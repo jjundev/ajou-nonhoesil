@@ -152,10 +152,11 @@ class AllinpdfConverter:
                 self.chrome_path,
                 "--headless=new",
                 "--remote-debugging-port=9222",
+                "--remote-allow-origins=*",
                 "--no-first-run",
                 "--no-default-browser-check",
                 f"--user-data-dir={self.user_data_dir}"
-            ])
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             time.sleep(2)
 
     def stop(self):
@@ -188,7 +189,12 @@ class AllinpdfConverter:
         abs_out = os.path.abspath(output_pdf_path)
         os.makedirs(os.path.dirname(abs_out), exist_ok=True)
         file_size_mb = os.path.getsize(abs_hwp) / (1024 * 1024)
-        dynamic_timeout = max(timeout_sec, int(file_size_mb * 5) + 60)
+
+        if file_size_mb > 100:
+            print(f"  [!] File size ({file_size_mb:.1f} MB) exceeds remote converter capacity (>100MB). Skipping remote upload.", flush=True)
+            return False
+
+        dynamic_timeout = min(180, max(timeout_sec, int(file_size_mb * 3) + 30))
 
         target_id = None
         ws = None
@@ -209,18 +215,18 @@ class AllinpdfConverter:
             root_id = doc["root"]["nodeId"]
             node_res = ws.call("DOM.querySelector", {"nodeId": root_id, "selector": "input[type=file]"})
             if not node_res or "nodeId" not in node_res or node_res["nodeId"] == 0:
-                print("  [-] Could not locate file input.")
+                print("  [-] Could not locate file input.", flush=True)
                 return False
 
             file_node_id = node_res["nodeId"]
 
             # 2. Upload file
-            print(f"  [*] Uploading {os.path.basename(abs_hwp)} ({file_size_mb:.2f} MB)...")
+            print(f"  [*] Uploading {os.path.basename(abs_hwp)} ({file_size_mb:.2f} MB)...", flush=True)
             ws.call("DOM.setFileInputFiles", {"files": [abs_hwp], "nodeId": file_node_id})
 
             # 3. Wait for options page
             options_loaded = False
-            upload_wait_sec = max(90, int(file_size_mb * 8) + 60)
+            upload_wait_sec = min(120, max(45, int(file_size_mb * 3) + 30))
             start_upload_wait = time.time()
             while time.time() - start_upload_wait < upload_wait_sec:
                 time.sleep(1)
@@ -230,11 +236,11 @@ class AllinpdfConverter:
                     options_loaded = True
                     break
                 elif "limited-wait" in url or "exception" in url:
-                    print(f"  [-] Reached rate limit or error page: {url}")
+                    print(f"  [-] Reached rate limit or error page: {url}", flush=True)
                     return False
 
             if not options_loaded:
-                print(f"  [-] Options page did not load in time (waited {upload_wait_sec}s).")
+                print(f"  [-] Options page did not load in time (waited {upload_wait_sec}s).", flush=True)
                 return False
 
             # 4. Click OK (PDF is checked by default)
@@ -258,6 +264,10 @@ class AllinpdfConverter:
                     })()
                 """})
                 val = json.loads(res["result"]["value"]) if res and "result" in res else {}
+                current_url = val.get("url", "")
+                if "exception" in current_url or "limited-wait" in current_url:
+                    print(f"  [-] Conversion error page reached: {current_url}")
+                    return False
                 if val.get("dl"):
                     download_url = val["dl"]
                     break
@@ -306,6 +316,11 @@ class AllinpdfConverter:
                     pass
 
 def main():
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except Exception:
+        pass
+
     parser = argparse.ArgumentParser(description="Batch convert HWP/HWPX files to PDF via Allinpdf")
     parser.add_argument("target", help="Target HWP file or directory containing HWP files")
     parser.add_argument("--output-dir", "-o", default=None, help="Optional output directory (default: in-place next to HWP files)")
@@ -316,16 +331,16 @@ def main():
 
     target_path = os.path.abspath(args.target)
     if not os.path.exists(target_path):
-        print(f"Error: Target path does not exist: {target_path}")
+        print(f"Error: Target path does not exist: {target_path}", flush=True)
         sys.exit(1)
 
     hwp_files = discover_hwp_files(target_path)
     if not hwp_files:
-        print(f"No HWP files found in {target_path}")
+        print(f"No HWP files found in {target_path}", flush=True)
         return
 
-    print(f"Found {len(hwp_files)} HWP files in {target_path}")
-    print(f"Output mode: {'Mirrored to ' + args.output_dir if args.output_dir else 'In-place (alongside .hwp)'}")
+    print(f"Found {len(hwp_files)} HWP files in {target_path}", flush=True)
+    print(f"Output mode: {'Mirrored to ' + args.output_dir if args.output_dir else 'In-place (alongside .hwp)'}", flush=True)
 
     success_cnt = 0
     skipped_cnt = 0

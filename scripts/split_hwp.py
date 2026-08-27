@@ -362,7 +362,7 @@ def write_hwp_ole(entries: list[dict], output_path: str):
     struct.pack_into("<H", hdr, 32, 6)  # Mini sector shift = 6 (64 bytes)
     struct.pack_into("<I", hdr, 44, num_fat_secs)
     struct.pack_into("<I", hdr, 48, first_dir_sec)
-    struct.pack_into("<I", hdr, 56, 4096)  # Mini cutoff
+    struct.pack_into("<I", hdr, 56, 0)  # Mini cutoff = 0 (all streams in regular FAT)
     struct.pack_into("<I", hdr, 60, 0xFFFFFFFE)  # No MiniFAT
     struct.pack_into("<I", hdr, 68, first_difat_sec)
     struct.pack_into("<I", hdr, 72, num_difat_secs)
