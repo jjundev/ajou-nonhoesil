@@ -10,6 +10,7 @@ and generates / executes clean rename plans following the standard format:
 import os
 import re
 import sys
+import json
 import argparse
 import unicodedata
 from collections import defaultdict
@@ -45,8 +46,8 @@ def extract_date_from_text(text: str, filename: str = "") -> str | None:
             
     # Fallback to filename if text has no date (e.g. 실험10 181130제출 결과보고서.pdf)
     if filename:
-        fn_m = re.search(r"(?:1[0-9]|2[0-9])(\d{4})", filename)
-        if fn_m and len(fn_m.group(0)) == 6:
+        fn_m = re.search(r"(?<!\d)(?:1[0-9]|2[0-9])\d{4}(?!\d)", filename)
+        if fn_m:
             return fn_m.group(0)
 
     return None
@@ -106,15 +107,17 @@ def build_rename_plan(base_dirs: list[str], category_hint: str = "") -> list[dic
             continue
         cat = category_hint or os.path.basename(bdir)
         for folder in sorted(os.listdir(bdir)):
+            norm_folder = clean_unicode(folder)
             fpath = os.path.join(bdir, folder)
             if not os.path.isdir(fpath):
                 continue
-            norm_folder = clean_unicode(folder)
+            norm_fpath = clean_unicode(fpath)
             pdf_files = [f for f in sorted(os.listdir(fpath)) if f.lower().endswith(".pdf")]
             
             parsed_list = []
             name_counts = defaultdict(int)
             for f in pdf_files:
+                norm_f = clean_unicode(f)
                 full_pdf = os.path.join(fpath, f)
                 parsed = extract_report_metadata(full_pdf, cat, norm_folder)
                 parsed_list.append(parsed)
@@ -126,6 +129,7 @@ def build_rename_plan(base_dirs: list[str], category_hint: str = "") -> list[dic
                 if item["part_suffix"]:
                     base_new += f"{item['part_suffix']}"
                 
+                base_new = clean_unicode(base_new)
                 name_counts[base_new] += 1
                 item["tentative_name"] = base_new
                 
@@ -138,70 +142,165 @@ def build_rename_plan(base_dirs: list[str], category_hint: str = "") -> list[dic
                 else:
                     final_new = f"{t}.pdf"
                 
-                new_path = os.path.join(fpath, final_new)
+                final_new = clean_unicode(final_new)
+                new_path = clean_unicode(os.path.join(fpath, final_new))
                 plan.append({
-                    "old_path": item["old_path"],
-                    "old_name": item["old_name"],
+                    "old_path": clean_unicode(item["old_path"]),
+                    "old_name": clean_unicode(item["old_name"]),
                     "new_name": final_new,
                     "new_path": new_path,
                     "folder": norm_folder,
-                    "category": cat
+                    "category": clean_unicode(cat)
                 })
     return plan
 
 def execute_renaming(plan: list[dict], dry_run: bool = True) -> dict:
     """
-    Execute renaming plan.
+    Execute renaming plan using a two-phase transaction-safe renaming approach
+    with defensive target collision validation.
     """
     results = {"success": 0, "skipped": 0, "errors": []}
+    old_paths_set = {os.path.abspath(op["old_path"]) for op in plan}
+
+    # 1. Validation phase
+    target_counts = defaultdict(int)
+    for op in plan:
+        target_counts[op["new_path"]] += 1
+    
     for op in plan:
         old_p = op["old_path"]
         new_p = op["new_path"]
         if old_p == new_p:
-            results["skipped"] += 1
             continue
-        if dry_run:
-            results["success"] += 1
-        else:
-            try:
-                os.rename(old_p, new_p)
+
+        if target_counts[new_p] > 1:
+            err_msg = f"Plan collision: multiple files target the same path '{new_p}'"
+            results["errors"].append((old_p, err_msg))
+            continue
+
+        # External collision: target exists on disk and is not one of the files being renamed
+        if os.path.exists(new_p) and os.path.abspath(new_p) not in old_paths_set:
+            err_msg = f"Target collision: unmanaged file '{new_p}' already exists on disk"
+            results["errors"].append((old_p, err_msg))
+
+    if results["errors"]:
+        return results
+
+    # 2. Execution phase
+    if dry_run:
+        for op in plan:
+            if op["old_path"] == op["new_path"]:
+                results["skipped"] += 1
+            else:
                 results["success"] += 1
-            except Exception as e:
-                results["errors"].append((old_p, str(e)))
+        return results
+
+    # Two-phase atomic rename to avoid swap/chain clobbering
+    to_rename = [op for op in plan if op["old_path"] != op["new_path"]]
+    results["skipped"] = len(plan) - len(to_rename)
+    
+    temp_mappings = []
+    # Phase 1: Rename source files to temporary intermediate paths
+    for idx, op in enumerate(to_rename):
+        old_p = op["old_path"]
+        temp_p = f"{old_p}.__tmp_rename_{idx}__"
+        try:
+            os.rename(old_p, temp_p)
+            temp_mappings.append((temp_p, op["new_path"], old_p))
+        except Exception as e:
+            results["errors"].append((old_p, f"Phase 1 temp rename failed: {e}"))
+            # Rollback Phase 1
+            for t_path, _, orig_path in temp_mappings:
+                try:
+                    os.rename(t_path, orig_path)
+                except Exception:
+                    pass
+            return results
+
+    # Phase 2: Rename intermediate temporary paths to final new paths
+    completed = []
+    for temp_p, new_p, orig_p in temp_mappings:
+        try:
+            os.rename(temp_p, new_p)
+            completed.append((new_p, orig_p))
+            results["success"] += 1
+        except Exception as e:
+            results["errors"].append((orig_p, f"Phase 2 final rename failed: {e}"))
+            # Rollback completed Phase 2 renames and remaining Phase 1 temps
+            for fin_p, orig_p in completed:
+                try:
+                    os.rename(fin_p, orig_p)
+                except Exception:
+                    pass
+            for rem_temp, _, orig_p in temp_mappings[len(completed):]:
+                try:
+                    os.rename(rem_temp, orig_p)
+                except Exception:
+                    pass
+            return results
+
     return results
 
-def main():
+def save_audit_log(plan: list[dict], audit_path: str = "docs/plans/renaming_audit.json", execution_results: dict | None = None) -> str:
+    """
+    Save rename plan audit JSON log to specified file path.
+    """
+    audit_path = os.path.abspath(audit_path)
+    os.makedirs(os.path.dirname(audit_path), exist_ok=True)
+
+    audit_data = {
+        "total_files": len(plan),
+        "renames": sum(1 for op in plan if op["old_path"] != op["new_path"]),
+        "unchanged": sum(1 for op in plan if op["old_path"] == op["new_path"]),
+        "plan": plan,
+        "execution": execution_results
+    }
+    with open(audit_path, "w", encoding="utf-8") as f:
+        json.dump(audit_data, f, ensure_ascii=False, indent=2)
+    return audit_path
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description="Rename PDF reports based on metadata extraction.")
     parser.add_argument("dirs", nargs="*", help="Base directories containing report folders")
-    parser.add_argument("--dry-run", action="store_true", default=False, help="Perform dry run without modifying files")
+    parser.add_argument("--dry-run", action="store_true", default=False, help="Perform dry run without modifying files (default)")
     parser.add_argument("--apply", action="store_true", default=False, help="Actually rename files")
-    args = parser.parse_args()
+    parser.add_argument("--audit-log", default="docs/plans/renaming_audit.json", help="Path to save audit log JSON")
+    args = parser.parse_args(argv)
 
     target_dirs = args.dirs
     if not target_dirs:
-        # Default target dirs
-        default_base = "from_the_past/정리"
+        # Default target dirs relative to repository root
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        repo_root = os.path.dirname(script_dir)
         target_dirs = [
-            os.path.join(default_base, "예비보고서"),
-            os.path.join(default_base, "결과보고서")
+            os.path.join(repo_root, "from_the_past/정리/예비보고서"),
+            os.path.join(repo_root, "from_the_past/정리/결과보고서")
         ]
 
     plan = build_rename_plan(target_dirs)
-    print(f"Total files in plan: {len(plan)}")
-    for item in plan:
-        status = "KEEP" if item["old_path"] == item["new_path"] else "RENAME"
-        print(f"[{status}] {item['old_name']} -> {item['new_name']}")
+    print(f"=== Found {len(plan)} PDF files to process ===")
+    for op in plan:
+        status = "[UNCHANGED]" if op["old_path"] == op["new_path"] else "[RENAME]"
+        print(f"{status} [{op['category']}/{op['folder']}] {op['old_name']} -> {op['new_name']}")
 
     is_dry_run = not args.apply or args.dry_run
     if is_dry_run:
-        print("\n[DRY RUN MODE] No changes applied. Use --apply to execute renaming.")
-    else:
-        print("\nExecuting rename operations...")
-        res = execute_renaming(plan, dry_run=False)
-        print(f"Results: Success: {res['success']}, Skipped: {res['skipped']}, Errors: {len(res['errors'])}")
+        res = execute_renaming(plan, dry_run=True)
+        save_audit_log(plan, audit_path=args.audit_log, execution_results=res)
+        print(f"\n[DRY RUN] No files were modified. Success: {res['success']}, Unchanged: {res['skipped']}, Errors: {len(res['errors'])}")
         if res["errors"]:
-            for err in res["errors"]:
-                print(f"Error renaming {err[0]}: {err[1]}")
+            for path, err in res["errors"]:
+                print(f"  Collision / Error on {path}: {err}")
+        print("Run with --apply to execute renames.")
+    else:
+        res = execute_renaming(plan, dry_run=False)
+        save_audit_log(plan, audit_path=args.audit_log, execution_results=res)
+        print(f"\n[APPLIED] Success: {res['success']}, Skipped: {res['skipped']}, Errors: {len(res['errors'])}")
+        if res["errors"]:
+            for path, err in res["errors"]:
+                print(f"  Error on {path}: {err}")
+
+    return 0 if not res["errors"] else 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
