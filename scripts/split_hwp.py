@@ -105,6 +105,20 @@ class CFBFParser:
         else:
             self.ministream = b""
 
+        # Build parent mapping by traversing tree from root
+        self.parent_map = {}
+        def traverse(entry_id, parent_name):
+            if entry_id in (0xFFFFFFFE, 0xFFFFFFFF) or entry_id >= len(self.entries):
+                return
+            entry = self.entries[entry_id]
+            if parent_name is not None:
+                self.parent_map[entry["name"]] = parent_name
+            traverse(entry["left"], parent_name)
+            traverse(entry["right"], parent_name)
+            if entry["type"] in (1, 5):
+                traverse(entry["child"], entry["name"])
+        traverse(0, None)
+
     def close(self):
         if self.fp and not self.fp.closed:
             self.fp.close()
@@ -227,35 +241,42 @@ def extract_referenced_bins(paragraphs: list[list[tuple[int, int, bytes]]]) -> s
     return bin_ids
 
 
+def ole_cmp_key(name: str):
+    return (len(name), [ord(c.upper()) for c in name])
+
+
+def build_bst(indices: list[int], entries: list[dict]) -> int:
+    if not indices:
+        return 0xFFFFFFFF
+    sorted_indices = sorted(indices, key=lambda idx: ole_cmp_key(entries[idx]["name"]))
+
+    def construct(sub: list[int]) -> int:
+        if not sub:
+            return 0xFFFFFFFF
+        mid = len(sub) // 2
+        root = sub[mid]
+        entries[root]["left"] = construct(sub[:mid])
+        entries[root]["right"] = construct(sub[mid + 1:])
+        return root
+
+    return construct(sorted_indices)
+
+
 def rebuild_ole_directory_tree(entries: list[dict]):
     """
-    Rebuild OLE directory tree pointers (child and right sibling links).
+    Rebuild OLE directory tree pointers (left, right, child) as balanced BSTs
+    according to MS-CFB specifications.
     """
     for e in entries:
         e["left"] = 0xFFFFFFFF
         e["right"] = 0xFFFFFFFF
         e["child"] = 0xFFFFFFFF
 
-    root_children = [i for i, e in enumerate(entries) if i > 0 and not e["name"].startswith("BIN") and e["name"] != "Section0"]
-    bin_children = [i for i, e in enumerate(entries) if e["name"].startswith("BIN")]
-    body_children = [i for i, e in enumerate(entries) if e["name"] == "Section0"]
-
-    if root_children:
-        entries[0]["child"] = root_children[0]
-        for idx in range(len(root_children) - 1):
-            entries[root_children[idx]]["right"] = root_children[idx + 1]
-
-    body_entry = next((e for e in entries if e["name"] == "BodyText"), None)
-    if body_entry and body_children:
-        body_entry["child"] = body_children[0]
-        for idx in range(len(body_children) - 1):
-            entries[body_children[idx]]["right"] = body_children[idx + 1]
-
-    bin_entry = next((e for e in entries if e["name"] == "BinData"), None)
-    if bin_entry and bin_children:
-        bin_entry["child"] = bin_children[0]
-        for idx in range(len(bin_children) - 1):
-            entries[bin_children[idx]]["right"] = bin_children[idx + 1]
+    for idx, s in enumerate(entries):
+        if s["type"] in (1, 5):  # Storage or Root Entry
+            s_name = s["name"]
+            child_indices = [i for i, e in enumerate(entries) if e.get("parent_name") == s_name and i != idx]
+            s["child"] = build_bst(child_indices, entries)
 
 
 def write_hwp_ole(entries: list[dict], output_path: str):
@@ -404,7 +425,8 @@ def split_hwp_file(input_hwp: str, output_prefix: str | None = None) -> list[str
                     if re.search(r"^4\.\s*기능별\s*결과사진", clean_txt) or \
                        re.search(r"^4\.\s*나누기", clean_txt) or \
                        re.search(r"^7\.\s*0으로\s*나누었을", clean_txt) or \
-                       re.search(r"^9\.\s*Reset", clean_txt):
+                       re.search(r"^9\.\s*Reset", clean_txt) or \
+                       re.search(r"^12\.\s*6자리\s*이상", clean_txt):
                         split_indices.append(idx)
         split_indices.append(len(paragraphs))
         split_indices = sorted(list(set(split_indices)))
@@ -429,15 +451,31 @@ def split_hwp_file(input_hwp: str, output_prefix: str | None = None) -> list[str
                     if bname.upper().startswith(prefix):
                         allowed_bin_names.add(bname)
 
+            DUMMY_JPG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\x27 \",#\x1c\x1c(7),01444\x1f\x27=82<.342\xff\xc0\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xbf\x00\xff\xd9"
+            DUMMY_BMP = b"BM:\x00\x00\x00\x00\x00\x00\x006\x00\x00\x00(\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\x00"
+
             part_entries = []
             for e in cfbf.entries:
                 name = e["name"]
-                if name.startswith("BIN") and name not in allowed_bin_names:
-                    continue
+                if e["type"] == 2:
+                    if name == "Section0":
+                        data = comp_sec0
+                    elif name.startswith("BIN"):
+                        if name in allowed_bin_names:
+                            data = all_stream_data[name]
+                        else:
+                            data = DUMMY_BMP if name.lower().endswith(".bmp") else DUMMY_JPG
+                    else:
+                        data = all_stream_data.get(name, b"")
+                else:
+                    data = b""
+
                 entry_copy = {
+                    "id": len(part_entries),
                     "name": name,
                     "type": e["type"],
-                    "data": comp_sec0 if name == "Section0" else all_stream_data.get(name, b"")
+                    "parent_name": cfbf.parent_map.get(name, "Root Entry"),
+                    "data": data
                 }
                 part_entries.append(entry_copy)
 
