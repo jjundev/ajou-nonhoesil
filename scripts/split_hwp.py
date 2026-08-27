@@ -4,6 +4,7 @@ Pure-Python HWP 5.0 Compound Document Splitter with MiniFAT support and BinData 
 Splits large HWP documents into independent, valid HWP part files (<50MB).
 """
 
+from __future__ import annotations
 import sys
 import os
 import struct
@@ -11,6 +12,7 @@ import zlib
 import re
 import argparse
 from pathlib import Path
+
 
 
 class CFBFParser:
