@@ -1371,7 +1371,8 @@ git commit -m "feat: 과목정보·보고서양식 설정과 로더, init-lab-we
 - Consumes: `scripts.lab.md.split_frontmatter`, `scripts.lab.md.parse_tables`
 - Produces:
   - `SpecError(ValueError)`
-  - `SpecTable` — `.id`, `.title`, `.kind`, `.encoding`, `.source`, `.expected`, `.header`, `.rows`, `.line`
+  - `SpecTable` — `.id`, `.title`, `.kind`, `.encoding`, `.source`, `.expected`, `.role`, `.header`, `.rows`, `.line`
+  - 상수 `ROLES = ("record", "reference")` — `reference` 는 교안에서 옮긴 참조표라 확인 칸을 만들지 않는다
   - `SpecItem` — `.id`, `.title`, `.device`, `.ics`, `.tables`
   - `LabSpec` — `.week`, `.experiment`, `.title`, `.source_manual`, `.power`, `.items`, `.tables`, `.path`, `.table(table_id) -> SpecTable | None`
   - `parse_spec(path) -> LabSpec`
@@ -1442,6 +1443,23 @@ class TestWeek2(unittest.TestCase):
         """실험1 p13 복합회로는 입력 2개에 출력이 3개다."""
         pairs = derived_parts(self.spec.table("T5"))
         self.assertEqual([name for name, _ in pairs], ["X", "Y", "Z"])
+
+    def test_theory_tables_are_reference_not_record(self):
+        """T6~T9 는 교안 2입력 이론표다. 학생이 배선하지도 채우지도 않는다."""
+        for tid in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=tid):
+                self.assertEqual(self.spec.table(tid).role, "reference")
+                self.assertEqual(self.spec.table(tid).encoding, "H/L")
+
+    def test_procedure_tables_default_to_record(self):
+        for tid in ("T1", "T2", "T3", "T4", "T5"):
+            with self.subTest(table=tid):
+                self.assertEqual(self.spec.table(tid).role, "record")
+
+    def test_both_encodings_appear_in_the_real_fixture(self):
+        """`H/L` ↔ `0/1` 변환 금지 규칙을 실물로 시험할 수 있어야 한다."""
+        encodings = {t.encoding for t in self.spec.tables}
+        self.assertEqual(encodings, {"0/1", "H/L"})
 
     def test_split_columns_on_a_multi_output_table(self):
         inputs, outputs = split_columns(self.spec.table("T5"))
@@ -1548,6 +1566,7 @@ from . import md
 
 KINDS = ("truth-table", "stepped", "capture")
 ENCODINGS = ("0/1", "H/L")
+ROLES = ("record", "reference")
 
 _T_HEAD = re.compile(r"^##\s+(T\d+)\s*·\s*(.+?)\s*$", re.M)
 _DERIVED = re.compile(r"^derived\s*\((.+)\)\s*$", re.S)
@@ -1568,6 +1587,7 @@ class SpecTable:
     encoding: Optional[str]
     source: Optional[str]
     expected: Optional[str]
+    role: str            # "record" | "reference"
     header: list
     rows: list
     line: int
@@ -1634,7 +1654,8 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
     return SpecTable(
         id=table_id, title=title, kind=kind,
         encoding=attrs.get("encoding"), source=attrs.get("source"),
-        expected=attrs.get("expected"), header=header, rows=rows, line=line,
+        expected=attrs.get("expected"), role=attrs.get("role", "record"),
+        header=header, rows=rows, line=line,
     )
 
 
@@ -1722,7 +1743,7 @@ def split_columns(table):
 python3 -m unittest tests.test_lab_spec_parser -v
 ```
 
-기대: `OK` (18 tests)
+기대: `OK` (21 tests)
 
 - [ ] **Step 5: 커밋**
 
@@ -2088,7 +2109,7 @@ def eval_boolean(text, env):
 python3 -m unittest tests.test_lab_boolexpr -v
 ```
 
-기대: `OK` (9 tests)
+기대: `OK` (10 tests)
 
 - [ ] **Step 5: `validate` 의 실패하는 테스트를 쓴다**
 
@@ -2359,6 +2380,9 @@ def check_metadata(spec) -> list:
         where = f"{spec.path.name}:{t.id}"
         if not t.source:
             out.append(Finding("error", where, "source 가 없다 (예상값 출처는 항상 명시한다)"))
+        if t.role not in ("record", "reference"):
+            out.append(Finding("error", where,
+                f"role 이 {t.role!r} 이다. `record` 또는 `reference` 여야 한다"))
         if t.kind == "capture":
             if not t.expected:
                 out.append(Finding("error", where,
@@ -3002,6 +3026,17 @@ class TestKindSpecificShapes(unittest.TestCase):
         self.assertIn("- 캡션:", block)
         self.assertNotIn("예상 |", block)
 
+    def test_reference_tables_are_excluded(self):
+        """T6~T9 는 교안 2입력 이론표다. 기록 칸을 만들면 안 된다."""
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        text = derive_record(spec)
+        for tid in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=tid):
+                self.assertNotIn(f"### {tid} ·", text)
+        for tid in ("T1", "T5"):
+            with self.subTest(table=tid):
+                self.assertIn(f"### {tid} ·", text)
+
     def test_capture_carries_the_prose_expectation(self):
         text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
         self.assertIn("> 예상:", text)
@@ -3053,6 +3088,10 @@ kind 마다 칸의 뜻이 다르다:
     truth-table  입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다
     stepped      스텝·조작은 주어지고, 명세에서 **비어 있는 열**이 채울 칸이다
     capture      셀 표가 아니라 스케치 격자 + 캡션 줄
+
+`role: reference` 인 표는 건너뛴다. 교안에서 그대로 옮긴 참조표라 학생이
+배선하지도 채우지도 않는다 (실험1 의 2입력 이론표 T6~T9). 확인 칸을 만들면
+"2입력 AND 이론표를 실험실에서 채우시오" 라는 무의미한 빈 칸이 나온다.
 """
 
 import unicodedata
@@ -3118,6 +3157,8 @@ def derive_record(spec) -> str:
                 f"IC: {', '.join(item.ics)} · 판독: {', '.join(item.device)}", ""]
         for table_id in item.tables:
             table = spec.table(table_id)
+            if table.role == "reference":
+                continue          # 교안 참조표다. 실험실에서 채우지 않는다
             out += [f"### {table.id} · {table.title}", "",
                     _RENDER[table.kind](table), "", "- 메모:", ""]
     out += ["# 실험 종료 메모", ""] + [f"- {p}:" for p in PROMPTS] + [""]
@@ -3130,7 +3171,7 @@ def derive_record(spec) -> str:
 python3 -m unittest tests.test_lab_record -v
 ```
 
-기대: `OK` (9 tests)
+기대: `OK` (10 tests)
 
 - [ ] **Step 5: `2주차/체크리스트/기록.md` 를 만든다**
 
@@ -3214,10 +3255,11 @@ class TestChecklistHtml(unittest.TestCase):
         self.assertIn("미사용", self.html)
 
     def test_check_cells_exist_for_every_truth_table_row(self):
-        """개수를 박지 말고 명세에서 센다 — T5 를 채우면 숫자가 바뀐다."""
+        """개수를 박지 말고 명세에서 센다. 참조표(role=reference)는 빠진다."""
         expected = sum(len(self.spec.table(t).rows)
                        for item in self.spec.items for t in item.tables
-                       if self.spec.table(t).kind != "capture")
+                       if self.spec.table(t).kind != "capture"
+                       and self.spec.table(t).role != "reference")
         self.assertEqual(self.html.count('class="check"'), expected)
         self.assertGreaterEqual(expected, 32)   # T1~T4 가 8행씩
 
@@ -3228,6 +3270,12 @@ class TestChecklistHtml(unittest.TestCase):
         for table in self.spec.tables:
             with self.subTest(table=table.id):
                 self.assertIn(table.source, self.html)
+
+    def test_reference_tables_do_not_get_check_cells(self):
+        """참조표는 인쇄본에 없다 — ③ 예비보고서 이론 절의 재료다."""
+        for tid in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=tid):
+                self.assertNotIn(f"{tid} ·", self.html)
 
     def test_wiring_photo_pair_is_present(self):
         """결선도 | 회로 2열 대조는 코퍼스에서 가장 강한 관행이다."""
@@ -3262,6 +3310,9 @@ if __name__ == "__main__":
 확인 칸은 세로로 정렬되어야 한다 — 세로줄 하나로 관통해 "전항 일치"를 표기하는
 방식이 태블릿 필기에서 가장 빠르기 때문이다. 칸과 숫자 사이에는 vision 전사가
 체크와 숫자를 구분할 여백이 있어야 한다.
+
+`role: reference` 표는 인쇄본에서 제외한다. 실험실에서 채우는 물건이 아니라
+예비보고서 이론 절의 재료다.
 """
 
 import html
@@ -3336,6 +3387,8 @@ def _tables(spec) -> str:
                    f"판독: {_esc(', '.join(item.device))}</p>")
         for table_id in item.tables:
             table = spec.table(table_id)
+            if table.role == "reference":
+                continue          # 참조표는 인쇄본에 넣지 않는다 (③ 이론 절의 재료다)
             out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
             out.append(f"<p class='src'>출처: {_esc(table.source)}</p>")
             out.append(_capture_html(table) if table.kind == "capture"
@@ -3371,7 +3424,7 @@ def render_checklist(spec, netlist_text, template) -> str:
 python3 -m unittest tests.test_lab_render -v
 ```
 
-기대: `OK` (8 tests)
+기대: `OK` (9 tests)
 
 - [ ] **Step 10: ② `prep-lab-checklist` 스킬을 만든다**
 
@@ -3760,7 +3813,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 | 섹션 | 재료 |
 |---|---|
 | 실험 목적 | 교안 p2 "목적" 슬라이드 |
-| 실험 이론 | 교안 이론 슬라이드 + `논회 강의노트/Ch*.pdf` + `docs/study/` |
+| 실험 이론 | 교안 이론 슬라이드 + `논회 강의노트/Ch*.pdf` + `docs/study/` + 명세의 **`role: reference` 표**(실험1 T6~T9 = 2입력 이론표, `encoding: H/L`). **`H/L` 을 `0/1` 로 바꾸지 말 것** |
 | 실험 부품 | 명세 `ics` + `ic칩.txt` + 핀아웃 이미지. LED 330Ω·미사용핀 처리 포함 |
 | 실험 과정 및 예상 결과 | 명세의 표 전부 + `source` 각주 |
 | 회로 결선도 | `<N>주차/결선도/netlist.md` 표 + 크롭된 브레드보드 |
