@@ -57,6 +57,25 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    "
    ```
 
+3b. **렌더된 HTML 검사.** `check_rendered_html`(표 셀에 남은 백틱·`**`)과
+    `check_embedded_images`(경로가 안 풀려 깨진 그림)는 둘 다 `extract_text()`
+    로는 안 보인다 — 실제로 표 셀 백틱 230개와 깨진 브레드보드 그림이 이
+    검사 없이 제출된 적이 있다. ③·④ 는 자기 절차 안에서 이 둘을 부르지만
+    (8b·11b 단계), **"☑ 제출 가능" 을 최종으로 쓰는 건 이 스킬이다** — 여기서
+    다시 부르지 않으면, ③·④ 밖에서(예: 렌더러를 고친 뒤 수동으로 다시 낸
+    HTML) 생긴 같은 결함을 ⑤ 혼자로는 못 잡는다. 대상은 `<N>주차/output/`
+    아래 **모든** HTML — 체크리스트·예비보고서·결과보고서를 가리지 않는다.
+
+    ```bash
+    python3 -c "
+    from pathlib import Path
+    from scripts.lab import validate
+    for html in sorted(Path('<N>주차/output/').glob('*.html')):
+        for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
+            print(f)
+    "
+    ```
+
 4. **코드가 못 보는 것을 사람이 본다.** 아래는 판정하지 말고 **질문으로** 남긴다.
 
    | 항목 | 왜 코드로 못 하나 |
@@ -87,7 +106,8 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    - [x] 수정 필요 — error 가 남아 있다
    ```
 
-6. **error 가 0 이 될 때까지 반복한다.** warn 은 남겨도 되지만 **왜 남기는지 한 줄** 적는다.
+6. **error 가 0 이 될 때까지 반복한다** (2·3·3b 단계 전부 합쳐서). warn 은
+   남겨도 되지만 **왜 남기는지 한 줄** 적는다.
 
 ## 비-목표
 
