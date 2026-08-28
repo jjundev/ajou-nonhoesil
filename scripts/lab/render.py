@@ -11,6 +11,7 @@
 import html
 import re
 
+from . import md
 from .notation import normalize_cell
 from .spec_parser import split_columns
 
@@ -28,20 +29,58 @@ def crop_rows(netlist_text: str) -> int:
     return min(rows, MAX_BREADBOARD_ROWS)
 
 
+_EMPHASIS = re.compile(r"\*{1,2}([^*]+)\*{1,2}")
+_CODE = re.compile(r"`([^`]+)`")
+
+
 def _esc(text) -> str:
     return html.escape(str(text), quote=False)
 
 
+def _plain(text: str) -> str:
+    """netlist 의 마크다운 표기를 벗긴다. 안 벗기면 인쇄본에 `**` 와 백틱이
+    그대로 찍힌다.
+
+    짝이 맞는 것을 먼저 벗기고, 남은 낱개 기호도 지운다 — 여러 줄에 걸친
+    코드 스팬은 줄을 합친 뒤에도 짝이 안 맞을 수 있다. 이 도메인에서 `*` 와
+    백틱은 내용이 아니라 항상 표기다.
+    """
+    text = _CODE.sub(r"\1", _EMPHASIS.sub(r"\1", text))
+    return text.replace("`", "").replace("*", "")
+
+
 def _procedure(spec, netlist_text) -> str:
-    """결선 절차. VCC/GND/미사용핀을 최상단 박스에 둔다."""
+    """결선 절차. VCC/GND/미사용핀을 최상단 박스에 둔다.
+
+    netlist 본문의 **모든 불릿**을 싣는다. 영문 `pin` 이 든 줄만 고르면
+    한글로 쓴 경고가 통째로 사라진다 — 실제로 "입력을 띄워두지 않는다"(이 과목의
+    대표 실패 원인)와 "74HC02 는 핀 배치가 다르다"(netlist 가 스스로 가장 흔한
+    배선 실수라고 표시한 것)가 인쇄본에서 빠져 있었다.
+    """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀은 전부 GND (플로팅 금지)</div>", "<ol>"]
-    for line in netlist_text.split("\n"):
+           "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
+    _, body = md.split_frontmatter(netlist_text)
+    step, open_list = 0, False
+    for line in body.split("\n"):
         stripped = line.strip()
-        if stripped.startswith("-") and ("pin" in stripped or "미사용" in stripped):
-            out.append(f"<li>{_esc(stripped.lstrip('- '))}</li>")
-    out.append("</ol>")
+        if stripped.startswith("#"):
+            if open_list:
+                out.append("</ol>")
+                open_list = False
+            out.append(f"<h3>{_esc(stripped.lstrip('# '))}</h3>")
+        elif stripped.startswith("- "):
+            if not open_list:
+                out.append(f'<ol start="{step + 1}">')
+                open_list = True
+            step += 1
+            out.append(f"<li>{_esc(_plain(stripped[2:]))}</li>")
+        elif open_list and stripped and line.startswith(" ") and out[-1].endswith("</li>"):
+            # 들여쓴 이어지는 줄은 앞 항목에 붙인다. 버리면 여러 줄로 쓴 경고가
+            # 중간에서 잘린다 — 74HC02 핀 배치 경고가 실제로 그렇게 잘렸다.
+            out[-1] = out[-1][: -len("</li>")] + " " + _esc(_plain(stripped)) + "</li>"
+    if open_list:
+        out.append("</ol>")
     return "\n".join(out)
 
 
@@ -102,7 +141,8 @@ def _tables(spec) -> str:
 def _breadboard(spec, netlist_text) -> str:
     rows = crop_rows(netlist_text)
     labels = " · ".join(f"{k}={v}" for k, v in spec.power.items())
-    return (f"<h2>브레드보드 작도 ({rows}행)</h2>"
+    # 제목만 앞 쪽에 남고 그림이 다음 쪽으로 넘어가는 것을 막는다 — 표와 같은 이유다.
+    return (f'<div class="tblock"><h2>브레드보드 작도 ({rows}행)</h2>'
             f"<p>단자: {_esc(labels)}</p>"
             f'<img src="../../.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{rows * 6}mm;object-fit:cover;'

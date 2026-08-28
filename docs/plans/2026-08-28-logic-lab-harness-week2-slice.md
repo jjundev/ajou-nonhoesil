@@ -3838,6 +3838,59 @@ class TestCrop(unittest.TestCase):
         self.assertLessEqual(crop_rows(netlist), 30)
 
 
+class TestPrintConstraints(unittest.TestCase):
+    """실험실 물리 조건은 CSS 에만 있어서 문자열 검증이 없으면 조용히 사라진다.
+    실제로 이 공백 때문에 브레드보드 그림이 제목과 갈라진 채 두 라운드를 통과했다."""
+
+    def test_check_cell_is_big_enough_for_a_pen(self):
+        self.assertIn("width: 10mm", TEMPLATE)
+        self.assertIn("height: 8mm", TEMPLATE)
+
+    def test_pin_numbers_are_readable_under_lab_lighting(self):
+        self.assertIn("font-size: 12pt", TEMPLATE)
+
+    def test_page_break_rules_survive(self):
+        for rule in ("break-inside: avoid",
+                     "display: table-header-group",
+                     "break-after: avoid"):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, TEMPLATE)
+
+    def test_table_and_breadboard_blocks_are_kept_whole(self):
+        """제목만 앞 쪽에 남고 내용이 넘어가면 실험실에서 못 읽는다."""
+        self.assertIn(".tblock", TEMPLATE)
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        html = render_checklist(spec, netlist, TEMPLATE)
+        self.assertEqual(html.count('<div class="tblock">'),
+                         5 + 1)   # 기록 대상 표 5개 + 브레드보드 1
+
+
+class TestProcedureCarriesEveryWarning(unittest.TestCase):
+    """영문 `pin` 이 든 줄만 고르면 한글로 쓴 경고가 통째로 사라진다.
+    이 과목의 대표 실패 원인(플로팅 입력) 경고가 실제로 그렇게 빠져 있었다."""
+
+    def setUp(self):
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        self.html = render_checklist(spec, netlist, TEMPLATE)
+
+    def test_korean_only_warnings_reach_the_printout(self):
+        for warning in ("띄워두지 않는다", "가장 흔한 배선 실수",
+                        "330Ω 직렬", "칩 재사용"):
+            with self.subTest(warning=warning):
+                self.assertIn(warning, self.html)
+
+    def test_multiline_bullets_are_not_truncated(self):
+        """`74HC02` 경고는 세 줄짜리 불릿이다. 이어지는 줄을 버리면 잘린다."""
+        self.assertIn("핀 1·4·10·13", self.html)
+
+    def test_markdown_syntax_does_not_reach_print(self):
+        body = self.html[self.html.index('<div class="power">'):]
+        self.assertNotIn("**", body)
+        self.assertNotIn("`", body)
+
+
 if __name__ == "__main__":
     unittest.main()
 ```
@@ -3858,6 +3911,7 @@ if __name__ == "__main__":
 import html
 import re
 
+from . import md
 from .notation import normalize_cell
 from .spec_parser import split_columns
 
@@ -3875,20 +3929,58 @@ def crop_rows(netlist_text: str) -> int:
     return min(rows, MAX_BREADBOARD_ROWS)
 
 
+_EMPHASIS = re.compile(r"\*{1,2}([^*]+)\*{1,2}")
+_CODE = re.compile(r"`([^`]+)`")
+
+
 def _esc(text) -> str:
     return html.escape(str(text), quote=False)
 
 
+def _plain(text: str) -> str:
+    """netlist 의 마크다운 표기를 벗긴다. 안 벗기면 인쇄본에 `**` 와 백틱이
+    그대로 찍힌다.
+
+    짝이 맞는 것을 먼저 벗기고, 남은 낱개 기호도 지운다 — 여러 줄에 걸친
+    코드 스팬은 줄을 합친 뒤에도 짝이 안 맞을 수 있다. 이 도메인에서 `*` 와
+    백틱은 내용이 아니라 항상 표기다.
+    """
+    text = _CODE.sub(r"\1", _EMPHASIS.sub(r"\1", text))
+    return text.replace("`", "").replace("*", "")
+
+
 def _procedure(spec, netlist_text) -> str:
-    """결선 절차. VCC/GND/미사용핀을 최상단 박스에 둔다."""
+    """결선 절차. VCC/GND/미사용핀을 최상단 박스에 둔다.
+
+    netlist 본문의 **모든 불릿**을 싣는다. 영문 `pin` 이 든 줄만 고르면
+    한글로 쓴 경고가 통째로 사라진다 — 실제로 "입력을 띄워두지 않는다"(이 과목의
+    대표 실패 원인)와 "74HC02 는 핀 배치가 다르다"(netlist 가 스스로 가장 흔한
+    배선 실수라고 표시한 것)가 인쇄본에서 빠져 있었다.
+    """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀은 전부 GND (플로팅 금지)</div>", "<ol>"]
-    for line in netlist_text.split("\n"):
+           "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
+    _, body = md.split_frontmatter(netlist_text)
+    step, open_list = 0, False
+    for line in body.split("\n"):
         stripped = line.strip()
-        if stripped.startswith("-") and ("pin" in stripped or "미사용" in stripped):
-            out.append(f"<li>{_esc(stripped.lstrip('- '))}</li>")
-    out.append("</ol>")
+        if stripped.startswith("#"):
+            if open_list:
+                out.append("</ol>")
+                open_list = False
+            out.append(f"<h3>{_esc(stripped.lstrip('# '))}</h3>")
+        elif stripped.startswith("- "):
+            if not open_list:
+                out.append(f'<ol start="{step + 1}">')
+                open_list = True
+            step += 1
+            out.append(f"<li>{_esc(_plain(stripped[2:]))}</li>")
+        elif open_list and stripped and line.startswith(" ") and out[-1].endswith("</li>"):
+            # 들여쓴 이어지는 줄은 앞 항목에 붙인다. 버리면 여러 줄로 쓴 경고가
+            # 중간에서 잘린다 — 74HC02 핀 배치 경고가 실제로 그렇게 잘렸다.
+            out[-1] = out[-1][: -len("</li>")] + " " + _esc(_plain(stripped)) + "</li>"
+    if open_list:
+        out.append("</ol>")
     return "\n".join(out)
 
 
@@ -3949,7 +4041,8 @@ def _tables(spec) -> str:
 def _breadboard(spec, netlist_text) -> str:
     rows = crop_rows(netlist_text)
     labels = " · ".join(f"{k}={v}" for k, v in spec.power.items())
-    return (f"<h2>브레드보드 작도 ({rows}행)</h2>"
+    # 제목만 앞 쪽에 남고 그림이 다음 쪽으로 넘어가는 것을 막는다 — 표와 같은 이유다.
+    return (f'<div class="tblock"><h2>브레드보드 작도 ({rows}행)</h2>'
             f"<p>단자: {_esc(labels)}</p>"
             f'<img src="../../.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{rows * 6}mm;object-fit:cover;'

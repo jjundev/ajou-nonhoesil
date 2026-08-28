@@ -72,5 +72,58 @@ class TestCrop(unittest.TestCase):
         self.assertLessEqual(crop_rows(netlist), 30)
 
 
+class TestPrintConstraints(unittest.TestCase):
+    """실험실 물리 조건은 CSS 에만 있어서 문자열 검증이 없으면 조용히 사라진다.
+    실제로 이 공백 때문에 브레드보드 그림이 제목과 갈라진 채 두 라운드를 통과했다."""
+
+    def test_check_cell_is_big_enough_for_a_pen(self):
+        self.assertIn("width: 10mm", TEMPLATE)
+        self.assertIn("height: 8mm", TEMPLATE)
+
+    def test_pin_numbers_are_readable_under_lab_lighting(self):
+        self.assertIn("font-size: 12pt", TEMPLATE)
+
+    def test_page_break_rules_survive(self):
+        for rule in ("break-inside: avoid",
+                     "display: table-header-group",
+                     "break-after: avoid"):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, TEMPLATE)
+
+    def test_table_and_breadboard_blocks_are_kept_whole(self):
+        """제목만 앞 쪽에 남고 내용이 넘어가면 실험실에서 못 읽는다."""
+        self.assertIn(".tblock", TEMPLATE)
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        html = render_checklist(spec, netlist, TEMPLATE)
+        self.assertEqual(html.count('<div class="tblock">'),
+                         5 + 1)   # 기록 대상 표 5개 + 브레드보드 1
+
+
+class TestProcedureCarriesEveryWarning(unittest.TestCase):
+    """영문 `pin` 이 든 줄만 고르면 한글로 쓴 경고가 통째로 사라진다.
+    이 과목의 대표 실패 원인(플로팅 입력) 경고가 실제로 그렇게 빠져 있었다."""
+
+    def setUp(self):
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        self.html = render_checklist(spec, netlist, TEMPLATE)
+
+    def test_korean_only_warnings_reach_the_printout(self):
+        for warning in ("띄워두지 않는다", "가장 흔한 배선 실수",
+                        "330Ω 직렬", "칩 재사용"):
+            with self.subTest(warning=warning):
+                self.assertIn(warning, self.html)
+
+    def test_multiline_bullets_are_not_truncated(self):
+        """`74HC02` 경고는 세 줄짜리 불릿이다. 이어지는 줄을 버리면 잘린다."""
+        self.assertIn("핀 1·4·10·13", self.html)
+
+    def test_markdown_syntax_does_not_reach_print(self):
+        body = self.html[self.html.index('<div class="power">'):]
+        self.assertNotIn("**", body)
+        self.assertNotIn("`", body)
+
+
 if __name__ == "__main__":
     unittest.main()
