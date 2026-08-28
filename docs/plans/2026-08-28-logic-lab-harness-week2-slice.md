@@ -604,6 +604,10 @@ class TestFrontmatter(unittest.TestCase):
         fm, _ = md.split_frontmatter("---\nfilled_by: ~\n---\n")
         self.assertIsNone(fm["filled_by"])
 
+    def test_null_literal_is_none(self):
+        self.assertIsNone(md.parse_value("null"))
+        self.assertIsNone(md.parse_value(""))
+
     def test_booleans(self):
         self.assertIs(md.parse_value("false"), False)
         self.assertIs(md.parse_value("true"), True)
@@ -642,7 +646,7 @@ class TestTables(unittest.TestCase):
         self.assertEqual(len(tables), 1)
         self.assertEqual(tables[0].header, ["A", "B", "Y"])
         self.assertEqual(tables[0].rows, [["0", "0", "0"], ["1", "1", "1"]])
-        self.assertEqual(tables[0].line, 5)
+        self.assertEqual(tables[0].line, 4)   # 구분선의 1-based 줄 번호
 
     def test_ignores_pipe_free_prose(self):
         self.assertEqual(md.parse_tables("표가 하나도 없다\n"), [])
@@ -651,6 +655,25 @@ class TestTables(unittest.TestCase):
         body = ("| A | Y |\n|---|---|\n| 0 | 1 |\n\n"
                 "| S | R | Q |\n|---|---|---|\n| 0 | 1 | 0 |\n")
         self.assertEqual([len(t.header) for t in md.parse_tables(body)], [2, 3])
+
+    def test_adjacent_tables_with_no_blank_line_between(self):
+        """두 번째 표의 헤더를 첫 표의 행으로 삼키면 안 된다."""
+        body = ("| A | Y |\n|---|---|\n| 0 | 1 |\n"
+                "| S | R |\n|---|---|\n| 1 | 0 |\n")
+        tables = md.parse_tables(body)
+        self.assertEqual([t.header for t in tables], [["A", "Y"], ["S", "R"]])
+        self.assertEqual([t.rows for t in tables], [[["0", "1"]], [["1", "0"]]])
+
+    def test_dash_only_row_is_data_not_a_separator(self):
+        """`-` 는 이 프로젝트의 don't-care 표기다. 구분선으로 오인하면
+        데이터 행이 통째로 조용히 사라진다."""
+        body = "| A | B |\n|---|---|\n| - | - |\n| 0 | 1 |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["-", "-"], ["0", "1"]])
+
+    def test_escaped_pipe_stays_inside_its_cell(self):
+        """쪼개 버리면 validate 의 `\\|` 검사가 영영 발화하지 못한다."""
+        body = "| A | B |\n|---|---|\n| a\\|b | c |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["a\\|b", "c"]])
 
     def test_symbolic_cells_survive_untouched(self):
         """실험6 의 복합 토큰. 콜론·괄호·어포스트로피가 셀 안에서 살아남아야 한다."""
@@ -672,17 +695,21 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(fm["week"], 2)
         self.assertEqual(fm["experiment"], 1)
         self.assertEqual(len(fm["items"]), 3)
-        self.assertGreaterEqual(len(md.parse_tables(body)), 4)
+        # 느슨한 하한은 회귀를 놓친다 — Task 1 픽스처의 실제 개수로 고정한다
+        self.assertEqual(len(md.parse_tables(body)), 9)
 
     def test_week6_spec_parses(self):
         text = (ROOT / "6주차/체크리스트/명세.md").read_text(encoding="utf-8")
-        fm, _ = md.split_frontmatter(text)
+        fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 6)
+        self.assertEqual(len(md.parse_tables(body)), 6)   # 표 5개 + 토큰 참조표 1개
 
     def test_week12_spec_parses(self):
         text = (ROOT / "12주차/체크리스트/명세.md").read_text(encoding="utf-8")
-        fm, _ = md.split_frontmatter(text)
+        fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 10)
+        # T1 은 capture 라 셀 표가 없다. 본문의 마크다운 표는 T2(stepped) 하나뿐
+        self.assertEqual(len(md.parse_tables(body)), 1)
 
 
 if __name__ == "__main__":
@@ -723,8 +750,8 @@ PyYAML 이 이 환경에 없으므로 프론트매터는 이 프로젝트가 실
 """
 
 import re
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -736,6 +763,7 @@ class MdTable:
 
 _ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 _SEP = re.compile(r"^\s*\|[\s:|-]+\|\s*$")
+_CELL_SPLIT = re.compile(r"(?<!\\)\|")   # `\|` 는 셀 구분자가 아니다
 
 
 def split_top(s: str) -> list:
@@ -866,26 +894,38 @@ def split_frontmatter(text: str):
 
 
 def _cells(line: str) -> list:
-    return [c.strip() for c in _ROW.match(line).group(1).split("|")]
+    """셀로 자른다. `\\|` 는 구분자가 아니라 셀 안의 문자다.
+
+    쪼개 버리면 `validate` 의 "셀에 escape 된 파이프" 검사가 영영 발화하지 못한다
+    — 검사가 찾는 문자열이 파싱 단계에서 사라지기 때문이다.
+    """
+    return [c.strip() for c in _CELL_SPLIT.split(_ROW.match(line).group(1))]
 
 
 def parse_tables(body: str) -> list:
-    """본문에서 마크다운 표를 전부 찾는다. 헤더 + 구분선이 있어야 표로 본다."""
+    """본문에서 마크다운 표를 전부 찾는다.
+
+    구분선은 **위치로만** 판정한다 — 헤더 바로 다음 줄이어야 한다. 내용으로
+    판정하면 `| - | - |` 같은 don't-care 행이 구분선과 구별되지 않아 데이터가
+    조용히 사라진다 (`-` 는 이 프로젝트의 don't-care 표기 중 하나다).
+    """
     lines = body.split("\n")
     tables, i = [], 0
     while i < len(lines):
-        if (_ROW.match(lines[i]) and not _SEP.match(lines[i])
+        if not (_ROW.match(lines[i]) and not _SEP.match(lines[i])
                 and i + 1 < len(lines) and _SEP.match(lines[i + 1])):
-            header = _cells(lines[i])
-            sep_line = i + 2  # 1-based
-            i += 2
-            rows = []
-            while i < len(lines) and _ROW.match(lines[i]) and not _SEP.match(lines[i]):
-                rows.append(_cells(lines[i]))
-                i += 1
-            tables.append(MdTable(header=header, rows=rows, line=sep_line))
+            i += 1
             continue
-        i += 1
+        header = _cells(lines[i])
+        sep_line = i + 2                      # 구분선의 1-based 줄 번호
+        i += 2
+        rows = []
+        while i < len(lines) and _ROW.match(lines[i]):
+            if i + 1 < len(lines) and _SEP.match(lines[i + 1]):
+                break                         # 이 줄은 다음 표의 헤더다
+            rows.append(_cells(lines[i]))
+            i += 1
+        tables.append(MdTable(header=header, rows=rows, line=sep_line))
     return tables
 ```
 
@@ -895,7 +935,7 @@ def parse_tables(body: str) -> list:
 python3 -m unittest tests.test_lab_md -v
 ```
 
-기대: `OK` (16 tests)
+기대: `OK` (19 tests)
 
 - [ ] **Step 5: 기존 테스트가 깨지지 않았는지 확인한다**
 
