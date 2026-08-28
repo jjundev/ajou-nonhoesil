@@ -56,6 +56,9 @@
           break-inside: avoid; }
   thead { display: table-header-group; }
   tr { break-inside: avoid; }
+  /* 출처 줄이 표와 갈라지면 어느 표의 근거인지 알 수 없다.
+     ② 체크리스트 템플릿에서 같은 결함을 겪고 넣은 규칙이다. */
+  .tblock { break-inside: avoid; }
   th, td { border: 1px solid #ccc; padding: 1.8mm 2.5mm; text-align: left; vertical-align: top; }
   th { background: #f0f0f0; font-weight: 600; }
 
