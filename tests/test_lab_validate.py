@@ -84,6 +84,22 @@ class TestBooleanCrosscheck(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("Y", errors[0].message)
 
+    def test_skips_dont_care_rows_but_still_checks_the_rest(self):
+        """don't-care 입력 행은 구체적 식으로 검산할 수 없다. 건너뛰되
+        그 뒤의 진짜 오류는 계속 잡아야 한다 — `break` 로 표 전체를 포기하면
+        don't-care 행 하나가 나머지 검산을 통째로 가려버린다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (Y = A·B)\n\n"
+            "| A | B | Y |\n|---|---|---|\n"
+            "| 0 | x | 0 |\n"      # 검산 불가 — 건너뛴다
+            "| 1 | 0 | 0 |\n"
+            "| 1 | 1 | 0 |\n"      # 진짜 오류
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("행3", errors[0].where)
+
     def test_works_on_hl_encoded_tables(self):
         """평가용으로만 비트로 읽는다. 데이터는 H/L 그대로 남는다."""
         spec = spec_from(HEAD + (
@@ -185,13 +201,16 @@ class TestTableIntegrity(unittest.TestCase):
 
     def test_bad_cell_contents_are_errors(self):
         """`\\|`·`<br>`·탭은 표를 깨거나 렌더링을 망가뜨린다."""
-        for bad, label in ((r"a\|b", "escape"), ("a<br>b", "br"), ("a\tb", "tab")):
+        cases = ((r"a\|b", "escape 된 파이프"), ("a<br>b", "<br> 태그"),
+                 ("a\tb", "탭 문자"))
+        for bad, label in cases:
             with self.subTest(cell=label):
                 spec = spec_from(HEAD + (
                     "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
                     f"| A | Y |\n|---|---|\n| {bad} | 0 |\n"
                 ))
-                self.assertTrue(validate.check_table_integrity(spec))
+                messages = [f.message for f in validate.check_table_integrity(spec)]
+                self.assertTrue(any(label in m for m in messages), messages)
 
     def test_ragged_row_is_an_error(self):
         spec = spec_from(HEAD + (
