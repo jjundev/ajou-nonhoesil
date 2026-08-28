@@ -85,10 +85,14 @@ def _tables(spec) -> str:
             table = spec.table(table_id)
             if table.role == "reference":
                 continue          # 참조표는 인쇄본에 넣지 않는다 (③ 이론 절의 재료다)
+            # 제목·출처·표를 한 덩어리로 묶는다 — 캡션만 앞 쪽에 남으면
+            # 어느 표의 출처인지 실험실에서 알 수 없다.
+            out.append('<div class="tblock">')
             out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
             out.append(f"<p class='src'>출처: {_esc(table.source)}</p>")
             out.append(_capture_html(table) if table.kind == "capture"
                        else _truth_or_stepped_html(table))
+            out.append("</div>")
         out.append('<div class="pair">'
                    "<div><b>결선도</b><br>(사진 부착)</div>"
                    "<div><b>구성한 회로</b><br>(사진 부착)</div></div>")

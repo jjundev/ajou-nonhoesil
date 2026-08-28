@@ -3530,8 +3530,10 @@ class TestWeek2Record(unittest.TestCase):
         self.assertIn("확인", self.text)
 
     def test_every_table_gets_a_memo_line(self):
-        """개수를 박지 말고 명세에서 센다 — T5 를 채우면 숫자가 바뀐다."""
-        used = sum(len(item.tables) for item in self.spec.items)
+        """개수를 박지 말고 명세에서 센다. 참조표(role=reference)는 기록에
+        들어가지 않으므로 셈에서도 빼야 한다."""
+        used = sum(1 for item in self.spec.items for tid in item.tables
+                   if self.spec.table(tid).role != "reference")
         self.assertEqual(self.text.count("- 메모:"), used)
 
     def test_closing_prompts_are_present(self):
@@ -3736,7 +3738,14 @@ print(text[:400])
   .procedure .power { font-weight: 700; border: 2px solid #000;
                       padding: 3mm; margin-bottom: 4mm; }
   .procedure li { font-size: 12pt; line-height: 1.7; }
-  table { border-collapse: collapse; margin-bottom: 6mm; }
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
   .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
@@ -3794,8 +3803,11 @@ class TestChecklistHtml(unittest.TestCase):
     def test_expected_value_sits_next_to_the_check_cell(self):
         self.assertIn("Y예상", self.html)
 
-    def test_source_is_surfaced_for_every_table(self):
+    def test_source_is_surfaced_for_every_printed_table(self):
+        """참조표는 인쇄본에 없으므로 출처도 없다 — 기록 대상만 본다."""
         for table in self.spec.tables:
+            if table.role == "reference":
+                continue
             with self.subTest(table=table.id):
                 self.assertIn(table.source, self.html)
 
@@ -3892,13 +3904,16 @@ def _truth_or_stepped_html(table) -> str:
         head = list(table.header)
         body = [[normalize_cell(c) for c in row] for row in table.rows]
 
-    out = ["<table>", "<tr>"]
+    # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.
+    # 헤더 없는 진리표 조각은 실험실에서 읽을 수 없다.
+    out = ["<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(h)}</th>" for h in head]
     out.append('<th>확인</th></tr>')
+    out += ["</thead>", "<tbody>"]
     for row in body:
         out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in row)
                    + '<td class="check"></td></tr>')
-    out.append("</table>")
+    out += ["</tbody>", "</table>"]
     return "\n".join(out)
 
 
@@ -3917,10 +3932,14 @@ def _tables(spec) -> str:
             table = spec.table(table_id)
             if table.role == "reference":
                 continue          # 참조표는 인쇄본에 넣지 않는다 (③ 이론 절의 재료다)
+            # 제목·출처·표를 한 덩어리로 묶는다 — 캡션만 앞 쪽에 남으면
+            # 어느 표의 출처인지 실험실에서 알 수 없다.
+            out.append('<div class="tblock">')
             out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
             out.append(f"<p class='src'>출처: {_esc(table.source)}</p>")
             out.append(_capture_html(table) if table.kind == "capture"
                        else _truth_or_stepped_html(table))
+            out.append("</div>")
         out.append('<div class="pair">'
                    "<div><b>결선도</b><br>(사진 부착)</div>"
                    "<div><b>구성한 회로</b><br>(사진 부착)</div></div>")
@@ -4009,16 +4028,23 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    ```bash
    python3 -c "
    from pathlib import Path
+   from scripts.lab import config
    from scripts.lab.render import render_checklist
    from scripts.lab.spec_parser import parse_spec
-   from scripts.lab.html2pdf import html_to_pdf
+   from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
+   root = config.find_project_root(Path('.'))
+   info = config.load_course_info(root)
    spec = parse_spec('<N>주차/체크리스트/명세.md')
    netlist = Path('<N>주차/결선도/netlist.md').read_text(encoding='utf-8')
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
    out = Path('<N>주차/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
-   html_to_pdf(out, out.with_suffix('.pdf'))
+   html_to_pdf(out, out.with_suffix('.pdf'),
+               chrome=info.get('chrome') or DEFAULT_CHROME)
    "
+
+   **`chrome=` 를 반드시 넘긴다** — 안 넘기면 `과목정보.md` 의 `chrome` 필드가
+   선언만 되고 아무 효과가 없다 (⑥ 표지 스킬과 같은 규칙이다).
    ```
 
 5. **A4 실측.** 아래를 돌려 210×297mm 인지 확인한다. 아니면 CSS 를 고치고 다시 낸다.
