@@ -37,8 +37,11 @@ class TestChecklistHtml(unittest.TestCase):
     def test_expected_value_sits_next_to_the_check_cell(self):
         self.assertIn("Y예상", self.html)
 
-    def test_source_is_surfaced_for_every_table(self):
+    def test_source_is_surfaced_for_every_printed_table(self):
+        """참조표는 인쇄본에 없으므로 출처도 없다 — 기록 대상만 본다."""
         for table in self.spec.tables:
+            if table.role == "reference":
+                continue
             with self.subTest(table=table.id):
                 self.assertIn(table.source, self.html)
 

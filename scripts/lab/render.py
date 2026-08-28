@@ -57,13 +57,16 @@ def _truth_or_stepped_html(table) -> str:
         head = list(table.header)
         body = [[normalize_cell(c) for c in row] for row in table.rows]
 
-    out = ["<table>", "<tr>"]
+    # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.
+    # 헤더 없는 진리표 조각은 실험실에서 읽을 수 없다.
+    out = ["<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(h)}</th>" for h in head]
     out.append('<th>확인</th></tr>')
+    out += ["</thead>", "<tbody>"]
     for row in body:
         out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in row)
                    + '<td class="check"></td></tr>')
-    out.append("</table>")
+    out += ["</tbody>", "</table>"]
     return "\n".join(out)
 
 

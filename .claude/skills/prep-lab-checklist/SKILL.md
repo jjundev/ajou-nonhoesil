@@ -48,17 +48,24 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    ```bash
    python3 -c "
    from pathlib import Path
+   from scripts.lab import config
    from scripts.lab.render import render_checklist
    from scripts.lab.spec_parser import parse_spec
-   from scripts.lab.html2pdf import html_to_pdf
+   from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
+   root = config.find_project_root(Path('.'))
+   info = config.load_course_info(root)
    spec = parse_spec('<N>주차/체크리스트/명세.md')
    netlist = Path('<N>주차/결선도/netlist.md').read_text(encoding='utf-8')
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
    out = Path('<N>주차/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
-   html_to_pdf(out, out.with_suffix('.pdf'))
+   html_to_pdf(out, out.with_suffix('.pdf'),
+               chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
+
+   **`chrome=` 를 반드시 넘긴다** — 안 넘기면 `과목정보.md` 의 `chrome` 필드가
+   선언만 되고 아무 효과가 없다 (⑥ 표지 스킬과 같은 규칙이다).
 
 5. **A4 실측.** 아래를 돌려 210×297mm 인지 확인한다. 아니면 CSS 를 고치고 다시 낸다.
 

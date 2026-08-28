@@ -5,7 +5,13 @@
   .procedure .power { font-weight: 700; border: 2px solid #000;
                       padding: 3mm; margin-bottom: 4mm; }
   .procedure li { font-size: 12pt; line-height: 1.7; }
-  table { border-collapse: collapse; margin-bottom: 6mm; }
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
   .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
@@ -100,12 +106,15 @@
 <h3>T1 · 3-input AND 진리표</h3>
 <p class='src'>출처: derived (Y = A·B·C)</p>
 <table>
+<thead>
 <tr>
 <th>A</th>
 <th>B</th>
 <th>C</th>
 <th>Y예상</th>
 <th>확인</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
 <tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
@@ -114,16 +123,20 @@
 <tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
 </table>
 <h3>T2 · 3-input OR 진리표</h3>
 <p class='src'>출처: derived (Y = A+B+C)</p>
 <table>
+<thead>
 <tr>
 <th>A</th>
 <th>B</th>
 <th>C</th>
 <th>Y예상</th>
 <th>확인</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
 <tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
@@ -132,6 +145,7 @@
 <tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
 </table>
 <div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
 <h2>E1.P1-2 · 3-input NAND / NOR gate 구성</h2>
@@ -139,12 +153,15 @@
 <h3>T3 · 3-input NAND 진리표</h3>
 <p class='src'>출처: derived (Y = (A·B·C)')</p>
 <table>
+<thead>
 <tr>
 <th>A</th>
 <th>B</th>
 <th>C</th>
 <th>Y예상</th>
 <th>확인</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
 <tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
@@ -153,16 +170,20 @@
 <tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</tbody>
 </table>
 <h3>T4 · 3-input NOR 진리표</h3>
 <p class='src'>출처: derived (Y = (A+B+C)')</p>
 <table>
+<thead>
 <tr>
 <th>A</th>
 <th>B</th>
 <th>C</th>
 <th>Y예상</th>
 <th>확인</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
 <tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
@@ -171,6 +192,7 @@
 <tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</tbody>
 </table>
 <div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
 <h2>E1.P2 · 복합 논리회로 구성</h2>
@@ -178,6 +200,7 @@
 <h3>T5 · 복합회로 진리표</h3>
 <p class='src'>출처: derived (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)')</p>
 <table>
+<thead>
 <tr>
 <th>A</th>
 <th>B</th>
@@ -185,10 +208,13 @@
 <th>Y예상</th>
 <th>Z예상</th>
 <th>확인</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
 <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
 </table>
 <div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div></section>
 <section class="breadboard"><h2>브레드보드 작도 (30행)</h2><p>단자: VCC=+5V · GND=GND</p><img src="../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:180mm;object-fit:cover;object-position:top"></section>

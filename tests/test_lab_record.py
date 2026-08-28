@@ -21,8 +21,10 @@ class TestWeek2Record(unittest.TestCase):
         self.assertIn("확인", self.text)
 
     def test_every_table_gets_a_memo_line(self):
-        """개수를 박지 말고 명세에서 센다 — T5 를 채우면 숫자가 바뀐다."""
-        used = sum(len(item.tables) for item in self.spec.items)
+        """개수를 박지 말고 명세에서 센다. 참조표(role=reference)는 기록에
+        들어가지 않으므로 셈에서도 빼야 한다."""
+        used = sum(1 for item in self.spec.items for tid in item.tables
+                   if self.spec.table(tid).role != "reference")
         self.assertEqual(self.text.count("- 메모:"), used)
 
     def test_closing_prompts_are_present(self):
