@@ -69,11 +69,16 @@
   .ov { border-top: 1px solid currentColor; display: inline-block;
         line-height: 1.35; padding-top: 1px; }
 
-  /* Footer — repeats on every printed page in Chromium */
+  /* Footer — 문서 맨 끝에 한 번만 찍힌다. `position: fixed` 는 Chromium
+     인쇄에서 페이지 여백 안에만 머문다는 보장이 없다 — 밀도 높은 표가
+     페이지 하단까지 채워지면 그 위에 겹쳐 찍힌다(①·⑥ 표지 템플릿이 이미
+     겪은 결함이라 매 쪽 반복 footer 자체를 두지 않는다, B2). 이 스킬은
+     "학습용" 표시가 실질적인 정보라 완전히 없애는 대신, 문서 흐름 안에 한
+     번만 두는 쪽을 택했다 — 겹침 없이 항상 마지막 쪽 끝에 나온다. */
   .doc-footer {
-    position: fixed; bottom: 6mm; left: 16mm; right: 16mm;
+    margin-top: 8mm; padding-top: 1.5mm;
     font-size: 7.5pt; color: #999; text-align: center;
-    border-top: 1px solid #eee; padding-top: 1.5mm;
+    border-top: 1px solid #eee;
   }
   .page-break { break-before: page; }
 </style>
@@ -97,3 +102,4 @@
   <div class="doc-footer">학습용 프리뷰 — 보고서 제출용 아님</div>
 </body>
 </html>
+
