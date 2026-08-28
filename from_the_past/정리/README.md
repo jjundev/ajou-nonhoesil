@@ -35,9 +35,13 @@
 
 ## 📌 보관 정책
 
-- **정본은 PDF**입니다. 편집 가능 원본(hwp/doc/docx/ppt/pptx/xlsx) 65개는
-  **전부 같은 폴더에 동일 이름 PDF를 함께 두었습니다** — 읽을 때는 PDF만 보면 되고,
-  원본은 고쳐 쓸 때만 열면 됩니다.
+- **정본은 PDF**입니다. 읽을 때는 PDF만 보면 되고, 원본은 고쳐 쓸 때만 엽니다.
+  - `퀴즈/실험N/원본_docx/` 는 **편집 가능 원본만** 둡니다. 그 내용은 이미 같은
+    실험 폴더의 표준 PDF(`실험N 퀴즈 ...pdf`)로 정리돼 있어 PDF 사본을 중복해서
+    두지 않습니다. 어느 원본이 어느 표준 PDF가 됐는지는 `퀴즈/RENAME_MAP.md`
+    끝의 대조표를 보면 됩니다.
+  - 그 밖의 원본(양식·모범답안·강의 슬라이드·텀프로젝트 문서)은 표준 PDF에
+    대응본이 없으므로 같은 폴더에 동일 이름 PDF를 함께 둡니다.
   - HWP -> PDF: `scripts/convert_hwp_to_pdf.py` (Allinpdf)
   - doc/docx/ppt/pptx/xlsx -> PDF: `scripts/convert_docs_to_pdf.py` (로컬 LibreOffice)
 - **Quartus/ModelSim 빌드 산출물은 보관하지 않습니다.** `db/`, `incremental_db/`,
