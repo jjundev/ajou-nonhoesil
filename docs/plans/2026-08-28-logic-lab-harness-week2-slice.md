@@ -1005,6 +1005,7 @@ git commit -m "feat: 표준 라이브러리 전용 프론트매터·마크다운
 `tests/test_lab_config.py`:
 
 ```python
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -1025,6 +1026,16 @@ class TestCourseInfo(unittest.TestCase):
         """표기 의무가 미확인이므로 자리만 비워둔다. 값이 없으면 로깅하지 않는다."""
         self.assertIsNone(config.load_course_info(ROOT)["ai_usage_log"])
 
+    def test_ai_usage_log_defaults_when_the_key_is_absent(self):
+        missing = Path(tempfile.mkdtemp())
+        (missing / ".claude").mkdir()
+        (missing / ".claude" / "과목정보.md").write_text(
+            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+            "professor: 허용석 교수님\nclass_section: C082\n---\n",
+            encoding="utf-8",
+        )
+        self.assertIsNone(config.load_course_info(missing)["ai_usage_log"])
+
 
 class TestReportFormat(unittest.TestCase):
     def test_default_preset_is_intersection(self):
@@ -1043,7 +1054,7 @@ class TestReportFormat(unittest.TestCase):
         """평가기준.txt(권위 2순위)가 요구하는 결보 섹션이 전부 있어야 한다."""
         fmt = config.load_report_format(ROOT)
         names = [s.name for s in fmt.result]
-        for required in ["실험 결과", "예비 비교", "결과 분석", "고찰"]:
+        for required in ["실험 결과", "예비 비교", "결과 분석", "고찰", "추가 공부"]:
             self.assertIn(required, names)
 
     def test_optional_sections_are_not_generated(self):
@@ -1072,6 +1083,24 @@ class TestReportFormat(unittest.TestCase):
     def test_unknown_preset_raises(self):
         with self.assertRaises(ValueError):
             config.load_report_format(ROOT, preset="없는프리셋")
+
+    def test_empty_section_list_raises_instead_of_returning_nothing(self):
+        """이 파일은 학기 중에 손으로 고친다. 키 한 줄이 들여쓰기되는 실수가
+        조용한 빈 보고서로 이어지면 안 된다."""
+        broken = Path(tempfile.mkdtemp())
+        (broken / ".claude").mkdir()
+        (broken / ".claude" / "보고서양식.md").write_text(
+            "---\nschema: report-format/v1\npreset: 교집합\n---\n\n"
+            "# 교집합\n\n"
+            "  예비보고서:\n"          # 실수로 들여쓰기됐다
+            "    - {name: 실험 목적}\n"
+            "결과보고서:\n"
+            "  - {name: 실험 결과}\n",
+            encoding="utf-8",
+        )
+        with self.assertRaises(ValueError) as ctx:
+            config.load_report_format(broken)
+        self.assertIn("섹션을 읽지 못했습니다", str(ctx.exception))
 
 
 class TestProjectRoot(unittest.TestCase):
@@ -1259,7 +1288,11 @@ def load_course_info(root) -> dict:
 
 
 def _section_body(body: str, name: str):
-    """`# name` 헤딩부터 다음 `# ` 헤딩 직전까지를 잘라낸다."""
+    """`# name` 헤딩부터 다음 `# ` 헤딩 직전까지를 잘라낸다.
+
+    프리셋 절의 산문에 열 0 의 `# ` 를 쓰면 다음 프리셋 헤딩과 구별되지 않아
+    블록이 일찍 잘린다. 보고서양식.md 안에서 `# ` 는 프리셋 헤딩 전용이다.
+    """
     lines = body.split("\n")
     start = None
     for i, line in enumerate(lines):
@@ -1314,11 +1347,23 @@ def load_report_format(root, preset=None) -> ReportFormat:
             keep.append(line)
 
     data = md.parse_block("\n".join(keep)) if keep else {}
-    return ReportFormat(
+    fmt = ReportFormat(
         preset=preset,
         pre=_sections(data.get("예비보고서")),
         result=_sections(data.get("결과보고서")),
     )
+    # 빈 섹션 목록은 정상적인 결과가 아니다. 이 파일은 조교 안내가 오면 학기 중에
+    # 손으로 고칠 물건이라, 키 한 줄이 들여쓰기되는 정도의 실수가 실제로 일어난다.
+    # 조용히 빈 목록을 돌려주면 이후 모든 보고서 스킬이 섹션 없는 보고서를
+    # 오류 없이 만들어낸다. 시끄럽게 실패하는 편이 낫다.
+    if not fmt.pre or not fmt.result:
+        raise ValueError(
+            f"보고서양식.md 의 '{preset}' 프리셋에서 섹션을 읽지 못했습니다 "
+            f"(예비 {len(fmt.pre)}개 / 결과 {len(fmt.result)}개). "
+            "`예비보고서:` 와 `결과보고서:` 가 각각 열 0 에서 시작하는지, "
+            "그 아래 항목이 `  - {name: ...}` 형태인지 확인하세요."
+        )
+    return fmt
 ```
 
 - [ ] **Step 6: 테스트가 통과하는지 확인한다**
@@ -1327,7 +1372,7 @@ def load_report_format(root, preset=None) -> ReportFormat:
 python3 -m unittest tests.test_lab_config -v
 ```
 
-기대: `OK` (10 tests)
+기대: `OK` (13 tests)
 
 - [ ] **Step 7: 브레드보드 템플릿을 복사한다**
 
@@ -2173,7 +2218,7 @@ def eval_boolean(text, env):
 python3 -m unittest tests.test_lab_boolexpr -v
 ```
 
-기대: `OK` (10 tests)
+기대: `OK` (13 tests)
 
 - [ ] **Step 5: `validate` 의 실패하는 테스트를 쓴다**
 
@@ -3235,7 +3280,7 @@ def derive_record(spec) -> str:
 python3 -m unittest tests.test_lab_record -v
 ```
 
-기대: `OK` (10 tests)
+기대: `OK` (13 tests)
 
 - [ ] **Step 5: `2주차/체크리스트/기록.md` 를 만든다**
 
