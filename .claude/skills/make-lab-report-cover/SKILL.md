@@ -66,10 +66,25 @@ print(info)
 
    실패하면 에러를 그대로 보여주고 **HTML 은 남긴다.**
 
-7. **AI 활용 로그.** `과목정보.md` 의 `ai_usage_log` 가 `~` 가 아니면 그 경로에
+7. **A4 실측.** 이 템플릿은 `@page { size: A4; margin: 0; }` + 하드코딩된
+   `210mm × 297mm` `.page` 박스를 쓴다 — 여백을 CSS 가 아니라 콘텐츠
+   패딩으로 흉내 내는, 이 저장소에서 가장 취약한 페이지 설정이다. 아래를
+   돌려 두 페이지(윤리 페이지 + 표지) 모두 210×297mm 인지 확인한다. 아니면
+   CSS 를 고치고 다시 낸다.
+
+   ```bash
+   python3 -c "
+   from pypdf import PdfReader
+   for p in PdfReader('<폴더>/<제목> 표지.pdf').pages:
+       print(round(float(p.mediabox.width)/72*25.4,1),
+             round(float(p.mediabox.height)/72*25.4,1))
+   "
+   ```
+
+8. **AI 활용 로그.** `과목정보.md` 의 `ai_usage_log` 가 `~` 가 아니면 그 경로에
    한 줄 추가한다. `~` 면 아무것도 하지 않는다.
 
-8. **결과 안내.** HTML·PDF 두 파일의 마크다운 링크를 한 줄로 출력.
+9. **결과 안내.** HTML·PDF 두 파일의 마크다운 링크를 한 줄로 출력.
 
 ## 자연어 오버라이드
 
