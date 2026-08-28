@@ -40,6 +40,10 @@ class TestFrontmatter(unittest.TestCase):
         fm, _ = md.split_frontmatter("---\nfilled_by: ~\n---\n")
         self.assertIsNone(fm["filled_by"])
 
+    def test_null_literal_is_none(self):
+        self.assertIsNone(md.parse_value("null"))
+        self.assertIsNone(md.parse_value(""))
+
     def test_booleans(self):
         self.assertIs(md.parse_value("false"), False)
         self.assertIs(md.parse_value("true"), True)
@@ -88,6 +92,25 @@ class TestTables(unittest.TestCase):
                 "| S | R | Q |\n|---|---|---|\n| 0 | 1 | 0 |\n")
         self.assertEqual([len(t.header) for t in md.parse_tables(body)], [2, 3])
 
+    def test_adjacent_tables_with_no_blank_line_between(self):
+        """두 번째 표의 헤더를 첫 표의 행으로 삼키면 안 된다."""
+        body = ("| A | Y |\n|---|---|\n| 0 | 1 |\n"
+                "| S | R |\n|---|---|\n| 1 | 0 |\n")
+        tables = md.parse_tables(body)
+        self.assertEqual([t.header for t in tables], [["A", "Y"], ["S", "R"]])
+        self.assertEqual([t.rows for t in tables], [[["0", "1"]], [["1", "0"]]])
+
+    def test_dash_only_row_is_data_not_a_separator(self):
+        """`-` 는 이 프로젝트의 don't-care 표기다. 구분선으로 오인하면
+        데이터 행이 통째로 조용히 사라진다."""
+        body = "| A | B |\n|---|---|\n| - | - |\n| 0 | 1 |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["-", "-"], ["0", "1"]])
+
+    def test_escaped_pipe_stays_inside_its_cell(self):
+        """쪼개 버리면 validate 의 `\\|` 검사가 영영 발화하지 못한다."""
+        body = "| A | B |\n|---|---|\n| a\\|b | c |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["a\\|b", "c"]])
+
     def test_symbolic_cells_survive_untouched(self):
         """실험6 의 복합 토큰. 콜론·괄호·어포스트로피가 셀 안에서 살아남아야 한다."""
         body = ("| J | K | C | Q(t) |\n|---|---|---|------|\n"
@@ -108,17 +131,21 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(fm["week"], 2)
         self.assertEqual(fm["experiment"], 1)
         self.assertEqual(len(fm["items"]), 3)
-        self.assertGreaterEqual(len(md.parse_tables(body)), 4)
+        # 느슨한 하한은 회귀를 놓친다 — Task 1 픽스처의 실제 개수로 고정한다
+        self.assertEqual(len(md.parse_tables(body)), 9)
 
     def test_week6_spec_parses(self):
         text = (ROOT / "6주차/체크리스트/명세.md").read_text(encoding="utf-8")
-        fm, _ = md.split_frontmatter(text)
+        fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 6)
+        self.assertEqual(len(md.parse_tables(body)), 6)   # 표 5개 + 토큰 참조표 1개
 
     def test_week12_spec_parses(self):
         text = (ROOT / "12주차/체크리스트/명세.md").read_text(encoding="utf-8")
-        fm, _ = md.split_frontmatter(text)
+        fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 10)
+        # T1 은 capture 라 셀 표가 없다. 본문의 마크다운 표는 T2(stepped) 하나뿐
+        self.assertEqual(len(md.parse_tables(body)), 1)
 
 
 if __name__ == "__main__":

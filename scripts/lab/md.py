@@ -15,8 +15,8 @@ PyYAML 이 이 환경에 없으므로 프론트매터는 이 프로젝트가 실
 """
 
 import re
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -28,6 +28,7 @@ class MdTable:
 
 _ROW = re.compile(r"^\s*\|(.+)\|\s*$")
 _SEP = re.compile(r"^\s*\|[\s:|-]+\|\s*$")
+_CELL_SPLIT = re.compile(r"(?<!\\)\|")   # `\|` 는 셀 구분자가 아니다
 
 
 def split_top(s: str) -> list:
@@ -158,24 +159,36 @@ def split_frontmatter(text: str):
 
 
 def _cells(line: str) -> list:
-    return [c.strip() for c in _ROW.match(line).group(1).split("|")]
+    """셀로 자른다. `\\|` 는 구분자가 아니라 셀 안의 문자다.
+
+    쪼개 버리면 `validate` 의 "셀에 escape 된 파이프" 검사가 영영 발화하지 못한다
+    — 검사가 찾는 문자열이 파싱 단계에서 사라지기 때문이다.
+    """
+    return [c.strip() for c in _CELL_SPLIT.split(_ROW.match(line).group(1))]
 
 
 def parse_tables(body: str) -> list:
-    """본문에서 마크다운 표를 전부 찾는다. 헤더 + 구분선이 있어야 표로 본다."""
+    """본문에서 마크다운 표를 전부 찾는다.
+
+    구분선은 **위치로만** 판정한다 — 헤더 바로 다음 줄이어야 한다. 내용으로
+    판정하면 `| - | - |` 같은 don't-care 행이 구분선과 구별되지 않아 데이터가
+    조용히 사라진다 (`-` 는 이 프로젝트의 don't-care 표기 중 하나다).
+    """
     lines = body.split("\n")
     tables, i = [], 0
     while i < len(lines):
-        if (_ROW.match(lines[i]) and not _SEP.match(lines[i])
+        if not (_ROW.match(lines[i]) and not _SEP.match(lines[i])
                 and i + 1 < len(lines) and _SEP.match(lines[i + 1])):
-            header = _cells(lines[i])
-            sep_line = i + 2  # 1-based
-            i += 2
-            rows = []
-            while i < len(lines) and _ROW.match(lines[i]) and not _SEP.match(lines[i]):
-                rows.append(_cells(lines[i]))
-                i += 1
-            tables.append(MdTable(header=header, rows=rows, line=sep_line))
+            i += 1
             continue
-        i += 1
+        header = _cells(lines[i])
+        sep_line = i + 2                      # 구분선의 1-based 줄 번호
+        i += 2
+        rows = []
+        while i < len(lines) and _ROW.match(lines[i]):
+            if i + 1 < len(lines) and _SEP.match(lines[i + 1]):
+                break                         # 이 줄은 다음 표의 헤더다
+            rows.append(_cells(lines[i]))
+            i += 1
+        tables.append(MdTable(header=header, rows=rows, line=sep_line))
     return tables
