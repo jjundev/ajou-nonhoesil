@@ -33,7 +33,7 @@ def get_soffice_binary() -> str:
 
 def discover_doc_files(
     target: str | Path,
-    extensions: Tuple[str, ...] = (".docx", ".doc", ".pptx"),
+    extensions: Tuple[str, ...] = (".docx", ".doc", ".pptx", ".ppt", ".xlsx", ".xls"),
 ) -> List[str]:
     """
     Recursively finds all supported document files, ignoring temporary/lock files (~$*) and hidden files.

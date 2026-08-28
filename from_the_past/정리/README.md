@@ -35,8 +35,11 @@
 
 ## 📌 보관 정책
 
-- **정본은 PDF**입니다. 편집이 필요한 양식·모범답안만 HWP로 함께 보관합니다
-  (`가이드라인_및_기준/예비보고서 양식.hwp`, `전학기_모범_실습보고서_camui20/` 11종 등).
+- **정본은 PDF**입니다. 편집 가능 원본(hwp/doc/docx/ppt/pptx/xlsx) 65개는
+  **전부 같은 폴더에 동일 이름 PDF를 함께 두었습니다** — 읽을 때는 PDF만 보면 되고,
+  원본은 고쳐 쓸 때만 열면 됩니다.
+  - HWP -> PDF: `scripts/convert_hwp_to_pdf.py` (Allinpdf)
+  - doc/docx/ppt/pptx/xlsx -> PDF: `scripts/convert_docs_to_pdf.py` (로컬 LibreOffice)
 - **Quartus/ModelSim 빌드 산출물은 보관하지 않습니다.** `db/`, `incremental_db/`,
   `output_files/`, `simulation/` 은 `.gitignore` 처리되어 있으며 `.qpf`/`.qsf`/`.xise`
   와 HDL 소스로 재생성합니다.
