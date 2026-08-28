@@ -54,6 +54,8 @@ class TestWeek2(unittest.TestCase):
         """실험1 p13 복합회로는 입력 2개에 출력이 3개다."""
         pairs = derived_parts(self.spec.table("T5"))
         self.assertEqual([name for name, _ in pairs], ["X", "Y", "Z"])
+        self.assertEqual([expr for _, expr in pairs],
+                         ["A + (A'·B)'", "A + B", "(A'·B)'"])
 
     def test_theory_tables_are_reference_not_record(self):
         """T6~T9 는 교안 2입력 이론표다. 학생이 배선하지도 채우지도 않는다."""
@@ -88,7 +90,19 @@ class TestWeek12CaptureAndStepped(unittest.TestCase):
         t = self.spec.table("T1")
         self.assertEqual(t.kind, "capture")
         self.assertEqual(t.rows, [])
-        self.assertIn("계단", t.expected)
+
+    def test_multiline_expected_joins_the_whole_block(self):
+        """`assertIn` 한 조각으로는 첫 줄이나 끝 줄이 빠져도 통과한다.
+        양 끝을 다 짚어야 이어붙이기가 블록 전체를 덮는지 증명된다."""
+        expected = self.spec.table("T1").expected
+        self.assertTrue(expected.startswith("1KHz"), expected[:40])
+        self.assertTrue(expected.rstrip().endswith("."), expected[-40:])
+        self.assertIn("1:2:4:8", expected)          # 마지막 줄의 토큰
+        self.assertNotIn("\n", expected)           # 한 줄로 합쳐졌다
+
+    def test_power_is_an_open_rail_map(self):
+        """실험10 은 +5V 와 +15V 두 레일을 쓴다 (스키마 파손 3번의 근거)."""
+        self.assertEqual(set(self.spec.power), {"VCC", "V15", "GND"})
 
     def test_adc_is_stepped_with_a_table(self):
         t = self.spec.table("T2")
@@ -113,6 +127,17 @@ class TestWeek6SymbolicTokens(unittest.TestCase):
         self.assertIn("Q(t-1)", cells)
         self.assertTrue(any(":" in c for c in cells),
                         "`0 : Reset` 같은 복합 토큰이 살아 있어야 한다")
+
+    def test_row_counts_are_not_powers_of_two(self):
+        """`x x 0` 축약 때문에 3입력 표가 5행이다. 이게 정상이라는 근거 픽스처다."""
+        counts = [len(t.rows) for t in self.spec.tables]
+        self.assertEqual(counts, [5, 3, 3, 5, 5])
+
+    def test_manual_sourced_tables_have_no_derived_pairs(self):
+        for t in self.spec.tables:
+            with self.subTest(table=t.id):
+                self.assertTrue(t.source.startswith("manual:"))
+                self.assertEqual(derived_parts(t), [])
 
 
 class TestErrors(unittest.TestCase):
@@ -142,6 +167,54 @@ class TestErrors(unittest.TestCase):
     def test_wrong_schema_raises(self):
         with self.assertRaises(SpecError):
             parse_spec(self._broken("lab-spec/v1", "lab-spec/v0"))
+
+    def test_missing_cell_table_raises(self):
+        """네 가지 구조적 실패 중 하나. 나머지 셋과 함께 반드시 지켜져야 한다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken(
+                "| 스텝 | 조작", "삭제됨 | 조작"))     # stepped 표의 헤더를 깬다
+        self.assertIn("마크다운 표가 없습니다", str(ctx.exception))
+
+    def test_capture_with_a_cell_table_raises(self):
+        """capture 는 셀 표 대신 expected 를 갖는다. 표가 붙어 있으면 데이터가
+        조용히 버려지므로 — 증거가 LabSpec 이전에 사라진다 — 여기서 막는다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken(
+                "- source: manual:p11",
+                "- source: manual:p11\n\n| A | B |\n|---|---|\n| 0 | 1 |"))
+        self.assertIn("capture", str(ctx.exception))
+
+    def test_duplicate_table_id_raises(self):
+        """`.table()` 이 조용히 첫 번째만 돌려주므로 두 번째 표가 통째로 숨는다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken("## T2 · ", "## T1 · "))
+        self.assertIn("T1", str(ctx.exception))
+
+
+class TestSemanticDefectsStaySilent(unittest.TestCase):
+    """이 Task 의 핵심 설계다 — 파서가 의미 결함에 예외를 던지면 반쯤 망가진
+    명세를 ⑤ 검증 스킬이 읽고 지적할 수 없게 된다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _spec_without(self, old, new=""):
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(
+            WEEK12.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
+        )
+        return parse_spec(target)
+
+    def test_missing_source_parses_with_none(self):
+        self.assertIsNone(self._spec_without("- source: manual:p16\n").table("T2").source)
+
+    def test_missing_encoding_parses_with_none(self):
+        self.assertIsNone(self._spec_without("- encoding: 0/1\n").table("T2").encoding)
+
+    def test_unknown_role_is_carried_through_not_rejected(self):
+        spec = self._spec_without("- kind: stepped", "- kind: stepped\n- role: bogus")
+        self.assertEqual(spec.table("T2").role, "bogus")
 
 
 if __name__ == "__main__":

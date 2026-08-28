@@ -1552,6 +1552,8 @@ class TestWeek2(unittest.TestCase):
         """실험1 p13 복합회로는 입력 2개에 출력이 3개다."""
         pairs = derived_parts(self.spec.table("T5"))
         self.assertEqual([name for name, _ in pairs], ["X", "Y", "Z"])
+        self.assertEqual([expr for _, expr in pairs],
+                         ["A + (A'·B)'", "A + B", "(A'·B)'"])
 
     def test_theory_tables_are_reference_not_record(self):
         """T6~T9 는 교안 2입력 이론표다. 학생이 배선하지도 채우지도 않는다."""
@@ -1586,7 +1588,19 @@ class TestWeek12CaptureAndStepped(unittest.TestCase):
         t = self.spec.table("T1")
         self.assertEqual(t.kind, "capture")
         self.assertEqual(t.rows, [])
-        self.assertIn("계단", t.expected)
+
+    def test_multiline_expected_joins_the_whole_block(self):
+        """`assertIn` 한 조각으로는 첫 줄이나 끝 줄이 빠져도 통과한다.
+        양 끝을 다 짚어야 이어붙이기가 블록 전체를 덮는지 증명된다."""
+        expected = self.spec.table("T1").expected
+        self.assertTrue(expected.startswith("1KHz"), expected[:40])
+        self.assertTrue(expected.rstrip().endswith("."), expected[-40:])
+        self.assertIn("1:2:4:8", expected)          # 마지막 줄의 토큰
+        self.assertNotIn("\n", expected)           # 한 줄로 합쳐졌다
+
+    def test_power_is_an_open_rail_map(self):
+        """실험10 은 +5V 와 +15V 두 레일을 쓴다 (스키마 파손 3번의 근거)."""
+        self.assertEqual(set(self.spec.power), {"VCC", "V15", "GND"})
 
     def test_adc_is_stepped_with_a_table(self):
         t = self.spec.table("T2")
@@ -1611,6 +1625,17 @@ class TestWeek6SymbolicTokens(unittest.TestCase):
         self.assertIn("Q(t-1)", cells)
         self.assertTrue(any(":" in c for c in cells),
                         "`0 : Reset` 같은 복합 토큰이 살아 있어야 한다")
+
+    def test_row_counts_are_not_powers_of_two(self):
+        """`x x 0` 축약 때문에 3입력 표가 5행이다. 이게 정상이라는 근거 픽스처다."""
+        counts = [len(t.rows) for t in self.spec.tables]
+        self.assertEqual(counts, [5, 3, 3, 5, 5])
+
+    def test_manual_sourced_tables_have_no_derived_pairs(self):
+        for t in self.spec.tables:
+            with self.subTest(table=t.id):
+                self.assertTrue(t.source.startswith("manual:"))
+                self.assertEqual(derived_parts(t), [])
 
 
 class TestErrors(unittest.TestCase):
@@ -1641,6 +1666,54 @@ class TestErrors(unittest.TestCase):
         with self.assertRaises(SpecError):
             parse_spec(self._broken("lab-spec/v1", "lab-spec/v0"))
 
+    def test_missing_cell_table_raises(self):
+        """네 가지 구조적 실패 중 하나. 나머지 셋과 함께 반드시 지켜져야 한다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken(
+                "| 스텝 | 조작", "삭제됨 | 조작"))     # stepped 표의 헤더를 깬다
+        self.assertIn("마크다운 표가 없습니다", str(ctx.exception))
+
+    def test_capture_with_a_cell_table_raises(self):
+        """capture 는 셀 표 대신 expected 를 갖는다. 표가 붙어 있으면 데이터가
+        조용히 버려지므로 — 증거가 LabSpec 이전에 사라진다 — 여기서 막는다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken(
+                "- source: manual:p11",
+                "- source: manual:p11\n\n| A | B |\n|---|---|\n| 0 | 1 |"))
+        self.assertIn("capture", str(ctx.exception))
+
+    def test_duplicate_table_id_raises(self):
+        """`.table()` 이 조용히 첫 번째만 돌려주므로 두 번째 표가 통째로 숨는다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken("## T2 · ", "## T1 · "))
+        self.assertIn("T1", str(ctx.exception))
+
+
+class TestSemanticDefectsStaySilent(unittest.TestCase):
+    """이 Task 의 핵심 설계다 — 파서가 의미 결함에 예외를 던지면 반쯤 망가진
+    명세를 ⑤ 검증 스킬이 읽고 지적할 수 없게 된다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _spec_without(self, old, new=""):
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(
+            WEEK12.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
+        )
+        return parse_spec(target)
+
+    def test_missing_source_parses_with_none(self):
+        self.assertIsNone(self._spec_without("- source: manual:p16\n").table("T2").source)
+
+    def test_missing_encoding_parses_with_none(self):
+        self.assertIsNone(self._spec_without("- encoding: 0/1\n").table("T2").encoding)
+
+    def test_unknown_role_is_carried_through_not_rejected(self):
+        spec = self._spec_without("- kind: stepped", "- kind: stepped\n- role: bogus")
+        self.assertEqual(spec.table("T2").role, "bogus")
+
 
 if __name__ == "__main__":
     unittest.main()
@@ -1667,7 +1740,7 @@ python3 -m unittest tests.test_lab_spec_parser -v
 """
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -1755,6 +1828,12 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         )
     found = md.parse_tables(block)
     if kind == "capture":
+        if found:
+            # 버리면 아무도 못 잡는다 — LabSpec 이 만들어지는 순간 증거가 사라진다.
+            raise SpecError(
+                f"{path}: {table_id} 는 capture 인데 마크다운 표가 {len(found)}개 있다. "
+                "capture 표는 셀 표 대신 expected 산문을 갖는다"
+            )
         header, rows, line = [], [], 0
     else:
         if not found:
@@ -1784,6 +1863,15 @@ def parse_spec(path) -> LabSpec:
     for n, m in enumerate(heads):
         end = heads[n + 1].start() if n + 1 < len(heads) else len(body)
         tables.append(_parse_table(m.group(1), m.group(2), body[m.end():end], path))
+
+    seen = set()
+    for t in tables:
+        if t.id in seen:
+            raise SpecError(
+                f"{path}: 표 ID {t.id} 가 두 번 정의됐다. "
+                "ID 는 문서 전체에서 유일해야 한다 (`.table()` 이 조용히 첫 번째만 준다)"
+            )
+        seen.add(t.id)
 
     known = {t.id for t in tables}
     items = []
@@ -2366,6 +2454,17 @@ class TestMetadata(unittest.TestCase):
         self.assertTrue(any("encoding" in f.message
                             for f in validate.check_metadata(spec)))
 
+    def test_malformed_derived_expression_is_an_error(self):
+        """`derived_parts` 가 빈 리스트를 주면 `split_columns` 가 조용히 잘못된
+        입출력 분할을 내놓는다. 여기서 잡지 않으면 아무도 못 잡는다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (X = A+B ; 이건 대입이 아니다 ; Z = A)\n\n"
+            "| A | B | X | Z |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n"
+        ))
+        self.assertTrue(any("식을 읽지 못했다" in f.message
+                            for f in validate.check_metadata(spec)))
+
     def test_capture_needs_expected_prose_not_encoding(self):
         spec = spec_from(HEAD + "- kind: capture\n- source: manual:p11\n")
         messages = [f.message for f in validate.check_metadata(spec)]
@@ -2489,6 +2588,13 @@ def check_metadata(spec) -> list:
         where = f"{spec.path.name}:{t.id}"
         if not t.source:
             out.append(Finding("error", where, "source 가 없다 (예상값 출처는 항상 명시한다)"))
+        if (t.source or "").strip().startswith("derived") and not derived_parts(t):
+            # 형식이 깨지면 derived_parts 가 빈 리스트를 주는데, 그건 "derived 가
+            # 아님" 과 구별되지 않는다. split_columns 가 조용히 잘못된 입출력
+            # 분할을 내놓으므로 여기서 잡아야 한다.
+            out.append(Finding("error", where,
+                f"source 가 derived 인데 식을 읽지 못했다: {t.source!r}. "
+                "`derived (Y = 식)` 또는 `derived (X = 식 ; Y = 식)` 형태여야 한다"))
         if t.role not in ("record", "reference"):
             out.append(Finding("error", where,
                 f"role 이 {t.role!r} 이다. `record` 또는 `reference` 여야 한다"))
@@ -2617,7 +2723,7 @@ def check_report_sections(report_path, sections) -> list:
 python3 -m unittest tests.test_lab_validate -v
 ```
 
-기대: `OK` (15 tests)
+기대: `OK` (16 tests)
 
 만약 `TestRealWeek2SpecIsClean` 이 실패하면 **검증기가 아니라 Task 1 의 명세가 틀린 것이다.** 명세를 고친다 — 그게 이 검증기의 존재 이유다.
 

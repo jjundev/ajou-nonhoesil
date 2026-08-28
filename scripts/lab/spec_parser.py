@@ -6,7 +6,7 @@
 """
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -94,6 +94,12 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         )
     found = md.parse_tables(block)
     if kind == "capture":
+        if found:
+            # 버리면 아무도 못 잡는다 — LabSpec 이 만들어지는 순간 증거가 사라진다.
+            raise SpecError(
+                f"{path}: {table_id} 는 capture 인데 마크다운 표가 {len(found)}개 있다. "
+                "capture 표는 셀 표 대신 expected 산문을 갖는다"
+            )
         header, rows, line = [], [], 0
     else:
         if not found:
@@ -123,6 +129,15 @@ def parse_spec(path) -> LabSpec:
     for n, m in enumerate(heads):
         end = heads[n + 1].start() if n + 1 < len(heads) else len(body)
         tables.append(_parse_table(m.group(1), m.group(2), body[m.end():end], path))
+
+    seen = set()
+    for t in tables:
+        if t.id in seen:
+            raise SpecError(
+                f"{path}: 표 ID {t.id} 가 두 번 정의됐다. "
+                "ID 는 문서 전체에서 유일해야 한다 (`.table()` 이 조용히 첫 번째만 준다)"
+            )
+        seen.add(t.id)
 
     known = {t.id for t in tables}
     items = []
