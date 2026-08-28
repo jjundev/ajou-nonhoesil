@@ -295,5 +295,56 @@ class TestReportSections(unittest.TestCase):
         self.assertTrue(all("추가 공부" not in f.message for f in findings))
 
 
+class TestRenderedHtmlChecks(unittest.TestCase):
+    """제출본에서 실제로 일어난 두 결함을 고정한다 — 표 셀의 백틱 유출과,
+    다른 디렉토리에서 렌더해 깨진 채 굳은 그림. 둘 다 텍스트로는 안 보인다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.dir = Path(self.tmp.name)
+
+    def _html(self, body):
+        path = self.dir / "r.html"
+        path.write_text(f"<html><body>{body}</body></html>", encoding="utf-8")
+        return path
+
+    def test_stray_backticks_in_a_table_cell_are_an_error(self):
+        path = self._html("<table><tr><td>`74HC08`</td></tr></table>")
+        self.assertTrue(any("백틱" in f.message
+                            for f in validate.check_rendered_html(path)))
+
+    def test_stray_bold_markers_are_an_error(self):
+        path = self._html("<p>**중요**</p>")
+        self.assertTrue(any("굵게" in f.message
+                            for f in validate.check_rendered_html(path)))
+
+    def test_properly_converted_html_is_clean(self):
+        path = self._html("<table><tr><td><code>74HC08</code></td></tr></table>"
+                          "<p><strong>중요</strong></p>")
+        self.assertEqual(validate.check_rendered_html(path), [])
+
+    def test_missing_image_is_an_error(self):
+        path = self._html('<img src="../assets/nope.jpg">')
+        findings = validate.check_embedded_images(path)
+        self.assertTrue(any("찾을 수 없다" in f.message for f in findings))
+
+    def test_present_image_is_clean(self):
+        (self.dir / "there.jpg").write_bytes(b"\xff\xd8\xff")
+        path = self._html('<img src="there.jpg">')
+        self.assertEqual(validate.check_embedded_images(path), [])
+
+    def test_data_and_remote_uris_are_skipped(self):
+        path = self._html('<img src="data:image/png;base64,AAAA">'
+                          '<img src="https://example.com/a.png">')
+        self.assertEqual(validate.check_embedded_images(path), [])
+
+    def test_real_checklist_html_is_clean(self):
+        """② 가 만든 실물은 통과해야 한다 — 그쪽은 코드가 렌더하므로."""
+        html = ROOT / "2주차/체크리스트/체크리스트.html"
+        self.assertEqual(validate.check_rendered_html(html), [])
+        self.assertEqual(validate.check_embedded_images(html), [])
+
+
 if __name__ == "__main__":
     unittest.main()

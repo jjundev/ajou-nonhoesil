@@ -2255,7 +2255,9 @@ git commit -m "feat: 표기 정규화·보수 오버바·active-low 모듈 추�
   - `check_orphan_tables(spec) -> list[Finding]` — 본문에 있으나 어느 항목도 안 가리키는 표
   - `validate_spec(spec) -> list[Finding]` — 위 다섯을 합친 것
   - `check_netlist(netlist_path, spec) -> list[Finding]`
-  - `check_report_sections(report_path, sections: list[Section], item_count=None) -> list[Finding]` — `item_count` 를 주면 `repeat: per-item` 섹션의 반복 횟수도 본다
+  - `check_report_sections(report_path, sections: list[Section], item_count=None) -> list[Finding]`
+  - `check_rendered_html(html_path) -> list[Finding]` — 렌더된 HTML 본문에 남은 마크다운 표기(백틱·`**`)
+  - `check_embedded_images(html_path) -> list[Finding]` — `<img src>` 가 가리키는 파일 존재 여부. 상대 경로는 **HTML 이 놓인 위치** 기준 — `item_count` 를 주면 `repeat: per-item` 섹션의 반복 횟수도 본다
 
 **설계 규칙:** 이 모듈은 **절대 예외를 던지지 않는다.** 검토는 반쯤 망가진 문서에도 동작해야 하기 때문이다. 모든 문제는 `Finding` 으로 나온다.
 
@@ -2943,6 +2945,52 @@ def check_netlist(netlist_path, spec) -> list:
             if ic not in text:
                 out.append(Finding("warn", path.name,
                     f"항목 {item.id} 의 IC {ic} 가 netlist 에 없다"))
+    return out
+
+
+_STRAY_MARKDOWN = (("`", "백틱"), ("**", "굵게 표기"))
+_TAG = re.compile(r"<[^>]+>")
+
+
+def check_rendered_html(html_path) -> list:
+    """렌더된 HTML 본문에 마크다운 표기가 남았는지 본다.
+
+    보고서 본문은 사람(또는 에이전트)이 마크다운에서 HTML 로 옮기는데,
+    산문의 코드 스팬만 `<code>` 로 바꾸고 **표 셀을 빠뜨리는** 실수가 실제로
+    일어났다 — 제출본 표 대부분에 백틱이 그대로 찍혔다. 눈으로는 잘 안 보인다.
+    """
+    path = Path(html_path)
+    if not path.exists():
+        return [Finding("error", str(html_path), "렌더된 HTML 파일이 없다")]
+    text = _TAG.sub(" ", path.read_text(encoding="utf-8"))
+    out = []
+    for token, label in _STRAY_MARKDOWN:
+        count = text.count(token)
+        if count:
+            out.append(Finding("error", path.name,
+                f"본문에 {label}({token!r})가 {count}개 남았다 — "
+                "마크다운을 HTML 로 옮길 때 표 셀을 빠뜨리면 인쇄본에 그대로 찍힌다"))
+    return out
+
+
+def check_embedded_images(html_path) -> list:
+    """`<img src=...>` 이 실제로 가리키는 파일이 있는지 본다.
+
+    상대 경로는 **HTML 이 놓인 위치** 기준으로 풀린다. 다른 디렉토리에서
+    렌더하면 그림이 깨진 채 PDF 로 굳는데, 텍스트 추출로는 안 보인다 —
+    실제로 예비보고서의 브레드보드 그림이 그렇게 깨진 채 커밋됐다.
+    """
+    path = Path(html_path)
+    if not path.exists():
+        return [Finding("error", str(html_path), "렌더된 HTML 파일이 없다")]
+    out = []
+    for src in re.findall(r'<img[^>]+src="([^"]+)"', path.read_text(encoding="utf-8")):
+        if src.startswith(("http://", "https://", "data:")):
+            continue
+        if not (path.parent / src).resolve().exists():
+            out.append(Finding("error", path.name,
+                f"이미지를 찾을 수 없다: {src!r} "
+                f"(HTML 위치 {path.parent} 기준으로 푼다)"))
     return out
 
 
@@ -4488,6 +4536,25 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 - 결과를 예측해 실험 결과 섹션을 채우지 않는다 (④의 영역이다).
 - 고찰을 쓰지 않는다 (예보엔 없고, 결보에서도 본인 경험이 재료다).
 ````
+
+- [ ] **Step 8b: 렌더된 HTML 을 검사한다**
+
+보고서 본문은 사람이 마크다운에서 HTML 로 옮기므로, 표 셀을 빠뜨리거나 다른
+디렉토리에서 렌더해 그림이 깨지는 실수가 실제로 일어난다. 둘 다 텍스트 추출로는
+안 보이므로 기계로 잡는다.
+
+```bash
+python3 -c "
+from scripts.lab import validate
+html = '<N>주차/output/<N>주차_예비보고서.html'
+for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
+    print(f)
+"
+```
+
+기대: 출력 없음. **HTML 은 반드시 `<N>주차/output/` 안에서 만들고 그 자리에서
+변환한다** — 상대 경로(`../../.claude/assets/...`)가 HTML 위치 기준으로 풀리므로,
+스크래치패드에서 렌더하면 그림이 깨진 채 PDF 로 굳는다.
 
 - [ ] **Step 9: 2주차 예비보고서를 실제로 만든다**
 

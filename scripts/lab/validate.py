@@ -180,6 +180,52 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
+_STRAY_MARKDOWN = (("`", "백틱"), ("**", "굵게 표기"))
+_TAG = re.compile(r"<[^>]+>")
+
+
+def check_rendered_html(html_path) -> list:
+    """렌더된 HTML 본문에 마크다운 표기가 남았는지 본다.
+
+    보고서 본문은 사람(또는 에이전트)이 마크다운에서 HTML 로 옮기는데,
+    산문의 코드 스팬만 `<code>` 로 바꾸고 **표 셀을 빠뜨리는** 실수가 실제로
+    일어났다 — 제출본 표 대부분에 백틱이 그대로 찍혔다. 눈으로는 잘 안 보인다.
+    """
+    path = Path(html_path)
+    if not path.exists():
+        return [Finding("error", str(html_path), "렌더된 HTML 파일이 없다")]
+    text = _TAG.sub(" ", path.read_text(encoding="utf-8"))
+    out = []
+    for token, label in _STRAY_MARKDOWN:
+        count = text.count(token)
+        if count:
+            out.append(Finding("error", path.name,
+                f"본문에 {label}({token!r})가 {count}개 남았다 — "
+                "마크다운을 HTML 로 옮길 때 표 셀을 빠뜨리면 인쇄본에 그대로 찍힌다"))
+    return out
+
+
+def check_embedded_images(html_path) -> list:
+    """`<img src=...>` 이 실제로 가리키는 파일이 있는지 본다.
+
+    상대 경로는 **HTML 이 놓인 위치** 기준으로 풀린다. 다른 디렉토리에서
+    렌더하면 그림이 깨진 채 PDF 로 굳는데, 텍스트 추출로는 안 보인다 —
+    실제로 예비보고서의 브레드보드 그림이 그렇게 깨진 채 커밋됐다.
+    """
+    path = Path(html_path)
+    if not path.exists():
+        return [Finding("error", str(html_path), "렌더된 HTML 파일이 없다")]
+    out = []
+    for src in re.findall(r'<img[^>]+src="([^"]+)"', path.read_text(encoding="utf-8")):
+        if src.startswith(("http://", "https://", "data:")):
+            continue
+        if not (path.parent / src).resolve().exists():
+            out.append(Finding("error", path.name,
+                f"이미지를 찾을 수 없다: {src!r} "
+                f"(HTML 위치 {path.parent} 기준으로 푼다)"))
+    return out
+
+
 def check_report_sections(report_path, sections, item_count=None) -> list:
     """`.claude/보고서양식.md` 기준으로 섹션 유무·순서를 본다.
 

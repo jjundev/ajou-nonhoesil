@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -139,7 +140,11 @@ class TestOverbarCssAcrossTemplates(unittest.TestCase):
                 continue          # 표지처럼 부울식을 쓰지 않는 템플릿
             checked += 1
             with self.subTest(template=template.parent.name):
-                self.assertIn("inline-block", css)
+                # `.ov` 규칙 자체를 본다. 파일 아무 데나 inline-block 이 있으면
+                # 통과하는 검사로는 옛 CSS 로의 회귀를 잡지 못한다.
+                rule = re.search(r"\.ov\s*\{[^}]*\}", css, re.S)
+                self.assertIsNotNone(rule, f"{template} 에 .ov 규칙이 없다")
+                self.assertIn("inline-block", rule.group(0))
         self.assertGreaterEqual(checked, 3)
 
 
