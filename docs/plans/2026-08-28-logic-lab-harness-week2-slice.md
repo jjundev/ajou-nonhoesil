@@ -3748,7 +3748,11 @@ print(text[:400])
   .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
-  .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개져
+     바깥쪽 바 하나만 있는 것처럼 보인다 — 그 식이 2주차 T5 의 실제 source 다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }      /* R5 오버바 */
   .sketch { border: 1px solid #333; height: 45mm; }
   .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
 </style>
@@ -4296,7 +4300,11 @@ cp "$TMPDIR/lastharness/.claude/skills/explain-lab-preview/template.html" \
 **MathJax 는 가져오지 않는다.** 원본은 `mathjax/` 폴더를 번들했지만 이 과목의 수식은 부울식뿐이고, `.ov` CSS 오버바(Task 8 template 과 동일)로 충분하다. `template.html` 에서 MathJax 스크립트 태그를 지우고 `.ov` 규칙을 넣는다.
 
 ```css
-.ov { border-top: 1px solid currentColor; }
+/* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개져
+     바깥쪽 바 하나만 있는 것처럼 보인다 — 그 식이 2주차 T5 의 실제 source 다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
 ```
 
 PDF 변환은 `scripts.lab.html2pdf.html_to_pdf` 를 쓴다 (Edge 아님).
@@ -4409,7 +4417,11 @@ A' -> <span class="ov">A</span>
 (A+B+C)' -> <span class="ov">A+B+C</span>
 ```
 
-`template.html` 에 `.ov { border-top: 1px solid currentColor; }` 를 넣는다.
+`template.html` 에 `/* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개져
+     바깥쪽 바 하나만 있는 것처럼 보인다 — 그 식이 2주차 T5 의 실제 source 다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }` 를 넣는다.
 
 **실험6 의 `Q(t-1)'` 같은 셀 값에는 이 함수를 부르지 않는다** — 상태 토큰이지 부울식이 아니다.
 

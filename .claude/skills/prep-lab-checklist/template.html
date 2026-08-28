@@ -15,7 +15,10 @@
   .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
-  .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
   .sketch { border: 1px solid #333; height: 45mm; }
   .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
 </style>

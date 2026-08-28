@@ -64,7 +64,10 @@
 
   /* Boolean complement overbar (R5) — applied only to boolean expressions,
      never to truth-table headers/signal names/cell values (those keep '). */
-  .ov { border-top: 1px solid currentColor; }
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
 
   /* Footer — repeats on every printed page in Chromium */
   .doc-footer {

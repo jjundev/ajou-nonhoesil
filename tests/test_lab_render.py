@@ -125,5 +125,23 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
         self.assertNotIn("`", body)
 
 
+class TestOverbarCssAcrossTemplates(unittest.TestCase):
+    """`border-top` 만으로는 중첩 오버바 두 겹이 같은 높이에 겹쳐 그려져
+    `(A'·B)'` 가 바 하나로 뭉개진다. 실제 렌더로 확인한 결함이고, 그 식은
+    2주차 T5 의 실제 source 다 — 제출 보고서에 틀린 표기가 인쇄된다."""
+
+    def test_every_template_that_uses_overbars_supports_nesting(self):
+        skills = (ROOT / ".claude" / "skills").glob("*/template.html")
+        checked = 0
+        for template in skills:
+            css = template.read_text(encoding="utf-8")
+            if ".ov" not in css:
+                continue          # 표지처럼 부울식을 쓰지 않는 템플릿
+            checked += 1
+            with self.subTest(template=template.parent.name):
+                self.assertIn("inline-block", css)
+        self.assertGreaterEqual(checked, 3)
+
+
 if __name__ == "__main__":
     unittest.main()
