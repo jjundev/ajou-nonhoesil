@@ -1,0 +1,15 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+entity stopwatch2 is
+port ( CLK, RESET, START_STOP : in std_logic;
+		 COM0, COM1, COM2, COM3, COM4, COM5 : out std_logic;
+		 a, b, c, d, e, f, g : out std_logic );
+end stopwatch2;
+
+architecture A_stopwatch of stopwatch2 is
+component F_100Hz
+	port ( CLK, CLR : in std_logic;
+			 Hz_100 : out std_logic );
+			 

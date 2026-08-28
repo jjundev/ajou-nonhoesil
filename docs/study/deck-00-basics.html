@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Module 00] 논리회로 핵심기초 리마인드 - 스터디 슬라이드 덱</title>
+    <!-- KaTeX CSS & JS for beautiful LaTeX formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- Pretendard WebFont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --accent: #1677ff;
+      --accent-hover: #0958d9;
+      --accent-light: #e6f4ff;
+      --surface: #f7f8fa;
+      --surface-subtle: #ffffff;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --border-subtle: #edf0f5;
+      
+      --dark-bg: #10141d;
+      --dark-surface: #181f2c;
+      --dark-fg: #f3f4f6;
+      --dark-muted: #9ca3af;
+      --dark-border: #263246;
+      --dark-accent-light: rgba(22, 119, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Top Module Nav */
+    .top-module-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.dark-active-slide .top-module-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-bottom-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .module-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    body.dark-active-slide .module-link { color: var(--dark-muted); }
+
+    .module-link:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    body.dark-active-slide .module-link:hover {
+      color: #60a5fa;
+      background: var(--dark-accent-light);
+    }
+
+    .module-link.active {
+      background: var(--accent);
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    body.dark-active-slide .hub-link { color: var(--dark-fg); }
+
+    /* Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      padding: 68px 60px 84px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-sizing: border-box;
+    }
+
+    .slide.light { background-color: var(--bg); color: var(--fg); }
+    .slide.hero.light { background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%); color: var(--fg); }
+    .slide.dark { background-color: var(--dark-bg); color: var(--dark-fg); }
+    .slide.hero.dark { background: radial-gradient(circle at 80% 20%, #17243c 0%, #0d111a 100%); color: var(--dark-fg); }
+
+    .slide.dark .surface-card, .slide.hero.dark .surface-card {
+      background-color: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+    .slide.dark .muted-text, .slide.hero.dark .muted-text { color: var(--dark-muted); }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .module-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .slide.dark .badge, .slide.hero.dark .badge {
+      background-color: var(--dark-accent-light);
+      color: #5c9cff;
+      border: 1px solid rgba(92, 156, 255, 0.3);
+    }
+
+    .topic-tag { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .slide.dark .topic-tag, .slide.hero.dark .topic-tag { color: var(--dark-muted); }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+    .slide.hero .slide-title { font-size: 38px; }
+
+    .slide-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 4px;
+      max-width: 90ch;
+      word-break: keep-all;
+    }
+    .slide.dark .slide-subtitle, .slide.hero.dark .slide-subtitle { color: var(--dark-muted); }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; align-items: stretch; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: stretch; }
+
+    .surface-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .surface-card.highlight { border-color: var(--accent); background-color: #fcfdfe; }
+    .slide.dark .surface-card.highlight { border-color: var(--accent); background-color: #172133; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .card-title .icon-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slide.dark .card-title .icon-pill { background: var(--dark-accent-light); color: #5c9cff; }
+
+    .card-body { font-size: 14px; line-height: 1.7; color: inherit; word-break: keep-all; }
+    .card-body ul { padding-left: 18px; margin: 4px 0; }
+    .card-body li { margin-bottom: 5px; }
+    .card-body li:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .slide.dark .formula-box { background-color: #111722; border-color: var(--dark-border); color: #60a5fa; }
+
+    .code-block {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #f472b6; font-weight: 700; }
+    .code-block .type { color: #38bdf8; }
+    .code-block .fn { color: #fbbf24; }
+    .code-block .comment { color: #64748b; font-style: italic; }
+    .code-block .num { color: #a78bfa; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .slide.dark .data-table { background: var(--dark-surface); border-color: var(--dark-border); }
+    .data-table th { background-color: var(--surface); color: var(--fg); font-weight: 700; padding: 7px 9px; border: 1px solid var(--border); }
+    .slide.dark .data-table th { background-color: #141b27; color: var(--dark-fg); border-color: var(--dark-border); }
+    .data-table td { padding: 7px 9px; border: 1px solid var(--border); color: inherit; }
+    .slide.dark .data-table td { border-color: var(--dark-border); }
+    .data-table .highlight-cell { background-color: var(--accent-light); font-weight: 700; color: var(--accent); }
+    .slide.dark .data-table .highlight-cell { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    .alert-callout {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+      background-color: var(--surface);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .alert-callout.warning { border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e; }
+    .slide.dark .alert-callout.warning { background-color: #2b1f0c; color: #fde68a; border-left-color: #f59e0b; }
+
+    /* Bottom Controller */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark-active-slide .bottom-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-top-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .nav-btn { background-color: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .slide-counter { font-size: 14px; font-weight: 700; font-family: var(--font-mono); min-width: 65px; text-align: center; }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 380px;
+      height: 6px;
+      background-color: var(--border-subtle);
+      border-radius: 999px;
+      margin: 0 20px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    body.dark-active-slide .progress-bar-container { background-color: var(--dark-border); }
+    .progress-bar { height: 100%; width: 10%; background-color: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+
+    .action-controls { display: flex; align-items: center; gap: 8px; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .action-btn { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.active { background-color: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    body.dark-active-slide .action-btn.active { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    /* Drawer & Modal */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 60px;
+      right: 0;
+      width: 440px;
+      max-height: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 0;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.dark-active-slide .speaker-notes-drawer { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .speaker-notes-drawer.open { transform: translateX(0); }
+    .drawer-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    body.dark-active-slide .drawer-header { border-bottom-color: var(--dark-border); }
+    .drawer-body { padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .overview-modal.open { display: flex; }
+    .overview-content {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      max-width: 1080px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    body.dark-active-slide .overview-content { background: #121824; color: var(--dark-fg); }
+    .overview-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .overview-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px;
+    }
+    body.dark-active-slide .overview-card { background: var(--dark-surface); border-color: var(--dark-border); }
+    .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .overview-card.active { border-color: var(--accent); border-width: 2px; background: var(--accent-light); }
+    body.dark-active-slide .overview-card.active { background: var(--dark-accent-light); }
+    .overview-num { font-size: 11px; font-weight: 700; color: var(--accent); }
+    .overview-title { font-size: 13.5px; font-weight: 700; margin-top: 4px; line-height: 1.4; }
+
+    .slide-notes { display: none; }
+    kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      color: #444;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation -->
+<nav class="top-module-bar">
+  <a href="index.html" class="hub-link">⚡ 논회실 스터디 덱 허브</a>
+  <div class="module-nav-links">
+    <a href="deck-00-basics.html" class="module-link active">M00 핵심기초</a>
+    <a href="deck-01-gates-cmos.html" class="module-link ">M01 기본게이트·CMOS</a>
+    <a href="deck-02-combinational.html" class="module-link ">M02 조합논리</a>
+    <a href="deck-03-sequential.html" class="module-link ">M03 순서논리</a>
+    <a href="deck-04-memory-dac-adc.html" class="module-link ">M04 기억소자·DAC/ADC</a>
+    <a href="deck-05-verilog-fpga.html" class="module-link ">M05 Verilog·FPGA</a>
+  </div>
+</nav>
+
+<div class="deck-container">
+  <div class="slide-track" id="slideTrack">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide hero dark" data-screen-label="01 Cover">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Module 00</span>
+            <span class="topic-tag">Foundational Theory & Refresher</span>
+          </div>
+          <h1 class="slide-title">논리회로 핵심기초 30분 리마인드</h1>
+          <p class="slide-subtitle">3년 공백 완벽 복구: 7대 기본 게이트, 부울 대수 필수 정리, 2의 보수 가감산, 카르노맵(K-Map) 마스터</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">1</span> 신호 & 기본 7대 게이트</div>
+            <div class="card-body">
+              <ul>
+                <li><strong>0(LOW, 0V)</strong>과 <strong>1(HIGH, 5V)</strong> 디지털 2진 신호</li>
+                <li>NOT, AND, OR, NAND, NOR, XOR, XNOR</li>
+                <li><strong>NAND / NOR</strong>의 범용성(Universal Gate) 증명</li>
+                <li>Active-Low 인버전 버블(Bubble)의 의미</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 부울 대수 & 간소화 정리</div>
+            <div class="card-body">
+              <ul>
+                <li>수식 간소화 = <strong>"빵판에 꽂을 IC 개수 절감"</strong></li>
+                <li>드모르간 법칙(De Morgan)과 버블 푸싱 테크닉</li>
+                <li>특이 분배법칙: $A + BC = (A+B)(A+C)$</li>
+                <li>흡수 법칙($A + AB = A$) & 합의 정리(Consensus)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> 2의 보수 & K-Map 최적화</div>
+            <div class="card-body">
+              <ul>
+                <li>컴퓨터는 뺄셈기 없이 <strong>2의 보수 가산</strong>으로 감산</li>
+                <li>부호 연산 오버플로우 판별: $V = C_4 \oplus C_3$</li>
+                <li>K-Map 그레이 코드 배치 및 $2^n$개 사각형 묶기</li>
+                <li>Don't Care($d$)를 활용한 초소형 게이트 설계</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Module 00 인트로 학습 가이드]</h4>
+        <p>논리회로 실험의 모든 고급 모듈(가산기, FSM, SRAM, DAC/ADC, Verilog)은 결국 부울 대수와 7대 게이트, 2의 보수 연산의 기초 위에서 동작합니다.</p>
+        <p><strong>발표자 강조점:</strong> 수식을 줄이지 않고 빵판에 직결하면 IC 개수가 늘어나 결선 오류와 노이즈가 급증합니다. K-Map과 부울 대수로 최적화하는 습관이 실습 칼퇴의 지름길입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: 3대 핵심축 -->
+    <section class="slide light" data-screen-label="02 3대 핵심축">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Architecture</span>
+            <span class="topic-tag">3 Core Pillars</span>
+          </div>
+          <h2 class="slide-title">논리회로의 3대 핵심축과 실험실 매핑</h2>
+          <p class="slide-subtitle">방대한 이론도 실습 관점에서는 3개의 명확한 기둥으로 직결됩니다.</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">축 1</span> 신호와 게이트 레벨</div>
+            <div class="card-body">
+              <p>모든 IC 핀은 0V(GND) 또는 5V(VCC) 전압으로 통신합니다.</p>
+              <div class="formula-box">$$\text{Logic 0: } 0\text{V} \quad \Big| \quad \text{Logic 1: } 5\text{V}$$</div>
+              <ul style="margin-top: 8px;">
+                <li>IC 74HC00~74HC86의 핀아웃 매핑</li>
+                <li>게이트 지연($t_{pd}$)과 논리 레벨 전파</li>
+                <li>Active-Low 제어 신호 ($\overline{CS}, \overline{OE}, \overline{WE}$)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">축 2</span> 부울 대수 최적화</div>
+            <div class="card-body">
+              <p>회로 게이트 수를 줄여 배선 면적과 전력 소모를 최소화합니다.</p>
+              <div class="formula-box">NAND-Only / NOR-Only 변환</div>
+              <ul style="margin-top: 8px;">
+                <li>드모르간 정리: $\overline{AB} = \bar{A} + \bar{B}$</li>
+                <li>버블 이동으로 Active-Low 직관 분석</li>
+                <li>Consensus 항 제거로 잉여 게이트 삭제</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">축 3</span> 수체계 & K-Map</div>
+            <div class="card-body">
+              <p>디지털 연산의 기본과 시각적 논리식 최소화 도구입니다.</p>
+              <div class="formula-box">$$V = C_n \oplus C_{n-1} \quad \text{(Overflow)}$$</div>
+              <ul style="margin-top: 8px;">
+                <li>2의 보수 = 1의 보수(비트 반전) + 1</li>
+                <li>K-Map 인접성(Adjacency)을 이용한 항 소거</li>
+                <li>SOP(AND-OR) vs POS(OR-AND) 변환</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="alert-callout warning">
+          💡 <strong>실습실 꿀팁:</strong> 수식을 정리하지 않고 복잡한 식 그대로 빵판에 구현하면 점퍼 와이어가 20개 이상 늘어나 접촉 불량(쇼트/오픈)을 찾느라 2시간 이상 낭비하게 됩니다.
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[3대 핵심축 강의 노트]</h4>
+        <p>학생들이 가장 많이 실수하는 부분은 '수식 간소화'를 단순 시험용 수학 문제로만 생각하는 것입니다. 실제 빵판에서는 74HC04(NOT), 74HC08(AND), 74HC32(OR) 3종류를 다 꽂는 대신 드모르간 정리를 통해 74HC00(NAND) 1개로 전부 해결할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: 7대 기본 게이트 마스터 -->
+    <section class="slide hero light" data-screen-label="03 7대 게이트">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Master Truth Table</span>
+            <span class="topic-tag">7 Fundamental Gates</span>
+          </div>
+          <h2 class="slide-title">7대 기본 논리 게이트 종합 마스터</h2>
+          <p class="slide-subtitle">NOT, AND, OR, NAND, NOR, XOR, XNOR의 진리표와 실전 동작 직관</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2-1">
+          <div class="surface-card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>A</th><th>B</th><th>NOT ($\bar{A}$)</th><th>AND ($AB$)</th><th>OR ($A+B$)</th><th>NAND ($\overline{AB}$)</th><th>NOR ($\overline{A+B}$)</th><th>XOR ($A\oplus B$)</th><th>XNOR ($A\odot B$)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td class="highlight-cell">0</td><td class="highlight-cell">1</td></tr>
+                <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="highlight-cell">1</td><td class="highlight-cell">0</td></tr>
+                <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="highlight-cell">1</td><td class="highlight-cell">0</td></tr>
+                <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td class="highlight-cell">0</td><td class="highlight-cell">1</td></tr>
+              </tbody>
+            </table>
+            <div style="font-size:12.5px; color:var(--muted); margin-top:6px;">
+              * XOR은 홀수 패리티 검출기(입력이 다르면 1), XNOR은 일치 검출기(입력이 같으면 1).
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">💡 게이트별 실전 직관</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>AND:</strong> 깐깐한 직렬 스위치 (둘 다 1이어야 1)</p>
+              <p><strong>OR:</strong> 관대한 병렬 스위치 (하나라도 1이면 1)</p>
+              <p><strong>NAND/NOR:</strong> 반전 출력 범용 게이트</p>
+              <p><strong>XOR ($A \oplus B$):</strong> 가산기 합($S$) 생성</p>
+              <p><strong>XNOR ($A \odot B$):</strong> 디지털 비교기(Comparator)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[7대 게이트 실전 포인트]</h4>
+        <p><strong>XOR ($A \oplus B = \bar{A}B + A\bar{B}$):</strong> 가산기(Adder)의 Sum 비트이자 비트 반전 제어기($B \oplus 0 = B$, $B \oplus 1 = \bar{B}$)로 4비트 가감산기(74HC283)에서 핵심 역할을 합니다.</p>
+        <p><strong>XNOR ($A \odot B = AB + \bar{A}\bar{B}$):</strong> 두 신호가 완벽히 같을 때만 1을 출력하므로 주소 디코더나 데이터 일치 검사기에 사용됩니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: Universal Gate (NAND & NOR) -->
+    <section class="slide dark" data-screen-label="04 Universal Gate">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Universal Logic</span>
+            <span class="topic-tag">NAND / NOR Synthesis</span>
+          </div>
+          <h2 class="slide-title">범용 게이트(Universal Gate)의 원리와 구현</h2>
+          <p class="slide-subtitle">NAND 또는 NOR 게이트 단 한 종류만으로 모든 논리 회로를 완전 합성하는 방법</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1</span> NOT 게이트 구현</div>
+            <div class="card-body">
+              <p>두 입력을 하나로 묶어 입력</p>
+              <div class="formula-box">$$\overline{A \cdot A} = \bar{A}$$</div>
+              <div class="code-block">
+A ──┬──\
+    └───)o── Y = A'
+      74HC00</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> AND 게이트 구현</div>
+            <div class="card-body">
+              <p>NAND 출력 뒤에 NOT(NAND) 직결</p>
+              <div class="formula-box">$$\overline{\overline{AB}} = AB$$</div>
+              <div class="code-block">
+A ──\
+     )o──┬──\
+B ──/    └───)o── Y = AB</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> OR 게이트 구현</div>
+            <div class="card-body">
+              <p>입력을 반전시켜 NAND에 입력 (드모르간)</p>
+              <div class="formula-box">$$\overline{\bar{A} \cdot \bar{B}} = A + B$$</div>
+              <div class="code-block">
+A ──▷o─\
+        )o── Y = A + B
+B ──▷o─/</div>
+            </div>
+          </div>
+        </div>
+        <div class="surface-card highlight">
+          <div class="card-title">★ NAND 게이트 4개로 XOR ($A \oplus B$) 구현하기 (시험 단골)</div>
+          <div class="card-body">
+            <div class="formula-box">$$A \oplus B = \overline{ \overline{A \cdot \overline{AB}} \cdot \overline{B \cdot \overline{AB}} }$$</div>
+            <p style="margin-top:6px; font-size:13px; color:var(--dark-muted);">74HC00 IC(Quad 2-input NAND) 1개에 들어있는 4개의 NAND 게이트를 모두 결선하면 별도의 74HC86(XOR) IC 없이 XOR 연산기를 완성할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[범용 게이트의 반도체 공학적 중요성]</h4>
+        <p>CMOS 공정에서 NAND 게이트는 NMOS 풀다운이 직렬이고 PMOS 풀업이 병렬이므로, 전자 이동도가 높은 NMOS의 장점을 살려 NOR 게이트보다 면적이 작고 속도가 빠릅니다.</p>
+        <p>따라서 플래시 메모리(NAND Flash) 및 대다수 ASIC 라이브러리는 기본 셀을 NAND 기반으로 합성합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5: 부울 대수 기본 공리 & 분배법칙 -->
+    <section class="slide light" data-screen-label="05 부울 대수 공리">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Boolean Axioms</span>
+            <span class="topic-tag">Algebraic Rules</span>
+          </div>
+          <h2 class="slide-title">부울 대수 기본 공리 & 필수 연산 규칙</h2>
+          <p class="slide-subtitle">수식 전개의 뼈대: 항등원, 영원, 멱등, 보원, 이중부정과 부울 고유의 분배법칙</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 5대 기본 공리 (Axioms)</div>
+            <table class="data-table">
+              <thead>
+                <tr><th>법칙 명칭</th><th>AND 연산 ($\cdot$)</th><th>OR 연산 ($+$)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>항등원 (Identity)</strong></td><td>$A \cdot 1 = A$</td><td>$A + 0 = A$</td></tr>
+                <tr><td><strong>영원 (Null)</strong></td><td>$A \cdot 0 = 0$</td><td>$A + 1 = 1$</td></tr>
+                <tr><td><strong>멱등 (Idempotent)</strong></td><td>$A \cdot A = A$</td><td>$A + A = A$</td></tr>
+                <tr><td><strong>보원 (Complement)</strong></td><td>$A \cdot \bar{A} = 0$</td><td>$A + \bar{A} = 1$</td></tr>
+                <tr><td><strong>이중부정 (Involution)</strong></td><td colspan="2">$\overline{\overline{A}} = A$</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">★ 주의: 부울 대수 특이 분배법칙</div>
+            <div class="card-body">
+              <p>일반 대수에서는 성립하지 않지만 부울 대수에서는 반드시 성립하는 핵심 정리입니다.</p>
+              <div class="formula-box">$$A + BC = (A + B)(A + C)$$</div>
+              <div style="background:#ffffff; border:1px dashed var(--border); padding:10px; border-radius:4px; font-size:13px; margin-top:8px;">
+                <strong>[증명 전개]:</strong><br>
+                $(A + B)(A + C) = AA + AC + BA + BC$<br>
+                $= A + A(C + B) + BC = A(1 + C + B) + BC$<br>
+                $= A \cdot 1 + BC = \mathbf{A + BC}$ (Q.E.D)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[부울 대수 공리 강의 팁]</h4>
+        <p>$A + BC = (A+B)(A+C)$는 논리식을 POS(최대항 곱) 형태로 변환하거나 복잡한 곱의 합 형태를 인수분해할 때 필수적으로 쓰입니다. 퀴즈에서 많은 학생들이 일반 수학 공식과 혼동하여 틀리므로 강조해 주십시오.</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: 4대 필수 정리 & 버블 푸싱 -->
+    <section class="slide hero dark" data-screen-label="06 4대 정리 & 버블푸싱">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Essential Theorems</span>
+            <span class="topic-tag">De Morgan & Bubble Pushing</span>
+          </div>
+          <h2 class="slide-title">4대 필수 정리 & 버블 푸싱(Bubble Pushing)</h2>
+          <p class="slide-subtitle">흡수 법칙, 합의 정리(Consensus), 드모르간 정리와 회로도 시각적 변환 테크닉</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1</span> 흡수 법칙 & 합의 정리</div>
+            <div class="card-body">
+              <p><strong>흡수 법칙 (Absorption):</strong> 잉여 항을 흡수하여 제거</p>
+              <div class="formula-box">$$A + AB = A \quad \Big| \quad A + \bar{A}B = A + B$$</div>
+              <p style="margin-top:8px;"><strong>합의 정리 (Consensus Theorem):</strong></p>
+              <div class="formula-box">$$AB + \bar{A}C + BC = AB + \bar{A}C$$</div>
+              <p style="font-size:12.5px; color:var(--dark-muted); margin-top:4px;">* $BC$항은 $A=1$일 땐 $AB$가, $A=0$일 땐 $\bar{A}C$가 커버하므로 삭제 가능.</p>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 드모르간 정리 & 버블 푸싱</div>
+            <div class="card-body">
+              <div class="formula-box">$$\overline{AB} = \bar{A} + \bar{B} \quad \Big| \quad \overline{A+B} = \bar{A} \cdot \bar{B}$$</div>
+              <div class="code-block" style="margin-top:8px;">
+[버블 푸싱 황금률]
+1. 게이트 출구의 버블(NAND)을 입구로 밀면 AND ➔ OR로 변환!
+2. 신호선 상의 마주보는 버블 2개는 서로 상쇄 (Bubble Cancellation)
+3. Active-Low 신호 흐름을 직관적으로 추적 가능</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[버블 푸싱(Bubble Pushing)의 실전 위력]</h4>
+        <p>실제 칩 레벨 도면(Schematic)을 볼 때 버블 푸싱을 적용하면 수식을 적지 않고도 "어떤 신호가 LOW로 활성화되어 다음 단을 구동하는지"를 직관적으로 파악할 수 있습니다.</p>
+        <p>Consensus Theorem은 추후 조합논리 회로에서 <strong>타이밍 글리치(Hazard)를 제거하기 위해 일부러 추가하는 항</strong>으로 다시 등장합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7: 수체계 & 2의 보수 가감산 -->
+    <section class="slide light" data-screen-label="07 2의 보수 가감산">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Arithmetic Logic</span>
+            <span class="topic-tag">2's Complement & Overflow</span>
+          </div>
+          <h2 class="slide-title">2진 수체계와 2의 보수(2's Complement) 가감산</h2>
+          <p class="slide-subtitle">부호-절대값 및 1의 보수 한계 극복, 덧셈기 기반 뺄셈 구현 및 오버플로우 판별</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 2의 보수 변환 및 범위</div>
+            <div class="card-body">
+              <p><strong>변환 공식:</strong> $N$비트 데이터의 비트를 전부 반전(1의 보수) 후 $+1$</p>
+              <div class="formula-box">$$-X = \bar{X} + 1$$</div>
+              <ul style="margin-top: 8px;">
+                <li><strong>$N$비트 표현 범위:</strong> $-2^{N-1} \sim +(2^{N-1}-1)$</li>
+                <li>4비트 예: $-8 \sim +7$ ($+0$과 $-0$의 중복 문제 완전 해결)</li>
+                <li><strong>뺄셈 연산:</strong> $A - B = A + (-B) = A + \bar{B} + 1$</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">★ 오버플로우(Overflow) 판별식</div>
+            <div class="card-body">
+              <p>부호 있는 연산에서 결과값이 $N$비트 표현 범위를 초과하여 부호가 왜곡되는 현상입니다.</p>
+              <div class="formula-box">$$V = C_n \oplus C_{n-1}$$</div>
+              <div style="font-size:13px; line-height:1.6; margin-top:8px;">
+                • $C_n$: 최상위 부호비트(MSB)에서 발생한 최종 캐리<br>
+                • $C_{n-1}$: 직전 비트에서 MSB로 넘어온 캐리<br>
+                • <strong>판별:</strong> $(+) + (+) = (-)$ 또는 $(-) + (-) = (+)$ 발생 시 $V=1$
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[2의 보수 및 오버플로우 강의 팁]</h4>
+        <p>많은 학생들이 캐리 발생($C_{out}=1$)과 오버플로우($V=1$)를 혼동합니다.</p>
+        <p><strong>구분법:</strong> 부호 없는(Unsigned) 연산에서는 $C_{out}=1$이 오버플로우이고, 부호 있는(Signed) 연산에서는 $V = C_n \oplus C_{n-1} = 1$이 오버플로우입니다. 74HC283 가산기 실험에서 반드시 검증하는 항목입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: K-Map 4대 황금률 -->
+    <section class="slide dark" data-screen-label="08 K-Map 4대 황금률">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Visual Optimization</span>
+            <span class="topic-tag">Karnaugh Map</span>
+          </div>
+          <h2 class="slide-title">카르노맵(K-Map) 시각적 간소화 4대 황금률</h2>
+          <p class="slide-subtitle">수식 전개 없이 1과 Don't Care를 $2^n$개 직사각형으로 묶어 최적 간소화식 도출</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-4">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1</span> 그레이 코드</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>인접 행/열 간에 단 1비트만 변경되도록 배치:</p>
+              <div class="formula-box">00 ➔ 01 ➔ 11 ➔ 10</div>
+              <p style="color:var(--dark-muted); margin-top:4px;">* 01에서 11로 건너뛰는 순서 절대 엄수!</p>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> $2^n$ 크기 묶기</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>반드시 1, 2, 4, 8, 16개의 직사각형/정사각형으로 묶음.</p>
+              <p style="color:#f87171; margin-top:4px;">❌ 3개, 6개 묶기 절대 금지!</p>
+              <p style="color:#4ade80;">✔ 크게 묶을수록 항이 소거됨.</p>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> 토러스 인접성</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>맵의 양 끝(좌-우, 상-하)과 4개의 모서리는 서로 맞닿아 있는 인접 셀입니다.</p>
+              <div class="formula-box">4 모서리 = 1개의 4-묶음</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">4</span> Don't Care ($d$)</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>입력될 수 없는 무효 상태는 $X(d)$로 표기.</p>
+              <p style="color:var(--dark-muted); margin-top:4px;">• 묶음을 크게 만들 수 있으면 <strong>1로 취급</strong><br>• 아니면 <strong>0으로 버림</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[K-Map 실전 오류 방지]</h4>
+        <p>1. 반드시 Prime Implicant(주항) 중 Essential Prime Implicant(필수 주항)을 먼저 식별하여 묶습니다.</p>
+        <p>2. Don't Care는 굳이 다 묶을 필요가 없으며, 1을 묶을 때 크기를 2배로 불려 변수를 날릴 수 있을 때만 포함시킵니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: SOP vs POS & 최적화 -->
+    <section class="slide light" data-screen-label="09 SOP vs POS">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Synthesis</span>
+            <span class="topic-tag">SOP vs POS Forms</span>
+          </div>
+          <h2 class="slide-title">SOP(최소항 합) vs POS(최대항 곱) 합성</h2>
+          <p class="slide-subtitle">출력 1 중심(AND-OR)과 출력 0 중심(OR-AND)의 2단 논리 회로 등가 변환</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 SOP (Sum of Products)</div>
+            <div class="card-body">
+              <p><strong>동작 원리:</strong> 출력 $Y=1$인 최소항(Minterm)들을 묶어 OR 결합</p>
+              <div class="formula-box">$$F(A,B,C) = \sum m(1, 3, 5, 7) = C$$</div>
+              <ul style="margin-top: 8px;">
+                <li>표준 형태: <strong>AND-OR 2단 회로</strong></li>
+                <li>드모르간 변환: <strong>NAND-NAND 회로</strong>와 완벽 등가</li>
+                <li>대부분의 디지털 설계에서 기본 표준으로 채택</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 POS (Product of Sums)</div>
+            <div class="card-body">
+              <p><strong>동작 원리:</strong> 출력 $Y=0$인 최대항(Maxterm)들을 묶어 AND 결합</p>
+              <div class="formula-box">$$F(A,B,C) = \prod M(0, 2, 4, 6) = C$$</div>
+              <ul style="margin-top: 8px;">
+                <li>표준 형태: <strong>OR-AND 2단 회로</strong></li>
+                <li>드모르간 변환: <strong>NOR-NOR 회로</strong>와 완벽 등가</li>
+                <li>진리표에 0이 1보다 현저히 적을 때 훨씬 유리</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[SOP와 POS 선택 기준]</h4>
+        <p>진리표에서 1의 개수와 0의 개수를 센 뒤, 1이 많으면 0을 묶어 POS로 전개하거나 $\bar{F}$를 구한 뒤 인버터를 붙이는 것이 게이트 수를 아끼는 비결입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 10: 자가진단 퀴즈 -->
+    <section class="slide hero dark" data-screen-label="10 자가진단 퀴즈">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Self Diagnostic</span>
+            <span class="topic-tag">10-Minute Quiz</span>
+          </div>
+          <h2 class="slide-title">실험실 투입 전 10분 자가진단 퀴즈 3선</h2>
+          <p class="slide-subtitle">조교 단골 구두 퀴즈 & 시험 대비 필수 실전 문제</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q1</span> 드모르간 변환</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>문제:</strong> $Y = \overline{(A+B)C}$를 NAND 게이트만으로 구현하시오.</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-family:var(--font-mono); font-size:12px;">
+                정답: Y = \overline{A+B} + \bar{C} = \bar{A}\bar{B} + \bar{C} = \overline{ \overline{\bar{A}\bar{B}} \cdot C }
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q2</span> 2의 보수 오버플로우</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>문제:</strong> 4비트 2의 보수 연산 $(+5) + (+4)$ 수행 시 $C_4$와 $C_3$, $V$는?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-family:var(--font-mono); font-size:12px;">
+                0101 + 0100 = 1001 (-7)<br>
+                C3 = 1, C4 = 0<br>
+                V = 0 ⊕ 1 = 1 (오버플로우 발생!)
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q3</span> K-Map 간소화</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>문제:</strong> $F(A,B,C) = \sum m(1,3,5) + d(7)$의 최적 간소화식은?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-family:var(--font-mono); font-size:12px;">
+                d(7)을 1로 포함하여<br>
+                m(1,3,5,7)을 4개 묶음<br>
+                ➔ 정답: F = C
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[퀴즈 풀이 및 피드백]</h4>
+        <p>Q1은 드모르간 법칙을 연쇄 적용하여 NAND 구조로 만드는 전형적인 시험 문제입니다.</p>
+        <p>Q2는 양수 5와 4를 더했는데 결과가 음수 1001(-7)이 나오는 2의 보수 오버플로우의 대표 사례입니다.</p>
+        <p>Q3은 Don't Care를 1로 포함시켜 2-묶음 2개 대신 4-묶음 1개로 변수 2개를 단숨에 날리는 최적화 문제입니다.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="bottom-bar">
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">← 이전</button>
+    <span class="slide-counter" id="slideIndicator">01 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">다음 →</button>
+  </div>
+  
+  <div class="progress-bar-container" id="progressBarContainer" title="클릭하여 해당 위치로 이동">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="action-controls">
+    <button class="action-btn" id="notesToggleBtn" title="발표자 노트 (단축키 S)">
+      📝 <span class="btn-text">발표자 노트</span> <kbd>S</kbd>
+    </button>
+    <button class="action-btn" id="overviewBtn" title="슬라이드 오버뷰 (단축키 O)">
+      📑 <span class="btn-text">전체 목차</span> <kbd>O</kbd>
+    </button>
+    <button class="action-btn" id="fullscreenBtn" title="전체화면 (단축키 F)">
+      ⛶ <span class="btn-text">전체화면</span> <kbd>F</kbd>
+    </button>
+  </div>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="speaker-notes-drawer" id="speakerNotesDrawer">
+  <div class="drawer-header">
+    <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+      <span>📝 발표자 노트 & 실습 족보</span>
+      <span class="badge" id="notesSlideTitle" style="font-size:10px;">Slide 01</span>
+    </div>
+    <button class="action-btn" id="closeNotesBtn" style="height:28px; padding:0 8px;">✕</button>
+  </div>
+  <div class="drawer-body" id="speakerNotesContent">
+    <!-- Updated dynamically via JS -->
+  </div>
+</div>
+
+<!-- Overview Modal -->
+<div class="overview-modal" id="overviewModal">
+  <div class="overview-content">
+    <div class="drawer-header" style="padding: 18px 24px;">
+      <h3 style="font-size: 20px; font-weight: 700;">전체 슬라이드 목차 (Module 00 - 총 10장)</h3>
+      <button class="action-btn" id="closeOverviewBtn" style="height:32px; padding:0 12px;">닫기 (Esc) ✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    const slideTrack = document.getElementById('slideTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const speakerNotesContent = document.getElementById('speakerNotesContent');
+    const notesSlideTitle = document.getElementById('notesSlideTitle');
+    const closeNotesBtn = document.getElementById('closeNotesBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    const STORAGE_KEY = 'logic_circuit_study_deck_m00_pos';
+    const savedPos = localStorage.getItem(STORAGE_KEY);
+    if (savedPos !== null && !isNaN(parseInt(savedPos, 10))) {
+      currentSlide = Math.min(Math.max(0, parseInt(savedPos, 10)), totalSlides - 1);
+    }
+
+    slides.forEach((slide, index) => {
+      const label = slide.getAttribute('data-screen-label') || `Slide ${index + 1}`;
+      const titleEl = slide.querySelector('.slide-title');
+      const title = titleEl ? titleEl.textContent : label;
+      const badgeEl = slide.querySelector('.badge');
+      const badge = badgeEl ? badgeEl.textContent : '';
+
+      const card = document.createElement('div');
+      card.className = `overview-card ${index === currentSlide ? 'active' : ''}`;
+      card.innerHTML = `
+        <div>
+          <div class="overview-num">${label}</div>
+          <div class="overview-title">${title}</div>
+        </div>
+        <div class="overview-tag" style="font-size:11px; color:var(--muted); margin-top:8px;">${badge}</div>
+      `;
+      card.addEventListener('click', () => {
+        goToSlide(index);
+        closeOverview();
+      });
+      overviewGrid.appendChild(card);
+    });
+
+    function updateDeck() {
+      slideTrack.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      const slideNumStr = String(currentSlide + 1).padStart(2, '0');
+      const totalStr = String(totalSlides).padStart(2, '0');
+      slideIndicator.textContent = `${slideNumStr} / ${totalStr}`;
+      const pct = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      const activeSlide = slides[currentSlide];
+      const isDark = activeSlide.classList.contains('dark');
+      if (isDark) {
+        document.body.classList.add('dark-active-slide');
+      } else {
+        document.body.classList.remove('dark-active-slide');
+      }
+
+      const notesEl = activeSlide.querySelector('.slide-notes');
+      const label = activeSlide.getAttribute('data-screen-label') || `Slide ${currentSlide + 1}`;
+      notesSlideTitle.textContent = label;
+      speakerNotesContent.innerHTML = notesEl ? notesEl.innerHTML : '이 슬라이드에 등록된 발표자 노트가 없습니다.';
+
+      const cards = overviewGrid.querySelectorAll('.overview-card');
+      cards.forEach((c, idx) => {
+        c.classList.toggle('active', idx === currentSlide);
+      });
+
+      localStorage.setItem(STORAGE_KEY, currentSlide);
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      const isOpen = speakerNotesDrawer.classList.toggle('open');
+      notesToggleBtn.classList.toggle('active', isOpen);
+    }
+
+    function toggleOverview() { overviewModal.classList.toggle('open'); }
+    function closeOverview() { overviewModal.classList.remove('open'); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+    overviewBtn.addEventListener('click', toggleOverview);
+    closeOverviewBtn.addEventListener('click', closeOverview);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    progressBarContainer.addEventListener('click', (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      goToSlide(Math.floor(ratio * totalSlides));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (['input', 'textarea', 'select'].includes(e.target.tagName.toLowerCase())) return;
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          closeOverview();
+          speakerNotesDrawer.classList.remove('open');
+          notesToggleBtn.classList.remove('active');
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+  })();
+</script>
+</body>
+</html>

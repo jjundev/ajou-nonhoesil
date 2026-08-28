@@ -1,0 +1,85 @@
+library ieee; 
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity  stopwatch is 
+port(
+	  clk		: in std_logic;
+	  reset	: in std_logic;
+	  start_stop	: in std_logic;
+	  com0	: out std_logic;
+	  com1	: out std_logic;
+	  com2	: out std_logic;
+	  com3	: out std_logic;
+	  com4	: out std_logic;
+	  com5	: out std_logic;
+	  A         	: out std_logic; 
+	  B         	: out std_logic; 
+	  C         	: out std_logic; 
+	  D         	: out std_logic; 
+	  E         	: out std_logic; 
+	  F         	: out std_logic; 
+	  G         	: out std_logic 
+);
+end stopwatch;
+-------------------------------------------
+-------------------------------------------
+architecture a of stopwatch is
+component  Hz100ctrl 
+	port( clk,nclr 	: in std_logic;
+      	         Hz100    	: out std_logic);
+end component;
+component  keyif  
+	port( start_stop	: in std_logic;
+	         clk, nclr	: in std_logic;
+	         enp	: out std_logic);
+end component;
+component  timecontrol  
+	port( clk, nclr 	: in std_logic;
+	         enp	: in std_logic;
+	         SSL 	: out std_logic_vector(3 downto 0);
+	         SSH 	: out std_logic_vector(3 downto 0);
+	         SECL	: out std_logic_vector(3 downto 0);
+	         SECH	: out std_logic_vector(3 downto 0);
+	         MINL	: out std_logic_vector(3 downto 0);
+	         MINH	: out std_logic_vector(3 downto 0));
+end component;
+component  outputif 
+	port( clk, nclr 	: in std_logic;
+	         SSL 	: in std_logic_vector(3 downto 0);
+	         SSH 	: in std_logic_vector(3 downto 0);
+	         SEC	: in std_logic_vector(3 downto 0);
+	         SECH	: in std_logic_vector(3 downto 0);
+	         MINL	: in std_logic_vector(3 downto 0);
+	         MINH 	: in std_logic_vector(3 downto 0);
+	         com_out	: out std_logic_vector(5 downto 0);
+	         seg_out	: out std_logic_vector(6 downto 0));
+end component;
+
+signal nclr 	: std_logic;
+	signal Hz100    	: std_logic;
+	signal enp	: std_logic;
+	signal SSL 	: std_logic_vector(3 downto 0);
+	signal SSH 	: std_logic_vector(3 downto 0);
+	signal SECL 	: std_logic_vector(3 downto 0);
+	signal SECH 	: std_logic_vector(3 downto 0);
+	signal MINL 	: std_logic_vector(3 downto 0);
+	signal MINH 	: std_logic_vector(3 downto 0);
+	signal com_out	: std_logic_vector(5 downto 0);
+	signal seg_out	: std_logic_vector(6 downto 0);
+begin
+
+	nclr <= not reset;
+
+	U1: Hz100ctrl port map( clk,nclr,Hz100);
+	U2: keyif port map( start_stop,clk,nclr,enp);
+	U3: timecontrol port map( Hz100,nclr,enp,SSL,SSH,SECL,SECH,MINL,MINH);
+	U4: outputif port map( clk,nclr,SSL,SSH,SECL,SECH,MINL,MINH,com_out,seg_out);
+
+	com0<=com_out(5);com1<=com_out(4);com2<=com_out(3);
+	com3<=com_out(2);com4<=com_out(1);com5<=com_out(0);
+	A<=seg_out(6);B<=seg_out(5);C<=seg_out(4);
+	D<=seg_out(3);E<=seg_out(2);F<=seg_out(1);G<=seg_out(0);
+
+end a;
+
+

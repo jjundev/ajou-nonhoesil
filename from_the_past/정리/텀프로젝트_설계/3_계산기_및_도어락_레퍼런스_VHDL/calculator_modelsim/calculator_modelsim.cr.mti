@@ -1,0 +1,102 @@
+{D:/Ahn's Project/Calculator/func_encoder.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/func_encoder.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity func_encoder
+-- Compiling architecture behavioral of func_encoder
+
+} {} {}} {D:/Ahn's Project/Calculator/cal_test_tb.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/cal_test_tb.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Loading package textio
+-- Loading package std_logic_textio
+-- Compiling entity cal_test
+-- Compiling architecture testbench_arch of cal_test
+
+} {} {}} {D:/Ahn's Project/Calculator/encoder.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/encoder.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity encoder
+-- Compiling architecture behavioral of encoder
+
+} {} {}} {D:/Ahn's Project/Calculator/demultiplexer.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/demultiplexer.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity demultiplexer
+-- Compiling architecture behavioral of demultiplexer
+
+} {} {}} {D:/Ahn's Project/Calculator/Controller.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/Controller.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity controller
+-- Compiling architecture behavioral of controller
+
+} {} {}} {D:/Ahn's Project/Calculator/reg_sync.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/reg_sync.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity reg_sync
+-- Compiling architecture behavioral of reg_sync
+
+} {} {}} {D:/Ahn's Project/Calculator/multiplxer.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/multiplxer.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity multiplxer
+-- Compiling architecture behavioral of multiplxer
+
+} {} {}} {D:/Ahn's Project/Calculator/memory_module.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/memory_module.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity memory_module
+-- Compiling architecture behavioral of memory_module
+
+} {} {}} {D:/Ahn's Project/Calculator/calculator_machine.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/calculator_machine.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity calculator_machine
+-- Compiling architecture behavioral of calculator_machine
+
+} {} {}} {D:/Ahn's Project/Calculator/ALU.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/ALU.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity alu
+-- Compiling architecture behavioral of alu
+
+} {} {}} {D:/Ahn's Project/Calculator/segment_driver.vhd} {1 {vcom -work ieee -2002 -explicit {D:/Ahn's Project/Calculator/segment_driver.vhd}
+Model Technology ModelSim SE vcom 6.0 Compiler 2004.08 Aug 19 2004
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity segment_driver
+-- Compiling architecture behavioral of segment_driver
+
+} {} {}}

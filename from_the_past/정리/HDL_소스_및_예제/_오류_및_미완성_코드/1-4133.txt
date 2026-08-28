@@ -1,0 +1,111 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity stop_watch is
+	port(clk, start_stop, clear : in std_logic;
+		msec10a_dec, msec10b_dec, sec10_dec, sec6_dec
+				:out std_logic_vector(6 downto 0));
+end stop_watch;
+
+architecture sample of stop_watch is
+	function dis_seg(cnt : integer range 0 to 15) return std_logic_vector is
+	variable seg_decode : std_logic_vector(6 downto 0);
+	  begin
+		case cnt is
+			when 0 => seg_decode :="0111111";
+			when 1 => seg_decode :="0000110";
+			when 2 => seg_decode :="1011011";
+			when 3 => seg_decode :="1001111";
+			when 4 => seg_decode :="1100110";
+			when 5 => seg_decode :="1101101";
+			when 6 => seg_decode :="1111101";
+			when 7 => seg_decode :="0100111";
+			when 8 => seg_decode :="1111111";
+			when 9 => seg_decode :="1100111";
+			when others => seg_decode :="00000000";
+		end case;
+		return (seg_decode);
+	end dis_seg;
+
+	signal masec10a, msec10b, sec10, sec6 : integer range 0 to 9;
+	signal startstop : std_logic;
+begin
+	p_startstop : process(start_stop, clear)
+	begin
+		if clear = '1' then
+			startstop <= '0';
+		elsif(start_stop'event and start_stop ='1')then
+			startstop <= not(startstop);
+		end if;
+	end process;
+	p_msec1 : process(clk)
+	vegin
+		if clear ='1' then
+			msec10a <= 0;
+		elsif(clk'event and clk='1')then
+			if startstop = '1'then
+				if msec10a=9 then
+					msec10a <= 0;
+				else
+					msec10a <= msec10a+1;
+				end if;
+			end if;
+		end if;
+	end process;
+
+	p_msec10 : process(clk)
+	begin
+		if clear = '1'then
+			msec10b <=0;
+		elsif (clk'event and clk='1')then
+			if(startstop ='1')then
+				if(msec10a = 9)then
+					if msec10b =9 then
+						msec10b <=0;
+					else
+						msec10b <= msec10b+1;
+					end if;
+				end if;
+			end if;
+		end if;
+	end process;
+
+	p_sec1 : process(clk)
+	begin
+		if clear = '1' then
+			sec10 <=0;
+		elsif(clk'event and clk='1')then
+			if startstop ='1' then
+				if(msec10a = 9)and (msec10b=9)then
+					if sec10=9 then
+						sec10 <=0;
+					else
+						sec10 <=sec10+1;
+					end if;
+				end if;
+			end if;
+		end if;
+	end process;
+
+	p_sec10 : process(clk)
+	begin
+		if clear = '1'then
+			sec6 <= 0;
+		elsif(clk'event and clk='1')then
+		   if startstop = '1' then
+		      if(msec10a=9) and (msec10b = 9)and (sec10 =9) then
+			 if sec6= 5 then
+				sec6 <=0;
+			 else
+				sec6 <= sec6+1;
+			 end if;
+		      end if;
+		    end if;
+		 end if;
+	end process;
+
+	msec10a_dec	<=dis_seg(msec10a);
+	msec10b_dec	<=dis_seg(msec10b);
+	sec10_dec	<=dis_sec(sec10);
+	sec6_dec	<=dis_sec(sec6);
+end sample;

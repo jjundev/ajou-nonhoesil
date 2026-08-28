@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Module 04] 기억소자 & 신호변환 - 스터디 슬라이드 덱</title>
+    <!-- KaTeX CSS & JS for beautiful LaTeX formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- Pretendard WebFont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --accent: #1677ff;
+      --accent-hover: #0958d9;
+      --accent-light: #e6f4ff;
+      --surface: #f7f8fa;
+      --surface-subtle: #ffffff;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --border-subtle: #edf0f5;
+      
+      --dark-bg: #10141d;
+      --dark-surface: #181f2c;
+      --dark-fg: #f3f4f6;
+      --dark-muted: #9ca3af;
+      --dark-border: #263246;
+      --dark-accent-light: rgba(22, 119, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Top Module Nav */
+    .top-module-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.dark-active-slide .top-module-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-bottom-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .module-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    body.dark-active-slide .module-link { color: var(--dark-muted); }
+
+    .module-link:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    body.dark-active-slide .module-link:hover {
+      color: #60a5fa;
+      background: var(--dark-accent-light);
+    }
+
+    .module-link.active {
+      background: var(--accent);
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    body.dark-active-slide .hub-link { color: var(--dark-fg); }
+
+    /* Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      padding: 68px 60px 84px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-sizing: border-box;
+    }
+
+    .slide.light { background-color: var(--bg); color: var(--fg); }
+    .slide.hero.light { background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%); color: var(--fg); }
+    .slide.dark { background-color: var(--dark-bg); color: var(--dark-fg); }
+    .slide.hero.dark { background: radial-gradient(circle at 80% 20%, #17243c 0%, #0d111a 100%); color: var(--dark-fg); }
+
+    .slide.dark .surface-card, .slide.hero.dark .surface-card {
+      background-color: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+    .slide.dark .muted-text, .slide.hero.dark .muted-text { color: var(--dark-muted); }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .module-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .slide.dark .badge, .slide.hero.dark .badge {
+      background-color: var(--dark-accent-light);
+      color: #5c9cff;
+      border: 1px solid rgba(92, 156, 255, 0.3);
+    }
+
+    .topic-tag { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .slide.dark .topic-tag, .slide.hero.dark .topic-tag { color: var(--dark-muted); }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+    .slide.hero .slide-title { font-size: 38px; }
+
+    .slide-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 4px;
+      max-width: 90ch;
+      word-break: keep-all;
+    }
+    .slide.dark .slide-subtitle, .slide.hero.dark .slide-subtitle { color: var(--dark-muted); }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; align-items: stretch; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: stretch; }
+
+    .surface-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .surface-card.highlight { border-color: var(--accent); background-color: #fcfdfe; }
+    .slide.dark .surface-card.highlight { border-color: var(--accent); background-color: #172133; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .card-title .icon-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slide.dark .card-title .icon-pill { background: var(--dark-accent-light); color: #5c9cff; }
+
+    .card-body { font-size: 14px; line-height: 1.7; color: inherit; word-break: keep-all; }
+    .card-body ul { padding-left: 18px; margin: 4px 0; }
+    .card-body li { margin-bottom: 5px; }
+    .card-body li:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .slide.dark .formula-box { background-color: #111722; border-color: var(--dark-border); color: #60a5fa; }
+
+    .code-block {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #f472b6; font-weight: 700; }
+    .code-block .type { color: #38bdf8; }
+    .code-block .fn { color: #fbbf24; }
+    .code-block .comment { color: #64748b; font-style: italic; }
+    .code-block .num { color: #a78bfa; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .slide.dark .data-table { background: var(--dark-surface); border-color: var(--dark-border); }
+    .data-table th { background-color: var(--surface); color: var(--fg); font-weight: 700; padding: 7px 9px; border: 1px solid var(--border); }
+    .slide.dark .data-table th { background-color: #141b27; color: var(--dark-fg); border-color: var(--dark-border); }
+    .data-table td { padding: 7px 9px; border: 1px solid var(--border); color: inherit; }
+    .slide.dark .data-table td { border-color: var(--dark-border); }
+    .data-table .highlight-cell { background-color: var(--accent-light); font-weight: 700; color: var(--accent); }
+    .slide.dark .data-table .highlight-cell { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    .alert-callout {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+      background-color: var(--surface);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .alert-callout.warning { border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e; }
+    .slide.dark .alert-callout.warning { background-color: #2b1f0c; color: #fde68a; border-left-color: #f59e0b; }
+
+    /* Bottom Controller */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark-active-slide .bottom-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-top-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .nav-btn { background-color: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .slide-counter { font-size: 14px; font-weight: 700; font-family: var(--font-mono); min-width: 65px; text-align: center; }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 380px;
+      height: 6px;
+      background-color: var(--border-subtle);
+      border-radius: 999px;
+      margin: 0 20px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    body.dark-active-slide .progress-bar-container { background-color: var(--dark-border); }
+    .progress-bar { height: 100%; width: 10%; background-color: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+
+    .action-controls { display: flex; align-items: center; gap: 8px; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .action-btn { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.active { background-color: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    body.dark-active-slide .action-btn.active { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    /* Drawer & Modal */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 60px;
+      right: 0;
+      width: 440px;
+      max-height: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 0;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.dark-active-slide .speaker-notes-drawer { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .speaker-notes-drawer.open { transform: translateX(0); }
+    .drawer-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    body.dark-active-slide .drawer-header { border-bottom-color: var(--dark-border); }
+    .drawer-body { padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .overview-modal.open { display: flex; }
+    .overview-content {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      max-width: 1080px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    body.dark-active-slide .overview-content { background: #121824; color: var(--dark-fg); }
+    .overview-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .overview-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px;
+    }
+    body.dark-active-slide .overview-card { background: var(--dark-surface); border-color: var(--dark-border); }
+    .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .overview-card.active { border-color: var(--accent); border-width: 2px; background: var(--accent-light); }
+    body.dark-active-slide .overview-card.active { background: var(--dark-accent-light); }
+    .overview-num { font-size: 11px; font-weight: 700; color: var(--accent); }
+    .overview-title { font-size: 13.5px; font-weight: 700; margin-top: 4px; line-height: 1.4; }
+
+    .slide-notes { display: none; }
+    kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      color: #444;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation -->
+<nav class="top-module-bar">
+  <a href="index.html" class="hub-link">⚡ 논회실 스터디 덱 허브</a>
+  <div class="module-nav-links">
+    <a href="deck-00-basics.html" class="module-link ">M00 핵심기초</a>
+    <a href="deck-01-gates-cmos.html" class="module-link ">M01 기본게이트·CMOS</a>
+    <a href="deck-02-combinational.html" class="module-link ">M02 조합논리</a>
+    <a href="deck-03-sequential.html" class="module-link ">M03 순서논리</a>
+    <a href="deck-04-memory-dac-adc.html" class="module-link active">M04 기억소자·DAC/ADC</a>
+    <a href="deck-05-verilog-fpga.html" class="module-link ">M05 Verilog·FPGA</a>
+  </div>
+</nav>
+
+<div class="deck-container">
+  <div class="slide-track" id="slideTrack">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide hero dark" data-screen-label="01 Cover">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Module 04</span>
+            <span class="topic-tag">Lab 9 & 10 Comprehensive Guide</span>
+          </div>
+          <h1 class="slide-title">기억소자 & 신호변환 (SRAM·DAC·ADC)</h1>
+          <p class="slide-subtitle">반도체 메모리 분류(SRAM vs DRAM), R-2R 사다리형 DAC, Flash vs SAR ADC 및 신호 변환 인터페이스</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">1</span> 반도체 메모리 (Lab 9)</div>
+            <div class="card-body">
+              <ul>
+                <li>6T SRAM(초고속, 캐시) vs 1T1C DRAM(고집적, 리프레시)</li>
+                <li>2D 매트릭스 주소 디코딩 (Coincident Selection)</li>
+                <li>7489 16x4 RAM 읽기/쓰기 사이클 타이밍</li>
+                <li>74670 4x4 듀얼 포트 레지스터 파일</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 디지털-아날로그 변환 (DAC)</div>
+            <div class="card-body">
+              <ul>
+                <li>가중 저항형 vs <strong>R-2R 사다리형 DAC</strong> 테브난 해석</li>
+                <li>LM741 OP-Amp 반전 가산기 계단 전압 생성</li>
+                <li>DAC 4대 스펙: 해상도($V_{LSB}$), 정착시간, DNL/INL</li>
+                <li>단조성(Monotonicity) 보장 원리</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> 아날로그-디지털 변환 (ADC)</div>
+            <div class="card-body">
+              <ul>
+                <li>나이퀴스트 표본화 정리 ($f_s \ge 2 f_{\max}$) & 안티앨리어싱</li>
+                <li>양자화 오차($\pm 0.5\text{LSB}$) 및 이론적 $\text{SNR}$ 공식</li>
+                <li>Flash ADC(1클록 초고속) vs SAR ADC(이진 탐색)</li>
+                <li>ADC0804 제어 시퀀스: $\overline{CS}, \overline{WR}, \overline{INTR}, \overline{RD}$</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Module 04 인트로 강의 가이드]</h4>
+        <p>디지털 시스템은 현실 세계의 연속적인 아날로그 신호(소리, 온도, 전압)를 센서로 받아 처리하고 다시 아날로그 액추에이터로 출력해야 합니다.</p>
+        <p><strong>발표자 강조점:</strong> 메모리(저장)와 DAC/ADC(신호 인터페이스)는 디지털 공학과 아날로그 전자회로가 만나는 가장 중요한 기술적 접점입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: 반도체 메모리 분류 체계 -->
+    <section class="slide light" data-screen-label="02 메모리 분류 체계">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Memory Taxonomy</span>
+            <span class="topic-tag">RAM vs ROM & Flash</span>
+          </div>
+          <h2 class="slide-title">반도체 메모리 분류 체계 & 아키텍처</h2>
+          <p class="slide-subtitle">전원 차단 시 보존 여부에 따른 휘발성(RAM)과 비휘발성(ROM) 및 PLD 구조</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+                 ┌─────────────────────────────────────────┐
+                 │          Semiconductor Memory           │
+                 └────────────────────┬────────────────────┘
+                                      │
+              ┌───────────────────────┴───────────────────────┐
+              ▼                                               ▼
+   ┌─────────────────────┐                         ┌─────────────────────┐
+   │   RAM (Volatile)    │                         │  ROM (Non-Volatile) │
+   └──────────┬──────────┘                         └──────────┬──────────┘
+              │                                               │
+      ┌───────┴───────┐                   ┌──────────┬────────┴───┬──────────┐
+      ▼               ▼                   ▼          ▼            ▼          ▼
+  ┌───────┐       ┌───────┐           ┌───────┐  ┌───────┐    ┌────────┐ ┌───────┐
+  │ SRAM  │       │ DRAM  │           │ Mask  │  │ PROM  │    │ EPROM  │ │ Flash │
+  │ (6T)  │       │(1T-1C)│           │  ROM  │  │(Fuse) │    │/EEPROM │ │Memory │
+  └───────┘       └───────┘           └───────┘  └───────┘    └────────┘ └───────┘</div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 비휘발성 메모리 & Flash 비교</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>Mask ROM / PROM:</strong> 공장 하드와이어링 또는 퓨즈 절단 1회 기록 (OTP).<br>
+              • <strong>EPROM / EEPROM:</strong> 자외선(UV) 일괄 소거 vs 바이트 단위 전기적 소거.<br>
+              • <strong>NOR Flash:</strong> 바이트 단위 랜덤 읽기 가능(XIP 코드 실행), BIOS 펌웨어용.<br>
+              • <strong>NAND Flash:</strong> 직렬 스트링 구조로 초고집적, 페이지 쓰기 + 블록 소거, SSD/스마트폰 스토리지.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[NAND Flash vs NOR Flash의 구조적 차이]</h4>
+        <p>NOR 플래시는 셀들이 병렬로 연결되어 메모리 주소를 바로 읽을 수 있어 CPU가 코드를 즉시 실행(XIP)할 수 있습니다.</p>
+        <p>NAND 플래시는 셀들이 직렬로 줄줄이 엮여 있어 면적이 1/3로 작지만, 데이터를 블록 단위로 읽어야 해서 SSD 컨트롤러가 필수적입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: 6T SRAM vs 1T1C DRAM -->
+    <section class="slide hero light" data-screen-label="03 SRAM vs DRAM">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Cell Architecture</span>
+            <span class="topic-tag">6T SRAM vs 1T1C DRAM</span>
+          </div>
+          <h2 class="slide-title">6T SRAM vs 1T1C DRAM 셀 심층 비교</h2>
+          <p class="slide-subtitle">쌍안정 인버터 래치(정적 유지)와 커패시터 전하 저장(동적 리프레시)의 메커니즘</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <table class="data-table">
+              <thead><tr><th>비교 항목</th><th>SRAM (Static RAM)</th><th>DRAM (Dynamic RAM)</th></tr></thead>
+              <tbody>
+                <tr><td><strong>단위 셀 구조</strong></td><td class="highlight-cell"><strong>6-MOSFET (6T)</strong><br>(2 인버터 + 2 접근 NMOS)</td><td><strong>1-MOSFET + 1-Capacitor (1T1C)</strong><br>($C_s \approx 25\text{fF}$)</td></tr>
+                <tr><td><strong>저장 방식</strong></td><td>쌍안정 래치 양의 피드백</td><td>커패시터 전하 충전/방전</td></tr>
+                <tr><td><strong>접근 속도</strong></td><td class="highlight-cell"><strong>초고속 ($1 \sim 10\text{ns}$)</strong></td><td>상대적 저속 ($30 \sim 60\text{ns}$)</td></tr>
+                <tr><td><strong>읽기 특성</strong></td><td><strong>비파괴 읽기 (Non-Destructive)</strong></td><td style="color:#ef4444;"><strong>파괴적 읽기 (재저장 Restore 필수)</strong></td></tr>
+                <tr><td><strong>리프레시</strong></td><td><strong>불필요</strong></td><td style="color:#ef4444;"><strong>필수 (수십 ms 주기 재충전)</strong></td></tr>
+                <tr><td><strong>집적도 / 단가</strong></td><td>낮음 / 고가</td><td class="highlight-cell"><strong>초고집적도 / 저단가</strong></td></tr>
+                <tr><td><strong>주요 용도</strong></td><td>CPU L1/L2/L3 캐시, 고속 버퍼</td><td>PC/스마트폰 메인 메모리 (DDR4/5)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 6T SRAM 셀 회로 동작</div>
+            <div class="code-block">
+      VCC          VCC
+       │            │
+     [PMOS1]      [PMOS2]
+       ├─── Q ──o───┤
+       ├─── o ── /Q ─┤
+     [NMOS1]      [NMOS2]
+       │            │
+      GND          GND
+       │            │
+  BL ──[N3]        [N4]── /BL
+        │            │
+       WL           WL (Word Line)</div>
+            <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">
+              * $WL=1$이 되면 $N_3, N_4$가 켜져 차동 비트선(Bit-Line $BL, \overline{BL}$)을 통해 감지 증폭기(Sense Amp)로 초고속 읽기/쓰기 수행.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[DRAM 파괴적 읽기와 리프레시의 원리]</h4>
+        <p>DRAM은 커패시터에 저장된 전하($Q=CV$)를 비트선으로 흘려보내 읽기 때문에 읽는 순간 커패시터의 전하가 비어버립니다(파괴적 읽기).</p>
+        <p>따라서 감지 증폭기가 신호를 증폭한 즉시 다시 커패시터에 채워 넣는 <strong>재저장(Restore) 동작</strong>이 하드웨어적으로 강제됩니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: 7489 16x4 RAM 타이밍 -->
+    <section class="slide dark" data-screen-label="04 7489 16x4 RAM">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Hardware Lab 9</span>
+            <span class="topic-tag">7489 / 74189 RAM Timing</span>
+          </div>
+          <h2 class="slide-title">16×4 IC RAM (7489)과 읽기/쓰기 타이밍</h2>
+          <p class="slide-subtitle">Active-Low 칩 선택($\overline{ME}$) 및 쓰기 인에이블($\overline{WE}$) 제어 시퀀스</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 7489 (16-Word × 4-Bit RAM) 핀아웃</div>
+            <div class="code-block">
+        ┌───────∪───────┐
+   A0 ─┤ 1          16 ├─ VCC (+5V)
+   A1 ─┤ 2   7489   15 ├─ A3 (Address)
+  /ME ─┤ 3  (16x4   14 ├─ A2
+  /WE ─┤ 4   SRAM)  13 ├─ /Q4 (반전 출력 /
+   D1 ─┤ 5          12 ├─ /Q3  오픈 컬렉터)
+  /Q1 ─┤ 6          11 ├─ D4 (Data In)
+   D2 ─┤ 7          10 ├─ /Q2
+  GND ─┤ 8           9 ├─ D3
+        └───────────────┘</div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 7489 동작 모드 진리표</div>
+            <table class="data-table">
+              <thead><tr><th>/ME (선택)</th><th>/WE (쓰기)</th><th>출력 /Q1~/Q4</th><th>동작 상태</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>1</td><td class="highlight-cell">보수 데이터 ($\bar{D}$)</td><td><strong>읽기 모드 (Read)</strong></td></tr>
+                <tr><td>0</td><td>0</td><td>입력의 보수</td><td><strong>쓰기 모드 (Write Pulse)</strong></td></tr>
+                <tr><td>1</td><td>X</td><td>HIGH (High-Z)</td><td>칩 비활성화 (Inhibit)</td></tr>
+              </tbody>
+            </table>
+            <div class="alert-callout warning" style="margin-top:8px; font-size:12px;">
+              ⚠️ <strong>주의:</strong> 7489의 출력은 <strong>오픈 컬렉터(Open-Collector)</strong>이므로 $1\text{k}\Omega \sim 4.7\text{k}\Omega$ 외부 풀업 저항을 달지 않으면 항상 0V만 측정됩니다!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[7489 실습 핵심 함정]</h4>
+        <p>1. <strong>출력이 반전(/Q):</strong> 데이터 입력에 <code>1010</code>을 쓰고 읽으면 <code>0101</code>이 출력됩니다. (74189는 3상태 버퍼 정출력 모델).</p>
+        <p>2. <strong>쓰기 시 Address 먼저 안정화:</strong> 주소를 바꾸면서 동시에 $\overline{WE}=0$을 주면 엉뚱한 주소에 데이터가 덮어써지는 <strong>Address Glitch Write</strong>가 발생하므로 반드시 주소 고정 후 $\overline{WE}$ 음의 펄스를 주어야 합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5: 디지털-아날로그 변환기 (DAC) 개요 -->
+    <section class="slide light" data-screen-label="05 DAC 변환 원리">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">D/A Conversion</span>
+            <span class="topic-tag">Weighted Resistor vs R-2R</span>
+          </div>
+          <h2 class="slide-title">디지털-아날로그 변환기(DAC)의 기본 원리</h2>
+          <p class="slide-subtitle">가중 저항형(Binary-Weighted) DAC의 원리와 고해상도 시의 치명적 한계</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 가중 저항형 DAC (Binary-Weighted)</div>
+            <div class="code-block">
+   b3(MSB) ───[  R  ]───┐
+   b2      ───[ 2R  ]───┼───(-) ┌───────┐
+   b1      ───[ 4R  ]───┤       │ LM741 │──► Vout
+   b0(LSB) ───[ 8R  ]───┤   ┌───(+)     │
+                        │   │   └───────┘
+                     Rf └───┴───[ Rf ]──┘
+                            GND (가상 접지)</div>
+            <div class="formula-box" style="margin-top:6px;">$$V_{out} = -V_{ref} \frac{R_f}{R} \left( \frac{b_3}{1} + \frac{b_2}{2} + \frac{b_1}{4} + \frac{b_0}{8} 
+ight)$$</div>
+          </div>
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">⚠️ 가중 저항형 DAC의 극단적 한계</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>비트 수가 증가할수록 저항비가 지수적($2^n$)으로 증가:</strong><br>
+              - 8비트 DAC: $R \sim 128R$<br>
+              - 16비트 DAC: $R \sim 32,768R$ ($10\text{k}\Omega \sim 327.68\text{M}\Omega$)<br>
+              • <strong>문제점:</strong> 반도체 집적회로 내부에서 수백 배 이상의 정밀 저항비를 공정 오차 없이 제작하는 것은 물리적으로 불가능 ➔ **R-2R 사다리형 DAC의 탄생!**
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[가중 저항형의 한계와 실무]</h4>
+        <p>가중 저항형은 비트 수가 4비트만 넘어가도 MSB 저항의 미세한 오차가 LSB 저항값 전체를 집어삼켜 전압 출력이 역전되는 비단조성(Non-monotonicity)이 발생합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: R-2R 사다리형 DAC -->
+    <section class="slide hero dark" data-screen-label="06 R-2R 사다리형 DAC">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Modern DAC Standard</span>
+            <span class="topic-tag">R-2R Ladder Network</span>
+          </div>
+          <h2 class="slide-title">R-2R 사다리형 DAC와 테브난 등가 해석</h2>
+          <p class="slide-subtitle">오직 $R$과 $2R$ 두 종류 저항만으로 구현하는 정밀 $1/2$ 전류 분배 사다리망</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+               R          R          R
+   ┌─────────/\/\/\─────/\/\/\─────/\/\/\─────┐
+   │          │          │          │         │
+  [2R]       [2R]       [2R]       [2R]      [Rf=2R]
+   │          │          │          │         │
+  GND         b0(LSB)    b1         b2(MSB)  OP-Amp(-)</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6; margin-top:8px;">
+              • 각 노드에서 왼쪽을 바라본 테브난 등가 저항은 항상 **정확히 $R$**로 일정!<br>
+              • 각 비트 스위치가 주입하는 전류는 상위 노드로 갈 때마다 정확히 **$1/2$씩 감쇄**되어 가산기로 유입.
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 LM741 출력 아날로그 전압 공식 (4비트)</div>
+            <div class="formula-box">$$V_{out} = -V_{ref} \cdot \frac{R_f}{2R} \cdot \sum_{i=0}^{3} \frac{b_i}{2^{3-i}} = -V_{ref} \left( \frac{b_3}{2} + \frac{b_2}{4} + \frac{b_1}{8} + \frac{b_0}{16} 
+ight)$$</div>
+            <div style="font-size:13px; line-height:1.6; margin-top:8px;">
+              • <strong>1 LSB 계단 전압 (Step Size):</strong> $\Delta V = \frac{V_{FS}}{2^n - 1} \approx \frac{V_{ref}}{16}$<br>
+              • 4비트 카운터(7493)를 물리면 $0\text{V}$부터 $V_{FS}$까지 완벽한 16단계 <strong>계단형 톱니파(Staircase Waveform)</strong> 출력!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[R-2R 사다리형의 반도체 공학적 승리]</h4>
+        <p>R-2R 구조는 오직 $R$과 $2R$ (즉, $R$ 2개 직렬)만 사용하므로 반도체 레이아웃에서 동일한 단위 저항 셀을 반복 배치하여 공정 변동에 대한 저항비 매칭 정밀도를 0.01% 이내로 극대화할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7: DAC 주요 사양 & 평가 지표 -->
+    <section class="slide light" data-screen-label="07 DAC 주요 사양">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Performance Metrics</span>
+            <span class="topic-tag">Resolution, DNL, INL & Settling</span>
+          </div>
+          <h2 class="slide-title">DAC 성능 평가 4대 핵심 지표</h2>
+          <p class="slide-subtitle">해상도, 정착 시간, 선형성 오차(DNL/INL) 및 단조성(Monotonicity)</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 1. 해상도 & 정착 시간</div>
+            <div class="card-body">
+              <p><strong>해상도 (Resolution):</strong> 비트 수 $n$ 또는 1 LSB 전압</p>
+              <div class="formula-box">$$V_{\text{LSB}} = \frac{V_{\text{FS}}}{2^n - 1} \quad (\text{예: 8비트 5V 시 } \approx 19.6\text{mV})$$</div>
+              <p style="margin-top:8px;"><strong>정착 시간 (Settling Time):</strong> 디지털 입력 변화 후 출력이 최종값의 $\pm 0.5\text{LSB}$ 이내로 안정화되기까지 걸리는 시간 (OP-Amp 슬루레이트가 지배).</p>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 2. 선형성 오차 (DNL / INL) & 단조성</div>
+            <div class="card-body">
+              <p>• <strong>DNL (차등 비선형성):</strong> 실제 인접 계단 높이와 이상적 $1\text{LSB}$ 간의 차이 ($|DNL| < 1\text{LSB}$ 이어야 단조성 보장).<br>
+              • <strong>INL (적분 비선형성):</strong> 이상적 직선과 실제 변환 곡선 간의 최대 편차.<br>
+              • <strong>단조성 (Monotonicity):</strong> 디지털 코드가 증가할 때 출력 아날로그 전압이 절대 감소하지 않고 계속 증가하는 특성.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[단조성 깨짐(Non-Monotonicity)의 위험성]</h4>
+        <p>만약 DNL 오차가 커서 디지털 코드가 <code>0111</code>에서 <code>1000</code>으로 올라갔는데 전압이 오히려 떨어지면 모터 제어나 로봇 제어 루프에서 발산 진동이 발생하여 기계가 폭주합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: 아날로그-디지털 변환기 (ADC) & 표본화 -->
+    <section class="slide dark" data-screen-label="08 ADC & 표본화 정리">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">A/D Conversion</span>
+            <span class="topic-tag">Sampling & Quantization</span>
+          </div>
+          <h2 class="slide-title">아날로그-디지털 변환(ADC)과 표본화 정리</h2>
+          <p class="slide-subtitle">나이퀴스트-섀넌 표본화 정리, 앨리어싱(Aliasing) 및 양자화 잡음 공식</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 나이퀴스트 표본화 정리 & 앨리어싱</div>
+            <div class="formula-box">$$f_s \ge 2 f_{\max} \quad (f_s: \text{Sampling Rate})$$</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6; margin-top:8px;">
+              • 신호의 최고 주파수 $f_{\max}$의 2배 이상으로 샘플링해야 원래 신호를 왜곡 없이 완벽 복원 가능.<br>
+              • <strong>앨리어싱 (Aliasing):</strong> $f_s < 2 f_{\max}$일 때 고주파 성분이 저주파 잡음으로 왜곡 복원되는 현상.<br>
+              • <strong>안티앨리어싱 필터 (AA Filter):</strong> ADC 입력단 직전에 $f_s/2$ 이상의 고주파를 차단하는 LPF 필수 장착!
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 양자화 오차와 신호 대 잡음비 (SNR)</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • 연속적인 전압을 이산적 디지털 값으로 반올림할 때 필연적으로 발생하는 오차:<br>
+              <div class="formula-box" style="margin:6px 0;">$$\text{최대 양자화 오차} = \pm \frac{1}{2} \text{LSB} = \pm \frac{V_{\text{FS}}}{2(2^n - 1)}$$</div>
+              • <strong>이론적 최대 신호 대 양자화 잡음비 (SQNR):</strong><br>
+              <div class="formula-box">$$\text{SNR} = 6.02   imes N + 1.76\text{ dB}$$</div>
+              ➔ 비트 수($N$)가 1비트 늘어날 때마다 음질/정밀도가 약 **$6\text{dB}$ (2배)**씩 향상!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[디지털 오디오 16비트 44.1kHz의 비밀]</h4>
+        <p>인간 가청 주파수 상한이 $20\text{kHz}$이므로 나이퀴스트 정리에 따라 $f_s > 40\text{kHz}$가 필요하여 CD 표준이 $44.1\text{kHz}$로 정해졌습니다.</p>
+        <p>16비트 해상도는 $\text{SNR} = 6.02   imes 16 + 1.76 \approx 98\text{dB}$의 경이로운 다이내믹 레인지를 제공합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: Flash ADC vs SAR ADC -->
+    <section class="slide hero light" data-screen-label="09 Flash vs SAR ADC">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Architecture Comparison</span>
+            <span class="topic-tag">Flash vs Successive Approx</span>
+          </div>
+          <h2 class="slide-title">Flash ADC vs SAR ADC 아키텍처 비교</h2>
+          <p class="slide-subtitle">병렬 비교기를 이용한 1클록 최고속 변환과 이진 탐색(Binary Search) 기반 고효율 변환</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 Flash ADC (병렬 비교형: 초고속)</div>
+            <div class="card-body">
+              <p>$(2^n - 1)$개의 아날로그 비교기(LM339)와 우선순위 인코더 결합</p>
+              <div class="formula-box">$$\text{변환 속도: 단 1 클록 (수백 MHz } \sim \text{GHz)}$$</div>
+              <ul style="margin-top:8px; font-size:13px;">
+                <li><strong>장점:</strong> 현존하는 가장 빠른 ADC 구조 (오실로스코프, 레이더)</li>
+                <li><strong>단점:</strong> 8비트만 되어도 255개 비교기 필요 ➔ 면적/전력 소모 지수적($2^n$) 급증</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 SAR ADC (축차 비교형: 고효율 범용)</div>
+            <div class="card-body">
+              <p>비교기 1개 + SAR 로직 + 내부 DAC를 이용한 <strong>이진 탐색(Binary Search)</strong></p>
+              <div class="formula-box">$$\text{변환 시간: 정확히 } N \text{ 클록 소요}$$</div>
+              <ul style="margin-top:8px; font-size:13px;">
+                <li>MSB(절반 전압)부터 1을 넣어보고 비교 ➔ 크면 1 유지, 작으면 0 리셋을 반복하여 LSB까지 결정</li>
+                <li><strong>장점:</strong> 비교기 1개로 $8 \sim 18$비트 고해상도 구현, 저전력·저비용 (MCU/ADC0804 표준)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[스무고개 게임과 SAR ADC]</h4>
+        <p>SAR ADC는 마치 1부터 100까지 숫자 맞추기(스무고개)에서 "50보다 큽니까? $  o$ 75보다 큽니까?" 하며 범위를 절반씩 좁혀나가는 이진 탐색 알고리즘을 하드웨어로 구현한 것입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 10: ADC0804 실습 핀아웃 & 시퀀스 -->
+    <section class="slide light" data-screen-label="10 ADC0804 실습 핀아웃">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Hardware Lab 10</span>
+            <span class="topic-tag">ADC0804 Timing Sequence</span>
+          </div>
+          <h2 class="slide-title">ADC0804 8비트 SAR ADC 실습 인터페이스</h2>
+          <p class="slide-subtitle">변환 시작($\overline{WR}$) ➔ 변환 중 ➔ 완료($\overline{INTR}=0$) ➔ 데이터 읽기($\overline{RD}$) 4단계 시퀀스</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+        ┌───────∪───────┐
+   /CS ─┤ 1          20 ├─ VCC (+5V)
+   /RD ─┤ 2   ADC0804 19 ├─ CLK_R (클록 저항)
+   /WR ─┤ 3  (8-bit   18 ├─ DB0 (LSB)
+ CLK_I ─┤ 4   SAR     17 ├─ DB1
+ /INTR ─┤ 5   ADC)    16 ├─ DB2
+  VIN+ ─┤ 6           15 ├─ DB3
+  VIN- ─┤ 7           14 ├─ DB4
+  AGND ─┤ 8           13 ├─ DB5
+ VREF2 ─┤ 9           12 ├─ DB6
+  DGND ─┤ 10          11 ├─ DB7 (MSB)
+        └───────────────┘</div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 ADC0804 제어 타이밍 시퀀스</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>Step 1: 변환 시작</strong><br>
+              $\overline{CS}=0$ 상태에서 $\overline{WR}$에 음의 펄스(LOW $  o$ HIGH)를 인가하면 SAR 내부 레지스터 리셋 및 변환 개시.<br>
+              • <strong>Step 2: SAR 이진 탐색 진행</strong> (약 $100\mu\text{s}$ 소요)<br>
+              • <strong>Step 3: 변환 완료 인터럽트</strong><br>
+              변환이 끝나면 $\overline{INTR}$ 핀이 자동으로 **LOW(0V)**로 떨어짐.<br>
+              • <strong>Step 4: 데이터 버스 읽기</strong><br>
+              $\overline{RD}$를 LOW로 당겨 3상태 버퍼를 열고 $DB_0 \sim DB_7$ 데이터 읽기.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[ADC0804 자가 연속 변환(Free-Running) 모드]</h4>
+        <p>실험실에서 마이크로컨트롤러 없이 빵판에서 계속 변환하려면 $\overline{INTR}$ 출력을 $\overline{WR}$ 입력에 직결하면 됩니다.</p>
+        <p>변환이 끝나는 즉시($\overline{INTR}=0$) 다음 변환 시작 펄스($\overline{WR}=0$)를 스스로 넣어 무한 연속 샘플링이 가능합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 11: 신호변환 팁 & 예상 퀴즈 -->
+    <section class="slide hero dark" data-screen-label="11 신호변환 팁 & 퀴즈">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Lab Secrets & Exam</span>
+            <span class="topic-tag">Mixed-Signal Q&A</span>
+          </div>
+          <h2 class="slide-title">기억소자·신호변환 트러블슈팅 & 퀴즈 3선</h2>
+          <p class="slide-subtitle">아날로그/디지털 접지 분리 원칙 및 시험/면접 단골 문제</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q1</span> AGND vs DGND 분리</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> ADC에서 아날로그 접지(AGND)와 디지털 접지(DGND)를 분리하는 이유는?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                디지털 스위칭 시 접지선에 흐르는 급격한 스파이크 노이즈가 미세한 아날로그 입력 전압에 유입되어 변환 정밀도를 파괴하는 것을 방지하기 위함입니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q2</span> 8비트 Flash ADC 비교기 수</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 8비트 Flash ADC를 만들려면 비교기가 몇 개 필요한가?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                $2^8 - 1 = \mathbf{255\text{개}}$의 비교기가 필요합니다. 고해상도로 갈수록 면적과 전력 소모가 극단적으로 커집니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q3</span> 7489 오픈컬렉터 풀업</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 7489 RAM 출력에 풀업 저항을 달지 않으면 무슨 일이 생기는가?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                내부 풀업 트랜지스터가 없으므로 HIGH 출력 시 핀이 공중에 떠(High-Z) 항상 0V만 측정되어 데이터를 읽을 수 없습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[혼성 신호(Mixed-Signal) 실험 총평]</h4>
+        <p>ADC와 DAC 실험은 미세 전압을 다루므로 빵판 전원선의 노이즈를 잡는 것이 최우선입니다.</p>
+        <p>AGND와 DGND는 칩 바로 아래에서 <strong>단일 접점(Star Ground)</strong>으로만 만나도록 결선해야 깨끗한 변환 파형을 얻을 수 있습니다.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="bottom-bar">
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">← 이전</button>
+    <span class="slide-counter" id="slideIndicator">01 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">다음 →</button>
+  </div>
+  
+  <div class="progress-bar-container" id="progressBarContainer" title="클릭하여 해당 위치로 이동">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="action-controls">
+    <button class="action-btn" id="notesToggleBtn" title="발표자 노트 (단축키 S)">
+      📝 <span class="btn-text">발표자 노트</span> <kbd>S</kbd>
+    </button>
+    <button class="action-btn" id="overviewBtn" title="슬라이드 오버뷰 (단축키 O)">
+      📑 <span class="btn-text">전체 목차</span> <kbd>O</kbd>
+    </button>
+    <button class="action-btn" id="fullscreenBtn" title="전체화면 (단축키 F)">
+      ⛶ <span class="btn-text">전체화면</span> <kbd>F</kbd>
+    </button>
+  </div>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="speaker-notes-drawer" id="speakerNotesDrawer">
+  <div class="drawer-header">
+    <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+      <span>📝 발표자 노트 & 실습 족보</span>
+      <span class="badge" id="notesSlideTitle" style="font-size:10px;">Slide 01</span>
+    </div>
+    <button class="action-btn" id="closeNotesBtn" style="height:28px; padding:0 8px;">✕</button>
+  </div>
+  <div class="drawer-body" id="speakerNotesContent">
+    <!-- Updated dynamically via JS -->
+  </div>
+</div>
+
+<!-- Overview Modal -->
+<div class="overview-modal" id="overviewModal">
+  <div class="overview-content">
+    <div class="drawer-header" style="padding: 18px 24px;">
+      <h3 style="font-size: 20px; font-weight: 700;">전체 슬라이드 목차 (Module 04 - 총 11장)</h3>
+      <button class="action-btn" id="closeOverviewBtn" style="height:32px; padding:0 12px;">닫기 (Esc) ✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    const slideTrack = document.getElementById('slideTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const speakerNotesContent = document.getElementById('speakerNotesContent');
+    const notesSlideTitle = document.getElementById('notesSlideTitle');
+    const closeNotesBtn = document.getElementById('closeNotesBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    const STORAGE_KEY = 'logic_circuit_study_deck_m04_pos';
+    const savedPos = localStorage.getItem(STORAGE_KEY);
+    if (savedPos !== null && !isNaN(parseInt(savedPos, 10))) {
+      currentSlide = Math.min(Math.max(0, parseInt(savedPos, 10)), totalSlides - 1);
+    }
+
+    slides.forEach((slide, index) => {
+      const label = slide.getAttribute('data-screen-label') || `Slide ${index + 1}`;
+      const titleEl = slide.querySelector('.slide-title');
+      const title = titleEl ? titleEl.textContent : label;
+      const badgeEl = slide.querySelector('.badge');
+      const badge = badgeEl ? badgeEl.textContent : '';
+
+      const card = document.createElement('div');
+      card.className = `overview-card ${index === currentSlide ? 'active' : ''}`;
+      card.innerHTML = `
+        <div>
+          <div class="overview-num">${label}</div>
+          <div class="overview-title">${title}</div>
+        </div>
+        <div class="overview-tag" style="font-size:11px; color:var(--muted); margin-top:8px;">${badge}</div>
+      `;
+      card.addEventListener('click', () => {
+        goToSlide(index);
+        closeOverview();
+      });
+      overviewGrid.appendChild(card);
+    });
+
+    function updateDeck() {
+      slideTrack.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      const slideNumStr = String(currentSlide + 1).padStart(2, '0');
+      const totalStr = String(totalSlides).padStart(2, '0');
+      slideIndicator.textContent = `${slideNumStr} / ${totalStr}`;
+      const pct = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      const activeSlide = slides[currentSlide];
+      const isDark = activeSlide.classList.contains('dark');
+      if (isDark) {
+        document.body.classList.add('dark-active-slide');
+      } else {
+        document.body.classList.remove('dark-active-slide');
+      }
+
+      const notesEl = activeSlide.querySelector('.slide-notes');
+      const label = activeSlide.getAttribute('data-screen-label') || `Slide ${currentSlide + 1}`;
+      notesSlideTitle.textContent = label;
+      speakerNotesContent.innerHTML = notesEl ? notesEl.innerHTML : '이 슬라이드에 등록된 발표자 노트가 없습니다.';
+
+      const cards = overviewGrid.querySelectorAll('.overview-card');
+      cards.forEach((c, idx) => {
+        c.classList.toggle('active', idx === currentSlide);
+      });
+
+      localStorage.setItem(STORAGE_KEY, currentSlide);
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      const isOpen = speakerNotesDrawer.classList.toggle('open');
+      notesToggleBtn.classList.toggle('active', isOpen);
+    }
+
+    function toggleOverview() { overviewModal.classList.toggle('open'); }
+    function closeOverview() { overviewModal.classList.remove('open'); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+    overviewBtn.addEventListener('click', toggleOverview);
+    closeOverviewBtn.addEventListener('click', closeOverview);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    progressBarContainer.addEventListener('click', (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      goToSlide(Math.floor(ratio * totalSlides));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (['input', 'textarea', 'select'].includes(e.target.tagName.toLowerCase())) return;
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          closeOverview();
+          speakerNotesDrawer.classList.remove('open');
+          notesToggleBtn.classList.remove('active');
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Module 03] 순서논리회로 실습 - 스터디 슬라이드 덱</title>
+    <!-- KaTeX CSS & JS for beautiful LaTeX formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- Pretendard WebFont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --accent: #1677ff;
+      --accent-hover: #0958d9;
+      --accent-light: #e6f4ff;
+      --surface: #f7f8fa;
+      --surface-subtle: #ffffff;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --border-subtle: #edf0f5;
+      
+      --dark-bg: #10141d;
+      --dark-surface: #181f2c;
+      --dark-fg: #f3f4f6;
+      --dark-muted: #9ca3af;
+      --dark-border: #263246;
+      --dark-accent-light: rgba(22, 119, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Top Module Nav */
+    .top-module-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.dark-active-slide .top-module-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-bottom-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .module-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    body.dark-active-slide .module-link { color: var(--dark-muted); }
+
+    .module-link:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    body.dark-active-slide .module-link:hover {
+      color: #60a5fa;
+      background: var(--dark-accent-light);
+    }
+
+    .module-link.active {
+      background: var(--accent);
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    body.dark-active-slide .hub-link { color: var(--dark-fg); }
+
+    /* Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      padding: 68px 60px 84px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-sizing: border-box;
+    }
+
+    .slide.light { background-color: var(--bg); color: var(--fg); }
+    .slide.hero.light { background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%); color: var(--fg); }
+    .slide.dark { background-color: var(--dark-bg); color: var(--dark-fg); }
+    .slide.hero.dark { background: radial-gradient(circle at 80% 20%, #17243c 0%, #0d111a 100%); color: var(--dark-fg); }
+
+    .slide.dark .surface-card, .slide.hero.dark .surface-card {
+      background-color: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+    .slide.dark .muted-text, .slide.hero.dark .muted-text { color: var(--dark-muted); }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .module-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .slide.dark .badge, .slide.hero.dark .badge {
+      background-color: var(--dark-accent-light);
+      color: #5c9cff;
+      border: 1px solid rgba(92, 156, 255, 0.3);
+    }
+
+    .topic-tag { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .slide.dark .topic-tag, .slide.hero.dark .topic-tag { color: var(--dark-muted); }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+    .slide.hero .slide-title { font-size: 38px; }
+
+    .slide-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 4px;
+      max-width: 90ch;
+      word-break: keep-all;
+    }
+    .slide.dark .slide-subtitle, .slide.hero.dark .slide-subtitle { color: var(--dark-muted); }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; align-items: stretch; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: stretch; }
+
+    .surface-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .surface-card.highlight { border-color: var(--accent); background-color: #fcfdfe; }
+    .slide.dark .surface-card.highlight { border-color: var(--accent); background-color: #172133; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .card-title .icon-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slide.dark .card-title .icon-pill { background: var(--dark-accent-light); color: #5c9cff; }
+
+    .card-body { font-size: 14px; line-height: 1.7; color: inherit; word-break: keep-all; }
+    .card-body ul { padding-left: 18px; margin: 4px 0; }
+    .card-body li { margin-bottom: 5px; }
+    .card-body li:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .slide.dark .formula-box { background-color: #111722; border-color: var(--dark-border); color: #60a5fa; }
+
+    .code-block {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #f472b6; font-weight: 700; }
+    .code-block .type { color: #38bdf8; }
+    .code-block .fn { color: #fbbf24; }
+    .code-block .comment { color: #64748b; font-style: italic; }
+    .code-block .num { color: #a78bfa; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .slide.dark .data-table { background: var(--dark-surface); border-color: var(--dark-border); }
+    .data-table th { background-color: var(--surface); color: var(--fg); font-weight: 700; padding: 7px 9px; border: 1px solid var(--border); }
+    .slide.dark .data-table th { background-color: #141b27; color: var(--dark-fg); border-color: var(--dark-border); }
+    .data-table td { padding: 7px 9px; border: 1px solid var(--border); color: inherit; }
+    .slide.dark .data-table td { border-color: var(--dark-border); }
+    .data-table .highlight-cell { background-color: var(--accent-light); font-weight: 700; color: var(--accent); }
+    .slide.dark .data-table .highlight-cell { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    .alert-callout {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+      background-color: var(--surface);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .alert-callout.warning { border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e; }
+    .slide.dark .alert-callout.warning { background-color: #2b1f0c; color: #fde68a; border-left-color: #f59e0b; }
+
+    /* Bottom Controller */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark-active-slide .bottom-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-top-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .nav-btn { background-color: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .slide-counter { font-size: 14px; font-weight: 700; font-family: var(--font-mono); min-width: 65px; text-align: center; }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 380px;
+      height: 6px;
+      background-color: var(--border-subtle);
+      border-radius: 999px;
+      margin: 0 20px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    body.dark-active-slide .progress-bar-container { background-color: var(--dark-border); }
+    .progress-bar { height: 100%; width: 10%; background-color: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+
+    .action-controls { display: flex; align-items: center; gap: 8px; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .action-btn { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.active { background-color: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    body.dark-active-slide .action-btn.active { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    /* Drawer & Modal */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 60px;
+      right: 0;
+      width: 440px;
+      max-height: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 0;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.dark-active-slide .speaker-notes-drawer { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .speaker-notes-drawer.open { transform: translateX(0); }
+    .drawer-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    body.dark-active-slide .drawer-header { border-bottom-color: var(--dark-border); }
+    .drawer-body { padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .overview-modal.open { display: flex; }
+    .overview-content {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      max-width: 1080px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    body.dark-active-slide .overview-content { background: #121824; color: var(--dark-fg); }
+    .overview-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .overview-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px;
+    }
+    body.dark-active-slide .overview-card { background: var(--dark-surface); border-color: var(--dark-border); }
+    .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .overview-card.active { border-color: var(--accent); border-width: 2px; background: var(--accent-light); }
+    body.dark-active-slide .overview-card.active { background: var(--dark-accent-light); }
+    .overview-num { font-size: 11px; font-weight: 700; color: var(--accent); }
+    .overview-title { font-size: 13.5px; font-weight: 700; margin-top: 4px; line-height: 1.4; }
+
+    .slide-notes { display: none; }
+    kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      color: #444;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation -->
+<nav class="top-module-bar">
+  <a href="index.html" class="hub-link">⚡ 논회실 스터디 덱 허브</a>
+  <div class="module-nav-links">
+    <a href="deck-00-basics.html" class="module-link ">M00 핵심기초</a>
+    <a href="deck-01-gates-cmos.html" class="module-link ">M01 기본게이트·CMOS</a>
+    <a href="deck-02-combinational.html" class="module-link ">M02 조합논리</a>
+    <a href="deck-03-sequential.html" class="module-link active">M03 순서논리</a>
+    <a href="deck-04-memory-dac-adc.html" class="module-link ">M04 기억소자·DAC/ADC</a>
+    <a href="deck-05-verilog-fpga.html" class="module-link ">M05 Verilog·FPGA</a>
+  </div>
+</nav>
+
+<div class="deck-container">
+  <div class="slide-track" id="slideTrack">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide hero dark" data-screen-label="01 Cover">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Module 03</span>
+            <span class="topic-tag">Lab 6, 7, 8 Comprehensive Guide</span>
+          </div>
+          <h1 class="slide-title">순서논리회로 실습: 래치·FF·레지스터·카운터</h1>
+          <p class="slide-subtitle">상태(State) 기억 메커니즘, 클록 동기화, 시프트 레지스터 4대 모드 및 동기/비동기 카운터</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">1</span> 기억 소자의 진화 (Lab 6)</div>
+            <div class="card-body">
+              <ul>
+                <li>SR 래치 (Active-High NOR vs Active-Low NAND)</li>
+                <li>레벨 감응(투명성) D 래치 vs 에지 트리거 D-FF</li>
+                <li>74HC74 D-FF & 74HC76 JK-FF 토글 동작</li>
+                <li>비동기 프리셋/클리어($\overline{PRE}, \overline{CLR}$) 최우선권</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 타이밍 & 시프트 (Lab 7)</div>
+            <div class="card-body">
+              <ul>
+                <li>셋업 타임($t_{su}$), 홀드 타임($t_h$), 메타스테이빌리티</li>
+                <li>2-FF 동기화기(Synchronizer) 설계</li>
+                <li>7496 시프트 레지스터: SISO, SIPO, PISO, PIPO</li>
+                <li>링 카운터($N$) vs 존슨 카운터($2N$)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> 카운터 & 디바운싱 (Lab 8)</div>
+            <div class="card-body">
+              <ul>
+                <li>74HC93 / 7490 비동기 리플 카운터의 누적 지연</li>
+                <li>74HC163 / 74190 동기식 카운터 Modulo-N 설계</li>
+                <li>기계식 스위치 채터링(Bouncing) 현상</li>
+                <li>SR 래치 및 74HC14 슈미트 트리거 디바운서</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Module 03 인트로 강의 가이드]</h4>
+        <p>순서논리회로는 <strong>출력의 피드백 루프를 통해 과거의 상태를 영구히 기억</strong>하는 회로입니다.</p>
+        <p><strong>발표자 강조점:</strong> 디지털 시스템이 단순 계산기를 넘어 컴퓨터(CPU, 메모리, FSM)로 진화하는 핵심 분기점입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: SR 래치 vs Gated D 래치 -->
+    <section class="slide light" data-screen-label="02 SR & D 래치">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Latch Fundamentals</span>
+            <span class="topic-tag">Bistable Memory Cells</span>
+          </div>
+          <h2 class="slide-title">SR 래치 vs 게이트 D 래치 (레벨 감응)</h2>
+          <p class="slide-subtitle">교차 결합 양의 피드백 루프, 금지 상태 및 투명성(Transparency) 특성</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 NOR 기반 Active-High SR 래치</div>
+            <div class="code-block">
+     S ──┤NOR 1├─── Q
+          │   ┌─┘
+          └───┼─┐
+          ┌───┘ │
+     R ──┤NOR 2├─── /Q</div>
+            <table class="data-table" style="margin-top:6px;">
+              <thead><tr><th>S</th><th>R</th><th>Q*</th><th>/Q*</th><th>동작 상태</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>Q</td><td>/Q</td><td>유지 (Hold)</td></tr>
+                <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>리셋 (Reset)</td></tr>
+                <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>셋 (Set)</td></tr>
+                <tr><td>1</td><td>1</td><td style="color:#ef4444;">0</td><td style="color:#ef4444;">0</td><td style="color:#ef4444;"><strong>금지 (Invalid / Race)</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 게이트 D 래치와 투명성(Transparency)</div>
+            <div class="card-body">
+              <p>SR의 금지 상태를 없애기 위해 $S=D, R=\bar{D}$로 묶은 회로</p>
+              <div class="formula-box">$$\text{Enable } C=1: Q = D \text{ (Transparent)} \quad \Big| \quad C=0: Q \text{ 유지 (Latch)}$$</div>
+              <div class="alert-callout warning" style="margin-top:8px; font-size:12.5px;">
+                ⚠️ <strong>한계:</strong> $C=1$인 동안 입력이 변하면 출력이 즉시 바뀌므로, 피드백 루프 구성 시 출력이 입력을 다시 흔드는 <strong>Race-Around 문제</strong> 발생 ➔ 플립플롭의 등장 배경!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[SR 래치 $S=R=1$이 금지인 진짜 이유]</h4>
+        <p>$S=R=1$일 때는 $Q=0, \bar{Q}=0$이 되어 상보 관계($Q 
+e \bar{Q}$)가 깨집니다.</p>
+        <p>더 치명적인 문제는 $S, R$이 동시에 0으로 바뀔 때 두 게이트의 미세한 지연 시간 차이에 의해 최종 상태가 무작위(0 또는 1)로 튀는 <strong>Race Condition</strong>이 발생하기 때문입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: D 플립플롭 & 에지 트리거 -->
+    <section class="slide hero light" data-screen-label="03 D 플립플롭">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Edge-Triggered Core</span>
+            <span class="topic-tag">74HC74 Dual D-FF</span>
+          </div>
+          <h2 class="slide-title">D 플립플롭(74HC74) & 에지 트리거링</h2>
+          <p class="slide-subtitle">클록 상승 에지 시점에만 데이터를 샘플링하여 피드백 레이스-어라운드 완벽 차단</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 74HC74 Dual D 플립플롭 핀아웃</div>
+            <div class="code-block">
+        ┌───────∪───────┐
+  /1CLR ─┤ 1          14 ├─ VCC
+     1D ─┤ 2   74HC74 13 ├─ /2CLR
+   1CLK ─┤ 3  (Dual   12 ├─ 2D
+  /1PRE ─┤ 4   D-FF)  11 ├─ 2CLK
+     1Q ─┤ 5          10 ├─ /2PRE
+    /1Q ─┤ 6           9 ├─ 2Q
+    GND ─┤ 7           8 ├─ /2Q
+        └───────────────┘</div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">★ 비동기 입력 ($\overline{PRE}, \overline{CLR}$) 최우선권</div>
+            <table class="data-table">
+              <thead><tr><th>/PRE</th><th>/CLR</th><th>CLK</th><th>D</th><th>Q*</th><th>동작</th></tr></thead>
+              <tbody>
+                <tr><td class="highlight-cell">0</td><td>1</td><td>X</td><td>X</td><td class="highlight-cell">1</td><td><strong>비동기 셋 (즉시 Q=1)</strong></td></tr>
+                <tr><td>1</td><td class="highlight-cell">0</td><td>X</td><td>X</td><td class="highlight-cell">0</td><td><strong>비동기 리셋 (즉시 Q=0)</strong></td></tr>
+                <tr><td>1</td><td>1</td><td>↑</td><td>1</td><td>1</td><td>동기 1 저장</td></tr>
+                <tr><td>1</td><td>1</td><td>↑</td><td>0</td><td>0</td><td>동기 0 저장</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:12.5px; color:var(--muted); margin-top:6px;">
+              * 정상 클록 동작을 위해서는 $\overline{PRE}$와 $\overline{CLR}$ 핀을 반드시 **VCC(5V)**에 묶어두어야 합니다!
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[실습실 74HC74 최다 질문: "불이 안 꺼져요!"]</h4>
+        <p>학생들이 $\overline{PRE}$나 $\overline{CLR}$ 핀을 안 쓰고 비워두면(Floating) 플로팅 노이즈로 인해 비동기 리셋이 걸려 클록을 아무리 줘도 출력이 변하지 않습니다.</p>
+        <p>반드시 사용하지 않는 $\overline{PRE}, \overline{CLR}$은 VCC에 직결해야 정상 클록 동작을 합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: 타이밍 제약 & 메타스테이빌리티 -->
+    <section class="slide dark" data-screen-label="04 타이밍 & 메타스테이블">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Timing Integrity</span>
+            <span class="topic-tag">Setup/Hold & Metastability</span>
+          </div>
+          <h2 class="slide-title">타이밍 제약 조건과 메타스테이빌리티(Metastability)</h2>
+          <p class="slide-subtitle">셋업 타임($t_{su}$)·홀드 타임($t_h$) 위반 시의 비정상 전압 진동 및 2-FF 동기화기</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 Setup Time ($t_{su}$) vs Hold Time ($t_h$)</div>
+            <div class="code-block">
+  Data  ───────XXXXX┌─────────────────────┐XXXXX────
+                    │◄─ t_su ─►│◄── t_h ──►│
+  Clock ───────────────────────▲────────────────────
+                             (Edge)</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6; margin-top:8px;">
+              • <strong>Setup Time ($t_{su}$):</strong> 클록 에지 발생 <strong>전</strong>에 데이터가 안정적으로 유지되어야 하는 최소 시간.<br>
+              • <strong>Hold Time ($t_h$):</strong> 클록 에지 발생 <strong>후</strong>에 데이터가 변하지 않고 유지되어야 하는 최소 시간.<br>
+              • 최대 동작 주파수: $f_{\max} = \frac{1}{t_{c-q} + t_{comb} + t_{su}}$
+            </div>
+          </div>
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">⚠️ 메타스테이빌리티와 2-FF 동기화기</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • 비동기 신호가 $t_{su}/t_h$ 윈도우 내부에서 변하면 출력이 중간 전압($V_{DD}/2$)에서 오랜 시간 방황(진동)함.<br>
+              • <strong>2-Stage 플립플롭 동기화기 (2-FF Synchronizer):</strong>
+              <div class="code-block" style="margin-top:6px;">
+Async In ──►[ D-FF 1 ]── Metastable Node ──►[ D-FF 2 ]──► Sync Out
+                 CLK ───────────────────────────┘</div>
+              ➔ 1번째 FF의 메타스테이블이 1클록 주기 동안 안정화되도록 대기하여 MTBF(평균 고장 간격)를 수백 년 단위로 연장!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[반도체/FPGA 면접 1순위 단골 질문]</h4>
+        <p>"메타스테이빌리티가 무엇이며 어떻게 해결합니까?"는 모든 디지털 하드웨어 기업의 필수 질문입니다.</p>
+        <p><strong>답변 키워드:</strong> Setup/Hold 위반 $  o$ 중간 전압 진동 $  o$ 2-Stage D-FF 동기화기를 통해 1클록 주기의 분해 시간($t_{met}$)을 확보하여 MTBF 극대화.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5: JK & T 플립플롭 -->
+    <section class="slide light" data-screen-label="05 JK & T 플립플롭">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Toggle Memory</span>
+            <span class="topic-tag">74HC76 & Frequency Divider</span>
+          </div>
+          <h2 class="slide-title">JK 플립플롭(74HC76) & T 플립플롭 (토글 분주기)</h2>
+          <p class="slide-subtitle">금지 상태를 반전(Toggle)으로 극복한 만능 플립플롭 및 주파수 2분주 회로</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 JK 플립플롭 특성표 & 특성방정식</div>
+            <div class="formula-box">$$Q^* = J \bar{Q} + \bar{K} Q$$</div>
+            <table class="data-table" style="margin-top:6px;">
+              <thead><tr><th>J</th><th>K</th><th>차기상태 Q*</th><th>동작 설명</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>Q</td><td>유지 (Hold)</td></tr>
+                <tr><td>0</td><td>1</td><td>0</td><td>리셋 (Reset)</td></tr>
+                <tr><td>1</td><td>0</td><td>1</td><td>셋 (Set)</td></tr>
+                <tr><td>1</td><td>1</td><td class="highlight-cell">$\bar{Q}$</td><td class="highlight-cell"><strong>토글 (Toggle / 반전)</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 T 플립플롭과 주파수 2분주기</div>
+            <div class="card-body">
+              <p>JK 플립플롭의 $J$와 $K$를 하나로 묶어 $T$로 입력 ($J=K=1$ 고정 시)</p>
+              <div class="formula-box">$$f_{\text{out}} = \frac{1}{2} f_{\text{in}} \quad (50\%\,\text{Duty Cycle})$$</div>
+              <div class="code-block" style="margin-top:6px;">
+   Clock In ───►[ >CLK    Q ]───────► Clock Out (f/2)
+                 [ J=1  /Q ]──┐
+                 [ K=1     ]  │ (피드백 연결로 자동 토글)
+                              ┘</div>
+              <p style="font-size:12.5px; color:var(--muted); margin-top:4px;">* 4개를 직렬 연결하면 $2^4 = 16$분주 카운터(7493)가 됩니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[T 플립플롭의 실전 응용]</h4>
+        <p>클록 발진기에서 나오는 비대칭 듀티비 파형도 T 플립플롭을 1번 통과하면 정확히 50:50 대칭 구형파로 보정되면서 주파수가 절반으로 떨어집니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: 시프트 레지스터 (7496 / 74194) -->
+    <section class="slide hero dark" data-screen-label="06 시프트 레지스터">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Data Movement</span>
+            <span class="topic-tag">7496 / 74194 Shift Register</span>
+          </div>
+          <h2 class="slide-title">시프트 레지스터 (7496 / 74194) 4대 동작 모드</h2>
+          <p class="slide-subtitle">클록마다 1비트씩 데이터를 이동시키는 직병렬 데이터 변환기</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-4">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1</span> SISO</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>Serial-In, Serial-Out</strong></p>
+              <p>직렬 입력 ➔ 직렬 출력</p>
+              <div class="formula-box">N-클록 시간 지연선 (FIFO Buffer)</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> SIPO</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>Serial-In, Parallel-Out</strong></p>
+              <p>직렬 수신 ➔ 병렬 변환</p>
+              <div class="formula-box">UART 수신기 / SPI 통신</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> PISO</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>Parallel-In, Serial-Out</strong></p>
+              <p>병렬 로드 ➔ 1비트씩 송신</p>
+              <div class="formula-box">UART 송신기 (통신 직렬화)</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">4</span> PIPO</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>Parallel-In, Parallel-Out</strong></p>
+              <p>동시 로드 ➔ 동시 출력</p>
+              <div class="formula-box">CPU 범용 레지스터 (R0~R31)</div>
+            </div>
+          </div>
+        </div>
+        <div class="surface-card highlight">
+          <div class="card-title">📌 7496 5비트 시프트 레지스터 제어 핀</div>
+          <div class="card-body" style="font-size:13px;">
+            • <strong>Clear:</strong> 비동기 0 초기화 | <strong>Clock:</strong> 상승 에지에서 $Q_A   o Q_B   o Q_C   o Q_D   o Q_E$ 이동<br>
+            • <strong>Parallel Enable (PE):</strong> $PE=1$일 때 $A \sim E$ 5비트 병렬 데이터를 즉시 플립플롭에 동시 주입 (PIPO/PISO 모드)
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[시프트 레지스터의 통신 핵심 역할]</h4>
+        <p>컴퓨터 내부 버스는 32비트/64비트 병렬(PIPO)이지만, USB나 이더넷, 블루투스 케이블은 선로 비용 때문에 1비트 직렬(Serial)로 보냅니다.</p>
+        <p>이때 PISO(송신 송출)와 SIPO(수신 조립) 레지스터가 직병렬 변환을 전담합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7: 링 카운터 vs 존슨 카운터 -->
+    <section class="slide light" data-screen-label="07 링 & 존슨 카운터">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Sequence Generators</span>
+            <span class="topic-tag">Ring vs Johnson Counters</span>
+          </div>
+          <h2 class="slide-title">링 카운터(Ring) vs 존슨 카운터(Johnson)</h2>
+          <p class="slide-subtitle">출력 피드백을 이용한 시퀀스 발생기: 상태 수, 디코딩 복잡도 및 비정상 상태 탈출</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 링 카운터 (Ring Counter: $Q_N   o D_0$)</div>
+            <div class="card-body">
+              <p>최종단 출력 $Q$를 첫 단 입력 $D$로 단순 순환</p>
+              <div class="formula-box">$N$개 FF ➔ $N$개 유효 상태 (4비트: 4상태)</div>
+              <ul style="margin-top:8px; font-size:13px;">
+                <li>상태 순환: <code>1000 ➔ 0100 ➔ 0010 ➔ 0001 ➔ 1000</code></li>
+                <li><strong>장점:</strong> 각 비트가 원-핫(One-Hot)이므로 **디코더 게이트 전혀 불필요**!</li>
+                <li><strong>단점:</strong> 초기 1 주입 필수, 무효 상태(12개) 진입 시 고립 위험.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 존슨 카운터 (Twisted Ring: $\bar{Q}_N   o D_0$)</div>
+            <div class="card-body">
+              <p>최종단 반전 출력 $\bar{Q}$를 첫 단 입력 $D$로 교차 피드백</p>
+              <div class="formula-box">$N$개 FF ➔ $2N$개 유효 상태 (4비트: 8상태)</div>
+              <ul style="margin-top:8px; font-size:13px;">
+                <li>상태 순환: <code>0000 ➔ 1000 ➔ 1100 ➔ 1110 ➔ 1111 ➔ 0111 ➔ 0011 ➔ 0001</code></li>
+                <li><strong>장점:</strong> 플립플롭 효율 2배, 인접 상태 간 1비트만 변하여 글리치 없음!</li>
+                <li>디코딩: 2-입력 AND 게이트 1개만으로 각 상태 디코딩 가능.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[존슨 카운터의 산업계 응용]</h4>
+        <p>존슨 카운터는 8상태를 만드는 데 2입력 AND 게이트만 있으면 되므로, 고속 다상 클록 발생기(Multi-phase Clock Generator)나 3상 모터 제어 신호 생성에 필수적으로 쓰입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: 비동기식(Ripple) 카운터 -->
+    <section class="slide dark" data-screen-label="08 비동기 리플 카운터">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Asynchronous Counting</span>
+            <span class="topic-tag">74HC93 & 7490 Decade Counter</span>
+          </div>
+          <h2 class="slide-title">비동기식(Ripple) 카운터와 누적 지연</h2>
+          <p class="slide-subtitle">앞 단의 출력이 뒷 단의 클록을 구동하는 구조와 과도기 글리치(Glitch) 한계</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 74HC93 4비트 2진 리플 카운터</div>
+            <div class="code-block">
+  CLK In ──►[ >CLK  QA ]──┬─► QA (LSB: f/2)
+            [ T=1  /QA ]  │
+                          └──►[ >CLK  QB ]──┬─► QB (f/4)
+                              [ T=1  /QB ]  │
+                                            └──►[ >CLK  QC ]── ...</div>
+            <p style="font-size:12.5px; color:var(--dark-muted); margin-top:6px;">
+              * 하강 에지 트리거 토글 FF 체인: $Q_0$ 출력이 $Q_1$의 클록으로 전달되어 마치 물결(Ripple)처럼 전파.
+            </p>
+          </div>
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">⚠️ 리플 카운터의 치명적 결함: 누적 지연</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • $N$번째 비트가 바뀌기까지 총 지연시간: $t_{\text{total}} = N   imes t_{pd}$<br>
+              • <strong>과도기 글리치 예시 ($0111_2   o 1000_2$ 전이 시):</strong><br>
+              $0111   o 0110   o 0100   o \mathbf{0000}   o 1000$<br>
+              ➔ 순간적으로 <code>0000</code> 등의 잘못된 상태가 출력선에 나타나 후속 조합회로에 심각한 오작동 유발!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[동기식 카운터로 넘어가야 하는 이유]</h4>
+        <p>리플 카운터는 회로가 단순하여 빵판에서 만들기 쉽지만, 4비트만 되어도 40ns 이상의 지연이 쌓여 고속 CPU나 정밀 타이머에는 절대 쓸 수 없습니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: 동기식 카운터 (74HC163 / 74190) -->
+    <section class="slide hero light" data-screen-label="09 동기식 카운터">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Synchronous Counting</span>
+            <span class="topic-tag">74HC163 & Modulo-N</span>
+          </div>
+          <h2 class="slide-title">동기식 카운터(74HC163) & Modulo-N 설계</h2>
+          <p class="slide-subtitle">모든 플립플롭이 동일 클록으로 동시 갱신되며, 병렬 룩어헤드 캐리로 누적 지연 제거</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 동기식 카운터의 핵심 장점</div>
+            <div class="card-body">
+              <ul style="line-height:1.7;">
+                <li><strong>공통 클록(Common CLK):</strong> 모든 FF가 한 클록 에지에서 동시 전환</li>
+                <li><strong>동기식 전파 지연:</strong> 비트 수 $N$에 상관없이 $t_{total} = t_{c-q}$ 단 1회 지연</li>
+                <li><strong>글리치 없음:</strong> 중간 과도기 상태가 발생하지 않아 완벽한 안정성 보장</li>
+                <li><strong>Ripple Carry Output (RCO):</strong> 15 카운트 시 HIGH 출력되어 다음 칩으로 즉시 캐리 전달</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">★ Modulo-10 (10진 카운터: 0~9) 설계법</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>방식 1: 동기식 클리어 ($\overline{\text{SCLR}}$) 활용 (추천)</strong><br>
+              출력이 9($1001_2$)일 때 감지하여 $\overline{\text{SCLR}}$을 LOW로 만들어 다음 클록 에지에서 0으로 초기화.<br>
+              • <strong>방식 2: 병렬 로드 ($\overline{\text{LOAD}}$) 활용</strong><br>
+              $RCO$를 $\overline{\text{LOAD}}$에 피드백하고 입력 $D_0 \sim D_3$에 시작값을 인가하여 임의 범위(예: 6~15) 카운팅 구현.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[동기식 리셋 vs 비동기식 리셋 차이]</h4>
+        <p>74HC163은 <strong>동기식 리셋(Synchronous Reset)</strong>을 채택하여 리셋 핀이 0이어도 다음 클록 에지가 와야 비로소 0으로 초기화됩니다. 이로 인해 리셋 펄스에 노이즈가 타도 오작동하지 않는 강력한 장점이 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 10: 스위치 채터링(Chattering) 방지 -->
+    <section class="slide dark" data-screen-label="10 스위치 디바운싱">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Signal Conditioning</span>
+            <span class="topic-tag">Switch Debouncing</span>
+          </div>
+          <h2 class="slide-title">기계식 스위치 채터링(Chattering)과 디바운서</h2>
+          <p class="slide-subtitle">스위치 접점 바운싱($1 \sim 10\text{ms}$)으로 인한 다중 펄스 계수 오류 및 완벽 해결 회로</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">⚠️ 채터링(Bouncing) 현상</div>
+            <div class="code-block">
+  스위치 누름 ──► │  수 ms 동안 접점이 수십 번 튀면서 펄스 발생  │
+                  └───/\/\/\/\/\┌─────────────────────────────
+                                │◄──── 1 ~ 10 ms ────►│</div>
+            <p style="font-size:12.5px; color:var(--dark-muted); margin-top:6px;">
+              * 카운터 클록에 스위치를 직결하면 버튼을 한 번 눌렀는데 숫자가 1이 아니라 5, 12씩 마구 올라가는 원인!
+            </p>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">✔ 2대 완벽 디바운서 (Debouncer) 회로</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>1. SPDT 스위치 + SR 래치 디바운서:</strong><br>
+              스위치가 처음 접점에 닿는 순간 래치가 Set/Reset되어 이후의 미세한 바운싱을 완전히 무시 (가장 확실한 하드웨어 디바운스).<br>
+              • <strong>2. RC 저역통과필터 + 74HC14 슈미트 트리거:</strong><br>
+              $R=10\text{k}\Omega, C=0.1\mu\text{F}$로 고주파 튐을 뭉개고, 슈미트 트리거의 히스테리시스($\Delta V_T$)로 칼 같은 1회 구형파 생성.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[실습실 팁: 스위치 입력 시 필수 조치]</h4>
+        <p>실험 6, 7, 8에서 수동으로 클록을 줄 때는 절대로 빵판 푸시버튼을 클록 핀에 직결하면 안 됩니다.</p>
+        <p>반드시 실험대 펄스 제너레이터(단발 펄스 버튼)를 쓰거나 74HC14 디바운싱 회로를 거쳐서 주어야 합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 11: 실전 디버깅 & 면접 퀴즈 -->
+    <section class="slide hero dark" data-screen-label="11 실전 디버깅 & 퀴즈">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Interview & Lab Secrets</span>
+            <span class="topic-tag">Sequential Circuits Q&A</span>
+          </div>
+          <h2 class="slide-title">순서논리 핵심 디버깅 팁 & 면접 족보 3선</h2>
+          <p class="slide-subtitle">클록 노이즈 방지법 및 플립플롭 vs 래치 기술 면접 단골 질문</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q1</span> 래치 vs 플립플롭</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 래치와 플립플롭의 결정적 차이는?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                래치는 Enable 레벨(구간) 동안 입력이 출력에 투과되는 레벨 감응이고, 플립플롭은 클록 에지(순간)에만 샘플링되는 에지 감응 소자입니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q2</span> 존슨 vs 링 카운터</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 4비트 존슨 카운터의 상태 수와 장점은?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                링 카운터(4개)보다 2배 많은 8개 상태를 가지며, 인접 상태 간 1비트만 변경되어 과도기 글리치 없이 2입력 AND 게이트로 디코딩됩니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q3</span> 셋업/홀드 타임 위반</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 셋업 타임을 위반하면 무슨 일이 일어나는가?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                플립플롭 내부 마스터 래치가 정상 안정화되지 못하고 중간 전압에서 방황하는 메타스테이빌리티가 발생하여 데이터가 깨집니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[순서논리회로 실험 총평 가이드]</h4>
+        <p>순서논리회로의 디버깅 핵심은 <strong>"클록 신호의 품질"</strong>입니다. 접촉 불량이나 긴 점퍼선으로 인한 인덕턴스 때문에 클록에 링잉(Ringing) 노이즈가 생기면 플립플롭이 1클록에 2번 트리거됩니다.</p>
+        <p>클록 배선은 최대한 짧게 연결하고 반드시 GND 접지를 강화해야 합니다.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="bottom-bar">
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">← 이전</button>
+    <span class="slide-counter" id="slideIndicator">01 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">다음 →</button>
+  </div>
+  
+  <div class="progress-bar-container" id="progressBarContainer" title="클릭하여 해당 위치로 이동">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="action-controls">
+    <button class="action-btn" id="notesToggleBtn" title="발표자 노트 (단축키 S)">
+      📝 <span class="btn-text">발표자 노트</span> <kbd>S</kbd>
+    </button>
+    <button class="action-btn" id="overviewBtn" title="슬라이드 오버뷰 (단축키 O)">
+      📑 <span class="btn-text">전체 목차</span> <kbd>O</kbd>
+    </button>
+    <button class="action-btn" id="fullscreenBtn" title="전체화면 (단축키 F)">
+      ⛶ <span class="btn-text">전체화면</span> <kbd>F</kbd>
+    </button>
+  </div>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="speaker-notes-drawer" id="speakerNotesDrawer">
+  <div class="drawer-header">
+    <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+      <span>📝 발표자 노트 & 실습 족보</span>
+      <span class="badge" id="notesSlideTitle" style="font-size:10px;">Slide 01</span>
+    </div>
+    <button class="action-btn" id="closeNotesBtn" style="height:28px; padding:0 8px;">✕</button>
+  </div>
+  <div class="drawer-body" id="speakerNotesContent">
+    <!-- Updated dynamically via JS -->
+  </div>
+</div>
+
+<!-- Overview Modal -->
+<div class="overview-modal" id="overviewModal">
+  <div class="overview-content">
+    <div class="drawer-header" style="padding: 18px 24px;">
+      <h3 style="font-size: 20px; font-weight: 700;">전체 슬라이드 목차 (Module 03 - 총 11장)</h3>
+      <button class="action-btn" id="closeOverviewBtn" style="height:32px; padding:0 12px;">닫기 (Esc) ✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    const slideTrack = document.getElementById('slideTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const speakerNotesContent = document.getElementById('speakerNotesContent');
+    const notesSlideTitle = document.getElementById('notesSlideTitle');
+    const closeNotesBtn = document.getElementById('closeNotesBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    const STORAGE_KEY = 'logic_circuit_study_deck_m03_pos';
+    const savedPos = localStorage.getItem(STORAGE_KEY);
+    if (savedPos !== null && !isNaN(parseInt(savedPos, 10))) {
+      currentSlide = Math.min(Math.max(0, parseInt(savedPos, 10)), totalSlides - 1);
+    }
+
+    slides.forEach((slide, index) => {
+      const label = slide.getAttribute('data-screen-label') || `Slide ${index + 1}`;
+      const titleEl = slide.querySelector('.slide-title');
+      const title = titleEl ? titleEl.textContent : label;
+      const badgeEl = slide.querySelector('.badge');
+      const badge = badgeEl ? badgeEl.textContent : '';
+
+      const card = document.createElement('div');
+      card.className = `overview-card ${index === currentSlide ? 'active' : ''}`;
+      card.innerHTML = `
+        <div>
+          <div class="overview-num">${label}</div>
+          <div class="overview-title">${title}</div>
+        </div>
+        <div class="overview-tag" style="font-size:11px; color:var(--muted); margin-top:8px;">${badge}</div>
+      `;
+      card.addEventListener('click', () => {
+        goToSlide(index);
+        closeOverview();
+      });
+      overviewGrid.appendChild(card);
+    });
+
+    function updateDeck() {
+      slideTrack.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      const slideNumStr = String(currentSlide + 1).padStart(2, '0');
+      const totalStr = String(totalSlides).padStart(2, '0');
+      slideIndicator.textContent = `${slideNumStr} / ${totalStr}`;
+      const pct = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      const activeSlide = slides[currentSlide];
+      const isDark = activeSlide.classList.contains('dark');
+      if (isDark) {
+        document.body.classList.add('dark-active-slide');
+      } else {
+        document.body.classList.remove('dark-active-slide');
+      }
+
+      const notesEl = activeSlide.querySelector('.slide-notes');
+      const label = activeSlide.getAttribute('data-screen-label') || `Slide ${currentSlide + 1}`;
+      notesSlideTitle.textContent = label;
+      speakerNotesContent.innerHTML = notesEl ? notesEl.innerHTML : '이 슬라이드에 등록된 발표자 노트가 없습니다.';
+
+      const cards = overviewGrid.querySelectorAll('.overview-card');
+      cards.forEach((c, idx) => {
+        c.classList.toggle('active', idx === currentSlide);
+      });
+
+      localStorage.setItem(STORAGE_KEY, currentSlide);
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      const isOpen = speakerNotesDrawer.classList.toggle('open');
+      notesToggleBtn.classList.toggle('active', isOpen);
+    }
+
+    function toggleOverview() { overviewModal.classList.toggle('open'); }
+    function closeOverview() { overviewModal.classList.remove('open'); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+    overviewBtn.addEventListener('click', toggleOverview);
+    closeOverviewBtn.addEventListener('click', closeOverview);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    progressBarContainer.addEventListener('click', (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      goToSlide(Math.floor(ratio * totalSlides));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (['input', 'textarea', 'select'].includes(e.target.tagName.toLowerCase())) return;
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          closeOverview();
+          speakerNotesDrawer.classList.remove('open');
+          notesToggleBtn.classList.remove('active');
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+  })();
+</script>
+</body>
+</html>

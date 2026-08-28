@@ -9,9 +9,11 @@ import sys
 import os
 import struct
 import zlib
+import io
 import re
 import argparse
 from pathlib import Path
+from PIL import Image
 
 
 
@@ -281,29 +283,98 @@ def rebuild_ole_directory_tree(entries: list[dict]):
 
 def write_hwp_ole(entries: list[dict], output_path: str):
     """
-    Reconstruct a valid OLE2 compound document with proper DIFAT/FAT/Directory layout.
+    Reconstruct a valid OLE2 compound document with proper DIFAT/FAT/MiniFAT/Directory layout.
+    Stores streams <4096 bytes into MiniStream and large streams into regular sectors.
     """
-    rebuild_ole_directory_tree(entries)
     sec_size = 512
-    cur_sec = 0
-    stream_data_bytes = bytearray()
-    new_fat = []
+    mini_sec_size = 64
+    mini_cutoff = 4096
+
+    # 1. Process mini streams (size < 4096, excluding storages and Root Entry)
+    mini_stream_bytes = bytearray()
+    minifat = []
 
     for e in entries:
-        e["size"] = len(e.get("data", b""))
-        if e["size"] > 0:
+        if e["type"] in (1, 5):  # Storage or Root
+            e["size"] = 0
+            e["is_mini"] = False
+            e["start_sec"] = 0 if e["type"] == 1 else 0xFFFFFFFE
+            continue
+
+        d = e.get("data", b"")
+        sz = len(d)
+        e["size"] = sz
+        if 0 < sz < mini_cutoff:
+            e["is_mini"] = True
+            e["start_sec"] = len(minifat)
+            pad = (mini_sec_size - (sz % mini_sec_size)) % mini_sec_size
+            padded = d + b"\x00" * pad
+            mini_stream_bytes.extend(padded)
+            num_mini_secs = len(padded) // mini_sec_size
+            start_m = e["start_sec"]
+            for i in range(num_mini_secs - 1):
+                minifat.append(start_m + i + 1)
+            minifat.append(0xFFFFFFFE)  # ENDOFCHAIN
+        else:
+            e["is_mini"] = False
+            e["start_sec"] = 0xFFFFFFFE
+
+    # 2. Regular streams (size >= 4096)
+    regular_stream_bytes = bytearray()
+    new_fat = []
+    cur_sec = 0
+
+    for e in entries:
+        if e["type"] in (1, 5):
+            continue
+        if not e["is_mini"] and e["size"] >= mini_cutoff:
             e["start_sec"] = cur_sec
             d = e["data"]
             pad = (sec_size - (len(d) % sec_size)) % sec_size
             padded = d + b"\x00" * pad
-            stream_data_bytes.extend(padded)
+            regular_stream_bytes.extend(padded)
             num_secs = len(padded) // sec_size
             for i in range(num_secs - 1):
                 new_fat.append(cur_sec + i + 1)
-            new_fat.append(0xFFFFFFFE)  # ENDOFCHAIN
+            new_fat.append(0xFFFFFFFE)
             cur_sec += num_secs
-        else:
-            e["start_sec"] = 0xFFFFFFFE
+
+    # 3. Write MiniStream into regular sectors as Root Entry's data
+    root_entry = entries[0]
+    root_entry["size"] = len(mini_stream_bytes)
+    if len(mini_stream_bytes) > 0:
+        root_entry["start_sec"] = cur_sec
+        pad = (sec_size - (len(mini_stream_bytes) % sec_size)) % sec_size
+        padded = bytes(mini_stream_bytes) + b"\x00" * pad
+        regular_stream_bytes.extend(padded)
+        num_secs = len(padded) // sec_size
+        for i in range(num_secs - 1):
+            new_fat.append(cur_sec + i + 1)
+        new_fat.append(0xFFFFFFFE)
+        cur_sec += num_secs
+    else:
+        root_entry["start_sec"] = 0xFFFFFFFE
+
+    # 4. Write MiniFAT sectors into regular stream
+    if len(minifat) > 0:
+        first_minifat_sec = cur_sec
+        minifat_bytes = bytearray()
+        for m_val in minifat:
+            minifat_bytes.extend(struct.pack("<I", m_val))
+        pad = (sec_size - (len(minifat_bytes) % sec_size)) % sec_size
+        minifat_bytes.extend(b"\xFF" * pad)
+        regular_stream_bytes.extend(minifat_bytes)
+        num_minifat_secs = len(minifat_bytes) // sec_size
+        for i in range(num_minifat_secs - 1):
+            new_fat.append(cur_sec + i + 1)
+        new_fat.append(0xFFFFFFFE)
+        cur_sec += num_minifat_secs
+    else:
+        first_minifat_sec = 0xFFFFFFFE
+        num_minifat_secs = 0
+
+    # 5. Rebuild directory tree
+    rebuild_ole_directory_tree(entries)
 
     dir_bytes = bytearray()
     for e in entries:
@@ -330,7 +401,7 @@ def write_hwp_ole(entries: list[dict], output_path: str):
     new_fat.append(0xFFFFFFFE)
     cur_sec += num_dir_secs
 
-    # Calculate FAT & DIFAT sector counts
+    # 6. Calculate FAT & DIFAT sector counts
     num_fat_secs = (len(new_fat) + (sec_size // 4) - 1) // (sec_size // 4)
     while True:
         difat_extra_needed = max(0, num_fat_secs - 109)
@@ -352,7 +423,7 @@ def write_hwp_ole(entries: list[dict], output_path: str):
 
     all_difat = [first_fat_sec + i for i in range(num_fat_secs)]
 
-    # Build Header
+    # 7. Build Header
     hdr = bytearray(512)
     hdr[:8] = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
     struct.pack_into("<H", hdr, 24, 0x003E)
@@ -362,8 +433,9 @@ def write_hwp_ole(entries: list[dict], output_path: str):
     struct.pack_into("<H", hdr, 32, 6)  # Mini sector shift = 6 (64 bytes)
     struct.pack_into("<I", hdr, 44, num_fat_secs)
     struct.pack_into("<I", hdr, 48, first_dir_sec)
-    struct.pack_into("<I", hdr, 56, 0)  # Mini cutoff = 0 (all streams in regular FAT)
-    struct.pack_into("<I", hdr, 60, 0xFFFFFFFE)  # No MiniFAT
+    struct.pack_into("<I", hdr, 56, mini_cutoff)
+    struct.pack_into("<I", hdr, 60, first_minifat_sec)
+    struct.pack_into("<I", hdr, 64, num_minifat_secs)
     struct.pack_into("<I", hdr, 68, first_difat_sec)
     struct.pack_into("<I", hdr, 72, num_difat_secs)
 
@@ -392,79 +464,68 @@ def write_hwp_ole(entries: list[dict], output_path: str):
 
     with open(output_path, "wb") as out_f:
         out_f.write(hdr)
-        out_f.write(stream_data_bytes)
+        out_f.write(regular_stream_bytes)
         out_f.write(dir_bytes)
         out_f.write(fat_bytes)
         out_f.write(difat_bytes)
 
 
-def split_hwp_file(input_hwp: str, output_prefix: str | None = None) -> list[str]:
+def create_dummy_images() -> tuple[bytes, bytes]:
+    img = Image.new("RGB", (1, 1), color=(255, 255, 255))
+    buf_j = io.BytesIO()
+    img.save(buf_j, format="JPEG")
+    real_jpg = buf_j.getvalue()
+    buf_b = io.BytesIO()
+    img.save(buf_b, format="BMP")
+    real_bmp = buf_b.getvalue()
+    return real_jpg, real_bmp
+
+
+def split_hwp_file(input_hwp: str, output_prefix: str | None = None, max_part_mb: float = 38.0) -> list[str]:
     """
     Split a large HWP file into standalone valid HWP part files (<50MB each),
-    preserving document header metadata and pruning unreferenced BinData images.
+    preserving document header metadata, styles, and controls while partitioning
+    image payloads with valid lightweight dummy placeholders.
     """
     abs_input = os.path.abspath(input_hwp)
     if output_prefix is None:
         p = Path(abs_input)
         output_prefix = str(p.parent / p.stem)
 
+    real_jpg, real_bmp = create_dummy_images()
+
     with CFBFParser(abs_input) as cfbf:
-        sec0_entry = next((e for e in cfbf.entries if e["name"] == "Section0"), None)
-        if not sec0_entry:
-            raise ValueError(f"Section0 stream not found in {input_hwp}")
-
-        sec0_raw = cfbf.get_stream_data(sec0_entry)
-        decomp_sec0 = zlib.decompress(sec0_raw, -15)
-        paragraphs = parse_hwp_paragraphs(decomp_sec0)
-
-        split_indices = [0]
-        for idx, p in enumerate(paragraphs):
-            for tag_id, level, data in p:
-                if tag_id == 67:
-                    clean_txt = "".join(c for c in data.decode("utf-16le", errors="ignore") if ord(c) >= 32).strip()
-                    if re.search(r"^4\.\s*기능별\s*결과사진", clean_txt) or \
-                       re.search(r"^4\.\s*나누기", clean_txt) or \
-                       re.search(r"^7\.\s*0으로\s*나누었을", clean_txt) or \
-                       re.search(r"^9\.\s*Reset", clean_txt) or \
-                       re.search(r"^12\.\s*6자리\s*이상", clean_txt):
-                        split_indices.append(idx)
-        split_indices.append(len(paragraphs))
-        split_indices = sorted(list(set(split_indices)))
-
         all_stream_data = {e["name"]: cfbf.get_stream_data(e) for e in cfbf.entries if e["type"] == 2}
+        bin_entries = [e for e in cfbf.entries if e["name"].startswith("BIN")]
+
+        # Partition bin items into chunks where each chunk has <= max_part_mb
+        parts = []
+        cur_part = []
+        cur_size = 0.0
+        for e in bin_entries:
+            sz = e["size"] / (1024 * 1024)
+            if cur_size + sz > max_part_mb and cur_part:
+                parts.append(cur_part)
+                cur_part = [e["name"]]
+                cur_size = sz
+            else:
+                cur_part.append(e["name"])
+                cur_size += sz
+        if cur_part:
+            parts.append(cur_part)
 
         out_files = []
-        for part_idx in range(1, len(split_indices)):
-            start_idx = split_indices[part_idx - 1]
-            end_idx = split_indices[part_idx]
-            part_paras = paragraphs[start_idx:end_idx]
-
-            rebuilt_sec0 = rebuild_section0(part_paras)
-            compressor = zlib.compressobj(level=9, wbits=-15)
-            comp_sec0 = compressor.compress(rebuilt_sec0) + compressor.flush()
-
-            referenced_bin_nums = extract_referenced_bins(part_paras)
-            allowed_bin_names = set()
-            for bnum in referenced_bin_nums:
-                prefix = f"BIN{bnum:04X}"
-                for bname in all_stream_data:
-                    if bname.upper().startswith(prefix):
-                        allowed_bin_names.add(bname)
-
-            DUMMY_JPG = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\x27 \",#\x1c\x1c(7),01444\x1f\x27=82<.342\xff\xc0\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xbf\x00\xff\xd9"
-            DUMMY_BMP = b"BM:\x00\x00\x00\x00\x00\x00\x006\x00\x00\x00(\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\x00"
-
+        for part_idx, active_bins in enumerate(parts, 1):
+            active_set = set(active_bins)
             part_entries = []
             for e in cfbf.entries:
                 name = e["name"]
                 if e["type"] == 2:
-                    if name == "Section0":
-                        data = comp_sec0
-                    elif name.startswith("BIN"):
-                        if name in allowed_bin_names:
+                    if name.startswith("BIN"):
+                        if name in active_set:
                             data = all_stream_data[name]
                         else:
-                            data = DUMMY_BMP if name.lower().endswith(".bmp") else DUMMY_JPG
+                            data = real_bmp if name.lower().endswith(".bmp") else real_jpg
                     else:
                         data = all_stream_data.get(name, b"")
                 else:
@@ -482,18 +543,20 @@ def split_hwp_file(input_hwp: str, output_prefix: str | None = None) -> list[str
             out_path = f"{output_prefix}_part{part_idx}.hwp"
             write_hwp_ole(part_entries, out_path)
             out_files.append(out_path)
-            print(f"  [+] Created: {os.path.basename(out_path)} ({os.path.getsize(out_path) / (1024*1024):.2f} MB, {len(part_paras)} paras, {len(allowed_bin_names)} images)")
+            file_mb = os.path.getsize(out_path) / (1024 * 1024)
+            print(f"  [+] Created: {os.path.basename(out_path)} ({file_mb:.2f} MB, {len(active_set)} active images)")
 
     return out_files
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Split HWP 5.0 document into smaller standalone HWP files")
+    parser = argparse.ArgumentParser(description="Split HWP 5.0 document into smaller standalone HWP files (<50MB)")
     parser.add_argument("input_hwp", help="Target HWP file to split")
     parser.add_argument("--out-prefix", "-o", default=None, help="Output prefix path")
+    parser.add_argument("--max-size", "-s", type=float, default=38.0, help="Max image chunk size in MB (default: 38.0)")
     args = parser.parse_args()
 
-    files = split_hwp_file(args.input_hwp, output_prefix=args.out_prefix)
+    files = split_hwp_file(args.input_hwp, output_prefix=args.out_prefix, max_part_mb=args.max_size)
     print(f"Successfully split into {len(files)} files.")
 
 

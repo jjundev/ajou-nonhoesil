@@ -1,0 +1,1494 @@
+
+module calculator (clock_50m, pb, fnd_s, fnd_d);
+
+	input clock_50m;         // 50MHz clock
+	input [16:1] pb;         //스위치 버튼 입력 선언
+	output reg [5:0] fnd_s;  //Segment 자리수 출력 선언
+	output reg [6:0] fnd_d;  //Segment 표시 출력 선언
+
+
+
+integer result_add=0;
+integer result_sub=0;
+integer result_mul=0;
+integer result_div=0;
+integer result_rem=0;
+integer result_mod=0;
+
+
+    parameter sw_idle = 0;
+    parameter sw_s1 = 1;
+    parameter sw_s2 = 2;
+    parameter sw_s3 = 3;
+    parameter sw_s4 = 4;
+    parameter sw_s5 = 5;
+    parameter sw_s6 = 6;
+    parameter sw_result = 7;
+    parameter sw_error = 8;
+    parameter sw_operator = 9;
+    parameter sw_equal = 10;
+
+
+
+
+reg [3:0]  sw_status =sw_idle;  //현재 상태신호를 나타내는 함수 (초기값은 clr)
+reg [31:0] init_counter = 0; //count를 위한 init_counter 32비트 변수 선언 
+wire       sw_clk ;	  //sw_clk신호선언, 버튼 감지용 clock
+reg        sw_toggle =0; //버튼이 잘못눌렸을 경우 판별          
+wire [16:1] npb    ; //npb신호 선언, 스위치의 not값
+reg [16:1] pb_1st =0 ; //스위치에 처음으로 변환된 값
+reg [16:1] pb_2nd =0 ; //스위치에 두번째로 변환된 값
+
+//출력될 6자리 숫자 0~9는 숫자와 동일값,  *=10,  #=11,  A=12, B=13, C=14, D=15, null=16
+integer num1_1 =20; //표시 할 10^5자리 신호 선언
+integer num1_2 =20; //표시 할 10^4자리 신호 선언
+integer num1_3 =20; //표시 할 10^3자리 신호 선언
+integer num1_4 =20; //표시 할 10^2자리 신호 선언
+integer num1_5 =20; //표시 할 10^1자리 신호 선언
+integer num1_6 =20; //표시 할 10^0자리 신호 선언
+
+integer num_temp2 =0; //입력값 저장을 위한 변수
+integer num_temp =0; //입력값 저장을 위한 변수
+integer calc_flag =0; //동작관련 flag 변수
+integer disp_flag =0; //동작관련 flag 변수
+integer cal_result = 0; //계산 결과 저장할 변수
+
+integer opPast =5; //0 : +, 1 : -, 2 : *, 3 : /, 4 : null, 5: mod&rem
+integer opCurr =5; //0 : +, 1 : -, 2 : *, 3 : /, 4 : null, 5: mod&rem
+reg  pass_ok =1;
+
+
+wire      fnd_clk ;	   //7segment clock
+reg [5:0] fnd_cnt ; //fnd Count
+reg [6:0] seg_100000 =0 ;	//Segment 10^5자리 신호 선언
+reg [6:0] seg_10000  =0 ;	//Segment 10^4자리 신호 선언
+reg [6:0] seg_1000   =0 ; //Segment 10^3자리 신호 선언
+reg [6:0] seg_100    =0 ;	 //Segment 10^2자리 신호 선언
+reg [6:0] seg_10     =0 ; //Segment 10^1자리 신호 선언
+reg [6:0] seg_1      =0 ;  //Segment 10^0자리 신호 선언
+
+assign npb = ~ pb; //푸시버튼스위치는 눌렀을때 '0'이므로 not을 해준다.
+
+always @ (posedge clock_50m)	//감지신호가 clock_50m 인 process문
+begin
+	//clock_50m이 상승에지 일때
+		init_counter <= init_counter+1; //init_counter 하나씩 증가함.
+	
+end
+
+assign sw_clk = init_counter[10]; // ~40ms clock,
+assign fnd_clk = init_counter[06]; // ~2ms clock, 50MHz 클럭을 17번 분주한 clock
+
+always @ (posedge sw_clk)	 // sw_clk,npb,pb_1st,PB_2nd,pb_toggle을 감지 신호로 하는 process문
+begin
+	// sw_clk가 상승에지일때,~40ms 클럭으로 눌림 감지
+		pb_2nd <= pb_1st; //pb_2nd에 pb_1st를 대입
+		pb_1st <= npb;	 //pb_1st에 npb를 대입
+
+		if((pb_2nd == 'h0000) && (pb_1st != pb_2nd)) //pb_2nd가 X"0000"이고 pb_1st와 pb_2nd가 다른값 일때
+			sw_toggle <= 1;	  // sw_toggle에 1을 대입, 즉 버튼이 눌렸다면
+		else if (calc_flag == 1) begin          //calc_flag가 1이면
+			if(opPast == 0) //이전에 저장된 연산자를 이용하여 연산
+				cal_result <= cal_result + num_temp; //기존의 값을 +연산하여 cal_result에 저장
+			else if (opPast == 1)
+				cal_result <= cal_result - num_temp; //기존의 값을 -연산하여 cal_result에 저장
+			else if (opPast == 2)
+				cal_result <= cal_result * num_temp; //기존의 값을 *연산하여 cal_result에 저장
+			else if (opPast == 3) begin
+				if(num_temp == 0) begin //초기값이 0일 경우
+					cal_result <= 99999999;  //0으로 나누면 에러가 뜨게하기 위함
+					calc_flag <= 0;
+					disp_flag <= 0;
+				end else
+					cal_result <= cal_result / num_temp; //기존의 값을 /연산하여 cal_result에 저장
+				
+			end else if (opPast == 5) begin
+				if(num_temp == 0) begin //초기값이 0일 경우
+					cal_result <= 99999999;  //0으로 나누면 에러가 뜨게하기 위함
+					calc_flag <= 0;
+					disp_flag <= 0;
+				end else if (num_temp>0 && cal_result>=0)  //cal_result>=0일 때는 mod연산모듈 작동
+					cal_result <= cal_result % num_temp;
+				else if (num_temp>0 && cal_result<0)  //cal_result<0일 때는 rem연산모듈 작동
+					cal_result <= cal_result-(cal_result/num_temp)*num_temp;
+				
+			end else
+				cal_result <= num_temp;
+
+			if(opCurr == 4)  //연산자가 입력되지 않은 경우 / == 을 눌렀을 때
+				calc_flag <= 2; //flag를 2로 설정
+			else begin
+				calc_flag <= 0; //flag 초기화
+				num_temp <= 0; //num_temp 초기화
+			end
+		end else if (calc_flag == 2) begin
+			cal_result <= cal_result;
+			num_temp2 <= num_temp;
+			calc_flag <= 0;
+			num_temp <= 0;
+			disp_flag <= 1;
+		end else if (disp_flag == 1) begin
+			disp_flag <=0;
+			if(cal_result >= 0 && cal_result < 10) begin   //일의 자리 숫자이면
+				num1_1 <= 20;
+				num1_2 <= 20;
+				num1_3 <= 20;
+				num1_4 <= 20;
+				num1_5 <= 20;
+				num1_6 <= cal_result; //첫째 자리수에 일의 자리수 대입
+			end else if (cal_result >= 10 && cal_result < 100) begin  //십의 자리 숫자이면
+				num1_1 <= 20;
+				num1_2 <= 20;
+				num1_3 <= 20;
+				num1_4 <= 20;
+				num1_5 <= cal_result / 10; //둘째 자리수에 십의 자리수 대입
+				num1_6 <= (cal_result % 10); //첫째 자리수에 일의 자리수 대입
+			end else if (cal_result >= 100 && cal_result < 1000) begin //백의 자리 숫자이면
+				num1_1 <= 20;
+				num1_2 <= 20;
+				num1_3 <= 20;
+				num1_4 <= cal_result / 100; //셋째 자리수에 백의 자리수 대입
+				num1_5 <= (cal_result % 100) / 10; //둘째 자리수에 십의 자리수 대입
+				num1_6 <= (cal_result % 10);  //첫째 자리수에 일의 자리수 대입
+			end else if (cal_result >= 1000 && cal_result < 10000) begin //천의 자리 숫자이면
+				num1_1 <= 20;
+				num1_2 <= 20;
+				num1_3 <= (cal_result / 1000); //넷째 자리수에 천의 자리수 대입
+				num1_4 <= (cal_result % 1000) / 100; //셋째 자리수에 백의 자리수 대입
+				num1_5 <= (cal_result % 100) / 10; //둘째 자리수에 십의 자리수 대입
+				num1_6 <= (cal_result % 10); //첫째 자리수에 일의 자리수 대입
+			end else if (cal_result >= 10000 && cal_result < 1000000) begin //만의 자리 숫자이면
+				num1_1 <= cal_result /100000;
+				num1_2 <= (cal_result % 100000) / 10000; //다섯째 자리수에 만의 자리수 대입
+				num1_3 <= (cal_result % 10000) / 1000; //넷째 자리수에 천의 자리수 대입
+				num1_4 <= (cal_result % 1000) / 100; //셋째 자리수에 백의 자리수 대입
+				num1_5 <= (cal_result % 100) / 10; //둘째 자리수에 십의 자리수 대입
+				num1_6 <= (cal_result % 10); //첫째 자리수에 일의 자리수 대입
+			end else if (cal_result > -10 && cal_result < 0) begin  // 음의 일의 자리 숫자일 경우
+				num1_1 <= 20; //null
+				num1_2 <= 20; //null
+				num1_3 <= 20; //null
+				num1_4 <= 20; //null
+				num1_5 <= 19; //'-'출력
+				num1_6 <= -cal_result;
+			end else if (cal_result > -100 && cal_result <= -10) begin  // 음의 십의 자리 숫자이면
+				num1_1 <= 20; //null
+				num1_2 <= 20; //null
+				num1_3 <= 20; //null 	
+				num1_4 <= 19; //'-'출력
+				num1_5 <= (-cal_result) / 10; //10으로 나누었을 때 몫을 출력
+				num1_6 <= ((-cal_result) % 10); //10으로 나누었을 때 나머지를 출력
+
+			end else begin
+				num1_1 <= 20; //null
+				num1_2 <= 10; //E
+				num1_3 <= 11; //r
+				num1_4 <= 11; //r
+				num1_5 <= 12; //o
+				num1_6 <= 11; //r		
+			end
+		end 
+
+		if((sw_toggle == 1)&&(pb_1st == pb_2nd)) begin //sw_toggle이 '1'이고 pb_1st와 pb_2nd가 같다면
+			sw_toggle <= 0;	//sw_toggle에 '0'을 대입, 스위치를 계속 눌렀을때 연속 검출 방지
+			case (pb_1st)  //pb_1st의 값이	
+				'h0001 : begin 	  // '1'을 눌렀을 경우
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle 또는 sw_error이면
+						sw_status <= sw_s1; //sw_status에 sw_s1 대입
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null 
+						num1_3 <= 20; //null 
+						num1_4 <= 20; //null 
+						num1_5 <= 20; //null
+						num1_6 <= 1; //num1_6에 1 대입
+						num_temp <= 1;  //num_temp에 현재 display된 값 대입
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1(한 자리수였다면), 
+						sw_status <= sw_s2; //sw_status에 sw_s2대입
+						num1_5 <= num1_6;
+						num1_6 <= 1; //num1_6에 1 대입	 
+						if (num1_6 == 19)
+							num_temp <= -1;
+						else 
+							num_temp <= num1_6 * 10 + 1;
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2(두 자리수였다면)
+						sw_status <= sw_s3; //sw_status에 sw_s3대입
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 1; //num1_6에 1 대입
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 1);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 1;			  
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3(세 자리수였다면)
+						sw_status <= sw_s4; //sw_status에 sw_s4대입
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 1; //num1_6에 1 대입
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 1);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 1);
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4(네 자리수였다면)
+						sw_status <= sw_s5; //sw_status에 sw_s5대입
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 1; //num1_6에 1 대입
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 1);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 1;	
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5(다섯 자리수였다면)
+						sw_status <= sw_s6; //sw_status에 sw_s6대입
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 1; //num1_6에 1 대입
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 1);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 1;	
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6이면
+						sw_status <= sw_error; //sw_status에 sw_error대입
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 					
+					end
+				end
+
+				'h0002 : begin 	// '2'를 눌렀을 경우
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status揶쎛 sw_idle
+						sw_status <= sw_s1; //sw_status에 sw_s1대입
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 2; 
+						num_temp <= 2;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1이면 (첫째 자리수)
+						sw_status <= sw_s2; //sw_status에 sw_s2대입
+						num1_5 <= num1_6;
+						num1_6 <= 2; //num1_6에 2 대입
+						if (num1_6 == 19)
+							num_temp <= -2;
+						else 
+							num_temp <= num1_6 * 10 + 2;
+					end else if (sw_status == sw_s2) begin //sw_status sw_s2
+						sw_status <= sw_s3; //sw_statussw_s3
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 2; //num1_6에 2 대입
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 2);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 2;			  
+					end else if (sw_status == sw_s3) begin //sw_status sw_s3
+						sw_status <= sw_s4; //sw_statussw_s4
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 2; //num1_6에 2 대입  
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 2);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 2);
+					end else if (sw_status == sw_s4) begin //sw_statussw_s3
+						sw_status <= sw_s5; //sw_statussw_s4
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 2; //num1_6에 2 대입
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 2);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 2;	
+					end else if (sw_status == sw_s5) begin //sw_status sw_s3
+						sw_status <= sw_s6; 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 2; //num1_6에 2 대입 			  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 2);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 2;	
+					end else if (sw_status == sw_s6) begin //sw_status sw_s4
+						sw_status <= sw_error; //sw_statussw_idle
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r  
+					end
+				end
+				'h0004 : begin //'3'을 눌렀을 경우
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin 
+						sw_status <= sw_s1; //sw_statussw_s1
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null 
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 3; //num1_6에 3 대입  
+						num_temp <= 3;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우 
+						sw_status <= sw_s2; //sw_statussw_s2
+						num1_5 <= num1_6;
+						num1_6 <= 3; //num1_6에 3 대입 
+						if (num1_6 == 19)
+							num_temp <= -3;
+						else 
+							num_temp <= num1_6 * 10 + 3;
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; //sw_status에 sw_s3대입 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 3; //num1_6에 3 대입 
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 3);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 3;			  
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; //sw_statu에 ssw_s4대입
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 3; //num1_6에 3 대입
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 3);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 3);
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; //sw_status에 sw_s5대입
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 3; //num1_6에 3 대입
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 3);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 3;	
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; //sw_status에 sw_65대입
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 3; //num1_6에 3 대입		  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 3);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 3;	
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; //sw_status에 sw_error대입
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r  
+					end
+				end
+				'h0008 : begin 	//'+' 연산자
+					if(sw_status == sw_idle || sw_status == sw_error) begin //sw_status가 sw_idle또는 sw_error일 때
+						sw_status <= sw_idle;  //초기 상태의 경우
+						calc_flag <= 0; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 20;
+					end else if (sw_status == sw_operator) begin //sw_status가 sw_operator상태일 경우(다른 연산자가 이미 입력되어 있는 경우)
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 15; //'+'연산, 'A' 출력
+						calc_flag <= 1;			   
+						num_temp <= cal_result;
+						opPast <= 4; //opPast를 null상태로 만듬 
+						opCurr <= 0; //operator'+' 
+					end else if (sw_status == sw_equal) begin //sw_status가 sw_equal일 경우
+						sw_status <= sw_operator; //sw_stautssw_operator
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 15; //'+'연산, 'A' 출력
+						calc_flag <= 1;
+						num_temp <= cal_result;
+						opPast <= 4; //opPast를 null상태로 만듬 
+						opCurr <= 0; //operator'+'
+					end else begin
+						sw_status <= sw_operator; //sw_stautssw_operator
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 15; //'+'연산, 'A' 출력
+						calc_flag <= 1;			   
+						opPast <= opCurr; //opPast를 opCurr상태로 만듬 
+						opCurr <= 0; //operator+ 
+					end
+				end
+				'h0010 : begin //'4'를 눌렀을 경우 	
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우 
+						sw_status <= sw_s1;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 4; //num1_6에 4 대입
+						num_temp <= 4;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; //sw_status에 sw_s2를 대입 
+						num1_5 <= num1_6;
+						num1_6 <= 4; //num1_6에 4 대입
+						if (num1_6 == 19)
+							num_temp <= -4;
+						else 
+							num_temp <= num1_6 * 10 + 4;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 4; //num1_6에 4 대입
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 4);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 4;			  
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; //sw_status에 sw_s4를 대입  
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 4; //num1_6에 4 대입
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 4);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 4);
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; //sw_status에 sw_s5를 대입 
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 4; //num1_6에 4 대입 
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 4);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 4;	
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; //sw_status에 sw_s6를 대입 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 4; //num1_6에 4 대입
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 4);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 4;	
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; 
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r  
+					end
+				end
+				'h0020 : begin //'5'를 눌렀을 경우 	
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우 
+						sw_status <= sw_s1; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 5; //num1_6에 5 대입 
+						num_temp <= 5;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; //sw_status에 sw_s2를 대입
+						num1_5 <= num1_6;
+						num1_6 <= 5; //num1_6에 5 대입
+						if (num1_6 == 19)
+							num_temp <= -5;
+						else 
+							num_temp <= num1_6 * 10 + 5;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; //sw_status에 sw_s3를 대입 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 5; //num1_6에 5 대입
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 5);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 5;			  
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; //sw_status에 sw_s4를 대입 
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 5; //num1_6에 5 대입
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 5);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 5);
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; //sw_status에 sw_s5를 대입 
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 5; //num1_6에 5 대입
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 5);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 5;	
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; //sw_status에 sw_s6를 대입 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 5; //num1_6에 5 대입	  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 5);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 5;	
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; //sw_status에 sw_error를 대입
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end
+				end
+				'h0040 : begin  //'6'을 눌렀을 경우 
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우
+						sw_status <= sw_s1; //sw_status에 sw_s1을 대입 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 6; //num1_6에 6 대입 
+						num_temp <= 6;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; //sw_status에 sw_s2를 대입 
+						num1_5 <= num1_6;
+						num1_6 <= 6; //num1_6에 6 대입 
+						if (num1_6 == 19)
+							num_temp <= -6;
+						else 
+							num_temp <= num1_6 * 10 + 6;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; //sw_status에 sw_s3를 대입 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 6; //num1_6에 6 대입 
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 6);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 6;			  
+						
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; //sw_status에 sw_s4를 대입 
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 6; //num1_6에 6 대입 
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 6);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 6);
+						
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; //sw_status에 sw_s5를 대입 
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 6; //num1_6에 6 대입 
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 6);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 6;	
+						
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; //sw_status에 sw_s6를 대입 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 6; //num1_6에 6 대입 		  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 6);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 6;	
+						
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; //sw_status에 sw_error를 대입
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end
+				end
+								
+				'h0080 : begin // '-'operator
+					if(sw_status == sw_idle) begin //초기 상태의 경우
+						sw_status <= sw_s1;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 19; //num1_6'-'
+                  					calc_flag <= 0; 
+					end else if (sw_status == sw_operator || sw_status == sw_error) begin  //sw_status가 sw_operator이거나 sw_error일 때
+						calc_flag <= 0;
+						num_temp <= cal_result;
+						sw_status <= sw_s1; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 19; //'-'연산 ,-출력
+					end else if (sw_status == sw_s1 && num1_6 == 19) begin
+						sw_status <= sw_idle;  
+						num1_6 <= 20;  
+					end else if (sw_status == sw_equal) begin //sw_status가 sw_equal일 때
+						sw_status <= sw_operator; //현재 상태에 사칙연산 상태 대입 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 16; //'-'연산, 'U'출력  
+						calc_flag <= 1;
+						num_temp <= cal_result;
+						opPast <= 4;
+						opCurr <= 1;
+					end else begin
+						sw_status <= sw_operator;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 16; //'-'연산, 'U'출력
+						calc_flag <= 1;			   
+						opPast <= opCurr;
+						opCurr <= 1; //operator - 
+					end
+				end
+					
+				'h0100 : begin //'7'을 눌렀을 경우 	
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우 
+						sw_status <= sw_s1; //sw_status에 sw_s1을 대입 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 7; //num1_6에 7 대입 
+						num_temp <= 7;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; //sw_status에 sw_s2를 대입 
+						num1_5 <= num1_6;
+						num1_6 <= 7;  //num1_6에 7 대입
+						if (num1_6 == 19)
+							num_temp <= -7;
+						else 						
+							num_temp <= (num1_6 * 10 + 7);			  
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; //sw_status에 sw_s3를 대입 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 7;  //num1_6에 7 대입
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 7);
+						else
+							num_temp <= (num1_5 * 100 + num1_6 * 10 + 7);
+								  
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; //sw_status에 sw_s4를 대입 
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 7; //num1_6에 7 대입
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 7);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 7);
+						
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; //sw_status에 sw_s5를 대입 
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 7; //num1_6에 7 대입
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 7);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 7;	
+									  
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; //sw_status에 sw_s6를 대입 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 7; //num1_6에 7 대입
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 7);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 7;	
+						
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; //sw_status에 sw_error를 대입 
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r
+					end
+				end
+					
+				'h0200 : begin //'8'을 눌렀을 경우 
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우
+						sw_status <= sw_s1; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 8; 
+						num_temp <= 8;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; 
+						num1_5 <= num1_6;
+						num1_6 <= 8; 
+						if (num1_6 == 19)
+							num_temp <= -8;
+						else 
+							num_temp <= num1_6 * 10 + 8;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 8;
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 8);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 8;			  
+						
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; 
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 8; 
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 8);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 8);
+						
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 8; 
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 8);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 8;	
+						
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 8; 	  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 8);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 8;	
+						
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; 
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r  
+					end
+				end
+					 
+				'h0400 : begin //'9'를 눌렀을 경우 
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우
+						sw_status <= sw_s1;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 9; 
+						num_temp <= 9;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; 
+						num1_5 <= num1_6;
+						num1_6 <= 9;
+						if (num1_6 == 19)
+							num_temp <= -9;
+						else 
+							num_temp <= num1_6 * 10 + 9;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3; 
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 9; 
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 9);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 9;			  
+						
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 9; 
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 9);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 9);
+						
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5; 
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 9; 
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 9);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 9;	
+						
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 9; 		  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 9);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 9;	
+						
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; 
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end
+				end
+								
+				'h0800 : begin // '*'을 눌렀을 경우 
+					if(sw_status == sw_idle || sw_status == sw_error) begin  //바로 * 누르면 에러 출력
+						sw_status <= sw_error;
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end else if (sw_status == sw_operator) begin //sw_status가 사칙연산일 경우 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 17; //'*'연산, 't'출력 
+						calc_flag <= 1;			   
+						num_temp <= cal_result;
+						opPast <= 4;
+						opCurr <= 2; //operator*
+					end else if (sw_status == sw_equal) begin //sw_status가 sw_equal일 경우 
+						sw_status <= sw_operator;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 17; //'*'연산, 't'출력 
+						calc_flag <= 1;
+						num_temp <= cal_result;
+						opPast <= 4;
+						opCurr <= 2;
+					end else begin
+						sw_status <= sw_operator; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 17; //'*'연산, 't'출력
+						calc_flag <= 1;			   
+						opPast <= opCurr;
+						opCurr <= 2; //operator * 
+					end
+				end
+					
+				'h1000 : begin // '='을 눌렀을 경우 
+					if(sw_status == sw_idle) begin   //sw_status가 sw_idle이면 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 0;  // 0 출력
+					end else if (sw_status == sw_equal) begin
+						calc_flag <= 1;
+						num_temp <= num_temp2;
+						opPast <= opPast;  //현재 저장된 operator opPast에 저장
+						opCurr <= 4;
+					end else begin
+						sw_status <= sw_equal;  //sw_status에 sw_idle대입	(초기 상태로)
+						calc_flag <= 1;			   
+						opPast <= opCurr;  //현재 저장된 operator opPast에 저장
+						opCurr <= 4;  //opCurr 초기화
+					end
+				end	
+				'h2000 : begin // '0'을 눌렀을 경우 
+					if(sw_status == sw_idle || sw_status == sw_error || sw_status == sw_operator) begin //sw_status가 sw_idle, sw_error, sw_ operator일 경우
+						sw_status <= sw_s1; 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 0;  // 0 출력
+						num_temp <= 0;
+					end else if (sw_status == sw_s1) begin //sw_status가 sw_s1일 경우
+						sw_status <= sw_s2; 
+						num1_5 <= num1_6;
+						num1_6 <= 0; 
+						if (num1_6 == 19)
+							num_temp <= 0;
+						else 
+							num_temp <= num1_6 * 10 + 0;
+						
+					end else if (sw_status == sw_s2) begin //sw_status가 sw_s2일 경우
+						sw_status <= sw_s3;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 0;
+						if (num1_5 == 19)
+							num_temp <= -(num1_6 * 10 + 0);
+						else 						
+							num_temp <= num1_5 * 100 + num1_6 * 10 + 0;	
+										
+					end else if (sw_status == sw_s3) begin //sw_status가 sw_s3일 경우
+						sw_status <= sw_s4; 
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 0; 
+						if (num1_4 == 19)
+							num_temp <= -(num1_5 * 100 + num1_6 * 10 + 0);
+						else
+							num_temp <= (num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 0);
+						
+					end else if (sw_status == sw_s4) begin //sw_status가 sw_s4일 경우
+						sw_status <= sw_s5;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 0; 
+						if (num1_3 == 19)
+							num_temp <= -(num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 0);
+						else
+							num_temp <= num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 0;	
+						
+					end else if (sw_status == sw_s5) begin //sw_status가 sw_s5일 경우
+						sw_status <= sw_s6; 
+						num1_1 <= num1_2;
+						num1_2 <= num1_3;
+						num1_3 <= num1_4;
+						num1_4 <= num1_5;
+						num1_5 <= num1_6;
+						num1_6 <= 0; 	  
+						if (num1_2 == 19)
+							num_temp <= -(num1_3*10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 0);
+						else
+							num_temp <= num1_2 * 100000 + num1_3 * 10000 + num1_4 * 1000 + num1_5 * 100 + num1_6 * 10 + 0;	
+							
+					end else if (sw_status == sw_s6) begin //sw_status가 sw_s6일 경우
+						sw_status <= sw_error; 
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end
+				end
+					
+				'h4000 : begin // 'CLEAR'을 눌렀을 경우 
+					sw_status <= sw_idle; //sw_status가 sw_idle일 경우 
+					num1_1 <= 20; //null
+					num1_2 <= 13; //null
+					num1_3 <= 14; //null
+					num1_4 <= 10; //null
+					num1_5 <= 15; //null
+					num1_6 <= 11; //null
+					cal_result <= 0; //0 대입 
+					num_temp <= 0;
+				end
+				'h8000 : begin // '/'연산을 눌렀을 경우
+					if(sw_status==sw_operator && opCurr==3) begin //'/'연산자 두번 눌렀을 경우
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 14; //p
+						num1_5 <= 10; //e
+						num1_6 <= 11; //r //percent를 뜻하는 per 출력
+						
+						calc_flag <= 0;		
+						opCurr<=5;
+					end else if (sw_status == sw_idle || sw_status == sw_error) begin //sw_status가 sw_idle일 경우
+						sw_status <= sw_error;  //바로 / 누르면 에러
+						num1_1 <= 20; //null
+						num1_2 <= 10; //E
+						num1_3 <= 11; //r
+						num1_4 <= 11; //r
+						num1_5 <= 12; //o
+						num1_6 <= 11; //r 
+					end else if (sw_status == sw_operator) begin //sw_status가 sw_operator일 경우 
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 18; //'/'연산, 'd'출력
+						calc_flag <= 1;		
+						num_temp <= cal_result;			
+						opPast <= 4;
+						opCurr <= 3; //operator+ 
+					end else if (sw_status == sw_equal) begin //sw_status가 sw_equal일 경우
+						sw_status <= sw_operator;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 18; //'/'연산, 'd'출력
+						calc_flag <= 1;
+						num_temp <= cal_result;
+						opPast <= 4;
+						opCurr <= 3;
+					end else begin
+						sw_status <= sw_operator;
+						num1_1 <= 20; //null
+						num1_2 <= 20; //null
+						num1_3 <= 20; //null
+						num1_4 <= 20; //null
+						num1_5 <= 20; //null
+						num1_6 <= 18; //'/'연산, 'd'출력
+						calc_flag <= 1;			   
+						opPast <= opCurr;
+						opCurr <= 3; //operator / 
+					end
+				end
+					
+			endcase
+		end
+end
+
+//sw_clk <= init_counter(2); // ~40ms clock,
+//fnd_clk <= init_counter(1); // ~2ms clock, 50MHz 7-segmentclock
+
+
+always @ (num1_1, num1_2, num1_3, num1_4, num1_5, num1_6)
+begin
+	if(num1_1 == 0)	 //num1_1이 0이면 
+		seg_100000 <= 7'b0111111; //seg_100000에 "0"을 출력
+	else if (num1_1 == 1)	 //num1_1이 1이면 
+		seg_100000 <= 7'b0000110; //seg_100000에 "1"을 출력
+	else if (num1_1 == 2)	//num1_1이 2이면
+		seg_100000 <= 7'b1011011; //seg_100000에 "2"을 출력, 이후 생략
+	else if (num1_1 == 3)	
+		seg_100000 <= 7'b1001111; 
+	else if (num1_1 == 4)	
+		seg_100000 <= 7'b1100110; 
+	else if (num1_1 == 5)	
+		seg_100000 <= 7'b1101101; 
+	else if (num1_1 == 6)	 
+		seg_100000 <= 7'b1111101; 
+	else if (num1_1 == 7)	
+		seg_100000 <= 7'b0100111; 
+	else if (num1_1 == 8)	
+		seg_100000 <= 7'b1111111; 
+	else if (num1_1 == 9)	
+		seg_100000 <= 7'b1101111; 
+	else if (num1_1 == 10)	 
+		seg_100000 <= 7'b1001111; 
+	else if (num1_1 == 11)	 
+		seg_100000 <= 7'b1010000;  //"r"출력
+	else if (num1_1 == 12)	
+		seg_100000 <= 7'b1011100;  //"o"출력 
+	else if (num1_1 == 13)	
+		seg_100000 <= 7'b0111001;  //"c"출력 
+	else if (num1_1 == 14)	
+		seg_100000 <= 7'b0111000;  //"L"출력 
+	else if (num1_1 == 15)	
+		seg_100000 <= 7'b1110111;  //"A"출력
+	else if (num1_1 == 16)	
+		seg_100000 <= 7'b0111110;  //"U"출력
+	else if (num1_1 == 17)	
+		seg_100000 <= 7'b1111000;  //"t"출력 
+	else if (num1_1 == 18)	 
+		seg_100000 <= 7'b1011110;  //"d"출력
+	else if (num1_1 == 19)	 
+		seg_100000 <= 7'b1000000;  //"-"출력 
+	else  //그 외의 경우
+		seg_100000 <= 7'b0000000; // 미출력
+	
+
+	if(num1_2 == 0)	 //num1_2이 0이면 
+		seg_10000 <= 7'b0111111; //seg_100000에 "0"을 출력
+	else if (num1_2 == 1)	 //num1_2이 1이면
+		seg_10000 <= 7'b0000110; //seg_100000에 "1"을 출력
+	else if (num1_2 == 2)	//num1_2이 2이면
+		seg_10000 <= 7'b1011011; //seg_100000에 "2"을 출력, 이후 생략
+	else if (num1_2 == 3)
+		seg_10000 <= 7'b1001111; 
+	else if (num1_2 == 4)	
+		seg_10000 <= 7'b1100110; 
+	else if (num1_2 == 5)	
+		seg_10000 <= 7'b1101101; 
+	else if (num1_2 == 6)	
+		seg_10000 <= 7'b1111101; 
+	else if (num1_2 == 7)	
+		seg_10000 <= 7'b0100111; 
+	else if (num1_2 == 8)	
+		seg_10000 <= 7'b1111111; 
+	else if (num1_2 == 9)	
+		seg_10000 <= 7'b1101111; 
+	else if (num1_2 == 10)	
+		seg_10000 <= 7'b1111001; 
+	else if (num1_2 == 11)	
+		seg_10000 <= 7'b1010000; 
+	else if (num1_2 == 12)	
+		seg_10000 <= 7'b1011100; 
+	else if (num1_2 == 13)	
+		seg_10000 <= 7'b0111001; 
+	else if (num1_2 == 14)	
+		seg_10000 <= 7'b0111000; 
+	else if (num1_2 == 15)	 
+		seg_10000 <= 7'b1110111; 
+	else if (num1_2 == 16)	
+		seg_10000 <= 7'b0111110; 
+	else if (num1_2 == 17)	
+		seg_10000 <= 7'b1111000; 
+	else if (num1_2 == 18)	
+		seg_10000 <= 7'b1011110; 
+	else if (num1_2 == 19)	
+		seg_10000 <= 7'b1000000;
+	else 
+		seg_10000 <= 7'b0000000; 
+	
+
+	if(num1_3 == 0)	
+		seg_1000 <= 7'b0111111;
+	else if (num1_3 == 1)	 
+		seg_1000 <= 7'b0000110; 
+	else if (num1_3 == 2)	
+		seg_1000 <= 7'b1011011; 
+	else if (num1_3 == 3)	
+		seg_1000 <= 7'b1001111; 
+	else if (num1_3 == 4)	
+		seg_1000 <= 7'b1100110; 
+	else if (num1_3 == 5)	
+		seg_1000 <= 7'b1101101; 
+	else if (num1_3 == 6)	
+		seg_1000 <= 7'b1111101; 
+	else if (num1_3 == 7)	
+		seg_1000 <= 7'b0100111; 
+	else if (num1_3 == 8)	
+		seg_1000 <= 7'b1111111; 
+	else if (num1_3 == 9)	
+		seg_1000 <= 7'b1101111; 
+	else if (num1_3 == 10)	
+		seg_1000 <= 7'b1111001; 
+	else if (num1_3 == 11)	
+		seg_1000 <= 7'b1010000; 
+	else if (num1_3 == 12)	 
+		seg_1000 <= 7'b1011100; 
+	else if (num1_3 == 13)	  
+		seg_1000 <= 7'b0111001; 
+	else if (num1_3 == 14)	
+		seg_1000 <= 7'b0111000; 
+	else if (num1_3 == 15)	
+		seg_1000 <= 7'b1110111; 
+	else if (num1_3 == 16)	
+		seg_1000 <= 7'b0111110; 
+	else if (num1_3 == 17)	 
+		seg_1000 <= 7'b1111000; 
+	else if (num1_3 == 18)	 
+		seg_1000 <= 7'b1011110; 
+	else if (num1_3 == 19)	 
+		seg_1000 <= 7'b1000000; 
+	else 
+		seg_1000 <= 7'b0000000; 
+	
+
+	if(num1_4==0)  
+		seg_100 <= 7'b0111111; 
+	else if (num1_4==1)  
+		seg_100 <= 7'b0000110;
+	else if (num1_4==2)  
+		seg_100 <= 7'b1011011; 
+	else if (num1_4==3)  
+		seg_100 <= 7'b1001111; 
+	else if (num1_4==4)  
+		seg_100 <= 7'b1100110; 
+	else if (num1_4==5)  
+		seg_100 <= 7'b1101101;
+	else if (num1_4==6)  
+		seg_100 <= 7'b1111101; 
+	else if (num1_4==7)  
+		seg_100 <= 7'b0100111; 
+	else if (num1_4==8) 
+		seg_100 <= 7'b1111111; 
+	else if (num1_4==9)   
+		seg_100 <= 7'b1101111;
+	else if (num1_4 == 10)	 
+		seg_100 <= 7'b1111001; 
+	else if (num1_4 == 11)	
+		seg_100 <= 7'b1010000; 
+	else if (num1_4 == 12)	
+		seg_100 <= 7'b1011100; 
+	else if (num1_4 == 13)	 
+		seg_100 <= 7'b0111001; 
+	else if (num1_4 == 14)	
+		seg_100 <= 7'b0111000; 
+	else if (num1_4 == 15)	 
+		seg_100 <= 7'b1110111; 
+	else if (num1_4 == 16)	
+		seg_100 <= 7'b0111110; 
+	else if (num1_4 == 17)	 
+		seg_100 <= 7'b1111000; 
+	else if (num1_4 == 18)	
+		seg_100 <= 7'b1011110; 
+	else if (num1_4 == 19)	
+		seg_100 <= 7'b1000000; 
+	else  
+		seg_100 <= 7'b0000000; 
+	
+
+	if(num1_5==0)
+		seg_10 <= 7'b0111111; 
+	else if (num1_5==1) 
+		seg_10 <= 7'b0000110; 
+	else if (num1_5==2)
+		seg_10 <= 7'b1011011; 
+	else if (num1_5==3) 
+		seg_10 <= 7'b1001111; 
+	else if (num1_5==4)  
+		seg_10 <= 7'b1100110; 
+	else if (num1_5==5) 
+		seg_10 <= 7'b1101101; 
+	else if (num1_5==6) 
+		seg_10 <= 7'b1111101; 
+	else if (num1_5==7) 
+		seg_10 <= 7'b0100111; 
+	else if (num1_5==8)  
+		seg_10 <= 7'b1111111; 
+	else if (num1_5==9)  
+		seg_10 <= 7'b1101111; 
+	else if (num1_5 == 10)	 
+		seg_10 <= 7'b1111001; 
+	else if (num1_5 == 11)	
+		seg_10 <= 7'b1010000; 
+	else if (num1_5 == 12)	
+		seg_10 <= 7'b1011100; 
+	else if (num1_5 == 13)	 
+		seg_10 <= 7'b0111001; 
+	else if (num1_5 == 14)	
+		seg_10 <= 7'b0111000; 
+	else if (num1_5 == 15)	 
+		seg_10 <= 7'b1110111; 
+	else if (num1_5 == 16)	 
+		seg_10 <= 7'b0111110; 
+	else if (num1_5 == 17)	 
+		seg_10 <= 7'b1111000; 
+	else if (num1_5 == 18)	
+		seg_10 <= 7'b1011110; 
+	else if (num1_5 == 19)	 
+		seg_10 <= 7'b1000000; 
+	else 
+		seg_10 <= 7'b0000000; 
+	
+
+	if(num1_6==0)  
+		seg_1 <= 7'b0111111; 
+	else if (num1_6==1)  
+		seg_1 <= 7'b0000110; 
+	else if (num1_6==2)  
+		seg_1 <= 7'b1011011; 
+	else if (num1_6==3) 
+		seg_1 <= 7'b1001111; 
+	else if (num1_6==4)  
+		seg_1 <= 7'b1100110; 
+	else if (num1_6==5)  
+		seg_1 <= 7'b1101101; 
+	else if (num1_6==6)   
+		seg_1 <= 7'b1111101; 
+	else if (num1_6==7)  
+		seg_1 <= 7'b0100111; 
+	else if (num1_6==8)  
+		seg_1 <= 7'b1111111; 
+	else if (num1_6==9) 
+		seg_1 <= 7'b1101111; 
+	else if (num1_6 == 10)	
+		seg_1 <= 7'b1111001; 
+	else if (num1_6 == 11)	  
+		seg_1 <= 7'b1010000; 
+	else if (num1_6 == 12)	
+		seg_1 <= 7'b1011100;
+	else if (num1_6 == 13)	 
+		seg_1 <= 7'b0111001; 
+	else if (num1_6 == 14)	 
+		seg_1 <= 7'b0111000; 
+	else if (num1_6 == 15)	 
+		seg_1 <= 7'b1110111; 
+	else if (num1_6 == 16)	 
+		seg_1 <= 7'b0111110; 
+	else if (num1_6 == 17)	 
+		seg_1 <= 7'b1111000; 
+	else if (num1_6 == 18)	
+		seg_1 <= 7'b1011110; 
+	else if (num1_6 == 19)	
+		seg_1 <= 7'b1000000; 
+	else  
+		seg_1 <= 7'b0000000;
+end	
+
+
+always @ (posedge fnd_clk) //감지신호가 fnd_clk, fnd_cnt인 process
+begin
+	//fnd_clk가 rising_edge라면
+		fnd_cnt <= fnd_cnt+1;		//fnd_cnt를 1씩 증가
+		case (fnd_cnt) 			  //fnd_cnt 값을 확인
+			5 : begin 				  //5일때 
+				fnd_d <= seg_100000; //fnd_d에 seg_100000을 대입
+				fnd_cnt <= 4; end
+			4 : begin 				  //4일때 
+				fnd_d <= seg_10000; //fnd_d에 seg_10000을 대입
+				fnd_cnt <= 3; end
+			3 : begin 				  //3일때 
+				fnd_d <= seg_1000; //fnd_d에 seg_1000을 대입
+				fnd_cnt <= 2; end
+			2 : begin 				  //2일때 
+				fnd_d <= seg_100; //fnd_d에 seg_100을 대입
+				fnd_cnt <= 1; end
+			1 : begin 				  //1일때 
+				fnd_d <= seg_10; //fnd_d에 seg_10을 대입
+				fnd_cnt <= 0; end
+			0 : begin 				  //0일때
+				fnd_d <= seg_1; //fnd_d에 seg_1을 대입
+				fnd_cnt <= 5; end
+						  //기타 값이라면 변화 x
+		endcase
+		
+		if(fnd_cnt == 5)  //fnd_cnt 값이 5일때 
+			fnd_s[5] <= 0;   //fnd_s(5)에 '0' 대입 
+		else	
+			fnd_s[5] <= 1;    //fnd_s(5)에 '1' 대입 
+		
+
+		if(fnd_cnt == 4)  //fnd_cnt 값이 4일때
+			fnd_s[4] <= 0;  //fnd_s(4)에 '0' 대입
+		else			
+			fnd_s[4] <= 1;  //fnd_s(4)에 '1' 대입 
+		
+
+		if(fnd_cnt == 3)  
+			fnd_s[3] <= 0;  
+		else			  
+			fnd_s[3] <= 1; 
+		
+
+		if(fnd_cnt == 2) 
+			fnd_s[2] <= 0;   
+		else			  
+			fnd_s[2] <= 1;  
+		
+
+		if(fnd_cnt == 1)  
+			fnd_s[1] <= 0;  
+		else			  
+			fnd_s[1] <= 1;   
+		
+
+		if(fnd_cnt == 0)  
+			fnd_s[1] <= 0;   
+		else			 
+			fnd_s[1] <= 1;  
+		
+end
+
+endmodule

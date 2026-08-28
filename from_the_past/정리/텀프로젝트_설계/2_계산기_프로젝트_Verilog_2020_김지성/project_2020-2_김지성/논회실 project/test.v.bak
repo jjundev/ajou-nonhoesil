@@ -1,0 +1,28 @@
+module calcul(clock_50m, pb, AC, DR, OUT);
+  
+  //input output
+  input [5:0] AC;
+  input [5:0] DR;
+  output reg [5:0] OUT;
+  
+  //clock_
+  reg [15:0] npb;
+  reg [31:0] init_counter;
+  reg sw_clk;
+  reg fnd_clk;
+  reg [1:0] fnd_cnt;
+  
+  //7-segment
+  reg [6:0] seg_100000;
+  reg [6:0] seg_10000;
+  reg [6:0] seg_1000;
+  reg [6:0] seg_100;
+  reg [6:0] seg_10;
+  reg [6:0] seg_1;
+ 
+  //switch control
+  
+  //sw_status
+  
+  //initial
+  

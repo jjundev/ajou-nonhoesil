@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Module 01] 기본 게이트 & CMOS 특성 - 스터디 슬라이드 덱</title>
+    <!-- KaTeX CSS & JS for beautiful LaTeX formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- Pretendard WebFont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --accent: #1677ff;
+      --accent-hover: #0958d9;
+      --accent-light: #e6f4ff;
+      --surface: #f7f8fa;
+      --surface-subtle: #ffffff;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --border-subtle: #edf0f5;
+      
+      --dark-bg: #10141d;
+      --dark-surface: #181f2c;
+      --dark-fg: #f3f4f6;
+      --dark-muted: #9ca3af;
+      --dark-border: #263246;
+      --dark-accent-light: rgba(22, 119, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Top Module Nav */
+    .top-module-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.dark-active-slide .top-module-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-bottom-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .module-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    body.dark-active-slide .module-link { color: var(--dark-muted); }
+
+    .module-link:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    body.dark-active-slide .module-link:hover {
+      color: #60a5fa;
+      background: var(--dark-accent-light);
+    }
+
+    .module-link.active {
+      background: var(--accent);
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    body.dark-active-slide .hub-link { color: var(--dark-fg); }
+
+    /* Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      padding: 68px 60px 84px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-sizing: border-box;
+    }
+
+    .slide.light { background-color: var(--bg); color: var(--fg); }
+    .slide.hero.light { background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%); color: var(--fg); }
+    .slide.dark { background-color: var(--dark-bg); color: var(--dark-fg); }
+    .slide.hero.dark { background: radial-gradient(circle at 80% 20%, #17243c 0%, #0d111a 100%); color: var(--dark-fg); }
+
+    .slide.dark .surface-card, .slide.hero.dark .surface-card {
+      background-color: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+    .slide.dark .muted-text, .slide.hero.dark .muted-text { color: var(--dark-muted); }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .module-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .slide.dark .badge, .slide.hero.dark .badge {
+      background-color: var(--dark-accent-light);
+      color: #5c9cff;
+      border: 1px solid rgba(92, 156, 255, 0.3);
+    }
+
+    .topic-tag { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .slide.dark .topic-tag, .slide.hero.dark .topic-tag { color: var(--dark-muted); }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+    .slide.hero .slide-title { font-size: 38px; }
+
+    .slide-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 4px;
+      max-width: 90ch;
+      word-break: keep-all;
+    }
+    .slide.dark .slide-subtitle, .slide.hero.dark .slide-subtitle { color: var(--dark-muted); }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; align-items: stretch; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: stretch; }
+
+    .surface-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .surface-card.highlight { border-color: var(--accent); background-color: #fcfdfe; }
+    .slide.dark .surface-card.highlight { border-color: var(--accent); background-color: #172133; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .card-title .icon-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slide.dark .card-title .icon-pill { background: var(--dark-accent-light); color: #5c9cff; }
+
+    .card-body { font-size: 14px; line-height: 1.7; color: inherit; word-break: keep-all; }
+    .card-body ul { padding-left: 18px; margin: 4px 0; }
+    .card-body li { margin-bottom: 5px; }
+    .card-body li:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .slide.dark .formula-box { background-color: #111722; border-color: var(--dark-border); color: #60a5fa; }
+
+    .code-block {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #f472b6; font-weight: 700; }
+    .code-block .type { color: #38bdf8; }
+    .code-block .fn { color: #fbbf24; }
+    .code-block .comment { color: #64748b; font-style: italic; }
+    .code-block .num { color: #a78bfa; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .slide.dark .data-table { background: var(--dark-surface); border-color: var(--dark-border); }
+    .data-table th { background-color: var(--surface); color: var(--fg); font-weight: 700; padding: 7px 9px; border: 1px solid var(--border); }
+    .slide.dark .data-table th { background-color: #141b27; color: var(--dark-fg); border-color: var(--dark-border); }
+    .data-table td { padding: 7px 9px; border: 1px solid var(--border); color: inherit; }
+    .slide.dark .data-table td { border-color: var(--dark-border); }
+    .data-table .highlight-cell { background-color: var(--accent-light); font-weight: 700; color: var(--accent); }
+    .slide.dark .data-table .highlight-cell { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    .alert-callout {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+      background-color: var(--surface);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .alert-callout.warning { border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e; }
+    .slide.dark .alert-callout.warning { background-color: #2b1f0c; color: #fde68a; border-left-color: #f59e0b; }
+
+    /* Bottom Controller */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark-active-slide .bottom-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-top-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .nav-btn { background-color: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .slide-counter { font-size: 14px; font-weight: 700; font-family: var(--font-mono); min-width: 65px; text-align: center; }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 380px;
+      height: 6px;
+      background-color: var(--border-subtle);
+      border-radius: 999px;
+      margin: 0 20px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    body.dark-active-slide .progress-bar-container { background-color: var(--dark-border); }
+    .progress-bar { height: 100%; width: 10%; background-color: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+
+    .action-controls { display: flex; align-items: center; gap: 8px; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .action-btn { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.active { background-color: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    body.dark-active-slide .action-btn.active { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    /* Drawer & Modal */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 60px;
+      right: 0;
+      width: 440px;
+      max-height: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 0;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.dark-active-slide .speaker-notes-drawer { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .speaker-notes-drawer.open { transform: translateX(0); }
+    .drawer-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    body.dark-active-slide .drawer-header { border-bottom-color: var(--dark-border); }
+    .drawer-body { padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .overview-modal.open { display: flex; }
+    .overview-content {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      max-width: 1080px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    body.dark-active-slide .overview-content { background: #121824; color: var(--dark-fg); }
+    .overview-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .overview-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px;
+    }
+    body.dark-active-slide .overview-card { background: var(--dark-surface); border-color: var(--dark-border); }
+    .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .overview-card.active { border-color: var(--accent); border-width: 2px; background: var(--accent-light); }
+    body.dark-active-slide .overview-card.active { background: var(--dark-accent-light); }
+    .overview-num { font-size: 11px; font-weight: 700; color: var(--accent); }
+    .overview-title { font-size: 13.5px; font-weight: 700; margin-top: 4px; line-height: 1.4; }
+
+    .slide-notes { display: none; }
+    kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      color: #444;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation -->
+<nav class="top-module-bar">
+  <a href="index.html" class="hub-link">⚡ 논회실 스터디 덱 허브</a>
+  <div class="module-nav-links">
+    <a href="deck-00-basics.html" class="module-link ">M00 핵심기초</a>
+    <a href="deck-01-gates-cmos.html" class="module-link active">M01 기본게이트·CMOS</a>
+    <a href="deck-02-combinational.html" class="module-link ">M02 조합논리</a>
+    <a href="deck-03-sequential.html" class="module-link ">M03 순서논리</a>
+    <a href="deck-04-memory-dac-adc.html" class="module-link ">M04 기억소자·DAC/ADC</a>
+    <a href="deck-05-verilog-fpga.html" class="module-link ">M05 Verilog·FPGA</a>
+  </div>
+</nav>
+
+<div class="deck-container">
+  <div class="slide-track" id="slideTrack">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide hero dark" data-screen-label="01 Cover">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Module 01</span>
+            <span class="topic-tag">Lab 1 & Lab 2 Guide</span>
+          </div>
+          <h1 class="slide-title">기본 게이트 & CMOS 전기적 특성</h1>
+          <p class="slide-subtitle">74 시리즈 핀아웃, CMOS 인버터 NMOS/PMOS 스위치 모델, VTC 곡선, 4대 전압 규격 및 노이즈 마진</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">1</span> 74 시리즈 IC 핀아웃</div>
+            <div class="card-body">
+              <ul>
+                <li>74HC00(NAND), 74HC02(NOR), 74HC04(NOT)</li>
+                <li>74HC08(AND), 74HC32(OR), 74HC86(XOR)</li>
+                <li>DIP14 패키지: <strong>Pin 14 = VCC(5V), Pin 7 = GND</strong></li>
+                <li>노치(Notch) 식별 및 핀 번호 반시계 방향 부여</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> CMOS 상보 스위칭 원리</div>
+            <div class="card-body">
+              <ul>
+                <li>PMOS 풀업(PUN): <strong>LOW 입력 시 ON</strong> ($R_p \approx 160\Omega$)</li>
+                <li>NMOS 풀다운(PDN): <strong>HIGH 입력 시 ON</strong> ($R_n \approx 80\Omega$)</li>
+                <li>정상 상태(DC) 정적 전류 소모: <strong>$0\mu\text{A}$</strong></li>
+                <li>PUN/PDN의 위상 쌍대성 (NAND 직렬/병렬 vs NOR 병렬/직렬)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> 전기적 특성 & 노이즈 마진</div>
+            <div class="card-body">
+              <ul>
+                <li>4대 임계 전압: $V_{IH,\min}, V_{IL,\max}, V_{OH,\min}, V_{OL,\max}$</li>
+                <li>DC 노이즈 마진: $NM_H, NM_L$ 계산</li>
+                <li><strong>74LS $\to$ 74HC 직결 금지 이슈</strong> ($-0.8\text{V}$ 마진)</li>
+                <li>플로팅(Floating) 입력 방지 & 풀업/풀다운 저항</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Module 01 인트로 강의 가이드]</h4>
+        <p>실험 1과 2는 디지털 논리 게이트의 수학적 기능(진리표)뿐 아니라 <strong>물리적/전기적 실체(전압, 전류, 지연, 전력)</strong>를 배우는 첫 번째 관문입니다.</p>
+        <p><strong>발표자 강조점:</strong> 디지털 회로도 물리적으로는 아날로그 MOSFET 트랜지스터로 만들어집니다. 전압 마진과 플로팅 방지를 이해하지 못하면 실습실에서 IC가 과열되어 타버립니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: 74 시리즈 IC 핀아웃 -->
+    <section class="slide light" data-screen-label="02 74 IC 핀아웃">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Hardware Specs</span>
+            <span class="topic-tag">DIP-14 Pinouts</span>
+          </div>
+          <h2 class="slide-title">74 시리즈 기본 논리 IC 핀아웃 & 패키지</h2>
+          <p class="slide-subtitle">74HC00~74HC86의 핀 구성 및 빵판 결선 시 칩 방향 식별법</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 DIP-14 표준 전원 및 게이트 배치</div>
+            <div class="code-block">
+        ┌───────∪───────┐
+   1A ─┤ 1          14 ├─ VCC (+5V)
+   1B ─┤ 2   74HC00  13 ├─ 4B
+   1Y ─┤ 3  (Quad    12 ├─ 4A
+   2A ─┤ 4   NAND)   11 ├─ 4Y
+   2B ─┤ 5           10 ├─ 3B
+   2Y ─┤ 6            9 ├─ 3A
+  GND ─┤ 7            8 ├─ 3Y
+        └───────────────┘</div>
+            <div style="font-size:13px; line-height:1.6; margin-top:8px;">
+              • <strong>VCC: Pin 14</strong>, <strong>GND: Pin 7</strong> (모든 표준 14핀 74시리즈 공통)<br>
+              • 반원형 노치(Notch)가 왼쪽(위쪽)을 향할 때 좌하단이 Pin 7, 우상단이 Pin 14.
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 주요 게이트별 IC 형번 및 주의점</div>
+            <table class="data-table">
+              <thead>
+                <tr><th>품명</th><th>기능 설명</th><th>내부 게이트 수</th><th>특이사항</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>74HC04</strong></td><td>Hex Inverter</td><td>6개</td><td>1A-1Y, 2A-2Y 단일 입출력</td></tr>
+                <tr><td><strong>74HC08</strong></td><td>Quad 2-Input AND</td><td>4개</td><td>1A,1B ➔ 1Y 표준 배치</td></tr>
+                <tr><td><strong>74HC32</strong></td><td>Quad 2-Input OR</td><td>4개</td><td>1A,1B ➔ 1Y 표준 배치</td></tr>
+                <tr><td><strong>74HC00</strong></td><td>Quad 2-Input NAND</td><td>4개</td><td>범용 게이트, 1A,1B ➔ 1Y</td></tr>
+                <tr><td><strong style="color:#ef4444;">74HC02</strong></td><td>Quad 2-Input NOR</td><td>4개</td><td>★ <strong>1Y가 Pin 1!</strong> (출력/입력 역전)</td></tr>
+                <tr><td><strong>74HC86</strong></td><td>Quad 2-Input XOR</td><td>4개</td><td>1A,1B ➔ 1Y 표준 배치</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="alert-callout warning">
+          ⚠️ <strong>주의:</strong> 74HC02(NOR)는 다른 IC들과 달리 <strong>Pin 1이 출력(1Y)</strong>이고 Pin 2, 3이 입력(1A, 1B)입니다. 다른 칩과 헷갈려 결선하면 출력이 쇼트됩니다!
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[74 시리즈 결선 시 주의사항]</h4>
+        <p>실습생들이 빵판에서 칩을 반대로 꽂아 14번을 GND에, 7번을 VCC에 넣는 역전압 사고가 빈번합니다. 이 경우 칩이 매우 뜨거워지며 소손됩니다.</p>
+        <p><strong>74HC02 역배열 주의:</strong> 7400, 7408, 7432는 1-2번 입력, 3번 출력이지만, 7402는 1번 출력, 2-3번 입력입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: CMOS 인버터 스위치 모델 -->
+    <section class="slide hero light" data-screen-label="03 CMOS 인버터">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Transistor Level</span>
+            <span class="topic-tag">CMOS Inverter Switching</span>
+          </div>
+          <h2 class="slide-title">CMOS 인버터 스위치 모델 & 상보 스위칭</h2>
+          <p class="slide-subtitle">PMOS(풀업)와 NMOS(풀다운)의 상보적 ON/OFF 및 정적 전류 0μA의 원리</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+               VDD (+5.0V)
+                   │
+            ┌──────┴──────┐
+            │  PMOS (PUN) │  <── VIN = 0V: ON (Rp ≈ 160Ω)
+     VIN ───┤  (풀업 망)  │      VIN = 5V: OFF (Roff > 1MΩ)
+            └──────┬──────┘
+                   ├────────────── VOUT (출력)
+            ┌──────┴──────┐
+            │  NMOS (PDN) │  <── VIN = 5V: ON (Rn ≈ 80Ω)
+     VIN ───┤ (풀다운 망) │      VIN = 0V: OFF (Roff > 1MΩ)
+            └──────┬──────┘
+                   │
+                GND (0V)</div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 동작 상태별 분석</div>
+            <div class="card-body">
+              <p><strong>1. 입력 $V_{IN} = 0\text{V}$ (Logic 0):</strong></p>
+              <ul style="margin-bottom:8px;">
+                <li>$V_{GS,p} = -5\text{V} \le V_{tp} \implies$ <strong>PMOS ON</strong> ($R_p \approx 160\Omega$)</li>
+                <li>$V_{GS,n} = 0\text{V} < V_{tn} \implies$ <strong>NMOS OFF</strong> ($R_{off} > 1\text{M}\Omega$)</li>
+                <li>$V_{OUT} = 5.0\text{V}$ (Logic 1, Strong 1)</li>
+              </ul>
+              <p><strong>2. 입력 $V_{IN} = 5\text{V}$ (Logic 1):</strong></p>
+              <ul>
+                <li>$V_{GS,p} = 0\text{V} > V_{tp} \implies$ <strong>PMOS OFF</strong> ($R_{off} > 1\text{M}\Omega$)</li>
+                <li>$V_{GS,n} = 5\text{V} \ge V_{tn} \implies$ <strong>NMOS ON</strong> ($R_n \approx 80\Omega$)</li>
+                <li>$V_{OUT} = 0.0\text{V}$ (Logic 0, Strong 0)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[CMOS 저전력의 본질]</h4>
+        <p>정상 상태(Static State)에서는 PMOS와 NMOS 중 하나가 반드시 완벽히 꺼져 있으므로 VDD에서 GND로 흐르는 직류 경로가 차단됩니다.</p>
+        <p>따라서 정적 소비 전력은 누설 전류(수 pA~nA)에 불과하여 배터리 구동 기기에 이상적입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: 복합 CMOS 게이트 쌍대성 -->
+    <section class="slide dark" data-screen-label="04 복합 CMOS 게이트">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Circuit Duality</span>
+            <span class="topic-tag">NAND vs NOR PUN/PDN</span>
+          </div>
+          <h2 class="slide-title">복합 CMOS 게이트의 위상 쌍대성(Topological Duality)</h2>
+          <p class="slide-subtitle">NAND(NMOS 직렬, PMOS 병렬) vs NOR(NMOS 병렬, PMOS 직렬)의 구조 비교</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card highlight">
+            <div class="card-title">📌 NAND 게이트 : $Y = \overline{A \cdot B}$</div>
+            <div class="card-body">
+              <p>• <strong>PDN (NMOS): 직렬 연결 (Series)</strong><br>
+              $A$와 $B$가 모두 1이어야 출력이 GND로 방전 ($Y=0$).</p>
+              <p>• <strong>PUN (PMOS): 병렬 연결 (Parallel)</strong><br>
+              $A$ 또는 $B$ 중 하나라도 0이면 VDD에 연결 ($Y=1$).</p>
+              <div class="formula-box" style="margin-top:6px;">장점: 전자 이동도 빠른 NMOS 직렬 ➔ 고속·소형</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 NOR 게이트 : $Y = \overline{A + B}$</div>
+            <div class="card-body">
+              <p>• <strong>PDN (NMOS): 병렬 연결 (Parallel)</strong><br>
+              $A$ 또는 $B$ 중 하나라도 1이면 출력이 GND로 방전 ($Y=0$).</p>
+              <p>• <strong>PUN (PMOS): 직렬 연결 (Series)</strong><br>
+              $A$와 $B$가 모두 0이어야 VDD에 연결 ($Y=1$).</p>
+              <div class="formula-box" style="margin-top:6px;">단점: 정공 이동도 느린 PMOS 직렬 ➔ 면적 큼·지연 증가</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[NAND가 NOR보다 널리 쓰이는 반도체적 이유]</h4>
+        <p>실리콘 반도체에서 전자(Electron)의 이동도는 정공(Hole)보다 약 2~3배 빠릅니다. 따라서 PMOS는 동일 전류를 흘리기 위해 NMOS보다 채널 폭($W$)을 2~3배 넓혀야 합니다.</p>
+        <p>NOR 게이트는 PMOS가 직렬로 들어가므로 온 저항을 줄이기 위해 트랜지스터 크기를 4~6배 키워야 해서 칩 면적과 기생 커패시턴스가 급증합니다. 그래서 반도체 업계는 NAND 설계를 선호합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5: VTC & 4대 임계 전압 -->
+    <section class="slide light" data-screen-label="05 VTC & 임계전압">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">DC Characteristics</span>
+            <span class="topic-tag">VTC & 4 Critical Voltages</span>
+          </div>
+          <h2 class="slide-title">전압 전달 특성 곡선(VTC) & 4대 임계 전압</h2>
+          <p class="slide-subtitle">기울기 $dV_{OUT}/dV_{IN} = -1$로 정의되는 $V_{IL}, V_{IH}, V_{OL}, V_{OH}$와 불확정 영역</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+   VOUT (V)
+5.0 │───────────────┐
+    │               4.4 │- - - - - - - - \ - - - - - VOH,min (4.4V / 3.84V)
+    │                 \ (기울기 = -1)
+2.5 │                  \  <── 중간 임계값 (Vth ≈ 2.5V)
+    │                   0.3 │- - - - - - - - - - \ - - - VOL,max (0.1V / 0.33V)
+0.0 └───────────────┬────┴───┬──► VIN (V)
+                   VIL      VIH
+                 (1.5V)   (3.5V)
+    │◄─ Valid LOW ─►│◄ Undef ►│◄── Valid HIGH ──►│</div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 74HC 기준 4대 전압 규격 ($V_{CC} = 5\text{V}$)</div>
+            <table class="data-table">
+              <thead>
+                <tr><th>파라미터</th><th>값</th><th>의미</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>$V_{IL,\max}$</td><td><strong>$1.5\text{V}$</strong> ($0.3 V_{CC}$)</td><td>안정적 Logic 0 인식 최대 입력</td></tr>
+                <tr><td>$V_{IH,\min}$</td><td><strong>$3.5\text{V}$</strong> ($0.7 V_{CC}$)</td><td>안정적 Logic 1 인식 최소 입력</td></tr>
+                <tr><td>$V_{OL,\max}$</td><td><strong>$0.33\text{V}$</strong> ($0.1\text{V}$)</td><td>Logic 0 출력 시 보장 최대 전압</td></tr>
+                <tr><td>$V_{OH,\min}$</td><td><strong>$3.84\text{V}$</strong> ($4.4\text{V}$)</td><td>Logic 1 출력 시 보장 최소 전압</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:12.5px; color:var(--muted); margin-top:8px;">
+              * $1.5\text{V} \sim 3.5\text{V}$ 불확정 영역에서는 PMOS와 NMOS가 동시 도통하여 막대한 관통 과전류가 흐릅니다.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[VTC 측정 실습 팁]</h4>
+        <p>실험 2에서 함수발생기로 삼각파(0~5V, 1kHz)를 인버터 입력에 넣고, 오실로스코프를 <strong>X-Y 모드</strong>로 설정하면 화면에 VTC 곡선이 그대로 나타납니다.</p>
+        <p>커서(Cursor) 기능을 이용해 $V_{IL}, V_{IH}, V_{OL}, V_{OH}$ 수치를 직접 측정하여 데이터시트와 비교합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: DC 노이즈 마진 & 호환성 -->
+    <section class="slide hero dark" data-screen-label="06 노이즈 마진 & 호환성">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Interfacing</span>
+            <span class="topic-tag">Noise Margin & TTL/CMOS</span>
+          </div>
+          <h2 class="slide-title">DC 노이즈 마진(Noise Margin)과 호환성</h2>
+          <p class="slide-subtitle">노이즈 마진 계산 공식 및 74LS(TTL) $  o$ 74HC(CMOS) 직결 시의 치명적 결함</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 노이즈 마진 공식</div>
+            <div class="formula-box">$$NM_H = V_{OH,\min} - V_{IH,\min}$$</div>
+            <div class="formula-box" style="margin-top:6px;">$$NM_L = V_{IL,\max} - V_{OL,\max}$$</div>
+            <div class="card-body" style="font-size:13px; margin-top:8px;">
+              • <strong>74HC $  o$ 74HC 연결:</strong><br>
+              $NM_H = 3.84\text{V} - 3.5\text{V} = \mathbf{+0.34\text{V}}$ (경부하 시 $+0.9\text{V}$)<br>
+              $NM_L = 1.5\text{V} - 0.33\text{V} = \mathbf{+1.17\text{V}}$ (경부하 시 $+1.4\text{V}$)<br>
+              ➔ 대단히 높은 노이즈 면역성(Noise Immunity) 보장!
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title" style="color:#f87171;">⚠️ 74LS(TTL) ➔ 74HC(CMOS) 직결 불가 이슈</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>74LS의 출력 전압과 74HC의 입력 전압 규격 충돌:</p>
+              <div class="formula-box" style="color:#f87171; background:#241416;">$$NM_H = 2.7\text{V} - 3.5\text{V} = \mathbf{-0.8\text{V} < 0}$$</div>
+              <p style="margin-top:8px; line-height:1.6;">
+                • 74LS의 HIGH 출력($2.7\text{V}$)이 74HC의 $V_{IH}(3.5\text{V})$에 도달하지 못해 <strong>불확정 영역</strong>에 빠짐!<br>
+                • <strong>해결책:</strong> 74LS 출력단에 $4.7\text{k}\Omega$ 풀업 저항을 달거나, 레벨 쉬프터 역할을 하는 <strong>74HCT</strong> 시리즈 사용.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[74HCT 시리즈의 존재 이유]</h4>
+        <p>74HCT 시리즈는 내부는 CMOS 공정이라 저전력이지만, 입력단 트랜지스터 크기를 비대칭으로 튜닝하여 TTL 레벨($V_{IH} = 2.0\text{V}$)을 인식하도록 만든 호환 칩입니다.</p>
+        <p>면접이나 시험에서 "TTL과 CMOS를 섞어 쓸 때 주의할 점"으로 단골 출제됩니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7: 동적 전력 & 지연시간 -->
+    <section class="slide light" data-screen-label="07 동적 전력 & 지연">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">AC Characteristics</span>
+            <span class="topic-tag">Propagation Delay & Power</span>
+          </div>
+          <h2 class="slide-title">동적 소비 전력과 전파 지연 시간($t_{pd}$)</h2>
+          <p class="slide-subtitle">스위칭 주파수 $f$에 비례하는 $P_D = C V^2 f$ 및 팬아웃(Fan-Out)의 부하 효과</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 전파 지연 시간 (Propagation Delay)</div>
+            <div class="card-body">
+              <div class="formula-box">$$t_{pd} = \frac{t_{PLH} + t_{PHL}}{2}$$</div>
+              <ul style="margin-top:8px;">
+                <li>$t_{PLH}$: 입력 $50\%$ 변화 후 출력이 LOW $  o$ HIGH $50\%$ 도달 시간</li>
+                <li>$t_{PHL}$: 입력 $50\%$ 변화 후 출력이 HIGH $  o$ LOW $50\%$ 도달 시간</li>
+                <li>74HC04 기준: $t_{pd} \approx 8 \sim 15\text{ ns}$ ($C_L = 50\text{pF}$)</li>
+                <li>부하 커패시턴스 $C_L$이 증가할수록 $RC$ 시상수가 커져 지연시간 급증</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 동적 소비 전력 (Dynamic Power)</div>
+            <div class="card-body">
+              <div class="formula-box">$$P_D = (C_{PD} + C_L) \cdot V_{CC}^2 \cdot f$$</div>
+              <ul style="margin-top:8px;">
+                <li>스위칭 주파수 $f$에 정확히 정비례</li>
+                <li>전원 전압의 제곱($V_{CC}^2$)에 비례 (5V ➔ 3.3V ➔ 1.2V 전압 강하 추세 이유)</li>
+                <li><strong>팬아웃 (Fan-Out):</strong> CMOS는 직류 전류 부하가 없으나, 입력단 게이트 커패시턴스($\approx 5\text{pF}$)가 병렬 추가되어 $t_{pd}$가 저하됨.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[동적 전력과 전압 스케일링의 역사]</h4>
+        <p>현대 CPU와 스마트폰 AP가 동작 전압을 5V에서 3.3V, 1.8V, 0.8V까지 낮춘 결정적 이유는 전력 공식의 $V^2$ 항 때문입니다. 전압을 절반으로 낮추면 발열과 소비전력이 1/4로 급감합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: 플로팅 방지 & 풀업/풀다운 -->
+    <section class="slide dark" data-screen-label="08 플로팅 방지 & 풀업">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Hardware Safety</span>
+            <span class="topic-tag">Floating Inputs & Pull-Up/Down</span>
+          </div>
+          <h2 class="slide-title">플로팅(Floating) 입력 방지 & 풀업/풀다운 저항</h2>
+          <p class="slide-subtitle">공중에 뜬 입력 핀이 초래하는 관통 전류 소손 현상과 안전한 바이어스 설계</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">❌ 플로팅(Floating) 입력의 위험성</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • CMOS 게이트 입력 임피던스는 수 $M\Omega$ 이상으로 매우 높음.<br>
+              • 핀을 어디에도 연결하지 않으면 공기 중 정전기와 노이즈를 흡수하여 중간 전압($1.5 \sim 3.5\text{V}$)으로 방황.<br>
+              • <strong>결과:</strong> PMOS와 NMOS가 동시에 ON되어 <strong>관통 과전류(Shoot-Through Current)</strong> 발생 ➔ 칩 발열 및 영구 파괴!
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">✔ 풀업(Pull-Up) / 풀다운(Pull-Down) 저항</div>
+            <div class="card-body" style="font-size:13px;">
+              <p>스위치 개방 시 입력 노드를 확실한 5V(또는 0V)로 고정:</p>
+              <div class="code-block">
+[풀업 저항 연결 (Active-Low)]     [풀다운 저항 연결 (Active-High)]
+       VCC (+5V)                         VCC (+5V)
+          │                                 │
+         [R: 4.7k~10k]                    [SW: Push Button]
+          ├───► IC Input Pin                ├───► IC Input Pin
+       [SW: Button]                       [R: 4.7k~10k]
+          │                                 │
+         GND                               GND</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[실습실 필수 수칙: 남는 핀 처리]</h4>
+        <p>74HC04 칩 1개에는 6개의 인버터가 들어있습니다. 실험에서 2개만 쓴다면 나머지 4개 인버터의 입력 핀 4개는 반드시 GND나 VCC에 꽂아두어야 합니다.</p>
+        <p>남는 입력 핀을 방치하면 칩 전체의 대기 전류가 급증하여 오동작의 원인이 됩니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: 오픈 드레인 & 슈미트 트리거 -->
+    <section class="slide light" data-screen-label="09 오픈드레인 & 슈미트">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Special Outputs & Inputs</span>
+            <span class="topic-tag">Open-Drain & Schmitt-Trigger</span>
+          </div>
+          <h2 class="slide-title">오픈 드레인(Open-Drain) & 슈미트 트리거(74HC14)</h2>
+          <p class="slide-subtitle">와이어드 AND 결선, 이종 전압 레벨 변환 및 히스테리시스($\Delta V_T$) 파형 정형</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 오픈 드레인 / 오픈 컬렉터 (OC)</div>
+            <div class="card-body">
+              <p>내부 PMOS 풀업을 제거하고 NMOS 풀다운만 남겨둔 출력 구조</p>
+              <div class="formula-box">$$\text{와이어드 AND (Wired-AND): } Y = A \cdot B$$</div>
+              <ul style="margin-top:8px;">
+                <li><strong>외부 풀업 저항 필수:</strong> 없으면 HIGH 출력 시 High-Z(플로팅) 상태</li>
+                <li><strong>이종 전압 변환:</strong> 풀업 저항을 3.3V나 12V에 달아 전압 레벨 시프팅</li>
+                <li>여러 출력을 선 하나로 묶어 버스 공유 (I2C 통신 SDA/SCL의 기본 원리)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 슈미트 트리거 인버터 (74HC14)</div>
+            <div class="card-body">
+              <p>상승 임계전압($V_{T+} \approx 2.9\text{V}$)과 하강 임계전압($V_{T-} \approx 2.1\text{V}$)이 다름</p>
+              <div class="formula-box">$$\text{Hysteresis 폭: } \Delta V_T = V_{T+} - V_{T-} \approx 0.8\text{V}$$</div>
+              <ul style="margin-top:8px;">
+                <li>천천히 변하는 아날로그 입력(Sine/Triangle)을 완벽한 구형파로 정형</li>
+                <li>노이즈가 심한 신호에서 발생하는 **글리치(채터링) 완벽 제거**</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[오픈 드레인과 슈미트 트리거 응용]</h4>
+        <p>오픈 드레인은 아두이노나 라즈베리파이의 I2C 버스에서 양방향 통신을 구현하는 핵심 기술입니다.</p>
+        <p>슈미트 트리거(74HC14)는 RC 지연 회로와 결합하여 간단한 <strong>구형파 발진기(Relaxation Oscillator)</strong>나 스위치 디바운서로 널리 쓰입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 10: 실습 팁 & 예상 퀴즈 -->
+    <section class="slide hero dark" data-screen-label="10 실습 팁 & 퀴즈">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Exam & Lab Secrets</span>
+            <span class="topic-tag">Troubleshooting & TA Q&A</span>
+          </div>
+          <h2 class="slide-title">실험 1-2 트러블슈팅 팁 & 예상 퀴즈 3선</h2>
+          <p class="slide-subtitle">계측기 노이즈 제거 노하우 및 조교 단골 구두 질문 핵심 족보</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q1</span> TTL-CMOS 직결</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 74LS04 출력을 74HC04 입력에 직결하면 왜 오동작하는가?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                74LS의 $V_{OH,\min}(2.7\text{V})$이 74HC의 $V_{IH,\min}(3.5\text{V})$보다 낮아 $NM_H = -0.8\text{V}$가 되어 HIGH 인식이 불가능하기 때문입니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q2</span> 스코프 프로브 10X</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 1X 프로브 대신 10X 프로브를 사용하는 이유는?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                1X는 커패시턴스가 $\approx 100\text{pF}$로 커서 신호 왜곡 및 지연을 유발합니다. 10X는 $\approx 10\text{pF}, 10\text{M}\Omega$로 회로 부하 효과를 최소화합니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q3</span> 바이패스 캐패시터</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 칩의 VCC-GND 사이에 0.1μF 캐패시터를 다는 이유는?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                게이트 스위칭 시 발생하는 급격한 순간 전류($di/dt$)로 인한 전원 전압 강하(Voltage Drop) 및 글리치 노이즈를 바이패스하여 억제합니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[조교 실습 평가 핵심 포인트]</h4>
+        <p>1. 오실로스코프 GND 클립을 빵판 접지에 정확히 물렸는지 확인합니다.</p>
+        <p>2. 프로브 감쇄비(10X)와 오실로스코프 채널 설정(10X)이 일치하는지 점검합니다.</p>
+        <p>3. 빵판 전원선에 디커플링 캐패시터(0.1uF 세라믹)가 배치되어 있는지 평가합니다.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="bottom-bar">
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">← 이전</button>
+    <span class="slide-counter" id="slideIndicator">01 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">다음 →</button>
+  </div>
+  
+  <div class="progress-bar-container" id="progressBarContainer" title="클릭하여 해당 위치로 이동">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="action-controls">
+    <button class="action-btn" id="notesToggleBtn" title="발표자 노트 (단축키 S)">
+      📝 <span class="btn-text">발표자 노트</span> <kbd>S</kbd>
+    </button>
+    <button class="action-btn" id="overviewBtn" title="슬라이드 오버뷰 (단축키 O)">
+      📑 <span class="btn-text">전체 목차</span> <kbd>O</kbd>
+    </button>
+    <button class="action-btn" id="fullscreenBtn" title="전체화면 (단축키 F)">
+      ⛶ <span class="btn-text">전체화면</span> <kbd>F</kbd>
+    </button>
+  </div>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="speaker-notes-drawer" id="speakerNotesDrawer">
+  <div class="drawer-header">
+    <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+      <span>📝 발표자 노트 & 실습 족보</span>
+      <span class="badge" id="notesSlideTitle" style="font-size:10px;">Slide 01</span>
+    </div>
+    <button class="action-btn" id="closeNotesBtn" style="height:28px; padding:0 8px;">✕</button>
+  </div>
+  <div class="drawer-body" id="speakerNotesContent">
+    <!-- Updated dynamically via JS -->
+  </div>
+</div>
+
+<!-- Overview Modal -->
+<div class="overview-modal" id="overviewModal">
+  <div class="overview-content">
+    <div class="drawer-header" style="padding: 18px 24px;">
+      <h3 style="font-size: 20px; font-weight: 700;">전체 슬라이드 목차 (Module 01 - 총 10장)</h3>
+      <button class="action-btn" id="closeOverviewBtn" style="height:32px; padding:0 12px;">닫기 (Esc) ✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    const slideTrack = document.getElementById('slideTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const speakerNotesContent = document.getElementById('speakerNotesContent');
+    const notesSlideTitle = document.getElementById('notesSlideTitle');
+    const closeNotesBtn = document.getElementById('closeNotesBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    const STORAGE_KEY = 'logic_circuit_study_deck_m01_pos';
+    const savedPos = localStorage.getItem(STORAGE_KEY);
+    if (savedPos !== null && !isNaN(parseInt(savedPos, 10))) {
+      currentSlide = Math.min(Math.max(0, parseInt(savedPos, 10)), totalSlides - 1);
+    }
+
+    slides.forEach((slide, index) => {
+      const label = slide.getAttribute('data-screen-label') || `Slide ${index + 1}`;
+      const titleEl = slide.querySelector('.slide-title');
+      const title = titleEl ? titleEl.textContent : label;
+      const badgeEl = slide.querySelector('.badge');
+      const badge = badgeEl ? badgeEl.textContent : '';
+
+      const card = document.createElement('div');
+      card.className = `overview-card ${index === currentSlide ? 'active' : ''}`;
+      card.innerHTML = `
+        <div>
+          <div class="overview-num">${label}</div>
+          <div class="overview-title">${title}</div>
+        </div>
+        <div class="overview-tag" style="font-size:11px; color:var(--muted); margin-top:8px;">${badge}</div>
+      `;
+      card.addEventListener('click', () => {
+        goToSlide(index);
+        closeOverview();
+      });
+      overviewGrid.appendChild(card);
+    });
+
+    function updateDeck() {
+      slideTrack.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      const slideNumStr = String(currentSlide + 1).padStart(2, '0');
+      const totalStr = String(totalSlides).padStart(2, '0');
+      slideIndicator.textContent = `${slideNumStr} / ${totalStr}`;
+      const pct = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      const activeSlide = slides[currentSlide];
+      const isDark = activeSlide.classList.contains('dark');
+      if (isDark) {
+        document.body.classList.add('dark-active-slide');
+      } else {
+        document.body.classList.remove('dark-active-slide');
+      }
+
+      const notesEl = activeSlide.querySelector('.slide-notes');
+      const label = activeSlide.getAttribute('data-screen-label') || `Slide ${currentSlide + 1}`;
+      notesSlideTitle.textContent = label;
+      speakerNotesContent.innerHTML = notesEl ? notesEl.innerHTML : '이 슬라이드에 등록된 발표자 노트가 없습니다.';
+
+      const cards = overviewGrid.querySelectorAll('.overview-card');
+      cards.forEach((c, idx) => {
+        c.classList.toggle('active', idx === currentSlide);
+      });
+
+      localStorage.setItem(STORAGE_KEY, currentSlide);
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      const isOpen = speakerNotesDrawer.classList.toggle('open');
+      notesToggleBtn.classList.toggle('active', isOpen);
+    }
+
+    function toggleOverview() { overviewModal.classList.toggle('open'); }
+    function closeOverview() { overviewModal.classList.remove('open'); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+    overviewBtn.addEventListener('click', toggleOverview);
+    closeOverviewBtn.addEventListener('click', closeOverview);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    progressBarContainer.addEventListener('click', (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      goToSlide(Math.floor(ratio * totalSlides));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (['input', 'textarea', 'select'].includes(e.target.tagName.toLowerCase())) return;
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          closeOverview();
+          speakerNotesDrawer.classList.remove('open');
+          notesToggleBtn.classList.remove('active');
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Module 05] Verilog HDL & FPGA 실습 - 스터디 슬라이드 덱</title>
+    <!-- KaTeX CSS & JS for beautiful LaTeX formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <!-- Pretendard WebFont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --accent: #1677ff;
+      --accent-hover: #0958d9;
+      --accent-light: #e6f4ff;
+      --surface: #f7f8fa;
+      --surface-subtle: #ffffff;
+      --muted: #6b7280;
+      --border: #d9dee7;
+      --border-subtle: #edf0f5;
+      
+      --dark-bg: #10141d;
+      --dark-surface: #181f2c;
+      --dark-fg: #f3f4f6;
+      --dark-muted: #9ca3af;
+      --dark-border: #263246;
+      --dark-accent-light: rgba(22, 119, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background-color: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Top Module Nav */
+    .top-module-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.dark-active-slide .top-module-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-bottom-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .module-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .module-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    body.dark-active-slide .module-link { color: var(--dark-muted); }
+
+    .module-link:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    body.dark-active-slide .module-link:hover {
+      color: #60a5fa;
+      background: var(--dark-accent-light);
+    }
+
+    .module-link.active {
+      background: var(--accent);
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    body.dark-active-slide .hub-link { color: var(--dark-fg); }
+
+    /* Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      padding: 68px 60px 84px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-sizing: border-box;
+    }
+
+    .slide.light { background-color: var(--bg); color: var(--fg); }
+    .slide.hero.light { background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%); color: var(--fg); }
+    .slide.dark { background-color: var(--dark-bg); color: var(--dark-fg); }
+    .slide.hero.dark { background: radial-gradient(circle at 80% 20%, #17243c 0%, #0d111a 100%); color: var(--dark-fg); }
+
+    .slide.dark .surface-card, .slide.hero.dark .surface-card {
+      background-color: var(--dark-surface);
+      border-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+    .slide.dark .muted-text, .slide.hero.dark .muted-text { color: var(--dark-muted); }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+
+    .module-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .slide.dark .badge, .slide.hero.dark .badge {
+      background-color: var(--dark-accent-light);
+      color: #5c9cff;
+      border: 1px solid rgba(92, 156, 255, 0.3);
+    }
+
+    .topic-tag { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .slide.dark .topic-tag, .slide.hero.dark .topic-tag { color: var(--dark-muted); }
+
+    .slide-title {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0;
+      word-break: keep-all;
+    }
+    .slide.hero .slide-title { font-size: 38px; }
+
+    .slide-subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 4px;
+      max-width: 90ch;
+      word-break: keep-all;
+    }
+    .slide.dark .slide-subtitle, .slide.hero.dark .slide-subtitle { color: var(--dark-muted); }
+
+    /* Content Area */
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 18px; align-items: stretch; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; align-items: stretch; }
+
+    .surface-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .surface-card.highlight { border-color: var(--accent); background-color: #fcfdfe; }
+    .slide.dark .surface-card.highlight { border-color: var(--accent); background-color: #172133; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .card-title .icon-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slide.dark .card-title .icon-pill { background: var(--dark-accent-light); color: #5c9cff; }
+
+    .card-body { font-size: 14px; line-height: 1.7; color: inherit; word-break: keep-all; }
+    .card-body ul { padding-left: 18px; margin: 4px 0; }
+    .card-body li { margin-bottom: 5px; }
+    .card-body li:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .slide.dark .formula-box { background-color: #111722; border-color: var(--dark-border); color: #60a5fa; }
+
+    .code-block {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #f472b6; font-weight: 700; }
+    .code-block .type { color: #38bdf8; }
+    .code-block .fn { color: #fbbf24; }
+    .code-block .comment { color: #64748b; font-style: italic; }
+    .code-block .num { color: #a78bfa; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .slide.dark .data-table { background: var(--dark-surface); border-color: var(--dark-border); }
+    .data-table th { background-color: var(--surface); color: var(--fg); font-weight: 700; padding: 7px 9px; border: 1px solid var(--border); }
+    .slide.dark .data-table th { background-color: #141b27; color: var(--dark-fg); border-color: var(--dark-border); }
+    .data-table td { padding: 7px 9px; border: 1px solid var(--border); color: inherit; }
+    .slide.dark .data-table td { border-color: var(--dark-border); }
+    .data-table .highlight-cell { background-color: var(--accent-light); font-weight: 700; color: var(--accent); }
+    .slide.dark .data-table .highlight-cell { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    .alert-callout {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--accent);
+      background-color: var(--surface);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .alert-callout.warning { border-left-color: #f59e0b; background-color: #fffbeb; color: #92400e; }
+    .slide.dark .alert-callout.warning { background-color: #2b1f0c; color: #fde68a; border-left-color: #f59e0b; }
+
+    /* Bottom Controller */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark-active-slide .bottom-bar {
+      background: rgba(16, 20, 29, 0.94);
+      border-top-color: var(--dark-border);
+      color: var(--dark-fg);
+    }
+
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 14px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .nav-btn { background-color: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .slide-counter { font-size: 14px; font-weight: 700; font-family: var(--font-mono); min-width: 65px; text-align: center; }
+
+    .progress-bar-container {
+      flex: 1;
+      max-width: 380px;
+      height: 6px;
+      background-color: var(--border-subtle);
+      border-radius: 999px;
+      margin: 0 20px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    body.dark-active-slide .progress-bar-container { background-color: var(--dark-border); }
+    .progress-bar { height: 100%; width: 10%; background-color: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
+
+    .action-controls { display: flex; align-items: center; gap: 8px; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--fg);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    body.dark-active-slide .action-btn { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.active { background-color: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    body.dark-active-slide .action-btn.active { background-color: var(--dark-accent-light); color: #60a5fa; }
+
+    /* Drawer & Modal */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 60px;
+      right: 0;
+      width: 440px;
+      max-height: 480px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius-lg) 0 0 0;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.dark-active-slide .speaker-notes-drawer { background: var(--dark-surface); border-color: var(--dark-border); color: var(--dark-fg); }
+    .speaker-notes-drawer.open { transform: translateX(0); }
+    .drawer-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    body.dark-active-slide .drawer-header { border-bottom-color: var(--dark-border); }
+    .drawer-body { padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .overview-modal.open { display: flex; }
+    .overview-content {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      max-width: 1080px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    body.dark-active-slide .overview-content { background: #121824; color: var(--dark-fg); }
+    .overview-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .overview-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100px;
+    }
+    body.dark-active-slide .overview-card { background: var(--dark-surface); border-color: var(--dark-border); }
+    .overview-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .overview-card.active { border-color: var(--accent); border-width: 2px; background: var(--accent-light); }
+    body.dark-active-slide .overview-card.active { background: var(--dark-accent-light); }
+    .overview-num { font-size: 11px; font-weight: 700; color: var(--accent); }
+    .overview-title { font-size: 13.5px; font-weight: 700; margin-top: 4px; line-height: 1.4; }
+
+    .slide-notes { display: none; }
+    kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      line-height: 1;
+      color: #444;
+      background-color: #f7f7f7;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<!-- Top Navigation -->
+<nav class="top-module-bar">
+  <a href="index.html" class="hub-link">⚡ 논회실 스터디 덱 허브</a>
+  <div class="module-nav-links">
+    <a href="deck-00-basics.html" class="module-link ">M00 핵심기초</a>
+    <a href="deck-01-gates-cmos.html" class="module-link ">M01 기본게이트·CMOS</a>
+    <a href="deck-02-combinational.html" class="module-link ">M02 조합논리</a>
+    <a href="deck-03-sequential.html" class="module-link ">M03 순서논리</a>
+    <a href="deck-04-memory-dac-adc.html" class="module-link ">M04 기억소자·DAC/ADC</a>
+    <a href="deck-05-verilog-fpga.html" class="module-link active">M05 Verilog·FPGA</a>
+  </div>
+</nav>
+
+<div class="deck-container">
+  <div class="slide-track" id="slideTrack">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide hero dark" data-screen-label="01 Cover">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Module 05</span>
+            <span class="topic-tag">HDL & FPGA Practical Guide</span>
+          </div>
+          <h1 class="slide-title">Verilog HDL & FPGA 실습 가이드</h1>
+          <p class="slide-subtitle">하드웨어 기술 언어 철학, 블로킹/논블로킹 황금률, 래치 방지, 클록 분주기 및 업계 표준 3단 FSM</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">1</span> HDL 철학 & 기본 문법</div>
+            <div class="card-body">
+              <ul>
+                <li>C언어(순차 실행) vs Verilog(<strong>동시 실행 Concurrency</strong>)</li>
+                <li>자료형: <code>wire</code>(물리적 결선) vs <code>reg</code>(절차적 대입)</li>
+                <li>연속 할당(<code>assign</code>) vs 절차적 블록(<code>always</code>)</li>
+                <li>진법 표현: <code>4'b1010</code>, <code>8'hFF</code>, <code>16'd1000</code></li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 핵심 설계 규칙 & 분주기</div>
+            <div class="card-body">
+              <ul>
+                <li><strong>블로킹(<code>=</code>) vs 논블로킹(<code>&lt;=</code>)</strong> 완벽 가이드</li>
+                <li><strong>래치(Latch) 유발 방지:</strong> 모든 <code>if</code>에 <code>else</code>, <code>case</code>에 <code>default</code></li>
+                <li>50MHz/100MHz 시스템 클록 $  o$ 1Hz 분주기 설계</li>
+                <li>FND 4자리 동적 시분할 스캐닝 (Multiplexing)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">3</span> FSM & FPGA 툴체인</div>
+            <div class="card-body">
+              <ul>
+                <li><strong>업계 표준 3단 FSM:</strong> State Reg + Next State + Output</li>
+                <li>Moore 머신(상태 의존) vs Mealy 머신(입력 직결)</li>
+                <li>테스트벤치(Testbench) 검증 & 시뮬레이션</li>
+                <li>Vivado 5단계 합성 $  o$ XDC 핀 매핑 $  o$ Bitstream 다운로드</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Module 05 인트로 강의 가이드]</h4>
+        <p>Verilog는 프로그래밍 언어가 아니라 **"실물 디지털 하드웨어(게이트, 플립플롭, MUX)의 결선을 기술하는 하드웨어 설계 언어"**입니다.</p>
+        <p><strong>발표자 강조점:</strong> C언어처럼 코딩하면 시뮬레이션은 돌아가도 실제 FPGA 보드에 다운로드했을 때 타이밍 에러나 래치 생성으로 100% 오작동합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: HDL vs C언어의 결정적 차이 -->
+    <section class="slide light" data-screen-label="02 HDL vs C 패러다임">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Paradigm Shift</span>
+            <span class="topic-tag">Hardware Concurrency vs Software</span>
+          </div>
+          <h2 class="slide-title">Verilog HDL vs C언어의 결정적 차이</h2>
+          <p class="slide-subtitle">소프트웨어의 순차 실행(Sequential)과 하드웨어의 공간적 동시 실행(Concurrent)</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <table class="data-table">
+              <thead><tr><th>비교 항목</th><th>C 언어 (Software)</th><th>Verilog HDL (Hardware)</th></tr></thead>
+              <tbody>
+                <tr><td><strong>실행 방식</strong></td><td>CPU가 명령어를 위에서 아래로 **순차 실행 (Sequential)**</td><td class="highlight-cell">모든 회로 모듈이 전원 인가 시 **동시에 동작 (Concurrent)**</td></tr>
+                <tr><td><strong>변수의 본질</strong></td><td>RAM 메모리 주소 공간의 임시 보관함</td><td>실제 구리 도선(<code>wire</code>) 또는 플립플롭(<code>reg</code>)</td></tr>
+                <tr><td><strong>시간(Time)</strong></td><td>코드 실행 시간은 CPU 클록 속도에 종속</td><td>실제 게이트 전파 지연($t_{pd}$) 및 클록 에지 명시</td></tr>
+                <tr><td><strong>컴파일 결과</strong></td><td>기계어 바이너리 명령어 스트림 (.exe / .hex)</td><td>LUT, 플립플롭, 배선 매핑 비트스트림 (.bit)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">💡 하드웨어 엔지니어의 마인드셋</div>
+            <div class="card-body" style="font-size:13px; line-height:1.7;">
+              • 코드를 작성할 때마다 <strong>"이 코드가 어떤 실물 게이트와 플립플롭으로 합성될 것인가?"</strong>를 머릿속으로 그리며 작성해야 합니다.<br>
+              • <code>always @(posedge clk)</code> 블록 1개는 실제 실리콘 다이 위에 <strong>D 플립플롭 하드웨어 뱅크</strong>를 생성합니다.<br>
+              • <code>assign</code> 문 1개는 실제 <strong>조합논리 게이트 망</strong>을 배선합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[C언어 개발자가 가장 많이 하는 실수]</h4>
+        <p>C언어의 <code>for</code> 루프는 시간을 두고 반복 실행되지만, Verilog의 <code>for</code> 루프는 하드웨어 회로를 그 횟수만큼 병렬 복제(Unrolling)하여 면적을 수십 배로 키워버립니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: Verilog 기본 문법 & 자료형 -->
+    <section class="slide hero light" data-screen-label="03 Verilog 기본 문법">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Syntax Core</span>
+            <span class="topic-tag">Module Structure & Data Types</span>
+          </div>
+          <h2 class="slide-title">Verilog 기본 구조와 <code>wire</code> vs <code>reg</code></h2>
+          <p class="slide-subtitle">모듈 선언 뼈대, 포트 입출력, 진법 표기법 및 2대 핵심 데이터 타입</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+<span class="kw">module</span> <span class="fn">FullAdder</span> (
+    <span class="kw">input</span>  <span class="type">wire</span> a,
+    <span class="kw">input</span>  <span class="type">wire</span> b,
+    <span class="kw">input</span>  <span class="type">wire</span> cin,
+    <span class="kw">output</span> <span class="type">wire</span> sum,
+    <span class="kw">output</span> <span class="type">wire</span> cout
+);
+    <span class="comment">// 데이터흐름 연속 할당 (Continuous Assignment)</span>
+    <span class="kw">assign</span> sum  = a ^ b ^ cin;
+    <span class="kw">assign</span> cout = (a & b) | (cin & (a ^ b));
+
+<span class="kw">endmodule</span></div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title">📌 <code>wire</code> vs <code>reg</code> 명확한 구분</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong><code>wire</code> (Net 타입):</strong><br>
+              - 소자 간을 연결하는 물리적 도선. 값을 스스로 기억하지 못함.<br>
+              - <strong><code>assign</code> 문</strong>의 좌변(LHS) 또는 하위 모듈 포트 연결에 사용.<br>
+              • <strong><code>reg</code> (Variable 타입):</strong><br>
+              - 값을 대입받아 보관할 수 있는 변수.<br>
+              - <strong><code>always</code> 또는 <code>initial</code> 블록 내부</strong>의 좌변(LHS)에서만 대입 가능.<br>
+              - *주의:* <code>reg</code>라고 무조건 플립플롭이 되는 것은 아니며, 조합회로 <code>always @(*)</code> 내부에서는 단순 도선(wire)으로 합성됨!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[진법 표기법 규칙]</h4>
+        <p><code>[비트수]'[진법][값]</code>: 예) <code>4'b1010</code> (4비트 2진수 1010), <code>8'hFF</code> (8비트 16진수 FF = 255), <code>16'd1000</code> (16비트 10진수 1000).</p>
+        <p>비트 수를 생략하고 그냥 <code>10</code>이라고 쓰면 컴파일러가 기본 32비트로 확장하여 불필요한 게이트가 낭비될 수 있으므로 반드시 비트 폭을 명시하십시오.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: 모델링 3대 방식 -->
+    <section class="slide dark" data-screen-label="04 모델링 3대 방식">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Abstraction Levels</span>
+            <span class="topic-tag">Structural, Dataflow & Behavioral</span>
+          </div>
+          <h2 class="slide-title">Verilog 회로 모델링의 3대 추상화 방식</h2>
+          <p class="slide-subtitle">구조적(Gate-Level), 데이터흐름(RTL <code>assign</code>), 동작적(Behavioral <code>always</code>)</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1</span> 구조적 (Structural)</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p>기본 게이트 프리미티브를 직접 인스턴스화</p>
+              <div class="code-block">
+<span class="type">and</span> g1 (c1, a, b);
+<span class="type">xor</span> g2 (s1, a, b);
+<span class="type">xor</span> g3 (sum, s1, cin);</div>
+              <p style="color:var(--dark-muted); margin-top:4px;">* 회로도(Schematic)와 1:1 매핑</p>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2</span> 데이터흐름 (Dataflow)</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p>부울 연산자와 <code>assign</code> 연속 할당</p>
+              <div class="code-block">
+<span class="kw">assign</span> sum = a ^ b ^ cin;
+<span class="kw">assign</span> cout = (a & b) |
+              (cin & (a ^ b));</div>
+              <p style="color:var(--dark-muted); margin-top:4px;">* RTL 조합논리 표준</p>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">3</span> 동작적 (Behavioral)</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p>알고리즘적 <code>if/else</code>, <code>case</code> 문</p>
+              <div class="code-block">
+<span class="kw">always</span> @(*) <span class="kw">begin</span>
+    <span class="kw">if</span> (sel) y = b;
+    <span class="kw">else</span>     y = a;
+<span class="kw">end</span></div>
+              <p style="color:#60a5fa; margin-top:4px;">* 복잡한 MUX, ALU, FSM 구현</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[동작적 모델링의 생산성]</h4>
+        <p>가장 복잡한 32비트 ALU나 FSM 제어기도 동작적 모델링(Behavioral)을 사용하면 <code>if/else</code>나 <code>case</code>문 몇 줄로 가독성 높게 설계할 수 있으며, 합성기(Synthesis Tool)가 이를 최적의 게이트로 자동 변환해 줍니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 5: 블로킹(=) vs 논블로킹(<=) -->
+    <section class="slide light" data-screen-label="05 블로킹 vs 논블로킹">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Critical Rule</span>
+            <span class="topic-tag">Blocking (=) vs Non-Blocking (&lt;=)</span>
+          </div>
+          <h2 class="slide-title">블로킹(<code>=</code>) vs 논블로킹(<code>&lt;=</code>) 황금률</h2>
+          <p class="slide-subtitle">순차적 즉시 대입과 클록 에지 동시 대입의 차이 및 하드웨어 오합성 방지</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="card-title">📌 블로킹 할당 (Blocking: <code>=</code>)</div>
+            <div class="card-body">
+              <p>문장이 나타난 순서대로 즉시 연산되어 다음 줄에 바로 영향</p>
+              <div class="code-block">
+<span class="comment">// 조합논리 회로에만 사용!</span>
+<span class="kw">always</span> @(*) <span class="kw">begin</span>
+    t1 = a & b;
+    t2 = c & d;
+    out = t1 | t2;
+<span class="kw">end</span></div>
+              <div class="formula-box" style="margin-top:6px;">규칙: always @(*) ➔ 반드시 '=' 사용</div>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 논블로킹 할당 (Non-Blocking: <code>&lt;=</code>)</div>
+            <div class="card-body">
+              <p>우변의 값들을 동시에 읽은 뒤, 클록 에지 끝에서 <strong>동시에 대입</strong></p>
+              <div class="code-block">
+<span class="comment">// 순서논리 (플립플롭)에 필수!</span>
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span>
+    q1 <= d;    <span class="comment">// q1과 q2가 동시에 전이!</span>
+    q2 <= q1;   <span class="comment">// 시프트 레지스터 정상 합성</span>
+<span class="kw">end</span></div>
+              <div class="formula-box" style="margin-top:6px; color:#1677ff;">규칙: always @(posedge clk) ➔ 반드시 '<=' 사용</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Verilog 2대 절대 수칙 (The Golden Rules)]</h4>
+        <p>1. <strong>조합논리 회로(Combinational Logic)</strong>를 설계할 때는 <code>always @(*)</code>와 <strong>블로킹(<code>=</code>)</strong>을 쓴다.</p>
+        <p>2. <strong>순서논리 회로(Sequential Logic)</strong>를 설계할 때는 <code>always @(posedge clk)</code>와 <strong>논블로킹(<code>&lt;=</code>)</strong>을 쓴다.</p>
+        <p>이 둘을 섞어 쓰면 시뮬레이션 결과와 실제 하드웨어 동작이 불일치하는 치명적 버그가 발생합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: 래치(Latch) 유발 방지 황금률 -->
+    <section class="slide hero dark" data-screen-label="06 래치 유발 방지">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Synthesis Safety</span>
+            <span class="topic-tag">Inadvertent Latch Prevention</span>
+          </div>
+          <h2 class="slide-title">의도치 않은 래치(Inadvertent Latch) 방지 원칙</h2>
+          <p class="slide-subtitle">조합회로에서 조건 분기 누락 시 합성기가 이전 값을 기억하는 투명 래치를 만드는 참사 예방</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card highlight" style="border-color:#f87171;">
+            <div class="card-title" style="color:#f87171;">❌ 래치가 생성되는 나쁜 코드 (Bug!)</div>
+            <div class="code-block">
+<span class="kw">always</span> @(*) <span class="kw">begin</span>
+    <span class="kw">if</span> (sel == <span class="num">2'b00</span>)
+        out = a;
+    <span class="kw">else if</span> (sel == <span class="num">2'b01</span>)
+        out = b;
+    <span class="comment">// else 분기가 없음!</span>
+    <span class="comment">// sel=10, 11일 때 이전 out을 "기억"해야 하므로</span>
+    <span class="comment">// 합성기가 원치 않는 투명 래치를 자동 생성함!</span>
+<span class="kw">end</span></div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title" style="color:#4ade80;">✔ 래치를 완벽 차단하는 2대 해결책</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>해결책 1: 모든 조건 완전 기술</strong><br>
+              모든 <code>if</code>에는 반드시 <code>else</code>를, 모든 <code>case</code>에는 반드시 <code>default</code>를 작성.<br>
+              • <strong>해결책 2: 블록 최상단 기본값 선할당 (강력 추천):</strong>
+              <div class="code-block" style="margin-top:6px;">
+<span class="kw">always</span> @(*) <span class="kw">begin</span>
+    out = <span class="num">1'b0</span>;  <span class="comment">// 1. 기본값 먼저 선할당!</span>
+    <span class="kw">if</span> (sel == <span class="num">2'b00</span>)      out = a;
+    <span class="kw">else if</span> (sel == <span class="num">2'b01</span>) out = b;
+<span class="kw">end</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[FPGA에서 래치가 금기시되는 이유]</h4>
+        <p>FPGA의 기본 단위 블록(Slice/LUT)은 룩업테이블과 에지 트리거 플립플롭으로 구성되어 있습니다.</p>
+        <p>래치를 생성하면 LUT의 피드백 루프를 억지로 사용해야 하므로 타이밍 검증(STA)이 불가능해지고 심각한 글리치와 발열이 발생합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 7: 클록 분주기 (Clock Divider) -->
+    <section class="slide light" data-screen-label="07 클록 분주기">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Hardware Implementation</span>
+            <span class="topic-tag">50MHz to 1Hz Clock Divider</span>
+          </div>
+          <h2 class="slide-title">클록 분주기(Clock Divider) 모듈 설계</h2>
+          <p class="slide-subtitle">FPGA 보드의 50MHz/100MHz 초고속 시스템 클록을 인간이 볼 수 있는 1Hz 신호로 분주</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+<span class="kw">module</span> <span class="fn">ClockDivider_1Hz</span> (
+    <span class="kw">input</span>  <span class="type">wire</span> clk_50mhz,  <span class="comment">// 50MHz 메인 클록</span>
+    <span class="kw">input</span>  <span class="type">wire</span> reset,
+    <span class="kw">output</span> <span class="type">reg</span>  clk_1hz     <span class="comment">// 1Hz LED 토글 클록</span>
+);
+    <span class="comment">// 50MHz에서 1초 = 50,000,000 주기 (절반 = 25,000,000)</span>
+    <span class="kw">parameter</span> COUNT_MAX = <span class="num">25_000_000</span>;
+    <span class="type">reg</span> [<span class="num">31</span>:<span class="num">0</span>] counter;
+
+    <span class="kw">always</span> @(<span class="kw">posedge</span> clk_50mhz <span class="kw">or posedge</span> reset) <span class="kw">begin</span>
+        <span class="kw">if</span> (reset) <span class="kw">begin</span>
+            counter <= <span class="num">32'd0</span>;
+            clk_1hz <= <span class="num">1'b0</span>;
+        <span class="kw">end</span> <span class="kw">else if</span> (counter >= COUNT_MAX - <span class="num">1</span>) <span class="kw">begin</span>
+            counter <= <span class="num">32'd0</span>;
+            clk_1hz <= ~clk_1hz; <span class="comment">// 0.5초마다 반전 = 1Hz!</span>
+        <span class="kw">end</span> <span class="kw">else begin</span>
+            counter <= counter + <span class="num">1'b1</span>;
+        <span class="kw">end</span>
+    <span class="kw">end</span>
+<span class="kw">endmodule</span></div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 분주비 계산 원리</div>
+            <div class="card-body">
+              <div class="formula-box">$$\text{COUNT\_MAX} = \frac{f_{\text{in}}}{2   imes f_{\text{target}}} = \frac{50\,\text{MHz}}{2   imes 1\,\text{Hz}} = 25,000,000$$</div>
+              <ul style="margin-top:8px; font-size:13px; line-height:1.6;">
+                <li>32비트 카운터는 최대 $2^{32} \approx 42.9$억까지 카운팅 가능하므로 5000만 카운팅을 너끈히 수용.</li>
+                <li><strong>FND 스캐닝용 1kHz 분주:</strong> $\text{COUNT\_MAX} = \frac{50\text{MHz}}{2   imes 1000\text{Hz}} = 25,000$.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[FPGA 클록 설계 실무 팁]</h4>
+        <p>실제 대규모 FPGA 설계에서는 분주된 클록을 직접 플립플롭의 <code>clk</code> 입력으로 쓰지 않고, 1클록 폭의 <strong>클록 인에이블(Clock Enable: <code>clk_en</code>) 펄스</strong>를 만들어 원본 고속 클록 도메인에서 동기식으로 구동하는 것이 지터(Jitter)를 방지하는 표준입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 8: 업계 표준 3단 FSM 아키텍처 -->
+    <section class="slide dark" data-screen-label="08 3단 FSM 설계">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">System Architecture</span>
+            <span class="topic-tag">3-Always Block FSM</span>
+          </div>
+          <h2 class="slide-title">업계 표준 3단 유한상태머신(FSM) 아키텍처</h2>
+          <p class="slide-subtitle">State Register, Next State Logic, Output Logic의 3단 분리 설계 및 Moore vs Mealy</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">1단</span> 상태 레지스터</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>순서논리 (D-FF):</strong> 클록 에지마다 현재 상태를 갱신</p>
+              <div class="code-block">
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk <span class="kw">or posedge</span> rst)
+    <span class="kw">if</span> (rst) state <= IDLE;
+    <span class="kw">else</span>     state <= next_state;</div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">2단</span> 차기 상태 로직</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>조합논리:</strong> 현재 상태와 입력으로 다음 상태 결정</p>
+              <div class="code-block">
+<span class="kw">always</span> @(*) <span class="kw">begin</span>
+    <span class="kw">case</span> (state)
+        IDLE: <span class="kw">if</span> (start) next_state = RUN;
+              <span class="kw">else</span>       next_state = IDLE;
+        RUN:  ...
+    <span class="kw">endcase</span>
+<span class="kw">end</span></div>
+            </div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title"><span class="icon-pill">3단</span> 출력 디코딩</div>
+            <div class="card-body" style="font-size:12.5px;">
+              <p><strong>출력 생성:</strong> 상태에 따른 제어 신호 출력</p>
+              <div class="code-block">
+<span class="comment">// Moore: 오직 현재 상태에만 의존</span>
+<span class="kw">assign</span> ready = (state == IDLE);
+<span class="kw">assign</span> busy  = (state == RUN);</div>
+              <p style="color:#60a5fa; margin-top:4px;">* 글리치 없는 안정적 출력</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[Moore vs Mealy FSM 선택 가이드]</h4>
+        <p>• <strong>Moore FSM:</strong> 출력이 오직 <strong>현재 상태($Q$)</strong>에 의해서만 결정됨 $  o$ 입력 노이즈가 출력으로 즉시 전파되지 않아 매우 안전함 (표준 추천).</p>
+        <p>• <strong>Mealy FSM:</strong> 출력이 현재 상태뿐 아니라 <strong>현재 입력($X$)</strong>에도 즉시 반응 $  o$ 상태 수를 줄일 수 있으나 입력 글리치가 출력에 그대로 노출됨.</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: 7-Segment 다이나믹 스캐닝 -->
+    <section class="slide hero light" data-screen-label="09 7-Segment 동적 스캐닝">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">FPGA Peripheral</span>
+            <span class="topic-tag">Dynamic Multiplexing Display</span>
+          </div>
+          <h2 class="slide-title">4자리 7-Segment 다이나믹 시분할 스캐닝</h2>
+          <p class="slide-subtitle">인간의 잔상 효과(Persistence of Vision)를 이용해 32개 핀 대신 12개 핀으로 4자리 FND 구동</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+   1kHz 스캐닝 클록 ──► [ 2비트 링 카운터 (0➔1➔2➔3) ]
+                             │
+       ┌───────────┬─────────┴─────────┬───────────┐
+       ▼           ▼                   ▼           ▼
+   [ 자릿수 1 ] [ 자릿수 2 ]        [ 자릿수 3 ] [ 자릿수 4 ]
+   (AN0=0 활성) (AN1=0 활성)        (AN2=0 활성) (AN3=0 활성)
+       │           │                   │           │
+       └───────────┴─────────┬─────────┴───────────┘
+                             ▼
+               공통 7-Segment 데이터 버스 (a~g)</div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 다이나믹 스캐닝 설계 원리</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>정적 구동의 한계:</strong> 4자리 FND를 개별 구동하면 $8   imes 4 = 32$개 FPGA 핀 낭비.<br>
+              • <strong>시분할 동적 구동:</strong><br>
+              - 데이터 선($a \sim g$) 7개는 4자리가 모두 병렬 공유.<br>
+              - 자릿수 선택 선($AN_0 \sim AN_3$) 4개를 **$1\text{kHz}$ 속도로 번갈아 가며 1자리씩만 순차 점등**.<br>
+              - 인간의 눈은 $60\text{Hz}$ 이상의 깜빡임을 연속 점등으로 인지하므로 4자리가 모두 완벽히 켜져 있는 것으로 보임!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[스캐닝 주파수 튜닝 노하우]</h4>
+        <p>• 주파수가 너무 낮으면($< 100\text{Hz}$): 숫자가 심하게 깜빡거립니다 (Flickering).</p>
+        <p>• 주파수가 너무 높으면($> 100\text{kHz}$): 기생 커패시턴스로 인해 이전 자릿수의 잔상이 다음 자릿수로 번지는 고스팅(Ghosting) 현상이 발생하므로 **$1\text{kHz} \sim 2\text{kHz}$**가 최적입니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 10: 테스트벤치(Testbench) & 시뮬레이션 -->
+    <section class="slide light" data-screen-label="10 테스트벤치 검증">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Verification</span>
+            <span class="topic-tag">Testbench & RTL Simulation</span>
+          </div>
+          <h2 class="slide-title">테스트벤치(Testbench) 작성 & 기능 검증</h2>
+          <p class="slide-subtitle">하드웨어 보드 다운로드 전 가상 클록 및 자극(Stimulus) 주입을 통한 시뮬레이션</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="surface-card">
+            <div class="code-block">
+<span class="kw">`timescale</span> <span class="num">1ns</span> / <span class="num">1ps</span>
+
+<span class="kw">module</span> <span class="fn">tb_Counter</span>;
+    <span class="type">reg</span> clk;
+    <span class="type">reg</span> reset;
+    <span class="type">wire</span> [<span class="num">3</span>:<span class="num">0</span>] count;
+
+    <span class="comment">// DUT (Device Under Test) 인스턴스화</span>
+    Counter uut (.clk(clk), .reset(reset), .count(count));
+
+    <span class="comment">// 100MHz 클록 생성 (주기 10ns)</span>
+    <span class="kw">always</span> <span class="kw">#5</span> clk = ~clk;
+
+    <span class="kw">initial</span> <span class="kw">begin</span>
+        clk = <span class="num">0</span>; reset = <span class="num">1</span>;
+        <span class="kw">#20</span> reset = <span class="num">0</span>;   <span class="comment">// 20ns 후 리셋 해제</span>
+        <span class="kw">#200</span>;           <span class="comment">// 200ns 동안 계수 관찰</span>
+        <span class="kw">$finish</span>;        <span class="comment">// 시뮬레이션 종료</span>
+    <span class="kw">end</span>
+<span class="kw">endmodule</span></div>
+          </div>
+          <div class="surface-card highlight">
+            <div class="card-title">📌 테스트벤치 작성 3대 원칙</div>
+            <div class="card-body" style="font-size:13px; line-height:1.6;">
+              • <strong>포트 없음:</strong> 테스트벤치 모듈은 외부 핀이 없는 최상위 닫힌 모듈 (<code>module tb; ... endmodule</code>).<br>
+              • <strong>DUT 입력은 <code>reg</code>, 출력은 <code>wire</code>로 선언:</strong> 자극을 대입해야 하므로 <code>reg</code>.<br>
+              • <strong>시간 지연(<code>#10</code>) 사용:</strong> 실제 칩에서는 합성 불가능하지만 시뮬레이션 테스트벤치에서는 필수적으로 사용.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[시뮬레이션 없는 보드 다운로드는 자살골]</h4>
+        <p>FPGA 툴(Vivado)에서 비트스트림을 굽는 데는 5~10분이 걸립니다. 버그를 보드에 올려서 잡으려면 하루에 10번밖에 디버깅을 못 합니다.</p>
+        <p>반드시 시뮬레이션 파형(ModelSim/Vivado Simulator)에서 신호가 완벽함을 확인한 뒤 보드에 구워야 합니다.</p>
+      </div>
+    </section>
+
+    <!-- Slide 11: FPGA 툴체인 & 실전 체크리스트 -->
+    <section class="slide hero dark" data-screen-label="11 FPGA 툴체인 & 퀴즈">
+      <div class="slide-header">
+        <div>
+          <div class="module-badge-group">
+            <span class="badge">Toolchain & Career</span>
+            <span class="topic-tag">Vivado Flow & Interview Q&A</span>
+          </div>
+          <h2 class="slide-title">FPGA 툴체인 5단계 & 실무 면접 족보 3선</h2>
+          <p class="slide-subtitle">Vivado 빌드 파이프라인 및 디지털 회로/반도체 설계 직무 단골 질문</p>
+        </div>
+      </div>
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q1</span> 블로킹 vs 논블로킹</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> 플립플롭 설계 시 왜 논블로킹(<code>&lt;=</code>)을 써야 하는가?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                블로킹(<code>=</code>)을 쓰면 문장 순서에 따라 시프트 레지스터가 단순 단일 도선으로 축약 합성되는 하드웨어 왜곡이 발생하기 때문입니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q2</span> 래치(Latch) 발생 원인</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>질문:</strong> <code>always @(*)</code>에서 래치가 생기는 원인과 해결책은?</p>
+              <div style="background:#111722; padding:8px; border-radius:4px; margin-top:6px; color:#60a5fa; font-size:12px;">
+                조건문에서 <code>else</code>나 <code>default</code>가 누락되어 이전 값을 보존하려 할 때 발생하며, 블록 시작 시 기본값을 선할당하여 해결합니다.
+              </div>
+            </div>
+          </div>
+          <div class="surface-card">
+            <div class="card-title"><span class="icon-pill">Q3</span> Vivado 5단계 흐름</div>
+            <div class="card-body" style="font-size:13px;">
+              <p><strong>FPGA 개발 5대 파이프라인:</strong></p>
+              <ol style="font-size:11.5px; line-height:1.5; padding-left:14px; margin-top:4px;">
+                <li><strong>RTL Synthesis:</strong> Verilog 코드를 게이트/LUT로 변환</li>
+                <li><strong>Implementation:</strong> 칩 내부 물리적 배치 & 배선 (Place & Route)</li>
+                <li><strong>XDC Constraints:</strong> 클록 및 보드 스위치/LED 핀 번호 매핑</li>
+                <li><strong>Bitstream Generation:</strong> .bit 파일 생성</li>
+                <li><strong>Hardware Program:</strong> JTAG 케이블로 FPGA 다운로드</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-notes">
+        <h4>[디지털 설계 엔지니어 커리어 총평]</h4>
+        <p>논리회로실험에서 배운 7대 게이트 ➔ CMOS 전기적 특성 ➔ 조합/순서논리 ➔ 메모리/신호변환 ➔ Verilog/FPGA는 현대 반도체 산업(삼성전자, SK하이닉스, 엔비디아, 퀄컴)의 칩 설계 기초 그 자체입니다.</p>
+        <p>이 6개 모듈의 덱을 철저히 복습하면 학점 A+는 물론 전공 면접까지 완벽하게 정복할 수 있습니다!</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+<!-- Bottom Control Bar -->
+<div class="bottom-bar">
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" aria-label="이전 슬라이드">← 이전</button>
+    <span class="slide-counter" id="slideIndicator">01 / 10</span>
+    <button class="nav-btn" id="nextBtn" aria-label="다음 슬라이드">다음 →</button>
+  </div>
+  
+  <div class="progress-bar-container" id="progressBarContainer" title="클릭하여 해당 위치로 이동">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="action-controls">
+    <button class="action-btn" id="notesToggleBtn" title="발표자 노트 (단축키 S)">
+      📝 <span class="btn-text">발표자 노트</span> <kbd>S</kbd>
+    </button>
+    <button class="action-btn" id="overviewBtn" title="슬라이드 오버뷰 (단축키 O)">
+      📑 <span class="btn-text">전체 목차</span> <kbd>O</kbd>
+    </button>
+    <button class="action-btn" id="fullscreenBtn" title="전체화면 (단축키 F)">
+      ⛶ <span class="btn-text">전체화면</span> <kbd>F</kbd>
+    </button>
+  </div>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="speaker-notes-drawer" id="speakerNotesDrawer">
+  <div class="drawer-header">
+    <div style="font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px;">
+      <span>📝 발표자 노트 & 실습 족보</span>
+      <span class="badge" id="notesSlideTitle" style="font-size:10px;">Slide 01</span>
+    </div>
+    <button class="action-btn" id="closeNotesBtn" style="height:28px; padding:0 8px;">✕</button>
+  </div>
+  <div class="drawer-body" id="speakerNotesContent">
+    <!-- Updated dynamically via JS -->
+  </div>
+</div>
+
+<!-- Overview Modal -->
+<div class="overview-modal" id="overviewModal">
+  <div class="overview-content">
+    <div class="drawer-header" style="padding: 18px 24px;">
+      <h3 style="font-size: 20px; font-weight: 700;">전체 슬라이드 목차 (Module 05 - 총 11장)</h3>
+      <button class="action-btn" id="closeOverviewBtn" style="height:32px; padding:0 12px;">닫기 (Esc) ✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid">
+      <!-- Generated dynamically via JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const totalSlides = slides.length;
+    const slideTrack = document.getElementById('slideTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const notesToggleBtn = document.getElementById('notesToggleBtn');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const speakerNotesContent = document.getElementById('speakerNotesContent');
+    const notesSlideTitle = document.getElementById('notesSlideTitle');
+    const closeNotesBtn = document.getElementById('closeNotesBtn');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const overviewModal = document.getElementById('overviewModal');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    const STORAGE_KEY = 'logic_circuit_study_deck_m05_pos';
+    const savedPos = localStorage.getItem(STORAGE_KEY);
+    if (savedPos !== null && !isNaN(parseInt(savedPos, 10))) {
+      currentSlide = Math.min(Math.max(0, parseInt(savedPos, 10)), totalSlides - 1);
+    }
+
+    slides.forEach((slide, index) => {
+      const label = slide.getAttribute('data-screen-label') || `Slide ${index + 1}`;
+      const titleEl = slide.querySelector('.slide-title');
+      const title = titleEl ? titleEl.textContent : label;
+      const badgeEl = slide.querySelector('.badge');
+      const badge = badgeEl ? badgeEl.textContent : '';
+
+      const card = document.createElement('div');
+      card.className = `overview-card ${index === currentSlide ? 'active' : ''}`;
+      card.innerHTML = `
+        <div>
+          <div class="overview-num">${label}</div>
+          <div class="overview-title">${title}</div>
+        </div>
+        <div class="overview-tag" style="font-size:11px; color:var(--muted); margin-top:8px;">${badge}</div>
+      `;
+      card.addEventListener('click', () => {
+        goToSlide(index);
+        closeOverview();
+      });
+      overviewGrid.appendChild(card);
+    });
+
+    function updateDeck() {
+      slideTrack.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      const slideNumStr = String(currentSlide + 1).padStart(2, '0');
+      const totalStr = String(totalSlides).padStart(2, '0');
+      slideIndicator.textContent = `${slideNumStr} / ${totalStr}`;
+      const pct = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      const activeSlide = slides[currentSlide];
+      const isDark = activeSlide.classList.contains('dark');
+      if (isDark) {
+        document.body.classList.add('dark-active-slide');
+      } else {
+        document.body.classList.remove('dark-active-slide');
+      }
+
+      const notesEl = activeSlide.querySelector('.slide-notes');
+      const label = activeSlide.getAttribute('data-screen-label') || `Slide ${currentSlide + 1}`;
+      notesSlideTitle.textContent = label;
+      speakerNotesContent.innerHTML = notesEl ? notesEl.innerHTML : '이 슬라이드에 등록된 발표자 노트가 없습니다.';
+
+      const cards = overviewGrid.querySelectorAll('.overview-card');
+      cards.forEach((c, idx) => {
+        c.classList.toggle('active', idx === currentSlide);
+      });
+
+      localStorage.setItem(STORAGE_KEY, currentSlide);
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      const isOpen = speakerNotesDrawer.classList.toggle('open');
+      notesToggleBtn.classList.toggle('active', isOpen);
+    }
+
+    function toggleOverview() { overviewModal.classList.toggle('open'); }
+    function closeOverview() { overviewModal.classList.remove('open'); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    notesToggleBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+    overviewBtn.addEventListener('click', toggleOverview);
+    closeOverviewBtn.addEventListener('click', closeOverview);
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    progressBarContainer.addEventListener('click', (e) => {
+      const rect = progressBarContainer.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      goToSlide(Math.floor(ratio * totalSlides));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (['input', 'textarea', 'select'].includes(e.target.tagName.toLowerCase())) return;
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+          break;
+        case 's':
+        case 'S':
+          e.preventDefault();
+          toggleNotes();
+          break;
+        case 'o':
+        case 'O':
+          e.preventDefault();
+          toggleOverview();
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          closeOverview();
+          speakerNotesDrawer.classList.remove('open');
+          notesToggleBtn.classList.remove('active');
+          break;
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    updateDeck();
+
+    // KaTeX Auto-render initialization
+    function initKaTeX() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          throwOnError: false
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initKaTeX, 50);
+      });
+    } else {
+      setTimeout(initKaTeX, 50);
+    }
+    window.addEventListener('load', () => setTimeout(initKaTeX, 100));
+  })();
+</script>
+</body>
+</html>
