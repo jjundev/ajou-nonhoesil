@@ -11,7 +11,7 @@ from pathlib import Path
 from . import md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
-from .spec_parser import derived_parts, split_columns
+from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
@@ -64,14 +64,14 @@ def check_metadata(spec) -> list:
             out.append(Finding("error", where,
                 f"source 가 derived 인데 식을 읽지 못했다: {t.source!r}. "
                 "`derived (Y = 식)` 또는 `derived (X = 식 ; Y = 식)` 형태여야 한다"))
-        if t.role not in ("record", "reference"):
+        if t.role not in ROLES:
             out.append(Finding("error", where,
                 f"role 이 {t.role!r} 이다. `record` 또는 `reference` 여야 한다"))
         if t.kind == "capture":
             if not t.expected:
                 out.append(Finding("error", where,
                     "capture 표에 expected 산문이 없다 (예상값을 적을 곳이 여기다)"))
-        elif t.encoding not in ("0/1", "H/L"):
+        elif t.encoding not in ENCODINGS:
             out.append(Finding("error", where,
                 f"encoding 이 {t.encoding!r} 이다. `0/1` 또는 `H/L` 을 선언해야 한다"))
     return out
@@ -111,16 +111,19 @@ def check_boolean(spec) -> list:
                     f"source 의 출력 {target!r} 이 표 헤더에 없다: {t.header}"))
                 continue
             out_col = t.header.index(target)
+            seen_eval_errors = set()
             for i, row in enumerate(t.rows, start=1):
                 if len(row) != len(t.header):
                     continue
-                env, dont_care = {}, False
+                env, dont_care, bad_cells = {}, False, []
                 for col, cell in zip(t.header, row):
                     bit = _bit(cell, t.encoding)
                     if bit is not None:
                         env[col] = bit
                     elif col in inputs and normalize_cell(cell) == DONT_CARE:
                         dont_care = True
+                    elif col in inputs:
+                        bad_cells.append(f"{col}={cell!r}")
                 if dont_care:
                     # 입력이 don't-care 인 행은 구체적 식으로 검산할 수 없다.
                     # 행 수 검사가 X 있는 표를 건너뛰는 것과 같은 이유다.
@@ -131,9 +134,18 @@ def check_boolean(spec) -> list:
                 try:
                     want = eval_boolean(expr, env)
                 except ValueError as exc:
-                    out.append(Finding("error", where,
-                        f"{target} 의 식 {expr!r} 을 평가할 수 없다: {exc}"))
-                    break
+                    # 셀 하나가 해독 불가라고 표 전체(나머지 행)를 포기하지
+                    # 않는다 — 이 행만 건너뛰고 검산을 계속한다. 같은 열이
+                    # 통째로 깨지면 모든 행에서 같은 메시지가 반복되므로,
+                    # 한 표에서 처음 한 번만 보고한다.
+                    sig = str(exc)
+                    if sig not in seen_eval_errors:
+                        seen_eval_errors.add(sig)
+                        cells = ", ".join(bad_cells) or "(식이 참조하지 않는 열)"
+                        out.append(Finding("error", f"{where} 행{i}",
+                            f"{target} 의 식 {expr!r} 을 평가할 수 없다: {exc} "
+                            f"— 해독 못 한 셀: {cells}"))
+                    continue
                 if got != want:
                     inputs, _ = split_columns(t)
                     shown = ", ".join(f"{c}={row[t.header.index(c)]}" for c in inputs)

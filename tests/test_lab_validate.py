@@ -100,6 +100,35 @@ class TestBooleanCrosscheck(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("행3", errors[0].where)
 
+    def test_unreadable_cell_only_skips_its_own_row(self):
+        """해독 불가 셀 하나가 나머지 행 검산을 통째로 막으면 안 된다 —
+        예전엔 `break` 로 표 전체(그 target 의 남은 행)를 포기했다 (C1)."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (Y = A·B)\n\n"
+            "| A | B | Y |\n|---|---|---|\n"
+            "| ? | 0 | 0 |\n"      # 행1: A 해독 불가(don't-care 아님) — eval 실패
+            "| 1 | 0 | 0 |\n"      # 행2: 정상, 일치
+            "| 1 | 1 | 0 |\n"      # 행3: 정상 셀인데 값이 틀렸다 — break 였다면 못 잡는다
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 2)
+        self.assertIn("행1", errors[0].where)
+        self.assertIn("?", errors[0].message)   # 문제된 셀 값이 메시지에 있어야 한다
+        self.assertIn("행3", errors[1].where)
+
+    def test_repeated_identical_eval_errors_are_reported_once(self):
+        """같은 열이 통째로 깨지면 모든 행에서 같은 메시지가 반복된다 —
+        표 하나당 한 번만 보고한다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (Y = A·B)\n\n"
+            "| A | B | Y |\n|---|---|---|\n"
+            "| ? | 0 | 0 |\n| ? | 1 | 0 |\n| ? | 1 | 1 |\n"
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 1)
+
     def test_works_on_hl_encoded_tables(self):
         """평가용으로만 비트로 읽는다. 데이터는 H/L 그대로 남는다."""
         spec = spec_from(HEAD + (
@@ -342,6 +371,14 @@ class TestRenderedHtmlChecks(unittest.TestCase):
     def test_real_checklist_html_is_clean(self):
         """② 가 만든 실물은 통과해야 한다 — 그쪽은 코드가 렌더하므로."""
         html = ROOT / "2주차/체크리스트/체크리스트.html"
+        self.assertEqual(validate.check_rendered_html(html), [])
+        self.assertEqual(validate.check_embedded_images(html), [])
+
+    def test_real_pre_report_html_is_clean(self):
+        """실제로 깨진 채 제출됐던 건 ②(기계 렌더)가 아니라 이 파일이다 —
+        표 셀 백틱 230개와, 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드
+        그림. ②만 회귀 대상이면 실제로 사고가 난 산출물은 아무도 안 지킨다 (D)."""
+        html = ROOT / "2주차/output/2주차_예비보고서.html"
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 
