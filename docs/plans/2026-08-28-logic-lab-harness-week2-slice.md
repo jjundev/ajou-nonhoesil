@@ -3961,15 +3961,20 @@ def _procedure(spec, netlist_text) -> str:
     out = [f'<div class="power">전원: {_esc(power)} · '
            "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
     _, body = md.split_frontmatter(netlist_text)
-    step, open_list = 0, False
+    step, open_list, pending_heading = 0, False, None
     for line in body.split("\n"):
         stripped = line.strip()
         if stripped.startswith("#"):
             if open_list:
                 out.append("</ol>")
                 open_list = False
-            out.append(f"<h3>{_esc(stripped.lstrip('# '))}</h3>")
+            # 바로 내보내지 않는다. 표나 산문만 딸린 절(`참조 핀아웃`,
+            # `미확정 사항`)은 항목이 하나도 없어서 빈 제목만 인쇄된다.
+            pending_heading = stripped.lstrip("# ")
         elif stripped.startswith("- "):
+            if pending_heading is not None:
+                out.append(f"<h3>{_esc(pending_heading)}</h3>")
+                pending_heading = None
             if not open_list:
                 out.append(f'<ol start="{step + 1}">')
                 open_list = True
@@ -4046,7 +4051,7 @@ def _breadboard(spec, netlist_text) -> str:
             f"<p>단자: {_esc(labels)}</p>"
             f'<img src="../../.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{rows * 6}mm;object-fit:cover;'
-            'object-position:top">')
+            'object-position:top"></div>')
 
 
 def render_checklist(spec, netlist_text, template) -> str:
