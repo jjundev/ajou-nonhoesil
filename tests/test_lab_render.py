@@ -67,10 +67,46 @@ class TestCapturePage(unittest.TestCase):
 
 class TestCrop(unittest.TestCase):
     def test_row_count_comes_from_the_netlist(self):
-        """쓰는 행만 남겨 작도 면적을 줄이는 것이 실제 관행이다 (2020 예보2)."""
+        """쓰는 행만 남겨 작도 면적을 줄이는 것이 실제 관행이다 (2020 예보2).
+
+        `0 < crop_rows(x) <= 30` 는 공식이 `min(max(6, n*8), 30)` 이라 **모든**
+        입력에서 참이라 상수를 반환해도 통과했다(C2) — 계산된 실제 값을 단언한다.
+        """
         netlist = "- U1 = 74HC08\n  - pin 1 ← 입력 A\n  - pin 14 → VCC(+5V)\n"
-        self.assertGreater(crop_rows(netlist), 0)
-        self.assertLessEqual(crop_rows(netlist), 30)
+        self.assertEqual(crop_rows(netlist), 8)   # IC 1개 → max(6, 1*8) = 8
+
+    def test_row_count_is_capped_at_the_maximum(self):
+        netlist = "\n".join(f"- U{i} = 74HC08 (quad 2-input AND)" for i in range(1, 10))
+        self.assertEqual(crop_rows(netlist), 30)   # max(6, 9*8=72) 를 30 에서 자른다
+
+    def test_ic_count_is_not_limited_to_the_74xx_family(self):
+        """" = 74" 휴리스틱은 40xx·555 계열을 0개로 세 격자가 아예 없는
+        크롭(바닥값 6행 = 36mm, 머리띠 51.4mm 보다 작다)으로 이어졌다 (B1)."""
+        with_ic = "- U1 = 4011 (quad 2-input NAND)\n  - pin 14 → VCC(+5V)\n"
+        without_ic = "IC 선언이 전혀 없는 netlist 다\n"
+        self.assertEqual(crop_rows(with_ic), 8)
+        self.assertEqual(crop_rows(without_ic), 6)
+        self.assertGreater(crop_rows(with_ic), crop_rows(without_ic))
+
+
+class TestBreadboardHeaderBand(unittest.TestCase):
+    """Breadboard.jpg 상단 로고·범례 띠가 크롭 계산에 없으면, `object-position:
+    top` 크롭이 머리띠부터 자르기 시작해 캡션이 약속하는 행 수만큼의 실제
+    격자가 안 보인다 (B1)."""
+
+    def test_visible_height_budget_includes_the_header_band(self):
+        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        html = render_checklist(spec, netlist, TEMPLATE)
+        rows = crop_rows(netlist)
+        caption = re.search(r"브레드보드 작도 \((\d+)행\)", html)
+        self.assertIsNotNone(caption)
+        self.assertEqual(int(caption.group(1)), rows)
+        height = re.search(r"max-height:([\d.]+)mm", html)
+        self.assertIsNotNone(height)
+        # rows*6mm 만 예산으로 두면 그만큼이 전부 머리띠에 먹혀 격자가 0행
+        # 보인다 — 머리띠만큼 더 커야 캡션의 행 수가 실제로 보인다.
+        self.assertGreater(float(height.group(1)), rows * 6)
 
 
 class TestPrintConstraints(unittest.TestCase):
@@ -112,7 +148,11 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
 
     def test_korean_only_warnings_reach_the_printout(self):
         for warning in ("띄워두지 않는다", "가장 흔한 배선 실수",
-                        "330Ω 직렬", "칩 재사용"):
+                        "330Ω 직렬", "칩 재사용",
+                        # 아래 셋은 불릿이 아니라 열 0 산문이라 별도 결함(A2)으로
+                        # 빠져 있었다 — X≡Z 자체 검증, 74HC02 핀 순서 재경고,
+                        # E1.P1-2 NAND 절 도입문.
+                        "다르면 배선 오류", "핀 순서에 주의", "교안 p12 회로도 그대로"):
             with self.subTest(warning=warning):
                 self.assertIn(warning, self.html)
 
