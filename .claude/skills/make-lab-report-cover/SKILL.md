@@ -34,10 +34,14 @@ print(info)
 
 3. **충돌 확인.** `<폴더>/<제목> 표지.pdf` 가 이미 있으면 덮어쓸지 한 줄로 확인.
 
-4. **제출일.** 사용자가 명시하지 않으면 오늘 날짜.
+4. **제출일.** 사용자가 명시하지 않으면 오늘 날짜. **형식도 `과목정보.md` 에서 읽는다.**
 
    ```bash
-   date +%Y.%m.%d
+   python3 -c "
+   from pathlib import Path
+   from scripts.lab import config
+   print(config.load_course_info(config.find_project_root(Path('.')))['date_format'])
+   " | xargs -I{} date +{}
    ```
 
 5. **템플릿 치환.** 스킬 폴더의 `template.html` 을 읽고 플레이스홀더 8개를 모두 바꾼다:
@@ -48,10 +52,17 @@ print(info)
 
    ```bash
    python3 -c "
-   from scripts.lab.html2pdf import html_to_pdf
-   html_to_pdf('<폴더>/<제목> 표지.html', '<폴더>/<제목> 표지.pdf')
+   from pathlib import Path
+   from scripts.lab import config
+   from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
+   info = config.load_course_info(config.find_project_root(Path('.')))
+   html_to_pdf('<폴더>/<제목> 표지.html', '<폴더>/<제목> 표지.pdf',
+               chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
+
+   **`chrome=` 를 반드시 넘긴다.** 안 넘기면 `과목정보.md` 의 `chrome` 필드가
+   선언만 되고 아무 효과가 없어, 크롬 위치를 바꿔도 반영되지 않는다.
 
    실패하면 에러를 그대로 보여주고 **HTML 은 남긴다.**
 
