@@ -85,9 +85,9 @@ def check_row_count(spec) -> list:
             continue
         if any(normalize_cell(c) == DONT_CARE for row in t.rows for c in row):
             continue
-        if not derived_parts(t):
-            continue
         inputs, _ = split_columns(t)
+        if not inputs:
+            continue
         expected = 2 ** len(inputs)
         if len(t.rows) != expected:
             out.append(Finding("warn", f"{spec.path.name}:{t.id}",
@@ -180,10 +180,13 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
-def check_report_sections(report_path, sections) -> list:
+def check_report_sections(report_path, sections, item_count=None) -> list:
     """`.claude/보고서양식.md` 기준으로 섹션 유무·순서를 본다.
 
     하드코딩된 목차와 대조하지 않는다 — 양식이 연도마다 다르기 때문이다 (R1).
+
+    `item_count` 를 주면 `repeat: per-item` 섹션이 항목 수만큼 나오는지도 본다.
+    항목반복형 프리셋(결보 29편 중 14편의 실제 구조)이 이걸 요구한다.
     """
     path = Path(report_path)
     if not path.exists():
@@ -191,14 +194,21 @@ def check_report_sections(report_path, sections) -> list:
     text = path.read_text(encoding="utf-8")
     headings = [re.sub(r"^#+\s*(?:\d+[.)]\s*)?", "", ln).strip()
                 for ln in text.split("\n") if ln.startswith("#")]
+    # 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과` 와 `결과 분석`
+    # 두 요구 섹션을 동시에 만족시켜 버린다. 정확히 일치해야 한다.
     out, last = [], -1
     for sec in sections:
         if not sec.generate:
             continue
-        pos = next((i for i, h in enumerate(headings) if sec.name in h), None)
+        hits = [i for i, h in enumerate(headings) if h == sec.name]
+        pos = hits[0] if hits else None
         if pos is None:
             out.append(Finding("error", path.name, f"양식이 요구하는 섹션 '{sec.name}' 이 없다"))
             continue
+        if sec.repeat == "per-item" and item_count is not None and len(hits) != item_count:
+            out.append(Finding("error", path.name,
+                f"섹션 '{sec.name}' 은 항목마다 반복돼야 한다 — "
+                f"항목 {item_count}개인데 {len(hits)}번 나온다"))
         if pos < last:
             out.append(Finding("warn", path.name,
                 f"섹션 '{sec.name}' 의 순서가 양식과 다르다"))

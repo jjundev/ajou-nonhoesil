@@ -14,7 +14,17 @@ class _Parser:
     """
 
     def __init__(self, text, env):
-        self.toks = _TOKEN.findall(text)
+        # `findall` 은 인식 못 한 문자를 **조용히 버린다** — `!A` 가 `A` 로 평가돼
+        # 틀린 진리표를 통과시킨다. 빈틈이 있으면 거절한다.
+        self.toks, pos = [], 0
+        for m in _TOKEN.finditer(text):
+            gap = text[pos:m.start()]
+            if gap.strip():
+                raise ValueError(f"알 수 없는 문자: {gap.strip()!r} (식: {text!r})")
+            self.toks.append(m.group(0))
+            pos = m.end()
+        if text[pos:].strip():
+            raise ValueError(f"알 수 없는 문자: {text[pos:].strip()!r} (식: {text!r})")
         self.i = 0
         self.env = env
 

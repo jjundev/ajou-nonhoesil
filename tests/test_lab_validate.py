@@ -109,20 +109,17 @@ class TestRowCount(unittest.TestCase):
         self.assertEqual(len(warns), 1)
         self.assertEqual(warns[0].level, "warn")
 
-    def test_skips_dont_care_rows_but_still_checks_the_rest(self):
-        """don't-care 입력 행은 구체적 식으로 검산할 수 없다. 건너뛰되
-        그 뒤의 진짜 오류는 계속 잡아야 한다 — 표 전체를 포기하면 안 된다."""
+    def test_checks_manual_sourced_tables_too(self):
+        """`derived` 가 아니어도 행 수는 봐야 한다. 이 검사를 derived 로만
+        제한하면 6주차 전부와 2주차 이론표 4개가 사각지대가 된다."""
         spec = spec_from(HEAD + (
-            "- kind: truth-table\n- encoding: 0/1\n"
-            "- source: derived (Y = A·B)\n\n"
-            "| A | B | Y |\n|---|---|---|\n"
-            "| 0 | x | 0 |\n"      # 검산 불가 — 건너뛴다
-            "| 1 | 0 | 0 |\n"
-            "| 1 | 1 | 0 |\n"      # 진짜 오류
+            "- kind: truth-table\n- encoding: H/L\n- source: manual:p4\n\n"
+            "| A | B | C |\n|---|---|---|\n"
+            "| L | L | L |\n| L | H | L |\n| H | L | L |\n"   # 4행이어야 하는데 3행
         ))
-        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
-        self.assertEqual(len(errors), 1)
-        self.assertIn("행3", errors[0].where)
+        warns = validate.check_row_count(spec)
+        self.assertEqual(len(warns), 1)
+        self.assertEqual(warns[0].level, "warn")
 
     def test_skips_tables_that_use_dont_care(self):
         """실험6 R-S Latch 는 3입력인데 `x x 0` 축약으로 5행이다. 정상이다."""
@@ -186,6 +183,16 @@ class TestTableIntegrity(unittest.TestCase):
                 spec = parse_spec(ROOT / week / "체크리스트" / "명세.md")
                 self.assertEqual(validate.check_orphan_tables(spec), [])
 
+    def test_bad_cell_contents_are_errors(self):
+        """`\\|`·`<br>`·탭은 표를 깨거나 렌더링을 망가뜨린다."""
+        for bad, label in ((r"a\|b", "escape"), ("a<br>b", "br"), ("a\tb", "tab")):
+            with self.subTest(cell=label):
+                spec = spec_from(HEAD + (
+                    "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
+                    f"| A | Y |\n|---|---|\n| {bad} | 0 |\n"
+                ))
+                self.assertTrue(validate.check_table_integrity(spec))
+
     def test_ragged_row_is_an_error(self):
         spec = spec_from(HEAD + (
             "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
@@ -196,6 +203,29 @@ class TestTableIntegrity(unittest.TestCase):
 
 
 class TestNetlist(unittest.TestCase):
+    def _netlist(self, text):
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def test_missing_power_and_floating_pin_handling_is_an_error(self):
+        """플로팅 입력은 이 과목의 대표 실패 원인이다. 이 검사가 존재하는 이유다."""
+        spec = parse_spec(WEEK2_SPEC)
+        findings = validate.check_netlist(
+            self._netlist("- U1 = 74HC08\n  - pin 1 ← 입력 A\n"), spec)
+        messages = " ".join(f.message for f in findings if f.level == "error")
+        for token in ("VCC", "GND", "미사용"):
+            with self.subTest(token=token):
+                self.assertIn(token, messages)
+
+    def test_ic_missing_from_netlist_is_a_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        findings = validate.check_netlist(
+            self._netlist("VCC GND 미사용\n"), spec)
+        warns = [f for f in findings if f.level == "warn"]
+        self.assertTrue(warns)
+        self.assertIn("74HC08", " ".join(f.message for f in warns))
+
     def test_real_week2_netlist_has_power_and_floating_pins(self):
         spec = parse_spec(WEEK2_SPEC)
         errors = [f for f in validate.check_netlist(WEEK2_NETLIST, spec)
@@ -215,6 +245,27 @@ class TestReportSections(unittest.TestCase):
         tmp.write_text("# 실험 목적\n내용\n# 실험 이론\n내용\n", encoding="utf-8")
         missing = [f.message for f in validate.check_report_sections(tmp, fmt.pre)]
         self.assertTrue(any("실험 부품" in m for m in missing))
+
+    def test_a_combined_heading_does_not_satisfy_two_sections(self):
+        """`# 실험 결과 분석` 한 줄이 `실험 결과` 와 `결과 분석` 을 동시에
+        만족시켜 버리면, 정말로 빠진 섹션이 조용히 통과한다."""
+        fmt = config.load_report_format(ROOT)
+        tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+        tmp.write_text("# 실험 결과 분석\n내용\n", encoding="utf-8")
+        missing = [f for f in validate.check_report_sections(tmp, fmt.result)
+                   if "없다" in f.message]
+        names = " ".join(f.message for f in missing)
+        self.assertIn("실험 결과", names)
+        self.assertIn("결과 분석", names)
+
+    def test_per_item_sections_must_repeat(self):
+        """항목반복형은 결보 29편 중 14편의 실제 구조다. 고찰이 항목마다 온다."""
+        fmt = config.load_report_format(ROOT, preset="항목반복형")
+        tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+        tmp.write_text("# 결선도\n# 구성한 회로\n# 실험 결과\n# 고찰\n"
+                       "# 전체적인 고찰\n", encoding="utf-8")
+        findings = validate.check_report_sections(tmp, fmt.result, item_count=3)
+        self.assertTrue(any("항목마다 반복" in f.message for f in findings))
 
     def test_optional_sections_are_not_required(self):
         fmt = config.load_report_format(ROOT)

@@ -50,6 +50,16 @@ class TestErrors(unittest.TestCase):
         with self.assertRaises(ValueError):
             eval_boolean("A)B", {"A": 1, "B": 1})
 
+    def test_unknown_character_is_rejected_not_dropped(self):
+        """`findall` 은 모르는 문자를 조용히 버린다 — `!A` 가 `A` 로 평가돼
+        틀린 진리표를 통과시킨다. 이 과목 표기는 후위 `'` 뿐이므로
+        `!`·`*`·`^` 는 인접 표기에서 흔한 오타다."""
+        for expr in ("!A", "A*B", "A^B", "A&B"):
+            with self.subTest(expr=expr):
+                with self.assertRaises(ValueError) as ctx:
+                    eval_boolean(expr, {"A": 1, "B": 1})
+                self.assertIn("알 수 없는 문자", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
