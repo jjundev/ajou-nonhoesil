@@ -3177,14 +3177,6 @@ class TestChromeConversion(unittest.TestCase):
         self.assertTrue(out.exists())
         self.assertGreater(out.stat().st_size, 1000)
 
-    def test_succeeds_despite_macos_stderr_noise(self):
-        """Chrome 은 정상 동작 중에도 task_policy_set 에러를 stderr 로 뱉는다.
-
-        종료 코드나 stderr 로 판정하면 멀쩡한 변환을 실패로 읽는다.
-        """
-        out = html_to_pdf(self.html, Path(self.tmp.name) / "noise.pdf")
-        self.assertTrue(out.exists())
-
     def test_overwrites_and_refreshes_mtime(self):
         target = Path(self.tmp.name) / "twice.pdf"
         html_to_pdf(self.html, target)
@@ -3197,6 +3189,46 @@ class TestChromeConversion(unittest.TestCase):
     def test_creates_missing_output_directory(self):
         out = html_to_pdf(self.html, Path(self.tmp.name) / "새폴더" / "out.pdf")
         self.assertTrue(out.exists())
+
+
+class TestSuccessRule(unittest.TestCase):
+    """성공 판정이 **파일 생성 여부**인지 고정한다. Chrome 은 macOS 에서 정상
+    동작 중에도 stderr 로 `task_policy_set` 에러를 뱉으므로, 종료 코드나 stderr
+    로 판정하면 멀쩡한 변환이 실패로 읽힌다.
+
+    진짜 Chrome 은 그 조합(성공 + 잡음 + 비정상 종료코드)을 마음대로 만들어낼
+    수 없으므로 그 동작을 흉내내는 스텁으로 규칙 자체를 시험한다. Chrome 이
+    없는 환경에서도 돈다.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.html = Path(self.tmp.name) / "in.html"
+        self.html.write_text("<h1>표지</h1>", encoding="utf-8")
+
+    def _stub(self, script: str) -> str:
+        path = Path(self.tmp.name) / "fake-chrome"
+        path.write_text("#!/bin/sh\n" + script, encoding="utf-8")
+        path.chmod(0o755)
+        return str(path)
+
+    def test_nonzero_exit_and_stderr_noise_still_succeed(self):
+        chrome = self._stub(
+            'for arg in "$@"; do\n'
+            '  case "$arg" in --print-to-pdf=*) out="${arg#--print-to-pdf=}";; esac\n'
+            "done\n"
+            "printf '%s' '%PDF-1.4 stub' > \"$out\"\n"
+            "echo 'task_policy_set TASK_CATEGORY_POLICY: (os/kern) invalid argument' >&2\n"
+            "exit 1\n"
+        )
+        out = html_to_pdf(self.html, Path(self.tmp.name) / "ok.pdf", chrome=chrome)
+        self.assertTrue(out.exists())
+
+    def test_clean_exit_without_a_file_still_fails(self):
+        chrome = self._stub("echo noise >&2\nexit 0\n")
+        with self.assertRaises(PdfError):
+            html_to_pdf(self.html, Path(self.tmp.name) / "none.pdf", chrome=chrome)
 
 
 class TestErrors(unittest.TestCase):
@@ -3282,7 +3314,7 @@ def html_to_pdf(html_path, pdf_path, chrome=DEFAULT_CHROME, timeout=120) -> Path
 python3 -m unittest tests.test_lab_html2pdf -v
 ```
 
-기대: `OK` (6 tests)
+기대: `OK` (7 tests)
 
 - [ ] **Step 6: 표지 템플릿을 이식한다**
 
@@ -3308,6 +3340,10 @@ font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic',
 
 `template.html` 의 표지 `<div>` **앞에** 윤리 페이지를 넣고 `page-break-after: always` 를 준다. 본문은 `가이드라인_및_기준/예비보고서 양식.pdf` 1쪽에서 가져오되, **`extract_text()` 결과는 단어 사이 공백이 뭉개져 있으므로 그대로 붙여넣지 말고 `Read` 로 vision 판독해서 옮긴다.**
 
+**이건 추가가 아니라 대체다.** 지난 학기 템플릿의 표지 안에는 이미 한글 윤리 강령 블록(`<section class="ethics">`, 10개 항목)이 있다 — 전용 윤리 페이지가 없던 시절의 우회책이다. 새 영문 페이지가 권위 1순위 원문을 그대로 담으므로 **한글 블록은 지운다.** 남기면 같은 내용이 두 쪽에 두 언어로 중복되고, 표지에서 가장 큰 블록이라 2쪽 보장을 위협한다. 서약 문장과 `dl.info` 는 남긴다.
+
+**새 페이지의 클래스 이름을 `ethics` 로 쓰지 마라.** 기존 한글 블록과 같은 이름이면 `page-break-after` 가 둘 다에 걸려 표지가 3쪽이 된다. `ethics-page` 를 쓴다.
+
 ```html
 <section class="ethics">
   <h2>IEEE Code of Ethics</h2>
@@ -3328,8 +3364,8 @@ font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic',
 | 원본 | 바꿀 것 |
 |---|---|
 | 기본값 표에 학부·과목·교수·분반·학번·성명을 **하드코딩** | `.claude/과목정보.md` 를 읽는다. 스킬에 값을 적지 않는다 |
-| `Get-Date -Format 'yyyy.MM.dd'` (PowerShell) | `date +%Y.%m.%d` |
-| Edge 헤드리스 (`msedge.exe`) | `scripts.lab.html2pdf.html_to_pdf` |
+| `Get-Date -Format 'yyyy.MM.dd'` (PowerShell) | `date +"$(과목정보의 date_format)"` — 형식도 설정에서 읽는다 |
+| Edge 헤드리스 (`msedge.exe`) | `scripts.lab.html2pdf.html_to_pdf(..., chrome=info["chrome"])` — **경로를 설정에서 읽는다.** 안 넘기면 `과목정보.md` 의 `chrome` 필드가 아무 일도 하지 않는다 |
 | `C:\Users\Hyunjun\.claude\skills\...\template.html` | 스킬 폴더 기준 상대 경로 |
 
 `.claude/skills/make-lab-report-cover/SKILL.md`:
@@ -3371,10 +3407,14 @@ print(info)
 
 3. **충돌 확인.** `<폴더>/<제목> 표지.pdf` 가 이미 있으면 덮어쓸지 한 줄로 확인.
 
-4. **제출일.** 사용자가 명시하지 않으면 오늘 날짜.
+4. **제출일.** 사용자가 명시하지 않으면 오늘 날짜. **형식도 `과목정보.md` 에서 읽는다.**
 
    ```bash
-   date +%Y.%m.%d
+   python3 -c "
+   from pathlib import Path
+   from scripts.lab import config
+   print(config.load_course_info(config.find_project_root(Path('.')))['date_format'])
+   " | xargs -I{} date +{}
    ```
 
 5. **템플릿 치환.** 스킬 폴더의 `template.html` 을 읽고 플레이스홀더 8개를 모두 바꾼다:
@@ -3385,10 +3425,17 @@ print(info)
 
    ```bash
    python3 -c "
-   from scripts.lab.html2pdf import html_to_pdf
-   html_to_pdf('<폴더>/<제목> 표지.html', '<폴더>/<제목> 표지.pdf')
+   from pathlib import Path
+   from scripts.lab import config
+   from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
+   info = config.load_course_info(config.find_project_root(Path('.')))
+   html_to_pdf('<폴더>/<제목> 표지.html', '<폴더>/<제목> 표지.pdf',
+               chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
+
+   **`chrome=` 를 반드시 넘긴다.** 안 넘기면 `과목정보.md` 의 `chrome` 필드가
+   선언만 되고 아무 효과가 없어, 크롬 위치를 바꿔도 반영되지 않는다.
 
    실패하면 에러를 그대로 보여주고 **HTML 은 남긴다.**
 

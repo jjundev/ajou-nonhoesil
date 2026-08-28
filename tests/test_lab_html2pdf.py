@@ -61,7 +61,7 @@ class TestSuccessRule(unittest.TestCase):
             'for arg in "$@"; do\n'
             '  case "$arg" in --print-to-pdf=*) out="${arg#--print-to-pdf=}";; esac\n'
             "done\n"
-            "printf '%PDF-1.4 stub' > \"$out\"\n"
+            "printf '%s' '%PDF-1.4 stub' > \"$out\"\n"
             "echo 'task_policy_set TASK_CATEGORY_POLICY: (os/kern) invalid argument' >&2\n"
             "exit 1\n"
         )
