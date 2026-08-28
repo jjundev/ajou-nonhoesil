@@ -51,7 +51,11 @@ def load_course_info(root) -> dict:
 
 
 def _section_body(body: str, name: str):
-    """`# name` 헤딩부터 다음 `# ` 헤딩 직전까지를 잘라낸다."""
+    """`# name` 헤딩부터 다음 `# ` 헤딩 직전까지를 잘라낸다.
+
+    프리셋 절의 산문에 열 0 의 `# ` 를 쓰면 다음 프리셋 헤딩과 구별되지 않아
+    블록이 일찍 잘린다. 보고서양식.md 안에서 `# ` 는 프리셋 헤딩 전용이다.
+    """
     lines = body.split("\n")
     start = None
     for i, line in enumerate(lines):
@@ -106,8 +110,20 @@ def load_report_format(root, preset=None) -> ReportFormat:
             keep.append(line)
 
     data = md.parse_block("\n".join(keep)) if keep else {}
-    return ReportFormat(
+    fmt = ReportFormat(
         preset=preset,
         pre=_sections(data.get("예비보고서")),
         result=_sections(data.get("결과보고서")),
     )
+    # 빈 섹션 목록은 정상적인 결과가 아니다. 이 파일은 조교 안내가 오면 학기 중에
+    # 손으로 고칠 물건이라, 키 한 줄이 들여쓰기되는 정도의 실수가 실제로 일어난다.
+    # 조용히 빈 목록을 돌려주면 이후 모든 보고서 스킬이 섹션 없는 보고서를
+    # 오류 없이 만들어낸다. 시끄럽게 실패하는 편이 낫다.
+    if not fmt.pre or not fmt.result:
+        raise ValueError(
+            f"보고서양식.md 의 '{preset}' 프리셋에서 섹션을 읽지 못했습니다 "
+            f"(예비 {len(fmt.pre)}개 / 결과 {len(fmt.result)}개). "
+            "`예비보고서:` 와 `결과보고서:` 가 각각 열 0 에서 시작하는지, "
+            "그 아래 항목이 `  - {name: ...}` 형태인지 확인하세요."
+        )
+    return fmt
