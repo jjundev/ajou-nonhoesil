@@ -752,6 +752,21 @@ class TestInlineComments(unittest.TestCase):
         """`#fff` 나 `c#sharp` 처럼 값 안의 `#` 는 주석이 아니다."""
         self.assertEqual(md.parse_block("t: c#sharp")["t"], "c#sharp")
 
+    def test_value_that_starts_with_hash_is_kept(self):
+        """앞 문자가 아예 없으면 '앞의 공백' 도 없다 — 주석이 아니다.
+        이걸 주석으로 보면 `#fff` 같은 값이 조용히 None 이 된다."""
+        self.assertEqual(md.parse_block("t: #fff")["t"], "#fff")
+        self.assertEqual(md.parse_value("#fff"), "#fff")
+
+    def test_hash_after_a_closing_bracket_is_a_comment(self):
+        self.assertEqual(md.parse_block("t: [a, b] # 뒤")["t"], ["a", "b"])
+
+    def test_hash_inside_single_quotes_is_kept(self):
+        self.assertEqual(md.parse_block("t: 'has # inside'")["t"], "has # inside")
+
+    def test_only_the_first_comment_marker_starts_the_comment(self):
+        self.assertEqual(md.parse_block("t: v # a # b")["t"], "v")
+
     def test_comment_after_an_inline_mapping_is_stripped(self):
         self.assertEqual(md.parse_block("p: {x: 1} # 뒤")["p"], {"x": 1})
 
@@ -866,7 +881,7 @@ def strip_comment(text: str) -> str:
             depth += 1
         elif ch in "]}":
             depth -= 1
-        elif ch == "#" and depth == 0 and (i == 0 or text[i - 1].isspace()):
+        elif ch == "#" and depth == 0 and i > 0 and text[i - 1].isspace():
             return text[:i]
     return text
 

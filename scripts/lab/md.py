@@ -82,7 +82,7 @@ def strip_comment(text: str) -> str:
             depth += 1
         elif ch in "]}":
             depth -= 1
-        elif ch == "#" and depth == 0 and (i == 0 or text[i - 1].isspace()):
+        elif ch == "#" and depth == 0 and i > 0 and text[i - 1].isspace():
             return text[:i]
     return text
 
