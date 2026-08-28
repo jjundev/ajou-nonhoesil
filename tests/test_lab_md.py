@@ -106,6 +106,28 @@ class TestTables(unittest.TestCase):
         body = "| A | B |\n|---|---|\n| - | - |\n| 0 | 1 |\n"
         self.assertEqual(md.parse_tables(body)[0].rows, [["-", "-"], ["0", "1"]])
 
+    def test_consecutive_dash_only_rows_all_survive(self):
+        """인접한 무효 입력 코드가 연달아 오는 진리표 형태다.
+        위치 판정만으로는 첫 행이 '다음 표의 헤더' 로 오인된다 —
+        구분선 문법이 대시 3개 이상을 요구해야 이 결함 부류가 사라진다."""
+        body = "| A | B |\n|---|---|\n| - | - |\n| - | - |\n| 0 | 1 |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows,
+                         [["-", "-"], ["-", "-"], ["0", "1"]])
+
+    def test_alignment_colons_are_still_a_separator(self):
+        body = "| A | B |\n|:---|---:|\n| 0 | 1 |\n"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["0", "1"]])
+
+    def test_table_at_eof_without_trailing_newline(self):
+        body = "| A | B |\n|---|---|\n| 0 | 1 |"
+        self.assertEqual(md.parse_tables(body)[0].rows, [["0", "1"]])
+
+    def test_header_without_a_separator_is_not_a_table(self):
+        self.assertEqual(md.parse_tables("| A | B |\n| 0 | 1 |\n"), [])
+
+    def test_separator_without_a_header_is_not_a_table(self):
+        self.assertEqual(md.parse_tables("|---|---|\n| 0 | 1 |\n"), [])
+
     def test_escaped_pipe_stays_inside_its_cell(self):
         """쪼개 버리면 validate 의 `\\|` 검사가 영영 발화하지 못한다."""
         body = "| A | B |\n|---|---|\n| a\\|b | c |\n"
