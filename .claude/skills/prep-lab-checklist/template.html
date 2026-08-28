@@ -1,0 +1,19 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+  .procedure { page-break-after: always; }
+  .procedure .power { font-weight: 700; border: 2px solid #000;
+                      padding: 3mm; margin-bottom: 4mm; }
+  .procedure li { font-size: 12pt; line-height: 1.7; }
+  table { border-collapse: collapse; margin-bottom: 6mm; }
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
+  .sketch { border: 1px solid #333; height: 45mm; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+</style>
+
+<h1>{{TITLE}}</h1>
+<section class="procedure">{{PROCEDURE}}</section>
+<section class="tables">{{TABLES}}</section>
+<section class="breadboard">{{BREADBOARD}}</section>

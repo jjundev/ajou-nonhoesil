@@ -1,0 +1,194 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+  .procedure { page-break-after: always; }
+  .procedure .power { font-weight: 700; border: 2px solid #000;
+                      padding: 3mm; margin-bottom: 4mm; }
+  .procedure li { font-size: 12pt; line-height: 1.7; }
+  table { border-collapse: collapse; margin-bottom: 6mm; }
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  .ov { border-top: 1px solid currentColor; }      /* R5 오버바 */
+  .sketch { border: 1px solid #333; height: 45mm; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+</style>
+
+<h1>2주차 · 실험1 Basic Gates 체크리스트</h1>
+<section class="procedure"><div class="power">전원: VCC = +5V · GND = GND · 미사용 입력핀은 전부 GND (플로팅 금지)</div>
+<ol>
+<li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li>
+<li>**미사용 입력핀은 전부 GND 로 내린다.** 플로팅 금지. 미사용 *출력*핀은 개방한다</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U1.pin4          (게이트1 출력 A·B → 게이트2 입력)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND    ※ 교안 p11 의 중간단 LED</li>
+<li>pin 5  ← 입력 C</li>
+<li>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A·B·C, T1 의 검증 대상</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U2.pin4          (게이트1 출력 A+B → 게이트2 입력)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>pin 5  ← 입력 C</li>
+<li>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A+B+C, T2 의 검증 대상</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U4.pin1          (게이트1 출력 A·B)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← U3.pin3</li>
+<li>pin 2  ← 입력 C</li>
+<li>pin 3  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = (A·B·C)', T3 의 검증 대상</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U6.pin2          (게이트1 출력 A+B)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 2  ← U5.pin3          (게이트1 입력 A — **pin 1 이 아니다**)</li>
+<li>pin 3  ← 입력 C           (게이트1 입력 B)</li>
+<li>pin 1  → L2 애노드 (330Ω 직렬) → GND    ※ 게이트1 **출력**. Y = (A+B+C)', T4 의 검증 대상</li>
+<li>미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND</li>
+<li>미사용 출력핀: pin 4, 10, 13 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A           (인버터1 입력)</li>
+<li>pin 2  → U8.pin1          (인버터1 출력 A')</li>
+<li>pin 3  ← U8.pin3          (인버터2 입력 A'·B)</li>
+<li>pin 4  → U9.pin2          (인버터2 출력 Z = (A'·B)')</li>
+<li>pin 4  → LED_Z 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 5, 9, 11, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← U7.pin2          (A')</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U7.pin3          (A'·B)</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A           (게이트1)</li>
+<li>pin 2  ← U7.pin4          (Z)</li>
+<li>pin 3  → LED_X 애노드 (330Ω 직렬) → GND    ※ X = A + Z</li>
+<li>pin 4  ← 입력 A           (게이트2)</li>
+<li>pin 5  ← 입력 B</li>
+<li>pin 6  → LED_Y 애노드 (330Ω 직렬) → GND    ※ Y = A + B</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+</ol></section>
+<section class="tables"><h2>E1.P1-1 · 3-input AND / OR gate 구성</h2>
+<p>IC: 74HC08, 74HC32 · 판독: LED</p>
+<h3>T1 · 3-input AND 진리표</h3>
+<p class='src'>출처: derived (Y = A·B·C)</p>
+<table>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</table>
+<h3>T2 · 3-input OR 진리표</h3>
+<p class='src'>출처: derived (Y = A+B+C)</p>
+<table>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</table>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
+<h2>E1.P1-2 · 3-input NAND / NOR gate 구성</h2>
+<p>IC: 74HC08, 74HC00, 74HC32, 74HC02 · 판독: LED</p>
+<h3>T3 · 3-input NAND 진리표</h3>
+<p class='src'>출처: derived (Y = (A·B·C)')</p>
+<table>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</table>
+<h3>T4 · 3-input NOR 진리표</h3>
+<p class='src'>출처: derived (Y = (A+B+C)')</p>
+<table>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</table>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
+<h2>E1.P2 · 복합 논리회로 구성</h2>
+<p>IC: 74HC04, 74HC32, 74HC08 · 판독: LED</p>
+<h3>T5 · 복합회로 진리표</h3>
+<p class='src'>출처: derived (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)')</p>
+<table>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>X예상</th>
+<th>Y예상</th>
+<th>Z예상</th>
+<th>확인</th></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</table>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div></section>
+<section class="breadboard"><h2>브레드보드 작도 (30행)</h2><p>단자: VCC=+5V · GND=GND</p><img src="../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:180mm;object-fit:cover;object-position:top"></section>
