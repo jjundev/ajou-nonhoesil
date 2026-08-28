@@ -73,8 +73,8 @@
   td.center, th.center { text-align: center; }
 
   /* 보수 오버바 (R5) — 부울식에만 적용. 표 헤더·신호명·셀 값은 그대로 ' 를 쓴다.
-     `display: inline-block` + `padding-top` 이 핵심이다 — 순수 `border-top`
-     만으로는 중첩된 `.ov` 두 겹(예: `(A'·B)'`)이 같은 높이에 겹쳐 그려져
+     display: inline-block + padding-top 이 핵심이다 — 순수 border-top
+     만으로는 중첩된 .ov 두 겹(예: (A'·B)')이 같은 높이에 겹쳐 그려져
      바깥쪽 바 하나만 있는 것처럼 보인다(직접 렌더링해 확인). inline-block 은
      안쪽 span 의 padding 을 자기 박스 높이에 반영하므로, 그걸 감싼 바깥쪽
      span 의 border-top 이 그만큼 더 위에서 그려져 두 단으로 분리된다. */
@@ -87,7 +87,7 @@
                           border: 1px solid #ccc; }
   .breadboard-block figcaption { font-size: 8.5pt; color: #666; margin-top: 1.5mm; }
 
-  /* 매 쪽 반복 footer 는 일부러 두지 않는다. `position: fixed` 는 Chromium
+  /* 매 쪽 반복 footer 는 일부러 두지 않는다. position: fixed 는 Chromium
      인쇄에서 페이지 여백 안에만 머문다는 보장이 없고, 실제로 이 문서의
      밀도 높은 표(§2.4 요약 박스 등)가 페이지 하단까지 채워질 때 footer 문구가
      본문 위에 겹쳐 찍히는 것을 확인했다 (② 체크리스트·⑥ 표지 템플릿에도
