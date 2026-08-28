@@ -43,6 +43,7 @@
 | 실험1 예시 `encoding: 0/1` | 교안 pp.4~9 이론표는 전부 **`L`/`H`**. 파생 3-input 표의 encoding 은 명세에서 **명시적으로 선언**하고 이론표와 섞지 않는다 | Task 1 Step 3 |
 | 실험10 kind = `capture` | **두 kind 가 필요하다.** 교안 p11 실험1(DAC)은 "계단 파형을 관찰하고 그려라" → `capture`. p16 실험2(ADC)는 "single pulse 를 계속 인가해 counter 를 증가시키며 전이 지점을 기록하고 출력 전압을 측정(7405 핀 8·6·4·2)" → **`stepped`**. kind 는 실험 단위가 아니라 **표 단위** 속성임이 여기서 확인된다 | Task 1 Step 5 |
 | 교집합 프리셋 결과보고서 = 실험 결과 + 고찰 | 평가기준.txt(권위 2순위)는 결보에 **실험 결과, 예비 비교, 결과 분석, 고찰(배운점·목적 달성 여부), 추가 공부**를 요구한다. 교집합은 권위 1·2순위의 합집합이어야 한다 | Task 3 Step 3 |
+| 실험1 p13 복합회로가 3입력(`A\|B\|C` → `Y1\|Y2\|Y3`) | **2입력 2출력구조다.** 입력 A·B, 출력 X·Y·Z. Task 1 의 vision 판독으로 확정했고, `X ≡ Z` 항등이 성립한다(실험실 자체 검산에 쓸 수 있다). 한 표가 출력을 여럿 갖는 경우가 실재하므로 `source` 가 `derived (X = … ; Y = … ; Z = …)` 형태를 지원해야 한다 | Task 1 완료분 · Task 4/6 코드 |
 | 74HC08·74HC32 핀아웃을 데이터시트 폴더에서 | **그 폴더에 없다.** `1_데이터시트_및_핀아웃/` 에는 74HC04(`datasheet.pdf`)·74HC03·74HC20·74HC42·74HC670·74HC76 뿐이고, `ic칩.txt` 는 기능 목록일 뿐 핀 번호가 없다. netlist 는 표준 DIP-14 핀아웃을 근거로 쓰고 **출처를 정직하게 그렇게 적으며**, 실물 대조를 미확정 항목으로 남긴다 | Task 1 Step 4 |
 
 ---
@@ -1374,7 +1375,7 @@ git commit -m "feat: 과목정보·보고서양식 설정과 로더, init-lab-we
   - `SpecItem` — `.id`, `.title`, `.device`, `.ics`, `.tables`
   - `LabSpec` — `.week`, `.experiment`, `.title`, `.source_manual`, `.power`, `.items`, `.tables`, `.path`, `.table(table_id) -> SpecTable | None`
   - `parse_spec(path) -> LabSpec`
-  - `derived_parts(table) -> tuple[str, str] | None` — `source: derived (Y = A·B·C)` 를 `("Y", "A·B·C")` 로
+  - `derived_parts(table) -> list[tuple[str, str]]` — 출력별 `(이름, 식)` 목록. 다중 출력(`derived (X = … ; Y = …)`)을 지원하고, `derived` 가 아니면 빈 리스트
   - `split_columns(table) -> tuple[list[str], list[str]]` — (입력 컬럼, 출력 컬럼). Task 6 의 행 수 검사와 Task 8 의 확인 칸 배치가 **둘 다 이것을 쓴다**
   - 상수 `KINDS = ("truth-table", "stepped", "capture")`, `ENCODINGS = ("0/1", "H/L")`
 
@@ -1415,11 +1416,15 @@ class TestWeek2(unittest.TestCase):
         """교안 p10 준비물이 근거다. 74HC08 은 quad AND 라 3-input 에 1개면 된다."""
         self.assertEqual(self.spec.items[0].ics, ["74HC08", "74HC32"])
 
-    def test_truth_tables_are_eight_rows(self):
+    def test_three_input_truth_tables_are_eight_rows(self):
         for tid in ("T1", "T2", "T3", "T4"):
             with self.subTest(table=tid):
                 self.assertEqual(len(self.spec.table(tid).rows), 8)
                 self.assertEqual(self.spec.table(tid).kind, "truth-table")
+
+    def test_composite_table_is_two_input(self):
+        """교안 p13 은 3입력이 아니라 2입력이다 (Task 1 vision 판독으로 확정)."""
+        self.assertEqual(len(self.spec.table("T5").rows), 4)
 
     def test_every_table_declares_source(self):
         for t in self.spec.tables:
@@ -1431,7 +1436,17 @@ class TestWeek2(unittest.TestCase):
         self.assertEqual(outputs, ["Y"])
 
     def test_derived_parts_extracts_expression(self):
-        self.assertEqual(derived_parts(self.spec.table("T1")), ("Y", "A·B·C"))
+        self.assertEqual(derived_parts(self.spec.table("T1")), [("Y", "A·B·C")])
+
+    def test_derived_parts_handles_multiple_outputs(self):
+        """실험1 p13 복합회로는 입력 2개에 출력이 3개다."""
+        pairs = derived_parts(self.spec.table("T5"))
+        self.assertEqual([name for name, _ in pairs], ["X", "Y", "Z"])
+
+    def test_split_columns_on_a_multi_output_table(self):
+        inputs, outputs = split_columns(self.spec.table("T5"))
+        self.assertEqual(inputs, ["A", "B"])
+        self.assertEqual(outputs, ["X", "Y", "Z"])
 
 
 class TestWeek12CaptureAndStepped(unittest.TestCase):
@@ -1535,7 +1550,8 @@ KINDS = ("truth-table", "stepped", "capture")
 ENCODINGS = ("0/1", "H/L")
 
 _T_HEAD = re.compile(r"^##\s+(T\d+)\s*·\s*(.+?)\s*$", re.M)
-_DERIVED = re.compile(r"^derived\s*\(\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*(.+?)\s*\)\s*$")
+_DERIVED = re.compile(r"^derived\s*\((.+)\)\s*$", re.S)
+_ASSIGN = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*(.+?)\s*$", re.S)
 _NAME = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 _ATTR = re.compile(r"^-\s+([a-z_]+)\s*:\s*(.*)$")
 
@@ -1660,24 +1676,41 @@ def parse_spec(path) -> LabSpec:
 
 
 def derived_parts(table):
-    """`source: derived (Y = A·B·C)` 를 `("Y", "A·B·C")` 로. 아니면 None."""
-    m = _DERIVED.match(table.source or "")
-    return (m.group(1), m.group(2)) if m else None
+    """`source: derived (...)` 의 출력별 `(이름, 식)` 목록. 아니면 빈 리스트.
+
+        derived (Y = A·B·C)                     -> [("Y", "A·B·C")]
+        derived (X = A+B ; Y = A' ; Z = (A·B)') -> 쌍 3개
+
+    한 표가 출력을 여럿 갖는 경우가 실재한다 (실험1 p13 복합회로).
+    """
+    m = _DERIVED.match((table.source or "").strip())
+    if not m:
+        return []
+    pairs = []
+    for chunk in m.group(1).split(";"):
+        assign = _ASSIGN.match(chunk)
+        if not assign:
+            return []          # 형식이 깨졌다 — validate 가 findings 로 잡는다
+        pairs.append((assign.group(1), assign.group(2)))
+    return pairs
 
 
 def split_columns(table):
     """표의 (입력 컬럼, 출력 컬럼).
 
-    `derived` 식이 있으면 식에 등장하는 컬럼이 입력이다. 없으면 마지막 열 하나를
-    출력으로 본다 — `기록.md` 의 확인 칸을 어디에 둘지 정하는 데 쓴다.
+    `derived` 식이 있으면 식이 참조하는 컬럼이 입력, 대입 대상이 출력이다.
+    없으면 마지막 열 하나를 출력으로 본다 — 확인 칸을 어디에 둘지 정하는 데 쓴다.
     """
-    parts = derived_parts(table)
-    if parts:
-        target, expr = parts
-        names = set(_NAME.findall(expr))
-        inputs = [c for c in table.header if c in names and c != target]
+    pairs = derived_parts(table)
+    if pairs:
+        targets = [name for name, _ in pairs]
+        referenced = set()
+        for _, expr in pairs:
+            referenced |= set(_NAME.findall(expr))
+        inputs = [c for c in table.header if c in referenced and c not in targets]
         if inputs:
-            return inputs, [c for c in table.header if c not in inputs]
+            outputs = [c for c in table.header if c in targets]
+            return inputs, outputs or [c for c in table.header if c not in inputs]
     if len(table.header) < 2:
         return list(table.header), []
     return list(table.header[:-1]), [table.header[-1]]
@@ -1689,7 +1722,7 @@ def split_columns(table):
 python3 -m unittest tests.test_lab_spec_parser -v
 ```
 
-기대: `OK` (15 tests)
+기대: `OK` (18 tests)
 
 - [ ] **Step 5: 커밋**
 
@@ -2137,6 +2170,19 @@ class TestBooleanCrosscheck(unittest.TestCase):
         ))
         self.assertEqual(validate.check_boolean(spec), [])
 
+    def test_crosschecks_every_output_of_a_multi_output_table(self):
+        """실험1 p13 은 출력이 3개다. 하나만 검산하고 넘어가면 안 된다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (X = A+B ; Y = A·B)\n\n"
+            "| A | B | X | Y |\n|---|---|---|---|\n"
+            "| 0 | 0 | 0 | 0 |\n| 0 | 1 | 1 | 0 |\n"
+            "| 1 | 0 | 1 | 0 |\n| 1 | 1 | 1 | 0 |\n"   # Y 마지막 행이 틀렸다
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("Y", errors[0].message)
+
     def test_works_on_hl_encoded_tables(self):
         """평가용으로만 비트로 읽는다. 데이터는 H/L 그대로 남는다."""
         spec = spec_from(HEAD + (
@@ -2343,40 +2389,42 @@ def check_row_count(spec) -> list:
 
 
 def check_boolean(spec) -> list:
-    """`derived (Y = ...)` 로 선언된 표를 식으로 되짚는다."""
+    """`derived (...)` 로 선언된 표를 식으로 되짚는다. 출력이 여럿이면 전부."""
     out = []
     for t in spec.tables:
-        parts = derived_parts(t)
-        if not parts or not t.rows:
+        pairs = derived_parts(t)
+        if not pairs or not t.rows:
             continue
-        target, expr = parts
         where = f"{spec.path.name}:{t.id}"
-        if target not in t.header:
-            out.append(Finding("error", where,
-                f"source 의 출력 {target!r} 이 표 헤더에 없다: {t.header}"))
-            continue
-        out_col = t.header.index(target)
-        for i, row in enumerate(t.rows, start=1):
-            if len(row) != len(t.header):
+        for target, expr in pairs:
+            if target not in t.header:
+                out.append(Finding("error", where,
+                    f"source 의 출력 {target!r} 이 표 헤더에 없다: {t.header}"))
                 continue
-            env = {}
-            for col, cell in zip(t.header, row):
-                bit = _bit(cell, t.encoding)
-                if bit is not None:
-                    env[col] = bit
-            got = _bit(row[out_col], t.encoding)
-            if got is None:
-                continue
-            try:
-                want = eval_boolean(expr, env)
-            except ValueError as exc:
-                out.append(Finding("error", where, f"식 {expr!r} 을 평가할 수 없다: {exc}"))
-                break
-            if got != want:
-                inputs = ", ".join(f"{c}={row[t.header.index(c)]}"
-                                   for c in t.header if c != target and c in env)
-                out.append(Finding("error", f"{where} 행{i}",
-                    f"{inputs} 일 때 {expr} = {want} 인데 표에는 {row[out_col]!r} 이다"))
+            out_col = t.header.index(target)
+            for i, row in enumerate(t.rows, start=1):
+                if len(row) != len(t.header):
+                    continue
+                env = {}
+                for col, cell in zip(t.header, row):
+                    bit = _bit(cell, t.encoding)
+                    if bit is not None:
+                        env[col] = bit
+                got = _bit(row[out_col], t.encoding)
+                if got is None:
+                    continue
+                try:
+                    want = eval_boolean(expr, env)
+                except ValueError as exc:
+                    out.append(Finding("error", where,
+                        f"{target} 의 식 {expr!r} 을 평가할 수 없다: {exc}"))
+                    break
+                if got != want:
+                    inputs, _ = split_columns(t)
+                    shown = ", ".join(f"{c}={row[t.header.index(c)]}" for c in inputs)
+                    out.append(Finding("error", f"{where} 행{i}",
+                        f"{shown} 일 때 {target} = {expr} = {want} 인데 "
+                        f"표에는 {row[out_col]!r} 이다"))
     return out
 
 
@@ -2436,7 +2484,7 @@ def check_report_sections(report_path, sections) -> list:
 python3 -m unittest tests.test_lab_validate -v
 ```
 
-기대: `OK` (14 tests)
+기대: `OK` (15 tests)
 
 만약 `TestRealWeek2SpecIsClean` 이 실패하면 **검증기가 아니라 Task 1 의 명세가 틀린 것이다.** 명세를 고친다 — 그게 이 검증기의 존재 이유다.
 
