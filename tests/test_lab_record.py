@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from scripts.lab.record import PROMPTS, derive_record
+from scripts.lab.record import PROMPTS, _width, derive_record
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,12 +72,36 @@ class TestKindSpecificShapes(unittest.TestCase):
 
 class TestAlignment(unittest.TestCase):
     def test_korean_headers_align(self):
-        """손으로 채울 표라 정렬이 실제로 중요하다 (한글은 2칸)."""
+        """손으로 채울 표라 정렬이 실제로 중요하다 (한글은 2칸).
+
+        파이프 개수·trailing space 만 보면 `_grid` 가 헤더·구분선·데이터 행을
+        전부 같은 `widths` 리스트로 만들고 항상 `|` 로 끝내므로 **구조적으로
+        항상 같다** — `_pad` 가 동공백 대신 `len()` 으로 계산해도 이 두 조건은
+        여전히 성립해 회귀를 못 잡는다(C2). 대신 `_width`(east-asian-width
+        인식) 로 각 셀의 실제 렌더 폭을 재서, 같은 열이면 행이 달라도 폭이
+        항상 같은지(=정렬되는지) 를 직접 본다.
+        """
         text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
-        block = [ln for ln in text.split("\n") if ln.startswith("| 스텝")][0]
-        rule = text.split("\n")[text.split("\n").index(block) + 1]
-        self.assertEqual(len(rule), len(rule.rstrip()))
-        self.assertEqual(block.count("|"), rule.count("|"))
+        lines = text.split("\n")
+        start = next(i for i, ln in enumerate(lines) if ln.startswith("| 스텝"))
+        block = []
+        i = start
+        while i < len(lines) and lines[i].startswith("|"):
+            block.append(lines[i])
+            i += 1
+        self.assertGreaterEqual(len(block), 4)   # 헤더 + 구분선 + 데이터 2행 이상
+
+        def cells(line):
+            return line.split("|")[1:-1]   # 맨 앞뒤의 빈 문자열을 버린다
+
+        header_cells = cells(block[0])
+        data_rows = [cells(ln) for ln in block[2:]]   # block[1] 은 구분선이다
+        for row in data_rows:
+            self.assertEqual(len(row), len(header_cells))
+        for col in range(len(header_cells)):
+            widths = {_width(header_cells[col])} | {_width(r[col]) for r in data_rows}
+            with self.subTest(col=col, header=header_cells[col].strip()):
+                self.assertEqual(len(widths), 1, f"열 {col} 의 렌더 폭이 행마다 다르다: {widths}")
 
 
 if __name__ == "__main__":

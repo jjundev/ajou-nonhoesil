@@ -92,6 +92,16 @@ class TestTables(unittest.TestCase):
                 "| S | R | Q |\n|---|---|---|\n| 0 | 1 | 0 |\n")
         self.assertEqual([len(t.header) for t in md.parse_tables(body)], [2, 3])
 
+    def test_single_column_table_survives(self):
+        """`_ROW`/`_SEP` 는 이미 두 번 손봤다(don't-care 행, escape 파이프).
+        1열 표가 깨지면 직접 실행 없이는 조용히 사라질 수 있는데 회귀
+        테스트가 없었다 (C3)."""
+        body = "| A |\n|---|\n| 0 |\n| 1 |\n"
+        tables = md.parse_tables(body)
+        self.assertEqual(len(tables), 1)
+        self.assertEqual(tables[0].header, ["A"])
+        self.assertEqual(tables[0].rows, [["0"], ["1"]])
+
     def test_adjacent_tables_with_no_blank_line_between(self):
         """두 번째 표의 헤더를 첫 표의 행으로 삼키면 안 된다."""
         body = ("| A | Y |\n|---|---|\n| 0 | 1 |\n"
