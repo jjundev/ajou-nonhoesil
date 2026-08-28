@@ -959,7 +959,7 @@ def parse_tables(body: str) -> list:
 python3 -m unittest tests.test_lab_md -v
 ```
 
-기대: `OK` (24 tests)
+기대: `OK` (25 tests)
 
 - [ ] **Step 5: 기존 테스트가 깨지지 않았는지 확인한다**
 
@@ -2255,7 +2255,7 @@ git commit -m "feat: 표기 정규화·보수 오버바·active-low 모듈 추�
   - `check_orphan_tables(spec) -> list[Finding]` — 본문에 있으나 어느 항목도 안 가리키는 표
   - `validate_spec(spec) -> list[Finding]` — 위 다섯을 합친 것
   - `check_netlist(netlist_path, spec) -> list[Finding]`
-  - `check_report_sections(report_path, sections: list[Section]) -> list[Finding]`
+  - `check_report_sections(report_path, sections: list[Section], item_count=None) -> list[Finding]` — `item_count` 를 주면 `repeat: per-item` 섹션의 반복 횟수도 본다
 
 **설계 규칙:** 이 모듈은 **절대 예외를 던지지 않는다.** 검토는 반쯤 망가진 문서에도 동작해야 하기 때문이다. 모든 문제는 `Finding` 으로 나온다.
 
@@ -2318,6 +2318,16 @@ class TestErrors(unittest.TestCase):
         with self.assertRaises(ValueError):
             eval_boolean("A)B", {"A": 1, "B": 1})
 
+    def test_unknown_character_is_rejected_not_dropped(self):
+        """`findall` 은 모르는 문자를 조용히 버린다 — `!A` 가 `A` 로 평가돼
+        틀린 진리표를 통과시킨다. 이 과목 표기는 후위 `'` 뿐이므로
+        `!`·`*`·`^` 는 인접 표기에서 흔한 오타다."""
+        for expr in ("!A", "A*B", "A^B", "A&B"):
+            with self.subTest(expr=expr):
+                with self.assertRaises(ValueError) as ctx:
+                    eval_boolean(expr, {"A": 1, "B": 1})
+                self.assertIn("알 수 없는 문자", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
@@ -2352,7 +2362,17 @@ class _Parser:
     """
 
     def __init__(self, text, env):
-        self.toks = _TOKEN.findall(text)
+        # `findall` 은 인식 못 한 문자를 **조용히 버린다** — `!A` 가 `A` 로 평가돼
+        # 틀린 진리표를 통과시킨다. 빈틈이 있으면 거절한다.
+        self.toks, pos = [], 0
+        for m in _TOKEN.finditer(text):
+            gap = text[pos:m.start()]
+            if gap.strip():
+                raise ValueError(f"알 수 없는 문자: {gap.strip()!r} (식: {text!r})")
+            self.toks.append(m.group(0))
+            pos = m.end()
+        if text[pos:].strip():
+            raise ValueError(f"알 수 없는 문자: {text[pos:].strip()!r} (식: {text!r})")
         self.i = 0
         self.env = env
 
@@ -2516,6 +2536,22 @@ class TestBooleanCrosscheck(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("Y", errors[0].message)
 
+    def test_skips_dont_care_rows_but_still_checks_the_rest(self):
+        """don't-care 입력 행은 구체적 식으로 검산할 수 없다. 건너뛰되
+        그 뒤의 진짜 오류는 계속 잡아야 한다 — `break` 로 표 전체를 포기하면
+        don't-care 행 하나가 나머지 검산을 통째로 가려버린다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (Y = A·B)\n\n"
+            "| A | B | Y |\n|---|---|---|\n"
+            "| 0 | x | 0 |\n"      # 검산 불가 — 건너뛴다
+            "| 1 | 0 | 0 |\n"
+            "| 1 | 1 | 0 |\n"      # 진짜 오류
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("행3", errors[0].where)
+
     def test_works_on_hl_encoded_tables(self):
         """평가용으로만 비트로 읽는다. 데이터는 H/L 그대로 남는다."""
         spec = spec_from(HEAD + (
@@ -2536,6 +2572,18 @@ class TestRowCount(unittest.TestCase):
             "- source: derived (Y = A·B·C)\n\n"
             "| A | B | C | Y |\n|---|---|---|---|\n"
             "| 0 | 0 | 0 | 0 |\n| 1 | 1 | 1 | 1 |\n"
+        ))
+        warns = validate.check_row_count(spec)
+        self.assertEqual(len(warns), 1)
+        self.assertEqual(warns[0].level, "warn")
+
+    def test_checks_manual_sourced_tables_too(self):
+        """`derived` 가 아니어도 행 수는 봐야 한다. 이 검사를 derived 로만
+        제한하면 6주차 전부와 2주차 이론표 4개가 사각지대가 된다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: H/L\n- source: manual:p4\n\n"
+            "| A | B | C |\n|---|---|---|\n"
+            "| L | L | L |\n| L | H | L |\n| H | L | L |\n"   # 4행이어야 하는데 3행
         ))
         warns = validate.check_row_count(spec)
         self.assertEqual(len(warns), 1)
@@ -2603,6 +2651,19 @@ class TestTableIntegrity(unittest.TestCase):
                 spec = parse_spec(ROOT / week / "체크리스트" / "명세.md")
                 self.assertEqual(validate.check_orphan_tables(spec), [])
 
+    def test_bad_cell_contents_are_errors(self):
+        """`\\|`·`<br>`·탭은 표를 깨거나 렌더링을 망가뜨린다."""
+        cases = ((r"a\|b", "escape 된 파이프"), ("a<br>b", "<br> 태그"),
+                 ("a\tb", "탭 문자"))
+        for bad, label in cases:
+            with self.subTest(cell=label):
+                spec = spec_from(HEAD + (
+                    "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
+                    f"| A | Y |\n|---|---|\n| {bad} | 0 |\n"
+                ))
+                messages = [f.message for f in validate.check_table_integrity(spec)]
+                self.assertTrue(any(label in m for m in messages), messages)
+
     def test_ragged_row_is_an_error(self):
         spec = spec_from(HEAD + (
             "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
@@ -2613,6 +2674,29 @@ class TestTableIntegrity(unittest.TestCase):
 
 
 class TestNetlist(unittest.TestCase):
+    def _netlist(self, text):
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def test_missing_power_and_floating_pin_handling_is_an_error(self):
+        """플로팅 입력은 이 과목의 대표 실패 원인이다. 이 검사가 존재하는 이유다."""
+        spec = parse_spec(WEEK2_SPEC)
+        findings = validate.check_netlist(
+            self._netlist("- U1 = 74HC08\n  - pin 1 ← 입력 A\n"), spec)
+        messages = " ".join(f.message for f in findings if f.level == "error")
+        for token in ("VCC", "GND", "미사용"):
+            with self.subTest(token=token):
+                self.assertIn(token, messages)
+
+    def test_ic_missing_from_netlist_is_a_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        findings = validate.check_netlist(
+            self._netlist("VCC GND 미사용\n"), spec)
+        warns = [f for f in findings if f.level == "warn"]
+        self.assertTrue(warns)
+        self.assertIn("74HC08", " ".join(f.message for f in warns))
+
     def test_real_week2_netlist_has_power_and_floating_pins(self):
         spec = parse_spec(WEEK2_SPEC)
         errors = [f for f in validate.check_netlist(WEEK2_NETLIST, spec)
@@ -2632,6 +2716,27 @@ class TestReportSections(unittest.TestCase):
         tmp.write_text("# 실험 목적\n내용\n# 실험 이론\n내용\n", encoding="utf-8")
         missing = [f.message for f in validate.check_report_sections(tmp, fmt.pre)]
         self.assertTrue(any("실험 부품" in m for m in missing))
+
+    def test_a_combined_heading_does_not_satisfy_two_sections(self):
+        """`# 실험 결과 분석` 한 줄이 `실험 결과` 와 `결과 분석` 을 동시에
+        만족시켜 버리면, 정말로 빠진 섹션이 조용히 통과한다."""
+        fmt = config.load_report_format(ROOT)
+        tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+        tmp.write_text("# 실험 결과 분석\n내용\n", encoding="utf-8")
+        missing = [f for f in validate.check_report_sections(tmp, fmt.result)
+                   if "없다" in f.message]
+        names = " ".join(f.message for f in missing)
+        self.assertIn("실험 결과", names)
+        self.assertIn("결과 분석", names)
+
+    def test_per_item_sections_must_repeat(self):
+        """항목반복형은 결보 29편 중 14편의 실제 구조다. 고찰이 항목마다 온다."""
+        fmt = config.load_report_format(ROOT, preset="항목반복형")
+        tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+        tmp.write_text("# 결선도\n# 구성한 회로\n# 실험 결과\n# 고찰\n"
+                       "# 전체적인 고찰\n", encoding="utf-8")
+        findings = validate.check_report_sections(tmp, fmt.result, item_count=3)
+        self.assertTrue(any("항목마다 반복" in f.message for f in findings))
 
     def test_optional_sections_are_not_required(self):
         fmt = config.load_report_format(ROOT)
@@ -2746,9 +2851,9 @@ def check_row_count(spec) -> list:
             continue
         if any(normalize_cell(c) == DONT_CARE for row in t.rows for c in row):
             continue
-        if not derived_parts(t):
-            continue
         inputs, _ = split_columns(t)
+        if not inputs:
+            continue
         expected = 2 ** len(inputs)
         if len(t.rows) != expected:
             out.append(Finding("warn", f"{spec.path.name}:{t.id}",
@@ -2765,6 +2870,7 @@ def check_boolean(spec) -> list:
         if not pairs or not t.rows:
             continue
         where = f"{spec.path.name}:{t.id}"
+        inputs, _ = split_columns(t)
         for target, expr in pairs:
             if target not in t.header:
                 out.append(Finding("error", where,
@@ -2774,11 +2880,17 @@ def check_boolean(spec) -> list:
             for i, row in enumerate(t.rows, start=1):
                 if len(row) != len(t.header):
                     continue
-                env = {}
+                env, dont_care = {}, False
                 for col, cell in zip(t.header, row):
                     bit = _bit(cell, t.encoding)
                     if bit is not None:
                         env[col] = bit
+                    elif col in inputs and normalize_cell(cell) == DONT_CARE:
+                        dont_care = True
+                if dont_care:
+                    # 입력이 don't-care 인 행은 구체적 식으로 검산할 수 없다.
+                    # 행 수 검사가 X 있는 표를 건너뛰는 것과 같은 이유다.
+                    continue
                 got = _bit(row[out_col], t.encoding)
                 if got is None:
                     continue
@@ -2834,10 +2946,13 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
-def check_report_sections(report_path, sections) -> list:
+def check_report_sections(report_path, sections, item_count=None) -> list:
     """`.claude/보고서양식.md` 기준으로 섹션 유무·순서를 본다.
 
     하드코딩된 목차와 대조하지 않는다 — 양식이 연도마다 다르기 때문이다 (R1).
+
+    `item_count` 를 주면 `repeat: per-item` 섹션이 항목 수만큼 나오는지도 본다.
+    항목반복형 프리셋(결보 29편 중 14편의 실제 구조)이 이걸 요구한다.
     """
     path = Path(report_path)
     if not path.exists():
@@ -2845,14 +2960,21 @@ def check_report_sections(report_path, sections) -> list:
     text = path.read_text(encoding="utf-8")
     headings = [re.sub(r"^#+\s*(?:\d+[.)]\s*)?", "", ln).strip()
                 for ln in text.split("\n") if ln.startswith("#")]
+    # 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과` 와 `결과 분석`
+    # 두 요구 섹션을 동시에 만족시켜 버린다. 정확히 일치해야 한다.
     out, last = [], -1
     for sec in sections:
         if not sec.generate:
             continue
-        pos = next((i for i, h in enumerate(headings) if sec.name in h), None)
+        hits = [i for i, h in enumerate(headings) if h == sec.name]
+        pos = hits[0] if hits else None
         if pos is None:
             out.append(Finding("error", path.name, f"양식이 요구하는 섹션 '{sec.name}' 이 없다"))
             continue
+        if sec.repeat == "per-item" and item_count is not None and len(hits) != item_count:
+            out.append(Finding("error", path.name,
+                f"섹션 '{sec.name}' 은 항목마다 반복돼야 한다 — "
+                f"항목 {item_count}개인데 {len(hits)}번 나온다"))
         if pos < last:
             out.append(Finding("warn", path.name,
                 f"섹션 '{sec.name}' 의 순서가 양식과 다르다"))
@@ -2942,6 +3064,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    | 교안 회로도와 netlist 위상이 맞는가 | PDF 벡터 판독이 필요하다 |
    | 예상값 `source` 가 실제로 그 쪽에 있는가 | 쪽 번호 대조는 사람이 |
    | 표기가 R5·R6 을 지키는가 | 오버바 승격 범위는 문맥 판단이다 |
+   | 섹션 제목이 양식의 이름과 **글자 그대로** 같은가 | 대조는 정확 일치다. `## 1. 실험 목적` 은 통과하지만(번호는 벗겨낸다) `## 1. 실험 목적 및 배경` 은 누락으로 잡힌다. 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과`·`결과 분석` 두 섹션을 동시에 만족시켜 버리므로 일부러 엄격하게 뒀다 |
 
 5. **라운드 문서 작성.** `<N>주차/output/<pre|result>_review_round<N>.md` 에 쓴다.
 
@@ -3782,7 +3905,7 @@ def render_checklist(spec, netlist_text, template) -> str:
 python3 -m unittest tests.test_lab_render -v
 ```
 
-기대: `OK` (9 tests)
+기대: `OK` (10 tests)
 
 - [ ] **Step 10: ② `prep-lab-checklist` 스킬을 만든다**
 
