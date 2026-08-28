@@ -104,6 +104,7 @@ def check_boolean(spec) -> list:
         if not pairs or not t.rows:
             continue
         where = f"{spec.path.name}:{t.id}"
+        inputs, _ = split_columns(t)
         for target, expr in pairs:
             if target not in t.header:
                 out.append(Finding("error", where,
@@ -113,11 +114,17 @@ def check_boolean(spec) -> list:
             for i, row in enumerate(t.rows, start=1):
                 if len(row) != len(t.header):
                     continue
-                env = {}
+                env, dont_care = {}, False
                 for col, cell in zip(t.header, row):
                     bit = _bit(cell, t.encoding)
                     if bit is not None:
                         env[col] = bit
+                    elif col in inputs and normalize_cell(cell) == DONT_CARE:
+                        dont_care = True
+                if dont_care:
+                    # 입력이 don't-care 인 행은 구체적 식으로 검산할 수 없다.
+                    # 행 수 검사가 X 있는 표를 건너뛰는 것과 같은 이유다.
+                    continue
                 got = _bit(row[out_col], t.encoding)
                 if got is None:
                     continue

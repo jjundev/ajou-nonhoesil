@@ -109,6 +109,21 @@ class TestRowCount(unittest.TestCase):
         self.assertEqual(len(warns), 1)
         self.assertEqual(warns[0].level, "warn")
 
+    def test_skips_dont_care_rows_but_still_checks_the_rest(self):
+        """don't-care 입력 행은 구체적 식으로 검산할 수 없다. 건너뛰되
+        그 뒤의 진짜 오류는 계속 잡아야 한다 — 표 전체를 포기하면 안 된다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (Y = A·B)\n\n"
+            "| A | B | Y |\n|---|---|---|\n"
+            "| 0 | x | 0 |\n"      # 검산 불가 — 건너뛴다
+            "| 1 | 0 | 0 |\n"
+            "| 1 | 1 | 0 |\n"      # 진짜 오류
+        ))
+        errors = [f for f in validate.check_boolean(spec) if f.level == "error"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("행3", errors[0].where)
+
     def test_skips_tables_that_use_dont_care(self):
         """실험6 R-S Latch 는 3입력인데 `x x 0` 축약으로 5행이다. 정상이다."""
         spec = spec_from(HEAD + (
