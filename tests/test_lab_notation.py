@@ -41,15 +41,55 @@ class TestOverbar(unittest.TestCase):
     def test_expression_without_prime_is_untouched(self):
         self.assertEqual(n.to_overbar_html("A⊕B"), "A⊕B")
 
-    def test_state_token_would_be_promoted_so_never_call_it_on_cells(self):
-        """`Q(t-1)'` 은 문법적으로 승격 대상이다. 그래서 셀에는 부르지 않는다.
+    def test_nested_complement_scope(self):
+        """2주차 T5 의 실제 식이 이 형태다 — `Z = (A'·B)'`.
+        평평한 정규식으로는 안쪽 `A'` 가 승격되지 않고 따옴표가 남는다."""
+        self.assertEqual(
+            n.to_overbar_html("(A'·B)'"),
+            '<span class="ov"><span class="ov">A</span>·B</span>')
 
-        이 테스트는 규칙을 문서화하려고 존재한다 — 함수가 아니라 호출부가
-        범위를 지켜야 한다.
-        """
-        self.assertEqual(n.to_overbar_html("Q(t-1)'"),
-                         '<span class="ov">Q(t-1)</span>')
-        self.assertEqual(n.normalize_cell("Q(t-1)'"), "Q(t-1)'")
+    def test_parenthesised_group_without_prime_keeps_its_parens(self):
+        self.assertEqual(n.to_overbar_html("((A+B)·C)'"),
+                         '<span class="ov">(A+B)·C</span>')
+
+    def test_double_prime_nests_twice(self):
+        self.assertEqual(
+            n.to_overbar_html("A''"),
+            '<span class="ov"><span class="ov">A</span></span>')
+
+    def test_unbalanced_parens_degrade_instead_of_crashing(self):
+        for expr in ("(A·B", "A)B", "'A", ""):
+            with self.subTest(expr=expr):
+                self.assertEqual(n.to_overbar_html(expr), expr)
+
+    def test_real_week2_source_expression_renders(self):
+        """명세 T5 의 source 식 전문. 이 모듈이 존재하는 이유다."""
+        rendered = n.to_overbar_html("X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)'")
+        self.assertNotIn("'", rendered)          # 따옴표가 남으면 안 된다
+        self.assertEqual(rendered.count('<span class="ov">'), 4)
+
+
+class TestCellValueGuard(unittest.TestCase):
+    """셀 값과 부울식은 문법적으로 구별되지 않는다 — `Q(t-1)'` 과 `(A·B)'` 은
+    같은 모양이다. 문서와 규율만으로는 못 막으므로 타입으로 막는다."""
+
+    def test_normalize_cell_returns_a_cell_value(self):
+        self.assertIsInstance(n.normalize_cell("0"), n.CellValue)
+        self.assertTrue(all(isinstance(c, n.CellValue)
+                            for c in n.normalize_row(["L", "H"])))
+
+    def test_cell_value_still_behaves_as_a_string(self):
+        cell = n.normalize_cell("Q(t-1)'")
+        self.assertEqual(cell, "Q(t-1)'")
+        self.assertEqual(f"{cell}!", "Q(t-1)'!")
+
+    def test_overbar_refuses_a_cell_value(self):
+        with self.assertRaises(TypeError):
+            n.to_overbar_html(n.normalize_cell("Q(t-1)'"))
+
+    def test_overbar_still_accepts_a_plain_string(self):
+        self.assertEqual(n.to_overbar_html("(A·B)'"),
+                         '<span class="ov">A·B</span>')
 
 
 class TestActiveLow(unittest.TestCase):
