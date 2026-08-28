@@ -553,6 +553,7 @@ git commit -m "feat: lab-spec/v1 스키마 확정 및 실험1·6·10 명세 작�
   - `parse_block(src: str) -> dict`
   - `parse_value(s: str) -> Any`
   - `split_top(s: str) -> list[str]`
+  - `strip_comment(text: str) -> str` — 따옴표·괄호 밖의 `#` 주석 제거
   - `parse_tables(body: str) -> list[MdTable]`
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
@@ -734,6 +735,32 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(len(md.parse_tables(body)), 1)
 
 
+class TestInlineComments(unittest.TestCase):
+    """`기록.md` 의 `filled_by: ~   # hand | vision | 미기입` 이 `None` 이 아니라
+    주석까지 붙은 문자열로 읽혔다. 소비자가 `is None` 으로 미기입을 판정하면
+    조용히 틀린다 — ④ 결과보고서 스킬이 실제로 그걸 밟았다."""
+
+    def test_comment_after_a_scalar_is_stripped(self):
+        self.assertIsNone(md.parse_block("filled_by: ~   # hand | vision")["filled_by"])
+        self.assertEqual(md.parse_block("week: 5   # 주차")["week"], 5)
+        self.assertEqual(md.parse_block("t: hello # 뒤")["t"], "hello")
+
+    def test_hash_inside_quotes_is_kept(self):
+        self.assertEqual(md.parse_block('t: "has # inside"')["t"], "has # inside")
+
+    def test_hash_without_leading_space_is_not_a_comment(self):
+        """`#fff` 나 `c#sharp` 처럼 값 안의 `#` 는 주석이 아니다."""
+        self.assertEqual(md.parse_block("t: c#sharp")["t"], "c#sharp")
+
+    def test_comment_after_an_inline_mapping_is_stripped(self):
+        self.assertEqual(md.parse_block("p: {x: 1} # 뒤")["p"], {"x": 1})
+
+    def test_real_record_file_marks_unfilled_as_none(self):
+        text = (ROOT / "2주차/체크리스트/기록.md").read_text(encoding="utf-8")
+        front, _ = md.split_frontmatter(text)
+        self.assertIsNone(front["filled_by"])
+
+
 if __name__ == "__main__":
     unittest.main()
 ```
@@ -817,8 +844,35 @@ def split_top(s: str) -> list:
     return parts
 
 
+def strip_comment(text: str) -> str:
+    """따옴표·괄호 밖의 `#` 부터 줄 끝까지를 주석으로 보고 잘라낸다.
+
+    YAML 처럼 `#` 앞에 공백이 있어야 주석으로 본다 — 값 안의 `#`(색상 `#fff`,
+    부품 표기 등)를 잘라내지 않기 위해서다.
+
+    이게 없으면 `filled_by: ~   # hand | vision` 이 `None` 이 아니라 주석까지
+    포함한 **문자열**로 읽힌다. 실제로 기록.md 가 그 형태이고, 소비자가
+    `filled_by is None` 으로 미기입을 판정하면 조용히 틀린다.
+    """
+    depth, quote = 0, ""
+    for i, ch in enumerate(text):
+        if quote:
+            if ch == quote:
+                quote = ""
+            continue
+        if ch in "\"'":
+            quote = ch
+        elif ch in "[{":
+            depth += 1
+        elif ch in "]}":
+            depth -= 1
+        elif ch == "#" and depth == 0 and (i == 0 or text[i - 1].isspace()):
+            return text[:i]
+    return text
+
+
 def parse_value(s: str) -> Any:
-    s = s.strip()
+    s = strip_comment(s).strip()
     if s in ("", "~", "null"):
         return None
     if s.startswith("{") and s.endswith("}"):

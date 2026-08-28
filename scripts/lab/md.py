@@ -60,8 +60,35 @@ def split_top(s: str) -> list:
     return parts
 
 
+def strip_comment(text: str) -> str:
+    """따옴표·괄호 밖의 `#` 부터 줄 끝까지를 주석으로 보고 잘라낸다.
+
+    YAML 처럼 `#` 앞에 공백이 있어야 주석으로 본다 — 값 안의 `#`(색상 `#fff`,
+    부품 표기 등)를 잘라내지 않기 위해서다.
+
+    이게 없으면 `filled_by: ~   # hand | vision` 이 `None` 이 아니라 주석까지
+    포함한 **문자열**로 읽힌다. 실제로 기록.md 가 그 형태이고, 소비자가
+    `filled_by is None` 으로 미기입을 판정하면 조용히 틀린다.
+    """
+    depth, quote = 0, ""
+    for i, ch in enumerate(text):
+        if quote:
+            if ch == quote:
+                quote = ""
+            continue
+        if ch in "\"'":
+            quote = ch
+        elif ch in "[{":
+            depth += 1
+        elif ch in "]}":
+            depth -= 1
+        elif ch == "#" and depth == 0 and (i == 0 or text[i - 1].isspace()):
+            return text[:i]
+    return text
+
+
 def parse_value(s: str) -> Any:
-    s = s.strip()
+    s = strip_comment(s).strip()
     if s in ("", "~", "null"):
         return None
     if s.startswith("{") and s.endswith("}"):

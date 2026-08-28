@@ -170,5 +170,31 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(len(md.parse_tables(body)), 1)
 
 
+class TestInlineComments(unittest.TestCase):
+    """`기록.md` 의 `filled_by: ~   # hand | vision | 미기입` 이 `None` 이 아니라
+    주석까지 붙은 문자열로 읽혔다. 소비자가 `is None` 으로 미기입을 판정하면
+    조용히 틀린다 — ④ 결과보고서 스킬이 실제로 그걸 밟았다."""
+
+    def test_comment_after_a_scalar_is_stripped(self):
+        self.assertIsNone(md.parse_block("filled_by: ~   # hand | vision")["filled_by"])
+        self.assertEqual(md.parse_block("week: 5   # 주차")["week"], 5)
+        self.assertEqual(md.parse_block("t: hello # 뒤")["t"], "hello")
+
+    def test_hash_inside_quotes_is_kept(self):
+        self.assertEqual(md.parse_block('t: "has # inside"')["t"], "has # inside")
+
+    def test_hash_without_leading_space_is_not_a_comment(self):
+        """`#fff` 나 `c#sharp` 처럼 값 안의 `#` 는 주석이 아니다."""
+        self.assertEqual(md.parse_block("t: c#sharp")["t"], "c#sharp")
+
+    def test_comment_after_an_inline_mapping_is_stripped(self):
+        self.assertEqual(md.parse_block("p: {x: 1} # 뒤")["p"], {"x": 1})
+
+    def test_real_record_file_marks_unfilled_as_none(self):
+        text = (ROOT / "2주차/체크리스트/기록.md").read_text(encoding="utf-8")
+        front, _ = md.split_frontmatter(text)
+        self.assertIsNone(front["filled_by"])
+
+
 if __name__ == "__main__":
     unittest.main()
