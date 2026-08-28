@@ -1968,9 +1968,10 @@ git commit -m "feat: 명세.md 파서 추가 (lab-spec/v1)"
 - Consumes: 없음 (stdlib 만)
 - Produces:
   - `DONT_CARE = "X"`
-  - `normalize_cell(value, dont_care_column=False) -> str`
-  - `normalize_row(row, dont_care_columns=()) -> list[str]`
-  - `to_overbar_html(expr: str) -> str` — `'` 를 `<span class="ov">…</span>` 로
+  - `CellValue(str)` — 표 셀에서 온 값임을 나타내는 얇은 하위 타입. `to_overbar_html` 이 이걸 거절한다
+  - `normalize_cell(value, dont_care_column=False) -> CellValue`
+  - `normalize_row(row, dont_care_columns=()) -> list[CellValue]`
+  - `to_overbar_html(expr) -> str` — `'` 를 `<span class="ov">…</span>` 로. **중첩 스코프 지원.** `CellValue` 를 받으면 `TypeError`
   - `active_low(name: str, first_use: bool, experiment: int) -> str`
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
@@ -2021,15 +2022,55 @@ class TestOverbar(unittest.TestCase):
     def test_expression_without_prime_is_untouched(self):
         self.assertEqual(n.to_overbar_html("A⊕B"), "A⊕B")
 
-    def test_state_token_would_be_promoted_so_never_call_it_on_cells(self):
-        """`Q(t-1)'` 은 문법적으로 승격 대상이다. 그래서 셀에는 부르지 않는다.
+    def test_nested_complement_scope(self):
+        """2주차 T5 의 실제 식이 이 형태다 — `Z = (A'·B)'`.
+        평평한 정규식으로는 안쪽 `A'` 가 승격되지 않고 따옴표가 남는다."""
+        self.assertEqual(
+            n.to_overbar_html("(A'·B)'"),
+            '<span class="ov"><span class="ov">A</span>·B</span>')
 
-        이 테스트는 규칙을 문서화하려고 존재한다 — 함수가 아니라 호출부가
-        범위를 지켜야 한다.
-        """
-        self.assertEqual(n.to_overbar_html("Q(t-1)'"),
-                         '<span class="ov">Q(t-1)</span>')
-        self.assertEqual(n.normalize_cell("Q(t-1)'"), "Q(t-1)'")
+    def test_parenthesised_group_without_prime_keeps_its_parens(self):
+        self.assertEqual(n.to_overbar_html("((A+B)·C)'"),
+                         '<span class="ov">(A+B)·C</span>')
+
+    def test_double_prime_nests_twice(self):
+        self.assertEqual(
+            n.to_overbar_html("A''"),
+            '<span class="ov"><span class="ov">A</span></span>')
+
+    def test_unbalanced_parens_degrade_instead_of_crashing(self):
+        for expr in ("(A·B", "A)B", "'A", ""):
+            with self.subTest(expr=expr):
+                self.assertEqual(n.to_overbar_html(expr), expr)
+
+    def test_real_week2_source_expression_renders(self):
+        """명세 T5 의 source 식 전문. 이 모듈이 존재하는 이유다."""
+        rendered = n.to_overbar_html("X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)'")
+        self.assertNotIn("'", rendered)          # 따옴표가 남으면 안 된다
+        self.assertEqual(rendered.count('<span class="ov">'), 4)
+
+
+class TestCellValueGuard(unittest.TestCase):
+    """셀 값과 부울식은 문법적으로 구별되지 않는다 — `Q(t-1)'` 과 `(A·B)'` 은
+    같은 모양이다. 문서와 규율만으로는 못 막으므로 타입으로 막는다."""
+
+    def test_normalize_cell_returns_a_cell_value(self):
+        self.assertIsInstance(n.normalize_cell("0"), n.CellValue)
+        self.assertTrue(all(isinstance(c, n.CellValue)
+                            for c in n.normalize_row(["L", "H"])))
+
+    def test_cell_value_still_behaves_as_a_string(self):
+        cell = n.normalize_cell("Q(t-1)'")
+        self.assertEqual(cell, "Q(t-1)'")
+        self.assertEqual(f"{cell}!", "Q(t-1)'!")
+
+    def test_overbar_refuses_a_cell_value(self):
+        with self.assertRaises(TypeError):
+            n.to_overbar_html(n.normalize_cell("Q(t-1)'"))
+
+    def test_overbar_still_accepts_a_plain_string(self):
+        self.assertEqual(n.to_overbar_html("(A·B)'"),
+                         '<span class="ov">A·B</span>')
 
 
 class TestActiveLow(unittest.TestCase):
@@ -2061,42 +2102,110 @@ python3 -m unittest tests.test_lab_notation -v
 **적용 범위가 이 모듈의 핵심이다.** `to_overbar_html` 은 부울식에만 쓴다.
 표 헤더·신호명·**셀 값**에는 쓰지 않는다 — 실험6 의 `Q(t-1)'` 은 상태 토큰이지
 부울식이 아니라서, 오버바로 승격하면 진리표가 망가진다.
+
+그 경계를 문서로만 지키지 않는다. `normalize_cell` 이 돌려주는 값은 `CellValue`
+(str 하위 타입) 이고, `to_overbar_html` 은 그걸 받으면 거절한다. 셀 값과 부울식은
+문법적으로 구별되지 않으므로(`Q(t-1)'` 과 `(A·B)'` 은 같은 모양이다), 타입만이
+호출부의 실수를 잡아낼 수 있다.
 """
 
 import re
 
 DONT_CARE = "X"
 _DC_TOKENS = ("x", "X", "-", "–", "—")
-
-# `(A·B)'` 또는 `A'` 또는 `Q(t-1)'` — 괄호로 스코프가 명시된 것만 잡는다 (R5).
-_PRIMED = re.compile(r"(\([^()]*\)|[A-Za-z][A-Za-z0-9_]*(?:\([^()]*\))?)'")
+_IDENT = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 
 
-def normalize_cell(value, dont_care_column=False) -> str:
+class CellValue(str):
+    """표 셀에서 온 값. 부울식이 아니다 — 오버바 승격 대상이 아니다."""
+
+    __slots__ = ()
+
+
+def normalize_cell(value, dont_care_column=False) -> CellValue:
     """R3 정규화. don't-care 변형과 공백만 손댄다.
 
     **`H/L` ↔ `0/1` 변환은 절대 하지 않는다.** encoding 은 표의 속성이다.
     """
     s = " ".join(str(value).split())
     if s in _DC_TOKENS:
-        return DONT_CARE
+        return CellValue(DONT_CARE)
     if s == "" and dont_care_column:
-        return DONT_CARE
-    return s
+        return CellValue(DONT_CARE)
+    return CellValue(s)
 
 
 def normalize_row(row, dont_care_columns=()) -> list:
     return [normalize_cell(v, i in dont_care_columns) for i, v in enumerate(row)]
 
 
-def to_overbar_html(expr: str) -> str:
-    """부울식의 `'` 를 오버바로 승격한다 (R5). **부울식에만 쓸 것.**"""
-    def repl(m):
-        inner = m.group(1)
-        if inner.startswith("(") and inner.endswith(")"):
-            inner = inner[1:-1]
-        return f'<span class="ov">{inner}</span>'
-    return _PRIMED.sub(repl, expr)
+def _match_paren(text: str, start: int) -> int:
+    """`text[start]` 의 `(` 에 대응하는 `)` 위치. 없으면 -1."""
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == "(":
+            depth += 1
+        elif text[i] == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
+def _primes(text: str, i: int) -> int:
+    n = 0
+    while i + n < len(text) and text[i + n] == "'":
+        n += 1
+    return n
+
+
+def _wrap(piece: str, count: int) -> str:
+    for _ in range(count):
+        piece = f'<span class="ov">{piece}</span>'
+    return piece
+
+
+def to_overbar_html(expr) -> str:
+    """부울식의 `'` 를 오버바로 승격한다 (R5). **부울식에만 쓸 것.**
+
+    괄호 스코프를 지키고 **중첩을 지원한다** — `(A'·B)'` 는 `A` 위의 바와
+    `A'·B` 전체 위의 바가 겹쳐 나온다. 이 형태가 2주차 명세 T5 의 실제 식이다.
+
+    입력은 대수 표기(문자·숫자·`·`·`+`·`⊕`·`'`·괄호)로 가정한다.
+    HTML 이스케이프는 하지 않는다 — 호출부가 알고리즘 텍스트만 넘겨야 한다.
+    """
+    if isinstance(expr, CellValue):
+        raise TypeError(
+            "셀 값에는 오버바를 승격하지 않는다. 실험6 의 `Q(t-1)'` 같은 상태 "
+            "토큰은 부울식이 아니다 — 승격하면 진리표가 망가진다."
+        )
+    out, i, n = [], 0, len(expr)
+    while i < n:
+        ch = expr[i]
+        if ch == "(":
+            close = _match_paren(expr, i)
+            if close < 0:                       # 괄호가 안 맞으면 글자 그대로
+                out.append(ch)
+                i += 1
+                continue
+            inner = to_overbar_html(expr[i + 1:close])
+            count = _primes(expr, close + 1)
+            out.append(_wrap(inner, count) if count else f"({inner})")
+            i = close + 1 + count
+        elif ch.isalpha():
+            m = _IDENT.match(expr, i)
+            end = m.end()
+            if end < n and expr[end] == "(":    # `Q(t-1)` 같은 이름
+                close = _match_paren(expr, end)
+                if close >= 0:
+                    end = close + 1
+            count = _primes(expr, end)
+            out.append(_wrap(expr[i:end], count))
+            i = end + count
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
 
 
 def active_low(name: str, first_use: bool, experiment: int) -> str:
@@ -2112,7 +2221,7 @@ def active_low(name: str, first_use: bool, experiment: int) -> str:
 python3 -m unittest tests.test_lab_notation -v
 ```
 
-기대: `OK` (11 tests)
+기대: `OK` (19 tests)
 
 - [ ] **Step 5: 커밋**
 
@@ -2143,7 +2252,8 @@ git commit -m "feat: 표기 정규화·보수 오버바·active-low 모듈 추�
   - `check_metadata(spec) -> list[Finding]`
   - `check_row_count(spec) -> list[Finding]`
   - `check_boolean(spec) -> list[Finding]`
-  - `validate_spec(spec) -> list[Finding]` — 위 넷을 합친 것
+  - `check_orphan_tables(spec) -> list[Finding]` — 본문에 있으나 어느 항목도 안 가리키는 표
+  - `validate_spec(spec) -> list[Finding]` — 위 다섯을 합친 것
   - `check_netlist(netlist_path, spec) -> list[Finding]`
   - `check_report_sections(report_path, sections: list[Section]) -> list[Finding]`
 
@@ -2478,6 +2588,21 @@ class TestMetadata(unittest.TestCase):
 
 
 class TestTableIntegrity(unittest.TestCase):
+    def test_orphan_table_is_an_error(self):
+        """파서는 반대 방향만 막는다. 고아 표는 여기서 잡아야 한다."""
+        spec = spec_from(HEAD.replace("tables: [T1]", "tables: []") + (
+            "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
+            "| A | Y |\n|---|---|\n| 0 | 0 |\n"
+        ))
+        self.assertTrue(any("가리키지 않는다" in f.message
+                            for f in validate.check_orphan_tables(spec)))
+
+    def test_real_specs_have_no_orphans(self):
+        for week in ("2주차", "6주차", "12주차"):
+            with self.subTest(week=week):
+                spec = parse_spec(ROOT / week / "체크리스트" / "명세.md")
+                self.assertEqual(validate.check_orphan_tables(spec), [])
+
     def test_ragged_row_is_an_error(self):
         spec = spec_from(HEAD + (
             "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n\n"
@@ -2672,9 +2797,22 @@ def check_boolean(spec) -> list:
     return out
 
 
+def check_orphan_tables(spec) -> list:
+    """본문에 있으나 어느 항목도 가리키지 않는 표.
+
+    파서는 반대 방향(없는 표를 가리키는 항목)만 막는다. 고아 표는 구조적으로
+    표현 가능하므로 여기서 잡는다 — 대개 항목의 `tables` 에 ID 를 빠뜨린 것이다.
+    """
+    referenced = {tid for item in spec.items for tid in item.tables}
+    return [Finding("error", f"{spec.path.name}:{t.id}",
+                    "어느 항목의 tables 도 이 표를 가리키지 않는다")
+            for t in spec.tables if t.id not in referenced]
+
+
 def validate_spec(spec) -> list:
     return (check_table_integrity(spec) + check_metadata(spec)
-            + check_row_count(spec) + check_boolean(spec))
+            + check_row_count(spec) + check_boolean(spec)
+            + check_orphan_tables(spec))
 
 
 def check_netlist(netlist_path, spec) -> list:
@@ -2728,7 +2866,7 @@ def check_report_sections(report_path, sections) -> list:
 python3 -m unittest tests.test_lab_validate -v
 ```
 
-기대: `OK` (16 tests)
+기대: `OK` (18 tests)
 
 만약 `TestRealWeek2SpecIsClean` 이 실패하면 **검증기가 아니라 Task 1 의 명세가 틀린 것이다.** 명세를 고친다 — 그게 이 검증기의 존재 이유다.
 
