@@ -185,6 +185,24 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다.",
                       re.sub(r"\s+", " ", self.docs["예보"]))
 
+    def test_ai_usage_log_gate_is_written_against_the_parsed_value(self):
+        # config.load_course_info() 는 YAML `~` 를 None 으로 돌려준다.
+        # "`~` 가 아니면" 을 글자대로 구현하면 항상 참이 되어 로그를 남긴다.
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                self.assertNotIn("`ai_usage_log` 가 `~` 가 아니면", text)
+                self.assertIn(
+                    "`ai_usage_log` 가 비어 있지 않으면(`None` 이 아니면)", text)
+
+    def test_both_skills_pass_item_count_to_the_section_check(self):
+        # item_count 없이 부르면 per-item 반복 횟수 검사가 통째로 생략된다.
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                calls = re.findall(r"check_report_sections\([^)]*\)", text)
+                self.assertTrue(calls, "호출부가 없다")
+                for call in calls:
+                    self.assertIn("item_count", call)
+
 
 if __name__ == "__main__":
     unittest.main()

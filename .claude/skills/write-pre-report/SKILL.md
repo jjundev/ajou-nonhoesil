@@ -362,21 +362,30 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     python3 -c "
     from pathlib import Path
     from scripts.lab import config, validate
+    from scripts.lab.spec_parser import parse_spec
     root = config.find_project_root(Path('.'))
     fmt = config.load_report_format(root)
-    for f in validate.check_report_sections('<실험NN>/output/<실험NN>_예비보고서.md', fmt.pre):
+    spec = parse_spec('<실험NN>/체크리스트/명세.md')
+    for f in validate.check_report_sections('<실험NN>/output/<실험NN>_예비보고서.md',
+                                             fmt.pre, item_count=len(spec.items)):
         print(f)
     "
     ```
 
-    출력이 없으면 모든 섹션이 존재하는 것이다. 출력을 파일로 남기지 않는다
+    `item_count=len(spec.items)` 를 항상 넘긴다 — §실행 절차 2 가 시킨
+    `repeat: per-item` 반복이 항목 수만큼 정확히 나왔는지는 이 인자 없이는
+    검사되지 않는다. 출력이 없으면 모든 섹션이 존재하는 것이다. 출력을
+    파일로 남기지 않는다
     — error 0 이면 빈 파일이라 "검사했음"과 "안 했음"이 구별되지 않는다
     (§실행 절차 6 의 "유일한 산출물"). 누락이 나오면 본문을 고치고 검증을
     다시 돌린다 — `round2`, `round3`... 는 파일이 아니라 이 명령을 다시
     실행하는 횟수를 가리킨다.
 
-10. `과목정보.md` 의 `ai_usage_log` 가 `~` 가 아니면 그 경로에 로그 한 줄을
-    남긴다. `~` 면 아무것도 하지 않는다.
+10. `과목정보.md` 의 `ai_usage_log` 가 비어 있지 않으면(`None` 이 아니면) 그
+    경로에 로그 한 줄을 남긴다. 비어 있으면 아무것도 하지 않는다.
+    `config.load_course_info()` 는 YAML `~` 를 파이썬 `None` 으로 돌려주므로
+    `!= '~'` 로 비교하면 항상 참이 되어 로그를 남긴다 — §실행 절차 7 이
+    `missing_identity()` 로 감싼 것과 같은 관례다.
 
 11. **결과 안내.** md 경로, 섹션 검증 결과(error 0 여부), 그리고 **다음 할 일**을
     한 줄로: `⑦ sync-report-to-notion` 으로 노션에 올린다.
