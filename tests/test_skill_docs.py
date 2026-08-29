@@ -117,6 +117,16 @@ class SkillDocInvariants(unittest.TestCase):
             with self.subTest(name):
                 self.assertEqual(re.findall(r"§\d+(?!\.\d)", text), [])
 
+    def test_sibling_subsection_scope_is_defined(self):
+        # 형제를 문서 전체로 읽으면 준비물·핀 배치·결선 표의 예외가 전부
+        # 무너져 표 10개의 레이아웃이 뒤집힌다.
+        self.assertIn("형제 소절(같은 대절 안의 소절)", self.docs["예보"])
+
+    def test_heading_levels_are_capped_at_two(self):
+        # `###` 를 허용하면 §절대 규칙 12 의 여백 규칙이 정의되지 않은
+        # 자리가 생긴다.
+        self.assertIn("`###` 이하는 쓰지 않는다", self.docs["예보"])
+
 
 if __name__ == "__main__":
     unittest.main()
