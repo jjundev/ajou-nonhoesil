@@ -224,7 +224,12 @@ class FolderConventionTest(unittest.TestCase):
         self.dir = Path(self.tmp.name)
 
     def _spec_at(self, folder, experiment):
-        """`<folder>/체크리스트/명세.md` 를 만들고 (경로, spec) 을 돌려준다."""
+        """`<folder>/체크리스트/명세.md` 를 만들고 (경로, spec) 을 돌려준다.
+
+        `parse_spec` 은 항목마다 `title`·`device`·`ics`·`tables` 를 요구한다
+        (`spec_parser.py`). 하나라도 빠지면 `SpecError` 가 나서 픽스처가
+        만들어지지 않는다.
+        """
         d = self.dir / folder / "체크리스트"
         d.mkdir(parents=True)
         path = d / "명세.md"
@@ -238,7 +243,10 @@ class FolderConventionTest(unittest.TestCase):
             'power: {VCC: "+5V", GND: "GND"}\n'
             "items:\n"
             "  - id: E1.P1\n"
-            "    name: 첫 항목\n"
+            "    title: 첫 항목\n"
+            "    device: [LED]\n"
+            "    ics: ['74HC08']\n"
+            "    tables: [T1]\n"
             "---\n\n"
             "# E1.P1 · 첫 항목\n\n"
             "## T1 · 표\n\n"
