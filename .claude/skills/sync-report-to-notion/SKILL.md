@@ -63,25 +63,45 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
 4. **올리고, 이력을 남기고, baseline 을 뜬다.** 세 가지가 한 덩어리다 —
    **baseline 없이 업로드만 하면 다음 pull 의 diff 가 왕복 노이즈로 뒤덮인다.**
 
+   **페이지 제목은 `properties` 로 명시해 넘기고, 본문의 같은 제목 헤딩은 뺀다.**
+   노션이 첫 `#` 헤딩을 제목으로 흡수해 주기는 하지만 그 흡수에는 조건이 붙는다
+   — 제목 헤딩 바로 뒤에 목차 블록을 두었더니 흡수가 깨져 **제목이 빈 페이지**가
+   만들어졌다(실제로 났다). 사이드바에 "Untitled" 로 뜨고 URL 에도 슬러그가 없어
+   사람이 찾지 못한다. 명시로 넘기면 그 조건에 기대지 않아도 되고, 대신 본문
+   첫 줄의 제목 헤딩을 빼야 제목이 두 번 보이지 않는다.
+
    ```bash
    python3 - <<'PY'
    from datetime import datetime
    from pathlib import Path
    from scripts.lab import config, notion
+   from scripts.lab.spec_parser import parse_spec
    OUT, NAME, KIND = Path('<실험NN>/output'), '<파일명>.md', '<예비보고서|결과보고서>'
    root = config.find_project_root(Path('.'))
    info = config.load_course_info(root)
    token = notion.load_token()
    text = (OUT / NAME).read_text(encoding='utf-8')
-   page = notion.push_markdown(text, info['notion_parent_page_id'], token)
+
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
+   title = config.document_title(spec.experiment, spec.title, KIND)
+   body = text
+   if body.startswith(f'# {title}\n'):
+       body = body[len(f'# {title}\n'):].lstrip('\n')
+
+   page = notion.push_markdown(body, info['notion_parent_page_id'], token, title=title)
    rec = notion.append_record(OUT, KIND, page['page_id'], page['url'], NAME,
                               datetime.now().strftime('%Y-%m-%d %H:%M'))
    base = OUT / f"{NAME[:-3]}_notion_baseline_v{rec['version']}.md"
    base.write_text(notion.pull_markdown(page['page_id'], token), encoding='utf-8')
+   print('제목', title)
    print('v', rec['version'], page['url'])
    print('baseline', base)
    PY
    ```
+
+   올린 뒤 **페이지 제목이 비어 있지 않은지 확인한다.** URL 에 제목 슬러그가
+   붙어 있으면(`.../p/1-Basic-Gates-...`) 제대로 들어간 것이고, 32자리 id 만
+   있으면 제목이 비었다는 뜻이다.
 
    이 스크립트가 셋 중 어디서든 죽으면 그대로 다시 돌리지 않는다 — 복구 절차는 4b 를 본다.
 
