@@ -159,8 +159,29 @@ def pull_markdown(page_id, token, timeout=120) -> str:
 
     **문자열을 못 찾으면 빈 문자열 대신 예외를 던진다.** 빈 문자열이 baseline
     으로 저장되면 이후 모든 diff 가 "전부 삭제됨" 으로 보여 거짓말이 된다.
+
+    **`truncated` 가 참이어도 같은 이유로 예외를 던진다.** 이 함수의 반환값이
+    그대로 baseline 파일이 되고, `check_notion_roundtrip(source_text,
+    pulled_text)` 는 문자열 두 개만 받아 baseline 대비 **손실만** 본다.
+    `truncated` 와 `unknown_block_ids` 는 이 되읽기 응답에만 실려 오는 신호라
+    — 반환형이 `str` 뿐이라 — 여기서 버리면 파이프라인 어디서도 되살릴 수
+    없다. 잘린 채로 baseline 이 굳으면, 잘려서 없어진 내용은 "원래 baseline
+    에도 없었던 것"이 되어 이후 실제로 지워져도 손실로 안 잡힌다 — 빈 문자열을
+    거부하는 것과 같은 이유로, 부분 문자열도 거부한다.
     """
     data = _request("GET", f"/pages/{page_id}/markdown", token, timeout=timeout)
+    if data.get("truncated") is True:
+        # 키가 아예 없거나 false 인 것은 "안 잘렸다" 다 — missing 을 참으로
+        # 읽으면 대부분의 정상 응답을 오탐으로 거절하게 된다.
+        unknown = data.get("unknown_block_ids") or []
+        ids = ", ".join(str(x) for x in unknown)
+        raise NotionError(
+            "노션 되읽기 응답이 잘렸습니다 (truncated=true) — 이 상태로 "
+            "baseline 을 저장하면 baseline 이 원본보다 짧아집니다. "
+            "check_notion_roundtrip 은 baseline 대비 손실만 보고하므로, 잘린 "
+            "baseline 은 이후의 진짜 손실을 가려 안 보이게 만듭니다."
+            + (f" 되돌아오지 않은 블록: {ids}" if ids else " (unknown_block_ids 없음)")
+        )
     for key in _MARKDOWN_KEYS:
         if isinstance(data.get(key), str):
             return data[key]

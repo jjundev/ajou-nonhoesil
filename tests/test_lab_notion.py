@@ -141,3 +141,61 @@ class TestPullMarkdown(unittest.TestCase):
             with self.assertRaises(notion.NotionError) as ctx:
                 notion.pull_markdown("PAGE", "ntn_abc")
         self.assertIn("id", str(ctx.exception))
+
+    def test_truncated_true_면_예외를_던지고_unknown_block_ids_를_알려준다(self):
+        """잘린 채로 baseline 을 저장하면, 이후 진짜 손실이 '원래 baseline 에도
+        없었던 것' 으로 흡수되어 손실만 보는 check_notion_roundtrip 에 안 잡힌다.
+        markdown 키에 그럴듯한 문자열이 있어도 truncated 가 참이면 그걸 쓰지
+        않고 예외부터 던져야 한다."""
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({
+                "object": "page_markdown",
+                "id": "PAGE",
+                "markdown": "일부만 왔다",
+                "truncated": True,
+                "unknown_block_ids": ["blk_1", "blk_2"],
+            })
+            with self.assertRaises(notion.NotionError) as ctx:
+                notion.pull_markdown("PAGE", "ntn_abc")
+        msg = str(ctx.exception)
+        self.assertIn("blk_1", msg)
+        self.assertIn("blk_2", msg)
+
+    def test_truncated_false_면_정상_반환한다(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({
+                "markdown": "본문",
+                "truncated": False,
+                "unknown_block_ids": [],
+            })
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertEqual(text, "본문")
+
+    def test_truncated_키가_아예_없어도_정상_반환한다(self):
+        """키 부재를 '참으로 잘렸다' 로 잘못 읽으면 truncated 를 아예 안 실어
+        주는 대다수의 정상 응답까지 거절하게 된다."""
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({"markdown": "본문"})
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertEqual(text, "본문")
+
+    def test_빈_마크다운은_잘리지_않았으면_그대로_반환한다(self):
+        """빈 문자열이 '존재'하는 것과 필드가 '없는' 것은 다르다 — 빈 노션
+        페이지의 정직한 진실은 전자다. isinstance(..., str) 검사를 truthy
+        검사로 바꾸면 이 둘을 혼동해, 내용이 진짜로 없을 뿐인 정상적인 빈
+        페이지를 '못 찾음' 실패로 잘못 던지게 된다."""
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({
+                "markdown": "",
+                "truncated": False,
+            })
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertEqual(text, "")
+
+    def test_content_키로도_꺼낼_수_있다(self):
+        """`markdown` 키가 없을 때의 대비책 — 노션이 이름을 바꿨을 때를 위한
+        `_MARKDOWN_KEYS` 의 두 번째 후보 경로가 여태 테스트되지 않았었다."""
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({"content": "대체 키 본문"})
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertEqual(text, "대체 키 본문")
