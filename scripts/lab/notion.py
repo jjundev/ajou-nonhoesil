@@ -147,3 +147,24 @@ def append_record(output_dir, kind, page_id, url, source, when) -> dict:
                    ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8")
     return record
+
+
+# 되읽기 응답에서 마크다운이 담긴 키. 첫 항목이 Task 1 프로브의 실측값이고,
+# 나머지는 노션이 이름을 바꿨을 때를 위한 여유다.
+_MARKDOWN_KEYS = ("markdown", "content")
+
+
+def pull_markdown(page_id, token, timeout=120) -> str:
+    """페이지 내용을 Notion-flavored Markdown 문자열로 되읽는다.
+
+    **문자열을 못 찾으면 빈 문자열 대신 예외를 던진다.** 빈 문자열이 baseline
+    으로 저장되면 이후 모든 diff 가 "전부 삭제됨" 으로 보여 거짓말이 된다.
+    """
+    data = _request("GET", f"/pages/{page_id}/markdown", token, timeout=timeout)
+    for key in _MARKDOWN_KEYS:
+        if isinstance(data.get(key), str):
+            return data[key]
+    raise NotionError(
+        f"되읽기 응답에서 마크다운 문자열을 찾지 못했습니다. "
+        f"응답의 키: {sorted(data)} — `_MARKDOWN_KEYS` 를 실측값에 맞추세요."
+    )

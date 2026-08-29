@@ -119,3 +119,25 @@ class TestRecords(unittest.TestCase):
         (self.out / notion.RECORD_NAME).write_text("{깨짐", encoding="utf-8")
         with self.assertRaises(notion.NotionError):
             notion.load_records(self.out)
+
+
+class TestPullMarkdown(unittest.TestCase):
+    def test_실측_응답에서_마크다운_문자열을_꺼낸다(self):
+        payload = json.loads((FIXTURES / "notion_pull_markdown.json").read_text("utf-8"))
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response(payload)
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertIsInstance(text, str)
+        self.assertGreater(len(text), 0)
+        req = opener.call_args[0][0]
+        self.assertTrue(req.full_url.endswith("/pages/PAGE/markdown"))
+        self.assertEqual(req.get_method(), "GET")
+
+    def test_모르는_응답_형태는_키_목록과_함께_실패한다(self):
+        """노션이 응답 형태를 바꾸면 빈 문자열을 돌려주는 대신 시끄럽게 죽어야
+        한다. 빈 문자열이 baseline 으로 저장되면 이후 모든 diff 가 거짓말이 된다."""
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({"object": "page", "id": "x"})
+            with self.assertRaises(notion.NotionError) as ctx:
+                notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertIn("id", str(ctx.exception))
