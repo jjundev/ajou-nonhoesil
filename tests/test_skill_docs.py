@@ -130,6 +130,20 @@ class SkillDocInvariants(unittest.TestCase):
             with self.subTest(name):
                 self.assertIn("`###` 이하는 쓰지 않는다", text)
 
+    def test_breadboard_template_path_and_home_are_pinned(self):
+        # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
+        rows = [ln for ln in self.docs["예보"].splitlines()
+                if ln.startswith("| 회로 결선도 |")]
+        self.assertEqual(len(rows), 1, rows)
+        self.assertIn(".claude/assets/Breadboard.jpg", rows[0])
+        self.assertIn("## 브레드보드 작도", rows[0])
+
+    def test_subsection_count_is_derived_from_the_spec(self):
+        # 규칙만으로 재생성하면 소절이 늘어난다 (8,345자 → 11,130자 실측).
+        self.assertIn("소절 수는 명세에서 파생한다", self.docs["예보"])
+        rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
+        self.assertIn(17, rules)
+
 
 if __name__ == "__main__":
     unittest.main()
