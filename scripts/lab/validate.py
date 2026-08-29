@@ -16,15 +16,17 @@ from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
 
+_MARKS = {"error": "✗", "warn": "!", "info": "ℹ"}
+
+
 @dataclass
 class Finding:
-    level: str   # "error" | "warn"
+    level: str   # "error" | "warn" | "info"
     where: str
     message: str
 
     def __str__(self):
-        mark = "✗" if self.level == "error" else "!"
-        return f"{mark} {self.where} — {self.message}"
+        return f"{_MARKS.get(self.level, '!')} {self.where} — {self.message}"
 
 
 def _bit(cell, encoding):
@@ -273,6 +275,56 @@ def check_embedded_images(html_path) -> list:
             out.append(Finding("error", path.name,
                 f"이미지를 찾을 수 없다: {src!r} "
                 f"(HTML 위치 {path.parent} 기준으로 푼다)"))
+    return out
+
+
+# NFM(Notion-flavored Markdown) 이 손실시키는 문법들. 실측 근거는
+# docs/plans/2026-08-29-notion-probe-결과.md 에 있다.
+_NFM_LOSSY = (
+    (re.compile(r"^#{5,}\s", re.M), "h5·h6 헤딩", "노션이 h4 로 강등한다"),
+    (re.compile(r"^\[\^[^\]]+\]:", re.M), "각주 정의", "NFM 이 지원하지 않는다"),
+    (re.compile(r"(?<!\!)\[\^[^\]]+\]"), "각주 참조", "NFM 이 지원하지 않는다"),
+    (re.compile(r"^<[a-zA-Z][^>]*>", re.M), "열 0 의 원시 HTML 블록",
+     "NFM 은 일부 태그만 받는다"),
+)
+_IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+
+
+def check_notion_markdown(md_path) -> list:
+    """노션에 올리기 전에 md 자체를 본다.
+
+    보고서에서 HTML 을 안 만들게 되면서 `check_rendered_html` 이 보고서 경로에서
+    호출되지 않는다. 이 함수가 그 자리를 대신한다 — 대상이 렌더된 HTML 에서 md 로
+    바뀌었을 뿐, "조용히 망가지고 눈으로는 안 보이는 결함"을 잡는 목적은 같다.
+
+    **상대경로 이미지는 error 가 아니라 info 다.** 노션 API 의 마크다운은 URL 만
+    받으므로 상대경로는 반드시 깨지는데, 그건 결함이 아니라 설계다 — 사진은
+    사용자가 노션에서 직접 끼워 넣기로 했다(자동 첨부는 파일 업로드 후 1시간 내
+    블록 삽입 + 위치 수술이 필요해 v1 의 복잡도가 아니다). 그래서 "고쳐라"가 아니라
+    "무엇을 몇 장 넣어야 하는지"를 알린다.
+    """
+    path = Path(md_path)
+    if not path.exists():
+        return [Finding("error", str(md_path), "보고서 md 파일이 없다")]
+    _, body = md.split_frontmatter(path.read_text(encoding="utf-8"))
+    out = []
+    for pattern, label, why in _NFM_LOSSY:
+        hits = pattern.findall(body)
+        if hits:
+            out.append(Finding("error", path.name,
+                f"{label} 이 {len(hits)}개 있다 — {why}"))
+    for t in md.parse_tables(body):
+        width = len(t.header)
+        for i, row in enumerate(t.rows, start=1):
+            if len(row) != width:
+                out.append(Finding("error", f"{path.name}:{t.line}",
+                    f"표 {i}행의 셀이 {len(row)}개인데 헤더는 {width}개다 — "
+                    "노션에서 표가 통째로 뭉개진다"))
+    local = [s for s in _IMAGE.findall(body)
+             if not s.startswith(("http://", "https://", "data:"))]
+    if local:
+        out.append(Finding("info", path.name,
+            f"노션에서 직접 넣어야 할 그림 {len(local)}장: " + ", ".join(local)))
     return out
 
 

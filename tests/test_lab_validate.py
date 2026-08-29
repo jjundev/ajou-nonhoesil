@@ -506,5 +506,60 @@ class FolderConventionTest(unittest.TestCase):
         self.assertEqual(findings[0].level, "error")
 
 
+def md_file(text):
+    tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+    tmp.write_text(text, encoding="utf-8")
+    return tmp
+
+
+class TestCheckNotionMarkdown(unittest.TestCase):
+    def test_실제_실험1_예비보고서는_깨끗하다(self):
+        path = ROOT / "실험01/output/실험01_예비보고서.md"
+        errors = [f for f in validate.check_notion_markdown(path)
+                  if f.level == "error"]
+        self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
+
+    def test_h5_이상은_error_다(self):
+        """NFM 은 h5·h6 를 h4 로 강등한다. 절 깊이가 무너지면 ⑤ 의 섹션 검증이
+        보는 헤딩 구조도 같이 무너진다."""
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n##### 다섯째 단계\n"))
+        self.assertTrue(any(f.level == "error" and "h5" in f.message
+                            for f in findings), findings)
+
+    def test_각주는_error_다(self):
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n본문[^1]\n\n[^1]: 각주\n"))
+        self.assertTrue(any(f.level == "error" and "각주" in f.message
+                            for f in findings), findings)
+
+    def test_열_수가_어긋난_표는_error_다(self):
+        """깨진 표는 노션에서 통째로 뭉개진다."""
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n| A | B |\n|---|---|\n| 0 | 0 |\n| 1 |\n"))
+        self.assertTrue(any(f.level == "error" and "헤더는 2개" in f.message
+                            for f in findings), findings)
+
+    def test_상대경로_이미지는_error_가_아니라_info_다(self):
+        """상대경로 이미지가 노션에서 깨지는 것은 결함이 아니라 설계다 — 사진은
+        사용자가 노션에서 직접 끼워 넣는다. 그래서 '고쳐라'가 아니라 '무엇을 몇 장
+        넣어야 하는지'를 알린다."""
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n![브레드보드](../../.claude/assets/Breadboard.jpg)\n"))
+        self.assertEqual([f.level for f in findings], ["info"])
+        self.assertIn("Breadboard.jpg", findings[0].message)
+        self.assertIn("1장", findings[0].message)
+
+    def test_원격_이미지는_알리지_않는다(self):
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n![x](https://example.com/a.png)\n"))
+        self.assertEqual(findings, [])
+
+    def test_파일이_없으면_error_한_건이다(self):
+        findings = validate.check_notion_markdown(Path("/없는/경로.md"))
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].level, "error")
+
+
 if __name__ == "__main__":
     unittest.main()
