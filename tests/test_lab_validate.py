@@ -573,6 +573,21 @@ class TestCheckNotionMarkdown(unittest.TestCase):
         self.assertIn("Breadboard.jpg", findings[0].message)
         self.assertIn("1장", findings[0].message)
 
+    def test_NFM_자체_블록_태그는_원시_HTML_로_잡지_않는다(self):
+        """목차·여백 블록은 노션이 입력으로 받는 문법이다 (실측 확인). 이걸
+        원시 HTML 로 잡으면 학생이 노션에서 잡은 레이아웃을 소스 md 에
+        되돌려 넣을 수 없다 — 매 업로드마다 여백을 손으로 다시 잡아야 한다."""
+        findings = validate.check_notion_markdown(md_file(
+            '# 제목\n\n<table_of_contents color="gray"/>\n\n'
+            "<empty-block/>\n<empty-block/>\n# 절\n본문\n"))
+        self.assertEqual([f for f in findings if f.level == "error"], [])
+
+    def test_NFM_이_안_받는_원시_HTML_은_여전히_잡는다(self):
+        findings = validate.check_notion_markdown(md_file(
+            '# 제목\n\n<figure class="photo-block">\n<img src="x.jpg">\n</figure>\n'))
+        self.assertTrue(any(f.level == "error" and "원시 HTML" in f.message
+                            for f in findings), findings)
+
     def test_원격_이미지는_알리지_않는다(self):
         findings = validate.check_notion_markdown(md_file(
             "# 제목\n\n![x](https://example.com/a.png)\n"))

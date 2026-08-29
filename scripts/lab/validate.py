@@ -281,14 +281,23 @@ def check_embedded_images(html_path) -> list:
 
 # NFM(Notion-flavored Markdown) 이 손실시키는 문법들. 실측 근거는
 # docs/plans/2026-08-29-notion-probe-결과.md 에 있다.
+# NFM 이 **입력으로도** 받는 자체 블록 태그. 원시 HTML 이 아니라 노션의 문법이다 —
+# 목차 블록과 여백 블록은 학생이 노션에서 잡은 레이아웃을 소스 md 에 되돌려 넣기
+# 위해 필요하고, 이것들까지 "원시 HTML" 로 잡으면 그 레이아웃을 올릴 수 없다.
+# 입력 수용 여부는 실측했다 (docs/plans/2026-08-29-notion-probe-결과.md).
+# 긴 이름을 먼저 둔다 — `table` 이 앞에 오면 `table_of_contents` 가 가려진다.
+_NFM_BLOCK_TAGS = ("table_of_contents", "empty-block", "table", "tr", "td", "th",
+                   "toggle", "callout", "columns", "column", "span")
+_NFM_TAG_ALT = "|".join(_NFM_BLOCK_TAGS)
+
 _NFM_LOSSY = (
     (re.compile(r"^#{5,}\s", re.M), "h5·h6 헤딩", "노션이 h4 로 강등한다"),
     (re.compile(r"^\[\^[^\]]+\]:", re.M), "각주 정의", "NFM 이 지원하지 않는다"),
     # 각주 정의 줄 안의 `[^n]` 을 참조로 이중 계수하지 않기 위해 `:` 로 끝나는
     # 형태(정의)는 제외한다 — 정의는 위 패턴이 이미 센다.
     (re.compile(r"(?<!\!)\[\^[^\]]+\](?!:)"), "각주 참조", "NFM 이 지원하지 않는다"),
-    (re.compile(r"^<[a-zA-Z][^>]*>", re.M), "열 0 의 원시 HTML 블록",
-     "NFM 은 일부 태그만 받는다"),
+    (re.compile(rf"^<(?!/?(?:{_NFM_TAG_ALT})\b)[a-zA-Z][^>]*>", re.M),
+     "열 0 의 원시 HTML 블록", "NFM 은 일부 태그만 받는다"),
 )
 _IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 
