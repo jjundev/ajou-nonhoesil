@@ -92,7 +92,7 @@ print(config.folder_for_week(<N>))
 > 결과이므로 우선 쓴다. 지금은 2·6·12주차에만 있고, 나머지 주차는 교안을
 > 직접 읽어야 한다.
 
-**주차 → 실험 회전 매핑 (1:1 아님).** 명세.md 가 없어 실험 번호 N 을 직접 못 읽을 때 이 표를 쓴다:
+**주차 → 실험 회전 매핑 (1:1 아님).** **이 표로 번호를 옮기지 않는다** — §1 이 `config.folder_for_week` 로 이미 구했다. 아래는 학생에게 "이번 주가 왜 실험4냐"를 설명할 때 보여줄 자료다:
 
 | 주 | 실험 | 주 | 실험 |
 |---|---|---|---|
@@ -270,7 +270,7 @@ print(config.folder_for_week(<N>))
 
 | placeholder | 값 |
 |---|---|
-| `{{TITLE}}` | `{week}주차 · 실험{experiment} 프리뷰` — `experiment` 는 §1에서 이미 구한 실험 번호, `week` 는 명세.md 프론트매터의 `week` 필드(없으면 `config.week_for_experiment(experiment)`)에서 얻는다. 인쇄물 제목은 경로가 실험 기준으로 바뀐 뒤에도 `{week}주차 · 실험{experiment} …` 형식을 유지한다(⑥·② 표지·체크리스트와 동일 규칙) — 바뀌는 것은 경로뿐이다 |
+| `{{TITLE}}` | `{week}주차 · 실험{experiment} {title} 프리뷰` (예: `2주차 · 실험1 Basic Gates 프리뷰`) — `experiment` 는 §1에서 구한 **0 을 뺀 정수**다(§1 의 출력은 `실험01` 이라는 폴더 이름이므로 `config.week_for_experiment('실험01')` 처럼 넘기면 `TypeError` 가 난다). `week` 와 `title` 은 명세.md 프론트매터에서 읽고, 명세가 없으면 `week` 는 `config.week_for_experiment(experiment)`, `title` 은 교안 제목을 쓴다. 인쇄물 제목은 경로가 실험 기준으로 바뀐 뒤에도 이 형식을 유지한다 — ② 체크리스트가 `scripts/lab/render.py` 에서 내는 `{week}주차 · 실험{experiment} {title} 체크리스트` 와 같은 규칙이고, 바뀌는 것은 경로뿐이다 |
 | `{{COURSE}}` | `.claude/과목정보.md` 의 `course` — **헤더·푸터 2곳에 등장하므로 전부 치환한다** |
 | `{{DATE}}` | 오늘 날짜, `과목정보.md` 의 `date_format` 으로 포맷 |
 | `{{CONTENT}}` | 본문 HTML (아래 §8.3) |
