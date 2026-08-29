@@ -330,6 +330,77 @@ def check_notion_markdown(md_path) -> list:
     return out
 
 
+@dataclass
+class MarkdownShape:
+    headings: list
+    table_count: int
+    table_rows: int
+    quote_blocks: int
+
+
+def markdown_shape(text) -> MarkdownShape:
+    """구조 불변량만 뽑는다. **텍스트 동일성은 보지 않는다.**
+
+    노션 왕복은 문단 병합·표 정렬 마커 소실 같은 노이즈를 반드시 만든다. 그걸
+    결함으로 세면 진짜 손실(표가 통째로 사라짐, 절이 안 올라감)이 파묻힌다.
+
+    인용은 **줄이 아니라 블록**으로 센다 — 여러 줄 인용이 한 줄로 합쳐지는 것은
+    노이즈지 손실이 아닌데, 줄로 세면 매번 error 로 올라온다.
+    """
+    _, body = md.split_frontmatter(text)
+    lines = body.split("\n")
+    tables = md.parse_tables(body)
+    quote_blocks, in_quote = 0, False
+    for line in lines:
+        if line.startswith(">"):
+            if not in_quote:
+                quote_blocks += 1
+            in_quote = True
+        else:
+            in_quote = False
+    return MarkdownShape(
+        headings=[re.sub(r"^#+\s*", "", ln).strip()
+                  for ln in lines if ln.startswith("#")],
+        table_count=len(tables),
+        table_rows=sum(len(t.rows) for t in tables),
+        quote_blocks=quote_blocks,
+    )
+
+
+def check_notion_roundtrip(source_text, pulled_text) -> list:
+    """올린 md 와 되읽은 md 의 구조를 대조한다. **손실만 본다.**
+
+    업로드 직후 되읽어 baseline 을 저장하는 이 왕복이 곧 업로드 검증이다 — 추가
+    API 호출 없이. 텍스트가 아니라 헤딩·표 개수·표 행 수·인용 블록 수만 비교하는
+    이유는 `markdown_shape` 와 같다: 노션이 만드는 노이즈(문단 병합, 표 정렬
+    마커 소실)를 결함으로 세면 진짜 손실이 그 안에 파묻힌다.
+
+    늘어난 것은 보고하지 않는다 — 사용자가 노션에서 절이나 표를 더한 것은 손실이
+    아니라 이 루프가 원하는 바로 그 입력이다.
+    """
+    src, got = markdown_shape(source_text), markdown_shape(pulled_text)
+    out = []
+    missing = [h for h in src.headings if h not in got.headings]
+    # 첫 헤딩은 노션이 페이지 제목으로 흡수하므로 되읽기에 없을 수 있다.
+    if missing and src.headings and missing[0] == src.headings[0]:
+        missing = missing[1:]
+    for name in missing:
+        out.append(Finding("error", "노션 왕복",
+            f"절 '{name}' 이 되읽기에 없다 — 노션에 올라가지 않았을 수 있다"))
+    if got.table_count < src.table_count:
+        out.append(Finding("error", "노션 왕복",
+            f"표가 {src.table_count}개에서 {got.table_count}개로 줄었다"))
+    if got.table_rows < src.table_rows:
+        out.append(Finding("error", "노션 왕복",
+            f"표 행이 {src.table_rows}개에서 {got.table_rows}개로 줄었다"))
+    if got.quote_blocks < src.quote_blocks:
+        out.append(Finding("error", "노션 왕복",
+            f"인용 블록이 {src.quote_blocks}개에서 {got.quote_blocks}개로 줄었다 — "
+            "이 보고서의 인용은 전부 `> 출처:` 근거 표기라 하나가 사라지면 "
+            "근거가 사라진 것이다"))
+    return out
+
+
 def check_report_sections(report_path, sections, item_count=None) -> list:
     """`.claude/보고서양식.md` 기준으로 섹션 유무·순서를 본다.
 

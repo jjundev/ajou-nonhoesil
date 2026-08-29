@@ -577,5 +577,74 @@ class TestCheckNotionMarkdown(unittest.TestCase):
         self.assertEqual(findings[0].level, "error")
 
 
+SRC = """# 실험1 Basic Gates 예비보고서
+
+## 1. 실험 목적
+
+목적 문장.
+
+> 출처: 교안 p.2
+
+## 2. 실험 이론
+
+| A | B | C |
+|---|---|---|
+| 0 | 0 | 0 |
+| 1 | 1 | 1 |
+
+> 출처: 교안 p.4
+"""
+
+
+class TestMarkdownShape(unittest.TestCase):
+    def test_구조만_센다(self):
+        shape = validate.markdown_shape(SRC)
+        self.assertEqual(shape.headings,
+                         ["실험1 Basic Gates 예비보고서", "1. 실험 목적", "2. 실험 이론"])
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+        self.assertEqual(shape.quote_blocks, 2)
+
+    def test_이어진_인용_줄은_한_블록이다(self):
+        """여러 줄 인용이 한 줄로 합쳐지는 것은 노이즈지 손실이 아니다. 줄로 세면
+        그 노이즈가 매번 error 로 올라온다."""
+        self.assertEqual(validate.markdown_shape("> 가\n> 나\n").quote_blocks, 1)
+        self.assertEqual(validate.markdown_shape("> 가\n\n> 나\n").quote_blocks, 2)
+
+
+class TestCheckNotionRoundtrip(unittest.TestCase):
+    def test_노이즈만_있으면_아무것도_보고하지_않는다(self):
+        noisy = SRC.replace("|---|---|---|", "| --- | --- | --- |")
+        self.assertEqual(validate.check_notion_roundtrip(SRC, noisy), [])
+
+    def test_첫_헤딩이_없어도_보고하지_않는다(self):
+        """노션이 첫 `#` 헤딩을 페이지 제목으로 흡수하므로 되읽기에 없을 수 있다."""
+        without_h1 = SRC.split("\n", 1)[1]
+        self.assertEqual(validate.check_notion_roundtrip(SRC, without_h1), [])
+
+    def test_사라진_절을_error_로_보고한다(self):
+        pulled = SRC.replace("## 2. 실험 이론", "")
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "2. 실험 이론" in f.message
+                            for f in findings), findings)
+
+    def test_사라진_표를_error_로_보고한다(self):
+        pulled = "\n".join(ln for ln in SRC.split("\n") if not ln.startswith("|"))
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "표" in f.message
+                            for f in findings), findings)
+
+    def test_사라진_출처_인용을_error_로_보고한다(self):
+        pulled = SRC.replace("> 출처: 교안 p.4", "")
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "인용" in f.message
+                            for f in findings), findings)
+
+    def test_늘어난_것은_error_가_아니다(self):
+        """사용자가 노션에서 절이나 표를 더한 것은 손실이 아니다."""
+        pulled = SRC + "\n## 3. 추가한 절\n\n내용\n"
+        self.assertEqual(validate.check_notion_roundtrip(SRC, pulled), [])
+
+
 if __name__ == "__main__":
     unittest.main()
