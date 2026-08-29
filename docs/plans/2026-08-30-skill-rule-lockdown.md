@@ -290,7 +290,7 @@ git commit -m "test: 스킬 문서 상호참조 불변식 + 죽은 참조 §3 �
 zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -20'
 ```
 
-Expected: 새 테스트 2개가 `FAIL` (각각 subTest `예보`·`결과` 양쪽), 기존 6개는 `ok`.
+Expected: 새 테스트 2개가 `FAIL` (각각 subTest `예보`·`결과` 양쪽), 기존 7개는 `ok`.
 
 - [ ] **Step 3: 예보 규칙 13 을 고친다**
 
