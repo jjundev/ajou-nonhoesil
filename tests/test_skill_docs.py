@@ -240,6 +240,21 @@ class SkillDocInvariants(unittest.TestCase):
                 for call in calls:
                     self.assertIn("item_count", call)
 
+    def test_rule_16_covers_additions_as_well_as_omissions(self):
+        # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이
+        # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.
+        self.assertIn("회로가 성립하는 데 필요한데 강의노트 준비물에 없는 소모품",
+                      self.docs["예보"])
+
+    def test_theory_scope_is_bounded_by_what_the_circuit_uses(self):
+        # 명세에 표가 없어도 회로가 쓰면 다루고(NOT), 회로가 안 쓰면
+        # 강의노트에 있어도 넣지 않는다(부울 대수 기본 정리).
+        pre = self.docs["예보"]
+        self.assertIn("이론 절은 그 주 회로가 실제로 쓰는 것만 다룬다", pre)
+        rows = [ln for ln in pre.splitlines() if ln.startswith("| 실험 이론 |")]
+        self.assertEqual(len(rows), 1, rows)
+        self.assertIn("범위는 §절대 규칙 16", rows[0])
+
 
 if __name__ == "__main__":
     unittest.main()
