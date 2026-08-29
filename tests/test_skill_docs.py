@@ -268,11 +268,15 @@ class SkillDocInvariants(unittest.TestCase):
         result = self.flat["결과"]
         self.assertIn("다음 헤딩까지의 **`body`**", result)
         self.assertNotIn("다음 헤딩까지의 원문에", result)
+        # `line` 은 구분선의 1-based 줄 번호다 (scripts/lab/md.py:26·214).
+        # 한 라운드에서 이것을 "첫 데이터 행" 으로 잘못 바꿔 쓴 적이 있다.
+        self.assertIn("표 구분선 줄 번호", result)
+        self.assertNotIn("첫 데이터 행 줄 번호", result)
 
     def test_all_blank_table_without_a_marker_has_its_own_row(self):
         # 마커 없이 전부 공란인 표는 "표 전체 미진행" 규칙에 걸리지 않는다.
         # 모의 실행에서 정보량 0 인 표가 그대로 실렸다.
-        self.assertIn("표 전체 공란 + 마커 없음", self.flat["결과"])
+        self.assertIn("표 전체 공란 + 마커 없음", self.docs["결과"])
 
     def test_table_bullet_example_does_not_teach_internal_ids(self):
         # 이 문서는 예시를 따라 쓰기 쉬워서 예시가 규칙을 이긴다.
