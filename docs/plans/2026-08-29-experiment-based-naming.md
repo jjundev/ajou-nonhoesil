@@ -1205,7 +1205,7 @@ Expected: 두 파일 모두 `0건`, `합계 0 건`. 예비보고서의 브레드
 python3 -m unittest discover -s tests -t . 2>&1 | grep -E '^(Ran|OK|FAILED)'
 ```
 
-Expected: `Ran 255 tests` / `OK`
+Expected: `Ran 266 tests` / `OK`
 
 - [ ] **Step 7: 설계문서에 정정 주석을 남긴다**
 
