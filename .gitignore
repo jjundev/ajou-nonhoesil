@@ -13,3 +13,6 @@ simulation/
 *.rpt
 *.smsg
 *.done
+
+# 전역 eli5 스킬의 일회성 산출물 (실험 폴더 표준 구조 밖)
+실험*/output/eli5_*.html

@@ -98,6 +98,15 @@ def cross_reference_errors(text):
     for token in re.findall(r"([\d·~]+)단계", text):
         for n in sorted(_expand(token) - steps):
             errors.append(f"{n}단계 없음")
+
+    # 이름 있는 절(`§섹션별 재료` 등) 참조도 검사한다. `§` 다음 토큰이 이
+    # 문서의 절 제목 중 하나와 시작이 일치하면 통과.
+    known = set(sec) | {"절대 규칙", "실행 절차"}
+    for ref in re.findall(r"§([^\s,.·()`]+)", text):
+        if ref[0].isdigit():
+            continue          # `§3` 형태는 별도 테스트가 잡는다
+        if not any(k.startswith(ref) or ref.startswith(k.split()[0]) for k in known):
+            errors.append(f"§{ref} 절 없음")
     return errors
 
 
@@ -183,6 +192,23 @@ class SkillDocInvariants(unittest.TestCase):
         for name, text in self.docs.items():
             with self.subTest(name):
                 self.assertEqual(re.findall(r"§\d+(?!\.\d)", text), [])
+
+    def test_no_unchecked_rule_reference_notation(self):
+        # `§규칙 N` 은 상호참조 검사기가 보지 않는 표기다 — 실제로 이 표기로
+        # 쓰인 죽은 참조가 한 번 있었다(§실행 절차 7).
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                self.assertEqual(re.findall(r"§규칙 \d", text), [])
+
+    def test_rule_and_step_numbering_is_contiguous(self):
+        # 참조되지 않는 규칙이 지워져도 상호참조 검사기는 보지 못한다 —
+        # 가리켜지는 규칙만 보기 때문이다. 번호가 비면 여기서 걸린다.
+        for name, text in self.docs.items():
+            sec = sections(text)
+            for title, first in (("절대 규칙", 1), ("실행 절차", 0)):
+                with self.subTest(f"{name}/{title}"):
+                    got = numbered_items(sec[title])
+                    self.assertEqual(got, set(range(first, max(got) + 1)))
 
     def test_sibling_subsection_scope_is_defined(self):
         # 형제를 문서 전체로 읽으면 소절 제목이 표 제목을 겸하는 예외가

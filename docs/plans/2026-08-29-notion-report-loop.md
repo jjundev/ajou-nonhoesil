@@ -74,10 +74,11 @@
    - Name: `논회실 하네스`
    - 워크스페이스: 본인 것
 2. **Internal Integration Secret** 복사 (`ntn_` 로 시작)
-3. `~/.zshrc` 맨 아래에 추가하고 새 터미널을 연다:
+3. `~/.zshenv` 맨 아래에 추가하고 새 터미널을 연다 (zsh 는 대화형 셸에서만
+   rc 파일을 읽어서, 하네스가 돌리는 비대화형 python3 는 그 값을 못 본다):
 
 ```bash
-echo "export NOTION_TOKEN='여기에_붙여넣기'" >> ~/.zshrc
+echo "export NOTION_TOKEN='여기에_붙여넣기'" >> ~/.zshenv
 ```
 
 4. 노션에서 페이지를 하나 만든다: 제목 `논리회로실험 2026-2`
@@ -343,7 +344,7 @@ class TestLoadToken(unittest.TestCase):
             with self.assertRaises(notion.NotionError) as ctx:
                 notion.load_token()
         self.assertIn("NOTION_TOKEN", str(ctx.exception))
-        self.assertIn("zshrc", str(ctx.exception))
+        self.assertIn("zshenv", str(ctx.exception))
 
 
 class TestRequest(unittest.TestCase):
@@ -426,7 +427,7 @@ def load_token() -> str:
     if not token:
         raise NotionError(
             f"환경변수 {TOKEN_ENV} 가 비어 있습니다.\n"
-            f"  echo \"export {TOKEN_ENV}='ntn_...'\" >> ~/.zshrc\n"
+            f"  echo \"export {TOKEN_ENV}='ntn_...'\" >> ~/.zshenv\n"
             "를 실행하고 **새 터미널**을 여세요. 토큰은 저장소에 두지 않습니다."
         )
     return token

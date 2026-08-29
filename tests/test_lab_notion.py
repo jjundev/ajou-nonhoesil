@@ -20,8 +20,19 @@ def fake_response(payload):
     return resp
 
 
+class _AutoClosingHTTPError(urllib.error.HTTPError):
+    """`read()` 뒤에 스스로 닫는다. `HTTPError` 는 `tempfile.
+    _TemporaryFileWrapper` 를 상속해서, 닫지 않은 채 버려지면 GC 때마다
+    `ResourceWarning` 을 낸다. `notion._request` 는 이 예외를 딱 한 번만
+    읽으므로 안전하다."""
+    def read(self, *args, **kwargs):
+        data = self.file.read(*args, **kwargs)
+        self.close()
+        return data
+
+
 def http_error(code, body):
-    return urllib.error.HTTPError(
+    return _AutoClosingHTTPError(
         "https://api.notion.com/v1/pages", code, "err", {},
         io.BytesIO(json.dumps(body).encode("utf-8")))
 
@@ -36,7 +47,10 @@ class TestLoadToken(unittest.TestCase):
             with self.assertRaises(notion.NotionError) as ctx:
                 notion.load_token()
         self.assertIn("NOTION_TOKEN", str(ctx.exception))
-        self.assertIn("zshrc", str(ctx.exception))
+        self.assertIn("zshenv", str(ctx.exception))
+        # `zshenv` 는 `zshrc` 를 부분문자열로 담지 않는다 — 옛 안내(대화형
+        # 셸 전용 파일)로 되돌아가면 여기서 걸린다.
+        self.assertNotIn("zshrc", str(ctx.exception))
 
 
 class TestRequest(unittest.TestCase):

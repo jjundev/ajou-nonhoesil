@@ -36,8 +36,10 @@ def load_token() -> str:
     if not token:
         raise NotionError(
             f"환경변수 {TOKEN_ENV} 가 비어 있습니다.\n"
-            f"  echo \"export {TOKEN_ENV}='ntn_...'\" >> ~/.zshrc\n"
-            "를 실행하고 **새 터미널**을 여세요. 토큰은 저장소에 두지 않습니다."
+            f"  echo \"export {TOKEN_ENV}='ntn_...'\" >> ~/.zshenv\n"
+            "를 실행하고 **새 터미널**을 여세요 (zsh 는 대화형 셸에서만 rc "
+            "파일을 읽어서, 하네스가 돌리는 비대화형 python3 는 그 값을 "
+            "못 봅니다). 토큰은 저장소에 두지 않습니다."
         )
     return token
 
@@ -101,6 +103,10 @@ def push_markdown(md_text, parent_page_id, token, title=None, timeout=120) -> di
     if title:
         payload["properties"] = {"title": [{"text": {"content": title}}]}
     data = _request("POST", "/pages", token, payload, timeout)
+    if "id" not in data:
+        raise NotionError(
+            f"노션 응답에 페이지 id 가 없습니다. 응답의 키: {sorted(data)}"
+        )
     return {"page_id": data["id"], "url": data.get("url", "")}
 
 

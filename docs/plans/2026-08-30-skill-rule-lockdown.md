@@ -180,6 +180,9 @@ class SkillDocInvariants(unittest.TestCase):
     def setUp(self):
         self.docs = {"예보": PRE.read_text(encoding="utf-8"),
                      "결과": RESULT.read_text(encoding="utf-8")}
+        # 산문 규칙을 문장으로 찾을 때 쓴다. 문단을 다시 감싸도 규칙이 같으면
+        # 통과해야 하므로, 줄바꿈·들여쓰기를 공백 하나로 눌러 둔 사본이다.
+        self.flat = {k: re.sub(r"\s+", " ", v) for k, v in self.docs.items()}
 
     def test_no_dangling_cross_references(self):
         for name, text in self.docs.items():
@@ -275,13 +278,13 @@ git commit -m "test: 스킬 문서 상호참조 불변식 + 죽은 참조 §3 �
         # 무너져 표 레이아웃이 통째로 뒤집힌다. 두 스킬이 같은 기계를 쓴다.
         for name, text in self.docs.items():
             with self.subTest(name):
-                self.assertIn("형제 소절(같은 대절 안의 소절)", text)
+                self.assertIn("형제 소절(같은 대절 안의 소절)", self.flat[name])
 
     def test_heading_levels_are_capped_at_two(self):
         # `###` 를 허용하면 여백 규칙이 정의되지 않은 자리가 생긴다.
         for name, text in self.docs.items():
             with self.subTest(name):
-                self.assertIn("`###` 이하는 쓰지 않는다", text)
+                self.assertIn("`###` 이하는 쓰지 않는다", self.flat[name])
 ```
 
 - [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
@@ -459,7 +462,7 @@ class SubsectionCounter(unittest.TestCase):
 
     def test_subsection_count_is_derived_from_the_spec(self):
         # 규칙만으로 재생성하면 소절이 늘어난다 (8,345자 → 11,130자 실측).
-        self.assertIn("소절 수는 명세에서 파생한다", self.docs["예보"])
+        self.assertIn("소절 수는 명세에서 파생한다", self.flat["예보"])
         rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
         self.assertIn(17, rules)
 
@@ -475,7 +478,7 @@ class SubsectionCounter(unittest.TestCase):
         # 기대지 않는다 — 문단을 다시 감싸도 규칙이 같으면 통과해야 한다.
         n_proc, n_wire = counts["실험 과정 및 예상 결과"], counts["회로 결선도"]
         self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다.",
-                      re.sub(r"\s+", " ", self.docs["예보"]))
+                      self.flat["예보"])
 ```
 
 - [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
@@ -576,7 +579,8 @@ F: `validate.check_report_sections` 는 `item_count is None` 이면 per-item 반
             with self.subTest(name):
                 self.assertNotIn("`ai_usage_log` 가 `~` 가 아니면", text)
                 self.assertIn(
-                    "`ai_usage_log` 가 비어 있지 않으면(`None` 이 아니면)", text)
+                    "`ai_usage_log` 가 비어 있지 않으면(`None` 이 아니면)",
+                    self.flat[name])
 
     def test_both_skills_pass_item_count_to_the_section_check(self):
         # item_count 없이 부르면 per-item 반복 횟수 검사가 통째로 생략된다.
