@@ -110,10 +110,13 @@ Task 2 (폴더·파일 리네임 + 픽스처·문서)
    ↓
 Task 3 (init-lab-experiment)     Task 4 (나머지 6개 스킬)
    ↓                                    ↓
-   └────────────→ Task 5 (재생성 + end-to-end 검증) ←┘
+   └──────────→ Task 4b (주차→폴더 해석) ←┘
+                        ↓
+              Task 5 (재생성 + end-to-end 검증)
 ```
 
-Task 3 과 Task 4 는 서로 독립이다.
+Task 3 과 Task 4 는 서로 독립이다. **Task 4b 는 계획에 없던 것으로, Task 4
+리뷰에서 드러난 회귀를 막는다** — 자세한 이유는 그 절 머리에 있다.
 
 ---
 
@@ -783,6 +786,253 @@ git add -A && git commit -m "refactor: 스킬 6종의 경로 규약을 <실험NN
 
 ---
 
+### Task 4b: 주차 → 폴더 해석을 코드로 (Task 4 리뷰에서 드러난 공백)
+
+**왜 계획에 없던 태스크인가.** Task 4 를 마치자 스킬 6종의 절차 경로가 전부
+`<실험NN>/` 이 됐다. 그런데 사용자는 여전히 **"2주차 체크리스트 뽑아줘"** 라고
+부르고, 각 스킬의 `description` 예시도 그렇게 쓰여 있다. 주차를 폴더로 옮기는
+표는 `init-lab-experiment` **한 곳에만** 있다 — 나머지 5개 스킬은 에이전트가
+`2주차 → 실험01` 을 알고 있기를 암묵적으로 기대한다. 실험4가 7주차인 이 과목에서
+그 기대는 틀린다. 리팩터 전에는 `2주차/` 가 그대로 폴더였으므로, 이 공백은
+**이 변경이 새로 만든 회귀**다.
+
+`check_folder_convention` 은 이걸 못 막는다. 그것은 폴더를 이미 찾은 뒤
+`experiment` 필드와 대조하는 사후 검사다. 애초에 엉뚱한 폴더를 열면(또는 못
+찾으면) 거기까지 가지도 못한다.
+
+**Files:**
+- Modify: `scripts/lab/config.py`
+- Modify: `.claude/skills/{prep-lab-checklist,review-lab-report,write-pre-report,write-result-report,make-lab-report-cover}/SKILL.md`
+- Modify: `.claude/skills/init-lab-experiment/SKILL.md` (표 대신 함수를 쓰게)
+- Test: `tests/test_lab_config.py`
+
+**Interfaces:**
+- Consumes: `config.experiment_dir()` (Task 1)
+- Produces: `config.WEEK_TO_EXPERIMENT: dict`, `config.folder_for_week(week: int) -> str`,
+  `config.week_for_experiment(experiment: int) -> int`
+
+- [ ] **Step 1: 실패 테스트를 쓴다**
+
+`tests/test_lab_config.py` 끝에 추가:
+
+```python
+class WeekMappingTest(unittest.TestCase):
+    """주차 → 폴더 해석. 매핑이 1:1 이 아니라서 사람이 외우면 틀린다."""
+
+    def test_회전_구간이_핵심이다(self):
+        # 5·6·7주차가 실험 5·6·4 로 어긋난다. 여기가 틀리면 엉뚱한 교안을 연다.
+        self.assertEqual(config.folder_for_week(5), "실험05")
+        self.assertEqual(config.folder_for_week(6), "실험06")
+        self.assertEqual(config.folder_for_week(7), "실험04")
+
+    def test_평범한_구간(self):
+        self.assertEqual(config.folder_for_week(2), "실험01")
+        self.assertEqual(config.folder_for_week(12), "실험10")
+
+    def test_FPGA_주차는_프로젝트_폴더다(self):
+        for week in (13, 14, 15):
+            with self.subTest(week=week):
+                self.assertEqual(config.folder_for_week(week), "프로젝트")
+
+    def test_중간고사_주차는_거절한다(self):
+        with self.assertRaises(ValueError) as cm:
+            config.folder_for_week(8)
+        self.assertIn("중간고사", str(cm.exception))
+
+    def test_범위_밖_주차는_거절한다(self):
+        for bad in (1, 16, 0, -3):
+            with self.subTest(week=bad):
+                with self.assertRaises(ValueError):
+                    config.folder_for_week(bad)
+
+    def test_bool은_주차가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.folder_for_week(True)
+
+    def test_역방향도_회전을_지킨다(self):
+        self.assertEqual(config.week_for_experiment(4), 7)
+        self.assertEqual(config.week_for_experiment(5), 5)
+        self.assertEqual(config.week_for_experiment(1), 2)
+        self.assertEqual(config.week_for_experiment(10), 12)
+
+    def test_왕복이_일치한다(self):
+        for week, exp in config.WEEK_TO_EXPERIMENT.items():
+            with self.subTest(week=week):
+                self.assertEqual(config.week_for_experiment(exp), week)
+                self.assertEqual(config.folder_for_week(week),
+                                 config.experiment_dir(exp))
+
+    def test_실험_열개가_빠짐없이_매핑된다(self):
+        self.assertEqual(sorted(config.WEEK_TO_EXPERIMENT.values()),
+                         list(range(1, config.EXPERIMENT_COUNT + 1)))
+```
+
+- [ ] **Step 2: 실패를 확인한다**
+
+```bash
+python3 -m unittest tests.test_lab_config -v 2>&1 | tail -20
+```
+
+Expected: FAIL — `AttributeError: module 'scripts.lab.config' has no attribute 'folder_for_week'`
+
+- [ ] **Step 3: 구현한다**
+
+`scripts/lab/config.py` 의 `experiment_dir` **바로 아래**에 추가:
+
+```python
+# 주차 → 실험 매핑. **1:1 이 아니다** — 5·6·7주차가 실험 5·6·4 로 어긋난다.
+# 이 표를 스킬 문서에 베껴 두면 한 곳만 고쳐지고 나머지가 틀어진다.
+WEEK_TO_EXPERIMENT = {2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
+                      9: 7, 10: 8, 11: 9, 12: 10}
+PROJECT_WEEKS = (13, 14, 15)   # FPGA 텀프로젝트 — 3주치가 한 프로젝트다
+PROJECT_DIR = "프로젝트"
+NO_ARTIFACT_WEEKS = {8: "중간고사"}
+
+
+def folder_for_week(week: int) -> str:
+    """주차 → 그 주 산출물이 들어갈 폴더 이름.
+
+    사용자는 "2주차 체크리스트" 처럼 **주차로 부른다.** 스킬 절차의 경로는
+    `실험NN/` 이므로 그 사이를 옮기는 곳이 필요한데, 표를 스킬마다 베껴 두면
+    한 곳만 고쳐진다 — 이 저장소가 반복해 온 결함이다.
+    """
+    if isinstance(week, bool) or not isinstance(week, int):
+        raise TypeError(f"주차는 정수여야 합니다: {week!r}")
+    if week in NO_ARTIFACT_WEEKS:
+        raise ValueError(
+            f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
+            "폴더를 만들지 않습니다."
+        )
+    if week in PROJECT_WEEKS:
+        return PROJECT_DIR
+    if week not in WEEK_TO_EXPERIMENT:
+        raise ValueError(
+            f"{week}주차에 해당하는 실험이 없습니다. "
+            f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
+            f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
+        )
+    return experiment_dir(WEEK_TO_EXPERIMENT[week])
+
+
+def week_for_experiment(experiment: int) -> int:
+    """실험 번호 → 그 실험을 하는 주차. `folder_for_week` 의 역방향.
+
+    스킬이 "실험5 는 5주차입니다" 처럼 되짚어 알릴 때 쓴다.
+    """
+    if isinstance(experiment, bool) or not isinstance(experiment, int):
+        raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
+    for week, exp in WEEK_TO_EXPERIMENT.items():
+        if exp == experiment:
+            return week
+    raise ValueError(
+        f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}"
+    )
+```
+
+- [ ] **Step 4: 통과를 확인한다**
+
+```bash
+python3 -m unittest tests.test_lab_config -v 2>&1 | tail -5
+```
+
+Expected: OK
+
+- [ ] **Step 5: 뮤테이션으로 그물을 확인한다**
+
+`WEEK_TO_EXPERIMENT` 의 `7: 4` 를 `7: 7` 로 잠시 바꾼다 (회전을 없애는, 사람이
+실제로 저지르는 실수).
+
+```bash
+python3 -m unittest tests.test_lab_config 2>&1 | tail -3
+```
+
+Expected: FAILED — 최소 `test_회전_구간이_핵심이다`, `test_역방향도_회전을_지킨다`,
+`test_왕복이_일치한다`, `test_실험_열개가_빠짐없이_매핑된다` 가 죽는다.
+확인 후 **되돌린다.**
+
+- [ ] **Step 6: 5개 스킬에 주차 해석 단계를 넣는다**
+
+`prep-lab-checklist` · `review-lab-report` · `write-pre-report` ·
+`write-result-report` · `make-lab-report-cover` 각각의 **1단계(폴더/명세 확인)
+바로 앞**에, 아래 블록을 그 스킬의 번호 체계에 맞춰 `0.` 또는 `1a.` 로 삽입한다.
+문구는 다섯 곳 모두 동일하게 쓴다 — 표현이 갈리면 한 곳만 고쳐진다.
+
+````markdown
+0. **주차로 불렸으면 폴더를 코드로 옮긴다.** 사용자는 "2주차 …" 처럼 주차로
+   부르는데 아래 절차의 경로는 `<실험NN>/` 이다. **매핑은 1:1 이 아니다** —
+   실험4는 7주차다. 손으로 옮기지 말고 아래를 돌린다.
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   print(config.folder_for_week(<N>))
+   "
+   ```
+
+   출력이 이후 모든 경로의 `<실험NN>` 이다. 사용자가 `실험N` 으로 불렀으면
+   `config.experiment_dir(<N>)` 을 대신 쓴다. `ValueError` 가 나면(중간고사·범위
+   밖) 그 메시지를 그대로 사용자에게 전하고 중단한다.
+````
+
+- [ ] **Step 7: `init-lab-experiment` 도 표 대신 함수를 쓰게 한다**
+
+그 스킬의 1단계는 지금 매핑 표를 눈으로 읽으라고 한다. 표는 **설명용으로 남기고**,
+실제 판정은 함수로 바꾼다. 1단계의 아래 두 불릿을
+
+```
+   - **8주차(중간고사)면 폴더를 만들지 않는다.** 실험 산출물이 없다고 한 줄로 알린다.
+   - **13~15주차(FPGA)면** `실험NN/` 이 아니라 `프로젝트/` 를 쓴다. 3주치가 한
+     프로젝트이므로 주차마다 폴더를 만들지 않는다. 4단계로 간다.
+```
+
+다음으로 바꾼다:
+
+````markdown
+   주차로 왔으면 **표를 눈으로 읽지 말고** 아래를 돌린다 — 실험4가 7주차라
+   눈으로 옮기면 틀린다. 위 표는 사용자에게 보여줄 설명용이다.
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   print(config.folder_for_week(<N>))
+   "
+   ```
+
+   - 출력이 `프로젝트` 면 FPGA 구간이다. 3주치가 한 프로젝트이므로 주차마다
+     폴더를 만들지 않는다. 그대로 4단계로 간다.
+   - `ValueError` 가 나면(8주차 중간고사, 또는 범위 밖) 그 메시지를 그대로
+     사용자에게 전하고 **폴더를 만들지 않는다.**
+   - 사용자가 `실험N` 으로 불렀으면 3단계의 `experiment_dir` 을 쓴다.
+````
+
+그리고 5단계("매핑 안내")의 주차 되짚기는 `config.week_for_experiment()` 를 쓰라고
+한 줄 덧붙인다.
+
+- [ ] **Step 8: 여섯 스킬이 다 같은 문구를 쓰는지 확인한다**
+
+```bash
+grep -c 'folder_for_week' .claude/skills/*/SKILL.md
+```
+
+Expected: 6개 스킬이 각각 1 이상, `explain-lab-preview` 는 0
+(그 스킬은 자기 매핑 표를 이미 갖고 있고 파일을 만들지 않는다).
+
+- [ ] **Step 9: 전체 테스트**
+
+```bash
+python3 -m unittest discover -s tests -t . 2>&1 | grep -E '^(Ran|OK|FAILED)'
+```
+
+Expected: `Ran 264 tests` / `OK` (255 + 9)
+
+- [ ] **Step 10: 커밋**
+
+```bash
+git add -A && git commit -m "fix: 주차→폴더 해석을 config 로 — 리팩터가 만든 호출 경로 공백을 막는다"
+```
+
+---
+
 ### Task 5: 산출물 재생성 + end-to-end 재검증 + 설계문서 정정
 
 리네임 뒤 산출물이 실제로 다시 나오는지 확인하지 않으면, 깨진 채로 커밋된다. 이 저장소에서 실제로 두 번 일어난 사고다.
@@ -956,11 +1206,12 @@ git add -A && git commit -m "chore: 실험 폴더로 산출물 재생성, 설계
 ## 완료 기준
 
 - [ ] `실험01/`, `실험06/`, `실험10/` 이 존재하고 `2주차/`, `6주차/`, `12주차/` 는 없다
-- [ ] `python3 -m unittest discover -s tests -t .` → 255 tests OK
+- [ ] `python3 -m unittest discover -s tests -t .` → 264 tests OK
 - [ ] 세 명세 모두 `check_folder_convention` 이 finding 0
 - [ ] `실험01/체크리스트/체크리스트.pdf` 8쪽 전 쪽 A4, 제목에 `2주차 · 실험1` 유지
 - [ ] `<N>주차` 플레이스홀더가 스킬에 하나도 없다
 - [ ] `init-lab-week` 이라는 이름이 저장소 어디에도 없다
+- [ ] 주차로 호출해도 스킬이 폴더를 코드로 찾아낸다 (`folder_for_week`)
 - [ ] 설계문서 결정 #4 에 뒤집힘 표시가 있다
 
 ## 이 계획서가 하지 않는 것
