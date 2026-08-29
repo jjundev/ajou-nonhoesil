@@ -83,6 +83,50 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    PY
    ```
 
+   이 스크립트가 셋 중 어디서든 죽으면 그대로 다시 돌리지 않는다 — 복구 절차는 4b 를 본다.
+
+4b. **4단계가 중간에 죽으면 그대로 다시 돌리지 않는다.** `push_markdown`·`append_record`·
+    baseline pull 은 한 스크립트 안에 있을 뿐 서로 독립된 호출이라 에러 처리가 없다 —
+    어디서 죽었느냐에 따라 남는 상태가 다르고, 복구 방법도 다르다.
+
+    **A. `append_record` 까지는 성공하고 baseline pull 만 죽었을 때.** 노션에 페이지가
+    있고 `notion.json` 에도 정상 레코드가 있다 — 없는 건 baseline 파일뿐이다. 이 상태에서
+    4단계를 그냥 재실행하면 §절대 규칙 1 때문에 새 페이지가 또 생기고 버전이 한 번 더
+    올라간다. 그러면 방금 만든 첫 버전은 baseline 없이 영영 고아로 남고, 9단계의 `diff -u`
+    는 나중에 그 baseline 을 찾다가 file-not-found 로 죽는다. 복구는 재업로드가 아니라
+    **재-pull** 이다 — pull 은 읽기 전용·멱등이므로 이미 기록된 `page_id` 로 baseline 만
+    다시 뜨면 안전하다. **새 페이지를 만들지 않는다.**
+
+    ```bash
+    python3 - <<'PY'
+    from pathlib import Path
+    from scripts.lab import notion
+    OUT = Path('<실험NN>/output')
+    token = notion.load_token()
+    for rec in notion.load_records(OUT):
+        stem = rec['source'][:-3]  # '<파일명>.md' 에서 .md 를 뗀 접미사
+        base = OUT / f"{stem}_notion_baseline_v{rec['version']}.md"
+        if base.exists():
+            continue
+        print('복구:', base)
+        base.write_text(notion.pull_markdown(rec['page_id'], token), encoding='utf-8')
+    PY
+    ```
+
+    출력이 없으면 복구할 baseline 이 없었다는 뜻이다(4단계가 온전히 끝났거나 이미 복구된
+    상태).
+
+    **B. `push_markdown` 은 성공했는데 `append_record` 가 실패했을 때.** 이번엔 `page_id`
+    가 디스크 어디에도 안 남는다 — `notion.json` 에 없으니 7단계("가장 최근 업로드를
+    찾는다")로도 이 페이지를 찾을 수 없다. **스크립트로 복구할 수 없다** — 노션에 무엇이
+    올라갔는지는 알지만 그것을 가리키는 레코드가 없으므로, 판단은 사용자 몫이다. 조용히
+    다시 올리지 않는다 — 재업로드하면 같은 버전에 페이지가 두 개 남는데, 레코드가 없던
+    첫 페이지를 사용자가 이미 봤는지조차 구분할 방법이 없어진다. 대신 있는 그대로
+    보고한다: 레코드 없이 노션 페이지가 하나 생겼을 수 있다는 것을 알리고, 3단계와 같은
+    방법으로 부모 페이지(`notion_parent_page_id`) id 를 다시 읽어 알려주어 그 아래에서
+    사용자가 직접 찾아보게 한 뒤, 그 페이지를 노션에서 지울지 아니면 그대로 두고 새
+    버전을 다시 올릴지 사용자에게 묻는다.
+
 5. **왕복 손실을 확인한다.** 방금 뜬 baseline 과 올린 원본을 대조한다.
 
    ```bash
