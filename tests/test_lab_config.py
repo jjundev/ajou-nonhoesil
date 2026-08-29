@@ -238,3 +238,40 @@ class WeekMappingTest(unittest.TestCase):
     def test_실험_열개가_빠짐없이_매핑된다(self):
         self.assertEqual(sorted(config.WEEK_TO_EXPERIMENT.values()),
                          list(range(1, config.EXPERIMENT_COUNT + 1)))
+
+    # 위 테스트들은 회전 구간(5·6·7)과 양 끝(2, 12)만 리터럴로 고정한다.
+    # 나머지 3·4·9·10·11주차는 어디에도 리터럴로 박혀 있지 않아서, 그 행들만
+    # 뒤섞는 순열(예: 9→8, 10→9, 11→7)이 들어와도 위 테스트들은 전부 통과한다 —
+    # `test_왕복이_일치한다` 는 WEEK_TO_EXPERIMENT 자신을 되읽어 검사하므로
+    # 자기참조이고, `test_실험_열개가_빠짐없이_매핑된다` 는 값의 집합만 본다.
+    # 그래서 열 행 전부를 매핑과 무관하게 여기 직접 적어 고정한다.
+    WEEK_TO_EXPERIMENT_고정값 = {
+        2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
+        9: 7, 10: 8, 11: 9, 12: 10,
+    }
+
+    def test_주차별_실험번호가_모두_리터럴로_고정된다(self):
+        """열 행 전부를 매핑에서 되읽지 않고 직접 적은 값으로 고정한다.
+
+        3·4·9·10·11주차는 이전 테스트 어디에도 리터럴로 박혀 있지 않아서,
+        그 행들만 골라 뒤섞는 순열도 기존 테스트를 다 통과시킬 수 있었다.
+        """
+        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
+            with self.subTest(week=week):
+                self.assertEqual(
+                    config.folder_for_week(week),
+                    config.experiment_dir(expected_experiment),
+                )
+
+    def test_실험별_주차가_모두_리터럴로_고정된다(self):
+        """`test_주차별_실험번호가_모두_리터럴로_고정된다` 의 역방향.
+
+        한쪽 방향만 고정하면 그 방향에서만 쓰이는 순열은 잡히지만, 반대
+        방향(`week_for_experiment`)이 따로 어긋나는 결함은 놓칠 수 있다.
+        """
+        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
+            with self.subTest(experiment=expected_experiment):
+                self.assertEqual(
+                    config.week_for_experiment(expected_experiment),
+                    week,
+                )
