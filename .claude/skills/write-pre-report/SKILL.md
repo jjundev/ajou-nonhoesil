@@ -91,12 +91,14 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    from pathlib import Path
    from scripts.lab import config
    info = config.load_course_info(config.find_project_root(Path('.')))
-   print('team=', info.get('team'), '/ ids=', info.get('student_ids'),
-         '/ names=', info.get('student_names'))
+   print('미확정:', config.missing_identity(info) or '없음')
    "
    ```
 
-   - **셋 다 `~` 가 아니면(조 편성 확정):** 표지가 필요하다고 기록해 둔다.
+   판정은 ⑥ `make-lab-report-cover` 1b 단계와 **같은 함수**를 쓴다 — 두 곳이
+   따로 판정하면 한쪽만 고쳐지고 다른 쪽이 `None` 을 표지에 찍는다.
+
+   - **`미확정: 없음` 이면(조 편성 확정):** 표지가 필요하다고 기록해 둔다.
      생성·병합은 10단계에서 한다.
    - **하나라도 `~` 면(조 편성 미확정):** 표지를 만들지 않는다. 본문 서두에
      "표지는 조 편성 확정 후 결합 예정" 안내를 (헤딩이 아닌 인용문/문단으로)

@@ -195,6 +195,17 @@ def check_netlist(netlist_path, spec) -> list:
 _STRAY_MARKDOWN = (("`", "백틱"), ("**", "굵게 표기"))
 _TAG = re.compile(r"<[^>]+>")
 
+# 화면·인쇄에 아무것도 찍지 않는 영역. 검사 전에 통째로 들어낸다 — CSS 주석에
+# `position: fixed` 처럼 백틱을 쓰는 건 자연스러운 저작이고, 실제로 프리뷰
+# 템플릿에서 두 번 반복됐다. 이걸 잡으면 매번 오탐이 떠서 검사 자체를 못 믿게
+# 된다. 잡아야 할 것은 표 셀에 남은 마크다운이지 주석 속 백틱이 아니다.
+_NON_RENDERING = re.compile(
+    r"<!--.*?-->"
+    r"|<style\b[^>]*>.*?</style>"
+    r"|<script\b[^>]*>.*?</script>",
+    re.DOTALL | re.IGNORECASE,
+)
+
 
 def check_rendered_html(html_path) -> list:
     """렌더된 HTML 본문에 마크다운 표기가 남았는지 본다.
@@ -202,11 +213,13 @@ def check_rendered_html(html_path) -> list:
     보고서 본문은 사람(또는 에이전트)이 마크다운에서 HTML 로 옮기는데,
     산문의 코드 스팬만 `<code>` 로 바꾸고 **표 셀을 빠뜨리는** 실수가 실제로
     일어났다 — 제출본 표 대부분에 백틱이 그대로 찍혔다. 눈으로는 잘 안 보인다.
+
+    `<style>`·`<script>`·HTML 주석은 렌더되지 않으므로 검사에서 뺀다.
     """
     path = Path(html_path)
     if not path.exists():
         return [Finding("error", str(html_path), "렌더된 HTML 파일이 없다")]
-    text = _TAG.sub(" ", path.read_text(encoding="utf-8"))
+    text = _TAG.sub(" ", _NON_RENDERING.sub(" ", path.read_text(encoding="utf-8")))
     out = []
     for token, label in _STRAY_MARKDOWN:
         count = text.count(token)

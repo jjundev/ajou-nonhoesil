@@ -353,6 +353,60 @@ class TestRenderedHtmlChecks(unittest.TestCase):
                           "<p><strong>중요</strong></p>")
         self.assertEqual(validate.check_rendered_html(path), [])
 
+    # --- 렌더되지 않는 영역은 검사에서 뺀다 -------------------------------
+    # CSS 주석에 `position: fixed` 를 쓰는 건 자연스러운 저작인데, 이걸 잡으면
+    # 그 템플릿이 낸 모든 HTML 이 영구히 error 가 되어 검사를 못 믿게 된다.
+
+    def _doc(self, head, body):
+        path = self.dir / "d.html"
+        path.write_text(f"<html><head>{head}</head><body>{body}</body></html>",
+                        encoding="utf-8")
+        return path
+
+    def test_backtick_in_a_css_comment_is_not_a_finding(self):
+        path = self._doc("<style>/* `position: fixed` 는 위험 */ p{margin:0}</style>",
+                         "<p>본문</p>")
+        self.assertEqual(validate.check_rendered_html(path), [])
+
+    def test_backtick_in_an_html_comment_is_not_a_finding(self):
+        path = self._doc("", "<!-- `74HC08` 자리 --><p>본문</p>")
+        self.assertEqual(validate.check_rendered_html(path), [])
+
+    def test_bold_markers_in_a_script_are_not_a_finding(self):
+        path = self._doc("<script>var s = '**x**';</script>", "<p>본문</p>")
+        self.assertEqual(validate.check_rendered_html(path), [])
+
+    def test_body_backticks_still_caught_when_a_style_block_exists(self):
+        """비렌더 영역 제거가 문서를 통째로 삼키면 검사가 죽은 채로 통과한다."""
+        path = self._doc("<style>/* `a` */</style>",
+                         "<table><tr><td>`74HC08`</td></tr></table>")
+        self.assertTrue(any("백틱" in f.message
+                            for f in validate.check_rendered_html(path)))
+
+    def test_body_backticks_still_caught_between_two_style_blocks(self):
+        path = self._doc("<style>/* `a` */</style><style>/* `b` */</style>",
+                         "<p>`74HC02`</p>")
+        self.assertTrue(any("백틱" in f.message
+                            for f in validate.check_rendered_html(path)))
+
+    def test_body_backticks_still_caught_between_two_html_comments(self):
+        """주석 제거가 greedy 면 첫 주석~마지막 주석 사이 본문이 통째로 사라져,
+        검사가 죽은 채로 조용히 통과한다. 실제로 이 구성만 그 결함을 잡는다."""
+        path = self._doc("", "<!-- 앞 --><table><tr><td>`74HC08`</td></tr>"
+                             "</table><!-- 뒤 -->")
+        self.assertTrue(any("백틱" in f.message
+                            for f in validate.check_rendered_html(path)))
+
+    def test_real_preview_template_is_clean(self):
+        """① 프리뷰 템플릿(사용자가 디자인한 실물)이 통과해야 한다."""
+        tmpl = ROOT / ".claude/skills/explain-lab-preview/template.html"
+        rendered = self.dir / "preview.html"
+        text = tmpl.read_text(encoding="utf-8")
+        for ph in ("{{TITLE}}", "{{COURSE}}", "{{DATE}}", "{{CONTENT}}"):
+            text = text.replace(ph, "샘플")
+        rendered.write_text(text, encoding="utf-8")
+        self.assertEqual(validate.check_rendered_html(rendered), [])
+
     def test_missing_image_is_an_error(self):
         path = self._html('<img src="../assets/nope.jpg">')
         findings = validate.check_embedded_images(path)

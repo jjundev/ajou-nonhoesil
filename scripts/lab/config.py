@@ -13,6 +13,9 @@ from . import md
 COURSE_INFO = ".claude/과목정보.md"
 REPORT_FORMAT = ".claude/보고서양식.md"
 
+# 조 편성이 확정돼야 채워지는 신원 필드. 표지에 찍히는 값이라 비면 지어내지 않는다.
+IDENTITY_FIELDS = ("team", "student_ids", "student_names")
+
 
 @dataclass
 class Section:
@@ -48,6 +51,17 @@ def load_course_info(root) -> dict:
             raise ValueError(f"과목정보.md 에 {required} 가 없습니다")
     info.setdefault("ai_usage_log", None)
     return info
+
+
+def missing_identity(info) -> list:
+    """`과목정보.md` 의 신원 필드 중 아직 `~` 인 것들을 이름 순서대로 돌려준다.
+
+    표지를 내는 경로(⑥ `make-lab-report-cover`)와 표지 병합 여부를 정하는
+    경로(③ `write-pre-report` 7단계)가 같은 판정을 쓰게 하려고 함수로 뺐다.
+    산문 규칙으로만 두었을 때 ⑥ 이 그것을 건너뛰고 `None` 을 템플릿에 치환해
+    `TypeError` 로 죽은 적이 있다.
+    """
+    return [k for k in IDENTITY_FIELDS if not info.get(k)]
 
 
 def _section_body(body: str, name: str):

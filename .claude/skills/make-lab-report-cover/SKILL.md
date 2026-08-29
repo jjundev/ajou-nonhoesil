@@ -29,6 +29,28 @@ print(info)
 
 1. **제목 추출.** 사용자 메시지에서 뽑는다 (예: `2주차 예비보고서`). 못 찾으면 되묻고 중단.
 
+1b. **조 편성 확인 — 미확정이면 값을 지어내지 말고 멈춘다.** 위 「값의 출처」의
+    규칙을 여기서 **실행 가능한 게이트로** 다시 둔다. 산문으로만 적혀 있던
+    탓에, 절차를 1→2→3→4→5 로 따라가면 5단계에서
+    `TypeError: replace() argument 2 must be str, not None` 로 죽었다.
+    (③ `write-pre-report` 는 7단계에서 같은 판정을 이미 한다 — 이 스킬을
+    단독 호출했을 때 그 보호가 없는 것이 문제였다.)
+
+    ```bash
+    python3 -c "
+    from pathlib import Path
+    from scripts.lab import config
+    info = config.load_course_info(config.find_project_root(Path('.')))
+    print('미확정:', config.missing_identity(info) or '없음')
+    "
+    ```
+
+    - **`미확정: 없음` 이면** 그대로 진행한다.
+    - **하나라도 비어 있으면** 표지를 만들지 않는다. 어떤 값이 없는지와
+      `.claude/과목정보.md` 의 해당 줄을 한 줄로 알리고, 사용자가 값을 주면
+      이번 실행에만 쓰되 그 파일에 적어둘지 물어본다. **`None`·빈 문자열·
+      임의의 학번을 템플릿에 넣지 않는다** — 표지는 제출물의 첫 장이다.
+
 2. **출력 폴더 결정.** 제목에 `N주차` 가 있고 `<N>주차/` 가 있으면 그 아래 `output/`.
    폴더가 없으면 **거절하고** `init-lab-week` 를 안내한다.
 

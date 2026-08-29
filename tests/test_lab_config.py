@@ -1,3 +1,4 @@
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -107,3 +108,53 @@ class TestProjectRoot(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MissingIdentityTest(unittest.TestCase):
+    """조 편성 미확정 판정 — ⑥ 표지·③ 예보가 공유하는 게이트."""
+
+    def test_모든_필드가_비면_전부_보고한다(self):
+        self.assertEqual(
+            config.missing_identity({}),
+            ["team", "student_ids", "student_names"],
+        )
+
+    def test_None_과_빈_문자열을_모두_미확정으로_본다(self):
+        # `~` 는 md 파서가 None 으로 준다. 빈 문자열도 표지에 찍히면 안 된다.
+        info = {"team": None, "student_ids": "", "student_names": "홍길동"}
+        self.assertEqual(config.missing_identity(info), ["team", "student_ids"])
+
+    def test_다_채워지면_빈_리스트다(self):
+        info = {"team": "3조", "student_ids": "202012345", "student_names": "홍길동"}
+        self.assertEqual(config.missing_identity(info), [])
+
+    def test_실제_과목정보로_돌아간다(self):
+        root = config.find_project_root(Path(__file__))
+        info = config.load_course_info(root)
+        # 값 자체는 학기마다 바뀌므로 형태만 고정한다.
+        self.assertIsInstance(config.missing_identity(info), list)
+
+
+class SkillTemplateTest(unittest.TestCase):
+    """실제 스킬 템플릿이 ⑤ 의 렌더 검사를 통과하는지.
+
+    ① 프리뷰 템플릿의 CSS 주석에 백틱이 있어서 그 스킬이 낸 모든 HTML 이
+    영구히 error 를 냈다. 백틱을 CSS 주석에 쓰는 건 자연스러운 저작이라
+    (같은 자리에서 두 번 반복됐다) 템플릿을 제약하는 대신 검사를 정밀하게
+    고쳤다. 이 테스트는 그 결과를 실제 템플릿으로 고정한다.
+    """
+
+    def test_치환된_템플릿이_렌더_검사를_통과한다(self):
+        from scripts.lab import validate
+
+        root = config.find_project_root(Path(__file__))
+        templates = sorted((root / ".claude" / "skills").glob("*/template.html"))
+        with tempfile.TemporaryDirectory() as tmp:
+            for tmpl in templates:
+                with self.subTest(template=tmpl.parent.name):
+                    text = tmpl.read_text(encoding="utf-8")
+                    for ph in re.findall(r"\{\{[A-Z_]+\}\}", text):
+                        text = text.replace(ph, "샘플")
+                    out = Path(tmp) / f"{tmpl.parent.name}.html"
+                    out.write_text(text, encoding="utf-8")
+                    self.assertEqual(validate.check_rendered_html(out), [])
