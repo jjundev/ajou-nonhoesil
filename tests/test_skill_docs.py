@@ -179,7 +179,11 @@ class SkillDocInvariants(unittest.TestCase):
         counts = subsection_counts(BASELINE_V6.read_text(encoding="utf-8"))
         self.assertEqual(counts["실험 과정 및 예상 결과"], 3)
         self.assertEqual(counts["회로 결선도"], 6)
-        self.assertIn("`items` 3개면 과정 3소절, 결선\n    6소절이다", self.docs["예보"])
+        # 규칙의 예시 문장을 정본에서 센 숫자로 조립해 대조한다. 줄바꿈에
+        # 기대지 않는다 — 문단을 다시 감싸도 규칙이 같으면 통과해야 한다.
+        n_proc, n_wire = counts["실험 과정 및 예상 결과"], counts["회로 결선도"]
+        self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다.",
+                      re.sub(r"\s+", " ", self.docs["예보"]))
 
 
 if __name__ == "__main__":
