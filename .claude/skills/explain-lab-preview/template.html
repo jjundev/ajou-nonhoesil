@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>{{TITLE}}</title>
+<style>
+  /* ------------------------------------------------------------------
+     디자인 토큰 — Toss 팔레트 6색만 쓴다. 다른 색을 새로 만들지 말 것.
+     인쇄 시 강조색은 회색조로 떨어지지만 위계는 굵기·괘선으로도 유지된다.
+     ------------------------------------------------------------------ */
+  :root {
+    --bg:      #ffffff;   /* 지면 */
+    --fg:      #111111;   /* 본문·제목 */
+    --accent:  #1677ff;   /* 문서 전체에서 2곳만: 헤더 아이브로우, 경고 블록 */
+    --surface: #f7f8fa;   /* 표 머리·콜아웃 면 */
+    --muted:   #6b7280;   /* 메타·출처·보조 */
+    --border:  #d9dee7;   /* 모든 헤어라인 */
+    --radius: 8px;
+  }
+
+  @page { size: A4; margin: 17mm 16mm 16mm 16mm; }
+  * { box-sizing: border-box; }
+
+  /* Chrome 헤드리스는 기본적으로 배경을 인쇄에서 버린다. 이걸 빼면 표 머리와
+     콜아웃 면이 PDF 에서 통째로 사라져 화면과 다른 문서가 나온다. */
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--fg);
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', system-ui, -apple-system,
+                 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    font-size: 11pt; line-height: 1.7;
+    word-break: keep-all;          /* 한국어 어절 중간에서 끊기지 않게 */
+    overflow-wrap: break-word;
+  }
+  p, li { orphans: 2; widows: 2; }
+
+  /* ------------------------------------------------------------------
+     문서 헤더
+     ------------------------------------------------------------------ */
+  .doc-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 8mm;
+    padding-bottom: 4mm; margin-bottom: 8mm;
+    border-bottom: 1px solid var(--fg);
+  }
+  .doc-header .label {
+    font-size: 7.5pt; font-weight: 600;
+    letter-spacing: 0.42em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3mm;
+  }
+  .doc-header .title {
+    font-size: 21pt; font-weight: 300; line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .doc-header .meta {
+    text-align: right; font-size: 8.5pt; color: var(--muted);
+    line-height: 1.55; white-space: nowrap;
+  }
+  .doc-header .meta .course { color: var(--fg); font-weight: 600; }
+
+  /* ------------------------------------------------------------------
+     본문 위계 — h2 는 번호 마커로 흐름([1]~[6])을 눈에 보이게 한다.
+     ------------------------------------------------------------------ */
+  .content { counter-reset: sec; }
+  .content h2 {
+    counter-increment: sec;
+    position: relative;
+    font-size: 13.5pt; font-weight: 700; letter-spacing: -0.01em;
+    margin: 10mm 0 3.5mm; padding: 0 0 2mm 9mm;
+    border-bottom: 1px solid var(--border);
+  }
+  .content h2::before {
+    content: counter(sec);
+    position: absolute; left: 0; top: 0.15em;
+    font-size: 9pt; font-weight: 600; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .content h2:first-child { margin-top: 0; }
+  .content h3 {
+    font-size: 11pt; font-weight: 600; color: var(--fg);
+    margin: 6mm 0 2mm;
+  }
+  .content h2, .content h3 { break-after: avoid; }
+  .content p { margin: 2.5mm 0; }
+  .content ul, .content ol { margin: 2.5mm 0; padding-left: 6mm; }
+  .content li { margin: 1.2mm 0; }
+  .content li::marker { color: var(--muted); }
+  .content strong { font-weight: 700; }
+  .content em { font-style: normal; font-weight: 600; }
+
+  /* 본문 안에서 IC 번호·핀 번호처럼 대조하며 읽는 토큰 */
+  .tok {
+    font-variant-numeric: tabular-nums;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 0.2mm 1.4mm; font-size: 0.94em;
+  }
+
+  /* ------------------------------------------------------------------
+     콜아웃 3종 — 좌측 컬러바 카드 패턴은 쓰지 않는다. 종류는 색이 아니라
+     상단의 태그 라벨로 구분한다(흑백 인쇄에서도 구분이 살아남는다).
+       .callout        비유·직관
+       .callout.note   P3 정밀 디테일("정확히는 X가 아니라 Y")
+       .callout.warn   배선 사고 경고 — 플로팅 입력 등. 강조색은 여기만.
+     ------------------------------------------------------------------ */
+  .callout {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3.5mm 4mm; margin: 4mm 0;
+    font-size: 10.5pt; break-inside: avoid;
+  }
+  /* 태그는 한글로 쓰므로 넓은 자간을 주지 않는다 — 0.2em 을 주면 "정 확 히 는"
+     처럼 낱자가 흩어져 라벨로 안 읽힌다. 위계는 크기·굵기·색으로 만든다. */
+  .callout .tag {
+    display: block; margin-bottom: 1.5mm;
+    font-size: 8pt; font-weight: 700; letter-spacing: 0.02em;
+    color: var(--muted);
+  }
+  .callout > :last-child { margin-bottom: 0; }
+  .callout p:first-of-type { margin-top: 0; }
+
+  .callout.note { background: var(--bg); }
+  .callout.warn {
+    background: var(--bg); border-color: var(--accent);
+  }
+  .callout.warn .tag { color: var(--accent); }
+
+  /* 한 줄 요약 — 문서에서 가장 무거운 상자. 섹션당 1개를 넘기지 말 것. */
+  .summary {
+    border: 1px solid var(--fg); border-radius: var(--radius);
+    padding: 4mm 4.5mm; margin: 5mm 0 3mm;
+    font-size: 11pt; font-weight: 600; line-height: 1.6;
+    break-inside: avoid;
+  }
+
+  /* ------------------------------------------------------------------
+     표 — 진리표가 쪽 경계에서 쪼개지면 헤더 없는 조각이 남아 못 읽는다.
+     제목·출처 줄은 .tblock 으로 표와 한 덩어리로 묶는다.
+     ------------------------------------------------------------------ */
+  .tblock { break-inside: avoid; margin: 4mm 0; }
+  .tblock .cap {
+    font-size: 9.5pt; font-weight: 600; margin: 0 0 1.5mm;
+  }
+  .src {
+    font-size: 8pt; color: var(--muted); margin: 1.5mm 0 0;
+  }
+  .tblock .src { margin-top: 1.2mm; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 0;
+    font-size: 9.5pt; break-inside: avoid;
+  }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 1.9mm 2.6mm; text-align: left; vertical-align: top;
+    line-height: 1.45;
+  }
+  th {
+    background: var(--surface); font-weight: 700;
+    border-bottom-color: var(--fg);
+  }
+  tbody tr:nth-child(even) td { background: var(--surface); }
+
+  /* 진리표: 0/1·H/L 은 가운데 정렬 + 고정폭 숫자라야 열이 눈으로 읽힌다.
+     비교·매핑 표(기본 table)는 좌측 정렬 그대로 둔다. */
+  table.truth { width: auto; min-width: 60mm; }
+  table.truth th, table.truth td {
+    text-align: center; font-variant-numeric: tabular-nums;
+    padding: 1.7mm 3mm; white-space: nowrap;
+  }
+  table.truth td.io { text-align: left; }
+
+  /* ------------------------------------------------------------------
+     보수(complement) 오버바 (R5) — 부울식에만 쓴다. 진리표 헤더·신호명·셀
+     값은 상태 토큰이므로 ' 를 유지한다.
+     중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록
+     inline-block 으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이
+     한 줄로 뭉개진다.
+     ------------------------------------------------------------------ */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+
+  /* 이번 프리뷰에서 다루지 않은 항목 등, 본문 끝의 보조 안내 */
+  .aside {
+    margin-top: 6mm; padding-top: 2.5mm;
+    border-top: 1px solid var(--border);
+    font-size: 9pt; color: var(--muted);
+  }
+
+  /* ------------------------------------------------------------------
+     푸터 — `position: fixed` 는 Chromium 인쇄에서 페이지 여백 안에만
+     머문다는 보장이 없다. 밀도 높은 표가 페이지 하단까지 채워지면 그 위에
+     겹쳐 찍힌다(①·⑥ 표지 템플릿이 이미 겪은 결함이라 매 쪽 반복 footer
+     자체를 두지 않는다, B2). 문서 흐름 안에 한 번만 두어 겹침 없이 항상
+     마지막 쪽 끝에 나오게 한다.
+     ------------------------------------------------------------------ */
+  .doc-footer {
+    margin-top: 9mm; padding-top: 2mm;
+    border-top: 1px solid var(--border);
+    font-size: 7.5pt; letter-spacing: 0.05em; color: var(--muted);
+    display: flex; justify-content: space-between; gap: 6mm;
+  }
+  .page-break { break-before: page; }
+</style>
+</head>
+<body>
+  <header class="doc-header">
+    <div class="left">
+      <div class="label">Lab Preview</div>
+      <div class="title">{{TITLE}}</div>
+    </div>
+    <div class="meta">
+      <div class="course">{{COURSE}}</div>
+      <div>{{DATE}}</div>
+    </div>
+  </header>
+
+  <main class="content">
+{{CONTENT}}
+  </main>
+
+  <footer class="doc-footer">
+    <span>학습용 프리뷰 — 보고서 제출용 아님</span>
+    <span>{{COURSE}}</span>
+  </footer>
+</body>
+</html>

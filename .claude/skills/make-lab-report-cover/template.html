@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>{{TITLE}} 표지</title>
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #111;
+    font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm 22mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* IEEE Code of Ethics page (page 1 of 2) */
+  .ethics-page { page-break-after: always; }
+  .ethics-page .head {
+    padding-bottom: 8mm;
+    margin-bottom: 9mm;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .ethics-page .doc-title {
+    font-size: 22pt;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+  .ethics-page .src {
+    font-size: 8pt;
+    color: #999;
+    margin: 2mm 0 0 0;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 10mm;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .header .left .label {
+    font-size: 8pt;
+    letter-spacing: 0.45em;
+    color: #888;
+    margin-bottom: 4mm;
+  }
+  .header .left .title {
+    font-size: 26pt;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .header .right {
+    text-align: right;
+    font-size: 9pt;
+    color: #666;
+    line-height: 1.6;
+  }
+  .header .right .course { color: #111; font-weight: 500; }
+
+  /* Spacer: fills the space the removed Korean ethics block used to occupy,
+     so the footer stays pinned to the bottom of the cover page. */
+  .spacer { flex: 1; }
+
+  /* Ethics section */
+  .intro {
+    font-size: 9pt;
+    line-height: 1.55;
+    color: #333;
+    margin: 0 0 4mm 0;
+  }
+  ol.codes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: code;
+  }
+  ol.codes li {
+    counter-increment: code;
+    position: relative;
+    padding-left: 7mm;
+    font-size: 9pt;
+    line-height: 1.5;
+    margin-bottom: 1.6mm;
+    color: #222;
+  }
+  ol.codes li::before {
+    content: counter(code) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: #111;
+    width: 6mm;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 6mm;
+    padding-top: 6mm;
+    border-top: 1px solid #1a1a1a;
+  }
+  .pledge {
+    text-align: center;
+    font-size: 9.5pt;
+    color: #111;
+    margin-bottom: 6mm;
+    letter-spacing: -0.005em;
+  }
+  dl.info {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 22mm 1fr;
+    row-gap: 2.2mm;
+    column-gap: 6mm;
+    max-width: 130mm;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  dl.info dt {
+    font-size: 8.5pt;
+    color: #888;
+    letter-spacing: 0.05em;
+    align-self: center;
+  }
+  dl.info dd {
+    margin: 0;
+    font-size: 10pt;
+    color: #111;
+    align-self: center;
+  }
+</style>
+</head>
+<body>
+<section class="page ethics-page">
+
+  <div class="head">
+    <div class="doc-title">IEEE Code of Ethics</div>
+    <p class="src">출처: http://www.ieee.org</p>
+  </div>
+
+  <p class="intro">
+    We, the members of the IEEE, in recognition of the importance of our technologies in affecting the quality of life throughout the world, and in accepting a personal obligation to our profession, its members and the communities we serve, do hereby commit ourselves to the highest ethical and professional conduct and agree:
+  </p>
+
+  <ol class="codes">
+    <li>to accept responsibility in making decisions consistent with the safety, health and welfare of the public, and to disclose promptly factors that might endanger the public or the environment;</li>
+    <li>to avoid real or perceived conflicts of interest whenever possible, and to disclose them to affected parties when they do exist;</li>
+    <li>to be honest and realistic in stating claims or estimates based on available data;</li>
+    <li>to reject bribery in all its forms;</li>
+    <li>to improve the understanding of technology, its appropriate application, and potential consequences;</li>
+    <li>to maintain and improve our technical competence and to undertake technological tasks for others only if qualified by training or experience, or after full disclosure of pertinent limitations;</li>
+    <li>to seek, accept, and offer honest criticism of technical work, to acknowledge and correct errors, and to credit properly the contributions of others;</li>
+    <li>to treat fairly all persons regardless of such factors as race, religion, gender, disability, age, or national origin;</li>
+    <li>to avoid injuring others, their property, reputation, or employment by false or malicious action;</li>
+    <li>to assist colleagues and co-workers in their professional development and to support them in following this code of ethics.</li>
+  </ol>
+
+</section>
+
+<section class="page cover">
+
+  <header class="header">
+    <div class="left">
+      <div class="label">REPORT</div>
+      <div class="title">{{TITLE}}</div>
+    </div>
+    <div class="right">
+      <div class="course">{{COURSE}}</div>
+      <div>{{CLASS_SECTION}} · {{DEPARTMENT}}</div>
+    </div>
+  </header>
+
+  <div class="spacer"></div>
+
+  <footer class="footer">
+    <p class="pledge">위 IEEE 윤리헌장 정신에 입각하여 report를 작성하였음을 서약합니다.</p>
+    <dl class="info">
+      <dt>학&nbsp;&nbsp;&nbsp;부</dt><dd>{{DEPARTMENT}}</dd>
+      <dt>제 출 일</dt><dd>{{SUBMIT_DATE}}</dd>
+      <dt>과 목 명</dt><dd>{{COURSE}}</dd>
+      <dt>교 수 명</dt><dd>{{PROFESSOR}}</dd>
+      <dt>분&nbsp;&nbsp;&nbsp;반</dt><dd>{{CLASS_SECTION}}</dd>
+      <dt>학&nbsp;&nbsp;&nbsp;번</dt><dd>{{STUDENT_IDS}}</dd>
+      <dt>성&nbsp;&nbsp;&nbsp;명</dt><dd>{{STUDENT_NAMES}}</dd>
+    </dl>
+  </footer>
+
+</section>
+</body>
+</html>

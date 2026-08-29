@@ -1,0 +1,29 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+  .procedure { page-break-after: always; }
+  .procedure .power { font-weight: 700; border: 2px solid #000;
+                      padding: 3mm; margin-bottom: 4mm; }
+  .procedure li { font-size: 12pt; line-height: 1.7; }
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  .sketch { border: 1px solid #333; height: 45mm; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+</style>
+
+<h1>{{TITLE}}</h1>
+<section class="procedure">{{PROCEDURE}}</section>
+<section class="tables">{{TABLES}}</section>
+<section class="breadboard">{{BREADBOARD}}</section>

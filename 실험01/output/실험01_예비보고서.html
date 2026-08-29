@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>실험1 Basic Gates 예비보고서</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #fff; color: #111;
+    font-family: 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 10.5pt; line-height: 1.65;
+  }
+
+  /* Header */
+  .doc-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 4mm; margin-bottom: 7mm;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .doc-header .label {
+    font-size: 7.5pt; letter-spacing: 0.45em; color: #888; margin-bottom: 2.5mm;
+  }
+  .doc-header .title { font-size: 19pt; font-weight: 300; line-height: 1.2; letter-spacing: -0.01em; }
+  .doc-header .meta { text-align: right; font-size: 8.5pt; color: #666; line-height: 1.5; }
+  .doc-header .meta .course { color: #111; font-weight: 500; }
+
+  /* Cover-pending notice — only present when §실행 절차 조 편성 미확정 분기다.
+     본문만 낸 상태임을 PDF 자체에서도 알 수 있게 한다. */
+  .cover-pending {
+    background: #f7f7f7; border: 1px dashed #999; color: #444;
+    font-size: 8.5pt; padding: 3mm 4mm; margin: 0 0 6mm 0;
+  }
+
+  /* Content */
+  .content h2 {
+    font-size: 13pt; font-weight: 600; margin: 9mm 0 3mm;
+    padding-bottom: 1.5mm; border-bottom: 1px solid #ddd;
+  }
+  .content h2:first-child { margin-top: 0; }
+  .content h3 { font-size: 11pt; font-weight: 600; margin: 6mm 0 2mm; color: #222; }
+  .content p { margin: 2.5mm 0; }
+  .content ul, .content ol { margin: 2.5mm 0; padding-left: 6mm; }
+  .content li { margin: 1mm 0; }
+  .content strong { font-weight: 600; }
+  .content h2, .content h3 { break-after: avoid; }
+
+  /* 인용/강조 박스 — ①·⑥ 과 동일 톤 */
+  .callout {
+    background: #f7f7f7; border-left: 3px solid #1a1a1a;
+    padding: 3mm 4mm; margin: 3mm 0; font-size: 10pt;
+  }
+  .summary {
+    border: 1px solid #1a1a1a; padding: 3.5mm 4mm; margin: 5mm 0 2mm;
+    font-weight: 500;
+  }
+  /* source 각주 (R4) — 예상값 표 바로 아래, 표와 한 덩어리로 묶인다 */
+  .cite { font-size: 9pt; color: #555; margin: 1.5mm 0 4mm; padding-left: 3mm;
+          border-left: 2px solid #ccc; }
+
+  /* 표 — 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남는다. 가능하면
+     통째로 넘긴다 (② 체크리스트·① 프리뷰와 동일 규칙). */
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt;
+          break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  /* 제목·출처와 표가 갈라지면 어느 표의 근거인지 알 수 없다. */
+  .tblock { break-inside: avoid; }
+  th, td { border: 1px solid #ccc; padding: 1.8mm 2.5mm; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; font-weight: 600; }
+  td.center, th.center { text-align: center; }
+
+  /* 보수 오버바 (R5) — 부울식에만 적용. 표 헤더·신호명·셀 값은 그대로 ' 를 쓴다.
+     display: inline-block + padding-top 이 핵심이다 — 순수 border-top
+     만으로는 중첩된 .ov 두 겹(예: (A'·B)')이 같은 높이에 겹쳐 그려져
+     바깥쪽 바 하나만 있는 것처럼 보인다(직접 렌더링해 확인). inline-block 은
+     안쪽 span 의 padding 을 자기 박스 높이에 반영하므로, 그걸 감싼 바깥쪽
+     span 의 border-top 이 그만큼 더 위에서 그려져 두 단으로 분리된다. */
+  .ov { display: inline-block; border-top: 1px solid currentColor; padding-top: 0.16em; }
+
+  /* 브레드보드 캔버스 — 자동 배선도가 아니라 빈 템플릿. netlist 가 요구하는
+     행 수만큼만 보여준다 (② render.crop_rows 와 동일 계산). */
+  .breadboard-block { margin: 4mm 0; break-inside: avoid; }
+  .breadboard-block img { width: 100%; object-fit: cover; object-position: top;
+                          border: 1px solid #ccc; }
+  .breadboard-block figcaption { font-size: 8.5pt; color: #666; margin-top: 1.5mm; }
+
+  /* 매 쪽 반복 footer 는 일부러 두지 않는다. position: fixed 는 Chromium
+     인쇄에서 페이지 여백 안에만 머문다는 보장이 없고, 실제로 이 문서의
+     밀도 높은 표(§2.4 요약 박스 등)가 페이지 하단까지 채워질 때 footer 문구가
+     본문 위에 겹쳐 찍히는 것을 확인했다 (② 체크리스트·⑥ 표지 템플릿에도
+     이런 footer 가 없다 — 그 관행을 따른다). */
+  .page-break { break-before: page; }
+</style>
+</head>
+<body>
+  <div class="doc-header">
+    <div class="left">
+      <div class="label">PRE-REPORT</div>
+      <div class="title">실험1 Basic Gates 예비보고서</div>
+    </div>
+    <div class="meta">
+      <div class="course">논리회로실험</div>
+      <div>작성일 2026.08.29</div>
+    </div>
+  </div>
+
+  <div class="content">
+<h2>1. 실험 목적</h2>
+<p>교안(<code>실험1.pdf</code>) p.2 &quot;1. 목적&quot; 에 따르면 이번 실험의 목적은 다음 두 가지다.</p>
+<ol><li>Logic gates(논리 게이트)의 이해</li><li>Logic 회로 구성 법칙의 이해 — Boolean equation(부울대수)과 De Morgan(드모르간)의 법칙 이해를 포함한다.</li></ol>
+<p>이를 이번 주차의 세 실험 항목에 구체적으로 적용하면 다음과 같다.</p>
+<ol><li>2-input 게이트 IC(<code>74HC08</code>, <code>74HC32</code>, <code>74HC00</code>, <code>74HC02</code>)를 두 단으로 캐스케이드 연결해 3-input AND·OR·NAND·NOR 게이트를 구성하고, LED 로 읽은 출력을 진리표와 대조해 검증한다 (E1.P1-1, E1.P1-2).</li><li>인버터(<code>74HC04</code>)·AND(<code>74HC08</code>)·OR(<code>74HC32</code>)를 조합한 복합 논리회로를 구성하여, 여러 게이트가 만드는 부울식을 실제 회로로 확인하고 드모르간 정리가 회로 수준에서 어떻게 성립하는지 관찰한다 (E1.P2).</li></ol>
+<p class="cite">출처: <code>from_the_past/정리/강의노트/실험1.pdf</code> p.2.</p>
+<h2>2. 실험 이론</h2>
+<h3>2.1 논리 레벨 — H/L 과 0/1</h3>
+<p>교안 p.3 은 논리값을 두 단계로 정의한다: L(Low) = 논리값 0 = 물리적으로 0V, H(High) = 논리값 1 = 물리적으로 3~5V. 이 보고서의 §2.2 이론표(T6~T9)는 교안 원문 그대로 <code>H</code>/<code>L</code> 인코딩을 쓰고, §4 의 3-input 진리표(T1~T5)는 실험실에서 LED 점등 여부로 직접 읽는 <code>0</code>/<code>1</code> 인코딩을 쓴다. 두 표기는 같은 논리값을 가리키는 서로 다른 표기일 뿐이며, 교안과 대조할 때 혼동하지 않도록 이 보고서에서도 서로 바꿔 쓰지 않는다.</p>
+<h3>2.2 기본 게이트 — 2-input 이론표</h3>
+<p>교안 p.4~p.8 은 AND·OR·NOT·NAND·NOR 각 게이트의 기호와 부울식, 2-input 진리표를 차례로 제시한다. 아래 T6~T9 는 명세(<code>실험01/체크리스트/명세.md</code>)에 <code>role: reference</code> 로 등록된 참조표로, 학생이 배선·기록하는 대상이 아니라 교안 원문을 그대로 옮긴 이론 자료다. <strong><code>H</code>/<code>L</code> 인코딩을 <code>0</code>/<code>1</code> 로 바꾸지 않고 교안 그대로 둔다.</strong></p>
+<div class="tblock"><p><strong>AND (부울식: <code>A·B = C</code>, 교안 p.4)</strong> — 두 입력이 모두 H 일 때만 출력이 H 다.</p><table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>L</td><td>L</td><td>L</td></tr><tr><td>L</td><td>H</td><td>L</td></tr><tr><td>H</td><td>L</td><td>L</td></tr><tr><td>H</td><td>H</td><td>H</td></tr></tbody></table></div>
+<div class="tblock"><p><strong>OR (부울식: <code>A+B = C</code>, 교안 p.5)</strong> — 두 입력 중 하나라도 H 이면 출력이 H 다.</p><table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>L</td><td>L</td><td>L</td></tr><tr><td>L</td><td>H</td><td>H</td></tr><tr><td>H</td><td>L</td><td>H</td></tr><tr><td>H</td><td>H</td><td>H</td></tr></tbody></table></div>
+<div class="tblock"><p><strong>NAND (부울식: <code><span class="ov">A·B</span> = C</code>, 교안 p.7)</strong> — AND 의 출력을 반전한 것이다.</p><table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>L</td><td>L</td><td>H</td></tr><tr><td>L</td><td>H</td><td>H</td></tr><tr><td>H</td><td>L</td><td>H</td></tr><tr><td>H</td><td>H</td><td>L</td></tr></tbody></table></div>
+<div class="tblock"><p><strong>NOR (부울식: <code><span class="ov">A+B</span> = C</code>, 교안 p.8)</strong> — OR 의 출력을 반전한 것이다.</p><table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>L</td><td>L</td><td>H</td></tr><tr><td>L</td><td>H</td><td>L</td></tr><tr><td>H</td><td>L</td><td>L</td></tr><tr><td>H</td><td>H</td><td>L</td></tr></tbody></table><p class="cite">출처: 교안 p.4·p.5·p.7·p.8 의 Truth table 슬라이드. 명세의 T6·T7·T8·T9 에 <code>source: manual:p4</code>·<code>manual:p5</code>·<code>manual:p7</code>·<code>manual:p8</code> 로 기록돼 있다.</p></div>
+<p>교안 p.9 는 XOR(<code>A⊕B = (<span class="ov">A</span>·B)+(A·<span class="ov">B</span>)</code>)도 함께 제시하지만, 이번 주차 준비물의 <code>74HC86</code>(quad XOR)을 쓰는 실험 항목이 교안 p.11~p.13 에 없다. 따라서 이 보고서는 XOR 를 이론으로만 언급하고 실험 항목으로 다루지 않는다.</p>
+<h3>2.3 2-input 게이트로 3-input 을 만드는 법</h3>
+<p>이번 실험의 세 항목 중 둘(E1.P1-1, E1.P1-2)은 <strong>2-input IC 만으로 3-input 게이트를 구성</strong>하는 것이다. 근거는 AND·OR 의 결합법칙이다.</p>
+<ul><li><code>A·B·C = (A·B)·C</code> — 게이트1 이 <code>A·B</code> 를 만들고, 게이트2 가 그 결과와 <code>C</code> 를 다시 AND 한다.</li><li><code>A+B+C = (A+B)+C</code> — 같은 방식으로 OR 두 단.</li></ul>
+<p>NAND·NOR 는 결합법칙이 성립하지 <strong>않는다</strong> (<code>(A↑B)↑C ≠ A↑(B↑C)</code>). 그래서 교안 p.12 는 3-input NAND 를 NAND 두 단으로 만들지 않고, <strong>AND 로 <code>A·B</code> 를 만든 뒤 NAND 로 <code>C</code> 와 합치는</strong> 구조를 쓴다: <code><span class="ov">A·B·C</span> = (A·B)↑C</code>. NOR 도 같은 이유로 OR + NOR 조합이다: <code><span class="ov">A+B+C</span> = (A+B)↓C</code>.</p>
+<h3>2.4 드모르간 정리와 복합회로(E1.P2)의 부울대수 해석</h3>
+<p>드모르간 정리는 <code><span class="ov">A·B</span> = <span class="ov">A</span> + <span class="ov">B</span></code>, <code><span class="ov">A+B</span> = <span class="ov">A</span>·<span class="ov">B</span></code> 다 (교안 p.2 가 명시한 학습 목표).</p>
+<p>교안 p.13 복합회로의 세 출력을 부울대수로 정리하면 다음과 같다. 배선은 §5.4 에 있다.</p>
+<ul><li><code>Z = <span class="ov"><span class="ov">A</span>·B</span></code> — 드모르간을 적용하면 <code>Z = <span class="ov"><span class="ov">A</span></span> + <span class="ov">B</span> = A + <span class="ov">B</span></code></li><li><code>X = A + Z = A + (A + <span class="ov">B</span>) = A + <span class="ov">B</span></code> (멱등법칙 <code>A + A = A</code>)</li><li><code>Y = A + B</code></li></ul>
+<p>따라서 <strong><code>X</code> 와 <code>Z</code> 는 대수적으로 항등</strong>이다(<code>X = Z = A + <span class="ov">B</span></code>). 브레드보드에서 <code>X</code> LED 와 <code>Z</code> LED 가 서로 다르게 켜지면 그것만으로 배선 오류를 알 수 있다 — 계측기 없이 얻는 자체 검산이다.</p>
+<p class="cite">출처: 부울식 전개는 위 드모르간 정리를 배선 판독 결과(<code>실험01/결선도/netlist.md</code>)에 적용해 이 보고서가 직접 도출했다.</p>
+<h2>3. 실험 부품</h2>
+<h3>3.1 준비물</h3>
+<p>교안 p.10 &quot;실험 준비물&quot; 은 다음을 지정한다.</p>
+<div class="tblock"><table><thead><tr><th>항목</th><th>수량</th><th>비고</th></tr></thead><tbody><tr><td>5V 전압원</td><td>1</td><td>모든 IC 의 pin 14</td></tr><tr><td><code>74HC00</code> (quad 2-input NAND)</td><td>1개</td><td>E1.P1-2</td></tr><tr><td><code>74HC02</code> (quad 2-input NOR)</td><td>1개</td><td>E1.P1-2</td></tr><tr><td><code>74HC04</code> (hex inverter)</td><td><strong>2개</strong></td><td>E1.P2</td></tr><tr><td><code>74HC08</code> (quad 2-input AND)</td><td>1개</td><td>E1.P1-1, E1.P1-2, E1.P2</td></tr><tr><td><code>74HC32</code> (quad 2-input OR)</td><td>1개</td><td>E1.P1-1, E1.P1-2, E1.P2</td></tr><tr><td><code>74HC86</code> (quad 2-input XOR)</td><td>1개</td><td>이번 실험 항목에는 쓰이지 않는다</td></tr><tr><td>발광다이오드</td><td>3개</td><td>330Ω 직렬 필수</td></tr></tbody></table></div>
+<p><strong>물리 칩은 재사용한다.</strong> <code>74HC08</code>·<code>74HC32</code> 는 각 1개뿐이므로, 세 항목의 회로를 동시에 브레드보드에 올릴 수 없다. 항목마다 같은 칩을 다시 배선해 쓴다. 준비물의 발광다이오드가 3개인 것도 E1.P2 의 출력 3개(X·Y·Z)에 맞춘 수량이다.</p>
+<h3>3.2 핀아웃 참조 (DIP-14)</h3>
+<div class="tblock"><table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>게이트4</th><th>VCC</th><th>GND</th><th>근거</th></tr></thead><tbody><tr><td><code>74HC00</code> (quad NAND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td><td>실험6 교안(<code>실험6.pdf</code>) p.7·p.8 회로도를 vision 으로 직접 판독해 확인</td></tr><tr><td><code>74HC08</code> (quad AND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td><td>TI 데이터시트(SCLS081J/SN74HC08)와 대조 확인됨 — <strong>다만 그 데이터시트 파일은 저장소에 없다</strong></td></tr><tr><td><code>74HC32</code> (quad OR)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td><td><strong>저장소에 데이터시트가 없고 저장소 회로도로도 대조되지 않는다.</strong> 표준 74HC 시리즈 배치를 가정 (§5.5 M1)</td></tr><tr><td><strong><code>74HC02</code> (quad NOR)</strong></td><td><strong>2,3 → 1</strong></td><td><strong>5,6 → 4</strong></td><td><strong>8,9 → 10</strong></td><td><strong>11,12 → 13</strong></td><td>14</td><td>7</td><td>TI 데이터시트(SCLS076G/SN74HC02)와 대조 확인됨 — 파일은 저장소에 없다</td></tr></tbody></table></div>
+<p><code>74HC04</code> (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7. 저장소 실물 데이터시트 <code>from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf</code> (Philips 74HC04, 2003-07-23, PINNING 절)에서 직접 확인했다.</p>
+<p><strong><code>74HC02</code> 는 나머지 셋과 핀 배치가 다르다.</strong> <code>74HC00</code>/<code>08</code>/<code>32</code> 는 핀 3·6·8·11 이 출력이지만 <code>74HC02</code> 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다.</p>
+<h3>3.3 LED 와 전류 제한 저항</h3>
+<p>교안 p.11·p.12·p.13 은 모두 &quot;※ 다이오드 연결 시, 330Ω 저항 필수&quot; 박스를 달고 있다. LED 는 애노드 쪽에 330Ω 을 직렬로 넣고 캐소드를 GND 로 내린다.</p>
+<p><code>74HC</code> 출력이 약 4.5V 를 내고 LED 순방향 전압을 약 2V 로 보면 330Ω 에 걸리는 전류는 약 (4.5 − 2) / 330 ≈ <strong>7.6 mA</strong> 이다. 74HC 시리즈의 권장 출력 전류를 넘는 값이므로, 교안 지시대로 따르되 LED 가 예상보다 어두우면 이것을 먼저 의심한다 (§5.5 M3).</p>
+<h3>3.4 미사용 핀 처리</h3>
+<ul><li><strong>미사용 입력핀은 전부 GND 로 내린다.</strong> 띄워두면(플로팅) CMOS 입력이 잡음을 주워 출력이 불안정해진다. 이 실험에서 결과가 안 맞는 가장 흔한 원인이다.</li><li><strong>미사용 출력핀은 개방한다.</strong> 출력끼리 묶거나 GND 로 내리면 칩이 손상된다.</li><li>입력 A·B·C 도 점퍼선으로 +5V(=1) 또는 GND(=0)에 <strong>직접</strong> 물린다. 띄워두지 않는다.</li></ul>
+<h2>4. 실험 과정 및 예상 결과</h2>
+<h3>4.1 E1.P1-1 · 3-input AND / OR gate 구성</h3>
+<p>교안 p.11. 2입력 게이트 2개를 캐스케이드해 3입력을 만든다. 교안 회로도에는 LED 가 <strong>2개</strong> 달려 있다 — 게이트1 출력(<code>A·B</code>)에 <code>L1</code>, 게이트2 출력(<code>A·B·C</code>)에 <code>L2</code> 가 붙는다. 진리표의 검증 대상은 최종 출력 <code>L2</code> 이고, <code>L1</code> 은 중간단이 살아 있는지 눈으로 보는 용도다.</p>
+<p>OR 는 같은 회로를 <code>74HC32</code> 로 바꿔 반복한다. 교안이 IC 를 지정하지 않고 &quot;OR gate에 대한 IC 찾아서 수행&quot; 이라고만 쓰므로, 준비물 중 quad 2-input OR 인 <code>74HC32</code> 를 선택했다.</p>
+<p><strong>과정.</strong> ① §5.2 대로 배선한다. ② 입력 A·B·C 를 000 부터 111 까지 8가지 조합으로 순서대로 인가한다. ③ 각 조합에서 <code>L2</code> 의 점등 여부를 기록하고 아래 예상표와 대조한다.</p>
+<div class="tblock"><p><strong>T1 · 3-input AND 예상 진리표</strong></p><table><thead><tr><th>A</th><th>B</th><th>C</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table><p class="cite">T1 출처: 부울대로 도출 (<code>Y = A·B·C</code>). 8행 = 2³ 전수.</p></div>
+<div class="tblock"><p><strong>T2 · 3-input OR 예상 진리표</strong></p><table><thead><tr><th>A</th><th>B</th><th>C</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table><p class="cite">T2 출처: 부울대수로 도출 (<code>Y = A+B+C</code>).</p></div>
+<h3>4.2 E1.P1-2 · 3-input NAND / NOR gate 구성</h3>
+<p>교안 p.12. §2.3 에서 밝힌 대로 NAND 는 결합법칙이 성립하지 않으므로 NAND 두 단이 아니라 <strong><code>74HC08</code> + <code>74HC00</code></strong> 조합이다. 게이트1(<code>74HC08</code>)이 <code>A·B</code> 를 만들고, 게이트2(<code>74HC00</code>)가 그 결과와 <code>C</code> 를 받아 <code><span class="ov">A·B·C</span></code> 를 낸다. p.11 과 마찬가지로 중간단 <code>L1</code>, 최종단 <code>L2</code> 두 개의 LED 가 붙는다.</p>
+<p>NOR 는 같은 구조를 <code>74HC32</code> → <code>74HC02</code> 로 바꿔 반복한다. <strong><code>74HC02</code> 의 핀 배치가 다르다는 점(§3.2)에 특히 주의한다.</strong></p>
+<p><strong>과정.</strong> E1.P1-1 과 동일하다. 8가지 입력 조합을 순서대로 인가하고 <code>L2</code> 를 기록한다.</p>
+<div class="tblock"><p><strong>T3 · 3-input NAND 예상 진리표</strong></p><table><thead><tr><th>A</th><th>B</th><th>C</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td></tr></tbody></table><p class="cite">T3 출처: 부울대수로 도출 (<code>Y = <span class="ov">A·B·C</span></code>). T1 의 출력을 전부 반전한 것과 같다.</p></div>
+<div class="tblock"><p><strong>T4 · 3-input NOR 예상 진리표</strong></p><table><thead><tr><th>A</th><th>B</th><th>C</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td></tr></tbody></table><p class="cite">T4 출처: 부울대수로 도출 (<code>Y = <span class="ov">A+B+C</span></code>). T2 의 출력을 전부 반전한 것과 같다.</p></div>
+<h3>4.3 E1.P2 · 복합 논리회로 구성</h3>
+<p>교안 p.13. 배선 위상을 300 DPI 로 렌더한 뒤 vision 으로 판독해 확정했다.</p>
+<p><strong>입력은 A, B 두 개이고 출력은 X, Y, Z 세 개다.</strong> 교안 p.13 회로도에 C 입력은 존재하지 않는다 (LED 3개 = 준비물의 발광다이오드 3개와 일치한다).</p>
+<p><strong>과정.</strong> ① §5.4 대로 배선한다. ② 입력 A·B 를 00, 01, 10, 11 네 조합으로 인가한다. ③ 세 LED(X·Y·Z)의 점등을 동시에 기록한다. ④ <strong><code>X</code> LED 와 <code>Z</code> LED 가 항상 같이 켜지는지 확인한다</strong> — §2.4 에서 보였듯 두 출력은 대수적으로 항등이므로, 다르면 배선 오류다.</p>
+<div class="tblock"><p><strong>T5 · 복합회로 예상 진리표</strong></p><table><thead><tr><th>A</th><th>B</th><th>X</th><th>Y</th><th>Z</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table><p class="cite">T5 출처: 부울대수로 도출 (<code>X = A + <span class="ov"><span class="ov">A</span>·B</span></code> ; <code>Y = A + B</code> ; <code>Z = <span class="ov"><span class="ov">A</span>·B</span></code>). 교안 p.13 복합회로 배선을 vision 판독해 <code>실험01/결선도/netlist.md</code> 로 확정했다. X 와 Z 는 §2.4 에서 보였듯 대수적으로 항등(<code>X = Z = A + <span class="ov">B</span></code>)이며, 위 표에서도 두 열이 일치한다.</p></div>
+<h2>5. 회로 결선도</h2>
+<h3>5.1 공통 규칙</h3>
+<ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li><li>미사용 입력핀은 전부 GND 로 내린다. 플로팅 금지. 미사용 출력핀은 개방한다</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0)에 직접 물린다</li><li>LED 는 애노드 쪽에 330Ω 직렬, 캐소드 → GND</li><li><strong>물리 칩 재사용:</strong> 아래 <code>U1</code>·<code>U3</code>·<code>U8</code> 은 같은 <code>74HC08</code> 한 개를, <code>U2</code>·<code>U5</code>·<code>U9</code> 는 같은 <code>74HC32</code> 한 개를 항목마다 재배선해 쓰는 것이다</li></ul>
+<p class="cite">출처: <code>실험01/결선도/netlist.md</code> &quot;공통 규칙&quot; 절.</p>
+<h3>5.2 E1.P1-1 배선 — 3-input AND(<code>74HC08</code>) / OR(<code>74HC32</code>)</h3>
+<div class="tblock"><table><thead><tr><th>소자</th><th>핀</th><th>연결</th></tr></thead><tbody><tr><td>U1 = <code>74HC08</code></td><td>14 / 7</td><td>VCC(+5V) / GND</td></tr><tr><td></td><td>1 / 2</td><td>← 입력 A / ← 입력 B</td></tr><tr><td></td><td>3</td><td>→ U1.pin4 (게이트1 출력 <code>A·B</code>), 그리고 L1 애노드(330Ω) → GND</td></tr><tr><td></td><td>5</td><td>← 입력 C</td></tr><tr><td></td><td>6</td><td>→ L2 애노드(330Ω) → GND ※ 최종 출력 <code>Y = A·B·C</code>, T1 검증 대상</td></tr><tr><td></td><td>9, 10, 12, 13</td><td>→ GND (미사용 입력)</td></tr><tr><td></td><td>8, 11</td><td>개방 (미사용 출력)</td></tr></tbody></table></div>
+<p>OR 회로는 U1 을 U2 = <code>74HC32</code> 로 바꾸고 나머지 배선은 동일하다. 최종 출력은 <code>Y = A+B+C</code> 이며 T2 의 검증 대상이다.</p>
+<h3>5.3 E1.P1-2 배선 — NAND(<code>74HC08</code>+<code>74HC00</code>) / NOR(<code>74HC32</code>+<code>74HC02</code>)</h3>
+<div class="tblock"><table><thead><tr><th>소자</th><th>핀</th><th>연결</th></tr></thead><tbody><tr><td>U3 = <code>74HC08</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>1 / 2</td><td>← 입력 A / ← 입력 B</td></tr><tr><td></td><td>3</td><td>→ U4.pin1 (<code>A·B</code>), 그리고 L1 애노드(330Ω) → GND</td></tr><tr><td></td><td>4, 5, 9, 10, 12, 13</td><td>→ GND</td></tr><tr><td></td><td>6, 8, 11</td><td>개방</td></tr><tr><td>U4 = <code>74HC00</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>1 / 2</td><td>← U3.pin3 / ← 입력 C</td></tr><tr><td></td><td>3</td><td>→ L2 애노드(330Ω) → GND ※ <code>Y = <span class="ov">A·B·C</span></code>, T3 검증 대상</td></tr><tr><td></td><td>4, 5, 9, 10, 12, 13</td><td>→ GND</td></tr><tr><td></td><td>6, 8, 11</td><td>개방</td></tr></tbody></table></div>
+<p>NOR 회로는 U5 = <code>74HC32</code>(U3 자리), U6 = <code>74HC02</code>(U4 자리)로 바꾼다. <strong><code>74HC02</code> 는 핀이 다르다:</strong></p>
+<div class="tblock"><table><thead><tr><th>소자</th><th>핀</th><th>연결</th></tr></thead><tbody><tr><td>U6 = <code>74HC02</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>2</td><td>← U5.pin3 (게이트1 입력 A — <strong>pin 1 이 아니다</strong>)</td></tr><tr><td></td><td>3</td><td>← 입력 C (게이트1 입력 B)</td></tr><tr><td></td><td>1</td><td>→ L2 애노드(330Ω) → GND ※ 게이트1 <strong>출력</strong>. <code>Y = <span class="ov">A+B+C</span></code>, T4 검증 대상</td></tr><tr><td></td><td>5, 6, 8, 9, 11, 12</td><td>→ GND</td></tr><tr><td></td><td>4, 10, 13</td><td>개방</td></tr></tbody></table></div>
+<h3>5.4 E1.P2 배선 — 복합 논리회로(<code>74HC04</code>+<code>74HC08</code>+<code>74HC32</code>)</h3>
+<div class="tblock"><table><thead><tr><th>소자</th><th>핀</th><th>연결</th></tr></thead><tbody><tr><td>U7 = <code>74HC04</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>1 → 2</td><td>← 입력 A → U8.pin1 (인버터1: <code><span class="ov">A</span></code>)</td></tr><tr><td></td><td>3 → 4</td><td>← U8.pin3 → U9.pin2 (인버터2: <code>Z = <span class="ov"><span class="ov">A</span>·B</span></code>), 그리고 LED_Z 애노드(330Ω) → GND</td></tr><tr><td></td><td>5, 9, 11, 13</td><td>→ GND</td></tr><tr><td></td><td>6, 8, 10, 12</td><td>개방</td></tr><tr><td>U8 = <code>74HC08</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>1 / 2</td><td>← U7.pin2 (<code><span class="ov">A</span></code>) / ← 입력 B</td></tr><tr><td></td><td>3</td><td>→ U7.pin3 (<code><span class="ov">A</span>·B</code>)</td></tr><tr><td></td><td>4, 5, 9, 10, 12, 13</td><td>→ GND</td></tr><tr><td></td><td>6, 8, 11</td><td>개방</td></tr><tr><td>U9 = <code>74HC32</code></td><td>14 / 7</td><td>VCC / GND</td></tr><tr><td></td><td>1 / 2</td><td>← 입력 A / ← U7.pin4 (<code>Z</code>)</td></tr><tr><td></td><td>3</td><td>→ LED_X 애노드(330Ω) → GND ※ <code>X = A + Z</code></td></tr><tr><td></td><td>4 / 5</td><td>← 입력 A / ← 입력 B</td></tr><tr><td></td><td>6</td><td>→ LED_Y 애노드(330Ω) → GND ※ <code>Y = A + B</code></td></tr><tr><td></td><td>9, 10, 12, 13</td><td>→ GND</td></tr><tr><td></td><td>8, 11</td><td>개방</td></tr></tbody></table></div>
+<p><code>Z</code> 노드(U7.pin4)는 LED_Z 와 U9.pin2 로 팬아웃한다. 부울대수상 <code>X ≡ Z</code> 이므로 <strong>LED_X 와 LED_Z 가 언제나 같이 켜져야 한다.</strong></p>
+<h3>5.5 미확정 사항</h3>
+<div class="tblock"><table><thead><tr><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td>M1</td><td><code>74HC32</code> 핀아웃이 저장소 데이터시트로도 저장소 회로도로도 확인되지 않음(표준 DIP-14 쿼드 2입력 배치를 가정). <code>74HC00</code> 은 실험6 교안 회로도(p.7·p.8)로, <code>74HC08</code>·<code>74HC02</code> 는 TI 데이터시트로 각각 확인됐다</td><td>실물 칩 각인 확인 후 벤더 데이터시트 대조</td></tr><tr><td>M2</td><td>교안이 입력 스위치/딥스위치를 지정하지 않음. 점퍼선 직결로 가정</td><td>실험실 키트 확인</td></tr><tr><td>M3</td><td><code>74HC</code> 출력으로 LED 를 직접 구동한다. 330Ω 에서 약 7.6 mA 로 데이터시트 권장 구동 전류를 넘는다</td><td>교안 지시가 그러하므로 그대로 따르되, LED 가 어두우면 이를 먼저 의심</td></tr></tbody></table><p class="cite">출처: <code>실험01/결선도/netlist.md</code> &quot;미확정 사항&quot; 절 그대로 인용.</p></div>
+<h3>5.6 브레드보드 작도 캔버스</h3>
+<p>아래는 실제 배선 전 빈 브레드보드 이미지다. 위 §5.2~§5.4 의 표를 참고해 <strong>손으로</strong> 신호명·전원명·저항값을 표기하며 배선을 그린다 — 이 하네스는 핀 번호를 바코드처럼 나열한 자동 배선도를 만들지 않는다(과거 제출본의 결선도 관행도 핀 번호가 아니라 신호명·전원명·저항값을 주석으로 붙이는 방식이다). 9개 IC(U1~U9, 실제로는 재사용되는 물리 칩 5개)를 감안해 30행 분량을 확보했다.</p>
+<figure class="breadboard-block"><img src="../../.claude/assets/Breadboard.jpg" alt="브레드보드 작도 캔버스 (전원 VCC=+5V · GND=GND). 이번 실험 netlist 는 30행이면 충분하다"><figcaption>브레드보드 작도 캔버스 (전원 VCC=+5V · GND=GND). 이번 실험 netlist 는 30행이면 충분하다</figcaption></figure>
+<p class="cite">출처: <code>.claude/assets/Breadboard.jpg</code>(빈 브레드보드 템플릿, <code>prep-lab-checklist</code> 가 체크리스트에 크롭해 삽입한 것과 같은 원본). 행 수(30)는 <code>scripts.lab.render.crop_rows(netlist_text)</code> 계산값이다.</p>
+<h2>6. 출처 및 참고문헌</h2>
+<ol><li><strong><code>from_the_past/정리/강의노트/실험1.pdf</code></strong> — 논리회로실험 2020-2 교안 &quot;실험1&quot;. p.2 목적, p.3 논리 레벨 정의, p.4~p.9 게이트별 기호·부울식·진리표, p.10 실험 준비물, p.11~p.13 실험 회로도. 이 보고서가 vision 으로 직접 열람해 판독했다.</li><li><strong><code>from_the_past/정리/강의노트/실험6.pdf</code></strong> — 논리회로실험 2020-2 교안 &quot;실험6&quot; (R-S/D Latch with Enable). p.7·p.8 회로도의 <code>74HC00</code> 게이트 핀 라벨을 이 보고서가 직접 확인해 §3.2 의 <code>74HC00</code> 핀아웃 근거로 썼다. 이 실험 자체(래치)는 이번 실험 대상이 아니므로 그 외 내용은 참고하지 않았다.</li><li><strong><code>from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf</code></strong> — Philips/Nexperia 74HC04 Hex inverter 데이터시트(2003-07-23). p.4 Fig.4 &quot;IEC logic symbol&quot; 과 PINNING 절에서 <code>74HC04</code> 핀아웃을 직접 확인했다.</li><li><strong>TI 데이터시트 SCLS081J(SN74HC08)·SCLS076G(SN74HC02)</strong> — <code>74HC08</code>·<code>74HC02</code> 핀아웃 대조에 쓰인 근거. <strong>다만 이 파일들은 저장소에 없어 이 보고서가 직접 열람하지 못했다</strong> — <code>실험01/결선도/netlist.md</code> 의 기록을 인용한 것이다. <code>74HC32</code> 는 저장소·외부 어느 쪽으로도 확인되지 않았다(§5.5 M1).</li><li><strong><code>실험01/체크리스트/명세.md</code></strong> — 이번 실험 명세(<code>lab-spec/v1</code>). 진리표 T1~T9, <code>items</code> 의 IC·항목 구성.</li><li><strong><code>실험01/결선도/netlist.md</code></strong> — 결선도(<code>lab-netlist/v1</code>). 핀아웃 참조표, 항목별 U1~U9 배선, 미확정 사항 M1~M3.</li></ol>
+
+  </div>
+</body>
+</html>

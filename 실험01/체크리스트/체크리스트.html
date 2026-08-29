@@ -1,0 +1,274 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+  .procedure { page-break-after: always; }
+  .procedure .power { font-weight: 700; border: 2px solid #000;
+                      padding: 3mm; margin-bottom: 4mm; }
+  .procedure li { font-size: 12pt; line-height: 1.7; }
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  .sketch { border: 1px solid #333; height: 45mm; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+</style>
+
+<h1>실험1 Basic Gates 체크리스트</h1>
+<section class="procedure"><div class="power">전원: VCC = +5V · GND = GND · 미사용 입력핀은 전부 GND (플로팅 금지)</div>
+<h3>공통 규칙</h3>
+<ol start="1">
+<li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li>
+<li>미사용 입력핀은 전부 GND 로 내린다. 플로팅 금지. 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 내리면 칩이 죽는다)</li>
+<li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다</li>
+<li>LED 는 애노드 쪽에 330Ω 직렬, 캐소드 → GND (교안 p11·p12·p13 의 "다이오드 연결 시, 330Ω 저항 필수" 박스)</li>
+<li>물리 칩 재사용: 교안 p10 준비물은 74HC00 / 74HC02 / 74HC04(2개) / 74HC08 / 74HC32 / 74HC86 각 1개(74HC04 만 2개)다. 아래에서 U1·U3·U8 은 같은 74HC08 한 개를, U2·U5·U9 는 같은 74HC32 한 개를 항목마다 재배선해 쓰는 것이다. 동시에 세 회로를 올릴 수는 없다</li>
+<li>핀아웃 출처:</li>
+<li>74HC04 — 저장소 실물 데이터시트 from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf (Philips 74HC04 Hex inverter, 2003-07-23, PINNING 절) 로 확인함</li>
+<li>74HC00 — 저장소 안에서 확인된다. 실험6 교안 (from_the_past/정리/강의노트/실험6.pdf) p7·p8 회로도가 같은 물리 칩(74HC00 쿼드 NAND)의 게이트 핀을 (1,2→3)·(4,5→6)·(9,10→8)·(12,13→11) 로 라벨한 것을 vision 으로 대조했다 — 아래 참조 핀아웃 표와 일치한다</li>
+<li>74HC08·74HC02 — TI 데이터시트(74HC08: SCLS081J/SN74HC08, 74HC02: SCLS076G/SN74HC02)로 대조해 확인됐다</li>
+<li>74HC32 — 저장소에 데이터시트가 없고, 저장소 회로도로도 대조되지 않는다 (실험6 은 OR/NOR 게이트를 쓰지 않는다). 표준 74HC 시리즈 DIP-14 쿼드 2입력 배치(74HC00·74HC08 과 동일 패턴)를 근거로 적었다. 실물 칩 각인과 1주차에 대조할 것 (아래 미확정 사항 표 M1 참조)</li>
+<li>74HC02 는 나머지 셋과 핀 배치가 다르다. 출력 핀 기준으로 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li>
+</ol>
+<h3>참조 핀아웃</h3>
+<p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.</p>
+<h3>E1.P1-1 · 3-input AND (74HC08)</h3>
+<ol start="12">
+<li>U1 = 74HC08 (quad 2-input AND, DIP-14)</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U1.pin4          (게이트1 출력 A·B → 게이트2 입력)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND    ※ 교안 p11 의 중간단 LED</li>
+<li>pin 5  ← 입력 C</li>
+<li>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A·B·C, T1 의 검증 대상</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+</ol>
+<h3>E1.P1-1 · 3-input OR (74HC32)</h3>
+<ol start="23">
+<li>U2 = 74HC32 (quad 2-input OR, DIP-14)</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U2.pin4          (게이트1 출력 A+B → 게이트2 입력)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>pin 5  ← 입력 C</li>
+<li>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A+B+C, T2 의 검증 대상</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+</ol>
+<h3>E1.P1-2 · 3-input NAND (74HC08 + 74HC00)</h3>
+<p>교안 p12 회로도 그대로. AND 로 A·B 를 만들고 NAND 로 C 와 합쳐 (A·B·C)' 를 낸다.</p>
+<ol start="34">
+<li>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U4.pin1          (게이트1 출력 A·B)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>U4 = 74HC00 (quad 2-input NAND, DIP-14)</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← U3.pin3</li>
+<li>pin 2  ← 입력 C</li>
+<li>pin 3  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = (A·B·C)', T3 의 검증 대상</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+</ol>
+<h3>E1.P1-2 · 3-input NOR (74HC32 + 74HC02)</h3>
+<p>같은 구조를 OR → NOR 로 바꾼 것. 74HC02 의 핀 순서에 주의 (출력이 pin 1).</p>
+<ol start="51">
+<li>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U6.pin2          (게이트1 출력 A+B)</li>
+<li>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>U6 = 74HC02 (quad 2-input NOR, DIP-14)</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 2  ← U5.pin3          (게이트1 입력 A — pin 1 이 아니다)</li>
+<li>pin 3  ← 입력 C           (게이트1 입력 B)</li>
+<li>pin 1  → L2 애노드 (330Ω 직렬) → GND    ※ 게이트1 출력. Y = (A+B+C)', T4 의 검증 대상</li>
+<li>미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND</li>
+<li>미사용 출력핀: pin 4, 10, 13 → 개방</li>
+</ol>
+<h3>E1.P2 · 복합 논리회로 (74HC04 + 74HC08 + 74HC32)</h3>
+<p>교안 p13. 입력 2개(A, B), 출력 3개(X, Y, Z), LED 3개. C 입력은 없다.</p>
+<ol start="68">
+<li>U7 = 74HC04 (hex inverter, DIP-14)</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A           (인버터1 입력)</li>
+<li>pin 2  → U8.pin1          (인버터1 출력 A')</li>
+<li>pin 3  ← U8.pin3          (인버터2 입력 A'·B)</li>
+<li>pin 4  → U9.pin2          (인버터2 출력 Z = (A'·B)')</li>
+<li>pin 4  → LED_Z 애노드 (330Ω 직렬) → GND</li>
+<li>미사용 입력핀: pin 5, 9, 11, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
+<li>U8 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← U7.pin2          (A')</li>
+<li>pin 2  ← 입력 B</li>
+<li>pin 3  → U7.pin3          (A'·B)</li>
+<li>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+<li>U9 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</li>
+<li>pin 14 → VCC(+5V)</li>
+<li>pin 7  → GND</li>
+<li>pin 1  ← 입력 A           (게이트1)</li>
+<li>pin 2  ← U7.pin4          (Z)</li>
+<li>pin 3  → LED_X 애노드 (330Ω 직렬) → GND    ※ X = A + Z</li>
+<li>pin 4  ← 입력 A           (게이트2)</li>
+<li>pin 5  ← 입력 B</li>
+<li>pin 6  → LED_Y 애노드 (330Ω 직렬) → GND    ※ Y = A + B</li>
+<li>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li>미사용 출력핀: pin 8, 11 → 개방</li>
+</ol>
+<p>Z 노드(U7.pin4)는 LED_Z 와 U9.pin2 로 팬아웃한다. 부울대수상 X ≡ Z 이므로 LED_X 와 LED_Z 가 언제나 같이 켜져야 한다. 다르면 배선 오류다.</p></section>
+<section class="tables"><h2>E1.P1-1 · 3-input AND / OR gate 구성</h2>
+<p>IC: 74HC08, 74HC32 · 판독: LED</p>
+<div class="tblock">
+<h3>T1 · 3-input AND 진리표</h3>
+<p class='src'>출처: derived (Y = A·B·C)</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="tblock">
+<h3>T2 · 3-input OR 진리표</h3>
+<p class='src'>출처: derived (Y = A+B+C)</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
+<h2>E1.P1-2 · 3-input NAND / NOR gate 구성</h2>
+<p>IC: 74HC08, 74HC00, 74HC32, 74HC02 · 판독: LED</p>
+<div class="tblock">
+<h3>T3 · 3-input NAND 진리표</h3>
+<p class='src'>출처: derived (Y = (A·B·C)')</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="tblock">
+<h3>T4 · 3-input NOR 진리표</h3>
+<p class='src'>출처: derived (Y = (A+B+C)')</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Y예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div>
+<h2>E1.P2 · 복합 논리회로 구성</h2>
+<p>IC: 74HC04, 74HC32, 74HC08 · 판독: LED</p>
+<div class="tblock">
+<h3>T5 · 복합회로 진리표</h3>
+<p class='src'>출처: derived (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)')</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>X예상</th>
+<th>Y예상</th>
+<th>Z예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
+</table>
+</div>
+<div class="pair"><div><b>결선도</b><br>(사진 부착)</div><div><b>구성한 회로</b><br>(사진 부착)</div></div></section>
+<section class="breadboard"><div class="tblock"><h2>브레드보드 작도 (30행)</h2><p>단자: VCC=+5V · GND=GND</p><img src="../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:231.4mm;object-fit:cover;object-position:top"></div></section>
