@@ -430,13 +430,18 @@ class TestRenderedHtmlChecks(unittest.TestCase):
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 
-    def test_real_pre_report_html_is_clean(self):
-        """실제로 깨진 채 제출됐던 건 ②(기계 렌더)가 아니라 이 파일이다 —
-        표 셀 백틱 230개와, 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드
-        그림. ②만 회귀 대상이면 실제로 사고가 난 산출물은 아무도 안 지킨다 (D)."""
-        html = ROOT / "실험01/output/실험01_예비보고서.html"
-        self.assertEqual(validate.check_rendered_html(html), [])
-        self.assertEqual(validate.check_embedded_images(html), [])
+    # 예비보고서 HTML 을 보던 테스트가 여기 있었다. 실제로 깨진 채 제출됐던 것이
+    # ②(기계 렌더)가 아니라 그 파일이었기 때문이다 — 표 셀 백틱 230개와,
+    # 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드 그림.
+    #
+    # **그 산출물이 더는 존재하지 않는다.** 보고서는 md 를 그대로 노션에 올리고
+    # 사용자가 거기서 PDF 로 내보낸다 — 사람이 마크다운을 HTML 로 옮기는 단계가
+    # 사라졌으므로 그 단계의 결함도 사라졌다. 같은 목적(사람이 쓴 보고서 본문을
+    # 기계로 검사한다)은 `TestCheckNotionMarkdown.test_실제_실험1_예비보고서는_깨끗하다`
+    # 가 md 자체를 대상으로 이어받았다.
+    #
+    # 위 `test_real_checklist_html_is_clean` 은 남긴다 — 체크리스트는 인쇄물이라
+    # 여전히 HTML 을 거친다.
 
 
 class FolderConventionTest(unittest.TestCase):
