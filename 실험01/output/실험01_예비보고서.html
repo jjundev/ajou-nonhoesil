@@ -125,7 +125,7 @@
 <h3>2.1 논리 레벨 — H/L과 0/1</h3>
 <p>교안 p.3은 논리값을 두 단계로 정의한다: <strong>L(Low) = 논리값 0 = 물리적으로 0V</strong>, <strong>H(High) = 논리값 1 = 물리적으로 3~5V</strong>. 이 보고서의 §2.2 이론표(T6~T9)는 교안 원문 그대로 <code>H</code>/<code>L</code> 인코딩을 쓰고, §4의 3-input 진리표(T1~T5)는 실험실에서 LED 점등 여부로 직접 읽는 <code>0</code>/<code>1</code> 인코딩을 쓴다. 두 표기는 같은 논리값을 가리키는 서로 다른 표기일 뿐이며, 교안과 대조할 때 혼동하지 않도록 이 보고서에서도 서로 바꿔 쓰지 않는다.</p>
 <h3>2.2 기본 게이트 — 2-input 이론표</h3>
-<p>교안 p.4~p.8은 AND·OR·NOT·NAND·NOR 각 게이트의 기호와 부울식, 2-input 진리표를 차례로 제시한다. 아래 T6~T9는 명세(<code>2주차/체크리스트/명세.md</code>)에 <code>role: reference</code>로 등록된 참조표로, 학생이 배선·기록하는 대상이 아니라 교안 원문을 그대로 옮긴 이론 자료다. <strong><code>H</code>/<code>L</code> 인코딩을 <code>0</code>/<code>1</code>로 바꾸지 않고 교안 그대로 둔다.</strong></p>
+<p>교안 p.4~p.8은 AND·OR·NOT·NAND·NOR 각 게이트의 기호와 부울식, 2-input 진리표를 차례로 제시한다. 아래 T6~T9는 명세(<code>실험01/체크리스트/명세.md</code>)에 <code>role: reference</code>로 등록된 참조표로, 학생이 배선·기록하는 대상이 아니라 교안 원문을 그대로 옮긴 이론 자료다. <strong><code>H</code>/<code>L</code> 인코딩을 <code>0</code>/<code>1</code>로 바꾸지 않고 교안 그대로 둔다.</strong></p>
 <p><strong>AND (부울식: <code>A·B = C</code>, 교안 p.4)</strong> — 두 입력선이 평평한 D자 모양으로 모이는 기호다. 두 입력이 모두 H일 때만 출력이 H다.</p>
 <div class="tblock">
 <p class="cite">T6 · 2-input AND 이론표 (교안 p.4, <code>role: reference</code>, <code>encoding: H/L</code>)</p>
@@ -164,7 +164,7 @@
 X = A + Z
 Y = A + B</pre>
 <p>§2.3의 드모르간 정리를 <code>Z</code>에 적용하면 Z = <span class="ov"><span class="ov">A</span>·B</span> = <span class="ov"><span class="ov">A</span></span> + <span class="ov">B</span> = A + <span class="ov">B</span>이고, 이를 <code>X</code>에 대입하면 X = A + Z = A + (A + <span class="ov">B</span>) = A + <span class="ov">B</span>(멱등법칙)이므로 <strong><code>X</code>와 <code>Z</code>는 항등식으로 같다.</strong> 따라서 올바르게 배선했다면 모든 입력 조합에서 LED_X와 LED_Z는 항상 같이 켜지거나 같이 꺼져야 한다 — §4·§5에서 이 성질을 배선 자체 검증 수단으로 다시 쓴다.</p>
-<p class="cite">출처: 부울식 전개는 위 §2.3의 드모르간 정리(<code>Chap3-part1.pdf</code> p.13)를 배선 판독 결과(<code>2주차/결선도/netlist.md</code>)에 적용해 이 보고서가 직접 도출했다.</p>
+<p class="cite">출처: 부울식 전개는 위 §2.3의 드모르간 정리(<code>Chap3-part1.pdf</code> p.13)를 배선 판독 결과(<code>실험01/결선도/netlist.md</code>)에 적용해 이 보고서가 직접 도출했다.</p>
 <h2>3. 실험 부품</h2>
 <h3>3.1 IC 개요</h3>
 <p>명세(<code>ics</code> 필드)를 기준으로 이번 주차가 실제로 쓰는 IC는 5종이다.</p>
@@ -173,7 +173,7 @@ Y = A + B</pre>
 <p class="cite">출처: 기능·명칭 대응은 <code>from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/ic칩.txt</code>, 패키지·게이트 수는 교안 p.4~p.8 및 아래 §3.2 핀아웃 표. <code>ic칩.txt</code> 원문은 <code>74HC08</code>의 동작을 "입력이 하나라도 1이면 출력값 = 1"이라고 적어 두었는데, 이는 AND가 아니라 OR(<code>74HC32</code>)의 동작 설명이다 — <code>74HC08</code>(AND)의 정확한 동작은 위 §2.2 T6 이론표와 §4의 T1 진리표("입력이 모두 1이어야 출력이 1")를 따른다.</p>
 </div>
 <h3>3.2 핀아웃 참조 (DIP-14)</h3>
-<p>저장소의 <code>1_데이터시트_및_핀아웃/</code> 폴더에는 이번 주차가 쓰는 5종 IC 중 <code>74HC04</code>의 데이터시트(<code>datasheet.pdf</code>)만 실제로 있고, 나머지 4종(<code>74HC08</code>, <code>74HC00</code>, <code>74HC32</code>, <code>74HC02</code>)의 데이터시트나 핀아웃 이미지는 <strong>없다</strong> (<code>ic칩.txt</code>는 기능 이름만 있을 뿐 핀 번호가 없다). 아래 표는 <code>2주차/결선도/netlist.md</code>가 이미 기록해 둔 확인 결과를 그대로 인용한 것이며, IC마다 근거의 확실성이 다르다.</p>
+<p>저장소의 <code>1_데이터시트_및_핀아웃/</code> 폴더에는 이번 주차가 쓰는 5종 IC 중 <code>74HC04</code>의 데이터시트(<code>datasheet.pdf</code>)만 실제로 있고, 나머지 4종(<code>74HC08</code>, <code>74HC00</code>, <code>74HC32</code>, <code>74HC02</code>)의 데이터시트나 핀아웃 이미지는 <strong>없다</strong> (<code>ic칩.txt</code>는 기능 이름만 있을 뿐 핀 번호가 없다). 아래 표는 <code>실험01/결선도/netlist.md</code>가 이미 기록해 둔 확인 결과를 그대로 인용한 것이며, IC마다 근거의 확실성이 다르다.</p>
 <div class="tblock">
 <table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>게이트4</th><th>VCC</th><th>GND</th><th>확인 근거</th></tr></thead><tbody><tr><td><code>74HC00</code></td><td>1,2→3</td><td>4,5→6</td><td>9,10→8</td><td>12,13→11</td><td>14</td><td>7</td><td>이 보고서가 <code>실험6.pdf</code>(R-S/D Latch 교안) p.7·p.8 회로도를 직접 vision으로 열람해 확인 — 두 쪽 모두 게이트 핀을 <code>(1,2→3)</code>·<code>(4,5→6)</code>·<code>(9,10→8)</code>·<code>(12,13→11)</code>로 라벨링해 같은 물리 칩(74HC00 쿼드 NAND)의 4개 게이트를 나타낸다. <code>netlist.md</code>의 기록과 일치</td></tr><tr><td><code>74HC08</code></td><td>1,2→3</td><td>4,5→6</td><td>9,10→8</td><td>12,13→11</td><td>14</td><td>7</td><td>TI 데이터시트(SCLS081J/SN74HC08)와 대조 확인됨 — <strong>다만 그 데이터시트 파일 자체는 저장소에 없다.</strong> 이 보고서는 <code>netlist.md</code>의 기록을 인용했을 뿐 직접 확인하지 않았다</td></tr><tr><td><code>74HC32</code></td><td>1,2→3</td><td>4,5→6</td><td>9,10→8</td><td>12,13→11</td><td>14</td><td>7</td><td><strong>미확정.</strong> 저장소에 데이터시트도, 대조할 회로도도 없다(실험6은 OR/NOR를 쓰지 않는다). 표준 74HC 쿼드 2-input DIP-14 배치(<code>74HC00</code>·<code>74HC08</code>과 동일 패턴)를 <strong>가정</strong>했을 뿐이다 — 실물 칩 각인 대조 필요 (<code>netlist.md</code> 미확정 사항 M1)</td></tr><tr><td><code>74HC02</code></td><td>2,3→1</td><td>5,6→4</td><td>8,9→10</td><td>11,12→13</td><td>14</td><td>7</td><td>TI 데이터시트(SCLS076G/SN74HC02)와 대조 확인됨 — <code>74HC08</code>과 마찬가지로 파일 자체는 저장소에 없고 <code>netlist.md</code>의 기록을 인용했다. <strong>출력이 pin 1·4·10·13으로, 나머지 세 IC(pin 3·6·8·11 출력)와 다르다</strong> — 이 실험에서 가장 흔한 배선 실수 지점</td></tr><tr><td><code>74HC04</code></td><td>1→2</td><td>3→4</td><td>5→6 (그리고 9→8, 11→10, 13→12까지 인버터 6개)</td><td></td><td>14</td><td>7</td><td>저장소 실물 데이터시트 <code>datasheet.pdf</code>(Philips/Nexperia, 74HC04 Hex inverter, 2003-07-23) p.4 Fig.4 "IEC logic symbol"에서 직접 확인</td></tr></tbody></table>
 </div>
@@ -215,7 +215,7 @@ Y = A + B</pre>
 <p><strong>예상 결과</strong></p>
 <div class="tblock">
 <table><thead><tr><th>A</th><th>B</th><th>X</th><th>Y</th><th>Z</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
-<p class="cite">T5 출처: 부울대수로 도출 (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)'), 교안 p.13 복합회로 배선을 vision 판독해 <code>2주차/결선도/netlist.md</code>로 확정. X와 Z는 §2.4에서 보였듯 대수적으로 항등(X = A+B' = Z)이다.</p>
+<p class="cite">T5 출처: 부울대수로 도출 (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)'), 교안 p.13 복합회로 배선을 vision 판독해 <code>실험01/결선도/netlist.md</code>로 확정. X와 Z는 §2.4에서 보였듯 대수적으로 항등(X = A+B' = Z)이다.</p>
 </div>
 <h2>5. 회로 결선도</h2>
 <h3>5.1 공통 규칙</h3>
@@ -227,7 +227,7 @@ Y = A + B</pre>
 <li><strong>물리 칩 재사용:</strong> 교안 p.10 준비물은 <code>74HC00</code>/<code>74HC02</code>/<code>74HC04</code>(2개)/<code>74HC08</code>/ <code>74HC32</code>/<code>74HC86</code> 각 1개(<code>74HC04</code>만 2개)뿐이다. 아래 표의 <code>U1</code>·<code>U3</code>·<code>U8</code>은 <strong>같은 <code>74HC08</code> 한 개</strong>를, <code>U2</code>·<code>U5</code>·<code>U9</code>는 <strong>같은 <code>74HC32</code> 한 개</strong>를 항목마다 재배선해 쓰는 것이다 — 세 회로를 동시에 올릴 수는 없다.</li>
 <li>핀아웃 근거는 §3.2와 같다.</li>
 </ul>
-<p class="cite">출처: <code>2주차/결선도/netlist.md</code> "공통 규칙" 절.</p>
+<p class="cite">출처: <code>실험01/결선도/netlist.md</code> "공통 규칙" 절.</p>
 <h3>5.2 E1.P1-1 배선 — 3-input AND(<code>74HC08</code>) / OR(<code>74HC32</code>)</h3>
 <div class="tblock">
 <table><thead><tr><th>지정자</th><th>IC</th><th>핀</th><th>연결</th></tr></thead><tbody><tr><td>U1</td><td><code>74HC08</code></td><td>14</td><td>VCC(+5V)</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>7</td><td>GND</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>1</td><td>← 입력 A</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>2</td><td>← 입력 B</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>3</td><td>→ U1.pin4 (게이트1 출력 <code>A·B</code> → 게이트2 입력); → L1 애노드(330Ω 직렬) → GND</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>5</td><td>← 입력 C</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>6</td><td>→ L2 애노드(330Ω 직렬) → GND — 최종 출력 <code>Y=A·B·C</code>, T1 검증 대상</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>9, 10, 12, 13</td><td>미사용 입력 → GND</td></tr><tr><td>U1</td><td><code>74HC08</code></td><td>8, 11</td><td>미사용 출력 → 개방</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>14</td><td>VCC(+5V)</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>7</td><td>GND</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>1</td><td>← 입력 A</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>2</td><td>← 입력 B</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>3</td><td>→ U2.pin4 (게이트1 출력 <code>A+B</code> → 게이트2 입력); → L1 애노드(330Ω 직렬) → GND</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>5</td><td>← 입력 C</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>6</td><td>→ L2 애노드(330Ω 직렬) → GND — 최종 출력 <code>Y=A+B+C</code>, T2 검증 대상</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>9, 10, 12, 13</td><td>미사용 입력 → GND</td></tr><tr><td>U2</td><td><code>74HC32</code></td><td>8, 11</td><td>미사용 출력 → 개방</td></tr></tbody></table>
@@ -245,7 +245,7 @@ Y = A + B</pre>
 <h3>5.5 미확정 사항</h3>
 <div class="tblock">
 <table><thead><tr><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td>M1</td><td><code>74HC32</code> 핀아웃이 저장소 데이터시트로도 저장소 회로도로도 확인되지 않음(표준 DIP-14 쿼드 2-input 배치를 가정). <code>74HC00</code>은 실험6 교안 회로도로, <code>74HC08</code>·<code>74HC02</code>는 (저장소에 없는) TI 데이터시트로 각각 확인됐다</td><td>실물 칩 각인 확인 후 벤더 데이터시트 대조</td></tr><tr><td>M2</td><td>교안이 입력 스위치/딥스위치를 지정하지 않음. 점퍼선 직결로 가정</td><td>실험실 키트 확인</td></tr><tr><td>M3</td><td><code>74HC</code> 출력으로 LED를 직접 구동한다. 330Ω에서 약 9mA로 데이터시트 권장 구동 전류를 넘는다</td><td>교안 지시가 그러하므로 그대로 따르되, LED가 어두우면 이를 먼저 의심</td></tr></tbody></table>
-<p class="cite">출처: <code>2주차/결선도/netlist.md</code> "미확정 사항" 절 그대로 인용.</p>
+<p class="cite">출처: <code>실험01/결선도/netlist.md</code> "미확정 사항" 절 그대로 인용.</p>
 </div>
 <h3>5.6 브레드보드 작도 캔버스</h3>
 <p>아래는 실제 배선 전 빈 브레드보드 이미지다. 위 §5.2~§5.4의 표를 참고해 <strong>손으로</strong> 신호명·전원명·저항값을 표기하며 배선을 그린다 — 이 하네스는 핀 번호를 바코드처럼 나열한 자동 배선도를 만들지 않는다(과거 제출본의 결선도 관행도 핀 번호가 아니라 신호명·전원명·저항값을 주석으로 붙이는 방식이다). 9개 IC(U1~U9, 실제로는 재사용되는 물리 칩 5개)를 감안해 30행 분량을 확보했다.</p>
@@ -258,8 +258,8 @@ Y = A + B</pre>
 <ol>
 <li><code>from_the_past/정리/강의노트/실험1.pdf</code> — 논리회로실험 2020-2 교안 "실험1. Basic Gates"(전체 13쪽). §1 목적(p.2), §2 이론(p.3~p.9), §3 실험방법·준비물(p.10)과 회로(p.11~p.13)를 전부 직접 확인했다.</li>
 <li><code>from_the_past/정리/논회 강의노트/Chap3-part1.pdf</code> — "Switching Algebra &amp; Logic Gates" 이론 강의자료. p.13~p.14 드모르간 정리(n변수 일반형, AND-Invert ≡ Invert-OR / OR-Invert ≡ Invert-AND)를 직접 확인했다.</li>
-<li><code>2주차/체크리스트/명세.md</code> — 이번 실험 명세(<code>lab-spec/v1</code>). 진리표 T1~T9, <code>items</code>의 IC·항목 구성.</li>
-<li><code>2주차/결선도/netlist.md</code> — 결선도(<code>lab-netlist/v1</code>). 핀아웃 참조표, 항목별 U1~U9 배선, 미확정 사항 M1~M3.</li>
+<li><code>실험01/체크리스트/명세.md</code> — 이번 실험 명세(<code>lab-spec/v1</code>). 진리표 T1~T9, <code>items</code>의 IC·항목 구성.</li>
+<li><code>실험01/결선도/netlist.md</code> — 결선도(<code>lab-netlist/v1</code>). 핀아웃 참조표, 항목별 U1~U9 배선, 미확정 사항 M1~M3.</li>
 <li><code>from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/ic칩.txt</code> — IC-기능 대응표. <code>74HC08</code> 설명에 오기가 있어 §3.1 각주에서 정정했다.</li>
 <li><code>from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf</code> — Philips/Nexperia <code>74HC04</code> Hex inverter 데이터시트(2003-07-23). p.3 ORDERING INFORMATION(DIP14 패키지 확인), p.4 Fig.4 "IEC logic symbol"(핀 대응 확인)을 직접 확인했다.</li>
 <li><code>docs/study/01_기본게이트_CMOS특성(실험1-2).md</code> — CMOS 플로팅 입력의 위험성 ("절대 금기") 정리.</li>
