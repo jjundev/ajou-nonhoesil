@@ -190,3 +190,29 @@ class TestOverbarCssAcrossTemplates(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChecklistTitleTest(unittest.TestCase):
+    """인쇄 체크리스트 제목. record 쪽과 같은 이유로 고정한다."""
+
+    def test_제목이_실험_기준이고_주차가_없다(self):
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
+        tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
+            encoding="utf-8")
+        html = render_checklist(spec, netlist, tmpl)
+        self.assertIn("실험1 Basic Gates 체크리스트", html)
+        self.assertNotIn("2주차 · 실험1", html)
+
+    def test_두_산출물의_제목이_같은_함수에서_나온다(self):
+        """기록과 체크리스트가 갈라지면 한쪽만 고쳐진다."""
+        from scripts.lab import config
+        from scripts.lab.record import derive_record
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
+        tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
+            encoding="utf-8")
+        self.assertIn(config.document_title(spec.experiment, spec.title, "체크리스트"),
+                      render_checklist(spec, netlist, tmpl))
+        self.assertIn(config.document_title(spec.experiment, spec.title, "기록"),
+                      derive_record(spec))

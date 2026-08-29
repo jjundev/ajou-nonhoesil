@@ -71,6 +71,26 @@ def folder_for_week(week: int) -> str:
     return experiment_dir(WEEK_TO_EXPERIMENT[week])
 
 
+# 산출물 제목의 유일한 형식. 예전에는 네 곳이 제각각 만들었고, 경로용 일괄
+# 치환이 그중 하나(프리뷰)를 조용히 덮어쓴 적이 있다.
+DOCUMENT_KINDS = ("체크리스트", "기록", "예비보고서", "결과보고서", "프리뷰")
+
+
+def document_title(experiment: int, title: str, kind: str) -> str:
+    """산출물 제목 — `실험1 Basic Gates 체크리스트` 형식.
+
+    **주차를 넣지 않는다.** 주차는 폴더를 찾을 때만 쓰고(`folder_for_week`),
+    사람이 읽는 제목에는 실험 번호와 이름만 남긴다. 어느 주에 하는지는
+    강의계획서의 일이지 제출물 표지의 일이 아니다.
+    """
+    if kind not in DOCUMENT_KINDS:
+        raise ValueError(f"산출물 종류는 {list(DOCUMENT_KINDS)} 입니다: {kind!r}")
+    if not isinstance(title, str) or not title.strip():
+        raise ValueError(f"실험 제목이 비어 있습니다: {title!r}")
+    experiment_dir(experiment)          # 번호 유효성은 한 곳에서만 판정한다
+    return f"실험{experiment} {title.strip()} {kind}"
+
+
 def week_for_experiment(experiment: int) -> int:
     """실험 번호 → 그 실험을 하는 주차. `folder_for_week` 의 역방향.
 

@@ -19,6 +19,7 @@ kind 마다 칸의 뜻이 다르다:
 import unicodedata
 
 from .spec_parser import split_columns
+from . import config
 
 PROMPTS = ("막혔던 것", "예상과 달랐던 것", "뭘 바꿔서 해결했나", "새로 안 것")
 
@@ -70,7 +71,7 @@ def derive_record(spec) -> str:
         "---", "schema: lab-record/v1", f"week: {spec.week}",
         f"experiment: {spec.experiment}", "spec: 명세.md",
         "filled_by: ~          # hand | vision | 미기입", "---", "",
-        f"# {spec.week}주차 · 실험{spec.experiment} {spec.title} 기록", "",
+        f"# {config.document_title(spec.experiment, spec.title, '기록')}", "",
         "확인 칸: `✓` 일치 / 값 = 불일치 시 실제 관찰값 / 공란 = 미확인.",
         "표를 통째로 진행하지 않았으면 그 표 아래에 `- 실험을 진행하지 않았음.` 을 적는다.", "",
     ]

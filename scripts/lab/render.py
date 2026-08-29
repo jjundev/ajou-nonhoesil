@@ -14,6 +14,7 @@ import re
 from . import md
 from .notation import normalize_cell
 from .spec_parser import split_columns
+from . import config
 
 MAX_BREADBOARD_ROWS = 30
 # Breadboard.jpg(998×1345px) 상단에 아주대학교 로고 + 범례 원 3개가 있다.
@@ -196,7 +197,7 @@ def _breadboard(spec, netlist_text) -> str:
 
 
 def render_checklist(spec, netlist_text, template) -> str:
-    title = f"{spec.week}주차 · 실험{spec.experiment} {spec.title} 체크리스트"
+    title = config.document_title(spec.experiment, spec.title, "체크리스트")
     return (template
             .replace("{{TITLE}}", _esc(title))
             .replace("{{PROCEDURE}}", _procedure(spec, netlist_text))

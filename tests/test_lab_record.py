@@ -106,3 +106,23 @@ class TestAlignment(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RecordTitleTest(unittest.TestCase):
+    """기록 제목이 실제로 무엇을 찍는지 고정한다.
+
+    이 자리는 지금까지 어떤 테스트도 보지 않았다 — 제목을 바꿔도 스위트가
+    그대로 통과했다. 실제로 프리뷰 제목이 그렇게 조용히 덮어써진 적이 있다.
+    """
+
+    def test_제목이_실험_기준이고_주차가_없다(self):
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        heading = next(l for l in derive_record(spec).splitlines()
+                       if l.startswith("# "))
+        self.assertEqual(heading, "# 실험1 Basic Gates 기록")
+        self.assertNotIn("주차", heading)
+
+    def test_week_는_프론트매터에_그대로_남는다(self):
+        # 제목에서 뺐다고 메타데이터까지 버리지는 않는다.
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        self.assertIn("week: 2", derive_record(spec))

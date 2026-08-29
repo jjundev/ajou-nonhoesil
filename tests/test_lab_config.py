@@ -276,3 +276,41 @@ class WeekMappingTest(unittest.TestCase):
                     config.week_for_experiment(expected_experiment),
                     week,
                 )
+
+
+class DocumentTitleTest(unittest.TestCase):
+    """산출물 제목 형식. 네 곳이 제각각 만들다가 경로용 일괄 치환이 그중
+    하나(프리뷰)를 조용히 덮어쓴 적이 있어서 한 함수로 모았다."""
+
+    def test_형식은_실험번호_이름_종류다(self):
+        self.assertEqual(
+            config.document_title(1, "Basic Gates", "체크리스트"),
+            "실험1 Basic Gates 체크리스트",
+        )
+
+    def test_제목에_주차가_들어가지_않는다(self):
+        # 주차는 폴더를 찾을 때만 쓴다. 제출물 표지의 일이 아니다.
+        for kind in config.DOCUMENT_KINDS:
+            with self.subTest(kind=kind):
+                self.assertNotIn("주차", config.document_title(1, "Basic Gates", kind))
+
+    def test_폴더와_달리_0을_채우지_않는다(self):
+        # 폴더는 정렬 때문에 `실험01`, 제목은 사람이 읽으므로 `실험1`.
+        self.assertTrue(config.document_title(1, "x", "기록").startswith("실험1 "))
+        self.assertTrue(config.document_title(10, "x", "기록").startswith("실험10 "))
+
+    def test_모르는_종류는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.document_title(1, "Basic Gates", "표지")
+
+    def test_빈_제목은_거절한다(self):
+        for bad in ("", "   ", None):
+            with self.subTest(title=bad):
+                with self.assertRaises(ValueError):
+                    config.document_title(1, bad, "기록")
+
+    def test_실험번호_판정은_experiment_dir_와_같다(self):
+        with self.assertRaises(ValueError):
+            config.document_title(11, "x", "기록")
+        with self.assertRaises(TypeError):
+            config.document_title(True, "x", "기록")

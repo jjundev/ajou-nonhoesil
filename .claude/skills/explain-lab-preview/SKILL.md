@@ -270,7 +270,7 @@ print(config.folder_for_week(<N>))
 
 | placeholder | 값 |
 |---|---|
-| `{{TITLE}}` | `{week}주차 · 실험{experiment} {title} 프리뷰` (예: `2주차 · 실험1 Basic Gates 프리뷰`) — `experiment` 는 §1에서 구한 **0 을 뺀 정수**다(§1 의 출력은 `실험01` 이라는 폴더 이름이므로 `config.week_for_experiment('실험01')` 처럼 넘기면 `TypeError` 가 난다). `week` 와 `title` 은 명세.md 프론트매터에서 읽고, 명세가 없으면 `week` 는 `config.week_for_experiment(experiment)`, `title` 은 교안 제목을 쓴다. 인쇄물 제목은 경로가 실험 기준으로 바뀐 뒤에도 이 형식을 유지한다 — ② 체크리스트가 `scripts/lab/render.py` 에서 내는 `{week}주차 · 실험{experiment} {title} 체크리스트` 와 같은 규칙이고, 바뀌는 것은 경로뿐이다 |
+| `{{TITLE}}` | `config.document_title(experiment, title, '프리뷰')` 의 출력 (`실험1 Basic Gates 프리뷰`). **손으로 짓지 않고, 제목에 주차를 넣지 않는다** — 주차는 §1 에서 폴더를 찾을 때만 쓴다. `experiment` 는 §1 에서 구한 **0 을 뺀 정수**이고(§1 의 출력은 `실험01` 이라는 폴더 이름이다), `title` 은 명세.md 프론트매터의 `title`, 명세가 없으면 교안 제목이다. ②·③·④ 가 쓰는 것과 같은 함수다 |
 | `{{COURSE}}` | `.claude/과목정보.md` 의 `course` — **헤더·푸터 2곳에 등장하므로 전부 치환한다** |
 | `{{DATE}}` | 오늘 날짜, `과목정보.md` 의 `date_format` 으로 포맷 |
 | `{{CONTENT}}` | 본문 HTML (아래 §8.3) |

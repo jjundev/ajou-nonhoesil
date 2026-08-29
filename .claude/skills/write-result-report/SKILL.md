@@ -261,6 +261,19 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 11. **HTML 렌더 + PDF 변환 (본문).** `template.html` 의 4개 placeholder
     (`{{TITLE}}`, `{{COURSE}}`, `{{DATE}}`, `{{CONTENT}}`) 를 채운다.
 
+    **`{TITLE}` 은 손으로 짓지 않는다** — `config.document_title(<실험번호>, <명세의 title>, '결과보고서')` 이 유일한 형식이다(`실험1 Basic Gates 결과보고서`). **제목에 주차를 넣지 않는다**; 주차는 폴더를 찾을 때만 쓴다. 실험 번호는 폴더 이름(`실험01`)이 아니라 **0 을 뺀 정수**다.
+
+    ```bash
+    python3 -c "
+    from scripts.lab import config
+    from scripts.lab.spec_parser import parse_spec
+    s = parse_spec('<실험NN>/체크리스트/명세.md')
+    print(config.document_title(s.experiment, s.title, '결과보고서'))
+    "
+    ```
+
+    본문 `.md` 의 첫 헤딩(`# …`)도 같은 문자열을 쓴다.
+
     **HTML 은 반드시 `<실험NN>/output/<실험NN>_결과보고서.html` 자리에 만들고
     그 자리에서 PDF 로 변환한다 — 다른 디렉토리(스크래치패드 등)에서
     렌더하지 않는다.** `{{CONTENT}}` 안의 상대 경로(실험사진

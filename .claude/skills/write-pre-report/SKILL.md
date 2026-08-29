@@ -125,6 +125,20 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    (`{{TITLE}}`, `{{COURSE}}`, `{{DATE}}`, `{{CONTENT}}`) 를 채운다. `COURSE`·
    `DATE`·`chrome` 은 한 번에 읽는다.
 
+   **`{TITLE}` 은 손으로 짓지 않는다** — `config.document_title(<실험번호>, <명세의 title>, '예비보고서')` 이 유일한 형식이다(`실험1 Basic Gates 예비보고서`). **제목에 주차를 넣지 않는다**; 주차는 폴더를 찾을 때만 쓴다. 실험 번호는 폴더 이름(`실험01`)이 아니라 **0 을 뺀 정수**다.
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   from scripts.lab.spec_parser import parse_spec
+   s = parse_spec('<실험NN>/체크리스트/명세.md')
+   print(config.document_title(s.experiment, s.title, '예비보고서'))
+   "
+   ```
+
+   본문 `.md` 의 첫 헤딩(`# …`)도 같은 문자열을 쓴다 — 두 곳이 갈리면
+   PDF 표지와 본문 제목이 어긋난다.
+
    **HTML 은 반드시 `<실험NN>/output/<실험NN>_예비보고서.html` 자리에 만들고 그
    자리에서 PDF 로 변환한다 — 스크래치패드 등 다른 디렉토리에서 렌더하지 않는다.**
    `{{CONTENT}}` 안의 상대 경로(브레드보드 이미지 `../../.claude/assets/...`)는
