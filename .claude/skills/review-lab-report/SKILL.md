@@ -13,33 +13,39 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
 `<N주차> [pre|result] [round<N>]`
 
 - 주차 토큰이 없으면 한 줄로 되묻고 중단한다.
-- `pre`/`result` 가 없으면 `<N>주차/output/` 을 보고 추론한다. 둘 다 있으면 되묻는다.
+- `pre`/`result` 가 없으면 `<실험NN>/output/` 을 보고 추론한다. 둘 다 있으면 되묻는다.
 - `round<N>` 이 없으면 기존 `*_review_round*.md` 중 최대 번호 + 1 을 쓴다.
 
 ## 실행 절차
 
-1. **주차 폴더 확인.** `<N>주차/` 가 없으면 **거절하고** `init-lab-week` 를 안내한다.
+1. **주차 폴더 확인.** `<실험NN>/` 가 없으면 **거절하고** `init-lab-experiment` 를 안내한다.
    폴더를 만들어 주지 않는다.
 
-2. **명세·결선도 검증.**
+2. **폴더 규약·명세·결선도 검증.**
 
    ```bash
    python3 -c "
    from pathlib import Path
    from scripts.lab.spec_parser import parse_spec, SpecError
    from scripts.lab import validate
+   spec_path = Path('<실험NN>/체크리스트/명세.md')
    try:
-       spec = parse_spec('<N>주차/체크리스트/명세.md')
+       spec = parse_spec(spec_path)
    except SpecError as e:
        print('SPEC-ERROR:', e); raise SystemExit(1)
+   for f in validate.check_folder_convention(spec_path, spec):
+       print(f)
    for f in validate.validate_spec(spec):
        print(f)
-   for f in validate.check_netlist('<N>주차/결선도/netlist.md', spec):
+   for f in validate.check_netlist('<실험NN>/결선도/netlist.md', spec):
        print(f)
    "
    ```
 
    `SpecError` 가 나오면 그것을 **첫 번째 finding 으로 보고하고** 나머지 검사는 건너뛴다.
+
+   폴더 규약 finding 은 "폴더 이름과 명세의 `experiment` 중 하나가 틀렸다"는 뜻이다.
+   어느 쪽이 맞는지는 교안으로 확인한다 — 실험4는 7주차이므로 주차로 추측하면 틀린다.
 
 3. **보고서 섹션 대조.** **반드시 `.claude/보고서양식.md` 를 기준으로 한다.**
    목차를 스킬에 하드코딩하지 않는다 — 양식은 연도마다·학생마다 다르고
@@ -64,14 +70,14 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
     (8b·11b 단계), **"☑ 제출 가능" 을 최종으로 쓰는 건 이 스킬이다** — 여기서
     다시 부르지 않으면, ③·④ 밖에서(예: 렌더러를 고친 뒤 수동으로 다시 낸
     HTML) 생긴 같은 결함을 ⑤ 혼자로는 못 잡는다. 대상은 그 주차의 **모든**
-    HTML 이다 — 보고서는 `<N>주차/output/`, 체크리스트는 `<N>주차/체크리스트/`
+    HTML 이다 — 보고서는 `<실험NN>/output/`, 체크리스트는 `<실험NN>/체크리스트/`
     에 있으므로 **두 곳을 다 본다.**
 
     ```bash
     python3 -c "
     from pathlib import Path
     from scripts.lab import validate
-    week = Path('<N>주차')
+    week = Path('<실험NN>')
     for html in sorted(list((week / 'output').glob('*.html'))
                        + list((week / '체크리스트').glob('*.html'))):
         for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
@@ -89,10 +95,10 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    | 표기가 R5·R6 을 지키는가 | 오버바 승격 범위는 문맥 판단이다 |
    | 섹션 제목이 양식의 이름과 **글자 그대로** 같은가 | 대조는 정확 일치다. `## 1. 실험 목적` 은 통과하지만(번호는 벗겨낸다) `## 1. 실험 목적 및 배경` 은 누락으로 잡힌다. 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과`·`결과 분석` 두 섹션을 동시에 만족시켜 버리므로 일부러 엄격하게 뒀다 |
 
-5. **라운드 문서 작성.** `<N>주차/output/<pre|result>_review_round<N>.md` 에 쓴다.
+5. **라운드 문서 작성.** `<실험NN>/output/<pre|result>_review_round<N>.md` 에 쓴다.
 
    ```markdown
-   # <N>주차 <예비|결과>보고서 검토 — round<N>
+   # <실험NN> <예비|결과>보고서 검토 — round<N>
 
    ## 자동 검사 (scripts/lab/validate.py)
 

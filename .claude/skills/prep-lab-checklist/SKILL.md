@@ -5,15 +5,15 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
 # prep-lab-checklist
 
-`<N>주차/체크리스트/명세.md` 하나에서 실험실용 산출물 전부를 파생한다.
+`<실험NN>/체크리스트/명세.md` 하나에서 실험실용 산출물 전부를 파생한다.
 
 **PDF 와 md 를 항상 쌍으로 만든다.** 태블릿에 PDF 를 띄워 펜으로 채우고,
 끝나면 `기록.md` 로 전사한다(④가 vision 으로 돕는다).
 
 ## 실행 절차
 
-1. **주차 폴더·명세 확인.** `<N>주차/체크리스트/명세.md` 가 없으면 **거절한다.**
-   폴더가 없으면 `init-lab-week` 를, 명세가 없으면 교안 판독이 먼저임을 안내한다.
+1. **주차 폴더·명세 확인.** `<실험NN>/체크리스트/명세.md` 가 없으면 **거절한다.**
+   폴더가 없으면 `init-lab-experiment` 를, 명세가 없으면 교안 판독이 먼저임을 안내한다.
    **명세를 지어내지 않는다.**
 
 2. **먼저 검증한다.** 틀린 진리표를 인쇄해서 실험실에 들고 가는 것이 최악이다.
@@ -22,9 +22,9 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    python3 -c "
    from scripts.lab.spec_parser import parse_spec
    from scripts.lab import validate
-   spec = parse_spec('<N>주차/체크리스트/명세.md')
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
    findings = (validate.validate_spec(spec)
-               + validate.check_netlist('<N>주차/결선도/netlist.md', spec))
+               + validate.check_netlist('<실험NN>/결선도/netlist.md', spec))
    print('\n'.join(str(f) for f in findings) or '문제 없음')
    "
    ```
@@ -38,8 +38,8 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    from pathlib import Path
    from scripts.lab.record import derive_record
    from scripts.lab.spec_parser import parse_spec
-   spec = parse_spec('<N>주차/체크리스트/명세.md')
-   Path('<N>주차/체크리스트/기록.md').write_text(derive_record(spec), encoding='utf-8')
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
+   Path('<실험NN>/체크리스트/기록.md').write_text(derive_record(spec), encoding='utf-8')
    "
    ```
 
@@ -54,10 +54,10 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
    root = config.find_project_root(Path('.'))
    info = config.load_course_info(root)
-   spec = parse_spec('<N>주차/체크리스트/명세.md')
-   netlist = Path('<N>주차/결선도/netlist.md').read_text(encoding='utf-8')
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
+   netlist = Path('<실험NN>/결선도/netlist.md').read_text(encoding='utf-8')
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
-   out = Path('<N>주차/체크리스트/체크리스트.html')
+   out = Path('<실험NN>/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
    html_to_pdf(out, out.with_suffix('.pdf'),
                chrome=info.get('chrome') or DEFAULT_CHROME)
@@ -72,7 +72,7 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    ```bash
    python3 -c "
    from pypdf import PdfReader
-   for p in PdfReader('<N>주차/체크리스트/체크리스트.pdf').pages:
+   for p in PdfReader('<실험NN>/체크리스트/체크리스트.pdf').pages:
        print(round(float(p.mediabox.width)/72*25.4,1),
              round(float(p.mediabox.height)/72*25.4,1))
    "

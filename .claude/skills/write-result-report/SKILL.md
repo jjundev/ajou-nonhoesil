@@ -27,7 +27,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 
 ## 실행 절차
 
-1. **주차 폴더·명세·기록.md 확인.** `<N>주차/체크리스트/기록.md` 가 없으면
+1. **주차 폴더·명세·기록.md 확인.** `<실험NN>/체크리스트/기록.md` 가 없으면
    **거절**하고 ② `prep-lab-checklist` 를 안내한다(기록.md 는 명세에서
    기계적으로 파생되므로, 명세가 없으면 그보다 먼저 그것부터). **기록.md 를
    이 스킬이 대신 만들지 않는다.**
@@ -41,9 +41,9 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     python3 -c "
     from scripts.lab.spec_parser import parse_spec
     from scripts.lab import validate
-    spec = parse_spec('<N>주차/체크리스트/명세.md')
+    spec = parse_spec('<실험NN>/체크리스트/명세.md')
     findings = (validate.validate_spec(spec)
-                + validate.check_netlist('<N>주차/결선도/netlist.md', spec))
+                + validate.check_netlist('<실험NN>/결선도/netlist.md', spec))
     print('\n'.join(str(f) for f in findings) or '문제 없음')
     "
     ```
@@ -61,7 +61,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    root = config.find_project_root(Path('.'))
    fmt = config.load_report_format(root)
    print('결보 섹션:', [(s.name, s.repeat, s.generate) for s in fmt.result])
-   text = Path('<N>주차/체크리스트/기록.md').read_text(encoding='utf-8')
+   text = Path('<실험NN>/체크리스트/기록.md').read_text(encoding='utf-8')
    front, body = md.split_frontmatter(text)
    print('filled_by:', front['filled_by'])
    checks = [r[-1] for t in md.parse_tables(body) for r in t.rows]
@@ -75,7 +75,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    - **채워진 칸이 0개면** 결과 표를 만들지 말고 다음과 같이 보고하고
      **완전히 멈춘다.** md·html·pdf 어느 것도 만들지 않는다.
 
-     > `<N>주차/체크리스트/기록.md` 의 확인 칸이 전부 비어 있습니다(채워진
+     > `<실험NN>/체크리스트/기록.md` 의 확인 칸이 전부 비어 있습니다(채워진
      > 칸 0개, `filled_by: 미기입`). 아직 실험을 진행하지 않으신 것 같습니다
      > — 이 상태로는 결과보고서를 쓸 수 없습니다. 실험을 마치고 `기록.md`
      > 를 채우신 뒤(또는 필기한 PDF 를 알려주시면 제가 vision 으로 옮겨
@@ -87,7 +87,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 
 3. **vision 전사 (필기 PDF 가 있을 때만).** **필기 PDF 경로는 스스로
    추측하지 않는다** — 태블릿 필기 산출물의 파일명 관례가 아직 정해져 있지
-   않다. 사용자가 경로를 주면 그것을 쓰고, 안 주면 `<N>주차/체크리스트/`
+   않다. 사용자가 경로를 주면 그것을 쓰고, 안 주면 `<실험NN>/체크리스트/`
    안에서 `명세.md`·`기록.md`·`체크리스트.html`·`체크리스트.pdf` 를 제외한
    PDF 를 후보로 찾아 제시한다. 후보가 없으면 "필기 PDF 를 찾지 못했다" 고
    보고하고 경로를 요청한다(2단계의 멈춤과 별개로, 확인 칸이 이미 일부
@@ -196,8 +196,8 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    `generate` 를 먼저 본다.
 
    - **`generate: false`(교집합 프리셋의 오늘 기본값)면 만들지 않는다.**
-     `<N>주차/퀴즈/` 를 들여다볼 필요도 없다.
-   - **`generate: true` 가 되면:** `<N>주차/퀴즈/` 에서 **그 주 실제
+     `<실험NN>/퀴즈/` 를 들여다볼 필요도 없다.
+   - **`generate: true` 가 되면:** `<실험NN>/퀴즈/` 에서 **그 주 실제
      문제**를 찾는다. 없으면 "이번 주 퀴즈 문제 원본을 찾지 못했다" 고
      보고하고 요청한 뒤, **이 섹션만 비운 채** 나머지 섹션은 계속 작성한다
      — 퀴즈 하나 때문에 이미 완성된 다른 절까지 버리지 않는다. 대신 14단계
@@ -212,7 +212,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
      학기마다·분반마다 다르다(월요반과 금요반 문제지가 다르다). AI 활용은
      보고서·퀴즈·프로젝트 전부 승인됐으므로 정책 제약은 없다.
 
-9. **md 저장.** `<N>주차/output/<N>주차_결과보고서.md` 에 쓴다. 별도
+9. **md 저장.** `<실험NN>/output/<실험NN>_결과보고서.md` 에 쓴다. 별도
    markdown→HTML 라이브러리는 쓰지 않는다 — 본문 HTML 은 직접 작성한다
    (①·③과 동일 원칙).
 
@@ -242,7 +242,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 11. **HTML 렌더 + PDF 변환 (본문).** `template.html` 의 4개 placeholder
     (`{{TITLE}}`, `{{COURSE}}`, `{{DATE}}`, `{{CONTENT}}`) 를 채운다.
 
-    **HTML 은 반드시 `<N>주차/output/<N>주차_결과보고서.html` 자리에 만들고
+    **HTML 은 반드시 `<실험NN>/output/<실험NN>_결과보고서.html` 자리에 만들고
     그 자리에서 PDF 로 변환한다 — 다른 디렉토리(스크래치패드 등)에서
     렌더하지 않는다.** `{{CONTENT}}` 안의 상대 경로(실험사진
     `../실험사진/T1 row5.jpg`)는 **HTML 파일이 실제로 놓인 위치** 기준으로
@@ -269,8 +269,8 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     from scripts.lab import config
     from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
     info = config.load_course_info(config.find_project_root(Path('.')))
-    html_to_pdf('<N>주차/output/<N>주차_결과보고서.html',
-                '<N>주차/output/<N>주차_결과보고서.pdf',
+    html_to_pdf('<실험NN>/output/<실험NN>_결과보고서.html',
+                '<실험NN>/output/<실험NN>_결과보고서.pdf',
                 chrome=info.get('chrome') or DEFAULT_CHROME)
     "
     ```
@@ -287,7 +287,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     ```bash
     python3 -c "
     from scripts.lab import validate
-    html = '<N>주차/output/<N>주차_결과보고서.html'
+    html = '<실험NN>/output/<실험NN>_결과보고서.html'
     for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
         print(f)
     "
@@ -297,13 +297,13 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     텍스트 노드**의 인라인 마크다운을 다시 확인한다. 이미지 오류가 나오면
     11단계의 위치 규칙을 어긴 것이다. 둘 다 고치고 PDF 를 다시 낸다.
 
-12. **A4 실측 (본문 PDF).** 이 시점의 `<N>주차_결과보고서.pdf` 는 아직
+12. **A4 실측 (본문 PDF).** 이 시점의 `<실험NN>_결과보고서.pdf` 는 아직
     본문뿐이다(표지가 필요해도 13단계 전에는 합쳐지지 않는다).
 
     ```bash
     python3 -c "
     from pypdf import PdfReader
-    for p in PdfReader('<N>주차/output/<N>주차_결과보고서.pdf').pages:
+    for p in PdfReader('<실험NN>/output/<실험NN>_결과보고서.pdf').pages:
         print(round(float(p.mediabox.width)/72*25.4,1),
               round(float(p.mediabox.height)/72*25.4,1))
     "
@@ -313,20 +313,20 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     "조 편성 확정"이었을 때만 한다.
 
     - **조 편성 미확정이었으면 이 단계를 건너뛴다** — 10단계에서 이미 본문에
-      "표지 결합 예정" 안내를 남겼다. `<N>주차_결과보고서.pdf` 는 지금
+      "표지 결합 예정" 안내를 남겼다. `<실험NN>_결과보고서.pdf` 는 지금
       상태(본문만)가 최종본이다.
     - **조 편성이 확정이었으면:** ⑥ `make-lab-report-cover` 로
-      `<N>주차/output/<N>주차 결과보고서 표지.pdf` 를 만든 뒤, 11단계가 낸
+      `<실험NN>/output/<제목> 표지.pdf` 를 만든 뒤, 11단계가 낸
       본문 PDF 와 페이지 단위로 합쳐 **같은 파일명에 덮어쓴다:**
 
       ```bash
       python3 -c "
       from pypdf import PdfReader, PdfWriter
       writer = PdfWriter()
-      for src in ['<N>주차/output/<N>주차 결과보고서 표지.pdf',
-                  '<N>주차/output/<N>주차_결과보고서.pdf']:
+      for src in ['<실험NN>/output/<제목> 표지.pdf',
+                  '<실험NN>/output/<실험NN>_결과보고서.pdf']:
           writer.append(PdfReader(src))
-      writer.write('<N>주차/output/<N>주차_결과보고서.pdf')
+      writer.write('<실험NN>/output/<실험NN>_결과보고서.pdf')
       "
       ```
 
@@ -345,11 +345,11 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     from scripts.lab.spec_parser import parse_spec
     root = config.find_project_root(Path('.'))
     fmt = config.load_report_format(root)
-    spec = parse_spec('<N>주차/체크리스트/명세.md')
-    for f in validate.check_report_sections('<N>주차/output/<N>주차_결과보고서.md',
+    spec = parse_spec('<실험NN>/체크리스트/명세.md')
+    for f in validate.check_report_sections('<실험NN>/output/<실험NN>_결과보고서.md',
                                              fmt.result, item_count=len(spec.items)):
         print(f)
-    " | tee <N>주차/output/result_review_round1.md
+    " | tee <실험NN>/output/result_review_round1.md
     ```
 
     `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
@@ -391,7 +391,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 ## 사진 배치
 
 - **행별 사진**(`truth-table`·`stepped` 의 불일치 행 등): 파일명
-  `T<n> row<m>.jpg` 로 `<N>주차/실험사진/` 에 있다. 불일치 행에는 사진이
+  `T<n> row<m>.jpg` 로 `<실험NN>/실험사진/` 에 있다. 불일치 행에는 사진이
   있어야 하지만(②의 인쇄물 구성 규칙), 없으면 "사진 없음" 이라고
   명시한다 — 지어내지 않는다.
 - **항목당 완성 회로 사진**(`truth-table`): 별도 명명 규칙이 없다. 그
@@ -401,7 +401,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 - **`capture` 표**: `기록.md` 그 표 블록의 "사진 파일:" 줄 값을 그대로
   쓴다(`T<n> row<m>` 패턴이 아니다 — capture 표는 행이 없다). 비어 있으면
   "사진 없음" 으로 명시한다.
-- HTML 안에서는 11단계의 위치 규칙에 따라 `<N>주차/output/` 기준
+- HTML 안에서는 11단계의 위치 규칙에 따라 `<실험NN>/output/` 기준
   상대경로 `../실험사진/T1 row5.jpg` 로 넣되, 캡션과 함께
   `<figure class="photo-block"><img src="../실험사진/T1 row5.jpg">
   <figcaption>T1 row5 — 불일치 관찰값</figcaption></figure>` 로 감싼다
@@ -418,7 +418,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 | 섹션 | 재료 |
 |---|---|
 | 실험 결과 | `기록.md` 확인 칸(§실행 절차 5의 "확인 칸 → 결과 표") + kind 별 서술(§실행 절차 6) + 실험사진(§사진 배치) |
-| 예비 비교 | `<N>주차/output/<N>주차_예비보고서.md`(있으면)의 예상값과 실험 결과의 대조. 예보가 아직 없으면(조 편성 미확정 등으로 못 냈으면) 명세의 예상값 자체와 대조하고 그 사실을 밝힌다 |
+| 예비 비교 | `<실험NN>/output/<실험NN>_예비보고서.md`(있으면)의 예상값과 실험 결과의 대조. 예보가 아직 없으면(조 편성 미확정 등으로 못 냈으면) 명세의 예상값 자체와 대조하고 그 사실을 밝힌다 |
 | 결과 분석 | 왜 그런 결과가 나왔는지 — 명세 본문의 부울대수 해설(예: 2주차 T5의 X≡Z 항등), `netlist.md` 의 배선 근거, 불일치 행의 원인 후보 논의(§실행 절차 6) |
 | 고찰 | §실행 절차 7. `기록.md` 끝 종료 메모 4문항뿐 |
 | 추가 공부 (`generate: false`) | 교집합 프리셋에선 만들지 않는다. 만들 프리셋이 오면 재료는 `실험보고서 평가기준.txt` 가 말하는 "레퍼런스 첨부" — 실제로 찾아본 참고자료만 |

@@ -18,8 +18,8 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 
 ## 실행 절차
 
-1. **주차·명세·결선도 확인.** `<N>주차/체크리스트/명세.md` 가 없으면 거절하고
-   `init-lab-week` 또는 명세 작성(교안 판독)을 안내한다. `<N>주차/결선도/netlist.md`
+1. **주차·명세·결선도 확인.** `<실험NN>/체크리스트/명세.md` 가 없으면 거절하고
+   `init-lab-experiment` 또는 명세 작성(교안 판독)을 안내한다. `<실험NN>/결선도/netlist.md`
    가 없으면 §3 의 `check_netlist` 가 "결선도 netlist 파일이 없다" error 를 내는데,
    그 자리까지 미루지 않고 여기서 먼저 정직하게 보고하고 멈춘다 — **회로 결선도
    절(§섹션별 재료)은 이 파일 없이는 채울 근거가 없다.** 없는 근거를 지어내지
@@ -48,9 +48,9 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    python3 -c "
    from scripts.lab.spec_parser import parse_spec
    from scripts.lab import validate
-   spec = parse_spec('<N>주차/체크리스트/명세.md')
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
    findings = (validate.validate_spec(spec)
-               + validate.check_netlist('<N>주차/결선도/netlist.md', spec))
+               + validate.check_netlist('<실험NN>/결선도/netlist.md', spec))
    print('\n'.join(str(f) for f in findings) or '문제 없음')
    "
    ```
@@ -76,7 +76,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    **표 헤더·신호명·셀 값에는 절대 부르지 않는다** — `normalize_cell` 이 돌려주는
    `CellValue` 를 넘기면 `TypeError` 가 난다. 이건 버그가 아니라 안전장치다.
 
-6. **md 저장.** `<N>주차/output/<N>주차_예비보고서.md` 에 쓴다. 별도
+6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. 별도
    markdown→HTML 라이브러리는 쓰지 않는다 — 본문 HTML 은 직접 작성한다
    (①과 동일 원칙).
 
@@ -108,7 +108,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    (`{{TITLE}}`, `{{COURSE}}`, `{{DATE}}`, `{{CONTENT}}`) 를 채운다. `COURSE`·
    `DATE`·`chrome` 은 한 번에 읽는다.
 
-   **HTML 은 반드시 `<N>주차/output/<N>주차_예비보고서.html` 자리에 만들고 그
+   **HTML 은 반드시 `<실험NN>/output/<실험NN>_예비보고서.html` 자리에 만들고 그
    자리에서 PDF 로 변환한다 — 스크래치패드 등 다른 디렉토리에서 렌더하지 않는다.**
    `{{CONTENT}}` 안의 상대 경로(브레드보드 이미지 `../../.claude/assets/...`)는
    **HTML 파일이 실제로 놓인 위치** 기준으로 풀린다. 다른 곳에서 렌더해 PDF 로만
@@ -133,8 +133,8 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    from scripts.lab import config
    from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
    info = config.load_course_info(config.find_project_root(Path('.')))
-   html_to_pdf('<N>주차/output/<N>주차_예비보고서.html',
-               '<N>주차/output/<N>주차_예비보고서.pdf',
+   html_to_pdf('<실험NN>/output/<실험NN>_예비보고서.html',
+               '<실험NN>/output/<실험NN>_예비보고서.pdf',
                chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
@@ -151,7 +151,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     ```bash
     python3 -c "
     from scripts.lab import validate
-    html = '<N>주차/output/<N>주차_예비보고서.html'
+    html = '<실험NN>/output/<실험NN>_예비보고서.html'
     for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
         print(f)
     "
@@ -162,13 +162,13 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     검사를 다시 통과하지 못한다. 이미지 오류가 나오면 §8 의 위치 규칙을 어긴
     것이다. 둘 다 고치고 PDF 를 다시 낸다.
 
-9. **A4 실측 (본문 PDF).** 이 시점의 `<N>주차_예비보고서.pdf` 는 아직 본문뿐이다
+9. **A4 실측 (본문 PDF).** 이 시점의 `<실험NN>_예비보고서.pdf` 는 아직 본문뿐이다
    (표지가 필요해도 10단계 전에는 합쳐지지 않는다).
 
    ```bash
    python3 -c "
    from pypdf import PdfReader
-   for p in PdfReader('<N>주차/output/<N>주차_예비보고서.pdf').pages:
+   for p in PdfReader('<실험NN>/output/<실험NN>_예비보고서.pdf').pages:
        print(round(float(p.mediabox.width)/72*25.4,1),
              round(float(p.mediabox.height)/72*25.4,1))
    "
@@ -178,20 +178,20 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     "조 편성 확정"이었을 때만 한다.
 
     - **조 편성 미확정이었으면 이 단계를 건너뛴다** — 7단계에서 이미 본문에
-      "표지 결합 예정" 안내를 남겼다. `<N>주차_예비보고서.pdf` 는 지금
+      "표지 결합 예정" 안내를 남겼다. `<실험NN>_예비보고서.pdf` 는 지금
       상태(본문만)가 최종본이다.
     - **조 편성이 확정이었으면:** ⑥ `make-lab-report-cover` 로
-      `<N>주차/output/<제목> 표지.pdf` 를 만든 뒤, 8단계가 낸 본문 PDF 와
+      `<실험NN>/output/<제목> 표지.pdf` 를 만든 뒤, 8단계가 낸 본문 PDF 와
       페이지 단위로 합쳐 **같은 파일명에 덮어쓴다:**
 
       ```bash
       python3 -c "
       from pypdf import PdfReader, PdfWriter
       writer = PdfWriter()
-      for src in ['<N>주차/output/<제목> 표지.pdf',
-                  '<N>주차/output/<N>주차_예비보고서.pdf']:
+      for src in ['<실험NN>/output/<제목> 표지.pdf',
+                  '<실험NN>/output/<실험NN>_예비보고서.pdf']:
           writer.append(PdfReader(src))
-      writer.write('<N>주차/output/<N>주차_예비보고서.pdf')
+      writer.write('<실험NN>/output/<실험NN>_예비보고서.pdf')
       "
       ```
 
@@ -209,9 +209,9 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     from scripts.lab import config, validate
     root = config.find_project_root(Path('.'))
     fmt = config.load_report_format(root)
-    for f in validate.check_report_sections('<N>주차/output/<N>주차_예비보고서.md', fmt.pre):
+    for f in validate.check_report_sections('<실험NN>/output/<실험NN>_예비보고서.md', fmt.pre):
         print(f)
-    " | tee <N>주차/output/pre_review_round1.md
+    " | tee <실험NN>/output/pre_review_round1.md
     ```
 
     출력이 없으면 모든 섹션이 존재하는 것이다. 누락이 나오면 본문을 고치고
@@ -239,7 +239,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 | 실험 이론 | 교안 이론 슬라이드 + `논회 강의노트/Ch*.pdf` + `docs/study/` + 명세의 **`role: reference` 표**(실험1 T6~T9 = 2입력 이론표, `encoding: H/L`). **`H/L` 을 `0/1` 로 바꾸지 말 것** |
 | 실험 부품 | 명세 `ics` + `ic칩.txt` + 핀아웃 이미지. **그 주 명세의 `items[].device` 를 먼저 확인한다** — `LED` 면 330Ω 직렬·미사용핀 처리를 포함하고, `oscilloscope`·`DMM`·`7segment` 등이면(예: 3주차 실험2 CMOS 특성처럼 `capture` 중심 실험) LED·저항 서술 대신 그 장비를 재료로 쓴다 |
 | 실험 과정 및 예상 결과 | 명세의 표 전부 + `source` 각주 |
-| 회로 결선도 | `<N>주차/결선도/netlist.md` 표 + 크롭된 브레드보드 |
+| 회로 결선도 | `<실험NN>/결선도/netlist.md` 표 + 크롭된 브레드보드 |
 | 출처 및 참고문헌 | 교안 쪽 번호, 데이터시트, 이론 교재. **실제로 본 것만** |
 
 `ic칩.txt` 처럼 원천 자료 자체에 오류가 있을 수 있다 — 발견하면 조용히 정정해
