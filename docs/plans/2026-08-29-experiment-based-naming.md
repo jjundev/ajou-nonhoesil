@@ -865,7 +865,43 @@ class WeekMappingTest(unittest.TestCase):
     def test_실험_열개가_빠짐없이_매핑된다(self):
         self.assertEqual(sorted(config.WEEK_TO_EXPERIMENT.values()),
                          list(range(1, config.EXPERIMENT_COUNT + 1)))
+
+    # --- 열 행 전부를 리터럴로 고정한다 ---------------------------------
+    # 위 테스트들만으로는 3·4·9·10·11주차가 어디에도 박혀 있지 않다.
+    # `test_왕복이_일치한다` 는 매핑을 순회해 매핑을 검사하므로 자기참조이고
+    # (어떤 전단사든 통과한다), `test_실험_열개가...` 는 값의 **집합**만 본다.
+    # 그래서 `9:8, 10:9, 11:7` 처럼 안 박힌 행끼리의 순열이 전부 통과했다.
+
+    WEEK_TO_EXPERIMENT_고정값 = {
+        2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
+        9: 7, 10: 8, 11: 9, 12: 10,
+    }
+
+    def test_주차별_실험번호가_모두_리터럴로_고정된다(self):
+        """열 행 전부를 매핑에서 되읽지 않고 직접 적은 값으로 고정한다."""
+        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
+            with self.subTest(week=week):
+                self.assertEqual(
+                    config.folder_for_week(week),
+                    config.experiment_dir(expected_experiment),
+                )
+
+    def test_실험별_주차가_모두_리터럴로_고정된다(self):
+        """위 테스트의 역방향.
+
+        한쪽 방향만 고정하면 반대 방향(`week_for_experiment`)이 따로
+        어긋나는 결함을 놓친다.
+        """
+        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
+            with self.subTest(experiment=expected_experiment):
+                self.assertEqual(
+                    config.week_for_experiment(expected_experiment),
+                    week,
+                )
 ```
+
+**이 리터럴 표가 요점이다.** 기대값을 `config.WEEK_TO_EXPERIMENT` 에서 되읽으면
+검사 대상으로 검사 대상을 검사하는 셈이라, 고치려던 결함을 그대로 재현한다.
 
 - [ ] **Step 2: 실패를 확인한다**
 
@@ -946,9 +982,16 @@ Expected: OK
 python3 -m unittest tests.test_lab_config 2>&1 | tail -3
 ```
 
-Expected: FAILED — 최소 `test_회전_구간이_핵심이다`, `test_역방향도_회전을_지킨다`,
-`test_왕복이_일치한다`, `test_실험_열개가_빠짐없이_매핑된다` 가 죽는다.
-확인 후 **되돌린다.**
+Expected: FAILED — `test_회전_구간이_핵심이다` 와
+`test_주차별_실험번호가_모두_리터럴로_고정된다` 가 죽는다. 확인 후 **되돌린다.**
+
+**두 번째 뮤테이션도 반드시 돌린다.** 위 하나만으로는 부족하다 — 회전 구간은
+이미 여러 테스트가 보고 있어서, 그 뮤테이션은 그물이 성긴 곳을 못 드러낸다.
+`9: 7, 10: 8, 11: 9` 를 `9: 8, 10: 9, 11: 7` 로 바꿔(안 박힌 행끼리의 순열)
+같은 명령을 돌린다.
+
+Expected: FAILED — 리터럴 고정 테스트 두 개가 죽는다. 이 뮤테이션이 통과하면
+그물에 구멍이 있는 것이다. 확인 후 **되돌린다.**
 
 - [ ] **Step 6: 5개 스킬에 주차 해석 단계를 넣는다**
 
@@ -1023,7 +1066,7 @@ Expected: 6개 스킬이 각각 1 이상, `explain-lab-preview` 는 0
 python3 -m unittest discover -s tests -t . 2>&1 | grep -E '^(Ran|OK|FAILED)'
 ```
 
-Expected: `Ran 264 tests` / `OK` (255 + 9)
+Expected: `Ran 266 tests` / `OK` (255 + 11)
 
 - [ ] **Step 10: 커밋**
 
@@ -1206,7 +1249,7 @@ git add -A && git commit -m "chore: 실험 폴더로 산출물 재생성, 설계
 ## 완료 기준
 
 - [ ] `실험01/`, `실험06/`, `실험10/` 이 존재하고 `2주차/`, `6주차/`, `12주차/` 는 없다
-- [ ] `python3 -m unittest discover -s tests -t .` → 264 tests OK
+- [ ] `python3 -m unittest discover -s tests -t .` → 266 tests OK
 - [ ] 세 명세 모두 `check_folder_convention` 이 finding 0
 - [ ] `실험01/체크리스트/체크리스트.pdf` 8쪽 전 쪽 A4, 제목에 `2주차 · 실험1` 유지
 - [ ] `<N>주차` 플레이스홀더가 스킬에 하나도 없다
