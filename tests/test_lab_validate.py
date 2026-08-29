@@ -533,6 +533,22 @@ class TestCheckNotionMarkdown(unittest.TestCase):
         self.assertTrue(any(f.level == "error" and "각주" in f.message
                             for f in findings), findings)
 
+    def test_각주_참조는_정의_줄과_이중_계수되지_않는다(self):
+        """`[^1]: 각주` 의 `[^1]` 은 정의 패턴이 이미 세는데, 참조 패턴이
+        anchor 없이 `[^n]` 을 잡으면 같은 자리를 또 센다 — 본문 참조는
+        한 번뿐인데 참조 2개로 보고되면 카운트가 틀린다."""
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n본문[^1]\n\n[^1]: 각주\n"))
+        ref = [f for f in findings if f.level == "error" and "각주 참조" in f.message]
+        self.assertEqual(len(ref), 1, findings)
+        self.assertIn("1개", ref[0].message)
+
+    def test_각주_정의만_있고_본문_참조가_없으면_참조_finding이_없다(self):
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n[^1]: 각주\n"))
+        ref = [f for f in findings if "각주 참조" in f.message]
+        self.assertEqual(ref, [], findings)
+
     def test_열_수가_어긋난_표는_error_다(self):
         """깨진 표는 노션에서 통째로 뭉개진다."""
         findings = validate.check_notion_markdown(md_file(
