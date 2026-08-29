@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
+BASELINE_V6 = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v6.md"
 
 
 def sections(text):
@@ -31,6 +32,20 @@ def sections(text):
 def numbered_items(section_body):
     """줄 맨 앞에서 시작하는 항목 번호를 모은다 (`1.` 도 `5b.` 도 받는다)."""
     return {int(n) for n in re.findall(r"^(\d+)[a-z]?\. ", section_body, re.M)}
+
+
+def subsection_counts(text):
+    """`# 대절` 마다 그 아래 `## 소절` 이 몇 개인지 센다."""
+    counts = {}
+    major = None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            if major is not None:
+                counts[major] += 1
+        elif line.startswith("# "):
+            major = line[2:].strip()
+            counts[major] = 0
+    return counts
 
 
 def _expand(token):
@@ -143,6 +158,16 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("소절 수는 명세에서 파생한다", self.docs["예보"])
         rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
         self.assertIn(17, rules)
+
+    def test_worked_subsection_example_matches_the_approved_report(self):
+        # 규칙 17 의 예시 숫자를 사용자가 승인한 정본에서 실제로 세어 대조한다.
+        # 계획이 이 숫자를 한 번 틀렸다 — 결선 소절을 4개라고 썼는데 정본은
+        # 6개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
+        # 문자열 존재만 보면 같은 실수가 다시 지나간다.
+        counts = subsection_counts(BASELINE_V6.read_text(encoding="utf-8"))
+        self.assertEqual(counts["실험 과정 및 예상 결과"], 3)
+        self.assertEqual(counts["회로 결선도"], 6)
+        self.assertIn("`items` 3개면 과정 3소절, 결선\n    6소절이다", self.docs["예보"])
 
 
 if __name__ == "__main__":

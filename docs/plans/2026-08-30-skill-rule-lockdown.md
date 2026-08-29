@@ -365,7 +365,7 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
 ## Task 3: B(브레드보드 템플릿) · 소절 수 파생 규칙 (신설 §절대 규칙 17)
 
 **Files:**
-- Modify: `tests/test_skill_docs.py` (테스트 2개 추가)
+- Modify: `tests/test_skill_docs.py` (테스트 3개 추가)
 - Modify: `.claude/skills/write-pre-report/SKILL.md` — §섹션별 재료 `회로 결선도` 행, §절대 규칙 끝에 17 신설
 
 **Interfaces:**
@@ -448,7 +448,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 333 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
+Expected: `Ran 334 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
 
 - [ ] **Step 6: 커밋**
 
@@ -601,7 +601,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_ai_usage_log_...` 는 subTest `예
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 335 tests`, `OK`.
+Expected: `Ran 336 tests`, `OK`.
 
 명령 자체가 실제로 도는지도 한 번 확인한다 (v6 정본 대상, 산출물을 만들지 않는다):
 
@@ -717,7 +717,7 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 337 tests`, `OK`.
+Expected: `Ran 338 tests`, `OK`.
 
 규칙 번호가 밀리지 않았는지 눈으로 확인한다:
 
@@ -848,7 +848,7 @@ Expected: `?? 실험01/output/eli5_실험01.html` 한 줄만. (`.superpowers/sdd
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `OK`, 테스트 수는 337 + 새로 추가한 만큼.
+Expected: `OK`, 테스트 수는 338 + 새로 추가한 만큼.
 
 ```bash
 git add tests/test_skill_docs.py .claude/skills/write-result-report/SKILL.md
