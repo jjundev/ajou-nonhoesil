@@ -93,9 +93,27 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    **표 헤더·신호명·셀 값에는 절대 부르지 않는다** — `normalize_cell` 이 돌려주는
    `CellValue` 를 넘기면 `TypeError` 가 난다. 이건 버그가 아니라 안전장치다.
 
-6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. 별도
-   markdown→HTML 라이브러리는 쓰지 않는다 — 본문 HTML 은 직접 작성한다
-   (①과 동일 원칙).
+6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. **이 md 가
+   유일한 산출물이다** — HTML 로 옮기지 않는다 (8단계).
+
+   **첫 헤딩(`# …`)은 손으로 짓지 않는다.**
+   `config.document_title(<실험번호>, <명세의 title>, '예비보고서')` 이 유일한
+   형식이다 (`실험1 Basic Gates 예비보고서`). **제목에 주차를 넣지 않는다** —
+   주차는 폴더를 찾을 때만 쓴다 (0단계). 실험 번호는 폴더 이름(`실험01`)이
+   아니라 **0 을 뺀 정수**다.
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   from scripts.lab.spec_parser import parse_spec
+   s = parse_spec('<실험NN>/체크리스트/명세.md')
+   print(config.document_title(s.experiment, s.title, '예비보고서'))
+   "
+   ```
+
+   **이 규칙은 PDF 를 안 만들게 되면서 오히려 더 중요해졌다.** 노션은 마크다운의
+   첫 `#` 헤딩을 그대로 페이지 제목으로 삼는다 — 여기서 틀리면 노션 페이지
+   제목과 제출 PDF 제목이 한꺼번에 틀린다.
 
 7. **조 편성 확인 → 표지 여부 분기 (판정만 한다).** 표지를 만들지도 합치지도
    않는다 — 8단계에서 다시 밝힌다.
