@@ -249,6 +249,8 @@ class SkillDocInvariants(unittest.TestCase):
         # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.
         self.assertIn("회로가 성립하는 데 필요한데 강의노트 준비물에 없는 소모품",
                       self.flat["예보"])
+        # 규칙 5 와의 관계를 명시한 문장도 지워지면 안 된다.
+        self.assertIn("§절대 규칙 5 를 푸는 것이 아니다", self.flat["예보"])
 
     def test_theory_scope_is_bounded_by_what_the_circuit_uses(self):
         # 명세에 표가 없어도 회로가 쓰면 다루고(NOT), 회로가 안 쓰면
