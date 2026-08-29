@@ -262,6 +262,49 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertEqual(len(rows), 1, rows)
         self.assertIn("범위는 §절대 규칙 16", rows[0])
 
+    def test_untried_table_scan_is_anchored_to_the_body_not_the_raw_text(self):
+        # MdTable.line 은 split_frontmatter 뒤의 body 기준이다. `기록.md` 의
+        # 프론트매터가 7줄이라, 원문을 훑으면 미진행 표와 미확인 표가 뒤바뀐다.
+        result = self.flat["결과"]
+        self.assertIn("다음 헤딩까지의 **`body`**", result)
+        self.assertNotIn("다음 헤딩까지의 원문에", result)
+
+    def test_all_blank_table_without_a_marker_has_its_own_row(self):
+        # 마커 없이 전부 공란인 표는 "표 전체 미진행" 규칙에 걸리지 않는다.
+        # 모의 실행에서 정보량 0 인 표가 그대로 실렸다.
+        self.assertIn("표 전체 공란 + 마커 없음", self.flat["결과"])
+
+    def test_table_bullet_example_does_not_teach_internal_ids(self):
+        # 이 문서는 예시를 따라 쓰기 쉬워서 예시가 규칙을 이긴다.
+        # §절대 규칙 9 가 이름을 대어 금지한 표 ID 를 규칙 14 예시가 가르쳤다.
+        self.assertNotIn("- **T1 결과**", self.docs["결과"])
+        self.assertNotIn("![T1 row5", self.docs["결과"])
+
+    def test_end_memo_transcription_handles_internal_ids(self):
+        # 학생 메모에 표 ID 가 있으면 "지어내지 않는다"와 규칙 9 가 부딪힌다.
+        self.assertIn("메모 원문의 표 ID·파일명은", self.flat["결과"])
+
+    def test_missing_pre_report_notice_goes_to_the_user_not_the_body(self):
+        # 규칙 8·9 와 절차 10 이 이미 본문 안내문을 금지한다.
+        self.assertIn("본문이 아니라 §실행 절차 14 의 결과 안내에서", self.flat["결과"])
+
+    def test_unfillable_section_is_removed_heading_and_all(self):
+        # check_report_sections 는 절 이름만 대조한다 — 헤딩만 남은 빈 섹션은
+        # error 로 잡히지 않고 그대로 제출된다.
+        self.assertIn("헤딩까지 함께 뺀다", self.flat["결과"])
+
+    def test_no_leaked_plan_task_numbers(self):
+        # 구현 계획의 작업 번호는 문서를 읽는 사람이 닿을 수 없는 좌표다.
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                self.assertEqual(re.findall(r"Task \d+", text), [])
+
+    def test_rule_5b_cites_a_result_report_sample(self):
+        # 결과보고서 서식 규칙의 근거로 예비보고서 3편을 들고 있었다.
+        result = self.flat["결과"]
+        self.assertNotIn("160310", result)
+        self.assertIn("160314", result)
+
 
 if __name__ == "__main__":
     unittest.main()
