@@ -226,17 +226,24 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    제외하는 것과 같은 구분이다. `kind: capture` 표는 셀 표 대신 `expected`
    산문을 싣는다.
 
-5. **보수 표기 (R5).** 저작은 `'`, 부울식만 오버바로 승격한다.
+5. **보수는 `'` 로 쓴다. `to_overbar_html` 을 부르지 않는다.**
 
-   ```bash
-   python3 -c "
-   from scripts.lab.notation import to_overbar_html
-   print(to_overbar_html(\"(A'·B)'\"))   # 중첩 스코프도 지원한다
-   "
-   ```
+   그 함수는 `<span class="ov">A·B·C</span>` 를 낸다. `.ov` 의 CSS 는
+   `template.html` 에 있었는데, 이 스킬이 HTML 을 만들지 않게 되면서(8단계)
+   **아무 데서도 적용되지 않는다.** 노션에서 그 `<span>` 은 NFM 태그가 아니라
+   사라지고, 남는 것은 바 없는 `A·B·C` 다 — **`(A·B·C)'` 의 보수가 조용히
+   없어져 부울식의 의미가 뒤집힌다.** `check_notion_markdown` 도 이걸 못 잡는다
+   (인라인이라 열 0 원시 HTML 검사에 안 걸린다).
 
-   **표 헤더·신호명·셀 값에는 절대 부르지 않는다** — `normalize_cell` 이 돌려주는
-   `CellValue` 를 넘기면 `TypeError` 가 난다. 이건 버그가 아니라 안전장치다.
+   그래서 보수는 본문에서도 `'` 그대로 둔다: `(A·B·C)'`.
+
+   노션이 인라인 수식 `$\overline{A \cdot B}$` 를 **실제 오버바로 렌더한다는
+   것은 확인됐다.** 다만 그 승격은 아직 열지 않았다 — 열 때는 `CellValue` 를
+   거부하는 가드를 그대로 물려받는 함수를 새로 만들어야 한다. 실험6 의
+   `Q(t-1)'` 은 상태 토큰이지 부울식이 아니라서, 승격하면 진리표가 망가진다.
+
+   `to_overbar_html` 자체는 지우지 않는다 — ②`prep-lab-checklist` 와
+   ①`explain-lab-preview` 는 아직 HTML→PDF 를 내므로 그쪽에서는 정상 동작한다.
 
 6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. **이 md 가
    유일한 산출물이다** — HTML 로 옮기지 않는다 (8단계).
