@@ -784,13 +784,14 @@ git commit -m "docs: ai_usage_log 판정을 파싱된 값 기준으로, 예보 �
         # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이
         # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.
         self.assertIn("회로가 성립하는 데 필요한데 강의노트 준비물에 없는 소모품",
-                      self.docs["예보"])
+                      self.flat["예보"])
 
     def test_theory_scope_is_bounded_by_what_the_circuit_uses(self):
         # 명세에 표가 없어도 회로가 쓰면 다루고(NOT), 회로가 안 쓰면
         # 강의노트에 있어도 넣지 않는다(부울 대수 기본 정리).
         pre = self.docs["예보"]
-        self.assertIn("이론 절은 그 주 회로가 실제로 쓰는 것만 다룬다", pre)
+        self.assertIn("이론 절은 그 주 회로가 실제로 쓰는 것만 다룬다",
+                      self.flat["예보"])
         rows = [ln for ln in pre.splitlines() if ln.startswith("| 실험 이론 |")]
         self.assertEqual(len(rows), 1, rows)
         self.assertIn("범위는 §절대 규칙 16", rows[0])
@@ -820,7 +821,9 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
     보고 적지 않은 것들이다. 비고에는 기능만 적고 "강의노트에 없다" 같은 메타
     서술은 쓰지 않는다(§절대 규칙 7). 이 규칙이 막는 것은 **회로에 쓰지도
     않는 소자를 설명하는 것**이지, 회로가 실제로 쓰는 것을 표에서 빠뜨리는
-    것이 아니다.
+    것이 아니다. 이것은 §절대 규칙 5 를 푸는 것이 아니다 — 브레드보드·점퍼선·
+    저항은 지어낸 근거가 아니라 그 회로를 꽂으려면 물리적으로 있어야 하는
+    것들이고, 표에 적는 것은 그 사실뿐이다.
 
     이론 절의 범위도 같은 기준이다. **이론 절은 그 주 회로가 실제로 쓰는
     것만 다룬다** — 명세에 대응하는 `role: reference` 표가 없어도 회로가 쓰는
