@@ -217,7 +217,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    - **`generate: true` 가 되면:** `<실험NN>/퀴즈/` 에서 **그 주 실제
      문제**를 찾는다. 없으면 "이번 주 퀴즈 문제 원본을 찾지 못했다" 고
      보고하고 요청한 뒤, **이 섹션만 비운 채** 나머지 섹션은 계속 작성한다
-     — 퀴즈 하나 때문에 이미 완성된 다른 절까지 버리지 않는다. 대신 14단계
+     — 퀴즈 하나 때문에 이미 완성된 다른 절까지 버리지 않는다. 대신 12단계
      검증에서 이 섹션 누락이 error 로 남을 것이고, 그 라운드 문서에 "퀴즈
      원본 대기 중"이라고 적어 둔다.
    - 문제 원본이 있으면 그 원문을 그대로 인용하고,
@@ -233,11 +233,8 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    markdown→HTML 라이브러리는 쓰지 않는다 — 본문 HTML 은 직접 작성한다
    (①·③과 동일 원칙).
 
-10. **조 편성 확인 → 표지 여부 분기 (결정만 한다).** 실제 표지 생성·병합은
-    **13단계로 미룬다** — 여기서 바로 합치면 11단계가 본문을 같은 파일명으로
-    다시 렌더·변환할 때 방금 합친 표지를 조용히 덮어쓴다(③이 실제로 이
-    구조였다). 병합은 반드시 이 스킬이 그 경로에 쓰는 **마지막** PDF 작업이어야
-    한다.
+10. **조 편성 확인 → 표지 여부 분기 (판정만 한다).** 표지를 만들지도 합치지도
+    않는다 — 11단계에서 다시 밝힌다.
 
     ```bash
     python3 -c "
@@ -251,124 +248,26 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     판정은 ⑥ `make-lab-report-cover` 1b 단계와 **같은 함수**를 쓴다 — 두 곳이
     따로 판정하면 한쪽만 고쳐지고 다른 쪽이 `None` 을 표지에 찍는다.
 
-    - **`미확정: 없음` 이면(조 편성 확정):** 표지가 필요하다고 기록해 둔다.
-      생성·병합은 13단계에서 한다.
-    - **하나라도 `~` 면(조 편성 미확정):** 표지를 만들지 않는다. 본문 서두에
-      "표지는 조 편성 확정 후 결합 예정" 안내를 (헤딩이 아닌 `.cover-pending`
-      문단으로 — `#` 로 시작하면 섹션으로 오인돼 14단계 검증을 오염시킨다)
-      남긴다. ③과 같은 규칙이다.
+    - **`미확정: 없음` 이면(조 편성 확정):** ⑥ `make-lab-report-cover` 로 표지를
+      만들 수 있다고 알린다. **이 스킬은 표지를 만들지도 합치지도 않는다.**
+    - **하나라도 `~` 면(조 편성 미확정):** 조 편성이 확정돼야 표지를 만들 수
+      있다고 알린다. **본문에는 아무 안내문도 넣지 않는다** — 이 md 는 그대로
+      노션에 올라가고 그대로 제출본이 되므로, 하네스 사정을 적은 문장이 제출
+      문서 첫 페이지에 찍힌다.
 
-11. **HTML 렌더 + PDF 변환 (본문).** `template.html` 의 4개 placeholder
-    (`{{TITLE}}`, `{{COURSE}}`, `{{DATE}}`, `{{CONTENT}}`) 를 채운다.
+11. **PDF 를 만들지 않는다.** 이 스킬의 산출물은 `.md` 하나다.
 
-    **`{{TITLE}}` 은 손으로 짓지 않는다** — `config.document_title(<실험번호>, <명세의 title>, '결과보고서')` 이 유일한 형식이다(`실험1 Basic Gates 결과보고서`). **제목에 주차를 넣지 않는다**; 주차는 폴더를 찾을 때만 쓴다. 실험 번호는 폴더 이름(`실험01`)이 아니라 **0 을 뺀 정수**다.
+    제출본은 사용자가 ⑦ `sync-report-to-notion` 으로 노션에 올린 뒤 노션에서
+    PDF 로 내보내고, ⑥ `make-lab-report-cover` 가 만든 표지를 앞에 손으로 붙여
+    만든다. **표지는 이 스킬의 관심사가 아니다.**
 
-    ```bash
-    python3 -c "
-    from scripts.lab import config
-    from scripts.lab.spec_parser import parse_spec
-    s = parse_spec('<실험NN>/체크리스트/명세.md')
-    print(config.document_title(s.experiment, s.title, '결과보고서'))
-    "
-    ```
+    예전에는 여기서 `template.html` 을 채워 Chrome 헤드리스로 PDF 를 내고
+    `pypdf` 로 표지를 합쳤다. 그 경로에는 "본문 재렌더가 방금 합친 표지를 조용히
+    덮어쓴다" 는 함정이 있었는데(③이 실제로 이 구조였다), PDF 를 아예 만들지
+    않게 되면서 함정 자체가 사라졌다. `template.html` 은 되돌릴 경우를 위해
+    남겨 두지만 이 절차는 쓰지 않는다.
 
-    본문 `.md` 의 첫 헤딩(`# …`)도 같은 문자열을 쓴다.
-
-    **HTML 은 반드시 `<실험NN>/output/<실험NN>_결과보고서.html` 자리에 만들고
-    그 자리에서 PDF 로 변환한다 — 다른 디렉토리(스크래치패드 등)에서
-    렌더하지 않는다.** `{{CONTENT}}` 안의 상대 경로(실험사진
-    `../실험사진/T1 row5.jpg`)는 **HTML 파일이 실제로 놓인 위치** 기준으로
-    풀린다. 다른 곳에서 렌더해 PDF 만 `output/` 에 옮기면 이미지 경로가
-    풀리지 않아 그림이 깨진 채 PDF 로 굳는데, `extract_text()` 로는 이
-    결함이 전혀 보이지 않는다 — ③의 산출물이 실제로 이 함정에 빠질
-    뻔했다(11b 단계가 이걸 기계로 잡는다).
-
-    ```bash
-    python3 -c "
-    from pathlib import Path
-    from datetime import datetime
-    from scripts.lab import config
-    root = config.find_project_root(Path('.'))
-    info = config.load_course_info(root)
-    print(info['course'])
-    print(datetime.now().strftime(info['date_format']))
-    print(info.get('chrome'))
-    "
-    ```
-
-    ```bash
-    python3 -c "
-    from scripts.lab import config
-    from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
-    info = config.load_course_info(config.find_project_root(Path('.')))
-    html_to_pdf('<실험NN>/output/<실험NN>_결과보고서.html',
-                '<실험NN>/output/<실험NN>_결과보고서.pdf',
-                chrome=info.get('chrome') or DEFAULT_CHROME)
-    "
-    ```
-
-    **`chrome=` 를 반드시 넘긴다** — 안 넘기면 `과목정보.md` 의 `chrome`
-    필드가 선언만 되고 아무 효과가 없다(②·③·⑥ 과 같은 규칙). 실패하면
-    에러를 그대로 보여주고 **HTML 은 남긴다.**
-
-11b. **렌더된 HTML 을 검사한다.** 보고서 본문은 사람(또는 에이전트)이
-    마크다운을 HTML 로 옮기므로, 산문의 코드 스팬만 `<code>` 로 바꾸고
-    **표 셀을 빠뜨리는** 실수, 그리고 위 11단계 규칙을 어겨 그림이 깨지는
-    실수가 실제로 일어난다. 둘 다 텍스트 추출로는 안 보이므로 기계로 잡는다.
-
-    ```bash
-    python3 -c "
-    from scripts.lab import validate
-    html = '<실험NN>/output/<실험NN>_결과보고서.html'
-    for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
-        print(f)
-    "
-    ```
-
-    기대: 출력 없음. 백틱·`**` 가 남았다고 나오면 **표 셀을 포함해 모든
-    텍스트 노드**의 인라인 마크다운을 다시 확인한다. 이미지 오류가 나오면
-    11단계의 위치 규칙을 어긴 것이다. 둘 다 고치고 PDF 를 다시 낸다.
-
-12. **A4 실측 (본문 PDF).** 이 시점의 `<실험NN>_결과보고서.pdf` 는 아직
-    본문뿐이다(표지가 필요해도 13단계 전에는 합쳐지지 않는다).
-
-    ```bash
-    python3 -c "
-    from pypdf import PdfReader
-    for p in PdfReader('<실험NN>/output/<실험NN>_결과보고서.pdf').pages:
-        print(round(float(p.mediabox.width)/72*25.4,1),
-              round(float(p.mediabox.height)/72*25.4,1))
-    "
-    ```
-
-13. **표지 병합 — 이 스킬이 최종 경로에 쓰는 마지막 PDF 작업.** 10단계 판정이
-    "조 편성 확정"이었을 때만 한다.
-
-    - **조 편성 미확정이었으면 이 단계를 건너뛴다** — 10단계에서 이미 본문에
-      "표지 결합 예정" 안내를 남겼다. `<실험NN>_결과보고서.pdf` 는 지금
-      상태(본문만)가 최종본이다.
-    - **조 편성이 확정이었으면:** ⑥ `make-lab-report-cover` 로
-      `<실험NN>/output/<제목> 표지.pdf` 를 만든 뒤, 11단계가 낸
-      본문 PDF 와 페이지 단위로 합쳐 **같은 파일명에 덮어쓴다:**
-
-      ```bash
-      python3 -c "
-      from pypdf import PdfReader, PdfWriter
-      writer = PdfWriter()
-      for src in ['<실험NN>/output/<제목> 표지.pdf',
-                  '<실험NN>/output/<실험NN>_결과보고서.pdf']:
-          writer.append(PdfReader(src))
-      writer.write('<실험NN>/output/<실험NN>_결과보고서.pdf')
-      "
-      ```
-
-      **이후 어떤 단계도 이 경로에 다시 쓰지 않는다.** 11단계로 되돌아가
-      PDF 를 다시 내야 하면(예: 14단계에서 본문 누락이 발견됐다면), 11·11b·12
-      를 다시 거쳐 본문을 새로 낸 **다음** 이 13단계를 다시 실행해 표지를
-      다시 합친다.
-
-14. **⑤ 로 검증하고 error 0 까지 반복한다.** (`.md` 를 보므로 표지 병합
-    여부와 무관하다.)
+12. **⑤ 로 검증하고 error 0 까지 반복한다.**
 
     ```bash
     python3 -c "
@@ -388,14 +287,13 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. 출력이
     없으면 모든 섹션이 존재하는 것이다. 누락이 나오면(퀴즈 원본 대기 등으로
     못 채운 섹션 포함) 본문을 고치거나 사용자 응답을 기다린 뒤 `round2`,
-    `round3`... 로 다시 돌린다 — 11단계부터 다시 돌면 13단계(표지 병합)도
-    다시 돌아야 한다는 뜻이다.
+    `round3`... 로 다시 돌린다.
 
-15. `과목정보.md` 의 `ai_usage_log` 가 `~` 가 아니면 그 경로에 로그 한 줄을
+13. `과목정보.md` 의 `ai_usage_log` 가 `~` 가 아니면 그 경로에 로그 한 줄을
     남긴다. `~` 면 아무것도 하지 않는다.
 
-16. **결과 안내.** md·pdf 링크, 섹션 검증 결과(error 0 여부), 표지 결합
-    여부를 한 줄로.
+14. **결과 안내.** md 경로, 섹션 검증 결과(error 0 여부), 그리고 **다음 할 일**을
+    한 줄로: `⑦ sync-report-to-notion` 으로 노션에 올린다.
 
 ## repeat: per-item 처리
 
@@ -433,12 +331,12 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 - **`capture` 표**: `기록.md` 그 표 블록의 "사진 파일:" 줄 값을 그대로
   쓴다(`T<n> row<m>` 패턴이 아니다 — capture 표는 행이 없다). 비어 있으면
   "사진 없음" 으로 명시한다.
-- HTML 안에서는 11단계의 위치 규칙에 따라 `<실험NN>/output/` 기준
-  상대경로 `../실험사진/T1 row5.jpg` 로 넣되, 캡션과 함께
-  `<figure class="photo-block"><img src="../실험사진/T1 row5.jpg">
-  <figcaption>T1 row5 — 불일치 관찰값</figcaption></figure>` 로 감싼다
-  (`template.html`). 결선도 | 회로 2열 대조처럼 사진 두 장을 나란히
-  둘 때는 그 둘을 `<div class="photo-row">` 로 함께 감싼다.
+- 상대경로 이미지로 넣는다: `![T1 row5 — 불일치 행 재현](../실험사진/T1 row5.jpg)`
+
+  **노션에서는 이 이미지가 깨져 보이는 것이 정상이다.** 노션 API 의 마크다운은
+  URL 만 받으므로 상대경로는 반드시 깨진다. 캡션이 그 자리에 무슨 사진이
+  들어가야 하는지 알려주고, 사용자가 노션에서 직접 끼워 넣는다. ⑦ 의 업로드 전
+  검사가 넣어야 할 목록을 세어 알린다.
 
 ## 섹션별 재료
 
@@ -468,5 +366,6 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 - 예비보고서 섹션을 다시 쓰지 않는다 (재료로 인용만 한다 — ③의 영역이다).
 - 표지를 이 스킬 안에서 새로 디자인하지 않는다 (⑥ 의 영역이다). 조 편성이
   미확정이면 표지 없이 본문만 내고, 결합은 조 편성 확정 이후로 미룬다.
+- PDF 를 만들지 않는다. 제출본은 노션 내보내기 + ⑥ 표지의 수동 병합이다 (⑦ 참조).
 - 캐시 신선도 로직(mtime 비교·SOURCES 블록)을 만들지 않는다. 소스(`기록.md`)가
   실험 후에는 고정이므로 다시 읽는 것이 싸고 안전하다.
