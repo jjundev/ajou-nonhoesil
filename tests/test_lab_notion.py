@@ -85,6 +85,28 @@ class TestPushMarkdown(unittest.TestCase):
         self.assertEqual(sent["markdown"], "# 제목\n\n본문")
         self.assertEqual(out["page_id"], created["id"])
 
+    def test_title_을_주면_properties_로_함께_보낸다(self):
+        """첫 `#` 헤딩의 자동 흡수는 조건이 붙는다 — 제목 헤딩 뒤에 목차 블록을
+        두면 깨져서 제목이 빈 페이지가 만들어진다(실제로 v4 에서 났다). 제목은
+        명시적으로 넘기는 쪽이 안전하다."""
+        created = json.loads((FIXTURES / "notion_create_page.json").read_text("utf-8"))
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response(created)
+            notion.push_markdown("# 제목\n\n본문", "PARENT", "ntn_abc",
+                                 title="실험1 Basic Gates 예비보고서")
+        sent = json.loads(opener.call_args[0][0].data.decode())
+        self.assertEqual(
+            sent["properties"]["title"][0]["text"]["content"],
+            "실험1 Basic Gates 예비보고서")
+
+    def test_title_이_없으면_properties_를_보내지_않는다(self):
+        created = json.loads((FIXTURES / "notion_create_page.json").read_text("utf-8"))
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response(created)
+            notion.push_markdown("# 제목\n\n본문", "PARENT", "ntn_abc")
+        sent = json.loads(opener.call_args[0][0].data.decode())
+        self.assertNotIn("properties", sent)
+
     def test_부모_페이지가_비면_Connect_안내와_함께_거절한다(self):
         with self.assertRaises(notion.NotionError) as ctx:
             notion.push_markdown("# 제목", "", "ntn_abc")

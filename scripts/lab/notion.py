@@ -76,15 +76,20 @@ RECORD_NAME = "notion.json"
 RECORD_SCHEMA = "notion-uploads/v1"
 
 
-def push_markdown(md_text, parent_page_id, token, timeout=120) -> dict:
+def push_markdown(md_text, parent_page_id, token, title=None, timeout=120) -> dict:
     """마크다운으로 노션 페이지를 **새로** 만든다. 덮어쓰기는 제공하지 않는다.
 
     이 루프는 구조적으로 "사용자가 노션에서 고쳤지만 아직 되읽히지 않은 구간"을
     갖는다. 그 구간에 재업로드가 덮어쓰면 수정이 **경고 없이** 사라지고, 노션
     페이지 덮어쓰기는 되돌리기 어렵다. 그래서 이 모듈에는 갈아엎는 함수가 없다.
 
-    페이지 제목은 마크다운의 첫 `#` 헤딩에서 온다 — 즉 **제목에 버전이 없다.**
-    몇 번째 업로드인지는 `notion.json` 이 안다.
+    `title` 을 주면 페이지 제목으로 그대로 쓴다. **주는 편이 안전하다** —
+    안 주면 노션이 마크다운의 첫 `#` 헤딩을 제목으로 흡수하는데, 그 흡수는
+    조건이 붙는다. 실제로 제목 헤딩 바로 뒤에 목차 블록을 두었더니 흡수가
+    깨져 **제목이 빈 페이지**가 만들어졌다(v4). 사이드바에서 "Untitled" 로
+    보이고 URL 에도 슬러그가 없어 사람이 찾지 못한다.
+
+    제목에 버전 번호는 넣지 않는다 — 몇 번째 업로드인지는 `notion.json` 이 안다.
     """
     if not (parent_page_id or "").strip():
         raise NotionError(
@@ -92,10 +97,10 @@ def push_markdown(md_text, parent_page_id, token, timeout=120) -> dict:
             "notion_parent_page_id 를 채우고, 노션에서 그 페이지에 integration 을 "
             "Connect 했는지 확인하세요 (안 하면 404 object_not_found 가 납니다)."
         )
-    data = _request("POST", "/pages", token, {
-        "parent": {"page_id": parent_page_id},
-        "markdown": md_text,
-    }, timeout)
+    payload = {"parent": {"page_id": parent_page_id}, "markdown": md_text}
+    if title:
+        payload["properties"] = {"title": [{"text": {"content": title}}]}
+    data = _request("POST", "/pages", token, payload, timeout)
     return {"page_id": data["id"], "url": data.get("url", "")}
 
 
