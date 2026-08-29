@@ -438,6 +438,26 @@ PY
 
 **`12주차` 를 `2주차` 보다 먼저 치환해야 한다** — 순서를 바꾸면 `12주차` 가 `1실험01` 이 된다.
 
+**치환 뒤 반드시 되돌려야 하는 곳이 하나 있다.** Task 1 이 만든
+`test_주차_이름이_남아_있으면_잡는다` 는 `_spec_at("2주차", 1)` 로 **일부러 옛
+이름**을 쓴다 — 그게 그 테스트의 전부다. 스크립트가 이것까지 `실험01` 로
+바꾸면 폴더와 `experiment` 가 우연히 일치해 테스트가 공허하게 통과한다.
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+p = Path('tests/test_lab_validate.py')
+t = p.read_text(encoding='utf-8')
+old = 'path, spec = self._spec_at("실험01", 1)\n        findings = validate.check_folder_convention(path, spec)'
+new = 'path, spec = self._spec_at("2주차", 1)\n        findings = validate.check_folder_convention(path, spec)'
+assert old in t, '이미 되돌려져 있거나 형태가 다르다 — 손으로 확인할 것'
+p.write_text(t.replace(old, new, 1), encoding='utf-8')
+print('옛 이름 픽스처 복원')
+PY
+```
+
+Expected: `옛 이름 픽스처 복원`
+
 Expected: 6개 파일 갱신 (`test_lab_config`, `test_lab_md`, `test_lab_record`, `test_lab_render`, `test_lab_spec_parser`, `test_lab_validate`)
 
 - [ ] **Step 6: 오해를 부르는 루프 변수 이름을 고친다**
@@ -467,10 +487,16 @@ Expected: `루프 변수 week -> folder`
 - [ ] **Step 7: 잔재가 없는지 확인한다**
 
 ```bash
-grep -rn '[0-9]주차' tests/*.py scripts/lab/*.py | grep -v '주차 ·' | grep -v '주차는' | grep -v '주차 명세'
+grep -rn '[0-9]주차[/_]' tests/*.py scripts/lab/*.py
 ```
 
-Expected: 출력 없음. `notation.py` 의 `2주차 명세 T5`, `render.py` 의 `IC 가 적은 주차는` 같은 **산문 주석**은 경로가 아니므로 남아도 된다.
+**`[/_]` 의 밑줄이 중요하다.** `2주차_예비보고서.html` 처럼 슬래시가 아니라
+밑줄로 이어지는 참조가 있고, `[0-9]주차/` 만 보면 그것을 놓친다. 실제로
+`tests/test_lab_validate.py` 의 예비보고서 HTML 경로가 이 형태였다.
+
+Expected: 출력 없음. 산문 주석(`notation.py` 의 `2주차 명세 T5`, `render.py` 의
+`IC 가 적은 주차는`)과 일부러 옛 이름을 쓰는 픽스처는 경로가 아니므로 이
+패턴에 걸리지 않는다.
 
 - [ ] **Step 8: 테스트를 돌린다**
 
@@ -820,7 +846,49 @@ git status --short 실험01/체크리스트/
 
 Expected: `체크리스트.pdf` 만 `M`. PDF 는 내장 타임스탬프 때문에 바이트가 달라진다 — `기록.md`·`체크리스트.html` 이 변경 목록에 없어야 한다. 있으면 리네임이 내용을 바꾼 것이므로 멈추고 원인을 찾는다.
 
-- [ ] **Step 4: 모든 HTML 산출물을 ⑤ 3b 로 검사한다**
+- [ ] **Step 4: 예비보고서 HTML 의 경로 잔재를 고치고 PDF 를 다시 낸다**
+
+Task 2 는 `.md` 의 경로만 고쳤다. 그 `.md` 로 만들어졌던 `.html`·`.pdf` 에는
+`2주차/결선도/netlist.md` 같은 **옛 경로가 8곳 그대로 굳어 있다** — 제출물의
+출처 표기가 존재하지 않는 경로를 가리키는 셈이다.
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+from scripts.lab import config
+from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
+h = Path('실험01/output/실험01_예비보고서.html')
+t = h.read_text(encoding='utf-8')
+before = t.count('2주차/')
+t = t.replace('2주차/체크리스트/', '실험01/체크리스트/').replace('2주차/결선도/', '실험01/결선도/')
+assert '2주차/' not in t, '남은 경로가 있다'
+h.write_text(t, encoding='utf-8')
+info = config.load_course_info(config.find_project_root(Path('.')))
+html_to_pdf(h, h.with_suffix('.pdf'), chrome=info.get('chrome') or DEFAULT_CHROME)
+print(f'경로 {before}곳 교체 후 PDF 재생성')
+PY
+```
+
+Expected: `경로 8곳 교체 후 PDF 재생성`
+
+제목 `# 2주차 예비보고서` 와 부제 `· 2주차 ·` 는 여기서도 **그대로 둔다** —
+`week` 유지 결정이다. 바꾸는 것은 경로뿐이다.
+
+```bash
+python3 -c "
+from pypdf import PdfReader
+r = PdfReader('실험01/output/실험01_예비보고서.pdf')
+print('쪽수:', r.get_num_pages())
+for p in r.pages:
+    w, h = float(p.mediabox.width)/72*25.4, float(p.mediabox.height)/72*25.4
+    assert abs(w-210) < 1 and abs(h-297) < 1, f'A4 아님: {w}x{h}'
+print('전 쪽 A4 확인')
+"
+```
+
+Expected: `쪽수: 16`, `전 쪽 A4 확인`
+
+- [ ] **Step 5: 모든 HTML 산출물을 ⑤ 3b 로 검사한다**
 
 ```bash
 python3 -c "
@@ -838,7 +906,7 @@ print('합계', n, '건')
 
 Expected: 두 파일 모두 `0건`, `합계 0 건`. 예비보고서의 브레드보드 그림 경로(`../../.claude/assets/`)가 리네임 뒤에도 풀리는지를 여기서 잡는다.
 
-- [ ] **Step 5: 전체 테스트를 돌린다**
+- [ ] **Step 6: 전체 테스트를 돌린다**
 
 ```bash
 python3 -m unittest discover -s tests -t . 2>&1 | grep -E '^(Ran|OK|FAILED)'
@@ -846,7 +914,7 @@ python3 -m unittest discover -s tests -t . 2>&1 | grep -E '^(Ran|OK|FAILED)'
 
 Expected: `Ran 255 tests` / `OK`
 
-- [ ] **Step 6: 설계문서에 정정 주석을 남긴다**
+- [ ] **Step 7: 설계문서에 정정 주석을 남긴다**
 
 과거 계획서는 고쳐 쓰지 않지만, 설계문서는 **권위 문서**라 결정이 뒤집힌 사실을 모르면 다음 사람이 오해한다. 결정 표의 #4 행 한 줄만 바꾼다.
 
@@ -867,16 +935,17 @@ PY
 
 Expected: `설계문서 결정 #4 정정`
 
-- [ ] **Step 7: 저장소 전체에 경로 잔재가 없는지 최종 확인한다**
+- [ ] **Step 8: 저장소 전체에 경로 잔재가 없는지 최종 확인한다**
 
 ```bash
-grep -rn '[0-9]주차/' --include='*.py' --include='*.md' --include='*.html' . \
-  | grep -v '^./docs/plans/2026-08-2[78]' | grep -v '^./from_the_past/'
+grep -rn '[0-9]주차[/_]' --include='*.py' --include='*.md' --include='*.html' . \
+  | grep -v '^./docs/plans/2026-08-2[789]' | grep -v '^./from_the_past/' \
+  | grep -v '^./.superpowers/' | grep -v '^./.agents/'
 ```
 
 Expected: 출력 없음. 제외한 둘은 각각 **역사 기록**(과거 계획서)과 **읽기 전용 원본**이다.
 
-- [ ] **Step 8: 커밋**
+- [ ] **Step 9: 커밋**
 
 ```bash
 git add -A && git commit -m "chore: 실험 폴더로 산출물 재생성, 설계문서 결정 #4 정정"
