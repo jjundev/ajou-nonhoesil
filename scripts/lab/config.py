@@ -16,6 +16,26 @@ REPORT_FORMAT = ".claude/보고서양식.md"
 # 조 편성이 확정돼야 채워지는 신원 필드. 표지에 찍히는 값이라 비면 지어내지 않는다.
 IDENTITY_FIELDS = ("team", "student_ids", "student_names")
 
+# 실험은 1~10 뿐이다. FPGA(13~15주차)는 실험 번호가 없어 `프로젝트/` 로 간다.
+EXPERIMENT_COUNT = 10
+
+
+def experiment_dir(experiment: int) -> str:
+    """실험 번호 → 폴더 이름. 두 자리로 0 을 채운다.
+
+    0 을 안 채우면 사전순 정렬이 `실험1, 실험10, 실험2, ...` 가 되어 시간
+    순서와 어긋난다. 규칙을 여기 한 곳에만 두는 이유는, 이 저장소의 반복
+    결함이 "같은 규약을 세 곳에 적용하고 네 번째를 잊는 것"이기 때문이다.
+    """
+    if isinstance(experiment, bool) or not isinstance(experiment, int):
+        raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
+    if not 1 <= experiment <= EXPERIMENT_COUNT:
+        raise ValueError(
+            f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}. "
+            "FPGA 프로젝트는 실험 번호가 없으므로 `프로젝트/` 를 씁니다."
+        )
+    return f"실험{experiment:02d}"
+
 
 @dataclass
 class Section:

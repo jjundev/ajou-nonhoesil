@@ -437,5 +437,74 @@ class TestRenderedHtmlChecks(unittest.TestCase):
         self.assertEqual(validate.check_embedded_images(html), [])
 
 
+class FolderConventionTest(unittest.TestCase):
+    """폴더 이름과 명세의 `experiment` 가 어긋나면 잡는다.
+
+    리네임을 한 번 하고 끝내면 다음 주차에 다시 어긋난다. 규약은 사람이
+    아니라 검사가 지킨다.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.dir = Path(self.tmp.name)
+
+    def _spec_at(self, folder, experiment):
+        """`<folder>/체크리스트/명세.md` 를 만들고 (경로, spec) 을 돌려준다."""
+        d = self.dir / folder / "체크리스트"
+        d.mkdir(parents=True)
+        path = d / "명세.md"
+        path.write_text(
+            "---\n"
+            "schema: lab-spec/v1\n"
+            f"week: 2\n"
+            f"experiment: {experiment}\n"
+            "title: Basic Gates\n"
+            "source_manual: x.pdf\n"
+            'power: {VCC: "+5V", GND: "GND"}\n'
+            "items:\n"
+            "  - id: E1.P1\n"
+            "    title: 첫 항목\n"
+            "    device: [LED]\n"
+            "    ics: ['74HC08']\n"
+            "    tables: [T1]\n"
+            "---\n\n"
+            "# E1.P1 · 첫 항목\n\n"
+            "## T1 · 표\n\n"
+            "- kind: truth-table\n"
+            "- source: 교안 p1\n"
+            "- encoding: 0/1\n\n"
+            "| A | Y |\n|---|---|\n| 0 | 0 |\n| 1 | 1 |\n",
+            encoding="utf-8",
+        )
+        return path, parse_spec(path)
+
+    def test_맞으면_finding_이_없다(self):
+        path, spec = self._spec_at("실험01", 1)
+        self.assertEqual(validate.check_folder_convention(path, spec), [])
+
+    def test_주차_이름이_남아_있으면_잡는다(self):
+        path, spec = self._spec_at("2주차", 1)
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(any("실험01" in f.message for f in findings))
+
+    def test_0을_안_채운_이름을_잡는다(self):
+        path, spec = self._spec_at("실험1", 1)
+        self.assertTrue(validate.check_folder_convention(path, spec))
+
+    def test_번호가_어긋나면_잡는다(self):
+        # 12주차는 실험10 이다. 실험12 폴더는 존재하면 안 된다.
+        path, spec = self._spec_at("실험09", 10)
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(any("실험10" in f.message for f in findings))
+
+    def test_범위_밖_번호에도_예외를_던지지_않는다(self):
+        """⑤ 는 반쯤 망가진 문서에도 돌아야 한다 — 여기서 죽으면 안 된다."""
+        path, spec = self._spec_at("실험11", 11)
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(findings)
+        self.assertEqual(findings[0].level, "error")
+
+
 if __name__ == "__main__":
     unittest.main()

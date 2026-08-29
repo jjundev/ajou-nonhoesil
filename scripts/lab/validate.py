@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import md
+from . import config, md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
 from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
@@ -171,6 +171,31 @@ def validate_spec(spec) -> list:
     return (check_table_integrity(spec) + check_metadata(spec)
             + check_row_count(spec) + check_boolean(spec)
             + check_orphan_tables(spec))
+
+
+def check_folder_convention(spec_path, spec) -> list:
+    """명세가 놓인 폴더 이름이 `experiment` 필드와 맞는지 본다.
+
+    폴더는 `<실험NN>/체크리스트/명세.md` 구조다. 리네임을 한 번 하고 끝내면
+    다음 주차에 다시 어긋나므로, ⑤ 가 매 검토마다 이것을 부른다.
+    """
+    path = Path(spec_path).resolve()
+    parents = path.parents
+    if len(parents) < 2:
+        return [Finding("error", str(spec_path),
+                        "명세 경로가 `<실험NN>/체크리스트/명세.md` 형태가 아니다")]
+    actual = parents[1].name
+    try:
+        expected = config.experiment_dir(spec.experiment)
+    except (TypeError, ValueError) as e:
+        # ⑤ 는 반쯤 망가진 문서에도 돌아야 한다. 여기서 죽으면 검토가 멈춘다.
+        return [Finding("error", actual,
+                        f"명세의 experiment 값을 폴더 이름으로 바꿀 수 없다: {e}")]
+    if actual != expected:
+        return [Finding("error", actual,
+            f"폴더 이름이 `{actual}` 인데 명세의 `experiment: {spec.experiment}` 는 "
+            f"`{expected}` 를 요구한다 — 둘 중 하나가 틀렸다")]
+    return []
 
 
 def check_netlist(netlist_path, spec) -> list:

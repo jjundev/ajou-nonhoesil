@@ -158,3 +158,32 @@ class SkillTemplateTest(unittest.TestCase):
                     out = Path(tmp) / f"{tmpl.parent.name}.html"
                     out.write_text(text, encoding="utf-8")
                     self.assertEqual(validate.check_rendered_html(out), [])
+
+
+class ExperimentDirTest(unittest.TestCase):
+    """폴더 이름 규칙은 한 곳에서만 만든다 — 문자열로 흩뿌리면 반드시 어긋난다."""
+
+    def test_두_자리로_0을_채운다(self):
+        self.assertEqual(config.experiment_dir(1), "실험01")
+        self.assertEqual(config.experiment_dir(9), "실험09")
+
+    def test_열_번째는_그대로_두_자리다(self):
+        self.assertEqual(config.experiment_dir(10), "실험10")
+
+    def test_0을_채워야_사전순_정렬이_시간순과_맞는다(self):
+        names = sorted(config.experiment_dir(n) for n in range(1, 11))
+        self.assertEqual(names[0], "실험01")
+        self.assertEqual(names[1], "실험02")
+        self.assertEqual(names[-1], "실험10")
+
+    def test_범위_밖_번호는_거절한다(self):
+        # FPGA 는 실험 번호가 없다. 11 을 허용하면 저장소가 없는 번호를 발명한다.
+        for bad in (0, 11, -1):
+            with self.subTest(experiment=bad):
+                with self.assertRaises(ValueError):
+                    config.experiment_dir(bad)
+
+    def test_bool은_정수가_아니다(self):
+        # True 는 int 의 하위형이라 조용히 `실험01` 이 된다.
+        with self.assertRaises(TypeError):
+            config.experiment_dir(True)
