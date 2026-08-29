@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class TestWeek2Record(unittest.TestCase):
     def setUp(self):
-        self.spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        self.spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
         self.text = derive_record(self.spec)
 
     def test_frontmatter_marks_it_unfilled(self):
@@ -41,7 +41,7 @@ class TestWeek2Record(unittest.TestCase):
 
 class TestKindSpecificShapes(unittest.TestCase):
     def test_capture_gets_a_sketch_grid_not_a_table(self):
-        text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
+        text = derive_record(parse_spec(ROOT / "실험10/체크리스트/명세.md"))
         block = text[text.index("### T1"):text.index("### T2")]
         self.assertIn("스케치", block)
         self.assertIn("- 캡션:", block)
@@ -49,7 +49,7 @@ class TestKindSpecificShapes(unittest.TestCase):
 
     def test_reference_tables_are_excluded(self):
         """T6~T9 는 교안 2입력 이론표다. 기록 칸을 만들면 안 된다."""
-        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
         text = derive_record(spec)
         for tid in ("T6", "T7", "T8", "T9"):
             with self.subTest(table=tid):
@@ -59,12 +59,12 @@ class TestKindSpecificShapes(unittest.TestCase):
                 self.assertIn(f"### {tid} ·", text)
 
     def test_capture_carries_the_prose_expectation(self):
-        text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
+        text = derive_record(parse_spec(ROOT / "실험10/체크리스트/명세.md"))
         self.assertIn("> 예상:", text)
 
     def test_stepped_keeps_its_columns_without_an_expected_suffix(self):
         """스텝 표는 비어 있는 열 자체가 채울 칸이다. `예상` 을 붙이면 안 된다."""
-        text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
+        text = derive_record(parse_spec(ROOT / "실험10/체크리스트/명세.md"))
         block = text[text.index("### T2"):]
         self.assertIn("| 스텝", block)
         self.assertNotIn("예상", block.split("- 메모:")[0])
@@ -81,7 +81,7 @@ class TestAlignment(unittest.TestCase):
         인식) 로 각 셀의 실제 렌더 폭을 재서, 같은 열이면 행이 달라도 폭이
         항상 같은지(=정렬되는지) 를 직접 본다.
         """
-        text = derive_record(parse_spec(ROOT / "12주차/체크리스트/명세.md"))
+        text = derive_record(parse_spec(ROOT / "실험10/체크리스트/명세.md"))
         lines = text.split("\n")
         start = next(i for i, ln in enumerate(lines) if ln.startswith("| 스텝"))
         block = []

@@ -99,7 +99,7 @@ class TestReportFormat(unittest.TestCase):
 
 class TestProjectRoot(unittest.TestCase):
     def test_walks_up_to_dotclaude(self):
-        self.assertEqual(config.find_project_root(ROOT / "2주차" / "체크리스트"), ROOT)
+        self.assertEqual(config.find_project_root(ROOT / "실험01" / "체크리스트"), ROOT)
 
     def test_raises_outside_project(self):
         with self.assertRaises(FileNotFoundError):

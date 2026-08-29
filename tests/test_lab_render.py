@@ -12,8 +12,8 @@ TEMPLATE = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
 
 class TestChecklistHtml(unittest.TestCase):
     def setUp(self):
-        self.spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
-        self.netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        self.spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        self.netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
         self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
 
     def test_no_placeholder_survives(self):
@@ -60,7 +60,7 @@ class TestChecklistHtml(unittest.TestCase):
 
 class TestCapturePage(unittest.TestCase):
     def test_capture_renders_a_sketch_box_not_a_grid(self):
-        spec = parse_spec(ROOT / "12주차/체크리스트/명세.md")
+        spec = parse_spec(ROOT / "실험10/체크리스트/명세.md")
         html = render_checklist(spec, "VCC GND 미사용", TEMPLATE)
         self.assertIn('class="sketch"', html)
 
@@ -95,8 +95,8 @@ class TestBreadboardHeaderBand(unittest.TestCase):
     격자가 안 보인다 (B1)."""
 
     def test_visible_height_budget_includes_the_header_band(self):
-        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
-        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
         html = render_checklist(spec, netlist, TEMPLATE)
         rows = crop_rows(netlist)
         caption = re.search(r"브레드보드 작도 \((\d+)행\)", html)
@@ -130,8 +130,8 @@ class TestPrintConstraints(unittest.TestCase):
     def test_table_and_breadboard_blocks_are_kept_whole(self):
         """제목만 앞 쪽에 남고 내용이 넘어가면 실험실에서 못 읽는다."""
         self.assertIn(".tblock", TEMPLATE)
-        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
-        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
         html = render_checklist(spec, netlist, TEMPLATE)
         self.assertEqual(html.count('<div class="tblock">'),
                          5 + 1)   # 기록 대상 표 5개 + 브레드보드 1
@@ -142,8 +142,8 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
     이 과목의 대표 실패 원인(플로팅 입력) 경고가 실제로 그렇게 빠져 있었다."""
 
     def setUp(self):
-        spec = parse_spec(ROOT / "2주차/체크리스트/명세.md")
-        netlist = (ROOT / "2주차/결선도/netlist.md").read_text(encoding="utf-8")
+        spec = parse_spec(ROOT / "실험01/체크리스트/명세.md")
+        netlist = (ROOT / "실험01/결선도/netlist.md").read_text(encoding="utf-8")
         self.html = render_checklist(spec, netlist, TEMPLATE)
 
     def test_korean_only_warnings_reach_the_printout(self):

@@ -6,8 +6,8 @@ from scripts.lab import config, validate
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
-WEEK2_SPEC = ROOT / "2주차/체크리스트/명세.md"
-WEEK2_NETLIST = ROOT / "2주차/결선도/netlist.md"
+WEEK2_SPEC = ROOT / "실험01/체크리스트/명세.md"
+WEEK2_NETLIST = ROOT / "실험01/결선도/netlist.md"
 
 
 def spec_from(text):
@@ -223,9 +223,9 @@ class TestTableIntegrity(unittest.TestCase):
                             for f in validate.check_orphan_tables(spec)))
 
     def test_real_specs_have_no_orphans(self):
-        for week in ("2주차", "6주차", "12주차"):
-            with self.subTest(week=week):
-                spec = parse_spec(ROOT / week / "체크리스트" / "명세.md")
+        for folder in ("실험01", "실험06", "실험10"):
+            with self.subTest(folder=folder):
+                spec = parse_spec(ROOT / folder / "체크리스트" / "명세.md")
                 self.assertEqual(validate.check_orphan_tables(spec), [])
 
     def test_bad_cell_contents_are_errors(self):
@@ -424,7 +424,7 @@ class TestRenderedHtmlChecks(unittest.TestCase):
 
     def test_real_checklist_html_is_clean(self):
         """② 가 만든 실물은 통과해야 한다 — 그쪽은 코드가 렌더하므로."""
-        html = ROOT / "2주차/체크리스트/체크리스트.html"
+        html = ROOT / "실험01/체크리스트/체크리스트.html"
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 
@@ -432,7 +432,7 @@ class TestRenderedHtmlChecks(unittest.TestCase):
         """실제로 깨진 채 제출됐던 건 ②(기계 렌더)가 아니라 이 파일이다 —
         표 셀 백틱 230개와, 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드
         그림. ②만 회귀 대상이면 실제로 사고가 난 산출물은 아무도 안 지킨다 (D)."""
-        html = ROOT / "2주차/output/2주차_예비보고서.html"
+        html = ROOT / "실험01/output/실험01_예비보고서.html"
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 

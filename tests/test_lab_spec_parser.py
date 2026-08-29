@@ -6,9 +6,9 @@ from scripts.lab.spec_parser import (SpecError, derived_parts, parse_spec,
                                      split_columns)
 
 ROOT = Path(__file__).resolve().parents[1]
-WEEK2 = ROOT / "2주차/체크리스트/명세.md"
-WEEK6 = ROOT / "6주차/체크리스트/명세.md"
-WEEK12 = ROOT / "12주차/체크리스트/명세.md"
+WEEK2 = ROOT / "실험01/체크리스트/명세.md"
+WEEK6 = ROOT / "실험06/체크리스트/명세.md"
+WEEK12 = ROOT / "실험10/체크리스트/명세.md"
 
 
 class TestWeek2(unittest.TestCase):
