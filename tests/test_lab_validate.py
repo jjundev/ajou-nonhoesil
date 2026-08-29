@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,6 +7,7 @@ from scripts.lab import config, validate
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
+FIXTURES = ROOT / "tests" / "fixtures"
 WEEK2_SPEC = ROOT / "실험01/체크리스트/명세.md"
 WEEK2_NETLIST = ROOT / "실험01/결선도/netlist.md"
 
@@ -611,6 +613,24 @@ class TestMarkdownShape(unittest.TestCase):
         self.assertEqual(validate.markdown_shape("> 가\n> 나\n").quote_blocks, 1)
         self.assertEqual(validate.markdown_shape("> 가\n\n> 나\n").quote_blocks, 2)
 
+    def test_노션이_돌려준_HTML_표를_표로_센다(self):
+        """실측 fixture(`notion_pull_markdown.json`)의 되읽기 markdown 은 파이프
+        표가 아니라 HTML `<table>` 이다. `md.parse_tables()` 만 쓰면 이걸 0개로
+        세서, 정상 왕복마다 "표가 통째로 사라졌다"는 거짓 경보가 뜬다."""
+        pulled = json.loads((FIXTURES / "notion_pull_markdown.json")
+                             .read_text("utf-8"))["markdown"]
+        shape = validate.markdown_shape(pulled)
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+
+    def test_header_row_없는_HTML_표는_모든_tr을_행으로_센다(self):
+        """`header-row="true"` 가 없으면 뺄 헤더 행이 없다 — 모든 `<tr>` 이 데이터
+        행이다."""
+        text = "<table>\n<tr><td>0</td></tr>\n<tr><td>1</td></tr>\n</table>\n"
+        shape = validate.markdown_shape(text)
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+
 
 class TestCheckNotionRoundtrip(unittest.TestCase):
     def test_노이즈만_있으면_아무것도_보고하지_않는다(self):
@@ -644,6 +664,35 @@ class TestCheckNotionRoundtrip(unittest.TestCase):
         """사용자가 노션에서 절이나 표를 더한 것은 손실이 아니다."""
         pulled = SRC + "\n## 3. 추가한 절\n\n내용\n"
         self.assertEqual(validate.check_notion_roundtrip(SRC, pulled), [])
+
+    def test_중복된_헤딩_중_하나만_사라져도_보고한다(self):
+        """항목반복형 프리셋(`.claude/보고서양식.md`)처럼 같은 헤딩이 여러 번
+        나오면, 집합 포함 검사(`h not in got.headings`)는 이름이 하나라도
+        남아 있으면 손실을 못 본다. 다중집합 차만이 이걸 잡는다."""
+        src = ("# 실험 보고서\n\n## 항목 1\n\n내용\n\n## 고찰\n\n내용1\n\n"
+               "## 항목 2\n\n내용\n\n## 고찰\n\n내용2\n")
+        pulled = "## 항목 1\n\n내용\n\n## 고찰\n\n내용1\n\n## 항목 2\n\n내용\n"
+        findings = validate.check_notion_roundtrip(src, pulled)
+        self.assertTrue(any(f.level == "error" and "고찰" in f.message
+                            for f in findings), findings)
+
+    def test_반복된_헤딩이_전부_남으면_보고하지_않는다(self):
+        """같은 이름이 여러 번 나오되 아무것도 안 사라졌으면 findings 가 없어야
+        한다 — 다중집합 차가 과다 보고하지 않는지 본다."""
+        src = "# 실험 보고서\n\n## 고찰\n\n내용1\n\n## 고찰\n\n내용2\n"
+        pulled = "## 고찰\n\n내용1\n\n## 고찰\n\n내용2\n"
+        self.assertEqual(validate.check_notion_roundtrip(src, pulled), [])
+
+    def test_HTML_표로_바뀐_것은_손실로_보지_않는다(self):
+        """이게 진짜 회귀 테스트다 — fixture 그대로의 되읽기(HTML 표)를 파이프
+        표 소스와 비교했을 때 findings 가 있으면, 모든 업로드가 "표가 0개로
+        줄었다"는 거짓 경보를 낸다는 뜻이다."""
+        pulled = json.loads((FIXTURES / "notion_pull_markdown.json")
+                             .read_text("utf-8"))["markdown"]
+        src = ("# 표 왕복 테스트\n\n첫 문단이다.\n## 표 검사\n\n"
+               "| A | B | C |\n|---|---|---|\n| 0 | 0 | 0 |\n| 1 | 1 | 1 |\n\n"
+               "> 출처: 프로브\n")
+        self.assertEqual(validate.check_notion_roundtrip(src, pulled), [])
 
 
 if __name__ == "__main__":

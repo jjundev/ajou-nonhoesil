@@ -5,6 +5,7 @@
 """
 
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -291,6 +292,15 @@ _NFM_LOSSY = (
 )
 _IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 
+# 노션 왕복은 파이프 표를 HTML `<table>` 로 바꿔 돌려준다 — 실측 근거는
+# docs/plans/2026-08-29-notion-probe-결과.md. `md.parse_tables()` 는 파이프 표만
+# 인식하므로, 되읽은 문서의 표를 `markdown_shape` 가 이 패턴으로도 세지 않으면
+# 왕복마다 "표가 통째로 사라졌다"는 거짓 경보가 뜬다. 속성 순서·공백·대소문자에
+# 흔들리지 않게 느슨히 잡는다.
+_HTML_TABLE = re.compile(r"<table\b([^>]*)>(.*?)</table>", re.IGNORECASE | re.DOTALL)
+_HTML_TABLE_HEADER_ROW = re.compile(r"\bheader-row\s*=\s*[\"']true[\"']", re.IGNORECASE)
+_HTML_TR = re.compile(r"<tr\b", re.IGNORECASE)
+
 
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
@@ -346,10 +356,24 @@ def markdown_shape(text) -> MarkdownShape:
 
     인용은 **줄이 아니라 블록**으로 센다 — 여러 줄 인용이 한 줄로 합쳐지는 것은
     노이즈지 손실이 아닌데, 줄로 세면 매번 error 로 올라온다.
+
+    표는 **파이프 표와 HTML `<table>` 을 함께** 센다 — 노션 되읽기가 파이프 표를
+    HTML 로 바꿔 돌려주기 때문이다(`_HTML_TABLE` 주석 참고). 원본(파이프)과
+    되읽기(HTML)를 같은 잣대로 세지 않으면 형태만 바뀐 표가 손실로 보인다.
     """
     _, body = md.split_frontmatter(text)
     lines = body.split("\n")
     tables = md.parse_tables(body)
+    html_tables = list(_HTML_TABLE.finditer(body))
+    html_table_rows = 0
+    for m in html_tables:
+        attrs, inner = m.group(1), m.group(2)
+        tr_count = len(_HTML_TR.findall(inner))
+        if _HTML_TABLE_HEADER_ROW.search(attrs):
+            # MdTable.rows 는 헤더 행을 빼고 세므로, HTML 표의 헤더 <tr> 도
+            # 여기서 빼야 두 형태의 행 수가 같은 기준으로 비교된다.
+            tr_count = max(tr_count - 1, 0)
+        html_table_rows += tr_count
     quote_blocks, in_quote = 0, False
     for line in lines:
         if line.startswith(">"):
@@ -361,8 +385,8 @@ def markdown_shape(text) -> MarkdownShape:
     return MarkdownShape(
         headings=[re.sub(r"^#+\s*", "", ln).strip()
                   for ln in lines if ln.startswith("#")],
-        table_count=len(tables),
-        table_rows=sum(len(t.rows) for t in tables),
+        table_count=len(tables) + len(html_tables),
+        table_rows=sum(len(t.rows) for t in tables) + html_table_rows,
         quote_blocks=quote_blocks,
     )
 
@@ -380,10 +404,17 @@ def check_notion_roundtrip(source_text, pulled_text) -> list:
     """
     src, got = markdown_shape(source_text), markdown_shape(pulled_text)
     out = []
-    missing = [h for h in src.headings if h not in got.headings]
+    # 집합 포함이 아니라 **다중집합 차**로 비교한다 — 같은 이름이 두 번 나오는데
+    # 하나만 남았을 때, `in` 검사는 "이름이 존재하긴 한다"만 보고 손실을 놓친다.
+    # 항목반복형 프리셋(`결선도`·`구성한 회로`·`실험 결과`·`고찰`을 항목마다
+    # 반복)이 이 상황을 실제로 만든다.
+    missing = list((Counter(src.headings) - Counter(got.headings)).elements())
     # 첫 헤딩은 노션이 페이지 제목으로 흡수하므로 되읽기에 없을 수 있다.
-    if missing and src.headings and missing[0] == src.headings[0]:
-        missing = missing[1:]
+    # **정확히 한 번만** 면제한다 — 같은 이름이 여러 번 나오는 양식에서 나머지
+    # 누락까지 덮어 주면, 이 함수의 존재 이유인 "절이 통째로 안 올라간 것"을
+    # 놓친다.
+    if src.headings and src.headings[0] in missing:
+        missing.remove(src.headings[0])
     for name in missing:
         out.append(Finding("error", "노션 왕복",
             f"절 '{name}' 이 되읽기에 없다 — 노션에 올라가지 않았을 수 있다"))
