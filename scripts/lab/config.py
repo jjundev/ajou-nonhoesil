@@ -37,6 +37,55 @@ def experiment_dir(experiment: int) -> str:
     return f"실험{experiment:02d}"
 
 
+# 주차 → 실험 매핑. **1:1 이 아니다** — 5·6·7주차가 실험 5·6·4 로 어긋난다.
+# 이 표를 스킬 문서에 베껴 두면 한 곳만 고쳐지고 나머지가 틀어진다.
+WEEK_TO_EXPERIMENT = {2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
+                      9: 7, 10: 8, 11: 9, 12: 10}
+PROJECT_WEEKS = (13, 14, 15)   # FPGA 텀프로젝트 — 3주치가 한 프로젝트다
+PROJECT_DIR = "프로젝트"
+NO_ARTIFACT_WEEKS = {8: "중간고사"}
+
+
+def folder_for_week(week: int) -> str:
+    """주차 → 그 주 산출물이 들어갈 폴더 이름.
+
+    사용자는 "2주차 체크리스트" 처럼 **주차로 부른다.** 스킬 절차의 경로는
+    `실험NN/` 이므로 그 사이를 옮기는 곳이 필요한데, 표를 스킬마다 베껴 두면
+    한 곳만 고쳐진다 — 이 저장소가 반복해 온 결함이다.
+    """
+    if isinstance(week, bool) or not isinstance(week, int):
+        raise TypeError(f"주차는 정수여야 합니다: {week!r}")
+    if week in NO_ARTIFACT_WEEKS:
+        raise ValueError(
+            f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
+            "폴더를 만들지 않습니다."
+        )
+    if week in PROJECT_WEEKS:
+        return PROJECT_DIR
+    if week not in WEEK_TO_EXPERIMENT:
+        raise ValueError(
+            f"{week}주차에 해당하는 실험이 없습니다. "
+            f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
+            f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
+        )
+    return experiment_dir(WEEK_TO_EXPERIMENT[week])
+
+
+def week_for_experiment(experiment: int) -> int:
+    """실험 번호 → 그 실험을 하는 주차. `folder_for_week` 의 역방향.
+
+    스킬이 "실험5 는 5주차입니다" 처럼 되짚어 알릴 때 쓴다.
+    """
+    if isinstance(experiment, bool) or not isinstance(experiment, int):
+        raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
+    for week, exp in WEEK_TO_EXPERIMENT.items():
+        if exp == experiment:
+            return week
+    raise ValueError(
+        f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}"
+    )
+
+
 @dataclass
 class Section:
     name: str

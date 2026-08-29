@@ -187,3 +187,54 @@ class ExperimentDirTest(unittest.TestCase):
         # True 는 int 의 하위형이라 조용히 `실험01` 이 된다.
         with self.assertRaises(TypeError):
             config.experiment_dir(True)
+
+
+class WeekMappingTest(unittest.TestCase):
+    """주차 → 폴더 해석. 매핑이 1:1 이 아니라서 사람이 외우면 틀린다."""
+
+    def test_회전_구간이_핵심이다(self):
+        # 5·6·7주차가 실험 5·6·4 로 어긋난다. 여기가 틀리면 엉뚱한 교안을 연다.
+        self.assertEqual(config.folder_for_week(5), "실험05")
+        self.assertEqual(config.folder_for_week(6), "실험06")
+        self.assertEqual(config.folder_for_week(7), "실험04")
+
+    def test_평범한_구간(self):
+        self.assertEqual(config.folder_for_week(2), "실험01")
+        self.assertEqual(config.folder_for_week(12), "실험10")
+
+    def test_FPGA_주차는_프로젝트_폴더다(self):
+        for week in (13, 14, 15):
+            with self.subTest(week=week):
+                self.assertEqual(config.folder_for_week(week), "프로젝트")
+
+    def test_중간고사_주차는_거절한다(self):
+        with self.assertRaises(ValueError) as cm:
+            config.folder_for_week(8)
+        self.assertIn("중간고사", str(cm.exception))
+
+    def test_범위_밖_주차는_거절한다(self):
+        for bad in (1, 16, 0, -3):
+            with self.subTest(week=bad):
+                with self.assertRaises(ValueError):
+                    config.folder_for_week(bad)
+
+    def test_bool은_주차가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.folder_for_week(True)
+
+    def test_역방향도_회전을_지킨다(self):
+        self.assertEqual(config.week_for_experiment(4), 7)
+        self.assertEqual(config.week_for_experiment(5), 5)
+        self.assertEqual(config.week_for_experiment(1), 2)
+        self.assertEqual(config.week_for_experiment(10), 12)
+
+    def test_왕복이_일치한다(self):
+        for week, exp in config.WEEK_TO_EXPERIMENT.items():
+            with self.subTest(week=week):
+                self.assertEqual(config.week_for_experiment(exp), week)
+                self.assertEqual(config.folder_for_week(week),
+                                 config.experiment_dir(exp))
+
+    def test_실험_열개가_빠짐없이_매핑된다(self):
+        self.assertEqual(sorted(config.WEEK_TO_EXPERIMENT.values()),
+                         list(range(1, config.EXPERIMENT_COUNT + 1)))

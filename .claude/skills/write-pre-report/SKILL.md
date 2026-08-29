@@ -18,6 +18,21 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 
 ## 실행 절차
 
+0. **주차로 불렸으면 폴더를 코드로 옮긴다.** 사용자는 "2주차 …" 처럼 주차로
+   부르는데 아래 절차의 경로는 `<실험NN>/` 이다. **매핑은 1:1 이 아니다** —
+   실험4는 7주차다. 손으로 옮기지 말고 아래를 돌린다.
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   print(config.folder_for_week(<N>))
+   "
+   ```
+
+   출력이 이후 모든 경로의 `<실험NN>` 이다. 사용자가 `실험N` 으로 불렀으면
+   `config.experiment_dir(<N>)` 을 대신 쓴다. `ValueError` 가 나면(중간고사·범위
+   밖) 그 메시지를 그대로 사용자에게 전하고 중단한다.
+
 1. **주차·명세·결선도 확인.** `<실험NN>/체크리스트/명세.md` 가 없으면 거절하고
    `init-lab-experiment` 또는 명세 작성(교안 판독)을 안내한다. `<실험NN>/결선도/netlist.md`
    가 없으면 §3 의 `check_netlist` 가 "결선도 netlist 파일이 없다" error 를 내는데,
