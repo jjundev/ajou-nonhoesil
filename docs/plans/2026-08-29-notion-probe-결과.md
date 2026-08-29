@@ -1,0 +1,73 @@
+# 노션 API 프로브 결과 (2026-08-29)
+
+계획서 `2026-08-29-notion-report-loop.md` Task 1 의 산출물. 실측값이며,
+`scripts/lab/notion.py` 와 `scripts/lab/validate.py` 의 상수·분기가 이 문서를 근거로 한다.
+
+부모 페이지: `3cbb06d263bc80ecbbeec20761dc3f92` (`.claude/과목정보.md` 의 `notion_parent_page_id`)
+API 버전: `2026-03-11` · integration 종류: **internal**
+
+## 결론 요약
+
+| 항목 | 결과 |
+|---|---|
+| `POST /v1/pages` 의 `markdown` 파라미터 | **작동한다.** md→블록 JSON 변환기가 필요 없다 |
+| 응답의 page id 키 / URL 키 | `id` / `url` (`public_url` 도 함께 온다) |
+| 첫 `#` 헤딩 | **페이지 제목으로 흡수되고 본문에서 사라진다** |
+| `GET /v1/pages/{id}/markdown` | **internal integration 에서 열린다.** 자동 되읽기 가능 |
+| 되읽기 응답에서 마크다운이 담긴 키 | `markdown` |
+| 되읽기 응답의 다른 키 | `id`, `object`, `request_id`, `truncated`, `unknown_block_ids` |
+
+## 왕복에서 보존되는 것
+
+- `##` 이하 헤딩 — 텍스트 그대로
+- `> 인용` — `>` 형태 그대로 (이 보고서들의 `> 출처:` 근거 표기가 살아남는다)
+- 산문 텍스트
+
+## 왕복에서 **변형되는** 것
+
+### 1. 파이프 표 → HTML `<table>` (이것이 가장 중요하다)
+
+올린 것:
+
+    | A | B | C |
+    |---|---|---|
+    | 0 | 0 | 0 |
+
+되읽은 것:
+
+    <table header-row="true">
+    <tr>
+    <td>A</td>
+    <td>B</td>
+    <td>C</td>
+    </tr>
+    <tr>
+    <td>0</td>
+    ...
+    </table>
+
+**`md.parse_tables()` 는 파이프 표만 인식하므로 되읽은 문서에서 표를 0개로 센다.**
+`validate.markdown_shape` 가 이 형태를 함께 세지 않으면 `check_notion_roundtrip` 이
+매 업로드마다 "표가 N개에서 0개로 줄었다"를 띄워, 진짜 손실을 가리는 잡음이 된다.
+
+`header-row="true"` 일 때 첫 `<tr>` 은 헤더다 — `MdTable.rows` 는 헤더를 빼고 세므로
+행 수를 맞추려면 여기서도 빼야 한다.
+
+### 2. 인라인 수식에 백틱이 붙는다
+
+올린 `$\overline{A \cdot B}$` → 되읽으면 ``$`\overline{A \cdot B}`$``.
+질문 8에서 미룬 "보수 `'` → LaTeX 오버바 승격" 을 나중에 열 때, 왕복 후 형태가
+입력과 다르다는 점을 baseline 이 흡수한다(원본이 아니라 baseline 과 비교하는 이유).
+
+### 3. 빈 줄이 사라진다
+
+블록 사이의 빈 줄이 제거된다. 문단 경계가 줄바꿈 하나로 바뀐다 — 예상했던 잡음이며,
+구조 불변량만 보는 설계가 이걸 무시한다.
+
+## 아직 확인하지 않은 것
+
+- **오버바 렌더 여부** — `$...$` 가 노션 화면에서 실제로 오버바로 보이는지는 사람이
+  눈으로 봐야 한다. 프로브 페이지에 검사용 한 줄을 심어 두었다.
+- `truncated` / `unknown_block_ids` 가 언제 참이 되는지. 큰 문서에서 되읽기가 잘릴
+  가능성이 있다 — 실험01 예비보고서(19.5KB)로 파일럿할 때 이 두 값을 확인할 것.
+- 상대경로 이미지가 노션에서 어떤 블록이 되는지(깨진 이미지인지 텍스트인지).
