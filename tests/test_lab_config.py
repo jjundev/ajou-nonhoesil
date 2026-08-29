@@ -149,6 +149,7 @@ class SkillTemplateTest(unittest.TestCase):
 
         root = config.find_project_root(Path(__file__))
         templates = sorted((root / ".claude" / "skills").glob("*/template.html"))
+        self.assertTrue(templates, "template.html 을 하나도 못 찾으면 이 테스트는 공허하게 통과한다")
         with tempfile.TemporaryDirectory() as tmp:
             for tmpl in templates:
                 with self.subTest(template=tmpl.parent.name):

@@ -40,7 +40,9 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 
    출력이 이후 모든 경로의 `<실험NN>` 이다. 사용자가 `실험N` 으로 불렀으면
    `config.experiment_dir(<N>)` 을 대신 쓴다. `ValueError` 가 나면(중간고사·범위
-   밖) 그 메시지를 그대로 사용자에게 전하고 중단한다.
+   밖) 그 메시지를 그대로 사용자에게 전하고 중단한다. 13~15주차는 `실험NN`
+   대신 `프로젝트` 를 돌려준다 — 그 뒤로는 모든 경로에서 `<실험NN>/` 자리에
+   `프로젝트/` 를 쓴다.
 
 1. **주차 폴더·명세·기록.md 확인.** `<실험NN>/체크리스트/기록.md` 가 없으면
    **거절**하고 ② `prep-lab-checklist` 를 안내한다(기록.md 는 명세에서
@@ -242,12 +244,14 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     from pathlib import Path
     from scripts.lab import config
     info = config.load_course_info(config.find_project_root(Path('.')))
-    print('team=', info.get('team'), '/ ids=', info.get('student_ids'),
-          '/ names=', info.get('student_names'))
+    print('미확정:', config.missing_identity(info) or '없음')
     "
     ```
 
-    - **셋 다 `~` 가 아니면(조 편성 확정):** 표지가 필요하다고 기록해 둔다.
+    판정은 ⑥ `make-lab-report-cover` 1b 단계와 **같은 함수**를 쓴다 — 두 곳이
+    따로 판정하면 한쪽만 고쳐지고 다른 쪽이 `None` 을 표지에 찍는다.
+
+    - **`미확정: 없음` 이면(조 편성 확정):** 표지가 필요하다고 기록해 둔다.
       생성·병합은 13단계에서 한다.
     - **하나라도 `~` 면(조 편성 미확정):** 표지를 만들지 않는다. 본문 서두에
       "표지는 조 편성 확정 후 결합 예정" 안내를 (헤딩이 아닌 `.cover-pending`
