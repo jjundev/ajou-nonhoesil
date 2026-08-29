@@ -30,6 +30,21 @@ class TestCourseInfo(unittest.TestCase):
         )
         self.assertIsNone(config.load_course_info(missing)["ai_usage_log"])
 
+    def test_notion_parent_page_id_is_read(self):
+        info = config.load_course_info(ROOT)
+        self.assertIn("notion_parent_page_id", info)
+
+    def test_notion_parent_page_id_defaults_when_the_key_is_absent(self):
+        """미확정이면 지어내지 않는다. `ai_usage_log` 와 같은 규칙이다."""
+        missing = Path(tempfile.mkdtemp())
+        (missing / ".claude").mkdir()
+        (missing / ".claude" / "과목정보.md").write_text(
+            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+            "professor: 허용석 교수님\nclass_section: C082\n---\n",
+            encoding="utf-8",
+        )
+        self.assertIsNone(config.load_course_info(missing)["notion_parent_page_id"])
+
 
 class TestReportFormat(unittest.TestCase):
     def test_default_preset_is_intersection(self):
