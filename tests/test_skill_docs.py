@@ -54,12 +54,12 @@ def cross_reference_errors(text):
     for token in re.findall(r"§절대 규칙 ([\d·~]+)", text):
         for n in sorted(_expand(token) - rules):
             errors.append(f"§절대 규칙 {n} 없음")
-    for token in re.findall(r"§?실행 절차 (\d+)", text):
-        if int(token) not in steps:
-            errors.append(f"실행 절차 {token} 없음")
-    for token in re.findall(r"(\d+)단계", text):
-        if int(token) not in steps:
-            errors.append(f"{token}단계 없음")
+    for token in re.findall(r"§?실행 절차 ([\d·~]+)", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"실행 절차 {n} 없음")
+    for token in re.findall(r"([\d·~]+)단계", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"{n}단계 없음")
     return errors
 
 
@@ -82,6 +82,14 @@ class CrossReferenceChecker(unittest.TestCase):
                "4. **넷.** §절대 규칙 1~3 과 §절대 규칙 2·9 를 본다\n"
                "\n## 실행 절차\n\n0. **영.** 본문\n")
         self.assertEqual(cross_reference_errors(doc), ["§절대 규칙 9 없음"])
+
+    def test_expands_lists_in_step_references_too(self):
+        # `5·6단계` 같은 묶음 인용에서 앞 번호가 조용히 빠지면 안 된다 —
+        # write-result-report 가 실제로 쓰는 형태다.
+        doc = ("## 절대 규칙\n\n1. **하나.** 3·9단계 와 §실행 절차 2·8 을 본다\n"
+               "\n## 실행 절차\n\n2. **둘.** 본문\n3. **셋.** 본문\n")
+        self.assertEqual(cross_reference_errors(doc),
+                         ["실행 절차 8 없음", "9단계 없음"])
 
     def test_a_clean_document_has_no_errors(self):
         doc = ("## 절대 규칙\n\n1. **하나.** §절대 규칙 2 와 0단계 를 본다\n"

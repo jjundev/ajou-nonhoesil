@@ -132,12 +132,12 @@ def cross_reference_errors(text):
     for token in re.findall(r"§절대 규칙 ([\d·~]+)", text):
         for n in sorted(_expand(token) - rules):
             errors.append(f"§절대 규칙 {n} 없음")
-    for token in re.findall(r"§?실행 절차 (\d+)", text):
-        if int(token) not in steps:
-            errors.append(f"실행 절차 {token} 없음")
-    for token in re.findall(r"(\d+)단계", text):
-        if int(token) not in steps:
-            errors.append(f"{token}단계 없음")
+    for token in re.findall(r"§?실행 절차 ([\d·~]+)", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"실행 절차 {n} 없음")
+    for token in re.findall(r"([\d·~]+)단계", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"{n}단계 없음")
     return errors
 
 
@@ -160,6 +160,14 @@ class CrossReferenceChecker(unittest.TestCase):
                "4. **넷.** §절대 규칙 1~3 과 §절대 규칙 2·9 를 본다\n"
                "\n## 실행 절차\n\n0. **영.** 본문\n")
         self.assertEqual(cross_reference_errors(doc), ["§절대 규칙 9 없음"])
+
+    def test_expands_lists_in_step_references_too(self):
+        # `5·6단계` 같은 묶음 인용에서 앞 번호가 조용히 빠지면 안 된다 —
+        # write-result-report 가 실제로 쓰는 형태다.
+        doc = ("## 절대 규칙\n\n1. **하나.** 3·9단계 와 §실행 절차 2·8 을 본다\n"
+               "\n## 실행 절차\n\n2. **둘.** 본문\n3. **셋.** 본문\n")
+        self.assertEqual(cross_reference_errors(doc),
+                         ["실행 절차 8 없음", "9단계 없음"])
 
     def test_a_clean_document_has_no_errors(self):
         doc = ("## 절대 규칙\n\n1. **하나.** §절대 규칙 2 와 0단계 를 본다\n"
@@ -199,7 +207,7 @@ zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -2
 ```
 
 Expected: `test_no_bare_section_number_references` 가 `FAIL` — subTest `예보` 에서 `['§3'] != []`.
-나머지 5개(`CrossReferenceChecker` 4개 + `test_no_dangling_cross_references`)는 `ok`.
+나머지 6개(`CrossReferenceChecker` 5개 + `test_no_dangling_cross_references`)는 `ok`.
 
 **`test_no_dangling_cross_references` 는 지금 통과한다.** 이 테스트는 결함을 찾는 도구가 아니라 이미 두 번 고친 결함이 되살아나는 것을 막는 그물이다 — 그래서 검사기 자체를 `CrossReferenceChecker` 4개로 따로 검증했다. 통과를 보고 "테스트가 무의미하다"고 판단하지 말 것.
 
@@ -233,7 +241,7 @@ Expected: `Ran 6 tests`, `OK`.
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 328 tests`, `OK`. (322 + 6)
+Expected: `Ran 329 tests`, `OK`. (322 + 7)
 
 - [ ] **Step 5: 커밋**
 
@@ -322,7 +330,7 @@ Expected: 새 테스트 2개가 `FAIL` (`AssertionError: ... not found in ...`),
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 330 tests`, `OK`.
+Expected: `Ran 331 tests`, `OK`.
 
 - [ ] **Step 6: 커밋**
 
@@ -419,7 +427,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 332 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
+Expected: `Ran 333 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
 
 - [ ] **Step 6: 커밋**
 
@@ -572,7 +580,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_ai_usage_log_...` 는 subTest `예
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 334 tests`, `OK`.
+Expected: `Ran 335 tests`, `OK`.
 
 명령 자체가 실제로 도는지도 한 번 확인한다 (v6 정본 대상, 산출물을 만들지 않는다):
 
@@ -688,7 +696,7 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 336 tests`, `OK`.
+Expected: `Ran 337 tests`, `OK`.
 
 규칙 번호가 밀리지 않았는지 눈으로 확인한다:
 
@@ -819,7 +827,7 @@ Expected: `?? 실험01/output/eli5_실험01.html` 한 줄만. (`.superpowers/sdd
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `OK`, 테스트 수는 336 + 새로 추가한 만큼.
+Expected: `OK`, 테스트 수는 337 + 새로 추가한 만큼.
 
 ```bash
 git add tests/test_skill_docs.py .claude/skills/write-result-report/SKILL.md
