@@ -69,3 +69,53 @@ class TestRequest(unittest.TestCase):
             opener.side_effect = urllib.error.URLError("네트워크 없음")
             with self.assertRaises(notion.NotionError):
                 notion._request("GET", "/pages/x", "ntn_abc")
+
+
+import tempfile
+
+
+class TestPushMarkdown(unittest.TestCase):
+    def test_부모_페이지와_마크다운을_그대로_보낸다(self):
+        created = json.loads((FIXTURES / "notion_create_page.json").read_text("utf-8"))
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response(created)
+            out = notion.push_markdown("# 제목\n\n본문", "PARENT", "ntn_abc")
+        sent = json.loads(opener.call_args[0][0].data.decode())
+        self.assertEqual(sent["parent"], {"page_id": "PARENT"})
+        self.assertEqual(sent["markdown"], "# 제목\n\n본문")
+        self.assertEqual(out["page_id"], created["id"])
+
+    def test_부모_페이지가_비면_Connect_안내와_함께_거절한다(self):
+        with self.assertRaises(notion.NotionError) as ctx:
+            notion.push_markdown("# 제목", "", "ntn_abc")
+        self.assertIn("notion_parent_page_id", str(ctx.exception))
+        self.assertIn("Connect", str(ctx.exception))
+
+
+class TestRecords(unittest.TestCase):
+    def setUp(self):
+        self.out = Path(tempfile.mkdtemp())
+
+    def test_없으면_빈_목록이다(self):
+        self.assertEqual(notion.load_records(self.out), [])
+
+    def test_version_은_같은_kind_안에서만_증가한다(self):
+        """예보와 결보는 서로 다른 문서다. 한 카운터를 공유하면 '예보 v2' 다음이
+        '결보 v3' 이 되어, 몇 번째 예보인지 알 수 없어진다."""
+        a = notion.append_record(self.out, "예비보고서", "P1", "u1", "s.md", "2026-08-29 10:00")
+        b = notion.append_record(self.out, "결과보고서", "P2", "u2", "s.md", "2026-08-29 11:00")
+        c = notion.append_record(self.out, "예비보고서", "P3", "u3", "s.md", "2026-08-29 12:00")
+        self.assertEqual((a["version"], b["version"], c["version"]), (1, 1, 2))
+
+    def test_기존_이력을_지우지_않는다(self):
+        notion.append_record(self.out, "예비보고서", "P1", "u1", "s.md", "2026-08-29 10:00")
+        notion.append_record(self.out, "예비보고서", "P2", "u2", "s.md", "2026-08-29 12:00")
+        records = notion.load_records(self.out)
+        self.assertEqual([r["page_id"] for r in records], ["P1", "P2"])
+
+    def test_깨진_JSON_은_조용히_덮어쓰지_않는다(self):
+        """이력이 사라지면 어느 노션 페이지가 몇 번째 업로드인지 영영 알 수 없다.
+        손으로 고칠 수 있게 시끄럽게 실패한다."""
+        (self.out / notion.RECORD_NAME).write_text("{깨짐", encoding="utf-8")
+        with self.assertRaises(notion.NotionError):
+            notion.load_records(self.out)

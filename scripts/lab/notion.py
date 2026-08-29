@@ -14,6 +14,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 API = "https://api.notion.com/v1"
 VERSION = "2026-03-11"          # `markdown` 파라미터가 이 버전부터 있다
@@ -69,3 +70,80 @@ def _request(method, path, token, payload=None, timeout=120) -> dict:
         raise NotionError(f"{method} {path} 실패 (HTTP {e.code}): {detail}") from None
     except urllib.error.URLError as e:
         raise NotionError(f"{method} {path} 연결 실패: {e.reason}") from None
+
+
+RECORD_NAME = "notion.json"
+RECORD_SCHEMA = "notion-uploads/v1"
+
+
+def push_markdown(md_text, parent_page_id, token, timeout=120) -> dict:
+    """마크다운으로 노션 페이지를 **새로** 만든다. 덮어쓰기는 제공하지 않는다.
+
+    이 루프는 구조적으로 "사용자가 노션에서 고쳤지만 아직 되읽히지 않은 구간"을
+    갖는다. 그 구간에 재업로드가 덮어쓰면 수정이 **경고 없이** 사라지고, 노션
+    페이지 덮어쓰기는 되돌리기 어렵다. 그래서 이 모듈에는 갈아엎는 함수가 없다.
+
+    페이지 제목은 마크다운의 첫 `#` 헤딩에서 온다 — 즉 **제목에 버전이 없다.**
+    몇 번째 업로드인지는 `notion.json` 이 안다.
+    """
+    if not (parent_page_id or "").strip():
+        raise NotionError(
+            "부모 페이지 id 가 비어 있습니다. `.claude/과목정보.md` 의 "
+            "notion_parent_page_id 를 채우고, 노션에서 그 페이지에 integration 을 "
+            "Connect 했는지 확인하세요 (안 하면 404 object_not_found 가 납니다)."
+        )
+    data = _request("POST", "/pages", token, {
+        "parent": {"page_id": parent_page_id},
+        "markdown": md_text,
+    }, timeout)
+    return {"page_id": data["id"], "url": data.get("url", "")}
+
+
+def _record_file(output_dir) -> Path:
+    return Path(output_dir) / RECORD_NAME
+
+
+def load_records(output_dir) -> list:
+    """업로드 이력을 읽는다. 없으면 빈 목록, 깨졌으면 시끄럽게 실패한다.
+
+    조용히 빈 목록으로 되돌리면 이후 업로드가 version 1 부터 다시 세면서 기존
+    이력을 통째로 덮어쓴다 — 어느 노션 페이지가 몇 번째였는지 영영 알 수 없어진다.
+    """
+    path = _record_file(output_dir)
+    if not path.exists():
+        return []
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("uploads", [])
+    except json.JSONDecodeError as e:
+        raise NotionError(
+            f"{path} 를 읽을 수 없습니다 ({e}). 손으로 고치거나 지우세요 — "
+            "조용히 덮어쓰면 업로드 이력이 사라집니다."
+        ) from None
+
+
+def append_record(output_dir, kind, page_id, url, source, when) -> dict:
+    """업로드 한 건을 `<실험NN>/output/notion.json` 에 덧붙인다.
+
+    `when` 을 인자로 받는다. 이 값은 파일에 굳으므로 테스트가 고정값을 넣을 수
+    있어야 한다.
+
+    `version` 은 **같은 kind 안에서만** 센다 — 예비보고서와 결과보고서는 서로
+    다른 문서라 카운터를 공유하면 "몇 번째 예보인지"를 알 수 없다.
+    """
+    records = load_records(output_dir)
+    record = {
+        "kind": kind,
+        "version": sum(1 for r in records if r.get("kind") == kind) + 1,
+        "page_id": page_id,
+        "url": url,
+        "source": source,
+        "uploaded_at": when,
+    }
+    records.append(record)
+    path = _record_file(output_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"schema": RECORD_SCHEMA, "uploads": records},
+                   ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8")
+    return record
