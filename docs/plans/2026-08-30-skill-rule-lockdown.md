@@ -374,7 +374,7 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
 
 **배경 — 왜 이 두 건인가.** 브레드보드 템플릿은 §절대 규칙 3 과 §섹션별 재료가 둘 다 "산출물에 포함된다"고 말하는데 **경로를 말하는 곳이 없다.** 실제 경로는 §절대 규칙 8 의 예시 한 줄에만 나오고, 그 규칙의 주제는 정반대("경로를 산문에 쓰지 마라")다. 게다가 저장소에 사본이 둘이다 (`.claude/assets/Breadboard.jpg`, `from_the_past/정리/강의노트/Breadboard.jpg`).
 
-소절 수 규칙은 실측에서 나왔다 — 같은 실험을 규칙만 보고 재생성했더니 8,345자가 11,130자가 됐고, 회로 결선 소절이 4개에서 6개로 늘었다(항목 단위가 아니라 회로 단위로 쪼갰다). 사용자가 승인한 v6 은 정확히 `items` 3개 → 과정 3소절, 결선 4소절이다.
+소절 수 규칙은 실측에서 나왔다 — 같은 실험을 규칙만 보고 재생성했더니 8,345자가 11,130자가 됐고, 회로 결선 소절이 4개에서 6개로 늘었다(항목 단위가 아니라 회로 단위로 쪼갰다). 사용자가 승인한 v6 은 `items` 3개 → 과정 3소절, 결선 6소절이다(공통 결선 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
 
@@ -430,16 +430,22 @@ Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_
 
 ```
 17. **소절 수는 명세에서 파생한다 — 늘리지 않는다.** 실험 과정 절의 소절은
-    명세 `items` 하나당 하나이고, 회로 결선 절의 소절은 그 위에 공통 결선
-    규칙 하나를 더한 만큼이다(`items` 3개면 과정 3소절, 결선 4소절).
-    **회로 단위로 더 쪼개지 않는다** — 3입력 AND 와 OR 는 명세에서 같은
-    항목이므로 한 소절이다. 이론 절의 범위는 §절대 규칙 16 이 정하므로
-    따로 세지 않는다.
+    명세 `items` 하나당 정확히 하나다. 회로 결선 절은 거기에 **고정 소절
+    셋**이 붙는다 — 맨 앞의 공통 결선 규칙, 그리고 맨 뒤의 실험 전 확인할
+    사항과 브레드보드 작도(§섹션별 재료가 셋의 재료를 든다). `items` 3개면
+    과정 3소절, 결선 6소절이다. 다만 그 주 결선도 자료에 적어 둘 주의 사항이
+    하나도 없으면 실험 전 확인할 사항 소절을 만들지 않는다 — 없는 것을
+    지어내지 않는다(§절대 규칙 5). 다섯 주차를 확인한 결과 지금까지는 모두
+    적을 것이 있었다.
+
+    **항목 안에서 회로 단위로 더 쪼개지 않는다** — 3입력 AND 와 OR 는 명세
+    에서 한 항목이므로 배선 소절도 하나다. 이론 절의 범위는 §절대 규칙 16 이
+    정하므로 따로 세지 않는다.
 
     **길어지면 소절을 쪼개는 게 아니라 지운다.** 규칙만 보고 같은 보고서를
-    다시 쓰게 했더니 8,345자가 11,130자가 됐고 결선 소절이 4개에서 6개로
-    늘었다. 늘어난 대목은 예외 없이 §절대 규칙 14·15 가 이미 금지한
-    종류였다 — 표를 다시 읽어 주는 문장과 표를 예고하는 문장이다.
+    다시 쓰게 했더니 8,345자가 11,130자가 됐다. 늘어난 원인은 둘이었다 —
+    배선 소절을 항목(3개)이 아니라 회로(5개) 단위로 쪼갠 것, 그리고
+    §절대 규칙 14·15 가 이미 금지한 종류의 문장이었다.
 ```
 
 - [ ] **Step 5: 테스트를 돌려 통과를 확인한다**
@@ -448,7 +454,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 334 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
+Expected: `Ran 336 tests`, `OK`. (`test_no_dangling_cross_references` 도 계속 통과해야 한다 — 규칙 17 이 참조하는 14·15·16 은 전부 실재한다.)
 
 - [ ] **Step 6: 커밋**
 
@@ -601,7 +607,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_ai_usage_log_...` 는 subTest `예
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 336 tests`, `OK`.
+Expected: `Ran 338 tests`, `OK`.
 
 명령 자체가 실제로 도는지도 한 번 확인한다 (v6 정본 대상, 산출물을 만들지 않는다):
 
@@ -717,7 +723,7 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 338 tests`, `OK`.
+Expected: `Ran 340 tests`, `OK`.
 
 규칙 번호가 밀리지 않았는지 눈으로 확인한다:
 
@@ -848,7 +854,7 @@ Expected: `?? 실험01/output/eli5_실험01.html` 한 줄만. (`.superpowers/sdd
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `OK`, 테스트 수는 338 + 새로 추가한 만큼.
+Expected: `OK`, 테스트 수는 340 + 새로 추가한 만큼.
 
 ```bash
 git add tests/test_skill_docs.py .claude/skills/write-result-report/SKILL.md

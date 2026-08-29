@@ -78,6 +78,18 @@ def cross_reference_errors(text):
     return errors
 
 
+class SubsectionCounter(unittest.TestCase):
+    """`subsection_counts` 가 문자열이 아니라 헤딩 구조를 세는지 본다."""
+
+    def test_counts_subsections_per_major_section(self):
+        doc = ("# 가\n## 가1\n본문\n## 가2\n# 나\n## 나1\n## 나2\n## 나3\n")
+        self.assertEqual(subsection_counts(doc), {"가": 2, "나": 3})
+
+    def test_a_major_section_with_no_subsections_counts_zero(self):
+        doc = ("# 가\n본문만 있다\n# 나\n## 나1\n")
+        self.assertEqual(subsection_counts(doc), {"가": 0, "나": 1})
+
+
 class CrossReferenceChecker(unittest.TestCase):
     """검사기 자체가 죽은 참조를 잡는지부터 확인한다."""
 
