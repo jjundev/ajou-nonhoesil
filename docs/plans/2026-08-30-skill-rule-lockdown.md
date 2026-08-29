@@ -365,7 +365,7 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
 ## Task 3: B(브레드보드 템플릿) · 소절 수 파생 규칙 (신설 §절대 규칙 17)
 
 **Files:**
-- Modify: `tests/test_skill_docs.py` (테스트 3개 추가)
+- Modify: `tests/test_skill_docs.py` (테스트 5개 추가 — `SubsectionCounter` 2 + `SkillDocInvariants` 3, 그리고 `BASELINE_V6` 상수와 `subsection_counts` 헬퍼)
 - Modify: `.claude/skills/write-pre-report/SKILL.md` — §섹션별 재료 `회로 결선도` 행, §절대 규칙 끝에 17 신설
 
 **Interfaces:**
@@ -378,7 +378,75 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
 
-`SkillDocInvariants` 클래스 안에 붙인다.
+모듈 수준에 상수와 헬퍼를 더한다. 상수는 `RESULT = …` 다음에, 헬퍼는
+`numbered_items` 다음에 놓는다.
+
+```python
+BASELINE_V6 = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v6.md"
+```
+
+```python
+def subsection_counts(text):
+    """`# 대절` 마다 그 아래 `## 소절` 이 몇 개인지 센다."""
+    counts = {}
+    major = None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            if major is not None:
+                counts[major] += 1
+        elif line.startswith("# "):
+            major = line[2:].strip()
+            counts[major] = 0
+    return counts
+
+
+def _expand(token):
+    """`11·13`, `10~15`, `7` 을 번호 집합으로 편다."""
+    out = set()
+    for part in token.split("·"):
+        if "~" in part:
+            lo, hi = part.split("~", 1)
+            out.update(range(int(lo), int(hi) + 1))
+        elif part.isdigit():
+            out.add(int(part))
+    return out
+
+
+def cross_reference_errors(text):
+    """`§절대 규칙 N`·`§실행 절차 N`·`N단계` 가 실재하는 항목을 가리키는지 본다."""
+    sec = sections(text)
+    rules = numbered_items(sec.get("절대 규칙", ""))
+    steps = numbered_items(sec.get("실행 절차", ""))
+    errors = []
+    for token in re.findall(r"§절대 규칙 ([\d·~]+)", text):
+        for n in sorted(_expand(token) - rules):
+            errors.append(f"§절대 규칙 {n} 없음")
+    for token in re.findall(r"§?실행 절차 ([\d·~]+)", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"실행 절차 {n} 없음")
+    for token in re.findall(r"([\d·~]+)단계", text):
+        for n in sorted(_expand(token) - steps):
+            errors.append(f"{n}단계 없음")
+    return errors
+```
+
+첫 테스트 클래스 앞에 헬퍼 자신의 단위 테스트를 둔다 — 정본 파일의 모양에
+기대지 않고 "문자열이 아니라 구조를 센다"를 보장하기 위해서다.
+
+```python
+class SubsectionCounter(unittest.TestCase):
+    """`subsection_counts` 가 문자열이 아니라 헤딩 구조를 세는지 본다."""
+
+    def test_counts_subsections_per_major_section(self):
+        doc = ("# 가\n## 가1\n본문\n## 가2\n# 나\n## 나1\n## 나2\n## 나3\n")
+        self.assertEqual(subsection_counts(doc), {"가": 2, "나": 3})
+
+    def test_a_major_section_with_no_subsections_counts_zero(self):
+        doc = ("# 가\n본문만 있다\n# 나\n## 나1\n")
+        self.assertEqual(subsection_counts(doc), {"가": 0, "나": 1})
+```
+
+`SkillDocInvariants` 클래스 안에 셋을 붙인다.
 
 ```python
     def test_breadboard_template_path_and_home_are_pinned(self):
@@ -394,6 +462,16 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
         self.assertIn("소절 수는 명세에서 파생한다", self.docs["예보"])
         rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
         self.assertIn(17, rules)
+
+    def test_worked_subsection_example_matches_the_approved_report(self):
+        # 규칙 17 의 예시 숫자를 사용자가 승인한 정본에서 실제로 세어 대조한다.
+        # 계획이 이 숫자를 한 번 틀렸다 — 결선 소절을 4개라고 썼는데 정본은
+        # 6개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
+        # 문자열 존재만 보면 같은 실수가 다시 지나간다.
+        counts = subsection_counts(BASELINE_V6.read_text(encoding="utf-8"))
+        self.assertEqual(counts["실험 과정 및 예상 결과"], 3)
+        self.assertEqual(counts["회로 결선도"], 6)
+        self.assertIn("`items` 3개면 과정 3소절, 결선\n    6소절이다", self.docs["예보"])
 ```
 
 - [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
@@ -402,7 +480,7 @@ git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스�
 zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -20'
 ```
 
-Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_are_pinned` 는 `.claude/assets/Breadboard.jpg not found in '| 회로 결선도 | ...'`, `test_subsection_count_is_derived_from_the_spec` 는 문자열 부재.
+Expected: 새 테스트 5개 중 `SkillDocInvariants` 의 3개가 `FAIL` (`SubsectionCounter` 의 2개는 헬퍼만 쓰므로 바로 통과한다). `test_breadboard_template_path_and_home_are_pinned` 는 `.claude/assets/Breadboard.jpg not found in '| 회로 결선도 | ...'`, 나머지 둘은 문자열 부재.
 
 - [ ] **Step 3: §섹션별 재료 의 `회로 결선도` 행을 고친다**
 
@@ -432,8 +510,8 @@ Expected: 새 테스트 2개가 `FAIL`. `test_breadboard_template_path_and_home_
 17. **소절 수는 명세에서 파생한다 — 늘리지 않는다.** 실험 과정 절의 소절은
     명세 `items` 하나당 정확히 하나다. 회로 결선 절은 거기에 **고정 소절
     셋**이 붙는다 — 맨 앞의 공통 결선 규칙, 그리고 맨 뒤의 실험 전 확인할
-    사항과 브레드보드 작도(§섹션별 재료가 셋의 재료를 든다). `items` 3개면
-    과정 3소절, 결선 6소절이다. 다만 그 주 결선도 자료에 적어 둘 주의 사항이
+    사항과 브레드보드 작도(§섹션별 재료가 셋의 재료를 든다). `items` 3개면 과정 3소절, 결선
+    6소절이다. 다만 그 주 결선도 자료에 적어 둘 주의 사항이
     하나도 없으면 실험 전 확인할 사항 소절을 만들지 않는다 — 없는 것을
     지어내지 않는다(§절대 규칙 5). 다섯 주차를 확인한 결과 지금까지는 모두
     적을 것이 있었다.
