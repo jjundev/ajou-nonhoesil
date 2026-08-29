@@ -256,13 +256,14 @@ git commit -m "test: 스킬 문서 상호참조 불변식 + 죽은 참조 §3 �
 
 **Files:**
 - Modify: `tests/test_skill_docs.py` (`SkillDocInvariants` 에 테스트 2개 추가)
-- Modify: `.claude/skills/write-pre-report/SKILL.md` — §절대 규칙 13, §절대 규칙 11
+- Modify: `.claude/skills/write-pre-report/SKILL.md` — §절대 규칙 13
+- Modify: `.claude/skills/write-result-report/SKILL.md` — §절대 규칙 14, §절대 규칙 12
 
 **Interfaces:**
-- Consumes: Task 1 의 `SkillDocInvariants.setUp` 이 채우는 `self.docs["예보"]`
+- Consumes: Task 1 의 `SkillDocInvariants.setUp` 이 채우는 `self.docs` (예보, 결과 모두)
 - Produces: 없음 (테스트만 늘어난다)
 
-**배경 — 왜 이 두 건인가.** 격리 에이전트가 실험01 을 재생성했을 때 둘 다 **판단을 강요당한** 자리다. 규칙 13 의 "형제 소절"이 같은 대절 안인지 문서 전체인지 말하지 않아, 반대로 읽으면 표 10개의 레이아웃이 통째로 뒤집힌다. 규칙 11 은 `#`·`##` 만 정의해서 소절 아래 한 단계가 더 필요할 때 `###` 를 써도 되는지가 비어 있다.
+**배경 — 왜 이 두 건인가.** 격리 에이전트가 실험01 을 재생성했을 때 둘 다 **판단을 강요당한** 자리다. 규칙 13 의 "형제 소절"이 같은 대절 안인지 문서 전체인지 말하지 않아, 반대로 읽으면 표 10개의 레이아웃이 통째로 뒤집힌다. 규칙 11 은 `#`·`##` 만 정의해서 소절 아래 한 단계가 더 필요할 때 `###` 를 써도 되는지가 비어 있다. **결과보고서 쪽이 오히려 더 중요하다** — `항목반복형` 프리셋이 여기서 쓰이고 항목마다 표가 반복되기 때문이다.
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
 
@@ -270,14 +271,17 @@ git commit -m "test: 스킬 문서 상호참조 불변식 + 죽은 참조 §3 �
 
 ```python
     def test_sibling_subsection_scope_is_defined(self):
-        # 형제를 문서 전체로 읽으면 준비물·핀 배치·결선 표의 예외가 전부
-        # 무너져 표 10개의 레이아웃이 뒤집힌다.
-        self.assertIn("형제 소절(같은 대절 안의 소절)", self.docs["예보"])
+        # 형제를 문서 전체로 읽으면 소절 제목이 표 제목을 겸하는 예외가
+        # 무너져 표 레이아웃이 통째로 뒤집힌다. 두 스킬이 같은 기계를 쓴다.
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                self.assertIn("형제 소절(같은 대절 안의 소절)", text)
 
     def test_heading_levels_are_capped_at_two(self):
-        # `###` 를 허용하면 §절대 규칙 12 의 여백 규칙이 정의되지 않은
-        # 자리가 생긴다.
-        self.assertIn("`###` 이하는 쓰지 않는다", self.docs["예보"])
+        # `###` 를 허용하면 여백 규칙이 정의되지 않은 자리가 생긴다.
+        for name, text in self.docs.items():
+            with self.subTest(name):
+                self.assertIn("`###` 이하는 쓰지 않는다", text)
 ```
 
 - [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
@@ -286,18 +290,11 @@ git commit -m "test: 스킬 문서 상호참조 불변식 + 죽은 참조 §3 �
 zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -20'
 ```
 
-Expected: 새 테스트 2개가 `FAIL` (`AssertionError: ... not found in ...`), 기존 6개는 `ok`.
+Expected: 새 테스트 2개가 `FAIL` (각각 subTest `예보`·`결과` 양쪽), 기존 6개는 `ok`.
 
-- [ ] **Step 3: 규칙 13 을 고친다**
+- [ ] **Step 3: 예보 규칙 13 을 고친다**
 
-`.claude/skills/write-pre-report/SKILL.md` §절대 규칙 13 에서 아래 두 줄을 찾는다:
-
-```
-    씌운다 — 형제 소절의 같은 성격 표가 제목을 달고 있는데 이것만 맨몸이면
-    어긋나 보인다.
-```
-
-아래로 교체한다:
+`.claude/skills/write-pre-report/SKILL.md` §절대 규칙 13 에서 아래 다섯 줄을 찾는다:
 
 ```
     씌운다 — 형제 소절(같은 대절 안의 소절)의 같은 성격 표가 제목을 달고
@@ -307,24 +304,48 @@ Expected: 새 테스트 2개가 `FAIL` (`AssertionError: ... not found in ...`),
     그 예외가 전부 무너진다.
 ```
 
-- [ ] **Step 4: 규칙 11 을 고친다**
-
-같은 파일 §절대 규칙 11 의 첫 문단 마지막 줄을 찾는다:
+아래로 교체한다:
 
 ```
-    번호(`1.`·`2.1` 등)를 헤딩 텍스트에서 뺀다.
+    씌운다 — 형제 소절(같은 대절 안의 소절)의 같은 성격 표가 제목을 달고
+    있는데 이것만 맨몸이면 어긋나 보인다. **형제는 같은 대절 안까지다** —
+    다른 대절의 표와는 맞추지 않는다. 예를 들어 `# 실험 부품` 의 준비물·핀
+    배치 표는 서로 형제라 같이 맞추지만, `# 회로 결선도` 의 결선 표는 대절이
+    달라 그것들과 맞출 필요가 없다. 문서 전체를 형제로 보면 이 규칙이 든
+    예외가 전부 무너진다.
 ```
 
-그 줄 **바로 다음에** 빈 줄 하나와 아래 문단을 삽입한다 (기존 "한 단계씩 올리는 이유는…" 문단 앞):
+- [ ] **Step 4: 결과 규칙 14 를 고친다**
+
+`.claude/skills/write-result-report/SKILL.md` 의 규칙 14 에서 아래 두 줄을 찾는다:
+
+```
+    끼면 표가 하나여도 불릿 제목을 씌운다** — 형제 소절의 같은 성격 표가
+    제목을 달고 있는데 이것만 맨몸이면 어긋나 보인다.
+```
+
+아래로 교체한다:
+
+```
+    끼면 표가 하나여도 불릿 제목을 씌운다** — 형제 소절(같은 대절 안의 소절)의
+    같은 성격 표가 제목을 달고 있는데 이것만 맨몸이면 어긋나 보인다.
+    **형제는 같은 대절 안까지다** — 다른 대절의 표와는 맞추지 않는다. 대절이
+    다르면 표의 성격도 다르고, 문서 전체를 형제로 보면 이 규칙이 바로 위에서
+    든 예외(소절 제목이 곧 표 제목을 겸하는 경우)가 무너진다.
+```
+
+- [ ] **Step 5: 결과 규칙 12 를 고친다**
+
+같은 파일의 규칙 12 (97행) 다음에 빈 줄 하나와 아래 문단을 삽입한다 (기존 "번호가 빠지면…" 문단 앞):
 
 ```
     **헤딩은 이 두 단계뿐이다 — `###` 이하는 쓰지 않는다.** 소절 아래 한
-    단계가 더 필요해 보이면 헤딩을 늘리지 말고 §절대 규칙 13 의 굵은 불릿
+    단계가 더 필요해 보이면 헤딩을 늘리지 말고 §절대 규칙 14 의 굵은 불릿
     제목으로 흡수한다. `#`·`##` 두 단계면 노션 목차 블록이 충분히 읽히고,
-    단계를 늘리면 §절대 규칙 12 의 여백 규칙이 정의되지 않은 자리가 생긴다.
+    단계를 늘리면 §절대 규칙 13 의 여백 규칙이 정의되지 않은 자리가 생긴다.
 ```
 
-- [ ] **Step 5: 테스트를 돌려 통과를 확인한다**
+- [ ] **Step 6: 테스트를 돌려 통과를 확인한다**
 
 ```bash
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
@@ -332,11 +353,11 @@ zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "
 
 Expected: `Ran 331 tests`, `OK`.
 
-- [ ] **Step 6: 커밋**
+- [ ] **Step 7: 커밋**
 
 ```bash
-git add tests/test_skill_docs.py .claude/skills/write-pre-report/SKILL.md
-git commit -m "docs: 형제 소절 범위와 헤딩 단계 상한을 명시"
+git add tests/test_skill_docs.py .claude/skills/write-pre-report/SKILL.md .claude/skills/write-result-report/SKILL.md
+git commit -m "docs: 형제 소절 범위·헤딩 상한을 결과보고서 스킬에도 적용하고 예시를 정정"
 ```
 
 ---
