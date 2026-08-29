@@ -235,7 +235,7 @@ Expected: `test_no_bare_section_number_references` 가 `FAIL` — subTest `예�
 zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -12'
 ```
 
-Expected: `Ran 6 tests`, `OK`.
+Expected: `Ran 7 tests`, `OK`.
 
 ```bash
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
@@ -582,10 +582,54 @@ F: `validate.check_report_sections` 는 `item_count is None` 이면 per-item 반
         # item_count 없이 부르면 per-item 반복 횟수 검사가 통째로 생략된다.
         for name, text in self.docs.items():
             with self.subTest(name):
-                calls = re.findall(r"check_report_sections\([^)]*\)", text)
+                calls = call_arguments(text, "check_report_sections")
                 self.assertTrue(calls, "호출부가 없다")
                 for call in calls:
                     self.assertIn("item_count", call)
+```
+
+Task 4 의 호출부 검사는 정규식이 아니라 균형 괄호 스캐너를 쓴다 —
+`check_report_sections\([^)]*\)` 은 중첩 괄호 `len(spec.items)` 에서 한 칸 일찍
+끊겨서, 인자 순서가 바뀌면 있는 인자를 없다고 보고한다. 모듈 수준에 헬퍼를 두고
+그 자신의 단위 테스트를 붙인다.
+
+```python
+def call_arguments(text, func_name):
+    """`func(...)` 호출의 괄호 안을 균형을 맞춰 뽑는다.
+
+    정규식 `\([^)]*\)` 은 중첩 괄호(`len(spec.items)`)에서 한 칸 일찍 끊긴다.
+    지금은 인자 순서 덕분에 우연히 통과하지만, `item_count` 앞에 다른 중첩
+    호출이 오도록 순서가 바뀌면 있는 인자를 없다고 보고한다.
+    """
+    out = []
+    needle = func_name + "("
+    i = text.find(needle)
+    while i != -1:
+        j, depth = i + len(needle), 1
+        while j < len(text) and depth:
+            if text[j] == "(":
+                depth += 1
+            elif text[j] == ")":
+                depth -= 1
+            j += 1
+        out.append(text[i + len(needle):j - 1])
+        i = text.find(needle, j)
+    return out
+```
+
+```python
+class CallArgumentScanner(unittest.TestCase):
+    """`call_arguments` 가 중첩 괄호에서 일찍 끊기지 않는지 본다."""
+
+    def test_nested_parentheses_do_not_truncate_the_argument_list(self):
+        # 정규식 `\([^)]*\)` 은 여기서 `item_count` 앞에서 끊겨 거짓 실패를 낸다.
+        src = "f(str(p), fmt.pre, item_count=len(spec.items))"
+        self.assertEqual(call_arguments(src, "f"),
+                         ["str(p), fmt.pre, item_count=len(spec.items)"])
+
+    def test_finds_every_call_site(self):
+        src = "f(a)\n설명 문장\nf(b, c)\n"
+        self.assertEqual(call_arguments(src, "f"), ["a", "b, c"])
 ```
 
 - [ ] **Step 2: 테스트를 돌려 실패를 확인한다**
@@ -689,7 +733,7 @@ Expected: 새 테스트 2개가 `FAIL`. `test_ai_usage_log_...` 는 subTest `예
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 338 tests`, `OK`.
+Expected: `Ran 340 tests`, `OK`.
 
 명령 자체가 실제로 도는지도 한 번 확인한다 (v6 정본 대상, 산출물을 만들지 않는다):
 
@@ -805,7 +849,7 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `Ran 340 tests`, `OK`.
+Expected: `Ran 342 tests`, `OK`.
 
 규칙 번호가 밀리지 않았는지 눈으로 확인한다:
 
@@ -936,7 +980,7 @@ Expected: `?? 실험01/output/eli5_실험01.html` 한 줄만. (`.superpowers/sdd
 zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
 ```
 
-Expected: `OK`, 테스트 수는 340 + 새로 추가한 만큼.
+Expected: `OK`, 테스트 수는 342 + 새로 추가한 만큼.
 
 ```bash
 git add tests/test_skill_docs.py .claude/skills/write-result-report/SKILL.md
