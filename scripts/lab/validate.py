@@ -5,6 +5,7 @@
 """
 
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,15 +17,17 @@ from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
 
+_MARKS = {"error": "✗", "warn": "!", "info": "ℹ"}
+
+
 @dataclass
 class Finding:
-    level: str   # "error" | "warn"
+    level: str   # "error" | "warn" | "info"
     where: str
     message: str
 
     def __str__(self):
-        mark = "✗" if self.level == "error" else "!"
-        return f"{mark} {self.where} — {self.message}"
+        return f"{_MARKS.get(self.level, '!')} {self.where} — {self.message}"
 
 
 def _bit(cell, encoding):
@@ -273,6 +276,168 @@ def check_embedded_images(html_path) -> list:
             out.append(Finding("error", path.name,
                 f"이미지를 찾을 수 없다: {src!r} "
                 f"(HTML 위치 {path.parent} 기준으로 푼다)"))
+    return out
+
+
+# NFM(Notion-flavored Markdown) 이 손실시키는 문법들. 실측 근거는
+# docs/plans/2026-08-29-notion-probe-결과.md 에 있다.
+# NFM 이 **입력으로도** 받는 자체 블록 태그. 원시 HTML 이 아니라 노션의 문법이다 —
+# 목차 블록과 여백 블록은 학생이 노션에서 잡은 레이아웃을 소스 md 에 되돌려 넣기
+# 위해 필요하고, 이것들까지 "원시 HTML" 로 잡으면 그 레이아웃을 올릴 수 없다.
+# 입력 수용 여부는 실측했다 (docs/plans/2026-08-29-notion-probe-결과.md).
+# 긴 이름을 먼저 둔다 — `table` 이 앞에 오면 `table_of_contents` 가 가려진다.
+_NFM_BLOCK_TAGS = ("table_of_contents", "empty-block", "table", "tr", "td", "th",
+                   "toggle", "callout", "columns", "column", "span")
+_NFM_TAG_ALT = "|".join(_NFM_BLOCK_TAGS)
+
+_NFM_LOSSY = (
+    (re.compile(r"^#{5,}\s", re.M), "h5·h6 헤딩", "노션이 h4 로 강등한다"),
+    (re.compile(r"^\[\^[^\]]+\]:", re.M), "각주 정의", "NFM 이 지원하지 않는다"),
+    # 각주 정의 줄 안의 `[^n]` 을 참조로 이중 계수하지 않기 위해 `:` 로 끝나는
+    # 형태(정의)는 제외한다 — 정의는 위 패턴이 이미 센다.
+    (re.compile(r"(?<!\!)\[\^[^\]]+\](?!:)"), "각주 참조", "NFM 이 지원하지 않는다"),
+    (re.compile(rf"^<(?!/?(?:{_NFM_TAG_ALT})\b)[a-zA-Z][^>]*>", re.M),
+     "열 0 의 원시 HTML 블록", "NFM 은 일부 태그만 받는다"),
+)
+_IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+
+# 노션 왕복은 파이프 표를 HTML `<table>` 로 바꿔 돌려준다 — 실측 근거는
+# docs/plans/2026-08-29-notion-probe-결과.md. `md.parse_tables()` 는 파이프 표만
+# 인식하므로, 되읽은 문서의 표를 `markdown_shape` 가 이 패턴으로도 세지 않으면
+# 왕복마다 "표가 통째로 사라졌다"는 거짓 경보가 뜬다. 속성 순서·공백·대소문자에
+# 흔들리지 않게 느슨히 잡는다.
+_HTML_TABLE = re.compile(r"<table\b([^>]*)>(.*?)</table>", re.IGNORECASE | re.DOTALL)
+_HTML_TABLE_HEADER_ROW = re.compile(r"\bheader-row\s*=\s*[\"']true[\"']", re.IGNORECASE)
+_HTML_TR = re.compile(r"<tr\b", re.IGNORECASE)
+
+
+def check_notion_markdown(md_path) -> list:
+    """노션에 올리기 전에 md 자체를 본다.
+
+    보고서에서 HTML 을 안 만들게 되면서 `check_rendered_html` 이 보고서 경로에서
+    호출되지 않는다. 이 함수가 그 자리를 대신한다 — 대상이 렌더된 HTML 에서 md 로
+    바뀌었을 뿐, "조용히 망가지고 눈으로는 안 보이는 결함"을 잡는 목적은 같다.
+
+    **상대경로 이미지는 error 가 아니라 info 다.** 노션 API 의 마크다운은 URL 만
+    받으므로 상대경로는 반드시 깨지는데, 그건 결함이 아니라 설계다 — 사진은
+    사용자가 노션에서 직접 끼워 넣기로 했다(자동 첨부는 파일 업로드 후 1시간 내
+    블록 삽입 + 위치 수술이 필요해 v1 의 복잡도가 아니다). 그래서 "고쳐라"가 아니라
+    "무엇을 몇 장 넣어야 하는지"를 알린다.
+    """
+    path = Path(md_path)
+    if not path.exists():
+        return [Finding("error", str(md_path), "보고서 md 파일이 없다")]
+    _, body = md.split_frontmatter(path.read_text(encoding="utf-8"))
+    out = []
+    for pattern, label, why in _NFM_LOSSY:
+        hits = pattern.findall(body)
+        if hits:
+            out.append(Finding("error", path.name,
+                f"{label} 이 {len(hits)}개 있다 — {why}"))
+    for t in md.parse_tables(body):
+        width = len(t.header)
+        for i, row in enumerate(t.rows, start=1):
+            if len(row) != width:
+                out.append(Finding("error", f"{path.name}:{t.line}",
+                    f"표 {i}행의 셀이 {len(row)}개인데 헤더는 {width}개다 — "
+                    "노션에서 표가 통째로 뭉개진다"))
+    local = [s for s in _IMAGE.findall(body)
+             if not s.startswith(("http://", "https://", "data:"))]
+    if local:
+        out.append(Finding("info", path.name,
+            f"노션에서 직접 넣어야 할 그림 {len(local)}장: " + ", ".join(local)))
+    return out
+
+
+@dataclass
+class MarkdownShape:
+    headings: list
+    table_count: int
+    table_rows: int
+    quote_blocks: int
+
+
+def markdown_shape(text) -> MarkdownShape:
+    """구조 불변량만 뽑는다. **텍스트 동일성은 보지 않는다.**
+
+    노션 왕복은 문단 병합·표 정렬 마커 소실 같은 노이즈를 반드시 만든다. 그걸
+    결함으로 세면 진짜 손실(표가 통째로 사라짐, 절이 안 올라감)이 파묻힌다.
+
+    인용은 **줄이 아니라 블록**으로 센다 — 여러 줄 인용이 한 줄로 합쳐지는 것은
+    노이즈지 손실이 아닌데, 줄로 세면 매번 error 로 올라온다.
+
+    표는 **파이프 표와 HTML `<table>` 을 함께** 센다 — 노션 되읽기가 파이프 표를
+    HTML 로 바꿔 돌려주기 때문이다(`_HTML_TABLE` 주석 참고). 원본(파이프)과
+    되읽기(HTML)를 같은 잣대로 세지 않으면 형태만 바뀐 표가 손실로 보인다.
+    """
+    _, body = md.split_frontmatter(text)
+    lines = body.split("\n")
+    tables = md.parse_tables(body)
+    html_tables = list(_HTML_TABLE.finditer(body))
+    html_table_rows = 0
+    for m in html_tables:
+        attrs, inner = m.group(1), m.group(2)
+        tr_count = len(_HTML_TR.findall(inner))
+        if _HTML_TABLE_HEADER_ROW.search(attrs):
+            # MdTable.rows 는 헤더 행을 빼고 세므로, HTML 표의 헤더 <tr> 도
+            # 여기서 빼야 두 형태의 행 수가 같은 기준으로 비교된다.
+            tr_count = max(tr_count - 1, 0)
+        html_table_rows += tr_count
+    quote_blocks, in_quote = 0, False
+    for line in lines:
+        if line.startswith(">"):
+            if not in_quote:
+                quote_blocks += 1
+            in_quote = True
+        else:
+            in_quote = False
+    return MarkdownShape(
+        headings=[re.sub(r"^#+\s*", "", ln).strip()
+                  for ln in lines if ln.startswith("#")],
+        table_count=len(tables) + len(html_tables),
+        table_rows=sum(len(t.rows) for t in tables) + html_table_rows,
+        quote_blocks=quote_blocks,
+    )
+
+
+def check_notion_roundtrip(source_text, pulled_text) -> list:
+    """올린 md 와 되읽은 md 의 구조를 대조한다. **손실만 본다.**
+
+    업로드 직후 되읽어 baseline 을 저장하는 이 왕복이 곧 업로드 검증이다 — 추가
+    API 호출 없이. 텍스트가 아니라 헤딩·표 개수·표 행 수·인용 블록 수만 비교하는
+    이유는 `markdown_shape` 와 같다: 노션이 만드는 노이즈(문단 병합, 표 정렬
+    마커 소실)를 결함으로 세면 진짜 손실이 그 안에 파묻힌다.
+
+    늘어난 것은 보고하지 않는다 — 사용자가 노션에서 절이나 표를 더한 것은 손실이
+    아니라 이 루프가 원하는 바로 그 입력이다.
+    """
+    src, got = markdown_shape(source_text), markdown_shape(pulled_text)
+    out = []
+    # 집합 포함이 아니라 **다중집합 차**로 비교한다 — 같은 이름이 두 번 나오는데
+    # 하나만 남았을 때, `in` 검사는 "이름이 존재하긴 한다"만 보고 손실을 놓친다.
+    # 항목반복형 프리셋(`결선도`·`구성한 회로`·`실험 결과`·`고찰`을 항목마다
+    # 반복)이 이 상황을 실제로 만든다.
+    missing = list((Counter(src.headings) - Counter(got.headings)).elements())
+    # 첫 헤딩은 노션이 페이지 제목으로 흡수하므로 되읽기에 없을 수 있다.
+    # **정확히 한 번만** 면제한다 — 같은 이름이 여러 번 나오는 양식에서 나머지
+    # 누락까지 덮어 주면, 이 함수의 존재 이유인 "절이 통째로 안 올라간 것"을
+    # 놓친다.
+    if src.headings and src.headings[0] in missing:
+        missing.remove(src.headings[0])
+    for name in missing:
+        out.append(Finding("error", "노션 왕복",
+            f"절 '{name}' 이 되읽기에 없다 — 노션에 올라가지 않았을 수 있다"))
+    if got.table_count < src.table_count:
+        out.append(Finding("error", "노션 왕복",
+            f"표가 {src.table_count}개에서 {got.table_count}개로 줄었다"))
+    if got.table_rows < src.table_rows:
+        out.append(Finding("error", "노션 왕복",
+            f"표 행이 {src.table_rows}개에서 {got.table_rows}개로 줄었다"))
+    if got.quote_blocks < src.quote_blocks:
+        out.append(Finding("error", "노션 왕복",
+            f"인용 블록이 {src.quote_blocks}개에서 {got.quote_blocks}개로 줄었다 — "
+            "이 보고서의 인용은 전부 `> 출처:` 근거 표기라 하나가 사라지면 "
+            "근거가 사라진 것이다"))
     return out
 
 

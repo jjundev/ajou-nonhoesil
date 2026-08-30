@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,6 +7,7 @@ from scripts.lab import config, validate
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
+FIXTURES = ROOT / "tests" / "fixtures"
 WEEK2_SPEC = ROOT / "실험01/체크리스트/명세.md"
 WEEK2_NETLIST = ROOT / "실험01/결선도/netlist.md"
 
@@ -428,13 +430,18 @@ class TestRenderedHtmlChecks(unittest.TestCase):
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 
-    def test_real_pre_report_html_is_clean(self):
-        """실제로 깨진 채 제출됐던 건 ②(기계 렌더)가 아니라 이 파일이다 —
-        표 셀 백틱 230개와, 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드
-        그림. ②만 회귀 대상이면 실제로 사고가 난 산출물은 아무도 안 지킨다 (D)."""
-        html = ROOT / "실험01/output/실험01_예비보고서.html"
-        self.assertEqual(validate.check_rendered_html(html), [])
-        self.assertEqual(validate.check_embedded_images(html), [])
+    # 예비보고서 HTML 을 보던 테스트가 여기 있었다. 실제로 깨진 채 제출됐던 것이
+    # ②(기계 렌더)가 아니라 그 파일이었기 때문이다 — 표 셀 백틱 230개와,
+    # 스크래치패드에서 렌더해 경로가 안 풀린 브레드보드 그림.
+    #
+    # **그 산출물이 더는 존재하지 않는다.** 보고서는 md 를 그대로 노션에 올리고
+    # 사용자가 거기서 PDF 로 내보낸다 — 사람이 마크다운을 HTML 로 옮기는 단계가
+    # 사라졌으므로 그 단계의 결함도 사라졌다. 같은 목적(사람이 쓴 보고서 본문을
+    # 기계로 검사한다)은 `TestCheckNotionMarkdown.test_실제_실험1_예비보고서는_깨끗하다`
+    # 가 md 자체를 대상으로 이어받았다.
+    #
+    # 위 `test_real_checklist_html_is_clean` 은 남긴다 — 체크리스트는 인쇄물이라
+    # 여전히 HTML 을 거친다.
 
 
 class FolderConventionTest(unittest.TestCase):
@@ -504,6 +511,208 @@ class FolderConventionTest(unittest.TestCase):
         findings = validate.check_folder_convention(path, spec)
         self.assertTrue(findings)
         self.assertEqual(findings[0].level, "error")
+
+
+def md_file(text):
+    tmp = Path(tempfile.mkdtemp()) / "보고서.md"
+    tmp.write_text(text, encoding="utf-8")
+    return tmp
+
+
+class TestCheckNotionMarkdown(unittest.TestCase):
+    def test_실제_실험1_예비보고서는_깨끗하다(self):
+        path = ROOT / "실험01/output/실험01_예비보고서.md"
+        errors = [f for f in validate.check_notion_markdown(path)
+                  if f.level == "error"]
+        self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
+
+    def test_h5_이상은_error_다(self):
+        """NFM 은 h5·h6 를 h4 로 강등한다. 절 깊이가 무너지면 ⑤ 의 섹션 검증이
+        보는 헤딩 구조도 같이 무너진다."""
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n##### 다섯째 단계\n"))
+        self.assertTrue(any(f.level == "error" and "h5" in f.message
+                            for f in findings), findings)
+
+    def test_각주는_error_다(self):
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n본문[^1]\n\n[^1]: 각주\n"))
+        self.assertTrue(any(f.level == "error" and "각주" in f.message
+                            for f in findings), findings)
+
+    def test_각주_참조는_정의_줄과_이중_계수되지_않는다(self):
+        """`[^1]: 각주` 의 `[^1]` 은 정의 패턴이 이미 세는데, 참조 패턴이
+        anchor 없이 `[^n]` 을 잡으면 같은 자리를 또 센다 — 본문 참조는
+        한 번뿐인데 참조 2개로 보고되면 카운트가 틀린다."""
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n본문[^1]\n\n[^1]: 각주\n"))
+        ref = [f for f in findings if f.level == "error" and "각주 참조" in f.message]
+        self.assertEqual(len(ref), 1, findings)
+        self.assertIn("1개", ref[0].message)
+
+    def test_각주_정의만_있고_본문_참조가_없으면_참조_finding이_없다(self):
+        findings = validate.check_notion_markdown(
+            md_file("# 제목\n\n[^1]: 각주\n"))
+        ref = [f for f in findings if "각주 참조" in f.message]
+        self.assertEqual(ref, [], findings)
+
+    def test_열_수가_어긋난_표는_error_다(self):
+        """깨진 표는 노션에서 통째로 뭉개진다."""
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n| A | B |\n|---|---|\n| 0 | 0 |\n| 1 |\n"))
+        self.assertTrue(any(f.level == "error" and "헤더는 2개" in f.message
+                            for f in findings), findings)
+
+    def test_상대경로_이미지는_error_가_아니라_info_다(self):
+        """상대경로 이미지가 노션에서 깨지는 것은 결함이 아니라 설계다 — 사진은
+        사용자가 노션에서 직접 끼워 넣는다. 그래서 '고쳐라'가 아니라 '무엇을 몇 장
+        넣어야 하는지'를 알린다."""
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n![브레드보드](../../.claude/assets/Breadboard.jpg)\n"))
+        self.assertEqual([f.level for f in findings], ["info"])
+        self.assertIn("Breadboard.jpg", findings[0].message)
+        self.assertIn("1장", findings[0].message)
+
+    def test_NFM_자체_블록_태그는_원시_HTML_로_잡지_않는다(self):
+        """목차·여백 블록은 노션이 입력으로 받는 문법이다 (실측 확인). 이걸
+        원시 HTML 로 잡으면 학생이 노션에서 잡은 레이아웃을 소스 md 에
+        되돌려 넣을 수 없다 — 매 업로드마다 여백을 손으로 다시 잡아야 한다."""
+        findings = validate.check_notion_markdown(md_file(
+            '# 제목\n\n<table_of_contents color="gray"/>\n\n'
+            "<empty-block/>\n<empty-block/>\n# 절\n본문\n"))
+        self.assertEqual([f for f in findings if f.level == "error"], [])
+
+    def test_NFM_이_안_받는_원시_HTML_은_여전히_잡는다(self):
+        findings = validate.check_notion_markdown(md_file(
+            '# 제목\n\n<figure class="photo-block">\n<img src="x.jpg">\n</figure>\n'))
+        self.assertTrue(any(f.level == "error" and "원시 HTML" in f.message
+                            for f in findings), findings)
+
+    def test_원격_이미지는_알리지_않는다(self):
+        findings = validate.check_notion_markdown(md_file(
+            "# 제목\n\n![x](https://example.com/a.png)\n"))
+        self.assertEqual(findings, [])
+
+    def test_파일이_없으면_error_한_건이다(self):
+        findings = validate.check_notion_markdown(Path("/없는/경로.md"))
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].level, "error")
+
+
+SRC = """# 실험1 Basic Gates 예비보고서
+
+## 1. 실험 목적
+
+목적 문장.
+
+> 출처: 교안 p.2
+
+## 2. 실험 이론
+
+| A | B | C |
+|---|---|---|
+| 0 | 0 | 0 |
+| 1 | 1 | 1 |
+
+> 출처: 교안 p.4
+"""
+
+
+class TestMarkdownShape(unittest.TestCase):
+    def test_구조만_센다(self):
+        shape = validate.markdown_shape(SRC)
+        self.assertEqual(shape.headings,
+                         ["실험1 Basic Gates 예비보고서", "1. 실험 목적", "2. 실험 이론"])
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+        self.assertEqual(shape.quote_blocks, 2)
+
+    def test_이어진_인용_줄은_한_블록이다(self):
+        """여러 줄 인용이 한 줄로 합쳐지는 것은 노이즈지 손실이 아니다. 줄로 세면
+        그 노이즈가 매번 error 로 올라온다."""
+        self.assertEqual(validate.markdown_shape("> 가\n> 나\n").quote_blocks, 1)
+        self.assertEqual(validate.markdown_shape("> 가\n\n> 나\n").quote_blocks, 2)
+
+    def test_노션이_돌려준_HTML_표를_표로_센다(self):
+        """실측 fixture(`notion_pull_markdown.json`)의 되읽기 markdown 은 파이프
+        표가 아니라 HTML `<table>` 이다. `md.parse_tables()` 만 쓰면 이걸 0개로
+        세서, 정상 왕복마다 "표가 통째로 사라졌다"는 거짓 경보가 뜬다."""
+        pulled = json.loads((FIXTURES / "notion_pull_markdown.json")
+                             .read_text("utf-8"))["markdown"]
+        shape = validate.markdown_shape(pulled)
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+
+    def test_header_row_없는_HTML_표는_모든_tr을_행으로_센다(self):
+        """`header-row="true"` 가 없으면 뺄 헤더 행이 없다 — 모든 `<tr>` 이 데이터
+        행이다."""
+        text = "<table>\n<tr><td>0</td></tr>\n<tr><td>1</td></tr>\n</table>\n"
+        shape = validate.markdown_shape(text)
+        self.assertEqual(shape.table_count, 1)
+        self.assertEqual(shape.table_rows, 2)
+
+
+class TestCheckNotionRoundtrip(unittest.TestCase):
+    def test_노이즈만_있으면_아무것도_보고하지_않는다(self):
+        noisy = SRC.replace("|---|---|---|", "| --- | --- | --- |")
+        self.assertEqual(validate.check_notion_roundtrip(SRC, noisy), [])
+
+    def test_첫_헤딩이_없어도_보고하지_않는다(self):
+        """노션이 첫 `#` 헤딩을 페이지 제목으로 흡수하므로 되읽기에 없을 수 있다."""
+        without_h1 = SRC.split("\n", 1)[1]
+        self.assertEqual(validate.check_notion_roundtrip(SRC, without_h1), [])
+
+    def test_사라진_절을_error_로_보고한다(self):
+        pulled = SRC.replace("## 2. 실험 이론", "")
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "2. 실험 이론" in f.message
+                            for f in findings), findings)
+
+    def test_사라진_표를_error_로_보고한다(self):
+        pulled = "\n".join(ln for ln in SRC.split("\n") if not ln.startswith("|"))
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "표" in f.message
+                            for f in findings), findings)
+
+    def test_사라진_출처_인용을_error_로_보고한다(self):
+        pulled = SRC.replace("> 출처: 교안 p.4", "")
+        findings = validate.check_notion_roundtrip(SRC, pulled)
+        self.assertTrue(any(f.level == "error" and "인용" in f.message
+                            for f in findings), findings)
+
+    def test_늘어난_것은_error_가_아니다(self):
+        """사용자가 노션에서 절이나 표를 더한 것은 손실이 아니다."""
+        pulled = SRC + "\n## 3. 추가한 절\n\n내용\n"
+        self.assertEqual(validate.check_notion_roundtrip(SRC, pulled), [])
+
+    def test_중복된_헤딩_중_하나만_사라져도_보고한다(self):
+        """항목반복형 프리셋(`.claude/보고서양식.md`)처럼 같은 헤딩이 여러 번
+        나오면, 집합 포함 검사(`h not in got.headings`)는 이름이 하나라도
+        남아 있으면 손실을 못 본다. 다중집합 차만이 이걸 잡는다."""
+        src = ("# 실험 보고서\n\n## 항목 1\n\n내용\n\n## 고찰\n\n내용1\n\n"
+               "## 항목 2\n\n내용\n\n## 고찰\n\n내용2\n")
+        pulled = "## 항목 1\n\n내용\n\n## 고찰\n\n내용1\n\n## 항목 2\n\n내용\n"
+        findings = validate.check_notion_roundtrip(src, pulled)
+        self.assertTrue(any(f.level == "error" and "고찰" in f.message
+                            for f in findings), findings)
+
+    def test_반복된_헤딩이_전부_남으면_보고하지_않는다(self):
+        """같은 이름이 여러 번 나오되 아무것도 안 사라졌으면 findings 가 없어야
+        한다 — 다중집합 차가 과다 보고하지 않는지 본다."""
+        src = "# 실험 보고서\n\n## 고찰\n\n내용1\n\n## 고찰\n\n내용2\n"
+        pulled = "## 고찰\n\n내용1\n\n## 고찰\n\n내용2\n"
+        self.assertEqual(validate.check_notion_roundtrip(src, pulled), [])
+
+    def test_HTML_표로_바뀐_것은_손실로_보지_않는다(self):
+        """이게 진짜 회귀 테스트다 — fixture 그대로의 되읽기(HTML 표)를 파이프
+        표 소스와 비교했을 때 findings 가 있으면, 모든 업로드가 "표가 0개로
+        줄었다"는 거짓 경보를 낸다는 뜻이다."""
+        pulled = json.loads((FIXTURES / "notion_pull_markdown.json")
+                             .read_text("utf-8"))["markdown"]
+        src = ("# 표 왕복 테스트\n\n첫 문단이다.\n## 표 검사\n\n"
+               "| A | B | C |\n|---|---|---|\n| 0 | 0 | 0 |\n| 1 | 1 | 1 |\n\n"
+               "> 출처: 프로브\n")
+        self.assertEqual(validate.check_notion_roundtrip(src, pulled), [])
 
 
 if __name__ == "__main__":

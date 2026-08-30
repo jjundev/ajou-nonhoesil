@@ -30,6 +30,41 @@ class TestCourseInfo(unittest.TestCase):
         )
         self.assertIsNone(config.load_course_info(missing)["ai_usage_log"])
 
+    def test_notion_parent_page_id_is_read(self):
+        """값까지 확인한다. 키 존재만 보면 프론트매터의 id 가 손으로 편집하다
+        잘려도 통과한다 — 이 필드는 노션 업로드가 통째로 매달린 값이다."""
+        info = config.load_course_info(ROOT)
+        self.assertEqual(
+            info["notion_parent_page_id"],
+            "3cbb06d263bc80ecbbeec20761dc3f92",
+        )
+
+    def test_notion_parent_page_id_defaults_when_the_key_is_absent(self):
+        """미확정이면 지어내지 않는다. `ai_usage_log` 와 같은 규칙이다."""
+        missing = Path(tempfile.mkdtemp())
+        (missing / ".claude").mkdir()
+        (missing / ".claude" / "과목정보.md").write_text(
+            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+            "professor: 허용석 교수님\nclass_section: C082\n---\n",
+            encoding="utf-8",
+        )
+        self.assertIsNone(config.load_course_info(missing)["notion_parent_page_id"])
+
+    def test_notion_parent_page_id_defaults_when_the_value_is_tilde(self):
+        """ROOT 는 이제 실값이 있어 이 경로를 못 덮는다. 리포를 새로 클론해
+        아직 자기 노션 페이지를 안 만든 사람은 키는 있고 값만 `~` 인 이 상태를
+        보게 된다 — `test_ai_usage_log_defaults_to_none` 이 다른 필드에서
+        지키는 것과 같은 경로다."""
+        missing = Path(tempfile.mkdtemp())
+        (missing / ".claude").mkdir()
+        (missing / ".claude" / "과목정보.md").write_text(
+            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+            "professor: 허용석 교수님\nclass_section: C082\n"
+            "notion_parent_page_id: ~\n---\n",
+            encoding="utf-8",
+        )
+        self.assertIsNone(config.load_course_info(missing)["notion_parent_page_id"])
+
 
 class TestReportFormat(unittest.TestCase):
     def test_default_preset_is_intersection(self):
