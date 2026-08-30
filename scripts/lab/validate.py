@@ -401,6 +401,30 @@ def check_report_wrapping(md_text) -> list:
         "76열 규칙은 스킬 문서에만 걸린다 — 보고서 문단은 한 줄로 쓴다")]
 
 
+_HEADING = re.compile(r"(?m)^(#{1,6})\s+(.*)$")
+
+
+def check_heading_backticks(md_text) -> list:
+    """헤딩 텍스트 안의 코드 스팬을 잡는다.
+
+    **노션 목차 블록이 헤딩 텍스트를 그대로 가져간다.** 그래서 헤딩에 백틱이
+    있으면 목차에까지 코드 배경이 번진다. 라운드 1 에서 학생이 실험02 의
+    헤딩 두 개에서 직접 백틱을 지웠고, 남은 두 개를 어떻게 볼지 물었더니
+    **체계적**이라고 확인해 주었다(실험01 승인본에는 백틱 헤딩이 0개다).
+
+    기호를 백틱으로 감싸는 것 자체는 §절대 규칙이 시키는 일이다 — **본문
+    안에서만** 그렇게 한다. 그래서 헤딩 줄만 본다.
+    """
+    hits = [i for i, line in enumerate(md_text.splitlines(), 1)
+            if _HEADING.match(line) and "`" in _HEADING.match(line).group(2)]
+    if not hits:
+        return []
+    return [Finding("error", "헤딩 표기",
+        f"헤딩 {len(hits)}개에 백틱이 있다 (첫 자리 {hits[0]}행) — 노션 목차 "
+        "블록이 헤딩 텍스트를 그대로 가져가 목차에까지 코드 배경이 번진다. "
+        "기호는 본문에서만 백틱으로 감싼다")]
+
+
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
 
@@ -432,6 +456,7 @@ def check_notion_markdown(md_path) -> list:
                     f"표 {i}행의 셀이 {len(row)}개인데 헤더는 {width}개다 — "
                     "노션에서 표가 통째로 뭉개진다"))
     out.extend(check_report_wrapping(body))
+    out.extend(check_heading_backticks(body))
     local = [s for s in _IMAGE.findall(body)
              if not s.startswith(("http://", "https://", "data:"))]
     if local:

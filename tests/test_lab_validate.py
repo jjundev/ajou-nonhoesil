@@ -846,5 +846,48 @@ class TestCheckReportWrapping(unittest.TestCase):
         self.assertTrue(any("줄바꿈" in f.where for f in found), found)
 
 
+class TestCheckHeadingBackticks(unittest.TestCase):
+    """헤딩 텍스트 안의 코드 스팬을 잡는다.
+
+    노션 목차 블록이 헤딩 텍스트를 그대로 가져가므로 목차에까지 코드 배경이
+    번진다. 라운드 1 에서 학생이 실험02 의 `## `Rn` 측정 회로` 두 개를 직접
+    지웠고, 확인 결과 체계적 분류였다(실험01 승인본에는 백틱 헤딩이 0개다).
+    """
+
+    CANON = ROOT / "실험01/output/실험01_예비보고서.md"
+
+    def test_헤딩_안의_백틱을_잡는다(self):
+        got = validate.check_heading_backticks("## `Rn` 측정 회로")
+        self.assertEqual(len(got), 1, got)
+        self.assertEqual(got[0].level, "error")
+
+    def test_맨몸_헤딩은_잡지_않는다(self):
+        self.assertEqual(validate.check_heading_backticks("## Rn 측정 회로"), [])
+
+    def test_본문의_백틱은_보지_않는다(self):
+        # 기호를 본문에서 백틱으로 감싸는 것은 규칙이 시키는 일이다.
+        self.assertEqual(validate.check_heading_backticks(
+            "## Rn 측정 회로\n\n`Rn(on) = V_OLmax / I_OLmax` 로 구한다."), [])
+
+    def test_여러_개여도_한_줄로_요약한다(self):
+        got = validate.check_heading_backticks(
+            "# `A` 절\n## `B` 절\n## C 절\n## `D` 절")
+        self.assertEqual(len(got), 1, got)
+        self.assertIn("3개", got[0].message)
+
+    def test_헤딩이_아닌_줄의_샵은_헤딩이_아니다(self):
+        self.assertEqual(validate.check_heading_backticks(
+            "값이 `#1` 이면 무시한다."), [])
+
+    def test_실험01_승인본은_조용하다(self):
+        # 실측 통제군. 승인본 헤딩에는 백틱이 하나도 없다.
+        got = validate.check_heading_backticks(self.CANON.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], got)
+
+    def test_check_notion_markdown_이_이_검사를_함께_낸다(self):
+        found = validate.check_notion_markdown(md_file("# 제목\n\n## `Rn` 측정 회로"))
+        self.assertTrue(any("헤딩" in f.where for f in found), found)
+
+
 if __name__ == "__main__":
     unittest.main()
