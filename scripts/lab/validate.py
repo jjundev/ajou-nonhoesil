@@ -337,6 +337,63 @@ def check_pulled_images(pulled_text) -> list:
     return out
 
 
+# 문단 흐름 밖에 있는 줄머리. 표·헤딩·펜스·인용·노션 태그는 줄바꿈이 의미다.
+_FLOW_OUT = ("\t", "|", "#", "<", "```", ">")
+
+
+def _flow_kind(line):
+    """줄이 문단 흐름의 어디에 속하는지. 흐름 밖이면 `keep`."""
+    if not line.strip():
+        return "blank"
+    if line.startswith(_FLOW_OUT):
+        return "keep"
+    if line.startswith("  "):
+        return "cont"
+    if line.startswith(("- ", "* ")):
+        return "bullet"
+    return "prose"
+
+
+def check_report_wrapping(md_text) -> list:
+    """본문 문단이 여러 줄로 쪼개져 있는지 본다.
+
+    **노션은 원본의 줄바꿈을 하나하나 그대로 렌더한다.** 그래서 76열에 맞춰
+    감싼 본문은 노션에서 문장 중간이 토막 난 채 보이고, 그대로 PDF 로 나간다.
+    실험02 초판이 그렇게 올라갔고 **사용자가 v2 를 고치려다 눈으로 찾았다** —
+    그때까지 아무 검사도 이것을 안 봤다.
+
+    76열 규칙은 `.claude/skills/*/SKILL.md` 에만 걸린다. 보고서 본문에는 걸리지
+    않는데 ③ 이 그 경계를 말해 주지 않아서, 격리 생성이 관행을 산출물에까지
+    옮겨 적용했다. 판단이 아니라 기계적 서식이라 규칙을 고치지 않으면 주차마다
+    재발한다.
+
+    **폭을 재지 않는다.** 신호는 구조다 — 제대로 쓴 보고서는 문단 하나가 줄
+    하나라, 산문 줄 바로 뒤에 또 산문 줄이 오는 일이 없다. 실측: 실험01
+    승인본 0곳, 감싸인 실험02 초판 160곳. 임계값이 필요 없을 만큼 갈린다.
+
+    한 줄로 요약해서 낸다. 160곳이면 160줄을 뱉는 검사는 아무도 안 읽는다.
+    """
+    lines = md_text.splitlines()
+    hits = []
+    for i in range(len(lines) - 1):
+        here, nxt = lines[i], lines[i + 1]
+        kind, kind_next = _flow_kind(here), _flow_kind(nxt)
+        joined = ((kind_next == "prose" and kind == "prose")
+                  or (kind_next == "cont" and kind in ("bullet", "cont")))
+        if not joined:
+            continue
+        # 콜론·마침표 뒤에 수식을 따로 놓은 것은 저자의 배치다. 잡으면 거짓 경보다.
+        if nxt.strip().startswith("`") and here.rstrip().endswith((":", ".")):
+            continue
+        hits.append(i + 1)
+    if not hits:
+        return []
+    return [Finding("error", "본문 줄바꿈",
+        f"문단이 {len(hits)}곳에서 줄로 쪼개져 있다 (첫 자리 {hits[0]}행) — "
+        "노션은 원본의 줄바꿈을 그대로 렌더해서 문장 중간이 토막 난 채 올라간다. "
+        "76열 규칙은 스킬 문서에만 걸린다 — 보고서 문단은 한 줄로 쓴다")]
+
+
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
 
@@ -367,6 +424,7 @@ def check_notion_markdown(md_path) -> list:
                 out.append(Finding("error", f"{path.name}:{t.line}",
                     f"표 {i}행의 셀이 {len(row)}개인데 헤더는 {width}개다 — "
                     "노션에서 표가 통째로 뭉개진다"))
+    out.extend(check_report_wrapping(body))
     local = [s for s in _IMAGE.findall(body)
              if not s.startswith(("http://", "https://", "data:"))]
     if local:

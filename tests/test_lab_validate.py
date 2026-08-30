@@ -764,5 +764,72 @@ class TestCheckPulledImages(unittest.TestCase):
         self.assertEqual(got, [], got)
 
 
+class TestCheckReportWrapping(unittest.TestCase):
+    """문단이 여러 줄로 쪼개져 있는지 본다.
+
+    노션은 원본의 줄바꿈을 하나하나 그대로 렌더한다. 실험02 초판이 76열에
+    맞춰 감싸인 채 올라갔고, 노션에서 문장 중간이 토막 났다. 사용자가 v2 를
+    고치려다 눈으로 찾았다 — 그때까지 아무 검사도 이것을 안 봤다.
+    """
+
+    ROOT = ROOT
+    CANON = ROOT / "실험01/output/실험01_예비보고서.md"
+    WEEK3 = ROOT / "실험02/output/실험02_예비보고서.md"
+
+    def test_문단이_두_줄로_쪼개져_있으면_잡는다(self):
+        got = validate.check_report_wrapping(
+            "출력 규격이 입력 규격보다 안쪽으로 여유를 두고 있어서, 배선에서\n"
+            "잡음이 실려도 다음 단이 여전히 옳게 판정한다.")
+        self.assertEqual(len(got), 1, got)
+        self.assertEqual(got[0].level, "error")
+
+    def test_한_줄_문단은_잡지_않는다(self):
+        self.assertEqual(validate.check_report_wrapping(
+            "출력 규격이 입력 규격보다 안쪽으로 여유를 두고 있어서 잡음이 실려도 된다."), [])
+
+    def test_빈_줄로_나뉜_두_문단은_잡지_않는다(self):
+        self.assertEqual(validate.check_report_wrapping(
+            "첫 문단이다.\n\n둘째 문단이다."), [])
+
+    def test_콜론_뒤에_수식을_따로_놓은_것은_의도된_줄바꿈이다(self):
+        # 규칙이 아니라 저자의 배치다. 이것까지 잡으면 거짓 경보가 된다.
+        self.assertEqual(validate.check_report_wrapping(
+            "- 입력 HIGH → 출력 LOW → 부하에서 전류를 빨아들인다(sinking):\n"
+            "  `Rn(on) = V_OLmax / I_OLmax`"), [])
+
+    def test_표와_헤딩과_태그는_흐름_밖이다(self):
+        self.assertEqual(validate.check_report_wrapping(
+            "# 실험 이론\n## 잡음 여유\n| 핀 | 처리 |\n|---|---|\n| 3 | GND |\n"
+            "<empty-block/>\n\t| 중첩 | 표 |"), [])
+
+    def test_불릿의_이어진_줄도_잡는다(self):
+        got = validate.check_report_wrapping(
+            "- 전파지연 — 입력이 출력으로 전달되는 시간. 입력과 출력이 각각\n"
+            "  VCC 의 50% 를 지나는 시점 사이를 잰다.")
+        self.assertEqual(len(got), 1, got)
+
+    def test_여러_군데여도_한_줄로_요약한다(self):
+        # 160곳이 나오면 160줄을 뱉는 검사는 아무도 안 읽는다.
+        got = validate.check_report_wrapping("가\n나\n다\n라")
+        self.assertEqual(len(got), 1, got)
+        self.assertIn("3곳", got[0].message)
+
+    def test_실험01_승인본은_조용하다(self):
+        # 실측 통제군. 일곱 번 올려 문제없던 판본이다.
+        got = validate.check_report_wrapping(self.CANON.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], got)
+
+    def test_실험02_되감은_판본은_조용하다(self):
+        got = validate.check_report_wrapping(self.WEEK3.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], got)
+
+    def test_check_notion_markdown_이_이_검사를_함께_낸다(self):
+        # 배선이 이 검사의 유일한 발화 경로다. `check_notion_markdown` 에서
+        # 호출을 지우면 함수가 죽은 코드가 되는데 단위 테스트는 그대로 통과한다.
+        found = validate.check_notion_markdown(md_file(
+            "# 제목\n\n문단이 여기서 끊기고\n다음 줄로 이어진다."))
+        self.assertTrue(any("줄바꿈" in f.where for f in found), found)
+
+
 if __name__ == "__main__":
     unittest.main()
