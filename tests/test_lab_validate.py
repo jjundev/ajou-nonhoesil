@@ -823,6 +823,21 @@ class TestCheckReportWrapping(unittest.TestCase):
         got = validate.check_report_wrapping(self.WEEK3.read_text(encoding="utf-8"))
         self.assertEqual(got, [], got)
 
+    def test_되읽은_baseline_은_이_검사의_범위가_아니다(self):
+        # 범위를 못 박는 테스트다. 노션 되읽기는 문단 사이 빈 줄을 지워서
+        # **각자 완결된** 문단이 나란히 붙는다 — 쪼개진 것이 아닌데도 잡힌다.
+        # 실험01 승인본은 0곳인데 그 v7 되읽기는 잡힌다는 사실 자체를 고정해
+        # 둔다. 이 함수는 `check_notion_markdown` 이 부르는 자리, 곧 올리기 전
+        # 원본에만 쓴다. 검사를 "앞줄이 문장 중간에서 끝났을 때만" 으로 좁히면
+        # 이 오탐은 사라지지만 실물 감싸기 160곳 중 2곳(문장이 줄바꿈 자리에서
+        # 딱 끝난 경우)을 놓친다 — 실제 호출 경로에 없는 오탐을 막자고
+        # 진짜 대상에서 약해지는 거래라 하지 않았다.
+        readback = self.ROOT / "실험01/output/실험01_예비보고서_notion_v7.md"
+        self.assertEqual(validate.check_report_wrapping(
+            self.CANON.read_text(encoding="utf-8")), [])
+        self.assertTrue(validate.check_report_wrapping(
+            readback.read_text(encoding="utf-8")))
+
     def test_check_notion_markdown_이_이_검사를_함께_낸다(self):
         # 배선이 이 검사의 유일한 발화 경로다. `check_notion_markdown` 에서
         # 호출을 지우면 함수가 죽은 코드가 되는데 단위 테스트는 그대로 통과한다.
