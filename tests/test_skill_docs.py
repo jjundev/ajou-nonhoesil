@@ -395,6 +395,20 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertTrue(calls, "⑦ 에 push_markdown 호출부가 없다")
         self.assertTrue(any("title=page_title" in c for c in calls), calls)
 
+    def test_the_pull_procedure_calls_the_empty_image_check(self):
+        # `check_pulled_images` 를 부르는 곳은 저장소에 ⑦ 의 pull 절차 하나뿐이다.
+        # 그 단계를 지우면 함수가 죽은 코드가 되는데 단위 테스트 7개는 그대로
+        # 통과한다 — 이 브랜치의 성과가 조용히 되돌려지는 유일한 경로다.
+        # push 에 걸면 매번 거짓 경보이므로(올린 직후엔 그림이 비어 있는 것이
+        # 정상이다) pull 절 **안**에 있는지까지 본다.
+        text = SYNC.read_text(encoding="utf-8")
+        where = text.find("check_pulled_images(")
+        self.assertNotEqual(where, -1, "⑦ 에 빈 그림 검사가 없다")
+        pull = text.index("\n## pull")
+        submit = text.index("\n## 제출")
+        self.assertTrue(pull < where < submit,
+                        f"빈 그림 검사가 pull 절 밖에 있다 (pull={pull}, 검사={where}, 제출={submit})")
+
 
 if __name__ == "__main__":
     unittest.main()
