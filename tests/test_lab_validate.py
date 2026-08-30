@@ -715,5 +715,54 @@ class TestCheckNotionRoundtrip(unittest.TestCase):
         self.assertEqual(validate.check_notion_roundtrip(src, pulled), [])
 
 
+class TestCheckPulledImages(unittest.TestCase):
+    """되읽은 본문에서 **아직 안 끼운 그림**을 잡는다.
+
+    실험01 v7 에서 브레드보드 그림이 빈 링크로 올라갔는데 아무 검사도 잡지
+    못했다 — `check_notion_markdown` 은 올리기 전 md 만 보고,
+    `check_notion_roundtrip` 은 헤딩·표·인용 개수만 세어 그림을 안 본다.
+    """
+
+    ROOT = Path(__file__).resolve().parents[1]
+    BEFORE = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v7.md"
+    AFTER = ROOT / "실험01/output/실험01_예비보고서_notion_v7.md"
+
+    def test_빈_링크를_error_로_잡는다(self):
+        got = validate.check_pulled_images("![브레드보드 작도 캔버스]()")
+        self.assertEqual(len(got), 1, got)
+        self.assertEqual(got[0].level, "error")
+        self.assertIn("브레드보드 작도 캔버스", got[0].message)
+
+    def test_채워진_링크는_잡지_않는다(self):
+        text = "![그림](https://prod-files-secure.s3.amazonaws.com/a/b.jpg)"
+        self.assertEqual(validate.check_pulled_images(text), [])
+
+    def test_공백만_있는_링크도_빈_것으로_센다(self):
+        # 노션이 자리는 남기고 대상만 비우는 변형을 실제로 만든 적이 있다.
+        got = validate.check_pulled_images("![x](   )")
+        self.assertEqual(len(got), 1, got)
+
+    def test_그림이_여러_장이면_빈_것만_센다(self):
+        text = "![a]() 와 ![b](https://x/y.jpg) 와 ![c]()"
+        got = validate.check_pulled_images(text)
+        self.assertEqual(len(got), 2, got)
+        self.assertIn("a", got[0].message)
+        self.assertIn("c", got[1].message)
+
+    def test_그림이_없으면_아무것도_보고하지_않는다(self):
+        self.assertEqual(validate.check_pulled_images("# 제목\n\n본문뿐이다."), [])
+
+    def test_실험01_v7_의_넣기_전_판본에서_실제로_잡는다(self):
+        # 실측 회귀. 이 파일이 바로 사용자가 눈으로 찾아낸 그 상태다.
+        got = validate.check_pulled_images(self.BEFORE.read_text(encoding="utf-8"))
+        self.assertEqual(len(got), 1, got)
+        self.assertIn("브레드보드 작도 캔버스", got[0].message)
+
+    def test_실험01_v7_의_넣은_뒤_판본에서는_조용하다(self):
+        # 거짓 경보를 내지 않는다는 쪽의 실측 회귀. 둘이 한 쌍이다.
+        got = validate.check_pulled_images(self.AFTER.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], got)
+
+
 if __name__ == "__main__":
     unittest.main()

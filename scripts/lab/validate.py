@@ -301,6 +301,10 @@ _NFM_LOSSY = (
 )
 _IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 
+# 대상이 비어도 잡고 alt 도 함께 뽑는다. `_IMAGE` 는 `[^)]+` 라 빈 링크를
+# 아예 못 잡는다 — 그 함수가 세는 것이 "넣어야 할 그림" 이기 때문이다.
+_IMAGE_ANY = re.compile(r"!\[([^\]]*)\]\(([^)]*)\)")
+
 # 노션 왕복은 파이프 표를 HTML `<table>` 로 바꿔 돌려준다 — 실측 근거는
 # docs/plans/2026-08-29-notion-probe-결과.md. `md.parse_tables()` 는 파이프 표만
 # 인식하므로, 되읽은 문서의 표를 `markdown_shape` 가 이 패턴으로도 세지 않으면
@@ -309,6 +313,28 @@ _IMAGE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 _HTML_TABLE = re.compile(r"<table\b([^>]*)>(.*?)</table>", re.IGNORECASE | re.DOTALL)
 _HTML_TABLE_HEADER_ROW = re.compile(r"\bheader-row\s*=\s*[\"']true[\"']", re.IGNORECASE)
 _HTML_TR = re.compile(r"<tr\b", re.IGNORECASE)
+
+
+def check_pulled_images(pulled_text) -> list:
+    """되읽은 본문에서 **아직 안 끼운 그림**을 잡는다.
+
+    올릴 때 상대경로 이미지는 노션에서 반드시 깨진다 — 그래서
+    `check_notion_markdown` 이 올리기 **전에** "몇 장 넣어야 한다" 를 info 로
+    알린다. 그런데 사용자가 실제로 넣었는지는 여태 아무도 확인하지 않았다.
+    실험01 v7 에서 브레드보드 그림이 빈 링크로 올라갔고 왕복 검사는 조용했다 —
+    `check_notion_roundtrip` 은 헤딩·표·인용 **개수**만 보므로 그림은 안 센다.
+
+    **되읽기 쪽에만 건다.** 올린 직후에는 그림이 비어 있는 것이 정상이므로
+    (사용자가 노션에서 끼우기로 한 설계다) push 에 걸면 매번 거짓 경보가 된다.
+    """
+    out = []
+    for alt, target in _IMAGE_ANY.findall(pulled_text):
+        if target.strip():
+            continue
+        out.append(Finding("error", "노션 그림",
+            f"그림 '{alt}' 이 빈 링크다 — 노션에서 아직 끼우지 않았다. "
+            "이대로 PDF 를 내보내면 그 자리가 빈 채로 제출된다"))
+    return out
 
 
 def check_notion_markdown(md_path) -> list:
