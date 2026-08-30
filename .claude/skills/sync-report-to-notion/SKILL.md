@@ -205,6 +205,23 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    PY
    ```
 
+8b. **안 끼운 그림이 없는지 본다.**
+
+    ```bash
+    zsh -c 'PYTHONPATH=. python3 -c "
+    from pathlib import Path
+    from scripts.lab import validate
+    p = Path(\"<실험NN>/output/<접미사>_notion_v<N>.md\")
+    f = validate.check_pulled_images(p.read_text(encoding=\"utf-8\"))
+    print(\"\n\".join(str(x) for x in f) or \"빈 그림 없음\")
+    "'
+    ```
+
+    `✗` 가 나오면 **거기서 멈추고 사용자에게 알린다.** 상대경로 그림은
+    노션에서 반드시 깨지므로 사용자가 손으로 끼워야 하는데, 안 끼운 채로 PDF
+    를 내보내면 그 자리가 빈 채로 제출된다. 실험01 v7 에서 실제로 그럴
+    뻔했고 기계는 조용했다. 사용자가 끼운 뒤 8단계부터 다시 돌린다.
+
 9. **baseline 과 diff 를 뜬다.** **원본이 아니라 baseline 과 비교한다** — 노션
    변환기의 노이즈가 양쪽에 똑같이 들어가 상쇄되므로, 남는 차이가 순수하게
    사용자가 고친 것이다.

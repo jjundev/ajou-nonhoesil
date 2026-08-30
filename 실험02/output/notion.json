@@ -1,0 +1,21 @@
+{
+  "schema": "notion-uploads/v1",
+  "uploads": [
+    {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "3ccb06d2-63bc-81ea-ab2c-d930af24757f",
+      "url": "https://app.notion.com/p/2-CMOS-v1-3ccb06d263bc81eaab2cd930af24757f",
+      "source": "실험02_예비보고서.md",
+      "uploaded_at": "2026-08-30 16:41"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 2,
+      "page_id": "3ccb06d2-63bc-81a5-85b8-d0f733847d56",
+      "url": "https://app.notion.com/p/2-CMOS-v2-3ccb06d263bc81a585b8d0f733847d56",
+      "source": "실험02_예비보고서.md",
+      "uploaded_at": "2026-08-30 17:51"
+    }
+  ]
+}
