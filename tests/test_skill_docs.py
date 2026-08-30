@@ -17,7 +17,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
+REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 BASELINE_V6 = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v6.md"
+
+# 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
+#
+# 나머지 다섯 스킬은 **일부러 뺐다.** 관례가 달라 통짜로 넣으면 오탐이 난다 —
+# `explain-lab-preview` 는 `## 0.`~`## 8.` 로 자기 절을 번호 매기고 `§0`~`§8` 로
+# 참조하며(21건), `sync-report-to-notion` 은 단계가 `## 실행 절차` 가 아니라
+# `## push`·`## pull` 안에 산다(7건). 거짓 경보를 내는 검사는 없느니만 못하다.
+# 편입하려면 그 문서의 절 이름을 여기 한 줄로 선언하면 된다.
+DOCS = {
+    "예보": (PRE, ("절대 규칙", "실행 절차")),
+    "결과": (RESULT, ("절대 규칙", "실행 절차")),
+    "리뷰": (REVIEW, ("실행 절차",)),
+}
+
+# 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
+# ⑤ 는 보고서를 **검사**하는 스킬이라 그 규칙들을 갖지 않는다.
+REPORT_DOCS = ("예보", "결과")
 
 
 def sections(text):
@@ -83,21 +101,28 @@ def _expand(token):
     return out
 
 
-def cross_reference_errors(text):
-    """`§절대 규칙 N`·`§실행 절차 N`·`N단계` 가 실재하는 항목을 가리키는지 본다."""
+def cross_reference_errors(text, titles=("절대 규칙", "실행 절차")):
+    """`§절대 규칙 N`·`§실행 절차 N`·`N단계` 가 실재하는 항목을 가리키는지 본다.
+
+    `titles` 는 그 문서에서 번호 매긴 항목이 사는 절 이름이다. 문서마다 다르므로
+    함수 안에 박지 않는다 — ⑤ 에는 `## 절대 규칙` 이 없어서, 박아 두면 거기
+    `§절대 규칙 N` 참조가 생기는 순간 전부 "없음"으로 잡힌다.
+    """
     sec = sections(text)
-    rules = numbered_items(sec.get("절대 규칙", ""))
-    steps = numbered_items(sec.get("실행 절차", ""))
+    rules = numbered_items(sec["절대 규칙"]) if "절대 규칙" in titles else None
+    steps = numbered_items(sec["실행 절차"]) if "실행 절차" in titles else None
     errors = []
-    for token in re.findall(r"§절대 규칙 ([\d·~]+)", text):
-        for n in sorted(_expand(token) - rules):
-            errors.append(f"§절대 규칙 {n} 없음")
-    for token in re.findall(r"§?실행 절차 ([\d·~]+)", text):
-        for n in sorted(_expand(token) - steps):
-            errors.append(f"실행 절차 {n} 없음")
-    for token in re.findall(r"([\d·~]+)단계", text):
-        for n in sorted(_expand(token) - steps):
-            errors.append(f"{n}단계 없음")
+    if rules is not None:
+        for token in re.findall(r"§절대 규칙 ([\d·~]+)", text):
+            for n in sorted(_expand(token) - rules):
+                errors.append(f"§절대 규칙 {n} 없음")
+    if steps is not None:
+        for token in re.findall(r"§?실행 절차 ([\d·~]+)", text):
+            for n in sorted(_expand(token) - steps):
+                errors.append(f"실행 절차 {n} 없음")
+        for token in re.findall(r"([\d·~]+)단계", text):
+            for n in sorted(_expand(token) - steps):
+                errors.append(f"{n}단계 없음")
 
     # 이름 있는 절(`§섹션별 재료` 등) 참조도 검사한다. `§` 다음 토큰이 이
     # 문서의 절 제목 중 하나와 시작이 일치하면 통과.
@@ -173,8 +198,7 @@ class CrossReferenceChecker(unittest.TestCase):
 
 class SkillDocInvariants(unittest.TestCase):
     def setUp(self):
-        self.docs = {"예보": PRE.read_text(encoding="utf-8"),
-                     "결과": RESULT.read_text(encoding="utf-8")}
+        self.docs = {k: p.read_text(encoding="utf-8") for k, (p, _) in DOCS.items()}
         # 산문 규칙을 문장으로 찾을 때 쓴다. 문단을 다시 감싸도 규칙이 같으면
         # 통과해야 하므로, 줄바꿈·들여쓰기를 공백 하나로 눌러 둔 사본이다.
         self.flat = {k: re.sub(r"\s+", " ", v) for k, v in self.docs.items()}
@@ -182,7 +206,7 @@ class SkillDocInvariants(unittest.TestCase):
     def test_no_dangling_cross_references(self):
         for name, text in self.docs.items():
             with self.subTest(name):
-                self.assertEqual(cross_reference_errors(text), [])
+                self.assertEqual(cross_reference_errors(text, DOCS[name][1]), [])
 
     def test_no_bare_section_number_references(self):
         # 상호참조 표기는 `§절대 규칙 N`·`§실행 절차 N`·`N단계` 뿐이다.
@@ -205,7 +229,8 @@ class SkillDocInvariants(unittest.TestCase):
         # 가리켜지는 규칙만 보기 때문이다. 번호가 비면 여기서 걸린다.
         for name, text in self.docs.items():
             sec = sections(text)
-            for title, first in (("절대 규칙", 1), ("실행 절차", 0)):
+            for title in DOCS[name][1]:
+                first = 0 if title == "실행 절차" else 1
                 with self.subTest(f"{name}/{title}"):
                     got = numbered_items(sec[title])
                     self.assertEqual(got, set(range(first, max(got) + 1)))
@@ -213,13 +238,15 @@ class SkillDocInvariants(unittest.TestCase):
     def test_sibling_subsection_scope_is_defined(self):
         # 형제를 문서 전체로 읽으면 소절 제목이 표 제목을 겸하는 예외가
         # 무너져 표 레이아웃이 통째로 뒤집힌다. 두 스킬이 같은 기계를 쓴다.
-        for name, text in self.docs.items():
+        # ⑤ 는 보고서를 검사하는 스킬이라 작성 규칙을 갖지 않는다.
+        for name in REPORT_DOCS:
             with self.subTest(name):
                 self.assertIn("형제 소절(같은 대절 안의 소절)", self.flat[name])
 
     def test_heading_levels_are_capped_at_two(self):
         # `###` 를 허용하면 여백 규칙이 정의되지 않은 자리가 생긴다.
-        for name, text in self.docs.items():
+        # ⑤ 는 보고서를 검사하는 스킬이라 작성 규칙을 갖지 않는다.
+        for name in REPORT_DOCS:
             with self.subTest(name):
                 self.assertIn("`###` 이하는 쓰지 않는다", self.flat[name])
 
@@ -254,15 +281,17 @@ class SkillDocInvariants(unittest.TestCase):
     def test_ai_usage_log_gate_is_written_against_the_parsed_value(self):
         # config.load_course_info() 는 YAML `~` 를 None 으로 돌려준다.
         # "`~` 가 아니면" 을 글자대로 구현하면 항상 참이 되어 로그를 남긴다.
-        for name, text in self.docs.items():
+        # ⑤ 는 보고서를 검사하는 스킬이라 작성 규칙을 갖지 않는다.
+        for name in REPORT_DOCS:
             with self.subTest(name):
-                self.assertNotIn("`ai_usage_log` 가 `~` 가 아니면", text)
+                self.assertNotIn("`ai_usage_log` 가 `~` 가 아니면", self.docs[name])
                 self.assertIn(
                     "`ai_usage_log` 가 비어 있지 않으면(`None` 이 아니면)",
                     self.flat[name])
 
-    def test_both_skills_pass_item_count_to_the_section_check(self):
+    def test_every_skill_passes_item_count_to_the_section_check(self):
         # item_count 없이 부르면 per-item 반복 횟수 검사가 통째로 생략된다.
+        # ⑤ 도 같은 인자를 넘겨야 한다 — 안 그러면 같은 보고서를 두 기준으로 잰다.
         for name, text in self.docs.items():
             with self.subTest(name):
                 calls = call_arguments(text, "check_report_sections")
@@ -339,6 +368,12 @@ class SkillDocInvariants(unittest.TestCase):
         result = self.flat["결과"]
         self.assertNotIn("160310", result)
         self.assertIn("160314", result)
+
+    def test_the_review_skill_is_covered_by_the_net(self):
+        # ⑤ 의 결함 3건(item_count 미전달·낡은 HTML 근거·죽은 §4)은 사람이
+        # 실험01 을 재생성해서 찾았다. 그물이 봤다면 자동으로 걸렸을 종류다.
+        self.assertIn("리뷰", DOCS)
+        self.assertIn("리뷰", self.docs)
 
 
 if __name__ == "__main__":
