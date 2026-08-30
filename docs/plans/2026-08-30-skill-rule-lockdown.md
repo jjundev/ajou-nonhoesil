@@ -798,6 +798,11 @@ git commit -m "docs: ai_usage_log 판정을 파싱된 값 기준으로, 예보 �
         pre = self.docs["예보"]
         self.assertIn("이론 절은 그 주 회로가 실제로 쓰는 것만 다룬다",
                       self.flat["예보"])
+        # 규칙의 예시가 하필 그 주 회로의 핵심 기법을 "빼라" 목록에 넣은 적이
+        # 있다 — 실험1 의 2입력→3입력 캐스케이드가 곧 결합법칙인데, 예시가
+        # `결합 법칙` 을 일반 이론으로 들어 이론 소절 하나를 통째로 지웠다.
+        self.assertIn("회로의 기법인 항등식을 일반 이론으로 오해해 빼면",
+                      self.flat["예보"])
         rows = [ln for ln in pre.splitlines() if ln.startswith("| 실험 이론 |")]
         self.assertEqual(len(rows), 1, rows)
         self.assertIn("범위는 §절대 규칙 16", rows[0])
@@ -834,190 +839,12 @@ Expected: 새 테스트 2개가 `FAIL` (문자열 부재).
     이론 절의 범위도 같은 기준이다. **이론 절은 그 주 회로가 실제로 쓰는
     것만 다룬다** — 명세에 대응하는 `role: reference` 표가 없어도 회로가 쓰는
     소자면 다루고(실험1 의 NOT 게이트: 복합회로가 74HC04 를 쓰는데 명세에는
-    표가 없다), 회로가 쓰지 않는 일반 이론은 강의노트에 있어도 넣지 않는다
-    (부울 대수의 교환·결합·분배 법칙 등).
-```
+    표가 없다), 회로가 쓰지 않는 일반 이론은 강의노트에 있어도 넣지 않는다.
 
-- [ ] **Step 4: §섹션별 재료 의 `실험 이론` 행을 고친다**
-
-같은 파일에서 아래 한 줄(표의 한 행)을 찾는다:
-
-```
-| 실험 이론 | 그 주 강의노트(`실험N.pdf`) 이론 슬라이드 + `논회 강의노트/Ch*.pdf`(이름이 겹치는 별도의 이론 교재 — §절대 규칙 6) + `docs/study/` + 명세의 **`role: reference` 표**(실험1 T6~T9 = 2입력 이론표, `encoding: H/L`). **`H/L` 을 `0/1` 로 바꾸지 말 것.** 본문에는 이 자료들의 이름을 밝히지 않고 내용만 녹여 쓴다(§절대 규칙 8) |
-```
-
-아래 한 줄로 교체한다 (마지막에 한 문장이 붙는다):
-
-```
-| 실험 이론 | 그 주 강의노트(`실험N.pdf`) 이론 슬라이드 + `논회 강의노트/Ch*.pdf`(이름이 겹치는 별도의 이론 교재 — §절대 규칙 6) + `docs/study/` + 명세의 **`role: reference` 표**(실험1 T6~T9 = 2입력 이론표, `encoding: H/L`). **`H/L` 을 `0/1` 로 바꾸지 말 것.** 본문에는 이 자료들의 이름을 밝히지 않고 내용만 녹여 쓴다(§절대 규칙 8). **범위는 §절대 규칙 16 이 정한다** — 자료에 있다고 다 쓰는 것이 아니라 그 주 회로가 실제로 쓰는 것만 |
-```
-
-- [ ] **Step 5: 테스트를 돌려 통과를 확인한다**
-
-```bash
-zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
-```
-
-Expected: `Ran 342 tests`, `OK`.
-
-규칙 번호가 밀리지 않았는지 눈으로 확인한다:
-
-```bash
-grep -nE "^1[4-7]\. \*\*" .claude/skills/write-pre-report/SKILL.md
-```
-
-Expected: 14·15·16·17 네 줄이 이 순서로 나오고, 17 은 "소절 수는 명세에서 파생한다" 다.
-
-- [ ] **Step 6: 커밋**
-
-```bash
-git add tests/test_skill_docs.py .claude/skills/write-pre-report/SKILL.md
-git commit -m "docs: 준비물에 없는 소모품 추가 허용, 이론 절 범위를 회로 기준으로 확정"
-```
-
----
-
-## Task 6: 결과보고서 스킬 dry run (합성 기록)
-
-**Files:**
-- Create: `.superpowers/sdd/result-dryrun-report.md` (git 추적 안 됨 — `.superpowers/sdd/.gitignore` 가 전부 무시한다)
-- Temporarily modify: `실험01/체크리스트/기록.md` (실행 후 `git checkout` 으로 되돌린다)
-- Temporarily create: `실험01/output/실험01_결과보고서.md` (실행 후 삭제한다)
-- Conditionally modify: `tests/test_skill_docs.py`, `.claude/skills/write-result-report/SKILL.md` (모순이 나왔을 때만)
-
-**Interfaces:**
-- Consumes: Task 4 가 고친 `write-result-report/SKILL.md` §실행 절차 13
-- Produces: 발견된 모순 목록. 고칠 것이 있으면 Task 1~5 와 같은 형태(불변식 테스트 + 문서 수정)로 같은 커밋에 담는다.
-
-**왜 하는가.** `write-result-report/SKILL.md` 는 **한 번도 실행된 적이 없다.** `실험01/체크리스트/기록.md` 는 템플릿만 있고 `filled_by: ~` 이며 확인 칸이 전부 비어 있다. 이 세션에서 배운 것은 하나다 — **모순은 읽어서가 아니라 실행해서만 나온다.** 예보 스킬은 두 번의 격리 재생성으로 모순 11건이 나왔고, 그중 어느 것도 문서를 눈으로 읽어서는 나오지 않았다. 실제 실험 후로 미루면 제출 전날 밤에 처음 만난다.
-
-**이 태스크는 TDD 사이클이 아니다.** 실행이 곧 검사다. 산출물은 버리고 발견만 남긴다.
-
-- [ ] **Step 1: 합성 기록을 만든다**
-
-`실험01/체크리스트/기록.md` 의 확인 칸을 채운다. 파일 머리의 규칙이 이렇다 — `✓` 일치 / 값 = 불일치 시 실제 관찰값 / 공란 = 미확인 / 표를 통째로 안 했으면 표 아래에 `- 실험을 진행하지 않았음.`
-
-**네 갈래를 전부 태운다:**
-
-- `T1`(3입력 AND) — 8행 전부 `✓`. 정상 경로.
-- `T2`(3입력 OR) — 7행 `✓`, `A=0 B=1 C=0` 행의 확인 칸에 `0` (예상 `1` 과 불일치). 고찰 분기.
-- `T3`(3입력 NAND) — 4행 `✓`, 나머지 4행 공란. 부분 미확인 분기.
-- `T5`(복합 논리회로) — 확인 칸 전부 공란 + 표 아래에 `- 실험을 진행하지 않았음.` 한 줄. 미진행 분기.
-- `T4`(3입력 NOR)는 손대지 않는다 — 확인 칸을 전부 공란으로 둔다. (기록.md 에는 `T1`~`T5` 다섯 개만 있다. `T6`~`T9` 는 명세의 `role: reference` 이론표라 기록 대상이 아니다.)
-
-frontmatter 의 `filled_by: ~` 를 `filled_by: hand` 로 바꾼다.
-
-`- 메모:` 줄 중 두 곳에 짧은 관찰을 적는다 (`T2` 아래: `- 메모: 해당 행에서 LED 가 켜지지 않았다. 재확인 필요.`).
-
-- [ ] **Step 2: 결과보고서 스킬을 격리 에이전트로 실행시킨다**
-
-`write-result-report` 를 **fresh 에이전트**로 실행한다(모델 opus, effort high). 브리프에 명시할 것:
-
-- 대상은 `실험01` (2주차).
-- **노션에 올리지 않는다** — `sync-report-to-notion` 을 부르지 않는다.
-- v6 예비보고서나 이 계획, git 이력을 참조하지 않는다. 스킬 문서와 저장소 자료만 본다.
-- 보고서 파일은 스킬이 지시하는 경로에 정상적으로 쓴다.
-- **막히거나 판단해야 했던 자리를 전부 기록한다** — 문서가 침묵한 곳, 참조가 어긋난 곳, 지시대로 하면 결과가 틀어지는 곳. 심각도가 아니라 문서 순서로 나열한다.
-- 보고서는 `.superpowers/sdd/result-dryrun-report.md` 에 쓰고, 최종 응답으로는 상태·발견 건수·차단 건수만 돌려준다.
-
-- [ ] **Step 3: 산출물을 기계로 확인한다**
-
-에이전트가 끝나면 생성된 보고서에 대해 아래를 돌린다.
-
-```bash
-zsh -c 'PYTHONPATH=. python3 -c "
-from pathlib import Path
-from scripts.lab import config, validate
-from scripts.lab.spec_parser import parse_spec
-root = config.find_project_root(Path(\".\"))
-fmt = config.load_report_format(root)
-spec = parse_spec(\"실험01/체크리스트/명세.md\")
-p = \"실험01/output/실험01_결과보고서.md\"
-out = (validate.check_report_sections(p, fmt.result, item_count=len(spec.items))
-       + validate.check_notion_markdown(p))
-print(\"\n\".join(str(f) for f in out) or \"문제 없음\")
-"'
-```
-
-Expected: `✗` 0건. `!`·`ℹ` 는 각각 이유를 적는다.
-
-레이아웃 규칙이 실제로 먹었는지도 센다:
-
-```bash
-p=실험01/output/실험01_결과보고서.md
-echo "목차   $(grep -c 'table_of_contents' $p)"
-echo "여백   $(grep -c 'empty-block' $p)"
-echo "쪽번호 $(grep -cE 'p\.[0-9]|p[0-9]+' $p)"
-echo "출처블록 $(grep -c '^> 출처:' $p)"
-echo "각주   $(grep -cE '\[\^[0-9]+\]' $p)"
-echo "ov스팬 $(grep -c 'class=\"ov\"' $p)"
-echo "탭표   $(grep -cP '^\t\|' $p)"
-```
-
-Expected: 목차 1, 여백 ≥ 헤딩 수, 쪽번호 0, 출처블록 0, 각주 0, ov스팬 0, 탭표 > 0.
-
-- [ ] **Step 4: 산출물을 되돌린다**
-
-```bash
-rm -f 실험01/output/실험01_결과보고서.md
-git checkout -- 실험01/체크리스트/기록.md
-git status --short
-```
-
-Expected: `?? 실험01/output/eli5_실험01.html` 한 줄만. (`.superpowers/sdd/` 는 무시된다.)
-
-- [ ] **Step 5: 발견을 분류한다**
-
-`.superpowers/sdd/result-dryrun-report.md` 의 각 발견을 셋으로 나눈다:
-
-- **체계적 결함** (지시와 코드가 어긋남, 죽은 참조, 따를 수 없는 지시) → 지금 고친다.
-- **미정의** (문서가 침묵해 에이전트가 판단) → 지금 고친다. 판단이 갈리면 다음 실험에서 다르게 나온다.
-- **일회성** (이번 합성 데이터에만 해당) → 고치지 않고 보고서에만 남긴다.
-
-앞의 두 갈래는 각각 아래 순서로 고친다:
-
-1. `tests/test_skill_docs.py` 의 `SkillDocInvariants` 안에 그 결함을 잡는 테스트를 하나 쓴다. 사라지면 안 되는 문장이면 `assertIn`, 되살아나면 안 되는 문장이면 `assertNotIn`, 표의 한 행이면 `startswith("| 이름 |")` 로 그 행만 뽑아 검사한다. 주석에 **왜** 그 문장이 필요한지 한 줄 적는다 — 문자열만 남으면 다음 사람이 지운다.
-2. `zsh -c 'PYTHONPATH=. python3 -m unittest tests.test_skill_docs -v 2>&1 | tail -20'` 으로 그 테스트가 실패하는 것을 확인한다.
-3. `.claude/skills/write-result-report/SKILL.md` 를 고친다. 규칙 번호를 밀지 않는다 — 새 규칙은 마지막 번호 뒤에 붙인다(현재 절대 규칙 1~17, 실행 절차 0~14).
-4. 같은 명령을 다시 돌려 통과를 확인한다.
-
-발견이 0건이면 Step 6 을 건너뛴다 — 커밋할 것이 없다.
-
-- [ ] **Step 6: 고친 것이 있으면 커밋한다**
-
-```bash
-zsh -c 'PYTHONPATH=. python3 -m unittest discover -s tests -t . 2>&1 | grep -E "^(OK|FAILED|Ran )"'
-```
-
-Expected: `OK`, 테스트 수는 342 + 새로 추가한 만큼.
-
-```bash
-git add tests/test_skill_docs.py .claude/skills/write-result-report/SKILL.md
-git commit -m "docs: 결과보고서 스킬 모의 실행에서 나온 모순 정리"
-```
-
----
-
-## 이 계획 다음 (별도 계획)
-
-Task 6 까지 끝나면 **최종 전체 리뷰 → `main` 머지**다. 리뷰어에게 `.superpowers/sdd/progress.md` 의 미해결 Minor 목록을 함께 넘긴다.
-
-그 뒤는 하네스 *개발*이 아니라 *사용*이라 별도 계획으로 뗀다:
-
-1. **실험02 검문소** — 유일한 계측 주차(오실로스코프·DMM, VTC·히스테리시스·Rn/Rp 계산). 진리표를 전제로 쓰인 규칙이 처음 깨질 자리다. 생성 → 노션 업로드 → 사용자가 직접 수정 → diff 를 규칙으로 환원. `docs/강의노트_이론_실험_매핑_정리.md` 의 확인된 오류 (2)(`t_pd = Δt/2` 는 틀렸고 `Δt/4` 가 맞다)를 그대로 베끼는지 특히 본다.
-2. **실험05** — 항목 4개로 §절대 규칙 17(소절 수 파생)의 첫 시험대이고, 매핑 문서 오류 (1)(준비물에 `74HC138`·7-segment 오기재)이 §절대 규칙 16 과 정면으로 만난다.
-3. **실험06·10** — 앞의 둘을 통과했으면 연속으로.
-
-**대기 중이지만 막힘은 아니다:** `과목정보.md` 의 `team`·`student_ids`·`student_names` 는 1주차 조 편성 후, `ai_usage_log` 는 강의계획서 §13 관련 조교 안내 후. 확정 전까지 표지는 만들지 않고 예보는 md 까지만 낸다.
-
-**사용자 몫:** 노션에서 v4·v5 와 프로브 페이지 2개를 지운다. 하네스에는 삭제 기능을 넣지 않는다 — 업로드는 append-only 설계다(`scripts/lab/notion.py` 에 덮어쓰기 함수가 없다).
-
----
-
-## 이 계획이 하지 않는 것
-
-- **`scripts/lab/*.py` 를 고치지 않는다.** `check_report_sections` 는 이미 `item_count` 를 받고, `load_course_info` 는 이미 `None` 을 돌려준다. 어긋난 것은 문서뿐이다.
-- **재생성 대조를 따로 돌리지 않는다.** 실험02·05·06·10 생성이 곧 격리 실행이고, 남은 4개가 공짜 테스트 4번이다.
-- **분량을 문자 수로 막지 않는다.** 주차마다 정당한 편차가 커서 상한은 거짓 경보를 낸다. §절대 규칙 17 은 소절 **수**를 명세에서 파생시킬 뿐이다.
-- **결과보고서에는 소절 수 규칙을 넣지 않는다.** 결과보고서의 섹션 반복은 이미 프리셋의 `repeat: per-item` + `item_count` 로 명세에서 파생된다. 필요한지는 Task 6 의 dry run 이 알려 준다 — 그때 넣는다.
+    이 기준은 소자만이 아니라 **부울 항등식에도 똑같이** 적용된다 — 다만
+    판단은 "일반 이론처럼 보이는가" 가 아니라 **회로가 실제로 그것을
+    하는가** 로 한다. 실험1 이 2입력 게이트를 두 단으로 이어 3입력을 만드는
+    것은 결합법칙 그 자체이므로 이론 절에서 다룬다. **회로의 기법인 항등식을
+    일반 이론으로 오해해 빼면 그 주 실험의 핵심이 사라진다.** 반대로 회로가
+    한 번도 쓰지 않는 항등식은 강의노트에 있어도 넣지 않는다.** 결과보고서의 섹션 반복은 이미 프리셋의 `repeat: per-item` + `item_count` 로 명세에서 파생된다. 필요한지는 Task 6 의 dry run 이 알려 준다 — 그때 넣는다.
 - **9건 중 I 는 고치지 않는다.** §절대 규칙 5 의 예시("`74HC08`·`74HC32` 핀아웃 데이터시트는 저장소에 없다")는 실측 결과 사실이고, `netlist.md` 가 확보한 확신도를 본문에 못 쓰는 것은 §절대 규칙 9 의 의도된 결과다. 결과는 안전한 쪽으로 보수적이다.

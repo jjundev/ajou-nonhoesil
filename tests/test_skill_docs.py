@@ -284,6 +284,11 @@ class SkillDocInvariants(unittest.TestCase):
         pre = self.docs["예보"]
         self.assertIn("이론 절은 그 주 회로가 실제로 쓰는 것만 다룬다",
                       self.flat["예보"])
+        # 규칙의 예시가 하필 그 주 회로의 핵심 기법을 "빼라" 목록에 넣은 적이
+        # 있다 — 실험1 의 2입력→3입력 캐스케이드가 곧 결합법칙인데, 예시가
+        # `결합 법칙` 을 일반 이론으로 들어 이론 소절 하나를 통째로 지웠다.
+        self.assertIn("회로의 기법인 항등식을 일반 이론으로 오해해 빼면",
+                      self.flat["예보"])
         rows = [ln for ln in pre.splitlines() if ln.startswith("| 실험 이론 |")]
         self.assertEqual(len(rows), 1, rows)
         self.assertIn("범위는 §절대 규칙 16", rows[0])
