@@ -1,7 +1,7 @@
 """스킬 문서의 불변식.
 
-`write-pre-report`·`write-result-report` 는 코드가 아니라 산문 규칙 문서라
-컴파일도 실행도 되지 않는다. 그래서 같은 모순이 두 번 되살아났다 — 각주를
+`write-pre-report`·`write-result-report`·`review-lab-report` 는 코드가 아니라
+산문 규칙 문서라 컴파일도 실행도 되지 않는다. 그래서 같은 모순이 두 번 되살아났다 — 각주를
 없앤 뒤에도 다른 규칙이 그 각주를 가리켰고, 삭제된 단계가 유일한 근거이던
 규칙이 함께 사라졌다. 둘 다 격리 에이전트에게 스킬을 실행시켜서야 드러났다.
 
@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
 REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
-BASELINE_V6 = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v6.md"
+SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
+CANON = ROOT / "실험01/output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
 #
@@ -26,7 +27,10 @@ BASELINE_V6 = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v
 # `explain-lab-preview` 는 `## 0.`~`## 8.` 로 자기 절을 번호 매기고 `§0`~`§8` 로
 # 참조하며(21건), `sync-report-to-notion` 은 단계가 `## 실행 절차` 가 아니라
 # `## push`·`## pull` 안에 산다(7건). 거짓 경보를 내는 검사는 없느니만 못하다.
-# 편입하려면 그 문서의 절 이름을 여기 한 줄로 선언하면 된다.
+# 편입은 여기 한 줄로 **시작**하지만 그것으로 끝나지 않는다 —
+# `test_every_skill_passes_item_count_to_the_section_check` 가 모든 문서에
+# `check_report_sections(` 호출을 요구하는데, 그 호출을 가진 SKILL.md 는
+# 저장소에 이 셋뿐이다. 없는 문서를 넣으면 그 테스트가 곧바로 깨진다.
 DOCS = {
     "예보": (PRE, ("절대 규칙", "실행 절차")),
     "결과": (RESULT, ("절대 규칙", "실행 절차")),
@@ -126,7 +130,10 @@ def cross_reference_errors(text, titles=("절대 규칙", "실행 절차")):
 
     # 이름 있는 절(`§섹션별 재료` 등) 참조도 검사한다. `§` 다음 토큰이 이
     # 문서의 절 제목 중 하나와 시작이 일치하면 통과.
-    known = set(sec) | {"절대 규칙", "실행 절차"}
+    # `titles` 로 만든다 — 하드코딩하면 ⑤ 처럼 `## 절대 규칙` 이 없는 문서에서
+    # `§절대 규칙 N` 이 이름 검사를 통과한다. 숫자 검사는 위에서 이미
+    # 건너뛰므로, 여기까지 통과하면 진짜 죽은 참조가 무음이 된다.
+    known = set(sec) | set(titles)
     for ref in re.findall(r"§([^\s,.·()`]+)", text):
         if ref[0].isdigit():
             continue          # `§3` 형태는 별도 테스트가 잡는다
@@ -265,11 +272,13 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn(17, rules)
 
     def test_worked_subsection_example_matches_the_approved_report(self):
-        # 규칙 17 의 예시 숫자를 사용자가 승인한 정본에서 실제로 세어 대조한다.
+        # 규칙 17 의 예시 숫자를 살아 있는 정본에서 실제로 세어 대조한다.
+        # 노션 baseline 이 아니라 정본을 읽는다 — baseline 은 판본이 바뀌면
+        # 낡고, 게다가 사용자가 옛 노션 페이지를 지울 때 함께 지우기 쉽다.
         # 계획이 이 숫자를 한 번 틀렸다 — 결선 소절을 4개라고 썼는데 정본은
         # 6개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
         # 문자열 존재만 보면 같은 실수가 다시 지나간다.
-        counts = subsection_counts(BASELINE_V6.read_text(encoding="utf-8"))
+        counts = subsection_counts(CANON.read_text(encoding="utf-8"))
         self.assertEqual(counts["실험 과정 및 예상 결과"], 3)
         self.assertEqual(counts["회로 결선도"], 6)
         # 규칙의 예시 문장을 정본에서 센 숫자로 조립해 대조한다. 줄바꿈에
@@ -373,7 +382,18 @@ class SkillDocInvariants(unittest.TestCase):
         # ⑤ 의 결함 3건(item_count 미전달·낡은 HTML 근거·죽은 §4)은 사람이
         # 실험01 을 재생성해서 찾았다. 그물이 봤다면 자동으로 걸렸을 종류다.
         self.assertIn("리뷰", DOCS)
-        self.assertIn("리뷰", self.docs)
+        # 키만 보면 `DOCS["리뷰"] = (REVIEW, ())` 로 바꿔도 통과하면서 ⑤ 의
+        # 상호참조 검사가 통째로 무음이 된다. 선언한 절이 있는지까지 본다.
+        self.assertTrue(DOCS["리뷰"][1], DOCS["리뷰"])
+
+    def test_the_upload_step_passes_the_versioned_title(self):
+        # 사용자는 노션 사이드바에서 PDF 를 내보내 제출한다. 제목이 전부 같으면
+        # 옛 판본을 골라도 아무 데서도 오류가 나지 않는다 — 이 하네스에서
+        # 조용히 틀린 것을 제출할 수 있는 유일한 경로였다. ⑦ 은 `DOCS` 에
+        # 없으므로(단계가 `## push`·`## pull` 안에 산다) 여기서 따로 본다.
+        calls = call_arguments(SYNC.read_text(encoding="utf-8"), "push_markdown")
+        self.assertTrue(calls, "⑦ 에 push_markdown 호출부가 없다")
+        self.assertTrue(any("title=page_title" in c for c in calls), calls)
 
 
 if __name__ == "__main__":
