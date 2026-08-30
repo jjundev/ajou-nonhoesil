@@ -12,6 +12,7 @@ diff 를 해석하는 판단은 ⑦ `sync-report-to-notion` 스킬의 몫이다.
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -178,6 +179,30 @@ def append_record(output_dir, kind, page_id, url, source, when) -> dict:
 # 나머지는 노션이 이름을 바꿨을 때를 위한 여유다.
 _MARKDOWN_KEYS = ("markdown", "content")
 
+# 서명이 실린 자산 URL. `X-Amz-Signature` 가 있는 것만 잡는다 — 쿼리스트링을
+# 통째로 떼면 사용자가 본문에 넣은 정상 링크(`?t=90` 같은)까지 망가진다.
+_PRESIGNED_ASSET = re.compile(r"(https?://[^\s)]*?)\?[^\s)]*X-Amz-Signature[^\s)]*")
+
+
+def strip_asset_signatures(md_text) -> str:
+    """되읽은 마크다운에서 서명 URL 의 쿼리스트링을 떼고 객체 경로만 남긴다.
+
+    노션에 올린 그림은 되읽으면 **1시간짜리 presigned URL** 로 돌아온다 —
+    `X-Amz-Security-Token` 과 `X-Amz-Signature` 가 쿼리스트링에 실려 있다.
+    두 가지가 곤란하다:
+
+    1. `pull_markdown` 의 반환값이 그대로 baseline 파일이 되어 git 에 들어간다.
+       자격증명 성격의 문자열을 저장소에 두지 않는다.
+    2. 서명은 되읽을 때마다 새로 생긴다. baseline 을 두는 이유가 다음 판본과
+       diff 를 떠 **사용자가 고친 것만** 남기는 것인데, 그림 한 장이 매번
+       통째로 바뀐 것처럼 보여 그 diff 를 못 쓰게 만든다.
+
+    쿼리스트링이 없어진 URL 로는 그림을 받을 수 없다. 그래도 괜찮다 — 이 파일은
+    보여주기용이 아니라 **대조용**이고, 남은 객체 경로가 `…/Breadboard.jpg` 라
+    어느 그림인지는 그대로 읽힌다.
+    """
+    return _PRESIGNED_ASSET.sub(r"\1", md_text)
+
 
 def pull_markdown(page_id, token, timeout=120) -> str:
     """페이지 내용을 Notion-flavored Markdown 문자열로 되읽는다.
@@ -209,7 +234,7 @@ def pull_markdown(page_id, token, timeout=120) -> str:
         )
     for key in _MARKDOWN_KEYS:
         if isinstance(data.get(key), str):
-            return data[key]
+            return strip_asset_signatures(data[key])
     raise NotionError(
         f"되읽기 응답에서 마크다운 문자열을 찾지 못했습니다. "
         f"응답의 키: {sorted(data)} — `_MARKDOWN_KEYS` 를 실측값에 맞추세요."

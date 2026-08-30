@@ -253,3 +253,47 @@ class TestPullMarkdown(unittest.TestCase):
             opener.return_value = fake_response({"content": "대체 키 본문"})
             text = notion.pull_markdown("PAGE", "ntn_abc")
         self.assertEqual(text, "대체 키 본문")
+
+
+# 노션에 올린 그림은 되읽을 때 1시간짜리 presigned URL 로 돌아온다. 아래는
+# 실제 되읽기(v7)에서 나온 모양을 줄여 옮긴 것이다.
+SIGNED = (
+    "https://prod-files-secure.s3.us-west-2.amazonaws.com/bb202fe9/dee1c66a/"
+    "Breadboard.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256"
+    "&X-Amz-Credential=ASIAZI2LB466SBQR5Q7N%2F20260830%2Fus-west-2%2Fs3"
+    "&X-Amz-Date=20260830T053258Z&X-Amz-Expires=3600"
+    "&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEK7"
+    "&X-Amz-Signature=35b55f75f5d8c3a643ea24a40fe348697c30401aa3e1256b"
+)
+BARE = "https://prod-files-secure.s3.us-west-2.amazonaws.com/bb202fe9/dee1c66a/Breadboard.jpg"
+
+
+class TestStripAssetSignatures(unittest.TestCase):
+    def test_서명_쿼리를_떼고_객체_경로만_남긴다(self):
+        got = notion.strip_asset_signatures(f"![브레드보드 작도 캔버스]({SIGNED})")
+        self.assertEqual(got, f"![브레드보드 작도 캔버스]({BARE})")
+
+    def test_뗀_결과에_자격증명_조각이_남지_않는다(self):
+        # 저장소에 들어가면 안 되는 것들이다. 부분 문자열로 확인한다 —
+        # 정규식이 한 조각만 놓쳐도 그것이 커밋된다.
+        got = notion.strip_asset_signatures(f"![x]({SIGNED})")
+        for leak in ("X-Amz-Signature", "X-Amz-Security-Token", "X-Amz-Credential"):
+            self.assertNotIn(leak, got)
+
+    def test_서명_없는_링크는_쿼리스트링까지_그대로_둔다(self):
+        # 쿼리스트링을 통째로 떼면 사용자가 본문에 넣은 정상 링크가 망가진다.
+        text = "[강의](https://youtu.be/abc?t=90) 와 [문서](https://x.io/a?b=1#c)"
+        self.assertEqual(notion.strip_asset_signatures(text), text)
+
+    def test_한_줄에_서명_링크와_정상_링크가_같이_있어도_각각_처리한다(self):
+        text = f"![그림]({SIGNED}) 그리고 [영상](https://youtu.be/abc?t=90)"
+        got = notion.strip_asset_signatures(text)
+        self.assertEqual(got, f"![그림]({BARE}) 그리고 [영상](https://youtu.be/abc?t=90)")
+
+    def test_되읽기가_서명을_떼고_돌려준다(self):
+        # 이 함수의 반환값이 그대로 baseline 파일이 되어 git 에 들어간다.
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen") as opener:
+            opener.return_value = fake_response({"markdown": f"![x]({SIGNED})"})
+            text = notion.pull_markdown("PAGE", "ntn_abc")
+        self.assertNotIn("X-Amz-Signature", text)
+        self.assertIn(BARE, text)
