@@ -84,16 +84,18 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
 
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
    title = config.document_title(spec.experiment, spec.title, KIND)
+   page_title = f"{title} v{notion.next_version(OUT, KIND)}"
    body = text
    if body.startswith(f'# {title}\n'):
        body = body[len(f'# {title}\n'):].lstrip('\n')
 
-   page = notion.push_markdown(body, info['notion_parent_page_id'], token, title=title)
+   page = notion.push_markdown(body, info['notion_parent_page_id'], token,
+                               title=page_title)
    rec = notion.append_record(OUT, KIND, page['page_id'], page['url'], NAME,
                               datetime.now().strftime('%Y-%m-%d %H:%M'))
    base = OUT / f"{NAME[:-3]}_notion_baseline_v{rec['version']}.md"
    base.write_text(notion.pull_markdown(page['page_id'], token), encoding='utf-8')
-   print('제목', title)
+   print('제목', page_title)
    print('v', rec['version'], page['url'])
    print('baseline', base)
    PY
@@ -104,6 +106,11 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    있으면 제목이 비었다는 뜻이다.
 
    이 스크립트가 셋 중 어디서든 죽으면 그대로 다시 돌리지 않는다 — 복구 절차는 4b 를 본다.
+
+   **제목 끝의 `v<N>` 은 업로드 전에 `next_version` 으로 구한다.** 사용자는
+   노션 사이드바에서 PDF 를 내보내므로 거기서 판본을 구분할 수 있어야 한다.
+   본문 첫 헤딩을 떼는 비교에는 버전 없는 `title` 을 그대로 쓴다 — 본문에는
+   버전이 없다. 이미 올라간 v1~v6 의 제목은 소급하지 않는다.
 
 4b. **4단계가 중간에 죽으면 그대로 다시 돌리지 않는다.** `push_markdown`·`append_record`·
     baseline pull 은 한 스크립트 안에 있을 뿐 서로 독립된 호출이라 에러 처리가 없다 —

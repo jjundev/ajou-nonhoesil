@@ -91,7 +91,10 @@ def push_markdown(md_text, parent_page_id, token, title=None, timeout=120) -> di
     깨져 **제목이 빈 페이지**가 만들어졌다(v4). 사이드바에서 "Untitled" 로
     보이고 URL 에도 슬러그가 없어 사람이 찾지 못한다.
 
-    제목에 버전 번호는 넣지 않는다 — 몇 번째 업로드인지는 `notion.json` 이 안다.
+    **제목 끝에 버전을 붙여 넘긴다** (`… 예비보고서 v7`). 사용자는 노션
+    사이드바에서 PDF 를 내보내 제출하는데 거기엔 `notion.json` 이 보이지
+    않는다. 제목이 전부 같으면 옛 판본을 골라도 아무 데서도 오류가 나지
+    않는다. 번호는 `next_version()` 으로 업로드 **전에** 구한다.
     """
     if not (parent_page_id or "").strip():
         raise NotionError(
@@ -132,6 +135,16 @@ def load_records(output_dir) -> list:
         ) from None
 
 
+def next_version(output_dir, kind) -> int:
+    """다음 업로드가 받을 버전 번호. `append_record` 가 붙일 번호와 같다.
+
+    페이지 제목은 업로드 **전에** 만들어야 하는데 `append_record` 는 업로드
+    **뒤에** 불린다. 두 곳에서 같은 식을 따로 쓰면 제목의 버전과 `notion.json`
+    의 버전이 어긋나므로, 세는 자리를 여기 하나로 둔다.
+    """
+    return sum(1 for r in load_records(output_dir) if r.get("kind") == kind) + 1
+
+
 def append_record(output_dir, kind, page_id, url, source, when) -> dict:
     """업로드 한 건을 `<실험NN>/output/notion.json` 에 덧붙인다.
 
@@ -141,10 +154,11 @@ def append_record(output_dir, kind, page_id, url, source, when) -> dict:
     `version` 은 **같은 kind 안에서만** 센다 — 예비보고서와 결과보고서는 서로
     다른 문서라 카운터를 공유하면 "몇 번째 예보인지"를 알 수 없다.
     """
+    version = next_version(output_dir, kind)
     records = load_records(output_dir)
     record = {
         "kind": kind,
-        "version": sum(1 for r in records if r.get("kind") == kind) + 1,
+        "version": version,
         "page_id": page_id,
         "url": url,
         "source": source,

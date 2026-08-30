@@ -143,6 +143,24 @@ class TestRecords(unittest.TestCase):
         c = notion.append_record(self.out, "예비보고서", "P3", "u3", "s.md", "2026-08-29 12:00")
         self.assertEqual((a["version"], b["version"], c["version"]), (1, 1, 2))
 
+    def test_다음_버전은_이력이_없으면_1이다(self):
+        self.assertEqual(notion.next_version(self.out, "예비보고서"), 1)
+
+    def test_다음_버전은_같은_kind_만_센다(self):
+        notion.append_record(self.out, "예비보고서", "p1", "u1", "s.md", "t")
+        notion.append_record(self.out, "결과보고서", "p2", "u2", "s.md", "t")
+        notion.append_record(self.out, "예비보고서", "p3", "u3", "s.md", "t")
+        self.assertEqual(notion.next_version(self.out, "예비보고서"), 3)
+        self.assertEqual(notion.next_version(self.out, "결과보고서"), 2)
+
+    def test_다음_버전은_append_record_가_붙일_번호와_같다(self):
+        # 제목은 업로드 전에, 기록은 업로드 후에 만들어진다. 둘이 어긋나면
+        # 페이지 제목의 버전과 notion.json 의 버전이 달라진다.
+        notion.append_record(self.out, "예비보고서", "p1", "u1", "s.md", "t")
+        expected = notion.next_version(self.out, "예비보고서")
+        rec = notion.append_record(self.out, "예비보고서", "p2", "u2", "s.md", "t")
+        self.assertEqual(rec["version"], expected)
+
     def test_기존_이력을_지우지_않는다(self):
         notion.append_record(self.out, "예비보고서", "P1", "u1", "s.md", "2026-08-29 10:00")
         notion.append_record(self.out, "예비보고서", "P2", "u2", "s.md", "2026-08-29 12:00")
