@@ -823,6 +823,24 @@ class TestCheckReportWrapping(unittest.TestCase):
         got = validate.check_report_wrapping(self.WEEK3.read_text(encoding="utf-8"))
         self.assertEqual(got, [], got)
 
+    def test_번호_목록은_쪼개진_문단이_아니다(self):
+        # 재생성 대조(⑦ 14단계)가 잡은 오탐이다. `1.` `2.` 를 산문으로 봐서
+        # 연달아 오는 번호 단계를 통째로 error 로 냈다. 규칙은 번호 목록을
+        # 금지하지 않는데 검사가 금지한 셈이라, 에이전트가 불릿으로 우회했다.
+        self.assertEqual(validate.check_report_wrapping(
+            "1. 첫째 단계다.\n2. 둘째 단계다.\n3. 셋째 단계다."), [])
+
+    def test_번호_목록의_이어진_줄은_잡는다(self):
+        # 오탐을 없애면서 진짜 감싸기까지 놓치면 안 된다.
+        got = validate.check_report_wrapping(
+            "1. 첫째 단계인데 문장이 길어서\n   다음 줄로 이어진다.")
+        self.assertEqual(len(got), 1, got)
+
+    def test_그림_줄은_쪼개진_문단이_아니다(self):
+        # 그림은 블록이다. 앞 산문과 붙어 있어도 "문장이 토막 났다" 가 아니다.
+        self.assertEqual(validate.check_report_wrapping(
+            "아래 캔버스에 미리 그려 둔다.\n![브레드보드 작도 캔버스](x.jpg)"), [])
+
     def test_되읽은_baseline_은_이_검사의_범위가_아니다(self):
         # 범위를 못 박는 테스트다. 노션 되읽기는 문단 사이 빈 줄을 지워서
         # **각자 완결된** 문단이 나란히 붙는다 — 쪼개진 것이 아닌데도 잡힌다.

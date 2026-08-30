@@ -339,17 +339,22 @@ def check_pulled_images(pulled_text) -> list:
 
 # 문단 흐름 밖에 있는 줄머리. 표·헤딩·펜스·인용·노션 태그는 줄바꿈이 의미다.
 _FLOW_OUT = ("\t", "|", "#", "<", "```", ">")
+# 번호 목록도 목록이다. 이것을 산문으로 보면 연달아 오는 단계가 통째로 잡힌다
+# — ⑦ 14단계 재생성이 실제로 이 오탐에 걸려 불릿으로 우회했다.
+_ORDERED = re.compile(r"^\d+\.\s")
+# 그림은 블록이다. 앞 산문과 붙어 있어도 "문장이 토막 났다" 가 아니다.
+_IMAGE_ONLY = re.compile(r"^!\[[^\]]*\]\([^)]*\)\s*$")
 
 
 def _flow_kind(line):
     """줄이 문단 흐름의 어디에 속하는지. 흐름 밖이면 `keep`."""
     if not line.strip():
         return "blank"
-    if line.startswith(_FLOW_OUT):
+    if line.startswith(_FLOW_OUT) or _IMAGE_ONLY.match(line):
         return "keep"
     if line.startswith("  "):
         return "cont"
-    if line.startswith(("- ", "* ")):
+    if line.startswith(("- ", "* ")) or _ORDERED.match(line):
         return "bullet"
     return "prose"
 
