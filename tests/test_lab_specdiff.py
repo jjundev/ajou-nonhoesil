@@ -9,6 +9,7 @@
 자리를 짚는지 확인한다. 합성 픽스처를 따로 만들지 않는다.
 """
 
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -139,12 +140,71 @@ class CompareSpecs(unittest.TestCase):
         self.assertFalse(any("행" in d for d in diffs), diffs)
         self.assertFalse(any("헤더" in d for d in diffs), diffs)
 
-        # 새로 끼운 표 자체는 "재생성에만 있다"로만, 정확히 한 번 보고된다.
-        table_onesided = [
-            d for d in diffs if d.startswith("표") and "재생성에만 있다" in d
+        # 새로 끼운 표 자체는 정확히 한 번 보고된다. "재생성에만 있다" 가
+        # 아니라 "짝을 못 지었다" 다 — 원본에도 T2 라는 ID(D Latch with
+        # Enable, source 로 재생성 T3 과 짝지어진 다른 표)가 있어서,
+        # "재생성에만 있다" 라고 하면 양쪽에 다 있는 ID 를 없다고 말하는
+        # 셈이기 때문이다(C2).
+        table_report = [
+            d for d in diffs if d.startswith("표 T2:") and "짝을 못 지었다" in d
         ]
-        self.assertEqual(len(table_onesided), 1, diffs)
-        self.assertIn("T2", table_onesided[0])
+        self.assertEqual(len(table_report), 1, diffs)
+
+    WEEK2 = ROOT / "실험01/체크리스트/명세.md"
+
+    def _shifted(self, source, first, last):
+        """`source` 명세의 표 ID 를 한 칸씩 밀고 새 `T2` 를 끼운 사본.
+
+        재생성물이 교안 표를 하나 더 정당하게 싣는 실제 상황이다 — 실험06
+        재생성 두 건이 각각 교안 p5 이론표를 `T2` 로 끼워 넣었고, 그때
+        이후 ID 가 전부 밀려 서로 다른 표가 짝지어졌다.
+        """
+        def bump(m):
+            n = int(m.group(1))
+            return f"T{n + 1}" if first <= n <= last else m.group(0)
+
+        # `tables:` 줄과 `## T<n> ·` 헤딩의 ID 만 민다. 항목이 표를 여럿
+        # 가리키는 줄(`tables: [T1, T2, T6, T7]`)도 밀어야 하므로 대괄호
+        # 통짜 치환이 아니라 토큰 단위로 바꾼다 — 통짜로 하면 원소가 하나인
+        # 목록만 밀려서 항목이 없는 표를 가리키거나 ID 가 중복된다.
+        out = []
+        for line in source.read_text(encoding="utf-8").split("\n"):
+            if line.lstrip().startswith("tables:") or line.startswith("## T"):
+                line = re.sub(r"T(\d+)", bump, line)
+            out.append(line)
+        # 밀고 나면 `T2` 를 가리키는 항목이 없다 — 첫 항목에 붙인다.
+        # 고아 표는 파서가 error 로 막는다.
+        text = "\n".join(out).replace("tables: [", "tables: [T2, ", 1)
+        text += ("\n## T2 · 끼운 참조표\n\n- kind: truth-table\n"
+                 "- encoding: 0/1\n- source: manual:p99\n- role: reference\n\n"
+                 "| A | Y |\n|---|---|\n| 0 | 0 |\n")
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(text, encoding="utf-8")
+        return target
+
+    def test_derived_source_만_있는_명세도_밀림에서_오정렬되지_않는다(self):
+        # 이 코퍼스의 절반이 `derived (...)` 다 — 실험03 은 4/4, 실험05 는
+        # 5/6, 실험01 은 5/9. `derived` 를 짝짓기 키에서 빼면 그 명세들에서
+        # 오정렬이 그대로 남는다. 실측: 고치기 전 19건(셀 차이 8건), 진짜
+        # 내용 오류는 0건이었다.
+        target = self._shifted(self.WEEK2, 2, 9)
+        diffs = compare_specs(self.WEEK2, target)
+        cells = [d for d in diffs if "행" in d]
+        self.assertEqual(cells, [], f"셀을 하나도 안 건드렸는데 차이가 났다: {cells}")
+
+    def test_짝을_못_지은_표는_한쪽에만_있다고_말하지_않는다(self):
+        # source 짝짓기가 원본 Tx 를 재생성 Ty(x≠y) 와 묶으면, 원본 Ty 와
+        # 재생성 Tx 가 둘 다 짝을 잃는다. 그것을 "한쪽에만 있다" 로 찍으면
+        # 양쪽에 있는 ID 를 없다고 말하는 셈이라 읽는 사람이 오독한다.
+        target = self._shifted(self.WEEK2, 2, 9)
+        diffs = compare_specs(self.WEEK2, target)
+        both = {"T" + str(n) for n in range(1, 10)}
+        for d in diffs:
+            if "원본에만 있다" in d or "재생성에만 있다" in d:
+                tid = d.split()[1].rstrip(":")
+                self.assertNotIn(
+                    tid, both,
+                    f"양쪽 문서에 다 있는 ID 를 한쪽에만 있다고 했다: {d}")
 
 
 class UncoveredTablesTest(unittest.TestCase):

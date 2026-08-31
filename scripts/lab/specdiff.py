@@ -149,24 +149,28 @@ def _pair_tables(a_tables, b_tables):
     """원본과 재생성의 표를 짝짓는다. 표는 최대 한 짝에만 쓰인다.
 
     ID 는 표가 추가·삭제되면 그 뒤 전부 밀린다(`_table_id_mismatch_notice`
-    참고) — 이 코퍼스에서 실제로 일어났다. `source`(예: `manual:p9`)는
-    교안 쪽 좌표라 밀리지 않으므로, 두 문서 모두에서 유일하게 등장하는
-    비-`derived` source 를 우선 매칭 키로 쓴다. `source` 가 없거나
-    `derived(...)`(부울식에서 유도)이거나 한쪽 문서 안에서 중복이면
-    믿을 수 없으므로 쓰지 않는다 — 그런 표는 기존처럼 ID 로 짝짓는다.
-    ID 매칭은 여전히 밀림에 취약하다는 한계가 있다.
+    참고) — 이 코퍼스에서 실제로 일어났다. `source`(`manual:p9` 든
+    `derived (Y = A·B·C)` 든)는 그 표가 무엇에서 왔는지를 가리키는
+    좌표라 밀리지 않으므로, 두 문서 모두에서 **유일하게** 등장하는
+    source 를 우선 매칭 키로 쓴다.
+
+    **`derived (...)` 도 키로 쓴다.** 처음엔 뺐는데, 이 코퍼스의 절반이
+    derived 라 그러면 오정렬이 그대로 남는다 — 실험03 은 표 4개가 전부,
+    실험05 는 6개 중 5개, 실험01 은 9개 중 5개다. 실측으로 실험01 에서
+    19건(셀 차이 8건)이 4건으로 줄었다. 식이 잘못 옮겨졌으면 그냥 ID
+    짝짓기로 떨어질 뿐이라 빼서 얻는 것이 없었다.
+
+    source 가 없거나 한쪽 문서 안에서 중복이면 믿을 수 없으므로 쓰지
+    않는다 — 그런 표는 ID 로 짝짓고, ID 매칭은 여전히 밀림에 취약하다.
 
     반환: `(짝 목록[(원본표, 재생성표), ...], 원본에만 있는 표 목록,
     재생성에만 있는 표 목록)`.
     """
-    def usable_source_counts(tables):
-        return Counter(
-            t.source for t in tables
-            if t.source and not t.source.strip().startswith("derived")
-        )
+    def source_counts(tables):
+        return Counter(t.source for t in tables if t.source)
 
-    a_src_counts = usable_source_counts(a_tables)
-    b_src_counts = usable_source_counts(b_tables)
+    a_src_counts = source_counts(a_tables)
+    b_src_counts = source_counts(b_tables)
 
     pairs = []
     matched_a, matched_b = set(), set()
@@ -174,8 +178,7 @@ def _pair_tables(a_tables, b_tables):
     # 1차: source 가 양쪽에서 유일하게 일치하는 표부터 짝짓는다.
     for t in a_tables:
         src = t.source
-        if (src and not src.strip().startswith("derived")
-                and a_src_counts[src] == 1 and b_src_counts.get(src) == 1):
+        if src and a_src_counts[src] == 1 and b_src_counts.get(src) == 1:
             match = next(u for u in b_tables if u.source == src)
             pairs.append((t, match))
             matched_a.add(t.id)
@@ -197,14 +200,24 @@ def _pair_tables(a_tables, b_tables):
 
 
 def _table_diffs(pairs, only_a, only_b) -> list:
-    """짝지은 표는 필드·셀을 대조하고, 한쪽에만 있는 표는 그렇게만 보고한다.
+    """짝지은 표는 필드·셀을 대조하고, 짝을 못 지은 표는 그렇게만 보고한다.
 
-    `_pair_tables` 가 이미 오정렬을 최대한 피해 짝지었으므로, 여기서는
-    짝진 쌍의 셀을 그대로 대조해도 안전하다 — 오정렬된 짝을 비교해 소음을
-    내는 문제는 짝짓기 단계에서 해결됐다.
+    **"한쪽에만 있다" 와 "짝을 못 지었다" 를 구별한다.** source 짝짓기가
+    원본 `Tx` 를 재생성 `Ty`(x≠y) 와 묶으면 원본 `Ty` 와 재생성 `Tx` 가
+    둘 다 짝을 잃는데, 그것을 "한쪽에만 있다" 로 찍으면 **양쪽 문서에 다
+    있는 ID 를 없다고 말하는 셈**이라 읽는 사람이 오독한다.
     """
-    out = [f"표 {t.id}: 원본에만 있다" for t in sorted(only_a, key=lambda t: t.id)]
-    out += [f"표 {t.id}: 재생성에만 있다" for t in sorted(only_b, key=lambda t: t.id)]
+    a_ids = {t.id for t in only_a} | {p[0].id for p in pairs}
+    b_ids = {t.id for t in only_b} | {p[1].id for p in pairs}
+    out = []
+    for t in sorted(only_a, key=lambda t: t.id):
+        where = "짝을 못 지었다 (재생성에도 같은 ID 가 있다)" \
+            if t.id in b_ids else "원본에만 있다"
+        out.append(f"표 {t.id}: {where}")
+    for t in sorted(only_b, key=lambda t: t.id):
+        where = "짝을 못 지었다 (원본에도 같은 ID 가 있다)" \
+            if t.id in a_ids else "재생성에만 있다"
+        out.append(f"표 {t.id}: {where}")
     for t_a, t_b in sorted(pairs, key=lambda p: p[0].id):
         label = t_a.id if t_a.id == t_b.id else f"{t_a.id}→{t_b.id}"
         for field in _TABLE_FIELDS:
