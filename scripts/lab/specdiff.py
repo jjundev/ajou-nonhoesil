@@ -6,8 +6,8 @@
 
 **산문은 보지 않는다.** 제목·`expected`·본문 서술은 같은 사실을 다르게 써도
 결함이 아니다. 보는 것은 소비자가 실제로 기대는 필드뿐이다 — 프론트매터의
-`week`·`experiment`·`power`, 항목의 `device`·`ics`·`tables`, 표의 `kind`·
-`encoding`·`source`·`role` 과 셀 전부.
+`week`·`experiment`·`source_manual`·`power`, 항목의 `device`·`ics`·`tables`,
+표의 `kind`·`encoding`·`source`·`role` 과 셀 전부.
 
 `kind: capture` 인 표는 셀이 없어(`header=[]`·`rows=[]`) 대조가 항상 같다고
 나온다 — 그 표의 기술적 주장은 전부 `expected` 산문에 있는데 산문은 위
@@ -16,8 +16,10 @@
 """
 
 from collections import Counter
+from pathlib import Path
 
-from .spec_parser import parse_spec
+from . import md
+from .spec_parser import _T_HEAD, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
 _ITEM_FIELDS = ("device", "ics", "tables")
@@ -62,7 +64,15 @@ def compare_specs(original, regenerated) -> list:
     if shift_notice:
         out.append(shift_notice)
 
-    for field in ("week", "experiment"):
+    # `source_manual` 은 스키마 필수 필드다(`docs/schema/lab-spec-v1.md` 의
+    # 프론트매터 표, `필수` 열에 ●). `write-pre-report`·`write-result-report`
+    # 두 스킬이 "손으로 짐작하지 않는다 — 명세의 `source_manual` 이 가리킨다"
+    # 로 이 필드를 명시적으로 소비한다(확인:
+    # `grep -n "source_manual" .claude/skills/write-pre-report/SKILL.md
+    # .claude/skills/write-result-report/SKILL.md`). 이 파일 docstring이
+    # 내건 기준("소비자가 실제로 기대는 필드")에 정확히 해당하므로 `week`·
+    # `experiment` 와 같은 자리에서 대조한다.
+    for field in ("week", "experiment", "source_manual"):
         x, y = getattr(a, field), getattr(b, field)
         if x != y:
             out.append(f"프론트매터 {field}: 원본 {x!r} / 재생성 {y!r}")
@@ -86,24 +96,70 @@ def compare_specs(original, regenerated) -> list:
 def uncovered_tables(spec_path) -> list:
     """`compare_specs` 가 **대조하지 못하는** 표를 이름과 이유로 돌려준다.
 
-    `capture` 표는 셀이 없어(`header=[]`·`rows=[]`) 어떤 재생성물과 짝지어도
-    `_cells` 가 항상 "같다" 로 본다. 그 표의 기술적 주장은 전부 `expected`
-    산문에 있는데, `compare_specs` 는 산문을 보지 않는다 — 재생성물이 사실을
-    완전히 뒤집어 써도(예: "상승" → "하강") 차이 0건으로 나온다.
+    두 갈래를 합쳐 낸다.
 
-    그렇다고 `expected` 를 대조에 넣을 수도 없다. 재생성은 같은 사실을 거의
-    항상 다른 문장으로 쓰므로, 넣으면 재작문할 때마다 오탐이 난다. 반대로
-    아무 신호도 안 내면 이 사각지대는 조용한 구멍으로 남는다. 그래서 이
-    함수는 **비교는 하지 않고, 비교 밖이라는 사실만** 목록으로 낸다 — 이
-    표들은 사람이 `expected` 원문을 직접 읽고 판단해야 한다는 뜻이다.
+    1. `capture` 표는 셀이 없어(`header=[]`·`rows=[]`) 어떤 재생성물과
+       짝지어도 `_cells` 가 항상 "같다" 로 본다. 그 표의 기술적 주장은 전부
+       `expected` 산문에 있는데, `compare_specs` 는 산문을 보지 않는다 —
+       재생성물이 사실을 완전히 뒤집어 써도(예: "상승" → "하강") 차이 0건
+       으로 나온다.
+    2. 첫 `## T` 헤딩 **앞**의 본문에 마크다운 표가 있으면, 그 표는
+       `spec_parser.parse_spec` 이 아예 스캔하지 않는 영역에 있어
+       `LabSpec.tables` 에 실리지 않는다 — `compare_specs` 는 그런 표가
+       있는지조차 모른다(자세한 내용은 `_preamble_tables` 참고).
 
-    capture 표가 없으면 빈 리스트다.
+    둘 다 `expected` 산문과 마찬가지로 **비교는 하지 않고, 비교 밖이라는
+    사실만** 목록으로 낸다. 그렇다고 이 표들을 대조에 넣을 수도 없다 —
+    1번은 재생성이 같은 사실을 거의 항상 다른 문장으로 쓰므로 넣으면
+    재작문할 때마다 오탐이 나고, 2번은 표 자체가 `## T<n>` 헤딩도
+    `kind`/`source` 속성도 없어 `SpecTable` 계약을 애초에 못 채운다. 반대로
+    아무 신호도 안 내면 이 사각지대는 조용한 구멍으로 남으므로, 사람이
+    원문을 직접 읽고 판단하라는 뜻으로 목록만 낸다.
+
+    capture 표도 머리말 표도 없으면 빈 리스트다.
     """
     spec = parse_spec(spec_path)
-    return [
+    out = [
         f"표 {t.id}: 셀이 없어 대조가 성립하지 않는다 — "
         "`expected` 산문을 사람이 읽어야 한다"
         for t in spec.tables if t.kind == "capture"
+    ]
+    out += _preamble_table_notice(spec_path)
+    return out
+
+
+def _preamble_table_notice(spec_path) -> list:
+    """첫 `## T` 헤딩 **앞**의 본문에 마크다운 표가 있으면 그 사실을 알린다.
+
+    `spec_parser.parse_spec` 은 `_T_HEAD` 로 찾은 첫 `## T` 헤딩부터만 표를
+    읽는다(`heads[0].start()` 이전은 스캔하지 않는다). 그 앞에 마크다운
+    표가 있으면 `LabSpec.tables` 에 실리지 않으므로 `compare_specs` 도 그
+    표를 절대 보지 못한다.
+
+    실측(컨트롤러, 최종 전체-브랜치 리뷰 I1): 실험03 2개, 실험05 1개,
+    실험06 1개, 실험01·02·10 은 0개. 실험06 의 그 표가 하필 셀 값 표기
+    규약표다 — `0->1` 이 라이징 엣지라는 뜻을 이 표에서만 정의하는데, 그
+    뜻을 뒤집어 적어도(`0->1` → 하강 엣지) `compare_specs` 는 차이 0건을
+    낸다. 이 함수는 그 원인 하나를 짚어 알릴 뿐 대조하지는 않는다 — 표를
+    `tables` 에 실어 대조하게 만들려면 `## T<n>` 헤딩과 `kind`/`source`
+    속성을 새로 요구해야 하는데, 그러면 살아 있는 승인본 다섯이 깨진다.
+
+    표 개수를 셀 때는 `md.parse_tables`(이 프로젝트의 유일한 마크다운 표
+    파서)를 그대로 쓴다 — 정규식을 새로 만들면 `_T_HEAD`·`md.parse_tables`
+    와 셋이 서로 다른 기준으로 "표"를 셀 위험이 있다.
+    """
+    front, body = md.split_frontmatter(
+        Path(spec_path).read_text(encoding="utf-8"))
+    heads = list(_T_HEAD.finditer(body))
+    preamble = body[:heads[0].start()] if heads else body
+    tables = md.parse_tables(preamble)
+    if not tables:
+        return []
+    return [
+        f"머리말(첫 `## T` 헤딩 앞)에 마크다운 표가 {len(tables)}개 있다 — "
+        "`compare_specs` 는 `## T` 헤딩이 붙은 표만 본다. 뜻을 정의하는 "
+        "표(예: 토큰 규약표)가 여기 있으면 그 뜻이 바뀌어도 차이 0건이 "
+        "난다"
     ]
 
 
@@ -220,8 +276,20 @@ def _pair_tables(a_tables, b_tables):
 
     **`derived (...)` 도 키로 쓴다.** 처음엔 뺐는데, 이 코퍼스의 절반이
     derived 라 그러면 오정렬이 그대로 남는다 — 실험03 은 표 4개가 전부,
-    실험05 는 6개 중 5개, 실험01 은 9개 중 5개다. 실측으로 실험01 에서
-    19건(셀 차이 8건)이 4건으로 줄었다.
+    실험05 는 6개 중 5개, 실험01 은 9개 중 5개다.
+
+    **정확한 건수는 픽스처마다 다르다 — 하나로 우기지 않는다.** 잴 수
+    있는 것은 방향뿐이다: 표 하나를 정당하게 끼워 뒤 ID 를 전부 미는
+    사본에서, 셀은 하나도 안 건드렸는데도 derived 를 매칭 키에서 빼면
+    나던 셀 차이가 derived 를 키로 쓰면 사라진다. 실측 예시 하나(픽스처:
+    `실험01/체크리스트/명세.md` 를 `T2`~`T9` 전부 한 칸씩 밀고 `T2` 를
+    `source: manual:p99` 로 새로 끼운 사본 —
+    `tests/test_lab_specdiff.py` 의 `_shifted(WEEK2, 2, 9)` 와 동일)로는
+    derived 를 뺀 매칭이 21건(그중 셀 차이 8건, `T3`·`T4` 의 `derived`
+    식이 밀려 다른 표와 짝지어진 탓)이었고, derived 를 키로 쓰면 6건으로
+    줄었다 — 진행 원장의 실험01 실측(19→4~5건)과 최종 리뷰어의 합성
+    픽스처(21→6)가 서로 다른 것도 이 때문이다: 같은 방향이지만 픽스처가
+    다르면 건수도 달라진다.
 
     식이 잘못 옮겨진 표는 **ID 짝짓기로 구제되지 않는다** — 상대 문서의
     같은 ID 가 이미 (올바른 source 로) 다른 표와 짝지어져 있으면, 아래
