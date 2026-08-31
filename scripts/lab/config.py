@@ -139,6 +139,9 @@ def load_course_info(root) -> dict:
         if not info.get(required):
             raise ValueError(f"과목정보.md 에 {required} 가 없습니다")
     info.setdefault("ai_usage_log", None)
+    # 노션 업로드 대상 부모 페이지. 토큰은 여기 두지 않는다 — 이 파일은 git 에
+    # 추적된다. 토큰은 환경변수 NOTION_TOKEN 에서만 읽는다 (scripts/lab/notion.py).
+    info.setdefault("notion_parent_page_id", None)
     return info
 
 

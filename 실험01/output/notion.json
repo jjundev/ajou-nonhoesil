@@ -1,0 +1,61 @@
+{
+  "schema": "notion-uploads/v1",
+  "uploads": [
+    {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "3cbb06d2-63bc-8119-bb0d-c44a4dfef212",
+      "url": "https://app.notion.com/p/1-Basic-Gates-3cbb06d263bc8119bb0dc44a4dfef212",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 19:18"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 2,
+      "page_id": "3cbb06d2-63bc-81d6-81d7-f6d42041044b",
+      "url": "https://app.notion.com/p/1-Basic-Gates-3cbb06d263bc81d681d7f6d42041044b",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 20:28"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 3,
+      "page_id": "3cbb06d2-63bc-81e8-a828-d19ffa2d1bf2",
+      "url": "https://app.notion.com/p/1-Basic-Gates-3cbb06d263bc81e8a828d19ffa2d1bf2",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 21:12"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 4,
+      "page_id": "3cbb06d2-63bc-81b2-8e67-ef6da12a73c3",
+      "url": "https://app.notion.com/p/3cbb06d263bc81b28e67ef6da12a73c3",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 21:41"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 5,
+      "page_id": "3cbb06d2-63bc-817f-8333-c9ae027eb57a",
+      "url": "https://app.notion.com/p/1-Basic-Gates-3cbb06d263bc817f8333c9ae027eb57a",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 21:43"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 6,
+      "page_id": "3cbb06d2-63bc-81b1-b65e-eb4c85b41411",
+      "url": "https://app.notion.com/p/1-Basic-Gates-3cbb06d263bc81b1b65eeb4c85b41411",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-29 21:43"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 7,
+      "page_id": "3ccb06d2-63bc-81ce-ad5c-f68e9c27f150",
+      "url": "https://app.notion.com/p/1-Basic-Gates-v7-3ccb06d263bc81cead5cf68e9c27f150",
+      "source": "실험01_예비보고서.md",
+      "uploaded_at": "2026-08-30 13:35"
+    }
+  ]
+}

@@ -72,23 +72,33 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    python3 -c "
    from pathlib import Path
    from scripts.lab import config, validate
+   from scripts.lab.spec_parser import parse_spec
    root = config.find_project_root(Path('.'))
    fmt = config.load_report_format(root)
+   spec = parse_spec('<실험NN>/체크리스트/명세.md')
    sections = fmt.pre if '<pre|result>' == 'pre' else fmt.result
-   for f in validate.check_report_sections('<보고서 경로>', sections):
+   for f in validate.check_report_sections('<보고서 경로>', sections,
+                                           item_count=len(spec.items)):
        print(f)
    "
    ```
 
+   `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
+   항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. ③·④ 가
+   자기 절차 안에서 같은 인자를 넘기므로, 여기서 빠지면 같은 보고서를 두
+   기준으로 재는 셈이 된다.
+
 3b. **렌더된 HTML 검사.** `check_rendered_html`(표 셀에 남은 백틱·`**`)과
     `check_embedded_images`(경로가 안 풀려 깨진 그림)는 둘 다 `extract_text()`
     로는 안 보인다 — 실제로 표 셀 백틱 230개와 깨진 브레드보드 그림이 이
-    검사 없이 제출된 적이 있다. ③·④ 는 자기 절차 안에서 이 둘을 부르지만
-    (8b·11b 단계), **"☑ 제출 가능" 을 최종으로 쓰는 건 이 스킬이다** — 여기서
-    다시 부르지 않으면, ③·④ 밖에서(예: 렌더러를 고친 뒤 수동으로 다시 낸
-    HTML) 생긴 같은 결함을 ⑤ 혼자로는 못 잡는다. 대상은 그 주차의 **모든**
-    HTML 이다 — 보고서는 `<실험NN>/output/`, 체크리스트는 `<실험NN>/체크리스트/`
-    에 있으므로 **두 곳을 다 본다.**
+    검사 없이 제출된 적이 있다. **이 두 함수를 부르는 스킬은 이제 ⑤ 뿐이다**
+    — ③·④ 는 보고서를 노션에 올리므로 HTML 을 아예 만들지 않고, HTML 을 내는
+    나머지 스킬은 이 검사를 자기 절차에 갖고 있지 않다. 여기서 부르지 않으면
+    아무도 안 부른다. 대상은 그 주차의 HTML **전부**다 —
+    `<실험NN>/체크리스트/` 와 `<실험NN>/output/` 를 **둘 다** 본다.
+    `output/` 의 HTML 은 옛 파이프라인의 잔재가 아니다:
+    `explain-lab-preview` 가 실험프리뷰 HTML 을 거기 내고, ⑥ 은 PDF 변환이
+    실패하면 표지 HTML 을 남긴다.
 
     ```bash
     python3 -c "
@@ -124,7 +134,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
 
    ## 사람이 확인할 것
 
-   - (§4 표의 항목 중 해당하는 것)
+   - (§실행 절차 4 의 항목 중 해당하는 것)
 
    ## 판정
 
