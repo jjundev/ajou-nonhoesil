@@ -88,6 +88,37 @@ def folder_for_week(week: int) -> str:
     return experiment_dir(WEEK_TO_EXPERIMENT[week])
 
 
+def experiment_for_week(week: int) -> int:
+    """주차 → 그 주 실험 번호(정수).
+
+    `folder_for_week` 는 경로용 폴더 이름을 문자열로 주는데, 교안 파일
+    이름(`manual_candidates`)은 정수 실험 번호를 요구한다. 폴더 이름에서
+    번호를 되파싱하면(`실험10` → `10`) `실험NN` 규약이 스킬 문서로 새어
+    나온다 — 그 규약은 `experiment_dir` 한 곳에만 있어야 한다. 그래서
+    스킬 절차가 폴더 이름과 실험 번호를 **둘 다** 코드로 구하도록 이
+    함수를 둔다. `프로젝트`(13~15주차)는 실험 번호가 없으므로 거절한다.
+    """
+    if isinstance(week, bool) or not isinstance(week, int):
+        raise TypeError(f"주차는 정수여야 합니다: {week!r}")
+    if week in NO_ARTIFACT_WEEKS:
+        raise ValueError(
+            f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
+            "폴더를 만들지 않습니다."
+        )
+    if week in PROJECT_WEEKS:
+        raise ValueError(
+            f"{week}주차는 FPGA 프로젝트라 실험 번호가 없습니다. "
+            f"`{PROJECT_DIR}` 폴더를 씁니다."
+        )
+    if week not in WEEK_TO_EXPERIMENT:
+        raise ValueError(
+            f"{week}주차에 해당하는 실험이 없습니다. "
+            f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
+            f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
+        )
+    return WEEK_TO_EXPERIMENT[week]
+
+
 # 산출물 제목의 유일한 형식. 예전에는 네 곳이 제각각 만들었고, 경로용 일괄
 # 치환이 그중 하나(프리뷰)를 조용히 덮어쓴 적이 있다.
 DOCUMENT_KINDS = ("체크리스트", "기록", "예비보고서", "결과보고서", "프리뷰")

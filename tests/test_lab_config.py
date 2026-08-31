@@ -265,6 +265,34 @@ class WeekMappingTest(unittest.TestCase):
         self.assertEqual(config.folder_for_week(2), "실험01")
         self.assertEqual(config.folder_for_week(12), "실험10")
 
+    def test_experiment_for_week_회전_구간이_핵심이다(self):
+        # 12주차 ≠ 실험 12 다 — 폴더 이름을 되파싱하고 싶어지는 자리다.
+        self.assertEqual(config.experiment_for_week(12), 10)
+        self.assertEqual(config.experiment_for_week(7), 4)
+
+    def test_experiment_for_week_평범한_구간(self):
+        self.assertEqual(config.experiment_for_week(2), 1)
+
+    def test_experiment_for_week_중간고사_주차는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.experiment_for_week(8)
+
+    def test_experiment_for_week_FPGA_주차는_실험_번호가_없다(self):
+        with self.assertRaises(ValueError):
+            config.experiment_for_week(13)
+
+    def test_experiment_for_week_범위_밖_주차는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.experiment_for_week(1)
+
+    def test_experiment_for_week_이_folder_for_week_와_일치한다(self):
+        for week in config.WEEK_TO_EXPERIMENT:
+            with self.subTest(week=week):
+                self.assertEqual(
+                    config.experiment_dir(config.experiment_for_week(week)),
+                    config.folder_for_week(week),
+                )
+
     def test_FPGA_주차는_프로젝트_폴더다(self):
         for week in (13, 14, 15):
             with self.subTest(week=week):

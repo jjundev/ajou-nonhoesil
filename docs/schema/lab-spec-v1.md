@@ -134,16 +134,25 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | `items[].tables` ↔ 본문 헤딩 일치 | 전부 | error |
 | `kind` 가 세 값 중 하나 | 전부 | error |
 | `role` 이 `record`/`reference` 중 하나 | 전부 | error |
-| `capture` 가 아닌 표에 `encoding` 존재 | 전부 | error |
-| `capture` 표에 `expected` 존재 | `capture` | error |
-| `capture` 가 아닌 표에 셀 표(마크다운 표) 존재 | 전부 | error |
-| `capture` 표에 셀 표(마크다운 표) 부재 | `capture` | error |
-| `capture` 가 아닌 표에 `expected` 부재 | 전부 | error |
+| `capture` 가 아닌 표에 `encoding` 부재 | 전부 | error |
+| `capture` 표에 `expected` 부재 | `capture` | error |
+| `capture` 표에 셀 표(마크다운 표) 존재 | `capture` | error (파서가 던진다) |
+| `capture` 가 아닌 표에 셀 표(마크다운 표) 부재 | 전부 | error (파서가 던진다) |
 | 행 수 = `2^n` | `truth-table` | **warn**, 그리고 `X` 가 있는 표에서는 건너뛴다 |
 | 출력 비트 ↔ `source` 부울식 역검산 | `derived (...)` 인 `truth-table` | error |
+| `source` 부재 | 전부 | error |
+| 한 표 안에 같은 이름의 열이 둘 | 전부 | error (파서가 던진다) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
+
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 `scripts/lab/validate.py` 의
+`check_metadata` 와 `spec_parser.py` 의 `_parse_table`이다. 위 표는 네 줄이
+방향이 거꾸로 적힌 채(`존재`/`부재`가 뒤집힌 채) 있었고, 실재하지 않는 검사
+한 줄까지 섞여 있었다 — 문서만 읽고는 드러나지 않다가 격리 재생성(실험06·
+실험10)이 코드를 실측해서야 드러났다. 이 표와 코드의 실제 동작이 어긋나면
+코드가 옳고 이 표가 틀린 것이다 — 문서만 읽고 저작하면 파서조차 못 읽는
+명세를 쓰게 된다.
 
 ## 셀 값 — 닫힌 enum 이 아니라 열린 토큰 (R3)
 
