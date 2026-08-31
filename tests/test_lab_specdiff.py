@@ -145,16 +145,27 @@ class CompareSpecs(unittest.TestCase):
         # source 로 재생성 T3 과 짝지어진 다른 표)가 있기 때문이다. 하지만
         # 새로 끼운 표의 source(manual:p5)는 원본 어디에도 없으므로(원본은
         # p7~p11 뿐이다) 그냥 "짝을 못 지었다" 도 아니다 — 정말 원본에는
-        # 없는 표라는 사실 자체는 여전히 알려야 한다. 그래서 세 갈래 중
-        # 2번("~에만 있는 표다, 상대에는 같은 ID로 다른 표가 있다")으로
+        # 없는 표라는 사실(observed: source 가 원본에 없다) 자체는 여전히
+        # 알려야 한다. 그래서 네 갈래 중 2번("source 가 상대에 없다")으로
         # 보고된다.
-        table_report = [
-            d for d in diffs
-            if d.startswith("표 T2:") and "재생성에만 있는 표다" in d
-        ]
+        #
+        # Minor 1 회귀(라운드 1 에서 못 고친 것): 검사 범위를 T2 하나로
+        # 좁히면 나머지 표(T1·T3~T6)가 잘못 한쪽에만 있다고 찍혀도 못
+        # 잡는다. `_table_diffs` 가 짝을 못 지은 표에 내는 줄은 항상
+        # "표 {id}: ..." 형태다(필드 차이 줄은 "표 {id} {field}: ..." 로
+        # ID 뒤에 콜론이 바로 오지 않는다) — 그 형태의 줄 **전부**를 먼저
+        # 걷어낸 뒤, T2 를 뺀 나머지에 그런 줄이 하나도 없는지 검사한다.
+        one_sided = [d for d in diffs if re.match(r"^표 T\d+(?:→T\d+)?: ", d)]
+        others = [d for d in one_sided if not d.startswith("표 T2:")]
+        self.assertEqual(
+            others, [],
+            f"밀림으로 ID 만 어긋난 표가 상대에 없다는 취지로 잘못 보고됐다: {others}")
+        table_report = [d for d in one_sided if d.startswith("표 T2:")]
         self.assertEqual(len(table_report), 1, diffs)
+        self.assertIn("원본 어디에도 없다", table_report[0])
 
     WEEK2 = ROOT / "실험01/체크리스트/명세.md"
+    WEEK3 = ROOT / "실험03/체크리스트/명세.md"
 
     def _shifted(self, source, first, last):
         """`source` 명세의 표 ID 를 한 칸씩 밀고 새 `T2` 를 끼운 사본.
@@ -201,6 +212,18 @@ class CompareSpecs(unittest.TestCase):
         cells = [d for d in diffs if "행" in d]
         self.assertEqual(cells, [], f"셀을 하나도 안 건드렸는데 차이가 났다: {cells}")
 
+        # Critical 1 회귀 — 짝마다 한 줄이 아니라 요약 한 줄이어야 한다.
+        # 이 시나리오는 T2~T9 여덟 개가 전부 ID 가 어긋난 채 짝지어지는데
+        # (원본 T2→사본 T3, ..., 원본 T9→사본 T10), 짝마다 냈으면 8줄이
+        # 늘었을 자리다. 실측(컨트롤러): 짝마다 내면 실험01 정당한 밀림에서
+        # 8줄이 늘고, 요약이면 1줄이다.
+        shift_lines = [d for d in diffs if d.startswith("[표 ID 가 어긋난 채 짝지어졌다]")]
+        self.assertEqual(len(shift_lines), 1, diffs)
+        # 이 시나리오는 표가 하나 늘어(ID 집합이 다르다) 위에서 이미
+        # `_table_id_mismatch_notice` 가 경고했으므로, 이 줄은 담담한
+        # 문구(강한 경고가 아니라)여야 한다.
+        self.assertIn("표 추가·삭제로 ID 가 밀린 결과로 보인다", shift_lines[0])
+
     def test_짝을_못_지은_표는_한쪽에만_있다고_말하지_않는다(self):
         # source 짝짓기가 원본 Tx 를 재생성 Ty(x≠y) 와 묶으면, 원본 Ty 와
         # 재생성 Tx 가 둘 다 짝을 잃는다. 밀림으로 ID 만 어긋난 표들은
@@ -208,10 +231,11 @@ class CompareSpecs(unittest.TestCase):
         # 취지의 줄로 보고되면 안 된다 — 전부 source 로 정상 짝지어지기
         # 때문이다. 유일한 예외는 `_shifted` 가 새로 끼워 넣는 T2 다 —
         # 그 표의 source(`manual:p99`)는 원본 어디에도 없는 **정말 새
-        # 표**라서(A 의 2번 갈래로 떨어진다: "재생성에만 있는 표다"),
-        # 이 표만 빼고 나머지 T1·T3~T10 전부를 통틀어 검사한다. 옛
-        # 필터(`d.startswith("표 T2:")`)처럼 검사 범위 자체를 T2 하나로
-        # 좁히면 T4·T5 가 잘못 짝을 잃어도 못 잡으므로 쓰지 않는다.
+        # 표**라서(2번 갈래로 떨어진다: source 가 상대에 없다는 관측
+        # 사실을 말한다), 이 표만 빼고 나머지 T1·T3~T10 전부를 통틀어
+        # 검사한다. 옛 필터(`d.startswith("표 T2:")`)처럼 검사 범위
+        # 자체를 T2 하나로 좁히면 T4·T5 가 잘못 짝을 잃어도 못 잡으므로
+        # 쓰지 않는다.
         target = self._shifted(self.WEEK2, 2, 9)
         diffs = compare_specs(self.WEEK2, target)
         # `_table_diffs` 가 짝을 못 지은 표에 내는 줄은 항상
@@ -223,7 +247,7 @@ class CompareSpecs(unittest.TestCase):
             others, [],
             f"밀림으로 ID 만 어긋난 표가 상대에 없다는 취지로 잘못 보고됐다: {others}")
         self.assertEqual(len(unmatched), 1, unmatched)
-        self.assertIn("재생성에만 있는 표다", unmatched[0])
+        self.assertIn("원본 어디에도 없다", unmatched[0])
 
     def _table_removed(self, source, tid):
         """`source` 명세에서 표 `tid` 블록을 통째로 지우고 뒤 ID 를 하나씩
@@ -253,19 +277,27 @@ class CompareSpecs(unittest.TestCase):
         return target
 
     def test_표가_통째로_지워지면_짝을_못_지은_것이_아니라_원본에만_있다고_말한다(self):
-        # Important 1 회귀. 실험06 에서 T2(D Latch with Enable, source
-        # manual:p8) 블록을 통째로 지우고 뒤 ID(T3~T5)를 하나씩 당기면,
-        # 밀린 표들(원본 T3→사본 T2 등)은 source 로 정상 짝지어져서
-        # 사본에도 우연히 "T2" 라는 ID 가 있다. ID 만 보면 이건 A 의
-        # 3번 갈래("짝을 못 지었다")처럼 보이기 쉽지만, 원본 T2 의 내용
-        # (D Latch with Enable, source manual:p8)은 사본 어디에도 없으므로
-        # source 기준으로는 2번 갈래("원본에만 있는 표다")가 맞다. 이걸
-        # 3번 갈래로 찍으면 진짜 삭제가 정렬 잡음처럼 읽힌다.
+        # Important 1 회귀(라운드 2 재작성). 실험06 에서 T2(D Latch with
+        # Enable, source manual:p8) 블록을 통째로 지우고 뒤 ID(T3~T5)를
+        # 하나씩 당기면, 밀린 표들(원본 T3→사본 T2 등)은 source 로 정상
+        # 짝지어져서 사본에도 우연히 "T2" 라는 ID 가 있다. ID 만 보면
+        # 이건 4번 갈래("짝을 못 지었다")처럼 보이기 쉽지만, 원본 T2 의
+        # 내용(D Latch with Enable, source manual:p8)은 사본 어디에도
+        # 없으므로 source 기준으로는 2번 갈래가 맞다. 이걸 4번 갈래로
+        # 찍으면 진짜 삭제가 정렬 잡음처럼 읽힌다.
+        #
+        # 재리뷰 Important 1: 2번 갈래는 더 이상 "원본에만 있는 표다"로
+        # 단정하지 않는다 — 삭제와 source 오기재를 구별할 수 없기
+        # 때문이다. 대신 관측 사실(source 가 상대 어디에도 없다)만 말하고
+        # 원인 후보 둘을 함께 적는다.
         target = self._table_removed(WEEK6, "T2")
         diffs = compare_specs(WEEK6, target)
         hit = [d for d in diffs if d.startswith("표 T2:")]
         self.assertEqual(len(hit), 1, diffs)
-        self.assertIn("원본에만 있는 표다", hit[0])
+        self.assertIn("manual:p8", hit[0])
+        self.assertIn("재생성 어디에도 없다", hit[0])
+        self.assertIn("표가 빠졌거나 source 가 잘못 옮겨졌을 수 있다", hit[0])
+        self.assertIn("재생성에도 같은 ID 가 있다", hit[0])
         self.assertNotIn("짝을 못 지었다", hit[0])
 
     def test_derived_경로에서_밀림_속_진짜_오류가_묻히지_않는다(self):
@@ -290,6 +322,91 @@ class CompareSpecs(unittest.TestCase):
         self.assertEqual(len(hit), 1, diffs)
         self.assertIn("'0'", hit[0])
         self.assertIn("'1'", hit[0])
+
+    def _table_ids_swapped(self, source, id1, id2):
+        """`source` 명세에서 `## {id1} ·`/`## {id2} ·` 헤딩 **줄만** 맞바꾼
+        사본. 몸통(필드·셀)과 항목은 손대지 않는다.
+
+        헤딩 줄만 바뀌고 그 아래 내용은 원래 자리에 그대로 남으므로,
+        결과는 "표 몸통이 다른 ID 로 옮겨간" 것과 정확히 같은 모양이다
+        — 예를 들어 원래 `## T1 · 반가산기 진리표` 였던 자리는 헤딩만
+        `## T2 · 전가산기 진리표` 로 바뀌고 그 아래 필드·셀(반가산기
+        내용)은 그대로다.
+        """
+        lines = source.read_text(encoding="utf-8").split("\n")
+        idx1 = next(i for i, l in enumerate(lines) if l.startswith(f"## {id1} "))
+        idx2 = next(i for i, l in enumerate(lines) if l.startswith(f"## {id2} "))
+        lines[idx1], lines[idx2] = lines[idx2], lines[idx1]
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text("\n".join(lines), encoding="utf-8")
+        return target
+
+    def test_표_헤딩만_맞바뀌면_ID_어긋난_짝을_경고한다(self):
+        # Critical 1. `_pair_tables` 는 source 로 짝짓는다. 헤딩(ID+제목)
+        # 만 맞바꾸고 몸통(필드·셀)은 그대로 두면, 원본 T1 의 source·셀이
+        # 사본에서는 ID T2 아래에 있다 — 표 내용이 다른 ID 로 옮겨간 것과
+        # 구별할 수 없는 모양이다. 43b91c6 은 필드·셀이 완전히 같은 이
+        # 짝에 대해 아무 줄도 내지 않아 차이 0건(거짓 합격)이었다(컨트롤러
+        # 실측). 실험03 은 표 4개가 전부 `derived` 라 C1(derived 도
+        # 짝짓기 키로 허용)이 만든 사각지대 그 자체를 지난다.
+        target = self._table_ids_swapped(self.WEEK3, "T1", "T2")
+        diffs = compare_specs(self.WEEK3, target)
+        self.assertEqual(
+            len(diffs), 1,
+            f"차이가 0건 이거나 1건이 아니다 — 표 내용이 다른 ID 로 옮겨갔는데 "
+            f"조용하거나(0건) 다른 잡음이 섞였다(>1건): {diffs}")
+        # 실험03 은 표를 넣거나 뺀 적이 없다 — ID 집합이 같은데 짝이
+        # 어긋났으므로 강한 경고(표 내용이 다른 ID 로 옮겨갔을 수 있다)
+        # 여야 한다. `_table_id_mismatch_notice`(표 추가·삭제 알림)와는
+        # 다른 문구다.
+        self.assertIn("표 내용이 서로 다른 ID 로 옮겨갔을 수 있다", diffs[0])
+        self.assertIn("T1→T2", diffs[0])
+        self.assertIn("T2→T1", diffs[0])
+        # 짝지은 필드·셀 자체는 여전히 조용하다 — 몸통은 안 건드렸다.
+        self.assertFalse(any("행" in d for d in diffs), diffs)
+        self.assertFalse(any("헤더" in d for d in diffs), diffs)
+
+    def test_source_없는_새_표는_source_없음이라고_말한다(self):
+        # Minor 2. `SpecTable.source` 는 `Optional[str]` 이라, 재생성이
+        # 표를 새로 끼우며 `- source:` 줄을 빠뜨리면 그 표는 source 로
+        # 판별할 수 없다. 그냥 "짝을 못 지었다"로만 찍으면 정말 새로
+        # 추가된 표가 정렬 잡음처럼 읽힌다 — source 가 없어 판별 불가
+        # 라는 사실 자체를 알려야 한다.
+        target = self._shifted(self.WEEK2, 2, 9)
+        text = target.read_text(encoding="utf-8")
+        old = "- source: manual:p99\n"
+        self.assertIn(old, text, "픽스처가 바뀌었다 — source 줄이 없다")
+        target.write_text(text.replace(old, "", 1), encoding="utf-8")
+
+        diffs = compare_specs(self.WEEK2, target)
+        hit = [d for d in diffs if d.startswith("표 T2:")]
+        self.assertEqual(len(hit), 1, diffs)
+        self.assertIn("source 가 없어 판별할 수 없다", hit[0])
+        self.assertIn("원본에도 같은 ID 가 있다", hit[0])
+
+    def test_한쪽만_있음_문구_여덟_개가_서로_부분문자열이_아니다(self):
+        # Minor 3 회귀. "원본에만 있다" 가 "원본에만 있는 표다" 의 부분
+        # 문자열이라, 문구로 거르는 소비자가 한 갈래를 통째로 놓쳤다
+        # (라운드 0 테스트가 실제로 공허 통과했다). A~C 가 다시 쓴 문구
+        # (양쪽 방향 각 네 갈래, 총 여덟)가 서로 부분 문자열이 아닌지
+        # 직접 검사한다.
+        src = repr("manual:pX")
+        phrases = [
+            "원본에만 있다",
+            f"source {src} 가 재생성 어디에도 없다 (표가 빠졌거나 source 가 "
+            "잘못 옮겨졌을 수 있다). 재생성에도 같은 ID 가 있다",
+            "짝을 못 지었다 (source 가 없어 판별할 수 없다; 재생성에도 같은 ID 가 있다)",
+            "짝을 못 지었다 (재생성에도 같은 ID 가 있다)",
+            "재생성에만 있다",
+            f"source {src} 가 원본 어디에도 없다 (표가 새로 추가됐거나 source 가 "
+            "잘못 옮겨졌을 수 있다). 원본에도 같은 ID 가 있다",
+            "짝을 못 지었다 (source 가 없어 판별할 수 없다; 원본에도 같은 ID 가 있다)",
+            "짝을 못 지었다 (원본에도 같은 ID 가 있다)",
+        ]
+        for i, p in enumerate(phrases):
+            for j, q in enumerate(phrases):
+                if i != j:
+                    self.assertNotIn(p, q, f"{p!r} 가 {q!r} 의 부분 문자열이다")
 
 
 class UncoveredTablesTest(unittest.TestCase):
