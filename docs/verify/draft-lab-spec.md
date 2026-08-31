@@ -18,6 +18,15 @@ git worktree add --detach <경로> HEAD
 rm -rf <경로>/docs/verify <경로>/docs/plans \
        <경로>/scripts/lab/specdiff.py <경로>/tests/test_lab_specdiff.py          # 답안지를 시험장에서 뺀다
 # 필요하면 대상 산출물을 지운다
+# 판정을 마쳤으면 worktree 를 지우기 전에 재생성물을 보존한다 — 이
+# 프로젝트는 "격리 재생성이 스킬 결함을 찾는 유일한 방법" 이라는 전제
+# 위에 있으므로 그 산출물은 근거물이다. 저장소 안이지만 커밋되지는
+# 않는 tmp/ 아래에 둔다(.gitignore 의 `tmp/`). 산출물이 실제로 생기는
+# 시나리오(V1·V2·V3)에서 의미가 있다 — V4~V6 처럼 아무것도 안 만들어야
+# 정상인 시나리오에서는 생략해도 된다. `<시나리오>` 는 v1·v2 처럼 이
+# 절차를 쓰는 시나리오 이름이다.
+mkdir -p "tmp/verify-artifacts/<시나리오>-$(date +%F)"
+cp -r <경로>/실험NN "tmp/verify-artifacts/<시나리오>-$(date +%F)/" 2>/dev/null || true
 git worktree remove --force <경로>
 ```
 
@@ -92,12 +101,48 @@ vision 으로는 라이징 엣지다. 그리고 11쪽으로 가장 싸다.
 
 ```bash
 git worktree add --detach /tmp/v1 HEAD
+rm -rf /tmp/v1/docs/verify /tmp/v1/docs/plans \
+       /tmp/v1/scripts/lab/specdiff.py /tmp/v1/tests/test_lab_specdiff.py
 rm /tmp/v1/실험06/체크리스트/명세.md /tmp/v1/실험06/결선도/netlist.md
 ```
 
 인자: `6주차 명세와 결선도를 만들어라`
 
-합격 조건:
+합격 조건은 **`차이 0건` 이고, 아래 목록을 사람이 눈으로 대조했을 때만**
+통과다. `compare_specs` 는 계약 필드만 보므로(`specdiff.py` 모듈
+docstring 참고), 다음 셋은 값이 달라도 `차이 0건` 그대로 나온다 —
+**대조 밖:**
+
+- **표 제목.** `_TABLE_FIELDS` 에 `title` 이 없다. 2026-09-01 회차에서
+  다섯 표 제목이 전부 달랐는데(원본 `특성표` / 재생성 `진리표`) 차이
+  0건이었다(아래 기록 참고).
+- **산문**(`expected` 필드·본문 서술).
+- **머리말**(첫 `## T` 헤딩 앞) 표. `spec_parser.parse_spec` 이
+  `heads[0].start()` 이전을 스캔하지 않아 `LabSpec.tables` 에 실리지
+  않는다. 실험06 은 여기 **토큰 규약표** 가 있다 — `0->1` 이 라이징
+  엣지라는 정의가 그 표에만 있어서, 뜻을 뒤집어도 `compare_specs` 는
+  차이 0건을 낸다. **이제 `uncovered_tables` 가 이것을 짚는다** — 실측:
+
+  ```bash
+  zsh -c 'PYTHONPATH=. python3 -c "
+  from scripts.lab.specdiff import uncovered_tables
+  for n in (\"01\",\"06\",\"10\"): print(n, uncovered_tables(f\"실험{n}/체크리스트/명세.md\"))
+  "'
+  # 01 []
+  # 06 ['머리말(첫 `## T` 헤딩 앞)에 마크다운 표가 1개 있다 — ...']
+  # 10 ['표 T1: 셀이 없어 대조가 성립하지 않는다 — `expected` 산문을 사람이 읽어야 한다']
+  ```
+
+  **이 알림은 자동 합격도 자동 불합격도 아니다** — 짚힌 표(머리말 표는
+  표 자체를, capture 표는 `expected` 산문을)를 원본과 재생성물 양쪽에서
+  사람이 직접 읽고 판단한다.
+
+`source_manual` 은 위 목록에 **없다 — 이제 대조된다.** 프론트매터 필드
+목록에 `week`·`experiment` 와 나란히 들어가, 명세가 참조한 교안 파일이
+바뀌면 차이로 뜬다.
+
+V1 의 실제 판정 명령(`compare_specs` 와 `uncovered_tables` 를 재생성물에
+함께 건다):
 
 ```bash
 zsh -c 'PYTHONPATH=. python3 -c "
@@ -112,7 +157,8 @@ for x in u: print(\"  \", x)
 "'
 ```
 
-- `차이 0건` 이면 통과.
+- `차이 0건` 이고, 위 대조 밖 세 항목을 사람이 눈으로 봐서 이상이
+  없으면 명세 쪽은 합격이다.
 - 차이가 있으면 **재생성이 틀렸다고 단정하지 않는다.** 각 줄에 대해
   교안으로 어느 쪽이 맞는지 가른다. 원본도 사람이 손으로 만든 것이다.
 - 그리고 결선도가 `check_netlist` 의 `error` 0 이어야 한다. `check_netlist`
@@ -133,15 +179,24 @@ for f in errors: print(\"  \", f)
 "'
 ```
 
-- `uncovered_tables` 가 표를 짚으면(실험06 에는 capture 표가 없어 지금은
-  빈 리스트다) `compare_specs` 가 그 표를 판정하지 못했다는 뜻이다 —
-  **자동 합격도 자동 불합격도 아니다.** 그 표의 `expected` 산문을 원본과
-  재생성물 양쪽에서 사람이 직접 읽고 판단한다.
+**이 `error 0` 은 자기정합 검사다 — 원본 결선도와는 대조하지 않는다.**
+`check_netlist(재생성 netlist, 재생성 spec)` 은 재생성 결선도가 재생성
+명세와 아귀가 맞는지만 본다. 저장소에 netlist 대 netlist 비교 도구가
+없다(`grep -rn "def compare" scripts/lab/` 로 확인하면 `specdiff.py`
+의 `compare_specs` 하나뿐이고, 그것도 명세끼리만 비교한다). 재생성
+결선도가 핀을 원본과 전부 다르게 배정해도, 자기 명세와만 맞으면 이
+판정은 통과한다. §결선도 골격의 `# 공통 규칙` 이 적듯 이 과목의 대표
+실패 원인이 플로팅 입력·핀 오배정이므로, **핀 배정 자체는 사람이 원본
+`실험06/결선도/netlist.md` 와 재생성물을 나란히 놓고 대조해야 한다** —
+이 스크립트는 그것을 대신하지 않는다.
 
 ### V2 — `명세만`
 
 ```bash
+rm -f /tmp/v2-명세-사본.md                        # 지난 회차 잔재 제거
 git worktree add --detach /tmp/v2 HEAD
+rm -rf /tmp/v2/docs/verify /tmp/v2/docs/plans \
+       /tmp/v2/scripts/lab/specdiff.py /tmp/v2/tests/test_lab_specdiff.py
 rm /tmp/v2/실험06/체크리스트/명세.md /tmp/v2/실험06/결선도/netlist.md
 ```
 
@@ -151,10 +206,14 @@ rm /tmp/v2/실험06/체크리스트/명세.md /tmp/v2/실험06/결선도/netlist
 `/tmp/v2/실험06/결선도/netlist.md` 는 **없다.**
 
 **V2 가 끝나면, V3 의 에이전트를 띄우기 전에** 이 시점의 명세를 사본으로
-남겨 둔다 — V3 의 판정이 바로 이 사본과 견준다:
+남겨 둔다 — V3 의 판정이 바로 이 사본과 견준다. mtime 도 함께 적어
+둔다 — V3 에서 이번 회차 것인지 대조하는 유일한 실마리다(2026-08-31
+누출은 `/tmp/v2-명세-사본.md` 에 지난 회차 사본이 그대로 남아 있었고
+그 mtime 이 `Aug 31 15:44` 였다):
 
 ```bash
 cp /tmp/v2/실험06/체크리스트/명세.md /tmp/v2-명세-사본.md
+ls -la /tmp/v2-명세-사본.md    # mtime 을 적어 둔다
 ```
 
 ### V3 — `결선도만`
@@ -165,9 +224,13 @@ cp /tmp/v2/실험06/체크리스트/명세.md /tmp/v2-명세-사본.md
 인자: `6주차 결선도만 만들어라`
 
 합격 조건: netlist 가 생기고, 명세는 V2 직후(위 사본)와 **바이트 단위로
-같다.** 이것이 주 기준이다 — `diff`/`cmp` 로 실제로 잰다:
+같다.** 이것이 주 기준이다 — `diff`/`cmp` 로 실제로 잰다. 그 전에 사본이
+**이번 회차 것인지** 먼저 확인한다 — mtime 이 방금 V2 에서 적어 둔
+시각과 다르면(특히 오늘 날짜가 아니면) 지난 회차 잔재를 보고 있는
+것이므로 여기서 멈추고 V2 부터 다시 돌린다:
 
 ```bash
+ls -la /tmp/v2-명세-사본.md    # 위 V2 단계의 mtime 과 같은지 확인
 diff -q /tmp/v2-명세-사본.md /tmp/v2/실험06/체크리스트/명세.md && echo "바이트 동일"
 ```
 
@@ -190,6 +253,8 @@ print(len(compare_specs(\"/tmp/v2-명세-사본.md\",
 
 ```bash
 git worktree add --detach /tmp/v4 HEAD
+rm -rf /tmp/v4/docs/verify /tmp/v4/docs/plans \
+       /tmp/v4/scripts/lab/specdiff.py /tmp/v4/tests/test_lab_specdiff.py
 ```
 
 인자: `6주차 명세와 결선도를 만들어라`
@@ -220,14 +285,28 @@ worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므
 
 ```bash
 git worktree add --detach /tmp/v5a HEAD
+rm -rf /tmp/v5a/docs/verify /tmp/v5a/docs/plans \
+       /tmp/v5a/scripts/lab/specdiff.py /tmp/v5a/tests/test_lab_specdiff.py
 git worktree add --detach /tmp/v5b HEAD
+rm -rf /tmp/v5b/docs/verify /tmp/v5b/docs/plans \
+       /tmp/v5b/scripts/lab/specdiff.py /tmp/v5b/tests/test_lab_specdiff.py
 ```
 
 인자: `8주차 명세를 만들어라` / `14주차 명세를 만들어라`
 
-합격 조건: `git status --porcelain` 이 공란. 그리고 거절 사유가 각각
-중간고사·FPGA 여야 한다. `config.folder_for_week(8)` 은 `ValueError`,
-`(14)` 는 `프로젝트` 를 돌려주므로 **거절 경로가 서로 다르다.**
+합격 조건: 두 worktree 모두 `git status --porcelain` 이 공란이어야
+한다 — **반드시 `-C` 로 대상을 지정한다.** 인자 없이 저장소 루트에서
+돌리면 worktree 가 아니라 본 저장소를 재므로, 본 저장소는 항상
+깨끗해 합격이 위조된다:
+
+```bash
+git -C /tmp/v5a status --porcelain
+git -C /tmp/v5b status --porcelain
+```
+
+그리고 거절 사유가 각각 중간고사·FPGA 여야 한다. `config.folder_for_week(8)`
+은 `ValueError`, `(14)` 는 `프로젝트` 를 돌려주므로 **거절 경로가 서로
+다르다.**
 
 ### V6 — 거절 (폴더 없음)
 
@@ -235,6 +314,8 @@ git worktree add --detach /tmp/v5b HEAD
 
 ```bash
 git worktree add --detach /tmp/v6 HEAD
+rm -rf /tmp/v6/docs/verify /tmp/v6/docs/plans \
+       /tmp/v6/scripts/lab/specdiff.py /tmp/v6/tests/test_lab_specdiff.py
 ```
 
 인자: `9주차 명세를 만들어라`
@@ -283,7 +364,27 @@ worktree 를 만들 때 `docs/verify/` 를 지우거나 프롬프트에서 금�
 ### 2026-09-01 회차 상세 — V2·V3 재실행
 
 인자 처리를 고친 뒤(실행 절차 5·7·8단계에 가드) 그 둘만 다시 돌렸다.
-V1 은 다시 안 돌렸다 — 무인자 경로라 이번 고침이 no-op 이다.
+**V1 은 다시 안 돌렸다 — 그런데 "무인자 경로라 이번 고침이 no-op"
+이라는 근거는 틀렸다.** `git diff 48f8495..240b964 --
+.claude/skills/draft-lab-spec/SKILL.md` 로 확인하면 무인자 경로도
+걸리는 변경이 셋 있다:
+
+- **§절대 규칙 13 본문이 다시 쓰였다**(`기존 산출물을` →
+  `<실험NN>/ 안의 기존 산출물을`, "저작 자체는 한다" 추가) — **V4 가
+  재는 것이 바로 이 규칙이다.**
+- **0단계 `ValueError` 문구가 둘로 갈렸다**(중간고사 / 매핑 밖) —
+  **V5a·V5b 가 재는 것이 바로 이 거절 사유다.**
+- **1단계 머리가 새로 붙었다**("이번 실행이 쓸 대상을 확정한 뒤…") —
+  무인자로 돌려도 이 문장을 읽는다.
+
+즉 **V1·V4·V5·V6 의 08-31 결과는 `48f8495` 판본 결과이지, `240b964`
+판본을 다시 잰 것이 아니다.** 결과가 실제로 바뀌었다고 단정하지는
+않는다 — 아무도 다시 돌려 보지 않았다. **다음 회차는 V1·V4·V5·V6
+넷을 현재 판본으로 재실행해야 한다** — 현재 판본은
+`git log -1 --format=%h -- .claude/skills/draft-lab-spec/SKILL.md`
+로 확인한다. 이 문서를 고치는 오늘(2026-09-01) §인자 절도 함께
+바뀌었으므로(최종 리뷰 I4), 다음 재실행은 그 이후 판본을 기준으로
+한다.
 
 | 시나리오 | 판정 | 근거 |
 |---|---|---|
