@@ -138,26 +138,33 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | `capture` 표에 `expected` 부재 | `capture` | error |
 | `capture` 표에 셀 표(마크다운 표) 존재 | `capture` | error (파서가 던진다) |
 | `capture` 가 아닌 표에 셀 표(마크다운 표) 부재 | 전부 | error (파서가 던진다) |
+| 행의 셀 수가 헤더 열 수와 다르다 | 전부 | error |
+| 셀에 escape 된 파이프(`\|`)·`<br>` 태그·탭 문자 | 전부 | error |
 | 행 수 = `2^n` | `truth-table` | **warn**, 그리고 `X` 가 있는 표에서는 건너뛴다 |
-| 출력 비트 ↔ `source` 부울식 역검산 | `derived (...)` 인 `truth-table` | error |
+| 출력 비트 ↔ `source` 부울식 역검산 | `derived (...)` 이고 rows 가 있는 표(`kind` 를 안 본다 — `stepped` 도 검산한다) | error |
 | `source` 부재 | 전부 | error |
 | 한 표 안에 같은 이름의 열이 둘 | 전부 | error (파서가 던진다) |
+| 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
 
-이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열한 줄이
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열네 줄이
 한 함수에 있지 않다. `kind` 값·`capture` 표의 셀 표 유무·열 이름 중복은
 `spec_parser.py` 의 `_parse_table`(파서이므로 예외로 던진다)이 맡는다.
 `role`·`encoding`·`capture` 의 `expected`·`source` 부재는
 `validate.py` 의 `check_metadata`, 행 수 `2^n` 은 같은 파일의
-`check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다.
+`check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
+불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
+`check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
+`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다.
 `items[].tables` ↔ 본문 헤딩 일치 한 줄만은 이 목록에서도 예외라 두 파일에
 걸친다 — 항목이 없는 표를 가리키면 `spec_parser.parse_spec`이 파싱 단계에서
 막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의
 `check_orphan_tables`가 검증 단계에서 잡는다. 요컨대 정본은
-`spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_metadata`·
-`check_row_count`·`check_boolean`·`check_orphan_tables`)를 합친 것이다.
+`spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
+`check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
+`check_diagnostic_claims`)를 합친 것이다.
 
 위 표는 네 줄이 코드와 반대로 적혀 있었다. 그중 둘(`encoding`·`expected`)은
 `존재`/`부재`가 그대로 뒤집혀 있었고, 나머지 둘(셀 표 유무를 다루는 두 줄)은

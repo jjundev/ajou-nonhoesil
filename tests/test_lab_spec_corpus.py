@@ -34,8 +34,9 @@ def live_specs():
 
 class LiveSpecCorpus(unittest.TestCase):
     def test_코퍼스가_비어_있지_않다(self):
-        # glob 이 0건이면 아래 테스트가 전부 조용히 통과한다.
-        self.assertGreaterEqual(len(live_specs()), 5, "명세를 하나도 못 찾았다")
+        # glob 이 0건이면 아래 테스트가 전부 조용히 통과한다. 살아 있는
+        # 명세가 여섯(실험01·02·03·05·06·10)이라 5 는 하나를 지워도 초록이다.
+        self.assertGreaterEqual(len(live_specs()), 6, "명세를 하나도 못 찾았다")
 
     def test_전부_파싱된다(self):
         for path in live_specs():
