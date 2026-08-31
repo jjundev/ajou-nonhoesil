@@ -60,6 +60,19 @@ class CompareSpecs(unittest.TestCase):
         diffs = compare_specs(WEEK6, target)
         self.assertTrue(any("source" in d for d in diffs), diffs)
 
+    def test_source_manual이_바뀌면_잡는다(self):
+        # 최종 전체-브랜치 리뷰 C1. `source_manual` 은 스키마 필수 필드이고
+        # `write-pre-report`·`write-result-report` 두 스킬이 "손으로
+        # 짐작하지 않는다 — 명세의 `source_manual` 이 가리킨다" 로 실제로
+        # 소비한다. 컨트롤러 재현: 실험06 명세의 `source_manual` 을
+        # 실험6.pdf -> 실험5.pdf 로 바꿔도 옛 코드는 차이 0건이었다.
+        target = self._mutated(
+            "source_manual: from_the_past/정리/강의노트/실험6.pdf",
+            "source_manual: from_the_past/정리/강의노트/실험5.pdf",
+        )
+        diffs = compare_specs(WEEK6, target)
+        self.assertTrue(any("source_manual" in d for d in diffs), diffs)
+
     def test_전원_레일이_빠지면_잡는다(self):
         target = self._mutated('power: {VCC: "+5V", GND: "GND"}',
                                'power: {VCC: "+5V"}')
@@ -489,10 +502,18 @@ class CompareSpecs(unittest.TestCase):
 class UncoveredTablesTest(unittest.TestCase):
     """`uncovered_tables` 가 `compare_specs` 의 사각지대를 실제로 짚는지 본다.
 
-    capture 표는 `header=[]`·`rows=[]` 라 `compare_specs` 의 셀 대조가
-    언제나 같다고 나온다(위 `test_capture_표의_expected가_바뀌어도_
-    compare_specs는_묵음이다` 참조). 그 사각지대를 사람이 알아채도록
-    이름과 이유를 목록으로 내는 함수가 실제로 그 표를 짚는지 확인한다.
+    두 사각지대를 각각 확인한다.
+
+    1. capture 표는 `header=[]`·`rows=[]` 라 `compare_specs` 의 셀 대조가
+       언제나 같다고 나온다(위 `test_capture_표의_expected가_바뀌어도_
+       compare_specs는_묵음이다` 참조).
+    2. 최종 전체-브랜치 리뷰 I1. 첫 `## T` 헤딩 **앞**의 본문에 있는
+       마크다운 표는 `spec_parser.parse_spec` 이 아예 스캔하지 않아
+       `LabSpec.tables` 에 실리지 않는다 — `compare_specs` 는 그런 표가
+       있는지조차 모른다.
+
+    둘 다 사람이 알아채도록 이름/위치와 이유를 목록으로 내는 함수가
+    실제로 그 표를 짚는지, 그리고 없을 때는 짚지 않는지 확인한다.
     """
 
     def setUp(self):
@@ -504,8 +525,38 @@ class UncoveredTablesTest(unittest.TestCase):
         self.assertEqual(len(found), 1, found)
         self.assertIn("T1", found[0])
 
-    def test_실험06_명세는_전부_truth_table이라_빈_리스트다(self):
-        self.assertEqual(uncovered_tables(WEEK6), [])
+    def test_실험06_명세는_capture_표가_없어_그_이유로는_안_짚는다(self):
+        # 실험06 은 truth-table 뿐이라 capture 표로는 안 짚혀야 한다.
+        # (머리말 표는 따로 짚는다 — 아래
+        # test_실험06_머리말의_토큰_규약표를_짚는다.)
+        found = uncovered_tables(WEEK6)
+        self.assertFalse(any("셀이 없어 대조가 성립하지 않는다" in f
+                             for f in found), found)
+
+    def test_실험06_머리말의_토큰_규약표를_짚는다(self):
+        # I1 회귀. 실험06 명세는 첫 `## T1` 헤딩보다 앞, 프론트매터
+        # 바로 다음에 "셀 값 표기 규약" 표(`0->1` 을 라이징 엣지로
+        # 정의하는 유일한 자리)가 있다 — 컨트롤러 실측으로 실험06 은
+        # 이런 머리말 표가 1개다. capture 표가 없으므로 이 한 줄만 나와야
+        # 한다.
+        found = uncovered_tables(WEEK6)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("머리말", found[0])
+        self.assertIn("1개", found[0])
+
+    WEEK2 = ROOT / "실험01/체크리스트/명세.md"
+
+    def test_머리말에_표가_없는_명세는_그_이유로는_안_짚는다(self):
+        # I1 회귀. 컨트롤러 실측: 실험01·실험10 은 첫 `## T` 헤딩 앞에
+        # 마크다운 표가 0개다 — uncovered_tables 가 머리말 표 사유로
+        # 잘못 짚으면 안 된다. (실험10 은 capture 표(T1) 사유로 여전히
+        # 짚히므로, 여기서는 "머리말" 문구가 섞여 들지 않는지만 본다.)
+        found_week2 = uncovered_tables(self.WEEK2)
+        self.assertEqual(found_week2, [],
+                         "실험01 은 capture 표도 머리말 표도 없어 빈 리스트여야 한다")
+
+        found_week12 = uncovered_tables(WEEK12)
+        self.assertFalse(any("머리말" in f for f in found_week12), found_week12)
 
     def test_expected가_바뀌어도_여전히_그_표를_짚는다(self):
         # compare_specs 는 이 변형을 못 잡는다(별도 테스트로 확인됨) —
