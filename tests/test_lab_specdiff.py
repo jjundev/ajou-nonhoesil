@@ -13,7 +13,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.lab.specdiff import compare_specs
+from scripts.lab.specdiff import compare_specs, uncovered_tables
 
 ROOT = Path(__file__).resolve().parents[1]
 WEEK6 = ROOT / "실험06/체크리스트/명세.md"
@@ -25,9 +25,13 @@ class CompareSpecs(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
 
-    def _mutated(self, old, new):
-        """실험06 명세에서 `old` 를 한 번만 `new` 로 바꾼 사본 경로."""
-        text = WEEK6.read_text(encoding="utf-8")
+    def _mutated(self, old, new, source=WEEK6):
+        """`source` 명세에서 `old` 를 한 번만 `new` 로 바꾼 사본 경로.
+
+        기본은 실험06 이다. 실험10(capture 표 픽스처)을 만질 때만 `source`
+        를 넘긴다.
+        """
+        text = source.read_text(encoding="utf-8")
         self.assertIn(old, text, f"픽스처가 바뀌었다 — {old!r} 가 없다")
         target = Path(self.tmp.name) / "명세.md"
         target.write_text(text.replace(old, new, 1), encoding="utf-8")
@@ -61,11 +65,34 @@ class CompareSpecs(unittest.TestCase):
         diffs = compare_specs(WEEK6, target)
         self.assertTrue(any("전원" in d for d in diffs), diffs)
 
-    def test_산문이_달라도_차이로_보지_않는다(self):
-        # 재생성물이 같은 사실을 다른 문장으로 쓰는 것은 결함이 아니다.
-        target = self._mutated("교안 p7. `74HC00` 쿼드 NAND",
-                               "교안 p7 의 회로다. `74HC00` 쿼드 NAND")
+    def test_파싱은_되지만_제외된_필드는_차이로_보지_않는다(self):
+        # `title` 은 SpecItem.title 로 실제로 파싱된다 — 파서가 아예 담지
+        # 않는 본문 서술(예: 어떤 필드로도 안 들어가는 안내문)을 만지면,
+        # `_ITEM_FIELDS`·`_TABLE_FIELDS` 에 title 이나 expected 가 실수로
+        # 들어가도 이 테스트는 원래부터 통과해 아무것도 지키지 못한다.
+        # 그래서 반드시 "파싱되지만 일부러 뺀" 자리를 만져야 한다.
+        target = self._mutated("title: R-S Latch with Enable (Gate 이용)",
+                               "title: R-S 래치 (Enable, 게이트 구성)")
         self.assertEqual(compare_specs(WEEK6, target), [])
+
+    def test_ics_순서만_바뀌면_차이로_보지_않는다(self):
+        # ics 는 그 항목이 쓰는 IC 패키지 이름의 집합이지 순서가 아니다.
+        # device·tables 도 같은 이유로 순서 무시다(스키마상 참조 목록).
+        target = self._mutated('ics: ["74HC00", "74HC04"]',
+                               'ics: ["74HC04", "74HC00"]')
+        self.assertEqual(compare_specs(WEEK6, target), [])
+
+    def test_capture_표의_expected가_바뀌어도_compare_specs는_묵음이다(self):
+        # capture 표는 셀이 없고 기술적 주장이 전부 expected 산문에 있다.
+        # expected 는 산문이라 대조 대상이 아니므로, 사실을 뒤집어도
+        # compare_specs 는 잡지 못한다 — 이것은 결함이 아니라 알려진 구멍
+        # 이고, uncovered_tables 가 그 구멍을 알린다(아래 UncoveredTables).
+        target = self._mutated(
+            "계단 상승한 뒤 리셋되는 톱니 형태",
+            "계단 하강한 뒤 리셋되는 역톱니 형태",
+            source=WEEK12,
+        )
+        self.assertEqual(compare_specs(WEEK12, target), [])
 
     def test_다른_주차끼리는_양쪽_방향을_다_보고한다(self):
         # 실험06 은 표 T1~T5·항목 다섯, 실험10 은 표 T1~T2·항목 둘이다.
@@ -73,3 +100,41 @@ class CompareSpecs(unittest.TestCase):
         self.assertTrue(any("원본에만 있다" in d for d in forward), forward)
         backward = compare_specs(WEEK12, WEEK6)
         self.assertTrue(any("재생성에만 있다" in d for d in backward), backward)
+
+
+class UncoveredTablesTest(unittest.TestCase):
+    """`uncovered_tables` 가 `compare_specs` 의 사각지대를 실제로 짚는지 본다.
+
+    capture 표는 `header=[]`·`rows=[]` 라 `compare_specs` 의 셀 대조가
+    언제나 같다고 나온다(위 `test_capture_표의_expected가_바뀌어도_
+    compare_specs는_묵음이다` 참조). 그 사각지대를 사람이 알아채도록
+    이름과 이유를 목록으로 내는 함수가 실제로 그 표를 짚는지 확인한다.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def test_실험10_명세에서_capture_표_T1을_짚는다(self):
+        found = uncovered_tables(WEEK12)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("T1", found[0])
+
+    def test_실험06_명세는_전부_truth_table이라_빈_리스트다(self):
+        self.assertEqual(uncovered_tables(WEEK6), [])
+
+    def test_expected가_바뀌어도_여전히_그_표를_짚는다(self):
+        # compare_specs 는 이 변형을 못 잡는다(별도 테스트로 확인됨) —
+        # 여기서는 uncovered_tables 가 그 자리를 계속 알린다는 것,
+        # 즉 "묵음" 이 아니라 "알려진 구멍" 임을 고정한다.
+        text = WEEK12.read_text(encoding="utf-8")
+        old = "계단 상승한 뒤 리셋되는 톱니 형태"
+        self.assertIn(old, text, f"픽스처가 바뀌었다 — {old!r} 가 없다")
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(
+            text.replace(old, "계단 하강한 뒤 리셋되는 역톱니 형태", 1),
+            encoding="utf-8",
+        )
+        found = uncovered_tables(target)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("T1", found[0])
