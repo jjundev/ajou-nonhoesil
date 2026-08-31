@@ -278,8 +278,10 @@ class WeekMappingTest(unittest.TestCase):
             config.experiment_for_week(8)
 
     def test_experiment_for_week_FPGA_주차는_실험_번호가_없다(self):
-        with self.assertRaises(ValueError):
-            config.experiment_for_week(13)
+        for week in (13, 14, 15):
+            with self.subTest(week=week):
+                with self.assertRaises(ValueError):
+                    config.experiment_for_week(week)
 
     def test_experiment_for_week_범위_밖_주차는_거절한다(self):
         with self.assertRaises(ValueError):
@@ -312,6 +314,12 @@ class WeekMappingTest(unittest.TestCase):
     def test_bool은_주차가_아니다(self):
         with self.assertRaises(TypeError):
             config.folder_for_week(True)
+
+    def test_experiment_for_week_bool은_주차가_아니다(self):
+        # folder_for_week 와 같은 헬퍼(_validated_week)를 실제로 쓰는지
+        # 지키는 테스트다 — 헬퍼 추출 뒤 한쪽만 고치면 여기가 깨진다.
+        with self.assertRaises(TypeError):
+            config.experiment_for_week(True)
 
     def test_역방향도_회전을_지킨다(self):
         self.assertEqual(config.week_for_experiment(4), 7)

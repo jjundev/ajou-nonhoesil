@@ -63,12 +63,18 @@ PROJECT_DIR = "프로젝트"
 NO_ARTIFACT_WEEKS = {8: "중간고사"}
 
 
-def folder_for_week(week: int) -> str:
-    """주차 → 그 주 산출물이 들어갈 폴더 이름.
+def _validated_week(week) -> None:
+    """`folder_for_week`·`experiment_for_week` 공통 주차 유효성 검사.
 
-    사용자는 "2주차 체크리스트" 처럼 **주차로 부른다.** 스킬 절차의 경로는
-    `실험NN/` 이므로 그 사이를 옮기는 곳이 필요한데, 표를 스킬마다 베껴 두면
-    한 곳만 고쳐진다 — 이 저장소가 반복해 온 결함이다.
+    이 저장소의 반복 결함이 "같은 규약을 세 곳에 적용하고 네 번째를 잊는
+    것"이다(`experiment_dir` 의 docstring 참고). 두 함수가 이 세 검사
+    (타입·중간고사 주차·존재하지 않는 주차)를 각자 복제해 두면, 메시지를
+    한쪽만 고치고 다른 쪽을 잊는 바로 그 결함이 재발한다. **PROJECT_WEEKS
+    갈래(폴더로 돌려줄지 실험 번호를 거절할지)는 여기서 판단하지 않는다** —
+    그건 두 함수가 서로 다르게 굴어야 하는 지점이라 호출자에 남긴다. 대신
+    "실험 주차도 아니고 FPGA 주차도 아니면 존재하지 않는 주차다"로 묶어서,
+    호출자가 PROJECT_WEEKS 를 먼저 걸러내든 나중에 걸러내든 이 검사 하나로
+    충분하게 한다.
     """
     if isinstance(week, bool) or not isinstance(week, int):
         raise TypeError(f"주차는 정수여야 합니다: {week!r}")
@@ -77,14 +83,24 @@ def folder_for_week(week: int) -> str:
             f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
             "폴더를 만들지 않습니다."
         )
-    if week in PROJECT_WEEKS:
-        return PROJECT_DIR
-    if week not in WEEK_TO_EXPERIMENT:
+    if week not in WEEK_TO_EXPERIMENT and week not in PROJECT_WEEKS:
         raise ValueError(
             f"{week}주차에 해당하는 실험이 없습니다. "
             f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
             f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
         )
+
+
+def folder_for_week(week: int) -> str:
+    """주차 → 그 주 산출물이 들어갈 폴더 이름.
+
+    사용자는 "2주차 체크리스트" 처럼 **주차로 부른다.** 스킬 절차의 경로는
+    `실험NN/` 이므로 그 사이를 옮기는 곳이 필요한데, 표를 스킬마다 베껴 두면
+    한 곳만 고쳐진다 — 이 저장소가 반복해 온 결함이다.
+    """
+    _validated_week(week)
+    if week in PROJECT_WEEKS:
+        return PROJECT_DIR
     return experiment_dir(WEEK_TO_EXPERIMENT[week])
 
 
@@ -98,23 +114,11 @@ def experiment_for_week(week: int) -> int:
     스킬 절차가 폴더 이름과 실험 번호를 **둘 다** 코드로 구하도록 이
     함수를 둔다. `프로젝트`(13~15주차)는 실험 번호가 없으므로 거절한다.
     """
-    if isinstance(week, bool) or not isinstance(week, int):
-        raise TypeError(f"주차는 정수여야 합니다: {week!r}")
-    if week in NO_ARTIFACT_WEEKS:
-        raise ValueError(
-            f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
-            "폴더를 만들지 않습니다."
-        )
+    _validated_week(week)
     if week in PROJECT_WEEKS:
         raise ValueError(
             f"{week}주차는 FPGA 프로젝트라 실험 번호가 없습니다. "
             f"`{PROJECT_DIR}` 폴더를 씁니다."
-        )
-    if week not in WEEK_TO_EXPERIMENT:
-        raise ValueError(
-            f"{week}주차에 해당하는 실험이 없습니다. "
-            f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
-            f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
         )
     return WEEK_TO_EXPERIMENT[week]
 

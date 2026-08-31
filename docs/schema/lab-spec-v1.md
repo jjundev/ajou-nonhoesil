@@ -134,7 +134,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | `items[].tables` ↔ 본문 헤딩 일치 | 전부 | error |
 | `kind` 가 세 값 중 하나 | 전부 | error |
 | `role` 이 `record`/`reference` 중 하나 | 전부 | error |
-| `capture` 가 아닌 표에 `encoding` 부재 | 전부 | error |
+| `capture` 가 아닌 표에 `encoding` 부재 또는 `0/1`·`H/L` 밖의 값 | 전부 | error |
 | `capture` 표에 `expected` 부재 | `capture` | error |
 | `capture` 표에 셀 표(마크다운 표) 존재 | `capture` | error (파서가 던진다) |
 | `capture` 가 아닌 표에 셀 표(마크다운 표) 부재 | 전부 | error (파서가 던진다) |
@@ -146,13 +146,26 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
 
-이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 `scripts/lab/validate.py` 의
-`check_metadata` 와 `spec_parser.py` 의 `_parse_table`이다. 위 표는 네 줄이
-방향이 거꾸로 적힌 채(`존재`/`부재`가 뒤집힌 채) 있었고, 실재하지 않는 검사
-한 줄까지 섞여 있었다 — 문서만 읽고는 드러나지 않다가 격리 재생성(실험06·
-실험10)이 코드를 실측해서야 드러났다. 이 표와 코드의 실제 동작이 어긋나면
-코드가 옳고 이 표가 틀린 것이다 — 문서만 읽고 저작하면 파서조차 못 읽는
-명세를 쓰게 된다.
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열한 줄이
+한 함수에 있지 않다. `kind` 값·`capture` 표의 셀 표 유무·열 이름 중복은
+`spec_parser.py` 의 `_parse_table`(파서이므로 예외로 던진다)이 맡는다.
+`role`·`encoding`·`capture` 의 `expected`·`source` 부재는
+`validate.py` 의 `check_metadata`, 행 수 `2^n` 은 같은 파일의
+`check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다.
+`items[].tables` ↔ 본문 헤딩 일치 한 줄만은 이 목록에서도 예외라 두 파일에
+걸친다 — 항목이 없는 표를 가리키면 `spec_parser.parse_spec`이 파싱 단계에서
+막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의
+`check_orphan_tables`가 검증 단계에서 잡는다. 요컨대 정본은
+`spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_metadata`·
+`check_row_count`·`check_boolean`·`check_orphan_tables`)를 합친 것이다.
+
+위 표는 네 줄이 코드와 반대로 적혀 있었다. 그중 둘(`encoding`·`expected`)은
+`존재`/`부재`가 그대로 뒤집혀 있었고, 나머지 둘(셀 표 유무를 다루는 두 줄)은
+`존재`/`부재` 문구는 맞았지만 대상(`전부` ↔ `capture`)이 서로 뒤바뀌어
+있었다. 게다가 실재하지 않는 검사 한 줄까지 섞여 있었다 — 문서만 읽고는
+드러나지 않다가 격리 재생성(실험06·실험10)이 코드를 실측해서야 드러났다.
+이 표와 코드의 실제 동작이 어긋나면 코드가 옳고 이 표가 틀린 것이다 —
+문서만 읽고 저작하면 파서조차 못 읽는 명세를 쓰게 된다.
 
 ## 셀 값 — 닫힌 enum 이 아니라 열린 토큰 (R3)
 
