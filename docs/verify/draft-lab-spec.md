@@ -15,7 +15,8 @@
 
 ```bash
 git worktree add --detach <경로> HEAD
-rm -rf <경로>/docs/verify <경로>/docs/plans          # 답안지를 시험장에서 뺀다
+rm -rf <경로>/docs/verify <경로>/docs/plans \
+       <경로>/scripts/lab/specdiff.py <경로>/tests/test_lab_specdiff.py          # 답안지를 시험장에서 뺀다
 # 필요하면 대상 산출물을 지운다
 git worktree remove --force <경로>
 ```
@@ -32,6 +33,15 @@ git worktree remove --force <경로>
 `docs/plans/` 를 남기면 여전히 답안지를 넘긴 것이다. 스킬 절차
 (`.claude/skills/draft-lab-spec/SKILL.md`)는 `docs/plans/` 를 참조하지
 않으므로, 지워도 스킬 실행에는 지장이 없다.
+
+**답안지는 이미 문서 밖에도 있다.** `scripts/lab/specdiff.py` 의 docstring 에는
+`compare_specs` 가 어느 필드를 대조하고(`capture` 표·산문은 보지 않는다)
+`"차이 0건 = 합격"` 이라는 채점 기준이 통째로 들어 있다. `tests/test_lab_specdiff.py`
+도 마찬가지로 **이전 재생성이 무엇을 했는지**를 적는다 — 예를 들어
+`"실측(실험06 재생성 2건): 교안 p5 이론표를 T2 로 끼워 넣으면"` 같은 대목이 있다.
+스킬은 `specdiff` 를 한 번도 참조하지 않고, `scripts/lab/__init__.py` 는 비어
+있으므로 지워도 스킬이 다른 모듈을 import 하는 데는 지장이 없다.
+**판정 도구는 본 저장소에서 돈다** — worktree 안에 있을 이유가 없다.
 
 **worktree 안에서 `unittest discover` 를 돌리지 않는다.**
 `test_lab_spec_parser.py`·`test_lab_md.py`·`test_lab_record.py`·
@@ -60,6 +70,7 @@ worktree 에서는 스킬과 무관한 실패가 난다.
 - `git commit` / `git add` / 브랜치 조작을 하지 마라.
 - `docs/verify/` 를 읽지 마라. 이 시험의 합격 조건이 거기 있다.
 - `docs/plans/` 를 읽지 마라. 이 시험의 합격 조건이 거기에도 있다.
+- `scripts/lab/specdiff.py` 와 `tests/test_lab_specdiff.py` 를 읽지 마라. 이 파일들에 채점 기준과 이전 재생성이 한 일이 적혀 있다.
 
 환경: `pytest` 없다. 파이썬은 `zsh -c 'PYTHONPATH=. python3 ...'` 로
 돌린다. `pdftotext`·`pdftoppm` 은 `/opt/homebrew/bin/` 에 있다.
