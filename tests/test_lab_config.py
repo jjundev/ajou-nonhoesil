@@ -8,6 +8,33 @@ from scripts.lab import config
 ROOT = Path(__file__).resolve().parents[1]
 
 
+class TestManualCandidates(unittest.TestCase):
+    """교안 PDF 경로. **폴더는 0 을 채우고 파일은 안 채운다.**"""
+
+    def test_파일_이름은_0_을_채우지_않는다(self):
+        # 폴더는 `실험04`, 파일은 `실험4.pdf`. 두 형식이 한 경로에 섞여
+        # 있어서 손으로 옮기면 7주차(실험4)에서 반드시 어긋난다.
+        got = config.manual_candidates(4)
+        self.assertEqual(got[0], Path("실험04/강의노트/실험4.pdf"))
+        self.assertEqual(got[1],
+                         Path("from_the_past/정리/강의노트/실험4.pdf"))
+
+    def test_주차_폴더_사본이_먼저다(self):
+        # 2026-2 교안이 배포되면 그 사본이 이긴다.
+        got = config.manual_candidates(10)
+        self.assertEqual(got[0], Path("실험10/강의노트/실험10.pdf"))
+
+    def test_범위_밖_번호는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.manual_candidates(11)
+
+    def test_두_번째_후보가_열_개_다_실재한다(self):
+        # 이 함수가 만드는 이름이 실물과 어긋나면 여기서 걸린다.
+        for n in range(1, 11):
+            with self.subTest(n=n):
+                self.assertTrue((ROOT / config.manual_candidates(n)[1]).exists())
+
+
 class TestCourseInfo(unittest.TestCase):
     def test_reads_required_fields(self):
         info = config.load_course_info(ROOT)

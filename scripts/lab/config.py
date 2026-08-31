@@ -37,6 +37,23 @@ def experiment_dir(experiment: int) -> str:
     return f"실험{experiment:02d}"
 
 
+# 과거 학기 교안 원본이 사는 곳. 2026-2 교안이 배포되면 각 주차 폴더의
+# `강의노트/` 로 들어오고 그쪽이 우선한다.
+MANUAL_ARCHIVE = "from_the_past/정리/강의노트"
+
+
+def manual_candidates(experiment) -> list:
+    """실험 번호 → 교안 PDF 후보 경로. 우선순위 순서다.
+
+    **폴더는 0 을 채우고 파일 이름은 안 채운다** — `실험04/강의노트/실험4.pdf`
+    처럼 한 경로에 두 형식이 섞여 있다. 손으로 옮기면 7주차(실험4)에서
+    반드시 어긋난다. 그래서 이 규칙을 여기 한 곳에만 둔다.
+    """
+    folder = experiment_dir(experiment)     # 번호 유효성은 한 곳에서만 판정한다
+    name = f"실험{experiment}.pdf"          # 0 을 채우지 않는다
+    return [Path(folder) / "강의노트" / name, Path(MANUAL_ARCHIVE) / name]
+
+
 # 주차 → 실험 매핑. **1:1 이 아니다** — 5·6·7주차가 실험 5·6·4 로 어긋난다.
 # 이 표를 스킬 문서에 베껴 두면 한 곳만 고쳐지고 나머지가 틀어진다.
 WEEK_TO_EXPERIMENT = {2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
