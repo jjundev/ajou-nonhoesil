@@ -1,0 +1,13 @@
+{
+  "schema": "notion-uploads/v1",
+  "uploads": [
+    {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "3cdb06d2-63bc-8166-b907-e05b0ac13ec2",
+      "url": "https://app.notion.com/p/5-Decoder-Encoder-v1-3cdb06d263bc8166b907e05b0ac13ec2",
+      "source": "실험05_예비보고서.md",
+      "uploaded_at": "2026-08-31 12:12"
+    }
+  ]
+}
