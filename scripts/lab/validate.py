@@ -462,6 +462,59 @@ def check_heading_backticks(md_text) -> list:
         "기호는 본문에서만 백틱으로 감싼다")]
 
 
+# A4 한 장에 들어가는 표의 최대 열 수. 실측값이지 유도값이 아니다 —
+# 실험05 v1 을 노션에서 A4 PDF 로 내보내 세었다(11열 셋 온전, 13·14열 잘림).
+NOTION_A4_MAX_COLUMNS = 11
+
+_SEP_ROW = re.compile(r"^\|[\s:|-]*-{2,}[\s:|-]*\|?$")
+
+
+def _split_row(line):
+    """`| a | b |` → `['a', 'b']`. 앞뒤 들여쓰기와 바깥 파이프를 뗀다."""
+    s = line.strip()
+    if s.endswith("|"):
+        s = s[:-1]
+    return [c.strip() for c in s[1:].split("|")]
+
+
+def check_table_width(md_text) -> list:
+    """A4 한 장에서 오른쪽이 잘릴 표를 잡는다.
+
+    **노션 PDF 내보내기는 넓은 표를 경고 없이 자른다.** 노션 화면에서는 가로
+    스크롤로 전부 보이므로 눈으로는 드러나지 않고, 제출본에서만 열이 사라진다.
+    실험05 v1 에서 실제로 났다 — `BCD to Decimal 예상 진리표`(14열)에서 `Y7`·
+    `Y8`·`Y9` 가, `8X3 우선순위 인코더 예상 진리표`(13열)에서 `GS`·`EO` 가
+    빠진 채로 PDF 가 나왔다. 하필 `GS`·`EO` 는 같은 보고서의 본문이 "두 신호가
+    함께 갈라 준다"고 설명하는 대상이라, 근거만 사라지고 주장이 남았다.
+
+    **한계 11열은 실측이다.** 같은 PDF 에서 11열 표 셋(`3X8 디코더 이론표`·
+    `8X3 인코더 이론표`·`Excess-3 예상 진리표`)은 온전했다. 12열은 시험하지
+    않았으므로 안전한 쪽으로 11 에서 끊는다.
+
+    **구분선이 있어야 표로 센다.** 본문에 `A|B` 같은 파이프가 섞여도 구분선이
+    없으면 표가 아니다. 들여쓴 표도 센다 — §절대 규칙 13 이 불릿 아래 표를
+    탭으로 들여쓰라고 시키므로, 들여쓰기를 빼면 진리표 대부분을 놓친다.
+    """
+    out, lines = [], md_text.splitlines()
+    for i, line in enumerate(lines):
+        s = line.strip()
+        if not s.startswith("|") or i + 1 >= len(lines):
+            continue
+        if not _SEP_ROW.match(lines[i + 1].strip()):
+            continue                      # 구분선이 뒤따라야 헤더다
+        header = _split_row(line)
+        n = len(header)
+        if n <= NOTION_A4_MAX_COLUMNS:
+            continue
+        cut = header[NOTION_A4_MAX_COLUMNS:]
+        out.append(Finding("error", "표 너비",
+            f"{i + 1}행의 표가 {n}열이라 A4 PDF 에서 오른쪽 {len(cut)}열이 "
+            f"잘린다 — {', '.join(cut)}. 노션 화면에서는 가로 스크롤로 다 "
+            f"보이므로 내보내기 전에는 드러나지 않는다. "
+            f"{NOTION_A4_MAX_COLUMNS}열 이하로 나눈다"))
+    return out
+
+
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
 
@@ -494,6 +547,7 @@ def check_notion_markdown(md_path) -> list:
                     "노션에서 표가 통째로 뭉개진다"))
     out.extend(check_report_wrapping(body))
     out.extend(check_heading_backticks(body))
+    out.extend(check_table_width(body))
     local = [s for s in _IMAGE.findall(body)
              if not s.startswith(("http://", "https://", "data:"))]
     if local:

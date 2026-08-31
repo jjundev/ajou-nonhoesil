@@ -946,5 +946,74 @@ class TestCheckHeadingBackticks(unittest.TestCase):
         self.assertTrue(any("헤딩" in f.where for f in found), found)
 
 
+class TestCheckTableWidth(unittest.TestCase):
+    """A4 한 장에 안 들어가는 표를 잡는다.
+
+    노션 PDF 내보내기는 넓은 표를 **경고 없이 오른쪽부터 자른다.** 화면에서는
+    가로 스크롤로 다 보이므로 눈으로는 안 드러나고, 제출본에서만 사라진다.
+
+    실측(실험05 v1, A4): 14열 표는 `Y7`·`Y8`·`Y9` 가, 13열 표는 `GS`·`EO` 가
+    잘렸고, 11열 표 셋은 온전했다. 그래서 한계는 **11열**이다.
+    """
+
+    CANON = ROOT / "실험01" / "output" / "실험01_예비보고서.md"
+
+    def _table(self, n, rows=2):
+        head = "| " + " | ".join(f"C{i}" for i in range(n)) + " |"
+        sep = "|" + "---|" * n
+        body = "\n".join("| " + " | ".join("0" for _ in range(n)) + " |"
+                         for _ in range(rows))
+        return f"{head}\n{sep}\n{body}"
+
+    def test_열_열한_개는_통과한다(self):
+        # 실험05 의 이론표 셋이 정확히 11열이고 PDF 에서 온전했다.
+        self.assertEqual(validate.check_table_width(self._table(11)), [])
+
+    def test_열_열두_개부터_잡는다(self):
+        got = validate.check_table_width(self._table(12))
+        self.assertEqual(len(got), 1, got)
+        self.assertEqual(got[0].level, "error")
+
+    def test_몇_열인지와_몇_열이_잘리는지_알린다(self):
+        got = validate.check_table_width(self._table(14))
+        self.assertIn("14열", got[0].message)
+        self.assertIn("3", got[0].message)      # 넘친 열 수
+
+    def test_잘리는_열_이름을_댄다(self):
+        # 어느 열이 사라지는지 모르면 사용자가 심각성을 판단할 수 없다.
+        head = "| D | C | B | A | Y0 | Y1 | Y2 | Y3 | Y4 | Y5 | Y6 | Y7 | Y8 | Y9 |"
+        md = head + "\n" + "|" + "---|" * 14 + "\n" + "| " + " | ".join("0" * 1 for _ in range(14)) + " |"
+        got = validate.check_table_width(md)
+        self.assertIn("Y7", got[0].message)
+        self.assertIn("Y9", got[0].message)
+
+    def test_탭으로_들여쓴_표도_센다(self):
+        # §절대 규칙 13 이 불릿 아래 표를 탭으로 들여쓰라고 시킨다.
+        md = "- **캡션**\n\t" + self._table(13).replace("\n", "\n\t")
+        self.assertEqual(len(validate.check_table_width(md)), 1)
+
+    def test_표가_여러_개면_각각_낸다(self):
+        md = self._table(13) + "\n\n산문\n\n" + self._table(14)
+        self.assertEqual(len(validate.check_table_width(md)), 2)
+
+    def test_좁은_표만_있으면_조용하다(self):
+        md = self._table(3) + "\n\n산문\n\n" + self._table(4)
+        self.assertEqual(validate.check_table_width(md), [])
+
+    def test_파이프가_든_산문은_표가_아니다(self):
+        self.assertEqual(validate.check_table_width(
+            "출력이 `A|B` 꼴이면 OR 이다."), [])
+
+    def test_실험01_승인본은_조용하다(self):
+        # 실측 통제군. 승인본의 가장 넓은 표가 11열 이하다.
+        got = validate.check_table_width(self.CANON.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], got)
+
+    def test_check_notion_markdown_이_이_검사를_함께_낸다(self):
+        found = validate.check_notion_markdown(md_file(
+            "# 제목\n\n" + self._table(14)))
+        self.assertTrue(any("표 너비" in f.where for f in found), found)
+
+
 if __name__ == "__main__":
     unittest.main()

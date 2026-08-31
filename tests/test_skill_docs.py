@@ -14,6 +14,8 @@ import re
 import unittest
 from pathlib import Path
 
+from scripts.lab import validate
+
 ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
@@ -291,6 +293,19 @@ class SkillDocInvariants(unittest.TestCase):
                       self.flat["예보"])
         # 무엇을 접지 '않는' 대상인지까지 적혀야 표까지 이어 붙이지 않는다.
         self.assertIn("표 행·헤딩·`<empty-block/>` 같은 블록", self.flat["예보"])
+
+    def test_wide_tables_are_split_for_the_a4_export(self):
+        # 노션 PDF 내보내기가 넓은 표를 경고 없이 자른다. 실험05 v1 이 14열
+        # 표에서 Y7~Y9 를, 13열 표에서 GS·EO 를 잃은 채 나갔다 — 하필 본문이
+        # "GS 와 EO 가 함께 갈라 준다"고 설명하는 그 두 열이었다.
+        rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
+        self.assertIn(19, rules)
+        # 한계값이 규칙과 코드 두 곳에 산다. 문서 쪽을 코드 상수로 조립해
+        # 대조한다 — 글자로 박아 두면 한쪽만 바뀌어도 초록으로 지나간다.
+        self.assertIn(f"표는 {validate.NOTION_A4_MAX_COLUMNS}열까지다",
+                      self.flat["예보"])
+        # 명세를 고치는 쪽으로 새면 정본이 렌더 사정에 끌려간다.
+        self.assertIn("명세를 고치지 말고 보고서에서 나눈다", self.flat["예보"])
 
     def test_worked_subsection_example_matches_the_approved_report(self):
         # 규칙 17 의 예시 숫자를 살아 있는 정본에서 실제로 세어 대조한다.
