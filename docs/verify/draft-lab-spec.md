@@ -218,6 +218,11 @@ git -C /tmp/v4 status --porcelain
 worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므로 판정이
 "트리가 그대로인가" 다 — 한 worktree 에 섞으면 어느 쪽이 썼는지 못 가른다.
 
+```bash
+git worktree add --detach /tmp/v5a HEAD
+git worktree add --detach /tmp/v5b HEAD
+```
+
 인자: `8주차 명세를 만들어라` / `14주차 명세를 만들어라`
 
 합격 조건: `git status --porcelain` 이 공란. 그리고 거절 사유가 각각
@@ -227,6 +232,10 @@ worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므
 ### V6 — 거절 (폴더 없음)
 
 실험07 은 폴더가 없다(9주차).
+
+```bash
+git worktree add --detach /tmp/v6 HEAD
+```
 
 인자: `9주차 명세를 만들어라`
 
