@@ -219,10 +219,17 @@ class CompareSpecs(unittest.TestCase):
         # 8줄이 늘고, 요약이면 1줄이다.
         shift_lines = [d for d in diffs if d.startswith("[표 ID 가 어긋난 채 짝지어졌다]")]
         self.assertEqual(len(shift_lines), 1, diffs)
-        # 이 시나리오는 표가 하나 늘어(ID 집합이 다르다) 위에서 이미
-        # `_table_id_mismatch_notice` 가 경고했으므로, 이 줄은 담담한
-        # 문구(강한 경고가 아니라)여야 한다.
-        self.assertIn("표 추가·삭제로 ID 가 밀린 결과로 보인다", shift_lines[0])
+        # I1 회귀(재리뷰 2). 이 시나리오는 표가 하나 늘어(ID 집합이
+        # 다르다) 밀림으로 설명은 되지만, 같은 실행 안에서 "밀림"과
+        # "표 내용이 다른 ID 로 옮겨간 것"은 코드가 구별할 수 없는 같은
+        # 관측 결과를 낳는다(리뷰어 재현: 실험06 에서 정당한 밀림 8건과
+        # 밀림+내용이동 8건이 건수가 같았다). 그래서 이 문구는 원인을
+        # 단정하지 않고 두 가능성을 함께 말해야 한다 — 강한 경고 쪽
+        # ("표 내용이 서로 다른 ID 로 옮겨갔을 수 있다는 뜻이다")처럼
+        # 하나로 단정하면 안 된다.
+        self.assertIn("표 추가·삭제로 ID 가 밀린 것일 수도", shift_lines[0])
+        self.assertIn("표 내용이 서로 다른 ID 로 옮겨간 것일 수도 있다", shift_lines[0])
+        self.assertIn("코드가 구별할 수 없다", shift_lines[0])
 
     def test_짝을_못_지은_표는_한쪽에만_있다고_말하지_않는다(self):
         # source 짝짓기가 원본 Tx 를 재생성 Ty(x≠y) 와 묶으면, 원본 Ty 와
@@ -384,29 +391,99 @@ class CompareSpecs(unittest.TestCase):
         self.assertIn("source 가 없어 판별할 수 없다", hit[0])
         self.assertIn("원본에도 같은 ID 가 있다", hit[0])
 
-    def test_한쪽만_있음_문구_여덟_개가_서로_부분문자열이_아니다(self):
-        # Minor 3 회귀. "원본에만 있다" 가 "원본에만 있는 표다" 의 부분
-        # 문자열이라, 문구로 거르는 소비자가 한 갈래를 통째로 놓쳤다
-        # (라운드 0 테스트가 실제로 공허 통과했다). A~C 가 다시 쓴 문구
-        # (양쪽 방향 각 네 갈래, 총 여덟)가 서로 부분 문자열이 아닌지
-        # 직접 검사한다.
-        src = repr("manual:pX")
-        phrases = [
-            "원본에만 있다",
-            f"source {src} 가 재생성 어디에도 없다 (표가 빠졌거나 source 가 "
-            "잘못 옮겨졌을 수 있다). 재생성에도 같은 ID 가 있다",
-            "짝을 못 지었다 (source 가 없어 판별할 수 없다; 재생성에도 같은 ID 가 있다)",
-            "짝을 못 지었다 (재생성에도 같은 ID 가 있다)",
-            "재생성에만 있다",
-            f"source {src} 가 원본 어디에도 없다 (표가 새로 추가됐거나 source 가 "
-            "잘못 옮겨졌을 수 있다). 원본에도 같은 ID 가 있다",
-            "짝을 못 지었다 (source 가 없어 판별할 수 없다; 원본에도 같은 ID 가 있다)",
-            "짝을 못 지었다 (원본에도 같은 ID 가 있다)",
-        ]
-        for i, p in enumerate(phrases):
-            for j, q in enumerate(phrases):
-                if i != j:
-                    self.assertNotIn(p, q, f"{p!r} 가 {q!r} 의 부분 문자열이다")
+    def test_한쪽만_있음_갈래가_서로_다른_시나리오에서_섞이지_않는다(self):
+        # I3 회귀(재리뷰 2). 옛 테스트("Minor 3 회귀")는 여덟 문구를
+        # 하드코딩한 리터럴 리스트로 두고 자기들끼리 부분 문자열 검사를
+        # 했다 — `_table_diffs` 를 한 번도 부르지 않았다. 리뷰어가 두 번
+        # 증명했다: 갈래 2 문구를 라운드 1 것으로 되돌려도 그 테스트는
+        # OK 였고, 갈래 4 를 갈래 3 의 부분 문자열로 바꿔도 OK 였다.
+        # 게다가 그 테스트가 고정하려던 성질의 전제 자체가 틀렸다 —
+        # "원본에만 있다" 는 "원본에만 있는 표다" 의 부분 문자열이
+        # 아니다(`있다` vs `있는`). 라운드 0 이 공허 통과한 진짜 원인은
+        # 소비자 필터의 접두 어긋남이지 부분 문자열 관계가 아니었다.
+        #
+        # 그래서 리터럴 비교 대신 `compare_specs` 를 실제로 두 번 불러
+        # 서로 다른 갈래(3: source 가 없어 판별 불가 / 4: source·ID 가
+        # 둘 다 상대에 있는데 짝짓기만 실패)를 발화시키고, 각 출력 줄이
+        # 자기 갈래로만 식별되는지 — 다른 갈래의 판별 문구가 섞여
+        # 들어오지 않는지 — 검사한다.
+        def bump(text, first, last):
+            def repl(m):
+                n = int(m.group(1))
+                return f"T{n + 1}" if first <= n <= last else m.group(0)
+            out = []
+            for line in text.split("\n"):
+                if line.lstrip().startswith("tables:") or line.startswith("## T"):
+                    line = re.sub(r"T(\d+)", repl, line)
+                out.append(line)
+            return "\n".join(out)
+
+        marker = "## T3 · D Latch with Enable 특성표"
+
+        # 시나리오 1 — 갈래 3(source 없음): 정당한 밀림(T2~T5 → T3~T6)에
+        # 새로 끼운 표가 source 를 아예 안 적었다.
+        text1 = bump(WEEK6.read_text(encoding="utf-8"), 2, 5)
+        self.assertIn(marker, text1, "픽스처가 바뀌었다 — 삽입 지점을 못 찾았다")
+        inserted1 = ("## T2 · source 없이 끼운 표\n\n"
+                     "- kind: truth-table\n- encoding: 0/1\n- role: reference\n\n"
+                     "| A | Y |\n|---|---|\n| 0 | 0 |\n\n")
+        target1 = Path(self.tmp.name) / "명세1.md"
+        target1.write_text(text1.replace(marker, inserted1 + marker, 1),
+                           encoding="utf-8")
+        diffs1 = compare_specs(WEEK6, target1)
+
+        # 시나리오 2 — 갈래 4(짝짓기만 실패): 같은 밀림에, 새로 끼운
+        # 표의 source 를 원본 T3(D F/F, source manual:p9)과 중복시킨다.
+        # source 유일성이 깨지면 원본 T3 은 1차 루프에서 짝을 못 찾고,
+        # 밀렸으므로 ID 로도 못 찾는다(사본의 "T3" 자리는 이미 다른
+        # 짝(원본 T2 ↔ 사본 T3, source p8)이 차지했다) — source 도 ID 도
+        # 상대에 있지만 그저 짝짓기에 실패한, 갈래 4 의 정의 그대로다.
+        text2 = bump(WEEK6.read_text(encoding="utf-8"), 2, 5)
+        self.assertIn(marker, text2, "픽스처가 바뀌었다 — 삽입 지점을 못 찾았다")
+        inserted2 = ("## T2 · 끼운 중복 source 표\n\n"
+                     "- kind: truth-table\n- encoding: 0/1\n"
+                     "- source: manual:p9\n- role: reference\n\n"
+                     "| A | Y |\n|---|---|\n| 0 | 0 |\n\n")
+        target2 = Path(self.tmp.name) / "명세2.md"
+        target2.write_text(text2.replace(marker, inserted2 + marker, 1),
+                           encoding="utf-8")
+        diffs2 = compare_specs(WEEK6, target2)
+
+        one_sided_pat = re.compile(r"^표 T\d+(?:→T\d+)?: (.+)$")
+        # 갈래 3 의 정체성: "source 가 없어 판별할 수 없다" 라는 사실이
+        # 반드시 있어야 한다. 갈래 4 의 정체성: 그 사실 없이 "짝을 못
+        # 지었다 (…에도 같은 ID 가 있다)" 로 끝나야 한다 — 괄호 안에
+        # "source 가 없어 판별할 수 없다;" 가 끼어들면(리뷰어가 증명한
+        # 바로 그 변형) 더 이상 이 갈래로 식별되지 않는다.
+        markers = {
+            "no_source": re.compile(r"^짝을 못 지었다 \(source 가 없어 판별할 수 없다;"),
+            "unmatched_only": re.compile(r"^짝을 못 지었다 \((원본|재생성)에도 같은 ID 가 있다\)$"),
+        }
+
+        def classify(msg):
+            return sorted(name for name, pat in markers.items() if pat.search(msg))
+
+        def one_sided_messages(diffs):
+            out = []
+            for d in diffs:
+                m = one_sided_pat.match(d)
+                if m:
+                    out.append(m.group(1))
+            return out
+
+        msgs1 = one_sided_messages(diffs1)
+        msgs2 = one_sided_messages(diffs2)
+
+        self.assertEqual(len(msgs1), 1, diffs1)
+        self.assertEqual(
+            classify(msgs1[0]), ["no_source"],
+            f"갈래 3 문구가 다른 갈래와 섞였거나 정체성을 잃었다: {msgs1[0]!r}")
+
+        self.assertEqual(len(msgs2), 3, diffs2)
+        for msg in msgs2:
+            self.assertEqual(
+                classify(msg), ["unmatched_only"],
+                f"갈래 4 문구가 다른 갈래와 섞였거나 정체성을 잃었다: {msg!r}")
 
 
 class UncoveredTablesTest(unittest.TestCase):

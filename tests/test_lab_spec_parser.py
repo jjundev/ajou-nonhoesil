@@ -190,6 +190,17 @@ class TestErrors(unittest.TestCase):
             parse_spec(self._broken("## T2 · ", "## T1 · "))
         self.assertIn("T1", str(ctx.exception))
 
+    def test_duplicate_item_id_raises(self):
+        """표 ID 중복을 막는 것과 같은 이유다 — `specdiff.compare_specs` 의
+        `{i.id: i for i in items}` 가 나중 것만 남기고 앞 항목을 조용히
+        지운다. 재생성물이 항목 ID 를 실수로 중복시키면(예: `E3.P2` 를
+        두 번 쓰면) 그 항목이 통째로 대조에서 빠져 차이 0건(거짓 합격)이
+        될 수 있다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken("id: E10.P2", "id: E10.P1"))
+        self.assertIn("E10.P1", str(ctx.exception))
+        self.assertIn("두 번", str(ctx.exception))
+
     def test_duplicate_column_name_raises(self):
         """실물이 있다 — 실험3 반감산기 헤더가 `A B D B` 다(출력 borrow 가
         입력 `B` 와 이름이 같다). `header.index()` 가 첫 번째만 주므로

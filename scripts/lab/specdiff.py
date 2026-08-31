@@ -155,26 +155,34 @@ def _table_id_mismatch_notice(ids_a, ids_b) -> str:
 def _table_id_shift_notice(pairs, ids_a, ids_b):
     """짝지은 표 중 ID 가 어긋난 것이 있으면 요약 한 줄로 경고한다. 없으면 `None`.
 
-    **이 함수가 없으면 Critical 1 이 재발한다.** `_pair_tables` 는 `source`
-    로 짝지으므로 원본 `Tx` 가 재생성 `Ty`(x≠y) 와 묶일 수 있다. 그 짝의
-    필드·셀이 완전히 같으면(표 몸통은 그대로 두고 ID·제목만 바뀐 경우가
-    실제로 그렇다) `_table_diffs` 는 그 짝에 대해 **아무 줄도 내지
-    않는다** — `compare_specs` 가 "차이 0건 = 합격"으로 쓰이므로, 표
-    몸통이 다른 ID 로 옮겨간 명세가 조용히 합격 처리된다.
+    `_pair_tables` 는 `source` 로 짝지으므로 원본 `Tx` 가 재생성 `Ty`(x≠y)
+    와 묶일 수 있다. 그 짝의 필드·셀이 완전히 같으면(표 몸통은 그대로 두고
+    ID·제목만 바뀐 경우가 실제로 그렇다) `_table_diffs` 는 그 짝에 대해
+    **아무 줄도 내지 않는다** — `compare_specs` 가 "차이 0건 = 합격"으로
+    쓰이므로, 표 몸통이 다른 ID 로 옮겨간 명세가 조용히 합격 처리된다.
+    이 함수가 그 사각지대를 메운다.
 
     짝마다 한 줄을 내면 정당한 밀림(표 추가로 뒤 ID 가 전부 한 칸씩 밀리는
     흔한 경우)에서도 밀린 짝 수만큼 줄이 늘어난다 — 실측: 실험01 8줄,
     실험06 4줄, 실험03 3줄. 그래서 어긋난 짝 전부를 **하나의 요약 줄**로
     묶는다.
 
-    이 한 줄은 두 경우를 구별해야 한다:
+    **원인을 단정할 수 있는 경우와 없는 경우가 갈린다.**
 
     - `ids_a == ids_b` (표 ID 집합이 같다): 표를 넣거나 뺀 흔적이 없는데
-      짝이 어긋났다는 뜻이므로, 표 내용이 서로 다른 ID 로 옮겨갔을
-      가능성을 **강하게 경고**한다.
-    - `ids_a != ids_b`: 표 추가·삭제로 그 뒤 ID 가 밀린 결과로 보인다.
-      이미 위쪽 `_table_id_mismatch_notice` 가 그 사실을 알렸으므로
-      담담하게 적는다.
+      짝이 어긋났다. 표 추가·삭제로는 설명되지 않으므로, 표 내용이 서로
+      다른 ID 로 옮겨갔을 가능성을 **강하게 경고**해도 근거가 있다.
+    - `ids_a != ids_b`: 표가 추가·삭제됐다는 사실 자체는 위쪽
+      `_table_id_mismatch_notice` 가 이미 알렸지만, **이 짝짓기 어긋남의
+      원인까지는 코드가 판별할 수 없다.** "표 추가·삭제로 ID 가 밀렸다"
+      와 "표 내용이 다른 ID 로 옮겨갔다"는 **같은 관측 결과**(source 로
+      짝지었더니 ID 가 다르다)를 낳는다 — 실험06 에서 정당한 밀림과
+      "밀림 + 내용이동"을 각각 재현하면 건수가 똑같이 8건이고, 다른 것은
+      화살표 목록의 점프 폭(`T3→T5` 처럼 이웃보다 큰 폭)뿐이었다. 그래서
+      이 경우는 원인을 하나로 단정하지 않고 관측 사실과 두 가능성을
+      함께 적는다. "오프셋이 전부 같은지" 같은 새 판별 로직은 넣지
+      않는다 — 오프셋도 순서 보존도 이 두 경우를 안정적으로 가르지
+      못한다(실측). 문구를 정직하게 하는 것으로 그친다.
     """
     mismatched = sorted(
         ((t_a.id, t_b.id) for t_a, t_b in pairs if t_a.id != t_b.id),
@@ -192,8 +200,12 @@ def _table_id_shift_notice(pairs, ids_a, ids_b):
             " 신뢰한 결과이니 원문을 직접 대조해 확인하라."
         )
     return (
-        f"[표 ID 가 어긋난 채 짝지어졌다] {labels} — 위에서 이미 알린 표 "
-        "추가·삭제로 ID 가 밀린 결과로 보인다."
+        f"[표 ID 가 어긋난 채 짝지어졌다] {labels} — source 로 짝지은 결과 "
+        "이 짝들의 ID 가 원본과 재생성에서 다르다. 위에서 이미 알린 표 "
+        "추가·삭제로 ID 가 밀린 것일 수도, 표 내용이 서로 다른 ID 로 "
+        "옮겨간 것일 수도 있다 — 이 둘은 같은 관측 결과를 낳아 코드가 "
+        "구별할 수 없다. 화살표가 고르게 밀리지 않았거나 중간이 건너뛰면 "
+        "후자를 의심하라."
     )
 
 
@@ -273,23 +285,31 @@ def _table_diffs(pairs, only_a, only_b, a_tables, b_tables) -> list:
     상대 문서에 그 source 가 아예 없으면 그 표는 정말 한쪽에만 있는
     것이다. `only_a` 의 표 `t` 에 대해(`only_b` 는 대칭):
 
-    1. `t.id` 가 상대의 ID 집합에 아예 없다 → 정말 한쪽에만 있다.
-    2. `t.id` 는 상대에 있지만 `t.source` 가 있고 상대의 source 집합에는
+    1. `t.source` 가 아예 없다 → **source 유무를 ID 유무보다 먼저 본다.**
+       source 가 없으면 ID 가 상대편에 있든 없든 "판별할 수 없다"는
+       참이므로 이 갈래가 맨 앞이다. `SpecTable.source` 는
+       `Optional[str]` 이라 재생성이 표를 새로 끼우며 `- source:` 줄을
+       빠뜨리면 여기로 떨어지는데, 그냥 "짝을 못 지었다"로만 찍으면
+       신규 표가 정렬 잡음처럼 읽힌다. ID 가 상대편에 있는지 여부는
+       이 줄 안에 함께 싣는다 — 예전에는 이 검사가 갈래 2 뒤에 있어서,
+       source 가 없어도 ID 가 상대 범위를 벗어나기만 하면 갈래 2("정말
+       한쪽에만 있다")로 잘못 단정됐다(실측: 같은 표 하나가 원본·재생성
+       양쪽에서 서로 다른 줄로 나오고 한쪽은 "재생성에만 있다"는 거짓
+       단정이었다).
+    2. `t.source` 는 있지만 `t.id` 가 상대의 ID 집합에 아예 없다 → 정말
+       한쪽에만 있다.
+    3. `t.id` 는 상대에 있지만 `t.source` 가 상대의 source 집합에는
        없다 → **관측한 사실만** 말한다: 이 source 가 상대 문서 어디에도
        없다는 것. 원인은 둘 중 하나일 수 있다 — 표가 정말 빠졌거나,
        source 가 잘못 옮겨졌거나(내용 자체는 상대에 다른 source 로
        멀쩡히 있을 수 있다). 어느 쪽인지 이 함수는 판정하지 않고, 상대에
        같은 ID 가 있다는 사실만 함께 싣는다.
-    3. `t.source` 가 아예 없다 → source 로는 판별할 수 없다는 사실
-       자체를 말한다. `SpecTable.source` 는 `Optional[str]` 이라 재생성이
-       표를 새로 끼우며 `- source:` 줄을 빠뜨리면 이 갈래로 떨어지는데,
-       그냥 "짝을 못 지었다"로만 찍으면 신규 표가 정렬 잡음처럼 읽힌다.
     4. 그 외(source 가 있고 상대편에도 있는데 짝짓기만 실패) → 진짜
        유무는 알 수 없고 그저 짝을 못 지은 것이다.
 
     **문구는 서로 부분 문자열이 되지 않는다.** 이전에는 "원본에만 있다"
     가 "원본에만 있는 표다"의 부분 문자열이라, 문구로 거르는 소비자가
-    한 갈래를 통째로 놓쳤다(`tests/test_lab_specdiff.py` 의 부분 문자열
+    한 갈래를 통째로 놓쳤다(`tests/test_lab_specdiff.py` 의 갈래 구별
     회귀 테스트 참고).
 
     `a_tables`/`b_tables` 는 `compare_specs` 가 이미 가진 원본·재생성의
@@ -304,26 +324,30 @@ def _table_diffs(pairs, only_a, only_b, a_tables, b_tables) -> list:
 
     out = []
     for t in sorted(only_a, key=lambda t: t.id):
-        if t.id not in b_ids:
+        if not t.source:
+            id_note = ("재생성에도 같은 ID 가 있다" if t.id in b_ids
+                       else "재생성에는 같은 ID 도 없다")
+            where = f"짝을 못 지었다 (source 가 없어 판별할 수 없다; {id_note})"
+        elif t.id not in b_ids:
             where = "원본에만 있다"
-        elif t.source and t.source not in b_sources:
+        elif t.source not in b_sources:
             where = (f"source {t.source!r} 가 재생성 어디에도 없다 "
                      "(표가 빠졌거나 source 가 잘못 옮겨졌을 수 있다). "
                      "재생성에도 같은 ID 가 있다")
-        elif not t.source:
-            where = "짝을 못 지었다 (source 가 없어 판별할 수 없다; 재생성에도 같은 ID 가 있다)"
         else:
             where = "짝을 못 지었다 (재생성에도 같은 ID 가 있다)"
         out.append(f"표 {t.id}: {where}")
     for t in sorted(only_b, key=lambda t: t.id):
-        if t.id not in a_ids:
+        if not t.source:
+            id_note = ("원본에도 같은 ID 가 있다" if t.id in a_ids
+                       else "원본에는 같은 ID 도 없다")
+            where = f"짝을 못 지었다 (source 가 없어 판별할 수 없다; {id_note})"
+        elif t.id not in a_ids:
             where = "재생성에만 있다"
-        elif t.source and t.source not in a_sources:
+        elif t.source not in a_sources:
             where = (f"source {t.source!r} 가 원본 어디에도 없다 "
                      "(표가 새로 추가됐거나 source 가 잘못 옮겨졌을 수 있다). "
                      "원본에도 같은 ID 가 있다")
-        elif not t.source:
-            where = "짝을 못 지었다 (source 가 없어 판별할 수 없다; 원본에도 같은 ID 가 있다)"
         else:
             where = "짝을 못 지었다 (원본에도 같은 ID 가 있다)"
         out.append(f"표 {t.id}: {where}")

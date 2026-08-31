@@ -151,10 +151,19 @@ def parse_spec(path) -> LabSpec:
 
     known = {t.id for t in tables}
     items = []
+    seen_items = set()
     for raw in front["items"]:
         for required in ("id", "title", "device", "ics", "tables"):
             if raw.get(required) is None:
                 raise SpecError(f"{path}: 항목 {raw.get('id')!r} 에 {required} 가 없습니다")
+        if raw["id"] in seen_items:
+            raise SpecError(
+                f"{path}: 항목 ID {raw['id']} 가 두 번 정의됐다. "
+                "ID 는 문서 전체에서 유일해야 한다 (`specdiff.compare_specs` 의 "
+                "`{i.id: i for i in items}` 가 나중 것만 남기고 앞 항목을 조용히 "
+                "지운다)"
+            )
+        seen_items.add(raw["id"])
         missing = [t for t in raw["tables"] if t not in known]
         if missing:
             raise SpecError(
