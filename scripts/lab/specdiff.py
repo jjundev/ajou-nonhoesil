@@ -72,7 +72,7 @@ def compare_specs(original, regenerated) -> list:
                   {i.id: i for i in b.items}, _ITEM_FIELDS)
 
     pairs, only_a, only_b = _pair_tables(a.tables, b.tables)
-    out += _table_diffs(pairs, only_a, only_b)
+    out += _table_diffs(pairs, only_a, only_b, a.tables, b.tables)
     return out
 
 
@@ -157,8 +157,19 @@ def _pair_tables(a_tables, b_tables):
     **`derived (...)` 도 키로 쓴다.** 처음엔 뺐는데, 이 코퍼스의 절반이
     derived 라 그러면 오정렬이 그대로 남는다 — 실험03 은 표 4개가 전부,
     실험05 는 6개 중 5개, 실험01 은 9개 중 5개다. 실측으로 실험01 에서
-    19건(셀 차이 8건)이 4건으로 줄었다. 식이 잘못 옮겨졌으면 그냥 ID
-    짝짓기로 떨어질 뿐이라 빼서 얻는 것이 없었다.
+    19건(셀 차이 8건)이 4건으로 줄었다.
+
+    식이 잘못 옮겨진 표는 **ID 짝짓기로 구제되지 않는다** — 상대 문서의
+    같은 ID 가 이미 (올바른 source 로) 다른 표와 짝지어져 있으면, 아래
+    2차 루프의 `t.id not in matched_b`(또는 `matched_a`) 조건에 걸려
+    정작 오기재된 그 표 자신은 끝까지 짝을 못 찾는다(실측: 실험01 을
+    밀고 `T3` 의 식을 오기재하면 `표 T3: 원본에만 있는 표다`,
+    `표 T4: 재생성에만 있는 표다` 로 나온다 — `_table_diffs` 참고). 소실은
+    아니지만("~에만 있는 표다"로 여전히 보고된다), 어느 표가 못 짝졌는지만
+    말할 뿐 무엇이 어떻게 틀렸는지(정확한 텍스트 차이)까지는 말해주지
+    않는다. `derived` 를 매칭 키에서 빼도 이 사각지대는 그대로였다 —
+    빼면 이 코퍼스 절반의 정상적인 밀림 정렬까지 함께 깨져 오정렬
+    소음만 늘어난다.
 
     source 가 없거나 한쪽 문서 안에서 중복이면 믿을 수 없으므로 쓰지
     않는다 — 그런 표는 ID 로 짝짓고, ID 매칭은 여전히 밀림에 취약하다.
@@ -199,24 +210,50 @@ def _pair_tables(a_tables, b_tables):
     return pairs, only_a, only_b
 
 
-def _table_diffs(pairs, only_a, only_b) -> list:
-    """짝지은 표는 필드·셀을 대조하고, 짝을 못 지은 표는 그렇게만 보고한다.
+def _table_diffs(pairs, only_a, only_b, a_tables, b_tables) -> list:
+    """짝지은 표는 필드·셀을 대조하고, 짝을 못 지은 표는 세 갈래로 나눠 보고한다.
 
-    **"한쪽에만 있다" 와 "짝을 못 지었다" 를 구별한다.** source 짝짓기가
-    원본 `Tx` 를 재생성 `Ty`(x≠y) 와 묶으면 원본 `Ty` 와 재생성 `Tx` 가
-    둘 다 짝을 잃는데, 그것을 "한쪽에만 있다" 로 찍으면 **양쪽 문서에 다
-    있는 ID 를 없다고 말하는 셈**이라 읽는 사람이 오독한다.
+    "한쪽에만 있다" 한 문구로는 **진짜 삭제/추가**(내용이 정말 한쪽에만
+    있음)와 **정렬 부작용**(source 짝짓기가 원본 `Tx` 를 재생성 `Ty`(x≠y)
+    와 묶어서 원본 `Ty` 와 재생성 `Tx` 가 둘 다 짝을 잃은 것)이 같은 말로
+    나온다. 갈리는 기준은 **`source` 가 상대 문서에 존재하는가** 다 —
+    `source` 는 그 표가 무엇에서 왔는지를 가리키는 좌표라 밀리지 않으므로,
+    상대 문서에 그 source 가 아예 없으면 그 표는 정말 한쪽에만 있는
+    것이다. `only_a` 의 표 `t` 에 대해(`only_b` 는 대칭):
+
+    1. `t.id` 가 상대의 ID 집합에 아예 없다 → 정말 한쪽에만 있다.
+    2. `t.id` 는 상대에 있지만 `t.source` 가 있고 상대의 source 집합에는
+       없다 → 상대에 같은 ID 로 **다른** 표가 있는 것이니, 이 표 자체는
+       역시 한쪽에만 있는 것이다(다만 ID 충돌을 함께 알린다).
+    3. 그 외(source 가 없거나, source 가 상대편에도 있는데 짝짓기만
+       실패) → 진짜 유무는 알 수 없고 그저 짝을 못 지은 것이다.
+
+    `a_tables`/`b_tables` 는 `compare_specs` 가 이미 가진 원본·재생성의
+    전체 표 목록이다 — `pairs`/`only_a`/`only_b` 에서 ID·source 집합을
+    다시 만들면 그 셋과 어긋날 때 메시지가 거짓말을 하므로, 여기서
+    새로 구하지 않고 그대로 받는다.
     """
-    a_ids = {t.id for t in only_a} | {p[0].id for p in pairs}
-    b_ids = {t.id for t in only_b} | {p[1].id for p in pairs}
+    b_ids = {t.id for t in b_tables}
+    b_sources = {t.source for t in b_tables if t.source}
+    a_ids = {t.id for t in a_tables}
+    a_sources = {t.source for t in a_tables if t.source}
+
     out = []
     for t in sorted(only_a, key=lambda t: t.id):
-        where = "짝을 못 지었다 (재생성에도 같은 ID 가 있다)" \
-            if t.id in b_ids else "원본에만 있다"
+        if t.id not in b_ids:
+            where = "원본에만 있다"
+        elif t.source and t.source not in b_sources:
+            where = "원본에만 있는 표다 (재생성에는 같은 ID 로 다른 표가 있다)"
+        else:
+            where = "짝을 못 지었다 (재생성에도 같은 ID 가 있다)"
         out.append(f"표 {t.id}: {where}")
     for t in sorted(only_b, key=lambda t: t.id):
-        where = "짝을 못 지었다 (원본에도 같은 ID 가 있다)" \
-            if t.id in a_ids else "재생성에만 있다"
+        if t.id not in a_ids:
+            where = "재생성에만 있다"
+        elif t.source and t.source not in a_sources:
+            where = "재생성에만 있는 표다 (원본에는 같은 ID 로 다른 표가 있다)"
+        else:
+            where = "짝을 못 지었다 (원본에도 같은 ID 가 있다)"
         out.append(f"표 {t.id}: {where}")
     for t_a, t_b in sorted(pairs, key=lambda p: p[0].id):
         label = t_a.id if t_a.id == t_b.id else f"{t_a.id}→{t_b.id}"

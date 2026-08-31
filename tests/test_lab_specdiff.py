@@ -140,13 +140,17 @@ class CompareSpecs(unittest.TestCase):
         self.assertFalse(any("행" in d for d in diffs), diffs)
         self.assertFalse(any("헤더" in d for d in diffs), diffs)
 
-        # 새로 끼운 표 자체는 정확히 한 번 보고된다. "재생성에만 있다" 가
-        # 아니라 "짝을 못 지었다" 다 — 원본에도 T2 라는 ID(D Latch with
-        # Enable, source 로 재생성 T3 과 짝지어진 다른 표)가 있어서,
-        # "재생성에만 있다" 라고 하면 양쪽에 다 있는 ID 를 없다고 말하는
-        # 셈이기 때문이다(C2).
+        # 새로 끼운 표 자체는 정확히 한 번 보고된다. 그냥 "재생성에만
+        # 있다" 는 아니다 — 원본에도 T2 라는 ID(D Latch with Enable,
+        # source 로 재생성 T3 과 짝지어진 다른 표)가 있기 때문이다. 하지만
+        # 새로 끼운 표의 source(manual:p5)는 원본 어디에도 없으므로(원본은
+        # p7~p11 뿐이다) 그냥 "짝을 못 지었다" 도 아니다 — 정말 원본에는
+        # 없는 표라는 사실 자체는 여전히 알려야 한다. 그래서 세 갈래 중
+        # 2번("~에만 있는 표다, 상대에는 같은 ID로 다른 표가 있다")으로
+        # 보고된다.
         table_report = [
-            d for d in diffs if d.startswith("표 T2:") and "짝을 못 지었다" in d
+            d for d in diffs
+            if d.startswith("표 T2:") and "재생성에만 있는 표다" in d
         ]
         self.assertEqual(len(table_report), 1, diffs)
 
@@ -173,7 +177,12 @@ class CompareSpecs(unittest.TestCase):
                 line = re.sub(r"T(\d+)", bump, line)
             out.append(line)
         # 밀고 나면 `T2` 를 가리키는 항목이 없다 — 첫 항목에 붙인다.
-        # 고아 표는 파서가 error 로 막는다.
+        # 이건 파싱을 위해 꼭 필요한 것은 아니다(`parse_spec` 은 *없는
+        # 표를 가리키는 항목* 만 막지, 아무 항목도 안 가리키는 고아 표는
+        # 그냥 통과시킨다 — `scripts/lab/spec_parser.py` 의 `가 없는 표`
+        # 예외 참고). 그래도 재생성물이 표를 정당하게 하나 더 실을 때는
+        # 보통 그 표를 가리키는 항목도 함께 생기므로, 붙여야 시나리오가
+        # 현실적이다.
         text = "\n".join(out).replace("tables: [", "tables: [T2, ", 1)
         text += ("\n## T2 · 끼운 참조표\n\n- kind: truth-table\n"
                  "- encoding: 0/1\n- source: manual:p99\n- role: reference\n\n"
@@ -194,17 +203,93 @@ class CompareSpecs(unittest.TestCase):
 
     def test_짝을_못_지은_표는_한쪽에만_있다고_말하지_않는다(self):
         # source 짝짓기가 원본 Tx 를 재생성 Ty(x≠y) 와 묶으면, 원본 Ty 와
-        # 재생성 Tx 가 둘 다 짝을 잃는다. 그것을 "한쪽에만 있다" 로 찍으면
-        # 양쪽에 있는 ID 를 없다고 말하는 셈이라 읽는 사람이 오독한다.
+        # 재생성 Tx 가 둘 다 짝을 잃는다. 밀림으로 ID 만 어긋난 표들은
+        # 어느 쪽으로도(3갈래 중 무엇으로도) "이 표가 상대에 없다" 는
+        # 취지의 줄로 보고되면 안 된다 — 전부 source 로 정상 짝지어지기
+        # 때문이다. 유일한 예외는 `_shifted` 가 새로 끼워 넣는 T2 다 —
+        # 그 표의 source(`manual:p99`)는 원본 어디에도 없는 **정말 새
+        # 표**라서(A 의 2번 갈래로 떨어진다: "재생성에만 있는 표다"),
+        # 이 표만 빼고 나머지 T1·T3~T10 전부를 통틀어 검사한다. 옛
+        # 필터(`d.startswith("표 T2:")`)처럼 검사 범위 자체를 T2 하나로
+        # 좁히면 T4·T5 가 잘못 짝을 잃어도 못 잡으므로 쓰지 않는다.
         target = self._shifted(self.WEEK2, 2, 9)
         diffs = compare_specs(self.WEEK2, target)
-        both = {"T" + str(n) for n in range(1, 10)}
-        for d in diffs:
-            if "원본에만 있다" in d or "재생성에만 있다" in d:
-                tid = d.split()[1].rstrip(":")
-                self.assertNotIn(
-                    tid, both,
-                    f"양쪽 문서에 다 있는 ID 를 한쪽에만 있다고 했다: {d}")
+        # `_table_diffs` 가 짝을 못 지은 표에 내는 줄은 항상
+        # "표 {id}: ..." 형태다(필드 차이 줄은 "표 {id} {field}: ..." 로
+        # ID 뒤에 콜론이 바로 오지 않는다) — 그 형태만 골라낸다.
+        unmatched = [d for d in diffs if re.match(r"^표 T\d+(?:→T\d+)?: ", d)]
+        others = [d for d in unmatched if not d.startswith("표 T2:")]
+        self.assertEqual(
+            others, [],
+            f"밀림으로 ID 만 어긋난 표가 상대에 없다는 취지로 잘못 보고됐다: {others}")
+        self.assertEqual(len(unmatched), 1, unmatched)
+        self.assertIn("재생성에만 있는 표다", unmatched[0])
+
+    def _table_removed(self, source, tid):
+        """`source` 명세에서 표 `tid` 블록을 통째로 지우고 뒤 ID 를 하나씩
+        당긴 사본. `_shifted` 와 정반대 상황 — 표가 하나 더 끼어드는 게
+        아니라 **정말로 사라지는** 것을 재현한다.
+        """
+        n = int(tid[1:])
+        lines = source.read_text(encoding="utf-8").split("\n")
+        start = next(i for i, l in enumerate(lines) if l.startswith(f"## {tid} "))
+        end = next(
+            (i for i in range(start + 1, len(lines)) if lines[i].startswith("## T")),
+            len(lines),
+        )
+        del lines[start:end]
+
+        def bump(m):
+            k = int(m.group(1))
+            return f"T{k - 1}" if k > n else m.group(0)
+
+        out = []
+        for line in lines:
+            if line.lstrip().startswith("tables:") or line.startswith("## T"):
+                line = re.sub(r"T(\d+)", bump, line)
+            out.append(line)
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text("\n".join(out), encoding="utf-8")
+        return target
+
+    def test_표가_통째로_지워지면_짝을_못_지은_것이_아니라_원본에만_있다고_말한다(self):
+        # Important 1 회귀. 실험06 에서 T2(D Latch with Enable, source
+        # manual:p8) 블록을 통째로 지우고 뒤 ID(T3~T5)를 하나씩 당기면,
+        # 밀린 표들(원본 T3→사본 T2 등)은 source 로 정상 짝지어져서
+        # 사본에도 우연히 "T2" 라는 ID 가 있다. ID 만 보면 이건 A 의
+        # 3번 갈래("짝을 못 지었다")처럼 보이기 쉽지만, 원본 T2 의 내용
+        # (D Latch with Enable, source manual:p8)은 사본 어디에도 없으므로
+        # source 기준으로는 2번 갈래("원본에만 있는 표다")가 맞다. 이걸
+        # 3번 갈래로 찍으면 진짜 삭제가 정렬 잡음처럼 읽힌다.
+        target = self._table_removed(WEEK6, "T2")
+        diffs = compare_specs(WEEK6, target)
+        hit = [d for d in diffs if d.startswith("표 T2:")]
+        self.assertEqual(len(hit), 1, diffs)
+        self.assertIn("원본에만 있는 표다", hit[0])
+        self.assertNotIn("짝을 못 지었다", hit[0])
+
+    def test_derived_경로에서_밀림_속_진짜_오류가_묻히지_않는다(self):
+        # Important 3. 기존 묵음 검증(브리프 Step 6·7)은 전부 실험06 위에서
+        # 도는데, 실험06 의 표 다섯은 전부 `manual:pN` 이라 derived 키
+        # 경로를 한 번도 지나지 않는다. 이 테스트는 실험01(9개 중 5개가
+        # derived)을 `_shifted(2, 9)` 로 밀고, 밀려서 T4 가 되는 표
+        # (원래 T3, source `derived (Y = (A·B·C)')`, 3-input NAND)의
+        # 마지막 행 Y 값을 0→1 로 바꿔 진짜 오류를 심는다. source 는
+        # 안 건드렸으니 T3↔T4 짝짓기는 그대로 유지돼야 하고, 오정렬
+        # 소음이 사라졌다고 해서 이 셀 오류까지 함께 묻히면 안 된다.
+        target = self._shifted(self.WEEK2, 2, 9)
+        text = target.read_text(encoding="utf-8")
+        old, new = "| 1 | 1 | 1 | 0 |", "| 1 | 1 | 1 | 1 |"
+        self.assertEqual(
+            text.count(old), 2,
+            f"픽스처가 바뀌었다 — {old!r} 가 두 번 나와야 한다(NAND·NOR 표 각각 한 번)")
+        target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+        diffs = compare_specs(self.WEEK2, target)
+        hit = [d for d in diffs if d.startswith("표 T3→T4") and "Y" in d]
+        self.assertEqual(len(hit), 1, diffs)
+        self.assertIn("'0'", hit[0])
+        self.assertIn("'1'", hit[0])
 
 
 class UncoveredTablesTest(unittest.TestCase):
