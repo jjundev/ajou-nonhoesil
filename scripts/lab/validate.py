@@ -16,6 +16,15 @@ from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
+# 관측 결과에 **방향을 붙이는** 문장. "~하면 ~를 의심한다", "~보다 크게
+# 나오면 ~다". 교안에 원본이 없어 대조할 곳이 없고, 방향이 거꾸로여도
+# 문법·서식 검사는 전부 통과하며 읽는 사람에게는 오히려 친절해 보인다.
+# 실험02 명세가 이 형태로 두 번 거꾸로였고 둘 다 제출본까지 갔다.
+#
+# 실측으로 폭을 맞췄다 — 살아 있는 문서 10개에 33건, 최대 9건. 넓히면
+# 목록이 못 읽을 만큼 길어지고, 좁히면(`나온다` 를 빼면) 실험02 의 원래
+# 오문 하나가 빠진다.
+_DIAGNOSTIC = re.compile(r"의심|나오면|나온다|보이면|어긋나면|빠뜨리면")
 
 _MARKS = {"error": "✗", "warn": "!", "info": "ℹ"}
 
@@ -170,10 +179,29 @@ def check_orphan_tables(spec) -> list:
             for t in spec.tables if t.id not in referenced]
 
 
+def check_diagnostic_claims(text, where) -> list:
+    """방향을 붙인 문장을 `info` 로 **센다. 판정하지 않는다.**
+
+    방향이 맞는지는 그 절차의 산술을 실제로 굴려 봐야 알 수 있고 그건 코드가
+    못 한다. 여기서 하는 일은 "굴려 봐야 할 문장이 여기 N개 있다" 를 보이게
+    만드는 것뿐이다 — 그래서 `error` 가 아니라 `info` 다. `error` 로 올리면
+    방향이 맞는 문장까지 고치게 된다.
+    """
+    return [Finding("info", f"{where}:{i}",
+                    f"방향을 붙인 문장이다 — 절차의 산술로 굴려 봤는가: "
+                    f"{line.strip()[:60]}")
+            for i, line in enumerate(text.split("\n"), start=1)
+            if _DIAGNOSTIC.search(line)]
+
+
 def validate_spec(spec) -> list:
+    # 진단 문장 info 는 **맨 끝**에 붙인다 — 앞에 끼우면 `findings[0]` 이
+    # error 라고 단언하는 검사들이 조용히 깨진다.
     return (check_table_integrity(spec) + check_metadata(spec)
             + check_row_count(spec) + check_boolean(spec)
-            + check_orphan_tables(spec))
+            + check_orphan_tables(spec)
+            + check_diagnostic_claims(
+                spec.path.read_text(encoding="utf-8"), spec.path.name))
 
 
 def check_folder_convention(spec_path, spec) -> list:
@@ -217,6 +245,10 @@ def check_netlist(netlist_path, spec) -> list:
             if ic not in text:
                 out.append(Finding("warn", path.name,
                     f"항목 {item.id} 의 IC {ic} 가 netlist 에 없다"))
+    # 결선도 쪽이 명세보다 진단 문장이 많다 (실험10: 9 대 1). 명세만
+    # 검사하면 절반을 놓친다. **끝에** 붙인다 — 파일 부재 error 는 위에서
+    # 이미 돌아갔고, 여기 info 가 앞에 끼면 `findings[0]` 단언이 깨진다.
+    out += check_diagnostic_claims(text, path.name)
     return out
 
 

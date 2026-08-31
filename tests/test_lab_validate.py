@@ -287,6 +287,45 @@ class TestNetlist(unittest.TestCase):
         findings = validate.check_netlist(ROOT / "없는파일.md", spec)
         self.assertEqual(findings[0].level, "error")
 
+    def test_info_가_error_앞으로_끼어들지_않는다(self):
+        # `test_missing_file_is_an_error` 가 `findings[0].level` 을 본다.
+        # 진단 문장 info 를 앞에 붙이면 그 테스트가 조용히 깨진다.
+        spec = parse_spec(WEEK2_SPEC)
+        findings = validate.check_netlist(
+            self._netlist("값이 크게 나오면 의심한다\n"), spec)
+        self.assertEqual(findings[0].level, "error")   # VCC 누락
+        self.assertEqual(findings[-1].level, "info")
+
+
+class TestDiagnosticClaims(unittest.TestCase):
+    """방향을 붙인 문장을 센다. **판정하지 않는다** — 방향이 맞는지는
+    절차의 산술을 굴려 봐야 알고 그건 코드가 못 한다."""
+
+    def test_방향을_붙인_줄을_info_로_센다(self):
+        findings = validate.check_diagnostic_claims(
+            "값이 크게 나오면 배선을 의심한다.\n평범한 서술이다.\n", "x.md")
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].level, "info")
+        self.assertEqual(findings[0].where, "x.md:1")
+
+    def test_error_나_warn_으로_올리지_않는다(self):
+        # 코드가 판정하면 방향이 맞는 문장까지 고치게 된다.
+        findings = validate.check_diagnostic_claims("의심한다\n", "x.md")
+        self.assertEqual([f.level for f in findings], ["info"])
+
+    def test_실험02_명세에서_실제로_잡힌다(self):
+        # 이 부류로 두 번 거꾸로였던 문서다. 목록이 비면 검사가 무의미하다.
+        spec = parse_spec(ROOT / "실험02/체크리스트/명세.md")
+        infos = [f for f in validate.validate_spec(spec) if f.level == "info"]
+        self.assertTrue(infos, "실험02 명세에서 한 건도 안 잡혔다")
+
+    def test_결선도에도_건다(self):
+        # 결선도 쪽이 명세보다 많다 (실험10: 9 대 1).
+        spec = parse_spec(ROOT / "실험10/체크리스트/명세.md")
+        infos = [f for f in validate.check_netlist(
+            ROOT / "실험10/결선도/netlist.md", spec) if f.level == "info"]
+        self.assertTrue(infos, "실험10 결선도에서 한 건도 안 잡혔다")
+
 
 class TestReportSections(unittest.TestCase):
     def test_missing_section_from_the_format_file(self):
