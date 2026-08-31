@@ -271,6 +271,18 @@ class SkillDocInvariants(unittest.TestCase):
         rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
         self.assertIn(17, rules)
 
+    def test_report_paragraphs_are_not_hard_wrapped(self):
+        # 검사기(`check_report_wrapping`)만 알고 스킬 문서는 모르던 규칙이다.
+        # 격리 재생성에서 118곳이 접힌 채 나왔다 — 저장소의 다른 마크다운이
+        # 전부 76열로 접혀 있어 에이전트가 그 관례를 따랐고, 문서에 말릴
+        # 근거가 없었다. 검사가 뒤에서 잡았지만 예방은 못 했다.
+        rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
+        self.assertIn(18, rules)
+        self.assertIn("보고서 문단을 줄로 쪼개지 않는다 — 한 문단이 한 줄이다",
+                      self.flat["예보"])
+        # 무엇을 접지 '않는' 대상인지까지 적혀야 표까지 이어 붙이지 않는다.
+        self.assertIn("표 행·헤딩·`<empty-block/>` 같은 블록", self.flat["예보"])
+
     def test_worked_subsection_example_matches_the_approved_report(self):
         # 규칙 17 의 예시 숫자를 살아 있는 정본에서 실제로 세어 대조한다.
         # 노션 baseline 이 아니라 정본을 읽는다 — baseline 은 판본이 바뀌면
