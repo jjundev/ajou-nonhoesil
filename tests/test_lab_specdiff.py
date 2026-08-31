@@ -101,6 +101,51 @@ class CompareSpecs(unittest.TestCase):
         backward = compare_specs(WEEK12, WEEK6)
         self.assertTrue(any("재생성에만 있다" in d for d in backward), backward)
 
+    def test_표_삽입으로_ID가_밀리면_셀_차이_대신_ID_불일치를_먼저_알린다(self):
+        # 실측(실험06 재생성 2건): 교안 p5 이론표를 T2 로 끼워 넣으면 그
+        # 뒤 T2~T5 가 전부 T3~T6 로 밀린다. ID 로만 짝지으면 원본 T3
+        # (교안 p9)과 재생성 T3(실은 밀린 옛 T2, 교안 p8)이 서로 다른
+        # 표인데 짝지어져, 셀 내용이 완전히 같은데도 차이가 쏟아진다
+        # (실측 19건). 이 테스트는 그 상황을 실험06 명세를 직접 변형해
+        # 재현한다 — 손으로 만든 픽스처가 아니다.
+        text = WEEK6.read_text(encoding="utf-8")
+        for old, new in (("T5", "T6"), ("T4", "T5"), ("T3", "T4"), ("T2", "T3")):
+            self.assertIn(old, text, f"픽스처가 바뀌었다 — {old!r} 가 없다")
+            text = text.replace(old, new)
+        marker = "## T3 · D Latch with Enable 특성표"
+        self.assertIn(marker, text, "표 삽입 지점을 못 찾았다 — 픽스처가 바뀌었다")
+        inserted = (
+            "## T2 · 래치·플립플롭 개념 정리\n\n"
+            "- kind: truth-table\n"
+            "- encoding: 0/1\n"
+            "- source: manual:p5\n"
+            "- role: reference\n\n"
+            "| 구분 | 설명 |\n"
+            "|---|---|\n"
+            "| 래치 | 레벨 인에이블 |\n\n"
+        )
+        text = text.replace(marker, inserted + marker, 1)
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(text, encoding="utf-8")
+
+        diffs = compare_specs(WEEK6, target)
+
+        # 1. 표 집합이 다르다는 사실 자체를 먼저, 눈에 띄게 알린다.
+        self.assertTrue(diffs, "차이가 아예 없다 — 표가 하나 늘었는데 이상하다")
+        self.assertIn("ID", diffs[0])
+        self.assertIn("표", diffs[0])
+
+        # 2. 오정렬된 짝의 셀 차이를 쏟아내지 않는다 — 내용은 실제로 같다.
+        self.assertFalse(any("행" in d for d in diffs), diffs)
+        self.assertFalse(any("헤더" in d for d in diffs), diffs)
+
+        # 새로 끼운 표 자체는 "재생성에만 있다"로만, 정확히 한 번 보고된다.
+        table_onesided = [
+            d for d in diffs if d.startswith("표") and "재생성에만 있다" in d
+        ]
+        self.assertEqual(len(table_onesided), 1, diffs)
+        self.assertIn("T2", table_onesided[0])
+
 
 class UncoveredTablesTest(unittest.TestCase):
     """`uncovered_tables` 가 `compare_specs` 의 사각지대를 실제로 짚는지 본다.

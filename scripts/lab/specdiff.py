@@ -15,6 +15,8 @@
 뿐이므로, 그 사각지대를 사람에게 알리는 `uncovered_tables` 를 따로 둔다.
 """
 
+from collections import Counter
+
 from .spec_parser import parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
@@ -41,6 +43,17 @@ def compare_specs(original, regenerated) -> list:
     a, b = parse_spec(original), parse_spec(regenerated)
     out = []
 
+    # 표 ID 집합이 다르면 다른 무엇보다 먼저 알린다 — 표 추가·삭제로
+    # 이후 ID 가 밀리면 순서 상관없이 아래 표 대조 결과 전체가 오정렬을
+    # 의심해야 하는 상태이기 때문이다. 아래에서 실제 짝짓기는 가능하면
+    # `source` 로 하지만(밀리지 않는다), 이 알림 자체는 ID 집합만으로
+    # 낸다 — source 로 완전히 구제되는 경우에도 "표가 추가·삭제됐다"는
+    # 사실 자체는 읽는 사람에게 여전히 유의미하다.
+    ids_a = {t.id for t in a.tables}
+    ids_b = {t.id for t in b.tables}
+    if ids_a != ids_b:
+        out.append(_table_id_mismatch_notice(ids_a, ids_b))
+
     for field in ("week", "experiment"):
         x, y = getattr(a, field), getattr(b, field)
         if x != y:
@@ -57,12 +70,9 @@ def compare_specs(original, regenerated) -> list:
 
     out += _by_id("항목", {i.id: i for i in a.items},
                   {i.id: i for i in b.items}, _ITEM_FIELDS)
-    out += _by_id("표", {t.id: t for t in a.tables},
-                  {t.id: t for t in b.tables}, _TABLE_FIELDS)
 
-    shared = sorted({t.id for t in a.tables} & {t.id for t in b.tables})
-    for tid in shared:
-        out += _cells(tid, a.table(tid), b.table(tid))
+    pairs, only_a, only_b = _pair_tables(a.tables, b.tables)
+    out += _table_diffs(pairs, only_a, only_b)
     return out
 
 
@@ -109,6 +119,99 @@ def _by_id(label, av, bv, fields) -> list:
                 same = x == y
             if not same:
                 out.append(f"{label} {key} {field}: 원본 {x!r} / 재생성 {y!r}")
+    return out
+
+
+def _table_id_mismatch_notice(ids_a, ids_b) -> str:
+    """표 ID 집합이 다르다는 사실을, 다른 어떤 표 차이보다도 먼저 알린다.
+
+    실측: 재생성이 교안의 표를 하나 더 정당하게 실으면(예: 이론표를 `T2`
+    로 끼워 넣음) 그 뒤 모든 표의 ID 가 한 칸씩 밀린다. ID 만 보고 짝지으면
+    원본 `T3` 과 재생성 `T3` 이 서로 다른 표인데도 짝지어져, 셀 내용이
+    완전히 같아도 차이가 쏟아진다 — 실측 19건, 그중 진짜 내용 오류는
+    0건이었다. 이 함수는 그 오정렬 가능성 자체를 먼저 경고해, 아래에
+    나오는 표 관련 차이를 읽는 사람이 "ID 정렬이 어긋났을 수 있다"는
+    전제를 깔고 읽게 한다.
+    """
+    only_a = sorted(ids_a - ids_b)
+    only_b = sorted(ids_b - ids_a)
+    return (
+        f"[표 ID 집합이 다르다] 원본에만 있는 ID {only_a} / "
+        f"재생성에만 있는 ID {only_b} — 표가 추가·삭제되면 그 뒤 ID 가 "
+        "전부 밀릴 수 있다. 아래 표 대조는 `source` 가 양쪽에서 유일하게 "
+        "일치하는 표를 먼저 그것으로 짝짓고, source 로 못 짝지은 나머지만 "
+        "ID 로 짝졌다 — ID 로 짝진 표는 실제로는 다른 표를 비교한 것일 "
+        "수 있으니 먼저 의심하라."
+    )
+
+
+def _pair_tables(a_tables, b_tables):
+    """원본과 재생성의 표를 짝짓는다. 표는 최대 한 짝에만 쓰인다.
+
+    ID 는 표가 추가·삭제되면 그 뒤 전부 밀린다(`_table_id_mismatch_notice`
+    참고) — 이 코퍼스에서 실제로 일어났다. `source`(예: `manual:p9`)는
+    교안 쪽 좌표라 밀리지 않으므로, 두 문서 모두에서 유일하게 등장하는
+    비-`derived` source 를 우선 매칭 키로 쓴다. `source` 가 없거나
+    `derived(...)`(부울식에서 유도)이거나 한쪽 문서 안에서 중복이면
+    믿을 수 없으므로 쓰지 않는다 — 그런 표는 기존처럼 ID 로 짝짓는다.
+    ID 매칭은 여전히 밀림에 취약하다는 한계가 있다.
+
+    반환: `(짝 목록[(원본표, 재생성표), ...], 원본에만 있는 표 목록,
+    재생성에만 있는 표 목록)`.
+    """
+    def usable_source_counts(tables):
+        return Counter(
+            t.source for t in tables
+            if t.source and not t.source.strip().startswith("derived")
+        )
+
+    a_src_counts = usable_source_counts(a_tables)
+    b_src_counts = usable_source_counts(b_tables)
+
+    pairs = []
+    matched_a, matched_b = set(), set()
+
+    # 1차: source 가 양쪽에서 유일하게 일치하는 표부터 짝짓는다.
+    for t in a_tables:
+        src = t.source
+        if (src and not src.strip().startswith("derived")
+                and a_src_counts[src] == 1 and b_src_counts.get(src) == 1):
+            match = next(u for u in b_tables if u.source == src)
+            pairs.append((t, match))
+            matched_a.add(t.id)
+            matched_b.add(match.id)
+
+    # 2차: source 로 못 짝지은 나머지는 ID 로 짝짓는다(기존 방식).
+    b_by_id = {t.id: t for t in b_tables}
+    for t in a_tables:
+        if t.id in matched_a:
+            continue
+        if t.id in b_by_id and t.id not in matched_b:
+            pairs.append((t, b_by_id[t.id]))
+            matched_a.add(t.id)
+            matched_b.add(t.id)
+
+    only_a = [t for t in a_tables if t.id not in matched_a]
+    only_b = [t for t in b_tables if t.id not in matched_b]
+    return pairs, only_a, only_b
+
+
+def _table_diffs(pairs, only_a, only_b) -> list:
+    """짝지은 표는 필드·셀을 대조하고, 한쪽에만 있는 표는 그렇게만 보고한다.
+
+    `_pair_tables` 가 이미 오정렬을 최대한 피해 짝지었으므로, 여기서는
+    짝진 쌍의 셀을 그대로 대조해도 안전하다 — 오정렬된 짝을 비교해 소음을
+    내는 문제는 짝짓기 단계에서 해결됐다.
+    """
+    out = [f"표 {t.id}: 원본에만 있다" for t in sorted(only_a, key=lambda t: t.id)]
+    out += [f"표 {t.id}: 재생성에만 있다" for t in sorted(only_b, key=lambda t: t.id)]
+    for t_a, t_b in sorted(pairs, key=lambda p: p[0].id):
+        label = t_a.id if t_a.id == t_b.id else f"{t_a.id}→{t_b.id}"
+        for field in _TABLE_FIELDS:
+            x, y = getattr(t_a, field), getattr(t_b, field)
+            if x != y:
+                out.append(f"표 {label} {field}: 원본 {x!r} / 재생성 {y!r}")
+        out += _cells(label, t_a, t_b)
     return out
 
 
