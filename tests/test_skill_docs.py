@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
 REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
+DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 CANON = ROOT / "실험01/output/실험01_예비보고서.md"
 
@@ -27,19 +28,27 @@ CANON = ROOT / "실험01/output/실험01_예비보고서.md"
 # `explain-lab-preview` 는 `## 0.`~`## 8.` 로 자기 절을 번호 매기고 `§0`~`§8` 로
 # 참조하며(21건), `sync-report-to-notion` 은 단계가 `## 실행 절차` 가 아니라
 # `## push`·`## pull` 안에 산다(7건). 거짓 경보를 내는 검사는 없느니만 못하다.
-# 편입은 여기 한 줄로 **시작**하지만 그것으로 끝나지 않는다 —
-# `test_every_skill_passes_item_count_to_the_section_check` 가 모든 문서에
-# `check_report_sections(` 호출을 요구하는데, 그 호출을 가진 SKILL.md 는
-# 저장소에 이 셋뿐이다. 없는 문서를 넣으면 그 테스트가 곧바로 깨진다.
+# `DOCS` 편입과 `check_report_sections` 호출 여부는 별개다 — 상호참조를 보는
+# 목록(`DOCS`)과 그 호출부를 보는 목록(`REPORT_SECTION_DOCS`)이 갈려 있다.
+# `draft-lab-spec` 처럼 보고서를 만들지 않는 문서를 `DOCS` 에 넣어도
+# `REPORT_SECTION_DOCS` 에 넣지 않으면 item_count 검사는 그 문서를 보지 않는다.
 DOCS = {
     "예보": (PRE, ("절대 규칙", "실행 절차")),
     "결과": (RESULT, ("절대 규칙", "실행 절차")),
     "리뷰": (REVIEW, ("실행 절차",)),
+    "명세": (DRAFT, ("절대 규칙", "실행 절차")),
 }
 
 # 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
 # ⑤ 는 보고서를 **검사**하는 스킬이라 그 규칙들을 갖지 않는다.
 REPORT_DOCS = ("예보", "결과")
+
+# `check_report_sections` 를 실제로 부르는 스킬. **`DOCS` 전체가 아니다** —
+# `draft-lab-spec` 은 명세를 만들고 보고서를 만들지 않으므로 그 호출을
+# 갖지 않는다. 이 분리 없이 `DOCS` 에 넣으면
+# `test_every_skill_passes_item_count_to_the_section_check` 가 곧바로 깨진다.
+# `DOCS` 는 상호참조를 보는 목록이고, 이쪽은 호출부를 보는 목록이다.
+REPORT_SECTION_DOCS = ("예보", "결과", "리뷰")
 
 
 def sections(text):
@@ -313,9 +322,9 @@ class SkillDocInvariants(unittest.TestCase):
     def test_every_skill_passes_item_count_to_the_section_check(self):
         # item_count 없이 부르면 per-item 반복 횟수 검사가 통째로 생략된다.
         # ⑤ 도 같은 인자를 넘겨야 한다 — 안 그러면 같은 보고서를 두 기준으로 잰다.
-        for name, text in self.docs.items():
+        for name in REPORT_SECTION_DOCS:
             with self.subTest(name):
-                calls = call_arguments(text, "check_report_sections")
+                calls = call_arguments(self.docs[name], "check_report_sections")
                 self.assertTrue(calls, "호출부가 없다")
                 for call in calls:
                     self.assertIn("item_count", call)
@@ -397,6 +406,16 @@ class SkillDocInvariants(unittest.TestCase):
         # 키만 보면 `DOCS["리뷰"] = (REVIEW, ())` 로 바꿔도 통과하면서 ⑤ 의
         # 상호참조 검사가 통째로 무음이 된다. 선언한 절이 있는지까지 본다.
         self.assertTrue(DOCS["리뷰"][1], DOCS["리뷰"])
+
+    def test_the_spec_producer_is_covered_by_the_net(self):
+        # ⑨ 는 저장소에서 명세를 **만드는** 유일한 스킬이다. 소비자 여덟이
+        # 전부 그 산출물에 기대므로, 죽은 상호참조가 여기 생기면 그 아래가
+        # 전부 흔들린다.
+        self.assertIn("명세", DOCS)
+        self.assertTrue(DOCS["명세"][1], DOCS["명세"])
+        # 보고서를 만들지 않으므로 `check_report_sections` 를 부르지 않는다.
+        # 이 분리 없이 `DOCS` 에 넣으면 아래 item_count 테스트가 깨진다.
+        self.assertNotIn("명세", REPORT_SECTION_DOCS)
 
     def test_the_upload_step_passes_the_versioned_title(self):
         # 사용자는 노션 사이드바에서 PDF 를 내보내 제출한다. 제목이 전부 같으면
