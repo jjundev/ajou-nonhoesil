@@ -190,6 +190,16 @@ class TestErrors(unittest.TestCase):
             parse_spec(self._broken("## T2 · ", "## T1 · "))
         self.assertIn("T1", str(ctx.exception))
 
+    def test_duplicate_column_name_raises(self):
+        """실물이 있다 — 실험3 반감산기 헤더가 `A B D B` 다(출력 borrow 가
+        입력 `B` 와 이름이 같다). `header.index()` 가 첫 번째만 주므로
+        역검산이 입력 열을 출력으로 보고 **표를 틀리게 고치라는** error 를
+        낸다. 중복 표 ID 를 막는 것과 같은 이유다."""
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(self._broken("| 핀6 | 핀4 |", "| 7405 핀8 | 핀4 |"))
+        self.assertIn("7405 핀8", str(ctx.exception))
+        self.assertIn("두 번", str(ctx.exception))
+
 
 class TestSemanticDefectsStaySilent(unittest.TestCase):
     """이 Task 의 핵심 설계다 — 파서가 의미 결함에 예외를 던지면 반쯤 망가진

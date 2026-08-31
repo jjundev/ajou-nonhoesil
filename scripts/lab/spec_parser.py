@@ -6,6 +6,7 @@
 """
 
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -105,6 +106,15 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         if not found:
             raise SpecError(f"{path}: {table_id}({kind}) 에 마크다운 표가 없습니다")
         header, rows, line = found[0].header, found[0].rows, found[0].line
+    dup = sorted(c for c, n in Counter(header).items() if n > 1)
+    if dup:
+        raise SpecError(
+            f"{path}: {table_id} 의 헤더에 같은 이름의 열이 두 번 있다: {dup}. "
+            "`header.index()` 가 조용히 첫 번째만 주므로 역검산이 엉뚱한 열을 "
+            "본다 — 교안이 입력과 출력에 같은 글자를 쓰는 실물이 있다"
+            "(실험3 반감산기 `A B D B`). 출력 쪽 이름을 구분해 적고, 그 자리에 "
+            "교안 표기를 밝힌다"
+        )
     return SpecTable(
         id=table_id, title=title, kind=kind,
         encoding=attrs.get("encoding"), source=attrs.get("source"),
