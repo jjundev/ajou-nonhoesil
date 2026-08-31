@@ -15,9 +15,23 @@
 
 ```bash
 git worktree add --detach <경로> HEAD
+rm -rf <경로>/docs/verify <경로>/docs/plans          # 답안지를 시험장에서 뺀다
 # 필요하면 대상 산출물을 지운다
 git worktree remove --force <경로>
 ```
+
+**`docs/verify/` 를 지우는 것이 선택이 아니다.** 이 파일이 worktree 안에
+있으면 격리 에이전트가 저장소를 뒤지다 자기 합격 조건을 읽는다 — 2026-08-31
+회차에서 실제로 둘이 그렇게 했다고 보고했다. 그 상태의 합격은 스킬이
+아니라 이 문서를 따른 결과라 아무것도 증명하지 않는다.
+
+**답안지가 이 파일 하나뿐이라고 가정하지 마라.**
+`docs/plans/2026-08-31-검증기계-신뢰회복.md` 와
+`docs/plans/2026-08-31-스킬-실행-검증.md` 에도 V1~V6 시나리오의 합격
+조건이 표와 문장으로 그대로 들어 있다 — `docs/verify/` 만 지우고
+`docs/plans/` 를 남기면 여전히 답안지를 넘긴 것이다. 스킬 절차
+(`.claude/skills/draft-lab-spec/SKILL.md`)는 `docs/plans/` 를 참조하지
+않으므로, 지워도 스킬 실행에는 지장이 없다.
 
 **worktree 안에서 `unittest discover` 를 돌리지 않는다.**
 `test_lab_spec_parser.py`·`test_lab_md.py`·`test_lab_record.py`·
@@ -44,6 +58,8 @@ worktree 에서는 스킬과 무관한 실패가 난다.
   픽스처가 없어 무관한 실패가 난다. 스킬 절차가 지정하는 표적 검증
   명령만 쓴다.
 - `git commit` / `git add` / 브랜치 조작을 하지 마라.
+- `docs/verify/` 를 읽지 마라. 이 시험의 합격 조건이 거기 있다.
+- `docs/plans/` 를 읽지 마라. 이 시험의 합격 조건이 거기에도 있다.
 
 환경: `pytest` 없다. 파이썬은 `zsh -c 'PYTHONPATH=. python3 ...'` 로
 돌린다. `pdftotext`·`pdftoppm` 은 `/opt/homebrew/bin/` 에 있다.
@@ -203,7 +219,18 @@ worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므
 
 인자: `9주차 명세를 만들어라`
 
-합격 조건: `git status --porcelain` 공란 — **폴더도 만들지 않아야 한다.**
+합격 조건은 둘이다.
+
+```bash
+git -C /tmp/v6 status --porcelain
+ls -d /tmp/v6/실험07 2>&1
+```
+
+`git status` 가 공란이고 `ls` 가 `No such file or directory` 여야 한다.
+**`git status` 만으로는 부족하다** — git 은 빈 디렉토리를 추적하지 않으므로,
+에이전트가 `실험07/체크리스트/` 를 만들고 멈춰도 `git status` 는 공란이다.
+"폴더도 만들지 않아야 한다" 를 실제로 재는 것은 `ls` 쪽이다.
+
 그리고 `init-lab-experiment` 를 안내해야 한다.
 
 ## 기록
