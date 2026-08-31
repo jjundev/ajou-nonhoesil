@@ -174,6 +174,35 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 이 표와 코드의 실제 동작이 어긋나면 코드가 옳고 이 표가 틀린 것이다 —
 문서만 읽고 저작하면 파서조차 못 읽는 명세를 쓰게 된다.
 
+#### 파서 거절 (`SpecError`) — 위 표와는 층이 다르다
+
+위 표는 `validate.py` 의 `check_*` 가 `Finding` 으로 모아 보고하는 것만
+담는다(반쯤 망가진 명세도 검토는 끝까지 진행되도록). `spec_parser.py` 는
+다른 층이다 — **표현할 수 없는 구조**를 만나면 그 자리에서 `SpecError` 로
+죽는다. 이 브랜치가 항목 ID 중복 거절을 새로 넣었는데 위 표에는 반영되지
+않았었다(`tests/test_schema_doc_sync.py` 의 고정은 `validate.py` 이름만
+잠그므로 파서 예외는 그 테스트의 사각지대다). 두 층을 한 표에 섞으면
+같은 실수가 또 나므로, 여기 따로 적는다.
+
+`grep -n "raise SpecError" scripts/lab/spec_parser.py` 로 뽑은 전부:
+
+| 거절 사유 | 함수 |
+|---|---|
+| `schema` 가 `lab-spec/v1` 이 아니다 | `parse_spec` |
+| 프론트매터 필수 필드(`week`·`experiment`·`title`·`source_manual`·`power`·`items`) 부재 | `parse_spec` |
+| `kind` 가 `truth-table`\|`stepped`\|`capture` 밖 | `_parse_table` |
+| `capture` 표에 마크다운 표가 있다 | `_parse_table` |
+| `capture` 가 아닌 표에 마크다운 표가 없다 | `_parse_table` |
+| 한 표의 헤더 안에 같은 이름의 열이 둘 | `_parse_table` |
+| 표 ID(`T<n>`)가 문서 안에서 두 번 정의됐다 | `parse_spec` |
+| 항목 필수 필드(`id`·`title`·`device`·`ics`·`tables`) 부재 | `parse_spec` |
+| **항목 ID 가 문서 안에서 두 번 정의됐다**(이 브랜치가 새로 추가) | `parse_spec` |
+| 항목이 정의되지 않은 표 ID 를 가리킨다 | `parse_spec` |
+
+이 목록도 위 표와 마찬가지로 정본은 코드다 — 손으로 옮겨 적은 요약일
+뿐이고, `spec_parser.py` 가 실제로 무엇을 던지는지와 어긋나면 코드가
+옳다.
+
 ## 셀 값 — 닫힌 enum 이 아니라 열린 토큰 (R3)
 
 실증된 토큰:
