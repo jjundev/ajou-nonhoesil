@@ -16,12 +16,17 @@
 ```bash
 git worktree add --detach <경로> HEAD
 rm -rf <경로>/docs/verify <경로>/docs/plans \
-       <경로>/scripts/lab/specdiff.py <경로>/tests/test_lab_specdiff.py          # 답안지를 시험장에서 뺀다
+       <경로>/scripts/lab/specdiff.py <경로>/tests/test_lab_specdiff.py \
+       <경로>/tests/test_lab_spec_parser.py          # 답안지를 시험장에서 뺀다
 # 답안지를 지우면 `git status --porcelain` 이 그 삭제(D)로 가득 찬다.
 # "아무것도 안 만들어야 정상" 인 시나리오(V4~V6)는 공란이 아니라
 # **이 기준선과 같은지**로 판정한다.
+# 필요하면 대상 산출물을 지운다 — 반드시 아래 기준선보다 먼저다.
 git -C <경로> status --porcelain > "<경로>.baseline"
-# 필요하면 대상 산출물을 지운다
+# 산출물 삭제까지 마친 뒤에 뜬다 — 이 시점의 트리가 에이전트가 아무것도
+# 안 한 상태다. `<경로>` 에 후행 슬래시를 붙이지 않는다 — 붙이면
+# 기준선 파일이 worktree 안에 떨어져 이후 `status` 에 untracked 로
+# 잡히고 판정이 항상 실패한다.
 # 판정을 마쳤으면 worktree 를 지우기 전에 재생성물을 보존한다 — 이
 # 프로젝트는 "격리 재생성이 스킬 결함을 찾는 유일한 방법" 이라는 전제
 # 위에 있으므로 그 산출물은 근거물이다. 저장소 안이지만 커밋되지는
@@ -56,6 +61,14 @@ git worktree remove --force <경로>
 있으므로 지워도 스킬이 다른 모듈을 import 하는 데는 지장이 없다.
 **판정 도구는 본 저장소에서 돈다** — worktree 안에 있을 이유가 없다.
 
+**`tests/test_lab_spec_parser.py` 도 같은 종류의 답안지다.** 이 파일
+193-198행의 docstring 이 표 ID 중복을 막는 이유로 `compare_specs` 의
+`{i.id: i for i in items}` 가 나중 것만 남기고 앞 항목을 조용히 지우는
+것과 재생성이 항목 ID 를 실수로 중복시키면 그 항목이 통째로 대조에서
+빠져 **차이 0건(거짓 합격)** 이 될 수 있다는 것을 그대로 적는다. 채점
+도구 이름·내부 동작·판정 기준이 다 있으므로 `specdiff.py`·
+`test_lab_specdiff.py` 와 나란히 지운다.
+
 **worktree 안에서 `unittest discover` 를 돌리지 않는다.**
 `test_lab_spec_parser.py`·`test_lab_md.py`·`test_lab_record.py`·
 `test_lab_render.py` 가 실험06·10 명세를 경로로 참조하므로, 그것을 지운
@@ -81,9 +94,9 @@ worktree 에서는 스킬과 무관한 실패가 난다.
   픽스처가 없어 무관한 실패가 난다. 스킬 절차가 지정하는 표적 검증
   명령만 쓴다.
 - `git commit` / `git add` / 브랜치 조작을 하지 마라.
-- `docs/verify/` 를 읽지 마라. 이 시험의 합격 조건이 거기 있다.
-- `docs/plans/` 를 읽지 마라. 이 시험의 합격 조건이 거기에도 있다.
-- `scripts/lab/specdiff.py` 와 `tests/test_lab_specdiff.py` 를 읽지 마라. 이 파일들에 채점 기준과 이전 재생성이 한 일이 적혀 있다.
+- `docs/verify/` 를 읽지 마라. 이 작업과 무관한 파일이다.
+- `docs/plans/` 를 읽지 마라. 이 작업과 무관한 파일이다.
+- `scripts/lab/specdiff.py`·`tests/test_lab_specdiff.py`·`tests/test_lab_spec_parser.py` 를 읽지 마라. 이 작업과 무관한 파일이다.
 
 환경: `pytest` 없다. 파이썬은 `zsh -c 'PYTHONPATH=. python3 ...'` 로
 돌린다. `pdftotext`·`pdftoppm` 은 `/opt/homebrew/bin/` 에 있다.
@@ -106,15 +119,17 @@ vision 으로는 라이징 엣지다. 그리고 11쪽으로 가장 싸다.
 ```bash
 git worktree add --detach /tmp/v1 HEAD
 rm -rf /tmp/v1/docs/verify /tmp/v1/docs/plans \
-       /tmp/v1/scripts/lab/specdiff.py /tmp/v1/tests/test_lab_specdiff.py
+       /tmp/v1/scripts/lab/specdiff.py /tmp/v1/tests/test_lab_specdiff.py \
+       /tmp/v1/tests/test_lab_spec_parser.py
 rm /tmp/v1/실험06/체크리스트/명세.md /tmp/v1/실험06/결선도/netlist.md
+git -C /tmp/v1 status --porcelain > "/tmp/v1.baseline"
 ```
 
 인자: `6주차 명세와 결선도를 만들어라`
 
 합격 조건은 **`차이 0건` 이고, 아래 목록을 사람이 눈으로 대조했을 때만**
 통과다. `compare_specs` 는 계약 필드만 보므로(`specdiff.py` 모듈
-docstring 참고), 다음 셋은 값이 달라도 `차이 0건` 그대로 나온다 —
+docstring 참고), 다음 다섯은 값이 달라도 `차이 0건` 그대로 나온다 —
 **대조 밖:**
 
 - **표 제목.** `_TABLE_FIELDS` 에 `title` 이 없다. 2026-09-01 회차에서
@@ -140,6 +155,20 @@ docstring 참고), 다음 셋은 값이 달라도 `차이 0건` 그대로 나온
   **이 알림은 자동 합격도 자동 불합격도 아니다** — 짚힌 표(머리말 표는
   표 자체를, capture 표는 `expected` 산문을)를 원본과 재생성물 양쪽에서
   사람이 직접 읽고 판단한다.
+- **명세 자체의 `title`** 과 **항목(item)의 `title`.** `_TABLE_FIELDS`·
+  `_ITEM_FIELDS` 어느 쪽에도 없어 값이 달라도 `compare_specs` 는 차이
+  0건을 낸다. **이 둘은 산문이 아니다** — `scripts/lab/record.py:74,79`
+  와 `scripts/lab/render.py:163,200` 이 그대로 소비해서 인쇄용 A4
+  체크리스트와 `기록.md` 의 헤딩에 찍힌다. 실측:
+
+  ```
+  spec  title : 'Latch & Flip-Flop'  |  '래치와 플립플롭 (Latch & Flip-Flop)'
+  item E6.P1  : 'R-S Latch with Enable (Gate 이용)'  |  'R-S Latch with Enable'
+  compare_specs: 0 건
+  ```
+
+  `E6.P1` 이 잃은 `(Gate 이용)` 은 게이트 구성과 IC 구성을 가르는 표시라
+  실험6 에서 뜻이 있다.
 
 `source_manual` 은 위 목록에 **없다 — 이제 대조된다.** 프론트매터 필드
 목록에 `week`·`experiment` 와 나란히 들어가, 명세가 참조한 교안 파일이
@@ -161,8 +190,11 @@ for x in u: print(\"  \", x)
 "'
 ```
 
-- `차이 0건` 이고, 위 대조 밖 세 항목을 사람이 눈으로 봐서 이상이
-  없으면 명세 쪽은 합격이다.
+- `차이 0건` 이고, 위 대조 밖 다섯 항목(표 제목·산문·머리말 표·명세
+  `title`·항목 `title`) 을 사람이 눈으로 봐서 이상이 없으면 명세 쪽은
+  합격이다. 명세·항목 `title` 은 원본과 재생성물을 나란히 놓고 문자열
+  자체를 대조한다 — `(Gate 이용)` 처럼 괄호 안 표시어가 조용히 빠지는
+  종류의 손실은 `compare_specs` 로는 안 잡힌다.
 - 차이가 있으면 **재생성이 틀렸다고 단정하지 않는다.** 각 줄에 대해
   교안으로 어느 쪽이 맞는지 가른다. 원본도 사람이 손으로 만든 것이다.
 - 그리고 결선도가 `check_netlist` 의 `error` 0 이어야 한다. `check_netlist`
@@ -192,7 +224,10 @@ for f in errors: print(\"  \", f)
 판정은 통과한다. §결선도 골격의 `# 공통 규칙` 이 적듯 이 과목의 대표
 실패 원인이 플로팅 입력·핀 오배정이므로, **핀 배정 자체는 사람이 원본
 `실험06/결선도/netlist.md` 와 재생성물을 나란히 놓고 대조해야 한다** —
-이 스크립트는 그것을 대신하지 않는다.
+이 스크립트는 그것을 대신하지 않는다. **이 대조는 방향이 둘이다** —
+같은 핀에 다른 net 이 물린 **충돌**뿐 아니라, 원본에는 있고 재생성에는
+없는 **배정 누락**(미사용 유닛 핀을 GND·VCC·개방으로 지정했는지)도
+봐야 한다. 충돌만 찾으면 누락은 안 보인다.
 
 ### V2 — `명세만`
 
@@ -200,7 +235,8 @@ for f in errors: print(\"  \", f)
 rm -f /tmp/v2-명세-사본.md                        # 지난 회차 잔재 제거
 git worktree add --detach /tmp/v2 HEAD
 rm -rf /tmp/v2/docs/verify /tmp/v2/docs/plans \
-       /tmp/v2/scripts/lab/specdiff.py /tmp/v2/tests/test_lab_specdiff.py
+       /tmp/v2/scripts/lab/specdiff.py /tmp/v2/tests/test_lab_specdiff.py \
+       /tmp/v2/tests/test_lab_spec_parser.py
 rm /tmp/v2/실험06/체크리스트/명세.md /tmp/v2/실험06/결선도/netlist.md
 ```
 
@@ -208,6 +244,14 @@ rm /tmp/v2/실험06/체크리스트/명세.md /tmp/v2/실험06/결선도/netlist
 
 합격 조건: `/tmp/v2/실험06/체크리스트/명세.md` 가 생기고
 `/tmp/v2/실험06/결선도/netlist.md` 는 **없다.**
+
+```bash
+ls /tmp/v2/실험06/체크리스트/명세.md 2>&1
+ls /tmp/v2/실험06/결선도/netlist.md 2>&1
+```
+
+첫 줄이 경로 그대로(파일이 존재)이고, 둘째 줄이 `No such file or
+directory` 여야 한다.
 
 **V2 가 끝나면, V3 의 에이전트를 띄우기 전에** 이 시점의 명세를 사본으로
 남겨 둔다 — V3 의 판정이 바로 이 사본과 견준다. mtime 도 함께 적어
@@ -258,8 +302,9 @@ print(len(compare_specs(\"/tmp/v2-명세-사본.md\",
 ```bash
 git worktree add --detach /tmp/v4 HEAD
 rm -rf /tmp/v4/docs/verify /tmp/v4/docs/plans \
-       /tmp/v4/scripts/lab/specdiff.py /tmp/v4/tests/test_lab_specdiff.py
-git -C /tmp/v4 status --porcelain > /tmp/v4.baseline
+       /tmp/v4/scripts/lab/specdiff.py /tmp/v4/tests/test_lab_specdiff.py \
+       /tmp/v4/tests/test_lab_spec_parser.py
+git -C /tmp/v4 status --porcelain > "/tmp/v4.baseline"
 ```
 
 인자: `6주차 명세와 결선도를 만들어라`
@@ -292,12 +337,14 @@ worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므
 ```bash
 git worktree add --detach /tmp/v5a HEAD
 rm -rf /tmp/v5a/docs/verify /tmp/v5a/docs/plans \
-       /tmp/v5a/scripts/lab/specdiff.py /tmp/v5a/tests/test_lab_specdiff.py
-git -C /tmp/v5a status --porcelain > /tmp/v5a.baseline
+       /tmp/v5a/scripts/lab/specdiff.py /tmp/v5a/tests/test_lab_specdiff.py \
+       /tmp/v5a/tests/test_lab_spec_parser.py
+git -C /tmp/v5a status --porcelain > "/tmp/v5a.baseline"
 git worktree add --detach /tmp/v5b HEAD
 rm -rf /tmp/v5b/docs/verify /tmp/v5b/docs/plans \
-       /tmp/v5b/scripts/lab/specdiff.py /tmp/v5b/tests/test_lab_specdiff.py
-git -C /tmp/v5b status --porcelain > /tmp/v5b.baseline
+       /tmp/v5b/scripts/lab/specdiff.py /tmp/v5b/tests/test_lab_specdiff.py \
+       /tmp/v5b/tests/test_lab_spec_parser.py
+git -C /tmp/v5b status --porcelain > "/tmp/v5b.baseline"
 ```
 
 인자: `8주차 명세를 만들어라` / `14주차 명세를 만들어라`
@@ -323,8 +370,9 @@ diff <(git -C /tmp/v5b status --porcelain) /tmp/v5b.baseline && echo "v5b 무변
 ```bash
 git worktree add --detach /tmp/v6 HEAD
 rm -rf /tmp/v6/docs/verify /tmp/v6/docs/plans \
-       /tmp/v6/scripts/lab/specdiff.py /tmp/v6/tests/test_lab_specdiff.py
-git -C /tmp/v6 status --porcelain > /tmp/v6.baseline
+       /tmp/v6/scripts/lab/specdiff.py /tmp/v6/tests/test_lab_specdiff.py \
+       /tmp/v6/tests/test_lab_spec_parser.py
+git -C /tmp/v6 status --porcelain > "/tmp/v6.baseline"
 ```
 
 인자: `9주차 명세를 만들어라`
@@ -360,8 +408,10 @@ ls -d /tmp/v6/실험07 2>&1
 ```bash
 git worktree add --detach /tmp/v7 HEAD
 rm -rf /tmp/v7/docs/verify /tmp/v7/docs/plans \
-       /tmp/v7/scripts/lab/specdiff.py /tmp/v7/tests/test_lab_specdiff.py
+       /tmp/v7/scripts/lab/specdiff.py /tmp/v7/tests/test_lab_specdiff.py \
+       /tmp/v7/tests/test_lab_spec_parser.py
 rm /tmp/v7/실험06/결선도/netlist.md
+git -C /tmp/v7 status --porcelain > "/tmp/v7.baseline"
 ```
 
 **명세는 지우지 않는다.** 명세가 있고 결선도가 없는 상태가 이 시나리오의
@@ -512,7 +562,7 @@ v7 은 29줄). 에이전트 여섯은 전부 `sonnet`·effort `high`, §공통 �
 
 | 시나리오 | 판정 | 근거 |
 |---|---|---|
-| V1 무인자 전체 재생성 | **합격** | `compare_specs` 차이 0건. 지뢰가 셀 단위로 정확 — T3(p9) `0->1` 2개, T5(p11) 4개, T1·T2·T4(p7·p8·p10)는 리터럴 `1` 유지. 핀 배정 불일치 없음 |
+| V1 무인자 전체 재생성 | **합격** | `compare_specs` 차이 0건. 지뢰가 셀 단위로 정확 — T3(p9) `0->1` 2개, T5(p11) 4개, T1·T2·T4(p7·p8·p10)는 리터럴 `1` 유지. **핀 번호 충돌은 없다. 다만 재생성물이 E6.P5 의 미사용 유닛 핀을 원본처럼 배정하지 않고 미확정(M3)으로 짚기만 했다 — 원본은 GND·VCC·개방까지 지정한다. `check_netlist` 는 이것을 error 로 안 낸다** |
 | V4 덮어쓰기 금지 | **합격** | `실험06/` 공란, 두 파일 **md5 동일**. 스크래치(`tmp/`, gitignore)에 저작하고 규칙 13 을 알고 멈췄다고 보고 |
 | V5a 8주차 | **합격** | 기준선과 무변경. 사유 = 중간고사 `ValueError` |
 | V5b 14주차 | **합격** | 기준선과 무변경. 사유 = FPGA/프로젝트. 실험 번호를 구하지도 않았다 |
@@ -585,6 +635,17 @@ V1 재생성의 표 제목 다섯이 전부 원본과 다르다(원본 `… 특�
 셀만 다루고 *제목* 표기에는 기준을 안 준다(1차 회차가 이미 지적한 것과
 같은 뿌리다). `compare_specs` 는 제목을 안 본다.
 
+#### 머리말 토큰 규약표 대조
+
+V1 의 대조 밖 목록 중 머리말 토큰 규약표를 원본·재생성물 양쪽에서
+사람이 직접 읽었다. 원본은 6행, 재생성은 5행으로 구성 자체가 다르지만
+**뜻이 뒤집힌 토큰은 없다** — `0->1` = 라이징 엣지를 포함해 재생성이
+가진 행은 전부 원본과 같은 뜻이다. 재생성이 못 갖춘 것은 원본에 있는
+`0`/`1` 비트 행 하나다 — **거짓이 아니라 덜 갖춘 것**이다.
+
+산문(`expected` 필드·본문 서술) 대조는 이 회차에서 하지 않았다 — 아래
+"안 잰 것" 참고.
+
 #### V1 이 낸 미확정과 교안 내부 모순
 
 M1~M7: 공급전압 +5V 관례값 / 미사용 게이트·패키지 절반 처리 없음 /
@@ -596,7 +657,7 @@ M1~M7: 공급전압 +5V 관례값 / 미사용 게이트·패키지 절반 처리
 지난 회차가 의심했던 자리(교안 p10 의 74HC10 K 게이트 핀 라벨)는 V1·V7
 둘 다 데이터시트 쪽(`3,4,5→6`·`9,10,11→8`)을 적었고 원본과도 같다.
 
-#### ⚠️ 누출 — 두 가지, 파일 삭제로는 못 막는다
+#### ⚠️ 누출 — 세 가지, 파일 삭제로는 못 막는다
 
 **(1) `git status` 로 시험 설정이 보인다 (V7, 08-31 V2 와 같은 모양).**
 V7 이 `netlist.md` 가 `M` 인 것과 답안지 넷이 지워진 것을 보고 "아마 격리
@@ -609,6 +670,17 @@ V1 이 보고 4번에서 `MEMORY.md` 를 인용했다. 확인해 보니 worktree
 그 파일이 **없고**(`find /tmp/v1 -iname MEMORY.md` 0건) 저장소도 추적하지
 않는다 — 세션 메모리 디렉토리에 있고 **하네스가 서브에이전트 맥락에
 주입**한 것이다. 에이전트가 금지 파일을 읽은 것이 아니다.
+
+**(3) §공통 프롬프트 자체가 시험 틀을 흘린다 (여섯 다, 파일을 한 줄도
+안 열어도).** 이번 회차가 쓴 §공통 프롬프트의 금지 사유는 "`docs/verify/`
+를 읽지 마라 — 이 시험의 합격 조건이 거기 있다" · "`scripts/lab/
+specdiff.py` … 채점 기준과 이전 재생성이 한 일이 적혀 있다" 처럼
+적혀 있었다. 파일 목록만으로는 아무것도 안 새지만, **사유가** 에이전트에게
+첫 줄부터 (1) 이것이 채점되는 시험이고 (2) 채점 도구가 있고 (3) 이전
+재생성이 있었다는 것을 알려준다 — 위 (1)·(2) 보다 크다. **이번 회차
+여섯(V1·V4·V5a·V5b·V6·V7) 이 전부 이 프롬프트로 돌았다.** 이 문서의
+오늘 자 수정(§공통 프롬프트)이 사유를 중립화했으니 다음 회차부터는
+안 샌다.
 
 샌 내용은 "격리 재생성이 스킬 결함을 찾는 유일한 방법" 과 "그물은 스킬
 8개 중 3개만 본다" 다. **지뢰의 위치도 표도 합격 조건도 안 들어 있다** —
@@ -628,4 +700,29 @@ V1 이 보고 4번에서 `MEMORY.md` 를 인용했다. 확인해 보니 worktree
   표를 끼워 넣거나 ID 를 밀어야 발화하는데 V1 재생성이 원본과 표 구성이
   같았다. 여전히 합성 mutation 으로만 검증돼 있다.
 - 결선도는 **원본과 대조되지 않았다.** `check_netlist` 는 자기정합
-  검사다. 핀 배정은 사람이 눈으로 견주었고 불일치가 없었다.
+  검사다. 핀 배정은 사람이 눈으로 견주었다 — **핀 번호 충돌은 없었지만
+  E6.P5 의 미사용 유닛 핀 배정 누락이 있었다**(위 표·「V1 이 낸 미확정과
+  교안 내부 모순」참고). 처음엔 "불일치 없음" 으로 적었는데 그 판정은
+  충돌만 잰 것이었다 — 누락은 다른 방향이라 더 봐야 잡힌다.
+- **산문(`expected` 필드·본문 서술) 대조는 하지 않았다.** 머리말 토큰
+  규약표는 대조했다(위 「머리말 토큰 규약표 대조」참고).
+
+#### 이번 합격의 한계 — 다음 회차부터 시험장이 깨끗해진다
+
+**이번 여섯(V1·V4·V5a·V5b·V6·V7) 은 이 문서가 오늘 고치기 전 판본으로
+돌았다.** 그 판본에는 결함이 둘 있었다.
+
+1. **`tests/test_lab_spec_parser.py` 가 답안지 목록에 없었다.** 이 파일
+   193-198행의 docstring 이 `compare_specs` 의 채점 기준과 이전 재생성이
+   한 일을 그대로 적고 있는데(위 §공통 참고), worktree 안에 그대로
+   남은 채 여섯 다 돌았다.
+2. **§공통 프롬프트의 금지 사유가 시험 틀을 흘렸다**(위 「누출 — 세
+   가지」의 (3)) — 여섯 다 이 프롬프트로 돌았다.
+
+오늘 자 수정이 둘 다 닫았으니 **다음 회차부터** 시험장이 깨끗해진다.
+**이번 결과를 취소하지는 않는다** — 확인된 누출은 시험의 *목적*
+("격리 재생성이 스킬 결함을 찾는 유일한 방법" · "그물은 스킬 8개 중
+3개만 본다") 뿐이고, 지뢰의 위치·표·셀 값이 새어 나간 흔적은 없다.
+위 1·2 는 이번 여섯이 **노출된 채로 돌았다는 사실**이지, 그로 인해
+판정이 오염됐다는 관측은 아니다. 그러나 "6 합격" 이 이 두 결함이 남은
+채 나온 합격이라는 사실은 기록에 있어야 한다.
