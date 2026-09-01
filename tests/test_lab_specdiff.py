@@ -79,15 +79,33 @@ class CompareSpecs(unittest.TestCase):
         diffs = compare_specs(WEEK6, target)
         self.assertTrue(any("전원" in d for d in diffs), diffs)
 
-    def test_파싱은_되지만_제외된_필드는_차이로_보지_않는다(self):
-        # `title` 은 SpecItem.title 로 실제로 파싱된다 — 파서가 아예 담지
-        # 않는 본문 서술(예: 어떤 필드로도 안 들어가는 안내문)을 만지면,
-        # `_ITEM_FIELDS`·`_TABLE_FIELDS` 에 title 이나 expected 가 실수로
-        # 들어가도 이 테스트는 원래부터 통과해 아무것도 지키지 못한다.
-        # 그래서 반드시 "파싱되지만 일부러 뺀" 자리를 만져야 한다.
+    def test_표_제목이_바뀌면_잡는다(self):
+        """표 제목은 산문이 아니다 — `render.py`·`record.py` 가 소비해
+        인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍힌다. 2026-08-31·
+        09-01 두 회차에서 재생성이 다섯 표를 전부 `특성표` -> `진리표` 로
+        바꿨는데 대조가 0건을 냈다."""
+        target = self._mutated("## T1 · R-S Latch with Enable 특성표",
+                               "## T1 · R-S Latch with Enable 진리표")
+        diffs = compare_specs(WEEK6, target)
+        self.assertTrue(any("표 T1" in d and "title" in d for d in diffs),
+                        diffs)
+
+    def test_항목_제목이_바뀌면_잡는다(self):
+        """`E6.P1` 이 잃은 `(Gate 이용)` 은 게이트 구성과 IC 구성을
+        가르는 표시다. 뜻이 있는 차이인데 대조 밖이었다."""
         target = self._mutated("title: R-S Latch with Enable (Gate 이용)",
-                               "title: R-S 래치 (Enable, 게이트 구성)")
-        self.assertEqual(compare_specs(WEEK6, target), [])
+                               "title: R-S Latch with Enable")
+        diffs = compare_specs(WEEK6, target)
+        self.assertTrue(any("항목" in d and "title" in d for d in diffs),
+                        diffs)
+
+    def test_명세_제목이_바뀌면_잡는다(self):
+        """프론트매터 `title` 도 계약 필수 필드다(스키마 `:22`) —
+        `source_manual` 을 대조에 넣은 것과 같은 이유다."""
+        target = self._mutated("title: Latch & Flip-Flop",
+                               "title: 래치와 플립플롭")
+        diffs = compare_specs(WEEK6, target)
+        self.assertTrue(any("프론트매터 title" in d for d in diffs), diffs)
 
     def test_ics_순서만_바뀌면_차이로_보지_않는다(self):
         # ics 는 그 항목이 쓰는 IC 패키지 이름의 집합이지 순서가 아니다.
@@ -101,6 +119,17 @@ class CompareSpecs(unittest.TestCase):
         # expected 는 산문이라 대조 대상이 아니므로, 사실을 뒤집어도
         # compare_specs 는 잡지 못한다 — 이것은 결함이 아니라 알려진 구멍
         # 이고, uncovered_tables 가 그 구멍을 알린다(아래 UncoveredTables).
+        #
+        # `expected` 는 `SpecTable` 로 실제로 파싱된다 — 파서가 아예 담지
+        # 않는 본문 서술(예: 어떤 필드로도 안 들어가는 안내문)을 만지면,
+        # `_ITEM_FIELDS`·`_TABLE_FIELDS` 에 `expected` 가 실수로 들어가도
+        # 이 테스트는 원래부터 통과해 아무것도 지키지 못한다. 그래서
+        # 반드시 "파싱되지만 일부러 뺀" 자리(`expected`)를 만져야 한다 —
+        # `title` 은 2026-09-01 부터 더 이상 그 자리가 아니다(대조에
+        # 들어왔다). 이 파일에 있던
+        # `test_파싱은_되지만_제외된_필드는_차이로_보지_않는다` 가 그
+        # 취지를 `title` 로 지키다가 이 테스트와 중복이 되어, 이 테스트로
+        # 취지를 옮기고 그쪽은 지웠다.
         target = self._mutated(
             "계단 상승한 뒤 리셋되는 톱니 형태",
             "계단 하강한 뒤 리셋되는 역톱니 형태",
@@ -371,10 +400,15 @@ class CompareSpecs(unittest.TestCase):
         # 짝짓기 키로 허용)이 만든 사각지대 그 자체를 지난다.
         target = self._table_ids_swapped(self.WEEK3, "T1", "T2")
         diffs = compare_specs(self.WEEK3, target)
+        # `title` 이 2026-09-01 에 대조 대상이 된 뒤로는 3건이 맞다 — 헤딩을
+        # 맞바꾸면 제목도 몸통과 함께 옮겨가므로, ID 불일치 알림 1건에 더해
+        # 양쪽 짝 각각의 title 차이 2건이 정당하게 따라붙는다. 이 테스트는
+        # 원래 "제목이 대조 밖이라 조용하다"를 전제로 1건을 기대했었다 —
+        # 그 전제 자체가 이번 태스크가 닫는 사각지대였다.
         self.assertEqual(
-            len(diffs), 1,
-            f"차이가 0건 이거나 1건이 아니다 — 표 내용이 다른 ID 로 옮겨갔는데 "
-            f"조용하거나(0건) 다른 잡음이 섞였다(>1건): {diffs}")
+            len(diffs), 3,
+            f"차이가 3건이 아니다 — ID 불일치 알림 1건과 헤딩을 따라 옮겨간 "
+            f"title 차이 2건(양쪽 짝)을 기대했다: {diffs}")
         # 실험03 은 표를 넣거나 뺀 적이 없다 — ID 집합이 같은데 짝이
         # 어긋났으므로 강한 경고(표 내용이 다른 ID 로 옮겨갔을 수 있다)
         # 여야 한다. `_table_id_mismatch_notice`(표 추가·삭제 알림)와는
@@ -382,7 +416,10 @@ class CompareSpecs(unittest.TestCase):
         self.assertIn("표 내용이 서로 다른 ID 로 옮겨갔을 수 있다", diffs[0])
         self.assertIn("T1→T2", diffs[0])
         self.assertIn("T2→T1", diffs[0])
-        # 짝지은 필드·셀 자체는 여전히 조용하다 — 몸통은 안 건드렸다.
+        self.assertTrue(any("표 T1→T2 title" in d for d in diffs), diffs)
+        self.assertTrue(any("표 T2→T1 title" in d for d in diffs), diffs)
+        # 짝지은 필드·셀 중 title 을 뺀 나머지(행·헤더 등 진짜 몸통)는
+        # 여전히 조용하다 — 손댄 것은 헤딩(ID+제목)뿐이다.
         self.assertFalse(any("행" in d for d in diffs), diffs)
         self.assertFalse(any("헤더" in d for d in diffs), diffs)
 

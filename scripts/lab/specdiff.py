@@ -22,8 +22,12 @@ from . import md
 from .spec_parser import _T_HEAD, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
-_ITEM_FIELDS = ("device", "ics", "tables")
-_TABLE_FIELDS = ("kind", "encoding", "source", "role")
+# `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다 — 계약서가 필수(●)로
+# 싣고(`docs/schema/lab-spec-v1.md:22,47`), `render.py`·`record.py` 가
+# 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다. 두 회차 연속으로
+# 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
+_ITEM_FIELDS = ("title", "device", "ics", "tables")
+_TABLE_FIELDS = ("title", "kind", "encoding", "source", "role")
 
 # 이 셋은 "무엇을 참조하는가" 의 목록이라 순서에 의미가 없다 — 재생성물이
 # 같은 IC·소자·표를 다른 순서로 적는 것은 결함이 아니다. `sorted()` 로
@@ -72,7 +76,7 @@ def compare_specs(original, regenerated) -> list:
     # .claude/skills/write-result-report/SKILL.md`). 이 파일 docstring이
     # 내건 기준("소비자가 실제로 기대는 필드")에 정확히 해당하므로 `week`·
     # `experiment` 와 같은 자리에서 대조한다.
-    for field in ("week", "experiment", "source_manual"):
+    for field in ("week", "experiment", "title", "source_manual"):
         x, y = getattr(a, field), getattr(b, field)
         if x != y:
             out.append(f"프론트매터 {field}: 원본 {x!r} / 재생성 {y!r}")
