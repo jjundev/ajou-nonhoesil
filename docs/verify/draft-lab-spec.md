@@ -259,6 +259,7 @@ print(len(compare_specs(\"/tmp/v2-명세-사본.md\",
 git worktree add --detach /tmp/v4 HEAD
 rm -rf /tmp/v4/docs/verify /tmp/v4/docs/plans \
        /tmp/v4/scripts/lab/specdiff.py /tmp/v4/tests/test_lab_specdiff.py
+git -C /tmp/v4 status --porcelain > /tmp/v4.baseline
 ```
 
 인자: `6주차 명세와 결선도를 만들어라`
@@ -277,7 +278,7 @@ git -C /tmp/v4 status --porcelain -- 실험06/
 없는 보조 판정은 답안지 삭제(`D`)로 가득 차므로 기준선과 견준다:
 
 ```bash
-git -C /tmp/v4 status --porcelain
+diff <(git -C /tmp/v4 status --porcelain) /tmp/v4.baseline && echo "무변경"
 ```
 
 그리고 에이전트가 "이미 있어서 멈췄다" 를 보고해야 한다 — 조용히
@@ -292,9 +293,11 @@ worktree 를 각각 따로 만든다. 거절은 아무것도 만들지 않으므
 git worktree add --detach /tmp/v5a HEAD
 rm -rf /tmp/v5a/docs/verify /tmp/v5a/docs/plans \
        /tmp/v5a/scripts/lab/specdiff.py /tmp/v5a/tests/test_lab_specdiff.py
+git -C /tmp/v5a status --porcelain > /tmp/v5a.baseline
 git worktree add --detach /tmp/v5b HEAD
 rm -rf /tmp/v5b/docs/verify /tmp/v5b/docs/plans \
        /tmp/v5b/scripts/lab/specdiff.py /tmp/v5b/tests/test_lab_specdiff.py
+git -C /tmp/v5b status --porcelain > /tmp/v5b.baseline
 ```
 
 인자: `8주차 명세를 만들어라` / `14주차 명세를 만들어라`
@@ -321,6 +324,7 @@ diff <(git -C /tmp/v5b status --porcelain) /tmp/v5b.baseline && echo "v5b 무변
 git worktree add --detach /tmp/v6 HEAD
 rm -rf /tmp/v6/docs/verify /tmp/v6/docs/plans \
        /tmp/v6/scripts/lab/specdiff.py /tmp/v6/tests/test_lab_specdiff.py
+git -C /tmp/v6 status --porcelain > /tmp/v6.baseline
 ```
 
 인자: `9주차 명세를 만들어라`
