@@ -17,6 +17,10 @@
 git worktree add --detach <경로> HEAD
 rm -rf <경로>/docs/verify <경로>/docs/plans \
        <경로>/scripts/lab/specdiff.py <경로>/tests/test_lab_specdiff.py          # 답안지를 시험장에서 뺀다
+# 답안지를 지우면 `git status --porcelain` 이 그 삭제(D)로 가득 찬다.
+# "아무것도 안 만들어야 정상" 인 시나리오(V4~V6)는 공란이 아니라
+# **이 기준선과 같은지**로 판정한다.
+git -C <경로> status --porcelain > "<경로>.baseline"
 # 필요하면 대상 산출물을 지운다
 # 판정을 마쳤으면 worktree 를 지우기 전에 재생성물을 보존한다 — 이
 # 프로젝트는 "격리 재생성이 스킬 결함을 찾는 유일한 방법" 이라는 전제
@@ -269,7 +273,8 @@ git -C /tmp/v4 status --porcelain -- 실험06/
 범위를 `실험06/` 로 좁히는 이유는, 규칙 13 이 "스크래치패드에 내고 diff 를
 보여준다" 이므로 에이전트가 사본을 어딘가에 만들 수 있기 때문이다 —
 **금지되는 것은 산출물을 제자리에서 덮어쓰는 것**이지 사본을 만드는 것이
-아니다. 저장소 다른 곳에 남은 것이 있으면 따로 보고 판단한다:
+아니다. 저장소 다른 곳에 남은 것이 있으면 따로 보고 판단한다. 이 범위
+없는 보조 판정은 답안지 삭제(`D`)로 가득 차므로 기준선과 견준다:
 
 ```bash
 git -C /tmp/v4 status --porcelain
@@ -294,14 +299,14 @@ rm -rf /tmp/v5b/docs/verify /tmp/v5b/docs/plans \
 
 인자: `8주차 명세를 만들어라` / `14주차 명세를 만들어라`
 
-합격 조건: 두 worktree 모두 `git status --porcelain` 이 공란이어야
-한다 — **반드시 `-C` 로 대상을 지정한다.** 인자 없이 저장소 루트에서
-돌리면 worktree 가 아니라 본 저장소를 재므로, 본 저장소는 항상
-깨끗해 합격이 위조된다:
+합격 조건: 두 worktree 모두 `git status --porcelain` 이 기준선과
+같아야 한다 — **반드시 `-C` 로 대상을 지정한다.** 인자 없이 저장소
+루트에서 돌리면 worktree 가 아니라 본 저장소를 재므로, 본 저장소는
+항상 깨끗해 합격이 위조된다:
 
 ```bash
-git -C /tmp/v5a status --porcelain
-git -C /tmp/v5b status --porcelain
+diff <(git -C /tmp/v5a status --porcelain) /tmp/v5a.baseline && echo "v5a 무변경"
+diff <(git -C /tmp/v5b status --porcelain) /tmp/v5b.baseline && echo "v5b 무변경"
 ```
 
 그리고 거절 사유가 각각 중간고사·FPGA 여야 한다. `config.folder_for_week(8)`
@@ -323,16 +328,63 @@ rm -rf /tmp/v6/docs/verify /tmp/v6/docs/plans \
 합격 조건은 둘이다.
 
 ```bash
-git -C /tmp/v6 status --porcelain
+diff <(git -C /tmp/v6 status --porcelain) /tmp/v6.baseline && echo "v6 무변경"
 ls -d /tmp/v6/실험07 2>&1
 ```
 
-`git status` 가 공란이고 `ls` 가 `No such file or directory` 여야 한다.
-**`git status` 만으로는 부족하다** — git 은 빈 디렉토리를 추적하지 않으므로,
+`git status` 가 기준선과 같고 `ls` 가 `No such file or directory` 여야
+한다. **`git status` 만으로는 부족하다** — git 은 빈 디렉토리를 추적하지 않으므로,
 에이전트가 `실험07/체크리스트/` 를 만들고 멈춰도 `git status` 는 공란이다.
 "폴더도 만들지 않아야 한다" 를 실제로 재는 것은 `ls` 쪽이다.
 
 그리고 `init-lab-experiment` 를 안내해야 한다.
+
+### V7 — 인자 토큰 없는 한쪽 발화
+
+§인자의 **"이 토큰이 없어도 사용자 말이 둘 중 한쪽만 가리키면 그쪽으로
+읽는다"** 를 잰다. 이 문장은 2026-09-01 최종 전체-브랜치 리뷰(I4)로 새로
+쓴 것이다. 그 전에는 토큰이 없으면 무조건 "둘 다" 로 떨어져서 —
+
+1. 1단계 규칙 13 검사에서 `명세.md` 가 이미 있다
+2. "그 자리에 저작하지 않는다 … `diff` 를 보여준 뒤 멈춘다"
+3. **사용자는 결선도를 못 받고 명세 diff 를 받는다**
+
+는 함정이 있었다. 그 함정이 닫혔는지 본다. 스킬 프론트매터
+`description` 이 **"결선도 만들어줘"** 를 트리거 예시로 싣고 있으므로,
+이것은 가상의 발화가 아니라 스킬 자신이 광고하는 입구다.
+
+```bash
+git worktree add --detach /tmp/v7 HEAD
+rm -rf /tmp/v7/docs/verify /tmp/v7/docs/plans \
+       /tmp/v7/scripts/lab/specdiff.py /tmp/v7/tests/test_lab_specdiff.py
+rm /tmp/v7/실험06/결선도/netlist.md
+```
+
+**명세는 지우지 않는다.** 명세가 있고 결선도가 없는 상태가 이 시나리오의
+전제다 — V3 과 같은 전제이되 **인자에 토큰이 없다.**
+
+인자: `6주차 결선도 만들어줘`
+
+합격 조건은 둘이다.
+
+```bash
+git -C /tmp/v7 status --porcelain -- 실험06/체크리스트/
+ls /tmp/v7/실험06/결선도/netlist.md 2>&1
+```
+
+**첫 줄이 공란**(명세를 한 글자도 안 건드렸다)이고 **`netlist.md` 가
+존재**해야 한다.
+
+- 명세 쪽에 출력이 있으면 **불합격** — `결선도만` 으로 안 읽고 명세까지
+  건드렸다.
+- `netlist.md` 가 없고 에이전트가 "명세가 이미 있어서 멈췄다" 를
+  보고했으면 **I4 의 함정이 그대로다** — §인자의 새 문장이 안 먹었다.
+- 에이전트가 무엇을 할지 되물었으면 그것도 **불합격**이다. §인자가
+  되묻으라고 한 것은 *번호* 토큰이 없을 때이고, "결선도 만들어줘" 는
+  한쪽만 가리키는 발화의 **본보기로 §인자에 이름까지 적혀 있다.**
+- 그리고 결선도가 `check_netlist` 의 `error` 0 이어야 한다 — 명령은
+  §V1 의 마지막 블록에서 경로만 `/tmp/v7` 로 바꿔 쓴다. **그 `error 0`
+  은 자기정합 검사다**(§V1 의 같은 단락 참고).
 
 ## 기록
 
