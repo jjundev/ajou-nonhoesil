@@ -4,10 +4,12 @@
 본다. 격리 재생성의 합격 판정이 사람 눈에 걸려 있으면 매번 기준이 흔들리기
 때문이다.
 
-**산문은 보지 않는다.** 제목·`expected`·본문 서술은 같은 사실을 다르게 써도
-결함이 아니다. 보는 것은 소비자가 실제로 기대는 필드뿐이다 — 프론트매터의
-`week`·`experiment`·`source_manual`·`power`, 항목의 `device`·`ics`·`tables`,
-표의 `kind`·`encoding`·`source`·`role` 과 셀 전부.
+**본문 산문은 보지 않는다.** `expected` 필드·본문 서술은 같은 사실을
+다르게 써도 결함이 아니다. 보는 것은 소비자가 실제로 기대는 필드뿐이다 —
+프론트매터의 `week`·`experiment`·`title`·`source_manual`·`power`, 항목의
+`title`·`device`·`ics`·`tables`, 표의 `title`·`kind`·`encoding`·`source`·
+`role` 과 셀 전부. **제목 셋(명세·항목·표 `title`)은 2026-09-01 이후
+본다** — 그 전에는 산문과 같이 대조 밖이었다.
 
 `kind: capture` 인 표는 셀이 없어(`header=[]`·`rows=[]`) 대조가 항상 같다고
 나온다 — 그 표의 기술적 주장은 전부 `expected` 산문에 있는데 산문은 위
@@ -22,10 +24,13 @@ from . import md
 from .spec_parser import _T_HEAD, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
-# `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다 — 계약서가 필수(●)로
-# 싣고(`docs/schema/lab-spec-v1.md:22,47`), `render.py`·`record.py` 가
-# 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다. 두 회차 연속으로
-# 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
+# `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다. 명세·항목 `title` 은
+# 계약서가 필수(●)로 싣고(`docs/schema/lab-spec-v1.md:22,47`); 표 `title`
+# 은 스키마의 표 필드 표에 행 자체가 없고 `## T<n> · <제목>` 헤딩 형식으로
+# 강제될 뿐이다(`docs/schema/lab-spec-v1.md:63,65`). 셋 다 `render.py`·
+# `record.py` 가 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다(확인:
+# `grep -n title scripts/lab/render.py scripts/lab/record.py`). 두 회차
+# 연속으로 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
 _ITEM_FIELDS = ("title", "device", "ics", "tables")
 _TABLE_FIELDS = ("title", "kind", "encoding", "source", "role")
 
