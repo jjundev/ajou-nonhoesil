@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -30,8 +31,16 @@ class TestGlobalHwpToPdfSkill(unittest.TestCase):
 
     def test_split_hwp_dummy_images_zero_deps(self):
         import split_hwp  # type: ignore
-        # Verify PIL is not imported
-        self.assertNotIn("PIL", sys.modules)
+        # Verify split_hwp has zero PIL dependencies in clean interpreter
+        res = subprocess.run(
+            [sys.executable, "-c", f"import sys; sys.path.insert(0, {str(SCRIPTS_DIR)!r}); import split_hwp; sys.exit(1 if 'PIL' in sys.modules else 0)"],
+            capture_output=True,
+        )
+        self.assertEqual(res.returncode, 0, "split_hwp should have zero PIL dependencies")
+        # Also verify source file contains no PIL imports
+        source_code = (SCRIPTS_DIR / "split_hwp.py").read_text(encoding="utf-8")
+        self.assertNotIn("import PIL", source_code)
+        self.assertNotIn("from PIL", source_code)
         dummy_jpg, dummy_bmp = split_hwp.create_dummy_images()
         self.assertIsInstance(dummy_jpg, bytes)
         self.assertIsInstance(dummy_bmp, bytes)
@@ -68,6 +77,15 @@ class TestGlobalHwpToPdfSkill(unittest.TestCase):
         # Base port offset formula check: agent i with offset 10
         base_ports = [9222 + i * 10 for i in range(3)]
         self.assertEqual(base_ports, [9222, 9232, 9242])
+
+    def test_skill_md_metadata(self):
+        skill_file = GLOBAL_SKILL_DIR / "SKILL.md"
+        self.assertTrue(skill_file.exists(), "SKILL.md must exist in global skill")
+        content = skill_file.read_text(encoding="utf-8")
+        self.assertTrue(content.startswith("---"), "SKILL.md must start with YAML frontmatter")
+        self.assertIn("name: hwp-to-pdf", content)
+        self.assertIn("description:", content)
+        self.assertNotIn("disable-model-invocation: true", content, "Should be model-invoked")
 
 if __name__ == "__main__":
     unittest.main()
