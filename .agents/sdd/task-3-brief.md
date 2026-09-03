@@ -1,101 +1,181 @@
-# `from_the_past/정리` 소장 가치 자료 분류 및 신규 폴더 체계 재배치 구현 계획서
-
-> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
-**Goal:** `from_the_past/정리/나머지`에 혼재된 118개 항목(파일 107개, 서브디렉토리 12개)을 용도별 5대 신규 폴더(`텀프로젝트_설계`, `HDL_소스_및_예제`, `가이드라인_및_기준`, `소자_데이터시트_및_미디어`, `전학기_모범_실습보고서_camui20`)와 기존 주차별 보고서 폴더로 100% 무손실 이동(`mv`) 배치하고, `나머지` 폴더를 정리한다.
-
-**Architecture:** Python 스크립트 기반의 원자적 파일 이동 및 무결성 검증 파이프라인. 각 단계별로 디렉토리 생성 -> 파일 이동 -> 이동 전후 파일 수 및 해시/용량 검증 -> 최종 잔여 디렉토리 정리 및 인벤토리 README 생성을 수행한다.
-
-**Tech Stack:** Python 3 (os, shutil, pathlib), Bash (mv, mkdir, ls)
-
-## Global Constraints
-
-- 모든 작업은 무손실(`mv`)로 수행되어야 하며, 어떠한 소스 파일이나 보고서 원문도 삭제되거나 덮어쓰여져서는 안 된다.
-- `from_the_past/정리/나머지/_중복_및_제외`는 원천 백업 보존을 위해 `from_the_past/_원천_아카이브/`로 안전하게 상위 이동한다.
-- `camui20` 전 학기 보고서(11종)는 사용자의 지정에 따라 독립 폴더 `from_the_past/정리/전학기_모범_실습보고서_camui20/`로 격리 보관한다.
-- 미완성/문법 에러 파일(`stopwatch1`, `stopwatch_static.vhd` 등)은 `_오류_및_미완성_코드/` 하위 폴더로 격리하고 경고 안내 `README.md`를 포함한다.
-
----
-
-## File Structure
-
-- **신설 디렉토리:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/` (하위 4개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/가이드라인_및_기준/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/전학기_모범_실습보고서_camui20/`
-- **수정/추가 문서:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/README.md`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/README.md` (전체 정리 디렉토리 맵)
-- **삭제 대상:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/` (파일 이동 완료 후 빈 디렉토리 삭제)
-
----
-
-
----
-
-### Task 3: HDL 소스 코드, 디지털 시계 및 보드 핀맵/예제 이동
+### Task 3: Announcement Attachment Collection and Download in `download.js`
 
 **Files:**
-- Source: `from_the_past/정리/나머지/`
-- Target: `from_the_past/정리/HDL_소스_및_예제/` 하위 4개 디렉토리
-- Create: `from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/README.md`
+- Modify: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/download.js`
+- Test: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/download.test.js`
 
-- [ ] **Step 1: 1_스톱워치_모범코드_Wedu 이동**
+**Interfaces:**
+- Consumes: `fetchBbRest`, `fetchContentHierarchy`, `collectDownloadableFiles`, `extractAnnouncementAttachments`, `resolveCourseId`, `fetchBbBinary`
+- Produces: `fetchAnnouncementFiles(page, courseId) -> Promise<Array<DownloadableFile>>`
+- Produces: `downloadCommand(page, args)` supporting `--announcements` (boolean flag) and automatically aggregating announcement files when `--all` or `--query` is supplied.
 
-```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/Stopwatch" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/1_스톱워치_모범코드_Wedu/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/source" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/1_스톱워치_모범코드_Wedu/"
+- [ ] **Step 1: Write failing unit test for announcement file downloading and registry arg check**
+
+In `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/download.test.js`, add:
+```javascript
+test('downloadCommand registers announcements argument in CLI options', () => {
+    const reg = getRegistry();
+    const downloadEntry = reg.find((entry) => entry.site === 'ajou-bb' && entry.name === 'download');
+    assert.ok(downloadEntry, 'download command must be registered');
+    const annArg = downloadEntry.args.find((a) => a.name === 'announcements');
+    assert.ok(annArg, '--announcements option must be registered');
+    assert.equal(annArg.type, 'bool');
+});
+
+test('downloadCommand downloads announcement attachments with --announcements flag', async (t) => {
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ajou-bb-ann-dl-'));
+    t.after(async () => {
+        await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+    });
+
+    const page = createStandardMockPage({
+        mockBinaryContent: 'Mock Syllabus Announcement PDF',
+    });
+
+    const origEvaluate = page.evaluate;
+    page.evaluate = async (script, ...args) => {
+        if (typeof script === 'string' && script.includes('/announcements')) {
+            return {
+                __status: 200,
+                __data: {
+                    results: [
+                        {
+                            id: '_ann_1',
+                            title: '운영계획 공지',
+                            body: `<p><a href="https://eclass2.ajou.ac.kr/bbcswebdav/xid-plan" data-bbtype="attachment" data-bbfile="{&quot;fileName&quot;:&quot;2026_Plan.pdf&quot;,&quot;fileSize&quot;:4096,&quot;resourceUrl&quot;:&quot;https://eclass2.ajou.ac.kr/bbcswebdav/xid-plan&quot;}">2026_Plan.pdf</a></p>`,
+                        },
+                    ],
+                },
+            };
+        }
+        return origEvaluate(script, ...args);
+    };
+
+    const results = await downloadCommand(page, {
+        course: '회로이론',
+        announcements: true,
+        out: tmpDir,
+    });
+
+    assert.equal(results.length, 1);
+    assert.equal(results[0].file_name, '2026_Plan.pdf');
+    assert.equal(results[0].status, 'downloaded');
+    assert.equal(await fs.stat(path.join(tmpDir, '2026_Plan.pdf')).then(() => true).catch(() => false), true);
+});
 ```
 
-- [ ] **Step 2: 2_통합_디지털시계_모듈 이동**
+- [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/watch_top.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/clk_gen.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/mode_set.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/time.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stop_watch.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/segment.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/참고자료_stop_watch.pdf" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈/"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
+```
+Expected: FAIL (missing announcement handling in `downloadCommand`)
+
+- [ ] **Step 3: Implement `fetchAnnouncementFiles` and integrate into `downloadCommand` in `download.js`**
+
+In `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/download.js`:
+Ensure named imports from `./common.js` include `fetchBbRest`:
+```javascript
+import {
+    AJOU_BB_HOST,
+    ArgumentError,
+    EmptyResultError,
+    collectDownloadableFiles,
+    fetchBbBinary,
+    fetchBbRest,
+    fetchContentHierarchy,
+    requirePositiveInt,
+    resolveCourseId,
+    withRedactedErrors,
+} from './common.js';
+import { extractAnnouncementAttachments, redactDeep } from './parser.js';
+```
+Add `fetchAnnouncementFiles`:
+```javascript
+export async function fetchAnnouncementFiles(page, courseId) {
+    try {
+        const rawData = await fetchBbRest(page, `/learn/api/public/v1/courses/${courseId}/announcements`, {
+            params: { limit: 100 },
+        });
+        const rawList = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.results) ? rawData.results : []);
+        const files = [];
+
+        for (const raw of rawList) {
+            const bodyHtml = raw.body ?? raw.body_html ?? '';
+            const attachments = extractAnnouncementAttachments(bodyHtml, raw.attachments);
+            for (const att of attachments) {
+                files.push({
+                    content_id: `announcement_${raw.id || raw.announcement_id || 'item'}`,
+                    title: raw.title ? `[공지] ${raw.title} - ${att.file_name}` : att.file_name,
+                    file_name: att.file_name,
+                    file_url: att.file_url,
+                    size_bytes: att.file_size,
+                    source: 'announcement',
+                });
+            }
+        }
+        return files;
+    } catch {
+        return [];
+    }
+}
+```
+Update `downloadCommand`:
+```javascript
+    const announcementsOnly = Boolean(args.announcements);
+    let availableFiles = [];
+
+    if (announcementsOnly) {
+        availableFiles = await fetchAnnouncementFiles(page, course.course_id);
+    } else {
+        const tree = await fetchContentHierarchy(page, course.course_id, null, 1, depth);
+        availableFiles = collectDownloadableFiles(tree);
+        if (all || query) {
+            const annFiles = await fetchAnnouncementFiles(page, course.course_id);
+            availableFiles = [...availableFiles, ...annFiles];
+        }
+    }
+
+    const effectiveAll = all || (announcementsOnly && !query && !contentId);
+    const targetFiles = filterFilesForDownload(availableFiles, { query, contentId, all: effectiveAll });
+```
+In attachment fetching loop inside `downloadCommand`:
+```javascript
+        if (file.content_id && !String(file.content_id).startsWith('announcement_')) {
+            try {
+                const attList = await fetchBbRest(page, `/learn/api/public/v1/courses/${course.course_id}/contents/${file.content_id}/attachments`);
+                const attachments = Array.isArray(attList?.results) ? attList.results : (Array.isArray(attList) ? attList : []);
+                if (attachments.length > 0) {
+                    const firstAtt = attachments[0];
+                    if (firstAtt.id) {
+                        downloadUrl = `/learn/api/public/v1/courses/${course.course_id}/contents/${file.content_id}/attachments/${firstAtt.id}/download`;
+                    }
+                    if (firstAtt.fileName) {
+                        actualFileName = firstAtt.fileName;
+                    }
+                }
+            } catch {
+                // Fallback to original file_url
+            }
+        }
+```
+Add CLI argument definition:
+```javascript
+        { name: 'announcements', type: 'bool', default: false, help: 'Download only files attached to course announcements' },
 ```
 
-- [ ] **Step 3: 3_보드별_핀맵_및_기초예제 이동**
+- [ ] **Step 4: Run test to verify it passes**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/Nexys3_Master.ucf" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch.xise" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/example" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/LICENSE" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/README" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제/"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
 ```
+Expected: PASS
 
-- [ ] **Step 4: _오류_및_미완성_코드 격리 및 README 작성**
+- [ ] **Step 5: Commit**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch1" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch_book" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch_static.vhd" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/stopwatch_static.vhd.bak" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/새 텍스트 문서.txt" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/1-4133.txt" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/"
-```
-
-경고 README 작성:
-```markdown
-# ⚠️ 주의: 오류 및 미완성 코드 아카이브
-
-이 디렉토리에 포함된 파일들은 과거 학생 과제 제출물 중 **문법 오류(Synthesis Error), 자리올림 로직 버그, 미연결 신호** 등이 포함되어 있어 실제 보드 동작이 보장되지 않는 파일들입니다.
-
-- `stopwatch1/`: VHDL 듀얼 엣지 트리거 등 문법 오류로 합성 불가
-- `stopwatch_static.vhd`: 48개 I/O 핀 요구 및 초 카운터 자리올림 로직 누락 버그
-- `stopwatch_book/`: `SEL_ST_SP` 신호 미연결 및 클록 분주비 오류 (1MHz 생성)
-
-**정상 동작 코드는 상위의 `1_스톱워치_모범코드_Wedu` 및 `2_통합_디지털시계_모듈`을 참조하세요.**
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli add adapter/ajou-bb/download.js tests/download.test.js
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli commit -m "feat(download): add announcement attachments discovery and --announcements support"
 ```
 
 ---

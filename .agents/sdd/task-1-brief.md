@@ -1,85 +1,93 @@
-# `from_the_past/정리` 소장 가치 자료 분류 및 신규 폴더 체계 재배치 구현 계획서
-
-> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
-**Goal:** `from_the_past/정리/나머지`에 혼재된 118개 항목(파일 107개, 서브디렉토리 12개)을 용도별 5대 신규 폴더(`텀프로젝트_설계`, `HDL_소스_및_예제`, `가이드라인_및_기준`, `소자_데이터시트_및_미디어`, `전학기_모범_실습보고서_camui20`)와 기존 주차별 보고서 폴더로 100% 무손실 이동(`mv`) 배치하고, `나머지` 폴더를 정리한다.
-
-**Architecture:** Python 스크립트 기반의 원자적 파일 이동 및 무결성 검증 파이프라인. 각 단계별로 디렉토리 생성 -> 파일 이동 -> 이동 전후 파일 수 및 해시/용량 검증 -> 최종 잔여 디렉토리 정리 및 인벤토리 README 생성을 수행한다.
-
-**Tech Stack:** Python 3 (os, shutil, pathlib), Bash (mv, mkdir, ls)
-
-## Global Constraints
-
-- 모든 작업은 무손실(`mv`)로 수행되어야 하며, 어떠한 소스 파일이나 보고서 원문도 삭제되거나 덮어쓰여져서는 안 된다.
-- `from_the_past/정리/나머지/_중복_및_제외`는 원천 백업 보존을 위해 `from_the_past/_원천_아카이브/`로 안전하게 상위 이동한다.
-- `camui20` 전 학기 보고서(11종)는 사용자의 지정에 따라 독립 폴더 `from_the_past/정리/전학기_모범_실습보고서_camui20/`로 격리 보관한다.
-- 미완성/문법 에러 파일(`stopwatch1`, `stopwatch_static.vhd` 등)은 `_오류_및_미완성_코드/` 하위 폴더로 격리하고 경고 안내 `README.md`를 포함한다.
-
----
-
-## File Structure
-
-- **신설 디렉토리:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/` (하위 4개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/가이드라인_및_기준/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/전학기_모범_실습보고서_camui20/`
-- **수정/추가 문서:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/README.md`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/README.md` (전체 정리 디렉토리 맵)
-- **삭제 대상:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/` (파일 이동 완료 후 빈 디렉토리 삭제)
-
----
-
-
----
-
-### Task 1: 디렉토리 스캐폴딩 및 원천 아카이브(`_중복_및_제외`) 격리
+### Task 1: Fix `fetchBbBinary` Test Mock Compatibility and Sync Adapter State
 
 **Files:**
-- Create: `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브/`
-- Create: `from_the_past/정리/` 하위 5대 신규 디렉토리 및 서브디렉토리 일체
-- Modify: `from_the_past/정리/나머지/_중복_및_제외` -> `from_the_past/_원천_아카이브/`로 이동
+- Modify: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/common.js`
+- Test: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/common.test.js`
+- Test: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/download.test.js`
 
 **Interfaces:**
-- Consumes: `from_the_past/정리/나머지/` 기존 경로
-- Produces: 5대 신규 분류 디렉토리 트리 및 `_원천_아카이브/`
+- Consumes: `page.getCookies`, `page.cookies`, `page.evaluate`
+- Produces: `fetchBbBinary(page, fileUrl) -> Promise<Buffer>` (only attempts Node session fetch if valid non-empty string cookies are present; falls back to in-page evaluation in test mocks)
 
-- [ ] **Step 1: 대상 디렉토리 트리 일괄 생성**
+- [ ] **Step 1: Write the failing test verification**
 
+Run existing test suite to confirm the 6 failing tests related to unmocked cookies in `fetchBbBinary`:
 ```bash
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/2_계산기_프로젝트_Verilog_2020_김지성"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/1_스톱워치_모범코드_Wedu"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/2_통합_디지털시계_모듈"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/3_보드별_핀맵_및_기초예제"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/가이드라인_및_기준"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/2_실측_오실로스코프_파형"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/3_실험실_실기영상_8주차"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/전학기_모범_실습보고서_camui20"
-mkdir -p "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/예비보고서/실험1"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
+```
+Expected: 6 tests failing with `AuthRequiredError: Blackboard Ultra session expired or unauthorized (HTTP 401)`
+
+- [ ] **Step 2: Update `common.js` to guard Node `fetch` with non-empty string `cookieHeader` and sync latest fixes**
+
+In `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/common.js`:
+Sync the `page.getCookies` and HTML detection fixes from `~/.opencli/clis/ajou-bb/common.js`. Ensure `docCookie` is validated as a non-empty string (`typeof docCookie === 'string' && docCookie.trim()`), and only execute Strategy 2 (Node.js session fetch) if `typeof cookieHeader === 'string' && cookieHeader.trim().length > 0`:
+```javascript
+            if (typeof page.getCookies === 'function') {
+                const cookies = await page.getCookies({ url: 'https://' + AJOU_BB_HOST }).catch(() => []);
+                if (Array.isArray(cookies) && cookies.length > 0) {
+                    cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+                }
+            } else if (typeof page.cookies === 'function') {
+                const cookies = await page.cookies('https://' + AJOU_BB_HOST).catch(() => []);
+                if (Array.isArray(cookies) && cookies.length > 0) {
+                    cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+                }
+            }
+            if (!cookieHeader && typeof page.evaluate === 'function') {
+                const docCookie = await page.evaluate('document.cookie || ""').catch(() => '');
+                if (typeof docCookie === 'string' && docCookie.trim()) {
+                    cookieHeader = docCookie.trim();
+                }
+            }
+
+            if (typeof cookieHeader === 'string' && cookieHeader.trim().length > 0) {
+                const userAgent = typeof page.evaluate === 'function'
+                    ? await page.evaluate('navigator.userAgent').catch(() => '')
+                    : 'Mozilla/5.0';
+
+                const headers = {
+                    'User-Agent': userAgent || 'Mozilla/5.0',
+                    'Referer': AJOU_BB_COURSE_URL,
+                    'Accept': '*/*',
+                    'Cookie': cookieHeader,
+                };
+
+                const nodeResp = await fetch(fullUrl, {
+                    headers,
+                    redirect: 'follow',
+                });
+
+                if (nodeResp.status === 401 || nodeResp.status === 403) {
+                    throw new AuthRequiredError(
+                        AJOU_BB_HOST,
+                        `Blackboard Ultra session expired or unauthorized (HTTP ${nodeResp.status}). Please log in again in Chrome.`,
+                    );
+                }
+
+                if (nodeResp.ok) {
+                    const contentType = nodeResp.headers.get('content-type') || '';
+                    const ab = await nodeResp.arrayBuffer();
+                    const isHtml = contentType.includes('text/html') || (ab.byteLength > 0 && Buffer.from(ab.slice(0, 50)).toString('utf8').toLowerCase().includes('<html'));
+                    if (ab && ab.byteLength > 0 && !isHtml) {
+                        return Buffer.from(ab);
+                    }
+                }
+            }
 ```
 
-- [ ] **Step 2: `_중복_및_제외` 폴더를 `_원천_아카이브`로 이동**
+- [ ] **Step 3: Run test suite to verify all existing tests pass**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/_중복_및_제외"/* "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브/"
-rm -rf "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/_중복_및_제외"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
 ```
+Expected: PASS (114/114 passing, 0 failures)
 
-- [ ] **Step 3: 생성 디렉토리 및 이동 검증**
+- [ ] **Step 4: Commit**
 
 ```bash
-ls -la "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브"
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli add adapter/ajou-bb/common.js
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli commit -m "fix(common): guard session fetch when cookies missing and sync html detection"
 ```
-Expected: `2020-2 논회실`, `논리회로실험` 폴더 정상 존재 확인.
 
 ---
 

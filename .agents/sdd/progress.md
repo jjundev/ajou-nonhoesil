@@ -14,3 +14,7 @@ Task 7: complete (Final verification, cleanup and inventory README generation, r
 Camui Task 1: complete (Parallel HWP converter engine and unit tests, review clean)
 Camui Task 2: complete (11 camui20 HWP reports parallel converted to PDF, review clean)
 Camui Task 3: complete (PDF integrity verification and README update, final review clean)
+Task 1: complete (commits b8264dc..6fa043a, review clean)
+Task 2: complete (commits 6fa043a..dc34ffe, review clean)
+Task 3: complete (commits dc34ffe..d017d8d, review clean)
+Task 4: complete (local install & live verification, review clean)

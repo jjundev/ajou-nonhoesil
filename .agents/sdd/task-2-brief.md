@@ -1,86 +1,177 @@
-# `from_the_past/정리` 소장 가치 자료 분류 및 신규 폴더 체계 재배치 구현 계획서
-
-> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
-**Goal:** `from_the_past/정리/나머지`에 혼재된 118개 항목(파일 107개, 서브디렉토리 12개)을 용도별 5대 신규 폴더(`텀프로젝트_설계`, `HDL_소스_및_예제`, `가이드라인_및_기준`, `소자_데이터시트_및_미디어`, `전학기_모범_실습보고서_camui20`)와 기존 주차별 보고서 폴더로 100% 무손실 이동(`mv`) 배치하고, `나머지` 폴더를 정리한다.
-
-**Architecture:** Python 스크립트 기반의 원자적 파일 이동 및 무결성 검증 파이프라인. 각 단계별로 디렉토리 생성 -> 파일 이동 -> 이동 전후 파일 수 및 해시/용량 검증 -> 최종 잔여 디렉토리 정리 및 인벤토리 README 생성을 수행한다.
-
-**Tech Stack:** Python 3 (os, shutil, pathlib), Bash (mv, mkdir, ls)
-
-## Global Constraints
-
-- 모든 작업은 무손실(`mv`)로 수행되어야 하며, 어떠한 소스 파일이나 보고서 원문도 삭제되거나 덮어쓰여져서는 안 된다.
-- `from_the_past/정리/나머지/_중복_및_제외`는 원천 백업 보존을 위해 `from_the_past/_원천_아카이브/`로 안전하게 상위 이동한다.
-- `camui20` 전 학기 보고서(11종)는 사용자의 지정에 따라 독립 폴더 `from_the_past/정리/전학기_모범_실습보고서_camui20/`로 격리 보관한다.
-- 미완성/문법 에러 파일(`stopwatch1`, `stopwatch_static.vhd` 등)은 `_오류_및_미완성_코드/` 하위 폴더로 격리하고 경고 안내 `README.md`를 포함한다.
-
----
-
-## File Structure
-
-- **신설 디렉토리:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/_원천_아카이브/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/` (하위 4개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/가이드라인_및_기준/`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/소자_데이터시트_및_미디어/` (하위 3개 폴더)
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/전학기_모범_실습보고서_camui20/`
-- **수정/추가 문서:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/HDL_소스_및_예제/_오류_및_미완성_코드/README.md`
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/README.md` (전체 정리 디렉토리 맵)
-- **삭제 대상:**
-  - `/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/` (파일 이동 완료 후 빈 디렉토리 삭제)
-
----
-
-
----
-
-### Task 2: 텀프로젝트 및 FPGA 설계 과제 자료 이동
+### Task 2: Announcement Attachment Parser in `parser.js`
 
 **Files:**
-- Source: `from_the_past/정리/나머지/`
-- Target: `from_the_past/정리/텀프로젝트_설계/` 하위 3개 디렉토리
+- Modify: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/parser.js`
+- Test: `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/parser.test.js`
 
 **Interfaces:**
-- Consumes: `설계과제.pdf`, `설계환경구축및실습.pdf`, `설계 계획서.hwp`, `설계 제안서.hwp`, `project_2020-2_김지성`, `project verilog 압축 파일`, `calculator_modelsim`, `project2_201423042_홍선표`, `calculator.hwp`, `설계 코드-1.txt`, `VHDL_시계.hwp`
-- Produces: 완벽히 정리된 텀프로젝트 레퍼런스 라이브러리
+- Consumes: Raw HTML announcement `body` / `bodyHtml` string and optional `rawAttachments` array
+- Produces: `extractAnnouncementAttachments(bodyHtml, rawAttachments = []) -> Array<{ file_name: string, file_size: number|null, file_url: string, mime_type: string|null }>`
+- Produces: `normalizeAnnouncement(rawAnnouncement) -> AnnouncementRecord` with populated `attachments: [...]` and accurate `has_attachments: boolean`
 
-- [ ] **Step 1: 1_공식_가이드_및_기획 파일 이동**
+- [ ] **Step 1: Write failing unit tests for announcement attachment extraction**
 
-```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/설계과제.pdf" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/설계환경구축및실습.pdf" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/설계 계획서.hwp" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/설계 제안서.hwp" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획/"
+In `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/tests/parser.test.js`, add:
+```javascript
+test('extractAnnouncementAttachments extracts data-bbfile JSON attachments', () => {
+    const html = `<p>공지</p><p><a href="https://eclass2.ajou.ac.kr/bbcswebdav/internal/courses/C1/announcements/_1/plan.pdf?token=123" data-bbtype="attachment" data-bbfile="{&quot;fileName&quot;:&quot;plan.pdf&quot;,&quot;fileSize&quot;:97377,&quot;mimeType&quot;:&quot;application/pdf&quot;,&quot;resourceUrl&quot;:&quot;https://eclass2.ajou.ac.kr/bbcswebdav/internal/courses/C1/announcements/_1/plan.pdf?token=123&quot;}">plan.pdf</a></p>`;
+    const attachments = extractAnnouncementAttachments(html);
+    assert.equal(attachments.length, 1);
+    assert.equal(attachments[0].file_name, 'plan.pdf');
+    assert.equal(attachments[0].file_size, 97377);
+    assert.equal(attachments[0].mime_type, 'application/pdf');
+    assert.equal(attachments[0].file_url, 'https://eclass2.ajou.ac.kr/bbcswebdav/internal/courses/C1/announcements/_1/plan.pdf?token=123');
+});
+
+test('extractAnnouncementAttachments extracts standard bbcswebdav links as fallback', () => {
+    const html = `<p><a href="/bbcswebdav/courses/C1/syllabus.docx">강의계획서.docx</a></p>`;
+    const attachments = extractAnnouncementAttachments(html);
+    assert.equal(attachments.length, 1);
+    assert.equal(attachments[0].file_name, '강의계획서.docx');
+    assert.equal(attachments[0].file_url, '/bbcswebdav/courses/C1/syllabus.docx');
+});
+
+test('normalizeAnnouncement populates attachments and sets has_attachments correctly', () => {
+    const raw = {
+        id: '_101_1',
+        title: '수업 운영 안내',
+        body: `<p><a href="https://eclass2.ajou.ac.kr/bbcswebdav/xid-1" data-bbtype="attachment" data-bbfile="{&quot;fileName&quot;:&quot;guide.pdf&quot;,&quot;fileSize&quot;:1024,&quot;resourceUrl&quot;:&quot;https://eclass2.ajou.ac.kr/bbcswebdav/xid-1&quot;}">guide.pdf</a></p>`,
+    };
+    const norm = normalizeAnnouncement(raw);
+    assert.equal(norm.has_attachments, true);
+    assert.equal(norm.attachments.length, 1);
+    assert.equal(norm.attachments[0].file_name, 'guide.pdf');
+});
 ```
 
-- [ ] **Step 2: 2_계산기_프로젝트_Verilog_2020_김지성 프로젝트 이동**
+- [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/project_2020-2_김지성" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/2_계산기_프로젝트_Verilog_2020_김지성/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/project verilog 압축 파일" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/2_계산기_프로젝트_Verilog_2020_김지성/"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
+```
+Expected: FAIL with `extractAnnouncementAttachments is not defined`
+
+- [ ] **Step 3: Implement `extractAnnouncementAttachments` and update `normalizeAnnouncement`**
+
+In `/Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli/adapter/ajou-bb/parser.js`:
+Add `import path from 'node:path';` at top.
+```javascript
+import path from 'node:path';
+
+/**
+ * Extracts attached file metadata from announcement body HTML or raw attachments list.
+ */
+export function extractAnnouncementAttachments(bodyHtml, rawAttachments = []) {
+    const attachments = [];
+    const seenUrls = new Set();
+
+    if (Array.isArray(rawAttachments)) {
+        for (const att of rawAttachments) {
+            if (!att) continue;
+            const url = att.url || att.downloadUrl || att.fileUrl || att.resourceUrl;
+            if (url && !seenUrls.has(url)) {
+                seenUrls.add(url);
+                attachments.push({
+                    file_name: String(att.fileName || att.name || att.title || 'attachment').trim(),
+                    file_size: typeof att.fileSize === 'number' ? att.fileSize : (typeof att.size === 'number' ? att.size : null),
+                    file_url: String(url).trim(),
+                    mime_type: att.mimeType || att.contentType || null,
+                });
+            }
+        }
+    }
+
+    if (typeof bodyHtml === 'string' && bodyHtml.trim()) {
+        const bbFileRegex = /<a\b[^>]*\bdata-bbfile="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+        let match;
+        while ((match = bbFileRegex.exec(bodyHtml)) !== null) {
+            try {
+                const decodedJson = match[1]
+                    .replace(/&quot;/g, '"')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>');
+                const parsed = JSON.parse(decodedJson);
+                const fileUrl = parsed.resourceUrl || parsed.url;
+                if (fileUrl && !seenUrls.has(fileUrl)) {
+                    seenUrls.add(fileUrl);
+                    attachments.push({
+                        file_name: String(parsed.fileName || parsed.displayName || stripHtml(match[2]) || 'attachment').trim(),
+                        file_size: typeof parsed.fileSize === 'number' ? parsed.fileSize : null,
+                        file_url: String(fileUrl).trim(),
+                        mime_type: parsed.mimeType || null,
+                    });
+                }
+            } catch {
+                // Ignore parse errors and continue
+            }
+        }
+
+        const hrefRegex = /<a\b[^>]*\bhref="([^"]*bbcswebdav[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+        while ((match = hrefRegex.exec(bodyHtml)) !== null) {
+            const rawHref = match[1].replace(/&amp;/g, '&');
+            if (rawHref && !seenUrls.has(rawHref)) {
+                seenUrls.add(rawHref);
+                const linkText = stripHtml(match[2]).trim();
+                let inferredName = linkText;
+                if (!inferredName || inferredName === rawHref) {
+                    try {
+                        const parsedUrl = new URL(rawHref, 'https://eclass2.ajou.ac.kr');
+                        inferredName = path.basename(parsedUrl.pathname) || 'attachment';
+                    } catch {
+                        inferredName = 'attachment';
+                    }
+                }
+                attachments.push({
+                    file_name: inferredName,
+                    file_size: null,
+                    file_url: rawHref,
+                    mime_type: null,
+                });
+            }
+        }
+    }
+
+    return attachments;
+}
+```
+Update `normalizeAnnouncement`:
+```javascript
+    const attachments = extractAnnouncementAttachments(bodyHtml, raw.attachments);
+    const hasAttachments = Boolean(
+        attachments.length > 0
+        || raw.hasAttachments
+        || (Array.isArray(raw.attachments) && raw.attachments.length > 0),
+    );
+
+    return {
+        announcement_id: announcementId,
+        course_id: courseId,
+        title,
+        body_text: bodyText,
+        body_html: bodyHtml,
+        author_name: authorName,
+        is_unread: isUnread,
+        created_at: createdAt,
+        modified_at: modifiedAt,
+        has_attachments: hasAttachments,
+        attachments,
+    };
 ```
 
-- [ ] **Step 3: 3_계산기_및_도어락_레퍼런스_VHDL 이동**
+- [ ] **Step 4: Run test to verify it passes**
 
 ```bash
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/calculator_modelsim" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/project2_201423042_홍선표" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/calculator.hwp" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/설계 코드-1.txt" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL/"
-mv "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/나머지/VHDL_시계.hwp" "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL/"
+npm --prefix /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli test
 ```
+Expected: PASS
 
-- [ ] **Step 4: 이동 검증**
+- [ ] **Step 5: Commit**
 
 ```bash
-ls -la "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/1_공식_가이드_및_기획"
-ls -la "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/2_계산기_프로젝트_Verilog_2020_김지성"
-ls -la "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/텀프로젝트_설계/3_계산기_및_도어락_레퍼런스_VHDL"
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli add adapter/ajou-bb/parser.js tests/parser.test.js
+git -C /Users/hyunjun_macbook_pro/Documents/Private/ajou/tools/ajou-bb-opencli commit -m "feat(parser): add extractAnnouncementAttachments and populate attachments in normalizeAnnouncement"
 ```
-Expected: 모든 파일 및 폴더가 100% 정상 배치됨.
 
 ---
 
