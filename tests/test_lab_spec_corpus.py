@@ -13,7 +13,7 @@ glob 으로 훑으면 다음에 만드는 명세가 자동으로 그물에 든�
 import unittest
 from pathlib import Path
 
-from scripts.lab import validate
+from scripts.lab import config, validate
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +29,10 @@ ROW_COUNT_WARN_ALLOWLIST = {
 
 
 def live_specs():
-    return sorted(ROOT.glob("실험*/체크리스트/명세.md"))
+    # glob 도 기반 폴더를 거친다. 여기에 `실험*` 만 적어 두면 이동 뒤 0건이
+    # 되고, `test_코퍼스가_비어_있지_않다` 하나만 빨개진 채 나머지 네 검사가
+    # 조용히 통과한다 — 그물이 있다는 착각이 그물이 없는 것보다 나쁘다.
+    return sorted((ROOT / config.EXPERIMENT_BASE).glob("실험*/체크리스트/명세.md"))
 
 
 class LiveSpecCorpus(unittest.TestCase):

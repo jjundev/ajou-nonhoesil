@@ -8,8 +8,8 @@ from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures"
-WEEK2_SPEC = ROOT / "실험01/체크리스트/명세.md"
-WEEK2_NETLIST = ROOT / "실험01/결선도/netlist.md"
+WEEK2_SPEC = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
+WEEK2_NETLIST = ROOT / config.experiment_dir(1) / "결선도/netlist.md"
 
 
 def spec_from(text):
@@ -225,9 +225,10 @@ class TestTableIntegrity(unittest.TestCase):
                             for f in validate.check_orphan_tables(spec)))
 
     def test_real_specs_have_no_orphans(self):
-        for folder in ("실험01", "실험06", "실험10"):
-            with self.subTest(folder=folder):
-                spec = parse_spec(ROOT / folder / "체크리스트" / "명세.md")
+        for n in (1, 6, 10):
+            with self.subTest(experiment=n):
+                spec = parse_spec(
+                    ROOT / config.experiment_dir(n) / "체크리스트" / "명세.md")
                 self.assertEqual(validate.check_orphan_tables(spec), [])
 
     def test_bad_cell_contents_are_errors(self):
@@ -315,15 +316,15 @@ class TestDiagnosticClaims(unittest.TestCase):
 
     def test_실험02_명세에서_실제로_잡힌다(self):
         # 이 부류로 두 번 거꾸로였던 문서다. 목록이 비면 검사가 무의미하다.
-        spec = parse_spec(ROOT / "실험02/체크리스트/명세.md")
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
         infos = [f for f in validate.validate_spec(spec) if f.level == "info"]
         self.assertTrue(infos, "실험02 명세에서 한 건도 안 잡혔다")
 
     def test_결선도에도_건다(self):
         # 결선도 쪽이 명세보다 많다 (실험10: 9 대 1).
-        spec = parse_spec(ROOT / "실험10/체크리스트/명세.md")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
         infos = [f for f in validate.check_netlist(
-            ROOT / "실험10/결선도/netlist.md", spec) if f.level == "info"]
+            ROOT / config.experiment_dir(10) / "결선도/netlist.md", spec) if f.level == "info"]
         self.assertTrue(infos, "실험10 결선도에서 한 건도 안 잡혔다")
 
 
@@ -465,7 +466,7 @@ class TestRenderedHtmlChecks(unittest.TestCase):
 
     def test_real_checklist_html_is_clean(self):
         """② 가 만든 실물은 통과해야 한다 — 그쪽은 코드가 렌더하므로."""
-        html = ROOT / "실험01/체크리스트/체크리스트.html"
+        html = ROOT / config.experiment_dir(1) / "체크리스트/체크리스트.html"
         self.assertEqual(validate.check_rendered_html(html), [])
         self.assertEqual(validate.check_embedded_images(html), [])
 
@@ -495,9 +496,14 @@ class FolderConventionTest(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.dir = Path(self.tmp.name)
 
-    def _spec_at(self, folder, experiment):
-        """`<folder>/체크리스트/명세.md` 를 만들고 (경로, spec) 을 돌려준다."""
-        d = self.dir / folder / "체크리스트"
+    def _spec_at(self, folder, experiment, base=config.EXPERIMENT_BASE):
+        """`<base>/<folder>/체크리스트/명세.md` 를 만들고 (경로, spec) 을 준다.
+
+        `base` 를 기본값으로 둔 것은 실제 배치가 `보고서/실험NN/...` 이기
+        때문이다. 위치를 일부러 어긋내는 테스트만 이 인자를 넘긴다.
+        """
+        d = self.dir / base / folder / "체크리스트" if base \
+            else self.dir / folder / "체크리스트"
         d.mkdir(parents=True)
         path = d / "명세.md"
         path.write_text(
@@ -534,6 +540,37 @@ class FolderConventionTest(unittest.TestCase):
         findings = validate.check_folder_convention(path, spec)
         self.assertTrue(any("실험01" in f.message for f in findings))
 
+    def test_요구하는_이름에_기반_경로가_섞이지_않는다(self):
+        """검사는 조부모 폴더의 **이름** 과 견준다. 기대값에 `보고서/` 가
+        섞이면 옳게 놓인 명세까지 전부 error 가 되고, 메시지도
+        "폴더 이름이 `실험1` 인데 `보고서/실험01` 를 요구한다"로 읽힌다."""
+        path, spec = self._spec_at("실험1", 1)
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(findings)
+        self.assertTrue(any("`실험01`" in f.message for f in findings))
+        self.assertFalse(any(config.EXPERIMENT_BASE in f.message
+                             for f in findings), findings)
+
+    def test_기반_폴더_밖에_있으면_잡는다(self):
+        """이름은 맞는데 위치가 옛 루트인 경우. 이름만 보던 시절엔 통과했다 —
+        2026-09 이동에서 실제로 아홉 스킬이 이 상태를 못 보고 지나갔다."""
+        path, spec = self._spec_at("실험01", 1, base="")
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(findings)
+        self.assertTrue(any(config.EXPERIMENT_BASE in f.message
+                            for f in findings), findings)
+
+    def test_엉뚱한_기반_폴더도_잡는다(self):
+        path, spec = self._spec_at("실험01", 1, base="문서")
+        findings = validate.check_folder_convention(path, spec)
+        self.assertTrue(any("문서" in f.message for f in findings), findings)
+
+    def test_이름과_위치가_둘_다_틀리면_둘_다_보고한다(self):
+        """한쪽만 알려주면 고친 뒤 다시 돌려야 나머지가 드러난다."""
+        path, spec = self._spec_at("실험1", 1, base="")
+        findings = validate.check_folder_convention(path, spec)
+        self.assertEqual(len(findings), 2, findings)
+
     def test_0을_안_채운_이름을_잡는다(self):
         path, spec = self._spec_at("실험1", 1)
         self.assertTrue(validate.check_folder_convention(path, spec))
@@ -560,7 +597,7 @@ def md_file(text):
 
 class TestCheckNotionMarkdown(unittest.TestCase):
     def test_실제_실험1_예비보고서는_깨끗하다(self):
-        path = ROOT / "실험01/output/실험01_예비보고서.md"
+        path = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
         errors = [f for f in validate.check_notion_markdown(path)
                   if f.level == "error"]
         self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
@@ -763,8 +800,8 @@ class TestCheckPulledImages(unittest.TestCase):
     """
 
     ROOT = Path(__file__).resolve().parents[1]
-    BEFORE = ROOT / "실험01/output/실험01_예비보고서_notion_baseline_v7.md"
-    AFTER = ROOT / "실험01/output/실험01_예비보고서_notion_v7.md"
+    BEFORE = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서_notion_baseline_v7.md"
+    AFTER = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서_notion_v7.md"
 
     def test_빈_링크를_error_로_잡는다(self):
         got = validate.check_pulled_images("![브레드보드 작도 캔버스]()")
@@ -812,8 +849,8 @@ class TestCheckReportWrapping(unittest.TestCase):
     """
 
     ROOT = ROOT
-    CANON = ROOT / "실험01/output/실험01_예비보고서.md"
-    WEEK3 = ROOT / "실험02/output/실험02_예비보고서.md"
+    CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
+    WEEK3 = ROOT / config.experiment_dir(2) / "output/실험02_예비보고서.md"
 
     def test_문단이_두_줄로_쪼개져_있으면_잡는다(self):
         got = validate.check_report_wrapping(
@@ -889,7 +926,7 @@ class TestCheckReportWrapping(unittest.TestCase):
         # 이 오탐은 사라지지만 실물 감싸기 160곳 중 2곳(문장이 줄바꿈 자리에서
         # 딱 끝난 경우)을 놓친다 — 실제 호출 경로에 없는 오탐을 막자고
         # 진짜 대상에서 약해지는 거래라 하지 않았다.
-        readback = self.ROOT / "실험01/output/실험01_예비보고서_notion_v7.md"
+        readback = self.ROOT / config.experiment_dir(1) / "output/실험01_예비보고서_notion_v7.md"
         self.assertEqual(validate.check_report_wrapping(
             self.CANON.read_text(encoding="utf-8")), [])
         self.assertTrue(validate.check_report_wrapping(
@@ -911,7 +948,7 @@ class TestCheckHeadingBackticks(unittest.TestCase):
     지웠고, 확인 결과 체계적 분류였다(실험01 승인본에는 백틱 헤딩이 0개다).
     """
 
-    CANON = ROOT / "실험01/output/실험01_예비보고서.md"
+    CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
     def test_헤딩_안의_백틱을_잡는다(self):
         got = validate.check_heading_backticks("## `Rn` 측정 회로")
@@ -956,7 +993,7 @@ class TestCheckTableWidth(unittest.TestCase):
     잘렸고, 11열 표 셋은 온전했다. 그래서 한계는 **11열**이다.
     """
 
-    CANON = ROOT / "실험01" / "output" / "실험01_예비보고서.md"
+    CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
     def _table(self, n, rows=2):
         head = "| " + " | ".join(f"C{i}" for i in range(n)) + " |"

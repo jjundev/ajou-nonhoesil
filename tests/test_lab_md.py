@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from scripts.lab import md
+from scripts.lab import config, md
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -157,7 +157,7 @@ class TestRealSpecFiles(unittest.TestCase):
     """Task 1 이 손으로 쓴 실물 명세가 그대로 파싱되어야 한다."""
 
     def test_week2_spec_parses(self):
-        text = (ROOT / "실험01/체크리스트/명세.md").read_text(encoding="utf-8")
+        text = (ROOT / config.experiment_dir(1) / "체크리스트/명세.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["schema"], "lab-spec/v1")
         self.assertEqual(fm["week"], 2)
@@ -167,13 +167,13 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(len(md.parse_tables(body)), 9)
 
     def test_week6_spec_parses(self):
-        text = (ROOT / "실험06/체크리스트/명세.md").read_text(encoding="utf-8")
+        text = (ROOT / config.experiment_dir(6) / "체크리스트/명세.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 6)
         self.assertEqual(len(md.parse_tables(body)), 6)   # 표 5개 + 토큰 참조표 1개
 
     def test_week12_spec_parses(self):
-        text = (ROOT / "실험10/체크리스트/명세.md").read_text(encoding="utf-8")
+        text = (ROOT / config.experiment_dir(10) / "체크리스트/명세.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 10)
         # T1 은 capture 라 셀 표가 없다. 본문의 마크다운 표는 T2(stepped) 하나뿐
@@ -216,7 +216,7 @@ class TestInlineComments(unittest.TestCase):
         self.assertEqual(md.parse_block("p: {x: 1} # 뒤")["p"], {"x": 1})
 
     def test_real_record_file_marks_unfilled_as_none(self):
-        text = (ROOT / "실험01/체크리스트/기록.md").read_text(encoding="utf-8")
+        text = (ROOT / config.experiment_dir(1) / "체크리스트/기록.md").read_text(encoding="utf-8")
         front, _ = md.split_frontmatter(text)
         self.assertIsNone(front["filled_by"])
 

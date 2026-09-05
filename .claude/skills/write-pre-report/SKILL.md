@@ -60,7 +60,10 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    따르면"이 아니라 학생이 강의노트 회로도를 직접 읽고 파악한 것처럼 쓴다.
 
    이미지는 **마크다운 이미지 문법으로 넣되 산문에서 그 경로를 입에 올리지
-   않는다.** `![브레드보드 작도 캔버스](../../.claude/assets/Breadboard.jpg)` 는
+   않는다.** 상대 경로는 세지 말고 코드로 구한다 —
+   `python3 -c "from scripts.lab import config; print(config.root_relative_prefix())"`
+   가 `output/` 에서 루트까지의 `../` 사슬을 준다. 그 사슬을 붙인
+   `![브레드보드 작도 캔버스](<사슬>.claude/assets/Breadboard.jpg)` 는
    넣고, "`.claude/assets/Breadboard.jpg` 를 크롭해 넣었다" 는 쓰지 않는다.
    그림은 사용자가 노션에서 직접 끼워 넣으므로 md 의 이 한 줄은 자리 표시
    역할을 겸한다.

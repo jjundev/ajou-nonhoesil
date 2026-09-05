@@ -205,28 +205,44 @@ def validate_spec(spec) -> list:
 
 
 def check_folder_convention(spec_path, spec) -> list:
-    """명세가 놓인 폴더 이름이 `experiment` 필드와 맞는지 본다.
+    """명세가 놓인 폴더의 **이름과 위치** 가 `experiment` 필드와 맞는지 본다.
 
-    폴더는 `<실험NN>/체크리스트/명세.md` 구조다. 리네임을 한 번 하고 끝내면
-    다음 주차에 다시 어긋나므로, ⑤ 가 매 검토마다 이것을 부른다.
+    폴더는 `<보고서>/<실험NN>/체크리스트/명세.md` 구조다. 리네임을 한 번 하고
+    끝내면 다음 주차에 다시 어긋나므로, ⑤ 가 매 검토마다 이것을 부른다.
+
+    **이름과 위치를 따로 본다.** 기대값은 `config.experiment_dir`(경로)이
+    아니라 `config.experiment_folder_name`(이름)이다 — 조부모 폴더의 `.name`
+    과 견주는 자리라 경로를 넣으면 옳게 놓인 명세까지 전부 error 가 된다.
+    위치는 그 위 한 칸(`EXPERIMENT_BASE`)을 따로 확인한다. 이름만 보던 시절엔
+    실험 폴더가 통째로 루트에서 `보고서/` 로 옮겨간 것을 이 검사가 못 봤다.
     """
     path = Path(spec_path).resolve()
     parents = path.parents
-    if len(parents) < 2:
+    if len(parents) < 3:
         return [Finding("error", str(spec_path),
-                        "명세 경로가 `<실험NN>/체크리스트/명세.md` 형태가 아니다")]
+                        "명세 경로가 "
+                        f"`{config.EXPERIMENT_BASE}/<실험NN>/체크리스트/명세.md` "
+                        "형태가 아니다")]
     actual = parents[1].name
+    actual_base = parents[2].name
     try:
-        expected = config.experiment_dir(spec.experiment)
+        expected = config.experiment_folder_name(spec.experiment)
     except (TypeError, ValueError) as e:
         # ⑤ 는 반쯤 망가진 문서에도 돌아야 한다. 여기서 죽으면 검토가 멈춘다.
         return [Finding("error", actual,
                         f"명세의 experiment 값을 폴더 이름으로 바꿀 수 없다: {e}")]
+    out = []
     if actual != expected:
-        return [Finding("error", actual,
+        out.append(Finding("error", actual,
             f"폴더 이름이 `{actual}` 인데 명세의 `experiment: {spec.experiment}` 는 "
-            f"`{expected}` 를 요구한다 — 둘 중 하나가 틀렸다")]
-    return []
+            f"`{expected}` 를 요구한다 — 둘 중 하나가 틀렸다"))
+    # 이름이 틀렸어도 위치는 마저 본다. 한 번에 하나씩만 알려주면 고친 뒤
+    # 다시 돌려야 나머지가 드러난다.
+    if actual_base != config.EXPERIMENT_BASE:
+        out.append(Finding("error", f"{actual_base}/{actual}",
+            f"실험 폴더가 `{actual_base}/` 아래에 있다 — "
+            f"`{config.EXPERIMENT_BASE}/{actual}` 이어야 한다"))
+    return out
 
 
 def check_netlist(netlist_path, spec) -> list:

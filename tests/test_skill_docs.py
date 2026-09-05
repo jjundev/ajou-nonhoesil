@@ -14,7 +14,7 @@ import re
 import unittest
 from pathlib import Path
 
-from scripts.lab import validate
+from scripts.lab import config, validate
 
 ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
@@ -22,7 +22,7 @@ RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
 REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
-CANON = ROOT / "실험01/output/실험01_예비보고서.md"
+CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
 #

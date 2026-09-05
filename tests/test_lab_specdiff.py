@@ -14,11 +14,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.lab import config
 from scripts.lab.specdiff import compare_specs, uncovered_tables
 
 ROOT = Path(__file__).resolve().parents[1]
-WEEK6 = ROOT / "실험06/체크리스트/명세.md"
-WEEK12 = ROOT / "실험10/체크리스트/명세.md"
+WEEK6 = ROOT / config.experiment_dir(6) / "체크리스트/명세.md"
+WEEK12 = ROOT / config.experiment_dir(10) / "체크리스트/명세.md"
 
 
 class CompareSpecs(unittest.TestCase):
@@ -206,8 +207,8 @@ class CompareSpecs(unittest.TestCase):
         self.assertEqual(len(table_report), 1, diffs)
         self.assertIn("원본 어디에도 없다", table_report[0])
 
-    WEEK2 = ROOT / "실험01/체크리스트/명세.md"
-    WEEK3 = ROOT / "실험03/체크리스트/명세.md"
+    WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
+    WEEK3 = ROOT / config.experiment_dir(3) / "체크리스트/명세.md"
 
     def _shifted(self, source, first, last):
         """`source` 명세의 표 ID 를 한 칸씩 밀고 새 `T2` 를 끼운 사본.
@@ -581,7 +582,7 @@ class UncoveredTablesTest(unittest.TestCase):
         self.assertIn("머리말", found[0])
         self.assertIn("1개", found[0])
 
-    WEEK2 = ROOT / "실험01/체크리스트/명세.md"
+    WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
 
     def test_머리말에_표가_없는_명세는_그_이유로는_안_짚는다(self):
         # I1 회귀. 컨트롤러 실측: 실험01·실험10 은 첫 `## T` 헤딩 앞에

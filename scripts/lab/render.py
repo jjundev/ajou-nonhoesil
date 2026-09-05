@@ -191,7 +191,7 @@ def _breadboard(spec, netlist_text) -> str:
     # 제목만 앞 쪽에 남고 그림이 다음 쪽으로 넘어가는 것을 막는다 — 표와 같은 이유다.
     return (f'<div class="tblock"><h2>브레드보드 작도 ({rows}행)</h2>'
             f"<p>단자: {_esc(labels)}</p>"
-            f'<img src="../../.claude/assets/Breadboard.jpg" '
+            f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
             'object-position:top"></div>')
 

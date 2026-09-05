@@ -2,13 +2,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.lab import config
 from scripts.lab.spec_parser import (SpecError, derived_parts, parse_spec,
                                      split_columns)
 
 ROOT = Path(__file__).resolve().parents[1]
-WEEK2 = ROOT / "실험01/체크리스트/명세.md"
-WEEK6 = ROOT / "실험06/체크리스트/명세.md"
-WEEK12 = ROOT / "실험10/체크리스트/명세.md"
+WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
+WEEK6 = ROOT / config.experiment_dir(6) / "체크리스트/명세.md"
+WEEK12 = ROOT / config.experiment_dir(10) / "체크리스트/명세.md"
 
 
 class TestWeek2(unittest.TestCase):

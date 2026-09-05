@@ -15,14 +15,23 @@ class TestManualCandidates(unittest.TestCase):
         # 폴더는 `실험04`, 파일은 `실험4.pdf`. 두 형식이 한 경로에 섞여
         # 있어서 손으로 옮기면 7주차(실험4)에서 반드시 어긋난다.
         got = config.manual_candidates(4)
-        self.assertEqual(got[0], Path("실험04/강의노트/실험4.pdf"))
+        self.assertEqual(got[0], Path("보고서/실험04/강의노트/실험4.pdf"))
         self.assertEqual(got[1],
                          Path("from_the_past/정리/강의노트/실험4.pdf"))
+
+    def test_두_번째_후보에는_실험_기반_경로가_붙지_않는다(self):
+        """과거 학기 원본은 `보고서/` 밖에 산다. 기반 경로를 후보 전체에
+        일괄로 붙이면 이쪽이 조용히 `보고서/from_the_past/...` 가 된다 —
+        파일이 없으므로 스킬은 "교안을 못 찾았다"로 넘어가고, 원인은
+        한참 뒤에나 드러난다."""
+        got = config.manual_candidates(1)
+        self.assertFalse(str(got[1]).startswith(config.EXPERIMENT_BASE))
+        self.assertEqual(got[1], Path("from_the_past/정리/강의노트/실험1.pdf"))
 
     def test_주차_폴더_사본이_먼저다(self):
         # 2026-2 교안이 배포되면 그 사본이 이긴다.
         got = config.manual_candidates(10)
-        self.assertEqual(got[0], Path("실험10/강의노트/실험10.pdf"))
+        self.assertEqual(got[0], Path("보고서/실험10/강의노트/실험10.pdf"))
 
     def test_범위_밖_번호는_거절한다(self):
         with self.assertRaises(ValueError):
@@ -161,7 +170,10 @@ class TestReportFormat(unittest.TestCase):
 
 class TestProjectRoot(unittest.TestCase):
     def test_walks_up_to_dotclaude(self):
-        self.assertEqual(config.find_project_root(ROOT / "실험01" / "체크리스트"), ROOT)
+        # 실험 폴더가 한 겹 더 깊어졌다 — 거슬러 올라가는 깊이가 늘어도
+        # 같은 루트를 찾아야 한다.
+        start = ROOT / config.experiment_dir(1) / "체크리스트"
+        self.assertEqual(config.find_project_root(start), ROOT)
 
     def test_raises_outside_project(self):
         with self.assertRaises(FileNotFoundError):
@@ -223,21 +235,114 @@ class SkillTemplateTest(unittest.TestCase):
                     self.assertEqual(validate.check_rendered_html(out), [])
 
 
+class ExperimentBaseTest(unittest.TestCase):
+    """실험 폴더가 사는 **위치**. 이름 규칙(`실험NN`)과는 다른 규칙이다.
+
+    2026-09 에 실험 폴더 여섯이 루트에서 `보고서/` 아래로 옮겨졌는데
+    `config.py` 만 안 고쳐졌다 — 아홉 스킬 전부가 없는 경로를 열었다.
+    그 이동이 눈에 안 띈 이유는 위치가 어디에도 상수로 없었기 때문이다
+    (이름 규칙은 `experiment_dir` 이 이미 한 곳에 모아 두고 있었다).
+    여기 테스트는 위치도 같은 대접을 받게 못 박는다.
+    """
+
+    def test_기반_폴더는_보고서다(self):
+        self.assertEqual(config.EXPERIMENT_BASE, "보고서")
+
+    def test_이름과_위치는_다른_함수다(self):
+        # `experiment_folder_name` 은 이름만, `experiment_dir` 은 경로.
+        # 검사기(validate.check_folder_convention)는 조부모 폴더의 *이름* 과
+        # 견주므로 접두사가 붙지 않은 쪽이 따로 필요하다.
+        self.assertEqual(config.experiment_folder_name(1), "실험01")
+        self.assertEqual(config.experiment_dir(1), "보고서/실험01")
+
+    def test_경로는_이름_앞에_기반을_붙인_것과_같다(self):
+        # 두 함수가 따로 0 패딩을 하면 한쪽만 고쳐지는 자리가 또 생긴다.
+        for n in range(1, config.EXPERIMENT_COUNT + 1):
+            with self.subTest(experiment=n):
+                self.assertEqual(
+                    config.experiment_dir(n),
+                    f"{config.EXPERIMENT_BASE}/{config.experiment_folder_name(n)}",
+                )
+
+    def test_기반이_세_입구_전부에_적용된다(self):
+        """`experiment_dir`·`manual_candidates`·`folder_for_week` — 스킬이
+        폴더를 얻는 입구는 이 셋뿐이다. 하나만 빠뜨리면 그 스킬만 조용히
+        옛 경로를 연다."""
+        base = config.EXPERIMENT_BASE
+        self.assertTrue(config.experiment_dir(3).startswith(base + "/"))
+        self.assertTrue(str(config.manual_candidates(3)[0]).startswith(base + "/"))
+        self.assertTrue(config.folder_for_week(4).startswith(base + "/"))
+        self.assertTrue(config.folder_for_week(13).startswith(base + "/"))
+
+    def test_FPGA_프로젝트도_기반_아래다(self):
+        # 실험 폴더만 옮기고 `프로젝트/` 를 루트에 두면 같은 성격의 산출물이
+        # 두 곳으로 갈린다 — 13~15주차가 오면 그때 또 이 작업을 한다.
+        self.assertEqual(config.PROJECT_DIR, "보고서/프로젝트")
+
+    def test_실험_폴더_여섯이_기반_아래_실재한다(self):
+        """상수가 실물과 어긋나면 여기서 걸린다. 아직 안 만든 실험은
+        디스크에 없는 게 정상이라 있는 것만 본다."""
+        live = sorted(p.name for p in (ROOT / config.EXPERIMENT_BASE).iterdir()
+                      if p.is_dir() and p.name.startswith("실험"))
+        self.assertEqual(
+            live, ["실험01", "실험02", "실험03", "실험05", "실험06", "실험10"])
+        for n in (1, 2, 3, 5, 6, 10):
+            with self.subTest(experiment=n):
+                self.assertTrue((ROOT / config.experiment_dir(n)).is_dir())
+
+    def test_루트로_거슬러_올라가는_사슬이_기반_깊이를_따라간다(self):
+        """②·③ 이 낸 문서가 `.claude/assets/` 그림을 가리킬 때 쓰는 `../`
+        사슬. 문자열로 박아 두면 기반 폴더가 늘 때 조용히 끊긴다 — HTML 은
+        그대로 렌더되고 그림 자리만 비어서 눈으로는 놓친다."""
+        # `보고서/실험01/체크리스트/` 에서 루트까지는 세 겹이다.
+        self.assertEqual(config.root_relative_prefix(), "../../../")
+        self.assertEqual(config.root_relative_prefix(0), "../../")
+        self.assertEqual(config.root_relative_prefix(2), "../../../../")
+
+    def test_사슬이_실제로_루트에_닿는다(self):
+        """`../` 개수를 리터럴로만 고정하면 두 리터럴이 함께 틀릴 수 있다.
+        실물 경로로 되짚어 `.claude/assets/` 가 정말 열리는지 본다."""
+        checklist_dir = ROOT / config.experiment_dir(1) / "체크리스트"
+        asset = checklist_dir / (config.root_relative_prefix()
+                                 + ".claude/assets/Breadboard.jpg")
+        self.assertTrue(asset.resolve().is_file(), asset)
+        self.assertEqual(asset.resolve(), (ROOT / ".claude/assets/Breadboard.jpg"))
+
+    def test_깊이가_정수가_아니면_거절한다(self):
+        for bad in (True, 1.5, "1"):
+            with self.subTest(depth=bad):
+                with self.assertRaises(TypeError):
+                    config.root_relative_prefix(bad)
+        with self.assertRaises(ValueError):
+            config.root_relative_prefix(-1)
+
+    def test_루트에는_실험_폴더가_남아_있지_않다(self):
+        """이동이 절반만 끝난 상태를 잡는다 — 루트 사본과 `보고서/` 사본이
+        동시에 있으면 코퍼스 glob 이 같은 명세를 두 번 세고, 사람은 옛
+        사본을 고치고 스킬은 새 사본을 읽는다."""
+        strays = sorted(p.name for p in ROOT.iterdir()
+                        if p.is_dir() and p.name.startswith("실험"))
+        self.assertEqual(strays, [], f"루트에 실험 폴더가 남아 있다: {strays}")
+
+
 class ExperimentDirTest(unittest.TestCase):
     """폴더 이름 규칙은 한 곳에서만 만든다 — 문자열로 흩뿌리면 반드시 어긋난다."""
 
     def test_두_자리로_0을_채운다(self):
-        self.assertEqual(config.experiment_dir(1), "실험01")
-        self.assertEqual(config.experiment_dir(9), "실험09")
+        self.assertEqual(config.experiment_folder_name(1), "실험01")
+        self.assertEqual(config.experiment_folder_name(9), "실험09")
+        self.assertEqual(config.experiment_dir(1), "보고서/실험01")
+        self.assertEqual(config.experiment_dir(9), "보고서/실험09")
 
     def test_열_번째는_그대로_두_자리다(self):
-        self.assertEqual(config.experiment_dir(10), "실험10")
+        self.assertEqual(config.experiment_folder_name(10), "실험10")
+        self.assertEqual(config.experiment_dir(10), "보고서/실험10")
 
     def test_0을_채워야_사전순_정렬이_시간순과_맞는다(self):
         names = sorted(config.experiment_dir(n) for n in range(1, 11))
-        self.assertEqual(names[0], "실험01")
-        self.assertEqual(names[1], "실험02")
-        self.assertEqual(names[-1], "실험10")
+        self.assertEqual(names[0], "보고서/실험01")
+        self.assertEqual(names[1], "보고서/실험02")
+        self.assertEqual(names[-1], "보고서/실험10")
 
     def test_범위_밖_번호는_거절한다(self):
         # FPGA 는 실험 번호가 없다. 11 을 허용하면 저장소가 없는 번호를 발명한다.
@@ -245,11 +350,15 @@ class ExperimentDirTest(unittest.TestCase):
             with self.subTest(experiment=bad):
                 with self.assertRaises(ValueError):
                     config.experiment_dir(bad)
+                with self.assertRaises(ValueError):
+                    config.experiment_folder_name(bad)
 
     def test_bool은_정수가_아니다(self):
         # True 는 int 의 하위형이라 조용히 `실험01` 이 된다.
         with self.assertRaises(TypeError):
             config.experiment_dir(True)
+        with self.assertRaises(TypeError):
+            config.experiment_folder_name(True)
 
 
 class WeekMappingTest(unittest.TestCase):
@@ -257,13 +366,13 @@ class WeekMappingTest(unittest.TestCase):
 
     def test_회전_구간이_핵심이다(self):
         # 5·6·7주차가 실험 5·6·4 로 어긋난다. 여기가 틀리면 엉뚱한 교안을 연다.
-        self.assertEqual(config.folder_for_week(5), "실험05")
-        self.assertEqual(config.folder_for_week(6), "실험06")
-        self.assertEqual(config.folder_for_week(7), "실험04")
+        self.assertEqual(config.folder_for_week(5), "보고서/실험05")
+        self.assertEqual(config.folder_for_week(6), "보고서/실험06")
+        self.assertEqual(config.folder_for_week(7), "보고서/실험04")
 
     def test_평범한_구간(self):
-        self.assertEqual(config.folder_for_week(2), "실험01")
-        self.assertEqual(config.folder_for_week(12), "실험10")
+        self.assertEqual(config.folder_for_week(2), "보고서/실험01")
+        self.assertEqual(config.folder_for_week(12), "보고서/실험10")
 
     def test_experiment_for_week_회전_구간이_핵심이다(self):
         # 12주차 ≠ 실험 12 다 — 폴더 이름을 되파싱하고 싶어지는 자리다.
@@ -298,7 +407,7 @@ class WeekMappingTest(unittest.TestCase):
     def test_FPGA_주차는_프로젝트_폴더다(self):
         for week in (13, 14, 15):
             with self.subTest(week=week):
-                self.assertEqual(config.folder_for_week(week), "프로젝트")
+                self.assertEqual(config.folder_for_week(week), "보고서/프로젝트")
 
     def test_중간고사_주차는_거절한다(self):
         with self.assertRaises(ValueError) as cm:

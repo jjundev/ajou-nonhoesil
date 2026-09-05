@@ -19,22 +19,63 @@ IDENTITY_FIELDS = ("team", "student_ids", "student_names")
 # 실험은 1~10 뿐이다. FPGA(13~15주차)는 실험 번호가 없어 `프로젝트/` 로 간다.
 EXPERIMENT_COUNT = 10
 
+# 주차 산출물이 사는 **위치**. 실험 폴더는 저장소 루트가 아니라 이 아래에 있다
+# (`보고서/실험01/...`). 이름 규칙(`실험NN`)과는 **다른 규칙**이라 상수를 따로
+# 둔다 — 2026-09 에 폴더 여섯을 루트에서 여기로 옮겼을 때 이름 규칙만 한 곳에
+# 모여 있고 위치는 어디에도 없어서, `config.py` 가 안 고쳐진 것을 아무도 못
+# 봤다. 아홉 스킬 전부가 없는 경로를 열었다. 위치를 옮기는 결정이 또 오면
+# **여기 한 줄만** 고친다. 문자열로 베끼지 않는다.
+EXPERIMENT_BASE = "보고서"
 
-def experiment_dir(experiment: int) -> str:
-    """실험 번호 → 폴더 이름. 두 자리로 0 을 채운다.
+
+def experiment_folder_name(experiment: int) -> str:
+    """실험 번호 → 폴더 **이름**. 두 자리로 0 을 채운다. 위치는 붙이지 않는다.
 
     0 을 안 채우면 사전순 정렬이 `실험1, 실험10, 실험2, ...` 가 되어 시간
     순서와 어긋난다. 규칙을 여기 한 곳에만 두는 이유는, 이 저장소의 반복
     결함이 "같은 규약을 세 곳에 적용하고 네 번째를 잊는 것"이기 때문이다.
+
+    경로가 필요하면 `experiment_dir` 을 쓴다. 이름만 필요한 곳은 실질적으로
+    한 군데뿐이다 — `validate.check_folder_convention` 이 명세가 놓인 폴더의
+    조부모 **이름** 과 견주는 자리다.
     """
     if isinstance(experiment, bool) or not isinstance(experiment, int):
         raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
     if not 1 <= experiment <= EXPERIMENT_COUNT:
         raise ValueError(
             f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}. "
-            "FPGA 프로젝트는 실험 번호가 없으므로 `프로젝트/` 를 씁니다."
+            f"FPGA 프로젝트는 실험 번호가 없으므로 `{PROJECT_DIR}/` 를 씁니다."
         )
     return f"실험{experiment:02d}"
+
+
+def experiment_dir(experiment: int) -> str:
+    """실험 번호 → 저장소 루트 기준 **경로**(`보고서/실험01`).
+
+    스킬이 폴더를 얻는 입구는 이것과 `manual_candidates`·`folder_for_week`
+    셋뿐이고, 셋 다 여기를 거치거나 `EXPERIMENT_BASE` 를 같은 방식으로 붙인다.
+    """
+    return f"{EXPERIMENT_BASE}/{experiment_folder_name(experiment)}"
+
+
+# 루트에서 실험 폴더까지의 깊이. `보고서/실험01` 이면 2 다.
+EXPERIMENT_DIR_DEPTH = len(Path(EXPERIMENT_BASE).parts) + 1
+
+
+def root_relative_prefix(subfolder_depth: int = 1) -> str:
+    """실험 폴더 아래 `subfolder_depth` 겹 안에서 저장소 루트까지의 `../` 사슬.
+
+    `보고서/실험01/체크리스트/체크리스트.html` 이 `.claude/assets/` 의 그림을
+    가리킬 때 쓴다. **직접 세지 않는다** — 기반 폴더가 한 겹 늘거나 줄면 이
+    사슬도 같이 변해야 하는데, `../../` 를 문자열로 박아 두면 그 연결이 끊긴다.
+    실제로 2026-09 이동에서 브레드보드 그림이 정확히 이 방식으로 끊겼다.
+    깨져도 HTML 은 렌더되고 그림 자리만 비므로 눈으로는 놓치기 쉽다.
+    """
+    if isinstance(subfolder_depth, bool) or not isinstance(subfolder_depth, int):
+        raise TypeError(f"깊이는 정수여야 합니다: {subfolder_depth!r}")
+    if subfolder_depth < 0:
+        raise ValueError(f"깊이는 0 이상이어야 합니다: {subfolder_depth}")
+    return "../" * (EXPERIMENT_DIR_DEPTH + subfolder_depth)
 
 
 # 과거 학기 교안 원본이 사는 곳. 2026-2 교안이 배포되면 각 주차 폴더의
@@ -48,8 +89,13 @@ def manual_candidates(experiment) -> list:
     **폴더는 0 을 채우고 파일 이름은 안 채운다** — `실험04/강의노트/실험4.pdf`
     처럼 한 경로에 두 형식이 섞여 있다. 손으로 옮기면 7주차(실험4)에서
     반드시 어긋난다. 그래서 이 규칙을 여기 한 곳에만 둔다.
+
+    **두 번째 후보에는 `EXPERIMENT_BASE` 를 붙이지 않는다.** 과거 학기 원본
+    아카이브는 `보고서/` 밖에 산다. 후보 목록 전체에 기반 경로를 일괄로
+    붙이면 이쪽이 조용히 없는 경로가 되고, 스킬은 "교안을 못 찾았다"로
+    넘어가 원인이 한참 뒤에 드러난다.
     """
-    folder = experiment_dir(experiment)     # 번호 유효성은 한 곳에서만 판정한다
+    folder = experiment_dir(experiment)     # 번호 유효성·위치는 한 곳에서만 정한다
     name = f"실험{experiment}.pdf"          # 0 을 채우지 않는다
     return [Path(folder) / "강의노트" / name, Path(MANUAL_ARCHIVE) / name]
 
@@ -59,7 +105,11 @@ def manual_candidates(experiment) -> list:
 WEEK_TO_EXPERIMENT = {2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
                       9: 7, 10: 8, 11: 9, 12: 10}
 PROJECT_WEEKS = (13, 14, 15)   # FPGA 텀프로젝트 — 3주치가 한 프로젝트다
-PROJECT_DIR = "프로젝트"
+# FPGA 프로젝트도 주차 산출물이라 실험 폴더와 같은 기반 아래 둔다. 실험만
+# 옮기고 이것을 루트에 남기면 같은 성격의 산출물이 두 곳으로 갈리고, 13주차가
+# 와서 폴더를 처음 만들 때 그 갈림을 다시 정리하게 된다. 아직 디스크에 없어서
+# 지금 정하는 값이 곧 실물이 된다.
+PROJECT_DIR = f"{EXPERIMENT_BASE}/프로젝트"
 NO_ARTIFACT_WEEKS = {8: "중간고사"}
 
 
@@ -139,7 +189,7 @@ def document_title(experiment: int, title: str, kind: str) -> str:
         raise ValueError(f"산출물 종류는 {list(DOCUMENT_KINDS)} 입니다: {kind!r}")
     if not isinstance(title, str) or not title.strip():
         raise ValueError(f"실험 제목이 비어 있습니다: {title!r}")
-    experiment_dir(experiment)          # 번호 유효성은 한 곳에서만 판정한다
+    experiment_folder_name(experiment)  # 번호 유효성은 한 곳에서만 판정한다
     return f"실험{experiment} {title.strip()} {kind}"
 
 
