@@ -82,7 +82,7 @@ def subsection_counts(text):
 
 
 def call_arguments(text, func_name):
-    """`func(...)` 호출의 괄호 안을 균형을 맞춰 뽑는다.
+    r"""`func(...)` 호출의 괄호 안을 균형을 맞춰 뽑는다.
 
     정규식 `\([^)]*\)` 은 중첩 괄호(`len(spec.items)`)에서 한 칸 일찍 끊긴다.
     지금은 인자 순서 덕분에 우연히 통과하지만, `item_count` 앞에 다른 중첩
