@@ -18,3 +18,8 @@ simulation/
 # 패턴에 `/` 가 있어 루트 기준으로 고정된다 — 실험 폴더가 `보고서/` 아래로
 # 옮겨갔으므로 접두사가 함께 가야 한다 (config.EXPERIMENT_BASE 와 같은 값).
 보고서/실험*/output/eli5_*.html
+
+# 개발용 가상환경 (requirements-dev.txt 의 설치 안내가 이 이름을 쓴다).
+# Homebrew 파이썬이 PEP 668 로 시스템 설치를 막아 venv 가 사실상 필수다.
+.venv/
+venv/
