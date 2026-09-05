@@ -12,6 +12,17 @@ SCRIPTS_DIR = GLOBAL_SKILL_DIR / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
+# 이 스킬은 일부러 리포 밖(홈 디렉터리)에 산다 — 여러 프로젝트가 같이 쓰기
+# 때문이다(`docs/plans/2026-09-03-global-hwp-to-pdf-skill.md:5`). 그래서
+# 설치되지 않은 기계에서는 이 파일이 검사할 대상 자체가 없다. 없는 것을
+# 실패로 세면 리포의 테스트 스위트가 이 기계에만 붙어 새로 클론한 곳마다
+# 깨진다. 그래서 "설치 안 됨" 은 건너뛰고, "설치는 됐는데 반쪽" 은 실패로
+# 남긴다 — 아래 판정을 디렉터리 존재로만 두는 이유이고, 그래야
+# `test_global_scripts_exist`·`test_skill_md_metadata` 가 여전히 뜻을 가진다.
+_INSTALLED = GLOBAL_SKILL_DIR.is_dir()
+
+
+@unittest.skipUnless(_INSTALLED, f"전역 hwp-to-pdf 스킬이 없는 환경 ({GLOBAL_SKILL_DIR})")
 class TestGlobalHwpToPdfSkill(unittest.TestCase):
     def test_global_scripts_exist(self):
         hwp_to_pdf_script = SCRIPTS_DIR / "hwp_to_pdf.py"
@@ -73,11 +84,6 @@ class TestGlobalHwpToPdfSkill(unittest.TestCase):
         with patch.dict(os.environ, {"CHROME_PATH": "/mock/nonexistent/chrome"}, clear=True):
             self.assertIsNotNone(hwp_to_pdf)
 
-    def test_port_allocation_offset(self):
-        # Base port offset formula check: agent i with offset 10
-        base_ports = [9222 + i * 10 for i in range(3)]
-        self.assertEqual(base_ports, [9222, 9232, 9242])
-
     def test_skill_md_metadata(self):
         skill_file = GLOBAL_SKILL_DIR / "SKILL.md"
         self.assertTrue(skill_file.exists(), "SKILL.md must exist in global skill")
@@ -86,6 +92,14 @@ class TestGlobalHwpToPdfSkill(unittest.TestCase):
         self.assertIn("name: hwp-to-pdf", content)
         self.assertIn("description:", content)
         self.assertNotIn("disable-model-invocation: true", content, "Should be model-invoked")
+
+# 이 계산은 전역 스킬을 건드리지 않으므로 설치 여부와 무관하게 돌아야 한다.
+class TestPortAllocation(unittest.TestCase):
+    def test_port_allocation_offset(self):
+        # Base port offset formula check: agent i with offset 10
+        base_ports = [9222 + i * 10 for i in range(3)]
+        self.assertEqual(base_ports, [9222, 9232, 9242])
+
 
 if __name__ == "__main__":
     unittest.main()
