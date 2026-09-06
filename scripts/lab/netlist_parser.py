@@ -22,9 +22,11 @@ KINDS = ("common", "lookup", "sources", "open-issues", "circuit")
 _H1 = re.compile(r"^#[ \t]+(?!#)(.+?)[ \t]*$", re.M)
 _ATTR = re.compile(r"^-[ \t]+([a-z_]+)[ \t]*:[ \t]*(.*)$")
 
-# `- U1 = 74HC08 (quad ...)` 또는 `## U1 = \`7490\` (decade counter)`.
-# 칩 이름은 공백·괄호·쉼표·백틱 앞까지다.
-IC_DECL = re.compile(r"(U\d+)[ \t]*=[ \t]*`?([^\s(,`]+)")
+# `- U1 = 74HC08 (quad ...)` 또는 ``## U1 = `7490` (decade counter)``.
+# 백틱으로 감싼 이름은 닫는 백틱까지 통째로 잡는다 — 실험10 의
+# `` `741 OP amp` `` 처럼 낱말이 여럿인 칩이 실재한다. 첫 공백에서 끊으면
+# `741` 이 되어 칩 교체 배너가 엉뚱한 이름을 말한다.
+IC_DECL = re.compile(r"(U\d+)[ \t]*=[ \t]*(`[^`\n]+`|[^\s(,`\n]+)")
 
 _BACKFILL = (
     "`# ` 절마다 `- kind:` 를 적고, 회로 절에는 `- id:`·`- item:`·`- tables:` 를 "
@@ -57,6 +59,7 @@ class NetlistSection:
         """
         out = []
         for _, chip in IC_DECL.findall(self.body):
+            chip = chip.strip("`")
             if chip not in out:
                 out.append(chip)
         return out
@@ -141,10 +144,15 @@ def parse_netlist(path) -> LabNetlist:
     if not heads:
         raise NetlistError(f"{path}: `# ` 절이 하나도 없습니다. {_BACKFILL}")
 
+    # `split_frontmatter` 가 떼어낸 프론트매터만큼 줄 번호가 밀린다. 안 더하면
+    # 오류가 가리키는 줄이 프론트매터 한복판이라 백필하려는 사람이 엉뚱한 곳을
+    # 연다 — 이 모듈이 존재하는 이유가 실행 가능한 오류 메시지다.
+    offset = text[: len(text) - len(body)].count("\n")
+
     sections = []
     for n, m in enumerate(heads):
         end = heads[n + 1].start() if n + 1 < len(heads) else len(body)
-        line = body[: m.start()].count("\n") + 1
+        line = offset + body[: m.start()].count("\n") + 1
         sections.append(_parse_section(m.group(1), body[m.end():end], line, path))
 
     seen = set()

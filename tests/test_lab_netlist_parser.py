@@ -128,6 +128,45 @@ class ParseRejects(unittest.TestCase):
         with self.assertRaises(NetlistError):
             parse_netlist(_write(text))
 
+    def test_줄_번호가_파일_기준이다(self):
+        """프론트매터를 뺀 본문 기준으로 세면 오류가 프론트매터 한복판을 가리킨다."""
+        text = MINIMAL.replace("- kind: common\n", "")
+        with self.assertRaises(NetlistError) as cm:
+            parse_netlist(_write(text))
+        self.assertIn(":8 ", str(cm.exception))
+
+
+class ChipNames(unittest.TestCase):
+    """칩 이름은 배선 본문에서 뽑는다. 칩 교체 배너가 이것을 그대로 말한다."""
+
+    def _section(self, body):
+        text = MINIMAL.replace(
+            "- U1 = 74HC08 (quad 2-input AND, DIP-14)\n"
+            "  - pin 14 → VCC(+5V)\n"
+            "  - pin 1  ← 입력 A\n"
+            "  - 미사용 입력핀: pin 9, 10 → GND\n", body)
+        return parse_netlist(_write(text)).circuits[0]
+
+    def test_괄호_설명이_붙은_칩(self):
+        self.assertEqual(
+            self._section("- U1 = 74HC08 (quad 2-input AND, DIP-14)\n").ics,
+            ["74HC08"])
+
+    def test_백틱으로_감싼_칩(self):
+        self.assertEqual(self._section("## U1 = `7490` (decade counter)\n").ics,
+                         ["7490"])
+
+    def test_낱말이_여럿인_칩을_자르지_않는다(self):
+        """실험10 의 `741 OP amp`. 첫 공백에서 끊으면 `741` 이 된다."""
+        self.assertEqual(
+            self._section("## U4 = `741 OP amp` (반전 가산 증폭기)\n").ics,
+            ["741 OP amp"])
+
+    def test_같은_칩을_두_번_세지_않는다(self):
+        self.assertEqual(
+            self._section("- U1 = 74HC08 (quad)\n- U3 = 74HC08 (quad)\n").ics,
+            ["74HC08"])
+
 
 class RealExperiment1(unittest.TestCase):
     """실물이 적합성 픽스처다 (`docs/schema/lab-spec-v1.md` 와 같은 규율)."""
