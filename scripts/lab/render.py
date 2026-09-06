@@ -271,8 +271,23 @@ def common_page(spec, netlist) -> str:
     옛 렌더러는 그것을 배선 단계 7~11번으로 찍었다.
     """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
+    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구는 "미사용 입력핀은
+    # 전부 GND" 였는데 주차의 절반에서 거짓이다 — 실험02 는 교안 p8 도면대로
+    # pin 9·11·13 을 **VCC** 로 올리고("이 주차는 '전부 GND' 가 아니다"),
+    # 실험06 은 active-low 비동기 입력(`SD`·`RD`·`PRE`·`CLR`)을 VCC 로 올린다
+    # (GND 로 내리면 그 F/F 이 영구히 preset/clear 에 걸린다). 이 줄은 학생이
+    # 실험실에서 가장 먼저 읽는 줄이라, 틀리면 그대로 잘못 배선한다. 주차별
+    # 규칙은 결선도의 `kind: common` 절이 담고 바로 아래 같은 쪽에 인쇄된다.
+    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구는 "미사용 입력핀은
+    # 전부 GND" 였는데 주차의 절반에서 거짓이다 — 실험02 는 교안 p8 도면대로
+    # pin 9·11·13 을 **VCC** 로 올리고("이 주차는 '전부 GND' 가 아니다"),
+    # 실험06 은 active-low 비동기 입력(`SD`·`RD`·`PRE`·`CLR`)을 VCC 로 올린다
+    # (GND 로 내리면 그 F/F 이 영구히 preset/clear 에 걸린다). 이 줄은 학생이
+    # 실험실에서 가장 먼저 읽는 줄이라, 틀리면 그대로 잘못 배선한다. 주차별
+    # 규칙은 결선도의 `kind: common` 절이 담고 바로 아래 같은 쪽에 인쇄된다.
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
+           "미사용 입력핀을 띄워 두지 않는다 (플로팅 금지) — "
+           "GND 로 내릴지 VCC 로 올릴지는 아래 공통 규칙을 본다</div>"]
     out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
     out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 

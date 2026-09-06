@@ -252,6 +252,34 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("<p>뒤 문단이다.</p>", html)
         self.assertNotIn("앞 문단이다. 뒤 문단이다", html)
 
+    def test_배너가_주차마다_다른_것을_말하지_않는다(self):
+        """옛 배너는 `미사용 입력핀은 전부 GND` 를 하드코딩했다 — 실험02 는
+        교안 p8 도면대로 pin 9·11·13 을 **VCC** 로 올리고 결선도가 "이 주차는
+        '전부 GND' 가 아니다"라고 못 박는다. 실험06 은 active-low 비동기
+        입력을 VCC 로 올린다. 학생이 가장 먼저 읽는 줄이라 틀리면 그대로
+        잘못 배선한다."""
+        banner = self.html[self.html.index('class="power"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertNotIn("전부 GND", banner)
+        self.assertIn("플로팅 금지", banner)
+        self.assertIn("공통 규칙", banner)
+
+    def test_실험02_인쇄본이_전부_GND_라고_말하지_않는다(self):
+        """실물 회귀. 실험02 결선도가 스스로 그 규칙을 부정한다.
+
+        검사는 **배너 한 줄**로 좁힌다 — 결선도 본문이 "실험01 규칙을 복사해
+        오면 교안과 어긋난다" 며 옛 문구 `"미사용 입력핀은 전부 GND"` 를 직접
+        인용해 반박하므로, 문서 전체에서 그 부분문자열을 찾으면 배너가 옳게
+        고쳐졌어도 이 인용문에 걸려 거짓으로 실패한다."""
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(2) / "결선도/netlist.md")
+        html = render_checklist(spec, netlist, TEMPLATE)
+        banner = html[html.index('class="power"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertNotIn("전부 GND", banner)
+        self.assertIn("이 주차는", html)          # 결선도의 반박이 실린다
+
 
 class TestCircuitPages(unittest.TestCase):
     """회로 하나 = 결선도 + 배선 + 유의사항 + 측정표. 실험실의 작업 단위는

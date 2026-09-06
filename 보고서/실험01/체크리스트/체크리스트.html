@@ -54,6 +54,10 @@
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
 
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
   /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
   .mismatch td { height: 8mm; background: #fafafa; }
 
@@ -65,19 +69,30 @@
      으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
   .ov { border-top: 1px solid currentColor; display: inline-block;
         line-height: 1.35; padding-top: 1px; }
-  .sketch { border: 1px solid #333; height: 45mm; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid #333; height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
+              font-size: 9.5pt; line-height: 1.5; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
 </style>
 
 <h1>실험1 Basic Gates 체크리스트</h1>
-<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 미사용 입력핀은 전부 GND (플로팅 금지)</div>
-<p class="legend">확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
+<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 미사용 입력핀을 띄워 두지 않는다 (플로팅 금지) — GND 로 내릴지 VCC 로 올릴지는 아래 공통 규칙을 본다</div>
+<p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
+<p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
+<p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
 <h2>오늘의 흐름</h2>
 <table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/5</td><td>C1 · 3-input AND (74HC08)</td><td>74HC08</td><td>T1 3-input AND 진리표</td></tr><tr><td>2/5</td><td>C2 · 3-input OR (74HC32)</td><td>74HC32</td><td>T2 3-input OR 진리표</td></tr><tr><td>3/5</td><td>C3 · 3-input NAND (74HC08 + 74HC00)</td><td>74HC08 · 74HC00</td><td>T3 3-input NAND 진리표</td></tr><tr><td>4/5</td><td>C4 · 3-input NOR (74HC32 + 74HC02)</td><td>74HC32 · 74HC02</td><td>T4 3-input NOR 진리표</td></tr><tr><td>5/5</td><td>C5 · 복합 논리회로 (74HC04 + 74HC08 + 74HC32)</td><td>74HC04 · 74HC08 · 74HC32</td><td>T5 복합회로 진리표</td></tr></tbody></table>
 <h2>공통 규칙</h2>
 <ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li><li>미사용 입력핀은 전부 GND 로 내린다. 플로팅 금지. 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 내리면 칩이 죽는다)</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다</li><li>LED 는 애노드 쪽에 330Ω 직렬, 캐소드 → GND (교안 p11·p12·p13 의 "다이오드 연결 시, 330Ω 저항 필수" 박스)</li><li>물리 칩 재사용: 교안 p10 준비물은 74HC00 / 74HC02 / 74HC04(2개) / 74HC08 / 74HC32 / 74HC86 각 1개(74HC04 만 2개)다. 아래에서 U1·U3·U8 은 같은 74HC08 한 개를, U2·U5·U9 는 같은 74HC32 한 개를 항목마다 재배선해 쓰는 것이다. 동시에 세 회로를 올릴 수는 없다</li><li>74HC02 는 나머지 셋과 핀 배치가 다르다. 출력 핀 기준으로 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li></ul>
 <div class="tblock"><h2>참조 핀아웃</h2>
-<p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.</p>
 <table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>게이트4</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC00 (quad NAND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC08 (quad AND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC32 (quad OR)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC02 (quad NOR)</td><td>2,3 → 1</td><td>5,6 → 4</td><td>8,9 → 10</td><td>11,12 → 13</td><td>14</td><td>7</td></tr></tbody></table>
+<p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.</p>
 </div>
 <h2>미확정 사항 — 실험실에서 확인할 것</h2>
 <p>교안 원문이 아닌 판단을 전부 모은다. 명세 쪽 미확정도 여기로 온다.</p>
@@ -87,7 +102,8 @@
 <div class="banner">준비 — 꽂는다: 74HC08</div>
 <div class="wirebox">
 <img src="../결선도/실험01_결선도_3입력_AND.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_AND.png</p>
-<div class="chip"><h4>U1 = 74HC08 (quad 2-input AND, DIP-14)</h4><ol start="1">
+<div class="chip"><h4>U1 = 74HC08 (quad 2-input AND, DIP-14)</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A</li>
@@ -96,7 +112,8 @@
 <li><span class="box"></span>pin 3  → L1 애노드 (330Ω 직렬) → GND    ※ 교안 p11 의 중간단 LED</li>
 <li><span class="box"></span>pin 5  ← 입력 C</li>
 <li><span class="box"></span>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A·B·C, T1 의 검증 대상</li>
-</ol></div>
+</ol>
+</div>
 </div>
 <div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
 <div class="chipunused"><b>U1 = 74HC08 (quad 2-input AND, DIP-14)</b><ul>
@@ -136,7 +153,8 @@
 <div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC08 · 꽂는다: 74HC32</div>
 <div class="wirebox">
 <h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
-<div class="chip"><h4>U2 = 74HC32 (quad 2-input OR, DIP-14)</h4><ol start="1">
+<div class="chip"><h4>U2 = 74HC32 (quad 2-input OR, DIP-14)</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A</li>
@@ -145,7 +163,8 @@
 <li><span class="box"></span>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
 <li><span class="box"></span>pin 5  ← 입력 C</li>
 <li><span class="box"></span>pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = A+B+C, T2 의 검증 대상</li>
-</ol></div>
+</ol>
+</div>
 </div>
 <div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
 <div class="chipunused"><b>U2 = 74HC32 (quad 2-input OR, DIP-14)</b><ul>
@@ -186,21 +205,25 @@
 <p>교안 p12 회로도 그대로. AND 로 A·B 를 만들고 NAND 로 C 와 합쳐 (A·B·C)' 를 낸다.</p>
 <div class="wirebox">
 <img src="../결선도/실험01_결선도_3입력_NAND.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_NAND.png</p>
-<div class="chip"><h4>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</h4><ol start="1">
+<div class="chip"><h4>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A</li>
 <li><span class="box"></span>pin 2  ← 입력 B</li>
 <li><span class="box"></span>pin 3  → U4.pin1          (게이트1 출력 A·B)</li>
 <li><span class="box"></span>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
-</ol></div>
-<div class="chip"><h4>U4 = 74HC00 (quad 2-input NAND, DIP-14)</h4><ol start="1">
+</ol>
+</div>
+<div class="chip"><h4>U4 = 74HC00 (quad 2-input NAND, DIP-14)</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← U3.pin3</li>
 <li><span class="box"></span>pin 2  ← 입력 C</li>
 <li><span class="box"></span>pin 3  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 Y = (A·B·C)', T3 의 검증 대상</li>
-</ol></div>
+</ol>
+</div>
 </div>
 <div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
 <div class="chipunused"><b>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</b><ul>
@@ -245,21 +268,25 @@
 <p>같은 구조를 OR → NOR 로 바꾼 것. 74HC02 의 핀 순서에 주의 (출력이 pin 1).</p>
 <div class="wirebox">
 <h3>브레드보드 작도 (16행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:147.4mm;object-fit:cover;object-position:top">
-<div class="chip"><h4>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</h4><ol start="1">
+<div class="chip"><h4>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A</li>
 <li><span class="box"></span>pin 2  ← 입력 B</li>
 <li><span class="box"></span>pin 3  → U6.pin2          (게이트1 출력 A+B)</li>
 <li><span class="box"></span>pin 3  → L1 애노드 (330Ω 직렬) → GND</li>
-</ol></div>
-<div class="chip"><h4>U6 = 74HC02 (quad 2-input NOR, DIP-14)</h4><ol start="1">
+</ol>
+</div>
+<div class="chip"><h4>U6 = 74HC02 (quad 2-input NOR, DIP-14)</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 2  ← U5.pin3          (게이트1 입력 A — pin 1 이 아니다)</li>
 <li><span class="box"></span>pin 3  ← 입력 C           (게이트1 입력 B)</li>
 <li><span class="box"></span>pin 1  → L2 애노드 (330Ω 직렬) → GND    ※ 게이트1 출력. Y = (A+B+C)', T4 의 검증 대상</li>
-</ol></div>
+</ol>
+</div>
 </div>
 <div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
 <div class="chipunused"><b>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</b><ul>
@@ -304,7 +331,8 @@
 <p>교안 p13. 입력 2개(A, B), 출력 3개(X, Y, Z), LED 3개. C 입력은 없다.</p>
 <div class="wirebox">
 <img src="../결선도/실험01_결선도_복합논리회로.png" style="width:100%"><p class="src">결선도: 실험01_결선도_복합논리회로.png</p>
-<div class="chip"><h4>U7 = 74HC04 (hex inverter, DIP-14)</h4><ol start="1">
+<div class="chip"><h4>U7 = 74HC04 (hex inverter, DIP-14)</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A           (인버터1 입력)</li>
@@ -312,15 +340,19 @@
 <li><span class="box"></span>pin 3  ← U8.pin3          (인버터2 입력 A'·B)</li>
 <li><span class="box"></span>pin 4  → U9.pin2          (인버터2 출력 Z = (A'·B)')</li>
 <li><span class="box"></span>pin 4  → LED_Z 애노드 (330Ω 직렬) → GND</li>
-</ol></div>
-<div class="chip"><h4>U8 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</h4><ol start="1">
+</ol>
+</div>
+<div class="chip"><h4>U8 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← U7.pin2          (A')</li>
 <li><span class="box"></span>pin 2  ← 입력 B</li>
 <li><span class="box"></span>pin 3  → U7.pin3          (A'·B)</li>
-</ol></div>
-<div class="chip"><h4>U9 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</h4><ol start="1">
+</ol>
+</div>
+<div class="chip"><h4>U9 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</h4>
+<ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 입력 A           (게이트1)</li>
@@ -329,7 +361,8 @@
 <li><span class="box"></span>pin 4  ← 입력 A           (게이트2)</li>
 <li><span class="box"></span>pin 5  ← 입력 B</li>
 <li><span class="box"></span>pin 6  → LED_Y 애노드 (330Ω 직렬) → GND    ※ Y = A + B</li>
-</ol></div>
+</ol>
+</div>
 </div>
 <div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
 <div class="chipunused"><b>U7 = 74HC04 (hex inverter, DIP-14)</b><ul>
