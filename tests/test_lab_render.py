@@ -5,9 +5,10 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
-from scripts.lab.render import (CLOSING, _esc, _plain, _split_circuit_body,
-                                circuit_pages, closing_page, common_page,
-                                crop_rows, render_checklist)
+from scripts.lab.render import (CLOSING, _blocks, _esc, _plain,
+                                _split_circuit_body, circuit_pages,
+                                closing_page, common_page, crop_rows,
+                                render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,6 +152,16 @@ class TestCommonPage(unittest.TestCase):
     def test_기록_대상_표의_확인_칸을_공통면이_만들지_않는다(self):
         """`.check` 개수는 회로 페이지에서만 나온다 — 개수 검사가 명세에서 센다."""
         self.assertNotIn('class="check"', self.html)
+
+    def test_참조_핀아웃_표를_두_번_찍지_않는다(self):
+        """`_blocks` 가 표를 제자리에 싣게 되면서 `lookup` 이 중복 렌더가 됐다."""
+        self.assertEqual(self.html.count("74HC02 (quad NOR)"), 1)
+
+    def test_미확정_표를_두_번_찍지_않는다(self):
+        """체크박스 없는 사본이 앞에 한 번 더 찍히면 어느 쪽에 표기할지 갈린다."""
+        self.assertEqual(self.html.count("<td class=\"box\"></td>"),
+                         self.html.count("<tr><td class=\"box\"></td>"))
+        self.assertEqual(self.html.count("M10"), 1)
 
 
 class TestCircuitPages(unittest.TestCase):
@@ -546,3 +557,41 @@ class ChecklistTitleTest(unittest.TestCase):
                       render_checklist(spec, netlist, tmpl))
         self.assertIn(config.document_title(spec.experiment, spec.title, "기록"),
                       derive_record(spec))
+
+
+class TestBlocksTables(unittest.TestCase):
+    """회로·공통 절의 마크다운 표가 인쇄본에서 통째로 사라지던 자리다.
+    실험10 공통 규칙의 전원 레일 표가 그 주차 최대 사고 지점인데 빠졌다."""
+
+    def test_표를_원문_위치에_인쇄한다(self):
+        html = _blocks("앞 산문이다.\n\n"
+                       "| 레일 | 값 |\n|---|---|\n| VCC | +5V |\n\n"
+                       "뒤 산문이다.\n")
+        self.assertLess(html.index("앞 산문"), html.index("<table"))
+        self.assertLess(html.index("<table"), html.index("뒤 산문"))
+        self.assertIn("<th>레일</th>", html)
+        self.assertIn("<td>+5V</td>", html)
+
+    def test_표_행이_하나도_빠지지_않는다(self):
+        """행 하나만 싣는 변이가 `<table` 존재 검사로는 통과한다."""
+        body = ("| 핀 | 연결 |\n|---|---|\n"
+                + "".join(f"| {n} | GND |\n" for n in range(1, 8)))
+        html = _blocks(body)
+        for n in range(1, 8):
+            with self.subTest(pin=n):
+                self.assertIn(f"<td>{n}</td>", html)
+
+    def test_표에_체크박스를_붙이지_않는다(self):
+        """산문 속 표는 참조용이다. 배선표만 체크박스를 받는다 (Task 4)."""
+        html = _blocks("| 핀 | 연결 |\n|---|---|\n| 14 | VCC |\n")
+        self.assertNotIn('class="box"', html)
+
+    def test_구분선_없는_파이프_줄은_버린다(self):
+        """표가 아닌 `|` 줄이 문단으로 새어 나오면 인쇄본에 파이프가 찍힌다."""
+        html = _blocks("산문\n| 구분선이 없다 |\n")
+        self.assertNotIn("|", html)
+        self.assertIn("산문", html)
+
+    def test_표기가_벗겨진다(self):
+        html = _blocks("| 소자 |\n|---|\n| `7490` **주의** |\n")
+        self.assertIn("<td>7490 주의</td>", html)

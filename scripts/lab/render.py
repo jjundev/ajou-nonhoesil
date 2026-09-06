@@ -90,7 +90,7 @@ _BULLET = re.compile(r"^([ \t]*)-[ \t]+(.*)$")
 
 
 def _blocks(body: str) -> str:
-    """`- ` 불릿·열 0 산문·`##` 헤딩을 HTML 로. 표 줄(`|`)은 건너뛴다.
+    """`- ` 불릿·열 0 산문·`##` 헤딩·**마크다운 표**를 HTML 로.
 
     들여쓴 이어지는 줄을 앞 항목에 붙인다 — 버리면 여러 줄로 쓴 경고가 중간에서
     잘린다. 74HC02 핀 순서 경고가 실제로 세 줄짜리 불릿이고, 그 경고를 netlist
@@ -98,6 +98,12 @@ def _blocks(body: str) -> str:
 
     빈 줄 없이 이어지는 열 0 산문 줄은 한 문단으로 합친다 — netlist 의
     "다르면 배선 오류다" 경고가 실제로 두 줄이다.
+
+    표는 **원문 위치에** 인쇄한다. 옛 렌더러는 `|` 로 시작하는 줄을 전부 버렸고,
+    그래서 실험10 공통 규칙의 전원 레일 표(그 주차 최대 사고 지점)와 실험02·03·05
+    회로 절의 소자 배치·팬아웃 표가 인쇄본에서 통째로 사라졌다. 여섯 주차에서
+    169줄이다. 여기 실린 표는 참조용이라 체크박스를 받지 않는다 — 체크박스는
+    칩 상자 안의 배선표만 받는다.
     """
     out, items, para = [], [], []
 
@@ -112,29 +118,44 @@ def _blocks(body: str) -> str:
             out.append(f"<p>{_esc(' '.join(para))}</p>")
             para.clear()
 
-    for raw in body.split("\n"):
-        line = raw.rstrip()
+    lines = body.split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i].rstrip()
         stripped = line.strip()
         if not stripped:
             flush_para()
+            i += 1
             continue
         if stripped.startswith("|"):
-            continue                      # 표는 부르는 쪽이 따로 렌더한다
+            table, nxt = md.parse_table_at(lines, i)
+            if table is None:
+                i += 1                    # 구분선 없는 `|` 줄 — 표가 아니다
+                continue
+            flush_items()
+            flush_para()
+            out.append(_md_table_html(table))
+            i = nxt
+            continue
         if stripped.startswith("#"):
             flush_items()
             flush_para()
             out.append(f"<h4>{_esc(_plain(stripped.lstrip('# ')))}</h4>")
+            i += 1
             continue
         m = _BULLET.match(line)
         if m and not m.group(1):
             flush_para()
             items.append(_plain(m.group(2)))
+            i += 1
             continue
         if line.startswith((" ", "\t")) and items:
             items[-1] += " " + _plain(stripped)
+            i += 1
             continue
         flush_items()
         para.append(_plain(stripped))
+        i += 1
     flush_items()
     flush_para()
     return "\n".join(out)
@@ -200,15 +221,19 @@ def common_page(spec, netlist) -> str:
         out.append(_blocks(section.body))
 
     for section in netlist.of_kind("lookup"):
+        # `_blocks` 가 본문의 표를 제자리에 싣는다 — 여기서 또 렌더하면 두 번
+        # 찍힌다. 체크박스가 필요한 `open-issues` 만 따로 렌더한다.
         out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
         out.append(_blocks(section.body))
-        for table in md.parse_tables(section.body):
-            out.append(_md_table_html(table))
         out.append("</div>")
 
     for section in netlist.of_kind("open-issues"):
         out.append(f"<h2>{_esc(_plain(section.title))} — 실험실에서 확인할 것</h2>")
-        out.append(_blocks(section.body))
+        # 표는 아래에서 체크박스를 붙여 따로 렌더한다. `_blocks` 에 그대로 넘기면
+        # 체크박스 없는 사본이 앞에 한 번 더 찍힌다.
+        prose = "\n".join(line for line in section.body.split("\n")
+                          if not line.strip().startswith("|"))
+        out.append(_blocks(prose))
         for table in md.parse_tables(section.body):
             out.append(_md_table_html(table, lead_checkbox=True))
 
