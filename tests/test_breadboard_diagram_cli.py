@@ -48,6 +48,41 @@ def _choices():
     raise AssertionError("--circuit 의 choices 를 못 찾았다")
 
 
+# 레일에 홀이 없는 행. `Breadboard.jpg` 의 레일 홀 컬럼을 픽셀로 훑어 얻었다 —
+# 이 행을 `bridge_row` 로 쓰면 점퍼를 꽂을 구멍이 없다.
+NO_HOLE_ROWS = {2, 3, 4, 9, 15, 21, 32}
+
+
+def _builder_names():
+    """파일 안 `build_*` 함수 이름."""
+    return [n.name for n in _tree().body
+            if isinstance(n, ast.FunctionDef) and n.name.startswith("build_")]
+
+
+def _calls_in(fn_name, method):
+    """`build_*` 함수 안의 `bb.<method>(...)` 호출 노드."""
+    for node in _tree().body:
+        if isinstance(node, ast.FunctionDef) and node.name == fn_name:
+            return [c for c in ast.walk(node)
+                    if isinstance(c, ast.Call)
+                    and isinstance(c.func, ast.Attribute)
+                    and c.func.attr == method]
+    raise AssertionError(f"{fn_name} 를 못 찾았다")
+
+
+def _bridge_rows(fn_name):
+    """그 빌더가 브리지를 그리는 행 번호."""
+    rows = []
+    for call in _calls_in(fn_name, "connect_unused_inputs"):
+        for kw in call.keywords:
+            if kw.arg == "bridge_row":
+                rows.append(ast.literal_eval(kw.value))
+    for call in _calls_in(fn_name, "bridge_rails"):
+        if len(call.args) >= 3:
+            rows.append(ast.literal_eval(call.args[2]))
+    return rows
+
+
 class BreadboardDispatch(unittest.TestCase):
     def test_회로_ID_가_빌더를_공유하지_않는다(self):
         """두 회로가 한 빌더를 쓰면 둘 중 하나는 반드시 틀린 그림이다."""
@@ -71,6 +106,34 @@ class BreadboardDispatch(unittest.TestCase):
             if gone not in supported:
                 with self.subTest(circuit=gone):
                     self.assertNotIn(f"`{gone}`", doc)
+
+
+class RailBridge(unittest.TestCase):
+    """전원 레일쌍 넷은 물리적으로 분리된 스트립이다.
+
+    칩 7번 핀을 좌측 GND 레일에 내리고 미사용 입력을 중앙 GND 레일에 내리면,
+    두 레일이 이어져 있지 않아 그 미사용 입력들이 그대로 뜬다. 배선표로는
+    보이지 않고 그림을 열어야 보인다.
+    """
+
+    def test_중앙_GND_레일로_내리면_bridge_row_를_넘긴다(self):
+        missing = []
+        for fn in _builder_names():
+            for call in _calls_in(fn, "connect_unused_inputs"):
+                pins = ast.literal_eval(call.args[0])
+                if not any(8 <= p <= 14 for p in pins):
+                    continue        # 1~7번은 7번 핀과 같은 레일로 간다
+                if "bridge_row" not in {k.arg for k in call.keywords}:
+                    missing.append(f"{fn}: 핀 {pins} 이 중앙 GND 레일에서 끝난다")
+        self.assertEqual(missing, [], "\n".join(missing))
+
+    def test_bridge_row_는_레일_홀이_있는_행이다(self):
+        bad = []
+        for fn in _builder_names():
+            for row in _bridge_rows(fn):
+                if row in NO_HOLE_ROWS:
+                    bad.append(f"{fn}: {row}행에는 레일 홀이 없다")
+        self.assertEqual(bad, [], "\n".join(bad))
 
 
 if __name__ == "__main__":
