@@ -243,6 +243,11 @@ def common_page(spec, netlist) -> str:
 
 
 _CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
+# ``## U1 = `7490` (decade counter)`` — 실험02·10 의 배선 표기. `IC_DECL` 은
+# 이미 이 형식을 읽는다(netlist_parser.py). 렌더러만 못 읽어서 실험10 P1 의
+# 배선 80줄이 통째로 사라졌다.
+_CHIP_HEAD = re.compile(r"^#{2,}[ \t]+(U\d+[ \t]*=[ \t]*.+?)[ \t]*$")
+_ANY_HEAD = re.compile(r"^#{1,}[ \t]+\S")
 
 _PHOTO = {
     "truth-table": "사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 {tid} row3.jpg 형식",
@@ -254,6 +259,31 @@ _PHOTO = {
 def _new_chip(head: str) -> dict:
     return {"type": "chip", "head": _plain(head), "wires": [], "unused": [],
             "notes": [], "tables": []}
+
+
+def _absorb_wiring(chip, table) -> None:
+    """헤딩형 칩 상자 아래의 마크다운 표를 배선표로 흡수한다.
+
+    표를 **표인 채로** 남긴다 — 불릿으로 펴면 실험10 의 `핀 | 연결 | 왜` 가
+    정렬을 잃고, 정렬이야말로 표로 적은 이유다. 행마다 앞에 체크박스 열이 붙는다.
+
+    어느 셀에든 `미사용` 이 있으면 미사용 목록으로 뺀다. 열 위치를 못 박을 수
+    없다 — 실험10 U2 표는 1열(`미사용 입력핀 11, 13`)이고 실험02 P4 U2 표는
+    3열(`미사용 입력`)이다. 미사용은 배선 순서와 무관하게 **배선을 끝낸 뒤**
+    칩마다 따로 확인하는 물건이라 목록이 갈려야 한다.
+    """
+    kept = []
+    for row in table.rows:
+        cells = [_plain(c).strip() for c in row]
+        if not any(cells):
+            continue
+        if any("미사용" in c for c in cells):
+            chip["unused"].append(" · ".join(c for c in cells if c))
+        else:
+            kept.append(row)
+    if kept:
+        chip["tables"].append(md.MdTable(header=table.header, rows=kept,
+                                         line=table.line))
 
 
 def _chip_boxes(nodes) -> list:
@@ -286,13 +316,13 @@ def _circuit_body(section):
     """
     lines = section.body.split("\n")
     nodes, prose = [], []
-    chip, last_key = None, None
+    chip, last_key, form = None, None, None
 
     def close_chip():
-        nonlocal chip, last_key
+        nonlocal chip, last_key, form
         if chip is not None:
             nodes.append(chip)
-            chip, last_key = None, None
+            chip, last_key, form = None, None, None
 
     def flush_prose():
         if any(p.strip() for p in prose):
@@ -304,15 +334,38 @@ def _circuit_body(section):
         line = lines[i].rstrip()
         stripped = line.strip()
 
-        m = _CHIP_LINE.match(line)
-        if m:
+        head = _CHIP_HEAD.match(line) or _CHIP_LINE.match(line)
+        if head:
             close_chip()
             flush_prose()
-            chip = _new_chip(m.group(1))
+            chip = _new_chip(head.group(1))
+            form = "heading" if stripped.startswith("#") else "bullet"
             i += 1
             continue
 
-        if chip is not None:
+        if _ANY_HEAD.match(line):
+            # 칩이 아닌 헤딩은 칩 상자를 닫는다. 상자는 `break-inside: avoid`
+            # 라서 긴 해설(실험02 P4 의 `### 왜 pin 4 와 pin 8 인가`)을 품으면
+            # 쪽 나눔이 무너진다.
+            close_chip()
+            prose.append(line)
+            i += 1
+            continue
+
+        if stripped.startswith("|"):
+            table, nxt = md.parse_table_at(lines, i)
+            if table is None:
+                i += 1
+                continue
+            if chip is not None and form == "heading":
+                _absorb_wiring(chip, table)
+            else:
+                close_chip()
+                prose.extend(lines[i:nxt])
+            i = nxt
+            continue
+
+        if chip is not None and form == "bullet":
             if stripped.startswith("- ") and line.startswith((" ", "\t")):
                 text = _plain(stripped[2:])
                 last_key = "unused" if text.startswith("미사용") else "wires"
@@ -328,10 +381,13 @@ def _circuit_body(section):
                 i += 1
                 continue
             if stripped:
-                # 들여쓴 배선 불릿도, 앞 항목을 잇는 줄도 아닌 줄이 불릿형 칩
-                # 상자를 닫는다. 실물 결선도에서는 언제나 열 0 줄이다 — 칩
-                # 아래의 들여쓴 줄은 항상 `- ` 불릿이거나 그 이어짐이다.
-                close_chip()
+                close_chip()          # 열 0 줄이 불릿형 칩 상자를 닫는다
+
+        if chip is not None and form == "heading":
+            if stripped:
+                chip["notes"].append(line)
+            i += 1
+            continue
 
         prose.append(line)
         i += 1
@@ -458,6 +514,10 @@ def circuit_pages(spec, netlist) -> str:
                 out += [f'<li><span class="box"></span>{_esc(w)}</li>'
                         for w in node["wires"]]
                 out.append("</ol>")
+            for table in node["tables"]:
+                out.append(_md_table_html(table, lead_checkbox=True))
+            if node["notes"]:
+                out.append(_blocks("\n".join(node["notes"])))
             out.append("</div>")
         out.append("</div>")
         unused_chips = [c for c in chips if c["unused"]]

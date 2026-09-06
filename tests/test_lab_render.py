@@ -668,3 +668,77 @@ class TestBlocksTables(unittest.TestCase):
     def test_표기가_벗겨진다(self):
         html = _blocks("| 소자 |\n|---|\n| `7490` **주의** |\n")
         self.assertIn("<td>7490 주의</td>", html)
+
+
+class TestHeadingChips(unittest.TestCase):
+    """실험02·10 은 배선을 `## U1 = ...` 헤딩 + 핀 표로 적는다. 이 형식을
+    렌더러가 못 읽어서 실험10 P1 의 배선 80줄이 통째로 사라졌다.
+    `netlist_parser.IC_DECL` 은 이미 이 형식을 파싱한다 — 렌더러만 못 읽었다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_heading_chips.md")
+        self.html = circuit_pages(self.spec, self.netlist)
+
+    def _pages(self):
+        return [p.split("</section>")[0]
+                for p in self.html.split('<section class="circuit">')[1:]]
+
+    def test_헤딩형_칩이_자기_상자를_갖는다(self):
+        self.assertIn("U1 = 7490 (decade counter)", self.html)
+        self.assertIn("U2 = 7404 (hex inverter)", self.html)
+        self.assertEqual(self.html.count('class="chip"'), 3)   # U1, U2, U5
+
+    def test_배선표_행마다_체크박스가_붙는다(self):
+        """C1 의 배선 행: U1 4행(NC 포함) + U2 3행 = 7행. 미사용 2행은 빠진다."""
+        page = self._pages()[0]
+        wirebox = page[page.index('class="wirebox"'):page.index('class="unused"')]
+        self.assertEqual(wirebox.count('<td class="box"></td>'), 7)
+
+    def test_배선표의_모든_행이_인쇄본에_온다(self):
+        """첫 표만 싣는 변이가 상자 존재 검사로는 통과한다."""
+        for cell in ("14 (INPUT A)", "함수발생기 1 kHz 구형파 출력",
+                     "U1 pin 12 (QA)", "4, 13", "NC 핀"):
+            with self.subTest(cell=cell):
+                self.assertIn(_esc(cell), self.html)
+
+    def test_미사용_행이_배선표에서_빠져_미사용_상자로_간다(self):
+        page = self._pages()[0]
+        box = page[page.index('class="unused"'):]
+        self.assertIn("미사용 입력핀 11, 13 · GND · 플로팅 금지", box)
+        self.assertIn("미사용 출력핀 10, 12 · 개방", box)
+        wirebox = page[page.index('class="wirebox"'):page.index('class="unused"')]
+        self.assertNotIn("플로팅 금지", wirebox)
+
+    def test_미사용_상자가_어느_칩_것인지_밝힌다(self):
+        page = self._pages()[0]
+        box = page[page.index('class="unused"'):]
+        self.assertIn("U2 = 7404 (hex inverter)", box)
+        self.assertNotIn("U1 = 7490", box)      # U1 에는 미사용 행이 없다
+
+    def test_칩이_아닌_헤딩의_표는_참조표라_체크박스가_없다(self):
+        """`## 소자 배치`·`## 가중 저항망` 은 배선이 아니다."""
+        page = self._pages()[0]
+        block = page[page.index("소자 배치"):page.index("U1 = 7490")]
+        self.assertIn("<td>10진 카운터, 4비트 디지털 워드 생성</td>", block)
+        self.assertNotIn('class="box"', block)
+
+    def test_칩_사이_참조표가_원문_순서를_지킨다(self):
+        """`가중 저항망` 은 U1 뒤 U2 앞이다. 뒤로 밀리면 배선 순서가 뒤집힌다."""
+        page = self._pages()[0]
+        self.assertLess(page.index("U1 = 7490"), page.index("가중 저항망"))
+        self.assertLess(page.index("가중 저항망"), page.index("U2 = 7404"))
+
+    def test_칩_상자_안의_불릿은_체크박스를_받지_않는다(self):
+        """헤딩형 상자의 열 0 불릿은 주석이지 배선 단계가 아니다 —
+        실험02 P4 U1 의 `- 짧은 점퍼 4개…` 가 그렇다."""
+        page = self._pages()[0]
+        self.assertIn("이 칩만 전원핀이 다르다", page)
+        note = page[page.index("이 칩만 전원핀이 다르다"):]
+        self.assertNotIn('class="box"', note[:200])
+
+    def test_칩_교체_배너가_헤딩형에서도_칩_이름을_안다(self):
+        """`ics` 는 IC_DECL 이 본문에서 뽑는다 — 헤딩도 본문이다."""
+        page = self._pages()[1]
+        banner = page[page.index('class="banner"'):]
+        self.assertIn("741 OP amp", banner[:400])
