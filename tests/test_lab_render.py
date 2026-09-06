@@ -15,6 +15,55 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
     encoding="utf-8")
 
+_MISSING_DIAGRAM_NETLIST = """---
+schema: lab-netlist/v1
+week: 2
+experiment: 1
+spec: ../체크리스트/명세.md
+---
+
+# C1 · 결선도 없음 (IC 한 개)
+
+- kind: circuit
+- id: C1
+- item: E1.P1-1
+- tables: [T1]
+
+- U1 = 74HC08 (quad 2-input AND)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → GND
+
+# C2 · 결선도 없음 (IC 두 개)
+
+- kind: circuit
+- id: C2
+- item: E1.P1-2
+- tables: [T2]
+
+- U2 = 74HC00 (quad 2-input NAND)
+  - pin 14 → VCC(+5V)
+- U3 = 74HC32 (quad 2-input OR)
+  - pin 1 ← 입력 A
+  - 미사용 입력핀: pin 9, 10 → GND
+"""
+
+
+def _netlist_missing_diagrams():
+    """`diagram:` 이 없는 회로 두 개짜리 합성 픽스처.
+
+    d556077 이 실험01 결선도에 OR·NOR PNG 를 더해 다섯 회로 전부가 `diagram:`
+    을 갖게 되면서, 결선도 부재 fallback(빈 브레드보드 대체) 경로를 실물로는
+    더 이상 시험할 수 없게 됐다. 실물을 도로 비우는 것은 답이 아니므로(그림을
+    지우는 것) 합성한다 — 관례는 `test_lab_validate.TestNetlistCircuits._netlist`
+    를 따른다: 최소 프론트매터 + `kind: circuit` 절만 갖춘 netlist.md 를 임시
+    파일로 써서 `parse_netlist` 로 읽는다. `item`·`tables` 는 실험01 실물
+    명세(T1·T2, E1.P1-1·E1.P1-2)를 그대로 가리켜 `spec.table()`·`spec.items`
+    조회가 실물과 같은 경로를 타게 한다. IC 개수를 회로마다 다르게 두어
+    (1개 vs 2개) `crop_rows` 가 회로마다 다른 행 수를 내는 것도 같이 본다."""
+    path = Path(tempfile.mkdtemp()) / "netlist.md"
+    path.write_text(_MISSING_DIAGRAM_NETLIST, encoding="utf-8")
+    return parse_netlist(path)
+
 
 class TestChecklistHtml(unittest.TestCase):
     def setUp(self):
@@ -338,9 +387,13 @@ class TestCircuitPages(unittest.TestCase):
         self.assertIn("../결선도/", self.html)
 
     def test_결선도가_없으면_빈_브레드보드로_대신한다(self):
-        """C2(OR)·C4(NOR) 는 결선도가 없다 — 그림 자리를 비우지 않는다."""
-        self.assertEqual(self.html.count("Breadboard.jpg"), 2)
-        self.assertIn("브레드보드 작도", self.html)
+        """실물 실험01 은 d556077 이후 다섯 회로 전부에 diagram 이 있어(OR·NOR
+        PNG 추가) fallback 경로를 더는 실물로 못 본다 — 합성 픽스처로 옮긴다.
+        `_netlist_missing_diagrams` 의 두 회로 다 결선도가 없다."""
+        netlist = _netlist_missing_diagrams()
+        html = circuit_pages(self.spec, netlist)
+        self.assertEqual(html.count("Breadboard.jpg"), len(netlist.circuits))
+        self.assertIn("브레드보드 작도", html)
 
     def test_배선_번호가_칩마다_1부터_다시_센다(self):
         """`<ol start="1">` 을 내는 곳이 한 군데뿐이라, 배선 전부를 한 목록에
@@ -461,9 +514,14 @@ class TestCircuitPages(unittest.TestCase):
     def test_빈_브레드보드_경로가_루트_접두사를_거친다(self):
         """`../` 를 손으로 적으면 그림 자리만 비고 HTML 은 정상 렌더된다 —
         눈으로는 놓친다. config.root_relative_prefix 의 docstring 이 2026-09
-        이동에서 정확히 이 방식으로 끊겼다고 기록한다."""
+        이동에서 정확히 이 방식으로 끊겼다고 기록한다.
+
+        실물 실험01 은 d556077 이후 결선도 없는 회로가 없어 이 경로 자체가
+        인쇄본에 나타나지 않는다 — 합성 픽스처로 옮긴다."""
+        netlist = _netlist_missing_diagrams()
+        html = circuit_pages(self.spec, netlist)
         self.assertIn(f"{config.root_relative_prefix()}.claude/assets/Breadboard.jpg",
-                      self.html)
+                      html)
 
     def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_바꿔_말하지_않는다(self):
         """뺄 칩과 꽂을 칩을 서로 뒤바꾼 변이가 통과하던 자리다.
@@ -621,10 +679,14 @@ class TestBreadboardHeaderBand(unittest.TestCase):
 
     def test_visible_height_budget_includes_the_header_band(self):
         """결선도 없는 회로마다 fallback 격자가 하나씩 들어간다. 캡션이 약속한
-        행 수가 실제로 보이려면 예산에 머리띠를 더해야 한다 (B1)."""
+        행 수가 실제로 보이려면 예산에 머리띠를 더해야 한다 (B1).
+
+        실물 실험01 은 d556077 이후 다섯 회로 전부에 diagram 이 있어 결선도
+        없는 회로가 하나도 없다 — `_netlist_missing_diagrams` 합성 픽스처로
+        옮긴다. 아래 `assertTrue(missing, ...)` 는 그 회귀(픽스처가 다시
+        조용히 diagram 을 다 갖게 되는 경우)를 그대로 잡아낸다."""
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = parse_netlist(
-            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        netlist = _netlist_missing_diagrams()
         html = render_checklist(spec, netlist, TEMPLATE)
         missing = [c for c in netlist.circuits
                    if not c.diagram
