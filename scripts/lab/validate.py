@@ -296,6 +296,14 @@ def check_netlist_circuits(netlist, spec) -> list:
                 out.append(Finding("error", where,
                     f"없는 표 {table_id} 를 가리킨다. "
                     f"정의된 표: {sorted(known_tables)}"))
+            elif spec.table(table_id).role == "reference":
+                # 렌더러도 걸러내지만, 그쪽 필터는 netlist 가 참조표를 말하지
+                # 않는 한 발화하지 않아 회귀를 못 잡는다. 여기서 저작 단계에
+                # 막는다 — 교안 이론표는 실험실에서 채우는 물건이 아니다.
+                out.append(Finding("error", where,
+                    f"{table_id} 는 role: reference 표다 — 교안에서 옮긴 이론표라 "
+                    "실험실에서 채우지 않는다. 회로의 tables 에서 뺀다 "
+                    "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
         if not circuit.diagram:

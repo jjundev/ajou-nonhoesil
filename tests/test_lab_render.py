@@ -1,11 +1,13 @@
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
-from scripts.lab.render import (_esc, _plain, _split_circuit_body, circuit_pages,
-                                closing_page, common_page, crop_rows, render_checklist)
+from scripts.lab.render import (CLOSING, _esc, _plain, _split_circuit_body,
+                                circuit_pages, closing_page, common_page,
+                                crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,6 +71,14 @@ class TestChecklistHtml(unittest.TestCase):
     def test_종료_전_확인_목록이_마지막에_온다(self):
         self.assertIn("부품", self.html)
         self.assertLess(self.html.index("오늘의 흐름"), self.html.index("반납"))
+
+    def test_종료_전_확인_항목이_하나도_빠지지_않는다(self):
+        """항목을 하나만 남겨도 위치 테스트는 통과한다. 실험실에서 놓치면
+        결과보고서에서 복구할 수 없는 것들이라 전수로 센다."""
+        self.assertGreaterEqual(len(CLOSING), 7)
+        for item in CLOSING:
+            with self.subTest(item=item):
+                self.assertIn(_esc(item), self.html)
 
 
 class TestCapturePage(unittest.TestCase):
@@ -242,6 +252,26 @@ class TestCircuitPages(unittest.TestCase):
         for tid in ("T6", "T7", "T8", "T9"):
             with self.subTest(table=tid):
                 self.assertNotIn(f"{tid} ·", self.html)
+
+    def test_회로가_참조표를_가리켜도_인쇄하지_않는다(self):
+        """`_circuit_tables` 의 `role == "reference"` 필터를 지워도 실물
+        데이터로는 통과한다 — netlist 가 T6~T9 를 말하지 않기 때문이다.
+        가리키는 결선도를 만들어 필터를 실제로 태운다."""
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T1]", "- tables: [T1, T6]")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        html = circuit_pages(self.spec, parse_netlist(path))
+        # `기록: T1, T6 · 판독: ...` 처럼 회로 h2 는 tables 원문을 그대로
+        # 나열한다 — 그 목록엔 필터가 없다(그래도 되는 곳이다: 저기는 요약
+        # 줄이지 표 자체가 아니다). 그래서 순수 "T6 ·" 로 찾으면 필터가
+        # 살아있어도 h2 에서 우연히 걸린다. 표 블록의 <h3> 로 좁혀야
+        # `_circuit_tables` 자체를 시험하는 것이 된다.
+        self.assertIn("<h3>T1 ·", html)
+        self.assertNotIn("<h3>T6 ·", html)
+        self.assertEqual(html.count('class="check"'),
+                         sum(len(self.spec.table(t).rows)
+                             for c in self.netlist.circuits for t in c.tables))
 
     def test_모든_배선_줄이_인쇄본에_온다(self):
         """첫 칩만 싣는 변이가 58줄 중 26줄을 지워도 옛 테스트는 전부 통과했다.

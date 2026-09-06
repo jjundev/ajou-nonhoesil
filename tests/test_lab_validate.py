@@ -374,6 +374,17 @@ spec: ../체크리스트/명세.md
             with self.subTest(table=ref):
                 self.assertNotIn(ref, warns)
 
+    def test_참조표를_가리키면_error(self):
+        """명세 항목의 tables 를 회로에 그대로 복사하면 교안 이론표가 확인 칸을
+        달고 인쇄된다. 실험1 의 E1.P1-1 은 [T1, T2, T6, T7] 이라 자연스러운 실수다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1, T6]\n")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertIn("T6", " ".join(f.message for f in errors))
+        self.assertNotIn("T1 는", " ".join(f.message for f in errors))
+
     def test_실험01_실물은_error_가_없다(self):
         spec = parse_spec(WEEK2_SPEC)
         netlist = parse_netlist(
