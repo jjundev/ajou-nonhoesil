@@ -1,6 +1,7 @@
 import re
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 from scripts.lab import config
@@ -315,17 +316,16 @@ class ExperimentBaseTest(unittest.TestCase):
                     f"{config.EXPERIMENT_BASE}/{config.experiment_folder_name(n)}",
                 )
 
-    def test_기반이_세_입구_전부에_적용된다(self):
-        """`experiment_dir`·`manual_candidates`·`folder_for_week` — 스킬이
-        폴더를 얻는 입구는 이 셋뿐이다. 하나만 빠뜨리면 그 스킬만 조용히
-        옛 경로를 연다."""
+    def test_기반이_두_입구_전부에_적용된다(self):
+        """폴더를 얻는 입구는 이 둘뿐이다. 하나만 빠뜨리면 그 스킬만 조용히
+        옛 경로를 연다. (예전에는 `folder_for_week` 를 더해 셋이었는데,
+        주차 모델을 걷어내면서 둘이 됐다. FPGA 는 `PROJECT_DIR` 상수라
+        바로 아래 `test_FPGA_프로젝트도_기반_아래다` 가 따로 본다.)"""
         base = config.EXPERIMENT_BASE
         self.assertTrue(config.experiment_dir(3).startswith(base + "/"))
         사본 = next(c for c in config.manual_candidates(3)
                    if str(c).startswith(base + "/"))
         self.assertEqual(사본, Path(f"{base}/실험03/강의노트/실험3.pdf"))
-        self.assertTrue(config.folder_for_week(4).startswith(base + "/"))
-        self.assertTrue(config.folder_for_week(13).startswith(base + "/"))
 
     def test_FPGA_프로젝트도_기반_아래다(self):
         # 실험 폴더만 옮기고 `프로젝트/` 를 루트에 두면 같은 성격의 산출물이
@@ -414,130 +414,6 @@ class ExperimentDirTest(unittest.TestCase):
             config.experiment_folder_name(True)
 
 
-class WeekMappingTest(unittest.TestCase):
-    """주차 → 폴더 해석. 매핑이 1:1 이 아니라서 사람이 외우면 틀린다."""
-
-    def test_회전_구간이_핵심이다(self):
-        # 5·6·7주차가 실험 5·6·4 로 어긋난다. 여기가 틀리면 엉뚱한 교안을 연다.
-        self.assertEqual(config.folder_for_week(5), "보고서/실험05")
-        self.assertEqual(config.folder_for_week(6), "보고서/실험06")
-        self.assertEqual(config.folder_for_week(7), "보고서/실험04")
-
-    def test_평범한_구간(self):
-        self.assertEqual(config.folder_for_week(2), "보고서/실험01")
-        self.assertEqual(config.folder_for_week(12), "보고서/실험10")
-
-    def test_experiment_for_week_회전_구간이_핵심이다(self):
-        # 12주차 ≠ 실험 12 다 — 폴더 이름을 되파싱하고 싶어지는 자리다.
-        self.assertEqual(config.experiment_for_week(12), 10)
-        self.assertEqual(config.experiment_for_week(7), 4)
-
-    def test_experiment_for_week_평범한_구간(self):
-        self.assertEqual(config.experiment_for_week(2), 1)
-
-    def test_experiment_for_week_중간고사_주차는_거절한다(self):
-        with self.assertRaises(ValueError):
-            config.experiment_for_week(8)
-
-    def test_experiment_for_week_FPGA_주차는_실험_번호가_없다(self):
-        for week in (13, 14, 15):
-            with self.subTest(week=week):
-                with self.assertRaises(ValueError):
-                    config.experiment_for_week(week)
-
-    def test_experiment_for_week_범위_밖_주차는_거절한다(self):
-        with self.assertRaises(ValueError):
-            config.experiment_for_week(1)
-
-    def test_experiment_for_week_이_folder_for_week_와_일치한다(self):
-        for week in config.WEEK_TO_EXPERIMENT:
-            with self.subTest(week=week):
-                self.assertEqual(
-                    config.experiment_dir(config.experiment_for_week(week)),
-                    config.folder_for_week(week),
-                )
-
-    def test_FPGA_주차는_프로젝트_폴더다(self):
-        for week in (13, 14, 15):
-            with self.subTest(week=week):
-                self.assertEqual(config.folder_for_week(week), "보고서/프로젝트")
-
-    def test_중간고사_주차는_거절한다(self):
-        with self.assertRaises(ValueError) as cm:
-            config.folder_for_week(8)
-        self.assertIn("중간고사", str(cm.exception))
-
-    def test_범위_밖_주차는_거절한다(self):
-        for bad in (1, 16, 0, -3):
-            with self.subTest(week=bad):
-                with self.assertRaises(ValueError):
-                    config.folder_for_week(bad)
-
-    def test_bool은_주차가_아니다(self):
-        with self.assertRaises(TypeError):
-            config.folder_for_week(True)
-
-    def test_experiment_for_week_bool은_주차가_아니다(self):
-        # folder_for_week 와 같은 헬퍼(_validated_week)를 실제로 쓰는지
-        # 지키는 테스트다 — 헬퍼 추출 뒤 한쪽만 고치면 여기가 깨진다.
-        with self.assertRaises(TypeError):
-            config.experiment_for_week(True)
-
-    def test_역방향도_회전을_지킨다(self):
-        self.assertEqual(config.week_for_experiment(4), 7)
-        self.assertEqual(config.week_for_experiment(5), 5)
-        self.assertEqual(config.week_for_experiment(1), 2)
-        self.assertEqual(config.week_for_experiment(10), 12)
-
-    def test_왕복이_일치한다(self):
-        for week, exp in config.WEEK_TO_EXPERIMENT.items():
-            with self.subTest(week=week):
-                self.assertEqual(config.week_for_experiment(exp), week)
-                self.assertEqual(config.folder_for_week(week),
-                                 config.experiment_dir(exp))
-
-    def test_실험_열개가_빠짐없이_매핑된다(self):
-        self.assertEqual(sorted(config.WEEK_TO_EXPERIMENT.values()),
-                         list(range(1, config.EXPERIMENT_COUNT + 1)))
-
-    # 위 테스트들은 회전 구간(5·6·7)과 양 끝(2, 12)만 리터럴로 고정한다.
-    # 나머지 3·4·9·10·11주차는 어디에도 리터럴로 박혀 있지 않아서, 그 행들만
-    # 뒤섞는 순열(예: 9→8, 10→9, 11→7)이 들어와도 위 테스트들은 전부 통과한다 —
-    # `test_왕복이_일치한다` 는 WEEK_TO_EXPERIMENT 자신을 되읽어 검사하므로
-    # 자기참조이고, `test_실험_열개가_빠짐없이_매핑된다` 는 값의 집합만 본다.
-    # 그래서 열 행 전부를 매핑과 무관하게 여기 직접 적어 고정한다.
-    WEEK_TO_EXPERIMENT_고정값 = {
-        2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
-        9: 7, 10: 8, 11: 9, 12: 10,
-    }
-
-    def test_주차별_실험번호가_모두_리터럴로_고정된다(self):
-        """열 행 전부를 매핑에서 되읽지 않고 직접 적은 값으로 고정한다.
-
-        3·4·9·10·11주차는 이전 테스트 어디에도 리터럴로 박혀 있지 않아서,
-        그 행들만 골라 뒤섞는 순열도 기존 테스트를 다 통과시킬 수 있었다.
-        """
-        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
-            with self.subTest(week=week):
-                self.assertEqual(
-                    config.folder_for_week(week),
-                    config.experiment_dir(expected_experiment),
-                )
-
-    def test_실험별_주차가_모두_리터럴로_고정된다(self):
-        """`test_주차별_실험번호가_모두_리터럴로_고정된다` 의 역방향.
-
-        한쪽 방향만 고정하면 그 방향에서만 쓰이는 순열은 잡히지만, 반대
-        방향(`week_for_experiment`)이 따로 어긋나는 결함은 놓칠 수 있다.
-        """
-        for week, expected_experiment in self.WEEK_TO_EXPERIMENT_고정값.items():
-            with self.subTest(experiment=expected_experiment):
-                self.assertEqual(
-                    config.week_for_experiment(expected_experiment),
-                    week,
-                )
-
-
 class DocumentTitleTest(unittest.TestCase):
     """산출물 제목 형식. 네 곳이 제각각 만들다가 경로용 일괄 치환이 그중
     하나(프리뷰)를 조용히 덮어쓴 적이 있어서 한 함수로 모았다."""
@@ -574,3 +450,64 @@ class DocumentTitleTest(unittest.TestCase):
             config.document_title(11, "x", "기록")
         with self.assertRaises(TypeError):
             config.document_title(True, "x", "기록")
+
+
+class TestExperimentDates(unittest.TestCase):
+    def test_실험1은_9월11일이다(self):
+        self.assertEqual(config.experiment_date(1), date(2026, 9, 11))
+
+    def test_실험2와_실험3이_같은_날이다(self):
+        # 주차를 열쇠로 쓰던 시절 int→int 로 표현할 수 없던 바로 그 자리다.
+        self.assertEqual(config.experiment_date(2), date(2026, 9, 18))
+        self.assertEqual(config.experiment_date(3), date(2026, 9, 18))
+
+    def test_9월18일에_실험이_둘이다(self):
+        self.assertEqual(config.experiments_on(date(2026, 9, 18)), [2, 3])
+
+    def test_추석에는_실험이_없다(self):
+        # 예전에는 NO_ARTIFACT_WEEKS 예외 표로 관리해야 했다. 이제 그냥 없다.
+        self.assertEqual(config.experiments_on(date(2026, 9, 25)), [])
+
+    def test_중간고사에는_실험이_없다(self):
+        self.assertEqual(config.experiments_on(date(2026, 10, 23)), [])
+
+    def test_회전_구간이_운영계획과_같다(self):
+        # 옛 표는 5·6·7주차를 실험 5·6·4 로 알았다. 정본은 4·5·6 이다.
+        self.assertEqual(config.experiment_date(4), date(2026, 10, 2))
+        self.assertEqual(config.experiment_date(5), date(2026, 10, 9))
+        self.assertEqual(config.experiment_date(6), date(2026, 10, 16))
+
+    def test_열_실험이_모두_리터럴로_고정된다(self):
+        expected = {
+            1: date(2026, 9, 11), 2: date(2026, 9, 18), 3: date(2026, 9, 18),
+            4: date(2026, 10, 2), 5: date(2026, 10, 9), 6: date(2026, 10, 16),
+            7: date(2026, 10, 30), 8: date(2026, 11, 6), 9: date(2026, 11, 13),
+            10: date(2026, 11, 20),
+        }
+        self.assertEqual(config.EXPERIMENT_DATES, expected)
+
+    def test_없는_실험_번호는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.experiment_date(11)
+
+    def test_bool은_실험_번호가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.experiment_date(True)
+
+    def test_다음_실험을_오늘_날짜로_찾는다(self):
+        when, exps = config.next_experiments(date(2026, 9, 12))
+        self.assertEqual(when, date(2026, 9, 18))
+        self.assertEqual(exps, [2, 3])
+
+    def test_실험_당일에는_그날을_준다(self):
+        when, exps = config.next_experiments(date(2026, 9, 11))
+        self.assertEqual((when, exps), (date(2026, 9, 11), [1]))
+
+    def test_학기가_끝나면_None(self):
+        self.assertIsNone(config.next_experiments(date(2026, 12, 31)))
+
+    def test_주차_함수는_사라졌다(self):
+        for gone in ("folder_for_week", "experiment_for_week",
+                     "week_for_experiment", "WEEK_TO_EXPERIMENT",
+                     "NO_ARTIFACT_WEEKS", "PROJECT_WEEKS"):
+            self.assertFalse(hasattr(config, gone), f"{gone} 가 아직 있다")
