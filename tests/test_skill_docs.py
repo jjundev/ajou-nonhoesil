@@ -268,6 +268,22 @@ class SkillDocInvariants(unittest.TestCase):
             with self.subTest(name):
                 self.assertIn("`###` 이하는 쓰지 않는다", self.flat[name])
 
+    def test_the_fresh_review_step_withholds_the_manual(self):
+        # 저작한 에이전트는 오염돼 있다 — 교안을 20번 읽고 나면 자기가 쓴
+        # 명세를 읽을 때 '쓴 것' 이 아니라 '의도한 것' 을 본다. 그래서 맥락
+        # 없는 에이전트에게 문서만 건넨다. 교안까지 주면 두 번째 재생성이
+        # 되어 비용이 배가 되고 fresh eyes 의 값어치가 사라진다.
+        #
+        # 대신 교안 전사 오류는 원리적으로 못 잡는다. 그 한계가 문서에
+        # 적혀 있어야 "fresh 검토를 통과했으니 맞다" 는 거짓 안심을
+        # 안 만든다 — 10단계가 경고하는 바로 그 실패다.
+        steps = numbered_items(sections(self.docs["명세"])["실행 절차"])
+        self.assertIn(9, steps)
+        self.assertIn(10, steps)
+        flat = self.flat["명세"]
+        self.assertIn("교안 경로는 주지 않는다", flat)
+        self.assertIn("교안 전사 오류는 못 잡는다", flat)
+
     def test_breadboard_template_path_and_home_are_pinned(self):
         # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
         rows = [ln for ln in self.docs["예보"].splitlines()
