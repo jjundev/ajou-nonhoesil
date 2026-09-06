@@ -109,9 +109,35 @@ def _stepped_html(table) -> str:
     return "\n".join(out)
 
 
+_READOUT = ("판독 조건 — CH1 ______ V/div · CH2 ______ V/div · "
+            "time/div ______ · 프로브 ______× · 모드  [ ] Y-T   [ ] X-Y")
+_CAPTION = "캡션: ____________________     사진 파일: ____________________"
+
+
 def _capture_html(table) -> str:
-    return (f"<p>예상: {_esc(table.expected or '')}</p>"
-            '<div class="sketch"></div><p>캡션: ________________</p>')
+    """파형은 셀 표가 아니다 — 스케치 격자와 판정 기준을 낸다.
+
+    `expected` 를 통째로 싣고 마크다운 표기를 벗긴다. 안 벗기면 실험02 T2 의
+    `**두 갈래로 갈라져**` 가 별 두 개째로 인쇄된다 — 옛 `_capture_html` 은
+    `_plain` 을 안 씌웠다. 그리고 이 산문이 이 표의 판정 기준 **전부**다.
+    진리표처럼 대조할 셀이 없으므로 한 줄로 줄이면 남는 게 없다.
+
+    **판독 조건**을 함께 적는다. V/div 를 모르면 결과보고서에서 화면의 칸을
+    볼트로 환산할 수 없고, X-Y 인지 Y-T 인지 모르면 실험02 T1·T2 의 곡선이
+    무엇을 뜻하는지 알 수 없다 — 두 표는 같은 배선에서 모드만 다르다.
+
+    미니표는 붙이지 않는다(`_mismatch_html` 이 `capture` 에 `""` 를 준다).
+    파형에는 "불일치 행"도 "이상 스텝"도 없다 — `예상과 다른 점` 상자가 맡는다.
+    """
+    expected = _plain(table.expected or "").strip()
+    out = []
+    if expected:
+        out.append(f'<div class="expected"><b>예상</b> — {_esc(expected)}</div>')
+    out.append('<div class="sketch"></div>')
+    out.append(f"<p class='readout'>{_esc(_READOUT)}</p>")
+    out.append(f"<p class='readout'>{_esc(_CAPTION)}</p>")
+    out.append('<div class="differs"><b>예상과 다른 점</b></div>')
+    return "\n".join(out)
 
 
 _BULLET = re.compile(r"^([ \t]*)-[ \t]+(.*)$")

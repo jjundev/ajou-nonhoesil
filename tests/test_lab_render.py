@@ -84,11 +84,61 @@ class TestChecklistHtml(unittest.TestCase):
 
 
 class TestCapturePage(unittest.TestCase):
+    """파형은 셀 표가 아니다. `expected` 산문이 판정 기준 전부이고, 판독 조건이
+    없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
+        self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
+
+    def _block(self):
+        # 회로 절 끝까지 자른다. `</div>` 로 자르면 `_capture_html` 이 내는
+        # 첫 상자(`.expected`)에서 끊겨 판독 조건·캡션·`예상과 다른 점` 이
+        # 전부 창 밖으로 밀린다. T1 은 C1 의 유일한 표다.
+        start = self.html.index("<h3>T1 ·")
+        return self.html[start:self.html.index("</section>", start)]
+
     def test_capture_renders_a_sketch_box_not_a_grid(self):
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
-        netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
-        html = render_checklist(spec, netlist, TEMPLATE)
-        self.assertIn('class="sketch"', html)
+        self.assertIn('class="sketch"', self.html)
+
+    def test_예상_산문을_통째로_싣는다(self):
+        """실험10 T1 의 expected 는 여섯 줄이다. 잘리면 판정 기준이 사라진다."""
+        block = self._block()
+        for phrase in ("계단 상승한 뒤 리셋되는 톱니 형태",
+                       "7490 의 모듈러스(10)", "가중 저항망 오차를 먼저 의심한다"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(_esc(phrase), block)
+
+    def test_마크다운_표기를_벗긴다(self):
+        """`_plain` 을 안 씌우면 실험02 의 `**두 갈래로**` 가 그대로 인쇄된다."""
+        block = self._block()
+        self.assertNotIn("**", block)
+        self.assertNotIn("`", block)
+
+    def test_판독_조건_줄이_붙는다(self):
+        block = self._block()
+        for token in ("V/div", "time/div", "프로브", "X-Y"):
+            with self.subTest(token=token):
+                self.assertIn(token, block)
+
+    def test_캡션과_사진_파일_칸이_붙는다(self):
+        block = self._block()
+        self.assertIn("캡션", block)
+        self.assertIn("사진 파일", block)
+
+    def test_예상과_다른_점_상자가_붙는다(self):
+        """`capture` 에는 미니표가 없다 — 그 자리를 이 상자가 맡는다."""
+        self.assertIn("예상과 다른 점", self._block())
+
+    def test_불일치_행_미니표를_붙이지_않는다(self):
+        """파형에 '불일치 행'도 '이상 스텝'도 없다."""
+        block = self._block()
+        self.assertNotIn('class="mismatch"', block)
+        self.assertNotIn("불일치 행", block)
+
+    def test_확인_칸을_만들지_않는다(self):
+        self.assertNotIn('class="check"', self._block())
 
 
 class TestCommonPage(unittest.TestCase):
@@ -804,8 +854,10 @@ class TestSteppedCells(unittest.TestCase):
         self.t2 = self.spec.table("T2")
 
     def _block(self):
+        # 회로 절 끝까지 자른다 — 기록 칸이 상자를 여럿 낼 수 있다. T2 는
+        # C2 의 유일한 표다.
         start = self.html.index("<h3>T2 ·")
-        return self.html[start:self.html.index("</div>", start)]
+        return self.html[start:self.html.index("</section>", start)]
 
     def test_확인_열을_붙이지_않는다(self):
         block = self._block()
