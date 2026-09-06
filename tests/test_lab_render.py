@@ -114,6 +114,28 @@ class TestPrintConstraints(unittest.TestCase):
     """실험실 물리 조건은 CSS 에만 있어서 문자열 검증이 없으면 조용히 사라진다.
     실제로 이 공백 때문에 브레드보드 그림이 제목과 갈라진 채 두 라운드를 통과했다."""
 
+    def test_회로마다_새_쪽에서_시작한다(self):
+        """회로 둘이 한 쪽을 나눠 쓰면 칩 교체 경계가 지면에서 사라진다."""
+        rule = re.search(r"\.circuit\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.circuit` 규칙이 없다")
+        self.assertIn("break-before: page", rule.group(0))
+
+    def test_배선_체크박스가_펜으로_칠할_만큼_크다(self):
+        rule = re.search(r"\.box\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.box` 규칙이 없다")
+        self.assertIn("4mm", rule.group(0))
+
+    def test_결선도와_배선이_한_덩어리로_유지된다(self):
+        """넘치면 표만 다음 쪽으로 가야 한다 — 그림과 배선이 갈리면 못 쓴다."""
+        rule = re.search(r"\.wirebox\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.wirebox` 규칙이 없다")
+        self.assertIn("break-inside: avoid", rule.group(0))
+
+    def test_플레이스홀더_네_개가_있다(self):
+        for token in ("{{TITLE}}", "{{COMMON}}", "{{CIRCUITS}}", "{{CLOSING}}"):
+            with self.subTest(token=token):
+                self.assertIn(token, TEMPLATE)
+
     def test_check_cell_is_big_enough_for_a_pen(self):
         self.assertIn("width: 10mm", TEMPLATE)
         self.assertIn("height: 8mm", TEMPLATE)
