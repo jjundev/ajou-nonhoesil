@@ -284,6 +284,23 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("교안 경로는 주지 않는다", flat)
         self.assertIn("교안 전사 오류는 못 잡는다", flat)
 
+    def test_the_folder_guard_precedes_the_refusal(self):
+        # config 가 준 경로에 폴더가 없다고 곧바로 거절하면, 폴더가 다른
+        # 자리에 멀쩡히 있는데 config 만 안 따라온 경우를 "폴더 없음" 으로
+        # 오진한다. 2026-09 에 실험 폴더가 루트에서 `보고서/` 아래로
+        # 옮겨졌을 때 실제로 이렇게 틀렸다 — 명세도 결선도도 다 있는데
+        # "폴더를 먼저 만드세요" 로 끝날 뻔했다.
+        #
+        # 가드가 거절 **앞**에 있어야 한다. 뒤에 있으면 이미 거절한 뒤다.
+        flat = self.flat["명세"]
+        guard = flat.find("거절하기 전에 경로 규약이 낡지 않았는지 본다")
+        refuse = flat.find("없으면 거절하고 `init-lab-experiment` 를 안내한다")
+        self.assertNotEqual(guard, -1, "경로 가드 문장이 없다")
+        self.assertNotEqual(refuse, -1, "거절 문장 앵커가 바뀌었다")
+        self.assertLess(guard, refuse)
+        # 찾은 경로로 우회하면 나머지 여덟 스킬이 같은 실패를 되풀이한다.
+        self.assertIn("우회하지 않는다", flat)
+
     def test_breadboard_template_path_and_home_are_pinned(self):
         # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
         rows = [ln for ln in self.docs["예보"].splitlines()
