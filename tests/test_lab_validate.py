@@ -1235,6 +1235,8 @@ class ContinuesValidation(unittest.TestCase):
         found = validate.check_netlist_circuits(parse_netlist(path), spec)
         self.assertTrue([f for f in found
                          if "continues" in f.message and f.level == "error"])
+        hits = [f for f in found if "continues" in f.message]
+        self.assertIn("자기 자신", hits[0].message)
 
 
 if __name__ == "__main__":

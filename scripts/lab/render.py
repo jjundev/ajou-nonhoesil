@@ -505,8 +505,13 @@ def _chip_swap(previous, current) -> str:
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
     if current.continues:
-        add = [c for c in current.ics if c not in previous.ics]
-        tail = " · 추가로 꽂는다: " + ", ".join(add) if add else ""
+        # 이어 붙이는 회로가 선언한 칩은 **전부** 새로 꽂는 것이다. 앞 회로를
+        # 그대로 두므로 이름이 겹쳐도 그것은 재배선이 아니라 **두 번째 패키지**다
+        # — 실험10 C1 의 `U4 = 741 OP amp` 와 C2 의 `U5 = 741 OP amp` 가 그렇다.
+        # 741 한 패키지에 op-amp 는 하나뿐이고 결선도가 "비교기를 하나 더
+        # 붙인다"라고 적는다. `not in previous.ics` 로 거르면 이 기능의 존재
+        # 이유인 그 지시가 배너에서 사라진다.
+        tail = " · 추가로 꽂는다: " + ", ".join(current.ics) if current.ics else ""
         return (f"{current.continues} 를 그대로 두고 이어 붙인다 — "
                 f"점퍼선을 걷지 않는다{tail}")
     remove = [c for c in previous.ics if c not in current.ics]

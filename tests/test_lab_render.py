@@ -948,6 +948,23 @@ class TestContinuesBanner(unittest.TestCase):
         banner = self._banner(self._html("- continues: C1"), 1)
         self.assertIn("741", banner)
 
+    def test_continues_는_이름이_겹치는_칩도_추가로_꽂으라고_한다(self):
+        """실험10 C1 은 `U4 = 741 OP amp`, C2 는 `U5 = 741 OP amp` 다 — 이름이
+        같지만 **패키지가 둘**이다. 741 한 패키지에 op-amp 는 하나뿐이고
+        결선도가 `비교기를 하나 더 붙인다` 라고 적는다. `not in previous.ics`
+        로 거르면 그 지시가 배너에서 통째로 사라진다."""
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8")
+        text = text.replace("- U5 = 741 (비교기)", "- U5 = 7490 (두 번째 패키지)")
+        text = text.replace("- tables: [T2]", "- tables: [T2]\n- continues: C1")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        netlist = parse_netlist(path)
+        self.assertEqual(netlist.circuits[0].ics, netlist.circuits[1].ics)
+        banner = self._banner(circuit_pages(spec, netlist), 1)
+        self.assertIn("추가로 꽂는다: 7490", banner)
+
     def test_continues_가_없으면_옛_배너_그대로다(self):
         """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
         banner = self._banner(self._html(""), 1)
