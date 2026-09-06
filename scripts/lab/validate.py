@@ -315,6 +315,23 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"diagram 파일이 없다: {circuit.diagram}. breadboard-diagram "
                 "스킬로 렌더하거나 diagram 줄을 지운다"))
 
+    # 인쇄되는 절의 본문에 든 마크다운 표는 렌더러가 통째로 버린다 — `_blocks`
+    # 와 `_split_circuit_body` 가 둘 다 `|` 로 시작하는 줄을 건너뛴다. `lookup`·
+    # `open-issues` 는 `common_page` 가 표를 따로 렌더하지만 `circuit`·`common`
+    # 은 아무도 렌더하지 않는다. 실험02·03·10 결선도는 소자 배치와 칩별 핀을
+    # 표로 적으므로, 그대로 백필하면 배선이 통째로 빠진 회로 페이지가 조용히
+    # 나온다. 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다.
+    for section in netlist.of_kind("circuit") + netlist.of_kind("common"):
+        table_lines = sum(1 for line in section.body.split("\n")
+                          if line.strip().startswith("|"))
+        if table_lines:
+            out.append(Finding("warn",
+                f"{netlist.path.name}:{section.id or section.title}",
+                f"본문에 마크다운 표 줄이 {table_lines}개 있다 — 인쇄본은 "
+                f"kind: {section.kind} 절의 표를 싣지 않는다. 배선은 "
+                "`- U<n> = <칩>` 아래 들여쓴 `- ` 불릿으로 적고, 참조용 표는 "
+                "`kind: lookup` 절로 뺀다"))
+
     for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
                            - covered):
         out.append(Finding("warn", netlist.path.name,

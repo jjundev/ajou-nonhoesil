@@ -405,6 +405,28 @@ spec: ../체크리스트/명세.md
         self.assertIn("C2", wheres)
         self.assertIn("C4", wheres)
 
+    def test_회로_본문의_표는_인쇄되지_않으므로_warn(self):
+        """실험02·03·10 결선도는 배선을 핀 표로 적는다. 그대로 백필하면
+        배선이 통째로 빠진 회로 페이지가 조용히 나온다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n\n"
+            "| 핀 | 연결 |\n|---|---|\n| 1 | 입력 A |\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn" and "마크다운 표" in f.message]
+        self.assertTrue(warns)
+        self.assertIn("kind: lookup", warns[0].message)
+
+    def test_lookup_절의_표는_warn_하지_않는다(self):
+        """`common_page` 가 그 표를 실제로 렌더한다 — 손실이 없다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# 참조 핀아웃\n\n- kind: lookup\n\n| IC | VCC |\n|---|---|\n| 74HC08 | 14 |\n\n"
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if "마크다운 표" in f.message]
+        self.assertEqual(warns, [])
+
 
 class TestDiagnosticClaims(unittest.TestCase):
     """방향을 붙인 문장을 센다. **판정하지 않는다** — 방향이 맞는지는
