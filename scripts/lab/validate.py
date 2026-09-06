@@ -12,6 +12,7 @@ from pathlib import Path
 from . import config, md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
+from .render import _chip_boxes, _chip_tables, _circuit_body
 from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
@@ -315,22 +316,26 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"diagram 파일이 없다: {circuit.diagram}. breadboard-diagram "
                 "스킬로 렌더하거나 diagram 줄을 지운다"))
 
-    # 인쇄되는 절의 본문에 든 마크다운 표는 렌더러가 통째로 버린다 — `_blocks`
-    # 와 `_split_circuit_body` 가 둘 다 `|` 로 시작하는 줄을 건너뛴다. `lookup`·
-    # `open-issues` 는 `common_page` 가 표를 따로 렌더하지만 `circuit`·`common`
-    # 은 아무도 렌더하지 않는다. 실험02·03·10 결선도는 소자 배치와 칩별 핀을
-    # 표로 적으므로, 그대로 백필하면 배선이 통째로 빠진 회로 페이지가 조용히
-    # 나온다. 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다.
-    for section in netlist.of_kind("circuit") + netlist.of_kind("common"):
-        table_lines = sum(1 for line in section.body.split("\n")
-                          if line.strip().startswith("|"))
-        if table_lines:
-            out.append(Finding("warn",
-                f"{netlist.path.name}:{section.id or section.title}",
-                f"본문에 마크다운 표 줄이 {table_lines}개 있다 — 인쇄본은 "
-                f"kind: {section.kind} 절의 표를 싣지 않는다. 배선은 "
-                "`- U<n> = <칩>` 아래 들여쓴 `- ` 불릿으로 적고, 참조용 표는 "
-                "`kind: lookup` 절로 뺀다"))
+    # 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다. 옛 판정은
+    # "본문에 표 줄이 있다" 였는데, 렌더러가 표를 싣게 되면서 그 경고가
+    # 거짓이 됐다. 지금 조용히 사라질 수 있는 것은 배선 그 자체다 — 칩
+    # 선언이 아예 없거나(실험10 처럼 표만 있는 경우), 칩 상자에 배선 행이
+    # 하나도 안 잡히는 경우(형식을 섞어 쓴 경우)다.
+    for circuit in netlist.circuits:
+        where = f"{netlist.path.name}:{circuit.id}"
+        chips = _chip_boxes(_circuit_body(circuit)[0])
+        if not chips:
+            out.append(Finding("warn", where,
+                "칩 선언이 하나도 없다 — 배선이 인쇄본에 실리지 않는다. "
+                "`- U<n> = <칩>` 불릿(아래에 들여쓴 `- ` 배선) 또는 "
+                "`## U<n> = <칩>` 헤딩(아래에 배선 표) 중 하나로 적는다"))
+            continue
+        for chip in chips:
+            if not chip["wires"] and not _chip_tables(chip):
+                out.append(Finding("warn", where,
+                    f"칩 {chip['head']!r} 에 배선이 하나도 없다 — 상자가 제목만 "
+                    "남는다. 불릿형이면 들여쓴 `- ` 배선을, 헤딩형이면 배선 표를 "
+                    "칩 아래에 둔다"))
 
     for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
                            - covered):
