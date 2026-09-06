@@ -5,7 +5,7 @@ from pathlib import Path
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.render import (_esc, _plain, _split_circuit_body, circuit_pages,
-                                common_page, crop_rows, render_checklist)
+                                closing_page, common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,7 +16,8 @@ TEMPLATE = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
 class TestChecklistHtml(unittest.TestCase):
     def setUp(self):
         self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        self.netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
 
     def test_no_placeholder_survives(self):
@@ -55,16 +56,26 @@ class TestChecklistHtml(unittest.TestCase):
             with self.subTest(table=tid):
                 self.assertNotIn(f"{tid} ·", self.html)
 
-    def test_wiring_photo_pair_is_present(self):
-        """결선도 | 회로 2열 대조는 코퍼스에서 가장 강한 관행이다."""
-        self.assertIn("결선도", self.html)
-        self.assertIn("회로", self.html)
+    def test_사진_부착_2열_상자를_인쇄하지_않는다(self):
+        """실험실에서 종이에 사진을 붙일 수 없고, 보고서 배치는 ④ 가 한다.
+        결과보고서 레이아웃이 실험실 인쇄본에 샌 것이었다."""
+        self.assertNotIn('class="pair"', self.html)
+        self.assertNotIn("(사진 부착)", self.html)
+
+    def test_사진_파일명_규칙이_인쇄본에_있다(self):
+        """규칙은 SKILL.md 에만 있었다 — 실험실에서 기억에 의존해야 했다."""
+        self.assertIn("row3.jpg", self.html)
+
+    def test_종료_전_확인_목록이_마지막에_온다(self):
+        self.assertIn("부품", self.html)
+        self.assertLess(self.html.index("오늘의 흐름"), self.html.index("반납"))
 
 
 class TestCapturePage(unittest.TestCase):
     def test_capture_renders_a_sketch_box_not_a_grid(self):
         spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
-        html = render_checklist(spec, "VCC GND 미사용", TEMPLATE)
+        netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
+        html = render_checklist(spec, netlist, TEMPLATE)
         self.assertIn('class="sketch"', html)
 
 
@@ -341,18 +352,25 @@ class TestBreadboardHeaderBand(unittest.TestCase):
     격자가 안 보인다 (B1)."""
 
     def test_visible_height_budget_includes_the_header_band(self):
+        """결선도 없는 회로마다 fallback 격자가 하나씩 들어간다. 캡션이 약속한
+        행 수가 실제로 보이려면 예산에 머리띠를 더해야 한다 (B1)."""
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         html = render_checklist(spec, netlist, TEMPLATE)
-        rows = crop_rows(netlist)
-        caption = re.search(r"브레드보드 작도 \((\d+)행\)", html)
-        self.assertIsNotNone(caption)
-        self.assertEqual(int(caption.group(1)), rows)
-        height = re.search(r"max-height:([\d.]+)mm", html)
-        self.assertIsNotNone(height)
-        # rows*6mm 만 예산으로 두면 그만큼이 전부 머리띠에 먹혀 격자가 0행
-        # 보인다 — 머리띠만큼 더 커야 캡션의 행 수가 실제로 보인다.
-        self.assertGreater(float(height.group(1)), rows * 6)
+        missing = [c for c in netlist.circuits
+                   if not c.diagram
+                   or not (netlist.path.parent / c.diagram).exists()]
+        self.assertTrue(missing, "결선도 없는 회로가 없어 이 검사가 무의미하다")
+        captions = re.findall(r"브레드보드 작도 \((\d+)행\)", html)
+        heights = re.findall(r"max-height:([\d.]+)mm", html)
+        self.assertEqual(len(captions), len(missing))
+        self.assertEqual(len(heights), len(missing))
+        for circuit, caption, height in zip(missing, captions, heights):
+            with self.subTest(circuit=circuit.id):
+                rows = crop_rows(circuit.body)
+                self.assertEqual(int(caption), rows)
+                self.assertGreater(float(height), rows * 6)
 
 
 class TestPrintConstraints(unittest.TestCase):
@@ -408,10 +426,15 @@ class TestPrintConstraints(unittest.TestCase):
         """제목만 앞 쪽에 남고 내용이 넘어가면 실험실에서 못 읽는다."""
         self.assertIn(".tblock", TEMPLATE)
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         html = render_checklist(spec, netlist, TEMPLATE)
+        record_tables = sum(
+            1 for c in netlist.circuits for t in c.tables
+            if spec.table(t) and spec.table(t).role != "reference")
+        lookup_sections = len(netlist.of_kind("lookup"))
         self.assertEqual(html.count('<div class="tblock">'),
-                         5 + 1)   # 기록 대상 표 5개 + 브레드보드 1
+                         record_tables + lookup_sections)
 
 
 class TestProcedureCarriesEveryWarning(unittest.TestCase):
@@ -420,7 +443,7 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
 
     def setUp(self):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = render_checklist(spec, netlist, TEMPLATE)
 
     def test_korean_only_warnings_reach_the_printout(self):
@@ -474,7 +497,7 @@ class ChecklistTitleTest(unittest.TestCase):
 
     def test_제목이_실험_기준이고_주차가_없다(self):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
             encoding="utf-8")
         html = render_checklist(spec, netlist, tmpl)
@@ -486,7 +509,7 @@ class ChecklistTitleTest(unittest.TestCase):
         from scripts.lab import config
         from scripts.lab.record import derive_record
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
             encoding="utf-8")
         self.assertIn(config.document_title(spec.experiment, spec.title, "체크리스트"),

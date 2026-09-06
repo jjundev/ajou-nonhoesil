@@ -12,6 +12,7 @@ import html
 import re
 
 from . import md
+from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_columns
 from . import config
@@ -23,17 +24,14 @@ MAX_BREADBOARD_ROWS = 30
 # 아래에서 시작한다. object-position: top 크롭이 이 띠를 예산에 안 넣으면,
 # IC 가 적은 주차는 격자가 한 줄도 없이 로고만 인쇄된다 (B1).
 _BREADBOARD_HEADER_MM = 51.4
-# IC 선언(`U<n> = <칩>`) 을 센다. `" = 74"` 로 좁히면 40xx·555 계열 IC 를
-# 쓰는 주차는 0개로 세어 위 degenerate 크롭(머리띠보다 작은 상자)에 빠진다.
-_IC_DECL = re.compile(r"\bU\d+\s*=\s*\S")
 
 
 def crop_rows(netlist_text: str) -> int:
     """netlist 가 실제로 쓰는 행 수. 브레드보드 템플릿을 여기에 맞춰 자른다.
 
-    소스가 하나이므로 크롭이 자동 계산된다 (R7).
+    회로 본문을 넘긴다 — 결선도가 없는 회로의 fallback 격자 크기를 정한다.
     """
-    ic_count = len(_IC_DECL.findall(netlist_text))
+    ic_count = len(IC_DECL.findall(netlist_text))
     rows = max(6, ic_count * 8)
     return min(rows, MAX_BREADBOARD_ROWS)
 
@@ -56,75 +54,6 @@ def _plain(text: str) -> str:
     """
     text = _CODE.sub(r"\1", _EMPHASIS.sub(r"\1", text))
     return text.replace("`", "").replace("*", "")
-
-
-def _procedure(spec, netlist_text) -> str:
-    """결선 절차. VCC/GND/미사용핀을 최상단 박스에 둔다.
-
-    netlist 본문의 **모든 불릿과 산문 줄**을 싣는다. 영문 `pin` 이 든 줄만
-    고르면 한글로 쓴 경고가 통째로 사라진다 — 실제로 "입력을 띄워두지
-    않는다"(이 과목의 대표 실패 원인)와 "74HC02 는 핀 배치가 다르다"(netlist
-    가 스스로 가장 흔한 배선 실수라고 표시한 것)가 인쇄본에서 빠져 있었다.
-
-    불릿·헤딩과 별개로 **열 0 의 산문 줄**(절 도입문·꼬리 경고 등)도 그 절의
-    `<p>` 로 내보낸다 — 안 그러면 "복합회로 X≡Z 항등이 깨지면 배선 오류"
-    처럼 불릿이 아닌 형태로 쓰인 경고가 조용히 사라진다. 표 줄(`|` 로 시작)은
-    여전히 건너뛴다 — `role: reference` 표와 같은 이유로 이 인쇄본의 대상이
-    아니다(§섹션별 재료). `참조 핀아웃`·`미확정 사항`처럼 표만 딸린 절은
-    지금도 산문이 없으면 여전히 빈 제목을 인쇄하지 않는다.
-    """
-    power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
-    out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
-    _, body = md.split_frontmatter(netlist_text)
-    step, open_list, pending_heading, blank_before = 0, False, None, False
-    for line in body.split("\n"):
-        stripped = line.strip()
-        if not stripped:
-            blank_before = True
-            continue
-        if stripped.startswith("#"):
-            if open_list:
-                out.append("</ol>")
-                open_list = False
-            # 바로 내보내지 않는다. 표만 딸린 절(`참조 핀아웃`, `미확정 사항`)은
-            # 항목이 하나도 없어서 빈 제목만 인쇄된다.
-            pending_heading = stripped.lstrip("# ")
-        elif stripped.startswith("- "):
-            if pending_heading is not None:
-                out.append(f"<h3>{_esc(pending_heading)}</h3>")
-                pending_heading = None
-            if not open_list:
-                out.append(f'<ol start="{step + 1}">')
-                open_list = True
-            step += 1
-            out.append(f"<li>{_esc(_plain(stripped[2:]))}</li>")
-        elif open_list and line.startswith(" ") and out[-1].endswith("</li>"):
-            # 들여쓴 이어지는 줄은 앞 항목에 붙인다. 버리면 여러 줄로 쓴 경고가
-            # 중간에서 잘린다 — 74HC02 핀 배치 경고가 실제로 그렇게 잘렸다.
-            out[-1] = out[-1][: -len("</li>")] + " " + _esc(_plain(stripped)) + "</li>"
-        elif not stripped.startswith("|") and not line.startswith(" "):
-            # 헤딩도 불릿도 아닌 열 0 산문 — 절 도입문이거나 목록 뒤에 남는
-            # 마무리 경고다. 표 줄(`|`)과 불릿의 들여쓴 이어짐은 위에서 이미
-            # 처리했으므로 여기 남는 건 진짜 산문뿐이다.
-            if open_list:
-                out.append("</ol>")
-                open_list = False
-            if pending_heading is not None:
-                out.append(f"<h3>{_esc(pending_heading)}</h3>")
-                pending_heading = None
-            text = _esc(_plain(stripped))
-            if not blank_before and out and out[-1].startswith("<p>") and out[-1].endswith("</p>"):
-                # 빈 줄 없이 이어지는 산문 줄은 같은 문단이다 — 줄바꿈만 있고
-                # 빈 줄이 없는 마크다운 문단은 한 덩어리로 합쳐야 한다
-                # (netlist.md 의 "다르면 배선 오류다" 경고가 실제로 두 줄이다).
-                out[-1] = out[-1][: -len("</p>")] + " " + text + "</p>"
-            else:
-                out.append(f"<p>{text}</p>")
-        blank_before = False
-    if open_list:
-        out.append("</ol>")
-    return "\n".join(out)
 
 
 def _truth_or_stepped_html(table) -> str:
@@ -467,49 +396,34 @@ def circuit_pages(spec, netlist) -> str:
     return "\n".join(out)
 
 
-def _tables(spec) -> str:
-    out = []
-    for item in spec.items:
-        out.append(f"<h2>{_esc(item.id)} · {_esc(item.title)}</h2>")
-        out.append(f"<p>IC: {_esc(', '.join(item.ics))} · "
-                   f"판독: {_esc(', '.join(item.device))}</p>")
-        for table_id in item.tables:
-            table = spec.table(table_id)
-            if table.role == "reference":
-                continue          # 참조표는 인쇄본에 넣지 않는다 (③ 이론 절의 재료다)
-            # 제목·출처·표를 한 덩어리로 묶는다 — 캡션만 앞 쪽에 남으면
-            # 어느 표의 출처인지 실험실에서 알 수 없다.
-            out.append('<div class="tblock">')
-            out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
-            out.append(f"<p class='src'>출처: {_esc(table.source)}</p>")
-            out.append(_capture_html(table) if table.kind == "capture"
-                       else _truth_or_stepped_html(table))
-            out.append("</div>")
-        out.append('<div class="pair">'
-                   "<div><b>결선도</b><br>(사진 부착)</div>"
-                   "<div><b>구성한 회로</b><br>(사진 부착)</div></div>")
-    return "\n".join(out)
+CLOSING = (
+    "표마다 확인 칸이 다 찼는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)",
+    "회로마다 완성 회로 사진을 찍었는가",
+    "진리표는 불일치 행마다 사진을 찍었는가",
+    "사진 파일명이 T1 row3.jpg 형식인가",
+    "공통면의 실험실 확인 목록을 다 처리했는가",
+    "조교에게 물어볼 것을 다 물었는가",
+    "부품을 반납했는가",
+)
 
 
-def _breadboard(spec, netlist_text) -> str:
-    rows = crop_rows(netlist_text)
-    labels = " · ".join(f"{k}={v}" for k, v in spec.power.items())
-    # 머리띠(_BREADBOARD_HEADER_MM)를 예산에 더해야 캡션이 약속하는 `rows`행이
-    # 실제로 보인다 — 안 더하면 머리띠가 예산을 깎아먹어 IC 가 적은 주차는
-    # 격자가 한 줄도 없이 로고만 인쇄된다 (B1).
-    visible_mm = _BREADBOARD_HEADER_MM + rows * 6
-    # 제목만 앞 쪽에 남고 그림이 다음 쪽으로 넘어가는 것을 막는다 — 표와 같은 이유다.
-    return (f'<div class="tblock"><h2>브레드보드 작도 ({rows}행)</h2>'
-            f"<p>단자: {_esc(labels)}</p>"
-            f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
-            f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
-            'object-position:top"></div>')
+def closing_page() -> str:
+    """실험실을 나오기 전 30초. 여기서 빠뜨린 것은 결과보고서에서 못 채운다."""
+    items = "".join(f'<li><span class="box"></span>{_esc(c)}</li>'
+                    for c in CLOSING)
+    return f"<h2>실험실을 나오기 전에</h2><ul>{items}</ul>"
 
 
-def render_checklist(spec, netlist_text, template) -> str:
+def render_checklist(spec, netlist, template) -> str:
+    """`netlist` 는 `netlist_parser.LabNetlist` 다 — 날 문자열이 아니다.
+
+    회로 메타 없이는 인쇄본을 낼 수 없다. 옛 결선도를 "옛 방식으로 대충" 렌더하는
+    관용을 두지 않는다 — 렌더러가 두 벌이 되고 어느 주차가 어느 레이아웃인지
+    조용히 갈린다. 파서가 백필 방법을 담아 거절한다.
+    """
     title = config.document_title(spec.experiment, spec.title, "체크리스트")
     return (template
             .replace("{{TITLE}}", _esc(title))
-            .replace("{{PROCEDURE}}", _procedure(spec, netlist_text))
-            .replace("{{TABLES}}", _tables(spec))
-            .replace("{{BREADBOARD}}", _breadboard(spec, netlist_text)))
+            .replace("{{COMMON}}", common_page(spec, netlist))
+            .replace("{{CIRCUITS}}", circuit_pages(spec, netlist))
+            .replace("{{CLOSING}}", closing_page()))
