@@ -8,7 +8,8 @@
 
 kind 마다 칸의 뜻이 다르다:
     truth-table  입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다
-    stepped      스텝·조작은 주어지고, 명세에서 **비어 있는 열**이 채울 칸이다
+    stepped      스텝·조작은 주어지고, 명세에서 **비어 있는 열**이 채울 칸이다.
+                 확인 칸을 붙이지 않는다 — 대조할 예상값이 없다
     capture      셀 표가 아니라 스케치 격자 + 캡션 줄
 
 `role: reference` 인 표는 건너뛴다. 교안에서 그대로 옮긴 참조표라 학생이
@@ -53,14 +54,30 @@ def _truth_table(table) -> str:
 
 
 def _stepped(table) -> str:
-    """명세에서 비어 있는 열이 실험실에서 채울 칸이다. `예상` 을 붙이지 않는다."""
-    return _grid(list(table.header) + ["확인"], [list(row) + [""] for row in table.rows])
+    """명세에서 비어 있는 열이 실험실에서 채울 칸이다.
+
+    `예상` 도 `확인` 도 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
+    **예상값이 있어야** 뜻이 있는데 스텝표에는 없다. 인쇄본(`render._stepped_html`)
+    이 같은 이유로 뺐다 — 두 문서는 쌍이라 규약이 갈리면 전사에서 어긋난다.
+
+    빈 열이 하나도 없는 표에만 `기록` 열을 만든다.
+    """
+    header = list(table.header)
+    rows = [list(row) for row in table.rows]
+    if not any(not c.strip() for row in rows for c in row):
+        header.append("기록")
+        rows = [row + [""] for row in rows]
+    return _grid(header, rows)
 
 
 def _capture(table) -> str:
+    """파형은 셀 표가 아니다. 판독 조건을 함께 적는다 — V/div 를 모르면
+    결과보고서에서 화면의 칸을 볼트로 환산할 수 없다."""
     return (f"> 예상: {table.expected or '(명세에 expected 가 없다)'}\n\n"
             "```\n  스케치 — 파형을 여기에 그린다\n\n\n\n\n```\n\n"
-            "- 캡션:\n- 사진 파일:")
+            "- 판독 조건: CH1 __ V/div · CH2 __ V/div · time/div __ · "
+            "프로브 __× · 모드 Y-T / X-Y\n"
+            "- 캡션:\n- 사진 파일:\n- 예상과 다른 점:")
 
 
 _RENDER = {"truth-table": _truth_table, "stepped": _stepped, "capture": _capture}
@@ -72,7 +89,9 @@ def derive_record(spec) -> str:
         f"experiment: {spec.experiment}", "spec: 명세.md",
         "filled_by: ~          # hand | vision | 미기입", "---", "",
         f"# {config.document_title(spec.experiment, spec.title, '기록')}", "",
-        "확인 칸: `✓` 일치 / 값 = 불일치 시 실제 관찰값 / 공란 = 미확인.",
+        "진리표 — 확인 칸: `✓` 일치 / 값 = 불일치 시 실제 관찰값 / 공란 = 미확인.",
+        "스텝표 — 빈 칸에 읽은 값을 **단위와 함께** 적는다. 확인 칸이 없다.",
+        "파형 — 스케치에 그리고 판독 조건 줄을 채운다.",
         "표를 통째로 진행하지 않았으면 그 표 아래에 `- 실험을 진행하지 않았음.` 을 적는다.", "",
     ]
     for item in spec.items:

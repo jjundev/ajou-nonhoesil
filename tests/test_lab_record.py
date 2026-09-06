@@ -127,3 +127,42 @@ class RecordTitleTest(unittest.TestCase):
         # 제목에서 뺐다고 메타데이터까지 버리지는 않는다.
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
         self.assertIn("week: 2", derive_record(spec))
+
+
+class RecordKindCells(unittest.TestCase):
+    """기록.md 와 인쇄본은 쌍이다. 규약이 갈리면 전사에서 어긋난다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.md = derive_record(self.spec)
+
+    def test_stepped_에_확인_열을_붙이지_않는다(self):
+        """인쇄본이 뺐다 — 대조할 예상값이 없는 표다."""
+        block = self.md[self.md.index("### T2 ·"):]
+        header = block.split("\n")[2]          # 표의 헤더 줄
+        self.assertIn("7405 핀8", header)
+        self.assertNotIn("확인", header)
+
+    def test_stepped_의_스텝_행이_전부_온다(self):
+        block = self.md[self.md.index("### T2 ·"):]
+        for n in range(1, 11):
+            with self.subTest(step=n):
+                self.assertIn(f"| S{n} ", block)
+
+    def test_capture_에_판독_조건_줄이_있다(self):
+        block = self.md[self.md.index("### T1 ·"):self.md.index("### T2 ·")]
+        for token in ("V/div", "time/div", "프로브", "X-Y"):
+            with self.subTest(token=token):
+                self.assertIn(token, block)
+
+    def test_capture_에_스케치와_캡션이_있다(self):
+        block = self.md[self.md.index("### T1 ·"):self.md.index("### T2 ·")]
+        self.assertIn("스케치", block)
+        self.assertIn("- 캡션:", block)
+        self.assertIn("- 사진 파일:", block)
+
+    def test_진리표는_확인_열을_유지한다(self):
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        text = derive_record(spec)
+        block = text[text.index("### T1 ·"):]
+        self.assertIn("확인", block.split("\n")[2])
