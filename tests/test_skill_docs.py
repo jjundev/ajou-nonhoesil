@@ -52,6 +52,10 @@ REPORT_DOCS = ("예보", "결과")
 # `DOCS` 는 상호참조를 보는 목록이고, 이쪽은 호출부를 보는 목록이다.
 REPORT_SECTION_DOCS = ("예보", "결과", "리뷰")
 
+# 핀아웃 근거가 실제로 사는 곳. 경로를 문서에만 두면 폴더가 옮겨졌을 때
+# 문서가 조용히 거짓말을 한다 — `Breadboard.jpg` 가 정확히 그렇게 깨졌다.
+DATASHEET_DIR = "from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃"
+
 
 def sections(text):
     """`## 제목` 으로 문서를 갈라 {제목: 본문} 으로 돌려준다."""
@@ -300,6 +304,18 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertLess(guard, refuse)
         # 찾은 경로로 우회하면 나머지 여덟 스킬이 같은 실패를 되풀이한다.
         self.assertIn("우회하지 않는다", flat)
+
+    def test_pinout_evidence_locations_are_pinned(self):
+        # 교안에 핀아웃 쪽이 없다고 곧바로 "표준 배치 가정" 으로 적으면
+        # 근거 등급이 떨어진다. 실측: 실험01 을 격리 재생성했을 때 초안은
+        # 다섯 칩 중 하나만 확인했는데, 승인본은 저장소 데이터시트와 **다른
+        # 주차 교안 회로도**로 넷을 확인했다. 저장소에 근거가 있는데 못 찾은
+        # 것이다.
+        flat = self.flat["명세"]
+        self.assertIn(DATASHEET_DIR, flat)
+        self.assertIn("다른 주차 교안", flat)
+        # 경로가 실재해야 한다 — 문서만 고치고 폴더가 사라지면 무의미하다.
+        self.assertTrue((ROOT / DATASHEET_DIR).is_dir(), DATASHEET_DIR)
 
     def test_breadboard_template_path_and_home_are_pinned(self):
         # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
