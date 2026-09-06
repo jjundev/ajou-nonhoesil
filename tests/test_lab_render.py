@@ -235,6 +235,20 @@ class TestCircuitPages(unittest.TestCase):
         self.assertIn('class="chip"', self.html)
         self.assertIn("U1 = 74HC08", self.html)
 
+    def test_칩_상자가_원문_순서대로_인쇄된다(self):
+        """노드를 뒤집는 변이가 이 클래스의 스무 개 테스트를 전부 통과했다.
+        칩 선언 순서를 **원문에서 직접** 읽어 인쇄 위치와 대조한다 — 렌더러가
+        센 순서로 렌더러를 재면 뒤집힌 순서끼리 맞아떨어져 아무것도 못 잡는다.
+        C3·C4 는 칩이 둘, C5 는 셋이라 순서가 실제로 구별된다."""
+        for page, circuit in zip(self._pages(), self.netlist.circuits):
+            heads = re.findall(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$",
+                               circuit.body, re.M)
+            with self.subTest(circuit=circuit.id):
+                self.assertGreaterEqual(len(heads), 1)
+                at = [page.index(f"<h4>{_esc(_plain(h.rstrip()))}</h4>")
+                      for h in heads]
+                self.assertEqual(at, sorted(at))
+
     def test_미사용핀_지시가_어느_칩_것인지_밝힌다(self):
         """라벨이 없으면 다칩 회로에서 같은 핀이 정반대 지시를 동시에 받는다 —
         C4 의 pin 4 는 U5 기준 GND, U6 기준 개방이다. 칩이 죽는 사고다."""
@@ -395,6 +409,24 @@ class TestCircuitBodySplit(unittest.TestCase):
             "  - pin 1 ← B\n"))
         self.assertEqual([n["type"] for n in nodes], ["chip", "prose", "chip"])
         self.assertIn("| R1 | 1.5k |", nodes[1]["text"])
+
+    def test_노드가_원문_순서를_지킨다(self):
+        """노드 목록을 통째로 뒤집는 변이가 기존 테스트를 전부 통과했다 —
+        `["chip","prose","chip"]` 은 뒤집어도 같은 수열이라 구별되지 않는다.
+        칩 셋을 비대칭으로 두어 위치를 못 박는다."""
+        nodes, _, _ = _circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← 입력 A\n"
+            "중간 산문이다.\n"
+            "- U2 = 74HC32 (quad)\n"
+            "  - pin 2 ← 입력 B\n"
+            "- U3 = 74HC04 (hex)\n"
+            "  - pin 3 ← 입력 C\n"))
+        self.assertEqual([n["type"] for n in nodes],
+                         ["chip", "prose", "chip", "chip"])
+        self.assertEqual([n["head"] for n in _chip_boxes(nodes)],
+                         ["U1 = 74HC08 (quad)", "U2 = 74HC32 (quad)",
+                          "U3 = 74HC04 (hex)"])
 
     def test_칩이_하나도_없으면_전부_앞_산문이다(self):
         """조용히 버리는 것보다 낫다."""

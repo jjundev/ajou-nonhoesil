@@ -328,7 +328,10 @@ def _circuit_body(section):
                 i += 1
                 continue
             if stripped:
-                close_chip()          # 열 0 줄이 불릿형 칩 상자를 닫는다
+                # 들여쓴 배선 불릿도, 앞 항목을 잇는 줄도 아닌 줄이 불릿형 칩
+                # 상자를 닫는다. 실물 결선도에서는 언제나 열 0 줄이다 — 칩
+                # 아래의 들여쓴 줄은 항상 `- ` 불릿이거나 그 이어짐이다.
+                close_chip()
 
         prose.append(line)
         i += 1
