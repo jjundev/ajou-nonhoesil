@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config, validate
+from scripts.lab.netlist_parser import parse_netlist
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -296,6 +297,135 @@ class TestNetlist(unittest.TestCase):
             self._netlist("값이 크게 나오면 의심한다\n"), spec)
         self.assertEqual(findings[0].level, "error")   # VCC 누락
         self.assertEqual(findings[-1].level, "info")
+
+
+class TestNetlistCircuits(unittest.TestCase):
+    """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다."""
+
+    HEAD = """---
+schema: lab-netlist/v1
+week: 2
+experiment: 1
+spec: ../체크리스트/명세.md
+---
+
+"""
+
+    def _netlist(self, circuits):
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(self.HEAD + circuits, encoding="utf-8")
+        return parse_netlist(path)
+
+    def test_없는_항목을_가리키면_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E9.P9\n- tables: [T1]\n")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertIn("E9.P9", " ".join(f.message for f in errors))
+
+    def test_없는_표를_가리키면_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T99]\n")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertIn("T99", " ".join(f.message for f in errors))
+
+    def test_diagram_이_없으면_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn" and f.where.endswith("C1")]
+        self.assertTrue(warns)
+        self.assertIn("breadboard-diagram", " ".join(f.message for f in warns))
+
+    def test_diagram_파일이_없으면_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n"
+            "- tables: [T1]\n- diagram: 없는그림.png\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn"]
+        self.assertIn("없는그림.png", " ".join(f.message for f in warns))
+
+    def test_어느_회로도_안_가리키는_기록표는_warn(self):
+        """인쇄본은 회로를 통해서만 표를 싣는다 — 고아 표는 조용히 사라진다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
+        warns = " ".join(f.message for f in
+                         validate.check_netlist_circuits(netlist, spec)
+                         if f.level == "warn")
+        for orphan in ("T2", "T3", "T4", "T5"):
+            with self.subTest(table=orphan):
+                self.assertIn(orphan, warns)
+
+    def test_참조표는_고아로_치지_않는다(self):
+        """T6~T9 는 role: reference 라 인쇄본에 애초에 안 들어간다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
+        warns = " ".join(f.message for f in
+                         validate.check_netlist_circuits(netlist, spec)
+                         if f.level == "warn")
+        for ref in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=ref):
+                self.assertNotIn(ref, warns)
+
+    def test_참조표를_가리키면_error(self):
+        """명세 항목의 tables 를 회로에 그대로 복사하면 교안 이론표가 확인 칸을
+        달고 인쇄된다. 실험1 의 E1.P1-1 은 [T1, T2, T6, T7] 이라 자연스러운 실수다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1, T6]\n")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertIn("T6", " ".join(f.message for f in errors))
+        self.assertNotIn("T1 는", " ".join(f.message for f in errors))
+
+    def test_실험01_실물은_error_가_없다(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
+
+    def test_실험01_실물은_OR_NOR_결선도_부재를_warn_한다(self):
+        """Task 1 이 e1_or·e1_nor 별칭을 지웠으므로 두 그림은 존재하지 않는다.
+        조용히 빈칸으로 나가는 대신 시끄럽게 알린다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn"]
+        wheres = " ".join(f.where for f in warns)
+        self.assertIn("C2", wheres)
+        self.assertIn("C4", wheres)
+
+    def test_회로_본문의_표는_인쇄되지_않으므로_warn(self):
+        """실험02·03·10 결선도는 배선을 핀 표로 적는다. 그대로 백필하면
+        배선이 통째로 빠진 회로 페이지가 조용히 나온다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n\n"
+            "| 핀 | 연결 |\n|---|---|\n| 1 | 입력 A |\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn" and "마크다운 표" in f.message]
+        self.assertTrue(warns)
+        self.assertIn("kind: lookup", warns[0].message)
+
+    def test_lookup_절의_표는_warn_하지_않는다(self):
+        """`common_page` 가 그 표를 실제로 렌더한다 — 손실이 없다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(
+            "# 참조 핀아웃\n\n- kind: lookup\n\n| IC | VCC |\n|---|---|\n| 74HC08 | 14 |\n\n"
+            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
+        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
+                 if "마크다운 표" in f.message]
+        self.assertEqual(warns, [])
 
 
 class TestDiagnosticClaims(unittest.TestCase):

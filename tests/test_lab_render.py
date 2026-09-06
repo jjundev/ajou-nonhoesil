@@ -1,9 +1,13 @@
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.render import crop_rows, render_checklist
+from scripts.lab.netlist_parser import NetlistSection, parse_netlist
+from scripts.lab.render import (CLOSING, _esc, _plain, _split_circuit_body,
+                                circuit_pages, closing_page, common_page,
+                                crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,7 +18,8 @@ TEMPLATE = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
 class TestChecklistHtml(unittest.TestCase):
     def setUp(self):
         self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        self.netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
 
     def test_no_placeholder_survives(self):
@@ -53,17 +58,298 @@ class TestChecklistHtml(unittest.TestCase):
             with self.subTest(table=tid):
                 self.assertNotIn(f"{tid} ·", self.html)
 
-    def test_wiring_photo_pair_is_present(self):
-        """결선도 | 회로 2열 대조는 코퍼스에서 가장 강한 관행이다."""
-        self.assertIn("결선도", self.html)
-        self.assertIn("회로", self.html)
+    def test_사진_부착_2열_상자를_인쇄하지_않는다(self):
+        """실험실에서 종이에 사진을 붙일 수 없고, 보고서 배치는 ④ 가 한다.
+        결과보고서 레이아웃이 실험실 인쇄본에 샌 것이었다."""
+        self.assertNotIn('class="pair"', self.html)
+        self.assertNotIn("(사진 부착)", self.html)
+
+    def test_사진_파일명_규칙이_인쇄본에_있다(self):
+        """규칙은 SKILL.md 에만 있었다 — 실험실에서 기억에 의존해야 했다."""
+        self.assertIn("row3.jpg", self.html)
+
+    def test_종료_전_확인_목록이_마지막에_온다(self):
+        self.assertIn("부품", self.html)
+        self.assertLess(self.html.index("오늘의 흐름"), self.html.index("반납"))
+
+    def test_종료_전_확인_항목이_하나도_빠지지_않는다(self):
+        """항목을 하나만 남겨도 위치 테스트는 통과한다. 실험실에서 놓치면
+        결과보고서에서 복구할 수 없는 것들이라 전수로 센다."""
+        self.assertGreaterEqual(len(CLOSING), 7)
+        for item in CLOSING:
+            with self.subTest(item=item):
+                self.assertIn(_esc(item), self.html)
 
 
 class TestCapturePage(unittest.TestCase):
     def test_capture_renders_a_sketch_box_not_a_grid(self):
         spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
-        html = render_checklist(spec, "VCC GND 미사용", TEMPLATE)
+        netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
+        html = render_checklist(spec, netlist, TEMPLATE)
         self.assertIn('class="sketch"', html)
+
+
+class TestCommonPage(unittest.TestCase):
+    """공통면은 한 번만 보면 되는 것을 모은다 — 전원·공통규칙·참조 핀아웃·
+    실험실 확인. 회로 페이지에 반복하면 지면을 먹고 표가 밀린다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.html = common_page(self.spec, self.netlist)
+
+    def test_전원_박스가_맨_위에_온다(self):
+        self.assertLess(self.html.index('class="power"'), self.html.index("<table"))
+        self.assertIn("미사용", self.html)
+
+    def test_오늘의_흐름_표가_회로를_전부_센다(self):
+        """`C3` 는 칩 이름 `74HC32` 의 부분문자열이다 — 페이지 전체에서 찾으면
+        흐름표에서 그 행을 지워도 통과한다. 흐름표 안에서만 본다."""
+        flow = self.html[self.html.index("<table class='flow'>"):]
+        flow = flow[: flow.index("</table>")]
+        self.assertEqual(flow.count("<tr>"), len(self.netlist.circuits) + 1)
+        for n, circuit in enumerate(self.netlist.circuits, start=1):
+            with self.subTest(circuit=circuit.id):
+                self.assertIn(f"<td>{n}/{len(self.netlist.circuits)}</td>", flow)
+                self.assertIn(f"<td>{circuit.id} · ", flow)
+
+    def test_참조_핀아웃_표가_인쇄본에_실린다(self):
+        """74HC02 만 출력이 pin 1·4·10·13 이다. netlist 가 스스로 '가장 흔한
+        배선 실수'라고 표시한 정보인데 옛 렌더러는 표 줄이라는 이유로 버렸다."""
+        self.assertIn("74HC02 (quad NOR)", self.html)
+        self.assertIn("2,3 → 1", self.html)
+
+    def test_미확정_표가_체크박스로_실린다(self):
+        """옛 렌더러는 제목과 도입문만 찍고 표를 버려 문장이 끊긴 채 끝났다."""
+        self.assertIn("M1", self.html)
+        self.assertIn("M10", self.html)
+        self.assertIn('class="box"', self.html)
+
+    def test_핀아웃_출처는_인쇄하지_않는다(self):
+        """참고문헌이 배선 단계 7~11번으로 찍히던 결함이다."""
+        self.assertNotIn("Philips", self.html)
+        self.assertNotIn("SCLS081J", self.html)
+
+    def test_확인_칸_범례가_인쇄본에_있다(self):
+        """규약은 기록.md 에만 있었다. 태블릿에 PDF 만 띄운 사람은 알 수 없다."""
+        self.assertIn("불일치", self.html)
+        self.assertIn("미확인", self.html)
+
+    def test_여러_줄_경고가_잘리지_않는다(self):
+        """74HC02 경고는 세 줄짜리 불릿 하나다. 이어지는 줄을 앞 항목에 붙이지
+        않으면 목록이 중간에서 끊기고 나머지가 별도 문단으로 떨어진다. 구절
+        하나만 찾으면 그 깨진 출력에서도 발견되므로, 첫 줄과 끝 줄이 **같은
+        `<li>` 안**에 있는지를 본다."""
+        import re as _re
+        items = _re.findall(r"<li>(.*?)</li>", self.html, _re.S)
+        joined = [i for i in items
+                  if "나머지 셋과 핀 배치가 다르다" in i and "가장 흔한 배선 실수" in i]
+        self.assertEqual(len(joined), 1, f"이어붙은 <li> 를 못 찾았다: {items}")
+        self.assertIn("핀 1·4·10·13", joined[0])
+
+    def test_기록_대상_표의_확인_칸을_공통면이_만들지_않는다(self):
+        """`.check` 개수는 회로 페이지에서만 나온다 — 개수 검사가 명세에서 센다."""
+        self.assertNotIn('class="check"', self.html)
+
+
+class TestCircuitPages(unittest.TestCase):
+    """회로 하나 = 결선도 + 배선 + 유의사항 + 측정표. 실험실의 작업 단위는
+    명세 항목이 아니라 회로다 — 칩이 종류당 하나라 순차로 배선해야 한다
+    (netlist M10)."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.html = circuit_pages(self.spec, self.netlist)
+
+    def _pages(self):
+        """회로 페이지를 하나씩 자른다. 문서 전체에서 찾으면 어느 회로 것인지
+        모르는 채로 통과한다."""
+        return [p.split("</section>")[0]
+                for p in self.html.split('<section class="circuit">')[1:]]
+
+    def test_회로마다_개쪽_상자가_하나씩_나온다(self):
+        self.assertEqual(self.html.count('<section class="circuit">'),
+                         len(self.netlist.circuits))
+
+    def test_진행_표시가_붙는다(self):
+        self.assertIn("1/5", self.html)
+        self.assertIn("5/5", self.html)
+
+    def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_말한다(self):
+        """C1(74HC08) → C2(74HC32) 는 칩을 갈아끼워야 한다."""
+        self.assertIn("뺀다", self.html)
+        self.assertIn("꽂는다", self.html)
+
+    def test_결선도가_있으면_그림을_싣는다(self):
+        self.assertIn("실험01_결선도_3입력_AND.png", self.html)
+        self.assertIn("../결선도/", self.html)
+
+    def test_결선도가_없으면_빈_브레드보드로_대신한다(self):
+        """C2(OR)·C4(NOR) 는 결선도가 없다 — 그림 자리를 비우지 않는다."""
+        self.assertEqual(self.html.count("Breadboard.jpg"), 2)
+        self.assertIn("브레드보드 작도", self.html)
+
+    def test_배선_번호가_칩마다_1부터_다시_센다(self):
+        """`<ol start="1">` 을 내는 곳이 한 군데뿐이라, 배선 전부를 한 목록에
+        몰아 칩 경계를 없애도 옛 단언은 통과했다. 목록 수 = 칩 수여야 한다."""
+        chips = sum(len(_split_circuit_body(c)[0]) for c in self.netlist.circuits)
+        self.assertGreaterEqual(chips, 9)
+        self.assertEqual(self.html.count('<ol start="1">'), chips)
+
+    def test_칩이_자기_상자를_갖는다(self):
+        """`U3 = 74HC08` 은 상자의 제목이지 배선 단계가 아니다."""
+        self.assertIn('class="chip"', self.html)
+        self.assertIn("U1 = 74HC08", self.html)
+
+    def test_미사용핀_지시가_어느_칩_것인지_밝힌다(self):
+        """라벨이 없으면 다칩 회로에서 같은 핀이 정반대 지시를 동시에 받는다 —
+        C4 의 pin 4 는 U5 기준 GND, U6 기준 개방이다. 칩이 죽는 사고다."""
+        page = self._pages()[3]                     # C4 · NOR (74HC32 + 74HC02)
+        box = page[page.index('class="unused"'):]
+        self.assertIn("U5 = 74HC32", box)
+        self.assertIn("U6 = 74HC02", box)
+        self.assertIn("개방", box)
+
+    def test_미사용핀_줄이_회로마다_하나도_빠지지_않는다(self):
+        """첫 칩의 미사용 줄만 버리는 변이가 조용히 통과하던 자리다.
+        플로팅 입력이 이 과목의 대표 실패 원인이라 개수를 센다."""
+        for page, circuit in zip(self._pages(), self.netlist.circuits):
+            expected = sum(1 for raw in circuit.body.split("\n")
+                           if raw.strip().startswith("- 미사용"))
+            with self.subTest(circuit=circuit.id):
+                self.assertGreater(expected, 0)
+                box = page[page.index('class="unused"'):]
+                self.assertEqual(box.count('<span class="box">'), expected)
+
+    def test_회로별_경고가_그_회로_페이지에만_온다(self):
+        """이름과 달리 문서 전체를 보던 자리다. 모든 산문을 회로 1 로 몰아넣는
+        변이가 통과했다 — C4 의 74HC02 경고가 C1 쪽에 찍혀도 잡히지 않는다."""
+        pages = self._pages()
+        for index, warning in ((2, "교안 p12 회로도 그대로"),
+                               (3, "핀 순서에 주의"),
+                               (4, "다르면 배선 오류")):
+            with self.subTest(warning=warning):
+                self.assertIn(warning, pages[index])
+                elsewhere = [n for n, p in enumerate(pages)
+                             if n != index and warning in p]
+                self.assertEqual(elsewhere, [])
+
+    def test_사진_지시가_표마다_붙는다(self):
+        self.assertIn("T1 row", self.html)
+        self.assertIn("불일치 행", self.html)
+
+    def test_불일치_행_미니표가_표마다_붙는다(self):
+        self.assertEqual(self.html.count('class="mismatch"'), 5)
+
+    def test_사진_부착_2열_상자가_사라졌다(self):
+        """실험실에서 사진을 붙일 수 없다. 보고서 배치는 ④ 가 한다."""
+        self.assertNotIn('class="pair"', self.html)
+
+    def test_참조표는_회로_페이지에도_없다(self):
+        for tid in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=tid):
+                self.assertNotIn(f"{tid} ·", self.html)
+
+    def test_회로가_참조표를_가리켜도_인쇄하지_않는다(self):
+        """`_circuit_tables` 의 `role == "reference"` 필터를 지워도 실물
+        데이터로는 통과한다 — netlist 가 T6~T9 를 말하지 않기 때문이다.
+        가리키는 결선도를 만들어 필터를 실제로 태운다."""
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T1]", "- tables: [T1, T6]")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        html = circuit_pages(self.spec, parse_netlist(path))
+        # `기록: T1, T6 · 판독: ...` 처럼 회로 h2 는 tables 원문을 그대로
+        # 나열한다 — 그 목록엔 필터가 없다(그래도 되는 곳이다: 저기는 요약
+        # 줄이지 표 자체가 아니다). 그래서 순수 "T6 ·" 로 찾으면 필터가
+        # 살아있어도 h2 에서 우연히 걸린다. 표 블록의 <h3> 로 좁혀야
+        # `_circuit_tables` 자체를 시험하는 것이 된다.
+        self.assertIn("<h3>T1 ·", html)
+        self.assertNotIn("<h3>T6 ·", html)
+        self.assertEqual(html.count('class="check"'),
+                         sum(len(self.spec.table(t).rows)
+                             for c in self.netlist.circuits for t in c.tables))
+
+    def test_모든_배선_줄이_인쇄본에_온다(self):
+        """첫 칩만 싣는 변이가 58줄 중 26줄을 지워도 옛 테스트는 전부 통과했다.
+        가장 파괴적인 소실 모드라 원문 줄을 하나씩 대조한다."""
+        lines = [_esc(_plain(raw.strip()[2:]))
+                 for circuit in self.netlist.circuits
+                 for raw in circuit.body.split("\n")
+                 if raw.startswith((" ", "\t")) and raw.strip().startswith("- ")]
+        self.assertGreaterEqual(len(lines), 58)
+        for text in lines:
+            with self.subTest(line=text[:40]):
+                self.assertIn(text, self.html)
+
+    def test_빈_브레드보드_경로가_루트_접두사를_거친다(self):
+        """`../` 를 손으로 적으면 그림 자리만 비고 HTML 은 정상 렌더된다 —
+        눈으로는 놓친다. config.root_relative_prefix 의 docstring 이 2026-09
+        이동에서 정확히 이 방식으로 끊겼다고 기록한다."""
+        self.assertIn(f"{config.root_relative_prefix()}.claude/assets/Breadboard.jpg",
+                      self.html)
+
+    def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_바꿔_말하지_않는다(self):
+        """뺄 칩과 꽂을 칩을 서로 뒤바꾼 변이가 통과하던 자리다.
+        C2 는 74HC08 을 뽑고 74HC32 를 꽂는다."""
+        page = self._pages()[1]
+        start = page.index('class="banner"')
+        banner = page[start:page.index("</div>", start)]
+        self.assertIn("뺀다: 74HC08", banner)
+        self.assertIn("꽂는다: 74HC32", banner)
+
+
+    def test_배선_뒤_검산_산문이_미사용_상자_뒤에_온다(self):
+        """C5 의 `LED_X 와 LED_Z 가 같이 켜져야 한다` 는 배선을 마친 뒤 하는
+        검산이다. 앞으로 올리면 preamble 로 읽힌다."""
+        page = self._pages()[4]
+        self.assertLess(page.index('class="unused"'), page.index("다르면 배선 오류"))
+
+    def test_배선_전_경고는_배선_앞에_온다(self):
+        """C4 의 `74HC02 의 핀 순서에 주의` 를 배선을 다 마친 뒤 읽으면 늦다."""
+        page = self._pages()[3]
+        self.assertLess(page.index("핀 순서에 주의"), page.index('class="wirebox"'))
+
+
+class TestCircuitBodySplit(unittest.TestCase):
+    """`_split_circuit_body` 의 줄 귀속. 실험01 에는 이어지는 줄이 없어 실물
+    렌더로는 발화하지 않지만, 이 저장소의 결선도는 관행적으로 줄을 접는다 —
+    발화하는 순간 플로팅 핀 지시가 엉뚱한 항목에 붙는다."""
+
+    def _section(self, body):
+        return NetlistSection(kind="circuit", title="C9 · 시험", body=body, line=1,
+                              id="C9", item="E1.P1-1", tables=["T1"])
+
+    def test_이어지는_줄이_미사용_줄을_이으면_미사용에_붙는다(self):
+        chips, _, _ = _split_circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← 입력 A\n"
+            "  - 미사용 출력핀: pin 8, 11 → 개방\n"
+            "    (절대 GND 로 내리지 않는다)\n"))
+        self.assertEqual(chips[0]["wires"], ["pin 1 ← 입력 A"])
+        self.assertEqual(chips[0]["unused"],
+                         ["미사용 출력핀: pin 8, 11 → 개방 (절대 GND 로 내리지 않는다)"])
+
+    def test_이어지는_줄이_배선_줄을_이으면_배선에_붙는다(self):
+        chips, _, _ = _split_circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 3 → L1 애노드\n"
+            "    (330Ω 직렬)\n"))
+        self.assertEqual(chips[0]["wires"], ["pin 3 → L1 애노드 (330Ω 직렬)"])
+        self.assertEqual(chips[0]["unused"], [])
+
+    def test_산문이_첫_칩_앞뒤로_갈린다(self):
+        _, before, after = _split_circuit_body(self._section(
+            "회로 소개다.\n"
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← 입력 A\n"
+            "배선을 마친 뒤 검산한다.\n"))
+        self.assertIn("회로 소개다", before)
+        self.assertNotIn("검산", before)
+        self.assertIn("검산", after)
 
 
 class TestCrop(unittest.TestCase):
@@ -96,23 +382,61 @@ class TestBreadboardHeaderBand(unittest.TestCase):
     격자가 안 보인다 (B1)."""
 
     def test_visible_height_budget_includes_the_header_band(self):
+        """결선도 없는 회로마다 fallback 격자가 하나씩 들어간다. 캡션이 약속한
+        행 수가 실제로 보이려면 예산에 머리띠를 더해야 한다 (B1)."""
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         html = render_checklist(spec, netlist, TEMPLATE)
-        rows = crop_rows(netlist)
-        caption = re.search(r"브레드보드 작도 \((\d+)행\)", html)
-        self.assertIsNotNone(caption)
-        self.assertEqual(int(caption.group(1)), rows)
-        height = re.search(r"max-height:([\d.]+)mm", html)
-        self.assertIsNotNone(height)
-        # rows*6mm 만 예산으로 두면 그만큼이 전부 머리띠에 먹혀 격자가 0행
-        # 보인다 — 머리띠만큼 더 커야 캡션의 행 수가 실제로 보인다.
-        self.assertGreater(float(height.group(1)), rows * 6)
+        missing = [c for c in netlist.circuits
+                   if not c.diagram
+                   or not (netlist.path.parent / c.diagram).exists()]
+        self.assertTrue(missing, "결선도 없는 회로가 없어 이 검사가 무의미하다")
+        captions = re.findall(r"브레드보드 작도 \((\d+)행\)", html)
+        heights = re.findall(r"max-height:([\d.]+)mm", html)
+        self.assertEqual(len(captions), len(missing))
+        self.assertEqual(len(heights), len(missing))
+        for circuit, caption, height in zip(missing, captions, heights):
+            with self.subTest(circuit=circuit.id):
+                rows = crop_rows(circuit.body)
+                self.assertEqual(int(caption), rows)
+                self.assertGreater(float(height), rows * 6)
 
 
 class TestPrintConstraints(unittest.TestCase):
     """실험실 물리 조건은 CSS 에만 있어서 문자열 검증이 없으면 조용히 사라진다.
     실제로 이 공백 때문에 브레드보드 그림이 제목과 갈라진 채 두 라운드를 통과했다."""
+
+    def test_회로마다_새_쪽에서_시작한다(self):
+        """회로 둘이 한 쪽을 나눠 쓰면 칩 교체 경계가 지면에서 사라진다."""
+        rule = re.search(r"\.circuit\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.circuit` 규칙이 없다")
+        self.assertIn("break-before: page", rule.group(0))
+
+    def test_배선_체크박스가_펜으로_칠할_만큼_크다(self):
+        rule = re.search(r"\.box\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.box` 규칙이 없다")
+        self.assertIn("4mm", rule.group(0))
+
+    def test_칩별_미사용핀_구획도_갈리지_않는다(self):
+        """구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음
+        쪽 꼭대기에 남아, 칩 라벨을 되살린 이유가 그대로 무너진다."""
+        rule = re.search(r"\.unused \.chipunused\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.unused .chipunused` 규칙이 없다")
+        self.assertIn("break-inside: avoid", rule.group(0))
+
+    def test_칩_배선이_쪽_경계에서_갈리지_않는다(self):
+        """원자 단위는 칩 상자다. 결선도+배선 전체를 통짜로 묶으면 새 장을
+        열자마자 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다
+        (실측 16쪽 중 3장). 칩 하나의 배선만 갈리지 않으면 충분하다."""
+        rule = re.search(r"\.wirebox \.chip\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.wirebox .chip` 규칙이 없다")
+        self.assertIn("break-inside: avoid", rule.group(0))
+
+    def test_플레이스홀더_네_개가_있다(self):
+        for token in ("{{TITLE}}", "{{COMMON}}", "{{CIRCUITS}}", "{{CLOSING}}"):
+            with self.subTest(token=token):
+                self.assertIn(token, TEMPLATE)
 
     def test_check_cell_is_big_enough_for_a_pen(self):
         self.assertIn("width: 10mm", TEMPLATE)
@@ -132,10 +456,15 @@ class TestPrintConstraints(unittest.TestCase):
         """제목만 앞 쪽에 남고 내용이 넘어가면 실험실에서 못 읽는다."""
         self.assertIn(".tblock", TEMPLATE)
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         html = render_checklist(spec, netlist, TEMPLATE)
+        record_tables = sum(
+            1 for c in netlist.circuits for t in c.tables
+            if spec.table(t) and spec.table(t).role != "reference")
+        lookup_sections = len(netlist.of_kind("lookup"))
         self.assertEqual(html.count('<div class="tblock">'),
-                         5 + 1)   # 기록 대상 표 5개 + 브레드보드 1
+                         record_tables + lookup_sections)
 
 
 class TestProcedureCarriesEveryWarning(unittest.TestCase):
@@ -144,7 +473,7 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
 
     def setUp(self):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = render_checklist(spec, netlist, TEMPLATE)
 
     def test_korean_only_warnings_reach_the_printout(self):
@@ -198,7 +527,7 @@ class ChecklistTitleTest(unittest.TestCase):
 
     def test_제목이_실험_기준이고_주차가_없다(self):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
             encoding="utf-8")
         html = render_checklist(spec, netlist, tmpl)
@@ -210,7 +539,7 @@ class ChecklistTitleTest(unittest.TestCase):
         from scripts.lab import config
         from scripts.lab.record import derive_record
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        netlist = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(encoding="utf-8")
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         tmpl = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
             encoding="utf-8")
         self.assertIn(config.document_title(spec.experiment, spec.title, "체크리스트"),

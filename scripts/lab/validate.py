@@ -268,6 +268,78 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
+def check_netlist_circuits(netlist, spec) -> list:
+    """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다.
+
+    `check_netlist` 는 건드리지 않는다 — 다섯 스킬이 그것을 부르고, 회로 메타를
+    요구하는 것은 인쇄본을 내는 ① `prep-lab-checklist` 뿐이다. 요구를 필요한
+    자리에만 둔다. 그것에 요구를 넣으면 아직 백필하지 않은 다섯 주차에서
+    ③④⑤⑧ 이 동시에 멈춘다.
+
+    결선도 부재는 **warn 이지 error 가 아니다.** 그림 없이도 배선 목록과 빈
+    브레드보드로 실험은 된다. 다만 조용히 빈칸으로 나가면 인쇄 후에야 눈으로
+    발견하므로 시끄럽게 알린다.
+    """
+    out = []
+    known_items = {i.id for i in spec.items}
+    known_tables = {t.id for t in spec.tables}
+    covered = set()
+
+    for circuit in netlist.circuits:
+        where = f"{netlist.path.name}:{circuit.id}"
+        if circuit.item not in known_items:
+            out.append(Finding("error", where,
+                f"item {circuit.item!r} 이 명세에 없다. "
+                f"정의된 항목: {sorted(known_items)}"))
+        for table_id in circuit.tables:
+            if table_id not in known_tables:
+                out.append(Finding("error", where,
+                    f"없는 표 {table_id} 를 가리킨다. "
+                    f"정의된 표: {sorted(known_tables)}"))
+            elif spec.table(table_id).role == "reference":
+                # 렌더러도 걸러내지만, 그쪽 필터는 netlist 가 참조표를 말하지
+                # 않는 한 발화하지 않아 회귀를 못 잡는다. 여기서 저작 단계에
+                # 막는다 — 교안 이론표는 실험실에서 채우는 물건이 아니다.
+                out.append(Finding("error", where,
+                    f"{table_id} 는 role: reference 표다 — 교안에서 옮긴 이론표라 "
+                    "실험실에서 채우지 않는다. 회로의 tables 에서 뺀다 "
+                    "(예비보고서 이론 절의 재료다)"))
+            else:
+                covered.add(table_id)
+        if not circuit.diagram:
+            out.append(Finding("warn", where,
+                "diagram 이 없다 — 인쇄본에 빈 브레드보드가 대신 들어간다. "
+                "breadboard-diagram 스킬로 결선도를 먼저 렌더한다"))
+        elif not (netlist.path.parent / circuit.diagram).exists():
+            out.append(Finding("warn", where,
+                f"diagram 파일이 없다: {circuit.diagram}. breadboard-diagram "
+                "스킬로 렌더하거나 diagram 줄을 지운다"))
+
+    # 인쇄되는 절의 본문에 든 마크다운 표는 렌더러가 통째로 버린다 — `_blocks`
+    # 와 `_split_circuit_body` 가 둘 다 `|` 로 시작하는 줄을 건너뛴다. `lookup`·
+    # `open-issues` 는 `common_page` 가 표를 따로 렌더하지만 `circuit`·`common`
+    # 은 아무도 렌더하지 않는다. 실험02·03·10 결선도는 소자 배치와 칩별 핀을
+    # 표로 적으므로, 그대로 백필하면 배선이 통째로 빠진 회로 페이지가 조용히
+    # 나온다. 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다.
+    for section in netlist.of_kind("circuit") + netlist.of_kind("common"):
+        table_lines = sum(1 for line in section.body.split("\n")
+                          if line.strip().startswith("|"))
+        if table_lines:
+            out.append(Finding("warn",
+                f"{netlist.path.name}:{section.id or section.title}",
+                f"본문에 마크다운 표 줄이 {table_lines}개 있다 — 인쇄본은 "
+                f"kind: {section.kind} 절의 표를 싣지 않는다. 배선은 "
+                "`- U<n> = <칩>` 아래 들여쓴 `- ` 불릿으로 적고, 참조용 표는 "
+                "`kind: lookup` 절로 뺀다"))
+
+    for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
+                           - covered):
+        out.append(Finding("warn", netlist.path.name,
+            f"기록 대상 표 {table_id} 를 가리키는 회로가 없다 — "
+            "인쇄본은 회로를 통해서만 표를 싣는다. 그대로 두면 조용히 빠진다"))
+    return out
+
+
 _STRAY_MARKDOWN = (("`", "백틱"), ("**", "굵게 표기"))
 _TAG = re.compile(r"<[^>]+>")
 

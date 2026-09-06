@@ -38,15 +38,23 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    ```bash
    python3 -c "
    from scripts.lab.spec_parser import parse_spec
+   from scripts.lab.netlist_parser import parse_netlist
    from scripts.lab import validate
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
+   netlist = parse_netlist('<실험NN>/결선도/netlist.md')
    findings = (validate.validate_spec(spec)
-               + validate.check_netlist('<실험NN>/결선도/netlist.md', spec))
+               + validate.check_netlist('<실험NN>/결선도/netlist.md', spec)
+               + validate.check_netlist_circuits(netlist, spec))
    print('\n'.join(str(f) for f in findings) or '문제 없음')
    "
    ```
 
    **error 가 하나라도 있으면 인쇄하지 말고 보고한다.** warn 은 알리고 진행한다.
+
+   `parse_netlist` 가 `NetlistError` 를 던지면 그 결선도에 회로 메타가 없는
+   것이다. **예외 메시지를 그대로 사용자에게 전하고 멈춘다** — 옛 방식으로
+   대충 렌더하지 않는다. 백필 방법은 메시지가 담고 있고 계약은
+   `docs/schema/lab-netlist-v1.md` 다.
 
 3. **기록 템플릿 파생.**
 
@@ -68,11 +76,12 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    from scripts.lab import config
    from scripts.lab.render import render_checklist
    from scripts.lab.spec_parser import parse_spec
+   from scripts.lab.netlist_parser import parse_netlist
    from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
    root = config.find_project_root(Path('.'))
    info = config.load_course_info(root)
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
-   netlist = Path('<실험NN>/결선도/netlist.md').read_text(encoding='utf-8')
+   netlist = parse_netlist('<실험NN>/결선도/netlist.md')
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
    out = Path('<실험NN>/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
@@ -84,7 +93,13 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    **`chrome=` 를 반드시 넘긴다** — 안 넘기면 `과목정보.md` 의 `chrome` 필드가
    선언만 되고 아무 효과가 없다 (⑥ 표지 스킬과 같은 규칙이다).
 
-5. **A4 실측.** 아래를 돌려 210×297mm 인지 확인한다. 아니면 CSS 를 고치고 다시 낸다.
+5. **A4 실측.** 아래를 돌려 쪽 크기를 본다.
+
+   **기대값은 `209.9 297.0` 이다.** Chrome 헤드리스가 A4 로 내는 mediabox 는
+   `594.95996 × 841.91998pt` = `209.889 × 297.011mm` 로 고정이다 — 폭이 이름값
+   210mm 보다 0.11mm 좁다. **이것은 결함이 아니다.** 2026-09 재설계 전후 PDF 가
+   같은 값이었다. 210.0 을 맞추려고 CSS 를 건드리지 않는다. 이 값에서 눈에 띄게
+   벗어날 때만(예: Letter 로 나와 215.9) `@page { size: A4 }` 를 확인하고 다시 낸다.
 
    ```bash
    python3 -c "
@@ -104,10 +119,28 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
 ## 인쇄물 구성 (이 순서를 지킨다)
 
-1. **결선 절차** — VCC/GND/미사용핀 박스가 맨 위. 배선을 끝내야 표를 채운다
-2. **표** — kind 별 레이아웃, 각 표에 `출처` 노출
-3. **결선도 | 회로 2열 대조** — 항목마다
-4. **브레드보드 작도면** — netlist 가 요구하는 행 수만큼 크롭
+**1. 공통면 (1쪽)** — 한 번만 보면 되는 것
+- 전원 박스 + 확인 칸 범례
+- 오늘의 흐름 표 (회로 순서 · 이름 · 쓰는 IC · 기록할 표)
+- 공통 규칙 (`kind: common`)
+- 참조 핀아웃 표 (`kind: lookup`)
+- 실험실 확인 체크박스 (`kind: open-issues`)
+- `kind: sources` 는 **인쇄하지 않는다** — ③ 의 참고문헌 재료다
+
+**2. 회로 페이지** — `kind: circuit` 마다 하나. 강제 개쪽
+- 머리글 `회로 3/5 · 이름 · 기록: T3`
+- 칩 교체 배너 (앞 회로와 IC 를 비교해 뺄 칩·꽂을 칩)
+- 결선도 (없으면 빈 브레드보드 크롭)
+- 칩별 배선 상자 — 번호는 회로마다 1부터, 줄마다 체크박스
+- 미사용핀 강조 박스
+- 이 회로의 유의사항 산문
+- 측정표 + 사진 지시 + 불일치 행 미니표
+
+**3. 종료면 (1쪽)** — 실험실을 나오기 전 확인 목록
+
+**결선도를 그리지 않는다.** `diagram:` 이 가리키는 PNG 를 싣기만 한다.
+그림이 필요하면 `breadboard-diagram` 을 **먼저 따로** 돌린다. 인쇄가 렌더러에
+묶이면 회로 ID 가 없는 주차에서 조용히 실패한다.
 
 ## kind 별 칸
 
@@ -122,6 +155,8 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 ## 비-목표
 
 - 명세를 만들지 않는다. 없으면 `draft-lab-spec` 이 교안에서 저작한다.
-- 자동 배선도를 그리지 않는다 (netlist + 빈 브레드보드만 준다).
+- 결선도를 그리지 않는다. `netlist` 의 `diagram:` 이 가리키는 PNG 를 소비할 뿐이고,
+  없으면 빈 브레드보드로 대신하며 검증이 warn 을 낸다. 그림은
+  `breadboard-diagram` 이 별도로 만든다.
 - 캐시 신선도 로직(mtime 비교·SOURCES 블록)을 만들지 않는다.
   소스가 고정이므로 그냥 다시 만드는 게 싸고 안전하다.
