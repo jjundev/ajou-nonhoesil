@@ -36,7 +36,7 @@ description: Generate accurate, publication-quality breadboard circuit wiring di
 
 ## 3. CLI 사용법
 ```bash
-python3 .agents/skills/breadboard-diagram/scripts/render_breadboard.py \
+python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
     --circuit <circuit_id> \
     --output <output_path> \
     [--template <template_path>]
@@ -44,15 +44,17 @@ python3 .agents/skills/breadboard-diagram/scripts/render_breadboard.py \
 
 ### 지원 회로 ID (`--circuit`):
 - **실험 1 (기본 게이트 및 조합논리)**:
-  - `e1_and`: 실험 1-1 3입력 AND 게이트 (74HC08)
-  - `e1_nand`: 실험 1-2 3입력 NAND 게이트 (74HC08 + 74HC00)
+  - `e1_and`: 실험 1-1 (1) 3입력 AND 게이트 (74HC08)
+  - `e1_or`: 실험 1-1 (2) 3입력 OR 게이트 (74HC32)
+  - `e1_nand`: 실험 1-2 (1) 3입력 NAND 게이트 (74HC08 + 74HC00)
+  - `e1_nor`: 실험 1-2 (2) 3입력 NOR 게이트 (74HC32 + 74HC02, 출력 1번 핀)
   - `e1_comb`: 실험 1-3 복합 논리회로 (74HC04 + 74HC08 + 74HC32, X, Y, Z 3출력)
 
-**3입력 OR·NOR 은 아직 지원하지 않는다.** 2026-09-06 이전에는 e1_or·e1_nor
-가 있었지만 실제로는 각각 AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR
-이름으로 냈다**. 특히 NOR 은 `74HC02` 의 출력 핀 1번 배치를 반영해야 하는데
-소스에 `74HC02` 가 존재하지 않았다. 별칭을 지웠다 — 그림이 틀린 것보다 없는 것이
-낫다. `74HC32` 전용 빌더와 `74HC02` 빌더를 작성하면 그때 되살린다.
+**OR·NOR 은 2026-09-06 에 되살렸다.** 그 전에는 `e1_or`·`e1_nor` 가 각각
+AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름으로 냈다.**
+별칭을 지웠다가, `74HC32` 전용 빌더(`build_e1_or`)와 `74HC02` 빌더
+(`build_e1_nor`, 출력이 1번 핀)를 실제로 작성해 복원했다. 두 회로가 한 빌더를
+공유하지 않는지는 `tests/test_breadboard_diagram_cli.py` 가 검사한다.
 - **실험 2 (CMOS 전기적 특성 및 전파지연)**:
   - `e2_inv`: 실험 2-1 Inverter 입출력 특성 회로 (74HC04 VTC, X-Y 모드)
   - `e2_schmitt`: 실험 2-2 Schmitt-trigger 입출력 특성 회로 (74HC14 Hysteresis)

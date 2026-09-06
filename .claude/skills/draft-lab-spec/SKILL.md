@@ -179,14 +179,22 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 
    ```bash
    python3 -c "
+   from pathlib import Path
    from scripts.lab import config
    for p in config.manual_candidates(<실험번호>):
-       print(p)
+       print('O' if Path(p).exists() else 'X', p)
    "
    ```
 
    앞에서부터 실재하는 첫 후보를 연다. 실제로 연 경로가 명세의
-   `source_manual` 이 된다. 둘 다 없으면 거절한다.
+   `source_manual` 이 된다. 하나도 없으면 거절한다. **후보 개수는 고정이
+   아니다** — 2026-2 배포본(`강의노트/실험N. <제목>.pdf`)은 배포된 주차에만
+   들어간다.
+
+   **어느 판본을 열었는지 보고에 적는다.** 배포본과 과거 학기 아카이브는
+   같은 실험이라도 내용이 다르다 — 실험1 은 아카이브가 13 쪽·항목 3 개,
+   배포본이 15 쪽·항목 5 개이고 OR·NOR 의 IC 지정도 다르다. 판본이 바뀌면
+   명세를 고치는 게 아니라 **다시 저작해야 한다.**
 
    **그다음 산출물이 이미 있는지 본다.** §절대 규칙 13 을 거는 자리가
    여기다 — 교안을 다 읽고 저작까지 마친 뒤에 떠올리면 늦는다.
