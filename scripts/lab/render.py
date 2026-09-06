@@ -233,8 +233,14 @@ def _md_table_html(table, lead_checkbox: bool = False) -> str:
     return "".join(out)
 
 
-LEGEND = ("확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. "
-          "표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.")
+LEGEND = (
+    "진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. "
+    "표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.",
+    "스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). "
+    "확인 칸이 없다: 대조할 예상값이 없는 표다.",
+    "파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. "
+    "조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.",
+)
 
 
 def _flow_table(spec, netlist) -> str:
@@ -266,9 +272,9 @@ def common_page(spec, netlist) -> str:
     """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀은 전부 GND (플로팅 금지)</div>",
-           f'<p class="legend">{_esc(LEGEND)}</p>',
-           "<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
+           "미사용 입력핀은 전부 GND (플로팅 금지)</div>"]
+    out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
+    out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 
     for section in netlist.of_kind("common"):
         out.append(f"<h2>{_esc(_plain(section.title))}</h2>")

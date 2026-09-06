@@ -100,7 +100,7 @@ class TestCapturePage(unittest.TestCase):
         start = self.html.index("<h3>T1 ·")
         return self.html[start:self.html.index("</section>", start)]
 
-    def test_capture_renders_a_sketch_box_not_a_grid(self):
+    def test_capture_는_격자가_아니라_스케치_상자를_낸다(self):
         self.assertIn('class="sketch"', self.html)
 
     def test_예상_산문을_통째로_싣는다(self):
@@ -196,10 +196,15 @@ class TestCommonPage(unittest.TestCase):
         self.assertNotIn("Philips", self.html)
         self.assertNotIn("SCLS081J", self.html)
 
-    def test_확인_칸_범례가_인쇄본에_있다(self):
-        """규약은 기록.md 에만 있었다. 태블릿에 PDF 만 띄운 사람은 알 수 없다."""
+    def test_기록_규약_범례가_kind_마다_있다(self):
+        """규약은 기록.md 에만 있었다 — 태블릿에 PDF 만 띄운 사람은 알 수 없다.
+        그리고 진리표 규약 하나로는 실험02·10 을 설명하지 못한다. 두 주차에는
+        진리표가 한 장도 없다."""
         self.assertIn("불일치", self.html)
         self.assertIn("미확인", self.html)
+        self.assertIn("단위", self.html)          # 스텝표
+        self.assertIn("판독 조건", self.html)      # 파형
+        self.assertEqual(self.html.count("class=\"legend\""), 3)
 
     def test_여러_줄_경고가_잘리지_않는다(self):
         """74HC02 경고는 세 줄짜리 불릿 하나다. 이어지는 줄을 앞 항목에 붙이지
