@@ -4,7 +4,7 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import parse_netlist
-from scripts.lab.render import common_page, crop_rows, render_checklist
+from scripts.lab.render import circuit_pages, common_page, crop_rows, render_checklist
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,6 +129,75 @@ class TestCommonPage(unittest.TestCase):
     def test_기록_대상_표의_확인_칸을_공통면이_만들지_않는다(self):
         """`.check` 개수는 회로 페이지에서만 나온다 — 개수 검사가 명세에서 센다."""
         self.assertNotIn('class="check"', self.html)
+
+
+class TestCircuitPages(unittest.TestCase):
+    """회로 하나 = 결선도 + 배선 + 유의사항 + 측정표. 실험실의 작업 단위는
+    명세 항목이 아니라 회로다 — 칩이 종류당 하나라 순차로 배선해야 한다
+    (netlist M10)."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.html = circuit_pages(self.spec, self.netlist)
+
+    def test_회로마다_개쪽_상자가_하나씩_나온다(self):
+        self.assertEqual(self.html.count('<section class="circuit">'),
+                         len(self.netlist.circuits))
+
+    def test_진행_표시가_붙는다(self):
+        self.assertIn("1/5", self.html)
+        self.assertIn("5/5", self.html)
+
+    def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_말한다(self):
+        """C1(74HC08) → C2(74HC32) 는 칩을 갈아끼워야 한다."""
+        self.assertIn("뺀다", self.html)
+        self.assertIn("꽂는다", self.html)
+
+    def test_결선도가_있으면_그림을_싣는다(self):
+        self.assertIn("실험01_결선도_3입력_AND.png", self.html)
+        self.assertIn("../결선도/", self.html)
+
+    def test_결선도가_없으면_빈_브레드보드로_대신한다(self):
+        """C2(OR)·C4(NOR) 는 결선도가 없다 — 그림 자리를 비우지 않는다."""
+        self.assertEqual(self.html.count("Breadboard.jpg"), 2)
+        self.assertIn("브레드보드 작도", self.html)
+
+    def test_배선_번호가_회로마다_1부터_다시_센다(self):
+        """문서 전체 1~95 연속이면 '62번 배선 중'이 아무 의미도 없다."""
+        self.assertEqual(self.html.count('<ol start="1">'),
+                         self.html.count("<ol "))
+
+    def test_칩이_자기_상자를_갖는다(self):
+        """`U3 = 74HC08` 은 상자의 제목이지 배선 단계가 아니다."""
+        self.assertIn('class="chip"', self.html)
+        self.assertIn("U1 = 74HC08", self.html)
+
+    def test_미사용핀_처리가_별도_강조_박스로_나온다(self):
+        self.assertIn('class="unused"', self.html)
+        self.assertIn("개방", self.html)
+
+    def test_회로별_경고가_그_회로_페이지에_온다(self):
+        for warning in ("교안 p12 회로도 그대로", "핀 순서에 주의", "다르면 배선 오류"):
+            with self.subTest(warning=warning):
+                self.assertIn(warning, self.html)
+
+    def test_사진_지시가_표마다_붙는다(self):
+        self.assertIn("T1 row", self.html)
+        self.assertIn("불일치 행", self.html)
+
+    def test_불일치_행_미니표가_표마다_붙는다(self):
+        self.assertEqual(self.html.count('class="mismatch"'), 5)
+
+    def test_사진_부착_2열_상자가_사라졌다(self):
+        """실험실에서 사진을 붙일 수 없다. 보고서 배치는 ④ 가 한다."""
+        self.assertNotIn('class="pair"', self.html)
+
+    def test_참조표는_회로_페이지에도_없다(self):
+        for tid in ("T6", "T7", "T8", "T9"):
+            with self.subTest(table=tid):
+                self.assertNotIn(f"{tid} ·", self.html)
 
 
 class TestCrop(unittest.TestCase):

@@ -286,6 +286,157 @@ def common_page(spec, netlist) -> str:
     return "\n".join(out)
 
 
+_CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
+
+_PHOTO = {
+    "truth-table": "사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 {tid} row3.jpg 형식",
+    "stepped": "사진: 스텝마다 1장. 파일명 {tid} row3.jpg 형식",
+    "capture": "사진: 파형 자체가 결과물이다. 파일명 {tid} row1.jpg 형식",
+}
+
+
+def _split_circuit_body(section):
+    """회로 본문을 (칩 상자, 미사용핀 줄, 산문) 으로 가른다.
+
+    `- U<n> = <칩>` 이 상자의 제목이고 그 아래 들여쓴 `- ` 가 배선이다. 옛
+    렌더러는 들여쓰기를 무시하고 전부 형제 번호로 만들어 **칩의 경계가 사라졌다**.
+
+    미사용핀 줄은 상자에서 빼내 별도 강조 박스로 보낸다 — 플로팅 입력이 이
+    과목의 대표 실패 원인인데 긴 목록의 마지막 두 줄로 묻혀 있었다.
+
+    `- U<n> =` 형태의 칩 선언이 하나도 없으면(실험10 처럼 `## U1 = ...` 헤딩을
+    쓰는 결선도) 상자를 만들지 않고 본문 전체를 산문으로 흘린다. 조용히 버리는
+    것보다 낫다.
+    """
+    chips, unused, prose = [], [], []
+    current = None
+    for raw in section.body.split("\n"):
+        line = raw.rstrip()
+        stripped = line.strip()
+        if not stripped or stripped.startswith("|"):
+            continue
+        m = _CHIP_LINE.match(line)
+        if m:
+            current = {"head": _plain(m.group(1)), "wires": []}
+            chips.append(current)
+            continue
+        if stripped.startswith("- ") and line.startswith((" ", "\t")) and current:
+            text = _plain(stripped[2:])
+            (unused if text.startswith("미사용") else current["wires"]).append(text)
+            continue
+        if line.startswith((" ", "\t")) and current and current["wires"]:
+            current["wires"][-1] += " " + _plain(stripped)
+            continue
+        prose.append(line)
+    return chips, unused, "\n".join(prose)
+
+
+def _chip_swap(previous, current) -> str:
+    """칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다 (netlist M10)."""
+    if previous is None:
+        return "준비: " + ", ".join(current.ics) + " 를 꽂는다"
+    remove = [c for c in previous.ics if c not in current.ics]
+    add = [c for c in current.ics if c not in previous.ics]
+    keep = [c for c in current.ics if c in previous.ics]
+    parts = []
+    if remove:
+        parts.append("뺀다: " + ", ".join(remove))
+    if add:
+        parts.append("꽂는다: " + ", ".join(add))
+    if keep:
+        parts.append("그대로 둔다: " + ", ".join(keep))
+    return " · ".join(parts) or "칩 교체 없음"
+
+
+def _diagram_html(section, netlist) -> str:
+    """결선도가 있으면 싣고, 없으면 그 자리에 빈 브레드보드를 넣는다.
+
+    **렌더러를 호출하지 않는다.** 인쇄가 PIL·시스템 폰트·미추적 스크립트에
+    묶이면 안 된다. 부재는 `validate.check_netlist_circuits` 가 warn 으로 알린다.
+
+    그림은 전체 폭을 요구한다 — 998px 를 절반(95mm)으로 줄이면 12px 핀 라벨이
+    약 3.2pt 가 되어 읽을 수 없다.
+    """
+    if section.diagram:
+        png = netlist.path.parent / section.diagram
+        if png.exists():
+            src = f"../{netlist.path.parent.name}/{section.diagram}"
+            return (f'<img src="{_esc(src)}" style="width:100%">'
+                    f'<p class="src">결선도: {_esc(section.diagram)}</p>')
+    rows = crop_rows(section.body)
+    visible_mm = _BREADBOARD_HEADER_MM + rows * 6
+    return (f"<h3>브레드보드 작도 ({rows}행)</h3>"
+            "<p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p>"
+            f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
+            f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
+            'object-position:top">')
+
+
+def _mismatch_html() -> str:
+    """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다."""
+    head = ('<table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th>'
+            "<th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody>")
+    body = "".join("<tr>" + "<td></td>" * 5 + "</tr>" for _ in range(3))
+    return head + body + "</tbody></table>"
+
+
+def _circuit_tables(spec, section) -> str:
+    out = []
+    for table_id in section.tables:
+        table = spec.table(table_id)
+        if table is None or table.role == "reference":
+            continue
+        out.append('<div class="tblock">')
+        out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
+        # `_plain` 을 씌운다 — 옛 `_tables()` 는 안 씌웠다. 지금 어느 명세의
+        # `source` 에도 마크다운이 없지만, 들어오는 순간 백틱이 인쇄본에 찍히고
+        # 그것을 잡는 검사는 본문만 본다.
+        out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
+        out.append(_capture_html(table) if table.kind == "capture"
+                   else _truth_or_stepped_html(table))
+        out.append(f"<p class='photo'>"
+                   f"{_esc(_PHOTO[table.kind].format(tid=table.id))}</p>")
+        out.append(_mismatch_html())
+        out.append("</div>")
+    return "\n".join(out)
+
+
+def circuit_pages(spec, netlist) -> str:
+    """회로마다 한 면. 강제 개쪽이라 회로 둘이 한 쪽을 나눠 쓰지 않는다.
+
+    면 안의 순서는 작업 순서다 — 칩 교체 → 결선도 → 배선 → 미사용핀 → 유의사항
+    → 측정표. `[결선도+배선]` 과 `[표]` 만 통짜로 유지하므로, 넘칠 때 갈리는
+    지점이 "다 꽂았다"는 순간과 일치한다.
+    """
+    out, previous = [], None
+    total = len(netlist.circuits)
+    for n, section in enumerate(netlist.circuits, start=1):
+        chips, unused, prose = _split_circuit_body(section)
+        tables = ", ".join(section.tables)
+        out.append('<section class="circuit">')
+        out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
+                   f"· 기록: {_esc(tables)}</h2>")
+        out.append(f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>')
+        out.append('<div class="wirebox">')
+        out.append(_diagram_html(section, netlist))
+        for chip in chips:
+            out.append(f'<div class="chip"><h4>{_esc(chip["head"])}</h4><ol start="1">')
+            out += [f'<li><span class="box"></span>{_esc(w)}</li>'
+                    for w in chip["wires"]]
+            out.append("</ol></div>")
+        out.append("</div>")
+        if unused:
+            out.append('<div class="unused"><b>배선을 끝내고 반드시 확인한다</b><ul>')
+            out += [f'<li><span class="box"></span>{_esc(u)}</li>' for u in unused]
+            out.append("</ul></div>")
+        if prose.strip():
+            out.append(_blocks(prose))
+        out.append(_circuit_tables(spec, section))
+        out.append("</section>")
+        previous = section
+    return "\n".join(out)
+
+
 def _tables(spec) -> str:
     out = []
     for item in spec.items:
