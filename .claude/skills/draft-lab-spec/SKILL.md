@@ -285,6 +285,34 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    는 `spec.items` 를 순회하며 각 항목의 `ics` 가 있는지 보므로, 낡은
    원본 명세로는 방금 쓴 결선도를 제대로 잴 수 없다.
 
+   ### 결선도 절에 회로 메타를 단다 (`lab-netlist/v1`)
+
+   모든 `# ` 절이 속성 리스트로 시작해야 한다. 없으면 ① `prep-lab-checklist` 가
+   인쇄본을 못 낸다. 계약은 `docs/schema/lab-netlist-v1.md` 다.
+
+   - 공통 규칙 절 → `- kind: common`
+   - 참조 핀아웃 표가 있는 절 → `- kind: lookup` (표는 인쇄본 공통면에 실린다)
+   - 핀아웃 출처 절 → `- kind: sources` (인쇄하지 않는다)
+   - 미확정 사항 절 → `- kind: open-issues`
+   - 회로 절 → `- kind: circuit` + `- id: C<n>` + `- item: <명세 항목 id>`
+     + `- tables: [T<n>]`, 결선도 PNG 가 있으면 `- diagram: <파일명>`
+
+   **회로는 배선 하나가 아니라 브레드보드에 한 번에 올리는 단위다.** 준비물이
+   종류당 하나뿐이라 회로를 순차로 배선하고 앞 회로를 빼야 하는 주차가 흔하다 —
+   그 경계가 회로 경계이고 인쇄본의 쪽 경계다.
+
+   작성 후 확인:
+
+       python3 -c "
+       from scripts.lab.netlist_parser import parse_netlist
+       from scripts.lab.spec_parser import parse_spec
+       from scripts.lab import validate
+       spec = parse_spec('<실험NN>/체크리스트/명세.md')
+       netlist = parse_netlist('<실험NN>/결선도/netlist.md')
+       print('\n'.join(str(f) for f in validate.check_netlist_circuits(netlist, spec))
+             or '회로 메타 문제 없음')
+       "
+
    ```bash
    python3 -c "
    from pathlib import Path
