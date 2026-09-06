@@ -306,12 +306,17 @@ def _split_circuit_body(section):
     pin 4 는 U5 기준 GND, U6 기준 개방이다. 어느 칩 것인지 인쇄본에 단서가
     없으면 "출력을 GND 로 내려 칩을 죽이는" 바로 그 사고가 된다.
 
+    산문은 **첫 칩 앞**과 **마지막 칩 뒤**로 갈라 돌려준다. 원문이 그렇게
+    쓰여 있기 때문이다 — 앞은 회로 소개와 배선 경고(`74HC02 의 핀 순서에 주의`)
+    이고, 뒤는 배선을 마친 뒤 하는 검산(`LED_X 와 LED_Z 가 같이 켜져야 한다`)
+    이다. 한 덩어리로 합치면 검산 지시가 배선 앞에 놓여 preamble 로 읽힌다.
+
     `- U<n> =` 형태의 칩 선언이 하나도 없으면(실험10 처럼 `## U1 = ...` 헤딩을
-    쓰는 결선도) 상자를 만들지 않고 본문 전체를 산문으로 흘린다. 조용히 버리는
-    것보다 낫다.
+    쓰는 결선도) 상자를 만들지 않고 본문 전체를 앞쪽 산문으로 흘린다. 조용히
+    버리는 것보다 낫다.
     """
-    chips, prose = [], []
-    current = None
+    chips, before, after = [], [], []
+    current, last_key = None, None
     for raw in section.body.split("\n"):
         line = raw.rstrip()
         stripped = line.strip()
@@ -320,18 +325,22 @@ def _split_circuit_body(section):
         m = _CHIP_LINE.match(line)
         if m:
             current = {"head": _plain(m.group(1)), "wires": [], "unused": []}
+            last_key = None
             chips.append(current)
             continue
         if stripped.startswith("- ") and line.startswith((" ", "\t")) and current:
             text = _plain(stripped[2:])
-            key = "unused" if text.startswith("미사용") else "wires"
-            current[key].append(text)
+            last_key = "unused" if text.startswith("미사용") else "wires"
+            current[last_key].append(text)
             continue
-        if line.startswith((" ", "\t")) and current and current["wires"]:
-            current["wires"][-1] += " " + _plain(stripped)
+        if line.startswith((" ", "\t")) and current and last_key:
+            # **마지막으로 담은 목록**에 잇는다. `wires` 로 고정하면 미사용 줄을
+            # 잇는 줄이 엉뚱한 배선 줄에 붙는다 — 플로팅 핀 지시를 다른 항목에
+            # 조용히 재부착하는 것이라, 칩 라벨을 잃던 결함과 같은 부류다.
+            current[last_key][-1] += " " + _plain(stripped)
             continue
-        prose.append(line)
-    return chips, "\n".join(prose)
+        (after if chips else before).append(line)
+    return chips, "\n".join(before), "\n".join(after)
 
 
 def _chip_swap(previous, current) -> str:
@@ -421,7 +430,7 @@ def circuit_pages(spec, netlist) -> str:
     out, previous = [], None
     total = len(netlist.circuits)
     for n, section in enumerate(netlist.circuits, start=1):
-        chips, prose = _split_circuit_body(section)
+        chips, prose_before, prose_after = _split_circuit_body(section)
         tables = ", ".join(section.tables)
         item = next((i for i in spec.items if i.id == section.item), None)
         device = f" · 판독: {', '.join(item.device)}" if item else ""
@@ -429,8 +438,8 @@ def circuit_pages(spec, netlist) -> str:
         out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
                    f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
         out.append(f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>')
-        if prose.strip():
-            out.append(_blocks(prose))
+        if prose_before.strip():
+            out.append(_blocks(prose_before))
         out.append('<div class="wirebox">')
         out.append(_diagram_html(section, netlist))
         for chip in chips:
@@ -449,6 +458,9 @@ def circuit_pages(spec, netlist) -> str:
                         for u in chip["unused"]]
                 out.append("</ul></div>")
             out.append("</div>")
+        if prose_after.strip():
+            # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
+            out.append(_blocks(prose_after))
         out.append(_circuit_tables(spec, section))
         out.append("</section>")
         previous = section

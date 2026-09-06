@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.netlist_parser import parse_netlist
+from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.render import (_esc, _plain, _split_circuit_body, circuit_pages,
                                 common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
@@ -261,6 +261,56 @@ class TestCircuitPages(unittest.TestCase):
         self.assertIn("꽂는다: 74HC32", banner)
 
 
+    def test_배선_뒤_검산_산문이_미사용_상자_뒤에_온다(self):
+        """C5 의 `LED_X 와 LED_Z 가 같이 켜져야 한다` 는 배선을 마친 뒤 하는
+        검산이다. 앞으로 올리면 preamble 로 읽힌다."""
+        page = self._pages()[4]
+        self.assertLess(page.index('class="unused"'), page.index("다르면 배선 오류"))
+
+    def test_배선_전_경고는_배선_앞에_온다(self):
+        """C4 의 `74HC02 의 핀 순서에 주의` 를 배선을 다 마친 뒤 읽으면 늦다."""
+        page = self._pages()[3]
+        self.assertLess(page.index("핀 순서에 주의"), page.index('class="wirebox"'))
+
+
+class TestCircuitBodySplit(unittest.TestCase):
+    """`_split_circuit_body` 의 줄 귀속. 실험01 에는 이어지는 줄이 없어 실물
+    렌더로는 발화하지 않지만, 이 저장소의 결선도는 관행적으로 줄을 접는다 —
+    발화하는 순간 플로팅 핀 지시가 엉뚱한 항목에 붙는다."""
+
+    def _section(self, body):
+        return NetlistSection(kind="circuit", title="C9 · 시험", body=body, line=1,
+                              id="C9", item="E1.P1-1", tables=["T1"])
+
+    def test_이어지는_줄이_미사용_줄을_이으면_미사용에_붙는다(self):
+        chips, _, _ = _split_circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← 입력 A\n"
+            "  - 미사용 출력핀: pin 8, 11 → 개방\n"
+            "    (절대 GND 로 내리지 않는다)\n"))
+        self.assertEqual(chips[0]["wires"], ["pin 1 ← 입력 A"])
+        self.assertEqual(chips[0]["unused"],
+                         ["미사용 출력핀: pin 8, 11 → 개방 (절대 GND 로 내리지 않는다)"])
+
+    def test_이어지는_줄이_배선_줄을_이으면_배선에_붙는다(self):
+        chips, _, _ = _split_circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 3 → L1 애노드\n"
+            "    (330Ω 직렬)\n"))
+        self.assertEqual(chips[0]["wires"], ["pin 3 → L1 애노드 (330Ω 직렬)"])
+        self.assertEqual(chips[0]["unused"], [])
+
+    def test_산문이_첫_칩_앞뒤로_갈린다(self):
+        _, before, after = _split_circuit_body(self._section(
+            "회로 소개다.\n"
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← 입력 A\n"
+            "배선을 마친 뒤 검산한다.\n"))
+        self.assertIn("회로 소개다", before)
+        self.assertNotIn("검산", before)
+        self.assertIn("검산", after)
+
+
 class TestCrop(unittest.TestCase):
     def test_row_count_comes_from_the_netlist(self):
         """쓰는 행만 남겨 작도 면적을 줄이는 것이 실제 관행이다 (2020 예보2).
@@ -319,6 +369,13 @@ class TestPrintConstraints(unittest.TestCase):
         rule = re.search(r"\.box\s*\{[^}]*\}", TEMPLATE, re.S)
         self.assertIsNotNone(rule, "`.box` 규칙이 없다")
         self.assertIn("4mm", rule.group(0))
+
+    def test_칩별_미사용핀_구획도_갈리지_않는다(self):
+        """구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음
+        쪽 꼭대기에 남아, 칩 라벨을 되살린 이유가 그대로 무너진다."""
+        rule = re.search(r"\.unused \.chipunused\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.unused .chipunused` 규칙이 없다")
+        self.assertIn("break-inside: avoid", rule.group(0))
 
     def test_칩_배선이_쪽_경계에서_갈리지_않는다(self):
         """원자 단위는 칩 상자다. 결선도+배선 전체를 통짜로 묶으면 새 장을
