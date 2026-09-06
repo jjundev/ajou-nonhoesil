@@ -200,8 +200,8 @@
 </tr>
 </thead>
 <tbody>
-<tr><td>S1</td><td>V_T+</td><td>X-Y 루프의 **오른쪽** 수직변. 커서 X 좌표</td><td class="fill"></td></tr>
-<tr><td>S2</td><td>V_T-</td><td>X-Y 루프의 **왼쪽** 수직변. 커서 X 좌표</td><td class="fill"></td></tr>
+<tr><td>S1</td><td>V_T+</td><td>X-Y 루프의 오른쪽 수직변. 커서 X 좌표</td><td class="fill"></td></tr>
+<tr><td>S2</td><td>V_T-</td><td>X-Y 루프의 왼쪽 수직변. 커서 X 좌표</td><td class="fill"></td></tr>
 <tr><td>S3</td><td>V_H = S1 - S2</td><td>계산 (교안 p4 정의)</td><td class="fill"></td></tr>
 <tr><td>S4</td><td>루프 상단 V_OUT</td><td>위쪽 수평변의 커서 Y 좌표. 약 VCC 여야 한다</td><td class="fill"></td></tr>
 <tr><td>S5</td><td>루프 하단 V_OUT</td><td>아래쪽 수평변의 커서 Y 좌표. 약 0V 여야 한다</td><td class="fill"></td></tr>
@@ -251,7 +251,7 @@
 </tr>
 </thead>
 <tbody>
-<tr><td>S1</td><td>R1 실저항</td><td>**회로에 꽂기 전** R1 양단, DMM 저항(Ω) 모드</td><td class="fill"></td></tr>
+<tr><td>S1</td><td>R1 실저항</td><td>회로에 꽂기 전 R1 양단, DMM 저항(Ω) 모드</td><td class="fill"></td></tr>
 <tr><td>S2</td><td>V_out (= V_OL)</td><td>DMM(+) → U1 pin 2, DMM(-) → 공통 GND, DCV</td><td class="fill"></td></tr>
 <tr><td>S3</td><td>R1 양단 전압</td><td>DMM(+) → VCC 레일, DMM(-) → U1 pin 2, DCV</td><td class="fill"></td></tr>
 <tr><td>S4</td><td>I_OL = S3 / S1</td><td>계산. 전류계를 직렬로 끊어 넣어 직접 재도 된다</td><td class="fill"></td></tr>
@@ -303,7 +303,7 @@
 </tr>
 </thead>
 <tbody>
-<tr><td>S1</td><td>R1 실저항</td><td>**회로에 꽂기 전** R1 양단, DMM 저항(Ω) 모드</td><td class="fill"></td></tr>
+<tr><td>S1</td><td>R1 실저항</td><td>회로에 꽂기 전 R1 양단, DMM 저항(Ω) 모드</td><td class="fill"></td></tr>
 <tr><td>S2</td><td>V_out (= V_OH)</td><td>DMM(+) → U1 pin 2, DMM(-) → 공통 GND, DCV</td><td class="fill"></td></tr>
 <tr><td>S3</td><td>VCC 실측</td><td>DMM(+) → VCC 레일, DMM(-) → 공통 GND, DCV</td><td class="fill"></td></tr>
 <tr><td>S4</td><td>I_OH = S2 / S1</td><td>계산. R1 이 pin 2 와 GND 사이에 있으므로 R1 양단 전압 = S2</td><td class="fill"></td></tr>
@@ -379,7 +379,7 @@
 </tr>
 </thead>
 <tbody>
-<tr><td>S1</td><td>Δt (CH1 → CH2 지연)</td><td>CH1 팁 U1 pin 4, CH2 팁 U1 pin 8. 두 파형의 **2.5V(=VCC 50%) 교차점** 사이 시간</td><td class="fill"></td></tr>
+<tr><td>S1</td><td>Δt (CH1 → CH2 지연)</td><td>CH1 팁 U1 pin 4, CH2 팁 U1 pin 8. 두 파형의 2.5V(=VCC 50%) 교차점 사이 시간</td><td class="fill"></td></tr>
 <tr><td>S2</td><td>pin 4 와 pin 8 사이 인버터 단 수</td><td>교안 p13 배선을 따라 셈. 5→6, 13→12, 11→10, 9→8</td><td>4</td></tr>
 <tr><td>S3</td><td>게이트당 t_pd = S1 / S2</td><td>계산</td><td class="fill"></td></tr>
 <tr><td>S4</td><td>데이터시트 t_PHL/t_PLH</td><td>74HC04 데이터시트 p11, VCC 4.5V·25도·C_L 50pF: typ 9ns / max 17ns (T8)</td><td class="fill"></td></tr>

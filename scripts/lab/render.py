@@ -58,12 +58,17 @@ def _plain(text: str) -> str:
 
 
 def _truth_table_html(table) -> str:
-    """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다."""
+    """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다.
+
+    `_plain` 으로 마크다운 표기를 먼저 벗기고 나서 `normalize_cell` 로 논리값을
+    정규화한다 — 순서가 반대면 `**1**` 같은 굵게 표기 셀이 정규화를 통과하지
+    못하고 별표째 인쇄본에 남는다.
+    """
     inputs, outputs = split_columns(table)
     at = {c: i for i, c in enumerate(table.header)}
     head = list(inputs) + [f"{c}예상" for c in outputs]
-    body = [[normalize_cell(row[at[c]]) for c in inputs]
-            + [normalize_cell(row[at[c]]) for c in outputs]
+    body = [[normalize_cell(_plain(row[at[c]])) for c in inputs]
+            + [normalize_cell(_plain(row[at[c]])) for c in outputs]
             for row in table.rows]
 
     # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.
@@ -91,9 +96,13 @@ def _stepped_html(table) -> str:
 
     `.check` 가 아니라 `.fill` 을 쓴다. `.check` 개수는 명세의 `truth-table`
     행 수와 대조되는 불변식이라 다른 뜻의 칸을 섞으면 그 검사가 죽는다.
+
+    셀에 `normalize_cell` 을 씌우지 않는다 — 스텝표 셀은 don't-care 축이 아니라
+    스텝·조작·측정 지시가 드는 자리다. 씌우면 실험02 T4 의 `-` 나 `x` 가 논리
+    don't-care `X` 로 둔갑한다. 마크다운 표기만 `_plain` 으로 벗긴다.
     """
     header = list(table.header)
-    rows = [[normalize_cell(c) for c in row] for row in table.rows]
+    rows = [[_plain(c) for c in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
         header.append("기록")
         rows = [row + [""] for row in rows]
