@@ -12,6 +12,7 @@ from pathlib import Path
 from . import config, md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
+from .render import _chip_boxes, _chip_tables, _circuit_body
 from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
@@ -27,6 +28,11 @@ _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 �
 _DIAGNOSTIC = re.compile(r"의심|나오면|나온다|보이면|어긋나면|빠뜨리면")
 
 _MARKS = {"error": "✗", "warn": "!", "info": "ℹ"}
+
+# 칩 상자 밖에서 배선·미사용핀 지시처럼 보이는 줄. 상자 밖으로 새면 체크박스도
+# 칩 라벨도 없이 `- ` 마커째 인쇄된다 — check_netlist_circuits 가 이 정규식으로
+# 렌더러의 상자 경계 버그와 무관하게 시끄럽게 만든다.
+_STRAY_WIRE = re.compile(r"^\s*-\s*(pin|미사용)")
 
 
 @dataclass
@@ -306,6 +312,41 @@ def check_netlist_circuits(netlist, spec) -> list:
                     "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
+        if circuit.continues:
+            if circuit.continues == circuit.id:
+                out.append(Finding("error", where,
+                    "continues 가 자기 자신을 가리킨다. 이어 붙일 **앞** 회로의 "
+                    "ID 를 적는다 — 배너가 '그대로 두라'고 지시하는 대상이다"))
+            else:
+                known_circuits = {c.id for c in netlist.circuits} - {circuit.id}
+                if circuit.continues not in known_circuits:
+                    out.append(Finding("error", where,
+                        f"continues 가 {circuit.continues!r} 를 가리키는데 그런 회로가 "
+                        f"없다. 정의된 회로: {sorted(known_circuits)}. 배너가 "
+                        "'뜯지 말라'고 지시하는 대상이라 없는 회로를 가리키면 "
+                        "실험실에서 무엇을 남겨야 할지 알 수 없다"))
+                else:
+                    order = [c.id for c in netlist.circuits]
+                    at = order.index(circuit.id)
+                    previous = order[at - 1] if at else None
+                    if circuit.continues != previous:
+                        out.append(Finding("error", where,
+                            f"continues 가 {circuit.continues!r} 를 가리키는데 "
+                            f"직전 회로는 {previous!r} 다. 이어 붙이기는 **바로 앞** "
+                            "회로만 가능하다 — 배너가 '점퍼선을 걷지 않는다'고 "
+                            "말하는 순간 그 사이 회로들의 점퍼를 어떻게 하라는 "
+                            "지시가 사라진다"))
+        for table_id in circuit.refs:
+            if table_id not in known_tables:
+                out.append(Finding("error", where,
+                    f"refs 가 없는 표 {table_id} 를 가리킨다. "
+                    f"정의된 표: {sorted(known_tables)}"))
+            elif spec.table(table_id).role != "reference":
+                out.append(Finding("error", where,
+                    f"refs 가 {table_id} 를 가리키는데 그것은 기록 대상 표다 — "
+                    "방향이 반대다. 실험실에서 채우는 표는 tables 로 간다. "
+                    "refs 는 role: reference 표를 회로 페이지에 읽기 전용으로 "
+                    "싣는 자리다 (실험02 T7 이 대조하는 T8 같은 것)"))
         if not circuit.diagram:
             out.append(Finding("warn", where,
                 "diagram 이 없다 — 인쇄본에 빈 브레드보드가 대신 들어간다. "
@@ -315,22 +356,38 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"diagram 파일이 없다: {circuit.diagram}. breadboard-diagram "
                 "스킬로 렌더하거나 diagram 줄을 지운다"))
 
-    # 인쇄되는 절의 본문에 든 마크다운 표는 렌더러가 통째로 버린다 — `_blocks`
-    # 와 `_split_circuit_body` 가 둘 다 `|` 로 시작하는 줄을 건너뛴다. `lookup`·
-    # `open-issues` 는 `common_page` 가 표를 따로 렌더하지만 `circuit`·`common`
-    # 은 아무도 렌더하지 않는다. 실험02·03·10 결선도는 소자 배치와 칩별 핀을
-    # 표로 적으므로, 그대로 백필하면 배선이 통째로 빠진 회로 페이지가 조용히
-    # 나온다. 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다.
-    for section in netlist.of_kind("circuit") + netlist.of_kind("common"):
-        table_lines = sum(1 for line in section.body.split("\n")
-                          if line.strip().startswith("|"))
-        if table_lines:
-            out.append(Finding("warn",
-                f"{netlist.path.name}:{section.id or section.title}",
-                f"본문에 마크다운 표 줄이 {table_lines}개 있다 — 인쇄본은 "
-                f"kind: {section.kind} 절의 표를 싣지 않는다. 배선은 "
-                "`- U<n> = <칩>` 아래 들여쓴 `- ` 불릿으로 적고, 참조용 표는 "
-                "`kind: lookup` 절로 뺀다"))
+    # 조용한 손실을 시끄럽게 만드는 것이 이 계약의 존재 이유다. 옛 판정은
+    # "본문에 표 줄이 있다" 였는데, 렌더러가 표를 싣게 되면서 그 경고가
+    # 거짓이 됐다. 지금 조용히 사라질 수 있는 것은 배선 그 자체다 — 칩
+    # 선언이 아예 없거나(실험10 처럼 표만 있는 경우), 칩 상자에 배선 행이
+    # 하나도 안 잡히는 경우(형식을 섞어 쓴 경우)다.
+    for circuit in netlist.circuits:
+        where = f"{netlist.path.name}:{circuit.id}"
+        nodes, before, after = _circuit_body(circuit)
+        chips = _chip_boxes(nodes)
+        if not chips:
+            out.append(Finding("warn", where,
+                "칩 선언이 하나도 없다 — 배선이 인쇄본에 실리지 않는다. "
+                "`- U<n> = <칩>` 불릿(아래에 들여쓴 `- ` 배선) 또는 "
+                "`## U<n> = <칩>` 헤딩(아래에 배선 표) 중 하나로 적는다"))
+            continue
+        for chip in chips:
+            if not chip["wires"] and not _chip_tables(chip):
+                out.append(Finding("warn", where,
+                    f"칩 {chip['head']!r} 에 배선이 하나도 없다 — 상자가 제목만 "
+                    "남는다. 불릿형이면 들여쓴 `- ` 배선을, 헤딩형이면 배선 표를 "
+                    "칩 아래에 둔다"))
+        # 배선이 한 줄이라도 남으면 칩당 warn 은 울리지 않는다 — 조용한 손실을
+        # 시끄럽게 만든다는 이 계약의 존재 이유가 거기서는 뚫린다. 렌더러가
+        # 무엇을 하든(상자 경계 버그가 다시 생기든) 배선처럼 생긴 줄이 상자
+        # **밖**에 있으면 그 자체로 시끄럽게 만든다.
+        stray = [line.strip() for line in (before + "\n" + after).split("\n")
+                 if _STRAY_WIRE.match(line)]
+        if stray:
+            out.append(Finding("warn", where,
+                f"배선처럼 보이는 줄 {len(stray)}개가 칩 상자 **밖**에 있다: "
+                f"{stray[:3]}. 체크박스도 칩 라벨도 없이 인쇄되고, 미사용핀이면 "
+                "칩별 확인 상자에 안 들어간다. 칩 선언 아래로 옮긴다"))
 
     for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
                            - covered):

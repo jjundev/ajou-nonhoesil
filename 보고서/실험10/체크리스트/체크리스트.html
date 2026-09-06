@@ -1,0 +1,223 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+
+  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
+  .common { break-after: page; }
+  .common .power { font-weight: 700; border: 2px solid #000;
+                   padding: 3mm; margin-bottom: 4mm; }
+  .common li { font-size: 12pt; line-height: 1.7; }
+
+  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
+  .circuit { break-before: page; }
+  .closing { break-before: page; }
+
+  /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
+  .flow td, .flow th { text-align: left; }
+
+  /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
+  .banner { border: 2px solid #000; padding: 2mm 3mm; margin: 2mm 0 3mm;
+            font-weight: 700; }
+
+  /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
+     그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
+     3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
+     칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
+  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
+                   break-inside: avoid; }
+  .wirebox img { break-after: avoid; }
+  .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
+  .wirebox ol { margin: 0; padding-left: 6mm; }
+  .wirebox li { font-size: 11pt; line-height: 1.6; }
+
+  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
+     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
+     통짜로 묶어도 백지 비용이 없다. */
+  .unused .chipunused { margin-top: 2mm; break-inside: avoid; }
+
+  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
+     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
+  .box { display: inline-block; width: 4mm; height: 4mm;
+         border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
+  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3, h4 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
+  /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
+  .mismatch td { height: 8mm; background: #fafafa; }
+
+  .legend { font-size: 9pt; margin: 1mm 0 4mm; }
+  .src { font-size: 9pt; margin: 0 0 1mm; }
+  .photo { font-size: 9pt; margin: 0 0 3mm; }
+
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid #333; height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
+              font-size: 9.5pt; line-height: 1.5; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
+</style>
+
+<h1>실험10 D/A &amp; A/D converter 체크리스트</h1>
+<section class="common"><div class="power">전원: VCC = +5V · V15 = +15V · GND = GND · 미사용 입력핀을 띄워 두지 않는다 (플로팅 금지) — GND 로 내릴지 VCC 로 올릴지는 아래 공통 규칙을 본다</div>
+<p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
+<p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
+<p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
+<h2>오늘의 흐름</h2>
+<table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/2</td><td>E10.P1 · DAC — 계단 파형 관찰</td><td>7490 · 7404 · 7405 · 741 OP amp</td><td>T1 DAC 출력 계단 파형</td></tr><tr><td>2/2</td><td>E10.P2 · ADC — 전이점 기록 및 출력 전압 측정</td><td>741 OP amp</td><td>T2 ADC 전이점</td></tr></tbody></table>
+<h2>공통 규칙</h2>
+<p>이 주차는 이 과목에서 유일하게 아날로그와 디지털이 한 브레드보드에 섞이는 회로다. 전원 레일이 셋이고, 오픈 컬렉터 인버터가 있고, 카운터의 전원핀이 다른 칩과 다르다. 아래 세 문단이 이 주차 배선 사고의 거의 전부를 차지한다.</p>
+<h4>전원 레일 — 레일마다 어디로 가는지 명시한다</h4>
+<p>명세 프론트매터는 {VCC: "+5V", V15: "+15V", GND: "GND"} 세 레일을 선언한다. 음전원(−15V) 레일은 없다. 교안 실험10 어디에도 -15V 나 ±15V 라벨이 없고, p7 의 U4·p15 의 U5 두 741 모두 pin 4 가 접지 기호에 직접 물려 있다 — vision 으로 확인했다. 즉 741 은 +15V 단일 전원으로 돌린다.</p>
+<table><thead><tr><th>레일</th><th>값</th><th>어느 핀으로 가는가</th></tr></thead><tbody><tr><td>VCC</td><td>+5V</td><td>7490 pin 5, 7404 pin 14, 7405 pin 14, 풀업 저항 R1~R4 상단</td></tr><tr><td>V15</td><td>+15V</td><td>741 OP amp U4 pin 7, U5 pin 7, 기준전압 분압기 R10 상단, ADC 가변저항 R13 상단</td></tr><tr><td>GND</td><td>0V</td><td>7490 pin 10, 7404 pin 7, 7405 pin 7, 741 U4·U5 pin 4, R11 하단, R13 하단, 7490 리셋핀 4개, 미사용 입력핀 전부, 계측기 프로브 접지 클립</td></tr></tbody></table>
+<ul><li>+5V 전원과 +15V 전원의 GND 를 반드시 같은 노드로 묶는다. 실험실 파워서플라이의 두 채널을 쓸 때 각 채널의 COM 을 따로 두면 DAC 출력이 741 입장에서 기준 없는 전압이 되어 계단이 아예 안 나오거나 레일에 붙는다. 이 주차에서 가장 조용히 망가지는 지점이다.</li><li>741 pin 4 는 데이터시트상 V− 다. 여기서 V− = 0V 이므로 출력은 0V 아래로 내려갈 수 없다. 그래서 교안이 R10–R9–R11 분압기로 pin 3(+) 에 양의 기준전압을 걸어 두는 것이다. 이 분압기를 빼먹으면 반전 가산 증폭기의 출력이 0V 에 붙어 계단이 보이지 않는다 — 분압기는 장식이 아니라 단일 전원 동작의 필수 부품이다.</li><li>741 pin 4 를 −15V 로 착각해 물리지 않는다. 명세가 선언하지 않은 레일이고 교안에도 없다. 실험실 파워서플라이에 −15V 단자가 있어도 이 회로에는 쓰지 않는다.</li></ul>
+<h4>7405 는 오픈 컬렉터다 — 풀업이 없으면 회로가 아예 안 돈다</h4>
+<p>7405 는 7404 와 논리는 같지만 출력단에 상단 트랜지스터가 없다. 출력은 LOW 로 끌어내리기만 하고 HIGH 를 못 만든다. 그래서 교안 p7 은 출력 4개마다 +5V 로 가는 1.5kΩ 풀업(R1~R4) 을 달아 둔다.</p>
+<ul><li>풀업을 빠뜨리면 7405 출력은 HIGH 일 때 플로팅이 되고, 가중 저항망에 전류가 들어가지 않아 계단이 전혀 안 나온다. "IC 를 잘못 꽂았나" 하고 IC 부터 의심하기 쉬운데, 실제 원인은 저항 4개다.</li><li>풀업이 가중 저항망의 일부라는 점이 이 회로의 핵심이다. 7405 출력이 HIGH 면 그 비트의 브랜치는 풀업 + 브랜치저항 을 통해 +5V 에 물리고, LOW 면 포화된 트랜지스터를 통해 거의 0V 에 물린다. 즉 풀업 저항값은 가중치 비율에 직접 들어간다 — R1~R4 를 다른 값으로 바꾸면 계단 높이가 어긋난다.</li><li>7404 → 7405 로 두 번 반전하므로 7405 출력 노드의 논리는 카운터 출력과 같다(QA=1 → 7405 출력 HIGH). 7404 는 카운터 출력을 버퍼링하고, 7405 는 그것을 +5V/0V 로 딱 떨어지게 스위칭하는 역할이다.</li></ul>
+<h4>7490 은 전원핀이 14/7 이 아니다</h4>
+<p>7490 은 pin 5 가 VCC, pin 10 이 GND 다. 이 과목의 다른 모든 74 시리즈 칩이 14 → VCC, 7 → GND 라서 손이 자동으로 그리로 간다. 7490 에 그렇게 물리면 pin 5(VCC) 가 R9(1) 옆의 신호핀이 아니라… 실제로는 pin 14 가 INPUT A, pin 7 이 R9(2) 이므로 클럭 입력에 5V 를 직결하고 R9(2) 를 접지로 끌어내리는 꼴이 되어 칩이 세지 않는다. 배선 전에 pin 5·10 을 먼저 꽂는 습관이 안전하다.</p>
+<p>리셋핀은 넷 다 GND 로 내린다: R0(1)=pin 2, R0(2)=pin 3, R9(1)=pin 6, R9(2)=pin 7. 교안 p9 의 Reset Inputs 표에서 이 넷이 모두 L 일 때만 COUNT 다. 하나라도 뜨면(플로팅은 TTL 에서 HIGH 로 읽힌다) 카운터가 0 또는 9 에 고정된다.</p>
+<h4>미사용핀 처리</h4>
+<ul><li>7404·7405 는 hex 인버터인데 이 회로는 게이트 4개만 쓴다. 미사용 입력핀 pin 11, pin 13 → GND. 미사용 출력핀 pin 10, pin 12 → 개방. (7405 의 미사용 출력은 오픈 컬렉터라 풀업이 없으면 어차피 플로팅이다 — 그대로 개방해 두고 아무것도 물리지 않는다.)</li><li>7490 pin 4, pin 13 은 NC 다 → 개방.</li><li>741 pin 1·pin 5 는 OFFSET NULL, pin 8 은 NC 다 → 세 핀 모두 개방. 오프셋 널은 이 실험에서 조정하지 않는다.</li></ul>
+<div class="tblock"><h2>참조 핀아웃</h2>
+<p>7490 (decade counter, DIP-14) — 전원핀 위치에 주의</p>
+<table><thead><tr><th>핀</th><th>이름</th><th>핀</th><th>이름</th></tr></thead><tbody><tr><td>1</td><td>INPUT B (CLKB)</td><td>14</td><td>INPUT A (CLKA)</td></tr><tr><td>2</td><td>R0(1)</td><td>13</td><td>NC</td></tr><tr><td>3</td><td>R0(2)</td><td>12</td><td>QA</td></tr><tr><td>4</td><td>NC</td><td>11</td><td>QD</td></tr><tr><td>5</td><td>VCC</td><td>10</td><td>GND</td></tr><tr><td>6</td><td>R9(1)</td><td>9</td><td>QB</td></tr><tr><td>7</td><td>R9(2)</td><td>8</td><td>QC</td></tr></tbody></table>
+<p>7404 (hex inverter) / 7405 (hex inverter, 오픈 컬렉터) — 두 칩의 핀 배치는 동일</p>
+<table><thead><tr><th>게이트</th><th>입력 → 출력</th><th></th><th>게이트</th><th>입력 → 출력</th></tr></thead><tbody><tr><td>A</td><td>1 → 2</td><td></td><td>D</td><td>9 → 8</td></tr><tr><td>B</td><td>3 → 4</td><td></td><td>E</td><td>11 → 10</td></tr><tr><td>C</td><td>5 → 6</td><td></td><td>F</td><td>13 → 12</td></tr></tbody></table>
+<p>VCC 14, GND 7.</p>
+<p>741 OP amp (LM741, DIP-8)</p>
+<table><thead><tr><th>핀</th><th>이름</th><th>핀</th><th>이름</th></tr></thead><tbody><tr><td>1</td><td>OFFSET NULL</td><td>8</td><td>NC</td></tr><tr><td>2</td><td>INVERTING INPUT (−)</td><td>7</td><td>V+ (여기서는 +15V)</td></tr><tr><td>3</td><td>NON-INVERTING INPUT (+)</td><td>6</td><td>OUTPUT</td></tr><tr><td>4</td><td>V− (여기서는 GND)</td><td>5</td><td>OFFSET NULL</td></tr></tbody></table>
+</div>
+<h2>미확정 사항 — 실험실에서 확인할 것</h2>
+
+<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M1</td><td>교안 p14 가 요구하는 68kΩ 이 p6 준비물 목록에 없다. p6 은 330Ω 가변저항·1k·1.5k·2.7k·4.5k·10.5k·22.6k 만 싣는다. p14 원문은 "10.5KΩ 저항에 68KΩ을 병렬로 연결하고" 이므로 대상은 R6 이다</td><td>실험실에서 68kΩ 조달 가능한지 조교에게 확인. 없으면 p14 관찰만 생략</td></tr><tr><td class="box"></td><td>M2</td><td>카운터를 0 으로 리셋하는 구체적 방법을 교안이 지정하지 않는다. p16 은 "counter 를 0으로 reset한다"로만 쓴다. 위 표의 "R0(1)·R0(2) 를 잠시 +5V 로" 는 교안 p9 의 Reset Inputs 진리표에서 파생한 절차다</td><td>실험실 키트에 리셋 스위치가 따로 있는지 확인. 없으면 점퍼선으로 위 절차 수행</td></tr><tr><td class="box"></td><td>M3</td><td>single pulse 의 물리적 형태가 지정되지 않았다. 함수발생기의 single/burst 버튼인지, 디바운스된 푸시버튼인지 교안에 없다. 디바운스가 안 된 생 스위치를 쓰면 한 번 눌러 여러 칸이 올라간다</td><td>실험실 장비 확인. 카운트가 한 번에 2 이상 뛰면 이걸 의심</td></tr><tr><td class="box"></td><td>M4</td><td>오실로스코프 Ch2 가 어느 노드인지 교안이 라벨하지 않는다. p11 사진의 계단 파형은 Ch3(분홍)이 확실하고, Ch2(청록)는 2 ms/div 에서 점선처럼 보이는 1 kHz 구형파라 클럭으로 판단했다. 위 계측 표의 Ch2 지정은 이 추론이다</td><td>파형이 안 맞으면 Ch2 를 클럭 대신 U3 출력 한 비트에 대 볼 것</td></tr><tr><td class="box"></td><td>M5</td><td>R13(330Ω) 이 +15V–GND 사이에 단독으로 걸려 약 0.68 W 를 소비한다. 교안 p15 회로도 그대로이지만 소형 가변저항 정격을 넘을 수 있다. 회로도에 정격 표기가 없다</td><td>실물 가변저항의 정격(W) 확인. 넘으면 조교에게 문의 — 임의로 저항을 키우지 말 것(전이점 범위가 바뀐다)</td></tr><tr><td class="box"></td><td>M6</td><td>교안 p7 회로도의 아래쪽 일부가 슬라이드 경계에서 잘려 렌더되지 않는다. U4 pin 7 아래 전원 라벨과 R11 하단 접지 기호가 그 영역에 있다. pin 7 → +15V 와 R11 하단 → GND 는 ①PDF 내부 텍스트 객체의 좌표(U4 pin 7 바로 아래 +15V, R11 바로 아래 0) ②잘린 글자의 윗부분 형태 ③U4 pin 4 가 접지 기호에 직결된 것이 눈으로 확인되므로 pin 7 이 양전원일 수밖에 없다는 점 ④p15 의 U5 가 동일 패턴(pin 4→GND, pin 7→+15V)으로 잘리지 않고 그려진 점 — 이 넷으로 판단했다</td><td>배선 전 조교에게 "741 은 단일 +15V 인가"를 한 번 확인. −15V 는 물리지 않는다</td></tr><tr><td class="box"></td><td>M7</td><td>p6 준비물의 "저항 : 330Ω 가변저항 (2개)" 표기가 "330Ω 저항 + 가변저항 2개" 인지 "330Ω 가변저항 2개" 인지 문면상 갈린다. 회로도의 R9·R13 둘 다 값 330 에 와이퍼 화살표가 붙은 가변저항이므로 후자로 읽었다</td><td>부품 수령 시 330Ω 가변저항이 2개인지 확인</td></tr></tbody></table></section>
+<section class="circuits"><section class="circuit">
+<h2>회로 1/2 · E10.P1 · DAC — 계단 파형 관찰 · 기록: T1 · 판독: oscilloscope</h2>
+<div class="banner">준비 — 꽂는다: 7490, 7404, 7405, 741 OP amp</div>
+<p>교안 p7 회로. 7490 이 0→9 를 세고, 각 비트가 7404→7405 를 거쳐 가중 저항망(weighted resistor) 으로 들어가고, 741 반전 가산 증폭기가 아날로그 전압을 만든다.</p>
+<p>저항망은 R-2R 사다리가 아니라 가중 저항망이다. 교안 p4 는 두 방식을 나란히 설명하지만, p7 이 실제로 그린 것은 비트마다 다른 값의 저항 하나를 공통 가산 노드로 모으는 가중 저항 방식이다 — R-2R 처럼 저항이 두 값만 반복하는 구조가 아니다. 배선 순서를 R-2R 로 착각하면 저항 위치가 전부 어긋난다.</p>
+<h4>소자 배치</h4>
+<table><thead><tr><th>지정자</th><th>소자</th><th>역할</th></tr></thead><tbody><tr><td>U1</td><td>7490</td><td>10진 카운터, 4비트 디지털 워드 생성</td></tr><tr><td>U2</td><td>7404</td><td>카운터 출력 버퍼(반전)</td></tr><tr><td>U3</td><td>7405</td><td>오픈 컬렉터 인버터(반전) — 가중 저항망 구동 스위치</td></tr><tr><td>U4</td><td>741 OP amp (LM741)</td><td>반전 가산 증폭기</td></tr></tbody></table>
+<div class="wirebox">
+<h3>브레드보드 작도 (30행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:231.4mm;object-fit:cover;object-position:top">
+<div class="chip"><h4>U1 = 7490 (decade counter)</h4>
+<table><thead><tr><th>확인</th><th>핀</th><th>연결</th><th>왜</th></tr></thead><tbody><tr><td class="box"></td><td>5</td><td>VCC(+5V)</td><td>7490 은 14 가 아니라 5 가 VCC 다</td></tr><tr><td class="box"></td><td>10</td><td>GND</td><td>7490 은 7 이 아니라 10 이 GND 다</td></tr><tr><td class="box"></td><td>14 (INPUT A)</td><td>함수발생기 1 kHz 구형파 출력</td><td>÷2 단의 클럭. 교안 p11 이 1 kHz 를 지정</td></tr><tr><td class="box"></td><td>1 (INPUT B)</td><td>U1 pin 12 (QA)</td><td>÷2 단과 ÷5 단을 이어야 BCD 10진이 된다. 이 점퍼 하나가 없으면 QA 만 토글하고 QB·QC·QD 는 죽는다</td></tr><tr><td class="box"></td><td>12 (QA)</td><td>U1 pin 1, U2 pin 1</td><td>LSB. 두 곳으로 팬아웃한다</td></tr><tr><td class="box"></td><td>9 (QB)</td><td>U2 pin 3</td><td></td></tr><tr><td class="box"></td><td>8 (QC)</td><td>U2 pin 5</td><td></td></tr><tr><td class="box"></td><td>11 (QD)</td><td>U2 pin 9</td><td>MSB. 7404 인버터 D 는 입력이 9, 출력이 8 이다 — 11 로 착각하기 쉽다</td></tr><tr><td class="box"></td><td>2 (R0(1))</td><td>GND</td><td>넷 다 L 이어야 COUNT (교안 p9 표)</td></tr><tr><td class="box"></td><td>3 (R0(2))</td><td>GND</td><td></td></tr><tr><td class="box"></td><td>6 (R9(1))</td><td>GND</td><td></td></tr><tr><td class="box"></td><td>7 (R9(2))</td><td>GND</td><td></td></tr><tr><td class="box"></td><td>4, 13</td><td>개방</td><td>NC 핀</td></tr></tbody></table>
+</div>
+<div class="chip"><h4>U2 = 7404 (hex inverter)</h4>
+<table><thead><tr><th>확인</th><th>핀</th><th>연결</th><th>왜</th></tr></thead><tbody><tr><td class="box"></td><td>14</td><td>VCC(+5V)</td><td></td></tr><tr><td class="box"></td><td>7</td><td>GND</td><td></td></tr><tr><td class="box"></td><td>1 ←</td><td>U1 pin 12 (QA)</td><td></td></tr><tr><td class="box"></td><td>2 →</td><td>U3 pin 1</td><td></td></tr><tr><td class="box"></td><td>3 ←</td><td>U1 pin 9 (QB)</td><td></td></tr><tr><td class="box"></td><td>4 →</td><td>U3 pin 3</td><td></td></tr><tr><td class="box"></td><td>5 ←</td><td>U1 pin 8 (QC)</td><td></td></tr><tr><td class="box"></td><td>6 →</td><td>U3 pin 5</td><td></td></tr><tr><td class="box"></td><td>9 ←</td><td>U1 pin 11 (QD)</td><td></td></tr><tr><td class="box"></td><td>8 →</td><td>U3 pin 9</td><td></td></tr></tbody></table>
+</div>
+<div class="chip"><h4>U3 = 7405 (오픈 컬렉터 인버터) + 풀업 R1~R4</h4>
+<table><thead><tr><th>확인</th><th>핀</th><th>연결</th><th>왜</th></tr></thead><tbody><tr><td class="box"></td><td>14</td><td>VCC(+5V)</td><td></td></tr><tr><td class="box"></td><td>7</td><td>GND</td><td></td></tr><tr><td class="box"></td><td>1 ←</td><td>U2 pin 2</td><td></td></tr><tr><td class="box"></td><td>2 →</td><td>R1(1.5kΩ) → VCC(+5V), 그리고 R5(22.6kΩ)</td><td>QA(LSB) 브랜치. 풀업 없으면 이 노드는 HIGH 를 못 만든다</td></tr><tr><td class="box"></td><td>3 ←</td><td>U2 pin 4</td><td></td></tr><tr><td class="box"></td><td>4 →</td><td>R2(1.5kΩ) → VCC(+5V), 그리고 R6(10.5kΩ)</td><td>QB 브랜치</td></tr><tr><td class="box"></td><td>5 ←</td><td>U2 pin 6</td><td></td></tr><tr><td class="box"></td><td>6 →</td><td>R3(1.5kΩ) → VCC(+5V), 그리고 R7(4.5kΩ)</td><td>QC 브랜치</td></tr><tr><td class="box"></td><td>9 ←</td><td>U2 pin 8</td><td></td></tr><tr><td class="box"></td><td>8 →</td><td>R4(1.5kΩ) → VCC(+5V), 그리고 R8(1.5kΩ)</td><td>QD(MSB) 브랜치</td></tr></tbody></table>
+</div>
+<h4>가중 저항망 — 저항값과 위치</h4>
+<table><thead><tr><th>저항</th><th>값</th><th>한쪽</th><th>다른 쪽</th><th>브랜치 합성</th><th>가중치</th></tr></thead><tbody><tr><td>R1</td><td>1.5kΩ</td><td>VCC(+5V)</td><td>U3 pin 2</td><td>R1+R5 = 24.1kΩ</td><td>QA (LSB), ×1</td></tr><tr><td>R5</td><td>22.6kΩ</td><td>U3 pin 2</td><td>가산 노드</td><td></td><td></td></tr><tr><td>R2</td><td>1.5kΩ</td><td>VCC(+5V)</td><td>U3 pin 4</td><td>R2+R6 = 12kΩ</td><td>QB, ×2</td></tr><tr><td>R6</td><td>10.5kΩ</td><td>U3 pin 4</td><td>가산 노드</td><td></td><td></td></tr><tr><td>R3</td><td>1.5kΩ</td><td>VCC(+5V)</td><td>U3 pin 6</td><td>R3+R7 = 6kΩ</td><td>QC, ×4</td></tr><tr><td>R7</td><td>4.5kΩ</td><td>U3 pin 6</td><td>가산 노드</td><td></td><td></td></tr><tr><td>R4</td><td>1.5kΩ</td><td>VCC(+5V)</td><td>U3 pin 8</td><td>R4+R8 = 3kΩ</td><td>QD (MSB), ×8</td></tr><tr><td>R8</td><td>1.5kΩ</td><td>U3 pin 8</td><td>가산 노드</td><td></td><td></td></tr></tbody></table>
+<ul><li>가산 노드 = R5·R6·R7·R8 의 오른쪽 끝이 전부 모이는 한 점 = U4 pin 2 = R12 의 한쪽.</li><li>합성 저항이 24.1 : 12 : 6 : 3 이므로 전류 가중치는 1 : 2 : 4 : 8 이다. MSB(QD) 가 가장 작은 저항을 갖는다 — 직관과 반대라 자리를 바꿔 꽂기 쉽다. 22.6kΩ 은 QA(LSB) 쪽, 1.5kΩ 두 개가 QD(MSB) 쪽이라고 외우는 편이 안전하다.</li><li>계단 높이가 불균등하면 IC 보다 이 여덟 개 저항의 자리를 먼저 의심한다.</li></ul>
+<div class="chip"><h4>U4 = 741 OP amp (반전 가산 증폭기) + 기준전압 분압기</h4>
+<table><thead><tr><th>확인</th><th>핀/소자</th><th>연결</th><th>왜</th></tr></thead><tbody><tr><td class="box"></td><td>U4 pin 7</td><td>V15(+15V)</td><td>교안 p7 U4 pin 7 라벨</td></tr><tr><td class="box"></td><td>U4 pin 4</td><td>GND</td><td>교안 p7 에서 접지 기호에 직결. −15V 아니다</td></tr><tr><td class="box"></td><td>U4 pin 2 (−)</td><td>가산 노드(R5·R6·R7·R8), 그리고 R12 한쪽</td><td>가상 접지. 여기로 네 브랜치 전류가 합쳐진다</td></tr><tr><td class="box"></td><td>U4 pin 3 (+)</td><td>R9(330Ω 가변저항) 와이퍼</td><td>단일 전원 동작용 기준전압. 계단은 이 전압에서 아래로 내려간다</td></tr><tr><td class="box"></td><td>U4 pin 6</td><td>DAC OUTPUT 노드, R12 반대쪽</td><td></td></tr><tr><td class="box"></td><td>U4 pin 1, 5, 8</td><td>개방</td><td>OFFSET NULL ×2, NC</td></tr><tr><td class="box"></td><td>R12</td><td>4.5kΩ. U4 pin 2 ↔ U4 pin 6</td><td>귀환저항 Rf. 계단 전체의 진폭을 정한다</td></tr><tr><td class="box"></td><td>R10</td><td>1kΩ. V15(+15V) ↔ R9 상단</td><td></td></tr><tr><td class="box"></td><td>R9</td><td>330Ω 가변저항. 상단 ← R10, 하단 → R11, 와이퍼 → U4 pin 3</td><td>3단자 전부 쓴다</td></tr><tr><td class="box"></td><td>R11</td><td>1kΩ. R9 하단 ↔ GND</td><td></td></tr></tbody></table>
+<p>R10–R9–R11 직렬 합은 2.33kΩ 이고 +15V 가 걸리므로 약 6.4 mA 가 흐른다 — 일반 1/4W 저항으로 충분하다.</p>
+</div>
+</div>
+<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="chipunused"><b>U2 = 7404 (hex inverter)</b><ul>
+<li><span class="box"></span>미사용 입력핀 11, 13 · GND · 플로팅 금지</li>
+<li><span class="box"></span>미사용 출력핀 10, 12 · 개방 · 출력끼리 묶거나 GND 로 내리면 칩이 죽는다</li>
+</ul></div>
+<div class="chipunused"><b>U3 = 7405 (오픈 컬렉터 인버터) + 풀업 R1~R4</b><ul>
+<li><span class="box"></span>미사용 입력핀 11, 13 · GND</li>
+<li><span class="box"></span>미사용 출력핀 10, 12 · 개방 · 풀업을 달지 않는다</li>
+</ul></div>
+</div>
+<h4>계측 — 오실로스코프를 어디에 대는가</h4>
+<table><thead><tr><th>채널</th><th>프로브 팁</th><th>프로브 접지 클립</th></tr></thead><tbody><tr><td>Ch3</td><td>U4 pin 6 (DAC OUTPUT) — 계단 파형이 보이는 곳</td><td>공통 GND</td></tr><tr><td>Ch2</td><td>클럭 노드(함수발생기 출력 = U1 pin 14)</td><td>공통 GND</td></tr></tbody></table>
+<ul><li>두 프로브의 접지 클립은 반드시 같은 공통 GND 로. +15V 전원 쪽 COM 에만 물리고 로직 GND 를 안 묶으면 계단이 엉뚱한 오프셋으로 뜬다.</li><li>교안 p11 사진의 설정: Ch2 5.00 V/div, Ch3 5.00 V/div, M 2.00 ms/div, 트리거 A: Ch3, 상승 에지, 0.00 V(p14 사진은 −900 mV). 1 kHz 클럭이면 계단 10개의 한 주기가 10 ms 이므로 2 ms/div 화면에서 약 5칸에 한 주기가 들어온다 — 이게 맞으면 카운터가 제대로 10진으로 돌고 있다는 뜻이다.</li><li>계단은 내려간다. 반전 증폭기이므로 카운트가 올라갈수록 출력이 기준전압에서 아래로 내려가고, 9→0 리셋에서 위로 튄다. 톱니의 방향이 반대로 보인다고 배선을 의심할 필요는 없다.</li></ul>
+<h4>교안이 요구하는 배선 변형 (p12~p14)</h4>
+<p>기본 회로를 세운 뒤 아래 변형을 차례로 가한다. 명세의 T1(capture) 은 파형을 그리라고만 하므로 표 칸은 없지만, 배선은 실제로 바뀐다.</p>
+<table><thead><tr><th>교안</th><th>변형</th><th>되돌릴 것</th></tr></thead><tbody><tr><td>p12</td><td>R12(Rf) 를 4.5kΩ → 2.7kΩ 으로 교체</td><td>다음 단계에서 4.5kΩ 으로 복귀</td></tr><tr><td>p13</td><td>R12 = 4.5kΩ 로 되돌린 뒤, ①7404 pin 2 ↔ 7405 pin 1 ②7404 pin 4 ↔ 7405 pin 3 ③7404 pin 6 ↔ 7405 pin 5 를 하나씩 개방</td><td>각 관찰 후 다시 연결</td></tr><tr><td>p14</td><td>R6(10.5kΩ) 에 68kΩ 을 병렬 연결 → 파형 관찰 → 68kΩ 제거 후 비교</td><td>68kΩ 제거</td></tr></tbody></table>
+<p>p13 에서 링크를 끊으면 7405 입력이 플로팅된다. TTL 플로팅 입력은 HIGH 로 읽히므로 해당 비트의 7405 출력이 LOW 로 고정되고, 그 비트만 계단에서 빠진다 — 그것이 이 관찰의 목적이다. (다른 실험에서라면 플로팅 입력은 금지지만 여기서는 교안이 의도한 조작이다.)</p>
+<div class="tblock">
+<h3>T1 · DAC 출력 계단 파형</h3>
+<p class='src'>출처: manual:p11</p>
+<div class="expected"><b>예상</b> — 1KHz 입력에서 counter 가 0→9 로 증가하는 동안 출력이 균등 간격으로 계단 상승한 뒤 리셋되는 톱니 형태. 계단 개수는 7490 의 모듈러스(10)를 따른다. 계단 높이가 불균등하면 가중 저항망 오차를 먼저 의심한다 — 교안 p7 의 소자값에서 각 브랜치 합성 저항이 R1+R8=3k, R2+R7=6k, R3+R6=12k, R4+R5=24.1k 로 1:2:4:8 이어야 한다.</div>
+<div class="sketch"></div>
+<p class='readout'>판독 조건 — CH1 ______ V/div · CH2 ______ V/div · time/div ______ · 프로브 ______× · 모드  [ ] Y-T   [ ] X-Y</p>
+<p class='readout'>캡션: ____________________     사진 파일: ____________________</p>
+<div class="differs"><b>예상과 다른 점</b></div>
+<p class='photo'>사진: 파형 자체가 결과물이다. 파일명 T1 row1.jpg 형식</p>
+
+</div>
+</section>
+<section class="circuit">
+<h2>회로 2/2 · E10.P2 · ADC — 전이점 기록 및 출력 전압 측정 · 기록: T2 · 판독: oscilloscope, DMM</h2>
+<div class="banner">앞 회로(E10.P1 · DAC — 계단 파형 관찰)를 그대로 두고 이어 붙인다 — 점퍼선을 걷지 않는다 · 추가로 꽂는다: 741 OP amp</div>
+<p>교안 p15~p16. E10.P1 회로를 그대로 둔 채 두 번째 741 OP amp 를 비교기로 덧붙인다. 7490·7404·7405 배선은 위 E10.P1 과 완전히 동일하므로 다시 적지 않는다 — 아래는 추가되는 부분만이다.</p>
+<h4>추가 소자</h4>
+<table><thead><tr><th>지정자</th><th>소자</th><th>역할</th></tr></thead><tbody><tr><td>U5</td><td>741 OP amp (LM741)</td><td>비교기. 준비물의 741 두 번째 패키지</td></tr><tr><td>R13</td><td>330Ω 가변저항</td><td>비교 기준전압 생성</td></tr></tbody></table>
+<div class="wirebox">
+<h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
+<div class="chip"><h4>U5 = 741 OP amp (비교기)</h4>
+<table><thead><tr><th>확인</th><th>핀/소자</th><th>연결</th><th>왜</th></tr></thead><tbody><tr><td class="box"></td><td>U5 pin 7</td><td>V15(+15V)</td><td>교안 p15 U5 pin 7 라벨</td></tr><tr><td class="box"></td><td>U5 pin 4</td><td>GND</td><td>교안 p15 에서 접지 기호에 직결. U4 와 같은 단일 전원</td></tr><tr><td class="box"></td><td>U5 pin 2 (−)</td><td>U4 pin 6 (DAC OUTPUT)</td><td>비교 대상. U4 의 출력을 그대로 받는다</td></tr><tr><td class="box"></td><td>U5 pin 3 (+)</td><td>R13 와이퍼</td><td>5~15V 로 돌려 가며 전이점을 찾는 쪽</td></tr><tr><td class="box"></td><td>U5 pin 6</td><td>OUTPUT — DMM 및 오실로스코프</td><td></td></tr><tr><td class="box"></td><td>U5 pin 1, 5, 8</td><td>개방</td><td></td></tr><tr><td class="box"></td><td>R13 상단</td><td>V15(+15V)</td><td></td></tr><tr><td class="box"></td><td>R13 하단</td><td>GND</td><td></td></tr></tbody></table>
+<ul><li>귀환 저항이 없다. 교안 p15 는 U5 에 Rf 를 달지 않는다 — 개루프 비교기이므로 출력은 두 입력의 대소에 따라 거의 레일까지 튄다. U4 처럼 R12 를 달면 비교기가 아니라 증폭기가 되어 전이점이 안 나온다.</li><li>R13 발열 주의. R13(330Ω) 은 +15V 와 GND 사이에 다른 저항 없이 홀로 걸린다 (U4 쪽 R9 는 R10·R11 과 직렬이라 사정이 다르다). 약 45 mA, 0.68 W 가 소비되는데 소형 가변저항의 정격은 보통 0.25~0.5 W 다. 교안 p15 회로도 그대로지만, 꽂자마자 뜨거워지면 정상이 아니라 정격 초과를 의심하고 조교에게 확인할 것. (아래 미확정 사항 M5)</li></ul>
+</div>
+</div>
+<h4>클럭 변경과 카운터 리셋</h4>
+<table><thead><tr><th>조작</th><th>배선</th><th>왜</th></tr></thead><tbody><tr><td>클럭 교체</td><td>U1 pin 14 ← 1 kHz 구형파 대신 single pulse 출처</td><td>교안 p16: "1KHz pulse 를 single pulse 로 바꾸고"</td></tr><tr><td>카운터 리셋</td><td>U1 pin 2·pin 3(R0(1)·R0(2)) 을 잠시 VCC(+5V) 로 올렸다가 다시 GND 로 되돌린다</td><td>교안 p9 표에서 R0(1)=H, R0(2)=H, R9 중 하나 L 이면 출력이 전부 L. GND 로 되돌리지 않으면 그 뒤로 세지 않는다 (M2)</td></tr></tbody></table>
+<h4>계측 — 어디를 재는가</h4>
+<table><thead><tr><th>계측기</th><th>접점</th><th>기준</th><th>무엇을</th></tr></thead><tbody><tr><td>DMM (전압)</td><td>U5 pin 6 (OUTPUT)</td><td>공통 GND</td><td>명세 T2 의 "출력 전압"</td></tr><tr><td>DMM (전압)</td><td>U5 pin 3</td><td>공통 GND</td><td>명세 T2 의 "3번 핀 전압". R13 을 돌리며 읽는다</td></tr><tr><td>오실로스코프 Ch3</td><td>U5 pin 6 (OUTPUT)</td><td>공통 GND</td><td>전이 순간을 눈으로 확인</td></tr><tr><td>오실로스코프 Ch2</td><td>U4 pin 6 (DAC OUTPUT)</td><td>공통 GND</td><td>교안 p17: 반전 입력이 구형파인지 확인</td></tr></tbody></table>
+<p>디지털 워드는 7405 의 pin 8 · pin 6 · pin 4 · pin 2 에서 읽는다 (교안 p16 명시). 명세 T2 의 열 순서와 같고, 비트 순서는 pin 8 = QD(MSB) → pin 2 = QA(LSB) 다. DMM 이나 로직 프로브를 이 네 핀에 차례로 대고 GND 기준으로 읽는다. 7405 출력은 오픈 컬렉터라 풀업 R1~R4 가 붙어 있어야만 HIGH 가 읽힌다 — 여기서 전부 0V 로 읽히면 비트가 아니라 풀업을 의심한다.</p>
+<div class="tblock">
+<h3>T2 · ADC 전이점</h3>
+<p class='src'>출처: manual:p16</p>
+<table>
+<thead>
+<tr>
+<th>스텝</th>
+<th>조작</th>
+<th>3번 핀 전압</th>
+<th>7405 핀8</th>
+<th>핀6</th>
+<th>핀4</th>
+<th>핀2</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>S1</td><td>counter reset(0), 가변저항으로 3번 핀 전압을 5V 부터 조정 시작(derived)</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S2</td><td>single pulse 1회 → counter=1</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S3</td><td>single pulse 1회 → counter=2</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S4</td><td>single pulse 1회 → counter=3</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S5</td><td>single pulse 1회 → counter=4</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S6</td><td>single pulse 1회 → counter=5</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S7</td><td>single pulse 1회 → counter=6</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S8</td><td>single pulse 1회 → counter=7</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S9</td><td>single pulse 1회 → counter=8</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+<tr><td>S10</td><td>single pulse 1회 → counter=9</td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+</tbody>
+</table>
+<p class='readout'>계측기 설정 — 모드·레인지·단위: ________________________________</p>
+<p class='photo'>사진: 스텝마다 1장. 파일명 T2 row3.jpg 형식</p>
+<h4>T2 · 이상 스텝 기록</h4><table class="mismatch"><thead><tr><th>이상 스텝</th><th>관찰한 것</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody></table>
+</div>
+</section></section>
+<section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>회로마다 완성 회로 사진을 찍었는가</li><li><span class="box"></span>진리표는 불일치 행마다 사진을 찍었는가</li><li><span class="box"></span>사진 파일명이 T1 row3.jpg 형식인가</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>

@@ -221,5 +221,42 @@ class TestInlineComments(unittest.TestCase):
         self.assertIsNone(front["filled_by"])
 
 
+class ParseTableAt(unittest.TestCase):
+    """`parse_tables` 가 위치를 잃어버려서 렌더러가 표를 제자리에 못 넣었다.
+    한 줄 단위로 물을 수 있어야 산문·칩 상자와 순서를 지켜 섞을 수 있다."""
+
+    def test_표_시작_줄에서_표와_다음_인덱스를_준다(self):
+        lines = ["앞 산문", "| 핀 | 연결 |", "|---|---|", "| 14 | VCC |",
+                 "뒤 산문"]
+        table, nxt = md.parse_table_at(lines, 1)
+        self.assertEqual(table.header, ["핀", "연결"])
+        self.assertEqual(table.rows, [["14", "VCC"]])
+        self.assertEqual(table.line, 3)      # 구분선의 1-based 줄 번호
+        self.assertEqual(nxt, 4)             # `뒤 산문` 의 인덱스
+
+    def test_표가_아니면_인덱스를_그대로_돌려준다(self):
+        lines = ["앞 산문", "| 구분선이 없는 줄 |", "뒤 산문"]
+        table, nxt = md.parse_table_at(lines, 0)
+        self.assertIsNone(table)
+        self.assertEqual(nxt, 0)
+        table, nxt = md.parse_table_at(lines, 1)
+        self.assertIsNone(table)
+        self.assertEqual(nxt, 1)
+
+    def test_대시_한_개_행을_구분선으로_보지_않는다(self):
+        """`| - | - |` 는 이 프로젝트의 don't-care 데이터 행이다."""
+        lines = ["| A | B |", "|---|---|", "| - | - |", "| 1 | 0 |"]
+        table, nxt = md.parse_table_at(lines, 0)
+        self.assertEqual(table.rows, [["-", "-"], ["1", "0"]])
+        self.assertEqual(nxt, 4)
+
+    def test_parse_tables_가_같은_결과를_준다(self):
+        """추출이 기존 동작을 바꾸지 않았는지 본다."""
+        body = "| A | B |\n|---|---|\n| 1 | 0 |\n\n산문\n\n| C |\n|---|\n| x |\n"
+        got = md.parse_tables(body)
+        self.assertEqual([t.header for t in got], [["A", "B"], ["C"]])
+        self.assertEqual([t.line for t in got], [2, 8])
+
+
 if __name__ == "__main__":
     unittest.main()

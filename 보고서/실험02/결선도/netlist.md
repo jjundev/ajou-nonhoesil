@@ -7,6 +7,8 @@ spec: ../체크리스트/명세.md
 
 # 공통 규칙
 
+- kind: common
+
 이 주차의 결선도는 **논리 배선이 아니라 계측 셋업**이다. 게이트 하나짜리 회로가
 대부분이라 "어느 핀을 어디에 꽂나" 는 몇 줄로 끝나고, 실제로 실험을 망치는 것은
 **프로브를 어디에 무엇을 기준으로 대는가**, **함수발생기가 무엇을 내보내는가**,
@@ -75,6 +77,8 @@ GND에 연결한다 (Pull up/Pull down)".
 
 # 핀아웃 출처
 
+- kind: sources
+
 - **`74HC04` — 저장소 실물 데이터시트로 확인함.**
   `from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf`
   (Philips `74HC04; 74HCT04` Hex inverter, 2003-07-23) p4 `Fig.3 Logic symbol` 을
@@ -98,7 +102,9 @@ GND에 연결한다 (Pull up/Pull down)".
 - 아래 어느 항목도 "표준 74 시리즈 관례" 같은 약한 근거만으로 적지 않았다.
   확인되지 않은 것은 전부 `미확정 사항` 표로 내렸다.
 
-## 참조 핀아웃
+# 참조 핀아웃
+
+- kind: lookup
 
 `74HC04` (hex inverter, DIP-14) — 데이터시트 p4 Fig.3 확인
 
@@ -139,6 +145,11 @@ VCC 14, GND 7 — 교안 p10 회로도로 확인.
 
 # E2.P1 · Inverter 의 입출력 특성 확인 (교안 p9)
 
+- kind: circuit
+- id: C1
+- item: E2.P1
+- tables: [T1]
+
 - U1 = `74HC04` (hex inverter, DIP-14)
   - pin 14 → VCC(+5V)
   - pin 7  → GND
@@ -178,6 +189,11 @@ VCC 14, GND 7 — 교안 p10 회로도로 확인.
 
 # E2.P2 · Schmitt-trigger 의 입출력 특성 확인 (교안 p10)
 
+- kind: circuit
+- id: C2
+- item: E2.P2
+- tables: [T2, T3]
+
 **E2.P1 과 배선이 글자 그대로 같고 칩만 바뀐다.** 통제 실험이므로 함수발생기
 설정·프로브 위치·미사용핀 처리를 하나도 바꾸지 않는다 — 바꾸면 그림 차이가 칩
 때문인지 설정 때문인지 갈리지 않는다.
@@ -200,6 +216,11 @@ CH1 → pin 1, CH2 → pin 2, X-Y 모드, 접지 공통).
 순서대로 빠지면서 입력에만 전원이 걸린 순간이 생긴다.
 
 # E2.P3-1 · CMOS 의 DC 특성 확인 — Rn (교안 p11)
+
+- kind: circuit
+- id: C3
+- item: E2.P3-1
+- tables: [T4]
 
 - U1 = `74HC04` (hex inverter, DIP-14)
   - pin 14 → VCC(+5V)
@@ -239,6 +260,11 @@ CH1 → pin 1, CH2 → pin 2, X-Y 모드, 접지 공통).
 
 # E2.P3-2 · CMOS 의 DC 특성 확인 — Rp (교안 p12)
 
+- kind: circuit
+- id: C4
+- item: E2.P3-2
+- tables: [T5]
+
 E2.P3-1 을 위아래로 뒤집는다. **바뀌는 것은 두 곳뿐이다.**
 
 - U1 = `74HC04` (hex inverter, DIP-14) — E2.P3-1 과 같은 물리 칩
@@ -271,6 +297,12 @@ E2.P3-1 을 위아래로 뒤집는다. **바뀌는 것은 두 곳뿐이다.**
 (`S3`)이 새로 필요하다 — 분자가 두 큰 수의 차라 공칭 5.00V 를 쓰면 오차가 크다.
 
 # E2.P4 · CMOS 의 AC 특성 확인 — tpd (교안 p13~p14)
+
+- kind: circuit
+- id: C5
+- item: E2.P4
+- tables: [T6, T7]
+- refs: [T8]
 
 ## 소자 배치
 
@@ -376,6 +408,8 @@ E2.P3-1 을 위아래로 뒤집는다. **바뀌는 것은 두 곳뿐이다.**
   거꾸로 읽기 쉽다.
 
 # 미확정 사항
+
+- kind: open-issues
 
 | 항목 | 내용 | 확인 방법 |
 |---|---|---|

@@ -196,28 +196,39 @@ def _cells(line: str) -> list:
     return [c.strip() for c in _CELL_SPLIT.split(_ROW.match(line).group(1))]
 
 
-def parse_tables(body: str) -> list:
-    """본문에서 마크다운 표를 전부 찾는다.
+def parse_table_at(lines: list, i: int):
+    """`lines[i]` 가 표의 헤더면 `(MdTable, 표가 끝난 다음 인덱스)`, 아니면 `(None, i)`.
 
     구분선은 **위치로만** 판정한다 — 헤더 바로 다음 줄이어야 한다. 내용으로
     판정하면 `| - | - |` 같은 don't-care 행이 구분선과 구별되지 않아 데이터가
     조용히 사라진다 (`-` 는 이 프로젝트의 don't-care 표기 중 하나다).
+
+    렌더러가 본문을 한 줄씩 훑으며 이것을 부른다 — 산문·칩 상자와 표의 **순서**를
+    지키려면 표가 어디서 시작해 어디서 끝나는지를 알아야 한다.
     """
+    if not (_ROW.match(lines[i]) and not _SEP.match(lines[i])
+            and i + 1 < len(lines) and _SEP.match(lines[i + 1])):
+        return None, i
+    header = _cells(lines[i])
+    sep_line = i + 2                          # 구분선의 1-based 줄 번호
+    j, rows = i + 2, []
+    while j < len(lines) and _ROW.match(lines[j]):
+        if j + 1 < len(lines) and _SEP.match(lines[j + 1]):
+            break                             # 이 줄은 다음 표의 헤더다
+        rows.append(_cells(lines[j]))
+        j += 1
+    return MdTable(header=header, rows=rows, line=sep_line), j
+
+
+def parse_tables(body: str) -> list:
+    """본문에서 마크다운 표를 전부 찾는다."""
     lines = body.split("\n")
     tables, i = [], 0
     while i < len(lines):
-        if not (_ROW.match(lines[i]) and not _SEP.match(lines[i])
-                and i + 1 < len(lines) and _SEP.match(lines[i + 1])):
+        table, nxt = parse_table_at(lines, i)
+        if table is None:
             i += 1
             continue
-        header = _cells(lines[i])
-        sep_line = i + 2                      # 구분선의 1-based 줄 번호
-        i += 2
-        rows = []
-        while i < len(lines) and _ROW.match(lines[i]):
-            if i + 1 < len(lines) and _SEP.match(lines[i + 1]):
-                break                         # 이 줄은 다음 표의 헤더다
-            rows.append(_cells(lines[i]))
-            i += 1
-        tables.append(MdTable(header=header, rows=rows, line=sep_line))
+        tables.append(table)
+        i = nxt
     return tables

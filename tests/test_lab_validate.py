@@ -405,27 +405,10 @@ spec: ../체크리스트/명세.md
         self.assertIn("C2", wheres)
         self.assertIn("C4", wheres)
 
-    def test_회로_본문의_표는_인쇄되지_않으므로_warn(self):
-        """실험02·03·10 결선도는 배선을 핀 표로 적는다. 그대로 백필하면
-        배선이 통째로 빠진 회로 페이지가 조용히 나온다."""
-        spec = parse_spec(WEEK2_SPEC)
-        netlist = self._netlist(
-            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n\n"
-            "| 핀 | 연결 |\n|---|---|\n| 1 | 입력 A |\n")
-        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
-                 if f.level == "warn" and "마크다운 표" in f.message]
-        self.assertTrue(warns)
-        self.assertIn("kind: lookup", warns[0].message)
-
-    def test_lookup_절의_표는_warn_하지_않는다(self):
-        """`common_page` 가 그 표를 실제로 렌더한다 — 손실이 없다."""
-        spec = parse_spec(WEEK2_SPEC)
-        netlist = self._netlist(
-            "# 참조 핀아웃\n\n- kind: lookup\n\n| IC | VCC |\n|---|---|\n| 74HC08 | 14 |\n\n"
-            "# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n")
-        warns = [f for f in validate.check_netlist_circuits(netlist, spec)
-                 if "마크다운 표" in f.message]
-        self.assertEqual(warns, [])
+    # 표 줄 warn 을 검증하던 두 테스트(`test_회로_본문의_표는_인쇄되지_않으므로_warn`·
+    # `test_lookup_절의_표는_warn_하지_않는다`)가 여기 있었다. 렌더러가 표를
+    # 인쇄하게 되면서 그 경고 자체가 거짓이 되어 지웠다 — 같은 자리(칩 선언
+    # 부재·배선 부재)는 아래 `NetlistCircuitWiring` 이 이어받는다.
 
 
 class TestDiagnosticClaims(unittest.TestCase):
@@ -1180,6 +1163,124 @@ class TestCheckTableWidth(unittest.TestCase):
         found = validate.check_notion_markdown(md_file(
             "# 제목\n\n" + self._table(14)))
         self.assertTrue(any("표 너비" in f.where for f in found), found)
+
+
+class NetlistCircuitWiring(unittest.TestCase):
+    """표 줄 warn 은 렌더러 한계의 증상 완화였다. 한계가 사라지면 거짓이 된다.
+    진짜 조용한 손실은 '칩 선언이 아예 없다'와 '칩에 배선이 하나도 없다'다."""
+
+    def _netlist(self, circuit_body):
+        text = ("---\nschema: lab-netlist/v1\nweek: 2\nexperiment: 1\n"
+                "spec: ../체크리스트/명세.md\n---\n\n"
+                "# C1 · 시험\n\n- kind: circuit\n- id: C1\n"
+                "- item: E1.P1-1\n- tables: [T1]\n\n" + circuit_body)
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return parse_netlist(path)
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+
+    def _messages(self, body):
+        return [f.message for f
+                in validate.check_netlist_circuits(self._netlist(body), self.spec)]
+
+    def test_표_줄만으로는_더_이상_경고하지_않는다(self):
+        """표는 이제 인쇄된다 — 경고가 거짓이 되면 사람이 경고를 안 믿는다."""
+        body = ("## U1 = 74HC08\n\n| 핀 | 연결 |\n|---|---|\n| 14 | VCC |\n")
+        self.assertEqual(
+            [m for m in self._messages(body) if "마크다운 표 줄" in m], [])
+
+    def test_칩_선언이_없으면_경고한다(self):
+        body = "회로 설명만 있고 배선이 없다.\n"
+        self.assertTrue([m for m in self._messages(body) if "칩 선언" in m])
+
+    def test_칩에_배선이_없으면_그_칩을_지목해_경고한다(self):
+        body = "## U1 = 74HC08\n\n설명만 있다.\n"
+        hits = [m for m in self._messages(body) if "배선" in m]
+        self.assertTrue(hits)
+        self.assertIn("U1 = 74HC08", hits[0])
+
+    def test_배선이_있으면_조용하다(self):
+        body = ("## U1 = 74HC08\n\n| 핀 | 연결 |\n|---|---|\n| 14 | VCC |\n")
+        self.assertEqual([m for m in self._messages(body)
+                          if "칩 선언" in m or "배선" in m], [])
+
+    def test_불릿형_배선도_배선으로_센다(self):
+        body = "- U1 = 74HC08 (quad)\n  - pin 14 → VCC(+5V)\n"
+        self.assertEqual([m for m in self._messages(body)
+                          if "칩 선언" in m or "배선" in m], [])
+
+    def test_상자_밖의_배선처럼_보이는_줄을_경고한다(self):
+        body = "- U1 = 74HC08\n  - pin 1 ← A\n- 미사용 입력핀: pin 9 → GND\n"
+        hits = [m for m in self._messages(body) if "칩 상자" in m]
+        self.assertTrue(hits)
+        self.assertIn("미사용", hits[0])
+
+
+class ContinuesValidation(unittest.TestCase):
+    def test_없는_회로를_가리키면_error(self):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]",
+                                      "- tables: [T2]\n- continues: C9")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        hits = [f for f in found if "continues" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("C9", hits[0].message)
+
+    def test_자기_자신을_가리키면_error(self):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]",
+                                      "- tables: [T2]\n- continues: C2")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        self.assertTrue([f for f in found
+                         if "continues" in f.message and f.level == "error"])
+        hits = [f for f in found if "continues" in f.message]
+        self.assertIn("자기 자신", hits[0].message)
+
+    def test_직전이_아닌_회로를_가리키면_error(self):
+        """C5 에 `continues: C1` 을 적으면 그 사이 회로들의 점퍼를 어떻게
+        하라는 지시가 사라진다."""
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T5]",
+                                      "- tables: [T5]\n- continues: C1")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        hits = [f for f in found if "continues" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("직전 회로", hits[0].message)
+
+
+class RefsValidation(unittest.TestCase):
+    def _findings(self, extra):
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T1]", f"- tables: [T1]\n{extra}")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        return validate.check_netlist_circuits(parse_netlist(path), spec)
+
+    def test_기록_대상_표를_refs_로_가리키면_error(self):
+        """방향이 반대다 — 기록할 표는 `tables` 로 간다."""
+        hits = [f for f in self._findings("- refs: [T2]") if "refs" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("tables", hits[0].message)
+
+    def test_없는_표를_refs_로_가리키면_error(self):
+        hits = [f for f in self._findings("- refs: [T99]") if "refs" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+
+    def test_참조표를_refs_로_가리키면_조용하다(self):
+        self.assertEqual(
+            [f for f in self._findings("- refs: [T6]") if "refs" in f.message], [])
 
 
 if __name__ == "__main__":

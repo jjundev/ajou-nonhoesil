@@ -92,3 +92,24 @@ class LiveSpecCorpus(unittest.TestCase):
                      if f.level == "warn"}
         self.assertEqual(set(ROW_COUNT_WARN_ALLOWLIST) - live, set(),
                          "warn 이 사라진 줄이 허용목록에 남아 있다")
+
+
+class 인쇄본_코퍼스(unittest.TestCase):
+    """커밋된 여섯 주차 인쇄본이 저장소 자체 검사를 통과하는가.
+
+    실험02 인쇄본이 `**` 10개를 담은 채 커밋된 적이 있다 — `_stepped_html` 이
+    `_plain` 을 안 씌웠고, `prep-lab-checklist` 절차가 `check_rendered_html` 을
+    안 돌려서 아무도 못 봤다. 산출물을 커밋하는 저장소라 산출물도 검사한다.
+    """
+
+    def test_인쇄본에_마크다운_표기가_남지_않는다(self):
+        for n in (1, 2, 3, 5, 6, 10):
+            path = (ROOT / config.experiment_dir(n)
+                    / "체크리스트/체크리스트.html")
+            with self.subTest(experiment=n):
+                self.assertTrue(path.exists(), f"{path} 가 없다")
+                errors = [f for f in validate.check_rendered_html(path)
+                          if f.level == "error"]
+                self.assertEqual(
+                    [str(f) for f in errors], [],
+                    f"실험{n:02d} 인쇄본이 자체 검사에서 error 를 낸다")

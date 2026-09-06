@@ -54,6 +54,10 @@
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
 
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
   /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
   .mismatch td { height: 8mm; background: #fafafa; }
 
@@ -65,7 +69,16 @@
      으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
   .ov { border-top: 1px solid currentColor; display: inline-block;
         line-height: 1.35; padding-top: 1px; }
-  .sketch { border: 1px solid #333; height: 45mm; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid #333; height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
+              font-size: 9.5pt; line-height: 1.5; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
 </style>
 
 <h1>{{TITLE}}</h1>
