@@ -5,10 +5,9 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
-from scripts.lab.render import (CLOSING, _blocks, _esc, _plain,
-                                _split_circuit_body, circuit_pages,
-                                closing_page, common_page, crop_rows,
-                                render_checklist)
+from scripts.lab.render import (CLOSING, _blocks, _chip_boxes, _circuit_body,
+                                _esc, _plain, circuit_pages, closing_page,
+                                common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -226,7 +225,8 @@ class TestCircuitPages(unittest.TestCase):
     def test_배선_번호가_칩마다_1부터_다시_센다(self):
         """`<ol start="1">` 을 내는 곳이 한 군데뿐이라, 배선 전부를 한 목록에
         몰아 칩 경계를 없애도 옛 단언은 통과했다. 목록 수 = 칩 수여야 한다."""
-        chips = sum(len(_split_circuit_body(c)[0]) for c in self.netlist.circuits)
+        chips = sum(len(_chip_boxes(_circuit_body(c)[0]))
+                    for c in self.netlist.circuits)
         self.assertGreaterEqual(chips, 9)
         self.assertEqual(self.html.count('<ol start="1">'), chips)
 
@@ -346,7 +346,7 @@ class TestCircuitPages(unittest.TestCase):
 
 
 class TestCircuitBodySplit(unittest.TestCase):
-    """`_split_circuit_body` 의 줄 귀속. 실험01 에는 이어지는 줄이 없어 실물
+    """`_circuit_body` 의 줄 귀속. 실험01 에는 이어지는 줄이 없어 실물
     렌더로는 발화하지 않지만, 이 저장소의 결선도는 관행적으로 줄을 접는다 —
     발화하는 순간 플로팅 핀 지시가 엉뚱한 항목에 붙는다."""
 
@@ -355,25 +355,27 @@ class TestCircuitBodySplit(unittest.TestCase):
                               id="C9", item="E1.P1-1", tables=["T1"])
 
     def test_이어지는_줄이_미사용_줄을_이으면_미사용에_붙는다(self):
-        chips, _, _ = _split_circuit_body(self._section(
+        nodes, _, _ = _circuit_body(self._section(
             "- U1 = 74HC08 (quad)\n"
             "  - pin 1 ← 입력 A\n"
             "  - 미사용 출력핀: pin 8, 11 → 개방\n"
             "    (절대 GND 로 내리지 않는다)\n"))
+        chips = _chip_boxes(nodes)
         self.assertEqual(chips[0]["wires"], ["pin 1 ← 입력 A"])
         self.assertEqual(chips[0]["unused"],
                          ["미사용 출력핀: pin 8, 11 → 개방 (절대 GND 로 내리지 않는다)"])
 
     def test_이어지는_줄이_배선_줄을_이으면_배선에_붙는다(self):
-        chips, _, _ = _split_circuit_body(self._section(
+        nodes, _, _ = _circuit_body(self._section(
             "- U1 = 74HC08 (quad)\n"
             "  - pin 3 → L1 애노드\n"
             "    (330Ω 직렬)\n"))
-        self.assertEqual(chips[0]["wires"], ["pin 3 → L1 애노드 (330Ω 직렬)"])
-        self.assertEqual(chips[0]["unused"], [])
+        self.assertEqual(_chip_boxes(nodes)[0]["wires"],
+                         ["pin 3 → L1 애노드 (330Ω 직렬)"])
+        self.assertEqual(_chip_boxes(nodes)[0]["unused"], [])
 
     def test_산문이_첫_칩_앞뒤로_갈린다(self):
-        _, before, after = _split_circuit_body(self._section(
+        _, before, after = _circuit_body(self._section(
             "회로 소개다.\n"
             "- U1 = 74HC08 (quad)\n"
             "  - pin 1 ← 입력 A\n"
@@ -381,6 +383,25 @@ class TestCircuitBodySplit(unittest.TestCase):
         self.assertIn("회로 소개다", before)
         self.assertNotIn("검산", before)
         self.assertIn("검산", after)
+
+    def test_칩_사이의_표가_노드_순서를_지킨다(self):
+        """실험10 P1 은 U3 과 U4 **사이**에 가중 저항망 표를 둔다. 3버킷으로
+        가르면 그 표가 마지막 칩 뒤로 밀려 배선 순서가 뒤집힌다."""
+        nodes, _, _ = _circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← A\n"
+            "| 저항 | 값 |\n|---|---|\n| R1 | 1.5k |\n"
+            "- U2 = 74HC32 (quad)\n"
+            "  - pin 1 ← B\n"))
+        self.assertEqual([n["type"] for n in nodes], ["chip", "prose", "chip"])
+        self.assertIn("| R1 | 1.5k |", nodes[1]["text"])
+
+    def test_칩이_하나도_없으면_전부_앞_산문이다(self):
+        """조용히 버리는 것보다 낫다."""
+        nodes, before, after = _circuit_body(self._section("산문뿐이다.\n"))
+        self.assertEqual(nodes, [])
+        self.assertIn("산문뿐이다", before)
+        self.assertEqual(after, "")
 
 
 class TestCrop(unittest.TestCase):
