@@ -82,9 +82,15 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("미사용", self.html)
 
     def test_오늘의_흐름_표가_회로를_전부_센다(self):
-        for circuit in self.netlist.circuits:
+        """`C3` 는 칩 이름 `74HC32` 의 부분문자열이다 — 페이지 전체에서 찾으면
+        흐름표에서 그 행을 지워도 통과한다. 흐름표 안에서만 본다."""
+        flow = self.html[self.html.index("<table class='flow'>"):]
+        flow = flow[: flow.index("</table>")]
+        self.assertEqual(flow.count("<tr>"), len(self.netlist.circuits) + 1)
+        for n, circuit in enumerate(self.netlist.circuits, start=1):
             with self.subTest(circuit=circuit.id):
-                self.assertIn(circuit.id, self.html)
+                self.assertIn(f"<td>{n}/{len(self.netlist.circuits)}</td>", flow)
+                self.assertIn(f"<td>{circuit.id} · ", flow)
 
     def test_참조_핀아웃_표가_인쇄본에_실린다(self):
         """74HC02 만 출력이 pin 1·4·10·13 이다. netlist 가 스스로 '가장 흔한
@@ -109,7 +115,16 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("미확인", self.html)
 
     def test_여러_줄_경고가_잘리지_않는다(self):
-        self.assertIn("핀 1·4·10·13", self.html)
+        """74HC02 경고는 세 줄짜리 불릿 하나다. 이어지는 줄을 앞 항목에 붙이지
+        않으면 목록이 중간에서 끊기고 나머지가 별도 문단으로 떨어진다. 구절
+        하나만 찾으면 그 깨진 출력에서도 발견되므로, 첫 줄과 끝 줄이 **같은
+        `<li>` 안**에 있는지를 본다."""
+        import re as _re
+        items = _re.findall(r"<li>(.*?)</li>", self.html, _re.S)
+        joined = [i for i in items
+                  if "나머지 셋과 핀 배치가 다르다" in i and "가장 흔한 배선 실수" in i]
+        self.assertEqual(len(joined), 1, f"이어붙은 <li> 를 못 찾았다: {items}")
+        self.assertIn("핀 1·4·10·13", joined[0])
 
     def test_기록_대상_표의_확인_칸을_공통면이_만들지_않는다(self):
         """`.check` 개수는 회로 페이지에서만 나온다 — 개수 검사가 명세에서 센다."""
