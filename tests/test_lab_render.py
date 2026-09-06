@@ -6,9 +6,9 @@ from pathlib import Path
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
-                                _circuit_body, _esc, _plain, circuit_pages,
-                                closing_page, common_page, crop_rows,
-                                render_checklist)
+                                _chip_tables, _circuit_body, _esc, _plain,
+                                circuit_pages, closing_page, common_page,
+                                crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1039,3 +1039,72 @@ class TestRefsTables(unittest.TestCase):
     def test_refs_가_없으면_참조표는_어디에도_없다(self):
         """뮤테이션으로 무는 자리 — 필터를 지워도 실물로는 발화하지 않는다."""
         self.assertNotIn("<h3>T6 ·", self._html(""))
+
+
+class Test실험10배선전수(unittest.TestCase):
+    """배선 138줄이 전부 표 안인 유일한 주차다. 첫 칩·첫 표만 싣는 변이가
+    가장 파괴적인 소실 모드라 원문 셀을 하나씩 대조한다.
+
+    개수는 리터럴로 박는다. `_circuit_body` 가 센 값으로 대조하면 파서와
+    렌더러가 같은 결함을 공유할 때 조용히 통과한다."""
+
+    #: 백필 전 원문을 재서 얻은 값. U1 13 · U2 10 · U3 10 · U4 10 · U5 8.
+    WIRE_ROWS = 51
+    UNUSED_ROWS = 4
+    CHIPS = 5
+
+    def setUp(self):
+        d = ROOT / config.experiment_dir(10)
+        self.spec = parse_spec(d / "체크리스트/명세.md")
+        self.netlist = parse_netlist(d / "결선도/netlist.md")
+        self.html = circuit_pages(self.spec, self.netlist)
+
+    def test_칩_상자_수가_원문의_칩_선언_수와_같다(self):
+        self.assertEqual(self.html.count('class="chip"'), self.CHIPS)
+
+    def test_원문_배선표의_모든_행이_인쇄본에_온다(self):
+        rows = [row for circuit in self.netlist.circuits
+                for chip in _chip_boxes(_circuit_body(circuit)[0])
+                for table in _chip_tables(chip) for row in table.rows]
+        self.assertEqual(len(rows), self.WIRE_ROWS)
+        for row in rows:
+            for cell in row:
+                text = _esc(_plain(cell)).strip()
+                if len(text) < 3:
+                    continue          # `7`·`14` 같은 핀 번호는 우연히 겹친다
+                with self.subTest(cell=text[:40]):
+                    self.assertIn(text, self.html)
+
+    def test_배선_체크박스_수가_원문_배선행_수와_같다(self):
+        self.assertEqual(self.html.count('<td class="box"></td>'),
+                         self.WIRE_ROWS)
+
+    def test_미사용_행이_배선표에서_빠져_미사용_상자로_간다(self):
+        """미사용 판정을 지우면 체크박스가 4개 늘고 미사용 상자가 빈다."""
+        boxes = 0
+        for page in self.html.split('<section class="circuit">')[1:]:
+            if 'class="unused"' not in page:
+                continue
+            boxes += page[page.index('class="unused"'):].count('<span class="box">')
+        self.assertEqual(boxes, self.UNUSED_ROWS)
+
+    def test_미사용핀_지시가_어느_칩_것인지_밝힌다(self):
+        """U2·U3 둘 다 `pin 11, 13 → GND` 다. 라벨이 없으면 구별되지 않는다."""
+        page = self.html.split('<section class="circuit">')[1]
+        box = page[page.index('class="unused"'):]
+        self.assertIn("U2 = 7404", box)
+        self.assertIn("U3 = 7405", box)
+
+    def test_C2_배너가_C1_을_뜯지_말라고_한다(self):
+        page = self.html.split('<section class="circuit">')[2]
+        start = page.index('class="banner"')
+        banner = page[start:page.index("</div>", start)]
+        self.assertIn("C1", banner)
+        self.assertIn("그대로 두고", banner)
+        self.assertNotIn("점퍼선을 모두 걷는다", banner)
+
+    def test_전원_레일_표가_공통면에_인쇄된다(self):
+        """이 주차 최대 사고 지점이다 — 두 전원의 GND 를 같은 노드로 묶는 것."""
+        html = common_page(self.spec, self.netlist)
+        self.assertIn("V15", html)
+        self.assertIn(_esc("+15V"), html)
