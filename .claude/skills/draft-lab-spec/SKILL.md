@@ -117,28 +117,32 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 
 ## 실행 절차
 
-0. **번호를 코드로 옮긴다.** 주차와 실험 번호는 **1:1 이 아니다** —
-   실험4가 7주차다. 손으로 옮기지 말고 아래를 돌린다.
+0. **실험 번호를 폴더 이름으로 옮긴다.** 사용자는 "실험1 …" 또는 "다음 실험 …"
+   으로 부르고, 아래 절차의 경로는 `<실험NN>/` 이다. 손으로 `실험1` 이라고
+   적지 않는다 — 0 을 안 채우면 `실험10` 이 `실험2` 앞에 정렬된다.
 
    ```bash
    python3 -c "
    from scripts.lab import config
-   folder = config.folder_for_week(<N>)
-   print('folder:', folder)
-   if folder != config.PROJECT_DIR:
-       print('experiment:', config.experiment_for_week(<N>))
+   print(config.experiment_dir(<실험번호>))
    "
    ```
 
-   출력이 `프로젝트` 면 **거절한다** — FPGA 는 산출물이 HDL·시뮬레이션
-   파형이라 이 스키마 밖이고, 그 경우 실험 번호는 구하지 않는다. 아니면
-   `experiment` 값을 1단계 `config.manual_candidates(<실험번호>)` 에
-   그대로 넘긴다. 사용자가 `실험N` 으로 불렀으면 위 블록 대신
-   `config.experiment_dir(<N>)` 로 폴더를, `<N>` 그대로를 실험 번호로
-   쓴다. `ValueError` 면 그 메시지를 그대로 전하고 중단한다 — 발생
-   조건은 둘이다. 그 주차가 시험 주간이라 산출물 자체가 없는 경우
-   (8주차 중간고사)와, 그 주차가 매핑에 아예 없는 경우(실험 주차도
-   FPGA 주차도 아님)다. 원인은 다르지만 처리는 둘 다 같다.
+   **"다음 실험" 처럼 날짜로 물었으면** 아래로 찾는다. 한 날에 실험이 둘일 수
+   있어 리스트가 온다(9/18 은 실험2·3 이다).
+
+   ```bash
+   python3 -c "
+   from scripts.lab import config
+   print(config.next_experiments())
+   "
+   ```
+
+   `None` 이면 학기가 끝난 것이다. 사용자가 가리키는 것이 FPGA
+   프로젝트(11/27~12/11, `config.PROJECT_DIR`)면 **거절한다** — FPGA 는
+   산출물이 HDL·시뮬레이션 파형이라 이 스키마 밖이고, 그 경우 실험 번호는
+   구하지 않는다. 아니면 실험 번호를 1단계 `config.manual_candidates(<실험번호>)`
+   에 그대로 넘긴다. `ValueError` 면 그 메시지를 그대로 전하고 중단한다.
 
 1. **이번 실행이 쓸 대상을 확정한 뒤, 폴더와 교안을 확인한다.** 인자가
    없으면 명세와 결선도를 **둘 다** 쓴다. `명세만` 이면 명세만 쓴다 —
@@ -233,7 +237,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 4. **명세를 저작한다** (1단계에서 확정한 대상이 `결선도만` 이면
    건너뛰고 기존 명세를 파싱한다).
 
-   프론트매터는 `schema`·`week`·`experiment`·`title`·`source_manual`·
+   프론트매터는 `schema`·`experiment`·`title`·`source_manual`·
    `power`(레일 이름 → 전압의 **열린 맵**)·`items[]` 다.
 
    - 표 ID 는 계약상 유일하기만 하면 된다(`docs/schema/lab-spec-v2.md`).
@@ -315,7 +319,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    는 `spec.items` 를 순회하며 각 항목의 `ics` 가 있는지 보므로, 낡은
    원본 명세로는 방금 쓴 결선도를 제대로 잴 수 없다.
 
-   ### 결선도 절에 회로 메타를 단다 (`lab-netlist/v1`)
+   ### 결선도 절에 회로 메타를 단다 (`lab-netlist/v2`)
 
    모든 `# ` 절이 속성 리스트로 시작해야 한다. 없으면 ① `prep-lab-checklist` 가
    인쇄본을 못 낸다. 계약은 `docs/schema/lab-netlist-v2.md` 다.
@@ -429,7 +433,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 | `# C<n> · <제목>` | `circuit` | **브레드보드에 한 번에 올리는 회로 하나마다** 하나다. 명세 항목과 1:1 이 아니다 — 칩이 종류당 하나뿐이라 한 항목이 회로 둘로 갈리는 주차가 흔하다. `- id`·`- item`·`- tables` 로 명세와 잇고, 결선도 PNG 가 있으면 `- diagram`. **배선은 칩 상자로 적는다 — 두 형식 중 하나다.** 불릿형(`- U<n> = <칩>` 아래 들여쓴 `- pin ...`)이거나 헤딩형(`## U<n> = <칩>` 아래 마크다운 표). 표로 적으면 행마다 체크박스가 붙고 정렬이 유지된다 — 핀 표가 `핀 | 연결 | 왜` 처럼 세 열이면 헤딩형이 낫다. 칩이 아닌 헤딩(`## 소자 배치`) 아래의 표는 참조표로 원문 위치에 인쇄된다. 앞 회로를 뜯지 않고 이어 붙이는 회로면 `- continues: <앞 회로 id>`, 대조할 `role: reference` 표가 있으면 `- refs: [T<n>]`. `## 계측` 은 잴 값이 있는 회로에만 붙는다 |
 | `# 미확정 사항` | `open-issues` | `M1`~ 번호를 매긴 표. `| 항목 | 내용 | 확인 방법 |`. 명세 쪽 미확정도 여기로 모은다. 인쇄본 공통면에 체크박스로 실린다 |
 
-프론트매터는 `schema: lab-netlist/v1` · `week` · `experiment` · `spec` 네 줄이다
+프론트매터는 `schema: lab-netlist/v2` · `experiment` · `spec` 세 줄이다
 (`docs/schema/lab-netlist-v2.md`). 빠지면 `parse_netlist` 가 거절한다.
 
 ## 비-목표
@@ -437,7 +441,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 - **폴더를 만들지 않는다.** `init-lab-experiment` 의 일이다.
 - **보고서를 쓰지 않는다.** `write-pre-report` 의 일이다.
 - **기존 명세·결선도를 고치지 않는다** (§절대 규칙 13).
-- **스키마를 바꾸지 않는다.** `lab-spec/v1` 이 표현하지 못하는 것을
+- **스키마를 바꾸지 않는다.** `lab-spec/v2` 가 표현하지 못하는 것을
   만나면 미확정으로 남기고 사용자에게 보고한다. 스키마 개정은 별개
   판단이다.
 - **FPGA(13~15주차)를 다루지 않는다.** 산출물이 HDL·시뮬레이션 파형·핀
