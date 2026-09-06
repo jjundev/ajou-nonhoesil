@@ -4,6 +4,7 @@
 다르고 이번 학기 것이 미확정이므로, 섹션 목록은 반드시 여기를 거쳐 읽는다.
 """
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -78,26 +79,72 @@ def root_relative_prefix(subfolder_depth: int = 1) -> str:
     return "../" * (EXPERIMENT_DIR_DEPTH + subfolder_depth)
 
 
-# 과거 학기 교안 원본이 사는 곳. 2026-2 교안이 배포되면 각 주차 폴더의
-# `강의노트/` 로 들어오고 그쪽이 우선한다.
+# 과거 학기 교안 원본이 사는 곳. 이름이 `실험N.pdf` 로 정규화돼 있다.
 MANUAL_ARCHIVE = "from_the_past/정리/강의노트"
 
+# 이번 학기(2026-2) 교안이 배포되는 곳. 저장소 루트의 폴더 하나에 열 주차가
+# 다 들어오고, **파일 이름에 제목이 붙는다** (`실험1. Basic Gates.pdf`).
+# 번호만으로 이름을 만들 수 없어서 이 후보만 디스크를 훑는다.
+MANUAL_DISTRIBUTION = "강의노트"
 
-def manual_candidates(experiment) -> list:
+
+def _distributed_manual(experiment: int, root: Path) -> Optional[Path]:
+    """배포 폴더에서 그 주차 교안을 찾는다. 없으면 `None`.
+
+    번호 뒤가 **숫자가 아니어야** 한다. `실험1` 로 앞자리만 맞추면
+    `실험10`·`실험11`·`실험12` 를 집어삼킨다 — 이 과목은 실험이 10 개라
+    한 자리와 두 자리가 실제로 섞인다.
+
+    같은 번호가 여럿이면 이름순 첫 개를 쓴다. 배포본은 주차당 한 편이므로
+    정상 경로에서는 일어나지 않고, 일어나면 결정적으로 같은 걸 고른다.
+    """
+    folder = root / MANUAL_DISTRIBUTION
+    if not folder.is_dir():
+        return None
+    pattern = re.compile(rf"^실험{experiment}(?!\d)")
+    hits = sorted(
+        f for f in folder.iterdir()
+        if f.suffix.lower() == ".pdf" and pattern.match(f.name)
+    )
+    return Path(MANUAL_DISTRIBUTION) / hits[0].name if hits else None
+
+
+def manual_candidates(experiment, root=None) -> list:
     """실험 번호 → 교안 PDF 후보 경로. 우선순위 순서다.
 
     **폴더는 0 을 채우고 파일 이름은 안 채운다** — `실험04/강의노트/실험4.pdf`
     처럼 한 경로에 두 형식이 섞여 있다. 손으로 옮기면 7주차(실험4)에서
     반드시 어긋난다. 그래서 이 규칙을 여기 한 곳에만 둔다.
 
-    **두 번째 후보에는 `EXPERIMENT_BASE` 를 붙이지 않는다.** 과거 학기 원본
+    **아카이브 후보에는 `EXPERIMENT_BASE` 를 붙이지 않는다.** 과거 학기 원본
     아카이브는 `보고서/` 밖에 산다. 후보 목록 전체에 기반 경로를 일괄로
     붙이면 이쪽이 조용히 없는 경로가 되고, 스킬은 "교안을 못 찾았다"로
     넘어가 원인이 한참 뒤에 드러난다.
+
+    **배포본이 주차 폴더 사본보다 먼저다.** 사본은 언제나 다른 데서 복사해
+    온 것이라 배포본보다 새로울 수 없고, `init-lab-experiment` 가 만들던
+    사본은 실제로 과거 학기 아카이브 사본이었다. 사본이 앞서면 그 낡은
+    판본이 배포본을 조용히 가린다.
+
+    2026-09 에 실험1 이 어긋난 것은 그보다 한 단계 앞이다 — 배포 폴더가
+    후보 목록에 **아예 없어서** 아홉 스킬 전부가 아카이브의 2020-2 판을
+    열었다. 두 판은 쪽수만 다른 게 아니라(13 쪽 vs 15 쪽) 실험 항목 구성이
+    3 개 vs 5 개로 다르고, OR·NOR 의 IC 지정 유무도 다르다. 어느 쪽도
+    "못 찾았다"로 드러나지 않는다 — 아카이브에 같은 번호의 파일이 늘 있기
+    때문에 조용히 옛것을 연다. 그래서 배포본을 후보에 넣는 것과 사본보다
+    앞세우는 것을 같이 한다.
+
+    반환 길이가 고정이 아니다. 배포본은 실재할 때만 들어간다 — 후보를
+    **번호로 집지 말고** `MANUAL_ARCHIVE`·`MANUAL_DISTRIBUTION` 로 가른다.
     """
     folder = experiment_dir(experiment)     # 번호 유효성·위치는 한 곳에서만 정한다
     name = f"실험{experiment}.pdf"          # 0 을 채우지 않는다
-    return [Path(folder) / "강의노트" / name, Path(MANUAL_ARCHIVE) / name]
+    distributed = _distributed_manual(experiment, Path(root) if root else Path("."))
+    return [
+        *([distributed] if distributed else []),
+        Path(folder) / "강의노트" / name,
+        Path(MANUAL_ARCHIVE) / name,
+    ]
 
 
 # 주차 → 실험 매핑. **1:1 이 아니다** — 5·6·7주차가 실험 5·6·4 로 어긋난다.

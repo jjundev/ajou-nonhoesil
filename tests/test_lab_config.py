@@ -8,6 +8,17 @@ from scripts.lab import config
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def archive_candidate(candidates: list) -> Path:
+    """후보 목록에서 과거 학기 아카이브 후보를 집는다.
+
+    **번호로 집지 않는다** — 배포본은 실재할 때만 들어가서 목록 길이가
+    고정이 아니다. `[1]` 로 집으면 배포본이 있는 주차에서만 조용히 다른
+    것을 집는다.
+    """
+    return next(c for c in candidates
+                if str(c).startswith(config.MANUAL_ARCHIVE))
+
+
 class TestManualCandidates(unittest.TestCase):
     """교안 PDF 경로. **폴더는 0 을 채우고 파일은 안 채운다.**"""
 
@@ -19,29 +30,69 @@ class TestManualCandidates(unittest.TestCase):
         self.assertEqual(got[1],
                          Path("from_the_past/정리/강의노트/실험4.pdf"))
 
-    def test_두_번째_후보에는_실험_기반_경로가_붙지_않는다(self):
+    def test_아카이브_후보에는_실험_기반_경로가_붙지_않는다(self):
         """과거 학기 원본은 `보고서/` 밖에 산다. 기반 경로를 후보 전체에
         일괄로 붙이면 이쪽이 조용히 `보고서/from_the_past/...` 가 된다 —
         파일이 없으므로 스킬은 "교안을 못 찾았다"로 넘어가고, 원인은
         한참 뒤에나 드러난다."""
-        got = config.manual_candidates(1)
-        self.assertFalse(str(got[1]).startswith(config.EXPERIMENT_BASE))
-        self.assertEqual(got[1], Path("from_the_past/정리/강의노트/실험1.pdf"))
+        got = archive_candidate(config.manual_candidates(1))
+        self.assertFalse(str(got).startswith(config.EXPERIMENT_BASE))
+        self.assertEqual(got, Path("from_the_past/정리/강의노트/실험1.pdf"))
 
-    def test_주차_폴더_사본이_먼저다(self):
-        # 2026-2 교안이 배포되면 그 사본이 이긴다.
+    def test_주차_폴더_사본이_아카이브보다_먼저다(self):
         got = config.manual_candidates(10)
-        self.assertEqual(got[0], Path("보고서/실험10/강의노트/실험10.pdf"))
+        self.assertLess(got.index(Path("보고서/실험10/강의노트/실험10.pdf")),
+                        got.index(archive_candidate(got)))
 
     def test_범위_밖_번호는_거절한다(self):
         with self.assertRaises(ValueError):
             config.manual_candidates(11)
 
-    def test_두_번째_후보가_열_개_다_실재한다(self):
+    def test_아카이브_후보가_열_개_다_실재한다(self):
         # 이 함수가 만드는 이름이 실물과 어긋나면 여기서 걸린다.
         for n in range(1, 11):
             with self.subTest(n=n):
-                self.assertTrue((ROOT / config.manual_candidates(n)[1]).exists())
+                got = archive_candidate(config.manual_candidates(n))
+                self.assertTrue((ROOT / got).exists())
+
+
+class TestDistributedManual(unittest.TestCase):
+    """이번 학기 배포 폴더(`강의노트/`). 이름에 제목이 붙어 번호만으로
+    만들 수 없으므로 이 후보만 디스크를 훑는다."""
+
+    def _배포폴더(self, *names) -> Path:
+        root = Path(tempfile.mkdtemp())
+        (root / config.MANUAL_DISTRIBUTION).mkdir()
+        for n in names:
+            (root / config.MANUAL_DISTRIBUTION / n).touch()
+        return root
+
+    def test_배포본이_주차_폴더_사본보다_먼저다(self):
+        """사본은 언제나 다른 데서 복사해 온 것이라 배포본보다 새로울 수
+        없다. 사본을 먼저 두면 과거 학기 판본이 이번 학기 배포본을 조용히
+        가린다 — 2026-09 실험1 에서 실제로 일어난 일이다."""
+        root = self._배포폴더("실험1. Basic Gates.pdf")
+        got = config.manual_candidates(1, root=root)
+        self.assertEqual(got[0], Path("강의노트/실험1. Basic Gates.pdf"))
+        self.assertEqual(got[1], Path("보고서/실험01/강의노트/실험1.pdf"))
+
+    def test_한_자리_번호가_두_자리를_집어삼키지_않는다(self):
+        """`실험1` 로 앞자리만 맞추면 `실험10` 이 걸린다. 이 과목은 실험이
+        10 개라 한 자리와 두 자리가 실제로 섞인다."""
+        root = self._배포폴더("실험10. Counter.pdf")
+        self.assertEqual(config.manual_candidates(1, root=root),
+                         config.manual_candidates(1, root=Path(tempfile.mkdtemp())))
+        self.assertEqual(config.manual_candidates(10, root=root)[0],
+                         Path("강의노트/실험10. Counter.pdf"))
+
+    def test_배포_폴더가_없으면_후보가_둘이다(self):
+        got = config.manual_candidates(1, root=Path(tempfile.mkdtemp()))
+        self.assertEqual(len(got), 2)
+
+    def test_PDF_가_아닌_파일은_후보가_아니다(self):
+        # 배포 폴더에는 `자리배치도.png` 같은 것도 같이 들어온다.
+        root = self._배포폴더("실험1 자리배치도.png")
+        self.assertEqual(len(config.manual_candidates(1, root=root)), 2)
 
 
 class TestCourseInfo(unittest.TestCase):
@@ -270,7 +321,9 @@ class ExperimentBaseTest(unittest.TestCase):
         옛 경로를 연다."""
         base = config.EXPERIMENT_BASE
         self.assertTrue(config.experiment_dir(3).startswith(base + "/"))
-        self.assertTrue(str(config.manual_candidates(3)[0]).startswith(base + "/"))
+        사본 = next(c for c in config.manual_candidates(3)
+                   if str(c).startswith(base + "/"))
+        self.assertEqual(사본, Path(f"{base}/실험03/강의노트/실험3.pdf"))
         self.assertTrue(config.folder_for_week(4).startswith(base + "/"))
         self.assertTrue(config.folder_for_week(13).startswith(base + "/"))
 
