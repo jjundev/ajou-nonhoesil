@@ -36,7 +36,7 @@ description: Generate accurate, publication-quality breadboard circuit wiring di
 
 ## 3. CLI 사용법
 ```bash
-python3 .agents/skills/breadboard-diagram/scripts/render_breadboard.py \
+python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
     --circuit <circuit_id> \
     --output <output_path> \
     [--template <template_path>]

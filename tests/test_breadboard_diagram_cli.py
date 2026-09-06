@@ -7,7 +7,9 @@
 netlist 스스로 "가장 흔한 배선 실수"라고 표시한 곳이기 때문이다.
 
 임포트하지 않고 소스를 `ast` 로 읽는다. 이 스크립트는 패키지가 아니고 PIL 을
-끌어온다.
+끌어온다. 정본은 `.claude/skills/breadboard-diagram/` 이다 — 2026-09-06 에
+`.agents/skills/` 사본과 갈라진 것을 발견해 일원화했다. 다른 스킬 아홉 개가
+모두 `.claude/skills/` 아래 있고 슬래시 커맨드 런타임도 여기서 로드한다.
 """
 
 import ast
@@ -15,8 +17,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / ".agents/skills/breadboard-diagram/scripts/render_breadboard.py"
-SKILL = ROOT / ".agents/skills/breadboard-diagram/SKILL.md"
+SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
+SKILL = ROOT / ".claude/skills/breadboard-diagram/SKILL.md"
 
 
 def _tree():

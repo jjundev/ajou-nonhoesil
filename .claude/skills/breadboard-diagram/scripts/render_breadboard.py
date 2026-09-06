@@ -22,6 +22,9 @@ class BreadboardRenderer:
         self.im = self.base_im.copy()
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.draw = ImageDraw.Draw(self.overlay)
+        # 이미 그린 레일 브리지. 칩마다 connect_unused_inputs 를 부르면 같은
+        # 레일쌍을 여러 번 잇게 되므로 한 번만 그린다
+        self._bridged = set()
         
         # Typography
         self.font_title = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 21)
@@ -136,6 +139,32 @@ class BreadboardRenderer:
             self.draw.text((c['e'] - 15, y - 6), str(pin_l), fill=(80, 80, 80, 255), font=self.font_en_sm)
             self.draw.text((c['f'] + 6, y - 6), str(pin_r), fill=(80, 80, 80, 255), font=self.font_en_sm)
 
+    def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
+        """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
+
+        이 템플릿의 레일쌍(좌 163/193, 중앙좌 458/488, 중앙우 529/559,
+        우 837/867)은 각각 **별개 스트립**이다. 칩 7번 핀을 좌측 GND 레일에
+        내리고 미사용 입력을 중앙 GND 레일에 내리면 두 레일이 이어져 있지
+        않아 미사용 입력이 뜬다. 그 점퍼를 명시적으로 그린다.
+
+        `row` 는 레일에 실제 홀이 있는 행이어야 한다. 이 템플릿에서 홀이
+        없는 행은 2, 3, 4, 9, 15, 21, 32 다.
+        """
+        key = (kind, min(x_a, x_b), max(x_a, x_b))
+        if key in self._bridged:
+            return
+        self._bridged.add(key)
+
+        color = (20, 60, 220, 255) if kind == 'gnd' else (220, 20, 20, 255)
+        y = self.r_y(row)
+        self.draw_wire([(x_a, y), (x_b, y)], color, width=3)
+
+        if label is None:
+            label = "레일 브리지 ──> GND 공통" if kind == 'gnd' else "레일 브리지 ──> +5V 공통"
+        if label:
+            bg = (240, 245, 255, 240) if kind == 'gnd' else (255, 240, 240, 240)
+            self.draw_badge(min(x_a, x_b) + 12, y + 7, label, bg, color, font=self.font_kr_sm)
+
     def connect_power(self, start_row, block='left'):
         c = self.cols[block]
         self.draw_wire([(c['f'], self.r_y(start_row)), (c['mid_vcc'], self.r_y(start_row))], (220, 20, 20, 255), width=3)
@@ -144,7 +173,7 @@ class BreadboardRenderer:
         self.draw_wire([(c['e'], self.r_y(start_row + 6)), (c['gnd'], self.r_y(start_row + 6))], (20, 60, 220, 255), width=3)
         self.draw_badge(c['gnd'] - 55, self.r_y(start_row + 6) - 8, "GND (0V)", (240, 240, 255, 240), (20, 60, 220, 255), font=self.font_en_bold)
 
-    def connect_unused_inputs(self, pins, start_row, block='left'):
+    def connect_unused_inputs(self, pins, start_row, block='left', bridge_row=None):
         c = self.cols[block]
         for p in pins:
             if 1 <= p <= 7:
@@ -157,6 +186,16 @@ class BreadboardRenderer:
         pin_str = ", ".join(str(p) for p in pins)
         mid_r = start_row + 2
         self.draw_badge(c['mid_gnd'] + 15, self.r_y(mid_r) - 8, f"미사용 입력 ({pin_str}) ──> GND 접지", (240, 245, 255, 240), (20, 60, 200, 255))
+
+        # 8~14번 핀은 중앙 GND 레일로 내려가는데, 7번 핀이 물린 레일과 별개
+        # 스트립이다. 브리지를 그리지 않으면 그 미사용 입력들이 그대로 뜬다
+        if any(8 <= p <= 14 for p in pins):
+            if bridge_row is None:
+                print(f"[WARN] {block} 블록 미사용 입력 {pin_str} 이 중앙 GND 레일에 "
+                      f"내려갔는데 bridge_row 가 없다 — 7번 핀 레일과 이어지지 않아 "
+                      f"뜬다. 빌더에서 bridge_row 를 넘겨라", file=sys.stderr)
+            else:
+                self.bridge_rails(c['mid_gnd'], c['gnd'], bridge_row, kind='gnd')
 
     def mark_unused_outputs(self, pins, start_row, block='left'):
         c = self.cols[block]
@@ -210,7 +249,7 @@ def build_e1_and(output_path, template_path=None):
     bb.draw_resistor(c['c'], bb.r_y(25), bb.r_y(27), label="330Ω")
     bb.draw_wire([(c['c'], bb.r_y(27)), (c['gnd'], bb.r_y(27))], (20, 60, 220, 255), width=2)
     
-    bb.connect_unused_inputs([9, 10, 12, 13], 10)
+    bb.connect_unused_inputs([9, 10, 12, 13], 10, bridge_row=29)
     bb.mark_unused_outputs([8, 11], 10)
     bb.export(output_path, max_row=30)
 
@@ -251,10 +290,10 @@ def build_e1_nand(output_path, template_path=None):
     bb.draw_resistor(c['c'], bb.r_y(28), bb.r_y(30), label="330Ω")
     bb.draw_wire([(c['c'], bb.r_y(30)), (c['gnd'], bb.r_y(30))], (20, 60, 220, 255), width=2)
     
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and)
+    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, bridge_row=31)
     bb.mark_unused_outputs([6, 8, 11], r_and)
     
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_nand)
+    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_nand, bridge_row=31)
     bb.mark_unused_outputs([6, 8, 11], r_nand)
     
     bb.export(output_path, max_row=33)
@@ -339,11 +378,11 @@ def build_e1_comb(output_path, template_path=None):
     
     # 4. 미사용 핀 안전 처리 (동선 정리)
     # 74HC04: 미사용 입력 (5, 9, 11, 13) -> GND, 미사용 출력 (6, 8, 10, 12) -> NC
-    bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left')
+    bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left', bridge_row=31)
     bb.mark_unused_outputs([6, 8, 10, 12], r_not, block='left')
     
     # 74HC08: 미사용 입력 (4, 5, 9, 10, 12, 13) -> GND, 미사용 출력 (6, 8, 11) -> NC
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, block='left')
+    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, block='left', bridge_row=31)
     bb.mark_unused_outputs([6, 8, 11], r_and, block='left')
     
     # 74HC32 (우측 칩): 미사용 입력 (9, 10, 12, 13) -> 우측 GND 레일(gnd: x=837)
@@ -356,6 +395,15 @@ def build_e1_comb(output_path, template_path=None):
     bb.draw_badge(c_r['f'] + 20, bb.r_y(r_or + 3) - 8, "Pin 11: NC", (250, 250, 250, 240), (130, 60, 60, 255), font=bb.font_kr_sm)
     bb.draw_badge(c_r['f'] + 20, bb.r_y(r_or + 6) - 8, "Pin 8: NC", (250, 250, 250, 240), (130, 60, 60, 255), font=bb.font_kr_sm)
     bb.draw_badge(c_r['f'] + 20, bb.r_y(r_or + 5) - 8, "미사용 출력 (8, 11) ──> 개방(NC)", (255, 240, 240, 240), (180, 40, 40, 255))
+
+    # 5. 레일 브리지 — 이 그림은 분리된 레일 모듈 넷을 쓴다
+    #    GND: 좌(163) · 중앙좌(458) · 중앙우(529) · 우(837) 를 31행에서 잇는다.
+    #         잇지 않으면 우측 74HC32 의 7번 핀(중앙우)과 좌측 칩들의 7번 핀(좌)이
+    #         서로 다른 스트립에 있어 한쪽이 접지되지 않는다
+    #    VCC: 좌측 칩들은 중앙좌(488), 74HC32 는 우(867) 에서 받으므로 33행에서 잇는다
+    bb.bridge_rails(c_l['mid_gnd'], c_r['mid_gnd'], 31, kind='gnd', label="")
+    bb.bridge_rails(c_r['mid_gnd'], c_r['gnd'], 31, kind='gnd')
+    bb.bridge_rails(c_l['mid_vcc'], c_r['vcc'], 33, kind='vcc')
 
     bb.export(output_path, max_row=34)
 
