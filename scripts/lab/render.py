@@ -296,19 +296,21 @@ _PHOTO = {
 
 
 def _split_circuit_body(section):
-    """회로 본문을 (칩 상자, 미사용핀 줄, 산문) 으로 가른다.
+    """회로 본문을 (칩 상자, 산문) 으로 가른다.
 
     `- U<n> = <칩>` 이 상자의 제목이고 그 아래 들여쓴 `- ` 가 배선이다. 옛
     렌더러는 들여쓰기를 무시하고 전부 형제 번호로 만들어 **칩의 경계가 사라졌다**.
 
-    미사용핀 줄은 상자에서 빼내 별도 강조 박스로 보낸다 — 플로팅 입력이 이
-    과목의 대표 실패 원인인데 긴 목록의 마지막 두 줄로 묻혀 있었다.
+    미사용핀 줄은 배선 목록에서 빼내되 **칩 안에 남긴다**. 회로 단위로 한데
+    모으면 다칩 회로에서 같은 핀 번호가 정반대 지시를 동시에 받는다 — C4 의
+    pin 4 는 U5 기준 GND, U6 기준 개방이다. 어느 칩 것인지 인쇄본에 단서가
+    없으면 "출력을 GND 로 내려 칩을 죽이는" 바로 그 사고가 된다.
 
     `- U<n> =` 형태의 칩 선언이 하나도 없으면(실험10 처럼 `## U1 = ...` 헤딩을
     쓰는 결선도) 상자를 만들지 않고 본문 전체를 산문으로 흘린다. 조용히 버리는
     것보다 낫다.
     """
-    chips, unused, prose = [], [], []
+    chips, prose = [], []
     current = None
     for raw in section.body.split("\n"):
         line = raw.rstrip()
@@ -317,35 +319,41 @@ def _split_circuit_body(section):
             continue
         m = _CHIP_LINE.match(line)
         if m:
-            current = {"head": _plain(m.group(1)), "wires": []}
+            current = {"head": _plain(m.group(1)), "wires": [], "unused": []}
             chips.append(current)
             continue
         if stripped.startswith("- ") and line.startswith((" ", "\t")) and current:
             text = _plain(stripped[2:])
-            (unused if text.startswith("미사용") else current["wires"]).append(text)
+            key = "unused" if text.startswith("미사용") else "wires"
+            current[key].append(text)
             continue
         if line.startswith((" ", "\t")) and current and current["wires"]:
             current["wires"][-1] += " " + _plain(stripped)
             continue
         prose.append(line)
-    return chips, unused, "\n".join(prose)
+    return chips, "\n".join(prose)
 
 
 def _chip_swap(previous, current) -> str:
-    """칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다 (netlist M10)."""
+    """칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다 (netlist M10).
+
+    같은 칩이 다음 회로에도 쓰이면 패키지는 남지만 **점퍼선은 다르다** —
+    netlist 가 "항목마다 재배선해 쓰는 것"이라고 적는다. `그대로 둔다` 로만
+    적으면 배선까지 그대로 둬도 되는 것으로 읽힌다.
+    """
     if previous is None:
-        return "준비: " + ", ".join(current.ics) + " 를 꽂는다"
+        return "준비 — 꽂는다: " + ", ".join(current.ics)
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
-    parts = []
+    parts = ["앞 회로의 점퍼선을 모두 걷는다"]
     if remove:
         parts.append("뺀다: " + ", ".join(remove))
     if add:
         parts.append("꽂는다: " + ", ".join(add))
     if keep:
-        parts.append("그대로 둔다: " + ", ".join(keep))
-    return " · ".join(parts) or "칩 교체 없음"
+        parts.append("패키지는 두고 재배선한다: " + ", ".join(keep))
+    return " · ".join(parts)
 
 
 def _diagram_html(section, netlist) -> str:
@@ -404,19 +412,25 @@ def _circuit_tables(spec, section) -> str:
 def circuit_pages(spec, netlist) -> str:
     """회로마다 한 면. 강제 개쪽이라 회로 둘이 한 쪽을 나눠 쓰지 않는다.
 
-    면 안의 순서는 작업 순서다 — 칩 교체 → 결선도 → 배선 → 미사용핀 → 유의사항
-    → 측정표. `[결선도+배선]` 과 `[표]` 만 통짜로 유지하므로, 넘칠 때 갈리는
-    지점이 "다 꽂았다"는 순간과 일치한다.
+    면 안의 순서는 작업 순서다 — 칩 교체 → 유의사항 → 결선도 → 배선 → 미사용핀
+    → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을 배선 앞으로 옮겼다 —
+    그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
+    미사용핀 상자는 칩별로 낸다 — 회로 단위로 합치면 C4 처럼 같은 핀 번호가
+    칩마다 정반대 지시를 받을 때 어느 칩 것인지 사라진다.
     """
     out, previous = [], None
     total = len(netlist.circuits)
     for n, section in enumerate(netlist.circuits, start=1):
-        chips, unused, prose = _split_circuit_body(section)
+        chips, prose = _split_circuit_body(section)
         tables = ", ".join(section.tables)
+        item = next((i for i in spec.items if i.id == section.item), None)
+        device = f" · 판독: {', '.join(item.device)}" if item else ""
         out.append('<section class="circuit">')
         out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
-                   f"· 기록: {_esc(tables)}</h2>")
+                   f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
         out.append(f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>')
+        if prose.strip():
+            out.append(_blocks(prose))
         out.append('<div class="wirebox">')
         out.append(_diagram_html(section, netlist))
         for chip in chips:
@@ -425,12 +439,16 @@ def circuit_pages(spec, netlist) -> str:
                     for w in chip["wires"]]
             out.append("</ol></div>")
         out.append("</div>")
-        if unused:
-            out.append('<div class="unused"><b>배선을 끝내고 반드시 확인한다</b><ul>')
-            out += [f'<li><span class="box"></span>{_esc(u)}</li>' for u in unused]
-            out.append("</ul></div>")
-        if prose.strip():
-            out.append(_blocks(prose))
+        unused_chips = [c for c in chips if c["unused"]]
+        if unused_chips:
+            out.append('<div class="unused">'
+                       "<b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>")
+            for chip in unused_chips:
+                out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
+                out += [f'<li><span class="box"></span>{_esc(u)}</li>'
+                        for u in chip["unused"]]
+                out.append("</ul></div>")
+            out.append("</div>")
         out.append(_circuit_tables(spec, section))
         out.append("</section>")
         previous = section

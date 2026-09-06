@@ -19,16 +19,20 @@
   .banner { border: 2px solid #000; padding: 2mm 3mm; margin: 2mm 0 3mm;
             font-weight: 700; }
 
-  /* 결선도 + 배선을 한 덩어리로 유지한다. 넘치면 표만 다음 쪽으로 간다 —
-     그 분할 지점이 "다 꽂았다"는 순간과 일치한다. */
-  .wirebox { break-inside: avoid; }
-  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm; }
+  /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
+     그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
+     3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
+     칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
+  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
+                   break-inside: avoid; }
+  .wirebox img { break-after: avoid; }
   .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
   .wirebox ol { margin: 0; padding-left: 6mm; }
   .wirebox li { font-size: 11pt; line-height: 1.6; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  .unused .chipunused { margin-top: 2mm; }
 
   /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
      (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */

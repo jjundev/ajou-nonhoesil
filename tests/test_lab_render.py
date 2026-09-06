@@ -4,7 +4,8 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import parse_netlist
-from scripts.lab.render import circuit_pages, common_page, crop_rows, render_checklist
+from scripts.lab.render import (_esc, _plain, _split_circuit_body, circuit_pages,
+                                common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -142,6 +143,12 @@ class TestCircuitPages(unittest.TestCase):
             ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = circuit_pages(self.spec, self.netlist)
 
+    def _pages(self):
+        """회로 페이지를 하나씩 자른다. 문서 전체에서 찾으면 어느 회로 것인지
+        모르는 채로 통과한다."""
+        return [p.split("</section>")[0]
+                for p in self.html.split('<section class="circuit">')[1:]]
+
     def test_회로마다_개쪽_상자가_하나씩_나온다(self):
         self.assertEqual(self.html.count('<section class="circuit">'),
                          len(self.netlist.circuits))
@@ -164,24 +171,50 @@ class TestCircuitPages(unittest.TestCase):
         self.assertEqual(self.html.count("Breadboard.jpg"), 2)
         self.assertIn("브레드보드 작도", self.html)
 
-    def test_배선_번호가_회로마다_1부터_다시_센다(self):
-        """문서 전체 1~95 연속이면 '62번 배선 중'이 아무 의미도 없다."""
-        self.assertEqual(self.html.count('<ol start="1">'),
-                         self.html.count("<ol "))
+    def test_배선_번호가_칩마다_1부터_다시_센다(self):
+        """`<ol start="1">` 을 내는 곳이 한 군데뿐이라, 배선 전부를 한 목록에
+        몰아 칩 경계를 없애도 옛 단언은 통과했다. 목록 수 = 칩 수여야 한다."""
+        chips = sum(len(_split_circuit_body(c)[0]) for c in self.netlist.circuits)
+        self.assertGreaterEqual(chips, 9)
+        self.assertEqual(self.html.count('<ol start="1">'), chips)
 
     def test_칩이_자기_상자를_갖는다(self):
         """`U3 = 74HC08` 은 상자의 제목이지 배선 단계가 아니다."""
         self.assertIn('class="chip"', self.html)
         self.assertIn("U1 = 74HC08", self.html)
 
-    def test_미사용핀_처리가_별도_강조_박스로_나온다(self):
-        self.assertIn('class="unused"', self.html)
-        self.assertIn("개방", self.html)
+    def test_미사용핀_지시가_어느_칩_것인지_밝힌다(self):
+        """라벨이 없으면 다칩 회로에서 같은 핀이 정반대 지시를 동시에 받는다 —
+        C4 의 pin 4 는 U5 기준 GND, U6 기준 개방이다. 칩이 죽는 사고다."""
+        page = self._pages()[3]                     # C4 · NOR (74HC32 + 74HC02)
+        box = page[page.index('class="unused"'):]
+        self.assertIn("U5 = 74HC32", box)
+        self.assertIn("U6 = 74HC02", box)
+        self.assertIn("개방", box)
 
-    def test_회로별_경고가_그_회로_페이지에_온다(self):
-        for warning in ("교안 p12 회로도 그대로", "핀 순서에 주의", "다르면 배선 오류"):
+    def test_미사용핀_줄이_회로마다_하나도_빠지지_않는다(self):
+        """첫 칩의 미사용 줄만 버리는 변이가 조용히 통과하던 자리다.
+        플로팅 입력이 이 과목의 대표 실패 원인이라 개수를 센다."""
+        for page, circuit in zip(self._pages(), self.netlist.circuits):
+            expected = sum(1 for raw in circuit.body.split("\n")
+                           if raw.strip().startswith("- 미사용"))
+            with self.subTest(circuit=circuit.id):
+                self.assertGreater(expected, 0)
+                box = page[page.index('class="unused"'):]
+                self.assertEqual(box.count('<span class="box">'), expected)
+
+    def test_회로별_경고가_그_회로_페이지에만_온다(self):
+        """이름과 달리 문서 전체를 보던 자리다. 모든 산문을 회로 1 로 몰아넣는
+        변이가 통과했다 — C4 의 74HC02 경고가 C1 쪽에 찍혀도 잡히지 않는다."""
+        pages = self._pages()
+        for index, warning in ((2, "교안 p12 회로도 그대로"),
+                               (3, "핀 순서에 주의"),
+                               (4, "다르면 배선 오류")):
             with self.subTest(warning=warning):
-                self.assertIn(warning, self.html)
+                self.assertIn(warning, pages[index])
+                elsewhere = [n for n, p in enumerate(pages)
+                             if n != index and warning in p]
+                self.assertEqual(elsewhere, [])
 
     def test_사진_지시가_표마다_붙는다(self):
         self.assertIn("T1 row", self.html)
@@ -198,6 +231,34 @@ class TestCircuitPages(unittest.TestCase):
         for tid in ("T6", "T7", "T8", "T9"):
             with self.subTest(table=tid):
                 self.assertNotIn(f"{tid} ·", self.html)
+
+    def test_모든_배선_줄이_인쇄본에_온다(self):
+        """첫 칩만 싣는 변이가 58줄 중 26줄을 지워도 옛 테스트는 전부 통과했다.
+        가장 파괴적인 소실 모드라 원문 줄을 하나씩 대조한다."""
+        lines = [_esc(_plain(raw.strip()[2:]))
+                 for circuit in self.netlist.circuits
+                 for raw in circuit.body.split("\n")
+                 if raw.startswith((" ", "\t")) and raw.strip().startswith("- ")]
+        self.assertGreaterEqual(len(lines), 58)
+        for text in lines:
+            with self.subTest(line=text[:40]):
+                self.assertIn(text, self.html)
+
+    def test_빈_브레드보드_경로가_루트_접두사를_거친다(self):
+        """`../` 를 손으로 적으면 그림 자리만 비고 HTML 은 정상 렌더된다 —
+        눈으로는 놓친다. config.root_relative_prefix 의 docstring 이 2026-09
+        이동에서 정확히 이 방식으로 끊겼다고 기록한다."""
+        self.assertIn(f"{config.root_relative_prefix()}.claude/assets/Breadboard.jpg",
+                      self.html)
+
+    def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_바꿔_말하지_않는다(self):
+        """뺄 칩과 꽂을 칩을 서로 뒤바꾼 변이가 통과하던 자리다.
+        C2 는 74HC08 을 뽑고 74HC32 를 꽂는다."""
+        page = self._pages()[1]
+        start = page.index('class="banner"')
+        banner = page[start:page.index("</div>", start)]
+        self.assertIn("뺀다: 74HC08", banner)
+        self.assertIn("꽂는다: 74HC32", banner)
 
 
 class TestCrop(unittest.TestCase):
@@ -259,10 +320,12 @@ class TestPrintConstraints(unittest.TestCase):
         self.assertIsNotNone(rule, "`.box` 규칙이 없다")
         self.assertIn("4mm", rule.group(0))
 
-    def test_결선도와_배선이_한_덩어리로_유지된다(self):
-        """넘치면 표만 다음 쪽으로 가야 한다 — 그림과 배선이 갈리면 못 쓴다."""
-        rule = re.search(r"\.wirebox\s*\{[^}]*\}", TEMPLATE, re.S)
-        self.assertIsNotNone(rule, "`.wirebox` 규칙이 없다")
+    def test_칩_배선이_쪽_경계에서_갈리지_않는다(self):
+        """원자 단위는 칩 상자다. 결선도+배선 전체를 통짜로 묶으면 새 장을
+        열자마자 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다
+        (실측 16쪽 중 3장). 칩 하나의 배선만 갈리지 않으면 충분하다."""
+        rule = re.search(r"\.wirebox \.chip\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.wirebox .chip` 규칙이 없다")
         self.assertIn("break-inside: avoid", rule.group(0))
 
     def test_플레이스홀더_네_개가_있다(self):
