@@ -136,5 +136,15 @@ class RailBridge(unittest.TestCase):
         self.assertEqual(bad, [], "\n".join(bad))
 
 
+class ChipPinout(unittest.TestCase):
+    """빌더가 그리는 칩이 netlist 가 지정한 칩과 같은지 본다."""
+
+    def test_e1_or_은_74HC32_를_그린다(self):
+        chips = [ast.literal_eval(c.args[0])
+                 for c in _calls_in("build_e1_or", "draw_chip")]
+        self.assertEqual(chips, ["74HC32"],
+                         "netlist C2 는 74HC32 단일 칩이다")
+
+
 if __name__ == "__main__":
     unittest.main()

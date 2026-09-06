@@ -254,6 +254,48 @@ def build_e1_and(output_path, template_path=None):
     bb.export(output_path, max_row=30)
 
 
+def build_e1_or(output_path, template_path=None):
+    """실험 1-1 (2) · 3입력 OR (74HC32). netlist C2.
+
+    C1(AND) 과 위상이 같다 — 74HC32 는 74HC00·74HC08 과 같은 표준 DIP-14 쿼드
+    2입력 배치(1,2→3 / 4,5→6)를 쓴다. **그 핀아웃은 저장소 데이터시트로도
+    저장소 회로도로도 확인되지 않았다(netlist M1).** 실물 칩 각인을 벤더
+    데이터시트와 대조할 것.
+    """
+    bb = BreadboardRenderer(template_path)
+    bb.set_header("실험 1-1: 3-Input OR Gate 회로 결선도",
+                  "IC: 74HC32 (Quad 2-Input OR) · 다이오드 보호 330Ω 저항 필수")
+    bb.draw_chip("74HC32", 10)
+    bb.connect_power(10)
+    c = bb.cols['left']
+
+    bb.draw_wire([(c['b'], bb.r_y(10)), (c['a'], bb.r_y(10)), (c['a'], bb.r_y(5)), (95, bb.r_y(5))], (230, 90, 0, 255), width=3)
+    bb.draw_badge(12, bb.r_y(5) - 9, "입력 A (1A)", (255, 245, 235, 240), (210, 80, 0, 255))
+
+    bb.draw_wire([(c['b'], bb.r_y(11)), (c['a'] - 16, bb.r_y(11)), (c['a'] - 16, bb.r_y(6)), (95, bb.r_y(6))], (0, 120, 180, 255), width=3)
+    bb.draw_badge(12, bb.r_y(6) - 9, "입력 B (1B)", (235, 245, 255, 240), (0, 110, 170, 255))
+
+    bb.draw_wire([(c['b'], bb.r_y(14)), (c['a'], bb.r_y(14)), (c['a'], bb.r_y(7)), (95, bb.r_y(7))], (20, 150, 40, 255), width=3)
+    bb.draw_badge(12, bb.r_y(7) - 9, "입력 C (2B)", (235, 255, 235, 240), (20, 130, 30, 255))
+
+    bb.draw_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], (140, 40, 200, 255), width=4)
+    bb.draw_badge(c['c'] - 75, bb.r_y(12) + 1, "1단->2단 연결", (255, 245, 255, 230), (130, 30, 190, 255), font=bb.font_kr_sm)
+
+    bb.draw_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], (180, 40, 180, 255), width=2)
+    bb.draw_led(c['a'], bb.r_y(19), bb.r_y(20), color_rgb=(210, 140, 0), label="L1 중간 LED (A+B)")
+    bb.draw_resistor(c['a'], bb.r_y(20), bb.r_y(22), label="330Ω")
+    bb.draw_wire([(c['a'], bb.r_y(22)), (c['gnd'], bb.r_y(22))], (20, 60, 220, 255), width=2)
+
+    bb.draw_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], (220, 20, 70, 255), width=3)
+    bb.draw_led(c['c'], bb.r_y(24), bb.r_y(25), color_rgb=(220, 20, 20), label="L2 최종 LED (Y=A+B+C)")
+    bb.draw_resistor(c['c'], bb.r_y(25), bb.r_y(27), label="330Ω")
+    bb.draw_wire([(c['c'], bb.r_y(27)), (c['gnd'], bb.r_y(27))], (20, 60, 220, 255), width=2)
+
+    bb.connect_unused_inputs([9, 10, 12, 13], 10, bridge_row=29)
+    bb.mark_unused_outputs([8, 11], 10)
+    bb.export(output_path, max_row=30)
+
+
 def build_e1_nand(output_path, template_path=None):
     bb = BreadboardRenderer(template_path)
     bb.set_header("실험 1-2: 3-Input NAND Gate 회로 결선도", "IC: 74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · 330Ω 저항 필수")
@@ -767,15 +809,16 @@ def build_e2_all(output_dir, template_path=None):
 def main():
     parser = argparse.ArgumentParser(description="Breadboard Diagram Generator")
     parser.add_argument("--circuit", required=True, choices=[
-        "e1_and", "e1_nand", "e1_comb",
+        "e1_and", "e1_or", "e1_nand", "e1_comb",
         "e2_inv", "e2_schmitt", "e2_rn", "e2_rp", "e2_tpd", "e2_all"
-    ], help="Circuit ID")
+    ], help="Circuit ID to render")
     parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e2_all)")
     parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
     args = parser.parse_args()
     
     dispatch = {
         "e1_and": build_e1_and,
+        "e1_or": build_e1_or,
         "e1_nand": build_e1_nand,
         "e1_comb": build_e1_comb,
         "e2_inv": build_e2_inv,
