@@ -973,3 +973,41 @@ class TestContinuesBanner(unittest.TestCase):
     def test_첫_회로에는_continues_가_무의미하다(self):
         banner = self._banner(self._html("- continues: C1"), 0)
         self.assertIn("준비 — 꽂는다", banner)
+
+
+class TestRefsTables(unittest.TestCase):
+    """실험02 T7 은 T8(데이터시트 기준값, role: reference)과 대조하는 표다.
+    `tables` 에 넣으면 validate 가 error 를 내므로 갈 곳을 만든다."""
+
+    def _html(self, extra):
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T1]", f"- tables: [T1]\n{extra}")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        return circuit_pages(spec, parse_netlist(path))
+
+    def test_refs_표가_회로_페이지에_실린다(self):
+        html = self._html("- refs: [T6]")
+        self.assertIn("<h3>T6 ·", html)
+
+    def test_refs_표에_기록_칸이_없다(self):
+        """교안 이론표다 — 실험실에서 채우지 않는다."""
+        html = self._html("- refs: [T6]")
+        block = html[html.index("<h3>T6 ·"):]
+        block = block[:block.index("</div>")]
+        self.assertNotIn('class="check"', block)
+        self.assertNotIn('class="mismatch"', block)
+        self.assertNotIn("사진", block)
+        self.assertIn("참조", block)
+
+    def test_refs_표의_모든_행이_온다(self):
+        html = self._html("- refs: [T6]")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        block = html[html.index("<h3>T6 ·"):]
+        block = block[:block.index("</div>")]
+        self.assertEqual(block.count("<tr>"), len(spec.table("T6").rows) + 1)
+
+    def test_refs_가_없으면_참조표는_어디에도_없다(self):
+        """뮤테이션으로 무는 자리 — 필터를 지워도 실물로는 발화하지 않는다."""
+        self.assertNotIn("<h3>T6 ·", self._html(""))

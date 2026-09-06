@@ -320,6 +320,17 @@ def check_netlist_circuits(netlist, spec) -> list:
                         f"없다. 정의된 회로: {sorted(known_circuits)}. 배너가 "
                         "'뜯지 말라'고 지시하는 대상이라 없는 회로를 가리키면 "
                         "실험실에서 무엇을 남겨야 할지 알 수 없다"))
+        for table_id in circuit.refs:
+            if table_id not in known_tables:
+                out.append(Finding("error", where,
+                    f"refs 가 없는 표 {table_id} 를 가리킨다. "
+                    f"정의된 표: {sorted(known_tables)}"))
+            elif spec.table(table_id).role != "reference":
+                out.append(Finding("error", where,
+                    f"refs 가 {table_id} 를 가리키는데 그것은 기록 대상 표다 — "
+                    "방향이 반대다. 실험실에서 채우는 표는 tables 로 간다. "
+                    "refs 는 role: reference 표를 회로 페이지에 읽기 전용으로 "
+                    "싣는 자리다 (실험02 T7 이 대조하는 T8 같은 것)"))
         if not circuit.diagram:
             out.append(Finding("warn", where,
                 "diagram 이 없다 — 인쇄본에 빈 브레드보드가 대신 들어간다. "

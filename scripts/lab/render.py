@@ -598,6 +598,18 @@ def _circuit_tables(spec, section) -> str:
                    f"{_esc(_PHOTO[table.kind].format(tid=table.id))}</p>")
         out.append(_mismatch_html(table.kind))
         out.append("</div>")
+    for table_id in section.refs:
+        table = spec.table(table_id)
+        if table is None:
+            continue                  # validate 가 error 로 잡는다
+        out.append('<div class="tblock">')
+        out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)} — 참조</h3>")
+        out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
+        # 기록 칸·미니표·사진 지시를 붙이지 않는다. 교안·데이터시트에서 옮긴
+        # 이론표라 실험실에서 채우는 물건이 아니다 — 옆 표(실험02 T7)가 대조할
+        # 기준값일 뿐이다.
+        out.append(_md_table_html(table))
+        out.append("</div>")
     return "\n".join(out)
 
 

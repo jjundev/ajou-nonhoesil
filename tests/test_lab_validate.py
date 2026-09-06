@@ -1239,5 +1239,29 @@ class ContinuesValidation(unittest.TestCase):
         self.assertIn("자기 자신", hits[0].message)
 
 
+class RefsValidation(unittest.TestCase):
+    def _findings(self, extra):
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T1]", f"- tables: [T1]\n{extra}")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        return validate.check_netlist_circuits(parse_netlist(path), spec)
+
+    def test_기록_대상_표를_refs_로_가리키면_error(self):
+        """방향이 반대다 — 기록할 표는 `tables` 로 간다."""
+        hits = [f for f in self._findings("- refs: [T2]") if "refs" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("tables", hits[0].message)
+
+    def test_없는_표를_refs_로_가리키면_error(self):
+        hits = [f for f in self._findings("- refs: [T99]") if "refs" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+
+    def test_참조표를_refs_로_가리키면_조용하다(self):
+        self.assertEqual(
+            [f for f in self._findings("- refs: [T6]") if "refs" in f.message], [])
+
+
 if __name__ == "__main__":
     unittest.main()

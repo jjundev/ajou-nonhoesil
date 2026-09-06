@@ -209,5 +209,25 @@ class ContinuesField(unittest.TestCase):
         self.assertIsNone(netlist.circuits[0].continues)
 
 
+class RefsField(unittest.TestCase):
+    def _netlist(self, extra):
+        text = ("---\nschema: lab-netlist/v1\nweek: 3\nexperiment: 2\n"
+                "spec: ../체크리스트/명세.md\n---\n\n"
+                "# C1 · tpd\n\n- kind: circuit\n- id: C1\n- item: E2.P4\n"
+                f"- tables: [T7]\n{extra}\n\n- U1 = 74HC04\n  - pin 14 → VCC\n")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return parse_netlist(path)
+
+    def test_refs_를_리스트로_읽는다(self):
+        self.assertEqual(self._netlist("- refs: [T8]").circuits[0].refs, ["T8"])
+
+    def test_없으면_빈_리스트다(self):
+        self.assertEqual(self._netlist("").circuits[0].refs, [])
+
+    def test_스칼라도_리스트로_감싼다(self):
+        self.assertEqual(self._netlist("- refs: T8").circuits[0].refs, ["T8"])
+
+
 if __name__ == "__main__":
     unittest.main()

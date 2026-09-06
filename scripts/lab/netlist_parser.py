@@ -49,6 +49,7 @@ class NetlistSection:
     tables: list = field(default_factory=list)
     diagram: Optional[str] = None
     continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
+    refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
 
     @property
     def ics(self) -> list:
@@ -122,11 +123,15 @@ def _parse_section(title, block, line, path) -> NetlistSection:
     tables = md.parse_value(attrs["tables"])
     if not isinstance(tables, list):
         tables = [tables]
+    refs = md.parse_value(attrs["refs"]) if attrs.get("refs") else []
+    if not isinstance(refs, list):
+        refs = [refs]
     return NetlistSection(
         kind=kind, title=title, body=body, line=line,
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
         diagram=attrs.get("diagram") or None,
         continues=attrs.get("continues") or None,
+        refs=[str(r) for r in refs],
     )
 
 
