@@ -163,6 +163,26 @@ class TestCommonPage(unittest.TestCase):
                          self.html.count("<tr><td class=\"box\"></td>"))
         self.assertEqual(self.html.count("M10"), 1)
 
+    def test_미확정_표가_앞뒤_문단을_붙이지_않는다(self):
+        """표 줄을 지워 버리면 표가 유일한 구분자였던 두 문단이 한 문단으로
+        합쳐진다. 실험01 의 미확정 절은 표 앞에 빈 줄이 있어 실물로는 발화하지
+        않지만, 다른 주차가 표를 문단 사이에 바로 끼우는 순간 문장이 붙는다."""
+        section = NetlistSection(
+            kind="open-issues", title="미확정 사항", line=1,
+            body=("앞 문단이다.\n"
+                  "| 항목 | 내용 |\n|---|---|\n| M1 | 값 |\n"
+                  "뒤 문단이다.\n"))
+        netlist = self.netlist
+        original = netlist.sections
+        try:
+            netlist.sections = [section]
+            html = common_page(self.spec, netlist)
+        finally:
+            netlist.sections = original
+        self.assertIn("<p>앞 문단이다.</p>", html)
+        self.assertIn("<p>뒤 문단이다.</p>", html)
+        self.assertNotIn("앞 문단이다. 뒤 문단이다", html)
+
 
 class TestCircuitPages(unittest.TestCase):
     """회로 하나 = 결선도 + 배선 + 유의사항 + 측정표. 실험실의 작업 단위는

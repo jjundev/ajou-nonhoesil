@@ -229,10 +229,12 @@ def common_page(spec, netlist) -> str:
 
     for section in netlist.of_kind("open-issues"):
         out.append(f"<h2>{_esc(_plain(section.title))} — 실험실에서 확인할 것</h2>")
-        # 표는 아래에서 체크박스를 붙여 따로 렌더한다. `_blocks` 에 그대로 넘기면
-        # 체크박스 없는 사본이 앞에 한 번 더 찍힌다.
-        prose = "\n".join(line for line in section.body.split("\n")
-                          if not line.strip().startswith("|"))
+        # 표 줄을 **빈 줄로 바꾼다.** 지워 버리면 표가 유일한 구분자였던 두
+        # 문단이 한 문단으로 합쳐진다 — `_blocks` 는 빈 줄에서만 문단을 끊는다.
+        # 표는 아래에서 체크박스를 붙여 따로 렌더한다. `_blocks` 에 그대로
+        # 넘기면 체크박스 없는 사본이 앞에 한 번 더 찍힌다.
+        prose = "\n".join("" if line.strip().startswith("|") else line
+                          for line in section.body.split("\n"))
         out.append(_blocks(prose))
         for table in md.parse_tables(section.body):
             out.append(_md_table_html(table, lead_checkbox=True))
