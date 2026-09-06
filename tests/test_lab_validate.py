@@ -21,8 +21,7 @@ def spec_from(text):
 
 
 HEAD = """---
-schema: lab-spec/v1
-week: 2
+schema: lab-spec/v2
 experiment: 1
 title: Basic Gates
 source_manual: from_the_past/정리/강의노트/실험1.pdf
@@ -303,8 +302,7 @@ class TestNetlistCircuits(unittest.TestCase):
     """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다."""
 
     HEAD = """---
-schema: lab-netlist/v1
-week: 2
+schema: lab-netlist/v2
 experiment: 1
 spec: ../체크리스트/명세.md
 ---
@@ -632,8 +630,7 @@ class FolderConventionTest(unittest.TestCase):
         path = d / "명세.md"
         path.write_text(
             "---\n"
-            "schema: lab-spec/v1\n"
-            f"week: 2\n"
+            "schema: lab-spec/v2\n"
             f"experiment: {experiment}\n"
             "title: Basic Gates\n"
             "source_manual: x.pdf\n"
@@ -1181,7 +1178,7 @@ class NetlistCircuitWiring(unittest.TestCase):
     진짜 조용한 손실은 '칩 선언이 아예 없다'와 '칩에 배선이 하나도 없다'다."""
 
     def _netlist(self, circuit_body):
-        text = ("---\nschema: lab-netlist/v1\nweek: 2\nexperiment: 1\n"
+        text = ("---\nschema: lab-netlist/v2\nexperiment: 1\n"
                 "spec: ../체크리스트/명세.md\n---\n\n"
                 "# C1 · 시험\n\n- kind: circuit\n- id: C1\n"
                 "- item: E1.P1-1\n- tables: [T1]\n\n" + circuit_body)

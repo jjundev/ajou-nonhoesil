@@ -14,7 +14,7 @@ class TestWeek2Record(unittest.TestCase):
         self.text = derive_record(self.spec)
 
     def test_frontmatter_marks_it_unfilled(self):
-        self.assertIn("schema: lab-record/v1", self.text)
+        self.assertIn("schema: lab-record/v2", self.text)
         self.assertIn("filled_by: ~", self.text)
 
     def test_expected_column_is_labelled_and_check_column_is_blank(self):
@@ -123,10 +123,10 @@ class RecordTitleTest(unittest.TestCase):
         self.assertEqual(heading, "# 실험1 Basic Gates 기록")
         self.assertNotIn("주차", heading)
 
-    def test_week_는_프론트매터에_그대로_남는다(self):
-        # 제목에서 뺐다고 메타데이터까지 버리지는 않는다.
+    def test_week_는_v2에서_아예_없다(self):
+        # v1 은 week 를 프론트매터에 남겼다 — v2 는 필드 자체를 걷어낸다.
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
-        self.assertIn("week: 2", derive_record(spec))
+        self.assertNotIn("week:", derive_record(spec))
 
 
 class RecordKindCells(unittest.TestCase):

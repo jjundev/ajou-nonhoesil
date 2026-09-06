@@ -1,4 +1,4 @@
-# lab-spec/v1 — 실험 명세 스키마
+# lab-spec/v2 — 실험 명세 스키마
 
 Task 1 에서 실험1(truth-table)·실험10(capture + stepped)·실험6(심볼릭 토큰)
 세 건으로 시험해 확정했다. `scripts/lab/spec_parser.py` 가 이 계약을 구현한다.
@@ -16,13 +16,20 @@ Task 1 에서 실험1(truth-table)·실험10(capture + stepped)·실험6(심볼�
 
 | 필드 | 필수 | 값 |
 |---|---|---|
-| `schema` | ● | `lab-spec/v1` 고정 |
-| `week` | ● | 정수 |
+| `schema` | ● | `lab-spec/v2` 고정 |
 | `experiment` | ● | 정수 |
 | `title` | ● | 문자열 |
 | `source_manual` | ● | 교안 PDF 경로 (저장소 루트 기준 상대경로) |
 | `power` | ● | 전원 레일 이름 → 전압 문자열의 **열린 맵**. 회로가 실제로 쓰는 레일을 전부 싣는다 (예: `{VCC: "+5V", GND: "GND"}`, `{VCC: "+5V", V15: "+15V", GND: "GND"}`). 레일 이름에 고정 enum 은 없다 |
 | `items` | ● | 항목 리스트 |
+
+### v1 에서 무엇이 바뀌었나
+
+`week` 필드가 사라졌다. 주차는 한 날에 실험이 둘인 경우(9/18 실험2·3)를
+표현할 수 없었고, 실험이 없는 주(추석·중간고사)를 예외 표로 따로 관리하게
+만들었다. 일정은 이제 `scripts/lab/config.py` 의 `EXPERIMENT_DATES` 한 곳에만
+있고, 산출물은 `experiment` 번호로 그것을 조회한다. **날짜를 프론트매터에도
+적지 않는다** — 두 곳에 두면 한 곳만 고쳐진다.
 
 ### `power` — 레일이 여러 개인 회로 (세 번째 파손)
 
@@ -188,8 +195,8 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 
 | 거절 사유 | 함수 |
 |---|---|
-| `schema` 가 `lab-spec/v1` 이 아니다 | `parse_spec` |
-| 프론트매터 필수 필드(`week`·`experiment`·`title`·`source_manual`·`power`·`items`) 부재 | `parse_spec` |
+| `schema` 가 `lab-spec/v2` 이 아니다 | `parse_spec` |
+| 프론트매터 필수 필드(`experiment`·`title`·`source_manual`·`power`·`items`) 부재 | `parse_spec` |
 | `kind` 가 `truth-table`\|`stepped`\|`capture` 밖 | `_parse_table` |
 | `capture` 표에 마크다운 표가 있다 | `_parse_table` |
 | `capture` 가 아닌 표에 마크다운 표가 없다 | `_parse_table` |
@@ -278,7 +285,7 @@ D0 D1 D2 D3               신호 이름
 - 진단 문장은 `source` 에 교안 쪽을 달 수 없다. 달 곳이 없다는 것 자체가
   **대조되지 않은 문장이라는 표시**다.
 
-## v1 에 없는 것 (의도적)
+## v2 에 없는 것 (의도적)
 
 - `value_type` — `kind` 와 토큰 집합으로 흡수됐다
 - `numeric` / `DMM` kind — 전 코퍼스 실측 수치가 2개뿐이라 폐기 (스펙 §개정 근거)
@@ -289,9 +296,9 @@ D0 D1 D2 D3               신호 이름
 
 ---
 
-# lab-netlist/v1 (부속)
+# lab-netlist/v2 (부속)
 
-결선도는 별도 스키마다. 프론트매터는 `schema`·`week`·`experiment`·`spec`(명세 상대경로)
-넷이고 본문은 자유 형식이되 **항목마다 VCC·GND·미사용 입력핀 처리를 반드시 적는다.**
+결선도는 별도 스키마다. 프론트매터는 `schema`·`experiment`·`spec`(명세 상대경로)
+셋이고 본문은 자유 형식이되 **항목마다 VCC·GND·미사용 입력핀 처리를 반드시 적는다.**
 이 과목의 대표 실패 원인이 플로팅 입력이기 때문이다. 핀아웃의 출처(실물 데이터시트인지
 표준 배치 가정인지)를 명시하고, 가정이면 미확정 사항 표에 올린다.

@@ -54,7 +54,7 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    `parse_netlist` 가 `NetlistError` 를 던지면 그 결선도에 회로 메타가 없는
    것이다. **예외 메시지를 그대로 사용자에게 전하고 멈춘다** — 옛 방식으로
    대충 렌더하지 않는다. 백필 방법은 메시지가 담고 있고 계약은
-   `docs/schema/lab-netlist-v1.md` 다.
+   `docs/schema/lab-netlist-v2.md` 다.
 
 3. **기록 템플릿 파생.**
 

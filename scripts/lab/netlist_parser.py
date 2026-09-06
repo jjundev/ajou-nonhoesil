@@ -1,4 +1,4 @@
-"""`netlist.md` → `LabNetlist`. 필드 계약은 `docs/schema/lab-netlist-v1.md` 가 정본이다.
+"""`netlist.md` → `LabNetlist`. 필드 계약은 `docs/schema/lab-netlist-v2.md` 가 정본이다.
 
 `spec_parser` 와 같은 분업을 지킨다 — 이 파서는 **표현할 수 없는 것에만** 예외를
 던지고(알 수 없는 kind, 회로인데 id 가 없음), 의미 결함(없는 항목을 가리킴, 그림
@@ -30,7 +30,7 @@ IC_DECL = re.compile(r"(U\d+)[ \t]*=[ \t]*(`[^`\n]+`|[^\s(,`\n]+)")
 
 _BACKFILL = (
     "`# ` 절마다 `- kind:` 를 적고, 회로 절에는 `- id:`·`- item:`·`- tables:` 를 "
-    "채운다. 계약은 docs/schema/lab-netlist-v1.md 다"
+    "채운다. 계약은 docs/schema/lab-netlist-v2.md 다"
 )
 
 
@@ -69,7 +69,6 @@ class NetlistSection:
 
 @dataclass
 class LabNetlist:
-    week: int
     experiment: int
     spec: str
     sections: list
@@ -139,11 +138,12 @@ def parse_netlist(path) -> LabNetlist:
     path = Path(path)
     text = path.read_text(encoding="utf-8")
     front, body = md.split_frontmatter(text)
-    if front.get("schema") != "lab-netlist/v1":
+    if front.get("schema") != "lab-netlist/v2":
         raise NetlistError(
-            f"{path}: schema 가 lab-netlist/v1 이 아닙니다 ({front.get('schema')!r})"
+            f"{path}: schema 가 lab-netlist/v2 가 아닙니다 ({front.get('schema')!r}). "
+            "v1 은 `week:` 를 요구했다 — 일정은 이제 config.EXPERIMENT_DATES 한 곳에만 산다"
         )
-    for required in ("week", "experiment", "spec"):
+    for required in ("experiment", "spec"):
         if front.get(required) is None:
             raise NetlistError(f"{path}: 프론트매터에 {required} 가 없습니다")
 
@@ -176,5 +176,5 @@ def parse_netlist(path) -> LabNetlist:
             f"한 쪽을 낸다. {_BACKFILL}"
         )
 
-    return LabNetlist(week=front["week"], experiment=front["experiment"],
+    return LabNetlist(experiment=front["experiment"],
                       spec=front["spec"], sections=sections, path=path, text=text)

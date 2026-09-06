@@ -6,7 +6,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 # draft-lab-spec
 
 저장소에서 **명세를 만드는 유일한 스킬**이다. 나머지 여덟은 전부 소비만
-한다. 산출물의 계약서는 `docs/schema/lab-spec-v1.md` 이고, 이 문서는 그
+한다. 산출물의 계약서는 `docs/schema/lab-spec-v2.md` 이고, 이 문서는 그
 계약서를 **어떤 순서로 채우는가**만 정한다.
 
 ## 인자
@@ -26,7 +26,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    오염이 있다. 다른 실물 자료가 그것뿐이면 `docs/corpus-audit/` 의 대조
    기록을 먼저 읽고, 다수결로만·연도를 밝혀 쓴다. 단일 제출본을 근거로
    삼지 않는다.
-2. **판독 규칙을 이 문서에 베끼지 않는다.** `docs/schema/lab-spec-v1.md`
+2. **판독 규칙을 이 문서에 베끼지 않는다.** `docs/schema/lab-spec-v2.md`
    의 "교안 판독 규칙"·"교안에서 오지 않은 문장"·"셀 값"·"표기" 네 절을
    저작 전에 읽는다. 계약서가 한 곳이어야 개정이 한 번에 먹는다.
 3. **표가 있는 쪽은 텍스트와 vision 을 둘 다 읽어 대조한다.** "수상하면
@@ -236,7 +236,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    프론트매터는 `schema`·`week`·`experiment`·`title`·`source_manual`·
    `power`(레일 이름 → 전압의 **열린 맵**)·`items[]` 다.
 
-   - 표 ID 는 계약상 유일하기만 하면 된다(`docs/schema/lab-spec-v1.md`).
+   - 표 ID 는 계약상 유일하기만 하면 된다(`docs/schema/lab-spec-v2.md`).
      **새로 저작할 때는** 읽기 편하도록 `T1` 부터 본문 등장 순서로
      붙인다 — 이것은 저작 관례이지 계약이 아니다. 실험01 의 비순차
      번호(T1,T2,T6,…)는 재번호 금지 지시가 남긴 흔적이니 따라 하지
@@ -318,7 +318,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    ### 결선도 절에 회로 메타를 단다 (`lab-netlist/v1`)
 
    모든 `# ` 절이 속성 리스트로 시작해야 한다. 없으면 ① `prep-lab-checklist` 가
-   인쇄본을 못 낸다. 계약은 `docs/schema/lab-netlist-v1.md` 다.
+   인쇄본을 못 낸다. 계약은 `docs/schema/lab-netlist-v2.md` 다.
 
    - 공통 규칙 절 → `- kind: common`
    - 참조 핀아웃 표가 있는 절 → `- kind: lookup` (공통면에 실린다)
@@ -430,7 +430,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
 | `# 미확정 사항` | `open-issues` | `M1`~ 번호를 매긴 표. `| 항목 | 내용 | 확인 방법 |`. 명세 쪽 미확정도 여기로 모은다. 인쇄본 공통면에 체크박스로 실린다 |
 
 프론트매터는 `schema: lab-netlist/v1` · `week` · `experiment` · `spec` 네 줄이다
-(`docs/schema/lab-netlist-v1.md`). 빠지면 `parse_netlist` 가 거절한다.
+(`docs/schema/lab-netlist-v2.md`). 빠지면 `parse_netlist` 가 거절한다.
 
 ## 비-목표
 

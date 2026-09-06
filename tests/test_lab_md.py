@@ -159,8 +159,7 @@ class TestRealSpecFiles(unittest.TestCase):
     def test_week2_spec_parses(self):
         text = (ROOT / config.experiment_dir(1) / "체크리스트/명세.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
-        self.assertEqual(fm["schema"], "lab-spec/v1")
-        self.assertEqual(fm["week"], 2)
+        self.assertEqual(fm["schema"], "lab-spec/v2")
         self.assertEqual(fm["experiment"], 1)
         self.assertEqual(len(fm["items"]), 3)
         # 느슨한 하한은 회귀를 놓친다 — Task 1 픽스처의 실제 개수로 고정한다

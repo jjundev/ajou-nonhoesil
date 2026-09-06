@@ -1,6 +1,5 @@
 ---
-schema: lab-netlist/v1
-week: 4
+schema: lab-netlist/v2
 experiment: 3
 spec: ../체크리스트/명세.md
 ---
