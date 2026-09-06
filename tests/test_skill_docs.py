@@ -317,6 +317,13 @@ class SkillDocInvariants(unittest.TestCase):
         # 경로가 실재해야 한다 — 문서만 고치고 폴더가 사라지면 무의미하다.
         self.assertTrue((ROOT / DATASHEET_DIR).is_dir(), DATASHEET_DIR)
 
+    def test_the_fresh_review_loops_back_to_validation(self):
+        # 9단계에서 수용한 지적을 고치면 5·7단계 검증이 보는 자리(셀·토큰
+        # 규약 표·미확정 표)가 바뀐다. 그런데 그 두 단계의 "error 0 까지
+        # 반복" 은 이미 지나갔다 — 다시 돌리라고 적어 두지 않으면 방금
+        # 만든 error 를 못 본 채 10단계 보고로 직행한다.
+        self.assertIn("고쳤으면 5·7단계 검증을 다시 돌린다", self.flat["명세"])
+
     def test_breadboard_template_path_and_home_are_pinned(self):
         # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
         rows = [ln for ln in self.docs["예보"].splitlines()
