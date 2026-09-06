@@ -84,6 +84,28 @@ class TestChecklistHtml(unittest.TestCase):
                 self.assertIn(_esc(item), self.html)
 
 
+class TestPlainStrikethrough(unittest.TestCase):
+    """실험05 미확정 표가 닫힌 항목을 취소선(`~~`)으로 표시한다. `_plain` 이
+    `*`·백틱처럼 벗기지 않으면 물결표째 인쇄본에 찍힌다."""
+
+    def test_물결표_두_개짜리_취소선을_벗긴다(self):
+        self.assertEqual(_plain("~~닫힌 항목~~ — 사유"), "닫힌 항목 — 사유")
+
+    def test_낱개_물결표는_지우지_않는다(self):
+        """실험10 이 `p15~p16` 처럼 쪽 범위 구분자로 낱개 `~` 를 쓴다 — 짝
+        없는 `~` 까지 지우면 그 범위 표기가 붙어 버린다."""
+        self.assertEqual(_plain("교안 p15~p16."), "교안 p15~p16.")
+
+    def test_실물_미확정_표의_취소선을_벗긴다(self):
+        """실험05 netlist 의 M1 이 실물로 취소선을 담은 유일한 셀이다."""
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(5) / "결선도/netlist.md")
+        spec = parse_spec(ROOT / config.experiment_dir(5) / "체크리스트/명세.md")
+        html = common_page(spec, netlist)
+        self.assertNotIn("~~", html)
+        self.assertIn("74HC148", html)
+
+
 class TestCapturePage(unittest.TestCase):
     """파형은 셀 표가 아니다. `expected` 산문이 판정 기준 전부이고, 판독 조건이
     없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다."""
@@ -386,6 +408,14 @@ class TestCircuitPages(unittest.TestCase):
 
     def test_불일치_행_미니표가_표마다_붙는다(self):
         self.assertEqual(self.html.count('class="mismatch"'), 5)
+
+    def test_미니표가_자기_제목을_가진다(self):
+        """미니표가 표 제목에서 떨어져 쪽을 넘어가면(실험10 PDF 17쪽처럼)
+        `이상 스텝 | 관찰한 것 | 짐작된 원인` 만 홀로 남는, 문맥 없는 3열
+        표가 된다. 표 앞에 `<h4>표ID · 종류</h4>` 를 붙여 자기 제목을 준다."""
+        for tid in re.findall(r'<h3>(T\d+)', self.html):
+            with self.subTest(table=tid):
+                self.assertIn(f"<h4>{tid} · 불일치 기록</h4>", self.html)
 
     def test_사진_부착_2열_상자가_사라졌다(self):
         """실험실에서 사진을 붙일 수 없다. 보고서 배치는 ④ 가 한다."""
@@ -1068,7 +1098,7 @@ class TestRefsTables(unittest.TestCase):
 
 
 class Test실험10배선전수(unittest.TestCase):
-    """배선 138줄이 전부 표 안인 유일한 주차다. 첫 칩·첫 표만 싣는 변이가
+    """배선 51행이 전부 표 안인 유일한 주차다. 첫 칩·첫 표만 싣는 변이가
     가장 파괴적인 소실 모드라 원문 셀을 하나씩 대조한다.
 
     개수는 리터럴로 박는다. `_circuit_body` 가 센 값으로 대조하면 파서와

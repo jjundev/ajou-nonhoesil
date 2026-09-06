@@ -39,6 +39,7 @@ def crop_rows(netlist_text: str) -> int:
 
 _EMPHASIS = re.compile(r"\*{1,2}([^*]+)\*{1,2}")
 _CODE = re.compile(r"`([^`]+)`")
+_STRIKE = re.compile(r"~{2}([^~]+)~{2}")
 
 
 def _esc(text) -> str:
@@ -52,8 +53,13 @@ def _plain(text: str) -> str:
     짝이 맞는 것을 먼저 벗기고, 남은 낱개 기호도 지운다 — 여러 줄에 걸친
     코드 스팬은 줄을 합친 뒤에도 짝이 안 맞을 수 있다. 이 도메인에서 `*` 와
     백틱은 내용이 아니라 항상 표기다.
+
+    `~~` 취소선도 짝이 맞을 때만 벗긴다 — 실험05 미확정 표가 닫힌 항목을
+    취소선으로 표시하는데, 안 벗기면 물결표째 인쇄본에 찍힌다. 낱개 `~` 는
+    `*`·백틱과 달리 지우지 않는다 — 실험10 이 `p15~p16` 처럼 쪽 범위
+    구분자로 흔히 쓴다. 짝 없는 `~` 를 지우면 그 범위 표기가 붙어 버린다.
     """
-    text = _CODE.sub(r"\1", _EMPHASIS.sub(r"\1", text))
+    text = _STRIKE.sub(r"\1", _CODE.sub(r"\1", _EMPHASIS.sub(r"\1", text)))
     return text.replace("`", "").replace("*", "")
 
 
@@ -280,13 +286,6 @@ def common_page(spec, netlist) -> str:
     옛 렌더러는 그것을 배선 단계 7~11번으로 찍었다.
     """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
-    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구는 "미사용 입력핀은
-    # 전부 GND" 였는데 주차의 절반에서 거짓이다 — 실험02 는 교안 p8 도면대로
-    # pin 9·11·13 을 **VCC** 로 올리고("이 주차는 '전부 GND' 가 아니다"),
-    # 실험06 은 active-low 비동기 입력(`SD`·`RD`·`PRE`·`CLR`)을 VCC 로 올린다
-    # (GND 로 내리면 그 F/F 이 영구히 preset/clear 에 걸린다). 이 줄은 학생이
-    # 실험실에서 가장 먼저 읽는 줄이라, 틀리면 그대로 잘못 배선한다. 주차별
-    # 규칙은 결선도의 `kind: common` 절이 담고 바로 아래 같은 쪽에 인쇄된다.
     # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구는 "미사용 입력핀은
     # 전부 GND" 였는데 주차의 절반에서 거짓이다 — 실험02 는 교안 p8 도면대로
     # pin 9·11·13 을 **VCC** 로 올리고("이 주차는 '전부 GND' 가 아니다"),
@@ -588,19 +587,28 @@ _MISMATCH = {
 _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: ________________________________"
 
 
-def _mismatch_html(kind: str) -> str:
+_MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
+
+
+def _mismatch_html(kind: str, table_id: str) -> str:
     """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다.
 
     kind 마다 열이 다르다. 스텝표에는 예상값이 없으므로 `예상`·`불일치 행` 열이
     설 자리가 없고, `capture` 는 아예 미니표를 갖지 않는다 — 파형에는 행도
     스텝도 없다. 그 자리는 `_capture_html` 의 `예상과 다른 점` 상자가 맡는다.
+
+    표 앞에 `<h4>표ID · 종류</h4>` 를 붙여 자기 제목을 준다 — 표 제목은 앞
+    쪽에 있어 쪽을 넘어가면(실험10 PDF 17쪽) `이상 스텝 | 관찰한 것 |
+    짐작된 원인` 만 홀로 남는, 문맥 없는 3열 표가 된다.
     """
     head = _MISMATCH.get(kind)
     if head is None:
         return ""
+    title = _MISMATCH_TITLE[kind]
     cells = "".join(f"<th>{_esc(h)}</th>" for h in head)
     body = "".join("<tr>" + "<td></td>" * len(head) + "</tr>" for _ in range(3))
-    return (f'<table class="mismatch"><thead><tr>{cells}</tr></thead>'
+    return (f"<h4>{_esc(table_id)} · {title}</h4>"
+            f'<table class="mismatch"><thead><tr>{cells}</tr></thead>'
             f"<tbody>{body}</tbody></table>")
 
 
@@ -625,7 +633,7 @@ def _circuit_tables(spec, section) -> str:
             out.append(_truth_table_html(table))
         out.append(f"<p class='photo'>"
                    f"{_esc(_PHOTO[table.kind].format(tid=table.id))}</p>")
-        out.append(_mismatch_html(table.kind))
+        out.append(_mismatch_html(table.kind, table.id))
         out.append("</div>")
     for table_id in section.refs:
         table = spec.table(table_id)
