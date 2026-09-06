@@ -268,6 +268,53 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
+def check_netlist_circuits(netlist, spec) -> list:
+    """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다.
+
+    `check_netlist` 는 건드리지 않는다 — 다섯 스킬이 그것을 부르고, 회로 메타를
+    요구하는 것은 인쇄본을 내는 ① `prep-lab-checklist` 뿐이다. 요구를 필요한
+    자리에만 둔다. 그것에 요구를 넣으면 아직 백필하지 않은 다섯 주차에서
+    ③④⑤⑧ 이 동시에 멈춘다.
+
+    결선도 부재는 **warn 이지 error 가 아니다.** 그림 없이도 배선 목록과 빈
+    브레드보드로 실험은 된다. 다만 조용히 빈칸으로 나가면 인쇄 후에야 눈으로
+    발견하므로 시끄럽게 알린다.
+    """
+    out = []
+    known_items = {i.id for i in spec.items}
+    known_tables = {t.id for t in spec.tables}
+    covered = set()
+
+    for circuit in netlist.circuits:
+        where = f"{netlist.path.name}:{circuit.id}"
+        if circuit.item not in known_items:
+            out.append(Finding("error", where,
+                f"item {circuit.item!r} 이 명세에 없다. "
+                f"정의된 항목: {sorted(known_items)}"))
+        for table_id in circuit.tables:
+            if table_id not in known_tables:
+                out.append(Finding("error", where,
+                    f"없는 표 {table_id} 를 가리킨다. "
+                    f"정의된 표: {sorted(known_tables)}"))
+            else:
+                covered.add(table_id)
+        if not circuit.diagram:
+            out.append(Finding("warn", where,
+                "diagram 이 없다 — 인쇄본에 빈 브레드보드가 대신 들어간다. "
+                "breadboard-diagram 스킬로 결선도를 먼저 렌더한다"))
+        elif not (netlist.path.parent / circuit.diagram).exists():
+            out.append(Finding("warn", where,
+                f"diagram 파일이 없다: {circuit.diagram}. breadboard-diagram "
+                "스킬로 렌더하거나 diagram 줄을 지운다"))
+
+    for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
+                           - covered):
+        out.append(Finding("warn", netlist.path.name,
+            f"기록 대상 표 {table_id} 를 가리키는 회로가 없다 — "
+            "인쇄본은 회로를 통해서만 표를 싣는다. 그대로 두면 조용히 빠진다"))
+    return out
+
+
 _STRAY_MARKDOWN = (("`", "백틱"), ("**", "굵게 표기"))
 _TAG = re.compile(r"<[^>]+>")
 
