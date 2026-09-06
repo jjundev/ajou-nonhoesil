@@ -145,6 +145,25 @@ class ChipPinout(unittest.TestCase):
         self.assertEqual(chips, ["74HC32"],
                          "netlist C2 는 74HC32 단일 칩이다")
 
+    def test_e1_nor_은_74HC32_와_74HC02_를_그린다(self):
+        chips = [ast.literal_eval(c.args[0])
+                 for c in _calls_in("build_e1_nor", "draw_chip")]
+        self.assertEqual(chips, ["74HC32", "74HC02"],
+                         "netlist C4 는 OR 앞단 + NOR 뒷단이다")
+
+    def test_74HC02_의_미사용_출력을_4_10_13_으로_잡는다(self):
+        """74HC00·74HC08·74HC32 는 출력이 3·6·8·11 이지만 74HC02 는
+        1·4·10·13 이다. netlist 가 '이 실험에서 가장 흔한 배선 실수'로
+        표시한 지점이고, 옛 `e1_nor` 별칭이 정확히 여기서 틀렸다."""
+        out_sets = [set(ast.literal_eval(c.args[0]))
+                    for c in _calls_in("build_e1_nor", "mark_unused_outputs")]
+        self.assertIn({4, 10, 13}, out_sets,
+                      "74HC02 의 미사용 출력은 4·10·13 이다")
+        in_sets = [set(ast.literal_eval(c.args[0]))
+                   for c in _calls_in("build_e1_nor", "connect_unused_inputs")]
+        self.assertIn({5, 6, 8, 9, 11, 12}, in_sets,
+                      "74HC02 의 미사용 입력은 5·6·8·9·11·12 이다")
+
 
 if __name__ == "__main__":
     unittest.main()

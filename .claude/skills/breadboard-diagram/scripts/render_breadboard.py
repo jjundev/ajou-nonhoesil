@@ -341,6 +341,74 @@ def build_e1_nand(output_path, template_path=None):
     bb.export(output_path, max_row=33)
 
 
+def build_e1_nor(output_path, template_path=None):
+    """실험 1-2 (2) · 3입력 NOR (74HC32 + 74HC02). netlist C4.
+
+    **74HC02 는 출력이 1번 핀이다.** 74HC00/08/32 가 (1,2 → 3) 인 데 반해
+    74HC02 는 (2,3 → 1) 이다 — netlist 가 "이 실험에서 가장 흔한 배선
+    실수"로 표시한 지점이다.
+
+    위상은 netlist M5 의 파생이다. 교안 p12 는 "반복 수행하라"만 적고 3입력
+    NOR 의 구성을 지정하지 않는다. NAND 회로의 앞단 74HC08(AND) 을 그대로 두고
+    뒷단만 NOR 로 바꾸면 `((A·B)+C)'` 이 되어 3입력 NOR 이 아니다. 그래서
+    앞단을 74HC32(OR) 로 바꿔 `(A+B+C)'` 을 얻는 구성을 택했다. 그림 안에
+    배지로 새긴다.
+    """
+    bb = BreadboardRenderer(template_path)
+    bb.set_header("실험 1-2: 3-Input NOR Gate 회로 결선도",
+                  "IC: 74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀")
+
+    c = bb.cols['left']
+    r_or = 7
+    r_nor = 18
+
+    bb.draw_chip("74HC32", r_or)
+    bb.connect_power(r_or)
+
+    bb.draw_chip("74HC02", r_nor)
+    bb.connect_power(r_nor)
+
+    # 입력 A -> 74HC32 pin 1 (7행), 입력 B -> pin 2 (8행)
+    bb.draw_wire([(c['b'], bb.r_y(7)), (c['a'], bb.r_y(7)), (c['a'], bb.r_y(4)), (95, bb.r_y(4))], (230, 90, 0, 255), width=3)
+    bb.draw_badge(12, bb.r_y(4) - 9, "입력 A (OR 1A)", (255, 245, 235, 240), (210, 80, 0, 255))
+
+    bb.draw_wire([(c['b'], bb.r_y(8)), (c['a'] - 16, bb.r_y(8)), (c['a'] - 16, bb.r_y(5)), (95, bb.r_y(5))], (0, 120, 180, 255), width=3)
+    bb.draw_badge(12, bb.r_y(5) - 9, "입력 B (OR 1B)", (235, 245, 255, 240), (0, 110, 170, 255))
+
+    # A+B: 74HC32 pin 3 (9행) -> 74HC02 pin 2 (19행). 1번 핀이 아니다
+    bb.draw_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(19))], (140, 40, 200, 255), width=3)
+    # 배지 폭이 84px 다. 자리를 셋 재보면 x=164 는 입력 C 가로선(95~220)을 덮고,
+    # x=239 는 자기가 가리키는 A+B 세로선(열 c, x=269)을 덮는다. x=286(열 d)만
+    # 배지가 [283,367] 에 앉아 둘 다 피한다. 17행은 칩(7~13행) 아래로 비어 있다
+    bb.draw_badge(c['d'], bb.r_y(17) - 8, "A+B ──> 2번 핀", (255, 245, 255, 230), (130, 30, 190, 255), font=bb.font_kr_sm)
+
+    # 중간단 LED L1 (A+B)
+    bb.draw_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(14))], (180, 40, 180, 255), width=2)
+    bb.draw_led(c['b'], bb.r_y(14), bb.r_y(15), color_rgb=(210, 140, 0), label="L1 중간 LED (A+B)")
+    bb.draw_resistor(c['b'], bb.r_y(15), bb.r_y(16), label="330Ω")
+    bb.draw_wire([(c['b'], bb.r_y(16)), (c['gnd'], bb.r_y(16))], (20, 60, 220, 255), width=2)
+
+    # 입력 C -> 74HC02 pin 3 (20행). a 열은 L2 가 쓰므로 x=220 채널로 뺀다
+    bb.draw_wire([(c['b'], bb.r_y(20)), (c['a'] - 16, bb.r_y(20)), (c['a'] - 16, bb.r_y(17)), (95, bb.r_y(17))], (20, 150, 40, 255), width=3)
+    bb.draw_badge(12, bb.r_y(17) - 9, "입력 C (NOR 3번 핀)", (235, 255, 235, 240), (20, 130, 30, 255))
+
+    # 최종 출력: 74HC02 pin 1 (18행) -> L2. 출력이 칩 맨 윗핀이다
+    bb.draw_wire([(c['a'], bb.r_y(18)), (c['a'], bb.r_y(27))], (220, 20, 70, 255), width=3)
+    bb.draw_led(c['a'], bb.r_y(27), bb.r_y(28), color_rgb=(220, 20, 20), label="L2 최종 LED (Y=(A+B+C)')")
+    bb.draw_resistor(c['a'], bb.r_y(28), bb.r_y(30), label="330Ω")
+    bb.draw_wire([(c['a'], bb.r_y(30)), (c['gnd'], bb.r_y(30))], (20, 60, 220, 255), width=2)
+
+    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_or, bridge_row=31)
+    bb.mark_unused_outputs([6, 8, 11], r_or)
+
+    bb.connect_unused_inputs([5, 6, 8, 9, 11, 12], r_nor, bridge_row=31)
+    bb.mark_unused_outputs([4, 10, 13], r_nor)
+
+    bb.draw_badge(c['f'] + 22, bb.r_y(26) - 8, "※ 위상 미확정(netlist M5) — 조교 확인 후 배선", (255, 250, 235, 245), (170, 110, 0, 255))
+
+    bb.export(output_path, max_row=33)
+
+
 def build_e1_comb(output_path, template_path=None):
     """실험 2: 복합 논리회로 (74HC04 + 74HC08 + 74HC32) 결선도.
     좌측: 74HC04 (row 7), 74HC08 (row 18)
@@ -809,7 +877,7 @@ def build_e2_all(output_dir, template_path=None):
 def main():
     parser = argparse.ArgumentParser(description="Breadboard Diagram Generator")
     parser.add_argument("--circuit", required=True, choices=[
-        "e1_and", "e1_or", "e1_nand", "e1_comb",
+        "e1_and", "e1_or", "e1_nand", "e1_nor", "e1_comb",
         "e2_inv", "e2_schmitt", "e2_rn", "e2_rp", "e2_tpd", "e2_all"
     ], help="Circuit ID to render")
     parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e2_all)")
@@ -820,6 +888,7 @@ def main():
         "e1_and": build_e1_and,
         "e1_or": build_e1_or,
         "e1_nand": build_e1_nand,
+        "e1_nor": build_e1_nor,
         "e1_comb": build_e1_comb,
         "e2_inv": build_e2_inv,
         "e2_schmitt": build_e2_schmitt,
