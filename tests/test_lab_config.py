@@ -486,6 +486,14 @@ class TestExperimentDates(unittest.TestCase):
         }
         self.assertEqual(config.EXPERIMENT_DATES, expected)
 
+    def test_FPGA_세_주차도_리터럴로_고정된다(self):
+        # 운영계획 p1: 13~15주차가 11/27·12/4·12/11 이다. 실험 번호가 없어
+        # EXPERIMENT_DATES 에 못 들어가므로 여기서 따로 잠근다.
+        self.assertEqual(
+            config.PROJECT_DATES,
+            (date(2026, 11, 27), date(2026, 12, 4), date(2026, 12, 11)),
+        )
+
     def test_없는_실험_번호는_거절한다(self):
         with self.assertRaises(ValueError):
             config.experiment_date(11)
