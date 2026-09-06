@@ -33,10 +33,12 @@ class TestChecklistHtml(unittest.TestCase):
         self.assertIn("미사용", self.html)
 
     def test_check_cells_exist_for_every_truth_table_row(self):
-        """개수를 박지 말고 명세에서 센다. 참조표(role=reference)는 빠진다."""
+        """개수를 박지 말고 명세에서 센다. `.check` 는 `truth-table` 전용이다 —
+        `stepped` 는 명세의 빈 셀(`.fill`)이 기록 칸이고, `capture` 는 셀 표가
+        아니다."""
         expected = sum(len(self.spec.table(t).rows)
                        for item in self.spec.items for t in item.tables
-                       if self.spec.table(t).kind != "capture"
+                       if self.spec.table(t).kind == "truth-table"
                        and self.spec.table(t).role != "reference")
         self.assertEqual(self.html.count('class="check"'), expected)
         self.assertGreaterEqual(expected, 32)   # T1~T4 가 8행씩
@@ -788,3 +790,61 @@ class TestHeadingChips(unittest.TestCase):
                         html.index("함수발생기"))
         self.assertLess(html.index("함수발생기"),
                         html.index("짧은 점퍼 4개"))
+
+
+class TestSteppedCells(unittest.TestCase):
+    """`stepped` 는 예상값이 없다. `확인`(✓ 일치)은 비교 대상 없는 빈 칸이고,
+    `불일치 행 / 예상 / 실제` 미니표는 뜻이 없다. 명세가 저작해 둔 **빈 셀**이
+    실험실에서 채울 칸이다 — 실험10 T2 는 빈 열이 다섯이다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
+        self.html = circuit_pages(self.spec, self.netlist)
+        self.t2 = self.spec.table("T2")
+
+    def _block(self):
+        start = self.html.index("<h3>T2 ·")
+        return self.html[start:self.html.index("</div>", start)]
+
+    def test_확인_열을_붙이지_않는다(self):
+        block = self._block()
+        self.assertNotIn("<th>확인</th>", block)
+        self.assertNotIn('class="check"', block)
+
+    def test_빈_셀이_기입_칸이_된다(self):
+        """T2 는 10행 × 빈 열 5개 = 50칸이다."""
+        blanks = sum(1 for row in self.t2.rows for c in row if not c.strip())
+        self.assertEqual(blanks, 50)
+        self.assertEqual(self._block().count('<td class="fill"></td>'), blanks)
+
+    def test_채워진_셀은_그대로_인쇄한다(self):
+        self.assertIn("single pulse 1회 → counter=9", self._block())
+
+    def test_모든_스텝_행이_인쇄본에_온다(self):
+        """행 절반만 싣는 변이가 표 존재 검사로는 통과한다."""
+        block = self._block()
+        for n in range(1, 11):
+            with self.subTest(step=n):
+                self.assertIn(f"<td>S{n}</td>", block)
+
+    def test_불일치_행_미니표_대신_이상_스텝_미니표가_온다(self):
+        block = self._block()
+        self.assertIn("이상 스텝", block)
+        self.assertIn("짐작된 원인", block)
+        self.assertNotIn("불일치 행", block)
+        self.assertNotIn("<th>예상</th>", block)
+
+    def test_계측기_설정_줄이_붙는다(self):
+        """단위와 레인지를 안 적으면 결과보고서에서 숫자를 못 읽는다."""
+        self.assertIn("계측기 설정", self._block())
+
+    def test_진리표는_그대로다(self):
+        """실험01 의 진리표 5장은 예상값과 확인 칸을 그대로 유지한다."""
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        html = circuit_pages(spec, netlist)
+        self.assertIn("<th>확인</th>", html)
+        self.assertIn("불일치 행", html)
+        self.assertNotIn('class="fill"', html)

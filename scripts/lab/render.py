@@ -57,17 +57,14 @@ def _plain(text: str) -> str:
     return text.replace("`", "").replace("*", "")
 
 
-def _truth_or_stepped_html(table) -> str:
-    if table.kind == "truth-table":
-        inputs, outputs = split_columns(table)
-        at = {c: i for i, c in enumerate(table.header)}
-        head = list(inputs) + [f"{c}예상" for c in outputs]
-        body = [[normalize_cell(row[at[c]]) for c in inputs]
-                + [normalize_cell(row[at[c]]) for c in outputs]
-                for row in table.rows]
-    else:
-        head = list(table.header)
-        body = [[normalize_cell(c) for c in row] for row in table.rows]
+def _truth_table_html(table) -> str:
+    """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다."""
+    inputs, outputs = split_columns(table)
+    at = {c: i for i, c in enumerate(table.header)}
+    head = list(inputs) + [f"{c}예상" for c in outputs]
+    body = [[normalize_cell(row[at[c]]) for c in inputs]
+            + [normalize_cell(row[at[c]]) for c in outputs]
+            for row in table.rows]
 
     # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.
     # 헤더 없는 진리표 조각은 실험실에서 읽을 수 없다.
@@ -78,6 +75,36 @@ def _truth_or_stepped_html(table) -> str:
     for row in body:
         out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in row)
                    + '<td class="check"></td></tr>')
+    out += ["</tbody>", "</table>"]
+    return "\n".join(out)
+
+
+def _stepped_html(table) -> str:
+    """스텝표 — **명세가 저작해 둔 빈 셀**이 실험실에서 채울 칸이다.
+
+    `확인` 열을 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
+    **예상값이 있어야** 뜻이 있는데 스텝표에는 없다. 붙이면 비교 대상 없는 빈
+    칸이 하나 더 생기고, 실험02 T3~T5·T7 처럼 이미 `기록` 열을 저작한 표에서는
+    같은 뜻의 칸이 둘이 된다.
+
+    빈 셀이 하나도 없는 표에만 `기록` 열을 만든다 — 그런 표는 채울 곳이 없다.
+
+    `.check` 가 아니라 `.fill` 을 쓴다. `.check` 개수는 명세의 `truth-table`
+    행 수와 대조되는 불변식이라 다른 뜻의 칸을 섞으면 그 검사가 죽는다.
+    """
+    header = list(table.header)
+    rows = [[normalize_cell(c) for c in row] for row in table.rows]
+    if not any(not c.strip() for row in rows for c in row):
+        header.append("기록")
+        rows = [row + [""] for row in rows]
+
+    out = ["<table>", "<thead>", "<tr>"]
+    out += [f"<th>{_esc(h)}</th>" for h in header]
+    out += ["</tr>", "</thead>", "<tbody>"]
+    for row in rows:
+        out.append("<tr>" + "".join(
+            '<td class="fill"></td>' if not c.strip() else f"<td>{_esc(c)}</td>"
+            for c in row) + "</tr>")
     out += ["</tbody>", "</table>"]
     return "\n".join(out)
 
@@ -478,12 +505,28 @@ def _diagram_html(section, netlist) -> str:
             'object-position:top">')
 
 
-def _mismatch_html() -> str:
-    """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다."""
-    head = ('<table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th>'
-            "<th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody>")
-    body = "".join("<tr>" + "<td></td>" * 5 + "</tr>" for _ in range(3))
-    return head + body + "</tbody></table>"
+_MISMATCH = {
+    "truth-table": ("불일치 행", "예상", "실제", "사진 파일", "짐작된 원인"),
+    "stepped": ("이상 스텝", "관찰한 것", "짐작된 원인"),
+}
+
+_INSTRUMENT = "계측기 설정 — 모드·레인지·단위: ________________________________"
+
+
+def _mismatch_html(kind: str) -> str:
+    """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다.
+
+    kind 마다 열이 다르다. 스텝표에는 예상값이 없으므로 `예상`·`불일치 행` 열이
+    설 자리가 없고, `capture` 는 아예 미니표를 갖지 않는다 — 파형에는 행도
+    스텝도 없다. 그 자리는 `_capture_html` 의 `예상과 다른 점` 상자가 맡는다.
+    """
+    head = _MISMATCH.get(kind)
+    if head is None:
+        return ""
+    cells = "".join(f"<th>{_esc(h)}</th>" for h in head)
+    body = "".join("<tr>" + "<td></td>" * len(head) + "</tr>" for _ in range(3))
+    return (f'<table class="mismatch"><thead><tr>{cells}</tr></thead>'
+            f"<tbody>{body}</tbody></table>")
 
 
 def _circuit_tables(spec, section) -> str:
@@ -498,11 +541,16 @@ def _circuit_tables(spec, section) -> str:
         # `source` 에도 마크다운이 없지만, 들어오는 순간 백틱이 인쇄본에 찍히고
         # 그것을 잡는 검사는 본문만 본다.
         out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
-        out.append(_capture_html(table) if table.kind == "capture"
-                   else _truth_or_stepped_html(table))
+        if table.kind == "capture":
+            out.append(_capture_html(table))
+        elif table.kind == "stepped":
+            out.append(_stepped_html(table))
+            out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
+        else:
+            out.append(_truth_table_html(table))
         out.append(f"<p class='photo'>"
                    f"{_esc(_PHOTO[table.kind].format(tid=table.id))}</p>")
-        out.append(_mismatch_html())
+        out.append(_mismatch_html(table.kind))
         out.append("</div>")
     return "\n".join(out)
 

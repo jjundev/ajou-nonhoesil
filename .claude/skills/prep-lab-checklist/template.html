@@ -54,6 +54,10 @@
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
 
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
   /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
   .mismatch td { height: 8mm; background: #fafafa; }
 
