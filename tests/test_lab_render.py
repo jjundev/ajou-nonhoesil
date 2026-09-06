@@ -3,7 +3,8 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.render import crop_rows, render_checklist
+from scripts.lab.netlist_parser import parse_netlist
+from scripts.lab.render import common_page, crop_rows, render_checklist
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,6 +65,55 @@ class TestCapturePage(unittest.TestCase):
         spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
         html = render_checklist(spec, "VCC GND 미사용", TEMPLATE)
         self.assertIn('class="sketch"', html)
+
+
+class TestCommonPage(unittest.TestCase):
+    """공통면은 한 번만 보면 되는 것을 모은다 — 전원·공통규칙·참조 핀아웃·
+    실험실 확인. 회로 페이지에 반복하면 지면을 먹고 표가 밀린다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(
+            ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.html = common_page(self.spec, self.netlist)
+
+    def test_전원_박스가_맨_위에_온다(self):
+        self.assertLess(self.html.index('class="power"'), self.html.index("<table"))
+        self.assertIn("미사용", self.html)
+
+    def test_오늘의_흐름_표가_회로를_전부_센다(self):
+        for circuit in self.netlist.circuits:
+            with self.subTest(circuit=circuit.id):
+                self.assertIn(circuit.id, self.html)
+
+    def test_참조_핀아웃_표가_인쇄본에_실린다(self):
+        """74HC02 만 출력이 pin 1·4·10·13 이다. netlist 가 스스로 '가장 흔한
+        배선 실수'라고 표시한 정보인데 옛 렌더러는 표 줄이라는 이유로 버렸다."""
+        self.assertIn("74HC02 (quad NOR)", self.html)
+        self.assertIn("2,3 → 1", self.html)
+
+    def test_미확정_표가_체크박스로_실린다(self):
+        """옛 렌더러는 제목과 도입문만 찍고 표를 버려 문장이 끊긴 채 끝났다."""
+        self.assertIn("M1", self.html)
+        self.assertIn("M10", self.html)
+        self.assertIn('class="box"', self.html)
+
+    def test_핀아웃_출처는_인쇄하지_않는다(self):
+        """참고문헌이 배선 단계 7~11번으로 찍히던 결함이다."""
+        self.assertNotIn("Philips", self.html)
+        self.assertNotIn("SCLS081J", self.html)
+
+    def test_확인_칸_범례가_인쇄본에_있다(self):
+        """규약은 기록.md 에만 있었다. 태블릿에 PDF 만 띄운 사람은 알 수 없다."""
+        self.assertIn("불일치", self.html)
+        self.assertIn("미확인", self.html)
+
+    def test_여러_줄_경고가_잘리지_않는다(self):
+        self.assertIn("핀 1·4·10·13", self.html)
+
+    def test_기록_대상_표의_확인_칸을_공통면이_만들지_않는다(self):
+        """`.check` 개수는 회로 페이지에서만 나온다 — 개수 검사가 명세에서 센다."""
+        self.assertNotIn('class="check"', self.html)
 
 
 class TestCrop(unittest.TestCase):

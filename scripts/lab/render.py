@@ -157,6 +157,135 @@ def _capture_html(table) -> str:
             '<div class="sketch"></div><p>캡션: ________________</p>')
 
 
+_BULLET = re.compile(r"^([ \t]*)-[ \t]+(.*)$")
+
+
+def _blocks(body: str) -> str:
+    """`- ` 불릿·열 0 산문·`##` 헤딩을 HTML 로. 표 줄(`|`)은 건너뛴다.
+
+    들여쓴 이어지는 줄을 앞 항목에 붙인다 — 버리면 여러 줄로 쓴 경고가 중간에서
+    잘린다. 74HC02 핀 순서 경고가 실제로 세 줄짜리 불릿이고, 그 경고를 netlist
+    스스로 "이 실험에서 가장 흔한 배선 실수"라고 표시한다.
+
+    빈 줄 없이 이어지는 열 0 산문 줄은 한 문단으로 합친다 — netlist 의
+    "다르면 배선 오류다" 경고가 실제로 두 줄이다.
+    """
+    out, items, para = [], [], []
+
+    def flush_items():
+        if items:
+            out.append("<ul>" + "".join(f"<li>{_esc(i)}</li>" for i in items)
+                       + "</ul>")
+            items.clear()
+
+    def flush_para():
+        if para:
+            out.append(f"<p>{_esc(' '.join(para))}</p>")
+            para.clear()
+
+    for raw in body.split("\n"):
+        line = raw.rstrip()
+        stripped = line.strip()
+        if not stripped:
+            flush_para()
+            continue
+        if stripped.startswith("|"):
+            continue                      # 표는 부르는 쪽이 따로 렌더한다
+        if stripped.startswith("#"):
+            flush_items()
+            flush_para()
+            out.append(f"<h4>{_esc(_plain(stripped.lstrip('# ')))}</h4>")
+            continue
+        m = _BULLET.match(line)
+        if m and not m.group(1):
+            flush_para()
+            items.append(_plain(m.group(2)))
+            continue
+        if line.startswith((" ", "\t")) and items:
+            items[-1] += " " + _plain(stripped)
+            continue
+        flush_items()
+        para.append(_plain(stripped))
+    flush_items()
+    flush_para()
+    return "\n".join(out)
+
+
+def _md_table_html(table, lead_checkbox: bool = False) -> str:
+    """마크다운 표를 인쇄용 HTML 로. 체크박스 열은 `.box` 다 — `.check` 는
+    명세의 기록 대상 표 행 전용이고 개수를 테스트가 명세에서 세어 대조한다."""
+    out = ["<table><thead><tr>"]
+    if lead_checkbox:
+        out.append("<th>확인</th>")
+    out += [f"<th>{_esc(_plain(h))}</th>" for h in table.header]
+    out.append("</tr></thead><tbody>")
+    for row in table.rows:
+        out.append("<tr>")
+        if lead_checkbox:
+            out.append('<td class="box"></td>')
+        out += [f"<td>{_esc(_plain(c))}</td>" for c in row]
+        out.append("</tr>")
+    out.append("</tbody></table>")
+    return "".join(out)
+
+
+LEGEND = ("확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. "
+          "표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.")
+
+
+def _flow_table(spec, netlist) -> str:
+    """오늘의 흐름. 도착 직후 오늘 뭘 몇 개 하는지 한눈에 본다.
+
+    쪽번호는 렌더 시점에 알 수 없다(Chrome 이 조판한다). 회로 번호로 대신한다 —
+    회로마다 강제 개쪽이므로 회로 번호가 곧 순서다.
+    """
+    total = len(netlist.circuits)
+    rows = ["<table class='flow'><thead><tr><th>순서</th><th>회로</th>"
+            "<th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody>"]
+    for n, circuit in enumerate(netlist.circuits, start=1):
+        tables = ", ".join(
+            f"{t} {spec.table(t).title}" if spec.table(t) else t
+            for t in circuit.tables)
+        rows.append(
+            f"<tr><td>{n}/{total}</td><td>{_esc(_plain(circuit.title))}</td>"
+            f"<td>{_esc(' · '.join(circuit.ics))}</td><td>{_esc(tables)}</td></tr>")
+    rows.append("</tbody></table>")
+    return "".join(rows)
+
+
+def common_page(spec, netlist) -> str:
+    """회로 페이지들 앞에 한 번만 오는 면.
+
+    `kind` 가 목적지를 정한다 — `sources`(핀아웃 출처)는 여기 없다. 그것은
+    ③ 예비보고서의 참고문헌 재료지 실험실에서 근거의 등급을 읽을 일은 없다.
+    옛 렌더러는 그것을 배선 단계 7~11번으로 찍었다.
+    """
+    power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
+    out = [f'<div class="power">전원: {_esc(power)} · '
+           "미사용 입력핀은 전부 GND (플로팅 금지)</div>",
+           f'<p class="legend">{_esc(LEGEND)}</p>',
+           "<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
+
+    for section in netlist.of_kind("common"):
+        out.append(f"<h2>{_esc(_plain(section.title))}</h2>")
+        out.append(_blocks(section.body))
+
+    for section in netlist.of_kind("lookup"):
+        out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
+        out.append(_blocks(section.body))
+        for table in md.parse_tables(section.body):
+            out.append(_md_table_html(table))
+        out.append("</div>")
+
+    for section in netlist.of_kind("open-issues"):
+        out.append(f"<h2>{_esc(_plain(section.title))} — 실험실에서 확인할 것</h2>")
+        out.append(_blocks(section.body))
+        for table in md.parse_tables(section.body):
+            out.append(_md_table_html(table, lead_checkbox=True))
+
+    return "\n".join(out)
+
+
 def _tables(spec) -> str:
     out = []
     for item in spec.items:
