@@ -7,6 +7,8 @@ spec: ../체크리스트/명세.md
 
 # 공통 규칙
 
+- kind: common
+
 - 모든 IC: pin 14 → VCC(+5V), pin 7 → GND
 - **미사용 입력핀은 전부 GND 로 내린다.** 플로팅 금지. 미사용 *출력*핀은 개방한다
   (출력끼리 묶거나 GND 로 내리면 칩이 죽는다)
@@ -21,7 +23,9 @@ spec: ../체크리스트/명세.md
   핀 3·6·8·11 이 출력이지만 `74HC02` 는 **핀 1·4·10·13** 이 출력이다. 이 실험에서
   가장 흔한 배선 실수다
 
-## 핀아웃 출처
+# 핀아웃 출처
+
+- kind: sources
 
 칩마다 근거의 등급이 다르다. **가정인 것은 미확정 표에 올린다.**
 
@@ -39,7 +43,9 @@ spec: ../체크리스트/명세.md
   배치(74HC00·74HC08 과 동일 패턴)를 근거로 적었다. 실물 칩 각인과 1주차에 대조할 것
   (아래 미확정 사항 표 M1 참조)
 
-## 참조 핀아웃
+# 참조 핀아웃
+
+- kind: lookup
 
 | IC | 게이트1 | 게이트2 | 게이트3 | 게이트4 | VCC | GND |
 |---|---|---|---|---|---|---|
@@ -50,7 +56,13 @@ spec: ../체크리스트/명세.md
 
 `74HC04` (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.
 
-# E1.P1-1 · 3-input AND (74HC08)
+# C1 · 3-input AND (74HC08)
+
+- kind: circuit
+- id: C1
+- item: E1.P1-1
+- tables: [T1]
+- diagram: 실험01_결선도_3입력_AND.png
 
 - U1 = 74HC08 (quad 2-input AND, DIP-14)
   - pin 14 → VCC(+5V)
@@ -64,7 +76,12 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 9, 10, 12, 13 → GND
   - 미사용 출력핀: pin 8, 11 → 개방
 
-# E1.P1-1 · 3-input OR (74HC32)
+# C2 · 3-input OR (74HC32)
+
+- kind: circuit
+- id: C2
+- item: E1.P1-1
+- tables: [T2]
 
 - U2 = 74HC32 (quad 2-input OR, DIP-14)
   - pin 14 → VCC(+5V)
@@ -78,7 +95,13 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 9, 10, 12, 13 → GND
   - 미사용 출력핀: pin 8, 11 → 개방
 
-# E1.P1-2 · 3-input NAND (74HC08 + 74HC00)
+# C3 · 3-input NAND (74HC08 + 74HC00)
+
+- kind: circuit
+- id: C3
+- item: E1.P1-2
+- tables: [T3]
+- diagram: 실험01_결선도_3입력_NAND.png
 
 교안 p12 회로도 그대로. AND 로 `A·B` 를 만들고 NAND 로 `C` 와 합쳐 `(A·B·C)'` 를 낸다.
 
@@ -100,7 +123,12 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND
   - 미사용 출력핀: pin 6, 8, 11 → 개방
 
-# E1.P1-2 · 3-input NOR (74HC32 + 74HC02)
+# C4 · 3-input NOR (74HC32 + 74HC02)
+
+- kind: circuit
+- id: C4
+- item: E1.P1-2
+- tables: [T4]
 
 같은 구조를 OR → NOR 로 바꾼 것. **`74HC02` 의 핀 순서에 주의** (출력이 pin 1).
 
@@ -122,7 +150,13 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND
   - 미사용 출력핀: pin 4, 10, 13 → 개방
 
-# E1.P2 · 복합 논리회로 (74HC04 + 74HC08 + 74HC32)
+# C5 · 복합 논리회로 (74HC04 + 74HC08 + 74HC32)
+
+- kind: circuit
+- id: C5
+- item: E1.P2
+- tables: [T5]
+- diagram: 실험01_결선도_복합논리회로.png
 
 교안 p13. **입력 2개(A, B), 출력 3개(X, Y, Z), LED 3개.** C 입력은 없다.
 
@@ -160,6 +194,8 @@ spec: ../체크리스트/명세.md
 **LED_X 와 LED_Z 가 언제나 같이 켜져야 한다.** 다르면 배선 오류다.
 
 # 미확정 사항
+
+- kind: open-issues
 
 교안 원문이 아닌 판단을 전부 모은다. 명세 쪽 미확정도 여기로 온다.
 
