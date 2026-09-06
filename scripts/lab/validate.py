@@ -307,6 +307,14 @@ def check_netlist_circuits(netlist, spec) -> list:
                     "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
+        if circuit.continues:
+            known_circuits = {c.id for c in netlist.circuits} - {circuit.id}
+            if circuit.continues not in known_circuits:
+                out.append(Finding("error", where,
+                    f"continues 가 {circuit.continues!r} 를 가리키는데 그런 회로가 "
+                    f"없다. 정의된 회로: {sorted(known_circuits)}. 배너가 "
+                    "'뜯지 말라'고 지시하는 대상이라 없는 회로를 가리키면 "
+                    "실험실에서 무엇을 남겨야 할지 알 수 없다"))
         if not circuit.diagram:
             out.append(Finding("warn", where,
                 "diagram 이 없다 — 인쇄본에 빈 브레드보드가 대신 들어간다. "

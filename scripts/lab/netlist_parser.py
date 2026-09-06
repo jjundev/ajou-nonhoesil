@@ -48,6 +48,7 @@ class NetlistSection:
     item: Optional[str] = None
     tables: list = field(default_factory=list)
     diagram: Optional[str] = None
+    continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
 
     @property
     def ics(self) -> list:
@@ -125,6 +126,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         kind=kind, title=title, body=body, line=line,
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
         diagram=attrs.get("diagram") or None,
+        continues=attrs.get("continues") or None,
     )
 
 

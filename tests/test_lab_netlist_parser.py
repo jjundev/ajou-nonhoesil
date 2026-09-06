@@ -187,5 +187,27 @@ class RealExperiment1(unittest.TestCase):
                 self.assertTrue(netlist.of_kind(kind), f"{kind} 절이 없다")
 
 
+class ContinuesField(unittest.TestCase):
+    def _netlist(self, extra):
+        text = ("---\nschema: lab-netlist/v1\nweek: 12\nexperiment: 10\n"
+                "spec: ../체크리스트/명세.md\n---\n\n"
+                "# C1 · DAC\n\n- kind: circuit\n- id: C1\n- item: E10.P1\n"
+                "- tables: [T1]\n\n- U1 = 7490\n  - pin 5 → VCC\n\n"
+                "# C2 · ADC\n\n- kind: circuit\n- id: C2\n- item: E10.P2\n"
+                f"- tables: [T2]\n{extra}\n\n- U5 = 741\n  - pin 7 → +15V\n")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return parse_netlist(path)
+
+    def test_continues_를_읽는다(self):
+        netlist = self._netlist("- continues: C1")
+        self.assertEqual(netlist.circuits[1].continues, "C1")
+
+    def test_없으면_None_이다(self):
+        netlist = self._netlist("")
+        self.assertIsNone(netlist.circuits[1].continues)
+        self.assertIsNone(netlist.circuits[0].continues)
+
+
 if __name__ == "__main__":
     unittest.main()

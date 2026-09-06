@@ -1212,5 +1212,30 @@ class NetlistCircuitWiring(unittest.TestCase):
                           if "칩 선언" in m or "배선" in m], [])
 
 
+class ContinuesValidation(unittest.TestCase):
+    def test_없는_회로를_가리키면_error(self):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]",
+                                      "- tables: [T2]\n- continues: C9")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        hits = [f for f in found if "continues" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("C9", hits[0].message)
+
+    def test_자기_자신을_가리키면_error(self):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]",
+                                      "- tables: [T2]\n- continues: C2")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        self.assertTrue([f for f in found
+                         if "continues" in f.message and f.level == "error"])
+
+
 if __name__ == "__main__":
     unittest.main()

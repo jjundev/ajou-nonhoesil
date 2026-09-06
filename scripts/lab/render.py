@@ -497,9 +497,18 @@ def _chip_swap(previous, current) -> str:
     같은 칩이 다음 회로에도 쓰이면 패키지는 남지만 **점퍼선은 다르다** —
     netlist 가 "항목마다 재배선해 쓰는 것"이라고 적는다. `그대로 둔다` 로만
     적으면 배선까지 그대로 둬도 되는 것으로 읽힌다.
+
+    `continues` 가 있는 회로는 예외다. 실험10 E10.P2 는 다 만든 DAC 에 `741`
+    비교기를 하나 더 붙이는 회로라, 기본 문구(`점퍼선을 모두 걷는다`)를 그대로
+    따르면 직전 회로를 뜯는다.
     """
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
+    if current.continues:
+        add = [c for c in current.ics if c not in previous.ics]
+        tail = " · 추가로 꽂는다: " + ", ".join(add) if add else ""
+        return (f"{current.continues} 를 그대로 두고 이어 붙인다 — "
+                f"점퍼선을 걷지 않는다{tail}")
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]

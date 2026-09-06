@@ -918,3 +918,41 @@ class TestSteppedCells(unittest.TestCase):
         self.assertIn("<th>확인</th>", html)
         self.assertIn("불일치 행", html)
         self.assertNotIn('class="fill"', html)
+
+
+class TestContinuesBanner(unittest.TestCase):
+    """`앞 회로의 점퍼선을 모두 걷는다` 는 실험10 C2 에서 틀린 지시다 —
+    E10.P2 는 다 만든 DAC 에 741 비교기를 하나 더 붙인다. 그대로 따르면
+    직전 회로를 뜯는다."""
+
+    def _html(self, extra):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]", f"- tables: [T2]\n{extra}")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        return circuit_pages(spec, parse_netlist(path))
+
+    def _banner(self, html, index):
+        page = html.split('<section class="circuit">')[1 + index]
+        start = page.index('class="banner"')
+        return page[start:page.index("</div>", start)]
+
+    def test_continues_가_있으면_뜯지_말라고_한다(self):
+        banner = self._banner(self._html("- continues: C1"), 1)
+        self.assertIn("C1", banner)
+        self.assertIn("그대로 두고", banner)
+        self.assertNotIn("점퍼선을 모두 걷는다", banner)
+
+    def test_continues_가_추가할_칩을_말한다(self):
+        banner = self._banner(self._html("- continues: C1"), 1)
+        self.assertIn("741", banner)
+
+    def test_continues_가_없으면_옛_배너_그대로다(self):
+        """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
+        banner = self._banner(self._html(""), 1)
+        self.assertIn("점퍼선을 모두 걷는다", banner)
+
+    def test_첫_회로에는_continues_가_무의미하다(self):
+        banner = self._banner(self._html("- continues: C1"), 0)
+        self.assertIn("준비 — 꽂는다", banner)
