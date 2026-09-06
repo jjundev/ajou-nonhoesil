@@ -1211,6 +1211,12 @@ class NetlistCircuitWiring(unittest.TestCase):
         self.assertEqual([m for m in self._messages(body)
                           if "칩 선언" in m or "배선" in m], [])
 
+    def test_상자_밖의_배선처럼_보이는_줄을_경고한다(self):
+        body = "- U1 = 74HC08\n  - pin 1 ← A\n- 미사용 입력핀: pin 9 → GND\n"
+        hits = [m for m in self._messages(body) if "칩 상자" in m]
+        self.assertTrue(hits)
+        self.assertIn("미사용", hits[0])
+
 
 class ContinuesValidation(unittest.TestCase):
     def test_없는_회로를_가리키면_error(self):

@@ -29,6 +29,11 @@ _DIAGNOSTIC = re.compile(r"의심|나오면|나온다|보이면|어긋나면|빠
 
 _MARKS = {"error": "✗", "warn": "!", "info": "ℹ"}
 
+# 칩 상자 밖에서 배선·미사용핀 지시처럼 보이는 줄. 상자 밖으로 새면 체크박스도
+# 칩 라벨도 없이 `- ` 마커째 인쇄된다 — check_netlist_circuits 가 이 정규식으로
+# 렌더러의 상자 경계 버그와 무관하게 시끄럽게 만든다.
+_STRAY_WIRE = re.compile(r"^\s*-\s*(pin|미사용)")
+
 
 @dataclass
 class Finding:
@@ -347,7 +352,8 @@ def check_netlist_circuits(netlist, spec) -> list:
     # 하나도 안 잡히는 경우(형식을 섞어 쓴 경우)다.
     for circuit in netlist.circuits:
         where = f"{netlist.path.name}:{circuit.id}"
-        chips = _chip_boxes(_circuit_body(circuit)[0])
+        nodes, before, after = _circuit_body(circuit)
+        chips = _chip_boxes(nodes)
         if not chips:
             out.append(Finding("warn", where,
                 "칩 선언이 하나도 없다 — 배선이 인쇄본에 실리지 않는다. "
@@ -360,6 +366,17 @@ def check_netlist_circuits(netlist, spec) -> list:
                     f"칩 {chip['head']!r} 에 배선이 하나도 없다 — 상자가 제목만 "
                     "남는다. 불릿형이면 들여쓴 `- ` 배선을, 헤딩형이면 배선 표를 "
                     "칩 아래에 둔다"))
+        # 배선이 한 줄이라도 남으면 칩당 warn 은 울리지 않는다 — 조용한 손실을
+        # 시끄럽게 만든다는 이 계약의 존재 이유가 거기서는 뚫린다. 렌더러가
+        # 무엇을 하든(상자 경계 버그가 다시 생기든) 배선처럼 생긴 줄이 상자
+        # **밖**에 있으면 그 자체로 시끄럽게 만든다.
+        stray = [line.strip() for line in (before + "\n" + after).split("\n")
+                 if _STRAY_WIRE.match(line)]
+        if stray:
+            out.append(Finding("warn", where,
+                f"배선처럼 보이는 줄 {len(stray)}개가 칩 상자 **밖**에 있다: "
+                f"{stray[:3]}. 체크박스도 칩 라벨도 없이 인쇄되고, 미사용핀이면 "
+                "칩별 확인 상자에 안 들어간다. 칩 선언 아래로 옮긴다"))
 
     for table_id in sorted({t.id for t in spec.tables if t.role != "reference"}
                            - covered):

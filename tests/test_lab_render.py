@@ -533,6 +533,32 @@ class TestCircuitBodySplit(unittest.TestCase):
         self.assertIn("산문뿐이다", before)
         self.assertEqual(after, "")
 
+    def test_들여쓴_표가_불릿형_상자를_닫지_않는다(self):
+        """상자를 닫으면 뒤따르는 배선과 미사용핀 지시가 통째로 상자 밖
+        산문으로 샌다 — 체크박스도 칩 라벨도 없이 `- ` 마커째 찍히고
+        미사용핀 상자가 사라진다. 플로팅 핀 지시를 잃는 사고다."""
+        nodes, _, after = _circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← A\n"
+            "  | 핀 | 연결 |\n  |---|---|\n  | 14 | VCC |\n"
+            "  - pin 2 ← B\n"
+            "  - 미사용 입력핀: pin 9 → GND\n"))
+        chip = _chip_boxes(nodes)[0]
+        self.assertEqual(chip["wires"], ["pin 1 ← A", "pin 2 ← B"])
+        self.assertEqual(chip["unused"], ["미사용 입력핀: pin 9 → GND"])
+        self.assertEqual([k for k, _ in chip["blocks"]], ["table"])
+        self.assertNotIn("pin 2", after)
+
+    def test_표가_아닌_들여쓴_파이프_줄도_상자를_닫지_않는다(self):
+        nodes, _, after = _circuit_body(self._section(
+            "- U1 = 74HC08 (quad)\n"
+            "  - pin 1 ← A\n"
+            "  | 구분선이 없다 |\n"
+            "  - 미사용 입력핀: pin 9 → GND\n"))
+        chip = _chip_boxes(nodes)[0]
+        self.assertEqual(chip["unused"], ["미사용 입력핀: pin 9 → GND"])
+        self.assertEqual(after.strip(), "")
+
 
 class TestCrop(unittest.TestCase):
     def test_row_count_comes_from_the_netlist(self):

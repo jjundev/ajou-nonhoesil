@@ -460,15 +460,18 @@ def _circuit_body(section):
             continue
 
         if stripped.startswith("|"):
+            indented = line.startswith((" ", "\t"))
             table, nxt = md.parse_table_at(lines, i)
             if table is None:
-                # 구분선 없는 `|` 줄은 표가 아니다. 불릿형 상자를 열어 둔 채
-                # 넘기면 그 뒤 줄들이 엉뚱하게 배선으로 붙는다.
-                if form == "bullet":
-                    close_chip()
+                # 들여쓴 `|` 줄은 그 칩에 속한다 — 상자를 닫으면 뒤따르는
+                # 배선과 미사용핀 지시가 통째로 상자 밖 산문으로 샌다.
+                # 체크박스도 칩 라벨도 없이 `- ` 마커째 찍히고, 미사용핀
+                # 상자가 사라진다. 플로팅 핀 지시를 잃는 바로 그 사고다.
+                if form == "bullet" and not indented:
+                    close_chip()          # 열 0 의 구분선 없는 `|` 줄만 닫는다
                 i += 1
                 continue
-            if chip is not None and form == "heading":
+            if chip is not None and (form == "heading" or indented):
                 flush_note()
                 _absorb_wiring(chip, table)
             else:
