@@ -82,6 +82,7 @@ spec: ../체크리스트/명세.md
 - id: C2
 - item: E1.P1-1
 - tables: [T2]
+- diagram: 실험01_결선도_3입력_OR.png
 
 - U2 = 74HC32 (quad 2-input OR, DIP-14)
   - pin 14 → VCC(+5V)
@@ -129,6 +130,7 @@ spec: ../체크리스트/명세.md
 - id: C4
 - item: E1.P1-2
 - tables: [T4]
+- diagram: 실험01_결선도_3입력_NOR.png
 
 같은 구조를 OR → NOR 로 바꾼 것. **`74HC02` 의 핀 순서에 주의** (출력이 pin 1).
 
