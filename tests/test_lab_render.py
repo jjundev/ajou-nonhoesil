@@ -5,9 +5,10 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
-from scripts.lab.render import (CLOSING, _blocks, _chip_boxes, _circuit_body,
-                                _esc, _plain, circuit_pages, closing_page,
-                                common_page, crop_rows, render_checklist)
+from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
+                                _circuit_body, _esc, _plain, circuit_pages,
+                                closing_page, common_page, crop_rows,
+                                render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,6 +116,18 @@ class TestCapturePage(unittest.TestCase):
         block = self._block()
         self.assertNotIn("**", block)
         self.assertNotIn("`", block)
+
+    def test_실물_expected_의_마크다운_표기를_벗긴다(self):
+        """픽스처가 보는 실험10 T1 의 expected 에는 마크다운이 하나도 없어
+        위 테스트가 `_plain` 제거 변이를 못 문다. 실물로 `**` 를 담은 것은
+        실험02 T2 다 — `**두 갈래로 갈라져 … 닫힌 루프**`. 옛 `_capture_html`
+        은 `_plain` 을 안 씌워 별 두 개가 인쇄본에 그대로 찍혔다."""
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+        table = spec.table("T2")
+        self.assertIn("**", table.expected)          # 원문에는 있다
+        html = _capture_html(table)
+        self.assertNotIn("**", html)                 # 인쇄본에는 없다
+        self.assertIn("두 갈래로 갈라져", html)
 
     def test_판독_조건_줄이_붙는다(self):
         block = self._block()
