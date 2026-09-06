@@ -994,7 +994,7 @@ class TestContinuesBanner(unittest.TestCase):
 
     def test_continues_가_있으면_뜯지_말라고_한다(self):
         banner = self._banner(self._html("- continues: C1"), 1)
-        self.assertIn("C1", banner)
+        self.assertIn("앞 회로(", banner)
         self.assertIn("그대로 두고", banner)
         self.assertNotIn("점퍼선을 모두 걷는다", banner)
 
@@ -1125,7 +1125,7 @@ class Test실험10배선전수(unittest.TestCase):
         page = self.html.split('<section class="circuit">')[2]
         start = page.index('class="banner"')
         banner = page[start:page.index("</div>", start)]
-        self.assertIn("C1", banner)
+        self.assertIn("앞 회로(", banner)
         self.assertIn("그대로 두고", banner)
         self.assertNotIn("점퍼선을 모두 걷는다", banner)
 

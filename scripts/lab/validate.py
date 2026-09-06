@@ -325,6 +325,17 @@ def check_netlist_circuits(netlist, spec) -> list:
                         f"없다. 정의된 회로: {sorted(known_circuits)}. 배너가 "
                         "'뜯지 말라'고 지시하는 대상이라 없는 회로를 가리키면 "
                         "실험실에서 무엇을 남겨야 할지 알 수 없다"))
+                else:
+                    order = [c.id for c in netlist.circuits]
+                    at = order.index(circuit.id)
+                    previous = order[at - 1] if at else None
+                    if circuit.continues != previous:
+                        out.append(Finding("error", where,
+                            f"continues 가 {circuit.continues!r} 를 가리키는데 "
+                            f"직전 회로는 {previous!r} 다. 이어 붙이기는 **바로 앞** "
+                            "회로만 가능하다 — 배너가 '점퍼선을 걷지 않는다'고 "
+                            "말하는 순간 그 사이 회로들의 점퍼를 어떻게 하라는 "
+                            "지시가 사라진다"))
         for table_id in circuit.refs:
             if table_id not in known_tables:
                 out.append(Finding("error", where,

@@ -1244,6 +1244,20 @@ class ContinuesValidation(unittest.TestCase):
         hits = [f for f in found if "continues" in f.message]
         self.assertIn("자기 자신", hits[0].message)
 
+    def test_직전이_아닌_회로를_가리키면_error(self):
+        """C5 에 `continues: C1` 을 적으면 그 사이 회로들의 점퍼를 어떻게
+        하라는 지시가 사라진다."""
+        text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
+            encoding="utf-8").replace("- tables: [T5]",
+                                      "- tables: [T5]\n- continues: C1")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        found = validate.check_netlist_circuits(parse_netlist(path), spec)
+        hits = [f for f in found if "continues" in f.message]
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("직전 회로", hits[0].message)
+
 
 class RefsValidation(unittest.TestCase):
     def _findings(self, extra):

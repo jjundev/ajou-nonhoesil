@@ -538,8 +538,10 @@ def _chip_swap(previous, current) -> str:
         # 741 한 패키지에 op-amp 는 하나뿐이고 결선도가 "비교기를 하나 더
         # 붙인다"라고 적는다. `not in previous.ics` 로 거르면 이 기능의 존재
         # 이유인 그 지시가 배너에서 사라진다.
+        # `continues` 는 언제나 직전 회로다(validate 가 강제한다). 인쇄본에
+        # 없는 내부 ID(`C1`) 대신 학생이 앞 쪽에서 실제로 읽은 제목을 말한다.
         tail = " · 추가로 꽂는다: " + ", ".join(current.ics) if current.ics else ""
-        return (f"{current.continues} 를 그대로 두고 이어 붙인다 — "
+        return (f"앞 회로({_plain(previous.title)})를 그대로 두고 이어 붙인다 — "
                 f"점퍼선을 걷지 않는다{tail}")
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
