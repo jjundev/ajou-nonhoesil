@@ -696,7 +696,8 @@ class TestHeadingChips(unittest.TestCase):
         self.assertEqual(wirebox.count('<td class="box"></td>'), 7)
 
     def test_배선표의_모든_행이_인쇄본에_온다(self):
-        """첫 표만 싣는 변이가 상자 존재 검사로는 통과한다."""
+        """회로 안 **둘째 칩의 표를 버리는** 변이가 배선 절반을 지워도 상자
+        존재 검사로는 통과한다. 셀 하나씩 대조한다."""
         for cell in ("14 (INPUT A)", "함수발생기 1 kHz 구형파 출력",
                      "U1 pin 12 (QA)", "4, 13", "NC 핀"):
             with self.subTest(cell=cell):
@@ -731,14 +732,59 @@ class TestHeadingChips(unittest.TestCase):
 
     def test_칩_상자_안의_불릿은_체크박스를_받지_않는다(self):
         """헤딩형 상자의 열 0 불릿은 주석이지 배선 단계가 아니다 —
-        실험02 P4 U1 의 `- 짧은 점퍼 4개…` 가 그렇다."""
+        실험02 P4 U1 의 `- 짧은 점퍼 4개…` 가 그렇다. 옛 단언은 텍스트 뒤
+        200자 창에 체크박스가 없는지만 봐서, 창이 칩 상자를 벗어나 **다음
+        참조표**를 재고 있었다 — 그 참조표 길이에 통과가 달려 있었다.
+        불릿 엘리먼트 자체를 본다."""
         page = self._pages()[0]
-        self.assertIn("이 칩만 전원핀이 다르다", page)
-        note = page[page.index("이 칩만 전원핀이 다르다"):]
-        self.assertNotIn('class="box"', note[:200])
+        self.assertIn("<li>이 칩만 전원핀이 다르다", page)
+        self.assertNotIn('<li><span class="box"></span>이 칩만', page)
 
     def test_칩_교체_배너가_헤딩형에서도_칩_이름을_안다(self):
         """`ics` 는 IC_DECL 이 본문에서 뽑는다 — 헤딩도 본문이다."""
         page = self._pages()[1]
         banner = page[page.index('class="banner"'):]
         self.assertIn("741 OP amp", banner[:400])
+
+    def _netlist_of(self, section):
+        """단면 결선도를 만든다. `circuit_pages` 는 `LabNetlist` 를 받는다."""
+        netlist = parse_netlist(ROOT / "tests/fixtures/netlist_heading_chips.md")
+        netlist.sections = [section]
+        return netlist
+
+    def test_상자_안_주석의_문단_경계가_살아_있다(self):
+        """빈 줄을 버리면 서로 다른 문단이 한 덩어리가 된다. 실험02 U2 상자는
+        `교안은 U2 의 역할을 설명하지 않는다…` 와 `U2 pin 2 가 개방인 것에
+        주의…` 가 빈 줄로 갈려 있고, 뒤쪽은 별도의 주의 문구다."""
+        section = NetlistSection(
+            kind="circuit", title="C9 · 시험", line=1,
+            id="C9", item="E10.P1", tables=["T1"],
+            body=("## U1 = 7400\n\n"
+                  "| 핀 | 연결 |\n|---|---|\n| 14 | VCC |\n\n"
+                  "첫째 문단이다.\n\n"
+                  "둘째 문단이다. 완전히 다른 이야기.\n"))
+        nodes, _, _ = _circuit_body(section)
+        html = "\n".join(
+            _blocks(p) for k, p in _chip_boxes(nodes)[0]["blocks"] if k == "note")
+        self.assertIn("<p>첫째 문단이다.</p>", html)
+        self.assertIn("<p>둘째 문단이다. 완전히 다른 이야기.</p>", html)
+        self.assertNotIn("첫째 문단이다. 둘째 문단이다", html)
+
+    def test_표_앞_산문이_표_앞에_남는다(self):
+        """실험02 U1 의 `핀 번호 순서로 흐르지 않는다` 는 표를 **읽기 전에**
+        읽어야 하는 경고다. 고정 순서로 찍으면 배선표 아래로 밀린다. 실험10 은
+        반대로 표가 먼저라, 어느 고정 순서도 답이 아니다."""
+        section = NetlistSection(
+            kind="circuit", title="C9 · 시험", line=1,
+            id="C9", item="E10.P1", tables=["T1"],
+            body=("## U1 = 74HC04\n\n"
+                  "핀 번호 순서로 흐르지 않는다.\n\n"
+                  "| 핀 | 연결 |\n|---|---|\n| 1 | 함수발생기 |\n\n"
+                  "짧은 점퍼 4개는 인접 핀끼리다.\n"))
+        kinds = [k for k, _ in _chip_boxes(_circuit_body(section)[0])[0]["blocks"]]
+        self.assertEqual(kinds, ["note", "table", "note"])
+        html = circuit_pages(self.spec, self._netlist_of(section))
+        self.assertLess(html.index("핀 번호 순서로 흐르지 않는다"),
+                        html.index("함수발생기"))
+        self.assertLess(html.index("함수발생기"),
+                        html.index("짧은 점퍼 4개"))

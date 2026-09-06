@@ -10,6 +10,7 @@
 
 import html
 import re
+from dataclasses import replace
 
 from . import md
 from .netlist_parser import IC_DECL
@@ -257,8 +258,25 @@ _PHOTO = {
 
 
 def _new_chip(head: str) -> dict:
+    """칩 상자 하나.
+
+    `blocks` 가 상자 **안**의 원문 순서다 — `("table", MdTable)` 은 체크박스를
+    붙일 배선표, `("note", 원문 조각)` 은 그 밖의 산문·불릿이다. 고정 순서로
+    찍으면 실험02 U1 의 `핀 번호 순서로 흐르지 않는다` 경고(표를 **읽기 전에**
+    읽어야 한다)가 배선표 아래로 밀리고, U2 의 `…판독한 결과:` 도입문은 상자
+    끝에 콜론만 남긴 채 끊긴다. 실험10 은 반대로 표가 먼저다 — 주차마다
+    다르므로 원문을 따른다.
+
+    `wires` 는 불릿형 전용이다 (`- U<n> =` 아래 들여쓴 `- ` 배선).
+    """
     return {"type": "chip", "head": _plain(head), "wires": [], "unused": [],
-            "notes": [], "tables": []}
+            "blocks": []}
+
+
+def _chip_tables(chip) -> list:
+    """이 칩의 배선표. `blocks` 가 정본이라 따로 담지 않는다 — 두 벌을 두면
+    표류한다."""
+    return [payload for kind, payload in chip["blocks"] if kind == "table"]
 
 
 def _absorb_wiring(chip, table) -> None:
@@ -282,8 +300,7 @@ def _absorb_wiring(chip, table) -> None:
         else:
             kept.append(row)
     if kept:
-        chip["tables"].append(md.MdTable(header=table.header, rows=kept,
-                                         line=table.line))
+        chip["blocks"].append(("table", replace(table, rows=kept)))
 
 
 def _chip_boxes(nodes) -> list:
@@ -317,10 +334,12 @@ def _circuit_body(section):
     lines = section.body.split("\n")
     nodes, prose = [], []
     chip, last_key, form = None, None, None
+    note = []                     # 헤딩형 상자 안에서 모으는 산문 조각
 
     def close_chip():
         nonlocal chip, last_key, form
         if chip is not None:
+            flush_note()
             nodes.append(chip)
             chip, last_key, form = None, None, None
 
@@ -328,6 +347,11 @@ def _circuit_body(section):
         if any(p.strip() for p in prose):
             nodes.append({"type": "prose", "text": "\n".join(prose)})
         prose.clear()
+
+    def flush_note():
+        if any(n.strip() for n in note):
+            chip["blocks"].append(("note", "\n".join(note)))
+        note.clear()
 
     i = 0
     while i < len(lines):
@@ -355,9 +379,14 @@ def _circuit_body(section):
         if stripped.startswith("|"):
             table, nxt = md.parse_table_at(lines, i)
             if table is None:
+                # 구분선 없는 `|` 줄은 표가 아니다. 불릿형 상자를 열어 둔 채
+                # 넘기면 그 뒤 줄들이 엉뚱하게 배선으로 붙는다.
+                if form == "bullet":
+                    close_chip()
                 i += 1
                 continue
             if chip is not None and form == "heading":
+                flush_note()
                 _absorb_wiring(chip, table)
             else:
                 close_chip()
@@ -384,8 +413,7 @@ def _circuit_body(section):
                 close_chip()          # 열 0 줄이 불릿형 칩 상자를 닫는다
 
         if chip is not None and form == "heading":
-            if stripped:
-                chip["notes"].append(line)
+            note.append(line)
             i += 1
             continue
 
@@ -514,10 +542,11 @@ def circuit_pages(spec, netlist) -> str:
                 out += [f'<li><span class="box"></span>{_esc(w)}</li>'
                         for w in node["wires"]]
                 out.append("</ol>")
-            for table in node["tables"]:
-                out.append(_md_table_html(table, lead_checkbox=True))
-            if node["notes"]:
-                out.append(_blocks("\n".join(node["notes"])))
+            # 상자 안은 원문 순서다. 고정 순서로 찍으면 표 앞에 있어야 할 경고가
+            # 표 아래로 밀린다 (실험02 U1) — 주차마다 표와 산문의 순서가 다르다.
+            for kind, payload in node["blocks"]:
+                out.append(_md_table_html(payload, lead_checkbox=True)
+                           if kind == "table" else _blocks(payload))
             out.append("</div>")
         out.append("</div>")
         unused_chips = [c for c in chips if c["unused"]]
