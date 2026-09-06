@@ -128,6 +128,12 @@ class RecordTitleTest(unittest.TestCase):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
         self.assertNotIn("week:", derive_record(spec))
 
+    def test_date_를_프론트매터에_넣지_않는다(self):
+        # 일정을 산출물에도 적으면 config.EXPERIMENT_DATES 와 두 곳에 살게 되어
+        # week 를 없앤 이유(단일 출처)와 같은 결함을 날짜로 다시 만든다.
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.assertNotIn("date:", derive_record(spec))
+
 
 class RecordKindCells(unittest.TestCase):
     """기록.md 와 인쇄본은 쌍이다. 규약이 갈리면 전사에서 어긋난다."""

@@ -25,9 +25,9 @@ from .spec_parser import _T_HEAD, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
 # `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다. 명세·항목 `title` 은
-# 계약서가 필수(●)로 싣고(`docs/schema/lab-spec-v2.md:22,47`); 표 `title`
+# 계약서가 필수(●)로 싣고(`docs/schema/lab-spec-v2.md:21,54`); 표 `title`
 # 은 스키마의 표 필드 표에 행 자체가 없고 `## T<n> · <제목>` 헤딩 형식으로
-# 강제될 뿐이다(`docs/schema/lab-spec-v2.md:63,65`). 셋 다 `render.py`·
+# 강제될 뿐이다(`docs/schema/lab-spec-v2.md:70,72`). 셋 다 `render.py`·
 # `record.py` 가 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다(확인:
 # `grep -n title scripts/lab/render.py scripts/lab/record.py`). 두 회차
 # 연속으로 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
