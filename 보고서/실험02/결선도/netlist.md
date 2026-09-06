@@ -149,7 +149,6 @@ VCC 14, GND 7 — 교안 p10 회로도로 확인.
 - id: C1
 - item: E2.P1
 - tables: [T1]
-- diagram: 실험02_결선도_인버터_입출력특성.png
 
 - U1 = `74HC04` (hex inverter, DIP-14)
   - pin 14 → VCC(+5V)
@@ -194,7 +193,6 @@ VCC 14, GND 7 — 교안 p10 회로도로 확인.
 - id: C2
 - item: E2.P2
 - tables: [T2, T3]
-- diagram: 실험02_결선도_슈미트트리거_입출력특성.png
 
 **E2.P1 과 배선이 글자 그대로 같고 칩만 바뀐다.** 통제 실험이므로 함수발생기
 설정·프로브 위치·미사용핀 처리를 하나도 바꾸지 않는다 — 바꾸면 그림 차이가 칩
@@ -223,7 +221,6 @@ CH1 → pin 1, CH2 → pin 2, X-Y 모드, 접지 공통).
 - id: C3
 - item: E2.P3-1
 - tables: [T4]
-- diagram: 실험02_결선도_DC특성_Rn.png
 
 - U1 = `74HC04` (hex inverter, DIP-14)
   - pin 14 → VCC(+5V)
@@ -267,7 +264,6 @@ CH1 → pin 1, CH2 → pin 2, X-Y 모드, 접지 공통).
 - id: C4
 - item: E2.P3-2
 - tables: [T5]
-- diagram: 실험02_결선도_DC특성_Rp.png
 
 E2.P3-1 을 위아래로 뒤집는다. **바뀌는 것은 두 곳뿐이다.**
 
@@ -306,7 +302,6 @@ E2.P3-1 을 위아래로 뒤집는다. **바뀌는 것은 두 곳뿐이다.**
 - id: C5
 - item: E2.P4
 - tables: [T6, T7]
-- diagram: 실험02_결선도_전파지연_tpd.png
 - refs: [T8]
 
 ## 소자 배치
