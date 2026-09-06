@@ -7,6 +7,8 @@ spec: ../체크리스트/명세.md
 
 # 공통 규칙
 
+- kind: common
+
 ## 1. 전원 핀이 IC 마다 다르다 — 이번 주의 1순위 사고
 
 1~4주차는 전부 DIP-14 라 `pin 14 → VCC`, `pin 7 → GND` 하나로 끝났다.
@@ -92,6 +94,8 @@ VCC, 아래쪽이 GND** 로 그려져 있다 (vision 확인).
 
 # 참조 핀아웃
 
+- kind: lookup
+
 | IC | 핀 배치 | VCC | GND |
 |---|---|---|---|
 | `74HC04` (hex inverter, DIP-14) | 1→2, 3→4, 5→6, 9→8, 11→10, 13→12 | 14 | 7 |
@@ -103,7 +107,9 @@ VCC, 아래쪽이 GND** 로 그려져 있다 (vision 확인).
 `74HC42` 의 출력은 **pin 7 다음이 pin 9** 다 — pin 8 이 GND 라 건너뛴다. 이
 건너뜀 자체가 "이 칩은 16핀이고 8번이 GND" 라는 신호다.
 
-## 핀아웃 출처
+# 핀아웃 출처
+
+- kind: sources
 
 - `74HC04` — 저장소 실물 데이터시트
   `from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/datasheet.pdf`
@@ -130,6 +136,12 @@ VCC, 아래쪽이 GND** 로 그려져 있다 (vision 확인).
   표준 74HC 16핀 배치(= 근거 계층에서 가장 약한 등급)로 적었다 → **미확정 M1**
 
 # E5.P1 · 2X4 Decoder (74HC04 + 74HC08)
+
+- kind: circuit
+- id: C1
+- item: E5.P1
+- tables: [T2]
+- refs: [T1]
 
 교안 p8. `Bit0`·`Bit1` 두 입력과 그 보수 네 개를 `74HC08` 네 게이트로 짝지어
 최소항 4개를 만든다. 배선 위상은 p8 을 300 DPI 로 렌더해 vision 으로 추적했고,
@@ -181,6 +193,11 @@ U2.pin10, U2.pin13 (2곳).
 
 # E5.P2 · BCD to Decimal Decoder (74HC42)
 
+- kind: circuit
+- id: C2
+- item: E5.P2
+- tables: [T3]
+
 교안 p13. **DIP-16 이고 LED 가 뒤집혀 있다** — 위 공통 규칙 1·3 을 먼저 읽을 것.
 
 - SW1~SW4 (SPDT 4개) — 교안 라벨 `Bit0`(SW1) ~ `Bit3`(SW4)
@@ -217,6 +234,11 @@ VCC 에 붙고 IC 가 캐소드 쪽에서 전류를 빨아들인다.
 `D C B A = 0 0 0 0` 을 먼저 넣어 `Y0` LED 가 켜지는지 확인한다.
 
 # E5.P3 · 10진 / Excess-3 코드 인코더 (74HC04 + 74HC20 ×2)
+
+- kind: circuit
+- id: C3
+- item: E5.P3
+- tables: [T4]
 
 교안 p14. 배선 위상은 p14 를 300 DPI 로 렌더해 vision 으로 추적했고,
 p16~p21 여섯 장(스위치 하나씩 올렸을 때 켜지는 출력의 빨간 박스)과 **교차
@@ -294,6 +316,12 @@ GND 로 내리면 NAND 출력이 영구히 1 이 되어 그 비트 LED 가 계�
 
 # E5.P4 · 8X3 Priority Encoder (74HC148)
 
+- kind: circuit
+- id: C4
+- item: E5.P4
+- tables: [T6]
+- refs: [T5]
+
 교안 p22. **DIP-16 이고, 입력도 출력도 active-low 이고, LED 가 뒤집혀 있다.**
 
 교안 회로도에는 `IN0`·`IN7` 두 개의 스위치만 그려져 있지만, 슬라이드 하단에
@@ -354,6 +382,8 @@ GND 로 내리면 NAND 출력이 영구히 1 이 되어 그 비트 LED 가 계�
 유효), `EO` = 0 은 "칩 켜짐 + 활성 입력 없음". 둘 다 1 이면 칩이 꺼진 것이다.
 
 # 미확정 사항
+
+- kind: open-issues
 
 | 항목 | 내용 | 확인 방법 |
 |---|---|---|
