@@ -1,6 +1,5 @@
 ---
-schema: lab-netlist/v1
-week: 5
+schema: lab-netlist/v2
 experiment: 5
 spec: ../체크리스트/명세.md
 ---
@@ -36,7 +35,7 @@ spec: ../체크리스트/명세.md
 
 ## 2. 미사용 입력핀 — 규칙이 두 갈래로 갈린다
 
-`docs/schema/lab-spec-v1.md` 가 말하는 "미사용 입력핀 처리"는 이번 주에
+`docs/schema/lab-spec-v2.md` 가 말하는 "미사용 입력핀 처리"는 이번 주에
 **두 가지 서로 다른 규칙**이 된다. 1주차의 "전부 GND" 를 그대로 적용하면
 E5.P3 이 조용히 틀린다.
 

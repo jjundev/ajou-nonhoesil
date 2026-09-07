@@ -85,7 +85,7 @@ _RENDER = {"truth-table": _truth_table, "stepped": _stepped, "capture": _capture
 
 def derive_record(spec) -> str:
     out = [
-        "---", "schema: lab-record/v1", f"week: {spec.week}",
+        "---", "schema: lab-record/v2",
         f"experiment: {spec.experiment}", "spec: 명세.md",
         "filled_by: ~          # hand | vision | 미기입", "---", "",
         f"# {config.document_title(spec.experiment, spec.title, '기록')}", "",

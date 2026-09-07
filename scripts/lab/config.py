@@ -6,6 +6,7 @@
 
 import re
 from dataclasses import dataclass
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -53,8 +54,8 @@ def experiment_folder_name(experiment: int) -> str:
 def experiment_dir(experiment: int) -> str:
     """실험 번호 → 저장소 루트 기준 **경로**(`보고서/실험01`).
 
-    스킬이 폴더를 얻는 입구는 이것과 `manual_candidates`·`folder_for_week`
-    셋뿐이고, 셋 다 여기를 거치거나 `EXPERIMENT_BASE` 를 같은 방식으로 붙인다.
+    스킬이 폴더를 얻는 입구는 이것과 `manual_candidates` 둘뿐이고, 둘 다
+    여기를 거치거나 `EXPERIMENT_BASE` 를 같은 방식으로 붙인다.
     """
     return f"{EXPERIMENT_BASE}/{experiment_folder_name(experiment)}"
 
@@ -91,29 +92,38 @@ MANUAL_DISTRIBUTION = "강의노트"
 def _distributed_manual(experiment: int, root: Path) -> Optional[Path]:
     """배포 폴더에서 그 주차 교안을 찾는다. 없으면 `None`.
 
+    **하위 폴더까지 훑는다.** 조교가 배포 폴더 안을 재편하면(2026-09-07 에
+    실제로 파일 다섯이 `공지사항/` 으로 내려갔다) 비재귀 탐색은 조용히 실패해
+    아카이브의 과거 학기 판으로 떨어진다. 아카이브에 늘 같은 번호 파일이
+    있으므로 "교안을 못 찾았다"로 드러나지도 않는다.
+
     번호 뒤가 **숫자가 아니어야** 한다. `실험1` 로 앞자리만 맞추면
     `실험10`·`실험11`·`실험12` 를 집어삼킨다 — 이 과목은 실험이 10 개라
     한 자리와 두 자리가 실제로 섞인다.
 
-    같은 번호가 여럿이면 이름순 첫 개를 쓴다. 배포본은 주차당 한 편이므로
-    정상 경로에서는 일어나지 않고, 일어나면 결정적으로 같은 걸 고른다.
+    같은 번호가 여럿이면 경로순 첫 개를 쓴다. 얕은 것이 먼저 오도록
+    (깊이, 경로) 로 정렬한다 — 최상위 배포본이 하위 사본을 이긴다.
     """
     folder = root / MANUAL_DISTRIBUTION
     if not folder.is_dir():
         return None
     pattern = re.compile(rf"^실험{experiment}(?!\d)")
     hits = sorted(
-        f for f in folder.iterdir()
-        if f.suffix.lower() == ".pdf" and pattern.match(f.name)
+        (f for f in folder.rglob("*")
+         if f.is_file() and f.suffix.lower() == ".pdf"
+         and pattern.match(f.name)),
+        key=lambda f: (len(f.relative_to(folder).parts), str(f)),
     )
-    return Path(MANUAL_DISTRIBUTION) / hits[0].name if hits else None
+    if not hits:
+        return None
+    return Path(MANUAL_DISTRIBUTION) / hits[0].relative_to(folder)
 
 
 def manual_candidates(experiment, root=None) -> list:
     """실험 번호 → 교안 PDF 후보 경로. 우선순위 순서다.
 
     **폴더는 0 을 채우고 파일 이름은 안 채운다** — `실험04/강의노트/실험4.pdf`
-    처럼 한 경로에 두 형식이 섞여 있다. 손으로 옮기면 7주차(실험4)에서
+    처럼 한 경로에 두 형식이 섞여 있다. 손으로 옮기면 두 자리 번호에서
     반드시 어긋난다. 그래서 이 규칙을 여기 한 곳에만 둔다.
 
     **아카이브 후보에는 `EXPERIMENT_BASE` 를 붙이지 않는다.** 과거 학기 원본
@@ -147,77 +157,117 @@ def manual_candidates(experiment, root=None) -> list:
     ]
 
 
-# 주차 → 실험 매핑. **1:1 이 아니다** — 5·6·7주차가 실험 5·6·4 로 어긋난다.
-# 이 표를 스킬 문서에 베껴 두면 한 곳만 고쳐지고 나머지가 틀어진다.
-WEEK_TO_EXPERIMENT = {2: 1, 3: 2, 4: 3, 5: 5, 6: 6, 7: 4,
-                      9: 7, 10: 8, 11: 9, 12: 10}
-PROJECT_WEEKS = (13, 14, 15)   # FPGA 텀프로젝트 — 3주치가 한 프로젝트다
-# FPGA 프로젝트도 주차 산출물이라 실험 폴더와 같은 기반 아래 둔다. 실험만
-# 옮기고 이것을 루트에 남기면 같은 성격의 산출물이 두 곳으로 갈리고, 13주차가
-# 와서 폴더를 처음 만들 때 그 갈림을 다시 정리하게 된다. 아직 디스크에 없어서
-# 지금 정하는 값이 곧 실물이 된다.
+# 2026-2 실험 일정. 정본은 `강의노트/공지사항/2026-2_논리회로실험 운영계획
+# (26.09.01).pdf` p1 이다.
+#
+# **실험 번호가 열쇠다.** 예전에는 주차가 열쇠였는데(`WEEK_TO_EXPERIMENT`),
+# 그 모델로는 두 가지를 표현할 수 없었다 — 9/18 처럼 한 날에 실험이 둘인 경우
+# (int→int 라 하나만 담긴다), 그리고 추석·중간고사처럼 실험이 없는 주(예외 표를
+# 따로 들고 다녀야 했다). 실험을 열쇠로 두면 둘 다 사라진다. 같은 날짜를 두
+# 실험이 가지면 그만이고, 실험이 없는 날은 그냥 이 표에 없다.
+#
+# **이 표를 스킬 문서에 베끼지 않는다.** 옛 주차표는 아홉 스킬에 문장으로
+# 베껴져 있었고("실험4는 7주차다"), 운영계획이 바뀌자 열한 곳이 한꺼번에
+# 거짓이 됐다.
+EXPERIMENT_DATES = {
+    1: date(2026, 9, 11),
+    2: date(2026, 9, 18),
+    3: date(2026, 9, 18),   # 실험2 와 같은 날. 8시 20분까지 둘 다 마쳐야 한다
+    4: date(2026, 10, 2),
+    5: date(2026, 10, 9),
+    6: date(2026, 10, 16),
+    7: date(2026, 10, 30),
+    8: date(2026, 11, 6),
+    9: date(2026, 11, 13),
+    10: date(2026, 11, 20),
+}
+
+# FPGA 텀프로젝트 — 3주치가 한 프로젝트다. 실험 번호가 없어 `PROJECT_DIR` 로 간다.
+PROJECT_DATES = (date(2026, 11, 27), date(2026, 12, 4), date(2026, 12, 11))
+
+# FPGA 프로젝트도 주차 산출물이라 실험 폴더와 같은 기반 아래 둔다.
 PROJECT_DIR = f"{EXPERIMENT_BASE}/프로젝트"
-NO_ARTIFACT_WEEKS = {8: "중간고사"}
 
 
-def _validated_week(week) -> None:
-    """`folder_for_week`·`experiment_for_week` 공통 주차 유효성 검사.
+# 1주차 날짜. 운영계획 p1 의 첫 행이다(9/4 오리엔테이션).
+# **표가 아니라 앵커 하나다.** 주차 → 날짜는 여기서 나오는 순수 산술이고,
+# 날짜 → 실험은 EXPERIMENT_DATES 가 맡는다. 정본이 둘로 갈리지 않는다.
+# 옛 WEEK_TO_EXPERIMENT 는 회전을 손으로 적어 둔 표라 운영계획이 바뀌자
+# 다섯 곳이 한꺼번에 틀렸다 — 산술에는 그 실패 모드가 없다.
+SEMESTER_WEEK1 = date(2026, 9, 4)
+SEMESTER_WEEKS = 16
 
-    이 저장소의 반복 결함이 "같은 규약을 세 곳에 적용하고 네 번째를 잊는
-    것"이다(`experiment_dir` 의 docstring 참고). 두 함수가 이 세 검사
-    (타입·중간고사 주차·존재하지 않는 주차)를 각자 복제해 두면, 메시지를
-    한쪽만 고치고 다른 쪽을 잊는 바로 그 결함이 재발한다. **PROJECT_WEEKS
-    갈래(폴더로 돌려줄지 실험 번호를 거절할지)는 여기서 판단하지 않는다** —
-    그건 두 함수가 서로 다르게 굴어야 하는 지점이라 호출자에 남긴다. 대신
-    "실험 주차도 아니고 FPGA 주차도 아니면 존재하지 않는 주차다"로 묶어서,
-    호출자가 PROJECT_WEEKS 를 먼저 걸러내든 나중에 걸러내든 이 검사 하나로
-    충분하게 한다.
-    """
+
+def _check_week(week) -> None:
     if isinstance(week, bool) or not isinstance(week, int):
         raise TypeError(f"주차는 정수여야 합니다: {week!r}")
-    if week in NO_ARTIFACT_WEEKS:
-        raise ValueError(
-            f"{week}주차는 {NO_ARTIFACT_WEEKS[week]}라 실험 산출물이 없습니다. "
-            "폴더를 만들지 않습니다."
-        )
-    if week not in WEEK_TO_EXPERIMENT and week not in PROJECT_WEEKS:
-        raise ValueError(
-            f"{week}주차에 해당하는 실험이 없습니다. "
-            f"실험 주차는 {sorted(WEEK_TO_EXPERIMENT)}, "
-            f"FPGA 는 {list(PROJECT_WEEKS)} 입니다."
-        )
+    if not 1 <= week <= SEMESTER_WEEKS:
+        raise ValueError(f"주차는 1~{SEMESTER_WEEKS} 입니다: {week}")
 
 
-def folder_for_week(week: int) -> str:
-    """주차 → 그 주 산출물이 들어갈 폴더 이름.
+def week_date(week: int) -> date:
+    """주차 → 그 주 수업 날짜."""
+    _check_week(week)
+    return SEMESTER_WEEK1 + timedelta(weeks=week - 1)
 
-    사용자는 "2주차 체크리스트" 처럼 **주차로 부른다.** 스킬 절차의 경로는
-    `실험NN/` 이므로 그 사이를 옮기는 곳이 필요한데, 표를 스킬마다 베껴 두면
-    한 곳만 고쳐진다 — 이 저장소가 반복해 온 결함이다.
+
+def is_project_week(week: int) -> bool:
+    """주차 → FPGA 프로젝트(13~15주차) 주차인지.
+
+    **`PROJECT_DATES` 에서 도출한다 — 주차 번호를 여기 새로 적지 않는다.**
+    옛 `folder_for_week` 만 이 판정을 알았고, 주차 모델을 걷어내며 그 지식이
+    통째로 사라졌다 — `experiments_in_week` 가 빈 리스트를 주는 두 가지
+    이유(실험이 없는 주 / FPGA 주)를 스킬이 다시 가를 수 있게 이 함수가
+    그 자리를 메운다. `week_date` 로 얻은 그 주 날짜가 `PROJECT_DATES` 에
+    있는지만 본다 — 정본이 둘로 갈리지 않는다.
     """
-    _validated_week(week)
-    if week in PROJECT_WEEKS:
-        return PROJECT_DIR
-    return experiment_dir(WEEK_TO_EXPERIMENT[week])
+    return week_date(week) in PROJECT_DATES
 
 
-def experiment_for_week(week: int) -> int:
-    """주차 → 그 주 실험 번호(정수).
+def experiments_in_week(week: int) -> list:
+    """주차 → 그 주에 하는 실험 번호들. 실험이 없는 주면 빈 리스트.
 
-    `folder_for_week` 는 경로용 폴더 이름을 문자열로 주는데, 교안 파일
-    이름(`manual_candidates`)은 정수 실험 번호를 요구한다. 폴더 이름에서
-    번호를 되파싱하면(`실험10` → `10`) `실험NN` 규약이 스킬 문서로 새어
-    나온다 — 그 규약은 `experiment_dir` 한 곳에만 있어야 한다. 그래서
-    스킬 절차가 폴더 이름과 실험 번호를 **둘 다** 코드로 구하도록 이
-    함수를 둔다. `프로젝트`(13~15주차)는 실험 번호가 없으므로 거절한다.
+    **리스트인 것이 요점이다.** 3주차(9/18)는 실험2·3 을 한 날에 하고,
+    4주차(추석)·8주차(중간고사)·1주차(오리엔테이션)는 빈 리스트다.
     """
-    _validated_week(week)
-    if week in PROJECT_WEEKS:
+    _check_week(week)
+    return experiments_on(week_date(week))
+
+
+def experiment_date(experiment: int) -> date:
+    """실험 번호 → 그 실험을 하는 날."""
+    if isinstance(experiment, bool) or not isinstance(experiment, int):
+        raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
+    if experiment not in EXPERIMENT_DATES:
         raise ValueError(
-            f"{week}주차는 FPGA 프로젝트라 실험 번호가 없습니다. "
-            f"`{PROJECT_DIR}` 폴더를 씁니다."
+            f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}"
         )
-    return WEEK_TO_EXPERIMENT[week]
+    return EXPERIMENT_DATES[experiment]
+
+
+def experiments_on(when: date) -> list:
+    """그 날 하는 실험 번호들. 실험이 없는 날이면 빈 리스트.
+
+    **리스트인 것이 요점이다.** 9/18 은 실험2·3 을 한 날에 한다.
+    """
+    if not isinstance(when, date):
+        raise TypeError(f"날짜여야 합니다: {when!r}")
+    return sorted(e for e, d in EXPERIMENT_DATES.items() if d == when)
+
+
+def next_experiments(today=None):
+    """오늘 이후(당일 포함) 가장 가까운 실험일과 그 날의 실험들.
+
+    학기가 끝났으면 `None`. 스킬이 "이번에 뭘 준비해야 하나"를 물을 때 쓴다.
+    """
+    if today is None:
+        today = date.today()
+    if not isinstance(today, date):
+        raise TypeError(f"날짜여야 합니다: {today!r}")
+    upcoming = sorted({d for d in EXPERIMENT_DATES.values() if d >= today})
+    if not upcoming:
+        return None
+    return upcoming[0], experiments_on(upcoming[0])
 
 
 # 산출물 제목의 유일한 형식. 예전에는 네 곳이 제각각 만들었고, 경로용 일괄
@@ -228,9 +278,9 @@ DOCUMENT_KINDS = ("체크리스트", "기록", "예비보고서", "결과보고�
 def document_title(experiment: int, title: str, kind: str) -> str:
     """산출물 제목 — `실험1 Basic Gates 체크리스트` 형식.
 
-    **주차를 넣지 않는다.** 주차는 폴더를 찾을 때만 쓰고(`folder_for_week`),
-    사람이 읽는 제목에는 실험 번호와 이름만 남긴다. 어느 주에 하는지는
-    강의계획서의 일이지 제출물 표지의 일이 아니다.
+    **주차를 넣지 않는다.** 주차는 이제 쓰지 않고, 사람이 읽는 제목에는
+    실험 번호와 이름만 남긴다. 어느 주에 하는지는 강의계획서의 일이지
+    제출물 표지의 일이 아니다.
     """
     if kind not in DOCUMENT_KINDS:
         raise ValueError(f"산출물 종류는 {list(DOCUMENT_KINDS)} 입니다: {kind!r}")
@@ -238,21 +288,6 @@ def document_title(experiment: int, title: str, kind: str) -> str:
         raise ValueError(f"실험 제목이 비어 있습니다: {title!r}")
     experiment_folder_name(experiment)  # 번호 유효성은 한 곳에서만 판정한다
     return f"실험{experiment} {title.strip()} {kind}"
-
-
-def week_for_experiment(experiment: int) -> int:
-    """실험 번호 → 그 실험을 하는 주차. `folder_for_week` 의 역방향.
-
-    스킬이 "실험5 는 5주차입니다" 처럼 되짚어 알릴 때 쓴다.
-    """
-    if isinstance(experiment, bool) or not isinstance(experiment, int):
-        raise TypeError(f"실험 번호는 정수여야 합니다: {experiment!r}")
-    for week, exp in WEEK_TO_EXPERIMENT.items():
-        if exp == experiment:
-            return week
-    raise ValueError(
-        f"실험 번호는 1~{EXPERIMENT_COUNT} 입니다: {experiment}"
-    )
 
 
 @dataclass

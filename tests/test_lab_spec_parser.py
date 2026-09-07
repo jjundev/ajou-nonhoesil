@@ -17,17 +17,18 @@ class TestWeek2(unittest.TestCase):
         self.spec = parse_spec(WEEK2)
 
     def test_frontmatter(self):
-        self.assertEqual(self.spec.week, 2)
         self.assertEqual(self.spec.experiment, 1)
         self.assertEqual(self.spec.power["VCC"], "+5V")
 
-    def test_three_items(self):
+    def test_five_items(self):
+        """신판(2026-2 배포본)은 실험 1-1/1-2/2-1/2-2/3 로 다섯 항목이다."""
         self.assertEqual([i.id for i in self.spec.items],
-                         ["E1.P1-1", "E1.P1-2", "E1.P2"])
+                         ["E1.P1-1", "E1.P1-2", "E1.P2-1", "E1.P2-2", "E1.P3"])
 
     def test_ic_list_matches_manual_parts_page(self):
         """교안 p10 준비물이 근거다. 74HC08 은 quad AND 라 3-input 에 1개면 된다."""
-        self.assertEqual(self.spec.items[0].ics, ["74HC08", "74HC32"])
+        self.assertEqual(self.spec.items[0].ics, ["74HC08"])
+        self.assertEqual(self.spec.items[1].ics, ["74HC32"])
 
     def test_three_input_truth_tables_are_eight_rows(self):
         for tid in ("T1", "T2", "T3", "T4"):
@@ -167,7 +168,7 @@ class TestErrors(unittest.TestCase):
 
     def test_wrong_schema_raises(self):
         with self.assertRaises(SpecError):
-            parse_spec(self._broken("lab-spec/v1", "lab-spec/v0"))
+            parse_spec(self._broken("lab-spec/v2", "lab-spec/v0"))
 
     def test_missing_cell_table_raises(self):
         """네 가지 구조적 실패 중 하나. 나머지 셋과 함께 반드시 지켜져야 한다."""
@@ -237,6 +238,50 @@ class TestSemanticDefectsStaySilent(unittest.TestCase):
     def test_unknown_role_is_carried_through_not_rejected(self):
         spec = self._spec_without("- kind: stepped", "- kind: stepped\n- role: bogus")
         self.assertEqual(spec.table("T2").role, "bogus")
+
+
+class TestSchemaV2(unittest.TestCase):
+    """`week:` 를 걷어낸 v2. v1 은 이제 구조적으로 거절된다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _write(self, text):
+        target = Path(self.tmp.name) / "명세.md"
+        target.write_text(text, encoding="utf-8")
+        return target
+
+    def test_v2는_week_없이_읽힌다(self):
+        md = (
+            "---\n"
+            "schema: lab-spec/v2\n"
+            "experiment: 1\n"
+            "title: Basic Gates\n"
+            "source_manual: 강의노트/실험1. Basic Gates.pdf\n"
+            'power: {VCC: "+5V", GND: "GND"}\n'
+            "items:\n"
+            "  - id: E1.P1\n"
+            "    title: 3-input AND\n"
+            "    device: [LED]\n"
+            '    ics: ["74HC08"]\n'
+            "    tables: [T1]\n"
+            "---\n\n"
+            "## T1 · 3-input AND\n\n"
+            "- kind: truth-table\n"
+            "- source: derived\n\n"
+            "| A | Y |\n|---|---|\n| 0 | 0 |\n"
+        )
+        path = self._write(md)
+        spec = parse_spec(path)
+        self.assertEqual(spec.experiment, 1)
+        self.assertFalse(hasattr(spec, "week"))
+
+    def test_v1은_거절한다(self):
+        md = "---\nschema: lab-spec/v1\nexperiment: 1\n---\n"
+        with self.assertRaises(SpecError) as cm:
+            parse_spec(self._write(md))
+        self.assertIn("lab-spec/v2", str(cm.exception))
 
 
 if __name__ == "__main__":

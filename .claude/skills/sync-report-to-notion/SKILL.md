@@ -21,16 +21,27 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
 
 ## push — 노션에 올리기
 
-0. **주차로 불렸으면 폴더를 코드로 옮긴다.** 매핑은 1:1 이 아니다(실험4 는 7주차).
+0. **실험 번호를 폴더 이름으로 옮긴다.** 사용자는 "실험1 …" 또는 "다음 실험 …"
+   으로 부르고, 아래 절차의 경로는 `<실험NN>/` 이다.
 
    ```bash
    python3 -c "
    from scripts.lab import config
-   print(config.folder_for_week(<N>))
+   print(config.experiment_dir(<실험번호>))
    "
    ```
 
-   사용자가 `실험N` 으로 불렀으면 `config.experiment_dir(<N>)` 을 쓴다.
+   **"다음 실험" 처럼 날짜로 물었으면** `config.next_experiments()` 로 찾는다.
+   한 날에 실험이 둘일 수 있어 리스트가 온다(9/18 은 실험2·3 이다). `None` 이면
+   학기가 끝난 것이다.
+
+   **주차로 불렸으면**("2주차 예보 노션에 올려" 처럼) `config.experiments_in_week(<N>)`
+   로 옮긴다. 빈 리스트인데 `config.is_project_week(<N>)` 가 참이면 FPGA
+   프로젝트 주차(13~15주차)다. 실험 번호가 없어 `config.PROJECT_DIR` 로
+   간다. 거짓이면 그 주엔 실험이 없다(1주차 오리엔테이션·4주차 추석·8주차
+   중간고사) — 알리고 중단한다. 둘 이상이면(한 날에 실험이 둘인 주차가
+   있다) 어느 쪽인지 되묻고 중단한다. 하나면 그 번호로 위
+   `config.experiment_dir()` 을 부른다.
 
 1. **올릴 파일을 정한다.** `<실험NN>/output/<실험NN>_예비보고서.md` 또는
    `..._결과보고서.md`. 없으면 ③ `write-pre-report` / ④ `write-result-report`

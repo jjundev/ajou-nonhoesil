@@ -21,8 +21,7 @@ def spec_from(text):
 
 
 HEAD = """---
-schema: lab-spec/v1
-week: 2
+schema: lab-spec/v2
 experiment: 1
 title: Basic Gates
 source_manual: from_the_past/정리/강의노트/실험1.pdf
@@ -303,8 +302,7 @@ class TestNetlistCircuits(unittest.TestCase):
     """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다."""
 
     HEAD = """---
-schema: lab-netlist/v1
-week: 2
+schema: lab-netlist/v2
 experiment: 1
 spec: ../체크리스트/명세.md
 ---
@@ -393,17 +391,28 @@ spec: ../체크리스트/명세.md
                   if f.level == "error"]
         self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
 
-    def test_실험01_실물은_OR_NOR_결선도_부재를_warn_한다(self):
-        """Task 1 이 e1_or·e1_nor 별칭을 지웠으므로 두 그림은 존재하지 않는다.
-        조용히 빈칸으로 나가는 대신 시끄럽게 알린다."""
+    def test_실험01_실물은_다섯_회로_모두_diagram_을_갖는다(self):
+        """C2(OR)·C4(NOR) 결선도가 이제 존재한다 — 더는 부재를 warn 할 대상이
+        아니다. `check_netlist_circuits` 는 diagram 줄이 없거나 그 파일이
+        없을 때만 warn 하므로(위 `test_diagram_이_없으면_warn`·
+        `test_diagram_파일이_없으면_warn` 참고), C1~C5 다섯 회로 전부에
+        diagram 이 있고 파일도 존재하면 그 종류의 warn 은 하나도 없어야
+        한다."""
         spec = parse_spec(WEEK2_SPEC)
         netlist = parse_netlist(
             ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.assertEqual([c.id for c in netlist.circuits],
+                         ["C1", "C2", "C3", "C4", "C5"])
+        for circuit in netlist.circuits:
+            with self.subTest(circuit=circuit.id):
+                self.assertTrue(circuit.diagram,
+                    f"{circuit.id} 에 diagram 줄이 없다")
+                self.assertTrue(
+                    (netlist.path.parent / circuit.diagram).exists(),
+                    f"{circuit.id} 의 diagram 파일 {circuit.diagram} 이 없다")
         warns = [f for f in validate.check_netlist_circuits(netlist, spec)
-                 if f.level == "warn"]
-        wheres = " ".join(f.where for f in warns)
-        self.assertIn("C2", wheres)
-        self.assertIn("C4", wheres)
+                 if f.level == "warn" and "diagram" in f.message]
+        self.assertEqual(warns, [], "\n".join(str(f) for f in warns))
 
     # 표 줄 warn 을 검증하던 두 테스트(`test_회로_본문의_표는_인쇄되지_않으므로_warn`·
     # `test_lookup_절의_표는_warn_하지_않는다`)가 여기 있었다. 렌더러가 표를
@@ -621,8 +630,7 @@ class FolderConventionTest(unittest.TestCase):
         path = d / "명세.md"
         path.write_text(
             "---\n"
-            "schema: lab-spec/v1\n"
-            f"week: 2\n"
+            "schema: lab-spec/v2\n"
             f"experiment: {experiment}\n"
             "title: Basic Gates\n"
             "source_manual: x.pdf\n"
@@ -1170,7 +1178,7 @@ class NetlistCircuitWiring(unittest.TestCase):
     진짜 조용한 손실은 '칩 선언이 아예 없다'와 '칩에 배선이 하나도 없다'다."""
 
     def _netlist(self, circuit_body):
-        text = ("---\nschema: lab-netlist/v1\nweek: 2\nexperiment: 1\n"
+        text = ("---\nschema: lab-netlist/v2\nexperiment: 1\n"
                 "spec: ../체크리스트/명세.md\n---\n\n"
                 "# C1 · 시험\n\n- kind: circuit\n- id: C1\n"
                 "- item: E1.P1-1\n- tables: [T1]\n\n" + circuit_body)

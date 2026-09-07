@@ -6,7 +6,7 @@
 
 **본문 산문은 보지 않는다.** `expected` 필드·본문 서술은 같은 사실을
 다르게 써도 결함이 아니다. 보는 것은 소비자가 실제로 기대는 필드뿐이다 —
-프론트매터의 `week`·`experiment`·`title`·`source_manual`·`power`, 항목의
+프론트매터의 `experiment`·`title`·`source_manual`·`power`, 항목의
 `title`·`device`·`ics`·`tables`, 표의 `title`·`kind`·`encoding`·`source`·
 `role` 과 셀 전부. **제목 셋(명세·항목·표 `title`)은 2026-09-01 이후
 본다** — 그 전에는 산문과 같이 대조 밖이었다.
@@ -25,9 +25,9 @@ from .spec_parser import _T_HEAD, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
 # `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다. 명세·항목 `title` 은
-# 계약서가 필수(●)로 싣고(`docs/schema/lab-spec-v1.md:22,47`); 표 `title`
+# 계약서가 필수(●)로 싣고(`docs/schema/lab-spec-v2.md:21,54`); 표 `title`
 # 은 스키마의 표 필드 표에 행 자체가 없고 `## T<n> · <제목>` 헤딩 형식으로
-# 강제될 뿐이다(`docs/schema/lab-spec-v1.md:63,65`). 셋 다 `render.py`·
+# 강제될 뿐이다(`docs/schema/lab-spec-v2.md:70,72`). 셋 다 `render.py`·
 # `record.py` 가 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다(확인:
 # `grep -n title scripts/lab/render.py scripts/lab/record.py`). 두 회차
 # 연속으로 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
@@ -73,15 +73,15 @@ def compare_specs(original, regenerated) -> list:
     if shift_notice:
         out.append(shift_notice)
 
-    # `source_manual` 은 스키마 필수 필드다(`docs/schema/lab-spec-v1.md` 의
+    # `source_manual` 은 스키마 필수 필드다(`docs/schema/lab-spec-v2.md` 의
     # 프론트매터 표, `필수` 열에 ●). `write-pre-report`·`write-result-report`
     # 두 스킬이 "손으로 짐작하지 않는다 — 명세의 `source_manual` 이 가리킨다"
     # 로 이 필드를 명시적으로 소비한다(확인:
     # `grep -n "source_manual" .claude/skills/write-pre-report/SKILL.md
     # .claude/skills/write-result-report/SKILL.md`). 이 파일 docstring이
-    # 내건 기준("소비자가 실제로 기대는 필드")에 정확히 해당하므로 `week`·
-    # `experiment` 와 같은 자리에서 대조한다.
-    for field in ("week", "experiment", "title", "source_manual"):
+    # 내건 기준("소비자가 실제로 기대는 필드")에 정확히 해당하므로 같은
+    # 자리에서 대조한다.
+    for field in ("experiment", "title", "source_manual"):
         x, y = getattr(a, field), getattr(b, field)
         if x != y:
             out.append(f"프론트매터 {field}: 원본 {x!r} / 재생성 {y!r}")

@@ -1,4 +1,4 @@
-"""`명세.md` → `LabSpec`. 필드 계약은 `docs/schema/lab-spec-v1.md` 가 정본이다.
+"""`명세.md` → `LabSpec`. 필드 계약은 `docs/schema/lab-spec-v2.md` 가 정본이다.
 
 이 파서는 **표현할 수 없는 것에만** 예외를 던진다 (알 수 없는 kind, 표 누락,
 없는 표를 가리키는 항목). `source` 누락·`encoding` 누락 같은 의미 결함은
@@ -53,7 +53,6 @@ class SpecItem:
 
 @dataclass
 class LabSpec:
-    week: int
     experiment: int
     title: str
     source_manual: str
@@ -126,11 +125,12 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
 def parse_spec(path) -> LabSpec:
     path = Path(path)
     front, body = md.split_frontmatter(path.read_text(encoding="utf-8"))
-    if front.get("schema") != "lab-spec/v1":
+    if front.get("schema") != "lab-spec/v2":
         raise SpecError(
-            f"{path}: schema 가 lab-spec/v1 이 아닙니다 ({front.get('schema')!r})"
+            f"{path}: schema 가 lab-spec/v2 가 아닙니다 ({front.get('schema')!r}). "
+            "v1 은 `week:` 를 요구했다 — 일정은 이제 config.EXPERIMENT_DATES 한 곳에만 산다"
         )
-    for required in ("week", "experiment", "title", "source_manual", "power", "items"):
+    for required in ("experiment", "title", "source_manual", "power", "items"):
         if front.get(required) is None:
             raise SpecError(f"{path}: 프론트매터에 {required} 가 없습니다")
 
@@ -173,7 +173,7 @@ def parse_spec(path) -> LabSpec:
         items.append(SpecItem(id=raw["id"], title=raw["title"],
                               device=raw["device"], ics=raw["ics"], tables=raw["tables"]))
 
-    return LabSpec(week=front["week"], experiment=front["experiment"],
+    return LabSpec(experiment=front["experiment"],
                    title=front["title"], source_manual=front["source_manual"],
                    power=front["power"], items=items, tables=tables, path=path)
 

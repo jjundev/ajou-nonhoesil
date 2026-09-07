@@ -1,4 +1,4 @@
-"""`docs/schema/lab-spec-v1.md` 의 `### 검사 강도` 절과 `validate.py` 를 맞댄다.
+"""`docs/schema/lab-spec-v2.md` 의 `### 검사 강도` 절과 `validate.py` 를 맞댄다.
 
 이 세션의 최종 리뷰(I2)가 발견한 사실: "정본은 코드다" 문단이
 `validate_spec` 의 구성 함수로 넷(`check_metadata`·`check_row_count`·
@@ -30,7 +30,7 @@ from pathlib import Path
 from scripts.lab import validate
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_DOC = ROOT / "docs/schema/lab-spec-v1.md"
+SCHEMA_DOC = ROOT / "docs/schema/lab-spec-v2.md"
 SECTION_HEADING = "### 검사 강도"
 
 
