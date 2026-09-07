@@ -105,6 +105,20 @@ class TestDistributedManual(unittest.TestCase):
         cands = config.manual_candidates(3, root=root)
         self.assertEqual(cands[0], Path("강의노트/공지사항/실험3. Adder.pdf"))
 
+    def test_최상위_배포본이_하위_사본을_이긴다(self):
+        # 정렬 키의 깊이 항이 지키는 성질이다. 깊이를 빼면 이름순만 남는데,
+        # 한글 자모 순서상 `공지사항/...` 이 `실험5...` 보다 앞서서 하위
+        # 사본이 배포본을 가린다 — 2026-09 판본 사고와 같은 실패 모드다.
+        root = Path(tempfile.mkdtemp())
+        dist = root / config.MANUAL_DISTRIBUTION
+        dist.mkdir()
+        (dist / "실험5. Toplevel.pdf").write_bytes(b"%PDF-")
+        sub = dist / "공지사항"
+        sub.mkdir(parents=True)
+        (sub / "실험5. Deep.pdf").write_bytes(b"%PDF-")
+        cands = config.manual_candidates(5, root=root)
+        self.assertEqual(cands[0], Path("강의노트/실험5. Toplevel.pdf"))
+
     def test_재귀_탐색도_두_자리_번호를_삼키지_않는다(self):
         root = Path(tempfile.mkdtemp())
         sub = root / config.MANUAL_DISTRIBUTION / "공지사항"
