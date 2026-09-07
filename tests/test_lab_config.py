@@ -626,3 +626,50 @@ class TestWeekAnchor(unittest.TestCase):
     def test_학기_1주차_리터럴이_고정된다(self):
         self.assertEqual(config.SEMESTER_WEEK1, date(2026, 9, 4))
         self.assertEqual(config.SEMESTER_WEEKS, 16)
+
+
+class TestIsProjectWeek(unittest.TestCase):
+    """FPGA 주차 판별의 정본은 `PROJECT_DATES` 다 — 주차 번호를 새로 적지 않는다.
+
+    옛 `folder_for_week` 만 이 판정을 알았다. 그 함수가 사라지며 아홉 스킬의
+    "빈 리스트" 갈래가 FPGA(13~15주차)를 오리엔테이션·추석·중간고사와
+    똑같이 취급하는 회귀가 생겼다 — 여기서 그 판정 자리를 되살린다.
+    """
+
+    def test_13_14_15주차는_프로젝트_주차다(self):
+        # PROJECT_DATES = (11/27, 12/4, 12/11) 이 정확히 13·14·15주차다.
+        self.assertTrue(config.is_project_week(13))
+        self.assertTrue(config.is_project_week(14))
+        self.assertTrue(config.is_project_week(15))
+
+    def test_2_4_8주차는_프로젝트_주차가_아니다(self):
+        self.assertFalse(config.is_project_week(2))
+        self.assertFalse(config.is_project_week(4))
+        self.assertFalse(config.is_project_week(8))
+
+    def test_모든_실험_주차는_프로젝트_주차가_아니다(self):
+        # 실험이 있는 모든 주 — 12주차(실험 없는 회전 사이 주)도 함께 확인한다.
+        for week in range(1, 13):
+            self.assertFalse(
+                config.is_project_week(week), f"{week}주차가 프로젝트로 잘못 판정됐다"
+            )
+
+    def test_16주차는_프로젝트_주차가_아니다(self):
+        # 학기 마지막 주는 프로젝트 뒤다 — PROJECT_DATES 에 없다.
+        self.assertFalse(config.is_project_week(16))
+
+    def test_week_date_로_도출된다(self):
+        # 리터럴을 새로 적지 않는다는 것을 코드로도 못박는다 — week_date 의
+        # 결과가 PROJECT_DATES 에 있는지로만 판정해야 한다.
+        for week in (13, 14, 15):
+            self.assertIn(config.week_date(week), config.PROJECT_DATES)
+
+    def test_범위_밖_주차는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.is_project_week(0)
+        with self.assertRaises(ValueError):
+            config.is_project_week(config.SEMESTER_WEEKS + 1)
+
+    def test_bool은_주차가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.is_project_week(True)

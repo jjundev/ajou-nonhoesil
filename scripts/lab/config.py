@@ -211,6 +211,19 @@ def week_date(week: int) -> date:
     return SEMESTER_WEEK1 + timedelta(weeks=week - 1)
 
 
+def is_project_week(week: int) -> bool:
+    """주차 → FPGA 프로젝트(13~15주차) 주차인지.
+
+    **`PROJECT_DATES` 에서 도출한다 — 주차 번호를 여기 새로 적지 않는다.**
+    옛 `folder_for_week` 만 이 판정을 알았고, 주차 모델을 걷어내며 그 지식이
+    통째로 사라졌다 — `experiments_in_week` 가 빈 리스트를 주는 두 가지
+    이유(실험이 없는 주 / FPGA 주)를 스킬이 다시 가를 수 있게 이 함수가
+    그 자리를 메운다. `week_date` 로 얻은 그 주 날짜가 `PROJECT_DATES` 에
+    있는지만 본다 — 정본이 둘로 갈리지 않는다.
+    """
+    return week_date(week) in PROJECT_DATES
+
+
 def experiments_in_week(week: int) -> list:
     """주차 → 그 주에 하는 실험 번호들. 실험이 없는 주면 빈 리스트.
 

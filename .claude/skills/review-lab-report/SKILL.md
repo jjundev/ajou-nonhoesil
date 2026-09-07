@@ -52,10 +52,13 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    "
    ```
 
-   - 빈 리스트면 그 주엔 실험이 없다(1주차 오리엔테이션·4주차 추석·8주차
-     중간고사). 그대로 알리고 중단한다.
-   - 둘 이상이면 **어느 쪽인지 되묻고 중단한다.** 3주차(9/18)가 실험2·3 이고,
-     8시 20분까지 둘 다 마쳐야 하므로 두 벌이 다 필요할 수도 있다.
+   - 빈 리스트인데 `config.is_project_week(<N>)` 가 참이면 FPGA 프로젝트
+     주차(13~15주차)다. 실험 번호가 없어 `config.PROJECT_DIR` 로 간다.
+   - 빈 리스트이고 거짓이면 그 주엔 실험이 없다(1주차 오리엔테이션·4주차
+     추석·8주차 중간고사). 그대로 알리고 중단한다.
+   - 둘 이상이면 **어느 쪽인지 되묻고 중단한다.** 한 날에 실험이 둘인
+     주차가 있고, 그날 안에 둘 다 마쳐야 하므로 두 벌이 다 필요할 수도
+     있다.
    - 하나면 그 번호로 위 `config.experiment_dir()` 을 부른다.
 
 1. **실험 폴더 확인.** `<실험NN>/` 가 없으면 **거절하고** `init-lab-experiment` 를 안내한다.
@@ -125,9 +128,13 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    # source 에 복합 인용('manual:p10 (…) + manual:p4 (…)')과 범위 인용
    # ('manual:p13-p14')이 섞여 있다 — 단순 split(':p')[1] 은 두 형태 모두에서
    # 죽거나 쪽을 놓친다. manual: 로 시작하는 source 안의 pN 을 전부 뽑는다.
+   # **`p(\\d+)` 단독으로는 안 된다** — 이 도메인은 `Rp`·`Rn` 소자 표기를
+   # 실제로 쓴다. `manual:p9 (Rp2 측정 참조)` 를 그 정규식에 먹이면 `p2` 를
+   # 쪽 번호로 잘못 줍는다. 앞이 `manual:` 이거나 범위 인용의 `-` 인 `pN`
+   # 만 잡는다.
    cited = sorted({int(p) for t in spec.tables
                    if str(t.source).startswith('manual:')
-                   for p in re.findall(r'p(\d+)', str(t.source))})
+                   for p in re.findall(r'(?:manual:|-)p(\d+)', str(t.source))})
    print('교안 쪽 수:', pages, '/ 인용된 쪽:', cited)
    for p in cited:
        if p > pages:
