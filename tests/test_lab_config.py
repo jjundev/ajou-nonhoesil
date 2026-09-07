@@ -291,12 +291,13 @@ class MissingIdentityTest(unittest.TestCase):
         self.assertEqual(config.missing_identity(info), [])
 
     def test_조_번호는_게이트가_아니다(self):
-        """`team` 을 되돌리면 표지가 영원히 멈춘다.
+        """`team` 을 게이트로 되돌리지 않는다.
 
-        이 분반은 조 번호를 주지 않아 `team` 에 채울 값이 없는데, 게이트에
-        있는 동안에는 `missing_identity` 가 언제나 `["team"]` 을 돌려줘 ⑥ 이
-        표지를 못 냈다. 어느 템플릿도 조 번호를 인쇄하지 않는다 —
-        게이트에는 실제로 표지에 찍히는 값만 둔다.
+        조 번호는 5조로 실재하고 `과목정보.md` 에 적혀 있다. 그런데도 이것이
+        게이트에 있으면 안 되는 이유는 **어느 템플릿도 그 값을 인쇄하지
+        않기** 때문이다 — 값이 비어 있던 동안 `missing_identity` 가 언제나
+        `["team"]` 을 돌려줘 ⑥ 이 표지를 못 냈다. 게이트에는 실제로 표지에
+        찍히는 값만 둔다. 값이 채워진 지금도 판정은 그 값을 보지 않는다.
         """
         self.assertNotIn("team", config.IDENTITY_FIELDS)
         self.assertEqual(config.missing_identity({"team": None}), config.missing_identity({}))
