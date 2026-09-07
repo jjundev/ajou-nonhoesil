@@ -95,6 +95,26 @@ class TestDistributedManual(unittest.TestCase):
         root = self._배포폴더("실험1 자리배치도.png")
         self.assertEqual(len(config.manual_candidates(1, root=root)), 2)
 
+    def test_하위_폴더의_교안도_찾는다(self):
+        # 조교가 2026-09-07 에 실제로 파일 다섯을 `공지사항/` 하위로 옮겼다.
+        # iterdir 은 비재귀라 그 순간 조용히 아카이브의 2020-2 판으로 떨어졌다.
+        root = Path(tempfile.mkdtemp())
+        sub = root / config.MANUAL_DISTRIBUTION / "공지사항"
+        sub.mkdir(parents=True)
+        (sub / "실험3. Adder.pdf").write_bytes(b"%PDF-")
+        cands = config.manual_candidates(3, root=root)
+        self.assertEqual(cands[0], Path("강의노트/공지사항/실험3. Adder.pdf"))
+
+    def test_재귀_탐색도_두_자리_번호를_삼키지_않는다(self):
+        root = Path(tempfile.mkdtemp())
+        sub = root / config.MANUAL_DISTRIBUTION / "공지사항"
+        sub.mkdir(parents=True)
+        (sub / "실험10. Converter.pdf").write_bytes(b"%PDF-")
+        self.assertNotIn(
+            Path("강의노트/공지사항/실험10. Converter.pdf"),
+            config.manual_candidates(1, root=root),
+        )
+
 
 class TestCourseInfo(unittest.TestCase):
     def test_reads_required_fields(self):

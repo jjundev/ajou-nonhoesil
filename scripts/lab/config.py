@@ -92,22 +92,31 @@ MANUAL_DISTRIBUTION = "강의노트"
 def _distributed_manual(experiment: int, root: Path) -> Optional[Path]:
     """배포 폴더에서 그 주차 교안을 찾는다. 없으면 `None`.
 
+    **하위 폴더까지 훑는다.** 조교가 배포 폴더 안을 재편하면(2026-09-07 에
+    실제로 파일 다섯이 `공지사항/` 으로 내려갔다) 비재귀 탐색은 조용히 실패해
+    아카이브의 과거 학기 판으로 떨어진다. 아카이브에 늘 같은 번호 파일이
+    있으므로 "교안을 못 찾았다"로 드러나지도 않는다.
+
     번호 뒤가 **숫자가 아니어야** 한다. `실험1` 로 앞자리만 맞추면
     `실험10`·`실험11`·`실험12` 를 집어삼킨다 — 이 과목은 실험이 10 개라
     한 자리와 두 자리가 실제로 섞인다.
 
-    같은 번호가 여럿이면 이름순 첫 개를 쓴다. 배포본은 주차당 한 편이므로
-    정상 경로에서는 일어나지 않고, 일어나면 결정적으로 같은 걸 고른다.
+    같은 번호가 여럿이면 경로순 첫 개를 쓴다. 얕은 것이 먼저 오도록
+    (깊이, 경로) 로 정렬한다 — 최상위 배포본이 하위 사본을 이긴다.
     """
     folder = root / MANUAL_DISTRIBUTION
     if not folder.is_dir():
         return None
     pattern = re.compile(rf"^실험{experiment}(?!\d)")
     hits = sorted(
-        f for f in folder.iterdir()
-        if f.suffix.lower() == ".pdf" and pattern.match(f.name)
+        (f for f in folder.rglob("*")
+         if f.is_file() and f.suffix.lower() == ".pdf"
+         and pattern.match(f.name)),
+        key=lambda f: (len(f.relative_to(folder).parts), str(f)),
     )
-    return Path(MANUAL_DISTRIBUTION) / hits[0].name if hits else None
+    if not hits:
+        return None
+    return Path(MANUAL_DISTRIBUTION) / hits[0].relative_to(folder)
 
 
 def manual_candidates(experiment, root=None) -> list:
