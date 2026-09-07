@@ -87,7 +87,55 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    폴더 규약 finding 은 "폴더 이름과 명세의 `experiment` 중 하나가 틀렸다"는 뜻이다.
    어느 쪽이 맞는지는 교안으로 확인한다.
 
-3. **보고서 섹션 대조.** **반드시 `.claude/보고서양식.md` 를 기준으로 한다.**
+3. **판본 확인 — 명세가 지금 열리는 교안에서 나왔는가.**
+
+   이 검사가 없으면 나머지 전부가 무의미해진다. 명세가 통째로 과거 학기
+   판본이어도 2단계의 역검산·행 수 대조는 **전부 통과한다** — 명세 안에서만
+   닫혀 있기 때문이다.
+
+   ```bash
+   python3 -c "
+   from pathlib import Path
+   from scripts.lab import config, spec_parser
+   spec = spec_parser.parse_spec(Path('<실험NN>/체크리스트/명세.md'))
+   live = next((p for p in config.manual_candidates(spec.experiment)
+                if Path(p).exists()), None)
+   print('명세가 적은 교안:', spec.source_manual)
+   print('지금 열리는 교안:', live)
+   print('일치' if live and str(live) == spec.source_manual else '✗ 불일치')
+   "
+   ```
+
+   **불일치면 error 다.** 명세를 고치지 말고 `draft-lab-spec` 으로 **다시
+   저작하라**고 안내한 뒤 그 라운드를 중단한다. 판본이 다르면 항목 구성 자체가
+   다를 수 있다 — 실험1 은 아카이브가 13쪽·3항목, 배포본이 15쪽·5항목이다.
+
+   일치하면 **쪽 번호를 실물로 대조한다.** 명세의 `source: manual:pN` 이
+   가리키는 쪽이 그 PDF 에 실제로 있고 그 내용인지 본다.
+
+   ```bash
+   python3 -c "
+   from pathlib import Path
+   from pypdf import PdfReader
+   from scripts.lab import config, spec_parser
+   spec = spec_parser.parse_spec(Path('<실험NN>/체크리스트/명세.md'))
+   live = next(p for p in config.manual_candidates(spec.experiment) if Path(p).exists())
+   pages = len(PdfReader(str(live)).pages)
+   cited = sorted({int(t.source.split(':p')[1]) for t in spec.tables
+                   if str(t.source).startswith('manual:p')})
+   print('교안 쪽 수:', pages, '/ 인용된 쪽:', cited)
+   for p in cited:
+       if p > pages:
+           print(f'✗ p{p} 는 이 교안에 없다')
+   "
+   ```
+
+   **쪽 수를 넘는 인용은 error.** 범위 안이어도 내용까지는 코드가 못 본다 —
+   그 쪽을 `pdftoppm -png -r 130` 으로 렌더해 vision 으로 읽고, 명세가 적은
+   표가 실제로 그 쪽에 있는지 확인한다. 교안이 래스터 스캔이면 `pdftotext`
+   가 아무것도 주지 않으므로 vision 이 유일한 길이다.
+
+4. **보고서 섹션 대조.** **반드시 `.claude/보고서양식.md` 를 기준으로 한다.**
    목차를 스킬에 하드코딩하지 않는다 — 양식은 연도마다·학생마다 다르고
    이번 학기 것이 미확정이다 (R1).
 
@@ -111,7 +159,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    자기 절차 안에서 같은 인자를 넘기므로, 여기서 빠지면 같은 보고서를 두
    기준으로 재는 셈이 된다.
 
-3b. **렌더된 HTML 검사.** `check_rendered_html`(표 셀에 남은 백틱·`**`)과
+4b. **렌더된 HTML 검사.** `check_rendered_html`(표 셀에 남은 백틱·`**`)과
     `check_embedded_images`(경로가 안 풀려 깨진 그림)는 둘 다 `extract_text()`
     로는 안 보인다 — 실제로 표 셀 백틱 230개와 깨진 브레드보드 그림이 이
     검사 없이 제출된 적이 있다. **이 두 함수를 부르는 스킬은 이제 ⑤ 뿐이다**
@@ -135,17 +183,17 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
     "
     ```
 
-4. **코드가 못 보는 것을 사람이 본다.** 아래는 판정하지 말고 **질문으로** 남긴다.
+5. **코드가 못 보는 것을 사람이 본다.** 아래는 판정하지 말고 **질문으로** 남긴다.
 
    | 항목 | 왜 코드로 못 하나 |
    |---|---|
    | 고찰이 본인 경험인가 | 배운 점은 학생 것이다. 지어내면 안 된다 |
    | 교안 회로도와 netlist 위상이 맞는가 | PDF 벡터 판독이 필요하다 |
-   | 예상값 `source` 가 실제로 그 쪽에 있는가 | 쪽 번호 대조는 사람이 |
+   | 인용한 쪽의 **내용**이 명세가 적은 표인가 | 3단계가 쪽 수 범위까지는 막는다. 내용 대조는 vision 이 필요하다 |
    | 표기가 R5·R6 을 지키는가 | 오버바 승격 범위는 문맥 판단이다 |
    | 섹션 제목이 양식의 이름과 **글자 그대로** 같은가 | 대조는 정확 일치다. `## 1. 실험 목적` 은 통과하지만(번호는 벗겨낸다) `## 1. 실험 목적 및 배경` 은 누락으로 잡힌다. 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과`·`결과 분석` 두 섹션을 동시에 만족시켜 버리므로 일부러 엄격하게 뒀다 |
 
-5. **라운드 문서 작성.** `<실험NN>/output/<pre|result>_review_round<N>.md` 에 쓴다.
+6. **라운드 문서 작성.** `<실험NN>/output/<pre|result>_review_round<N>.md` 에 쓴다.
 
    ```markdown
    # <실험NN> <예비|결과>보고서 검토 — round<N>
@@ -157,7 +205,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
 
    ## 사람이 확인할 것
 
-   - (§실행 절차 4 의 항목 중 해당하는 것)
+   - (§실행 절차 5 의 항목 중 해당하는 것)
 
    ## 판정
 
@@ -165,7 +213,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    - [x] 수정 필요 — error 가 남아 있다
    ```
 
-6. **error 가 0 이 될 때까지 반복한다** (2·3·3b 단계 전부 합쳐서). warn 은
+7. **error 가 0 이 될 때까지 반복한다** (2·3·4·4b 단계 전부 합쳐서). warn 은
    남겨도 되지만 **왜 남기는지 한 줄** 적는다.
 
 ## 비-목표
