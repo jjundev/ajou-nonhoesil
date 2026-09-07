@@ -3,22 +3,66 @@ import sys
 import argparse
 from PIL import Image, ImageDraw, ImageFont
 
+# 저장소 루트. 이 파일은 `<루트>/.claude/skills/breadboard-diagram/scripts/`
+# 에 있다. **cwd 로 찾지 않는다** — 예전 후보 목록이 상대 경로여서 저장소
+# 루트 밖에서 부르면 조용히 못 찾았고, 그 자리를 메우려고 남의 계정에서는
+# 그냥 죽는 절대 경로가 하드코딩돼 있었다.
+REPO_ROOT = os.path.abspath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', '..'))
+
+# 브레드보드 템플릿 정본. **`.claude/assets/` 가 이긴다.**
+#
+# 이 클래스의 `cols`·`r_y()` 픽셀 좌표는 이 한 장의 그림에 맞춰져 있다.
+# 그래서 "같은 브레드보드 그림"이면 아무거나 써도 되는 게 아니다 —
+# 2026-2 배포본 `강의노트/공지사항/Breadboard.pdf` 는 도면도 세로 좌표도
+# 같지만(보드 상하단이 y=242·1317 로 일치) **가로가 중앙 기준 약 5% 넓다**.
+# 좌우 끝 레일이 최대 19px 밀리는데 홀 간격이 17px 이라, 갈아끼우면 결선이
+# 옆 홀에 그려진다. 그림 자체는 그럴듯하게 나오므로 눈으로는 안 잡힌다.
+# 배포본으로 옮기려면 좌표표를 같이 다시 떠야 한다.
+#
+# 아카이브 사본은 지금 정본과 바이트가 같지만(md5 ae44279586294fc5…) 과거
+# 학기 자료라 정리 대상이다. 최후 대체물로만 남긴다.
+TEMPLATE_CANDIDATES = (
+    '.claude/assets/Breadboard.jpg',
+    'from_the_past/정리/강의노트/Breadboard.jpg',
+    'from_the_past/정리/아카이브/강의노트/Breadboard.jpg',
+)
+
+# 좌표표가 묶여 있는 판본의 크기.
+TEMPLATE_SIZE = (998, 1345)
+
+
+def _default_template():
+    """정본 템플릿 경로. 저장소 루트를 먼저 보고, 없으면 cwd 도 본다."""
+    tried = []
+    for rel in TEMPLATE_CANDIDATES:
+        for base in (REPO_ROOT, os.getcwd()):
+            path = os.path.join(base, rel)
+            if path in tried:
+                continue
+            tried.append(path)
+            if os.path.exists(path):
+                return path
+    raise FileNotFoundError(
+        '브레드보드 템플릿을 찾지 못했습니다. 찾아본 곳:\n  ' + '\n  '.join(tried))
+
+
 class BreadboardRenderer:
     def __init__(self, template_path=None):
         if template_path is None:
-            candidate_paths = [
-                'from_the_past/정리/강의노트/Breadboard.jpg',
-                'from_the_past/정리/아카이브/강의노트/Breadboard.jpg',
-                '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/from_the_past/정리/강의노트/Breadboard.jpg'
-            ]
-            for p in candidate_paths:
-                if os.path.exists(p):
-                    template_path = p
-                    break
-        if not template_path or not os.path.exists(template_path):
+            template_path = _default_template()
+        if not os.path.exists(template_path):
             raise FileNotFoundError(f"Breadboard template not found: {template_path}")
-            
+
         self.base_im = Image.open(template_path).convert('RGBA')
+        # 좌표표가 이 크기에 묶여 있다. 다른 판본이 들어오면 여기서 걸린다 —
+        # 갈아끼운 그림은 결과가 그럴듯해서 눈으로는 안 잡히기 때문이다.
+        if self.base_im.size != TEMPLATE_SIZE:
+            raise ValueError(
+                f'템플릿 크기가 {TEMPLATE_SIZE[0]}x{TEMPLATE_SIZE[1]} 가 아닙니다: '
+                f'{self.base_im.size} ({template_path}).\n'
+                'cols·r_y() 좌표는 정본 한 장에 맞춰져 있습니다. '
+                '다른 판본을 쓰려면 좌표표를 다시 떠야 합니다.')
         self.im = self.base_im.copy()
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.draw = ImageDraw.Draw(self.overlay)
