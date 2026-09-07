@@ -714,6 +714,34 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
+def _input_jumper(bb, c, row, name, target, rail_row=None, marker=(130, 0)):
+    """입력 한 줄: **좌 GND 레일 홀 → 같은 행 b열**. GND(=0) 자리를 그린 것이다.
+
+    이전 판은 보드 밖 x=95 허공에서 선을 끌어왔다. 브레드보드 그림에서 홀이
+    아닌 데서 나오는 선은 꽂을 데가 없다 — 따라 그리는 사람이 왼쪽 끝을 어디에
+    꽂아야 하는지 알 수 없었다. netlist 공통 규칙(입력은 +5V 나 GND 에 직접
+    물린다)대로 레일 홀에서 출발시키고, 1 을 줄 때는 레일 쪽 끝만 빨간 VCC
+    레일로 옮겨 꽂는다고 범례에 적는다.
+
+    레일에 홀이 없는 행(8·14·20행 따위)은 `snap_rail_row()` 로 가까운 홀 행에서
+    출발해 한 행 비스듬히 들어간다 — `connect_unused_inputs()` 와 같은 관례다.
+    **`rail_row` 는 그 자동 선택이 이웃 입력과 같은 홀을 고를 때 준다.** 7행·8행에
+    나란히 들어가는 A·B 는 8행이 7행 홀로 스냅돼 A 와 한 홀을 두고 다투므로
+    B 에 9 를 넘긴다. 한 홀에 점퍼 둘은 못 꽂는다.
+
+    번호 원은 기본으로 **레일 왼쪽 x=130, 행 높이 그대로** 둔다. 선이 레일에서
+    시작하니 그 자리는 비어 있고, 선과 같은 높이라 어느 줄 번호인지 바로 읽힌다.
+    단 템플릿에 행 번호가 인쇄된 10·20·30행은 거기가 막혀 있으니 레일과 a열
+    사이 여백 `(215, ±13)` 으로 피한다. 꼬리표에는 꽂을 자리(b10)를 그대로
+    적는다 — 왼쪽 눈금이 10·20·30 뿐이라 이름만 있으면 홀을 세어야 한다.
+    """
+    r_rail = rail_row if rail_row is not None else bb.snap_rail_row(row)
+    bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c['b'], bb.r_y(row))], 'sig',
+                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
+                 marker_at=(marker[0], bb.r_y(row) + marker[1]))
+    _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → b{row}")
+
+
 def build_e1_and(output_path, template_path=None):
     """실험 1-1 · 3입력 AND (74HC08 2단 캐스케이드). netlist C1."""
     bb = BreadboardRenderer(template_path)
@@ -731,15 +759,15 @@ def build_e1_and(output_path, template_path=None):
     bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
     bb.connect_power(r)
 
-    bb.step_wire([(95, bb.r_y(5)), (c['a'], bb.r_y(5)), (c['a'], bb.r_y(10)), (c['b'], bb.r_y(10))],
-                 'sig', '입력 A -> pin 1', marker_at=(130, bb.r_y(5) - 12))
-    _tag(bb, 12, bb.r_y(5) - 8, "입력 A")
-    bb.step_wire([(95, bb.r_y(6)), (c['a'] - 16, bb.r_y(6)), (c['a'] - 16, bb.r_y(11)), (c['b'], bb.r_y(11))],
-                 'sig', '입력 B -> pin 2', marker_at=(130, bb.r_y(6) + 10))
-    _tag(bb, 12, bb.r_y(6) - 8, "입력 B")
-    bb.step_wire([(95, bb.r_y(7)), (c['a'], bb.r_y(7)), (c['a'], bb.r_y(14)), (c['b'], bb.r_y(14))],
-                 'sig', '입력 C -> pin 5', marker_at=(130, bb.r_y(7) + 10))
-    _tag(bb, 12, bb.r_y(7) - 8, "입력 C")
+    # 입력 세 줄은 보드 밖에서 목표 행으로 **수평 직행**한다. 예전엔 5·6·7행으로
+    # 들어와 a열을 타고 내려갔는데, A(5→10)·C(7→14)·중간단 갈래(12→19) 가 전부
+    # x=c['a'] 한 줄에 겹쳐 있었다. 그려 놓고 보면 C 가 12행부터 초록 중간단
+    # 선에 삼켜져, 따라 그리면 pin 3 이 pin 5 로 들어가는 다른 회로가 된다.
+    # 세로 경유 자체를 없애면 겹침도 홀 가림도 한꺼번에 닫힌다
+    # 입력 세 줄은 좌 GND 레일 홀에서 같은 행 b열로 들어간다. 사연은 _input_jumper
+    _input_jumper(bb, c, 10, 'A', 'pin 1', marker=(215, -13))
+    _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
+    _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
 
     bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid',
                  '1단 출력 A·B -> 2단 입력 (pin 3 -> pin 4)', width=4,
@@ -755,7 +783,7 @@ def build_e1_and(output_path, template_path=None):
 
     bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC08')
     bb.mark_unused_outputs([8, 11], r, chip='74HC08')
-    bb.note('입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다.')
+    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
 
 
@@ -782,15 +810,15 @@ def build_e1_or(output_path, template_path=None):
     bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
     bb.connect_power(r)
 
-    bb.step_wire([(95, bb.r_y(5)), (c['a'], bb.r_y(5)), (c['a'], bb.r_y(10)), (c['b'], bb.r_y(10))],
-                 'sig', '입력 A -> pin 1', marker_at=(130, bb.r_y(5) - 12))
-    _tag(bb, 12, bb.r_y(5) - 8, "입력 A")
-    bb.step_wire([(95, bb.r_y(6)), (c['a'] - 16, bb.r_y(6)), (c['a'] - 16, bb.r_y(11)), (c['b'], bb.r_y(11))],
-                 'sig', '입력 B -> pin 2', marker_at=(130, bb.r_y(6) + 10))
-    _tag(bb, 12, bb.r_y(6) - 8, "입력 B")
-    bb.step_wire([(95, bb.r_y(7)), (c['a'], bb.r_y(7)), (c['a'], bb.r_y(14)), (c['b'], bb.r_y(14))],
-                 'sig', '입력 C -> pin 5', marker_at=(130, bb.r_y(7) + 10))
-    _tag(bb, 12, bb.r_y(7) - 8, "입력 C")
+    # 입력 세 줄은 보드 밖에서 목표 행으로 **수평 직행**한다. 예전엔 5·6·7행으로
+    # 들어와 a열을 타고 내려갔는데, A(5→10)·C(7→14)·중간단 갈래(12→19) 가 전부
+    # x=c['a'] 한 줄에 겹쳐 있었다. 그려 놓고 보면 C 가 12행부터 초록 중간단
+    # 선에 삼켜져, 따라 그리면 pin 3 이 pin 5 로 들어가는 다른 회로가 된다.
+    # 세로 경유 자체를 없애면 겹침도 홀 가림도 한꺼번에 닫힌다
+    # 입력 세 줄은 좌 GND 레일 홀에서 같은 행 b열로 들어간다. 사연은 _input_jumper
+    _input_jumper(bb, c, 10, 'A', 'pin 1', marker=(215, -13))
+    _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
+    _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
 
     bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid',
                  '1단 출력 A+B -> 2단 입력 (pin 3 -> pin 4)', width=4,
@@ -806,7 +834,7 @@ def build_e1_or(output_path, template_path=None):
 
     bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC32')
     bb.mark_unused_outputs([8, 11], r, chip='74HC32')
-    bb.note('입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다.')
+    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
 
 
@@ -827,12 +855,9 @@ def build_e1_nand(output_path, template_path=None):
     bb.connect_power(r_and)
     bb.connect_power(r_nand)
 
-    bb.step_wire([(95, bb.r_y(5)), (c['a'], bb.r_y(5)), (c['a'], bb.r_y(7)), (c['b'], bb.r_y(7))],
-                 'sig', '입력 A -> 74HC08 pin 1', marker_at=(130, bb.r_y(5) - 12))
-    _tag(bb, 12, bb.r_y(5) - 8, "입력 A")
-    bb.step_wire([(95, bb.r_y(6)), (c['a'] - 16, bb.r_y(6)), (c['a'] - 16, bb.r_y(8)), (c['b'], bb.r_y(8))],
-                 'sig', '입력 B -> 74HC08 pin 2', marker_at=(130, bb.r_y(6) + 10))
-    _tag(bb, 12, bb.r_y(6) - 8, "입력 B")
+    # 8행 레일에는 홀이 없다. 자동 스냅은 7행을 고르는데 그건 A 의 홀이다 — B 는 9행
+    _input_jumper(bb, c, 7, 'A', '74HC08 pin 1')
+    _input_jumper(bb, c, 8, 'B', '74HC08 pin 2', rail_row=9)
 
     bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(18))], 'mid',
                  'A·B -> 74HC00 pin 1 (칩 사이 연결)', marker_at=(c['c'] + 18, bb.r_y(13)))
@@ -841,9 +866,7 @@ def build_e1_nand(output_path, template_path=None):
                  '중간단 확인용 갈래', width=2, marker_at=(c['b'] - 20, bb.r_y(11)))
     bb.led_chain(c['b'], 13, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
-    bb.step_wire([(95, bb.r_y(17)), (c['a'], bb.r_y(17)), (c['a'], bb.r_y(19)), (c['b'], bb.r_y(19))],
-                 'sig', '입력 C -> 74HC00 pin 2', marker_at=(130, bb.r_y(17) + 10))
-    _tag(bb, 12, bb.r_y(17) - 8, "입력 C")
+    _input_jumper(bb, c, 19, 'C', '74HC00 pin 2')
 
     bb.step_wire([(c['c'], bb.r_y(20)), (c['c'], bb.r_y(25))], 'sig',
                  '최종 출력 74HC00 pin 3 -> L2', marker_at=(c['c'] + 18, bb.r_y(22)))
@@ -853,7 +876,7 @@ def build_e1_nand(output_path, template_path=None):
     bb.mark_unused_outputs([6, 8, 11], r_and, chip='74HC08')
     bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_nand, bridge_row=29, chip='74HC00')
     bb.mark_unused_outputs([6, 8, 11], r_nand, chip='74HC00')
-    bb.note('입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다.')
+    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
 
 
@@ -880,12 +903,9 @@ def build_e1_nor(output_path, template_path=None):
     bb.connect_power(r_or)
     bb.connect_power(r_nor)
 
-    bb.step_wire([(95, bb.r_y(5)), (c['a'], bb.r_y(5)), (c['a'], bb.r_y(7)), (c['b'], bb.r_y(7))],
-                 'sig', '입력 A -> 74HC32 pin 1', marker_at=(130, bb.r_y(5) - 12))
-    _tag(bb, 12, bb.r_y(5) - 8, "입력 A")
-    bb.step_wire([(95, bb.r_y(6)), (c['a'] - 16, bb.r_y(6)), (c['a'] - 16, bb.r_y(8)), (c['b'], bb.r_y(8))],
-                 'sig', '입력 B -> 74HC32 pin 2', marker_at=(130, bb.r_y(6) + 10))
-    _tag(bb, 12, bb.r_y(6) - 8, "입력 B")
+    # 8행 레일에는 홀이 없다. 자동 스냅은 7행을 고르는데 그건 A 의 홀이다 — B 는 9행
+    _input_jumper(bb, c, 7, 'A', '74HC32 pin 1')
+    _input_jumper(bb, c, 8, 'B', '74HC32 pin 2', rail_row=9)
 
     # A+B 는 74HC02 의 **2번 핀**으로 간다. 1번 핀은 출력이다
     bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(19))], 'mid',
@@ -895,9 +915,9 @@ def build_e1_nor(output_path, template_path=None):
                  '중간단 확인용 갈래', width=2, marker_at=(c['b'] - 20, bb.r_y(11)))
     bb.led_chain(c['b'], 13, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
-    bb.step_wire([(95, bb.r_y(17)), (c['a'] - 16, bb.r_y(17)), (c['a'] - 16, bb.r_y(20)), (c['b'], bb.r_y(20))],
-                 'sig', '입력 C -> 74HC02 pin 3', marker_at=(130, bb.r_y(17) + 10))
-    _tag(bb, 12, bb.r_y(17) - 8, "입력 C")
+    # 20행은 레일 홀도 없고("20 →" 가 인쇄돼) 왼쪽 여백도 막혀 있다 — 19행 홀에서
+    # 비스듬히 들어가고 번호 원은 여백 아래쪽으로
+    _input_jumper(bb, c, 20, 'C', '74HC02 pin 3', marker=(215, +13))
 
     # 최종 출력은 74HC02 의 1번 핀 — 칩 맨 윗핀이다
     bb.step_wire([(c['a'], bb.r_y(18)), (c['a'], bb.r_y(25))], 'sig',
@@ -911,7 +931,7 @@ def build_e1_nor(output_path, template_path=None):
     bb.mark_unused_outputs([4, 10, 13], r_nor, chip='74HC02')
     bb.note('74HC02 는 핀 배치가 다르다 — 입력이 2·3 / 5·6 / 8·9 / 11·12, 출력이 1·4·10·13. '
             '나머지 넷과 반대다.')
-    bb.note('입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다.')
+    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
 
 
@@ -957,20 +977,24 @@ def build_e1_comb(output_path, template_path=None, stage=None):
 
     if st >= 2:
         # --- 2단계: 신호 ---
-        bb.step_wire([(95, bb.r_y(5)), (c_l['a'], bb.r_y(5)), (c_l['a'], bb.r_y(7)), (c_l['b'], bb.r_y(7))],
-                     'sig', '입력 A -> 74HC04 pin 1', marker_at=(130, bb.r_y(5) - 12))
-        _tag(bb, 12, bb.r_y(5) - 8, "입력 A")
-        bb.step_wire([(c_l['a'], bb.r_y(5)), (c_r['a'], bb.r_y(5)), (c_r['a'], bb.r_y(13)), (c_r['b'], bb.r_y(13))],
+        _input_jumper(bb, c_l, 7, 'A', '74HC04 pin 1')
+        # 오른쪽 블록으로 가는 갈래는 **같은 스트립의 다른 홀(a7)** 에 두 번째 점퍼를
+        # 꽂는 것이다. 점퍼는 이어 붙일 수 없으니 허공 줄기에서 분기하면 안 된다.
+        # 레일과 a열 사이 여백(x=228)으로 빠져 5행까지 올라간 뒤 판 위를 가로지른다
+        # — a열을 타고 올라가면 a5·a6 홀을 덮는다
+        bb.step_wire([(c_l['a'], bb.r_y(7)), (228, bb.r_y(7)), (228, bb.r_y(5)),
+                      (c_r['a'], bb.r_y(5)), (c_r['a'], bb.r_y(13)), (c_r['b'], bb.r_y(13))],
                      'sig', '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(c_r['a'] - 40, bb.r_y(5) - 12))
         bb.step_wire([(c_r['a'], bb.r_y(10)), (c_r['b'], bb.r_y(10))],
                      'sig', '입력 A 갈래 -> 74HC32 pin 1', width=2, marker_at=(c_r['a'] - 18, bb.r_y(10)))
 
-        bb.step_wire([(95, bb.r_y(6)), (c_l['a'] - 16, bb.r_y(6)), (c_l['a'] - 16, bb.r_y(19)), (c_l['b'], bb.r_y(19))],
-                     'sig', '입력 B -> 74HC08 pin 2', marker_at=(130, bb.r_y(6) + 10))
-        _tag(bb, 12, bb.r_y(6) - 8, "입력 B")
-        bb.step_wire([(c_l['a'] - 16, bb.r_y(6)), (c_r['b'] + 8, bb.r_y(6)), (c_r['b'] + 8, bb.r_y(14)), (c_r['b'], bb.r_y(14))],
+        _input_jumper(bb, c_l, 19, 'B', '74HC08 pin 2')
+        # B 갈래도 a19 에 두 번째 점퍼. 여백 x=212 로 6행까지 올라간다 — A 갈래(228)와
+        # 다른 세로줄이라 겹치지 않고, 7행에서 입력 A 선과 한 번 교차만 한다
+        bb.step_wire([(c_l['a'], bb.r_y(19)), (212, bb.r_y(19)), (212, bb.r_y(6)),
+                      (c_r['b'] + 8, bb.r_y(6)), (c_r['b'] + 8, bb.r_y(14)), (c_r['b'], bb.r_y(14))],
                      'sig', '입력 B 갈래 -> 74HC32 pin 5', width=2,
-                     marker_at=(c_r['b'] - 60, bb.r_y(6) + 10), frm='입력 B 선에서 분기')
+                     marker_at=(c_r['b'] - 60, bb.r_y(6) + 10))
 
         bb.step_wire([(c_l['c'], bb.r_y(8)), (c_l['c'], bb.r_y(18))], 'mid',
                      "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c_l['c'] - 20, bb.r_y(15)))
@@ -1011,6 +1035,7 @@ def build_e1_comb(output_path, template_path=None, stage=None):
                 "두 LED 가 서로 다르게 켜지면 배선이 틀린 것이다 — 공짜 자체 검산.")
 
     bb.note('입력 A·B 두 개뿐이다. 교안 p15 회로도에 C 입력은 없다.')
+    bb.note('입력 A·B 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 오른쪽 블록으로 가는 갈래는 같은 행의 a열에 꽂는 두 번째 점퍼다.')
     bb.export(output_path, max_row=34)
 
 
