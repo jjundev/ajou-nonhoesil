@@ -44,11 +44,11 @@ python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
 
 ### 지원 회로 ID (`--circuit`):
 - **실험 1 (기본 게이트 및 조합논리)**:
-  - `e1_and`: 실험 1-1 (1) 3입력 AND 게이트 (74HC08)
-  - `e1_or`: 실험 1-1 (2) 3입력 OR 게이트 (74HC32)
-  - `e1_nand`: 실험 1-2 (1) 3입력 NAND 게이트 (74HC08 + 74HC00)
-  - `e1_nor`: 실험 1-2 (2) 3입력 NOR 게이트 (74HC32 + 74HC02, 출력 1번 핀)
-  - `e1_comb`: 실험 1-3 복합 논리회로 (74HC04 + 74HC08 + 74HC32, X, Y, Z 3출력)
+  - `e1_and`: 실험 1-1 3입력 AND 게이트 (74HC08)
+  - `e1_or`: 실험 1-2 3입력 OR 게이트 (74HC32)
+  - `e1_nand`: 실험 2-1 3입력 NAND 게이트 (74HC08 + 74HC00)
+  - `e1_nor`: 실험 2-2 3입력 NOR 게이트 (74HC32 + 74HC02, 출력 1번 핀)
+  - `e1_comb`: 실험 3 복합 논리회로 (74HC04 + 74HC08 + 74HC32, X, Y, Z 3출력)
 
 **OR·NOR 은 2026-09-06 에 되살렸다.** 그 전에는 `e1_or`·`e1_nor` 가 각각
 AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름으로 냈다.**
