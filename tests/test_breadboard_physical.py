@@ -57,6 +57,27 @@ class PhysicalRules(unittest.TestCase):
         bb.connect_jacks()
         bb.verify()
 
+    # ---- R2. 한 홀에 리드 하나 ----
+
+    def test_한_홀에_배선_둘은_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid', '1단 -> 2단')
+        bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12))], 'mid', '갈래')
+        with self.assertRaisesRegex(AssertionError, '한 홀에 리드 둘.*좌 c12'):
+            bb.verify()
+
+    def test_레일_홀이_차면_가까운_빈_홀로_옮긴다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.lead(c['gnd'], bb.r_y(7), '먼저 꽂힌 것')
+        # 8행은 빈 행이고 7행은 찼다 -> 9행
+        self.assertEqual(bb.free_rail_row(8, c['gnd']), 9)
+        self.assertEqual(bb.free_rail_row(10, c['gnd']), 10)
+        # 두 열을 같이 주면 둘 다 비어야 한다
+        bb.lead(c['mid_gnd'], bb.r_y(31), '브리지 끝')
+        self.assertEqual(bb.free_rail_row(31, c['mid_gnd'], c['mid_vcc']), 30)
+
 
 if __name__ == '__main__':
     unittest.main()

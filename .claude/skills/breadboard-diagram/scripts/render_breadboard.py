@@ -220,6 +220,21 @@ class BreadboardRenderer:
         else:
             self._leads[key] = what
 
+    def free_rail_row(self, row, *xs):
+        """`row` 에서 가장 가까운, `xs` 열의 홀이 전부 비어 있는 레일 행.
+
+        `snap_rail_row()` 는 홀이 있는 행만 찾았다. 그래서 7행·8행에 나란히
+        들어가는 입력 A·B 가 둘 다 7행 홀로 스냅돼 한 홀을 두고 다퉜고, 레일
+        브리지 셋을 31행에 이으면 가운데 레일 31행에 점퍼 둘이 꽂혔다. 한 홀에
+        리드 둘은 못 꽂는다 — 점유표를 보고 비어 있는 이웃으로 간다. 가까운
+        순(같은 행, 위, 아래, 두 칸 위, …)이라 결과가 결정적이다.
+        """
+        for d in range(0, 8):
+            for cand in ((row,) if d == 0 else (row - d, row + d)):
+                if self.is_rail_row(cand) and all((x, cand) not in self._leads for x in xs):
+                    return cand
+        raise ValueError(f'{row}행 근처에 빈 레일 홀이 없다: x={xs}')
+
     def _rail_xs(self):
         out = set()
         for block in self.cols.values():
@@ -292,7 +307,7 @@ class BreadboardRenderer:
     def connect_jacks(self, block='left'):
         """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다."""
         c = self.cols[block]
-        r_v, r_g = self.snap_rail_row(3), self.snap_rail_row(4)
+        r_v, r_g = self.free_rail_row(3, c['vcc']), self.free_rail_row(4, c['gnd'])
         self.step_wire([(JACKS['red'], JACK_BOTTOM), (JACKS['red'], 250),
                         (c['vcc'], 250), (c['vcc'], self.r_y(r_v))],
                        'vcc', '전원장치 +5V 잭', marker_at=(JACKS['red'] + 46, 118))
@@ -450,8 +465,8 @@ class BreadboardRenderer:
         self.step_note('sig', self.addr(x, y_a), self.addr(x, self.r_y(top_row + 3)),
                        f'{tag}: LED + 330Ω 직렬 · {desc}',
                        marker_at=(x + marker_dx, (y_a + y_k) // 2))
-        r_gnd = self.snap_rail_row(top_row + 3)
         x_gnd = self.nearest_gnd_rail(x, block)
+        r_gnd = self.free_rail_row(top_row + 3, x_gnd)
         self.step_wire([(x, self.r_y(top_row + 3)), (x_gnd, self.r_y(r_gnd))],
                        'gnd', f'{tag} 저항 아래 -> GND',
                        width=2, marker_at=(x - 22, self.r_y(top_row + 3) + 2))
@@ -502,7 +517,7 @@ class BreadboardRenderer:
         if key in self._bridged:
             return
         self._bridged.add(key)
-        row = self.snap_rail_row(row)
+        row = self.free_rail_row(row, x_a, x_b)
         self._uf_union(x_a, x_b)
         y = self.r_y(row)
         self.step_wire([(x_a, y), (x_b, y)], kind,
@@ -520,11 +535,11 @@ class BreadboardRenderer:
         c = self.cols[block]
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
-        r14 = self.snap_rail_row(start_row)
+        r14 = self.free_rail_row(start_row, x_vcc)
         self.step_wire([(c['f'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', 'pin 14 -> +5V 레일',
                        marker_at=((c['f'] + x_vcc) // 2, self.r_y(start_row) - 11))
-        r7 = self.snap_rail_row(start_row + 6)
+        r7 = self.free_rail_row(start_row + 6, x_gnd)
         self.step_wire([(c['e'], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
                        'gnd', 'pin 7 -> GND 레일',
                        marker_at=((c['e'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
@@ -556,11 +571,14 @@ class BreadboardRenderer:
             else:
                 continue
             pick = self.nearest_vcc_rail if rail == 'vcc' else self.nearest_gnd_rail
-            x_rail, r_rail = pick(x_pin, block), self.snap_rail_row(row)
+            x_rail = pick(x_pin, block)
+            r_rail = self.free_rail_row(row, x_rail)
             col = WIRE[rail]
             self.draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self.draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
             self.draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
+            self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
+            self.lead(x_rail, self.r_y(r_rail), f'{chip} pin {p} 미사용 입력 접지선')
             self.touch_rail(rail, x_rail)
 
         pin_str = ", ".join(str(p) for p in pins)
@@ -713,6 +731,7 @@ class BreadboardRenderer:
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
         """
         bad = [f'홀이 아니다: {s}' for s in self._not_holes]
+        bad += [f'한 홀에 리드 둘: {s}' for s in self._double]
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
@@ -755,7 +774,7 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
-def _input_jumper(bb, c, row, name, target, rail_row=None, marker=(130, 0)):
+def _input_jumper(bb, c, row, name, target, marker=(130, 0)):
     """입력 한 줄: **좌 GND 레일 홀 → 같은 행 b열**. GND(=0) 자리를 그린 것이다.
 
     이전 판은 보드 밖 x=95 허공에서 선을 끌어왔다. 브레드보드 그림에서 홀이
@@ -764,11 +783,9 @@ def _input_jumper(bb, c, row, name, target, rail_row=None, marker=(130, 0)):
     물린다)대로 레일 홀에서 출발시키고, 1 을 줄 때는 레일 쪽 끝만 빨간 VCC
     레일로 옮겨 꽂는다고 범례에 적는다.
 
-    레일에 홀이 없는 행(8·14·20행 따위)은 `snap_rail_row()` 로 가까운 홀 행에서
-    출발해 한 행 비스듬히 들어간다 — `connect_unused_inputs()` 와 같은 관례다.
-    **`rail_row` 는 그 자동 선택이 이웃 입력과 같은 홀을 고를 때 준다.** 7행·8행에
-    나란히 들어가는 A·B 는 8행이 7행 홀로 스냅돼 A 와 한 홀을 두고 다투므로
-    B 에 9 를 넘긴다. 한 홀에 점퍼 둘은 못 꽂는다.
+    레일에 홀이 없는 행(8·14·20행 따위)이나 이웃 입력이 이미 쓴 홀은
+    `free_rail_row()` 가 피해 준다 — 7행·8행에 나란히 들어가는 A·B 는 B 가
+    9행 홀에서 비스듬히 들어간다. `connect_unused_inputs()` 와 같은 관례다.
 
     번호 원은 기본으로 **레일 왼쪽 x=130, 행 높이 그대로** 둔다. 선이 레일에서
     시작하니 그 자리는 비어 있고, 선과 같은 높이라 어느 줄 번호인지 바로 읽힌다.
@@ -776,7 +793,7 @@ def _input_jumper(bb, c, row, name, target, rail_row=None, marker=(130, 0)):
     사이 여백 `(215, ±13)` 으로 피한다. 꼬리표에는 꽂을 자리(b10)를 그대로
     적는다 — 왼쪽 눈금이 10·20·30 뿐이라 이름만 있으면 홀을 세어야 한다.
     """
-    r_rail = rail_row if rail_row is not None else bb.snap_rail_row(row)
+    r_rail = bb.free_rail_row(row, c['gnd'])
     bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c['b'], bb.r_y(row))], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
                  marker_at=(marker[0], bb.r_y(row) + marker[1]))
@@ -814,7 +831,9 @@ def build_e1_and(output_path, template_path=None):
                  '1단 출력 A·B -> 2단 입력 (pin 3 -> pin 4)', width=4,
                  marker_at=(c['c'] - 20, bb.r_y(12) + 8))
 
-    bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
+    # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
                  '중간단 확인용 갈래', width=2, marker_at=(c['a'] + 18, bb.r_y(16)))
     bb.led_chain(c['a'], 19, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
@@ -865,7 +884,9 @@ def build_e1_or(output_path, template_path=None):
                  '1단 출력 A+B -> 2단 입력 (pin 3 -> pin 4)', width=4,
                  marker_at=(c['c'] - 20, bb.r_y(12) + 8))
 
-    bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
+    # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
                  '중간단 확인용 갈래', width=2, marker_at=(c['a'] + 18, bb.r_y(16)))
     bb.led_chain(c['a'], 19, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
@@ -896,9 +917,8 @@ def build_e1_nand(output_path, template_path=None):
     bb.connect_power(r_and)
     bb.connect_power(r_nand)
 
-    # 8행 레일에는 홀이 없다. 자동 스냅은 7행을 고르는데 그건 A 의 홀이다 — B 는 9행
     _input_jumper(bb, c, 7, 'A', '74HC08 pin 1')
-    _input_jumper(bb, c, 8, 'B', '74HC08 pin 2', rail_row=9)
+    _input_jumper(bb, c, 8, 'B', '74HC08 pin 2')
 
     bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(18))], 'mid',
                  'A·B -> 74HC00 pin 1 (칩 사이 연결)', marker_at=(c['c'] + 18, bb.r_y(13)))
@@ -944,9 +964,8 @@ def build_e1_nor(output_path, template_path=None):
     bb.connect_power(r_or)
     bb.connect_power(r_nor)
 
-    # 8행 레일에는 홀이 없다. 자동 스냅은 7행을 고르는데 그건 A 의 홀이다 — B 는 9행
     _input_jumper(bb, c, 7, 'A', '74HC32 pin 1')
-    _input_jumper(bb, c, 8, 'B', '74HC32 pin 2', rail_row=9)
+    _input_jumper(bb, c, 8, 'B', '74HC32 pin 2')
 
     # A+B 는 74HC02 의 **2번 핀**으로 간다. 1번 핀은 출력이다
     bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(19))], 'mid',
@@ -1051,9 +1070,10 @@ def build_e1_comb(output_path, template_path=None, stage=None):
 
     if st >= 3:
         # --- 3단계: 출력 LED 와 마감 ---
-        bb.step_wire([(c_l['b'], bb.r_y(10)), (c_l['b'], bb.r_y(26))], 'sig',
-                     'Z 노드 -> Z LED', marker_at=(c_l['b'] - 20, bb.r_y(22)))
-        bb.led_chain(c_l['b'], 26, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다",
+        # Z LED 선은 a10 에서. b10 은 위의 초록 Z 점퍼가 쓴다 (같은 스트립, 다른 홀)
+        bb.step_wire([(c_l['a'], bb.r_y(10)), (c_l['a'], bb.r_y(26))], 'sig',
+                     'Z 노드 -> Z LED', marker_at=(c_l['a'] - 20, bb.r_y(22)))
+        bb.led_chain(c_l['a'], 26, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다",
                      color_rgb=(210, 20, 80))
 
         bb.step_wire([(c_r['d'], bb.r_y(12)), (c_r['d'], bb.r_y(22))], 'sig',
@@ -1203,7 +1223,7 @@ def _build_e2_dc(output_path, template_path, mode):
 
     # pin 1 을 레일에 직결한다. CMOS 입력은 전류를 거의 안 먹으므로 저항이 필요없다
     x_rail = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['b'], 'left')
-    bb.step_wire([(c['b'], bb.r_y(r)), (x_rail, bb.r_y(bb.snap_rail_row(r)))], rail,
+    bb.step_wire([(c['b'], bb.r_y(r)), (x_rail, bb.r_y(bb.free_rail_row(r, x_rail)))], rail,
                  f"pin 1 -> {'+5V' if rn else 'GND'} 직결 "
                  f"(입력 {'HIGH' if rn else 'LOW'} -> 출력 {'LOW' if rn else 'HIGH'} 고정)",
                  marker_at=(c['b'] - 30, bb.r_y(r) - 12))
@@ -1214,7 +1234,7 @@ def _build_e2_dc(output_path, template_path, mode):
                  'R1 = 1kΩ 꽂기 (pin 2 와 같은 행에서 시작)',
                  marker_at=(c['a'] - 22, (bb.r_y(r + 1) + bb.r_y(r + 4)) // 2))
     x_far = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
-    bb.step_wire([(c['a'], bb.r_y(r + 4)), (x_far, bb.r_y(bb.snap_rail_row(r + 4)))], rail,
+    bb.step_wire([(c['a'], bb.r_y(r + 4)), (x_far, bb.r_y(bb.free_rail_row(r + 4, x_far)))], rail,
                  f"R1 반대쪽 -> {'+5V' if rn else 'GND'} 레일",
                  marker_at=(c['a'] - 30, bb.r_y(r + 4) + 10))
 
