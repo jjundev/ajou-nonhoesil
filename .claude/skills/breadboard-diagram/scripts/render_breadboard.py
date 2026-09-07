@@ -126,6 +126,13 @@ class BreadboardRenderer:
         self._leads = {}
         self._not_holes = []
         self._double = []
+        # 배선 구간 목록. (색, 꼭짓점들, 뜻). 서로 다른 배선이 같은 축 위에
+        # 포개지면 그림에서 한 선으로 보인다 — 2026-09-07 실험 1-1 에서 입력 C 가
+        # 초록 중간단 선에 삼켜져 다른 회로로 읽혔다. 'strict' 면 verify() 가
+        # 던지고, 'warn' 이면 stderr 에 적고 overlap_warnings 에 남긴다
+        self._segments = []
+        self.overlap_policy = 'strict'
+        self.overlap_warnings = []
         # 번호 매기기는 e1 계열(손스케치용 원도)만 켠다. e2 빌더들은 아직
         # 옛 API(draw_wire) 를 쓰므로 순서표가 반쪽이 된다 — 반쪽 표는 없는
         # 것보다 나쁘다
@@ -234,6 +241,40 @@ class BreadboardRenderer:
                 if self.is_rail_row(cand) and all((x, cand) not in self._leads for x in xs):
                     return cand
         raise ValueError(f'{row}행 근처에 빈 레일 홀이 없다: x={xs}')
+
+    def _overlaps(self):
+        """서로 다른 배선의 구간이 같은 축 위에 포개진 곳. 축 방향 구간만 본다.
+
+        다른 색이면 8px 만 포개져도 잡는다. 같은 색은 30px(두 홀 폭 안)까지
+        봐준다 — 같은 스트립의 옆 홀에 꽂은 두 번째 점퍼가 첫 점퍼 위를 되짚어
+        여백으로 나가는 갈래 밑동이 그렇다 (복합 회로 A 갈래 11px, B 갈래 27px).
+        그 이상 같은 색으로 포개지면 두 넷이 한 선으로 보인다 (검정은 모든
+        신호선의 색이다).
+        """
+        segs = []
+        for i, (kind, pts, desc) in enumerate(self._segments):
+            for a, b in zip(pts, pts[1:]):
+                segs.append((i, kind, desc, a, b))
+        out = []
+        for i, ki, di, a, b in segs:
+            for j, kj, dj, c, d in segs:
+                if j <= i:
+                    continue
+                lim = 8 if ki != kj else 30
+                where = None
+                if abs(a[0] - b[0]) < .5 and abs(c[0] - d[0]) < .5 and abs(a[0] - c[0]) < 1.5:
+                    lo = max(min(a[1], b[1]), min(c[1], d[1]))
+                    hi = min(max(a[1], b[1]), max(c[1], d[1]))
+                    if hi - lo > lim:
+                        where = f'세로 {self.addr(a[0], lo)}~{self.addr(a[0], hi)}'
+                elif abs(a[1] - b[1]) < .5 and abs(c[1] - d[1]) < .5 and abs(a[1] - c[1]) < 1.5:
+                    lo = max(min(a[0], b[0]), min(c[0], d[0]))
+                    hi = min(max(a[0], b[0]), max(c[0], d[0]))
+                    if hi - lo > lim:
+                        where = f'가로 {self.addr(lo, a[1])}~{self.addr(hi, a[1])}'
+                if where:
+                    out.append(f'{where} — [{KIND_KR[ki]}] {di} / [{KIND_KR[kj]}] {dj}')
+        return out
 
     def _rail_xs(self):
         out = set()
@@ -394,6 +435,7 @@ class BreadboardRenderer:
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
+        self._segments.append((kind, [tuple(p) for p in points], desc))
         if not self.numbered:
             return None
 
@@ -602,6 +644,8 @@ class BreadboardRenderer:
             r_rail = self.free_rail_row(row, x_rail)
             col = WIRE[rail]
             self.draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
+            self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
+                                   f'{chip} pin {p} 미사용 입력'))
             self.draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
             self.draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
@@ -761,6 +805,15 @@ class BreadboardRenderer:
         bad += [f'한 홀에 리드 둘: {s}' for s in self._double]
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
+
+        # R4. 다른 배선끼리 같은 축 위에 포개지면 그림에서 한 선으로 보인다
+        overlaps = self._overlaps()
+        if overlaps:
+            msg = '배선이 포개졌다:\n  ' + '\n  '.join(overlaps)
+            if self.overlap_policy == 'strict':
+                raise AssertionError(msg)
+            self.overlap_warnings = overlaps
+            print(f'[WARN] {msg}', file=sys.stderr)
 
         # 레일 연결성. 같은 전원을 나르는 레일들이 브리지로 이어져 있지
         # 않으면, 그림대로 꽂았을 때 전원이 안 간다. 눈으로는 절대 안 잡힌다 —
@@ -1038,6 +1091,11 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     """
     bb = BreadboardRenderer(template_path)
     bb.enable_steps()
+    # 복합 회로는 칩 셋이 빽빽해 포개짐 둘이 남아 있다 (우 a10~b10 검정/초록,
+    # 좌 g10~중앙GND10 초록/파랑). 우회 경로는 렌더-확인을 반복해야 정해지므로
+    # 별도 계획으로 뺐다 (docs/plans/2026-09-07-결선도-물리실현성-검사.md 후속).
+    # 그동안은 경고만 낸다 — 다른 회로는 전부 엄격 모드다
+    bb.overlap_policy = 'warn'
     st = 3 if stage is None else stage
     title = {1: "실험 3: 복합 논리회로 — 1단계 (칩과 전원)",
              2: "실험 3: 복합 논리회로 — 2단계 (신호 배선까지)",

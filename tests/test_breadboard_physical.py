@@ -78,6 +78,39 @@ class PhysicalRules(unittest.TestCase):
         bb.lead(c['mid_gnd'], bb.r_y(31), '브리지 끝')
         self.assertEqual(bb.free_rail_row(31, c['mid_gnd'], c['mid_vcc']), 30)
 
+    # ---- R4. 서로 다른 배선이 같은 축 위에 포개지지 않는다 ----
+
+    def test_다른_색_배선이_한_줄에_포개지면_막힌다(self):
+        # 2026-09-07 실험 1-1 의 원형: 입력 C 의 세로 구간이 초록 중간단 선에 덮여
+        # pin 3 이 pin 5 로 들어가는 다른 회로로 읽혔다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(7)), (c['a'], bb.r_y(14))], 'sig', '입력 C')
+        bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid', '중간단 갈래')
+        # `.` 은 줄바꿈을 못 넘는다 — 메시지가 '포개졌다:\n  세로 …' 꼴이라 \s+ 로 잇는다
+        with self.assertRaisesRegex(AssertionError, '포개졌다:\\s+세로'):
+            bb.verify()
+
+    def test_같은_색의_짧은_갈래_밑동은_봐준다(self):
+        # 복합 회로의 B 갈래: a19 에 꽂은 두 번째 점퍼가 입력선 위를 27px 되짚어
+        # 여백(x=212)으로 나간다. 두 홀 폭 안의 같은 색 포개짐은 갈래 밑동이다.
+        # 끝점은 홀이어야 하므로(R1) 폴리라인을 a5 에서 끝낸다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['gnd'], bb.r_y(19)), (c['b'], bb.r_y(19))], 'sig', '입력 B')
+        bb.step_wire([(c['a'], bb.r_y(19)), (212, bb.r_y(19)), (212, bb.r_y(5)), (c['a'], bb.r_y(5))],
+                     'sig', '갈래')
+        bb.verify()
+
+    def test_경고_모드는_던지지_않고_기록한다(self):
+        bb = self.board()
+        bb.overlap_policy = 'warn'
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(7)), (c['a'], bb.r_y(14))], 'sig', '입력 C')
+        bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid', '중간단 갈래')
+        bb.verify()
+        self.assertEqual(len(bb.overlap_warnings), 1)
+
     # ---- R2. 부품 다리와 칩 핀도 홀을 차지한다 ----
 
     def test_칩_핀_홀에_배선을_꽂으면_막힌다(self):
