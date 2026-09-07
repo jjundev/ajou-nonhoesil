@@ -151,5 +151,54 @@ class PhysicalRules(unittest.TestCase):
         self.assertNotIn((c['c'], 25), bb._leads)
 
 
+def _render(mod, fn):
+    """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""
+    captured = {}
+    orig = mod.BreadboardRenderer.export
+
+    def spy(self_, *a, **k):
+        captured['bb'] = self_
+        return orig(self_, *a, **k)
+
+    mod.BreadboardRenderer.export = spy
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            fn(os.path.join(d, 'x.png'))
+    finally:
+        mod.BreadboardRenderer.export = orig
+    return captured['bb']
+
+
+class AllCircuits(unittest.TestCase):
+    """12장 전부가 그림대로 꽂힌다. 복합 회로만 포개짐 경고가 남아 있다 (후속 계획)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def builders(self):
+        return {n: f for n, f in vars(self.mod).items()
+                if n.startswith('build_') and not n.endswith('_all') and inspect.isfunction(f)}
+
+    def test_모든_회로가_그림대로_꽂힌다(self):
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, fn)
+                self.assertEqual(bb._not_holes, [])
+                self.assertEqual(bb._double, [])
+
+    def test_복합_회로만_포개짐_경고를_안고_있다(self):
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, fn)
+                if name.startswith('build_e1_comb'):
+                    self.assertEqual(bb.overlap_policy, 'warn')
+                    self.assertLessEqual(len(bb.overlap_warnings), 2,
+                                         '복합 회로의 포개짐이 늘었다 — 2건이 알려진 빚이다')
+                else:
+                    self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드는 복합 회로만')
+                    self.assertEqual(bb.overlap_warnings, [])
+
+
 if __name__ == '__main__':
     unittest.main()
