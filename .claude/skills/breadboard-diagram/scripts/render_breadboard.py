@@ -255,7 +255,7 @@ def build_e1_and(output_path, template_path=None):
 
 
 def build_e1_or(output_path, template_path=None):
-    """실험 1-1 (2) · 3입력 OR (74HC32). netlist C2.
+    """실험 1-2 · 3입력 OR (74HC32). netlist C2.
 
     C1(AND) 과 위상이 같다 — 74HC32 는 74HC00·74HC08 과 같은 표준 DIP-14 쿼드
     2입력 배치(1,2→3 / 4,5→6)를 쓴다. **그 핀아웃은 저장소 데이터시트로도
@@ -263,7 +263,7 @@ def build_e1_or(output_path, template_path=None):
     데이터시트와 대조할 것.
     """
     bb = BreadboardRenderer(template_path)
-    bb.set_header("실험 1-1: 3-Input OR Gate 회로 결선도",
+    bb.set_header("실험 1-2: 3-Input OR Gate 회로 결선도",
                   "IC: 74HC32 (Quad 2-Input OR) · 다이오드 보호 330Ω 저항 필수")
     bb.draw_chip("74HC32", 10)
     bb.connect_power(10)
@@ -298,7 +298,7 @@ def build_e1_or(output_path, template_path=None):
 
 def build_e1_nand(output_path, template_path=None):
     bb = BreadboardRenderer(template_path)
-    bb.set_header("실험 1-2: 3-Input NAND Gate 회로 결선도", "IC: 74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · 330Ω 저항 필수")
+    bb.set_header("실험 2-1: 3-Input NAND Gate 회로 결선도", "IC: 74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · 330Ω 저항 필수")
     
     c = bb.cols['left']
     r_and = 7
@@ -342,7 +342,7 @@ def build_e1_nand(output_path, template_path=None):
 
 
 def build_e1_nor(output_path, template_path=None):
-    """실험 1-2 (2) · 3입력 NOR (74HC32 + 74HC02). netlist C4.
+    """실험 2-2 · 3입력 NOR (74HC32 + 74HC02). netlist C4.
 
     **74HC02 는 출력이 1번 핀이다.** 74HC00/08/32 가 (1,2 → 3) 인 데 반해
     74HC02 는 (2,3 → 1) 이다 — netlist 가 "이 실험에서 가장 흔한 배선
@@ -355,11 +355,11 @@ def build_e1_nor(output_path, template_path=None):
 
     **2026-2 배포본 교안 p14 가 이 구성(74HC32 앞단 + 74HC02 뒷단)을 회로도에
     직접 라벨해 파생과 일치함을 확인했다** — netlist M5 는 이걸로 해소됐다
-    (명세.md `E1.P1-2` 참조). 그림에는 더 이상 "위상 미확정" 배지를 두지
+    (명세.md `E1.P2-2` 참조). 그림에는 더 이상 "위상 미확정" 배지를 두지
     않는다 — 남기면 이미 해소된 사실을 거짓으로 되돌리게 된다.
     """
     bb = BreadboardRenderer(template_path)
-    bb.set_header("실험 1-2: 3-Input NOR Gate 회로 결선도",
+    bb.set_header("실험 2-2: 3-Input NOR Gate 회로 결선도",
                   "IC: 74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀")
 
     c = bb.cols['left']
@@ -412,12 +412,12 @@ def build_e1_nor(output_path, template_path=None):
 
 
 def build_e1_comb(output_path, template_path=None):
-    """실험 2: 복합 논리회로 (74HC04 + 74HC08 + 74HC32) 결선도.
+    """실험 3: 복합 논리회로 (74HC04 + 74HC08 + 74HC32) 결선도.
     좌측: 74HC04 (row 7), 74HC08 (row 18)
     우측: 74HC32 (row 10)
     """
     bb = BreadboardRenderer(template_path)
-    bb.set_header("실험 2: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)", "IC: 74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · 330Ω 저항 3개 필수")
+    bb.set_header("실험 3: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)", "IC: 74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · 330Ω 저항 3개 필수")
     
     c_l = bb.cols['left']
     c_r = bb.cols['right']
