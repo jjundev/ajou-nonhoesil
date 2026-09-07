@@ -163,8 +163,16 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    for f in validate.check_report_sections('<보고서 경로>', sections,
                                            item_count=len(spec.items)):
        print(f)
+   for f in validate.check_report_references('<보고서 경로>', spec, root=root):
+       print(f)
    "
    ```
+
+   `check_report_references` 는 참고문헌 절을 본다 — 실제로 쓴 IC 의 제조사
+   데이터시트가 다 있는지, 개정·발행연도·URL 을 갖췄는지, 2차 미러
+   (alldatasheet·네이버·블로그)가 섞이지 않았는지. ③ §절대 규칙 9 의 기계
+   검사판이다. **과거 제출본(`from_the_past/`) 참고문헌은 거의 전부 여기서
+   error 가 난다** — 그 형식을 본떠서는 안 되는 이유가 이것이다.
 
    `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
    항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. ③·④ 가

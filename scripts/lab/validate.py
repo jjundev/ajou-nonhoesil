@@ -838,3 +838,192 @@ def check_report_sections(report_path, sections, item_count=None) -> list:
                 f"섹션 '{sec.name}' 의 순서가 양식과 다르다"))
         last = max(last, pos)
     return out
+
+
+# 참고문헌에 올라오면 안 되는 2차 미러·백과·블로그. 과거 제출본
+# (`from_the_past/`) 참고문헌의 거의 전부가 여기 걸린다 — 그 형식을 따라 하면
+# 검증되지 않은 출처가 그대로 제출본에 들어간다. ③ §절대 규칙 9.
+_BANNED_REF_HOSTS = (
+    "alldatasheet", "datasheet.co.kr", "hobbytronics", "datasheetspdf",
+    "naver.", "blog.me", "tistory", "wikipedia", "namu.wiki",
+    "slideshare", "electronicshub", "electronics-tutorials", "chipdocs",
+)
+
+# 데이터시트 인용 한 줄이 갖춰야 하는 것. URL 만 있고 개정·날짜가 없으면
+# 어느 판을 봤는지 특정되지 않는다 — 74HC 계열은 개정마다 전기적 특성이 바뀐다.
+_REF_URL = re.compile(r"https?://\S+")
+_REF_DATE = re.compile(r"(?:19|20)\d{2}[-.\s년]")
+_REF_EDITION = re.compile(r"Rev\.?\s*\d+|S[A-Z]{3}\d{3}[A-Z]?|SNOS[A-Z0-9]+", re.I)
+# `74` 로 시작하는 것만 IC 로 본다. 바로 `\d{4}` 를 쓰면 발행연도(`2024`,
+# `1974`)가 전부 IC 이름으로 잡혀 "안 쓰는 IC 를 인용했다" 오탐이 쏟아진다.
+#
+# 경계는 `\b` 가 아니라 **앞뒤로 숫자만 막는다.** `\b` 를 쓰면 벤더 품번
+# 접두(`SN7486`·`MM74HC86`·`CD74HC20`)에서 `74…` 앞이 글자라 경계가 서지 않아
+# 토큰을 통째로 놓친다 — TI 서지는 표제가 전부 `SN` 접두다. 앞의 숫자를 막으면
+# `1974` 안의 `74` 는 그대로 걸러지고, 뒤의 숫자를 막으면 `74HC1480` 을
+# `74HC148` 로 잘못 자르지 않는다.
+_IC_TOKEN = re.compile(r"(?<![0-9])(?:74[A-Z]{0,3}\d{1,3}|LM\d{3})(?![0-9])")
+
+
+def _reference_block(text: str) -> tuple:
+    """`참고문헌` 절의 (본문 줄 목록, 절을 찾았는가)."""
+    lines = text.split("\n")
+    start = None
+    for i, ln in enumerate(lines):
+        if ln.startswith("#") and "참고문헌" in ln:
+            start = i + 1
+            break
+    if start is None:
+        return [], False
+    out = []
+    for ln in lines[start:]:
+        if ln.startswith("#"):
+            break
+        out.append(ln)
+    return out, True
+
+
+_REF_BULLET = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s")
+
+# `74HC86` · `74LS86` · `7486` 을 같은 칩으로 본다. 74 시리즈에서 가운데 글자는
+# 계열(HC/HCT/LS/S/…)이고 번호가 기능을 정한다 — 핀 배치는 계열이 달라도 같다.
+_IC_FAMILY = re.compile(r"^74[A-Z]*(\d{1,3})$")
+
+
+def _ic_family(tok: str) -> str:
+    """IC 토큰에서 계열 글자를 떼어 번호만 남긴다. 74 계열이 아니면 그대로."""
+    m = _IC_FAMILY.match(tok)
+    return f"74{m.group(1)}" if m else tok
+
+
+def _reference_entries(body) -> list:
+    """참고문헌 줄들을 **인용 한 건 단위**로 묶는다.
+
+    불릿으로 시작하는 줄이 새 인용이고, 들여쓴 다음 줄은 그 인용의 계속이다.
+    서지가 길어 URL 을 다음 줄로 내리는 것이 정상 형식이라, 줄 단위로 검사하면
+    그 URL 줄에 개정·날짜가 없다고 멀쩡한 인용을 경고로 잡는다.
+    """
+    entries, cur = [], None
+    for ln in body:
+        if _REF_BULLET.match(ln):
+            if cur is not None:
+                entries.append(cur)
+            cur = ln
+        elif cur is not None and ln.strip():
+            cur += " " + ln.strip()
+        elif not ln.strip() and cur is not None:
+            entries.append(cur)
+            cur = None
+    if cur is not None:
+        entries.append(cur)
+    return entries
+
+
+def verified_datasheet_ics(root) -> set:
+    """`.claude/데이터시트_출처.md` 가 확인해 둔 IC 이름 집합.
+
+    파일이 없으면 빈 집합을 준다 — 그때는 '표에 없다' 판정을 하지 않는다.
+    검증기가 자료 부재를 오류로 바꾸면 안 되기 때문이다.
+    """
+    path = Path(root) / ".claude" / "데이터시트_출처.md"
+    if not path.exists():
+        return set()
+    out = set()
+    for ln in path.read_text(encoding="utf-8").split("\n"):
+        if ln.startswith("|"):
+            out.update(_IC_TOKEN.findall(ln))
+    return out
+
+
+def check_report_references(report_path, spec, root=None) -> list:
+    """참고문헌 절이 **실제로 쓴 IC 의 제조사 데이터시트**를 갖췄는지 본다.
+
+    ③ `write-pre-report` §절대 규칙 9 의 기계 검사판이다. 규칙만 두면
+    지시했을 뿐 보장되지 않는다 — 실제로 나오는지는 검사가 있어야 안다.
+
+    다섯 가지를 본다:
+      1. 참고문헌 절이 있는가
+      2. 강의노트 줄이 있는가
+      3. 명세 `ics` 의 IC 마다 인용 줄이 있는가
+      4. 데이터시트 줄에 URL·개정/문서번호·발행연도가 다 있는가
+      5. 금지 호스트(2차 미러·백과·블로그)가 없는가
+    """
+    path = Path(report_path)
+    if not path.exists():
+        return [Finding("error", str(report_path), "보고서 파일이 없다")]
+    text = path.read_text(encoding="utf-8")
+    body, found = _reference_block(text)
+    if not found:
+        return [Finding("error", path.name, "'출처 및 참고문헌' 절이 없다")]
+
+    out = []
+    joined = "\n".join(body)
+    if not joined.strip():
+        out.append(Finding("error", path.name, "참고문헌 절이 비어 있다"))
+        return out
+
+    if "강의노트" not in joined:
+        out.append(Finding("error", path.name,
+            "참고문헌에 강의노트가 없다 — 그 주 실습 자료는 언제나 출처다"))
+
+    for ln in body:
+        low = ln.lower()
+        for host in _BANNED_REF_HOSTS:
+            if host in low:
+                out.append(Finding("error", path.name,
+                    f"참고문헌에 금지된 2차 출처가 있다 ('{host}') — "
+                    f"제조사 사이트가 1차 출처다: {ln.strip()[:60]}"))
+                break
+
+    # 명세는 `741 OP amp` 처럼 접미사를 붙여 적기도 한다. 문자열 그대로
+    # 비교하면 그런 항목이 전부 "없다" 로 잡히므로 IC 토큰만 뽑아 견준다.
+    used = sorted({tok for item in spec.items for ic in item.ics
+                   for tok in _IC_TOKEN.findall(ic)})
+    # 있는지 없는지도 **계열 글자를 뗀 번호로** 견준다. 아래 "안 쓴 IC" 검사와
+    # 같은 기준이어야 한다 — 한쪽만 계열을 따지면 명세가 `7404`(TTL 표기)인데
+    # 핀아웃 근거로 `74HC04` 를 인용한 보고서가 양쪽에서 동시에 걸린다
+    # (없다고 error, 안 쓴다고 warn). 실험03 이 정확히 그 경우다.
+    cited = {_ic_family(tok) for tok in _IC_TOKEN.findall(joined)}
+    for ic in used:
+        if _ic_family(ic) not in cited:
+            out.append(Finding("error", path.name,
+                f"'{ic}' 를 쓰는데 참고문헌에 그 데이터시트가 없다"))
+
+    # 인용했지만 안 쓴 IC — 안 본 자료를 봤다고 적는 것이다.
+    #
+    # **계열 글자는 무시하고 번호로만 견준다.** 벤더 데이터시트 한 편이 계열을
+    # 여럿 함께 다루고 표제도 `SN5486, SN54LS86A, …, SN7486` 이나
+    # `74HC04; 74HCT04` 라, 서지를 제대로 옮겨 적으면 쓰지 않는 계열 이름이
+    # 반드시 따라온다. 명세가 `7486`(TTL 표기)인데 핀아웃 근거로 `74HC86` 을
+    # 인용하는 것도 정당하다 — 실험03 처럼 교안 표기와 실물 각인이 갈리는
+    # 주차가 있다. 계열까지 일치를 요구하면 이런 인용이 전부 오탐이 된다.
+    allowed = {_ic_family(ic) for ic in used}
+    for tok in sorted(set(_IC_TOKEN.findall(joined))):
+        if _ic_family(tok) in allowed:
+            continue
+        if any(tok in ln for ln in body if _REF_URL.search(ln)):
+            out.append(Finding("warn", path.name,
+                f"'{tok}' 은 이 주에 쓰지 않는데 참고문헌에 있다"))
+
+    # 인용 한 건이 여러 줄에 걸치는 것이 정상이다 — 서지가 길어 URL 을 다음
+    # 줄로 내린다. 줄 단위로 검사하면 그 URL 줄에는 개정도 날짜도 없으므로
+    # 멀쩡한 인용이 전부 경고로 잡힌다. 불릿 단위로 묶어서 본다.
+    for entry in _reference_entries(body):
+        if not _REF_URL.search(entry) or not _IC_TOKEN.search(entry):
+            continue
+        if not _REF_EDITION.search(entry):
+            out.append(Finding("warn", path.name,
+                f"데이터시트 인용에 개정/문서번호가 없다 — "
+                f"어느 판인지 특정되지 않는다: {entry.strip()[:60]}"))
+        if not _REF_DATE.search(entry):
+            out.append(Finding("warn", path.name,
+                f"데이터시트 인용에 발행연도가 없다: {entry.strip()[:60]}"))
+
+    verified = verified_datasheet_ics(root) if root else set()
+    if verified:
+        for ic in used:
+            if ic not in verified:
+                out.append(Finding("warn", path.name,
+                    f"'{ic}' 가 `.claude/데이터시트_출처.md` 에 없다 — "
+                    f"벤더 사이트에서 확인해 표에 먼저 추가한다"))
+    return out
