@@ -6,7 +6,7 @@
 
 import re
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -178,6 +178,38 @@ PROJECT_DATES = (date(2026, 11, 27), date(2026, 12, 4), date(2026, 12, 11))
 
 # FPGA 프로젝트도 주차 산출물이라 실험 폴더와 같은 기반 아래 둔다.
 PROJECT_DIR = f"{EXPERIMENT_BASE}/프로젝트"
+
+
+# 1주차 날짜. 운영계획 p1 의 첫 행이다(9/4 오리엔테이션).
+# **표가 아니라 앵커 하나다.** 주차 → 날짜는 여기서 나오는 순수 산술이고,
+# 날짜 → 실험은 EXPERIMENT_DATES 가 맡는다. 정본이 둘로 갈리지 않는다.
+# 옛 WEEK_TO_EXPERIMENT 는 회전을 손으로 적어 둔 표라 운영계획이 바뀌자
+# 다섯 곳이 한꺼번에 틀렸다 — 산술에는 그 실패 모드가 없다.
+SEMESTER_WEEK1 = date(2026, 9, 4)
+SEMESTER_WEEKS = 16
+
+
+def _check_week(week) -> None:
+    if isinstance(week, bool) or not isinstance(week, int):
+        raise TypeError(f"주차는 정수여야 합니다: {week!r}")
+    if not 1 <= week <= SEMESTER_WEEKS:
+        raise ValueError(f"주차는 1~{SEMESTER_WEEKS} 입니다: {week}")
+
+
+def week_date(week: int) -> date:
+    """주차 → 그 주 수업 날짜."""
+    _check_week(week)
+    return SEMESTER_WEEK1 + timedelta(weeks=week - 1)
+
+
+def experiments_in_week(week: int) -> list:
+    """주차 → 그 주에 하는 실험 번호들. 실험이 없는 주면 빈 리스트.
+
+    **리스트인 것이 요점이다.** 3주차(9/18)는 실험2·3 을 한 날에 하고,
+    4주차(추석)·8주차(중간고사)·1주차(오리엔테이션)는 빈 리스트다.
+    """
+    _check_week(week)
+    return experiments_on(week_date(week))
 
 
 def experiment_date(experiment: int) -> date:

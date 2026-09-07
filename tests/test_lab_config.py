@@ -519,3 +519,76 @@ class TestExperimentDates(unittest.TestCase):
                      "week_for_experiment", "WEEK_TO_EXPERIMENT",
                      "NO_ARTIFACT_WEEKS", "PROJECT_WEEKS"):
             self.assertFalse(hasattr(config, gone), f"{gone} 가 아직 있다")
+
+
+class TestWeekAnchor(unittest.TestCase):
+    """주차 → 날짜는 앵커(`SEMESTER_WEEK1`)에서 나오는 순수 산술이다.
+
+    옛 `WEEK_TO_EXPERIMENT` 표는 회전을 손으로 적어 둔 표라 운영계획이
+    바뀌자 다섯 곳이 한꺼번에 틀렸다. 앵커 하나 + 산술에는 그 실패 모드가
+    없다 — 여기서 앵커가 운영계획 p1 과 실제로 맞는지를 잠근다.
+    """
+
+    def test_1주차는_9월4일이다(self):
+        self.assertEqual(config.week_date(1), date(2026, 9, 4))
+
+    def test_2주차는_9월11일이다(self):
+        self.assertEqual(config.week_date(2), date(2026, 9, 11))
+
+    def test_16주차는_12월18일이다(self):
+        self.assertEqual(config.week_date(16), date(2026, 12, 18))
+
+    def test_2주차엔_실험1이다(self):
+        self.assertEqual(config.experiments_in_week(2), [1])
+
+    def test_3주차엔_실험2와_3이_같이_있다(self):
+        # 옛 모델이 int→int 라 표현하지 못하던 자리다.
+        self.assertEqual(config.experiments_in_week(3), [2, 3])
+
+    def test_1주차_오리엔테이션엔_실험이_없다(self):
+        self.assertEqual(config.experiments_in_week(1), [])
+
+    def test_4주차_추석엔_실험이_없다(self):
+        self.assertEqual(config.experiments_in_week(4), [])
+
+    def test_8주차_중간고사엔_실험이_없다(self):
+        self.assertEqual(config.experiments_in_week(8), [])
+
+    def test_회전_구간이_운영계획과_같다(self):
+        # 옛 표는 5·6·7주차를 실험 5·6·4 로 잘못 알았다. 정본은 4·5·6 이다.
+        self.assertEqual(config.experiments_in_week(5), [4])
+        self.assertEqual(config.experiments_in_week(6), [5])
+        self.assertEqual(config.experiments_in_week(7), [6])
+
+    def test_앵커가_모든_실험일을_실제로_맞힌다(self):
+        # 앵커와 EXPERIMENT_DATES 가 어긋나면 여기서 걸린다.
+        dates = set(config.EXPERIMENT_DATES.values())
+        reachable = {config.week_date(w) for w in range(1, config.SEMESTER_WEEKS + 1)}
+        self.assertTrue(
+            dates <= reachable,
+            f"앵커가 못 맞추는 실험일: {sorted(dates - reachable)}",
+        )
+
+    def test_week_date_범위_밖_주차는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.week_date(0)
+        with self.assertRaises(ValueError):
+            config.week_date(config.SEMESTER_WEEKS + 1)
+
+    def test_week_date_bool은_주차가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.week_date(True)
+
+    def test_experiments_in_week_범위_밖_주차는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.experiments_in_week(0)
+        with self.assertRaises(ValueError):
+            config.experiments_in_week(config.SEMESTER_WEEKS + 1)
+
+    def test_experiments_in_week_bool은_주차가_아니다(self):
+        with self.assertRaises(TypeError):
+            config.experiments_in_week(True)
+
+    def test_학기_1주차_리터럴이_고정된다(self):
+        self.assertEqual(config.SEMESTER_WEEK1, date(2026, 9, 4))
+        self.assertEqual(config.SEMESTER_WEEKS, 16)
