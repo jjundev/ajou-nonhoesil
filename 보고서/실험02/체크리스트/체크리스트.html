@@ -105,20 +105,20 @@
 <table><thead><tr><th>게이트</th><th>입력 → 출력</th><th>게이트</th><th>입력 → 출력</th></tr></thead><tbody><tr><td>1 (1A/1Y)</td><td>1 → 2</td><td>4 (4A/4Y)</td><td>9 → 8</td></tr><tr><td>2 (2A/2Y)</td><td>3 → 4</td><td>5 (5A/5Y)</td><td>11 → 10</td></tr><tr><td>3 (3A/3Y)</td><td>5 → 6</td><td>6 (6A/6Y)</td><td>13 → 12</td></tr></tbody></table>
 <p>VCC 14, GND 7.</p>
 <p>74HC14 (Schmitt-trigger hex inverter, DIP-14)</p>
-<table><thead><tr><th>게이트</th><th>입력 → 출력</th><th>근거</th></tr></thead><tbody><tr><td>1 (1A/1Y)</td><td>1 → 2</td><td>교안 p10 회로도로 확인</td></tr><tr><td>2~6</td><td>3 → 4, 5 → 6, 9 → 8, 11 → 10, 13 → 12</td><td>가정 (74HC04 와 동일 배치) — M1</td></tr></tbody></table>
-<p>VCC 14, GND 7 — 교안 p10 회로도로 확인.</p>
+<table><thead><tr><th>게이트</th><th>입력 → 출력</th><th>근거</th></tr></thead><tbody><tr><td>1 (1A/1Y)</td><td>1 → 2</td><td>교안 p10 회로도 + Nexperia 데이터시트</td></tr><tr><td>2~6</td><td>3 → 4, 5 → 6, 9 → 8, 11 → 10, 13 → 12</td><td>Nexperia 74HC14 Rev. 10 §6.2 (74HC04 와 동일 배치)</td></tr></tbody></table>
+<p>VCC 14, GND 7 — 교안 p10 회로도와 데이터시트 양쪽으로 확인.</p>
 <h4>부품 수량 (교안 준비물 페이지가 없어 회로도에서 역산)</h4>
 <table><thead><tr><th>부품</th><th>수량</th><th>근거</th></tr></thead><tbody><tr><td>74HC04 (74HC04N, DIP-14)</td><td>2개</td><td>교안 p13 이 U1·U2 두 패키지를 동시에 요구한다. E2.P1·E2.P3-1·E2.P3-2 는 이 중 한 개를 재배선해 쓴다</td></tr><tr><td>74HC14 (SN74HC14, DIP-14)</td><td>1개</td><td>교안 p10</td></tr><tr><td>저항 1kΩ</td><td>1개</td><td>교안 p11·p12 의 R1. 두 항목이 순차라 같은 저항을 옮겨 쓴다</td></tr><tr><td>함수발생기(파형발생기)</td><td>1대</td><td>교안 p9·p10(사인파), p13(사각파 1MHz)</td></tr><tr><td>오실로스코프 (2채널)</td><td>1대</td><td>교안 p9·p10(X-Y), p14(2채널 지연)</td></tr><tr><td>DMM</td><td>1대</td><td>교안 p11·p12</td></tr></tbody></table>
 <p>교안 실험2 14쪽에는 준비물 슬라이드가 아예 없다(실험1 p10, 실험10 p6 에는 있다). 위 표는 회로도 역산이므로 수령 시 대조할 것 → 미확정 M6. 저장소의 과거 실측 사진 from_the_past/정리/소자_데이터시트_및_미디어/2_실측_오실로스코프_파형/전달지연.jpg 에 DIP-14 두 개가 나란히 꽂힌 브레드보드가 찍혀 있어, "실험 4 는 74HC04 두 패키지" 라는 p13 판독과 어긋나지 않는다(방증일 뿐 근거는 p13 회로도다).</p>
 </div>
 <h2>미확정 사항 — 실험실에서 확인할 것</h2>
 
-<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M1</td><td>74HC14 의 게이트 2~6 핀 배치가 확인되지 않았다. 저장소에 74HC14 데이터시트가 없고, 교안 p10 회로도는 pin 1(입력)·pin 2(출력)·pin 14(VCC)·pin 7(GND) 만 라벨한다. 나머지 열 개 핀은 74HC04 와 동일 배치라고 가정했다</td><td>실물 칩 각인(예: SN74HC14N) 확인 후 벤더 데이터시트 대조. 대조 전에는 미사용핀을 VCC/GND 에 꽂지 말고, 최소한 pin 1·2·7·14 만으로 먼저 동작을 확인할 것</td></tr><tr><td class="box"></td><td>M2</td><td>74HC14 의 V_T+·V_T- 수치가 교안에도 저장소에도 없다. 교안 p4 는 정의와 그림만 주고 값을 주지 않는다</td><td>예상값을 적지 않는다. 실측값을 명세 T3 에 기록하고, 나중에 벤더 데이터시트를 구하면 그때 대조한다</td></tr><tr><td class="box"></td><td>M3</td><td>실험 1·2 의 사인파 주파수를 교안이 지정하지 않는다. p9·p10 은 파형·Vpp·Voffset 만 쓴다</td><td>X-Y 모드는 주파수에 둔감하므로 아무 값이나 되지만, 너무 높으면 74HC14 루프가 슬루율 때문에 실제보다 넓어 보이고 너무 낮으면 트레이스가 깜빡인다. 주파수를 바꿔 가며 루프 폭이 더 이상 변하지 않는 지점에서 읽는다. 특정 값을 교안 지시인 것처럼 적지 않는다</td></tr><tr><td class="box"></td><td>M4</td><td>실험 4 의 "5V amplitude" 에 오프셋이 없다. 실험 1·2 는 Voffset 2.5 를 명시했으므로 실험 4 도 0~5V 를 의도한 것으로 읽었으나, 교안 문면에는 없다. 오프셋 0 이면 입력이 -2.5V 까지 내려가 74HC04 데이터시트 p5 의 입력 보호 다이오드 조건(V_I &lt; -0.5V)에 걸린다</td><td>음전압이 나가지 않게 오프셋 +2.5V 를 걸고, 전원 인가 전에 오실로스코프로 파형을 먼저 확인한다. 조교에게 "실험 4 도 0~5V 인가" 를 한 번 확인</td></tr><tr><td class="box"></td><td>M5</td><td>"5V amplitude" 가 Vpp 5V 인지 진폭(peak) 5V(= Vpp 10V) 인지 문면상 갈린다. 실험 1·2 가 Vpp 5V 로 쓴 것과 회로가 5V 로직이라는 점에서 Vpp 5V 로 읽었다</td><td>Vpp 10V 로 두면 VCC 를 넘는 입력이 되어 위쪽 보호 다이오드에도 걸린다. 함수발생기 표시가 Vpp 인지 Amplitude 인지 확인하고 오실로스코프로 실제 진폭을 확인한 뒤 회로에 넣는다</td></tr><tr><td class="box"></td><td>M6</td><td>교안 실험2 에 준비물 페이지가 없다. 14쪽 어디에도 부품 목록 슬라이드가 없어(실험1 p10, 실험10 p6 과 대조) 위 부품 수량 표는 회로도 역산이다</td><td>수령 시 74HC04 가 2개 인지 먼저 확인. 1개만 받으면 E2.P4 를 못 한다</td></tr><tr><td class="box"></td><td>M7</td><td>I_OL·I_OH 를 어떻게 재라는지 교안이 지정하지 않는다. p11·p12 도면에는 전류계 기호 없이 화살표와 라벨만 있다. 위 계측 표는 R1 양단 전압을 재서 나누는 방식을 기본으로 적었고, 이는 파생이다</td><td>전류계를 직접 쓸 거라면 직렬로 넣는다. 병렬로 대면 전원이 단락된다. 두 방식의 값이 크게 다르면 R1 실저항(S1)을 다시 잰다</td></tr><tr><td class="box"></td><td>M8</td><td>프로브 감쇠비(1:1 / 10:1)를 교안이 지정하지 않는다. E2.P4 에서는 프로브 용량이 C_L 에 직접 들어가 지연을 늘린다(74HC04 데이터시트 p13: C_L 은 지그·프로브 용량 포함)</td><td>10:1 로 두면 용량 부담이 작아 데이터시트 값에 가깝게 나온다. 어느 쪽을 썼는지 결과보고서에 반드시 적을 것 — 안 적으면 측정값이 데이터시트와 벌어진 이유를 나중에 설명할 수 없다</td></tr><tr><td class="box"></td><td>M9</td><td>오실로스코프 기종이 저장소 매뉴얼(Agilent InfiniiVision 2000 X 시리즈)과 같다고 가정했다. X-Y 모드의 CH1 = X축, CH2 = Y축 은 그 매뉴얼 p47·p49 근거다</td><td>실험실 장비가 다른 기종이면 X-Y 축 배정을 그 기종 매뉴얼로 확인. 대부분 CH1 = X 지만, 다르면 명세 T1·T2 의 좌우 판정(V_T+ 가 오른쪽)이 뒤집힌다</td></tr></tbody></table></section>
+<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M3</td><td>실험 1·2 의 사인파 주파수를 교안이 지정하지 않는다. p9·p10 은 파형·Vpp·Voffset 만 쓴다</td><td>X-Y 모드는 주파수에 둔감하므로 아무 값이나 되지만, 너무 높으면 74HC14 루프가 슬루율 때문에 실제보다 넓어 보이고 너무 낮으면 트레이스가 깜빡인다. 주파수를 바꿔 가며 루프 폭이 더 이상 변하지 않는 지점에서 읽는다. 특정 값을 교안 지시인 것처럼 적지 않는다</td></tr><tr><td class="box"></td><td>M4</td><td>실험 4 의 "5V amplitude" 에 오프셋이 없다. 실험 1·2 는 Voffset 2.5 를 명시했으므로 실험 4 도 0~5V 를 의도한 것으로 읽었으나, 교안 문면에는 없다. 오프셋 0 이면 입력이 -2.5V 까지 내려가 74HC04 데이터시트 p5 의 입력 보호 다이오드 조건(V_I &lt; -0.5V)에 걸린다</td><td>음전압이 나가지 않게 오프셋 +2.5V 를 걸고, 전원 인가 전에 오실로스코프로 파형을 먼저 확인한다. 조교에게 "실험 4 도 0~5V 인가" 를 한 번 확인</td></tr><tr><td class="box"></td><td>M5</td><td>"5V amplitude" 가 Vpp 5V 인지 진폭(peak) 5V(= Vpp 10V) 인지 문면상 갈린다. 실험 1·2 가 Vpp 5V 로 쓴 것과 회로가 5V 로직이라는 점에서 Vpp 5V 로 읽었다</td><td>Vpp 10V 로 두면 VCC 를 넘는 입력이 되어 위쪽 보호 다이오드에도 걸린다. 함수발생기 표시가 Vpp 인지 Amplitude 인지 확인하고 오실로스코프로 실제 진폭을 확인한 뒤 회로에 넣는다</td></tr><tr><td class="box"></td><td>M6</td><td>교안 실험2 에 준비물 페이지가 없다. 14쪽 어디에도 부품 목록 슬라이드가 없어(실험1 p10, 실험10 p6 과 대조) 위 부품 수량 표는 회로도 역산이다</td><td>수령 시 74HC04 가 2개 인지 먼저 확인. 1개만 받으면 E2.P4 를 못 한다</td></tr><tr><td class="box"></td><td>M7</td><td>I_OL·I_OH 를 어떻게 재라는지 교안이 지정하지 않는다. p11·p12 도면에는 전류계 기호 없이 화살표와 라벨만 있다. 위 계측 표는 R1 양단 전압을 재서 나누는 방식을 기본으로 적었고, 이는 파생이다</td><td>전류계를 직접 쓸 거라면 직렬로 넣는다. 병렬로 대면 전원이 단락된다. 두 방식의 값이 크게 다르면 R1 실저항(S1)을 다시 잰다</td></tr><tr><td class="box"></td><td>M8</td><td>프로브 감쇠비(1:1 / 10:1)를 교안이 지정하지 않는다. E2.P4 에서는 프로브 용량이 C_L 에 직접 들어가 지연을 늘린다(74HC04 데이터시트 p13: C_L 은 지그·프로브 용량 포함)</td><td>10:1 로 두면 용량 부담이 작아 데이터시트 값에 가깝게 나온다. 어느 쪽을 썼는지 결과보고서에 반드시 적을 것 — 안 적으면 측정값이 데이터시트와 벌어진 이유를 나중에 설명할 수 없다</td></tr><tr><td class="box"></td><td>M9</td><td>오실로스코프 기종이 저장소 매뉴얼(Agilent InfiniiVision 2000 X 시리즈)과 같다고 가정했다. X-Y 모드의 CH1 = X축, CH2 = Y축 은 그 매뉴얼 p47·p49 근거다</td><td>실험실 장비가 다른 기종이면 X-Y 축 배정을 그 기종 매뉴얼로 확인. 대부분 CH1 = X 지만, 다르면 명세 T1·T2 의 좌우 판정(V_T+ 가 오른쪽)이 뒤집힌다</td></tr></tbody></table></section>
 <section class="circuits"><section class="circuit">
 <h2>회로 1/5 · E2.P1 · Inverter 의 입출력 특성 확인 (교안 p9) · 기록: T1 · 판독: oscilloscope</h2>
 <div class="banner">준비 — 꽂는다: 74HC04</div>
 <div class="wirebox">
-<h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
+<img src="../결선도/실험02_결선도_인버터_입출력특성.png" style="width:100%"><p class="src">결선도: 실험02_결선도_인버터_입출력특성.png</p>
 <div class="chip"><h4>U1 = 74HC04 (hex inverter, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -157,14 +157,14 @@
 <div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC04 · 꽂는다: 74HC14</div>
 <p>E2.P1 과 배선이 글자 그대로 같고 칩만 바뀐다. 통제 실험이므로 함수발생기 설정·프로브 위치·미사용핀 처리를 하나도 바꾸지 않는다 — 바꾸면 그림 차이가 칩 때문인지 설정 때문인지 갈리지 않는다.</p>
 <div class="wirebox">
-<h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
+<img src="../결선도/실험02_결선도_슈미트트리거_입출력특성.png" style="width:100%"><p class="src">결선도: 실험02_결선도_슈미트트리거_입출력특성.png</p>
 <div class="chip"><h4>U1 = 74HC14 (Schmitt-trigger hex inverter, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
 <li><span class="box"></span>pin 7  → GND</li>
 <li><span class="box"></span>pin 1  ← 함수발생기 출력 (= VIN 노드)</li>
 <li><span class="box"></span>pin 2  → VOUT 노드</li>
-<li><span class="box"></span>※ pin 1·2·7·14 만 교안으로 확인된 핀이다. 나머지 열 개는 74HC04 와 같다는 가정이다(M1). 미사용핀을 꽂기 전에 실물 칩 각인으로 품번을 확인하고, 가능하면 벤더 데이터시트를 대조할 것.</li>
+<li><span class="box"></span>※ 열네 핀 전부 Nexperia 74HC14 Rev. 10 §6.2 로 확인됐다 — 74HC04 와 같은 배치다. 교안이 라벨한 것은 pin 1·2·7·14 넷뿐이었다.</li>
 </ol>
 </div>
 </div>
@@ -216,7 +216,7 @@
 <h2>회로 3/5 · E2.P3-1 · CMOS 의 DC 특성 확인 — Rn (교안 p11) · 기록: T4 · 판독: DMM</h2>
 <div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC14 · 꽂는다: 74HC04</div>
 <div class="wirebox">
-<h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
+<img src="../결선도/실험02_결선도_DC특성_Rn.png" style="width:100%"><p class="src">결선도: 실험02_결선도_DC특성_Rn.png</p>
 <div class="chip"><h4>U1 = 74HC04 (hex inverter, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -268,7 +268,7 @@
 <div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 패키지는 두고 재배선한다: 74HC04</div>
 <p>E2.P3-1 을 위아래로 뒤집는다. 바뀌는 것은 두 곳뿐이다.</p>
 <div class="wirebox">
-<h3>브레드보드 작도 (8행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:99.4mm;object-fit:cover;object-position:top">
+<img src="../결선도/실험02_결선도_DC특성_Rp.png" style="width:100%"><p class="src">결선도: 실험02_결선도_DC특성_Rp.png</p>
 <div class="chip"><h4>U1 = 74HC04 (hex inverter, DIP-14) — E2.P3-1 과 같은 물리 칩</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -322,7 +322,7 @@
 <table><thead><tr><th>지정자</th><th>소자</th><th>역할</th></tr></thead><tbody><tr><td>U1</td><td>74HC04 #1</td><td>인버터 6개 전부를 직렬로 이은 지연 체인</td></tr><tr><td>U2</td><td>74HC04 #2</td><td>U1 최종단(pin 8)에 게이트 입력 부하 1개를 더하는 용도</td></tr></tbody></table>
 <p>74HC04 가 두 패키지 필요하다. E2.P1~E2.P3 에서 쓰던 칩 하나로는 안 된다.</p>
 <div class="wirebox">
-<h3>브레드보드 작도 (16행)</h3><p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p><img src="../../../.claude/assets/Breadboard.jpg" style="width:100%;max-height:147.4mm;object-fit:cover;object-position:top">
+<img src="../결선도/실험02_결선도_전파지연_tpd.png" style="width:100%"><p class="src">결선도: 실험02_결선도_전파지연_tpd.png</p>
 <div class="chip"><h4>U1 = 74HC04 #1 — 지연 체인</h4>
 <p>핀 번호 순서로 흐르지 않는다. pin 6 에서 pin 13 으로 건너뛴 뒤 번호를 거슬러 내려온다. 교안 p13 회로도를 900dpi 로 렌더해 확정했다.</p>
 <table><thead><tr><th>확인</th><th>단</th><th>게이트</th><th>입력핀</th><th>출력핀</th><th>출력이 가는 곳</th></tr></thead><tbody><tr><td class="box"></td><td>1</td><td>1A/1Y</td><td>1 ← 함수발생기</td><td>2</td><td>→ U1 pin 3</td></tr><tr><td class="box"></td><td>2</td><td>2A/2Y</td><td>3</td><td>4</td><td>→ U1 pin 5, 그리고 CH1 프로브</td></tr><tr><td class="box"></td><td>3</td><td>3A/3Y</td><td>5</td><td>6</td><td>→ U1 pin 13 (여기서 건너뛴다)</td></tr><tr><td class="box"></td><td>4</td><td>6A/6Y</td><td>13</td><td>12</td><td>→ U1 pin 11</td></tr><tr><td class="box"></td><td>5</td><td>5A/5Y</td><td>11</td><td>10</td><td>→ U1 pin 9</td></tr><tr><td class="box"></td><td>6</td><td>4A/4Y</td><td>9</td><td>8</td><td>→ U2 pin 1, 그리고 CH2 프로브</td></tr></tbody></table>

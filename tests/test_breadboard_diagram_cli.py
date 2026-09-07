@@ -48,9 +48,35 @@ def _choices():
     raise AssertionError("--circuit 의 choices 를 못 찾았다")
 
 
-# 레일에 홀이 없는 행. `Breadboard.jpg` 의 레일 홀 컬럼을 픽셀로 훑어 얻었다 —
-# 이 행을 `bridge_row` 로 쓰면 점퍼를 꽂을 구멍이 없다.
-NO_HOLE_ROWS = {2, 3, 4, 9, 15, 21, 32}
+def _module_const(name):
+    """모듈 최상위의 리터럴 상수. 빌더가 핀 목록을 상수로 빼 쓰면
+    `ast.literal_eval` 이 Name 에서 죽는다."""
+    for node in _tree().body:
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == name for t in node.targets):
+            v = node.value
+            # `frozenset({...})` 처럼 감싼 것은 벗겨서 읽는다
+            if (isinstance(v, ast.Call) and isinstance(v.func, ast.Name)
+                    and v.func.id in {"frozenset", "set", "tuple", "list"} and v.args):
+                return ast.literal_eval(v.args[0])
+            return ast.literal_eval(v)
+    raise AssertionError(f"모듈 상수 {name} 을 못 찾았다")
+
+
+def _literal(node):
+    """리터럴이면 그대로, 모듈 상수 이름이면 풀어서."""
+    if isinstance(node, ast.Name):
+        return _module_const(node.id)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return list(_literal(node.left)) + list(_literal(node.right))
+    return ast.literal_eval(node)
+
+
+# 레일에 홀이 없는 행. **하드코딩하지 않는다** — 2026-09-07 까지 이 파일은
+# `{2,3,4,9,15,21,32}` 를 들고 있었는데, 그건 눈대중 좌표 시절의 목록이라
+# 실측값(`{1,2,63} + 8·14·20…62`)과 겹치는 데가 하나도 없었다. 검사가 엉뚱한
+# 행을 막고 진짜 빈 행은 통과시키고 있었다. 렌더러가 들고 있는 값을 읽는다.
+NO_HOLE_ROWS = set(_module_const("RAIL_GAP_ROWS"))
 
 
 def _builder_names():
@@ -76,10 +102,10 @@ def _bridge_rows(fn_name):
     for call in _calls_in(fn_name, "connect_unused_inputs"):
         for kw in call.keywords:
             if kw.arg == "bridge_row":
-                rows.append(ast.literal_eval(kw.value))
+                rows.append(_literal(kw.value))
     for call in _calls_in(fn_name, "bridge_rails"):
         if len(call.args) >= 3:
-            rows.append(ast.literal_eval(call.args[2]))
+            rows.append(_literal(call.args[2]))
     return rows
 
 
@@ -119,11 +145,15 @@ class RailBridge(unittest.TestCase):
     def test_중앙_GND_레일로_내리면_bridge_row_를_넘긴다(self):
         missing = []
         for fn in _builder_names():
+            bridged = bool(_calls_in(fn, "bridge_rails"))
             for call in _calls_in(fn, "connect_unused_inputs"):
-                pins = ast.literal_eval(call.args[0])
+                kw = {k.arg: k.value for k in call.keywords}
+                if _literal(kw["rail"]) != "gnd" if "rail" in kw else False:
+                    continue        # VCC 풀업은 14번 핀과 같은 레일로 간다
+                pins = _literal(call.args[0])
                 if not any(8 <= p <= 14 for p in pins):
                     continue        # 1~7번은 7번 핀과 같은 레일로 간다
-                if "bridge_row" not in {k.arg for k in call.keywords}:
+                if "bridge_row" not in kw and not bridged:
                     missing.append(f"{fn}: 핀 {pins} 이 중앙 GND 레일에서 끝난다")
         self.assertEqual(missing, [], "\n".join(missing))
 
