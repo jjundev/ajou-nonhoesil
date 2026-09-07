@@ -182,27 +182,25 @@ class BreadboardRenderer:
     def is_rail_row(r):
         return 1 <= r <= ROW_MAX and r not in RAIL_GAP_ROWS
 
-    def snap_rail_row(self, r):
-        """레일에 홀이 실제로 있는 가장 가까운 행."""
-        if self.is_rail_row(r):
-            return r
-        for d in range(1, 8):
-            for cand in (r - d, r + d):
-                if self.is_rail_row(cand):
-                    return cand
-        raise ValueError(f'레일 홀이 있는 행을 못 찾았다: r={r}')
+    @staticmethod
+    def _row_of(y):
+        """y 좌표에 제일 가까운 행 번호. addr() 과 hole_at() 이 같은 식을 쓴다 — 한쪽만 고치면 갈린다."""
+        return int(round((y - ROW0) / ROW_PITCH)) + 1
 
     def hole_at(self, x, y):
         """(x, y) 가 실제 홀이면 그 홀의 키 (열 x, 행), 아니면 None.
 
-        레일은 5홀씩 묶여 빈 행이 있고, 단자대는 63행 전부 홀이다. 열은
-        `_addr_map` 의 x 에 9px 안으로 붙어야 한다 — 그 밖은 배선 통로다.
+        레일은 5홀씩 묶여 빈 행이 있고, 단자대는 63행 전부 홀이다. 열·행 모두
+        홀 중심에서 5px 안이어야 한다 — 열 피치가 16px 라 9px 로는 인접 열
+        사이에 거부 구간이 없었다. 그 밖은 배선 통로거나 밀린 좌표다.
         """
-        r = int(round((y - ROW0) / ROW_PITCH)) + 1
+        r = self._row_of(y)
         if not 1 <= r <= ROW_MAX:
             return None
         best = min(self._addr_map, key=lambda k: abs(k - x))
-        if abs(best - x) > 9:
+        if abs(best - x) > 5:
+            return None
+        if abs(y - self.r_y(r)) > 5:
             return None
         if '레일' in self._addr_map[best] and not self.is_rail_row(r):
             return None
@@ -215,8 +213,8 @@ class BreadboardRenderer:
         R1 위반, 이미 차 있으면 R2 위반으로 적어 두고 verify() 가 한꺼번에 낸다
         — 그리는 도중에 던지면 어디까지 그렸는지 알 수 없다.
         """
-        if y < 240:
-            return
+        if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
+            return   # 전원잭 — 보드 밖의 유일한 합법 끝점
         key = self.hole_at(x, y)
         if key is None:
             self._not_holes.append(f'{what} — ({x:.0f}, {y:.0f}) = {self.addr(x, y)}')
@@ -321,7 +319,7 @@ class BreadboardRenderer:
             return '보드밖(입력)'
         if x > 880:
             return '보드밖'
-        r = int(round((y - ROW0) / ROW_PITCH)) + 1
+        r = self._row_of(y)
         best = min(self._addr_map, key=lambda k: abs(k - x))
         if abs(best - x) > 9:
             # 홀이 아니라 배선 통로다. 분기점(T 접속)일 때만 여기 온다
@@ -1136,6 +1134,9 @@ def build_e1_comb(output_path, template_path=None, stage=None):
                      'sig', '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(c_r['a'] - 40, bb.r_y(5) - 12))
         bb.step_wire([(c_r['a'], bb.r_y(10)), (c_r['b'], bb.r_y(10))],
                      'sig', '입력 A 갈래 -> 74HC32 pin 1', width=2, marker_at=(c_r['a'] - 18, bb.r_y(10)))
+        # 이 점퍼는 초록 Z 선(10행) 아래에 통째로 깔려 그림에서 안 보인다 — 후속 계획이
+        # 경로를 옮길 때까지 꼬리표로 존재만 알린다. 순서표 번호로 위치를 찾는다
+        _tag(bb, c_r['c'] + 4, bb.r_y(9) - 8, "A→b10")
 
         _input_jumper(bb, c_l, 19, 'B', '74HC08 pin 2')
         # B 갈래도 a19 에 두 번째 점퍼. 여백 x=212 로 6행까지 올라간다 — A 갈래(228)와
@@ -1168,7 +1169,7 @@ def build_e1_comb(output_path, template_path=None, stage=None):
         bb.step_wire([(c_r['c'], bb.r_y(12)), (c_r['c'], bb.r_y(22))], 'sig',
                      '74HC32 pin 3 -> X LED', marker_at=(c_r['c'] - 18, bb.r_y(18)))
         bb.led_chain(c_r['c'], 22, "X", "X = A + Z — Z 와 다르면 배선 오류",
-                     block='right', color_rgb=(220, 120, 0), marker_dx=40)
+                     block='right', color_rgb=(220, 120, 0))
 
         bb.step_wire([(c_r['a'], bb.r_y(15)), (c_r['a'], bb.r_y(27))], 'sig',
                      '74HC32 pin 6 -> Y LED', marker_at=(c_r['a'] - 20, bb.r_y(21)))

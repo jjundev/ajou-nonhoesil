@@ -57,6 +57,21 @@ class PhysicalRules(unittest.TestCase):
         bb.connect_jacks()
         bb.verify()
 
+    def test_홀_사이_골에_앉은_끝점은_홀이_아니다(self):
+        # 열 피치가 16px 인데 허용치가 9px 였다 — 인접 열 사이에 '홀 아님' 이 없었다
+        bb = self.board()
+        c = bb.cols['left']
+        self.assertEqual(bb.hole_at(c['c'], bb.r_y(10)), (c['c'], 10))
+        self.assertIsNone(bb.hole_at(c['c'] + 8, bb.r_y(10)))
+        self.assertIsNone(bb.hole_at(c['c'], bb.r_y(10) + 8))
+
+    def test_잭이_아닌_보드_위쪽_허공은_면제되지_않는다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], 239), (c['c'], bb.r_y(10))], 'sig', '위에서 내려온 선')
+        with self.assertRaisesRegex(AssertionError, '홀이 아니다'):
+            bb.verify()
+
     # ---- R2. 한 홀에 리드 하나 ----
 
     def test_한_홀에_배선_둘은_막힌다(self):
@@ -110,6 +125,15 @@ class PhysicalRules(unittest.TestCase):
         bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid', '중간단 갈래')
         bb.verify()
         self.assertEqual(len(bb.overlap_warnings), 1)
+
+    def test_경고_목록은_이번_verify_의_결과로_덮인다(self):
+        # ad06489 가 고친 시나리오: 포개짐이 사라진 뒤에도 옛 경고가 남았다
+        bb = self.board()
+        bb.overlap_policy = 'warn'
+        bb.overlap_warnings = ['옛 경고']
+        bb.connect_jacks()
+        bb.verify()
+        self.assertEqual(bb.overlap_warnings, [])
 
     # ---- R2. 부품 다리와 칩 핀도 홀을 차지한다 ----
 
@@ -172,6 +196,10 @@ def _render(mod, fn):
 class AllCircuits(unittest.TestCase):
     """12장 전부가 그림대로 꽂힌다. 복합 회로만 포개짐 경고가 남아 있다 (후속 계획)."""
 
+    # 복합 회로에 남은 포개짐. 늘어도 줄어도 여기가 빨개진다 — 후속 계획이 0 으로 만든다
+    COMB_OVERLAPS = {'build_e1_comb': 2, 'build_e1_comb_s1': 0,
+                     'build_e1_comb_s2': 1, 'build_e1_comb_s3': 2}
+
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
@@ -193,8 +221,8 @@ class AllCircuits(unittest.TestCase):
                 bb = _render(self.mod, fn)
                 if name.startswith('build_e1_comb'):
                     self.assertEqual(bb.overlap_policy, 'warn')
-                    self.assertLessEqual(len(bb.overlap_warnings), 2,
-                                         '복합 회로의 포개짐이 늘었다 — 2건이 알려진 빚이다')
+                    self.assertEqual(len(bb.overlap_warnings), self.COMB_OVERLAPS[name],
+                                     f'{name}: 복합 회로의 포개짐 수가 달라졌다')
                 else:
                     self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드는 복합 회로만')
                     self.assertEqual(bb.overlap_warnings, [])
