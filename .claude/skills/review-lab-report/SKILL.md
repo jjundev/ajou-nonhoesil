@@ -115,14 +115,19 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
 
    ```bash
    python3 -c "
+   import re
    from pathlib import Path
    from pypdf import PdfReader
    from scripts.lab import config, spec_parser
    spec = spec_parser.parse_spec(Path('<실험NN>/체크리스트/명세.md'))
    live = next(p for p in config.manual_candidates(spec.experiment) if Path(p).exists())
    pages = len(PdfReader(str(live)).pages)
-   cited = sorted({int(t.source.split(':p')[1]) for t in spec.tables
-                   if str(t.source).startswith('manual:p')})
+   # source 에 복합 인용('manual:p10 (…) + manual:p4 (…)')과 범위 인용
+   # ('manual:p13-p14')이 섞여 있다 — 단순 split(':p')[1] 은 두 형태 모두에서
+   # 죽거나 쪽을 놓친다. manual: 로 시작하는 source 안의 pN 을 전부 뽑는다.
+   cited = sorted({int(p) for t in spec.tables
+                   if str(t.source).startswith('manual:')
+                   for p in re.findall(r'p(\d+)', str(t.source))})
    print('교안 쪽 수:', pages, '/ 인용된 쪽:', cited)
    for p in cited:
        if p > pages:
