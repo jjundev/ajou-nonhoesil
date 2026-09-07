@@ -16,7 +16,13 @@ COURSE_INFO = ".claude/과목정보.md"
 REPORT_FORMAT = ".claude/보고서양식.md"
 
 # 조 편성이 확정돼야 채워지는 신원 필드. 표지에 찍히는 값이라 비면 지어내지 않는다.
-IDENTITY_FIELDS = ("team", "student_ids", "student_names")
+#
+# `team` 은 2026-09-07 에 뺐다. 이 분반은 조 번호를 주지 않아 채울 값이 없는데,
+# 게이트에 있는 동안에는 표지가 영원히 "미확정: team" 으로 멈췄다. 어느 템플릿도
+# 조 번호를 인쇄하지 않으므로 제출물에 빈 칸이 생기지도 않는다. **여기 있는 이름은
+# 전부 실제로 표지에 찍히는 값이어야 한다** — 안 찍히는 값을 게이트에 두면
+# 채울 방법이 없는 필드가 산출물을 막는다.
+IDENTITY_FIELDS = ("student_ids", "student_names")
 
 # 실험은 1~10 뿐이다. FPGA(13~15주차)는 실험 번호가 없어 `프로젝트/` 로 간다.
 EXPERIMENT_COUNT = 10

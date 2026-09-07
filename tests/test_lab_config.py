@@ -276,17 +276,30 @@ class MissingIdentityTest(unittest.TestCase):
     def test_모든_필드가_비면_전부_보고한다(self):
         self.assertEqual(
             config.missing_identity({}),
-            ["team", "student_ids", "student_names"],
+            ["student_ids", "student_names"],
         )
 
     def test_None_과_빈_문자열을_모두_미확정으로_본다(self):
         # `~` 는 md 파서가 None 으로 준다. 빈 문자열도 표지에 찍히면 안 된다.
-        info = {"team": None, "student_ids": "", "student_names": "홍길동"}
-        self.assertEqual(config.missing_identity(info), ["team", "student_ids"])
+        info = {"student_ids": "", "student_names": None}
+        self.assertEqual(
+            config.missing_identity(info), ["student_ids", "student_names"]
+        )
 
     def test_다_채워지면_빈_리스트다(self):
-        info = {"team": "3조", "student_ids": "202012345", "student_names": "홍길동"}
+        info = {"student_ids": "202012345", "student_names": "홍길동"}
         self.assertEqual(config.missing_identity(info), [])
+
+    def test_조_번호는_게이트가_아니다(self):
+        """`team` 을 되돌리면 표지가 영원히 멈춘다.
+
+        이 분반은 조 번호를 주지 않아 `team` 에 채울 값이 없는데, 게이트에
+        있는 동안에는 `missing_identity` 가 언제나 `["team"]` 을 돌려줘 ⑥ 이
+        표지를 못 냈다. 어느 템플릿도 조 번호를 인쇄하지 않는다 —
+        게이트에는 실제로 표지에 찍히는 값만 둔다.
+        """
+        self.assertNotIn("team", config.IDENTITY_FIELDS)
+        self.assertEqual(config.missing_identity({"team": None}), config.missing_identity({}))
 
     def test_실제_과목정보로_돌아간다(self):
         root = config.find_project_root(Path(__file__))
