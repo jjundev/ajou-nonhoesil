@@ -20,13 +20,15 @@ class TestWeek2(unittest.TestCase):
         self.assertEqual(self.spec.experiment, 1)
         self.assertEqual(self.spec.power["VCC"], "+5V")
 
-    def test_three_items(self):
+    def test_five_items(self):
+        """신판(2026-2 배포본)은 실험 1-1/1-2/2-1/2-2/3 로 다섯 항목이다."""
         self.assertEqual([i.id for i in self.spec.items],
-                         ["E1.P1-1", "E1.P1-2", "E1.P2"])
+                         ["E1.P1-1", "E1.P1-2", "E1.P2-1", "E1.P2-2", "E1.P3"])
 
     def test_ic_list_matches_manual_parts_page(self):
         """교안 p10 준비물이 근거다. 74HC08 은 quad AND 라 3-input 에 1개면 된다."""
-        self.assertEqual(self.spec.items[0].ics, ["74HC08", "74HC32"])
+        self.assertEqual(self.spec.items[0].ics, ["74HC08"])
+        self.assertEqual(self.spec.items[1].ics, ["74HC32"])
 
     def test_three_input_truth_tables_are_eight_rows(self):
         for tid in ("T1", "T2", "T3", "T4"):

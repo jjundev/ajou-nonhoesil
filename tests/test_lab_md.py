@@ -161,7 +161,7 @@ class TestRealSpecFiles(unittest.TestCase):
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["schema"], "lab-spec/v2")
         self.assertEqual(fm["experiment"], 1)
-        self.assertEqual(len(fm["items"]), 3)
+        self.assertEqual(len(fm["items"]), 5)
         # 느슨한 하한은 회귀를 놓친다 — Task 1 픽스처의 실제 개수로 고정한다
         self.assertEqual(len(md.parse_tables(body)), 9)
 

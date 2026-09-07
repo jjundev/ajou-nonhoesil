@@ -445,7 +445,7 @@ class TestCircuitPages(unittest.TestCase):
         """이름과 달리 문서 전체를 보던 자리다. 모든 산문을 회로 1 로 몰아넣는
         변이가 통과했다 — C4 의 74HC02 경고가 C1 쪽에 찍혀도 잡히지 않는다."""
         pages = self._pages()
-        for index, warning in ((2, "교안 p12 회로도 그대로"),
+        for index, warning in ((2, "교안 p13 회로도 그대로"),
                                (3, "핀 순서에 주의"),
                                (4, "다르면 배선 오류")):
             with self.subTest(warning=warning):
@@ -781,7 +781,7 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
                         # 아래 셋은 불릿이 아니라 열 0 산문이라 별도 결함(A2)으로
                         # 빠져 있었다 — X≡Z 자체 검증, 74HC02 핀 순서 재경고,
                         # E1.P1-2 NAND 절 도입문.
-                        "다르면 배선 오류", "핀 순서에 주의", "교안 p12 회로도 그대로"):
+                        "다르면 배선 오류", "핀 순서에 주의", "교안 p13 회로도 그대로"):
             with self.subTest(warning=warning):
                 self.assertIn(warning, self.html)
 
