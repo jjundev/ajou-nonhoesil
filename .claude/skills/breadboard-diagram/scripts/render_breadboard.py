@@ -806,13 +806,14 @@ class BreadboardRenderer:
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
-        # R4. 다른 배선끼리 같은 축 위에 포개지면 그림에서 한 선으로 보인다
+        # R4. 다른 배선끼리 같은 축 위에 포개지면 그림에서 한 선으로 보인다.
+        # overlap_warnings 는 **이번 verify() 의 결과**다 — 포개짐이 없으면 비운다
         overlaps = self._overlaps()
+        self.overlap_warnings = overlaps
         if overlaps:
             msg = '배선이 포개졌다:\n  ' + '\n  '.join(overlaps)
             if self.overlap_policy == 'strict':
                 raise AssertionError(msg)
-            self.overlap_warnings = overlaps
             print(f'[WARN] {msg}', file=sys.stderr)
 
         # 레일 연결성. 같은 전원을 나르는 레일들이 브리지로 이어져 있지
