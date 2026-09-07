@@ -1038,6 +1038,21 @@ class TestCheckReportWrapping(unittest.TestCase):
         self.assertEqual(validate.check_report_wrapping(
             "아래 캔버스에 미리 그려 둔다.\n![브레드보드 작도 캔버스](x.jpg)"), [])
 
+    def test_참고문헌의_URL_줄은_쪼개진_문단이_아니다(self):
+        # 데이터시트 인용은 서지 한 줄 + 링크 한 줄이 관행이다. 실험01·02
+        # 승인본이 그 모양으로 올라갔는데도 이 검사가 둘 다 error 로 잡았다.
+        self.assertEqual(validate.check_report_wrapping(
+            "- Nexperia. 74HC00; 74HCT00 — Quad 2-input NAND gate. Rev. 11, 2025-04-29.\n"
+            "  https://assets.nexperia.com/documents/data-sheet/74HC_HCT00.pdf"), [])
+
+    def test_URL_이_아닌_이어진_줄은_그대로_잡는다(self):
+        # 오탐을 없애면서 진짜 감싸기까지 놓치면 안 된다. 줄 **전체**가 URL
+        # 하나일 때만 넘어간다 — 산문이 URL 뒤에 붙으면 감싸기다.
+        got = validate.check_report_wrapping(
+            "- Nexperia. 74HC00 데이터시트인데 서지가 길어서\n"
+            "  https://example.com/x.pdf 를 보라고 이어 붙였다.")
+        self.assertEqual(len(got), 1, got)
+
     def test_되읽은_baseline_은_이_검사의_범위가_아니다(self):
         # 범위를 못 박는 테스트다. 노션 되읽기는 문단 사이 빈 줄을 지워서
         # **각자 완결된** 문단이 나란히 붙는다 — 쪼개진 것이 아닌데도 잡힌다.

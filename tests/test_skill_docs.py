@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config, validate
+from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
@@ -51,6 +52,13 @@ REPORT_DOCS = ("예보", "결과")
 # `test_every_skill_passes_item_count_to_the_section_check` 가 곧바로 깨진다.
 # `DOCS` 는 상호참조를 보는 목록이고, 이쪽은 호출부를 보는 목록이다.
 REPORT_SECTION_DOCS = ("예보", "결과", "리뷰")
+
+# 다른 문서를 가리키는 상호참조. `③ §절대 규칙 9` 처럼 스킬 번호가 앞에 붙는다.
+# 이 참조는 **자기 문서에서 풀면 안 된다** — ⑤ 에는 `## 절대 규칙` 이 없어서
+# `§절대 절 없음` 으로 잡혔고, ④ 의 `③ §절대 규칙 5` 는 하필 ④ 자신의 규칙 5 가
+# 있어서 엉뚱한 문서를 보고 조용히 통과했다. 앞의 번호가 가리키는 문서에서 푼다.
+CROSS_DOC = re.compile(r"([①-⑦])\s*§(절대 규칙|실행 절차)\s*([\d·~]+)")
+MARKERS = {"③": "예보", "④": "결과", "⑤": "리뷰"}
 
 # 핀아웃 근거가 실제로 사는 곳. 경로를 문서에만 두면 폴더가 옮겨졌을 때
 # 문서가 조용히 거짓말을 한다 — `Breadboard.jpg` 가 정확히 그렇게 깨졌다.
@@ -127,6 +135,9 @@ def cross_reference_errors(text, titles=("절대 규칙", "실행 절차")):
     함수 안에 박지 않는다 — ⑤ 에는 `## 절대 규칙` 이 없어서, 박아 두면 거기
     `§절대 규칙 N` 참조가 생기는 순간 전부 "없음"으로 잡힌다.
     """
+    # 다른 문서를 가리키는 참조는 여기서 풀지 않는다 (위 `CROSS_DOC` 참조).
+    # `test_cross_document_references_resolve_in_the_target_doc` 가 본다.
+    text = CROSS_DOC.sub(" ", text)
     sec = sections(text)
     rules = numbered_items(sec["절대 규칙"]) if "절대 규칙" in titles else None
     steps = numbered_items(sec["실행 절차"]) if "실행 절차" in titles else None
@@ -229,6 +240,29 @@ class SkillDocInvariants(unittest.TestCase):
         for name, text in self.docs.items():
             with self.subTest(name):
                 self.assertEqual(cross_reference_errors(text, DOCS[name][1]), [])
+
+    def test_cross_document_references_resolve_in_the_target_doc(self):
+        """`③ §절대 규칙 9` 가 ③ 에 실재하는가.
+
+        자기 문서에서 푸는 검사로는 이것을 볼 수 없다 — ⑤ 는 `## 절대 규칙`
+        이 없어 죽은 참조로 잡히고(거짓 경보), ④ 는 자기 규칙 번호와 우연히
+        겹쳐 통과한다(무음). 둘 다 실제로 있었던 상태다.
+        """
+        checked = 0
+        for name, text in self.docs.items():
+            for marker, title, token in CROSS_DOC.findall(text):
+                target = MARKERS.get(marker)
+                if target is None:
+                    continue      # DOCS 밖의 스킬은 대조할 원본이 없다
+                checked += 1
+                with self.subTest(f"{name} → {target} §{title} {token}"):
+                    items = numbered_items(sections(self.docs[target])[title])
+                    self.assertEqual(
+                        sorted(_expand(token) - items), [],
+                        f"{name} 이 가리키는 {target} §{title} 항목이 없다")
+        # 커밋된 문서에 실재하는 최소 개수다(④ 가 ③ 을 두 번 가리킨다).
+        # 살아 있는 트리에는 더 있지만, 여기 박는 숫자는 커밋된 것만 센다.
+        self.assertGreaterEqual(checked, 2, "상호참조를 하나도 못 찾으면 이 테스트는 공허하다")
 
     def test_no_bare_section_number_references(self):
         # 상호참조 표기는 `§절대 규칙 N`·`§실행 절차 N`·`N단계` 뿐이다.
@@ -370,13 +404,19 @@ class SkillDocInvariants(unittest.TestCase):
         # 계획이 이 숫자를 한 번 틀렸다 — 결선 소절을 4개라고 썼는데 정본은
         # 6개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
         # 문자열 존재만 보면 같은 실수가 다시 지나간다.
+        # 숫자를 손으로 박지 않는다. 2026-2 배포본이 실험1 을 항목 셋에서
+        # 다섯으로 늘렸을 때 정본과 규칙 17 은 5·8 로 따라갔는데 이 테스트만
+        # 3·6 에 남아 깨졌다 — 규칙 17 이 말하는 그 파생을 여기서도 한다.
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        n_proc = len(spec.items)
+        # 고정 소절 셋: 공통 결선 규칙 + 실험 전 확인할 사항 + 브레드보드 작도.
+        n_wire = n_proc + 3
         counts = subsection_counts(CANON.read_text(encoding="utf-8"))
-        self.assertEqual(counts["실험 과정 및 예상 결과"], 3)
-        self.assertEqual(counts["회로 결선도"], 6)
+        self.assertEqual(counts["실험 과정 및 예상 결과"], n_proc)
+        self.assertEqual(counts["회로 결선도"], n_wire)
         # 규칙의 예시 문장을 정본에서 센 숫자로 조립해 대조한다. 줄바꿈에
         # 기대지 않는다 — 문단을 다시 감싸도 규칙이 같으면 통과해야 한다.
-        n_proc, n_wire = counts["실험 과정 및 예상 결과"], counts["회로 결선도"]
-        self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다.",
+        self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다",
                       self.flat["예보"])
 
     def test_ai_usage_log_gate_is_written_against_the_parsed_value(self):

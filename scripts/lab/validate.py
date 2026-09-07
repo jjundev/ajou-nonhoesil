@@ -523,6 +523,10 @@ _ORDERED = re.compile(r"^\d+\.\s")
 _IMAGE_ONLY = re.compile(r"^!\[[^\]]*\]\([^)]*\)\s*$")
 
 
+# 줄 전체가 URL 하나인가. 참고문헌 인용의 링크 줄을 알아보는 데 쓴다.
+_BARE_URL = re.compile(r"^<?https?://\S+>?$")
+
+
 def _flow_kind(line):
     """줄이 문단 흐름의 어디에 속하는지. 흐름 밖이면 `keep`."""
     if not line.strip():
@@ -573,6 +577,13 @@ def check_report_wrapping(md_text) -> list:
             continue
         # 콜론·마침표 뒤에 수식을 따로 놓은 것은 저자의 배치다. 잡으면 거짓 경보다.
         if nxt.strip().startswith("`") and here.rstrip().endswith((":", ".")):
+            continue
+        # 참고문헌의 URL 줄도 저자의 배치다. 데이터시트 인용은 서지 한 줄 +
+        # 링크 한 줄이 관행이라, 실험01·02 승인본이 그 모양으로 올라갔는데도
+        # 이 검사가 둘 다 error 로 잡았다. **URL 만 있는 줄**로 좁힌다 —
+        # 감싸인 산문의 이어진 줄이 URL 하나로만 이뤄지는 일은 없으므로
+        # 진짜 감싸기(실험02 초판 160곳)를 놓치지 않는다.
+        if _BARE_URL.match(nxt.strip()):
             continue
         hits.append(i + 1)
     if not hits:
