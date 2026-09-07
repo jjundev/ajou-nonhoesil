@@ -78,6 +78,45 @@ class PhysicalRules(unittest.TestCase):
         bb.lead(c['mid_gnd'], bb.r_y(31), '브리지 끝')
         self.assertEqual(bb.free_rail_row(31, c['mid_gnd'], c['mid_vcc']), 30)
 
+    # ---- R2. 부품 다리와 칩 핀도 홀을 차지한다 ----
+
+    def test_칩_핀_홀에_배선을_꽂으면_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 10)
+        bb.step_wire([(c['f'], bb.r_y(10)), (c['mid_vcc'], bb.r_y(10))], 'vcc', 'pin 14')
+        with self.assertRaisesRegex(AssertionError, '한 홀에 리드 둘.*74HC08 pin 14'):
+            bb.verify()
+
+    def test_LED_사슬은_다리마다_다른_홀을_쓴다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], 'sig', '출력 -> L2')
+        bb.led_chain(c['c'], 24, 'L2', '최종 출력')
+        bb.verify()
+        self.assertEqual(bb._leads[(c['c'], 24)], '신호 배선 · 출력 -> L2')
+        self.assertEqual(bb._leads[(c['d'], 24)], 'L2 LED 애노드')
+        self.assertEqual(bb._leads[(c['d'], 25)], 'L2 LED 캐소드')
+        self.assertEqual(bb._leads[(c['e'], 25)], '330Ω 윗다리')
+        self.assertEqual(bb._leads[(c['e'], 27)], '330Ω 아랫다리')
+        # GND 점퍼는 레일 쪽 끝 홀(c27)에서. LED 열(d27)에서 뽑으면 레일로 가는 길에
+        # 다른 다리 위를 지나진 않지만, 레일 쪽 끝이 항상 아무것도 안 넘는 자리다
+        self.assertIn((c['c'], 27), bb._leads)
+        self.assertNotIn((c['d'], 27), bb._leads)
+
+    def test_오른쪽_끝_열의_LED_사슬은_왼쪽으로_자란다(self):
+        bb = self.board()
+        c = bb.cols['right']
+        bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(22))], 'sig', 'pin 3 -> X')
+        bb.led_chain(c['d'], 22, 'X', 'X 출력', block='right')
+        bb.verify()
+        self.assertEqual(bb._leads[(c['c'], 22)], 'X LED 애노드')
+        self.assertEqual(bb._leads[(c['b'], 23)], '330Ω 윗다리')
+        # 왼쪽으로 자란 사슬의 GND 점퍼는 저항 너머(a25)에서 — c25 나 d25 에서 뽑으면
+        # 레일(542, 왼쪽)로 가는 가로선이 저항 아랫다리 b25 위를 지난다
+        self.assertIn((c['a'], 25), bb._leads)
+        self.assertNotIn((c['c'], 25), bb._leads)
+
 
 if __name__ == '__main__':
     unittest.main()

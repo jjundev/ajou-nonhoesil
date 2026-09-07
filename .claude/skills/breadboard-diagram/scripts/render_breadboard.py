@@ -428,6 +428,8 @@ class BreadboardRenderer:
         return n
 
     def draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
+        self.lead(x, y1, f'{label} 윗다리')
+        self.lead(x, y2, f'{label} 아랫다리')
         wire_col = (100, 100, 100, 255)
         body_col = (225, 195, 145, 255)
         ymid = (y1 + y2) // 2
@@ -443,6 +445,8 @@ class BreadboardRenderer:
             self.draw.line([(x - 4, ymid + off), (x + 4, ymid + off)], fill=col, width=2)
 
     def draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
+        self.lead(x, y_anode, f'{label} LED 애노드')
+        self.lead(x, y_cathode, f'{label} LED 캐소드')
         ymid = (y_anode + y_cathode) // 2
         self.draw.line([(x, y_anode), (x, ymid - 8)], fill=(130, 130, 130, 255), width=2)
         self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=(130, 130, 130, 255), width=2)
@@ -452,24 +456,42 @@ class BreadboardRenderer:
 
     def led_chain(self, x, top_row, tag, desc, block='left', color_rgb=(220, 20, 20),
                   marker_dx=-21):
-        """LED + 330Ω + GND 한 벌.
+        """LED + 330Ω + GND 한 벌. `x` 는 **신호가 도착하는 열**이다.
+
+        LED 는 그 옆 열, 저항은 그 다음 열에 꽂는다. 같은 행 a~e(또는 f~j)는
+        한 노드라 어느 홀이든 이어지지만, **한 홀에는 다리 하나만** 들어간다.
+        이전 판은 배선 끝·LED 애노드·LED 캐소드·저항 윗다리를 전부 한 열에
+        포개 그렸다 — 그림대로면 한 홀에 둘씩 꽂아야 했다. 사슬은 빈 열 쪽으로
+        자란다: 오른쪽에 두 열이 없으면(d 열) 왼쪽으로 간다.
+
+        저항 아래 GND 점퍼는 저항 행에서 **레일에 가장 가까운 빈 홀**에서 뽑는다.
+        LED 열에서 뽑으면 왼쪽으로 자란 사슬(도착 d → LED c → 저항 b)의 가로선이
+        저항 아랫다리 b 위를 지나간다 — 검정 선 아래 다리가 깔리는 그림이다.
 
         보드 위에는 **짧은 꼬리표만** 붙인다 (L1, X, Z…). 'L2 최종 LED
         (Y=A·B·C)' 같은 긴 문구는 결선 순서표로 내려보낸다 — 손으로 옮겨
         그릴 것이 아니면서 정작 그릴 홀을 가리기 때문이다.
         """
         c = self.cols[block]
-        y_a, y_k = self.r_y(top_row), self.r_y(top_row + 1)
-        self.draw_led(x, y_a, y_k, color_rgb, tag)
-        self.draw_resistor(x, y_k, self.r_y(top_row + 3), label="330Ω")
-        self.step_note('sig', self.addr(x, y_a), self.addr(x, self.r_y(top_row + 3)),
-                       f'{tag}: LED + 330Ω 직렬 · {desc}',
-                       marker_at=(x + marker_dx, (y_a + y_k) // 2))
-        x_gnd = self.nearest_gnd_rail(x, block)
+        group = [c[k] for k in 'abcde'] if x <= c['e'] else [c[k] for k in 'fghij']
+        i = group.index(x)
+        step = 1 if i + 2 < len(group) else -1
+        x_led, x_res = group[i + step], group[i + 2 * step]
+        y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
+        self.draw_led(x_led, y_a, y_k, color_rgb, tag)
+        self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+        self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
+                       f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
+                       f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
+                       marker_at=(x + marker_dx, y_k))
+        x_gnd = self.nearest_gnd_rail(x_led, block)
+        # 저항 행(top_row+3)에서 저항 열을 뺀 홀 가운데 레일에 제일 가까운 것
+        free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
+        x_from = min(free, key=lambda h: abs(h - x_gnd))
         r_gnd = self.free_rail_row(top_row + 3, x_gnd)
-        self.step_wire([(x, self.r_y(top_row + 3)), (x_gnd, self.r_y(r_gnd))],
+        self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
                        'gnd', f'{tag} 저항 아래 -> GND',
-                       width=2, marker_at=(x - 22, self.r_y(top_row + 3) + 2))
+                       width=2, marker_at=(x_from - 22, y_r + 2))
 
     # ---------------- 칩 ----------------
 
@@ -504,6 +526,8 @@ class BreadboardRenderer:
             rt = str(14 - i)
             w = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]
             self.draw.text((x2 - 3 - w, y - 6), rt, fill=(215, 215, 215, 255), font=self.font_num)
+            self.lead(c['e'], y, f'{name} pin {i + 1}')
+            self.lead(c['f'], y, f'{name} pin {14 - i}')
 
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
         """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
@@ -531,18 +555,21 @@ class BreadboardRenderer:
         중앙 레일에, a~e 쪽(pin 1~7)이 바깥 왼쪽 레일에 붙는다. 우측 보드는
         좌우가 뒤집힌다 — 이전 판은 좌측 기준 배선을 우측에도 그대로 써서
         복합회로 빌더가 전원 배선을 손으로 다시 썼다.
+
+        점퍼는 핀 홀 바로 옆(d·g 열)에서 출발한다 — e·f 열 홀에는 칩 다리가
+        꽂혀 있다. `connect_unused_inputs()` 가 처음부터 그렇게 했다.
         """
         c = self.cols[block]
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
         r14 = self.free_rail_row(start_row, x_vcc)
-        self.step_wire([(c['f'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
+        self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', 'pin 14 -> +5V 레일',
-                       marker_at=((c['f'] + x_vcc) // 2, self.r_y(start_row) - 11))
+                       marker_at=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
         r7 = self.free_rail_row(start_row + 6, x_gnd)
-        self.step_wire([(c['e'], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
+        self.step_wire([(c['d'], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
                        'gnd', 'pin 7 -> GND 레일',
-                       marker_at=((c['e'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+                       marker_at=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -832,14 +859,15 @@ def build_e1_and(output_path, template_path=None):
                  marker_at=(c['c'] - 20, bb.r_y(12) + 8))
 
     # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
-    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] + 18, bb.r_y(16)))
-    bb.led_chain(c['a'], 19, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다.
+    # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
+                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
+    bb.led_chain(c['a'], 24, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
-    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], 'sig',
-                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(20)))
-    bb.led_chain(c['c'], 24, "L2", "최종 출력 Y = A·B·C — 진리표 검증 대상")
+    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(19))], 'sig',
+                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(17)))
+    bb.led_chain(c['c'], 19, "L2", "최종 출력 Y = A·B·C — 진리표 검증 대상")
 
     bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC08')
     bb.mark_unused_outputs([8, 11], r, chip='74HC08')
@@ -885,14 +913,15 @@ def build_e1_or(output_path, template_path=None):
                  marker_at=(c['c'] - 20, bb.r_y(12) + 8))
 
     # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
-    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] + 18, bb.r_y(16)))
-    bb.led_chain(c['a'], 19, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다.
+    # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
+                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
+    bb.led_chain(c['a'], 24, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
-    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], 'sig',
-                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(20)))
-    bb.led_chain(c['c'], 24, "L2", "최종 출력 Y = A+B+C — 진리표 검증 대상")
+    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(19))], 'sig',
+                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(17)))
+    bb.led_chain(c['c'], 19, "L2", "최종 출력 Y = A+B+C — 진리표 검증 대상")
 
     bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC32')
     bb.mark_unused_outputs([8, 11], r, chip='74HC32')
@@ -920,12 +949,12 @@ def build_e1_nand(output_path, template_path=None):
     _input_jumper(bb, c, 7, 'A', '74HC08 pin 1')
     _input_jumper(bb, c, 8, 'B', '74HC08 pin 2')
 
-    bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(18))], 'mid',
-                 'A·B -> 74HC00 pin 1 (칩 사이 연결)', marker_at=(c['c'] + 18, bb.r_y(13)))
+    bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(18))], 'mid',
+                 'A·B -> 74HC00 pin 1 (칩 사이 연결)', marker_at=(c['a'] - 20, bb.r_y(13)))
 
-    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(13))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] - 20, bb.r_y(11)))
-    bb.led_chain(c['b'], 13, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
+    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(14))], 'mid',
+                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] + 18, bb.r_y(11)))
+    bb.led_chain(c['b'], 14, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
     _input_jumper(bb, c, 19, 'C', '74HC00 pin 2')
 
@@ -968,22 +997,23 @@ def build_e1_nor(output_path, template_path=None):
     _input_jumper(bb, c, 8, 'B', '74HC32 pin 2')
 
     # A+B 는 74HC02 의 **2번 핀**으로 간다. 1번 핀은 출력이다
-    bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(19))], 'mid',
-                 "A+B -> 74HC02 pin 2 (1번 아님!)", marker_at=(c['c'] + 18, bb.r_y(14)))
+    bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(19))], 'mid',
+                 "A+B -> 74HC02 pin 2 (1번 아님!)", marker_at=(c['a'] - 20, bb.r_y(14)))
 
-    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(13))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] - 20, bb.r_y(11)))
-    bb.led_chain(c['b'], 13, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
+    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(14))], 'mid',
+                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] + 18, bb.r_y(11)))
+    bb.led_chain(c['b'], 14, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
     # 20행은 레일 홀도 없고("20 →" 가 인쇄돼) 왼쪽 여백도 막혀 있다 — 19행 홀에서
     # 비스듬히 들어가고 번호 원은 여백 아래쪽으로
     _input_jumper(bb, c, 20, 'C', '74HC02 pin 3', marker=(215, +13))
 
-    # 최종 출력은 74HC02 의 1번 핀 — 칩 맨 윗핀이다
-    bb.step_wire([(c['a'], bb.r_y(18)), (c['a'], bb.r_y(25))], 'sig',
+    # 최종 출력은 74HC02 의 1번 핀 — 칩 맨 윗핀이다. c열로 내린다: a열은 위의
+    # A+B 초록선이, b열은 입력 C 의 끝점(b20)이 쓴다
+    bb.step_wire([(c['c'], bb.r_y(18)), (c['c'], bb.r_y(25))], 'sig',
                  "최종 출력 74HC02 pin 1 -> L2 (출력이 맨 윗핀)",
-                 marker_at=(c['a'] + 18, bb.r_y(22)))
-    bb.led_chain(c['a'], 25, "L2", "최종 출력 Y = (A+B+C)' — 진리표 검증 대상")
+                 marker_at=(c['c'] + 18, bb.r_y(22)))
+    bb.led_chain(c['c'], 25, "L2", "최종 출력 Y = (A+B+C)' — 진리표 검증 대상")
 
     bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_or, bridge_row=29, chip='74HC32')
     bb.mark_unused_outputs([6, 8, 11], r_or, chip='74HC32')
@@ -1076,14 +1106,14 @@ def build_e1_comb(output_path, template_path=None, stage=None):
         bb.led_chain(c_l['a'], 26, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다",
                      color_rgb=(210, 20, 80))
 
-        bb.step_wire([(c_r['d'], bb.r_y(12)), (c_r['d'], bb.r_y(22))], 'sig',
-                     '74HC32 pin 3 -> X LED', marker_at=(c_r['d'] + 18, bb.r_y(18)))
-        bb.led_chain(c_r['d'], 22, "X", "X = A + Z — Z 와 다르면 배선 오류",
+        bb.step_wire([(c_r['c'], bb.r_y(12)), (c_r['c'], bb.r_y(22))], 'sig',
+                     '74HC32 pin 3 -> X LED', marker_at=(c_r['c'] - 18, bb.r_y(18)))
+        bb.led_chain(c_r['c'], 22, "X", "X = A + Z — Z 와 다르면 배선 오류",
                      block='right', color_rgb=(220, 120, 0), marker_dx=40)
 
-        bb.step_wire([(c_r['c'], bb.r_y(15)), (c_r['c'], bb.r_y(27))], 'sig',
-                     '74HC32 pin 6 -> Y LED', marker_at=(c_r['c'] - 20, bb.r_y(21)))
-        bb.led_chain(c_r['c'], 27, "Y", "Y = A + B", block='right', color_rgb=(20, 150, 50))
+        bb.step_wire([(c_r['a'], bb.r_y(15)), (c_r['a'], bb.r_y(27))], 'sig',
+                     '74HC32 pin 6 -> Y LED', marker_at=(c_r['a'] - 20, bb.r_y(21)))
+        bb.led_chain(c_r['a'], 27, "Y", "Y = A + B", block='right', color_rgb=(20, 150, 50))
 
         bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left', bridge_row=31, chip='74HC04')
         bb.mark_unused_outputs([6, 8, 10, 12], r_not, block='left', chip='74HC04')
@@ -1234,7 +1264,7 @@ def _build_e2_dc(output_path, template_path, mode):
                  'R1 = 1kΩ 꽂기 (pin 2 와 같은 행에서 시작)',
                  marker_at=(c['a'] - 22, (bb.r_y(r + 1) + bb.r_y(r + 4)) // 2))
     x_far = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
-    bb.step_wire([(c['a'], bb.r_y(r + 4)), (x_far, bb.r_y(bb.free_rail_row(r + 4, x_far)))], rail,
+    bb.step_wire([(c['b'], bb.r_y(r + 4)), (x_far, bb.r_y(bb.free_rail_row(r + 4, x_far)))], rail,
                  f"R1 반대쪽 -> {'+5V' if rn else 'GND'} 레일",
                  marker_at=(c['a'] - 30, bb.r_y(r + 4) + 10))
 
