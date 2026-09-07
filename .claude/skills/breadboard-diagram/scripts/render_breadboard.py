@@ -348,11 +348,15 @@ def build_e1_nor(output_path, template_path=None):
     74HC02 는 (2,3 → 1) 이다 — netlist 가 "이 실험에서 가장 흔한 배선
     실수"로 표시한 지점이다.
 
-    위상은 netlist M5 의 파생이다. 교안 p12 는 "반복 수행하라"만 적고 3입력
-    NOR 의 구성을 지정하지 않는다. NAND 회로의 앞단 74HC08(AND) 을 그대로 두고
-    뒷단만 NOR 로 바꾸면 `((A·B)+C)'` 이 되어 3입력 NOR 이 아니다. 그래서
-    앞단을 74HC32(OR) 로 바꿔 `(A+B+C)'` 을 얻는 구성을 택했다. 그림 안에
-    배지로 새긴다.
+    위상은 원래 구판 교안(p12 "반복 수행하라"만 적고 구성 미지정) 아래서
+    파생으로 골랐다 — NAND 회로의 앞단 74HC08(AND) 을 그대로 두고 뒷단만
+    NOR 로 바꾸면 `((A·B)+C)'` 이 되어 3입력 NOR 이 아니므로, 앞단을
+    74HC32(OR) 로 바꿔 `(A+B+C)'` 을 얻는 구성을 택했었다.
+
+    **2026-2 배포본 교안 p14 가 이 구성(74HC32 앞단 + 74HC02 뒷단)을 회로도에
+    직접 라벨해 파생과 일치함을 확인했다** — netlist M5 는 이걸로 해소됐다
+    (명세.md `E1.P1-2` 참조). 그림에는 더 이상 "위상 미확정" 배지를 두지
+    않는다 — 남기면 이미 해소된 사실을 거짓으로 되돌리게 된다.
     """
     bb = BreadboardRenderer(template_path)
     bb.set_header("실험 1-2: 3-Input NOR Gate 회로 결선도",
@@ -403,8 +407,6 @@ def build_e1_nor(output_path, template_path=None):
 
     bb.connect_unused_inputs([5, 6, 8, 9, 11, 12], r_nor, bridge_row=31)
     bb.mark_unused_outputs([4, 10, 13], r_nor)
-
-    bb.draw_badge(c['f'] + 22, bb.r_y(26) - 8, "※ 위상 미확정(netlist M5) — 조교 확인 후 배선", (255, 250, 235, 245), (170, 110, 0, 255))
 
     bb.export(output_path, max_row=33)
 
