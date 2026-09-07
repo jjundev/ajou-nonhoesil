@@ -119,6 +119,13 @@ class BreadboardRenderer:
         # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
+        # 홀 점유표. (열 x, 행) -> 무엇이 꽂혀 있는가. 배선 끝점·부품 다리·칩 핀이
+        # 전부 여기 등록되고 verify() 가 본다 — 끝점은 홀이어야 하고(R1), 한 홀에는
+        # 리드 하나만 들어간다(R2). 2026-09-07 까지 verify() 는 주소 문자열을 파싱해
+        # 레일 끝점의 빈 행만 봤고, 허공(x=95)에서 출발한 입력선이 그 틈으로 지나갔다
+        self._leads = {}
+        self._not_holes = []
+        self._double = []
         # 번호 매기기는 e1 계열(손스케치용 원도)만 켠다. e2 빌더들은 아직
         # 옛 API(draw_wire) 를 쓰므로 순서표가 반쪽이 된다 — 반쪽 표는 없는
         # 것보다 나쁘다
@@ -177,6 +184,41 @@ class BreadboardRenderer:
                 if self.is_rail_row(cand):
                     return cand
         raise ValueError(f'레일 홀이 있는 행을 못 찾았다: r={r}')
+
+    def hole_at(self, x, y):
+        """(x, y) 가 실제 홀이면 그 홀의 키 (열 x, 행), 아니면 None.
+
+        레일은 5홀씩 묶여 빈 행이 있고, 단자대는 63행 전부 홀이다. 열은
+        `_addr_map` 의 x 에 9px 안으로 붙어야 한다 — 그 밖은 배선 통로다.
+        """
+        r = int(round((y - ROW0) / ROW_PITCH)) + 1
+        if not 1 <= r <= ROW_MAX:
+            return None
+        best = min(self._addr_map, key=lambda k: abs(k - x))
+        if abs(best - x) > 9:
+            return None
+        if '레일' in self._addr_map[best] and not self.is_rail_row(r):
+            return None
+        return (best, r)
+
+    def lead(self, x, y, what):
+        """홀 (x, y) 에 리드 하나를 꽂는다.
+
+        전원잭(y < 240)은 보드 밖의 유일한 합법 끝점이라 건너뛴다. 홀이 아니면
+        R1 위반, 이미 차 있으면 R2 위반으로 적어 두고 verify() 가 한꺼번에 낸다
+        — 그리는 도중에 던지면 어디까지 그렸는지 알 수 없다.
+        """
+        if y < 240:
+            return
+        key = self.hole_at(x, y)
+        if key is None:
+            self._not_holes.append(f'{what} — ({x:.0f}, {y:.0f}) = {self.addr(x, y)}')
+            return
+        prev = self._leads.get(key)
+        if prev is not None:
+            self._double.append(f'{self.addr(x, y)}: {prev} + {what}')
+        else:
+            self._leads[key] = what
 
     def _rail_xs(self):
         out = set()
@@ -335,6 +377,8 @@ class BreadboardRenderer:
         self.draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
+        for p in (points[0], points[-1]):
+            self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
         if not self.numbered:
             return None
 
@@ -656,24 +700,21 @@ class BreadboardRenderer:
                t, fill=color, font=self.font_num)
 
     def verify(self):
-        """배선 끝점이 실제 홀 위에 있는지 검사한다.
+        """그림대로 꽂을 수 있는지 검사한다. 내보내기 직전에 돈다.
 
-        좌표표가 어긋나도 그림은 그럴듯하게 나오기 때문에 눈으로는 안 잡힌다.
-        템플릿 크기 검사(TEMPLATE_SIZE)는 판본 교체만 잡지 좌표 자체의
-        회귀는 못 잡는다 — 이전 판이 정확히 그 틈으로 빠져나갔다.
+        좌표표가 어긋나도, 선이 허공에서 출발해도 그림은 그럴듯하게 나온다 —
+        눈으로는 안 잡힌다. 2026-09-07 까지는 주소 문자열에 '레일' 이 든 끝점의
+        빈 행만 봤고, 허공(x=95)에서 온 입력선은 '보드밖(입력)' 이라는 이름을
+        달고 그 틈으로 지나갔다. 지금은 점유표(`_leads`)를 본다.
+
+        R1  모든 끝점은 실제 홀이다 (전원잭만 예외).
+        R2  한 홀에는 리드 하나만 들어간다 — 점퍼·부품 다리·칩 핀 전부.
+        R4  서로 다른 배선이 같은 축 위에 포개지지 않는다 (`overlap_policy`).
+        그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
         """
-        bad = []
-        for s in self.steps:
-            for a in (s['frm'], s['to']):
-                if '레일' in a:
-                    try:
-                        r = int(a.split('레일')[1].replace('행', ''))
-                    except ValueError:
-                        continue
-                    if not self.is_rail_row(r):
-                        bad.append(f"{a} — 그 행의 레일에는 홀이 없다")
+        bad = [f'홀이 아니다: {s}' for s in self._not_holes]
         if bad:
-            raise AssertionError('결선 끝점이 홀 밖이다:\n  ' + '\n  '.join(bad))
+            raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
         # 레일 연결성. 같은 전원을 나르는 레일들이 브리지로 이어져 있지
         # 않으면, 그림대로 꽂았을 때 전원이 안 간다. 눈으로는 절대 안 잡힌다 —
