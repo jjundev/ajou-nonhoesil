@@ -149,3 +149,93 @@ def compare_netlist_pins(original, regenerated) -> list:
         for e in sorted(b[item] - a[item], key=_fmt):
             out.append(f"{item}: 재생성에만 — {_fmt(e)}")
     return out
+
+
+from . import config, validate                      # noqa: E402
+from .spec_parser import parse_spec                 # noqa: E402
+from .specdiff import compare_specs, uncovered_tables   # noqa: E402
+
+_SENT_SPLIT = re.compile(r"(?<=[.。다\)])\s|\|")
+
+
+def _sentences(path, min_len):
+    t = re.sub(r"\s+", " ", Path(path).read_text(encoding="utf-8"))
+    return {p.strip() for p in _SENT_SPLIT.split(t) if len(p.strip()) >= min_len}
+
+
+def shared_sentences(regen_paths, corpus_paths, min_len=25) -> list:
+    """재생성물과 코퍼스가 공유하는 문장. 격리의 실증이다 — 답을 못 봤으면
+    칩 이름·프론트매터 조각 말고는 겹칠 수 없다."""
+    r, c = set(), set()
+    for p in regen_paths:
+        r |= _sentences(p, min_len)
+    for p in corpus_paths:
+        c |= _sentences(p, min_len)
+    return sorted(r & c, key=len, reverse=True)
+
+
+_CELL = re.compile(r"행\d+ \S+: 원본 '([^']*)' / 재생성 '([^']*)'")
+_ENC_PAIRS = {("0", "L"), ("1", "H"), ("L", "0"), ("H", "1")}
+
+
+def classify_spec_diffs(diffs) -> dict:
+    """`compare_specs` 의 줄을 다섯 갈래로 나눈다. 갈래마다 뜻이 다르다 —
+    `id_shift` 는 표가 하나 늘거나 줄어 번호가 밀린 것, `encoding` 은 `0/1`↔`H/L`
+    치환으로 설명되는 셀, `cell` 은 진짜 값 차이, `title` 은 이름만 다른 것."""
+    out = {"id_shift": [], "encoding": [], "title": [], "cell": [], "other": []}
+    for d in diffs:
+        if d.startswith("[표 ID"):
+            out["id_shift"].append(d)
+        elif " encoding: " in d:
+            out["encoding"].append(d)
+        elif " title: " in d:
+            out["title"].append(d)
+        else:
+            m = _CELL.search(d)
+            if m and (m.group(1), m.group(2)) in _ENC_PAIRS:
+                out["encoding"].append(d)
+            elif m:
+                out["cell"].append(d)
+            else:
+                out["other"].append(d)
+    return out
+
+
+def judgment_markdown(experiment: int, regen_dir, corpus_dirs=()) -> str:
+    """판정 초안. 자동으로 셀 수 있는 것만 센다 — 제목 갈림의 옳고 그름과
+    산문은 사람이 본다."""
+    root = Path(config.experiment_dir(experiment))
+    regen_dir = Path(regen_dir)
+    o_spec, r_spec = root / "체크리스트/명세.md", regen_dir / "체크리스트/명세.md"
+    o_net, r_net = root / "결선도/netlist.md", regen_dir / "결선도/netlist.md"
+
+    diffs = classify_spec_diffs(compare_specs(o_spec, r_spec))
+    total = sum(len(v) for v in diffs.values())
+    unc = uncovered_tables(r_spec)
+    findings = validate.check_netlist(r_net, parse_spec(r_spec))
+    by_level = {lvl: [f for f in findings if f.level == lvl] for lvl in ("error", "warn", "info")}
+    pins = compare_netlist_pins(o_net, r_net)
+    corpus = [o_spec, o_net]
+    for d in corpus_dirs:
+        corpus += sorted(Path(d).glob("*.md"))
+    shared = shared_sentences([r_spec, r_net], corpus)
+
+    L = [f"# 실험{experiment} 격리 재생성 판정 초안", "",
+         "이 회차는 세션 메모리 주입 아래서 돌았다.", "",
+         f"## 1. compare_specs 차이 {total}건"]
+    for k, label in (("id_shift", "ID 밀림"), ("encoding", "인코딩 치환"), ("title", "제목"),
+                     ("cell", "**셀 실차이**"), ("other", "기타")):
+        L.append(f"- {label}: {len(diffs[k])}건")
+        L += [f"    - {x}" for x in diffs[k][:20]]
+    L += ["", f"대조 밖 표 {len(unc)}건"] + [f"- {x}" for x in unc]
+    L += ["", f"## 2. check_netlist error {len(by_level['error'])}건 · warn {len(by_level['warn'])}건 · info {len(by_level['info'])}건"]
+    L += [f"- {f}" for lvl in ("error", "warn", "info") for f in by_level[lvl]]
+    L += ["", f"## 3. 핀 간선 차이 {len(pins)}건"] + [f"- {x}" for x in pins]
+    L += ["", f"## 4. 문장 교집합 {len(shared)}건 (25자 이상)"] + [f"- {s[:120]}" for s in shared[:15]]
+    L += ["", "## 5. 사람이 볼 것",
+          "- 제목 차이는 가리키는 대상이 바뀌었는지부터 본다 (런북 §V1 의 title 기준).",
+          "- 머리말 표(토큰 규약)와 산문은 도구가 안 본다. 원본과 나란히 읽는다.",
+          "- 에이전트 보고 3항(첫 실행 error/warn/info)으로 **규칙이 막았나 / 검사가 잡았나**를 가른다.",
+          "",
+          "> 구조 검증이 통과했다는 것은 파서가 읽을 수 있다는 뜻이고, 내용이 맞다는 뜻이 아니다.", ""]
+    return "\n".join(L)

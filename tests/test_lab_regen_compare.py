@@ -84,3 +84,83 @@ class PinNets(unittest.TestCase):
         out = compare_netlist_pins(NETLIST, v)
         self.assertTrue(any("E1.P3" in s and "원본에만" in s for s in out), out)
         self.assertTrue(any("E1.P9" in s and "재생성에만" in s for s in out), out)
+
+
+from scripts.lab.regen_compare import (classify_spec_diffs, judgment_markdown,
+                                       shared_sentences)
+
+SPEC = E01 / "체크리스트/명세.md"
+
+
+def _spec_variant(replacements):
+    """실험01 명세를 바꾼 임시 사본. **첫 출현만** 바꾼다 — `| 1 | 1 | 1 | 1  | 1  |`
+    같은 행은 T1·T2 에 둘 다 있어서 전부 바꾸면 차이가 둘이 된다."""
+    text = SPEC.read_text(encoding="utf-8")
+    for old, new in replacements:
+        assert text.count(old) >= 1, old
+        text = text.replace(old, new, 1)
+    d = Path(tempfile.mkdtemp()) / config.experiment_folder_name(1) / "체크리스트"
+    d.mkdir(parents=True)
+    p = d / "명세.md"
+    p.write_text(text, encoding="utf-8")
+    return p
+
+
+class SharedSentences(unittest.TestCase):
+    def test_자기_자신과는_전부_겹친다(self):
+        out = shared_sentences([SPEC], [SPEC])
+        self.assertTrue(out)
+        self.assertTrue(all(len(s) >= 25 for s in out))
+
+    def test_다른_글과는_안_겹친다(self):
+        p = Path(tempfile.mkdtemp()) / "x.md"
+        p.write_text("이 문장은 스물다섯 자를 넘기려고 일부러 길게 쓴 문장이다.\n", encoding="utf-8")
+        self.assertEqual(shared_sentences([p], [SPEC]), [])
+
+
+class ClassifySpecDiffs(unittest.TestCase):
+    def test_다섯_키가_항상_있다(self):
+        out = classify_spec_diffs([])
+        self.assertEqual(set(out), {"id_shift", "encoding", "title", "cell", "other"})
+
+    def test_인코딩만_바꾼_사본은_전부_encoding_으로_간다(self):
+        # T1 을 0/1 → H/L 로 뒤집는다. 뜻은 같으니 cell 로 세면 안 된다.
+        # `\b0\b`·`\b1\b` 는 헤더의 `L1`·`L2` 안 숫자를 건드리지 않는다 —
+        # `L` 과 `1` 사이는 단어 경계가 아니다.
+        text = SPEC.read_text(encoding="utf-8")
+        start = text.index("## T1 ·")
+        end = text.index("\n# ", start)
+        block = text[start:end].replace("encoding: 0/1", "encoding: H/L")
+        block = "\n".join(
+            re.sub(r"\b1\b", "H", re.sub(r"\b0\b", "L", l)) if l.startswith("|") else l
+            for l in block.splitlines())
+        v = _spec_variant([(text[start:end], block)])
+        from scripts.lab.specdiff import compare_specs
+        got = classify_spec_diffs(compare_specs(SPEC, v))
+        self.assertTrue(got["encoding"], got)
+        self.assertEqual(got["cell"], [], got)
+        self.assertEqual(got["title"], [], got)
+
+    def test_셀_하나를_뒤집으면_cell_이다(self):
+        v = _spec_variant([("| 1 | 1 | 1 | 1  | 1  |", "| 1 | 1 | 1 | 1  | 0  |")])
+        from scripts.lab.specdiff import compare_specs
+        got = classify_spec_diffs(compare_specs(SPEC, v))
+        self.assertEqual(len(got["cell"]), 1, got)
+        self.assertEqual(got["encoding"], [])
+
+    def test_제목만_바꾸면_title_이다(self):
+        v = _spec_variant([("## T1 · 3-input AND 진리표", "## T1 · 3-input AND gate 진리표")])
+        from scripts.lab.specdiff import compare_specs
+        got = classify_spec_diffs(compare_specs(SPEC, v))
+        self.assertEqual(len(got["title"]), 1, got)
+        self.assertEqual(got["cell"], [])
+
+
+class Judgment(unittest.TestCase):
+    def test_원본을_원본과_대조한_판정문(self):
+        md = judgment_markdown(1, E01, corpus_dirs=[E01 / "output"])
+        self.assertIn("compare_specs 차이 0건", md)
+        self.assertIn("핀 간선 차이 0건", md)
+        self.assertIn("check_netlist error 0건", md)
+        self.assertIn("세션 메모리 주입 아래서 돌았다", md)
+        self.assertIn("구조 검증이 통과했다는 것은 파서가 읽을 수 있다는 뜻이고", md)
