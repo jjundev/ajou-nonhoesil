@@ -387,6 +387,114 @@ class Rails(unittest.TestCase):
         self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H8'], [])
 
 
+class Paperwork(unittest.TestCase):
+    def _pair(self, cid='e1_nand'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        hand.title = '2-1 NAND Gate'
+        return ref, hand
+
+    def test_H9_브리지_행이_다르면_표기로_알린다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
+        hand.signed = True
+        hand.title = '2-1 NAND Gate'
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H9']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '표기')
+
+    def test_H10_칩이_밀리면_표기로만_알린다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
+        hand.signed = True
+        hand.title = '2-1 NAND Gate'
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H10']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '표기')
+
+    def test_H12_학번_미기재를_잡는다(self):
+        ref, hand = self._pair()
+        hand.signed = False
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H12']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '표기')
+
+    def test_H11_제목이_회로와_다르면_잡는다(self):
+        ref, hand = self._pair()
+        hand.title = '2-2 NAND Gate'
+        hand.circuit = 'e1_nor'
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H11']
+        self.assertTrue(found)
+
+    def test_H13_uncertain_은_보류로_나온다(self):
+        ref, hand = self._pair()
+        hand.uncertain = {('left', 'd', 17)}
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H13']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '보류')
+
+
+class Verdict(unittest.TestCase):
+    def test_치명이_있으면_수정_필요(self):
+        f = [hc.HandFinding('H3', '치명', 'x', 'y')]
+        self.assertEqual(hc.verdict(f), '수정 필요')
+
+    def test_기능이_있으면_수정_필요(self):
+        f = [hc.HandFinding('H4', '기능', 'x', 'y')]
+        self.assertEqual(hc.verdict(f), '수정 필요')
+
+    def test_표기만_있으면_제출_가능(self):
+        """학번 미기재는 막지 않는다 — 별도 줄로만 알린다."""
+        f = [hc.HandFinding('H12', '표기', 'x', 'y')]
+        self.assertEqual(hc.verdict(f), '제출 가능')
+
+    def test_보류만_있으면_제출_가능(self):
+        f = [hc.HandFinding('H13', '보류', 'x', 'y')]
+        self.assertEqual(hc.verdict(f), '제출 가능')
+
+
+class Judgment(unittest.TestCase):
+    def test_판정문에_쪽별_결함과_총평이_들어간다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = hc.reference_diagram('e1_nand')
+        hand.signed = False
+        hand.title = '2-1 NAND Gate'
+        hand.page = 3
+        md = hc.judgment_markdown([(3, 'e1_nand', hc.compare(ref, hand), hand)],
+                                  round_no=1)
+        self.assertIn('round1', md)
+        self.assertIn('3쪽', md)
+        self.assertIn('제출 가능', md)
+        self.assertIn('H12', md)
+
+    def test_치명이_있으면_총평이_수정_필요다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = hc.reference_diagram('e1_nand')
+        hand.signed = True
+        node = hc.node_of(hand.chips[1]['pins'][14])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        md = hc.judgment_markdown([(3, 'e1_nand', hc.compare(ref, hand), hand)], 1)
+        self.assertIn('수정 필요', md)
+
+
+class RuleRegistry(unittest.TestCase):
+    def test_check_로_시작하는_함수는_전부_규칙_목록에_있다(self):
+        """함수만 만들고 `_RULES` 에 안 올리면 검사가 조용히 빠진다.
+        2026-09-08 1차 검토가 LED 사슬을 건너뛴 것이 바로 그 실패였다."""
+        defined = {v for k, v in vars(hc).items()
+                   if k.startswith('check_') and callable(v)}
+        self.assertEqual(defined, set(hc._RULES))
+
+    def test_규칙_코드가_H1부터_H13까지_빠짐없다(self):
+        import inspect
+        src = inspect.getsource(hc)
+        for n in range(1, 14):
+            self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
+
+
 if __name__ == '__main__':
     unittest.main()
 

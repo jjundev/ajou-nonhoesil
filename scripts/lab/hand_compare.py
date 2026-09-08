@@ -476,11 +476,75 @@ def check_rails(ref, hand):
     return out
 
 
+# 회로 ID -> 제목에 들어가야 할 말. 제목만 보고 다른 회로를 그렸다고
+# 판정하지 않는다 — 제목이 틀렸는지 그림이 틀렸는지는 서명이 가른다
+CIRCUIT_WORDS = {
+    'e1_and': ('AND',), 'e1_or': ('OR',),
+    'e1_nand': ('NAND',), 'e1_nor': ('NOR',),
+    'e1_comb': ('복합', 'COMB'),
+    'e1_comb_s1': ('복합', 'COMB'), 'e1_comb_s2': ('복합', 'COMB'),
+    'e1_comb_s3': ('복합', 'COMB'),
+}
+
+
+def check_placement(ref, hand):
+    """H9 브리지·잭 행 차이 · H10 칩 행 차이. 둘 다 표기다.
+
+    칩이 밀려도 배선이 함께 옮겨져 있으면 그림은 유효하다. 그래도 알리는
+    이유는 체크리스트의 좌표 표기와 어긋나기 때문이다 — 같이 제출한다면
+    맞춰 두는 편이 낫다.
+    """
+    out = []
+    rmap, hmap = {}, {}
+    for key, ch in zip(chip_keys(ref), ref.chips):
+        rmap[key] = ch['pin1_row']
+    for key, ch in zip(chip_keys(hand), hand.chips):
+        hmap[key] = ch['pin1_row']
+    for key, rrow in rmap.items():
+        hrow = hmap.get(key)
+        if hrow is not None and hrow != rrow:
+            out.append(HandFinding(
+                'H10', '표기', key,
+                f'참조는 pin 1 이 {rrow}행인데 손그림은 {hrow}행이다 '
+                f'({hrow - rrow:+d}행). 배선이 함께 옮겨져 있으면 회로는 맞다'))
+
+    rb = {(k, a[2]) for k, a, _b in ref.bridges}
+    hb = {(k, a[2]) for k, a, _b in hand.bridges}
+    if rb and hb and rb != hb:
+        out.append(HandFinding(
+            'H9', '표기', '레일 브리지',
+            f'참조는 {sorted(r for _k, r in rb)}행인데 손그림은 '
+            f'{sorted(r for _k, r in hb)}행이다. 도면상 같은 노드지만, '
+            '레일이 가운데서 끊긴 실물 보드라면 30행 아래 브리지는 전원을 못 올린다'))
+    return out
+
+
+def check_paperwork(ref, hand):
+    """H11 제목 · H12 자필 기재 · H13 전사 보류."""
+    out = []
+    words = CIRCUIT_WORDS.get(hand.circuit or ref.circuit, ())
+    title = (hand.title or '').upper()
+    if words and title and not any(w.upper() in title for w in words):
+        out.append(HandFinding(
+            'H11', '표기', '제목',
+            f'제목 {hand.title!r} 에 {" 또는 ".join(words)} 가 없다. '
+            '회로와 제목 중 어느 쪽이 틀렸는지 함께 본다'))
+    if not hand.signed:
+        out.append(HandFinding(
+            'H12', '표기', '자필 기재',
+            '학번·이름·날짜가 없다. 참조 도면이 제출 조건으로 요구한다'))
+    for hole in sorted(hand.uncertain):
+        out.append(HandFinding(
+            'H13', '보류', _addr(hole),
+            '전사가 확신하지 못한 끝점이다. 그 자리를 확대해 다시 읽는다'))
+    return out
+
+
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
-_RULES = [check_holes, check_power, check_signals, check_led_chains, check_rails]
-
+_RULES = [check_holes, check_power, check_signals, check_led_chains,
+          check_rails, check_placement, check_paperwork]
 
 
 def compare(ref, hand):
@@ -490,4 +554,39 @@ def compare(ref, hand):
         out.extend(rule(ref, hand))
     order = {g: i for i, g in enumerate(GRADES)}
     return sorted(out, key=lambda f: (order.get(f.grade, 9), f.rule))
+
+
+BLOCKING = ('치명', '기능')
+
+
+def verdict(findings):
+    """치명·기능이 없으면 제출 가능. 표기는 막지 않고 별도 줄로 알린다."""
+    return '수정 필요' if any(f.grade in BLOCKING for f in findings) else '제출 가능'
+
+
+def judgment_markdown(pages, round_no):
+    """쪽별 판정 문서. `pages` 는 (쪽 번호, 회로 ID, 결함들, 손그림) 목록."""
+    every = [f for _p, _c, fs, _h in pages for f in fs]
+    lines = [f'# 손그림 결선도 검토 round{round_no}', '',
+             f'**총평: {verdict(every)}**', '']
+
+    counts = {g: sum(1 for f in every if f.grade == g) for g in GRADES}
+    lines += ['| 등급 | 건수 |', '|---|---|']
+    lines += [f'| {g} | {counts[g]} |' for g in GRADES]
+    lines.append('')
+
+    for page, circuit, findings, hand in pages:
+        lines.append(f'## {page}쪽 · {circuit} · {hand.title or "제목 없음"}')
+        lines.append('')
+        lines.append(f'판정: **{verdict(findings)}**')
+        lines.append('')
+        if not findings:
+            lines += ['참조와 다른 곳이 없다.', '']
+            continue
+        lines += ['| 등급 | 규칙 | 자리 | 내용 |', '|---|---|---|---|']
+        for f in findings:
+            msg = f.message.replace('|', r'\|')
+            lines.append(f'| {f.grade} | {f.rule} | {f.where} | {msg} |')
+        lines.append('')
+    return '\n'.join(lines)
 
