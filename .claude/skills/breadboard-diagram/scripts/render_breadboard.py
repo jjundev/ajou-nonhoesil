@@ -174,7 +174,18 @@ class BreadboardRenderer:
                 'gnd': 836, 'vcc': 852,
             },
         }
+        # 그린 것을 **사실 그대로** 적어 둔다. 손그림 검토가 이걸 정답으로
+        # 읽는다. `_leads` 의 뜻풀이 문자열을 파싱하게 두면 말이 바뀔 때마다
+        # 검사기가 조용히 깨진다 — 검사기는 코드를 읽어야지 산문을 읽으면 안 된다
+        self.chips = []
+        self.leds = []
+        self.resistors = []
+        self.led_chains = []
+        self.unused_inputs = []
+        self.unused_outputs = []
+
         self._addr_map = self._build_addr_map()
+        self._sym_map = self._build_sym_map()
 
     # ---------------- 좌표 ----------------
 
@@ -374,6 +385,29 @@ class BreadboardRenderer:
                 out[x] = f'{blabel} {names.get(key, key)}'
         return out
 
+    def _build_sym_map(self):
+        """x 좌표 -> (블록, 열 이름). `_addr_map` 의 기계용 짝이다."""
+        out = {}
+        for block in ('left', 'right'):
+            for key, x in self.cols[block].items():
+                if key.startswith('chip'):
+                    continue
+                out[x] = (block, key)
+        return out
+
+    def sym(self, x, row):
+        """(x, 행) -> (블록, 열 이름, 행). 홀이 아니면 None.
+
+        `addr()` 이 사람이 읽는 '좌 b10' 을 만든다면 이쪽은 기계가 비교하는
+        ('left', 'b', 10) 을 만든다. 허용치는 `hole_at()` 과 같은 5px 다 —
+        열 피치가 16px 라 그보다 넓으면 인접 열 사이에 거부 구간이 없다.
+        """
+        best = min(self._sym_map, key=lambda k: abs(k - x))
+        if abs(best - x) > 5:
+            return None
+        block, col = self._sym_map[best]
+        return (block, col, row)
+
     def addr(self, x, y):
         """(x, y) 를 '좌 e7' 처럼 읽히는 주소로. 표에 그대로 들어간다."""
         if y < 240:
@@ -534,6 +568,9 @@ class BreadboardRenderer:
     def draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
         self.lead(x, y1, f'{label} 윗다리')
         self.lead(x, y2, f'{label} 아랫다리')
+        self.resistors.append({'label': label,
+                               'top': self.sym(x, self._row_of(y1)),
+                               'bottom': self.sym(x, self._row_of(y2))})
         wire_col = (100, 100, 100, 255)
         body_col = (225, 195, 145, 255)
         ymid = (y1 + y2) // 2
@@ -551,6 +588,9 @@ class BreadboardRenderer:
     def draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
         self.lead(x, y_anode, f'{label} LED 애노드')
         self.lead(x, y_cathode, f'{label} LED 캐소드')
+        self.leds.append({'tag': label,
+                          'anode': self.sym(x, self._row_of(y_anode)),
+                          'cathode': self.sym(x, self._row_of(y_cathode))})
         ymid = (y_anode + y_cathode) // 2
         self.draw.line([(x, y_anode), (x, ymid - 8)], fill=(130, 130, 130, 255), width=2)
         self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=(130, 130, 130, 255), width=2)
@@ -584,6 +624,12 @@ class BreadboardRenderer:
         y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
         self.draw_led(x_led, y_a, y_k, color_rgb, tag)
         self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+        self.led_chains.append({'tag': tag,
+                                'signal': self.sym(x, top_row),
+                                'anode': self.sym(x_led, top_row),
+                                'cathode': self.sym(x_led, top_row + 1),
+                                'res_top': self.sym(x_res, top_row + 1),
+                                'res_bottom': self.sym(x_res, top_row + 3)})
         self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
                        f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
                        f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
@@ -632,6 +678,13 @@ class BreadboardRenderer:
             self.draw.text((x2 - 3 - w, y - 6), rt, fill=(215, 215, 215, 255), font=self.font_num)
             self.lead(c['e'], y, f'{name} pin {i + 1}')
             self.lead(c['f'], y, f'{name} pin {14 - i}')
+
+        pins = {}
+        for i in range(7):
+            pins[i + 1] = self.sym(c['e'], start_row + i)
+            pins[14 - i] = self.sym(c['f'], start_row + i)
+        self.chips.append({'label': name, 'block': block,
+                           'pin1_row': start_row, 'pins': pins})
 
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
         """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
@@ -725,6 +778,7 @@ class BreadboardRenderer:
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
             self.lead(x_rail, self.r_y(r_rail), f'{chip} pin {p} 미사용 입력 접지선')
             self.touch_rail(rail, x_rail)
+            self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': rail})
 
         pin_str = ", ".join(str(p) for p in pins)
         self.step_note(rail, f'{chip} pin {pin_str}',
@@ -746,6 +800,8 @@ class BreadboardRenderer:
         이전 판은 핀마다 'Pin 8: NC (개방)' 배지를 보드 위에 찍었다. 손으로
         옮겨 그릴 것이 하나도 없는 문구가 정작 그릴 홀을 덮었다.
         """
+        for p in pins:
+            self.unused_outputs.append({'chip': chip, 'pin': p})
         pin_str = ", ".join(str(p) for p in pins)
         self.note(f'{chip} 미사용 출력 pin {pin_str} 은 **아무 데도 연결하지 않는다** '
                   f'— 개방(NC). GND 로 내리거나 출력끼리 묶으면 칩이 상한다.')
@@ -861,6 +917,42 @@ class BreadboardRenderer:
         bbox = d.textbbox((0, 0), t, font=self.font_num)
         d.text((x - (bbox[2]-bbox[0])/2 - bbox[0], y - (bbox[3]-bbox[1])/2 - bbox[1]),
                t, fill=color, font=self.font_num)
+
+    def wiring(self):
+        """이 그림이 무엇을 어디에 꽂았는지 **기호 좌표**로 낸다.
+
+        손그림 검토(`review-hand-diagram`)가 정답으로 쓴다. 픽셀이 아니라
+        (블록, 열, 행) 으로 내는 이유는 손그림 전사가 '좌 b10' 같은 주소로
+        적히기 때문이다 — 양쪽을 같은 말로 맞춰야 비교가 된다.
+
+        `overlaps` 는 `verify()` 가 채운다. `export()` 를 거친 렌더러면 차 있고,
+        아니면 비어 있다. 참조 그림에서 **잘 안 보이는 선**을 판정문에 주석으로
+        달기 위한 것이다 — 복합회로의 A 갈래가 초록 Z 선 아래 깔려 있어서
+        따라 그린 사람이 통째로 빠뜨렸다.
+        """
+        def endpoint(p):
+            x, y = p
+            if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
+                color = min(JACKS, key=lambda k: abs(JACKS[k] - x))
+                return ('jack', color)
+            return ('hole', self.sym(x, self._row_of(y)))
+
+        wires = [{'kind': kind, 'desc': desc,
+                  'frm': endpoint(pts[0]), 'to': endpoint(pts[-1])}
+                 for kind, pts, desc in self._segments]
+        bridges = [(kind, self.sym(a, 1), self.sym(b, 1))
+                   for kind, a, b in sorted(self._bridged)]
+        return {
+            'chips': list(self.chips),
+            'wires': wires,
+            'leds': list(self.leds),
+            'resistors': list(self.resistors),
+            'chains': list(self.led_chains),
+            'unused_inputs': list(self.unused_inputs),
+            'unused_outputs': list(self.unused_outputs),
+            'bridges': bridges,
+            'overlaps': list(self.overlap_warnings),
+        }
 
     def verify(self):
         """그림대로 꽂을 수 있는지 검사한다. 내보내기 직전에 돈다.
@@ -1014,6 +1106,7 @@ def build_e1_and(output_path, template_path=None):
     bb.mark_unused_outputs([8, 11], r, chip='74HC08')
     bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
+    return bb
 
 
 def build_e1_or(output_path, template_path=None):
@@ -1070,6 +1163,7 @@ def build_e1_or(output_path, template_path=None):
     bb.mark_unused_outputs([8, 11], r, chip='74HC32')
     bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
+    return bb
 
 
 def build_e1_nand(output_path, template_path=None):
@@ -1111,6 +1205,7 @@ def build_e1_nand(output_path, template_path=None):
     bb.mark_unused_outputs([6, 8, 11], r_nand, chip='74HC00')
     bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
+    return bb
 
 
 def build_e1_nor(output_path, template_path=None):
@@ -1166,6 +1261,7 @@ def build_e1_nor(output_path, template_path=None):
             '나머지 넷과 반대다.')
     bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
+    return bb
 
 
 def build_e1_comb(output_path, template_path=None, stage=None):
@@ -1292,6 +1388,7 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     bb.note('입력 A·B 두 개뿐이다. 교안 p15 회로도에 C 입력은 없다.')
     bb.note('입력 A·B 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 오른쪽 블록으로 가는 갈래는 같은 행의 옆 홀(c7·b19)에 꽂는 두 번째 점퍼다.')
     bb.export(output_path, max_row=34)
+    return bb
 
 
 # ---------------------------------------------------------------------------
@@ -1576,17 +1673,17 @@ def build_e2_all(output_dir, template_path=None):
 # 별칭이던 시절을 잡아낸 바로 그 검사다.
 def build_e1_comb_s1(output_path, template_path=None):
     """복합회로 1단계 — 칩 안착과 전원만."""
-    build_e1_comb(output_path, template_path, stage=1)
+    return build_e1_comb(output_path, template_path, stage=1)
 
 
 def build_e1_comb_s2(output_path, template_path=None):
     """복합회로 2단계 — 1단계 + 신호 배선."""
-    build_e1_comb(output_path, template_path, stage=2)
+    return build_e1_comb(output_path, template_path, stage=2)
 
 
 def build_e1_comb_s3(output_path, template_path=None):
     """복합회로 3단계 — 2단계 + LED 3벌과 미사용 핀 처리."""
-    build_e1_comb(output_path, template_path, stage=3)
+    return build_e1_comb(output_path, template_path, stage=3)
 
 
 def build_e1_all(output_dir, template_path=None):
