@@ -21,7 +21,6 @@
 import hashlib
 import importlib.util
 import io
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -122,13 +121,21 @@ def board_image(pdf_path, page_index=0):
                 f"{Path(pdf_path).name} {page_index + 1}쪽에 판형 이미지가 없다. "
                 "배포본 판형 위에 그린 PDF 만 검토한다")
 
-        tiles.sort(key=lambda t: t[0].y0)
-        is_tiled = len(tiles) > 1 and all(
-            abs(tiles[i][0].x0 - tiles[0][0].x0) < 2 and abs(tiles[i][0].x1 - tiles[0][0].x1) < 2
-            for i in range(len(tiles))
+        # 페이지 너비의 상당 부분을 차지하는 판형 후보 타일들을 먼저 거른다.
+        # 학생이 덧붙인 사진·스탬프(작은 너비)가 타일 판정(all)을 깨뜨리지 않게 한다.
+        min_board_w = min(400.0, page.rect.width * 0.6)
+        cand_tiles = [t for t in tiles if t[0].width >= min_board_w]
+        if not cand_tiles:
+            cand_tiles = tiles
+
+        cand_tiles.sort(key=lambda t: t[0].y0)
+        is_tiled = len(cand_tiles) > 1 and all(
+            abs(cand_tiles[i][0].x0 - cand_tiles[0][0].x0) < 5 and
+            abs(cand_tiles[i][0].x1 - cand_tiles[0][0].x1) < 5
+            for i in range(len(cand_tiles))
         )
         if is_tiled:
-            extracted = [doc.extract_image(xref) for _, xref in tiles]
+            extracted = [doc.extract_image(xref) for _, xref in cand_tiles]
             total_w = max(info["width"] for info in extracted)
             total_h = sum(info["height"] for info in extracted)
             stitched = Image.new("RGB", (total_w, total_h))
@@ -140,9 +147,11 @@ def board_image(pdf_path, page_index=0):
             buf = io.BytesIO()
             stitched.save(buf, format="PNG")
             data = buf.getvalue()
-            r0 = tiles[0][0]
-            r_last = tiles[-1][0]
-            rect = (r0.x0, r0.y0, r_last.x1, r_last.y1)
+            min_x0 = min(t[0].x0 for t in cand_tiles)
+            min_y0 = min(t[0].y0 for t in cand_tiles)
+            max_x1 = max(t[0].x1 for t in cand_tiles)
+            max_y1 = max(t[0].y1 for t in cand_tiles)
+            rect = (min_x0, min_y0, max_x1, max_y1)
             return BoardImage(
                 md5=hashlib.md5(data).hexdigest(),
                 width=total_w,
@@ -151,7 +160,7 @@ def board_image(pdf_path, page_index=0):
                 data=data,
             )
         else:
-            best = max(tiles, key=lambda t: t[0].width * t[0].height)
+            best = max(cand_tiles, key=lambda t: t[0].width * t[0].height)
             rect, xref = best
             info = doc.extract_image(xref)
             return BoardImage(

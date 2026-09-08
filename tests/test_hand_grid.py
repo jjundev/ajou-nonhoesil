@@ -26,6 +26,25 @@ class BoardExtraction(unittest.TestCase):
         with self.assertRaises(hand_grid.GridError):
             hand_grid.board_image(HANDOUT, page_index=99)
 
+    def test_추가_사진이나_스탬프가_있어도_타일_판형을_정상_추출한다(self):
+        import io
+        import tempfile
+        import fitz
+        from PIL import Image
+
+        doc = fitz.open(str(HANDOUT))
+        page = doc[0]
+        stamp = Image.new("RGB", (60, 60), (200, 0, 0))
+        buf = io.BytesIO()
+        stamp.save(buf, format="PNG")
+        page.insert_image(fitz.Rect(10, 10, 70, 70), stream=buf.getvalue())
+        with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
+            doc.save(tmp.name)
+            doc.close()
+            board = hand_grid.board_image(tmp.name)
+            self.assertEqual(board.width, 998)
+            self.assertEqual(board.height, 1345)
+
 
 class GridDetection(unittest.TestCase):
     @classmethod
