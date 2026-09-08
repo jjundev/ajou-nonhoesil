@@ -10,6 +10,7 @@
 둘이 되어 표류한다.
 """
 
+import io
 import re
 import shutil
 import subprocess
@@ -34,11 +35,8 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys) -> Path:
     dest.mkdir(parents=True)
     archive = subprocess.run(["git", "archive", "--format=tar", "HEAD"], cwd=root,
                              check=True, capture_output=True).stdout
-    tar_path = dest.parent / (dest.name + ".tar")
-    tar_path.write_bytes(archive)
-    with tarfile.open(tar_path) as tf:
+    with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as tf:
         tf.extractall(dest, filter="data")
-    tar_path.unlink()
 
     dest_real = dest.resolve()
     for key in answer_keys:

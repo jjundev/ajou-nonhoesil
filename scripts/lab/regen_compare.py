@@ -229,7 +229,7 @@ def judgment_markdown(experiment: int, regen_dir, corpus_dirs=()) -> str:
         L.append(f"- {label}: {len(diffs[k])}건")
         L += [f"    - {x}" for x in diffs[k][:20]]
     L += ["", f"대조 밖 표 {len(unc)}건"] + [f"- {x}" for x in unc]
-    L += ["", f"## 2. check_netlist error {len(by_level['error'])}건 · warn {len(by_level['warn'])}건 · info {len(by_level['info'])}건"]
+    L += ["", f"## 2. check_netlist error {len(by_level['error'])}건 · warn {len(by_level['warn'])}건 · info {len(by_level['info'])}건 (회로 메타 `diagram` 등은 안 센다)"]
     L += [f"- {f}" for lvl in ("error", "warn", "info") for f in by_level[lvl]]
     L += ["", f"## 3. 핀 간선 차이 {len(pins)}건"] + [f"- {x}" for x in pins]
     L += ["", f"## 4. 문장 교집합 {len(shared)}건 (25자 이상)"] + [f"- {s[:120]}" for s in shared[:15]]
