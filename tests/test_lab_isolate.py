@@ -65,6 +65,18 @@ class BuildIsolatedTree(unittest.TestCase):
         self.assertTrue((self.root / "docs/verify/answer.md").exists())
         self.assertEqual(_git(self.root, "status", "--porcelain"), "")
 
+    def test_답안지_키가_dest_밖이면_예외를_던지고_아무것도_안_지운다(self):
+        # `dest / key` 는 key 가 절대경로처럼 보이면 dest 를 버리고 key 그대로가
+        # 된다 — 답안지 키에 앞 `/` 가 붙으면 임의 절대경로를 rmtree/unlink 할
+        # 뻔했다. 여기서는 실제로 아무것도 지우지 않고 예외만 확인한다.
+        root = _fake_repo()
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        with self.assertRaises(ValueError):
+            build_isolated_tree(root, dest, 1, ["/etc"])
+        # 격리 밖(원본 저장소)은 전혀 건드리지 않았다.
+        self.assertTrue((root / "docs/verify/answer.md").exists())
+        self.assertTrue((root / "keep.md").exists())
+
 
 class LeakScan(unittest.TestCase):
     def test_승인본에서_토큰을_뽑는다(self):
@@ -78,3 +90,24 @@ class LeakScan(unittest.TestCase):
         hits = leak_scan(root, ["E1.P1-1"])
         self.assertEqual(len(hits), 1, hits)
         self.assertTrue(hits[0].startswith("keep.md:1:"), hits[0])
+
+    def test_derived가_여러_줄로_이어져도_토큰을_뽑는다(self):
+        # spec_parser._attrs() 는 들여쓴(2칸 이상) 줄을 앞 값에 이어 붙인다
+        # (spec_parser.py:70-80). `derived (...)` 가 이 규칙으로 두 줄에 걸쳐
+        # 적혀도 leak_tokens 가 여전히 토큰을 뽑아야 한다 — source-of-truth
+        # 파서의 _DERIVED 처럼 re.S 없이 `$` 앵커가 줄바꿈 앞에서 끊기면 안 된다.
+        original = "- source: derived (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)')"
+        wrapped = (
+            "- source: derived (X = A + (A'·B)' ; Y = A + B ;\n"
+            "  Z = (A'·B)')"
+        )
+        text = SPEC.read_text(encoding="utf-8")
+        self.assertIn(original, text, "명세의 T5 source 줄 형식이 바뀌었다 — 테스트를 갱신하라")
+        wrapped_text = text.replace(original, wrapped)
+
+        tmp_dir = Path(tempfile.mkdtemp())
+        tmp_spec = tmp_dir / "명세.md"
+        tmp_spec.write_text(wrapped_text, encoding="utf-8")
+
+        toks = leak_tokens(tmp_spec)
+        self.assertTrue(any(t.startswith("Y = A + B") for t in toks), toks)

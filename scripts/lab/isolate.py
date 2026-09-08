@@ -40,8 +40,16 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys) -> Path:
         tf.extractall(dest, filter="data")
     tar_path.unlink()
 
+    dest_real = dest.resolve()
     for key in answer_keys:
         p = dest / key
+        p_real = p.resolve()
+        if p_real == dest_real or not p_real.is_relative_to(dest_real):
+            # `dest / key` 는 key 가 절대경로처럼 보이면 dest 를 버리고
+            # key 그대로가 된다(Path.__truediv__ 의 규칙) — 답안지 키에
+            # 실수로든 스킬 문서 오염으로든 앞에 `/` 가 붙으면 격리
+            # 임시 폴더 밖 임의 경로를 rmtree/unlink 하게 된다.
+            raise ValueError(f"답안지 키가 격리 트리 밖을 가리킨다: {key!r}")
         if p.is_dir():
             shutil.rmtree(p)
         elif p.exists():
@@ -60,7 +68,7 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys) -> Path:
     return dest
 
 
-_DERIVED = re.compile(r"derived\s*\((.*)\)\s*$")
+_DERIVED = re.compile(r"derived\s*\((.*)\)\s*$", re.S)
 
 
 def leak_tokens(spec_path) -> list:
