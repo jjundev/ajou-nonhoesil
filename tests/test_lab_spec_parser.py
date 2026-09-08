@@ -37,7 +37,11 @@ class TestWeek2(unittest.TestCase):
                 self.assertEqual(self.spec.table(tid).kind, "truth-table")
 
     def test_composite_table_is_two_input(self):
-        """교안 p13 은 3입력이 아니라 2입력이다 (Task 1 vision 판독으로 확정)."""
+        """교안 p15 복합회로는 3입력이 아니라 2입력이다 (vision 판독으로 확정).
+
+        쪽 번호가 오래 p13 이라고 적혀 있었다 — 아카이브 2020-2 판(13 쪽)
+        기준이고, 배포본 2026-2(15 쪽)에서 p13 은 NAND 다.
+        """
         self.assertEqual(len(self.spec.table("T5").rows), 4)
 
     def test_every_table_declares_source(self):
@@ -45,15 +49,18 @@ class TestWeek2(unittest.TestCase):
             self.assertTrue(t.source, f"{t.id} 에 source 가 없다")
 
     def test_split_columns_finds_inputs_and_outputs(self):
+        """T1 은 출력이 둘이다 — 교안 p11 이 중간단 L1 과 최종단 L2 를 둘 다
+        연결하라고 지시하므로 표가 둘 다 받는다."""
         inputs, outputs = split_columns(self.spec.table("T1"))
         self.assertEqual(inputs, ["A", "B", "C"])
-        self.assertEqual(outputs, ["Y"])
+        self.assertEqual(outputs, ["L1", "L2"])
 
     def test_derived_parts_extracts_expression(self):
-        self.assertEqual(derived_parts(self.spec.table("T1")), [("Y", "A·B·C")])
+        self.assertEqual(derived_parts(self.spec.table("T1")),
+                         [("L1", "A·B"), ("L2", "A·B·C")])
 
     def test_derived_parts_handles_multiple_outputs(self):
-        """실험1 p13 복합회로는 입력 2개에 출력이 3개다."""
+        """실험1 p15 복합회로는 입력 2개에 출력이 3개다."""
         pairs = derived_parts(self.spec.table("T5"))
         self.assertEqual([name for name, _ in pairs], ["X", "Y", "Z"])
         self.assertEqual([expr for _, expr in pairs],
