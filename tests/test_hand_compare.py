@@ -136,6 +136,56 @@ class Reference(unittest.TestCase):
             d = hc.reference_diagram(cid)
             self.assertTrue(d.chips, cid)
 
+class SelfCompare(unittest.TestCase):
+    def test_참조를_그대로_손그림으로_넣으면_결함_0건(self):
+        """정답을 정답과 견주어 결함이 나오면 검사기가 틀린 것이다."""
+        for cid in ('e1_and', 'e1_or', 'e1_nand', 'e1_nor'):
+            ref = hc.reference_diagram(cid)
+            hand = hc.reference_diagram(cid)
+            hand.signed = True
+            hand.title = cid
+            bad = [f for f in hc.compare(ref, hand) if f.grade != '표기']
+            self.assertEqual(bad, [], f"{cid}: {[str(x) for x in bad]}")
+
+
+class Physical(unittest.TestCase):
+    def _hand(self, cid='e1_nand'):
+        d = hc.reference_diagram(cid)
+        d.signed = True
+        return d
+
+    def test_H1_레일_빈_행에_꽂은_끝점을_잡는다(self):
+        hand = self._hand()
+        hand.wires.append({'kind': 'gnd', 'desc': '',
+                           'frm': ('hole', ('left', 'gnd', 14)),
+                           'to': ('hole', ('left', 'b', 14))})
+        rules = {f.rule for f in hc.compare(hc.reference_diagram('e1_nand'), hand)}
+        self.assertIn('H1', rules)
+
+    def test_H1_63행_밖은_잡는다(self):
+        hand = self._hand()
+        hand.wires.append({'kind': 'sig', 'desc': '',
+                           'frm': ('hole', ('left', 'a', 70)),
+                           'to': ('hole', ('left', 'b', 70))})
+        rules = {f.rule for f in hc.compare(hc.reference_diagram('e1_nand'), hand)}
+        self.assertIn('H1', rules)
+
+    def test_H2_한_홀에_리드_둘을_잡는다(self):
+        hand = self._hand()
+        chip = hand.chips[0]
+        hand.wires.append({'kind': 'sig', 'desc': '',
+                           'frm': ('hole', chip['pins'][1]),
+                           'to': ('hole', ('left', 'a', 30))})
+        found = [f for f in hc.compare(hc.reference_diagram('e1_nand'), hand)
+                 if f.rule == 'H2']
+        self.assertTrue(found)
+        self.assertIn('e7', found[0].where)
+
+    def test_H2_는_참조에서는_안_난다(self):
+        ref = hc.reference_diagram('e1_nand')
+        self.assertEqual([f for f in hc.check_holes(ref, ref) if f.rule == 'H2'], [])
+
 
 if __name__ == '__main__':
     unittest.main()
+

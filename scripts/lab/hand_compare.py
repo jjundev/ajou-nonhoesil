@@ -193,14 +193,22 @@ def reference_diagram(circuit_id):
 
 def _from_wiring(w, circuit_id):
     """`wiring()` 출력 -> `Diagram`. 손그림 쪽과 같은 모양으로 맞춘다."""
-    bridges = [(kind, a, b) for kind, a, b in w['bridges']
-               if a is not None and b is not None]
+    bridges = []
+    wires = []
+    for x in w['wires']:
+        if x.get('desc') == '레일 브리지' and x['frm'][0] == 'hole' and x['to'][0] == 'hole':
+            bridges.append((x['kind'], x['frm'][1], x['to'][1]))
+        else:
+            wires.append(dict(x))
+    if not bridges:
+        bridges = [(kind, a, b) for kind, a, b in w['bridges']
+                   if a is not None and b is not None]
     by_hole = {c['res_top']: c['tag'] for c in w['chains']}
     for r in w['resistors']:
         r['tag'] = by_hole.get(r['top'], r.get('label', ''))
     return Diagram(
         chips=[dict(c) for c in w['chips']],
-        wires=[dict(x) for x in w['wires']],
+        wires=wires,
         leds=[dict(l) for l in w['leds']],
         resistors=[dict(r) for r in w['resistors']],
         chains=[dict(c) for c in w['chains']],
@@ -209,3 +217,84 @@ def _from_wiring(w, circuit_id):
         bridges=bridges,
         overlaps=list(w['overlaps']),
         circuit=circuit_id)
+
+
+
+def _addr(hole):
+    """홀 -> 사람이 읽는 주소. 판정문에 그대로 들어간다."""
+    block, col, row = hole
+    prefix = '좌' if block == 'left' else '우'
+    names = {'gnd': 'GND레일', 'vcc': 'VCC레일',
+             'mid_gnd': '중앙GND레일', 'mid_vcc': '중앙VCC레일'}
+    if col in RAIL_COLS:
+        return f'{prefix} {names[col]}{row}행'
+    return f'{prefix} {col}{row}'
+
+
+def check_holes(ref, hand):
+    """H1 끝점이 실제 홀인가 · H2 한 홀에 리드 하나인가. (`ref` 는 쓰지 않는다)
+
+    렌더러 `verify()` 의 R1·R2 를 손그림 쪽으로 옮긴 것이다. 그림대로 꽂을 수
+    없는 결선은 무엇을 뜻하든 틀린 것이라 서명 비교보다 먼저 본다.
+
+    규칙 함수는 전부 `(ref, hand)` 를 받는다 — `_RULES` 가 한 줄로 도는
+    대신 규칙마다 분기를 두면 규칙이 늘 때마다 그 분기가 커진다.
+    """
+    mod = load_renderer()
+    out, leads = [], {}
+
+    def put(hole, what):
+        block, col, row = hole
+        if not 1 <= row <= mod.ROW_MAX:
+            out.append(HandFinding(
+                'H1', '치명', _addr(hole),
+                f'{row}행은 판에 없다 (1~{mod.ROW_MAX}행)'))
+            return
+        if col in RAIL_COLS and row in mod.RAIL_GAP_ROWS:
+            out.append(HandFinding(
+                'H1', '치명', _addr(hole),
+                f'레일 {row}행에는 홀이 없다 — 5홀씩 묶여 빈 행이다. '
+                f'{what} 를 이웃 행으로 옮긴다'))
+            return
+        key = (block, col, row)
+        if key in leads:
+            out.append(HandFinding(
+                'H2', '치명', _addr(hole),
+                f'한 홀에 둘: {leads[key]} + {what}. '
+                '같은 행 a~e 는 한 노드라 옆 홀로 옮기면 된다'))
+        else:
+            leads[key] = what
+
+    for key, ch in zip(chip_keys(hand), hand.chips):
+        for pin, hole in ch['pins'].items():
+            put(hole, f'{key} pin {pin}')
+    for w in hand.wires:
+        for ep in (w['frm'], w['to']):
+            if ep[0] == 'hole' and ep[1] is not None:
+                put(ep[1], f"{w.get('kind', '')} 배선".strip())
+    for l in hand.leds:
+        put(l['anode'], f"{l['tag']} LED 애노드")
+        put(l['cathode'], f"{l['tag']} LED 캐소드")
+    for r in hand.resistors:
+        put(r['top'], f"{r.get('tag', '')} 저항 윗다리".strip())
+        put(r['bottom'], f"{r.get('tag', '')} 저항 아랫다리".strip())
+    for kind, a, b in hand.bridges:
+        put(a, f'{kind} 레일 브리지')
+        put(b, f'{kind} 레일 브리지')
+    return out
+
+
+# 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
+# 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
+# 통째로 건너뛴 것이 바로 그 실패였다
+_RULES = [check_holes]
+
+
+def compare(ref, hand):
+    """참조와 손그림을 견준다. 심한 것부터 정렬해서 준다."""
+    out = []
+    for rule in _RULES:
+        out.extend(rule(ref, hand))
+    order = {g: i for i, g in enumerate(GRADES)}
+    return sorted(out, key=lambda f: (order.get(f.grade, 9), f.rule))
+
