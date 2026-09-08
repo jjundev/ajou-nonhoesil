@@ -6,6 +6,7 @@
 그래서 검출한 격자를 렌더러의 권위 있는 좌표표에 1차식으로 맞추고, 잔차가
 크면 소리를 내며 멈춘다.
 """
+import os
 import unittest
 from pathlib import Path
 
@@ -86,6 +87,41 @@ class Fit(unittest.TestCase):
         ys = [self.cal.to_px(0, hand_grid.load_renderer().ROW0 + i * 16.345)[1]
               for i in range(10)]
         self.assertEqual(ys, sorted(ys))
+
+
+class Overlay(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.board = hand_grid.board_image(HANDOUT)
+        cls.cal = hand_grid.calibrate(cls.board)
+        cls.page = hand_grid.render_page(HANDOUT, 0)
+
+    def test_쪽을_300dpi_로_그린다(self):
+        # A4 세로 594.75x841.5pt -> 300dpi 면 약 2478x3506
+        self.assertGreater(self.page.width, 2000)
+        self.assertGreater(self.page.height, 3000)
+
+    def test_격자를_덮은_그림이_원본과_크기가_같다(self):
+        import tempfile
+        from PIL import Image
+        out = os.path.join(tempfile.mkdtemp(), 'grid.png')
+        hand_grid.overlay_grid(self.page, self.cal, out)
+        self.assertEqual(Image.open(out).size, self.page.size)
+
+    def test_크롭은_요청한_행_범위만큼_잘라_확대한다(self):
+        import tempfile
+        from PIL import Image
+        out = os.path.join(tempfile.mkdtemp(), 'crop.png')
+        hand_grid.crop_rows(self.page, self.cal, 10, 20, out, scale=2)
+        im = Image.open(out)
+        self.assertGreater(im.width, 0)
+        self.assertGreater(im.height, 0)
+
+    def test_거꾸로_된_행_범위는_거절한다(self):
+        import tempfile
+        out = os.path.join(tempfile.mkdtemp(), 'x.png')
+        with self.assertRaises(hand_grid.GridError):
+            hand_grid.crop_rows(self.page, self.cal, 20, 10, out)
 
 
 if __name__ == '__main__':

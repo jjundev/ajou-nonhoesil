@@ -21,6 +21,7 @@
 import hashlib
 import importlib.util
 import io
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -292,3 +293,110 @@ def _reference_cols(mod):
     for block in bb.cols.values():
         out.extend(x for key, x in block.items() if not key.startswith('chip'))
     return out
+
+
+# 오버레이 색. 격자선은 **읽는 보조선**이지 판정 근거가 아니다 — 손그림 잉크
+# (빨강·파랑·검정·초록)와 겹치지 않는 자홍/하늘로 골라 눈이 헷갈리지 않게 한다
+GRID_ROW = (255, 0, 255, 70)
+GRID_COL = (0, 160, 255, 60)
+GRID_TEXT_ROW = (200, 0, 200, 255)
+GRID_TEXT_COL = (0, 90, 200, 255)
+
+
+def render_page(pdf_path, page_index=0, dpi=300):
+    """그 쪽을 dpi 로 그린 이미지."""
+    import fitz
+    from PIL import Image
+
+    doc = fitz.open(str(pdf_path))
+    try:
+        if not 0 <= page_index < len(doc):
+            raise GridError(
+                f"{Path(pdf_path).name} 에 {page_index + 1}쪽이 없다 "
+                f"(전체 {len(doc)}쪽)")
+        pix = doc[page_index].get_pixmap(dpi=dpi)
+        return Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+    finally:
+        doc.close()
+
+
+def _col_names(mod):
+    """(블록, 열) -> 렌더러 x. 오버레이 라벨과 크롭이 함께 쓴다."""
+    bb = mod.BreadboardRenderer.__new__(mod.BreadboardRenderer)
+    mod.BreadboardRenderer._init_cols(bb)
+    out = {}
+    for block, cols in bb.cols.items():
+        for key, x in cols.items():
+            if not key.startswith('chip'):
+                out[(block, key)] = x
+    return out
+
+
+_SHORT = {'gnd': 'G-', 'vcc': 'V+', 'mid_gnd': 'g-', 'mid_vcc': 'v+'}
+
+
+def overlay_grid(page_im, cal, out_path, max_row=35):
+    """행 번호·열 이름·레일 빈 행을 반투명으로 덮은 그림.
+
+    Claude 가 끝점을 읽는 **보조선**이다. 사람이 눈금을 세지 않게 하려고
+    있는 것이지, 이 그림으로 판정하지 않는다 — 판정은 전사 파일로 한다.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+
+    mod = load_renderer()
+    im = page_im.convert("RGBA")
+    ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(ov)
+    try:
+        font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 20)
+    except OSError:
+        font = ImageFont.load_default()
+
+    names = _col_names(mod)
+    xs = [cal.to_px(x, mod.ROW0)[0] for x in names.values()]
+    x_lo, x_hi = min(xs), max(xs)
+
+    for r in range(1, min(max_row, mod.ROW_MAX) + 1):
+        y = cal.to_px(0, mod.ROW0 + (r - 1) * mod.ROW_PITCH)[1]
+        d.line([(x_lo - 60, y), (x_hi + 20, y)], fill=GRID_ROW, width=1)
+        label = f'{r} gap' if r in mod.RAIL_GAP_ROWS else str(r)
+        d.text((x_lo - 58, y - 10), label, fill=GRID_TEXT_ROW, font=font)
+
+    y_top = cal.to_px(0, mod.ROW0)[1]
+    y_bot = cal.to_px(0, mod.ROW0 + (min(max_row, mod.ROW_MAX) - 1)
+                      * mod.ROW_PITCH)[1]
+    for (block, key), x in names.items():
+        px = cal.to_px(x, mod.ROW0)[0]
+        d.line([(px, y_top - 30), (px, y_bot)], fill=GRID_COL, width=1)
+        tag = _SHORT.get(key, key)
+        prefix = '좌' if block == 'left' else '우'
+        d.text((px - 9, y_top - 52), f'{prefix}{tag}',
+               fill=GRID_TEXT_COL, font=font)
+
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    Image.alpha_composite(im, ov).convert("RGB").save(out_path)
+    return out_path
+
+
+def crop_rows(page_im, cal, row_from, row_to, out_path, scale=3, block=None):
+    """행 범위를 잘라 확대한다. 치명 결함의 증거로 쓴다."""
+    from PIL import Image
+
+    if row_to <= row_from:
+        raise GridError(f"행 범위가 거꾸로다: {row_from} -> {row_to}")
+    mod = load_renderer()
+    names = _col_names(mod)
+    if block:
+        names = {k: v for k, v in names.items() if k[0] == block}
+    xs = [cal.to_px(x, mod.ROW0)[0] for x in names.values()]
+    y0 = cal.to_px(0, mod.ROW0 + (row_from - 1) * mod.ROW_PITCH)[1]
+    y1 = cal.to_px(0, mod.ROW0 + (row_to - 1) * mod.ROW_PITCH)[1]
+    box = (max(0, int(min(xs) - 80)), max(0, int(y0 - 20)),
+           min(page_im.width, int(max(xs) + 40)),
+           min(page_im.height, int(y1 + 20)))
+    c = page_im.crop(box)
+    c = c.resize((c.width * scale, c.height * scale), Image.LANCZOS)
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    c.save(out_path)
+    return out_path
+
