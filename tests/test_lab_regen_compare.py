@@ -85,6 +85,13 @@ class PinNets(unittest.TestCase):
         self.assertTrue(any("E1.P3" in s and "원본에만" in s for s in out), out)
         self.assertTrue(any("E1.P9" in s and "재생성에만" in s for s in out), out)
 
+    def test_괄호_속_주석의_숫자는_핀으로_안_읽는다(self):
+        # 불릿 머리 뒤 괄호 안에 `M1` 같은 토큰이 있으면 그 `1` 이 핀으로 잘못
+        # 읽혀선 안 된다 — 실제 재생성 회차가 이 자리에서 걸렸다.
+        v = _variant([("  - 미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND\n",
+                       "  - 미사용 입력핀 (M1 을 닫은 뒤에만): pin 5, 6, 8, 9, 11, 12 → GND\n")])
+        self.assertEqual(compare_netlist_pins(NETLIST, v), [])
+
 
 from scripts.lab.regen_compare import (classify_spec_diffs, judgment_markdown,
                                        shared_sentences)

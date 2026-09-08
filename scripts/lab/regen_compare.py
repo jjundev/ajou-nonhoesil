@@ -95,7 +95,8 @@ def _edges_of_chip(chip, umap) -> set:
         head = re.split(r"→|·", rest, maxsplit=1)[0]
         tail = rest[len(head):]
         target = "GND" if "GND" in tail else "VCC" if "VCC" in tail else "개방" if "개방" in tail else tail
-        for p in re.findall(r"\d+", head):
+        head = re.sub(r"\(.*?\)", "", head)
+        for p in re.findall(r"(?<![A-Za-z])\d+", head):
             add(p, target)
     for kind, table in chip["blocks"]:
         if kind != "table":
@@ -233,7 +234,7 @@ def judgment_markdown(experiment: int, regen_dir, corpus_dirs=()) -> str:
     L += ["", f"## 3. 핀 간선 차이 {len(pins)}건"] + [f"- {x}" for x in pins]
     L += ["", f"## 4. 문장 교집합 {len(shared)}건 (25자 이상)"] + [f"- {s[:120]}" for s in shared[:15]]
     L += ["", "## 5. 사람이 볼 것",
-          "- 제목 차이는 가리키는 대상이 바뀌었는지부터 본다 (런북 §V1 의 title 기준).",
+          "- 제목 차이는 가리키는 대상이 바뀌었는지부터 본다 (런북 V1 절의 title 기준).",
           "- 머리말 표(토큰 규약)와 산문은 도구가 안 본다. 원본과 나란히 읽는다.",
           "- 에이전트 보고 3항(첫 실행 error/warn/info)으로 **규칙이 막았나 / 검사가 잡았나**를 가른다.",
           "",
