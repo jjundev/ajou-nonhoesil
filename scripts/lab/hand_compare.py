@@ -403,10 +403,83 @@ def _reference_hidden(ref, key, pin):
     return ''
 
 
+def check_led_chains(ref, hand):
+    """H7 LED 사슬이 이어져 있는가.
+
+    신호 -> LED 애노드 -> 캐소드 -> 저항 윗다리 -> 아랫다리 -> GND 로 다섯
+    자리가 사슬로 이어져야 한다. 어느 한 마디만 어긋나도 LED 는 안 켜지는데
+    **칩 배선만 보면 멀쩡해 보인다.** 2026-09-08 1차 검토가 이 검사를 건너뛰어
+    3·4쪽의 죽은 L1 을 통과시켰다.
+
+    신호가 애노드에 도달하는지는 H6 이 이미 본다(핀 서명에 LED 애노드가
+    들어간다). 여기는 캐소드부터 GND 까지를 본다.
+    """
+    out = []
+    nets = build_nets(hand)
+    att = attachments(hand, nets)
+    by_tag = {c['tag']: c for c in hand.chains}
+
+    for rc in ref.chains:
+        tag = rc['tag']
+        hcn = by_tag.get(tag)
+        if hcn is None:
+            out.append(HandFinding(
+                'H7', '치명', tag,
+                '참조에 있는 LED 사슬이 손그림에 없다 '
+                '(LED 와 330Ω 을 같은 꼬리표로 적었는지 본다)'))
+            continue
+        k_net = nets.get(node_of(hcn['cathode']))
+        t_net = nets.get(node_of(hcn['res_top']))
+        if k_net != t_net:
+            out.append(HandFinding(
+                'H7', '치명', f"{tag} ({_addr(hcn['cathode'])})",
+                f"LED 캐소드({_addr(hcn['cathode'])})와 "
+                f"저항 윗다리({_addr(hcn['res_top'])})가 다른 줄이다. "
+                'LED 가 안 켜지고 전류는 저항으로만 빠진다'))
+        b_net = nets.get(node_of(hcn['res_bottom']))
+        if ('RAIL', 'GND') not in att.get(b_net, set()):
+            touched = ', '.join(sorted(_describe(a) for a in att.get(b_net, set())))
+            out.append(HandFinding(
+                'H7', '치명', f"{tag} ({_addr(hcn['res_bottom'])})",
+                f"저항 아랫다리가 GND 레일에 닿지 않는다"
+                + (f' — 대신 {touched} 에 닿아 있다' if touched else '')))
+    return out
+
+
+def check_rails(ref, hand):
+    """H8 레일 연속성.
+
+    레일쌍 넷은 서로 **별개 스트립**이다. +5V 를 한 레일에 넣고 칩 14번 핀을
+    다른 레일에 물리면 그림은 완벽해 보이는데 전원이 안 간다. 렌더러도 같은
+    이유로 `verify()` 에 연결성 검사를 넣었다 — 눈으로는 절대 안 잡힌다.
+    """
+    out = []
+    nets = build_nets(hand)
+    att = attachments(hand, nets)
+
+    for pol, colset in (('VCC', VCC_COLS), ('GND', GND_COLS)):
+        used = {}
+        for node in nets:
+            if node[0] == 'R' and node[2] in colset:
+                rep = nets[node]
+                if any(a[0] in ('PIN', 'JACK', 'RES', 'LED')
+                       for a in att.get(rep, set())):
+                    used.setdefault(rep, []).append(node)
+        if len(used) > 1:
+            groups = ' / '.join(
+                '+'.join(sorted(f'{n[1]} {n[2]}' for n in g))
+                for g in used.values())
+            out.append(HandFinding(
+                'H8', '치명', f'{pol} 레일',
+                f'{pol} 레일이 끊겨 있다 — 브리지가 없다: {groups}. '
+                '레일쌍은 별개 스트립이라 이어주지 않으면 전원이 안 간다'))
+    return out
+
+
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
-_RULES = [check_holes, check_power, check_signals]
+_RULES = [check_holes, check_power, check_signals, check_led_chains, check_rails]
 
 
 

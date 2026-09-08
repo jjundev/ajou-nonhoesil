@@ -319,6 +319,74 @@ class Signals(unittest.TestCase):
         self.assertEqual([str(x) for x in found], [])
 
 
+class LedChain(unittest.TestCase):
+    """**1차 검토가 통째로 건너뛴 검사다.** 3·4쪽 L1 저항이 LED 캐소드 행이
+    아니라 애노드 행에서 시작해 LED 가 아예 안 켜지는데, 칩 배선만 보면
+    멀쩡해 보인다. 그래서 코드로 강제한다."""
+
+    def _pair(self, cid='e1_nand'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        return ref, hand
+
+    def _chain(self, d, tag):
+        return next(c for c in d.chains if c['tag'] == tag)
+
+    def test_H7_저항이_한_행_위면_잡는다(self):
+        ref, hand = self._pair()
+        ch = self._chain(hand, 'L1')
+        top = ch['res_top']
+        ch['res_top'] = (top[0], top[1], top[2] - 1)
+        for r in hand.resistors:
+            if r['tag'] == 'L1':
+                r['top'] = ch['res_top']
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H7']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '치명')
+        self.assertIn('캐소드', found[0].message)
+
+    def test_H7_저항_아랫다리가_GND_에_안_닿으면_잡는다(self):
+        ref, hand = self._pair()
+        ch = self._chain(hand, 'L1')
+        node = hc.node_of(ch['res_bottom'])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H7']
+        self.assertTrue(found)
+        self.assertIn('GND', found[0].message)
+
+    def test_H7_사슬이_통째로_없으면_잡는다(self):
+        ref, hand = self._pair()
+        hand.chains = [c for c in hand.chains if c['tag'] != 'L2']
+        hand.leds = [l for l in hand.leds if l['tag'] != 'L2']
+        hand.resistors = [r for r in hand.resistors if r.get('tag') != 'L2']
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H7']
+        self.assertTrue(found)
+        self.assertIn('L2', found[0].where)
+
+
+class Rails(unittest.TestCase):
+    def _pair(self, cid='e1_nand'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        return ref, hand
+
+    def test_H8_브리지가_없으면_잡는다(self):
+        ref, hand = self._pair()
+        hand.wires = [w for w in hand.wires if w.get('desc') != '레일 브리지']
+        hand.bridges = []
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H8']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '치명')
+
+    def test_H8_브리지가_있으면_안_난다(self):
+        ref, hand = self._pair()
+        self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H8'], [])
+
+
 if __name__ == '__main__':
     unittest.main()
 
