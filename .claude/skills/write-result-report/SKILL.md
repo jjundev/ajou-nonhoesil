@@ -320,7 +320,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 5. **결과 표 구성.** 명세와 기록을 같이 읽어 항목마다 결과 표를 만든다.
    `기록.md` 의 표는 `md.parse_tables` 로, 원래 예상값·kind 는
    `spec_parser.parse_spec` 으로 얻는다(같은 표 ID 로 둘을 대응시킨다).
-   `role: reference` 표(예: 실험1 T6~T9)는 애초에 기록.md 에도 없으므로
+   `role: reference` 표(예: 실험1 T6~T10)는 애초에 기록.md 에도 없으므로
    다룰 필요가 없다.
 
    | 확인 칸 | 결과 표 | 본문 서술 |
