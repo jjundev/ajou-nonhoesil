@@ -64,6 +64,14 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
 
    `X` 가 하나라도 있으면 거절한다.
 
+   ```bash
+   git status --porcelain .claude/skills/draft-lab-spec docs/schema scripts/lab
+   ```
+
+   출력이 비어 있지 않으면 멈추고 사용자에게 묻는다 — 격리 트리는
+   `git archive HEAD` 로 **HEAD** 를 푸므로 커밋 안 한 수정은 재지지
+   않고, 8단계가 적는 HEAD 와도 어긋난다.
+
 1. **격리 트리를 만든다.** 스크래치패드 아래에 둔다. 답안지 목록은
    §답안지 목록을 **그대로** 옮긴다.
 
@@ -91,7 +99,8 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
    ```
 
    `보고서/<실험NN>/{체크리스트,결선도,output}/` 내용물은 함수가 비운다.
-   폴더는 남는다 — `draft-lab-spec` 1단계가 폴더를 요구한다.
+   폴더는 남는다 — `draft-lab-spec` 1단계가 폴더를 요구한다. 이 트리는
+   `HEAD` 의 사본이다 (작업 트리가 아니다).
 
 2. **누출을 훑는다.** 승인본 명세의 항목 id·제목·파생식으로 트리를 grep 한다.
 
