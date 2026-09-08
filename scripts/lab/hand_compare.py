@@ -284,10 +284,69 @@ def check_holes(ref, hand):
     return out
 
 
+def _pin_of(hand_keys, ref_key):
+    """참조 칩 이름이 손그림에도 있는가. 없으면 None."""
+    return ref_key if ref_key in hand_keys else None
+
+
+def check_power(ref, hand):
+    """H3 전원·접지 · H4 미사용 입력 접지 · H5 미사용 출력 개방.
+
+    칩마다 이 넷을 세는 것이 손그림 검토의 뼈대다 — 회로가 무엇이든 항상
+    같고, 빠지면 회로가 아예 안 돈다. 2026-09-08 손그림 3쪽에서 뒷단 칩
+    오른쪽 다섯 가닥이 통째로 없었던 것을 잡는 자리다.
+    """
+    out = []
+    hsig = signatures(hand)
+    hkeys = set(chip_keys(hand))
+
+    for key in chip_keys(ref):
+        if key not in hkeys:
+            out.append(HandFinding(
+                'H3', '치명', key, '참조에 있는 칩이 손그림에 없다'))
+            continue
+        for pin, want, avoid in ((14, 'VCC', 'GND'), (7, 'GND', 'VCC')):
+            sig = hsig.get((key, pin), frozenset())
+            if ('RAIL', want) not in sig:
+                out.append(HandFinding(
+                    'H3', '치명', f'{key} pin {pin}',
+                    f'{want} 레일에 닿지 않는다. '
+                    f'{"전원이 안 들어가 칩이 동작하지 않는다" if pin == 14 else "접지가 없어 칩이 동작하지 않는다"}'))
+            if ('RAIL', avoid) in sig:
+                out.append(HandFinding(
+                    'H3', '치명', f'{key} pin {pin}',
+                    f'{avoid} 레일에도 닿아 있다 — 전원 단락이다'))
+
+    for u in ref.unused_inputs:
+        key, pin = u['chip'], u['pin']
+        if key not in hkeys:
+            continue
+        want = 'VCC' if u.get('rail') == 'vcc' else 'GND'
+        if ('RAIL', want) not in hsig.get((key, pin), frozenset()):
+            out.append(HandFinding(
+                'H4', '기능', f'{key} pin {pin}',
+                f'미사용 입력인데 {want} 에 묶이지 않았다. '
+                'CMOS 입력은 뜨면 안 된다'))
+
+    for u in ref.unused_outputs:
+        key, pin = u['chip'], u['pin']
+        if key not in hkeys:
+            continue
+        sig = hsig.get((key, pin), frozenset())
+        if sig:
+            what = ', '.join(sorted(str(s) for s in sig))
+            out.append(HandFinding(
+                'H5', '치명', f'{key} pin {pin}',
+                f'미사용 출력은 개방(NC)이어야 하는데 {what} 에 닿아 있다. '
+                'GND 로 내리거나 출력끼리 묶으면 칩이 상한다'))
+    return out
+
+
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
-_RULES = [check_holes]
+_RULES = [check_holes, check_power]
+
 
 
 def compare(ref, hand):

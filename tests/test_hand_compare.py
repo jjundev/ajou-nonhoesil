@@ -186,6 +186,65 @@ class Physical(unittest.TestCase):
         self.assertEqual([f for f in hc.check_holes(ref, ref) if f.rule == 'H2'], [])
 
 
+class Power(unittest.TestCase):
+    """2026-09-08 손그림 3쪽은 뒷단 74HC00 오른쪽이 통째로 비어 있었다 —
+    pin 14 전원과 pin 9·10·12·13 접지 다섯 가닥이 없었다. 위 칩과 나란히
+    놓고 봐야 보이는 결함이라 사람 눈으로는 놓치기 쉽다."""
+
+    def _pair(self, cid='e1_nand'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        return ref, hand
+
+    def _drop_wires_touching(self, d, hole):
+        node = hc.node_of(hole)
+        d.wires = [w for w in d.wires
+                   if hc._endpoint_node(w['frm']) != node
+                   and hc._endpoint_node(w['to']) != node]
+
+    def test_H3_pin14_전원이_없으면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[1]['pins'][14])
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H3']
+        self.assertTrue(found)
+        self.assertIn('74HC00', found[0].where)
+        self.assertEqual(found[0].grade, '치명')
+
+    def test_H3_pin7_접지가_없으면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[1]['pins'][7])
+        rules = {f.rule for f in hc.compare(ref, hand)}
+        self.assertIn('H3', rules)
+
+    def test_H3_pin14_를_GND_에_물리면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[1]['pins'][14])
+        hand.wires.append({'kind': 'gnd', 'desc': '',
+                           'frm': ('hole', ('left', 'g', 18)),
+                           'to': ('hole', ('left', 'mid_gnd', 18))})
+        msgs = ' '.join(f.message for f in hc.compare(ref, hand) if f.rule == 'H3')
+        self.assertIn('GND', msgs)
+
+    def test_H4_미사용_입력_접지가_빠지면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[0]['pins'][9])
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H4']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '기능')
+
+    def test_H5_미사용_출력을_접지하면_잡는다(self):
+        ref, hand = self._pair()
+        hand.wires.append({'kind': 'gnd', 'desc': '',
+                           'frm': ('hole', ('left', 'g', 10)),
+                           'to': ('hole', ('left', 'mid_gnd', 10))})
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H5']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '치명')
+        self.assertIn('개방', found[0].message)
+
+
 if __name__ == '__main__':
+
     unittest.main()
 
