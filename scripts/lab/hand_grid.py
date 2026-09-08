@@ -1,0 +1,285 @@
+"""손그림 PDF 의 판형 좌표를 렌더러 좌표표에 맞춘다.
+
+**사람이 좌표를 뜨지 않는다.** 배포본 판형은 정본 `Breadboard.jpg` 와 같은
+그림인데 가로가 중앙 기준 5% 넓다 — `breadboard-diagram/SKILL.md` §2 가
+"갈아끼우면 결선이 옆 홀에 그려지는데, 그림 자체는 멀쩡해 보여서 눈으로는 안
+잡힌다"고 적어 둔 그 차이다. 눈대중 상수를 새로 만들면 같은 사고가 반복된다.
+
+대신 이렇게 한다.
+
+1. 손그림 PDF 의 각 쪽에는 판형 래스터가 **이미지로** 박혀 있고, 놓인 자리도
+   PDF 안에 있다. 잉크가 없는 깨끗한 판형을 그대로 꺼낸다.
+2. 그 래스터에서 홀 열·행을 검출한다.
+3. 검출된 열 28개·행 63개를 렌더러의 `cols`·`r_y()` 에 순서대로 짝지어 축마다
+   1차식을 맞춘다. 균일 가로 확대는 1차식이 정확히 흡수한다.
+4. 잔차가 3px 를 넘으면 중단한다. 판형이 바뀐 것이다.
+
+쪽 크기로 막지 않는 이유: 학생 PDF 는 필기 앱 내보내기라 1210x834pt 이고
+배포본은 A4 594x841pt 다. 쪽 크기를 보면 정상 제출물을 거절한다. 기하를 본다.
+"""
+
+import hashlib
+import importlib.util
+import io
+import os
+from dataclasses import dataclass
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+RENDERER = (REPO_ROOT / ".claude/skills/breadboard-diagram/scripts"
+            / "render_breadboard.py")
+
+# 판형 한 장에 있는 홀 열과 행. 렌더러 좌표표가 정하는 값이라 여기서 세지
+# 않고 맞춰만 본다 — 검출이 이 수와 다르면 판형이 다른 것이다
+EXPECTED_COLS = 28
+EXPECTED_ROWS = 63
+
+# 잔차 한계. 렌더러 `hole_at()` 의 홀 허용치가 5px 이므로 그보다 넉넉히 안쪽
+MAX_RESIDUAL = 3.0
+
+_renderer = None
+
+
+class GridError(ValueError):
+    """판형을 못 읽었거나 좌표가 안 맞는다."""
+
+
+def load_renderer():
+    """렌더러 모듈. 스킬 폴더 안에 있어 import 경로에 없다."""
+    global _renderer
+    if _renderer is None:
+        spec = importlib.util.spec_from_file_location(
+            "render_breadboard", str(RENDERER))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _renderer = mod
+    return _renderer
+
+
+@dataclass
+class BoardImage:
+    md5: str
+    width: int
+    height: int
+    rect: tuple      # 쪽 안에서 놓인 자리 (x0, y0, x1, y1) — 포인트 단위
+    data: bytes      # 원본 래스터 바이트
+
+
+@dataclass
+class Calibration:
+    ax: float
+    bx: float
+    ay: float
+    by: float
+    res_x: float
+    res_y: float
+    rect: tuple
+    board_size: tuple
+    dpi: int
+
+    def to_px(self, x, y):
+        """렌더러 좌표 -> 그 쪽을 dpi 로 그렸을 때의 픽셀.
+
+        렌더러 좌표 -> 판형 래스터 픽셀 -> 쪽 포인트 -> 렌더 픽셀 순으로 간다.
+        """
+        w, h = self.board_size
+        x0, y0, x1, y1 = self.rect
+        ix = self.ax * x + self.bx
+        iy = self.ay * y + self.by
+        pt_x = x0 + ix / w * (x1 - x0)
+        pt_y = y0 + iy / h * (y1 - y0)
+        s = self.dpi / 72.0
+        return (pt_x * s, pt_y * s)
+
+
+def board_image(pdf_path, page_index=0):
+    """그 쪽에 깔린 판형 래스터와 놓인 자리.
+
+    가장 넓게 깔린 이미지를 판형으로 본다. 학생이 사진을 덧붙였더라도 판형이
+    쪽 대부분을 차지하기 때문이다.
+    Microsoft: Print To PDF 처럼 세로로 쪼개져 박힌 판형은 위에서 아래로 이어붙인다.
+    """
+    import fitz
+    from PIL import Image
+
+    doc = fitz.open(str(pdf_path))
+    try:
+        if not 0 <= page_index < len(doc):
+            raise GridError(
+                f"{Path(pdf_path).name} 에 {page_index + 1}쪽이 없다 "
+                f"(전체 {len(doc)}쪽)")
+        page = doc[page_index]
+        tiles = []
+        for img in page.get_images(full=True):
+            xref = img[0]
+            rects = page.get_image_rects(xref)
+            if not rects:
+                continue
+            r = max(rects, key=lambda rr: rr.width * rr.height)
+            tiles.append((r, xref))
+        if not tiles:
+            raise GridError(
+                f"{Path(pdf_path).name} {page_index + 1}쪽에 판형 이미지가 없다. "
+                "배포본 판형 위에 그린 PDF 만 검토한다")
+
+        tiles.sort(key=lambda t: t[0].y0)
+        is_tiled = len(tiles) > 1 and all(
+            abs(tiles[i][0].x0 - tiles[0][0].x0) < 2 and abs(tiles[i][0].x1 - tiles[0][0].x1) < 2
+            for i in range(len(tiles))
+        )
+        if is_tiled:
+            extracted = [doc.extract_image(xref) for _, xref in tiles]
+            total_w = max(info["width"] for info in extracted)
+            total_h = sum(info["height"] for info in extracted)
+            stitched = Image.new("RGB", (total_w, total_h))
+            cur_y = 0
+            for info in extracted:
+                part = Image.open(io.BytesIO(info["image"]))
+                stitched.paste(part, (0, cur_y))
+                cur_y += info["height"]
+            buf = io.BytesIO()
+            stitched.save(buf, format="PNG")
+            data = buf.getvalue()
+            r0 = tiles[0][0]
+            r_last = tiles[-1][0]
+            rect = (r0.x0, r0.y0, r_last.x1, r_last.y1)
+            return BoardImage(
+                md5=hashlib.md5(data).hexdigest(),
+                width=total_w,
+                height=total_h,
+                rect=rect,
+                data=data,
+            )
+        else:
+            best = max(tiles, key=lambda t: t[0].width * t[0].height)
+            rect, xref = best
+            info = doc.extract_image(xref)
+            return BoardImage(
+                md5=hashlib.md5(info["image"]).hexdigest(),
+                width=info["width"],
+                height=info["height"],
+                rect=(rect.x0, rect.y0, rect.x1, rect.y1),
+                data=info["image"],
+            )
+    finally:
+        doc.close()
+
+
+def _runs(profile, threshold):
+    """문턱을 넘는 구간들의 (시작, 끝) 목록."""
+    out, i, n = [], 0, len(profile)
+    while i < n:
+        if profile[i] >= threshold:
+            j = i
+            while j < n and profile[j] >= threshold:
+                j += 1
+            out.append((i, j))
+            i = j
+        else:
+            i += 1
+    return out
+
+
+def _merge_to_count(runs, expected):
+    """이웃한 구간을 붙여 개수가 `expected` 가 되는 중심 목록.
+
+    홀은 **작은 사각 테두리**로 그려져 있어 구간이 홀마다 둘씩(왼쪽 변,
+    오른쪽 변) 나온다. 붙이는 간격을 0 부터 키우면서 개수가 맞는 지점을
+    찾는다 — 결과가 결정적이고, 못 맞추면 소리를 낸다.
+    """
+    if not runs:
+        raise GridError("홀을 하나도 못 찾았다")
+    span = runs[-1][1] - runs[0][0]
+    for gap in range(0, max(2, int(span / expected)) + 2):
+        merged, cur = [], list(runs[0])
+        for a, b in runs[1:]:
+            if a - cur[1] <= gap:
+                cur[1] = b
+            else:
+                merged.append(tuple(cur))
+                cur = [a, b]
+        merged.append(tuple(cur))
+        if len(merged) == expected:
+            return [(a + b) / 2.0 for a, b in merged]
+    raise GridError(
+        f"홀 {expected}개로 정리되지 않는다 (구간 {len(runs)}개). "
+        "판형이 바뀌었거나 해상도가 모자란다")
+
+
+def detect_grid(data):
+    """판형 래스터에서 홀 열 중심 x 들과 행 중심 y 들.
+
+    잉크가 없는 원본 래스터를 본다 — 학생 필기는 PDF 의 다른 층에 있다.
+    """
+    from PIL import Image
+
+    im = Image.open(io.BytesIO(data)).convert("L")
+    w, h = im.size
+    px = im.load()
+    # 위쪽 전원 잭 영역/상단 경계선과 아래 여백을 뺀 몸통만 본다
+    y0, y1 = int(h * 0.19), int(h * 0.965)
+    x0, x1 = int(w * 0.02), int(w * 0.98)
+
+    row_prof = [sum(1 for x in range(x0, x1) if px[x, y] < 140)
+                for y in range(y0, y1)]
+    rows = _merge_to_count(_runs(row_prof, max(row_prof) * 0.35),
+                           EXPECTED_ROWS)
+
+    # 열 프로파일: 3px 간격으로 훑되, 인쇄된 얇은 레일선(폭 2~3px)은 폭으로 걸러낸다
+    col_prof = [0] * w
+    for y in range(y0, y1, 3):
+        for x in range(w):
+            if px[x, y] < 140:
+                col_prof[x] += 1
+
+    col_runs = [r for r in _runs(col_prof, max(col_prof) * 0.12) if r[1] - r[0] >= 4]
+    cols = _merge_to_count(col_runs, EXPECTED_COLS)
+
+    return cols, [y + y0 for y in rows]
+
+
+def _fit(src, dst):
+    """dst = a*src + b 최소제곱. (a, b, 최대 잔차) 를 준다."""
+    n = len(src)
+    ms, md = sum(src) / n, sum(dst) / n
+    num = sum((s - ms) * (d - md) for s, d in zip(src, dst))
+    den = sum((s - ms) ** 2 for s in src)
+    if den == 0:
+        raise GridError("맞출 좌표가 한 점뿐이다")
+    a = num / den
+    b = md - a * ms
+    res = max(abs(a * s + b - d) for s, d in zip(src, dst))
+    return a, b, res
+
+
+def calibrate(board, dpi=300):
+    """검출한 격자를 렌더러 좌표표에 맞춘다."""
+    mod = load_renderer()
+    cols, rows = detect_grid(board.data)
+
+    ref_cols = sorted(_reference_cols(mod))
+    ref_rows = [mod.ROW0 + (r - 1) * mod.ROW_PITCH for r in range(1, mod.ROW_MAX + 1)]
+
+    ax, bx, res_x = _fit(ref_cols, cols)
+    ay, by, res_y = _fit(ref_rows, rows)
+    if res_x > MAX_RESIDUAL or res_y > MAX_RESIDUAL:
+        raise GridError(
+            f"판형이 렌더러 좌표표와 맞지 않는다 "
+            f"(가로 잔차 {res_x:.1f}px, 세로 {res_y:.1f}px, 한계 {MAX_RESIDUAL}). "
+            "다른 판형 위에 그렸거나 판형이 바뀌었다")
+    return Calibration(ax, bx, ay, by, res_x, res_y,
+                       board.rect, (board.width, board.height), dpi)
+
+
+def _reference_cols(mod):
+    """렌더러가 아는 열 x 들. 칩 몸통 경계(`chip_x1`·`chip_x2`)는 홀이 아니다.
+
+    숫자를 베껴 적지 않는다 — 렌더러 `cols` 가 유일한 권위다. 템플릿 이미지를
+    열지 않으려고 `__new__` 로 껍데기만 만들고 좌표표만 채운다.
+    """
+    bb = mod.BreadboardRenderer.__new__(mod.BreadboardRenderer)
+    mod.BreadboardRenderer._init_cols(bb)
+    out = []
+    for block in bb.cols.values():
+        out.extend(x for key, x in block.items() if not key.startswith('chip'))
+    return out

@@ -158,6 +158,25 @@ class BreadboardRenderer:
         self.font_num = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 9)
         self.font_step = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 11)
 
+        self._init_cols()
+        # 그린 것을 **사실 그대로** 적어 둔다. 손그림 검토가 이걸 정답으로
+        # 읽는다. `_leads` 의 뜻풀이 문자열을 파싱하게 두면 말이 바뀔 때마다
+        # 검사기가 조용히 깨진다 — 검사기는 코드를 읽어야지 산문을 읽으면 안 된다
+        self.chips = []
+        self.leds = []
+        self.resistors = []
+        self.led_chains = []
+        self.unused_inputs = []
+        self.unused_outputs = []
+
+        self._addr_map = self._build_addr_map()
+        self._sym_map = self._build_sym_map()
+
+    # ---------------- 좌표 ----------------
+
+    def _init_cols(self):
+        """열 좌표표. 템플릿 없이 좌표만 쓰려는 쪽(손그림 검토)이 있어
+        `__init__` 에서 뽑아 놓는다. 이 표가 열 좌표의 **유일한 권위**다."""
         self.cols = {
             'left': {
                 'gnd': 174, 'vcc': 190,
@@ -174,20 +193,6 @@ class BreadboardRenderer:
                 'gnd': 836, 'vcc': 852,
             },
         }
-        # 그린 것을 **사실 그대로** 적어 둔다. 손그림 검토가 이걸 정답으로
-        # 읽는다. `_leads` 의 뜻풀이 문자열을 파싱하게 두면 말이 바뀔 때마다
-        # 검사기가 조용히 깨진다 — 검사기는 코드를 읽어야지 산문을 읽으면 안 된다
-        self.chips = []
-        self.leds = []
-        self.resistors = []
-        self.led_chains = []
-        self.unused_inputs = []
-        self.unused_outputs = []
-
-        self._addr_map = self._build_addr_map()
-        self._sym_map = self._build_sym_map()
-
-    # ---------------- 좌표 ----------------
 
     def r_y(self, r):
         return int(round(ROW0 + (r - 1) * ROW_PITCH))
