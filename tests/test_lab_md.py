@@ -163,7 +163,7 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(fm["experiment"], 1)
         self.assertEqual(len(fm["items"]), 5)
         # 느슨한 하한은 회귀를 놓친다 — 픽스처의 실제 개수로 고정한다
-        self.assertEqual(len(md.parse_tables(body)), 10)  # 표 9개 + 토큰 규약표 1개
+        self.assertEqual(len(md.parse_tables(body)), 11)  # 표 10개 + 토큰 규약표 1개
 
     def test_week6_spec_parses(self):
         text = (ROOT / config.experiment_dir(6) / "체크리스트/명세.md").read_text(encoding="utf-8")
