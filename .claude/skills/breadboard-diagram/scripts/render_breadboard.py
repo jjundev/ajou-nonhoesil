@@ -245,7 +245,9 @@ class BreadboardRenderer:
 
         다른 색이면 8px 만 포개져도 잡는다. 같은 색은 30px(두 홀 폭 안)까지
         봐준다 — 같은 스트립의 옆 홀에 꽂은 두 번째 점퍼가 첫 점퍼 위를 되짚어
-        여백으로 나가는 갈래 밑동이 그렇다 (복합 회로 A 갈래 11px, B 갈래 27px).
+        여백으로 나가는 갈래 밑동이 그렇다. 다만 그 밑동은 굵은 선 아래 깔려
+        "선 중간에서 얇은 선이 솟는" 그림이 되므로(2026-09-08 복합 회로 a7·a19
+        지적) 봐준다고 해서 써도 되는 건 아니다 — 갈래는 옆 홀에서 세로로 뺀다.
         그 이상 같은 색으로 포개지면 두 넷이 한 선으로 보인다 (검정은 모든
         신호선의 색이다).
         """
@@ -588,8 +590,10 @@ class BreadboardRenderer:
                        '레일 브리지',
                        marker_at=((x_a + x_b) // 2, y - 12))
 
-    def connect_power(self, start_row, block='left'):
-        """pin 14 -> +5V, pin 7 -> GND.
+    def connect_power(self, start_row, block='left', gnd_marker_at=None):
+        """pin 14 -> +5V, pin 7 -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
+        빌더가 지정할 때만 준다 — 기본 자리(레일과 d열 사이, 한 행 위)에 다른
+        배선의 모서리가 오는 경우다.
 
         어느 레일로 가는지는 블록마다 다르다. 좌측 보드는 f~j 쪽(pin 8~14)이
         중앙 레일에, a~e 쪽(pin 1~7)이 바깥 왼쪽 레일에 붙는다. 우측 보드는
@@ -609,7 +613,7 @@ class BreadboardRenderer:
         r7 = self.free_rail_row(start_row + 6, x_gnd)
         self.step_wire([(c['d'], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
                        'gnd', 'pin 7 -> GND 레일',
-                       marker_at=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+                       marker_at=gnd_marker_at or ((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -853,8 +857,13 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
-def _input_jumper(bb, c, row, name, target, marker=(130, 0)):
-    """입력 한 줄: **좌 GND 레일 홀 → 같은 행 b열**. GND(=0) 자리를 그린 것이다.
+def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
+    """입력 한 줄: **좌 GND 레일 홀 → 같은 행 `col` 열(기본 b)**. GND(=0) 자리를 그린 것이다.
+
+    `col` 은 같은 스트립에 **두 번째 점퍼(갈래)** 를 꽂을 때 쓴다. 갈래를 옆 홀에
+    꽂되 그 갈래가 입력선 위를 되짚어 나가면 밑동이 굵은 입력선 아래 깔려
+    "굵은 선 중간에서 얇은 선이 솟는" 그림이 된다 (2026-09-08 지적). 그래서
+    입력선은 a 열에서 멈추고 갈래는 b 열에서 **세로로** 빠져나가게 한다.
 
     이전 판은 보드 밖 x=95 허공에서 선을 끌어왔다. 브레드보드 그림에서 홀이
     아닌 데서 나오는 선은 꽂을 데가 없다 — 따라 그리는 사람이 왼쪽 끝을 어디에
@@ -873,10 +882,10 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0)):
     적는다 — 왼쪽 눈금이 10·20·30 뿐이라 이름만 있으면 홀을 세어야 한다.
     """
     r_rail = bb.free_rail_row(row, c['gnd'])
-    bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c['b'], bb.r_y(row))], 'sig',
+    bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c[col], bb.r_y(row))], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
                  marker_at=(marker[0], bb.r_y(row) + marker[1]))
-    _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → b{row}")
+    _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
 
 
 def build_e1_and(output_path, template_path=None):
@@ -1090,11 +1099,9 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     """
     bb = BreadboardRenderer(template_path)
     bb.enable_steps()
-    # 복합 회로는 칩 셋이 빽빽해 포개짐 둘이 남아 있다 (우 a10~b10 검정/초록,
-    # 좌 g10~중앙GND10 초록/파랑). 우회 경로는 렌더-확인을 반복해야 정해지므로
-    # 별도 계획으로 뺐다 (docs/plans/2026-09-07-결선도-물리실현성-검사.md 후속).
-    # 그동안은 경고만 낸다 — 다른 회로는 전부 엄격 모드다
-    bb.overlap_policy = 'warn'
+    # 2026-09-08 까지는 포개짐 둘(우 a10~b10 검정/초록, 좌 g10~중앙GND10 초록/파랑)
+    # 때문에 경고 모드였다. 초록 Z 선이 10행 대신 11행으로 건너가면서 둘 다 사라져
+    # 다른 회로와 같은 엄격 모드다
     st = 3 if stage is None else stage
     title = {1: "실험 3: 복합 논리회로 — 1단계 (칩과 전원)",
              2: "실험 3: 복합 논리회로 — 2단계 (신호 배선까지)",
@@ -1118,51 +1125,63 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     bb.bridge_rails(c_r['mid_gnd'], c_r['gnd'], 31, kind='gnd')
     bb.bridge_rails(c_l['vcc'], c_l['mid_vcc'], 33, kind='vcc')
     bb.bridge_rails(c_l['mid_vcc'], c_r['vcc'], 33, kind='vcc')
-    bb.connect_power(r_not, block='left')
+    # 74HC04 pin 7 번호 원의 기본 자리(x=231, 12~13행 사이)에 B 갈래 모서리(228, 12행)가
+    # 온다. 칩 사이 빈 행(14~17)의 a열에 번호 원·꼬리표를 세로로 쌓는다 — 14행 ⑨,
+    # 15행 A' 번호, 16행 A' 꼬리표, 17행 Z LED 번호
+    bb.connect_power(r_not, block='left', gnd_marker_at=(c_l['a'], bb.r_y(14)))
     bb.connect_power(r_and, block='left')
     bb.connect_power(r_or, block='right')
 
     if st >= 2:
         # --- 2단계: 신호 ---
         _input_jumper(bb, c_l, 7, 'A', '74HC04 pin 1')
-        # 오른쪽 블록으로 가는 갈래는 **같은 스트립의 다른 홀(a7)** 에 두 번째 점퍼를
+        # 오른쪽 블록으로 가는 갈래는 **같은 스트립의 다른 홀(c7)** 에 두 번째 점퍼를
         # 꽂는 것이다. 점퍼는 이어 붙일 수 없으니 허공 줄기에서 분기하면 안 된다.
-        # 레일과 a열 사이 여백(x=228)으로 빠져 5행까지 올라간 뒤 판 위를 가로지른다
-        # — a열을 타고 올라가면 a5·a6 홀을 덮는다
-        bb.step_wire([(c_l['a'], bb.r_y(7)), (228, bb.r_y(7)), (228, bb.r_y(5)),
-                      (c_r['a'], bb.r_y(5)), (c_r['a'], bb.r_y(13)), (c_r['b'], bb.r_y(13))],
-                     'sig', '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(c_r['a'] - 40, bb.r_y(5) - 12))
+        # c7 에서 **세로로** c5 까지 올라간 뒤 판 위를 가로지른다 — 이전 판은 a7 에서
+        # 입력선 위를 되짚어 여백으로 나가서 밑동이 굵은 선 아래 깔렸다. 오른쪽에서는
+        # 중앙 레일과 a열 사이 여백(x=577)으로 내려와 a13 에 꽂는다 — a열을 타고
+        # 내려가면 두 번째 갈래의 시작점 a10 위를 지난다
+        bb.step_wire([(c_l['c'], bb.r_y(7)), (c_l['c'], bb.r_y(5)),
+                      (577, bb.r_y(5)), (577, bb.r_y(13)), (c_r['a'], bb.r_y(13))],
+                     'sig', '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(577 + 14, bb.r_y(5) - 12))
         bb.step_wire([(c_r['a'], bb.r_y(10)), (c_r['b'], bb.r_y(10))],
                      'sig', '입력 A 갈래 -> 74HC32 pin 1', width=2, marker_at=(c_r['a'] - 18, bb.r_y(10)))
-        # 이 점퍼는 초록 Z 선(10행) 아래에 통째로 깔려 그림에서 안 보인다 — 후속 계획이
-        # 경로를 옮길 때까지 꼬리표로 존재만 알린다. 순서표 번호로 위치를 찾는다
-        _tag(bb, c_r['c'] + 4, bb.r_y(9) - 8, "A→b10")
 
-        _input_jumper(bb, c_l, 19, 'B', '74HC08 pin 2')
-        # B 갈래도 a19 에 두 번째 점퍼. 여백 x=212 로 6행까지 올라간다 — A 갈래(228)와
-        # 다른 세로줄이라 겹치지 않고, 7행에서 입력 A 선과 한 번 교차만 한다
-        bb.step_wire([(c_l['a'], bb.r_y(19)), (212, bb.r_y(19)), (212, bb.r_y(6)),
+        # 입력 B 는 a19 에서 멈추고 갈래는 b19 에서 세로로 나간다. c19 는 위가 A' 끝점
+        # (c18) 이라 막혀 있고, a19 에서 여백으로 되짚으면 밑동이 입력선 아래 깔린다
+        _input_jumper(bb, c_l, 19, 'B', '74HC08 pin 2', col='a')
+        # b19 → b12 (칩 사이 빈 행과 pin 7·pin 6 스트립을 지나기만 한다) → 여백 x=228
+        # 로 6행까지 올라간다. 228 은 7행에서 입력 A 선(레일→b7)을 a7 빈 홀 왼쪽에서
+        # 한 번 가로지른다. 12행은 pin 6(미사용 출력, 개방)이라 가로선이 없다
+        bb.step_wire([(c_l['b'], bb.r_y(19)), (c_l['b'], bb.r_y(12)), (228, bb.r_y(12)), (228, bb.r_y(6)),
                       (c_r['b'] + 8, bb.r_y(6)), (c_r['b'] + 8, bb.r_y(14)), (c_r['b'], bb.r_y(14))],
                      'sig', '입력 B 갈래 -> 74HC32 pin 5', width=2,
-                     marker_at=(c_r['b'] - 60, bb.r_y(6) + 10))
+                     marker_at=(577 + 14, bb.r_y(6) + 10))
 
+        # 번호 원과 꼬리표는 칩 사이 빈 행(14~17)의 a열에 세로로 쌓는다 — b열은 B 갈래,
+        # 여백 212·228 은 Z LED 선과 B 갈래가 지나가서 거기 두면 선을 가린다
         bb.step_wire([(c_l['c'], bb.r_y(8)), (c_l['c'], bb.r_y(18))], 'mid',
-                     "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c_l['c'] - 20, bb.r_y(15)))
-        _tag(bb, c_l['c'] - 46, bb.r_y(12) - 8, "A'")
+                     "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c_l['a'], bb.r_y(15)))
+        _tag(bb, c_l['a'] - 8, bb.r_y(16) - 7, "A'")
 
         bb.step_wire([(c_l['d'], bb.r_y(20)), (c_l['d'], bb.r_y(9))], 'mid',
                      "A'·B (74HC08 pin 3) -> 74HC04 pin 3", marker_at=(c_l['d'] + 18, bb.r_y(16)))
         _tag(bb, c_l['d'] + 12, bb.r_y(21) - 8, "A'·B")
 
-        bb.step_wire([(c_l['b'], bb.r_y(10)), (c_r['c'], bb.r_y(10)), (c_r['c'], bb.r_y(11)), (c_r['b'], bb.r_y(11))],
+        # 10행을 끝까지 타면 왼쪽에서 pin 11 접지선(g10→중앙GND), 오른쪽에서 A 갈래
+        # (a10→b10) 위에 포개진다. 칩을 지나자마자 f·g 열 사이(x=362)에서 11행으로
+        # 내려간다 — 11행 오른쪽은 pin 10(미사용 출력, 개방)이라 비어 있다
+        bb.step_wire([(c_l['b'], bb.r_y(10)), (362, bb.r_y(10)), (362, bb.r_y(11)), (c_r['b'], bb.r_y(11))],
                      'mid', "Z (74HC04 pin 4) -> 74HC32 pin 2", width=2,
                      marker_at=(c_l['b'] + 60, bb.r_y(10) - 12))
 
     if st >= 3:
         # --- 3단계: 출력 LED 와 마감 ---
-        # Z LED 선은 a10 에서. b10 은 위의 초록 Z 점퍼가 쓴다 (같은 스트립, 다른 홀)
-        bb.step_wire([(c_l['a'], bb.r_y(10)), (c_l['a'], bb.r_y(26))], 'sig',
-                     'Z 노드 -> Z LED', marker_at=(c_l['a'] - 20, bb.r_y(22)))
+        # Z LED 선은 a10 에서. b10 은 위의 초록 Z 점퍼가 쓴다 (같은 스트립, 다른 홀).
+        # a열을 타고 내려가면 입력 B 의 끝점 a19 위를 지나 Z 가 B 에 물린 것처럼 읽히므로
+        # 여백 x=212 로 내려간다 — 19행에서 입력 B 선을 a19 에서 27px 떨어져 가로지른다
+        bb.step_wire([(c_l['a'], bb.r_y(10)), (212, bb.r_y(10)), (212, bb.r_y(26)), (c_l['a'], bb.r_y(26))],
+                     'sig', 'Z 노드 -> Z LED', marker_at=(c_l['a'], bb.r_y(17)))
         bb.led_chain(c_l['a'], 26, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다",
                      color_rgb=(210, 20, 80))
 
@@ -1186,7 +1205,7 @@ def build_e1_comb(output_path, template_path=None, stage=None):
                 "두 LED 가 서로 다르게 켜지면 배선이 틀린 것이다 — 공짜 자체 검산.")
 
     bb.note('입력 A·B 두 개뿐이다. 교안 p15 회로도에 C 입력은 없다.')
-    bb.note('입력 A·B 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 오른쪽 블록으로 가는 갈래는 같은 행의 a열에 꽂는 두 번째 점퍼다.')
+    bb.note('입력 A·B 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 오른쪽 블록으로 가는 갈래는 같은 행의 옆 홀(c7·b19)에 꽂는 두 번째 점퍼다.')
     bb.export(output_path, max_row=34)
 
 

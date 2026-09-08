@@ -107,8 +107,9 @@ class PhysicalRules(unittest.TestCase):
             bb.verify()
 
     def test_같은_색의_짧은_갈래_밑동은_봐준다(self):
-        # 복합 회로의 B 갈래: a19 에 꽂은 두 번째 점퍼가 입력선 위를 27px 되짚어
-        # 여백(x=212)으로 나간다. 두 홀 폭 안의 같은 색 포개짐은 갈래 밑동이다.
+        # 옛 복합 회로의 B 갈래: a19 에 꽂은 두 번째 점퍼가 입력선 위를 27px 되짚어
+        # 여백(x=212)으로 나갔다. 두 홀 폭 안의 같은 색 포개짐은 갈래 밑동이라 검사는
+        # 봐준다 (그림으로는 밑동이 안 보여 2026-09-08 에 실제 회로에서는 걷어냈다).
         # 끝점은 홀이어야 하므로(R1) 폴리라인을 a5 에서 끝낸다
         bb = self.board()
         c = bb.cols['left']
@@ -194,11 +195,8 @@ def _render(mod, fn):
 
 
 class AllCircuits(unittest.TestCase):
-    """12장 전부가 그림대로 꽂힌다. 복합 회로만 포개짐 경고가 남아 있다 (후속 계획)."""
-
-    # 복합 회로에 남은 포개짐. 늘어도 줄어도 여기가 빨개진다 — 후속 계획이 0 으로 만든다
-    COMB_OVERLAPS = {'build_e1_comb': 2, 'build_e1_comb_s1': 0,
-                     'build_e1_comb_s2': 1, 'build_e1_comb_s3': 2}
+    """12장 전부가 그림대로 꽂힌다. 2026-09-08 까지 복합 회로만 포개짐 경고 둘을
+    안고 경고 모드였다 — 초록 Z 선을 11행으로 옮겨 0 이 됐고 엄격 모드다."""
 
     @classmethod
     def setUpClass(cls):
@@ -215,17 +213,12 @@ class AllCircuits(unittest.TestCase):
                 self.assertEqual(bb._not_holes, [])
                 self.assertEqual(bb._double, [])
 
-    def test_복합_회로만_포개짐_경고를_안고_있다(self):
+    def test_모든_회로가_엄격_모드로_포개짐_없이_통과한다(self):
         for name, fn in sorted(self.builders().items()):
             with self.subTest(회로=name):
                 bb = _render(self.mod, fn)
-                if name.startswith('build_e1_comb'):
-                    self.assertEqual(bb.overlap_policy, 'warn')
-                    self.assertEqual(len(bb.overlap_warnings), self.COMB_OVERLAPS[name],
-                                     f'{name}: 복합 회로의 포개짐 수가 달라졌다')
-                else:
-                    self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드는 복합 회로만')
-                    self.assertEqual(bb.overlap_warnings, [])
+                self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드로 도는 회로가 없어야 한다')
+                self.assertEqual(bb.overlap_warnings, [])
 
 
 if __name__ == '__main__':
