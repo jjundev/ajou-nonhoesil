@@ -76,6 +76,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
        '.claude/skills/verify-draft-lab-spec',
        'docs/verify', 'docs/plans', 'docs/study', 'docs/rule-friction',
        'docs/notion-feedback', 'docs/강의노트_이론_실험_매핑_정리.md',
+       'docs/corpus-audit',
        'scripts/lab/specdiff.py', 'scripts/lab/regen_compare.py',
        'scripts/lab/isolate.py', 'tests',
        '.claude/skills/breadboard-diagram',
@@ -180,6 +181,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
 - `docs/plans/` — 합격 조건이 표와 문장으로 들어 있다
 - `docs/study/`·`docs/rule-friction/`·`docs/notion-feedback/`·
   `docs/강의노트_이론_실험_매핑_정리.md` — 실험 내용의 파생 서술
+- `docs/corpus-audit/` — 과거 제출본 감사. 어느 표가 맞는지를 문장으로 적는다
 - `scripts/lab/specdiff.py`·`scripts/lab/regen_compare.py`·
   `scripts/lab/isolate.py` — docstring 이 채점 기준을 적는다
 - `tests/` — 실험01 값을 픽스처로 읽는 테스트가 열 개 넘는다
@@ -188,7 +190,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
   싣는 등 값이 샌다
 - `보고서/<실험NN>/{체크리스트,결선도,output}/` **내용물** — 폴더는 둔다
 
-남기는 것: `docs/schema/`·`docs/corpus-audit/`·`scripts/lab/` 나머지·
+남기는 것: `docs/schema/`·`scripts/lab/` 나머지·
 `.claude/데이터시트_출처.md`·`.claude/과목정보.md`·`강의노트/`·
 `from_the_past/`·다른 실험 폴더. `draft-lab-spec` 이 참조하거나 그 절차가
 실물로 드는 것들이다.

@@ -564,6 +564,7 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("`tests/`", sec)
         self.assertIn("`scripts/lab/regen_compare.py`", sec)
         self.assertIn("`scripts/lab/isolate.py`", sec)
+        self.assertIn("`docs/corpus-audit/`", sec)
 
     def test_the_verifier_prompt_gives_no_reasons_and_forbids_git_history(self):
         # 금지 사유는 첫 줄부터 "채점되는 시험" 임을 알려준다(런북 2026-09-01
