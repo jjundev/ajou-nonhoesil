@@ -1362,5 +1362,108 @@ class ManualQuotes(unittest.TestCase):
         self.assertEqual(validate.check_manual_quotes(text, "", "명세.md"), [])
 
 
+class ColumnRoles(unittest.TestCase):
+    """같은 열 이름이 표마다 입력·출력으로 갈리는 자리를 센다.
+
+    실험01 이 실물이다 — `C` 가 T1~T4 에서는 세 번째 **입력**이고 T6~T9 에서는
+    **출력**이다. 교안 p5·p6·p8·p9 가 `INPUT(A, B) / OUTPUT(C)` 2단 헤더를
+    쓰는데 명세가 한 줄로 누르면서 구분이 사라졌다. 규칙 5(한 표 안 유일)는
+    표 *안*만 보므로 이 자리를 못 본다.
+    """
+
+    FRONT = """---
+schema: lab-spec/v2
+experiment: 1
+title: Basic Gates
+source_manual: from_the_past/정리/강의노트/실험1.pdf
+power: {VCC: "+5V", GND: "GND"}
+items:
+  - id: E1.P1-1
+    title: 표 둘
+    device: [LED]
+    ics: ["74HC08"]
+    tables: [T1, T2]
+---
+"""
+
+    def _spec(self, body):
+        return spec_from(self.FRONT + body)
+
+    def test_한_이름이_입력과_출력으로_갈리면_info(self):
+        spec = self._spec("""
+## T1 · 파생표
+
+- kind: truth-table
+- encoding: 0/1
+- source: derived (Y = A·B·C)
+
+| A | B | C | Y |
+|---|---|---|---|
+| 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 |
+| 0 | 1 | 0 | 0 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 0 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 0 |
+| 1 | 1 | 1 | 1 |
+
+## T2 · 교안 2입력 이론표
+
+- kind: truth-table
+- encoding: 0/1
+- source: manual:p5
+- role: reference
+
+| A | B | C |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+""")
+        found = validate.check_column_roles(spec)
+        self.assertEqual([f.level for f in found], ["info"])
+        self.assertIn("`C`", found[0].message)
+        self.assertIn("입력 T1", found[0].message)
+        self.assertIn("출력 T2", found[0].message)
+
+    def test_역할이_한결같으면_조용하다(self):
+        spec = self._spec("""
+## T1 · 파생표
+
+- kind: truth-table
+- encoding: 0/1
+- source: derived (Y = A·B)
+
+| A | B | Y |
+|---|---|---|
+| 0 | 0 | 0 |
+| 0 | 1 | 0 |
+| 1 | 0 | 0 |
+| 1 | 1 | 1 |
+
+## T2 · 다중 출력이어도 같다
+
+- kind: truth-table
+- encoding: 0/1
+- source: derived (Y = A ; Z = B)
+
+| A | B | Y | Z |
+|---|---|---|---|
+| 0 | 0 | 0 | 0 |
+| 0 | 1 | 0 | 1 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 1 | 1 |
+""")
+        self.assertEqual(validate.check_column_roles(spec), [])
+
+    def test_실험01_은_C_한_건만_낸다(self):
+        """실물 회귀. `C` 말고 다른 이름이 걸리면 오탐이 는 것이다."""
+        found = validate.check_column_roles(parse_spec(WEEK2_SPEC))
+        self.assertEqual([f.level for f in found], ["info"])
+        self.assertIn("`C`", found[0].message)
+
+
 if __name__ == "__main__":
     unittest.main()

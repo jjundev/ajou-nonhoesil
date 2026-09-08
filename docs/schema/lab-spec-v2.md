@@ -152,6 +152,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 출력 비트 ↔ `source` 부울식 역검산 | `derived (...)` 이고 rows 가 있는 표(`kind` 를 안 본다 — `stepped` 도 검산한다) | error |
 | `source` 부재 | 전부 | error |
 | 한 표 안에 같은 이름의 열이 둘 | 전부 | error (파서가 던진다) |
+| 같은 열 이름이 표마다 입력·출력으로 갈린다 | 전부 | info (표가 아니라 머리말 토큰 규약 표를 고친다) |
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
 | 교안 인용이 `source_manual` 텍스트 추출본에 없다 | `교안`·`강의노트` 가 같은 줄에 있는 큰따옴표 인용 | info (래스터면 오탐이라 막지 않는다) |
 
@@ -173,7 +174,9 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `items[].tables` ↔ 본문 헤딩 일치 한 줄만은 이 목록에서도 예외라 두 파일에
 걸친다 — 항목이 없는 표를 가리키면 `spec_parser.parse_spec`이 파싱 단계에서
 막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의
-`check_orphan_tables`가 검증 단계에서 잡는다. 요컨대 정본은
+`check_orphan_tables`가 검증 단계에서 잡는다. 표 *사이*의 열 이름 충돌은
+`check_column_roles`(info)가 `split_columns` 로 각 표의 입력·출력을 갈라
+맞대는데, 규칙 5 가 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
 `spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
 `check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
 `check_diagnostic_claims`)를 합친 것이다.

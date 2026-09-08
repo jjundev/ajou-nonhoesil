@@ -174,6 +174,40 @@ def check_boolean(spec) -> list:
     return out
 
 
+def check_column_roles(spec) -> list:
+    """같은 열 이름이 표마다 **입력과 출력으로 갈리는지** 본다.
+
+    규칙 5 는 한 표 *안*의 이름 중복만 막는다. 표 *사이*에서 같은 글자가 다른
+    뜻을 갖는 자리는 아무도 안 봤다 — 실험01 이 실물이다. `C` 가 T1~T4 에서는
+    세 번째 입력이고 T6~T9 에서는 출력이다. 교안 p5·p6·p8·p9 가
+    `INPUT(A, B) / OUTPUT(C)` 2단 헤더로 갈라 놓은 것을 명세가 한 줄 헤더로
+    누르면서 구분이 사라졌다.
+
+    **`info` 다 — 표를 고치라는 뜻이 아니다.** 교안이 그렇게 쓰면 §절대 규칙 4
+    가 원문 그대로를 요구하므로 표는 그대로 둔다. 고칠 자리는 머리말의
+    `| 토큰 | 뜻 | 근거 |` 표다. `error` 로 올리면 교안 표기를 바꾸게 되어
+    규칙 4 와 정면으로 부딪힌다.
+    """
+    roles = {}
+    for t in spec.tables:
+        ins, outs = split_columns(t)
+        for name in ins:
+            roles.setdefault(name, {}).setdefault("입력", []).append(t.id)
+        for name in outs:
+            roles.setdefault(name, {}).setdefault("출력", []).append(t.id)
+    out = []
+    for name, seen in roles.items():
+        if len(seen) < 2:
+            continue
+        where = " / ".join(f"{role} {'·'.join(ids)}" for role, ids in seen.items())
+        out.append(Finding(
+            "info", f"{spec.path.name}:{name}",
+            f"열 `{name}` 이 표마다 뜻이 다르다 ({where}). 표를 고치지 말고 "
+            f"머리말 `| 토큰 | 뜻 | 근거 |` 표에 밝혔는지 본다 — 교안 표기가 "
+            f"그렇다면 그대로 두는 것이 맞다(§절대 규칙 4)"))
+    return out
+
+
 def check_orphan_tables(spec) -> list:
     """본문에 있으나 어느 항목도 가리키지 않는 표.
 
@@ -268,6 +302,7 @@ def validate_spec(spec) -> list:
     return (check_table_integrity(spec) + check_metadata(spec)
             + check_row_count(spec) + check_boolean(spec)
             + check_orphan_tables(spec)
+            + check_column_roles(spec)
             + check_diagnostic_claims(
                 spec.path.read_text(encoding="utf-8"), spec.path.name))
 
