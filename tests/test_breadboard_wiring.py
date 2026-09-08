@@ -10,6 +10,7 @@
 """
 import importlib.util
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -32,6 +33,10 @@ class Wiring(unittest.TestCase):
         cls.tmp = tempfile.mkdtemp()
         cls.and_bb = cls.mod.build_e1_and(os.path.join(cls.tmp, 'and.png'))
         cls.nand_bb = cls.mod.build_e1_nand(os.path.join(cls.tmp, 'nand.png'))
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
 
     def test_빌더가_렌더러를_돌려준다(self):
         self.assertIsInstance(self.and_bb, self.mod.BreadboardRenderer)

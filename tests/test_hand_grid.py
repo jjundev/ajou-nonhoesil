@@ -7,6 +7,8 @@
 크면 소리를 내며 멈춘다.
 """
 import os
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -95,6 +97,11 @@ class Overlay(unittest.TestCase):
         cls.board = hand_grid.board_image(HANDOUT)
         cls.cal = hand_grid.calibrate(cls.board)
         cls.page = hand_grid.render_page(HANDOUT, 0)
+        cls.tmp = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
 
     def test_쪽을_300dpi_로_그린다(self):
         # A4 세로 594.75x841.5pt -> 300dpi 면 약 2478x3506
@@ -102,24 +109,21 @@ class Overlay(unittest.TestCase):
         self.assertGreater(self.page.height, 3000)
 
     def test_격자를_덮은_그림이_원본과_크기가_같다(self):
-        import tempfile
         from PIL import Image
-        out = os.path.join(tempfile.mkdtemp(), 'grid.png')
+        out = os.path.join(self.tmp, 'grid.png')
         hand_grid.overlay_grid(self.page, self.cal, out)
         self.assertEqual(Image.open(out).size, self.page.size)
 
     def test_크롭은_요청한_행_범위만큼_잘라_확대한다(self):
-        import tempfile
         from PIL import Image
-        out = os.path.join(tempfile.mkdtemp(), 'crop.png')
+        out = os.path.join(self.tmp, 'crop.png')
         hand_grid.crop_rows(self.page, self.cal, 10, 20, out, scale=2)
         im = Image.open(out)
         self.assertGreater(im.width, 0)
         self.assertGreater(im.height, 0)
 
     def test_거꾸로_된_행_범위는_거절한다(self):
-        import tempfile
-        out = os.path.join(tempfile.mkdtemp(), 'x.png')
+        out = os.path.join(self.tmp, 'x.png')
         with self.assertRaises(hand_grid.GridError):
             hand_grid.crop_rows(self.page, self.cal, 20, 10, out)
 

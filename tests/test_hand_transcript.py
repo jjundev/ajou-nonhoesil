@@ -115,6 +115,20 @@ class Parse(unittest.TestCase):
         d = ht.parse_transcript(_write(obj))
         self.assertEqual(d.bridges, [("gnd", ("left", "mid_gnd", 31), ("left", "gnd", 31))])
 
+    def test_칩_내부_필수_열쇠가_없으면_TranscriptError(self):
+        for key in ('label', 'pin1_row'):
+            obj = json.loads(json.dumps(MINIMAL))
+            del obj['chips'][0][key]
+            with self.assertRaises(ht.TranscriptError):
+                ht.parse_transcript(_write(obj))
+
+    def test_배선_내부_필수_열쇠가_없으면_TranscriptError(self):
+        for key in ('from', 'to'):
+            obj = json.loads(json.dumps(MINIMAL))
+            del obj['wires'][0][key]
+            with self.assertRaises(ht.TranscriptError):
+                ht.parse_transcript(_write(obj))
+
 
 if __name__ == '__main__':
     unittest.main()

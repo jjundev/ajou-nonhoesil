@@ -161,6 +161,20 @@ class Reference(unittest.TestCase):
             d = hc.reference_diagram(cid)
             self.assertTrue(d.chips, cid)
 
+    def test_from_wiring_은_입력_w의_resistors를_변형하지_않는다(self):
+        w = {
+            'chips': [], 'wires': [], 'leds': [],
+            'resistors': [{'top': ('left', 'd', 15), 'bottom': ('left', 'd', 17), 'label': '330Ω'}],
+            'chains': [{'tag': 'L1', 'res_top': ('left', 'd', 15)}],
+            'unused_inputs': [], 'unused_outputs': [], 'bridges': [], 'overlaps': [],
+        }
+        r_before = dict(w['resistors'][0])
+        d = hc._from_wiring(w, 'test')
+        self.assertEqual(w['resistors'][0], r_before)
+        self.assertNotIn('tag', w['resistors'][0])
+        self.assertEqual(d.resistors[0]['tag'], 'L1')
+
+
 class SelfCompare(unittest.TestCase):
     def test_참조를_그대로_손그림으로_넣으면_결함_0건(self):
         """정답을 정답과 견주어 결함이 나오면 검사기가 틀린 것이다."""
@@ -268,6 +282,16 @@ class Power(unittest.TestCase):
         self.assertEqual(found[0].grade, '치명')
         self.assertIn('개방', found[0].message)
 
+    def test_H3_참조_칩이_손그림에_없으면_잡는다(self):
+        ref, hand = self._pair()
+        hand.chips = [hand.chips[0]]  # 74HC00 제거
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H3']
+        self.assertTrue(found)
+        missing_chip = [f for f in found if f.where == '74HC00']
+        self.assertTrue(missing_chip)
+        self.assertEqual(missing_chip[0].grade, '치명')
+        self.assertIn('참조에 있는 칩이 손그림에 없다', missing_chip[0].message)
+
 
 class Signals(unittest.TestCase):
     """4쪽은 74HC02 pin 3 으로 가는 입력 C 가 없었고, 5쪽은 74HC32 pin 1 로
@@ -317,6 +341,14 @@ class Signals(unittest.TestCase):
         hand.signed = True
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
         self.assertEqual([str(x) for x in found], [])
+
+    def test_H6_참조_숨김_배선은_칩과_핀_모두_일치할_때만_알린다(self):
+        """오버랩 경고가 다른 칩의 같은 번호 핀에 오탐으로 붙지 않는다."""
+        ref = hc.reference_diagram('e1_comb')
+        ref.overlaps = ['가로 c10~c20 — [신호선] 74HC32 pin 1 / [신호선] 기타']
+        self.assertIn('참조 그림에서', hc._reference_hidden(ref, '74HC32', 1))
+        self.assertEqual(hc._reference_hidden(ref, '74HC08', 1), '')
+        self.assertEqual(hc._reference_hidden(ref, '74HC32', 2), '')
 
 
 class LedChain(unittest.TestCase):

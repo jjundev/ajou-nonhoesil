@@ -110,26 +110,54 @@ def parse_transcript(path):
 
     chips = []
     for ch in obj['chips']:
+        try:
+            label = ch['label']
+            pin1_row = ch['pin1_row']
+        except KeyError as e:
+            raise TranscriptError(f"칩 항목에 필수 키 {e} 가 없다: {ch}") from e
         block = BLOCKS.get(ch.get('block'), ch.get('block'))
         if block not in ('left', 'right'):
             raise TranscriptError(f"블록이 좌/우가 아니다: {ch.get('block')!r}")
-        row = int(ch['pin1_row'])
-        _check_row(row, f"{ch.get('label')} pin1_row={row}")
-        chips.append({'label': ch['label'], 'block': block,
+        try:
+            row = int(pin1_row)
+        except (ValueError, TypeError) as e:
+            raise TranscriptError(f"pin1_row 가 정수가 아니다: {pin1_row!r}") from e
+        _check_row(row, f"{label} pin1_row={row}")
+        chips.append({'label': label, 'block': block,
                       'pin1_row': row, 'pins': chip_pins(block, row)})
 
-    wires = [{'kind': w.get('color', ''), 'desc': w.get('desc', ''),
-              'frm': parse_address(w['from']), 'to': parse_address(w['to'])}
-             for w in obj['wires']]
+    wires = []
+    for w in obj['wires']:
+        try:
+            w_from = w['from']
+            w_to = w['to']
+        except KeyError as e:
+            raise TranscriptError(f"배선 항목에 필수 키 {e} 가 없다: {w}") from e
+        wires.append({'kind': w.get('color', ''), 'desc': w.get('desc', ''),
+                      'frm': parse_address(w_from), 'to': parse_address(w_to)})
 
-    leds = [{'tag': l['tag'],
-             'anode': parse_address(l['anode'])[1],
-             'cathode': parse_address(l['cathode'])[1]}
-            for l in obj.get('leds', [])]
-    resistors = [{'tag': r.get('tag', ''), 'label': r.get('label', '330Ω'),
-                  'top': parse_address(r['top'])[1],
-                  'bottom': parse_address(r['bottom'])[1]}
-                 for r in obj.get('resistors', [])]
+    leds = []
+    for l in obj.get('leds', []):
+        try:
+            tag = l['tag']
+            anode = l['anode']
+            cathode = l['cathode']
+        except KeyError as e:
+            raise TranscriptError(f"LED 항목에 필수 키 {e} 가 없다: {l}") from e
+        leds.append({'tag': tag,
+                     'anode': parse_address(anode)[1],
+                     'cathode': parse_address(cathode)[1]})
+
+    resistors = []
+    for r in obj.get('resistors', []):
+        try:
+            top = r['top']
+            bottom = r['bottom']
+        except KeyError as e:
+            raise TranscriptError(f"저항 항목에 필수 키 {e} 가 없다: {r}") from e
+        resistors.append({'tag': r.get('tag', ''), 'label': r.get('label', '330Ω'),
+                          'top': parse_address(top)[1],
+                          'bottom': parse_address(bottom)[1]})
 
     by_tag = {l['tag']: l for l in leds}
     chains = []
@@ -145,8 +173,13 @@ def parse_transcript(path):
 
     bridges = []
     for b in obj.get('bridges', []):
-        a = parse_address(b['from'])[1]
-        z = parse_address(b['to'])[1]
+        try:
+            b_from = b['from']
+            b_to = b['to']
+        except KeyError as e:
+            raise TranscriptError(f"브리지 항목에 필수 키 {e} 가 없다: {b}") from e
+        a = parse_address(b_from)[1]
+        z = parse_address(b_to)[1]
         bridges.append((b.get('kind', ''), a, z))
 
     uncertain = {parse_address(u)[1] for u in obj.get('uncertain', [])}

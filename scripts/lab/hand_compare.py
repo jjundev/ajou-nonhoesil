@@ -204,13 +204,16 @@ def _from_wiring(w, circuit_id):
         bridges = [(kind, a, b) for kind, a, b in w['bridges']
                    if a is not None and b is not None]
     by_hole = {c['res_top']: c['tag'] for c in w['chains']}
+    resistors = []
     for r in w['resistors']:
-        r['tag'] = by_hole.get(r['top'], r.get('label', ''))
+        new_r = dict(r)
+        new_r['tag'] = by_hole.get(new_r['top'], new_r.get('label', ''))
+        resistors.append(new_r)
     return Diagram(
         chips=[dict(c) for c in w['chips']],
         wires=wires,
         leds=[dict(l) for l in w['leds']],
-        resistors=[dict(r) for r in w['resistors']],
+        resistors=resistors,
         chains=[dict(c) for c in w['chains']],
         unused_inputs=[dict(u) for u in w['unused_inputs']],
         unused_outputs=[dict(u) for u in w['unused_outputs']],
@@ -282,11 +285,6 @@ def check_holes(ref, hand):
         put(a, f'{kind} 레일 브리지')
         put(b, f'{kind} 레일 브리지')
     return out
-
-
-def _pin_of(hand_keys, ref_key):
-    """참조 칩 이름이 손그림에도 있는가. 없으면 None."""
-    return ref_key if ref_key in hand_keys else None
 
 
 def check_power(ref, hand):
@@ -397,8 +395,9 @@ def _reference_hidden(ref, key, pin):
     숨겨 놓은 것을 따라 그린 사람 탓으로 돌리면 다음에도 같은 자리가 빠진다.
     """
     needle = f'pin {pin}'
+    base_key = key.split('#')[0]
     for w in ref.overlaps:
-        if needle in w:
+        if (key in w or base_key in w) and needle in w:
             return ' (참조 그림에서 다른 선에 깔려 잘 안 보이는 자리다)'
     return ''
 
@@ -488,7 +487,7 @@ CIRCUIT_WORDS = {
 
 
 def check_placement(ref, hand):
-    """H9 브리지·잭 행 차이 · H10 칩 행 차이. 둘 다 표기다.
+    """H9 브리지 행 차이 · H10 칩 행 차이. 둘 다 표기다.
 
     칩이 밀려도 배선이 함께 옮겨져 있으면 그림은 유효하다. 그래도 알리는
     이유는 체크리스트의 좌표 표기와 어긋나기 때문이다 — 같이 제출한다면
