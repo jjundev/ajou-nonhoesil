@@ -124,6 +124,9 @@ class BreadboardRenderer:
         # 리드 하나만 들어간다(R2). 2026-09-07 까지 verify() 는 주소 문자열을 파싱해
         # 레일 끝점의 빈 행만 봤고, 허공(x=95)에서 출발한 입력선이 그 틈으로 지나갔다
         self._leads = {}
+        # 배선이 **지나가는** 홀. 비어 있지만 여기에 끝점을 두면 점이 선 아래
+        # 깔린다 — free_rail_row() 가 피하고 verify() R3 가 끝점과 대조한다
+        self._passed = set()
         self._not_holes = []
         self._double = []
         # 배선 구간 목록. (색, 꼭짓점들, 뜻). 서로 다른 배선이 같은 축 위에
@@ -206,6 +209,59 @@ class BreadboardRenderer:
             return None
         return (best, r)
 
+    def _register_pass(self, points):
+        """폴리라인이 지나가는 홀을 `_passed` 에 적는다 (양 끝점은 뺀다).
+
+        2px 간격으로 훑어 `hole_at()` 에 걸리는 홀을 모은다 — 대각선도 같은
+        식으로 잡힌다. 꺾이는 점이 홀 위에 있으면 그것도 '지나간 홀' 이다.
+        """
+        ends = {self.hole_at(*points[0]), self.hole_at(*points[-1])}
+        for (x0, y0), (x1, y1) in zip(points, points[1:]):
+            length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** .5
+            n = max(1, int(length / 2))
+            for i in range(n + 1):
+                t = i / n
+                key = self.hole_at(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)
+                if key is not None and key not in ends:
+                    self._passed.add(key)
+
+    def _endpoints_under_wires(self, margin=6):
+        """R3. 배선 끝점이나 부품 다리가 다른 배선 구간의 **중간**에 놓인 곳.
+
+        점이 선 아래 깔리면 그 선에서 갈라지는 T 접속으로 읽힌다. 점퍼는 이어
+        붙일 수 없으니 그런 접속은 없다 — **같은 넷이라도 봐주지 않는다.**
+        2026-09-08 복합 회로 a7·a19 가 같은 넷이었고, 그래서 더 헷갈렸다.
+        R4 가 같은 색 30px 이하를 밑동으로 봐주더라도 그 밑동의 끝점은 여기서
+        걸린다 — 갈래는 옆 홀에서 세로로 뺀다.
+
+        칩 핀 홀은 뺀다. 칩을 가로지르는 선은 핀 행을 지날 수밖에 없고 핀
+        스텁은 회색이라 구분된다. 구간 양끝 `margin` px 안은 그 배선 자신의
+        끝이라 뺀다 — 옆 홀(16px)에 나란히 끝나는 두 점퍼는 걸리지 않는다.
+        """
+        pts = []
+        for i, (kind, points, desc) in enumerate(self._segments):
+            for q in (points[0], points[-1]):
+                pts.append((i, q, f'[{KIND_KR[kind]}] {desc}'))
+        for (x, r), what in self._leads.items():
+            if '다리' in what or '애노드' in what or '캐소드' in what:
+                pts.append((None, (x, self.r_y(r)), f'[부품] {what}'))
+        out = []
+        for owner, (px, py), what in pts:
+            for j, (kj, pj, dj) in enumerate(self._segments):
+                if owner == j:
+                    continue
+                for (ax, ay), (bx, by) in zip(pj, pj[1:]):
+                    dx, dy = bx - ax, by - ay
+                    length = (dx * dx + dy * dy) ** .5
+                    if length < 1:
+                        continue
+                    along = ((px - ax) * dx + (py - ay) * dy) / length
+                    if along <= margin or length - along <= margin:
+                        continue
+                    if abs((px - ax) * dy - (py - ay) * dx) / length < 1.5:
+                        out.append(f'{self.addr(px, py)} {what} ← 그 위를 지나는 [{KIND_KR[kj]}] {dj}')
+        return sorted(set(out))
+
     def lead(self, x, y, what):
         """홀 (x, y) 에 리드 하나를 꽂는다.
 
@@ -233,10 +289,15 @@ class BreadboardRenderer:
         브리지 셋을 31행에 이으면 가운데 레일 31행에 점퍼 둘이 꽂혔다. 한 홀에
         리드 둘은 못 꽂는다 — 점유표를 보고 비어 있는 이웃으로 간다. 가까운
         순(같은 행, 위, 아래, 두 칸 위, …)이라 결과가 결정적이다.
+
+        다른 배선이 **지나가는** 홀(`_passed`)도 찬 것으로 본다. pin 14 전원선이
+        같은 행 중앙 GND 레일 홀 위를 지나는데 거기에 미사용 핀 접지선이 착지하면
+        파란 점이 빨간 선 아래 깔린다 (R3). 먼저 그린 선이 지나간 자리는 비켜 간다.
         """
         for d in range(0, 8):
             for cand in ((row,) if d == 0 else (row - d, row + d)):
-                if self.is_rail_row(cand) and all((x, cand) not in self._leads for x in xs):
+                if self.is_rail_row(cand) and all(
+                        (x, cand) not in self._leads and (x, cand) not in self._passed for x in xs):
                     return cand
         raise ValueError(f'{row}행 근처에 빈 레일 홀이 없다: x={xs}')
 
@@ -436,6 +497,7 @@ class BreadboardRenderer:
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
         self._segments.append((kind, [tuple(p) for p in points], desc))
+        self._register_pass(points)
         if not self.numbered:
             return None
 
@@ -590,10 +652,11 @@ class BreadboardRenderer:
                        '레일 브리지',
                        marker_at=((x_a + x_b) // 2, y - 12))
 
-    def connect_power(self, start_row, block='left', gnd_marker_at=None):
+    def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
         """pin 14 -> +5V, pin 7 -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
         빌더가 지정할 때만 준다 — 기본 자리(레일과 d열 사이, 한 행 위)에 다른
-        배선의 모서리가 오는 경우다.
+        배선의 모서리가 오는 경우다. `gnd_col` 은 pin 7 접지선이 출발하는 열로,
+        `connect_unused_inputs(col=)` 과 같은 이유로 바꾼다.
 
         어느 레일로 가는지는 블록마다 다르다. 좌측 보드는 f~j 쪽(pin 8~14)이
         중앙 레일에, a~e 쪽(pin 1~7)이 바깥 왼쪽 레일에 붙는다. 우측 보드는
@@ -611,7 +674,7 @@ class BreadboardRenderer:
                        'vcc', 'pin 14 -> +5V 레일',
                        marker_at=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
         r7 = self.free_rail_row(start_row + 6, x_gnd)
-        self.step_wire([(c['d'], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
+        self.step_wire([(c[gnd_col], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
                        'gnd', 'pin 7 -> GND 레일',
                        marker_at=gnd_marker_at or ((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
 
@@ -626,21 +689,29 @@ class BreadboardRenderer:
         return min((c['vcc'], c['mid_vcc']), key=lambda xr: abs(xr - x))
 
     def connect_unused_inputs(self, pins, start_row, block='left', bridge_row=None,
-                              chip='', rail='gnd'):
+                              chip='', rail='gnd', col='d'):
         """미사용 입력핀을 전원 레일로. 여러 가닥이지만 표에는 **한 줄**로 묶는다.
 
         `rail='vcc'` 면 GND 가 아니라 +5V 로 올린다. 실험02 교안 p8 도면이
         미사용 입력 일부를 VCC 로 묶으라고 지정한다 — CMOS 입력은 뜨면 안 될
         뿐이지 어느 쪽으로 묶든 상관없고, 도면을 그대로 따르는 편이 대조하기 쉽다.
+
+        `col` 은 pin 1~7 쪽 접지선이 출발하는 열이다 (기본 d — 핀 홀 e 바로 옆).
+        그 열 위로 다른 세로선이 지나가면(복합 회로의 초록 A'·B 선이 d열을 탄다)
+        접지선 끝점이 그 선 아래 깔리므로 빈 열로 옮긴다.
+
+        착지는 **자기 행에 레일 홀이 있는 핀부터** 한다. 빈 행(8·14·20행)의 핀은
+        이웃 행으로 밀리는데, 그 핀이 먼저 착지하면 정작 그 행의 주인 핀이 밀린다.
         """
         c = self.cols[block]
+        placed = []
         for p in pins:
             if 1 <= p <= 7:
-                row, x_pin = start_row + (p - 1), c['d']
+                placed.append((start_row + (p - 1), c[col], p))
             elif 8 <= p <= 14:
-                row, x_pin = start_row + (14 - p), c['g']
-            else:
-                continue
+                placed.append((start_row + (14 - p), c['g'], p))
+        order = sorted(range(len(placed)), key=lambda i: (not self.is_rail_row(placed[i][0]), i))
+        for row, x_pin, p in (placed[i] for i in order):
             pick = self.nearest_vcc_rail if rail == 'vcc' else self.nearest_gnd_rail
             x_rail = pick(x_pin, block)
             r_rail = self.free_rail_row(row, x_rail)
@@ -648,6 +719,7 @@ class BreadboardRenderer:
             self.draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
                                    f'{chip} pin {p} 미사용 입력'))
+            self._register_pass([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))])
             self.draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
             self.draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
@@ -800,23 +872,29 @@ class BreadboardRenderer:
 
         R1  모든 끝점은 실제 홀이다 (전원잭만 예외).
         R2  한 홀에는 리드 하나만 들어간다 — 점퍼·부품 다리·칩 핀 전부.
+        R3  배선 끝점·부품 다리 위를 다른 배선이 지나가지 않는다 — 넷 무관.
         R4  서로 다른 배선이 같은 축 위에 포개지지 않는다 (`overlap_policy`).
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
         """
         bad = [f'홀이 아니다: {s}' for s in self._not_holes]
         bad += [f'한 홀에 리드 둘: {s}' for s in self._double]
-        if bad:
-            raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
+        bad += [f'끝점이 다른 배선 아래 깔린다: {s}' for s in self._endpoints_under_wires()]
 
         # R4. 다른 배선끼리 같은 축 위에 포개지면 그림에서 한 선으로 보인다.
-        # overlap_warnings 는 **이번 verify() 의 결과**다 — 포개짐이 없으면 비운다
+        # overlap_warnings 는 **이번 verify() 의 결과**다 — 포개짐이 없으면 비운다.
+        # 축 위 포개짐은 한쪽 끝점이 상대 구간 안에 있다는 뜻이라 R3 에도 걸린다 —
+        # R4 는 "두 넷이 한 선으로 보인다" 는 진단을 덧붙이는 역할이고, 경고 모드는
+        # R4 문구만 낮춘다 (R3 는 그래도 던진다)
         overlaps = self._overlaps()
         self.overlap_warnings = overlaps
         if overlaps:
             msg = '배선이 포개졌다:\n  ' + '\n  '.join(overlaps)
             if self.overlap_policy == 'strict':
-                raise AssertionError(msg)
-            print(f'[WARN] {msg}', file=sys.stderr)
+                bad.append(msg)
+            else:
+                print(f'[WARN] {msg}', file=sys.stderr)
+        if bad:
+            raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
         # 레일 연결성. 같은 전원을 나르는 레일들이 브리지로 이어져 있지
         # 않으면, 그림대로 꽂았을 때 전원이 안 간다. 눈으로는 절대 안 잡힌다 —
@@ -915,14 +993,16 @@ def build_e1_and(output_path, template_path=None):
     _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
     _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
 
-    bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid',
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(13))], 'mid',
                  '1단 출력 A·B -> 2단 입력 (pin 3 -> pin 4)', width=4,
-                 marker_at=(c['c'] - 20, bb.r_y(12) + 8))
+                 marker_at=(c['d'] - 18, bb.r_y(13) + 9))
 
-    # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
-    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다.
+    # 갈래는 c12 에 꽂는다. d12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다. 점퍼를
+    # 바깥쪽(d), 갈래를 안쪽(c)에 두는 이유: 반대로 두면 갈래가 왼쪽으로 가며
+    # 점퍼 끝점 c12 위를 지나 T 접속으로 읽힌다 (R3).
     # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
+    bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
                  '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
     bb.led_chain(c['a'], 24, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
@@ -969,14 +1049,16 @@ def build_e1_or(output_path, template_path=None):
     _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
     _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
 
-    bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid',
+    bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(13))], 'mid',
                  '1단 출력 A+B -> 2단 입력 (pin 3 -> pin 4)', width=4,
-                 marker_at=(c['c'] - 20, bb.r_y(12) + 8))
+                 marker_at=(c['d'] - 18, bb.r_y(13) + 9))
 
-    # 갈래는 d12 에 꽂는다. c12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
-    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다.
+    # 갈래는 c12 에 꽂는다. d12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓴다 —
+    # 같은 스트립이라 어느 홀이든 이어지지만 한 홀에 점퍼 둘은 못 꽂는다. 점퍼를
+    # 바깥쪽(d), 갈래를 안쪽(c)에 두는 이유: 반대로 두면 갈래가 왼쪽으로 가며
+    # 점퍼 끝점 c12 위를 지나 T 접속으로 읽힌다 (R3).
     # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
+    bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
                  '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
     bb.led_chain(c['a'], 24, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
 
@@ -1128,7 +1210,10 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     # 74HC04 pin 7 번호 원의 기본 자리(x=231, 12~13행 사이)에 B 갈래 모서리(228, 12행)가
     # 온다. 칩 사이 빈 행(14~17)의 a열에 번호 원·꼬리표를 세로로 쌓는다 — 14행 ⑨,
     # 15행 A' 번호, 16행 A' 꼬리표, 17행 Z LED 번호
-    bb.connect_power(r_not, block='left', gnd_marker_at=(c_l['a'], bb.r_y(14)))
+    # 74HC04 의 pin 7·pin 5 접지선은 d열 대신 **a열**에서 뽑는다 — d열은 초록 A'·B
+    # 세로선(d20→d9)이 타고 내려와 d11·d13 끝점이 그 아래 깔린다 (R3). a열은 Z LED
+    # 선이 여백으로 나간 뒤로 비어 있다
+    bb.connect_power(r_not, block='left', gnd_marker_at=(c_l['a'], bb.r_y(14)), gnd_col='a')
     bb.connect_power(r_and, block='left')
     bb.connect_power(r_or, block='right')
 
@@ -1158,8 +1243,8 @@ def build_e1_comb(output_path, template_path=None, stage=None):
                      'sig', '입력 B 갈래 -> 74HC32 pin 5', width=2,
                      marker_at=(577 + 14, bb.r_y(6) + 10))
 
-        # 번호 원과 꼬리표는 칩 사이 빈 행(14~17)의 a열에 세로로 쌓는다 — b열은 B 갈래,
-        # 여백 212·228 은 Z LED 선과 B 갈래가 지나가서 거기 두면 선을 가린다
+        # 번호 원과 꼬리표는 칩 사이 빈 행(14~17)의 a열에 세로로 쌓는다 (전원 단계 주석
+        # 참조) — b열은 B 갈래, 여백 212·228 은 Z LED 선과 B 갈래가 지나가서 선을 가린다
         bb.step_wire([(c_l['c'], bb.r_y(8)), (c_l['c'], bb.r_y(18))], 'mid',
                      "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c_l['a'], bb.r_y(15)))
         _tag(bb, c_l['a'] - 8, bb.r_y(16) - 7, "A'")
@@ -1194,7 +1279,7 @@ def build_e1_comb(output_path, template_path=None, stage=None):
                      '74HC32 pin 6 -> Y LED', marker_at=(c_r['a'] - 20, bb.r_y(21)))
         bb.led_chain(c_r['a'], 27, "Y", "Y = A + B", block='right', color_rgb=(20, 150, 50))
 
-        bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left', bridge_row=31, chip='74HC04')
+        bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left', bridge_row=31, chip='74HC04', col='a')
         bb.mark_unused_outputs([6, 8, 10, 12], r_not, block='left', chip='74HC04')
         bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, block='left', bridge_row=31, chip='74HC08')
         bb.mark_unused_outputs([6, 8, 11], r_and, block='left', chip='74HC08')

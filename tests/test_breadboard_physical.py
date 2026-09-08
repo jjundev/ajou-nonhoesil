@@ -106,25 +106,89 @@ class PhysicalRules(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, '포개졌다:\\s+세로'):
             bb.verify()
 
-    def test_같은_색의_짧은_갈래_밑동은_봐준다(self):
-        # 옛 복합 회로의 B 갈래: a19 에 꽂은 두 번째 점퍼가 입력선 위를 27px 되짚어
-        # 여백(x=212)으로 나갔다. 두 홀 폭 안의 같은 색 포개짐은 갈래 밑동이라 검사는
-        # 봐준다 (그림으로는 밑동이 안 보여 2026-09-08 에 실제 회로에서는 걷어냈다).
-        # 끝점은 홀이어야 하므로(R1) 폴리라인을 a5 에서 끝낸다
+    def test_같은_색_밑동은_R4_가_봐주지만_R3_가_잡는다(self):
+        # 옛 복합 회로의 B 갈래: a19 에 꽂은 두 번째 점퍼가 입력선(레일→b19) 위를
+        # 27px 되짚어 여백(x=212)으로 나갔다. R4 는 두 홀 폭 안의 같은 색 포개짐을
+        # 밑동으로 봐주지만, 그 밑동의 끝점 a19 는 입력선 **중간**에 놓인다 —
+        # 그림에서는 얇은 선이 굵은 선 중간에서 솟는 것으로 보였다 (2026-09-08).
         bb = self.board()
         c = bb.cols['left']
         bb.step_wire([(c['gnd'], bb.r_y(19)), (c['b'], bb.r_y(19))], 'sig', '입력 B')
         bb.step_wire([(c['a'], bb.r_y(19)), (212, bb.r_y(19)), (212, bb.r_y(5)), (c['a'], bb.r_y(5))],
                      'sig', '갈래')
+        self.assertEqual(bb._overlaps(), [])
+        with self.assertRaisesRegex(AssertionError, '끝점이 다른 배선 아래.*좌 a19'):
+            bb.verify()
+
+    # ---- R3. 끝점 위를 다른 배선이 지나가지 않는다 ----
+
+    def test_옆_홀에_나란히_끝나는_두_점퍼는_괜찮다(self):
+        # 고친 뒤의 모양: 입력선은 a19 에서 멈추고 갈래는 b19 에서 세로로 나간다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['gnd'], bb.r_y(19)), (c['a'], bb.r_y(19))], 'sig', '입력 B')
+        bb.step_wire([(c['b'], bb.r_y(19)), (c['b'], bb.r_y(12)), (228, bb.r_y(12)), (228, bb.r_y(6)),
+                      (c['c'], bb.r_y(6))], 'sig', '갈래')
         bb.verify()
 
-    def test_경고_모드는_던지지_않고_기록한다(self):
+    def test_같은_넷이라도_끝점_위를_지나면_막힌다(self):
+        # 옛 AND 회로: pin 3→4 점퍼가 c12 에서 끝나는데 같은 넷의 갈래가 d12 에서
+        # a12 로 가며 c12 위를 지났다. T 접속으로 읽히지만 점퍼는 이어 붙일 수 없다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(12)), (c['c'], bb.r_y(13))], 'mid', 'pin 3 -> pin 4')
+        bb.step_wire([(c['d'], bb.r_y(12)), (c['a'], bb.r_y(12))], 'mid', '갈래')
+        with self.assertRaisesRegex(AssertionError, '끝점이 다른 배선 아래.*좌 c12'):
+            bb.verify()
+
+    def test_대각선_아래_깔린_끝점도_잡는다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        # g8 → 중앙GND 6행 대각선이 j7 근처를 지난다. 그 선 위의 한 점에 끝점을 둔다
+        x0, y0, x1, y1 = c['g'], bb.r_y(8), c['mid_gnd'], bb.r_y(6)
+        bb.step_wire([(x0, y0), (x1, y1)], 'gnd', '대각 접지선')
+        t = (c['j'] - x0) / (x1 - x0)
+        y_on = y0 + (y1 - y0) * t
+        self.assertLess(abs(y_on - bb.r_y(7)), 5, '픽스처: j7 홀이 대각선 위에 있어야 한다')
+        bb.step_wire([(c['j'], bb.r_y(7)), (c['j'], bb.r_y(9))], 'sig', 'j7 에서 출발')
+        with self.assertRaisesRegex(AssertionError, '끝점이 다른 배선 아래.*좌 j7'):
+            bb.verify()
+
+    def test_칩_핀_홀_위를_지나는_것은_봐준다(self):
+        # 칩을 가로지르는 선은 핀 행을 지날 수밖에 없다. e10·f10 은 핀 홀이다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC04', 7)
+        bb.step_wire([(c['b'], bb.r_y(10)), (c['mid_gnd'], bb.r_y(10))], 'mid', '칩 가로지르기')
+        bb.verify()
+
+    def test_부품_다리_위를_지나면_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_resistor(c['c'], bb.r_y(20), bb.r_y(22))
+        bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], 'sig', '저항 위를 지나는 선')
+        with self.assertRaisesRegex(AssertionError, '끝점이 다른 배선 아래.*윗다리'):
+            bb.verify()
+
+    def test_레일_홀_위를_지나간_선이_있으면_착지를_비킨다(self):
+        # pin 14 전원선(g7 → 중앙VCC 7행)은 중앙GND 7행 홀 위를 지난다.
+        # 8행(빈 행)의 핀 접지선은 7행이 아니라 9행에 착지해야 한다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['g'], bb.r_y(7)), (c['mid_vcc'], bb.r_y(7))], 'vcc', 'pin 14')
+        self.assertIn((c['mid_gnd'], 7), bb._passed)
+        self.assertEqual(bb.free_rail_row(8, c['mid_gnd']), 9)
+
+    def test_경고_모드는_R4_를_기록만_하고_R3_는_그래도_던진다(self):
+        # 축 위 포개짐은 언제나 한쪽 끝점이 상대 구간 안에 있다 — R3 가 잡는다.
+        # 경고 모드는 R4 문구만 낮추고, 그래도 overlap_warnings 는 채워진다
         bb = self.board()
         bb.overlap_policy = 'warn'
         c = bb.cols['left']
         bb.step_wire([(c['a'], bb.r_y(7)), (c['a'], bb.r_y(14))], 'sig', '입력 C')
         bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(19))], 'mid', '중간단 갈래')
-        bb.verify()
+        with self.assertRaisesRegex(AssertionError, '끝점이 다른 배선 아래.*좌 a12'):
+            bb.verify()
         self.assertEqual(len(bb.overlap_warnings), 1)
 
     def test_경고_목록은_이번_verify_의_결과로_덮인다(self):
