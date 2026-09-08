@@ -23,6 +23,7 @@ RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
 REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
+VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
@@ -40,6 +41,7 @@ DOCS = {
     "결과": (RESULT, ("절대 규칙", "실행 절차")),
     "리뷰": (REVIEW, ("실행 절차",)),
     "명세": (DRAFT, ("절대 규칙", "실행 절차")),
+    "검증": (VERIFY, ("절대 규칙", "실행 절차")),
 }
 
 # 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
@@ -550,6 +552,32 @@ class SkillDocInvariants(unittest.TestCase):
         submit = text.index("\n## 제출")
         self.assertTrue(pull < where < submit,
                         f"빈 그림 검사가 pull 절 밖에 있다 (pull={pull}, 검사={where}, 제출={submit})")
+
+    def test_the_verifier_lists_itself_as_an_answer_key(self):
+        # 스킬 문서 자체가 합격 조건을 담는다. 격리 트리에서 빼지 않으면
+        # 에이전트가 저장소를 뒤지다 자기 채점표를 읽는다 — 2026-08-31 에
+        # docs/verify/ 로 실제로 일어난 일이다.
+        text = self.docs["검증"]
+        sec = sections(text)["답안지 목록"]
+        self.assertIn("`.claude/skills/verify-draft-lab-spec/`", sec)
+        self.assertIn("`docs/verify/`", sec)
+        self.assertIn("`tests/`", sec)
+        self.assertIn("`scripts/lab/regen_compare.py`", sec)
+        self.assertIn("`scripts/lab/isolate.py`", sec)
+
+    def test_the_verifier_prompt_gives_no_reasons_and_forbids_git_history(self):
+        # 금지 사유는 첫 줄부터 "채점되는 시험" 임을 알려준다(런북 2026-09-01
+        # 누출 (3)). 이력은 답안지 이름을 흘린다.
+        sec = sections(self.docs["검증"])["에이전트 프롬프트"]
+        self.assertNotIn("합격", sec)
+        self.assertNotIn("채점", sec)
+        self.assertIn("`git log`", sec)
+        self.assertIn("한 번에 통과했으면 그렇다고 명시", sec)
+
+    def test_the_verifier_does_not_fix_anything(self):
+        sec = sections(self.docs["검증"])["비-목표"]
+        self.assertIn("`draft-lab-spec` 을 고치지 않는다", sec)
+        self.assertIn("커밋하지 않는다", sec)
 
 
 if __name__ == "__main__":
