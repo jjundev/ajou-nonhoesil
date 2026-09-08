@@ -19,7 +19,12 @@
 두 번 보고하지 않기 위해서다.
 """
 
+import os
+import tempfile
 from dataclasses import dataclass
+
+from .hand_grid import load_renderer
+from .hand_transcript import Diagram
 
 RAIL_COLS = frozenset({'gnd', 'vcc', 'mid_gnd', 'mid_vcc'})
 VCC_COLS = frozenset({'vcc', 'mid_vcc'})
@@ -152,3 +157,55 @@ def signatures(diagram):
             rep = nets[node_of(hole)]
             out[(key, pin)] = frozenset(att.get(rep, set()) - {('PIN', key, pin)})
     return out
+
+
+# 손그림 검토가 정답으로 삼는 회로들. `main()` 의 dispatch 와 같은 이름을 쓴다
+CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
+            'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3')
+
+
+class CompareError(ValueError):
+    """참조를 꺼내거나 대조할 수 없다."""
+
+
+def reference_diagram(circuit_id):
+    """렌더러 빌더를 돌려 그 그림의 결선을 `Diagram` 으로 꺼낸다.
+
+    빌더가 PNG 를 쓰긴 하지만 우리가 필요한 건 `wiring()` 이다. 임시 폴더에
+    쓰고 버린다 — `export()` 가 `verify()` 를 부르므로 `overlaps` 도 이때 찬다.
+    """
+    if circuit_id not in CIRCUITS:
+        raise CompareError(
+            f"모르는 회로 ID: {circuit_id!r}. "
+            f"쓸 수 있는 것: {', '.join(CIRCUITS)}")
+    mod = load_renderer()
+    builder = getattr(mod, f"build_{circuit_id}", None)
+    if builder is None:
+        raise CompareError(f"빌더가 없다: build_{circuit_id}")
+    with tempfile.TemporaryDirectory() as tmp:
+        bb = builder(os.path.join(tmp, f"{circuit_id}.png"))
+    if bb is None:
+        raise CompareError(
+            f"build_{circuit_id} 가 렌더러를 돌려주지 않는다 — "
+            "빌더 끝에 `return bb` 가 있어야 한다")
+    return _from_wiring(bb.wiring(), circuit_id)
+
+
+def _from_wiring(w, circuit_id):
+    """`wiring()` 출력 -> `Diagram`. 손그림 쪽과 같은 모양으로 맞춘다."""
+    bridges = [(kind, a, b) for kind, a, b in w['bridges']
+               if a is not None and b is not None]
+    by_hole = {c['res_top']: c['tag'] for c in w['chains']}
+    for r in w['resistors']:
+        r['tag'] = by_hole.get(r['top'], r.get('label', ''))
+    return Diagram(
+        chips=[dict(c) for c in w['chips']],
+        wires=[dict(x) for x in w['wires']],
+        leds=[dict(l) for l in w['leds']],
+        resistors=[dict(r) for r in w['resistors']],
+        chains=[dict(c) for c in w['chains']],
+        unused_inputs=[dict(u) for u in w['unused_inputs']],
+        unused_outputs=[dict(u) for u in w['unused_outputs']],
+        bridges=bridges,
+        overlaps=list(w['overlaps']),
+        circuit=circuit_id)

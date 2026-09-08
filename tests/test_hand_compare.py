@@ -95,5 +95,47 @@ class Signatures(unittest.TestCase):
         self.assertIn(('LED', 'L2', 'A'), hc.signatures(d)[('74HC08', 6)])
 
 
+class Reference(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.nand = hc.reference_diagram('e1_nand')
+
+    def test_참조가_Diagram_으로_나온다(self):
+        self.assertEqual([c['label'] for c in self.nand.chips],
+                         ['74HC08', '74HC00'])
+        self.assertEqual([c['pin1_row'] for c in self.nand.chips], [7, 18])
+
+    def test_참조_pin14_는_VCC_이고_pin7_은_GND_다(self):
+        sig = hc.signatures(self.nand)
+        for chip in ('74HC08', '74HC00'):
+            self.assertIn(('RAIL', 'VCC'), sig[(chip, 14)])
+            self.assertNotIn(('RAIL', 'GND'), sig[(chip, 14)])
+            self.assertIn(('RAIL', 'GND'), sig[(chip, 7)])
+
+    def test_참조_미사용_출력은_아무_데도_안_닿는다(self):
+        sig = hc.signatures(self.nand)
+        for chip, pin in [('74HC08', 6), ('74HC08', 8), ('74HC00', 11)]:
+            self.assertEqual(sig[(chip, pin)], frozenset())
+
+    def test_참조_LED_사슬은_캐소드와_저항_윗다리가_한_넷이다(self):
+        nets = hc.build_nets(self.nand)
+        for ch in self.nand.chains:
+            self.assertEqual(nets[hc.node_of(ch['cathode'])],
+                             nets[hc.node_of(ch['res_top'])])
+
+    def test_참조_칩_사이_연결이_서명에_보인다(self):
+        sig = hc.signatures(self.nand)
+        self.assertIn(('PIN', '74HC00', 1), sig[('74HC08', 3)])
+
+    def test_모르는_회로_ID_는_거절한다(self):
+        with self.assertRaises(hc.CompareError):
+            hc.reference_diagram('e9_없음')
+
+    def test_다섯_회로가_모두_열린다(self):
+        for cid in ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb'):
+            d = hc.reference_diagram(cid)
+            self.assertTrue(d.chips, cid)
+
+
 if __name__ == '__main__':
     unittest.main()
