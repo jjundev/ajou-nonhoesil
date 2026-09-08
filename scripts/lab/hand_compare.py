@@ -342,10 +342,71 @@ def check_power(ref, hand):
     return out
 
 
+
+def _describe(item):
+    """부착물 하나를 사람 말로."""
+    if item[0] == 'PIN':
+        return f'{item[1]} pin {item[2]}'
+    if item[0] == 'LED':
+        return f"{item[1]} LED {'애노드' if item[2] == 'A' else '캐소드'}"
+    if item[0] == 'RES':
+        return f"{item[1]} 저항 {'윗' if item[2] == 'T' else '아랫'}다리"
+    if item[0] == 'RAIL':
+        return f'{item[1]} 레일'
+    if item[0] == 'JACK':
+        return f'{item[1]} 전원잭'
+    return str(item)
+
+
+def check_signals(ref, hand):
+    """H6 핀 서명 차이.
+
+    전원(H3)·미사용(H4·H5)이 이미 본 것은 뺀다 — 한 결함을 두 번 보고하지
+    않는다. 남는 것이 신호선이다: 입력, 단 간 연결, LED 도달.
+    """
+    out = []
+    rsig, hsig = signatures(ref), signatures(hand)
+    hkeys = set(chip_keys(hand))
+    skip = {(u['chip'], u['pin']) for u in ref.unused_inputs}
+    skip |= {(u['chip'], u['pin']) for u in ref.unused_outputs}
+
+    for (key, pin), want in sorted(rsig.items()):
+        if key not in hkeys or pin in (7, 14) or (key, pin) in skip:
+            continue
+        got = hsig.get((key, pin), frozenset())
+        missing = want - got
+        extra = got - want
+        if not missing and not extra:
+            continue
+        parts = []
+        if missing:
+            parts.append('없다: ' + ', '.join(sorted(_describe(m) for m in missing)))
+        if extra:
+            parts.append('더 있다: ' + ', '.join(sorted(_describe(e) for e in extra)))
+        note = _reference_hidden(ref, key, pin)
+        out.append(HandFinding(
+            'H6', '치명', f'{key} pin {pin}',
+            ' · '.join(parts) + note))
+    return out
+
+
+def _reference_hidden(ref, key, pin):
+    """참조 그림에서 그 핀으로 가는 선이 다른 선에 깔려 있으면 알린다.
+
+    2026-09-08 5쪽에서 빠진 `A -> 74HC32 pin 1` 이 그런 선이었다. 원도가
+    숨겨 놓은 것을 따라 그린 사람 탓으로 돌리면 다음에도 같은 자리가 빠진다.
+    """
+    needle = f'pin {pin}'
+    for w in ref.overlaps:
+        if needle in w:
+            return ' (참조 그림에서 다른 선에 깔려 잘 안 보이는 자리다)'
+    return ''
+
+
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
-_RULES = [check_holes, check_power]
+_RULES = [check_holes, check_power, check_signals]
 
 
 

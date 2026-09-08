@@ -17,6 +17,31 @@ def _wire(a, b, kind='sig'):
     return {'kind': kind, 'desc': '', 'frm': ('hole', a), 'to': ('hole', b)}
 
 
+def _shift_rows(d, delta):
+    """그림 전체를 delta 행만큼 옮긴다. 레일 빈 행은 피하지 않으므로
+    빈 행에 걸리지 않는 delta 만 쓴다."""
+    def s(hole):
+        return None if hole is None else (hole[0], hole[1], hole[2] + delta)
+
+    for ch in d.chips:
+        ch['pin1_row'] += delta
+        ch['pins'] = {p: s(h) for p, h in ch['pins'].items()}
+    for w in d.wires:
+        for side in ('frm', 'to'):
+            kind, val = w[side]
+            w[side] = (kind, s(val)) if kind == 'hole' else (kind, val)
+    for l in d.leds:
+        l['anode'], l['cathode'] = s(l['anode']), s(l['cathode'])
+    for r in d.resistors:
+        r['top'], r['bottom'] = s(r['top']), s(r['bottom'])
+    for c in d.chains:
+        for k in ('signal', 'anode', 'cathode', 'res_top', 'res_bottom'):
+            if k in c:
+                c[k] = s(c[k])
+    d.bridges = [(k, s(a), s(b)) for k, a, b in d.bridges]
+    return d
+
+
 class Nodes(unittest.TestCase):
     def test_같은_행_a부터e_는_한_노드다(self):
         self.assertEqual(hc.node_of(('left', 'a', 10)),
@@ -244,7 +269,56 @@ class Power(unittest.TestCase):
         self.assertIn('개방', found[0].message)
 
 
-if __name__ == '__main__':
+class Signals(unittest.TestCase):
+    """4쪽은 74HC02 pin 3 으로 가는 입력 C 가 없었고, 5쪽은 74HC32 pin 1 로
+    가는 A 갈래가 없었다. 둘 다 '있어야 할 것이 없다' 라 원도만 보고는
+    안 보인다 — 5쪽 갈래는 참조 그림에서 초록 선 아래 깔려 있기까지 했다."""
 
+    def _pair(self, cid='e1_nor'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        return ref, hand
+
+    def test_H6_입력이_빠지면_잡는다(self):
+        ref, hand = self._pair()
+        node = hc.node_of(hand.chips[1]['pins'][3])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
+        self.assertTrue(found)
+        self.assertEqual(found[0].grade, '치명')
+
+    def test_H6_칩_사이_연결이_빠지면_잡는다(self):
+        ref, hand = self._pair('e1_nand')
+        node = hc.node_of(hand.chips[1]['pins'][1])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        msgs = ' '.join(f.message for f in hc.compare(ref, hand) if f.rule == 'H6')
+        self.assertIn('74HC08', msgs)
+
+    def test_H6_출력_둘이_한_넷이면_잡는다(self):
+        """5쪽에서 Z 선과 A·B 선이 한 홀에서 만났다 — 출력끼리 맞물린다."""
+        ref, hand = self._pair('e1_comb')
+        a = hand.chips[0]['pins'][4]      # 74HC04 출력
+        b = hand.chips[1]['pins'][3]      # 74HC08 출력
+        hand.wires.append({'kind': 'mid', 'desc': '',
+                           'frm': ('hole', (a[0], 'd', a[2])),
+                           'to': ('hole', (b[0], 'd', b[2]))})
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
+        self.assertTrue(found)
+
+    def test_H6_행이_통째로_밀린_그림은_통과한다(self):
+        """칩과 배선이 함께 한 행 내려간 그림은 유효하다."""
+        ref = hc.reference_diagram('e1_nand')
+        hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
+        hand.signed = True
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
+        self.assertEqual([str(x) for x in found], [])
+
+
+if __name__ == '__main__':
     unittest.main()
 
