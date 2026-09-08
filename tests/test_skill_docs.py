@@ -553,6 +553,57 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertTrue(pull < where < submit,
                         f"빈 그림 검사가 pull 절 밖에 있다 (pull={pull}, 검사={where}, 제출={submit})")
 
+    def test_the_verifier_answer_keys_agree_in_all_three_places(self):
+        # 답안지 목록의 정본은 §답안지 목록(산문)인데, §실행 절차 1단계의
+        # `KEYS = [...]` 가 이를 그대로 옮겨야 한다(§실행 절차 1단계 지시
+        # 문구). 코드(scripts/lab/isolate.py)는 받은 목록을 지우기만 하므로
+        # 여기서는 KEYS 와 산문 불릿 두 곳을 직접 대조한다.
+        text = self.docs["검증"]
+        proc = sections(text)["실행 절차"]
+        start = proc.index("KEYS = [") + len("KEYS = [")
+        end = proc.index("]", start)
+        keys = {m.rstrip("/") for m in re.findall(r"'([^']+)'", proc[start:end])}
+
+        sec = sections(text)["답안지 목록"]
+        before, marker, after = sec.partition("남기는 것:")
+        self.assertNotEqual(marker, "", "\"남기는 것:\" 문장이 없다 — 앵커가 바뀌었다")
+        # 불릿 단위로 나눈다 — "스킬 여덟" 불릿은 `draft-lab-spec` 과
+        # `write-pre-report` 둘 다 예시 인용이지 답안지 경로가 아니다.
+        # 불릿 전체를 통짜로 빼야 그 안의 backtick 이 전부 빠진다.
+        bullets = [b for b in re.split(r"(?m)^- ", before)[1:]]
+        prose = set()
+        excluded = set()
+        for b in bullets:
+            toks = {m.rstrip("/") for m in re.findall(r"`([^`]+)`", b)}
+            if "<실험NN>" in b or "스킬 여덟" in b:
+                excluded |= toks
+            else:
+                prose |= toks
+        prose_all = prose | excluded
+
+        # `draft-lab-spec` 을 뺀 스킬 여덟은 §답안지 목록이 "스킬 여덟" 이라는
+        # 구절로만 가리키고 이름을 나열하지 않는다 — KEYS 쪽 개수·이름으로
+        # 따로 잰다.
+        other_skills = {k for k in keys if k.startswith(".claude/skills/")} - {
+            ".claude/skills/verify-draft-lab-spec", ".claude/skills/breadboard-diagram"}
+        self.assertEqual(len(other_skills), 8, other_skills)
+        self.assertNotIn(".claude/skills/draft-lab-spec", other_skills)
+
+        # 보고서 불릿(`<실험NN>` 자리표시자)과 "스킬 여덟" 불릿의 backtick 은
+        # KEYS 에 문자 그대로는 없다 — 위 두 이유로 뺀다. 나머지는 KEYS 에
+        # 전부 있어야 한다.
+        self.assertEqual(prose - keys, set(), prose - keys)
+
+        # 반대 방향: 스킬 여덟을 뺀 KEYS 는 전부 산문 불릿에 실려 있어야 한다.
+        self.assertEqual((keys - other_skills) - prose_all, set(),
+                         (keys - other_skills) - prose_all)
+
+        # "남기는 것:" 은 답안지가 아니다 — KEYS 항목이 거기 섞여 있으면
+        # 지우면 안 되는 자리를 지우거나 그 반대다.
+        for k in keys:
+            with self.subTest(k):
+                self.assertNotIn(k, after)
+
     def test_the_verifier_lists_itself_as_an_answer_key(self):
         # 스킬 문서 자체가 합격 조건을 담는다. 격리 트리에서 빼지 않으면
         # 에이전트가 저장소를 뒤지다 자기 채점표를 읽는다 — 2026-08-31 에

@@ -64,7 +64,7 @@ class PinNets(unittest.TestCase):
     def test_핀_하나를_옮기면_양방향으로_짚는다(self):
         # C1 의 입력 C 를 pin 5 에서 pin 9 로 옮긴다. 원본에만 있는 간선(5←C)과
         # 재생성에만 있는 간선(9←C)이 **둘 다** 나와야 한다 — 충돌만 찾으면 누락은
-        # 안 보인다(런북 §V1).
+        # 안 보인다(런북 V1 절).
         v = _variant([("  - pin 5  ← 입력 C\n  - pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 L2 = A·B·C, T1 의 검증 대상",
                        "  - pin 9  ← 입력 C\n  - pin 6  → L2 애노드 (330Ω 직렬) → GND    ※ 최종 출력 L2 = A·B·C, T1 의 검증 대상")])
         out = compare_netlist_pins(NETLIST, v)
@@ -161,6 +161,19 @@ class ClassifySpecDiffs(unittest.TestCase):
         got = classify_spec_diffs(compare_specs(SPEC, v))
         self.assertEqual(len(got["title"]), 1, got)
         self.assertEqual(got["cell"], [])
+
+    def test_표_ID_로_시작하는_두_형태가_모두_id_shift_다(self):
+        # compare_specs 가 실제로 내는 두 문장 형태를 그대로 옮긴다 — 분류기는
+        # `[표 ID` 접두만 본다(regen_compare.classify_spec_diffs). 꼬리는
+        # 자유롭게 잘라도 된다.
+        diffs = [
+            "[표 ID 집합이 다르다] 원본에만 있는 ID [] / 재생성에만 있는 ID ['T10'] — …",
+            "[표 ID 가 어긋난 채 짝지어졌다] T2→T3 — …",
+        ]
+        got = classify_spec_diffs(diffs)
+        self.assertEqual(len(got["id_shift"]), 2, got)
+        for key in ("encoding", "title", "cell", "other"):
+            self.assertEqual(got[key], [], (key, got))
 
 
 class Judgment(unittest.TestCase):

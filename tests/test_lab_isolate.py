@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.isolate import build_isolated_tree, leak_scan, leak_tokens
+from scripts.lab.isolate import _DERIVED, build_isolated_tree, leak_scan, leak_tokens
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
@@ -94,8 +94,10 @@ class LeakScan(unittest.TestCase):
     def test_derived가_여러_줄로_이어져도_토큰을_뽑는다(self):
         # spec_parser._attrs() 는 들여쓴(2칸 이상) 줄을 앞 값에 이어 붙인다
         # (spec_parser.py:70-80). `derived (...)` 가 이 규칙으로 두 줄에 걸쳐
-        # 적혀도 leak_tokens 가 여전히 토큰을 뽑아야 한다 — source-of-truth
-        # 파서의 _DERIVED 처럼 re.S 없이 `$` 앵커가 줄바꿈 앞에서 끊기면 안 된다.
+        # 적혀도 leak_tokens 가 여전히 토큰을 뽑아야 한다 — 이어붙이기
+        # 회귀 테스트다. _attrs() 가 줄바꿈을 공백으로 눌러 붙이므로
+        # `_DERIVED` 가 re.S 없이도 이 입력에서는 통과한다 — re.S 자체를
+        # 재는 것은 아래 test_DERIVED_정규식은_줄바꿈을_건너_잡는다다.
         original = "- source: derived (X = A + (A'·B)' ; Y = A + B ; Z = (A'·B)')"
         wrapped = (
             "- source: derived (X = A + (A'·B)' ; Y = A + B ;\n"
@@ -111,3 +113,10 @@ class LeakScan(unittest.TestCase):
 
         toks = leak_tokens(tmp_spec)
         self.assertTrue(any(t.startswith("Y = A + B") for t in toks), toks)
+
+    def test_DERIVED_정규식은_줄바꿈을_건너_잡는다(self):
+        # 위 테스트는 spec_parser._attrs() 가 줄바꿈을 공백으로 눌러 붙이기
+        # 때문에 re.S 유무와 무관하게 통과한다 — re.S 가 실제로 관측되는
+        # 유일한 자리는 정규식 자체다. `.` 이 줄바꿈을 건너야 `search` 가
+        # 매치한다: re.S 없이 `.*` 는 `\n` 을 소비하지 않는다.
+        self.assertIsNotNone(_DERIVED.search("derived (A ;\nB)"))
