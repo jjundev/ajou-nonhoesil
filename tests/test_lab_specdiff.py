@@ -247,19 +247,19 @@ class CompareSpecs(unittest.TestCase):
 
     def test_derived_source_만_있는_명세도_밀림에서_오정렬되지_않는다(self):
         # 이 코퍼스의 절반이 `derived (...)` 다 — 실험03 은 4/4, 실험05 는
-        # 5/6, 실험01 은 5/9. `derived` 를 짝짓기 키에서 빼면 그 명세들에서
+        # 5/6, 실험01 은 5/10. `derived` 를 짝짓기 키에서 빼면 그 명세들에서
         # 오정렬이 그대로 남는다. 실측: 고치기 전 19건(셀 차이 8건), 진짜
         # 내용 오류는 0건이었다.
-        target = self._shifted(self.WEEK2, 2, 9)
+        target = self._shifted(self.WEEK2, 2, 10)
         diffs = compare_specs(self.WEEK2, target)
         cells = [d for d in diffs if "행" in d]
         self.assertEqual(cells, [], f"셀을 하나도 안 건드렸는데 차이가 났다: {cells}")
 
         # Critical 1 회귀 — 짝마다 한 줄이 아니라 요약 한 줄이어야 한다.
-        # 이 시나리오는 T2~T9 여덟 개가 전부 ID 가 어긋난 채 짝지어지는데
-        # (원본 T2→사본 T3, ..., 원본 T9→사본 T10), 짝마다 냈으면 8줄이
+        # 이 시나리오는 T2~T10 아홉 개가 전부 ID 가 어긋난 채 짝지어지는데
+        # (원본 T2→사본 T3, ..., 원본 T10→사본 T11), 짝마다 냈으면 9줄이
         # 늘었을 자리다. 실측(컨트롤러): 짝마다 내면 실험01 정당한 밀림에서
-        # 8줄이 늘고, 요약이면 1줄이다.
+        # 9줄이 늘고, 요약이면 1줄이다.
         shift_lines = [d for d in diffs if d.startswith("[표 ID 가 어긋난 채 짝지어졌다]")]
         self.assertEqual(len(shift_lines), 1, diffs)
         # I1 회귀(재리뷰 2). 이 시나리오는 표가 하나 늘어(ID 집합이
@@ -282,11 +282,11 @@ class CompareSpecs(unittest.TestCase):
         # 때문이다. 유일한 예외는 `_shifted` 가 새로 끼워 넣는 T2 다 —
         # 그 표의 source(`manual:p99`)는 원본 어디에도 없는 **정말 새
         # 표**라서(2번 갈래로 떨어진다: source 가 상대에 없다는 관측
-        # 사실을 말한다), 이 표만 빼고 나머지 T1·T3~T10 전부를 통틀어
+        # 사실을 말한다), 이 표만 빼고 나머지 T1·T3~T11 전부를 통틀어
         # 검사한다. 옛 필터(`d.startswith("표 T2:")`)처럼 검사 범위
         # 자체를 T2 하나로 좁히면 T4·T5 가 잘못 짝을 잃어도 못 잡으므로
         # 쓰지 않는다.
-        target = self._shifted(self.WEEK2, 2, 9)
+        target = self._shifted(self.WEEK2, 2, 10)
         diffs = compare_specs(self.WEEK2, target)
         # `_table_diffs` 가 짝을 못 지은 표에 내는 줄은 항상
         # "표 {id}: ..." 형태다(필드 차이 줄은 "표 {id} {field}: ..." 로
@@ -353,22 +353,22 @@ class CompareSpecs(unittest.TestCase):
     def test_derived_경로에서_밀림_속_진짜_오류가_묻히지_않는다(self):
         # Important 3. 기존 묵음 검증(브리프 Step 6·7)은 전부 실험06 위에서
         # 도는데, 실험06 의 표 다섯은 전부 `manual:pN` 이라 derived 키
-        # 경로를 한 번도 지나지 않는다. 이 테스트는 실험01(9개 중 5개가
-        # derived)을 `_shifted(2, 9)` 로 밀고, 밀려서 T4 가 되는 표
-        # (원래 T3, source `derived (Y = (A·B·C)')`, 3-input NAND)의
-        # 마지막 행 Y 값을 0→1 로 바꿔 진짜 오류를 심는다. source 는
+        # 경로를 한 번도 지나지 않는다. 이 테스트는 실험01(10개 중 5개가
+        # derived)을 `_shifted(2, 10)` 로 밀고, 밀려서 T4 가 되는 표
+        # (원래 T3, source `derived (L1 = A·B ; L2 = (A·B·C)')`, 3-input
+        # NAND)의 마지막 행 L2 값을 0→1 로 바꿔 진짜 오류를 심는다. source 는
         # 안 건드렸으니 T3↔T4 짝짓기는 그대로 유지돼야 하고, 오정렬
         # 소음이 사라졌다고 해서 이 셀 오류까지 함께 묻히면 안 된다.
-        target = self._shifted(self.WEEK2, 2, 9)
+        target = self._shifted(self.WEEK2, 2, 10)
         text = target.read_text(encoding="utf-8")
-        old, new = "| 1 | 1 | 1 | 0 |", "| 1 | 1 | 1 | 1 |"
+        old, new = "| 1 | 1 | 1 | 1  | 0  |", "| 1 | 1 | 1 | 1  | 1  |"
         self.assertEqual(
             text.count(old), 2,
             f"픽스처가 바뀌었다 — {old!r} 가 두 번 나와야 한다(NAND·NOR 표 각각 한 번)")
         target.write_text(text.replace(old, new, 1), encoding="utf-8")
 
         diffs = compare_specs(self.WEEK2, target)
-        hit = [d for d in diffs if d.startswith("표 T3→T4") and "Y" in d]
+        hit = [d for d in diffs if d.startswith("표 T3→T4") and "L2" in d]
         self.assertEqual(len(hit), 1, diffs)
         self.assertIn("'0'", hit[0])
         self.assertIn("'1'", hit[0])
@@ -430,7 +430,7 @@ class CompareSpecs(unittest.TestCase):
         # 판별할 수 없다. 그냥 "짝을 못 지었다"로만 찍으면 정말 새로
         # 추가된 표가 정렬 잡음처럼 읽힌다 — source 가 없어 판별 불가
         # 라는 사실 자체를 알려야 한다.
-        target = self._shifted(self.WEEK2, 2, 9)
+        target = self._shifted(self.WEEK2, 2, 10)
         text = target.read_text(encoding="utf-8")
         old = "- source: manual:p99\n"
         self.assertIn(old, text, "픽스처가 바뀌었다 — source 줄이 없다")
@@ -585,13 +585,15 @@ class UncoveredTablesTest(unittest.TestCase):
     WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
 
     def test_머리말에_표가_없는_명세는_그_이유로는_안_짚는다(self):
-        # I1 회귀. 컨트롤러 실측: 실험01·실험10 은 첫 `## T` 헤딩 앞에
-        # 마크다운 표가 0개다 — uncovered_tables 가 머리말 표 사유로
-        # 잘못 짚으면 안 된다. (실험10 은 capture 표(T1) 사유로 여전히
-        # 짚히므로, 여기서는 "머리말" 문구가 섞여 들지 않는지만 본다.)
+        # I1 회귀. 실험10 은 첫 `## T` 헤딩 앞에 마크다운 표가 0개다 —
+        # uncovered_tables 가 머리말 표 사유로 잘못 짚으면 안 된다.
+        # (실험10 은 capture 표(T1) 사유로 여전히 짚히므로, 여기서는
+        # "머리말" 문구가 섞여 들지 않는지만 본다.) 실험01 은 2026-09-07
+        # 이후 머리말에 토큰 규약표가 하나 있어 **그 사유로 정확히 한 번**
+        # 짚혀야 한다 — 양성 대조군이다.
         found_week2 = uncovered_tables(self.WEEK2)
-        self.assertEqual(found_week2, [],
-                         "실험01 은 capture 표도 머리말 표도 없어 빈 리스트여야 한다")
+        self.assertEqual(len(found_week2), 1, found_week2)
+        self.assertIn("머리말", found_week2[0])
 
         found_week12 = uncovered_tables(WEEK12)
         self.assertFalse(any("머리말" in f for f in found_week12), found_week12)
