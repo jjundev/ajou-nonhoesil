@@ -153,6 +153,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | `source` 부재 | 전부 | error |
 | 한 표 안에 같은 이름의 열이 둘 | 전부 | error (파서가 던진다) |
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
+| 교안 인용이 `source_manual` 텍스트 추출본에 없다 | `교안`·`강의노트` 가 같은 줄에 있는 큰따옴표 인용 | info (래스터면 오탐이라 막지 않는다) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
@@ -165,7 +166,10 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
-`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다.
+`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 교안 인용
+대조는 `check_manual_quotes`(info)가 맡는데, 이것 하나만 `validate_spec` 밖에
+있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
+가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다).
 `items[].tables` ↔ 본문 헤딩 일치 한 줄만은 이 목록에서도 예외라 두 파일에
 걸친다 — 항목이 없는 표를 가리키면 `spec_parser.parse_spec`이 파싱 단계에서
 막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의

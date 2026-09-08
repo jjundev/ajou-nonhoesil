@@ -1306,5 +1306,61 @@ class RefsValidation(unittest.TestCase):
             [f for f in self._findings("- refs: [T6]") if "refs" in f.message], [])
 
 
+class ManualQuotes(unittest.TestCase):
+    """교안을 인용한다고 주장하는 문장이 실제로 그 교안에 있는지 본다.
+
+    실험01 이 실물 근거다. 명세가 `source_manual` 을 2026-2 배포본으로 갈면서
+    산문은 아카이브 2020-2 판의 문장을 그대로 이고 갔고, 검사기 아홉 개가
+    전부 통과시켰다.
+    """
+
+    def test_교안에_있는_인용은_통과한다(self):
+        text = '교안 p11 의 "다이오드 연결 시, 330Ω 저항 필수" 박스를 따른다.\n'
+        manual = "3. 실험 방법 ※ 다이오드 연결 시, 330Ω 저항 필수\n"
+        self.assertEqual(validate.check_manual_quotes(text, manual, "명세.md"), [])
+
+    def test_교안에_없는_인용은_info_로_올라온다(self):
+        text = ('교안이 IC 를 지정하지 않고 "OR gate에 대한 IC 찾아서 수행" '
+                '이라고만 쓴다.\n')
+        manual = "실험 1-2) 3-input OR gate\n주어진 회로를 구성한다.\n"
+        found = validate.check_manual_quotes(text, manual, "명세.md")
+        self.assertEqual([f.level for f in found], ["info"])
+        self.assertIn("OR gate에 대한 IC 찾아서 수행", found[0].message)
+        self.assertEqual(found[0].where, "명세.md:1")
+
+    def test_교안을_안_가리키는_줄의_인용은_건너뛴다(self):
+        """자기 이전 판을 인용하는 문장까지 잡으면 오탐이 된다 — 실물이다."""
+        text = '이전에는 "표준 DIP-14 배치" 가정이었고 미확정 M1 이었다.\n'
+        self.assertEqual(validate.check_manual_quotes(text, "아무 내용", "결선도"), [])
+
+    def test_강의노트라고_불러도_검사한다(self):
+        text = '강의노트가 "없는 문장" 이라고 적는다.\n'
+        found = validate.check_manual_quotes(text, "다른 내용", "명세.md")
+        self.assertEqual([f.level for f in found], ["info"])
+
+    def test_공백_차이는_무시한다(self):
+        """`pdftotext -layout` 은 칸을 맞추려고 공백을 넣는다."""
+        text = '교안은 "5V 전압원" 만 적는다.\n'
+        manual = " - 5V    전압원\n"
+        self.assertEqual(validate.check_manual_quotes(text, manual, "명세.md"), [])
+
+    def test_백틱_안의_토큰은_인용이_아니다(self):
+        text = '교안이 `74HC32` 를 지정한다.\n'
+        self.assertEqual(validate.check_manual_quotes(text, "", "명세.md"), [])
+
+    def test_짧은_인용이_뒤_인용과_짝이_어긋나지_않는다(self):
+        """실물 오탐이었다 — `"5V"` 가 길이 미달로 밀리면서 그 닫는 따옴표가
+        다음 인용의 여는 따옴표로 붙어 `"를 언급할 뿐 "` 이 인용이 됐다.
+        짝을 먼저 맞추고 길이는 나중에 거른다."""
+        text = ('교안은 "5V"를 언급할 뿐 "전압원"이라는 표현은 p10 에만 있다.\n')
+        self.assertEqual(
+            validate.check_manual_quotes(text, "5V 전압원", "결선도"), [])
+
+    def test_교안_텍스트를_못_뽑았으면_아무것도_내지_않는다(self):
+        """래스터라 0 자가 나온 경우까지 없다고 단정하면 안 된다."""
+        text = '교안이 "없는 말" 이라고 쓴다.\n'
+        self.assertEqual(validate.check_manual_quotes(text, "", "명세.md"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -5,6 +5,7 @@
 """
 
 import re
+import subprocess
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -198,6 +199,67 @@ def check_diagnostic_claims(text, where) -> list:
                     f"{line.strip()[:60]}")
             for i, line in enumerate(text.split("\n"), start=1)
             if _DIAGNOSTIC.search(line)]
+
+
+# 교안을 인용한다고 주장하는 줄. `교안`·`강의노트` 가 같은 줄에 없으면
+# 자기 이전 판이나 데이터시트를 인용하는 것이라 검사 대상이 아니다.
+_MANUAL_WORD = re.compile(r"교안|강의노트")
+# 길이는 여기서 거르지 않는다 — 짧은 인용을 건너뛰면 그 닫는 따옴표가
+# 다음 인용의 여는 따옴표로 붙어 엉뚱한 조각이 인용으로 잡힌다.
+_QUOTE = re.compile(r"[\u201c\u201d\"]([^\u201c\u201d\"\n`]{1,80})[\u201c\u201d\"]")
+_QUOTE_MIN = 4
+
+
+def _squash(s: str) -> str:
+    return re.sub(r"\s+", "", s)
+
+
+def extract_manual_text(manual_path) -> str:
+    """교안 PDF 의 텍스트 층을 통째로 뽑는다. 못 뽑으면 빈 문자열이다.
+
+    빈 문자열이면 `check_manual_quotes` 가 아무것도 내지 않는다 — `pdftotext`
+    가 없는 환경에서 "교안에 그 문장이 없다" 로 오진하지 않기 위해서다.
+    """
+    try:
+        done = subprocess.run(["pdftotext", "-layout", str(manual_path), "-"],
+                              capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return done.stdout if done.returncode == 0 else ""
+
+
+def check_manual_quotes(text, manual_text, where) -> list:
+    """교안을 인용한다고 **주장하는** 큰따옴표 문장이 그 교안에 실재하는지 본다.
+
+    판본을 갈면서 산문만 옛 판에 남는 사고를 겨냥한다. 실험01 이 실물이다 —
+    `source_manual` 이 2026-2 배포본으로 바뀐 뒤에도 아카이브 2020-2 판의
+    `"OR gate에 대한 IC 찾아서 수행"` 이 산문에 남았고, 기존 검사기는
+    전부 통과시켰다. `source_manual` 은 파서가 필드로만 보고 내용은 아무도
+    안 읽었기 때문이다.
+
+    **`info` 만 낸다 — `error` 로 올리면 안 된다.** 교안의 회로도·기호가
+    래스터면 `pdftotext` 가 그 자리에서 0 자를 내놓으므로(§절대 규칙 3),
+    "추출본에 없다" 가 "교안에 없다" 를 뜻하지 않는다. 이 검사가 하는 일은
+    "교안을 다시 펴서 이 줄을 확인하라" 를 보이게 만드는 것뿐이다.
+    """
+    if not _squash(manual_text or ""):
+        return []
+    hay = _squash(manual_text)
+    out = []
+    for i, line in enumerate(text.split("\n"), start=1):
+        if not _MANUAL_WORD.search(line):
+            continue
+        for m in _QUOTE.finditer(line):
+            quoted = m.group(1).strip()
+            if len(_squash(quoted)) < _QUOTE_MIN:
+                continue
+            if _squash(quoted) not in hay:
+                out.append(Finding(
+                    "info", f"{where}:{i}",
+                    f"교안 인용인데 `source_manual` 텍스트 추출본에 그 문자열이 "
+                    f"없다 — 판본이 바뀐 자리인지 본다(래스터면 오탐이다): "
+                    f"\u201c{quoted}\u201d"))
+    return out
 
 
 def validate_spec(spec) -> list:
