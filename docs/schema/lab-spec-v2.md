@@ -18,7 +18,7 @@ Task 1 에서 실험1(truth-table)·실험10(capture + stepped)·실험6(심볼�
 |---|---|---|
 | `schema` | ● | `lab-spec/v2` 고정 |
 | `experiment` | ● | 정수 |
-| `title` | ● | 문자열 |
+| `title` | ● | 문자열. **교안 제목에서 `실험 N.` 번호를 뺀 이름**(`Basic Gates`). `config.document_title` 이 `실험N` 을 앞에 붙이므로 번호를 넣으면 이중이 된다 |
 | `source_manual` | ● | 교안 PDF 경로 (저장소 루트 기준 상대경로) |
 | `power` | ● | 전원 레일 이름 → 전압 문자열의 **열린 맵**. 회로가 실제로 쓰는 레일을 전부 싣는다 (예: `{VCC: "+5V", GND: "GND"}`, `{VCC: "+5V", V15: "+15V", GND: "GND"}`). 레일 이름에 고정 enum 은 없다 |
 | `items` | ● | 항목 리스트 |
@@ -79,7 +79,7 @@ T5 다 — T1~T5 재번호 금지 지시의 결과다). `items[].tables` 가 가
 | 필드 | 필수 | 값 |
 |---|---|---|
 | `kind` | ● | `truth-table` \| `stepped` \| `capture` — **표 단위 속성이다** (실험10 이 근거) |
-| `encoding` | `capture` 외 ● | `0/1` \| `H/L` — **표의 속성이다. 서로 변환하지 말 것** |
+| `encoding` | `capture` 외 ● | `0/1` \| `H/L` — **표의 속성이다. 서로 변환하지 말 것.** 교안 표는 원문 표기, 교안에 없어 부울식으로 채운 `derived` 표는 `0/1` (2026-09-08 결정) |
 | `source` | ● | `manual:p11` \| `derived (Y = A·B·C)` \| `past-report:2020` |
 | `expected` | `capture` 만 | 정성 서술 산문. 셀 표가 없는 표의 예상값이 여기 들어간다 |
 | `role` | 선택 | `record` \| `reference` — 생략하면 `record`이며, `source` 만으로는 가를 수 없는 참조표(`reference`)와 기록 대상(`record`)을 구분하기 위한 필드다 |
