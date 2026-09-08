@@ -24,6 +24,7 @@ REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
+HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
@@ -632,5 +633,32 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("커밋하지 않는다", sec)
 
 
+class HandDiagramSkill(unittest.TestCase):
+    def test_문서가_있다(self):
+        self.assertTrue(HAND.exists())
+
+    def test_출력_경로가_박혀_있다(self):
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn("output/손그림검토/round", text)
+
+    def test_폴더_가드가_거절보다_앞에_온다(self):
+        """실험 폴더가 없으면 만들지 않고 init-lab-experiment 로 보낸다."""
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn("init-lab-experiment", text)
+        self.assertLess(text.index("experiment_dir"),
+                        text.index("init-lab-experiment"))
+
+    def test_규칙_열세개가_전부_적혀_있다(self):
+        text = HAND.read_text(encoding="utf-8")
+        for n in range(1, 14):
+            self.assertIn(f"H{n}", text)
+
+    def test_전사를_사람이_한다고_적혀_있다(self):
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn("전사", text)
+        self.assertIn("uncertain", text)
+
+
 if __name__ == "__main__":
     unittest.main()
+
