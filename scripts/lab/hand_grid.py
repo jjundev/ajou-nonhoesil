@@ -230,8 +230,15 @@ def detect_grid(data):
     y0, y1 = int(h * 0.19), int(h * 0.965)
     x0, x1 = int(w * 0.02), int(w * 0.98)
 
+    span = x1 - x0
     row_prof = [sum(1 for x in range(x0, x1) if px[x, y] < 140)
                 for y in range(y0, y1)]
+    # 인쇄된 판형 테두리·구분선을 뺀다. 실측(2026-09-09): 홀 행은 폭의
+    # 0.29~0.33 까지만 어둡고 테두리는 0.70 이다. 0.45 는 그 사이다.
+    # **열 쪽은 이 방법을 못 쓴다** — 홀 열은 모든 행에 홀이 있어 세로로
+    # 0.95~1.0 까지 차서 인쇄된 레일선과 안 갈린다. 그래서 열은 폭으로 거른다
+    # (아래 `col_runs` 의 `r[1] - r[0] >= 4`).
+    row_prof = [v if v <= 0.45 * span else 0 for v in row_prof]
     rows = _merge_to_count(_runs(row_prof, max(row_prof) * 0.35),
                            EXPECTED_ROWS)
 

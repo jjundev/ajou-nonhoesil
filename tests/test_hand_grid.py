@@ -91,6 +91,50 @@ class Fit(unittest.TestCase):
         self.assertEqual(ys, sorted(ys))
 
 
+class BorderLine(unittest.TestCase):
+    """인쇄된 판형 테두리가 홀 행으로 잡히면 63행으로 안 모인다.
+
+    학생 PDF 에서 실제로 일어난 고장이다 — 아래 테두리 한 줄 때문에 구간이
+    94개로 튀었다. 그 PDF 는 저장소 밖에 있으므로 배포본에 같은 줄을 합성한다.
+    합성하지 않으면 이 필터는 배포본에서 무동작이라 시험대에 오르지 않는다.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.board = hand_grid.board_image(HANDOUT)
+        cls.clean_cols, cls.clean_rows = hand_grid.detect_grid(cls.board.data)
+
+    def _with_line(self, ratio=0.98):
+        """홀 행 **사이**에 폭 `ratio` 만큼 꽉 찬 검은 줄을 그은 래스터."""
+        import io
+        from PIL import Image, ImageDraw
+
+        im = Image.open(io.BytesIO(self.board.data)).convert("RGB")
+        w, _h = im.size
+        # 홀 행 두 개의 한가운데 — 진짜 행을 덮지 않는 자리다
+        y = int((self.clean_rows[-3] + self.clean_rows[-2]) / 2)
+        ImageDraw.Draw(im).rectangle(
+            [int(w * 0.02), y, int(w * ratio), y + 2], fill=(0, 0, 0))
+        buf = io.BytesIO()
+        im.save(buf, format="PNG")
+        return buf.getvalue()
+
+    def test_꽉_찬_가로줄이_있어도_63행_28열을_찾는다(self):
+        cols, rows = hand_grid.detect_grid(self._with_line())
+        self.assertEqual(len(rows), 63)
+        self.assertEqual(len(cols), 28)
+
+    def test_가로줄이_행_위치를_밀지_않는다(self):
+        """개수만 맞고 자리가 밀리면 맞춤 잔차가 관문을 넘는다."""
+        _cols, rows = hand_grid.detect_grid(self._with_line())
+        for clean, got in zip(self.clean_rows, rows):
+            self.assertLess(abs(clean - got), 1.0)
+
+    def test_홀_행은_거르지_않는다(self):
+        """홀 행의 어둠 비율은 0.33 을 넘지 않는다 — 문턱 0.45 아래다."""
+        self.assertEqual(len(self.clean_rows), 63)
+
+
 class Overlay(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
