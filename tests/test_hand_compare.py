@@ -485,6 +485,42 @@ class Rails(unittest.TestCase):
         self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H8'], [])
 
 
+class BridgeRows(unittest.TestCase):
+    """H9 는 행만 말하므로 행만 비교해야 한다."""
+
+    def _pair(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = hc.reference_diagram('e1_nand')
+        hand.signed = True
+        hand.title = '2-1 NAND Gate'
+        return ref, hand
+
+    def test_종류가_없어도_행이_같으면_조용하다(self):
+        """전사가 kind 를 빠뜨리면 '[29,30]인데 [29,30]이다' 가 나왔다."""
+        ref, hand = self._pair()
+        hand.bridges = [('', a, b) for _k, a, b in hand.bridges]
+        self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H9'], [])
+
+    def test_아래로_내려간_브리지에는_경고를_붙인다(self):
+        ref, hand = self._pair()
+        hand.bridges = [(k, (a[0], a[1], a[2] + 4), (b[0], b[1], b[2] + 4))
+                        for k, a, b in hand.bridges]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H9']
+        self.assertTrue(found)
+        self.assertIn('아래', found[0].message)
+        self.assertIn('[33, 34]', found[0].message)
+
+    def test_위로_올라간_브리지에는_경고를_안_붙인다(self):
+        """round2 는 28·29행인데 '30행 아래' 경고를 받았다."""
+        ref, hand = self._pair()
+        hand.bridges = [(k, (a[0], a[1], a[2] - 1), (b[0], b[1], b[2] - 1))
+                        for k, a, b in hand.bridges]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H9']
+        self.assertTrue(found)
+        self.assertNotIn('아래', found[0].message)
+        self.assertIn('영향이 없다', found[0].message)
+
+
 class Paperwork(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)

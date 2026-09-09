@@ -530,14 +530,20 @@ def check_placement(ref, hand):
                 f'참조는 pin 1 이 {rrow}행인데 손그림은 {hrow}행이다 '
                 f'({hrow - rrow:+d}행). 배선이 함께 옮겨져 있으면 회로는 맞다'))
 
-    rb = {(k, a[2]) for k, a, _b in ref.bridges}
-    hb = {(k, a[2]) for k, a, _b in hand.bridges}
+    # 메시지가 행만 말하므로 **행만 비교한다.** 종류까지 넣어 비교하면 전사가
+    # `kind` 를 빠뜨렸을 때 '[29,30]인데 [29,30]이다' 라는 자기모순이 나온다
+    rb = sorted({a[2] for _k, a, _b in ref.bridges})
+    hb = sorted({a[2] for _k, a, _b in hand.bridges})
     if rb and hb and rb != hb:
+        # 경고는 방향을 본다. round2 는 28·29행(참조보다 위)인데 '30행 아래'
+        # 경고를 받았다 — 맞지 않는 조언이다
+        below = max(hb) > max(rb)
+        tail = ('레일이 가운데서 끊긴 실물 보드라면 참조보다 아래 놓인 브리지는 '
+                '전원을 못 올린다' if below
+                else '도면상 같은 노드라 회로에는 영향이 없다')
         out.append(HandFinding(
             'H9', '표기', '레일 브리지',
-            f'참조는 {sorted(r for _k, r in rb)}행인데 손그림은 '
-            f'{sorted(r for _k, r in hb)}행이다. 도면상 같은 노드지만, '
-            '레일이 가운데서 끊긴 실물 보드라면 30행 아래 브리지는 전원을 못 올린다'))
+            f'참조는 {rb}행인데 손그림은 {hb}행이다. {tail}'))
     return out
 
 
