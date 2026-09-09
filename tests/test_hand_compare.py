@@ -174,6 +174,30 @@ class Reference(unittest.TestCase):
         self.assertNotIn('tag', w['resistors'][0])
         self.assertEqual(d.resistors[0]['tag'], 'L1')
 
+    def test_참조_배선에는_브리지가_없다(self):
+        """브리지가 wires 와 bridges 양쪽에 있으면 `check_holes` 가 같은 홀을
+        두 번 세어 H2 가 헛난다."""
+        ends = {frozenset((a, b)) for _k, a, b in self.nand.bridges}
+        self.assertTrue(ends)
+        for w in self.nand.wires:
+            if w['frm'][0] == 'hole' and w['to'][0] == 'hole':
+                self.assertNotIn(frozenset((w['frm'][1], w['to'][1])), ends)
+
+    def test_배선_설명_문구가_바뀌어도_브리지가_남는다(self):
+        """산문 대조를 쓰면 문구 한 글자에 참조 브리지가 통째로 사라지고,
+        폴백이 1행을 주어 회로마다 H1 치명이 4건 헛난다."""
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as t:
+            bb = hc.load_renderer().build_e1_nand(os.path.join(t, 'x.png'))
+        w = bb.wiring()
+        for x in w['wires']:
+            if x.get('desc') == '레일 브리지':
+                x['desc'] = '레일 브리지(전원 연결)'
+        d = hc._from_wiring(w, 'e1_nand')
+        self.assertEqual(len(d.bridges), 2)
+        self.assertEqual([f for f in hc.check_holes(d, d) if f.rule == 'H1'], [])
+
 
 class SelfCompare(unittest.TestCase):
     def test_참조를_그대로_손그림으로_넣으면_결함_0건(self):
@@ -408,7 +432,6 @@ class Rails(unittest.TestCase):
 
     def test_H8_브리지가_없으면_잡는다(self):
         ref, hand = self._pair()
-        hand.wires = [w for w in hand.wires if w.get('desc') != '레일 브리지']
         hand.bridges = []
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H8']
         self.assertTrue(found)

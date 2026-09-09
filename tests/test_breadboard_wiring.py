@@ -97,6 +97,17 @@ class Wiring(unittest.TestCase):
         self.assertIn(('gnd', 'gnd', 'mid_gnd'), pairs)
         self.assertIn(('vcc', 'vcc', 'mid_vcc'), pairs)
 
+    def test_레일_브리지가_실제로_꽂힌_행을_담는다(self):
+        """1행을 박아 두면 레일 빈 행이라 손그림 검토가 H1 을 헛낸다.
+
+        `_bridged` 는 중복 방지 키라 행이 없다. 행을 따로 기록해야 한다.
+        """
+        for kind, a, b in self.and_bb.wiring()['bridges']:
+            self.assertEqual(a[2], b[2], kind)
+            self.assertNotIn(a[2], self.mod.RAIL_GAP_ROWS)
+        rows = {k: a[2] for k, a, _b in self.and_bb.wiring()['bridges']}
+        self.assertEqual(rows, {'gnd': 29, 'vcc': 30})
+
     def test_칩이_둘인_회로는_둘_다_남는다(self):
         chips = self.nand_bb.wiring()['chips']
         self.assertEqual([c['label'] for c in chips], ['74HC08', '74HC00'])

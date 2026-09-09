@@ -111,6 +111,10 @@ class BreadboardRenderer:
         # 이미 그린 레일 브리지. 칩마다 connect_unused_inputs 를 부르면 같은
         # 레일쌍을 여러 번 잇게 되므로 한 번만 그린다
         self._bridged = set()
+        # 실제로 꽂힌 브리지. `_bridged` 는 중복 방지 키(kind, x, x)라 **행이 없다**.
+        # 행을 안 담으면 `wiring()` 이 1행을 주는데 1행은 레일 빈 행이라,
+        # 손그림 검토가 참조 브리지마다 H1 치명을 헛낸다
+        self.bridges = []
         # 어느 레일 스트립에 무엇이 닿았는지. 레일쌍 넷은 서로 **별개
         # 스트립**이라, +5V 를 한 레일에 넣고 칩 14번 핀을 다른 레일에 물리면
         # 그림은 멀쩡한데 전원이 안 간다. verify() 가 이걸로 잡는다
@@ -705,6 +709,7 @@ class BreadboardRenderer:
         self._bridged.add(key)
         row = self.free_rail_row(row, x_a, x_b)
         self._uf_union(x_a, x_b)
+        self.bridges.append((kind, self.sym(x_a, row), self.sym(x_b, row)))
         y = self.r_y(row)
         self.step_wire([(x_a, y), (x_b, y)], kind,
                        '레일 브리지',
@@ -945,8 +950,6 @@ class BreadboardRenderer:
         wires = [{'kind': kind, 'desc': desc,
                   'frm': endpoint(pts[0]), 'to': endpoint(pts[-1])}
                  for kind, pts, desc in self._segments]
-        bridges = [(kind, self.sym(a, 1), self.sym(b, 1))
-                   for kind, a, b in sorted(self._bridged)]
         return {
             'chips': list(self.chips),
             'wires': wires,
@@ -955,7 +958,7 @@ class BreadboardRenderer:
             'chains': list(self.led_chains),
             'unused_inputs': list(self.unused_inputs),
             'unused_outputs': list(self.unused_outputs),
-            'bridges': bridges,
+            'bridges': list(self.bridges),
             'overlaps': list(self.overlap_warnings),
         }
 

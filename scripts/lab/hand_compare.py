@@ -192,17 +192,19 @@ def reference_diagram(circuit_id):
 
 
 def _from_wiring(w, circuit_id):
-    """`wiring()` 출력 -> `Diagram`. 손그림 쪽과 같은 모양으로 맞춘다."""
-    bridges = []
-    wires = []
-    for x in w['wires']:
-        if x.get('desc') == '레일 브리지' and x['frm'][0] == 'hole' and x['to'][0] == 'hole':
-            bridges.append((x['kind'], x['frm'][1], x['to'][1]))
-        else:
-            wires.append(dict(x))
-    if not bridges:
-        bridges = [(kind, a, b) for kind, a, b in w['bridges']
-                   if a is not None and b is not None]
+    """`wiring()` 출력 -> `Diagram`. 손그림 쪽과 같은 모양으로 맞춘다.
+
+    브리지는 `wires` 에서 빼고 `bridges` 로만 보낸다 — 양쪽에 두면
+    `check_holes` 가 같은 홀을 두 번 세어 H2 가 헛난다. 거르는 기준은
+    **끝점 홀 쌍**이다. 배선 설명 문구로 맞추면 문구가 바뀔 때 조용히 깨지고,
+    그때 폴백이 1행짜리 브리지를 내어 H1 이 회로마다 4건 헛난다.
+    """
+    bridges = [(kind, a, b) for kind, a, b in w['bridges']
+               if a is not None and b is not None]
+    bridge_ends = {frozenset((a, b)) for _kind, a, b in bridges}
+    wires = [dict(x) for x in w['wires']
+             if not (x['frm'][0] == 'hole' and x['to'][0] == 'hole'
+                     and frozenset((x['frm'][1], x['to'][1])) in bridge_ends)]
     by_hole = {c['res_top']: c['tag'] for c in w['chains']}
     resistors = []
     for r in w['resistors']:
