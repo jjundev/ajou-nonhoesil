@@ -159,6 +159,8 @@ class PhysicalRules(unittest.TestCase):
         bb = self.board()
         c = bb.cols['left']
         bb.draw_chip('74HC04', 7)
+        # R3 만 보는 조각 보드다 — 핀을 하나도 안 물렸으니 R5 의 뜬 핀 검사는 끈다
+        bb.partial = True
         bb.step_wire([(c['b'], bb.r_y(10)), (c['mid_gnd'], bb.r_y(10))], 'mid', '칩 가로지르기')
         bb.verify()
 

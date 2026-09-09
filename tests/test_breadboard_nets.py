@@ -149,5 +149,87 @@ class CircuitNets(unittest.TestCase):
         self.assertEqual({'gnd'}, _net_of(bb, '74HC04#10 pin 5')['rails'])
 
 
+class R5(unittest.TestCase):
+    """넷 검사 자체. 합성 보드에 몇 줄만 그리고 `verify()` 를 부른다 —
+    파일을 쓰지 않아 빠르고, 어느 갈래가 잡았는지 메시지로 확인한다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def board(self):
+        bb = self.mod.BreadboardRenderer()
+        bb.enable_steps()
+        return bb
+
+    def test_같은_스트립_안에서_끝나는_점퍼는_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(20)), (c['d'], bb.r_y(20))], 'sig', '갈래')
+        with self.assertRaisesRegex(AssertionError, '같은 스트립'):
+            bb.verify()
+
+    def test_옆_행으로_가는_점퍼는_통과한다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(20)), (c['c'], bb.r_y(21))], 'sig', '갈래')
+        bb.verify()
+
+    def test_전원_두_레일이_한_넷이면_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['vcc'], bb.r_y(21)), (c['gnd'], bb.r_y(21))], 'vcc', '단락')
+        with self.assertRaisesRegex(AssertionError, '단락'):
+            bb.verify()
+
+    def test_아무_데도_안_물린_칩_핀은_막힌다(self):
+        bb = self.board()
+        bb.draw_chip('74HC08', 10)
+        with self.assertRaisesRegex(AssertionError, '뜬 핀'):
+            bb.verify()
+
+    def test_미사용_출력은_뜬_핀이_아니다(self):
+        bb = self.board()
+        bb.draw_chip('74HC08', 10)
+        bb.mark_unused_outputs([8], 10, chip='74HC08')
+        with self.assertRaises(AssertionError) as e:
+            bb.verify()
+        self.assertIn('74HC08#10 pin 1 이', str(e.exception))
+        self.assertNotIn('74HC08#10 pin 8 이', str(e.exception))
+
+    def test_계측기가_무는_핀은_뜬_핀이_아니다(self):
+        """실험02 인버터는 pin 1 에 함수발생기를, pin 2 에 프로브를 문다 —
+        점퍼가 없다고 뜬 것이 아니다."""
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC04', 10)
+        bb.instrument(c['a'], 10, '함수발생기', '체인 입력')
+        with self.assertRaises(AssertionError) as e:
+            bb.verify()
+        self.assertNotIn('74HC04#10 pin 1 이', str(e.exception))
+        self.assertIn('74HC04#10 pin 2 이', str(e.exception))
+
+    def test_덜_그린_그림은_뜬_핀만_봐준다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 10)
+        bb.partial = True
+        bb.verify()
+        bb.step_wire([(c['c'], bb.r_y(20)), (c['d'], bb.r_y(20))], 'sig', '갈래')
+        with self.assertRaisesRegex(AssertionError, '같은 스트립'):
+            bb.verify()
+
+    def test_모든_회로가_넷_검사를_통과한다(self):
+        """`export()` 안에서 `verify()` 가 돈다 — 렌더가 되면 통과한 것이다."""
+        import inspect
+        builders = {n: f for n, f in vars(self.mod).items()
+                    if n.startswith('build_') and not n.endswith('_all')
+                    and inspect.isfunction(f)}
+        self.assertEqual(len(builders), 13)
+        for name, fn in sorted(builders.items()):
+            with self.subTest(회로=name):
+                _render(self.mod, fn)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1110,7 +1110,16 @@ class BreadboardRenderer:
         R2  한 홀에는 리드 하나만 들어간다 — 점퍼·부품 다리·칩 핀 전부.
         R3  배선 끝점·부품 다리 위를 다른 배선이 지나가지 않는다 — 넷 무관.
         R4  서로 다른 배선이 같은 축 위에 포개지지 않는다 (`overlap_policy`).
+        R5  넷이 말이 된다 — 같은 스트립 안에서 끝나는 점퍼가 없고, +5V 와
+            GND 가 한 넷이 아니며, 아무 데도 안 물린 칩 핀이 없다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
+
+        R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
+        아무도 안 봤고, 그 틈으로 결함 둘이 지나갔다 — 복합 회로의 `우 a10 →
+        우 b10` 은 같은 스트립 안이라 아무 일도 안 하면서 74HC32 pin 1 을 뜬
+        채로 뒀고, 실험02 Rn 은 1kΩ 아랫다리가 pin 5 행에 앉아 +5V 를 GND 로
+        직결시켰다. 더 나쁜 것은 R3 를 통과시키려는 재배치가 첫 결함을 만들었고
+        검사는 오히려 통과로 바뀌었다는 점이다. 그래서 R5 를 넣었다.
         """
         bad = [f'홀이 아니다: {s}' for s in self._not_holes]
         bad += [f'한 홀에 리드 둘: {s}' for s in self._double]
@@ -1131,6 +1140,44 @@ class BreadboardRenderer:
                 print(f'[WARN] {msg}', file=sys.stderr)
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
+
+        # R5. 넷 검사. 여기까지는 전부 기하였다 — 그림대로 꽂을 수는 있지만
+        # 꽂아 봐야 회로가 아닌 그림을 여기서 잡는다
+        r5 = []
+        input_segs = {inp['seg'] for inp in self.inputs}
+        for i, (kind, pts, desc) in enumerate(self._segments):
+            if i in input_segs:
+                continue   # 입력 점퍼의 레일 끝은 가상 노드다 (`input_node()`)
+            a = self._strip(self.sym(pts[0][0], self._row_of(pts[0][1])))
+            b = self._strip(self.sym(pts[-1][0], self._row_of(pts[-1][1])))
+            if a is not None and a == b:
+                r5.append(f'같은 스트립 안에서 끝나는 점퍼(전기적으로 무의미): {desc}')
+
+        nets = self.nets()
+        for net in nets:
+            if {'vcc', 'gnd'} <= net['rails']:
+                r5.append('+5V 와 GND 가 한 넷이다 — 단락: '
+                          + ', '.join(sorted(net['labels'])))
+
+        # 뜬 핀. 미사용 출력(개방 NC)과 계측기가 무는 핀은 뺀다 — 실험02 는
+        # 점퍼가 아니라 프로브로 신호를 넣고 뺀다. 덜 그린 그림(`partial`)도 뺀다
+        probe_strips = {self._strip(p['sym']) for p in self.probes if p.get('sym')}
+        open_pins = {(u['block'], u['pin1_row'], u['pin']) for u in self.unused_outputs}
+        for ch in ([] if self.partial else self.chips):
+            for p, sym in ch['pins'].items():
+                if (ch['block'], ch['pin1_row'], p) in open_pins:
+                    continue
+                if self._strip(sym) in probe_strips:
+                    continue
+                lab = self._pin_label(ch, p)
+                for net in nets:
+                    if lab in net['labels']:
+                        if len(net['labels']) == 1:
+                            r5.append(f'{lab} 이 아무 데도 안 물렸다 — 뜬 핀')
+                        break
+
+        if r5:
+            raise AssertionError('넷이 틀렸다:\n  ' + '\n  '.join(r5))
 
         # 레일 연결성. 같은 전원을 나르는 레일들이 브리지로 이어져 있지
         # 않으면, 그림대로 꽂았을 때 전원이 안 간다. 눈으로는 절대 안 잡힌다 —
@@ -1422,10 +1469,13 @@ def build_e1_comb(output_path, template_path=None, stage=None):
     """
     bb = BreadboardRenderer(template_path)
     bb.enable_steps()
-    # 2026-09-08 까지는 포개짐 둘(우 a10~b10 검정/초록, 좌 g10~중앙GND10 초록/파랑)
-    # 때문에 경고 모드였다. 초록 Z 선이 10행 대신 11행으로 건너가면서 둘 다 사라져
-    # 다른 회로와 같은 엄격 모드다
+    # 2026-09-08 까지는 포개짐 둘(우 10행 갈래와 초록 Z 선, 좌 g10~중앙GND10
+    # 초록/파랑) 때문에 경고 모드였다. 초록 Z 선이 10행 대신 11행으로 건너가면서
+    # 둘 다 사라져 다른 회로와 같은 엄격 모드다
     st = 3 if stage is None else stage
+    # 1·2단계는 **일부러 덜 그린** 그림이다 — LED 도 미사용 핀 처리도 3단계에만
+    # 있으니 뜬 핀이 정상이다. R5 의 뜬 핀 갈래만 건너뛴다
+    bb.partial = st < 3
     title = {1: "실험 3: 복합 논리회로 — 1단계 (칩과 전원)",
              2: "실험 3: 복합 논리회로 — 2단계 (신호 배선까지)",
              3: "실험 3: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)" if stage is None
