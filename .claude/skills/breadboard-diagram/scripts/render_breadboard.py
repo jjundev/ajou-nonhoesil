@@ -88,6 +88,9 @@ PROBE = (105, 105, 110, 255)
 JACKS = {'red': 439, 'yellow': 603, 'gray': 766}
 JACK_BOTTOM = 160
 
+# 넷 라벨용 이름. 저장소가 한국어라 넷 판정문도 한국어로 나와야 한다
+JACK_KR = {'red': '빨강', 'yellow': '노랑', 'gray': '회색'}
+
 
 class BreadboardRenderer:
     def __init__(self, template_path=None):
@@ -149,6 +152,12 @@ class BreadboardRenderer:
         self.notes = []
         # 계측기·신호원 접점. 결선표와 섞지 않는다
         self.probes = []
+        # 입력 점퍼가 꽂힌 자리. 넷 검사가 레일 쪽 끝을 **가상 입력 노드**로
+        # 바꿔 세는 데 쓴다 — `input_node()` 주석 참조
+        self.inputs = []
+        # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). 뜬 핀 검사만
+        # 건너뛴다 — 같은 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
+        self.partial = False
         self.title = ""
         self.subtitle = ""
 
@@ -197,6 +206,15 @@ class BreadboardRenderer:
                 'gnd': 836, 'vcc': 852,
             },
         }
+        # 레일 x -> 어느 전원인가. 넷 검사가 +5V 와 GND 가 한 넷이 됐는지 볼 때
+        # 쓴다. 열 **이름**에서 뽑으므로 이 표가 유일한 권위라는 규칙을 지킨다
+        self._rail_kind = {}
+        for blk in self.cols.values():
+            for key, x in blk.items():
+                if 'gnd' in key:
+                    self._rail_kind[x] = 'gnd'
+                elif 'vcc' in key:
+                    self._rail_kind[x] = 'vcc'
 
     def r_y(self, r):
         return int(round(ROW0 + (r - 1) * ROW_PITCH))
@@ -508,7 +526,8 @@ class BreadboardRenderer:
         n = len(self.probes) + 1
         self.draw_badge(12, lane_y - 8, f'{n}. {label}', (248, 248, 250, 240), PROBE,
                         font=self.font_kr_sm, pad=2)
-        self.probes.append({'n': n, 'label': label, 'at': self.addr(x, y), 'desc': desc})
+        self.probes.append({'n': n, 'label': label, 'at': self.addr(x, y), 'desc': desc,
+                            'sym': self.sym(x, row)})
 
     def instrument_note(self, label, at, desc):
         """그림에 그릴 자리가 없는 접점(회로에 꽂기 전 저항 측정 등)."""
@@ -788,7 +807,8 @@ class BreadboardRenderer:
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
             self.lead(x_rail, self.r_y(r_rail), f'{chip} pin {p} 미사용 입력 접지선')
             self.touch_rail(rail, x_rail)
-            self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': rail})
+            self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': rail,
+                                       'block': block, 'pin1_row': start_row})
 
         pin_str = ", ".join(str(p) for p in pins)
         self.step_note(rail, f'{chip} pin {pin_str}',
@@ -811,7 +831,8 @@ class BreadboardRenderer:
         옮겨 그릴 것이 하나도 없는 문구가 정작 그릴 홀을 덮었다.
         """
         for p in pins:
-            self.unused_outputs.append({'chip': chip, 'pin': p})
+            self.unused_outputs.append({'chip': chip, 'pin': p,
+                                        'block': block, 'pin1_row': start_row})
         pin_str = ", ".join(str(p) for p in pins)
         self.note(f'{chip} 미사용 출력 pin {pin_str} 은 **아무 데도 연결하지 않는다** '
                   f'— 개방(NC). GND 로 내리거나 출력끼리 묶으면 칩이 상한다.')
@@ -962,6 +983,121 @@ class BreadboardRenderer:
             'overlaps': list(self.overlap_warnings),
         }
 
+    def input_node(self, name, x, row):
+        """**방금 그린 배선**을 입력 점퍼로 적어 둔다 (`_input_jumper` 가 부른다).
+
+        입력 점퍼는 지금 GND 레일에 꽂혀 있다 — 0 을 준 자리를 그린 것이고,
+        1 을 줄 때는 레일 쪽 끝만 VCC 레일로 옮긴다. 넷 검사가 이걸 레일
+        연결로 세면 입력 A·B·C 가 GND 와 한 넷이 되어 "pin 1 이 입력 A 에
+        물렸는가" 를 물을 수 없다. 그래서 그 끝을 가상 입력 노드로 바꿔 센다.
+        """
+        self.inputs.append({'name': name, 'at': self.sym(x, row),
+                            'seg': len(self._segments) - 1})
+
+    _AE = ('a', 'b', 'c', 'd', 'e')
+    _FJ = ('f', 'g', 'h', 'i', 'j')
+
+    def _strip(self, sym):
+        """기호 좌표 -> 스트립 키. **홀이 아니라 스트립이 넷의 단위다.**
+
+        단자대는 한 행의 a~e 가 한 스트립, f~j 가 또 한 스트립이다 (가운데
+        골이 갈라 놓는다). 전원 레일은 열 하나가 통째로 한 스트립이라 행이
+        없다 — 레일쌍 넷이 서로 별개 스트립인 것은 x 가 다르기 때문이다.
+        """
+        if sym is None:
+            return None
+        block, col, row = sym
+        if col in self._AE:
+            return (block, 'ae', row)
+        if col in self._FJ:
+            return (block, 'fj', row)
+        return ('rail', self.cols[block][col])
+
+    def _pin_label(self, ch, p):
+        """칩 핀의 넷 라벨. 한 그림에 같은 칩이 둘이면(`e2_tpd`) 행으로 갈린다."""
+        return f"{ch['label']}#{ch['pin1_row']} pin {p}"
+
+    def nets(self):
+        """그린 것을 **전기적 넷**으로 묶어 낸다.
+
+        -> `[{'labels': {'74HC32#10 pin 1', '입력 A', ...}, 'rails': {'vcc'}}, ...]`
+
+        `_leads` 는 홀 단위라 이 층위를 못 본다 — 같은 스트립의 다른 홀에 꽂은
+        두 점퍼는 홀이 다르지만 **전기적으로 한 점**이다. 2026-09-09 의 결함
+        둘이 정확히 그 틈으로 지나갔다.
+
+        `desc` 문자열은 읽지 않는다. `chips`·`leds`·`resistors`·`_segments`·
+        `inputs` 라는 **구조**만 읽는다 — 말이 바뀔 때 조용히 깨지지 않도록.
+        """
+        uf = {}
+
+        def find(k):
+            uf.setdefault(k, k)
+            while uf[k] != k:
+                uf[k] = uf[uf[k]]
+                k = uf[k]
+            return k
+
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                uf[rb] = ra
+
+        members = {}
+
+        def put(strip, label):
+            if strip is not None:
+                members.setdefault(strip, set()).add(label)
+                find(strip)
+
+        for ch in self.chips:
+            for p, sym in ch['pins'].items():
+                put(self._strip(sym), self._pin_label(ch, p))
+        for led in self.leds:
+            put(self._strip(led['anode']), f"LED {led['tag']} 애노드")
+            put(self._strip(led['cathode']), f"LED {led['tag']} 캐소드")
+        for i, r in enumerate(self.resistors, 1):
+            put(self._strip(r['top']), f"저항{i}({r['label']}) 윗다리")
+            put(self._strip(r['bottom']), f"저항{i}({r['label']}) 아랫다리")
+        for x, name in self._addr_map.items():
+            if x in self._rail_xs():
+                put(('rail', x), name)
+
+        # 입력 점퍼는 레일 쪽 끝을 가상 노드로 바꾼다 (`input_node()` 참조)
+        sub = {}
+        for inp in self.inputs:
+            sub[inp['seg']] = ('input', inp['name'])
+            put(('input', inp['name']), f"입력 {inp['name']}")
+
+        for i, (kind, pts, desc) in enumerate(self._segments):
+            ends = []
+            for p in (pts[0], pts[-1]):
+                if p[1] < 240 and any(abs(p[0] - jx) < 30 for jx in JACKS.values()):
+                    color = min(JACKS, key=lambda k: abs(JACKS[k] - p[0]))
+                    ends.append(('jack', color))
+                    put(('jack', color), f'{JACK_KR[color]} 잭')
+                else:
+                    ends.append(self._strip(self.sym(p[0], self._row_of(p[1]))))
+            if i in sub:
+                ends = [sub[i] if e is not None and e[0] == 'rail' else e for e in ends]
+            if ends[0] is None or ends[1] is None:
+                continue   # 홀이 아닌 끝점은 R1 이 따로 잡는다
+            union(ends[0], ends[1])
+
+        groups = {}
+        for strip in list(uf):
+            groups.setdefault(find(strip), []).append(strip)
+        out = []
+        for strips in groups.values():
+            labels = set()
+            rails = set()
+            for st in strips:
+                labels |= members.get(st, set())
+                if st[0] == 'rail':
+                    rails.add(self._rail_kind.get(st[1]))
+            out.append({'labels': labels, 'rails': rails - {None}})
+        return out
+
     def verify(self):
         """그림대로 꽂을 수 있는지 검사한다. 내보내기 직전에 돈다.
 
@@ -1063,6 +1199,7 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c[col], bb.r_y(row))], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
                  marker_at=(marker[0], bb.r_y(row) + marker[1]))
+    bb.input_node(name, c[col], row)
     _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
 
 
