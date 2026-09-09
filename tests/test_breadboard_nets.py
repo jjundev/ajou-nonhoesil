@@ -121,6 +121,33 @@ class CircuitNets(unittest.TestCase):
         self.assertIn('LED X 애노드', _net_of(bb, '74HC32#10 pin 3')['labels'])
         self.assertNotIn('LED X 애노드', z)
 
+    def test_Rn_은_전원이_단락되지_않는다(self):
+        """2026-09-09 까지 1kΩ 아랫다리가 pin 5 행(14행)에 앉았다. 그 스트립에
+        `R1 반대쪽 -> +5V` 점퍼와 pin 5 접지선이 함께 꽂혀 +5V 가 GND 로
+        직결됐다 — 그림대로 꽂으면 전원장치가 나간다."""
+        bb = _render(self.mod, self.mod.build_e2_rn)
+        for net in bb.nets():
+            self.assertNotEqual({'vcc', 'gnd'}, net['rails'], sorted(net['labels']))
+
+    def test_Rn_과_Rp_의_저항은_pin_2_에만_물린다(self):
+        """부품 다리가 칩 행에 앉으면 그 핀이 저항 반대쪽 전원에 끌려간다.
+        칩은 10~16행을 다 쓰므로 저항은 칩 행 **밖**으로 나가야 한다."""
+        for name in ('build_e2_rn', 'build_e2_rp'):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, getattr(self.mod, name))
+                chip = bb.chips[0]
+                r = bb.resistors[0]
+                pin_strips = {bb._strip(s) for s in chip['pins'].values()}
+                self.assertEqual(bb._strip(chip['pins'][2]), bb._strip(r['bottom']))
+                self.assertNotIn(bb._strip(r['top']), pin_strips)
+
+    def test_Rn_은_넷리스트대로_물린다(self):
+        """netlist C3: R1 한쪽 → VCC, 다른 쪽 → pin 2. 미사용 입력 pin 5 → GND."""
+        bb = _render(self.mod, self.mod.build_e2_rn)
+        self.assertIn('저항1(1kΩ) 아랫다리', _net_of(bb, '74HC04#10 pin 2')['labels'])
+        self.assertEqual({'vcc'}, _net_of(bb, '저항1(1kΩ) 윗다리')['rails'])
+        self.assertEqual({'gnd'}, _net_of(bb, '74HC04#10 pin 5')['rails'])
+
 
 if __name__ == '__main__':
     unittest.main()

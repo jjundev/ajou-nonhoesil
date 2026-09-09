@@ -1665,22 +1665,29 @@ def _build_e2_dc(output_path, template_path, mode):
     _e2_power(bb)
     bb.connect_power(r)
 
-    # pin 1 을 레일에 직결한다. CMOS 입력은 전류를 거의 안 먹으므로 저항이 필요없다
-    x_rail = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['b'], 'left')
-    bb.step_wire([(c['b'], bb.r_y(r)), (x_rail, bb.r_y(bb.free_rail_row(r, x_rail)))], rail,
+    # pin 1 을 레일에 직결한다. CMOS 입력은 전류를 거의 안 먹으므로 저항이 필요없다.
+    # **a열에서** 뽑는다 — b열은 R1 이 칩 위로 올라가며 지나간다
+    x_rail = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
+    bb.step_wire([(c['a'], bb.r_y(r)), (x_rail, bb.r_y(bb.free_rail_row(r, x_rail)))], rail,
                  f"pin 1 -> {'+5V' if rn else 'GND'} 직결 "
                  f"(입력 {'HIGH' if rn else 'LOW'} -> 출력 {'LOW' if rn else 'HIGH'} 고정)",
                  marker_at=(c['b'] - 30, bb.r_y(r) - 12))
 
-    # R1 = 1kΩ. pin 2 가 있는 행(a~e 는 한 줄이 한 노드다)에서 아래로 내린다
-    bb.draw_resistor(c['a'], bb.r_y(r + 1), bb.r_y(r + 4), label="1kΩ")
-    bb.step_note('sig', bb.addr(c['a'], bb.r_y(r + 1)), bb.addr(c['a'], bb.r_y(r + 4)),
-                 'R1 = 1kΩ 꽂기 (pin 2 와 같은 행에서 시작)',
-                 marker_at=(c['a'] - 22, (bb.r_y(r + 1) + bb.r_y(r + 4)) // 2))
+    # R1 = 1kΩ. 아랫다리는 pin 2 행(a~e 는 한 줄이 한 노드다), 윗다리는 **칩 위
+    # 빈 행**(r-2 = 8행)이다. 2026-09-09 까지 아랫다리가 r+4 = 14행에 있었는데
+    # 그 행은 pin 5 다 — 같은 스트립에 R1 반대쪽 전원 점퍼와 pin 5 접지선이
+    # 함께 꽂혀 Rn 에서 +5V 가 GND 로 직결됐다. 칩은 10~16행을 다 쓰므로
+    # 저항은 칩 행 **밖**으로 나가야 한다.
+    # 저항이 b열인 이유: 레일이 왼쪽이라 b열에서 레일로 가는 점퍼가 a열 홀 위를
+    # 지난다. 다리를 a에 두면 그 점퍼가 다리 위를 지나 R3 다 (`led_chain` 과 같은 규칙)
+    bb.draw_resistor(c['b'], bb.r_y(r - 2), bb.r_y(r + 1), label="1kΩ")
+    bb.step_note('sig', bb.addr(c['b'], bb.r_y(r + 1)), bb.addr(c['b'], bb.r_y(r - 2)),
+                 'R1 = 1kΩ 꽂기 (pin 2 와 같은 행에서 시작해 칩 위 빈 행으로)',
+                 marker_at=(c['c'], (bb.r_y(r - 2) + bb.r_y(r + 1)) // 2))
     x_far = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
-    bb.step_wire([(c['b'], bb.r_y(r + 4)), (x_far, bb.r_y(bb.free_rail_row(r + 4, x_far)))], rail,
+    bb.step_wire([(c['a'], bb.r_y(r - 2)), (x_far, bb.r_y(bb.free_rail_row(r - 2, x_far)))], rail,
                  f"R1 반대쪽 -> {'+5V' if rn else 'GND'} 레일",
-                 marker_at=(c['a'] - 30, bb.r_y(r + 4) + 10))
+                 marker_at=(c['a'] - 30, bb.r_y(r - 2) + 10))
 
     _e2_unused(bb, r, '74HC04')
 
