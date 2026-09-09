@@ -219,6 +219,43 @@ class R5(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, '같은 스트립'):
             bb.verify()
 
+    def test_양끝이_빈_스트립인_부품_다리는_막힌다(self):
+        """뜬 핀만 보던 시절, 허공에 걸친 저항은 어떤 규칙도 안 봤다. 그림대로
+        꽂으면 부하가 안 달린 채로 V_OL 을 재게 되고 **실험실에서는 아무 이상이
+        없어 보인다** — 눈으로도 계측으로도 안 잡히는 자리다."""
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_resistor(c['c'], bb.r_y(21), bb.r_y(24), label="1kΩ")
+        with self.assertRaises(AssertionError) as e:
+            bb.verify()
+        self.assertIn('저항1(1kΩ) 윗다리 가 아무 데도 안 물렸다 — 뜬 다리', str(e.exception))
+        self.assertIn('저항1(1kΩ) 아랫다리 가 아무 데도 안 물렸다 — 뜬 다리', str(e.exception))
+
+        # 아랫다리를 레일에 물리면 그 다리는 더 이상 뜨지 않는다
+        bb.step_wire([(c['a'], bb.r_y(24)), (c['gnd'], bb.r_y(24))], 'gnd', '아랫다리 -> GND')
+        with self.assertRaises(AssertionError) as e:
+            bb.verify()
+        self.assertNotIn('아랫다리 가', str(e.exception))
+        self.assertIn('윗다리 가', str(e.exception))
+
+        # 윗다리까지 물리면 통과한다 — 짝이 붙은 다리는 넷에 라벨이 둘 이상이다
+        bb.step_wire([(c['a'], bb.r_y(21)), (c['gnd'], bb.r_y(21))], 'gnd', '윗다리 -> GND')
+        bb.verify()
+
+    def test_입력_점퍼가_꽂힌_스트립이_VCC_에_물리면_단락이다(self):
+        """입력 점퍼의 레일 끝은 라벨 판정에서만 가상 노드다. 그림에 그려진
+        배선은 GND 레일에 실제로 꽂혀 있으므로, 그 스트립이 VCC 에도 물리면
+        그림 그대로가 GND↔VCC 직결이다 — 치환한 넷에서는 안 보인다."""
+        bb = self.board()
+        c = bb.cols['left']
+        self.mod._input_jumper(bb, c, 20, 'A', '어딘가')
+        # 같은 스트립(좌 a~e 20행)에서 VCC 로. 가로선이 입력선 끝점 b20 위를
+        # 지나지 않도록 d 열에서 세로로 빠져나간 뒤 17행에서 레일로 간다
+        bb.step_wire([(c['d'], bb.r_y(20)), (c['d'], bb.r_y(17)), (c['vcc'], bb.r_y(17))],
+                     'vcc', '입력 스트립 -> +5V')
+        with self.assertRaisesRegex(AssertionError, '단락'):
+            bb.verify()
+
     def test_모든_회로가_넷_검사를_통과한다(self):
         """`export()` 안에서 `verify()` 가 돈다 — 렌더가 되면 통과한 것이다."""
         import inspect

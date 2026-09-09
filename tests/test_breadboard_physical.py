@@ -215,6 +215,9 @@ class PhysicalRules(unittest.TestCase):
     def test_LED_사슬은_다리마다_다른_홀을_쓴다(self):
         bb = self.board()
         c = bb.cols['left']
+        # 이 판은 **일부러 덜 그린 조각**이다 — c15 에 칩이 없어 신호선 반대쪽이
+        # 빈 스트립이다. R5 의 '아무 데도 안 물렸다' 갈래만 뺀다 (R1~R4 는 다 돈다)
+        bb.partial = True
         bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(24))], 'sig', '출력 -> L2')
         bb.led_chain(c['c'], 24, 'L2', '최종 출력')
         bb.verify()
@@ -231,6 +234,7 @@ class PhysicalRules(unittest.TestCase):
     def test_오른쪽_끝_열의_LED_사슬은_왼쪽으로_자란다(self):
         bb = self.board()
         c = bb.cols['right']
+        bb.partial = True   # 위와 같은 조각 판이다 — d12 에 칩이 없다
         bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(22))], 'sig', 'pin 3 -> X')
         bb.led_chain(c['d'], 22, 'X', 'X 출력', block='right')
         bb.verify()

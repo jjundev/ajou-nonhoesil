@@ -143,9 +143,9 @@ class BreadboardRenderer:
         self._segments = []
         self.overlap_policy = 'strict'
         self.overlap_warnings = []
-        # 번호 매기기는 e1 계열(손스케치용 원도)만 켠다. e2 빌더들은 아직
-        # 옛 API(draw_wire) 를 쓰므로 순서표가 반쪽이 된다 — 반쪽 표는 없는
-        # 것보다 나쁘다
+        # 결선 순서표와 번호 원을 켜는 스위치. **지금은 13장 빌더가 전부 켠다** —
+        # e1 계열도 e2 계열도 `enable_steps()` + `step_wire()` 에 네 색 팔레트(`WIRE`)를
+        # 쓴다. 옛 `draw_wire()` 를 쓰는 빌더는 하나도 없다 (2026-09-10 확인)
         self.numbered = False
         # 보드 밖으로 뺀 규칙 문구. 배선이 아니라 배선의 *이유* 라서 손으로
         # 옮겨 그릴 대상이 아니다 — 보드 위에 두면 그릴 홀만 가린다
@@ -155,8 +155,9 @@ class BreadboardRenderer:
         # 입력 점퍼가 꽂힌 자리. 넷 검사가 레일 쪽 끝을 **가상 입력 노드**로
         # 바꿔 세는 데 쓴다 — `input_node()` 주석 참조
         self.inputs = []
-        # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). 뜬 핀 검사만
-        # 건너뛴다 — 같은 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
+        # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
+        # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
+        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
         self.partial = False
         self.title = ""
         self.subtitle = ""
@@ -494,7 +495,13 @@ class BreadboardRenderer:
         self.draw.text((x, y), text, fill=text_col, font=font)
 
     def draw_wire(self, points, color, width=3):
-        """번호 없는 생짜 배선. e2 빌더들이 아직 이걸 쓴다."""
+        """번호 없는 생짜 배선. **지금 이 함수를 부르는 빌더는 하나도 없다.**
+
+        `_segments` 에도 `_leads` 에도 아무것도 남기지 않는다 — 그래서 이걸로 그린
+        선은 `verify()` 를 통째로 우회한다. 끝점이 홀인지(R1), 한 홀에 리드가
+        둘인지(R2), 다른 배선 아래 깔리는지(R3·R4), 무엇과 무엇을 잇는지(R5)
+        아무도 보지 않는다. 순서표에도 안 오른다. `step_wire()` 를 써라.
+        """
         self.draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
@@ -863,8 +870,8 @@ class BreadboardRenderer:
         d.line([(x_pad, y0), (998 - x_pad, y0)], fill=(190, 195, 200, 255), width=1)
         y = y0 + 14
 
-        # 색 규칙 범례는 넷으로 고정된 그림에만. e2 빌더들은 아직 옛 팔레트를
-        # 쓰므로 범례를 붙이면 거짓말이 된다
+        # 색 규칙 범례는 순서표를 켠 그림에만 붙인다. 지금은 13장 빌더가 전부
+        # 켜므로 전부 붙고, 전부 참이다 — e1·e2 가릴 것 없이 `WIRE` 네 색만 쓴다
         if self.numbered:
             d.text((x_pad, y), "배선 색 규칙", fill=(20, 40, 90, 255), font=self.font_kr_bold)
             x = x_pad + 84
@@ -990,9 +997,21 @@ class BreadboardRenderer:
         1 을 줄 때는 레일 쪽 끝만 VCC 레일로 옮긴다. 넷 검사가 이걸 레일
         연결로 세면 입력 A·B·C 가 GND 와 한 넷이 되어 "pin 1 이 입력 A 에
         물렸는가" 를 물을 수 없다. 그래서 그 끝을 가상 입력 노드로 바꿔 센다.
+
+        넷을 정하는 것은 `seg` 하나다. `x`·`row` 는 좌표를 뜻하는 인자가 아니라
+        **직전 세그먼트가 정말 그 홀에서 끝났는지 확인하는 단언**이다 — "이
+        함수는 `step_wire()` 바로 뒤에 온다" 는 관례를 여기서 강제한다. 관례로
+        두면 사이에 배선 한 줄이 끼는 순간 엉뚱한 세그먼트의 끝이 가상 노드로
+        바뀌고, 그림은 멀쩡하게 나온다.
         """
-        self.inputs.append({'name': name, 'at': self.sym(x, row),
-                            'seg': len(self._segments) - 1})
+        seg = len(self._segments) - 1
+        assert seg >= 0, f'input_node({name}) 앞에 step_wire() 가 없다'
+        ex, ey = self._segments[seg][1][-1]
+        end, here = self.sym(ex, self._row_of(ey)), self.sym(x, row)
+        assert end == here, (
+            f'input_node({name}) 이 가리키는 홀 {here} 이 직전 배선의 끝점 {end} 과 '
+            f'다르다 — input_node() 는 그 입력 점퍼를 그린 step_wire() 바로 뒤에 와야 한다')
+        self.inputs.append({'name': name, 'at': here, 'seg': seg})
 
     _AE = ('a', 'b', 'c', 'd', 'e')
     _FJ = ('f', 'g', 'h', 'i', 'j')
@@ -1017,7 +1036,22 @@ class BreadboardRenderer:
         """칩 핀의 넷 라벨. 한 그림에 같은 칩이 둘이면(`e2_tpd`) 행으로 갈린다."""
         return f"{ch['label']}#{ch['pin1_row']} pin {p}"
 
-    def nets(self):
+    def _lead_labels(self):
+        """부품 다리의 (넷 라벨, 기호 좌표) 목록. LED 두 다리, 저항 두 다리.
+
+        `nets()` 와 R5ⓒ 가 **같은 말**을 써야 해서 한 자리에 둔다 — 한쪽만
+        고치면 "뜬 다리" 판정이 자기 라벨을 넷에서 못 찾고 조용히 넘어간다.
+        """
+        out = []
+        for led in self.leds:
+            out.append((f"LED {led['tag']} 애노드", led['anode']))
+            out.append((f"LED {led['tag']} 캐소드", led['cathode']))
+        for i, r in enumerate(self.resistors, 1):
+            out.append((f"저항{i}({r['label']}) 윗다리", r['top']))
+            out.append((f"저항{i}({r['label']}) 아랫다리", r['bottom']))
+        return out
+
+    def nets(self, substitute_inputs=True):
         """그린 것을 **전기적 넷**으로 묶어 낸다.
 
         -> `[{'labels': {'74HC32#10 pin 1', '입력 A', ...}, 'rails': {'vcc'}}, ...]`
@@ -1028,6 +1062,11 @@ class BreadboardRenderer:
 
         `desc` 문자열은 읽지 않는다. `chips`·`leds`·`resistors`·`_segments`·
         `inputs` 라는 **구조**만 읽는다 — 말이 바뀔 때 조용히 깨지지 않도록.
+
+        `substitute_inputs=False` 면 입력 점퍼의 레일 끝을 **치환하지 않는다.**
+        치환된 넷은 "무엇이 무엇에 물렸는가" 를 묻기 위한 것이라 그 배선이 실재로
+        잇고 있는 레일을 지운다 — 그림 그대로 꽂았을 때의 단락(R5ⓑ)은 지우지
+        않은 넷에서만 보인다. 라벨·뜬 핀 판정은 치환한 넷을 쓴다.
         """
         uf = {}
 
@@ -1053,21 +1092,19 @@ class BreadboardRenderer:
         for ch in self.chips:
             for p, sym in ch['pins'].items():
                 put(self._strip(sym), self._pin_label(ch, p))
-        for led in self.leds:
-            put(self._strip(led['anode']), f"LED {led['tag']} 애노드")
-            put(self._strip(led['cathode']), f"LED {led['tag']} 캐소드")
-        for i, r in enumerate(self.resistors, 1):
-            put(self._strip(r['top']), f"저항{i}({r['label']}) 윗다리")
-            put(self._strip(r['bottom']), f"저항{i}({r['label']}) 아랫다리")
+        for label, sym in self._lead_labels():
+            put(self._strip(sym), label)
         for x, name in self._addr_map.items():
             if x in self._rail_xs():
                 put(('rail', x), name)
 
-        # 입력 점퍼는 레일 쪽 끝을 가상 노드로 바꾼다 (`input_node()` 참조)
+        # 입력 점퍼는 레일 쪽 끝을 가상 노드로 바꾼다 (`input_node()` 참조).
+        # 끄면 그린 그대로 — 레일 끝이 레일로 남는다
         sub = {}
-        for inp in self.inputs:
-            sub[inp['seg']] = ('input', inp['name'])
-            put(('input', inp['name']), f"입력 {inp['name']}")
+        if substitute_inputs:
+            for inp in self.inputs:
+                sub[inp['seg']] = ('input', inp['name'])
+                put(('input', inp['name']), f"입력 {inp['name']}")
 
         for i, (kind, pts, desc) in enumerate(self._segments):
             ends = []
@@ -1111,7 +1148,8 @@ class BreadboardRenderer:
         R3  배선 끝점·부품 다리 위를 다른 배선이 지나가지 않는다 — 넷 무관.
         R4  서로 다른 배선이 같은 축 위에 포개지지 않는다 (`overlap_policy`).
         R5  넷이 말이 된다 — 같은 스트립 안에서 끝나는 점퍼가 없고, +5V 와
-            GND 가 한 넷이 아니며, 아무 데도 안 물린 칩 핀이 없다.
+            GND 가 한 넷이 아니며(치환하지 않은 넷에서 본다), 아무 데도 안 물린
+            칩 핀도 부품 다리도 없다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1154,27 +1192,49 @@ class BreadboardRenderer:
                 r5.append(f'같은 스트립 안에서 끝나는 점퍼(전기적으로 무의미): {desc}')
 
         nets = self.nets()
-        for net in nets:
+        # 단락만은 **치환하지 않은 넷**에서 본다. 입력 점퍼가 지금 꽂혀 있는
+        # 레일은 가상 노드가 아니라 실재 배선이다 — 그 점퍼가 꽂힌 스트립이
+        # 이미 VCC 에 물려 있으면 그림 그대로가 GND↔VCC 직결인데, 치환한 넷에서는
+        # 그 레일이 지워져 아무 일도 없어 보인다
+        for net in self.nets(substitute_inputs=False):
             if {'vcc', 'gnd'} <= net['rails']:
                 r5.append('+5V 와 GND 가 한 넷이다 — 단락: '
                           + ', '.join(sorted(net['labels'])))
 
-        # 뜬 핀. 미사용 출력(개방 NC)과 계측기가 무는 핀은 뺀다 — 실험02 는
-        # 점퍼가 아니라 프로브로 신호를 넣고 뺀다. 덜 그린 그림(`partial`)도 뺀다
+        # 아무 데도 안 물린 것. 넷에 자기 라벨 하나뿐이면 그림에는 있으되
+        # 회로에는 없다. 미사용 출력(개방 NC)과 계측기가 무는 자리는 뺀다 —
+        # 실험02 는 점퍼가 아니라 프로브로 신호를 넣고 뺀다. 덜 그린
+        # 그림(`partial`)도 통째로 뺀다: 칩 핀도 부품 다리도 아직 안 붙었을 수 있다
         probe_strips = {self._strip(p['sym']) for p in self.probes if p.get('sym')}
+        # 면제 키에 **칩 라벨이 없다.** 넣으면 `build_e2_tpd` 가 깨진다 — 거기서
+        # `draw_chip` 라벨은 '74HC04' 인데 `mark_unused_outputs(chip='U2')` 라
+        # 키가 어긋나고, U2 의 미사용 출력 6개가 전부 뜬 핀 오탐이 된다.
+        # 그리고 "같은 블록·같은 pin1_row 에 칩 둘은 없다" 는 것은 관례가 아니라
+        # **R2 가 강제한다** — 그렇게 두면 `draw_chip` 이 e·f 열 홀에 리드를 둘씩
+        # 꽂아 `_double` 에 걸리고, 그건 R5 보다 먼저 던진다
         open_pins = {(u['block'], u['pin1_row'], u['pin']) for u in self.unused_outputs}
-        for ch in ([] if self.partial else self.chips):
-            for p, sym in ch['pins'].items():
-                if (ch['block'], ch['pin1_row'], p) in open_pins:
-                    continue
-                if self._strip(sym) in probe_strips:
-                    continue
-                lab = self._pin_label(ch, p)
-                for net in nets:
-                    if lab in net['labels']:
-                        if len(net['labels']) == 1:
-                            r5.append(f'{lab} 이 아무 데도 안 물렸다 — 뜬 핀')
-                        break
+        # (라벨, 스트립, 조사, 무엇이라 부를지). 칩 핀만 보던 것을 부품 다리까지 넓혔다 —
+        # 양끝이 다 빈 스트립에 걸친 저항은 아무 규칙도 안 보고 지나갔고, 그림대로
+        # 꽂으면 무부하 V_OL 을 재게 되는데 **실험실에서는 아무 이상이 없어 보인다.**
+        # 짝이 있는 다리는 넷에 라벨이 둘 이상이라(예: {저항1(1kΩ) 윗다리, 좌
+        # VCC레일}) 오탐이 나지 않는다
+        checked = []
+        if not self.partial:
+            for ch in self.chips:
+                for p, sym in ch['pins'].items():
+                    if (ch['block'], ch['pin1_row'], p) in open_pins:
+                        continue
+                    checked.append((self._pin_label(ch, p), self._strip(sym), '이', '뜬 핀'))
+            for label, sym in self._lead_labels():
+                checked.append((label, self._strip(sym), '가', '뜬 다리'))
+        for lab, strip, josa, what in checked:
+            if strip in probe_strips:
+                continue
+            for net in nets:
+                if lab in net['labels']:
+                    if len(net['labels']) == 1:
+                        r5.append(f'{lab} {josa} 아무 데도 안 물렸다 — {what}')
+                    break
 
         if r5:
             raise AssertionError('넷이 틀렸다:\n  ' + '\n  '.join(r5))
