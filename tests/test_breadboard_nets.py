@@ -96,5 +96,31 @@ class NetModel(unittest.TestCase):
         self.assertNotIn('좌 GND레일', net['labels'])
 
 
+class CircuitNets(unittest.TestCase):
+    """회로마다 넷리스트가 약속한 대로 물렸는가. 정답의 권위는
+    `보고서/실험01/결선도/netlist.md` 와 실험02 넷리스트다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_복합_74HC32_pin_1_이_입력_A_와_한_넷이다(self):
+        """2026-09-09 까지 `우 a10 → 우 b10` 은 같은 스트립 안에서 끝나 아무
+        일도 하지 않았고, a10 으로 A 를 가져오는 선이 없어 pin 1 이 떴다.
+        netlist C5: `U9 pin 1 ← 입력 A`."""
+        bb = _render(self.mod, self.mod.build_e1_comb_s3)
+        self.assertIn('입력 A', _net_of(bb, '74HC32#10 pin 1')['labels'])
+
+    def test_복합_Z_와_X_는_각자_LED_를_달고_있다(self):
+        """`X ≡ Z` 라 두 LED 가 언제나 같이 켜져야 한다 — 공짜 자체 검산이다.
+        서로 다른 넷에서 각각 켜져야 의미가 있다."""
+        bb = _render(self.mod, self.mod.build_e1_comb_s3)
+        z = _net_of(bb, '74HC04#7 pin 4')['labels']
+        self.assertIn('LED Z 애노드', z)
+        self.assertIn('74HC32#10 pin 2', z)
+        self.assertIn('LED X 애노드', _net_of(bb, '74HC32#10 pin 3')['labels'])
+        self.assertNotIn('LED X 애노드', z)
+
+
 if __name__ == '__main__':
     unittest.main()
