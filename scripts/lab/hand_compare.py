@@ -148,14 +148,28 @@ def attachments(diagram, nets=None):
 
 
 def signatures(diagram):
-    """(칩 이름, 핀 번호) -> 그 핀 넷의 부착물. 자기 자신은 뺀다."""
+    """(칩 이름, 핀 번호) -> 그 핀 넷의 부착물. 자기 자신은 뺀다.
+
+    **레일이 든 넷은 극성 토큰으로 접는다.** 입력은 GND 레일 홀에서 b열로
+    들어오도록 그려져(`_input_jumper`) 입력 핀이 GND 넷 위에 앉는다 — 실험01
+    NAND 참조에서 그 넷 부착물이 21개고 입력 핀 서명이 20개다. 접지 않으면
+    레일 어디가 흔들려도 입력 핀 전부가 H6 을 낸다. 미사용 입력 한 가닥만
+    빼도 H6 이 3건 헛났다.
+
+    그 핀의 전기적 사실은 '어느 극성에 물렸는가' 가 전부이고, 같은 레일에
+    누가 더 붙어 있는지는 그 핀과 무관하다. 레일끼리의 관계는 H3·H4·H8 이
+    따로 본다. 레일이 없는 넷(칩 사이 연결·LED 사슬)은 그대로 열거한다 —
+    거기가 신호선이라 낱낱이 봐야 한다.
+    """
     nets = build_nets(diagram)
     att = attachments(diagram, nets)
     out = {}
     for key, ch in zip(chip_keys(diagram), diagram.chips):
         for pin, hole in ch['pins'].items():
             rep = nets[node_of(hole)]
-            out[(key, pin)] = frozenset(att.get(rep, set()) - {('PIN', key, pin)})
+            seen = att.get(rep, set()) - {('PIN', key, pin)}
+            rails = {a for a in seen if a[0] == 'RAIL'}
+            out[(key, pin)] = frozenset(rails) if rails else frozenset(seen)
     return out
 
 
@@ -334,7 +348,7 @@ def check_power(ref, hand):
             continue
         sig = hsig.get((key, pin), frozenset())
         if sig:
-            what = ', '.join(sorted(str(s) for s in sig))
+            what = ', '.join(sorted(_describe(s) for s in sig))
             out.append(HandFinding(
                 'H5', '치명', f'{key} pin {pin}',
                 f'미사용 출력은 개방(NC)이어야 하는데 {what} 에 닿아 있다. '

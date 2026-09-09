@@ -328,6 +328,49 @@ class Signals(unittest.TestCase):
         hand.signed = True
         return ref, hand
 
+    def test_레일_넷은_극성_토큰_하나로_접힌다(self):
+        """입력은 GND 레일 홀에서 들어오도록 그려져 입력 핀이 GND 넷에 앉는다.
+        실험01 NAND 에서 그 넷 부착물이 21개다 — 접지 않으면 레일 어디가
+        흔들려도 입력 핀 전부가 H6 을 낸다."""
+        ref = hc.reference_diagram('e1_nand')
+        sig = hc.signatures(ref)
+        self.assertEqual(sig[('74HC08', 1)], frozenset({('RAIL', 'GND')}))
+        self.assertEqual(sig[('74HC08', 7)], frozenset({('RAIL', 'GND')}))
+        self.assertEqual(sig[('74HC08', 14)], frozenset({('RAIL', 'VCC')}))
+
+    def test_레일이_없는_넷은_그대로_열거된다(self):
+        """칩 사이 연결은 접으면 안 된다 — 거기가 신호선이다."""
+        ref = hc.reference_diagram('e1_nand')
+        sig = hc.signatures(ref)
+        self.assertIn(('PIN', '74HC00', 1), sig[('74HC08', 3)])
+
+    def test_미사용_입력_접지가_빠져도_입력핀은_조용하다(self):
+        """접기 전에는 이 한 가닥 때문에 H6 이 3건 헛났다."""
+        ref = hc.reference_diagram('e1_nand')
+        hand = hc.reference_diagram('e1_nand')
+        hand.signed = True
+        node = hc.node_of(hand.chips[0]['pins'][9])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        fs = hc.compare(ref, hand)
+        self.assertEqual([f for f in fs if f.rule == 'H6'], [])
+        self.assertTrue([f for f in fs if f.rule == 'H4'])
+
+    def test_입력이_통째로_빠지면_접은_뒤에도_잡는다(self):
+        """접기가 진짜 결함까지 삼키면 안 된다 — 4쪽의 실제 결함이다."""
+        ref = hc.reference_diagram('e1_nand')
+        hand = hc.reference_diagram('e1_nand')
+        hand.signed = True
+        node = hc.node_of(hand.chips[1]['pins'][2])
+        hand.wires = [w for w in hand.wires
+                      if hc._endpoint_node(w['frm']) != node
+                      and hc._endpoint_node(w['to']) != node]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
+        self.assertTrue(found)
+        self.assertIn('74HC00 pin 2', found[0].where)
+        self.assertIn('GND 레일', found[0].message)
+
     def test_H6_입력이_빠지면_잡는다(self):
         ref, hand = self._pair()
         node = hc.node_of(hand.chips[1]['pins'][3])
