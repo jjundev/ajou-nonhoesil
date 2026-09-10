@@ -648,10 +648,15 @@ class HandDiagramSkill(unittest.TestCase):
         self.assertLess(text.index("experiment_dir"),
                         text.index("init-lab-experiment"))
 
-    def test_규칙_열세개가_전부_적혀_있다(self):
+    def test_규칙_열네개가_전부_적혀_있다(self):
         text = HAND.read_text(encoding="utf-8")
-        for n in range(1, 14):
+        for n in range(1, 15):
             self.assertIn(f"H{n}", text)
+
+    def test_전사가_pin_1_열을_적는다고_돼_있다(self):
+        """뒤집어 그린 칩은 pin1_col 없이는 전사가 못 담는다."""
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn("pin1_col", text)
 
     def test_전사를_사람이_한다고_적혀_있다(self):
         text = HAND.read_text(encoding="utf-8")
