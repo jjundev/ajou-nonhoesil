@@ -72,6 +72,19 @@ class ChipPins(unittest.TestCase):
             self.assertEqual(ht.chip_pins(chip['block'], chip['pin1_row']),
                              chip['pins'])
 
+    def test_pin1_col_f_면_핀이_거울상이다(self):
+        """노치가 아래를 보게 그린 칩. pin 1~7 이 f 열, 8~14 가 e 열이다."""
+        pins = ht.chip_pins('left', 17, 'f')
+        self.assertEqual(pins[1], ('left', 'f', 17))
+        self.assertEqual(pins[7], ('left', 'f', 23))
+        self.assertEqual(pins[8], ('left', 'e', 23))
+        self.assertEqual(pins[14], ('left', 'e', 17))
+
+    def test_pin1_col_은_e_나_f_만_받는다(self):
+        """DIP-14 는 채널을 걸친다. 다른 열은 핀 모델이 없다."""
+        with self.assertRaises(ValueError):
+            ht.chip_pins('left', 17, 'd')
+
 
 class Parse(unittest.TestCase):
     def test_최소_전사를_읽는다(self):
@@ -81,6 +94,30 @@ class Parse(unittest.TestCase):
         self.assertFalse(d.signed)
         self.assertEqual(len(d.wires), 1)
         self.assertEqual(d.chips[0]['pins'][1], ('left', 'e', 7))
+
+    def test_pin1_col_이_없으면_e_다(self):
+        """기존 전사 파일은 pin1_col 이 없다. 그대로 읽혀야 한다."""
+        d = ht.parse_transcript(_write(MINIMAL))
+        self.assertEqual(d.chips[0]['pin1_col'], 'e')
+        self.assertEqual(d.chips[0]['pins'][1], ('left', 'e', 7))
+
+    def test_pin1_col_f_를_읽는다(self):
+        obj = dict(MINIMAL)
+        obj['chips'] = [{"label": "74HC08", "block": "left",
+                         "pin1_row": 7, "pin1_col": "f"}]
+        d = ht.parse_transcript(_write(obj))
+        self.assertEqual(d.chips[0]['pin1_col'], 'f')
+        self.assertEqual(d.chips[0]['pins'][1], ('left', 'f', 7))
+        self.assertEqual(d.chips[0]['pins'][14], ('left', 'e', 7))
+
+    def test_pin1_col_이_e_f_밖이면_TranscriptError(self):
+        """채널을 안 걸친 칩은 전사가 못 담는다. uncertain 으로 보내라고 말한다."""
+        obj = dict(MINIMAL)
+        obj['chips'] = [{"label": "74HC08", "block": "left",
+                         "pin1_row": 7, "pin1_col": "d"}]
+        with self.assertRaises(ht.TranscriptError) as cm:
+            ht.parse_transcript(_write(obj))
+        self.assertIn('uncertain', str(cm.exception))
 
     def test_LED_와_저항을_꼬리표로_묶어_사슬을_만든다(self):
         d = ht.parse_transcript(_write(MINIMAL))

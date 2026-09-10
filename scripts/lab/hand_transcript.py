@@ -56,16 +56,21 @@ class Diagram:
     page: int = 0
 
 
-def chip_pins(block, pin1_row):
-    """DIP-14 가 꽂히는 홀. pin 1~7 은 e 열, pin 8~14 는 f 열.
+def chip_pins(block, pin1_row, pin1_col='e'):
+    """DIP-14 가 꽂히는 홀. pin 1~7 은 pin 1 열, pin 8~14 는 건너편 열.
 
-    `draw_chip()` 이 실제로 꽂는 자리와 같아야 한다 —
-    `test_핀_배치가_렌더러와_같다` 가 그것을 묶어 둔다.
+    `pin1_col='e'` 가 렌더러 `draw_chip()` 이 꽂는 자리와 같아야 한다 —
+    `test_핀_배치가_렌더러와_같다` 가 그것을 묶어 둔다. `'f'` 는 노치가 아래를
+    보게 그린 칩이다. 채널을 걸치지 않는 열은 핀 모델이 없어 거절한다.
     """
+    across = {'e': 'f', 'f': 'e'}
+    if pin1_col not in across:
+        raise ValueError(
+            f"pin 1 열은 e 또는 f 다 — DIP-14 는 채널을 걸친다: {pin1_col!r}")
     pins = {}
     for i in range(7):
-        pins[i + 1] = (block, 'e', pin1_row + i)
-        pins[14 - i] = (block, 'f', pin1_row + i)
+        pins[i + 1] = (block, pin1_col, pin1_row + i)
+        pins[14 - i] = (block, across[pin1_col], pin1_row + i)
     return pins
 
 
@@ -123,8 +128,17 @@ def parse_transcript(path):
         except (ValueError, TypeError) as e:
             raise TranscriptError(f"pin1_row 가 정수가 아니다: {pin1_row!r}") from e
         _check_row(row, f"{label} pin1_row={row}")
+        # pin 1 열. 없으면 e — 기존 전사가 전부 그렇다. 뒤집어 그린 칩은 f 다.
+        # 채널을 안 걸친 칩(a~d·g~j)은 핀 모델이 없어 전사가 못 담는다 —
+        # 그 칩의 pin 1 홀을 `uncertain` 에 올리면 H13 보류로 사람에게 간다
+        pin1_col = ch.get('pin1_col', 'e')
+        if pin1_col not in ('e', 'f'):
+            raise TranscriptError(
+                f"{label} pin1_col={pin1_col!r} — pin 1 열은 e 또는 f 다. "
+                "채널을 안 걸친 칩은 pin 1 홀을 uncertain 에 올린다")
         chips.append({'label': label, 'block': block,
-                      'pin1_row': row, 'pins': chip_pins(block, row)})
+                      'pin1_row': row, 'pin1_col': pin1_col,
+                      'pins': chip_pins(block, row, pin1_col)})
 
     wires = []
     for w in obj['wires']:
