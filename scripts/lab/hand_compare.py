@@ -536,6 +536,15 @@ def _unshifted_elements(ref, hand, delta):
     ref_wires = {frozenset((w['frm'][1], w['to'][1])) for w in ref.wires
                  if w['frm'][0] == 'hole' and w['to'][0] == 'hole'}
 
+    ref_rail_wires = set()
+    for w in ref.wires:
+        if w['frm'][0] == 'hole' and w['to'][0] == 'hole':
+            a, b = w['frm'][1], w['to'][1]
+            if b[1] in RAIL_COLS:
+                ref_rail_wires.add((a, (b[0], b[1])))
+            if a[1] in RAIL_COLS:
+                ref_rail_wires.add((b, (a[0], a[1])))
+
     def back(hole):
         return (hole[0], hole[1], hole[2] - delta)
 
@@ -546,6 +555,10 @@ def _unshifted_elements(ref, hand, delta):
         if frozenset((a, b)) not in ref_wires:
             continue
         if delta and frozenset((back(a), back(b))) in ref_wires:
+            continue
+        if delta and b[1] in RAIL_COLS and (back(a), (b[0], b[1])) in ref_rail_wires:
+            continue
+        if delta and a[1] in RAIL_COLS and (back(b), (a[0], a[1])) in ref_rail_wires:
             continue
         desc = f"{w.get('kind', '')} 배선 끝점".strip()
         out.append((desc, a))

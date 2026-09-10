@@ -560,6 +560,44 @@ class BridgeRows(unittest.TestCase):
         self.assertIn('영향이 없다', found[0].message)
 
 
+class UnshiftedRailEndpoints(unittest.TestCase):
+    """레일 끝점의 **행**은 "따라왔는가" 판정에 들어가지 않는다.
+
+    `node_of` 가 레일 홀을 `('R', block, col)` 로 접는다 — 같은 레일이면 몇
+    행에 꽂았든 한 노드다. 그런데 `_unshifted_elements` 는 배선을 홀 쌍으로
+    맞추므로, 레일 행까지 되돌려 비교하면 **부품 쪽만 따라 옮기고 레일 홀은
+    원래 자리에 둔 그림**을 "안 따라온 것" 으로 짚는다. 레일은 길어서 아무
+    데나 꽂는 것이 정상이라 이건 오탐이다.
+
+    이 검사는 `compare()` 가 아니라 `_unshifted_elements` 를 직접 겨눈다.
+    통합 레벨에서는 `check_chip_follow` 의 충돌 검사가 이 차이를 흡수해
+    판정이 똑같이 나온다 — 실측으로 참조 회로 둘 × delta 셋 × 레일 고정·동반
+    12개 시나리오 전부 출력이 같았다. 그래서 여기서만 붙들 수 있다.
+    """
+
+    def test_레일_끝점의_행은_따라옴_판정에_안_들어간다(self):
+        # 참조: d10 은 GND 5행에, d11 은 GND 9행에 물려 있다.
+        # 손그림(delta=1): d11-GND9 를 그대로 뒀다 — 참조 좌표와 같으니
+        # 홀 쌍으로만 보면 "안 따라온 배선" 이다. 그러나 되돌린 d10 이
+        # 참조에서 같은 GND 레일에 물려 있으므로 따라온 것으로 봐야 한다.
+        d10, d11 = ('left', 'd', 10), ('left', 'd', 11)
+        ref = Diagram(wires=[_wire(d10, ('left', 'gnd', 5)),
+                             _wire(d11, ('left', 'gnd', 9))])
+        hand = Diagram(wires=[_wire(d11, ('left', 'gnd', 9))])
+        self.assertEqual(hc._unshifted_elements(ref, hand, delta=1), [])
+
+    def test_레일이_아닌_끝점은_행이_다르면_안_따라온_것이다(self):
+        # 위 관용이 레일 밖으로 새면 진짜 소실을 놓친다. 같은 배치에서
+        # 레일 자리를 보통 홀(g 열)로 바꾸면 그대로 짚혀야 한다.
+        d10, d11 = ('left', 'd', 10), ('left', 'd', 11)
+        ref = Diagram(wires=[_wire(d10, ('left', 'g', 5)),
+                             _wire(d11, ('left', 'g', 9))])
+        hand = Diagram(wires=[_wire(d11, ('left', 'g', 9))])
+        self.assertEqual(
+            [h for _, h in hc._unshifted_elements(ref, hand, delta=1)],
+            [d11, ('left', 'g', 9)])
+
+
 class ChipFollow(unittest.TestCase):
     """2026-09-09 시험 PDF: 74HC00 을 한 행 위(17행)에 그리고 아래 배선은 전부
     따라갔는데 L1 저항만 참조 자리(d15→d17)에 남았다. H7 이 증상을, H10 이
