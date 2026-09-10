@@ -363,11 +363,50 @@ class SkillDocInvariants(unittest.TestCase):
 
     def test_breadboard_template_path_and_home_are_pinned(self):
         # 경로가 §절대 규칙 8 의 예시에만 있고, 저장소에 사본이 둘이다.
+        # 템플릿은 이제 기본이 아니라 폴백이다 — `diagram` 이 없는 주차에서만
+        # 쓴다. 그래도 경로는 여기 못박아 둔다: 사본을 집으면 조용히 다른
+        # 판본이 실린다.
         rows = [ln for ln in self.docs["예보"].splitlines()
                 if ln.startswith("| 회로 결선도 |")]
         self.assertEqual(len(rows), 1, rows)
         self.assertIn(".claude/assets/Breadboard.jpg", rows[0])
-        self.assertIn("## 브레드보드 작도", rows[0])
+        # 그림의 근원이 netlist 의 `diagram` 이라는 것과, 그림이 회로 소절
+        # 안에 산다는 것 둘 다 재료 표에 있어야 한다. 앞의 것이 없으면
+        # 파일명을 짐작해 쓰고, 뒤의 것이 없으면 다시 절 끝에 몰아 둔다.
+        self.assertIn("diagram", rows[0])
+        self.assertIn("회로 소절마다 제목 바로 아래", rows[0])
+
+    def test_the_diagram_lives_inside_its_circuit_subsection(self):
+        # 그림이 절 맨 뒤 `## 브레드보드 작도` 소절에 한 장 몰려 있었다.
+        # 결선도 PNG 는 이미 회로마다 있는데 예보 본문에는 한 장도 안 실려
+        # 있었고, 학생은 표를 보면서 그림을 대조할 수 없었다.
+        rules = numbered_items(sections(self.docs["예보"])["절대 규칙"])
+        self.assertIn(20, rules)
+        flat = self.flat["예보"]
+        self.assertIn("결선도 그림은 그 회로의 소절 안에, 표 바로 위에 둔다", flat)
+        # 폴백이 규칙에 없으면 결선도 PNG 가 없는 주차(실험01 말고 전부)에서
+        # 예보가 멈추거나 깨진 링크를 낸다.
+        self.assertIn("빈 브레드보드 캔버스로 폴백한다", flat)
+        # 정본도 실제로 그 차례여야 한다 — 규칙만 고치고 정본이 옛 모양이면
+        # 다음 재생성이 정본을 본보기로 삼아 되돌아간다.
+        # 보고서는 대절이 `# `, 소절이 `## ` 다 — `sections()` 는 스킬 문서용
+        # 이라 여기 쓰면 대절을 못 찾는다.
+        canon = CANON.read_text(encoding="utf-8")
+        body = re.split(r"^# 회로 결선도\n", canon, flags=re.M)[1]
+        body = re.split(r"^# ", body, flags=re.M)[0]
+        image = re.compile(r"^!\[[^\]]*\]\((\S+)\)\s*$")
+        for chunk in body.split("\n## ")[1:]:
+            head, *lines = chunk.splitlines()
+            if head.startswith(("공통 결선 규칙", "실험 전 확인할 사항")):
+                continue
+            hits = [i for i, ln in enumerate(lines) if image.match(ln)]
+            self.assertEqual(len(hits), 1, f"{head}: 그림이 {len(hits)}장이다")
+            table = next((i for i, ln in enumerate(lines)
+                          if ln.lstrip().startswith("|")), len(lines))
+            self.assertLess(hits[0], table, f"{head}: 그림이 표 아래에 있다")
+            target = image.match(lines[hits[0]]).group(1)
+            self.assertTrue((CANON.parent / target).exists(),
+                            f"{head}: {target} 이 없다")
 
     def test_subsection_count_is_derived_from_the_spec(self):
         # 규칙만으로 재생성하면 소절이 늘어난다 (8,345자 → 11,130자 실측).
@@ -405,15 +444,16 @@ class SkillDocInvariants(unittest.TestCase):
         # 노션 baseline 이 아니라 정본을 읽는다 — baseline 은 판본이 바뀌면
         # 낡고, 게다가 사용자가 옛 노션 페이지를 지울 때 함께 지우기 쉽다.
         # 계획이 이 숫자를 한 번 틀렸다 — 결선 소절을 4개라고 썼는데 정본은
-        # 6개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항 + 브레드보드 작도).
+        # 5개다(공통 규칙 + 배선 3 + 실험 전 확인할 사항).
         # 문자열 존재만 보면 같은 실수가 다시 지나간다.
         # 숫자를 손으로 박지 않는다. 2026-2 배포본이 실험1 을 항목 셋에서
         # 다섯으로 늘렸을 때 정본과 규칙 17 은 5·8 로 따라갔는데 이 테스트만
         # 3·6 에 남아 깨졌다 — 규칙 17 이 말하는 그 파생을 여기서도 한다.
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
         n_proc = len(spec.items)
-        # 고정 소절 셋: 공통 결선 규칙 + 실험 전 확인할 사항 + 브레드보드 작도.
-        n_wire = n_proc + 3
+        # 고정 소절 둘: 공통 결선 규칙 + 실험 전 확인할 사항. 브레드보드
+        # 작도는 소절이 아니라 회로 소절 안의 그림이 됐다(§절대 규칙 20).
+        n_wire = n_proc + 2
         counts = subsection_counts(CANON.read_text(encoding="utf-8"))
         self.assertEqual(counts["실험 과정 및 예상 결과"], n_proc)
         self.assertEqual(counts["회로 결선도"], n_wire)
