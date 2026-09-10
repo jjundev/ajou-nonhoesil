@@ -18,8 +18,12 @@ from scripts.lab import config
 from scripts.lab.specdiff import compare_specs, uncovered_tables
 
 ROOT = Path(__file__).resolve().parents[1]
-WEEK6 = ROOT / config.experiment_dir(6) / "체크리스트/명세.md"
-WEEK12 = ROOT / config.experiment_dir(10) / "체크리스트/명세.md"
+# 씨앗은 픽스처다. 살아 있는 실험을 쓰면, 그 주차를 다시 저작할 때마다
+# 여기 박아 둔 `0->1`·`manual:p9` 같은 값이 함께 사라져 검사기 회귀망이
+# 통째로 빨개진다 — 검사기는 안 바뀌었는데도. `EDGE` 는 표 T1~T5·머리말
+# 규약표를 가진 씨앗, `CAPTURE` 는 capture/stepped 표를 가진 씨앗이다.
+EDGE = ROOT / "tests/fixtures/spec_edge.md"
+CAPTURE = ROOT / "tests/fixtures/spec_capture.md"
 
 
 class CompareSpecs(unittest.TestCase):
@@ -27,7 +31,7 @@ class CompareSpecs(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
 
-    def _mutated(self, old, new, source=WEEK6):
+    def _mutated(self, old, new, source=EDGE):
         """`source` 명세에서 `old` 를 한 번만 `new` 로 바꾼 사본 경로.
 
         기본은 실험06 이다. 실험10(capture 표 픽스처)을 만질 때만 `source`
@@ -40,25 +44,25 @@ class CompareSpecs(unittest.TestCase):
         return target
 
     def test_같은_문서끼리는_차이가_없다(self):
-        self.assertEqual(compare_specs(WEEK6, WEEK6), [])
+        self.assertEqual(compare_specs(EDGE, EDGE), [])
 
     def test_라이징_엣지가_리터럴_1_로_돌아가면_그_자리를_짚는다(self):
         # 이 파일이 존재하는 이유가 이 한 줄이다. 재생성물의 이 셀이 `1` 이면
         # 텍스트 추출의 지뢰를 밟은 것이고, 그것을 사람 눈에 맡기지 않는다.
         target = self._mutated("| 0 | 0->1 | 0 |", "| 0 | 1 | 0 |")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertEqual(len(diffs), 1, diffs)
         self.assertIn("0->1", diffs[0])
         self.assertIn("'1'", diffs[0])
 
     def test_encoding_이_바뀌면_잡는다(self):
         target = self._mutated("- encoding: 0/1", "- encoding: H/L")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("encoding" in d for d in diffs), diffs)
 
     def test_source_가_바뀌면_잡는다(self):
         target = self._mutated("- source: manual:p9", "- source: manual:p99")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("source" in d for d in diffs), diffs)
 
     def test_source_manual이_바뀌면_잡는다(self):
@@ -71,13 +75,13 @@ class CompareSpecs(unittest.TestCase):
             "source_manual: from_the_past/정리/강의노트/실험6.pdf",
             "source_manual: from_the_past/정리/강의노트/실험5.pdf",
         )
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("source_manual" in d for d in diffs), diffs)
 
     def test_전원_레일이_빠지면_잡는다(self):
         target = self._mutated('power: {VCC: "+5V", GND: "GND"}',
                                'power: {VCC: "+5V"}')
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("전원" in d for d in diffs), diffs)
 
     def test_표_제목이_바뀌면_잡는다(self):
@@ -87,7 +91,7 @@ class CompareSpecs(unittest.TestCase):
         바꿨는데 대조가 0건을 냈다."""
         target = self._mutated("## T1 · R-S Latch with Enable 특성표",
                                "## T1 · R-S Latch with Enable 진리표")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("표 T1" in d and "title" in d for d in diffs),
                         diffs)
 
@@ -96,7 +100,7 @@ class CompareSpecs(unittest.TestCase):
         가르는 표시다. 뜻이 있는 차이인데 대조 밖이었다."""
         target = self._mutated("title: R-S Latch with Enable (Gate 이용)",
                                "title: R-S Latch with Enable")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("항목" in d and "title" in d for d in diffs),
                         diffs)
 
@@ -105,7 +109,7 @@ class CompareSpecs(unittest.TestCase):
         `source_manual` 을 대조에 넣은 것과 같은 이유다."""
         target = self._mutated("title: Latch & Flip-Flop",
                                "title: 래치와 플립플롭")
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
         self.assertTrue(any("프론트매터 title" in d for d in diffs), diffs)
 
     def test_ics_순서만_바뀌면_차이로_보지_않는다(self):
@@ -113,7 +117,7 @@ class CompareSpecs(unittest.TestCase):
         # device·tables 도 같은 이유로 순서 무시다(스키마상 참조 목록).
         target = self._mutated('ics: ["74HC00", "74HC04"]',
                                'ics: ["74HC04", "74HC00"]')
-        self.assertEqual(compare_specs(WEEK6, target), [])
+        self.assertEqual(compare_specs(EDGE, target), [])
 
     def test_capture_표의_expected가_바뀌어도_compare_specs는_묵음이다(self):
         # capture 표는 셀이 없고 기술적 주장이 전부 expected 산문에 있다.
@@ -134,15 +138,15 @@ class CompareSpecs(unittest.TestCase):
         target = self._mutated(
             "계단 상승한 뒤 리셋되는 톱니 형태",
             "계단 하강한 뒤 리셋되는 역톱니 형태",
-            source=WEEK12,
+            source=CAPTURE,
         )
-        self.assertEqual(compare_specs(WEEK12, target), [])
+        self.assertEqual(compare_specs(CAPTURE, target), [])
 
     def test_다른_주차끼리는_양쪽_방향을_다_보고한다(self):
         # 실험06 은 표 T1~T5·항목 다섯, 실험10 은 표 T1~T2·항목 둘이다.
-        forward = compare_specs(WEEK6, WEEK12)
+        forward = compare_specs(EDGE, CAPTURE)
         self.assertTrue(any("원본에만 있다" in d for d in forward), forward)
-        backward = compare_specs(WEEK12, WEEK6)
+        backward = compare_specs(CAPTURE, EDGE)
         self.assertTrue(any("재생성에만 있다" in d for d in backward), backward)
 
     def test_표_삽입으로_ID가_밀리면_셀_차이_대신_ID_불일치를_먼저_알린다(self):
@@ -152,7 +156,7 @@ class CompareSpecs(unittest.TestCase):
         # 표인데 짝지어져, 셀 내용이 완전히 같은데도 차이가 쏟아진다
         # (실측 19건). 이 테스트는 그 상황을 실험06 명세를 직접 변형해
         # 재현한다 — 손으로 만든 픽스처가 아니다.
-        text = WEEK6.read_text(encoding="utf-8")
+        text = EDGE.read_text(encoding="utf-8")
         for old, new in (("T5", "T6"), ("T4", "T5"), ("T3", "T4"), ("T2", "T3")):
             self.assertIn(old, text, f"픽스처가 바뀌었다 — {old!r} 가 없다")
             text = text.replace(old, new)
@@ -172,7 +176,7 @@ class CompareSpecs(unittest.TestCase):
         target = Path(self.tmp.name) / "명세.md"
         target.write_text(text, encoding="utf-8")
 
-        diffs = compare_specs(WEEK6, target)
+        diffs = compare_specs(EDGE, target)
 
         # 1. 표 집합이 다르다는 사실 자체를 먼저, 눈에 띄게 알린다.
         self.assertTrue(diffs, "차이가 아예 없다 — 표가 하나 늘었는데 이상하다")
@@ -208,7 +212,7 @@ class CompareSpecs(unittest.TestCase):
         self.assertIn("원본 어디에도 없다", table_report[0])
 
     WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
-    WEEK3 = ROOT / config.experiment_dir(3) / "체크리스트/명세.md"
+    DERIVED = ROOT / "tests/fixtures/spec_derived.md"
 
     def _shifted(self, source, first, last):
         """`source` 명세의 표 ID 를 한 칸씩 밀고 새 `T2` 를 끼운 사본.
@@ -340,8 +344,8 @@ class CompareSpecs(unittest.TestCase):
         # 단정하지 않는다 — 삭제와 source 오기재를 구별할 수 없기
         # 때문이다. 대신 관측 사실(source 가 상대 어디에도 없다)만 말하고
         # 원인 후보 둘을 함께 적는다.
-        target = self._table_removed(WEEK6, "T2")
-        diffs = compare_specs(WEEK6, target)
+        target = self._table_removed(EDGE, "T2")
+        diffs = compare_specs(EDGE, target)
         hit = [d for d in diffs if d.startswith("표 T2:")]
         self.assertEqual(len(hit), 1, diffs)
         self.assertIn("manual:p8", hit[0])
@@ -399,8 +403,8 @@ class CompareSpecs(unittest.TestCase):
         # 짝에 대해 아무 줄도 내지 않아 차이 0건(거짓 합격)이었다(컨트롤러
         # 실측). 실험03 은 표 4개가 전부 `derived` 라 C1(derived 도
         # 짝짓기 키로 허용)이 만든 사각지대 그 자체를 지난다.
-        target = self._table_ids_swapped(self.WEEK3, "T1", "T2")
-        diffs = compare_specs(self.WEEK3, target)
+        target = self._table_ids_swapped(self.DERIVED, "T1", "T2")
+        diffs = compare_specs(self.DERIVED, target)
         # `title` 이 2026-09-01 에 대조 대상이 된 뒤로는 3건이 맞다 — 헤딩을
         # 맞바꾸면 제목도 몸통과 함께 옮겨가므로, ID 불일치 알림 1건에 더해
         # 양쪽 짝 각각의 title 차이 2건이 정당하게 따라붙는다. 이 테스트는
@@ -473,7 +477,7 @@ class CompareSpecs(unittest.TestCase):
 
         # 시나리오 1 — 갈래 3(source 없음): 정당한 밀림(T2~T5 → T3~T6)에
         # 새로 끼운 표가 source 를 아예 안 적었다.
-        text1 = bump(WEEK6.read_text(encoding="utf-8"), 2, 5)
+        text1 = bump(EDGE.read_text(encoding="utf-8"), 2, 5)
         self.assertIn(marker, text1, "픽스처가 바뀌었다 — 삽입 지점을 못 찾았다")
         inserted1 = ("## T2 · source 없이 끼운 표\n\n"
                      "- kind: truth-table\n- encoding: 0/1\n- role: reference\n\n"
@@ -481,7 +485,7 @@ class CompareSpecs(unittest.TestCase):
         target1 = Path(self.tmp.name) / "명세1.md"
         target1.write_text(text1.replace(marker, inserted1 + marker, 1),
                            encoding="utf-8")
-        diffs1 = compare_specs(WEEK6, target1)
+        diffs1 = compare_specs(EDGE, target1)
 
         # 시나리오 2 — 갈래 4(짝짓기만 실패): 같은 밀림에, 새로 끼운
         # 표의 source 를 원본 T3(D F/F, source manual:p9)과 중복시킨다.
@@ -489,7 +493,7 @@ class CompareSpecs(unittest.TestCase):
         # 밀렸으므로 ID 로도 못 찾는다(사본의 "T3" 자리는 이미 다른
         # 짝(원본 T2 ↔ 사본 T3, source p8)이 차지했다) — source 도 ID 도
         # 상대에 있지만 그저 짝짓기에 실패한, 갈래 4 의 정의 그대로다.
-        text2 = bump(WEEK6.read_text(encoding="utf-8"), 2, 5)
+        text2 = bump(EDGE.read_text(encoding="utf-8"), 2, 5)
         self.assertIn(marker, text2, "픽스처가 바뀌었다 — 삽입 지점을 못 찾았다")
         inserted2 = ("## T2 · 끼운 중복 source 표\n\n"
                      "- kind: truth-table\n- encoding: 0/1\n"
@@ -498,7 +502,7 @@ class CompareSpecs(unittest.TestCase):
         target2 = Path(self.tmp.name) / "명세2.md"
         target2.write_text(text2.replace(marker, inserted2 + marker, 1),
                            encoding="utf-8")
-        diffs2 = compare_specs(WEEK6, target2)
+        diffs2 = compare_specs(EDGE, target2)
 
         one_sided_pat = re.compile(r"^표 T\d+(?:→T\d+)?: (.+)$")
         # 갈래 3 의 정체성: "source 가 없어 판별할 수 없다" 라는 사실이
@@ -559,7 +563,7 @@ class UncoveredTablesTest(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
 
     def test_실험10_명세에서_capture_표_T1을_짚는다(self):
-        found = uncovered_tables(WEEK12)
+        found = uncovered_tables(CAPTURE)
         self.assertEqual(len(found), 1, found)
         self.assertIn("T1", found[0])
 
@@ -567,7 +571,7 @@ class UncoveredTablesTest(unittest.TestCase):
         # 실험06 은 truth-table 뿐이라 capture 표로는 안 짚혀야 한다.
         # (머리말 표는 따로 짚는다 — 아래
         # test_실험06_머리말의_토큰_규약표를_짚는다.)
-        found = uncovered_tables(WEEK6)
+        found = uncovered_tables(EDGE)
         self.assertFalse(any("셀이 없어 대조가 성립하지 않는다" in f
                              for f in found), found)
 
@@ -577,7 +581,7 @@ class UncoveredTablesTest(unittest.TestCase):
         # 정의하는 유일한 자리)가 있다 — 컨트롤러 실측으로 실험06 은
         # 이런 머리말 표가 1개다. capture 표가 없으므로 이 한 줄만 나와야
         # 한다.
-        found = uncovered_tables(WEEK6)
+        found = uncovered_tables(EDGE)
         self.assertEqual(len(found), 1, found)
         self.assertIn("머리말", found[0])
         self.assertIn("1개", found[0])
@@ -595,14 +599,14 @@ class UncoveredTablesTest(unittest.TestCase):
         self.assertEqual(len(found_week2), 1, found_week2)
         self.assertIn("머리말", found_week2[0])
 
-        found_week12 = uncovered_tables(WEEK12)
+        found_week12 = uncovered_tables(CAPTURE)
         self.assertFalse(any("머리말" in f for f in found_week12), found_week12)
 
     def test_expected가_바뀌어도_여전히_그_표를_짚는다(self):
         # compare_specs 는 이 변형을 못 잡는다(별도 테스트로 확인됨) —
         # 여기서는 uncovered_tables 가 그 자리를 계속 알린다는 것,
         # 즉 "묵음" 이 아니라 "알려진 구멍" 임을 고정한다.
-        text = WEEK12.read_text(encoding="utf-8")
+        text = CAPTURE.read_text(encoding="utf-8")
         old = "계단 상승한 뒤 리셋되는 톱니 형태"
         self.assertIn(old, text, f"픽스처가 바뀌었다 — {old!r} 가 없다")
         target = Path(self.tmp.name) / "명세.md"

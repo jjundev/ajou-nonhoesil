@@ -1,0 +1,98 @@
+---
+schema: lab-spec/v2
+experiment: 10
+title: D/A & A/D converter
+source_manual: from_the_past/정리/강의노트/실험10.pdf
+power: {VCC: "+5V", V15: "+15V", GND: "GND"}
+items:
+  - id: E10.P1
+    title: DAC — 계단 파형 관찰
+    device: [oscilloscope]
+    ics: ["7490", "7404", "7405", "741 OP amp"]
+    tables: [T1]
+  - id: E10.P2
+    title: ADC — 전이점 기록 및 출력 전압 측정
+    device: [oscilloscope, DMM]
+    ics: ["7490", "7404", "7405", "741 OP amp"]
+    tables: [T2]
+---
+
+<!--
+`netlist_capture.md` / `netlist_heading_chips.md` 의 짝 명세다.
+
+렌더러 검사(`TestCapturePage`·`TestSteppedCells`·`TestContinuesBanner`·
+`TestHeadingChips`)와 `ContinuesValidation` 이 쓴다. 이것들이 보는 것은
+**렌더러 동작**이지 명세 내용이 아니다 — `capture` 의 여러 줄 산문이 안 잘리는가,
+`stepped` 의 빈 셀 50칸이 다 나오는가, 스텝 10행이 다 실리는가.
+
+2026-09-10 이전에는 `보고서/실험10/체크리스트/명세.md` 실물을 읽었다. 실험02~10
+을 2026-2 교안 기준으로 다시 쓰려고 지우면서, 살아 있는 실험에 묶여 있던 이
+결합을 끊었다. 코퍼스가 학기 내내 갈아엎히는 저장소에서 렌더러 검사가 특정
+주차에 묶여 있는 것 자체가 결함이었다 — 짝 넷리스트 둘은 이미 픽스처였다.
+
+내용은 그때의 실험10 T1·T2 에서 가져왔다. **근거 문서가 아니라 표본이다** —
+쪽 번호와 소자값은 렌더러가 산문을 안 자르는지 보려고 남긴 것이지 교안 대조용이
+아니다. 새 실험10 명세를 저작해도 이 파일은 따라 고치지 않는다.
+-->
+
+# E10.P1 · DAC — 계단 파형 관찰
+
+교안 p7 회로. `7490` decade counter 의 4비트 출력이 `7404` → `7405`(오픈 컬렉터)를
+거쳐 가중 저항망으로 들어가고, `741` 반전 가산 증폭기가 아날로그 전압을 만든다.
+교안 p11 은 **파형을 그려라**라고만 지시한다 — 채울 셀 표가 없다.
+
+전원 주의: 로직단은 +5V 이지만 `741` OP amp 는 **+15V 단일 전원**을 쓴다
+(pin 7 → +15V, pin 4 → GND — 교안 p7 회로도(U4)의 `+15V` 라벨을 근거로 vision
+확인. mediabox 720×540pt 기준 텍스트 객체가 하단에서 36.7pt 위, U4 핀 7 바로
+아래에 있어 추출 가능하다. p15 회로도(U5, 동일 배선 패턴)의 라벨은 보강
+근거다). `±15V` 라벨은 실험10 어디에도 없다. R9/R10/R11(및 p15 의 R13) 분압기는
+이 +15V 레일에서 pin 3(+) 로 들어가는 **기준전압** 배선이지 별도의 음전원이
+아니다.
+
+## T1 · DAC 출력 계단 파형
+
+- kind: capture
+- source: manual:p11
+- expected: 1KHz 입력에서 counter 가 0→9 로 증가하는 동안 출력이 균등 간격으로
+  계단 상승한 뒤 리셋되는 톱니 형태. 계단 개수는 7490 의 모듈러스(10)를 따른다.
+  계단 높이가 불균등하면 가중 저항망 오차를 먼저 의심한다 — 교안 p7 의 소자값에서
+  각 브랜치 합성 저항이 R1+R8=3k, R2+R7=6k, R3+R6=12k, R4+R5=24.1k 로
+  1:2:4:8 이어야 한다.
+
+# E10.P2 · ADC — 전이점 기록 및 출력 전압 측정
+
+교안 p15~p16. 실험1 회로의 DAC 출력에 `741` 비교기를 하나 더 붙인다.
+1KHz pulse 를 single pulse 로 바꾸고 counter 를 0 으로 reset 한 뒤, 가변저항으로
+비교기 3번 핀 전압을 5~15V 로 변화시키며 **출력이 변화되는 지점**을 기록하고
+그때의 디지털 워드를 `7405` 핀 8·6·4·2 에서 읽는다. single pulse 를 계속 인가해
+counter 를 1씩 올리며 반복한다.
+
+여기는 `capture` 가 아니라 **`stepped`** 다. 스텝 축이 counter 값으로 이산이고
+스텝마다 기록할 셀이 있다. `kind` 가 실험 단위가 아니라 **표 단위 속성**이라는 근거가
+이 항목이다 — 같은 실험10 안에서 T1 은 `capture`, T2 는 `stepped` 다.
+
+## T2 · ADC 전이점
+
+- kind: stepped
+- encoding: 0/1
+- source: manual:p16
+
+| 스텝 | 조작 | 3번 핀 전압 | 7405 핀8 | 핀6 | 핀4 | 핀2 |
+|------|------|-------------|----------|-----|-----|-----|
+| S1 | counter reset(0), 가변저항으로 3번 핀 전압을 5V 부터 조정 시작(derived) | | | | | |
+| S2 | single pulse 1회 → counter=1 | | | | | |
+| S3 | single pulse 1회 → counter=2 | | | | | |
+| S4 | single pulse 1회 → counter=3 | | | | | |
+| S5 | single pulse 1회 → counter=4 | | | | | |
+| S6 | single pulse 1회 → counter=5 | | | | | |
+| S7 | single pulse 1회 → counter=6 | | | | | |
+| S8 | single pulse 1회 → counter=7 | | | | | |
+| S9 | single pulse 1회 → counter=8 | | | | | |
+| S10 | single pulse 1회 → counter=9 | | | | | |
+
+**`S1` 의 "5V 부터 조정 시작"은 파생된 조작이지 교안 원문이 아니다.** 교안 p16 은
+"가변 저항을 그림과 같이 연결시키고 ADC 의 3번 핀이 5~15V 로 변화될 때 출력이
+변화되는 지점을 기록하고 출력 전압을 측정한다"라고만 쓴다 — 스윕 범위(5~15V)는
+명시하지만 각 스텝에서 가변저항을 어느 값에 놓아야 하는지는 지시하지 않는다.
+스윕의 시작점을 하한(5V)으로 잡는 것은 "5~15V 로 변화"라는 지시에서 합리적으로
+파생한 절차다.

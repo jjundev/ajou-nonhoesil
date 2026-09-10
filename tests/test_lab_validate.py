@@ -225,11 +225,15 @@ class TestTableIntegrity(unittest.TestCase):
                             for f in validate.check_orphan_tables(spec)))
 
     def test_real_specs_have_no_orphans(self):
-        for n in (1, 6, 10):
-            with self.subTest(experiment=n):
-                spec = parse_spec(
-                    ROOT / config.experiment_dir(n) / "체크리스트" / "명세.md")
-                self.assertEqual(validate.check_orphan_tables(spec), [])
+        # 번호를 박으면 그 실험이 재작성 대기 중일 때 통째로 빨개진다.
+        # 살아 있는 명세를 훑으면 다음에 놓이는 명세가 자동으로 든다.
+        paths = sorted((ROOT / config.EXPERIMENT_BASE)
+                       .glob("실험*/체크리스트/명세.md"))
+        self.assertTrue(paths, "명세를 하나도 못 찾았다")
+        for path in paths:
+            with self.subTest(path.parent.parent.name):
+                self.assertEqual(
+                    validate.check_orphan_tables(parse_spec(path)), [])
 
     def test_bad_cell_contents_are_errors(self):
         """`\\|`·`<br>`·탭은 표를 깨거나 렌더링을 망가뜨린다."""
@@ -436,18 +440,20 @@ class TestDiagnosticClaims(unittest.TestCase):
         findings = validate.check_diagnostic_claims("의심한다\n", "x.md")
         self.assertEqual([f.level for f in findings], ["info"])
 
-    def test_실험02_명세에서_실제로_잡힌다(self):
-        # 이 부류로 두 번 거꾸로였던 문서다. 목록이 비면 검사가 무의미하다.
-        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+    def test_실물_문서에서_실제로_잡힌다(self):
+        # 목록이 비면 검사가 무의미하다. 씨앗은 픽스처지만 **손으로 심은
+        # 문장이 아니라** 저작된 문서에서 온 산문이라 이 대조가 성립한다.
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         infos = [f for f in validate.validate_spec(spec) if f.level == "info"]
-        self.assertTrue(infos, "실험02 명세에서 한 건도 안 잡혔다")
+        self.assertTrue(infos, "명세에서 한 건도 안 잡혔다")
 
     def test_결선도에도_건다(self):
-        # 결선도 쪽이 명세보다 많다 (실험10: 9 대 1).
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        # 결선도 쪽이 명세보다 많다 (이 픽스처는 9 대 1).
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         infos = [f for f in validate.check_netlist(
-            ROOT / config.experiment_dir(10) / "결선도/netlist.md", spec) if f.level == "info"]
-        self.assertTrue(infos, "실험10 결선도에서 한 건도 안 잡혔다")
+            ROOT / "tests/fixtures/netlist_full_wiring.md", spec)
+            if f.level == "info"]
+        self.assertTrue(infos, "결선도에서 한 건도 안 잡혔다")
 
 
 class TestReportSections(unittest.TestCase):
@@ -971,7 +977,6 @@ class TestCheckReportWrapping(unittest.TestCase):
 
     ROOT = ROOT
     CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
-    WEEK3 = ROOT / config.experiment_dir(2) / "output/실험02_예비보고서.md"
 
     def test_문단이_두_줄로_쪼개져_있으면_잡는다(self):
         got = validate.check_report_wrapping(
@@ -1016,9 +1021,11 @@ class TestCheckReportWrapping(unittest.TestCase):
         got = validate.check_report_wrapping(self.CANON.read_text(encoding="utf-8"))
         self.assertEqual(got, [], got)
 
-    def test_실험02_되감은_판본은_조용하다(self):
-        got = validate.check_report_wrapping(self.WEEK3.read_text(encoding="utf-8"))
-        self.assertEqual(got, [], got)
+    # 2026-09-10: `test_실험02_되감은_판본은_조용하다` 를 걷어냈다. 실험02
+    # 예비보고서를 2026-2 교안 기준 재저작 대상으로 지웠고, 이 검사는 **그
+    # 문서가 실제로 되감겨 있다**는 사실에 기댄다 — 픽스처로 옮기면 자기가
+    # 심은 답을 채점하게 된다. 위 `CANON`(실험01 정본)이 같은 성격의 대조를
+    # 계속 맡는다. 실험02 를 다시 저작할 때 되살린다.
 
     def test_번호_목록은_쪼개진_문단이_아니다(self):
         # 재생성 대조(⑦ 14단계)가 잡은 오탐이다. `1.` `2.` 를 산문으로 봐서
@@ -1248,7 +1255,7 @@ class ContinuesValidation(unittest.TestCase):
                                       "- tables: [T2]\n- continues: C9")
         path = Path(tempfile.mkdtemp()) / "netlist.md"
         path.write_text(text, encoding="utf-8")
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         found = validate.check_netlist_circuits(parse_netlist(path), spec)
         hits = [f for f in found if "continues" in f.message]
         self.assertEqual([f.level for f in hits], ["error"])
@@ -1260,7 +1267,7 @@ class ContinuesValidation(unittest.TestCase):
                                       "- tables: [T2]\n- continues: C2")
         path = Path(tempfile.mkdtemp()) / "netlist.md"
         path.write_text(text, encoding="utf-8")
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         found = validate.check_netlist_circuits(parse_netlist(path), spec)
         self.assertTrue([f for f in found
                          if "continues" in f.message and f.level == "error"])

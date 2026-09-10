@@ -380,15 +380,20 @@ class ExperimentBaseTest(unittest.TestCase):
         # 두 곳으로 갈린다 — 13~15주차가 오면 그때 또 이 작업을 한다.
         self.assertEqual(config.PROJECT_DIR, "보고서/프로젝트")
 
-    def test_실험_폴더_여섯이_기반_아래_실재한다(self):
-        """상수가 실물과 어긋나면 여기서 걸린다. 아직 안 만든 실험은
-        디스크에 없는 게 정상이라 있는 것만 본다."""
+    def test_기반_아래_실재하는_실험_폴더가_상수와_왕복한다(self):
+        """상수가 실물과 어긋나면 여기서 걸린다.
+
+        실험 폴더 목록을 여기 박아 두지 않는다. 실험은 학기 중에 지웠다 다시
+        쓴다 — 목록을 박으면 폴더 하나 되살릴 때마다 이 줄을 같이 고쳐야 하고,
+        잊으면 빨간불이 **재작성 중이라는 뜻인지 이름 규칙이 깨졌다는 뜻인지**
+        구별되지 않는다. 그래서 실물에서 읽어 이름↔번호 왕복만 본다."""
         live = sorted(p.name for p in (ROOT / config.EXPERIMENT_BASE).iterdir()
                       if p.is_dir() and p.name.startswith("실험"))
-        self.assertEqual(
-            live, ["실험01", "실험02", "실험03", "실험05", "실험06", "실험10"])
-        for n in (1, 2, 3, 5, 6, 10):
-            with self.subTest(experiment=n):
+        self.assertTrue(live, "실험 폴더가 하나도 없다")
+        for name in live:
+            with self.subTest(folder=name):
+                n = int(name.removeprefix("실험"))
+                self.assertEqual(config.experiment_folder_name(n), name)
                 self.assertTrue((ROOT / config.experiment_dir(n)).is_dir())
 
     def test_루트로_거슬러_올라가는_사슬이_기반_깊이를_따라간다(self):

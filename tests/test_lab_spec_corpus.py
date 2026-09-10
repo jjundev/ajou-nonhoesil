@@ -1,9 +1,13 @@
 """살아 있는 명세 전부가 파서와 검사를 통과하는지 훑는다.
 
-이름으로 찍어 보는 테스트(`test_lab_spec_parser.py` 는 실험01·06·10)는
-**새로 만든 명세를 보지 않는다.** 실험02·05 는 여태 어떤 테스트도 안 봤다.
-glob 으로 훑으면 다음에 만드는 명세가 자동으로 그물에 든다 —
-`draft-lab-spec` 이 조용히 깨진 명세를 남길 수 있는 경로를 막는다.
+이름으로 찍어 보는 테스트는 **새로 만든 명세를 보지 않는다.** glob 으로
+훑으면 다음에 만드는 명세가 자동으로 그물에 든다 — `draft-lab-spec` 이
+조용히 깨진 명세를 남길 수 있는 경로를 막는다.
+
+2026-09-10 에 실험02~10 을 2026-2 교안 기준으로 다시 쓰려고 지웠다. 이 파일의
+검사는 그때 번호를 박은 목록을 전부 버리고 실물 glob 으로 옮겼다 — 실험이
+하나씩 돌아올 때마다 목록을 고치지 않아도 자동으로 그물에 들게 하려는 것이고,
+동시에 재작성 중인 빈 자리 때문에 빨간불이 뜨지 않게 하려는 것이다.
 
 여기 있는 테스트는 **구조만** 본다. 실험02 는 이 검사들을 전부 통과한 채로
 물리 오류 두 개를 갖고 있었다. 통과는 "파서가 읽을 수 있다"는 뜻이지
@@ -37,9 +41,11 @@ def live_specs():
 
 class LiveSpecCorpus(unittest.TestCase):
     def test_코퍼스가_비어_있지_않다(self):
-        # glob 이 0건이면 아래 테스트가 전부 조용히 통과한다. 살아 있는
-        # 명세가 여섯(실험01·02·03·05·06·10)이라 5 는 하나를 지워도 초록이다.
-        self.assertGreaterEqual(len(live_specs()), 6, "명세를 하나도 못 찾았다")
+        # glob 이 0건이면 아래 테스트가 전부 조용히 통과한다. 여기서 막는 건
+        # **0건**이지 코퍼스가 줄어드는 것이 아니다 — 2026-09-10 에 실험02~10
+        # 을 교안 기준으로 다시 쓰려고 지웠고, 그동안 살아 있는 명세는
+        # 실험01 하나다. 명세를 새로 놓으면 glob 이 알아서 다시 문다.
+        self.assertGreaterEqual(len(live_specs()), 1, "명세를 하나도 못 찾았다")
 
     def test_전부_파싱된다(self):
         for path in live_specs():
@@ -84,13 +90,19 @@ class LiveSpecCorpus(unittest.TestCase):
         # 표를 고쳐 warn 이 사라져도 목록 줄은 남는다 — 그러면 다음 사람이
         # 그 표를 "허용된 예외" 로 읽는다.
         live = set()
+        folders = set()
         for path in live_specs():
             folder = path.parent.parent.name
+            folders.add(folder)
             spec = parse_spec(path)
             live |= {(folder, f.where.rsplit(":", 1)[-1])
                      for f in validate.validate_spec(spec)
                      if f.level == "warn"}
-        self.assertEqual(set(ROW_COUNT_WARN_ALLOWLIST) - live, set(),
+        # 재작성 대기 중인 실험의 줄은 재운다. 지워 버리면 그 실험을 다시 쓸
+        # 때 사유(교안 원문 근거)가 함께 사라져 warn 을 새로 조사하게 된다.
+        # 폴더가 돌아왔는데도 warn 이 없으면 그때 죽은 줄로 잡힌다.
+        dead = {k for k in ROW_COUNT_WARN_ALLOWLIST if k[0] in folders} - live
+        self.assertEqual(dead, set(),
                          "warn 이 사라진 줄이 허용목록에 남아 있다")
 
 
@@ -103,13 +115,19 @@ class 인쇄본_코퍼스(unittest.TestCase):
     """
 
     def test_인쇄본에_마크다운_표기가_남지_않는다(self):
-        for n in (1, 2, 3, 5, 6, 10):
-            path = (ROOT / config.experiment_dir(n)
-                    / "체크리스트/체크리스트.html")
-            with self.subTest(experiment=n):
+        # 명세가 살아 있으면 그 주차 인쇄본도 있어야 한다. 번호를 박지 않고
+        # 명세에서 끌어오면, 재작성으로 실험이 빠졌다 돌아오는 동안 이 검사가
+        # "인쇄본이 없다" 로 빨개지지 않으면서도 **명세만 있고 인쇄본을 안 낸**
+        # 진짜 누락은 그대로 잡는다.
+        specs = live_specs()
+        self.assertTrue(specs, "명세를 하나도 못 찾았다")
+        for spec_path in specs:
+            folder = spec_path.parent.parent
+            path = folder / "체크리스트/체크리스트.html"
+            with self.subTest(folder.name):
                 self.assertTrue(path.exists(), f"{path} 가 없다")
                 errors = [f for f in validate.check_rendered_html(path)
                           if f.level == "error"]
                 self.assertEqual(
                     [str(f) for f in errors], [],
-                    f"실험{n:02d} 인쇄본이 자체 검사에서 error 를 낸다")
+                    f"{folder.name} 인쇄본이 자체 검사에서 error 를 낸다")

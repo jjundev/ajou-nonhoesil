@@ -8,8 +8,10 @@ from scripts.lab.spec_parser import (SpecError, derived_parts, parse_spec,
 
 ROOT = Path(__file__).resolve().parents[1]
 WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
-WEEK6 = ROOT / config.experiment_dir(6) / "체크리스트/명세.md"
-WEEK12 = ROOT / config.experiment_dir(10) / "체크리스트/명세.md"
+# 파서 동작을 보는 씨앗이라 픽스처다 — 살아 있는 주차를 쓰면 그 주차를 다시
+# 저작할 때마다 여기 박힌 행 수·토큰이 함께 바뀌어, 파서는 멀쩡한데 빨개진다.
+EDGE = ROOT / "tests/fixtures/spec_edge.md"          # 심볼릭 토큰·축약 행
+CAPTURE = ROOT / "tests/fixtures/spec_capture.md"    # capture/stepped·두 레일
 
 
 class TestWeek2(unittest.TestCase):
@@ -93,7 +95,7 @@ class TestWeek12CaptureAndStepped(unittest.TestCase):
     """kind 는 실험 단위가 아니라 표 단위 속성이다 (실험10 이 근거)."""
 
     def setUp(self):
-        self.spec = parse_spec(WEEK12)
+        self.spec = parse_spec(CAPTURE)
 
     def test_dac_is_capture_with_prose_expectation(self):
         t = self.spec.table("T1")
@@ -124,7 +126,7 @@ class TestWeek6SymbolicTokens(unittest.TestCase):
     """열린 토큰 모델(R3)이 심볼릭 값을 담는지."""
 
     def setUp(self):
-        self.spec = parse_spec(WEEK6)
+        self.spec = parse_spec(EDGE)
 
     def test_encoding_is_binary_not_hl(self):
         """실험6 교안은 0/1, 실험1 교안은 H/L. 섞지 않는다."""
@@ -159,7 +161,7 @@ class TestErrors(unittest.TestCase):
     def _broken(self, old, new):
         target = Path(self.tmp.name) / "명세.md"
         target.write_text(
-            WEEK12.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
+            CAPTURE.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
         )
         return target
 
@@ -232,7 +234,7 @@ class TestSemanticDefectsStaySilent(unittest.TestCase):
     def _spec_without(self, old, new=""):
         target = Path(self.tmp.name) / "명세.md"
         target.write_text(
-            WEEK12.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
+            CAPTURE.read_text(encoding="utf-8").replace(old, new), encoding="utf-8"
         )
         return parse_spec(target)
 

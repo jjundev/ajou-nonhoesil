@@ -144,14 +144,11 @@ class TestPlainStrikethrough(unittest.TestCase):
         없는 `~` 까지 지우면 그 범위 표기가 붙어 버린다."""
         self.assertEqual(_plain("교안 p15~p16."), "교안 p15~p16.")
 
-    def test_실물_미확정_표의_취소선을_벗긴다(self):
-        """실험05 netlist 의 M1 이 실물로 취소선을 담은 유일한 셀이다."""
-        netlist = parse_netlist(
-            ROOT / config.experiment_dir(5) / "결선도/netlist.md")
-        spec = parse_spec(ROOT / config.experiment_dir(5) / "체크리스트/명세.md")
-        html = common_page(spec, netlist)
-        self.assertNotIn("~~", html)
-        self.assertIn("74HC148", html)
+    # 2026-09-10: 실물 회귀 검사를 여기서 걷어냈다. 실험02~10 을 2026-2 교안
+    # 기준으로 재저작하려고 지웠고, 이 검사들은 **그 문서가 실제로 그 결함을
+    # 담고 있다**는 사실에 기대므로 픽스처로 옮기면 자기가 심은 답을 채점하게
+    # 된다. 해당 주차 명세·결선도를 다시 저작할 때 함께 되살린다 —
+    # `docs/plans/2026-09-10-코퍼스-재작성-되살릴-검사.md` 에 목록이 있다.
 
 
 class TestCapturePage(unittest.TestCase):
@@ -159,7 +156,7 @@ class TestCapturePage(unittest.TestCase):
     없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다."""
 
     def setUp(self):
-        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
         self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
 
@@ -187,13 +184,21 @@ class TestCapturePage(unittest.TestCase):
         self.assertNotIn("**", block)
         self.assertNotIn("`", block)
 
-    def test_실물_expected_의_마크다운_표기를_벗긴다(self):
-        """픽스처가 보는 실험10 T1 의 expected 에는 마크다운이 하나도 없어
-        위 테스트가 `_plain` 제거 변이를 못 문다. 실물로 `**` 를 담은 것은
-        실험02 T2 다 — `**두 갈래로 갈라져 … 닫힌 루프**`. 옛 `_capture_html`
-        은 `_plain` 을 안 씌워 별 두 개가 인쇄본에 그대로 찍혔다."""
-        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
-        table = spec.table("T2")
+    def test_expected_의_마크다운_표기를_벗긴다(self):
+        """씨앗 픽스처의 T1 expected 에는 마크다운이 하나도 없어 위 테스트가
+        `_plain` 제거 변이를 못 문다. 그래서 여기서 `**` 를 직접 심는다.
+
+        실물 회귀였다 — 실험02 T2 가 `**두 갈래로 갈라져 … 닫힌 루프**` 를
+        담았고, 옛 `_capture_html` 이 `_plain` 을 안 씌워 별 두 개가 인쇄본에
+        그대로 찍혔다. 그 명세는 2026-09-10 에 재저작 대상으로 지웠으므로,
+        무는 자리만 남기고 씨앗은 픽스처에서 만든다."""
+        text = (ROOT / "tests/fixtures/spec_capture.md").read_text(
+            encoding="utf-8").replace(
+                "계단 상승한 뒤 리셋되는 톱니 형태",
+                "**두 갈래로 갈라져 계단 상승한 뒤 리셋되는 톱니 형태**", 1)
+        target = Path(tempfile.mkdtemp()) / "명세.md"
+        target.write_text(text, encoding="utf-8")
+        table = parse_spec(target).table("T1")
         self.assertIn("**", table.expected)          # 원문에는 있다
         html = _capture_html(table)
         self.assertNotIn("**", html)                 # 인쇄본에는 없다
@@ -334,21 +339,11 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("플로팅 금지", banner)
         self.assertIn("공통 규칙", banner)
 
-    def test_실험02_인쇄본이_전부_GND_라고_말하지_않는다(self):
-        """실물 회귀. 실험02 결선도가 스스로 그 규칙을 부정한다.
-
-        검사는 **배너 한 줄**로 좁힌다 — 결선도 본문이 "실험01 규칙을 복사해
-        오면 교안과 어긋난다" 며 옛 문구 `"미사용 입력핀은 전부 GND"` 를 직접
-        인용해 반박하므로, 문서 전체에서 그 부분문자열을 찾으면 배너가 옳게
-        고쳐졌어도 이 인용문에 걸려 거짓으로 실패한다."""
-        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
-        netlist = parse_netlist(
-            ROOT / config.experiment_dir(2) / "결선도/netlist.md")
-        html = render_checklist(spec, netlist, TEMPLATE)
-        banner = html[html.index('class="power"'):]
-        banner = banner[:banner.index("</div>")]
-        self.assertNotIn("전부 GND", banner)
-        self.assertIn("이 주차는", html)          # 결선도의 반박이 실린다
+    # 2026-09-10: 실물 회귀 검사를 여기서 걷어냈다. 실험02~10 을 2026-2 교안
+    # 기준으로 재저작하려고 지웠고, 이 검사들은 **그 문서가 실제로 그 결함을
+    # 담고 있다**는 사실에 기대므로 픽스처로 옮기면 자기가 심은 답을 채점하게
+    # 된다. 해당 주차 명세·결선도를 다시 저작할 때 함께 되살린다 —
+    # `docs/plans/2026-09-10-코퍼스-재작성-되살릴-검사.md` 에 목록이 있다.
 
 
 class TestCircuitPages(unittest.TestCase):
@@ -891,7 +886,7 @@ class TestHeadingChips(unittest.TestCase):
     `netlist_parser.IC_DECL` 은 이미 이 형식을 파싱한다 — 렌더러만 못 읽었다."""
 
     def setUp(self):
-        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_heading_chips.md")
         self.html = circuit_pages(self.spec, self.netlist)
 
@@ -1011,7 +1006,7 @@ class TestSteppedCells(unittest.TestCase):
     실험실에서 채울 칸이다 — 실험10 T2 는 빈 열이 다섯이다."""
 
     def setUp(self):
-        self.spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        self.spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         self.netlist = parse_netlist(ROOT / "tests/fixtures/netlist_capture.md")
         self.html = circuit_pages(self.spec, self.netlist)
         self.t2 = self.spec.table("T2")
@@ -1075,7 +1070,7 @@ class TestContinuesBanner(unittest.TestCase):
             encoding="utf-8").replace("- tables: [T2]", f"- tables: [T2]\n{extra}")
         path = Path(tempfile.mkdtemp()) / "netlist.md"
         path.write_text(text, encoding="utf-8")
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         return circuit_pages(spec, parse_netlist(path))
 
     def _banner(self, html, index):
@@ -1104,7 +1099,7 @@ class TestContinuesBanner(unittest.TestCase):
         text = text.replace("- tables: [T2]", "- tables: [T2]\n- continues: C1")
         path = Path(tempfile.mkdtemp()) / "netlist.md"
         path.write_text(text, encoding="utf-8")
-        spec = parse_spec(ROOT / config.experiment_dir(10) / "체크리스트/명세.md")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
         netlist = parse_netlist(path)
         self.assertEqual(netlist.circuits[0].ics, netlist.circuits[1].ics)
         banner = self._banner(circuit_pages(spec, netlist), 1)
@@ -1158,8 +1153,8 @@ class TestRefsTables(unittest.TestCase):
         self.assertNotIn("<h3>T6 ·", self._html(""))
 
 
-class Test실험10배선전수(unittest.TestCase):
-    """배선 51행이 전부 표 안인 유일한 주차다. 첫 칩·첫 표만 싣는 변이가
+class Test배선전수(unittest.TestCase):
+    """배선 51행이 전부 표 안인 픽스처다. 첫 칩·첫 표만 싣는 변이가
     가장 파괴적인 소실 모드라 원문 셀을 하나씩 대조한다.
 
     개수는 리터럴로 박는다. `_circuit_body` 가 센 값으로 대조하면 파서와
@@ -1171,9 +1166,9 @@ class Test실험10배선전수(unittest.TestCase):
     CHIPS = 5
 
     def setUp(self):
-        d = ROOT / config.experiment_dir(10)
-        self.spec = parse_spec(d / "체크리스트/명세.md")
-        self.netlist = parse_netlist(d / "결선도/netlist.md")
+        self.spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        self.netlist = parse_netlist(
+            ROOT / "tests/fixtures/netlist_full_wiring.md")
         self.html = circuit_pages(self.spec, self.netlist)
 
     def test_칩_상자_수가_원문의_칩_선언_수와_같다(self):

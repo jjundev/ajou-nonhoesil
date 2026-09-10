@@ -154,7 +154,10 @@ class TestTables(unittest.TestCase):
 
 
 class TestRealSpecFiles(unittest.TestCase):
-    """Task 1 이 손으로 쓴 실물 명세가 그대로 파싱되어야 한다."""
+    """손으로 쓴 명세가 그대로 파싱되어야 한다.
+
+    실험01 은 살아 있는 실물이고, 나머지 둘은 픽스처다 — 표 개수를 여기
+    박아 두는 검사라 살아 있는 주차를 쓰면 재저작 때마다 같이 깨진다."""
 
     def test_week2_spec_parses(self):
         text = (ROOT / config.experiment_dir(1) / "체크리스트/명세.md").read_text(encoding="utf-8")
@@ -166,13 +169,13 @@ class TestRealSpecFiles(unittest.TestCase):
         self.assertEqual(len(md.parse_tables(body)), 11)  # 표 10개 + 토큰 규약표 1개
 
     def test_week6_spec_parses(self):
-        text = (ROOT / config.experiment_dir(6) / "체크리스트/명세.md").read_text(encoding="utf-8")
+        text = (ROOT / "tests/fixtures/spec_edge.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 6)
         self.assertEqual(len(md.parse_tables(body)), 6)   # 표 5개 + 토큰 참조표 1개
 
     def test_week12_spec_parses(self):
-        text = (ROOT / config.experiment_dir(10) / "체크리스트/명세.md").read_text(encoding="utf-8")
+        text = (ROOT / "tests/fixtures/spec_capture.md").read_text(encoding="utf-8")
         fm, body = md.split_frontmatter(text)
         self.assertEqual(fm["experiment"], 10)
         # T1 은 capture 라 셀 표가 없다. 본문의 마크다운 표는 T2(stepped) 하나뿐
