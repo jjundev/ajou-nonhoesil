@@ -268,5 +268,61 @@ class R5(unittest.TestCase):
                 _render(self.mod, fn)
 
 
+class R6(unittest.TestCase):
+    """자기 스트립 안을 달리는 구간. R5ⓐ 가 배선의 **양 끝점**만 보는 사이,
+    자기 스트립 안을 지나다 밖으로 나가는 배선은 끝점이 서로 다른 스트립이라
+    통과했다. 2026-09-10 사용자가 OR 의 ⑪ 갈래(`좌 c12 → 좌 a12 → 좌 a24`)를
+    짚어 드러났다 — 12행 a~e 는 한 스트립이라 가로 구간은 없어도 되는 우회다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def board(self):
+        bb = self.mod.BreadboardRenderer()
+        bb.enable_steps()
+        return bb
+
+    def test_자기_스트립_안을_달리는_구간은_막힌다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))],
+                     'mid', '중간단 확인용 갈래')
+        with self.assertRaisesRegex(AssertionError, '자기 스트립.*좌 c12 -> 좌 a12'):
+            bb.verify()
+
+    def test_옛_AND_갈래_기하를_그대로_재현하면_걸린다(self):
+        # 2026-09-08~10 의 실제 좌표. 점퍼(d12→d13)와 갈래가 나란히 있던 그림이다.
+        # 점퍼는 R6 에 걸리지 않고 갈래만 걸려야 한다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(13))], 'mid', 'pin 3 -> pin 4')
+        bb.step_wire([(c['c'], bb.r_y(12)), (c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))],
+                     'mid', '중간단 확인용 갈래')
+        with self.assertRaisesRegex(AssertionError, '자기 스트립.*중간단 확인용 갈래'):
+            bb.verify()
+
+    def test_곧게_내리는_갈래는_통과한다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid', '중간단 확인용 갈래')
+        bb.verify()
+
+    def test_잭에서_레일로_내려오는_선은_R6_가_안_본다(self):
+        # 레일 스트립 키에는 행이 없다 — 같은 레일 위 두 점은 언제나 같은 스트립이다.
+        # 홀 판정 없이 `sym()` 만 보면 전원잭 배선 둘이 통째로 오탐이 된다
+        bb = self.board()
+        bb.connect_jacks()
+        bb.verify()
+
+    def test_칩을_가로지르는_선은_스트립이_갈려_통과한다(self):
+        # a~e 와 f~j 는 가운데 골이 갈라 놓는다. 한 행을 가로질러도 같은 스트립이 아니다
+        bb = self.board()
+        c = bb.cols['left']
+        bb.step_wire([(c['b'], bb.r_y(25)), (c['i'], bb.r_y(25))], 'sig', '골 건너기')
+        bb.verify()
+
+
 if __name__ == '__main__':
     unittest.main()
+

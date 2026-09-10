@@ -1150,6 +1150,8 @@ class BreadboardRenderer:
         R5  넷이 말이 된다 — 같은 스트립 안에서 끝나는 점퍼가 없고, +5V 와
             GND 가 한 넷이 아니며(치환하지 않은 넷에서 본다), 아무 데도 안 물린
             칩 핀도 부품 다리도 없다.
+        R6  배선이 자기 스트립 안을 달리는 구간이 없다 — 뒤쪽 홀에서 출발하면
+            되는 우회다. R5ⓐ 가 양 끝점만 보는 틈으로 지나간 부류다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1190,6 +1192,21 @@ class BreadboardRenderer:
             b = self._strip(self.sym(pts[-1][0], self._row_of(pts[-1][1])))
             if a is not None and a == b:
                 r5.append(f'같은 스트립 안에서 끝나는 점퍼(전기적으로 무의미): {desc}')
+
+        # R6. 자기 스트립 안을 달리는 구간. 꺾임점 둘이 같은 스트립이면 그
+        # 구간은 전기적으로 없는 것과 같다 — 뒤쪽 홀에서 출발하면 그만이다.
+        # R5ⓐ 는 배선의 **양 끝점**만 봐서, 자기 스트립 안을 지나다 밖으로
+        # 나가는 배선은 끝점이 서로 달라 통과했다. 2026-09-10 OR 의 ⑪ 갈래
+        # (`좌 c12 → 좌 a12 → 좌 a24`)가 그 틈으로 이틀을 살아남았다.
+        for kind, pts, desc in self._segments:
+            for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+                if self.hole_at(ax, ay) is None or self.hole_at(bx, by) is None:
+                    continue   # 잭(보드 밖)이나 여백을 지나는 구간은 볼 것이 없다
+                sa = self._strip(self.sym(ax, self._row_of(ay)))
+                sb = self._strip(self.sym(bx, self._row_of(by)))
+                if sa is not None and sa == sb:
+                    r5.append(f'자기 스트립 안을 달리는 구간(없어도 되는 우회): '
+                              f'{self.addr(ax, ay)} -> {self.addr(bx, by)} · {desc}')
 
         nets = self.nets()
         # 단락만은 **치환하지 않은 넷**에서 본다. 입력 점퍼가 지금 꽂혀 있는
