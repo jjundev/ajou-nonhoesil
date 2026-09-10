@@ -1,0 +1,83 @@
+import tempfile
+import unittest
+from pathlib import Path
+from PIL import Image
+
+from scripts.lab import export_hand_diagrams as ehd
+
+
+class TestExportHandDiagrams(unittest.TestCase):
+    def setUp(self):
+        self.pdf_path = Path("보고서/실험01/output/손그림검토/round8/hand.pdf")
+        self.assertTrue(self.pdf_path.exists(), "round8 hand.pdf 가 존재해야 합니다.")
+
+    def test_find_default_pdf(self):
+        found = ehd.find_default_pdf(1)
+        self.assertTrue(found.is_file())
+        self.assertEqual(found.name, "hand.pdf")
+
+    def test_export_hand_diagrams(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_paths = ehd.export_hand_diagrams(
+                experiment=1,
+                pdf_path=self.pdf_path,
+                out_dir=tmpdir,
+                dpi=150,  # fast test
+            )
+            self.assertEqual(len(out_paths), 5)
+            expected_names = [
+                "실험01_1-1_손그림_3입력_AND.png",
+                "실험01_1-2_손그림_3입력_OR.png",
+                "실험01_2-1_손그림_3입력_NAND.png",
+                "실험01_2-2_손그림_3입력_NOR.png",
+                "실험01_3_손그림_복합논리회로.png",
+            ]
+            for p, expected in zip(out_paths, expected_names):
+                self.assertEqual(p.name, expected)
+                self.assertTrue(p.is_file())
+                # Verify it's a valid PNG image and cropped to breadboard body
+                with Image.open(p) as img:
+                    self.assertEqual(img.format, "PNG")
+                    # Cropped aspect ratio: height should be greater than width (tall vertical breadboard)
+                    self.assertGreater(img.height, img.width)
+                    self.assertLess(img.width, 1500)
+
+    def test_resolve_circuit_filenames_from_netlist(self):
+        filenames = ehd.resolve_circuit_filenames(1, 5)
+        expected = [
+            "실험01_1-1_손그림_3입력_AND.png",
+            "실험01_1-2_손그림_3입력_OR.png",
+            "실험01_2-1_손그림_3입력_NAND.png",
+            "실험01_2-2_손그림_3입력_NOR.png",
+            "실험01_3_손그림_복합논리회로.png",
+        ]
+        self.assertEqual(filenames, expected)
+
+    def test_resolve_circuit_filenames_fallback(self):
+        filenames = ehd.resolve_circuit_filenames(99, 2)
+        self.assertEqual(filenames, ["실험99_손그림_p1.png", "실험99_손그림_p2.png"])
+
+    def test_resolve_circuit_filenames_with_transcripts(self):
+        round_dir = Path("보고서/실험01/output/손그림검토/round8")
+        if round_dir.is_dir():
+            filenames = ehd.resolve_circuit_filenames(1, 5, round_dir=round_dir)
+            expected = [
+                "실험01_1-1_손그림_3입력_AND.png",
+                "실험01_1-2_손그림_3입력_OR.png",
+                "실험01_2-1_손그림_3입력_NAND.png",
+                "실험01_2-2_손그림_3입력_NOR.png",
+                "실험01_3_손그림_복합논리회로.png",
+            ]
+            self.assertEqual(filenames, expected)
+
+    def test_cli(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            exit_code = ehd.main(["1", str(self.pdf_path), "--out", tmpdir, "--dpi", "100"])
+            self.assertEqual(exit_code, 0)
+            files = list(Path(tmpdir).glob("*.png"))
+            self.assertEqual(len(files), 5)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
