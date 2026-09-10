@@ -8,9 +8,10 @@
 본다. 합성 픽스처로는 실물에서만 나오는 배치를 못 밟는다.
 """
 import unittest
+from pathlib import Path
 
 from scripts.lab import hand_compare as hc
-from scripts.lab.hand_transcript import Diagram, chip_pins
+from scripts.lab.hand_transcript import Diagram, chip_pins, parse_transcript
 
 
 def _wire(a, b, kind='sig'):
@@ -39,6 +40,44 @@ def _shift_rows(d, delta):
             if k in c:
                 c[k] = s(c[k])
     d.bridges = [(k, s(a), s(b)) for k, a, b in d.bridges]
+    return d
+
+
+_MIRROR = {'a': 'j', 'b': 'i', 'c': 'h', 'd': 'g', 'e': 'f',
+           'f': 'e', 'g': 'd', 'h': 'c', 'i': 'b', 'j': 'a',
+           'gnd': 'gnd', 'vcc': 'vcc',
+           'mid_gnd': 'mid_gnd', 'mid_vcc': 'mid_vcc'}
+
+
+def _flip_chip(d, index, wiring=True):
+    """index 번째 칩을 뒤집는다(pin 1 이 f 열). `wiring=True` 면 그 칩 행에
+    끝점이 있는 요소도 좌우 거울상으로 옮긴다 — 배선이 함께 뒤집힌 그림이다.
+    `False` 면 칩만 뒤집고 배선은 참조 자리에 둔다."""
+    ch = d.chips[index]
+    rows = range(ch['pin1_row'], ch['pin1_row'] + 7)
+    ch['pin1_col'] = 'f'
+    ch['pins'] = chip_pins(ch['block'], ch['pin1_row'], 'f')
+    if not wiring:
+        return d
+
+    def m(hole):
+        if hole is None or hole[2] not in rows:
+            return hole
+        return (hole[0], _MIRROR[hole[1]], hole[2])
+
+    for w in d.wires:
+        for side in ('frm', 'to'):
+            kind, val = w[side]
+            w[side] = (kind, m(val)) if kind == 'hole' else (kind, val)
+    for l in d.leds:
+        l['anode'], l['cathode'] = m(l['anode']), m(l['cathode'])
+    for r in d.resistors:
+        r['top'], r['bottom'] = m(r['top']), m(r['bottom'])
+    for c in d.chains:
+        for k in ('signal', 'anode', 'cathode', 'res_top', 'res_bottom'):
+            if k in c:
+                c[k] = m(c[k])
+    d.bridges = [(k, m(a), m(b)) for k, a, b in d.bridges]
     return d
 
 
@@ -521,6 +560,91 @@ class BridgeRows(unittest.TestCase):
         self.assertIn('영향이 없다', found[0].message)
 
 
+class ChipFollow(unittest.TestCase):
+    """2026-09-09 시험 PDF: 74HC00 을 한 행 위(17행)에 그리고 아래 배선은 전부
+    따라갔는데 L1 저항만 참조 자리(d15→d17)에 남았다. H7 이 증상을, H10 이
+    행 차이를 각각 냈지만 둘을 잇는 줄은 사람이 요약할 때 만들었다. 그 줄이
+    H14 다 — 칩 이름·이동량·남은 요소를 한 줄에 낸다."""
+
+    FIXTURE = Path(__file__).parent / 'fixtures' / 'hand_e1_nand_chip_up_one.json'
+
+    def _pair(self, cid='e1_nand'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        hand.title = '2-1 NAND Gate'
+        return ref, hand
+
+    def test_H14_실물_전사에서_칩이_올라가고_L1_저항이_남으면_잡는다(self):
+        hand = parse_transcript(self.FIXTURE)
+        ref = hc.reference_diagram(hand.circuit)
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H14']
+        self.assertEqual(len(found), 1)
+        f = found[0]
+        self.assertEqual(f.grade, '치명')
+        self.assertEqual(f.where, '74HC00')
+        self.assertIn('-1행', f.message)
+        self.assertIn('L1 저항 아랫다리 좌 d17', f.message)
+        self.assertIn('pin 1 행', f.message)
+        # 74HC08 은 참조 자리 그대로다 — 줄이 없다
+        self.assertNotIn('74HC08', f.message)
+
+    def test_H14_는_증상_줄을_지우지_않는다(self):
+        """H7 은 여전히 저항 아랫다리를 짚는다. H14 는 원인 줄이다."""
+        hand = parse_transcript(self.FIXTURE)
+        ref = hc.reference_diagram(hand.circuit)
+        rules = {f.rule for f in hc.compare(ref, hand)}
+        self.assertIn('H7', rules)
+        self.assertIn('H10', rules)
+        self.assertIn('H14', rules)
+
+    def test_전체가_함께_밀린_그림에는_H14_가_없다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
+        hand.signed = True
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H14']
+        self.assertEqual([str(x) for x in found], [])
+
+    def test_권장_수정을_적용하면_H14_와_H7_이_사라진다(self):
+        """실물 전사에서 저항 아랫다리만 d17 → d16 으로 올린다. L1 LED(c14·c15)와
+        저항 윗다리(d15)는 여전히 참조 자리 그대로지만 74HC00 은 17~23행이라
+        충돌이 없다 — 참조 좌표에 남았다는 것만으로는 H14 를 내지 않는다.
+        2026-09-09 요약이 권한 수정이 정확히 이것이다."""
+        hand = parse_transcript(self.FIXTURE)
+        ref = hc.reference_diagram(hand.circuit)
+        fixed = ('left', 'd', 16)
+        for r in hand.resistors:
+            if r['tag'] == 'L1':
+                r['bottom'] = fixed
+        for c in hand.chains:
+            if c['tag'] == 'L1':
+                c['res_bottom'] = fixed
+        found = hc.compare(ref, hand)
+        self.assertEqual([str(f) for f in found if f.rule in ('H14', 'H7')], [])
+        self.assertEqual([str(f) for f in found if f.grade in hc.BLOCKING], [])
+        self.assertEqual(hc.verdict(found), '제출 가능')
+
+    def test_칩만_뒤집고_배선을_두면_H14_가_난다(self):
+        ref, hand = self._pair()
+        _flip_chip(hand, 1, wiring=False)
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H14']
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].where, '74HC00')
+        self.assertIn('f 열', found[0].message)
+        self.assertIn('배선 끝점', found[0].message)
+
+    def test_배선까지_함께_뒤집으면_H14_없이_H10_표기만_난다(self):
+        """넷이 같으면 유효한 그림이다 — 행 밀림과 같은 원리."""
+        ref, hand = self._pair()
+        _flip_chip(hand, 1, wiring=True)
+        found = hc.compare(ref, hand)
+        self.assertEqual([str(f) for f in found if f.rule == 'H14'], [])
+        self.assertEqual([str(f) for f in found if f.grade == '치명'], [])
+        h10 = [f for f in found if f.rule == 'H10']
+        self.assertEqual(len(h10), 1)
+        self.assertIn('f 열', h10[0].message)
+
+
 class Paperwork(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
@@ -634,10 +758,10 @@ class RuleRegistry(unittest.TestCase):
                    if k.startswith('check_') and callable(v)}
         self.assertEqual(defined, set(hc._RULES))
 
-    def test_규칙_코드가_H1부터_H13까지_빠짐없다(self):
+    def test_규칙_코드가_H1부터_H14까지_빠짐없다(self):
         import inspect
         src = inspect.getsource(hc)
-        for n in range(1, 14):
+        for n in range(1, 15):
             self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
 
 

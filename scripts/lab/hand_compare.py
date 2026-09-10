@@ -509,6 +509,100 @@ CIRCUIT_WORDS = {
 }
 
 
+def _unshifted_elements(ref, hand, delta):
+    """참조 좌표에 그대로 남은 손그림 요소 — (설명, 홀) 목록.
+
+    LED·저항 다리는 꼬리표로 짝을 맞춘다. 배선은 꼬리표가 없어 끝점 홀 쌍으로
+    맞추는데, 전체가 delta 만큼 밀린 그림에서는 레일 선이 우연히 참조의 다른
+    선과 같은 자리에 올 수 있다(GND10→d10 이 밀려 GND11→d11 이 된다). 그래서
+    **delta 만큼 되돌린 쌍이 참조에 있으면 '따라온 것'으로 보고 뺀다.** 잭
+    끝점 배선은 칩 행에 앉을 수 없어 건너뛴다.
+    """
+    out = []
+    ref_led = {(l['tag'], side): l[key] for l in ref.leds
+               for side, key in (('A', 'anode'), ('K', 'cathode'))}
+    for l in hand.leds:
+        for side, key in (('A', 'anode'), ('K', 'cathode')):
+            if ref_led.get((l['tag'], side)) == l[key]:
+                out.append((_describe(('LED', l['tag'], side)), l[key]))
+
+    ref_res = {(r.get('tag', ''), side): r[key] for r in ref.resistors
+               for side, key in (('T', 'top'), ('B', 'bottom'))}
+    for r in hand.resistors:
+        for side, key in (('T', 'top'), ('B', 'bottom')):
+            if ref_res.get((r.get('tag', ''), side)) == r[key]:
+                out.append((_describe(('RES', r.get('tag', ''), side)), r[key]))
+
+    ref_wires = {frozenset((w['frm'][1], w['to'][1])) for w in ref.wires
+                 if w['frm'][0] == 'hole' and w['to'][0] == 'hole'}
+
+    def back(hole):
+        return (hole[0], hole[1], hole[2] - delta)
+
+    for w in hand.wires:
+        if w['frm'][0] != 'hole' or w['to'][0] != 'hole':
+            continue
+        a, b = w['frm'][1], w['to'][1]
+        if frozenset((a, b)) not in ref_wires:
+            continue
+        if delta and frozenset((back(a), back(b))) in ref_wires:
+            continue
+        desc = f"{w.get('kind', '')} 배선 끝점".strip()
+        out.append((desc, a))
+        out.append((desc, b))
+    return out
+
+
+def check_chip_follow(ref, hand):
+    """H14 칩 자리 변경을 안 따라간 요소.
+
+    2026-09-09 시험 PDF 에서 74HC00 이 한 행 위(17행)에 있고 아래 배선은 전부
+    따라갔는데 L1 저항만 참조 자리(d15→d17)에 남아 저항 아랫다리가 pin 1 행에
+    앉았다. H7 이 증상("GND 에 안 닿는다")을, H10 이 행 차이를 냈지만 둘을 잇는
+    줄이 없어 판정문만 읽으면 저항 한 줄 고치라는 뜻으로 읽혔다.
+
+    거리 기준을 쓰지 않는다. **참조 좌표 그대로인 요소가 앉은 노드에서 이 칩의
+    핀이 참조와 달라졌는가** 만 본다. 행 이동이면 참조에서 핀이 없던 노드에
+    핀이 생기고(∅ → pin n), 뒤집힘이면 같은 노드의 핀 번호가 바뀐다(1 ↔ 14).
+    충돌이 없으면 회로는 멀쩡하고 H10 표기만 남는다. 증상 줄(H3·H6·H7)은
+    그대로 두고 이 줄을 더한다 — 같은 층위의 메아리가 아니라 원인 줄이다.
+    """
+    out = []
+    rchips = dict(zip(chip_keys(ref), ref.chips))
+    hchips = dict(zip(chip_keys(hand), hand.chips))
+    for key, rch in rchips.items():
+        hch = hchips.get(key)
+        if hch is None:
+            continue
+        delta = hch['pin1_row'] - rch['pin1_row']
+        hcol, rcol = hch.get('pin1_col', 'e'), rch.get('pin1_col', 'e')
+        if delta == 0 and hcol == rcol:
+            continue
+        rpins = {node_of(h): p for p, h in rch['pins'].items()}
+        hpins = {node_of(h): p for p, h in hch['pins'].items()}
+        stuck = []
+        for desc, hole in _unshifted_elements(ref, hand, delta):
+            node = node_of(hole)
+            r_pin, h_pin = rpins.get(node), hpins.get(node)
+            if r_pin == h_pin:
+                continue
+            where = (f'pin {h_pin} 행' if h_pin is not None
+                     else f'참조에서는 pin {r_pin} 행, 지금은 칩 밖')
+            stuck.append(f'{desc} {_addr(hole)} ({where})')
+        if not stuck:
+            continue
+        how = []
+        if delta:
+            how.append(f'참조보다 {delta:+d}행 옮겨졌')
+        if hcol != rcol:
+            how.append(f'pin 1 이 {hcol} 열로 뒤집혔')
+        out.append(HandFinding(
+            'H14', '치명', key,
+            '고 '.join(how) + '는데 다음 요소가 참조 좌표에 남아 그 핀 행에 '
+            '앉았다: ' + ', '.join(stuck)))
+    return out
+
+
 def check_placement(ref, hand):
     """H9 브리지 행 차이 · H10 칩 자리 차이(행·방향). 둘 다 표기다.
 
@@ -580,7 +674,7 @@ def check_paperwork(ref, hand):
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
 _RULES = [check_holes, check_power, check_signals, check_led_chains,
-          check_rails, check_placement, check_paperwork]
+          check_rails, check_chip_follow, check_placement, check_paperwork]
 
 
 def compare(ref, hand):
