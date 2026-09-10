@@ -59,8 +59,9 @@ def resolve_circuit_filenames(
     experiment: int,
     page_count: int,
     round_dir: Optional[Path] = None,
+    pdf_path: Optional[str | Path] = None,
 ) -> List[str]:
-    """netlist.md 및 검토 전사를 참조하여 쪽별 아카이빙 파일명을 결정한다.
+    """netlist.md 및 검토 전사/PDF 텍스트를 참조하여 쪽별 아카이빙 파일명을 결정한다.
 
     파일명 규칙: {실험폴더명}_{소단원}_손그림_{회로명}.png
     (예: 실험01_1-1_손그림_3입력_AND.png, 실험01_3_손그림_복합논리회로.png)
@@ -104,23 +105,92 @@ def resolve_circuit_filenames(
             t = re.sub(r"^[A-Za-z0-9]+[ ·]*실험\s*[\d-]+[)]?\s*", "", s.title)
             name_part = re.sub(r"[^\w가-힣-]+", "_", t).strip("_")
 
+        # 범용 토큰 집합 (소단원, 회로명, 제목에서 추출한 키워드 및 IC 칩 모델명)
+        tokens = set()
+        for t_src in [sub_item, name_part, s.title]:
+            for tok in re.findall(r"[A-Za-z0-9가-힣]+", t_src):
+                if len(tok) >= 2 or tok.isdigit():
+                    tokens.add(tok.upper())
+        for ic in s.ics:
+            tokens.add(ic.upper())
+
         fname = f"{folder_name}_{sub_item}_손그림_{name_part}.png"
         circuit_info.append({
             "section": s,
             "sub_item": sub_item,
             "name_part": name_part,
             "filename": fname,
+            "ics": [ic.upper() for ic in s.ics],
+            "tokens": tokens,
         })
 
-    # 전사 파일이 있으면 페이지별 회로 매칭 시도 (페이지 셔플 대응)
+    def _score_circuit_candidate(
+        ci: dict,
+        text: str,
+        chips: Optional[List[str]] = None,
+        circuit_id: str = "",
+    ) -> int:
+        score = 0
+        t_clean = re.sub(r"\s+", "", text).upper()
+        t_upper = text.upper()
+
+        # 1. 소단원 번호 일치 (예: '1-1', '2-1', '3')
+        sub = ci["sub_item"].upper()
+        if sub and (sub in t_upper or sub.replace("-", "") in t_clean):
+            score += 15
+
+        # 2. 회로명 전체 포함 (예: '3입력_AND', '복합논리회로', 'CMOS_전달특성')
+        name_clean = re.sub(r"[_ ]+", "", ci["name_part"]).upper()
+        if name_clean in t_clean:
+            score += 25
+
+        # 3. 토큰 일치도 (단어별 매칭)
+        for tok in ci["tokens"]:
+            if len(tok) <= 1:
+                continue
+            # 서브스트링 충돌 방지 (예: 'AND'가 'NAND'의 일부로 오인되거나 'OR'가 'NOR'의 일부로 오인되는 경우)
+            if tok == "AND" and "NAND" in t_clean and "INPUTAND" not in t_clean and " AND" not in t_upper:
+                continue
+            if tok == "OR" and "NOR" in t_clean and " OR" not in t_upper and "1-2" not in t_clean:
+                continue
+            if tok in t_clean or tok in t_upper:
+                score += 6
+
+        # 4. 칩 매칭 (전사 데이터에 칩 정보가 있는 경우)
+        if chips:
+            for c in chips:
+                c_up = c.upper()
+                if any(c_up in ic or ic in c_up for ic in ci["ics"]):
+                    score += 10
+
+        # 5. circuit ID 매칭 (예: e1_and, e1_or, e2_cmos)
+        if circuit_id:
+            cid = circuit_id.lower()
+            if any(tok.lower() in cid for tok in ci["tokens"] if len(tok) >= 3):
+                score += 10
+
+        return score
+
+    # 전사 파일 및 PDF 텍스트를 이용해 페이지별 회로 매칭 시도 (페이지 셔플 대응)
     filenames: List[str] = []
     used_indices = set()
 
     trans_dir = round_dir / "전사" if round_dir else None
     has_transcripts = trans_dir and trans_dir.is_dir()
 
+    pdf_doc = None
+    if pdf_path:
+        try:
+            import fitz
+            pdf_doc = fitz.open(str(pdf_path))
+        except Exception:
+            pdf_doc = None
+
     for i in range(page_count):
-        matched_filename = None
+        best_candidate_idx = None
+        highest_score = 0
+
+        # 1. 전사 파일 매칭
         if has_transcripts:
             tf = trans_dir / f"p{i+1}.json"
             if tf.is_file():
@@ -128,31 +198,52 @@ def resolve_circuit_filenames(
                     with open(tf, "r", encoding="utf-8") as f:
                         tdata = json.load(f)
                     ttitle = tdata.get("title", "")
-                    tcircuit = tdata.get("circuit", "").lower()
+                    tcircuit = tdata.get("circuit", "")
+                    tchips = [c.get("label", "") for c in tdata.get("chips", [])]
+                    full_text = f"{ttitle} {tcircuit}"
+
                     for c_idx, ci in enumerate(circuit_info):
                         if c_idx in used_indices:
                             continue
-                        if ci["sub_item"] in ttitle:
-                            matched_filename = ci["filename"]
-                            used_indices.add(c_idx)
-                            break
-                        if ci["name_part"] in ttitle or (ttitle and ttitle in ci["name_part"]):
-                            matched_filename = ci["filename"]
-                            used_indices.add(c_idx)
-                            break
-                        if "comb" in tcircuit and "복합" in ci["name_part"]:
-                            matched_filename = ci["filename"]
-                            used_indices.add(c_idx)
-                            break
+                        sc = _score_circuit_candidate(ci, full_text, chips=tchips, circuit_id=tcircuit)
+                        if sc > highest_score:
+                            highest_score = sc
+                            best_candidate_idx = c_idx
                 except Exception:
                     pass
 
-        if matched_filename:
+        # 2. PDF 내 텍스트/OCR 레이어에서 키워드 감지 (전사 점수가 낮거나 없는 경우)
+        if highest_score < 10 and pdf_doc is not None and i < len(pdf_doc):
+            try:
+                page_text = pdf_doc[i].get_text()
+                for c_idx, ci in enumerate(circuit_info):
+                    if c_idx in used_indices:
+                        continue
+                    sc = _score_circuit_candidate(ci, page_text)
+                    if sc > highest_score:
+                        highest_score = sc
+                        best_candidate_idx = c_idx
+            except Exception:
+                pass
+
+        if best_candidate_idx is not None and highest_score >= 5:
+            matched_filename = circuit_info[best_candidate_idx]["filename"]
+            used_indices.add(best_candidate_idx)
             filenames.append(matched_filename)
-        elif i < len(circuit_info):
-            filenames.append(circuit_info[i]["filename"])
         else:
-            filenames.append(f"{folder_name}_손그림_p{i+1}.png")
+            fallback_fn = None
+            for c_idx, ci in enumerate(circuit_info):
+                if c_idx not in used_indices:
+                    fallback_fn = ci["filename"]
+                    used_indices.add(c_idx)
+                    break
+            if fallback_fn:
+                filenames.append(fallback_fn)
+            else:
+                filenames.append(f"{folder_name}_손그림_p{i+1}.png")
+
+    if pdf_doc is not None:
+        pdf_doc.close()
 
     return filenames
 
@@ -201,7 +292,7 @@ def export_hand_diagrams(
     page_count = len(doc)
     doc.close()
 
-    filenames = resolve_circuit_filenames(experiment, page_count, round_dir=round_dir)
+    filenames = resolve_circuit_filenames(experiment, page_count, round_dir=round_dir, pdf_path=src_pdf)
 
     saved_paths: List[Path] = []
     for i in range(page_count):

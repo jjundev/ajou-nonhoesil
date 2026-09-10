@@ -70,6 +70,34 @@ class TestExportHandDiagrams(unittest.TestCase):
             ]
             self.assertEqual(filenames, expected)
 
+    def test_resolve_circuit_filenames_shuffled_pdf(self):
+        import fitz
+        # Create temporary shuffled PDF: [2, 4, 0, 3, 1]
+        # Page 0 (new) -> 2 (2-1 NAND)
+        # Page 1 (new) -> 4 (3 복합)
+        # Page 2 (new) -> 0 (1-1 AND)
+        # Page 3 (new) -> 3 (2-2 NOR)
+        # Page 4 (new) -> 1 (1-2 OR)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shuffled_path = Path(tmpdir) / "shuffled.pdf"
+            src_doc = fitz.open(str(self.pdf_path))
+            shuffled_doc = fitz.open()
+            for idx in [2, 4, 0, 3, 1]:
+                shuffled_doc.insert_pdf(src_doc, from_page=idx, to_page=idx)
+            shuffled_doc.save(str(shuffled_path))
+            shuffled_doc.close()
+            src_doc.close()
+
+            filenames = ehd.resolve_circuit_filenames(1, 5, pdf_path=shuffled_path)
+            expected = [
+                "실험01_2-1_손그림_3입력_NAND.png",
+                "실험01_3_손그림_복합논리회로.png",
+                "실험01_1-1_손그림_3입력_AND.png",
+                "실험01_2-2_손그림_3입력_NOR.png",
+                "실험01_1-2_손그림_3입력_OR.png",
+            ]
+            self.assertEqual(filenames, expected)
+
     def test_cli(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             exit_code = ehd.main(["1", str(self.pdf_path), "--out", tmpdir, "--dpi", "100"])
