@@ -10,7 +10,7 @@
 import unittest
 
 from scripts.lab import hand_compare as hc
-from scripts.lab.hand_transcript import Diagram
+from scripts.lab.hand_transcript import Diagram, chip_pins
 
 
 def _wire(a, b, kind='sig'):
@@ -546,6 +546,18 @@ class Paperwork(unittest.TestCase):
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H10']
         self.assertTrue(found)
         self.assertEqual(found[0].grade, '표기')
+
+    def test_H10_칩이_뒤집히면_표기로_알린다(self):
+        """노치가 아래를 보게 그린 칩. 배선이 함께 뒤집혀 있으면 회로는 맞다."""
+        ref, hand = self._pair()
+        ch = hand.chips[1]
+        ch['pin1_col'] = 'f'
+        ch['pins'] = chip_pins(ch['block'], ch['pin1_row'], 'f')
+        found = [f for f in hc.check_placement(ref, hand) if f.rule == 'H10']
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].grade, '표기')
+        self.assertEqual(found[0].where, '74HC00')
+        self.assertIn('f 열', found[0].message)
 
     def test_H12_학번_미기재를_잡는다(self):
         ref, hand = self._pair()

@@ -510,25 +510,33 @@ CIRCUIT_WORDS = {
 
 
 def check_placement(ref, hand):
-    """H9 브리지 행 차이 · H10 칩 행 차이. 둘 다 표기다.
+    """H9 브리지 행 차이 · H10 칩 자리 차이(행·방향). 둘 다 표기다.
 
-    칩이 밀려도 배선이 함께 옮겨져 있으면 그림은 유효하다. 그래도 알리는
-    이유는 체크리스트의 좌표 표기와 어긋나기 때문이다 — 같이 제출한다면
-    맞춰 두는 편이 낫다.
+    칩이 밀리거나 뒤집혀도 배선이 함께 옮겨져 있으면 그림은 유효하다. 그래도
+    알리는 이유는 체크리스트의 좌표 표기와 어긋나기 때문이다 — 같이 제출한다면
+    맞춰 두는 편이 낫다. 옮겨진 자리를 배선이 **안** 따라간 것은 H14 가 본다.
     """
     out = []
     rmap, hmap = {}, {}
     for key, ch in zip(chip_keys(ref), ref.chips):
-        rmap[key] = ch['pin1_row']
+        rmap[key] = (ch['pin1_row'], ch.get('pin1_col', 'e'))
     for key, ch in zip(chip_keys(hand), hand.chips):
-        hmap[key] = ch['pin1_row']
-    for key, rrow in rmap.items():
-        hrow = hmap.get(key)
-        if hrow is not None and hrow != rrow:
+        hmap[key] = (ch['pin1_row'], ch.get('pin1_col', 'e'))
+    for key, (rrow, rcol) in rmap.items():
+        got = hmap.get(key)
+        if got is None:
+            continue
+        hrow, hcol = got
+        if hrow != rrow:
             out.append(HandFinding(
                 'H10', '표기', key,
                 f'참조는 pin 1 이 {rrow}행인데 손그림은 {hrow}행이다 '
                 f'({hrow - rrow:+d}행). 배선이 함께 옮겨져 있으면 회로는 맞다'))
+        if hcol != rcol:
+            out.append(HandFinding(
+                'H10', '표기', key,
+                f'참조는 pin 1 이 {rcol} 열인데 손그림은 {hcol} 열이다 — '
+                '칩이 뒤집혀 있다. 배선이 함께 뒤집혀 있으면 회로는 맞다'))
 
     # 메시지가 행만 말하므로 **행만 비교한다.** 종류까지 넣어 비교하면 전사가
     # `kind` 를 빠뜨렸을 때 '[29,30]인데 [29,30]이다' 라는 자기모순이 나온다
