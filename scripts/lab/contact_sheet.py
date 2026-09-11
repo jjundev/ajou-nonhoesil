@@ -1,4 +1,4 @@
-"""실험사진을 항목별로 한 장에 합성한다 (④ write-result-report §사진 배치).
+"""실험사진을 항목별로 한 장에 합성한다 (export-photo-sheet 스킬의 엔진).
 
 `<실험NN>/실험사진/<항목> <입력비트>.jpg` (예: `1-1 000.jpg`, `3-1 11.jpg`) 를
 항목마다 2열 격자로 묶어 `<실험NN>/실험사진/시트/` 에 JPEG 한 장씩 낸다.
@@ -14,27 +14,32 @@
 노션 무료 플랜의 업로드 상한(5 MB)을 넘지 않도록 저장 후 크기를 검사한다.
 
 사용:
-    python -m scripts.lab.contact_sheet <실험번호> [--dry-run]
+    python -m scripts.lab.contact_sheet <실험번호> --check          # 파일명·기록 대조만. 문제 있으면 종료 코드 1
+    python -m scripts.lab.contact_sheet <실험번호> --dry-run        # 캡션만 출력
+    python -m scripts.lab.contact_sheet <실험번호>                  # 합성
+    python -m scripts.lab.contact_sheet <실험번호> --only 2-1       # 한 항목만 다시
+    python -m scripts.lab.contact_sheet <실험번호> --tile-width 800 # 타일 폭(기본 1000)
+    python -m scripts.lab.contact_sheet <실험번호> --photo-dir DIR  # 사진 폴더 대체(시험용)
 """
 from __future__ import annotations
 
 import argparse
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from . import config, md
 
-TILE_W = 1000            # 타일 폭(px). 세로 사진이면 1000×1333
-TILE_H = 1333
+DEFAULT_TILE_W = 1000    # 타일 폭(px). 세로 사진이면 1000×1333
 CAPTION_H = 72
 GAP = 24
 MAX_BYTES = 5 * 1024 * 1024
 COLS = 2
 
+_PHOTO_EXT = {".jpg", ".jpeg", ".png"}
 _FILE = re.compile(r"^(?P<item>[\d]+(?:-[\d]+)?)\s+(?P<bits>[01]+)\.(?:jpe?g|png)$", re.I)
 _ITEM_HEADING = re.compile(r"^##\s+(?P<id>E\d+\.P[\w-]+)\s+·\s+(?P<title>.+)$")
 _ITEM_TOKEN = re.compile(r"실험\s*(?P<tok>\d+(?:-\d+)?)\)")
@@ -59,6 +64,17 @@ class ItemRecord:
     inputs: list        # ['A', 'B', 'C']
     outputs: list       # ['L1', 'L2']
     rows: dict          # bits -> (expected list, check cell)
+
+
+@dataclass
+class Plan:
+    """항목 하나의 합성 계획. `problems` 가 비어 있어야 만든다."""
+    token: str
+    record: ItemRecord | None
+    out: Path
+    photos: list = field(default_factory=list)      # [(bits, Path)]
+    captions: list = field(default_factory=list)    # photos 와 같은 순서
+    problems: list = field(default_factory=list)    # 문자열
 
 
 def _font(size: int) -> ImageFont.FreeTypeFont:
@@ -88,7 +104,6 @@ def load_records(record_path: Path) -> list[ItemRecord]:
     out = []
     for n, (i, m) in enumerate(heads):
         end = heads[n + 1][0] if n + 1 < len(heads) else len(lines)
-        # 표 구분선 줄 번호(1-based)가 이 항목 구간에 드는 첫 표
         tbl = next((t for t in tables if i < t.line - 1 < end), None)
         if tbl is None:
             continue
@@ -109,52 +124,103 @@ def load_records(record_path: Path) -> list[ItemRecord]:
     return out
 
 
-def _match_item(token: str, records: list[ItemRecord]) -> ItemRecord:
+def _match_item(token: str, records: list[ItemRecord]) -> ItemRecord | None:
     for r in records:
         if r.token == token:
             return r
     head = token.split("-")[0]
     hits = [r for r in records if r.token == head]
-    if len(hits) == 1:
-        return hits[0]
-    raise ContactSheetError(f"사진 파일의 항목 토큰 `{token}` 에 맞는 기록.md 항목이 없다")
+    return hits[0] if len(hits) == 1 else None
 
 
 def _caption(rec: ItemRecord, bits: str) -> str:
     if len(bits) != len(rec.inputs):
         raise ContactSheetError(
-            f"{rec.title}: 입력이 {len(rec.inputs)}개인데 파일명 비트가 `{bits}` 다")
+            f"입력이 {len(rec.inputs)}개인데 파일명 비트가 `{bits}` 다")
     if bits not in rec.rows:
-        raise ContactSheetError(f"{rec.title}: 기록.md 에 `{bits}` 행이 없다")
+        raise ContactSheetError(f"기록.md 에 `{bits}` 행이 없다")
     expected, check = rec.rows[bits]
     if not check:
         raise ContactSheetError(
-            f"{rec.title} `{bits}`: 확인 칸이 비어 있다(시험하지 않은 행) — "
-            "사진 파일명이나 기록.md 중 하나가 틀렸다. 캡션을 지어내지 않는다")
+            f"`{bits}` 확인 칸이 비어 있다(시험하지 않은 행) — "
+            "파일명이나 기록.md 중 하나가 틀렸다. 캡션을 지어내지 않는다")
     if check == "✓":
         states = expected
     else:
-        # 불일치 행: 관찰값을 `L1=0 L2=1` 또는 `0 1` 형태로 적어 둔 것을 받는다
         vals = re.findall(r"[01]", check)
         if len(vals) != len(rec.outputs):
             raise ContactSheetError(
-                f"{rec.title} `{bits}`: 확인 칸 `{check}` 에서 출력 {len(rec.outputs)}개를 "
-                "읽지 못했다")
+                f"`{bits}` 확인 칸 `{check}` 에서 출력 {len(rec.outputs)}개를 읽지 못했다")
         states = vals
     ins = " ".join(f"{n}={b}" for n, b in zip(rec.inputs, bits))
     outs = " · ".join(f"{n} {'켜짐' if s == '1' else '꺼짐'}" for n, s in zip(rec.outputs, states))
     return f"{ins}  →  {outs}"
 
 
-def _tile(path: Path, caption: str, font) -> Image.Image:
+def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None) -> tuple[list[Plan], list[str]]:
+    """합성 계획을 세운다. 파일을 만들지 않는다.
+
+    반환: (항목별 Plan 목록, 어느 항목에도 속하지 않는 문제 목록 — 규칙 밖 파일명 등)
+    """
+    exp_dir = Path(config.experiment_dir(experiment))
+    photo_dir = photo_dir or exp_dir / "실험사진"
+    record = exp_dir / "체크리스트" / "기록.md"
+    if not record.exists():
+        raise ContactSheetError(f"{record} 가 없다")
+    if not photo_dir.is_dir():
+        raise ContactSheetError(f"{photo_dir} 가 없다")
+    records = load_records(record)
+
+    loose: list[str] = []
+    groups: dict[str, list[tuple[str, Path]]] = {}
+    for p in sorted(photo_dir.iterdir()):
+        if not p.is_file() or p.suffix.lower() not in _PHOTO_EXT:
+            continue
+        m = _FILE.match(p.name)
+        if not m:
+            loose.append(f"파일명이 `<항목> <입력비트>.jpg` 규칙 밖: {p.name}")
+            continue
+        groups.setdefault(m.group("item"), []).append((m.group("bits"), p))
+    if not groups and not loose:
+        raise ContactSheetError(f"{photo_dir} 에 사진이 없다")
+
+    plans = []
+    for token, photos in groups.items():
+        if only and token != only:
+            continue
+        rec = _match_item(token, records)
+        photos.sort(key=lambda t: t[0])
+        out = photo_dir / "시트" / (
+            f"{exp_dir.name}_{rec.token}_사진_{_slug(rec.title)}.jpg" if rec else f"{exp_dir.name}_{token}_사진.jpg")
+        pl = Plan(token=token, record=rec, out=out, photos=photos)
+        if rec is None:
+            pl.problems.append(f"항목 토큰 `{token}` 에 맞는 기록.md 항목이 없다")
+        else:
+            seen = set()
+            for bits, p in photos:
+                if bits in seen:
+                    pl.problems.append(f"{p.name}: `{bits}` 조합 사진이 둘 이상이다")
+                seen.add(bits)
+                try:
+                    pl.captions.append(_caption(rec, bits))
+                except ContactSheetError as e:
+                    pl.problems.append(f"{p.name}: {e}")
+                    pl.captions.append(None)
+        plans.append(pl)
+    if only and not plans:
+        raise ContactSheetError(f"`--only {only}` 에 해당하는 사진이 없다")
+    return plans, loose
+
+
+def _tile(path: Path, caption: str, font, tile_w: int, tile_h: int) -> Image.Image:
     im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
-    im.thumbnail((TILE_W, TILE_H))
-    tile = Image.new("RGB", (TILE_W, TILE_H + CAPTION_H), "white")
-    tile.paste(im, ((TILE_W - im.width) // 2, CAPTION_H + (TILE_H - im.height) // 2))
+    im.thumbnail((tile_w, tile_h))
+    tile = Image.new("RGB", (tile_w, tile_h + CAPTION_H), "white")
+    tile.paste(im, ((tile_w - im.width) // 2, CAPTION_H + (tile_h - im.height) // 2))
     d = ImageDraw.Draw(tile)
-    d.rectangle((0, 0, TILE_W, CAPTION_H), fill=(30, 30, 30))
+    d.rectangle((0, 0, tile_w, CAPTION_H), fill=(30, 30, 30))
     tw = d.textlength(caption, font=font)
-    d.text(((TILE_W - tw) / 2, 14), caption, fill="white", font=font)
+    d.text(((tile_w - tw) / 2, 14), caption, fill="white", font=font)
     return tile
 
 
@@ -167,56 +233,67 @@ def _save_under_limit(sheet: Image.Image, out: Path) -> int:
     raise ContactSheetError(f"{out.name}: 품질을 낮춰도 5 MB 를 넘는다 ({size} B)")
 
 
-def build(experiment: int, dry_run: bool = False) -> list[tuple[Path, list[str]]]:
-    exp_dir = Path(config.experiment_dir(experiment))
-    photo_dir = exp_dir / "실험사진"
-    record = exp_dir / "체크리스트" / "기록.md"
-    if not record.exists():
-        raise ContactSheetError(f"{record} 가 없다")
-    records = load_records(record)
-
-    groups: dict[str, list[tuple[str, Path]]] = {}
-    for p in sorted(photo_dir.iterdir()):
-        m = _FILE.match(p.name)
-        if not m:
-            continue
-        groups.setdefault(m.group("item"), []).append((m.group("bits"), p))
-    if not groups:
-        raise ContactSheetError(f"{photo_dir} 에 `<항목> <비트>.jpg` 사진이 없다")
-
-    font = None if dry_run else _font(30)
-    out_dir = photo_dir / "시트"
+def build(plans: list[Plan], tile_w: int = DEFAULT_TILE_W) -> list[tuple[Path, int]]:
+    """문제 없는 Plan 만 합성한다. 문제 있는 Plan 이 하나라도 있으면 아무것도 만들지 않는다."""
+    bad = [p for p in plans if p.problems]
+    if bad:
+        raise ContactSheetError(
+            "대조에 실패한 항목이 있어 합성하지 않는다: " + ", ".join(p.token for p in bad))
+    tile_h = round(tile_w * 4 / 3)
+    font = _font(round(tile_w * 0.03))
     results = []
-    for token, photos in groups.items():
-        rec = _match_item(token, records)
-        photos.sort(key=lambda t: t[0])
-        captions = [_caption(rec, bits) for bits, _ in photos]
-        out = out_dir / f"{exp_dir.name}_{rec.token}_사진_{_slug(rec.title)}.jpg"
-        if not dry_run:
-            out_dir.mkdir(exist_ok=True)
-            rows = -(-len(photos) // COLS)
-            tile_h = TILE_H + CAPTION_H
-            sheet = Image.new("RGB", (COLS * TILE_W + (COLS + 1) * GAP,
-                                      rows * tile_h + (rows + 1) * GAP), "white")
-            for k, ((_, p), cap) in enumerate(zip(photos, captions)):
-                x = GAP + (k % COLS) * (TILE_W + GAP)
-                y = GAP + (k // COLS) * (tile_h + GAP)
-                sheet.paste(_tile(p, cap, font), (x, y))
-            _save_under_limit(sheet, out)
-        results.append((out, captions))
+    for pl in plans:
+        pl.out.parent.mkdir(exist_ok=True)
+        rows = -(-len(pl.photos) // COLS)
+        th = tile_h + CAPTION_H
+        sheet = Image.new("RGB", (COLS * tile_w + (COLS + 1) * GAP, rows * th + (rows + 1) * GAP), "white")
+        for k, ((_, p), cap) in enumerate(zip(pl.photos, pl.captions)):
+            x = GAP + (k % COLS) * (tile_w + GAP)
+            y = GAP + (k // COLS) * (th + GAP)
+            sheet.paste(_tile(p, cap, font, tile_w, tile_h), (x, y))
+        results.append((pl.out, _save_under_limit(sheet, pl.out)))
     return results
+
+
+def _print_check(plans: list[Plan], loose: list[str]) -> int:
+    n_bad = len(loose) + sum(len(p.problems) for p in plans)
+    print("| 항목 | 사진 수 | 문제 |")
+    print("|---|---|---|")
+    for pl in plans:
+        print(f"| {pl.token} | {len(pl.photos)} | {'; '.join(pl.problems) or '없음'} |")
+    for msg in loose:
+        print(f"| – | – | {msg} |")
+    print(f"\n대조 결과: 문제 {n_bad}건")
+    return 1 if n_bad else 0
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("experiment", type=int)
+    ap.add_argument("--check", action="store_true", help="파일명·기록 대조만 하고 표로 보고한다")
     ap.add_argument("--dry-run", action="store_true", help="캡션만 출력하고 파일을 만들지 않는다")
+    ap.add_argument("--only", metavar="항목", help="이 항목 토큰(예: 2-1)만 다룬다")
+    ap.add_argument("--tile-width", type=int, default=DEFAULT_TILE_W, metavar="PX")
+    ap.add_argument("--photo-dir", type=Path, help="사진 폴더를 대체한다(시험용)")
     a = ap.parse_args(argv)
     try:
-        for out, captions in build(a.experiment, a.dry_run):
-            print(out)
-            for c in captions:
-                print("   ", c)
+        plans, loose = plan(a.experiment, a.photo_dir, a.only)
+        if a.check:
+            return _print_check(plans, loose)
+        if loose:
+            for msg in loose:
+                print("오류:", msg, file=sys.stderr)
+            return 1
+        for pl in plans:
+            print(pl.out)
+            for (bits, p), cap in zip(pl.photos, pl.captions):
+                print(f"    {p.name:14s} {cap or '(캡션 없음)'}")
+            for msg in pl.problems:
+                print("    오류:", msg)
+        if a.dry_run:
+            return 1 if any(p.problems for p in plans) else 0
+        for out, size in build(plans, a.tile_width):
+            print(f"저장 {out}  {size // 1024} KB")
     except ContactSheetError as e:
         print("오류:", e, file=sys.stderr)
         return 1
