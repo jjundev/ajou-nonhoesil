@@ -1,0 +1,306 @@
+{
+  "page": 5,
+  "circuit": "e1_comb",
+  "title": "복합논리회로",
+  "signed": false,
+  "chips": [
+    {
+      "label": "74HC04",
+      "block": "좌",
+      "pin1_row": 7,
+      "pin1_col": "e"
+    },
+    {
+      "label": "74HC08",
+      "block": "좌",
+      "pin1_row": 18,
+      "pin1_col": "e"
+    },
+    {
+      "label": "74HC32",
+      "block": "우",
+      "pin1_row": 10,
+      "pin1_col": "e"
+    }
+  ],
+  "wires": [
+    {
+      "color": "빨강",
+      "desc": "전원장치 +5V 잭",
+      "from": "전원잭(빨강)",
+      "to": "좌 VCC레일3행"
+    },
+    {
+      "color": "파랑",
+      "desc": "전원장치 0V 잭",
+      "from": "전원잭(회색)",
+      "to": "좌 GND레일4행"
+    },
+    {
+      "color": "빨강",
+      "desc": "74HC04 pin 14 -> +5V 레일",
+      "from": "좌 g7",
+      "to": "좌 중앙VCC레일7행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC04 pin 5 미사용 입력",
+      "from": "좌 GND레일11행",
+      "to": "좌 a11"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC04 pin 7 -> GND 레일",
+      "from": "좌 GND레일13행",
+      "to": "좌 a13"
+    },
+    {
+      "color": "빨강",
+      "desc": "74HC08 pin 14 -> +5V 레일",
+      "from": "좌 g18",
+      "to": "좌 중앙VCC레일18행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 7 -> GND 레일",
+      "from": "좌 GND레일24행",
+      "to": "좌 d24"
+    },
+    {
+      "color": "빨강",
+      "desc": "74HC32 pin 14 -> +5V 레일",
+      "from": "우 g10",
+      "to": "우 VCC레일10행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC32 pin 7 -> GND 레일",
+      "from": "우 중앙GND레일16행",
+      "to": "우 d16"
+    },
+    {
+      "color": "검정",
+      "desc": "입력 A -> 74HC04 pin 1",
+      "from": "좌 GND레일7행",
+      "to": "좌 b7"
+    },
+    {
+      "color": "검정",
+      "desc": "입력 A 갈래 -> 74HC32 pin 4",
+      "from": "좌 c7",
+      "to": "우 a13"
+    },
+    {
+      "color": "검정",
+      "desc": "입력 A 갈래 -> 74HC32 pin 1",
+      "from": "우 d13",
+      "to": "우 d10"
+    },
+    {
+      "color": "검정",
+      "desc": "입력 B -> 74HC08 pin 2",
+      "from": "좌 GND레일19행",
+      "to": "좌 a19"
+    },
+    {
+      "color": "검정",
+      "desc": "입력 B 갈래 -> 74HC32 pin 5",
+      "from": "좌 b19",
+      "to": "우 b14"
+    },
+    {
+      "color": "초록",
+      "desc": "A' (74HC04 pin 2) -> 74HC08 pin 1",
+      "from": "좌 c8",
+      "to": "좌 c18"
+    },
+    {
+      "color": "초록",
+      "desc": "A'·B (74HC08 pin 3) -> 74HC04 pin 3",
+      "from": "좌 d20",
+      "to": "좌 d9"
+    },
+    {
+      "color": "초록",
+      "desc": "Z (74HC04 pin 4) -> 74HC32 pin 2",
+      "from": "좌 b10",
+      "to": "우 b11"
+    },
+    {
+      "color": "검정",
+      "desc": "Z 노드 -> Z LED",
+      "from": "좌 a10",
+      "to": "좌 a26"
+    },
+    {
+      "color": "파랑",
+      "desc": "Z 저항 아래 -> GND",
+      "from": "좌 GND레일29행",
+      "to": "좌 a29"
+    },
+    {
+      "color": "검정",
+      "desc": "74HC32 pin 3 -> X LED",
+      "from": "우 c12",
+      "to": "우 c22"
+    },
+    {
+      "color": "파랑",
+      "desc": "X 저항 아래 -> GND",
+      "from": "우 중앙GND레일25행",
+      "to": "우 d25"
+    },
+    {
+      "color": "검정",
+      "desc": "74HC32 pin 6 -> Y LED",
+      "from": "우 a15",
+      "to": "우 a27"
+    },
+    {
+      "color": "파랑",
+      "desc": "Y 저항 아래 -> GND",
+      "from": "우 중앙GND레일29행",
+      "to": "우 a30"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC04 pin 13 미사용 입력",
+      "from": "좌 g8",
+      "to": "좌 중앙GND레일9행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC04 pin 11 미사용 입력",
+      "from": "좌 g10",
+      "to": "좌 중앙GND레일10행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC04 pin 9 미사용 입력",
+      "from": "좌 g12",
+      "to": "좌 중앙GND레일12행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 4 미사용 입력",
+      "from": "좌 GND레일21행",
+      "to": "좌 d21"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 5 미사용 입력",
+      "from": "좌 GND레일22행",
+      "to": "좌 d22"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 13 미사용 입력",
+      "from": "좌 g19",
+      "to": "좌 중앙GND레일19행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 12 미사용 입력",
+      "from": "좌 g20",
+      "to": "좌 중앙GND레일21행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 10 미사용 입력",
+      "from": "좌 g22",
+      "to": "좌 중앙GND레일22행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC08 pin 9 미사용 입력",
+      "from": "좌 g23",
+      "to": "좌 중앙GND레일23행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC32 pin 13 미사용 입력",
+      "from": "우 g11",
+      "to": "우 GND레일11행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC32 pin 12 미사용 입력",
+      "from": "우 g12",
+      "to": "우 GND레일12행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC32 pin 10 미사용 입력",
+      "from": "우 g14",
+      "to": "우 GND레일13행"
+    },
+    {
+      "color": "파랑",
+      "desc": "74HC32 pin 9 미사용 입력",
+      "from": "우 g15",
+      "to": "우 GND레일15행"
+    }
+  ],
+  "leds": [
+    {
+      "tag": "Z",
+      "anode": "좌 b26",
+      "cathode": "좌 b27"
+    },
+    {
+      "tag": "X",
+      "anode": "우 d22",
+      "cathode": "우 d23"
+    },
+    {
+      "tag": "Y",
+      "anode": "우 b27",
+      "cathode": "우 b28"
+    }
+  ],
+  "resistors": [
+    {
+      "tag": "Z",
+      "top": "좌 c27",
+      "bottom": "좌 c29"
+    },
+    {
+      "tag": "X",
+      "top": "우 e23",
+      "bottom": "우 e25"
+    },
+    {
+      "tag": "Y",
+      "top": "우 c28",
+      "bottom": "우 c30"
+    }
+  ],
+  "bridges": [
+    {
+      "kind": "gnd",
+      "from": "좌 GND레일31행",
+      "to": "좌 중앙GND레일31행"
+    },
+    {
+      "kind": "gnd",
+      "from": "좌 중앙GND레일30행",
+      "to": "우 중앙GND레일30행"
+    },
+    {
+      "kind": "gnd",
+      "from": "우 중앙GND레일31행",
+      "to": "우 GND레일31행"
+    },
+    {
+      "kind": "vcc",
+      "from": "좌 VCC레일33행",
+      "to": "좌 중앙VCC레일33행"
+    },
+    {
+      "kind": "vcc",
+      "from": "좌 중앙VCC레일34행",
+      "to": "우 VCC레일34행"
+    }
+  ],
+  "uncertain": []
+}
