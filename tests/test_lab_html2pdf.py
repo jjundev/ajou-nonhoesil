@@ -2,10 +2,19 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.lab.html2pdf import DEFAULT_CHROME, PdfError, html_to_pdf
+from scripts.lab import config
+from scripts.lab.html2pdf import PdfError, html_to_pdf, resolve_chrome
 
 
-@unittest.skipUnless(Path(DEFAULT_CHROME).exists(), "Chrome 이 없는 환경")
+def _chrome_available() -> bool:
+    try:
+        resolve_chrome()
+        return True
+    except PdfError:
+        return False
+
+
+@unittest.skipUnless(_chrome_available(), "Chrome 이 없는 환경")
 class TestChromeConversion(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -72,6 +81,44 @@ class TestSuccessRule(unittest.TestCase):
         chrome = self._stub("echo noise >&2\nexit 0\n")
         with self.assertRaises(PdfError):
             html_to_pdf(self.html, Path(self.tmp.name) / "none.pdf", chrome=chrome)
+
+
+class TestResolveChrome(unittest.TestCase):
+    """`chrome` 은 기기별 경로 목록이다. macOS·Windows 를 번갈아 쓰는데 경로가
+    하나뿐이던 동안에는 기기를 바꿀 때마다 PDF 변환이 전부 멈췄다."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _file(self, name: str) -> str:
+        path = Path(self.tmp.name) / name
+        path.write_text("", encoding="utf-8")
+        return str(path)
+
+    def test_이_머신에_있는_첫_경로를_고른다(self):
+        missing = str(Path(self.tmp.name) / "다른-기기-크롬")
+        first, second = self._file("chrome-a"), self._file("chrome-b")
+        self.assertEqual(resolve_chrome([missing, first, second]), first)
+
+    def test_경로_하나짜리_문자열도_그대로_받는다(self):
+        only = self._file("chrome")
+        self.assertEqual(resolve_chrome(only), only)
+
+    def test_하나도_없으면_시도한_경로를_전부_알린다(self):
+        a, b = "/없는/맥-크롬", r"C:\없는\chrome.exe"
+        with self.assertRaises(PdfError) as ctx:
+            resolve_chrome([a, b])
+        self.assertIn(a, str(ctx.exception))
+        self.assertIn(b, str(ctx.exception))
+        self.assertIn("과목정보.md", str(ctx.exception))
+
+    def test_과목정보에_맥과_윈도우_경로가_둘_다_있다(self):
+        info = config.load_course_info(config.find_project_root(Path(__file__)))
+        chrome = info["chrome"]
+        self.assertIsInstance(chrome, list)
+        self.assertTrue(any(c.startswith("/Applications/") for c in chrome), chrome)
+        self.assertTrue(any(c.lower().endswith("chrome.exe") for c in chrome), chrome)
 
 
 class TestErrors(unittest.TestCase):
