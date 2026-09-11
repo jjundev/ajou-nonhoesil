@@ -120,6 +120,7 @@ def generate_cover_pdf(
         "{{DEPARTMENT}}": info.get("department", "전자공학과"),
         "{{SUBMIT_DATE}}": date_str,
         "{{PROFESSOR}}": info.get("professor", ""),
+        "{{TEAM}}": str(info.get("team", "")),
         "{{STUDENT_IDS}}": str(info.get("student_ids", "")),
         "{{STUDENT_NAMES}}": str(info.get("student_names", "")),
     }

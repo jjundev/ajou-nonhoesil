@@ -276,31 +276,37 @@ class MissingIdentityTest(unittest.TestCase):
     def test_모든_필드가_비면_전부_보고한다(self):
         self.assertEqual(
             config.missing_identity({}),
-            ["student_ids", "student_names"],
+            ["team", "student_ids", "student_names"],
         )
 
     def test_None_과_빈_문자열을_모두_미확정으로_본다(self):
         # `~` 는 md 파서가 None 으로 준다. 빈 문자열도 표지에 찍히면 안 된다.
-        info = {"student_ids": "", "student_names": None}
+        info = {"team": "", "student_ids": "", "student_names": None}
         self.assertEqual(
-            config.missing_identity(info), ["student_ids", "student_names"]
+            config.missing_identity(info), ["team", "student_ids", "student_names"]
         )
 
     def test_다_채워지면_빈_리스트다(self):
-        info = {"student_ids": "202012345", "student_names": "홍길동"}
+        info = {"team": "5조", "student_ids": "202012345", "student_names": "홍길동"}
         self.assertEqual(config.missing_identity(info), [])
 
-    def test_조_번호는_게이트가_아니다(self):
-        """`team` 을 게이트로 되돌리지 않는다.
+    def test_게이트와_표지_인쇄값이_일치한다(self):
+        """게이트에는 실제로 표지에 찍히는 값만 두고, 찍히는 신원 값은 전부 둔다.
 
-        조 번호는 5조로 실재하고 `과목정보.md` 에 적혀 있다. 그런데도 이것이
-        게이트에 있으면 안 되는 이유는 **어느 템플릿도 그 값을 인쇄하지
-        않기** 때문이다 — 값이 비어 있던 동안 `missing_identity` 가 언제나
-        `["team"]` 을 돌려줘 ⑥ 이 표지를 못 냈다. 게이트에는 실제로 표지에
-        찍히는 값만 둔다. 값이 채워진 지금도 판정은 그 값을 보지 않는다.
+        `team` 이 이 규칙의 양쪽을 다 겪었다. 어느 템플릿도 인쇄하지 않던
+        동안 게이트에 있어서 ⑥ 이 "미확정: team" 으로 표지를 못 냈고
+        (2026-09-07 에 뺐다), 2026-09-12 에 표지에 5조를 찍기로 해 다시
+        들어왔다. 둘 중 한쪽만 고치면 이 테스트가 잡는다.
         """
-        self.assertNotIn("team", config.IDENTITY_FIELDS)
-        self.assertEqual(config.missing_identity({"team": None}), config.missing_identity({}))
+        root = config.find_project_root(Path(__file__))
+        cover = (root / ".claude/skills/make-lab-report-cover/template.html").read_text(
+            encoding="utf-8"
+        )
+        for field in config.IDENTITY_FIELDS:
+            with self.subTest(field=field):
+                self.assertIn("{{%s}}" % field.upper(), cover)
+        self.assertIn("{{TEAM}}", cover)
+        self.assertIn("team", config.IDENTITY_FIELDS)
 
     def test_실제_과목정보로_돌아간다(self):
         root = config.find_project_root(Path(__file__))
