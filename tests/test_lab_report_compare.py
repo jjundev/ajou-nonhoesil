@@ -98,6 +98,26 @@ class Compare(unittest.TestCase):
         self.assertTrue(any("헤딩" in x and "실험 1-2) 3-input OR gate" in x for x in d["structure"]), d["structure"])
         self.assertFalse(any(("표 " in x or "그림" in x) and "실험 1-1)" not in x for x in d["structure"]), d["structure"])
 
+    def test_소절_헤딩만_사라지면_남는_소절에_짝_없음을_적는다(self):
+        # `## 74HC 출력의 LED 직접 구동` 의 **헤딩 줄만** 지우면 그 본문은 앞
+        # 소절(`## 고장 모델로 다시 본 칩 테스트`)로 흡수된다 — `추가 공부` 아래
+        # 소절이 원본 2개에서 재생성 1개로 준다. 이름으로도 위치로도 짝을 못
+        # 찾은 원본 소절은 조용히 스킵되면 안 되고 "짝 없음" 으로 남아야 한다.
+        a = report_shape(_text(APPROVED))
+        parent = "추가 공부"
+        children_a = [s.heading for s in a.sections if s.parent == parent]
+        self.assertEqual(len(children_a), 2, children_a)
+
+        variant_text = _variant([("## 74HC 출력의 LED 직접 구동\n", "")])
+        b = report_shape(variant_text)
+        children_b = [s.heading for s in b.sections if s.parent == parent]
+        self.assertEqual(len(children_b), 1, children_b)
+
+        d = compare_reports(_text(APPROVED), variant_text)
+        self.assertTrue(
+            any("짝 없음" in x and "74HC 출력의 LED 직접 구동" in x for x in d["structure"]),
+            d["structure"])
+
 
 from scripts.lab.report_compare import fact_tokens, judgment_markdown
 
@@ -121,6 +141,19 @@ class Facts(unittest.TestCase):
 
     def test_자기대조는_fact_도_0(self):
         self.assertEqual(compare_reports(_text(APPROVED), _text(APPROVED))["fact"], [])
+
+    def test_이름이_바뀐_소절도_위치로_짝지어_사실을_비교한다(self):
+        # ④ 가 `추가 공부` 소절의 제목을 새로 쓰면서 내용도 고치는 회귀다 —
+        # 이름이 바뀐 `## 고장 모델로 다시 본 칩 테스트` 는 위치로 짝지어야
+        # 계속 대조되고(`structure` 의 헤딩 replace), 같은 대절의 다른 소절
+        # (`## 74HC 출력의 LED 직접 구동`)은 이름이 그대로라 여느 때처럼
+        # 정확히 짝지어 수치 변경을 잡는다 — 둘이 뒤섞여 밀리면 안 된다.
+        d = compare_reports(_text(APPROVED), _variant([
+            ("## 고장 모델로 다시 본 칩 테스트", "## 단일 고착 고장 모델로 본 칩 시험"),
+            ("9.4mA", "7.9mA"),
+        ]))
+        self.assertTrue(any("9.4mA" in x and "7.9mA" in x for x in d["fact"]), d["fact"])
+        self.assertTrue(any("replace" in x for x in d["structure"]), d["structure"])
 
 
 class Judgment(unittest.TestCase):

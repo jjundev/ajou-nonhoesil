@@ -146,14 +146,57 @@ def _key(s):
     return (s.parent, s.heading)
 
 
+def _label(s) -> str:
+    """대조 메시지에 쓸 절 이름. 소절은 대절을 붙여 같은 이름의 소절(실험 결과·
+    실험 사진 아래)을 구분한다."""
+    return f"{s.parent} / {s.heading}" if s.parent else s.heading
+
+
 def _pair_sections(a, b):
     """(대절 이름, 소절 이름) 으로 짝짓는다. 같은 이름의 소절이 대절마다 하나씩 있는
-    문서(실험 결과·실험 사진)라 대절을 붙여야 짝이 유일하다. 누락·추가는 structure 의
-    헤딩 수열 차이가 알린다."""
+    문서(실험 결과·실험 사진)라 대절을 붙여야 짝이 유일하다.
+
+    이름이 바뀐 소절(예: ④ 가 내용은 고치되 제목을 새로 쓴 경우)은 이름으로 못
+    찾으므로, 그 다음으로 **같은 대절 아래 여전히 못 찾은 `##` 소절끼리 등장
+    순서로** 짝짓는다 — 대절 P 에서 a 의 못 찾은 k 번째 소절은 b 의 못 찾은
+    k 번째 소절과 짝짓는다. 대절(`#`, level 1)은 이 위치 짝을 타지 않는다 —
+    이름이 그대로 유일한 열쇠다. 그래도 못 찾으면 `(x, None, False)` 로 돌려주고,
+    호출부가 "짝 없음" 을 알린다. 누락·추가 자체는 `_structure` 의 헤딩 수열
+    차이가 알린다.
+
+    돌려주는 것은 `(원본 절, 재생성 절 또는 None, 위치로_짝지었나)` 세 쌍이다.
+    """
     by_key = {}
     for s in b:
         by_key.setdefault(_key(s), s)
-    return [(s, by_key.get(_key(s))) for s in a]
+
+    exact, used_b = {}, set()
+    for s in a:
+        y = by_key.get(_key(s))
+        if y is not None:
+            exact[id(s)] = y
+            used_b.add(id(y))
+
+    # 대절별로, 정확한 이름 짝을 못 찾은 b 쪽 `##` 소절을 등장 순서로 모은다.
+    pool = {}
+    for s in b:
+        if id(s) in used_b or s.level != 2:
+            continue
+        pool.setdefault(s.parent, []).append(s)
+
+    next_idx = {}
+    out = []
+    for s in a:
+        y = exact.get(id(s))
+        positional = False
+        if y is None and s.level == 2:
+            lst = pool.get(s.parent, [])
+            i = next_idx.get(s.parent, 0)
+            if i < len(lst):
+                y, positional = lst[i], True
+                next_idx[s.parent] = i + 1
+        out.append((s, y, positional))
+    return out
 
 
 def _structure(a: ReportShape, b: ReportShape) -> list:
@@ -165,26 +208,29 @@ def _structure(a: ReportShape, b: ReportShape) -> list:
             if tag == "equal":
                 continue
             out.append(f"헤딩 {tag}: 원본 {ha[i1:i2]} / 재생성 {hb[j1:j2]}")
-    for x, y in _pair_sections(a.sections, b.sections):
+    for x, y, positional in _pair_sections(a.sections, b.sections):
+        prefix = "(위치 짝) " if positional else ""
         if y is None:
+            out.append(f"절 '{_label(x)}': 짝 없음 — 대조 생략")
             continue
         if len(x.tables) != len(y.tables):
-            out.append(f"절 '{x.heading}': 표 {len(x.tables)}개 / 재생성 {len(y.tables)}개")
+            out.append(f"{prefix}절 '{_label(x)}': 표 {len(x.tables)}개 / 재생성 {len(y.tables)}개")
         for k, (tx, ty) in enumerate(zip(x.tables, y.tables), 1):
             if len(tx[1]) != len(ty[1]):
-                out.append(f"절 '{x.heading}' 표 {k}: 행 {len(tx[1])} / 재생성 {len(ty[1])}")
+                out.append(f"{prefix}절 '{_label(x)}' 표 {k}: 행 {len(tx[1])} / 재생성 {len(ty[1])}")
         if x.images != y.images:
-            out.append(f"절 '{x.heading}': 그림 {x.images} / 재생성 {y.images}")
+            out.append(f"{prefix}절 '{_label(x)}': 그림 {x.images} / 재생성 {y.images}")
         if x.empty_blocks != y.empty_blocks:
-            out.append(f"절 '{x.heading}': 앞 여백 블록 {x.empty_blocks} / 재생성 {y.empty_blocks}")
+            out.append(f"{prefix}절 '{_label(x)}': 앞 여백 블록 {x.empty_blocks} / 재생성 {y.empty_blocks}")
     return out
 
 
 def _cells(a: ReportShape, b: ReportShape) -> list:
     out = []
-    for x, y in _pair_sections(a.sections, b.sections):
+    for x, y, positional in _pair_sections(a.sections, b.sections):
         if y is None:
             continue
+        prefix = "(위치 짝) " if positional else ""
         for k, (tx, ty) in enumerate(zip(x.tables, y.tables), 1):
             grid_x = [tx[0]] + tx[1]
             grid_y = [ty[0]] + ty[1]
@@ -192,9 +238,9 @@ def _cells(a: ReportShape, b: ReportShape) -> list:
                 for c, (cx, cy) in enumerate(zip(rx, ry), 1):
                     if cx != cy:
                         where = "헤더" if r == 0 else f"행{r}"
-                        out.append(f"절 '{x.heading}' 표 {k} {where} 열{c}: 원본 '{cx}' / 재생성 '{cy}'")
+                        out.append(f"{prefix}절 '{_label(x)}' 표 {k} {where} 열{c}: 원본 '{cx}' / 재생성 '{cy}'")
                 if len(rx) != len(ry):
-                    out.append(f"절 '{x.heading}' 표 {k} 행{r}: 셀 {len(rx)}개 / 재생성 {len(ry)}개")
+                    out.append(f"{prefix}절 '{_label(x)}' 표 {k} 행{r}: 셀 {len(rx)}개 / 재생성 {len(ry)}개")
     return out
 
 
@@ -231,29 +277,36 @@ def fact_tokens(sentences) -> Counter:
     return c
 
 
+def _fmt_tokens(items) -> str:
+    return ", ".join(f"{t}×{n}" if n > 1 else t for t, n in items) or "—"
+
+
 def _facts(a: ReportShape, b: ReportShape) -> list:
     out = []
-    for x, y in _pair_sections(a.sections, b.sections):
+    for x, y, positional in _pair_sections(a.sections, b.sections):
         if y is None:
             continue
+        prefix = "(위치 짝) " if positional else ""
         cx, cy = fact_tokens(x.sentences), fact_tokens(y.sentences)
         only_x = sorted((cx - cy).items())
         only_y = sorted((cy - cx).items())
         if only_x or only_y:
-            fmt = lambda items: ", ".join(f"{t}×{n}" if n > 1 else t for t, n in items) or "—"
-            out.append(f"절 '{x.heading}': 원본에만 {fmt(only_x)} / 재생성에만 {fmt(only_y)}")
+            out.append(f"{prefix}절 '{_label(x)}': 원본에만 {_fmt_tokens(only_x)} / "
+                       f"재생성에만 {_fmt_tokens(only_y)}")
     return out
 
 
 def _wording(a: ReportShape, b: ReportShape) -> list:
     out = []
-    for x, y in _pair_sections(a.sections, b.sections):
+    for x, y, positional in _pair_sections(a.sections, b.sections):
         if y is None:
             continue
+        prefix = "(위치 짝) " if positional else ""
         sx, sy = set(x.sentences), set(y.sentences)
         union = sx | sy
         j = (len(sx & sy) / len(union)) if union else 1.0
-        out.append(f"절 '{x.heading}': 문장 일치율 {j:.2f} (원본 {len(sx)} / 재생성 {len(sy)} / 공통 {len(sx & sy)})")
+        out.append(f"{prefix}절 '{_label(x)}': 문장 일치율 {j:.2f} "
+                   f"(원본 {len(sx)} / 재생성 {len(sy)} / 공통 {len(sx & sy)})")
     return out
 
 

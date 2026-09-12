@@ -1514,6 +1514,14 @@ class BodyStyle(unittest.TestCase):
                 "# 출처 및 참고문헌\n- Nexperia, 74HC_HCT08 — Rev. 9 — 2021-12-13, 5 V 조건\n")
         self.assertEqual(self._msgs(text), [])
 
+    def test_HTML_표_줄도_보지_않는다(self):
+        # 노션 되읽기는 표를 `<table>` 로 돌려준다 — 셀 안의 `5 V` 처럼 숫자
+        # 뒤 단위를 띄어 쓴 것은 표의 정상 표기라 파이프 표와 똑같이 걸러야
+        # 한다(`report_compare` 0단계가 이 함수를 baseline 에도 돌린다).
+        text = ("# 실험 결과\n"
+                "<table header-row=\"true\"><tr><td>전원</td></tr><tr><td>5 V</td></tr></table>\n")
+        self.assertEqual(self._msgs(text), [])
+
     def test_각_갈래는_한_건으로_요약하고_첫_줄을_적는다(self):
         msgs = self._msgs("# 고찰\nL1 이 켜졌다.\nL2 가 꺼졌다.\n")
         self.assertEqual(len(msgs), 1, msgs)

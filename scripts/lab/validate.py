@@ -724,24 +724,38 @@ _STYLE_PARTICLE = re.compile(
     r"(?=[\s,.)]|$)")
 _STYLE_UNIT = re.compile(r"\d (?:V|mA|μA|µA|Ω|kΩ|ns/V|ns|°C)(?![A-Za-z])")
 _STYLE_FENCE = re.compile(r"^\s*```")
+# `\b` 로 끊어야 `<table_of_contents/>`(문서 맨 앞 목차 블록) 를 표로 오인해
+# 남은 본문 전체를 "표 안" 으로 잘못 넘기지 않는다 — 닫는 태그가 영영 안 와
+# `in_html_table` 이 계속 True 로 눌어붙는다.
+_HTML_TABLE_OPEN = re.compile(r"<table\b", re.IGNORECASE)
+_HTML_TABLE_CLOSE = re.compile(r"</table\b", re.IGNORECASE)
 
 
 def check_body_style(md_text) -> list:
     """본문 문체 다섯 갈래를 warn 으로 잡는다. 갈래마다 Finding 하나.
 
-    참고문헌 절(`#` 헤딩에 `참고문헌`)과 표 줄, 펜스 코드 블록은 보지 않는다 —
-    서지에는 `Rev. 9 — 2021` 같은 em dash 와 영문·숫자가 정상이고, 표 셀은
-    `check_notion_markdown` 의 몫이다. ③ §절대 규칙 21·④ §절대 규칙 18(붙여쓰기),
+    참고문헌 절(`#` 헤딩에 `참고문헌`)과 표 줄(파이프 표, 노션이 되돌리는 HTML
+    `<table>` 표 둘 다), 펜스 코드 블록은 보지 않는다 — 서지에는 `Rev. 9 — 2021`
+    같은 em dash 와 영문·숫자가 정상이고, 표 셀은 `check_notion_markdown` 의
+    몫이다(`report_compare` 의 0단계가 이 함수를 되읽은 HTML baseline 에도
+    돌리므로, HTML 표 줄을 걸러내지 않으면 표 안의 `5 V`·`—` 같은 정상값이
+    거짓 warn 이 된다). ③ §절대 규칙 21·④ §절대 규칙 18(붙여쓰기),
     ④ §절대 규칙 8(백틱·em dash·첫째) 의 기계 검사판이다. 폭은 실험01 결보
     v5 승인본에서 0건이 나오도록 맞췄다(`tests/test_lab_validate.py::BodyStyle`).
     """
     hits = {"백틱": [], "em dash": [], "첫째": [], "조사": [], "단위": []}
-    in_refs, in_fence = False, False
+    in_refs, in_fence, in_html_table = False, False, False
     for n, line in enumerate(md_text.splitlines(), 1):
         if _STYLE_FENCE.match(line):
             in_fence = not in_fence
             continue
         if in_fence:
+            continue
+        if _HTML_TABLE_OPEN.search(line):
+            in_html_table = True
+        if in_html_table:
+            if _HTML_TABLE_CLOSE.search(line):
+                in_html_table = False
             continue
         if line.startswith("#"):
             in_refs = "참고문헌" in line

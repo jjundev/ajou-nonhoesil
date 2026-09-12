@@ -126,7 +126,7 @@ def leak_scan(dest, tokens, exts=(".md", ".py", ".html", ".txt", ".json")) -> li
         for n, line in enumerate(lines, 1):
             for tok in tokens:
                 if tok in line:
-                    hits.append(f"{p.relative_to(dest)}:{n}: {tok}")
+                    hits.append(f"{p.relative_to(dest).as_posix()}:{n}: {tok}")
     return hits
 
 
@@ -147,5 +147,5 @@ def leak_sentences(approved_md, tree, min_len=25, exts=(".md", ".py", ".txt")) -
         except UnicodeDecodeError:
             continue
         for s in sorted(wanted & found, key=len, reverse=True):
-            hits.append(f"{p.relative_to(tree)}: {s[:120]}")
+            hits.append(f"{p.relative_to(tree).as_posix()}: {s[:120]}")
     return hits
