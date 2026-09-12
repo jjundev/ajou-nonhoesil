@@ -285,6 +285,7 @@ def approved_report_path(experiment: int) -> Path:
 def judgment_markdown(experiment: int, regen_md, leak_hits=(), agent_report: str = "") -> str:
     """판정 초안. 도구가 셀 수 있는 것만 센다 — `fact` 의 세 갈래 분류(규칙 없음 /
     검사 없음 / 환경)와 산문은 사람이 원본과 나란히 읽고 표시한다."""
+    leak_hits = list(leak_hits)
     approved = approved_report_path(experiment).read_text(encoding="utf-8")
     regen = Path(regen_md).read_text(encoding="utf-8")
     d = compare_reports(approved, regen)
@@ -301,7 +302,7 @@ def judgment_markdown(experiment: int, regen_md, leak_hits=(), agent_report: str
           "- 사실 토큰 차이마다 위 세 칸 중 하나에 표시한다. `규칙 없음`·`검사 없음` 만 규칙 제안의 재료다.",
           "- 산문은 절마다 원본과 나란히 읽는다 — 사실이 같고 문장만 다른 것은 결함이 아니다.",
           "- 에이전트 보고 3항(⑤ 첫 실행 error/warn/info)으로 **규칙이 막았나 / 검사가 잡았나** 를 가른다.",
-          "", f"## 7. 구조적 누출 {len(list(leak_hits))}건"] + [f"- {x}" for x in leak_hits]
+          "", f"## 7. 구조적 누출 {len(leak_hits)}건"] + [f"- {x}" for x in leak_hits]
     L += ["", "> 구조 대조가 0건이라는 것은 같은 틀이라는 뜻이고, 같은 보고서라는 뜻이 아니다.", ""]
     if agent_report:
         L += ["## 에이전트 보고 (원문)", "", agent_report, ""]

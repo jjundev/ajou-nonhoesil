@@ -136,3 +136,12 @@ class Judgment(unittest.TestCase):
         self.assertIn("a.md: 문장", text)
         self.assertIn("보고 본문", text)
         self.assertIn("[ ] 규칙 없음", text)
+
+    def test_누출_목록이_제너레이터여도_전부_적힌다(self):
+        d = Path(tempfile.mkdtemp())
+        regen = d / "실험01_결과보고서.md"
+        regen.write_text(_text(APPROVED), encoding="utf-8")
+        text = judgment_markdown(1, regen, leak_hits=(h for h in ["a.md: 하나", "b.md: 둘"]))
+        self.assertIn("## 7. 구조적 누출 2건", text)
+        self.assertIn("- a.md: 하나", text)
+        self.assertIn("- b.md: 둘", text)
