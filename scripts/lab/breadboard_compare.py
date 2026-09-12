@@ -88,8 +88,17 @@ def render_chain(boards, out_dir, template_path=None):
         bb, err = _call(fn, os.path.join(out_dir, name), template_path, stage, base)
         if bb is None and not err:
             err = "빌더가 렌더러를 돌려주지 않는다 — 끝에 `return bb` 가 없다"
-        out.append(Board(name, _cid(fn), stage, bb, err))
-        base = bb.snapshot() if bb is not None else None
+        board = Board(name, _cid(fn), stage, bb, err)
+        out.append(board)
+        base = None
+        if bb is not None:
+            try:
+                base = bb.snapshot()
+            except Exception as e:  # noqa: BLE001 — 판정 재료다. snapshot() 도 죽을 수 있다 —
+                # 이 보드는 그렸지만 기준선을 못 낸다. `error` 에 적고 다음 보드는
+                # 기준선 없이 간다(빌더가 죽었을 때와 같은 계약).
+                msg = f"snapshot() 실패: {type(e).__name__}: {e}"
+                board.error = f"{board.error} · {msg}" if board.error else msg
     return out
 
 

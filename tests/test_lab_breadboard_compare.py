@@ -124,6 +124,20 @@ class BrokenBuilder(unittest.TestCase):
         t = bc.transition(boards[0])
         self.assertEqual(t["steps"], None)
 
+    def test_snapshot_이_죽어도_사슬은_계속된다(self):
+        class DeadSnapshot:
+            def snapshot(self):
+                raise RuntimeError("스냅샷 붕괴")
+
+        def dead_snapshot_builder(path, template_path=None, stage=None, baseline=None):
+            return DeadSnapshot()
+
+        mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_dead_snapshot")
+        boards = bc.render_chain([("x.png", dead_snapshot_builder, None),
+                                  mod.E1_BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
+        self.assertIn("snapshot", boards[0].error)
+        self.assertEqual(boards[1].error, "")
+
 
 class Judgment(unittest.TestCase):
     def test_승인본을_승인본과_대조한_판정문(self):
