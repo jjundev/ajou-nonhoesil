@@ -64,10 +64,18 @@ def _cid(fn):
 
 def _call(fn, path, template_path, stage, baseline):
     """빌더를 규약 시그니처로 부른다. 시그니처가 다르면 위치 인자 둘로 한 번 더 —
-    그것도 죽으면 오류 문자열. 어느 쪽이었는지는 오류 문자열에 남긴다."""
+    그것도 죽으면 오류 문자열. 어느 쪽이었는지는 오류 문자열에 남긴다.
+
+    TypeError 라고 다 시그니처 문제는 아니다 — 빌더 안쪽(예: `stage` 분기)에서
+    난 TypeError 도 여기로 온다. 그걸 시그니처 불일치로 오인해 `(path,
+    template_path)` 로 다시 부르면 stage 없는 완성 보드가 조용히 그 자리를
+    대신한다. `e.__traceback__.tb_next` 로 가른다 — 인자 바인딩 실패는 호출
+    프레임에서 바로 나서 다음 프레임이 없고, 빌더 내부 실패는 있다."""
     try:
         return fn(path, template_path, stage=stage, baseline=baseline), ""
     except TypeError as e:
+        if e.__traceback__.tb_next is not None:   # 빌더 안쪽에서 난 TypeError — 시그니처 문제가 아니다
+            return None, f"TypeError: {e}"
         try:
             return fn(path, template_path), f"stage/baseline 인자를 안 받는다 ({e})"
         except Exception as e2:  # noqa: BLE001 — 판정 재료다
@@ -115,22 +123,24 @@ def render_finals(finals, out_dir, template_path=None):
 
 
 def pair_boards(ref, new):
-    """이름이 같은 것끼리 먼저, 남은 것끼리는 순서로. 남는 쪽은 None 짝."""
-    by_name = {b.name: b for b in new}
-    pairs, used = [], set()
+    """이름이 같은 것끼리 먼저, 남은 것끼리는 순서로. 남는 쪽은 None 짝.
+
+    같은 이름이 둘이면(재생성이 한 파일명에 두 장을 썼다 — 이 도구가 잡아야 할
+    결함이다) 큐로 하나씩 소비한다 — dict 로 접으면 앞 장이 조용히 사라진다.
+    """
+    from collections import defaultdict, deque
+    queue = defaultdict(deque)
+    for b in new:
+        queue[b.name].append(b)
+    pairs = []
     for r in ref:
-        if r.name in by_name:
-            pairs.append([r, by_name[r.name]])
-            used.add(r.name)
-        else:
-            pairs.append([r, None])
-    rest = [b for b in new if b.name not in used]
+        pairs.append([r, queue[r.name].popleft() if queue[r.name] else None])
+    ids = {id(p[1]) for p in pairs}
+    rest = [b for b in new if id(b) not in ids]
     for p in pairs:
         if p[1] is None and rest:
             p[1] = rest.pop(0)
-    pairs = [tuple(p) for p in pairs]
-    pairs += [(None, b) for b in rest]
-    return pairs
+    return [tuple(p) for p in pairs] + [(None, b) for b in rest]
 
 
 def _compare_diagrams(ref_d, new_d):
@@ -173,6 +183,10 @@ def seats(boards):
 
 
 def transition(board):
+    """보드 하나의 전환 수치 다섯 개: `steps`(번호 받은 줄) · `kept`(회색으로 남긴 것) ·
+    `removed`(걷는다 표에 올라간 것) · `swaps`(칩 교체·삽입) · `partial`(단계가 회로
+    전체를 다 그리지 못했는지). 빌더가 죽어 `board.bb` 가 없으면(또는 `board` 자체가
+    None, 즉 짝이 없으면) 다섯 값 모두 `None` — 「0」 이 아니다, 재지 못했다는 뜻이다."""
     if board is None or board.bb is None:
         return {"name": board.name if board else "—", "steps": None, "kept": None,
                 "removed": None, "swaps": None, "partial": None,
@@ -199,8 +213,8 @@ def check_filename(name, subs):
         return "틀이 `실험NN_<소단원>_결선도_<회로명>[_<k>단계_<이름>].png` 가 아니다"
     if m.group(2) not in subs:
         return f"<소단원> `{m.group(2)}` 이 명세 항목에 없다 (후보: {', '.join(sorted(subs))})"
-    if not STAGE_RE.match(name) and re.search(r"_단계\d+|단계_\d+|_\d+단계$", m.group(3)):
-        return "단계 표기가 `_<k>단계_<이름>` 순서가 아니다"
+    if not STAGE_RE.match(name) and "단계" in m.group(3):
+        return "단계 표기가 `_<k>단계_<이름>` 순서가 아니거나 회로명이 없다"
     return ""
 
 
@@ -293,6 +307,7 @@ def judge(experiment, approved_renderer, regen_renderer, netlist_path, regen_png
               "- 3·4절의 치명·기능마다: SKILL.md 에 그 넷을 정하는 문장이 **있었는가**(있는데 안 읽힘) / **없었는가**(규칙 없음). 8절 3항의 첫 렌더 결과로 verify() 가 잡았는지도 가른다.",
               "- 5절: 자리가 다르면 「슬롯」 문단이 자리 **선택**을 지시하는지 본다 — 자리표는 netlist 가 주므로 여기서 갈리면 netlist 를 안 읽은 것이다.",
               "- 6절: 재생성 kept 가 승인본보다 작으면 공통 배선을 같은 헬퍼·같은 순서로 안 그린 것(「기준선」 문단). removed 가 다르면 단계 분해가 다른 것.",
+              "- 도구의 사각지대: 아무것도 꽂히지 않은 레일 구간의 브리지가 빠진 것은 넷 차이로 안 보인다(hand_compare 가 부착물 있는 넷만 본다). 실물 보드에서는 레일이 끊기므로 PNG 를 볼 때 브리지 수를 센다.",
               "- 7절: 파일명 갈림은 「파일명 규칙」 문단이 <소단원>·<이름> 을 어디서 가져오라 했는지 본다.",
               "- 1절의 누출 자리와 일치하는 것은 합격 근거로 세지 않는다.",
               "", "> 치명 0 은 넷이 같다는 뜻이고, 그림이 따라 그리기 좋다는 뜻이 아니다. PNG 는 눈으로 한 번 본다.", ""]

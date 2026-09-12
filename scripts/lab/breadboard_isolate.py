@@ -56,5 +56,6 @@ def strip_e1(src: str) -> str:
 
 
 def strip_e1_file(path) -> None:
+    """격리 트리의 렌더러를 제자리에서 걷어낸다 — `build_isolated_tree(edit=)` 훅이 부른다."""
     p = Path(path)
     p.write_text(strip_e1(p.read_text(encoding="utf-8")), encoding="utf-8")

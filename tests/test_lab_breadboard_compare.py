@@ -62,6 +62,11 @@ class Rendered(unittest.TestCase):
         self.assertTrue(t["partial"])
         self.assertGreater(t["removed"], 0)
 
+    def test_다른_회로끼리_대조하면_치명_기능이_난다(self):
+        # 자기대조 0건은 대조기가 아무것도 안 봐도 통과한다 — 다른 넷은 잡아야 의미가 있다
+        bad = [f for f in bc.net_findings(self.boards[0], self.boards[2]) if f.grade in bc.BLOCKING]
+        self.assertTrue(bad, "대조기가 서로 다른 넷을 구별하지 못한다")
+
 
 class Pairing(unittest.TestCase):
     def _b(self, name, cid="e1_x"):
@@ -90,6 +95,26 @@ class Pairing(unittest.TestCase):
         pairs = bc.pair_boards(ref, new[:1])
         self.assertEqual(pairs[1][1], None)
 
+    def test_같은_이름이_둘이면_둘_다_남는다(self):
+        a = self._b("a.png")
+        a1, a2 = self._b("a.png"), self._b("a.png")
+        pairs = bc.pair_boards([a], [a1, a2])
+        self.assertEqual(len(pairs), 2)
+        self.assertIs(pairs[0][0], a)
+        self.assertIs(pairs[0][1], a1)
+        self.assertIsNone(pairs[1][0])
+        self.assertIs(pairs[1][1], a2)
+
+    def test_승인본_이름이_겹쳐도_재생성_한_장을_두_번_쓰지_않는다(self):
+        a = self._b("a.png")
+        a1 = self._b("a.png")
+        pairs = bc.pair_boards([a, a], [a1])
+        self.assertEqual(len(pairs), 2)
+        self.assertIs(pairs[0][0], a)
+        self.assertIs(pairs[0][1], a1)
+        self.assertIs(pairs[1][0], a)
+        self.assertIsNone(pairs[1][1])
+
 
 class Filenames(unittest.TestCase):
     SUBS = {"1-1", "1-2", "2-1", "2-2", "3"}
@@ -103,7 +128,9 @@ class Filenames(unittest.TestCase):
 
     def test_어긋난_이름은_이유를_낸다(self):
         for bad in ("실험1-1_결선도_AND.png", "실험01_1-1_AND.png", "실험01_9_결선도_AND.png",
-                    "실험01_2-1_결선도_NAND_단계1.png", "e1_and.png"):
+                    "실험01_2-1_결선도_NAND_단계1.png", "e1_and.png",
+                    "실험01_1-1_결선도_3단계_이름.png",
+                    "실험01_1-1_결선도_AND_2단계_이름_추가.png"):
             self.assertNotEqual(bc.check_filename(bad, self.SUBS), "", bad)
 
 
@@ -137,6 +164,27 @@ class BrokenBuilder(unittest.TestCase):
                                   mod.E1_BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
         self.assertIn("snapshot", boards[0].error)
         self.assertEqual(boards[1].error, "")
+
+    def test_빌더_안의_TypeError_는_시그니처_불일치로_보지_않는다(self):
+        def fn(path, template_path=None, stage=None, baseline=None):
+            if stage is not None:
+                raise TypeError("내부 버그")
+            return object()
+
+        boards = bc.render_chain([("x.png", fn, 1)], tempfile.mkdtemp(), TEMPLATE)
+        self.assertIsNone(boards[0].bb)
+        self.assertIn("내부 버그", boards[0].error)
+        self.assertNotIn("안 받는다", boards[0].error)
+
+    def test_시그니처가_다른_빌더는_위치_인자로_다시_부른다(self):
+        mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_sig")
+
+        def fn(path, template_path=None):
+            return mod.build_e1_and(path, template_path)
+
+        boards = bc.render_chain([("x.png", fn, 1)], tempfile.mkdtemp(), TEMPLATE)
+        self.assertIsNotNone(boards[0].bb)
+        self.assertIn("안 받는다", boards[0].error)
 
 
 class Judgment(unittest.TestCase):
