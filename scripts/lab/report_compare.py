@@ -205,6 +205,46 @@ def _references(a: ReportShape, b: ReportShape) -> list:
     return out
 
 
+# 문장이 달라도 사실이 같으면 같은 보고서다 — 그래서 문장이 아니라 토큰을 센다.
+# 수치+단위, IC 이름, 벡터 집합, 입력 조건, 핀 번호, 고착 표기, (미확인).
+_FACT = re.compile(
+    r"\d+(?:\.\d+)?(?:V|mA|μA|µA|Ω|kΩ|ns/V|ns|°C)"
+    r"|74[A-Z]*\d{2,3}"
+    r"|\{[01,\s]+\}"
+    r"|[A-Z]=(?:[A-Z]=)*[01]"          # A=1, A=B=1, C=0
+    r"|\d+번 핀|핀\s?\d+"
+    r"|고착-[01]"
+    r"|\(미확인\)")
+_PIN_KO = re.compile(r"^(\d+)번 핀$")
+
+
+def fact_tokens(sentences) -> Counter:
+    """`1번 핀` 과 `핀 1` 은 같은 사실이라 `핀 1` 로 모은다."""
+    c = Counter()
+    for s in sentences:
+        for tok in _FACT.findall(s):
+            tok = re.sub(r"\s+", " ", tok).strip()
+            m = _PIN_KO.match(tok)
+            if m:
+                tok = f"핀 {m.group(1)}"
+            c[tok] += 1
+    return c
+
+
+def _facts(a: ReportShape, b: ReportShape) -> list:
+    out = []
+    for x, y in _pair_sections(a.sections, b.sections):
+        if y is None:
+            continue
+        cx, cy = fact_tokens(x.sentences), fact_tokens(y.sentences)
+        only_x = sorted((cx - cy).items())
+        only_y = sorted((cy - cx).items())
+        if only_x or only_y:
+            fmt = lambda items: ", ".join(f"{t}×{n}" if n > 1 else t for t, n in items) or "—"
+            out.append(f"절 '{x.heading}': 원본에만 {fmt(only_x)} / 재생성에만 {fmt(only_y)}")
+    return out
+
+
 def _wording(a: ReportShape, b: ReportShape) -> list:
     out = []
     for x, y in _pair_sections(a.sections, b.sections):
@@ -224,10 +264,45 @@ def compare_reports(approved_text: str, regen_text: str) -> dict:
         "cell": _cells(a, b),
         "references": _references(a, b),
         "style": [f.message for f in validate.check_body_style(regen_text)],
-        "fact": [],
+        "fact": _facts(a, b),
         "wording": _wording(a, b),
     }
 
 
 def counted(diffs: dict) -> int:
     return sum(len(v) for k, v in diffs.items() if k != "wording")
+
+
+_ROOT = Path(__file__).resolve().parents[2]   # scripts/lab/report_compare.py → 저장소 루트
+
+
+def approved_report_path(experiment: int) -> Path:
+    """승인본 경로. 저장소 루트 기준 절대경로라 어느 CWD 에서 불러도 같다."""
+    return (_ROOT / config.experiment_dir(experiment) / "output"
+            / f"{config.experiment_folder_name(experiment)}_결과보고서.md")
+
+
+def judgment_markdown(experiment: int, regen_md, leak_hits=(), agent_report: str = "") -> str:
+    """판정 초안. 도구가 셀 수 있는 것만 센다 — `fact` 의 세 갈래 분류(규칙 없음 /
+    검사 없음 / 환경)와 산문은 사람이 원본과 나란히 읽고 표시한다."""
+    approved = approved_report_path(experiment).read_text(encoding="utf-8")
+    regen = Path(regen_md).read_text(encoding="utf-8")
+    d = compare_reports(approved, regen)
+    L = [f"# 실험{experiment} 결과보고서 격리 재생성 판정 초안", "",
+         "이 회차는 세션 메모리 주입 아래서 돌았다.", "",
+         f"## 1. 구조 {len(d['structure'])}건"] + [f"- {x}" for x in d["structure"]]
+    L += ["", f"## 2. 표 셀 {len(d['cell'])}건"] + [f"- {x}" for x in d["cell"]]
+    L += ["", f"## 3. 참고문헌 {len(d['references'])}건"] + [f"- {x}" for x in d["references"]]
+    L += ["", f"## 4. 문체 {len(d['style'])}건 (재생성물, `check_body_style`)"] + [f"- {x}" for x in d["style"]]
+    L += ["", f"## 5. 사실 토큰 {len(d['fact'])}건 — 한 줄마다 하나에 표시한다"]
+    L += [f"- {x}\n    - [ ] 규칙 없음  [ ] 검사 없음  [ ] 환경(데이터시트 못 열음 등)" for x in d["fact"]]
+    L += ["", "## 6. 산문 일치율 (기준 밖 — 나란히 읽는다)"] + [f"- {x}" for x in d["wording"]]
+    L += ["", "사람이 볼 것:",
+          "- 사실 토큰 차이마다 위 세 칸 중 하나에 표시한다. `규칙 없음`·`검사 없음` 만 규칙 제안의 재료다.",
+          "- 산문은 절마다 원본과 나란히 읽는다 — 사실이 같고 문장만 다른 것은 결함이 아니다.",
+          "- 에이전트 보고 3항(⑤ 첫 실행 error/warn/info)으로 **규칙이 막았나 / 검사가 잡았나** 를 가른다.",
+          "", f"## 7. 구조적 누출 {len(list(leak_hits))}건"] + [f"- {x}" for x in leak_hits]
+    L += ["", "> 구조 대조가 0건이라는 것은 같은 틀이라는 뜻이고, 같은 보고서라는 뜻이 아니다.", ""]
+    if agent_report:
+        L += ["## 에이전트 보고 (원문)", "", agent_report, ""]
+    return "\n".join(L)

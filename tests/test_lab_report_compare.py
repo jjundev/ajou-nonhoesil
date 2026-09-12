@@ -97,3 +97,42 @@ class Compare(unittest.TestCase):
         self.assertEqual(d["cell"], [], d["cell"])
         self.assertTrue(any("헤딩" in x and "실험 1-2) 3-input OR gate" in x for x in d["structure"]), d["structure"])
         self.assertFalse(any(("표 " in x or "그림" in x) and "실험 1-1)" not in x for x in d["structure"]), d["structure"])
+
+
+from scripts.lab.report_compare import fact_tokens, judgment_markdown
+
+
+class Facts(unittest.TestCase):
+    def test_사실_토큰을_뽑는다(self):
+        c = fact_tokens(["전류는 9.4mA 이고 74HC08 의 1번 핀이 고착-1 이면 A=B=1 에서 {01, 10, 11} 가 (미확인)"])
+        self.assertEqual(c["9.4mA"], 1)
+        self.assertEqual(c["74HC08"], 1)
+        self.assertEqual(c["핀 1"], 1)
+        self.assertEqual(c["고착-1"], 1)
+        self.assertEqual(c["A=B=1"], 1)
+        self.assertEqual(c["{01, 10, 11}"], 1)
+        self.assertEqual(c["(미확인)"], 1)
+
+    def test_수치가_바뀌면_fact_에_양쪽_값이_적힌다(self):
+        d = compare_reports(_text(APPROVED), _variant([("9.4mA", "7.9mA")]))
+        self.assertEqual(len(d["fact"]), 1, d["fact"])
+        self.assertIn("9.4mA", d["fact"][0])
+        self.assertIn("7.9mA", d["fact"][0])
+
+    def test_자기대조는_fact_도_0(self):
+        self.assertEqual(compare_reports(_text(APPROVED), _text(APPROVED))["fact"], [])
+
+
+class Judgment(unittest.TestCase):
+    def test_일곱_절과_메모리_주입_문장이_있다(self):
+        d = Path(tempfile.mkdtemp())
+        regen = d / "실험01_결과보고서.md"
+        regen.write_text(_variant([("9.4mA", "7.9mA")]), encoding="utf-8")
+        text = judgment_markdown(1, regen, leak_hits=["a.md: 문장"], agent_report="보고 본문")
+        for n in range(1, 8):
+            self.assertIn(f"## {n}.", text)
+        self.assertIn("세션 메모리 주입", text)
+        self.assertIn("7.9mA", text)
+        self.assertIn("a.md: 문장", text)
+        self.assertIn("보고 본문", text)
+        self.assertIn("[ ] 규칙 없음", text)
