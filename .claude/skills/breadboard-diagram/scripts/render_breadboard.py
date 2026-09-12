@@ -105,6 +105,10 @@ WIRE = {
 }
 KIND_KR = {'vcc': '+5V', 'gnd': '0V', 'sig': '신호', 'mid': '중간'}
 
+# 앞 단계에서 그대로 두는 배선·부품의 색. 네 색 팔레트(`WIRE`)에 넣지 않는다 —
+# 이것은 넷의 색이 아니라 "이번 단계에서 손대지 않는다" 는 표시다
+KEEP = (165, 165, 165, 255)
+
 # 계측기 리드는 **배선이 아니다.** 점퍼선으로 꽂는 게 아니라 프로브 팁과 집게로
 # 문다. 그래서 위 네 색에 끼워 넣지 않고 회색 점선으로 따로 그리고, 순서표도
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
@@ -119,7 +123,7 @@ JACK_KR = {'red': '빨강', 'yellow': '노랑', 'gray': '회색'}
 
 
 class BreadboardRenderer:
-    def __init__(self, template_path=None):
+    def __init__(self, template_path=None, baseline=None):
         if template_path is None:
             template_path = _default_template()
         if not os.path.exists(template_path):
@@ -185,6 +189,15 @@ class BreadboardRenderer:
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
         # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
         self.partial = False
+        # 앞 보드의 `snapshot()`. 같은 홀 쌍의 배선·같은 홀의 LED 사슬은 회색으로
+        # 그리고 번호를 주지 않는다 — 실험실에서는 그 선을 손대지 않는다.
+        # 기준선에 있었는데 이번에 안 그린 것은 `removed()` 가 "걷는다" 로 낸다.
+        # 실험01 실험실 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 됐다
+        self.baseline = baseline
+        self.kept = []          # 그대로 두는 배선·부품의 desc
+        self.swaps = []         # (앞 칩, 새 칩, block, pin1_row)
+        self._keep_parts = False  # led_chain 이 기준선 사슬을 그리는 동안 참
+        self.submit = True
         self.title = ""
         self.subtitle = ""
 
@@ -480,7 +493,7 @@ class BreadboardRenderer:
 
     # ---------------- 머리글 ----------------
 
-    def set_header(self, title, subtitle):
+    def set_header(self, title, subtitle, submit=True):
         """제목은 **잭 아래 빈 띠(y 165~238)** 에 넣는다.
 
         이전 판은 `[370,30,850,160]` 을 흰색으로 덮고 그 자리에 제목을 썼는데,
@@ -491,8 +504,10 @@ class BreadboardRenderer:
         self.title, self.subtitle = title, subtitle
         self.draw.text((28, 170), title, fill=(20, 40, 90, 255), font=self.font_title)
         self.draw.text((30, 200), subtitle, fill=(80, 90, 100, 255), font=self.font_subtitle)
-        self.draw.text((30, 220), "※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다",
-                       fill=(180, 50, 50, 255), font=self.font_kr_sm)
+        self.submit = submit
+        line = ("※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다" if submit
+                else "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다")
+        self.draw.text((30, 220), line, fill=(180, 50, 50, 255), font=self.font_kr_sm)
 
     def connect_jacks(self, block='left'):
         """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다."""
@@ -584,15 +599,25 @@ class BreadboardRenderer:
 
         `desc` 는 짧은 뜻풀이만 준다 — 어디서 어디로 가는지는 좌표에서
         자동으로 뽑는다 ('좌 b7 -> 좌 GND레일7행').
+
+        기준선(`baseline`)에 같은 (색, 끝점, 끝점) 이 있으면 **회색으로 그리고
+        번호를 주지 않는다** — 앞 단계에서 꽂아 둔 그대로다. 점유표·구간·레일
+        접촉은 똑같이 남긴다: 회색이어도 그림대로 꽂히는지는 verify() 가 본다.
         """
-        color = WIRE[kind]
+        key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
+        kept = self.baseline is not None and key in self.baseline['wires']
+        color = KEEP if kept else WIRE[kind]
         self.draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
+            self.touch_rail(kind, p[0])
         self._segments.append((kind, [tuple(p) for p in points], desc))
         self._register_pass(points)
+        if kept:
+            self.kept.append(desc)
+            return None
         if not self.numbered:
             return None
 
@@ -602,8 +627,6 @@ class BreadboardRenderer:
             marker_at = ((x0 + x1) // 2, (y0 + y1) // 2)
         self._marker(marker_at[0], marker_at[1], n, color)
 
-        for p in (points[0], points[-1]):
-            self.touch_rail(kind, p[0])
         frm = frm or self.addr(*points[0])
         to = to or self.addr(*points[-1])
         self.steps.append({'n': n, 'kind': kind, 'frm': frm, 'to': to,
@@ -617,6 +640,9 @@ class BreadboardRenderer:
         단계에는 반드시 준다** — 안 주면 표에는 번호가 있는데 그림에는 없어서,
         따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다.
         """
+        if self._keep_parts:
+            self.kept.append(desc)      # 기준선 사슬의 부품 줄 — 번호 없이 회색
+            return None
         if not self.numbered:
             return None
         n = len(self.steps) + 1
@@ -632,8 +658,10 @@ class BreadboardRenderer:
         self.resistors.append({'label': label,
                                'top': self.sym(x, self._row_of(y1)),
                                'bottom': self.sym(x, self._row_of(y2))})
-        wire_col = (100, 100, 100, 255)
-        body_col = (225, 195, 145, 255)
+        wire_col = KEEP if self._keep_parts else (100, 100, 100, 255)
+        body_col = (215, 215, 215, 255) if self._keep_parts else (225, 195, 145, 255)
+        if self._keep_parts:
+            bands = [KEEP] * 4
         ymid = (y1 + y2) // 2
         self.draw.line([(x, y1), (x, ymid - 12)], fill=wire_col, width=2)
         self.draw.line([(x, ymid + 12), (x, y2)], fill=wire_col, width=2)
@@ -652,6 +680,8 @@ class BreadboardRenderer:
         self.leds.append({'tag': label,
                           'anode': self.sym(x, self._row_of(y_anode)),
                           'cathode': self.sym(x, self._row_of(y_cathode))})
+        if self._keep_parts:
+            color_rgb = KEEP[:3]
         ymid = (y_anode + y_cathode) // 2
         self.draw.line([(x, y_anode), (x, ymid - 8)], fill=(130, 130, 130, 255), width=2)
         self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=(130, 130, 130, 255), width=2)
@@ -682,27 +712,34 @@ class BreadboardRenderer:
         i = group.index(x)
         step = 1 if i + 2 < len(group) else -1
         x_led, x_res = group[i + step], group[i + 2 * step]
-        y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
-        self.draw_led(x_led, y_a, y_k, color_rgb, tag)
-        self.draw_resistor(x_res, y_k, y_r, label="330Ω")
-        self.led_chains.append({'tag': tag,
-                                'signal': self.sym(x, top_row),
-                                'anode': self.sym(x_led, top_row),
-                                'cathode': self.sym(x_led, top_row + 1),
-                                'res_top': self.sym(x_res, top_row + 1),
-                                'res_bottom': self.sym(x_res, top_row + 3)})
-        self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
-                       f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
-                       f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
-                       marker_at=(x + marker_dx, y_k))
-        x_gnd = self.nearest_gnd_rail(x_led, block)
-        # 저항 행(top_row+3)에서 저항 열을 뺀 홀 가운데 레일에 제일 가까운 것
-        free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
-        x_from = min(free, key=lambda h: abs(h - x_gnd))
-        r_gnd = self.free_rail_row(top_row + 3, x_gnd)
-        self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
-                       'gnd', f'{tag} 저항 아래 -> GND',
-                       width=2, marker_at=(x_from - 22, y_r + 2))
+        key = (self.sym(x_led, top_row), self.sym(x_led, top_row + 1),
+               self.sym(x_res, top_row + 1), self.sym(x_res, top_row + 3))
+        # 기준선에 같은 네 홀의 사슬이 있으면 LED·저항·GND 점퍼 전부 회색이고
+        # 번호가 없다 — 앞 단계에서 꽂아 둔 그대로다. 플래그는 사슬을 그리는 동안만 선다
+        self._keep_parts = self.baseline is not None and key in self.baseline['chains']
+        try:
+            y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
+            self.draw_led(x_led, y_a, y_k, color_rgb, tag)
+            self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+            self.led_chains.append({'tag': tag,
+                                    'signal': self.sym(x, top_row),
+                                    'anode': self.sym(x_led, top_row),
+                                    'cathode': self.sym(x_led, top_row + 1),
+                                    'res_top': self.sym(x_res, top_row + 1),
+                                    'res_bottom': self.sym(x_res, top_row + 3)})
+            self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
+                           f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
+                           f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
+                           marker_at=(x + marker_dx, y_k))
+            x_gnd = self.nearest_gnd_rail(x_led, block)
+            free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
+            x_from = min(free, key=lambda h: abs(h - x_gnd))
+            r_gnd = self.free_rail_row(top_row + 3, x_gnd)
+            self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
+                           'gnd', f'{tag} 저항 아래 -> GND',
+                           width=2, marker_at=(x_from - 22, y_r + 2))
+        finally:
+            self._keep_parts = False
 
     # ---------------- 칩 ----------------
 
@@ -746,6 +783,13 @@ class BreadboardRenderer:
             pins[14 - i] = self.sym(c['f'], start_row + i)
         self.chips.append({'label': name, 'block': block,
                            'pin1_row': start_row, 'pins': pins})
+        if self.baseline is not None:
+            prev = self.baseline['chips'].get((block, start_row))
+            if prev != name:
+                # 같은 자리의 칩이 다르다 — 실험실에서 첫 번째로 할 일이다
+                self.swaps.append((prev, name, block, start_row))
+                self.step_note('sig', f'뽑는다: {prev or "(빈 자리)"}', f'꽂는다: {name}',
+                               f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체')
 
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
         """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
@@ -933,6 +977,24 @@ class BreadboardRenderer:
             for ln in self._wrap('· ' + n.replace('**', ''), self.font_step, 998 - 2 * x_pad):
                 d.text((x_pad, y), ln, fill=(90, 70, 70, 255), font=self.font_step)
                 y += 15
+        if self.baseline is not None:
+            d.text((x_pad, y),
+                   f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). 번호 = 이번 단계에서 새로 한다',
+                   fill=(90, 90, 90, 255), font=self.font_step)
+            y += 15
+            gone = self.removed()
+            if gone:
+                y += 6
+                d.text((x_pad, y), "앞 단계에서 걷는다 — 먼저 뽑고 ☐ 를 채운다",
+                       fill=(160, 30, 30, 255), font=self.font_kr_bold)
+                y += 20
+                for g in gone:
+                    d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
+                                outline=(120, 125, 130, 255), width=1)
+                    lines = self._wrap('걷기: ' + g, self.font_step, 998 - 2 * x_pad - 20)[:2]
+                    for k, ln in enumerate(lines):
+                        d.text((x_pad + 18, y + k * 14), ln, fill=(160, 30, 30, 255), font=self.font_step)
+                    y += max(18, len(lines) * 14 + 4)
         y += 8
 
         if not (self.numbered and self.steps):
@@ -999,6 +1061,55 @@ class BreadboardRenderer:
         d.text((x - (bbox[2]-bbox[0])/2 - bbox[0], y - (bbox[3]-bbox[1])/2 - bbox[1]),
                t, fill=color, font=self.font_num)
 
+    def _endpoint(self, p):
+        """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))`. `wiring()`
+        과 기준선 비교가 **같은 규칙**을 써야 해서 한 자리에 둔다."""
+        x, y = p
+        if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
+            color = min(JACKS, key=lambda k: abs(JACKS[k] - x))
+            return ('jack', color)
+        return ('hole', self.sym(x, self._row_of(y)))
+
+    def _sym_addr(self, end):
+        """`_endpoint()` 출력 -> '좌 b10' 처럼 읽히는 주소. `addr()` 과 같은 말이다."""
+        if end[0] == 'jack':
+            return '전원잭'
+        block, col, row = end[1]
+        name = self._addr_map[self.cols[block][col]]
+        return f'{name}{row}행' if '레일' in name else f'{name}{row}'
+
+    def snapshot(self):
+        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다."""
+        w = self.wiring()
+        return {
+            'wires': {(x['kind'], x['frm'], x['to']): x['desc'] for x in w['wires']},
+            'chains': {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom']): ch['tag']
+                       for ch in w['chains']},
+            'chips': {(ch['block'], ch['pin1_row']): ch['label'] for ch in w['chips']},
+        }
+
+    def removed(self):
+        """기준선에 있었는데 이번 보드에 없는 것 — 실험실에서 **걷을** 것."""
+        if self.baseline is None:
+            return []
+        drawn = {(k, self._endpoint(pts[0]), self._endpoint(pts[-1]))
+                 for k, pts, _ in self._segments}
+        out = []
+        for key, desc in self.baseline['wires'].items():
+            if key not in drawn:
+                out.append(f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])} · {desc}')
+        here = {(c['block'], c['pin1_row']) for c in self.chips}
+        for key, label in self.baseline['chips'].items():
+            if key not in here:
+                out.append(f'칩 {label} ({"좌" if key[0] == "left" else "우"} {key[1]}행) 뽑는다')
+        chains = {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom'])
+                  for ch in self.led_chains}
+        for key, tag in self.baseline['chains'].items():
+            if key not in chains:
+                out.append(f'LED {tag} 사슬 ({self._sym_addr(("hole", key[0]))}~'
+                           f'{self._sym_addr(("hole", key[3]))}) 뽑는다')
+        return out
+
     def wiring(self):
         """이 그림이 무엇을 어디에 꽂았는지 **기호 좌표**로 낸다.
 
@@ -1011,15 +1122,8 @@ class BreadboardRenderer:
         달기 위한 것이다 — 복합회로의 A 갈래가 초록 Z 선 아래 깔려 있어서
         따라 그린 사람이 통째로 빠뜨렸다.
         """
-        def endpoint(p):
-            x, y = p
-            if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
-                color = min(JACKS, key=lambda k: abs(JACKS[k] - x))
-                return ('jack', color)
-            return ('hole', self.sym(x, self._row_of(y)))
-
         wires = [{'kind': kind, 'desc': desc,
-                  'frm': endpoint(pts[0]), 'to': endpoint(pts[-1])}
+                  'frm': self._endpoint(pts[0]), 'to': self._endpoint(pts[-1])}
                  for kind, pts, desc in self._segments]
         return {
             'chips': list(self.chips),
