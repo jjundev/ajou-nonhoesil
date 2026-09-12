@@ -329,11 +329,22 @@ class Power(unittest.TestCase):
         self.assertIn('GND', msgs)
 
     def test_H4_미사용_입력_접지가_빠지면_잡는다(self):
+        """참조가 `rail: 'gnd'` 로 접지한 미사용 입력이 손그림에 없으면 H4 다
+        (실험02 처럼 교안이 접지를 지시한 주차)."""
         ref, hand = self._pair()
         self._drop_wires_touching(hand, hand.chips[0]['pins'][9])
+        ref.unused_inputs = [{'chip': '74HC08', 'pin': 9, 'rail': 'gnd',
+                              'block': 'left', 'pin1_row': ref.chips[0]['pin1_row']}]
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H4']
         self.assertTrue(found)
         self.assertEqual(found[0].grade, '기능')
+
+    def test_H4_개방_미사용_입력은_아무것도_요구하지_않는다(self):
+        """`rail: None` 은 접지 생략(실험01 규칙)이다. 손그림에 선이 없어도 H4 가 아니다."""
+        ref, hand = self._pair()
+        ref.unused_inputs = [{'chip': '74HC08', 'pin': 9, 'rail': None,
+                              'block': 'left', 'pin1_row': ref.chips[0]['pin1_row']}]
+        self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H4'], [])
 
     def test_H5_미사용_출력을_접지하면_잡는다(self):
         ref, hand = self._pair()

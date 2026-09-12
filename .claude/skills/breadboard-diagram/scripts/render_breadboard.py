@@ -870,6 +870,23 @@ class BreadboardRenderer:
         self.note(f'{chip} 미사용 출력 pin {pin_str} 은 **아무 데도 연결하지 않는다** '
                   f'— 개방(NC). GND 로 내리거나 출력끼리 묶으면 칩이 상한다.')
 
+    def mark_unused_inputs(self, pins, start_row, block='left', chip=''):
+        """미사용 게이트 입력을 **개방**으로 등록한다. 아무것도 그리지 않는다.
+
+        2026-09-11 실험01 실측: 미사용 입력을 접지하지 않아도 진리표가 같았고,
+        접지선은 NAND 순서표 20줄 중 12줄이었다. 학교 규정도 아니다(운영계획서
+        3.2 6) 은 손그림·학번·이름·날짜만 요구한다). 그래서 뺀다 — 교안이
+        미사용 핀 처리를 지시한 주차(실험02 p8)만 `connect_unused_inputs` 로
+        그린다. **사용하는 게이트의 입력은 여전히 반드시 물린다** — 그쪽이
+        R5ⓒ 가 잡는 진짜 결함이다.
+        """
+        for p in pins:
+            self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': None,
+                                       'block': block, 'pin1_row': start_row})
+        pin_str = ", ".join(str(p) for p in pins)
+        self.note(f'{chip} 미사용 입력 pin {pin_str} 은 접지하지 않는다 — 결과에 영향 '
+                  '없음(실험01 실측). 사용하는 게이트의 입력만 반드시 물린다.')
+
     # ---------------- 내보내기 ----------------
 
     def _wrap(self, text, font, max_w):
@@ -1256,6 +1273,10 @@ class BreadboardRenderer:
         # **R2 가 강제한다** — 그렇게 두면 `draw_chip` 이 e·f 열 홀에 리드를 둘씩
         # 꽂아 `_double` 에 걸리고, 그건 R5 보다 먼저 던진다
         open_pins = {(u['block'], u['pin1_row'], u['pin']) for u in self.unused_outputs}
+        # 개방으로 등록한 미사용 입력(`mark_unused_inputs`, rail None)도 뜬 핀이
+        # 아니다. 접지한 것(rail 'gnd'/'vcc')은 배선이 있으므로 여기 올 일이 없다
+        open_pins |= {(u['block'], u['pin1_row'], u['pin'])
+                      for u in self.unused_inputs if u.get('rail') is None}
         # (라벨, 스트립, 조사, 무엇이라 부를지). 칩 핀만 보던 것을 부품 다리까지 넓혔다 —
         # 양끝이 다 빈 스트립에 걸친 저항은 아무 규칙도 안 보고 지나갔고, 그림대로
         # 꽂으면 무부하 V_OL 을 재게 되는데 **실험실에서는 아무 이상이 없어 보인다.**

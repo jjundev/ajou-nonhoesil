@@ -342,6 +342,8 @@ def check_power(ref, hand):
         key, pin = u['chip'], u['pin']
         if key not in hkeys:
             continue
+        if u.get('rail') is None:
+            continue        # 개방(접지 생략) — 참조가 아무것도 요구하지 않는다
         want = 'VCC' if u.get('rail') == 'vcc' else 'GND'
         if ('RAIL', want) not in hsig.get((key, pin), frozenset()):
             out.append(HandFinding(
