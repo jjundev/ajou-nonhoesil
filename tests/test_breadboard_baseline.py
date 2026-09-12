@@ -55,7 +55,8 @@ class Baseline(unittest.TestCase):
         bb.draw_chip('74HC08', 7)
         n = bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig', '출력 -> L2')
         self.assertIsNone(n)
-        self.assertEqual(bb.kept, ['출력 -> L2'])
+        # 같은 자리·같은 칩도 그대로 상태로 kept 에 먼저 들어간다
+        self.assertEqual(bb.kept, ['74HC08 칩 그대로', '출력 -> L2'])
         self.assertEqual(bb.steps, [])
         # 회색이어도 점유표·구간에는 남는다 — verify() 가 여전히 본다
         self.assertIn((c['a'], 12), bb._leads)
@@ -99,6 +100,27 @@ class Baseline(unittest.TestCase):
         bb.draw_chip('74HC08', 7)
         self.assertEqual(bb.swaps, [])
         self.assertEqual(bb.steps, [])
+
+    def test_같은_칩이면_그대로_상태를_기록한다(self):
+        """몸통을 회색으로 그리는 것은 픽셀이라 직접 못 본다 — `kept` 에 남는
+        관측 가능한 상태로 대신 검사한다."""
+        base = self.first().snapshot()
+        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb.enable_steps()
+        bb.draw_chip('74HC08', 7)
+        self.assertIn('74HC08 칩 그대로', bb.kept)
+
+    def test_빈_자리에_새로_꽂으면_교체라고_하지_않는다(self):
+        """S2(18행)는 기준선(첫 보드)에 칩이 없던 자리다 — "뽑는다: (빈 자리)"
+        처럼 뽑을 것도 없는데 교체라 부르면 안 된다."""
+        base = self.first().snapshot()
+        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb.enable_steps()
+        bb.draw_chip('74HC00', 18)
+        self.assertEqual(bb.swaps, [(None, '74HC00', 'left', 18)])
+        self.assertEqual(bb.steps[0]['frm'], '(빈 자리)')
+        self.assertEqual(bb.steps[0]['to'], '꽂는다: 74HC00')
+        self.assertEqual(bb.steps[0]['desc'], '좌 18행에 새로 꽂는다')
 
     def test_뽑힌_칩은_removed_에_나온다(self):
         base = self.first().snapshot()

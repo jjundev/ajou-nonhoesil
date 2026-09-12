@@ -533,6 +533,12 @@ def _chip_swap(previous, current) -> str:
     `continues` 가 있는 회로는 예외다. 실험10 E10.P2 는 다 만든 DAC 에 `741`
     비교기를 하나 더 붙이는 회로라, 기본 문구(`점퍼선을 모두 걷는다`)를 그대로
     따르면 직전 회로를 뜯는다.
+
+    `current.stages`(`## 단계` 표)가 있는 회로도 예외다 — 그 회로는 슬롯
+    고정·기준선 비교로 그려져 앞 회로의 배선을 걷지 않는다. `모두 걷는다`
+    문구를 그대로 두면 학생이 실제로 점퍼선을 다 뽑아 단계 그림의 회색(=
+    그대로 둔다) 전제를 깬다. 대신 단계 그림 자체(회색·번호·`걷는다` 표)가
+    무엇을 걷고 새로 꽂을지 지시한다고 말한다.
     """
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
@@ -551,7 +557,11 @@ def _chip_swap(previous, current) -> str:
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
-    parts = ["앞 회로의 점퍼선을 모두 걷는다"]
+    if current.stages:
+        parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
+                 "(회색·번호·'걷는다' 표)이 지시한다"]
+    else:
+        parts = ["앞 회로의 점퍼선을 모두 걷는다"]
     if remove:
         parts.append("뺀다: " + ", ".join(remove))
     if add:
@@ -694,8 +704,6 @@ def circuit_pages(spec, netlist) -> str:
         out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
                    f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
         banner = _chip_swap(previous, section)
-        if previous is not None:
-            banner += " · 선 단위 변경(그대로·걷는다·새로)은 첫 그림 아래 표를 본다"
         out.append(f'<div class="banner">{_esc(banner)}</div>')
         if prose_before.strip():
             out.append(_blocks(prose_before))

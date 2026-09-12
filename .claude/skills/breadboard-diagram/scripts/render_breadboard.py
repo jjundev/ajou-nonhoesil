@@ -760,21 +760,34 @@ class BreadboardRenderer:
         y_top = self.r_y(start_row) - 8
         y_bot = self.r_y(start_row + 6) + 8
 
-        self.draw.rectangle([x1, y_top, x2, y_bot], fill=(30, 33, 36, 255), outline=(130, 140, 150, 255), width=2)
+        # 기준선의 같은 자리에 같은 칩이 있으면 몸통을 회색으로 그린다 — 앞
+        # 단계에서 꽂아 둔 그대로라는 뜻이다(footer 범례 "회색 = 앞 단계에서
+        # 그대로 둔다"). 배선·LED 사슬과 같은 규칙을 칩에도 적용한다.
+        prev = (self.baseline['chips'].get((block, start_row))
+                if self.baseline is not None else None)
+        kept_chip = self.baseline is not None and prev == name
+        body_fill = (200, 200, 200, 255) if kept_chip else (30, 33, 36, 255)
+        body_outline = KEEP if kept_chip else (130, 140, 150, 255)
+        # 몸통이 밝아지면 흰 글씨는 안 보인다 — 진한 회색으로 바꿔 pin 번호·
+        # 이름을 계속 읽을 수 있게 한다
+        text_fill = (55, 55, 55, 255) if kept_chip else (255, 255, 255, 255)
+        num_fill = (90, 90, 90, 255) if kept_chip else (215, 215, 215, 255)
+
+        self.draw.rectangle([x1, y_top, x2, y_bot], fill=body_fill, outline=body_outline, width=2)
         notch_w = (x2 - x1) // 3
         self.draw.arc([x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6], 0, 180, fill=(200, 200, 200, 255), width=2)
-        self._vtext(((x1 + x2) / 2, (y_top + y_bot) / 2), name, (255, 255, 255, 255), self.font_chip)
+        self._vtext(((x1 + x2) / 2, (y_top + y_bot) / 2), name, text_fill, self.font_chip)
 
-        # 핀 번호는 **몸통 안쪽**에 흰 글씨로. 이전 판은 e-15 / f+6 에 찍어서
+        # 핀 번호는 **몸통 안쪽**에 찍는다. 이전 판은 e-15 / f+6 에 찍어서
         # d 열과 g 열 홀을 가렸다 — 정작 배선을 꽂는 자리다
         for i in range(7):
             y = self.r_y(start_row + i)
             self.draw.line([(c['e'], y), (x1, y)], fill=(170, 170, 170, 255), width=3)
             self.draw.line([(x2, y), (c['f'], y)], fill=(170, 170, 170, 255), width=3)
-            self.draw.text((x1 + 3, y - 6), str(i + 1), fill=(215, 215, 215, 255), font=self.font_num)
+            self.draw.text((x1 + 3, y - 6), str(i + 1), fill=num_fill, font=self.font_num)
             rt = str(14 - i)
             w = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]
-            self.draw.text((x2 - 3 - w, y - 6), rt, fill=(215, 215, 215, 255), font=self.font_num)
+            self.draw.text((x2 - 3 - w, y - 6), rt, fill=num_fill, font=self.font_num)
             self.lead(c['e'], y, f'{name} pin {i + 1}')
             self.lead(c['f'], y, f'{name} pin {14 - i}')
 
@@ -785,13 +798,20 @@ class BreadboardRenderer:
         self.chips.append({'label': name, 'block': block,
                            'pin1_row': start_row, 'pins': pins})
         if self.baseline is not None:
-            prev = self.baseline['chips'].get((block, start_row))
-            if prev != name:
+            if kept_chip:
+                self.kept.append(f'{name} 칩 그대로')
+            elif prev is None:
+                # 빈 자리에 새로 꽂는다 — 뽑을 것이 없으니 "교체"라고 하지 않는다
+                self.swaps.append((prev, name, block, start_row))
+                self.step_note('sig', '(빈 자리)', f'꽂는다: {name}',
+                               f'{"좌" if block == "left" else "우"} {start_row}행에 새로 꽂는다',
+                               marker_at=((x1 + x2) // 2, y_top + 12))
+            else:
                 # 같은 자리의 칩이 다르다 — 실험실에서 첫 번째로 할 일이다
                 self.swaps.append((prev, name, block, start_row))
                 # 번호 원은 칩 몸통 안, 위쪽 가장자리 근처에 찍는다 — 몸통 위 행은
                 # 홀이 있고(복합회로에서는 가로 배선도 지나가) 원이 겹쳐 가린다
-                self.step_note('sig', f'뽑는다: {prev or "(빈 자리)"}', f'꽂는다: {name}',
+                self.step_note('sig', f'뽑는다: {prev}', f'꽂는다: {name}',
                                f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체',
                                marker_at=((x1 + x2) // 2, y_top + 12))
 

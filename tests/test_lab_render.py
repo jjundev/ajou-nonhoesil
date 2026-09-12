@@ -1269,6 +1269,17 @@ spec: ../체크리스트/명세.md
 - U3 = 74HC00 (quad 2-input NAND)
   - pin 1 ← U2.pin3
   - 미사용 입력핀: pin 9, 10 → 개방
+
+# C3 · 단계 없는 뒤 회로
+
+- kind: circuit
+- id: C3
+- item: E1.P1-2
+- tables: [T2]
+
+- U4 = 74HC32 (quad 2-input OR)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → 개방
 """
 
 
@@ -1318,8 +1329,23 @@ class TestStages(unittest.TestCase):
         self.assertNotIn('class="stage"', self.pages[0])
 
     def test_배너가_선_단위_변경의_위치를_말한다(self):
-        self.assertNotIn("첫 그림 아래", self.pages[0])       # 첫 회로는 앞 회로가 없다
-        self.assertIn("첫 그림 아래 표", self.pages[1])
+        """C2 는 단계가 있는 회로다 — 배너가 `모두 걷는다` 대신 단계 그림을
+        가리켜야 한다. C1 은 첫 회로라 배너에 해당 문구가 없다."""
+        self.assertNotIn("그대로 둔다", self.pages[0])
+        self.assertIn("그대로 둔다", self.pages[1])
+        self.assertNotIn("모두 걷는다", self.pages[1])
+
+    def test_단계_있는_회로_배너는_그대로_둔다_뿐이고_모두_걷는다는_없다(self):
+        banner = self.pages[1][self.pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("그대로 둔다", banner)
+        self.assertNotIn("모두 걷는다", banner)
+
+    def test_단계_없는_뒤_회로는_옛_배너_그대로다(self):
+        """C3 은 단계가 없고 첫 회로도 아니다 — 기본 문구가 그대로 남는다."""
+        banner = self.pages[2][self.pages[2].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("모두 걷는다", banner)
 
     def test_미사용_상자_제목이_핀_점검이다(self):
         self.assertIn("핀 점검", self.pages[0])
