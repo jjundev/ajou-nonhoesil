@@ -77,7 +77,13 @@ def _restore(archive: bytes, dest: Path, rel: str) -> None:
 
 
 def build_isolated_tree(root, dest, experiment: int, answer_keys,
-                        clear_subdirs=_CLEARED, keep=()) -> Path:
+                        clear_subdirs=_CLEARED, keep=(), edit=None) -> Path:
+    """…(기존 docstring 유지)…
+
+    `edit(dest)` 는 답안 삭제·`keep` 복원 뒤, `git init` **전**에 한 번 불린다.
+    답안이 파일 하나의 일부일 때(결선도 빌더 구간) 파일을 지우지 않고 고치는
+    자리다 — 커밋 뒤에 고치면 `git show HEAD:…` 로 원문이 되살아난다.
+    """
     root, dest = Path(root), Path(dest)
     if dest.exists():
         _rmtree(dest)
@@ -102,6 +108,8 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys,
         d.mkdir(parents=True)
     for rel in keep:
         _restore(archive, dest, rel)
+    if edit is not None:
+        edit(dest)
 
     _git(dest, "init", "-q")
     _git(dest, "add", "-A")

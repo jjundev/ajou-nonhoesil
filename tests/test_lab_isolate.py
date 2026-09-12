@@ -203,6 +203,20 @@ class ResultReportMode(unittest.TestCase):
         self.assertFalse((exp / "체크리스트/기록.md").exists())
         self.assertEqual(list((exp / "output").iterdir()), [])
 
+    def test_edit_훅은_커밋_전에_트리를_고친다(self):
+        # 답안이 파일 일부일 때(결선도 빌더 구간) 파일을 지우는 대신 고쳐야 한다.
+        # git init 전에 불려야 `git status` 도 이력도 원문을 말하지 않는다.
+        dest = Path(tempfile.mkdtemp()) / "iso"
+
+        def edit(tree):
+            (tree / "keep.md").write_text("고쳐진 본문\n", encoding="utf-8")
+
+        build_isolated_tree(self.root, dest, 1, [], edit=edit)
+        self.assertEqual((dest / "keep.md").read_text(encoding="utf-8"), "고쳐진 본문\n")
+        self.assertEqual(_git(dest, "status", "--porcelain"), "")
+        self.assertEqual(_git(dest, "rev-list", "--count", "HEAD").strip(), "1")
+        self.assertIn("고쳐진 본문", _git(dest, "show", "HEAD:keep.md"))
+
 
 class LeakSentences(unittest.TestCase):
     def test_승인본_문장이_남은_파일을_짚는다(self):
