@@ -87,7 +87,8 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
        'docs/corpus-audit',
        'scripts/lab/specdiff.py', 'scripts/lab/regen_compare.py',
        'scripts/lab/isolate.py', 'scripts/lab/contact_sheet.py',
-       'scripts/lab/export_hand_diagrams.py', 'tests',
+       'scripts/lab/export_hand_diagrams.py', 'scripts/lab/report_compare.py',
+       '.claude/skills/verify-write-result-report', 'tests',
        '.claude/skills/breadboard-diagram',
        '.claude/skills/explain-lab-preview', '.claude/skills/init-lab-experiment',
        '.claude/skills/make-lab-report-cover', '.claude/skills/prep-lab-checklist',
@@ -197,6 +198,8 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
 - `scripts/lab/contact_sheet.py`·`scripts/lab/export_hand_diagrams.py` —
   docstring·주석에 실험01 항목 제목과 id 가 예시로 있다 (2026-09-12 회차의
   누출 grep 에서 걸려 추가)
+- `scripts/lab/report_compare.py`·`.claude/skills/verify-write-result-report/` —
+  결과보고서 검증 도구와 형제 스킬. 같은 시험 형식과 답안지 목록을 싣는다
 - `tests/` — 실험01 값을 픽스처로 읽는 테스트가 열 개 넘는다
 - `.claude/skills/breadboard-diagram/` — 실험01 배선이 코드로 있다
 - `draft-lab-spec` 을 뺀 스킬 여덟 — `write-pre-report` 가 실험01 제목표를

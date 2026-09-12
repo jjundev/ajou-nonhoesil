@@ -24,6 +24,7 @@ REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
+VERIFY_RESULT = ROOT / ".claude/skills/verify-write-result-report/SKILL.md"
 HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
 INIT = ROOT / ".claude/skills/init-lab-experiment/SKILL.md"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
@@ -44,6 +45,7 @@ DOCS = {
     "리뷰": (REVIEW, ("실행 절차",)),
     "명세": (DRAFT, ("절대 규칙", "실행 절차")),
     "검증": (VERIFY, ("절대 규칙", "실행 절차")),
+    "결보검증": (VERIFY_RESULT, ("절대 규칙", "실행 절차")),
 }
 
 # 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
@@ -640,8 +642,8 @@ class SkillDocInvariants(unittest.TestCase):
         # `draft-lab-spec` 을 뺀 스킬 여덟은 §답안지 목록이 "스킬 여덟" 이라는
         # 구절로만 가리키고 이름을 나열하지 않는다 — KEYS 쪽 개수·이름으로
         # 따로 잰다.
-        other_skills = {k for k in keys if k.startswith(".claude/skills/")} - {
-            ".claude/skills/verify-draft-lab-spec", ".claude/skills/breadboard-diagram"}
+        other_skills = {k for k in keys if k.startswith(".claude/skills/")
+                        and "/verify-" not in k} - {".claude/skills/breadboard-diagram"}
         self.assertEqual(len(other_skills), 8, other_skills)
         self.assertNotIn(".claude/skills/draft-lab-spec", other_skills)
 
@@ -686,6 +688,54 @@ class SkillDocInvariants(unittest.TestCase):
         sec = sections(self.docs["검증"])["비-목표"]
         self.assertIn("`draft-lab-spec` 을 고치지 않는다", sec)
         self.assertIn("커밋하지 않는다", sec)
+
+    def test_the_result_verifier_answer_keys_agree_with_its_prose(self):
+        # `verify-write-result-report` 판. "스킬 여덟" 예외는 없고, `{exp}` 로
+        # 실험 폴더를 끼우는 f-string 키는 `<실험NN>` 불릿이 맡는다.
+        text = self.docs["결보검증"]
+        proc = sections(text)["실행 절차"]
+        start = proc.index("KEYS = [") + len("KEYS = [")
+        end = proc.index("]", start)
+        keys = {m.rstrip("/") for m in re.findall(r"'([^']+)'", proc[start:end])}
+        literal_keys = {k for k in keys if "{exp}" not in k}
+
+        sec = sections(text)["답안지 목록"]
+        before, marker, after = sec.partition("남기는 것:")
+        self.assertNotEqual(marker, "")
+        prose, placeholder = set(), set()
+        for b in re.split(r"(?m)^- ", before)[1:]:
+            toks = {m.rstrip("/") for m in re.findall(r"`([^`]+)`", b)}
+            (placeholder if "<실험NN>" in b else prose).update(toks)
+        self.assertEqual(prose - literal_keys, set(), prose - literal_keys)
+        self.assertEqual(literal_keys - prose, set(), literal_keys - prose)
+        for k in literal_keys:
+            with self.subTest(k):
+                self.assertNotIn(k, after)
+
+    def test_the_result_verifier_lists_itself_and_its_tools_as_answer_keys(self):
+        sec = sections(self.docs["결보검증"])["답안지 목록"]
+        for key in ("`.claude/skills/verify-write-result-report/`", "`docs/verify/`",
+                    "`docs/plans/`", "`docs/notion-feedback/`", "`tests/`",
+                    "`scripts/lab/report_compare.py`", "`scripts/lab/isolate.py`"):
+            with self.subTest(key):
+                self.assertIn(key, sec)
+
+    def test_the_result_verifier_prompt_and_non_goals_match_the_sibling(self):
+        sec = sections(self.docs["결보검증"])["에이전트 프롬프트"]
+        self.assertNotIn("합격", sec)
+        self.assertNotIn("채점", sec)
+        self.assertIn("`git log`", sec)
+        self.assertIn("한 번에 통과했으면 그렇다고 명시", sec)
+        self.assertIn("`review-lab-report`", sec)
+        non = sections(self.docs["결보검증"])["비-목표"]
+        self.assertIn("`write-result-report` 를 고치지 않는다", non)
+        self.assertIn("커밋하지 않는다", non)
+
+    def test_both_verifiers_keep_each_other_out_of_the_tree(self):
+        # 두 검증 스킬은 서로의 프롬프트·답안지 목록을 싣는다 — 한쪽 격리 트리에
+        # 다른 쪽이 남으면 에이전트가 거기서 시험 형식을 읽는다.
+        self.assertIn("'.claude/skills/verify-write-result-report'", self.docs["검증"])
+        self.assertIn("'.claude/skills/verify-draft-lab-spec'", self.docs["결보검증"])
 
 
 class HandDiagramSkill(unittest.TestCase):
