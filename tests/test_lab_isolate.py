@@ -11,7 +11,8 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.isolate import _DERIVED, build_isolated_tree, leak_scan, leak_tokens
+from scripts.lab.isolate import (_DERIVED, build_isolated_tree, leak_scan, leak_sentences,
+                                 leak_tokens)
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
@@ -29,8 +30,17 @@ def _fake_repo():
     exp = root / config.experiment_dir(1)
     (exp / "체크리스트").mkdir(parents=True)
     (exp / "결선도").mkdir()
+    (exp / "output").mkdir()
+    (exp / "실험사진/시트").mkdir(parents=True)
     (exp / "체크리스트/명세.md").write_text("정답\n", encoding="utf-8")
+    (exp / "체크리스트/기록.md").write_text("기록\n", encoding="utf-8")
     (exp / "결선도/netlist.md").write_text("정답\n", encoding="utf-8")
+    (exp / "output/실험01_예비보고서.md").write_text("예보 본문\n", encoding="utf-8")
+    (exp / "output/실험01_결과보고서.md").write_text(
+        "시험한 네 행은 모두 예상과 일치했다는 승인본 문장이다.\n", encoding="utf-8")
+    (exp / "output/실험01_결과보고서_notion_baseline_v5.md").write_text("답\n", encoding="utf-8")
+    (exp / "output/result_review_round1.md").write_text("리뷰\n", encoding="utf-8")
+    (exp / "실험사진/시트/실험01_1-1_사진_3입력_AND.jpg").write_bytes(b"jpg")
     (root / "keep.md").write_text("남는 파일 E1.P1-1 언급\n", encoding="utf-8")
     _git(root, "init", "-q")
     _git(root, "add", "-A")
@@ -120,3 +130,78 @@ class LeakScan(unittest.TestCase):
         # 유일한 자리는 정규식 자체다. `.` 이 줄바꿈을 건너야 `search` 가
         # 매치한다: re.S 없이 `.*` 는 `\n` 을 소비하지 않는다.
         self.assertIsNotNone(_DERIVED.search("derived (A ;\nB)"))
+
+
+class ResultReportMode(unittest.TestCase):
+    """결과보고서 검증용 격리 — output 만 비우고 예비보고서 md 를 되살린다.
+
+    명세·기록·결선도·사진 시트는 ④ 의 **입력**이라 남아야 한다. 답안은
+    output/ 의 결과보고서 계열과 리뷰 문서뿐이다.
+    """
+
+    def setUp(self):
+        self.root = _fake_repo()
+        self.dest = Path(tempfile.mkdtemp()) / "iso"
+        exp = config.experiment_dir(1)
+        build_isolated_tree(self.root, self.dest, 1, ["docs/verify"],
+                            clear_subdirs=("output",),
+                            keep=[f"{exp}/output/실험01_예비보고서.md"])
+        self.exp = self.dest / exp
+
+    def test_입력물은_남는다(self):
+        self.assertTrue((self.exp / "체크리스트/명세.md").exists())
+        self.assertTrue((self.exp / "체크리스트/기록.md").exists())
+        self.assertTrue((self.exp / "결선도/netlist.md").exists())
+        self.assertTrue((self.exp / "실험사진/시트/실험01_1-1_사진_3입력_AND.jpg").exists())
+
+    def test_output_은_예비보고서만_남는다(self):
+        self.assertEqual(sorted(p.name for p in (self.exp / "output").iterdir()),
+                         ["실험01_예비보고서.md"])
+        self.assertEqual((self.exp / "output/실험01_예비보고서.md").read_text(encoding="utf-8"),
+                         "예보 본문\n")
+
+    def test_status_는_비어_있다(self):
+        self.assertEqual(_git(self.dest, "status", "--porcelain"), "")
+
+    def test_글롭_키를_편다(self):
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        exp = config.experiment_dir(1)
+        build_isolated_tree(self.root, dest, 1, [f"{exp}/output/*결과보고서*"], clear_subdirs=())
+        names = sorted(p.name for p in (dest / exp / "output").iterdir())
+        self.assertEqual(names, ["result_review_round1.md", "실험01_예비보고서.md"])
+
+    def test_없는_keep_경로는_예외다(self):
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        with self.assertRaises(KeyError):
+            build_isolated_tree(self.root, dest, 1, [], clear_subdirs=("output",),
+                                keep=["없는/파일.md"])
+
+    def test_기본_인자는_세_폴더를_비운다(self):
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        build_isolated_tree(self.root, dest, 1, [])
+        exp = dest / config.experiment_dir(1)
+        self.assertFalse((exp / "체크리스트/기록.md").exists())
+        self.assertEqual(list((exp / "output").iterdir()), [])
+
+
+class LeakSentences(unittest.TestCase):
+    def test_승인본_문장이_남은_파일을_짚는다(self):
+        root = _fake_repo()
+        approved = root / config.experiment_dir(1) / "output/실험01_결과보고서.md"
+        tree = Path(tempfile.mkdtemp())
+        (tree / "a.md").write_text("서론. 시험한 네 행은 모두 예상과 일치했다는 승인본 문장이다. 끝.\n",
+                                   encoding="utf-8")
+        (tree / "b.md").write_text("이 문장은 스물다섯 자를 넘기려고 일부러 길게 쓴 문장이다.\n",
+                                   encoding="utf-8")
+        hits = leak_sentences(approved, tree)
+        self.assertEqual(len(hits), 1, hits)
+        self.assertTrue(hits[0].startswith("a.md: "), hits[0])
+
+    def test_git_폴더와_다른_확장자는_건너뛴다(self):
+        root = _fake_repo()
+        approved = root / config.experiment_dir(1) / "output/실험01_결과보고서.md"
+        tree = Path(tempfile.mkdtemp())
+        (tree / ".git").mkdir()
+        (tree / ".git/x.md").write_text(approved.read_text(encoding="utf-8"), encoding="utf-8")
+        (tree / "x.jpg").write_text(approved.read_text(encoding="utf-8"), encoding="utf-8")
+        self.assertEqual(leak_sentences(approved, tree), [])

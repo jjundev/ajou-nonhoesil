@@ -18,9 +18,14 @@ import tarfile
 from pathlib import Path
 
 from . import config
+from .regen_compare import _sentences
 from .spec_parser import parse_spec
 
+# 기본값 — `draft-lab-spec` 검증용. 명세·결선도·output 을 통째로 비운다.
+# 결과보고서 검증은 `clear_subdirs=("output",)` 에 `keep` 으로 예비보고서 md 를
+# 되살린다 — 명세·기록·결선도·사진은 ④ 의 입력이지 답안이 아니다.
 _CLEARED = ("체크리스트", "결선도", "output")
+_GLOB_CHARS = ("*", "?", "[")
 
 
 def _git(cwd, *args) -> str:
@@ -28,7 +33,39 @@ def _git(cwd, *args) -> str:
                           cwd=cwd, check=True, capture_output=True, text=True).stdout
 
 
-def build_isolated_tree(root, dest, experiment: int, answer_keys) -> Path:
+def _guard(dest_real: Path, p: Path, key: str) -> Path:
+    """`dest / key` 가 격리 트리 밖을 가리키면 예외. 절대경로 키·`..` 키가 그렇다."""
+    p_real = p.resolve()
+    if p_real == dest_real or not p_real.is_relative_to(dest_real):
+        # `dest / key` 는 key 가 절대경로처럼 보이면 dest 를 버리고 key 그대로가
+        # 된다(Path.__truediv__ 의 규칙) — 답안지 키에 실수로든 스킬 문서 오염으로든
+        # 앞에 `/` 가 붙으면 격리 임시 폴더 밖 임의 경로를 rmtree/unlink 하게 된다.
+        raise ValueError(f"답안지 키가 격리 트리 밖을 가리킨다: {key!r}")
+    return p
+
+
+def _expand_keys(dest: Path, dest_real: Path, answer_keys) -> list:
+    out = []
+    for key in answer_keys:
+        if any(ch in key for ch in _GLOB_CHARS):
+            if key.startswith(("/", "\\")) or ".." in Path(key).parts:
+                raise ValueError(f"답안지 키가 격리 트리 밖을 가리킨다: {key!r}")
+            out += [_guard(dest_real, p, key) for p in sorted(dest.glob(key))]
+        else:
+            out.append(_guard(dest_real, dest / key, key))
+    return out
+
+
+def _restore(archive: bytes, dest: Path, rel: str) -> None:
+    """아카이브에서 `rel` 하나를 다시 꺼낸다. 없으면 KeyError — 조용히 넘기면
+    '예비보고서 없이 돌았다' 가 판정에서 '④ 가 예보를 안 읽었다' 로 보인다."""
+    with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as tf:
+        member = tf.getmember(rel)
+        tf.extract(member, dest, filter="data")
+
+
+def build_isolated_tree(root, dest, experiment: int, answer_keys,
+                        clear_subdirs=_CLEARED, keep=()) -> Path:
     root, dest = Path(root), Path(dest)
     if dest.exists():
         shutil.rmtree(dest)
@@ -39,26 +76,20 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys) -> Path:
         tf.extractall(dest, filter="data")
 
     dest_real = dest.resolve()
-    for key in answer_keys:
-        p = dest / key
-        p_real = p.resolve()
-        if p_real == dest_real or not p_real.is_relative_to(dest_real):
-            # `dest / key` 는 key 가 절대경로처럼 보이면 dest 를 버리고
-            # key 그대로가 된다(Path.__truediv__ 의 규칙) — 답안지 키에
-            # 실수로든 스킬 문서 오염으로든 앞에 `/` 가 붙으면 격리
-            # 임시 폴더 밖 임의 경로를 rmtree/unlink 하게 된다.
-            raise ValueError(f"답안지 키가 격리 트리 밖을 가리킨다: {key!r}")
+    for p in _expand_keys(dest, dest_real, answer_keys):
         if p.is_dir():
             shutil.rmtree(p)
         elif p.exists():
             p.unlink()
 
     exp = dest / config.experiment_dir(experiment)
-    for sub in _CLEARED:
+    for sub in clear_subdirs:
         d = exp / sub
         if d.exists():
             shutil.rmtree(d)
         d.mkdir(parents=True)
+    for rel in keep:
+        _restore(archive, dest, rel)
 
     _git(dest, "init", "-q")
     _git(dest, "add", "-A")
@@ -96,4 +127,25 @@ def leak_scan(dest, tokens, exts=(".md", ".py", ".html", ".txt", ".json")) -> li
             for tok in tokens:
                 if tok in line:
                     hits.append(f"{p.relative_to(dest)}:{n}: {tok}")
+    return hits
+
+
+def leak_sentences(approved_md, tree, min_len=25, exts=(".md", ".py", ".txt")) -> list:
+    """승인본 보고서의 문장(25자 이상)이 트리 어딘가에 그대로 남아 있는지 본다.
+
+    명세 토큰(`leak_tokens`)은 결과보고서에 맞지 않는다 — 결보의 답은 항목 id 가
+    아니라 문장이다. `regen_compare.shared_sentences` 와 같은 자름 규칙을 쓴다.
+    """
+    tree = Path(tree)
+    wanted = _sentences(Path(approved_md), min_len)
+    hits = []
+    for p in sorted(tree.rglob("*")):
+        if ".git" in p.parts or not p.is_file() or p.suffix not in exts:
+            continue
+        try:
+            found = _sentences(p, min_len)
+        except UnicodeDecodeError:
+            continue
+        for s in sorted(wanted & found, key=len, reverse=True):
+            hits.append(f"{p.relative_to(tree)}: {s[:120]}")
     return hits
