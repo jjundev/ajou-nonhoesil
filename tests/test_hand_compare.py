@@ -395,9 +395,23 @@ class Signals(unittest.TestCase):
         self.assertIn(('PIN', '74HC00', 1), sig[('74HC08', 3)])
 
     def test_미사용_입력_접지가_빠져도_입력핀은_조용하다(self):
-        """접기 전에는 이 한 가닥 때문에 H6 이 3건 헛났다."""
-        ref = hc.reference_diagram('e1_nand')
-        hand = hc.reference_diagram('e1_nand')
+        """접기 전에는 이 한 가닥 때문에 H6 이 3건 헛났다.
+
+        슬롯 고정 이후 실험01 실측 규칙(2026-09-11)으로 미사용 입력은 더
+        접지하지 않는다(rail=None, `mark_unused_inputs`) — 실물 e1_nand 에는
+        이제 이 배선 자체가 없다. 폴딩 로직은 여전히 검증해야 하므로 그 규칙이
+        살아 있던 시절의 배선(공유 GND 레일에 미사용 입력 한 가닥)을 참조
+        위에 합성해 재현한다.
+        """
+        def _prep():
+            d = hc.reference_diagram('e1_nand')
+            pin9 = d.chips[0]['pins'][9]
+            d.unused_inputs = [dict(u, rail='gnd') if (u['chip'], u['pin']) == ('74HC08', 9)
+                               else dict(u) for u in d.unused_inputs]
+            d.wires = list(d.wires) + [_wire(pin9, (d.chips[0]['block'], 'gnd', pin9[2]))]
+            return d
+        ref = _prep()
+        hand = _prep()
         hand.signed = True
         node = hc.node_of(hand.chips[0]['pins'][9])
         hand.wires = [w for w in hand.wires
@@ -611,9 +625,13 @@ class UnshiftedRailEndpoints(unittest.TestCase):
 
 class ChipFollow(unittest.TestCase):
     """2026-09-09 시험 PDF: 74HC00 을 한 행 위(17행)에 그리고 아래 배선은 전부
-    따라갔는데 L1 저항만 참조 자리(d15→d17)에 남았다. H7 이 증상을, H10 이
+    따라갔는데 L1 저항만 참조 자리(e15→e17)에 남았다. H7 이 증상을, H10 이
     행 차이를 각각 냈지만 둘을 잇는 줄은 사람이 요약할 때 만들었다. 그 줄이
-    H14 다 — 칩 이름·이동량·남은 요소를 한 줄에 낸다."""
+    H14 다 — 칩 이름·이동량·남은 요소를 한 줄에 낸다.
+
+    2026-09-12 슬롯 고정 이후 실험01 결선도의 L1 사슬은 c/d 열이 아니라
+    d/e 열을 쓴다 — 픽스처도 그 열로 다시 낸다(`hand_e1_nand_chip_up_one.json`).
+    """
 
     FIXTURE = Path(__file__).parent / 'fixtures' / 'hand_e1_nand_chip_up_one.json'
 
@@ -633,7 +651,7 @@ class ChipFollow(unittest.TestCase):
         self.assertEqual(f.grade, '치명')
         self.assertEqual(f.where, '74HC00')
         self.assertIn('-1행', f.message)
-        self.assertIn('L1 저항 아랫다리 좌 d17', f.message)
+        self.assertIn('L1 저항 아랫다리 좌 e17', f.message)
         self.assertIn('pin 1 행', f.message)
         # 74HC08 은 참조 자리 그대로다 — 줄이 없다
         self.assertNotIn('74HC08', f.message)
@@ -655,13 +673,13 @@ class ChipFollow(unittest.TestCase):
         self.assertEqual([str(x) for x in found], [])
 
     def test_권장_수정을_적용하면_H14_와_H7_이_사라진다(self):
-        """실물 전사에서 저항 아랫다리만 d17 → d16 으로 올린다. L1 LED(c14·c15)와
-        저항 윗다리(d15)는 여전히 참조 자리 그대로지만 74HC00 은 17~23행이라
+        """실물 전사에서 저항 아랫다리만 e17 → e16 으로 올린다. L1 LED(d14·d15)와
+        저항 윗다리(e15)는 여전히 참조 자리 그대로지만 74HC00 은 17~23행이라
         충돌이 없다 — 참조 좌표에 남았다는 것만으로는 H14 를 내지 않는다.
         2026-09-09 요약이 권한 수정이 정확히 이것이다."""
         hand = parse_transcript(self.FIXTURE)
         ref = hc.reference_diagram(hand.circuit)
-        fixed = ('left', 'd', 16)
+        fixed = ('left', 'e', 16)
         for r in hand.resistors:
             if r['tag'] == 'L1':
                 r['bottom'] = fixed

@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 # 저장소 루트. 이 파일은 `<루트>/.claude/skills/breadboard-diagram/scripts/`
@@ -1481,352 +1482,359 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
 
 
-def build_e1_and(output_path, template_path=None):
-    """실험 1-1 · 3입력 AND (74HC08 2단 캐스케이드). netlist C1."""
-    bb = BreadboardRenderer(template_path)
+# ---------------------------------------------------------------------------
+# 실험 1 · 기본 게이트 — 슬롯 고정 배치
+#
+# 다섯 회로가 칩 자리를 공유한다 (`docs/plans/2026-09-12-결선도-단계화-슬롯고정-설계.md`).
+# 정본은 netlist 의 `kind: layout` 표이고 이 상수는 그 사본이다 —
+# `tests/test_breadboard_wiring.py` 가 둘을 맞댄다.
+#
+#   S1 좌 7행  : C1 74HC08 · C2 74HC32 · C3 74HC08 · C4 74HC32 · C5 74HC04
+#   S2 좌 18행 : C3 74HC00 · C4 74HC02 · C5 74HC08
+#   S3 우 10행 : C5 74HC32
+#
+# 입력 A 는 b7, B 는 b8(C1~C4)/b19(C5). 중간단 L1 은 c9→c14 갈래 + c14 사슬.
+# 최종 L2(C5 에서는 Z) 는 a25 사슬 — 다섯 회로가 같은 사슬을 쓴다.
+# 실험실 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 되는데 그림이 회로마다
+# 달라 전부 걷었다. 같은 홀을 쓰면 기준선 비교로 그 사실이 그림에 보인다.
+E1_SLOTS = {'S1': ('left', 7), 'S2': ('left', 18), 'S3': ('right', 10)}
+_S1, _S2, _S3 = E1_SLOTS['S1'][1], E1_SLOTS['S2'][1], E1_SLOTS['S3'][1]
+_E1_INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
+                  '빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
+
+
+def _e1_frame(bb):
+    """잭 + 좌측 레일 브리지. 다섯 회로가 같은 홀을 쓴다 — 기준선 비교로 회색이 된다."""
+    c = bb.cols['left']
+    bb.connect_jacks()
+    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
+    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
+
+
+def _e1_front(bb, chip, op):
+    """S1 칩 + 전원 + 입력 A·B + 중간단 L1. C1~C4 의 공통 앞단.
+
+    L1 갈래는 c9 에서 곧게 내린다 — a 열은 C3·C4 의 칩 사이 연결(a9→a18/a19)이,
+    d 열은 C1·C2 의 pin 3→4 점퍼(d9→d10)가, b 열은 입력 끝점이 쓴다.
+    """
+    c = bb.cols['left']
+    bb.draw_chip(chip, _S1)
+    _e1_frame(bb)
+    bb.connect_power(_S1)
+    _input_jumper(bb, c, 7, 'A', f'{chip} pin 1')
+    _input_jumper(bb, c, 8, 'B', f'{chip} pin 2')
+    bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(14))], 'mid',
+                 '중간단 확인용 갈래', width=2, marker_at=(c['c'] + 18, bb.r_y(11)))
+    bb.led_chain(c['c'], 14, "L1", f"중간단 A{op}B — 켜지는지 눈으로만 본다",
+                 color_rgb=(210, 140, 0))
+
+
+def _e1_single(bb, chip, op):
+    """C1·C2 — 한 칩 2단 캐스케이드. 최종 L2 급전은 a12→a25 (a 열만 비어 있다)."""
+    c = bb.cols['left']
+    _e1_front(bb, chip, op)
+    bb.step_wire([(c['d'], bb.r_y(9)), (c['d'], bb.r_y(10))], 'mid',
+                 f'1단 출력 A{op}B -> 2단 입력 (pin 3 -> pin 4)', width=4,
+                 marker_at=(c['d'] - 18, bb.r_y(10) + 9))
+    _input_jumper(bb, c, 11, 'C', f'{chip} pin 5')
+    bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig',
+                 '최종 출력 pin 6 -> L2', marker_at=(c['a'] - 20, bb.r_y(20)))
+    bb.led_chain(c['a'], 25, "L2", f"최종 출력 Y = A{op}B{op}C — 진리표 검증 대상")
+    bb.mark_unused_inputs([9, 10, 12, 13], _S1, chip=chip)
+    bb.mark_unused_outputs([8, 11], _S1, chip=chip)
+    bb.note(_E1_INPUT_NOTE)
+
+
+def build_e1_and(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-1 · 3입력 AND (74HC08 2단 캐스케이드). netlist C1. 단계 없음 — 첫 보드다."""
+    bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
     bb.set_header("실험 1-1: 3-Input AND Gate 결선도",
-                  "74HC08 (Quad 2-Input AND) 한 개를 2단으로 · LED 마다 330Ω 직렬")
-    c = bb.cols['left']
-    r = 10
-
-    bb.draw_chip("74HC08", r)
-    bb.connect_jacks()
-    # 잭이 들어간 바깥 레일과 칩이 물리는 중앙 레일은 **별개 스트립**이다.
-    # 이어주지 않으면 그림대로 꽂아도 전원이 안 간다
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
-    bb.connect_power(r)
-
-    # 입력 세 줄은 보드 밖에서 목표 행으로 **수평 직행**한다. 예전엔 5·6·7행으로
-    # 들어와 a열을 타고 내려갔는데, A(5→10)·C(7→14)·중간단 갈래(12→19) 가 전부
-    # x=c['a'] 한 줄에 겹쳐 있었다. 그려 놓고 보면 C 가 12행부터 초록 중간단
-    # 선에 삼켜져, 따라 그리면 pin 3 이 pin 5 로 들어가는 다른 회로가 된다.
-    # 세로 경유 자체를 없애면 겹침도 홀 가림도 한꺼번에 닫힌다
-    # 입력 세 줄은 좌 GND 레일 홀에서 같은 행 b열로 들어간다. 사연은 _input_jumper
-    _input_jumper(bb, c, 10, 'A', 'pin 1', marker=(215, -13))
-    _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
-    _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
-
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(13))], 'mid',
-                 '1단 출력 A·B -> 2단 입력 (pin 3 -> pin 4)', width=4,
-                 marker_at=(c['d'] - 18, bb.r_y(13) + 9))
-
-    # 갈래는 a12 에서 **곧게** 내린다. 12행 a~e 는 한 스트립이라 c12 든 a12 든
-    # 전기적으로 같은 점이고, a12 에서 시작하면 가로 구간 자체가 없다.
-    # d12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓰고 b·c 는 비워 둔다.
-    # 2026-09-07~08 에는 이 갈래가 c12(→d12→c12) 에서 출발해 a12 로 꺾였다.
-    # 그 가로 구간이 R2(한 홀에 리드 둘)와 R3(끝점 위 통과)에 차례로 걸렸고
-    # 그때마다 시작 홀만 한 칸씩 옮겨, 이유를 잃은 꺾임만 남았다 — R6 참조.
-    # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
-    bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
-    bb.led_chain(c['a'], 24, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
-
-    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(19))], 'sig',
-                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(17)))
-    bb.led_chain(c['c'], 19, "L2", "최종 출력 Y = A·B·C — 진리표 검증 대상")
-
-    bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC08')
-    bb.mark_unused_outputs([8, 11], r, chip='74HC08')
-    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
+                  "74HC08 (Quad 2-Input AND) 한 개를 2단으로 · LED 마다 330Ω 직렬",
+                  submit=baseline is None)
+    _e1_single(bb, "74HC08", "·")
     bb.export(output_path, max_row=31)
     return bb
 
 
-def build_e1_or(output_path, template_path=None):
-    """실험 1-2 · 3입력 OR (74HC32). netlist C2.
+def build_e1_or(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-2 · 3입력 OR (74HC32). netlist C2. C1 과 배선이 같다 — 칩만 바꾼다.
 
-    C1(AND) 과 위상이 같다 — 74HC32 는 74HC00·74HC08 과 같은 표준 DIP-14 쿼드
-    2입력 배치(1,2->3 / 4,5->6)를 쓴다. **Nexperia 74HC32 Rev. 10 (2025-04-30)
-    §5.2 로 확인됐다** — `1A~4A = 1,4,9,12` / `1B~4B = 2,5,10,13` /
-    `1Y~4Y = 3,6,8,11` / GND 7 / VCC 14.
+    Nexperia 74HC32 Rev. 10 (2025-04-30) §5.2: `1A~4A = 1,4,9,12` / `1B~4B =
+    2,5,10,13` / `1Y~4Y = 3,6,8,11` / GND 7 / VCC 14 — 74HC08 과 같은 배치다.
     """
-    bb = BreadboardRenderer(template_path)
+    bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
-    bb.set_header("실험 1-2: 3-Input OR Gate 결선도",
-                  "74HC32 (Quad 2-Input OR) 한 개를 2단으로 · LED 마다 330Ω 직렬")
-    c = bb.cols['left']
-    r = 10
-
-    bb.draw_chip("74HC32", r)
-    bb.connect_jacks()
-    # 잭이 들어간 바깥 레일과 칩이 물리는 중앙 레일은 **별개 스트립**이다.
-    # 이어주지 않으면 그림대로 꽂아도 전원이 안 간다
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
-    bb.connect_power(r)
-
-    # 입력 세 줄은 보드 밖에서 목표 행으로 **수평 직행**한다. 예전엔 5·6·7행으로
-    # 들어와 a열을 타고 내려갔는데, A(5→10)·C(7→14)·중간단 갈래(12→19) 가 전부
-    # x=c['a'] 한 줄에 겹쳐 있었다. 그려 놓고 보면 C 가 12행부터 초록 중간단
-    # 선에 삼켜져, 따라 그리면 pin 3 이 pin 5 로 들어가는 다른 회로가 된다.
-    # 세로 경유 자체를 없애면 겹침도 홀 가림도 한꺼번에 닫힌다
-    # 입력 세 줄은 좌 GND 레일 홀에서 같은 행 b열로 들어간다. 사연은 _input_jumper
-    _input_jumper(bb, c, 10, 'A', 'pin 1', marker=(215, -13))
-    _input_jumper(bb, c, 11, 'B', 'pin 2', marker=(215, +13))
-    _input_jumper(bb, c, 14, 'C', 'pin 5', marker=(215, +13))
-
-    bb.step_wire([(c['d'], bb.r_y(12)), (c['d'], bb.r_y(13))], 'mid',
-                 '1단 출력 A+B -> 2단 입력 (pin 3 -> pin 4)', width=4,
-                 marker_at=(c['d'] - 18, bb.r_y(13) + 9))
-
-    # 갈래는 a12 에서 **곧게** 내린다. 12행 a~e 는 한 스트립이라 c12 든 a12 든
-    # 전기적으로 같은 점이고, a12 에서 시작하면 가로 구간 자체가 없다.
-    # d12 는 바로 위의 pin 3 -> pin 4 점퍼가 쓰고 b·c 는 비워 둔다.
-    # 2026-09-07~08 에는 이 갈래가 c12(→d12→c12) 에서 출발해 a12 로 꺾였다.
-    # 그 가로 구간이 R2(한 홀에 리드 둘)와 R3(끝점 위 통과)에 차례로 걸렸고
-    # 그때마다 시작 홀만 한 칸씩 옮겨, 이유를 잃은 꺾임만 남았다 — R6 참조.
-    # L1 은 24행까지 내린다: 19행에 두면 L1 저항(c20~c22)이 L2 선 밑에 깔린다
-    bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(24))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['a'] - 20, bb.r_y(20)))
-    bb.led_chain(c['a'], 24, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
-
-    bb.step_wire([(c['c'], bb.r_y(15)), (c['c'], bb.r_y(19))], 'sig',
-                 '최종 출력 pin 6 -> L2', marker_at=(c['c'] + 18, bb.r_y(17)))
-    bb.led_chain(c['c'], 19, "L2", "최종 출력 Y = A+B+C — 진리표 검증 대상")
-
-    bb.connect_unused_inputs([9, 10, 12, 13], r, bridge_row=29, chip='74HC32')
-    bb.mark_unused_outputs([8, 11], r, chip='74HC32')
-    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
+    bb.set_header("실험 1-2: 3-Input OR Gate 결선도" if baseline is None
+                  else "실험 1-2: 3-Input OR — 1단계 (칩 교체)",
+                  "74HC32 (Quad 2-Input OR) 한 개를 2단으로 · C1 과 배선이 같다",
+                  submit=baseline is None)
+    _e1_single(bb, "74HC32", "+")
     bb.export(output_path, max_row=31)
     return bb
 
 
-def build_e1_nand(output_path, template_path=None):
-    """실험 2-1 · 3입력 NAND (74HC08 앞단 + 74HC00 뒷단). netlist C3."""
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    bb.set_header("실험 2-1: 3-Input NAND Gate 결선도",
-                  "74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · LED 마다 330Ω 직렬")
-    c = bb.cols['left']
-    r_and, r_nand = 7, 18
+def _e1_two_chip(bb, front, back, op, stage, back_in_row, back_in_label,
+                 c_row, c_pin, out_row, out_col, back_unused_in, back_unused_out):
+    """C3·C4 — 앞단(S1) + 뒷단(S2).
 
-    bb.draw_chip("74HC08", r_and)
-    bb.draw_chip("74HC00", r_nand)
-    bb.connect_jacks()
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
-    bb.connect_power(r_and)
-    bb.connect_power(r_nand)
-
-    _input_jumper(bb, c, 7, 'A', '74HC08 pin 1')
-    _input_jumper(bb, c, 8, 'B', '74HC08 pin 2')
-
-    bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(18))], 'mid',
-                 'A·B -> 74HC00 pin 1 (칩 사이 연결)', marker_at=(c['a'] - 20, bb.r_y(13)))
-
-    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(14))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] + 18, bb.r_y(11)))
-    bb.led_chain(c['b'], 14, "L1", "중간단 A·B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
-
-    _input_jumper(bb, c, 19, 'C', '74HC00 pin 2')
-
-    bb.step_wire([(c['c'], bb.r_y(20)), (c['c'], bb.r_y(25))], 'sig',
-                 '최종 출력 74HC00 pin 3 -> L2', marker_at=(c['c'] + 18, bb.r_y(22)))
-    bb.led_chain(c['c'], 25, "L2", "최종 출력 Y = (A·B·C)' — 진리표 검증 대상")
-
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, bridge_row=29, chip='74HC08')
-    bb.mark_unused_outputs([6, 8, 11], r_and, chip='74HC08')
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_nand, bridge_row=29, chip='74HC00')
-    bb.mark_unused_outputs([6, 8, 11], r_nand, chip='74HC00')
-    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
-    bb.export(output_path, max_row=31)
-    return bb
-
-
-def build_e1_nor(output_path, template_path=None):
-    """실험 2-2 · 3입력 NOR (74HC32 앞단 + 74HC02 뒷단). netlist C4.
-
-    **74HC02 는 출력이 1번 핀이다.** 74HC00/08/32 가 (1,2 -> 3) 인 데 반해
-    74HC02 는 (2,3 -> 1) 이다 — netlist 가 "이 실험에서 가장 흔한 배선
-    실수"로 표시한 지점이다. 2026-2 배포본 교안 p14 가 이 구성(74HC32 앞단 +
-    74HC02 뒷단)을 회로도에 직접 라벨해 파생과 일치함이 확인됐다.
+    stage 1 은 앞단만 검사한다: L1 = A{op}B 네 조합. 뒷단 전원 점퍼는 이때
+    미리 꽂는다 — 회로가 바뀌어도 그 두 가닥은 그대로다. L2 사슬은 남겨 두고
+    급전선만 걷는다(기준선 비교가 그 사실을 그림에 적는다).
     """
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    bb.set_header("실험 2-2: 3-Input NOR Gate 결선도",
-                  "74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀")
     c = bb.cols['left']
-    r_or, r_nor = 7, 18
+    _e1_front(bb, front, op)
+    bb.connect_power(_S2)
+    bb.mark_unused_inputs([4, 5, 9, 10, 12, 13], _S1, chip=front)
+    bb.mark_unused_outputs([6, 8, 11], _S1, chip=front)
+    if stage == 1:
+        bb.partial = True
+        bb.led_chain(c['a'], 25, "L2", "아직 급전하지 않는다 — 2단계에서 잇는다")
+        bb.note(f'1단계: {front} 게이트1 만 검사한다. L1 = A{op}B 를 네 조합 전부 본다.')
+        bb.note(_E1_INPUT_NOTE)
+        return
+    bb.draw_chip(back, _S2)
+    bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(back_in_row))], 'mid',
+                 f'A{op}B -> {back} {back_in_label} (칩 사이 연결)',
+                 marker_at=(c['a'] - 20, bb.r_y(13)))
+    _input_jumper(bb, c, c_row, 'C', f'{back} pin {c_pin}', marker=(215, +13))
+    bb.step_wire([(c[out_col], bb.r_y(out_row)), (c[out_col], bb.r_y(25))], 'sig',
+                 f'최종 출력 {back} -> L2', marker_at=(c[out_col] + 18, bb.r_y(22)))
+    bb.led_chain(c['a'], 25, "L2", f"최종 출력 Y = (A{op}B{op}C)' — 진리표 검증 대상")
+    bb.mark_unused_inputs(back_unused_in, _S2, chip=back)
+    bb.mark_unused_outputs(back_unused_out, _S2, chip=back)
+    bb.note(_E1_INPUT_NOTE)
 
-    bb.draw_chip("74HC32", r_or)
-    bb.draw_chip("74HC02", r_nor)
-    bb.connect_jacks()
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
-    bb.connect_power(r_or)
-    bb.connect_power(r_nor)
 
-    _input_jumper(bb, c, 7, 'A', '74HC32 pin 1')
-    _input_jumper(bb, c, 8, 'B', '74HC32 pin 2')
+def build_e1_nand(output_path, template_path=None, stage=None, baseline=None):
+    """실험 2-1 · 3입력 NAND (74HC08 앞단 + 74HC00 뒷단). netlist C3. 2단계."""
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 2-1: 3-Input NAND — 1단계 (앞단 AND 검사)"
+    elif baseline is None:
+        title = "실험 2-1: 3-Input NAND Gate 결선도"
+    else:
+        title = "실험 2-1: 3-Input NAND — 2단계 (뒷단 NAND, 완성)"
+    bb.set_header(title, "74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · LED 마다 330Ω 직렬",
+                  submit=baseline is None)
+    # 74HC00 게이트1: 1,2 -> 3. 출력 pin 3 은 20행이고 a 열이 비어 있다
+    _e1_two_chip(bb, "74HC08", "74HC00", "·", stage,
+                 back_in_row=18, back_in_label="pin 1", c_row=19, c_pin=2,
+                 out_row=20, out_col='a',
+                 back_unused_in=[4, 5, 9, 10, 12, 13], back_unused_out=[6, 8, 11])
+    bb.export(output_path, max_row=31)
+    return bb
 
-    # A+B 는 74HC02 의 **2번 핀**으로 간다. 1번 핀은 출력이다
-    bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(19))], 'mid',
-                 "A+B -> 74HC02 pin 2 (1번 아님!)", marker_at=(c['a'] - 20, bb.r_y(14)))
 
-    bb.step_wire([(c['b'], bb.r_y(9)), (c['b'], bb.r_y(14))], 'mid',
-                 '중간단 확인용 갈래', width=2, marker_at=(c['b'] + 18, bb.r_y(11)))
-    bb.led_chain(c['b'], 14, "L1", "중간단 A+B — 켜지는지 눈으로만 본다", color_rgb=(210, 140, 0))
+def build_e1_nor(output_path, template_path=None, stage=None, baseline=None):
+    """실험 2-2 · 3입력 NOR (74HC32 앞단 + 74HC02 뒷단). netlist C4. 2단계.
 
-    # 20행은 레일 홀도 없고("20 →" 가 인쇄돼) 왼쪽 여백도 막혀 있다 — 19행 홀에서
-    # 비스듬히 들어가고 번호 원은 여백 아래쪽으로
-    _input_jumper(bb, c, 20, 'C', '74HC02 pin 3', marker=(215, +13))
-
-    # 최종 출력은 74HC02 의 1번 핀 — 칩 맨 윗핀이다. c열로 내린다: a열은 위의
-    # A+B 초록선이, b열은 입력 C 의 끝점(b20)이 쓴다
-    bb.step_wire([(c['c'], bb.r_y(18)), (c['c'], bb.r_y(25))], 'sig',
-                 "최종 출력 74HC02 pin 1 -> L2 (출력이 맨 윗핀)",
-                 marker_at=(c['c'] + 18, bb.r_y(22)))
-    bb.led_chain(c['c'], 25, "L2", "최종 출력 Y = (A+B+C)' — 진리표 검증 대상")
-
-    bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_or, bridge_row=29, chip='74HC32')
-    bb.mark_unused_outputs([6, 8, 11], r_or, chip='74HC32')
-    bb.connect_unused_inputs([5, 6, 8, 9, 11, 12], r_nor, bridge_row=29, chip='74HC02')
-    bb.mark_unused_outputs([4, 10, 13], r_nor, chip='74HC02')
+    **74HC02 는 출력이 1번 핀이다** (2,3 -> 1). A+B 는 pin 2(19행), C 는 pin 3
+    (20행), 출력 pin 1(18행)은 c 열로 내린다 — a 열은 a9→a19 가 지난다.
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 2-2: 3-Input NOR — 1단계 (앞단 OR 검사)"
+    elif baseline is None:
+        title = "실험 2-2: 3-Input NOR Gate 결선도"
+    else:
+        title = "실험 2-2: 3-Input NOR — 2단계 (뒷단 NOR, 완성)"
+    bb.set_header(title, "74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀",
+                  submit=baseline is None)
+    _e1_two_chip(bb, "74HC32", "74HC02", "+", stage,
+                 back_in_row=19, back_in_label="pin 2 (1번 아님!)", c_row=20, c_pin=3,
+                 out_row=18, out_col='c',
+                 back_unused_in=[5, 6, 8, 9, 11, 12], back_unused_out=[4, 10, 13])
     bb.note('74HC02 는 핀 배치가 다르다 — 입력이 2·3 / 5·6 / 8·9 / 11·12, 출력이 1·4·10·13. '
             '나머지 넷과 반대다.')
-    bb.note('입력 A·B·C 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
     bb.export(output_path, max_row=31)
     return bb
 
 
-def build_e1_comb(output_path, template_path=None, stage=None):
-    """실험 3 · 복합 논리회로 (74HC04 + 74HC08 + 74HC32). netlist C5.
+def build_e1_comb(output_path, template_path=None, stage=None, baseline=None):
+    """실험 3 · 복합 논리회로. netlist C5. 칩 하나 = 단계 하나.
 
-    칩이 셋이라 한 장에 다 그리면 손으로 따라 그리기 버겁다. `stage` 로
-    **누적 3단계**를 뽑을 수 있다 — 회로 자체는 하나뿐이라 그림을 쪼갤 수는
-    없지만 그리는 순서는 쪼갤 수 있다.
+      stage 1  74HC04(S1) + Z LED. pin 3 은 임시로 입력 A 에서(c7→c9) — Z = A'
+      stage 2  + 74HC08(S2). 임시 점퍼를 걷고 A'·B 경로 — Z = (A'·B)'
+      stage 3  + 74HC32(S3) + X·Y LED = 완성. X ≡ Z 자체 검산
 
-      stage=1  칩 안착 + 전원 (잭·pin14/7·레일 브리지)
-      stage=2  1단계 + 신호 배선 (A, B, A', A'·B, Z, X, Y)
-      stage=3  2단계 + LED 3벌 + 미사용 핀 처리 = 최종본
+    Z LED 는 앞 회로들의 L2 사슬(a25) 그대로다. 전원·브리지는 세 슬롯 전부
+    1단계에서 꽂는다 — 회로가 바뀌어도 그대로인 선이다.
     """
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    # 2026-09-08 까지는 포개짐 둘(우 10행 갈래와 초록 Z 선, 좌 g10~중앙GND10
-    # 초록/파랑) 때문에 경고 모드였다. 초록 Z 선이 10행 대신 11행으로 건너가면서
-    # 둘 다 사라져 다른 회로와 같은 엄격 모드다
     st = 3 if stage is None else stage
-    # 1·2단계는 **일부러 덜 그린** 그림이다 — LED 도 미사용 핀 처리도 3단계에만
-    # 있으니 뜬 핀이 정상이다. R5 의 뜬 핀 갈래만 건너뛴다
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
     bb.partial = st < 3
-    title = {1: "실험 3: 복합 논리회로 — 1단계 (칩과 전원)",
-             2: "실험 3: 복합 논리회로 — 2단계 (신호 배선까지)",
-             3: "실험 3: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)" if stage is None
-                else "실험 3: 복합 논리회로 — 3단계 (완성)"}[st]
-    bb.set_header(title,
-                  "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개")
+    title = {1: "실험 3: 복합 논리회로 — 1단계 (인버터, Z = A')",
+             2: "실험 3: 복합 논리회로 — 2단계 (AND 추가, Z = (A'·B)')",
+             3: "실험 3: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)" if baseline is None
+                else "실험 3: 복합 논리회로 — 3단계 (OR 추가, 완성)"}[st]
+    bb.set_header(title, "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개",
+                  submit=baseline is None)
+    c, r = bb.cols['left'], bb.cols['right']
 
-    c_l, c_r = bb.cols['left'], bb.cols['right']
-    r_not, r_and, r_or = 7, 18, 10
-
-    # --- 1단계: 칩 안착과 전원 ---
-    bb.draw_chip("74HC04", r_not, block='left')
-    bb.draw_chip("74HC08", r_and, block='left')
-    bb.draw_chip("74HC32", r_or, block='right')
-    bb.connect_jacks()
-    # 이 그림은 분리된 레일 스트립을 여섯 개 쓴다. 하나라도 안 이으면 그쪽에
-    # 물린 핀이 전원을 못 받는다 — 그림은 멀쩡해 보인다
-    bb.bridge_rails(c_l['gnd'], c_l['mid_gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_l['mid_gnd'], c_r['mid_gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_r['mid_gnd'], c_r['gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_l['vcc'], c_l['mid_vcc'], 33, kind='vcc')
-    bb.bridge_rails(c_l['mid_vcc'], c_r['vcc'], 33, kind='vcc')
-    # 74HC04 pin 7 번호 원의 기본 자리(x=231, 12~13행 사이)에 B 갈래 모서리(228, 12행)가
-    # 온다. 칩 사이 빈 행(14~17)의 a열에 번호 원·꼬리표를 세로로 쌓는다 — 14행 ⑨,
-    # 15행 A' 번호, 16행 A' 꼬리표, 17행 Z LED 번호
-    # 74HC04 의 pin 7·pin 5 접지선은 d열 대신 **a열**에서 뽑는다 — d열은 초록 A'·B
-    # 세로선(d20→d9)이 타고 내려와 d11·d13 끝점이 그 아래 깔린다 (R3). a열은 Z LED
-    # 선이 여백으로 나간 뒤로 비어 있다
-    bb.connect_power(r_not, block='left', gnd_marker_at=(c_l['a'], bb.r_y(14)), gnd_col='a')
-    bb.connect_power(r_and, block='left')
-    bb.connect_power(r_or, block='right')
-
+    bb.draw_chip("74HC04", _S1)
+    _e1_frame(bb)
+    bb.connect_power(_S1)
+    bb.connect_power(_S2)
+    # 우측 블록 레일. 31행은 좌우 중앙GND 브리지가, 33·34행은 우측 바깥 레일이
+    # 쓴다 — 30행에 두면 우 a30·c30(Y 사슬 저항 아래) 위를 지난다 (R3)
+    bb.bridge_rails(c['mid_gnd'], r['mid_gnd'], 31, kind='gnd')
+    bb.bridge_rails(r['mid_gnd'], r['gnd'], 33, kind='gnd')
+    bb.bridge_rails(c['mid_vcc'], r['vcc'], 34, kind='vcc')
+    bb.connect_power(_S3, block='right')
+    _input_jumper(bb, c, 7, 'A', '74HC04 pin 1')
+    # Z LED 급전: b10 → 여백 212 → a25. a 열은 A'(a8→a18)가, c 열은 A'·B(c20→c9)가
+    # 지나고 d10 은 Z→우측 점퍼가 쓴다. 212 는 19행에서 입력 B 선을 가로지른다 (교차는 허용)
+    bb.step_wire([(c['b'], bb.r_y(10)), (212, bb.r_y(10)), (212, bb.r_y(25)), (c['a'], bb.r_y(25))],
+                 'sig', 'Z (74HC04 pin 4) -> Z LED', marker_at=(c['a'] - 20, bb.r_y(16)))
+    bb.led_chain(c['a'], 25, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다", color_rgb=(210, 20, 80))
+    if st == 1:
+        bb.step_wire([(c['c'], bb.r_y(7)), (c['c'], bb.r_y(9))], 'sig',
+                     '임시: 입력 A 갈래 -> 74HC04 pin 3 (2단계에서 걷는다)',
+                     marker_at=(c['c'] + 18, bb.r_y(8)))
+        bb.note("1단계: 인버터 2단(pin 3→4)을 검사한다. pin 3 을 A 에 임시로 물려 Z = A' 를 A=0,1 로 본다.")
     if st >= 2:
-        # --- 2단계: 신호 ---
-        _input_jumper(bb, c_l, 7, 'A', '74HC04 pin 1')
-        # 오른쪽 블록으로 가는 갈래는 **같은 스트립의 다른 홀(c7)** 에 두 번째 점퍼를
-        # 꽂는 것이다. 점퍼는 이어 붙일 수 없으니 허공 줄기에서 분기하면 안 된다.
-        # c7 에서 **세로로** c5 까지 올라간 뒤 판 위를 가로지른다 — 이전 판은 a7 에서
-        # 입력선 위를 되짚어 여백으로 나가서 밑동이 굵은 선 아래 깔렸다. 오른쪽에서는
-        # 중앙 레일과 a열 사이 여백(x=577)으로 내려와 a13(pin 4 스트립)에 꽂는다
-        bb.step_wire([(c_l['c'], bb.r_y(7)), (c_l['c'], bb.r_y(5)),
-                      (577, bb.r_y(5)), (577, bb.r_y(13)), (c_r['a'], bb.r_y(13))],
-                     'sig', '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(577 + 14, bb.r_y(5) - 12))
-        # pin 1 은 pin 4 스트립(13행)의 빈 홀에서 10행으로 올려 받는다. 2026-09-09
-        # 까지 여기가 `우 a10 → 우 b10` 이었다 — 같은 스트립 안이라 전기적으로
-        # 아무 일도 하지 않았고 pin 1 은 뜬 채였다. 최초 판에서는 A 갈래가 a열을
-        # 타고 내려가며 a10 위를 지나 T 접속처럼 보였는데, 2026-09-08 에 그 갈래를
-        # 여백으로 옮기면서 공급이 끊겼고 이 토막만 남았다.
-        # d 열인 이유: b11 은 초록 Z 선의 끝점, c12 는 X LED 선의 끝점이라 그 위를
-        # 지나면 R3 다. d11·d12 는 비어 있다
-        bb.step_wire([(c_r['d'], bb.r_y(13)), (c_r['d'], bb.r_y(10))],
-                     'sig', '입력 A 갈래 -> 74HC32 pin 1', width=2, marker_at=(c_r['b'], bb.r_y(12)))
-
-        # 입력 B 는 a19 에서 멈추고 갈래는 b19 에서 세로로 나간다. c19 는 위가 A' 끝점
-        # (c18) 이라 막혀 있고, a19 에서 여백으로 되짚으면 밑동이 입력선 아래 깔린다
-        _input_jumper(bb, c_l, 19, 'B', '74HC08 pin 2', col='a')
-        # b19 → b12 (칩 사이 빈 행과 pin 7·pin 6 스트립을 지나기만 한다) → 여백 x=228
-        # 로 6행까지 올라간다. 228 은 7행에서 입력 A 선(레일→b7)을 a7 빈 홀 왼쪽에서
-        # 한 번 가로지른다. 12행은 pin 6(미사용 출력, 개방)이라 가로선이 없다
-        bb.step_wire([(c_l['b'], bb.r_y(19)), (c_l['b'], bb.r_y(12)), (228, bb.r_y(12)), (228, bb.r_y(6)),
-                      (c_r['b'] + 8, bb.r_y(6)), (c_r['b'] + 8, bb.r_y(14)), (c_r['b'], bb.r_y(14))],
-                     'sig', '입력 B 갈래 -> 74HC32 pin 5', width=2,
-                     marker_at=(577 + 14, bb.r_y(6) + 10))
-
-        # 번호 원과 꼬리표는 칩 사이 빈 행(14~17)의 a열에 세로로 쌓는다 (전원 단계 주석
-        # 참조) — b열은 B 갈래, 여백 212·228 은 Z LED 선과 B 갈래가 지나가서 선을 가린다
-        bb.step_wire([(c_l['c'], bb.r_y(8)), (c_l['c'], bb.r_y(18))], 'mid',
-                     "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c_l['a'], bb.r_y(15)))
-        _tag(bb, c_l['a'] - 8, bb.r_y(16) - 7, "A'")
-
-        bb.step_wire([(c_l['d'], bb.r_y(20)), (c_l['d'], bb.r_y(9))], 'mid',
-                     "A'·B (74HC08 pin 3) -> 74HC04 pin 3", marker_at=(c_l['d'] + 18, bb.r_y(16)))
-        _tag(bb, c_l['d'] + 12, bb.r_y(21) - 8, "A'·B")
-
-        # 10행을 끝까지 타면 왼쪽에서 pin 11 접지선(g10→중앙GND), 오른쪽에서 A 갈래의
-        # 끝점(d13→d10, ⑯)이 얹혀 있어 이미 A 의 넷인 10행 스트립 위에 포개진다. 칩을
-        # 지나자마자 f·g 열 사이(x=362)에서 11행으로 내려간다 — 11행 오른쪽은
-        # pin 10(미사용 출력, 개방)이라 비어 있다. (2026-09-09: 우측 근거였던
-        # `우 a10→b10` 점퍼는 제거되고 d10 이 그 자리를 대신했다)
-        bb.step_wire([(c_l['b'], bb.r_y(10)), (362, bb.r_y(10)), (362, bb.r_y(11)), (c_r['b'], bb.r_y(11))],
-                     'mid', "Z (74HC04 pin 4) -> 74HC32 pin 2", width=2,
-                     marker_at=(c_l['b'] + 60, bb.r_y(10) - 12))
-
+        bb.draw_chip("74HC08", _S2)
+        _input_jumper(bb, c, 19, 'B', '74HC08 pin 2', marker=(215, +13))
+        bb.step_wire([(c['a'], bb.r_y(8)), (c['a'], bb.r_y(18))], 'mid',
+                     "A' (74HC04 pin 2) -> 74HC08 pin 1", marker_at=(c['a'] - 20, bb.r_y(13)))
+        bb.step_wire([(c['c'], bb.r_y(20)), (c['c'], bb.r_y(9))], 'mid',
+                     "A'·B (74HC08 pin 3) -> 74HC04 pin 3", marker_at=(c['c'] + 18, bb.r_y(15)))
+        bb.mark_unused_inputs([4, 5, 9, 10, 12, 13], _S2, chip='74HC08')
+        bb.mark_unused_outputs([6, 8, 11], _S2, chip='74HC08')
+    if st == 2:
+        bb.note("2단계: 74HC08 게이트1 + 인버터1·2. Z = (A'·B)' 를 네 조합 전부 본다.")
     if st >= 3:
-        # --- 3단계: 출력 LED 와 마감 ---
-        # Z LED 선은 a10 에서. b10 은 위의 초록 Z 점퍼가 쓴다 (같은 스트립, 다른 홀).
-        # a열을 타고 내려가면 입력 B 의 끝점 a19 위를 지나 Z 가 B 에 물린 것처럼 읽히므로
-        # 여백 x=212 로 내려간다 — 19행에서 입력 B 선을 a19 에서 27px 떨어져 가로지른다
-        bb.step_wire([(c_l['a'], bb.r_y(10)), (212, bb.r_y(10)), (212, bb.r_y(26)), (c_l['a'], bb.r_y(26))],
-                     'sig', 'Z 노드 -> Z LED', marker_at=(c_l['a'], bb.r_y(17)))
-        bb.led_chain(c_l['a'], 26, "Z", "Z = (A'·B)' — X 와 항상 같아야 한다",
-                     color_rgb=(210, 20, 80))
-
-        bb.step_wire([(c_r['c'], bb.r_y(12)), (c_r['c'], bb.r_y(22))], 'sig',
-                     '74HC32 pin 3 -> X LED', marker_at=(c_r['c'] - 18, bb.r_y(18)))
-        bb.led_chain(c_r['c'], 22, "X", "X = A + Z — Z 와 다르면 배선 오류",
+        bb.draw_chip("74HC32", _S3, block='right')
+        # A 갈래: 7행 스트립의 c7 에서 세로로 5행까지 올려 판 위를 가로지른다
+        bb.step_wire([(c['c'], bb.r_y(7)), (c['c'], bb.r_y(5)), (577, bb.r_y(5)),
+                      (577, bb.r_y(13)), (r['a'], bb.r_y(13))], 'sig',
+                     '입력 A 갈래 -> 74HC32 pin 4', width=2, marker_at=(577 + 14, bb.r_y(5) - 12))
+        bb.step_wire([(r['d'], bb.r_y(13)), (r['d'], bb.r_y(10))], 'sig',
+                     '입력 A 갈래 -> 74HC32 pin 1', width=2, marker_at=(r['b'], bb.r_y(12)))
+        # B 갈래: 19행 스트립의 d19 에서 세로로 17행까지, 여백 228 로 6행까지 올려 우 b14
+        bb.step_wire([(c['d'], bb.r_y(19)), (c['d'], bb.r_y(17)), (228, bb.r_y(17)), (228, bb.r_y(6)),
+                      (r['b'] + 8, bb.r_y(6)), (r['b'] + 8, bb.r_y(14)), (r['b'], bb.r_y(14))],
+                     'sig', '입력 B 갈래 -> 74HC32 pin 5', width=2, marker_at=(577 + 14, bb.r_y(6) + 10))
+        # Z → 우측: d10 에서 칩을 가로질러 f·g 사이(362)에서 11행으로 내려 우 b11
+        bb.step_wire([(c['d'], bb.r_y(10)), (362, bb.r_y(10)), (362, bb.r_y(11)), (r['b'], bb.r_y(11))],
+                     'mid', "Z (74HC04 pin 4) -> 74HC32 pin 2", width=2,
+                     marker_at=(c['d'] + 40, bb.r_y(10) - 12))
+        bb.step_wire([(r['c'], bb.r_y(12)), (r['c'], bb.r_y(22))], 'sig',
+                     '74HC32 pin 3 -> X LED', marker_at=(r['c'] - 18, bb.r_y(18)))
+        bb.led_chain(r['c'], 22, "X", "X = A + Z — Z 와 다르면 배선 오류",
                      block='right', color_rgb=(220, 120, 0))
-
-        bb.step_wire([(c_r['a'], bb.r_y(15)), (c_r['a'], bb.r_y(27))], 'sig',
-                     '74HC32 pin 6 -> Y LED', marker_at=(c_r['a'] - 20, bb.r_y(21)))
-        bb.led_chain(c_r['a'], 27, "Y", "Y = A + B", block='right', color_rgb=(20, 150, 50))
-
-        bb.connect_unused_inputs([5, 9, 11, 13], r_not, block='left', bridge_row=31, chip='74HC04', col='a')
-        bb.mark_unused_outputs([6, 8, 10, 12], r_not, block='left', chip='74HC04')
-        bb.connect_unused_inputs([4, 5, 9, 10, 12, 13], r_and, block='left', bridge_row=31, chip='74HC08')
-        bb.mark_unused_outputs([6, 8, 11], r_and, block='left', chip='74HC08')
-        bb.connect_unused_inputs([9, 10, 12, 13], r_or, block='right', bridge_row=31, chip='74HC32')
-        bb.mark_unused_outputs([8, 11], r_or, block='right', chip='74HC32')
-
+        bb.step_wire([(r['a'], bb.r_y(15)), (r['a'], bb.r_y(27))], 'sig',
+                     '74HC32 pin 6 -> Y LED', marker_at=(r['a'] - 20, bb.r_y(21)))
+        bb.led_chain(r['a'], 27, "Y", "Y = A + B", block='right', color_rgb=(20, 150, 50))
+        bb.mark_unused_inputs([9, 10, 12, 13], _S3, block='right', chip='74HC32')
+        bb.mark_unused_outputs([8, 11], _S3, block='right', chip='74HC32')
         bb.note("Z 와 X 는 부울대수로 항등이다 (X = A + (A'·B)' = A + B' = Z). "
                 "두 LED 가 서로 다르게 켜지면 배선이 틀린 것이다 — 공짜 자체 검산.")
-
+    bb.mark_unused_inputs([5, 9, 11, 13], _S1, chip='74HC04')
+    bb.mark_unused_outputs([6, 8, 10, 12], _S1, chip='74HC04')
     bb.note('입력 A·B 두 개뿐이다. 교안 p15 회로도에 C 입력은 없다.')
-    bb.note('입력 A·B 는 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 빨간 +5V 레일로 옮겨 꽂는다. 오른쪽 블록으로 가는 갈래는 같은 행의 옆 홀(c7·b19)에 꽂는 두 번째 점퍼다.')
+    bb.note(_E1_INPUT_NOTE)
     bb.export(output_path, max_row=34)
     return bb
+
+
+# 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
+# 실제로 남아 있는 것. 첫 보드(C1)는 기준선이 없어 완성본을 겸한다.
+E1_BOARDS = [
+    ("실험01_결선도_3입력_AND.png", build_e1_and, None),
+    ("실험01_결선도_3입력_OR_1단계_칩교체.png", build_e1_or, None),
+    ("실험01_결선도_3입력_NAND_1단계_앞단AND.png", build_e1_nand, 1),
+    ("실험01_결선도_3입력_NAND_2단계_뒷단NAND.png", build_e1_nand, None),
+    ("실험01_결선도_3입력_NOR_1단계_앞단OR.png", build_e1_nor, 1),
+    ("실험01_결선도_3입력_NOR_2단계_뒷단NOR.png", build_e1_nor, None),
+    ("실험01_결선도_복합논리회로_1단계_인버터.png", build_e1_comb, 1),
+    ("실험01_결선도_복합논리회로_2단계_AND.png", build_e1_comb, 2),
+    ("실험01_결선도_복합논리회로_3단계_OR.png", build_e1_comb, None),
+]
+
+# 완성본 — 기준선 없이 전부 색. 예비보고서에 싣고 손으로 따라 그리는 원도다.
+# 회색이 섞인 단계 그림을 원도로 쓰면 따라 그리는 사람이 회색 선을 빠뜨린다
+E1_FINALS = [
+    ("실험01_결선도_3입력_OR.png", build_e1_or),
+    ("실험01_결선도_3입력_NAND.png", build_e1_nand),
+    ("실험01_결선도_3입력_NOR.png", build_e1_nor),
+    ("실험01_결선도_복합논리회로.png", build_e1_comb),
+]
+
+
+def _e1_baseline(index, template_path=None):
+    """`E1_BOARDS[index]` 의 기준선 = 바로 앞 보드의 `snapshot()`. 첫 보드는 None.
+
+    앞 보드는 기준선 **없이** 그린다 — 배선 집합은 기준선과 무관하므로(색과
+    번호만 달라진다) 재귀가 없다. 임시 파일에 그리고 버린다.
+    """
+    if index == 0:
+        return None
+    _name, fn, stage = E1_BOARDS[index - 1]
+    with tempfile.TemporaryDirectory() as d:
+        return fn(os.path.join(d, 'prev.png'), template_path, stage=stage).snapshot()
+
+
+def _e1_board(index, output_path, template_path=None):
+    _name, fn, stage = E1_BOARDS[index]
+    return fn(output_path, template_path, stage=stage,
+              baseline=_e1_baseline(index, template_path))
+
+
+def build_e1_or_s1(output_path, template_path=None):
+    """C2 1단계 — C1 에서 칩만 갈아끼운다. 새 배선 0가닥."""
+    return _e1_board(1, output_path, template_path)
+
+
+def build_e1_nand_s1(output_path, template_path=None):
+    """C3 1단계 — 앞단 74HC08 만. L1 = A·B 네 조합."""
+    return _e1_board(2, output_path, template_path)
+
+
+def build_e1_nand_s2(output_path, template_path=None):
+    """C3 2단계 — 74HC00 을 더해 완성."""
+    return _e1_board(3, output_path, template_path)
+
+
+def build_e1_nor_s1(output_path, template_path=None):
+    """C4 1단계 — 앞단 74HC32 만. L1 = A+B 네 조합."""
+    return _e1_board(4, output_path, template_path)
+
+
+def build_e1_nor_s2(output_path, template_path=None):
+    """C4 2단계 — 74HC02 를 더해 완성."""
+    return _e1_board(5, output_path, template_path)
+
+
+def build_e1_comb_s1(output_path, template_path=None):
+    """C5 1단계 — 74HC04 + Z LED, 임시 점퍼로 Z = A'."""
+    return _e1_board(6, output_path, template_path)
+
+
+def build_e1_comb_s2(output_path, template_path=None):
+    """C5 2단계 — 74HC08 추가, Z = (A'·B)'."""
+    return _e1_board(7, output_path, template_path)
+
+
+def build_e1_comb_s3(output_path, template_path=None):
+    """C5 3단계 — 74HC32 추가, 완성."""
+    return _e1_board(8, output_path, template_path)
+
+
+def build_e1_all(output_dir, template_path=None):
+    """실험 1 결선도 13장 — 절차 9장(기준선 사슬) + 완성본 4장(기준선 없음)."""
+    os.makedirs(output_dir, exist_ok=True)
+    base = None
+    for filename, fn, stage in E1_BOARDS:
+        bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+        base = bb.snapshot()
+    for filename, fn in E1_FINALS:
+        fn(os.path.join(output_dir, filename), template_path)
+    print(f"[SUCCESS] 실험01 결선도 {len(E1_BOARDS) + len(E1_FINALS)}장 생성: {output_dir}")
 
 
 # ---------------------------------------------------------------------------
@@ -2112,62 +2120,28 @@ def build_e2_all(output_dir, template_path=None):
     print(f"[SUCCESS] All 5 diagrams for 실험02 generated in: {output_dir}")
 
 
-# 단계별 빌더는 **이름 있는 함수**로 둔다. 람다로 두면
-# `tests/test_breadboard_diagram_cli.py` 가 dispatch 를 AST 로 읽어 "두 회로가
-# 한 빌더를 공유하지 않는지" 보는 가드가 깨진다 — OR·NOR 이 AND·NAND 빌더의
-# 별칭이던 시절을 잡아낸 바로 그 검사다.
-def build_e1_comb_s1(output_path, template_path=None):
-    """복합회로 1단계 — 칩 안착과 전원만."""
-    return build_e1_comb(output_path, template_path, stage=1)
-
-
-def build_e1_comb_s2(output_path, template_path=None):
-    """복합회로 2단계 — 1단계 + 신호 배선."""
-    return build_e1_comb(output_path, template_path, stage=2)
-
-
-def build_e1_comb_s3(output_path, template_path=None):
-    """복합회로 3단계 — 2단계 + LED 3벌과 미사용 핀 처리."""
-    return build_e1_comb(output_path, template_path, stage=3)
-
-
-def build_e1_all(output_dir, template_path=None):
-    """실험 1 결선도 일괄 렌더. 복합회로는 **누적 3단계만** 낸다 — 칩 셋을
-    한 장으로 따라 그리는 건 무리라서 그리는 순서를 쪼개 준다."""
-    os.makedirs(output_dir, exist_ok=True)
-    targets = [
-        ("실험01_결선도_3입력_AND.png", build_e1_and),
-        ("실험01_결선도_3입력_OR.png", build_e1_or),
-        ("실험01_결선도_3입력_NAND.png", build_e1_nand),
-        ("실험01_결선도_3입력_NOR.png", build_e1_nor),
-        # 복합회로는 **누적 3단계만** 낸다. 통짜 한 장(`e1_comb`)은 3단계
-        # 완성본과 그림이 같으면서 순서를 안 주므로, 손으로 따라 그릴 사람에게
-        # 줄 것이 못 된다. CLI 로는 여전히 뽑을 수 있다
-        ("실험01_결선도_복합논리회로_1단계_전원.png", build_e1_comb_s1),
-        ("실험01_결선도_복합논리회로_2단계_신호.png", build_e1_comb_s2),
-        ("실험01_결선도_복합논리회로_3단계_완성.png", build_e1_comb_s3),
-    ]
-    for filename, func in targets:
-        func(os.path.join(output_dir, filename), template_path)
-    print(f"[SUCCESS] 실험01 결선도 {len(targets)}장 생성: {output_dir}")
-
-
 def main():
     parser = argparse.ArgumentParser(description="Breadboard Diagram Generator")
     parser.add_argument("--circuit", required=True, choices=[
-        "e1_and", "e1_or", "e1_nand", "e1_nor", "e1_comb",
-        "e1_comb_s1", "e1_comb_s2", "e1_comb_s3", "e1_all",
+        "e1_and", "e1_or", "e1_or_s1", "e1_nand", "e1_nand_s1", "e1_nand_s2",
+        "e1_nor", "e1_nor_s1", "e1_nor_s2",
+        "e1_comb", "e1_comb_s1", "e1_comb_s2", "e1_comb_s3", "e1_all",
         "e2_inv", "e2_schmitt", "e2_rn", "e2_rp", "e2_tpd", "e2_all"
     ], help="Circuit ID to render")
     parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e2_all)")
     parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
     args = parser.parse_args()
-    
+
     dispatch = {
         "e1_and": build_e1_and,
         "e1_or": build_e1_or,
+        "e1_or_s1": build_e1_or_s1,
         "e1_nand": build_e1_nand,
+        "e1_nand_s1": build_e1_nand_s1,
+        "e1_nand_s2": build_e1_nand_s2,
         "e1_nor": build_e1_nor,
+        "e1_nor_s1": build_e1_nor_s1,
+        "e1_nor_s2": build_e1_nor_s2,
         "e1_comb": build_e1_comb,
         "e1_comb_s1": build_e1_comb_s1,
         "e1_comb_s2": build_e1_comb_s2,

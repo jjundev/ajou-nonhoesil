@@ -284,7 +284,9 @@ class R5(unittest.TestCase):
         builders = {n: f for n, f in vars(self.mod).items()
                     if n.startswith('build_') and not n.endswith('_all')
                     and inspect.isfunction(f)}
-        self.assertEqual(len(builders), 13)
+        # 2026-09-12 슬롯 고정: 실험01 절차 CLI 래퍼 5개(e1_or_s1·e1_nand_s1/_s2·
+        # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
+        self.assertEqual(len(builders), 18)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)
