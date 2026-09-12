@@ -11,8 +11,10 @@
 """
 
 import io
+import os
 import re
 import shutil
+import stat
 import subprocess
 import tarfile
 from pathlib import Path
@@ -56,6 +58,16 @@ def _expand_keys(dest: Path, dest_real: Path, answer_keys) -> list:
     return out
 
 
+def _rmtree(path: Path) -> None:
+    """지난 회차의 격리 트리를 지운다. Windows 에서 `.git/objects/` 는 읽기 전용이라
+    `shutil.rmtree` 가 PermissionError 로 죽는다(2026-09-12 2회차) — 쓰기 권한을
+    주고 다시 지운다."""
+    def _onerror(func, p, exc_info):
+        os.chmod(p, stat.S_IWRITE)
+        func(p)
+    shutil.rmtree(path, onerror=_onerror)
+
+
 def _restore(archive: bytes, dest: Path, rel: str) -> None:
     """아카이브에서 `rel` 하나를 다시 꺼낸다. 없으면 KeyError — 조용히 넘기면
     '예비보고서 없이 돌았다' 가 판정에서 '④ 가 예보를 안 읽었다' 로 보인다."""
@@ -68,7 +80,7 @@ def build_isolated_tree(root, dest, experiment: int, answer_keys,
                         clear_subdirs=_CLEARED, keep=()) -> Path:
     root, dest = Path(root), Path(dest)
     if dest.exists():
-        shutil.rmtree(dest)
+        _rmtree(dest)
     dest.mkdir(parents=True)
     archive = subprocess.run(["git", "archive", "--format=tar", "HEAD"], cwd=root,
                              check=True, capture_output=True).stdout

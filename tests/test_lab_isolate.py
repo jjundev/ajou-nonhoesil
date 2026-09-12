@@ -188,6 +188,14 @@ class ResultReportMode(unittest.TestCase):
                     build_isolated_tree(root, dest, 1, [key], clear_subdirs=())
         self.assertTrue((root / "keep.md").exists())
 
+    def test_같은_dest_에_두_번_만들어도_된다(self):
+        # 지난 회차 트리의 `.git/objects/` 는 Windows 에서 읽기 전용이라 그냥
+        # rmtree 하면 PermissionError 다(2026-09-12 2회차) — 두 번째 호출이 통과해야 한다.
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        build_isolated_tree(self.root, dest, 1, [])
+        build_isolated_tree(self.root, dest, 1, [])
+        self.assertEqual(_git(dest, "rev-list", "--count", "HEAD").strip(), "1")
+
     def test_기본_인자는_세_폴더를_비운다(self):
         dest = Path(tempfile.mkdtemp()) / "iso"
         build_isolated_tree(self.root, dest, 1, [])
