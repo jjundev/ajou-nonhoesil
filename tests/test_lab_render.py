@@ -377,7 +377,7 @@ class TestCircuitPages(unittest.TestCase):
         self.assertIn("꽂는다", self.html)
 
     def test_결선도가_있으면_그림을_싣는다(self):
-        self.assertIn("실험01_결선도_3입력_AND.png", self.html)
+        self.assertIn("실험01_1-1_결선도_3입력_AND.png", self.html)
         self.assertIn("../결선도/", self.html)
 
     def test_결선도가_없으면_빈_브레드보드로_대신한다(self):
@@ -757,8 +757,9 @@ class TestPrintConstraints(unittest.TestCase):
             1 for c in netlist.circuits for t in c.tables
             if spec.table(t) and spec.table(t).role != "reference")
         lookup_sections = len(netlist.of_kind("lookup"))
+        layout_sections = len(netlist.of_kind("layout"))
         self.assertEqual(html.count('<div class="tblock">'),
-                         record_tables + lookup_sections)
+                         record_tables + lookup_sections + layout_sections)
 
 
 class TestProcedureCarriesEveryWarning(unittest.TestCase):
@@ -1220,3 +1221,140 @@ class Test배선전수(unittest.TestCase):
         html = common_page(self.spec, self.netlist)
         self.assertIn("V15", html)
         self.assertIn(_esc("+15V"), html)
+
+
+_STAGED_NETLIST = """---
+schema: lab-netlist/v2
+experiment: 1
+spec: ../체크리스트/명세.md
+---
+
+# 칩 자리표
+
+- kind: layout
+
+| 슬롯 | 자리 | 회로별 칩 |
+|---|---|---|
+| S1 | 좌 7행 | C1 74HC08 · C2 74HC00 |
+
+# C1 · 첫 회로
+
+- kind: circuit
+- id: C1
+- item: E1.P1-1
+- tables: [T1]
+
+- U1 = 74HC08 (quad 2-input AND)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → 개방
+
+# C2 · 단계 있는 회로
+
+- kind: circuit
+- id: C2
+- item: E1.P2-1
+- tables: [T3]
+- diagram: 완성.png
+
+## 단계
+
+| 단계 | 그림 | 이 단계에서 | 확인 |
+|---|---|---|---|
+| 1 | 1단계.png | **앞단만** 꽂는다 | L1 = A·B, AB = 00·01·10·11 |
+| 2 | 2단계.png | 뒷단을 더한다 | T3 8행 |
+
+- U2 = 74HC08 (quad 2-input AND)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 4, 5 → 개방
+- U3 = 74HC00 (quad 2-input NAND)
+  - pin 1 ← U2.pin3
+  - 미사용 입력핀: pin 9, 10 → 개방
+
+# C3 · 단계 없는 뒤 회로
+
+- kind: circuit
+- id: C3
+- item: E1.P1-2
+- tables: [T2]
+
+- U4 = 74HC32 (quad 2-input OR)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → 개방
+"""
+
+
+class TestStages(unittest.TestCase):
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(_STAGED_NETLIST, encoding="utf-8")
+        self.netlist = parse_netlist(path)
+        self.html = render_checklist(self.spec, self.netlist, TEMPLATE)
+        self.pages = self.html.split('<section class="circuit">')[1:]
+
+    def test_자리표가_공통면에_실린다(self):
+        common = self.html[:self.html.index('<section class="circuits">')]
+        self.assertIn("칩 자리표", common)
+        self.assertIn("좌 7행", common)
+
+    def test_단계_블록이_순서대로_실린다(self):
+        page = self.pages[1]
+        self.assertEqual(page.count('class="stage"'), 2)
+        self.assertLess(page.index("단계 1"), page.index("단계 2"))
+        self.assertIn("1단계.png", page)
+        self.assertIn("확인:", page)
+        self.assertIn("AB = 00·01·10·11", page)
+
+    def test_단계_블록은_체크박스를_가진다(self):
+        page = self.pages[1]
+        stage = page[page.index('class="stage"'):page.index('class="wirebox"')]
+        self.assertEqual(stage.count('<span class="box">'), 2)
+
+    def test_단계_블록이_결선도_상자_앞에_온다(self):
+        page = self.pages[1]
+        self.assertLess(page.index('class="stage"'), page.index('class="wirebox"'))
+
+    def test_단계가_있으면_완성본에_캡션이_붙는다(self):
+        self.assertIn("완성본 — 손그림 원도", self.pages[1])
+        self.assertNotIn("완성본 — 손그림 원도", self.pages[0])
+
+    def test_단계_표가_참조표로_두_번_찍히지_않는다(self):
+        self.assertNotIn("<th>이 단계에서</th>", self.html)
+
+    def test_단계_문구의_마크다운을_벗긴다(self):
+        self.assertNotIn("**앞단만**", self.html)
+        self.assertIn("앞단만", self.pages[1])
+
+    def test_단계가_없는_회로는_블록이_없다(self):
+        self.assertNotIn('class="stage"', self.pages[0])
+
+    def test_배너가_선_단위_변경의_위치를_말한다(self):
+        """C2 는 단계가 있는 회로다 — 배너가 `모두 걷는다` 대신 단계 그림을
+        가리켜야 한다. C1 은 첫 회로라 배너에 해당 문구가 없다."""
+        self.assertNotIn("그대로 둔다", self.pages[0])
+        self.assertIn("그대로 둔다", self.pages[1])
+        self.assertNotIn("모두 걷는다", self.pages[1])
+
+    def test_단계_있는_회로_배너는_그대로_둔다_뿐이고_모두_걷는다는_없다(self):
+        banner = self.pages[1][self.pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("그대로 둔다", banner)
+        self.assertNotIn("모두 걷는다", banner)
+
+    def test_단계_없는_뒤_회로는_옛_배너_그대로다(self):
+        """C3 은 단계가 없고 첫 회로도 아니다 — 기본 문구가 그대로 남는다."""
+        banner = self.pages[2][self.pages[2].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("모두 걷는다", banner)
+
+    def test_미사용_상자_제목이_핀_점검이다(self):
+        self.assertIn("핀 점검", self.pages[0])
+        self.assertIn("개방", self.pages[0])
+
+    def test_전원_박스가_사용_게이트_입력을_말한다(self):
+        power = self.html[self.html.index('class="power"'):]
+        power = power[:power.index("</div>")]
+        self.assertIn("사용하는 게이트의 입력", power)
+        self.assertIn("플로팅 금지", power)
+        self.assertIn("공통 규칙", power)
+        self.assertNotIn("전부 GND", power)

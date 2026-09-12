@@ -197,6 +197,28 @@ class R5(unittest.TestCase):
         self.assertIn('74HC08#10 pin 1 이', str(e.exception))
         self.assertNotIn('74HC08#10 pin 8 이', str(e.exception))
 
+    def test_개방_등록한_미사용_입력은_뜬_핀이_아니다(self):
+        """실험01 실측(2026-09-11): 미사용 게이트 입력을 접지하지 않아도 결과가
+        같았다. 접지선은 순서표의 절반이었다. 개방으로 등록하면 R5ⓒ 가 봐준다."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 10)
+        bb.mark_unused_inputs([9, 10, 12, 13], 10, chip='74HC08')
+        bb.mark_unused_outputs([8, 11], 10, chip='74HC08')
+        with self.assertRaises(AssertionError) as e:
+            bb.verify()
+        msg = str(e.exception)
+        self.assertIn('74HC08#10 pin 1 이', msg)
+        for p in (9, 10, 12, 13):
+            self.assertNotIn(f'74HC08#10 pin {p} 이', msg)
+
+    def test_개방_미사용_입력은_rail_이_None_으로_남는다(self):
+        bb = self.board()
+        bb.draw_chip('74HC08', 10)
+        bb.mark_unused_inputs([9, 10], 10, chip='74HC08')
+        self.assertEqual([(u['chip'], u['pin'], u['rail']) for u in bb.wiring()['unused_inputs']],
+                         [('74HC08', 9, None), ('74HC08', 10, None)])
+        self.assertTrue(any('접지하지 않는다' in n for n in bb.notes))
+
     def test_계측기가_무는_핀은_뜬_핀이_아니다(self):
         """실험02 인버터는 pin 1 에 함수발생기를, pin 2 에 프로브를 문다 —
         점퍼가 없다고 뜬 것이 아니다."""
@@ -262,7 +284,9 @@ class R5(unittest.TestCase):
         builders = {n: f for n, f in vars(self.mod).items()
                     if n.startswith('build_') and not n.endswith('_all')
                     and inspect.isfunction(f)}
-        self.assertEqual(len(builders), 13)
+        # 2026-09-12 슬롯 고정: 실험01 절차 CLI 래퍼 5개(e1_or_s1·e1_nand_s1/_s2·
+        # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
+        self.assertEqual(len(builders), 18)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

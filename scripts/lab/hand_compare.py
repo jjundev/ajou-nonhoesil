@@ -182,6 +182,7 @@ def signatures(diagram):
 
 # 손그림 검토가 정답으로 삼는 회로들. `main()` 의 dispatch 와 같은 이름을 쓴다
 CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
+            'e1_or_s1', 'e1_nand_s1', 'e1_nand_s2', 'e1_nor_s1', 'e1_nor_s2',
             'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3')
 
 
@@ -342,6 +343,8 @@ def check_power(ref, hand):
         key, pin = u['chip'], u['pin']
         if key not in hkeys:
             continue
+        if u.get('rail') is None:
+            continue        # 개방(접지 생략) — 참조가 아무것도 요구하지 않는다
         want = 'VCC' if u.get('rail') == 'vcc' else 'GND'
         if ('RAIL', want) not in hsig.get((key, pin), frozenset()):
             out.append(HandFinding(

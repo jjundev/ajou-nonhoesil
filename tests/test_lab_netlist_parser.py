@@ -248,5 +248,82 @@ class SchemaV2(unittest.TestCase):
         self.assertIn("lab-netlist/v2", str(cm.exception))
 
 
+STAGED = """---
+schema: lab-netlist/v2
+experiment: 1
+spec: ../체크리스트/명세.md
+---
+
+# 칩 자리표
+
+- kind: layout
+
+| 슬롯 | 자리 | 회로별 칩 |
+|---|---|---|
+| S1 | 좌 7행 | C1 74HC08 |
+
+# C3 · NAND
+
+- kind: circuit
+- id: C3
+- item: E1.P2-1
+- tables: [T3]
+- diagram: 완성.png
+
+교안 p13 회로도 그대로.
+
+## 단계
+
+| 단계 | 그림 | 이 단계에서 | 확인 |
+|---|---|---|---|
+| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |
+| 2 | `2단계.png` | 74HC00 을 더한다 | T3 8행 |
+
+- U3 = 74HC08 (quad 2-input AND)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 4, 5 → 개방
+"""
+
+
+class Stages(unittest.TestCase):
+    def setUp(self):
+        self.netlist = parse_netlist(_write(STAGED))
+        self.c3 = self.netlist.circuits[0]
+
+    def test_layout_kind_를_읽는다(self):
+        layout = self.netlist.of_kind("layout")
+        self.assertEqual(len(layout), 1)
+        self.assertIn("| S1 |", layout[0].body)
+
+    def test_단계_표를_읽는다(self):
+        self.assertEqual([s["n"] for s in self.c3.stages], ["1", "2"])
+        self.assertEqual(self.c3.stages[0]["diagram"], "1단계.png")   # 백틱을 벗긴다
+        self.assertEqual(self.c3.stages[0]["todo"], "74HC08 만 꽂는다")
+        self.assertEqual(self.c3.stages[1]["check"], "T3 8행")
+
+    def test_단계_표는_본문에서_빠진다(self):
+        """남으면 `_circuit_body` 가 참조표로 인쇄한다 — 단계 블록과 표가 두 번 찍힌다."""
+        self.assertNotIn("## 단계", self.c3.body)
+        self.assertNotIn("1단계.png", self.c3.body)
+        self.assertIn("교안 p13", self.c3.body)
+        self.assertIn("U3 = 74HC08", self.c3.body)
+
+    def test_단계가_없으면_빈_리스트다(self):
+        netlist = parse_netlist(_write(MINIMAL))
+        self.assertEqual(netlist.circuits[0].stages, [])
+
+    def test_단계_표의_열이_다르면_거절한다(self):
+        bad = STAGED.replace("| 단계 | 그림 | 이 단계에서 | 확인 |", "| 단계 | 파일 | 할 일 | 확인 |")
+        with self.assertRaisesRegex(NetlistError, "이 단계에서"):
+            parse_netlist(_write(bad))
+
+    def test_단계_헤딩_아래_표가_없으면_거절한다(self):
+        bad = STAGED.replace("| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n", "")
+        bad = bad.replace("| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |\n", "")
+        bad = bad.replace("| 2 | `2단계.png` | 74HC00 을 더한다 | T3 8행 |\n", "")
+        with self.assertRaisesRegex(NetlistError, "단계"):
+            parse_netlist(_write(bad))
+
+
 if __name__ == "__main__":
     unittest.main()

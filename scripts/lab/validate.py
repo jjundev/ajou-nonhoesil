@@ -384,6 +384,11 @@ def check_netlist_circuits(netlist, spec) -> list:
     발견하므로 시끄럽게 알린다.
     """
     out = []
+    layouts = netlist.of_kind("layout")
+    if len(layouts) > 1:
+        out.append(Finding("error", netlist.path.name,
+            f"kind: layout 절이 {len(layouts)}개다 — 칩 자리표는 실험당 하나다. "
+            "자리가 둘이면 어느 그림이 어느 자리인지 갈린다"))
     known_items = {i.id for i in spec.items}
     known_tables = {t.id for t in spec.tables}
     covered = set()
@@ -409,6 +414,20 @@ def check_netlist_circuits(netlist, spec) -> list:
                     "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
+        for st in circuit.stages:
+            if not st["check"]:
+                out.append(Finding("error", where,
+                    f"단계 {st['n']} 의 확인 칸이 비었다 — 단계 끝에서 무엇을 보는지가 "
+                    "이 표의 존재 이유다. 관측할 LED 와 입력 조합을 적는다"))
+            if st["diagram"] and not (netlist.path.parent / st["diagram"]).exists():
+                out.append(Finding("warn", where,
+                    f"단계 {st['n']} 그림 파일이 없다: {st['diagram']}. "
+                    "breadboard-diagram 의 e1_all 같은 일괄 렌더로 만든다"))
+        if circuit.stages and circuit.diagram and circuit.stages[-1]["diagram"] == circuit.diagram:
+            out.append(Finding("error", where,
+                f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "
+                "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
+                "완성본은 기준선 없이 따로 낸다 (E1_FINALS)"))
         if circuit.continues:
             if circuit.continues == circuit.id:
                 out.append(Finding("error", where,

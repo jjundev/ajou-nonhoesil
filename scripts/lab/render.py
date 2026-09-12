@@ -294,8 +294,8 @@ def common_page(spec, netlist) -> str:
     # 실험실에서 가장 먼저 읽는 줄이라, 틀리면 그대로 잘못 배선한다. 주차별
     # 규칙은 결선도의 `kind: common` 절이 담고 바로 아래 같은 쪽에 인쇄된다.
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "미사용 입력핀을 띄워 두지 않는다 (플로팅 금지) — "
-           "GND 로 내릴지 VCC 로 올릴지는 아래 공통 규칙을 본다</div>"]
+           "사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — "
+           "미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>"]
     out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
     out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 
@@ -306,6 +306,12 @@ def common_page(spec, netlist) -> str:
     for section in netlist.of_kind("lookup"):
         # `_blocks` 가 본문의 표를 제자리에 싣는다 — 여기서 또 렌더하면 두 번
         # 찍힌다. 체크박스가 필요한 `open-issues` 만 따로 렌더한다.
+        out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
+        out.append(_blocks(section.body))
+        out.append("</div>")
+
+    for section in netlist.of_kind("layout"):
+        # 칩 자리표. 다섯 회로가 같은 자리를 쓴다는 선언이라 한 번만 보면 된다
         out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
         out.append(_blocks(section.body))
         out.append("</div>")
@@ -527,6 +533,12 @@ def _chip_swap(previous, current) -> str:
     `continues` 가 있는 회로는 예외다. 실험10 E10.P2 는 다 만든 DAC 에 `741`
     비교기를 하나 더 붙이는 회로라, 기본 문구(`점퍼선을 모두 걷는다`)를 그대로
     따르면 직전 회로를 뜯는다.
+
+    `current.stages`(`## 단계` 표)가 있는 회로도 예외다 — 그 회로는 슬롯
+    고정·기준선 비교로 그려져 앞 회로의 배선을 걷지 않는다. `모두 걷는다`
+    문구를 그대로 두면 학생이 실제로 점퍼선을 다 뽑아 단계 그림의 회색(=
+    그대로 둔다) 전제를 깬다. 대신 단계 그림 자체(회색·번호·`걷는다` 표)가
+    무엇을 걷고 새로 꽂을지 지시한다고 말한다.
     """
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
@@ -545,7 +557,11 @@ def _chip_swap(previous, current) -> str:
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
-    parts = ["앞 회로의 점퍼선을 모두 걷는다"]
+    if current.stages:
+        parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
+                 "(회색·번호·'걷는다' 표)이 지시한다"]
+    else:
+        parts = ["앞 회로의 점퍼선을 모두 걷는다"]
     if remove:
         parts.append("뺀다: " + ", ".join(remove))
     if add:
@@ -577,6 +593,23 @@ def _diagram_html(section, netlist) -> str:
             f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
             'object-position:top">')
+
+
+def _stage_html(stage, netlist) -> str:
+    """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 칸.
+
+    그림이 없으면 빈 브레드보드를 넣지 않는다 — 단계 그림은 회색 기준선이 요점이라
+    격자로 대신할 수 없다. 부재는 validate 가 warn 으로 알렸다.
+    """
+    png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
+    if png is not None and png.exists():
+        src = f"../{netlist.path.parent.name}/{stage['diagram']}"
+        img = f'<img src="{_esc(src)}" style="width:100%">'
+    else:
+        img = f"<p class='src'>단계 그림이 아직 없다: {_esc(stage['diagram'] or '(없음)')}</p>"
+    return (f'<div class="stage"><h3>단계 {_esc(stage["n"])}</h3>{img}'
+            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>"
+            f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p></div>')
 
 
 _MISMATCH = {
@@ -670,10 +703,15 @@ def circuit_pages(spec, netlist) -> str:
         out.append('<section class="circuit">')
         out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
                    f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
-        out.append(f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>')
+        banner = _chip_swap(previous, section)
+        out.append(f'<div class="banner">{_esc(banner)}</div>')
         if prose_before.strip():
             out.append(_blocks(prose_before))
+        for stage in section.stages:
+            out.append(_stage_html(stage, netlist))
         out.append('<div class="wirebox">')
+        if section.stages:
+            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
         out.append(_diagram_html(section, netlist))
         for node in nodes:
             if node["type"] == "prose":
@@ -695,7 +733,7 @@ def circuit_pages(spec, netlist) -> str:
         unused_chips = [c for c in chips if c["unused"]]
         if unused_chips:
             out.append('<div class="unused">'
-                       "<b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>")
+                       "<b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>")
             for chip in unused_chips:
                 out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
                 out += [f'<li><span class="box"></span>{_esc(u)}</li>'

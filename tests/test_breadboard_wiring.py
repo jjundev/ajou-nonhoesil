@@ -52,20 +52,20 @@ class Wiring(unittest.TestCase):
         chips = self.and_bb.wiring()['chips']
         self.assertEqual([c['label'] for c in chips], ['74HC08'])
         chip = chips[0]
-        self.assertEqual(chip['pin1_row'], 10)
+        self.assertEqual(chip['pin1_row'], 7)
         self.assertEqual(chip['block'], 'left')
         # pin 1~7 은 e 열, pin 8~14 는 f 열. draw_chip 이 그렇게 꽂는다
-        self.assertEqual(chip['pins'][1], ('left', 'e', 10))
-        self.assertEqual(chip['pins'][7], ('left', 'e', 16))
-        self.assertEqual(chip['pins'][14], ('left', 'f', 10))
-        self.assertEqual(chip['pins'][8], ('left', 'f', 16))
+        self.assertEqual(chip['pins'][1], ('left', 'e', 7))
+        self.assertEqual(chip['pins'][7], ('left', 'e', 13))
+        self.assertEqual(chip['pins'][14], ('left', 'f', 7))
+        self.assertEqual(chip['pins'][8], ('left', 'f', 13))
 
     def test_배선은_양_끝을_기호_좌표로_남긴다(self):
         wires = self.and_bb.wiring()['wires']
         ends = {(w['frm'], w['to']) for w in wires}
         # pin 14 -> 중앙 VCC 레일 (connect_power)
-        self.assertIn((('hole', ('left', 'g', 10)),
-                       ('hole', ('left', 'mid_vcc', 10))), ends)
+        self.assertIn((('hole', ('left', 'g', 7)),
+                       ('hole', ('left', 'mid_vcc', 7))), ends)
 
     def test_전원잭_끝점은_홀이_아니라_잭으로_남는다(self):
         wires = self.and_bb.wiring()['wires']
@@ -76,11 +76,11 @@ class Wiring(unittest.TestCase):
         chains = {ch['tag']: ch for ch in self.and_bb.wiring()['chains']}
         self.assertEqual(set(chains), {'L1', 'L2'})
         l2 = chains['L2']
-        # led_chain(c['c'], 19, "L2", ...) — 도착 c19, LED 는 옆 열, 저항은 그 다음
-        self.assertEqual(l2['anode'][2], 19)
-        self.assertEqual(l2['cathode'][2], 20)
-        self.assertEqual(l2['res_top'][2], 20)
-        self.assertEqual(l2['res_bottom'][2], 22)
+        # led_chain(c['a'], 25, "L2", ...) — 도착 a25, LED 는 옆 열, 저항은 그 다음
+        self.assertEqual(l2['anode'][2], 25)
+        self.assertEqual(l2['cathode'][2], 26)
+        self.assertEqual(l2['res_top'][2], 26)
+        self.assertEqual(l2['res_bottom'][2], 28)
         self.assertEqual(l2['anode'][1], l2['cathode'][1])
         self.assertNotEqual(l2['anode'][1], l2['res_top'][1])
 
@@ -90,6 +90,7 @@ class Wiring(unittest.TestCase):
                          {('74HC08', 9), ('74HC08', 10), ('74HC08', 12), ('74HC08', 13)})
         self.assertEqual({(u['chip'], u['pin']) for u in w['unused_outputs']},
                          {('74HC08', 8), ('74HC08', 11)})
+        self.assertTrue(all(u['rail'] is None for u in w['unused_inputs']))
 
     def test_레일_브리지가_열_이름_쌍으로_남는다(self):
         bridges = self.and_bb.wiring()['bridges']
@@ -112,6 +113,46 @@ class Wiring(unittest.TestCase):
         chips = self.nand_bb.wiring()['chips']
         self.assertEqual([c['label'] for c in chips], ['74HC08', '74HC00'])
         self.assertEqual([c['pin1_row'] for c in chips], [7, 18])
+
+    def test_빌더_칩_자리가_netlist_자리표와_같다(self):
+        """슬롯 정본은 netlist 의 `kind: layout` 표다. 빌더 상수는 그 사본이라
+        여기서 맞댄다 — 한쪽만 고치면 체크리스트 자리표와 그림이 갈린다."""
+        import re
+        from scripts.lab import config, md
+        from scripts.lab.netlist_parser import parse_netlist
+        netlist = parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(1), '결선도', 'netlist.md'))
+        layouts = netlist.of_kind('layout')
+        self.assertEqual(len(layouts), 1, 'netlist 에 kind: layout 절이 하나 있어야 한다')
+        table = md.parse_tables(layouts[0].body)[0]
+        slots = {}
+        for row in table.rows:
+            m = re.match(r'(좌|우)\s*(\d+)행', row[1])
+            self.assertIsNotNone(m, row)
+            slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
+        self.assertEqual(slots, self.mod.E1_SLOTS)
+
+    def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
+        seats = set(self.mod.E1_SLOTS.values())
+        for name, fn, stage in self.mod.E1_BOARDS:
+            with self.subTest(board=name):
+                bb = fn(os.path.join(self.tmp, name), stage=stage)
+                for ch in bb.wiring()['chips']:
+                    self.assertIn((ch['block'], ch['pin1_row']), seats)
+
+    def test_보드_사슬은_9장_완성본은_4장이다(self):
+        self.assertEqual(len(self.mod.E1_BOARDS), 9)
+        self.assertEqual(len(self.mod.E1_FINALS), 4)
+        names = [n for n, _f, _s in self.mod.E1_BOARDS] + [n for n, _f in self.mod.E1_FINALS]
+        self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
+        self.assertNotIn(self.mod.E1_BOARDS[-1][0], [n for n, _f in self.mod.E1_FINALS],
+                         '마지막 단계 그림과 완성본은 다른 파일이어야 한다 — 완성본에는 회색이 없다')
+
+    def test_OR_전환은_새_배선이_0가닥이다(self):
+        """1-1→1-2 는 칩만 갈아끼운다 — 이 계획의 존재 이유다."""
+        base = self.mod.build_e1_and(os.path.join(self.tmp, 'a.png')).snapshot()
+        bb = self.mod.build_e1_or(os.path.join(self.tmp, 'o.png'), baseline=base)
+        self.assertEqual([s['desc'] for s in bb.steps], ['좌 7행 칩 교체'])
+        self.assertEqual(bb.removed(), [])
 
 
 if __name__ == '__main__':

@@ -166,33 +166,48 @@ class RailBridge(unittest.TestCase):
         self.assertEqual(bad, [], "\n".join(bad))
 
 
+def _helper_call(fn_name, callee):
+    """`build_*` 함수 안의 `callee(...)` (모듈 함수) 호출 노드 하나."""
+    for node in _tree().body:
+        if isinstance(node, ast.FunctionDef) and node.name == fn_name:
+            for c in ast.walk(node):
+                if (isinstance(c, ast.Call) and isinstance(c.func, ast.Name)
+                        and c.func.id == callee):
+                    return c
+    raise AssertionError(f"{fn_name} 안에 {callee}() 호출이 없다")
+
+
 class ChipPinout(unittest.TestCase):
-    """빌더가 그리는 칩이 netlist 가 지정한 칩과 같은지 본다."""
+    """빌더가 그리는 칩이 netlist 가 지정한 칩과 같은지 본다. 실험01 빌더는 칩과
+    미사용핀을 `_e1_single`·`_e1_two_chip` 에 인자로 넘기므로 그 호출을 읽는다."""
 
     def test_e1_or_은_74HC32_를_그린다(self):
-        chips = [ast.literal_eval(c.args[0])
-                 for c in _calls_in("build_e1_or", "draw_chip")]
-        self.assertEqual(chips, ["74HC32"],
+        call = _helper_call("build_e1_or", "_e1_single")
+        self.assertEqual(ast.literal_eval(call.args[1]), "74HC32",
                          "netlist C2 는 74HC32 단일 칩이다")
 
     def test_e1_nor_은_74HC32_와_74HC02_를_그린다(self):
-        chips = [ast.literal_eval(c.args[0])
-                 for c in _calls_in("build_e1_nor", "draw_chip")]
-        self.assertEqual(chips, ["74HC32", "74HC02"],
-                         "netlist C4 는 OR 앞단 + NOR 뒷단이다")
+        call = _helper_call("build_e1_nor", "_e1_two_chip")
+        self.assertEqual([ast.literal_eval(call.args[1]), ast.literal_eval(call.args[2])],
+                         ["74HC32", "74HC02"], "netlist C4 는 OR 앞단 + NOR 뒷단이다")
 
     def test_74HC02_의_미사용_출력을_4_10_13_으로_잡는다(self):
         """74HC00·74HC08·74HC32 는 출력이 3·6·8·11 이지만 74HC02 는
         1·4·10·13 이다. netlist 가 '이 실험에서 가장 흔한 배선 실수'로
         표시한 지점이고, 옛 `e1_nor` 별칭이 정확히 여기서 틀렸다."""
-        out_sets = [set(ast.literal_eval(c.args[0]))
-                    for c in _calls_in("build_e1_nor", "mark_unused_outputs")]
-        self.assertIn({4, 10, 13}, out_sets,
-                      "74HC02 의 미사용 출력은 4·10·13 이다")
-        in_sets = [set(ast.literal_eval(c.args[0]))
-                   for c in _calls_in("build_e1_nor", "connect_unused_inputs")]
-        self.assertIn({5, 6, 8, 9, 11, 12}, in_sets,
-                      "74HC02 의 미사용 입력은 5·6·8·9·11·12 이다")
+        call = _helper_call("build_e1_nor", "_e1_two_chip")
+        kw = {k.arg: ast.literal_eval(k.value) for k in call.keywords}
+        self.assertEqual(set(kw["back_unused_out"]), {4, 10, 13},
+                         "74HC02 의 미사용 출력은 4·10·13 이다")
+        self.assertEqual(set(kw["back_unused_in"]), {5, 6, 8, 9, 11, 12},
+                         "74HC02 의 미사용 입력은 5·6·8·9·11·12 이다")
+
+    def test_실험01_빌더는_미사용_입력을_접지하지_않는다(self):
+        """실험01 실측(2026-09-11) 규칙. 접지는 교안이 지시한 실험02 만 한다."""
+        for fn in ("build_e1_and", "build_e1_or", "build_e1_nand", "build_e1_nor",
+                   "build_e1_comb", "_e1_single", "_e1_two_chip", "_e1_front"):
+            with self.subTest(fn=fn):
+                self.assertEqual(_calls_in(fn, "connect_unused_inputs"), [])
 
 
 if __name__ == "__main__":

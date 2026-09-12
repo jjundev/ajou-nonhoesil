@@ -30,6 +30,12 @@
   .wirebox ol { margin: 0; padding-left: 6mm; }
   .wirebox li { font-size: 11pt; line-height: 1.6; }
 
+  /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
+     회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
+  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
+  .stage h3 { margin: 0 0 1.5mm; }
+  .stage img { break-after: avoid; }
+
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
   /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
@@ -82,26 +88,30 @@
 </style>
 
 <h1>실험1 Basic Gates 체크리스트</h1>
-<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 미사용 입력핀을 띄워 두지 않는다 (플로팅 금지) — GND 로 내릴지 VCC 로 올릴지는 아래 공통 규칙을 본다</div>
+<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — 미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>
 <p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
 <p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
 <p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
 <h2>오늘의 흐름</h2>
 <table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/5</td><td>C1 · 실험 1-1) 3-input AND (74HC08)</td><td>74HC08</td><td>T1 3-input AND 진리표</td></tr><tr><td>2/5</td><td>C2 · 실험 1-2) 3-input OR (74HC32)</td><td>74HC32</td><td>T2 3-input OR 진리표</td></tr><tr><td>3/5</td><td>C3 · 실험 2-1) 3-input NAND (74HC08 + 74HC00)</td><td>74HC08 · 74HC00</td><td>T3 3-input NAND 진리표</td></tr><tr><td>4/5</td><td>C4 · 실험 2-2) 3-input NOR (74HC32 + 74HC02)</td><td>74HC32 · 74HC02</td><td>T4 3-input NOR 진리표</td></tr><tr><td>5/5</td><td>C5 · 실험 3) 복합 논리회로 (74HC04 + 74HC08 + 74HC32)</td><td>74HC04 · 74HC08 · 74HC32</td><td>T5 복합회로 진리표</td></tr></tbody></table>
 <h2>공통 규칙</h2>
-<ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li><li>미사용 입력핀은 전부 GND 로 내린다. 플로팅 금지. 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 내리면 칩이 죽는다)</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다</li><li>LED 는 애노드 쪽에 330Ω 직렬, 캐소드 → GND (교안 p11~p15 의 "다이오드 연결 시, 330Ω 저항 필수" 박스)</li><li>물리 칩 재사용: 교안 p10 준비물은 74HC00 / 74HC02 / 74HC04 / 74HC08 / 74HC32 / 74HC86 이고 수량 표기가 없다. 아래에서 U1·U3·U8 은 같은 74HC08 한 개를, U2·U5·U9 는 같은 74HC32 한 개를 항목마다 재배선해 쓰는 것이다</li><li>74HC02 는 나머지 셋과 핀 배치가 다르다. 출력 핀 기준으로 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li></ul>
+<ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND</li><li>사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지). 미사용 게이트의 입력은 접지하지 않는다 — 2026-09-11 실험실 실측에서 결과에 영향이 없었고, 접지선이 NAND 순서표 20줄 중 12줄이라 결선만 복잡하게 했다. 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 내리면 칩이 죽는다). 교안이 미사용 핀 처리를 명시한 주차(실험02 p8)만 교안대로 한다</li><li>각 칩을 처음 쓰는 회로에서는 진리표 전 행을 돌린다. 조교가 일부 행만 지시해도 그렇다 — 74HC08 결함(2026-09-11)은 11 조합을 건너뛰어 마지막 회로에서야 드러났다. C1 8행이 74HC08 게이트1·2 의 네 조합을 모두 덮고, C2 가 74HC32, C3 2단계가 74HC00, C4 2단계가 74HC02 를 처음 쓴다</li><li>칩 자리는 고정이다 (아래 # 칩 자리표). 회로가 바뀌어도 전원·입력·LED 사슬은 그대로 두고, 그림의 회색 선은 손대지 않는다. 걷을 선은 그림 아래 "앞 단계에서 걷는다" 표에 있다</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다</li><li>LED 는 애노드 쪽에 330Ω 직렬, 캐소드 → GND (교안 p11~p15 의 "다이오드 연결 시, 330Ω 저항 필수" 박스)</li><li>물리 칩 재사용: 교안 p10 준비물은 74HC00 / 74HC02 / 74HC04 / 74HC08 / 74HC32 / 74HC86 이고 수량 표기가 없다. 아래에서 U1·U3·U8 은 같은 74HC08 한 개를, U2·U5·U9 는 같은 74HC32 한 개를 항목마다 재배선해 쓰는 것이다</li><li>74HC02 는 나머지 셋과 핀 배치가 다르다. 출력 핀 기준으로 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li></ul>
 <div class="tblock"><h2>참조 핀아웃</h2>
 <table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>게이트4</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC00 (quad NAND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC08 (quad AND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC32 (quad OR)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC02 (quad NOR)</td><td>2,3 → 1</td><td>5,6 → 4</td><td>8,9 → 10</td><td>11,12 → 13</td><td>14</td><td>7</td></tr></tbody></table>
 <p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.</p>
 </div>
+<div class="tblock"><h2>칩 자리표</h2>
+<p>다섯 회로가 같은 자리를 쓴다. 입력 A 는 b7, B 는 b8(C1~C4) 또는 b19(C5), 중간단 L1 은 c14 사슬, 최종 L2(C5 의 Z)는 a25 사슬 — 회로가 바뀌어도 그대로다.</p>
+<table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>S1</td><td>좌 7행</td><td>C1 74HC08 · C2 74HC32 · C3 74HC08 · C4 74HC32 · C5 74HC04</td></tr><tr><td>S2</td><td>좌 18행</td><td>C3 74HC00 · C4 74HC02 · C5 74HC08</td></tr><tr><td>S3</td><td>우 10행</td><td>C5 74HC32</td></tr></tbody></table>
+</div>
 <h2>미확정 사항 — 실험실에서 확인할 것</h2>
 <p>교안 원문이 아닌 판단을 전부 모은다. 명세 쪽 미확정도 여기로 온다.</p>
-<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M2</td><td>교안이 입력 스위치·딥스위치를 지정하지 않는다. 점퍼선 직결로 가정했다</td><td>실험실 키트 확인</td></tr><tr><td class="box"></td><td>M3</td><td>74HC 출력으로 LED 를 직접 구동한다. 적색 LED 순방향 강하를 2V 로 보면 330Ω 에서 (5−2)/330 ≈ 9.1 mA 다. 저장소 74HC04 데이터시트는 VOH·VOL 을 IO = ±4.0 mA(VCC 4.5V) 조건에서 규정하므로 규격 조건의 두 배가 넘고, 절대 최대 IO = ±25 mA 보다는 작다</td><td>교안 지시가 그러하므로 그대로 따른다. 규격 조건을 넘겨 쓰면 VOH 가 규정 최소 3.98V 아래로 내려가므로, LED 밝기가 눈에 띄게 낮으면 이 지점을 먼저 본다</td></tr><tr><td class="box"></td><td>M7</td><td>교안은 "5V 전압원"(p10)만 적고 접지를 문자로 적지 않는다. p11~p15 는 입력 인가를 설명하며 "5V"를 언급할 뿐 "전압원"이라는 표현은 p10 에만 있다. 명세 power 의 GND 는 관례값이다</td><td>전원장치 GND 단자를 접지 레일에 물리고 IC 7번 핀과 도통을 본다</td></tr><tr><td class="box"></td><td>M8</td><td>74HC86(XOR) 이 p10 준비물에 있으나 어느 항목도 XOR 회로를 구성하지 않는다. 예비용인지 다른 연도 잔재인지 알 수 없다</td><td>조교에게 이번 주차에 쓰는지 확인한다</td></tr><tr><td class="box"></td><td>M10</td><td>항목마다 74HC08·74HC32 를 한 패키지씩 요구하는데 준비물은 종류당 하나다. 세 회로를 동시에 브레드보드에 올릴 수 없다(# 공통 규칙 의 물리 칩 재사용 참조)</td><td>순차로 배선한다 — 앞 회로를 다 기록한 뒤 칩을 빼고 다음 회로를 꽂는다</td></tr></tbody></table></section>
+<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M2</td><td>교안이 입력 스위치·딥스위치를 지정하지 않는다. 점퍼선 직결로 가정했다</td><td>실험실 키트 확인</td></tr><tr><td class="box"></td><td>M3</td><td>74HC 출력으로 LED 를 직접 구동한다. 적색 LED 순방향 강하를 2V 로 보면 330Ω 에서 (5−2)/330 ≈ 9.1 mA 다. 저장소 74HC04 데이터시트는 VOH·VOL 을 IO = ±4.0 mA(VCC 4.5V) 조건에서 규정하므로 규격 조건의 두 배가 넘고, 절대 최대 IO = ±25 mA 보다는 작다</td><td>교안 지시가 그러하므로 그대로 따른다. 규격 조건을 넘겨 쓰면 VOH 가 규정 최소 3.98V 아래로 내려가므로, LED 밝기가 눈에 띄게 낮으면 이 지점을 먼저 본다</td></tr><tr><td class="box"></td><td>M7</td><td>명세 power 의 GND 는 교안 문자다 — p3 "0 Volt (GND 인가)", p11~p15 "5V와 GND를 번갈아 인가". 이전 판은 "교안이 접지를 문자로 적지 않는다" 고 적었는데 텍스트 추출로 실재가 확인돼 2026-09-08 정정했다. 남는 것은 전원장치의 어느 단자가 그 GND 인가뿐이다</td><td>전원장치 GND 단자를 접지 레일에 물리고 IC 7번 핀과 도통을 본다</td></tr><tr><td class="box"></td><td>M8</td><td>74HC86(XOR) 이 p10 준비물에 있으나 어느 항목도 XOR 회로를 구성하지 않는다. 예비용인지 다른 연도 잔재인지 알 수 없다</td><td>조교에게 이번 주차에 쓰는지 확인한다</td></tr><tr><td class="box"></td><td>M10</td><td>항목마다 74HC08·74HC32 를 한 패키지씩 요구하는데 준비물은 종류당 하나다. 세 회로를 동시에 브레드보드에 올릴 수 없다(# 공통 규칙 의 물리 칩 재사용 참조)</td><td>순차로 배선한다 — 앞 회로를 다 기록한 뒤 칩을 빼고 다음 회로를 꽂는다</td></tr></tbody></table></section>
 <section class="circuits"><section class="circuit">
 <h2>회로 1/5 · C1 · 실험 1-1) 3-input AND (74HC08) · 기록: T1 · 판독: LED</h2>
 <div class="banner">준비 — 꽂는다: 74HC08</div>
 <div class="wirebox">
-<img src="../결선도/실험01_결선도_3입력_AND.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_AND.png</p>
+<img src="../결선도/실험01_1-1_결선도_3입력_AND.png" style="width:100%"><p class="src">결선도: 실험01_1-1_결선도_3입력_AND.png</p>
 <div class="chip"><h4>U1 = 74HC08 (quad 2-input AND, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -115,9 +125,9 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
 <div class="chipunused"><b>U1 = 74HC08 (quad 2-input AND, DIP-14)</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
 </ul></div>
 </div>
@@ -151,9 +161,12 @@
 </section>
 <section class="circuit">
 <h2>회로 2/5 · C2 · 실험 1-2) 3-input OR (74HC32) · 기록: T2 · 판독: LED</h2>
-<div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC08 · 꽂는다: 74HC32</div>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 뺀다: 74HC08 · 꽂는다: 74HC32</div>
+<p>C1 과 배선이 같다. 칩만 갈아끼운다 — 그림의 회색은 전부 그대로 둔다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험01_1-2_결선도_3입력_OR_1단계_칩교체.png" style="width:100%"><p><b>이 단계에서:</b> 74HC08 을 뽑고 74HC32 를 같은 자리에 꽂는다. 선은 하나도 안 걷는다</p><p><span class="box"></span><b>확인:</b> T2 8행 전부 (74HC32 첫 사용)</p></div>
 <div class="wirebox">
-<img src="../결선도/실험01_결선도_3입력_OR.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_OR.png</p>
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험01_1-2_결선도_3입력_OR.png" style="width:100%"><p class="src">결선도: 실험01_1-2_결선도_3입력_OR.png</p>
 <div class="chip"><h4>U2 = 74HC32 (quad 2-input OR, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -167,9 +180,9 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
 <div class="chipunused"><b>U2 = 74HC32 (quad 2-input OR, DIP-14)</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
 </ul></div>
 </div>
@@ -203,10 +216,13 @@
 </section>
 <section class="circuit">
 <h2>회로 3/5 · C3 · 실험 2-1) 3-input NAND (74HC08 + 74HC00) · 기록: T3 · 판독: LED</h2>
-<div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC32 · 꽂는다: 74HC08, 74HC00</div>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 뺀다: 74HC32 · 꽂는다: 74HC08, 74HC00</div>
 <p>교안 p13 회로도 그대로. AND 로 A·B 를 만들고 NAND 로 C 와 합쳐 (A·B·C)' 를 낸다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험01_2-1_결선도_3입력_NAND_1단계_앞단AND.png" style="width:100%"><p><b>이 단계에서:</b> 74HC32 를 뽑고 74HC08 을 꽂는다. C 입력·pin 3→4 점퍼·L2 급전선 세 가닥을 걷는다. 뒷단 전원 두 가닥을 미리 꽂는다</p><p><span class="box"></span><b>확인:</b> L1 = A·B, AB = 00·01·10·11</p></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험01_2-1_결선도_3입력_NAND_2단계_뒷단NAND.png" style="width:100%"><p><b>이 단계에서:</b> 74HC00 을 18행에 꽂고 A·B→pin 1, C→pin 2, pin 3→L2 를 잇는다</p><p><span class="box"></span><b>확인:</b> T3 8행 전부 (74HC00 첫 사용)</p></div>
 <div class="wirebox">
-<img src="../결선도/실험01_결선도_3입력_NAND.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_NAND.png</p>
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험01_2-1_결선도_3입력_NAND.png" style="width:100%"><p class="src">결선도: 실험01_2-1_결선도_3입력_NAND.png</p>
 <div class="chip"><h4>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -227,13 +243,13 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
 <div class="chipunused"><b>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
 </ul></div>
 <div class="chipunused"><b>U4 = 74HC00 (quad 2-input NAND, DIP-14)</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
 </ul></div>
 </div>
@@ -267,10 +283,13 @@
 </section>
 <section class="circuit">
 <h2>회로 4/5 · C4 · 실험 2-2) 3-input NOR (74HC32 + 74HC02) · 기록: T4 · 판독: LED</h2>
-<div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC08, 74HC00 · 꽂는다: 74HC32, 74HC02</div>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 뺀다: 74HC08, 74HC00 · 꽂는다: 74HC32, 74HC02</div>
 <p>같은 구조를 OR → NOR 로 바꾼 것. 74HC02 의 핀 순서에 주의 (출력이 pin 1).</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험01_2-2_결선도_3입력_NOR_1단계_앞단OR.png" style="width:100%"><p><b>이 단계에서:</b> 74HC08→74HC32, 74HC00 은 뽑는다. 칩 사이 연결·C 입력·L2 급전선을 걷는다. 뒷단 전원 두 가닥은 그대로</p><p><span class="box"></span><b>확인:</b> L1 = A+B, AB = 00·01·10·11</p></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험01_2-2_결선도_3입력_NOR_2단계_뒷단NOR.png" style="width:100%"><p><b>이 단계에서:</b> 74HC02 를 18행에 꽂고 A+B→pin 2, C→pin 3, pin 1→L2 를 잇는다</p><p><span class="box"></span><b>확인:</b> T4 8행 전부 (74HC02 첫 사용)</p></div>
 <div class="wirebox">
-<img src="../결선도/실험01_결선도_3입력_NOR.png" style="width:100%"><p class="src">결선도: 실험01_결선도_3입력_NOR.png</p>
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험01_2-2_결선도_3입력_NOR.png" style="width:100%"><p class="src">결선도: 실험01_2-2_결선도_3입력_NOR.png</p>
 <div class="chip"><h4>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -291,13 +310,13 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
 <div class="chipunused"><b>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
 </ul></div>
 <div class="chipunused"><b>U6 = 74HC02 (quad 2-input NOR, DIP-14)</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 4, 10, 13 → 개방</li>
 </ul></div>
 </div>
@@ -331,12 +350,15 @@
 </section>
 <section class="circuit">
 <h2>회로 5/5 · C5 · 실험 3) 복합 논리회로 (74HC04 + 74HC08 + 74HC32) · 기록: T5 · 판독: LED</h2>
-<div class="banner">앞 회로의 점퍼선을 모두 걷는다 · 뺀다: 74HC02 · 꽂는다: 74HC04, 74HC08 · 패키지는 두고 재배선한다: 74HC32</div>
-<p>칩이 셋이라 한 장을 통째로 손으로 따라 그리기 버겁다. 누적 3단계로만 둔다 — 회로는 하나뿐이라 그림을 쪼갤 수는 없지만 그리는 순서는 쪼갤 수 있다. 위 diagram 이 가리키는 3단계가 곧 완성본이다.</p>
-<ul><li>실험01_결선도_복합논리회로_1단계_전원.png — 칩 안착 + 전원 (잭·pin14/7·레일 브리지)</li><li>실험01_결선도_복합논리회로_2단계_신호.png — 1단계 + 신호 배선 (A, B, A', A'·B, Z)</li><li>실험01_결선도_복합논리회로_3단계_완성.png — 2단계 + LED 3벌 + 미사용 핀 처리 = 완성</li></ul>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 뺀다: 74HC02 · 꽂는다: 74HC04, 74HC08 · 패키지는 두고 재배선한다: 74HC32</div>
+<p>칩 하나 = 단계 하나. 단계 끝은 반드시 LED 로 본다. 74HC04 는 S1(7행), 74HC08 은 S2(18행), 74HC32 는 우측 S3(10행). Z LED 는 앞 회로들의 L2 사슬 자리다.</p>
 <p>교안 p15. 입력 2개(A, B), 출력 3개(X, Y, Z), LED 3개. C 입력은 없다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험01_3_결선도_복합논리회로_1단계_인버터.png" style="width:100%"><p><b>이 단계에서:</b> 74HC32→74HC04, 74HC02 는 뽑는다. B 입력·L1 갈래와 사슬·칩 사이 연결·C 입력·L2 급전선을 걷는다. 우측 전원·브리지, Z LED 급전(b10→a25), 임시 점퍼 c7→c9 를 꽂는다</p><p><span class="box"></span><b>확인:</b> Z = A' · A = 0 → 켜짐, A = 1 → 꺼짐</p></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험01_3_결선도_복합논리회로_2단계_AND.png" style="width:100%"><p><b>이 단계에서:</b> 임시 점퍼 c7→c9 를 걷는다. 74HC08 을 18행에 꽂고 B→b19, A'(a8→a18), A'·B(c20→c9) 를 잇는다</p><p><span class="box"></span><b>확인:</b> Z = (A'·B)' · AB = 00·01·10·11 (01 만 꺼짐)</p></div>
+<div class="stage"><h3>단계 3</h3><img src="../결선도/실험01_3_결선도_복합논리회로_3단계_OR.png" style="width:100%"><p><b>이 단계에서:</b> 74HC32 를 우 10행에 꽂고 A·B 갈래, Z→pin 2, X·Y LED 를 잇는다</p><p><span class="box"></span><b>확인:</b> T5 4행 · X 와 Z 가 항상 같다</p></div>
 <div class="wirebox">
-<img src="../결선도/실험01_결선도_복합논리회로_3단계_완성.png" style="width:100%"><p class="src">결선도: 실험01_결선도_복합논리회로_3단계_완성.png</p>
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험01_3_결선도_복합논리회로.png" style="width:100%"><p class="src">결선도: 실험01_3_결선도_복합논리회로.png</p>
 <div class="chip"><h4>U7 = 74HC04 (hex inverter, DIP-14)</h4>
 <ol start="1">
 <li><span class="box"></span>pin 14 → VCC(+5V)</li>
@@ -370,17 +392,17 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>배선을 끝내고 반드시 확인한다 — 칩마다 따로 본다</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
 <div class="chipunused"><b>U7 = 74HC04 (hex inverter, DIP-14)</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 5, 9, 11, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 5, 9, 11, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
 </ul></div>
 <div class="chipunused"><b>U8 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
 </ul></div>
 <div class="chipunused"><b>U9 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</b><ul>
-<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → GND</li>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
 </ul></div>
 </div>

@@ -423,6 +423,43 @@ spec: ../체크리스트/명세.md
     # 인쇄하게 되면서 그 경고 자체가 거짓이 되어 지웠다 — 같은 자리(칩 선언
     # 부재·배선 부재)는 아래 `NetlistCircuitWiring` 이 이어받는다.
 
+    STAGED_C1 = ("# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n"
+                 "- diagram: 완성.png\n\n## 단계\n\n"
+                 "| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
+                 "| 1 | 1단계.png | 칩 하나 | L1 = A·B 4조합 |\n"
+                 "| 2 | 2단계.png | 칩 둘 | T1 8행 |\n")
+
+    def test_단계_그림이_없으면_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(self.STAGED_C1)
+        warns = [f.message for f in validate.check_netlist_circuits(netlist, spec)
+                 if f.level == "warn"]
+        self.assertTrue(any("1단계.png" in m for m in warns))
+        self.assertTrue(any("2단계.png" in m for m in warns))
+
+    def test_단계_확인_칸이_비면_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(self.STAGED_C1.replace("| 칩 하나 | L1 = A·B 4조합 |", "| 칩 하나 |  |"))
+        errors = [f.message for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertTrue(any("확인 칸" in m for m in errors))
+
+    def test_마지막_단계_그림이_완성본과_같으면_error(self):
+        """단계 그림에는 회색 기준선이 있다 — 손그림 원도로 쓰면 회색 선을 빠뜨린다."""
+        spec = parse_spec(WEEK2_SPEC)
+        netlist = self._netlist(self.STAGED_C1.replace("| 2 | 2단계.png |", "| 2 | 완성.png |"))
+        errors = [f.message for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertTrue(any("완성본" in m for m in errors))
+
+    def test_자리표가_둘이면_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        layout = "# 자리표\n\n- kind: layout\n\n| 슬롯 | 자리 | 회로별 칩 |\n|---|---|---|\n| S1 | 좌 7행 | x |\n\n"
+        netlist = self._netlist(layout + layout.replace("# 자리표", "# 자리표 2") + self.STAGED_C1)
+        errors = [f.message for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertTrue(any("layout" in m for m in errors))
+
 
 class TestDiagnosticClaims(unittest.TestCase):
     """방향을 붙인 문장을 센다. **판정하지 않는다** — 방향이 맞는지는
