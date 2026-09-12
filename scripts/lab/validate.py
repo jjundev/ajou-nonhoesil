@@ -702,8 +702,9 @@ def check_heading_backticks(md_text) -> list:
     헤딩 두 개에서 직접 백틱을 지웠고, 남은 두 개를 어떻게 볼지 물었더니
     **체계적**이라고 확인해 주었다(실험01 승인본에는 백틱 헤딩이 0개다).
 
-    기호를 백틱으로 감싸는 것 자체는 §절대 규칙이 시키는 일이다 — **본문
-    안에서만** 그렇게 한다. 그래서 헤딩 줄만 본다.
+    2026-09-12 부터는 본문의 백틱도 쓰지 않는다(③ §절대 규칙 11, ④ §절대
+    규칙 8). 다만 이 검사는 아직 **헤딩 줄만** 본다 — 본문 검사는 같은
+    수정이 다음 실험에서 또 나오면 승격한다.
     """
     hits = [i for i, line in enumerate(md_text.splitlines(), 1)
             if _HEADING.match(line) and "`" in _HEADING.match(line).group(2)]

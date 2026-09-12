@@ -86,7 +86,8 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
        'docs/notion-feedback', 'docs/강의노트_이론_실험_매핑_정리.md',
        'docs/corpus-audit',
        'scripts/lab/specdiff.py', 'scripts/lab/regen_compare.py',
-       'scripts/lab/isolate.py', 'tests',
+       'scripts/lab/isolate.py', 'scripts/lab/contact_sheet.py',
+       'scripts/lab/export_hand_diagrams.py', 'tests',
        '.claude/skills/breadboard-diagram',
        '.claude/skills/explain-lab-preview', '.claude/skills/init-lab-experiment',
        '.claude/skills/make-lab-report-cover', '.claude/skills/prep-lab-checklist',
@@ -193,11 +194,19 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
 - `docs/corpus-audit/` — 과거 제출본 감사. 어느 표가 맞는지를 문장으로 적는다
 - `scripts/lab/specdiff.py`·`scripts/lab/regen_compare.py`·
   `scripts/lab/isolate.py` — docstring 이 채점 기준을 적는다
+- `scripts/lab/contact_sheet.py`·`scripts/lab/export_hand_diagrams.py` —
+  docstring·주석에 실험01 항목 제목과 id 가 예시로 있다 (2026-09-12 회차의
+  누출 grep 에서 걸려 추가)
 - `tests/` — 실험01 값을 픽스처로 읽는 테스트가 열 개 넘는다
 - `.claude/skills/breadboard-diagram/` — 실험01 배선이 코드로 있다
 - `draft-lab-spec` 을 뺀 스킬 여덟 — `write-pre-report` 가 실험01 제목표를
   싣는 등 값이 샌다
 - `보고서/<실험NN>/{체크리스트,결선도,output}/` **내용물** — 폴더는 둔다
+- `보고서/<실험NN>/` 의 **그 밖의 내용물 전부** — 예비보고서 PDF(승인본 명세가
+  그대로 들어 있다), `실험사진/`(파일명 `1-1 000.jpg`·시트 이름 `3입력_AND` 가
+  항목 구성과 입력 폭을 알린다), 실험 메모. grep 은 PDF·그림을 못 보므로 목록으로
+  막는다 (2026-09-12 회차에서 발견). 함수가 비우는 세 폴더 말고는 실험 폴더에
+  아무것도 남기지 않는다
 
 남기는 것: `docs/schema/`·`scripts/lab/` 나머지·
 `.claude/데이터시트_출처.md`·`.claude/과목정보.md`·`강의노트/`·
