@@ -788,8 +788,11 @@ class BreadboardRenderer:
             if prev != name:
                 # 같은 자리의 칩이 다르다 — 실험실에서 첫 번째로 할 일이다
                 self.swaps.append((prev, name, block, start_row))
+                # 번호 원은 칩 몸통 안, 위쪽 가장자리 근처에 찍는다 — 몸통 위 행은
+                # 홀이 있고(복합회로에서는 가로 배선도 지나가) 원이 겹쳐 가린다
                 self.step_note('sig', f'뽑는다: {prev or "(빈 자리)"}', f'꽂는다: {name}',
-                               f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체')
+                               f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체',
+                               marker_at=((x1 + x2) // 2, y_top + 12))
 
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
         """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
