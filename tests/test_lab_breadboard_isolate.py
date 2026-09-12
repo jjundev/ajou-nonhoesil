@@ -7,7 +7,6 @@
 
 import ast
 import importlib.util
-import os
 import tempfile
 import unittest
 from pathlib import Path

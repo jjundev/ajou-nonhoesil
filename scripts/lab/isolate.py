@@ -78,7 +78,7 @@ def _restore(archive: bytes, dest: Path, rel: str) -> None:
 
 def build_isolated_tree(root, dest, experiment: int, answer_keys,
                         clear_subdirs=_CLEARED, keep=(), edit=None) -> Path:
-    """…(기존 docstring 유지)…
+    """저장소 HEAD 를 `git archive` 로 풀고 답안지를 지운 뒤 새 저장소로 커밋 하나를 만든다.
 
     `edit(dest)` 는 답안 삭제·`keep` 복원 뒤, `git init` **전**에 한 번 불린다.
     답안이 파일 하나의 일부일 때(결선도 빌더 구간) 파일을 지우지 않고 고치는
