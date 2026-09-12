@@ -88,3 +88,12 @@ class Compare(unittest.TestCase):
     def test_wording_은_절마다_일치율_한_줄이다(self):
         d = compare_reports(_text(APPROVED), _text(APPROVED))
         self.assertTrue(all("1.00" in x for x in d["wording"]), d["wording"])
+
+    def test_같은_이름의_소절_하나가_빠져도_다른_대절의_짝은_안_밀린다(self):
+        # `## 실험 1-2) 3-input OR gate` 는 `# 실험 결과` 와 `# 실험 사진` 아래 한 번씩 있다.
+        # 앞의 것(표가 있는 쪽)만 빼면 헤딩 수열 차이만 나야 하고, 사진 절의 같은 이름
+        # 소절이 표 절의 짝으로 끌려와 가짜 표·그림 차이를 내면 안 된다.
+        d = compare_reports(_text(APPROVED), _variant([("## 실험 1-2) 3-input OR gate\n", "")]))
+        self.assertEqual(d["cell"], [], d["cell"])
+        self.assertTrue(any("헤딩" in x and "실험 1-2) 3-input OR gate" in x for x in d["structure"]), d["structure"])
+        self.assertFalse(any(("표 " in x or "그림" in x) and "실험 1-1)" not in x for x in d["structure"]), d["structure"])

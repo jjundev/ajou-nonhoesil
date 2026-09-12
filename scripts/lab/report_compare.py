@@ -19,7 +19,7 @@
 import difflib
 import html
 import re
-from collections import Counter, defaultdict, deque
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -48,6 +48,7 @@ class Section:
     images: list = field(default_factory=list)     # alt 텍스트
     sentences: list = field(default_factory=list)
     empty_blocks: int = 0
+    parent: str = ""    # 가장 가까운 앞 `#` 대절 이름. 대절 자신은 ""
 
 
 @dataclass
@@ -89,7 +90,7 @@ def report_shape(text: str) -> ReportShape:
     _, body = md.split_frontmatter(_pipe_tables_only(text))
     lines = body.split("\n")
     title, sections, pending_empty = "", [], 0
-    cur = None
+    cur, parent_name = None, ""
     i = 0
     while i < len(lines):
         line = lines[i]
@@ -112,7 +113,10 @@ def report_shape(text: str) -> ReportShape:
             if level == 1 and cur is None and not title and j < len(lines) and _TOC.match(lines[j]):
                 title = name
             else:
-                cur = Section(heading=name, level=level, empty_blocks=pending_empty)
+                if level == 1:
+                    parent_name = name
+                cur = Section(heading=name, level=level, empty_blocks=pending_empty,
+                              parent=parent_name if level == 2 else "")
                 sections.append(cur)
             pending_empty = 0
             i += 1
@@ -138,18 +142,18 @@ def report_shape(text: str) -> ReportShape:
     return ReportShape(title=title, sections=sections, references=refs)
 
 
-def _pair_sections(a, b):
-    """이름으로 짝짓는다 — 같은 이름이 여러 번 나오면 **등장 순서대로** 짝짓는다.
+def _key(s):
+    return (s.parent, s.heading)
 
-    실험01 결보는 같은 소절 이름("실험 1-1) 3-input AND gate" 등)이 `실험 결과`
-    (표)와 `실험 사진`(그림) 아래 두 번씩 나온다. 첫 출현만으로 짝지으면 그 두
-    번째 등장이 전부 첫 번째 등장에 잘못 겹쳐 자기대조에서도 표·그림 개수가
-    어긋난 것처럼 보인다 — 그래서 이름별 대기열로 순서를 맞춘다. 순서·누락은
-    structure 가 따로 알린다."""
-    by_name = defaultdict(deque)
+
+def _pair_sections(a, b):
+    """(대절 이름, 소절 이름) 으로 짝짓는다. 같은 이름의 소절이 대절마다 하나씩 있는
+    문서(실험 결과·실험 사진)라 대절을 붙여야 짝이 유일하다. 누락·추가는 structure 의
+    헤딩 수열 차이가 알린다."""
+    by_key = {}
     for s in b:
-        by_name[s.heading].append(s)
-    return [(s, by_name[s.heading].popleft() if by_name[s.heading] else None) for s in a]
+        by_key.setdefault(_key(s), s)
+    return [(s, by_key.get(_key(s))) for s in a]
 
 
 def _structure(a: ReportShape, b: ReportShape) -> list:
