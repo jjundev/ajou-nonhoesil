@@ -703,8 +703,8 @@ def check_heading_backticks(md_text) -> list:
     **체계적**이라고 확인해 주었다(실험01 승인본에는 백틱 헤딩이 0개다).
 
     2026-09-12 부터는 본문의 백틱도 쓰지 않는다(③ §절대 규칙 11, ④ §절대
-    규칙 8). 다만 이 검사는 아직 **헤딩 줄만** 본다 — 본문 검사는 같은
-    수정이 다음 실험에서 또 나오면 승격한다.
+    규칙 8). 이 검사는 **헤딩 줄만** 본다(error) — 본문은 `check_body_style`
+    이 warn 으로 본다(같은 날 결보 v5 회차에서 승격).
     """
     hits = [i for i, line in enumerate(md_text.splitlines(), 1)
             if _HEADING.match(line) and "`" in _HEADING.match(line).group(2)]
@@ -714,6 +714,58 @@ def check_heading_backticks(md_text) -> list:
         f"헤딩 {len(hits)}개에 백틱이 있다 (첫 자리 {hits[0]}행) — 노션 목차 "
         "블록이 헤딩 텍스트를 그대로 가져가 목차에까지 코드 배경이 번진다. "
         "기호는 본문에서만 백틱으로 감싼다")]
+
+
+# 본문 문체. 전부 2026-09-12 실험01 결보에서 사용자가 손으로 지운 것들이다 —
+# v3 평가에서 백틱·em dash·"첫째", v5 되읽기에서 조사·단위 띄어쓰기.
+# 라틴 문자·숫자·닫는 괄호·작은따옴표(보수 `'`) 바로 뒤에 공백 하나 + 조사 + 경계.
+_STYLE_PARTICLE = re.compile(
+    r"[A-Za-z0-9)\]'}] (은|는|이|가|을|를|의|와|과|로|으로|에|에서|도|만|부터|까지|뿐)"
+    r"(?=[\s,.)]|$)")
+_STYLE_UNIT = re.compile(r"\d (?:V|mA|μA|µA|Ω|kΩ|ns/V|ns|°C)(?![A-Za-z])")
+_STYLE_FENCE = re.compile(r"^\s*```")
+
+
+def check_body_style(md_text) -> list:
+    """본문 문체 다섯 갈래를 warn 으로 잡는다. 갈래마다 Finding 하나.
+
+    참고문헌 절(`#` 헤딩에 `참고문헌`)과 표 줄, 펜스 코드 블록은 보지 않는다 —
+    서지에는 `Rev. 9 — 2021` 같은 em dash 와 영문·숫자가 정상이고, 표 셀은
+    `check_notion_markdown` 의 몫이다. ③ §절대 규칙 21·④ §절대 규칙 18(붙여쓰기),
+    ④ §절대 규칙 8(백틱·em dash·첫째) 의 기계 검사판이다. 폭은 실험01 결보
+    v5 승인본에서 0건이 나오도록 맞췄다(`tests/test_lab_validate.py::BodyStyle`).
+    """
+    hits = {"백틱": [], "em dash": [], "첫째": [], "조사": [], "단위": []}
+    in_refs, in_fence = False, False
+    for n, line in enumerate(md_text.splitlines(), 1):
+        if _STYLE_FENCE.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if line.startswith("#"):
+            in_refs = "참고문헌" in line
+        if in_refs or line.lstrip().startswith("|"):
+            continue
+        if "`" in line:
+            hits["백틱"].append(n)
+        if "—" in line:
+            hits["em dash"].append(n)
+        if "첫째" in line:
+            hits["첫째"].append(n)
+        if _STYLE_PARTICLE.search(line):
+            hits["조사"].append(n)
+        if _STYLE_UNIT.search(line):
+            hits["단위"].append(n)
+    why = {
+        "백틱": "본문 백틱 코드 서식 — 노션에서 붉은 고정폭 배경으로 렌더된다 (④ §절대 규칙 8)",
+        "em dash": "본문 em dash — 학생이 손으로 쓰지 않는 문장 부호다 (④ §절대 규칙 8)",
+        "첫째": "\"첫째 … 둘째 …\" 열거 — 산문 두 문단으로 푼다 (④ §절대 규칙 8)",
+        "조사": "숫자·영문 뒤 조사를 띄어 썼다 — `L1이`, `A=B=1에서` 처럼 붙인다 (④ §절대 규칙 18)",
+        "단위": "숫자와 단위를 띄어 썼다 — `330Ω`, `9.4mA` 처럼 붙인다 (④ §절대 규칙 18)",
+    }
+    return [Finding("warn", "본문 문체", f"{why[k]}: {len(v)}곳 (첫 자리 {v[0]}행)")
+            for k, v in hits.items() if v]
 
 
 # A4 한 장에 들어가는 표의 최대 열 수. 실측값이지 유도값이 아니다 —

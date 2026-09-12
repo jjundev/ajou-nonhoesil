@@ -484,6 +484,13 @@ class SkillDocInvariants(unittest.TestCase):
                 for call in calls:
                     self.assertIn("item_count", call)
 
+    def test_body_style_check_is_called_by_writer_and_reviewer(self):
+        # warn 검사라도 ④ 가 안 부르면 md 를 낸 세션 안에서 못 고치고, ⑤ 가
+        # 안 부르면 같은 보고서를 두 기준으로 잰다.
+        for name in ("결과", "리뷰"):
+            with self.subTest(name):
+                self.assertIn("check_body_style(", self.docs[name])
+
     def test_rule_16_covers_additions_as_well_as_omissions(self):
         # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이
         # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.

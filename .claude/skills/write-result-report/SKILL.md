@@ -537,15 +537,18 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     rep = '<실험NN>/output/<실험NN>_결과보고서.md'
     for f in (validate.check_report_sections(rep, fmt.result, item_count=len(spec.items))
               + validate.check_report_references(rep, spec, root=root)
-              + validate.check_notion_markdown(rep)):
+              + validate.check_notion_markdown(rep)
+              + validate.check_body_style(Path(rep).read_text(encoding='utf-8'))):
         print(f)
     "
     ```
 
-    **세 검사를 한꺼번에 돌린다.** 섹션만 보면 참고문헌 누락(§절대 규칙 10)은
-    ⑤ 에서야 걸린다 — 실험01 결보 v2 가 그렇게 노션까지 올라간 뒤에 error
-    5건으로 돌아왔다. `check_notion_markdown` 은 ⑦ 이 업로드 전에 다시
-    돌리지만, 여기서 먼저 잡아야 md 를 낸 세션 안에서 고칠 수 있다.
+    **네 검사를 한꺼번에 돌린다.** `check_body_style` 은 warn 이지만 여기서
+    고친다 — §절대 규칙 8·18 의 기계 검사판이라 남기면 그대로 노션에 올라간다.
+    섹션만 보면 참고문헌 누락(§절대 규칙 10)은 ⑤ 에서야 걸린다 — 실험01
+    결보 v2 가 그렇게 노션까지 올라간 뒤에 error 5건으로 돌아왔다.
+    `check_notion_markdown` 은 ⑦ 이 업로드 전에 다시 돌리지만, 여기서 먼저
+    잡아야 md 를 낸 세션 안에서 고칠 수 있다.
 
     `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
     항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. 출력이

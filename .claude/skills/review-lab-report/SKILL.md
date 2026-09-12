@@ -165,8 +165,14 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print(f)
    for f in validate.check_report_references('<보고서 경로>', spec, root=root):
        print(f)
+   for f in validate.check_body_style(Path('<보고서 경로>').read_text(encoding='utf-8')):
+       print(f)
    "
    ```
+
+   `check_body_style` 은 본문 문체(백틱·em dash·"첫째"·조사/단위 띄어쓰기)를
+   warn 으로 잡는다 — ③ §절대 규칙 21·④ §절대 규칙 8·18 의 기계 검사판이다.
+   warn 이라도 라운드 문서에 그대로 적는다.
 
    `check_report_references` 는 참고문헌 절을 본다 — 실제로 쓴 IC 의 제조사
    데이터시트가 다 있는지, 개정·발행연도·URL 을 갖췄는지, 2차 미러

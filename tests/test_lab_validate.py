@@ -1472,5 +1472,54 @@ items:
         self.assertIn("`C`", found[0].message)
 
 
+class BodyStyle(unittest.TestCase):
+    """2026-09-12 실험01 결보 v5 회차에서 승격한 본문 문체 검사.
+
+    v3 평가에서 백틱·em dash·"첫째" 가, v5 되읽기에서 조사·단위 띄어쓰기가
+    사용자 손으로 지워졌다. 전부 기계로 셀 수 있는 것이라 warn 으로 잡는다.
+    """
+
+    CANON = ROOT / config.experiment_dir(1) / "output/실험01_결과보고서.md"
+
+    def _msgs(self, text):
+        return [f.message for f in validate.check_body_style(text)]
+
+    def test_승인본은_0건이다(self):
+        # 이 검사의 폭은 승인본 v5 로 맞춘다 — 승인본에서 하나라도 잡히면 정규식이
+        # 넓은 것이지 승인본이 틀린 것이 아니다.
+        got = validate.check_body_style(self.CANON.read_text(encoding="utf-8"))
+        self.assertEqual(got, [], [str(f) for f in got])
+
+    def test_조사_띄어쓰기를_잡는다(self):
+        msgs = self._msgs("# 실험 결과\n앞단 출력 L1 이 A·B 다.\n")
+        self.assertEqual(len(msgs), 1, msgs)
+        self.assertIn("조사", msgs[0])
+
+    def test_붙여_쓴_조사는_잡지_않는다(self):
+        self.assertEqual(self._msgs("# 실험 결과\n앞단 출력 L1이 A·B다. C 하나만 1이어도 켜진다.\n"), [])
+
+    def test_단위_띄어쓰기를_잡는다(self):
+        msgs = self._msgs("# 결과 분석\n전류는 (5.0 − 1.9) / 330 ≈ 9.4 mA 다.\n")
+        self.assertEqual(len(msgs), 1, msgs)   # `9.4 mA` 하나. `330 ≈` 는 조사가 아니다
+        self.assertIn("단위", msgs[0])
+
+    def test_백틱과_em_dash와_첫째를_잡는다(self):
+        msgs = self._msgs("# 고찰\n`L1` 이 켜졌다 — 첫째, 배선이 맞았다.\n")
+        self.assertTrue(any("백틱" in m for m in msgs), msgs)
+        self.assertTrue(any("em dash" in m for m in msgs), msgs)
+        self.assertTrue(any("첫째" in m for m in msgs), msgs)
+
+    def test_참고문헌_절과_표_줄은_보지_않는다(self):
+        text = ("# 실험 결과\n\t| A | L1 |\n\t|---|---|\n\t| 1 | 1 |\n"
+                "# 출처 및 참고문헌\n- Nexperia, 74HC_HCT08 — Rev. 9 — 2021-12-13, 5 V 조건\n")
+        self.assertEqual(self._msgs(text), [])
+
+    def test_각_갈래는_한_건으로_요약하고_첫_줄을_적는다(self):
+        msgs = self._msgs("# 고찰\nL1 이 켜졌다.\nL2 가 꺼졌다.\n")
+        self.assertEqual(len(msgs), 1, msgs)
+        self.assertIn("2곳", msgs[0])
+        self.assertIn("2행", msgs[0])
+
+
 if __name__ == "__main__":
     unittest.main()
