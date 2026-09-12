@@ -473,6 +473,32 @@ class ExperimentDirTest(unittest.TestCase):
             config.experiment_folder_name(True)
 
 
+class ExperimentSubdirsTest(unittest.TestCase):
+    """`init-lab-experiment` 가 세우는 하위 폴더 골격.
+
+    예전엔 스킬 문서의 `mkdir -p {…}` 한 줄에 일곱 개가 박혀 있었다. 그중
+    `강의노트`·`퀴즈`·`STT` 는 어느 실험 폴더에서도 파일이 한 번도 커밋된
+    적이 없고, 실험01 은 셋 없이 결과보고서까지 나갔다. 읽는 쪽이 전부
+    "있으면" 읽는 자리라 빈 폴더와 없는 폴더가 똑같이 동작한다.
+    """
+
+    def test_골격은_네_폴더다(self):
+        self.assertEqual(config.EXPERIMENT_SUBDIRS,
+                         ("체크리스트", "결선도", "실험사진", "output"))
+
+    def test_선택_폴더는_골격에_없다(self):
+        for optional in ("강의노트", "퀴즈", "STT"):
+            with self.subTest(folder=optional):
+                self.assertNotIn(optional, config.EXPERIMENT_SUBDIRS)
+
+    def test_격리_트리가_비우는_폴더는_골격_안에_있다(self):
+        # 격리 재생성은 저작 산출물 폴더를 비워 **다시 만든다**. 골격에서
+        # 빠진 폴더를 거기서 되살리면 init 이 안 만드는 폴더가 격리
+        # 트리에만 생겨, 스킬이 실전과 다른 트리를 보고 검증된다.
+        from scripts.lab import isolate
+        self.assertLessEqual(set(isolate._CLEARED), set(config.EXPERIMENT_SUBDIRS))
+
+
 class DocumentTitleTest(unittest.TestCase):
     """산출물 제목 형식. 네 곳이 제각각 만들다가 경로용 일괄 치환이 그중
     하나(프리뷰)를 조용히 덮어쓴 적이 있어서 한 함수로 모았다."""

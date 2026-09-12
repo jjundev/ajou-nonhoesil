@@ -25,6 +25,7 @@ DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
+INIT = ROOT / ".claude/skills/init-lab-experiment/SKILL.md"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
@@ -702,6 +703,29 @@ class HandDiagramSkill(unittest.TestCase):
         text = HAND.read_text(encoding="utf-8")
         self.assertIn("전사", text)
         self.assertIn("uncertain", text)
+
+
+class InitSkill(unittest.TestCase):
+    """폴더 골격은 `config.EXPERIMENT_SUBDIRS` 한 곳에만 있다."""
+
+    def setUp(self):
+        self.text = INIT.read_text(encoding="utf-8")
+
+    def test_폴더_목록을_config에서_읽는다(self):
+        self.assertIn("config.EXPERIMENT_SUBDIRS", self.text)
+
+    def test_폴더_목록을_문서에_베끼지_않는다(self):
+        # 중괄호 확장 목록이나 개수를 적으면 config 를 고칠 때 문서가 따로
+        # 거짓이 된다. 일정표가 정확히 이렇게 열한 곳에서 한꺼번에 틀렸다.
+        self.assertNotRegex(self.text, r"\{[^}\n]*체크리스트[^}\n]*\}")
+        self.assertNotRegex(self.text, r"\d+개 하위 폴더")
+
+    def test_선택_폴더와_하위_산출물_폴더를_만들지_않는다고_적혀_있다(self):
+        sec = sections(self.text)["비-목표"]
+        for folder in ("`강의노트/`", "`퀴즈/`", "`STT/`",
+                       "`결선도/손그림/`", "`실험사진/시트/`", "`output/손그림검토/`"):
+            with self.subTest(folder=folder):
+                self.assertIn(folder, sec)
 
 
 if __name__ == "__main__":

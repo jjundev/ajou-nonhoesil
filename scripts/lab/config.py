@@ -72,6 +72,22 @@ def experiment_dir(experiment: int) -> str:
 EXPERIMENT_DIR_DEPTH = len(Path(EXPERIMENT_BASE).parts) + 1
 
 
+# `init-lab-experiment` 가 실험 폴더 아래 세우는 골격. **스킬이 쓰기 전에
+# 있어야 하는 폴더와, 스킬보다 사람이 먼저 파일을 넣는 폴더만** 둔다.
+# 앞의 셋은 저작 산출물이 사는 곳이고(`isolate._CLEARED` 가 비워 다시 만드는
+# 셋과 같다), `실험사진` 은 폰 사진을 먼저 넣는 자리다.
+#
+# 예전 스킬 문서에는 일곱 개가 박혀 있었다. `강의노트`·`퀴즈`·`STT` 는 어느
+# 실험 폴더에서도 파일이 한 번도 커밋된 적이 없고, 실험01 은 셋 없이
+# 결과보고서까지 나갔다. 읽는 쪽이 전부 "있으면" 읽는 자리라(교안 후보는
+# 파일 실재를 보고, 퀴즈 해설은 `generate: false`, 녹취는 있을 때만) 빈
+# 폴더와 없는 폴더가 똑같이 동작한다 — 쓸 날 손으로 만든다.
+#
+# `결선도/손그림/`·`실험사진/시트/`·`output/손그림검토/` 같은 하위 산출물
+# 폴더도 여기 없다. 그걸 쓰는 스크립트가 제 손으로 만든다.
+EXPERIMENT_SUBDIRS = ("체크리스트", "결선도", "실험사진", "output")
+
+
 def root_relative_prefix(subfolder_depth: int = 1) -> str:
     """실험 폴더 아래 `subfolder_depth` 겹 안에서 저장소 루트까지의 `../` 사슬.
 
