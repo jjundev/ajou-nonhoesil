@@ -17,7 +17,7 @@ from typing import Optional
 
 from . import md
 
-KINDS = ("common", "lookup", "sources", "open-issues", "circuit")
+KINDS = ("common", "lookup", "sources", "open-issues", "circuit", "layout")
 
 _H1 = re.compile(r"^#[ \t]+(?!#)(.+?)[ \t]*$", re.M)
 _ATTR = re.compile(r"^-[ \t]+([a-z_]+)[ \t]*:[ \t]*(.*)$")
@@ -32,6 +32,11 @@ _BACKFILL = (
     "`# ` 절마다 `- kind:` 를 적고, 회로 절에는 `- id:`·`- item:`·`- tables:` 를 "
     "채운다. 계약은 docs/schema/lab-netlist-v2.md 다"
 )
+
+# 회로 절 안 `## 단계` 표의 열. 렌더러가 **열 이름**으로 읽는다 — 순서가 아니라
+# 이름이 계약이라 저작자가 열을 바꾸면 여기서 거절한다
+STAGE_COLUMNS = ("단계", "그림", "이 단계에서", "확인")
+_STAGE_HEAD = re.compile(r"^##[ \t]+단계[ \t]*$")
 
 
 class NetlistError(ValueError):
@@ -50,6 +55,7 @@ class NetlistSection:
     diagram: Optional[str] = None
     continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
     refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
+    stages: list = field(default_factory=list)   # `## 단계` 표. 칩 하나 = 단계 하나
 
     @property
     def ics(self) -> list:
@@ -81,6 +87,40 @@ class LabNetlist:
 
     def of_kind(self, kind: str) -> list:
         return [s for s in self.sections if s.kind == kind]
+
+
+def _split_stages(body, path, line):
+    """회로 본문에서 `## 단계` 헤딩과 그 표를 떼어 `(단계 목록, 나머지 본문)` 으로.
+
+    떼어내는 이유: 남겨 두면 `render._circuit_body` 가 "칩이 아닌 헤딩 아래의
+    표" 규칙으로 참조표로 인쇄한다 — 단계 블록과 표가 두 번 찍힌다.
+    실험01 실험실 기록(2026-09-11): 복합회로를 전부 꽂고 불이 안 들어오자
+    어디가 틀렸는지 알 수 없었다. 칩 하나마다 LED 로 확인하는 단계가 데이터여야
+    체크리스트에 확인 칸이 생긴다.
+    """
+    lines = body.split("\n")
+    for i, ln in enumerate(lines):
+        if not _STAGE_HEAD.match(ln.rstrip()):
+            continue
+        j = i + 1
+        while j < len(lines) and not lines[j].strip():
+            j += 1
+        table, nxt = md.parse_table_at(lines, j) if j < len(lines) else (None, j)
+        if table is None:
+            raise NetlistError(
+                f"{path}:{line + i} 근처 `## 단계` 아래에 표가 없다. "
+                f"`| {' | '.join(STAGE_COLUMNS)} |` 표를 헤딩 바로 아래 둔다")
+        if tuple(h.strip() for h in table.header) != STAGE_COLUMNS:
+            raise NetlistError(
+                f"{path}:{line + i} 근처 `## 단계` 표의 열이 {table.header} 다. "
+                f"{list(STAGE_COLUMNS)} 이어야 한다 — 렌더러가 열 이름으로 읽는다")
+        stages = [dict(zip(("n", "diagram", "todo", "check"),
+                           (c.strip().strip("`") for c in row)))
+                  for row in table.rows]
+        if not stages:
+            raise NetlistError(f"{path}:{line + i} 근처 `## 단계` 표에 행이 없다")
+        return stages, "\n".join(lines[:i] + lines[nxt:])
+    return [], body
 
 
 def _leading_attrs(block: str):
@@ -125,12 +165,14 @@ def _parse_section(title, block, line, path) -> NetlistSection:
     refs = md.parse_value(attrs["refs"]) if attrs.get("refs") else []
     if not isinstance(refs, list):
         refs = [refs]
+    stages, body = _split_stages(body, path, line)
     return NetlistSection(
         kind=kind, title=title, body=body, line=line,
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
         diagram=attrs.get("diagram") or None,
         continues=attrs.get("continues") or None,
         refs=[str(r) for r in refs],
+        stages=stages,
     )
 
 
