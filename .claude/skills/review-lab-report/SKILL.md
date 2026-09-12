@@ -105,9 +105,14 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
                 if Path(p).exists()), None)
    print('명세가 적은 교안:', spec.source_manual)
    print('지금 열리는 교안:', live)
-   print('일치' if live and str(live) == spec.source_manual else '✗ 불일치')
+   print('일치' if live and Path(live).as_posix() == Path(spec.source_manual).as_posix() else '✗ 불일치')
    "
    ```
+
+   경로는 `Path.as_posix()` 로 맞춰 비교한다 — Windows 의 `manual_candidates`
+   는 `\` 구분자 경로를 돌려주므로 문자열 비교(`str(live) == …`)는 같은 파일도
+   항상 `✗ 불일치` 로 냈다(2026-09-12 격리 1회차에서 에이전트가 `samefile` 로
+   자체 판단해 넘어갔다).
 
    **불일치면 error 다.** 명세를 고치지 말고 `draft-lab-spec` 으로 **다시
    저작하라**고 안내한 뒤 그 라운드를 중단한다. 판본이 다르면 항목 구성 자체가
@@ -167,12 +172,16 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print(f)
    for f in validate.check_body_style(Path('<보고서 경로>').read_text(encoding='utf-8')):
        print(f)
+   for f in validate.check_notion_markdown('<보고서 경로>'):
+       print(f)
    "
    ```
 
    `check_body_style` 은 본문 문체(백틱·em dash·"첫째"·조사/단위 띄어쓰기)를
    warn 으로 잡는다 — ③ §절대 규칙 21·④ §절대 규칙 8·18 의 기계 검사판이다.
-   warn 이라도 라운드 문서에 그대로 적는다.
+   warn 이라도 라운드 문서에 그대로 적는다. `check_notion_markdown` 은
+   ④ §실행 절차 12 가 도는 네 검사 중 넷째다 — 여기서 빠지면 ⑤ 가 ④ 보다 좁게
+   재는 셈이 된다(2026-09-12 격리 1회차에서 에이전트가 지적).
 
    `check_report_references` 는 참고문헌 절을 본다 — 실제로 쓴 IC 의 제조사
    데이터시트가 다 있는지, 개정·발행연도·URL 을 갖췄는지, 2차 미러
@@ -216,7 +225,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    | 고찰이 본인 경험인가 | 배운 점은 학생 것이다. 지어내면 안 된다 |
    | 교안 회로도와 netlist 위상이 맞는가 | PDF 벡터 판독이 필요하다 |
    | 인용한 쪽의 **내용**이 명세가 적은 표인가 | 3단계가 쪽 수 범위까지는 막는다. 내용 대조는 vision 이 필요하다 |
-   | 표기가 R5·R6 을 지키는가 | 오버바 승격 범위는 문맥 판단이다 |
+   | 표기가 R5·R6 을 지키는가 — 정의는 `docs/schema/lab-spec-v2.md` 「표기 (R5·R6)」 절(보수는 ASCII `'` 와 괄호 스코프, 오버바 승격은 부울식만·표 헤더/신호명/셀 값은 안 함) | 오버바 승격 범위는 문맥 판단이다 |
    | 섹션 제목이 양식의 이름과 **글자 그대로** 같은가 | 대조는 정확 일치다. `## 1. 실험 목적` 은 통과하지만(번호는 벗겨낸다) `## 1. 실험 목적 및 배경` 은 누락으로 잡힌다. 부분 문자열로 맞추면 `# 실험 결과 분석` 한 줄이 `실험 결과`·`결과 분석` 두 섹션을 동시에 만족시켜 버리므로 일부러 엄격하게 뒀다 |
 
 6. **라운드 문서 작성.** `<실험NN>/output/<pre|result>_review_round<N>.md` 에 쓴다.

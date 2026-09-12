@@ -492,6 +492,9 @@ class SkillDocInvariants(unittest.TestCase):
         for name in ("결과", "리뷰"):
             with self.subTest(name):
                 self.assertIn("check_body_style(", self.docs[name])
+                # ⑤ 가 ④ 보다 좁게 재면 안 된다 — 2026-09-12 격리 1회차에서 ⑤ 에
+                # `check_notion_markdown` 이 빠져 있던 것을 에이전트가 지적했다.
+                self.assertIn("check_notion_markdown(", self.docs[name])
 
     def test_rule_16_covers_additions_as_well_as_omissions(self):
         # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이

@@ -199,6 +199,9 @@ def _pair_sections(a, b):
     return out
 
 
+_SUB_RENAME = "(소절 이름) "
+
+
 def _structure(a: ReportShape, b: ReportShape) -> list:
     out = []
     ha, hb = [f"{'#' * s.level} {s.heading}" for s in a.sections], \
@@ -207,7 +210,14 @@ def _structure(a: ReportShape, b: ReportShape) -> list:
         for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(a=ha, b=hb).get_opcodes():
             if tag == "equal":
                 continue
-            out.append(f"헤딩 {tag}: 원본 {ha[i1:i2]} / 재생성 {hb[j1:j2]}")
+            # 같은 자리의 `##` 이름만 바뀐 것은 저작자 문구다 — 결과 분석·추가 공부의
+            # 소절 이름은 양식이 정하지 않는다. 표시는 하되 `counted` 가 세지 않는다.
+            # 내용은 위치 짝(`_pair_sections`)이 따로 대조한다. 2026-09-12 격리
+            # 1회차에서 이 갈림이 매번 구조 4건으로 잡혔다.
+            renamed = (tag == "replace" and i2 - i1 == j2 - j1
+                       and all(h.startswith("## ") for h in ha[i1:i2] + hb[j1:j2]))
+            prefix = _SUB_RENAME if renamed else ""
+            out.append(f"{prefix}헤딩 {tag}: 원본 {ha[i1:i2]} / 재생성 {hb[j1:j2]}")
     for x, y, positional in _pair_sections(a.sections, b.sections):
         prefix = "(위치 짝) " if positional else ""
         if y is None:
@@ -323,7 +333,9 @@ def compare_reports(approved_text: str, regen_text: str) -> dict:
 
 
 def counted(diffs: dict) -> int:
-    return sum(len(v) for k, v in diffs.items() if k != "wording")
+    """`wording` 과 `(소절 이름) ` 줄(같은 자리의 소절 이름만 바뀐 것)은 세지 않는다."""
+    return sum(1 for k, v in diffs.items() if k != "wording"
+               for x in v if not x.startswith(_SUB_RENAME))
 
 
 _ROOT = Path(__file__).resolve().parents[2]   # scripts/lab/report_compare.py → 저장소 루트

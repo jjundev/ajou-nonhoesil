@@ -155,6 +155,20 @@ class Facts(unittest.TestCase):
         self.assertTrue(any("9.4mA" in x and "7.9mA" in x for x in d["fact"]), d["fact"])
         self.assertTrue(any("replace" in x for x in d["structure"]), d["structure"])
 
+    def test_소절_이름만_바뀐_것은_표시하되_세지_않는다(self):
+        # 결과 분석·추가 공부의 `##` 이름은 양식이 정하지 않는 저작자 문구다 —
+        # 같은 자리에서 이름만 바뀌면 `(소절 이름) ` 줄로 보이되 counted 는 0 이다.
+        d = compare_reports(_text(APPROVED), _variant([
+            ("## 고장 모델로 다시 본 칩 테스트", "## 단일 고착 고장 모델로 본 칩 시험"),
+        ]))
+        self.assertTrue(any(x.startswith("(소절 이름) ") for x in d["structure"]), d["structure"])
+        self.assertEqual(counted(d), 0, {k: v for k, v in d.items() if k != "wording"})
+
+    def test_대절_이름이_바뀌면_여전히_센다(self):
+        d = compare_reports(_text(APPROVED), _variant([("# 고찰\n", "# 실험 고찰\n")]))
+        self.assertTrue(any(x.startswith("헤딩 replace") for x in d["structure"]), d["structure"])
+        self.assertGreater(counted(d), 0)
+
 
 class Judgment(unittest.TestCase):
     def test_일곱_절과_메모리_주입_문장이_있다(self):
