@@ -548,6 +548,13 @@ class SkillDocInvariants(unittest.TestCase):
             with self.subTest(name):
                 self.assertEqual(re.findall(r"Task \d+", text), [])
 
+    def test_particle_spacing_rule_lives_in_both_report_skills(self):
+        # 2026-09-12 실험01 결보 v5 되읽기: 사용자가 본문 전체에서 `L1 이`→`L1이`,
+        # `330 Ω`→`330Ω` 로 고쳤다. 표기 규약이라 ③④ 둘 다 규칙으로 갖는다.
+        for name in REPORT_DOCS:
+            with self.subTest(name):
+                self.assertIn("조사와 숫자 뒤 단위는 붙여 쓴다", self.flat[name])
+
     def test_rule_5b_cites_a_result_report_sample(self):
         # 결과보고서 서식 규칙의 근거로 예비보고서 3편을 들고 있었다.
         result = self.flat["결과"]
