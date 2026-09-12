@@ -45,7 +45,7 @@ class PinNets(unittest.TestCase):
         c1 = nets["E1.P1-1"]
         self.assertIn(frozenset({("PIN", "74HC08", 1), ("IN", "A")}), c1)
         self.assertIn(frozenset({("PIN", "74HC08", 14), ("VCC",)}), c1)
-        self.assertIn(frozenset({("PIN", "74HC08", 9), ("GND",)}), c1)      # 미사용 입력
+        self.assertIn(frozenset({("PIN", "74HC08", 9), ("OPEN",)}), c1)     # 미사용 입력(접지 생략)
         self.assertIn(frozenset({("PIN", "74HC08", 8), ("OPEN",)}), c1)     # 미사용 출력
         self.assertIn(frozenset({("PIN", "74HC08", 3), ("LED", "L1")}), c1)
         self.assertIn(frozenset({("PIN", "74HC08", 3), ("PIN", "74HC08", 4)}), c1)
@@ -88,8 +88,8 @@ class PinNets(unittest.TestCase):
     def test_괄호_속_주석의_숫자는_핀으로_안_읽는다(self):
         # 불릿 머리 뒤 괄호 안에 `M1` 같은 토큰이 있으면 그 `1` 이 핀으로 잘못
         # 읽혀선 안 된다 — 실제 재생성 회차가 이 자리에서 걸렸다.
-        v = _variant([("  - 미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → GND\n",
-                       "  - 미사용 입력핀 (M1 을 닫은 뒤에만): pin 5, 6, 8, 9, 11, 12 → GND\n")])
+        v = _variant([("  - 미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → 개방 (접지 생략 — 공통 규칙)\n",
+                       "  - 미사용 입력핀 (M1 을 닫은 뒤에만): pin 5, 6, 8, 9, 11, 12 → 개방 (접지 생략 — 공통 규칙)\n")])
         self.assertEqual(compare_netlist_pins(NETLIST, v), [])
 
 

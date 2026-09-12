@@ -757,8 +757,9 @@ class TestPrintConstraints(unittest.TestCase):
             1 for c in netlist.circuits for t in c.tables
             if spec.table(t) and spec.table(t).role != "reference")
         lookup_sections = len(netlist.of_kind("lookup"))
+        layout_sections = len(netlist.of_kind("layout"))
         self.assertEqual(html.count('<div class="tblock">'),
-                         record_tables + lookup_sections)
+                         record_tables + lookup_sections + layout_sections)
 
 
 class TestProcedureCarriesEveryWarning(unittest.TestCase):
