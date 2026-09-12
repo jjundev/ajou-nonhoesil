@@ -31,6 +31,32 @@ TEMPLATE_CANDIDATES = (
 # 좌표표가 묶여 있는 판본의 크기.
 TEMPLATE_SIZE = (998, 1345)
 
+# 폰트. macOS 경로만 박혀 있어 Windows 에서 렌더러가 통째로 죽었다 (2026-09-12).
+# 있는 것을 순서대로 쓴다 — 한글은 Apple SD Gothic Neo → 맑은 고딕 → 나눔고딕,
+# 영문은 Helvetica → Arial → DejaVu. 저장소 루트 밖의 절대 경로지만 폰트는
+# 저장소가 들고 다닐 물건이 아니다.
+FONT_CANDIDATES = {
+    'kr': ('/System/Library/Fonts/AppleSDGothicNeo.ttc',
+           'C:/Windows/Fonts/malgun.ttf',
+           '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'),
+    'en': ('/System/Library/Fonts/Helvetica.ttc',
+           'C:/Windows/Fonts/arial.ttf',
+           '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),
+}
+
+
+def font_path(kind):
+    """`kind`('kr'|'en') 의 첫 번째 실재 폰트 경로. 없으면 어디를 봤는지 적어 던진다."""
+    for path in FONT_CANDIDATES[kind]:
+        if os.path.exists(path):
+            return path
+    raise FileNotFoundError(
+        f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind]))
+
+
+def _font(kind, size):
+    return ImageFont.truetype(font_path(kind), size)
+
 
 def _default_template():
     """정본 템플릿 경로. 저장소 루트를 먼저 보고, 없으면 cwd 도 본다."""
@@ -162,15 +188,15 @@ class BreadboardRenderer:
         self.title = ""
         self.subtitle = ""
 
-        self.font_title = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 21)
-        self.font_subtitle = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 14)
-        self.font_kr_bold = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 12)
-        self.font_kr_sm = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 11)
-        self.font_en_bold = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 12)
-        self.font_en_sm = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 10)
-        self.font_chip = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 11)
-        self.font_num = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 9)
-        self.font_step = ImageFont.truetype('/System/Library/Fonts/AppleSDGothicNeo.ttc', 11)
+        self.font_title = _font('kr', 21)
+        self.font_subtitle = _font('kr', 14)
+        self.font_kr_bold = _font('kr', 12)
+        self.font_kr_sm = _font('kr', 11)
+        self.font_en_bold = _font('en', 12)
+        self.font_en_sm = _font('en', 10)
+        self.font_chip = _font('en', 11)
+        self.font_num = _font('en', 9)
+        self.font_step = _font('kr', 11)
 
         self._init_cols()
         # 그린 것을 **사실 그대로** 적어 둔다. 손그림 검토가 이걸 정답으로
