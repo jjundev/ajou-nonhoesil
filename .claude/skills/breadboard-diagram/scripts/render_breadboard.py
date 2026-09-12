@@ -1765,24 +1765,24 @@ def build_e1_comb(output_path, template_path=None, stage=None, baseline=None):
 # 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
 # 실제로 남아 있는 것. 첫 보드(C1)는 기준선이 없어 완성본을 겸한다.
 E1_BOARDS = [
-    ("실험01_결선도_3입력_AND.png", build_e1_and, None),
-    ("실험01_결선도_3입력_OR_1단계_칩교체.png", build_e1_or, None),
-    ("실험01_결선도_3입력_NAND_1단계_앞단AND.png", build_e1_nand, 1),
-    ("실험01_결선도_3입력_NAND_2단계_뒷단NAND.png", build_e1_nand, None),
-    ("실험01_결선도_3입력_NOR_1단계_앞단OR.png", build_e1_nor, 1),
-    ("실험01_결선도_3입력_NOR_2단계_뒷단NOR.png", build_e1_nor, None),
-    ("실험01_결선도_복합논리회로_1단계_인버터.png", build_e1_comb, 1),
-    ("실험01_결선도_복합논리회로_2단계_AND.png", build_e1_comb, 2),
-    ("실험01_결선도_복합논리회로_3단계_OR.png", build_e1_comb, None),
+    ("실험01_1-1_결선도_3입력_AND.png", build_e1_and, None),
+    ("실험01_1-2_결선도_3입력_OR_1단계_칩교체.png", build_e1_or, None),
+    ("실험01_2-1_결선도_3입력_NAND_1단계_앞단AND.png", build_e1_nand, 1),
+    ("실험01_2-1_결선도_3입력_NAND_2단계_뒷단NAND.png", build_e1_nand, None),
+    ("실험01_2-2_결선도_3입력_NOR_1단계_앞단OR.png", build_e1_nor, 1),
+    ("실험01_2-2_결선도_3입력_NOR_2단계_뒷단NOR.png", build_e1_nor, None),
+    ("실험01_3_결선도_복합논리회로_1단계_인버터.png", build_e1_comb, 1),
+    ("실험01_3_결선도_복합논리회로_2단계_AND.png", build_e1_comb, 2),
+    ("실험01_3_결선도_복합논리회로_3단계_OR.png", build_e1_comb, None),
 ]
 
 # 완성본 — 기준선 없이 전부 색. 예비보고서에 싣고 손으로 따라 그리는 원도다.
 # 회색이 섞인 단계 그림을 원도로 쓰면 따라 그리는 사람이 회색 선을 빠뜨린다
 E1_FINALS = [
-    ("실험01_결선도_3입력_OR.png", build_e1_or),
-    ("실험01_결선도_3입력_NAND.png", build_e1_nand),
-    ("실험01_결선도_3입력_NOR.png", build_e1_nor),
-    ("실험01_결선도_복합논리회로.png", build_e1_comb),
+    ("실험01_1-2_결선도_3입력_OR.png", build_e1_or),
+    ("실험01_2-1_결선도_3입력_NAND.png", build_e1_nand),
+    ("실험01_2-2_결선도_3입력_NOR.png", build_e1_nor),
+    ("실험01_3_결선도_복합논리회로.png", build_e1_comb),
 ]
 
 

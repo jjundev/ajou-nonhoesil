@@ -377,7 +377,7 @@ class TestCircuitPages(unittest.TestCase):
         self.assertIn("꽂는다", self.html)
 
     def test_결선도가_있으면_그림을_싣는다(self):
-        self.assertIn("실험01_결선도_3입력_AND.png", self.html)
+        self.assertIn("실험01_1-1_결선도_3입력_AND.png", self.html)
         self.assertIn("../결선도/", self.html)
 
     def test_결선도가_없으면_빈_브레드보드로_대신한다(self):
