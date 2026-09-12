@@ -176,6 +176,18 @@ class ResultReportMode(unittest.TestCase):
             build_isolated_tree(self.root, dest, 1, [], clear_subdirs=("output",),
                                 keep=["없는/파일.md"])
 
+    def test_절대경로_글롭_키는_ValueError_이고_아무것도_안_지운다(self):
+        # Windows 드라이브 경로(`C:/...`)는 `/` 로 시작하지 않아 문자열 검사만으로는
+        # 새고, `Path.glob` 은 그것을 NotImplementedError 로 튕긴다 — 계약은 ValueError 다.
+        root = _fake_repo()
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        drive = Path(tempfile.gettempdir()).anchor or "/"
+        for key in (f"{drive}Windows/*.md", "/etc/*.conf", "../*.md"):
+            with self.subTest(key):
+                with self.assertRaises(ValueError):
+                    build_isolated_tree(root, dest, 1, [key], clear_subdirs=())
+        self.assertTrue((root / "keep.md").exists())
+
     def test_기본_인자는_세_폴더를_비운다(self):
         dest = Path(tempfile.mkdtemp()) / "iso"
         build_isolated_tree(self.root, dest, 1, [])

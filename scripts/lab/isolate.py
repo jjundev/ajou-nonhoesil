@@ -48,7 +48,7 @@ def _expand_keys(dest: Path, dest_real: Path, answer_keys) -> list:
     out = []
     for key in answer_keys:
         if any(ch in key for ch in _GLOB_CHARS):
-            if key.startswith(("/", "\\")) or ".." in Path(key).parts:
+            if Path(key).is_absolute() or key.startswith(("/", "\\")) or ".." in Path(key).parts:
                 raise ValueError(f"답안지 키가 격리 트리 밖을 가리킨다: {key!r}")
             out += [_guard(dest_real, p, key) for p in sorted(dest.glob(key))]
         else:
