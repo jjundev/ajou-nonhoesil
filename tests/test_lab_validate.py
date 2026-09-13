@@ -1700,5 +1700,14 @@ class ReportTables(unittest.TestCase):
                          [("error", "보고서 파일이 없다")])
 
 
+class RealReportTables(unittest.TestCase):
+    def test_실제_실험1_예비보고서의_표가_명세와_맞다(self):
+        """2026-09 조교 감점(-1) 뒤 T1~T4 를 명세의 `A B C L1 L2` 로 되돌렸다."""
+        exp = Path(config.experiment_dir(1))
+        found = validate.check_report_tables(exp / "output/실험01_예비보고서.md",
+                                             parse_spec(exp / "체크리스트/명세.md"))
+        self.assertEqual([str(f) for f in found], [])
+
+
 if __name__ == "__main__":
     unittest.main()
