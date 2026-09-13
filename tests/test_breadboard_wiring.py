@@ -155,5 +155,80 @@ class Wiring(unittest.TestCase):
         self.assertEqual(bb.removed(), [])
 
 
+class WiringE2(unittest.TestCase):
+    """실험02 — 같은 규약(슬롯·기준선·단계)을 따르는지. 정본은
+    `보고서/실험02/결선도/netlist.md` 다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.tmp = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_빌더_칩_자리가_netlist_자리표와_같다(self):
+        import re
+        from scripts.lab import config, md
+        from scripts.lab.netlist_parser import parse_netlist
+        netlist = parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(2), '결선도', 'netlist.md'))
+        layouts = netlist.of_kind('layout')
+        self.assertEqual(len(layouts), 1)
+        table = md.parse_tables(layouts[0].body)[0]
+        slots = {}
+        for row in table.rows:
+            m = re.match(r'(좌|우)\s*(\d+)행', row[1])
+            self.assertIsNotNone(m, row)
+            slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
+        self.assertEqual(slots, self.mod.E2_SLOTS)
+
+    def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
+        seats = set(self.mod.E2_SLOTS.values())
+        for name, fn, stage in self.mod.E2_BOARDS:
+            with self.subTest(board=name):
+                bb = fn(os.path.join(self.tmp, name), stage=stage)
+                for ch in bb.wiring()['chips']:
+                    self.assertIn((ch['block'], ch['pin1_row']), seats)
+
+    def test_보드_사슬은_4장_완성본은_2장이다(self):
+        self.assertEqual(len(self.mod.E2_BOARDS), 4)
+        self.assertEqual(len(self.mod.E2_FINALS), 2)
+        names = [n for n, _f, _s in self.mod.E2_BOARDS] + [n for n, _f in self.mod.E2_FINALS]
+        self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
+        self.assertNotIn(self.mod.E2_BOARDS[-1][0], [n for n, _f in self.mod.E2_FINALS])
+
+    def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
+        """netlist 가 가리키는 파일을 빌더가 전부 만든다 — 한쪽만 고치면 인쇄본에
+        빈 브레드보드가 들어간다."""
+        from scripts.lab import config
+        from scripts.lab.netlist_parser import parse_netlist
+        netlist = parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(2), '결선도', 'netlist.md'))
+        wanted = set()
+        for c in netlist.circuits:
+            if c.diagram:
+                wanted.add(c.diagram)
+            for st in c.stages:
+                wanted.add(st['diagram'])
+        made = {n for n, _f, _s in self.mod.E2_BOARDS} | {n for n, _f in self.mod.E2_FINALS}
+        self.assertEqual(wanted, made)
+
+    def test_슈미트_전환은_새_배선이_0가닥이다(self):
+        """교안 p11: "앞선 회로 구성 및 설정을 유지하고, IC를 74HC14로 교체한다"."""
+        base = self.mod.build_e2_inv(os.path.join(self.tmp, 'i.png')).snapshot()
+        bb = self.mod.build_e2_schmitt(os.path.join(self.tmp, 's.png'), baseline=base)
+        self.assertEqual([s['desc'] for s in bb.steps], ['좌 7행 칩 교체'])
+        self.assertEqual(bb.removed(), [])
+
+    def test_tpd_1단계는_C2_의_pull_선_다섯_가닥을_걷는다(self):
+        """U1 은 여섯 게이트를 전부 쓰므로 C2 의 미사용 입력 pull 선이 전부 걷힌다."""
+        base = self.mod.build_e2_schmitt(os.path.join(self.tmp, 's.png')).snapshot()
+        bb = self.mod.build_e2_tpd(os.path.join(self.tmp, 't1.png'), stage=1, baseline=base)
+        removed = bb.removed()
+        self.assertEqual(sum('미사용 입력' in r for r in removed), 5, removed)
+        # 같은 자리(S1)의 칩 교체는 removed 가 아니라 순서표 첫 줄이다
+        self.assertEqual(bb.steps[0]['desc'], '좌 7행 칩 교체')
+
+
 if __name__ == '__main__':
     unittest.main()

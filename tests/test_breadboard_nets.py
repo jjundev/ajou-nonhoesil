@@ -121,32 +121,48 @@ class CircuitNets(unittest.TestCase):
         self.assertIn('LED X 애노드', _net_of(bb, '74HC32#10 pin 3')['labels'])
         self.assertNotIn('LED X 애노드', z)
 
-    def test_Rn_은_전원이_단락되지_않는다(self):
-        """2026-09-09 까지 1kΩ 아랫다리가 pin 5 행(14행)에 앉았다. 그 스트립에
-        `R1 반대쪽 -> +5V` 점퍼와 pin 5 접지선이 함께 꽂혀 +5V 가 GND 로
-        직결됐다 — 그림대로 꽂으면 전원장치가 나간다."""
-        bb = _render(self.mod, self.mod.build_e2_rn)
-        for net in bb.nets():
-            self.assertNotEqual({'vcc', 'gnd'}, net['rails'], sorted(net['labels']))
+    def test_tpd_체인은_교안_p12_순서로_흐른다(self):
+        """netlist C3: 2→3, 4→5, 6→13, 12→11, 10→9, 8→U2 pin 1. 핀 번호 순서가
+        아니다 — pin 6 에서 pin 13 으로 건너뛴 뒤 거슬러 내려온다. 핀 번호만 보고
+        `9→8` 로 짐작하면 CH1~CH2 사이가 2단이 되고 게이트당 t_pd 가 2배로 나온다."""
+        bb = _render(self.mod, self.mod.build_e2_tpd)
+        for a, b in ((2, 3), (4, 5), (6, 13), (12, 11), (10, 9)):
+            with self.subTest(pair=(a, b)):
+                self.assertIn(f'74HC04#7 pin {b}', _net_of(bb, f'74HC04#7 pin {a}')['labels'])
+        self.assertIn('74HC04#18 pin 1', _net_of(bb, '74HC04#7 pin 8')['labels'])
 
-    def test_Rn_과_Rp_의_저항은_pin_2_에만_물린다(self):
-        """부품 다리가 칩 행에 앉으면 그 핀이 저항 반대쪽 전원에 끌려간다.
-        칩은 10~16행을 다 쓰므로 저항은 칩 행 **밖**으로 나가야 한다."""
-        for name in ('build_e2_rn', 'build_e2_rp'):
+    def test_tpd_U1_체인은_전원_레일에_닿지_않는다(self):
+        """체인 노드 하나라도 레일에 물리면 그 단 뒤가 전부 고정된다."""
+        bb = _render(self.mod, self.mod.build_e2_tpd)
+        for p in (2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13):
+            with self.subTest(pin=p):
+                self.assertEqual(set(), _net_of(bb, f'74HC04#7 pin {p}')['rails'])
+
+    def test_tpd_U2_pull_선은_교안_p12_회로도대로다(self):
+        """netlist C3: U2 pin 3·5 → GND, pin 9·11·13 → VCC. pin 2 는 개방."""
+        bb = _render(self.mod, self.mod.build_e2_tpd)
+        for p in (3, 5):
+            self.assertEqual({'gnd'}, _net_of(bb, f'74HC04#18 pin {p}')['rails'])
+        for p in (9, 11, 13):
+            self.assertEqual({'vcc'}, _net_of(bb, f'74HC04#18 pin {p}')['rails'])
+
+    def test_실험02_회로는_전원이_단락되지_않는다(self):
+        """pull-down(3·5) 과 pull-up(9·11·13) 이 한 레일 행에 착지하면 단락이다."""
+        for name in ('build_e2_inv', 'build_e2_schmitt', 'build_e2_tpd'):
             with self.subTest(회로=name):
                 bb = _render(self.mod, getattr(self.mod, name))
-                chip = bb.chips[0]
-                r = bb.resistors[0]
-                pin_strips = {bb._strip(s) for s in chip['pins'].values()}
-                self.assertEqual(bb._strip(chip['pins'][2]), bb._strip(r['bottom']))
-                self.assertNotIn(bb._strip(r['top']), pin_strips)
+                for net in bb.nets():
+                    self.assertNotEqual({'vcc', 'gnd'}, net['rails'], sorted(net['labels']))
 
-    def test_Rn_은_넷리스트대로_물린다(self):
-        """netlist C3: R1 한쪽 → VCC, 다른 쪽 → pin 2. 미사용 입력 pin 5 → GND."""
-        bb = _render(self.mod, self.mod.build_e2_rn)
-        self.assertIn('저항1(1kΩ) 아랫다리', _net_of(bb, '74HC04#10 pin 2')['labels'])
-        self.assertEqual({'vcc'}, _net_of(bb, '저항1(1kΩ) 윗다리')['rails'])
-        self.assertEqual({'gnd'}, _net_of(bb, '74HC04#10 pin 5')['rails'])
+    def test_VTC_회로의_pull_선은_교안_p9_그림대로다(self):
+        """netlist C1·C2: pin 3·5 → GND, pin 9·11·13 → VCC. 74HC14 도 같다."""
+        for name, chip in (('build_e2_inv', '74HC04'), ('build_e2_schmitt', '74HC14')):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, getattr(self.mod, name))
+                for p in (3, 5):
+                    self.assertEqual({'gnd'}, _net_of(bb, f'{chip}#7 pin {p}')['rails'])
+                for p in (9, 11, 13):
+                    self.assertEqual({'vcc'}, _net_of(bb, f'{chip}#7 pin {p}')['rails'])
 
 
 class R5(unittest.TestCase):
@@ -286,7 +302,9 @@ class R5(unittest.TestCase):
                     and inspect.isfunction(f)}
         # 2026-09-12 슬롯 고정: 실험01 절차 CLI 래퍼 5개(e1_or_s1·e1_nand_s1/_s2·
         # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
-        self.assertEqual(len(builders), 18)
+        # 2026-09-13 실험02 재저작: Rn·Rp 가 빠지고(배포본 교안에 없다) 절차 래퍼
+        # 3개(e2_schmitt_s1·e2_tpd_s1/_s2)가 늘어 실험01 13 + 실험02 6 = 19 다.
+        self.assertEqual(len(builders), 19)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

@@ -88,13 +88,18 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
 별칭을 지웠다가, `74HC32` 전용 빌더(`build_e1_or`)와 `74HC02` 빌더
 (`build_e1_nor`, 출력이 1번 핀)를 실제로 작성해 복원했다. 두 회로가 한 빌더를
 공유하지 않는지는 `tests/test_breadboard_diagram_cli.py` 가 검사한다.
-- **실험 2 (CMOS 전기적 특성 및 전파지연)** — 2026-09-07 에 새 규약으로 다시 그렸다:
-  - `e2_inv`: 실험 2-1 Inverter 입출력 특성 회로 (74HC04 VTC, X-Y 모드)
-  - `e2_schmitt`: 실험 2-2 Schmitt-trigger 입출력 특성 회로 (74HC14 Hysteresis)
-  - `e2_rn`: 실험 2-3 (1) CMOS DC 특성 측정 — Rn (NMOS 온저항, 1kΩ 풀업)
-  - `e2_rp`: 실험 2-3 (2) CMOS DC 특성 측정 — Rp (PMOS 온저항, 1kΩ 풀다운)
-  - `e2_tpd`: 실험 2-4 CMOS AC 특성 측정 — 전파지연 tpd (74HC04 x 2개, 6단 체인 + 부하)
-  - `e2_all`: 실험 2 결선도 5종 전체를 출력 디렉토리에 일괄 렌더링
+- **실험 2 (CMOS 회로의 전기적 특성)** — 2026-09-13 에 2026-2 배포본(12쪽) 기준으로
+  슬롯·기준선·단계 규약에 맞춰 다시 썼다. 슬롯은 S1 좌 7행 · S2 좌 18행 (`E2_SLOTS`,
+  netlist `kind: layout` 과 테스트가 맞댄다). 옛 판의 Rn·Rp(DC 특성) 회로는 배포본
+  교안에 없어 지웠다:
+  - `e2_inv`: 실험 1-1 Inverter 입출력 특성 (74HC04 게이트 1, X-Y 모드). 첫 보드 — 완성본 겸 절차 그림
+  - `e2_schmitt`: 실험 1-2 Schmitt-trigger 입출력 특성 (74HC14) 완성본 · `e2_schmitt_s1`: C1 에서 칩만 갈아끼우는 전환 그림
+  - `e2_tpd`: 실험 2 CMOS AC 특성 t_pd (74HC04 두 패키지, U1 6단 체인 + U2 부하) 완성본 · `e2_tpd_s1`(U1 체인만, C2 의 pull 선을 걷는다) · `e2_tpd_s2`(U2 부하 추가, 완성)
+  - `e2_all`: 절차 4장 + 완성본 2장 = 6장 일괄 (`E2_BOARDS` · `E2_FINALS`)
+
+  미사용 입력은 이 주차만 `connect_unused_inputs()` 로 그린다 — 교안 p9 가 명시하고
+  그림이 pin 3·5 → GND, pin 9·11·13 → VCC 다. GND 브리지는 그리지 않는다 — 접지
+  끝점이 전부 좌 바깥 레일 하나에 앉아 끝점 없는 레일을 이을 이유가 없다.
 
 ## 4. 그림을 두 층으로 나눈다
 

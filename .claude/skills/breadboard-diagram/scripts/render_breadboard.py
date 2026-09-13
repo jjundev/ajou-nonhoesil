@@ -894,11 +894,19 @@ class BreadboardRenderer:
             elif 8 <= p <= 14:
                 placed.append((start_row + (14 - p), c['g'], p))
         order = sorted(range(len(placed)), key=lambda i: (not self.is_rail_row(placed[i][0]), i))
+        # 기준선에 같은 (색, 끝점, 끝점) 이 있으면 `step_wire` 와 같은 규칙으로 회색이다
+        # — 실험02 C1→C2 는 칩만 갈아 끼우므로 pull 선 다섯 가닥이 전부 그대로다.
+        # 전부 회색이면 순서표에 번호 대신 "그대로 둔다" 로 남긴다
+        kept_lines = 0
         for row, x_pin, p in (placed[i] for i in order):
             pick = self.nearest_vcc_rail if rail == 'vcc' else self.nearest_gnd_rail
             x_rail = pick(x_pin, block)
             r_rail = self.free_rail_row(row, x_rail)
-            col = WIRE[rail]
+            key = (rail, self._endpoint((x_pin, self.r_y(row))),
+                   self._endpoint((x_rail, self.r_y(r_rail))))
+            kept = self.baseline is not None and key in self.baseline['wires']
+            kept_lines += kept
+            col = KEEP if kept else WIRE[rail]
             self.draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
                                    f'{chip} pin {p} 미사용 입력'))
@@ -912,10 +920,13 @@ class BreadboardRenderer:
                                        'block': block, 'pin1_row': start_row})
 
         pin_str = ", ".join(str(p) for p in pins)
-        self.step_note(rail, f'{chip} pin {pin_str}',
-                       '가까운 +5V 레일' if rail == 'vcc' else '가까운 GND 레일',
-                       '미사용 입력 풀업' if rail == 'vcc' else '미사용 입력 접지',
-                       count=len(pins))
+        desc = '미사용 입력 풀업' if rail == 'vcc' else '미사용 입력 접지'
+        if placed and kept_lines == len(placed):
+            self.kept.append(f'{chip} pin {pin_str} {desc}')
+        else:
+            self.step_note(rail, f'{chip} pin {pin_str}',
+                           '가까운 +5V 레일' if rail == 'vcc' else '가까운 GND 레일',
+                           desc, count=len(pins))
 
         if rail == 'gnd' and any(8 <= p <= 14 for p in pins):
             if bridge_row is None:
@@ -1858,286 +1869,254 @@ def build_e1_all(output_dir, template_path=None):
 
 
 # ---------------------------------------------------------------------------
-# 실험 2 · CMOS 회로의 전기적 특성
+# 실험 2 · CMOS 회로의 전기적 특성 — 2026-2 배포본(12쪽) 기준, 2026-09-13 재저작
 #
 # 실험 1 과 성격이 다르다. **정답표가 없다** — LED 가 켜지는지 보는 게 아니라
-# 함수발생기로 흔들고 오실로스코프·DMM 으로 읽는다. 그래서 그림에 두 층이 더
-# 필요하다.
+# 함수발생기로 흔들고 오실로스코프로 읽는다. 그래서 그림에 두 층이 있다.
 #
 #   · 배선(점퍼선으로 꽂는 것)   -> `step_wire`, 결선 순서표
 #   · 계측(프로브·집게로 무는 것) -> `instrument`, 계측표, 회색 점선
 #
 # 둘을 한 표에 섞으면 조원이 프로브 자리에 점퍼선을 찾는다.
 #
-# 미사용 입력 처리도 실험 1 과 다르다. 교안 p8 도면이 **일부는 GND, 일부는
-# VCC** 로 묶으라고 지정한다 (pin 3·5 -> GND / pin 9·11·13 -> VCC). CMOS 입력은
-# 뜨지만 않으면 어느 쪽이든 되지만, 도면대로 따라야 실험실에서 대조가 된다.
+# 미사용 입력 처리도 실험 1 과 다르다. 교안 p9 가 "사용하지 않는 핀의 입력 값은
+# Vcc 또는 GND에 연결 (Pull up/Pull down)" 이라 명시하고, 그 그림과 p12 의 U2 가
+# **pin 3·5 -> GND / pin 9·11·13 -> VCC** 로 그려져 있다. 도면대로 따라야
+# 실험실에서 대조가 된다.
 #
-# 근거: `보고서/실험02/결선도/netlist.md` (C1~C5), `체크리스트/명세.md`.
+# 세 회로가 칩 자리를 공유한다. 정본은 netlist 의 `kind: layout` 표이고 이
+# 상수는 사본이다 — `tests/test_breadboard_wiring.py` 가 둘을 맞댄다.
+#
+#   S1 좌 7행  : C1 74HC04 · C2 74HC14 · C3 74HC04 (U1, 체인)
+#   S2 좌 18행 : C3 74HC04 (U2, 부하)
+#
+# 근거: `보고서/실험02/결선도/netlist.md` (C1~C3), `체크리스트/명세.md`.
 
-_E2_UNUSED_GND = [3, 5]        # 교안 p8: 미사용 입력 중 GND 로 내리는 것
-_E2_UNUSED_VCC = [9, 11, 13]   # 교안 p8: VCC 로 올리는 것
+E2_SLOTS = {'S1': ('left', 7), 'S2': ('left', 18)}
+_E2_S1, _E2_S2 = E2_SLOTS['S1'][1], E2_SLOTS['S2'][1]
+_E2_UNUSED_GND = [3, 5]        # 교안 p9 그림: 미사용 입력 중 GND 로 내리는 것
+_E2_UNUSED_VCC = [9, 11, 13]   # 교안 p9 그림: VCC 로 올리는 것
 _E2_UNUSED_OUT = [4, 6, 8, 10, 12]
+_E2_XY_NOTE = ('오실로스코프 X-Y 모드: "Horiz > 좌측 아래 버튼" (교안 p10 머리글). CH1 이 '
+               '가로축(Vin), CH2 가 세로축(Vout) — 축 배정은 통상 정의라 실험실 기종에서 '
+               '확인한다 (netlist M8).')
+_E2_GND_NOTE = ('함수발생기 -, CH1 -, CH2 - 는 전부 좌 GND 레일에 문다 — 전원장치 0V 와 '
+                '같은 노드다 (회로도의 접지 기호는 전부 같은 GND).')
 
 
-def _e2_power(bb, block='left'):
-    """잭 -> 바깥 레일 -> 중앙 레일. 레일쌍은 별개 스트립이라 브리지가 필수다."""
-    c = bb.cols[block]
-    bb.connect_jacks()
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
+def _e2_frame(bb):
+    """잭 + VCC 브리지. 세 회로가 같은 홀을 쓴다 — 기준선 비교로 회색이 된다.
 
-
-def _e2_unused(bb, start_row, chip, block='left'):
-    """교안 p8 의 미사용핀 처리 한 벌."""
-    bb.connect_unused_inputs(_E2_UNUSED_GND, start_row, block=block, chip=chip, rail='gnd')
-    bb.connect_unused_inputs(_E2_UNUSED_VCC, start_row, block=block, chip=chip, rail='vcc')
-    bb.mark_unused_outputs(_E2_UNUSED_OUT, start_row, block=block, chip=chip)
-
-
-def _build_e2_vtc(output_path, template_path, chip, title, subtitle, extra_notes=()):
-    """E2.P1 / E2.P2 공통. **배선이 글자 그대로 같고 칩만 바뀐다** — 통제
-    실험이라 함수발생기 설정·프로브 위치·미사용핀 처리를 하나도 안 바꾼다.
-    바꾸면 그림 차이가 칩 때문인지 설정 때문인지 갈리지 않는다."""
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    bb.set_header(title, subtitle)
-    c = bb.cols['left']
-    r = 10
-
-    bb.draw_chip(chip, r)
-    _e2_power(bb)
-    bb.connect_power(r)
-    _e2_unused(bb, r, chip)
-
-    # pin 1 은 함수발생기가 물고, pin 2 는 아무 부하 없이 프로브만 문다.
-    # 점퍼선으로 꽂을 배선이 전원과 미사용핀뿐이다
-    bb.instrument(c['a'], r, '함수발생기 + CH1 (X축)',
-                  f'사인파 Vpp 5V · 오프셋 2.5V · {chip} pin 1 (= V_IN)', lane_row=5)
-    bb.instrument(c['a'], r + 1, 'CH2 (Y축)',
-                  f'{chip} pin 2 (= V_OUT). 부하 없음 — 프로브만 문다', lane_row=7)
-    bb.instrument_note('두 프로브 접지 클립', '공통 GND 레일', '보드 GND 와 같은 노드')
-
-    bb.note('오프셋 2.5V 를 빼먹으면 입력이 -2.5V 까지 내려간다. 데이터시트 LIMITING '
-            'VALUES 가 V_I < -0.5V 에서 입력 보호 다이오드에 전류가 흐른다고 못박는다 — '
-            '함수발생기가 전류를 제한하지 않으면 입력단이 상한다.')
-    bb.note('오실로스코프를 X-Y 로 둔다: [Horiz] → 시간 모드 → XY (매뉴얼 p46~p47). '
-            'CH1/CH2 를 바꿔 물면 곡선이 90도 돈다 — 오프셋을 잠깐 올렸다 내려서 '
-            '곡선이 **좌우로** 움직이면 제대로 문 것이다.')
-    for t in extra_notes:
-        bb.note(t)
-    bb.export(output_path, max_row=31)
-
-
-def build_e2_inv(output_path, template_path=None):
-    """실험 2-1 · Inverter 입출력 특성 (74HC04 VTC). netlist C1."""
-    return _build_e2_vtc(
-        output_path, template_path, '74HC04',
-        "실험 2-1: Inverter 입출력 특성 (VTC)",
-        "74HC04 (Hex Inverter) · 오실로스코프 X-Y 모드 (CH1=V_IN, CH2=V_OUT)")
-
-
-def build_e2_schmitt(output_path, template_path=None):
-    """실험 2-2 · Schmitt-trigger 입출력 특성 (74HC14). netlist C2."""
-    return _build_e2_vtc(
-        output_path, template_path, '74HC14',
-        "실험 2-2: Schmitt-trigger 입출력 특성 (히스테리시스)",
-        "74HC14 (Schmitt-trigger Hex Inverter) · 실험 2-1 과 배선이 같고 칩만 바뀐다",
-        extra_notes=(
-            '실험 2-1 의 통제 실험이다. 배선·함수발생기 설정·프로브 위치를 하나도 '
-            '바꾸지 않는다. 바꾸면 그림 차이가 칩 때문인지 설정 때문인지 갈리지 않는다.',
-            '칩을 바꿔 꽂을 때 전원을 내린다. 전원이 살아 있는 채로 DIP 를 뽑으면 '
-            '핀이 순서대로 빠지면서 입력에만 전원이 걸린 순간이 생긴다.',
-            '74HC14 는 74HC04 와 핀 배치가 같다 (Nexperia Rev. 10 §6.2 확인).'))
-
-
-def _build_e2_dc(output_path, template_path, mode):
-    """E2.P3-1(Rn) / E2.P3-2(Rp). **부하 저항의 위치가 이 항목의 전부다.**
-
-    Rn: pin 1 -> VCC (입력 HIGH -> 출력 LOW). R1 이 VCC 와 출력 사이 -> 출력이
-        전류를 빨아들이는 sinking. NMOS 도통 저항에 걸린 전압이 V_OL.
-    Rp: pin 1 -> GND (입력 LOW -> 출력 HIGH). R1 이 출력과 GND 사이 -> sourcing.
-        PMOS 도통 저항에서 잃은 만큼 V_OH 가 VCC 보다 낮아진다.
-
-    위아래를 뒤집은 것뿐이고 **바뀌는 곳은 두 군데다** (pin 1 이 붙는 레일,
-    R1 의 반대쪽이 붙는 레일).
+    GND 브리지는 **없다.** 이 주차의 접지 끝점(pin 7, pull-down 3·5, 잭)은 전부
+    좌 바깥 GND 레일 하나에 앉는다 — 끝점이 없는 레일을 잇는 브리지는 따라 그릴
+    가닥만 늘린다(2026-09-12 격리 재생성 교훈). VCC 는 잭이 바깥 레일, pin 14 와
+    pull-up 이 중앙 레일이라 브리지가 필요하다.
     """
-    rn = (mode == 'Rn')
-    rail = 'vcc' if rn else 'gnd'
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    bb.set_header(
-        f"실험 2-3{'(1)' if rn else '(2)'}: CMOS DC 특성 — {mode}",
-        f"74HC04 · {'NMOS' if rn else 'PMOS'} 온저항 · 1kΩ 부하를 "
-        f"{'VCC 와 출력 사이' if rn else '출력과 GND 사이'} 에 둔다 "
-        f"· 출력이 {'sinking (V_OL)' if rn else 'sourcing (V_OH)'}")
     c = bb.cols['left']
-    r = 10
-
-    bb.draw_chip('74HC04', r)
-    _e2_power(bb)
-    bb.connect_power(r)
-
-    # pin 1 을 레일에 직결한다. CMOS 입력은 전류를 거의 안 먹으므로 저항이 필요없다.
-    # **a열에서** 뽑는다 — b열은 R1 이 칩 위로 올라가며 지나간다
-    x_rail = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
-    bb.step_wire([(c['a'], bb.r_y(r)), (x_rail, bb.r_y(bb.free_rail_row(r, x_rail)))], rail,
-                 f"pin 1 -> {'+5V' if rn else 'GND'} 직결 "
-                 f"(입력 {'HIGH' if rn else 'LOW'} -> 출력 {'LOW' if rn else 'HIGH'} 고정)",
-                 marker_at=(c['b'] - 30, bb.r_y(r) - 12))
-
-    # R1 = 1kΩ. 아랫다리는 pin 2 행(a~e 는 한 줄이 한 노드다), 윗다리는 **칩 위
-    # 빈 행**(r-2 = 8행)이다. 2026-09-09 까지 아랫다리가 r+4 = 14행에 있었는데
-    # 그 행은 pin 5 다 — 같은 스트립에 R1 반대쪽 전원 점퍼와 pin 5 접지선이
-    # 함께 꽂혀 Rn 에서 +5V 가 GND 로 직결됐다. 칩은 10~16행을 다 쓰므로
-    # 저항은 칩 행 **밖**으로 나가야 한다.
-    # 저항이 b열인 이유: 레일이 왼쪽이라 b열에서 레일로 가는 점퍼가 a열 홀 위를
-    # 지난다. 다리를 a에 두면 그 점퍼가 다리 위를 지나 R3 다 (`led_chain` 과 같은 규칙)
-    bb.draw_resistor(c['b'], bb.r_y(r - 2), bb.r_y(r + 1), label="1kΩ")
-    bb.step_note('sig', bb.addr(c['b'], bb.r_y(r + 1)), bb.addr(c['b'], bb.r_y(r - 2)),
-                 'R1 = 1kΩ 꽂기 (pin 2 와 같은 행에서 시작해 칩 위 빈 행으로)',
-                 marker_at=(c['c'], (bb.r_y(r - 2) + bb.r_y(r + 1)) // 2))
-    x_far = (bb.nearest_vcc_rail if rn else bb.nearest_gnd_rail)(c['a'], 'left')
-    bb.step_wire([(c['a'], bb.r_y(r - 2)), (x_far, bb.r_y(bb.free_rail_row(r - 2, x_far)))], rail,
-                 f"R1 반대쪽 -> {'+5V' if rn else 'GND'} 레일",
-                 marker_at=(c['a'] - 30, bb.r_y(r - 2) + 10))
-
-    _e2_unused(bb, r, '74HC04')
-
-    bb.instrument_note('S1 · DMM 저항(Ω) 모드', 'R1 양끝',
-                       '**회로에 꽂기 전에** R1 실저항을 잰다. 꽂은 채로 재면 IC 를 '
-                       '통한 우회 경로가 병렬로 붙어 값이 틀린다')
-    bb.instrument(c['c'], r + 1, 'S2 · DMM DCV (+)',
-                  f"74HC04 pin 2 = V_out (= {'V_OL' if rn else 'V_OH'}). (-) 는 공통 GND",
-                  lane_row=6)
-    if rn:
-        bb.instrument(c['d'], r + 1, 'S3 · DMM DCV — R1 양단',
-                      '(+) VCC 레일, (-) pin 2. R1 양단 전압에서 I_OL 을 낸다', lane_row=20)
-    else:
-        bb.instrument_note('S3 · DMM DCV', 'VCC 레일 ↔ 공통 GND',
-                           'VCC 실측. Rp 의 분자가 (VCC - V_OH) 라 공칭 5.00V 를 쓰면 '
-                           '두 큰 수의 차에서 오차가 커진다')
-
-    if rn:
-        bb.note('pin 2(출력)를 VCC 에 **직결하면 안 된다.** 반드시 R1 을 거친다 — '
-                '직결하면 도통한 NMOS 를 통해 VCC 가 GND 로 단락된다.')
-        bb.note('R1 양단 전압 / R1 = I_OL. V_OL / I_OL = Rn.')
-    else:
-        bb.note('R1 이 pin 2 와 GND 사이에 있으므로 **R1 양단 전압 = V_out** 이다. '
-                '따라서 I_OH = V_out / R1 이고 DMM 접점이 Rn 쪽보다 하나 줄어든다.')
-        bb.note('(VCC - V_OH) / I_OH = Rp. 보통 Rp > Rn 이고, 그것이 상승 천이가 '
-                '하강 천이보다 느린 원인이다 — 실험 2-4 의 지연 비대칭이 여기서 나온다.')
-    bb.note('전류계를 쓸 거면 **반드시 직렬로** 넣는다. 저항이나 전원에 병렬로 대면 '
-            '전류계가 VCC 를 단락시켜 퓨즈가 나간다.')
-    bb.export(output_path, max_row=31)
-
-
-def build_e2_rn(output_path, template_path=None):
-    """실험 2-3 (1) · CMOS DC 특성 — Rn. netlist C3."""
-    return _build_e2_dc(output_path, template_path, 'Rn')
-
-
-def build_e2_rp(output_path, template_path=None):
-    """실험 2-3 (2) · CMOS DC 특성 — Rp. netlist C4."""
-    return _build_e2_dc(output_path, template_path, 'Rp')
-
-
-def build_e2_tpd(output_path, template_path=None):
-    """실험 2-4 · 전파지연 tpd (74HC04 두 개). netlist C5.
-
-    **체인이 핀 번호 순서로 흐르지 않는다.** `pin 6` 에서 `pin 13` 으로 건너뛴 뒤
-    번호를 거슬러 내려온다 (교안 p13 회로도를 900dpi 로 렌더해 확정).
-
-        1 →2 · 3 →4 · 5 →6 · 13→12 · 11→10 · 9 →8
-
-    CH1(pin 4) 과 CH2(pin 8) 사이에 인버터가 **4단** 있다. 핀 번호만 보고
-    `1→2, 3→4, 5→6, 9→8` 로 짐작하면 2단으로 세게 되고 게이트당 t_pd 가 정확히
-    2배로 나온다 — 이 주차에서 가장 비싼 실수다. 배선이 아니라 계산에서 틀리므로
-    실험실에서는 아무 이상이 없어 보인다.
-    """
-    bb = BreadboardRenderer(template_path)
-    bb.enable_steps()
-    bb.set_header("실험 2-4: CMOS AC 특성 — 전파지연 t_pd",
-                  "74HC04 두 개 · U1 은 인버터 6개 직렬 체인, U2 는 최종단 부하 · CH1=pin 4, CH2=pin 8")
-    c_l, c_r = bb.cols['left'], bb.cols['right']
-    r1, r2 = 7, 10   # U1 좌측 7행, U2 우측 10행
-
-    bb.draw_chip('74HC04', r1, block='left')
-    bb.draw_chip('74HC04', r2, block='right')
-
     bb.connect_jacks()
-    bb.bridge_rails(c_l['gnd'], c_l['mid_gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_l['mid_gnd'], c_r['mid_gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_r['mid_gnd'], c_r['gnd'], 31, kind='gnd')
-    bb.bridge_rails(c_l['vcc'], c_l['mid_vcc'], 33, kind='vcc')
-    bb.bridge_rails(c_l['mid_vcc'], c_r['vcc'], 33, kind='vcc')
-    bb.connect_power(r1, block='left')
-    bb.connect_power(r2, block='right')
+    bb.bridge_rails(c['vcc'], c['mid_vcc'], 27, kind='vcc')
 
-    # U1 체인. 인접 핀끼리는 짧은 점퍼 넷, 6->13 하나만 칩을 가로지른다
-    bb.step_wire([(c_l['b'], bb.r_y(8)), (c_l['b'], bb.r_y(9))], 'mid',
+
+def _e2_vtc(bb, chip):
+    """C1·C2 공통 — S1 칩 하나, 게이트 1 만 쓴다. 점퍼로 꽂는 배선은 전원과
+    미사용 입력 pull 뿐이고, pin 1 은 함수발생기가, pin 2 는 프로브가 문다.
+
+    두 회로가 **같은 헬퍼를 같은 순서로** 부르므로 C2 는 C1 기준선에서 배선
+    전부가 회색이 되고 순서표 첫 줄이 칩 교체 한 줄이다.
+    """
+    c = bb.cols['left']
+    bb.draw_chip(chip, _E2_S1)
+    _e2_frame(bb)
+    bb.connect_power(_E2_S1)
+    bb.connect_unused_inputs(_E2_UNUSED_GND, _E2_S1, chip=chip, rail='gnd')
+    bb.connect_unused_inputs(_E2_UNUSED_VCC, _E2_S1, chip=chip, rail='vcc')
+    bb.mark_unused_outputs(_E2_UNUSED_OUT, _E2_S1, chip=chip)
+    bb.instrument(c['a'], _E2_S1, '함수발생기 + CH1 (가로축)',
+                  f'사인파 Vpp 5V · offset 2.5V (교안 p10) · {chip} pin 1 = Vin',
+                  lane_row=4)
+    bb.instrument(c['a'], _E2_S1 + 1, 'CH2 (세로축)',
+                  f'{chip} pin 2 = Vout · 부하 없음, 프로브만 문다', lane_row=11)
+    bb.instrument_note('함수발생기 -, CH1 -, CH2 -', '좌 GND 레일', '전원장치 0V 와 같은 노드')
+    bb.note(_E2_XY_NOTE)
+    bb.note('미사용 입력은 교안 p9 그림대로 pin 3·5 → GND, pin 9·11·13 → VCC (netlist M6). '
+            '사용하는 게이트 1 의 입력 pin 1 은 함수발생기가 문다 — 띄워두지 않는다.')
+    bb.note(_E2_GND_NOTE)
+
+
+def build_e2_inv(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-1 · Inverter 입출력 특성 (74HC04, X-Y). netlist C1. 첫 보드 — 완성본 겸용."""
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    bb.set_header("실험 1-1: Inverter 입출력 특성 결선도",
+                  "74HC04 (Hex Inverter) 게이트 1 · 오실로스코프 X-Y 모드 (CH1 = Vin, CH2 = Vout)",
+                  submit=baseline is None)
+    _e2_vtc(bb, '74HC04')
+    bb.export(output_path, max_row=31)
+    return bb
+
+
+def build_e2_schmitt(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-2 · Schmitt-trigger 입출력 특성 (74HC14). netlist C2. C1 과 배선이 같다.
+
+    Nexperia 74HC14 Rev. 10 (2024-02-29) §6.2: 입력 1,3,5,9,11,13 / 출력 2,4,6,8,
+    10,12 / GND 7 / VCC 14 — 74HC04 와 같은 배치라 칩만 갈아 끼운다.
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    bb.set_header("실험 1-2: Schmitt-trigger 입출력 특성 결선도" if baseline is None
+                  else "실험 1-2: Schmitt-trigger — 1단계 (칩 교체)",
+                  "74HC14 (Hex Schmitt inverter) · C1 과 배선이 같다 — 칩만 갈아 끼운다",
+                  submit=baseline is None)
+    _e2_vtc(bb, '74HC14')
+    bb.note('74HC14 는 74HC04 와 핀 배치가 같다 (Nexperia 74HC14 Rev. 10 §6.2). 전원을 끄고 '
+            '칩만 갈아 끼운다 — 선은 하나도 안 걷는다. 신호원·X-Y 설정도 그대로다 (교안 p11).')
+    bb.export(output_path, max_row=31)
+    return bb
+
+
+def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
+    """실험 2 · CMOS AC 특성 — t_pd (74HC04 두 패키지). netlist C3. 칩 하나 = 단계 하나.
+
+      stage 1  U1(S1) 체인 6단 + 전원(S1·S2 둘 다). CH1 = pin 4, CH2 = pin 8
+      stage 2  + U2(S2) 부하 = 완성
+
+    체인이 핀 번호 순서로 흐르지 않는다 — pin 6 에서 pin 13 으로 건너뛴 뒤 번호를
+    거슬러 내려온다 (교안 p12 회로도, 600dpi vision 판독):
+
+        1→2 · 3→4 · 5→6 · 13→12 · 11→10 · 9→8
+
+    CH1(pin 4)~CH2(pin 8) 사이는 4→5, 6→13, 12→11, 10→9 의 **4 단**이다. 단 수는
+    측정값에서 역산하지 않고 이 점퍼 넷을 세어 확인한다 (netlist M3).
+    """
+    st = 2 if stage is None else stage
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    bb.partial = st < 2
+    title = {1: "실험 2: CMOS AC 특성 — 1단계 (U1 체인, CH1 = pin 4 · CH2 = pin 8)",
+             2: "실험 2: CMOS AC 특성 (t_pd) 결선도" if baseline is None
+                else "실험 2: CMOS AC 특성 — 2단계 (U2 부하, 완성)"}[st]
+    bb.set_header(title,
+                  "74HC04 두 패키지 · U1 인버터 6단 직렬, U2 는 체인 끝 부하 · 사각파 Vpp 5V, 1MHz",
+                  submit=baseline is None)
+    c = bb.cols['left']
+    r1, r2 = _E2_S1, _E2_S2
+
+    bb.draw_chip('74HC04', r1)
+    _e2_frame(bb)
+    bb.connect_power(r1)
+    # U2 자리 전원 두 가닥 — 회로가 바뀌어도 그대로인 선이라 1단계에 미리 꽂는다
+    bb.connect_power(r2)
+
+    # U1 체인. 인접 핀끼리는 짧은 점퍼 넷, 6->13 하나만 칩 위(5행)로 넘긴다.
+    # a 열은 프로브 자리(pin 1·4), b 열은 짧은 점퍼, c 열은 긴 점퍼 — 서로 안 겹친다
+    bb.step_wire([(c['b'], bb.r_y(r1 + 1)), (c['b'], bb.r_y(r1 + 2))], 'mid',
                  '1단 출력 pin 2 -> 2단 입력 pin 3', width=4,
-                 marker_at=(c_l['b'] - 20, bb.r_y(8) + 8))
-    bb.step_wire([(c_l['b'], bb.r_y(10)), (c_l['b'], bb.r_y(11))], 'mid',
+                 marker_at=(c['b'] - 20, bb.r_y(r1 + 1) + 8))
+    bb.step_wire([(c['b'], bb.r_y(r1 + 3)), (c['b'], bb.r_y(r1 + 4))], 'mid',
                  '2단 출력 pin 4 -> 3단 입력 pin 5', width=4,
-                 marker_at=(c_l['b'] - 20, bb.r_y(10) + 8))
-    # 3단 출력 pin 6 (12행, a~e 쪽) -> 4단 입력 pin 13 (8행, f~j 쪽). 칩 위로 넘긴다
-    bb.step_wire([(c_l['c'], bb.r_y(12)), (c_l['c'], bb.r_y(5)),
-                  (c_l['h'], bb.r_y(5)), (c_l['h'], bb.r_y(8))], 'mid',
-                 '3단 출력 pin 6 -> 4단 입력 pin 13 (칩을 가로지르는 유일한 긴 점퍼)',
-                 marker_at=(c_l['e'] + 6, bb.r_y(5) - 12))
-    bb.step_wire([(c_l['g'], bb.r_y(9)), (c_l['g'], bb.r_y(10))], 'mid',
+                 marker_at=(c['b'] - 20, bb.r_y(r1 + 3) + 8))
+    bb.step_wire([(c['c'], bb.r_y(r1 + 5)), (c['c'], bb.r_y(r1 - 2)),
+                  (c['h'], bb.r_y(r1 - 2)), (c['h'], bb.r_y(r1 + 1))], 'mid',
+                 '3단 출력 pin 6 -> 4단 입력 pin 13 (칩 위로 넘기는 긴 점퍼)',
+                 marker_at=(c['e'] + 6, bb.r_y(r1 - 2) - 12))
+    bb.step_wire([(c['g'], bb.r_y(r1 + 2)), (c['g'], bb.r_y(r1 + 3))], 'mid',
                  '4단 출력 pin 12 -> 5단 입력 pin 11', width=4,
-                 marker_at=(c_l['g'] + 20, bb.r_y(9) + 8))
-    bb.step_wire([(c_l['g'], bb.r_y(11)), (c_l['g'], bb.r_y(12))], 'mid',
+                 marker_at=(c['g'] + 20, bb.r_y(r1 + 2) + 8))
+    bb.step_wire([(c['g'], bb.r_y(r1 + 4)), (c['g'], bb.r_y(r1 + 5))], 'mid',
                  '5단 출력 pin 10 -> 6단 입력 pin 9', width=4,
-                 marker_at=(c_l['g'] + 20, bb.r_y(11) + 8))
+                 marker_at=(c['g'] + 20, bb.r_y(r1 + 4) + 8))
 
-    # U1 pin 8 (6단 출력, 13행 f~j 쪽) -> U2 pin 1 (우측 10행 a~e 쪽)
-    bb.step_wire([(c_l['i'], bb.r_y(13)), (c_l['i'], bb.r_y(4)),
-                  (c_r['a'], bb.r_y(4)), (c_r['a'], bb.r_y(10))], 'sig',
-                 'U1 최종단 pin 8 -> U2 pin 1 (게이트 입력 부하)',
-                 marker_at=(c_r['a'] - 70, bb.r_y(4) - 12))
+    bb.instrument(c['a'], r1, '함수발생기',
+                  '사각파 Vpp 5V · 1MHz (교안 p12) · U1 pin 1 = VIN', lane_row=4)
+    bb.instrument(c['a'], r1 + 3, 'CH1',
+                  'U1 pin 4 = 2단 출력 · 지연 측정 시작점 (교안 p12)', lane_row=11)
+    bb.instrument(c['h'], r1 + 6, 'CH2',
+                  'U1 pin 8 = 6단 출력 · CH1 과 사이에 인버터 4단 (교안 p12)', lane_row=16)
+    bb.instrument_note('함수발생기 -, CH1 -, CH2 -', '좌 GND 레일', '전원장치 0V 와 같은 노드')
 
-    # U2 는 논리에 관여하지 않는다. pin 1 만 받고 나머지는 도면대로 묶는다
-    bb.connect_unused_inputs(_E2_UNUSED_GND, r2, block='right', chip='U2', rail='gnd')
-    bb.connect_unused_inputs(_E2_UNUSED_VCC, r2, block='right', chip='U2', rail='vcc')
-    bb.mark_unused_outputs([2] + _E2_UNUSED_OUT, r2, block='right', chip='U2')
+    if st == 1:
+        bb.note('1단계: U1 체인만 본다. CH1(pin 4)·CH2(pin 8) 둘 다 1MHz 사각파가 보이고 '
+                '같은 방향으로 움직이면(짝수 단) 2단계로 간다. U2 자리 전원 두 가닥은 미리 꽂는다.')
+    else:
+        bb.draw_chip('74HC04', r2)
+        # U1 pin 8 (13행 f~j 쪽) -> U2 pin 1 (18행 a~e 쪽). 두 칩 사이 빈 15행으로 건넌다
+        bb.step_wire([(c['i'], bb.r_y(r1 + 6)), (c['i'], bb.r_y(r1 + 8)),
+                      (c['b'], bb.r_y(r1 + 8)), (c['b'], bb.r_y(r2))], 'sig',
+                     'U1 최종단 pin 8 -> U2 pin 1 (게이트 입력 부하)',
+                     marker_at=(c['e'] + 6, bb.r_y(r1 + 8) - 12))
+        bb.connect_unused_inputs(_E2_UNUSED_GND, r2, chip='U2', rail='gnd')
+        bb.connect_unused_inputs(_E2_UNUSED_VCC, r2, chip='U2', rail='vcc')
+        bb.mark_unused_outputs([2] + _E2_UNUSED_OUT, r2, chip='U2')
+        bb.note('U2 는 게이트 1 입력만 받는다 — "체인 끝 부하" 는 회로도 해석이지 교안 원문이 '
+                '아니다. pin 2 는 개방, 나머지 입력은 교안 p12 회로도대로 3·5 → GND, 9·11·13 → VCC.')
 
-    bb.instrument(c_l['a'], r1, '함수발생기', 'U1 pin 1 (체인 입력)', lane_row=17)
-    bb.instrument(c_l['d'], 10, 'CH1', 'U1 pin 4 = 2단 출력. 여기가 지연 측정 시작점',
-                  lane_row=19)
-    bb.instrument(c_l['h'], 13, 'CH2', 'U1 pin 8 = 6단 출력. CH1 과 사이에 인버터 4단',
-                  lane_row=21)
-    bb.instrument_note('두 프로브 접지 클립', '공통 GND 레일', '보드 GND 와 같은 노드')
+    bb.note('U1 에는 미사용 입력이 없다 — 인버터 6개를 전부 쓰므로 14핀이 모두 물린다. '
+            'C2 의 pull 선(3·5 → GND, 9·11·13 → VCC)은 걷는다 (아래 "앞 단계에서 걷는다").')
+    bb.note('CH1~CH2 사이는 4단 (4→5, 6→13, 12→11, 10→9). 짝수 단이라 두 파형은 같은 방향이고 '
+            'Δt = 2·t_PHL + 2·t_PLH 다 — 1단 환산은 Δt/4. 단 수는 점퍼를 세어 확인한다 (netlist M3).')
+    bb.note('교안 p12 는 사각파의 offset 을 적지 않는다 (netlist M2). 0~5V 로 두려면 offset '
+            '2.5V 가 필요하다 — CH1 로 Vin 이 0~5V 인지 먼저 본다.')
+    bb.note(_E2_GND_NOTE)
+    bb.export(output_path, max_row=31)
+    return bb
 
-    bb.note('U1 에는 **미사용 입력핀이 없다.** 인버터 6개를 전부 쓰므로 14핀이 모두 '
-            '물린다. 다른 항목의 습관대로 pin 3·5 를 GND 로 내리면 체인이 끊긴다.')
-    bb.note('긴 점퍼(pin 6 -> pin 13)가 빠지면 뒤 4단이 전부 죽고 pin 8 이 뜬다. '
-            '화면에는 CH2 가 노이즈처럼 흔들리는 모습으로 나타나지, 지연이 이상한 '
-            '모습으로 나타나지 않는다.')
-    bb.note('CH1 과 CH2 사이는 **4단**이다 (5→6, 13→12, 11→10, 9→8). 핀 번호만 보고 '
-            '2단으로 세면 게이트당 t_pd 가 정확히 2배로 나온다. 짝수 단이라 두 파형은 '
-            '동상이고, Δt = 2·t_PHL + 2·t_PLH 이므로 둘을 분리할 수 없다 — 평균만 얻는다.')
-    bb.note('U2 는 논리에 관여하지 않는다. U1 최종단에 게이트 입력 부하 하나를 '
-            '더하는 것이 전부이고, U2 pin 2 는 개방이다.')
-    bb.export(output_path, max_row=34)
+
+# 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
+# 실제로 남아 있는 것. 첫 보드(C1)는 기준선이 없어 완성본을 겸한다.
+E2_BOARDS = [
+    ("실험02_1-1_결선도_인버터_입출력특성.png", build_e2_inv, None),
+    ("실험02_1-2_결선도_슈미트트리거_입출력특성_1단계_칩교체.png", build_e2_schmitt, None),
+    ("실험02_2_결선도_인버터체인_tpd_1단계_U1체인.png", build_e2_tpd, 1),
+    ("실험02_2_결선도_인버터체인_tpd_2단계_U2부하.png", build_e2_tpd, None),
+]
+
+# 완성본 — 기준선 없이 전부 색. 예비보고서에 싣고 손으로 따라 그리는 원도다.
+E2_FINALS = [
+    ("실험02_1-2_결선도_슈미트트리거_입출력특성.png", build_e2_schmitt),
+    ("실험02_2_결선도_인버터체인_tpd.png", build_e2_tpd),
+]
+
+
+def _e2_baseline(index, template_path=None):
+    """`E2_BOARDS[index]` 의 기준선 = 바로 앞 보드의 `snapshot()`. 첫 보드는 None."""
+    if index == 0:
+        return None
+    _name, fn, stage = E2_BOARDS[index - 1]
+    with tempfile.TemporaryDirectory() as d:
+        return fn(os.path.join(d, 'prev.png'), template_path, stage=stage).snapshot()
+
+
+def _e2_board(index, output_path, template_path=None):
+    _name, fn, stage = E2_BOARDS[index]
+    return fn(output_path, template_path, stage=stage,
+              baseline=_e2_baseline(index, template_path))
+
+
+def build_e2_schmitt_s1(output_path, template_path=None):
+    """C2 1단계 — C1 에서 칩만 갈아 끼운다. 새 배선 0가닥."""
+    return _e2_board(1, output_path, template_path)
+
+
+def build_e2_tpd_s1(output_path, template_path=None):
+    """C3 1단계 — U1 체인만. C2 의 pull 선 다섯 가닥을 걷고 체인 점퍼 다섯 가닥을 꽂는다."""
+    return _e2_board(2, output_path, template_path)
+
+
+def build_e2_tpd_s2(output_path, template_path=None):
+    """C3 2단계 — U2 부하를 더해 완성."""
+    return _e2_board(3, output_path, template_path)
 
 
 def build_e2_all(output_dir, template_path=None):
-    """실험 2의 모든 결선도 5종을 지정된 디렉토리에 일괄 렌더링"""
+    """실험 2 결선도 6장 — 절차 4장(기준선 사슬) + 완성본 2장(기준선 없음)."""
     os.makedirs(output_dir, exist_ok=True)
-    targets = [
-        ("실험02_결선도_인버터_입출력특성.png", build_e2_inv),
-        ("실험02_결선도_슈미트트리거_입출력특성.png", build_e2_schmitt),
-        ("실험02_결선도_DC특성_Rn.png", build_e2_rn),
-        ("실험02_결선도_DC특성_Rp.png", build_e2_rp),
-        ("실험02_결선도_전파지연_tpd.png", build_e2_tpd),
-    ]
-    for filename, func in targets:
-        p = os.path.join(output_dir, filename)
-        func(p, template_path)
-    print(f"[SUCCESS] All 5 diagrams for 실험02 generated in: {output_dir}")
+    base = None
+    for filename, fn, stage in E2_BOARDS:
+        bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+        base = bb.snapshot()
+    for filename, fn in E2_FINALS:
+        fn(os.path.join(output_dir, filename), template_path)
+    print(f"[SUCCESS] 실험02 결선도 {len(E2_BOARDS) + len(E2_FINALS)}장 생성: {output_dir}")
 
 
 def main():
@@ -2146,9 +2125,9 @@ def main():
         "e1_and", "e1_or", "e1_or_s1", "e1_nand", "e1_nand_s1", "e1_nand_s2",
         "e1_nor", "e1_nor_s1", "e1_nor_s2",
         "e1_comb", "e1_comb_s1", "e1_comb_s2", "e1_comb_s3", "e1_all",
-        "e2_inv", "e2_schmitt", "e2_rn", "e2_rp", "e2_tpd", "e2_all"
+        "e2_inv", "e2_schmitt", "e2_schmitt_s1", "e2_tpd", "e2_tpd_s1", "e2_tpd_s2", "e2_all"
     ], help="Circuit ID to render")
-    parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e2_all)")
+    parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e1_all / e2_all)")
     parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
     args = parser.parse_args()
 
@@ -2169,9 +2148,10 @@ def main():
         "e1_all": build_e1_all,
         "e2_inv": build_e2_inv,
         "e2_schmitt": build_e2_schmitt,
-        "e2_rn": build_e2_rn,
-        "e2_rp": build_e2_rp,
+        "e2_schmitt_s1": build_e2_schmitt_s1,
         "e2_tpd": build_e2_tpd,
+        "e2_tpd_s1": build_e2_tpd_s1,
+        "e2_tpd_s2": build_e2_tpd_s2,
         "e2_all": build_e2_all,
     }
     dispatch[args.circuit](args.output, args.template)
