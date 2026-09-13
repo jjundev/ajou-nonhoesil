@@ -60,6 +60,11 @@ class Wiring(unittest.TestCase):
         self.assertEqual(chip['pins'][14], ('left', 'f', 7))
         self.assertEqual(chip['pins'][8], ('left', 'f', 13))
 
+    def test_입력_점퍼가_이름으로_나온다(self):
+        """손그림 검토 H15 가 참조의 신호 이름을 여기서 꺼낸다."""
+        self.assertEqual([i['name'] for i in self.and_bb.wiring()['inputs']],
+                         ['A', 'B', 'C'])
+
     def test_배선은_양_끝을_기호_좌표로_남긴다(self):
         wires = self.and_bb.wiring()['wires']
         ends = {(w['frm'], w['to']) for w in wires}

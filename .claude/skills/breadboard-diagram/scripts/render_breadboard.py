@@ -86,6 +86,7 @@ def _default_template():
 # `tools/measure_template.py` 를 보라.
 ROW0 = 272.0        # 1행 홀 중심 y
 ROW_PITCH = 16.345  # 행 간격
+BOARD_LEFT = 149     # 좌 보드 테두리 x. 이보다 왼쪽은 보드 밖 여백이다 (가독성 테스트의 BOARD_L)
 ROW_MAX = 63        # 이 보드는 63행이다 (라벨은 1·10·20…60 만 찍혀 있다)
 
 # 전원 레일은 5홀씩 묶여 있고 그 사이가 비어 있다. **그 빈 행에 배선을 끝내면
@@ -186,6 +187,11 @@ class BreadboardRenderer:
         # 입력 점퍼가 꽂힌 자리. 넷 검사가 레일 쪽 끝을 **가상 입력 노드**로
         # 바꿔 세는 데 쓴다 — `input_node()` 주석 참조
         self.inputs = []
+        # 보드 안에 찍은 신호 이름 배지. (이름, 상자 (x0, y0, x1, y1), 가리키는 배선 번호 | None).
+        # 가독성 테스트가 번호 원·배선·꽂힌 홀을 가리는지 본다
+        self.tag_boxes = []
+        # 번호 원의 상자. 같은 검사가 쓴다
+        self.marker_boxes = []
         # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
         # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
@@ -536,6 +542,28 @@ class BreadboardRenderer:
         self.draw.rectangle([bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad], fill=bg_col, outline=text_col, width=1)
         self.draw.text((x, y), text, fill=text_col, font=font)
 
+    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None):
+        """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z.
+
+        2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
+        없었다. 원도는 입력 이름을 보드 밖(x=12) 꼬리표에만 적었고, 학생은 보드
+        판형 위만 따라 그려 그 글자가 옮겨지지 않았다. 신호 이름은 그림의 일부라
+        이 함수로 보드 안에 둔다. 규칙 문구는 여전히 `note()` 로 보드 밖이다.
+
+        `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 배지 상자의 왼쪽
+        끝이다. `seg` 는 이 이름이 가리키는 배선의 `_segments` 번호 — 겹침 검사가
+        그 선만 봐준다.
+        """
+        font, pad = self.font_en_bold, 2
+        b = self.draw.textbbox((0, 0), name, font=font)
+        w, h = b[2] - b[0], b[3] - b[1]
+        left = x - w / 2 if align == 'center' else x + pad
+        tx, ty = left - b[0], y - h / 2 - b[1]
+        self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
+        box = self.draw.textbbox((tx, ty), name, font=font)
+        self.tag_boxes.append(
+            (name, (box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad), seg))
+
     def draw_wire(self, points, color, width=3):
         """번호 없는 생짜 배선. **지금 이 함수를 부르는 빌더는 하나도 없다.**
 
@@ -585,6 +613,7 @@ class BreadboardRenderer:
 
     def _marker(self, x, y, n, color):
         """배선 번호. 결선 순서표의 몇 번인지 가리킨다."""
+        self.marker_boxes.append((x - 8, y - 8, x + 8, y + 8))
         self.draw.ellipse([x-8, y-8, x+8, y+8], fill=(255, 255, 255, 245), outline=color, width=2)
         t = str(n)
         bbox = self.draw.textbbox((0, 0), t, font=self.font_num)
@@ -688,7 +717,7 @@ class BreadboardRenderer:
         self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=(130, 130, 130, 255), width=2)
         self.draw.ellipse([x - 8, ymid - 8, x + 8, ymid + 8], fill=(*color_rgb, 240), outline=(255, 255, 255, 255), width=2)
         if label:
-            self.draw_badge(x + 12, ymid - 7, label, (255, 255, 255, 235), color_rgb, font=self.font_kr_sm, pad=2)
+            self.signal_tag(label, x + 10, ymid, align='left', col=color_rgb)
 
     def led_chain(self, x, top_row, tag, desc, block='left', color_rgb=(220, 20, 20),
                   marker_dx=-21):
@@ -704,9 +733,10 @@ class BreadboardRenderer:
         LED 열에서 뽑으면 왼쪽으로 자란 사슬(도착 d → LED c → 저항 b)의 가로선이
         저항 아랫다리 b 위를 지나간다 — 검정 선 아래 다리가 깔리는 그림이다.
 
-        보드 위에는 **짧은 꼬리표만** 붙인다 (L1, X, Z…). 'L2 최종 LED
-        (Y=A·B·C)' 같은 긴 문구는 결선 순서표로 내려보낸다 — 손으로 옮겨
-        그릴 것이 아니면서 정작 그릴 홀을 가리기 때문이다.
+        보드 위에는 **신호 이름만** 붙인다 (L1, X, Z…) — `draw_led()` 가
+        `signal_tag()` 로 찍는다. 'L2 최종 LED (L2=A·B·C)' 같은 긴 문구는 결선
+        순서표로 내려보낸다 — 손으로 옮겨 그릴 것이 아니면서 정작 그릴 홀을
+        가리기 때문이다.
         """
         c = self.cols[block]
         group = [c[k] for k in 'abcde'] if x <= c['e'] else [c[k] for k in 'fghij']
@@ -1152,6 +1182,7 @@ class BreadboardRenderer:
         return {
             'chips': list(self.chips),
             'wires': wires,
+            'inputs': [dict(i) for i in self.inputs],
             'leds': list(self.leds),
             'resistors': list(self.resistors),
             'chains': list(self.led_chains),
@@ -1466,7 +1497,7 @@ class BreadboardRenderer:
 
 
 def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
-    """보드 위 꼬리표. **두 글자 안팎으로만** 쓴다 — 뜻은 결선 순서표에 있다."""
+    """보드 **밖** 꼬리표 — 꽂을 자리(`입력 A → b7`). 신호 이름은 `signal_tag()` 가 보드 안에 둔다."""
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
@@ -1493,6 +1524,12 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     단 템플릿에 행 번호가 인쇄된 10·20·30행은 거기가 막혀 있으니 레일과 a열
     사이 여백 `(215, ±13)` 으로 피한다. 꼬리표에는 꽂을 자리(b10)를 그대로
     적는다 — 왼쪽 눈금이 10·20·30 뿐이라 이름만 있으면 홀을 세어야 한다.
+
+    **이름은 보드 안에도 적는다** — 레일 쪽 끝 옆, 보드 좌 테두리와 좌 GND 레일
+    사이 여백이다(`signal_tag()`). 2026-09 실험01 예보가 "입력 A·B·C 위치 표기가
+    없다" 로 감점됐다(-1) — 이름이 보드 밖 꼬리표에만 있었고 학생은 판형 위만
+    따라 그렸다. 레일과 a 열 사이 여백은 쓰지 않는다: 복합 회로의 Z 급전선(x=212)이
+    10~25행을 세로로 지나고, 번호 원 `(215, ±13)` 도 거기 앉는다(2026-09-14 실측).
     """
     r_rail = bb.free_rail_row(row, c['gnd'])
     bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c[col], bb.r_y(row))], 'sig',
@@ -1500,6 +1537,9 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
                  marker_at=(marker[0], bb.r_y(row) + marker[1]))
     bb.input_node(name, c[col], row)
     _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
+    # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
+    bb.signal_tag(name, (BOARD_LEFT + c['gnd']) / 2, bb.r_y(r_rail),
+                  seg=len(bb._segments) - 1)
 
 
 # ---------------------------------------------------------------------------
@@ -1559,7 +1599,7 @@ def _e1_single(bb, chip, op):
     _input_jumper(bb, c, 11, 'C', f'{chip} pin 5')
     bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig',
                  '최종 출력 pin 6 -> L2', marker_at=(c['a'] - 20, bb.r_y(20)))
-    bb.led_chain(c['a'], 25, "L2", f"최종 출력 Y = A{op}B{op}C — 진리표 검증 대상")
+    bb.led_chain(c['a'], 25, "L2", f"최종 출력 L2 = A{op}B{op}C — 진리표 검증 대상")
     bb.mark_unused_inputs([9, 10, 12, 13], _S1, chip=chip)
     bb.mark_unused_outputs([8, 11], _S1, chip=chip)
     bb.note(_E1_INPUT_NOTE)
@@ -1620,7 +1660,7 @@ def _e1_two_chip(bb, front, back, op, stage, back_in_row, back_in_label,
     _input_jumper(bb, c, c_row, 'C', f'{back} pin {c_pin}', marker=(215, +13))
     bb.step_wire([(c[out_col], bb.r_y(out_row)), (c[out_col], bb.r_y(25))], 'sig',
                  f'최종 출력 {back} -> L2', marker_at=(c[out_col] + 18, bb.r_y(22)))
-    bb.led_chain(c['a'], 25, "L2", f"최종 출력 Y = (A{op}B{op}C)' — 진리표 검증 대상")
+    bb.led_chain(c['a'], 25, "L2", f"최종 출력 L2 = (A{op}B{op}C)' — 진리표 검증 대상")
     bb.mark_unused_inputs(back_unused_in, _S2, chip=back)
     bb.mark_unused_outputs(back_unused_out, _S2, chip=back)
     bb.note(_E1_INPUT_NOTE)
