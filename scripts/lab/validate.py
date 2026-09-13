@@ -248,18 +248,60 @@ def _squash(s: str) -> str:
     return re.sub(r"\s+", "", s)
 
 
+_HANGUL = re.compile(r"[\uac00-\ud7a3]")
+
+
+def _pdftotext_text(manual_path) -> str:
+    """`pdftotext -layout` 의 표준 출력을 문자열로 돌려준다. 못 돌리면 빈 문자열."""
+    try:
+        done = subprocess.run(["pdftotext", "-layout", str(manual_path), "-"],
+                              capture_output=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    if done.returncode != 0:
+        return ""
+    # `text=True` 로 받으면 안 된다 — pdftotext 가 글머리표(`0xb7`) 같은
+    # 비 UTF-8 바이트를 섞어 내고, Windows 기본 인코딩(cp949)에서는 그것이
+    # 읽기 스레드의 UnicodeDecodeError 가 되어 함수가 None 을 돌려줬다.
+    return done.stdout.decode("utf-8", errors="replace")
+
+
+def _pypdf_text(manual_path) -> str:
+    """`pypdf` 로 쪽마다 텍스트를 뽑아 잇는다. 라이브러리가 없거나 못 열면 빈 문자열."""
+    try:
+        import pypdf
+    except ImportError:
+        return ""
+    try:
+        reader = pypdf.PdfReader(str(manual_path))
+        return "\n".join((page.extract_text() or "") for page in reader.pages)
+    except Exception:
+        return ""
+
+
 def extract_manual_text(manual_path) -> str:
     """교안 PDF 의 텍스트 층을 통째로 뽑는다. 못 뽑으면 빈 문자열이다.
 
     빈 문자열이면 `check_manual_quotes` 가 아무것도 내지 않는다 — `pdftotext`
     가 없는 환경에서 "교안에 그 문장이 없다" 로 오진하지 않기 위해서다.
+
+    **항상 `str` 이다** — 어떤 경로로도 None 을 돌려주지 않는다. 호출자가
+    `len()` 을 바로 걸기 때문이다.
+
+    `pdftotext` 결과에 한글이 한 글자도 없는데 `pypdf` 결과에는 있으면 `pypdf`
+    쪽을 덧붙인다. 실험2 교안이 실물이다 — 내장 NanumSquare 트루타입에
+    한글 ToUnicode 가 없어 `pdftotext` 는 ASCII 만 내놓고, 그 결과 명세의
+    한글 인용 12건이 전부 "교안에 없다" 로 오진됐다. `pypdf` 는 같은 파일에서
+    한글을 제대로 되살린다. 둘 다 한글이 없으면 `pdftotext` 결과를 그대로
+    쓴다(영문 교안이거나 래스터인 경우).
     """
-    try:
-        done = subprocess.run(["pdftotext", "-layout", str(manual_path), "-"],
-                              capture_output=True, text=True, timeout=60)
-    except (OSError, subprocess.SubprocessError):
-        return ""
-    return done.stdout if done.returncode == 0 else ""
+    text = _pdftotext_text(manual_path)
+    if _HANGUL.search(text):
+        return text
+    fallback = _pypdf_text(manual_path)
+    if not _HANGUL.search(fallback):
+        return text
+    return f"{text}\n{fallback}" if text else fallback
 
 
 def check_manual_quotes(text, manual_text, where) -> list:

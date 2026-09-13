@@ -26,6 +26,8 @@ pytest>=9.1.1
 
 # pypdf — 체크리스트 PDF 의 A4 실측(210×297mm)과 페이지별 이미지 개수 확인.
 # 브레드보드 그림이 깨진 채 PDF 로 굳는 사고를 잡아낸 것이 이 확인이다.
+# `validate.extract_manual_text` 도 `pdftotext` 가 한글을 못 뽑는 교안(실험2)
+# 에서 이것을 예비로 쓴다 — 없으면 조용히 건너뛴다.
 pypdf>=6.17.0
 
 # pymupdf(`import fitz`) — hwp/PDF 분할·이름변경 스크립트의 테스트.

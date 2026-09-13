@@ -1,7 +1,10 @@
 import json
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from scripts.lab import config, validate
 from scripts.lab.netlist_parser import parse_netlist
@@ -1404,6 +1407,105 @@ class ManualQuotes(unittest.TestCase):
         """래스터라 0 자가 나온 경우까지 없다고 단정하면 안 된다."""
         text = '교안이 "없는 말" 이라고 쓴다.\n'
         self.assertEqual(validate.check_manual_quotes(text, "", "명세.md"), [])
+
+
+MANUAL_CMOS = ROOT / "강의노트/실험2. CMOS 회로의 전기적 특성.pdf"
+
+
+class ExtractManualText(unittest.TestCase):
+    """`extract_manual_text` 는 **항상 str** 이고, `pdftotext` 가 한글을 못
+    뽑으면 `pypdf` 로 보충한다.
+
+    2026-09-13 Windows(cp949) 실물 두 건이다.
+    - `pdftotext` 가 글머리표 `0xb7` 을 내놓자 `text=True` 읽기 스레드가
+      UnicodeDecodeError 를 내고 함수가 None 을 돌려줘 호출자의 `len()` 이
+      깨졌다.
+    - 실험2 교안은 내장 NanumSquare 에 한글 ToUnicode 가 없어 `pdftotext`
+      가 ASCII 만 내놓았고, 명세의 한글 인용 12건이 전부 info 로 오진됐다.
+      `pypdf` 는 같은 파일에서 한글을 되살린다.
+    """
+
+    @staticmethod
+    def _done(stdout: bytes, returncode: int = 0):
+        return subprocess.CompletedProcess(["pdftotext"], returncode,
+                                           stdout=stdout, stderr=b"")
+
+    def test_비UTF8_바이트가_섞여도_str_을_돌려준다(self):
+        raw = "다음 항목".encode("utf-8")
+        with mock.patch.object(validate.subprocess, "run",
+                               return_value=self._done(b"\xb7 " + raw)), \
+             mock.patch.object(validate, "_pypdf_text") as fallback:
+            text = validate.extract_manual_text("x.pdf")
+        self.assertIsInstance(text, str)
+        self.assertIn("�", text)
+        self.assertIn("다음 항목", text)
+        fallback.assert_not_called()
+        # 호출자가 바로 거는 `len()` 과 `check_manual_quotes` 가 깨지지 않는다.
+        self.assertGreater(len(text), 0)
+        self.assertEqual(validate.check_manual_quotes(
+            '교안은 "다음 항목" 이라고 쓴다.\n', text, "명세.md"), [])
+
+    def test_pdftotext_결과에_한글이_있으면_pypdf_를_부르지_않는다(self):
+        with mock.patch.object(validate.subprocess, "run",
+                               return_value=self._done("한글 교안".encode())), \
+             mock.patch.object(validate, "_pypdf_text") as fallback:
+            self.assertEqual(validate.extract_manual_text("x.pdf"), "한글 교안")
+        fallback.assert_not_called()
+
+    def test_pdftotext_가_한글을_못_뽑으면_pypdf_결과를_덧붙인다(self):
+        with mock.patch.object(validate.subprocess, "run",
+                               return_value=self._done(b"CMOS VCC INPUT\n")), \
+             mock.patch.object(validate, "_pypdf_text",
+                               return_value="CMOS 회로의 전기적 특성"):
+            text = validate.extract_manual_text("x.pdf")
+        self.assertIsInstance(text, str)
+        self.assertIn("CMOS VCC INPUT", text)
+        self.assertIn("CMOS 회로의 전기적 특성", text)
+        self.assertEqual(validate.check_manual_quotes(
+            '교안은 "CMOS 회로의 전기적 특성" 을 다룬다.\n', text, "명세.md"), [])
+
+    def test_pdftotext_가_없으면_pypdf_결과만_쓴다(self):
+        with mock.patch.object(validate.subprocess, "run",
+                               side_effect=FileNotFoundError("pdftotext")), \
+             mock.patch.object(validate, "_pypdf_text",
+                               return_value="한글만 있는 교안"):
+            self.assertEqual(validate.extract_manual_text("x.pdf"),
+                             "한글만 있는 교안")
+
+    def test_둘_다_한글이_없으면_pdftotext_결과를_그대로_쓴다(self):
+        """영문 교안이거나 래스터인 경우 — 덧붙일 것이 없다."""
+        with mock.patch.object(validate.subprocess, "run",
+                               return_value=self._done(b"English only\n")), \
+             mock.patch.object(validate, "_pypdf_text",
+                               return_value="English only too"):
+            self.assertEqual(validate.extract_manual_text("x.pdf"),
+                             "English only\n")
+
+    def test_아무것도_못_뽑으면_빈_문자열이다(self):
+        """기존 계약 — 빈 문자열이면 `check_manual_quotes` 가 조용히 넘어간다."""
+        with mock.patch.object(validate.subprocess, "run",
+                               side_effect=FileNotFoundError("pdftotext")), \
+             mock.patch.object(validate, "_pypdf_text", return_value=""):
+            self.assertEqual(validate.extract_manual_text("x.pdf"), "")
+        with mock.patch.object(validate.subprocess, "run",
+                               return_value=self._done(b"", returncode=1)), \
+             mock.patch.object(validate, "_pypdf_text", return_value=""):
+            self.assertEqual(validate.extract_manual_text("x.pdf"), "")
+
+    def test_pypdf_가_없거나_못_열어도_빈_문자열이다(self):
+        self.assertEqual(validate._pypdf_text(
+            Path(tempfile.mkdtemp()) / "없는.pdf"), "")
+        with mock.patch.dict("sys.modules", {"pypdf": None}):
+            self.assertEqual(validate._pypdf_text("x.pdf"), "")
+
+    @unittest.skipUnless(MANUAL_CMOS.exists() and shutil.which("pdftotext"),
+                         "실험2 교안 PDF 와 pdftotext 가 둘 다 있어야 한다")
+    def test_실물_실험2_교안에서_한글을_뽑는다(self):
+        text = validate.extract_manual_text(MANUAL_CMOS)
+        self.assertIsInstance(text, str)
+        self.assertRegex(text, "[가-힣]")
+        self.assertEqual(validate.check_manual_quotes(
+            '교안 1절은 "CMOS 회로의 전기적 특성" 을 든다.\n', text, "명세.md"), [])
 
 
 class ColumnRoles(unittest.TestCase):
