@@ -1,6 +1,6 @@
 ---
 name: review-lab-report
-description: 논리회로실험 명세·결선도·예비보고서·결과보고서를 검증하고 라운드별 리뷰 문서를 남긴다. 사용자가 "2주차 예비보고서 검토", "명세 검증해줘", "보고서 리뷰", "결과보고서 확인해줘" 등을 요청하거나 /review-lab-report 를 호출할 때 사용한다. 진리표 부울식 역검산, 행 수 대조, source·encoding 누락, netlist 의 VCC/GND/미사용핀 누락, 그리고 `.claude/보고서양식.md` 기준 섹션 대조를 수행한다.
+description: 논리회로실험 명세·결선도·예비보고서·결과보고서를 검증하고 라운드별 리뷰 문서를 남긴다. 사용자가 "2주차 예비보고서 검토", "명세 검증해줘", "보고서 리뷰", "결과보고서 확인해줘" 등을 요청하거나 /review-lab-report 를 호출할 때 사용한다. 진리표 부울식 역검산, 행 수 대조, 예비보고서 표 머리 대조, source·encoding 누락, netlist 의 VCC/GND/미사용핀 누락, 그리고 `.claude/보고서양식.md` 기준 섹션 대조를 수행한다.
 ---
 
 # review-lab-report
@@ -174,6 +174,9 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print(f)
    for f in validate.check_notion_markdown('<보고서 경로>'):
        print(f)
+   if '<pre|result>' == 'pre':
+       for f in validate.check_report_tables('<보고서 경로>', spec):
+           print(f)
    "
    ```
 
@@ -182,6 +185,13 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    warn 이라도 라운드 문서에 그대로 적는다. `check_notion_markdown` 은
    ④ §실행 절차 12 가 도는 네 검사 중 넷째다 — 여기서 빠지면 ⑤ 가 ④ 보다 좁게
    재는 셈이 된다(2026-09-12 격리 1회차에서 에이전트가 지적).
+
+   `check_report_tables` 는 **예비보고서에만** 부른다 — 예상 결과 표의 열 이름·열
+   수·열 순서·셀을 명세 기록 대상 진리표와 맞댄다. ③ §절대 규칙 22 의 기계
+   검사판이다. 2단계의 행 수 대조는 명세 안에서만 돌아서, 보고서가 열을 줄이거나
+   이름을 바꿔도 모른다. 2026-09 실험01 예보가 `A B C L1 L2` 를 `A B C Y` 로 내고도
+   `pre_review_round2` 를 통과해 조교 감점(-1)을 받았다. 결과보고서 표는 관측값이라
+   셀이 명세와 다를 수 있으므로 부르지 않는다.
 
    `check_report_references` 는 참고문헌 절을 본다 — 실제로 쓴 IC 의 제조사
    데이터시트가 다 있는지, 개정·발행연도·URL 을 갖췄는지, 2차 미러

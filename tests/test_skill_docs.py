@@ -496,6 +496,20 @@ class SkillDocInvariants(unittest.TestCase):
                 # `check_notion_markdown` 이 빠져 있던 것을 에이전트가 지적했다.
                 self.assertIn("check_notion_markdown(", self.docs[name])
 
+    def test_table_header_check_is_called_by_writer_and_reviewer(self):
+        # 2026-09 실험01 예보가 명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 내고
+        # ⑤ 를 통과해 조교 감점을 받았다. ③ 이 안 부르면 쓴 세션 안에서 못 고치고,
+        # ⑤ 가 안 부르면 행 수만 보고 다시 통과시킨다.
+        for name in ("예보", "리뷰"):
+            with self.subTest(name):
+                self.assertIn("check_report_tables(", self.docs[name])
+
+    def test_rule_22_example_uses_the_spec_column_names(self):
+        # 이 문서는 예시를 따라 쓰기 쉬워서 예시가 규칙을 이긴다. 옛 규칙 13 의
+        # 인용 `Y = A·B·C` 가 실험01 예보의 `Y` 열 이름을 굳혔다.
+        self.assertIn("(`L1 = A·B`, `L2 = A·B·C`)", self.docs["예보"])
+        self.assertNotIn("Y = A·B·C", self.docs["예보"])
+
     def test_rule_16_covers_additions_as_well_as_omissions(self):
         # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이
         # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.
