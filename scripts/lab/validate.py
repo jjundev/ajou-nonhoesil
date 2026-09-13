@@ -1210,3 +1210,102 @@ def check_report_references(report_path, spec, root=None) -> list:
                     f"'{ic}' 가 `.claude/데이터시트_출처.md` 에 없다 — "
                     f"벤더 사이트에서 확인해 표에 먼저 추가한다"))
     return out
+
+
+def _bare_cell(s) -> str:
+    """표 머리·셀 비교용. 굵게·백틱을 벗기고 공백을 누른다."""
+    return " ".join(str(s).replace("**", "").replace("`", "").split())
+
+
+def check_report_tables(report_path, spec) -> list:
+    """예비보고서 진리표가 명세 진리표의 **머리·열 순서·셀**을 그대로 옮겼는지 본다.
+
+    ③ `write-pre-report` §절대 규칙 22 의 기계 검사판이다. 2026-09 실험01 예보가
+    명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 줄여 냈다 — 중간단 `L1` 을 버리고
+    최종 `L2` 를 `Y` 로 바꿨다. 행 수 대조는 명세 안에서만 돌아 ⑤ 가 그대로
+    통과시켰고, 조교가 감점했다(-1).
+
+    짝짓기는 **정확 대응이 먼저**다 — 머리가 명세 머리의 부분집합이고, 행 수가
+    같고, 셀까지 전부 같은 표. 머리와 행 수만 보면 실험01 의 T1~T4 처럼 머리가
+    같은 표 넷이 서로의 짝으로 잡혀 AND 표를 OR 명세로 대조하게 된다.
+
+    - 명세 기록 대상 진리표(`kind: truth-table`, `role: record`)마다 정확 대응 표의
+      머리 합집합이 명세 머리와 같아야 하고, 각 표 안의 열 순서는 명세 순서를
+      따라야 한다. §절대 규칙 19 가 넓은 표를 나누게 하므로 대응 표는 여럿일 수 있다.
+    - 정확 대응이 없으면, 어느 명세 표에도 정확 대응하지 않은 표 가운데 행 수가
+      같고 머리가 가장 많이 겹치는 표를 짚는다. 머리가 부분집합이면 처음 갈리는
+      행을, 아니면 빠진 열과 명세에 없는 열을 알린다.
+    - 참조표(`role: reference`)는 §절대 규칙 16 으로 빠질 수 있어 요구하지 않는다.
+      다만 거기 정확 대응한 표는 다른 명세 표의 짝 후보에서 뺀다.
+    - 명세에 없는 표는 잡지 않는다 — §섹션별 재료 실험 이론 ⑵ 가 데이터시트
+      function table 처럼 명세 밖 이론표를 싣게 한다.
+
+    예비보고서 전용이다. 결과보고서 표는 관측값이라 셀이 명세와 다를 수 있다.
+    """
+    path = Path(report_path)
+    if not path.exists():
+        return [Finding("error", str(report_path), "보고서 파일이 없다")]
+    found = md.parse_tables(path.read_text(encoding="utf-8"))
+    heads = [[_bare_cell(c) for c in t.header] for t in found]
+    truth = [t for t in spec.tables if t.kind == "truth-table"]
+
+    def fits(i, st):
+        return (bool(heads[i]) and set(heads[i]) <= set(st.header)
+                and len(found[i].rows) == len(st.rows))
+
+    def first_diff(i, st):
+        """셀이 처음 갈리는 (행 번호, 보고서 값, 명세 값). 전부 같으면 None."""
+        cols = [st.header.index(c) for c in heads[i]]
+        for r, (row, srow) in enumerate(zip(found[i].rows, st.rows), start=1):
+            got = [str(normalize_cell(_bare_cell(v))) for v in row]
+            exp = [str(normalize_cell(srow[k])) for k in cols]
+            if got != exp:
+                return r, got, exp
+        return None
+
+    exact = {st.id: [i for i in range(len(found))
+                     if fits(i, st) and first_diff(i, st) is None]
+             for st in truth}
+    claimed = {i for ids in exact.values() for i in ids}
+    out = []
+    for st in truth:
+        if st.role != "record":
+            continue
+        want = " ".join(st.header)
+        hits = exact[st.id]
+        if hits:
+            for i in hits:
+                order = [st.header.index(c) for c in heads[i]]
+                if order != sorted(order):
+                    out.append(Finding("error", path.name,
+                        f"{found[i].line}줄 표 `{' '.join(heads[i])}` 의 열 순서가 "
+                        f"명세 {st.id} `{want}` 와 다르다"))
+            covered = {c for i in hits for c in heads[i]}
+            missing = [c for c in st.header if c not in covered]
+            if missing:
+                out.append(Finding("error", path.name,
+                    f"명세 {st.id} 의 열 {', '.join(missing)} 이 보고서 표에 없다 "
+                    f"(명세: `{want}`)"))
+            continue
+        near = [i for i in range(len(found)) if i not in claimed
+                and len(found[i].rows) == len(st.rows) and set(heads[i]) & set(st.header)]
+        if not near:
+            out.append(Finding("error", path.name,
+                f"명세 {st.id} (`{want}`) 에 대응하는 표가 보고서에 없다"))
+            continue
+        i = max(near, key=lambda k: (len(set(heads[k]) & set(st.header)), -k))
+        claimed.add(i)
+        if fits(i, st):
+            r, got, exp = first_diff(i, st)
+            out.append(Finding("error", path.name,
+                f"{found[i].line}줄 표 {r}번째 행이 명세 {st.id} 와 다르다: "
+                f"보고서 {got} · 명세 {exp}"))
+        else:
+            missing = [c for c in st.header if c not in heads[i]]
+            extra = [c for c in heads[i] if c not in st.header]
+            out.append(Finding("error", path.name,
+                f"{found[i].line}줄 표 `{' '.join(heads[i])}` 가 명세 {st.id} `{want}` 와 "
+                f"머리가 다르다 — 빠진 열: {', '.join(missing) or '없음'} · "
+                f"명세에 없는 열: {', '.join(extra) or '없음'}. "
+                "열 이름·열 수를 명세 그대로 옮긴다"))
+    return out

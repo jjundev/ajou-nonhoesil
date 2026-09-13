@@ -1566,5 +1566,139 @@ class BodyStyle(unittest.TestCase):
         self.assertIn("2행", msgs[0])
 
 
+TABLE_SPEC_HEAD = """---
+schema: lab-spec/v2
+experiment: 1
+title: Basic Gates
+source_manual: from_the_past/정리/강의노트/실험1.pdf
+power: {VCC: "+5V", GND: "GND"}
+items:
+  - id: E1.P1-1
+    title: 3-input AND
+    device: [LED]
+    ics: ["74HC08"]
+    tables: [T1, T6]
+  - id: E1.P1-2
+    title: 3-input OR
+    device: [LED]
+    ics: ["74HC32"]
+    tables: [T2]
+---
+
+"""
+_AND_ROWS = [(a, b, c, a & b, a & b & c) for a in (0, 1) for b in (0, 1) for c in (0, 1)]
+_OR_ROWS = [(a, b, c, a | b, a | b | c) for a in (0, 1) for b in (0, 1) for c in (0, 1)]
+_H5 = ["A", "B", "C", "L1", "L2"]
+
+
+def _spec_truth(tid, title, source, rows):
+    return (f"## {tid} · {title}\n\n- kind: truth-table\n- encoding: 0/1\n"
+            f"- source: derived ({source})\n\n"
+            "| A | B | C | L1 | L2 |\n|---|---|---|---|---|\n"
+            + "".join("| " + " | ".join(map(str, r)) + " |\n" for r in rows) + "\n")
+
+
+TABLE_SPEC = (TABLE_SPEC_HEAD
+              + _spec_truth("T1", "3-input AND 진리표", "L1 = A·B ; L2 = A·B·C", _AND_ROWS)
+              + _spec_truth("T2", "3-input OR 진리표", "L1 = A+B ; L2 = A+B+C", _OR_ROWS)
+              + "## T6 · AND Gate Truth Table\n\n- kind: truth-table\n- encoding: H/L\n"
+                "- source: manual:p5\n- role: reference\n\n"
+                "| A | B | C |\n|---|---|---|\n"
+                "| L | L | L |\n| L | H | L |\n| H | L | L |\n| H | H | H |\n")
+
+
+def _report_table(header, rows, cols):
+    """불릿 아래 탭 들여쓴 표 — ③ §절대 규칙 13 의 모양 그대로."""
+    lines = ["\t| " + " | ".join(header) + " |", "\t|" + "---|" * len(header)]
+    lines += ["\t| " + " | ".join(str(r[k]) for k in cols) + " |" for r in rows]
+    return "\n".join(lines) + "\n"
+
+
+_AND_T = _report_table(_H5, _AND_ROWS, [0, 1, 2, 3, 4])
+_OR_T = _report_table(_H5, _OR_ROWS, [0, 1, 2, 3, 4])
+_THEORY_T = ("- **AND**\n\t| A | B | C |\n\t|---|---|---|\n"
+             "\t| L | L | L |\n\t| L | H | L |\n\t| H | L | L |\n\t| H | H | H |\n")
+
+
+class ReportTables(unittest.TestCase):
+    """③ §절대 규칙 22 · `check_report_tables`.
+
+    2026-09 실험01 예보가 명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 내고도
+    ⑤ 를 통과했다 — 행 수 대조는 명세 안에서만 돈다. 조교 감점(-1).
+    """
+
+    def setUp(self):
+        self.spec = spec_from(TABLE_SPEC)
+
+    def _check(self, body):
+        return validate.check_report_tables(md_file("# 제목\n\n" + body), self.spec)
+
+    def test_명세와_같은_표는_조용하다(self):
+        self.assertEqual(self._check(_AND_T + "\n" + _OR_T + "\n" + _THEORY_T), [])
+
+    def test_머리가_같은_명세_표_둘을_섞어_대조하지_않는다(self):
+        """AND·OR 표는 머리도 행 수도 같다. 셀까지 같은 표끼리 짝지어야 한다 —
+        머리만 보고 짝지으면 OR 표를 AND 명세로 대조해 셀 오류가 헛난다
+        (2026-09-14 초안이 복원된 실험01 예보에서 12건을 헛냈다)."""
+        self.assertEqual(self._check(_OR_T + "\n" + _AND_T), [])
+
+    def test_열을_줄이고_이름을_바꾼_표를_짚는다(self):
+        found = self._check(_report_table(["A", "B", "C", "Y"], _AND_ROWS, [0, 1, 2, 4])
+                            + "\n" + _OR_T)
+        self.assertEqual(len(found), 1, found)
+        self.assertEqual(found[0].level, "error")
+        self.assertIn("명세 T1", found[0].message)
+        self.assertIn("빠진 열: L1, L2", found[0].message)
+        self.assertIn("명세에 없는 열: Y", found[0].message)
+
+    def test_중간_출력_열이_빠진_표를_잡는다(self):
+        found = self._check(_report_table(["A", "B", "C", "L2"], _AND_ROWS, [0, 1, 2, 4])
+                            + "\n" + _OR_T)
+        self.assertEqual([f.message for f in found],
+                         ["명세 T1 의 열 L1 이 보고서 표에 없다 (명세: `A B C L1 L2`)"])
+
+    def test_나눠_실은_표는_합집합으로_본다(self):
+        """§절대 규칙 19 가 11열을 넘는 표를 입력 열을 되풀이해 나누게 한다."""
+        body = (_report_table(["A", "B", "C", "L1"], _AND_ROWS, [0, 1, 2, 3]) + "\n"
+                + _report_table(["A", "B", "C", "L2"], _AND_ROWS, [0, 1, 2, 4]) + "\n" + _OR_T)
+        self.assertEqual(self._check(body), [])
+
+    def test_열_순서가_바뀌면_잡는다(self):
+        found = self._check(_report_table(["A", "B", "C", "L2", "L1"], _AND_ROWS, [0, 1, 2, 4, 3])
+                            + "\n" + _OR_T)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("열 순서", found[0].message)
+
+    def test_셀이_다르면_첫_행만_잡는다(self):
+        wrong = _AND_T.replace("| 1 | 1 | 1 | 1 | 1 |", "| 1 | 1 | 1 | 1 | 0 |")
+        found = self._check(wrong + "\n" + _OR_T)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("8번째 행", found[0].message)
+        self.assertIn("명세 T1", found[0].message)
+
+    def test_참조표가_없어도_조용하다(self):
+        """참조표는 §절대 규칙 16 으로 빠질 수 있다."""
+        self.assertEqual(self._check(_AND_T + "\n" + _OR_T), [])
+
+    def test_명세에_없는_이론표는_잡지_않는다(self):
+        """§섹션별 재료 실험 이론 ⑵ 가 데이터시트 function table 을 싣게 한다."""
+        extra = ("- **x**\n\t| A | B | Y |\n\t|---|---|---|\n"
+                 "\t| 0 | 0 | 0 |\n\t| 0 | 1 | 1 |\n\t| 1 | 0 | 1 |\n\t| 1 | 1 | 0 |\n")
+        self.assertEqual(self._check(_AND_T + "\n" + _OR_T + "\n" + extra), [])
+
+    def test_대응하는_표가_없으면_잡는다(self):
+        self.assertEqual([f.message for f in self._check(_AND_T)],
+                         ["명세 T2 (`A B C L1 L2`) 에 대응하는 표가 보고서에 없다"])
+
+    def test_셀의_굵게와_백틱은_벗기고_본다(self):
+        body = _AND_T.replace("| A | B | C | L1 | L2 |", "| **A** | B | C | `L1` | L2 |")
+        self.assertEqual(self._check(body + "\n" + _OR_T), [])
+
+    def test_보고서가_없으면_error(self):
+        found = validate.check_report_tables(Path(tempfile.mkdtemp()) / "없다.md", self.spec)
+        self.assertEqual([(f.level, f.message) for f in found],
+                         [("error", "보고서 파일이 없다")])
+
+
 if __name__ == "__main__":
     unittest.main()
