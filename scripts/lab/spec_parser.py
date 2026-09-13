@@ -40,6 +40,7 @@ class SpecTable:
     header: list
     rows: list
     line: int
+    outputs: Optional[list] = None   # `- outputs: [S, C]`. 없으면 None
 
 
 @dataclass
@@ -119,7 +120,18 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         encoding=attrs.get("encoding"), source=attrs.get("source"),
         expected=attrs.get("expected"), role=attrs.get("role", "record"),
         header=header, rows=rows, line=line,
+        outputs=_list_attr(attrs.get("outputs")),
     )
+
+
+def _list_attr(value):
+    """`[S, C]` → `["S", "C"]`. 속성이 없으면 None.
+
+    헤더에 있는 이름인지는 보지 않는다 — 의미 결함이라 validate 가 잡는다.
+    """
+    if value is None:
+        return None
+    return [c.strip() for c in value.strip().strip("[]").split(",") if c.strip()]
 
 
 def parse_spec(path) -> LabSpec:
@@ -202,7 +214,9 @@ def split_columns(table):
     """표의 (입력 컬럼, 출력 컬럼).
 
     `derived` 식이 있으면 식이 참조하는 컬럼이 입력, 대입 대상이 출력이다.
-    없으면 마지막 열 하나를 출력으로 본다 — 확인 칸을 어디에 둘지 정하는 데 쓴다.
+    없으면 `outputs` 선언을 따른다 — 교안 원문을 옮겨 `manual:pN` 으로 남아야
+    하는 표가 출력이 둘일 때 쓴다(실험3 p4~p7). 둘 다 없으면 마지막 열 하나를
+    출력으로 본다 — 확인 칸을 어디에 둘지 정하는 데 쓴다.
     """
     pairs = derived_parts(table)
     if pairs:
@@ -214,6 +228,9 @@ def split_columns(table):
         if inputs:
             outputs = [c for c in table.header if c in targets]
             return inputs, outputs or [c for c in table.header if c not in inputs]
+    declared = [c for c in table.header if c in (table.outputs or [])]
+    if declared:
+        return [c for c in table.header if c not in declared], declared
     if len(table.header) < 2:
         return list(table.header), []
     return list(table.header[:-1]), [table.header[-1]]

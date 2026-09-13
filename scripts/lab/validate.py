@@ -83,6 +83,21 @@ def check_metadata(spec) -> list:
             out.append(Finding("error", where,
                 f"source 가 derived 인데 식을 읽지 못했다: {t.source!r}. "
                 "`derived (Y = 식)` 또는 `derived (X = 식 ; Y = 식)` 형태여야 한다"))
+        if t.outputs is not None:
+            # split_columns 는 헤더에 있는 이름만 쓰고 나머지를 조용히 버린다.
+            missing = [c for c in t.outputs if c not in t.header]
+            if missing:
+                out.append(Finding("error", where,
+                    f"outputs 가 헤더에 없는 열을 가리킨다: {missing}. "
+                    f"헤더: {t.header}"))
+            targets = [name for name, _ in derived_parts(t)]
+            if targets and set(targets) != set(t.outputs):
+                # 출력을 두 곳에 적으면 한쪽만 고쳐진다. split_columns 는
+                # derived 식을 따르므로 outputs 쪽이 조용히 무시된다.
+                out.append(Finding("error", where,
+                    f"outputs {t.outputs} 가 derived 대입 대상 {targets} 와 "
+                    "다르다. derived 표는 식이 출력을 정하므로 outputs 를 "
+                    "지우거나 식에 맞춘다"))
         if t.role not in ROLES:
             out.append(Finding("error", where,
                 f"role 이 {t.role!r} 이다. `record` 또는 `reference` 여야 한다"))

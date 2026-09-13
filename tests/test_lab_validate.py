@@ -182,6 +182,77 @@ class TestRowCount(unittest.TestCase):
         self.assertEqual(validate.check_row_count(spec), [])
 
 
+class TestDeclaredOutputs(unittest.TestCase):
+    """`manual:pN` 참조표가 출력 열을 `outputs` 로 선언한다 (실험3 이 실물).
+
+    선언이 없으면 `split_columns` 는 마지막 열 하나만 출력으로 본다. 출력이
+    둘인 교안 원문 표에서는 첫 출력(`S`·`D`)이 입력으로 세어져 행 수 warn
+    과 열 역할 info 가 거짓으로 난다.
+    """
+
+    SPEC = FIXTURES / "spec_manual_outputs.md"
+
+    def _without_outputs(self):
+        text = self.SPEC.read_text(encoding="utf-8")
+        return spec_from("\n".join(line for line in text.split("\n")
+                                   if not line.startswith("- outputs:")))
+
+    def test_선언하면_행_수_warn_이_없다(self):
+        self.assertEqual(validate.check_row_count(parse_spec(self.SPEC)), [])
+
+    def test_선언하면_열_역할_충돌이_없다(self):
+        self.assertEqual(validate.check_column_roles(parse_spec(self.SPEC)), [])
+
+    def test_선언하면_error_도_warn_도_없다(self):
+        findings = [f for f in validate.validate_spec(parse_spec(self.SPEC))
+                    if f.level in ("error", "warn")]
+        self.assertEqual(findings, [], "\n".join(str(f) for f in findings))
+
+    def test_선언을_걷으면_원래의_오탐이_돌아온다(self):
+        """픽스처가 결함 자리를 실제로 지나는지 본다. 이게 없으면 위 세
+        검사는 "원래 아무 문제 없던 표" 에서도 통과한다."""
+        spec = self._without_outputs()
+        warns = {f.where.rsplit(":", 1)[-1]: f.message
+                 for f in validate.check_row_count(spec)}
+        self.assertEqual(sorted(warns), ["T2", "T4", "T6", "T8"])
+        self.assertIn("입력 3비트(A, B, S)면 8행이어야 하는데 4행이다", warns["T2"])
+        self.assertIn("16행", warns["T4"])
+        roles = {f.where.rsplit(":", 1)[-1]
+                 for f in validate.check_column_roles(spec)}
+        self.assertEqual(roles, {"S", "D"})
+
+    def test_헤더에_없는_열을_가리키면_error(self):
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n- source: manual:p4\n"
+            "- outputs: [S, Q]\n\n"
+            "| A | B | S | C |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n"
+        ))
+        errors = [f.message for f in validate.check_metadata(spec)
+                  if f.level == "error"]
+        self.assertTrue(any("outputs" in m and "'Q'" in m for m in errors), errors)
+
+    def test_derived_대입_대상과_다르면_error(self):
+        """출력을 두 곳에 적으면 한쪽만 고쳐진다. 어긋나면 시끄럽게 만든다."""
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (S = A⊕B ; C = A·B)\n- outputs: [S]\n\n"
+            "| A | B | S | C |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n"
+        ))
+        errors = [f.message for f in validate.check_metadata(spec)
+                  if f.level == "error"]
+        self.assertTrue(any("outputs" in m and "derived" in m for m in errors),
+                        errors)
+
+    def test_derived_대입_대상과_같으면_순서가_달라도_조용하다(self):
+        spec = spec_from(HEAD + (
+            "- kind: truth-table\n- encoding: 0/1\n"
+            "- source: derived (S = A⊕B ; C = A·B)\n- outputs: [C, S]\n\n"
+            "| A | B | S | C |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n"
+        ))
+        self.assertFalse(any("outputs" in f.message
+                             for f in validate.check_metadata(spec)))
+
+
 class TestMetadata(unittest.TestCase):
     def test_missing_source_is_an_error(self):
         spec = spec_from(HEAD + (

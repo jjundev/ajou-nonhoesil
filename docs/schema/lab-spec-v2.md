@@ -83,6 +83,7 @@ T5 다 — T1~T5 재번호 금지 지시의 결과다). `items[].tables` 가 가
 | `source` | ● | `manual:p11` \| `derived (Y = A·B·C)` \| `past-report:2020` |
 | `expected` | `capture` 만 | 정성 서술 산문. 셀 표가 없는 표의 예상값이 여기 들어간다 |
 | `role` | 선택 | `record` \| `reference` — 생략하면 `record`이며, `source` 만으로는 가를 수 없는 참조표(`reference`)와 기록 대상(`record`)을 구분하기 위한 필드다 |
+| `outputs` | 선택 | 출력 열 이름 리스트(`[S, C]`). `derived (...)` 가 아닌 표에서 출력이 둘 이상일 때 쓴다. 생략하면 마지막 열 하나가 출력이다. `derived` 표는 식의 대입 대상이 출력이라 필요 없고, 적으면 대입 대상과 같아야 한다 (아래 "`outputs`" 절) |
 
 `capture` 를 뺀 모든 표는 속성 리스트 뒤에 마크다운 표가 하나 온다.
 
@@ -135,6 +136,30 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 추가한다. `실험01/체크리스트/명세.md` 의 `T6`·`T7`·`T8`·`T9` 에 `role: reference`
 를 붙인다.
 
+### `outputs` — `manual` 표의 다중 출력 (다섯 번째 파손)
+
+실험3 에서 발견된 다섯 번째 파손이다. 교안 p4~p7 의 `Truth Table` 은 출력이
+둘이다(반가산기 `A B S C`, 전가산기 `A B Ci S Co`, 반감산기 `A B D Bo`,
+전감산기 `A B Bi D Bo`). 원문을 옮긴 참조표라 `source` 는 `manual:pN` 이어야
+하는데, 그러면 출력 열을 말할 곳이 없었다 — `split_columns` 는 `derived` 식이
+없으면 마지막 열 하나만 출력으로 본다. 그래서 `S`·`D` 가 입력으로 세어져
+행 수 검사가 "입력 3비트(A, B, S)면 8행이어야" warn 을, 열 역할 검사가
+"`S` 가 표마다 뜻이 다르다" info 를 거짓으로 냈다. 표를 `derived` 로 바꾸면
+교안 쪽 번호가 사라지고, 셀을 고칠 일도 아니다.
+
+**고침(v2 범위 안):** 표 속성에 선택 필드 **`outputs`** 를 추가한다.
+`- outputs: [S, C]` 처럼 프론트매터 `tables` 와 같은 플로우 리스트로 적는다.
+생략하면 예전과 같다 — 기존 명세는 한 줄도 고치지 않는다.
+
+- 분할 우선순위: `derived` 식 → `outputs` → 마지막 열 하나
+- 출력 순서는 선언 순서가 아니라 헤더 순서다 (`derived` 분할과 같다)
+- `derived` 표에 적으면 대입 대상과 집합으로 같아야 한다. 어긋나면 error —
+  출력을 두 곳에 적으면 한쪽만 고쳐진다
+- 헤더에 없는 열을 가리키면 error. 파서는 던지지 않는다(의미 결함이다)
+
+실험1 T6~T9 는 출력이 `C` 하나라 마지막 열 규칙으로 충분하다 — `outputs` 를
+붙이지 않는다. 적합성 픽스처는 `tests/fixtures/spec_manual_outputs.md` 다.
+
 ### 검사 강도
 
 | 검사 | 대상 | 강도 |
@@ -142,6 +167,8 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | `items[].tables` ↔ 본문 헤딩 일치 | 전부 | error |
 | `kind` 가 세 값 중 하나 | 전부 | error |
 | `role` 이 `record`/`reference` 중 하나 | 전부 | error |
+| `outputs` 가 헤더에 없는 열을 가리킨다 | `outputs` 가 있는 표 | error |
+| `outputs` 가 `derived` 대입 대상과 다르다 | `derived (...)` 이고 `outputs` 가 있는 표 | error |
 | `capture` 가 아닌 표에 `encoding` 부재 또는 `0/1`·`H/L` 밖의 값 | 전부 | error |
 | `capture` 표에 `expected` 부재 | `capture` | error |
 | `capture` 표에 셀 표(마크다운 표) 존재 | `capture` | error (파서가 던진다) |
@@ -159,10 +186,10 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
 
-이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열네 줄이
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열여덟 줄이
 한 함수에 있지 않다. `kind` 값·`capture` 표의 셀 표 유무·열 이름 중복은
 `spec_parser.py` 의 `_parse_table`(파서이므로 예외로 던진다)이 맡는다.
-`role`·`encoding`·`capture` 의 `expected`·`source` 부재는
+`role`·`encoding`·`capture` 의 `expected`·`source` 부재와 `outputs` 두 줄은
 `validate.py` 의 `check_metadata`, 행 수 `2^n` 은 같은 파일의
 `check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의

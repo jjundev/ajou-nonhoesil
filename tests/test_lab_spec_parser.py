@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from scripts.lab import config
@@ -149,6 +150,75 @@ class TestWeek6SymbolicTokens(unittest.TestCase):
             with self.subTest(table=t.id):
                 self.assertTrue(t.source.startswith("manual:"))
                 self.assertEqual(derived_parts(t), [])
+
+
+class TestDeclaredOutputs(unittest.TestCase):
+    """`derived` 가 아닌 표가 출력 열을 `outputs` 로 선언한다.
+
+    실험3 이 실물이다. 교안 p4~p7 의 `Truth Table` 은 출력이 둘(합·올림 /
+    차·내림)인데, 원문 그대로 옮긴 참조표라 `source` 가 `manual:pN` 이어야
+    한다. 선언할 자리가 없으면 `split_columns` 는 마지막 열 하나만 출력으로
+    본다.
+    """
+
+    SPEC = ROOT / "tests/fixtures/spec_manual_outputs.md"
+
+    def setUp(self):
+        self.spec = parse_spec(self.SPEC)
+
+    def test_리스트로_읽힌다(self):
+        self.assertEqual(self.spec.table("T2").outputs, ["S", "C"])
+        self.assertEqual(self.spec.table("T8").outputs, ["D", "Bo"])
+
+    def test_없으면_None_이다(self):
+        self.assertIsNone(self.spec.table("T1").outputs)
+
+    def test_참조표는_manual_source_를_그대로_지닌다(self):
+        for tid in ("T2", "T4", "T6", "T8"):
+            with self.subTest(table=tid):
+                t = self.spec.table(tid)
+                self.assertTrue(t.source.startswith("manual:p"), t.source)
+                self.assertEqual(t.role, "reference")
+                self.assertEqual(derived_parts(t), [])
+
+    def test_split_columns_가_선언을_따른다(self):
+        cases = {"T2": (["A", "B"], ["S", "C"]),
+                 "T4": (["A", "B", "Ci"], ["S", "Co"]),
+                 "T6": (["A", "B"], ["D", "Bo"]),
+                 "T8": (["A", "B", "Bi"], ["D", "Bo"])}
+        for tid, want in cases.items():
+            with self.subTest(table=tid):
+                self.assertEqual(split_columns(self.spec.table(tid)), want)
+
+    def test_참조표와_기록표의_분할이_같다(self):
+        for record, reference in (("T1", "T2"), ("T3", "T4"),
+                                  ("T5", "T6"), ("T7", "T8")):
+            with self.subTest(pair=(record, reference)):
+                self.assertEqual(split_columns(self.spec.table(reference)),
+                                 split_columns(self.spec.table(record)))
+
+    def test_출력_순서는_선언이_아니라_헤더를_따른다(self):
+        """`derived` 분할도 헤더 순서다. 둘이 갈리면 확인 칸 순서가 갈린다."""
+        t = replace(self.spec.table("T2"), outputs=["C", "S"])
+        self.assertEqual(split_columns(t), (["A", "B"], ["S", "C"]))
+
+    def test_선언이_없으면_마지막_열_규칙_그대로다(self):
+        t = replace(self.spec.table("T2"), outputs=None)
+        self.assertEqual(split_columns(t), (["A", "B", "S"], ["C"]))
+
+    def test_derived_식이_선언보다_우선한다(self):
+        """어긋난 선언은 `validate.check_metadata` 가 error 로 잡는다."""
+        t = replace(self.spec.table("T1"), outputs=["C"])
+        self.assertEqual(split_columns(t), (["A", "B"], ["S", "C"]))
+
+    def test_헤더에_없는_열을_가리켜도_던지지_않는다(self):
+        """의미 결함이다 — 파서는 싣고 validate 가 findings 로 보고한다."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        target = Path(tmp.name) / "명세.md"
+        target.write_text(self.SPEC.read_text(encoding="utf-8").replace(
+            "- outputs: [S, C]", "- outputs: [S, 없는열]"), encoding="utf-8")
+        self.assertEqual(parse_spec(target).table("T2").outputs, ["S", "없는열"])
 
 
 class TestErrors(unittest.TestCase):
