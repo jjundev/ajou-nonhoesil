@@ -770,10 +770,16 @@ class HandDiagramSkill(unittest.TestCase):
         self.assertLess(text.index("experiment_dir"),
                         text.index("init-lab-experiment"))
 
-    def test_규칙_열네개가_전부_적혀_있다(self):
+    def test_규칙_열다섯개가_검사_목록_표에_있다(self):
         text = HAND.read_text(encoding="utf-8")
-        for n in range(1, 15):
-            self.assertIn(f"H{n}", text)
+        for n in range(1, 16):
+            self.assertIn(f"| H{n} |", text)
+
+    def test_전사가_신호_이름을_적는다고_돼_있다(self):
+        """H15 는 전사의 labels 로만 판정한다. 적으라는 말이 없으면 늘 비어서 잡힌다."""
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn('"labels"', text)
+        self.assertIn("보드 밖", text)
 
     def test_전사가_pin_1_열을_적는다고_돼_있다(self):
         """뒤집어 그린 칩은 pin1_col 없이는 전사가 못 담는다."""

@@ -43,7 +43,7 @@ GRADES = ('치명', '기능', '표기', '보류')
 
 @dataclass
 class HandFinding:
-    rule: str      # 'H1' ~ 'H13'
+    rule: str      # 'H1' ~ 'H15'
     grade: str     # 치명 | 기능 | 표기 | 보류
     where: str
     message: str
@@ -233,6 +233,9 @@ def _from_wiring(w, circuit_id):
         new_r = dict(r)
         new_r['tag'] = by_hole.get(new_r['top'], new_r.get('label', ''))
         resistors.append(new_r)
+    # 참조가 보드 안에 찍은 신호 이름 = 입력 점퍼 이름 + LED 꼬리표 (H15)
+    names = [i['name'] for i in w['inputs']] + [c['tag'] for c in w['chains']]
+    labels = [{'name': n, 'at': None} for n in dict.fromkeys(names)]
     return Diagram(
         chips=[dict(c) for c in w['chips']],
         wires=wires,
@@ -243,6 +246,7 @@ def _from_wiring(w, circuit_id):
         unused_outputs=[dict(u) for u in w['unused_outputs']],
         bridges=bridges,
         overlaps=list(w['overlaps']),
+        labels=labels,
         circuit=circuit_id)
 
 
@@ -686,11 +690,32 @@ def check_paperwork(ref, hand):
     return out
 
 
+def check_labels(ref, hand):
+    """H15 입력·출력 신호 이름 표기. 참조가 보드 안에 찍은 이름이 손그림에 있는가.
+
+    2026-09 실험01 예보 조교 감점(-1): "결선도에 입력 A·B·C 위치 표기가 없어
+    확인하기 어렵다." 회로는 돌지만 채점에서 실제로 깎이므로 표기가 아니라 기능
+    등급으로 제출을 막는다.
+
+    **이름 집합만 본다.** 어느 홀 옆에 적었는지는 보지 않는다 — 이 검사기는 행이
+    밀려도 넷이 같으면 통과시키는 설계라 좌표 판정은 그 원칙과 부딪힌다. 자리는
+    전사 규칙이 지킨다(보드 밖 여백의 글자는 전사하지 않는다). 대소문자는 가리지
+    않고, 손그림에만 있는 이름은 알리지 않는다.
+    """
+    have = {lb['name'].upper() for lb in hand.labels}
+    return [HandFinding(
+                'H15', '기능', lb['name'],
+                f"신호 이름 {lb['name']!r} 이 그림 위에 없다. 입력은 점퍼 끝 옆, "
+                "출력은 LED 옆에 적는다")
+            for lb in ref.labels if lb['name'].upper() not in have]
+
+
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고
 # 목록에 안 올리면 검사가 조용히 빠진다. 2026-09-08 회차에서 LED 사슬 검사를
 # 통째로 건너뛴 것이 바로 그 실패였다
 _RULES = [check_holes, check_power, check_signals, check_led_chains,
-          check_rails, check_chip_follow, check_placement, check_paperwork]
+          check_rails, check_chip_follow, check_placement, check_paperwork,
+          check_labels]
 
 
 def compare(ref, hand):

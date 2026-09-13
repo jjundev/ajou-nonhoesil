@@ -166,6 +166,24 @@ class Parse(unittest.TestCase):
             with self.assertRaises(ht.TranscriptError):
                 ht.parse_transcript(_write(obj))
 
+    def test_이름표를_읽는다(self):
+        obj = json.loads(json.dumps(MINIMAL))
+        obj['labels'] = [{"name": "A", "at": "좌 GND레일7행"}, {"name": "L1"}]
+        d = ht.parse_transcript(_write(obj))
+        self.assertEqual(d.labels, [{'name': 'A', 'at': ('left', 'gnd', 7)},
+                                    {'name': 'L1', 'at': None}])
+
+    def test_이름표가_없으면_빈_목록이다(self):
+        """2026-09-12 이전 전사에는 labels 가 없다. 그대로 읽혀야 한다."""
+        d = ht.parse_transcript(_write(MINIMAL))
+        self.assertEqual(d.labels, [])
+
+    def test_이름표에_name_이_없으면_거절한다(self):
+        obj = json.loads(json.dumps(MINIMAL))
+        obj['labels'] = [{"at": "좌 b7"}]
+        with self.assertRaises(ht.TranscriptError):
+            ht.parse_transcript(_write(obj))
+
 
 if __name__ == '__main__':
     unittest.main()
