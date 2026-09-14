@@ -2484,7 +2484,7 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
 
 
 # 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
-# 실제로 남아 있는 것. 첫 보드(C1 1단계)는 기준선이 없다.
+# 실제로 남아 있는 것. 첫 보드(C2 1단계)는 맨바닥에서 시작하므로 기준선이 없다.
 E3_BOARDS = [
     ("실험03_1-2_결선도_전가산기_1단계_XOR.png", build_e3_fa, 1),
     ("실험03_1-2_결선도_전가산기_2단계_Co경로.png", build_e3_fa, None),
