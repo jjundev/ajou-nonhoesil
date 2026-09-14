@@ -70,6 +70,7 @@ class LiveSpecCorpus(unittest.TestCase):
             with self.subTest(path.parent.parent.name):
                 spec = parse_spec(path)
                 pages = validate.extract_manual_pages(ROOT / spec.source_manual)
+                self.assertTrue(pages, f"강의노트 텍스트를 못 뽑았다: {spec.source_manual}")
                 errors = [f for f in validate.check_manual_names(spec, pages)
                           if f.level == "error"]
                 self.assertEqual(errors, [], "\n".join(str(f) for f in errors))

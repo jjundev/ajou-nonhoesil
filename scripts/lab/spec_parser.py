@@ -50,7 +50,8 @@ class SpecItem:
     device: list
     ics: list
     tables: list
-    pages: Optional[list] = None   # 강의노트 쪽 번호 `[11]`. 없으면 None — 검사는 validate 몫
+    pages: Optional[list] = None   # 강의노트 쪽 번호 `[11]`. 없으면 None — 형태(양의 정수
+                                    # 리스트)는 파서가 거절하고, 쪽 존재·이름 대조는 validate 몫
 
 
 @dataclass
@@ -191,9 +192,18 @@ def parse_spec(path) -> LabSpec:
                 f"{path}: 항목 {raw['id']} 가 없는 표 {missing} 를 가리킵니다. "
                 f"정의된 표: {sorted(known)}"
             )
+        pages = raw.get("pages")
+        if pages is not None and (
+                not isinstance(pages, list) or not pages
+                or not all(isinstance(p, int) and not isinstance(p, bool) and p > 0
+                           for p in pages)):
+            raise SpecError(
+                f"{path}: 항목 {raw['id']} 의 pages 는 쪽 번호(양의 정수) 리스트여야 한다 — "
+                f"받은 값: {pages!r}"
+            )
         items.append(SpecItem(id=raw["id"], title=raw["title"],
                               device=raw["device"], ics=raw["ics"], tables=raw["tables"],
-                              pages=raw.get("pages")))
+                              pages=pages))
 
     return LabSpec(experiment=front["experiment"],
                    title=front["title"], source_manual=front["source_manual"],

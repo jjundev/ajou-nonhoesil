@@ -282,6 +282,24 @@ class TestSharedLetter(unittest.TestCase):
     def test_pages_를_읽는다(self):
         self.assertEqual(parse_spec(self.SPEC).items[0].pages, [6])
 
+    def test_pages_가_스칼라면_던진다(self):
+        target = self._variant("pages: [6]", "pages: 6")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("pages", str(ctx.exception))
+
+    def test_pages_가_문자열_리스트면_던진다(self):
+        target = self._variant("pages: [6]", 'pages: ["6"]')
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("pages", str(ctx.exception))
+
+    def test_pages_가_빈_리스트면_던진다(self):
+        target = self._variant("pages: [6]", "pages: []")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("pages", str(ctx.exception))
+
     def test_pages_가_없으면_None_이다(self):
         """의미 결함은 validate 몫이다 — 파서는 싣기만 한다."""
         self.assertIsNone(parse_spec(EDGE).items[0].pages)

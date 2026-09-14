@@ -437,7 +437,7 @@ def check_manual_names(spec, pages) -> list:
     - 텍스트 층이 없는 쪽(래스터)은 info — 대조를 못 했다는 뜻이지 틀렸다는 뜻이
       아니다(`check_manual_quotes` 와 같은 이유). `pages` 가 빈 리스트면(PDF 를 못
       엶) info 한 줄만 낸다.
-    - 머리에 라틴 토큰이 아닌 열(한글 설명 열)이 있는 표는 건너뛴다.
+    - 머리에 라틴 토큰이 아닌 열(한글 설명 열)이 있는 표는 info 로 알리고 건너뛴다.
     """
     name = spec.path.name
     if not pages:
@@ -473,6 +473,10 @@ def check_manual_names(spec, pages) -> list:
         where = f"{name}:{t.id}"
         header = [_bare_cell(c) for c in t.header]
         if not all(_LATIN_TOKEN.fullmatch(c) for c in header):
+            bad = [c for c in header if not _LATIN_TOKEN.fullmatch(c)]
+            out.append(Finding("info", where,
+                f"머리에 라틴 토큰이 아닌 열({', '.join(bad)})이 있어 강의노트 이름 대조를 "
+                "건너뛴다 — vision 으로 본다"))
             continue
         cited = [int(n) for n in _MANUAL_PAGE.findall(t.source or "")]
         if cited:
@@ -1471,15 +1475,20 @@ def check_report_tables(report_path, spec, *, cells=True) -> list:
       T1~T4 처럼 머리가 같은 표 넷이 서로의 짝으로 잡혀 AND 표를 OR 명세로 대조하게
       된다. §절대 규칙 19 가 넓은 표를 나누게 하므로 대응 표는 여럿일 수 있다.
     - `cells=False`(결과보고서)면 셀은 관측값이라 보지 않는다. 셀로 짝을 가를 수 없으니
-      명세 순서대로, 머리가 맞는 아직 안 쓴 표 하나와 1:1 로 짝짓는다 — 같은 머리
-      표 넷이 보고서 표 하나를 나눠 가지면 표가 빠져도 모른다. 2026-09-14 전에는
-      결과보고서에 아예 부르지 않았다.
+      명세 순서대로, 머리가 맞는 아직 안 쓴 표 하나와 먼저 1:1 로 짝짓는다. §절대 규칙 19
+      로 나뉜 넓은 표는, 아직 안 쓴 표 가운데 지금까지 짝의 열에 없는 명세 열을 새로
+      덮는 표만 보고서 표 순서대로 이어 붙인다 — 머리가 완전히 같은 표는 새 열이 없어
+      붙지 않으므로 "같은 머리 표 넷이 보고서 표 하나를 나눠 갖지 않는다" 는 그대로다.
+      2026-09-14 전에는 결과보고서에 아예 부르지 않았다.
     - 정확 대응이 없으면, 어느 명세 표에도 대응하지 않은 표 가운데 머리가 가장 많이
       겹치는 표(진리표는 행 수도 같은 것)를 짚는다. 머리가 짝지어지면 처음 갈리는
       행을, 아니면 빠진 열과 명세에 없는 열을 알린다. 같은 글자 열은 `B(4열)` 처럼
       자리로 부른다.
     - 참조표(`role: reference`)는 §절대 규칙 16 으로 빠질 수 있어 요구하지 않는다.
-      다만 셀까지 정확 대응한 표는 다른 명세 표의 짝 후보에서 뺀다.
+      다만 셀까지 정확 대응한 표는 다른 명세 표의 짝 후보에서 뺀다. `cells=False`
+      에서는 참조표를 짝으로 가져가지 않으므로, 머리와 행 수가 같은 기록표·참조표
+      쌍(실험03 T5·T6)에서는 보고서의 이론표가 기록표 자리를 채워 누락을 가릴 수
+      있다 — 알려진 한계.
     - 명세에 없는 표는 잡지 않는다 — §섹션별 재료 실험 이론 ⑵ 가 데이터시트
       function table 처럼 명세 밖 이론표를 싣게 한다.
     """
@@ -1520,10 +1529,18 @@ def check_report_tables(report_path, spec, *, cells=True) -> list:
             claimed.update(exact[st.id])
     for st in checked:
         if not by_cells(st) and st.role == "record":
-            i = next((i for i in range(len(found)) if i not in claimed and fits(i, st)),
-                     None)
-            exact[st.id] = [] if i is None else [i]
-            claimed.update(exact[st.id])
+            st_header = bare(st)
+            hits, covered = [], set()
+            for i in range(len(found)):
+                if i in claimed or not fits(i, st):
+                    continue
+                cols = set(_col_map(heads[i], st_header))
+                if hits and cols <= covered:
+                    continue  # 새 열을 보태지 않는 표(같은 머리 반복)는 짝에 더하지 않는다
+                hits.append(i)
+                covered |= cols
+            exact[st.id] = hits
+            claimed.update(hits)
 
     out = []
     for st in checked:

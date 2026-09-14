@@ -1803,6 +1803,34 @@ STEP_SPEC = (TABLE_SPEC
                "| 구간 | CH1 에지 (U1 pin 4) | CH2 에지 (U1 pin 8) | 측정값 (ns) |\n"
                "|---|---|---|---|\n| 상승 | ↑ | ↓ |  |\n| 하강 | ↓ | ↑ |  |\n")
 
+# 12열 기록 진리표 — §절대 규칙 19 로 A B C D Y0..Y3 / A B C D Y4..Y7 두 표로 나뉜다.
+_WIDE_HEADER = ["A", "B", "C", "D", "Y0", "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7"]
+_WIDE_ROWS = [(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)]
+_WIDE_SPEC = ("""---
+schema: lab-spec/v2
+experiment: 1
+title: Wide Table
+source_manual: from_the_past/정리/강의노트/실험1.pdf
+power: {VCC: "+5V", GND: "GND"}
+items:
+  - id: E1.P1-1
+    title: 8-output demo
+    device: [LED]
+    ics: ["74HC138"]
+    tables: [T1]
+---
+
+## T1 · 8-output 진리표
+
+- kind: truth-table
+- encoding: 0/1
+- source: derived (Y0..Y7)
+
+""" + _report_table(_WIDE_HEADER, _WIDE_ROWS, list(range(12))) + "\n")
+_WIDE_T1 = _report_table(_WIDE_HEADER[:8], _WIDE_ROWS, [0, 1, 2, 3, 4, 5, 6, 7])
+_WIDE_T2 = _report_table(["A", "B", "C", "D", "Y4", "Y5", "Y6", "Y7"], _WIDE_ROWS,
+                         [0, 1, 2, 3, 8, 9, 10, 11])
+
 
 class ReportTables(unittest.TestCase):
     """③ §절대 규칙 22 · `check_report_tables`.
@@ -1931,6 +1959,26 @@ class StepAndResultTables(unittest.TestCase):
         self.assertEqual(len(found), 1, found)
         self.assertIn("명세에 없는 열: Y", found[0].message)
 
+    def test_나눈_결과표_두_조각을_합치면_cells_False_가_조용하다(self):
+        """§절대 규칙 19 로 나뉜 12열 표 — 두 조각이 함께 명세 T1 을 덮는다."""
+        spec = spec_from(_WIDE_SPEC)
+        found = validate.check_report_tables(
+            md_file("# 제목\n\n" + _WIDE_T1 + "\n" + _WIDE_T2), spec, cells=False)
+        self.assertEqual(found, [])
+
+    def test_나눈_결과표_한_조각이_빠지면_남은_열이_잡힌다(self):
+        spec = spec_from(_WIDE_SPEC)
+        found = validate.check_report_tables(
+            md_file("# 제목\n\n" + _WIDE_T1), spec, cells=False)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("명세 T1 의 열 Y4, Y5, Y6, Y7 이 보고서 표에 없다", found[0].message)
+
+    def test_나눈_결과표_두_조각은_cells_True_에서도_조용하다(self):
+        spec = spec_from(_WIDE_SPEC)
+        found = validate.check_report_tables(
+            md_file("# 제목\n\n" + _WIDE_T1 + "\n" + _WIDE_T2), spec, cells=True)
+        self.assertEqual(found, [])
+
 
 # 강의노트 실험3 p6(반감산기) 텍스트 층의 모양 — pypdf 가 실제로 내는 줄을 줄였다
 _P6 = ("2. 실험 이론\n• 반감산기 (Half Subtractor)\n"
@@ -1967,6 +2015,17 @@ class ManualNames(unittest.TestCase):
         messages = " ".join(f.message for f in found)
         self.assertIn("열 `Bo` 가 교안 p6 에 없다", messages)
         self.assertIn("머리 `A B D Bo` 가 교안 p6 에 이 순서로 없다", messages)
+
+    def test_라틴_토큰이_아닌_머리는_info_한_줄만_내고_건너뛴다(self):
+        """T5 머리만 `B'` 로 바꿔 라틴 토큰이 아닌 열을 만든다 — T6 은 그대로다."""
+        spec = self._spec(("- source: derived (D = A⊕B ; B = A'·B)\n\n| A | B | D | B |",
+                           "- source: derived (D = A⊕B ; B = A'·B)\n\n| A | B | D | B' |"))
+        found = validate.check_manual_names(spec, _PAGES)
+        self.assertEqual(len(found), 1, found)
+        self.assertEqual(found[0].level, "info")
+        self.assertEqual(found[0].where.rsplit(":", 1)[-1], "T5")
+        self.assertIn("라틴 토큰이 아닌 열", found[0].message)
+        self.assertIn("B'", found[0].message)
 
     def test_참조표_머리_순서가_바뀌면_잡는다(self):
         spec = self._spec(("- outputs: [D, B]\n\n| A | B | D | B |",
