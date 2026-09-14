@@ -206,6 +206,27 @@ EXPERIMENT_DATES = {
     10: date(2026, 11, 20),
 }
 
+# 2026-2 소실험 범위. 정본은 조교 공지 `_350547_1`(2026-09-14 "[필독] 논리회로실험
+# 보고서 관련 공지", `강의노트/공지사항/`)이다. 실험2 부터는 여기 적힌 소실험만
+# **실험실에서 하고** 예비·결과보고서에 쓴다 — 보고서만 줄이는 것이 아니다.
+#
+# 값은 교안 항목 번호다. 명세 항목 id 의 `P` 뒤(`E3.P1-2` → `1-2`)와 맞댄다.
+# 공지의 `실험 1` 처럼 가지 번호가 없는 토큰은 그 아래 가지(`1-1`·`1-2`)를 전부
+# 덮는다. 이 표에 없는 실험(실험1 — 이미 끝나 전체를 쓴다)은 전체다.
+#
+# **이 표도 스킬 문서에 베끼지 않는다** — `EXPERIMENT_DATES` 와 같은 이유다.
+EXPERIMENT_SCOPE = {
+    2: ("1-1", "1-2"),
+    3: ("1-2", "2-2"),
+    4: ("1-1", "2-1"),
+    5: ("1-2", "2-2"),
+    6: ("1", "2-1", "3-2"),
+    7: ("1",),
+    8: ("1", "3"),
+    9: ("1", "2"),
+    10: ("1",),
+}
+
 # FPGA 텀프로젝트 — 3주치가 한 프로젝트다. 실험 번호가 없어 `PROJECT_DIR` 로 간다.
 PROJECT_DATES = (date(2026, 11, 27), date(2026, 12, 4), date(2026, 12, 11))
 
@@ -292,6 +313,32 @@ def next_experiments(today=None):
     if not upcoming:
         return None
     return upcoming[0], experiments_on(upcoming[0])
+
+
+def scope_tokens(experiment: int) -> Optional[tuple]:
+    """실험 번호 → 그 실험의 범위 토큰. 범위가 없으면(전체) `None`."""
+    experiment_date(experiment)          # 번호 유효성은 한 곳에서만 정한다
+    return EXPERIMENT_SCOPE.get(experiment)
+
+
+def token_covers(token: str, item_id: str) -> bool:
+    """범위 토큰 하나가 항목 id 를 덮는가.
+
+    `P` 뒤의 번호가 토큰과 같거나 `토큰-` 로 시작하면 덮는다. `-` 까지 보는 것이
+    요점이다 — 그냥 `startswith(token)` 이면 `1` 이 `10` 을 삼킨다.
+    """
+    if ".P" not in item_id:
+        return False
+    sub = item_id.split(".P", 1)[1]
+    return sub == token or sub.startswith(token + "-")
+
+
+def item_in_scope(experiment: int, item_id: str) -> bool:
+    """이 항목을 실험실에서 하는가. 범위가 없는 실험이면 늘 참."""
+    tokens = scope_tokens(experiment)
+    if tokens is None:
+        return True
+    return any(token_covers(t, item_id) for t in tokens)
 
 
 # 산출물 제목의 유일한 형식. 예전에는 네 곳이 제각각 만들었고, 경로용 일괄

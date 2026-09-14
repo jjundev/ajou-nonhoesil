@@ -729,3 +729,50 @@ class TestIsProjectWeek(unittest.TestCase):
     def test_bool은_주차가_아니다(self):
         with self.assertRaises(TypeError):
             config.is_project_week(True)
+
+
+class TestExperimentScope(unittest.TestCase):
+    """조교 공지 `_350547_1`(2026-09-14) — 실험2 부터는 지정 소실험만 한다."""
+
+    def test_공지_표를_그대로_옮겼다(self):
+        self.assertEqual(config.EXPERIMENT_SCOPE, {
+            2: ("1-1", "1-2"), 3: ("1-2", "2-2"), 4: ("1-1", "2-1"),
+            5: ("1-2", "2-2"), 6: ("1", "2-1", "3-2"), 7: ("1",),
+            8: ("1", "3"), 9: ("1", "2"), 10: ("1",)})
+
+    def test_범위_표의_실험은_일정표에_있다(self):
+        self.assertLessEqual(set(config.EXPERIMENT_SCOPE), set(config.EXPERIMENT_DATES))
+
+    def test_실험1_은_범위가_없다(self):
+        self.assertIsNone(config.scope_tokens(1))
+        self.assertTrue(config.item_in_scope(1, "E1.P3"))
+
+    def test_가지_번호는_정확히_맞아야_한다(self):
+        self.assertTrue(config.item_in_scope(3, "E3.P1-2"))
+        self.assertTrue(config.item_in_scope(3, "E3.P2-2"))
+        self.assertFalse(config.item_in_scope(3, "E3.P1-1"))
+        self.assertFalse(config.item_in_scope(3, "E3.P2-1"))
+
+    def test_실험02_는_AC_특성을_하지_않는다(self):
+        self.assertFalse(config.item_in_scope(2, "E2.P2"))
+
+    def test_가지_없는_토큰은_그_아래_가지를_덮는다(self):
+        self.assertTrue(config.item_in_scope(6, "E6.P1"))
+        self.assertTrue(config.item_in_scope(6, "E6.P1-2"))
+        self.assertTrue(config.item_in_scope(6, "E6.P2-1"))
+        self.assertFalse(config.item_in_scope(6, "E6.P2"))
+
+    def test_앞자리만_같은_번호는_덮지_않는다(self):
+        """`1` 이 `10` 을, `1-1` 이 `1-10` 을 삼키면 안 된다 — 가지 구분자 `-` 까지 본다."""
+        self.assertFalse(config.token_covers("1", "E7.P10"))
+        self.assertFalse(config.token_covers("1-1", "E7.P1-10"))
+        self.assertTrue(config.token_covers("1", "E7.P1-10"))
+
+    def test_P_가_없는_id_는_범위_밖이다(self):
+        self.assertFalse(config.item_in_scope(3, "E3-1-2"))
+
+    def test_틀린_실험_번호는_거절한다(self):
+        with self.assertRaises(ValueError):
+            config.scope_tokens(11)
+        with self.assertRaises(TypeError):
+            config.scope_tokens("3")
