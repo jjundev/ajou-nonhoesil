@@ -28,6 +28,7 @@
 
 import os
 import tempfile
+from collections import Counter
 from dataclasses import dataclass
 
 from .hand_grid import load_renderer
@@ -180,10 +181,17 @@ def signatures(diagram):
     return out
 
 
-# 손그림 검토가 정답으로 삼는 회로들. `main()` 의 dispatch 와 같은 이름을 쓴다
+# 손그림 검토가 정답으로 삼는 회로들. `main()` 의 dispatch 와 같은 이름을 쓴다.
+# 실험02·03 은 2026-09-14 에 넣었다 — 그 전에는 `reference_diagram('e3_hs')` 가
+# "모르는 회로 ID" 로 멈춰 두 주차 손그림을 검토할 수 없었다. 18개 모두 자기
+# 대조에서 H12(서명 없음) 하나만 난다 — 참조 그림에는 서명이 없다.
 CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e1_or_s1', 'e1_nand_s1', 'e1_nand_s2', 'e1_nor_s1', 'e1_nor_s2',
-            'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3')
+            'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3',
+            'e2_inv', 'e2_schmitt', 'e2_schmitt_s1',
+            'e2_tpd', 'e2_tpd_s1', 'e2_tpd_s2',
+            'e3_ha', 'e3_ha_s1', 'e3_ha_s2', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2',
+            'e3_hs', 'e3_hs_s1', 'e3_hs_s2', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2')
 
 
 class CompareError(ValueError):
@@ -233,11 +241,17 @@ def _from_wiring(w, circuit_id):
         new_r = dict(r)
         new_r['tag'] = by_hole.get(new_r['top'], new_r.get('label', ''))
         resistors.append(new_r)
-    # 참조가 보드 안에 찍은 신호 이름 = 입력 점퍼 이름 + LED 꼬리표 + 계측 지점
-    # 이름 (H15). 계측 이름은 입력도 LED 도 없는 주차(실험02 `VIN`·`VOUT`·`CH1`)의 것이다
-    names = ([i['name'] for i in w['inputs']] + [c['tag'] for c in w['chains']]
-             + [p['name'] for p in w.get('probes', [])])
-    labels = [{'name': n, 'at': None} for n in dict.fromkeys(names)]
+    # 참조가 보드 안에 찍은 신호 이름 = 입력 이름 + LED 꼬리표 + 계측 지점 이름 (H15).
+    # 계측 이름은 입력도 LED 도 없는 주차(실험02 `VIN`·`VOUT`·`CH1`)의 것이다.
+    # **입력과 계측만 이름으로 중복을 지운다** — 입력은 점퍼마다가 아니라 이름마다
+    # 배지가 하나다(e3 는 입력마다 좌·우 블록 점퍼가 둘). LED 꼬리표는 지우지
+    # 않는다: 실험3 반감산기는 입력 B 와 출력 B 가 같은 글자라 둘 다 이름이다
+    # (2026-09-14 — 전체를 `dict.fromkeys` 로 지우던 때는 `A B D` 로 줄어 출력 B 를
+    # 빠뜨린 손그림이 통과했다).
+    names = (list(dict.fromkeys(i['name'] for i in w['inputs']))
+             + [c['tag'] for c in w['chains']]
+             + list(dict.fromkeys(p['name'] for p in w.get('probes', []))))
+    labels = [{'name': n, 'at': None} for n in names]
     return Diagram(
         chips=[dict(c) for c in w['chips']],
         wires=wires,
@@ -508,13 +522,26 @@ def check_rails(ref, hand):
 
 
 # 회로 ID -> 제목에 들어가야 할 말. 제목만 보고 다른 회로를 그렸다고
-# 판정하지 않는다 — 제목이 틀렸는지 그림이 틀렸는지는 서명이 가른다
+# 판정하지 않는다 — 제목이 틀렸는지 그림이 틀렸는지는 서명이 가른다.
+# 실험02·03 은 결선도 제목(`set_header`)의 회로 이름에서 뽑았다.
 CIRCUIT_WORDS = {
     'e1_and': ('AND',), 'e1_or': ('OR',),
     'e1_nand': ('NAND',), 'e1_nor': ('NOR',),
     'e1_comb': ('복합', 'COMB'),
     'e1_comb_s1': ('복합', 'COMB'), 'e1_comb_s2': ('복합', 'COMB'),
     'e1_comb_s3': ('복합', 'COMB'),
+    'e2_inv': ('INVERTER', '인버터'),
+    'e2_schmitt': ('SCHMITT', '슈미트'), 'e2_schmitt_s1': ('SCHMITT', '슈미트'),
+    'e2_tpd': ('T_PD', 'TPD', 'AC 특성'), 'e2_tpd_s1': ('T_PD', 'TPD', 'AC 특성'),
+    'e2_tpd_s2': ('T_PD', 'TPD', 'AC 특성'),
+    'e3_ha': ('반가산기', 'HALF ADDER'), 'e3_ha_s1': ('반가산기', 'HALF ADDER'),
+    'e3_ha_s2': ('반가산기', 'HALF ADDER'),
+    'e3_fa': ('전가산기', 'FULL ADDER'), 'e3_fa_s1': ('전가산기', 'FULL ADDER'),
+    'e3_fa_s2': ('전가산기', 'FULL ADDER'),
+    'e3_hs': ('반감산기', 'HALF SUBTRACTOR'), 'e3_hs_s1': ('반감산기', 'HALF SUBTRACTOR'),
+    'e3_hs_s2': ('반감산기', 'HALF SUBTRACTOR'),
+    'e3_fs': ('전감산기', 'FULL SUBTRACTOR'), 'e3_fs_s1': ('전감산기', 'FULL SUBTRACTOR'),
+    'e3_fs_s2': ('전감산기', 'FULL SUBTRACTOR'),
 }
 
 
@@ -699,17 +726,33 @@ def check_labels(ref, hand):
     확인하기 어렵다." 회로는 돌지만 채점에서 실제로 깎이므로 표기가 아니라 기능
     등급으로 제출을 막는다.
 
-    **이름 집합만 본다.** 어느 홀 옆에 적었는지는 보지 않는다 — 이 검사기는 행이
-    밀려도 넷이 같으면 통과시키는 설계라 좌표 판정은 그 원칙과 부딪힌다. 자리는
-    전사 규칙이 지킨다(보드 밖 여백의 글자는 전사하지 않는다). 대소문자는 가리지
-    않고, 손그림에만 있는 이름은 알리지 않는다.
+    **이름을 개수까지 센다. 어느 홀 옆에 적었는지는 보지 않는다** — 이 검사기는
+    행이 밀려도 넷이 같으면 통과시키는 설계라 좌표 판정은 그 원칙과 부딪힌다.
+    자리는 전사 규칙이 지킨다(보드 밖 여백의 글자는 전사하지 않는다). 개수를 세는
+    이유는 실험3 반감산기다 — 입력 `B` 와 출력 `B` 가 같은 글자라 집합으로 보면
+    출력 `B` 를 빠뜨린 그림이 통과한다. 대소문자는 가리지 않고, 손그림에만 있는
+    이름은 알리지 않는다.
     """
-    have = {lb['name'].upper() for lb in hand.labels}
-    return [HandFinding(
-                'H15', '기능', lb['name'],
-                f"신호 이름 {lb['name']!r} 이 그림 위에 없다. 입력은 점퍼 끝 옆, "
-                "출력은 LED 옆, 계측 지점 이름은 그 스트립 끝에 적는다")
-            for lb in ref.labels if lb['name'].upper() not in have]
+    have = Counter(lb['name'].upper() for lb in hand.labels)
+    want = Counter(lb['name'].upper() for lb in ref.labels)
+    shown = {}
+    for lb in ref.labels:
+        shown.setdefault(lb['name'].upper(), lb['name'])
+    out = []
+    for key, n in want.items():
+        short = n - have[key]
+        if short <= 0:
+            continue
+        name = shown[key]
+        if n == 1:
+            msg = (f"신호 이름 {name!r} 이 그림 위에 없다. 입력은 점퍼 끝 옆, "
+                   "출력은 LED 옆, 계측 지점 이름은 그 스트립 끝에 적는다")
+        else:
+            msg = (f"신호 이름 {name!r} 이 참조보다 {short}개 적다(참조 {n} · 그림 "
+                   f"{have[key]}). 같은 글자가 입력과 출력에 따로 있다 — 입력은 점퍼 "
+                   "끝 옆, 출력은 LED 옆에 각각 적는다")
+        out.append(HandFinding('H15', '기능', name, msg))
+    return out
 
 
 # 규칙을 여기 순서대로 돈다. 새 규칙은 이 목록에 올린다 — 함수만 만들고

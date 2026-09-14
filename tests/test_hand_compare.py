@@ -792,16 +792,11 @@ class Labels(unittest.TestCase):
 
     def test_계측_지점_이름도_참조_이름이_된다(self):
         """입력 점퍼도 LED 도 없는 주차(실험02) — 교안 회로도의 신호원·출력·채널 이름이
-        H15 대상이다. 실험02 는 아직 `CIRCUITS` 에 없어 빌더를 직접 부른다."""
-        import os
-        import tempfile
-        mod = hc.load_renderer()
-        for builder, want in (('build_e2_inv', ['VIN', 'VOUT']),
-                              ('build_e2_tpd', ['VIN', 'CH1', 'CH2'])):
-            with self.subTest(builder=builder), tempfile.TemporaryDirectory() as tmp:
-                bb = getattr(mod, builder)(os.path.join(tmp, 'x.png'))
-                ref = hc._from_wiring(bb.wiring(), builder)
-                self.assertEqual([lb['name'] for lb in ref.labels], want)
+        H15 대상이다."""
+        for cid, want in (('e2_inv', ['VIN', 'VOUT']), ('e2_tpd', ['VIN', 'CH1', 'CH2'])):
+            with self.subTest(cid=cid):
+                self.assertEqual([lb['name'] for lb in hc.reference_diagram(cid).labels],
+                                 want)
 
     def test_이름이_하나_빠지면_기능으로_잡는다(self):
         ref, hand = self._pair()
@@ -815,6 +810,20 @@ class Labels(unittest.TestCase):
         ref, hand = self._pair()
         self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H15'], [])
 
+    def test_반감산기_참조는_입력_B_와_출력_B_를_둘_다_갖는다(self):
+        """실험3 반감산기는 교안 p6 그대로 입력과 출력이 같은 글자 `B` 다."""
+        self.assertEqual([lb['name'] for lb in hc.reference_diagram('e3_hs').labels],
+                         ['A', 'B', 'D', 'B'])
+
+    def test_같은_글자의_둘째가_빠지면_개수로_잡는다(self):
+        ref, hand = self._pair('e3_hs')
+        hand.title = '2-1 반감산기'
+        drop = max(i for i, lb in enumerate(hand.labels) if lb['name'] == 'B')
+        hand.labels = [lb for i, lb in enumerate(hand.labels) if i != drop]
+        found = [f for f in hc.compare(ref, hand) if f.rule == 'H15']
+        self.assertEqual([(f.grade, f.where) for f in found], [('기능', 'B')])
+        self.assertIn('참조 2 · 그림 1', found[0].message)
+
     def test_이름표가_없는_전사는_이름마다_잡힌다(self):
         """2026-09 실험01 제출 손그림이 이 상태였다 — A·B·C 가 한 글자도 없었다."""
         ref, hand = self._pair()
@@ -826,6 +835,23 @@ class Labels(unittest.TestCase):
         ref, hand = self._pair()
         hand.labels = [{'name': lb['name'].lower(), 'at': None} for lb in hand.labels]
         self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H15'], [])
+
+
+class NewWeeks(unittest.TestCase):
+    """실험02·03 회로를 참조로 꺼내 자기 대조한다 — 서명만 채우면 finding 이 없어야 한다.
+
+    2026-09-14 전에는 `CIRCUITS` 에 e1 만 있어 두 주차 손그림을 검토할 수 없었다.
+    """
+
+    def test_실험02_03_회로_18개가_자기_대조에서_조용하다(self):
+        cids = [c for c in hc.CIRCUITS if c.startswith(('e2_', 'e3_'))]
+        self.assertEqual(len(cids), 18)
+        for cid in cids:
+            with self.subTest(cid=cid):
+                ref = hc.reference_diagram(cid)
+                hand = hc.reference_diagram(cid)
+                hand.signed = True
+                self.assertEqual([str(f) for f in hc.compare(ref, hand)], [])
 
 
 class Verdict(unittest.TestCase):

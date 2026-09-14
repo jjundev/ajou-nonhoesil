@@ -19,6 +19,7 @@ import importlib.util
 import os
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +104,22 @@ class BuilderApiContract(unittest.TestCase):
                                   "부른다), 꽂을 자리는 _tag() 로, 설명은 note() 로 보드 밖에 낸다")
 
 
+def _missing_signal_names(bb):
+    """보드 안 배지에 없는 신호 이름 — 개수로 센다.
+
+    입력은 점퍼마다가 아니라 이름마다 배지가 하나라(e3 는 입력마다 좌·우 블록 점퍼가
+    둘) 이름으로 중복을 지우고, LED 꼬리표는 그대로 센다. 실험3 반감산기는 입력 B 와
+    출력 B 가 같은 글자라 집합으로 보면 둘째 B 배지가 빠져도 통과한다(2026-09-14
+    패치 재현).
+    """
+    want = Counter(list(dict.fromkeys(i['name'] for i in bb.inputs))
+                   + [ch['tag'] for ch in bb.led_chains]
+                   + list(dict.fromkeys(p['name'] for p in bb.probes if p.get('name'))))
+    got = Counter(n for n, box, _s in bb.tag_boxes
+                  if BOARD_L < box[0] and box[2] < BOARD_R)
+    return want - got
+
+
 class RenderedContract(unittest.TestCase):
     """실제로 그려 보고 센다. ast 로는 위임을 못 따라간다."""
 
@@ -164,12 +181,15 @@ class RenderedContract(unittest.TestCase):
         for name, fn in _circuit_builders(self.mod).items():
             with self.subTest(회로=name):
                 bb, _ = self._render(fn)
-                want = ({i['name'] for i in bb.inputs}
-                        | {ch['tag'] for ch in bb.led_chains}
-                        | {p['name'] for p in bb.probes if p.get('name')})
-                got = {n for n, box, _s in bb.tag_boxes
-                       if BOARD_L < box[0] and box[2] < BOARD_R}
-                self.assertEqual(want - got, set(), f"{name}: 보드 안에 없는 신호 이름")
+                self.assertEqual(_missing_signal_names(bb), Counter(),
+                                 f"{name}: 보드 안에 없는 신호 이름")
+
+    def test_둘째_B_배지가_빠지면_잡는다(self):
+        """위 단언이 같은 글자를 개수로 세는지 — 반감산기 LED2 의 B 배지를 지워 본다."""
+        bb, _ = self._render(self.mod.build_e3_hs)
+        drop = max(k for k, (n, _b, _s) in enumerate(bb.tag_boxes) if n == 'B')
+        bb.tag_boxes = [t for k, t in enumerate(bb.tag_boxes) if k != drop]
+        self.assertEqual(_missing_signal_names(bb), Counter({'B': 1}))
 
     def test_실험02_계측_지점은_강의노트_이름을_단다(self):
         """실험02 는 입력 점퍼도 LED 도 없어 위 검사가 빈 집합으로 통과했다 — 신호원·
