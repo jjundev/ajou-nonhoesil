@@ -1325,47 +1325,51 @@ def _leftover(names, against) -> list:
     return out
 
 
-def check_report_tables(report_path, spec) -> list:
-    """예비보고서 진리표가 명세 진리표의 **머리·열 순서·셀**을 그대로 옮겼는지 본다.
+def check_report_tables(report_path, spec, *, cells=True) -> list:
+    """보고서 표가 명세 기록표의 **머리·열 순서**(와 `cells` 면 진리표 셀)를 옮겼는지 본다.
 
     ③ `write-pre-report` §절대 규칙 22 의 기계 검사판이다. 2026-09 실험01 예보가
     명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 줄여 냈다 — 중간단 `L1` 을 버리고
     최종 `L2` 를 `Y` 로 바꿨다. 행 수 대조는 명세 안에서만 돌아 ⑤ 가 그대로
     통과시켰고, 조교가 감점했다(-1).
 
-    짝짓기는 **정확 대응이 먼저**다 — 머리가 명세 머리의 부분집합이고, 행 수가
-    같고, 셀까지 전부 같은 표. 머리와 행 수만 보면 실험01 의 T1~T4 처럼 머리가
-    같은 표 넷이 서로의 짝으로 잡혀 AND 표를 OR 명세로 대조하게 된다.
-
-    - 명세 기록 대상 진리표(`kind: truth-table`, `role: record`)마다 정확 대응 표의
-      머리 합집합이 명세 머리와 같아야 하고, 각 표 안의 열 순서는 명세 순서를
-      따라야 한다. §절대 규칙 19 가 넓은 표를 나누게 하므로 대응 표는 여럿일 수 있다.
-    - 정확 대응이 없으면, 어느 명세 표에도 정확 대응하지 않은 표 가운데 행 수가
-      같고 머리가 가장 많이 겹치는 표를 짚는다. 머리가 부분집합이면 처음 갈리는
-      행을, 아니면 빠진 열과 명세에 없는 열을 알린다.
+    - 대상은 명세의 `truth-table` 과 `stepped` 다. `stepped` 는 칸이 실험실에서 채워지므로
+      늘 머리만 보고 행 수도 보지 않는다.
+    - `cells=True`(예비보고서)면 진리표는 **정확 대응이 먼저**다 — 머리가 명세 머리에
+      짝지어지고, 행 수가 같고, 셀까지 전부 같은 표. 머리와 행 수만 보면 실험01 의
+      T1~T4 처럼 머리가 같은 표 넷이 서로의 짝으로 잡혀 AND 표를 OR 명세로 대조하게
+      된다. §절대 규칙 19 가 넓은 표를 나누게 하므로 대응 표는 여럿일 수 있다.
+    - `cells=False`(결과보고서)면 셀은 관측값이라 보지 않는다. 셀로 짝을 가를 수 없으니
+      명세 순서대로, 머리가 맞는 아직 안 쓴 표 하나와 1:1 로 짝짓는다 — 같은 머리
+      표 넷이 보고서 표 하나를 나눠 가지면 표가 빠져도 모른다. 2026-09-14 전에는
+      결과보고서에 아예 부르지 않았다.
+    - 정확 대응이 없으면, 어느 명세 표에도 대응하지 않은 표 가운데 머리가 가장 많이
+      겹치는 표(진리표는 행 수도 같은 것)를 짚는다. 머리가 짝지어지면 처음 갈리는
+      행을, 아니면 빠진 열과 명세에 없는 열을 알린다. 같은 글자 열은 `B(4열)` 처럼
+      자리로 부른다.
     - 참조표(`role: reference`)는 §절대 규칙 16 으로 빠질 수 있어 요구하지 않는다.
-      다만 거기 정확 대응한 표는 다른 명세 표의 짝 후보에서 뺀다.
+      다만 셀까지 정확 대응한 표는 다른 명세 표의 짝 후보에서 뺀다.
     - 명세에 없는 표는 잡지 않는다 — §섹션별 재료 실험 이론 ⑵ 가 데이터시트
       function table 처럼 명세 밖 이론표를 싣게 한다.
-
-    예비보고서 전용이다. 결과보고서 표는 관측값이라 셀이 명세와 다를 수 있다.
     """
     path = Path(report_path)
     if not path.exists():
         return [Finding("error", str(report_path), "보고서 파일이 없다")]
     found = md.parse_tables(path.read_text(encoding="utf-8"))
     heads = [[_bare_cell(c) for c in t.header] for t in found]
-    truth = [t for t in spec.tables if t.kind == "truth-table"]
+    checked = [t for t in spec.tables if t.kind in ("truth-table", "stepped")]
+
+    def bare(st):
+        return [_bare_cell(c) for c in st.header]
 
     def fits(i, st):
-        st_header = [_bare_cell(c) for c in st.header]
-        return (bool(heads[i]) and _col_map(heads[i], st_header) is not None
-                and len(found[i].rows) == len(st.rows))
+        """머리가 명세 머리에 짝지어지고, 진리표면 행 수도 같다."""
+        return (bool(heads[i]) and _col_map(heads[i], bare(st)) is not None
+                and (st.kind != "truth-table" or len(found[i].rows) == len(st.rows)))
 
     def first_diff(i, st):
         """셀이 처음 갈리는 (행 번호, 보고서 값, 명세 값). 전부 같으면 None."""
-        st_header = [_bare_cell(c) for c in st.header]
-        cols = _col_map(heads[i], st_header)
+        cols = _col_map(heads[i], bare(st))
         for r, (row, srow) in enumerate(zip(found[i].rows, st.rows), start=1):
             got = [str(normalize_cell(_bare_cell(v))) for v in row]
             exp = [str(normalize_cell(srow[k])) for k in cols]
@@ -1373,15 +1377,28 @@ def check_report_tables(report_path, spec) -> list:
                 return r, got, exp
         return None
 
-    exact = {st.id: [i for i in range(len(found))
-                     if fits(i, st) and first_diff(i, st) is None]
-             for st in truth}
-    claimed = {i for ids in exact.values() for i in ids}
+    def by_cells(st):
+        return cells and st.kind == "truth-table"
+
+    # 셀을 보는 표가 먼저 짝을 가져간다(셀까지 같은 표 전부). 나머지는 명세 순서대로 1:1.
+    exact, claimed = {}, set()
+    for st in checked:
+        if by_cells(st):
+            exact[st.id] = [i for i in range(len(found))
+                            if fits(i, st) and first_diff(i, st) is None]
+            claimed.update(exact[st.id])
+    for st in checked:
+        if not by_cells(st) and st.role == "record":
+            i = next((i for i in range(len(found)) if i not in claimed and fits(i, st)),
+                     None)
+            exact[st.id] = [] if i is None else [i]
+            claimed.update(exact[st.id])
+
     out = []
-    for st in truth:
+    for st in checked:
         if st.role != "record":
             continue
-        st_header = [_bare_cell(c) for c in st.header]
+        st_header = bare(st)
         want = " ".join(st_header)
         hits = exact[st.id]
         if hits:
@@ -1400,12 +1417,14 @@ def check_report_tables(report_path, spec) -> list:
                     f"(명세: `{want}`)"))
             continue
         near = [i for i in range(len(found)) if i not in claimed
-                and len(found[i].rows) == len(st.rows) and set(heads[i]) & set(st_header)]
+                and (st.kind != "truth-table" or len(found[i].rows) == len(st.rows))
+                and set(heads[i]) & set(st_header)]
         if not near:
             out.append(Finding("error", path.name,
                 f"명세 {st.id} (`{want}`) 에 대응하는 표가 보고서에 없다"))
             continue
-        i = max(near, key=lambda k: (sum((Counter(heads[k]) & Counter(st_header)).values()), -k))
+        i = max(near, key=lambda k: (sum((Counter(heads[k]) & Counter(st_header)).values()),
+                                     -k))
         claimed.add(i)
         if fits(i, st):
             r, got, exp = first_diff(i, st)

@@ -163,8 +163,8 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
 
     ```
     - **3-input AND 진리표**
-    	| A | B | C | Y |
-    	|---|---|---|---|
+    	| A | B | C | L1 | L2 |
+    	|---|---|---|---|---|
     	…
     ```
 
@@ -196,6 +196,13 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     고쳤다(`docs/notion-feedback/round2-실험01-결과보고서.md`). 한글 낱말 사이의
     띄어쓰기는 그대로다 — 이 규칙은 라틴 문자·숫자·닫는 괄호 바로 뒤에만 해당한다.
     ⑤ 의 `validate.check_body_style` 이 warn 으로 잡는다.
+19. **결과 표 머리와 산문 속 회로 신호 이름은 명세 열 이름 그대로 쓴다.** 명세
+    기록표의 열 이름·열 수·열 순서를 옮기고(③ §절대 규칙 22 와 같다), 추가 공부처럼
+    산문에서 회로 신호를 부를 때도 `L1`·`L2` 같은 명세 이름을 쓴다 — `Y`·`P` 처럼
+    새 이름을 짓지 않는다. 2026-09 실험01 예보가 회로도 출력 `L1`·`L2` 를 `Y` 로
+    바꿔 조교 감점(-1)을 받았고, 같은 실험 결보의 추가 공부는 3입력 AND 의 신호를
+    `P`·`Y` 로 불렀다. 표 머리는 12단계의 `check_report_tables(…, cells=False)` 가
+    잡고, 산문은 기계 검사가 없다.
 
 ## 실행 절차
 
@@ -544,17 +551,20 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     for f in (validate.check_report_sections(rep, fmt.result, item_count=len(spec.items))
               + validate.check_report_references(rep, spec, root=root)
               + validate.check_notion_markdown(rep)
-              + validate.check_body_style(Path(rep).read_text(encoding='utf-8'))):
+              + validate.check_body_style(Path(rep).read_text(encoding='utf-8'))
+              + validate.check_report_tables(rep, spec, cells=False)):
         print(f)
     "
     ```
 
-    **네 검사를 한꺼번에 돌린다.** `check_body_style` 은 warn 이지만 여기서
+    **다섯 검사를 한꺼번에 돌린다.** `check_body_style` 은 warn 이지만 여기서
     고친다 — §절대 규칙 8·18 의 기계 검사판이라 남기면 그대로 노션에 올라간다.
     섹션만 보면 참고문헌 누락(§절대 규칙 10)은 ⑤ 에서야 걸린다 — 실험01
     결보 v2 가 그렇게 노션까지 올라간 뒤에 error 5건으로 돌아왔다.
     `check_notion_markdown` 은 ⑦ 이 업로드 전에 다시 돌리지만, 여기서 먼저
     잡아야 md 를 낸 세션 안에서 고칠 수 있다.
+    `check_report_tables(…, cells=False)` 는 결과 표 머리가 명세 기록표 머리와 같은지만
+    본다(§절대 규칙 19) — 결과 칸은 관측값이라 셀은 보지 않는다.
 
     `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
     항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. 출력이

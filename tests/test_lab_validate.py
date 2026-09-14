@@ -1794,6 +1794,14 @@ _AND_T = _report_table(_H5, _AND_ROWS, [0, 1, 2, 3, 4])
 _OR_T = _report_table(_H5, _OR_ROWS, [0, 1, 2, 3, 4])
 _THEORY_T = ("- **AND**\n\t| A | B | C |\n\t|---|---|---|\n"
              "\t| L | L | L |\n\t| L | H | L |\n\t| H | L | L |\n\t| H | H | H |\n")
+_STEP_H = ["구간", "CH1 에지 (U1 pin 4)", "CH2 에지 (U1 pin 8)", "측정값 (ns)"]
+_STEP_ROWS = [("상승", "↑", "↓", ""), ("하강", "↓", "↑", "")]
+_STEP_T = "- **전달 지연**\n" + _report_table(_STEP_H, _STEP_ROWS, [0, 1, 2, 3])
+STEP_SPEC = (TABLE_SPEC
+             + "\n## T3 · 전달 지연 측정\n\n- kind: stepped\n- encoding: 0/1\n"
+               "- source: manual:p12\n\n"
+               "| 구간 | CH1 에지 (U1 pin 4) | CH2 에지 (U1 pin 8) | 측정값 (ns) |\n"
+               "|---|---|---|---|\n| 상승 | ↑ | ↓ |  |\n| 하강 | ↓ | ↑ |  |\n")
 
 
 class ReportTables(unittest.TestCase):
@@ -1880,11 +1888,70 @@ class ReportTables(unittest.TestCase):
                          [("error", "보고서 파일이 없다")])
 
 
+class StepAndResultTables(unittest.TestCase):
+    """스텝표 머리와 결과보고서 표 머리 (`check_report_tables(..., cells=False)`).
+
+    2026-09-14 전에는 진리표만, 예비보고서에만 불렀다 — 결과보고서 표 머리는 아무도
+    안 봤고 실험02 예보가 스텝표 머리를 줄여도 조용했다.
+    """
+
+    def setUp(self):
+        self.spec = spec_from(STEP_SPEC)
+
+    def _check(self, body, cells=True):
+        return validate.check_report_tables(md_file("# 제목\n\n" + body), self.spec,
+                                            cells=cells)
+
+    def test_스텝표는_칸이_채워져도_머리만_맞으면_조용하다(self):
+        filled = _report_table(_STEP_H, [("상승", "↑", "↓", "38"), ("하강", "↓", "↑", "41")],
+                               [0, 1, 2, 3])
+        self.assertEqual(self._check(_AND_T + "\n" + _OR_T + "\n" + filled), [])
+
+    def test_스텝표_머리를_줄이면_잡는다(self):
+        short = _report_table(["구간", "CH1 에지", "CH2 에지", "측정값 (ns)"], _STEP_ROWS,
+                              [0, 1, 2, 3])
+        found = self._check(_AND_T + "\n" + _OR_T + "\n" + short)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("명세 T3", found[0].message)
+        self.assertIn("빠진 열: CH1 에지 (U1 pin 4), CH2 에지 (U1 pin 8)", found[0].message)
+
+    def test_결과보고서는_셀이_달라도_머리만_본다(self):
+        observed = _AND_T.replace("| 0 | 0 | 1 | 0 | 0 |", "| 0 | 0 | 1 | (미확인) | (미확인) |")
+        self.assertEqual(self._check(observed + "\n" + _OR_T + "\n" + _STEP_T, cells=False), [])
+
+    def test_결과보고서에서_표_하나가_빠지면_잡는다(self):
+        """머리가 같은 AND·OR 표가 보고서 표 하나를 나눠 갖지 않는다 — 1:1 로 짝짓는다."""
+        found = self._check(_AND_T + "\n" + _STEP_T, cells=False)
+        self.assertEqual([f.message for f in found],
+                         ["명세 T2 (`A B C L1 L2`) 에 대응하는 표가 보고서에 없다"])
+
+    def test_결과보고서에서도_열_이름을_바꾸면_잡는다(self):
+        renamed = _report_table(["A", "B", "C", "L1", "Y"], _AND_ROWS, [0, 1, 2, 3, 4])
+        found = self._check(renamed + "\n" + _OR_T + "\n" + _STEP_T, cells=False)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("명세에 없는 열: Y", found[0].message)
+
+
 class RealReportTables(unittest.TestCase):
     def test_실제_실험1_예비보고서의_표가_명세와_맞다(self):
         """2026-09 조교 감점(-1) 뒤 T1~T4 를 명세의 `A B C L1 L2` 로 되돌렸다."""
         exp = Path(config.experiment_dir(1))
         found = validate.check_report_tables(exp / "output/실험01_예비보고서.md",
+                                             parse_spec(exp / "체크리스트/명세.md"))
+        self.assertEqual([str(f) for f in found], [])
+
+    def test_실제_실험1_결과보고서의_표_머리가_명세와_맞다(self):
+        """결과 칸은 `(미확인)`·관측값이라 머리만 본다(`cells=False`)."""
+        exp = Path(config.experiment_dir(1))
+        found = validate.check_report_tables(exp / "output/실험01_결과보고서.md",
+                                             parse_spec(exp / "체크리스트/명세.md"),
+                                             cells=False)
+        self.assertEqual([str(f) for f in found], [])
+
+    def test_실제_실험3_예비보고서의_표가_명세와_맞다(self):
+        """2026-09-14 반감산기 내림 수를 교안 표기 `B` 로 되돌린 판(`A B D B`)."""
+        exp = Path(config.experiment_dir(3))
+        found = validate.check_report_tables(exp / "output/실험03_예비보고서.md",
                                              parse_spec(exp / "체크리스트/명세.md"))
         self.assertEqual([str(f) for f in found], [])
 
