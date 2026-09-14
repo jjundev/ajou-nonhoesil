@@ -2119,15 +2119,404 @@ def build_e2_all(output_dir, template_path=None):
     print(f"[SUCCESS] 실험02 결선도 {len(E2_BOARDS) + len(E2_FINALS)}장 생성: {output_dir}")
 
 
+# ---------------------------------------------------------------------------
+# 실험 3 · 가산기 & 감산기 — 2026-2 배포본(9쪽) 기준, 2026-09-14 저작
+#
+# 네 회로가 칩 네 종류(74HC86·74HC08·74HC32·74HC04)를 한 패키지씩 나눠 쓴다.
+# 슬롯은 **역할**에 붙고 칩 종류는 회로가 바뀌어도 그 자리에서 바뀌지 않는다 —
+# 정본은 netlist 의 `kind: layout` 표이고 이 상수는 사본이다
+# (`tests/test_breadboard_wiring.py` 가 둘을 맞댄다).
+#
+#   S1 좌 7행  : 74HC86 (U1, XOR) — 네 회로 전부. 입력 A·B·Ci/Bi 가 여기 꽂힌다
+#   S2 좌 18행 : 74HC04 (U4, NOT) — C3·C4
+#   S3 우 10행 : 74HC08 (U2, AND) — 네 회로 전부
+#   S4 우 21행 : 74HC32 (U3, OR)  — C2·C4 (C3 동안은 전원만 둔 채 쉰다)
+#
+# 자리를 이렇게 잡은 이유: 교차 배선이 전부 **입력 갈래**(A·B·Ci 가 좌 7·8·11행
+# 스트립에서 우측 AND 로 건너는 것)와 인버터 출력 둘(A'·(A⊕B)')뿐이라, 왼쪽
+# 블록에는 XOR·NOT·LED1 만 남고 AND→OR 은 우측 안에서 짧게 끝난다. netlist 초안은
+# 74HC08 을 좌 18행에 두었는데 그러면 감산기에서 좌우를 오가는 선이 여섯 가닥이다.
+#
+# 세로 차선(홀이 없는 여백):
+#   212 : 좌 레일~a열 사이 — LED1 급전 (XOR 출력 → 좌 a25 사슬)
+#   440 : 좌 j열~중앙 레일 사이 — A' (좌 74HC04 pin 2 → 우 74HC08 pin 1)
+#   452 : 같은 여백 — (A⊕B)' (좌 74HC04 pin 4 → 우 74HC08 pin 4)
+# 입력 갈래는 칩 위(4·5·6행)를 가로질러 우측 a·b·c 열로 내려간다 — 실험01
+# 복합회로의 A·B 갈래와 같은 꼴이다.
+#
+# LED 는 두 개뿐이다(교안 p8). LED1(합/차)은 좌 a25 사슬, LED2(올림/내림)는
+# 우 c29 사슬로 고정하고, 회로가 바뀌면 **급전선만** 옮긴다.
+#
+# 근거: `보고서/실험03/결선도/netlist.md` (C1~C4), `체크리스트/명세.md`.
+
+E3_SLOTS = {'S1': ('left', 7), 'S2': ('left', 18), 'S3': ('right', 10), 'S4': ('right', 21)}
+_E3_S1, _E3_S2, _E3_S3, _E3_S4 = (E3_SLOTS[k][1] for k in ('S1', 'S2', 'S3', 'S4'))
+_E3_LED1 = 25      # 좌 a25 사슬 — S / D
+_E3_LED2 = 29      # 우 c29 사슬 — C / Co / Bo
+_E3_LANE = 212     # 좌 여백 세로 차선 — LED1 급전
+_E3_LANE_A = 440   # 좌 j~중앙 레일 여백 — A' 건너감
+_E3_LANE_X = 452   # 같은 여백 — (A⊕B)' 건너감
+_E3_INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
+                  '빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
+_E3_LED_NOTE = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(C·Co·Bo). '
+                '회로가 바뀌어도 LED·저항은 그대로 두고 급전선만 옮긴다.')
+_E3_XOR_UNUSED = ([4, 5, 9, 10, 12, 13], [6, 8, 11])      # 게이트 1 만 쓸 때
+_E3_XOR2_UNUSED = ([9, 10, 12, 13], [8, 11])              # 게이트 1·2 를 쓸 때
+_E3_NOT_UNUSED = ([3, 5, 9, 11, 13], [4, 6, 8, 10, 12])   # 인버터 1 만
+_E3_NOT2_UNUSED = ([5, 9, 11, 13], [6, 8, 10, 12])        # 인버터 1·2
+_E3_OR_REST = ([1, 2, 4, 5, 9, 10, 12, 13], [3, 6, 8, 11])  # C3 동안 쉬는 74HC32
+
+
+def _e3_frame(bb):
+    """잭 + 레일 브리지 넷. 네 회로가 같은 홀을 쓴다 — 기준선 비교로 회색이 된다.
+
+    끝점이 있는 레일만 잇는다: 좌 바깥(잭·입력·좌 칩 pin 7·LED1) → 좌 중앙 →
+    우 중앙(우 칩 pin 7·LED2) 이 GND 사슬이고, 좌 바깥(잭) → 좌 중앙(좌 칩 pin 14)
+    → 우 바깥(우 칩 pin 14) 이 VCC 사슬이다. 좌 중앙 GND 는 중계 역할뿐이지만
+    우측 GND 로 가는 유일한 길이다.
+    """
+    c, r = bb.cols['left'], bb.cols['right']
+    bb.connect_jacks()
+    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
+    bb.bridge_rails(c['mid_gnd'], r['mid_gnd'], 31, kind='gnd')
+    bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
+    bb.bridge_rails(c['mid_vcc'], r['vcc'], 34, kind='vcc')
+
+
+def _e3_draw(bb, circuit, stage):
+    """네 회로의 공통 그리기. `circuit` 은 ha·fa·hs·fs, `stage` 는 1 또는 2(완성).
+
+    같은 배선은 네 회로에서 같은 헬퍼를 같은 순서로 부른다 — 레일 착지 행이 점유
+    순서로 정해지므로 순서가 다르면 같은 선이 다른 행에 앉아 기준선 비교가 깨진다.
+    순서: S1 칩 → 프레임 → S1·S3 전원 → 입력 A·B(·Ci/Bi) → LED1 → 우측 AND 쪽
+    → LED2 → S4 전원 → S2 전원.
+    """
+    c, r = bb.cols['left'], bb.cols['right']
+    L = bb.r_y
+    full = circuit in ('fa', 'fs')
+    sub = circuit in ('hs', 'fs')
+    cin = 'Bi' if sub else 'Ci'
+    sum_tag = 'D' if sub else 'S'
+    carry_tag = {'ha': 'C', 'fa': 'Co', 'hs': 'Bo', 'fs': 'Bo'}[circuit]
+    done = stage != 1
+    bb.partial = not done
+
+    # --- 좌 S1: XOR + 입력 + LED1 ---
+    bb.draw_chip('74HC86', _E3_S1)
+    _e3_frame(bb)
+    bb.connect_power(_E3_S1, gnd_col='b')
+    bb.connect_power(_E3_S3, block='right', gnd_col='a')
+    _input_jumper(bb, c, 7, 'A', '74HC86 pin 1')
+    _input_jumper(bb, c, 8, 'B', '74HC86 pin 2')
+    if full:
+        _input_jumper(bb, c, 11, cin, '74HC86 pin 5 (XOR2)')
+        bb.step_wire([(c['c'], L(9)), (c['c'], L(10))], 'mid',
+                     'XOR1 출력 A⊕B -> XOR2 입력 (pin 3 -> pin 4)', width=4,
+                     marker_at=(c['c'] - 18, L(10) + 9))
+    src_row, src_pin = (12, 6) if full else (9, 3)
+    bb.step_wire([(c['b'], L(src_row)), (_E3_LANE, L(src_row)),
+                  (_E3_LANE, L(_E3_LED1)), (c['a'], L(_E3_LED1))], 'sig',
+                 f'{sum_tag} = 74HC86 pin {src_pin} -> LED1',
+                 marker_at=(_E3_LANE + 13, L(19)))
+    sum_desc = {'ha': 'S = A⊕B — 진리표 T1 의 S 열', 'fa': 'S = A⊕B⊕Ci — 진리표 T3 의 S 열',
+                'hs': 'D = A⊕B — 진리표 T5 의 D 열', 'fs': 'D = A⊕B⊕Bi — 진리표 T7 의 D 열'}[circuit]
+    bb.led_chain(c['a'], _E3_LED1, sum_tag, sum_desc, color_rgb=(210, 140, 0))
+
+    if circuit == 'ha' and not done:
+        # 1단계: XOR 만. AND 자리(S3) 전원은 미리 꽂았고, LED2 사슬은 급전 없이 둔다
+        bb.led_chain(r['c'], _E3_LED2, carry_tag, '아직 급전하지 않는다 — 2단계에서 잇는다',
+                     block='right')
+        bb.mark_unused_inputs(_E3_XOR_UNUSED[0], _E3_S1, chip='74HC86')
+        bb.mark_unused_outputs(_E3_XOR_UNUSED[1], _E3_S1, chip='74HC86')
+        bb.note('1단계: 74HC86 게이트 1 만 검사한다. LED1 = S = A⊕B 를 네 조합 전부 본다 '
+                '(01·10 만 켜짐). 우 10행 전원 두 가닥은 2단계의 74HC08 자리다.')
+        bb.note(_E3_LED_NOTE)
+        bb.note(_E3_INPUT_NOTE)
+        return
+
+    # --- 우 S3: AND + 입력 갈래 ---
+    bb.draw_chip('74HC08', _E3_S3, block='right')
+    if not sub or (circuit == 'hs' and not done):
+        # A 갈래: 좌 d7 에서 칩 위 4행으로 올려 우 a4 → a10. 감산기는 인버터가
+        # 대신 pin 1 을 먹인다 (반감산기 1단계는 아직 이 선이 남아 있다)
+        bb.step_wire([(c['d'], L(7)), (c['d'], L(4)), (r['a'], L(4)), (r['a'], L(10))], 'sig',
+                     '입력 A 갈래 -> 74HC08 pin 1', width=2,
+                     marker_at=(r['a'] - 14, L(7)))
+    bb.step_wire([(c['c'], L(8)), (c['c'], L(5)), (r['b'], L(5)), (r['b'], L(11))], 'sig',
+                 '입력 B 갈래 -> 74HC08 pin 2', width=2,
+                 marker_at=(r['b'] + 14, L(8)))
+
+    if sub and (done or circuit == 'fs'):
+        # --- 좌 S2: NOT. A → pin 1, A' → 우 AND pin 1 (440 차선으로 건넌다) ---
+        # 반감산기 2단계에서 꽂고, 전감산기는 두 단계 모두 그대로 둔다
+        bb.draw_chip('74HC04', _E3_S2)
+        bb.step_wire([(c['d'], L(7)), (c['d'], L(_E3_S2))], 'sig',
+                     '입력 A 갈래 -> 74HC04 pin 1', width=2,
+                     marker_at=(c['d'] + 16, L(15)))
+        bb.step_wire([(c['c'], L(_E3_S2 + 1)), (c['c'], L(17)), (_E3_LANE_A, L(17)),
+                      (_E3_LANE_A, L(10)), (r['a'], L(10))], 'mid',
+                     "A' (74HC04 pin 2) -> 74HC08 pin 1",
+                     marker_at=(_E3_LANE_A - 14, L(13)))
+        if circuit == 'fs' and done:
+            bb.step_wire([(c['a'], L(9)), (c['a'], L(_E3_S2 + 2))], 'mid',
+                         'A⊕B (74HC86 pin 3) -> 74HC04 pin 3 (NOT2)',
+                         marker_at=(c['a'] - 20, L(15)))
+            bb.step_wire([(c['d'], L(_E3_S2 + 3)), (c['d'], L(25)), (_E3_LANE_X, L(25)),
+                          (_E3_LANE_X, L(13)), (r['a'], L(13))], 'mid',
+                         "(A⊕B)' (74HC04 pin 4) -> 74HC08 pin 4 (AND2)",
+                         marker_at=(_E3_LANE_X + 14, L(20)))
+
+    if full and done:
+        if circuit == 'fa':
+            bb.step_wire([(c['a'], L(9)), (c['a'], L(6)), (r['c'], L(6)), (r['c'], L(13))], 'mid',
+                         'A⊕B (74HC86 pin 3) -> 74HC08 pin 4 (AND2)',
+                         marker_at=(r['c'] + 14, L(8)))
+        bb.step_wire([(c['c'], L(11)), (c['c'], L(14)), (r['a'], L(14))], 'sig',
+                     f'입력 {cin} 갈래 -> 74HC08 pin 5 (AND2)', width=2,
+                     marker_at=(c['j'] + 12, L(14) - 12))
+
+    # --- 우 S4: OR (전가산기·전감산기), 반감산기 동안은 쉰다 ---
+    if full and done:
+        bb.draw_chip('74HC32', _E3_S4, block='right')
+        bb.step_wire([(r['d'], L(12)), (r['d'], L(_E3_S4 + 1))], 'mid',
+                     'AND1 출력 (74HC08 pin 3) -> 74HC32 pin 2',
+                     marker_at=(r['d'] + 16, L(18)))
+        bb.step_wire([(r['b'], L(15)), (r['b'], L(_E3_S4))], 'mid',
+                     'AND2 출력 (74HC08 pin 6) -> 74HC32 pin 1',
+                     marker_at=(r['b'] - 16, L(18)))
+        bb.step_wire([(r['c'], L(_E3_S4 + 2)), (r['c'], L(_E3_LED2))], 'sig',
+                     f'{carry_tag} = 74HC32 pin 3 -> LED2',
+                     marker_at=(r['c'] - 16, L(26)))
+    else:
+        tmp = "A'·B (임시)" if circuit == 'fs' else 'A·B (임시)'
+        bb.step_wire([(r['c'], L(12)), (r['c'], L(_E3_LED2))], 'sig',
+                     f'{carry_tag if not full else tmp} = 74HC08 pin 3 -> LED2',
+                     marker_at=(r['c'] - 16, L(20)))
+    carry_desc = {'ha': 'C = A·B — 진리표 T1 의 C 열',
+                  'fa': 'Co = A·B + (A⊕B)·Ci — 진리표 T3 의 Co 열',
+                  'hs': "Bo = A'·B — 진리표 T5 의 Bo 열 (교안 표기 B)",
+                  'fs': "Bo = A'·B + (A⊕B)'·Bi — 진리표 T7 의 Bo 열"}[circuit]
+    if full and not done:
+        carry_desc = (f"아직 앞 회로의 {'A' + chr(39) + '·B' if sub else 'A·B'} 가 켜진다 "
+                      "— 2단계에서 OR 출력으로 옮긴다")
+    bb.led_chain(r['c'], _E3_LED2, carry_tag, carry_desc, block='right')
+
+    # S4 전원: C2 1단계부터 미리 꽂아 두고, C3 동안 쉬는 74HC32 도 그대로 둔다 (netlist M9)
+    if circuit != 'ha':
+        bb.connect_power(_E3_S4, block='right')
+    if circuit == 'hs' or (circuit == 'fs' and not done):
+        bb.draw_chip('74HC32', _E3_S4, block='right')
+        bb.mark_unused_inputs(_E3_OR_REST[0], _E3_S4, block='right', chip='74HC32')
+        bb.mark_unused_outputs(_E3_OR_REST[1], _E3_S4, block='right', chip='74HC32')
+        bb.note('74HC32 는 뽑지 않는다 — 전원만 물린 채 입력 전부 개방으로 두고 C4 에서 다시 쓴다 '
+                '(netlist M9). LED 가 T5 와 다르면 먼저 이 칩을 뽑고 다시 본다.')
+    # S2 전원: C3 1단계부터 미리 (74HC04 자리)
+    if sub:
+        bb.connect_power(_E3_S2, gnd_col='a')
+
+    # --- 미사용 핀 등록 ---
+    xor_u = _E3_XOR2_UNUSED if full else _E3_XOR_UNUSED
+    bb.mark_unused_inputs(xor_u[0], _E3_S1, chip='74HC86')
+    bb.mark_unused_outputs(xor_u[1], _E3_S1, chip='74HC86')
+    and_u = _E3_XOR2_UNUSED if (full and done) else _E3_XOR_UNUSED
+    bb.mark_unused_inputs(and_u[0], _E3_S3, block='right', chip='74HC08')
+    bb.mark_unused_outputs(and_u[1], _E3_S3, block='right', chip='74HC08')
+    if full and done:
+        bb.mark_unused_inputs(_E3_XOR_UNUSED[0], _E3_S4, block='right', chip='74HC32')
+        bb.mark_unused_outputs(_E3_XOR_UNUSED[1], _E3_S4, block='right', chip='74HC32')
+    if sub and (done or circuit == 'fs'):
+        not_u = _E3_NOT2_UNUSED if (circuit == 'fs' and done) else _E3_NOT_UNUSED
+        bb.mark_unused_inputs(not_u[0], _E3_S2, chip='74HC04')
+        bb.mark_unused_outputs(not_u[1], _E3_S2, chip='74HC04')
+    bb.note(_E3_LED_NOTE)
+    bb.note(_E3_INPUT_NOTE)
+
+
+def build_e3_ha(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-1 · 반가산기 (74HC86 XOR + 74HC08 AND). netlist C1. 2단계.
+
+      stage 1  74HC86(S1) + LED1. S = A⊕B
+      stage 2  + 74HC08(S3, 우측) + A·B 갈래 + LED2 = 완성. C = A·B
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 1-1: 반가산기 — 1단계 (XOR, S = A⊕B)"
+    elif baseline is None:
+        title = "실험 1-1: 반가산기 결선도"
+    else:
+        title = "실험 1-1: 반가산기 — 2단계 (AND 추가, 완성)"
+    bb.set_header(title, "74HC86 (XOR) 게이트 1 → S · 74HC08 (AND) 게이트 1 → C · LED 2개, 330Ω 2개",
+                  submit=baseline is None)
+    _e3_draw(bb, 'ha', stage)
+    bb.export(output_path, max_row=36)
+    return bb
+
+
+def build_e3_fa(output_path, template_path=None, stage=None, baseline=None):
+    """실험 1-2 · 전가산기 (74HC86 ×2게이트 + 74HC08 ×2게이트 + 74HC32). netlist C2. 2단계.
+
+      stage 1  C1 위에 Ci 입력·XOR2 (pin 3→4, Ci→pin 5) · LED1 을 pin 6 으로. S = A⊕B⊕Ci
+      stage 2  + 74HC32(S4) + AND2 (A⊕B·Ci) + OR · LED2 를 OR 출력으로 = 완성
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 1-2: 전가산기 — 1단계 (XOR2 추가, S = A⊕B⊕Ci)"
+    elif baseline is None:
+        title = "실험 1-2: 전가산기 결선도"
+    else:
+        title = "실험 1-2: 전가산기 — 2단계 (AND2 + OR 추가, 완성)"
+    bb.set_header(title, "74HC86 XOR 2개 + 74HC08 AND 2개 + 74HC32 OR · Co = A·B + (A⊕B)·Ci",
+                  submit=baseline is None)
+    _e3_draw(bb, 'fa', stage)
+    bb.export(output_path, max_row=36)
+    return bb
+
+
+def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
+    """실험 2-1 · 반감산기 (74HC86 XOR + 74HC04 NOT + 74HC08 AND). netlist C3. 2단계.
+
+      stage 1  C2 의 전가산기 확장을 걷고 반가산기 꼴로 되돌린다 (LED2 는 임시로 A·B).
+               74HC32 는 전원만 둔 채 쉰다. S2 전원을 미리 꽂는다. D = A⊕B
+      stage 2  + 74HC04(S2) · A 갈래를 pin 1 로, A' 를 우 AND pin 1 로 = 완성. Bo = A'·B
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 2-1: 반감산기 — 1단계 (XOR 로 되돌림, D = A⊕B)"
+    elif baseline is None:
+        title = "실험 2-1: 반감산기 결선도"
+    else:
+        title = "실험 2-1: 반감산기 — 2단계 (NOT 추가, 완성)"
+    bb.set_header(title, "74HC86 (XOR) → D · 74HC04 (NOT) + 74HC08 (AND) → Bo = A'·B (교안 표기 B)",
+                  submit=baseline is None)
+    _e3_draw(bb, 'hs', stage)
+    bb.export(output_path, max_row=36)
+    return bb
+
+
+def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
+    """실험 2-2 · 전감산기 (네 칩 전부). netlist C4. 2단계. 새로 꽂는 칩은 없다.
+
+      stage 1  C3 위에 Bi 입력·XOR2 · LED1 을 pin 6 으로. D = A⊕B⊕Bi
+      stage 2  + NOT2 ((A⊕B)') + AND2 + OR · LED2 를 OR 출력으로 = 완성
+    """
+    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb.enable_steps()
+    if stage == 1:
+        title = "실험 2-2: 전감산기 — 1단계 (XOR2 추가, D = A⊕B⊕Bi)"
+    elif baseline is None:
+        title = "실험 2-2: 전감산기 결선도"
+    else:
+        title = "실험 2-2: 전감산기 — 2단계 (NOT2 + AND2 + OR, 완성)"
+    bb.set_header(title, "74HC86 XOR 2 + 74HC04 NOT 2 + 74HC08 AND 2 + 74HC32 OR · Bo = A'·B + (A⊕B)'·Bi",
+                  submit=baseline is None)
+    _e3_draw(bb, 'fs', stage)
+    bb.export(output_path, max_row=36)
+    return bb
+
+
+# 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
+# 실제로 남아 있는 것. 첫 보드(C1 1단계)는 기준선이 없다.
+E3_BOARDS = [
+    ("실험03_1-1_결선도_반가산기_1단계_XOR.png", build_e3_ha, 1),
+    ("실험03_1-1_결선도_반가산기_2단계_AND.png", build_e3_ha, None),
+    ("실험03_1-2_결선도_전가산기_1단계_XOR2.png", build_e3_fa, 1),
+    ("실험03_1-2_결선도_전가산기_2단계_OR.png", build_e3_fa, None),
+    ("실험03_2-1_결선도_반감산기_1단계_XOR.png", build_e3_hs, 1),
+    ("실험03_2-1_결선도_반감산기_2단계_NOT.png", build_e3_hs, None),
+    ("실험03_2-2_결선도_전감산기_1단계_XOR2.png", build_e3_fs, 1),
+    ("실험03_2-2_결선도_전감산기_2단계_Bo경로.png", build_e3_fs, None),
+]
+
+# 완성본 — 기준선 없이 전부 색. 예비보고서에 싣고 손으로 따라 그리는 원도다.
+E3_FINALS = [
+    ("실험03_1-1_결선도_반가산기.png", build_e3_ha),
+    ("실험03_1-2_결선도_전가산기.png", build_e3_fa),
+    ("실험03_2-1_결선도_반감산기.png", build_e3_hs),
+    ("실험03_2-2_결선도_전감산기.png", build_e3_fs),
+]
+
+
+def _e3_baseline(index, template_path=None):
+    """`E3_BOARDS[index]` 의 기준선 = 바로 앞 보드의 `snapshot()`. 첫 보드는 None."""
+    if index == 0:
+        return None
+    _name, fn, stage = E3_BOARDS[index - 1]
+    with tempfile.TemporaryDirectory() as d:
+        return fn(os.path.join(d, 'prev.png'), template_path, stage=stage).snapshot()
+
+
+def _e3_board(index, output_path, template_path=None):
+    _name, fn, stage = E3_BOARDS[index]
+    return fn(output_path, template_path, stage=stage,
+              baseline=_e3_baseline(index, template_path))
+
+
+def build_e3_ha_s1(output_path, template_path=None):
+    """C1 1단계 — 74HC86 + LED1. S = A⊕B 네 조합."""
+    return _e3_board(0, output_path, template_path)
+
+
+def build_e3_ha_s2(output_path, template_path=None):
+    """C1 2단계 — 74HC08 을 더해 완성."""
+    return _e3_board(1, output_path, template_path)
+
+
+def build_e3_fa_s1(output_path, template_path=None):
+    """C2 1단계 — Ci 와 XOR2. LED1 급전을 pin 6 으로 옮긴다."""
+    return _e3_board(2, output_path, template_path)
+
+
+def build_e3_fa_s2(output_path, template_path=None):
+    """C2 2단계 — 74HC32 와 AND2 를 더해 완성."""
+    return _e3_board(3, output_path, template_path)
+
+
+def build_e3_hs_s1(output_path, template_path=None):
+    """C3 1단계 — 전가산기 확장을 걷고 XOR 로 되돌린다."""
+    return _e3_board(4, output_path, template_path)
+
+
+def build_e3_hs_s2(output_path, template_path=None):
+    """C3 2단계 — 74HC04 를 더해 완성."""
+    return _e3_board(5, output_path, template_path)
+
+
+def build_e3_fs_s1(output_path, template_path=None):
+    """C4 1단계 — Bi 와 XOR2. LED1 급전을 pin 6 으로 옮긴다."""
+    return _e3_board(6, output_path, template_path)
+
+
+def build_e3_fs_s2(output_path, template_path=None):
+    """C4 2단계 — NOT2·AND2·OR 을 더해 완성."""
+    return _e3_board(7, output_path, template_path)
+
+
+def build_e3_all(output_dir, template_path=None):
+    """실험 3 결선도 12장 — 절차 8장(기준선 사슬) + 완성본 4장(기준선 없음)."""
+    os.makedirs(output_dir, exist_ok=True)
+    base = None
+    for filename, fn, stage in E3_BOARDS:
+        bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+        base = bb.snapshot()
+    for filename, fn in E3_FINALS:
+        fn(os.path.join(output_dir, filename), template_path)
+    print(f"[SUCCESS] 실험03 결선도 {len(E3_BOARDS) + len(E3_FINALS)}장 생성: {output_dir}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Breadboard Diagram Generator")
     parser.add_argument("--circuit", required=True, choices=[
         "e1_and", "e1_or", "e1_or_s1", "e1_nand", "e1_nand_s1", "e1_nand_s2",
         "e1_nor", "e1_nor_s1", "e1_nor_s2",
         "e1_comb", "e1_comb_s1", "e1_comb_s2", "e1_comb_s3", "e1_all",
-        "e2_inv", "e2_schmitt", "e2_schmitt_s1", "e2_tpd", "e2_tpd_s1", "e2_tpd_s2", "e2_all"
+        "e2_inv", "e2_schmitt", "e2_schmitt_s1", "e2_tpd", "e2_tpd_s1", "e2_tpd_s2", "e2_all",
+        "e3_ha", "e3_ha_s1", "e3_ha_s2", "e3_fa", "e3_fa_s1", "e3_fa_s2",
+        "e3_hs", "e3_hs_s1", "e3_hs_s2", "e3_fs", "e3_fs_s1", "e3_fs_s2", "e3_all"
     ], help="Circuit ID to render")
-    parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e1_all / e2_all)")
+    parser.add_argument("--output", required=True, help="Output PNG path (or directory path for e1_all / e2_all / e3_all)")
     parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
     args = parser.parse_args()
 
@@ -2153,6 +2542,19 @@ def main():
         "e2_tpd_s1": build_e2_tpd_s1,
         "e2_tpd_s2": build_e2_tpd_s2,
         "e2_all": build_e2_all,
+        "e3_ha": build_e3_ha,
+        "e3_ha_s1": build_e3_ha_s1,
+        "e3_ha_s2": build_e3_ha_s2,
+        "e3_fa": build_e3_fa,
+        "e3_fa_s1": build_e3_fa_s1,
+        "e3_fa_s2": build_e3_fa_s2,
+        "e3_hs": build_e3_hs,
+        "e3_hs_s1": build_e3_hs_s1,
+        "e3_hs_s2": build_e3_hs_s2,
+        "e3_fs": build_e3_fs,
+        "e3_fs_s1": build_e3_fs_s1,
+        "e3_fs_s2": build_e3_fs_s2,
+        "e3_all": build_e3_all,
     }
     dispatch[args.circuit](args.output, args.template)
 

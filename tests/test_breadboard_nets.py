@@ -304,7 +304,8 @@ class R5(unittest.TestCase):
         # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
         # 2026-09-13 실험02 재저작: Rn·Rp 가 빠지고(배포본 교안에 없다) 절차 래퍼
         # 3개(e2_schmitt_s1·e2_tpd_s1/_s2)가 늘어 실험01 13 + 실험02 6 = 19 다.
-        self.assertEqual(len(builders), 19)
+        # 2026-09-14 실험03: 회로 4 + 절차 래퍼 8 = 12 가 늘어 31 이다.
+        self.assertEqual(len(builders), 31)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

@@ -230,5 +230,77 @@ class WiringE2(unittest.TestCase):
         self.assertEqual(bb.steps[0]['desc'], '좌 7행 칩 교체')
 
 
+class WiringE3(unittest.TestCase):
+    """실험03 — 같은 규약(슬롯·기준선·단계)을 따르는지. 정본은
+    `보고서/실험03/결선도/netlist.md` 다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.tmp = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def _netlist(self):
+        from scripts.lab import config
+        from scripts.lab.netlist_parser import parse_netlist
+        return parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(3), '결선도', 'netlist.md'))
+
+    def test_빌더_칩_자리가_netlist_자리표와_같다(self):
+        import re
+        from scripts.lab import md
+        layouts = self._netlist().of_kind('layout')
+        self.assertEqual(len(layouts), 1)
+        table = md.parse_tables(layouts[0].body)[0]
+        slots = {}
+        for row in table.rows:
+            m = re.match(r'(좌|우)\s*(\d+)행', row[1])
+            self.assertIsNotNone(m, row)
+            slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
+        self.assertEqual(slots, self.mod.E3_SLOTS)
+
+    def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
+        seats = set(self.mod.E3_SLOTS.values())
+        for name, fn, stage in self.mod.E3_BOARDS:
+            with self.subTest(board=name):
+                bb = fn(os.path.join(self.tmp, name), stage=stage)
+                for ch in bb.wiring()['chips']:
+                    self.assertIn((ch['block'], ch['pin1_row']), seats)
+
+    def test_보드_사슬은_8장_완성본은_4장이다(self):
+        self.assertEqual(len(self.mod.E3_BOARDS), 8)
+        self.assertEqual(len(self.mod.E3_FINALS), 4)
+        names = [n for n, _f, _s in self.mod.E3_BOARDS] + [n for n, _f in self.mod.E3_FINALS]
+        self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
+        self.assertNotIn(self.mod.E3_BOARDS[-1][0], [n for n, _f in self.mod.E3_FINALS])
+
+    def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
+        netlist = self._netlist()
+        wanted = set()
+        for c in netlist.circuits:
+            if c.diagram:
+                wanted.add(c.diagram)
+            for st in c.stages:
+                wanted.add(st['diagram'])
+        made = {n for n, _f, _s in self.mod.E3_BOARDS} | {n for n, _f in self.mod.E3_FINALS}
+        self.assertEqual(wanted, made)
+
+    def test_전감산기_1단계는_반감산기를_뜯지_않는다(self):
+        """C3→C4 는 네 칩이 전부 자리에 있다 — 뽑는 칩도 걷는 인버터 배선도 없다.
+        처음 저작에서 74HC04·74HC32 가 "뽑는다" 로 나왔던 결함의 회귀 방지다."""
+        base = self.mod.build_e3_hs(os.path.join(self.tmp, 'hs.png')).snapshot()
+        bb = self.mod.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), stage=1, baseline=base)
+        removed = bb.removed()
+        self.assertFalse(any('뽑는다' in r for r in removed), removed)
+        self.assertEqual(len(removed), 1, removed)   # LED1 급전선 하나만 옮긴다
+
+    def test_반감산기_1단계는_전가산기_확장_여덟_가닥을_걷는다(self):
+        base = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa.png')).snapshot()
+        bb = self.mod.build_e3_hs(os.path.join(self.tmp, 'hs1.png'), stage=1, baseline=base)
+        self.assertEqual(len(bb.removed()), 8, bb.removed())
+
+
 if __name__ == '__main__':
     unittest.main()

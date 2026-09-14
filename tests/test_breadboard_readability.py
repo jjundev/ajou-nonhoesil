@@ -61,7 +61,8 @@ class BuilderApiContract(unittest.TestCase):
         for n in tree.body:
             if isinstance(n, ast.FunctionDef) and (
                     n.name.startswith("build_") or n.name.startswith("_build_")
-                    or n.name.startswith("_e1_") or n.name.startswith("_e2_")):
+                    or n.name.startswith("_e1_") or n.name.startswith("_e2_")
+                    or n.name.startswith("_e3_")):
                 yield n
 
     def _calls(self, node, attr):
