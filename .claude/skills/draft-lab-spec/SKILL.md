@@ -389,6 +389,7 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    except SpecError as e:
        print('SPEC-ERROR:', e); raise SystemExit(1)
    for f in validate.check_folder_convention(p, spec): print(f)
+   for f in validate.check_item_scope(spec): print(f)
    for f in validate.validate_spec(spec): print(f)
    for f in validate.check_manual_quotes(
            p.read_text(encoding='utf-8'),

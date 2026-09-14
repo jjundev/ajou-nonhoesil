@@ -58,6 +58,7 @@ class LiveSpecCorpus(unittest.TestCase):
                 spec = parse_spec(path)
                 errors = [f for f in
                           validate.check_folder_convention(path, spec)
+                          + validate.check_item_scope(spec)
                           + validate.validate_spec(spec)
                           if f.level == "error"]
                 self.assertEqual(errors, [],

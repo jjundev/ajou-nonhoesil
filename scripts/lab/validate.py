@@ -562,6 +562,46 @@ def check_folder_convention(spec_path, spec) -> list:
     return out
 
 
+def check_item_scope(spec) -> list:
+    """명세 항목이 이번 학기 소실험 범위(`config.EXPERIMENT_SCOPE`)와 맞는지 본다.
+
+    조교 공지 `_350547_1`(2026-09-14)로 실험2 부터는 지정 소실험만 실험실에서
+    한다. 명세는 실험실에서 하는 것만 싣는다 — 체크리스트·`기록.md`·보고서 표
+    대조·항목 수가 전부 `spec.items` 를 돌기 때문이다.
+
+    **`validate_spec` 에 넣지 않는다.** `check_folder_convention` 처럼 명세 자체가
+    아니라 실제 강의 방침에 매인 검사다. 픽스처(`spec_manual_outputs.md` 는
+    `experiment: 3` 에 반가산기·반감산기를 둔다)가 명세 문법의 표본으로 쓰는
+    항목까지 막게 된다.
+
+    두 방향을 본다 — 범위 밖 항목(뺄 것), 그리고 어느 항목에도 맞지 않는 범위
+    번호(교안 번호가 공지와 다르거나 항목이 빠진 것).
+    """
+    try:
+        tokens = config.scope_tokens(spec.experiment)
+    except (TypeError, ValueError) as e:
+        # 반쯤 망가진 명세에도 검토는 끝까지 돈다. 번호 자체는 폴더 검사가 따로 잡는다
+        return [Finding("error", spec.path.name,
+                        f"명세의 experiment 값으로 범위를 찾을 수 없다: {e}")]
+    if tokens is None:
+        return []
+    shown = ", ".join(tokens)
+    out = []
+    for item in spec.items:
+        if not config.item_in_scope(spec.experiment, item.id):
+            out.append(Finding("error", f"{spec.path.name}:{item.id}",
+                f"항목 {item.id} 는 실험{spec.experiment} 범위({shown}) 밖이다 — "
+                "조교 공지 `_350547_1` 로 실험실에서 하지 않는 소실험이다. "
+                "명세에서 뺀다(`config.EXPERIMENT_SCOPE`)"))
+    for token in tokens:
+        if not any(config.token_covers(token, item.id) for item in spec.items):
+            out.append(Finding("error", spec.path.name,
+                f"범위 번호 `{token}` 에 맞는 항목이 없다 — 교안 항목 번호가 공지와 "
+                "다르거나 항목이 빠졌다. 교안에서 그 번호를 확인한다"
+                "(`config.EXPERIMENT_SCOPE`)"))
+    return out
+
+
 def check_netlist(netlist_path, spec) -> list:
     """플로팅 입력은 이 과목의 대표 실패 원인이다. 누락을 error 로 잡는다."""
     path = Path(netlist_path)

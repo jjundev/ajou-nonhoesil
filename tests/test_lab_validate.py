@@ -23,6 +23,23 @@ def spec_from(text):
     return parse_spec(path)
 
 
+def scoped_spec(experiment, item_ids):
+    """범위 검사용 최소 명세 — 항목마다 표 하나."""
+    items = "".join(
+        f"  - id: {i}\n    title: {i}\n    device: [LED]\n"
+        f"    ics: [\"74HC08\"]\n    tables: [T{n}]\n"
+        for n, i in enumerate(item_ids, start=1))
+    tables = "".join(
+        f"\n## T{n} · 표 {n}\n\n- kind: truth-table\n- encoding: 0/1\n"
+        "- source: manual:p1\n\n| A | Y |\n|---|---|\n| 0 | 0 |\n| 1 | 1 |\n"
+        for n in range(1, len(item_ids) + 1))
+    return spec_from(
+        "---\nschema: lab-spec/v2\n"
+        f"experiment: {experiment}\ntitle: 범위\nsource_manual: x.pdf\n"
+        'power: {VCC: "+5V", GND: "GND"}\n'
+        f"items:\n{items}---\n{tables}")
+
+
 HEAD = """---
 schema: lab-spec/v2
 experiment: 1
@@ -2140,6 +2157,37 @@ class SharedLetter(unittest.TestCase):
         self.assertEqual([f.level for f in found], ["info"])
         self.assertIn("열 `B` 이 한 표 안에서 입력이자 출력이다 (T5·T6)", found[0].message)
         self.assertNotIn("표마다", found[0].message)
+
+
+class TestItemScope(unittest.TestCase):
+    """조교 공지 `_350547_1` — 명세는 실험실에서 하는 소실험만 싣는다."""
+
+    def test_범위와_맞으면_조용하다(self):
+        spec = scoped_spec(3, ["E3.P1-2", "E3.P2-2"])
+        self.assertEqual(validate.check_item_scope(spec), [])
+
+    def test_범위가_없는_실험은_보지_않는다(self):
+        spec = scoped_spec(1, ["E1.P1-1", "E1.P3"])
+        self.assertEqual(validate.check_item_scope(spec), [])
+
+    def test_범위_밖_항목은_error(self):
+        found = validate.check_item_scope(scoped_spec(3, ["E3.P1-1", "E3.P1-2", "E3.P2-2"]))
+        self.assertEqual([(f.level, f.where) for f in found], [("error", "명세.md:E3.P1-1")])
+        self.assertIn("_350547_1", found[0].message)
+
+    def test_범위_번호에_맞는_항목이_없으면_error(self):
+        found = validate.check_item_scope(scoped_spec(3, ["E3.P1-2"]))
+        self.assertEqual([(f.level, f.where) for f in found], [("error", "명세.md")])
+        self.assertIn("`2-2`", found[0].message)
+
+    def test_가지_없는_토큰은_가지_항목으로_채워진다(self):
+        spec = scoped_spec(7, ["E7.P1-1", "E7.P1-2"])
+        self.assertEqual(validate.check_item_scope(spec), [])
+
+    def test_validate_spec_은_범위를_보지_않는다(self):
+        """픽스처가 명세 문법의 표본으로 범위 밖 항목을 쓴다(`spec_manual_outputs.md`)."""
+        spec = scoped_spec(3, ["E3.P1-1", "E3.P1-2", "E3.P2-2"])
+        self.assertFalse(any("_350547_1" in f.message for f in validate.validate_spec(spec)))
 
 
 if __name__ == "__main__":

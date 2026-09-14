@@ -65,6 +65,11 @@ Task 1 리뷰에서 발견된 세 번째 스키마 파손이다(첫 번째는 �
 실험1 준비물엔 `74HC86` 이 있지만 어느 항목도 XOR 회로를 구성하지 않으므로
 `ics` 어디에도 넣지 않는다(예비용 또는 다른 연도 잔재로 판단).
 
+**범위** — 명세에는 그 학기 실험실에서 하는 소실험만 싣는다(`config.EXPERIMENT_SCOPE`,
+조교 공지 `_350547_1`). 범위 밖 교안 항목은 id 를 비워 두지 않고 아예 싣지 않는다.
+남은 항목의 id·표 ID 는 다시 매기지 않는다 — 실험03 은 `E3.P1-2`·`E3.P2-2`, `T3`·`T4`·
+`T7`·`T8` 이다. `check_item_scope` 가 두 방향(범위 밖 항목, 항목 없는 범위 번호)을 잡는다.
+
 본문에 흔히 나오는 `# <id> · <제목>` 최상위 헤딩(실물: `# E1.P1-1 · 실험 1-1)
 3-input AND gate 구성`)은 **순수 장식이다 — 계약에 없다.** 항목과 표의 결합은
 오직 프론트매터 `items[].tables` 리스트로만 이뤄지고, 표가 본문에서 어느 `#`
@@ -213,6 +218,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
 | 교안 인용이 `source_manual` 텍스트 추출본에 없다 | `교안`·`강의노트` 가 같은 줄에 있는 큰따옴표 인용 | info (래스터면 오탐이라 막지 않는다) |
 | 진리표 열 이름이 강의노트 쪽 텍스트에 없다 | `truth-table` — `manual:pN` 표는 머리 토큰열이 그 쪽에 연속으로, 파생표는 열 이름이 항목 `pages` 쪽에 | error (텍스트 층이 없는 쪽은 info, 파생표 항목에 `pages` 가 없어도 error) |
+| 항목이 소실험 범위(`config.EXPERIMENT_SCOPE`) 밖이거나, 범위 번호에 맞는 항목이 없다 | `EXPERIMENT_SCOPE` 에 있는 실험(2~10) | error (`validate_spec` 밖 — 아래 산문) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
@@ -227,8 +233,11 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
 `check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 교안 인용
 대조는 `check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
-맡는데, 이 둘만 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
-가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다).
+맡는데, 이 둘은 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
+가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다). 소실험 범위는
+`check_item_scope`(error)가 맡고 역시 `validate_spec` 밖이다 — 명세가 아니라 강의
+방침(`config.EXPERIMENT_SCOPE`)에 매여 있어서, 명세 문법의 표본인 픽스처까지 막지 않게
+`check_folder_convention` 처럼 따로 부른다.
 `items[].tables` ↔ 본문 헤딩 일치 한 줄만은 이 목록에서도 예외라 두 파일에
 걸친다 — 항목이 없는 표를 가리키면 `spec_parser.parse_spec`이 파싱 단계에서
 막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의

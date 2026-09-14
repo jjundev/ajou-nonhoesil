@@ -79,6 +79,8 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print('SPEC-ERROR:', e); raise SystemExit(1)
    for f in validate.check_folder_convention(spec_path, spec):
        print(f)
+   for f in validate.check_item_scope(spec):
+       print(f)
    for f in validate.validate_spec(spec):
        print(f)
    for f in validate.check_netlist('<실험NN>/결선도/netlist.md', spec):
