@@ -217,8 +217,14 @@ class TestInlineComments(unittest.TestCase):
     def test_comment_after_an_inline_mapping_is_stripped(self):
         self.assertEqual(md.parse_block("p: {x: 1} # 뒤")["p"], {"x": 1})
 
-    def test_real_record_file_marks_unfilled_as_none(self):
-        text = (ROOT / config.experiment_dir(1) / "체크리스트/기록.md").read_text(encoding="utf-8")
+    def test_unfilled_record_marks_filled_by_as_none(self):
+        """`record.derive_record` 가 내는 머리 그대로다 — `~` 뒤 주석이 값에 섞이면 안 된다.
+
+        예전에는 실험01 실물 `기록.md` 를 읽었는데, 실험을 마친 뒤 `hand` 로 채워져
+        (2026-09-12 `e8a870a`) 테스트가 데이터 상태에 묶여 깨졌다.
+        """
+        text = ("---\nschema: lab-record/v2\nexperiment: 1\nspec: 명세.md\n"
+                "filled_by: ~          # hand | vision | 미기입\n---\n\n# 기록\n")
         front, _ = md.split_frontmatter(text)
         self.assertIsNone(front["filled_by"])
 

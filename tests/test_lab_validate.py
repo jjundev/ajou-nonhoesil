@@ -597,12 +597,15 @@ class TestReportSections(unittest.TestCase):
         self.assertTrue(any("항목마다 반복" in f.message for f in findings))
 
     def test_optional_sections_are_not_required(self):
+        """`generate: false` 섹션(퀴즈 해설)은 없어도 누락이 아니다. `추가 공부` 는
+        2026-09-12 부터 생성 대상이라 가짜 보고서에도 넣는다."""
         fmt = config.load_report_format(ROOT)
         tmp = Path(tempfile.mkdtemp()) / "보고서.md"
-        tmp.write_text("# 실험 결과\n# 예비 비교\n# 결과 분석\n# 고찰\n",
-                       encoding="utf-8")
+        tmp.write_text("# 실험 결과\n# 예비보고서와의 비교\n# 결과 분석\n# 고찰\n"
+                       "# 추가 공부\n", encoding="utf-8")
         findings = validate.check_report_sections(tmp, fmt.result)
-        self.assertTrue(all("추가 공부" not in f.message for f in findings))
+        self.assertTrue(all("퀴즈" not in f.message for f in findings),
+                        [str(f) for f in findings])
 
 
 class TestRenderedHtmlChecks(unittest.TestCase):

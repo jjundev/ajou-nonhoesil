@@ -202,17 +202,22 @@ class TestReportFormat(unittest.TestCase):
         )
 
     def test_intersection_result_report_covers_grading_rubric(self):
-        """평가기준.txt(권위 2순위)가 요구하는 결보 섹션이 전부 있어야 한다."""
+        """평가기준.txt(권위 2순위)가 요구하는 결보 섹션이 전부 있어야 한다.
+
+        `예비 비교` 는 평가기준 원문이다. 2026-09-12 `e8a870a` 에서 사용자 요청으로
+        `예비보고서와의 비교` 로 풀어 썼다(`.claude/보고서양식.md` 머리말).
+        """
         fmt = config.load_report_format(ROOT)
         names = [s.name for s in fmt.result]
-        for required in ["실험 결과", "예비 비교", "결과 분석", "고찰", "추가 공부"]:
+        for required in ["실험 결과", "예비보고서와의 비교", "결과 분석", "고찰", "추가 공부"]:
             self.assertIn(required, names)
 
     def test_optional_sections_are_not_generated(self):
+        """`generate: false` 는 지어낼 수 없는 섹션이다. 2026-09-12 에 `추가 공부` 가
+        생성 대상이 되면서 남은 것은 퀴즈 해설 하나다."""
         fmt = config.load_report_format(ROOT)
-        optional = [s for s in fmt.result if s.name == "추가 공부"]
-        self.assertEqual(len(optional), 1)
-        self.assertFalse(optional[0].generate)
+        optional = [s.name for s in fmt.result if not s.generate]
+        self.assertEqual(optional, ["퀴즈문제에 대한 해설"])
 
     def test_repeat_per_item_flag_survives(self):
         """항목반복형은 결보 29편 중 14편의 실제 구조다 (R2)."""
