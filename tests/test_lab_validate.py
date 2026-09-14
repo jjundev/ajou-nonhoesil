@@ -1587,7 +1587,7 @@ class ColumnRoles(unittest.TestCase):
 
     실험01 이 실물이다 — `C` 가 T1~T4 에서는 세 번째 **입력**이고 T6~T9 에서는
     **출력**이다. 교안 p5·p6·p8·p9 가 `INPUT(A, B) / OUTPUT(C)` 2단 헤더를
-    쓰는데 명세가 한 줄로 누르면서 구분이 사라졌다. 규칙 5(한 표 안 유일)는
+    쓰는데 명세가 한 줄로 누르면서 구분이 사라졌다. 파서의 중복 열 거절(한 표 안)은
     표 *안*만 보므로 이 자리를 못 본다.
     """
 
@@ -1919,7 +1919,7 @@ class SharedLetter(unittest.TestCase):
         found = [f for f in validate.check_boolean(spec_from(text)) if f.level == "error"]
         self.assertEqual(len(found), 1, "\n".join(str(f) for f in found))
         self.assertTrue(found[0].where.endswith("T5 행2"), found[0].where)
-        self.assertIn("A=0, B=1 일 때 B = A'·B = 1 인데 표에는 '0' 이다",
+        self.assertIn("A=0, B(2열)=1 일 때 B(4열) = A'·B = 1 인데 표에는 '0' 이다",
                       found[0].message)
 
     def test_보고서_표가_교안_머리_그대로면_조용하다(self):
@@ -1928,7 +1928,7 @@ class SharedLetter(unittest.TestCase):
     def test_둘째_B_를_빼면_출력_열이_빠졌다고_짚는다(self):
         """이름 집합으로 보면 `B` 가 이미 있어 빠진 열이 없는 것처럼 보인다."""
         self.assertEqual([f.message for f in self._report(["A", "B", "D"], [0, 1, 2])],
-                         ["명세 T5 의 열 B 이 보고서 표에 없다 (명세: `A B D B`)"])
+                         ["명세 T5 의 열 B(4열) 이 보고서 표에 없다 (명세: `A B D B`)"])
 
     def test_Bo_로_바꾸면_머리가_다르다고_짚는다(self):
         found = self._report(["A", "B", "D", "Bo"], [0, 1, 2, 3])
@@ -1943,6 +1943,13 @@ class SharedLetter(unittest.TestCase):
         self.assertIn("2번째 행", found[0].message)
         self.assertIn("보고서 ['0', '1', '1', '0'] · 명세 ['0', '1', '1', '1']",
                       found[0].message)
+
+    def test_한_표_안의_같은_글자는_따로_알린다(self):
+        """"표마다 뜻이 다르다" 가 아니다 — 같은 표 안에서 입력이자 출력이다."""
+        found = validate.check_column_roles(self.spec)
+        self.assertEqual([f.level for f in found], ["info"])
+        self.assertIn("열 `B` 이 한 표 안에서 입력이자 출력이다 (T5·T6)", found[0].message)
+        self.assertNotIn("표마다", found[0].message)
 
 
 if __name__ == "__main__":

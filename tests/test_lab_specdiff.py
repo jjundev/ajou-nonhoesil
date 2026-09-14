@@ -60,6 +60,14 @@ class CompareSpecs(unittest.TestCase):
         diffs = compare_specs(EDGE, target)
         self.assertTrue(any("encoding" in d for d in diffs), diffs)
 
+    def test_같은_글자_열의_셀_차이는_자리로_부른다(self):
+        """실험3 반감산기 `A B D B` — 입력 B 와 출력 B 중 어느 쪽이 갈렸는지 말한다."""
+        shared = ROOT / "tests/fixtures/spec_shared_letter.md"
+        target = self._mutated("| 0 | 1 | 1 | 1 |", "| 0 | 1 | 1 | 0 |", source=shared)
+        diffs = compare_specs(shared, target)
+        self.assertEqual(len(diffs), 1, diffs)
+        self.assertIn("표 T5 행2 B(4열): 원본 '1' / 재생성 '0'", diffs[0])
+
     def test_source_가_바뀌면_잡는다(self):
         target = self._mutated("- source: manual:p9", "- source: manual:p99")
         diffs = compare_specs(EDGE, target)

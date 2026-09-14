@@ -21,7 +21,7 @@ from collections import Counter
 from pathlib import Path
 
 from . import md
-from .spec_parser import _T_HEAD, parse_spec
+from .spec_parser import _T_HEAD, column_label, parse_spec
 
 # 대조 대상. **여기 없는 필드는 달라도 결함이 아니다.**
 # `title` 셋(명세·항목·표)은 2026-09-01 에 들어왔다. 명세·항목 `title` 은
@@ -454,6 +454,6 @@ def _cells(tid, a, b) -> list:
             continue
         for i, (ca, cb) in enumerate(zip(ra, rb)):
             if ca != cb:
-                col = a.header[i] if i < len(a.header) else f"열{i + 1}"
+                col = column_label(a.header, i) if i < len(a.header) else f"열{i + 1}"
                 out.append(f"표 {tid} 행{n} {col}: 원본 {ca!r} / 재생성 {cb!r}")
     return out

@@ -262,3 +262,13 @@ def split_columns(table):
     """
     inputs, outputs = split_indices(table)
     return [table.header[i] for i in inputs], [table.header[i] for i in outputs]
+
+
+def column_label(header, i):
+    """열 번호 `i` 를 메시지용 이름으로. 한 표에 같은 이름이 둘 이상이면 자리를 붙인다.
+
+    실험3 반감산기 `A B D B` 에서 넷째 열은 `B(4열)` 이다. 판정은 `split_indices` 로
+    자리를 가르지만 메시지가 이름만 쓰면 입력 `B` 인지 출력 `B` 인지 갈리지 않는다.
+    """
+    name = header[i]
+    return f"{name}({i + 1}열)" if header.count(name) > 1 else name

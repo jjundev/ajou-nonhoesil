@@ -4,7 +4,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.spec_parser import (SpecError, derived_parts, parse_spec,
+from scripts.lab.spec_parser import (SpecError, column_label, derived_parts, parse_spec,
                                      split_columns, split_indices)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -272,6 +272,12 @@ class TestSharedLetter(unittest.TestCase):
         with self.assertRaises(SpecError) as ctx:
             parse_spec(target)
         self.assertIn("T6", str(ctx.exception))
+
+    def test_column_label_은_같은_글자에만_자리를_붙인다(self):
+        header = ["A", "B", "D", "B"]
+        self.assertEqual([column_label(header, i) for i in range(4)],
+                         ["A", "B(2열)", "D", "B(4열)"])
+        self.assertEqual(column_label(["A", "B", "S", "C"], 3), "C")
 
 
 class TestErrors(unittest.TestCase):

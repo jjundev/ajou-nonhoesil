@@ -14,7 +14,7 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.regen_compare import compare_netlist_pins, pin_nets
+from scripts.lab.regen_compare import _endpoint, compare_netlist_pins, pin_nets
 
 ROOT = Path(__file__).resolve().parents[1]
 E01 = ROOT / config.experiment_dir(1)
@@ -91,6 +91,19 @@ class PinNets(unittest.TestCase):
         v = _variant([("  - 미사용 입력핀: pin 5, 6, 8, 9, 11, 12 → 개방 (접지 생략 — 공통 규칙)\n",
                        "  - 미사용 입력핀 (M1 을 닫은 뒤에만): pin 5, 6, 8, 9, 11, 12 → 개방 (접지 생략 — 공통 규칙)\n")])
         self.assertEqual(compare_netlist_pins(NETLIST, v), [])
+
+
+class LedEndpoint(unittest.TestCase):
+    """netlist 의 LED 끝점. 실험03 netlist 는 `LED1 애노드`·`LED2 애노드` 로 적는다."""
+
+    def test_LED_번호_꼴을_LED_로_읽는다(self):
+        self.assertEqual(
+            _endpoint("LED2 애노드 (330Ω 직렬) → GND    ※ B = A'·B", {}, "U2"),
+            ("LED", "LED2"))
+
+    def test_실험01_꼴은_그대로다(self):
+        self.assertEqual(_endpoint("LED_L1", {}, "U1"), ("LED", "L1"))
+        self.assertEqual(_endpoint("L2", {}, "U1"), ("LED", "L2"))
 
 
 from scripts.lab.regen_compare import (classify_spec_diffs, judgment_markdown,

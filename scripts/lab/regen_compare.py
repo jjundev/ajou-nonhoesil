@@ -23,7 +23,10 @@ _UNUSED_HEAD = re.compile(r"미사용\s*(입력|출력)핀")
 _OTHER_PIN = re.compile(r"U(\d+)[ .]*pin\s*(\d+)")
 _SELF_PIN = re.compile(r"^pin\s*(\d+)$")
 _INPUT = re.compile(r"입력\s*([A-Z]\w*)")
-_LED = re.compile(r"LED_?([A-Z]\w*)|\bL(\d)\b")
+# LED 끝점. `LED_L1`·`L1`(실험01) 과 `LED1`·`LED2`(실험03 netlist 의 "LED1 애노드")
+# 를 읽는다. 2026-09-14 전에는 `LED2` 를 못 읽어 그 줄이 뒤의 "→ GND" 로 떨어져
+# `('GND',)` 가 됐다 — 원본·재생성이 똑같이 틀려 차이는 안 났지만 간선 하나를 잃었다.
+_LED = re.compile(r"LED_?([A-Z]\w*)|\bL(\d)\b|\b(LED\d+)\b")
 
 
 def _clean(text: str) -> str:
@@ -45,7 +48,7 @@ def _endpoint(text: str, umap: dict, self_key: str):
         return ("IN", m.group(1))
     m = _LED.search(t)
     if m:
-        return ("LED", m.group(1) or f"L{m.group(2)}")
+        return ("LED", m.group(1) or m.group(3) or f"L{m.group(2)}")
     if "VCC" in t or "+5V" in t:
         return ("VCC",)
     if "GND" in t:

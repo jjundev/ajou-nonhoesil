@@ -14,8 +14,8 @@ from . import config, md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
-from .spec_parser import (ENCODINGS, ROLES, derived_parts, split_columns,
-                          split_indices)
+from .spec_parser import (ENCODINGS, ROLES, column_label, derived_parts,
+                          split_columns, split_indices)
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
@@ -150,6 +150,7 @@ def check_boolean(spec) -> list:
                 continue
             # 같은 글자가 입력에도 있으면 뒤의 것이 출력이다(split_indices).
             out_col = max(k for k, c in enumerate(t.header) if c == target)
+            label = column_label(t.header, out_col)
             seen_eval_errors = set()
             for i, row in enumerate(t.rows, start=1):
                 if len(row) != len(t.header):
@@ -185,40 +186,54 @@ def check_boolean(spec) -> list:
                         seen_eval_errors.add(sig)
                         cells = ", ".join(bad_cells) or "(식이 참조하지 않는 열)"
                         out.append(Finding("error", f"{where} 행{i}",
-                            f"{target} 의 식 {expr!r} 을 평가할 수 없다: {exc} "
+                            f"{label} 의 식 {expr!r} 을 평가할 수 없다: {exc} "
                             f"— 해독 못 한 셀: {cells}"))
                     continue
                 if got != want:
-                    shown = ", ".join(f"{t.header[k]}={row[k]}" for k in inputs)
+                    shown = ", ".join(f"{column_label(t.header, k)}={row[k]}"
+                                      for k in inputs)
                     out.append(Finding("error", f"{where} 행{i}",
-                        f"{shown} 일 때 {target} = {expr} = {want} 인데 "
+                        f"{shown} 일 때 {label} = {expr} = {want} 인데 "
                         f"표에는 {row[out_col]!r} 이다"))
     return out
 
 
 def check_column_roles(spec) -> list:
-    """같은 열 이름이 표마다 **입력과 출력으로 갈리는지** 본다.
+    """같은 열 이름이 **입력과 출력으로 갈리는지** 본다. 두 층이 있다.
 
-    규칙 5 는 한 표 *안*의 이름 중복만 막는다. 표 *사이*에서 같은 글자가 다른
-    뜻을 갖는 자리는 아무도 안 봤다 — 실험01 이 실물이다. `C` 가 T1~T4 에서는
-    세 번째 입력이고 T6~T9 에서는 출력이다. 교안 p5·p6·p8·p9 가
-    `INPUT(A, B) / OUTPUT(C)` 2단 헤더로 갈라 놓은 것을 명세가 한 줄 헤더로
-    누르면서 구분이 사라졌다.
+    - **표 사이** — 실험01 이 실물이다. `C` 가 T1~T4 에서는 세 번째 입력이고
+      T6~T9 에서는 출력이다. 교안 p5·p6·p8·p9 가 `INPUT(A, B) / OUTPUT(C)` 2단
+      헤더로 갈라 놓은 것을 명세가 한 줄 헤더로 누르면서 구분이 사라졌다.
+    - **한 표 안** — 실험3 반감산기 `A B D B`. 교안 p6 이 내림 수를 입력과 같은
+      글자 `B` 로 적는다. 파서가 입력 하나·출력 하나로 갈리는 경우만 받고 뒤의
+      것을 출력으로 본다(`split_indices`). 이 표들은 표 사이 층에서 빼고 따로
+      알린다 — 같이 세면 "표마다 뜻이 다르다" 는 틀린 문장이 된다.
 
-    **`info` 다 — 표를 고치라는 뜻이 아니다.** 교안이 그렇게 쓰면 §절대 규칙 4
-    가 원문 그대로를 요구하므로 표는 그대로 둔다. 고칠 자리는 머리말의
-    `| 토큰 | 뜻 | 근거 |` 표다. `error` 로 올리면 교안 표기를 바꾸게 되어
-    규칙 4 와 정면으로 부딪힌다.
+    **`info` 다 — 표를 고치라는 뜻이 아니다.** 교안이 그렇게 쓰면 `draft-lab-spec`
+    §절대 규칙 5 가 열 이름을 원문 그대로 두라고 한다. 고칠 자리는 머리말의
+    `| 토큰 | 뜻 | 근거 |` 표다. `error` 로 올리면 교안 표기를 바꾸게 되어 그 규칙과
+    정면으로 부딪힌다.
     """
-    roles = {}
+    roles, within = {}, {}
     for t in spec.tables:
         ins, outs = split_columns(t)
+        for name in dict.fromkeys(n for n in ins if n in outs):
+            within.setdefault(name, []).append(t.id)
         for name in ins:
             roles.setdefault(name, {}).setdefault("입력", []).append(t.id)
         for name in outs:
             roles.setdefault(name, {}).setdefault("출력", []).append(t.id)
     out = []
+    for name, ids in within.items():
+        out.append(Finding(
+            "info", f"{spec.path.name}:{name}",
+            f"열 `{name}` 이 한 표 안에서 입력이자 출력이다 ({'·'.join(ids)}) — 뒤의 "
+            f"`{name}` 이 출력이다. 머리말 `| 토큰 | 뜻 | 근거 |` 표에 두 열의 뜻을 "
+            f"밝혔는지 본다(`draft-lab-spec` §절대 규칙 5)"))
     for name, seen in roles.items():
+        skip = set(within.get(name, []))
+        seen = {role: [i for i in ids if i not in skip] for role, ids in seen.items()}
+        seen = {role: ids for role, ids in seen.items() if ids}
         if len(seen) < 2:
             continue
         where = " / ".join(f"{role} {'·'.join(ids)}" for role, ids in seen.items())
@@ -226,7 +241,7 @@ def check_column_roles(spec) -> list:
             "info", f"{spec.path.name}:{name}",
             f"열 `{name}` 이 표마다 뜻이 다르다 ({where}). 표를 고치지 말고 "
             f"머리말 `| 토큰 | 뜻 | 근거 |` 표에 밝혔는지 본다 — 교안 표기가 "
-            f"그렇다면 그대로 두는 것이 맞다(§절대 규칙 4)"))
+            f"그렇다면 그대로 두는 것이 맞다(`draft-lab-spec` §절대 규칙 5)"))
     return out
 
 
@@ -1377,7 +1392,8 @@ def check_report_tables(report_path, spec) -> list:
                         f"{found[i].line}줄 표 `{' '.join(heads[i])}` 의 열 순서가 "
                         f"명세 {st.id} `{want}` 와 다르다"))
             covered = {k for i in hits for k in _col_map(heads[i], st_header)}
-            missing = [c for k, c in enumerate(st_header) if k not in covered]
+            missing = [column_label(st_header, k) for k in range(len(st_header))
+                       if k not in covered]
             if missing:
                 out.append(Finding("error", path.name,
                     f"명세 {st.id} 의 열 {', '.join(missing)} 이 보고서 표에 없다 "
