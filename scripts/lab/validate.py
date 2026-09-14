@@ -1250,12 +1250,14 @@ def check_report_tables(report_path, spec) -> list:
     truth = [t for t in spec.tables if t.kind == "truth-table"]
 
     def fits(i, st):
-        return (bool(heads[i]) and set(heads[i]) <= set(st.header)
+        st_header = [_bare_cell(c) for c in st.header]
+        return (bool(heads[i]) and set(heads[i]) <= set(st_header)
                 and len(found[i].rows) == len(st.rows))
 
     def first_diff(i, st):
         """셀이 처음 갈리는 (행 번호, 보고서 값, 명세 값). 전부 같으면 None."""
-        cols = [st.header.index(c) for c in heads[i]]
+        st_header = [_bare_cell(c) for c in st.header]
+        cols = [st_header.index(c) for c in heads[i]]
         for r, (row, srow) in enumerate(zip(found[i].rows, st.rows), start=1):
             got = [str(normalize_cell(_bare_cell(v))) for v in row]
             exp = [str(normalize_cell(srow[k])) for k in cols]
@@ -1271,29 +1273,30 @@ def check_report_tables(report_path, spec) -> list:
     for st in truth:
         if st.role != "record":
             continue
-        want = " ".join(st.header)
+        st_header = [_bare_cell(c) for c in st.header]
+        want = " ".join(st_header)
         hits = exact[st.id]
         if hits:
             for i in hits:
-                order = [st.header.index(c) for c in heads[i]]
+                order = [st_header.index(c) for c in heads[i]]
                 if order != sorted(order):
                     out.append(Finding("error", path.name,
                         f"{found[i].line}줄 표 `{' '.join(heads[i])}` 의 열 순서가 "
                         f"명세 {st.id} `{want}` 와 다르다"))
             covered = {c for i in hits for c in heads[i]}
-            missing = [c for c in st.header if c not in covered]
+            missing = [c for c in st_header if c not in covered]
             if missing:
                 out.append(Finding("error", path.name,
                     f"명세 {st.id} 의 열 {', '.join(missing)} 이 보고서 표에 없다 "
                     f"(명세: `{want}`)"))
             continue
         near = [i for i in range(len(found)) if i not in claimed
-                and len(found[i].rows) == len(st.rows) and set(heads[i]) & set(st.header)]
+                and len(found[i].rows) == len(st.rows) and set(heads[i]) & set(st_header)]
         if not near:
             out.append(Finding("error", path.name,
                 f"명세 {st.id} (`{want}`) 에 대응하는 표가 보고서에 없다"))
             continue
-        i = max(near, key=lambda k: (len(set(heads[k]) & set(st.header)), -k))
+        i = max(near, key=lambda k: (len(set(heads[k]) & set(st_header)), -k))
         claimed.add(i)
         if fits(i, st):
             r, got, exp = first_diff(i, st)
@@ -1301,8 +1304,8 @@ def check_report_tables(report_path, spec) -> list:
                 f"{found[i].line}줄 표 {r}번째 행이 명세 {st.id} 와 다르다: "
                 f"보고서 {got} · 명세 {exp}"))
         else:
-            missing = [c for c in st.header if c not in heads[i]]
-            extra = [c for c in heads[i] if c not in st.header]
+            missing = [c for c in st_header if c not in heads[i]]
+            extra = [c for c in heads[i] if c not in st_header]
             out.append(Finding("error", path.name,
                 f"{found[i].line}줄 표 `{' '.join(heads[i])}` 가 명세 {st.id} `{want}` 와 "
                 f"머리가 다르다 — 빠진 열: {', '.join(missing) or '없음'} · "

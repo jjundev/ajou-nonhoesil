@@ -1633,6 +1633,10 @@ class ReportTables(unittest.TestCase):
     def _check(self, body):
         return validate.check_report_tables(md_file("# 제목\n\n" + body), self.spec)
 
+    def test_명세_머리의_굵게와_백틱도_벗기고_본다(self):
+        self.spec.table('T1').header = ['A', 'B', 'C', '`L1`', '**L2**']
+        self.assertEqual(self._check(_AND_T + "\n" + _OR_T), [])
+
     def test_명세와_같은_표는_조용하다(self):
         self.assertEqual(self._check(_AND_T + "\n" + _OR_T + "\n" + _THEORY_T), [])
 

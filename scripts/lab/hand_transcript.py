@@ -207,8 +207,11 @@ def parse_transcript(path):
             name = lb['name']
         except KeyError as e:
             raise TranscriptError(f"이름표 항목에 필수 키 {e} 가 없다: {lb}") from e
+        name = str(name).strip()
+        if not name:
+            raise TranscriptError(f"이름표 항목의 name 이 비어 있다: {lb}")
         at = parse_address(lb['at'])[1] if lb.get('at') else None
-        labels.append({'name': str(name).strip(), 'at': at})
+        labels.append({'name': name, 'at': at})
 
     return Diagram(chips=chips, wires=wires, leds=leds, resistors=resistors,
                    chains=chains, bridges=bridges, uncertain=uncertain,

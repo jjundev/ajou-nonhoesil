@@ -184,6 +184,12 @@ class Parse(unittest.TestCase):
         with self.assertRaises(ht.TranscriptError):
             ht.parse_transcript(_write(obj))
 
+    def test_이름표의_name_이_비어_있으면_거절한다(self):
+        obj = json.loads(json.dumps(MINIMAL))
+        obj['labels'] = [{"name": "  "}]
+        with self.assertRaises(ht.TranscriptError):
+            ht.parse_transcript(_write(obj))
+
 
 if __name__ == '__main__':
     unittest.main()

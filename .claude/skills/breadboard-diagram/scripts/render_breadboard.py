@@ -1538,6 +1538,9 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     bb.input_node(name, c[col], row)
     _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
+    assert c is bb.cols['left'], (
+        '_input_jumper 의 신호 이름 배지 자리는 좌 보드 테두리~좌 GND 레일 여백 기준이다 — '
+        '우 블록 입력이면 자리를 새로 정한다')
     bb.signal_tag(name, (BOARD_LEFT + c['gnd']) / 2, bb.r_y(r_rail),
                   seg=len(bb._segments) - 1)
 

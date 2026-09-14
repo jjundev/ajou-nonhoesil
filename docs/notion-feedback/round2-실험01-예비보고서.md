@@ -44,4 +44,6 @@ T1~T4 표와 불릿 제목을 명세대로 되돌렸다. 노션 페이지와 제
 
 규칙 22 가 과적합으로 판명되면(예: 강의노트가 출력 이름을 주지 않는 주차) 걷어낼 자리는
 ③ §절대 규칙 22 와 `check_report_tables` 호출 두 곳이다. H15 는 `hand_compare._RULES` 에서
-`check_labels` 를 빼면 꺼진다.
+`check_labels` 항목을 빼는 것만으로는 안 꺼진다 — `check_` 로 시작하는 함수가 정의돼 있으면서
+목록에 없으면 `RuleRegistry.test_check_로_시작하는_함수는_전부_규칙_목록에_있다` 가 실패한다.
+`check_labels` 함수 정의와 `_RULES` 항목을 함께 지워야 꺼진다.
