@@ -2225,8 +2225,10 @@ _E3_LANE_A = 440   # 좌 j~중앙 레일 여백 — A' 건너감
 _E3_LANE_X = 452   # 같은 여백 — (A⊕B)' 건너감
 _E3_INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
                   '빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
-_E3_LED_NOTE = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(C·Co·B·Bo). '
-                '회로가 바뀌어도 LED·저항은 그대로 두고 급전선만 옮긴다.')
+_E3_LED_NOTE_REGRESSION = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(C·Co·B·Bo). '
+                           '회로가 바뀌어도 LED·저항은 그대로 두고 급전선만 옮긴다.')
+_E3_LED_NOTE_CHAIN = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(Co·Bo). '
+                      '두 회로(전가산기·전감산기)에서 LED·저항·급전선 자리가 같다.')
 _E3_XOR_UNUSED = ([4, 5, 9, 10, 12, 13], [6, 8, 11])      # 게이트 1 만 쓸 때
 _E3_XOR2_UNUSED = ([9, 10, 12, 13], [8, 11])              # 게이트 1·2 를 쓸 때
 _E3_NOT_UNUSED = ([3, 5, 9, 11, 13], [4, 6, 8, 10, 12])   # 인버터 1 만
@@ -2271,6 +2273,8 @@ def _e3_draw(bb, circuit, stage):
     sum_tag = 'D' if sub else 'S'
     # 반감산기 내림 수는 교안 p6 표기 그대로 입력과 같은 글자 B 다 — 회귀 그림 e3_hs 만 쓴다.
     carry_tag = {'ha': 'C', 'fa': 'Co', 'hs': 'B', 'fs': 'Bo'}[circuit]
+    # 사슬(fa·fs)은 급전선이 옮겨지지 않는다 — 회귀 전용 완성본(ha·hs)만 옛 문구를 쓴다.
+    led_note = _E3_LED_NOTE_CHAIN if full else _E3_LED_NOTE_REGRESSION
     done = stage != 1
     bb.partial = not done
 
@@ -2291,8 +2295,8 @@ def _e3_draw(bb, circuit, stage):
                   (_E3_LANE, L(_E3_LED1)), (c['a'], L(_E3_LED1))], 'sig',
                  f'{sum_tag} = 74HC86 pin {src_pin} -> LED1',
                  marker_at=(_E3_LANE + 13, L(19)))
-    sum_desc = {'ha': 'S = A⊕B — 진리표 T1 의 S 열', 'fa': 'S = A⊕B⊕Ci — 진리표 T3 의 S 열',
-                'hs': 'D = A⊕B — 진리표 T5 의 D 열', 'fs': 'D = A⊕B⊕Bi — 진리표 T7 의 D 열'}[circuit]
+    sum_desc = {'ha': 'S = A⊕B — 반가산기 진리표의 S 열', 'fa': 'S = A⊕B⊕Ci — 진리표 T3 의 S 열',
+                'hs': 'D = A⊕B — 반감산기 진리표의 D 열', 'fs': 'D = A⊕B⊕Bi — 진리표 T7 의 D 열'}[circuit]
     bb.led_chain(c['a'], _E3_LED1, sum_tag, sum_desc, color_rgb=(210, 140, 0))
 
     if not done:
@@ -2309,7 +2313,7 @@ def _e3_draw(bb, circuit, stage):
         else:
             bb.note('1단계: 74HC86 게이트 1 만 검사한다. LED1 = S = A⊕B 를 네 조합 전부 본다 '
                     '(01·10 만 켜짐). 우 10행 전원 두 가닥은 2단계의 74HC08 자리다.')
-        bb.note(_E3_LED_NOTE)
+        bb.note(led_note)
         bb.note(_E3_INPUT_NOTE)
         return
 
@@ -2369,9 +2373,9 @@ def _e3_draw(bb, circuit, stage):
         bb.step_wire([(r['c'], L(12)), (r['c'], L(_E3_LED2))], 'sig',
                      f'{carry_tag} = 74HC08 pin 3 -> LED2',
                      marker_at=(r['c'] - 16, L(20)))
-    carry_desc = {'ha': 'C = A·B — 진리표 T1 의 C 열',
+    carry_desc = {'ha': 'C = A·B — 반가산기 진리표의 C 열',
                   'fa': 'Co = A·B + (A⊕B)·Ci — 진리표 T3 의 Co 열',
-                  'hs': "B = A'·B — 진리표 T5 의 넷째 열 B (입력 B 와 같은 글자)",
+                  'hs': "B = A'·B — 반감산기 진리표의 넷째 열 B (입력 B 와 같은 글자)",
                   'fs': "Bo = A'·B + (A⊕B)'·Bi — 진리표 T7 의 Bo 열"}[circuit]
     bb.led_chain(r['c'], _E3_LED2, carry_tag, carry_desc, block='right')
 
@@ -2396,7 +2400,7 @@ def _e3_draw(bb, circuit, stage):
         not_u = _E3_NOT2_UNUSED if circuit == 'fs' else _E3_NOT_UNUSED
         bb.mark_unused_inputs(not_u[0], _E3_S2, chip='74HC04')
         bb.mark_unused_outputs(not_u[1], _E3_S2, chip='74HC04')
-    bb.note(_E3_LED_NOTE)
+    bb.note(led_note)
     bb.note(_E3_INPUT_NOTE)
 
 

@@ -592,7 +592,8 @@ def check_item_scope(spec) -> list:
             out.append(Finding("error", f"{spec.path.name}:{item.id}",
                 f"항목 {item.id} 는 실험{spec.experiment} 범위({shown}) 밖이다 — "
                 "조교 공지 `_350547_1` 로 실험실에서 하지 않는 소실험이다. "
-                "명세에서 뺀다(`config.EXPERIMENT_SCOPE`)"))
+                "명세에서 뺀다(`config.EXPERIMENT_SCOPE`) — 단 범위 번호 error 가 "
+                "함께 나면 교안 번호가 공지와 다른 것이니 지우지 말고 사용자에게 묻는다"))
     for token in tokens:
         if not any(config.token_covers(token, item.id) for item in spec.items):
             out.append(Finding("error", spec.path.name,

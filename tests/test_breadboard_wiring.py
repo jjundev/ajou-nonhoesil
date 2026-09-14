@@ -311,6 +311,8 @@ class WiringE3(unittest.TestCase):
         self.assertTrue(any('74HC08 pin 1' in r for r in removed), removed)
         self.assertTrue(any('74HC08 pin 4' in r for r in removed), removed)
         self.assertFalse(any('뽑는다' in r for r in removed), removed)
+        # 새 번호 일곱 개: 74HC04(1) + 네 가닥(4) + 전원 두 가닥(2)
+        self.assertEqual(len(bb.steps), 7, bb.steps)
 
     def test_반감산기_전감산기에는_1단계를_주지_않는다(self):
         """두 회로의 1단계는 반감산기를 거치던 옛 사슬의 차분이었다."""
