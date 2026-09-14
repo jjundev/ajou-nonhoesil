@@ -127,13 +127,16 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    python3 -c "
    from pathlib import Path
    from scripts.lab import validate
-   for f in validate.check_rendered_html(Path('<실험NN>/체크리스트/체크리스트.html')):
+   html = Path('<실험NN>/체크리스트/체크리스트.html')
+   for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
        print(f)
    "
    ```
 
    **error 가 0 이 아니면 인쇄하지 않는다** — 마크다운을 HTML 로 옮길 때 표
    셀을 빠뜨리면 인쇄본에 그대로 찍힌다.
+   `check_embedded_images` 는 경로가 안 풀려 깨진 결선도 그림을 잡는다 —
+   2026-09-14 점검 전까지 이 단계는 마크다운 표기만 보고 그림은 안 봤다.
 
 6. **A4 실측.** 아래를 돌려 쪽 크기를 본다.
 

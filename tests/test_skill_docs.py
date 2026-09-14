@@ -270,6 +270,32 @@ class SkillDocInvariants(unittest.TestCase):
         # 살아 있는 트리에는 더 있지만, 여기 박는 숫자는 커밋된 것만 센다.
         self.assertGreaterEqual(checked, 2, "상호참조를 하나도 못 찾으면 이 테스트는 공허하다")
 
+    def test_code_and_schema_cross_references_resolve(self):
+        """`scripts/lab/*.py` 와 `docs/schema/*.md` 안의 `③ §절대 규칙 9` 도 푼다.
+
+        위 테스트는 스킬 문서끼리의 상호참조만 본다. 코드 docstring·메시지와 스키마
+        문서의 `④ §절대 규칙 8` 같은 인용은 가리키는 규칙이 지워지거나 번호가 밀려도
+        아무도 몰랐다. 도입 때(2026-09-14) 10건을 풀어 오탐 0건이었다.
+
+        **이 그물 밖에 남는 것:** 원문자가 없는 인용(`§절대 규칙 4`)과 원문자와 § 사이에
+        스킬 이름이 끼인 인용(``③ `write-pre-report` §절대 규칙 22``)은 `CROSS_DOC` 이
+        잡지 않는다. draft-lab-spec 규칙은 원문자가 없어 스킬 이름으로 인용한다.
+        """
+        files = (sorted((ROOT / "scripts/lab").glob("*.py"))
+                 + sorted((ROOT / "docs/schema").glob("*.md")))
+        checked = 0
+        for path in files:
+            for marker, title, token in CROSS_DOC.findall(path.read_text(encoding="utf-8")):
+                target = MARKERS.get(marker)
+                if target is None:
+                    continue
+                checked += 1
+                with self.subTest(f"{path.name} → {target} §{title} {token}"):
+                    items = numbered_items(sections(self.docs[target])[title])
+                    self.assertEqual(sorted(_expand(token) - items), [],
+                                     f"{path.name} 이 가리키는 {target} §{title} 항목이 없다")
+        self.assertGreater(checked, 0, "교차참조를 하나도 못 찾으면 이 테스트는 공허하다")
+
     def test_no_bare_section_number_references(self):
         # 상호참조 표기는 `§절대 규칙 N`·`§실행 절차 N`·`N단계` 뿐이다.
         # `§3` 은 어느 번호 체계인지 말하지 않아 규칙 3 으로도 절차 3 으로도

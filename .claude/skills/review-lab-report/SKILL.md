@@ -69,6 +69,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    ```bash
    python3 -c "
    from pathlib import Path
+   from scripts.lab.netlist_parser import parse_netlist
    from scripts.lab.spec_parser import parse_spec, SpecError
    from scripts.lab import validate
    spec_path = Path('<실험NN>/체크리스트/명세.md')
@@ -82,8 +83,15 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print(f)
    for f in validate.check_netlist('<실험NN>/결선도/netlist.md', spec):
        print(f)
+   for f in validate.check_netlist_circuits(
+           parse_netlist(Path('<실험NN>/결선도/netlist.md')), spec):
+       print(f)
    "
    ```
+
+   `check_netlist_circuits` 는 회로 절 본문(칩 상자 밖으로 샌 배선 줄 등)을 본다.
+   `prep-lab-checklist` 2단계와 `draft-lab-spec` 7단계가 부르는데 여기서만 빠져,
+   거기서 거절될 결선도가 검토에서는 통과할 수 있었다(2026-09-14 점검).
 
    `SpecError` 가 나오면 그것을 **첫 번째 finding 으로 보고하고** 나머지 검사는 건너뛴다.
 
@@ -225,10 +233,11 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
 4b. **렌더된 HTML 검사.** `check_rendered_html`(표 셀에 남은 백틱·`**`)과
     `check_embedded_images`(경로가 안 풀려 깨진 그림)는 둘 다 `extract_text()`
     로는 안 보인다 — 실제로 표 셀 백틱 230개와 깨진 브레드보드 그림이 이
-    검사 없이 제출된 적이 있다. **이 두 함수를 부르는 스킬은 이제 ⑤ 뿐이다**
-    — ③·④ 는 보고서를 노션에 올리므로 HTML 을 아예 만들지 않고, HTML 을 내는
-    나머지 스킬은 이 검사를 자기 절차에 갖고 있지 않다. 여기서 부르지 않으면
-    아무도 안 부른다. 대상은 그 주차의 HTML **전부**다 —
+    검사 없이 제출된 적이 있다. **두 함수를 다 부르는 스킬은 ⑤ 와
+    `prep-lab-checklist`(5단계, 체크리스트 인쇄본만)다** — ③·④ 는 보고서를 노션에
+    올리므로 HTML 을 아예 만들지 않고, 프리뷰·표지 HTML 을 내는 스킬은 이 검사를
+    자기 절차에 갖고 있지 않다. 그 HTML 은 여기서 부르지 않으면 아무도 안 부른다.
+    대상은 그 주차의 HTML **전부**다 —
     `<실험NN>/체크리스트/` 와 `<실험NN>/output/` 를 **둘 다** 본다.
     `output/` 의 HTML 은 옛 파이프라인의 잔재가 아니다:
     `explain-lab-preview` 가 실험프리뷰 HTML 을 거기 내고, ⑥ 은 PDF 변환이

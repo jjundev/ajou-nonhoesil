@@ -3,11 +3,13 @@
 Task 1 에서 실험1(truth-table)·실험10(capture + stepped)·실험6(심볼릭 토큰)
 세 건으로 시험해 확정했다. `scripts/lab/spec_parser.py` 가 이 계약을 구현한다.
 
-실물 3종이 이 문서의 적합성 픽스처다 — 별도의 합성 픽스처를 만들지 않는다.
+실험06·10 은 2026-09-10 에 2026-2 강의노트로 다시 쓰려고 지웠다. 지금 적합성
+픽스처는 이것들이다:
 
-- `실험01/체크리스트/명세.md` — truth-table 5개, 다중 출력 표 포함
-- `실험06/체크리스트/명세.md` — 심볼릭·복합 토큰, `2^n` 아닌 행 수
-- `실험10/체크리스트/명세.md` — `capture` 와 `stepped` 가 한 문서 안에 공존
+- `보고서/실험01/체크리스트/명세.md` — truth-table 5개, 다중 출력 표 포함
+- `tests/fixtures/spec_edge.md` — 심볼릭·복합 토큰, `2^n` 아닌 행 수 (옛 실험06)
+- `tests/fixtures/spec_capture.md` — `capture` 와 `stepped` 가 한 문서 안에 공존 (옛 실험10)
+- `tests/fixtures/spec_manual_outputs.md`·`spec_shared_letter.md` — `outputs` 선언, 입력과 출력이 같은 글자인 표
 
 ## 문서 프론트매터
 
@@ -81,7 +83,7 @@ T5 다 — T1~T5 재번호 금지 지시의 결과다). `items[].tables` 가 가
 |---|---|---|
 | `kind` | ● | `truth-table` \| `stepped` \| `capture` — **표 단위 속성이다** (실험10 이 근거) |
 | `encoding` | `capture` 외 ● | `0/1` \| `H/L` — **표의 속성이다. 서로 변환하지 말 것.** 교안 표는 원문 표기, 교안에 없어 부울식으로 채운 `derived` 표는 `0/1` (2026-09-08 결정) |
-| `source` | ● | `manual:p11` \| `derived (Y = A·B·C)` \| `past-report:2020` |
+| `source` | ● | `manual:p11` \| `derived (L2 = A·B·C)` \| `past-report:2020` |
 | `expected` | `capture` 만 | 정성 서술 산문. 셀 표가 없는 표의 예상값이 여기 들어간다 |
 | `role` | 선택 | `record` \| `reference` — 생략하면 `record`이며, `source` 만으로는 가를 수 없는 참조표(`reference`)와 기록 대상(`record`)을 구분하기 위한 필드다 |
 | `outputs` | 선택 | 출력 열 이름 리스트(`[S, C]`). `derived (...)` 가 아닌 표에서 출력이 둘 이상일 때 쓴다. 생략하면 마지막 열 하나가 출력이다. `derived` 표는 식의 대입 대상이 출력이라 필요 없고, 적으면 대입 대상과 같아야 한다 (아래 "`outputs`" 절) |
@@ -93,8 +95,8 @@ T5 다 — T1~T5 재번호 금지 지시의 결과다). `items[].tables` 가 가
 `expected` 처럼 값이 길어지면 다음 줄로 넘어간다. **원 줄 다음에 오는 줄이 최소 2칸
 들여쓰기로 시작하면 앞 속성 값의 연속으로 보고, 줄바꿈을 공백 한 칸으로 바꿔 이어
 붙인다.** 들여쓰기가 2칸 미만이거나, 다음 `- key:` 줄, 빈 줄, `#`/`##` 헤딩이 나오면
-값이 끝난 것으로 본다. 실물 픽스처: `실험10/체크리스트/명세.md` 의 T1 `expected` 가
-5줄이다 — 이 규칙 없이는 파서가 이 픽스처를 못 읽는다.
+값이 끝난 것으로 본다. 픽스처: `tests/fixtures/spec_capture.md`(옛 실험10) 의 T1
+`expected` 가 여러 줄이다 — 이 규칙 없이는 파서가 이 픽스처를 못 읽는다.
 
 ### `kind` 가 표 단위인 이유
 
@@ -205,6 +207,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 행 수 = `2^n` | `truth-table` | **warn**, 그리고 `X` 가 있는 표에서는 건너뛴다 |
 | 출력 비트 ↔ `source` 부울식 역검산 | `derived (...)` 이고 rows 가 있는 표(`kind` 를 안 본다 — `stepped` 도 검산한다) | error |
 | `source` 부재 | 전부 | error |
+| `source` 가 `derived` 인데 식을 읽지 못했다 | `derived` 로 시작하는 `source` | error |
 | 한 표 안에 같은 이름의 열이 둘 — 진리표에서 입력 하나·출력 하나로 갈리면 뺀다(위 "입력과 출력이 같은 글자" 절) | 전부 | error (파서가 던진다) |
 | 같은 열 이름이 표마다 입력·출력으로 갈린다 | 전부 | info (표가 아니라 머리말 토큰 규약 표를 고친다) |
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
@@ -231,7 +234,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 막고, 반대로 어느 항목도 가리키지 않는 고아 표는 `validate.py` 의
 `check_orphan_tables`가 검증 단계에서 잡는다. 표 *사이*의 열 이름 충돌은
 `check_column_roles`(info)가 `split_columns` 로 각 표의 입력·출력을 갈라
-맞대는데, 규칙 5 가 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
+맞대는데, 파서의 중복 열 거절이 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
 `spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
 `check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
 `check_diagnostic_claims`)를 합친 것이다.
@@ -266,7 +269,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 한 표의 헤더 안에 같은 이름의 열이 둘 (진리표에서 입력 하나·출력 하나로 갈리면 받는다) | `_parse_table` |
 | 표 ID(`T<n>`)가 문서 안에서 두 번 정의됐다 | `parse_spec` |
 | 항목 필수 필드(`id`·`title`·`device`·`ics`·`tables`) 부재 | `parse_spec` |
-| **항목 ID 가 문서 안에서 두 번 정의됐다**(이 브랜치가 새로 추가) | `parse_spec` |
+| 항목 ID 가 문서 안에서 두 번 정의됐다 | `parse_spec` |
 | 항목이 정의되지 않은 표 ID 를 가리킨다 | `parse_spec` |
 
 이 목록도 위 표와 마찬가지로 정본은 코드다 — 손으로 옮겨 적은 요약일
