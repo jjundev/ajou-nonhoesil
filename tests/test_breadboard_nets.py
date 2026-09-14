@@ -306,8 +306,9 @@ class R5(unittest.TestCase):
         # 3개(e2_schmitt_s1·e2_tpd_s1/_s2)가 늘어 실험01 13 + 실험02 6 = 19 다.
         # 2026-09-14 실험03: 회로 4 + 절차 래퍼 8 = 12 가 늘어 31 이다.
         # 2026-09-14 범위 축소(조교 공지 `_350547_1`): 실험02 절차 래퍼 2개
-        # (e2_tpd_s1/_s2)가 빠져 29 다. 완성본 build_e2_tpd 는 남는다.
-        self.assertEqual(len(builders), 29)
+        # (e2_tpd_s1/_s2)와 실험03 절차 래퍼 5개(e3_ha_s1/_s2·e3_hs_s1/_s2·e3_fs_s2)가
+        # 빠져 24 다. 완성본 build_e2_tpd·build_e3_ha·build_e3_hs 는 남는다.
+        self.assertEqual(len(builders), 24)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

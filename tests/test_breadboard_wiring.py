@@ -267,13 +267,6 @@ class WiringE3(unittest.TestCase):
                 for ch in bb.wiring()['chips']:
                     self.assertIn((ch['block'], ch['pin1_row']), seats)
 
-    def test_보드_사슬은_8장_완성본은_4장이다(self):
-        self.assertEqual(len(self.mod.E3_BOARDS), 8)
-        self.assertEqual(len(self.mod.E3_FINALS), 4)
-        names = [n for n, _f, _s in self.mod.E3_BOARDS] + [n for n, _f in self.mod.E3_FINALS]
-        self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
-        self.assertNotIn(self.mod.E3_BOARDS[-1][0], [n for n, _f in self.mod.E3_FINALS])
-
     def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
         netlist = self._netlist()
         wanted = set()
@@ -285,19 +278,46 @@ class WiringE3(unittest.TestCase):
         made = {n for n, _f, _s in self.mod.E3_BOARDS} | {n for n, _f in self.mod.E3_FINALS}
         self.assertEqual(wanted, made)
 
-    def test_전감산기_1단계는_반감산기를_뜯지_않는다(self):
-        """C3→C4 는 네 칩이 전부 자리에 있다 — 뽑는 칩도 걷는 인버터 배선도 없다.
-        처음 저작에서 74HC04·74HC32 가 "뽑는다" 로 나왔던 결함의 회귀 방지다."""
-        base = self.mod.build_e3_hs(os.path.join(self.tmp, 'hs.png')).snapshot()
-        bb = self.mod.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), stage=1, baseline=base)
-        removed = bb.removed()
-        self.assertFalse(any('뽑는다' in r for r in removed), removed)
-        self.assertEqual(len(removed), 1, removed)   # LED1 급전선 하나만 옮긴다
+    def test_보드_사슬은_3장_완성본은_2장이다(self):
+        """반가산기·반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다."""
+        self.assertEqual(len(self.mod.E3_BOARDS), 3)
+        self.assertEqual(len(self.mod.E3_FINALS), 2)
+        names = [n for n, _f, _s in self.mod.E3_BOARDS] + [n for n, _f in self.mod.E3_FINALS]
+        self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
+        self.assertNotIn(self.mod.E3_BOARDS[-1][0], [n for n, _f in self.mod.E3_FINALS])
+        self.assertFalse(any(k in n for n in names for k in ('반가산기', '반감산기')), names)
 
-    def test_반감산기_1단계는_전가산기_확장_여덟_가닥을_걷는다(self):
+    def test_전가산기_1단계는_맨바닥에서_XOR_쪽만_꽂는다(self):
+        """반가산기(실험 1-1)를 안 하므로 전가산기가 첫 보드다 — 기준선이 없고
+        74HC08·74HC32 는 아직 없다."""
+        _name, fn, stage = self.mod.E3_BOARDS[0]
+        self.assertEqual((fn, stage), (self.mod.build_e3_fa, 1))
+        bb = fn(os.path.join(self.tmp, 'fa1.png'), stage=stage)
+        self.assertEqual([c['label'] for c in bb.wiring()['chips']], ['74HC86'])
+        self.assertEqual(bb.removed(), [])
+
+    def test_전가산기_2단계는_아무것도_걷지_않는다(self):
+        base = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa1.png'), stage=1).snapshot()
+        bb = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa2.png'), baseline=base)
+        self.assertEqual(bb.removed(), [])
+
+    def test_전감산기는_전가산기에서_두_가닥만_걷는다(self):
+        """AND1 pin 1 의 A 갈래와 AND2 pin 4 의 A⊕B 선. Ci 점퍼·LED 급전선은 그대로다 —
+        기준선은 끝점으로 비교하므로 이름이 Ci→Bi 로 바뀌어도 회색으로 남는다."""
         base = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa.png')).snapshot()
-        bb = self.mod.build_e3_hs(os.path.join(self.tmp, 'hs1.png'), stage=1, baseline=base)
-        self.assertEqual(len(bb.removed()), 8, bb.removed())
+        bb = self.mod.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), baseline=base)
+        removed = bb.removed()
+        self.assertEqual(len(removed), 2, removed)
+        self.assertTrue(any('74HC08 pin 1' in r for r in removed), removed)
+        self.assertTrue(any('74HC08 pin 4' in r for r in removed), removed)
+        self.assertFalse(any('뽑는다' in r for r in removed), removed)
+
+    def test_반감산기_전감산기에는_1단계를_주지_않는다(self):
+        """두 회로의 1단계는 반감산기를 거치던 옛 사슬의 차분이었다."""
+        for fn in (self.mod.build_e3_hs, self.mod.build_e3_fs):
+            with self.subTest(fn=fn.__name__):
+                with self.assertRaises(ValueError):
+                    fn(os.path.join(self.tmp, 'x.png'), stage=1)
 
 
 if __name__ == '__main__':

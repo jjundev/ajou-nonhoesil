@@ -184,15 +184,16 @@ def signatures(diagram):
 # 손그림 검토가 정답으로 삼는 회로들. `main()` 의 dispatch 와 같은 이름을 쓴다.
 # 실험02·03 은 2026-09-14 에 넣었다 — 그 전에는 `reference_diagram('e3_hs')` 가
 # "모르는 회로 ID" 로 멈춰 두 주차 손그림을 검토할 수 없었다. 같은 날 조교 공지
-# `_350547_1` 로 실험02 AC 특성을 하지 않게 되어 그 단계 그림 ID 가 빠졌다 —
-# 완성본 `e2_tpd` 는 렌더러 회귀 사례로 남는다. 16개 모두 자기 대조에서
-# H12(서명 없음) 하나만 난다 — 참조 그림에는 서명이 없다.
+# `_350547_1` 로 실험02 AC 특성·실험03 반가산기·반감산기를 하지 않게 되어 그 단계
+# 그림 ID 가 빠졌다 — 완성본 `e2_tpd`·`e3_ha`·`e3_hs` 는 렌더러 회귀 사례로 남는다.
+# 실험02·03 의 11개 모두 자기 대조에서 H12(서명 없음) 하나만 난다 — 참조 그림에는
+# 서명이 없다.
 CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e1_or_s1', 'e1_nand_s1', 'e1_nand_s2', 'e1_nor_s1', 'e1_nor_s2',
             'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3',
             'e2_inv', 'e2_schmitt', 'e2_schmitt_s1', 'e2_tpd',
-            'e3_ha', 'e3_ha_s1', 'e3_ha_s2', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2',
-            'e3_hs', 'e3_hs_s1', 'e3_hs_s2', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2')
+            'e3_ha', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2',
+            'e3_hs', 'e3_fs', 'e3_fs_s1')
 
 
 class CompareError(ValueError):
@@ -534,14 +535,11 @@ CIRCUIT_WORDS = {
     'e2_inv': ('INVERTER', '인버터'),
     'e2_schmitt': ('SCHMITT', '슈미트'), 'e2_schmitt_s1': ('SCHMITT', '슈미트'),
     'e2_tpd': ('T_PD', 'TPD', 'AC 특성'),
-    'e3_ha': ('반가산기', 'HALF ADDER'), 'e3_ha_s1': ('반가산기', 'HALF ADDER'),
-    'e3_ha_s2': ('반가산기', 'HALF ADDER'),
+    'e3_ha': ('반가산기', 'HALF ADDER'),
     'e3_fa': ('전가산기', 'FULL ADDER'), 'e3_fa_s1': ('전가산기', 'FULL ADDER'),
     'e3_fa_s2': ('전가산기', 'FULL ADDER'),
-    'e3_hs': ('반감산기', 'HALF SUBTRACTOR'), 'e3_hs_s1': ('반감산기', 'HALF SUBTRACTOR'),
-    'e3_hs_s2': ('반감산기', 'HALF SUBTRACTOR'),
+    'e3_hs': ('반감산기', 'HALF SUBTRACTOR'),
     'e3_fs': ('전감산기', 'FULL SUBTRACTOR'), 'e3_fs_s1': ('전감산기', 'FULL SUBTRACTOR'),
-    'e3_fs_s2': ('전감산기', 'FULL SUBTRACTOR'),
 }
 
 
