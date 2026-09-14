@@ -196,12 +196,14 @@ class WiringE2(unittest.TestCase):
                 for ch in bb.wiring()['chips']:
                     self.assertIn((ch['block'], ch['pin1_row']), seats)
 
-    def test_보드_사슬은_4장_완성본은_2장이다(self):
-        self.assertEqual(len(self.mod.E2_BOARDS), 4)
-        self.assertEqual(len(self.mod.E2_FINALS), 2)
+    def test_보드_사슬은_2장_완성본은_1장이다(self):
+        """교안 실험 2(AC 특성)는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다."""
+        self.assertEqual(len(self.mod.E2_BOARDS), 2)
+        self.assertEqual(len(self.mod.E2_FINALS), 1)
         names = [n for n, _f, _s in self.mod.E2_BOARDS] + [n for n, _f in self.mod.E2_FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
         self.assertNotIn(self.mod.E2_BOARDS[-1][0], [n for n, _f in self.mod.E2_FINALS])
+        self.assertFalse(any('tpd' in n for n in names), names)
 
     def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
         """netlist 가 가리키는 파일을 빌더가 전부 만든다 — 한쪽만 고치면 인쇄본에
@@ -224,15 +226,6 @@ class WiringE2(unittest.TestCase):
         bb = self.mod.build_e2_schmitt(os.path.join(self.tmp, 's.png'), baseline=base)
         self.assertEqual([s['desc'] for s in bb.steps], ['좌 7행 칩 교체'])
         self.assertEqual(bb.removed(), [])
-
-    def test_tpd_1단계는_C2_의_pull_선_다섯_가닥을_걷는다(self):
-        """U1 은 여섯 게이트를 전부 쓰므로 C2 의 미사용 입력 pull 선이 전부 걷힌다."""
-        base = self.mod.build_e2_schmitt(os.path.join(self.tmp, 's.png')).snapshot()
-        bb = self.mod.build_e2_tpd(os.path.join(self.tmp, 't1.png'), stage=1, baseline=base)
-        removed = bb.removed()
-        self.assertEqual(sum('미사용 입력' in r for r in removed), 5, removed)
-        # 같은 자리(S1)의 칩 교체는 removed 가 아니라 순서표 첫 줄이다
-        self.assertEqual(bb.steps[0]['desc'], '좌 7행 칩 교체')
 
 
 class WiringE3(unittest.TestCase):

@@ -1949,16 +1949,21 @@ def build_e1_all(output_dir, template_path=None):
 # **pin 3·5 -> GND / pin 9·11·13 -> VCC** 로 그려져 있다. 도면대로 따라야
 # 실험실에서 대조가 된다.
 #
-# 세 회로가 칩 자리를 공유한다. 정본은 netlist 의 `kind: layout` 표이고 이
+# 두 회로가 칩 자리를 공유한다. 정본은 netlist 의 `kind: layout` 표이고 이
 # 상수는 사본이다 — `tests/test_breadboard_wiring.py` 가 둘을 맞댄다.
 #
-#   S1 좌 7행  : C1 74HC04 · C2 74HC14 · C3 74HC04 (U1, 체인)
-#   S2 좌 18행 : C3 74HC04 (U2, 부하)
+#   S1 좌 7행  : C1 74HC04 · C2 74HC14 (U1)
 #
-# 근거: `보고서/실험02/결선도/netlist.md` (C1~C3), `체크리스트/명세.md`.
+# 교안 실험 2(t_pd, `build_e2_tpd`)는 조교 공지 `_350547_1`(2026-09-14)로 실험실에서
+# 하지 않는다. 빌더는 완성본만 남긴다 — 사슬에는 없고, 한 그림에 같은 칩 두
+# 패키지(`74HC04#7`·`#18`)가 앉는 유일한 사례라 넷·가독성·손그림 테스트가 쓴다.
+# 그 U2 자리는 슬롯표 밖이라 `_E2_TPD_U2_ROW` 로 따로 둔다.
+#
+# 근거: `보고서/실험02/결선도/netlist.md` (C1·C2), `체크리스트/명세.md`.
 
-E2_SLOTS = {'S1': ('left', 7), 'S2': ('left', 18)}
-_E2_S1, _E2_S2 = E2_SLOTS['S1'][1], E2_SLOTS['S2'][1]
+E2_SLOTS = {'S1': ('left', 7)}
+_E2_S1 = E2_SLOTS['S1'][1]
+_E2_TPD_U2_ROW = 18   # 범위 밖 build_e2_tpd 의 부하 칩(U2) 자리 — 슬롯표에 없다
 _E2_UNUSED_GND = [3, 5]        # 교안 p9 그림: 미사용 입력 중 GND 로 내리는 것
 _E2_UNUSED_VCC = [9, 11, 13]   # 교안 p9 그림: VCC 로 올리는 것
 _E2_UNUSED_OUT = [4, 6, 8, 10, 12]
@@ -2042,7 +2047,7 @@ def build_e2_schmitt(output_path, template_path=None, stage=None, baseline=None)
 
 
 def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
-    """실험 2 · CMOS AC 특성 — t_pd (74HC04 두 패키지). netlist C3. 칩 하나 = 단계 하나.
+    """실험 2 · CMOS AC 특성 — t_pd (74HC04 두 패키지). 범위 밖 — 회귀 사례로만 남는다.
 
       stage 1  U1(S1) 체인 6단 + 전원(S1·S2 둘 다). CH1 = pin 4, CH2 = pin 8
       stage 2  + U2(S2) 부하 = 완성
@@ -2053,7 +2058,7 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
         1→2 · 3→4 · 5→6 · 13→12 · 11→10 · 9→8
 
     CH1(pin 4)~CH2(pin 8) 사이는 4→5, 6→13, 12→11, 10→9 의 **4 단**이다. 단 수는
-    측정값에서 역산하지 않고 이 점퍼 넷을 세어 확인한다 (netlist M3).
+    측정값에서 역산하지 않고 이 점퍼 넷을 세어 확인한다.
     """
     st = 2 if stage is None else stage
     bb = BreadboardRenderer(template_path, baseline=baseline)
@@ -2066,7 +2071,7 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
                   "74HC04 두 패키지 · U1 인버터 6단 직렬, U2 는 체인 끝 부하 · 사각파 Vpp 5V, 1MHz",
                   submit=baseline is None)
     c = bb.cols['left']
-    r1, r2 = _E2_S1, _E2_S2
+    r1, r2 = _E2_S1, _E2_TPD_U2_ROW
 
     bb.draw_chip('74HC04', r1)
     _e2_frame(bb)
@@ -2123,8 +2128,8 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
     bb.note('U1 에는 미사용 입력이 없다 — 인버터 6개를 전부 쓰므로 14핀이 모두 물린다. '
             'C2 의 pull 선(3·5 → GND, 9·11·13 → VCC)은 걷는다 (아래 "앞 단계에서 걷는다").')
     bb.note('CH1~CH2 사이는 4단 (4→5, 6→13, 12→11, 10→9). 짝수 단이라 두 파형은 같은 방향이고 '
-            'Δt = 2·t_PHL + 2·t_PLH 다 — 1단 환산은 Δt/4. 단 수는 점퍼를 세어 확인한다 (netlist M3).')
-    bb.note('교안 p12 는 사각파의 offset 을 적지 않는다 (netlist M2). 0~5V 로 두려면 offset '
+            'Δt = 2·t_PHL + 2·t_PLH 다 — 1단 환산은 Δt/4. 단 수는 점퍼를 세어 확인한다.')
+    bb.note('교안 p12 는 사각파의 offset 을 적지 않는다. 0~5V 로 두려면 offset '
             '2.5V 가 필요하다 — CH1 로 Vin 이 0~5V 인지 먼저 본다.')
     bb.note(_E2_GND_NOTE)
     bb.export(output_path, max_row=31)
@@ -2136,14 +2141,11 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
 E2_BOARDS = [
     ("실험02_1-1_결선도_인버터_입출력특성.png", build_e2_inv, None),
     ("실험02_1-2_결선도_슈미트트리거_입출력특성_1단계_칩교체.png", build_e2_schmitt, None),
-    ("실험02_2_결선도_인버터체인_tpd_1단계_U1체인.png", build_e2_tpd, 1),
-    ("실험02_2_결선도_인버터체인_tpd_2단계_U2부하.png", build_e2_tpd, None),
 ]
 
 # 완성본 — 기준선 없이 전부 색. 예비보고서에 싣고 손으로 따라 그리는 원도다.
 E2_FINALS = [
     ("실험02_1-2_결선도_슈미트트리거_입출력특성.png", build_e2_schmitt),
-    ("실험02_2_결선도_인버터체인_tpd.png", build_e2_tpd),
 ]
 
 
@@ -2167,18 +2169,8 @@ def build_e2_schmitt_s1(output_path, template_path=None):
     return _e2_board(1, output_path, template_path)
 
 
-def build_e2_tpd_s1(output_path, template_path=None):
-    """C3 1단계 — U1 체인만. C2 의 pull 선 다섯 가닥을 걷고 체인 점퍼 다섯 가닥을 꽂는다."""
-    return _e2_board(2, output_path, template_path)
-
-
-def build_e2_tpd_s2(output_path, template_path=None):
-    """C3 2단계 — U2 부하를 더해 완성."""
-    return _e2_board(3, output_path, template_path)
-
-
 def build_e2_all(output_dir, template_path=None):
-    """실험 2 결선도 6장 — 절차 4장(기준선 사슬) + 완성본 2장(기준선 없음)."""
+    """실험 2 결선도 3장 — 절차 2장(기준선 사슬) + 완성본 1장(기준선 없음)."""
     os.makedirs(output_dir, exist_ok=True)
     base = None
     for filename, fn, stage in E2_BOARDS:
@@ -2583,7 +2575,7 @@ def main():
         "e1_and", "e1_or", "e1_or_s1", "e1_nand", "e1_nand_s1", "e1_nand_s2",
         "e1_nor", "e1_nor_s1", "e1_nor_s2",
         "e1_comb", "e1_comb_s1", "e1_comb_s2", "e1_comb_s3", "e1_all",
-        "e2_inv", "e2_schmitt", "e2_schmitt_s1", "e2_tpd", "e2_tpd_s1", "e2_tpd_s2", "e2_all",
+        "e2_inv", "e2_schmitt", "e2_schmitt_s1", "e2_tpd", "e2_all",
         "e3_ha", "e3_ha_s1", "e3_ha_s2", "e3_fa", "e3_fa_s1", "e3_fa_s2",
         "e3_hs", "e3_hs_s1", "e3_hs_s2", "e3_fs", "e3_fs_s1", "e3_fs_s2", "e3_all"
     ], help="Circuit ID to render")
@@ -2610,8 +2602,6 @@ def main():
         "e2_schmitt": build_e2_schmitt,
         "e2_schmitt_s1": build_e2_schmitt_s1,
         "e2_tpd": build_e2_tpd,
-        "e2_tpd_s1": build_e2_tpd_s1,
-        "e2_tpd_s2": build_e2_tpd_s2,
         "e2_all": build_e2_all,
         "e3_ha": build_e3_ha,
         "e3_ha_s1": build_e3_ha_s1,

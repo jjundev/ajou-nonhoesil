@@ -128,7 +128,7 @@ class BreadboardDispatch(unittest.TestCase):
     def test_지원하지_않는_회로를_SKILL_문서가_광고하지_않는다(self):
         doc = SKILL.read_text(encoding="utf-8")
         supported = {c for c, _ in _dispatch_pairs()}
-        for gone in ("e1_or", "e1_nor", "e2_rn", "e2_rp"):
+        for gone in ("e1_or", "e1_nor", "e2_rn", "e2_rp", "e2_tpd_s1", "e2_tpd_s2"):
             if gone not in supported:
                 with self.subTest(circuit=gone):
                     self.assertNotIn(f"`{gone}`", doc)

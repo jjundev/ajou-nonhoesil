@@ -841,11 +841,12 @@ class NewWeeks(unittest.TestCase):
     """실험02·03 회로를 참조로 꺼내 자기 대조한다 — 서명만 채우면 finding 이 없어야 한다.
 
     2026-09-14 전에는 `CIRCUITS` 에 e1 만 있어 두 주차 손그림을 검토할 수 없었다.
+    같은 날 조교 공지 `_350547_1` 로 실험02 AC 특성의 단계 그림 ID 가 빠졌다.
     """
 
-    def test_실험02_03_회로_18개가_자기_대조에서_조용하다(self):
+    def test_실험02_03_회로가_자기_대조에서_조용하다(self):
         cids = [c for c in hc.CIRCUITS if c.startswith(('e2_', 'e3_'))]
-        self.assertEqual(len(cids), 18)
+        self.assertEqual(len(cids), 16)
         for cid in cids:
             with self.subTest(cid=cid):
                 ref = hc.reference_diagram(cid)

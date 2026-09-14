@@ -305,7 +305,9 @@ class R5(unittest.TestCase):
         # 2026-09-13 실험02 재저작: Rn·Rp 가 빠지고(배포본 교안에 없다) 절차 래퍼
         # 3개(e2_schmitt_s1·e2_tpd_s1/_s2)가 늘어 실험01 13 + 실험02 6 = 19 다.
         # 2026-09-14 실험03: 회로 4 + 절차 래퍼 8 = 12 가 늘어 31 이다.
-        self.assertEqual(len(builders), 31)
+        # 2026-09-14 범위 축소(조교 공지 `_350547_1`): 실험02 절차 래퍼 2개
+        # (e2_tpd_s1/_s2)가 빠져 29 다. 완성본 build_e2_tpd 는 남는다.
+        self.assertEqual(len(builders), 29)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)
