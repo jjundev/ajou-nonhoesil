@@ -1,0 +1,309 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+
+  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
+  .common { break-after: page; }
+  .common .power { font-weight: 700; border: 2px solid #000;
+                   padding: 3mm; margin-bottom: 4mm; }
+  .common li { font-size: 12pt; line-height: 1.7; }
+
+  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
+  .circuit { break-before: page; }
+  .closing { break-before: page; }
+
+  /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
+  .flow td, .flow th { text-align: left; }
+
+  /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
+  .banner { border: 2px solid #000; padding: 2mm 3mm; margin: 2mm 0 3mm;
+            font-weight: 700; }
+
+  /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
+     그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
+     3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
+     칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
+  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
+                   break-inside: avoid; }
+  .wirebox img { break-after: avoid; }
+  .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
+  .wirebox ol { margin: 0; padding-left: 6mm; }
+  .wirebox li { font-size: 11pt; line-height: 1.6; }
+
+  /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
+     회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
+  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
+  .stage h3 { margin: 0 0 1.5mm; }
+  .stage img { break-after: avoid; }
+
+  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
+     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
+     통짜로 묶어도 백지 비용이 없다. */
+  .unused .chipunused { margin-top: 2mm; break-inside: avoid; }
+
+  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
+     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
+  .box { display: inline-block; width: 4mm; height: 4mm;
+         border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
+  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3, h4 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
+  /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
+  .mismatch td { height: 8mm; background: #fafafa; }
+
+  .legend { font-size: 9pt; margin: 1mm 0 4mm; }
+  .src { font-size: 9pt; margin: 0 0 1mm; }
+  .photo { font-size: 9pt; margin: 0 0 3mm; }
+
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid #333; height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
+              font-size: 9.5pt; line-height: 1.5; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
+</style>
+
+<h1>실험3 가산기 &amp; 감산기 체크리스트</h1>
+<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — 미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>
+<p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
+<p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
+<p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
+<h2>오늘의 흐름</h2>
+<table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/2</td><td>C2 · 실험 1-2) 전가산기 (74HC86 + 74HC08 + 74HC32)</td><td>74HC86 · 74HC08 · 74HC32</td><td>T3 전가산기 진리표</td></tr><tr><td>2/2</td><td>C4 · 실험 2-2) 전감산기 (74HC86 + 74HC04 + 74HC08 + 74HC32)</td><td>74HC86 · 74HC04 · 74HC08 · 74HC32</td><td>T7 전감산기 진리표</td></tr></tbody></table>
+<h2>공통 규칙</h2>
+<ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND. 전원은 준비물 p8 의 5V 전압원, 입력 레벨은 p9 "INPUT(A, B, Ci 또는 Bi)에 5V와 GND를 번갈아 인가"</li><li>네 칩(74HC86·74HC08·74HC32·74HC04) 모두 계열 표준 전원핀(14·7)이다. 다른 전원핀을 가진 칩은 이 주차에 없다</li><li>사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지). 미사용 게이트의 입력은 접지하지 않는다 — 교안이 미사용 핀 처리를 말하지 않는 주차이고, 실험01 실측(2026-09-11)에서 접지 생략이 결과에 영향이 없었다. 이 규칙은 교안 원문이 아니다(M12). 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 직결하면 출력 정격을 넘는 전류가 흐른다 — 실험01 M3 이 인용한 74HC04 절대 최대 IO ±25 mA)</li><li>칩을 꽂거나 뽑을 때는 전원을 끈다. 교안 원문이 아닌 안전 절차다 — 단계 표의 "꽂는다/뽑는다" 줄은 전부 전원을 끈 상태를 전제한다</li><li>교안 실험 1-1(반가산기)·2-1(반감산기)는 하지 않는다 — 조교 공지 _350547_1 (2026-09-14, 범위는 config.EXPERIMENT_SCOPE). 그래서 C2 는 맨바닥에서 시작하고, C4 는 C2 를 다 만든 상태에서 74HC04 를 끼워 바꾼다. 회로 ID(C2·C4)와 미확정 번호는 다시 매기지 않는다</li><li>각 칩을 처음 쓰는 단계에서는 그 단계 LED 로 진리표 전 행을 돌린다. C2 1단계가 74HC86 을, C2 2단계가 74HC08·74HC32 를, C4 1단계가 74HC04 를 처음 쓴다. 두 회로 모두 끝에서 8행 전부를 돌린다</li><li>칩 자리는 고정이다 (아래 # 칩 자리표). 회로에 있는 한 74HC86 은 좌측 앞단, 74HC04 는 그 아래, 74HC08 과 74HC32 는 우측이다. 회로가 바뀌어도 전원· 입력 A·B·LED 사슬은 그대로 두고, 그림의 회색 선은 손대지 않는다 — 단계 그림에서 앞 단계와 같은 배선은 회색으로 그려지고 번호를 받지 않는다 (breadboard-diagram 의 기준선 규약). 걷을 선은 단계 표가 지시한다</li><li>단계 순서는 자기 LED 가 달린 출력을 가진 칩·경로부터다 — 결선도 관례이고 교안 원문이 아니다</li><li>입력 A·B·Ci/Bi 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다(스위치는 교안에 없다 — M2)</li><li>LED 는 두 개뿐이다(준비물 p8 발광 다이오드 (2개)·저항 330Ω (2개)). LED1 은 합/차(S·D), LED2 는 올림/내림(Co·Bo) 자리다. 애노드 쪽에 330Ω 직렬, 캐소드 → GND (교안 p9 "출력 단(S와 C, 또는 D와 B)에 330Ω 저항과 다이오드를 연결한다."). 어느 LED 가 어느 출력인지와 저항이 애노드 쪽이라는 것은 배선 편의다(M11). 두 회로에서 급전선 자리도 같다 — LED1 은 U1 pin 6, LED2 는 U3 pin 3 이다</li><li>물리 칩 재사용: 준비물에 IC 수량 표기가 없다(M1). 아래 U1~U4 는 물리 칩 하나에 붙인 번호라 두 회로에서 같은 이름이 같은 칩이다 — U1 은 74HC86, U2 는 74HC08, U3 는 74HC32, U4 는 74HC04</li><li>핀 줄의 ※ 뒤는 그 점의 신호 이름과 명세 표 대응을 적은 주석이다(배선 지시가 아니다)</li></ul>
+<div class="tblock"><h2>참조 핀아웃</h2>
+<table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>게이트4</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC86 (quad XOR)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC08 (quad AND)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr><tr><td>74HC32 (quad OR)</td><td>1,2 → 3</td><td>4,5 → 6</td><td>9,10 → 8</td><td>12,13 → 11</td><td>14</td><td>7</td></tr></tbody></table>
+<p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7. 오른쪽 세 인버터는 입력 번호가 출력보다 크다(9→8, 11→10, 13→12). 이 주차의 쿼드 세 칩은 핀 배치가 전부 같다 — 실험01 의 74HC02 같은 예외가 없다.</p>
+</div>
+<div class="tblock"><h2>칩 자리표</h2>
+<p>두 회로가 같은 자리를 쓴다. 입력 A·B 는 S1 의 pin 1·2 와 S3 의 pin 1·2 로 가고(C4 에서 S3 pin 1 만 A' 로 바뀐다), 세 번째 입력 Ci/Bi 는 S1 pin 5 와 S3 pin 5 로 간다. 슬롯은 역할에 붙는다 — 앞단 XOR(S1)·인버터(S2)·앞단 AND(S3)·합류 OR(S4). 이 주차는 칩 종류가 회로마다 바뀌지 않으므로 슬롯의 칩도 바뀌지 않는다. 좌·우 는 브레드보드 두 블록, 행은 그 블록 단자대의 행 번호(칩 pin 1 이 앉는 행)다. 행 번호는 실험01·02 결선도의 관례(S1 좌 7행·S2 좌 18행·S3 우 10행)를 따른 것이고 S4 우 21행은 이번에 새로 잡은 자리다 — 교안 근거가 없다(M4).</p>
+<p>AND 를 우측에, 인버터를 좌측에 둔 이유(2026-09-14 렌더에서 확정, M4): 좌우를 건너는 선이 전부 입력 갈래(A·B·Ci/Bi 가 좌 7·8·11행 스트립에서 우측 AND 로 가는 것)와 인버터 출력 둘(A'·(A⊕B)')뿐이 된다. AND 를 좌측에 두면 감산기에서 좌우를 오가는 선이 여섯 가닥이다. AND→OR 은 우측 안에서 끝난다.</p>
+<table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>S1</td><td>좌 7행</td><td>C2 74HC86 · C4 74HC86 (U1, 앞단 XOR)</td></tr><tr><td>S2</td><td>좌 18행</td><td>C4 74HC04 (U4, 인버터)</td></tr><tr><td>S3</td><td>우 10행</td><td>C2 74HC08 · C4 74HC08 (U2, 앞단 AND)</td></tr><tr><td>S4</td><td>우 21행</td><td>C2 74HC32 · C4 74HC32 (U3, 합류 OR)</td></tr></tbody></table>
+</div>
+<h2>미확정 사항 — 실험실에서 확인할 것</h2>
+<p>교안 원문이 아닌 판단을 전부 모은다. 명세 쪽 미확정도 여기로 온다.</p>
+<p>M7(반감산기 내림 수 B 표기)·M9(C3 동안 쉬는 74HC32)는 조교 공지 _350547_1 로 반감산기를 빼면서 함께 뺐다. 번호는 다시 매기지 않는다.</p>
+<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M1</td><td>준비물 p8 의 IC 목록 74HC04, 74HC08, 74HC32, 74HC86 에 수량이 없다. 종류당 한 패키지로 보고 두 회로를 순차 배선하도록 짰다 — 회로도의 라벨 중복은 전부 같은 패키지 안의 두 번째 게이트로 해석했다</td><td>실험실 키트에서 패키지 수 확인. 두 개씩이어도 C4 는 C2 에서 두 가닥만 바꾸면 되므로 이 결선도대로 한다</td></tr><tr><td class="box"></td><td>M2</td><td>교안이 입력 스위치·딥스위치를 지정하지 않는다. 점퍼선 직결로 가정했다</td><td>실험실 키트 확인</td></tr><tr><td class="box"></td><td>M3</td><td>74HC 출력으로 LED 를 직접 구동한다. 적색 LED 순방향 강하를 2V 로 보면 330Ω 에서 (5−2)/330 ≈ 9.1 mA 다 — 실험01 M3 과 같은 판단이고 교안 지시(p9)가 그러하므로 그대로 따른다</td><td>LED 밝기가 눈에 띄게 낮으면 이 지점을 먼저 본다</td></tr><tr><td class="box"></td><td>M4</td><td>칩 자리(S1 좌 7행·S2 좌 18행·S3 우 10행)는 실험01·02 결선도 관례를 따른 것이고 S4 우 21행은 이번에 새로 잡았다. 교안 근거가 없다. 2026-09-14 렌더로 확정 — 초안은 74HC08 을 S2(좌 18행)에 두었는데 교차 배선 수를 세어 AND 를 S3(우 10행), 인버터를 S2 로 바꿨다. 범위 축소 뒤의 5장(절차 3 + 완성본 2)도 렌더러의 물리 실현성 검사(R1~R6·넷)를 통과했다</td><td>실험실에서 슬롯을 바꾸면 그림과 어긋나므로 그대로 따른다. 우측 블록은 전원 레일이 좌우 뒤집혀 있어 U2·U3 의 pin 7 은 중앙 GND 레일, pin 14 는 우 바깥 VCC 레일로 간다(그림대로)</td></tr><tr><td class="box"></td><td>M5</td><td>교안 표기는 74HC 계열이다. 실물 각인이 다른 제조사(TI SN74HC..)여도 핀 배치는 같지만, 74HCT·74LS 등 다른 계열이면 전기 특성(입력 문턱·미사용 입력 거동)이 달라 인용할 데이터시트를 바꾼다</td><td>수령한 칩의 각인 확인</td></tr><tr><td class="box"></td><td>M6</td><td>교안 표지 머리글이 25-1 논리회로실험 이다. 2026-2 배포본이 지난 학기 슬라이드를 그대로 쓴 것인지, 다른 판이 따로 배포되는지 모른다</td><td>강의 사이트에서 배포 파일 갱신 여부 확인</td></tr><tr><td class="box"></td><td>M8</td><td>회로도 두 장(p5·p7)의 위상은 래스터라 300dpi 렌더 후 vision 으로만 읽었다. 특히 전가산기 AND2 의 두 입력(A⊕B·Ci), 전감산기 NOT1 의 입력이 A 탭(A'·B 이지 A·B' 가 아니다), NOT2 의 입력(A⊕B)과 AND2 의 입력(Bi) 은 세로선 위치로 판독했다</td><td>교안 진리표와 부울식 역검산이 전부 일치한다(명세 T3·T7). 실험실에서 LED 가 T3·T7 과 어긋나면 이 배선부터 본다</td></tr><tr><td class="box"></td><td>M10</td><td>준비물의 발광 다이오드 (2개) 가 출력 두 개에 배정되므로 A⊕B·A·B·A' 같은 중간단은 관측점이 없다. C2 1단계 확인은 LED1 로만 보고 LED2 는 아직 급전하지 않는다. C4 1단계는 두 LED 모두 최종 출력이다</td><td>중간단을 따로 보고 싶으면 LED1 급전선을 그 핀으로 잠시 옮겨 본다 — 교안 부품 수를 넘기지 않는다</td></tr><tr><td class="box"></td><td>M11</td><td>배선 편의로 정한 것: OR(U3) 의 pin 1·2 에 어느 AND 출력을 넣는지(교환 법칙), LED1 = 합/차·LED2 = 올림/내림 배정, 330Ω 을 애노드 쪽에 두는 직렬 순서. 교안 p9 는 "330Ω 저항과 다이오드를 연결" 까지만 쓴다</td><td>확인이 필요한 값은 아니다. 조교가 다른 배정을 지시하면 그쪽으로 — 함수는 바뀌지 않는다</td></tr><tr><td class="box"></td><td>M12</td><td>미사용 게이트 입력을 개방하는 공통 규칙 자체가 교안 원문이 아니다. CMOS 는 플로팅 입력이 발진·소비 전류 증가를 부를 수 있는 계열이지만 실험01 실측(2026-09-11)에서 결과에 영향이 없었고, 이 주차 교안은 미사용 핀 처리를 말하지 않는다</td><td>조교가 접지·풀업을 지시하면 그대로 한다. LED 가 진리표와 다르면 이 자리를 본다</td></tr></tbody></table></section>
+<section class="circuits"><section class="circuit">
+<h2>회로 1/2 · C2 · 실험 1-2) 전가산기 (74HC86 + 74HC08 + 74HC32) · 기록: T3 · 판독: LED</h2>
+<div class="banner">준비 — 꽂는다: 74HC86, 74HC08, 74HC32</div>
+<p>교안 p5 회로도 그대로. 이 주차 첫 회로라 맨바닥에서 시작한다 — 교안이 앞에 두는 반가산기(실험 1-1)는 조교 공지 _350547_1 로 하지 않는다. 칩이 셋이라 단계는 둘이다. 먼저 S 경로(74HC86 의 XOR1·XOR2 — 자기 LED 가 있다), 다음 Co 경로(74HC08 의 AND1·AND2 + 74HC32 OR). 단계 끝은 그 시점의 LED 로 본다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험03_1-2_결선도_전가산기_1단계_XOR.png" style="width:100%"><p><b>이 단계에서:</b> 74HC86 을 S1 에 꽂는다. 전원(14→VCC, 7→GND), A→pin 1, B→pin 2, Ci→pin 5, U1 pin 3→pin 4, U1 pin 6→LED1 급전, LED1·LED2 사슬(330Ω→GND) 을 꽂는다. S3 의 전원 두 가닥도 미리 꽂는다. LED2 사슬은 아직 급전하지 않는다</p><p><span class="box"></span><b>확인:</b> LED1 = S = A⊕B⊕Ci, T3 8행의 S 열 (입력에 1 이 홀수 개일 때만 켜짐). 74HC86 첫 사용</p></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험03_1-2_결선도_전가산기_2단계_Co경로.png" style="width:100%"><p><b>이 단계에서:</b> 74HC08 을 S3 에, 74HC32 를 S4 에 꽂는다. A→U2 pin 1, B→U2 pin 2 갈래(칩 위 4·5행을 건넌다), U1 pin 3→U2 pin 4, Ci→U2 pin 5, U2 pin 3→U3 pin 2, U2 pin 6→U3 pin 1, U3 pin 3→LED2 급전, S4 전원 두 가닥을 잇는다</p><p><span class="box"></span><b>확인:</b> T3 8행 전부 (74HC08·74HC32 첫 사용) — LED2 = Co 는 입력에 1 이 둘 이상일 때 켜짐</p></div>
+<div class="wirebox">
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험03_1-2_결선도_전가산기.png" style="width:100%"><p class="src">결선도: 실험03_1-2_결선도_전가산기.png</p>
+<div class="chip"><h4>U1 = 74HC86 (quad 2-input XOR, DIP-14) — S1</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 A           (XOR1)</li>
+<li><span class="box"></span>pin 2  ← 입력 B</li>
+<li><span class="box"></span>pin 3  → U1.pin4          (XOR1 출력 A⊕B → XOR2 입력)</li>
+<li><span class="box"></span>pin 3  → U2.pin4          (A⊕B → AND2 입력, 팬아웃)</li>
+<li><span class="box"></span>pin 4  ← U1.pin3          (XOR2)</li>
+<li><span class="box"></span>pin 5  ← 입력 Ci</li>
+<li><span class="box"></span>pin 6  → LED1 애노드 (330Ω 직렬) → GND    ※ S = A⊕B⊕Ci, T3 의 S 열</li>
+</ol>
+</div>
+<div class="chip"><h4>U2 = 74HC08 (quad 2-input AND, DIP-14) — S3</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 A           (AND1)</li>
+<li><span class="box"></span>pin 2  ← 입력 B</li>
+<li><span class="box"></span>pin 3  → U3.pin2          (AND1 출력 A·B → OR)</li>
+<li><span class="box"></span>pin 4  ← U1.pin3          (AND2, A⊕B)</li>
+<li><span class="box"></span>pin 5  ← 입력 Ci</li>
+<li><span class="box"></span>pin 6  → U3.pin1          (AND2 출력 (A⊕B)·Ci → OR)</li>
+</ol>
+</div>
+<div class="chip"><h4>U3 = 74HC32 (quad 2-input OR, DIP-14) — S4</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U2.pin6          ((A⊕B)·Ci)</li>
+<li><span class="box"></span>pin 2  ← U2.pin3          (A·B)</li>
+<li><span class="box"></span>pin 3  → LED2 애노드 (330Ω 직렬) → GND    ※ Co = A·B + (A⊕B)·Ci, T3 의 Co 열</li>
+</ol>
+</div>
+</div>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="chipunused"><b>U1 = 74HC86 (quad 2-input XOR, DIP-14) — S1</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U2 = 74HC08 (quad 2-input AND, DIP-14) — S3</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U3 = 74HC32 (quad 2-input OR, DIP-14) — S4</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+</ul></div>
+</div>
+<p>Ci 입력 점퍼는 U1 pin 5 와 U2 pin 5 두 곳으로 팬아웃한다. OR 의 두 입력은 교안 회로도에서 위가 AND2, 아래가 AND1 이지만 OR 은 교환 법칙이 성립하므로 pin 1·2 의 배정은 배선 편의다 — 교안 원문이 아니다(M11).</p>
+<div class="tblock">
+<h3>T3 · 전가산기 진리표</h3>
+<p class='src'>출처: derived (S = A⊕B⊕Ci ; Co = A·B + (A⊕B)·Ci)</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Ci</th>
+<th>S예상</th>
+<th>Co예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 T3 row3.jpg 형식</p>
+<h4>T3 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock">
+<h3>T4 · 전가산기 Truth Table — 참조</h3>
+<p class='src'>출처: manual:p5</p>
+<table><thead><tr><th>A</th><th>B</th><th>Ci</th><th>S</th><th>Co</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+</div>
+</section>
+<section class="circuit">
+<h2>회로 2/2 · C4 · 실험 2-2) 전감산기 (74HC86 + 74HC04 + 74HC08 + 74HC32) · 기록: T7 · 판독: LED</h2>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 꽂는다: 74HC04 · 패키지는 두고 재배선한다: 74HC86, 74HC08, 74HC32</div>
+<p>교안 p7 회로도 그대로. C2(전가산기)를 다 만든 상태에서 바꾼다 — 교안이 앞에 두는 반감산기(실험 2-1)는 조교 공지 _350547_1 로 하지 않는다. 전가산기와 전감산기는 XOR 쪽이 같고 AND 입력 둘만 다르다: AND1 pin 1 이 A 대신 A' 를, AND2 pin 4 가 A⊕B 대신 (A⊕B)' 를 받는다. 그래서 새 칩은 74HC04 하나이고 단계도 하나다 — 두 가닥을 걷고 인버터를 거치는 네 가닥을 꽂는다. Ci 점퍼는 그 자리 그대로 Bi 가 되고, LED1 급전(U1 pin 6)·LED2 급전(U3 pin 3)도 그대로다 — A⊕B⊕Ci 와 A⊕B⊕Bi 는 같은 함수라 LED1 은 배선을 안 바꾸고 S 에서 D 가 된다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험03_2-2_결선도_전감산기_1단계_NOT.png" style="width:100%"><p><b>이 단계에서:</b> A→U2 pin 1 갈래와 U1 pin 3→U2 pin 4 선을 걷는다. 74HC04 를 S2 에 꽂고 전원 두 가닥(14→VCC, 7→GND), A→U4 pin 1, U4 pin 2→U2 pin 1(좌 j 열과 중앙 레일 사이 여백으로 건넌다), U1 pin 3→U4 pin 3, U4 pin 4→U2 pin 4(여백 차선으로 건넌다) 를 잇는다. Ci 점퍼는 그대로 두고 이제 Bi 로 부른다</p><p><span class="box"></span><b>확인:</b> T7 8행 전부 (74HC04 첫 사용) — LED1 = D 는 입력에 1 이 홀수 개일 때, LED2 = Bo 는 001·010·011·111 에서 켜짐</p></div>
+<div class="wirebox">
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험03_2-2_결선도_전감산기.png" style="width:100%"><p class="src">결선도: 실험03_2-2_결선도_전감산기.png</p>
+<div class="chip"><h4>U1 = 74HC86 (quad 2-input XOR, DIP-14) — S1, C2 와 같은 칩</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 A           (XOR1)</li>
+<li><span class="box"></span>pin 2  ← 입력 B</li>
+<li><span class="box"></span>pin 3  → U1.pin4          (XOR1 출력 A⊕B → XOR2 입력)</li>
+<li><span class="box"></span>pin 3  → U4.pin3          (A⊕B → NOT2 입력, 팬아웃)</li>
+<li><span class="box"></span>pin 4  ← U1.pin3          (XOR2)</li>
+<li><span class="box"></span>pin 5  ← 입력 Bi</li>
+<li><span class="box"></span>pin 6  → LED1 애노드 (330Ω 직렬) → GND    ※ D = A⊕B⊕Bi, T7 의 D 열</li>
+</ol>
+</div>
+<div class="chip"><h4>U4 = 74HC04 (hex inverter, DIP-14) — S2</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 A           (NOT1)</li>
+<li><span class="box"></span>pin 2  → U2.pin1          (A')</li>
+<li><span class="box"></span>pin 3  ← U1.pin3          (NOT2, A⊕B)</li>
+<li><span class="box"></span>pin 4  → U2.pin4          ((A⊕B)')</li>
+</ol>
+</div>
+<div class="chip"><h4>U2 = 74HC08 (quad 2-input AND, DIP-14) — S3, C2 와 같은 칩</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U4.pin2          (AND1, A')</li>
+<li><span class="box"></span>pin 2  ← 입력 B</li>
+<li><span class="box"></span>pin 3  → U3.pin2          (AND1 출력 A'·B → OR)</li>
+<li><span class="box"></span>pin 4  ← U4.pin4          (AND2, (A⊕B)')</li>
+<li><span class="box"></span>pin 5  ← 입력 Bi</li>
+<li><span class="box"></span>pin 6  → U3.pin1          (AND2 출력 (A⊕B)'·Bi → OR)</li>
+</ol>
+</div>
+<div class="chip"><h4>U3 = 74HC32 (quad 2-input OR, DIP-14) — S4, C2 와 같은 칩</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U2.pin6          ((A⊕B)'·Bi)</li>
+<li><span class="box"></span>pin 2  ← U2.pin3          (A'·B)</li>
+<li><span class="box"></span>pin 3  → LED2 애노드 (330Ω 직렬) → GND    ※ Bo = A'·B + (A⊕B)'·Bi, T7 의 Bo 열</li>
+</ol>
+</div>
+</div>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="chipunused"><b>U1 = 74HC86 (quad 2-input XOR, DIP-14) — S1, C2 와 같은 칩</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U4 = 74HC04 (hex inverter, DIP-14) — S2</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 5, 9, 11, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U2 = 74HC08 (quad 2-input AND, DIP-14) — S3, C2 와 같은 칩</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U3 = 74HC32 (quad 2-input OR, DIP-14) — S4, C2 와 같은 칩</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
+</ul></div>
+</div>
+<p>A 는 U1 pin 1·U4 pin 1 로, Bi 는 U1 pin 5·U2 pin 5 로, A⊕B(U1 pin 3) 는 U1 pin 4·U4 pin 3 으로 팬아웃한다. OR 의 pin 1·2 배정은 C2 와 같은 이유로 배선 편의다(M11).</p>
+<div class="tblock">
+<h3>T7 · 전감산기 진리표</h3>
+<p class='src'>출처: derived (D = A⊕B⊕Bi ; Bo = A'·B + (A⊕B)'·Bi)</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Bi</th>
+<th>D예상</th>
+<th>Bo예상</th>
+<th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 T7 row3.jpg 형식</p>
+<h4>T7 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock">
+<h3>T8 · 전감산기 Truth Table — 참조</h3>
+<p class='src'>출처: manual:p7</p>
+<table><thead><tr><th>A</th><th>B</th><th>Bi</th><th>D</th><th>Bo</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+</div>
+</section></section>
+<section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>회로마다 완성 회로 사진을 찍었는가</li><li><span class="box"></span>진리표는 불일치 행마다 사진을 찍었는가</li><li><span class="box"></span>사진 파일명이 T1 row3.jpg 형식인가</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>
