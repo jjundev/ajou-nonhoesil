@@ -2195,13 +2195,13 @@ def build_e2_all(output_dir, template_path=None):
 E3_SLOTS = {'S1': ('left', 7), 'S2': ('left', 18), 'S3': ('right', 10), 'S4': ('right', 21)}
 _E3_S1, _E3_S2, _E3_S3, _E3_S4 = (E3_SLOTS[k][1] for k in ('S1', 'S2', 'S3', 'S4'))
 _E3_LED1 = 25      # 좌 a25 사슬 — S / D
-_E3_LED2 = 29      # 우 c29 사슬 — C / Co / Bo
+_E3_LED2 = 29      # 우 c29 사슬 — C / Co / B / Bo
 _E3_LANE = 212     # 좌 여백 세로 차선 — LED1 급전
 _E3_LANE_A = 440   # 좌 j~중앙 레일 여백 — A' 건너감
 _E3_LANE_X = 452   # 같은 여백 — (A⊕B)' 건너감
 _E3_INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
                   '빨간 +5V 레일로 옮겨 꽂는다. 띄워두지 않는다.')
-_E3_LED_NOTE = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(C·Co·Bo). '
+_E3_LED_NOTE = ('LED 는 두 개뿐이다(교안 p8). LED1 = 합/차(S·D), LED2 = 올림/내림(C·Co·B·Bo). '
                 '회로가 바뀌어도 LED·저항은 그대로 두고 급전선만 옮긴다.')
 _E3_XOR_UNUSED = ([4, 5, 9, 10, 12, 13], [6, 8, 11])      # 게이트 1 만 쓸 때
 _E3_XOR2_UNUSED = ([9, 10, 12, 13], [8, 11])              # 게이트 1·2 를 쓸 때
@@ -2240,7 +2240,8 @@ def _e3_draw(bb, circuit, stage):
     sub = circuit in ('hs', 'fs')
     cin = 'Bi' if sub else 'Ci'
     sum_tag = 'D' if sub else 'S'
-    carry_tag = {'ha': 'C', 'fa': 'Co', 'hs': 'Bo', 'fs': 'Bo'}[circuit]
+    # 반감산기 내림 수는 교안 p6 표기 그대로 입력과 같은 글자 B 다(netlist M7).
+    carry_tag = {'ha': 'C', 'fa': 'Co', 'hs': 'B', 'fs': 'Bo'}[circuit]
     done = stage != 1
     bb.partial = not done
 
@@ -2337,7 +2338,7 @@ def _e3_draw(bb, circuit, stage):
                      marker_at=(r['c'] - 16, L(20)))
     carry_desc = {'ha': 'C = A·B — 진리표 T1 의 C 열',
                   'fa': 'Co = A·B + (A⊕B)·Ci — 진리표 T3 의 Co 열',
-                  'hs': "Bo = A'·B — 진리표 T5 의 Bo 열 (교안 표기 B)",
+                  'hs': "B = A'·B — 진리표 T5 의 넷째 열 B (입력 B 와 같은 글자)",
                   'fs': "Bo = A'·B + (A⊕B)'·Bi — 진리표 T7 의 Bo 열"}[circuit]
     if full and not done:
         carry_desc = (f"아직 앞 회로의 {'A' + chr(39) + '·B' if sub else 'A·B'} 가 켜진다 "
@@ -2422,7 +2423,7 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
 
       stage 1  C2 의 전가산기 확장을 걷고 반가산기 꼴로 되돌린다 (LED2 는 임시로 A·B).
                74HC32 는 전원만 둔 채 쉰다. S2 전원을 미리 꽂는다. D = A⊕B
-      stage 2  + 74HC04(S2) · A 갈래를 pin 1 로, A' 를 우 AND pin 1 로 = 완성. Bo = A'·B
+      stage 2  + 74HC04(S2) · A 갈래를 pin 1 로, A' 를 우 AND pin 1 로 = 완성. B = A'·B
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
@@ -2432,7 +2433,7 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
         title = "실험 2-1: 반감산기 결선도"
     else:
         title = "실험 2-1: 반감산기 — 2단계 (NOT 추가, 완성)"
-    bb.set_header(title, "74HC86 (XOR) → D · 74HC04 (NOT) + 74HC08 (AND) → Bo = A'·B (교안 표기 B)",
+    bb.set_header(title, "74HC86 (XOR) → D · 74HC04 (NOT) + 74HC08 (AND) → 내림 수 B = A'·B (입력 B 와 같은 글자)",
                   submit=baseline is None)
     _e3_draw(bb, 'hs', stage)
     bb.export(output_path, max_row=36)

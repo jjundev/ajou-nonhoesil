@@ -1,0 +1,21 @@
+{
+  "schema": "notion-uploads/v1",
+  "uploads": [
+    {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "3dbb06d2-63bc-814f-a5c2-cb67d0a56ade",
+      "url": "https://app.notion.com/p/3-v1-3dbb06d263bc814fa5c2cb67d0a56ade",
+      "source": "실험03_예비보고서.md",
+      "uploaded_at": "2026-09-14 11:08"
+    },
+    {
+      "kind": "예비보고서",
+      "version": 2,
+      "page_id": "3dbb06d2-63bc-81a7-9d7e-e3ea360e72b6",
+      "url": "https://app.notion.com/p/3-v2-3dbb06d263bc81a79d7ee3ea360e72b6",
+      "source": "실험03_예비보고서.md",
+      "uploaded_at": "2026-09-14 11:51"
+    }
+  ]
+}
