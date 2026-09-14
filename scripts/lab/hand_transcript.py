@@ -50,6 +50,8 @@ class Diagram:
     bridges: list = field(default_factory=list)
     overlaps: list = field(default_factory=list)
     uncertain: set = field(default_factory=set)
+    # 보드 위에 적힌 신호 이름. [{'name': 'A', 'at': 홀 | None}]. H15 가 본다
+    labels: list = field(default_factory=list)
     title: str = ""
     circuit: str = ""
     signed: bool = False
@@ -198,8 +200,22 @@ def parse_transcript(path):
 
     uncertain = {parse_address(u)[1] for u in obj.get('uncertain', [])}
 
+    # 선택 키다 — 2026-09-12 이전 전사에는 없다. 없으면 빈 목록이고 H15 가 이름마다 잡는다
+    labels = []
+    for lb in obj.get('labels', []):
+        try:
+            name = lb['name']
+        except KeyError as e:
+            raise TranscriptError(f"이름표 항목에 필수 키 {e} 가 없다: {lb}") from e
+        name = str(name).strip()
+        if not name:
+            raise TranscriptError(f"이름표 항목의 name 이 비어 있다: {lb}")
+        at = parse_address(lb['at'])[1] if lb.get('at') else None
+        labels.append({'name': name, 'at': at})
+
     return Diagram(chips=chips, wires=wires, leds=leds, resistors=resistors,
                    chains=chains, bridges=bridges, uncertain=uncertain,
+                   labels=labels,
                    title=obj.get('title', ''), circuit=obj['circuit'],
                    signed=bool(obj.get('signed', False)),
                    page=int(obj['page']))

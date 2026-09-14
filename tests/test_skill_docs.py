@@ -496,6 +496,20 @@ class SkillDocInvariants(unittest.TestCase):
                 # `check_notion_markdown` 이 빠져 있던 것을 에이전트가 지적했다.
                 self.assertIn("check_notion_markdown(", self.docs[name])
 
+    def test_table_header_check_is_called_by_writer_and_reviewer(self):
+        # 2026-09 실험01 예보가 명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 내고
+        # ⑤ 를 통과해 조교 감점을 받았다. ③ 이 안 부르면 쓴 세션 안에서 못 고치고,
+        # ⑤ 가 안 부르면 행 수만 보고 다시 통과시킨다.
+        for name in ("예보", "리뷰"):
+            with self.subTest(name):
+                self.assertIn("check_report_tables(", self.docs[name])
+
+    def test_rule_22_example_uses_the_spec_column_names(self):
+        # 이 문서는 예시를 따라 쓰기 쉬워서 예시가 규칙을 이긴다. 옛 규칙 13 의
+        # 인용 `Y = A·B·C` 가 실험01 예보의 `Y` 열 이름을 굳혔다.
+        self.assertIn("(`L1 = A·B`, `L2 = A·B·C`)", self.docs["예보"])
+        self.assertNotIn("Y = A·B·C", self.docs["예보"])
+
     def test_rule_16_covers_additions_as_well_as_omissions(self):
         # 강의노트 준비물에 없는 브레드보드·점퍼선·저항 없이는 결선 절이
         # 성립하지 않는다. 규칙 16 이 빼는 쪽만 말해서 판단이 갈렸다.
@@ -756,10 +770,16 @@ class HandDiagramSkill(unittest.TestCase):
         self.assertLess(text.index("experiment_dir"),
                         text.index("init-lab-experiment"))
 
-    def test_규칙_열네개가_전부_적혀_있다(self):
+    def test_규칙_열다섯개가_검사_목록_표에_있다(self):
         text = HAND.read_text(encoding="utf-8")
-        for n in range(1, 15):
-            self.assertIn(f"H{n}", text)
+        for n in range(1, 16):
+            self.assertIn(f"| H{n} |", text)
+
+    def test_전사가_신호_이름을_적는다고_돼_있다(self):
+        """H15 는 전사의 labels 로만 판정한다. 적으라는 말이 없으면 늘 비어서 잡힌다."""
+        text = HAND.read_text(encoding="utf-8")
+        self.assertIn('"labels"', text)
+        self.assertIn("보드 밖", text)
 
     def test_전사가_pin_1_열을_적는다고_돼_있다(self):
         """뒤집어 그린 칩은 pin1_col 없이는 전사가 못 담는다."""

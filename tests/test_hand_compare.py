@@ -1,4 +1,4 @@
-"""넷 모델과 규칙 13개를 검사한다.
+"""넷 모델과 규칙 H1~H15 를 검사한다.
 
 **홀 좌표가 아니라 넷으로 비교한다.** 칩이 참조보다 한 행 위에 있어도 주변
 배선이 같이 옮겨져 있으면 그림은 유효하다 — 2026-09-08 손그림 세 쪽이 전부
@@ -202,7 +202,7 @@ class Reference(unittest.TestCase):
 
     def test_from_wiring_은_입력_w의_resistors를_변형하지_않는다(self):
         w = {
-            'chips': [], 'wires': [], 'leds': [],
+            'chips': [], 'wires': [], 'inputs': [], 'leds': [],
             'resistors': [{'top': ('left', 'd', 15), 'bottom': ('left', 'd', 17), 'label': '330Ω'}],
             'chains': [{'tag': 'L1', 'res_top': ('left', 'd', 15)}],
             'unused_inputs': [], 'unused_outputs': [], 'bridges': [], 'overlaps': [],
@@ -686,6 +686,8 @@ class ChipFollow(unittest.TestCase):
         for c in hand.chains:
             if c['tag'] == 'L1':
                 c['res_bottom'] = fixed
+        # 이 픽스처는 2026-09-09 전사라 labels 가 없다 — 여기서 보려는 것은 H14·H7 이다
+        hand.labels = list(ref.labels)
         found = hc.compare(ref, hand)
         self.assertEqual([str(f) for f in found if f.rule in ('H14', 'H7')], [])
         self.assertEqual([str(f) for f in found if f.grade in hc.BLOCKING], [])
@@ -772,6 +774,47 @@ class Paperwork(unittest.TestCase):
         self.assertEqual(found[0].grade, '보류')
 
 
+class Labels(unittest.TestCase):
+    """H15. 2026-09 실험01 예보 조교 감점(-1) — 손그림에 입력 A·B·C 표기가 없었다."""
+
+    def _pair(self, cid='e1_and'):
+        ref = hc.reference_diagram(cid)
+        hand = hc.reference_diagram(cid)
+        hand.signed = True
+        hand.title = '1-1 AND Gate'
+        return ref, hand
+
+    def test_참조는_입력과_LED_꼬리표를_이름으로_갖는다(self):
+        self.assertEqual([lb['name'] for lb in hc.reference_diagram('e1_and').labels],
+                         ['A', 'B', 'C', 'L1', 'L2'])
+        self.assertEqual([lb['name'] for lb in hc.reference_diagram('e1_comb').labels],
+                         ['A', 'B', 'Z', 'X', 'Y'])
+
+    def test_이름이_하나_빠지면_기능으로_잡는다(self):
+        ref, hand = self._pair()
+        hand.labels = [lb for lb in hand.labels if lb['name'] != 'B']
+        found = hc.compare(ref, hand)
+        self.assertEqual([(f.grade, f.where) for f in found if f.rule == 'H15'],
+                         [('기능', 'B')])
+        self.assertEqual(hc.verdict(found), '수정 필요')
+
+    def test_이름이_다_있으면_조용하다(self):
+        ref, hand = self._pair()
+        self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H15'], [])
+
+    def test_이름표가_없는_전사는_이름마다_잡힌다(self):
+        """2026-09 실험01 제출 손그림이 이 상태였다 — A·B·C 가 한 글자도 없었다."""
+        ref, hand = self._pair()
+        hand.labels = []
+        self.assertEqual([f.where for f in hc.compare(ref, hand) if f.rule == 'H15'],
+                         ['A', 'B', 'C', 'L1', 'L2'])
+
+    def test_대소문자는_가리지_않는다(self):
+        ref, hand = self._pair()
+        hand.labels = [{'name': lb['name'].lower(), 'at': None} for lb in hand.labels]
+        self.assertEqual([f for f in hc.compare(ref, hand) if f.rule == 'H15'], [])
+
+
 class Verdict(unittest.TestCase):
     def test_치명이_있으면_수정_필요(self):
         f = [hc.HandFinding('H3', '치명', 'x', 'y')]
@@ -825,10 +868,10 @@ class RuleRegistry(unittest.TestCase):
                    if k.startswith('check_') and callable(v)}
         self.assertEqual(defined, set(hc._RULES))
 
-    def test_규칙_코드가_H1부터_H14까지_빠짐없다(self):
+    def test_규칙_코드가_H1부터_H15까지_빠짐없다(self):
         import inspect
         src = inspect.getsource(hc)
-        for n in range(1, 15):
+        for n in range(1, 16):
             self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
 
 

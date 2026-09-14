@@ -4,7 +4,7 @@
 결선도"를 요구하므로, 렌더 결과물은 조원이 **따라 그릴 원도**다. 그래서
 무엇이 그림 위에 있어야 하고 무엇이 있으면 안 되는지가 갈린다.
 
-  · 보드 위  — 손으로 옮겨 그릴 것 (배선, 칩, 핀 번호, 두 글자 꼬리표)
+  · 보드 위  — 손으로 옮겨 그릴 것 (배선, 칩, 핀 번호, 신호 이름 배지)
   · 보드 밖  — 옮겨 그릴 수 없는 것 (미사용핀을 접지하는 *이유*, 계측 지시)
 
 2026-09 이전 판은 이 둘을 섞어 보드 위에 라벨 박스를 30개 넘게 얹었다. 그중
@@ -27,12 +27,32 @@ SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 # 보드 안쪽 x 범위. 이 밖에 앉는 배지는 여백이라 홀을 가리지 않는다
 BOARD_L, BOARD_R = 149, 877
 
-# 보드 위에 허용하는 꼬리표 개수. `L1`·`A'`·`Z` 처럼 두 글자짜리만 남긴
-# 결과가 회로당 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다
+# 그림 한 장의 보드 위 배지 상한. 신호 이름(입력 A·B·C, 출력 L1·L2·X·Y·Z)만 남긴
+# 결과가 한 장에 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다
 MAX_ON_BOARD_LABELS = 8
 
-# `_tag()` 만 보드 위 배지를 그린다. 빌더가 직접 부르면 옛 방식으로 돌아간 것
-SANCTIONED_BADGE_HELPER = "_tag"
+
+def _inter(a, b):
+    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+
+
+def _badge_hits(bb, box, seg):
+    """신호 이름 배지 상자가 가리는 것 — 번호 원, 꽂힌 홀, 자기 것이 아닌 배선, 다른 배지."""
+    hits = [f'번호 원 {m}' for m in bb.marker_boxes if _inter(box, m)]
+    for (hx, hr), what in bb._leads.items():
+        if box[0] <= hx <= box[2] and box[1] <= bb.r_y(hr) <= box[3]:
+            hits.append(f'홀 {what}')
+    for j, (_kind, pts, desc) in enumerate(bb._segments):
+        if j == seg:
+            continue
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
+            if any(box[0] < ax + (bx - ax) * k / n < box[2]
+                   and box[1] < ay + (by - ay) * k / n < box[3] for k in range(n + 1)):
+                hits.append(f'배선 {desc}')
+                break
+    hits += [f'배지 {n}' for n, b, _s in bb.tag_boxes if b is not box and _inter(box, b)]
+    return hits
 
 
 def _module():
@@ -79,8 +99,8 @@ class BuilderApiContract(unittest.TestCase):
     def test_빌더가_보드_위에_배지를_직접_그리지_않는다(self):
         tree = ast.parse(SRC.read_text(encoding="utf-8"))
         bad = [n.name for n in self._builder_like(tree) if self._calls(n, "draw_badge")]
-        self.assertEqual(bad, [], f"{bad}: 보드 위 꼬리표는 {SANCTIONED_BADGE_HELPER}() 로, "
-                                  "설명은 note() 로 보드 밖에 낸다")
+        self.assertEqual(bad, [], f"{bad}: 신호 이름은 signal_tag() 로(_input_jumper·draw_led 가 "
+                                  "부른다), 꽂을 자리는 _tag() 로, 설명은 note() 로 보드 밖에 낸다")
 
 
 class RenderedContract(unittest.TestCase):
@@ -91,14 +111,16 @@ class RenderedContract(unittest.TestCase):
         cls.mod = _module()
 
     def _render(self, fn):
-        counted = {'labels': 0}
+        # 그림 한 장만 센다. 단계 그림은 기준선을 얻으려고 앞 보드를 한 번 더
+        # 그리는데, 그 배지까지 합치면 한 장에 5개인 그림이 10개로 잡힌다
+        counted = {}
         mod = self.mod
         orig_badge = mod.BreadboardRenderer.draw_badge
         captured = {}
 
         def spy_badge(self_, x, y, text, *a, **k):
             if BOARD_L < x < BOARD_R:
-                counted['labels'] += 1
+                counted[self_] = counted.get(self_, 0) + 1
             return orig_badge(self_, x, y, text, *a, **k)
 
         orig_export = mod.BreadboardRenderer.export
@@ -115,7 +137,8 @@ class RenderedContract(unittest.TestCase):
         finally:
             mod.BreadboardRenderer.draw_badge = orig_badge
             mod.BreadboardRenderer.export = orig_export
-        return captured['bb'], counted['labels']
+        bb = captured['bb']
+        return bb, counted.get(bb, 0)
 
     def test_모든_회로가_결선_순서표를_낸다(self):
         """번호와 순서표가 없으면 조원은 30가닥을 동시에 봐야 한다."""
@@ -133,6 +156,26 @@ class RenderedContract(unittest.TestCase):
                     labels, MAX_ON_BOARD_LABELS,
                     f"{name}: 보드 위 라벨 {labels}개. 손으로 옮겨 그릴 것이 아니면 "
                     "note() 로 보드 밖에 낸다")
+
+    def test_신호_이름이_보드_안에_있다(self):
+        """2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
+        없었다. 원도가 입력 이름을 보드 밖(x=12) 꼬리표에만 적었고, 학생은 보드
+        판형 위만 따라 그려 그 글자가 옮겨지지 않았다."""
+        for name, fn in _circuit_builders(self.mod).items():
+            with self.subTest(회로=name):
+                bb, _ = self._render(fn)
+                want = ({i['name'] for i in bb.inputs}
+                        | {ch['tag'] for ch in bb.led_chains})
+                got = {n for n, box, _s in bb.tag_boxes
+                       if BOARD_L < box[0] and box[2] < BOARD_R}
+                self.assertEqual(want - got, set(), f"{name}: 보드 안에 없는 신호 이름")
+
+    def test_신호_이름_배지가_번호_원_배선_홀을_가리지_않는다(self):
+        for name, fn in _circuit_builders(self.mod).items():
+            with self.subTest(회로=name):
+                bb, _ = self._render(fn)
+                for tag, box, seg in bb.tag_boxes:
+                    self.assertEqual(_badge_hits(bb, box, seg), [], f"{name}: {tag}")
 
     def test_배선_색이_넷을_넘지_않는다(self):
         """이전 판은 한 장에 16색을 썼고 그중 눈으로 구분 안 되는 쌍이 여럿이었다.
