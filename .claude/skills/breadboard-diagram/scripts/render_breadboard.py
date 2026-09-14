@@ -588,12 +588,20 @@ class BreadboardRenderer:
                                fill=color, width=width)
                 t = e + gap
 
-    def instrument(self, x, row, label, desc, block='left', lane_row=None):
+    def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None):
         """계측기·신호원 접점. **배선이 아니다** — 점퍼로 꽂는 게 아니라
         프로브 팁이나 집게로 문다. 회색 점선으로 그리고 계측표에 따로 쌓는다.
 
         보드 왼쪽 여백으로 뺀다. `lane_row` 를 주면 여백 안(x=140)에서 꺾어
         그 행으로 옮긴다 — 접점 두 개가 이웃한 행이면 꼬리표가 겹치기 때문이다.
+
+        `name` 은 교안 회로도가 그 접점에 붙인 신호 이름이다(실험02 `VIN`·`VOUT`·
+        `CH1`·`CH2`). 주면 **보드 안에도** 배지로 적는다 — 꼬리표만 보드 밖에 두면
+        판형 위만 따라 그리는 손그림에서 이름이 빠진다(2026-09 실험01 조교 감점과
+        같은 꼴, 2026-09-14 실험02 pre_review_round3). 자리는 그 접점과 같은
+        스트립의 끝 여백이다: 칩 왼쪽 스트립(a~e)이면 레일과 a 열 사이, 오른쪽
+        스트립(f~j)이면 j 열 바깥. 한 행의 다섯 홀은 한 노드라 스트립 끝에 적어도
+        같은 핀을 가리킨다.
         """
         y = self.r_y(row)
         lane_y = self.r_y(lane_row) if lane_row else y
@@ -603,8 +611,19 @@ class BreadboardRenderer:
         n = len(self.probes) + 1
         self.draw_badge(12, lane_y - 8, f'{n}. {label}', (248, 248, 250, 240), PROBE,
                         font=self.font_kr_sm, pad=2)
-        self.probes.append({'n': n, 'label': label, 'at': self.addr(x, y), 'desc': desc,
-                            'sym': self.sym(x, row)})
+        entry = {'n': n, 'label': label, 'at': self.addr(x, y), 'desc': desc,
+                 'sym': self.sym(x, row)}
+        if name:
+            entry['name'] = name
+            c = self.cols[block]
+            if x < c['chip_x1']:
+                rail = max(v for k, v in c.items()
+                           if ('gnd' in k or 'vcc' in k) and v < c['a'])
+                # 가운데서 1.5px 왼쪽 — 3~4행 사이 번호 원(b 열 - 20)과 붙지 않게
+                self.signal_tag(name, (rail + c['a']) / 2 - 1.5, y, col=PROBE)
+            else:
+                self.signal_tag(name, c['j'] + 6, y, align='left', col=PROBE)
+        self.probes.append(entry)
 
     def instrument_note(self, label, at, desc):
         """그림에 그릴 자리가 없는 접점(회로에 꽂기 전 저항 측정 등)."""
@@ -1194,6 +1213,9 @@ class BreadboardRenderer:
             'chips': list(self.chips),
             'wires': wires,
             'inputs': [dict(i) for i in self.inputs],
+            # 이름 붙은 계측 지점 — 입력 점퍼도 LED 도 없는 주차(실험02)의 H15 대상
+            'probes': [{'name': p['name'], 'at': p['at']}
+                       for p in self.probes if p.get('name')],
             'leds': list(self.leds),
             'resistors': list(self.resistors),
             'chains': list(self.led_chains),
@@ -1974,11 +1996,13 @@ def _e2_vtc(bb, chip):
     bb.connect_unused_inputs(_E2_UNUSED_GND, _E2_S1, chip=chip, rail='gnd')
     bb.connect_unused_inputs(_E2_UNUSED_VCC, _E2_S1, chip=chip, rail='vcc')
     bb.mark_unused_outputs(_E2_UNUSED_OUT, _E2_S1, chip=chip)
+    # 보드 안 이름은 교안 p10·p11 회로도의 신호 이름 그대로다
     bb.instrument(c['a'], _E2_S1, '함수발생기 + CH1 (가로축)',
                   f'사인파 Vpp 5V · offset 2.5V (교안 p10) · {chip} pin 1 = Vin',
-                  lane_row=4)
+                  lane_row=4, name='VIN')
     bb.instrument(c['a'], _E2_S1 + 1, 'CH2 (세로축)',
-                  f'{chip} pin 2 = Vout · 부하 없음, 프로브만 문다', lane_row=11)
+                  f'{chip} pin 2 = Vout · 부하 없음, 프로브만 문다', lane_row=11,
+                  name='VOUT')
     bb.instrument_note('함수발생기 -, CH1 -, CH2 -', '좌 GND 레일', '전원장치 0V 와 같은 노드')
     bb.note(_E2_XY_NOTE)
     bb.note('미사용 입력은 교안 p9 그림대로 pin 3·5 → GND, pin 9·11·13 → VCC (netlist M6). '
@@ -2069,12 +2093,15 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
                  '5단 출력 pin 10 -> 6단 입력 pin 9', width=4,
                  marker_at=(c['g'] + 20, bb.r_y(r1 + 4) + 8))
 
+    # 보드 안 이름: 교안 p12 회로도의 `VIN`, 본문 "CH1에 U1의 4번 핀을, CH2에 U1의 8번 핀을"
     bb.instrument(c['a'], r1, '함수발생기',
-                  '사각파 Vpp 5V · 1MHz (교안 p12) · U1 pin 1 = VIN', lane_row=4)
+                  '사각파 Vpp 5V · 1MHz (교안 p12) · U1 pin 1 = VIN', lane_row=4, name='VIN')
     bb.instrument(c['a'], r1 + 3, 'CH1',
-                  'U1 pin 4 = 2단 출력 · 지연 측정 시작점 (교안 p12)', lane_row=11)
+                  'U1 pin 4 = 2단 출력 · 지연 측정 시작점 (교안 p12)', lane_row=11,
+                  name='CH1')
     bb.instrument(c['h'], r1 + 6, 'CH2',
-                  'U1 pin 8 = 6단 출력 · CH1 과 사이에 인버터 4단 (교안 p12)', lane_row=16)
+                  'U1 pin 8 = 6단 출력 · CH1 과 사이에 인버터 4단 (교안 p12)', lane_row=16,
+                  name='CH2')
     bb.instrument_note('함수발생기 -, CH1 -, CH2 -', '좌 GND 레일', '전원장치 0V 와 같은 노드')
 
     if st == 1:

@@ -233,8 +233,10 @@ def _from_wiring(w, circuit_id):
         new_r = dict(r)
         new_r['tag'] = by_hole.get(new_r['top'], new_r.get('label', ''))
         resistors.append(new_r)
-    # 참조가 보드 안에 찍은 신호 이름 = 입력 점퍼 이름 + LED 꼬리표 (H15)
-    names = [i['name'] for i in w['inputs']] + [c['tag'] for c in w['chains']]
+    # 참조가 보드 안에 찍은 신호 이름 = 입력 점퍼 이름 + LED 꼬리표 + 계측 지점
+    # 이름 (H15). 계측 이름은 입력도 LED 도 없는 주차(실험02 `VIN`·`VOUT`·`CH1`)의 것이다
+    names = ([i['name'] for i in w['inputs']] + [c['tag'] for c in w['chains']]
+             + [p['name'] for p in w.get('probes', [])])
     labels = [{'name': n, 'at': None} for n in dict.fromkeys(names)]
     return Diagram(
         chips=[dict(c) for c in w['chips']],
@@ -706,7 +708,7 @@ def check_labels(ref, hand):
     return [HandFinding(
                 'H15', '기능', lb['name'],
                 f"신호 이름 {lb['name']!r} 이 그림 위에 없다. 입력은 점퍼 끝 옆, "
-                "출력은 LED 옆에 적는다")
+                "출력은 LED 옆, 계측 지점 이름은 그 스트립 끝에 적는다")
             for lb in ref.labels if lb['name'].upper() not in have]
 
 

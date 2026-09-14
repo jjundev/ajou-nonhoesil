@@ -165,10 +165,27 @@ class RenderedContract(unittest.TestCase):
             with self.subTest(회로=name):
                 bb, _ = self._render(fn)
                 want = ({i['name'] for i in bb.inputs}
-                        | {ch['tag'] for ch in bb.led_chains})
+                        | {ch['tag'] for ch in bb.led_chains}
+                        | {p['name'] for p in bb.probes if p.get('name')})
                 got = {n for n, box, _s in bb.tag_boxes
                        if BOARD_L < box[0] and box[2] < BOARD_R}
                 self.assertEqual(want - got, set(), f"{name}: 보드 안에 없는 신호 이름")
+
+    def test_실험02_계측_지점은_강의노트_이름을_단다(self):
+        """실험02 는 입력 점퍼도 LED 도 없어 위 검사가 빈 집합으로 통과했다 — 신호원·
+        채널 이름이 보드 밖 꼬리표에만 있었다(2026-09-14 실험02 pre_review_round3).
+        이름은 교안 그대로다: p10·p11 회로도의 `VIN`·`VOUT`, p12 회로도의 `VIN` 과
+        본문 "CH1에 U1의 4번 핀을, CH2에 U1의 8번 핀을"."""
+        cases = {'build_e2_inv': ['VIN', 'VOUT'],
+                 'build_e2_schmitt': ['VIN', 'VOUT'],
+                 'build_e2_tpd': ['VIN', 'CH1', 'CH2']}
+        for name, want in cases.items():
+            with self.subTest(회로=name):
+                bb, _ = self._render(getattr(self.mod, name))
+                self.assertEqual([p['name'] for p in bb.probes if p.get('name')], want)
+                got = [n for n, box, _s in bb.tag_boxes
+                       if BOARD_L < box[0] and box[2] < BOARD_R]
+                self.assertEqual(sorted(got), sorted(want))
 
     def test_신호_이름_배지가_번호_원_배선_홀을_가리지_않는다(self):
         for name, fn in _circuit_builders(self.mod).items():

@@ -790,6 +790,19 @@ class Labels(unittest.TestCase):
         self.assertEqual([lb['name'] for lb in hc.reference_diagram('e1_comb').labels],
                          ['A', 'B', 'Z', 'X', 'Y'])
 
+    def test_계측_지점_이름도_참조_이름이_된다(self):
+        """입력 점퍼도 LED 도 없는 주차(실험02) — 교안 회로도의 신호원·출력·채널 이름이
+        H15 대상이다. 실험02 는 아직 `CIRCUITS` 에 없어 빌더를 직접 부른다."""
+        import os
+        import tempfile
+        mod = hc.load_renderer()
+        for builder, want in (('build_e2_inv', ['VIN', 'VOUT']),
+                              ('build_e2_tpd', ['VIN', 'CH1', 'CH2'])):
+            with self.subTest(builder=builder), tempfile.TemporaryDirectory() as tmp:
+                bb = getattr(mod, builder)(os.path.join(tmp, 'x.png'))
+                ref = hc._from_wiring(bb.wiring(), builder)
+                self.assertEqual([lb['name'] for lb in ref.labels], want)
+
     def test_이름이_하나_빠지면_기능으로_잡는다(self):
         ref, hand = self._pair()
         hand.labels = [lb for lb in hand.labels if lb['name'] != 'B']
