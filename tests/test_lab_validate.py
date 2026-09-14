@@ -1886,5 +1886,61 @@ class RealReportTables(unittest.TestCase):
         self.assertEqual([str(f) for f in found], [])
 
 
+SHARED_LETTER = FIXTURES / "spec_shared_letter.md"
+_HS_ROWS = [(a, b, a ^ b, (1 - a) & b) for a in (0, 1) for b in (0, 1)]
+
+
+class SharedLetter(unittest.TestCase):
+    """교안이 입력과 출력에 같은 글자를 쓴다 — 실험3 반감산기 `A B D B`.
+
+    이름을 키로 삼는 곳은 전부 두 `B` 를 하나로 뭉갠다. 역검산은 출력 값을 입력
+    자리에 넣고, 보고서 표 대조는 둘째 `B` 를 입력 열과 맞대 "셀이 틀렸다" 는
+    거짓 error 를 냈다(2026-09-14 실험03 pre_review_round2 스크래치 실측).
+    """
+
+    def setUp(self):
+        self.spec = parse_spec(SHARED_LETTER)
+
+    def _report(self, header, cols, rows=_HS_ROWS):
+        body = "# 제목\n\n- **반감산기**\n" + _report_table(header, rows, cols)
+        return validate.check_report_tables(md_file(body), self.spec)
+
+    def test_교안_표기_그대로면_error_도_warn_도_없다(self):
+        findings = [f for f in validate.validate_spec(self.spec)
+                    if f.level in ("error", "warn")]
+        self.assertEqual(findings, [], "\n".join(str(f) for f in findings))
+
+    def test_역검산은_출력_B_를_입력_B_와_따로_본다(self):
+        text = SHARED_LETTER.read_text(encoding="utf-8").replace(
+            "| 0 | 1 | 1 | 1 |", "| 0 | 1 | 1 | 0 |", 1)
+        found = [f for f in validate.check_boolean(spec_from(text)) if f.level == "error"]
+        self.assertEqual(len(found), 1, "\n".join(str(f) for f in found))
+        self.assertTrue(found[0].where.endswith("T5 행2"), found[0].where)
+        self.assertIn("A=0, B=1 일 때 B = A'·B = 1 인데 표에는 '0' 이다",
+                      found[0].message)
+
+    def test_보고서_표가_교안_머리_그대로면_조용하다(self):
+        self.assertEqual(self._report(["A", "B", "D", "B"], [0, 1, 2, 3]), [])
+
+    def test_둘째_B_를_빼면_출력_열이_빠졌다고_짚는다(self):
+        """이름 집합으로 보면 `B` 가 이미 있어 빠진 열이 없는 것처럼 보인다."""
+        self.assertEqual([f.message for f in self._report(["A", "B", "D"], [0, 1, 2])],
+                         ["명세 T5 의 열 B 이 보고서 표에 없다 (명세: `A B D B`)"])
+
+    def test_Bo_로_바꾸면_머리가_다르다고_짚는다(self):
+        found = self._report(["A", "B", "D", "Bo"], [0, 1, 2, 3])
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("빠진 열: B · 명세에 없는 열: Bo", found[0].message)
+
+    def test_둘째_B_의_셀은_명세_넷째_열과_맞댄다(self):
+        wrong = [(a, b, d, 1 - bo) if (a, b) == (0, 1) else (a, b, d, bo)
+                 for a, b, d, bo in _HS_ROWS]
+        found = self._report(["A", "B", "D", "B"], [0, 1, 2, 3], wrong)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("2번째 행", found[0].message)
+        self.assertIn("보고서 ['0', '1', '1', '0'] · 명세 ['0', '1', '1', '1']",
+                      found[0].message)
+
+
 if __name__ == "__main__":
     unittest.main()

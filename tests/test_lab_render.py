@@ -7,8 +7,8 @@ from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
                                 _chip_tables, _circuit_body, _esc, _plain,
-                                circuit_pages, closing_page, common_page,
-                                crop_rows, render_checklist)
+                                _truth_table_html, circuit_pages, closing_page,
+                                common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -130,6 +130,21 @@ class TestChecklistHtml(unittest.TestCase):
         for item in CLOSING:
             with self.subTest(item=item):
                 self.assertIn(_esc(item), self.html)
+
+
+class TestSharedLetterTruthTable(unittest.TestCase):
+    """실험3 반감산기 `A B D B` — 입력 `B` 칸에 출력 값이 찍히면 안 된다."""
+
+    def test_입력_B_와_출력_B예상_이_따로_찍힌다(self):
+        spec = parse_spec(ROOT / "tests/fixtures/spec_shared_letter.md")
+        html = _truth_table_html(spec.table("T5"))
+        self.assertEqual(re.findall(r"<th>([^<]*)</th>", html),
+                         ["A", "B", "D예상", "B예상", "확인"])
+        rows = [re.findall(r"<td>([^<]*)</td>", tr)
+                for tr in re.findall(r"<tr>(.*?)</tr>", html)]
+        self.assertEqual([r for r in rows if r],
+                         [["0", "0", "0", "0"], ["0", "1", "1", "1"],
+                          ["1", "0", "1", "0"], ["1", "1", "0", "0"]])
 
 
 class TestPlainStrikethrough(unittest.TestCase):

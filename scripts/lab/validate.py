@@ -14,7 +14,8 @@ from . import config, md
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
-from .spec_parser import ENCODINGS, ROLES, derived_parts, split_columns
+from .spec_parser import (ENCODINGS, ROLES, derived_parts, split_columns,
+                          split_indices)
 
 _BAD_CELL = {"\\|": "escape 된 파이프", "<br>": "<br> 태그", "\t": "탭 문자"}
 
@@ -138,25 +139,32 @@ def check_boolean(spec) -> list:
         if not pairs or not t.rows:
             continue
         where = f"{spec.path.name}:{t.id}"
-        inputs, _ = split_columns(t)
+        inputs, _ = split_indices(t)
+        # 입력 열을 나중에 채운다 — 출력이 입력과 같은 글자면(실험3 반감산기
+        # `A B D B`) 출력 값이 식의 입력 자리를 덮으면 안 된다.
+        order = [k for k in range(len(t.header)) if k not in inputs] + inputs
         for target, expr in pairs:
             if target not in t.header:
                 out.append(Finding("error", where,
                     f"source 의 출력 {target!r} 이 표 헤더에 없다: {t.header}"))
                 continue
-            out_col = t.header.index(target)
+            # 같은 글자가 입력에도 있으면 뒤의 것이 출력이다(split_indices).
+            out_col = max(k for k, c in enumerate(t.header) if c == target)
             seen_eval_errors = set()
             for i, row in enumerate(t.rows, start=1):
                 if len(row) != len(t.header):
                     continue
                 env, dont_care, bad_cells = {}, False, []
-                for col, cell in zip(t.header, row):
+                for k in order:
+                    col, cell = t.header[k], row[k]
                     bit = _bit(cell, t.encoding)
                     if bit is not None:
                         env[col] = bit
-                    elif col in inputs and normalize_cell(cell) == DONT_CARE:
+                    elif k in inputs and normalize_cell(cell) == DONT_CARE:
+                        env.pop(col, None)
                         dont_care = True
-                    elif col in inputs:
+                    elif k in inputs:
+                        env.pop(col, None)
                         bad_cells.append(f"{col}={cell!r}")
                 if dont_care:
                     # 입력이 don't-care 인 행은 구체적 식으로 검산할 수 없다.
@@ -181,8 +189,7 @@ def check_boolean(spec) -> list:
                             f"— 해독 못 한 셀: {cells}"))
                     continue
                 if got != want:
-                    inputs, _ = split_columns(t)
-                    shown = ", ".join(f"{c}={row[t.header.index(c)]}" for c in inputs)
+                    shown = ", ".join(f"{t.header[k]}={row[k]}" for k in inputs)
                     out.append(Finding("error", f"{where} 행{i}",
                         f"{shown} 일 때 {target} = {expr} = {want} 인데 "
                         f"표에는 {row[out_col]!r} 이다"))
@@ -1274,6 +1281,35 @@ def _bare_cell(s) -> str:
     return " ".join(str(s).replace("**", "").replace("`", "").split())
 
 
+def _col_map(head, st_header):
+    """보고서 머리의 열마다 명세 열 번호. 하나라도 못 짝지으면 None.
+
+    같은 글자는 나온 차례대로 짝짓는다 — 실험3 반감산기 `A B D B` 에서 보고서의
+    둘째 `B` 는 명세 넷째 열(출력)이다. `st_header.index()` 로 찾으면 두 `B` 가
+    모두 입력 열로 가서, 교안 그대로 옮긴 표에 "셀이 틀렸다" 는 거짓 error 가 난다.
+    """
+    used, out = set(), []
+    for c in head:
+        k = next((j for j, s in enumerate(st_header) if s == c and j not in used), None)
+        if k is None:
+            return None
+        used.add(k)
+        out.append(k)
+    return out
+
+
+def _leftover(names, against) -> list:
+    """`names` 에서 `against` 와 짝지어지지 않고 남는 이름. 같은 글자는 개수로 센다."""
+    left = Counter(against)
+    out = []
+    for c in names:
+        if left[c]:
+            left[c] -= 1
+        else:
+            out.append(c)
+    return out
+
+
 def check_report_tables(report_path, spec) -> list:
     """예비보고서 진리표가 명세 진리표의 **머리·열 순서·셀**을 그대로 옮겼는지 본다.
 
@@ -1308,13 +1344,13 @@ def check_report_tables(report_path, spec) -> list:
 
     def fits(i, st):
         st_header = [_bare_cell(c) for c in st.header]
-        return (bool(heads[i]) and set(heads[i]) <= set(st_header)
+        return (bool(heads[i]) and _col_map(heads[i], st_header) is not None
                 and len(found[i].rows) == len(st.rows))
 
     def first_diff(i, st):
         """셀이 처음 갈리는 (행 번호, 보고서 값, 명세 값). 전부 같으면 None."""
         st_header = [_bare_cell(c) for c in st.header]
-        cols = [st_header.index(c) for c in heads[i]]
+        cols = _col_map(heads[i], st_header)
         for r, (row, srow) in enumerate(zip(found[i].rows, st.rows), start=1):
             got = [str(normalize_cell(_bare_cell(v))) for v in row]
             exp = [str(normalize_cell(srow[k])) for k in cols]
@@ -1335,13 +1371,13 @@ def check_report_tables(report_path, spec) -> list:
         hits = exact[st.id]
         if hits:
             for i in hits:
-                order = [st_header.index(c) for c in heads[i]]
+                order = _col_map(heads[i], st_header)
                 if order != sorted(order):
                     out.append(Finding("error", path.name,
                         f"{found[i].line}줄 표 `{' '.join(heads[i])}` 의 열 순서가 "
                         f"명세 {st.id} `{want}` 와 다르다"))
-            covered = {c for i in hits for c in heads[i]}
-            missing = [c for c in st_header if c not in covered]
+            covered = {k for i in hits for k in _col_map(heads[i], st_header)}
+            missing = [c for k, c in enumerate(st_header) if k not in covered]
             if missing:
                 out.append(Finding("error", path.name,
                     f"명세 {st.id} 의 열 {', '.join(missing)} 이 보고서 표에 없다 "
@@ -1353,7 +1389,7 @@ def check_report_tables(report_path, spec) -> list:
             out.append(Finding("error", path.name,
                 f"명세 {st.id} (`{want}`) 에 대응하는 표가 보고서에 없다"))
             continue
-        i = max(near, key=lambda k: (len(set(heads[k]) & set(st_header)), -k))
+        i = max(near, key=lambda k: (sum((Counter(heads[k]) & Counter(st_header)).values()), -k))
         claimed.add(i)
         if fits(i, st):
             r, got, exp = first_diff(i, st)
@@ -1361,8 +1397,8 @@ def check_report_tables(report_path, spec) -> list:
                 f"{found[i].line}줄 표 {r}번째 행이 명세 {st.id} 와 다르다: "
                 f"보고서 {got} · 명세 {exp}"))
         else:
-            missing = [c for c in st_header if c not in heads[i]]
-            extra = [c for c in heads[i] if c not in st_header]
+            missing = _leftover(st_header, heads[i])
+            extra = _leftover(heads[i], st_header)
             out.append(Finding("error", path.name,
                 f"{found[i].line}줄 표 `{' '.join(heads[i])}` 가 명세 {st.id} `{want}` 와 "
                 f"머리가 다르다 — 빠진 열: {', '.join(missing) or '없음'} · "

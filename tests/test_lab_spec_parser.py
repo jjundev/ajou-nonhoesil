@@ -5,7 +5,7 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.spec_parser import (SpecError, derived_parts, parse_spec,
-                                     split_columns)
+                                     split_columns, split_indices)
 
 ROOT = Path(__file__).resolve().parents[1]
 WEEK2 = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
@@ -221,6 +221,59 @@ class TestDeclaredOutputs(unittest.TestCase):
         self.assertEqual(parse_spec(target).table("T2").outputs, ["S", "없는열"])
 
 
+class TestSharedLetter(unittest.TestCase):
+    """교안이 입력과 출력에 같은 글자를 쓴다 — 실험3 반감산기 `A B D B`.
+
+    2026-09 실험01 조교 감점("회로도의 출력 이름을 표에 보여야 한다") 뒤로 명세도
+    교안 표기를 그대로 싣는다. 이름으로는 두 `B` 를 가를 수 없어 자리로 가른다 —
+    앞의 것이 입력, 뒤의 것이 출력이다. 교안 2단 헤더의 순서와 같다.
+    """
+
+    SPEC = ROOT / "tests/fixtures/spec_shared_letter.md"
+
+    def _variant(self, old, new):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        target = Path(tmp.name) / "명세.md"
+        text = self.SPEC.read_text(encoding="utf-8")
+        self.assertIn(old, text)
+        target.write_text(text.replace(old, new), encoding="utf-8")
+        return target
+
+    def test_교안_머리_그대로_읽힌다(self):
+        spec = parse_spec(self.SPEC)
+        for tid in ("T5", "T6"):
+            with self.subTest(table=tid):
+                self.assertEqual(spec.table(tid).header, ["A", "B", "D", "B"])
+
+    def test_뒤의_같은_글자가_출력이다(self):
+        """T5 는 `derived` 식으로, T6 은 `outputs` 선언으로 같은 분할에 닿는다."""
+        spec = parse_spec(self.SPEC)
+        for tid in ("T5", "T6"):
+            with self.subTest(table=tid):
+                self.assertEqual(split_indices(spec.table(tid)), ([0, 1], [2, 3]))
+                self.assertEqual(split_columns(spec.table(tid)),
+                                 (["A", "B"], ["D", "B"]))
+
+    def test_같은_글자가_둘_다_입력이면_던진다(self):
+        """식이 둘째 `B` 를 출력으로 삼지 않으면 두 `B` 가 모두 입력이 된다 —
+        자리로도 어느 쪽을 식에 넣을지 정할 수 없다."""
+        target = self._variant("- source: derived (D = A⊕B ; B = A'·B)",
+                               "- source: derived (D = A⊕B)")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("T5", str(ctx.exception))
+        self.assertIn("두 번", str(ctx.exception))
+
+    def test_진리표가_아니면_입출력으로_갈려도_던진다(self):
+        """스텝표의 마지막 열은 확인 칸 자리일 뿐 출력이 아니다."""
+        target = self._variant("- kind: truth-table\n- encoding: 0/1\n- source: manual:p6",
+                               "- kind: stepped\n- encoding: 0/1\n- source: manual:p6")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("T6", str(ctx.exception))
+
+
 class TestErrors(unittest.TestCase):
     """실물 명세를 한 군데씩 망가뜨려 파서가 거절하는지 본다."""
 
@@ -283,10 +336,10 @@ class TestErrors(unittest.TestCase):
         self.assertIn("두 번", str(ctx.exception))
 
     def test_duplicate_column_name_raises(self):
-        """실물이 있다 — 실험3 반감산기 헤더가 `A B D B` 다(출력 borrow 가
-        입력 `B` 와 이름이 같다). `header.index()` 가 첫 번째만 주므로
-        역검산이 입력 열을 출력으로 보고 **표를 틀리게 고치라는** error 를
-        낸다. 중복 표 ID 를 막는 것과 같은 이유다."""
+        """스텝표의 두 열이 같은 이름이면 어느 열을 읽을지 정할 수 없다.
+        이름으로 셀을 찾는 곳은 조용히 한쪽만 준다 — 중복 표 ID 를 막는 것과
+        같은 이유다. 진리표에서 입력 하나·출력 하나로 갈리는 경우만 자리로
+        가른다(`TestSharedLetter`, 실험3 반감산기 `A B D B`)."""
         with self.assertRaises(SpecError) as ctx:
             parse_spec(self._broken("| 핀6 | 핀4 |", "| 7405 핀8 | 핀4 |"))
         self.assertIn("7405 핀8", str(ctx.exception))

@@ -19,7 +19,7 @@ kind 마다 칸의 뜻이 다르다:
 
 import unicodedata
 
-from .spec_parser import split_columns
+from .spec_parser import split_indices
 from . import config
 
 PROMPTS = ("막혔던 것", "예상과 달랐던 것", "뭘 바꿔서 해결했나", "새로 안 것")
@@ -45,10 +45,12 @@ def _grid(header, rows) -> str:
 
 
 def _truth_table(table) -> str:
-    inputs, outputs = split_columns(table)
-    at = {c: i for i, c in enumerate(table.header)}
-    header = list(inputs) + [f"{c}예상" for c in outputs] + ["확인"]
-    rows = [[row[at[c]] for c in inputs] + [row[at[c]] for c in outputs] + [""]
+    # 셀은 이름이 아니라 자리로 찾는다 — 입력과 출력이 같은 글자인 표가 있다
+    # (실험3 반감산기 `A B D B`). 출력에 `예상` 이 붙어 기록에서는 갈린다.
+    inputs, outputs = split_indices(table)
+    header = ([table.header[i] for i in inputs]
+              + [f"{table.header[i]}예상" for i in outputs] + ["확인"])
+    rows = [[row[i] for i in inputs] + [row[i] for i in outputs] + [""]
             for row in table.rows]
     return _grid(header, rows)
 

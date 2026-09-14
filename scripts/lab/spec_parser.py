@@ -106,22 +106,30 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         if not found:
             raise SpecError(f"{path}: {table_id}({kind}) 에 마크다운 표가 없습니다")
         header, rows, line = found[0].header, found[0].rows, found[0].line
-    dup = sorted(c for c, n in Counter(header).items() if n > 1)
-    if dup:
-        raise SpecError(
-            f"{path}: {table_id} 의 헤더에 같은 이름의 열이 두 번 있다: {dup}. "
-            "`header.index()` 가 조용히 첫 번째만 주므로 역검산이 엉뚱한 열을 "
-            "본다 — 교안이 입력과 출력에 같은 글자를 쓰는 실물이 있다"
-            "(실험3 반감산기 `A B D B`). 출력 쪽 이름을 구분해 적고, 그 자리에 "
-            "교안 표기를 밝힌다"
-        )
-    return SpecTable(
+    table = SpecTable(
         id=table_id, title=title, kind=kind,
         encoding=attrs.get("encoding"), source=attrs.get("source"),
         expected=attrs.get("expected"), role=attrs.get("role", "record"),
         header=header, rows=rows, line=line,
         outputs=_list_attr(attrs.get("outputs")),
     )
+    # 교안이 입력과 출력에 같은 글자를 쓰는 실물이 있다(실험3 반감산기
+    # `A B D B`). 진리표에서 입력 하나·출력 하나로 갈리면 자리로 가를 수
+    # 있다 — `split_indices` 가 뒤의 것을 출력으로 본다. 그 밖의 중복은
+    # 어느 열을 읽을지 정할 수 없어 거절한다.
+    ins, outs = split_indices(table)
+    dup = sorted(c for c, n in Counter(header).items() if n > 1 and not (
+        kind == "truth-table" and n == 2
+        and sum(header[i] == c for i in ins) == 1
+        and sum(header[i] == c for i in outs) == 1))
+    if dup:
+        raise SpecError(
+            f"{path}: {table_id} 의 헤더에 같은 이름의 열이 두 번 있다: {dup}. "
+            "진리표에서 입력 하나·출력 하나로 갈릴 때만 자리로 가른다(실험3 "
+            "반감산기 `A B D B` — 앞의 B 가 입력, 뒤의 B 가 출력이다). 같은 쪽에 "
+            "두 번이거나 진리표가 아니면 어느 열을 읽을지 정할 수 없다"
+        )
+    return table
 
 
 def _list_attr(value):
@@ -210,27 +218,47 @@ def derived_parts(table):
     return pairs
 
 
-def split_columns(table):
-    """표의 (입력 컬럼, 출력 컬럼).
+def split_indices(table):
+    """표의 (입력 열 번호, 출력 열 번호). 둘 다 헤더 순서다.
 
-    `derived` 식이 있으면 식이 참조하는 컬럼이 입력, 대입 대상이 출력이다.
+    `derived` 식이 있으면 식이 참조하는 열이 입력, 대입 대상이 출력이다.
     없으면 `outputs` 선언을 따른다 — 교안 원문을 옮겨 `manual:pN` 으로 남아야
     하는 표가 출력이 둘일 때 쓴다(실험3 p4~p7). 둘 다 없으면 마지막 열 하나를
     출력으로 본다 — 확인 칸을 어디에 둘지 정하는 데 쓴다.
+
+    **출력 이름이 헤더에 두 번 나오면 뒤의 것이 출력이다.** 교안이 입력과
+    출력에 같은 글자를 쓰는 실물이 있다(실험3 반감산기 `A B D B`). 이름으로는
+    두 `B` 를 가를 수 없으므로 셀을 읽는 곳은 이 번호를 쓴다 — `{이름: 번호}`
+    로 찾으면 입력 `B` 칸에 출력 값이 찍힌다.
     """
+    header = table.header
+
+    def last(name):
+        return max(i for i, c in enumerate(header) if c == name)
+
     pairs = derived_parts(table)
     if pairs:
         targets = [name for name, _ in pairs]
         referenced = set()
         for _, expr in pairs:
             referenced |= set(_NAME.findall(expr))
-        inputs = [c for c in table.header if c in referenced and c not in targets]
+        outputs = sorted({last(n) for n in targets if n in header})
+        inputs = [i for i, c in enumerate(header) if c in referenced and i not in outputs]
         if inputs:
-            outputs = [c for c in table.header if c in targets]
-            return inputs, outputs or [c for c in table.header if c not in inputs]
-    declared = [c for c in table.header if c in (table.outputs or [])]
+            return inputs, outputs or [i for i in range(len(header)) if i not in inputs]
+    declared = sorted({last(n) for n in (table.outputs or []) if n in header})
     if declared:
-        return [c for c in table.header if c not in declared], declared
-    if len(table.header) < 2:
-        return list(table.header), []
-    return list(table.header[:-1]), [table.header[-1]]
+        return [i for i in range(len(header)) if i not in declared], declared
+    if len(header) < 2:
+        return list(range(len(header))), []
+    return list(range(len(header) - 1)), [len(header) - 1]
+
+
+def split_columns(table):
+    """표의 (입력 컬럼, 출력 컬럼) 이름. 분할 규칙은 `split_indices` 가 정한다.
+
+    같은 글자가 입력과 출력에 한 번씩 나올 수 있다(실험3 반감산기 →
+    `(["A", "B"], ["D", "B"])`). 셀을 읽을 때는 이름 말고 `split_indices` 를 쓴다.
+    """
+    inputs, outputs = split_indices(table)
+    return [table.header[i] for i in inputs], [table.header[i] for i in outputs]

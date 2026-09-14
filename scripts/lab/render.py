@@ -15,7 +15,7 @@ from dataclasses import replace
 from . import md
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
-from .spec_parser import split_columns
+from .spec_parser import split_indices
 from . import config
 
 MAX_BREADBOARD_ROWS = 30
@@ -70,11 +70,12 @@ def _truth_table_html(table) -> str:
     정규화한다 — 순서가 반대면 `**1**` 같은 굵게 표기 셀이 정규화를 통과하지
     못하고 별표째 인쇄본에 남는다.
     """
-    inputs, outputs = split_columns(table)
-    at = {c: i for i, c in enumerate(table.header)}
-    head = list(inputs) + [f"{c}예상" for c in outputs]
-    body = [[normalize_cell(_plain(row[at[c]])) for c in inputs]
-            + [normalize_cell(_plain(row[at[c]])) for c in outputs]
+    # 셀은 이름이 아니라 자리로 찾는다 — 입력과 출력이 같은 글자인 표가 있다
+    # (실험3 반감산기 `A B D B`). `record._truth_table` 과 같은 규약이다.
+    inputs, outputs = split_indices(table)
+    head = [table.header[i] for i in inputs] + [f"{table.header[i]}예상" for i in outputs]
+    body = [[normalize_cell(_plain(row[i])) for i in inputs]
+            + [normalize_cell(_plain(row[i])) for i in outputs]
             for row in table.rows]
 
     # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.

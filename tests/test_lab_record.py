@@ -71,6 +71,23 @@ class TestKindSpecificShapes(unittest.TestCase):
         self.assertNotIn("예상", block.split("- 메모:")[0])
 
 
+class SharedLetterRecord(unittest.TestCase):
+    """교안이 입력과 출력에 같은 글자를 쓰는 표(실험3 반감산기 `A B D B`).
+
+    `{이름: 열 번호}` 로 셀을 찾으면 두 `B` 가 하나로 뭉개져 입력 `B` 칸에 출력
+    값이 찍힌다. 기록에서는 출력에 `예상` 이 붙어 `B` 와 `B예상` 으로 갈린다.
+    """
+
+    def test_입력_B_와_출력_B예상_이_따로_찍힌다(self):
+        text = derive_record(parse_spec(ROOT / "tests/fixtures/spec_shared_letter.md"))
+        rows = [[c.strip() for c in ln.strip().strip("|").split("|")]
+                for ln in text.split("\n")
+                if ln.startswith("|") and not set(ln) <= set("|- ")]
+        self.assertEqual(rows[0], ["A", "B", "D예상", "B예상", "확인"])
+        self.assertEqual(rows[1:5], [["0", "0", "0", "0", ""], ["0", "1", "1", "1", ""],
+                                     ["1", "0", "1", "0", ""], ["1", "1", "0", "0", ""]])
+
+
 class TestAlignment(unittest.TestCase):
     def test_korean_headers_align(self):
         """손으로 채울 표라 정렬이 실제로 중요하다 (한글은 2칸).
