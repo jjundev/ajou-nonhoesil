@@ -1932,6 +1932,70 @@ class StepAndResultTables(unittest.TestCase):
         self.assertIn("명세에 없는 열: Y", found[0].message)
 
 
+# 강의노트 실험3 p6(반감산기) 텍스트 층의 모양 — pypdf 가 실제로 내는 줄을 줄였다
+_P6 = ("2. 실험 이론\n• 반감산기 (Half Subtractor)\n"
+       "- 2개 비트 A와 B를 입력 받아, 차 D와 내림 수 B를 출력\n"
+       "입력 출력\nA B D B\n0 0 0 0\n0 1 1 1\n1 0 1 0\n1 1 0 0\n"
+       "A\nB\nD\nB\nTruth Table74HC86\n74HC08\n회로 구성\n74HC04")
+_PAGES = [""] * 5 + [_P6] + [""] * 3
+
+
+class ManualNames(unittest.TestCase):
+    """`check_manual_names` — 명세 열 이름을 강의노트 쪽 텍스트와 맞댄다.
+
+    2026-09-14 실험03 명세가 반감산기 내림 수 `B` 를 `Bo` 로 바꿨는데, 이름 검사가
+    전부 명세 기준이라 하류 검사가 다 통과했다.
+    """
+
+    def _spec(self, *pairs):
+        text = SHARED_LETTER.read_text(encoding="utf-8")
+        for old, new in pairs:
+            self.assertIn(old, text)
+            text = text.replace(old, new)
+        return spec_from(text)
+
+    def test_교안_그대로면_조용하다(self):
+        self.assertEqual(validate.check_manual_names(self._spec(), _PAGES), [])
+
+    def test_Bo_로_바꾸면_두_표_모두_잡는다(self):
+        spec = self._spec(("| A | B | D | B |", "| A | B | D | Bo |"),
+                          ("B = A'·B", "Bo = A'·B"),
+                          ("- outputs: [D, B]", "- outputs: [D, Bo]"))
+        found = validate.check_manual_names(spec, _PAGES)
+        self.assertEqual(sorted((f.level, f.where.rsplit(":", 1)[-1]) for f in found),
+                         [("error", "T5"), ("error", "T6")])
+        messages = " ".join(f.message for f in found)
+        self.assertIn("열 `Bo` 가 교안 p6 에 없다", messages)
+        self.assertIn("머리 `A B D Bo` 가 교안 p6 에 이 순서로 없다", messages)
+
+    def test_참조표_머리_순서가_바뀌면_잡는다(self):
+        spec = self._spec(("- outputs: [D, B]\n\n| A | B | D | B |",
+                           "- outputs: [D, B]\n\n| B | A | D | B |"))
+        found = validate.check_manual_names(spec, _PAGES)
+        self.assertEqual([(f.level, f.where.rsplit(":", 1)[-1]) for f in found],
+                         [("error", "T6")])
+
+    def test_pages_가_없으면_error(self):
+        found = validate.check_manual_names(self._spec(("    pages: [6]\n", "")), _PAGES)
+        self.assertEqual([(f.level, f.where.rsplit(":", 1)[-1]) for f in found],
+                         [("error", "E3.P2-1")])
+        self.assertIn("pages", found[0].message)
+
+    def test_없는_쪽을_가리키면_error(self):
+        found = validate.check_manual_names(self._spec(("pages: [6]", "pages: [12]")), _PAGES)
+        self.assertEqual([f.level for f in found], ["error"])
+        self.assertIn("교안 p12 은 없다", found[0].message)
+
+    def test_텍스트_층이_없는_쪽은_info(self):
+        found = validate.check_manual_names(self._spec(), [""] * 9)
+        self.assertTrue(found)
+        self.assertEqual({f.level for f in found}, {"info"})
+
+    def test_강의노트를_못_열면_info_한_줄(self):
+        found = validate.check_manual_names(self._spec(), [])
+        self.assertEqual([f.level for f in found], ["info"])
+
+
 class RealReportTables(unittest.TestCase):
     def test_실제_실험1_예비보고서의_표가_명세와_맞다(self):
         """2026-09 조교 감점(-1) 뒤 T1~T4 를 명세의 `A B C L1 L2` 로 되돌렸다."""

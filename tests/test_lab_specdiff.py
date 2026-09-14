@@ -68,6 +68,13 @@ class CompareSpecs(unittest.TestCase):
         self.assertEqual(len(diffs), 1, diffs)
         self.assertIn("표 T5 행2 B(4열): 원본 '1' / 재생성 '0'", diffs[0])
 
+    def test_pages_가_바뀌면_잡는다(self):
+        shared = ROOT / "tests/fixtures/spec_shared_letter.md"
+        target = self._mutated("pages: [6]", "pages: [7]", source=shared)
+        diffs = compare_specs(shared, target)
+        self.assertEqual(len(diffs), 1, diffs)
+        self.assertIn("pages", diffs[0])
+
     def test_source_가_바뀌면_잡는다(self):
         target = self._mutated("- source: manual:p9", "- source: manual:p99")
         diffs = compare_specs(EDGE, target)

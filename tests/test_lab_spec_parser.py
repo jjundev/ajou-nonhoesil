@@ -279,6 +279,13 @@ class TestSharedLetter(unittest.TestCase):
                          ["A", "B(2열)", "D", "B(4열)"])
         self.assertEqual(column_label(["A", "B", "S", "C"], 3), "C")
 
+    def test_pages_를_읽는다(self):
+        self.assertEqual(parse_spec(self.SPEC).items[0].pages, [6])
+
+    def test_pages_가_없으면_None_이다(self):
+        """의미 결함은 validate 몫이다 — 파서는 싣기만 한다."""
+        self.assertIsNone(parse_spec(EDGE).items[0].pages)
+
 
 class TestErrors(unittest.TestCase):
     """실물 명세를 한 군데씩 망가뜨려 파서가 거절하는지 본다."""

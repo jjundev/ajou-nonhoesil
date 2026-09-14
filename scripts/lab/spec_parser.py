@@ -50,6 +50,7 @@ class SpecItem:
     device: list
     ics: list
     tables: list
+    pages: Optional[list] = None   # 강의노트 쪽 번호 `[11]`. 없으면 None — 검사는 validate 몫
 
 
 @dataclass
@@ -191,7 +192,8 @@ def parse_spec(path) -> LabSpec:
                 f"정의된 표: {sorted(known)}"
             )
         items.append(SpecItem(id=raw["id"], title=raw["title"],
-                              device=raw["device"], ics=raw["ics"], tables=raw["tables"]))
+                              device=raw["device"], ics=raw["ics"], tables=raw["tables"],
+                              pages=raw.get("pages")))
 
     return LabSpec(experiment=front["experiment"],
                    title=front["title"], source_manual=front["source_manual"],

@@ -10,6 +10,7 @@ items:
     device: [LED]
     ics: ["74HC86", "74HC04", "74HC08"]
     tables: [T5, T6]
+    pages: [6]
 ---
 
 <!--

@@ -152,6 +152,23 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    표가 실제로 그 쪽에 있는지 확인한다. 교안이 래스터 스캔이면 `pdftotext`
    가 아무것도 주지 않으므로 vision 이 유일한 길이다.
 
+   **열 이름을 강의노트와 대조한다.** 판본이 맞아도 명세가 이름을 바꿨으면 이후
+   검사가 전부 명세를 따라 통과한다(2026-09-14 실험03 `Bo`).
+
+   ```bash
+   python3 -c "
+   from pathlib import Path
+   from scripts.lab import validate
+   from scripts.lab.spec_parser import parse_spec
+   spec = parse_spec(Path('<실험NN>/체크리스트/명세.md'))
+   for f in validate.check_manual_names(spec, validate.extract_manual_pages(spec.source_manual)):
+       print(f)
+   "
+   ```
+
+   **error 면 그 라운드를 멈추고** `draft-lab-spec` 으로 명세를 고치라고 안내한다.
+   info(텍스트 층 없음)는 그 쪽을 vision 으로 읽어 사람 확인 항목에 올린다.
+
 4. **보고서 섹션 대조.** **반드시 `.claude/보고서양식.md` 를 기준으로 한다.**
    목차를 스킬에 하드코딩하지 않는다 — 양식은 연도마다·학생마다 다르고
    이번 학기 것이 미확정이다 (R1).

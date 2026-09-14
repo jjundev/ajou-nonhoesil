@@ -63,6 +63,17 @@ class LiveSpecCorpus(unittest.TestCase):
                 self.assertEqual(errors, [],
                                  "\n".join(str(f) for f in errors))
 
+    def test_진리표_열_이름이_강의노트에_있다(self):
+        """이름 검사는 전부 명세 기준이라 명세가 강의노트와 어긋나면 하류가 다 통과한다
+        (2026-09-14 실험03 `Bo`). 강의노트 PDF 쪽 텍스트와 직접 맞댄다."""
+        for path in live_specs():
+            with self.subTest(path.parent.parent.name):
+                spec = parse_spec(path)
+                pages = validate.extract_manual_pages(ROOT / spec.source_manual)
+                errors = [f for f in validate.check_manual_names(spec, pages)
+                          if f.level == "error"]
+                self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
+
     def test_결선도가_짝으로_있고_error_가_없다(self):
         for path in live_specs():
             with self.subTest(path.parent.parent.name):

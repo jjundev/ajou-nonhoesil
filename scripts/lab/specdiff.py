@@ -31,17 +31,19 @@ from .spec_parser import _T_HEAD, column_label, parse_spec
 # `record.py` 가 인쇄용 체크리스트와 `기록.md` 헤딩에 그대로 찍는다(확인:
 # `grep -n title scripts/lab/render.py scripts/lab/record.py`). 두 회차
 # 연속으로 재생성이 다섯 표 제목을 전부 바꿨는데 대조가 0건을 냈다.
-_ITEM_FIELDS = ("title", "device", "ics", "tables")
+_ITEM_FIELDS = ("title", "device", "ics", "tables", "pages")
 _TABLE_FIELDS = ("title", "kind", "encoding", "source", "role")
 
-# 이 셋은 "무엇을 참조하는가" 의 목록이라 순서에 의미가 없다 — 재생성물이
+# 이 넷은 "무엇을 참조하는가" 의 목록이라 순서에 의미가 없다 — 재생성물이
 # 같은 IC·소자·표를 다른 순서로 적는 것은 결함이 아니다. `sorted()` 로
 # 비교한다. `set` 을 쓰면 중복까지 뭉개져 `["A","A","B"]` 와 `["A","B"]`
 # 가 같아지므로 쓰지 않는다. 반면 `_TABLE_FIELDS` 는 전부 스칼라(문자열)라
 # 순서 개념이 아예 없고, 셀(`rows`)과 헤더(`header`)는 순서 자체가 값이라
 # (어느 열이 무엇인지, 어느 행이 어느 입력 조합인지) `_cells` 에서 지금처럼
 # 순서 민감 비교를 그대로 둔다.
-_UNORDERED_LIST_FIELDS = {"device", "ics", "tables"}
+# `pages` 는 2026-09-14 에 넣었다 — 강의노트 이름 대조(`validate.check_manual_names`)가
+# 쓰는 쪽이라 재생성물이 빠뜨리면 그 대조가 통째로 빠진다. 없으면 None 이다.
+_UNORDERED_LIST_FIELDS = {"device", "ics", "tables", "pages"}
 
 
 def compare_specs(original, regenerated) -> list:
@@ -186,7 +188,7 @@ def _by_id(label, av, bv, fields) -> list:
         for field in fields:
             x, y = getattr(av[key], field), getattr(bv[key], field)
             if field in _UNORDERED_LIST_FIELDS:
-                same = sorted(x) == sorted(y)
+                same = sorted(x or []) == sorted(y or [])   # pages 는 없으면 None
             else:
                 same = x == y
             if not same:

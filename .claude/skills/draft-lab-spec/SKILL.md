@@ -88,6 +88,10 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    번이거나 진리표가 아니면 파서가 거절한다. 2026-09-14 전에는 출력 쪽을
    `Bo` 로 바꿔 적게 했다 — 실험01 조교가 회로도 출력 이름(`L1`·`L2`)을
    표에서 바꾼 것을 감점해(-1) 되돌렸다.
+   **항목마다 `pages: [N]` 에 그 회로도·절차가 있는 강의노트 쪽을 적는다.**
+   5단계의 `check_manual_names` 가 파생표 열 이름을 그 쪽 텍스트와, 교안 표를
+   옮긴 표(`manual:pN`)의 머리를 인용 쪽과 대조한다. 파생표가 있는데 `pages` 가
+   없으면 error 다.
 6. **`ics` 는 패키지 이름 목록이다 — 수량이 아니다.** 게이트 단위가
    아니라 패키지 단위로 싣는다: 회로도에 같은 칩이 두 번 나와도 쿼드
    패키지에서 게이트 둘을 뽑는 것이면 이름 하나다. 한 항목이 같은 칩을
@@ -389,8 +393,15 @@ description: 논리회로실험 교안 PDF 에서 `<실험NN>/체크리스트/�
    for f in validate.check_manual_quotes(
            p.read_text(encoding='utf-8'),
            validate.extract_manual_text(spec.source_manual), p.name): print(f)
+   for f in validate.check_manual_names(
+           spec, validate.extract_manual_pages(spec.source_manual)): print(f)
    "
    ```
+
+   `check_manual_names` 의 error 는 열 이름이 강의노트 그 쪽 텍스트에 없다는 뜻이다.
+   이름을 고치기 전에 `pages` 가 맞는 쪽인지, 그 쪽을 vision 으로 다시 읽어 강의노트가
+   실제로 쓰는 표기가 무엇인지 먼저 본다. info(텍스트 층 없음)면 vision 대조가 유일한
+   길이다.
 
    **error 를 표 수정으로 없애지 않는다.** 원인이 열 이름일 수 있다
    (§절대 규칙 5). 부울식 역검산이 "표에는 X 이다" 라고 할 때, 표가

@@ -375,6 +375,137 @@ def check_manual_quotes(text, manual_text, where) -> list:
     return out
 
 
+# 강의노트 텍스트에서 신호 이름을 뽑는 토큰. `spec_parser._NAME`(부울식 변수)과
+# 같은 규칙이라 `L1과` 는 `L1` 로, `INPUT(A, B, C)` 는 `INPUT`·`A`·`B`·`C` 로 읽힌다.
+# 수식 이탤릭(𝐴)과 숫자로 시작하는 셀 값(`0`)은 토큰이 아니다.
+_LATIN_TOKEN = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
+_MANUAL_PAGE = re.compile(r"manual:p(\d+)")
+
+
+def extract_manual_pages(manual_path) -> list:
+    """강의노트 PDF 의 쪽별 텍스트. 1쪽이 `[0]` 이다. 못 열면 빈 리스트.
+
+    `check_manual_names` 가 쪽 단위로 대조하려고 쓴다 — `extract_manual_text` 는 전
+    쪽을 이어 붙여 어느 쪽에 있는지를 잃는다. pypdf 를 먼저 쓴다: 실험3 강의노트는
+    `pdftotext` 가 한글을 떨어뜨린다(Symbol 폰트). pypdf 가 빈 문자열을 준 쪽만
+    `pdftotext -f N -l N` 으로 한 번 더 본다.
+    """
+    try:
+        import pypdf
+    except ImportError:
+        return []
+    try:
+        reader = pypdf.PdfReader(str(manual_path))
+        pages = [(page.extract_text() or "") for page in reader.pages]
+    except Exception:
+        return []
+    for n, text in enumerate(pages, start=1):
+        if text.strip():
+            continue
+        try:
+            done = subprocess.run(["pdftotext", "-layout", "-f", str(n), "-l", str(n),
+                                   str(manual_path), "-"], capture_output=True, timeout=60)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if done.returncode == 0:
+            pages[n - 1] = done.stdout.decode("utf-8", errors="replace")
+    return pages
+
+
+def _contains_run(tokens, run) -> bool:
+    """`run` 이 `tokens` 안에 끊기지 않고 그 순서로 있는가."""
+    n = len(run)
+    return any(tokens[k:k + n] == run for k in range(len(tokens) - n + 1))
+
+
+def check_manual_names(spec, pages) -> list:
+    """명세 진리표의 열 이름이 **강의노트 그 쪽에** 그대로 있는지 본다.
+
+    다른 이름 검사는 전부 명세를 기준으로 잰다 — 예보 표는 명세 머리와, 결선도
+    배지는 빌더와. 명세가 강의노트와 어긋나면 하류가 전부 통과한다. 2026-09-14
+    실험03 명세가 반감산기 내림 수 `B` 를 `Bo` 로 바꿨고, 명세·예보를 둘 다 `Bo` 로
+    바꾼 사본은 warn 0건이었다. 조교는 회로도 출력 이름을 표에서 바꾼 예보를
+    감점했다(2026-09 실험01, -1).
+
+    - 교안 표를 옮긴 표(`source` 가 `manual:pN` 을 인용): 머리 토큰열이 인용 쪽 중
+      하나의 토큰열 안에 **끊기지 않고 그 순서로** 있어야 한다. 순서와 같은 글자
+      둘까지 본다(실험3 p6 `A B D B`).
+    - 파생표(`derived`): 열 이름마다 그 표를 쓰는 항목의 `pages` 쪽 텍스트에 토큰으로
+      있어야 한다. 이름이 회로도 꼬리표·절차 문장에 흩어져 있어서다(실험1 p11
+      "L1과 L2에 330Ω 저항", "INPUT(A, B, C)").
+    - 파생표를 쓰는 항목에 `pages` 가 없으면 error, 강의노트 쪽 수를 넘는 쪽은 error.
+    - 텍스트 층이 없는 쪽(래스터)은 info — 대조를 못 했다는 뜻이지 틀렸다는 뜻이
+      아니다(`check_manual_quotes` 와 같은 이유). `pages` 가 빈 리스트면(PDF 를 못
+      엶) info 한 줄만 낸다.
+    - 머리에 라틴 토큰이 아닌 열(한글 설명 열)이 있는 표는 건너뛴다.
+    """
+    name = spec.path.name
+    if not pages:
+        return [Finding("info", name,
+            "강의노트 텍스트를 뽑지 못해 열 이름 대조를 건너뛴다 — vision 으로 본다")]
+    tokens = [_LATIN_TOKEN.findall(p) for p in pages]
+    out, noted = [], set()
+
+    def readable(where, nums):
+        """쓸 수 있는 쪽 번호만 돌려준다. 없는 쪽은 error, 텍스트 층이 없는 쪽은 info."""
+        ok = []
+        for n in nums:
+            if not isinstance(n, int) or not 1 <= n <= len(pages):
+                if (where, n) not in noted:
+                    out.append(Finding("error", where,
+                        f"교안 p{n} 은 없다 — 이 강의노트는 {len(pages)}쪽이다"))
+            elif not tokens[n - 1]:
+                if (where, n) not in noted:
+                    out.append(Finding("info", where,
+                        f"교안 p{n} 에 텍스트 층이 없다(래스터) — 열 이름은 vision 으로 "
+                        "대조한다"))
+            else:
+                ok.append(n)
+            noted.add((where, n))
+        return ok
+
+    def cite(nums):
+        return "·".join(f"p{n}" for n in nums)
+
+    for t in spec.tables:
+        if t.kind != "truth-table" or not t.header:
+            continue
+        where = f"{name}:{t.id}"
+        header = [_bare_cell(c) for c in t.header]
+        if not all(_LATIN_TOKEN.fullmatch(c) for c in header):
+            continue
+        cited = [int(n) for n in _MANUAL_PAGE.findall(t.source or "")]
+        if cited:
+            ok = readable(where, cited)
+            if ok and not any(_contains_run(tokens[n - 1], header) for n in ok):
+                out.append(Finding("error", where,
+                    f"머리 `{' '.join(header)}` 가 교안 {cite(ok)} 에 이 순서로 없다 — "
+                    "교안 표를 옮긴 표는 머리를 글자 그대로 둔다"
+                    "(`draft-lab-spec` §절대 규칙 5)"))
+            continue
+        for item in spec.items:
+            if t.id not in item.tables:
+                continue
+            iwhere = f"{name}:{item.id}"
+            if not item.pages:
+                if (iwhere, None) not in noted:
+                    out.append(Finding("error", iwhere,
+                        f"pages 가 없어 {t.id} 의 열 이름을 강의노트와 대조할 수 없다 — "
+                        "회로도·절차가 있는 쪽을 `pages: [N]` 으로 적는다"))
+                    noted.add((iwhere, None))
+                continue
+            ok = readable(iwhere, item.pages)
+            if not ok:
+                continue
+            have = set().union(*(tokens[n - 1] for n in ok))
+            for c in dict.fromkeys(header):
+                if c not in have:
+                    out.append(Finding("error", where,
+                        f"열 `{c}` 가 교안 {cite(ok)} 에 없다 — 열 이름은 강의노트 "
+                        "회로도·절차의 표기를 그대로 쓴다(`draft-lab-spec` §절대 규칙 5)"))
+    return out
+
+
 def validate_spec(spec) -> list:
     # 진단 문장 info 는 **맨 끝**에 붙인다 — 앞에 끼우면 `findings[0]` 이
     # error 라고 단언하는 검사들이 조용히 깨진다.
