@@ -11,6 +11,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image
+
 from scripts.lab import config
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,6 +125,72 @@ class Cli(unittest.TestCase):
         r = self._run("--experiment", str(free[-1]))
         self.assertEqual(r.returncode, 2)
         self.assertIn("주차 결선 파일이 없다", r.stderr)
+
+
+class Stamp(unittest.TestCase):
+    """도장 = 그림이 **무엇을** 싣는가의 해시. 글꼴·줄바꿈은 들지 않는다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def _render_final(self, mod):
+        name, fn = mod.load_board(3).FINALS[0]
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, name)
+            bb = fn(p, None)
+            return bb, mod.read_stamp(p), Path(p).read_bytes()
+
+    def test_PNG_에_도장이_찍힌다(self):
+        bb, got, _png = self._render_final(self.mod)
+        self.assertRegex(got, r"^v1:[0-9a-f]{64}$")
+        self.assertEqual(got, bb.stamp())
+
+    def test_글꼴이_달라도_도장은_같다(self):
+        """커밋된 실험01 PNG 는 다른 기계의 글꼴로 뽑혀 바이트가 달랐다 — 선은 같았다."""
+        other = _load("rb_font")
+        other._font = lambda kind, size: other.ImageFont.load_default(size)
+        _bb1, s1, png1 = self._render_final(self.mod)
+        _bb2, s2, png2 = self._render_final(other)
+        self.assertNotEqual(png1, png2, "글꼴이 실제로 바뀌지 않았다")
+        self.assertEqual(s1, s2)
+
+    def test_주석이_바뀌면_도장이_바뀐다(self):
+        bb, got, _png = self._render_final(self.mod)
+        bb.notes.append("새 주석")
+        self.assertNotEqual(bb.stamp(), got)
+
+    def test_도장_없는_PNG_는_None(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "x.png")
+            Image.new("RGB", (4, 4)).save(p)
+            self.assertIsNone(self.mod.read_stamp(p))
+
+    def test_build_all_은_파일명마다_도장을_돌려준다(self):
+        with tempfile.TemporaryDirectory() as d:
+            made = self.mod.build_all(self.mod.load_board_file(FIXTURE), d)
+            self.assertEqual(list(made), ["min_1단계_잭.png", "min.png"])
+            for name, s in made.items():
+                self.assertEqual(self.mod.read_stamp(os.path.join(d, name)), s)
+
+
+class CommittedPngs(unittest.TestCase):
+    """커밋된 결선도 PNG 가 지금 `배치.py` 에서 나온 것인가 — 도장으로 본다.
+    글꼴이 다른 기계에서도 선·문구가 같으면 통과한다."""
+
+    def test_결선도_폴더가_코드와_같다(self):
+        mod = _load()
+        nums = mod.board_numbers()
+        self.assertTrue({1, 2, 3} <= set(nums), nums)
+        for n in nums:
+            folder = Path(mod.board_path(n)).parent
+            with self.subTest(실험=n), tempfile.TemporaryDirectory() as d:
+                made = mod.build_all(mod.load_board(n), d)
+                self.assertEqual({p.name for p in folder.glob("*.png")}, set(made),
+                                 "결선도 폴더의 PNG 와 배치.py 의 BOARDS·FINALS 가 다르다")
+                stale = sorted(f for f, s in made.items() if mod.read_stamp(folder / f) != s)
+                self.assertEqual(stale, [], "코드와 어긋난 PNG — "
+                                 f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
 
 
 if __name__ == "__main__":

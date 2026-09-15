@@ -2,10 +2,13 @@ import os
 import re
 import sys
 import glob
+import json
 import types
+import hashlib
 import argparse
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
+from PIL.PngImagePlugin import PngInfo
 
 # 저장소 루트. 이 파일은 `<루트>/.claude/skills/breadboard-diagram/scripts/`
 # 에 있다. **cwd 로 찾지 않는다** — 예전 후보 목록이 상대 경로여서 저장소
@@ -1516,6 +1519,27 @@ class BreadboardRenderer:
                     f'{KIND_KR[kind]} 레일이 끊겨 있다 — 브리지가 없다: {desc}\n'
                     '  레일쌍 넷은 별개 스트립이다. bridge_rails() 로 이어라.')
 
+    def content(self):
+        """도장에 드는 것 — 이 그림이 **무엇을** 싣는가. 주차 파일이 넘긴 문자열과 홀
+        주소뿐이다. 픽셀·글꼴·줄바꿈 결과·엔진 범례 문구는 넣지 않는다 — 기계마다
+        글꼴이 달라도 같은 결선이면 같은 도장이 나와야 한다.
+
+        `verify()` 뒤에 불러야 `wiring()['overlaps']` 가 찬다 — `export()` 가 그렇게 한다.
+        """
+        return {
+            'title': self.title, 'subtitle': self.subtitle, 'submit': self.submit,
+            'notes': list(self.notes),
+            'steps': list(self.steps),
+            'probes': list(self.probes),
+            'kept': len(self.kept) if self.baseline is not None else None,
+            'removed': self.removed(),
+            'wiring': self.wiring(),
+        }
+
+    def stamp(self):
+        blob = json.dumps(self.content(), ensure_ascii=False, sort_keys=True, default=_jsonable)
+        return 'v1:' + hashlib.sha256(blob.encode('utf-8')).hexdigest()
+
     def export(self, output_path, max_row=35):
         self.verify()
         final_im = Image.alpha_composite(self.im, self.overlay)
@@ -1527,7 +1551,9 @@ class BreadboardRenderer:
         used = self._draw_footer(canvas, board_h)
         out = canvas.crop((0, 0, 998, min(used, canvas.height)))
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        out.save(output_path)
+        info = PngInfo()
+        info.add_text(STAMP_KEY, self.stamp())
+        out.save(output_path, pnginfo=info)
         print(f"[SUCCESS] Exported: {output_path} "
               f"({out.size[0]}x{out.size[1]}, 결선 {len(self.steps)}단계)")
 
@@ -1589,6 +1615,22 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
 # 뽑기만 한다. 설계: `docs/plans/2026-09-15-결선도-엔진-주차분리-설계.md`.
 
 BOARD_FILE = '배치.py'
+
+# 도장 — PNG 텍스트 청크. 그림이 **무엇을** 싣는가의 해시(`BreadboardRenderer.content()`).
+# 글꼴·줄바꿈은 들지 않는다 — 기계가 달라도 선과 문구가 같으면 도장이 같다.
+# `tests/test_breadboard_boards.py` 가 커밋된 PNG 의 도장을 지금 코드와 맞댄다.
+STAMP_KEY = 'breadboard-stamp'
+
+
+def _jsonable(o):
+    """`json.dumps` 가 모르는 값 — 집합은 정렬해 목록으로, 나머지는 문자열로."""
+    return sorted(o, key=repr) if isinstance(o, (set, frozenset)) else str(o)
+
+
+def read_stamp(path):
+    """PNG 에 찍힌 도장. 없으면 None."""
+    with Image.open(path) as im:
+        return im.text.get(STAMP_KEY)
 
 
 def _config():
@@ -1656,16 +1698,15 @@ def load_board(experiment):
 def build_all(board, output_dir, template_path=None):
     """주차 결선 파일 `board` 의 결선도를 전부 뽑는다 — 절차 사슬 `BOARDS` 는 앞 보드를
     기준선으로 이어 그리고(회색·걷기 표), 완성본 `FINALS` 는 기준선 없이 그린다.
-    뽑은 파일명을 돌려준다."""
+    `{파일명: 도장}` 을 돌려준다(사슬 순서, 그다음 완성본)."""
     os.makedirs(output_dir, exist_ok=True)
-    made, base = [], None
+    made, base = {}, None
     for filename, fn, stage in board.BOARDS:
         bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
         base = bb.snapshot()
-        made.append(filename)
+        made[filename] = bb.stamp()
     for filename, fn in board.FINALS:
-        fn(os.path.join(output_dir, filename), template_path)
-        made.append(filename)
+        made[filename] = fn(os.path.join(output_dir, filename), template_path).stamp()
     return made
 
 
