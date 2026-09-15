@@ -17,6 +17,7 @@
 import ast
 import importlib.util
 import os
+import re
 import tempfile
 import unittest
 from collections import Counter
@@ -78,8 +79,7 @@ class BuilderApiContract(unittest.TestCase):
         for n in tree.body:
             if isinstance(n, ast.FunctionDef) and (
                     n.name.startswith("build_") or n.name.startswith("_build_")
-                    or n.name.startswith("_e1_") or n.name.startswith("_e2_")
-                    or n.name.startswith("_e3_")):
+                    or re.match(r"_e\d+_", n.name)):
                 yield n
 
     def _calls(self, node, attr):

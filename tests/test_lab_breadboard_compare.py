@@ -198,3 +198,19 @@ class Judgment(unittest.TestCase):
         self.assertIn("세션 메모리 주입", md)
         self.assertIn("치명 0 · 기능 0", md)
         self.assertIn("첫 렌더 통과", md)
+
+    def test_재생성_배치_py_를_못_불러와도_죽지_않고_판정문을_낸다(self):
+        """재생성 `배치.py` 가 엔진에 없는 이름을 import 하면 `load_board_at` 이
+        죽는다 — 격리 재생성 에이전트가 엔진에 없는 헬퍼를 쓴 흔적이다. `judge()`
+        는 그 자리에서 죽지 않고 2절에 이유를 적은 뒤 나머지 절을 재생성 쪽 없이
+        낸다(I2)."""
+        with tempfile.TemporaryDirectory() as d:
+            bad = Path(d) / "배치.py"
+            bad.write_text("from render_breadboard import 없는이름\n", encoding="utf-8")
+            empty_png_dir = Path(d) / "png"
+            empty_png_dir.mkdir()
+            md = bc.judge(1, BOARD, bad, NETLIST, empty_png_dir, TEMPLATE)
+            self.assertIn("## 2. 보드 사슬", md)
+            self.assertIn("불러오지 못했다", md)
+            self.assertIn("`BOARDS` 없음", md)
+            self.assertIn("## 9. 사람이 볼 것", md)

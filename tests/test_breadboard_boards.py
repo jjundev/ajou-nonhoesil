@@ -5,9 +5,11 @@
 import ast
 import importlib.util
 import os
+import re
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 
@@ -61,7 +63,7 @@ class Loader(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             base = Path(d) / config.EXPERIMENT_BASE
             for name in (config.experiment_folder_name(4), config.experiment_folder_name(2),
-                         "실험4", "메모"):
+                         "실험4", "메모", "실험99"):
                 (base / name / "결선도").mkdir(parents=True)
                 (base / name / "결선도" / "배치.py").write_text("", encoding="utf-8")
             self.assertEqual(self.mod.board_numbers(root=d), [2, 4])
@@ -74,6 +76,22 @@ class BuildAll(unittest.TestCase):
             made = mod.build_all(mod.load_board_file(FIXTURE), d)
             self.assertEqual(sorted(made), ["min.png", "min_1단계_잭.png"])
             self.assertEqual(sorted(os.listdir(d)), ["min.png", "min_1단계_잭.png"])
+
+    def test_빌더가_None을_돌려주면_알아볼_수_있는_TypeError를_던진다(self):
+        """`return bb` 를 빠뜨린 빌더는 `'NoneType' object has no attribute
+        'snapshot'` 같은 알아볼 수 없는 오류로 죽는다 — 문구를 준다(M1)."""
+        mod = _load()
+
+        def none_builder(path, template_path=None, stage=None, baseline=None):
+            return None
+
+        board = types.SimpleNamespace(BOARDS=[("x.png", none_builder, None)], FINALS=[])
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(TypeError) as cm:
+                mod.build_all(board, d)
+            self.assertIn("x.png", str(cm.exception))
+            self.assertIn("none_builder", str(cm.exception))
+            self.assertIn("return bb", str(cm.exception))
 
 
 class RealBoards(unittest.TestCase):
@@ -98,7 +116,7 @@ class RealBoards(unittest.TestCase):
         names = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
         names += [t.id for n in tree.body if isinstance(n, ast.Assign)
                   for t in n.targets if isinstance(t, ast.Name)]
-        bad = [n for n in names if n.startswith(("build_e", "_e1_", "_e2_", "_e3_"))
+        bad = [n for n in names if n.startswith("build_e") or re.match(r"_e\d+_", n)
                or n[:1] == "E" and n[1:2].isdigit()]
         self.assertEqual(bad, [])
 
@@ -122,9 +140,16 @@ class Cli(unittest.TestCase):
 
     def test_결선_파일이_없는_실험은_거절한다(self):
         free = sorted(set(range(1, config.EXPERIMENT_COUNT + 1)) - set(_load().board_numbers()))
+        if not free:
+            self.skipTest("모든 실험에 결선 파일이 있다")
         r = self._run("--experiment", str(free[-1]))
         self.assertEqual(r.returncode, 2)
         self.assertIn("주차 결선 파일이 없다", r.stderr)
+
+    def test_범위_밖_실험_번호는_트레이스백_없이_거절한다(self):
+        r = self._run("--experiment", "0")
+        self.assertEqual(r.returncode, 2, r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
 
 
 class Stamp(unittest.TestCase):
@@ -164,6 +189,14 @@ class Stamp(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = os.path.join(d, "x.png")
             Image.new("RGB", (4, 4)).save(p)
+            self.assertIsNone(self.mod.read_stamp(p))
+
+    def test_PNG_가_아닌_이미지는_AttributeError_없이_None(self):
+        """`im.text` 는 PNG 전용 속성이다 — JPEG 등은 없어서 `.get()` 이 바로
+        `AttributeError` 로 죽는다(미룬 지적 3)."""
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "x.jpg")
+            Image.new("RGB", (4, 4)).save(p, format="JPEG")
             self.assertIsNone(self.mod.read_stamp(p))
 
     def test_build_all_은_파일명마다_도장을_돌려준다(self):

@@ -1628,9 +1628,9 @@ def _jsonable(o):
 
 
 def read_stamp(path):
-    """PNG 에 찍힌 도장. 없으면 None."""
+    """PNG 에 찍힌 도장. 없으면 None. `text` 는 PNG 전용 속성이라 다른 형식이면 없다."""
     with Image.open(path) as im:
-        return im.text.get(STAMP_KEY)
+        return getattr(im, 'text', {}).get(STAMP_KEY)
 
 
 def _config():
@@ -1703,10 +1703,19 @@ def build_all(board, output_dir, template_path=None):
     made, base = {}, None
     for filename, fn, stage in board.BOARDS:
         bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+        if bb is None:
+            raise TypeError(
+                f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
+                "빌더 끝에 `return bb` 가 있어야 한다")
         base = bb.snapshot()
         made[filename] = bb.stamp()
     for filename, fn in board.FINALS:
-        made[filename] = fn(os.path.join(output_dir, filename), template_path).stamp()
+        bb = fn(os.path.join(output_dir, filename), template_path)
+        if bb is None:
+            raise TypeError(
+                f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
+                "빌더 끝에 `return bb` 가 있어야 한다")
+        made[filename] = bb.stamp()
     return made
 
 
@@ -1718,7 +1727,10 @@ def main():
                         help="출력 폴더 (기본: 그 배치.py 가 있는 결선도 폴더)")
     parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
     args = parser.parse_args()
-    path = board_path(args.experiment)
+    try:
+        path = board_path(args.experiment)
+    except ValueError as e:
+        parser.error(str(e))
     if not os.path.exists(path):
         parser.error(f"주차 결선 파일이 없다: {path}")
     out = args.output or os.path.dirname(path)

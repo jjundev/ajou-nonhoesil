@@ -245,7 +245,12 @@ def judge(experiment, approved_board, regen_board, netlist_path, regen_png_dir,
     """판정 초안. 셀 수 있는 것만 센다 — 갈린 자리에 규칙이 있었는지는 사람이
     SKILL.md 와 에이전트 보고를 놓고 가른다. 두 인자는 승인본·재생성 `배치.py` 경로다."""
     ref_mod = load_board_at(approved_board, f"board_approved_e{experiment}")
-    new_mod = load_board_at(regen_board, f"board_regen_e{experiment}")
+    try:
+        new_mod = load_board_at(regen_board, f"board_regen_e{experiment}")
+        load_error = ""
+    except Exception as e:  # noqa: BLE001 — 판정 재료다. 승인본 로드는 감싸지 않는다 —
+        # 승인본이 안 불러지면 크게 죽는 게 맞다. 재생성 쪽만 죽지 않게 감싼다.
+        new_mod, load_error = None, f"{type(e).__name__}: {e}"
     boards_attr, finals_attr = "BOARDS", "FINALS"
     slots = layout_slots(netlist_path)
     subs = sub_items(netlist_path)
@@ -267,6 +272,8 @@ def judge(experiment, approved_board, regen_board, netlist_path, regen_png_dir,
         nb = f"{len(new_b)}장" if new_boards else f"`{boards_attr}` 없음"
         nf = f"{len(new_f)}장" if new_finals else f"`{finals_attr}` 없음"
         L += [f"## 2. 보드 사슬 — 승인본 {len(ref_b)}장+완성본 {len(ref_f)}장 / 재생성 {nb}+완성본 {nf}", ""]
+        if load_error:
+            L += [f"- 재생성 `배치.py` 를 불러오지 못했다: {load_error}", ""]
         L += [f"- 재생성 {b}" for b in new_b + new_f] + [""]
 
         bp = pair_boards(ref_b, new_b)
