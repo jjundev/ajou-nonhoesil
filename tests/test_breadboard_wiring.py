@@ -30,9 +30,10 @@ class Wiring(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
         cls.tmp = tempfile.mkdtemp()
-        cls.and_bb = cls.mod.build_e1_and(os.path.join(cls.tmp, 'and.png'))
-        cls.nand_bb = cls.mod.build_e1_nand(os.path.join(cls.tmp, 'nand.png'))
+        cls.and_bb = cls.b1.build_e1_and(os.path.join(cls.tmp, 'and.png'))
+        cls.nand_bb = cls.b1.build_e1_nand(os.path.join(cls.tmp, 'nand.png'))
 
     @classmethod
     def tearDownClass(cls):
@@ -134,28 +135,28 @@ class Wiring(unittest.TestCase):
             m = re.match(r'(좌|우)\s*(\d+)행', row[1])
             self.assertIsNotNone(m, row)
             slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
-        self.assertEqual(slots, self.mod.E1_SLOTS)
+        self.assertEqual(slots, self.b1.E1_SLOTS)
 
     def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
-        seats = set(self.mod.E1_SLOTS.values())
-        for name, fn, stage in self.mod.E1_BOARDS:
+        seats = set(self.b1.E1_SLOTS.values())
+        for name, fn, stage in self.b1.BOARDS:
             with self.subTest(board=name):
                 bb = fn(os.path.join(self.tmp, name), stage=stage)
                 for ch in bb.wiring()['chips']:
                     self.assertIn((ch['block'], ch['pin1_row']), seats)
 
     def test_보드_사슬은_9장_완성본은_4장이다(self):
-        self.assertEqual(len(self.mod.E1_BOARDS), 9)
-        self.assertEqual(len(self.mod.E1_FINALS), 4)
-        names = [n for n, _f, _s in self.mod.E1_BOARDS] + [n for n, _f in self.mod.E1_FINALS]
+        self.assertEqual(len(self.b1.BOARDS), 9)
+        self.assertEqual(len(self.b1.FINALS), 4)
+        names = [n for n, _f, _s in self.b1.BOARDS] + [n for n, _f in self.b1.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
-        self.assertNotIn(self.mod.E1_BOARDS[-1][0], [n for n, _f in self.mod.E1_FINALS],
+        self.assertNotIn(self.b1.BOARDS[-1][0], [n for n, _f in self.b1.FINALS],
                          '마지막 단계 그림과 완성본은 다른 파일이어야 한다 — 완성본에는 회색이 없다')
 
     def test_OR_전환은_새_배선이_0가닥이다(self):
         """1-1→1-2 는 칩만 갈아끼운다 — 이 계획의 존재 이유다."""
-        base = self.mod.build_e1_and(os.path.join(self.tmp, 'a.png')).snapshot()
-        bb = self.mod.build_e1_or(os.path.join(self.tmp, 'o.png'), baseline=base)
+        base = self.b1.build_e1_and(os.path.join(self.tmp, 'a.png')).snapshot()
+        bb = self.b1.build_e1_or(os.path.join(self.tmp, 'o.png'), baseline=base)
         self.assertEqual([s['desc'] for s in bb.steps], ['좌 7행 칩 교체'])
         self.assertEqual(bb.removed(), [])
 
@@ -167,6 +168,7 @@ class WiringE2(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
         cls.tmp = tempfile.mkdtemp()
 
     @classmethod
@@ -186,11 +188,11 @@ class WiringE2(unittest.TestCase):
             m = re.match(r'(좌|우)\s*(\d+)행', row[1])
             self.assertIsNotNone(m, row)
             slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
-        self.assertEqual(slots, self.mod.E2_SLOTS)
+        self.assertEqual(slots, self.b2.E2_SLOTS)
 
     def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
-        seats = set(self.mod.E2_SLOTS.values())
-        for name, fn, stage in self.mod.E2_BOARDS:
+        seats = set(self.b2.E2_SLOTS.values())
+        for name, fn, stage in self.b2.BOARDS:
             with self.subTest(board=name):
                 bb = fn(os.path.join(self.tmp, name), stage=stage)
                 for ch in bb.wiring()['chips']:
@@ -198,11 +200,11 @@ class WiringE2(unittest.TestCase):
 
     def test_보드_사슬은_2장_완성본은_1장이다(self):
         """교안 실험 2(AC 특성)는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다."""
-        self.assertEqual(len(self.mod.E2_BOARDS), 2)
-        self.assertEqual(len(self.mod.E2_FINALS), 1)
-        names = [n for n, _f, _s in self.mod.E2_BOARDS] + [n for n, _f in self.mod.E2_FINALS]
+        self.assertEqual(len(self.b2.BOARDS), 2)
+        self.assertEqual(len(self.b2.FINALS), 1)
+        names = [n for n, _f, _s in self.b2.BOARDS] + [n for n, _f in self.b2.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
-        self.assertNotIn(self.mod.E2_BOARDS[-1][0], [n for n, _f in self.mod.E2_FINALS])
+        self.assertNotIn(self.b2.BOARDS[-1][0], [n for n, _f in self.b2.FINALS])
         self.assertFalse(any('tpd' in n for n in names), names)
 
     def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
@@ -217,13 +219,13 @@ class WiringE2(unittest.TestCase):
                 wanted.add(c.diagram)
             for st in c.stages:
                 wanted.add(st['diagram'])
-        made = {n for n, _f, _s in self.mod.E2_BOARDS} | {n for n, _f in self.mod.E2_FINALS}
+        made = {n for n, _f, _s in self.b2.BOARDS} | {n for n, _f in self.b2.FINALS}
         self.assertEqual(wanted, made)
 
     def test_슈미트_전환은_새_배선이_0가닥이다(self):
         """교안 p11: "앞선 회로 구성 및 설정을 유지하고, IC를 74HC14로 교체한다"."""
-        base = self.mod.build_e2_inv(os.path.join(self.tmp, 'i.png')).snapshot()
-        bb = self.mod.build_e2_schmitt(os.path.join(self.tmp, 's.png'), baseline=base)
+        base = self.b2.build_e2_inv(os.path.join(self.tmp, 'i.png')).snapshot()
+        bb = self.b2.build_e2_schmitt(os.path.join(self.tmp, 's.png'), baseline=base)
         self.assertEqual([s['desc'] for s in bb.steps], ['좌 7행 칩 교체'])
         self.assertEqual(bb.removed(), [])
 
@@ -235,6 +237,7 @@ class WiringE3(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
         cls.tmp = tempfile.mkdtemp()
 
     @classmethod
@@ -257,11 +260,11 @@ class WiringE3(unittest.TestCase):
             m = re.match(r'(좌|우)\s*(\d+)행', row[1])
             self.assertIsNotNone(m, row)
             slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
-        self.assertEqual(slots, self.mod.E3_SLOTS)
+        self.assertEqual(slots, self.b3.E3_SLOTS)
 
     def test_모든_보드의_칩이_슬롯_위에_앉는다(self):
-        seats = set(self.mod.E3_SLOTS.values())
-        for name, fn, stage in self.mod.E3_BOARDS:
+        seats = set(self.b3.E3_SLOTS.values())
+        for name, fn, stage in self.b3.BOARDS:
             with self.subTest(board=name):
                 bb = fn(os.path.join(self.tmp, name), stage=stage)
                 for ch in bb.wiring()['chips']:
@@ -275,37 +278,37 @@ class WiringE3(unittest.TestCase):
                 wanted.add(c.diagram)
             for st in c.stages:
                 wanted.add(st['diagram'])
-        made = {n for n, _f, _s in self.mod.E3_BOARDS} | {n for n, _f in self.mod.E3_FINALS}
+        made = {n for n, _f, _s in self.b3.BOARDS} | {n for n, _f in self.b3.FINALS}
         self.assertEqual(wanted, made)
 
     def test_보드_사슬은_3장_완성본은_2장이다(self):
         """반가산기·반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다."""
-        self.assertEqual(len(self.mod.E3_BOARDS), 3)
-        self.assertEqual(len(self.mod.E3_FINALS), 2)
-        names = [n for n, _f, _s in self.mod.E3_BOARDS] + [n for n, _f in self.mod.E3_FINALS]
+        self.assertEqual(len(self.b3.BOARDS), 3)
+        self.assertEqual(len(self.b3.FINALS), 2)
+        names = [n for n, _f, _s in self.b3.BOARDS] + [n for n, _f in self.b3.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
-        self.assertNotIn(self.mod.E3_BOARDS[-1][0], [n for n, _f in self.mod.E3_FINALS])
+        self.assertNotIn(self.b3.BOARDS[-1][0], [n for n, _f in self.b3.FINALS])
         self.assertFalse(any(k in n for n in names for k in ('반가산기', '반감산기')), names)
 
     def test_전가산기_1단계는_맨바닥에서_XOR_쪽만_꽂는다(self):
         """반가산기(실험 1-1)를 안 하므로 전가산기가 첫 보드다 — 기준선이 없고
         74HC08·74HC32 는 아직 없다."""
-        _name, fn, stage = self.mod.E3_BOARDS[0]
-        self.assertEqual((fn, stage), (self.mod.build_e3_fa, 1))
+        _name, fn, stage = self.b3.BOARDS[0]
+        self.assertEqual((fn, stage), (self.b3.build_e3_fa, 1))
         bb = fn(os.path.join(self.tmp, 'fa1.png'), stage=stage)
         self.assertEqual([c['label'] for c in bb.wiring()['chips']], ['74HC86'])
         self.assertEqual(bb.removed(), [])
 
     def test_전가산기_2단계는_아무것도_걷지_않는다(self):
-        base = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa1.png'), stage=1).snapshot()
-        bb = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa2.png'), baseline=base)
+        base = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa1.png'), stage=1).snapshot()
+        bb = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa2.png'), baseline=base)
         self.assertEqual(bb.removed(), [])
 
     def test_전감산기는_전가산기에서_두_가닥만_걷는다(self):
         """AND1 pin 1 의 A 갈래와 AND2 pin 4 의 A⊕B 선. Ci 점퍼·LED 급전선은 그대로다 —
         기준선은 끝점으로 비교하므로 이름이 Ci→Bi 로 바뀌어도 회색으로 남는다."""
-        base = self.mod.build_e3_fa(os.path.join(self.tmp, 'fa.png')).snapshot()
-        bb = self.mod.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), baseline=base)
+        base = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa.png')).snapshot()
+        bb = self.b3.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), baseline=base)
         removed = bb.removed()
         self.assertEqual(len(removed), 2, removed)
         self.assertTrue(any('74HC08 pin 1' in r for r in removed), removed)
@@ -316,7 +319,7 @@ class WiringE3(unittest.TestCase):
 
     def test_반감산기_전감산기에는_1단계를_주지_않는다(self):
         """두 회로의 1단계는 반감산기를 거치던 옛 사슬의 차분이었다."""
-        for fn in (self.mod.build_e3_hs, self.mod.build_e3_fs):
+        for fn in (self.b3.build_e3_hs, self.b3.build_e3_fs):
             with self.subTest(fn=fn.__name__):
                 with self.assertRaises(ValueError):
                     fn(os.path.join(self.tmp, 'x.png'), stage=1)

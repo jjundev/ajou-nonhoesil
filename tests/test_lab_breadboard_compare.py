@@ -11,21 +11,21 @@ from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab import breadboard_compare as bc
-from scripts.lab.breadboard_isolate import RENDERER
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = str(ROOT / ".claude/assets/Breadboard.jpg")
 NETLIST = ROOT / config.experiment_dir(1) / "결선도/netlist.md"
 PNG_DIR = ROOT / config.experiment_dir(1) / "결선도"
+BOARD = PNG_DIR / "배치.py"
 
 
 class Rendered(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_approved")
+        cls.mod = bc.load_board_at(BOARD, "board_test_approved")
         cls.tmp = tempfile.mkdtemp()
-        cls.boards = bc.render_chain(cls.mod.E1_BOARDS, os.path.join(cls.tmp, "a"), TEMPLATE)
-        cls.finals = bc.render_finals(cls.mod.E1_FINALS, os.path.join(cls.tmp, "f"), TEMPLATE)
+        cls.boards = bc.render_chain(cls.mod.BOARDS, os.path.join(cls.tmp, "a"), TEMPLATE)
+        cls.finals = bc.render_finals(cls.mod.FINALS, os.path.join(cls.tmp, "f"), TEMPLATE)
 
     def test_보드_아홉_완성본_넷이_오류_없이_그려진다(self):
         self.assertEqual([b.error for b in self.boards], [""] * 9)
@@ -35,8 +35,8 @@ class Rendered(unittest.TestCase):
         self.assertEqual(self.boards[2].stage, 1)
 
     def test_자기대조는_치명_기능_0건(self):
-        other = bc.load_renderer_at(ROOT / RENDERER, "rb_test_again")
-        b2 = bc.render_chain(other.E1_BOARDS, os.path.join(self.tmp, "b"), TEMPLATE)
+        other = bc.load_board_at(BOARD, "board_test_again")
+        b2 = bc.render_chain(other.BOARDS, os.path.join(self.tmp, "b"), TEMPLATE)
         for ref, new in zip(self.boards, b2):
             with self.subTest(ref.name):
                 bad = [f for f in bc.net_findings(ref, new) if f.grade in bc.BLOCKING]
@@ -142,9 +142,9 @@ class BrokenBuilder(unittest.TestCase):
         def none_builder(path, template_path=None, stage=None, baseline=None):
             return None
 
-        mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_broken")
+        mod = bc.load_board_at(BOARD, "board_test_broken")
         boards = bc.render_chain([("x.png", boom, None), ("y.png", none_builder, 1),
-                                  mod.E1_BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
+                                  mod.BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
         self.assertIn("R2", boards[0].error)
         self.assertIn("돌려주지 않는다", boards[1].error)
         self.assertEqual(boards[2].error, "")
@@ -159,9 +159,9 @@ class BrokenBuilder(unittest.TestCase):
         def dead_snapshot_builder(path, template_path=None, stage=None, baseline=None):
             return DeadSnapshot()
 
-        mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_dead_snapshot")
+        mod = bc.load_board_at(BOARD, "board_test_dead_snapshot")
         boards = bc.render_chain([("x.png", dead_snapshot_builder, None),
-                                  mod.E1_BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
+                                  mod.BOARDS[0]], tempfile.mkdtemp(), TEMPLATE)
         self.assertIn("snapshot", boards[0].error)
         self.assertEqual(boards[1].error, "")
 
@@ -177,7 +177,7 @@ class BrokenBuilder(unittest.TestCase):
         self.assertNotIn("안 받는다", boards[0].error)
 
     def test_시그니처가_다른_빌더는_위치_인자로_다시_부른다(self):
-        mod = bc.load_renderer_at(ROOT / RENDERER, "rb_test_sig")
+        mod = bc.load_board_at(BOARD, "board_test_sig")
 
         def fn(path, template_path=None):
             return mod.build_e1_and(path, template_path)
@@ -189,7 +189,7 @@ class BrokenBuilder(unittest.TestCase):
 
 class Judgment(unittest.TestCase):
     def test_승인본을_승인본과_대조한_판정문(self):
-        md = bc.judge(1, ROOT / RENDERER, ROOT / RENDERER, NETLIST, PNG_DIR, TEMPLATE,
+        md = bc.judge(1, BOARD, BOARD, NETLIST, PNG_DIR, TEMPLATE,
                       leak_hits=["a.md:1: E1_SLOTS"], agent_report="3. 첫 렌더 통과")
         for head in ("## 1. 구조적 누출 1건", "## 2. 보드 사슬", "## 3. 절차 그림 넷 대조",
                      "## 4. 완성본 넷 대조", "## 5. 칩 자리", "## 6. 전환 수치",
@@ -198,3 +198,19 @@ class Judgment(unittest.TestCase):
         self.assertIn("세션 메모리 주입", md)
         self.assertIn("치명 0 · 기능 0", md)
         self.assertIn("첫 렌더 통과", md)
+
+    def test_재생성_배치_py_를_못_불러와도_죽지_않고_판정문을_낸다(self):
+        """재생성 `배치.py` 가 엔진에 없는 이름을 import 하면 `load_board_at` 이
+        죽는다 — 격리 재생성 에이전트가 엔진에 없는 헬퍼를 쓴 흔적이다. `judge()`
+        는 그 자리에서 죽지 않고 2절에 이유를 적은 뒤 나머지 절을 재생성 쪽 없이
+        낸다(I2)."""
+        with tempfile.TemporaryDirectory() as d:
+            bad = Path(d) / "배치.py"
+            bad.write_text("from render_breadboard import 없는이름\n", encoding="utf-8")
+            empty_png_dir = Path(d) / "png"
+            empty_png_dir.mkdir()
+            md = bc.judge(1, BOARD, bad, NETLIST, empty_png_dir, TEMPLATE)
+            self.assertIn("## 2. 보드 사슬", md)
+            self.assertIn("불러오지 못했다", md)
+            self.assertIn("`BOARDS` 없음", md)
+            self.assertIn("## 9. 사람이 볼 것", md)

@@ -67,21 +67,40 @@ description: Generate accurate, publication-quality breadboard circuit wiring di
 ## 3. CLI 사용법
 ```bash
 python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
-    --circuit <circuit_id> \
-    --output <output_path> \
+    --experiment <N> \
+    [--output <출력 폴더>] \
     [--template <template_path>]
 ```
 
-### 지원 회로 ID (`--circuit`):
+`보고서/실험NN/결선도/배치.py` 의 `BOARDS`(절차 사슬)와 `FINALS`(완성본)를 **전부** 뽑는다.
+출력 폴더 기본값은 그 `배치.py` 가 있는 결선도 폴더다. 회로 하나만 뽑는 옵션은 없다 — 절차
+그림은 앞 보드를 기준선으로 쓰므로 사슬째 뽑아야 맞는다.
+
+**엔진과 주차 결선은 따로 산다** (2026-09-15, `docs/plans/2026-09-15-결선도-엔진-주차분리-설계.md`).
+스킬 폴더의 `render_breadboard.py` 는 엔진(보드·배선 도구·`verify()`)만 갖고 주차 이름을 모른다.
+주차마다 결선은 그 실험 폴더의 `결선도/배치.py` 에 쓴다(§4a 「주차 빌더를 쓸 때」). 새 주차
+때문에 스킬 폴더의 **코드**(엔진 `render_breadboard.py`)를 고치게 되면 그것은 도구 변경이다 —
+따로 커밋한다.
+
+**도장.** 뽑은 PNG 에는 그 그림이 싣는 내용(배선·부품·제목·주석·결선 순서·계측표·걷기 목록)의
+해시가 텍스트 청크 `breadboard-stamp` 로 찍힌다. 글꼴·줄바꿈은 해시에 들지 않는다 — 기계마다
+시스템 글꼴이 달라 픽셀은 달라도 결선이 같으면 도장이 같다. `tests/test_breadboard_boards.py` 가
+결선도 폴더의 PNG 목록이 `BOARDS`·`FINALS` 와 같은지, 도장이 지금 코드와 같은지 본다 —
+`배치.py` 를 고치고 PNG 를 안 뽑으면 여기서 걸린다.
+
+### 주차별 결선 (`보고서/실험NN/결선도/배치.py`)
+
+아래 ID 는 빌더 이름 `build_<ID>` 의 `<ID>` 이고 손그림 검토(`hand_compare.CIRCUITS`)의 회로 ID 다.
+이 목록은 그 주차 결선 커밋에서 함께 고친다 — 도구 변경이 아니다.
 - **실험 1 (기본 게이트 및 조합논리)** — 슬롯 고정 배치 (S1 좌 7행 · S2 좌 18행 · S3 우 10행):
   - `e1_and`: 실험 1-1 3입력 AND (74HC08). 첫 보드 — 완성본 겸 절차 그림
   - `e1_or`: 실험 1-2 3입력 OR (74HC32) 완성본 · `e1_or_s1`: C1 에서 칩만 갈아끼우는 전환 그림
   - `e1_nand`: 실험 2-1 3입력 NAND 완성본 · `e1_nand_s1`(앞단 AND 검사) · `e1_nand_s2`(뒷단 NAND, 완성)
   - `e1_nor`: 실험 2-2 3입력 NOR 완성본 · `e1_nor_s1` · `e1_nor_s2`
   - `e1_comb`: 실험 3 복합 논리회로 완성본 · `e1_comb_s1`(인버터, Z = A') · `e1_comb_s2`(AND 추가) · `e1_comb_s3`(OR 추가, 완성)
-  - `e1_all`: 절차 9장 + 완성본 4장 = 13장 일괄. 절차 그림은 앞 보드를 기준선으로 회색을 넣고, 완성본은 기준선 없이 전부 색이다
+  - `--experiment 1`: 절차 9장 + 완성본 4장 = 13장 일괄. 절차 그림은 앞 보드를 기준선으로 회색을 넣고, 완성본은 기준선 없이 전부 색이다
 
-  **완성본과 단계 그림을 섞지 않는다.** 예비보고서·손그림 원도는 완성본(`E1_FINALS`)이고, 체크리스트의 단계 블록은 절차 그림(`E1_BOARDS`)이다. netlist 의 `diagram` 은 완성본을, `## 단계` 표는 절차 그림을 가리킨다.
+  **완성본과 단계 그림을 섞지 않는다.** 예비보고서·손그림 원도는 완성본(`FINALS`)이고, 체크리스트의 단계 블록은 절차 그림(`BOARDS`)이다. netlist 의 `diagram` 은 완성본을, `## 단계` 표는 절차 그림을 가리킨다.
 
 **OR·NOR 은 2026-09-06 에 되살렸다.** 그 전에는 `e1_or`·`e1_nor` 가 각각
 AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름으로 냈다.**
@@ -95,7 +114,7 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
   - `e2_inv`: 실험 1-1 Inverter 입출력 특성 (74HC04 게이트 1, X-Y 모드). 첫 보드 — 완성본 겸 절차 그림
   - `e2_schmitt`: 실험 1-2 Schmitt-trigger 입출력 특성 (74HC14) 완성본 · `e2_schmitt_s1`: C1 에서 칩만 갈아끼우는 전환 그림
   - `e2_tpd`: 실험 2 CMOS AC 특성 t_pd (74HC04 두 패키지) 완성본 — **2026-09-14 조교 공지(`_350547_1`)로 실험실에서 하지 않는다.** 사슬·일괄 렌더에 없고, 한 그림에 같은 칩 두 패키지가 앉는 회귀 사례로 테스트만 쓴다
-  - `e2_all`: 절차 2장 + 완성본 1장 = 3장 일괄 (`E2_BOARDS` · `E2_FINALS`)
+  - `--experiment 2`: 절차 2장 + 완성본 1장 = 3장 일괄 (`BOARDS` · `FINALS`)
 
   미사용 입력은 이 주차만 `connect_unused_inputs()` 로 그린다 — 교안 p9 가 명시하고
   그림이 pin 3·5 → GND, pin 9·11·13 → VCC 다. GND 브리지는 그리지 않는다 — 접지
@@ -109,7 +128,7 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
   - `e3_fa`: 실험 1-2 전가산기 완성본 · `e3_fa_s1`(맨바닥에서 XOR 두 개 + LED1, S = A⊕B⊕Ci) · `e3_fa_s2`(74HC08 AND 두 개 + 74HC32 OR, 완성)
   - `e3_fs`: 실험 2-2 전감산기 완성본 · `e3_fs_s1`(전가산기에서 두 가닥을 걷고 74HC04 를 끼운다, 완성)
   - `e3_ha`·`e3_hs`: 실험 1-1 반가산기·2-1 반감산기 완성본 — **2026-09-14 조교 공지(`_350547_1`)로 실험실에서 하지 않는다.** 사슬·일괄 렌더에 없고 회귀 사례로 테스트만 쓴다(`e3_hs` 는 입력·출력이 같은 글자 `B`). `_e3_draw` 는 `hs`·`fs` 에 1단계를 주면 거절한다
-  - `e3_all`: 절차 3장 + 완성본 2장 = 5장 일괄 (`E3_BOARDS` · `E3_FINALS`)
+  - `--experiment 3`: 절차 3장 + 완성본 2장 = 5장 일괄 (`BOARDS` · `FINALS`)
 
   전감산기 1단계는 전가산기 완성 상태에서 **두 가닥만** 걷는다(A → 74HC08 pin 1, A⊕B → 74HC08
   pin 4). 기준선은 끝점으로 비교하므로 `Ci` 점퍼가 `Bi` 로 이름만 바뀌어도 회색으로 남는다.
@@ -165,7 +184,7 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
 ## 4a. 슬롯 · 기준선 · 단계
 
 **슬롯.** 한 실험의 모든 회로가 칩 자리를 공유한다. 정본은 netlist 의 `kind: layout` 표이고
-빌더 상수(`E1_SLOTS`)는 사본이다 — `tests/test_breadboard_wiring.py` 가 맞댄다. 실험01 실험실
+주차 `배치.py` 의 슬롯 상수(`E1_SLOTS`)는 사본이다 — `tests/test_breadboard_wiring.py` 가 맞댄다. 실험01 실험실
 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 되는데 그림이 회로마다 달라 전부 걷었다.
 
 **기준선.** `BreadboardRenderer(baseline=앞_보드.snapshot())` 로 그리면 같은 (색, 끝점, 끝점)
@@ -184,10 +203,15 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
 바뀌어도 그대로인 선이다. 마지막 단계 전까지는 `bb.partial = True` 다 — 2단계 회로는 1단계만,
 3단계 회로는 1·2단계. 마지막 단계는 완성 상태라 뜬 핀이 없어야 한다.
 
-**주차 빌더를 쓸 때:** 빌더 시그니처는 `build_eN_x(output_path, template_path=None,
-stage=None, baseline=None)`, 보드 사슬은 `EN_BOARDS = [(파일명, 빌더, stage), …]`,
-완성본은 `EN_FINALS`, CLI 래퍼 `build_eN_x_sK` 는 `_eN_board(index, …)` 로 앞 보드를 임시
-렌더해 기준선을 만든다. 실험01 의 `_e1_*` 가 실물이다.
+**주차 빌더를 쓸 때:** 파일은 `보고서/실험NN/결선도/배치.py` 하나다. 머리에서
+`from render_breadboard import BreadboardRenderer, _input_jumper` 로 엔진을 가져온다 — 엔진이
+그 파일을 불러 줄 때 이 import 가 엔진 자신을 가리키므로 경로를 따로 잡지 않는다. 빌더
+시그니처는 `build_eN_x(output_path, template_path=None, stage=None, baseline=None)` 이고 끝에
+`return bb` 를 둔다. 보드 사슬은 `BOARDS = [(파일명, 빌더, stage), …]`, 완성본은
+`FINALS = [(파일명, 빌더), …]` 다 — 일괄 렌더 함수는 쓰지 않는다(엔진 `build_all` 이 한다).
+단계 래퍼 `build_eN_x_sK` 는 `_eN_board(index, …)` 로 앞 보드를 임시 렌더해 기준선을 만든다.
+실물은 `보고서/실험01/결선도/배치.py` 의 `_e1_*` 다. `<ID>`(`build_<ID>`)는 손그림 검토 전사
+JSON 에 저장되므로 한 번 쓴 이름은 바꾸지 않는다.
 
 **파일명 규칙.** `실험NN_<소단원>_결선도_<회로명>.png` 이 완성본,
 `실험NN_<소단원>_결선도_<회로명>_<k>단계_<이름>.png` 이 절차 그림이다.
@@ -286,9 +310,19 @@ GND 에 꽂혀 있어도 1 을 줄 때 옮길 자리라, 레일로 세면 입력
 
 ## 6. 새 회로 빌더를 쓸 때 (다음 주차용)
 
-주차마다 `build_eN_*` 를 손으로 쓴다. **옛 함수(`draw_wire`, `draw_badge`)가
-그대로 살아 있고 더 짧기 때문에, 아무 생각 없이 쓰면 옛 방식으로 돌아간다.**
-그래서 아래를 `tests/test_breadboard_readability.py` 가 센다.
+주차마다 `보고서/실험NN/결선도/배치.py` 에 `build_eN_*` 를 손으로 쓰고(§4a 「주차 빌더를
+쓸 때」), `render_breadboard.py --experiment N` 으로 뽑는다. 스킬 폴더의 엔진은 고치지 않는다 —
+고쳐야 한다면 도구 변경이라 따로 커밋하고, 지난 주차 PNG 가 코드와 같은지(도장 테스트)를 본다.
+도장은 그리는 방식(색·범례·배치)을 담지 않는다 — 엔진의 그리는 방식만 바꿨다면 도장은
+그대로이니 전 주차를 `--experiment N` 으로 다시 뽑는다.
+**옛 함수(`draw_wire`, `draw_badge`)가 그대로 살아 있고 더 짧기 때문에, 아무 생각 없이 쓰면
+옛 방식으로 돌아간다.** 그래서 아래를 `tests/test_breadboard_readability.py` 가 센다 — 엔진과
+주차 `배치.py` 를 전부 읽는다.
+
+새 주차 결선을 쓸 때 손댈 곳 — ① `보고서/실험NN/결선도/배치.py` ②
+`render_breadboard.py --experiment N` 으로 뽑기 ③ `scripts/lab/hand_compare.py` 의
+`CIRCUITS` 에 회로 ID 추가 ④ `tests/test_breadboard_nets.py` 의 빌더 수 단언(`len(builders)`)
+⑤ §3 「주차별 결선」 목록.
 
 | 하고 싶은 것 | 쓸 함수 | 쓰면 안 되는 것 |
 |---|---|---|

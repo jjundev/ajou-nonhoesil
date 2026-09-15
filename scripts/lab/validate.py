@@ -677,12 +677,12 @@ def check_netlist_circuits(netlist, spec) -> list:
             if st["diagram"] and not (netlist.path.parent / st["diagram"]).exists():
                 out.append(Finding("warn", where,
                     f"단계 {st['n']} 그림 파일이 없다: {st['diagram']}. "
-                    "breadboard-diagram 의 e1_all 같은 일괄 렌더로 만든다"))
+                    "breadboard-diagram 의 `--experiment N` 일괄 렌더로 만든다"))
         if circuit.stages and circuit.diagram and circuit.stages[-1]["diagram"] == circuit.diagram:
             out.append(Finding("error", where,
                 f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "
                 "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
-                "완성본은 기준선 없이 따로 낸다 (E1_FINALS)"))
+                "완성본은 기준선 없이 따로 낸다 (주차 배치.py 의 FINALS)"))
         if circuit.continues:
             if circuit.continues == circuit.id:
                 out.append(Finding("error", where,

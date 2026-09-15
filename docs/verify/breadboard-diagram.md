@@ -5,9 +5,10 @@
 자리 = SKILL.md 에 더 적어야 할 규칙. 새 주차(실험03)를 저작하기 전에 안다.
 
 `verify-draft-lab-spec` 의 틀(답안 제거 → 격리 실행 → 자동 대조 → 사람이 판정)을
-빌린다. 그 스킬의 §절대 규칙 1~7 이 그대로 적용된다. 다른 점은 답안이 파일
-하나의 **일부**라는 것 — `render_breadboard.py` 에서 실험01 구간만 걷어낸다
-(`scripts/lab/breadboard_isolate.py`). 대조는 `scripts/lab/breadboard_compare.py`.
+빌린다. 그 스킬의 §절대 규칙 1~7 이 그대로 적용된다. 답안은 파일 하나 —
+`보고서/실험01/결선도/배치.py`(실험01 결선)다. 엔진 `render_breadboard.py` 는 주차를 모르므로
+그대로 남는다(2026-09-15 분리 전에는 엔진 파일에서 실험01 구간을 잘라냈다). 대조는
+`scripts/lab/breadboard_compare.py`.
 
 ## 절대 규칙 (verify-draft-lab-spec 과 같다 — 여기 다시 적는 이유는 그 스킬 폴더가
 격리 트리에서 지워지기 때문이다)
@@ -33,12 +34,11 @@
    python -c "
    from pathlib import Path
    from scripts.lab import config
-   from scripts.lab.breadboard_isolate import RENDERER
    d = Path(config.experiment_dir(1))
-   for f in ('결선도/netlist.md', '체크리스트/명세.md'):
+   for f in ('결선도/netlist.md', '결선도/배치.py', '체크리스트/명세.md'):
        print('O' if (d / f).exists() else 'X', d / f)
    print(len(list((d / '결선도').glob('*.png'))), 'png (13 이어야 한다)')
-   print('E1_SLOTS' in Path(RENDERER).read_text(encoding='utf-8'), '승인본 빌더 있음')
+   print('E1_SLOTS' in (d / '결선도/배치.py').read_text(encoding='utf-8'), '승인본 빌더 있음')
    "
    git status --porcelain .claude/skills/breadboard-diagram scripts/lab docs/schema 보고서/실험01
    ```
@@ -53,7 +53,6 @@
    import tempfile
    from pathlib import Path
    from scripts.lab.isolate import build_isolated_tree
-   from scripts.lab.breadboard_isolate import RENDERER, strip_e1_file
    KEYS = [
        '.claude/skills/verify-draft-lab-spec', '.claude/skills/verify-write-result-report',
        '.claude/skills/review-hand-diagram', '.claude/skills/export-hand-diagram',
@@ -62,22 +61,21 @@
        'docs/notion-feedback', 'docs/corpus-audit', 'docs/강의노트_이론_실험_매핑_정리.md',
        'scripts/lab/hand_compare.py', 'scripts/lab/hand_transcript.py',
        'scripts/lab/export_hand_diagrams.py', 'scripts/lab/contact_sheet.py',
-       'scripts/lab/breadboard_isolate.py', 'scripts/lab/breadboard_compare.py',
+       'scripts/lab/breadboard_compare.py',
        'scripts/lab/isolate.py', 'scripts/lab/regen_compare.py', 'scripts/lab/specdiff.py',
        'scripts/lab/report_compare.py', 'tests',
-       '보고서/실험01/결선도/*.png', '보고서/실험01/결선도/손그림',
+       '보고서/실험01/결선도/배치.py', '보고서/실험01/결선도/*.png', '보고서/실험01/결선도/손그림',
        '보고서/실험01/체크리스트/체크리스트.html', '보고서/실험01/체크리스트/체크리스트.pdf',
        '보고서/실험01/실험사진', '보고서/실험01/실험중있었던일.md',
        '보고서/실험01/*예비보고서*.pdf', '보고서/실험01/*결과보고서*.pdf',
    ]
    dest = Path(tempfile.gettempdir()) / 'iso-실험01-bb'
-   build_isolated_tree(Path('.'), dest, 1, KEYS, clear_subdirs=('output',),
-                       edit=lambda t: strip_e1_file(t / RENDERER))
+   build_isolated_tree(Path('.'), dest, 1, KEYS, clear_subdirs=('output',))
    print(dest)
    "
    ```
 
-   남는 것: `breadboard-diagram/SKILL.md`·걷어낸 `render_breadboard.py`·
+   남는 것: `breadboard-diagram/SKILL.md`·엔진 `render_breadboard.py`(주차 결선 없음)·
    `.claude/assets/Breadboard.jpg`·`보고서/실험01/결선도/netlist.md`(입력)·
    `체크리스트/{명세,기록}.md`·`docs/schema/`·`강의노트/`·`.claude/데이터시트_출처.md`·
    `draft-lab-spec` 등 나머지 스킬·`scripts/lab/` 나머지·다른 실험 폴더.
@@ -90,7 +88,7 @@
    from pathlib import Path
    from scripts.lab.isolate import leak_scan
    dest = Path(tempfile.gettempdir()) / 'iso-실험01-bb'
-   TOKS = ['E1_SLOTS', '_e1_', 'build_e1', 'E1_BOARDS', '결선도_3입력', '결선도_복합',
+   TOKS = ['E1_SLOTS', '_e1_', 'build_e1', '결선도_3입력', '결선도_복합',
            '1단계_', '좌 7행', '좌 18행', '우 10행', 'c7→c9', 'a25', 'c9→c14', 'b19']
    hits = leak_scan(dest, TOKS)
    Path('tmp/verify-artifacts').mkdir(parents=True, exist_ok=True)
@@ -103,7 +101,14 @@
    **정상(구조적 누출)**: `.claude/skills/breadboard-diagram/SKILL.md`,
    `docs/schema/lab-netlist-v2.md`, `보고서/실험01/결선도/netlist.md`,
    `.claude/skills/draft-lab-spec/SKILL.md`(파일명 예시), `scripts/lab/render.py`·
-   `validate.py`(단계 표 열 이름), `보고서/실험01/체크리스트/{명세,기록}.md`.
+   `validate.py`(단계 표 열 이름), `보고서/실험01/체크리스트/{명세,기록}.md`, 엔진
+   `render_breadboard.py` 의 `hashlib.sha256(` 줄(`leak_scan` 이 부분 문자열 매칭이라
+   토큰 `a25` 가 `sha256` 의 부분 문자열로 걸리는 거짓 양성), 그리고
+   **다른 실험 폴더**(`보고서/실험02/`·`실험03/` …)의 `배치.py`·`netlist.md`·`명세.md`·`기록.md` —
+   슬롯 관례(`좌 7행` 등)와 단계 파일명(`1단계_`)이 겹친다. 다른 주차는 예시로 남기는 것이라
+   빼지 않고 판정.md 1절에 적는다(분리 전에는 같은 문구가 엔진 파일의 실험02·03 구간에 있었다).
+   엔진 `render_breadboard.py` 는 §답안지 목록에 넣지 않는다 — 엔진에서 걸리면 그 줄을
+   읽고, 진짜 홀 주소·주차 이름이면 엔진을 고친다(도구 변경, 따로 커밋한다).
    **그 밖의 파일**이 나오면 §답안지 목록에 더하고 1단계부터 다시 한다.
 
 3. **대조 도구를 자기대조로 점검한다.**
@@ -120,24 +125,25 @@
 
 5. **산출물을 보존한다.** 끝나면 격리 트리에서 저장소 `tmp/verify-artifacts/
    실험01-breadboard-격리-<YYYY-MM-DD>/` 로 복사한다: `보고서/실험01/결선도/`
-   (재생성 PNG), `.claude/skills/breadboard-diagram/scripts/render_breadboard.py`
-   (재생성 빌더 — `render_breadboard.py` 이름 그대로), `tmp/격리보고.md`, 그리고
-   2단계의 `누출-실험01-bb.txt`. 격리 트리를 지우기 전에 한다.
+   (재생성 PNG 와 재생성 빌더 `배치.py`), `tmp/격리보고.md`,
+   2단계의 `누출-실험01-bb.txt`, 그리고 격리 트리의 엔진
+   (`.claude/skills/breadboard-diagram/scripts/render_breadboard.py`)을
+   `render_breadboard.py` 로 복사한다 — 에이전트가 엔진에 헬퍼를 더했으면 그
+   신호가 여기 없으면 사라진다. 격리 트리를 지우기 전에 한다.
 
-6. **판정 초안을 낸다.** 승인본 템플릿 경로를 명시해 넘긴다 — 복사한 재생성
-   렌더러는 `REPO_ROOT` 가 어긋나 템플릿을 스스로 못 찾는다.
+6. **판정 초안을 낸다.** 두 `배치.py` 는 저장소 엔진 하나로 불러온다
+   (`breadboard_compare.load_board_at`). 템플릿 경로는 명시해 넘긴다.
 
    ```bash
    python -c "
    from pathlib import Path
    from scripts.lab import config
    from scripts.lab.breadboard_compare import judge
-   from scripts.lab.breadboard_isolate import RENDERER
    art = Path('tmp/verify-artifacts/실험01-breadboard-격리-<YYYY-MM-DD>')
    leaks = [l for l in (art / '누출-실험01-bb.txt').read_text(encoding='utf-8').splitlines() if l]
    report = (art / '격리보고.md').read_text(encoding='utf-8') if (art / '격리보고.md').exists() else ''
    out = art / '판정.md'
-   out.write_text(judge(1, Path(RENDERER), art / 'render_breadboard.py',
+   out.write_text(judge(1, Path(config.experiment_dir(1)) / '결선도/배치.py', art / '결선도/배치.py',
                         Path(config.experiment_dir(1)) / '결선도/netlist.md', art / '결선도',
                         str(Path('.claude/assets/Breadboard.jpg').resolve()),
                         leak_hits=leaks, agent_report=report), encoding='utf-8')
@@ -145,10 +151,22 @@
    "
    ```
 
-   재생성 모듈에 `E1_BOARDS` 가 없으면 2절이 그렇게 말한다. 그러면 재생성
-   `render_breadboard.py` 를 읽어 `[(파일명, 빌더, stage)]` 목록을 손으로 만들어
+   재생성 모듈에 `BOARDS` 가 없으면 2절이 그렇게 말한다. 그러면 재생성
+   `배치.py` 를 읽어 `[(파일명, 빌더, stage)]` 목록을 손으로 만들어
    `render_chain` 에 넘기는 짧은 스크립트로 3~6절을 다시 낸다 — 그 사실 자체가
    「주차 빌더를 쓸 때」 문단의 판정 재료다.
+
+   그다음 엔진 변경 신호를 본다: 5단계가 복사한 격리 트리 엔진을 저장소 엔진과
+   대조한다.
+
+   ```bash
+   git diff --no-index .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
+       tmp/verify-artifacts/실험01-breadboard-격리-<YYYY-MM-DD>/render_breadboard.py
+   ```
+
+   차이가 있으면 판정.md 에 "엔진 변경(도구 변경)" 으로 적는다 — 에이전트가
+   엔진에 헬퍼를 더했다는 뜻이고, `judge()` 의 넷·자리·전환 대조는 저장소
+   엔진으로 다시 잰 것이니 그 헬퍼가 판정에 반영되지 않았을 수 있다.
 
 7. **사람이 본다.** 판정.md 9절을 하나씩 짚고, 재생성 PNG 13장을 승인본과
    나란히 눈으로 본다(회색 기준선이 실제로 회색인지, 번호가 새 배선에만
@@ -176,10 +194,10 @@
   `docs/강의노트_이론_실험_매핑_정리.md` — 파생 서술
 - `scripts/lab/hand_compare.py`·`hand_transcript.py`·`export_hand_diagrams.py`·
   `contact_sheet.py` — 실험01 회로 ID 와 배치를 안다
-- `scripts/lab/breadboard_isolate.py`·`breadboard_compare.py`·`isolate.py`·
+- `scripts/lab/breadboard_compare.py`·`isolate.py`·
   `regen_compare.py`·`specdiff.py`·`report_compare.py` — docstring 이 채점 기준
 - `tests/` — 실험01 값을 픽스처로 단언한다
-- `render_breadboard.py` 의 실험01 구간 — `strip_e1_file` 이 걷어낸다(파일은 남는다)
+- `보고서/실험01/결선도/배치.py` — 실험01 결선 그 자체(엔진 `render_breadboard.py` 는 남는다)
 - `보고서/실험01/결선도/*.png`·`결선도/손그림/` — 답 그 자체와 손그림 스캔
 - `보고서/실험01/체크리스트/체크리스트.{html,pdf}` — 단계 그림이 박혀 있다
 - `보고서/실험01/output/` 내용물 전부 — 예비보고서 md 가 파일명 13개를 싣는다.
@@ -189,7 +207,7 @@
 
 ## 누출 토큰
 
-`E1_SLOTS`·`_e1_`·`build_e1`·`E1_BOARDS`·`결선도_3입력`·`결선도_복합`·`1단계_`·
+`E1_SLOTS`·`_e1_`·`build_e1`·`결선도_3입력`·`결선도_복합`·`1단계_`·
 `좌 7행`·`좌 18행`·`우 10행`·`c7→c9`·`a25`·`c9→c14`·`b19`. 2단계가 이 목록을 쓴다.
 
 ## 승인본 기준 수치 (사람이 읽는 참고값 — 판정은 6단계가 같은 함수로 다시 잰다)
@@ -218,7 +236,7 @@
 이 저장소에 `breadboard-diagram` 스킬이 있다.
 `.claude/skills/breadboard-diagram/SKILL.md` 를 읽고 **그 문서의 규칙 그대로** 다음 요청을 수행하라:
 
-> `보고서/실험01/결선도/netlist.md` 가 기술한 실험1 회로 다섯 개(C1~C5)의 빌더와 보드 사슬을 `.claude/skills/breadboard-diagram/scripts/render_breadboard.py` 에 작성하고, `--circuit e1_all` 로 `보고서/실험01/결선도/` 에 렌더하라.
+> `보고서/실험01/결선도/netlist.md` 가 기술한 실험1 회로 다섯 개(C1~C5)의 빌더와 보드 사슬을 `보고서/실험01/결선도/배치.py` 에 작성하고, `render_breadboard.py --experiment 1` 로 `보고서/실험01/결선도/` 에 렌더하라.
 
 너에게 주어진 것은 그 스킬 문서와 이 저장소뿐이다. 다른 맥락은 없다. 한국어로 작업하고 보고한다.
 

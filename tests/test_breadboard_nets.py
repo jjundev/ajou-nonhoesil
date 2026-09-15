@@ -15,6 +15,8 @@ import os
 import tempfile
 import unittest
 
+from tests._boards import all_builders
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(REPO_ROOT, '.claude', 'skills', 'breadboard-diagram',
                       'scripts', 'render_breadboard.py')
@@ -58,6 +60,7 @@ class NetModel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
         bb = self.mod.BreadboardRenderer()
@@ -103,18 +106,19 @@ class CircuitNets(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def test_복합_74HC32_pin_1_이_입력_A_와_한_넷이다(self):
         """2026-09-09 까지 `우 a10 → 우 b10` 은 같은 스트립 안에서 끝나 아무
         일도 하지 않았고, a10 으로 A 를 가져오는 선이 없어 pin 1 이 떴다.
         netlist C5: `U9 pin 1 ← 입력 A`."""
-        bb = _render(self.mod, self.mod.build_e1_comb_s3)
+        bb = _render(self.mod, self.b1.build_e1_comb_s3)
         self.assertIn('입력 A', _net_of(bb, '74HC32#10 pin 1')['labels'])
 
     def test_복합_Z_와_X_는_각자_LED_를_달고_있다(self):
         """`X ≡ Z` 라 두 LED 가 언제나 같이 켜져야 한다 — 공짜 자체 검산이다.
         서로 다른 넷에서 각각 켜져야 의미가 있다."""
-        bb = _render(self.mod, self.mod.build_e1_comb_s3)
+        bb = _render(self.mod, self.b1.build_e1_comb_s3)
         z = _net_of(bb, '74HC04#7 pin 4')['labels']
         self.assertIn('LED Z 애노드', z)
         self.assertIn('74HC32#10 pin 2', z)
@@ -125,7 +129,7 @@ class CircuitNets(unittest.TestCase):
         """netlist C3: 2→3, 4→5, 6→13, 12→11, 10→9, 8→U2 pin 1. 핀 번호 순서가
         아니다 — pin 6 에서 pin 13 으로 건너뛴 뒤 거슬러 내려온다. 핀 번호만 보고
         `9→8` 로 짐작하면 CH1~CH2 사이가 2단이 되고 게이트당 t_pd 가 2배로 나온다."""
-        bb = _render(self.mod, self.mod.build_e2_tpd)
+        bb = _render(self.mod, self.b2.build_e2_tpd)
         for a, b in ((2, 3), (4, 5), (6, 13), (12, 11), (10, 9)):
             with self.subTest(pair=(a, b)):
                 self.assertIn(f'74HC04#7 pin {b}', _net_of(bb, f'74HC04#7 pin {a}')['labels'])
@@ -133,14 +137,14 @@ class CircuitNets(unittest.TestCase):
 
     def test_tpd_U1_체인은_전원_레일에_닿지_않는다(self):
         """체인 노드 하나라도 레일에 물리면 그 단 뒤가 전부 고정된다."""
-        bb = _render(self.mod, self.mod.build_e2_tpd)
+        bb = _render(self.mod, self.b2.build_e2_tpd)
         for p in (2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13):
             with self.subTest(pin=p):
                 self.assertEqual(set(), _net_of(bb, f'74HC04#7 pin {p}')['rails'])
 
     def test_tpd_U2_pull_선은_교안_p12_회로도대로다(self):
         """netlist C3: U2 pin 3·5 → GND, pin 9·11·13 → VCC. pin 2 는 개방."""
-        bb = _render(self.mod, self.mod.build_e2_tpd)
+        bb = _render(self.mod, self.b2.build_e2_tpd)
         for p in (3, 5):
             self.assertEqual({'gnd'}, _net_of(bb, f'74HC04#18 pin {p}')['rails'])
         for p in (9, 11, 13):
@@ -150,7 +154,7 @@ class CircuitNets(unittest.TestCase):
         """pull-down(3·5) 과 pull-up(9·11·13) 이 한 레일 행에 착지하면 단락이다."""
         for name in ('build_e2_inv', 'build_e2_schmitt', 'build_e2_tpd'):
             with self.subTest(회로=name):
-                bb = _render(self.mod, getattr(self.mod, name))
+                bb = _render(self.mod, getattr(self.b2, name))
                 for net in bb.nets():
                     self.assertNotEqual({'vcc', 'gnd'}, net['rails'], sorted(net['labels']))
 
@@ -158,7 +162,7 @@ class CircuitNets(unittest.TestCase):
         """netlist C1·C2: pin 3·5 → GND, pin 9·11·13 → VCC. 74HC14 도 같다."""
         for name, chip in (('build_e2_inv', '74HC04'), ('build_e2_schmitt', '74HC14')):
             with self.subTest(회로=name):
-                bb = _render(self.mod, getattr(self.mod, name))
+                bb = _render(self.mod, getattr(self.b2, name))
                 for p in (3, 5):
                     self.assertEqual({'gnd'}, _net_of(bb, f'{chip}#7 pin {p}')['rails'])
                 for p in (9, 11, 13):
@@ -172,6 +176,7 @@ class R5(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
         bb = self.mod.BreadboardRenderer()
@@ -296,10 +301,7 @@ class R5(unittest.TestCase):
 
     def test_모든_회로가_넷_검사를_통과한다(self):
         """`export()` 안에서 `verify()` 가 돈다 — 렌더가 되면 통과한 것이다."""
-        import inspect
-        builders = {n: f for n, f in vars(self.mod).items()
-                    if n.startswith('build_') and not n.endswith('_all')
-                    and inspect.isfunction(f)}
+        builders = all_builders(self.mod)
         # 2026-09-12 슬롯 고정: 실험01 절차 CLI 래퍼 5개(e1_or_s1·e1_nand_s1/_s2·
         # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
         # 2026-09-13 실험02 재저작: Rn·Rp 가 빠지고(배포본 교안에 없다) 절차 래퍼
@@ -308,6 +310,8 @@ class R5(unittest.TestCase):
         # 2026-09-14 범위 축소(조교 공지 `_350547_1`): 실험02 절차 래퍼 2개
         # (e2_tpd_s1/_s2)와 실험03 절차 래퍼 5개(e3_ha_s1/_s2·e3_hs_s1/_s2·e3_fs_s2)가
         # 빠져 24 다. 완성본 build_e2_tpd·build_e3_ha·build_e3_hs 는 남는다.
+        # 2026-09-15 엔진·주차 분리: 빌더가 주차 `배치.py` 로 옮겨 갔다(`tests/_boards.py`).
+        # 일괄 렌더 `build_eN_all` 은 원래 세지 않았으므로 수는 그대로 24 다.
         self.assertEqual(len(builders), 24)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
@@ -323,6 +327,7 @@ class R6(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
         bb = self.mod.BreadboardRenderer()

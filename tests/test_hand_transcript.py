@@ -67,7 +67,7 @@ class ChipPins(unittest.TestCase):
         import os
         import tempfile as tf
         mod = load_renderer()
-        bb = mod.build_e1_nand(os.path.join(tf.mkdtemp(), 'x.png'))
+        bb = mod.load_board(1).build_e1_nand(os.path.join(tf.mkdtemp(), 'x.png'))
         for chip in bb.wiring()['chips']:
             self.assertEqual(ht.chip_pins(chip['block'], chip['pin1_row']),
                              chip['pins'])

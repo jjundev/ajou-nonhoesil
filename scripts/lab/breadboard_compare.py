@@ -14,13 +14,12 @@
 4. 파일명 — `실험NN_<소단원>_결선도_<회로명>[_<k>단계_<이름>].png`
 
 승인본 쪽 값도 **같은 함수로** 잰다 — 설계 문서의 표를 베끼면 표가 낡았을 때
-도구가 그것을 못 본다. 두 렌더러 모듈은 이름을 달리해 따로 로드한다
-(`hand_grid.load_renderer` 의 캐시 이름 `render_breadboard` 와 겹치지 않게).
+도구가 그것을 못 본다. 승인본·재생성 `배치.py` 는 저장소 엔진 하나
+(`hand_grid.load_renderer()`)로 이름을 달리해 따로 로드한다.
 
 판정은 사람이 한다. `judge()` 는 셀 수 있는 것만 세고 「사람이 볼 것」 으로 끝난다.
 """
 
-import importlib.util
 import os
 import re
 import tempfile
@@ -29,6 +28,7 @@ from pathlib import Path
 
 from . import md
 from .hand_compare import BLOCKING, _from_wiring, compare
+from .hand_grid import load_renderer
 from .netlist_parser import parse_netlist
 
 PAPERWORK = ("H11", "H12", "H13")   # 제목·서명·전사 불확실 — 손그림에만 있는 것
@@ -38,12 +38,9 @@ STAGE_RE = re.compile(r"^실험(\d{2})_(\d+(?:-\d+)?)_결선도_(.+)_(\d+)단계
 FINAL_RE = re.compile(r"^실험(\d{2})_(\d+(?:-\d+)?)_결선도_(.+)\.png$")
 
 
-def load_renderer_at(path, name):
-    """렌더러 모듈을 경로에서 로드한다. `name` 은 모듈마다 달라야 한다."""
-    spec = importlib.util.spec_from_file_location(name, str(path))
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def load_board_at(path, name):
+    """주차 결선 파일(`배치.py`)을 경로에서 로드한다. `name` 은 모듈마다 달라야 한다."""
+    return load_renderer().load_board_file(path, name)
 
 
 @dataclass
@@ -243,13 +240,18 @@ def _pair_table(pairs, title):
     return L
 
 
-def judge(experiment, approved_renderer, regen_renderer, netlist_path, regen_png_dir,
+def judge(experiment, approved_board, regen_board, netlist_path, regen_png_dir,
           template_path, leak_hits=(), agent_report=""):
     """판정 초안. 셀 수 있는 것만 센다 — 갈린 자리에 규칙이 있었는지는 사람이
-    SKILL.md 와 에이전트 보고를 놓고 가른다."""
-    ref_mod = load_renderer_at(approved_renderer, f"rb_approved_e{experiment}")
-    new_mod = load_renderer_at(regen_renderer, f"rb_regen_e{experiment}")
-    boards_attr, finals_attr = f"E{experiment}_BOARDS", f"E{experiment}_FINALS"
+    SKILL.md 와 에이전트 보고를 놓고 가른다. 두 인자는 승인본·재생성 `배치.py` 경로다."""
+    ref_mod = load_board_at(approved_board, f"board_approved_e{experiment}")
+    try:
+        new_mod = load_board_at(regen_board, f"board_regen_e{experiment}")
+        load_error = ""
+    except Exception as e:  # noqa: BLE001 — 판정 재료다. 승인본 로드는 감싸지 않는다 —
+        # 승인본이 안 불러지면 크게 죽는 게 맞다. 재생성 쪽만 죽지 않게 감싼다.
+        new_mod, load_error = None, f"{type(e).__name__}: {e}"
+    boards_attr, finals_attr = "BOARDS", "FINALS"
     slots = layout_slots(netlist_path)
     subs = sub_items(netlist_path)
     regen_pngs = sorted(p.name for p in Path(regen_png_dir).glob("*.png"))
@@ -270,6 +272,8 @@ def judge(experiment, approved_renderer, regen_renderer, netlist_path, regen_png
         nb = f"{len(new_b)}장" if new_boards else f"`{boards_attr}` 없음"
         nf = f"{len(new_f)}장" if new_finals else f"`{finals_attr}` 없음"
         L += [f"## 2. 보드 사슬 — 승인본 {len(ref_b)}장+완성본 {len(ref_f)}장 / 재생성 {nb}+완성본 {nf}", ""]
+        if load_error:
+            L += [f"- 재생성 `배치.py` 를 불러오지 못했다: {load_error}", ""]
         L += [f"- 재생성 {b}" for b in new_b + new_f] + [""]
 
         bp = pair_boards(ref_b, new_b)

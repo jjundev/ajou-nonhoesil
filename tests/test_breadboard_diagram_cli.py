@@ -10,11 +10,17 @@ netlist 스스로 "가장 흔한 배선 실수"라고 표시한 곳이기 때문
 끌어온다. 정본은 `.claude/skills/breadboard-diagram/` 이다 — 2026-09-06 에
 `.agents/skills/` 사본과 갈라진 것을 발견해 일원화했다. 다른 스킬 아홉 개가
 모두 `.claude/skills/` 아래 있고 슬래시 커맨드 런타임도 여기서 로드한다.
+
+2026-09-15: 엔진과 주차 결선을 나눴다. 회로 ID 분기표(`dispatch`·`--circuit`)는 없고,
+빌더는 `보고서/실험NN/결선도/배치.py` 에 있다. 아래 `_tree()` 는 엔진과 주차 파일을 한
+모듈처럼 이어 읽는다.
 """
 
 import ast
 import unittest
 from pathlib import Path
+
+from tests._boards import board_files
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
@@ -22,30 +28,30 @@ SKILL = ROOT / ".claude/skills/breadboard-diagram/SKILL.md"
 
 
 def _tree():
-    return ast.parse(SRC.read_text(encoding="utf-8"))
+    """엔진과 주차 `배치.py` 전부를 한 모듈처럼 이어 읽는다 — 상수·빌더가 어느
+    파일에 있든 아래 도우미가 그대로 찾는다."""
+    body = []
+    for p in [SRC, *board_files()]:
+        body += ast.parse(p.read_text(encoding="utf-8")).body
+    return ast.Module(body=body, type_ignores=[])
 
 
-def _dispatch_pairs():
-    """`dispatch = {...}` 의 (회로 ID, 빌더 함수 이름) 목록."""
-    for node in ast.walk(_tree()):
+def _cli_options():
+    """엔진 `main()` 의 `add_argument` 첫 인자들."""
+    tree = ast.parse(SRC.read_text(encoding="utf-8"))
+    return [c.args[0].value for c in ast.walk(tree)
+            if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
+            and c.func.attr == "add_argument" and c.args
+            and isinstance(c.args[0], ast.Constant)]
+
+
+def _finals(path):
+    """`배치.py` 의 `FINALS = [(파일명, 빌더), …]` → [(파일명, 빌더 이름)]."""
+    for node in ast.parse(path.read_text(encoding="utf-8")).body:
         if isinstance(node, ast.Assign) and any(
-                isinstance(t, ast.Name) and t.id == "dispatch" for t in node.targets):
-            return [(ast.literal_eval(k), v.id)
-                    for k, v in zip(node.value.keys, node.value.values)]
-    raise AssertionError("dispatch 딕셔너리를 못 찾았다")
-
-
-def _choices():
-    """`--circuit` 인자의 choices 리스트."""
-    for node in ast.walk(_tree()):
-        if (isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Attribute)
-                and node.func.attr == "add_argument"
-                and node.args and getattr(node.args[0], "value", "") == "--circuit"):
-            for kw in node.keywords:
-                if kw.arg == "choices":
-                    return ast.literal_eval(kw.value)
-    raise AssertionError("--circuit 의 choices 를 못 찾았다")
+                isinstance(t, ast.Name) and t.id == "FINALS" for t in node.targets):
+            return [(e.elts[0].value, e.elts[1].id) for e in node.value.elts]
+    raise AssertionError(f"{path}: FINALS 가 없다")
 
 
 def _module_const(name):
@@ -109,25 +115,25 @@ def _bridge_rows(fn_name):
     return rows
 
 
-class BreadboardDispatch(unittest.TestCase):
-    def test_회로_ID_가_빌더를_공유하지_않는다(self):
-        """두 회로가 한 빌더를 쓰면 둘 중 하나는 반드시 틀린 그림이다."""
-        pairs = _dispatch_pairs()
-        seen = {}
-        shared = []
-        for circuit, builder in pairs:
-            if builder in seen:
-                shared.append(f"{seen[builder]} 와 {circuit} 가 {builder} 를 공유한다")
-            seen[builder] = circuit
-        self.assertEqual(shared, [], "\n".join(shared))
+class BreadboardCli(unittest.TestCase):
+    def test_CLI_는_실험_번호로만_부른다(self):
+        """회로 ID 분기표가 있으면 엔진이 주차 이름을 알아야 한다 — 2026-09-15 에 없앴다."""
+        opts = _cli_options()
+        self.assertIn("--experiment", opts)
+        self.assertNotIn("--circuit", opts)
 
-    def test_choices_와_dispatch_가_같은_집합이다(self):
-        self.assertEqual(sorted(_choices()),
-                         sorted(c for c, _ in _dispatch_pairs()))
+    def test_완성본끼리_빌더를_공유하지_않는다(self):
+        """두 완성본이 한 빌더를 쓰면 둘 중 하나는 반드시 틀린 그림이다."""
+        files = board_files()
+        self.assertTrue(files, "주차 결선 파일이 하나도 없다")
+        for p in files:
+            with self.subTest(p.parent.parent.name):
+                names = [b for _f, b in _finals(p)]
+                self.assertEqual(len(names), len(set(names)), names)
 
     def test_지원하지_않는_회로를_SKILL_문서가_광고하지_않는다(self):
         doc = SKILL.read_text(encoding="utf-8")
-        supported = {c for c, _ in _dispatch_pairs()}
+        supported = {n.removeprefix("build_") for n in _builder_names()}
         for gone in ("e1_or", "e1_nor", "e2_rn", "e2_rp", "e2_tpd_s1", "e2_tpd_s2",
                      "e3_ha_s1", "e3_ha_s2", "e3_hs_s1", "e3_hs_s2", "e3_fs_s2"):
             if gone not in supported:

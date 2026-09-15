@@ -44,6 +44,7 @@ class BreadboardCoords(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
         from PIL import Image
         path = cls.mod._default_template()
         cls.im = Image.open(path).convert('L')
@@ -115,7 +116,7 @@ class BreadboardCoords(unittest.TestCase):
             with self.subTest(회로=name):
                 with tempfile.TemporaryDirectory() as d:
                     out = os.path.join(d, 'x.png')
-                    getattr(self.mod, name)(out)
+                    getattr(self.b1, name)(out)
                     self.assertTrue(os.path.exists(out))
 
     def test_결선표_주소가_모두_실제_홀이다(self):
@@ -130,11 +131,11 @@ class BreadboardCoords(unittest.TestCase):
                     renderer['bb'] = self_inner
                     return orig.export(self_inner, *a, **k)
 
-            self.mod.BreadboardRenderer = Spy
+            self.b1.BreadboardRenderer = Spy
             try:
-                self.mod.build_e1_comb(os.path.join(d, 'x.png'))
+                self.b1.build_e1_comb(os.path.join(d, 'x.png'))
             finally:
-                self.mod.BreadboardRenderer = orig
+                self.b1.BreadboardRenderer = orig
 
         bb = renderer['bb']
         self.assertGreater(len(bb.steps), 20)
