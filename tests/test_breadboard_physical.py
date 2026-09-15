@@ -9,10 +9,11 @@ docstring 과 달리 레일 끝점의 빈 행만 봤다. 그림도 순서표도 
 빠르고, 어느 규칙이 잡았는지 메시지로 확인한다.
 """
 import importlib.util
-import inspect
 import os
 import tempfile
 import unittest
+
+from tests._boards import all_builders
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(REPO_ROOT, '.claude', 'skills', 'breadboard-diagram',
@@ -273,8 +274,7 @@ class AllCircuits(unittest.TestCase):
         cls.mod = _load()
 
     def builders(self):
-        return {n: f for n, f in vars(self.mod).items()
-                if n.startswith('build_') and not n.endswith('_all') and inspect.isfunction(f)}
+        return all_builders(self.mod)
 
     def test_모든_회로가_그림대로_꽂힌다(self):
         for name, fn in sorted(self.builders().items()):

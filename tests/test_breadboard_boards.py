@@ -2,8 +2,10 @@
 
 설계: docs/plans/2026-09-15-결선도-엔진-주차분리-설계.md
 """
+import ast
 import importlib.util
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -70,6 +72,57 @@ class BuildAll(unittest.TestCase):
             made = mod.build_all(mod.load_board_file(FIXTURE), d)
             self.assertEqual(sorted(made), ["min.png", "min_1단계_잭.png"])
             self.assertEqual(sorted(os.listdir(d)), ["min.png", "min_1단계_잭.png"])
+
+
+class RealBoards(unittest.TestCase):
+    """세 주차의 결선이 실험 폴더로 옮겨 갔고, 엔진에는 주차 이름이 없다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_세_주차의_결선_파일이_있다(self):
+        self.assertTrue({1, 2, 3} <= set(self.mod.board_numbers()), self.mod.board_numbers())
+
+    def test_주차_파일은_BOARDS_와_FINALS_를_낸다(self):
+        for n in self.mod.board_numbers():
+            with self.subTest(실험=n):
+                board = self.mod.load_board(n)
+                self.assertTrue(all(len(t) == 3 for t in board.BOARDS), board.BOARDS)
+                self.assertTrue(all(len(t) == 2 for t in board.FINALS), board.FINALS)
+
+    def test_엔진은_주차_결선을_정의하지_않는다(self):
+        tree = ast.parse(SCRIPT.read_text(encoding="utf-8"))
+        names = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
+        names += [t.id for n in tree.body if isinstance(n, ast.Assign)
+                  for t in n.targets if isinstance(t, ast.Name)]
+        bad = [n for n in names if n.startswith(("build_e", "_e1_", "_e2_", "_e3_"))
+               or n[:1] == "E" and n[1:2].isdigit()]
+        self.assertEqual(bad, [])
+
+
+class Cli(unittest.TestCase):
+    def _run(self, *args):
+        return subprocess.run([sys.executable, str(SCRIPT), *args],
+                              capture_output=True, text=True, cwd=ROOT)
+
+    def test_experiment_로_그_주차를_전부_뽑는다(self):
+        board = _load().load_board(2)
+        want = sorted([n for n, _f, _s in board.BOARDS] + [n for n, _f in board.FINALS])
+        with tempfile.TemporaryDirectory() as d:
+            r = self._run("--experiment", "2", "--output", d)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(sorted(os.listdir(d)), want)
+
+    def test_circuit_는_없다(self):
+        r = self._run("--circuit", "e3_all", "--output", tempfile.gettempdir())
+        self.assertEqual(r.returncode, 2, r.stderr)
+
+    def test_결선_파일이_없는_실험은_거절한다(self):
+        free = sorted(set(range(1, config.EXPERIMENT_COUNT + 1)) - set(_load().board_numbers()))
+        r = self._run("--experiment", str(free[-1]))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("주차 결선 파일이 없다", r.stderr)
 
 
 if __name__ == "__main__":

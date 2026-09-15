@@ -228,7 +228,7 @@ class Reference(unittest.TestCase):
         import os
         import tempfile
         with tempfile.TemporaryDirectory() as t:
-            bb = hc.load_renderer().build_e1_nand(os.path.join(t, 'x.png'))
+            bb = hc.load_renderer().load_board(1).build_e1_nand(os.path.join(t, 'x.png'))
         w = bb.wiring()
         for x in w['wires']:
             if x.get('desc') == '레일 브리지':

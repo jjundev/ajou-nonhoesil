@@ -210,8 +210,8 @@ def reference_diagram(circuit_id):
         raise CompareError(
             f"모르는 회로 ID: {circuit_id!r}. "
             f"쓸 수 있는 것: {', '.join(CIRCUITS)}")
-    mod = load_renderer()
-    builder = getattr(mod, f"build_{circuit_id}", None)
+    board = load_renderer().load_board(int(circuit_id.split("_", 1)[0][1:]))
+    builder = getattr(board, f"build_{circuit_id}", None)
     if builder is None:
         raise CompareError(f"빌더가 없다: build_{circuit_id}")
     with tempfile.TemporaryDirectory() as tmp:

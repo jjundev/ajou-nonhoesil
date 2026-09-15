@@ -22,6 +22,8 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
+from tests._boards import all_builders, board_files
+
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 
@@ -64,14 +66,8 @@ def _module():
 
 
 def _circuit_builders(mod):
-    """`--circuit` 이 부르는 빌더. `*_all` 은 이들을 묶기만 한다."""
-    import inspect
-    out = {}
-    for name, fn in vars(mod).items():
-        if (name.startswith("build_") and not name.endswith("_all")
-                and inspect.isfunction(fn)):
-            out[name] = fn
-    return out
+    """모든 주차 `배치.py` 의 빌더 — 엔진 `mod` 로 불러 스파이가 그 클래스에 걸린다."""
+    return all_builders(mod)
 
 
 class BuilderApiContract(unittest.TestCase):
@@ -91,15 +87,20 @@ class BuilderApiContract(unittest.TestCase):
                 if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
                 and c.func.attr == attr]
 
+    @staticmethod
+    def _trees():
+        """엔진과 주차 `배치.py` 전부 — 빌더는 주차 파일에, 헬퍼 일부는 엔진에 있다."""
+        return [ast.parse(p.read_text(encoding="utf-8")) for p in [SRC, *board_files()]]
+
     def test_빌더가_번호_없는_배선을_그리지_않는다(self):
-        tree = ast.parse(SRC.read_text(encoding="utf-8"))
-        bad = [n.name for n in self._builder_like(tree) if self._calls(n, "draw_wire")]
+        bad = [n.name for t in self._trees() for n in self._builder_like(t)
+               if self._calls(n, "draw_wire")]
         self.assertEqual(bad, [], f"{bad}: draw_wire 는 번호도 순서표도 남기지 않는다. "
                                   "step_wire 를 쓴다")
 
     def test_빌더가_보드_위에_배지를_직접_그리지_않는다(self):
-        tree = ast.parse(SRC.read_text(encoding="utf-8"))
-        bad = [n.name for n in self._builder_like(tree) if self._calls(n, "draw_badge")]
+        bad = [n.name for t in self._trees() for n in self._builder_like(t)
+               if self._calls(n, "draw_badge")]
         self.assertEqual(bad, [], f"{bad}: 신호 이름은 signal_tag() 로(_input_jumper·draw_led 가 "
                                   "부른다), 꽂을 자리는 _tag() 로, 설명은 note() 로 보드 밖에 낸다")
 
@@ -126,6 +127,7 @@ class RenderedContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _module()
+        cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def _render(self, fn):
         # 그림 한 장만 센다. 단계 그림은 기준선을 얻으려고 앞 보드를 한 번 더
@@ -186,7 +188,7 @@ class RenderedContract(unittest.TestCase):
 
     def test_둘째_B_배지가_빠지면_잡는다(self):
         """위 단언이 같은 글자를 개수로 세는지 — 반감산기 LED2 의 B 배지를 지워 본다."""
-        bb, _ = self._render(self.mod.build_e3_hs)
+        bb, _ = self._render(self.b3.build_e3_hs)
         drop = max(k for k, (n, _b, _s) in enumerate(bb.tag_boxes) if n == 'B')
         bb.tag_boxes = [t for k, t in enumerate(bb.tag_boxes) if k != drop]
         self.assertEqual(_missing_signal_names(bb), Counter({'B': 1}))
@@ -201,7 +203,7 @@ class RenderedContract(unittest.TestCase):
                  'build_e2_tpd': ['VIN', 'CH1', 'CH2']}
         for name, want in cases.items():
             with self.subTest(회로=name):
-                bb, _ = self._render(getattr(self.mod, name))
+                bb, _ = self._render(getattr(self.b2, name))
                 self.assertEqual([p['name'] for p in bb.probes if p.get('name')], want)
                 got = [n for n, box, _s in bb.tag_boxes
                        if BOARD_L < box[0] and box[2] < BOARD_R]
