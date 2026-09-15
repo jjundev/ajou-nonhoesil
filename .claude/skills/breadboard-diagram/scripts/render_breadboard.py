@@ -2236,17 +2236,17 @@ _E3_NOT2_UNUSED = ([5, 9, 11, 13], [6, 8, 10, 12])        # 인버터 1·2
 
 
 def _e3_frame(bb):
-    """잭 + 레일 브리지 넷. 네 회로가 같은 홀을 쓴다 — 기준선 비교로 회색이 된다.
+    """잭 + 레일 브리지 셋. 네 회로가 같은 홀을 쓴다 — 기준선 비교로 회색이 된다.
 
-    끝점이 있는 레일만 잇는다: 좌 바깥(잭·입력·좌 칩 pin 7·LED1) → 좌 중앙 →
-    우 중앙(우 칩 pin 7·LED2) 이 GND 사슬이고, 좌 바깥(잭) → 좌 중앙(좌 칩 pin 14)
-    → 우 바깥(우 칩 pin 14) 이 VCC 사슬이다. 좌 중앙 GND 는 중계 역할뿐이지만
-    우측 GND 로 가는 유일한 길이다.
+    끝점이 있는 레일만 잇는다: 좌 바깥(잭·입력·좌 칩 pin 7·LED1) → 우 중앙(우 칩
+    pin 7·LED2) 이 GND 사슬이고, 좌 바깥(잭) → 좌 중앙(좌 칩 pin 14) → 우 바깥(우 칩
+    pin 14) 이 VCC 사슬이다. 좌 중앙 GND 레일은 끝점이 없어 거치지 않는다 — 거치면
+    따라 그릴 가닥만 는다(2026-09-15 조원 지적). 브리지는 레일을 건너뛸 수 있다 —
+    VCC 34행도 우 중앙 레일을 건너 우 바깥으로 간다.
     """
     c, r = bb.cols['left'], bb.cols['right']
     bb.connect_jacks()
-    bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
-    bb.bridge_rails(c['mid_gnd'], r['mid_gnd'], 31, kind='gnd')
+    bb.bridge_rails(c['gnd'], r['mid_gnd'], 29, kind='gnd')
     bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
     bb.bridge_rails(c['mid_vcc'], r['vcc'], 34, kind='vcc')
 
