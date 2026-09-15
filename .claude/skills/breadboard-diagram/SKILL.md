@@ -79,7 +79,8 @@ python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
 **엔진과 주차 결선은 따로 산다** (2026-09-15, `docs/plans/2026-09-15-결선도-엔진-주차분리-설계.md`).
 스킬 폴더의 `render_breadboard.py` 는 엔진(보드·배선 도구·`verify()`)만 갖고 주차 이름을 모른다.
 주차마다 결선은 그 실험 폴더의 `결선도/배치.py` 에 쓴다(§4a 「주차 빌더를 쓸 때」). 새 주차
-때문에 스킬 폴더의 파일을 고치게 되면 그것은 도구 변경이다 — 따로 커밋한다.
+때문에 스킬 폴더의 **코드**(엔진 `render_breadboard.py`)를 고치게 되면 그것은 도구 변경이다 —
+따로 커밋한다.
 
 **도장.** 뽑은 PNG 에는 그 그림이 싣는 내용(배선·부품·제목·주석·결선 순서·계측표·걷기 목록)의
 해시가 텍스트 청크 `breadboard-stamp` 로 찍힌다. 글꼴·줄바꿈은 해시에 들지 않는다 — 기계마다
@@ -90,6 +91,7 @@ python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
 ### 주차별 결선 (`보고서/실험NN/결선도/배치.py`)
 
 아래 ID 는 빌더 이름 `build_<ID>` 의 `<ID>` 이고 손그림 검토(`hand_compare.CIRCUITS`)의 회로 ID 다.
+이 목록은 그 주차 결선 커밋에서 함께 고친다 — 도구 변경이 아니다.
 - **실험 1 (기본 게이트 및 조합논리)** — 슬롯 고정 배치 (S1 좌 7행 · S2 좌 18행 · S3 우 10행):
   - `e1_and`: 실험 1-1 3입력 AND (74HC08). 첫 보드 — 완성본 겸 절차 그림
   - `e1_or`: 실험 1-2 3입력 OR (74HC32) 완성본 · `e1_or_s1`: C1 에서 칩만 갈아끼우는 전환 그림
@@ -311,9 +313,16 @@ GND 에 꽂혀 있어도 1 을 줄 때 옮길 자리라, 레일로 세면 입력
 주차마다 `보고서/실험NN/결선도/배치.py` 에 `build_eN_*` 를 손으로 쓰고(§4a 「주차 빌더를
 쓸 때」), `render_breadboard.py --experiment N` 으로 뽑는다. 스킬 폴더의 엔진은 고치지 않는다 —
 고쳐야 한다면 도구 변경이라 따로 커밋하고, 지난 주차 PNG 가 코드와 같은지(도장 테스트)를 본다.
+도장은 그리는 방식(색·범례·배치)을 담지 않는다 — 엔진의 그리는 방식만 바꿨다면 도장은
+그대로이니 전 주차를 `--experiment N` 으로 다시 뽑는다.
 **옛 함수(`draw_wire`, `draw_badge`)가 그대로 살아 있고 더 짧기 때문에, 아무 생각 없이 쓰면
 옛 방식으로 돌아간다.** 그래서 아래를 `tests/test_breadboard_readability.py` 가 센다 — 엔진과
 주차 `배치.py` 를 전부 읽는다.
+
+새 주차 결선을 쓸 때 손댈 곳 — ① `보고서/실험NN/결선도/배치.py` ②
+`render_breadboard.py --experiment N` 으로 뽑기 ③ `scripts/lab/hand_compare.py` 의
+`CIRCUITS` 에 회로 ID 추가 ④ `tests/test_breadboard_nets.py` 의 빌더 수 단언(`len(builders)`)
+⑤ §3 「주차별 결선」 목록.
 
 | 하고 싶은 것 | 쓸 함수 | 쓰면 안 되는 것 |
 |---|---|---|
