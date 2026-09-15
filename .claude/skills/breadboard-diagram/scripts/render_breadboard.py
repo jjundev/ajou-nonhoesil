@@ -1,5 +1,8 @@
 import os
+import re
 import sys
+import glob
+import types
 import argparse
 import tempfile
 from PIL import Image, ImageDraw, ImageFont
@@ -1576,6 +1579,94 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
         '우 블록 입력이면 자리를 새로 정한다')
     bb.signal_tag(name, (BOARD_LEFT + c['gnd']) / 2, bb.r_y(r_rail),
                   seg=len(bb._segments) - 1)
+
+
+# ---------------------------------------------------------------------------
+# 주차 결선 파일 — `보고서/실험NN/결선도/배치.py`
+#
+# 엔진은 주차를 모른다. 주차마다 결선(칩 자리·배선 순서·단계)은 그 실험 폴더의
+# `배치.py` 에 있고, 엔진은 그 파일의 `BOARDS`(기준선 사슬)·`FINALS`(완성본)를
+# 뽑기만 한다. 설계: `docs/plans/2026-09-15-결선도-엔진-주차분리-설계.md`.
+
+BOARD_FILE = '배치.py'
+
+
+def _config():
+    """`scripts.lab.config` — 실험 폴더 경로 규칙의 정본. 엔진은 스킬 폴더에 있어
+    import 경로에 저장소 루트가 없을 수 있다."""
+    if REPO_ROOT not in sys.path:
+        sys.path.insert(0, REPO_ROOT)
+    from scripts.lab import config
+    return config
+
+
+def board_path(experiment):
+    """실험 번호 → 그 주차 결선 파일의 절대 경로. 있는지는 보지 않는다."""
+    return os.path.join(REPO_ROOT, _config().experiment_dir(experiment), '결선도', BOARD_FILE)
+
+
+def board_numbers(root=None):
+    """결선 파일이 있는 실험 번호, 오름차순. 폴더 이름을 `experiment_folder_name` 으로
+    되돌려 같을 때만 센다 — 이름 규칙은 config 한 곳에 있다."""
+    cfg = _config()
+    out = []
+    for p in glob.glob(os.path.join(root or REPO_ROOT, cfg.EXPERIMENT_BASE, '*', '결선도', BOARD_FILE)):
+        name = os.path.basename(os.path.dirname(os.path.dirname(p)))
+        m = re.search(r'(\d+)$', name)
+        try:
+            if m and cfg.experiment_folder_name(int(m.group(1))) == name:
+                out.append(int(m.group(1)))
+        except ValueError:
+            continue
+    return sorted(out)
+
+
+def load_board_file(path, name=None):
+    """주차 결선 파일 하나를 모듈로 불러온다.
+
+    그 파일의 `from render_breadboard import …` 는 **이 엔진**을 가리킨다. 테스트와
+    대조기는 엔진을 `importlib` 로 여러 번 로드하고 `sys.modules` 에 올리지 않는다 —
+    불러오는 동안만 이 엔진의 전역 이름을 담은 모듈을 그 자리에 끼웠다가 되돌린다.
+    그래서 주차 파일의 `BreadboardRenderer` 는 이 엔진의 클래스와 같은 객체다.
+    불러오는 동안 바이트코드를 쓰지 않는다 — 보고서 폴더에 `__pycache__` 가 생긴다.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name or 'board', os.path.abspath(path))
+    mod = importlib.util.module_from_spec(spec)
+    view = types.ModuleType('render_breadboard')
+    view.__dict__.update(globals())
+    saved, saved_flag = sys.modules.get('render_breadboard'), sys.dont_write_bytecode
+    sys.modules['render_breadboard'] = view
+    sys.dont_write_bytecode = True
+    try:
+        spec.loader.exec_module(mod)
+    finally:
+        sys.dont_write_bytecode = saved_flag
+        if saved is None:
+            sys.modules.pop('render_breadboard', None)
+        else:
+            sys.modules['render_breadboard'] = saved
+    return mod
+
+
+def load_board(experiment):
+    return load_board_file(board_path(experiment), f'board_e{experiment}')
+
+
+def build_all(board, output_dir, template_path=None):
+    """주차 결선 파일 `board` 의 결선도를 전부 뽑는다 — 절차 사슬 `BOARDS` 는 앞 보드를
+    기준선으로 이어 그리고(회색·걷기 표), 완성본 `FINALS` 는 기준선 없이 그린다.
+    뽑은 파일명을 돌려준다."""
+    os.makedirs(output_dir, exist_ok=True)
+    made, base = [], None
+    for filename, fn, stage in board.BOARDS:
+        bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+        base = bb.snapshot()
+        made.append(filename)
+    for filename, fn in board.FINALS:
+        fn(os.path.join(output_dir, filename), template_path)
+        made.append(filename)
+    return made
 
 
 # ---------------------------------------------------------------------------
