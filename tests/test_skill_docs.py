@@ -27,6 +27,8 @@ VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 VERIFY_RESULT = ROOT / ".claude/skills/verify-write-result-report/SKILL.md"
 HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
 INIT = ROOT / ".claude/skills/init-lab-experiment/SKILL.md"
+FIGURE = ROOT / ".claude/skills/draw-expected-figure/SKILL.md"
+FIGURE_TEMPLATE = ROOT / ".claude/skills/draw-expected-figure/template.html"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
@@ -46,6 +48,7 @@ DOCS = {
     "명세": (DRAFT, ("절대 규칙", "실행 절차")),
     "검증": (VERIFY, ("절대 규칙", "실행 절차")),
     "결보검증": (VERIFY_RESULT, ("절대 규칙", "실행 절차")),
+    "그림": (FIGURE, ("절대 규칙", "실행 절차")),
 }
 
 # 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
@@ -779,6 +782,47 @@ class SkillDocInvariants(unittest.TestCase):
         # 다른 쪽이 남으면 에이전트가 거기서 시험 형식을 읽는다.
         self.assertIn("'.claude/skills/verify-write-result-report'", self.docs["검증"])
         self.assertIn("'.claude/skills/verify-draft-lab-spec'", self.docs["결보검증"])
+
+
+class FigureSkill(unittest.TestCase):
+    """`draw-expected-figure` 전용 불변식. 상호참조·번호 연속은 `DOCS` 편입으로 본다."""
+
+    def setUp(self):
+        self.text = FIGURE.read_text(encoding="utf-8")
+        self.proc = sections(self.text)["실행 절차"]
+
+    def test_판정은_capture_tables_로만_한다(self):
+        self.assertIn("figure.capture_tables(", self.proc)
+        self.assertIn("figure.gate_message(", self.proc)
+
+    def test_숫자_검사가_추출보다_먼저다(self):
+        check = self.proc.index("figure_export <실험번호> --check-only")
+        export = self.proc.index("figure_export <실험번호>\n")
+        self.assertLess(check, export)
+
+    def test_올린_보고서는_고치지_않는다(self):
+        self.assertIn("figure.is_uploaded(", self.proc)
+        self.assertIn("figure.insert_placeholder(", self.proc)
+        self.assertIn("figure.set_spec_figure(", self.proc)
+
+    def test_통제군_값을_예시로_쓰지_않는다(self):
+        # 실험02 가 격리 검증의 통제군이다. 문서·템플릿에 그 값이 있으면 재생성이
+        # 규칙이 아니라 예시를 따라 합격한다.
+        template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
+        for token in ("74HC04", "74HC14", "2.38", "1.35", "3.15", "0.98", "인버터", "슈미트"):
+            with self.subTest(token):
+                self.assertNotIn(token, self.text)
+                self.assertNotIn(token, template)
+
+    def test_템플릿이_캡처_계약을_지킨다(self):
+        template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
+        for token in ("data-fig-heights", 'get("fig")', 'class="tick"', "var FIGURES = ["):
+            with self.subTest(token):
+                self.assertIn(token, template)
+
+    def test_예비보고서_스킬이_그림_스킬을_안내한다(self):
+        proc = sections(PRE.read_text(encoding="utf-8"))["실행 절차"]
+        self.assertIn("draw-expected-figure", proc)
 
 
 class HandDiagramSkill(unittest.TestCase):

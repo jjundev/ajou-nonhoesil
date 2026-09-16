@@ -736,7 +736,9 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     `missing_identity()` 로 감싼 것과 같은 관례다.
 
 11. **결과 안내.** md 경로, 섹션 검증 결과(error 0 여부), 그리고 **다음 할 일**을
-    한 줄로: `⑦ sync-report-to-notion` 으로 노션에 올린다.
+    한 줄로: `⑦ sync-report-to-notion` 으로 노션에 올린다. 명세에 `kind: capture`
+    표가 있으면 올리기 **전에** `draw-expected-figure` 로 예상 결과 그림과 그 자리를
+    먼저 만든다고 덧붙인다 — 올린 뒤에 돌리면 md 에 자리를 넣지 못한다.
 
 ## 섹션별 재료
 
