@@ -833,6 +833,49 @@ class FigureSkill(unittest.TestCase):
                     else:
                         self.assertNotIn(token, text)
 
+    def test_승인본_모양을_묘사하지_않는다(self):
+        # 값만 막으면 부족하다. 옛 규칙 5 의 "파형과 특성 곡선을 짝지어" 는 통제군
+        # 승인본의 패널 구성을 그대로 적은 예시라, 재생성이 짝으로 그려도 규칙이
+        # 막았는지 예시를 베꼈는지 가를 수 없었다. 규칙은 일반형으로만 쓴다.
+        texts = {
+            "SKILL.md": self.text,
+            "template.html": FIGURE_TEMPLATE.read_text(encoding="utf-8"),
+        }
+        for token in ("X-Y", "시간축", "고리", "에지", "짝", "히스테리시스", "S자", "Typ"):
+            for name, text in texts.items():
+                with self.subTest(token=token, file=name):
+                    self.assertNotIn(token, text)
+
+    def _rule(self, n):
+        body = sections(self.text)["절대 규칙"]
+        m = re.search(rf"^{n}\. (.*?)(?=^\d+\. |\Z)", body, re.M | re.S)
+        self.assertIsNotNone(m, f"절대 규칙 {n} 이 없다")
+        return m.group(1)
+
+    def test_패널_구성은_이론_쪽과_비교_묶음까지_본다(self):
+        # 1회차: 이론 쪽 그림을 한 항목에만 적용하고, 비교하라고 묶인 다른 항목은
+        # 다른 구성으로 그렸다. "그 항목의 그림" 이 어디까지인지 문서가 말해야 한다.
+        rule = self._rule(5)
+        for token in ("items[].pages", "이론 쪽", "비교"):
+            with self.subTest(token):
+                self.assertIn(token, rule)
+
+    def test_모양과_위치를_근거에_묶는다(self):
+        # 1회차: 전이 위치를 "범위 중앙 부근에 임의로" 두고 라벨을 달지 않았고,
+        # 본문이 말한 모양을 다른 곡선으로 바꿨다. 규칙 3·4 는 둘 다 막지 않았다.
+        rule = self._rule(11)
+        for token in ("대표값", "모식", "§절대 규칙 3", "§실행 절차 3"):
+            with self.subTest(token):
+                self.assertIn(token, rule)
+        step3 = re.search(r"^3\. (.*?)(?=^4\. )", self.proc, re.M | re.S).group(1)
+        self.assertIn("모양·위치", step3)
+        self.assertIn("모식", step3)
+
+    def test_근거_표에_모양_위치_칸이_있다(self):
+        template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
+        head = re.search(r"<table class=\"evidence\">.*?<thead>(.*?)</thead>", template, re.S).group(1)
+        self.assertEqual(re.findall(r"<th>(.*?)</th>", head), ["그림", "요소", "근거", "모양·위치"])
+
     def test_템플릿이_캡처_계약을_지킨다(self):
         template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
         for token in ("data-fig-heights", 'get("fig")', 'class="tick"', "var FIGURES = ["):
