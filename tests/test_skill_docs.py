@@ -855,16 +855,19 @@ class FigureSkill(unittest.TestCase):
     def test_패널_구성은_이론_쪽과_비교_묶음까지_본다(self):
         # 1회차: 이론 쪽 그림을 한 항목에만 적용하고, 비교하라고 묶인 다른 항목은
         # 다른 구성으로 그렸다. "그 항목의 그림" 이 어디까지인지 문서가 말해야 한다.
+        # 2회차: 한 쪽에 나란히 놓인 그림 중 명세 축과 맞는 하나만 골랐다.
         rule = self._rule(5)
-        for token in ("items[].pages", "이론 쪽", "비교"):
+        for token in ("items[].pages", "이론 쪽", "비교", "나란히", "하나만 골라"):
             with self.subTest(token):
                 self.assertIn(token, rule)
 
     def test_모양과_위치를_근거에_묶는다(self):
         # 1회차: 전이 위치를 "범위 중앙 부근에 임의로" 두고 라벨을 달지 않았고,
         # 본문이 말한 모양을 다른 곡선으로 바꿨다. 규칙 3·4 는 둘 다 막지 않았다.
+        # 2회차: 위치를 사이에 두는 경계의 대표값을 위치로 보지 않고, 본문의
+        # "정확한 값은 없다" 를 근거로 모식으로 뒀다. 사용자는 대표값이 맞다고 했다.
         rule = self._rule(11)
-        for token in ("대표값", "모식", "§절대 규칙 3", "§실행 절차 3"):
+        for token in ("대표값", "모식", "§절대 규칙 3", "§실행 절차 3", "경계", "§절대 규칙 4"):
             with self.subTest(token):
                 self.assertIn(token, rule)
         step3 = re.search(r"^3\. (.*?)(?=^4\. )", self.proc, re.M | re.S).group(1)
