@@ -35,6 +35,10 @@
     padding-bottom: 10mm;
     border-bottom: 1px solid #1a1a1a;
   }
+  .header .left {
+    min-width: 0;
+    flex: 1;
+  }
   .header .left .label {
     font-size: 8pt;
     letter-spacing: 0.45em;
@@ -42,16 +46,20 @@
     margin-bottom: 4mm;
   }
   .header .left .title {
-    font-size: 26pt;
+    font-size: 21pt;
     font-weight: 300;
-    line-height: 1;
-    letter-spacing: -0.01em;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    word-break: keep-all;
   }
   .header .right {
     text-align: right;
     font-size: 9pt;
     color: #666;
     line-height: 1.6;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 8mm;
   }
   .header .right .course { color: #111; font-weight: 500; }
 
