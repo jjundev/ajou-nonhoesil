@@ -60,6 +60,7 @@ def resolve_circuit_filenames(
     page_count: int,
     round_dir: Optional[Path] = None,
     pdf_path: Optional[str | Path] = None,
+    pages: Optional[List[int]] = None,
 ) -> List[str]:
     """netlist.md 및 검토 전사/PDF 텍스트를 참조하여 쪽별 아카이빙 파일명을 결정한다.
 
@@ -172,9 +173,6 @@ def resolve_circuit_filenames(
         return score
 
     # 전사 파일 및 PDF 텍스트를 이용해 페이지별 회로 매칭 시도 (페이지 셔플 대응)
-    filenames: List[str] = []
-    used_indices = set()
-
     trans_dir = round_dir / "전사" if round_dir else None
     has_transcripts = trans_dir and trans_dir.is_dir()
 
@@ -186,13 +184,17 @@ def resolve_circuit_filenames(
         except Exception:
             pdf_doc = None
 
-    for i in range(page_count):
-        best_candidate_idx = None
-        highest_score = 0
+    target_page_indices = pages if pages is not None else list(range(page_count))
 
-        # 1. 전사 파일 매칭
+    # 각 target 페이지별로 각 후보 회로에 대한 점수를 계산
+    candidate_scores = []
+    for t_idx, p_num in enumerate(target_page_indices):
+        # 1. 전사 파일 텍스트
+        full_text = ""
+        tchips = []
+        tcircuit = ""
         if has_transcripts:
-            tf = trans_dir / f"p{i+1}.json"
+            tf = trans_dir / f"p{p_num+1}.json"
             if tf.is_file():
                 try:
                     with open(tf, "r", encoding="utf-8") as f:
@@ -201,46 +203,52 @@ def resolve_circuit_filenames(
                     tcircuit = tdata.get("circuit", "")
                     tchips = [c.get("label", "") for c in tdata.get("chips", [])]
                     full_text = f"{ttitle} {tcircuit}"
-
-                    for c_idx, ci in enumerate(circuit_info):
-                        if c_idx in used_indices:
-                            continue
-                        sc = _score_circuit_candidate(ci, full_text, chips=tchips, circuit_id=tcircuit)
-                        if sc > highest_score:
-                            highest_score = sc
-                            best_candidate_idx = c_idx
                 except Exception:
                     pass
 
-        # 2. PDF 내 텍스트/OCR 레이어에서 키워드 감지 (전사 점수가 낮거나 없는 경우)
-        if highest_score < 10 and pdf_doc is not None and i < len(pdf_doc):
+        # 2. PDF 내 텍스트
+        pdf_text = ""
+        if pdf_doc is not None and p_num < len(pdf_doc):
             try:
-                page_text = pdf_doc[i].get_text()
-                for c_idx, ci in enumerate(circuit_info):
-                    if c_idx in used_indices:
-                        continue
-                    sc = _score_circuit_candidate(ci, page_text)
-                    if sc > highest_score:
-                        highest_score = sc
-                        best_candidate_idx = c_idx
+                pdf_text = pdf_doc[p_num].get_text()
             except Exception:
                 pass
 
-        if best_candidate_idx is not None and highest_score >= 5:
-            matched_filename = circuit_info[best_candidate_idx]["filename"]
-            used_indices.add(best_candidate_idx)
-            filenames.append(matched_filename)
+        for c_idx, ci in enumerate(circuit_info):
+            sc = 0
+            if full_text:
+                sc = max(sc, _score_circuit_candidate(ci, full_text, chips=tchips, circuit_id=tcircuit))
+            if pdf_text:
+                sc = max(sc, _score_circuit_candidate(ci, pdf_text))
+            if sc >= 5:
+                candidate_scores.append((sc, t_idx, c_idx))
+
+    # 점수 높은 순으로 매칭
+    candidate_scores.sort(key=lambda x: x[0], reverse=True)
+    assigned_targets = {}
+    used_circuits = set()
+
+    for sc, t_idx, c_idx in candidate_scores:
+        if t_idx not in assigned_targets and c_idx not in used_circuits:
+            assigned_targets[t_idx] = c_idx
+            used_circuits.add(c_idx)
+
+    filenames: List[str] = []
+    for t_idx, p_num in enumerate(target_page_indices):
+        if t_idx in assigned_targets:
+            filenames.append(circuit_info[assigned_targets[t_idx]]["filename"])
         else:
             fallback_fn = None
-            for c_idx, ci in enumerate(circuit_info):
-                if c_idx not in used_indices:
-                    fallback_fn = ci["filename"]
-                    used_indices.add(c_idx)
-                    break
+            if len(target_page_indices) <= len(circuit_info):
+                for c_idx, ci in enumerate(circuit_info):
+                    if c_idx not in used_circuits:
+                        fallback_fn = ci["filename"]
+                        used_circuits.add(c_idx)
+                        break
             if fallback_fn:
                 filenames.append(fallback_fn)
             else:
-                filenames.append(f"{folder_name}_손그림_p{i+1}.png")
+                filenames.append(f"{folder_name}_손그림_p{p_num+1}.png")
 
     if pdf_doc is not None:
         pdf_doc.close()
@@ -248,12 +256,28 @@ def resolve_circuit_filenames(
     return filenames
 
 
+def parse_pages_arg(pages_str: str) -> List[int]:
+    """1-based 페이지 문자열(예: '1,2', '1-2', '3,4')을 0-based 정수 리스트로 변환한다."""
+    res = []
+    for part in pages_str.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = part.split("-", 1)
+            res.extend(range(int(start) - 1, int(end)))
+        else:
+            res.append(int(part) - 1)
+    return sorted(list(set(res)))
+
+
 def export_hand_diagrams(
     experiment: int,
     pdf_path: Optional[str | Path] = None,
     out_dir: Optional[str | Path] = None,
     dpi: int = 300,
-    crop_board: bool = True,
+    crop_board: bool = False,
+    pages: Optional[List[int]] = None,
 ) -> List[Path]:
     """손그림 PDF 의 쪽들을 개별 고해상도 PNG 파일로 내보낸다.
 
@@ -262,7 +286,8 @@ def export_hand_diagrams(
         pdf_path: 대상 PDF 파일 경로 (None 이면 최신 파일 자동 탐색)
         out_dir: 출력 디렉토리 (None 이면 `보고서/실험NN/결선도/손그림`)
         dpi: 렌더링 해상도 (기본 300 DPI)
-        crop_board: 브레드보드 및 상단 전원 잭 부분만 타이트하게 크롭할지 여부 (기본 True)
+        crop_board: 브레드보드 및 상단 전원 잭 부분만 타이트하게 크롭할지 여부 (기본 False: 전체 페이지 유지)
+        pages: 추출할 페이지의 0-based 인덱스 목록 (None 이면 PDF 전체 페이지)
 
     Returns:
         생성된 PNG 파일의 Path 목록
@@ -289,20 +314,31 @@ def export_hand_diagrams(
     import fitz
 
     doc = fitz.open(str(src_pdf))
-    page_count = len(doc)
+    total_pages = len(doc)
     doc.close()
 
-    filenames = resolve_circuit_filenames(experiment, page_count, round_dir=round_dir, pdf_path=src_pdf)
+    if pages is None:
+        target_pages = list(range(total_pages))
+    else:
+        target_pages = [p for p in pages if 0 <= p < total_pages]
+
+    filenames = resolve_circuit_filenames(
+        experiment,
+        len(target_pages),
+        round_dir=round_dir,
+        pdf_path=src_pdf,
+        pages=target_pages,
+    )
 
     saved_paths: List[Path] = []
-    for i in range(page_count):
-        filename = filenames[i] if i < len(filenames) else f"{config.experiment_folder_name(experiment)}_손그림_p{i+1}.png"
+    for idx, p_num in enumerate(target_pages):
+        filename = filenames[idx] if idx < len(filenames) else f"{config.experiment_folder_name(experiment)}_손그림_p{p_num+1}.png"
         out_path = target_dir / filename
-        im = hand_grid.render_page(str(src_pdf), i, dpi=dpi)
+        im = hand_grid.render_page(str(src_pdf), p_num, dpi=dpi)
 
         if crop_board:
             # 브레드보드 판형 영역과 상단 잭 영역만 크롭하고 좌우 여백/필기 제목/하단 실체도 캡션을 제거한다.
-            b = hand_grid.board_image(str(src_pdf), i)
+            b = hand_grid.board_image(str(src_pdf), p_num)
             w_t, h_t = b.width, b.height
             bx0, by0, bx1, by1 = b.rect
             s = dpi / 72.0
@@ -324,24 +360,77 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="손그림 결선도 PDF 를 개별 300 DPI PNG 로 추출하여 결선도/손그림/ 에 저장합니다."
     )
-    parser.add_argument("experiment", type=int, help="실험 번호 (예: 1)")
+    parser.add_argument("experiment", help="실험 번호 (예: 1) 또는 주차 (예: 3주차)")
     parser.add_argument("pdf", nargs="?", default=None, help="손그림 PDF 파일 경로 (생략 시 최신 검토본 사용)")
     parser.add_argument("--out", "-o", default=None, help="출력 디렉토리 (기본: 보고서/실험NN/결선도/손그림)")
+    parser.add_argument("--pages", default=None, help="추출할 페이지 번호 (1-based, 예: '1,2' 또는 '3-4')")
     parser.add_argument("--dpi", type=int, default=300, help="해상도 DPI (기본: 300)")
-    parser.add_argument("--full-page", action="store_true", help="브레드보드 크롭 없이 전체 페이지를 저장")
+    parser.add_argument(
+        "--crop",
+        action="store_true",
+        default=False,
+        help="브레드보드 본체 영역만 정밀 크롭하여 저장 (기본값: False, 크롭하지 않고 전체 페이지 저장)",
+    )
+    parser.add_argument(
+        "--no-crop",
+        action="store_true",
+        default=False,
+        help="크롭하지 않고 전체 페이지 저장 (기본값)",
+    )
+    parser.add_argument(
+        "--full-page",
+        action="store_true",
+        default=False,
+        help=argparse.SUPPRESS,  # 기존 호환용
+    )
 
     args = parser.parse_args(argv)
 
+    crop_board = bool(args.crop and not (args.no_crop or args.full_page))
+    parsed_pages = parse_pages_arg(args.pages) if args.pages else None
+
+    # 주차 토큰 처리 (예: "3주차", "week3")
+    m_week = re.search(r"(\d+)\s*주차|week\s*(\d+)", str(args.experiment), re.IGNORECASE)
+    if m_week:
+        week_num = int(m_week.group(1) or m_week.group(2))
+        exp_list = config.experiments_in_week(week_num)
+        if not exp_list:
+            print(f"[ERROR] {week_num}주차에 해당하는 실험이 없습니다.", file=sys.stderr)
+            return 1
+    else:
+        try:
+            m_num = re.search(r"\d+", str(args.experiment))
+            if not m_num:
+                raise ValueError("숫자 없음")
+            exp_list = [int(m_num.group(0))]
+        except Exception:
+            print(f"[ERROR] 유효한 실험 번호를 찾을 수 없습니다: {args.experiment}", file=sys.stderr)
+            return 1
+
     try:
-        paths = export_hand_diagrams(
-            experiment=args.experiment,
-            pdf_path=args.pdf,
-            out_dir=args.out,
-            dpi=args.dpi,
-            crop_board=not args.full_page,
-        )
-        print(f"[SUCCESS] {len(paths)}개의 손그림 PNG 생성 완료:")
-        for p in paths:
+        total_saved = []
+        for exp in exp_list:
+            exp_pages = parsed_pages
+            if exp_pages is None and len(exp_list) > 1 and args.pdf:
+                import fitz
+                doc = fitz.open(str(args.pdf))
+                n_pdf = len(doc)
+                doc.close()
+                if n_pdf == 4 and exp_list == [2, 3]:
+                    exp_pages = [0, 1] if exp == 2 else [2, 3]
+
+            paths = export_hand_diagrams(
+                experiment=exp,
+                pdf_path=args.pdf,
+                out_dir=args.out,
+                dpi=args.dpi,
+                crop_board=crop_board,
+                pages=exp_pages,
+            )
+            total_saved.extend(paths)
+
+        print(f"[SUCCESS] {len(total_saved)}개의 손그림 PNG 생성 완료:")
+        for p in total_saved:
             print(f"  - {p} ({p.stat().st_size // 1024} KB)")
         return 0
     except Exception as e:

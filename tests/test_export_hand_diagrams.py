@@ -16,7 +16,7 @@ class TestExportHandDiagrams(unittest.TestCase):
         self.assertTrue(found.is_file())
         self.assertEqual(found.name, "hand.pdf")
 
-    def test_export_hand_diagrams(self):
+    def test_export_hand_diagrams_default_no_crop(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             out_paths = ehd.export_hand_diagrams(
                 experiment=1,
@@ -35,7 +35,22 @@ class TestExportHandDiagrams(unittest.TestCase):
             for p, expected in zip(out_paths, expected_names):
                 self.assertEqual(p.name, expected)
                 self.assertTrue(p.is_file())
-                # Verify it's a valid PNG image and cropped to breadboard body
+                # Default is no crop: full landscape page (width > height)
+                with Image.open(p) as img:
+                    self.assertEqual(img.format, "PNG")
+                    self.assertGreater(img.width, img.height)
+
+    def test_export_hand_diagrams_cropped(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_paths = ehd.export_hand_diagrams(
+                experiment=1,
+                pdf_path=self.pdf_path,
+                out_dir=tmpdir,
+                dpi=150,
+                crop_board=True,
+            )
+            self.assertEqual(len(out_paths), 5)
+            for p in out_paths:
                 with Image.open(p) as img:
                     self.assertEqual(img.format, "PNG")
                     # Cropped aspect ratio: height should be greater than width (tall vertical breadboard)
@@ -104,6 +119,27 @@ class TestExportHandDiagrams(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             files = list(Path(tmpdir).glob("*.png"))
             self.assertEqual(len(files), 5)
+            # Default CLI should not crop
+            with Image.open(files[0]) as img:
+                self.assertGreater(img.width, img.height)
+
+    def test_parse_pages_arg(self):
+        self.assertEqual(ehd.parse_pages_arg("1,2"), [0, 1])
+        self.assertEqual(ehd.parse_pages_arg("3-4"), [2, 3])
+        self.assertEqual(ehd.parse_pages_arg("1, 3, 5"), [0, 2, 4])
+
+    def test_export_hand_diagrams_pages_subset(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_paths = ehd.export_hand_diagrams(
+                experiment=1,
+                pdf_path=self.pdf_path,
+                out_dir=tmpdir,
+                dpi=100,
+                pages=[0, 1],
+            )
+            self.assertEqual(len(out_paths), 2)
+            self.assertEqual(out_paths[0].name, "실험01_1-1_손그림_3입력_AND.png")
+            self.assertEqual(out_paths[1].name, "실험01_1-2_손그림_3입력_OR.png")
 
 
 if __name__ == "__main__":
