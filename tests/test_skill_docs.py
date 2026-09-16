@@ -29,6 +29,8 @@ HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
 INIT = ROOT / ".claude/skills/init-lab-experiment/SKILL.md"
 FIGURE = ROOT / ".claude/skills/draw-expected-figure/SKILL.md"
 FIGURE_TEMPLATE = ROOT / ".claude/skills/draw-expected-figure/template.html"
+FIGURE_PY = ROOT / "scripts/lab/figure.py"
+FIGURE_EXPORT_PY = ROOT / "scripts/lab/figure_export.py"
 CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
@@ -806,13 +808,30 @@ class FigureSkill(unittest.TestCase):
         self.assertIn("figure.set_spec_figure(", self.proc)
 
     def test_통제군_값을_예시로_쓰지_않는다(self):
-        # 실험02 가 격리 검증의 통제군이다. 문서·템플릿에 그 값이 있으면 재생성이
-        # 규칙이 아니라 예시를 따라 합격한다.
-        template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
-        for token in ("74HC04", "74HC14", "2.38", "1.35", "3.15", "0.98", "인버터", "슈미트"):
-            with self.subTest(token):
-                self.assertNotIn(token, self.text)
-                self.assertNotIn(token, template)
+        # 실험02 가 격리 검증의 통제군이다. 문서·템플릿·모듈에 그 값이 있으면
+        # 재생성이 규칙이 아니라 예시를 따라 합격한다. `figure`·`figure_export`
+        # 의 docstring 도 같은 그물에 든다 — 실제로 `figure_export` 의 숫자
+        # 검사 설명 docstring이 `1.4` 를 예시로 써서 누출됐었다.
+        texts = {
+            "SKILL.md": self.text,
+            "template.html": FIGURE_TEMPLATE.read_text(encoding="utf-8"),
+            "figure.py": FIGURE_PY.read_text(encoding="utf-8"),
+            "figure_export.py": FIGURE_EXPORT_PY.read_text(encoding="utf-8"),
+        }
+        tokens = ("74HC04", "74HC14", "2.38", "1.35", "3.15", "0.98", "인버터", "슈미트",
+                  "2.1", "2.4", "1.4", "0.9", "1.7", "2.0")
+        for token in tokens:
+            # 소수 토큰은 부분 문자열로 보면 `0.74em`·`12.5px`·`1.65` 같은
+            # 무관한 값 안에서 오탐이 난다 — 숫자 경계로 자른다. 칩 이름·용어
+            # 토큰은 부분 문자열로 그대로 본다.
+            pattern = (re.compile(r"(?<![\d.])" + re.escape(token) + r"(?!\d)")
+                       if token[0].isdigit() else None)
+            for name, text in texts.items():
+                with self.subTest(token=token, file=name):
+                    if pattern is not None:
+                        self.assertIsNone(pattern.search(text), f"{name} 에 {token} 이 있다")
+                    else:
+                        self.assertNotIn(token, text)
 
     def test_템플릿이_캡처_계약을_지킨다(self):
         template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
