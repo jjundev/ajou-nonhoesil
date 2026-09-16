@@ -11,6 +11,9 @@ doctype·charset 을 붙인 사본을 임시 폴더에 쓰고 그것을 연다.
 **숫자 검사**는 그림 속 소수값이 예비보고서 md 에 같은 글자로 있는지 본다.
 보간·환산한 값과 `1.3` 을 `1.30` 으로 찍어 없는 정밀도를 만드는 것을 막는다.
 눈금 라벨은 `class="tick"` 으로 빠진다.
+
+**캡션**은 그린 뒤의 DOM 에서 읽는다(`read_captions`). 예비보고서에 자리를 넣을
+때 HTML 의 캡션을 손으로 옮겨 적으면 둘이 어긋난다.
 """
 
 import argparse
@@ -33,6 +36,7 @@ _TEXT = re.compile(r"<text\b([^>]*)>(.*?)</text>", re.S)
 _TICK = re.compile(r'class="[^"]*\btick\b[^"]*"')
 _TAG = re.compile(r"<[^>]+>")
 _DECIMAL = re.compile(r"(?<![\d.])\d+\.\d+(?!\d|\.\d)")
+_CAPTION = re.compile(r"<figcaption\b[^>]*>(.*?)</figcaption>", re.S)
 
 
 class FigureError(RuntimeError):
@@ -131,15 +135,37 @@ def check_figure_numbers(dom_text, md_text) -> list:
             for n in sorted(set(figure_numbers(dom_text)) - body)]
 
 
+def parse_captions(dom_text) -> list:
+    """DOM 의 `<figcaption>` 글자를 그림 순서대로."""
+    return [html_lib.unescape(_TAG.sub("", c)).strip() for c in _CAPTION.findall(dom_text)]
+
+
+def _experiment(experiment):
+    """실험 번호 → (실험 폴더, 명세, Chrome 경로)."""
+    root = config.find_project_root(Path("."))
+    exp = root / config.experiment_dir(experiment)
+    chrome = config.load_course_info(root).get("chrome") or DEFAULT_CHROME
+    return exp, parse_spec(exp / "체크리스트/명세.md"), chrome
+
+
+def read_captions(experiment) -> list:
+    """그림 HTML 의 캡션을 capture 표 순서대로 돌려준다. 수가 다르면 멈춘다."""
+    exp, spec, chrome = _experiment(experiment)
+    pairs = figure.capture_tables(spec)
+    captions = parse_captions(dump_dom(exp / "output" / f"{exp.name}_예상결과.html", chrome))
+    if len(captions) != len(pairs):
+        raise FigureError(f"그림 HTML 의 캡션이 {len(captions)}개인데 capture 표는 "
+                          f"{len(pairs)}개다 — FIGURES 가 표마다 하나인지 본다")
+    return captions
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="예상 결과 그림: 판정 → 숫자 검사 → PNG 추출")
     p.add_argument("experiment", type=int)
     p.add_argument("--check-only", action="store_true", help="숫자 검사까지만 한다")
     args = p.parse_args(argv)
 
-    root = config.find_project_root(Path("."))
-    exp = root / config.experiment_dir(args.experiment)
-    spec = parse_spec(exp / "체크리스트/명세.md")
+    exp, spec, chrome = _experiment(args.experiment)
     pairs = figure.capture_tables(spec)
     if not pairs:
         print(figure.gate_message(spec))
@@ -150,7 +176,6 @@ def main(argv=None) -> int:
         raise FigureError(f"그림 이름이 겹친다 — 한 항목에 capture 표가 둘 이상이다: {names}")
     html_path = exp / "output" / f"{exp.name}_예상결과.html"
     md_path = exp / "output" / f"{exp.name}_예비보고서.md"
-    chrome = config.load_course_info(root).get("chrome") or DEFAULT_CHROME
 
     dom = dump_dom(html_path, chrome)
     heights = parse_heights(dom)

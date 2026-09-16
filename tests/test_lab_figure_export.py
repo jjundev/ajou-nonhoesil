@@ -94,6 +94,34 @@ class Heights(unittest.TestCase):
             fx.parse_heights("<html>")
 
 
+class Captions(unittest.TestCase):
+    """10단계가 캡션을 HTML 에서 손으로 옮겨 적으면 둘이 어긋난다 — DOM 에서 읽는다."""
+
+    def test_그림_순서대로_캡션을_읽는다(self):
+        dom = ('<figure id="f1"><figcaption>첫 그림 &lt;A&gt; &amp; B</figcaption></figure>'
+               '<figure id="f2"><figcaption class="x">둘째 그림</figcaption></figure>')
+        self.assertEqual(fx.parse_captions(dom), ["첫 그림 <A> & B", "둘째 그림"])
+
+    def test_read_captions_는_그림_수와_캡션_수가_다르면_멈춘다(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _two_capture_tree(Path(tmp))
+            dom = '<figcaption>하나뿐</figcaption>'
+            with mock.patch.object(fx.config, "find_project_root", return_value=root), \
+                 mock.patch.object(fx, "dump_dom", return_value=dom):
+                with self.assertRaises(fx.FigureError):
+                    fx.read_captions(7)
+
+    def test_read_captions_는_실험_폴더의_그림_html_을_연다(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _two_capture_tree(Path(tmp))
+            dom = '<figcaption>가</figcaption><figcaption>나</figcaption>'
+            with mock.patch.object(fx.config, "find_project_root", return_value=root), \
+                 mock.patch.object(fx, "dump_dom", return_value=dom) as dump:
+                self.assertEqual(fx.read_captions(7), ["가", "나"])
+            self.assertEqual(Path(dump.call_args.args[0]),
+                             root / "보고서/실험07/output/실험07_예상결과.html")
+
+
 class Export(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
@@ -210,6 +238,21 @@ items:
 """
 
 
+def _two_capture_tree(root) -> Path:
+    (root / ".claude").mkdir()
+    (root / ".claude/과목정보.md").write_text(
+        "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+        "professor: 허용석 교수님\nclass_section: C082\n---\n",
+        encoding="utf-8")
+    exp = root / "보고서/실험07"
+    (exp / "체크리스트").mkdir(parents=True)
+    (exp / "output").mkdir(parents=True)
+    (exp / "체크리스트/명세.md").write_text(_SPEC_TWO_CAPTURES, encoding="utf-8")
+    (exp / "output/실험07_예상결과.html").write_text("<title>t</title>", encoding="utf-8")
+    (exp / "output/실험07_예비보고서.md").write_text("본문.", encoding="utf-8")
+    return root
+
+
 class CliCheckOnlyMissingHeights(unittest.TestCase):
     """F1: 그림 스크립트가 도중에 멈추면 뒤 그림의 <text> 가 DOM 에 없어 숫자
     검사가 findings 를 하나도 못 낸다 — `--check-only` 도 "숫자 검사 통과" 로
@@ -218,19 +261,7 @@ class CliCheckOnlyMissingHeights(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
-        root = Path(tmp.name)
-        (root / ".claude").mkdir()
-        (root / ".claude/과목정보.md").write_text(
-            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
-            "professor: 허용석 교수님\nclass_section: C082\n---\n",
-            encoding="utf-8")
-        exp = root / "보고서/실험07"
-        (exp / "체크리스트").mkdir(parents=True)
-        (exp / "output").mkdir(parents=True)
-        (exp / "체크리스트/명세.md").write_text(_SPEC_TWO_CAPTURES, encoding="utf-8")
-        (exp / "output/실험07_예상결과.html").write_text("<title>t</title>", encoding="utf-8")
-        (exp / "output/실험07_예비보고서.md").write_text("본문.", encoding="utf-8")
-        self.root = root
+        self.root = _two_capture_tree(Path(tmp.name))
 
     def test_기록된_높이가_그림_수보다_적으면_check_only_도_멈춘다(self):
         # 그림 두 장인데 DOM 에 높이가 하나만 찍혀 있다 — 두 번째 그림 함수가

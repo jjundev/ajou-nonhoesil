@@ -879,6 +879,30 @@ class FigureSkill(unittest.TestCase):
         head = re.search(r"<table class=\"evidence\">.*?<thead>(.*?)</thead>", template, re.S).group(1)
         self.assertEqual(re.findall(r"<th>(.*?)</th>", head), ["그림", "요소", "근거", "모양·위치"])
 
+    def test_실험NN_치환이_주석을_건드리지_않는다(self):
+        # 3회차: 4단계 "`실험NN` 을 바꾼다" 를 글자대로 하면 맨 위 주석 문장까지
+        # 바뀌어 말이 안 됐다. 자리표시는 제목 세 곳에만 두고 절차가 그 셋을 부른다.
+        template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
+        comment = re.search(r"<!--.*?-->", template, re.S).group(0)
+        self.assertNotIn("실험NN", comment)
+        self.assertEqual(template.count("실험NN"), 3)
+        step4 = re.search(r"^4\. (.*?)(?=^5\. )", self.proc, re.M | re.S).group(1)
+        for token in ("<title>", "eyebrow", "h1"):
+            with self.subTest(token):
+                self.assertIn(token, step4)
+
+    def test_강의노트_렌더_자리가_정해져_있다(self):
+        # 2·3회차: `<스크래치>` 가 정의되지 않아 격리 에이전트가 둘 곳을 매번 지어냈다.
+        self.assertNotIn("<스크래치>", self.text)
+        step2 = re.search(r"^2\. (.*?)(?=^3\. )", self.proc, re.M | re.S).group(1)
+        self.assertIn("tmp/manual", step2)
+
+    def test_캡션을_옮겨_적지_않고_html_에서_읽는다(self):
+        # 3회차: 10단계 `CAPTIONS` 를 4단계 HTML 에서 손으로 옮겨 적어 둘이 어긋날 수 있었다.
+        step10 = re.search(r"^10\. (.*?)(?=^11\. )", self.proc, re.M | re.S).group(1)
+        self.assertIn("figure_export.read_captions(", step10)
+        self.assertNotIn("CAPTIONS", step10)
+
     def test_템플릿이_캡처_계약을_지킨다(self):
         template = FIGURE_TEMPLATE.read_text(encoding="utf-8")
         for token in ("data-fig-heights", 'get("fig")', 'class="tick"', "var FIGURES = ["):

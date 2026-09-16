@@ -99,8 +99,10 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
      이론 쪽의 그림. 회로도·그림은 래스터라 텍스트 추출이 비므로 렌더해서 본다:
 
      ```bash
-     pdftoppm -r 110 -png '<source_manual>' '<스크래치>/manual'
+     mkdir -p tmp/manual && pdftoppm -r 110 -png '<source_manual>' tmp/manual/p
      ```
+
+     `tmp/` 는 저장소 루트 아래이고 git 이 무시한다.
 
    §절대 규칙 10 대로 과거 제출본은 열지 않는다.
 
@@ -115,7 +117,8 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
    구성이 달라지거나, 옮겨 온 패널의 근거 칸을 채울 수 없을 때만 사용자에게 묻는다.
 
 4. **그림 HTML 을 쓴다.** `.claude/skills/draw-expected-figure/template.html` 을
-   `<실험NN>/output/<실험NN>_예상결과.html` 로 복사하고 `실험NN` 을 바꾼다. 3단계
+   `<실험NN>/output/<실험NN>_예상결과.html` 로 복사하고, `<title>`·`.eyebrow`·`h1` 세
+   곳의 `실험NN` 만 폴더 이름으로 바꾼다(맨 위 주석은 그대로 둔다). 3단계
    표를 `table.evidence` 의 `tbody` 에 옮기고, `FIGURES` 에 1단계가 출력한 순서대로
    그림을 하나씩 넣는다 — `title` 은 항목 제목, `file` 은 1단계의 PNG 이름,
    `caption` 은 번호 없는 한 줄(§절대 규칙 7). 눈금 라벨은 `text(…, { tick: true })`
@@ -175,18 +178,21 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
     ```bash
     python3 -c "
     from pathlib import Path
-    from scripts.lab import config, figure, validate
+    from scripts.lab import config, figure, figure_export, validate
     from scripts.lab.spec_parser import parse_spec
     exp = Path(config.experiment_dir(<실험번호>))
     md = exp / 'output' / (exp.name + '_예비보고서.md')
+    pairs = figure.capture_tables(parse_spec(exp / '체크리스트/명세.md'))
+    captions = figure_export.read_captions(<실험번호>)
     if figure.is_uploaded(md.parent, md.name):
         print('올린 보고서 — md 를 고치지 않는다')
+        for (item, table), caption in zip(pairs, captions):
+            print(item.title, '|', caption)
     else:
-        CAPTIONS = {<표 id>: '<4단계의 그 그림 caption>'}
         text = md.read_text(encoding='utf-8')
-        for item, table in figure.capture_tables(parse_spec(exp / '체크리스트/명세.md')):
+        for (item, table), caption in zip(pairs, captions):
             text = figure.insert_placeholder(text, item.title,
-                                             figure.figure_png_name(exp, item), CAPTIONS[table.id])
+                                             figure.figure_png_name(exp, item), caption)
         md.write_text(text, encoding='utf-8')
         for f in (validate.check_notion_markdown(md) + validate.check_body_style(text)
                   + validate.check_report_wrapping(text)):
@@ -194,8 +200,9 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
     "
     ```
 
-    `CAPTIONS` 의 키는 `'T1'` 처럼 따옴표 친 표 id 다. 자리를 넣었으면 error·warn 이
-    0 이어야 하고, info 로 "노션에서 직접 넣어야 할 그림" 이 늘어난 것은 정상이다.
+    캡션은 4단계 HTML 의 `caption` 을 그대로 읽는다 — 옮겨 적지 않는다. 자리를
+    넣었으면 error·warn 이 0 이어야 하고, info 로 "노션에서 직접 넣어야 할 그림" 이
+    늘어난 것은 정상이다.
     올린 보고서면 표마다 "`## <항목 제목>` 소절 마지막 문단 뒤에 그림, 그 아래 캡션
     한 줄" 을 캡션 글자와 함께 사용자에게 알린다.
 
