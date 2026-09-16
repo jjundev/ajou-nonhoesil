@@ -61,6 +61,29 @@ class CaptureCopy(unittest.TestCase):
         with self.assertRaises(fx.FigureError):
             fx.dump_dom(Path("/없는/그림.html"))
 
+    def test_종료_코드가_0이_아니면_멈춘다(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        html = Path(tmp.name) / "그림.html"
+        html.write_text("<title>t</title>", encoding="utf-8")
+        with mock.patch.object(fx, "resolve_chrome", return_value="chrome"), \
+             mock.patch.object(fx.subprocess, "run",
+                               return_value=subprocess.CompletedProcess([], 1, "", "에러 메시지")):
+            with self.assertRaises(fx.FigureError):
+                fx.dump_dom(html)
+
+    def test_표준출력이_비면_멈춘다(self):
+        # Chrome 이 죽으면 종료 코드는 0 인데 stdout 만 비는 경우가 있다.
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        html = Path(tmp.name) / "그림.html"
+        html.write_text("<title>t</title>", encoding="utf-8")
+        with mock.patch.object(fx, "resolve_chrome", return_value="chrome"), \
+             mock.patch.object(fx.subprocess, "run",
+                               return_value=subprocess.CompletedProcess([], 0, "", "")):
+            with self.assertRaises(fx.FigureError):
+                fx.dump_dom(html)
+
 
 class Heights(unittest.TestCase):
     def test_높이를_읽는다(self):
@@ -133,7 +156,13 @@ class Numbers(unittest.TestCase):
         self.assertIn("1.30", found[0].message)
 
     def test_정수는_보지_않는다(self):
-        self.assertEqual(fx.figure_numbers("<svg><text>5 V</text></svg>"), [])
+        self.assertEqual(fx.check_figure_numbers("<svg><text>5 V</text></svg>", "본문"), [])
+
+    def test_문장_끝의_소수도_찾는다(self):
+        # "…2.75." 처럼 소수 뒤에 마침표만 오면 옛 정규식은 소수를 못 찾아
+        # 본문에 있는 값을 없는 것처럼 잘못 잡았다(F4).
+        dom = '<svg><text>문턱 2.75V</text></svg>'
+        self.assertEqual(fx.check_figure_numbers(dom, "문턱은 2.75."), [])
 
 
 class Cli(unittest.TestCase):
@@ -144,6 +173,73 @@ class Cli(unittest.TestCase):
             code = fx.main(["1"])
         self.assertEqual(code, 0)
         self.assertIn("capture 표가 없어", buf.getvalue())
+
+
+_SPEC_TWO_CAPTURES = """---
+schema: lab-spec/v2
+experiment: 7
+title: 테스트
+source_manual: x.pdf
+power: {VCC: "+5V", GND: "GND"}
+items:
+  - id: E7.P1
+    title: 항목 1
+    device: []
+    ics: []
+    tables: [T1]
+  - id: E7.P2
+    title: 항목 2
+    device: []
+    ics: []
+    tables: [T2]
+---
+
+# E7.P1 · 항목 1
+
+## T1 · 표1
+
+- kind: capture
+- expected: 무언가
+
+# E7.P2 · 항목 2
+
+## T2 · 표2
+
+- kind: capture
+- expected: 무언가
+"""
+
+
+class CliCheckOnlyMissingHeights(unittest.TestCase):
+    """F1: 그림 스크립트가 도중에 멈추면 뒤 그림의 <text> 가 DOM 에 없어 숫자
+    검사가 findings 를 하나도 못 낸다 — `--check-only` 도 "숫자 검사 통과" 로
+    거짓 성공하면 안 되고, 높이 기록 개수부터 걸려야 한다."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / ".claude").mkdir()
+        (root / ".claude/과목정보.md").write_text(
+            "---\ndepartment: 전자공학과\ncourse: 논리회로실험\n"
+            "professor: 허용석 교수님\nclass_section: C082\n---\n",
+            encoding="utf-8")
+        exp = root / "보고서/실험07"
+        (exp / "체크리스트").mkdir(parents=True)
+        (exp / "output").mkdir(parents=True)
+        (exp / "체크리스트/명세.md").write_text(_SPEC_TWO_CAPTURES, encoding="utf-8")
+        (exp / "output/실험07_예상결과.html").write_text("<title>t</title>", encoding="utf-8")
+        (exp / "output/실험07_예비보고서.md").write_text("본문.", encoding="utf-8")
+        self.root = root
+
+    def test_기록된_높이가_그림_수보다_적으면_check_only_도_멈춘다(self):
+        # 그림 두 장인데 DOM 에 높이가 하나만 찍혀 있다 — 두 번째 그림 함수가
+        # 던졌다는 뜻이다. 옛 코드는 숫자 검사만 보고 findings 가 없으니
+        # "숫자 검사 통과" 로 끝냈다.
+        with mock.patch.object(fx.config, "find_project_root", return_value=self.root), \
+             mock.patch.object(fx, "dump_dom", return_value='<html data-fig-heights="510">'):
+            with self.assertRaises(fx.FigureError):
+                fx.main(["7", "--check-only"])
 
 
 @unittest.skipUnless(_chrome_available(), "Chrome 이 없는 환경")

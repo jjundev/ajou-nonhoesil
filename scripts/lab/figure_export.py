@@ -32,7 +32,7 @@ _HEIGHTS = re.compile(r'data-fig-heights="([\d,]+)"')
 _TEXT = re.compile(r"<text\b([^>]*)>(.*?)</text>", re.S)
 _TICK = re.compile(r'class="[^"]*\btick\b[^"]*"')
 _TAG = re.compile(r"<[^>]+>")
-_DECIMAL = re.compile(r"(?<![\d.])\d+\.\d+(?![\d.])")
+_DECIMAL = re.compile(r"(?<![\d.])\d+\.\d+(?!\d|\.\d)")
 
 
 class FigureError(RuntimeError):
@@ -54,7 +54,11 @@ def _write_copy(html_path, tmp) -> Path:
 
 
 def dump_dom(html_path, chrome=DEFAULT_CHROME, timeout=120) -> str:
-    """사본을 헤드리스로 열어 스크립트가 그린 뒤의 DOM 을 돌려준다."""
+    """사본을 헤드리스로 열어 스크립트가 그린 뒤의 DOM 을 돌려준다.
+
+    DOM 뜨기는 PNG 추출과 달리 남는 파일이 없다 — 종료 코드가 0 이 아니거나
+    표준출력이 비면 실패로 본다(`html2pdf.html_to_pdf` 와 같은 판정 스타일).
+    """
     html_path = Path(html_path)
     if not html_path.exists():
         raise FigureError(f"그림 HTML 이 없다: {html_path}")
@@ -65,6 +69,11 @@ def dump_dom(html_path, chrome=DEFAULT_CHROME, timeout=120) -> str:
             [chrome, "--headless=new", "--disable-gpu",
              f"--virtual-time-budget={BUDGET_MS}", "--dump-dom", copy.as_uri()],
             capture_output=True, text=True, timeout=timeout)
+    if proc.returncode != 0 or not proc.stdout.strip():
+        raise FigureError(
+            f"DOM 을 뜨지 못했다 (종료 코드 {proc.returncode}).\n"
+            f"stderr:\n{proc.stderr.strip()}"
+        )
     return proc.stdout
 
 
@@ -144,6 +153,13 @@ def main(argv=None) -> int:
     chrome = config.load_course_info(root).get("chrome") or DEFAULT_CHROME
 
     dom = dump_dom(html_path, chrome)
+    heights = parse_heights(dom)
+    if len(heights) != len(names):
+        raise FigureError(
+            f"기록된 그림 높이가 {len(heights)}개인데 그림은 {len(names)}개다 — "
+            "그림 스크립트가 도중에 멈췄을 수 있다 (콘솔 에러로 뒤 그림들이 안 그려지면 "
+            "그 그림의 <text> 가 DOM 에 없어 숫자 검사가 findings 를 하나도 못 낸다)"
+        )
     findings = check_figure_numbers(dom, md_path.read_text(encoding="utf-8"))
     for f in findings:
         print(f)
@@ -152,7 +168,7 @@ def main(argv=None) -> int:
     if args.check_only:
         print("숫자 검사 통과")
         return 0
-    for png in export_pngs(html_path, exp / "output", names, parse_heights(dom), chrome):
+    for png in export_pngs(html_path, exp / "output", names, heights, chrome):
         print(png)
     return 0
 
