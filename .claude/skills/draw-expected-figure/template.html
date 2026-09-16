@@ -134,7 +134,7 @@
     return function (v) { return r0 + (v - d0) * (r1 - r0) / (d1 - d0); };
   }
   function f2(n) { return Math.round(n * 100) / 100; }
-  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
   // "V_{x}" → 아래첨자
   function rich(s) {
     return esc(s).replace(/_\{([^}]*)\}/g, function (_, sub) {
