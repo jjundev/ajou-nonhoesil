@@ -1,0 +1,389 @@
+<title>실험02 예상 결과 그림</title>
+<meta charset="utf-8">
+<!--
+  artifact: https://claude.ai/artifact/2rxoQLr8SeJRrUf2XZCfGu
+  draw-expected-figure 템플릿. <실험NN>/output/<실험NN>_예상결과.html 로 복사해 `실험NN` 을
+  바꾸고, 아래 FIGURES 와 요소·근거 표만 채운다. 그림 속 숫자는 예비보고서 md 에 같은 글자로
+  있어야 하고, 눈금 라벨은 text(..., { tick: true }) 로 쓴다.
+  PNG: python3 -m scripts.lab.figure_export <실험번호>
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F3F4F6;
+    --surface: #FFFFFF;
+    --ink: #1A1D21;
+    --muted: #5B636D;
+    --line: #D9DDE2;
+    --accent: #1F4FA8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #15181C;
+      --surface: #1E2227;
+      --ink: #E7EAEE;
+      --muted: #9BA3AD;
+      --line: #313740;
+      --accent: #8FB0EC;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #15181C;
+    --surface: #1E2227;
+    --ink: #E7EAEE;
+    --muted: #9BA3AD;
+    --line: #313740;
+    --accent: #8FB0EC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 40px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  header { display: flex; flex-direction: column; gap: 8px; max-width: 68ch; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  h1 { margin: 0; font-size: 28px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
+  h2 { margin: 0; font-size: 18px; font-weight: 600; text-wrap: balance; }
+  p { margin: 0; }
+  .lede { color: var(--muted); }
+  #figures { display: flex; flex-direction: column; gap: 40px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .fig-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .fig-head .file {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  /* 그림은 노션의 흰 페이지에 들어가므로 테마와 무관하게 흰 종이로 고정한다 */
+  .paper { background: #FFFFFF; border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+  .paper svg { display: block; width: 100%; height: auto; }
+  figcaption { max-width: 72ch; padding-left: 14px; border-left: 2px solid var(--accent); }
+  .notes { border-top: 1px solid var(--line); padding-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .scroll { overflow-x: auto; }
+  table.evidence { border-collapse: collapse; width: 100%; font-size: 14px; }
+  table.evidence th, table.evidence td {
+    text-align: left; vertical-align: top; padding: 6px 10px; border-bottom: 1px solid var(--line);
+  }
+  table.evidence th { color: var(--muted); font-weight: 600; }
+
+  /* ?fig=N 추출 모드: 그림 한 장만 가로 1000 으로 */
+  html.export, html.export body { background: #FFFFFF; }
+  html.export .wrap { max-width: none; padding: 0; gap: 0; }
+  html.export header, html.export .notes, html.export figcaption,
+  html.export .fig-head, html.export figure:not(.on) { display: none; }
+  html.export .paper { border: 0; border-radius: 0; padding: 0; }
+  html.export .paper svg { width: 1000px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">실험02 · 예비보고서 · 예상 결과</span>
+    <h1>실험02 예상 결과 그림</h1>
+    <p class="lede">capture 표마다 한 장이다. 캡션은 이미지 밖 글자로 보고서에 붙는다.</p>
+  </header>
+
+  <div id="figures"></div>
+
+  <section class="notes">
+    <h2>그림 요소와 근거</h2>
+    <div class="scroll">
+      <table class="evidence">
+        <thead><tr><th>그림</th><th>요소</th><th>근거</th></tr></thead>
+        <tbody>
+          <!-- 요소마다 한 행. 근거는 예비보고서 문장, 명세 expected, 강의노트 그림 쪽 중 하나 이상.
+               근거 칸을 채울 수 없는 요소는 그리지 않는다. -->
+          <tr><td>1·2</td><td>시간축 패널과 X-Y 패널의 짝</td><td>강의노트 p4 그림(입력·출력 파형과 V<sub>O</sub>–V<sub>I</sub> 고리를 나란히 그림)</td></tr>
+          <tr><td>1·2</td><td>입력 사인파 0~5V, X-Y 가로 CH1·세로 CH2</td><td>예비보고서 "사인파 Vpp 5V, offset 2.5V", "CH1을 가로축, CH2를 세로축으로 쓰므로"</td></tr>
+          <tr><td>1</td><td>전이 구간 Typ 2.1~2.4V</td><td>예비보고서 74HC04 DC 특성 표 VIH·VIL 의 Typ 열</td></tr>
+          <tr><td>1</td><td>ABNORMAL 막대 1.35~3.15V</td><td>예비보고서 "규격의 VILmax 1.35V와 VIHmin 3.15V 사이"</td></tr>
+          <tr><td>1</td><td>곡선 한 줄·양방향 화살표</td><td>예비보고서 "올라갈 때와 내려갈 때의 궤적이 겹쳐 한 줄로 보이는 것이 정상"</td></tr>
+          <tr><td>2</td><td>VT+ 2.38V·VT− 1.4V 에지</td><td>예비보고서 74HC14 문턱 전압 표 Typ 열</td></tr>
+          <tr><td>2</td><td>시계 방향 화살표·VH 폭</td><td>강의노트 p4 그림 화살표와 V<sub>H</sub> 표시, 예비보고서 "오른쪽 세로 에지가 VT+, 왼쪽이 VT-이고 가로 폭이 VH"</td></tr>
+          <tr><td>2</td><td>VH Typ 0.98V</td><td>예비보고서 74HC14 문턱 전압 표 VH 행</td></tr>
+          <tr><td>2</td><td>Min~Max 막대 VT− 0.9~2.0V·VT+ 1.7~3.15V</td><td>예비보고서 "VT+ 1.7~3.15V, VT- 0.9~2.0V"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var W = 1000;
+  var C = {
+    ink: "#1A1D21", muted: "#5B636D", faint: "#9AA1AA", grid: "#E4E7EB", frame: "#9AA1AA",
+    line1: "#1F4FA8", line2: "#6B737D", mark: "#B8322A", band: "rgba(184,50,42,0.12)"
+  };
+  var FONT = "'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+  var MONO = "'IBM Plex Mono',ui-monospace,monospace";
+
+  function lin(d0, d1, r0, r1) {
+    return function (v) { return r0 + (v - d0) * (r1 - r0) / (d1 - d0); };
+  }
+  function f2(n) { return Math.round(n * 100) / 100; }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  // "V_{x}" → 아래첨자
+  function rich(s) {
+    return esc(s).replace(/_\{([^}]*)\}/g, function (_, sub) {
+      return '<tspan dy="5" font-size="0.74em">' + sub + '</tspan><tspan dy="-5">​</tspan>';
+    });
+  }
+  function text(x, y, s, o) {
+    o = o || {};
+    var a = ' x="' + f2(x) + '" y="' + f2(y) + '" font-size="' + (o.size || 17) + '" fill="' + (o.fill || C.ink) + '"';
+    if (o.tick) a += ' class="tick"';
+    if (o.anchor) a += ' text-anchor="' + o.anchor + '"';
+    if (o.weight) a += ' font-weight="' + o.weight + '"';
+    if (o.rotate) a += ' transform="rotate(-90 ' + f2(x) + " " + f2(y) + ')"';
+    if (o.mono) a += ' font-family="' + MONO + '"';
+    return "<text" + a + ">" + rich(s) + "</text>";
+  }
+  function line(x1, y1, x2, y2, stroke, w, dash, extra) {
+    return '<line x1="' + f2(x1) + '" y1="' + f2(y1) + '" x2="' + f2(x2) + '" y2="' + f2(y2) +
+      '" stroke="' + stroke + '" stroke-width="' + w + '"' +
+      (dash ? ' stroke-dasharray="' + dash + '"' : "") + (extra || "") + " />";
+  }
+  function path(pts, stroke, w, extra) {
+    var d = pts.map(function (p, i) { return (i ? "L" : "M") + f2(p[0]) + " " + f2(p[1]); }).join("");
+    return '<path d="' + d + '" fill="none" stroke="' + stroke + '" stroke-width="' + w +
+      '" stroke-linejoin="round" stroke-linecap="round"' + (extra || "") + " />";
+  }
+  function arrowHead(x, y, dx, dy, fill, size) {
+    size = size || 11;
+    var L = Math.hypot(dx, dy); dx /= L; dy /= L;
+    var bx = x - dx * size, by = y - dy * size, px = -dy * size * 0.5, py = dx * size * 0.5;
+    return '<path d="M' + f2(x) + " " + f2(y) + "L" + f2(bx + px) + " " + f2(by + py) +
+      "L" + f2(bx - px) + " " + f2(by - py) + 'Z" fill="' + fill + '" />';
+  }
+  function circle(x, y, r, fill, stroke, w) {
+    return '<circle cx="' + f2(x) + '" cy="' + f2(y) + '" r="' + r + '" fill="' + fill + '"' +
+      (stroke ? ' stroke="' + stroke + '" stroke-width="' + w + '"' : "") + " />";
+  }
+  function svgWrap(body, h, label) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + " " + h + '" role="img" aria-label="' +
+      esc(label) + '" font-family="' + FONT + '"><rect width="' + W + '" height="' + h + '" fill="#FFFFFF" />' +
+      body + "</svg>";
+  }
+
+  // ---- 공통 좌표 ----
+  var T = { x0: 80, x1: 460 };                       // 시간축 패널
+  var tx = lin(0, 1, T.x0, T.x1);
+  var vinY = lin(-0.3, 5.3, 230, 60);                // Vin 띠
+  var voutY = lin(-0.5, 5.5, 360, 270);              // Vout 띠
+  var X = { x0: 650, x1: 950, y0: 360, y1: 60 };     // X-Y 패널
+  var xx = lin(-0.3, 5.3, X.x0, X.x1);
+  var xy = lin(-0.3, 5.3, X.y0, X.y1);
+  function vin(t) { return 2.5 - 2.5 * Math.cos(2 * Math.PI * t); }
+  var N = 600;
+
+  function frame(o) {
+    var s = "";
+    // 패널 제목
+    s += text(T.x0, 30, "시간축 (Y-T)", { size: 19, weight: 600 });
+    s += text(X.x0, 30, "X-Y 모드", { size: 19, weight: 600 });
+
+    // Vin 띠
+    [0, 1, 2, 3, 4, 5].forEach(function (v) { s += line(T.x0, vinY(v), T.x1, vinY(v), C.grid, 1); });
+    s += '<rect x="' + T.x0 + '" y="60" width="' + (T.x1 - T.x0) + '" height="170" fill="none" stroke="' + C.frame + '" stroke-width="1.2" />';
+    s += text(T.x0 - 8, vinY(5) + 6, "5", { anchor: "end", fill: C.muted, mono: true, tick: true });
+    s += text(T.x0 - 8, vinY(0) + 6, "0", { anchor: "end", fill: C.muted, mono: true, tick: true });
+    s += text(34, 145, "V_{in} (CH1) [V]", { rotate: true, anchor: "middle", size: 17 });
+
+    // Vout 띠
+    [0, 5].forEach(function (v) { s += line(T.x0, voutY(v), T.x1, voutY(v), C.grid, 1); });
+    s += '<rect x="' + T.x0 + '" y="270" width="' + (T.x1 - T.x0) + '" height="90" fill="none" stroke="' + C.frame + '" stroke-width="1.2" />';
+    s += text(T.x0 - 8, voutY(5) + 6, "5", { anchor: "end", fill: C.muted, mono: true, tick: true });
+    s += text(T.x0 - 8, voutY(0) + 6, "0", { anchor: "end", fill: C.muted, mono: true, tick: true });
+    s += text(34, 315, "V_{out} [V]", { rotate: true, anchor: "middle", size: 17 });
+    s += text(T.x1, 386, "시간 →", { anchor: "end", fill: C.muted });
+    s += text(T.x0, 386, "사인파 한 주기", { fill: C.muted });
+
+    // X-Y 격자
+    for (var v = 0; v <= 5; v++) {
+      s += line(xx(v), X.y0, xx(v), X.y1, C.grid, 1);
+      s += line(X.x0, xy(v), X.x1, xy(v), C.grid, 1);
+      s += text(xx(v), X.y0 + 24, String(v), { anchor: "middle", fill: C.muted, mono: true, tick: true });
+      s += text(X.x0 - 8, xy(v) + 6, String(v), { anchor: "end", fill: C.muted, mono: true, tick: true });
+    }
+    s += '<rect x="' + X.x0 + '" y="' + X.y1 + '" width="' + (X.x1 - X.x0) + '" height="' + (X.y0 - X.y1) + '" fill="none" stroke="' + C.frame + '" stroke-width="1.2" />';
+    s += text((X.x0 + X.x1) / 2, 412, "V_{in} (CH1, 가로축) [V]", { anchor: "middle" });
+    s += text(606, 210, "V_{out} (CH2, 세로축) [V]", { rotate: true, anchor: "middle" });
+
+    return s;
+  }
+
+  // 데이터시트 범위 막대 (X-Y 가로축 눈금에 맞춘다)
+  function rangeBar(y, label, lo, hi, typ, typ2) {
+    function num(n) { return n.toFixed(Math.max(1, (String(n).split(".")[1] || "").length)); }
+    var s = "";
+    s += text(X.x0 - 14, y + 6, label, { anchor: "end", size: 16, fill: C.ink });
+    s += line(xx(lo), y, xx(hi), y, C.ink, 2.5);
+    s += line(xx(lo), y - 7, xx(lo), y + 7, C.ink, 2.5);
+    s += line(xx(hi), y - 7, xx(hi), y + 7, C.ink, 2.5);
+    s += text(xx(lo) - 7, y + 6, num(lo), { anchor: "end", size: 16, fill: C.muted, mono: true });
+    s += text(xx(hi) + 7, y + 6, num(hi), { size: 16, fill: C.muted, mono: true });
+    if (typ != null) s += '<circle cx="' + f2(xx(typ)) + '" cy="' + y + '" r="5.5" fill="' + C.mark + '" />';
+    if (typ2 != null) s += '<circle cx="' + f2(xx(typ2)) + '" cy="' + y + '" r="5.5" fill="' + C.mark + '" />';
+    return s;
+  }
+
+  // ---- 그림 1: 74HC04 ----
+  function fig1() {
+    var VM = 2.25, K = 14.6;                           // 10~90% 가 Typ 2.1~2.4 V 에 들도록
+    function tf(v) { return 5 / (1 + Math.exp(K * (v - VM))); }
+    var s = frame();
+
+    // 시간축: Typ 전이 띠
+    s += '<rect x="' + T.x0 + '" y="' + f2(vinY(2.4)) + '" width="' + (T.x1 - T.x0) + '" height="' + f2(vinY(2.1) - vinY(2.4)) + '" fill="' + C.band + '" />';
+    s += line(T.x0, vinY(2.1), T.x1, vinY(2.1), C.mark, 1.4, "6 4");
+    s += line(T.x0, vinY(2.4), T.x1, vinY(2.4), C.mark, 1.4, "6 4");
+    s += text(T.x1 + 10, vinY(2.25) - 4, "전이 Typ", { size: 16, fill: C.mark, weight: 600 });
+    s += text(T.x1 + 10, vinY(2.25) + 16, "2.1~2.4 V", { size: 16, fill: C.mark, mono: true });
+
+    var tUp = Math.acos(1 - VM / 2.5) / (2 * Math.PI), tDn = 1 - tUp;
+    [tUp, tDn].forEach(function (t) { s += line(tx(t), 60, tx(t), 360, C.mark, 1.2, "2 4"); });
+
+    var vinPts = [], voutPts = [];
+    for (var i = 0; i <= N; i++) {
+      var t = i / N, v = vin(t);
+      vinPts.push([tx(t), vinY(v)]);
+      voutPts.push([tx(t), voutY(tf(v))]);
+    }
+    s += path(vinPts, C.line2, 2.2);
+    s += path(voutPts, C.line1, 3.2);
+
+    // X-Y: 한 줄기 곡선
+    var xyPts = [];
+    for (var j = 0; j <= N; j++) { var u = 5 * j / N; xyPts.push([xx(u), xy(tf(u))]); }
+    s += path(xyPts, C.line1, 3.4);
+    // 오르내림이 같은 선 — 양쪽 평탄부에 양방향 화살표
+    s += line(xx(0.45), xy(5) + 18, xx(1.55), xy(5) + 18, C.ink, 1.6);
+    s += arrowHead(xx(1.55), xy(5) + 18, 1, 0, C.ink) + arrowHead(xx(0.45), xy(5) + 18, -1, 0, C.ink);
+    s += line(xx(3.25), xy(0) - 18, xx(4.55), xy(0) - 18, C.ink, 1.6);
+    s += arrowHead(xx(4.55), xy(0) - 18, 1, 0, C.ink) + arrowHead(xx(3.25), xy(0) - 18, -1, 0, C.ink);
+    s += text(xx(2.85), xy(4.1), "상승·하강 궤적이", { size: 16, fill: C.ink });
+    s += text(xx(2.85), xy(4.1) + 21, "한 줄로 겹친다", { size: 16, fill: C.ink });
+
+    // 범위 막대
+    s += rangeBar(446, "ABNORMAL: V_{IL} max ~ V_{IH} min", 1.35, 3.15);
+    s += rangeBar(480, "Typ 전이: V_{IL} ~ V_{IH}", 2.1, 2.4);
+    return { h: 510, svg: svgWrap(s, 510, "74HC04 인버터 예상 입출력 특성: 시간축과 X-Y") };
+  }
+
+  // ---- 그림 2: 74HC14 ----
+  function fig2() {
+    var TP = 2.38, TM = 1.4;
+    var s = frame();
+
+    s += line(T.x0, vinY(TP), T.x1, vinY(TP), C.mark, 1.6, "8 5");
+    s += line(T.x0, vinY(TM), T.x1, vinY(TM), C.mark, 1.6, "8 5");
+    s += text(T.x1 + 10, vinY(TP) + 1, "V_{T+} 2.38 V", { size: 16, fill: C.mark, weight: 600 });
+    s += text(T.x1 + 10, vinY(TM) + 17, "V_{T−} 1.4 V", { size: 16, fill: C.mark, weight: 600 });
+
+    var tUp = Math.acos(1 - TP / 2.5) / (2 * Math.PI);
+    var tDn = 1 - Math.acos(1 - TM / 2.5) / (2 * Math.PI);
+    [tUp, tDn].forEach(function (t) { s += line(tx(t), 60, tx(t), 360, C.mark, 1.2, "2 4"); });
+
+    var vinPts = [];
+    for (var i = 0; i <= N; i++) { var t = i / N; vinPts.push([tx(t), vinY(vin(t))]); }
+    s += path(vinPts, C.line2, 2.2);
+    s += path([[tx(0), voutY(5)], [tx(tUp), voutY(5)], [tx(tUp), voutY(0)], [tx(tDn), voutY(0)],
+               [tx(tDn), voutY(5)], [tx(1), voutY(5)]], C.line1, 3.2);
+
+    // X-Y: 히스테리시스 고리
+    s += path([[xx(0), xy(5)], [xx(TP), xy(5)], [xx(TP), xy(0)], [xx(5), xy(0)]], C.line1, 3.4);
+    s += path([[xx(5), xy(0)], [xx(TM), xy(0)], [xx(TM), xy(5)], [xx(0), xy(5)]], C.line1, 3.4);
+    // 시계 방향: 위 →, 오른쪽 에지 ↓, 아래 ←, 왼쪽 에지 ↑
+    s += arrowHead(xx(0.95), xy(5), 1, 0, C.line1, 14);
+    s += arrowHead(xx(TP), xy(2.1), 0, 1, C.line1, 14);
+    s += arrowHead(xx(3.9), xy(0), -1, 0, C.line1, 14);
+    s += arrowHead(xx(TM), xy(2.9), 0, -1, C.line1, 14);
+    s += text(xx(TP) + 10, xy(1.2), "V_{T+}", { size: 17, fill: C.mark, weight: 600 });
+    s += text(xx(TM) - 10, xy(3.8), "V_{T−}", { size: 17, fill: C.mark, weight: 600, anchor: "end" });
+    // V_H 폭
+    var yh = xy(3.35);
+    s += line(xx(TM) + 3, yh, xx(TP) - 3, yh, C.ink, 1.6);
+    s += arrowHead(xx(TP) - 3, yh, 1, 0, C.ink, 9) + arrowHead(xx(TM) + 3, yh, -1, 0, C.ink, 9);
+    s += text((xx(TM) + xx(TP)) / 2, yh - 10, "V_{H}", { size: 16, anchor: "middle" });
+    s += text(xx(2.85), xy(3.35) + 6, "Typ 0.98 V", { size: 16, fill: C.muted, mono: true });
+
+    s += rangeBar(446, "V_{T−} Min~Max · 점 = Typ", 0.9, 2.0, TM);
+    s += rangeBar(480, "V_{T+} Min~Max · 점 = Typ", 1.7, 3.15, TP);
+    return { h: 510, svg: svgWrap(s, 510, "74HC14 슈미트 트리거 예상 입출력 특성: 시간축과 X-Y 히스테리시스 고리") };
+  }
+
+  // 그림 목록. capture 표마다 하나, 명세 순서대로.
+  //   title   — 명세 항목 제목
+  //   file    — figure.figure_png_name 이 정한 PNG 이름
+  //   caption — 번호 없는 한 줄. 이미지 안에는 넣지 않는다
+  //   draw    — { h: 높이, svg: svgWrap(본문, 높이, 설명) } 를 돌려준다. 가로는 1000 고정
+  var FIGURES = [
+    { title: "실험 1-1) Inverter의 입출력 특성 확인",
+      file: "실험02_1-1_예상결과_인버터_입출력특성.png",
+      caption: "74HC04 인버터의 예상 입출력 특성. 왼쪽은 시간축, 오른쪽은 X-Y 모드이며, 전이 위치는 VCC 4.5V 데이터시트 Typ 값으로 그렸다.",
+      draw: fig1 },
+    { title: "실험 1-2) Schmitt-trigger의 입출력 특성 확인",
+      file: "실험02_1-2_예상결과_슈미트트리거_입출력특성.png",
+      caption: "74HC14 슈미트 트리거의 예상 입출력 특성. 올라갈 때는 VT+, 내려갈 때는 VT−에서 전이해 시계 방향 고리를 그린다.",
+      draw: fig2 }
+  ];
+
+  var host = document.getElementById("figures");
+  var heights = [];
+  FIGURES.forEach(function (f, i) {
+    var r = f.draw();
+    var fig = document.createElement("figure");
+    fig.id = "f" + (i + 1);
+    var head = document.createElement("div");
+    head.className = "fig-head";
+    var h2 = document.createElement("h2");
+    h2.textContent = f.title;
+    var file = document.createElement("span");
+    file.className = "file";
+    file.textContent = f.file;
+    head.appendChild(h2);
+    head.appendChild(file);
+    var paper = document.createElement("div");
+    paper.className = "paper";
+    paper.innerHTML = r.svg;
+    var cap = document.createElement("figcaption");
+    cap.textContent = f.caption;
+    fig.appendChild(head);
+    fig.appendChild(paper);
+    fig.appendChild(cap);
+    host.appendChild(fig);
+    heights.push(r.h);
+  });
+  document.documentElement.setAttribute("data-fig-heights", heights.join(","));
+
+  var q = null;
+  try { q = new URLSearchParams(location.search).get("fig"); } catch (e) {}
+  var on = q && document.getElementById("f" + q);
+  if (on) {
+    document.documentElement.classList.add("export");
+    on.classList.add("on");
+  }
+})();
+</script>

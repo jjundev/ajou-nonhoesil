@@ -81,6 +81,8 @@
   /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
   .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
               font-size: 9.5pt; line-height: 1.5; }
+  /* 명세 `figure` 의 예상 개형 그림. 산문 아래·스케치 위에서 화면과 대조한다. */
+  .expected-fig { display: block; width: 100%; break-inside: avoid; break-after: avoid; }
   .readout { font-size: 9pt; margin: 1mm 0; }
   /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
   .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
@@ -137,6 +139,7 @@
 <h3>T1 · 74HC04 Inverter 입출력 특성 (X-Y)</h3>
 <p class='src'>출처: manual:p10</p>
 <div class="expected"><b>예상</b> — 가로축 CH1 = Vin(0~5V 사인파), 세로축 CH2 = Vout. 교안 p3 의 논리 레벨 정의대로 Vin 이 낮은 쪽에서는 Vout 이 VCC 근처(OUTPUT HIGH), Vin 이 높은 쪽에서는 GND 근처(OUTPUT LOW)에 있고, 그 사이에서 한 번 전이한다. 전이가 일어나는 Vin 구간을 p3 의 V_ILmax~V_IHmin(ABNORMAL 영역) 과 대응해 본다. Vin 이 올라갈 때와 내려갈 때 전이 위치가 같은지(단일 곡선인지)를 T2 와 비교하기 위해 봐 둔다. 이 대응·비교 지시는 교안 원문이 아니다 — 교안은 "결과를 확인한다" 까지만 쓴다. 전이 전압 숫자는 교안에 없으므로 예상값을 적지 않는다.</div>
+<img class="expected-fig" src="../output/실험02_1-1_예상결과_인버터_입출력특성.png"><p class='src'>예상 그림: 실험02_1-1_예상결과_인버터_입출력특성.png</p>
 <div class="sketch"></div>
 <p class='readout'>판독 조건 — CH1 ______ V/div · CH2 ______ V/div · time/div ______ · 프로브 ______× · 모드  [ ] Y-T   [ ] X-Y</p>
 <p class='readout'>캡션: ____________________     사진 파일: ____________________</p>
@@ -175,6 +178,7 @@
 <h3>T2 · 74HC14 Schmitt-trigger 입출력 특성 (X-Y)</h3>
 <p class='src'>출처: manual:p11</p>
 <div class="expected"><b>예상</b> — T1 과 같은 축. 교안 p4 의 이론대로 Vin 이 올라갈 때의 전이 전압(VT+)과 내려갈 때의 전이 전압(VT-)이 달라 곡선이 닫힌 고리(hysteresis)를 그린다. 고리의 오른쪽 세로 에지가 VT+, 왼쪽이 VT-, 가로 폭이 VH = VT+ - VT- 다 (p4 그림). 캡션에 두 에지의 Vin 눈금값을 적어 두면 비교가 된다 — 이 기록 지시와 T1 의 단일 전이를 나란히 놓고 보라는 지시는 교안 원문이 아니다. 교안은 "결과를 비교한다" 까지만 쓴다. 문턱 전압의 예상 숫자는 교안에 없으므로 적지 않는다.</div>
+<img class="expected-fig" src="../output/실험02_1-2_예상결과_슈미트트리거_입출력특성.png"><p class='src'>예상 그림: 실험02_1-2_예상결과_슈미트트리거_입출력특성.png</p>
 <div class="sketch"></div>
 <p class='readout'>판독 조건 — CH1 ______ V/div · CH2 ______ V/div · time/div ______ · 프로브 ______× · 모드  [ ] Y-T   [ ] X-Y</p>
 <p class='readout'>캡션: ____________________     사진 파일: ____________________</p>
