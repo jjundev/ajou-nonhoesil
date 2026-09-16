@@ -90,6 +90,7 @@ T5 다 — T1~T5 재번호 금지 지시의 결과다). `items[].tables` 가 가
 | `encoding` | `capture` 외 ● | `0/1` \| `H/L` — **표의 속성이다. 서로 변환하지 말 것.** 교안 표는 원문 표기, 교안에 없어 부울식으로 채운 `derived` 표는 `0/1` (2026-09-08 결정) |
 | `source` | ● | `manual:p11` \| `derived (L2 = A·B·C)` \| `past-report:2020` |
 | `expected` | `capture` 만 | 정성 서술 산문. 셀 표가 없는 표의 예상값이 여기 들어간다 |
+| `figure` | 선택 · `capture` | 예상 개형 그림 경로. 명세 파일 위치 기준 상대경로(`../output/실험02_1-1_예상결과_인버터_XY.png`). 체크리스트가 `expected` 산문과 스케치 상자 사이에 싣는다. 파일이 없으면 그림 대신 안내 한 줄을 낸다. `specdiff` 대조 대상이 아니다 — `draft-lab-spec` 이 저작하지 않고, 예비보고서용 그림을 만든 뒤 사람이 적는다 |
 | `role` | 선택 | `record` \| `reference` — 생략하면 `record`이며, `source` 만으로는 가를 수 없는 참조표(`reference`)와 기록 대상(`record`)을 구분하기 위한 필드다 |
 | `outputs` | 선택 | 출력 열 이름 리스트(`[S, C]`). `derived (...)` 가 아닌 표에서 출력이 둘 이상일 때 쓴다. 생략하면 마지막 열 하나가 출력이다. `derived` 표는 식의 대입 대상이 출력이라 필요 없고, 적으면 대입 대상과 같아야 한다 (아래 "`outputs`" 절) |
 

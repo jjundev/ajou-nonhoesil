@@ -219,6 +219,37 @@ class TestCapturePage(unittest.TestCase):
         self.assertNotIn("**", html)                 # 인쇄본에는 없다
         self.assertIn("두 갈래로 갈라져", html)
 
+    def _spec_with_figure(self, make_png: bool):
+        text = (ROOT / "tests/fixtures/spec_capture.md").read_text(
+            encoding="utf-8").replace(
+                "- kind: capture", "- kind: capture\n- figure: 예상.png", 1)
+        target = Path(tempfile.mkdtemp()) / "명세.md"
+        target.write_text(text, encoding="utf-8")
+        if make_png:
+            (target.parent / "예상.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+        return target
+
+    def test_figure_그림을_예상_산문과_스케치_사이에_싣는다(self):
+        """실험02 T1·T2 는 예비보고서의 예상 결과 그림을 실험실에서도 보며
+        화면과 대조한다. 산문(판정 기준) 바로 아래, 그려 넣을 스케치 위다."""
+        target = self._spec_with_figure(make_png=True)
+        table = parse_spec(target).table("T1")
+        self.assertEqual(table.figure, "예상.png")
+        html = _capture_html(table, target.parent)
+        img = html.index('src="예상.png"')
+        self.assertLess(html.index('class="expected"'), img)
+        self.assertLess(img, html.index('class="sketch"'))
+
+    def test_figure_파일이_없으면_그림_대신_안내를_낸다(self):
+        """없는 파일에 `<img>` 를 내면 깨진 그림이 PDF 로 굳는다."""
+        target = self._spec_with_figure(make_png=False)
+        html = _capture_html(parse_spec(target).table("T1"), target.parent)
+        self.assertNotIn("<img", html)
+        self.assertIn("예상 그림이 아직 없다", html)
+
+    def test_figure_가_없으면_그림_자리를_내지_않는다(self):
+        self.assertNotIn("예상 그림", self._block())
+
     def test_판독_조건_줄이_붙는다(self):
         block = self._block()
         for token in ("V/div", "time/div", "프로브", "X-Y"):

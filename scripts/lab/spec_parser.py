@@ -41,6 +41,7 @@ class SpecTable:
     rows: list
     line: int
     outputs: Optional[list] = None   # `- outputs: [S, C]`. 없으면 None
+    figure: Optional[str] = None     # `- figure: ../output/x.png`. 명세 파일 위치 기준 상대경로
 
 
 @dataclass
@@ -114,6 +115,7 @@ def _parse_table(table_id, title, block, path) -> SpecTable:
         expected=attrs.get("expected"), role=attrs.get("role", "record"),
         header=header, rows=rows, line=line,
         outputs=_list_attr(attrs.get("outputs")),
+        figure=attrs.get("figure") or None,
     )
     # 교안이 입력과 출력에 같은 글자를 쓰는 실물이 있다(실험3 반감산기
     # `A B D B`). 진리표에서 입력 하나·출력 하나로 갈리면 자리로 가를 수

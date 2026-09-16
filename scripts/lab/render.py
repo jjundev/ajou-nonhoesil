@@ -11,6 +11,7 @@
 import html
 import re
 from dataclasses import replace
+from pathlib import Path
 
 from . import md
 from .netlist_parser import IC_DECL
@@ -130,7 +131,7 @@ _READOUT = ("판독 조건 — CH1 ______ V/div · CH2 ______ V/div · "
 _CAPTION = "캡션: ____________________     사진 파일: ____________________"
 
 
-def _capture_html(table) -> str:
+def _capture_html(table, spec_dir=None) -> str:
     """파형은 셀 표가 아니다 — 스케치 격자와 판정 기준을 낸다.
 
     `expected` 를 통째로 싣고 마크다운 표기를 벗긴다. 안 벗기면 실험02 T2 의
@@ -144,11 +145,23 @@ def _capture_html(table) -> str:
 
     미니표는 붙이지 않는다(`_mismatch_html` 이 `capture` 에 `""` 를 준다).
     파형에는 "불일치 행"도 "이상 스텝"도 없다 — `예상과 다른 점` 상자가 맡는다.
+
+    `figure` 가 있으면 예상 개형 그림을 산문과 스케치 사이에 싣는다. 경로는
+    명세 파일 위치(`spec_dir`) 기준이고, 인쇄본 HTML 도 같은 `체크리스트/` 에
+    놓이므로 `src` 에 그대로 쓴다. 파일이 없으면 `<img>` 를 내지 않는다 —
+    깨진 그림이 PDF 로 굳는다(`check_embedded_images` 가 잡는 결함).
     """
     expected = _plain(table.expected or "").strip()
     out = []
     if expected:
         out.append(f'<div class="expected"><b>예상</b> — {_esc(expected)}</div>')
+    if table.figure:
+        name = Path(table.figure).name
+        if spec_dir is not None and (Path(spec_dir) / table.figure).exists():
+            out.append(f'<img class="expected-fig" src="{_esc(table.figure)}">'
+                       f"<p class='src'>예상 그림: {_esc(name)}</p>")
+        else:
+            out.append(f"<p class='src'>예상 그림이 아직 없다: {_esc(name)}</p>")
     out.append('<div class="sketch"></div>')
     out.append(f"<p class='readout'>{_esc(_READOUT)}</p>")
     out.append(f"<p class='readout'>{_esc(_CAPTION)}</p>")
@@ -659,7 +672,7 @@ def _circuit_tables(spec, section) -> str:
         # 그것을 잡는 검사는 본문만 본다.
         out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
         if table.kind == "capture":
-            out.append(_capture_html(table))
+            out.append(_capture_html(table, spec.path.parent))
         elif table.kind == "stepped":
             out.append(_stepped_html(table))
             out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
