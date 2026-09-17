@@ -133,22 +133,45 @@ class TestEnsureCover(unittest.TestCase):
 
 
 class TestIntegration(unittest.TestCase):
-    def test_merge_lab_report_with_explicit_body(self):
+    def test_merge_lab_report_with_explicit_body_cleans_by_default(self):
         from scripts.lab.merge_report import merge_lab_report
         root = config.find_project_root(Path("."))
         exp_dir = root / config.experiment_dir(1)
-        with tempfile.NamedTemporaryFile(suffix="_notion_export_예비보고서.pdf") as tmp_body:
+        with tempfile.NamedTemporaryFile(suffix="_notion_export_예비보고서.pdf", delete=False) as tmp_body:
             writer = pypdf.PdfWriter()
             for _ in range(3):
                 writer.add_blank_page(width=595.27, height=841.89)
             with open(tmp_body.name, "wb") as f:
                 writer.write(f)
 
-            out = merge_lab_report(1, kind="예비보고서", body_path=Path(tmp_body.name))
+            tmp_path = Path(tmp_body.name)
+            out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
             self.assertTrue(out.is_file())
             self.assertEqual(out.name, "실험1_Basic_Gates_예비보고서.pdf")
             reader = pypdf.PdfReader(str(out))
             self.assertEqual(len(reader.pages), 4)  # 1 cover + 3 body
+            # clean_body=True 가 기본이므로 원본 파일이 자동 삭제되어야 함
+            self.assertFalse(tmp_path.exists())
+
+    def test_merge_lab_report_clean_body_false_keeps_file(self):
+        from scripts.lab.merge_report import merge_lab_report
+        root = config.find_project_root(Path("."))
+        exp_dir = root / config.experiment_dir(1)
+        with tempfile.NamedTemporaryFile(suffix="_notion_export_keep_예비보고서.pdf", delete=False) as tmp_body:
+            writer = pypdf.PdfWriter()
+            for _ in range(2):
+                writer.add_blank_page(width=595.27, height=841.89)
+            with open(tmp_body.name, "wb") as f:
+                writer.write(f)
+
+            tmp_path = Path(tmp_body.name)
+            try:
+                out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path, clean_body=False)
+                self.assertTrue(out.is_file())
+                self.assertTrue(tmp_path.is_file())
+            finally:
+                if tmp_path.exists():
+                    tmp_path.unlink()
 
 
 

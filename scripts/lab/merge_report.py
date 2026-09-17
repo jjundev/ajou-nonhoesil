@@ -224,6 +224,7 @@ def merge_lab_report(
     body_path: Path | str | None = None,
     submit_date: str | None = None,
     chrome: str | None = None,
+    clean_body: bool = True,
 ) -> Path:
     """실험 번호 또는 디렉토리를 받아 표지를 보장하고 본문과 병합한다."""
     root = config.find_project_root(Path("."))
@@ -247,7 +248,16 @@ def merge_lab_report(
     fname = output_filename(spec.experiment, spec.title, kind)
     out_path = exp_dir / fname
 
-    return merge_report_pdf(cover_pdf, body_pdf, out_path)
+    result = merge_report_pdf(cover_pdf, body_pdf, out_path)
+
+    # 병합 및 검증 성공 후 입력 원본 본문 PDF 자동 삭제 (정리)
+    if clean_body and body_pdf.is_file() and body_pdf.resolve() != out_path.resolve():
+        try:
+            body_pdf.unlink()
+        except OSError:
+            pass
+
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -258,6 +268,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--kind", choices=["예비보고서", "결과보고서"], default="예비보고서", help="보고서 종류 (기본값: 예비보고서)")
     parser.add_argument("--date", type=str, help="제출일 (YYYY.MM.DD, 미지정 시 오늘 날짜)")
     parser.add_argument("--chrome", type=str, help="Chrome 바이너리 경로")
+    parser.add_argument("--keep-body", action="store_true", help="병합 후 입력 원본 본문 PDF를 삭제하지 않고 유지")
     args = parser.parse_args(argv)
 
     target = args.exp if args.exp is not None else args.dir
@@ -271,6 +282,7 @@ def main(argv: list[str] | None = None) -> int:
             body_path=args.body,
             submit_date=args.date,
             chrome=args.chrome,
+            clean_body=not args.keep_body,
         )
         print(f"성공적으로 병합되었습니다: {out}")
         return 0
