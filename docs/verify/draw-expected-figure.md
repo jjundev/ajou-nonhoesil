@@ -13,6 +13,8 @@
 - `.claude/skills/verify-draft-lab-spec/`, `.claude/skills/verify-write-result-report/`
 - `scripts/lab/isolate.py`, `scripts/lab/regen_compare.py`, `scripts/lab/specdiff.py`,
   `scripts/lab/report_compare.py`
+- 대상 주차 폴더 최상위의 보고서 PDF(`<실험NN>/*.pdf`) — 노션에서 내보낸 예비보고서가
+  승인 그림을 품는다. 2026-09-17 전에는 빠지지 않아 1~3회차 트리에 들어갔다(§누출 정정)
 - 대상 주차의 `체크리스트/`·`output/` 내용물 — `명세.md` 와 `output/<실험NN>_예비보고서.md`
   만 되살리고, 명세의 `- figure:` 줄은 지운다. `output/notion.json` 도 빠지므로
   에이전트는 "안 올린 보고서" 경로를 탄다
@@ -26,14 +28,15 @@ from pathlib import Path
 from scripts.lab import config
 from scripts.lab.isolate import build_isolated_tree
 N = <실험번호>
+exp = config.experiment_dir(N)
+name = Path(exp).name
 KEYS = [
     'docs/plans', 'docs/verify', 'docs/notion-feedback', 'docs/rule-friction', 'tests',
     '.claude/skills/verify-draft-lab-spec', '.claude/skills/verify-write-result-report',
     'scripts/lab/isolate.py', 'scripts/lab/regen_compare.py', 'scripts/lab/specdiff.py',
     'scripts/lab/report_compare.py',
+    f'{exp}/*.pdf',
 ]
-exp = config.experiment_dir(N)
-name = Path(exp).name
 def strip_figure(dest):
     p = dest / exp / '체크리스트/명세.md'
     p.write_text(re.sub(r'(?m)^- figure:.*\n', '', p.read_text(encoding='utf-8')), encoding='utf-8')
@@ -50,7 +53,10 @@ PY
 ```bash
 grep -rn "예상결과_\|figure:" '<트리>/보고서/<실험NN>' | wc -l
 grep -rln "draw-expected-figure" '<트리>/docs' | wc -l
+find '<트리>/보고서/<실험NN>' -maxdepth 1 -name '*.pdf' | wc -l
 ```
+
+셋째 줄은 글자 grep 이 못 보는 누출이다 — 노션 PDF 속 그림은 이미지라 이름으로 안 잡힌다.
 
 ## 에이전트 프롬프트
 
@@ -90,9 +96,9 @@ draw-expected-figure 스킬(.claude/skills/draw-expected-figure/SKILL.md)로 실
 |---|---|---|---|---|
 | 2026-09-17 | 실험01 | 4154a53 | 일치 — 1단계 종료, 파일 변경 없음 | §실행 절차 1 이 "`capture 표가 없어` 로 시작하는 줄" 이라 하지만 실제 줄은 `T1: truth-table, …` 로 시작한다(판단엔 지장 없음) |
 | 2026-09-17 | 실험03 | 4154a53 | 일치 — 1단계 종료, 파일 변경 없음 | 명령을 저장소 루트에서 돌린다는 전제가 문서에 드러나 있지 않다 |
-| 2026-09-17 | 실험02 | 4154a53 | 부분 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과 | 아래 §1회차 갈림 |
-| 2026-09-17 | 실험02 | ed89bf2 | 부분 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·소수값이 승인본의 부분집합·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과(`deb40eb` 이후 첫 유효 값)·근거 표 모양·위치 칸 채움·그림 2 세로 에지 둘이 대표값 2.38·1.4 에 라벨과 함께·md 캡션 본문 표기 | 아래 §2회차 갈림 |
-| 2026-09-17 | 실험02 | 6302221 | 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·소수값이 승인본의 부분집합·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과·두 그림 모두 시간축+X-Y 두 칸·그림 1 전이가 Typ 2.1~2.4 사이에 라벨과 함께·그림 2 세로 에지 둘이 2.38·1.4 에 라벨과 함께·근거 표 모양·위치 칸 채움·md 캡션 본문 표기 | 아래 §3회차 갈림 |
+| 2026-09-17 | 실험02 | 4154a53 | 부분 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과 | 아래 §1회차 갈림· §누출 정정 |
+| 2026-09-17 | 실험02 | ed89bf2 | 부분 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·소수값이 승인본의 부분집합·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과(`deb40eb` 이후 첫 유효 값)·근거 표 모양·위치 칸 채움·그림 2 세로 에지 둘이 대표값 2.38·1.4 에 라벨과 함께·md 캡션 본문 표기 | 아래 §2회차 갈림· §누출 정정 |
+| 2026-09-17 | 실험02 | 6302221 | 일치 — PNG 이름·명세 figure 두 줄·md 두 소절 자리(error·warn 0)·소수값이 승인본의 부분집합·측정 화면 흉내 없음·이미지 안 각주/번호 없음·숫자 검사 첫 실행 통과·두 그림 모두 시간축+X-Y 두 칸·그림 1 전이가 Typ 2.1~2.4 사이에 라벨과 함께·그림 2 세로 에지 둘이 2.38·1.4 에 라벨과 함께·근거 표 모양·위치 칸 채움·md 캡션 본문 표기 | 아래 §3회차 갈림· §누출 정정 |
 
 ### 1회차 갈림 (2026-09-17)
 
@@ -127,7 +133,7 @@ draw-expected-figure 스킬(.claude/skills/draw-expected-figure/SKILL.md)로 실
 에이전트가 더 보고한 것:
 
 - §실행 절차 2 의 `<스크래치>` 가 "작업 디렉터리 밖에 쓰지 않는다" 와 만나면 둘 곳이 없다 — 저장소 `tmp/`(gitignore)에 렌더했다.
-- `보고서/실험02/` 최상위에 노션 내보내기 예비보고서 PDF 가 남는다(KEYS·`clear_subdirs` 밖). 열지 않았다고 보고했다. 그 PDF 의 이미지는 손그림 결선도 넷이고 예상결과 그림은 없다(2026-09-17 `pdfimages` 로 확인) — 이 스킬의 답안 누출은 아니다.
+- `보고서/실험02/` 최상위에 노션 내보내기 예비보고서 PDF 가 남는다(KEYS·`clear_subdirs` 밖). 열지 않았다고 보고했다. **처음엔 "예상결과 그림은 없다" 고 적었으나 틀렸다** — §누출 정정.
 - 숫자 검사는 글자만 보고 뜻은 안 본다(`1.4` 는 VT- Typ 이자 VH Max).
 - §실행 절차 7 은 여백을 다루지 않는다 — 그림 2 오른쪽 여백이 넓다.
 
@@ -148,3 +154,9 @@ draw-expected-figure 스킬(.claude/skills/draw-expected-figure/SKILL.md)로 실
 - §실행 절차 2 의 `<스크래치>` 가 정의돼 있지 않다(2회차에 이어 두 번째). 이번엔 트리 안에 임시 폴더를 만들고 지웠다.
 - §실행 절차 7 에서 고친 뒤 숫자 검사를 다시 돌리라는 말이 없다 — 6단계 추출이 검사를 함께 돌려 실제로는 막힌다.
 - §실행 절차 10 의 `CAPTIONS` 를 4단계 HTML 캡션에서 손으로 옮겨 적어야 해 둘이 어긋날 수 있다.
+
+### 누출 정정 (2026-09-17)
+
+1~3회차 트리에 `보고서/실험02/실험2_CMOS_회로의_전기적_특성_예비보고서.pdf`(노션 내보내기, 커밋 `1eec878`)가 들어갔다. 이 PDF 4쪽의 이미지 둘이 승인 그림이다 — 1-1 은 승인본 PNG 와 픽셀까지 같고, 1-2 는 `V_T− 1.40 V`(승인본은 `1.4 V`) 한 자리만 다르다. 2회차 기록에 "손그림 결선도뿐" 이라 적은 것은 이미지 네 장 중 5쪽의 한 장만 열어 보고 일반화한 잘못이다.
+
+2·3회차 에이전트 실행 기록에서 이 PDF 이름은 폴더 목록 출력과 누출 보고에만 나오고 여는 호출(`Read`·`pdfimages`·`pdftoppm`·`pdftotext`)은 없다. 1회차 기록은 남아 있지 않다. 그래도 세 회차는 **답이 든 트리에서 돌았다.** §트리 만들기의 KEYS 에 `<실험NN>/*.pdf` 를 더하고 누출 확인 셋째 줄을 두었다 — 이후 회차가 깨끗한 트리의 첫 값이다.
