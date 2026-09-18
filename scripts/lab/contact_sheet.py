@@ -19,6 +19,7 @@
     python -m scripts.lab.contact_sheet <실험번호>                  # 합성
     python -m scripts.lab.contact_sheet <실험번호> --only 2-1       # 한 항목만 다시
     python -m scripts.lab.contact_sheet <실험번호> --tile-width 800 # 타일 폭(기본 1000)
+    python -m scripts.lab.contact_sheet <실험번호> --per-sheet 4    # 항목당 4장씩 여러 시트(_1, _2 …)
     python -m scripts.lab.contact_sheet <실험번호> --photo-dir DIR  # 사진 폴더 대체(시험용)
 """
 from __future__ import annotations
@@ -33,9 +34,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from . import config, md
 
-DEFAULT_TILE_W = 1000    # 타일 폭(px). 세로 사진이면 1000×1333
+DEFAULT_TILE_W = 1000    # 타일 폭(px). 타일 높이는 그 항목 사진의 비율에서 정한다
 CAPTION_H = 72
-GAP = 24
+GAP = 0                  # 타일 사이 여백. 2026-09-18 실험03 시트에서 사용자가 없앴다
 MAX_BYTES = 5 * 1024 * 1024
 COLS = 2
 
@@ -233,25 +234,54 @@ def _save_under_limit(sheet: Image.Image, out: Path) -> int:
     raise ContactSheetError(f"{out.name}: 품질을 낮춰도 5 MB 를 넘는다 ({size} B)")
 
 
-def build(plans: list[Plan], tile_w: int = DEFAULT_TILE_W) -> list[tuple[Path, int]]:
-    """문제 없는 Plan 만 합성한다. 문제 있는 Plan 이 하나라도 있으면 아무것도 만들지 않는다."""
+def _tile_height(photos: list, tile_w: int) -> int:
+    """그 항목 사진들의 세로/가로 비율 최대값으로 타일 높이를 정한다 — 정사각 사진에
+    4:3 타일을 주면 위아래에 흰 띠가 남는다(2026-09-18 실험03에서 사용자가 지적)."""
+    ratio = 0.0
+    for _, p in photos:
+        with Image.open(p) as im:
+            w, h = ImageOps.exif_transpose(im).size
+        ratio = max(ratio, h / w)
+    return round(tile_w * ratio)
+
+
+def _sheet_outputs(pl: Plan, per_sheet: int | None) -> list[tuple[Path, list, list]]:
+    """Plan 하나를 시트 단위로 쪼갠다. `per_sheet` 가 없으면 한 장, 있으면 그 수만큼
+    묶어 `_1`, `_2` … 접미어를 붙인다."""
+    n = len(pl.photos)
+    if not per_sheet or per_sheet >= n:
+        return [(pl.out, pl.photos, pl.captions)]
+    chunks = []
+    for i in range(0, n, per_sheet):
+        k = i // per_sheet + 1
+        out = pl.out.with_name(f"{pl.out.stem}_{k}{pl.out.suffix}")
+        chunks.append((out, pl.photos[i:i + per_sheet], pl.captions[i:i + per_sheet]))
+    return chunks
+
+
+def build(plans: list[Plan], tile_w: int = DEFAULT_TILE_W,
+          per_sheet: int | None = None) -> list[tuple[Path, int]]:
+    """문제 없는 Plan 만 합성한다. 문제 있는 Plan 이 하나라도 있으면 아무것도 만들지 않는다.
+
+    `per_sheet` 를 주면 항목 하나를 그 수만큼씩 여러 장으로 나눈다(예: 8장을 4장씩 두 장)."""
     bad = [p for p in plans if p.problems]
     if bad:
         raise ContactSheetError(
             "대조에 실패한 항목이 있어 합성하지 않는다: " + ", ".join(p.token for p in bad))
-    tile_h = round(tile_w * 4 / 3)
     font = _font(round(tile_w * 0.03))
     results = []
     for pl in plans:
         pl.out.parent.mkdir(exist_ok=True)
-        rows = -(-len(pl.photos) // COLS)
+        tile_h = _tile_height(pl.photos, tile_w)
         th = tile_h + CAPTION_H
-        sheet = Image.new("RGB", (COLS * tile_w + (COLS + 1) * GAP, rows * th + (rows + 1) * GAP), "white")
-        for k, ((_, p), cap) in enumerate(zip(pl.photos, pl.captions)):
-            x = GAP + (k % COLS) * (tile_w + GAP)
-            y = GAP + (k // COLS) * (th + GAP)
-            sheet.paste(_tile(p, cap, font, tile_w, tile_h), (x, y))
-        results.append((pl.out, _save_under_limit(sheet, pl.out)))
+        for out, photos, captions in _sheet_outputs(pl, per_sheet):
+            rows = -(-len(photos) // COLS)
+            sheet = Image.new("RGB", (COLS * tile_w + (COLS + 1) * GAP, rows * th + (rows + 1) * GAP), "white")
+            for k, ((_, p), cap) in enumerate(zip(photos, captions)):
+                x = GAP + (k % COLS) * (tile_w + GAP)
+                y = GAP + (k // COLS) * (th + GAP)
+                sheet.paste(_tile(p, cap, font, tile_w, tile_h), (x, y))
+            results.append((out, _save_under_limit(sheet, out)))
     return results
 
 
@@ -274,6 +304,8 @@ def main(argv=None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="캡션만 출력하고 파일을 만들지 않는다")
     ap.add_argument("--only", metavar="항목", help="이 항목 토큰(예: 2-1)만 다룬다")
     ap.add_argument("--tile-width", type=int, default=DEFAULT_TILE_W, metavar="PX")
+    ap.add_argument("--per-sheet", type=int, metavar="N",
+                    help="항목 하나를 사진 N장씩 여러 장으로 나눈다(파일명에 _1, _2 … 가 붙는다)")
     ap.add_argument("--photo-dir", type=Path, help="사진 폴더를 대체한다(시험용)")
     a = ap.parse_args(argv)
     try:
@@ -292,7 +324,7 @@ def main(argv=None) -> int:
                 print("    오류:", msg)
         if a.dry_run:
             return 1 if any(p.problems for p in plans) else 0
-        for out, size in build(plans, a.tile_width):
+        for out, size in build(plans, a.tile_width, a.per_sheet):
             print(f"저장 {out}  {size // 1024} KB")
     except ContactSheetError as e:
         print("오류:", e, file=sys.stderr)
