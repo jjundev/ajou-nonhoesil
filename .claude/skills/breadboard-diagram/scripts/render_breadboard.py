@@ -1242,7 +1242,7 @@ class BreadboardRenderer:
         t = str(n)
         bbox = d.textbbox((0, 0), t, font=self.font_num)
         d.text((x - (bbox[2]-bbox[0])/2 - bbox[0], y - (bbox[3]-bbox[1])/2 - bbox[1]),
-               t, fill=color, font=self.font_num)
+               t, fill=text, font=self.font_num)
 
     def _endpoint(self, p):
         """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))`. `wiring()`
