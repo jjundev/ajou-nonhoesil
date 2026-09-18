@@ -1109,6 +1109,46 @@ def check_table_width(md_text) -> list:
     return out
 
 
+_PHOTO_SECTION = re.compile(r"^#\s+(?:\d+[.)]\s*)?실험 사진\s*$")
+
+
+def check_result_photo_diagrams(md_text) -> list:
+    """결과보고서 "실험 사진" 절의 항목 소절마다 결선도 그림이 시트 앞에 있는지 본다.
+
+    2026-09-18 실험01 결보 조교 피드백("실험 사진과 함께 예비보고서에서
+    그리셨던 회로 결선도를 첨부")으로 ④ §사진 배치가 소절마다 손그림 결선도
+    한 장을 시트 앞에 싣게 됐다. 결선도는 경로에 `결선도/` 가 들어간 그림이다 —
+    손그림(`결선도/손그림/`)이 정본이고 작도 PNG(`결선도/`)는 폴백이라 둘 다 센다.
+
+    "실험 사진" 대절이 없는 문서(예비보고서, 다른 프리셋)는 대상이 아니다 —
+    ⑤ 가 예보에도 같은 검사 묶음을 돌리므로 조용히 빈 목록을 돌려준다.
+    warn 인 까닭: 손그림도 작도 PNG 도 없는 주차가 있을 수 있고, 그때 ④ 는
+    멈추지 않고 결선도 없이 쓴다.
+    """
+    _, body = md.split_frontmatter(md_text)
+    blocks = re.split(r"(?m)^(?=# )", body)
+    photo = next((b for b in blocks
+                  if _PHOTO_SECTION.match(b.split("\n", 1)[0])), None)
+    if photo is None:
+        return []
+    out = []
+    for sub in re.split(r"(?m)^(?=## )", photo)[1:]:
+        title = sub.split("\n", 1)[0][3:].strip()
+        where = f"실험 사진 / {title}"
+        srcs = _IMAGE.findall(sub)
+        diagram = [i for i, s in enumerate(srcs) if "결선도/" in s]
+        if not diagram:
+            out.append(Finding("warn", where,
+                "예비보고서의 결선도 그림이 없다 — 시트 앞에 "
+                "`../결선도/손그림/` 의 손그림을 싣는다(④ §사진 배치)"))
+            continue
+        sheets = [i for i, s in enumerate(srcs) if "결선도/" not in s]
+        if sheets and diagram[0] > sheets[0]:
+            out.append(Finding("warn", where,
+                "결선도가 사진 시트 뒤에 있다 — 결선도를 시트 앞에 둔다(④ §사진 배치)"))
+    return out
+
+
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
 

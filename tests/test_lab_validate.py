@@ -2190,5 +2190,75 @@ class TestItemScope(unittest.TestCase):
         self.assertFalse(any("_350547_1" in f.message for f in validate.validate_spec(spec)))
 
 
+class TestCheckResultPhotoDiagrams(unittest.TestCase):
+    """결과보고서 실험 사진 절의 항목 소절마다 예보 결선도가 있는지 본다.
+
+    2026-09-18 실험01 결보 조교 피드백("실험 사진과 함께 예비보고서에서
+    그리셨던 회로 결선도를 첨부")에서 왔다. 산문 규칙만 두면 격리 재생성에서
+    빠져도 아무도 못 잡는다.
+    """
+
+    GOOD = (
+        "# 실험 사진\n\n머리말.\n\n"
+        "## 실험 1-2) 전가산기\n\n"
+        "![예비보고서에서 그린 전가산기 결선도](../결선도/손그림/실험03_1-2_손그림_전가산기.png)\n\n"
+        "![전가산기 회로의 입력 조합 000부터 011까지](../실험사진/시트/a_1.jpg)\n\n"
+        "## 실험 2-2) 전감산기\n\n"
+        "![예비보고서에서 그린 전감산기 결선도](../결선도/손그림/실험03_2-2_손그림_전감산기.png)\n\n"
+        "![전감산기 회로의 입력 조합 000부터 011까지](../실험사진/시트/b_1.jpg)\n\n"
+        "# 예비보고서와의 비교\n\n본문.\n"
+    )
+
+    def test_소절마다_결선도가_시트_앞에_있으면_깨끗하다(self):
+        self.assertEqual(validate.check_result_photo_diagrams(self.GOOD), [])
+
+    def test_결선도가_빠진_소절을_지목한다(self):
+        text = self.GOOD.replace(
+            "![예비보고서에서 그린 전감산기 결선도](../결선도/손그림/실험03_2-2_손그림_전감산기.png)\n\n", "")
+        found = validate.check_result_photo_diagrams(text)
+        self.assertEqual(len(found), 1, found)
+        self.assertEqual(found[0].level, "warn")
+        self.assertEqual(found[0].where, "실험 사진 / 실험 2-2) 전감산기")
+
+    def test_결선도가_시트_뒤에_있으면_잡는다(self):
+        text = (
+            "# 실험 사진\n\n"
+            "## 실험 1-1) 3-input AND gate\n\n"
+            "![3입력 AND 회로의 네 입력 조합](../실험사진/시트/a.jpg)\n\n"
+            "![예비보고서에서 그린 3입력 AND 결선도](../결선도/손그림/b.png)\n"
+        )
+        found = validate.check_result_photo_diagrams(text)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("앞", found[0].message)
+
+    def test_다른_대절의_결선도는_세지_않는다(self):
+        text = (
+            "# 실험 사진\n\n"
+            "## 실험 1-1) 3-input AND gate\n\n"
+            "![3입력 AND 회로의 네 입력 조합](../실험사진/시트/a.jpg)\n\n"
+            "# 결과 분석\n\n"
+            "![예비보고서에서 그린 3입력 AND 결선도](../결선도/손그림/b.png)\n"
+        )
+        self.assertEqual(len(validate.check_result_photo_diagrams(text)), 1)
+
+    def test_작도_PNG_폴백도_결선도로_센다(self):
+        text = (
+            "# 실험 사진\n\n"
+            "## 실험 1-1) 3-input AND gate\n\n"
+            "![예비보고서의 3입력 AND 결선도](../결선도/실험01_1-1_결선도_3입력_AND.png)\n\n"
+            "![3입력 AND 회로의 네 입력 조합](../실험사진/시트/a.jpg)\n"
+        )
+        self.assertEqual(validate.check_result_photo_diagrams(text), [])
+
+    def test_실험_사진_절이_없으면_검사하지_않는다(self):
+        # 예비보고서에도 같이 부르므로 대상이 아니면 조용해야 한다.
+        text = "# 회로 결선도\n\n## 실험 1-1) 결선\n\n![결선도](../결선도/a.png)\n"
+        self.assertEqual(validate.check_result_photo_diagrams(text), [])
+
+    def test_프런트매터가_있어도_동작한다(self):
+        text = "---\nexperiment: 3\n---\n\n" + self.GOOD
+        self.assertEqual(validate.check_result_photo_diagrams(text), [])
+
+
 if __name__ == "__main__":
     unittest.main()
