@@ -285,5 +285,84 @@ class Baseline(unittest.TestCase):
         self.assertIn('좌 a12 → 좌 a25', str(cm.exception))
 
 
+class RemovalBoard(unittest.TestCase):
+    """걷기 보드 — 앞 회로는 전부 회색, 다음 회로에 없는 배선만 빨간 점선 + 번호."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def _frame(self, bb):
+        c = bb.cols['left']
+        bb.enable_steps()
+        bb.draw_chip('74HC08', 7)
+        bb.connect_jacks()
+        bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
+        bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
+        bb.connect_power(7)
+        return c
+
+    def prev_fn(self, output_path, template_path=None, stage=None, baseline=None):
+        """앞 회로: 출력 배선 + LED 사슬."""
+        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline)
+        bb.set_header('앞 회로', '출력 -> L2')
+        c = self._frame(bb)
+        bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig', '출력 -> L2')
+        bb.led_chain(c['a'], 25, 'L2', '최종')
+        bb.partial = True          # 74HC08 핀이 뜬다 — 최소 보드라 정상
+        bb.export(output_path, max_row=31)
+        return bb
+
+    def next_fn(self, output_path, template_path=None, stage=None, baseline=None):
+        """다음 회로: 출력 배선이 없고 LED 사슬만 남는다."""
+        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline)
+        bb.set_header('다음 회로', '출력 없음')
+        c = self._frame(bb)
+        bb.led_chain(c['a'], 25, 'L2', '최종')
+        bb.partial = True
+        bb.export(output_path, max_row=31)
+        return bb
+
+    def test_걷기_보드는_앞_회로를_회색으로_다음에_없는_선을_유령으로_그린다(self):
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None),
+                                       '걷기 제목', '걷기 부제')
+        with tempfile.TemporaryDirectory() as d:
+            g = build(os.path.join(d, 'g.png'))
+            self.assertEqual((g.title, g.submit, g.partial), ('걷기 제목', False, True))
+            self.assertEqual(g.steps, [])
+            self.assertEqual([(r['n'], r['addr']) for r in g.removals()], [(1, '좌 a12 → 좌 a25')])
+            self.assertEqual(len(g.ghost_drawn), 1)
+            self.assertTrue(any('L2' in k for k in g.kept))
+            self.assertTrue(os.path.exists(os.path.join(d, 'g.png')))
+
+    def test_걷기_보드의_snapshot_을_기준선으로_쓰면_다음_보드에_걷을_것이_없다(self):
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
+        with tempfile.TemporaryDirectory() as d:
+            g = build(os.path.join(d, 'g.png'))
+            nb = self.next_fn(os.path.join(d, 'n.png'), baseline=g.snapshot())
+            self.assertEqual(nb.removed(), [])
+            self.assertEqual(nb.removals(), [])
+
+    def test_기준선을_넘겨도_같은_걷기_보드가_나온다(self):
+        """사슬(`build_all`)은 앞 보드의 snapshot 을 넘기고, 단계 래퍼는 안 넘긴다."""
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
+        with tempfile.TemporaryDirectory() as d:
+            base = self.prev_fn(os.path.join(d, 'p.png')).snapshot()
+            a = build(os.path.join(d, 'a.png'), baseline=base)
+            b = build(os.path.join(d, 'b.png'))
+            self.assertEqual(a.stamp(), b.stamp())
+
+    def test_걷을_것이_없는_경계는_거절한다(self):
+        build = self.mod.removal_board((self.prev_fn, None), (self.prev_fn, None), 't', 's')
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(ValueError):
+                build(os.path.join(d, 'g.png'))
+
+    def test_클로저는_엔진_모듈_소속이라_주차_빌더_열거에_안_잡힌다(self):
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
+        self.assertEqual(build.__module__, self.mod.__name__)
+        self.assertTrue(build.__name__.startswith('removal_'))
+
+
 if __name__ == '__main__':
     unittest.main()

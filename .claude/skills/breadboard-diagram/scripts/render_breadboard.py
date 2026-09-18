@@ -1826,6 +1826,40 @@ def load_board(experiment):
     return load_board_file(board_path(experiment), f'board_e{experiment}')
 
 
+def removal_board(prev, nxt, title, subtitle):
+    """걷기 보드 빌더를 만든다. `prev`·`nxt` 는 `(빌더, stage)`.
+
+    앞 회로(`prev`)를 전부 회색으로 그리고, 다음 회로(`nxt`)에 없는 배선만 빨간 점선 +
+    걷기 번호로 그린다. 새 선은 없다. 회로가 바뀌는 경계마다 한 장 — 2026-09-18 실험03
+    에서 걷을 두 가닥이 footer 표에만 있어 실험실에서 놓쳤다.
+
+    돌려주는 클로저는 표준 빌더 시그니처라 `BOARDS` 에 그대로 들어간다. `__module__` 이
+    엔진이라 주차 파일의 `build_*` 열거(`tests/_boards.py`)에 안 잡힌다 — 걷기 보드는
+    `steps` 가 비어 가독성 검사(`steps > 0`)의 대상이 아니다. 주차 파일에 `build_` 로
+    시작하는 래퍼를 두지 않는다.
+
+    `baseline` 을 안 넘기면 앞 보드를 임시 렌더해 스스로 만든다 — 단계 래퍼
+    (`_eN_board`)가 그렇게 부른다. 사슬(`build_all`)은 앞 보드의 snapshot 을 넘긴다.
+    """
+    prev_fn, prev_stage = prev
+    nxt_fn, nxt_stage = nxt
+
+    def build(output_path, template_path=None, stage=None, baseline=None):
+        with tempfile.TemporaryDirectory() as d:
+            base = baseline or prev_fn(os.path.join(d, 'prev.png'), template_path,
+                                       stage=prev_stage).snapshot()
+            nb = nxt_fn(os.path.join(d, 'next.png'), template_path,
+                        stage=nxt_stage, baseline=base)
+            wires = {r['key']: r['n'] for r in nb.removals()}
+        if not wires:
+            raise ValueError(f'{title}: 걷을 배선이 없다 — 걷기 보드가 필요 없는 경계다')
+        ghost = dict(base, ghost={'wires': wires, 'title': title, 'subtitle': subtitle})
+        return prev_fn(output_path, template_path, stage=prev_stage, baseline=ghost)
+
+    build.__name__ = f'removal_{nxt_fn.__name__}'
+    return build
+
+
 def build_all(board, output_dir, template_path=None):
     """주차 결선 파일 `board` 의 결선도를 전부 뽑는다 — 절차 사슬 `BOARDS` 는 앞 보드를
     기준선으로 이어 그리고(회색·걷기 표), 완성본 `FINALS` 는 기준선 없이 그린다.
