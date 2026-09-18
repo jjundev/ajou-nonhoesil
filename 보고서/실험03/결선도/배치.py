@@ -4,7 +4,7 @@
 import os
 import tempfile
 
-from render_breadboard import BreadboardRenderer, _input_jumper
+from render_breadboard import BreadboardRenderer, _input_jumper, removal_board
 
 
 # 실험 3 · 가산기 & 감산기 — 2026-2 배포본(9쪽) 기준, 2026-09-14 저작
@@ -101,7 +101,9 @@ def _e3_draw(bb, circuit, stage):
     # 사슬(fa·fs)은 급전선이 옮겨지지 않는다 — 회귀 전용 완성본(ha·hs)만 옛 문구를 쓴다.
     led_note = _E3_LED_NOTE_CHAIN if full else _E3_LED_NOTE_REGRESSION
     done = stage != 1
-    bb.partial = not done
+    # 걷기 보드(ghost)는 앞 회로를 완성 상태로 그리지만 뽑을 두 가닥을 점유표에서 빼므로
+    # 74HC08 pin 1·4 가 뜬다 — 그게 정상이라 생성자가 켜 둔 `partial` 을 도로 내리지 않는다
+    bb.partial = not done or bb.ghost is not None
 
     # --- 좌 S1: XOR + 입력 + LED1 ---
     bb.draw_chip('74HC86', _E3_S1)
@@ -292,12 +294,13 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
 
 
 def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
-    """실험 2-2 · 전감산기 (네 칩 전부). netlist C4. 1단계.
+    """실험 2-2 · 전감산기 (네 칩 전부). netlist C4. 걷기 보드(0단계) + 1단계.
 
-    전가산기(C2) 완성 상태에서 바꾼다 — 74HC04 를 S2 에 꽂고, AND1 pin 1 로 가던
-    A 갈래와 AND2 pin 4 로 가던 A⊕B 선을 걷어 인버터를 거치게 다시 꽂는다. Ci
-    점퍼는 그 자리 그대로 Bi 가 되고, LED 급전선 둘도 그대로다. 1단계가 곧 완성이다
-    (`stage=1` 은 `_e3_draw` 가 거절한다).
+    전가산기(C2) 완성 상태에서 바꾼다 — 0단계(걷기 보드)에서 AND1 pin 1 로 가던 A 갈래와
+    AND2 pin 4 로 가던 A⊕B 선을 걷고, 1단계에서 74HC04 를 S2 에 꽂아 인버터를 거치게
+    다시 꽂는다. Ci 점퍼는 그 자리 그대로 Bi 가 되고, LED 급전선 둘도 그대로다. 1단계가
+    곧 완성이다 (`stage=1` 은 `_e3_draw` 가 거절한다). 걷기 보드는 `BOARDS` 의
+    `removal_board(...)` 가 만든다 — 이 빌더에 `build_*` 래퍼는 없다.
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
@@ -314,9 +317,16 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
 
 # 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
 # 실제로 남아 있는 것. 첫 보드(C2 1단계)는 맨바닥에서 시작하므로 기준선이 없다.
+# C2 → C4 경계에 걷기 보드(0단계)가 있다 — 2026-09-18 실험실에서 걷을 두 가닥이
+# footer 표에만 있어 놓쳤다. 걷기 보드는 앞 회로가 전부 회색이고 뽑을 선만 빨간 점선이다.
 BOARDS = [
     ("실험03_1-2_결선도_전가산기_1단계_XOR.png", build_e3_fa, 1),
     ("실험03_1-2_결선도_전가산기_2단계_Co경로.png", build_e3_fa, None),
+    ("실험03_2-2_결선도_전감산기_0단계_걷기.png",
+     removal_board((build_e3_fa, None), (build_e3_fs, None),
+                   "실험 2-2: 전감산기 — 0단계 (전가산기에서 걷는 선 2가닥)",
+                   "A→74HC08 pin 1 갈래와 A⊕B→74HC08 pin 4 를 뽑는다 · 회색은 그대로 둔다"),
+     None),
     ("실험03_2-2_결선도_전감산기_1단계_NOT.png", build_e3_fs, None),
 ]
 
@@ -353,5 +363,5 @@ def build_e3_fa_s2(output_path, template_path=None):
 
 
 def build_e3_fs_s1(output_path, template_path=None):
-    """C4 1단계 — 전가산기에서 74HC04 를 끼워 전감산기로 바꾼다. 완성."""
-    return _e3_board(2, output_path, template_path)
+    """C4 1단계 — 걷기 보드(0단계) 뒤에 74HC04 를 끼워 전감산기로 바꾼다. 완성."""
+    return _e3_board(3, output_path, template_path)

@@ -281,14 +281,45 @@ class WiringE3(unittest.TestCase):
         made = {n for n, _f, _s in self.b3.BOARDS} | {n for n, _f in self.b3.FINALS}
         self.assertEqual(wanted, made)
 
-    def test_보드_사슬은_3장_완성본은_2장이다(self):
-        """반가산기·반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다."""
-        self.assertEqual(len(self.b3.BOARDS), 3)
+    def test_보드_사슬은_4장_완성본은_2장이다(self):
+        """반가산기·반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다.
+        전가산기 → 전감산기 경계에 걷기 보드(0단계) 한 장이 있다(2026-09-18 실험실 기록)."""
+        self.assertEqual(len(self.b3.BOARDS), 4)
         self.assertEqual(len(self.b3.FINALS), 2)
         names = [n for n, _f, _s in self.b3.BOARDS] + [n for n, _f in self.b3.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
         self.assertNotIn(self.b3.BOARDS[-1][0], [n for n, _f in self.b3.FINALS])
         self.assertFalse(any(k in n for n in names for k in ('반가산기', '반감산기')), names)
+        self.assertEqual(self.b3.BOARDS[2][0], '실험03_2-2_결선도_전감산기_0단계_걷기.png')
+
+    def _chain(self):
+        """`build_all` 과 같은 순서로 사슬을 이어 그린 렌더러 목록."""
+        out, base = [], None
+        for name, fn, stage in self.b3.BOARDS:
+            bb = fn(os.path.join(self.tmp, name), stage=stage, baseline=base)
+            out.append(bb)
+            base = bb.snapshot()
+        return out
+
+    def test_걷기_보드는_두_가닥만_유령이고_새_선이_없다(self):
+        g = self._chain()[2]
+        self.assertEqual([(r['n'], r['addr']) for r in g.removals()],
+                         [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13')])
+        self.assertEqual(g.steps, [])
+        self.assertTrue(g.partial)
+        self.assertFalse(g.submit)
+        self.assertEqual([c['label'] for c in g.wiring()['chips']], ['74HC86', '74HC08', '74HC32'])
+
+    def test_걷기_보드_뒤의_전감산기_1단계는_걷을_것이_없다(self):
+        fs = self._chain()[3]
+        self.assertEqual(fs.removed(), [])
+        # 새 번호 일곱 개: 74HC04(1) + 네 가닥(4) + 전원 두 가닥(2) — 걷기 보드가 있어도 같다
+        self.assertEqual(len(fs.steps), 7, fs.steps)
+
+    def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
+        """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
+        _name, fn, _stage = self.b3.BOARDS[2]
+        self.assertEqual(fn.__module__, self.mod.__name__)
 
     def test_전가산기_1단계는_맨바닥에서_XOR_쪽만_꽂는다(self):
         """반가산기(실험 1-1)를 안 하므로 전가산기가 첫 보드다 — 기준선이 없고
