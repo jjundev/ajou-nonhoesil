@@ -527,6 +527,14 @@ class SkillDocInvariants(unittest.TestCase):
                 # `check_notion_markdown` 이 빠져 있던 것을 에이전트가 지적했다.
                 self.assertIn("check_notion_markdown(", self.docs[name])
 
+    def test_photo_diagram_check_is_called_by_writer_and_reviewer(self):
+        # 2026-09-18 실험01 결보 조교 피드백으로 실험 사진 절에 예보 결선도를
+        # 싣게 됐다. ④ 가 안 부르면 쓴 세션 안에서 못 고치고, ⑤ 가 안 부르면
+        # 같은 보고서를 두 기준으로 잰다.
+        for name in ("결과", "리뷰"):
+            with self.subTest(name):
+                self.assertIn("check_result_photo_diagrams(", self.docs[name])
+
     def test_table_header_check_is_called_by_writer_and_reviewer(self):
         # 2026-09 실험01 예보가 명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 내고
         # ⑤ 를 통과해 조교 감점을 받았다. ③ 이 안 부르면 쓴 세션 안에서 못 고치고,

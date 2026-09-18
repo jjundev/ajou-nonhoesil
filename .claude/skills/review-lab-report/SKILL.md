@@ -199,6 +199,8 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
        print(f)
    for f in validate.check_body_style(Path('<보고서 경로>').read_text(encoding='utf-8')):
        print(f)
+   for f in validate.check_result_photo_diagrams(Path('<보고서 경로>').read_text(encoding='utf-8')):
+       print(f)
    for f in validate.check_notion_markdown('<보고서 경로>'):
        print(f)
    for f in validate.check_report_tables('<보고서 경로>', spec,
@@ -210,8 +212,11 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
    `check_body_style` 은 본문 문체(백틱·em dash·"첫째"·조사/단위 띄어쓰기)를
    warn 으로 잡는다 — ③ §절대 규칙 21·④ §절대 규칙 8·18 의 기계 검사판이다.
    warn 이라도 라운드 문서에 그대로 적는다. `check_notion_markdown` 은
-   ④ §실행 절차 12 가 도는 다섯 검사 중 넷째다 — 여기서 빠지면 ⑤ 가 ④ 보다 좁게
+   ④ §실행 절차 12 가 도는 여섯 검사 중 셋째다 — 여기서 빠지면 ⑤ 가 ④ 보다 좁게
    재는 셈이 된다(2026-09-12 격리 1회차에서 에이전트가 지적).
+
+   `check_result_photo_diagrams` 는 결과보고서 실험 사진 절에만 반응하고 예보에는
+   빈 목록을 돌려준다 — 두 종류에 같은 블록을 돌려도 된다.
 
    `check_report_tables` 는 보고서 표의 열 이름·열 수·열 순서를 명세 기록표(진리표와
    스텝표)와 맞댄다. ③ §절대 규칙 22 의 기계 검사판이다. 2단계의 행 수 대조는 명세

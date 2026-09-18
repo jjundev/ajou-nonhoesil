@@ -552,12 +552,13 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
               + validate.check_report_references(rep, spec, root=root)
               + validate.check_notion_markdown(rep)
               + validate.check_body_style(Path(rep).read_text(encoding='utf-8'))
+              + validate.check_result_photo_diagrams(Path(rep).read_text(encoding='utf-8'))
               + validate.check_report_tables(rep, spec, cells=False)):
         print(f)
     "
     ```
 
-    **다섯 검사를 한꺼번에 돌린다.** `check_body_style` 은 warn 이지만 여기서
+    **여섯 검사를 한꺼번에 돌린다.** `check_body_style` 은 warn 이지만 여기서
     고친다 — §절대 규칙 8·18 의 기계 검사판이라 남기면 그대로 노션에 올라간다.
     섹션만 보면 참고문헌 누락(§절대 규칙 10)은 ⑤ 에서야 걸린다 — 실험01
     결보 v2 가 그렇게 노션까지 올라간 뒤에 error 5건으로 돌아왔다.
@@ -565,6 +566,10 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     잡아야 md 를 낸 세션 안에서 고칠 수 있다.
     `check_report_tables(…, cells=False)` 는 결과 표 머리가 명세 기록표 머리와 같은지만
     본다(§절대 규칙 19) — 결과 칸은 관측값이라 셀은 보지 않는다.
+
+    `check_result_photo_diagrams` 는 실험 사진 절 항목 소절마다 예보 결선도가
+    시트 앞에 있는지 warn 으로 본다(§사진 배치). 결선도를 구할 수 없던 주차라
+    남기는 warn 이면 §실행 절차 14 결과 안내에 그 사정을 적는다.
 
     `item_count=len(spec.items)` 를 항상 넘긴다 — `repeat: per-item` 섹션이
     항목 수만큼 정확히 반복됐는지는 이 인자 없이는 검사되지 않는다. 출력이
