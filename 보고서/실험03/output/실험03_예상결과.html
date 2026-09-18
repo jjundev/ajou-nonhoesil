@@ -1,0 +1,355 @@
+<title>실험03 예상 결과 그림</title>
+<meta charset="utf-8">
+<!--
+  실험03 예비보고서 "실험 과정 및 예상 결과" 절의 진리표 뒤에 넣을 그림 두 장.
+  값은 본문 부울식에서 계산하고, 명세 T3·T7 진리표와 대조해 어긋나면 페이지에 경고를 띄운다.
+  PNG 추출: ?fig=1 (1000×636) / ?fig=2 (1000×716) 으로 열면 그림 한 장만 남는다.
+  Chrome 헤드리스로 --window-size=1000,<높이> --force-device-scale-factor=3 캡처.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F3F4F6;
+    --ink: #1A1D21;
+    --muted: #5B636D;
+    --line: #D9DDE2;
+    --accent: #1F4FA8;
+    --code-bg: #E8EBEF;
+    --warn-bg: #FBE9E7;
+    --warn-ink: #8A1F17;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #15181C;
+      --ink: #E7EAEE;
+      --muted: #9BA3AD;
+      --line: #313740;
+      --accent: #8FB0EC;
+      --code-bg: #262B31;
+      --warn-bg: #3A1D1A;
+      --warn-ink: #F4B4AC;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #15181C;
+    --ink: #E7EAEE;
+    --muted: #9BA3AD;
+    --line: #313740;
+    --accent: #8FB0EC;
+    --code-bg: #262B31;
+    --warn-bg: #3A1D1A;
+    --warn-ink: #F4B4AC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 40px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  header { display: flex; flex-direction: column; gap: 8px; max-width: 68ch; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 { margin: 0; font-size: 28px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
+  h2 { margin: 0; font-size: 18px; font-weight: 600; text-wrap: balance; }
+  p { margin: 0; }
+  .lede { color: var(--muted); }
+  .warn {
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .fig-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .fig-head .file {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  /* 그림은 노션의 흰 페이지에 들어가므로 테마와 무관하게 흰 종이로 고정한다 */
+  .paper {
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px;
+  }
+  .paper svg { display: block; width: 100%; height: auto; }
+  figcaption {
+    max-width: 72ch;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+  }
+  figcaption b { font-weight: 600; }
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px 32px;
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+  }
+  .notes h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+  .notes p { color: var(--muted); font-size: 14px; }
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ?fig=N 추출 모드: 그림 한 장만 가로 1000 으로 */
+  html.export, html.export body { background: #FFFFFF; }
+  html.export .wrap { max-width: none; padding: 0; gap: 0; }
+  html.export header, html.export .notes, html.export figcaption,
+  html.export .fig-head, html.export figure:not(.on) { display: none; }
+  html.export .paper { border: 0; border-radius: 0; padding: 0; }
+  html.export .paper svg { width: 1000px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">실험03 · 가산기 &amp; 감산기 · 예비보고서</span>
+    <h1>예상 결과 그림 — 전가산기와 전감산기의 신호 격자</h1>
+    <p class="lede">실험 1-2·2-2 소절의 진리표 바로 뒤에 넣을 그림 두 장이다. 여덟 입력 조합마다 입력, 입력 1의 개수, LED 가 없는 중간 노드, 출력 LED 를 한 격자에 놓아 진리표의 각 행이 왜 그 값인지 보이게 했다.</p>
+    <p class="warn" id="warn" hidden></p>
+  </header>
+
+  <figure id="f1">
+    <div class="fig-head">
+      <h2>그림 1 · 실험 1-2) 전가산기</h2>
+      <span class="file">실험03_1-2_예상결과_전가산기.png</span>
+    </div>
+    <div class="paper" id="paper1"></div>
+    <figcaption><b>그림 1.</b> 전가산기의 입력 조합별 예상 신호. 회색 줄은 LED 가 없어 관측하지 않는 중간 노드이고, 출력 LED 는 값이 1일 때 켜진다.</figcaption>
+  </figure>
+
+  <figure id="f2">
+    <div class="fig-head">
+      <h2>그림 2 · 실험 2-2) 전감산기</h2>
+      <span class="file">실험03_2-2_예상결과_전감산기.png</span>
+    </div>
+    <div class="paper" id="paper2"></div>
+    <figcaption><b>그림 2.</b> 전감산기의 입력 조합별 예상 신호. 회색 줄은 LED 가 없어 관측하지 않는 중간 노드이고, 출력 LED 는 값이 1일 때 켜진다.</figcaption>
+  </figure>
+
+  <section class="notes">
+    <div>
+      <h3>값의 출처</h3>
+      <p>격자 값은 본문 부울식 S = A⊕B⊕Ci, Co = A·B + (A⊕B)·Ci 와 D = A⊕B⊕Bi, Bo = A'·B + (A⊕B)'·Bi 에서 계산했다. 출력 두 줄은 명세 T3·T7 진리표와 대조되며, 어긋나면 이 페이지 맨 위에 경고가 뜬다.</p>
+    </div>
+    <div>
+      <h3>LED 가 켜지는 조건</h3>
+      <p>넷리스트대로 출력 → 330Ω → LED 애노드, 캐소드 → GND 라서 출력이 1일 때 켜진다. 준비물에 LED 색이 적혀 있지 않아 특정 색으로 그리지 않았다.</p>
+    </div>
+    <div>
+      <h3>PNG 추출</h3>
+      <p><code>?fig=1</code> 은 1000×636, <code>?fig=2</code> 는 1000×716 으로 그림 한 장만 남는다. Chrome 헤드리스 3배 캡처로 가로 3000 px 를 뽑는다.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var W = 1000;
+  var C = {
+    ink: "#1A1D21", muted: "#5B636D", faint: "#9AA1AA", grid: "#E4E7EB", rule: "#C9CED5",
+    midFill: "#EEF0F3", on: "#1F4FA8", onHalo: "rgba(31,79,168,0.16)"
+  };
+  var FONT = "'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif";
+  var MONO = "'IBM Plex Mono',ui-monospace,monospace";
+
+  var COL0 = 320, COLW = 80;                     // 8 열: 320 ~ 960
+  function cx(i) { return COL0 + COLW * i + COLW / 2; }
+  function f2(n) { return Math.round(n * 100) / 100; }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function text(x, y, s, o) {
+    o = o || {};
+    var a = ' x="' + f2(x) + '" y="' + f2(y) + '" font-size="' + (o.size || 18) + '" fill="' + (o.fill || C.ink) + '"';
+    if (o.anchor) a += ' text-anchor="' + o.anchor + '"';
+    if (o.weight) a += ' font-weight="' + o.weight + '"';
+    if (o.mono) a += ' font-family="' + MONO + '"';
+    return "<text" + a + ">" + esc(s) + "</text>";
+  }
+  function line(x1, y1, x2, y2, stroke, w) {
+    return '<line x1="' + f2(x1) + '" y1="' + f2(y1) + '" x2="' + f2(x2) + '" y2="' + f2(y2) + '" stroke="' + stroke + '" stroke-width="' + w + '" />';
+  }
+  function circle(x, y, r, fill, stroke, w) {
+    return '<circle cx="' + f2(x) + '" cy="' + f2(y) + '" r="' + r + '" fill="' + fill + '"' +
+      (stroke ? ' stroke="' + stroke + '" stroke-width="' + w + '"' : "") + " />";
+  }
+  function led(x, y, lit) {
+    if (!lit) return circle(x, y, 13, "#FFFFFF", C.faint, 2);
+    var s = circle(x, y, 22, C.onHalo);
+    for (var k = 0; k < 8; k++) {
+      var a = k * Math.PI / 4, r0 = 17, r1 = 24;
+      s += line(x + Math.cos(a) * r0, y + Math.sin(a) * r0, x + Math.cos(a) * r1, y + Math.sin(a) * r1, C.on, 2);
+    }
+    return s + circle(x, y, 13, C.on);
+  }
+  function combos() {
+    var out = [];
+    for (var n = 0; n < 8; n++) out.push({ a: (n >> 2) & 1, b: (n >> 1) & 1, c: n & 1 });
+    return out;
+  }
+
+  // rows: {kind: section|input|count|mid|led, label, fn, legend}
+  function figure(title, headLabel, rows, ariaLabel) {
+    var R = combos();
+    var H_SECTION = 44, H_ROW = 40, H_LED = 58;
+    var y = 0, s = "";
+
+    // 머리 행: 입력 조합
+    y = 50;
+    s += text(40, y + 6, headLabel, { fill: C.muted, size: 17 });
+    R.forEach(function (r, i) {
+      s += text(cx(i), y + 6, "" + r.a + r.b + r.c, { anchor: "middle", mono: true, size: 19, weight: 500 });
+    });
+    var gridTop = y + 22;
+    y = gridTop;
+
+    var bands = [];
+    rows.forEach(function (row) {
+      if (row.kind === "section") {
+        y += H_SECTION;
+        s += line(40, y - 26, W - 40, y - 26, C.rule, 1);
+        s += text(40, y - 4, row.label, { size: 15, fill: C.muted, weight: 600 });
+        if (row.legend) s += row.legend(W - 40, y - 9);
+        y += 4;
+        return;
+      }
+      var h = row.kind === "led" ? H_LED : H_ROW;
+      var mid = y + h / 2;
+      if (row.kind === "mid") bands.push([y + 3, h - 6]);
+      s += text(40, mid + 6, row.label, {
+        size: 18, fill: row.kind === "mid" ? C.muted : C.ink,
+        weight: row.kind === "led" ? 600 : null
+      });
+      R.forEach(function (r, i) {
+        var v = row.fn(r), x = cx(i);
+        if (row.kind === "input") {
+          s += v ? circle(x, mid, 9, C.ink) : circle(x, mid, 9, "#FFFFFF", C.faint, 1.6);
+        } else if (row.kind === "count") {
+          s += text(x, mid + 6, String(v), { anchor: "middle", mono: true, size: 18 });
+        } else if (row.kind === "mid") {
+          if (v) s += '<rect x="' + f2(x - 22) + '" y="' + f2(mid - 14) + '" width="44" height="28" rx="4" fill="#DCE0E6" />';
+          s += text(x, mid + 6, String(v), { anchor: "middle", mono: true, size: 18, fill: v ? C.ink : C.faint });
+        } else if (row.kind === "led") {
+          s += led(x, mid, v);
+        }
+      });
+      y += h;
+    });
+    var gridBottom = y + 6;
+
+    // 중간 노드 줄의 옅은 바탕은 글자보다 먼저 깔려야 한다
+    var under = bands.map(function (b) {
+      return '<rect x="' + (COL0 - 290) + '" y="' + f2(b[0]) + '" width="' + (W - 30 - (COL0 - 290)) + '" height="' + f2(b[1]) + '" fill="' + C.midFill + '" />';
+    }).join("");
+    var cols = "";
+    for (var i = 0; i <= 8; i++) cols += line(COL0 + COLW * i, gridTop - 2, COL0 + COLW * i, gridBottom, C.grid, 1);
+
+    var H = Math.ceil(gridBottom + 18);
+    return {
+      h: H,
+      svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + ariaLabel +
+        '" font-family="' + FONT + '"><rect width="' + W + '" height="' + H + '" fill="#FFFFFF" />' + under + cols + s + "</svg>"
+    };
+  }
+
+  function inputLegend(x, y) {
+    return circle(x - 118, y - 5, 7, C.ink) + text(x - 104, y + 1, "1", { size: 15, fill: C.muted, mono: true }) +
+      circle(x - 64, y - 5, 7, "#FFFFFF", C.faint, 1.6) + text(x - 50, y + 1, "0", { size: 15, fill: C.muted, mono: true });
+  }
+  function ledLegend(x, y) {
+    return circle(x - 196, y - 5, 8, C.on) + text(x - 180, y + 1, "켜짐 (1)", { size: 15, fill: C.muted }) +
+      circle(x - 82, y - 5, 8, "#FFFFFF", C.faint, 1.8) + text(x - 66, y + 1, "꺼짐 (0)", { size: 15, fill: C.muted });
+  }
+  function xor(p, q) { return p ^ q; }
+  function count(r) { return r.a + r.b + r.c; }
+
+  var adderRows = [
+    { kind: "section", label: "입력", legend: inputLegend },
+    { kind: "input", label: "A", fn: function (r) { return r.a; } },
+    { kind: "input", label: "B", fn: function (r) { return r.b; } },
+    { kind: "input", label: "Ci", fn: function (r) { return r.c; } },
+    { kind: "count", label: "입력 1의 개수", fn: count },
+    { kind: "section", label: "중간 노드 · LED 없음" },
+    { kind: "mid", label: "A⊕B", fn: function (r) { return xor(r.a, r.b); } },
+    { kind: "mid", label: "A·B", fn: function (r) { return r.a & r.b; } },
+    { kind: "mid", label: "(A⊕B)·Ci", fn: function (r) { return xor(r.a, r.b) & r.c; } },
+    { kind: "section", label: "출력 LED", legend: ledLegend },
+    { kind: "led", label: "S (LED1)", fn: function (r) { return xor(xor(r.a, r.b), r.c); } },
+    { kind: "led", label: "Co (LED2)", fn: function (r) { return (r.a & r.b) | (xor(r.a, r.b) & r.c); } }
+  ];
+  var subRows = [
+    { kind: "section", label: "입력", legend: inputLegend },
+    { kind: "input", label: "A", fn: function (r) { return r.a; } },
+    { kind: "input", label: "B", fn: function (r) { return r.b; } },
+    { kind: "input", label: "Bi", fn: function (r) { return r.c; } },
+    { kind: "count", label: "입력 1의 개수", fn: count },
+    { kind: "section", label: "중간 노드 · LED 없음" },
+    { kind: "mid", label: "A⊕B", fn: function (r) { return xor(r.a, r.b); } },
+    { kind: "mid", label: "A'", fn: function (r) { return 1 - r.a; } },
+    { kind: "mid", label: "A'·B", fn: function (r) { return (1 - r.a) & r.b; } },
+    { kind: "mid", label: "(A⊕B)'", fn: function (r) { return 1 - xor(r.a, r.b); } },
+    { kind: "mid", label: "(A⊕B)'·Bi", fn: function (r) { return (1 - xor(r.a, r.b)) & r.c; } },
+    { kind: "section", label: "출력 LED", legend: ledLegend },
+    { kind: "led", label: "D (LED1)", fn: function (r) { return xor(xor(r.a, r.b), r.c); } },
+    { kind: "led", label: "Bo (LED2)", fn: function (r) { return ((1 - r.a) & r.b) | ((1 - xor(r.a, r.b)) & r.c); } }
+  ];
+
+  // 명세 T3·T7 의 출력 열 (000 → 111)
+  var SPEC = {
+    "S": [0, 1, 1, 0, 1, 0, 0, 1], "Co": [0, 0, 0, 1, 0, 1, 1, 1],
+    "D": [0, 1, 1, 0, 1, 0, 0, 1], "Bo": [0, 1, 1, 1, 0, 0, 0, 1]
+  };
+  var bad = [];
+  adderRows.concat(subRows).forEach(function (row) {
+    if (row.kind !== "led") return;
+    var key = row.label.split(" ")[0];
+    combos().forEach(function (r, i) {
+      if (row.fn(r) !== SPEC[key][i]) bad.push(key + " " + r.a + r.b + r.c);
+    });
+  });
+  if (bad.length) {
+    var w = document.getElementById("warn");
+    w.textContent = "명세 진리표와 어긋난 칸이 있다: " + bad.join(", ");
+    w.hidden = false;
+  }
+
+  var g1 = figure("전가산기", "입력 조합  A B Ci", adderRows, "전가산기 입력 조합별 입력, 중간 노드, 출력 LED 격자");
+  var g2 = figure("전감산기", "입력 조합  A B Bi", subRows, "전감산기 입력 조합별 입력, 중간 노드, 출력 LED 격자");
+  document.getElementById("paper1").innerHTML = g1.svg;
+  document.getElementById("paper2").innerHTML = g2.svg;
+  document.documentElement.setAttribute("data-fig-heights", g1.h + "," + g2.h);
+
+  var q = null;
+  try { q = new URLSearchParams(location.search).get("fig"); } catch (e) {}
+  if (q === "1" || q === "2") {
+    document.documentElement.classList.add("export");
+    document.getElementById("f" + q).classList.add("on");
+  }
+})();
+</script>

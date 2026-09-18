@@ -1,0 +1,74 @@
+{
+  "page": 2,
+  "circuit": "e2_schmitt",
+  "title": "1-2 Schmitt-trigger",
+  "signed": false,
+  "chips": [
+    {
+      "label": "74HC14",
+      "block": "좌",
+      "pin1_row": 7,
+      "pin1_col": "e"
+    }
+  ],
+  "wires": [
+    {
+      "color": "빨강",
+      "from": "전원잭(빨강)",
+      "to": "좌 VCC레일3행"
+    },
+    {
+      "color": "파랑",
+      "from": "전원잭(회색)",
+      "to": "좌 GND레일3행"
+    },
+    {
+      "color": "파랑",
+      "from": "좌 GND레일9행",
+      "to": "좌 d9"
+    },
+    {
+      "color": "파랑",
+      "from": "좌 GND레일11행",
+      "to": "좌 d11"
+    },
+    {
+      "color": "파랑",
+      "from": "좌 GND레일13행",
+      "to": "좌 d13"
+    },
+    {
+      "color": "빨강",
+      "from": "좌 g7",
+      "to": "좌 중앙VCC레일7행"
+    },
+    {
+      "color": "빨강",
+      "from": "좌 g8",
+      "to": "좌 중앙VCC레일9행"
+    },
+    {
+      "color": "빨강",
+      "from": "좌 g10",
+      "to": "좌 중앙VCC레일10행"
+    },
+    {
+      "color": "빨강",
+      "from": "좌 g12",
+      "to": "좌 중앙VCC레일12행"
+    }
+  ],
+  "leds": [],
+  "resistors": [],
+  "bridges": [
+    {
+      "kind": "vcc",
+      "from": "좌 VCC레일27행",
+      "to": "좌 중앙VCC레일27행"
+    }
+  ],
+  "labels": [],
+  "uncertain": [
+    "좌 d11"
+  ]
+}
