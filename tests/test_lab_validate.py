@@ -2259,6 +2259,19 @@ class TestCheckResultPhotoDiagrams(unittest.TestCase):
         text = "---\nexperiment: 3\n---\n\n" + self.GOOD
         self.assertEqual(validate.check_result_photo_diagrams(text), [])
 
+    def test_실험02_03_결과보고서는_결선도를_싣는다(self):
+        for n in (2, 3):
+            with self.subTest(n):
+                name = config.experiment_folder_name(n)
+                path = ROOT / config.experiment_dir(n) / f"output/{name}_결과보고서.md"
+                found = validate.check_result_photo_diagrams(
+                    path.read_text(encoding="utf-8"))
+                self.assertEqual(found, [])
+                # 가리킨 결선도 파일이 실재해야 한다 — 노션에 손으로 끼울 원본이다.
+                for src in validate._IMAGE.findall(path.read_text(encoding="utf-8")):
+                    if "결선도/" in src:
+                        self.assertTrue((path.parent / src).exists(), src)
+
 
 if __name__ == "__main__":
     unittest.main()
