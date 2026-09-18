@@ -117,6 +117,11 @@ KIND_KR = {'vcc': '+5V', 'gnd': '0V', 'sig': '신호', 'mid': '중간'}
 # 이것은 넷의 색이 아니라 "이번 단계에서 손대지 않는다" 는 표시다
 KEEP = (165, 165, 165, 255)
 
+# 걷기 보드에서 **뽑는** 배선의 색. footer "앞 단계에서 걷는다" 표와 같은 빨강이다.
+# `WIRE` 팔레트에 넣지 않는다 — 넷의 색이 아니라 "이 그림에서 뽑는다" 는 표시다.
+# 2026-09-18 실험03: 걷을 두 가닥이 footer 표에만 있어 실험실에서 놓쳤다
+REMOVE = (160, 30, 30, 255)
+
 # 계측기 리드는 **배선이 아니다.** 점퍼선으로 꽂는 게 아니라 프로브 팁과 집게로
 # 문다. 그래서 위 네 색에 끼워 넣지 않고 회색 점선으로 따로 그리고, 순서표도
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
@@ -128,6 +133,11 @@ JACK_BOTTOM = 160
 
 # 넷 라벨용 이름. 저장소가 한국어라 넷 판정문도 한국어로 나와야 한다
 JACK_KR = {'red': '빨강', 'yellow': '노랑', 'gray': '회색'}
+
+
+def _boxes_touch(a, b):
+    """두 상자 (x0, y0, x1, y1) 가 겹치는가. 걷기 번호 원 자리 잡기에 쓴다."""
+    return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
 
 
 class BreadboardRenderer:
@@ -210,6 +220,16 @@ class BreadboardRenderer:
         self.kept = []          # 그대로 두는 배선·부품의 desc
         self.swaps = []         # (앞 칩, 새 칩, block, pin1_row)
         self._keep_parts = False  # led_chain 이 기준선 사슬을 그리는 동안 참
+        # 걷기 보드 — 기준선 dict 의 `ghost` 키 `{'wires': {key: n}, 'title', 'subtitle'}`.
+        # `step_wire()` 가 그 key 를 만나면 점유표·구간에 안 남기고 `ghost_layer` 에 빨간
+        # 점선으로 그린다. 뽑은 선의 핀이 뜨는 것이 정상이라 `partial` 이다.
+        # 기준선 dict 에 키를 얹는 이유: `set_header()` 가 제목을 즉시 그려 사후에 못 바꾸고,
+        # 빌더 시그니처를 늘리면 세 주차 스물세 빌더를 고쳐야 한다. `removal_board()` 가 만든다
+        self.ghost = (baseline or {}).get('ghost')
+        self.ghost_layer = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
+        self.ghost_drawn = {}     # key -> n. export() 가 빌더가 안 그린 key 를 잡는다
+        if self.ghost is not None:
+            self.partial = True
         self.submit = True
         self.title = ""
         self.subtitle = ""
@@ -513,13 +533,22 @@ class BreadboardRenderer:
         하필 그 사각형 안에 **전원 잭 세 개가 들어 있었다.** 과거 예비보고서의
         결선도는 예외 없이 그 잭에서 보드까지 전원선을 그린다 — 실험대 전원이
         그 잭이기 때문이다. 덮어버리면 "5V 를 어디서 따오지"에서 막힌다.
+
+        걷기 보드(ghost 모드)는 앞 회로 빌더가 부르는 제목 대신 `ghost` 의 제목을 쓴다 —
+        빌더는 자기가 걷기 보드로 렌더되는지 모른다.
         """
+        if self.ghost is not None:
+            title, subtitle, submit = self.ghost['title'], self.ghost['subtitle'], False
         self.title, self.subtitle = title, subtitle
         self.draw.text((28, 170), title, fill=(20, 40, 90, 255), font=self.font_title)
         self.draw.text((30, 200), subtitle, fill=(80, 90, 100, 255), font=self.font_subtitle)
         self.submit = submit
-        line = ("※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다" if submit
-                else "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다")
+        if submit:
+            line = "※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다"
+        elif self.ghost is not None:
+            line = "※ 걷기 그림 — 빨간 점선만 뽑는다(전원을 끄고). 회색은 그대로 둔다. 새로 꽂는 것은 없다"
+        else:
+            line = "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다"
         self.draw.text((30, 220), line, fill=(180, 50, 50, 255), font=self.font_kr_sm)
 
     def connect_jacks(self, block='left'):
@@ -582,7 +611,8 @@ class BreadboardRenderer:
         for p in (points[0], points[-1]):
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
 
-    def _dashed(self, points, color, width=2, dash=7, gap=5):
+    def _dashed(self, points, color, width=2, dash=7, gap=5, draw=None):
+        d = draw or self.draw
         for (x0, y0), (x1, y1) in zip(points, points[1:]):
             span = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
             if span == 0:
@@ -590,8 +620,8 @@ class BreadboardRenderer:
             ux, uy, t = (x1 - x0) / span, (y1 - y0) / span, 0.0
             while t < span:
                 e = min(t + dash, span)
-                self.draw.line([(x0 + ux * t, y0 + uy * t), (x0 + ux * e, y0 + uy * e)],
-                               fill=color, width=width)
+                d.line([(x0 + ux * t, y0 + uy * t), (x0 + ux * e, y0 + uy * e)],
+                       fill=color, width=width)
                 t = e + gap
 
     def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None):
@@ -648,6 +678,36 @@ class BreadboardRenderer:
     def enable_steps(self):
         self.numbered = True
 
+    def _marker_removed(self, x, y, n):
+        """걷기 번호 — 빨간 채움·흰 숫자. 순서표 원(흰 바탕·색 테두리)과 구분된다."""
+        self.marker_boxes.append((x - 8, y - 8, x + 8, y + 8))
+        self._marker_on(self.draw, x, y, n, REMOVE, filled=True)
+
+    def _ghost_wire(self, points, n):
+        """걷기 보드의 뽑을 배선. 유령 레이어에 빨간 점선, overlay 에 걷기 번호 원.
+
+        점유표·구간·레일 접촉에 아무것도 안 남긴다 — 이 선은 이제 없는 것이고, 그 홀에
+        다음 회로의 새 선이 앉을 수 있다(실험03 좌 d7·a9). 끝점 원도 안 찍는다.
+        번호 원은 가장 긴 구간의 중점에, 기존 원과 겹치면 그 구간을 따라 옮긴다.
+        """
+        self._dashed(points, REMOVE, width=4, dash=9, gap=6,
+                     draw=ImageDraw.Draw(self.ghost_layer))
+        if len(points) < 2:
+            self._marker_removed(points[0][0], points[0][1], n)
+            return
+        (x0, y0), (x1, y1) = max(zip(points, points[1:]),
+                                 key=lambda s: abs(s[1][0] - s[0][0]) + abs(s[1][1] - s[0][1]))
+        span = max(1.0, ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5)
+        ux, uy = (x1 - x0) / span, (y1 - y0) / span
+        mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+        x, y = mx, my
+        for k in (0, 24, -24, 48):
+            x, y = mx + ux * k, my + uy * k
+            box = (x - 8, y - 8, x + 8, y + 8)
+            if not any(_boxes_touch(box, b) for b in self.marker_boxes):
+                break
+        self._marker_removed(int(x), int(y), n)
+
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
                   frm=None, to=None):
         """배선 하나 + 결선 순서표 한 줄.
@@ -660,6 +720,11 @@ class BreadboardRenderer:
         접촉은 똑같이 남긴다: 회색이어도 그림대로 꽂히는지는 verify() 가 본다.
         """
         key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
+        if self.ghost is not None and key in self.ghost['wires']:
+            n = self.ghost['wires'][key]
+            self._ghost_wire(points, n)
+            self.ghost_drawn[key] = n
+            return None
         kept = self.baseline is not None and key in self.baseline['wires']
         color = KEEP if kept else WIRE[kind]
         self.draw.line(points, fill=color, width=width, joint='curve')
@@ -1056,6 +1121,12 @@ class BreadboardRenderer:
                 d.line([(x, y + 7), (x + 24, y + 7)], fill=WIRE[kind], width=4)
                 d.text((x + 30, y), KIND_KR[kind], fill=(60, 60, 60, 255), font=self.font_step)
                 x += 96
+            if self.ghost is not None:
+                for k in range(0, 24, 12):
+                    d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=REMOVE, width=3)
+                d.text((x + 30, y), '뽑는다 (빨간 점선 · 빨간 번호)',
+                       fill=(60, 60, 60, 255), font=self.font_step)
+                x += 190
             if self.probes:
                 for k in range(0, 24, 12):
                     d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=PROBE, width=3)
@@ -1068,22 +1139,41 @@ class BreadboardRenderer:
                 d.text((x_pad, y), ln, fill=(90, 70, 70, 255), font=self.font_step)
                 y += 15
         if self.baseline is not None:
-            d.text((x_pad, y),
-                   f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). 번호 = 이번 단계에서 새로 한다',
-                   fill=(90, 90, 90, 255), font=self.font_step)
+            if self.ghost is not None:
+                line = (f'· 회색 = 그대로 둔다 ({len(self.kept)}개). '
+                        '빨간 점선 + 빨간 번호 = 이 그림에서 뽑는다. 새로 꽂는 것은 없다')
+            else:
+                line = (f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). '
+                        '번호 = 이번 단계에서 새로 한다')
+            d.text((x_pad, y), line, fill=(90, 90, 90, 255), font=self.font_step)
             y += 15
-            gone = self.removed()
-            if gone:
+            wires = self.removals()
+            others = self.removed()[len(wires):]
+            if wires or others:
                 y += 6
                 d.text((x_pad, y), "앞 단계에서 걷는다 — 먼저 뽑고 ☐ 를 채운다",
-                       fill=(160, 30, 30, 255), font=self.font_kr_bold)
+                       fill=REMOVE, font=self.font_kr_bold)
                 y += 20
-                for g in gone:
+                for r in wires:
+                    d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
+                                outline=(120, 125, 130, 255), width=1)
+                    x_text = x_pad + 18
+                    if self.ghost is not None:
+                        # 그림 위 빨간 원과 같은 번호 — 걷기 보드에서만. 보통 보드는
+                        # 그림에 원이 없어 번호가 가리킬 데가 없다
+                        self._marker_on(d, x_pad + 28, y + 8, r['n'], REMOVE, filled=True)
+                        x_text = x_pad + 42
+                    lines = self._wrap(f"걷기: {r['addr']} · {r['desc']}", self.font_step,
+                                       998 - x_text - x_pad)[:2]
+                    for k, ln in enumerate(lines):
+                        d.text((x_text, y + k * 14), ln, fill=REMOVE, font=self.font_step)
+                    y += max(18, len(lines) * 14 + 4)
+                for g in others:
                     d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
                                 outline=(120, 125, 130, 255), width=1)
                     lines = self._wrap('걷기: ' + g, self.font_step, 998 - 2 * x_pad - 20)[:2]
                     for k, ln in enumerate(lines):
-                        d.text((x_pad + 18, y + k * 14), ln, fill=(160, 30, 30, 255), font=self.font_step)
+                        d.text((x_pad + 18, y + k * 14), ln, fill=REMOVE, font=self.font_step)
                     y += max(18, len(lines) * 14 + 4)
         y += 8
 
@@ -1144,8 +1234,11 @@ class BreadboardRenderer:
             y += max(18, len(lines) * 14 + 4)
         return y + 10
 
-    def _marker_on(self, d, x, y, n, color):
-        d.ellipse([x-8, y-8, x+8, y+8], fill=(255, 255, 255, 245), outline=color, width=2)
+    def _marker_on(self, d, x, y, n, color, filled=False):
+        """번호 원. `filled` 면 색 채움·흰 숫자 — 걷기 번호가 순서표 번호와 헷갈리지 않게."""
+        fill, text = ((color, (255, 255, 255, 255)) if filled
+                      else ((255, 255, 255, 245), color))
+        d.ellipse([x-8, y-8, x+8, y+8], fill=fill, outline=color, width=2)
         t = str(n)
         bbox = d.textbbox((0, 0), t, font=self.font_num)
         d.text((x - (bbox[2]-bbox[0])/2 - bbox[0], y - (bbox[3]-bbox[1])/2 - bbox[1]),
@@ -1552,7 +1645,7 @@ class BreadboardRenderer:
 
         `verify()` 뒤에 불러야 `wiring()['overlaps']` 가 찬다 — `export()` 가 그렇게 한다.
         """
-        return {
+        out = {
             'title': self.title, 'subtitle': self.subtitle, 'submit': self.submit,
             'notes': list(self.notes),
             'steps': list(self.steps),
@@ -1561,6 +1654,10 @@ class BreadboardRenderer:
             'removed': self.removed(),
             'wiring': self.wiring(),
         }
+        if self.ghost is not None:
+            # 걷기 보드에서만 든다 — 다른 보드의 도장은 그대로라 재생성 범위가 안 번진다
+            out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
+        return out
 
     def stamp(self):
         blob = json.dumps(self.content(), ensure_ascii=False, sort_keys=True, default=_jsonable)
@@ -1568,7 +1665,15 @@ class BreadboardRenderer:
 
     def export(self, output_path, max_row=35):
         self.verify()
-        final_im = Image.alpha_composite(self.im, self.overlay)
+        if self.ghost is not None:
+            missing = [f'{self._sym_addr(k[1])} → {self._sym_addr(k[2])}'
+                       for k in self.ghost['wires'] if k not in self.ghost_drawn]
+            assert not missing, (
+                f'걷기 대상 배선을 앞 빌더가 그리지 않았다: {missing} — '
+                'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
+        # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
+        final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
+                                         self.overlay)
         board_h = self.r_y(max_row) + 20
         board = final_im.crop((0, 0, 998, board_h)).convert('RGB')
 

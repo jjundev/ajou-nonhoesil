@@ -10,6 +10,8 @@ import os
 import tempfile
 import unittest
 
+from PIL import Image
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(REPO_ROOT, '.claude', 'skills', 'breadboard-diagram',
                       'scripts', 'render_breadboard.py')
@@ -195,6 +197,74 @@ class Baseline(unittest.TestCase):
         bb = self.mod.BreadboardRenderer()
         bb.set_header('t', 's', submit=False)
         self.assertFalse(bb.submit)
+
+    GHOST_KEY = ('sig', ('hole', ('left', 'a', 12)), ('hole', ('left', 'a', 25)))
+
+    def ghost_board(self, drop_wire=False):
+        """`first()` 를 기준선으로, 출력 배선 하나만 유령으로 그린 걷기 보드.
+        `drop_wire=True` 면 그 배선을 아예 안 그린다 — export 가 잡아야 한다."""
+        base = self.first().snapshot()
+        ghost = {'wires': {self.GHOST_KEY: 1}, 'title': '걷기 제목', 'subtitle': '걷기 부제'}
+        bb = self.mod.BreadboardRenderer(baseline=dict(base, ghost=ghost))
+        bb.enable_steps()
+        bb.set_header('무시되는 제목', '무시되는 부제')
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 7)
+        bb.connect_jacks()
+        bb.bridge_rails(c['gnd'], c['mid_gnd'], 29, kind='gnd')
+        bb.bridge_rails(c['vcc'], c['mid_vcc'], 30, kind='vcc')
+        bb.connect_power(7)
+        n = None
+        if not drop_wire:
+            n = bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig', '출력 -> L2')
+        bb.led_chain(c['a'], 25, 'L2', '최종')
+        return bb, n
+
+    def test_ghost_배선은_번호도_점유표도_구간도_받지_않는다(self):
+        bb, n = self.ghost_board()
+        c = bb.cols['left']
+        self.assertIsNone(n)
+        self.assertNotIn((c['a'], 12), bb._leads)
+        self.assertFalse(any(w['frm'] == self.GHOST_KEY[1] and w['to'] == self.GHOST_KEY[2]
+                             for w in bb.wiring()['wires']))
+        self.assertEqual(bb.steps, [])                      # 새 선이 없다
+        self.assertEqual(bb.ghost_drawn, {self.GHOST_KEY: 1})
+        self.assertEqual(len(bb.marker_boxes), 1)           # 걷기 번호 원 하나
+        self.assertTrue(bb.partial)
+
+    def test_ghost_모드는_제목을_기준선에서_받고_제출용이_아니다(self):
+        bb, _ = self.ghost_board()
+        self.assertEqual((bb.title, bb.subtitle, bb.submit), ('걷기 제목', '걷기 부제', False))
+
+    def test_ghost_배선은_removals_와_content_에_번호로_남는다(self):
+        bb, _ = self.ghost_board()
+        self.assertEqual([(r['n'], r['addr']) for r in bb.removals()], [(1, '좌 a12 → 좌 a25')])
+        self.assertEqual(bb.content()['ghost'], [(1, '좌 a12 → 좌 a25')])
+        self.assertNotIn('ghost', self.first().content())   # 보통 보드의 도장은 그대로다
+
+    def test_ghost_배선은_PNG_에_빨간_점선으로_찍힌다(self):
+        bb, _ = self.ghost_board()
+        c = bb.cols['left']
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, 'g.png')
+            bb.export(p, max_row=31)
+            im = Image.open(p).convert('RGB')
+            ys = range(bb.r_y(13), bb.r_y(24))
+            self.assertTrue(any(im.getpixel((c['a'], y)) == self.mod.REMOVE[:3] for y in ys))
+        plain = self.first()
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, 'p.png')
+            plain.partial = True
+            plain.export(p, max_row=31)
+            im = Image.open(p).convert('RGB')
+            self.assertFalse(any(im.getpixel((c['a'], y)) == self.mod.REMOVE[:3] for y in ys))
+
+    def test_ghost_대상을_안_그리면_export_가_잡는다(self):
+        bb, _ = self.ghost_board(drop_wire=True)
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(AssertionError) as cm:
+                bb.export(os.path.join(d, 'x.png'), max_row=31)
+        self.assertIn('좌 a12 → 좌 a25', str(cm.exception))
 
 
 if __name__ == '__main__':
