@@ -535,6 +535,17 @@ class SkillDocInvariants(unittest.TestCase):
             with self.subTest(name):
                 self.assertIn("check_result_photo_diagrams(", self.docs[name])
 
+    def test_section_material_table_example_matches_the_diagram_first_rule(self):
+        # §사진 배치가 "결선도를 먼저" 싣는다고 바꾼 뒤에도 §섹션별 재료 표의
+        # 승인본 실험01 예시 문장이 옛 순서("사진을 한 장에 모았다"로 시작)를
+        # 그대로 인용해 규칙과 모순됐다. 표 행 자체가 새 규칙을 따라야 한다.
+        for line in self.docs["결과"].splitlines():
+            if "| 실험 사진 |" in line:
+                self.assertIn("결선도를 먼저", line)
+                break
+        else:
+            self.fail("`| 실험 사진 |` 행을 찾지 못했다")
+
     def test_table_header_check_is_called_by_writer_and_reviewer(self):
         # 2026-09 실험01 예보가 명세 T1~T4 의 `A B C L1 L2` 를 `A B C Y` 로 내고
         # ⑤ 를 통과해 조교 감점을 받았다. ③ 이 안 부르면 쓴 세션 안에서 못 고치고,
