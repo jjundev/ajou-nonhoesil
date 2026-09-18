@@ -47,6 +47,42 @@ class Baseline(unittest.TestCase):
         self.assertEqual(snap['chips'], {('left', 7): '74HC08'})
         self.assertEqual(len(snap['chains']), 1)
 
+    def test_snapshot_은_배선_경로도_낸다(self):
+        """끝점만 남기면 걷을 선을 그림에 그릴 수 없다 — 걷기 보드가 꼭짓점을 쓴다."""
+        bb = self.first()
+        c = bb.cols['left']
+        snap = bb.snapshot()
+        key = ('sig', ('hole', ('left', 'a', 12)), ('hole', ('left', 'a', 25)))
+        self.assertEqual(snap['paths'][key], [(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))])
+        self.assertEqual(set(snap['paths']), set(snap['wires']))
+
+    def test_removals_는_걷을_배선에_번호와_경로를_준다(self):
+        base = self.first().snapshot()
+        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb.enable_steps()
+        bb.draw_chip('74HC08', 7)
+        rs = bb.removals()
+        self.assertEqual([r['n'] for r in rs], list(range(1, len(rs) + 1)))
+        self.assertEqual([r['key'] for r in rs], list(base['wires']))   # 기준선 순서
+        wire = [r for r in rs if r['desc'] == '출력 -> L2'][0]
+        self.assertEqual(wire['addr'], '좌 a12 → 좌 a25')
+        self.assertEqual(wire['points'], base['paths'][wire['key']])
+        # 칩·사슬은 removals 에 없고 removed 에만 있다
+        self.assertTrue(all(r['key'] in base['wires'] for r in rs))
+        self.assertTrue(any('LED L2 사슬' in g for g in bb.removed()))
+        self.assertEqual(bb.removed()[:len(rs)],
+                         [f"{r['addr']} · {r['desc']}" for r in rs])
+
+    def test_기준선이_없으면_removals_도_빈_목록이다(self):
+        self.assertEqual(self.first().removals(), [])
+
+    def test_옛_snapshot_에_paths_가_없으면_points_는_None_이다(self):
+        base = self.first().snapshot()
+        del base['paths']
+        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb.enable_steps()
+        self.assertTrue(all(r['points'] is None for r in bb.removals()))
+
     def test_기준선에_있는_배선은_회색이고_번호가_없다(self):
         base = self.first().snapshot()
         bb = self.mod.BreadboardRenderer(baseline=base)

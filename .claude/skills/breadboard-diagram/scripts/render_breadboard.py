@@ -1169,25 +1169,51 @@ class BreadboardRenderer:
         return f'{name}{row}행' if '레일' in name else f'{name}{row}'
 
     def snapshot(self):
-        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다."""
+        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다.
+
+        `paths` 는 배선의 꼭짓점이다 — 걷기 보드(`removal_board`)가 뽑을 선을 같은
+        경로로 빨간 점선으로 그린다. 끝점만 남기면 그릴 수 없다(2026-09-18 실험03).
+        """
         w = self.wiring()
+        paths = {}
+        for kind, pts, _desc in self._segments:
+            paths.setdefault((kind, self._endpoint(pts[0]), self._endpoint(pts[-1])), pts)
         return {
             'wires': {(x['kind'], x['frm'], x['to']): x['desc'] for x in w['wires']},
             'chains': {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom']): ch['tag']
                        for ch in w['chains']},
             'chips': {(ch['block'], ch['pin1_row']): ch['label'] for ch in w['chips']},
+            'paths': paths,
         }
 
-    def removed(self):
-        """기준선에 있었는데 이번 보드에 없는 것 — 실험실에서 **걷을** 것."""
+    def removals(self):
+        """기준선에 있었는데 이번 보드에 없는 **배선** — 걷기 번호를 매겨 낸다.
+
+        순서는 기준선(앞 보드)의 그리기 순서라 결정적이다. netlist 단계 표가 이
+        번호(걷기 ①·②)를 인용한다. 칩·사슬은 여기 없고 `removed()` 에만 있다 —
+        칩 교체는 순서표에 이미 번호 원이 있다. `points` 는 기준선 `paths` 의 꼭짓점,
+        옛 snapshot 이면 None.
+        """
         if self.baseline is None:
             return []
         drawn = {(k, self._endpoint(pts[0]), self._endpoint(pts[-1]))
                  for k, pts, _ in self._segments}
+        paths = self.baseline.get('paths', {})
         out = []
         for key, desc in self.baseline['wires'].items():
-            if key not in drawn:
-                out.append(f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])} · {desc}')
+            if key in drawn:
+                continue
+            out.append({'n': len(out) + 1, 'key': key,
+                        'addr': f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])}',
+                        'desc': desc, 'points': paths.get(key)})
+        return out
+
+    def removed(self):
+        """기준선에 있었는데 이번 보드에 없는 것 — 실험실에서 **걷을** 것. 배선 → 칩 →
+        사슬 순의 문자열. 배선 줄은 `removals()` 와 같은 순서·같은 수다."""
+        if self.baseline is None:
+            return []
+        out = [f"{r['addr']} · {r['desc']}" for r in self.removals()]
         here = {(c['block'], c['pin1_row']) for c in self.chips}
         for key, label in self.baseline['chips'].items():
             if key not in here:
