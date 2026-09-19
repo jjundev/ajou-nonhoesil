@@ -628,7 +628,7 @@ class SkillDocInvariants(unittest.TestCase):
         result = self.flat["결과"]
         self.assertIn("필기 PDF 가 없고 행 사진만 있으면 사진에서 전사한다", result)
         self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
-        self.assertIn("채워진 칸이 0개이고 행 사진도 없으면", result)
+        self.assertIn("채워진 칸이 0개이고 행 사진도 스텝표·파형 사진도 없으면", result)
         self.assertIn("행 사진(`<항목> <입력비트>.jpg`)도 없으면", result)
         self.assertIn("사진이 찍힌 행에 아직 빈 확인 칸이 있으면 아래 사진 전사로 간다",
                       result)
@@ -639,7 +639,8 @@ class SkillDocInvariants(unittest.TestCase):
         # 덮어쓸 수 있었다. 2단계 제목도 "비어 있으면 멈춘다" 라 사진만 있는
         # 경우와 어긋났다.
         result = self.flat["결과"]
-        self.assertIn("기록.md 상태 판정 — 확인 칸도 행 사진도 없으면 여기서 멈춘다.",
+        self.assertIn("기록.md 상태 판정 — 확인 칸도 실험 사진(행 사진·스텝표·파형 사진)도 "
+                      "없으면 여기서 멈춘다.",
                       result)
         self.assertNotIn("기록.md 상태 판정 — 비어 있으면 여기서 멈춘다.", result)
         self.assertIn("사진 전사는 빈 칸만 대상이다. 이미 채워진 칸은 덮어쓰지 않고, "
@@ -654,6 +655,16 @@ class SkillDocInvariants(unittest.TestCase):
         result = self.flat["결과"]
         self.assertIn("규칙 밖 이름의 이미지 파일이 있으면", result)
         self.assertIn("이름을 바꿀지 묻는다", result)
+
+    def test_side_photos_only_week_is_not_reported_as_no_experiment(self):
+        # 실험02 는 진리표 없이 capture 표뿐이라 확인 칸도 행 사진도 없다.
+        # 스텝표·파형 사진만 있어도 "실험을 안 했다" 로 멈추면 안 된다.
+        result = self.flat["결과"]
+        self.assertIn("채워진 칸이 0개이고 행 사진은 없는데 스텝표·파형 사진이 있으면",
+                      result)
+        self.assertIn("print('스텝표·파형 사진:'", result)
+        self.assertIn("추측으로 채우지 않는다", result)
+        self.assertIn("확인 칸도 실험 사진(행 사진·스텝표·파형 사진)도 없으면", result)
 
     def test_free_memo_file_goes_through_the_record_first(self):
         # 실험03 은 `실험중있었던일.md` 에 자유 형식으로 적었다.
