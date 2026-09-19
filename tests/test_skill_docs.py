@@ -605,6 +605,36 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertNotIn("- **T1 결과**", self.docs["결과"])
         self.assertNotIn("![T1 row5", self.docs["결과"])
 
+    def test_photo_naming_is_the_contact_sheet_rule(self):
+        # 2026-09-19: 옛 관례 `T<n> row<m>.jpg` 가 세 문서에 남아 시트 엔진
+        # 규칙(`<항목> <입력비트>.jpg`)과 어긋났다.
+        paths = {
+            "결과": RESULT,
+            "체크": ROOT / ".claude/skills/prep-lab-checklist/SKILL.md",
+            "시트": ROOT / ".claude/skills/export-photo-sheet/SKILL.md",
+        }
+        for name, path in paths.items():
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(name):
+                self.assertNotIn("row<m>", text)
+                self.assertNotIn("T1 row", text)
+        self.assertIn("<항목> <입력비트>.jpg", self.docs["결과"])
+        self.assertIn("<항목> <표ID> <설명>.jpg", self.docs["결과"])
+
+    def test_photo_only_flow_is_an_official_path(self):
+        # 실험03 은 확인 칸을 손으로 채우지 않고 행 사진만 찍었다.
+        result = self.flat["결과"]
+        self.assertIn("필기 PDF 가 없고 행 사진만 있으면 사진에서 전사한다", result)
+        self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
+        self.assertIn("채워진 칸이 0개이고 행 사진도 없으면", result)
+
+    def test_free_memo_file_goes_through_the_record_first(self):
+        # 실험03 은 `실험중있었던일.md` 에 자유 형식으로 적었다.
+        result = self.flat["결과"]
+        self.assertIn("자유 메모 파일이 있으면 그것이 재료다", result)
+        self.assertIn("**`기록.md` 종료 메모를 먼저 채우고**", result)
+        self.assertIn("4문항이 전부 공란이고 자유 메모 파일도 없으면", result)
+
     def test_end_memo_transcription_handles_internal_ids(self):
         # 학생 메모에 표 ID 가 있으면 "지어내지 않는다"와 규칙 9 가 부딪힌다.
         self.assertIn("메모 원문의 표 ID·파일명은", self.flat["결과"])
