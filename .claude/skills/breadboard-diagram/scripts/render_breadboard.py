@@ -1861,6 +1861,9 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     2026-09-18 실험03 에서 네 칩이 게이트 1·2 만 써 왼쪽에 11리드가 몰렸다(R7) — 게이트를
     좌·우로 나누면 오른쪽 게이트의 입력이 이 분기를 쓴다.
 
+    아래는 좌 바깥 레일(side='a', 좌 블록) 의 경우다 — 다른 세 레일의 배지·번호 원
+    자리는 본문 주석에 있다.
+
     `col` 은 같은 스트립에 **두 번째 점퍼(갈래)** 를 꽂을 때 쓴다. 갈래를 옆 홀에
     꽂되 그 갈래가 입력선 위를 되짚어 나가면 밑동이 굵은 입력선 아래 깔려
     "굵은 선 중간에서 얇은 선이 솟는" 그림이 된다 (2026-09-08 지적). 그래서
@@ -1898,8 +1901,13 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         col = col or 'i'
     r_rail = bb.free_rail_row(row, x_rail)
     y_rail, y_row = bb.r_y(r_rail), bb.r_y(row)
+    # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안 되니까)
+    # — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가 이 레일을
+    # 아예 안 본다. 중앙 GND 468·우 바깥 GND 836 에 매달린 입력이 접지된 레일과
+    # 안 이어져 있어도 verify() 가 통과하던 자리라 여기서 직접 찍는다(2026-09-20).
+    bb.touch_rail('gnd', x_rail)
     # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌
-    # 테두리~레일 사이(기존), 우 바깥 레일은 레일~보드 우 테두리 사이, 중앙 레일 둘은
+    # 테두리~레일 사이(기존), 우 바깥 레일은 VCC 레일(852)~보드 우 테두리 사이, 중앙 레일 둘은
     # 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)이다. 번호 원은 좌·우
     # 바깥이면 보드 밖 같은 행, 중앙이면 배지 위 18px 다 — 여백이 58px 라 나란히 못 놓는다.
     if x_rail == bb.cols['left']['gnd']:
@@ -1907,6 +1915,9 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     elif x_rail == bb.cols['right']['gnd']:
         badge_x, default_marker = (bb.cols['right']['vcc'] + BOARD_RIGHT) / 2, (BOARD_RIGHT + 24, 0)
     else:
+        # 중앙 레일 둘(좌 중앙 468·우 중앙 542)이 이 자리를 같이 쓴다 — 같은 행에 좌 f쪽
+        # 입력과 우 a쪽 입력을 함께 넣으면 배지와 번호 원이 서로 위에 겹친다(58px 여백은
+        # 한 번에 입력 한 행만 받는다). 배지 겹침은 가독성 테스트가 잡는다.
         badge_x = (bb.cols['left']['mid_vcc'] + bb.cols['right']['mid_gnd']) / 2
         default_marker = (badge_x, -18)
     mx, dy = marker or default_marker

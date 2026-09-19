@@ -363,6 +363,26 @@ class PhysicalRules(unittest.TestCase):
         self.assertEqual(bb.addr(*pts[-1]), '좌 b10')
         self.assertEqual(desc, '입력 C -> 74HC08 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
 
+    def test_f쪽_입력_레일도_레일_연결성_검사에_든다(self):
+        """`kind='sig'` 라 `step_wire` 가 `touch_rail` 을 안 부른다 — 입력이 매달린
+        레일이 접지 레일과 안 이어져 있어도 통과하던 자리(2026-09-20 최종리뷰)."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()  # 잭은 좌 바깥 레일에 꽂힌다
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        with self.assertRaisesRegex(AssertionError, '레일이 끊겨 있다'):
+            bb.verify()
+
+    def test_f쪽_입력_레일을_브리지로_이으면_통과한다(self):
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        bb.bridge_rails(bb.cols['left']['gnd'], bb.cols['right']['gnd'], 30, kind='gnd')
+        bb.verify()
+
     def test_side_는_a_또는_f_다(self):
         bb = self.board()
         with self.assertRaisesRegex(AssertionError, "side"):
