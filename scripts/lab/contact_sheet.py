@@ -156,10 +156,12 @@ def _caption(rec: ItemRecord, bits: str) -> str:
     return f"{ins}  →  {outs}"
 
 
-def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None) -> tuple[list[Plan], list[str]]:
+def plan(experiment: int, photo_dir: Path | None = None,
+         only: str | None = None) -> tuple[list[Plan], list[str], list[str]]:
     """합성 계획을 세운다. 파일을 만들지 않는다.
 
-    반환: (항목별 Plan 목록, 어느 항목에도 속하지 않는 문제 목록 — 규칙 밖 파일명 등)
+    반환: (항목별 Plan 목록, 어느 항목에도 속하지 않는 문제 목록 — 규칙 밖 파일명 등,
+          건너뛴 스텝표·파형 사진 파일명 목록 — 문제로 세지 않는다)
     """
     exp_dir = Path(config.experiment_dir(experiment))
     photo_dir = photo_dir or exp_dir / "실험사진"
@@ -171,6 +173,7 @@ def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None
     records = load_records(record)
 
     loose: list[str] = []
+    skipped: list[str] = []
     groups: dict[str, list[tuple[str, Path]]] = {}
     for p in sorted(photo_dir.iterdir()):
         if not p.is_file() or p.suffix.lower() not in _PHOTO_EXT:
@@ -178,7 +181,8 @@ def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None
         m = _FILE.match(p.name)
         if not m:
             if _SIDE.match(p.name):
-                continue          # 스텝표·파형 사진 — 시트 대상이 아니다(결과보고서가 따로 싣는다)
+                skipped.append(p.name)
+                continue         # 스텝표·파형 사진 — 시트 대상이 아니다(결과보고서가 따로 싣는다)
             loose.append(f"파일명이 `<항목> <입력비트>.jpg` 규칙 밖: {p.name}")
             continue
         groups.setdefault(m.group("item"), []).append((m.group("bits"), p))
@@ -211,7 +215,7 @@ def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None
         plans.append(pl)
     if only and not plans:
         raise ContactSheetError(f"`--only {only}` 에 해당하는 사진이 없다")
-    return plans, loose
+    return plans, loose, skipped
 
 
 def _tile(path: Path, caption: str, font, tile_w: int, tile_h: int) -> Image.Image:
@@ -286,7 +290,7 @@ def build(plans: list[Plan], tile_w: int = DEFAULT_TILE_W,
     return results
 
 
-def _print_check(plans: list[Plan], loose: list[str]) -> int:
+def _print_check(plans: list[Plan], loose: list[str], skipped: list[str]) -> int:
     n_bad = len(loose) + sum(len(p.problems) for p in plans)
     print("| 항목 | 사진 수 | 문제 |")
     print("|---|---|---|")
@@ -294,6 +298,8 @@ def _print_check(plans: list[Plan], loose: list[str]) -> int:
         print(f"| {pl.token} | {len(pl.photos)} | {'; '.join(pl.problems) or '없음'} |")
     for msg in loose:
         print(f"| – | – | {msg} |")
+    if skipped:      # 알림일 뿐 문제가 아니다 — n_bad 에 세지 않는다
+        print(f"\n건너뜀 (스텝표·파형 사진 — 시트 대상 아님): {len(skipped)}장 — {', '.join(skipped)}")
     print(f"\n대조 결과: 문제 {n_bad}건")
     return 1 if n_bad else 0
 
@@ -310,9 +316,9 @@ def main(argv=None) -> int:
     ap.add_argument("--photo-dir", type=Path, help="사진 폴더를 대체한다(시험용)")
     a = ap.parse_args(argv)
     try:
-        plans, loose = plan(a.experiment, a.photo_dir, a.only)
+        plans, loose, skipped = plan(a.experiment, a.photo_dir, a.only)
         if a.check:
-            return _print_check(plans, loose)
+            return _print_check(plans, loose, skipped)
         if loose:
             for msg in loose:
                 print("오류:", msg, file=sys.stderr)

@@ -4,6 +4,8 @@
 `<항목> <입력비트>.jpg` 를 읽었다. 실험실에서 인쇄본대로 찍으면 시트가 전부
 "규칙 밖" 으로 거절했다.
 """
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -48,11 +50,25 @@ class TestContactSheetSidePhotos(unittest.TestCase):
             (self.dir / name).write_bytes(b"")
 
     def test_스텝표_파형_사진은_규칙_밖_문제가_아니다(self):
-        plans, loose = contact_sheet.plan(3, photo_dir=self.dir)
+        plans, loose, skipped = contact_sheet.plan(3, photo_dir=self.dir)
         self.assertEqual([p.token for p in plans], ["1-2"])
         self.assertEqual([p.name for _, p in plans[0].photos], ["1-2 000.jpg"])
         self.assertEqual(len(loose), 1)
         self.assertIn("실험03 1-2 001.jpg", loose[0])
+        self.assertEqual(skipped, ["1-2 T3 근접.jpg"])
+
+    def test_check_는_건너뛴_사진_수를_알리고_문제로_세지_않는다(self):
+        d = Path(tempfile.mkdtemp())
+        for name in ("1-2 000.jpg", "1-1 T1 xy.jpg", "1-2 T3 근접.jpg"):
+            (d / name).write_bytes(b"")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = contact_sheet.main(["3", "--check", "--photo-dir", str(d)])
+        out = buf.getvalue()
+        self.assertEqual(code, 0)
+        self.assertIn("건너뜀 (스텝표·파형 사진 — 시트 대상 아님): 2장 — "
+                      "1-1 T1 xy.jpg, 1-2 T3 근접.jpg", out)
+        self.assertIn("문제 0건", out)
 
     def test_시트로_묶을_사진이_없으면_그렇게_말한다(self):
         only_side = Path(tempfile.mkdtemp())
