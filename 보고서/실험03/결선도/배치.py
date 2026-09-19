@@ -101,9 +101,7 @@ def _e3_draw(bb, circuit, stage):
     # 사슬(fa·fs)은 급전선이 옮겨지지 않는다 — 회귀 전용 완성본(ha·hs)만 옛 문구를 쓴다.
     led_note = _E3_LED_NOTE_CHAIN if full else _E3_LED_NOTE_REGRESSION
     done = stage != 1
-    # 걷기 보드(ghost)는 앞 회로를 완성 상태로 그리지만 뽑을 두 가닥을 점유표에서 빼므로
-    # 74HC08 pin 1·4 가 뜬다 — 그게 정상이라 생성자가 켜 둔 `partial` 을 도로 내리지 않는다
-    bb.partial = not done or bb.ghost is not None
+    bb.partial = not done
 
     # --- 좌 S1: XOR + 입력 + LED1 ---
     bb.draw_chip('74HC86', _E3_S1)

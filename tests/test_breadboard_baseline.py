@@ -358,6 +358,25 @@ class RemovalBoard(unittest.TestCase):
             with self.assertRaises(ValueError):
                 build(os.path.join(d, 'g.png'))
 
+    def test_걷기_보드는_partial_을_내려도_다시_올라간다(self):
+        """주차 빌더들은 `bb.partial = st < 3` 처럼 단계로 값을 정한다 — 걷기 보드에서
+        그게 생성자가 켜 둔 것을 도로 내리면 걷어낸 가닥의 핀이 `verify()` R5 에 걸린다
+        (2026-09-19 실험03 PNG 재생성이 이걸로 죽었다)."""
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
+        with tempfile.TemporaryDirectory() as d:
+            g = build(os.path.join(d, 'g.png'))
+        self.assertTrue(g.partial)
+        g.partial = False
+        self.assertTrue(g.partial, '걷기 보드는 정의상 partial 이다')
+
+    def test_보통_보드는_partial_을_내리면_내려간다(self):
+        bb = self.mod.BreadboardRenderer()
+        self.assertFalse(bb.partial)
+        bb.partial = True
+        self.assertTrue(bb.partial)
+        bb.partial = False
+        self.assertFalse(bb.partial)
+
     def test_클로저는_엔진_모듈_소속이라_주차_빌더_열거에_안_잡힌다(self):
         build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
         self.assertEqual(build.__module__, self.mod.__name__)

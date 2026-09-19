@@ -39,11 +39,18 @@ TEMPLATE_CANDIDATES = (
 TEMPLATE_SIZE = (998, 1345)
 
 # 폰트. macOS 경로만 박혀 있어 Windows 에서 렌더러가 통째로 죽었다 (2026-09-12).
-# 있는 것을 순서대로 쓴다 — 한글은 Apple SD Gothic Neo → 맑은 고딕 → 나눔고딕,
-# 영문은 Helvetica → Arial → DejaVu. 저장소 루트 밖의 절대 경로지만 폰트는
-# 저장소가 들고 다닐 물건이 아니다.
+# 있는 것을 순서대로 쓴다 — 한글은 Apple SD Gothic Neo → 본고딕 → 함초롬돋움 →
+# 맑은 고딕 → 나눔고딕, 영문은 Helvetica → Arial → DejaVu. 저장소 루트 밖의
+# 절대 경로지만 폰트는 저장소가 들고 다닐 물건이 아니다.
+#
+# 2026-09-19: 맑은 고딕에 U+2295 ⊕ 가 없어 결선도 부제·꼬리표가 □ 로 찍혔다
+# (`(A⊕B)·Ci` 가 `(A□B)·Ci` 로 나가고 줄바꿈도 어긋났다). 그래서 Windows 에서 한글과
+# ⊕ 를 **둘 다** 가진 폰트를 맑은 고딕 앞에 세우고, `font_path()` 가 글리프까지
+# 확인해 못 그리는 후보는 건너뛴다 — 있기만 한 폰트를 고르면 같은 일이 되풀이된다.
 FONT_CANDIDATES = {
     'kr': ('/System/Library/Fonts/AppleSDGothicNeo.ttc',
+           'C:/Windows/Fonts/NotoSansKR-VF.ttf',
+           'C:/Windows/Fonts/HANDotum.ttf',
            'C:/Windows/Fonts/malgun.ttf',
            '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'),
     'en': ('/System/Library/Fonts/Helvetica.ttc',
@@ -51,14 +58,54 @@ FONT_CANDIDATES = {
            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),
 }
 
+# 한글 폰트가 반드시 그려야 하는 글자 — 결선도가 실제로 찍는 기호들이다.
+# ⊕ 부제·배선 뜻풀이, → 주소, · 머리표, ☐ 체크칸, ※ 꼬리표.
+REQUIRED_GLYPHS = {'kr': '⊕→·☐※', 'en': ''}
+
+# 글리프가 없을 때 폰트가 대신 그리는 .notdef 를 부르는 글자. 유니코드가
+# 비문자로 못박아 두어(U+FFFE) 어떤 폰트에도 진짜 글리프가 없다.
+_NOTDEF = '\ufffe'
+
+
+def _glyph_mask(font, ch):
+    """`ch` 한 글자의 렌더 결과 — (크기, 픽셀). 같은 폰트 안에서만 견준다."""
+    mask = font.getmask(ch, mode='L')
+    return (mask.size, bytes(mask))
+
+
+def _covers(path, chars):
+    """`path` 폰트가 `chars` 를 **전부** 진짜 글리프로 그리는가.
+
+    .notdef(`\\ufffe`) 와 똑같이 그려지는 글자는 없는 것으로 본다. Pillow 만 쓴다 —
+    폰트 테이블을 읽는 의존성을 새로 들이지 않으려고 그림을 직접 견준다.
+    """
+    try:
+        font = ImageFont.truetype(path, 20)
+    except OSError:
+        return False
+    notdef = _glyph_mask(font, _NOTDEF)
+    return all(_glyph_mask(font, ch) != notdef for ch in chars)
+
 
 def font_path(kind):
-    """`kind`('kr'|'en') 의 첫 번째 실재 폰트 경로. 없으면 어디를 봤는지 적어 던진다."""
+    """`kind`('kr'|'en') 의 첫 번째 쓸 만한 폰트 경로.
+
+    실재하기만 해서는 안 되고 `REQUIRED_GLYPHS[kind]` 를 다 그려야 한다 — 맑은 고딕은
+    한글은 되고 ⊕ 는 안 되어 그림이 조용히 □ 로 나갔다(2026-09-19). 없으면 어디를
+    봤는지, 어느 후보가 글리프 때문에 밀렸는지 적어 던진다.
+    """
+    wanted = REQUIRED_GLYPHS[kind]
+    skipped = []
     for path in FONT_CANDIDATES[kind]:
-        if os.path.exists(path):
+        if not os.path.exists(path):
+            continue
+        if _covers(path, wanted):
             return path
-    raise FileNotFoundError(
-        f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind]))
+        skipped.append(path)
+    msg = f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind])
+    if skipped:
+        msg += (f'\n글리프 {wanted!r} 가 없어 건너뛴 후보:\n  ' + '\n  '.join(skipped))
+    raise FileNotFoundError(msg)
 
 
 def _font(kind, size):
@@ -210,8 +257,10 @@ class BreadboardRenderer:
         self.marker_boxes = []
         # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
-        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
-        self.partial = False
+        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다.
+        # 걷기 보드에서는 프로퍼티(`partial` setter)가 False 를 받아도 True 로 남긴다 —
+        # 아래 `self.ghost` 를 먼저 정해 두어야 setter 가 그것을 볼 수 있다
+        self._partial = False
         # 앞 보드의 `snapshot()`. 같은 홀 쌍의 배선·같은 홀의 LED 사슬은 회색으로
         # 그리고 번호를 주지 않는다 — 실험실에서는 그 선을 손대지 않는다.
         # 기준선에 있었는데 이번에 안 그린 것은 `removed()` 가 "걷는다" 로 낸다.
@@ -257,6 +306,22 @@ class BreadboardRenderer:
 
         self._addr_map = self._build_addr_map()
         self._sym_map = self._build_sym_map()
+
+    @property
+    def partial(self):
+        return self._partial
+
+    @partial.setter
+    def partial(self, value):
+        """걷기 보드는 정의상 `partial` 이다 — 내려도 다시 올린다.
+
+        걷어낸 가닥의 핀은 아무 데도 안 물린다(74HC08 pin 1·4). 그게 이 그림의 요점인데
+        `verify()` R5 는 뜬 핀을 오류로 잡는다. 주차 파일들은 `bb.partial = st < 3`
+        처럼 단계로 값을 정하므로, 생성자가 켜 둔 것을 빌더가 뒤에서 도로 내린다
+        (2026-09-19 실험03 걷기 보드가 이걸로 PNG 재생성에서 죽었다). 세 주차 스물세
+        빌더에 `or bb.ghost` 를 덧대는 대신 여기서 한 번 막는다.
+        """
+        self._partial = bool(value) or getattr(self, 'ghost', None) is not None
 
     # ---------------- 좌표 ----------------
 
