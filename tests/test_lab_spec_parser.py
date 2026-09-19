@@ -304,6 +304,39 @@ class TestSharedLetter(unittest.TestCase):
         """의미 결함은 validate 몫이다 — 파서는 싣기만 한다."""
         self.assertIsNone(parse_spec(EDGE).items[0].pages)
 
+    def test_schematic_이_없으면_None(self):
+        self.assertIsNone(parse_spec(self.SPEC).items[0].schematic)
+
+    def test_schematic_을_읽는다(self):
+        target = self._variant("pages: [6]",
+                               "pages: [6]\n    schematic: [실험03_2-1_회로도.png]")
+        self.assertEqual(parse_spec(target).items[0].schematic,
+                         ["실험03_2-1_회로도.png"])
+
+    def test_schematic_이_스칼라면_던진다(self):
+        target = self._variant("pages: [6]", "pages: [6]\n    schematic: a.png")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("schematic", str(ctx.exception))
+
+    def test_schematic_이_빈_리스트면_던진다(self):
+        target = self._variant("pages: [6]", "pages: [6]\n    schematic: []")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("schematic", str(ctx.exception))
+
+    def test_schematic_원소가_문자열이_아니면_던진다(self):
+        target = self._variant("pages: [6]", "pages: [6]\n    schematic: [5]")
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("schematic", str(ctx.exception))
+
+    def test_schematic_원소가_공백뿐이면_던진다(self):
+        target = self._variant("pages: [6]", 'pages: [6]\n    schematic: ["  "]')
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("schematic", str(ctx.exception))
+
 
 class TestErrors(unittest.TestCase):
     """실물 명세를 한 군데씩 망가뜨려 파서가 거절하는지 본다."""

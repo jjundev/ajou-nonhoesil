@@ -584,6 +584,67 @@ class TestCircuitPages(unittest.TestCase):
         page = self._pages()[3]
         self.assertLess(page.index("핀 순서에 주의"), page.index('class="wirebox"'))
 
+    def _spec_with_schematic(self, make_png: bool):
+        """실험01 명세 사본의 E1.P1-1 에 schematic 을 단다. 사본은 임시 폴더라
+        PNG 유무를 마음대로 정한다."""
+        src = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
+        text = src.read_text(encoding="utf-8")
+        self.assertEqual(text.count("pages: [11]"), 1)
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        target = Path(tmp.name) / "명세.md"
+        target.write_text(text.replace(
+            "pages: [11]", "pages: [11]\n    schematic: [실험01_1-1_회로도.png]"),
+            encoding="utf-8")
+        if make_png:
+            (target.parent / "실험01_1-1_회로도.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+        return parse_spec(target)
+
+    def test_schematic_이_없으면_싣지_않는다(self):
+        self.assertNotIn('class="schematic"', self.html)
+        self.assertNotIn("회로도가 아직 없다", self.html)
+
+    def test_schematic_을_배너_뒤_작도면_앞에_싣는다(self):
+        """핸드오프 B: 강의노트 회로도는 그 항목 첫머리, 브레드보드 작도면 앞이다."""
+        spec = self._spec_with_schematic(make_png=True)
+        page = circuit_pages(spec, _netlist_missing_diagrams()).split(
+            '<section class="circuit">')[1]
+        img = page.index('<img class="schematic" src="실험01_1-1_회로도.png">')
+        self.assertLess(page.index('class="banner"'), img)
+        self.assertLess(img, page.index('class="wirebox"'))
+        self.assertIn("강의노트 p11 · 회로 구성", page)
+
+    def test_schematic_은_항목의_첫_회로에만_싣는다(self):
+        spec = self._spec_with_schematic(make_png=True)
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(_MISSING_DIAGRAM_NETLIST.replace(
+            "- item: E1.P1-2", "- item: E1.P1-1"), encoding="utf-8")
+        html = circuit_pages(spec, parse_netlist(path))
+        self.assertEqual(html.count('class="schematic"'), 1)
+        pages = html.split('<section class="circuit">')[1:]
+        self.assertIn('class="schematic"', pages[0])
+
+    def test_schematic_파일이_없으면_그림_대신_안내를_낸다(self):
+        """없는 파일에 `<img>` 를 내면 `check_embedded_images` 가 error 로 막는다."""
+        spec = self._spec_with_schematic(make_png=False)
+        html = circuit_pages(spec, _netlist_missing_diagrams())
+        self.assertNotIn('class="schematic"', html)
+        self.assertIn("회로도가 아직 없다: 실험01_1-1_회로도.png", html)
+        # 그림이 없는데 캡션만 남으면 없는 그림을 가리킨다 — 안내 한 줄만 낸다
+        self.assertNotIn("회로 구성", html)
+
+    def test_schematic_캡션은_크롭한_첫_쪽만_적는다(self):
+        """크롭은 `pages[0]` 에서 나온다 — `p11·p12` 라고 적으면 p12 그림인 줄 안다."""
+        from scripts.lab.render import _schematic_html
+        from scripts.lab.spec_parser import SpecItem
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "a.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            item = SpecItem(id="E1.P1-1", title="t", device=[], ics=[], tables=[],
+                            pages=[11, 12], schematic=["a.png"])
+            out = _schematic_html(item, d)
+        self.assertIn("<p class='src'>강의노트 p11 · 회로 구성</p>", out)
+        self.assertNotIn("p12", out)
+
 
 class TestCircuitBodySplit(unittest.TestCase):
     """`_circuit_body` 의 줄 귀속. 실험01 에는 이어지는 줄이 없어 실물

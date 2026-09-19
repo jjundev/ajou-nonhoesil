@@ -53,6 +53,8 @@ class SpecItem:
     tables: list
     pages: Optional[list] = None   # 강의노트 쪽 번호 `[11]`. 없으면 None — 형태(양의 정수
                                     # 리스트)는 파서가 거절하고, 쪽 존재·이름 대조는 validate 몫
+    schematic: Optional[list] = None   # 강의노트 회로도 PNG `[실험03_1-2_회로도.png]`. 명세 파일
+                                        # 위치 기준 상대경로. 파일 존재는 validate 몫
 
 
 @dataclass
@@ -203,9 +205,17 @@ def parse_spec(path) -> LabSpec:
                 f"{path}: 항목 {raw['id']} 의 pages 는 쪽 번호(양의 정수) 리스트여야 한다 — "
                 f"받은 값: {pages!r}"
             )
+        schematic = raw.get("schematic")
+        if schematic is not None and (
+                not isinstance(schematic, list) or not schematic
+                or not all(isinstance(s, str) and s.strip() for s in schematic)):
+            raise SpecError(
+                f"{path}: 항목 {raw['id']} 의 schematic 은 회로도 PNG 경로(문자열) 리스트여야 한다 — "
+                f"받은 값: {schematic!r}"
+            )
         items.append(SpecItem(id=raw["id"], title=raw["title"],
                               device=raw["device"], ics=raw["ics"], tables=raw["tables"],
-                              pages=pages))
+                              pages=pages, schematic=schematic))
 
     return LabSpec(experiment=front["experiment"],
                    title=front["title"], source_manual=front["source_manual"],

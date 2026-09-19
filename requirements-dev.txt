@@ -30,7 +30,8 @@ pytest>=9.1.1
 # 에서 이것을 예비로 쓴다 — 없으면 조용히 건너뛴다.
 pypdf>=6.17.0
 
-# pymupdf(`import fitz`) — hwp/PDF 분할·이름변경 스크립트의 테스트.
+# pymupdf(`import fitz`) — hwp/PDF 분할·이름변경 스크립트의 테스트, 그리고
+# 강의노트 회로도 크롭(`scripts/lab/schematic.py`, draft-lab-spec 4단계 끝).
 pymupdf>=1.28.2
 
 # pillow — 교안 렌더 PNG 를 크롭·확대해 회로도를 vision 판독할 때.

@@ -58,6 +58,7 @@ Task 1 리뷰에서 발견된 세 번째 스키마 파손이다(첫 번째는 �
 | `ics` | ● | IC 이름 리스트. **준비물 페이지의 표기를 따르되, 항목이 실제로 쓰는 패키지만 싣는다.** 패키지 단위이지 게이트 단위가 아니다 |
 | `tables` | ● | 이 항목이 쓰는 표 ID 리스트 (`[T1, T2]`) |
 | `pages` | 파생 진리표가 있으면 ● | 그 항목의 회로도·절차가 있는 강의노트 쪽 번호 리스트(`[11]`). `validate.check_manual_names` 가 파생표 열 이름을 이 쪽 텍스트와 대조한다. 키가 없으면 파서가 None 으로 읽고, 그 없음은 그 검사가 error 로 낸다 — 있는데 형태가 틀리면(스칼라, 문자열 원소, 빈 리스트) 파서가 `SpecError` 로 거절한다 |
+| `schematic` | 선택 | 강의노트 게이트 기호 회로도 PNG 경로 리스트(`[실험03_1-2_회로도.png]`). 명세 파일 위치 기준 상대경로이고 파일은 `<실험NN>/체크리스트/` 에 둔다(`결선도/` 는 `배치.py` 출력만 담는다). 체크리스트가 그 항목의 첫 회로 페이지 첫머리(칩 교체 배너 뒤)에 싣는다. `draft-lab-spec` 이 손으로 쓰지 않고 `scripts/lab/schematic.py` 가 크롭하면서 적는다. `specdiff` 대조 대상이 아니다. 형태가 틀리면(스칼라, 문자열 아닌 원소, 빈 리스트) 파서가 `SpecError` 로 거절하고, 파일이 없으면 `check_schematics` 가 warn 을 낸다 |
 
 `ics` 는 **패키지 수**를 센다. 회로도에 `74HC08` 라벨이 두 번 나와도 쿼드 패키지에서
 게이트 2개를 뽑는 것이므로 `["74HC08"]` 이다 (실험1 p11 이 근거). `×2` 같은 수량
@@ -219,12 +220,13 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
 | 교안 인용이 `source_manual` 텍스트 추출본에 없다 | `교안`·`강의노트` 가 같은 줄에 있는 큰따옴표 인용 | info (래스터면 오탐이라 막지 않는다) |
 | 진리표 열 이름이 강의노트 쪽 텍스트에 없다 | `truth-table` — `manual:pN` 표는 머리 토큰열이 그 쪽에 연속으로, 파생표는 열 이름이 항목 `pages` 쪽에 | error (텍스트 층이 없는 쪽은 info, 파생표 항목에 `pages` 가 없어도 error) |
+| 항목 `schematic` 이 가리키는 회로도 파일이 명세 옆에 없다 | `schematic` 이 있는 항목 | warn |
 | 항목이 소실험 범위(`config.EXPERIMENT_SCOPE`) 밖이거나, 범위 번호에 맞는 항목이 없다 | `EXPERIMENT_SCOPE` 에 있는 실험(2~10) | error (`validate_spec` 밖 — 아래 산문) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
 
-이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열여덟 줄이
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 스물두 줄이
 한 함수에 있지 않다. `kind` 값·`capture` 표의 셀 표 유무·열 이름 중복은
 `spec_parser.py` 의 `_parse_table`(파서이므로 예외로 던진다)이 맡는다.
 `role`·`encoding`·`capture` 의 `expected`·`source` 부재와 `outputs` 두 줄은
@@ -232,8 +234,9 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
-`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 교안 인용
-대조는 `check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
+`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 회로도 파일
+부재는 `check_schematics`(warn)가 맡는다. 교안 인용 대조는
+`check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
 맡는데, 이 둘은 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
 가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다). 소실험 범위는
 `check_item_scope`(error)가 맡고 역시 `validate_spec` 밖이다 — 명세가 아니라 강의
@@ -247,7 +250,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 맞대는데, 파서의 중복 열 거절이 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
 `spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
 `check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
-`check_diagnostic_claims`)를 합친 것이다.
+`check_diagnostic_claims`·`check_schematics`)를 합친 것이다.
 
 위 표는 네 줄이 코드와 반대로 적혀 있었다. 그중 둘(`encoding`·`expected`)은
 `존재`/`부재`가 그대로 뒤집혀 있었고, 나머지 둘(셀 표 유무를 다루는 두 줄)은
@@ -282,6 +285,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 항목 ID 가 문서 안에서 두 번 정의됐다 | `parse_spec` |
 | 항목이 정의되지 않은 표 ID 를 가리킨다 | `parse_spec` |
 | 항목 `pages` 가 있는데 양의 정수의 비지 않은 리스트가 아니다(스칼라, 문자열 원소, 빈 리스트) | `parse_spec` |
+| 항목 `schematic` 이 있는데 비지 않은 문자열 리스트가 아니다(스칼라, 문자열 아닌 원소, 빈 리스트) | `parse_spec` |
 
 이 목록도 위 표와 마찬가지로 정본은 코드다 — 손으로 옮겨 적은 요약일
 뿐이고, `spec_parser.py` 가 실제로 무엇을 던지는지와 어긋나면 코드가
