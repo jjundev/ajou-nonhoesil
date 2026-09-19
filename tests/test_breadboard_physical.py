@@ -246,6 +246,56 @@ class PhysicalRules(unittest.TestCase):
         self.assertIn((c['a'], 25), bb._leads)
         self.assertNotIn((c['c'], 25), bb._leads)
 
+    # ---- R7. 칩 한쪽에 리드가 몰리지 않는다 ----
+
+    def _chip_with_side_leads(self, n, side='a'):
+        """좌 7행 74HC08 의 한쪽 자유 열에 리드 n 개를 점유표로 직접 꽂는다.
+        배선 기하는 R1~R6 몫이라 여기서는 `lead()` 만 쓴다. 핀은 안 물렸으니 partial."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        c = bb.cols['left']
+        cols = self.mod.SIDE_COLS[side]
+        for k in range(n):
+            bb.lead(c[cols[k % 4]], bb.r_y(7 + k // 4), f'점퍼 {k}')
+        return bb
+
+    def test_칩_한쪽_8리드는_통과한다(self):
+        self._chip_with_side_leads(8).verify()
+
+    def test_칩_한쪽_9리드는_R7_로_막힌다(self):
+        bb = self._chip_with_side_leads(9)
+        with self.assertRaisesRegex(AssertionError, r'R7 칩 한쪽 밀집: 74HC08\(좌 7행\) 왼쪽 9리드 > 8: 좌 a7'):
+            bb.verify()
+
+    def test_오른쪽도_같은_한도다(self):
+        bb = self._chip_with_side_leads(9, side='f')
+        with self.assertRaisesRegex(AssertionError, r'오른쪽 9리드 > 8: 좌 g7'):
+            bb.verify()
+
+    def test_칩_핀과_지나가는_선은_R7_에_안_센다(self):
+        """칩 핀 홀(e·f)은 칩 자신이고, 위를 지나는 선은 꽂는 것이 아니다."""
+        bb = self._chip_with_side_leads(8)
+        c = bb.cols['left']
+        # d 열을 세로로 지나는 선 — d7~d8 은 꽂혀 있으니 옆 a~d 밖인 여백 x 로 우회하지 않고
+        # 칩 아래 행에서 출발해 칩 위 행으로 간다(d9~d13 은 비어 있어 `_passed` 에만 든다)
+        bb.step_wire([(c['d'], bb.r_y(16)), (c['d'], bb.r_y(9))], 'sig', '지나가는 선')
+        self.assertEqual([s['count'] for s in bb.side_leads()], [9, 0])
+        # d9 는 이 선의 **끝점**이라 리드다 — 9 가 됐으니 막힌다. 끝점을 d16→d15 로 바꾸면 통과
+        with self.assertRaisesRegex(AssertionError, 'R7'):
+            bb.verify()
+
+    def test_legacy_정책은_R7_을_끈다(self):
+        bb = self._chip_with_side_leads(11)
+        bb.density_policy = 'legacy'
+        bb.verify()
+
+    def test_모르는_밀도_정책은_거절한다(self):
+        bb = self._chip_with_side_leads(1)
+        bb.density_policy = 'warn'
+        with self.assertRaisesRegex(ValueError, 'density_policy'):
+            bb.verify()
+
 
 def _render(mod, fn):
     """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""
@@ -289,6 +339,20 @@ class AllCircuits(unittest.TestCase):
                 bb = _render(self.mod, fn)
                 self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드로 도는 회로가 없어야 한다')
                 self.assertEqual(bb.overlap_warnings, [])
+
+    def test_R7_legacy_는_실험_1_2_3_뿐이고_그_뒤는_엄격_모드다(self):
+        """실험01~03 은 R7(2026-09-20) 이전 승인본이라 legacy 로 고정한다. 실험04부터
+        새 빌더가 legacy 를 붙이면 여기서 걸린다 — 밀집은 게이트 배정으로 풀지 정책으로
+        끄지 않는다."""
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                exp = int(fn.__module__.rsplit('board_e', 1)[1])
+                bb = _render(self.mod, fn)
+                want = 'legacy' if exp <= 3 else 'strict'
+                self.assertEqual(bb.density_policy, want,
+                                 f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
+                if want == 'strict':
+                    self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
 
 
 if __name__ == '__main__':

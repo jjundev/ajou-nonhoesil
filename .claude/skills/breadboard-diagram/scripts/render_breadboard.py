@@ -264,6 +264,11 @@ class BreadboardRenderer:
         # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
+        # R7 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘으면 verify() 가
+        # 막는다. 'legacy' 는 R7(2026-09-20) 이전에 승인·제출된 실험01~03 빌더만 쓴다 —
+        # 승인본을 다시 그리지 않으려는 것이지 면허가 아니다. tests/test_breadboard_physical.py
+        # 가 실험 4 이상은 전부 strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
+        self.density_policy = 'strict'
         # 홀 점유표. (열 x, 행) -> 무엇이 꽂혀 있는가. 배선 끝점·부품 다리·칩 핀이
         # 전부 여기 등록되고 verify() 가 본다 — 끝점은 홀이어야 하고(R1), 한 홀에는
         # 리드 하나만 들어간다(R2). 2026-09-07 까지 verify() 는 주소 문자열을 파싱해
@@ -1638,6 +1643,8 @@ class BreadboardRenderer:
             칩 핀도 부품 다리도 없다.
         R6  배선이 자기 스트립 안을 달리는 구간이 없다 — 뒤쪽 홀에서 출발하면
             되는 우회다. R5ⓐ 가 양 끝점만 보는 틈으로 지나간 부류다.
+        R7  칩 한쪽(핀 행 7 × 자유 열 4)에 꽂힌 리드가 SIDE_LEAD_MAX 를 넘지 않는다
+            (`density_policy`). 실험01~03 승인본만 'legacy' 로 끈다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1664,6 +1671,18 @@ class BreadboardRenderer:
                 bad.append(msg)
             else:
                 print(f'[WARN] {msg}', file=sys.stderr)
+
+        # R7. 칩 한쪽에 리드가 몰리지 않는다 — 2026-09-18 실험03 에서 네 칩이 게이트 1·2 만
+        # 써서 74HC86 왼쪽에 11리드가 몰렸다. 게이트를 좌·우로 나눠 배정하면 풀린다(SKILL §4a).
+        if self.density_policy not in ('strict', 'legacy'):
+            raise ValueError(f"density_policy 는 'strict' 또는 'legacy' 다: {self.density_policy!r}")
+        if self.density_policy == 'strict':
+            for s in self.side_leads():
+                if s['count'] > SIDE_LEAD_MAX:
+                    blk = '좌' if s['block'] == 'left' else '우'
+                    side_kr = '왼쪽' if s['side'] == 'a' else '오른쪽'
+                    bad.append(f"R7 칩 한쪽 밀집: {s['chip']}({blk} {s['pin1_row']}행) {side_kr} "
+                               f"{s['count']}리드 > {SIDE_LEAD_MAX}: {', '.join(s['addrs'])}")
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 

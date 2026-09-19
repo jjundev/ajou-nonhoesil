@@ -92,6 +92,7 @@ def build_e2_inv(output_path, template_path=None, stage=None, baseline=None):
     """실험 1-1 · Inverter 입출력 특성 (74HC04, X-Y). netlist C1. 첫 보드 — 완성본 겸용."""
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-1: Inverter 입출력 특성 결선도",
                   "74HC04 (Hex Inverter) 게이트 1 · 오실로스코프 X-Y 모드 (CH1 = Vin, CH2 = Vout)",
                   submit=baseline is None)
@@ -108,6 +109,7 @@ def build_e2_schmitt(output_path, template_path=None, stage=None, baseline=None)
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-2: Schmitt-trigger 입출력 특성 결선도" if baseline is None
                   else "실험 1-2: Schmitt-trigger — 1단계 (칩 교체)",
                   "74HC14 (Hex Schmitt inverter) · C1 과 배선이 같다 — 칩만 갈아 끼운다",
@@ -136,6 +138,7 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
     st = 2 if stage is None else stage
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.partial = st < 2
     title = {1: "실험 2: CMOS AC 특성 — 1단계 (U1 체인, CH1 = pin 4 · CH2 = pin 8)",
              2: "실험 2: CMOS AC 특성 (t_pd) 결선도" if baseline is None
