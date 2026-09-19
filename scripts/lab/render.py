@@ -572,8 +572,8 @@ def _chip_swap(previous, current) -> str:
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
     if current.stages:
-        parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
-                 "(회색·번호·'걷는다' 표)이 지시한다"]
+        parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 0단계 걷기 그림(빨간 점선), "
+                 "새 선은 단계 그림(회색·번호)이 지시한다"]
     else:
         parts = ["앞 회로의 점퍼선을 모두 걷는다"]
     if remove:
