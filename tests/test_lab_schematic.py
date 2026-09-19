@@ -1,9 +1,10 @@
 import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.lab import schematic
+from scripts.lab import config, schematic
 from scripts.lab.spec_parser import SpecItem
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,6 +42,12 @@ class TestName(unittest.TestCase):
                          "실험03_1-2_회로도.png")
 
 
+_TABLES = ("## T3 · x\n\n- kind: truth-table\n- encoding: 0/1\n"
+           "- source: manual:p5\n\n| A | S |\n|---|---|\n| 0 | 0 |\n\n"
+           "## T7 · y\n\n- kind: truth-table\n- encoding: 0/1\n"
+           "- source: manual:p7\n\n| A | D |\n|---|---|\n| 0 | 0 |\n")
+
+
 class TestSetSpecSchematic(unittest.TestCase):
     def test_pages_다음_줄에_넣는다(self):
         out = schematic.set_spec_schematic(SPEC, "E3.P1-2", ["실험03_1-2_회로도.png"])
@@ -71,10 +78,7 @@ class TestSetSpecSchematic(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "명세.md"
             p.write_text(schematic.set_spec_schematic(SPEC, "E3.P1-2", ["a.png"])
-                         .replace("본문", "## T3 · x\n\n- kind: truth-table\n- encoding: 0/1\n"
-                                  "- source: manual:p5\n\n| A | S |\n|---|---|\n| 0 | 0 |\n\n"
-                                  "## T7 · y\n\n- kind: truth-table\n- encoding: 0/1\n"
-                                  "- source: manual:p7\n\n| A | D |\n|---|---|\n| 0 | 0 |\n"),
+                         .replace("본문", _TABLES),
                          encoding="utf-8")
             self.assertEqual(parse_spec(p).items[0].schematic, ["a.png"])
 
@@ -106,3 +110,48 @@ class TestDefaultBoxOnManual(unittest.TestCase):
             self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
             width = int.from_bytes(data[16:20], "big")
             self.assertAlmostEqual(width, 400 / 72 * 300, delta=3)
+
+
+def _git_status(path):
+    return subprocess.run(["git", "status", "--porcelain", "--", path], cwd=ROOT,
+                          capture_output=True, text=True, encoding="utf-8",
+                          check=True).stdout
+
+
+@unittest.skipUnless(HAS_FITZ and MANUAL3.exists(), "pymupdf 나 실험3 교안이 없다")
+class TestMainWithSpec(unittest.TestCase):
+    """draft-lab-spec 절대 규칙 13 — 기존 명세가 있으면 스크래치패드에 새로 쓴다.
+    `--spec` 은 그 사본 옆에 PNG 를 두고 사본만 고친다. `main()` 은 cwd 에서
+    프로젝트 루트를 찾는다 — pytest 는 저장소 루트에서 돈다."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        folder = Path(tmp.name) / "실험03" / "체크리스트"
+        folder.mkdir(parents=True)
+        self.spec = folder / "명세.md"
+        self.spec.write_text(SPEC.replace("본문", _TABLES), encoding="utf-8")
+        self.real = ROOT / config.experiment_dir(3) / "체크리스트/명세.md"
+        self.real_before = self.real.read_bytes() if self.real.exists() else None
+        self.status_before = _git_status("보고서")
+
+    def _assert_보고서_그대로(self):
+        self.assertEqual(_git_status("보고서"), self.status_before)
+        self.assertEqual(self.real.read_bytes() if self.real.exists() else None,
+                         self.real_before)
+
+    def test_사본_옆에_PNG_를_두고_사본에만_적는다(self):
+        self.assertEqual(schematic.main(["3", "E3.P1-2", "--spec", str(self.spec)]), 0)
+        png = self.spec.parent / "실험03_1-2_회로도.png"
+        self.assertEqual(png.read_bytes()[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertIn("    pages: [5]\n    schematic: [실험03_1-2_회로도.png]\n",
+                      self.spec.read_text(encoding="utf-8"))
+        self._assert_보고서_그대로()
+
+    def test_pages_없는_항목도_page_로_뽑는다(self):
+        self.assertEqual(schematic.main(
+            ["3", "E3.P2-2", "--spec", str(self.spec), "--page", "7"]), 0)
+        self.assertTrue((self.spec.parent / "실험03_2-2_회로도.png").exists())
+        self.assertIn("    tables: [T7]\n    schematic: [실험03_2-2_회로도.png]\n---",
+                      self.spec.read_text(encoding="utf-8"))
+        self._assert_보고서_그대로()

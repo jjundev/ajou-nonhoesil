@@ -6,8 +6,10 @@ p5·p7). 임베드 이미지를 그대로 뽑으면 `74HC86`·`A`·`Ci` 가 빠�
 자리에 4pt 여백을 둔 것이다 — 여백을 더 주면 이미지 바로 아래 캡션 '회로 구성'(p5·p7
 top 507pt)이 반쯤 걸린다. 그림 자리가 다르면 `--box` 로 준다.
 
-PNG 는 `<실험NN>/체크리스트/` 에 둔다. `결선도/` 는 `배치.py` 출력만 담는다
-(`tests/test_breadboard_boards.py` 의 `CommittedPngs`).
+PNG 는 고치는 명세 옆, 곧 `<실험NN>/체크리스트/` 에 둔다. `결선도/` 는 `배치.py`
+출력만 담는다(`tests/test_breadboard_boards.py` 의 `CommittedPngs`). 기존 명세가
+있으면 `--spec` 으로 스크래치패드 사본을 준다 — PNG 도 사본 옆에 떨어지고
+`<실험NN>/` 은 건드리지 않는다(draft-lab-spec 절대 규칙 13).
 
 pymupdf(`fitz`)는 함수 안에서만 부른다 — `render`·`validate` 가 이 모듈을 안 부르지만,
 fitz 없는 기계에서 `scripts.lab` 을 import 하다 죽는 일을 만들지 않는다.
@@ -100,11 +102,14 @@ def main(argv=None) -> int:
     ap.add_argument("item", help="명세 항목 id (예: E3.P1-2)")
     ap.add_argument("--page", type=int, help="교안 쪽. 없으면 항목 pages 의 첫 쪽")
     ap.add_argument("--box", help="x0,y0,x1,y1 (pt, 쪽 왼쪽 위 기준). 없으면 default_box")
+    ap.add_argument("--spec", type=Path,
+                    help="고칠 명세 경로. PNG 도 그 옆에 둔다. 없으면 <실험NN>/체크리스트/명세.md "
+                         "— 기존 명세가 있을 때(draft-lab-spec 절대 규칙 13) 스크래치패드 사본을 준다")
     a = ap.parse_args(argv)
 
     root = config.find_project_root(Path("."))
-    exp_dir = root / config.experiment_dir(a.experiment)
-    spec_path = exp_dir / "체크리스트/명세.md"
+    exp_dir = root / config.experiment_dir(a.experiment)   # PNG 이름(`실험NN_`)은 늘 여기서 온다
+    spec_path = a.spec or exp_dir / "체크리스트/명세.md"
     spec = parse_spec(spec_path)
     item = next((i for i in spec.items if i.id == a.item), None)
     if item is None:
