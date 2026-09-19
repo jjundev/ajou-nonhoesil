@@ -17,6 +17,7 @@ from . import md
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_indices
+from .photo_names import item_token, photo_name
 from . import config
 
 MAX_BREADBOARD_ROWS = 30
@@ -64,12 +65,17 @@ def _plain(text: str) -> str:
     return text.replace("`", "").replace("*", "")
 
 
-def _truth_table_html(table) -> str:
+def _truth_table_html(table, token=None) -> str:
     """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다.
 
     `_plain` 으로 마크다운 표기를 먼저 벗기고 나서 `normalize_cell` 로 논리값을
     정규화한다 — 순서가 반대면 `**1**` 같은 굵게 표기 셀이 정규화를 통과하지
     못하고 별표째 인쇄본에 남는다.
+
+    `token`(항목 토큰, 예 `1-2`)이 있으면 행마다 찍을 사진 파일명 열을 붙인다 —
+    `contact_sheet` 가 그대로 읽는 `<항목> <입력비트>.jpg` 다. 비트는 입력 **자리**
+    순서다. 입력 셀이 0/1 이 아니면(don't-care 등) 한 장으로 찍을 조합이 아니라 `—`.
+    `.check` 가 아니라 `.photo-name` 이다 — `.check` 개수는 행 수 불변식이다.
     """
     # 셀은 이름이 아니라 자리로 찾는다 — 입력과 출력이 같은 글자인 표가 있다
     # (실험3 반감산기 `A B D B`). `record._truth_table` 과 같은 규약이다.
@@ -83,11 +89,16 @@ def _truth_table_html(table) -> str:
     # 헤더 없는 진리표 조각은 실험실에서 읽을 수 없다.
     out = ["<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(h)}</th>" for h in head]
-    out.append('<th>확인</th></tr>')
+    out.append("<th>확인</th>" + ("<th>사진 파일명</th>" if token else "") + "</tr>")
     out += ["</thead>", "<tbody>"]
     for row in body:
-        out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in row)
-                   + '<td class="check"></td></tr>')
+        cells = "".join(f"<td>{_esc(c)}</td>" for c in row) + '<td class="check"></td>'
+        if token:
+            bits = row[:len(inputs)]
+            name = (photo_name(token, "".join(bits))
+                    if all(b in ("0", "1") for b in bits) else "—")
+            cells += f'<td class="photo-name">{_esc(name)}</td>'
+        out.append(f"<tr>{cells}</tr>")
     out += ["</tbody>", "</table>"]
     return "\n".join(out)
 
@@ -352,11 +363,17 @@ _CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
 _CHIP_HEAD = re.compile(r"^#{2,}[ \t]+(U\d+[ \t]*=[ \t]*.+?)[ \t]*$")
 _ANY_HEAD = re.compile(r"^#{1,}[ \t]+\S")
 
+# 사진 파일명은 `photo_names` 규칙이다. 실험02 는 `실험02 1-1 …` 처럼 접두어를 붙여
+# 시트 엔진이 전부 규칙 밖으로 거절했다 — 그래서 접두어 금지를 줄마다 적는다.
+_NO_PREFIX = "앞에 실험 번호(예: 실험03)를 붙이지 않는다"
 _PHOTO = {
-    "truth-table": "사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 {tid} row3.jpg 형식",
-    "stepped": "사진: 스텝마다 1장. 파일명 {tid} row3.jpg 형식",
-    "capture": "사진: 파형 자체가 결과물이다. 파일명 {tid} row1.jpg 형식",
+    "truth-table": "사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — " + _NO_PREFIX,
+    "stepped": "사진: 스텝마다 1장. 파일명 '{tok} {tid} s<스텝>.jpg' — " + _NO_PREFIX,
+    "capture": "사진: 파형 자체가 결과물이다. 파일명 '{tok} {tid} <설명>.jpg' — " + _NO_PREFIX,
 }
+# 항목 제목에 `실험 N)` 이 없으면 파일명 열이 없다 — 가리킬 열이 없으니 규칙을 적는다.
+_PHOTO_NO_TOKEN = ("사진: 시험한 행마다 1장(불일치 행 필수). 파일명 '<항목> <입력비트>.jpg' — "
+                   + _NO_PREFIX)
 
 
 def _new_chip(head: str) -> dict:
@@ -697,6 +714,8 @@ def _mismatch_html(kind: str, table_id: str) -> str:
 
 def _circuit_tables(spec, section) -> str:
     out = []
+    item = next((i for i in spec.items if i.id == section.item), None)
+    token = item_token(item.title) if item else None
     for table_id in section.tables:
         table = spec.table(table_id)
         if table is None or table.role == "reference":
@@ -713,9 +732,10 @@ def _circuit_tables(spec, section) -> str:
             out.append(_stepped_html(table))
             out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
-            out.append(_truth_table_html(table))
-        out.append(f"<p class='photo'>"
-                   f"{_esc(_PHOTO[table.kind].format(tid=table.id))}</p>")
+            out.append(_truth_table_html(table, token))
+        photo = (_PHOTO_NO_TOKEN if table.kind == "truth-table" and not token
+                 else _PHOTO[table.kind].format(tid=table.id, tok=token or "<항목>"))
+        out.append(f"<p class='photo'>{_esc(photo)}</p>")
         out.append(_mismatch_html(table.kind, table.id))
         out.append("</div>")
     for table_id in section.refs:
@@ -807,12 +827,14 @@ def circuit_pages(spec, netlist) -> str:
 
 
 CLOSING = (
-    "표마다 확인 칸이 다 찼는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)",
-    "회로마다 완성 회로 사진을 찍었는가",
-    "진리표는 불일치 행마다 사진을 찍었는가",
-    "사진 파일명이 T1 row3.jpg 형식인가",
+    "표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 "
+    "(진행하지 않은 표에는 진행하지 않았음 을 적는다)",
+    "표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), "
+    "스텝표는 스텝마다, 파형은 화면마다",
+    "사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)",
     "공통면의 실험실 확인 목록을 다 처리했는가",
     "조교에게 물어볼 것을 다 물었는가",
+    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 자유 메모 파일도 된다",
     "부품을 반납했는가",
 )
 

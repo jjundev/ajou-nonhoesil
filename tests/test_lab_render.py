@@ -1,10 +1,12 @@
 import re
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
+from scripts.lab.photo_names import FILE
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
                                 _chip_tables, _circuit_body, _esc, _plain,
                                 _truth_table_html, circuit_pages, closing_page,
@@ -116,8 +118,11 @@ class TestChecklistHtml(unittest.TestCase):
         self.assertNotIn("(사진 부착)", self.html)
 
     def test_사진_파일명_규칙이_인쇄본에_있다(self):
-        """규칙은 SKILL.md 에만 있었다 — 실험실에서 기억에 의존해야 했다."""
-        self.assertIn("row3.jpg", self.html)
+        """규칙은 SKILL.md 에만 있었다 — 실험실에서 기억에 의존해야 했다.
+        2026-09-19 부터는 행마다 찍을 이름 자체를 인쇄한다(시트 엔진 규칙)."""
+        self.assertIn("사진 파일명", self.html)
+        self.assertIn("1-1 000.jpg", self.html)
+        self.assertNotIn("row3.jpg", self.html)
 
     def test_종료_전_확인_목록이_마지막에_온다(self):
         self.assertIn("부품", self.html)
@@ -145,6 +150,70 @@ class TestSharedLetterTruthTable(unittest.TestCase):
         self.assertEqual([r for r in rows if r],
                          [["0", "0", "0", "0"], ["0", "1", "1", "1"],
                           ["1", "0", "1", "0"], ["1", "1", "0", "0"]])
+
+
+class TestPhotoNameColumn(unittest.TestCase):
+    """진리표 행마다 찍을 사진 파일명 — `contact_sheet` 가 그대로 읽는 이름이다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.t1 = self.spec.table("T1")
+
+    def _names(self, html):
+        return re.findall(r'<td class="photo-name">([^<]*)</td>', html)
+
+    def test_행마다_시트_규칙의_이름이_찍힌다(self):
+        html = _truth_table_html(self.t1, "1-1")
+        names = self._names(html)
+        self.assertEqual(len(names), len(self.t1.rows))
+        self.assertEqual(names[0], "1-1 000.jpg")
+        for name in names:
+            with self.subTest(name=name):
+                self.assertIsNotNone(FILE.match(name))
+        self.assertIn("<th>사진 파일명</th>", html)
+
+    def test_비트는_입력_자리_순서다(self):
+        """`A B D B` — 뒤의 `B` 는 출력이다. 이름으로 찾으면 출력 값이 비트에 섞인다."""
+        spec = parse_spec(ROOT / "tests/fixtures/spec_shared_letter.md")
+        names = self._names(_truth_table_html(spec.table("T5"), "2-1"))
+        self.assertEqual(names, ["2-1 00.jpg", "2-1 01.jpg", "2-1 10.jpg", "2-1 11.jpg"])
+
+    def test_토큰이_없으면_열을_내지_않는다(self):
+        html = _truth_table_html(self.t1)
+        self.assertNotIn("photo-name", html)
+        self.assertNotIn("사진 파일명", html)
+
+    def test_입력에_0_1_이_아닌_값이_있으면_대시다(self):
+        rows = [["X"] + list(self.t1.rows[0][1:])] + list(self.t1.rows[1:])
+        names = self._names(_truth_table_html(replace(self.t1, rows=rows), "1-1"))
+        self.assertEqual(names[0], "—")
+
+    def test_확인_칸_개수는_그대로다(self):
+        """`.check` 개수는 명세의 truth-table 행 수와 대조되는 불변식이다."""
+        html = _truth_table_html(self.t1, "1-1")
+        self.assertEqual(html.count('class="check"'), len(self.t1.rows))
+
+    def test_회로_페이지가_항목_토큰을_넘긴다(self):
+        netlist = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        html = circuit_pages(self.spec, netlist)
+        self.assertIn("1-2 000.jpg", html)
+        self.assertIn("3 00.jpg", html)
+
+    def test_파형_사진_지시는_표ID_규칙이다(self):
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+        netlist = parse_netlist(ROOT / config.experiment_dir(2) / "결선도/netlist.md")
+        html = circuit_pages(spec, netlist)
+        self.assertIn("1-1 T1 &lt;설명&gt;.jpg", html)
+
+
+class TestClosingChecklist(unittest.TestCase):
+    def test_옛_파일명_관례가_없다(self):
+        self.assertNotIn("row", " ".join(CLOSING))
+
+    def test_파일명과_종료_메모를_묻는다(self):
+        joined = " ".join(CLOSING)
+        self.assertIn("표에 인쇄된 이름 그대로", joined)
+        self.assertIn("종료 메모", joined)
 
 
 class TestPlainStrikethrough(unittest.TestCase):
@@ -496,8 +565,9 @@ class TestCircuitPages(unittest.TestCase):
                 self.assertEqual(elsewhere, [])
 
     def test_사진_지시가_표마다_붙는다(self):
-        self.assertIn("T1 row", self.html)
+        self.assertIn("실험 번호(예: 실험03)를 붙이지 않는다", self.html)
         self.assertIn("불일치 행", self.html)
+        self.assertNotIn("T1 row", self.html)
 
     def test_불일치_행_미니표가_표마다_붙는다(self):
         self.assertEqual(self.html.count('class="mismatch"'), 5)
