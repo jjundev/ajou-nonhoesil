@@ -612,6 +612,8 @@ class SkillDocInvariants(unittest.TestCase):
             "결과": RESULT,
             "체크": ROOT / ".claude/skills/prep-lab-checklist/SKILL.md",
             "시트": ROOT / ".claude/skills/export-photo-sheet/SKILL.md",
+            # 결과보고서 템플릿의 사진 CSS 주석도 옛 예시를 들고 있었다.
+            "결과 템플릿": ROOT / ".claude/skills/write-result-report/template.html",
         }
         for name, path in paths.items():
             text = path.read_text(encoding="utf-8")
@@ -628,7 +630,30 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
         self.assertIn("채워진 칸이 0개이고 행 사진도 없으면", result)
         self.assertIn("행 사진(`<항목> <입력비트>.jpg`)도 없으면", result)
-        self.assertIn("행 사진이 있으면 아래 사진 전사로 간다", result)
+        self.assertIn("사진이 찍힌 행에 아직 빈 확인 칸이 있으면 아래 사진 전사로 간다",
+                      result)
+        self.assertNotIn("행 사진이 있으면 아래 사진 전사로 간다", result)
+
+    def test_photo_transcription_never_overwrites_hand_filled_cells(self):
+        # 최종 리뷰: 사진이 있다는 이유만으로 손으로 채운 칸을 사진 판독으로
+        # 덮어쓸 수 있었다. 2단계 제목도 "비어 있으면 멈춘다" 라 사진만 있는
+        # 경우와 어긋났다.
+        result = self.flat["결과"]
+        self.assertIn("기록.md 상태 판정 — 확인 칸도 행 사진도 없으면 여기서 멈춘다.",
+                      result)
+        self.assertNotIn("기록.md 상태 판정 — 비어 있으면 여기서 멈춘다.", result)
+        self.assertIn("사진 전사는 빈 칸만 대상이다. 이미 채워진 칸은 덮어쓰지 않고, "
+                      "사진 판독이 다르면 두 값을 나란히 제시해 사용자가 정한다.", result)
+        self.assertIn("사진이 한 장도 없는 표는 진행 여부를 사용자에게 묻고, 진행하지 "
+                      "않았으면 그 표 아래에 `- 실험을 진행하지 않았음.` 을 적는다.",
+                      result)
+
+    def test_misnamed_photos_are_not_reported_as_no_experiment(self):
+        # 실험02 는 `실험02 1-1 …` 처럼 접두어를 붙여 찍었다. 규칙 밖 이름을
+        # "실험을 안 했다" 로 보고하면 사용자를 헛걸음시킨다.
+        result = self.flat["결과"]
+        self.assertIn("규칙 밖 이름의 이미지 파일이 있으면", result)
+        self.assertIn("이름을 바꿀지 묻는다", result)
 
     def test_free_memo_file_goes_through_the_record_first(self):
         # 실험03 은 `실험중있었던일.md` 에 자유 형식으로 적었다.

@@ -276,7 +276,7 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
     **error 가 있으면 작성을 멈추고 보고한 뒤 사용자 판단을 기다린다.** warn 은
     알리고 진행한다.
 
-2. **기록.md 상태 판정 — 비어 있으면 여기서 멈춘다.** 명세·기록을 같이 읽어
+2. **기록.md 상태 판정 — 확인 칸도 행 사진도 없으면 여기서 멈춘다.** 명세·기록을 같이 읽어
    확인 칸이 실제로 몇 개 채워졌는지 센다.
 
    ```bash
@@ -298,19 +298,31 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    메타데이터는 갱신을 잊을 수 있지만 빈 칸은 거짓말을 못 한다.
 
    - **채워진 칸이 0개인데 행 사진이 있으면** 멈추지 않고 3단계의 사진 전사로
-     간다. 아래로 센다(0개면 사진이 없는 것이다).
+     간다. 아래로 센다(`행 사진` 이 빈 목록이면 사진이 없는 것이다). `규칙 밖`
+     은 규칙에 맞지 않는 이미지 파일이다(스텝표·파형 사진 `<항목> <표ID> <설명>.jpg`
+     는 빼고 센다).
 
      ```bash
      python3 -c "
      from pathlib import Path
      from scripts.lab import config
-     from scripts.lab.photo_names import FILE
+     from scripts.lab.photo_names import FILE, SIDE
      d = Path(config.experiment_dir(<실험번호>)) / '실험사진'
-     print(sorted(p.name for p in d.iterdir() if FILE.match(p.name)) if d.is_dir() else '사진 폴더 없음')
+     imgs = sorted(p.name for p in d.iterdir() if p.suffix.lower() in ('.jpg', '.jpeg', '.png')) if d.is_dir() else []
+     print('행 사진:', [n for n in imgs if FILE.match(n)] if d.is_dir() else '사진 폴더 없음')
+     print('규칙 밖:', [n for n in imgs if not FILE.match(n) and not SIDE.match(n)])
      "
      ```
 
-   - **채워진 칸이 0개이고 행 사진도 없으면** 결과 표를 만들지 말고 다음과 같이 보고하고
+   - **채워진 칸이 0개이고 행 사진은 없는데 규칙 밖 이름의 이미지 파일이 있으면**
+     "실험을 진행하지 않았다" 로 보고하지 않는다 — 사진을 찍었는데 이름만 어긋난
+     것이다(실험02 는 `실험02 1-1 …` 처럼 접두어를 붙였다). 그 파일 목록을 사용자에게
+     보여 주고, 규칙(진리표 행 사진은 `<항목> <입력비트>.jpg`, 예 `1-2 000.jpg` —
+     앞에 실험 번호를 붙이지 않는다)을 인용한 뒤 이름을 바꿀지 묻는다. 이름을
+     바꾸면 행 사진이 생긴 것이므로 위 분기로 간다. 이름을 스스로 바꾸지 않는다.
+
+   - **채워진 칸이 0개이고 행 사진도 없으면**(규칙 밖 이름의 이미지 파일도 없으면)
+     결과 표를 만들지 말고 다음과 같이 보고하고
      **완전히 멈춘다.** md·html·pdf 어느 것도 만들지 않는다.
 
      > `<실험NN>/체크리스트/기록.md` 의 확인 칸이 전부 비어 있습니다(채워진
@@ -323,14 +335,36 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
      진행한다. 일부 표만 채워진 상태(실험을 중간까지만 했다)도 정상 입력이다
      — 5단계가 셀 단위로 처리한다.
 
-3. **vision 전사 (필기 PDF 나 행 사진이 있을 때만).** **필기 PDF 경로는 스스로
+3. **vision 전사 (필기 PDF 가 있거나, 행 사진이 찍힌 행에 빈 확인 칸이 있을 때만).** **필기 PDF 경로는 스스로
    추측하지 않는다** — 태블릿 필기 산출물의 파일명 관례가 아직 정해져 있지
    않다. 사용자가 경로를 주면 그것을 쓰고, 안 주면 `<실험NN>/체크리스트/`
    안에서 `명세.md`·`기록.md`·`체크리스트.html`·`체크리스트.pdf` 를 제외한
    PDF 를 후보로 찾아 제시한다. 후보가 없고 행 사진(`<항목> <입력비트>.jpg`)도
    없으면 "필기 PDF 를 찾지 못했다" 고 보고하고 경로를 요청한다(2단계의 멈춤과
    별개로, 확인 칸이 이미 일부 채워진 채 이번 세션에서 추가로 옮길 필기가 있는
-   경우다). 행 사진이 있으면 아래 사진 전사로 간다.
+   경우다). 필기 PDF 가 없을 때, 사진이 찍힌 행에 아직 빈 확인 칸이 있으면 아래 사진 전사로 간다.
+   사진이 찍힌 행의 확인 칸이 이미 전부 채워졌으면 사진에서 옮길 것이 없으므로
+   전사를 건너뛰고 4단계로 간다 — 행 사진이 있다는 것만으로 사진 전사에 들어가지
+   않는다. 아래로 사진마다 그 행의 확인 칸이 비었는지 본다.
+
+   ```bash
+   python3 -c "
+   from pathlib import Path
+   from scripts.lab import config
+   from scripts.lab.contact_sheet import load_records
+   from scripts.lab.photo_names import FILE
+   exp = Path(config.experiment_dir(<실험번호>))
+   recs = {r.token: r for r in load_records(exp / '체크리스트/기록.md')}
+   for p in sorted((exp / '실험사진').iterdir()):
+       m = FILE.match(p.name)
+       if not m:
+           continue
+       rec = recs.get(m['item'])
+       row = rec.rows.get(m['bits']) if rec else None
+       state = '기록에 없는 행' if row is None else ('빈 칸' if not row[1] else '채워짐: ' + row[1])
+       print(p.name, '→', state)
+   "
+   ```
 
    PDF 를 읽어 각 표의 확인 칸을 채운다.
 
@@ -360,7 +394,11 @@ description: 논리회로실험 결과보고서를 `기록.md` 의 확인 칸과
    - 입력 조합은 **파일명에서만** 읽는다(`1-2 011.jpg` → 그 표의 입력 열 순서로
      A=0·B=1·Ci=1). 사진 속 스위치 위치로 입력을 읽지 않는다.
    - 사진에서는 LED 상태만 판독한다. 예상값과 같으면 `✓`, 다르면 관찰값을 적는다.
+   - 사진 전사는 빈 칸만 대상이다. 이미 채워진 칸은 덮어쓰지 않고, 사진 판독이
+     다르면 두 값을 나란히 제시해 사용자가 정한다.
    - 사진이 없는 행은 공란으로 둔다 — 시험하지 않은 행이다. 예상값으로 채우지 않는다.
+   - 사진이 한 장도 없는 표는 진행 여부를 사용자에게 묻고, 진행하지 않았으면 그 표
+     아래에 `- 실험을 진행하지 않았음.` 을 적는다.
    - 애매한 칸만이 아니라 **모든 칸**을 위 판독 표 형식으로 한 번에 제시하고 사용자
      확정을 받는다 — 어둡게 켜진 LED 를 꺼짐으로 읽기 쉽다.
    - 확정되면 `기록.md` 를 갱신하고 `filled_by:` 를 `vision` 으로 바꾼다. 이 기록으로
