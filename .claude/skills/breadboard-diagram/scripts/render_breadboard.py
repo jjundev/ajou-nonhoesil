@@ -39,11 +39,24 @@ TEMPLATE_CANDIDATES = (
 TEMPLATE_SIZE = (998, 1345)
 
 # 폰트. macOS 경로만 박혀 있어 Windows 에서 렌더러가 통째로 죽었다 (2026-09-12).
-# 있는 것을 순서대로 쓴다 — 한글은 Apple SD Gothic Neo → 맑은 고딕 → 나눔고딕,
-# 영문은 Helvetica → Arial → DejaVu. 저장소 루트 밖의 절대 경로지만 폰트는
-# 저장소가 들고 다닐 물건이 아니다.
+# 있는 것을 순서대로 쓴다 — 한글은 Apple SD Gothic Neo → 본고딕 → 함초롬돋움 →
+# 맑은 고딕 → 나눔고딕, 영문은 Helvetica → Arial → DejaVu. 저장소 루트 밖의
+# 절대 경로지만 폰트는 저장소가 들고 다닐 물건이 아니다.
+#
+# 2026-09-19: 맑은 고딕에 U+2295 ⊕ 가 없어 결선도 부제·꼬리표가 □ 로 찍혔다
+# (`(A⊕B)·Ci` 가 `(A□B)·Ci` 로 나가고 줄바꿈도 어긋났다). 그래서 Windows 에서 한글과
+# ⊕ 를 **둘 다** 가진 폰트를 맑은 고딕 앞에 세우고, `font_path()` 가 글리프까지
+# 확인해 못 그리는 후보는 건너뛴다 — 있기만 한 폰트를 고르면 같은 일이 되풀이된다.
+#
+# 다만 글리프 검사는 **하드/소프트로 갈린다**. 처음에는 ☐ 까지 하드로 넣었는데, 맑은
+# 고딕밖에 없는 보통의 Windows 에서는 모든 후보가 밀려 렌더러가 통째로
+# `FileNotFoundError` 로 죽었다 — 체크칸 하나 때문에 그림을 아예 못 뽑는 건 과하다.
+# 하드(`REQUIRED_GLYPHS`)가 빠진 후보만 버리고, 소프트(`PREFERRED_GLYPHS`)는 그것까지
+# 되는 후보를 **선호**하되 없으면 경고 한 줄만 남기고 쓴다.
 FONT_CANDIDATES = {
     'kr': ('/System/Library/Fonts/AppleSDGothicNeo.ttc',
+           'C:/Windows/Fonts/NotoSansKR-VF.ttf',
+           'C:/Windows/Fonts/HANDotum.ttf',
            'C:/Windows/Fonts/malgun.ttf',
            '/usr/share/fonts/truetype/nanum/NanumGothic.ttf'),
     'en': ('/System/Library/Fonts/Helvetica.ttc',
@@ -51,14 +64,83 @@ FONT_CANDIDATES = {
            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),
 }
 
+# 하드 — 이게 빠진 후보는 **버린다**. ⊕ 부제·배선 뜻풀이, → 주소, · 머리표, ※ 꼬리표.
+# 하나라도 □ 로 나가면 식이 딴 글자가 되거나 주소를 못 읽는다.
+REQUIRED_GLYPHS = {'kr': '⊕→·※', 'en': ''}
+
+# 소프트 — 있으면 좋다. ☐ 체크칸은 □ 로 나가도 뜻이 안 바뀌고 자리도 같다. 하드를
+# 통과한 후보 중 이것까지 되는 첫 후보를 고르고, 아무도 없으면 경고만 하고 쓴다.
+PREFERRED_GLYPHS = {'kr': '☐', 'en': ''}
+
+# 소프트 글리프 경고를 이미 낸 폰트 — 렌더 한 장에 `font_path()` 가 여러 번 불린다.
+_SOFT_WARNED = set()
+
+# 글리프가 없을 때 폰트가 대신 그리는 .notdef 를 부르는 글자. 유니코드가
+# 비문자로 못박아 두어(U+FFFE) 어떤 폰트에도 진짜 글리프가 없다.
+_NOTDEF = '\ufffe'
+
+
+def _glyph_mask(font, ch):
+    """`ch` 한 글자의 렌더 결과 — (크기, 픽셀). 같은 폰트 안에서만 견준다."""
+    mask = font.getmask(ch, mode='L')
+    return (mask.size, bytes(mask))
+
+
+def _covers(path, chars):
+    """`path` 폰트가 `chars` 를 **전부** 진짜 글리프로 그리는가.
+
+    .notdef(`\\ufffe`) 와 똑같이 그려지는 글자는 없는 것으로 본다. Pillow 만 쓴다 —
+    폰트 테이블을 읽는 의존성을 새로 들이지 않으려고 그림을 직접 견준다.
+
+    못 여는 파일이면 `OSError` 를 그대로 올린다 — "글리프가 없다" 와 "폰트가 아니다"
+    는 다른 사고라 부르는 쪽이 갈라 적어야 한다.
+    """
+    font = ImageFont.truetype(path, 20)
+    notdef = _glyph_mask(font, _NOTDEF)
+    return all(_glyph_mask(font, ch) != notdef for ch in chars)
+
 
 def font_path(kind):
-    """`kind`('kr'|'en') 의 첫 번째 실재 폰트 경로. 없으면 어디를 봤는지 적어 던진다."""
+    """`kind`('kr'|'en') 의 첫 번째 쓸 만한 폰트 경로.
+
+    실재하기만 해서는 안 되고 `REQUIRED_GLYPHS[kind]`(하드)를 다 그려야 한다 — 맑은
+    고딕은 한글은 되고 ⊕ 는 안 되어 그림이 조용히 □ 로 나갔다(2026-09-19).
+    `PREFERRED_GLYPHS[kind]`(소프트)는 **선호**일 뿐이다: 하드를 통과한 후보 중 소프트
+    까지 되는 첫 후보를 고르고, 아무도 없으면 하드를 통과한 첫 후보를 쓰며 stderr 에
+    경고 한 줄을 남긴다. 소프트 때문에 렌더러를 죽이지 않는다.
+
+    하드를 통과한 후보가 하나도 없을 때만 던진다. 어디를 봤는지, 어느 후보가 글리프
+    때문에 밀렸는지, 어느 후보는 아예 못 열었는지 갈라 적는다.
+    """
+    hard, soft = REQUIRED_GLYPHS[kind], PREFERRED_GLYPHS[kind]
+    skipped, unreadable, fallback = [], [], None
     for path in FONT_CANDIDATES[kind]:
-        if os.path.exists(path):
-            return path
-    raise FileNotFoundError(
-        f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind]))
+        if not os.path.exists(path):
+            continue
+        try:
+            if not _covers(path, hard):
+                skipped.append(path)
+                continue
+            if _covers(path, soft):
+                return path
+        except OSError:
+            unreadable.append(path)
+            continue
+        if fallback is None:
+            fallback = path
+    if fallback is not None:
+        if fallback not in _SOFT_WARNED:
+            _SOFT_WARNED.add(fallback)
+            missing = ''.join(ch for ch in soft if not _covers(fallback, ch))
+            print(f'[font] {fallback} 에 {missing} 가 없어 그 자리는 □ 로 찍힌다 — '
+                  f'뜻은 안 바뀌니 그대로 간다', file=sys.stderr)
+        return fallback
+    msg = f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind])
+    if unreadable:
+        msg += ('\n열지 못한 후보(폰트가 아니거나 깨졌다):\n  ' + '\n  '.join(unreadable))
+    if skipped:
+        msg += (f'\n글리프 {hard!r} 가 없어 건너뛴 후보:\n  ' + '\n  '.join(skipped))
+    raise FileNotFoundError(msg)
 
 
 def _font(kind, size):
@@ -117,6 +199,11 @@ KIND_KR = {'vcc': '+5V', 'gnd': '0V', 'sig': '신호', 'mid': '중간'}
 # 이것은 넷의 색이 아니라 "이번 단계에서 손대지 않는다" 는 표시다
 KEEP = (165, 165, 165, 255)
 
+# 걷기 보드에서 **뽑는** 배선의 색. footer "앞 단계에서 걷는다" 표와 같은 빨강이다.
+# `WIRE` 팔레트에 넣지 않는다 — 넷의 색이 아니라 "이 그림에서 뽑는다" 는 표시다.
+# 2026-09-18 실험03: 걷을 두 가닥이 footer 표에만 있어 실험실에서 놓쳤다
+REMOVE = (160, 30, 30, 255)
+
 # 계측기 리드는 **배선이 아니다.** 점퍼선으로 꽂는 게 아니라 프로브 팁과 집게로
 # 문다. 그래서 위 네 색에 끼워 넣지 않고 회색 점선으로 따로 그리고, 순서표도
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
@@ -128,6 +215,11 @@ JACK_BOTTOM = 160
 
 # 넷 라벨용 이름. 저장소가 한국어라 넷 판정문도 한국어로 나와야 한다
 JACK_KR = {'red': '빨강', 'yellow': '노랑', 'gray': '회색'}
+
+
+def _boxes_touch(a, b):
+    """두 상자 (x0, y0, x1, y1) 가 겹치는가. 걷기 번호 원 자리 잡기에 쓴다."""
+    return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
 
 
 class BreadboardRenderer:
@@ -200,8 +292,10 @@ class BreadboardRenderer:
         self.marker_boxes = []
         # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
-        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다
-        self.partial = False
+        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다.
+        # 걷기 보드에서는 프로퍼티(`partial` setter)가 False 를 받아도 True 로 남긴다 —
+        # 아래 `self.ghost` 를 먼저 정해 두어야 setter 가 그것을 볼 수 있다
+        self._partial = False
         # 앞 보드의 `snapshot()`. 같은 홀 쌍의 배선·같은 홀의 LED 사슬은 회색으로
         # 그리고 번호를 주지 않는다 — 실험실에서는 그 선을 손대지 않는다.
         # 기준선에 있었는데 이번에 안 그린 것은 `removed()` 가 "걷는다" 로 낸다.
@@ -210,6 +304,16 @@ class BreadboardRenderer:
         self.kept = []          # 그대로 두는 배선·부품의 desc
         self.swaps = []         # (앞 칩, 새 칩, block, pin1_row)
         self._keep_parts = False  # led_chain 이 기준선 사슬을 그리는 동안 참
+        # 걷기 보드 — 기준선 dict 의 `ghost` 키 `{'wires': {key: n}, 'title', 'subtitle'}`.
+        # `step_wire()` 가 그 key 를 만나면 점유표·구간에 안 남기고 `ghost_layer` 에 빨간
+        # 점선으로 그린다. 뽑은 선의 핀이 뜨는 것이 정상이라 `partial` 이다.
+        # 기준선 dict 에 키를 얹는 이유: `set_header()` 가 제목을 즉시 그려 사후에 못 바꾸고,
+        # 빌더 시그니처를 늘리면 세 주차 스물세 빌더를 고쳐야 한다. `removal_board()` 가 만든다
+        self.ghost = (baseline or {}).get('ghost')
+        self.ghost_layer = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
+        self.ghost_drawn = {}     # key -> n. export() 가 빌더가 안 그린 key 를 잡는다
+        if self.ghost is not None:
+            self.partial = True
         self.submit = True
         self.title = ""
         self.subtitle = ""
@@ -237,6 +341,22 @@ class BreadboardRenderer:
 
         self._addr_map = self._build_addr_map()
         self._sym_map = self._build_sym_map()
+
+    @property
+    def partial(self):
+        return self._partial
+
+    @partial.setter
+    def partial(self, value):
+        """걷기 보드는 정의상 `partial` 이다 — 내려도 다시 올린다.
+
+        걷어낸 가닥의 핀은 아무 데도 안 물린다(74HC08 pin 1·4). 그게 이 그림의 요점인데
+        `verify()` R5 는 뜬 핀을 오류로 잡는다. 주차 파일들은 `bb.partial = st < 3`
+        처럼 단계로 값을 정하므로, 생성자가 켜 둔 것을 빌더가 뒤에서 도로 내린다
+        (2026-09-19 실험03 걷기 보드가 이걸로 PNG 재생성에서 죽었다). 세 주차 스물세
+        빌더에 `or bb.ghost` 를 덧대는 대신 여기서 한 번 막는다.
+        """
+        self._partial = bool(value) or getattr(self, 'ghost', None) is not None
 
     # ---------------- 좌표 ----------------
 
@@ -513,13 +633,22 @@ class BreadboardRenderer:
         하필 그 사각형 안에 **전원 잭 세 개가 들어 있었다.** 과거 예비보고서의
         결선도는 예외 없이 그 잭에서 보드까지 전원선을 그린다 — 실험대 전원이
         그 잭이기 때문이다. 덮어버리면 "5V 를 어디서 따오지"에서 막힌다.
+
+        걷기 보드(ghost 모드)는 앞 회로 빌더가 부르는 제목 대신 `ghost` 의 제목을 쓴다 —
+        빌더는 자기가 걷기 보드로 렌더되는지 모른다.
         """
+        if self.ghost is not None:
+            title, subtitle, submit = self.ghost['title'], self.ghost['subtitle'], False
         self.title, self.subtitle = title, subtitle
         self.draw.text((28, 170), title, fill=(20, 40, 90, 255), font=self.font_title)
         self.draw.text((30, 200), subtitle, fill=(80, 90, 100, 255), font=self.font_subtitle)
         self.submit = submit
-        line = ("※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다" if submit
-                else "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다")
+        if submit:
+            line = "※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다"
+        elif self.ghost is not None:
+            line = "※ 걷기 그림 — 빨간 점선만 뽑는다(전원을 끄고). 회색은 그대로 둔다. 새로 꽂는 것은 없다"
+        else:
+            line = "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다"
         self.draw.text((30, 220), line, fill=(180, 50, 50, 255), font=self.font_kr_sm)
 
     def connect_jacks(self, block='left'):
@@ -582,7 +711,8 @@ class BreadboardRenderer:
         for p in (points[0], points[-1]):
             self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
 
-    def _dashed(self, points, color, width=2, dash=7, gap=5):
+    def _dashed(self, points, color, width=2, dash=7, gap=5, draw=None):
+        d = draw or self.draw
         for (x0, y0), (x1, y1) in zip(points, points[1:]):
             span = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
             if span == 0:
@@ -590,8 +720,8 @@ class BreadboardRenderer:
             ux, uy, t = (x1 - x0) / span, (y1 - y0) / span, 0.0
             while t < span:
                 e = min(t + dash, span)
-                self.draw.line([(x0 + ux * t, y0 + uy * t), (x0 + ux * e, y0 + uy * e)],
-                               fill=color, width=width)
+                d.line([(x0 + ux * t, y0 + uy * t), (x0 + ux * e, y0 + uy * e)],
+                       fill=color, width=width)
                 t = e + gap
 
     def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None):
@@ -648,6 +778,36 @@ class BreadboardRenderer:
     def enable_steps(self):
         self.numbered = True
 
+    def _marker_removed(self, x, y, n):
+        """걷기 번호 — 빨간 채움·흰 숫자. 순서표 원(흰 바탕·색 테두리)과 구분된다."""
+        self.marker_boxes.append((x - 8, y - 8, x + 8, y + 8))
+        self._marker_on(self.draw, x, y, n, REMOVE, filled=True)
+
+    def _ghost_wire(self, points, n):
+        """걷기 보드의 뽑을 배선. 유령 레이어에 빨간 점선, overlay 에 걷기 번호 원.
+
+        점유표·구간·레일 접촉에 아무것도 안 남긴다 — 이 선은 이제 없는 것이고, 그 홀에
+        다음 회로의 새 선이 앉을 수 있다(실험03 좌 d7·a9). 끝점 원도 안 찍는다.
+        번호 원은 가장 긴 구간의 중점에, 기존 원과 겹치면 그 구간을 따라 옮긴다.
+        """
+        self._dashed(points, REMOVE, width=4, dash=9, gap=6,
+                     draw=ImageDraw.Draw(self.ghost_layer))
+        if len(points) < 2:
+            self._marker_removed(points[0][0], points[0][1], n)
+            return
+        (x0, y0), (x1, y1) = max(zip(points, points[1:]),
+                                 key=lambda s: abs(s[1][0] - s[0][0]) + abs(s[1][1] - s[0][1]))
+        span = max(1.0, ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5)
+        ux, uy = (x1 - x0) / span, (y1 - y0) / span
+        mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+        x, y = mx, my
+        for k in (0, 24, -24, 48):
+            x, y = mx + ux * k, my + uy * k
+            box = (x - 8, y - 8, x + 8, y + 8)
+            if not any(_boxes_touch(box, b) for b in self.marker_boxes):
+                break
+        self._marker_removed(int(x), int(y), n)
+
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
                   frm=None, to=None):
         """배선 하나 + 결선 순서표 한 줄.
@@ -660,6 +820,11 @@ class BreadboardRenderer:
         접촉은 똑같이 남긴다: 회색이어도 그림대로 꽂히는지는 verify() 가 본다.
         """
         key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
+        if self.ghost is not None and key in self.ghost['wires']:
+            n = self.ghost['wires'][key]
+            self._ghost_wire(points, n)
+            self.ghost_drawn[key] = n
+            return None
         kept = self.baseline is not None and key in self.baseline['wires']
         color = KEEP if kept else WIRE[kind]
         self.draw.line(points, fill=color, width=width, joint='curve')
@@ -1056,6 +1221,12 @@ class BreadboardRenderer:
                 d.line([(x, y + 7), (x + 24, y + 7)], fill=WIRE[kind], width=4)
                 d.text((x + 30, y), KIND_KR[kind], fill=(60, 60, 60, 255), font=self.font_step)
                 x += 96
+            if self.ghost is not None:
+                for k in range(0, 24, 12):
+                    d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=REMOVE, width=3)
+                d.text((x + 30, y), '뽑는다 (빨간 점선 · 빨간 번호)',
+                       fill=(60, 60, 60, 255), font=self.font_step)
+                x += 190
             if self.probes:
                 for k in range(0, 24, 12):
                     d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=PROBE, width=3)
@@ -1068,22 +1239,41 @@ class BreadboardRenderer:
                 d.text((x_pad, y), ln, fill=(90, 70, 70, 255), font=self.font_step)
                 y += 15
         if self.baseline is not None:
-            d.text((x_pad, y),
-                   f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). 번호 = 이번 단계에서 새로 한다',
-                   fill=(90, 90, 90, 255), font=self.font_step)
+            if self.ghost is not None:
+                line = (f'· 회색 = 그대로 둔다 ({len(self.kept)}개). '
+                        '빨간 점선 + 빨간 번호 = 이 그림에서 뽑는다. 새로 꽂는 것은 없다')
+            else:
+                line = (f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). '
+                        '번호 = 이번 단계에서 새로 한다')
+            d.text((x_pad, y), line, fill=(90, 90, 90, 255), font=self.font_step)
             y += 15
-            gone = self.removed()
-            if gone:
+            wires = self.removals()
+            others = self.removed()[len(wires):]
+            if wires or others:
                 y += 6
                 d.text((x_pad, y), "앞 단계에서 걷는다 — 먼저 뽑고 ☐ 를 채운다",
-                       fill=(160, 30, 30, 255), font=self.font_kr_bold)
+                       fill=REMOVE, font=self.font_kr_bold)
                 y += 20
-                for g in gone:
+                for r in wires:
+                    d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
+                                outline=(120, 125, 130, 255), width=1)
+                    x_text = x_pad + 18
+                    if self.ghost is not None:
+                        # 그림 위 빨간 원과 같은 번호 — 걷기 보드에서만. 보통 보드는
+                        # 그림에 원이 없어 번호가 가리킬 데가 없다
+                        self._marker_on(d, x_pad + 28, y + 8, r['n'], REMOVE, filled=True)
+                        x_text = x_pad + 42
+                    lines = self._wrap(f"걷기: {r['addr']} · {r['desc']}", self.font_step,
+                                       998 - x_text - x_pad)[:2]
+                    for k, ln in enumerate(lines):
+                        d.text((x_text, y + k * 14), ln, fill=REMOVE, font=self.font_step)
+                    y += max(18, len(lines) * 14 + 4)
+                for g in others:
                     d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
                                 outline=(120, 125, 130, 255), width=1)
                     lines = self._wrap('걷기: ' + g, self.font_step, 998 - 2 * x_pad - 20)[:2]
                     for k, ln in enumerate(lines):
-                        d.text((x_pad + 18, y + k * 14), ln, fill=(160, 30, 30, 255), font=self.font_step)
+                        d.text((x_pad + 18, y + k * 14), ln, fill=REMOVE, font=self.font_step)
                     y += max(18, len(lines) * 14 + 4)
         y += 8
 
@@ -1144,12 +1334,15 @@ class BreadboardRenderer:
             y += max(18, len(lines) * 14 + 4)
         return y + 10
 
-    def _marker_on(self, d, x, y, n, color):
-        d.ellipse([x-8, y-8, x+8, y+8], fill=(255, 255, 255, 245), outline=color, width=2)
+    def _marker_on(self, d, x, y, n, color, filled=False):
+        """번호 원. `filled` 면 색 채움·흰 숫자 — 걷기 번호가 순서표 번호와 헷갈리지 않게."""
+        fill, text = ((color, (255, 255, 255, 255)) if filled
+                      else ((255, 255, 255, 245), color))
+        d.ellipse([x-8, y-8, x+8, y+8], fill=fill, outline=color, width=2)
         t = str(n)
         bbox = d.textbbox((0, 0), t, font=self.font_num)
         d.text((x - (bbox[2]-bbox[0])/2 - bbox[0], y - (bbox[3]-bbox[1])/2 - bbox[1]),
-               t, fill=color, font=self.font_num)
+               t, fill=text, font=self.font_num)
 
     def _endpoint(self, p):
         """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))`. `wiring()`
@@ -1169,7 +1362,11 @@ class BreadboardRenderer:
         return f'{name}{row}행' if '레일' in name else f'{name}{row}'
 
     def snapshot(self):
-        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다."""
+        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다.
+
+        끝점 기호만 담는다 — 꼭짓점은 여기 없다. 걷기 보드(`removal_board`)는 앞 회로
+        빌더를 **다시 돌려** 그리므로 살아 있는 빌더의 꼭짓점을 쓴다(`_ghost_wire`).
+        """
         w = self.wiring()
         return {
             'wires': {(x['kind'], x['frm'], x['to']): x['desc'] for x in w['wires']},
@@ -1178,16 +1375,35 @@ class BreadboardRenderer:
             'chips': {(ch['block'], ch['pin1_row']): ch['label'] for ch in w['chips']},
         }
 
-    def removed(self):
-        """기준선에 있었는데 이번 보드에 없는 것 — 실험실에서 **걷을** 것."""
+    def removals(self):
+        """기준선에 있었는데 이번 보드에 없는 **배선** — 걷기 번호를 매겨 낸다.
+
+        순서는 기준선(앞 보드)의 그리기 순서라 결정적이다. netlist 단계 표가 이
+        번호(걷기 ①·②)를 인용한다. 칩·사슬은 여기 없고 `removed()` 에만 있다 —
+        칩 교체는 순서표에 이미 번호 원이 있다.
+
+        꼭짓점은 내지 않는다 — 걷기 보드는 앞 회로 빌더를 다시 돌려 그리므로 그림은
+        살아 있는 빌더의 꼭짓점으로 그려진다(`_ghost_wire`).
+        """
         if self.baseline is None:
             return []
         drawn = {(k, self._endpoint(pts[0]), self._endpoint(pts[-1]))
                  for k, pts, _ in self._segments}
         out = []
         for key, desc in self.baseline['wires'].items():
-            if key not in drawn:
-                out.append(f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])} · {desc}')
+            if key in drawn:
+                continue
+            out.append({'n': len(out) + 1, 'key': key,
+                        'addr': f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])}',
+                        'desc': desc})
+        return out
+
+    def removed(self):
+        """기준선에 있었는데 이번 보드에 없는 것 — 실험실에서 **걷을** 것. 배선 → 칩 →
+        사슬 순의 문자열. 배선 줄은 `removals()` 와 같은 순서·같은 수다."""
+        if self.baseline is None:
+            return []
+        out = [f"{r['addr']} · {r['desc']}" for r in self.removals()]
         here = {(c['block'], c['pin1_row']) for c in self.chips}
         for key, label in self.baseline['chips'].items():
             if key not in here:
@@ -1526,7 +1742,7 @@ class BreadboardRenderer:
 
         `verify()` 뒤에 불러야 `wiring()['overlaps']` 가 찬다 — `export()` 가 그렇게 한다.
         """
-        return {
+        out = {
             'title': self.title, 'subtitle': self.subtitle, 'submit': self.submit,
             'notes': list(self.notes),
             'steps': list(self.steps),
@@ -1535,6 +1751,10 @@ class BreadboardRenderer:
             'removed': self.removed(),
             'wiring': self.wiring(),
         }
+        if self.ghost is not None:
+            # 걷기 보드에서만 든다 — 다른 보드의 도장은 그대로라 재생성 범위가 안 번진다
+            out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
+        return out
 
     def stamp(self):
         blob = json.dumps(self.content(), ensure_ascii=False, sort_keys=True, default=_jsonable)
@@ -1542,7 +1762,27 @@ class BreadboardRenderer:
 
     def export(self, output_path, max_row=35):
         self.verify()
-        final_im = Image.alpha_composite(self.im, self.overlay)
+        if self.ghost is not None:
+            missing = [f'{self._sym_addr(k[1])} → {self._sym_addr(k[2])}'
+                       for k in self.ghost['wires'] if k not in self.ghost_drawn]
+            assert not missing, (
+                f'걷기 대상 배선을 앞 빌더가 그리지 않았다: {missing} — '
+                'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
+            # 반대쪽도 본다 — 유령 목록이 실제로 걷히는 배선의 부분집합이어도 안 된다.
+            # 번호 없는 가닥이 조용히 사라지면 그림이 무엇을 뽑는지 말해 주지 않는다.
+            listed = set(self.ghost['wires'])
+            actual = {r['key'] for r in self.removals()}
+            extra = [self._sym_addr(k[1]) + ' → ' + self._sym_addr(k[2])
+                     for k in actual - listed]
+            gone = [self._sym_addr(k[1]) + ' → ' + self._sym_addr(k[2])
+                    for k in listed - actual]
+            assert not (extra or gone), (
+                f'걷기 목록과 실제로 걷히는 배선이 다르다 — 목록에 없는데 걷히는 것: '
+                f'{extra}, 목록에 있는데 안 걷히는 것: {gone} — '
+                'removal_board 의 nxt 빌더가 기준선을 만든 prev 와 짝이 맞아야 한다')
+        # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
+        final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
+                                         self.overlay)
         board_h = self.r_y(max_row) + 20
         board = final_im.crop((0, 0, 998, board_h)).convert('RGB')
 
@@ -1693,6 +1933,45 @@ def load_board_file(path, name=None):
 
 def load_board(experiment):
     return load_board_file(board_path(experiment), f'board_e{experiment}')
+
+
+def removal_board(prev, nxt, title, subtitle):
+    """걷기 보드 빌더를 만든다. `prev`·`nxt` 는 `(빌더, stage)`.
+
+    앞 회로(`prev`)를 전부 회색으로 그리고, 다음 회로(`nxt`)에 없는 배선만 빨간 점선 +
+    걷기 번호로 그린다. 새 선은 없다. 회로가 바뀌는 경계마다 한 장 — 2026-09-18 실험03
+    에서 걷을 두 가닥이 footer 표에만 있어 실험실에서 놓쳤다.
+
+    돌려주는 클로저는 표준 빌더 시그니처라 `BOARDS` 에 그대로 들어간다. `__module__` 이
+    엔진이라 주차 파일의 `build_*` 열거(`tests/_boards.py`)에 안 잡힌다 — 걷기 보드는
+    `steps` 가 비어 가독성 검사(`steps > 0`)의 대상이 아니다. 주차 파일에 `build_` 로
+    시작하는 래퍼를 두지 않는다.
+
+    `baseline` 을 안 넘기면 앞 보드를 임시 렌더해 스스로 만든다 — 단계 래퍼
+    (`_eN_board`)가 그렇게 부른다. 사슬(`build_all`)은 앞 보드의 snapshot 을 넘긴다.
+
+    클로저는 `stage` 를 **거절한다** — 앞뒤 회로의 단계는 `prev`·`nxt` 로 이미 정해져
+    있어서, 호출 쪽이 또 주면 조용히 무시돼 엉뚱한 단계의 걷기 그림이 나간다.
+    """
+    prev_fn, prev_stage = prev
+    nxt_fn, nxt_stage = nxt
+
+    def build(output_path, template_path=None, stage=None, baseline=None):
+        assert stage is None, ('걷기 보드는 stage 를 받지 않는다 — '
+                               'prev/nxt 의 stage 는 removal_board() 인자로 준다')
+        with tempfile.TemporaryDirectory() as d:
+            base = baseline or prev_fn(os.path.join(d, 'prev.png'), template_path,
+                                       stage=prev_stage).snapshot()
+            nb = nxt_fn(os.path.join(d, 'next.png'), template_path,
+                        stage=nxt_stage, baseline=base)
+            wires = {r['key']: r['n'] for r in nb.removals()}
+        if not wires:
+            raise ValueError(f'{title}: 걷을 배선이 없다 — 걷기 보드가 필요 없는 경계다')
+        ghost = dict(base, ghost={'wires': wires, 'title': title, 'subtitle': subtitle})
+        return prev_fn(output_path, template_path, stage=prev_stage, baseline=ghost)
+
+    build.__name__ = f'removal_{nxt_fn.__name__}'
+    return build
 
 
 def build_all(board, output_dir, template_path=None):

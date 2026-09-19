@@ -551,8 +551,11 @@ def _chip_swap(previous, current) -> str:
     `current.stages`(`## 단계` 표)가 있는 회로도 예외다 — 그 회로는 슬롯
     고정·기준선 비교로 그려져 앞 회로의 배선을 걷지 않는다. `모두 걷는다`
     문구를 그대로 두면 학생이 실제로 점퍼선을 다 뽑아 단계 그림의 회색(=
-    그대로 둔다) 전제를 깬다. 대신 단계 그림 자체(회색·번호·`걷는다` 표)가
-    무엇을 걷고 새로 꽂을지 지시한다고 말한다.
+    그대로 둔다) 전제를 깬다. 대신 그림이 무엇을 걷고 새로 꽂을지
+    지시한다고 말하는데, **어느 그림인지는 `0` 단계 행이 가른다**: `0` 행
+    (걷기 보드)이 있으면 걷을 선은 0단계 걷기 그림(빨간 점선)이, 없으면
+    (실험01 처럼 걷기 보드가 없는 주차) 단계 그림의 회색·번호·`걷는다` 표가
+    지시한다. `0` 행이 없는데 걷기 그림을 가리키면 없는 그림을 찾게 된다.
     """
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
@@ -572,8 +575,14 @@ def _chip_swap(previous, current) -> str:
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
     if current.stages:
-        parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
-                 "(회색·번호·'걷는다' 표)이 지시한다"]
+        # 단계 번호는 `netlist_parser` 가 문자열로 넘긴다.
+        walk = any(str(st.get("n", "")).strip() == "0" for st in current.stages)
+        if walk:
+            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 0단계 걷기 그림(빨간 점선), "
+                     "새 선은 단계 그림(회색·번호)이 지시한다"]
+        else:
+            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
+                     "(회색·번호·'걷는다' 표)이 지시한다"]
     else:
         parts = ["앞 회로의 점퍼선을 모두 걷는다"]
     if remove:

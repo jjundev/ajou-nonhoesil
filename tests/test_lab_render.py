@@ -1393,6 +1393,31 @@ class TestStages(unittest.TestCase):
         banner = banner[:banner.index("</div>")]
         self.assertIn("모두 걷는다", banner)
 
+    def test_걷기_단계가_없는_회로는_걷기_그림을_가리키지_않는다(self):
+        """C2 는 `## 단계` 표가 있지만 `0` 행이 없다 — 걷기 보드가 없는
+        회로(실험01 전부)다. 없는 그림을 가리키면 학생이 그것을 찾는다."""
+        banner = self.pages[1][self.pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("'걷는다' 표", banner)
+        self.assertNotIn("0단계", banner)
+
+    def test_걷기_단계가_있으면_배너가_0단계_걷기_그림을_가리킨다(self):
+        """실험03 C4 처럼 `## 단계` 표에 `0` 행(걷기 보드)이 있는 회로만
+        빨간 점선 그림을 가리킨다."""
+        text = _STAGED_NETLIST.replace(
+            "| 1 | 1단계.png |",
+            "| 0 | 0단계_걷기.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있다 |\n"
+            "| 1 | 1단계.png |")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        pages = render_checklist(
+            self.spec, parse_netlist(path), TEMPLATE
+        ).split('<section class="circuit">')[1:]
+        banner = pages[1][pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("0단계 걷기 그림", banner)
+        self.assertNotIn("'걷는다' 표", banner)
+
     def test_미사용_상자_제목이_핀_점검이다(self):
         self.assertIn("핀 점검", self.pages[0])
         self.assertIn("개방", self.pages[0])
