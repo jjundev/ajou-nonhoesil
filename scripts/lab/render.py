@@ -283,6 +283,18 @@ LEGEND = (
 )
 
 
+# 공통면 물리 주의. 셋째 줄만 주차에 따라 갈린다 — 배너 원칙("모든 주차에서 참인
+# 것만")대로 걷기 보드가 없는 주차에서 0단계 그림을 가리키지 않는다.
+_CAUTION = (
+    "선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)",
+    "칩을 꽂고 뽑을 때는 전원을 끈다",
+)
+_CAUTION_SWAP = {
+    True: "회로를 바꿀 때는 0단계 걷기 그림의 선부터 먼저 뽑고 새 선을 꽂는다",
+    False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고 새 선을 꽂는다",
+}
+
+
 def _flow_table(spec, netlist) -> str:
     """오늘의 흐름. 도착 직후 오늘 뭘 몇 개 하는지 한눈에 본다.
 
@@ -321,6 +333,11 @@ def common_page(spec, netlist) -> str:
     out = [f'<div class="power">전원: {_esc(power)} · '
            "사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — "
            "미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>"]
+    walk = any(_has_walk(c) for c in netlist.circuits)
+    lines = _CAUTION + (_CAUTION_SWAP[walk],)
+    out.append('<div class="caution"><b>손으로 할 때 주의</b><ul>'
+               + "".join(f"<li>{_esc(line)}</li>" for line in lines)
+               + "</ul></div>")
     out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
     out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 
@@ -554,6 +571,13 @@ def _circuit_body(section):
     return nodes[first:last + 1], before, after
 
 
+def _has_walk(section) -> bool:
+    """`## 단계` 표에 `0` 행(걷기 보드)이 있는가. 칩 교체 배너와 공통면 주의 상자가
+    같은 판정을 쓴다 — 없는 그림을 가리키지 않기 위해서다. 단계 번호는
+    `netlist_parser` 가 문자열로 넘긴다."""
+    return any(str(st.get("n", "")).strip() == "0" for st in section.stages or ())
+
+
 def _chip_swap(previous, current) -> str:
     """칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다 (netlist M10).
 
@@ -592,9 +616,7 @@ def _chip_swap(previous, current) -> str:
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
     if current.stages:
-        # 단계 번호는 `netlist_parser` 가 문자열로 넘긴다.
-        walk = any(str(st.get("n", "")).strip() == "0" for st in current.stages)
-        if walk:
+        if _has_walk(current):
             parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 0단계 걷기 그림(빨간 점선), "
                      "새 선은 단계 그림(회색·번호)이 지시한다"]
         else:

@@ -8,7 +8,8 @@ from scripts.lab import config
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.photo_names import FILE
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
-                                _chip_tables, _circuit_body, _esc, _plain,
+                                _chip_tables, _circuit_body, _esc, _has_walk,
+                                _plain,
                                 _truth_table_html, circuit_pages, closing_page,
                                 common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
@@ -454,11 +455,48 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("플로팅 금지", banner)
         self.assertIn("공통 규칙", banner)
 
+    def test_물리_주의_상자가_전원_박스_바로_아래_온다(self):
+        caution = self.html.index('class="caution"')
+        self.assertLess(self.html.index('class="power"'), caution)
+        self.assertLess(caution, self.html.index('class="legend"'))
+
+    def test_물리_주의_세_줄(self):
+        box = self.html[self.html.index('class="caution"'):]
+        box = box[:box.index("</div>")]
+        self.assertEqual(box.count("<li>"), 3)
+        self.assertIn("클립", box)
+        self.assertIn("전원을 끈다", box)
+
+    def test_걷기_보드가_없는_주차는_걷기_그림을_가리키지_않는다(self):
+        """공통면은 모든 주차에서 참인 것만 말한다 — 실험01 에는 0단계 그림이 없다."""
+        self.assertIn("걷을 선부터 먼저 뽑고", self.html)
+        self.assertNotIn("0단계 걷기 그림", self.html)
+
     # 2026-09-10: 실물 회귀 검사를 여기서 걷어냈다. 실험02~10 을 2026-2 교안
     # 기준으로 재저작하려고 지웠고, 이 검사들은 **그 문서가 실제로 그 결함을
     # 담고 있다**는 사실에 기대므로 픽스처로 옮기면 자기가 심은 답을 채점하게
     # 된다. 해당 주차 명세·결선도를 다시 저작할 때 함께 되살린다 —
     # `docs/plans/2026-09-10-코퍼스-재작성-되살릴-검사.md` 에 목록이 있다.
+
+
+
+class TestCautionWithWalkBoard(unittest.TestCase):
+    """실험03 C4 는 `## 단계` 표에 `0` 행(걷기 보드)이 있다."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(3) / "체크리스트/명세.md")
+        self.netlist = parse_netlist(ROOT / config.experiment_dir(3) / "결선도/netlist.md")
+
+    def test_걷기_보드가_있으면_0단계_그림의_선부터(self):
+        html = common_page(self.spec, self.netlist)
+        box = html[html.index('class="caution"'):]
+        box = box[:box.index("</div>")]
+        self.assertIn("0단계 걷기 그림의 선부터 먼저 뽑고", box)
+
+    def test_has_walk_는_0_행만_본다(self):
+        self.assertTrue(any(_has_walk(c) for c in self.netlist.circuits))
+        one = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
+        self.assertFalse(any(_has_walk(c) for c in one.circuits))
 
 
 class TestCircuitPages(unittest.TestCase):
