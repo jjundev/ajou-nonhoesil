@@ -47,6 +47,12 @@ TEMPLATE_SIZE = (998, 1345)
 # (`(A⊕B)·Ci` 가 `(A□B)·Ci` 로 나가고 줄바꿈도 어긋났다). 그래서 Windows 에서 한글과
 # ⊕ 를 **둘 다** 가진 폰트를 맑은 고딕 앞에 세우고, `font_path()` 가 글리프까지
 # 확인해 못 그리는 후보는 건너뛴다 — 있기만 한 폰트를 고르면 같은 일이 되풀이된다.
+#
+# 다만 글리프 검사는 **하드/소프트로 갈린다**. 처음에는 ☐ 까지 하드로 넣었는데, 맑은
+# 고딕밖에 없는 보통의 Windows 에서는 모든 후보가 밀려 렌더러가 통째로
+# `FileNotFoundError` 로 죽었다 — 체크칸 하나 때문에 그림을 아예 못 뽑는 건 과하다.
+# 하드(`REQUIRED_GLYPHS`)가 빠진 후보만 버리고, 소프트(`PREFERRED_GLYPHS`)는 그것까지
+# 되는 후보를 **선호**하되 없으면 경고 한 줄만 남기고 쓴다.
 FONT_CANDIDATES = {
     'kr': ('/System/Library/Fonts/AppleSDGothicNeo.ttc',
            'C:/Windows/Fonts/NotoSansKR-VF.ttf',
@@ -58,9 +64,16 @@ FONT_CANDIDATES = {
            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),
 }
 
-# 한글 폰트가 반드시 그려야 하는 글자 — 결선도가 실제로 찍는 기호들이다.
-# ⊕ 부제·배선 뜻풀이, → 주소, · 머리표, ☐ 체크칸, ※ 꼬리표.
-REQUIRED_GLYPHS = {'kr': '⊕→·☐※', 'en': ''}
+# 하드 — 이게 빠진 후보는 **버린다**. ⊕ 부제·배선 뜻풀이, → 주소, · 머리표, ※ 꼬리표.
+# 하나라도 □ 로 나가면 식이 딴 글자가 되거나 주소를 못 읽는다.
+REQUIRED_GLYPHS = {'kr': '⊕→·※', 'en': ''}
+
+# 소프트 — 있으면 좋다. ☐ 체크칸은 □ 로 나가도 뜻이 안 바뀌고 자리도 같다. 하드를
+# 통과한 후보 중 이것까지 되는 첫 후보를 고르고, 아무도 없으면 경고만 하고 쓴다.
+PREFERRED_GLYPHS = {'kr': '☐', 'en': ''}
+
+# 소프트 글리프 경고를 이미 낸 폰트 — 렌더 한 장에 `font_path()` 가 여러 번 불린다.
+_SOFT_WARNED = set()
 
 # 글리프가 없을 때 폰트가 대신 그리는 .notdef 를 부르는 글자. 유니코드가
 # 비문자로 못박아 두어(U+FFFE) 어떤 폰트에도 진짜 글리프가 없다.
@@ -78,11 +91,11 @@ def _covers(path, chars):
 
     .notdef(`\\ufffe`) 와 똑같이 그려지는 글자는 없는 것으로 본다. Pillow 만 쓴다 —
     폰트 테이블을 읽는 의존성을 새로 들이지 않으려고 그림을 직접 견준다.
+
+    못 여는 파일이면 `OSError` 를 그대로 올린다 — "글리프가 없다" 와 "폰트가 아니다"
+    는 다른 사고라 부르는 쪽이 갈라 적어야 한다.
     """
-    try:
-        font = ImageFont.truetype(path, 20)
-    except OSError:
-        return False
+    font = ImageFont.truetype(path, 20)
     notdef = _glyph_mask(font, _NOTDEF)
     return all(_glyph_mask(font, ch) != notdef for ch in chars)
 
@@ -90,21 +103,43 @@ def _covers(path, chars):
 def font_path(kind):
     """`kind`('kr'|'en') 의 첫 번째 쓸 만한 폰트 경로.
 
-    실재하기만 해서는 안 되고 `REQUIRED_GLYPHS[kind]` 를 다 그려야 한다 — 맑은 고딕은
-    한글은 되고 ⊕ 는 안 되어 그림이 조용히 □ 로 나갔다(2026-09-19). 없으면 어디를
-    봤는지, 어느 후보가 글리프 때문에 밀렸는지 적어 던진다.
+    실재하기만 해서는 안 되고 `REQUIRED_GLYPHS[kind]`(하드)를 다 그려야 한다 — 맑은
+    고딕은 한글은 되고 ⊕ 는 안 되어 그림이 조용히 □ 로 나갔다(2026-09-19).
+    `PREFERRED_GLYPHS[kind]`(소프트)는 **선호**일 뿐이다: 하드를 통과한 후보 중 소프트
+    까지 되는 첫 후보를 고르고, 아무도 없으면 하드를 통과한 첫 후보를 쓰며 stderr 에
+    경고 한 줄을 남긴다. 소프트 때문에 렌더러를 죽이지 않는다.
+
+    하드를 통과한 후보가 하나도 없을 때만 던진다. 어디를 봤는지, 어느 후보가 글리프
+    때문에 밀렸는지, 어느 후보는 아예 못 열었는지 갈라 적는다.
     """
-    wanted = REQUIRED_GLYPHS[kind]
-    skipped = []
+    hard, soft = REQUIRED_GLYPHS[kind], PREFERRED_GLYPHS[kind]
+    skipped, unreadable, fallback = [], [], None
     for path in FONT_CANDIDATES[kind]:
         if not os.path.exists(path):
             continue
-        if _covers(path, wanted):
-            return path
-        skipped.append(path)
+        try:
+            if not _covers(path, hard):
+                skipped.append(path)
+                continue
+            if _covers(path, soft):
+                return path
+        except OSError:
+            unreadable.append(path)
+            continue
+        if fallback is None:
+            fallback = path
+    if fallback is not None:
+        if fallback not in _SOFT_WARNED:
+            _SOFT_WARNED.add(fallback)
+            missing = ''.join(ch for ch in soft if not _covers(fallback, ch))
+            print(f'[font] {fallback} 에 {missing} 가 없어 그 자리는 □ 로 찍힌다 — '
+                  f'뜻은 안 바뀌니 그대로 간다', file=sys.stderr)
+        return fallback
     msg = f'{kind} 폰트를 찾지 못했다. 찾아본 곳:\n  ' + '\n  '.join(FONT_CANDIDATES[kind])
+    if unreadable:
+        msg += ('\n열지 못한 후보(폰트가 아니거나 깨졌다):\n  ' + '\n  '.join(unreadable))
     if skipped:
-        msg += (f'\n글리프 {wanted!r} 가 없어 건너뛴 후보:\n  ' + '\n  '.join(skipped))
+        msg += (f'\n글리프 {hard!r} 가 없어 건너뛴 후보:\n  ' + '\n  '.join(skipped))
     raise FileNotFoundError(msg)
 
 
@@ -1329,19 +1364,15 @@ class BreadboardRenderer:
     def snapshot(self):
         """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다.
 
-        `paths` 는 배선의 꼭짓점이다 — 걷기 보드(`removal_board`)가 뽑을 선을 같은
-        경로로 빨간 점선으로 그린다. 끝점만 남기면 그릴 수 없다(2026-09-18 실험03).
+        끝점 기호만 담는다 — 꼭짓점은 여기 없다. 걷기 보드(`removal_board`)는 앞 회로
+        빌더를 **다시 돌려** 그리므로 살아 있는 빌더의 꼭짓점을 쓴다(`_ghost_wire`).
         """
         w = self.wiring()
-        paths = {}
-        for kind, pts, _desc in self._segments:
-            paths.setdefault((kind, self._endpoint(pts[0]), self._endpoint(pts[-1])), pts)
         return {
             'wires': {(x['kind'], x['frm'], x['to']): x['desc'] for x in w['wires']},
             'chains': {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom']): ch['tag']
                        for ch in w['chains']},
             'chips': {(ch['block'], ch['pin1_row']): ch['label'] for ch in w['chips']},
-            'paths': paths,
         }
 
     def removals(self):
@@ -1349,21 +1380,22 @@ class BreadboardRenderer:
 
         순서는 기준선(앞 보드)의 그리기 순서라 결정적이다. netlist 단계 표가 이
         번호(걷기 ①·②)를 인용한다. 칩·사슬은 여기 없고 `removed()` 에만 있다 —
-        칩 교체는 순서표에 이미 번호 원이 있다. `points` 는 기준선 `paths` 의 꼭짓점,
-        옛 snapshot 이면 None.
+        칩 교체는 순서표에 이미 번호 원이 있다.
+
+        꼭짓점은 내지 않는다 — 걷기 보드는 앞 회로 빌더를 다시 돌려 그리므로 그림은
+        살아 있는 빌더의 꼭짓점으로 그려진다(`_ghost_wire`).
         """
         if self.baseline is None:
             return []
         drawn = {(k, self._endpoint(pts[0]), self._endpoint(pts[-1]))
                  for k, pts, _ in self._segments}
-        paths = self.baseline.get('paths', {})
         out = []
         for key, desc in self.baseline['wires'].items():
             if key in drawn:
                 continue
             out.append({'n': len(out) + 1, 'key': key,
                         'addr': f'{self._sym_addr(key[1])} → {self._sym_addr(key[2])}',
-                        'desc': desc, 'points': paths.get(key)})
+                        'desc': desc})
         return out
 
     def removed(self):
@@ -1736,6 +1768,18 @@ class BreadboardRenderer:
             assert not missing, (
                 f'걷기 대상 배선을 앞 빌더가 그리지 않았다: {missing} — '
                 'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
+            # 반대쪽도 본다 — 유령 목록이 실제로 걷히는 배선의 부분집합이어도 안 된다.
+            # 번호 없는 가닥이 조용히 사라지면 그림이 무엇을 뽑는지 말해 주지 않는다.
+            listed = set(self.ghost['wires'])
+            actual = {r['key'] for r in self.removals()}
+            extra = [self._sym_addr(k[1]) + ' → ' + self._sym_addr(k[2])
+                     for k in actual - listed]
+            gone = [self._sym_addr(k[1]) + ' → ' + self._sym_addr(k[2])
+                    for k in listed - actual]
+            assert not (extra or gone), (
+                f'걷기 목록과 실제로 걷히는 배선이 다르다 — 목록에 없는데 걷히는 것: '
+                f'{extra}, 목록에 있는데 안 걷히는 것: {gone} — '
+                'removal_board 의 nxt 빌더가 기준선을 만든 prev 와 짝이 맞아야 한다')
         # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
         final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
                                          self.overlay)
@@ -1905,11 +1949,16 @@ def removal_board(prev, nxt, title, subtitle):
 
     `baseline` 을 안 넘기면 앞 보드를 임시 렌더해 스스로 만든다 — 단계 래퍼
     (`_eN_board`)가 그렇게 부른다. 사슬(`build_all`)은 앞 보드의 snapshot 을 넘긴다.
+
+    클로저는 `stage` 를 **거절한다** — 앞뒤 회로의 단계는 `prev`·`nxt` 로 이미 정해져
+    있어서, 호출 쪽이 또 주면 조용히 무시돼 엉뚱한 단계의 걷기 그림이 나간다.
     """
     prev_fn, prev_stage = prev
     nxt_fn, nxt_stage = nxt
 
     def build(output_path, template_path=None, stage=None, baseline=None):
+        assert stage is None, ('걷기 보드는 stage 를 받지 않는다 — '
+                               'prev/nxt 의 stage 는 removal_board() 인자로 준다')
         with tempfile.TemporaryDirectory() as d:
             base = baseline or prev_fn(os.path.join(d, 'prev.png'), template_path,
                                        stage=prev_stage).snapshot()

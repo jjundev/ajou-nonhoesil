@@ -49,16 +49,7 @@ class Baseline(unittest.TestCase):
         self.assertEqual(snap['chips'], {('left', 7): '74HC08'})
         self.assertEqual(len(snap['chains']), 1)
 
-    def test_snapshot_은_배선_경로도_낸다(self):
-        """끝점만 남기면 걷을 선을 그림에 그릴 수 없다 — 걷기 보드가 꼭짓점을 쓴다."""
-        bb = self.first()
-        c = bb.cols['left']
-        snap = bb.snapshot()
-        key = ('sig', ('hole', ('left', 'a', 12)), ('hole', ('left', 'a', 25)))
-        self.assertEqual(snap['paths'][key], [(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))])
-        self.assertEqual(set(snap['paths']), set(snap['wires']))
-
-    def test_removals_는_걷을_배선에_번호와_경로를_준다(self):
+    def test_removals_는_걷을_배선에_번호를_준다(self):
         base = self.first().snapshot()
         bb = self.mod.BreadboardRenderer(baseline=base)
         bb.enable_steps()
@@ -66,9 +57,9 @@ class Baseline(unittest.TestCase):
         rs = bb.removals()
         self.assertEqual([r['n'] for r in rs], list(range(1, len(rs) + 1)))
         self.assertEqual([r['key'] for r in rs], list(base['wires']))   # 기준선 순서
+        self.assertTrue(all('points' not in r for r in rs))             # 꼭짓점은 안 낸다
         wire = [r for r in rs if r['desc'] == '출력 -> L2'][0]
         self.assertEqual(wire['addr'], '좌 a12 → 좌 a25')
-        self.assertEqual(wire['points'], base['paths'][wire['key']])
         # 칩·사슬은 removals 에 없고 removed 에만 있다
         self.assertTrue(all(r['key'] in base['wires'] for r in rs))
         self.assertTrue(any('LED L2 사슬' in g for g in bb.removed()))
@@ -78,12 +69,11 @@ class Baseline(unittest.TestCase):
     def test_기준선이_없으면_removals_도_빈_목록이다(self):
         self.assertEqual(self.first().removals(), [])
 
-    def test_옛_snapshot_에_paths_가_없으면_points_는_None_이다(self):
-        base = self.first().snapshot()
-        del base['paths']
-        bb = self.mod.BreadboardRenderer(baseline=base)
-        bb.enable_steps()
-        self.assertTrue(all(r['points'] is None for r in bb.removals()))
+    def test_snapshot_은_경로를_남기지_않는다(self):
+        """걷기 보드는 앞 빌더를 다시 돌려 살아 있는 꼭짓점으로 그린다 — 기준선에 꼭짓점을
+        얹어 두면 아무도 안 읽는 채로 도장 계산만 무겁게 한다."""
+        snap = self.first().snapshot()
+        self.assertNotIn('paths', snap)
 
     def test_기준선에_있는_배선은_회색이고_번호가_없다(self):
         base = self.first().snapshot()
@@ -200,10 +190,16 @@ class Baseline(unittest.TestCase):
 
     GHOST_KEY = ('sig', ('hole', ('left', 'a', 12)), ('hole', ('left', 'a', 25)))
 
-    def ghost_board(self, drop_wire=False):
+    EXTRA_KEY = ('sig', ('hole', ('left', 'b', 12)), ('hole', ('left', 'b', 25)))
+
+    def ghost_board(self, drop_wire=False, extra_baseline_wire=False):
         """`first()` 를 기준선으로, 출력 배선 하나만 유령으로 그린 걷기 보드.
-        `drop_wire=True` 면 그 배선을 아예 안 그린다 — export 가 잡아야 한다."""
+        `drop_wire=True` 면 그 배선을 아예 안 그린다 — export 가 잡아야 한다.
+        `extra_baseline_wire=True` 면 기준선에만 있고 유령 목록에도 그림에도 없는
+        배선을 하나 더 얹는다 — 그것도 걷히는데 걷기 번호가 없다."""
         base = self.first().snapshot()
+        if extra_baseline_wire:
+            base = dict(base, wires={**base['wires'], self.EXTRA_KEY: '목록에 없는 선'})
         ghost = {'wires': {self.GHOST_KEY: 1}, 'title': '걷기 제목', 'subtitle': '걷기 부제'}
         bb = self.mod.BreadboardRenderer(baseline=dict(base, ghost=ghost))
         bb.enable_steps()
@@ -283,6 +279,17 @@ class Baseline(unittest.TestCase):
             with self.assertRaises(AssertionError) as cm:
                 bb.export(os.path.join(d, 'x.png'), max_row=31)
         self.assertIn('좌 a12 → 좌 a25', str(cm.exception))
+
+    def test_걷기_목록에_없는데_걷히는_배선이_있으면_export_가_잡는다(self):
+        """유령 목록이 실제로 걷히는 배선의 **부분집합**이어도 안 된다 — 번호 없는 선이
+        조용히 사라져 실험실에서 무엇을 뽑는지 그림이 말해 주지 않는다."""
+        bb, _ = self.ghost_board(extra_baseline_wire=True)
+        self.assertEqual(len(bb.removals()), 2)         # 둘 다 걷힌다
+        self.assertEqual(len(bb.ghost_drawn), 1)        # 번호는 하나뿐
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(AssertionError) as cm:
+                bb.export(os.path.join(d, 'x.png'), max_row=31)
+        self.assertIn('좌 b12 → 좌 b25', str(cm.exception))
 
 
 class RemovalBoard(unittest.TestCase):
@@ -376,6 +383,15 @@ class RemovalBoard(unittest.TestCase):
         self.assertTrue(bb.partial)
         bb.partial = False
         self.assertFalse(bb.partial)
+
+    def test_클로저는_stage_를_받지_않는다(self):
+        """`stage` 는 `removal_board()` 인자(`prev`·`nxt`)로 이미 정해져 있다 — 호출 쪽이
+        또 주면 조용히 무시돼 엉뚱한 단계의 걷기 그림이 나간다."""
+        build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(AssertionError) as cm:
+                build(os.path.join(d, 'g.png'), stage=1)
+        self.assertIn('stage', str(cm.exception))
 
     def test_클로저는_엔진_모듈_소속이라_주차_빌더_열거에_안_잡힌다(self):
         build = self.mod.removal_board((self.prev_fn, None), (self.next_fn, None), 't', 's')
