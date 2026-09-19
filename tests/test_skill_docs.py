@@ -627,6 +627,8 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("필기 PDF 가 없고 행 사진만 있으면 사진에서 전사한다", result)
         self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
         self.assertIn("채워진 칸이 0개이고 행 사진도 없으면", result)
+        self.assertIn("행 사진(`<항목> <입력비트>.jpg`)도 없으면", result)
+        self.assertIn("행 사진이 있으면 아래 사진 전사로 간다", result)
 
     def test_free_memo_file_goes_through_the_record_first(self):
         # 실험03 은 `실험중있었던일.md` 에 자유 형식으로 적었다.
