@@ -257,6 +257,33 @@ def check_orphan_tables(spec) -> list:
             for t in spec.tables if t.id not in referenced]
 
 
+def check_one_truth_table_per_item(spec) -> list:
+    """항목마다 기록 진리표는 하나, 그것도 항목의 첫 기록 표여야 한다.
+
+    `contact_sheet.load_records` 는 기록.md 의 항목 헤딩 아래 **첫 표**만 읽고,
+    체크리스트가 인쇄하는 사진 파일명(`<항목> <입력비트>.jpg`)에는 표 ID 가
+    없다. 진리표가 둘이면 사진이 어느 표 것인지 가릴 수 없고, 진리표가 다른
+    종류 표 뒤에 오면 시트가 엉뚱한 표를 읽는다. `reference` 표는 세지 않는다.
+    """
+    out = []
+    for item in spec.items:
+        tables = [t for t in (spec.table(tid) for tid in item.tables)
+                  if t is not None and t.role != "reference"]
+        truth = [t.id for t in tables if t.kind == "truth-table"]
+        where = f"{spec.path.name}:{item.id}"
+        if len(truth) > 1:
+            out.append(Finding("warn", where,
+                f"기록 진리표가 {len(truth)}개다({', '.join(truth)}). 사진 "
+                "파일명에 표 ID 가 없고 `contact_sheet.load_records` 는 항목의 "
+                "첫 표만 읽으므로 항목을 나누거나 표를 합친다"))
+        elif truth and tables[0].kind != "truth-table":
+            out.append(Finding("warn", where,
+                f"첫 기록 표 {tables[0].id} 가 진리표가 아닌데 진리표 "
+                f"{truth[0]} 가 뒤에 있다. `contact_sheet.load_records` 는 항목의 "
+                "첫 표만 읽으므로 진리표를 항목의 첫 표로 옮긴다"))
+    return out
+
+
 def check_schematics(spec) -> list:
     """항목 `schematic` 이 가리키는 강의노트 회로도 PNG 가 명세 옆에 있는가.
 
@@ -534,6 +561,7 @@ def validate_spec(spec) -> list:
     return (check_table_integrity(spec) + check_metadata(spec)
             + check_row_count(spec) + check_boolean(spec)
             + check_orphan_tables(spec)
+            + check_one_truth_table_per_item(spec)
             + check_column_roles(spec)
             + check_schematics(spec)
             + check_diagnostic_claims(

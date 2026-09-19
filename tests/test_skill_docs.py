@@ -605,6 +605,74 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertNotIn("- **T1 결과**", self.docs["결과"])
         self.assertNotIn("![T1 row5", self.docs["결과"])
 
+    def test_photo_naming_is_the_contact_sheet_rule(self):
+        # 2026-09-19: 옛 관례 `T<n> row<m>.jpg` 가 세 문서에 남아 시트 엔진
+        # 규칙(`<항목> <입력비트>.jpg`)과 어긋났다.
+        paths = {
+            "결과": RESULT,
+            "체크": ROOT / ".claude/skills/prep-lab-checklist/SKILL.md",
+            "시트": ROOT / ".claude/skills/export-photo-sheet/SKILL.md",
+            # 결과보고서 템플릿의 사진 CSS 주석도 옛 예시를 들고 있었다.
+            "결과 템플릿": ROOT / ".claude/skills/write-result-report/template.html",
+        }
+        for name, path in paths.items():
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(name):
+                self.assertNotIn("row<m>", text)
+                self.assertNotIn("T1 row", text)
+        self.assertIn("<항목> <입력비트>.jpg", self.docs["결과"])
+        self.assertIn("<항목> <표ID> <설명>.jpg", self.docs["결과"])
+
+    def test_photo_only_flow_is_an_official_path(self):
+        # 실험03 은 확인 칸을 손으로 채우지 않고 행 사진만 찍었다.
+        result = self.flat["결과"]
+        self.assertIn("필기 PDF 가 없고 행 사진만 있으면 사진에서 전사한다", result)
+        self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
+        self.assertIn("채워진 칸이 0개이고 행 사진도 스텝표·파형 사진도 없으면", result)
+        self.assertIn("행 사진(`<항목> <입력비트>.jpg`)도 없으면", result)
+        self.assertIn("사진이 찍힌 행에 아직 빈 확인 칸이 있으면 아래 사진 전사로 간다",
+                      result)
+        self.assertNotIn("행 사진이 있으면 아래 사진 전사로 간다", result)
+
+    def test_photo_transcription_never_overwrites_hand_filled_cells(self):
+        # 최종 리뷰: 사진이 있다는 이유만으로 손으로 채운 칸을 사진 판독으로
+        # 덮어쓸 수 있었다. 2단계 제목도 "비어 있으면 멈춘다" 라 사진만 있는
+        # 경우와 어긋났다.
+        result = self.flat["결과"]
+        self.assertIn("기록.md 상태 판정 — 확인 칸도 실험 사진(행 사진·스텝표·파형 사진)도 "
+                      "없으면 여기서 멈춘다.",
+                      result)
+        self.assertNotIn("기록.md 상태 판정 — 비어 있으면 여기서 멈춘다.", result)
+        self.assertIn("사진 전사는 빈 칸만 대상이다. 이미 채워진 칸은 덮어쓰지 않고, "
+                      "사진 판독이 다르면 두 값을 나란히 제시해 사용자가 정한다.", result)
+        self.assertIn("사진이 한 장도 없는 표는 진행 여부를 사용자에게 묻고, 진행하지 "
+                      "않았으면 그 표 아래에 `- 실험을 진행하지 않았음.` 을 적는다.",
+                      result)
+
+    def test_misnamed_photos_are_not_reported_as_no_experiment(self):
+        # 실험02 는 `실험02 1-1 …` 처럼 접두어를 붙여 찍었다. 규칙 밖 이름을
+        # "실험을 안 했다" 로 보고하면 사용자를 헛걸음시킨다.
+        result = self.flat["결과"]
+        self.assertIn("규칙 밖 이름의 이미지 파일이 있으면", result)
+        self.assertIn("이름을 바꿀지 묻는다", result)
+
+    def test_side_photos_only_week_is_not_reported_as_no_experiment(self):
+        # 실험02 는 진리표 없이 capture 표뿐이라 확인 칸도 행 사진도 없다.
+        # 스텝표·파형 사진만 있어도 "실험을 안 했다" 로 멈추면 안 된다.
+        result = self.flat["결과"]
+        self.assertIn("채워진 칸이 0개이고 행 사진은 없는데 스텝표·파형 사진이 있으면",
+                      result)
+        self.assertIn("print('스텝표·파형 사진:'", result)
+        self.assertIn("추측으로 채우지 않는다", result)
+        self.assertIn("확인 칸도 실험 사진(행 사진·스텝표·파형 사진)도 없으면", result)
+
+    def test_free_memo_file_goes_through_the_record_first(self):
+        # 실험03 은 `실험중있었던일.md` 에 자유 형식으로 적었다.
+        result = self.flat["결과"]
+        self.assertIn("자유 메모 파일이 있으면 그것이 재료다", result)
+        self.assertIn("**`기록.md` 종료 메모를 먼저 채우고**", result)
+        self.assertIn("4문항이 전부 공란이고 자유 메모 파일도 없으면", result)
+
     def test_end_memo_transcription_handles_internal_ids(self):
         # 학생 메모에 표 ID 가 있으면 "지어내지 않는다"와 규칙 9 가 부딪힌다.
         self.assertIn("메모 원문의 표 ID·파일명은", self.flat["결과"])
