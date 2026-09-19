@@ -220,6 +220,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 | 방향을 붙인 진단 문장 | 전부 | info (판정하지 않고 센다) |
 | 교안 인용이 `source_manual` 텍스트 추출본에 없다 | `교안`·`강의노트` 가 같은 줄에 있는 큰따옴표 인용 | info (래스터면 오탐이라 막지 않는다) |
 | 진리표 열 이름이 강의노트 쪽 텍스트에 없다 | `truth-table` — `manual:pN` 표는 머리 토큰열이 그 쪽에 연속으로, 파생표는 열 이름이 항목 `pages` 쪽에 | error (텍스트 층이 없는 쪽은 info, 파생표 항목에 `pages` 가 없어도 error) |
+| 항목 `schematic` 이 가리키는 회로도 파일이 명세 옆에 없다 | `schematic` 이 있는 항목 | warn |
 | 항목이 소실험 범위(`config.EXPERIMENT_SCOPE`) 밖이거나, 범위 번호에 맞는 항목이 없다 | `EXPERIMENT_SCOPE` 에 있는 실험(2~10) | error (`validate_spec` 밖 — 아래 산문) |
 
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
@@ -233,7 +234,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
-`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 교안 인용
+`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 회로도 파일 부재는 `check_schematics`(warn)가 맡는다. 교안 인용
 대조는 `check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
 맡는데, 이 둘은 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
 가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다). 소실험 범위는
@@ -248,7 +249,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 맞대는데, 파서의 중복 열 거절이 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
 `spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
 `check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
-`check_diagnostic_claims`)를 합친 것이다.
+`check_diagnostic_claims`·`check_schematics`)를 합친 것이다.
 
 위 표는 네 줄이 코드와 반대로 적혀 있었다. 그중 둘(`encoding`·`expected`)은
 `존재`/`부재`가 그대로 뒤집혀 있었고, 나머지 둘(셀 표 유무를 다루는 두 줄)은

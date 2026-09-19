@@ -552,6 +552,42 @@ spec: ../체크리스트/명세.md
         self.assertTrue(any("layout" in m for m in errors))
 
 
+class TestSchematics(unittest.TestCase):
+    """명세 항목 `schematic` 이 가리키는 강의노트 회로도가 명세 옆에 있는가."""
+
+    def _spec(self, schematic_line, make_png):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        target = Path(tmp.name) / "명세.md"
+        text = (FIXTURES / "spec_shared_letter.md").read_text(encoding="utf-8")
+        self.assertIn("pages: [6]", text)
+        if schematic_line:
+            text = text.replace("pages: [6]", "pages: [6]\n    " + schematic_line, 1)
+        target.write_text(text, encoding="utf-8")
+        if make_png:
+            (target.parent / "실험03_2-1_회로도.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+        return parse_spec(target)
+
+    def test_필드가_없으면_아무것도_내지_않는다(self):
+        self.assertEqual(validate.check_schematics(self._spec(None, False)), [])
+
+    def test_파일이_있으면_아무것도_내지_않는다(self):
+        spec = self._spec("schematic: [실험03_2-1_회로도.png]", True)
+        self.assertEqual(validate.check_schematics(spec), [])
+
+    def test_파일이_없으면_warn_하나(self):
+        spec = self._spec("schematic: [실험03_2-1_회로도.png]", False)
+        findings = validate.check_schematics(spec)
+        self.assertEqual([f.level for f in findings], ["warn"])
+        self.assertIn("실험03_2-1_회로도.png", findings[0].message)
+        self.assertIn("E3.P2-1", findings[0].where)
+
+    def test_validate_spec_이_부른다(self):
+        spec = self._spec("schematic: [실험03_2-1_회로도.png]", False)
+        self.assertTrue(any("회로도" in f.message and f.level == "warn"
+                            for f in validate.validate_spec(spec)))
+
+
 class TestDiagnosticClaims(unittest.TestCase):
     """방향을 붙인 문장을 센다. **판정하지 않는다** — 방향이 맞는지는
     절차의 산술을 굴려 봐야 알고 그건 코드가 못 한다."""

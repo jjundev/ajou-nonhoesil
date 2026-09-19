@@ -257,6 +257,24 @@ def check_orphan_tables(spec) -> list:
             for t in spec.tables if t.id not in referenced]
 
 
+def check_schematics(spec) -> list:
+    """항목 `schematic` 이 가리키는 강의노트 회로도 PNG 가 명세 옆에 있는가.
+
+    필드가 없으면 아무것도 내지 않는다 — 실험01·02 는 회로도를 소급하지 않는다.
+    파일이 없으면 warn 이다(결선도 `diagram` 부재와 같은 급): 렌더러는 `<img>` 대신
+    안내 한 줄을 내므로 인쇄는 가능하다. 경로는 명세 파일 위치 기준이다.
+    """
+    out = []
+    for item in spec.items:
+        for rel in item.schematic or []:
+            if not (spec.path.parent / rel).exists():
+                out.append(Finding(
+                    "warn", f"{spec.path.name}:{item.id}",
+                    f"회로도 파일이 없다: {rel} — "
+                    f"`python -m scripts.lab.schematic {spec.experiment} {item.id}` 로 만든다"))
+    return out
+
+
 def check_diagnostic_claims(text, where) -> list:
     """방향을 붙인 문장을 `info` 로 **센다. 판정하지 않는다.**
 
@@ -517,6 +535,7 @@ def validate_spec(spec) -> list:
             + check_row_count(spec) + check_boolean(spec)
             + check_orphan_tables(spec)
             + check_column_roles(spec)
+            + check_schematics(spec)
             + check_diagnostic_claims(
                 spec.path.read_text(encoding="utf-8"), spec.path.name))
 
