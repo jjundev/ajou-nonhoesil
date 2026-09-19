@@ -348,6 +348,62 @@ class TestTableIntegrity(unittest.TestCase):
                             for f in validate.check_table_integrity(spec)))
 
 
+class TestOneTruthTablePerItem(unittest.TestCase):
+    """항목마다 기록 진리표는 하나, 그것도 항목의 첫 기록 표여야 한다.
+
+    `contact_sheet.load_records` 는 기록.md 의 항목 헤딩 아래 **첫 표**만 읽고,
+    인쇄된 사진 파일명(`<항목> <입력비트>.jpg`)에는 표 ID 가 없다.
+    """
+
+    TT = ("\n## {tid} · 표\n\n- kind: truth-table\n- encoding: 0/1\n"
+          "- source: manual:p1\n{role}\n| A | Y |\n|---|---|\n| 0 | 0 |\n| 1 | 1 |\n")
+    CAP = ("\n## {tid} · 파형\n\n- kind: capture\n- source: manual:p1\n"
+           "- expected: 파형이 나온다\n")
+
+    def _spec(self, tables, bodies):
+        return spec_from(
+            "---\nschema: lab-spec/v2\nexperiment: 1\ntitle: t\n"
+            'source_manual: x.pdf\npower: {VCC: "+5V", GND: "GND"}\n'
+            "items:\n  - id: E1.P1-1\n    title: 1-1\n    device: [LED]\n"
+            f"    ics: [\"74HC08\"]\n    tables: [{', '.join(tables)}]\n---\n"
+            + "".join(bodies))
+
+    def _hits(self, spec):
+        return [f for f in validate.validate_spec(spec)
+                if f.level == "warn" and "load_records" in f.message]
+
+    def test_two_record_truth_tables_warn(self):
+        spec = self._spec(["T1", "T2"], [self.TT.format(tid="T1", role=""),
+                                         self.TT.format(tid="T2", role="")])
+        hits = self._hits(spec)
+        self.assertEqual(len(hits), 1, hits)
+        self.assertIn("E1.P1-1", hits[0].where)
+
+    def test_reference_truth_table_does_not_count(self):
+        spec = self._spec(["T1", "T2"], [
+            self.TT.format(tid="T1", role=""),
+            self.TT.format(tid="T2", role="- role: reference\n")])
+        self.assertEqual(self._hits(spec), [])
+
+    def test_truth_table_behind_another_kind_warns(self):
+        spec = self._spec(["T1", "T2"], [self.CAP.format(tid="T1"),
+                                         self.TT.format(tid="T2", role="")])
+        hits = self._hits(spec)
+        self.assertEqual(len(hits), 1, hits)
+
+    def test_truth_table_first_then_capture_is_fine(self):
+        spec = self._spec(["T1", "T2"], [self.TT.format(tid="T1", role=""),
+                                         self.CAP.format(tid="T2")])
+        self.assertEqual(self._hits(spec), [])
+
+    def test_real_specs_do_not_warn(self):
+        for n in (1, 2, 3):
+            path = ROOT / config.experiment_dir(n) / "체크리스트/명세.md"
+            with self.subTest(experiment=n):
+                self.assertEqual(
+                    validate.check_one_truth_table_per_item(parse_spec(path)), [])
+
+
 class TestNetlist(unittest.TestCase):
     def _netlist(self, text):
         path = Path(tempfile.mkdtemp()) / "netlist.md"

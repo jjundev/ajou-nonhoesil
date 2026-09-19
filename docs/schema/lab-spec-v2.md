@@ -235,7 +235,10 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
 `check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 회로도 파일
-부재는 `check_schematics`(warn)가 맡는다. 교안 인용 대조는
+부재는 `check_schematics`(warn)가 맡는다. 항목마다 기록 진리표가 하나이고 그것이
+항목의 첫 기록 표인지는 `check_one_truth_table_per_item`(warn)가 본다 — 사진
+파일명(`<항목> <입력비트>.jpg`)에 표 ID 가 없고 `contact_sheet.load_records` 는
+항목 헤딩 아래 첫 표만 읽어서다. 교안 인용 대조는
 `check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
 맡는데, 이 둘은 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
 가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다). 소실험 범위는
@@ -250,7 +253,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 맞대는데, 파서의 중복 열 거절이 표 *안*만 보는 것과 층이 다르다. 요컨대 정본은
 `spec_parser.py`(`parse_spec`·`_parse_table`)와 `validate.py`(`check_table_integrity`·
 `check_metadata`·`check_row_count`·`check_boolean`·`check_orphan_tables`·
-`check_diagnostic_claims`·`check_schematics`)를 합친 것이다.
+`check_one_truth_table_per_item`·`check_diagnostic_claims`·`check_schematics`)를 합친 것이다.
 
 위 표는 네 줄이 코드와 반대로 적혀 있었다. 그중 둘(`encoding`·`expected`)은
 `존재`/`부재`가 그대로 뒤집혀 있었고, 나머지 둘(셀 표 유무를 다루는 두 줄)은
