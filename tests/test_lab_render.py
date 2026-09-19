@@ -200,6 +200,21 @@ class TestPhotoNameColumn(unittest.TestCase):
         self.assertIn("1-2 000.jpg", html)
         self.assertIn("3 00.jpg", html)
 
+    def test_토큰은_표를_가진_항목에서_온다(self):
+        """회로의 `item` 이 표의 소유 항목과 달라도 파일명은 소유 항목의 번호다 —
+        `contact_sheet` 는 기록.md 의 항목 헤딩(표를 가진 항목)으로 사진을 묶는다."""
+        text = _MISSING_DIAGRAM_NETLIST.replace(
+            "- item: E1.P1-1\n- tables: [T1]", "- item: E1.P1-1\n- tables: [T2]")
+        self.assertNotEqual(text, _MISSING_DIAGRAM_NETLIST)
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        netlist = parse_netlist(path)
+        c1 = next(s for s in netlist.sections if s.id == "C1")
+        self.assertEqual(c1.item, "E1.P1-1")
+        html = circuit_pages(self.spec, replace(netlist, sections=[c1]))
+        self.assertIn("1-2 000.jpg", html)
+        self.assertNotIn("1-1 000.jpg", html)
+
     def test_파형_사진_지시는_표ID_규칙이다(self):
         spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
         netlist = parse_netlist(ROOT / config.experiment_dir(2) / "결선도/netlist.md")

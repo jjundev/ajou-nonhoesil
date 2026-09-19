@@ -736,12 +736,15 @@ def _mismatch_html(kind: str, table_id: str) -> str:
 
 def _circuit_tables(spec, section) -> str:
     out = []
-    item = next((i for i in spec.items if i.id == section.item), None)
-    token = item_token(item.title) if item else None
+    circuit_item = next((i for i in spec.items if i.id == section.item), None)
     for table_id in section.tables:
         table = spec.table(table_id)
         if table is None or table.role == "reference":
             continue
+        # 토큰은 표를 가진 항목에서 딴다 — `contact_sheet` 는 기록.md 의 항목
+        # 헤딩으로 사진을 묶는다. 소유 항목이 없으면 회로의 `item` 으로 물러선다.
+        item = next((i for i in spec.items if table_id in i.tables), circuit_item)
+        token = item_token(item.title) if item else None
         out.append('<div class="tblock">')
         out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
         # `_plain` 을 씌운다 — 옛 `_tables()` 는 안 씌웠다. 지금 어느 명세의
@@ -856,7 +859,7 @@ CLOSING = (
     "사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)",
     "공통면의 실험실 확인 목록을 다 처리했는가",
     "조교에게 물어볼 것을 다 물었는가",
-    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 자유 메모 파일도 된다",
+    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다",
     "부품을 반납했는가",
 )
 
