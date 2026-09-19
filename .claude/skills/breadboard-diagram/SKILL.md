@@ -232,7 +232,7 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
 넣는다. 게이트 1 출력 → 게이트 4 입력 사슬은 **칩 위 행(pin1_row−1)** 을 지나 g~j 열로
 내려온다 — 칩 몸통 위는 지나지 않는다(핀 번호를 가린다). 이 규칙의 결과는 `verify()` R7 이
 잰다: 칩 한쪽(핀 행 7 × 자유 열 4) 리드가 `SIDE_LEAD_MAX`(8) 를 넘으면 그림을 안 낸다.
-netlist 를 저작할 때 게이트 번호를 이렇게 적는 것이 먼저다(`draft-lab-spec` 「netlist 저작」).
+netlist 를 저작할 때 게이트 번호를 이렇게 적는 것이 먼저다(`draft-lab-spec` SKILL 의 「결선도 절에 회로 메타를 단다」 절).
 
 **주차 빌더를 쓸 때:** 파일은 `보고서/실험NN/결선도/배치.py` 하나다. 머리에서
 `from render_breadboard import BreadboardRenderer, _input_jumper` 로 엔진을 가져온다 — 엔진이
@@ -369,6 +369,7 @@ GND 에 꽂혀 있어도 1 을 줄 때 옮길 자리라, 레일로 세면 입력
 `render_breadboard.py --experiment N` 으로 뽑기 ③ `scripts/lab/hand_compare.py` 의
 `CIRCUITS` 에 회로 ID 추가 ④ `tests/test_breadboard_nets.py` 의 빌더 수 단언(`len(builders)`)
 ⑤ §3 「주차별 결선」 목록.
+
 새 빌더에 `bb.density_policy = 'legacy'` 를 쓰지 않는다 — `tests/test_breadboard_physical.py` 가
 실험 4 이상은 strict 인지 본다. R7 에 걸리면 게이트를 나눈다(§4a), 정책을 끄지 않는다.
 
