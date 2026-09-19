@@ -479,7 +479,6 @@ class TestCommonPage(unittest.TestCase):
     # `docs/plans/2026-09-10-코퍼스-재작성-되살릴-검사.md` 에 목록이 있다.
 
 
-
 class TestCautionWithWalkBoard(unittest.TestCase):
     """실험03 C4 는 `## 단계` 표에 `0` 행(걷기 보드)이 있다."""
 
