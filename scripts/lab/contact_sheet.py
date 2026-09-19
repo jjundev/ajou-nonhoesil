@@ -33,6 +33,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from . import config, md
+from .photo_names import FILE as _FILE, SIDE as _SIDE, item_token
 
 DEFAULT_TILE_W = 1000    # 타일 폭(px). 타일 높이는 그 항목 사진의 비율에서 정한다
 CAPTION_H = 72
@@ -41,9 +42,7 @@ MAX_BYTES = 5 * 1024 * 1024
 COLS = 2
 
 _PHOTO_EXT = {".jpg", ".jpeg", ".png"}
-_FILE = re.compile(r"^(?P<item>[\d]+(?:-[\d]+)?)\s+(?P<bits>[01]+)\.(?:jpe?g|png)$", re.I)
 _ITEM_HEADING = re.compile(r"^##\s+(?P<id>E\d+\.P[\w-]+)\s+·\s+(?P<title>.+)$")
-_ITEM_TOKEN = re.compile(r"실험\s*(?P<tok>\d+(?:-\d+)?)\)")
 
 _FONT_CANDIDATES = (
     r"C:/Windows/Fonts/malgun.ttf",
@@ -118,10 +117,9 @@ def load_records(record_path: Path) -> list[ItemRecord]:
             cells = [c.strip() for c in r]
             bits = "".join(cells[: len(inputs)])
             rows[bits] = (cells[len(inputs): len(inputs) + len(outputs)], cells[-1])
-        tok = _ITEM_TOKEN.search(m.group("title"))
         out.append(ItemRecord(
             id=m.group("id"), title=m.group("title").strip(),
-            token=tok.group("tok") if tok else "", inputs=inputs, outputs=outputs, rows=rows))
+            token=item_token(m.group("title")) or "", inputs=inputs, outputs=outputs, rows=rows))
     return out
 
 
@@ -179,11 +177,14 @@ def plan(experiment: int, photo_dir: Path | None = None, only: str | None = None
             continue
         m = _FILE.match(p.name)
         if not m:
+            if _SIDE.match(p.name):
+                continue          # 스텝표·파형 사진 — 시트 대상이 아니다(결과보고서가 따로 싣는다)
             loose.append(f"파일명이 `<항목> <입력비트>.jpg` 규칙 밖: {p.name}")
             continue
         groups.setdefault(m.group("item"), []).append((m.group("bits"), p))
     if not groups and not loose:
-        raise ContactSheetError(f"{photo_dir} 에 사진이 없다")
+        raise ContactSheetError(
+            f"{photo_dir} 에 시트로 묶을 사진(`<항목> <입력비트>.jpg`)이 없다")
 
     plans = []
     for token, photos in groups.items():
