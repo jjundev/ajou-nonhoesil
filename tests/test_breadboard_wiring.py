@@ -355,6 +355,24 @@ class WiringE3(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     fn(os.path.join(self.tmp, 'x.png'), stage=1)
 
+    def test_전감산기_74HC86_은_왼쪽에_11리드_오른쪽에_1리드다(self):
+        """R7(2026-09-20)의 근거 숫자. 실험03 은 게이트 1·2 만 써서 배선이 칩 왼쪽
+        a~d 열 7행에 몰렸다 — 실험실에서 꽂기도 확인도 힘들었다. 승인본은 legacy 로
+        고정하고 이 숫자를 회귀로 남긴다."""
+        bb = self.b3.build_e3_fs(os.path.join(self.tmp, 'fs_density.png'))
+        by = {(s['chip'], s['side']): s for s in bb.side_leads()}
+        self.assertEqual(by[('74HC86', 'a')]['count'], 11)
+        self.assertEqual(by[('74HC86', 'f')]['count'], 1)
+        self.assertEqual(by[('74HC86', 'f')]['addrs'], ['좌 g7'])
+        self.assertEqual(by[('74HC08', 'a')]['count'], 7)
+        self.assertEqual(by[('74HC08', 'f')]['count'], 1)
+        # 칩마다 (a, f) 두 항목, self.chips 순서
+        self.assertEqual([(s['chip'], s['side']) for s in bb.side_leads()],
+                         [('74HC86', 'a'), ('74HC86', 'f'), ('74HC08', 'a'), ('74HC08', 'f'),
+                          ('74HC04', 'a'), ('74HC04', 'f'), ('74HC32', 'a'), ('74HC32', 'f')])
+        # 칩 핀(e·f 열)은 세지 않는다 — 74HC86 좌 e7~e13 은 리드지만 지표 밖이다
+        self.assertNotIn('좌 e7', by[('74HC86', 'a')]['addrs'])
+
 
 if __name__ == '__main__':
     unittest.main()

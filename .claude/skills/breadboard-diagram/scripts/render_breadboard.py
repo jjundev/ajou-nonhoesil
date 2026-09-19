@@ -175,6 +175,14 @@ def _default_template():
 ROW0 = 272.0        # 1행 홀 중심 y
 ROW_PITCH = 16.345  # 행 간격
 BOARD_LEFT = 149     # 좌 보드 테두리 x. 이보다 왼쪽은 보드 밖 여백이다 (가독성 테스트의 BOARD_L)
+BOARD_RIGHT = 880    # 우 보드 테두리 x. 이보다 오른쪽은 보드 밖 여백이다 (addr() 의 '보드밖' 경계와 같다)
+
+# R7. 칩 한쪽에 꽂히는 리드 한도. 한쪽 = 핀 행 7개 × 그쪽 자유 열 4개(a~d 또는 g~j) = 28홀.
+# 2026-09-18 실험03: 네 칩이 게이트 1·2 만 써서 74HC86 왼쪽에 11리드가 몰렸고 오른쪽은
+# pin 14 전원선 하나였다 — 꽂기도, 꽂았는지 보기도 힘들었다. 8 이면 실험03 왼쪽 11 은
+# 걸리고, 게이트를 좌·우로 나눈 전가산기(좌 7·우 5)는 통과한다.
+SIDE_LEAD_MAX = 8
+SIDE_COLS = {'a': ('a', 'b', 'c', 'd'), 'f': ('g', 'h', 'i', 'j')}
 ROW_MAX = 63        # 이 보드는 63행이다 (라벨은 1·10·20…60 만 찍혀 있다)
 
 # 전원 레일은 5홀씩 묶여 있고 그 사이가 비어 있다. **그 빈 행에 배선을 끝내면
@@ -1414,6 +1422,27 @@ class BreadboardRenderer:
             if key not in chains:
                 out.append(f'LED {tag} 사슬 ({self._sym_addr(("hole", key[0]))}~'
                            f'{self._sym_addr(("hole", key[3]))}) 뽑는다')
+        return out
+
+    def side_leads(self):
+        """칩마다 양쪽(a~d / g~j) 핀 행 7개에 꽂힌 리드 수 — R7 의 지표.
+
+        점유표(`_leads`)만 읽는다. 칩 핀(e·f 열)은 그 칩 자신이라 빼고, 지나가는
+        선(`_passed`)은 꽂는 것이 아니라 뺀다. `wiring()` 에 넣지 않는다 — `content()`
+        가 `wiring()` 을 통째로 해시하므로 필드 하나만 더해도 지난 주차 도장이 전부
+        깨진다.
+        """
+        out = []
+        for ch in self.chips:
+            c = self.cols[ch['block']]
+            rows = range(ch['pin1_row'], ch['pin1_row'] + 7)
+            for side, names in SIDE_COLS.items():
+                xs = {c[k] for k in names}
+                holes = sorted((h for h in self._leads if h[0] in xs and h[1] in rows),
+                               key=lambda h: (h[1], h[0]))
+                out.append({'chip': ch['label'], 'block': ch['block'],
+                            'pin1_row': ch['pin1_row'], 'side': side, 'count': len(holes),
+                            'addrs': [self.addr(x, self.r_y(r)) for x, r in holes]})
         return out
 
     def wiring(self):
