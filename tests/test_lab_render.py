@@ -630,6 +630,20 @@ class TestCircuitPages(unittest.TestCase):
         html = circuit_pages(spec, _netlist_missing_diagrams())
         self.assertNotIn('class="schematic"', html)
         self.assertIn("회로도가 아직 없다: 실험01_1-1_회로도.png", html)
+        # 그림이 없는데 캡션만 남으면 없는 그림을 가리킨다 — 안내 한 줄만 낸다
+        self.assertNotIn("회로 구성", html)
+
+    def test_schematic_캡션은_크롭한_첫_쪽만_적는다(self):
+        """크롭은 `pages[0]` 에서 나온다 — `p11·p12` 라고 적으면 p12 그림인 줄 안다."""
+        from scripts.lab.render import _schematic_html
+        from scripts.lab.spec_parser import SpecItem
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "a.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            item = SpecItem(id="E1.P1-1", title="t", device=[], ics=[], tables=[],
+                            pages=[11, 12], schematic=["a.png"])
+            out = _schematic_html(item, d)
+        self.assertIn("<p class='src'>강의노트 p11 · 회로 구성</p>", out)
+        self.assertNotIn("p12", out)
 
 
 class TestCircuitBodySplit(unittest.TestCase):

@@ -601,18 +601,23 @@ def _schematic_html(item, spec_dir) -> str:
     `src` 는 명세 기준 상대경로 그대로다 — 인쇄본 HTML 이 명세와 같은 `체크리스트/`
     에 놓인다(`_capture_html` 의 `figure` 와 같은 논리). 파일이 없으면 `<img>` 를
     내지 않는다 — 깨진 그림이 PDF 로 굳는다. 필드가 없으면 빈 문자열이다.
+
+    캡션은 `pages` 의 첫 쪽만 적는다 — `schematic.py` 는 `--page` 가 없으면
+    `pages[0]` 을 자른다. 캡션은 `<img>` 를 하나라도 냈을 때만 붙인다 — 그림이
+    없는데 캡션만 남으면 없는 그림을 가리킨다(파일이 없으면 안내 한 줄뿐이다).
     """
     if item is None or not item.schematic:
         return ""
-    pages = "·".join(f"p{p}" for p in item.pages or [])
-    caption = f"강의노트 {pages} · 회로 구성" if pages else "강의노트 · 회로 구성"
+    caption = (f"강의노트 p{item.pages[0]} · 회로 구성" if item.pages
+               else "강의노트 · 회로 구성")
     out = []
     for rel in item.schematic:
         if (Path(spec_dir) / rel).exists():
             out.append(f'<img class="schematic" src="{_esc(rel)}">')
         else:
             out.append(f"<p class='src'>회로도가 아직 없다: {_esc(rel)}</p>")
-    out.append(f"<p class='src'>{_esc(caption)}</p>")
+    if any(o.startswith("<img") for o in out):
+        out.append(f"<p class='src'>{_esc(caption)}</p>")
     return "".join(out)
 
 
