@@ -296,6 +296,78 @@ class PhysicalRules(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'density_policy'):
             bb.verify()
 
+    # ---- 칩 오른쪽 게이트의 입력 점퍼 (R7 을 풀기 위한 헬퍼 분기) ----
+
+    def _badge_covers_lead(self, bb, name):
+        box = next(b for n, b, _s in bb.tag_boxes if n == name)
+        return [what for (hx, hr), what in bb._leads.items()
+                if box[0] <= hx <= box[2] and box[1] <= bb.r_y(hr) <= box[3]]
+
+    def test_좌_블록_f쪽_입력은_중앙_GND_레일에서_i열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        # 11행 = pin1_row+4 = f 쪽 pin 10. (8행은 레일 빈 행이라 free_rail_row 가 7행으로
+        # 옮긴다 — 레일 행 판정을 섞지 않으려고 홀이 있는 11행을 쓴다)
+        self.mod._input_jumper(bb, c, 11, 'B', '74HC08 pin 10', side='f')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '좌 중앙GND레일11행')
+        self.assertEqual(bb.addr(*pts[-1]), '좌 i11')
+        self.assertEqual(bb.inputs[-1], {'name': 'B', 'at': ('left', 'i', 11), 'seg': len(bb._segments) - 1})
+        self.assertEqual(self._badge_covers_lead(bb, 'B'), [])
+        # 배지는 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)에 있다
+        box = next(b for n, b, _s in bb.tag_boxes if n == 'B')
+        self.assertGreater(box[0], c['mid_vcc'])
+        self.assertLess(box[2], bb.cols['right']['mid_gnd'])
+        # 순서표 문구는 a 쪽과 같은 틀이다 — 도장 규약을 f 쪽에서도 지킨다
+        self.assertEqual(desc, '입력 B -> 74HC08 pin 10 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+
+    def test_우_블록_f쪽_입력은_우_바깥_GND_레일에서_i열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 11, 'A', '74HC08 pin 13', side='f')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '우 GND레일11행')
+        self.assertEqual(bb.addr(*pts[-1]), '우 i11')
+        box = next(b for n, b, _s in bb.tag_boxes if n == 'A')
+        self.assertGreater(box[0], c['vcc'])
+        self.assertLess(box[2], self.mod.BOARD_RIGHT)
+        self.assertEqual(self._badge_covers_lead(bb, 'A'), [])
+
+    def test_우_블록_a쪽_입력은_우_중앙_GND_레일에서_b열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 10, 'A', '74HC08 pin 1')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '우 중앙GND레일10행')
+        self.assertEqual(bb.addr(*pts[-1]), '우 b10')
+
+    def test_좌_블록_a쪽_입력은_지금과_같다(self):
+        """기존 주차의 호출 형태(`marker=(215, 13)`)가 그대로 도는지 — 도장 불변의 근거."""
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 10, 'C', '74HC08 pin 4', marker=(215, 13))
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '좌 GND레일10행')
+        self.assertEqual(bb.addr(*pts[-1]), '좌 b10')
+        self.assertEqual(desc, '입력 C -> 74HC08 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+
+    def test_side_는_a_또는_f_다(self):
+        bb = self.board()
+        with self.assertRaisesRegex(AssertionError, "side"):
+            self.mod._input_jumper(bb, bb.cols['left'], 7, 'A', 'x', side='g')
+
 
 def _render(mod, fn):
     """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""

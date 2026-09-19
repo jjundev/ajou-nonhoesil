@@ -627,7 +627,7 @@ class BreadboardRenderer:
             return '전원잭'
         if x < 149:
             return '보드밖(입력)'
-        if x > 880:
+        if x > BOARD_RIGHT:
             return '보드밖'
         r = self._row_of(y)
         best = min(self._addr_map, key=lambda k: abs(k - x))
@@ -1851,8 +1851,15 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
-def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
-    """입력 한 줄: **좌 GND 레일 홀 → 같은 행 `col` 열(기본 b)**. GND(=0) 자리를 그린 것이다.
+def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
+    """입력 한 줄: **그쪽 GND 레일 홀 → 같은 행 `col` 열**. GND(=0) 자리를 그린 것이다.
+
+    `side` 는 입력이 들어가는 핀이 칩의 어느 쪽인가다 — `'a'`(핀 1~7, a~e 쪽) 또는
+    `'f'`(핀 8~14, f~j 쪽). 레일은 그쪽에 붙은 GND 다: 좌 블록은 a 쪽이 바깥 174, f 쪽이
+    중앙 468 이고 우 블록은 뒤집혀 a 쪽이 중앙 542, f 쪽이 바깥 836 이다. 열 기본값은
+    a 쪽 `b`, f 쪽 `i`(핀 홀 e·f 옆 d·g 는 전원선 자리라 한 칸 띈다 — `connect_power`).
+    2026-09-18 실험03 에서 네 칩이 게이트 1·2 만 써 왼쪽에 11리드가 몰렸다(R7) — 게이트를
+    좌·우로 나누면 오른쪽 게이트의 입력이 이 분기를 쓴다.
 
     `col` 은 같은 스트립에 **두 번째 점퍼(갈래)** 를 꽂을 때 쓴다. 갈래를 옆 홀에
     꽂되 그 갈래가 입력선 위를 되짚어 나가면 밑동이 굵은 입력선 아래 깔려
@@ -1881,18 +1888,35 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     따라 그렸다. 레일과 a 열 사이 여백은 쓰지 않는다: 복합 회로의 Z 급전선(x=212)이
     10~25행을 세로로 지나고, 번호 원 `(215, ±13)` 도 거기 앉는다(2026-09-14 실측).
     """
-    r_rail = bb.free_rail_row(row, c['gnd'])
-    bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c[col], bb.r_y(row))], 'sig',
+    assert side in ('a', 'f'), f"side 는 'a' 또는 'f' 다: {side!r}"
+    block = 'left' if c is bb.cols['left'] else 'right'
+    if side == 'a':
+        x_rail = c['gnd'] if block == 'left' else c['mid_gnd']
+        col = col or 'b'
+    else:
+        x_rail = c['mid_gnd'] if block == 'left' else c['gnd']
+        col = col or 'i'
+    r_rail = bb.free_rail_row(row, x_rail)
+    y_rail, y_row = bb.r_y(r_rail), bb.r_y(row)
+    # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌
+    # 테두리~레일 사이(기존), 우 바깥 레일은 레일~보드 우 테두리 사이, 중앙 레일 둘은
+    # 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)이다. 번호 원은 좌·우
+    # 바깥이면 보드 밖 같은 행, 중앙이면 배지 위 18px 다 — 여백이 58px 라 나란히 못 놓는다.
+    if x_rail == bb.cols['left']['gnd']:
+        badge_x, default_marker = (BOARD_LEFT + x_rail) / 2, (130, 0)
+    elif x_rail == bb.cols['right']['gnd']:
+        badge_x, default_marker = (bb.cols['right']['vcc'] + BOARD_RIGHT) / 2, (BOARD_RIGHT + 24, 0)
+    else:
+        badge_x = (bb.cols['left']['mid_vcc'] + bb.cols['right']['mid_gnd']) / 2
+        default_marker = (badge_x, -18)
+    mx, dy = marker or default_marker
+    bb.step_wire([(x_rail, y_rail), (c[col], y_row)], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
-                 marker_at=(marker[0], bb.r_y(row) + marker[1]))
+                 marker_at=(mx, y_row + dy))
     bb.input_node(name, c[col], row)
-    _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
+    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}")
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
-    assert c is bb.cols['left'], (
-        '_input_jumper 의 신호 이름 배지 자리는 좌 보드 테두리~좌 GND 레일 여백 기준이다 — '
-        '우 블록 입력이면 자리를 새로 정한다')
-    bb.signal_tag(name, (BOARD_LEFT + c['gnd']) / 2, bb.r_y(r_rail),
-                  seg=len(bb._segments) - 1)
+    bb.signal_tag(name, badge_x, y_rail, seg=len(bb._segments) - 1)
 
 
 # ---------------------------------------------------------------------------
