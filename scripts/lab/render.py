@@ -594,6 +594,28 @@ def _chip_swap(previous, current) -> str:
     return " · ".join(parts)
 
 
+def _schematic_html(item, spec_dir) -> str:
+    """강의노트 게이트 회로도 — 항목의 첫 회로 페이지, 칩 교체 배너 바로 뒤.
+
+    결선도를 보다가 "원래 회로가 뭐였지" 를 교안을 따로 열지 않고 확인하게 한다.
+    `src` 는 명세 기준 상대경로 그대로다 — 인쇄본 HTML 이 명세와 같은 `체크리스트/`
+    에 놓인다(`_capture_html` 의 `figure` 와 같은 논리). 파일이 없으면 `<img>` 를
+    내지 않는다 — 깨진 그림이 PDF 로 굳는다. 필드가 없으면 빈 문자열이다.
+    """
+    if item is None or not item.schematic:
+        return ""
+    pages = "·".join(f"p{p}" for p in item.pages or [])
+    caption = f"강의노트 {pages} · 회로 구성" if pages else "강의노트 · 회로 구성"
+    out = []
+    for rel in item.schematic:
+        if (Path(spec_dir) / rel).exists():
+            out.append(f'<img class="schematic" src="{_esc(rel)}">')
+        else:
+            out.append(f"<p class='src'>회로도가 아직 없다: {_esc(rel)}</p>")
+    out.append(f"<p class='src'>{_esc(caption)}</p>")
+    return "".join(out)
+
+
 def _diagram_html(section, netlist) -> str:
     """결선도가 있으면 싣고, 없으면 그 자리에 빈 브레드보드를 넣는다.
 
@@ -708,14 +730,16 @@ def _circuit_tables(spec, section) -> str:
 
 def circuit_pages(spec, netlist) -> str:
     """회로마다 한 면. 강제 개쪽이라 회로 둘이 한 쪽을 나눠 쓰지 않는다.
+    강의노트 회로도는 한 항목을 가리키는 회로가 여럿이어도 첫 회로에만 싣는다.
 
-    면 안의 순서는 작업 순서다 — 칩 교체 → 유의사항 → 결선도 → 배선 → 미사용핀
-    → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을 배선 앞으로 옮겼다 —
-    그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
+    면 안의 순서는 작업 순서다 — 칩 교체 → 강의노트 회로도 → 유의사항 → 결선도
+    → 배선 → 미사용핀 → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
+    배선 앞으로 옮겼다 — 그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
     미사용핀 상자는 칩별로 낸다 — 회로 단위로 합치면 C4 처럼 같은 핀 번호가
     칩마다 정반대 지시를 받을 때 어느 칩 것인지 사라진다.
     """
     out, previous = [], None
+    shown = set()                 # 강의노트 회로도를 이미 실은 항목
     total = len(netlist.circuits)
     for n, section in enumerate(netlist.circuits, start=1):
         nodes, prose_before, prose_after = _circuit_body(section)
@@ -728,6 +752,11 @@ def circuit_pages(spec, netlist) -> str:
                    f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
         banner = _chip_swap(previous, section)
         out.append(f'<div class="banner">{_esc(banner)}</div>')
+        if item is not None and item.id not in shown:
+            shown.add(item.id)
+            schematic = _schematic_html(item, spec.path.parent)
+            if schematic:         # 빈 문자열을 넣으면 필드 없는 주차의 HTML 에 빈 줄이 는다
+                out.append(schematic)
         if prose_before.strip():
             out.append(_blocks(prose_before))
         for stage in section.stages:
