@@ -155,3 +155,22 @@ class TestMainWithSpec(unittest.TestCase):
         self.assertIn("    tables: [T7]\n    schematic: [실험03_2-2_회로도.png]\n---",
                       self.spec.read_text(encoding="utf-8"))
         self._assert_보고서_그대로()
+
+    def _assert_아무것도_안_만든다(self, before):
+        self.assertEqual(sorted(self.spec.parent.iterdir()), [self.spec])
+        self.assertEqual(self.spec.read_text(encoding="utf-8"), before)
+        self._assert_보고서_그대로()
+
+    def test_box_가_수가_아니면_사용법_오류(self):
+        before = self.spec.read_text(encoding="utf-8")
+        with self.assertRaises(SystemExit) as ctx:
+            schematic.main(["3", "E3.P1-2", "--box", "a,b,c,d", "--spec", str(self.spec)])
+        self.assertEqual(ctx.exception.code, 2)
+        self._assert_아무것도_안_만든다(before)
+
+    def test_page_가_교안_쪽_수_밖이면_사용법_오류(self):
+        before = self.spec.read_text(encoding="utf-8")
+        with self.assertRaises(SystemExit) as ctx:
+            schematic.main(["3", "E3.P1-2", "--page", "99", "--spec", str(self.spec)])
+        self.assertEqual(ctx.exception.code, 2)
+        self._assert_아무것도_안_만든다(before)

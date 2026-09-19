@@ -33,6 +33,12 @@ def schematic_name(exp_dir, item) -> str:
     return f"{Path(exp_dir).name}_{sub_id(item)}_회로도.png"
 
 
+def page_count(manual) -> int:
+    import fitz
+    with fitz.open(str(manual)) as doc:
+        return len(doc)
+
+
 def default_box(manual, page: int) -> tuple:
     """그 쪽에서 로고를 뺀 가장 큰 이미지 자리 + 여백 (pt, 쪽 왼쪽 위 기준).
 
@@ -118,8 +124,14 @@ def main(argv=None) -> int:
     if page is None:
         ap.error(f"항목 {item.id} 에 pages 가 없다 — --page 로 쪽을 준다")
     manual = root / spec.source_manual
+    n_pages = page_count(manual)
+    if not 1 <= page <= n_pages:
+        ap.error(f"교안 쪽 {page} 가 범위 밖이다 — {spec.source_manual} 은 1~{n_pages} 쪽이다")
     if a.box:
-        box = tuple(float(v) for v in a.box.split(","))
+        try:
+            box = tuple(float(v) for v in a.box.split(","))
+        except ValueError:
+            ap.error(f"--box 는 x0,y0,x1,y1 네 수다 — 받은 값: {a.box}")
         if len(box) != 4:
             ap.error("--box 는 x0,y0,x1,y1 네 수다")
     else:

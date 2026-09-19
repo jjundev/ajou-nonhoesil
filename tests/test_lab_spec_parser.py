@@ -331,6 +331,12 @@ class TestSharedLetter(unittest.TestCase):
             parse_spec(target)
         self.assertIn("schematic", str(ctx.exception))
 
+    def test_schematic_원소가_공백뿐이면_던진다(self):
+        target = self._variant("pages: [6]", 'pages: [6]\n    schematic: ["  "]')
+        with self.assertRaises(SpecError) as ctx:
+            parse_spec(target)
+        self.assertIn("schematic", str(ctx.exception))
+
 
 class TestErrors(unittest.TestCase):
     """실물 명세를 한 군데씩 망가뜨려 파서가 거절하는지 본다."""

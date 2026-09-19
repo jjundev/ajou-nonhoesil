@@ -226,7 +226,7 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 행 수 검사가 warn 인 이유: 실험6 R-S Latch 는 3입력인데 5행이다 (`x x 0` 이 4개 조합을
 한 줄로 접는다). 이것은 오류가 아니라 교안의 정상 표기다.
 
-이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 열여덟 줄이
+이 표는 코드를 손으로 옮겨 적은 요약이고, 정본은 코드다 — 다만 스물두 줄이
 한 함수에 있지 않다. `kind` 값·`capture` 표의 셀 표 유무·열 이름 중복은
 `spec_parser.py` 의 `_parse_table`(파서이므로 예외로 던진다)이 맡는다.
 `role`·`encoding`·`capture` 의 `expected`·`source` 부재와 `outputs` 두 줄은
@@ -234,8 +234,9 @@ Task 1 리뷰에서 발견된 네 번째 스키마 파손이다(첫 번째는 �
 `check_row_count`, 출력 비트 역검산은 `check_boolean`이 맡는다. 셀 수
 불일치·escape 된 파이프·`<br>` 태그·탭 문자는 같은 파일의
 `check_table_integrity`(전부 error)가 맡고, 방향을 붙인 진단 문장은
-`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 회로도 파일 부재는 `check_schematics`(warn)가 맡는다. 교안 인용
-대조는 `check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
+`check_diagnostic_claims`(info — 판정하지 않고 센다)가 맡는다. 회로도 파일
+부재는 `check_schematics`(warn)가 맡는다. 교안 인용 대조는
+`check_manual_quotes`(info)가, 열 이름 대조는 `check_manual_names`(error·info)가
 맡는데, 이 둘은 `validate_spec` 밖에 있다 — 명세 텍스트 말고 교안 텍스트가 더 필요해서다(`extract_manual_text`
 가 뽑아 주고, 못 뽑으면 빈 문자열이라 검사가 조용히 넘어간다). 소실험 범위는
 `check_item_scope`(error)가 맡고 역시 `validate_spec` 밖이다 — 명세가 아니라 강의
