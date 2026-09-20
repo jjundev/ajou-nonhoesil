@@ -725,7 +725,13 @@ def _check_nodes(circuit, spec, where) -> list:
             if bits is None:
                 continue
             env = {name: _bit(c, table.encoding) for name, c in zip(computed.inputs, cells)}
-            want = eval_boolean(expr, env)
+            try:
+                want = eval_boolean(expr, env)
+            except ValueError as exc:
+                out.append(Finding("error", where,
+                    f"명세 출력 {target} 의 식 {expr!r} 을 노드 입력으로 "
+                    f"평가할 수 없다: {exc}"))
+                break
             if bits[k] != want:
                 shown = ", ".join(f"{i}={c}" for i, c in zip(computed.inputs, cells))
                 out.append(Finding("error", f"{where} 행{n}",

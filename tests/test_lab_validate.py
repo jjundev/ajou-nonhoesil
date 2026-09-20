@@ -645,6 +645,22 @@ spec: ../체크리스트/명세.md
         errors = self._node_errors(self.NODED_C1.replace("| L2 | A·B·C |", "| L2 | A·B |"))
         self.assertTrue(any("표류" in m and "L2" in m for m in errors), errors)
 
+    def test_명세_출력_식을_평가할_수_없으면_error(self):
+        """검사는 던지지 않는다 — 명세 식의 변수가 기록표 입력에 없어도 Finding 으로 낸다."""
+        text = WEEK2_SPEC.read_text(encoding="utf-8")
+        # `C` 를 `Q` 로 **바꾸면** 안 된다 — `split_indices` 는 derived 식이 참조하는
+        # 이름으로 입력 열을 정하므로 C 가 입력에서 빠지고, 노드 식 `A·B·C` 가 먼저
+        # `nodes.compute` 에서 터져 이 가드까지 오지 못한다. 미지의 변수를 **더한다**.
+        broken = text.replace("- source: derived (L1 = A·B ; L2 = A·B·C)",
+                              "- source: derived (L1 = A·B ; L2 = A·B·C·Q)")
+        self.assertNotEqual(broken, text)
+        path = Path(tempfile.mkdtemp()) / "명세.md"
+        path.write_text(broken, encoding="utf-8")
+        errors = [f.message for f in
+                  validate.check_netlist_circuits(self._netlist(self.NODED_C1), parse_spec(path))
+                  if f.level == "error"]
+        self.assertTrue(any("평가할 수 없다" in m and "L2" in m for m in errors), errors)
+
     def test_실험03_실물_노드_표는_error_가_없다(self):
         """Task 7 이 백필한 뒤에만 뜻이 있다 — 그 전에는 노드가 없어 자명하게 통과한다."""
         spec = parse_spec(ROOT / config.experiment_dir(3) / "체크리스트/명세.md")
