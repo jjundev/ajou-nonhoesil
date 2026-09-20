@@ -269,6 +269,29 @@ class StageBudget(unittest.TestCase):
                             f"{[k[1:] for k in bb.new_signal]}")
                     base = bb.snapshot()
 
+    def test_단계_보드는_아무것도_걷지_않는다(self):
+        """뽑는 자리는 전용 걷기 보드다 (2026-09-20). 단계 보드가 선을 걷으면 그
+        지시는 footer 표의 글 한 줄뿐이고, 2026-09-18 실험03 실험실에서 바로 그
+        글이 건너뛰어졌다 — 걷기 보드를 만든 근거가 그것이다.
+
+        `stage is None` 인 보드가 걷기 보드다(`removal_board` 클로저는 stage 를
+        거절한다). 실험01·02 는 옛 규약 승인본이라 면제다."""
+        for n in self.mod.board_numbers():
+            if n in self.LEGACY_BOARDS:
+                continue
+            board = self.mod.load_board(n)
+            with tempfile.TemporaryDirectory() as d:
+                base = None
+                for name, fn, stage in board.BOARDS:
+                    bb = fn(os.path.join(d, name), stage=stage, baseline=base)
+                    if stage is not None:
+                        with self.subTest(실험=n, board=name):
+                            self.assertEqual(
+                                [r['addr'] for r in bb.removals()], [],
+                                f"{name}: 단계 보드가 선을 걷는다 — 그 전환 앞에 "
+                                f"removal_board 를 끼운다")
+                    base = bb.snapshot()
+
 
 class CommittedPngs(unittest.TestCase):
     """커밋된 결선도 PNG 가 지금 `배치.py` 에서 나온 것인가 — 도장으로 본다.

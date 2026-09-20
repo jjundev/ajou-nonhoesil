@@ -327,6 +327,22 @@ class WiringE3(unittest.TestCase):
         self.assertEqual([c['label'] for c in g.wiring()['chips']],
                          ['74HC86', '74HC08', '74HC32'])
 
+    def test_걷기_보드마다_뽑는_주소가_고정이다(self):
+        """`removal_board` 의 prev/nxt 짝이 뒤바뀌어도 수열·이름 단언은 통과한다 —
+        주소만이 짝을 못 박는다."""
+        chain = self._chain()
+        want = {
+            1: [(1, '좌 b9 → 좌 a25')],
+            4: [(1, '우 c12 → 우 c29')],
+            6: [(1, '우 c15 → 우 c29')],
+            8: [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13'), (3, '우 c23 → 우 c29')],
+            10: [(1, '우 c12 → 우 c29')],
+        }
+        for i, pairs in want.items():
+            name = self.b3.BOARDS[i][0]
+            with self.subTest(board=name):
+                self.assertEqual([(r['n'], r['addr']) for r in chain[i].removals()], pairs)
+
     def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
         """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
         for i in (1, 4, 6, 8, 10):
