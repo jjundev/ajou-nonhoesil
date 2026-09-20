@@ -324,6 +324,13 @@ class Stages(unittest.TestCase):
         with self.assertRaisesRegex(NetlistError, "단계"):
             parse_netlist(_write(bad))
 
+    def test_단계_행의_셀_수가_다르면_거절한다(self):
+        """짧은 행은 `md._cells` 가 채우지 않는다 — 그대로 두면 뒤에서 KeyError 로 죽는다."""
+        bad = STAGED.replace("| 2 | `2단계.png` | 74HC00 을 더한다 | T3 8행 |",
+                             "| 2 | `2단계.png` | 74HC00 을 더한다 |")
+        with self.assertRaisesRegex(NetlistError, "셀"):
+            parse_netlist(_write(bad))
+
 
 NODED = MINIMAL.replace(
     "- diagram: 그림.png\n",
@@ -364,6 +371,13 @@ class ParseNodes(unittest.TestCase):
         bad = bad.replace("| A·B | A·B | `U1 pin 3` |\n", "")
         bad = bad.replace("| L2 | A·B·C | U1 pin 6 |\n", "")
         with self.assertRaisesRegex(NetlistError, "노드"):
+            parse_netlist(_write(bad))
+
+    def test_노드_행의_셀_수가_다르면_거절한다(self):
+        """핀 칸이 빠진 행은 `pin` 키가 없는 dict 이 된다 — `_check_nodes` 가 KeyError 로
+        죽어 검증기 밖으로 예외가 샌다. 구조 결함이라 파서가 먼저 거절한다."""
+        bad = NODED.replace("| A·B | A·B | `U1 pin 3` |", "| A·B | A·B |")
+        with self.assertRaisesRegex(NetlistError, "셀"):
             parse_netlist(_write(bad))
 
     def test_단계와_노드가_함께_있으면_둘_다_뗀다(self):

@@ -118,6 +118,15 @@ def _split_subtable(body, head_re, columns, keys, label, path, line):
             raise NetlistError(
                 f"{path}:{line + i} 근처 `## {label}` 표의 열이 {table.header} 다. "
                 f"{list(columns)} 이어야 한다 — 렌더러가 열 이름으로 읽는다")
+        # 짧은 행은 `md._cells` 가 채우지 않는다. 그대로 `dict(zip(...))` 하면 키가
+        # 빠진 dict 이 나와, 읽는 쪽(`validate._check_nodes`, `nodes.compute`)이
+        # `KeyError` 로 죽는다 — 검증기는 예외로 중단하지 않는 것이 계약이다.
+        # 구조 결함은 파서 몫이므로 여기서 거절한다.
+        for k, row in enumerate(table.rows, start=1):
+            if len(row) != len(columns):
+                raise NetlistError(
+                    f"{path}:{line + i} 근처 `## {label}` 표의 행 {k} 의 셀이 "
+                    f"{len(row)}개다. {len(columns)}개({', '.join(columns)})여야 한다")
         rows = [dict(zip(keys, (c.strip().strip("`") for c in row)))
                 for row in table.rows]
         if not rows:
