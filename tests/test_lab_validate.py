@@ -660,7 +660,12 @@ spec: ../체크리스트/명세.md
             "| 1 | 1단계.png |")
         warns = self._stage_node_findings(text, "warn")
         self.assertEqual([w for w in warns if "단계 1걷기" in w], [])
-        self.assertEqual(self._stage_node_findings(text, "error"), [])
+        # `_stage_node_findings` 는 "노드" 가 든 메시지만 남긴다 — 걷기 구조 error 에는
+        # 그 낱말이 없으니 필터 없이 전부 모아야 거짓 양성 방향을 문다.
+        spec = parse_spec(WEEK2_SPEC)
+        errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                  if f.level == "error"]
+        self.assertEqual(errors, [])
 
     def test_걷기_행이_표의_마지막이면_error(self):
         """걷기는 다음 단계의 머리다 — 뒤에 꽂는 단계가 없으면 무엇을 위해 걷는지가 없다."""
