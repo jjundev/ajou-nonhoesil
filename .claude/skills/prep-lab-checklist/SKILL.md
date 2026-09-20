@@ -82,17 +82,32 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    대충 렌더하지 않는다. 백필 방법은 메시지가 담고 있고 계약은
    `docs/schema/lab-netlist-v2.md` 다.
 
-3. **기록 템플릿 파생.**
+3. **기록 템플릿 파생 — 이미 채워진 기록은 덮지 않는다.**
 
    ```bash
    python3 -c "
-   from pathlib import Path
-   from scripts.lab.record import derive_record
+   from scripts.lab.record import derive_record, write_record
    from scripts.lab.spec_parser import parse_spec
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
-   Path('<실험NN>/체크리스트/기록.md').write_text(derive_record(spec), encoding='utf-8')
+   print(write_record('<실험NN>/체크리스트/기록.md', derive_record(spec)))
    "
    ```
+
+   **`write_record` 로 쓴다. `Path(...).write_text(...)` 로 쓰지 않는다** —
+   파생은 언제나 **빈** 템플릿이라, 손으로 쓰면 체크리스트를 다시 뽑는 것만으로
+   실험 기록을 지우는 명령이 된다. 2026-09-20 실험03 재생성이 실제로
+   `filled_by: vision`·확인 칸 16개·종료 메모 4문항을 말없이 날렸다(작업자가
+   알아채고 `git checkout` 으로 되돌렸다).
+
+   - `created`·`regenerated` 면 그대로 4단계로 간다. 파일이 없거나 손대지 않은
+     템플릿이면 지금까지와 똑같이 동작한다.
+   - **`RecordExistsError` 가 나면 멈춘다.** 예외 메시지의 근거 목록(확인 칸
+     N개 · 종료 메모 N문항 …)을 **그대로 사용자에게 전하고** 판단을 받는다.
+     기록을 그대로 둔 채 4단계로 가면 인쇄본(html·pdf)만 다시 나오는데, 대개
+     이쪽이 사용자가 원하던 것이다.
+   - 사용자가 "빈 템플릿으로 되돌려 달라"고 **명시적으로** 답했을 때만
+     `force=True` 로 다시 부른다(`기록.md.bak-<시각>` 백업이 먼저 남는다).
+     **스스로 켜지 않는다** — 켜는 순간 이 가드는 없는 것과 같다.
 
 4. **인쇄본 렌더 + PDF.**
 

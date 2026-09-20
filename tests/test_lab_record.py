@@ -1,7 +1,9 @@
+import datetime
+import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.lab import config
+from scripts.lab import config, record
 from scripts.lab.record import PROMPTS, _width, derive_record
 from scripts.lab.spec_parser import parse_spec
 
@@ -189,3 +191,159 @@ class RecordKindCells(unittest.TestCase):
         text = derive_record(spec)
         block = text[text.index("### T1 ·"):]
         self.assertIn("확인", block.split("\n")[2])
+
+
+def _fill_first_blank_row(text: str):
+    """빈 칸이 있는 첫 데이터 행을 채운다. `(채운 텍스트, 채운 칸 수)`.
+
+    셀 자리로 찾는다 — 진리표의 확인 열이든 스텝표의 빈 열이든 같은 방법으로
+    "사람이 실험실에서 적은 칸" 을 만든다.
+    """
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if not line.startswith("|") or set(line) <= set("|- "):
+            continue
+        cells = line.split("|")
+        blanks = [j for j in range(1, len(cells) - 1) if not cells[j].strip()]
+        if not blanks:
+            continue
+        for j in blanks:
+            cells[j] = " ✓ "
+        lines[i] = "|".join(cells)
+        return "\n".join(lines), len(blanks)
+    raise AssertionError("빈 칸이 있는 데이터 행이 없다")
+
+
+class 채워진기록보호(unittest.TestCase):
+    """② 3단계가 채워진 `기록.md` 를 말없이 덮은 사고(2026-09-20 실험03)의 회귀.
+
+    그날 덮인 파일에는 `filled_by: vision`·확인 칸 16개·종료 메모 4문항이 있었고
+    전부 빈 템플릿이 됐다. 작업자가 알아채고 `git checkout` 으로 되돌렸지만,
+    못 봤으면 실험 당일에만 알 수 있는 값이 조용히 사라졌을 것이다.
+    """
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        self.template = derive_record(self.spec)
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.path = Path(tmp.name) / "기록.md"
+
+    def _filled(self) -> str:
+        """실험을 마친 기록. 프론트매터·확인 칸·종료 메모가 다 들어 있다."""
+        text, _ = _fill_first_blank_row(self.template)
+        return (text.replace("filled_by: ~", "filled_by: vision")
+                    .replace("- 막혔던 것:", "- 막혔던 것: GND 접촉 불량"))
+
+    def test_없으면_템플릿을_만든다(self):
+        """빈 템플릿을 처음 내는 경로는 가드가 생겨도 그대로다."""
+        result = record.write_record(self.path, self.template)
+        self.assertEqual(result["status"], "created")
+        self.assertIsNone(result["backup"])
+        self.assertEqual(self.path.read_text(encoding="utf-8"), self.template)
+
+    def test_채워진_기록을_덮지_않고_거절한다(self):
+        filled = self._filled()
+        self.path.write_text(filled, encoding="utf-8")
+        with self.assertRaises(record.RecordExistsError) as cm:
+            record.write_record(self.path, self.template)
+        self.assertEqual(self.path.read_text(encoding="utf-8"), filled)
+        # 근거를 메시지에 담아야 사용자가 보고 판단할 수 있다
+        self.assertIn("filled_by: vision", str(cm.exception))
+        self.assertIn("확인 칸", str(cm.exception))
+        self.assertIn("종료 메모", str(cm.exception))
+
+    def test_손대지_않은_템플릿은_다시_낸다(self):
+        """명세를 고친 뒤 다시 뽑는 평범한 경로. 잃을 것이 없다."""
+        self.path.write_text(self.template, encoding="utf-8")
+        result = record.write_record(self.path, self.template + "\n### T99 · 새 표\n")
+        self.assertEqual(result["status"], "regenerated")
+        self.assertIn("새 표", self.path.read_text(encoding="utf-8"))
+
+    def test_force_는_백업을_먼저_남긴다(self):
+        """사용자가 되돌려 달라고 답한 경우에도 원본을 지우지 않는다."""
+        filled = self._filled()
+        self.path.write_text(filled, encoding="utf-8")
+        result = record.write_record(self.path, self.template, force=True)
+        self.assertEqual(result["status"], "overwritten")
+        self.assertEqual(result["backup"].read_text(encoding="utf-8"), filled)
+        self.assertEqual(self.path.read_text(encoding="utf-8"), self.template)
+
+    def test_확인_칸_하나만_채워도_지킨다(self):
+        text, filled = _fill_first_blank_row(self.template)
+        self.assertEqual(filled, 1)               # 진리표의 확인 칸 하나
+        self.assertEqual(record.record_marks(text, self.template), ["확인 칸 1개"])
+
+    def test_filled_by_만_적혀_있어도_지킨다(self):
+        """확인 칸보다 프론트매터를 먼저 바꾼 기록도 사람 손이 닿은 것이다."""
+        text = self.template.replace("filled_by: ~", "filled_by: hand")
+        self.assertEqual(record.record_marks(text, self.template),
+                         ["프론트매터 `filled_by: hand`"])
+
+    def test_미기입은_채운_것으로_보지_않는다(self):
+        """주석의 보기를 그대로 옮겨 적은 것뿐이다."""
+        text = self.template.replace("filled_by: ~", "filled_by: 미기입")
+        self.assertEqual(record.record_marks(text, self.template), [])
+
+    def test_갓_파생한_템플릿에는_흔적이_없다(self):
+        """고정 산문이 `실험을 진행하지 않았음` 을 설명한다 — 본문에서 통으로
+        세면 손대지 않은 템플릿이 채워진 것으로 보인다."""
+        self.assertEqual(record.record_marks(self.template, self.template), [])
+        self.assertEqual(record.record_marks(self.template), [])
+
+    def test_스텝표_기록_칸도_지킨다(self):
+        """스텝표에는 확인 열이 없다 — 명세가 비워 둔 칸이 기록 칸이라 템플릿과
+        견주지 않으면 채워진 것을 알 수 없다(실험02 는 확인 칸이 0개다)."""
+        template = derive_record(parse_spec(ROOT / "tests/fixtures/spec_capture.md"))
+        text, filled = _fill_first_blank_row(template)
+        self.assertEqual(filled, 5)               # S1 행의 빈 열 다섯
+        self.assertEqual(record.record_marks(text, template), ["기록 칸 5개"])
+
+    def test_파형_캡션과_스케치도_지킨다(self):
+        """실험02 는 진리표도 스텝표도 없이 파형만 있었다. 칸으로는 안 잡힌다."""
+        template = derive_record(parse_spec(ROOT / "tests/fixtures/spec_capture.md"))
+        self.assertEqual(record.record_marks(template, template), [])
+        text = template.replace("- 캡션:", "- 캡션: 계단 10개, 리셋 1회")
+        self.assertEqual(record.record_marks(text, template), ["메모·캡션 줄 1개"])
+        text = template.replace("  스케치 — 파형을 여기에 그린다",
+                                "  스케치 — 파형을 여기에 그린다\n  _/‾|_/‾|")
+        self.assertEqual(record.record_marks(text, template), ["스케치 1줄"])
+
+    def test_깨진_프론트매터는_보호_쪽으로_기운다(self):
+        """판정할 수 없는 파일을 조용히 덮는 것보다 시끄럽게 멈추는 게 낫다."""
+        self.path.write_text("---\nfilled_by: hand\n\n# 기록\n", encoding="utf-8")
+        with self.assertRaises(record.RecordExistsError):
+            record.write_record(self.path, self.template)
+
+    def test_백업_이름이_같은_초에도_겹치지_않는다(self):
+        now = datetime.datetime(2026, 9, 20, 14, 31, 2)
+        self.path.write_text(self._filled(), encoding="utf-8")
+        first = record.write_record(self.path, self.template, force=True, now=now)
+        self.path.write_text(self._filled(), encoding="utf-8")
+        second = record.write_record(self.path, self.template, force=True, now=now)
+        self.assertNotEqual(first["backup"], second["backup"])
+        self.assertTrue(first["backup"].exists())
+        self.assertTrue(second["backup"].exists())
+
+
+class 승인본기록은_그대로다(unittest.TestCase):
+    """저장소에 이미 있는 세 기록은 전부 사람이 채운 것이다. 파생이 이것들을
+    덮으려 하면 반드시 막혀야 한다 — 가드의 판정 대상이 실물이다."""
+
+    def test_승인본_셋이_모두_보호된다(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        for n in (1, 2, 3):
+            with self.subTest(experiment=n):
+                folder = ROOT / config.experiment_dir(n) / "체크리스트"
+                template = derive_record(parse_spec(folder / "명세.md"))
+                text = (folder / "기록.md").read_text(encoding="utf-8")
+                self.assertTrue(record.record_marks(text, template),
+                                "채워진 기록인데 흔적을 못 찾았다")
+                # 사본에 대고 시험한다 — 가드가 깨진 판에서 이 테스트가
+                # 승인본을 날려 버리면 회귀 테스트가 사고의 공범이 된다
+                copy = Path(tmp.name) / f"기록{n}.md"
+                copy.write_text(text, encoding="utf-8")
+                with self.assertRaises(record.RecordExistsError):
+                    record.write_record(copy, template)
+                self.assertEqual(copy.read_text(encoding="utf-8"), text)
