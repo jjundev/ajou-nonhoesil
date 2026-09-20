@@ -281,15 +281,21 @@ class WiringE3(unittest.TestCase):
         made = {n for n, _f, _s in self.b3.BOARDS} | {n for n, _f in self.b3.FINALS}
         self.assertEqual(wanted, made)
 
-    def test_보드_사슬은_8장_완성본은_2장이다(self):
-        """2026-09-20 단계 세분화: C2 가 다섯 단계, C4 가 걷기 + 두 단계다."""
-        self.assertEqual(len(self.b3.BOARDS), 8)
+    def test_보드_사슬은_12장_완성본은_2장이다(self):
+        """2026-09-20 걷기 보드: 선을 뽑는 자리마다 전용 보드가 한 장씩 끼어
+        C2 가 5 → 8장(2걷기·4걷기·5걷기), C4 가 3 → 4장(1걷기·2걷기)이다."""
+        self.assertEqual(len(self.b3.BOARDS), 12)
         self.assertEqual(len(self.b3.FINALS), 2)
         names = [n for n, _f, _s in self.b3.BOARDS] + [n for n, _f in self.b3.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
         self.assertNotIn(self.b3.BOARDS[-1][0], [n for n, _f in self.b3.FINALS])
         self.assertFalse(any(k in n for n in names for k in ('반가산기', '반감산기')), names)
-        self.assertEqual(self.b3.BOARDS[5][0], '실험03_2-2_결선도_전감산기_0단계_걷기.png')
+        self.assertEqual([n for n, _f, _s in self.b3.BOARDS if '걷기' in n],
+                         ['실험03_1-2_결선도_전가산기_2걷기_LED1프로브.png',
+                          '실험03_1-2_결선도_전가산기_4걷기_LED2프로브.png',
+                          '실험03_1-2_결선도_전가산기_5걷기_LED2프로브.png',
+                          '실험03_2-2_결선도_전감산기_1걷기_세가닥.png',
+                          '실험03_2-2_결선도_전감산기_2걷기_LED2프로브.png'])
 
     def _chain(self):
         """`build_all` 과 같은 순서로 사슬을 이어 그린 렌더러 목록."""
@@ -309,7 +315,7 @@ class WiringE3(unittest.TestCase):
 
     def test_걷기_보드는_세_가닥이_유령이고_새_선이_없다(self):
         """LED2 최종 급전선도 걷는다 — 1단계에 그것이 A'·B 를 보는 프로브가 된다."""
-        g = self._chain()[5]
+        g = self._chain()[8]
         self.assertEqual([(r['n'], r['addr']) for r in g.removals()],
                          [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13'), (3, '우 c23 → 우 c29')])
         self.assertEqual(g.steps, [])
@@ -323,8 +329,12 @@ class WiringE3(unittest.TestCase):
 
     def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
         """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
-        _name, fn, _stage = self.b3.BOARDS[5]
-        self.assertEqual(fn.__module__, self.mod.__name__)
+        for i in (1, 4, 6, 8, 10):
+            name, fn, stage = self.b3.BOARDS[i]
+            with self.subTest(board=name):
+                self.assertIn('걷기', name)
+                self.assertIsNone(stage)
+                self.assertEqual(fn.__module__, self.mod.__name__)
 
     def test_전가산기_1단계는_맨바닥에서_XOR1_과_임시_급전선만_꽂는다(self):
         _name, fn, stage = self.b3.BOARDS[0]
@@ -335,13 +345,20 @@ class WiringE3(unittest.TestCase):
         self.assertEqual(len(bb.new_signal), 3)
         self.assertTrue(any('임시 급전' in s['desc'] for s in bb.steps), bb.steps)
 
-    def test_단계마다_임시_급전선을_한_가닥씩_걷는다(self):
-        """2·4·5단계와 전감산기 2단계는 앞 단계의 프로브를 걷는다. 3단계는 걷지 않는다."""
+    def test_걷기는_전용_보드에서만_일어난다(self):
+        """이 라운드의 요점 전부다 — 단계 보드는 꽂기만 하고, 뽑기는 자기 그림을 갖는다.
+        글로만 있던 지시가 2026-09-18 실험실에서 건너뛰어졌다."""
         chain = self._chain()
-        self.assertEqual([len(bb.removals()) for bb in chain], [0, 1, 0, 1, 1, 3, 0, 1])
+        self.assertEqual([len(bb.removals()) for bb in chain],
+                         [0, 1, 0, 0, 1, 0, 1, 0, 3, 0, 1, 0])
         # 번호가 몇 개 붙는가 — `new_signal <= 3` 은 상한만 잰다. 1단계 16 은 맨바닥이라
         # 전원·레일·LED 사슬까지 세고, 걷기 보드 0 은 새 선도 순서표도 없다는 뜻이다.
-        self.assertEqual([len(bb.steps) for bb in chain], [16, 3, 4, 3, 6, 0, 6, 3])
+        self.assertEqual([len(bb.steps) for bb in chain],
+                         [16, 0, 3, 4, 0, 3, 0, 6, 0, 6, 0, 3])
+        for bb, (name, _fn, stage) in zip(chain, self.b3.BOARDS):
+            if stage is not None:
+                with self.subTest(board=name):
+                    self.assertEqual(bb.removals(), [], f'{name}: 단계 보드가 선을 걷는다')
 
     def test_반감산기에는_단계가_없다(self):
         """반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 완성본만 남는다."""
