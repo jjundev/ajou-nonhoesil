@@ -35,6 +35,8 @@
   .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
   .stage h3 { margin: 0 0 1.5mm; }
   .stage img { break-after: avoid; }
+  /* 노드 기대값 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
+  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
@@ -59,6 +61,8 @@
   .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
   th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  /* 행마다 찍을 사진 파일명. 인쇄만 하고 채우지 않는다 — `.check` 와 섞지 않는다 */
+  td.photo-name { font-size: 8pt; white-space: nowrap; color: #333; }
 
   /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
      여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
@@ -68,6 +72,10 @@
   .mismatch td { height: 8mm; background: #fafafa; }
 
   .legend { font-size: 9pt; margin: 1mm 0 4mm; }
+  .common .caution { border: 1px solid #000; padding: 2mm 3mm; margin: 2mm 0;
+                     font-size: 9.5pt; break-inside: avoid; }
+  .common .caution ul { margin: 1mm 0 0; padding-left: 5mm; }
+  .common .caution li { font-size: inherit; line-height: 1.4; }
   .src { font-size: 9pt; margin: 0 0 1mm; }
   .photo { font-size: 9pt; margin: 0 0 3mm; }
 
@@ -81,6 +89,9 @@
   /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
   .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
               font-size: 9.5pt; line-height: 1.5; }
+  /* 명세 `figure` 의 예상 개형 그림. 산문 아래·스케치 위에서 화면과 대조한다. */
+  .expected-fig { display: block; width: 100%; break-inside: avoid; break-after: avoid; }
+  .schematic { display: block; width: 80%; max-height: 70mm; object-fit: contain; margin: 2mm auto 0; break-inside: avoid; }
   .readout { font-size: 9pt; margin: 1mm 0; }
   /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
   .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
@@ -89,6 +100,7 @@
 
 <h1>실험3 가산기 &amp; 감산기 체크리스트</h1>
 <section class="common"><div class="power">전원: VCC = +5V · GND = GND · 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — 미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>
+<div class="caution"><b>손으로 할 때 주의</b><ul><li>선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)</li><li>칩을 꽂고 뽑을 때는 전원을 끈다</li><li>회로를 바꿀 때는 0단계 걷기 그림의 선부터 먼저 뽑고 새 선을 꽂는다</li></ul></div>
 <p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
 <p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
 <p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
@@ -112,7 +124,9 @@
 <section class="circuits"><section class="circuit">
 <h2>회로 1/2 · C2 · 실험 1-2) 전가산기 (74HC86 + 74HC08 + 74HC32) · 기록: T3 · 판독: LED</h2>
 <div class="banner">준비 — 꽂는다: 74HC86, 74HC08, 74HC32</div>
+<img class="schematic" src="실험03_1-2_회로도.png"><p class='src'>강의노트 p5 · 회로 구성</p>
 <p>교안 p5 회로도 그대로. 이 주차 첫 회로라 맨바닥에서 시작한다 — 교안이 앞에 두는 반가산기(실험 1-1)는 조교 공지 _350547_1 로 하지 않는다. 칩이 셋이라 단계는 둘이다. 먼저 S 경로(74HC86 의 XOR1·XOR2 — 자기 LED 가 있다), 다음 Co 경로(74HC08 의 AND1·AND2 + 74HC32 OR). 단계 끝은 그 시점의 LED 로 본다.</p>
+<p>프로브로 찍을 핀과 그 기대값 식. 순서는 신호가 흐르는 순서다 — 틀린 행에서 왼쪽 노드부터 찍는다.</p>
 <div class="stage"><h3>단계 1</h3><img src="../결선도/실험03_1-2_결선도_전가산기_1단계_XOR.png" style="width:100%"><p><b>이 단계에서:</b> 74HC86 을 S1 에 꽂는다. 전원(14→VCC, 7→GND), A→pin 1, B→pin 2, Ci→pin 5, U1 pin 3→pin 4, U1 pin 6→LED1 급전, LED1·LED2 사슬(330Ω→GND) 을 꽂는다. S3 의 전원 두 가닥도 미리 꽂는다. LED2 사슬은 아직 급전하지 않는다</p><p><span class="box"></span><b>확인:</b> LED1 = S = A⊕B⊕Ci, T3 8행의 S 열 (입력에 1 이 홀수 개일 때만 켜짐). 74HC86 첫 사용</p></div>
 <div class="stage"><h3>단계 2</h3><img src="../결선도/실험03_1-2_결선도_전가산기_2단계_Co경로.png" style="width:100%"><p><b>이 단계에서:</b> 74HC08 을 S3 에, 74HC32 를 S4 에 꽂는다. A→U2 pin 1, B→U2 pin 2 갈래(칩 위 4·5행을 건넌다), U1 pin 3→U2 pin 4, Ci→U2 pin 5, U2 pin 3→U3 pin 2, U2 pin 6→U3 pin 1, U3 pin 3→LED2 급전, S4 전원 두 가닥을 잇는다</p><p><span class="box"></span><b>확인:</b> T3 8행 전부 (74HC08·74HC32 첫 사용) — LED2 = Co 는 입력에 1 이 둘 이상일 때 켜짐</p></div>
 <div class="wirebox">
@@ -168,6 +182,34 @@
 </ul></div>
 </div>
 <p>Ci 입력 점퍼는 U1 pin 5 와 U2 pin 5 두 곳으로 팬아웃한다. OR 의 두 입력은 교안 회로도에서 위가 AND2, 아래가 AND1 이지만 OR 은 교환 법칙이 성립하므로 pin 1·2 의 배정은 배선 편의다 — 교안 원문이 아니다(M11).</p>
+<div class="tblock nodes">
+<h3>중간 노드 기대값 — 프로브로 찍을 핀</h3>
+<p class='src'>틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Ci</th>
+<th>A⊕B<br><small>U1 pin 3</small></th>
+<th>S<br><small>U1 pin 6</small></th>
+<th>A·B<br><small>U2 pin 3</small></th>
+<th>(A⊕B)·Ci<br><small>U2 pin 6</small></th>
+<th>Co<br><small>U3 pin 3</small></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
 <div class="tblock">
 <h3>T3 · 전가산기 진리표</h3>
 <p class='src'>출처: derived (S = A⊕B⊕Ci ; Co = A·B + (A⊕B)·Ci)</p>
@@ -179,20 +221,20 @@
 <th>Ci</th>
 <th>S예상</th>
 <th>Co예상</th>
-<th>확인</th></tr>
+<th>확인</th><th>사진 파일명</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
-<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td></tr>
-<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
-<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
-<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
-<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
-<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td></tr>
-<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">1-2 000.jpg</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-2 001.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-2 010.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-2 011.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-2 100.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-2 101.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-2 110.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td><td class="photo-name">1-2 111.jpg</td></tr>
 </tbody>
 </table>
-<p class='photo'>사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 T3 row3.jpg 형식</p>
+<p class='photo'>사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — 앞에 실험 번호(예: 실험03)를 붙이지 않는다</p>
 <h4>T3 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
 </div>
 <div class="tblock">
@@ -203,9 +245,12 @@
 </section>
 <section class="circuit">
 <h2>회로 2/2 · C4 · 실험 2-2) 전감산기 (74HC86 + 74HC04 + 74HC08 + 74HC32) · 기록: T7 · 판독: LED</h2>
-<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림(회색·번호·'걷는다' 표)이 지시한다 · 꽂는다: 74HC04 · 패키지는 두고 재배선한다: 74HC86, 74HC08, 74HC32</div>
-<p>교안 p7 회로도 그대로. C2(전가산기)를 다 만든 상태에서 바꾼다 — 교안이 앞에 두는 반감산기(실험 2-1)는 조교 공지 _350547_1 로 하지 않는다. 전가산기와 전감산기는 XOR 쪽이 같고 AND 입력 둘만 다르다: AND1 pin 1 이 A 대신 A' 를, AND2 pin 4 가 A⊕B 대신 (A⊕B)' 를 받는다. 그래서 새 칩은 74HC04 하나이고 단계도 하나다 — 두 가닥을 걷고 인버터를 거치는 네 가닥을 꽂는다. Ci 점퍼는 그 자리 그대로 Bi 가 되고, LED1 급전(U1 pin 6)·LED2 급전(U3 pin 3)도 그대로다 — A⊕B⊕Ci 와 A⊕B⊕Bi 는 같은 함수라 LED1 은 배선을 안 바꾸고 S 에서 D 가 된다.</p>
-<div class="stage"><h3>단계 1</h3><img src="../결선도/실험03_2-2_결선도_전감산기_1단계_NOT.png" style="width:100%"><p><b>이 단계에서:</b> A→U2 pin 1 갈래와 U1 pin 3→U2 pin 4 선을 걷는다. 74HC04 를 S2 에 꽂고 전원 두 가닥(14→VCC, 7→GND), A→U4 pin 1, U4 pin 2→U2 pin 1(좌 j 열과 중앙 레일 사이 여백으로 건넌다), U1 pin 3→U4 pin 3, U4 pin 4→U2 pin 4(여백 차선으로 건넌다) 를 잇는다. Ci 점퍼는 그대로 두고 이제 Bi 로 부른다</p><p><span class="box"></span><b>확인:</b> T7 8행 전부 (74HC04 첫 사용) — LED1 = D 는 입력에 1 이 홀수 개일 때, LED2 = Bo 는 001·010·011·111 에서 켜짐</p></div>
+<div class="banner">앞 회로 배선은 그대로 둔다 — 걷을 선은 0단계 걷기 그림(빨간 점선), 새 선은 단계 그림(회색·번호)이 지시한다 · 꽂는다: 74HC04 · 패키지는 두고 재배선한다: 74HC86, 74HC08, 74HC32</div>
+<img class="schematic" src="실험03_2-2_회로도.png"><p class='src'>강의노트 p7 · 회로 구성</p>
+<p>교안 p7 회로도 그대로. C2(전가산기)를 다 만든 상태에서 바꾼다 — 교안이 앞에 두는 반감산기(실험 2-1)는 조교 공지 _350547_1 로 하지 않는다. 전가산기와 전감산기는 XOR 쪽이 같고 AND 입력 둘만 다르다: AND1 pin 1 이 A 대신 A' 를, AND2 pin 4 가 A⊕B 대신 (A⊕B)' 를 받는다. 그래서 새 칩은 74HC04 하나다. 0단계(걷기 보드)에서 두 가닥을 걷고, 1단계에서 인버터를 거치는 네 가닥을 꽂는다 — 2026-09-18 실험실에서 두 가닥을 안 걷은 채 인버터 쪽을 꽂아 LED 가 어긋났고, 그 뒤로 걷기를 그림 한 장으로 뗐다. Ci 점퍼는 그 자리 그대로 Bi 가 되고, LED1 급전(U1 pin 6)·LED2 급전(U3 pin 3)도 그대로다 — A⊕B⊕Ci 와 A⊕B⊕Bi 는 같은 함수라 LED1 은 배선을 안 바꾸고 S 에서 D 가 된다.</p>
+<p>프로브로 찍을 핀과 그 기대값 식. C2 와 다른 것은 인버터를 거친 A'·(A⊕B)' 와 그것을 받는 AND 두 개다.</p>
+<div class="stage"><h3>단계 0</h3><img src="../결선도/실험03_2-2_결선도_전감산기_0단계_걷기.png" style="width:100%"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(A→U2 pin 1 갈래, 좌 d7→우 a10)·②(U1 pin 3→U2 pin 4, 좌 a9→우 c13)를 뽑는다. 그림의 빨간 점선이 그 두 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 두 가닥이 손에 있고 우 a10·우 c13 홀이 비어 있다 (LED 검사 없음 — 2026-09-18 이 두 가닥을 안 뽑은 채 인버터를 꽂았다)</p></div>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험03_2-2_결선도_전감산기_1단계_NOT.png" style="width:100%"><p><b>이 단계에서:</b> 걷기 ①·② 가 끝난 상태에서 74HC04 를 S2 에 꽂고 전원 두 가닥(14→VCC, 7→GND), A→U4 pin 1, U4 pin 2→U2 pin 1(좌 j 열과 중앙 레일 사이 여백으로 건넌다), U1 pin 3→U4 pin 3, U4 pin 4→U2 pin 4(여백 차선으로 건넌다) 를 잇는다. Ci 점퍼는 그대로 두고 이제 Bi 로 부른다</p><p><span class="box"></span><b>확인:</b> T7 8행 전부 (74HC04 첫 사용) — LED1 = D 는 입력에 1 이 홀수 개일 때, LED2 = Bo 는 001·010·011·111 에서 켜짐</p></div>
 <div class="wirebox">
 <p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
 <img src="../결선도/실험03_2-2_결선도_전감산기.png" style="width:100%"><p class="src">결선도: 실험03_2-2_결선도_전감산기.png</p>
@@ -273,6 +318,36 @@
 </ul></div>
 </div>
 <p>A 는 U1 pin 1·U4 pin 1 로, Bi 는 U1 pin 5·U2 pin 5 로, A⊕B(U1 pin 3) 는 U1 pin 4·U4 pin 3 으로 팬아웃한다. OR 의 pin 1·2 배정은 C2 와 같은 이유로 배선 편의다(M11).</p>
+<div class="tblock nodes">
+<h3>중간 노드 기대값 — 프로브로 찍을 핀</h3>
+<p class='src'>틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Bi</th>
+<th>A'<br><small>U4 pin 2</small></th>
+<th>A⊕B<br><small>U1 pin 3</small></th>
+<th>(A⊕B)'<br><small>U4 pin 4</small></th>
+<th>D<br><small>U1 pin 6</small></th>
+<th>A'·B<br><small>U2 pin 3</small></th>
+<th>(A⊕B)'·Bi<br><small>U2 pin 6</small></th>
+<th>Bo<br><small>U3 pin 3</small></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
 <div class="tblock">
 <h3>T7 · 전감산기 진리표</h3>
 <p class='src'>출처: derived (D = A⊕B⊕Bi ; Bo = A'·B + (A⊕B)'·Bi)</p>
@@ -284,20 +359,20 @@
 <th>Bi</th>
 <th>D예상</th>
 <th>Bo예상</th>
-<th>확인</th></tr>
+<th>확인</th><th>사진 파일명</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
-<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
-<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td></tr>
-<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td></tr>
-<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td></tr>
-<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td></tr>
-<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td></tr>
-<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">2-2 000.jpg</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="check"></td><td class="photo-name">2-2 001.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="check"></td><td class="photo-name">2-2 010.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">2-2 011.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">2-2 100.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">2-2 101.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">2-2 110.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="check"></td><td class="photo-name">2-2 111.jpg</td></tr>
 </tbody>
 </table>
-<p class='photo'>사진: 완성 회로 1장 + 불일치 행마다 1장. 파일명 T7 row3.jpg 형식</p>
+<p class='photo'>사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — 앞에 실험 번호(예: 실험03)를 붙이지 않는다</p>
 <h4>T7 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
 </div>
 <div class="tblock">
@@ -306,4 +381,4 @@
 <table><thead><tr><th>A</th><th>B</th><th>Bi</th><th>D</th><th>Bo</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table>
 </div>
 </section></section>
-<section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>회로마다 완성 회로 사진을 찍었는가</li><li><span class="box"></span>진리표는 불일치 행마다 사진을 찍었는가</li><li><span class="box"></span>사진 파일명이 T1 row3.jpg 형식인가</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>
+<section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), 스텝표는 스텝마다, 파형은 화면마다</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>
