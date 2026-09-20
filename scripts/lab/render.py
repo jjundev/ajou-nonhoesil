@@ -14,7 +14,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from . import md
-from . import nodes
+from . import nodes as node_calc
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_indices
@@ -730,7 +730,7 @@ def _node_table_html(spec, section) -> str:
     if not section.nodes:
         return ""
     try:
-        nt = nodes.compute(section, spec)
+        nt = node_calc.compute(section, spec)
     except ValueError as exc:
         return f"<p class='src'>노드 표를 계산할 수 없다: {_esc(exc)}</p>"
     out = ['<div class="tblock nodes">',
@@ -742,7 +742,7 @@ def _node_table_html(spec, section) -> str:
             for name, pin in nt.nodes]
     out += ["</tr>", "</thead>", "<tbody>"]
     for cells, bits in nt.rows:
-        vals = ([nodes.format_bit(b, nt.encoding) for b in bits] if bits is not None
+        vals = ([node_calc.format_bit(b, nt.encoding) for b in bits] if bits is not None
                 else ["—"] * len(nt.nodes))
         out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
                    + "".join(f"<td>{_esc(v)}</td>" for v in vals) + "</tr>")
