@@ -237,6 +237,7 @@ def build_e3_ha(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
         title = "실험 1-1: 반가산기 — 1단계 (XOR, S = A⊕B)"
     elif baseline is None:
@@ -261,6 +262,7 @@ def build_e3_fa(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
         title = "실험 1-2: 전가산기 — 1단계 (XOR 두 개, S = A⊕B⊕Ci)"
     elif baseline is None:
@@ -283,6 +285,7 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     title = "실험 2-1: 반감산기 결선도"
     bb.set_header(title, "74HC86 (XOR) → D · 74HC04 (NOT) + 74HC08 (AND) → 내림 수 B = A'·B (입력 B 와 같은 글자)",
                   submit=baseline is None)
@@ -302,6 +305,7 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if baseline is None:
         title = "실험 2-2: 전감산기 결선도"
     else:

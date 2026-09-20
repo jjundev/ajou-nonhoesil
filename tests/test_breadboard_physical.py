@@ -246,6 +246,251 @@ class PhysicalRules(unittest.TestCase):
         self.assertIn((c['a'], 25), bb._leads)
         self.assertNotIn((c['c'], 25), bb._leads)
 
+    # ---- R7. 칩 한쪽에 리드가 몰리지 않는다 ----
+
+    def _chip_with_side_leads(self, n, side='a'):
+        """좌 7행 74HC08 의 한쪽 자유 열에 리드 n 개를 점유표로 직접 꽂는다.
+        배선 기하는 R1~R6 몫이라 여기서는 `lead()` 만 쓴다. 핀은 안 물렸으니 partial."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        c = bb.cols['left']
+        cols = self.mod.SIDE_COLS[side]
+        for k in range(n):
+            bb.lead(c[cols[k % 4]], bb.r_y(7 + k // 4), f'점퍼 {k}')
+        return bb
+
+    def test_칩_한쪽_8리드는_통과한다(self):
+        self._chip_with_side_leads(8).verify()
+
+    def test_칩_한쪽_9리드는_R7_로_막힌다(self):
+        bb = self._chip_with_side_leads(9)
+        with self.assertRaisesRegex(AssertionError, r'R7 칩 한쪽 밀집: 74HC08\(좌 7행\) 왼쪽 9리드 > 8: 좌 a7'):
+            bb.verify()
+
+    def test_오른쪽도_같은_한도다(self):
+        bb = self._chip_with_side_leads(9, side='f')
+        with self.assertRaisesRegex(AssertionError, r'오른쪽 9리드 > 8: 좌 g7'):
+            bb.verify()
+
+    def test_칩_핀과_지나가는_선은_R7_에_안_센다(self):
+        """칩 핀 홀(e·f)은 칩 자신이고, 위를 지나는 선은 꽂는 것이 아니다."""
+        bb = self._chip_with_side_leads(8)
+        c = bb.cols['left']
+        # d 열을 세로로 지나는 선 — d7~d8 은 꽂혀 있으니 옆 a~d 밖인 여백 x 로 우회하지 않고
+        # 칩 아래 행에서 출발해 칩 위 행으로 간다(d9~d13 은 비어 있어 `_passed` 에만 든다)
+        bb.step_wire([(c['d'], bb.r_y(16)), (c['d'], bb.r_y(9))], 'sig', '지나가는 선')
+        self.assertEqual([s['count'] for s in bb.side_leads()], [9, 0])
+        # d9 는 이 선의 **끝점**이라 리드다 — 9 가 됐으니 막힌다. 끝점을 d16→d15 로 바꾸면 통과
+        with self.assertRaisesRegex(AssertionError, 'R7'):
+            bb.verify()
+
+    def test_legacy_정책은_R7_을_끈다(self):
+        bb = self._chip_with_side_leads(11)
+        bb.density_policy = 'legacy'
+        bb.verify()
+
+    def test_모르는_밀도_정책은_거절한다(self):
+        bb = self._chip_with_side_leads(1)
+        bb.density_policy = 'warn'
+        with self.assertRaisesRegex(ValueError, 'density_policy'):
+            bb.verify()
+
+    # ---- 칩 오른쪽 게이트의 입력 점퍼 (R7 을 풀기 위한 헬퍼 분기) ----
+
+    def _badge_covers_lead(self, bb, name):
+        box = next(b for n, b, _s in bb.tag_boxes if n == name)
+        return [what for (hx, hr), what in bb._leads.items()
+                if box[0] <= hx <= box[2] and box[1] <= bb.r_y(hr) <= box[3]]
+
+    def test_좌_블록_f쪽_입력은_중앙_GND_레일에서_i열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        # 11행 = pin1_row+4 = f 쪽 pin 10. (8행은 레일 빈 행이라 free_rail_row 가 7행으로
+        # 옮긴다 — 레일 행 판정을 섞지 않으려고 홀이 있는 11행을 쓴다)
+        self.mod._input_jumper(bb, c, 11, 'B', '74HC08 pin 10', side='f')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '좌 중앙GND레일11행')
+        self.assertEqual(bb.addr(*pts[-1]), '좌 i11')
+        self.assertEqual(bb.inputs[-1], {'name': 'B', 'at': ('left', 'i', 11), 'seg': len(bb._segments) - 1})
+        self.assertEqual(self._badge_covers_lead(bb, 'B'), [])
+        # 배지는 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)에 있다
+        box = next(b for n, b, _s in bb.tag_boxes if n == 'B')
+        self.assertGreater(box[0], c['mid_vcc'])
+        self.assertLess(box[2], bb.cols['right']['mid_gnd'])
+        # 순서표 문구는 a 쪽과 같은 틀이다 — 도장 규약을 f 쪽에서도 지킨다
+        self.assertEqual(desc, '입력 B -> 74HC08 pin 10 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+
+    def test_우_블록_f쪽_입력은_우_바깥_GND_레일에서_i열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 11, 'A', '74HC08 pin 13', side='f')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '우 GND레일11행')
+        self.assertEqual(bb.addr(*pts[-1]), '우 i11')
+        box = next(b for n, b, _s in bb.tag_boxes if n == 'A')
+        self.assertGreater(box[0], c['vcc'])
+        self.assertLess(box[2], self.mod.BOARD_RIGHT)
+        self.assertEqual(self._badge_covers_lead(bb, 'A'), [])
+
+    def test_우_블록_a쪽_입력은_우_중앙_GND_레일에서_b열로_들어간다(self):
+        bb = self.board()
+        c = bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 10, 'A', '74HC08 pin 1')
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '우 중앙GND레일10행')
+        self.assertEqual(bb.addr(*pts[-1]), '우 b10')
+
+    def test_좌_블록_a쪽_입력은_지금과_같다(self):
+        """기존 주차의 호출 형태(`marker=(215, 13)`)가 그대로 도는지 — 도장 불변의 근거."""
+        bb = self.board()
+        c = bb.cols['left']
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        self.mod._input_jumper(bb, c, 10, 'C', '74HC08 pin 4', marker=(215, 13))
+        bb.verify()
+        kind, pts, desc = bb._segments[-1]
+        self.assertEqual(bb.addr(*pts[0]), '좌 GND레일10행')
+        self.assertEqual(bb.addr(*pts[-1]), '좌 b10')
+        self.assertEqual(desc, '입력 C -> 74HC08 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+
+    def test_f쪽_입력_레일도_레일_연결성_검사에_든다(self):
+        """`kind='sig'` 라 `step_wire` 가 `touch_rail` 을 안 부른다 — 입력이 매달린
+        레일이 접지 레일과 안 이어져 있어도 통과하던 자리(2026-09-20 최종리뷰)."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()  # 잭은 좌 바깥 레일에 꽂힌다
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        with self.assertRaisesRegex(AssertionError, '레일이 끊겨 있다'):
+            bb.verify()
+
+    def test_f쪽_입력_레일을_브리지로_이으면_통과한다(self):
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        bb.bridge_rails(bb.cols['left']['gnd'], bb.cols['right']['gnd'], 30, kind='gnd')
+        bb.verify()
+
+    def test_side_는_a_또는_f_다(self):
+        bb = self.board()
+        with self.assertRaisesRegex(AssertionError, "side"):
+            self.mod._input_jumper(bb, bb.cols['left'], 7, 'A', 'x', side='g')
+
+    def test_걷을_입력_점퍼는_그쪽_GND_레일을_건드리지_않는다(self):
+        """걷기 보드(`removal_board`)에서 이 점퍼는 `step_wire` 가 유령선으로만 그리고
+        점유표·구간·레일 접촉을 하나도 안 남긴다 — 꽂혀 있지 않은 선이다. 그런데
+        `touch_rail` 을 먼저 부르면 우 바깥 GND 836 이 검사에 들어가 브리지를 내놓으라고
+        한다(2026-09-20)."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        snap = bb.snapshot()
+
+        # 그 점퍼만 빼고 다시 그린 보드의 removals() 가 걷기 key 를 준다
+        probe = self.mod.BreadboardRenderer(baseline=snap)
+        probe.enable_steps()
+        probe.draw_chip('74HC08', 10, block='right')
+        probe.partial = True
+        probe.connect_jacks()
+        keys = [r['key'] for r in probe.removals()]
+        self.assertEqual(len(keys), 1, f'입력 점퍼 하나만 걷어야 한다: {keys}')
+
+        ghost = self.mod.BreadboardRenderer(baseline=dict(
+            snap, ghost={'wires': {keys[0]: 1}, 'title': 't', 'subtitle': 's'}))
+        ghost.enable_steps()
+        ghost.draw_chip('74HC08', 10, block='right')
+        ghost.connect_jacks()
+        self.mod._input_jumper(ghost, ghost.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        self.assertNotIn(ghost.cols['right']['gnd'], ghost._touched['gnd'])
+        ghost.verify()
+
+    # ---- R8. 같은 블록 두 칩 사이 배선은 쪽을 바꾸지 않는다 ----
+
+    def _two_chips(self):
+        """좌 7행 74HC86 + 좌 18행 74HC04. 핀은 안 물렸으니 partial."""
+        bb = self.board()
+        bb.draw_chip('74HC86', 7)
+        bb.draw_chip('74HC04', 18)
+        bb.partial = True
+        return bb
+
+    def test_같은_쪽으로_잇는_칩_사이_배선은_통과한다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(20))], 'mid', 'A⊕B -> NOT2 pin 3')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_반대_쪽으로_건너는_칩_사이_배선은_R8_로_막힌다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(16)), (c['h'], bb.r_y(16)), (c['h'], bb.r_y(19))],
+                     'mid', 'A⊕B -> NOT2 pin 13')
+        w = bb.cross_side_wires()
+        self.assertEqual([(x['frm'], x['to']) for x in w], [('좌 a9', '좌 h19')])
+        self.assertEqual((w[0]['from_side']['chip'], w[0]['from_side']['side']), ('74HC86', 'a'))
+        self.assertEqual((w[0]['to_side']['chip'], w[0]['to_side']['side']), ('74HC04', 'f'))
+        with self.assertRaisesRegex(AssertionError, r'R8 칩 사이 엇갈림: 좌 a9 → 좌 h19 · A⊕B -> NOT2 pin 13 — 74HC86 a쪽 → 74HC04 f쪽'):
+            bb.verify()
+
+    def test_같은_칩_안에서_건너는_사슬은_R8_대상이_아니다(self):
+        """게이트를 나눈 칩 안의 XOR1→XOR2 사슬 — 나누기의 대가라 허용한다."""
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(14)), (c['h'], bb.r_y(14)), (c['h'], bb.r_y(9))],
+                     'mid', 'XOR1 -> XOR2 (pin 3 -> pin 12)')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_다른_블록으로_건너는_배선은_R8_대상이_아니다(self):
+        bb = self._two_chips()
+        c, r = bb.cols['left'], bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(6)), (r['h'], bb.r_y(6)), (r['h'], bb.r_y(12))],
+                     'mid', 'A⊕B -> 우 AND2 pin 12')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_LED_레일_끝점은_R8_대상이_아니다(self):
+        """칩 f쪽 출력 → LED 사슬(칩 행 밖) 은 칩 사이 배선이 아니다."""
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['i'], bb.r_y(10)), (c['i'], bb.r_y(15)), (212, bb.r_y(15)), (212, bb.r_y(30)), (c['a'], bb.r_y(30))],
+                     'sig', 'S -> LED1')
+        self.assertEqual(bb.cross_side_wires(), [])
+
+    def test_legacy_정책은_R8_도_끈다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(16)), (c['h'], bb.r_y(16)), (c['h'], bb.r_y(19))],
+                     'mid', 'A⊕B -> NOT2 pin 13')
+        bb.density_policy = 'legacy'
+        bb.verify()
+
+
+# R8 의 알려진 예외 — 2026-09-20 실측. `build_e2_tpd` 는 **시험 전용 회귀 빌더**다: 교안 실험 2
+# 의 t_pd 는 조교 공지 `_350547_1` 로 실험실에서 하지 않고 제출 PNG 도 없다
+# (`보고서/실험02/결선도/배치.py:30-33`). 한 그림에 **같은 부품번호 74HC04 두 패키지**(좌 7행 U1,
+# 좌 18행 U2)가 앉는 유일한 사례라 남겨 둔 것이고, U1 pin 8(f쪽) → U2 pin 1(a쪽) 은 74HC04 의
+# 핀배치상 목적지 pin 1 이 a쪽에만 있어 쪽을 바꿀 수밖에 없다. R8 자체는 legacy 로 면제되므로
+# verify() 동작에는 영향이 없다 — 이 표는 회귀선일 뿐이고, 주소까지 못 박아 두어 어디서든 새
+# 엇갈림이 생기거나 여기에 한 건이라도 늘면 테스트가 깨진다.
+KNOWN_CROSS_SIDE = {'build_e2_tpd': [('좌 i13', '좌 b18')]}
+
 
 def _render(mod, fn):
     """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""
@@ -289,6 +534,30 @@ class AllCircuits(unittest.TestCase):
                 bb = _render(self.mod, fn)
                 self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드로 도는 회로가 없어야 한다')
                 self.assertEqual(bb.overlap_warnings, [])
+
+    def test_R7_legacy_는_실험_1_2_3_뿐이고_그_뒤는_엄격_모드다(self):
+        """실험01~03 은 R7(2026-09-20) 이전 승인본이라 legacy 로 고정한다. 실험04부터
+        새 빌더가 legacy 를 붙이면 여기서 걸린다 — 밀집은 게이트 배정으로 풀지 정책으로
+        끄지 않는다."""
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                exp = int(fn.__module__.rsplit('board_e', 1)[1])
+                bb = _render(self.mod, fn)
+                want = 'legacy' if exp <= 3 else 'strict'
+                self.assertEqual(bb.density_policy, want,
+                                 f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
+                if want == 'strict':
+                    self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
+
+    def test_R8_모든_회로에_칩_사이_엇갈림이_없다(self):
+        """2026-09-20 실측: 실험01~03 완성본 7장 0건, 시험 전용 build_e2_tpd 1건 —
+        legacy 라도 회귀선으로 건다. 알려진 1건까지 주소로 못 박으므로 어디서든 새 엇갈림이
+        생기거나 e2_tpd 에 하나 더 붙으면 여기서 걸린다."""
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, fn)
+                self.assertEqual([(w['frm'], w['to']) for w in bb.cross_side_wires()],
+                                 KNOWN_CROSS_SIDE.get(name, []), name)
 
 
 if __name__ == '__main__':

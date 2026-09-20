@@ -175,6 +175,14 @@ def _default_template():
 ROW0 = 272.0        # 1행 홀 중심 y
 ROW_PITCH = 16.345  # 행 간격
 BOARD_LEFT = 149     # 좌 보드 테두리 x. 이보다 왼쪽은 보드 밖 여백이다 (가독성 테스트의 BOARD_L)
+BOARD_RIGHT = 880    # 우 보드 테두리 x. 이보다 오른쪽은 보드 밖 여백이다 (addr() 의 '보드밖' 경계와 같다)
+
+# R7. 칩 한쪽에 꽂히는 리드 한도. 한쪽 = 핀 행 7개 × 그쪽 자유 열 4개(a~d 또는 g~j) = 28홀.
+# 2026-09-18 실험03: 네 칩이 게이트 1·2 만 써서 74HC86 왼쪽에 11리드가 몰렸고 오른쪽은
+# pin 14 전원선 하나였다 — 꽂기도, 꽂았는지 보기도 힘들었다. 8 이면 실험03 왼쪽 11 은
+# 걸리고, 게이트를 좌·우로 나눈 전가산기(좌 7·우 5)는 통과한다.
+SIDE_LEAD_MAX = 8
+SIDE_COLS = {'a': ('a', 'b', 'c', 'd'), 'f': ('g', 'h', 'i', 'j')}
 ROW_MAX = 63        # 이 보드는 63행이다 (라벨은 1·10·20…60 만 찍혀 있다)
 
 # 전원 레일은 5홀씩 묶여 있고 그 사이가 비어 있다. **그 빈 행에 배선을 끝내면
@@ -256,6 +264,12 @@ class BreadboardRenderer:
         # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
+        # R7·R8 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘거나(R7) 같은
+        # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20)
+        # 이전에 승인·제출된 실험01~03 빌더만 쓴다 — 승인본을 다시 그리지 않으려는
+        # 것이지 면허가 아니다. tests/test_breadboard_physical.py 가 실험 4 이상은 전부
+        # strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
+        self.density_policy = 'strict'
         # 홀 점유표. (열 x, 행) -> 무엇이 꽂혀 있는가. 배선 끝점·부품 다리·칩 핀이
         # 전부 여기 등록되고 verify() 가 본다 — 끝점은 홀이어야 하고(R1), 한 홀에는
         # 리드 하나만 들어간다(R2). 2026-09-07 까지 verify() 는 주소 문자열을 파싱해
@@ -614,7 +628,7 @@ class BreadboardRenderer:
             return '전원잭'
         if x < 149:
             return '보드밖(입력)'
-        if x > 880:
+        if x > BOARD_RIGHT:
             return '보드밖'
         r = self._row_of(y)
         best = min(self._addr_map, key=lambda k: abs(k - x))
@@ -1416,6 +1430,68 @@ class BreadboardRenderer:
                            f'{self._sym_addr(("hole", key[3]))}) 뽑는다')
         return out
 
+    def side_leads(self):
+        """칩마다 양쪽(a~d / g~j) 핀 행 7개에 꽂힌 리드 수 — R7 의 지표.
+
+        점유표(`_leads`)만 읽는다. 칩 핀(e·f 열)은 그 칩 자신이라 빼고, 지나가는
+        선(`_passed`)은 꽂는 것이 아니라 뺀다. `wiring()` 에 넣지 않는다 — `content()`
+        가 `wiring()` 을 통째로 해시하므로 필드 하나만 더해도 지난 주차 도장이 전부
+        깨진다.
+        """
+        out = []
+        for ch in self.chips:
+            c = self.cols[ch['block']]
+            rows = range(ch['pin1_row'], ch['pin1_row'] + 7)
+            for side, names in SIDE_COLS.items():
+                xs = {c[k] for k in names}
+                holes = sorted((h for h in self._leads if h[0] in xs and h[1] in rows),
+                               key=lambda h: (h[1], h[0]))
+                out.append({'chip': ch['label'], 'block': ch['block'],
+                            'pin1_row': ch['pin1_row'], 'side': side, 'count': len(holes),
+                            'addrs': [self.addr(x, self.r_y(r)) for x, r in holes]})
+        return out
+
+    def chip_side_of(self, end):
+        """`_endpoint()` 결과가 어느 칩의 어느 쪽 핀 스트립인가.
+
+        칩 행 범위(pin1_row~+6) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
+        a~e / f~j 는 한 스트립이라 그 홀에 꽂은 것은 그 핀에 꽂은 것이다. e·f(칩 다리)·칩 행
+        밖·레일·잭은 None. 같은 이름의 칩이 두 자리에 앉을 수 있어(실험02 t_pd) `pin1_row` 로
+        구분한다.
+        """
+        if end[0] != 'hole' or end[1] is None:
+            return None
+        blk, col, row = end[1]
+        for ch in self.chips:
+            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + 6:
+                for side, names in SIDE_COLS.items():
+                    if col in names:
+                        return {'chip': ch['label'], 'block': blk, 'pin1_row': ch['pin1_row'], 'side': side}
+                return None
+        return None
+
+    def cross_side_wires(self):
+        """R8 의 지표 — 같은 블록의 **서로 다른 두 칩** 핀 스트립을 잇는 배선 중 양 끝 쪽이 다른 것.
+
+        2026-09-20 격리 시험판(게이트를 무조건 1·4 로 나눈 판)에서 `좌 a9 → 좌 h19`(A⊕B → NOT2),
+        `우 g13 → 우 b21`(AND2 → OR) 같은 X자가 생겼다 — 승인본 실험01~03 완성본 7장은 0건,
+        시험 전용 `build_e2_tpd` 한 가닥만 예외(`tests/test_breadboard_physical.py`
+        `KNOWN_CROSS_SIDE`). 같은 칩 안의 사슬(XOR1→XOR2)은 나누기의 대가라 보지 않고, 다른
+        블록 사이는 차선으로 건너므로 보지 않는다. 가닥 단위로 본다 — 중계 스트립을 거친 두
+        가닥은 못 본다. 넷 단위 검사는 별건. `wiring()` 에 넣지 않는다 — 도장.
+        """
+        out = []
+        for _kind, pts, desc in self._segments:
+            a = self.chip_side_of(self._endpoint(pts[0]))
+            b = self.chip_side_of(self._endpoint(pts[-1]))
+            if not a or not b or a['block'] != b['block']:
+                continue
+            if (a['chip'], a['pin1_row']) == (b['chip'], b['pin1_row']) or a['side'] == b['side']:
+                continue
+            out.append({'frm': self.addr(*pts[0]), 'to': self.addr(*pts[-1]), 'desc': desc,
+                        'from_side': a, 'to_side': b})
+        return out
+
     def wiring(self):
         """이 그림이 무엇을 어디에 꽂았는지 **기호 좌표**로 낸다.
 
@@ -1609,6 +1685,10 @@ class BreadboardRenderer:
             칩 핀도 부품 다리도 없다.
         R6  배선이 자기 스트립 안을 달리는 구간이 없다 — 뒤쪽 홀에서 출발하면
             되는 우회다. R5ⓐ 가 양 끝점만 보는 틈으로 지나간 부류다.
+        R7  칩 한쪽(핀 행 7 × 자유 열 4)에 꽂힌 리드가 SIDE_LEAD_MAX 를 넘지 않는다
+            (`density_policy`). 실험01~03 승인본만 'legacy' 로 끈다.
+        R8  같은 블록의 두 칩을 잇는 배선은 쪽(a~d / g~j)을 바꾸지 않는다 — 게이트는 신호가
+            오는 쪽으로 배정한다(SKILL §4a). `density_policy` 가 함께 끈다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1635,6 +1715,26 @@ class BreadboardRenderer:
                 bad.append(msg)
             else:
                 print(f'[WARN] {msg}', file=sys.stderr)
+
+        # R7. 칩 한쪽에 리드가 몰리지 않는다 — 2026-09-18 실험03 에서 네 칩이 게이트 1·2 만
+        # 써서 74HC86 왼쪽에 11리드가 몰렸다. 게이트를 좌·우로 나눠 배정하면 풀린다(SKILL §4a).
+        if self.density_policy not in ('strict', 'legacy'):
+            raise ValueError(f"density_policy 는 'strict' 또는 'legacy' 다: {self.density_policy!r}")
+        if self.density_policy == 'strict':
+            for s in self.side_leads():
+                if s['count'] > SIDE_LEAD_MAX:
+                    blk = '좌' if s['block'] == 'left' else '우'
+                    side_kr = '왼쪽' if s['side'] == 'a' else '오른쪽'
+                    bad.append(f"R7 칩 한쪽 밀집: {s['chip']}({blk} {s['pin1_row']}행) {side_kr} "
+                               f"{s['count']}리드 > {SIDE_LEAD_MAX}: {', '.join(s['addrs'])}")
+
+        # R8. 같은 블록 두 칩 사이 배선이 반대쪽으로 건너지 않는다 — 2026-09-20 격리 시험판의
+        # X자. 게이트를 신호가 오는 쪽으로 배정하면 생기지 않는다(SKILL §4a).
+        if self.density_policy == 'strict':
+            for w in self.cross_side_wires():
+                bad.append(f"R8 칩 사이 엇갈림: {w['frm']} → {w['to']} · {w['desc']} — "
+                           f"{w['from_side']['chip']} {w['from_side']['side']}쪽 → "
+                           f"{w['to_side']['chip']} {w['to_side']['side']}쪽")
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
@@ -1803,8 +1903,18 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
     bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
 
 
-def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
-    """입력 한 줄: **좌 GND 레일 홀 → 같은 행 `col` 열(기본 b)**. GND(=0) 자리를 그린 것이다.
+def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
+    """입력 한 줄: **그쪽 GND 레일 홀 → 같은 행 `col` 열**. GND(=0) 자리를 그린 것이다.
+
+    `side` 는 입력이 들어가는 핀이 칩의 어느 쪽인가다 — `'a'`(핀 1~7, a~e 쪽) 또는
+    `'f'`(핀 8~14, f~j 쪽). 레일은 그쪽에 붙은 GND 다: 좌 블록은 a 쪽이 바깥 174, f 쪽이
+    중앙 468 이고 우 블록은 뒤집혀 a 쪽이 중앙 542, f 쪽이 바깥 836 이다. 열 기본값은
+    a 쪽 `b`, f 쪽 `i`(핀 홀 e·f 옆 d·g 는 전원선 자리라 한 칸 띈다 — `connect_power`).
+    2026-09-18 실험03 에서 네 칩이 게이트 1·2 만 써 왼쪽에 11리드가 몰렸다(R7) — 게이트를
+    좌·우로 나누면 오른쪽 게이트의 입력이 이 분기를 쓴다.
+
+    아래는 좌 바깥 레일(side='a', 좌 블록) 의 경우다 — 다른 세 레일의 배지·번호 원
+    자리는 본문 주석에 있다.
 
     `col` 은 같은 스트립에 **두 번째 점퍼(갈래)** 를 꽂을 때 쓴다. 갈래를 옆 홀에
     꽂되 그 갈래가 입력선 위를 되짚어 나가면 밑동이 굵은 입력선 아래 깔려
@@ -1833,18 +1943,54 @@ def _input_jumper(bb, c, row, name, target, marker=(130, 0), col='b'):
     따라 그렸다. 레일과 a 열 사이 여백은 쓰지 않는다: 복합 회로의 Z 급전선(x=212)이
     10~25행을 세로로 지나고, 번호 원 `(215, ±13)` 도 거기 앉는다(2026-09-14 실측).
     """
-    r_rail = bb.free_rail_row(row, c['gnd'])
-    bb.step_wire([(c['gnd'], bb.r_y(r_rail)), (c[col], bb.r_y(row))], 'sig',
+    assert side in ('a', 'f'), f"side 는 'a' 또는 'f' 다: {side!r}"
+    block = 'left' if c is bb.cols['left'] else 'right'
+    if side == 'a':
+        x_rail = c['gnd'] if block == 'left' else c['mid_gnd']
+        col = col or 'b'
+    else:
+        x_rail = c['mid_gnd'] if block == 'left' else c['gnd']
+        col = col or 'i'
+    r_rail = bb.free_rail_row(row, x_rail)
+    y_rail, y_row = bb.r_y(r_rail), bb.r_y(row)
+    # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌
+    # 테두리~레일 사이(기존), 우 바깥 레일은 VCC 레일(852)~보드 우 테두리 사이, 중앙 레일 둘은
+    # 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)이다. 번호 원은 좌·우
+    # 바깥이면 보드 밖 같은 행, 중앙이면 배지 위 18px 다 — 여백이 58px 라 나란히 못 놓는다.
+    if x_rail == bb.cols['left']['gnd']:
+        badge_x, default_marker = (BOARD_LEFT + x_rail) / 2, (130, 0)
+    elif x_rail == bb.cols['right']['gnd']:
+        badge_x, default_marker = (bb.cols['right']['vcc'] + BOARD_RIGHT) / 2, (BOARD_RIGHT + 24, 0)
+    else:
+        # 중앙 레일 둘(좌 중앙 468·우 중앙 542)이 이 자리를 같이 쓴다 — 같은 행에 좌 f쪽
+        # 입력과 우 a쪽 입력을 함께 넣으면 배지와 번호 원이 서로 위에 겹친다(58px 여백은
+        # 한 번에 입력 한 행만 받는다). 배지 겹침은 가독성 테스트가 잡는다.
+        badge_x = (bb.cols['left']['mid_vcc'] + bb.cols['right']['mid_gnd']) / 2
+        default_marker = (badge_x, -18)
+    mx, dy = marker or default_marker
+    p0, p1 = (x_rail, y_rail), (c[col], y_row)
+    # 걷기 보드(`removal_board`)가 이 점퍼를 걷는 장이면 `step_wire` 는 유령선만 그리고
+    # 곧장 돌아온다 — 점유표도 구간도 레일 접촉도 안 남긴다. 꽂혀 있지 않은 선이다.
+    # `step_wire` 와 **같은 식**으로 판정한다(회색 유지선·번호 끔도 None 을 돌려주니
+    # 반환값으로는 못 가른다).
+    ghosted = bb.ghost is not None and (
+        'sig', bb._endpoint(p0), bb._endpoint(p1)) in bb.ghost['wires']
+    bb.step_wire([p0, p1], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
-                 marker_at=(marker[0], bb.r_y(row) + marker[1]))
-    bb.input_node(name, c[col], row)
-    _tag(bb, 12, bb.r_y(row) - 8, f"입력 {name} → {col}{row}")
+                 marker_at=(mx, y_row + dy))
+    if not ghosted:
+        # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안
+        # 되니까) — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가
+        # 이 레일을 아예 안 본다. 중앙 GND 468·우 바깥 GND 836 에 매달린 입력이 접지된
+        # 레일과 안 이어져 있어도 verify() 가 통과하던 자리라 여기서 직접 찍는다
+        # (2026-09-20). 걷는 점퍼에는 찍지 않는다 — 안 꽂힌 선 때문에 브리지를 내놓으라
+        # 하게 된다. `input_node` 도 마찬가지다: 세그먼트가 안 쌓여 직전 배선(엉뚱한
+        # 것)의 끝을 가상 입력 노드로 바꾸려다 단언에 걸린다.
+        bb.touch_rail('gnd', x_rail)
+        bb.input_node(name, c[col], row)
+    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}")
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
-    assert c is bb.cols['left'], (
-        '_input_jumper 의 신호 이름 배지 자리는 좌 보드 테두리~좌 GND 레일 여백 기준이다 — '
-        '우 블록 입력이면 자리를 새로 정한다')
-    bb.signal_tag(name, (BOARD_LEFT + c['gnd']) / 2, bb.r_y(r_rail),
-                  seg=len(bb._segments) - 1)
+    bb.signal_tag(name, badge_x, y_rail, seg=len(bb._segments) - 1)
 
 
 # ---------------------------------------------------------------------------

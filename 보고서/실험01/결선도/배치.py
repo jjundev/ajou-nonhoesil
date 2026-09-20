@@ -73,6 +73,7 @@ def build_e1_and(output_path, template_path=None, stage=None, baseline=None):
     """실험 1-1 · 3입력 AND (74HC08 2단 캐스케이드). netlist C1. 단계 없음 — 첫 보드다."""
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-1: 3-Input AND Gate 결선도",
                   "74HC08 (Quad 2-Input AND) 한 개를 2단으로 · LED 마다 330Ω 직렬",
                   submit=baseline is None)
@@ -89,6 +90,7 @@ def build_e1_or(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-2: 3-Input OR Gate 결선도" if baseline is None
                   else "실험 1-2: 3-Input OR — 1단계 (칩 교체)",
                   "74HC32 (Quad 2-Input OR) 한 개를 2단으로 · C1 과 배선이 같다",
@@ -134,6 +136,7 @@ def build_e1_nand(output_path, template_path=None, stage=None, baseline=None):
     """실험 2-1 · 3입력 NAND (74HC08 앞단 + 74HC00 뒷단). netlist C3. 2단계."""
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
         title = "실험 2-1: 3-Input NAND — 1단계 (앞단 AND 검사)"
     elif baseline is None:
@@ -159,6 +162,7 @@ def build_e1_nor(output_path, template_path=None, stage=None, baseline=None):
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
         title = "실험 2-2: 3-Input NOR — 1단계 (앞단 OR 검사)"
     elif baseline is None:
@@ -190,6 +194,7 @@ def build_e1_comb(output_path, template_path=None, stage=None, baseline=None):
     st = 3 if stage is None else stage
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
+    bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.partial = st < 3
     title = {1: "실험 3: 복합 논리회로 — 1단계 (인버터, Z = A')",
              2: "실험 3: 복합 논리회로 — 2단계 (AND 추가, Z = (A'·B)')",
