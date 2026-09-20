@@ -339,6 +339,9 @@ class WiringE3(unittest.TestCase):
         """2·4·5단계와 전감산기 2단계는 앞 단계의 프로브를 걷는다. 3단계는 걷지 않는다."""
         chain = self._chain()
         self.assertEqual([len(bb.removals()) for bb in chain], [0, 1, 0, 1, 1, 3, 0, 1])
+        # 번호가 몇 개 붙는가 — `new_signal <= 3` 은 상한만 잰다. 1단계 16 은 맨바닥이라
+        # 전원·레일·LED 사슬까지 세고, 걷기 보드 0 은 새 선도 순서표도 없다는 뜻이다.
+        self.assertEqual([len(bb.steps) for bb in chain], [16, 3, 4, 3, 6, 0, 6, 3])
 
     def test_반감산기에는_단계가_없다(self):
         """반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 완성본만 남는다."""

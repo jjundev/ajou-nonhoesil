@@ -291,7 +291,12 @@ def _e3_draw(bb, circuit, stage):
         not_u = _E3_NOT2_UNUSED if (circuit == 'fs' and at(fs=2)) else _E3_NOT_UNUSED
         bb.mark_unused_inputs(not_u[0], _E3_S2, chip='74HC04')
         bb.mark_unused_outputs(not_u[1], _E3_S2, chip='74HC04')
-    note = _E3_STAGE_NOTE.get((circuit, stage))
+    # 단계 노트는 **이 보드에서 무엇을 꽂는지** 를 말한다. 걷기 보드는 앞 회로를 그 단계로
+    # 다시 그려 만들므로(`removal_board` 가 유령선을 얹는다) 그대로 두면 0단계 종이에
+    # "5단계: … 74HC32 를 꽂아 완성한다" 가 찍힌다 — netlist 0단계 행("새로 꽂는 것은 없다")
+    # 과 SKILL 의 "새 선도 순서표도 없다" 와 같은 면에서 부딪힌다. 유령 렌더면 건너뛴다.
+    # 완성 경로(`stage is None`)는 애초에 노트가 없어 도장이 움직이지 않는다.
+    note = None if bb.ghost is not None else _E3_STAGE_NOTE.get((circuit, stage))
     if note:
         bb.note(note)
     bb.note(led_note)
@@ -391,8 +396,9 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
 
 # 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
 # 실제로 남아 있는 것. 첫 보드(C2 1단계)는 맨바닥에서 시작하므로 기준선이 없다.
-# C2 → C4 경계에 걷기 보드(0단계)가 있다 — 2026-09-18 실험실에서 걷을 세 가닥이
-# footer 표에만 있어 놓쳤다. 걷기 보드는 앞 회로가 전부 회색이고 뽑을 선만 빨간 점선이다.
+# C2 → C4 경계에 걷기 보드(0단계)가 있다 — 2026-09-18 당시 걷을 두 가닥이 실험실에서
+# footer 표에만 있어 놓쳤다(지금은 LED2 급전선이 더해져 세 가닥이다 — 2026-09-20 단계
+# 세분화). 걷기 보드는 앞 회로가 전부 회색이고 뽑을 선만 빨간 점선이다.
 BOARDS = [
     ("실험03_1-2_결선도_전가산기_1단계_XOR1.png", build_e3_fa, 1),
     ("실험03_1-2_결선도_전가산기_2단계_S.png", build_e3_fa, 2),
