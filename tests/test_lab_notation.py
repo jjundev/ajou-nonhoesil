@@ -101,5 +101,32 @@ class TestActiveLow(unittest.TestCase):
         self.assertEqual(n.active_low("GWN", True, 9), "GWN")
 
 
+class TestBitOf(unittest.TestCase):
+    """`bit_of` 는 검산·기대값 계산 전용이다 — 데이터를 바꾸지 않는다."""
+
+    def test_0_1_표는_0과_1만_읽는다(self):
+        from scripts.lab.notation import bit_of
+        self.assertEqual(bit_of("0", "0/1"), 0)
+        self.assertEqual(bit_of(" 1 ", "0/1"), 1)
+        self.assertIsNone(bit_of("H", "0/1"))
+
+    def test_H_L_표는_H와_L만_읽는다(self):
+        from scripts.lab.notation import bit_of
+        self.assertEqual(bit_of("L", "H/L"), 0)
+        self.assertEqual(bit_of("H", "H/L"), 1)
+        self.assertIsNone(bit_of("1", "H/L"))
+
+    def test_dont_care_와_빈칸은_None(self):
+        from scripts.lab.notation import bit_of
+        for cell in ("X", "x", "-", "", "  "):
+            with self.subTest(cell=cell):
+                self.assertIsNone(bit_of(cell, "0/1"))
+
+    def test_validate_의_bit_은_같은_함수다(self):
+        from scripts.lab import validate
+        from scripts.lab.notation import bit_of
+        self.assertIs(validate._bit, bit_of)
+
+
 if __name__ == "__main__":
     unittest.main()

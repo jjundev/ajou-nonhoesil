@@ -599,6 +599,76 @@ spec: ../체크리스트/명세.md
                   if f.level == "error"]
         self.assertTrue(any("완성본" in m for m in errors))
 
+    NODED_C1 = ("# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n"
+                "- diagram: 완성.png\n\n## 노드\n\n"
+                "| 노드 | 식 | 핀 |\n|---|---|---|\n"
+                "| L1 | A·B | U1 pin 3 |\n"
+                "| L2 | A·B·C | U1 pin 6 |\n\n"
+                "- U1 = 74HC08 (quad 2-input AND)\n  - pin 14 → VCC(+5V)\n")
+
+    def _node_errors(self, text):
+        spec = parse_spec(WEEK2_SPEC)
+        return [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                if f.level == "error"]
+
+    def test_노드_표가_맞으면_error_가_없다(self):
+        self.assertEqual([m for m in self._node_errors(self.NODED_C1) if "노드" in m], [])
+
+    def test_단계는_있는데_노드가_없으면_warn(self):
+        spec = parse_spec(WEEK2_SPEC)
+        warns = [f.message for f in validate.check_netlist_circuits(self._netlist(self.STAGED_C1), spec)
+                 if f.level == "warn"]
+        self.assertTrue(any("노드" in m for m in warns), warns)
+
+    def test_노드_식의_변수가_표에_없으면_error(self):
+        errors = self._node_errors(self.NODED_C1.replace("| L1 | A·B |", "| L1 | A·Q |"))
+        self.assertTrue(any("노드 L1" in m and "Q" in m for m in errors), errors)
+
+    def test_핀_형식이_다르면_error(self):
+        errors = self._node_errors(self.NODED_C1.replace("U1 pin 3", "U1 p3"))
+        self.assertTrue(any("형식" in m for m in errors), errors)
+
+    def test_선언되지_않은_칩의_핀이면_error(self):
+        errors = self._node_errors(self.NODED_C1.replace("U1 pin 3", "U9 pin 3"))
+        self.assertTrue(any("선언" in m and "U9" in m for m in errors), errors)
+
+    def test_노드_이름이_겹치면_error(self):
+        errors = self._node_errors(self.NODED_C1.replace("| L2 | A·B·C |", "| L1 | A·B·C |"))
+        self.assertTrue(any("두 번" in m for m in errors), errors)
+
+    def test_명세_출력이_노드에_없으면_error(self):
+        errors = self._node_errors(self.NODED_C1.replace("| L2 | A·B·C | U1 pin 6 |\n", ""))
+        self.assertTrue(any("출력 L2" in m for m in errors), errors)
+
+    def test_출력_노드_값이_명세_식과_다르면_error(self):
+        """결선도가 A·B 를 L2 라 부르면 명세(A·B·C)와 표류한 것이다 — 행 110 에서 갈린다."""
+        errors = self._node_errors(self.NODED_C1.replace("| L2 | A·B·C |", "| L2 | A·B |"))
+        self.assertTrue(any("표류" in m and "L2" in m for m in errors), errors)
+
+    def test_명세_출력_식을_평가할_수_없으면_error(self):
+        """검사는 던지지 않는다 — 명세 식의 변수가 기록표 입력에 없어도 Finding 으로 낸다."""
+        text = WEEK2_SPEC.read_text(encoding="utf-8")
+        # `C` 를 `Q` 로 **바꾸면** 안 된다 — `split_indices` 는 derived 식이 참조하는
+        # 이름으로 입력 열을 정하므로 C 가 입력에서 빠지고, 노드 식 `A·B·C` 가 먼저
+        # `nodes.compute` 에서 터져 이 가드까지 오지 못한다. 미지의 변수를 **더한다**.
+        broken = text.replace("- source: derived (L1 = A·B ; L2 = A·B·C)",
+                              "- source: derived (L1 = A·B ; L2 = A·B·C·Q)")
+        self.assertNotEqual(broken, text)
+        path = Path(tempfile.mkdtemp()) / "명세.md"
+        path.write_text(broken, encoding="utf-8")
+        errors = [f.message for f in
+                  validate.check_netlist_circuits(self._netlist(self.NODED_C1), parse_spec(path))
+                  if f.level == "error"]
+        self.assertTrue(any("평가할 수 없다" in m and "L2" in m for m in errors), errors)
+
+    def test_실험03_실물_노드_표는_error_가_없다(self):
+        """Task 7 이 백필한 뒤에만 뜻이 있다 — 그 전에는 노드가 없어 자명하게 통과한다."""
+        spec = parse_spec(ROOT / config.experiment_dir(3) / "체크리스트/명세.md")
+        netlist = parse_netlist(ROOT / config.experiment_dir(3) / "결선도/netlist.md")
+        errors = [f for f in validate.check_netlist_circuits(netlist, spec)
+                  if f.level == "error"]
+        self.assertEqual(errors, [], "\n".join(str(f) for f in errors))
+
     def test_자리표가_둘이면_error(self):
         spec = parse_spec(WEEK2_SPEC)
         layout = "# 자리표\n\n- kind: layout\n\n| 슬롯 | 자리 | 회로별 칩 |\n|---|---|---|\n| S1 | 좌 7행 | x |\n\n"

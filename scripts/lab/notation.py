@@ -114,3 +114,16 @@ def active_low(name: str, first_use: bool, experiment: int) -> str:
     if experiment == 9:
         return name
     return f"{name} (Active Low)" if first_use else name
+
+
+def bit_of(cell, encoding):
+    """평가용 비트로 읽는다. **데이터를 바꾸지 않는다** — 검산과 기대값 계산에만 쓴다.
+
+    `validate._bit` 이 여기로 왔다. 노드 기대값(`nodes.py`)을 렌더러도 계산해야
+    하는데 `validate` 가 `render` 를 import 하므로, 둘이 공유할 함수는 제3의
+    모듈에 있어야 순환이 없다.
+    """
+    c = normalize_cell(cell)
+    if encoding == "H/L":
+        return {"L": 0, "H": 1}.get(c)
+    return {"0": 0, "1": 1}.get(c)

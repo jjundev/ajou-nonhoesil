@@ -1511,6 +1511,42 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 9, 10 → 개방
 """
 
+_NODED_NETLIST = """---
+schema: lab-netlist/v2
+experiment: 1
+spec: ../체크리스트/명세.md
+---
+
+# C1 · 노드 있는 회로
+
+- kind: circuit
+- id: C1
+- item: E1.P1-1
+- tables: [T1]
+
+## 노드
+
+| 노드 | 식 | 핀 |
+|---|---|---|
+| A·B | A·B | U1 pin 3 |
+| L2 | A·B·C | U1 pin 6 |
+
+- U1 = 74HC08 (quad 2-input AND)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → 개방
+
+# C2 · 노드 없는 회로
+
+- kind: circuit
+- id: C2
+- item: E1.P1-2
+- tables: [T2]
+
+- U4 = 74HC32 (quad 2-input OR)
+  - pin 14 → VCC(+5V)
+  - 미사용 입력핀: pin 9, 10 → 개방
+"""
+
 
 class TestStages(unittest.TestCase):
     def setUp(self):
@@ -1612,3 +1648,54 @@ class TestStages(unittest.TestCase):
         self.assertIn("플로팅 금지", power)
         self.assertIn("공통 규칙", power)
         self.assertNotIn("전부 GND", power)
+
+
+class TestNodeTable(unittest.TestCase):
+    """중간 노드 기대값 표 — 기록표 바로 위, `.check` 없이. 설계 #6."""
+
+    def _render(self, text):
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        html = render_checklist(spec, parse_netlist(path), TEMPLATE)
+        return html, html.split('<section class="circuit">')[1:]
+
+    def test_노드_표가_기록표_앞에_온다(self):
+        _, pages = self._render(_NODED_NETLIST)
+        page = pages[0]
+        self.assertIn("중간 노드 기대값", page)
+        self.assertLess(page.index("중간 노드 기대값"), page.index("<h3>T1 ·"))
+        self.assertLess(page.index('class="wirebox"'), page.index("중간 노드 기대값"))
+
+    def test_열_머리에_노드_이름과_핀이_있다(self):
+        _, pages = self._render(_NODED_NETLIST)
+        self.assertIn("<th>A·B<br><small>U1 pin 3</small></th>", pages[0])
+        self.assertIn("<th>L2<br><small>U1 pin 6</small></th>", pages[0])
+
+    def test_행_값이_식대로다(self):
+        _, pages = self._render(_NODED_NETLIST)
+        block = pages[0][pages[0].index("중간 노드 기대값"):pages[0].index("<h3>T1 ·")]
+        self.assertIn("<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>", block)
+        self.assertIn("<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>", block)
+        self.assertEqual(block.count("<tr>"), 9)          # 머리 1 + 8행
+
+    def test_탐색_안내_한_줄이_붙는다(self):
+        _, pages = self._render(_NODED_NETLIST)
+        self.assertIn("입력 쪽 노드부터", pages[0])
+
+    def test_check_셀_개수는_변하지_않는다(self):
+        html, _ = self._render(_NODED_NETLIST)
+        self.assertEqual(html.count('class="check"'), 16)   # T1 8행 + T2 8행
+
+    def test_노드_없는_회로에는_표가_없다(self):
+        _, pages = self._render(_NODED_NETLIST)
+        self.assertNotIn("중간 노드 기대값", pages[1])
+
+    def test_노드_표가_참조표로_두_번_찍히지_않는다(self):
+        html, _ = self._render(_NODED_NETLIST)
+        self.assertNotIn("<th>식</th>", html)
+
+    def test_계산할_수_없으면_안내_한_줄이고_죽지_않는다(self):
+        _, pages = self._render(_NODED_NETLIST.replace("| A·B | A·B |", "| A·B | A·Q |"))
+        self.assertIn("노드 표를 계산할 수 없다", pages[0])
+        self.assertNotIn("중간 노드 기대값", pages[0])

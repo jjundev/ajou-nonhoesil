@@ -10,10 +10,11 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import config, md
+from . import config, md, nodes
 from .boolexpr import eval_boolean
-from .notation import DONT_CARE, normalize_cell
+from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
+from .netlist_parser import IC_DECL
 from .spec_parser import (ENCODINGS, ROLES, column_label, derived_parts,
                           split_columns, split_indices)
 
@@ -47,12 +48,8 @@ class Finding:
         return f"{_MARKS.get(self.level, '!')} {self.where} — {self.message}"
 
 
-def _bit(cell, encoding):
-    """평가용 비트로 읽는다. **데이터를 바꾸지 않는다** — 검산 중에만 쓴다."""
-    c = normalize_cell(cell)
-    if encoding == "H/L":
-        return {"L": 0, "H": 1}.get(c)
-    return {"0": 0, "1": 1}.get(c)
+# 본체는 `notation.bit_of` 다 — 렌더러와 공유하려고 옮겼다. 이름은 기존 호출을 위해 남긴다.
+_bit = bit_of
 
 
 def check_table_integrity(spec) -> list:
@@ -673,6 +670,79 @@ def check_netlist(netlist_path, spec) -> list:
     return out
 
 
+_NODE_PIN = re.compile(r"^U\d+ pin \d+$")
+
+
+def _check_nodes(circuit, spec, where) -> list:
+    """`## 노드` 표 — 식·핀·출력 노드. 용의자를 '선'이 아니라 '노드'로 좁히는 표다.
+    출력 노드(명세 `derived` 의 대입 대상)만 명세 식과 대조한다 — 중간 노드의 식은
+    저작자 단언이라 검산되지 않는다. 그래도 출력이 맞으면 중간단 오타는 대부분
+    출력 불일치로 드러난다.
+
+    출력 노드(명세 `derived` 의 대입 대상)는 반드시 노드 표에 있어야 하고, 그 식의
+    값이 명세 식과 전 행 일치해야 한다 — 결선도와 명세의 표류를 잡는 유일한 자리다.
+    `check_boolean` 은 명세 셀만 본다.
+    """
+    out = []
+    if not circuit.nodes:
+        if circuit.stages:
+            out.append(Finding("warn", where,
+                "단계는 있는데 `## 노드` 표가 없다 — 단계 끝을 프로브로 찍을 핀과 "
+                "기대값이 없다. 게이트 출력 핀마다 `| 노드 | 식 | 핀 |` 한 행을 적는다"))
+        return out
+    try:
+        table = nodes.record_table(circuit, spec)
+    except ValueError as exc:
+        return [Finding("error", where, str(exc))]
+    if table is None:
+        return [Finding("error", where,
+            "`## 노드` 표는 truth-table 기록표를 가진 회로에만 둔다 — "
+            "입력 행이 있어야 기대값이 있다")]
+    declared = {u for u, _ in IC_DECL.findall(circuit.body)}
+    seen = set()
+    for node in circuit.nodes:
+        if node["name"] in seen:
+            out.append(Finding("error", where, f"노드 {node['name']!r} 이 두 번 있다"))
+        seen.add(node["name"])
+        if not _NODE_PIN.match(node["pin"]):
+            out.append(Finding("error", where,
+                f"노드 {node['name']} 의 핀 {node['pin']!r} 은 `U<n> pin <m>` 형식이 아니다"))
+        elif node["pin"].split()[0] not in declared:
+            out.append(Finding("error", where,
+                f"노드 {node['name']} 의 칩 {node['pin'].split()[0]} 이 이 회로에 "
+                f"선언돼 있지 않다. 선언된 칩: {sorted(declared)}"))
+    try:
+        computed = nodes.compute(circuit, spec)
+    except ValueError as exc:
+        out.append(Finding("error", where, str(exc)))
+        return out
+    by_name = {name: k for k, (name, _) in enumerate(computed.nodes)}
+    for target, expr in derived_parts(table):
+        if target not in by_name:
+            out.append(Finding("error", where,
+                f"출력 {target} 이 `## 노드` 표에 없다 — LED 가 달린 핀도 노드다"))
+            continue
+        k = by_name[target]
+        for n, (cells, bits) in enumerate(computed.rows, start=1):
+            if bits is None:
+                continue
+            env = {name: _bit(c, table.encoding) for name, c in zip(computed.inputs, cells)}
+            try:
+                want = eval_boolean(expr, env)
+            except ValueError as exc:
+                out.append(Finding("error", where,
+                    f"명세 출력 {target} 의 식 {expr!r} 을 노드 입력으로 "
+                    f"평가할 수 없다: {exc}"))
+                break
+            if bits[k] != want:
+                shown = ", ".join(f"{i}={c}" for i, c in zip(computed.inputs, cells))
+                out.append(Finding("error", f"{where} 행{n}",
+                    f"{shown} 일 때 노드 {target} = {bits[k]} 인데 명세 식 {expr} 은 "
+                    f"{want} 다 — 결선도와 명세가 표류했다"))
+                break
+    return out
+
+
 def check_netlist_circuits(netlist, spec) -> list:
     """회로 메타의 **의미** 결함. 구조 결함은 `netlist_parser` 가 예외로 던진다.
 
@@ -730,6 +800,7 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "
                 "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
                 "완성본은 기준선 없이 따로 낸다 (주차 배치.py 의 FINALS)"))
+        out += _check_nodes(circuit, spec, where)
         if circuit.continues:
             if circuit.continues == circuit.id:
                 out.append(Finding("error", where,
