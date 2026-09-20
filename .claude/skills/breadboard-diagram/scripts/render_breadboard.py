@@ -265,9 +265,10 @@ class BreadboardRenderer:
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
         # R7·R8 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘거나(R7) 같은
-        # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20) 이전에 승인·제출된 실험01~03 빌더만 쓴다 —
-        # 승인본을 다시 그리지 않으려는 것이지 면허가 아니다. tests/test_breadboard_physical.py
-        # 가 실험 4 이상은 전부 strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
+        # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20)
+        # 이전에 승인·제출된 실험01~03 빌더만 쓴다 — 승인본을 다시 그리지 않으려는
+        # 것이지 면허가 아니다. tests/test_breadboard_physical.py 가 실험 4 이상은 전부
+        # strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
         self.density_policy = 'strict'
         # 홀 점유표. (열 x, 행) -> 무엇이 꽂혀 있는가. 배선 끝점·부품 다리·칩 핀이
         # 전부 여기 등록되고 verify() 가 본다 — 끝점은 홀이어야 하고(R1), 한 홀에는
