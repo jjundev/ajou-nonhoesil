@@ -281,16 +281,15 @@ class WiringE3(unittest.TestCase):
         made = {n for n, _f, _s in self.b3.BOARDS} | {n for n, _f in self.b3.FINALS}
         self.assertEqual(wanted, made)
 
-    def test_보드_사슬은_4장_완성본은_2장이다(self):
-        """반가산기·반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 사슬에 없다.
-        전가산기 → 전감산기 경계에 걷기 보드(0단계) 한 장이 있다(2026-09-18 실험실 기록)."""
-        self.assertEqual(len(self.b3.BOARDS), 4)
+    def test_보드_사슬은_8장_완성본은_2장이다(self):
+        """2026-09-20 단계 세분화: C2 가 다섯 단계, C4 가 걷기 + 두 단계다."""
+        self.assertEqual(len(self.b3.BOARDS), 8)
         self.assertEqual(len(self.b3.FINALS), 2)
         names = [n for n, _f, _s in self.b3.BOARDS] + [n for n, _f in self.b3.FINALS]
         self.assertEqual(len(names), len(set(names)), '파일명이 겹친다')
         self.assertNotIn(self.b3.BOARDS[-1][0], [n for n, _f in self.b3.FINALS])
         self.assertFalse(any(k in n for n in names for k in ('반가산기', '반감산기')), names)
-        self.assertEqual(self.b3.BOARDS[2][0], '실험03_2-2_결선도_전감산기_0단계_걷기.png')
+        self.assertEqual(self.b3.BOARDS[5][0], '실험03_2-2_결선도_전감산기_0단계_걷기.png')
 
     def _chain(self):
         """`build_all` 과 같은 순서로 사슬을 이어 그린 렌더러 목록."""
@@ -301,59 +300,66 @@ class WiringE3(unittest.TestCase):
             base = bb.snapshot()
         return out
 
-    def test_걷기_보드는_두_가닥만_유령이고_새_선이_없다(self):
-        g = self._chain()[2]
+    def test_단계마다_새_신호선이_셋_이하다(self):
+        """단계 세분화의 전부다 — 확인이 실패하면 용의자가 방금 꽂은 셋이다."""
+        for bb, (name, _fn, _stage) in zip(self._chain(), self.b3.BOARDS):
+            with self.subTest(board=name):
+                self.assertLessEqual(len(bb.new_signal), self.mod.STAGE_WIRE_BUDGET,
+                                     f'{name}: {[k[1:] for k in bb.new_signal]}')
+
+    def test_걷기_보드는_세_가닥이_유령이고_새_선이_없다(self):
+        """LED2 최종 급전선도 걷는다 — 1단계에 그것이 A'·B 를 보는 프로브가 된다."""
+        g = self._chain()[5]
         self.assertEqual([(r['n'], r['addr']) for r in g.removals()],
-                         [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13')])
+                         [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13'), (3, '우 c23 → 우 c29')])
         self.assertEqual(g.steps, [])
         self.assertTrue(g.partial)
         self.assertFalse(g.submit)
-        self.assertEqual([c['label'] for c in g.wiring()['chips']], ['74HC86', '74HC08', '74HC32'])
-
-    def test_걷기_보드_뒤의_전감산기_1단계는_걷을_것이_없다(self):
-        fs = self._chain()[3]
-        self.assertEqual(fs.removed(), [])
-        # 새 번호 일곱 개: 74HC04(1) + 네 가닥(4) + 전원 두 가닥(2) — 걷기 보드가 있어도 같다
-        self.assertEqual(len(fs.steps), 7, fs.steps)
+        # 걷기 보드가 뽑는 선은 "새 선" 이 아니다 — 렌더러의 계수 줄이 유령선 분기
+        # 위로 올라가면 조용히 새 선으로 세어진다. 그 회귀를 여기서 막는다.
+        self.assertEqual(g.new_signal, [])
+        self.assertEqual([c['label'] for c in g.wiring()['chips']],
+                         ['74HC86', '74HC08', '74HC32'])
 
     def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
         """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
-        _name, fn, _stage = self.b3.BOARDS[2]
+        _name, fn, _stage = self.b3.BOARDS[5]
         self.assertEqual(fn.__module__, self.mod.__name__)
 
-    def test_전가산기_1단계는_맨바닥에서_XOR_쪽만_꽂는다(self):
-        """반가산기(실험 1-1)를 안 하므로 전가산기가 첫 보드다 — 기준선이 없고
-        74HC08·74HC32 는 아직 없다."""
+    def test_전가산기_1단계는_맨바닥에서_XOR1_과_임시_급전선만_꽂는다(self):
         _name, fn, stage = self.b3.BOARDS[0]
         self.assertEqual((fn, stage), (self.b3.build_e3_fa, 1))
         bb = fn(os.path.join(self.tmp, 'fa1.png'), stage=stage)
         self.assertEqual([c['label'] for c in bb.wiring()['chips']], ['74HC86'])
         self.assertEqual(bb.removed(), [])
+        self.assertEqual(len(bb.new_signal), 3)
+        self.assertTrue(any('임시 급전' in s['desc'] for s in bb.steps), bb.steps)
 
-    def test_전가산기_2단계는_아무것도_걷지_않는다(self):
-        base = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa1.png'), stage=1).snapshot()
-        bb = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa2.png'), baseline=base)
-        self.assertEqual(bb.removed(), [])
+    def test_단계마다_임시_급전선을_한_가닥씩_걷는다(self):
+        """2·4·5단계와 전감산기 2단계는 앞 단계의 프로브를 걷는다. 3단계는 걷지 않는다."""
+        chain = self._chain()
+        self.assertEqual([len(bb.removals()) for bb in chain], [0, 1, 0, 1, 1, 3, 0, 1])
+        # 번호가 몇 개 붙는가 — `new_signal <= 3` 은 상한만 잰다. 1단계 16 은 맨바닥이라
+        # 전원·레일·LED 사슬까지 세고, 걷기 보드 0 은 새 선도 순서표도 없다는 뜻이다.
+        self.assertEqual([len(bb.steps) for bb in chain], [16, 3, 4, 3, 6, 0, 6, 3])
 
-    def test_전감산기는_전가산기에서_두_가닥만_걷는다(self):
-        """AND1 pin 1 의 A 갈래와 AND2 pin 4 의 A⊕B 선. Ci 점퍼·LED 급전선은 그대로다 —
+    def test_반감산기에는_단계가_없다(self):
+        """반감산기는 조교 공지 `_350547_1` 로 하지 않는다 — 완성본만 남는다."""
+        with self.assertRaises(ValueError):
+            self.b3.build_e3_hs(os.path.join(self.tmp, 'x.png'), stage=1)
+        with self.assertRaises(ValueError):
+            self.b3.build_e3_fa(os.path.join(self.tmp, 'x.png'), stage=6)
+
+    def test_전감산기_완성은_전가산기에서_두_가닥을_바꾼다(self):
+        """AND1 pin 1 의 A 갈래와 AND2 pin 4 의 A⊕B. Ci 점퍼·LED 사슬은 그대로다 —
         기준선은 끝점으로 비교하므로 이름이 Ci→Bi 로 바뀌어도 회색으로 남는다."""
         base = self.b3.build_e3_fa(os.path.join(self.tmp, 'fa.png')).snapshot()
-        bb = self.b3.build_e3_fs(os.path.join(self.tmp, 'fs1.png'), baseline=base)
+        bb = self.b3.build_e3_fs(os.path.join(self.tmp, 'fs.png'), baseline=base)
         removed = bb.removed()
         self.assertEqual(len(removed), 2, removed)
         self.assertTrue(any('74HC08 pin 1' in r for r in removed), removed)
         self.assertTrue(any('74HC08 pin 4' in r for r in removed), removed)
         self.assertFalse(any('뽑는다' in r for r in removed), removed)
-        # 새 번호 일곱 개: 74HC04(1) + 네 가닥(4) + 전원 두 가닥(2)
-        self.assertEqual(len(bb.steps), 7, bb.steps)
-
-    def test_반감산기_전감산기에는_1단계를_주지_않는다(self):
-        """두 회로의 1단계는 반감산기를 거치던 옛 사슬의 차분이었다."""
-        for fn in (self.b3.build_e3_hs, self.b3.build_e3_fs):
-            with self.subTest(fn=fn.__name__):
-                with self.assertRaises(ValueError):
-                    fn(os.path.join(self.tmp, 'x.png'), stage=1)
 
     def test_전감산기_74HC86_은_왼쪽에_11리드_오른쪽에_1리드다(self):
         """R7(2026-09-20)의 근거 숫자. 실험03 은 게이트 1·2 만 써서 배선이 칩 왼쪽

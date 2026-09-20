@@ -620,6 +620,52 @@ spec: ../체크리스트/명세.md
                  if f.level == "warn"]
         self.assertTrue(any("노드" in m for m in warns), warns)
 
+    STAGED_NODED_C1 = ("# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n"
+                       "- diagram: 완성.png\n\n## 단계\n\n"
+                       "| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
+                       "| 1 | 1단계.png | 칩 하나 | 노드 `L1` — L1 을 네 조합으로 본다 |\n"
+                       "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |\n\n"
+                       "## 노드\n\n"
+                       "| 노드 | 식 | 핀 |\n|---|---|---|\n"
+                       "| L1 | A·B | U1 pin 3 |\n"
+                       "| L2 | A·B·C | U1 pin 6 |\n\n"
+                       "- U1 = 74HC08 (quad 2-input AND)\n  - pin 14 → VCC(+5V)\n")
+
+    def _stage_node_findings(self, text, level):
+        spec = parse_spec(WEEK2_SPEC)
+        return [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                if f.level == level and "노드" in f.message]
+
+    def test_단계가_가리키는_노드가_노드표에_있으면_조용하다(self):
+        self.assertEqual(self._stage_node_findings(self.STAGED_NODED_C1, "error"), [])
+        warns = self._stage_node_findings(self.STAGED_NODED_C1, "warn")
+        self.assertEqual([w for w in warns if "가리키지" in w], [])
+
+    def test_단계가_없는_노드를_가리키면_error(self):
+        """결선도 안에서 이름이 표류하는 유일한 자리다 — 그림은 맞는데 표가 옛 이름을 쥔다."""
+        bad = self.STAGED_NODED_C1.replace("노드 `L2` — T1 8행", "노드 `L9` — T1 8행")
+        errors = self._stage_node_findings(bad, "error")
+        self.assertTrue(any("L9" in m and "단계 2" in m for m in errors), errors)
+
+    def test_노드표가_있는데_단계가_노드를_안_가리키면_warn(self):
+        bad = self.STAGED_NODED_C1.replace("노드 `L1` — L1 을 네 조합으로 본다", "L1 을 네 조합으로 본다")
+        warns = self._stage_node_findings(bad, "warn")
+        self.assertTrue(any("가리키지" in m and "단계 1" in m for m in warns), warns)
+
+    def test_0단계는_노드를_가리키지_않아도_된다(self):
+        """걷기 보드는 걷기만 하므로 관측할 출력이 없다."""
+        text = self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            "| 0 | 0단계_걷기.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있고 홀이 비었다 |\n"
+            "| 1 | 1단계.png |")
+        warns = self._stage_node_findings(text, "warn")
+        self.assertEqual([w for w in warns if "단계 0" in w], [])
+
+    def test_노드표가_없는_회로의_단계는_노드를_묻지_않는다(self):
+        """실험01·02 승인본이 그렇다 — '단계는 있는데 노드 표가 없다' warn 이 이미 한 번 말한다."""
+        warns = self._stage_node_findings(self.STAGED_C1, "warn")
+        self.assertEqual([w for w in warns if "가리키지" in w], [])
+
     def test_노드_식의_변수가_표에_없으면_error(self):
         errors = self._node_errors(self.NODED_C1.replace("| L1 | A·B |", "| L1 | A·Q |"))
         self.assertTrue(any("노드 L1" in m and "Q" in m for m in errors), errors)

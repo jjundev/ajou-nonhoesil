@@ -301,6 +301,28 @@ class Stages(unittest.TestCase):
         self.assertEqual(self.c3.stages[0]["todo"], "74HC08 만 꽂는다")
         self.assertEqual(self.c3.stages[1]["check"], "T3 8행")
 
+    def test_확인_칸이_가리키는_노드를_뽑는다(self):
+        """단계 하나는 관측 노드 하나를 세운다 — 그 이름이 데이터여야 검증기가 잰다.
+        백틱이 이름의 경계다: `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다."""
+        text = STAGED.replace("| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+                              "| 1 | `1단계.png` | 74HC08 만 꽂는다 | 노드 `A·B` — L1 을 네 조합으로 본다 |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual(c3.stages[0]["node"], "A·B")
+        self.assertEqual(c3.stages[1]["node"], None)
+
+    def test_확인_칸이_닫는_백틱으로_끝나도_노드를_뽑는다(self):
+        """`_split_subtable` 이 셀 양끝 백틱을 떼므로 `노드 `A·B`` 는 닫는 백틱을 잃는다.
+        정규식이 그 경우에도 이름을 온전히 내야 한다."""
+        text = STAGED.replace("| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+                              "| 1 | `1단계.png` | 74HC08 만 꽂는다 | 노드 `(A⊕B)·Ci` |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual(c3.stages[0]["node"], "(A⊕B)·Ci")
+
+    def test_노드로_시작하지_않는_확인_칸은_None_이다(self):
+        """실험01·02 승인본의 단계 표가 그렇다 — 파서가 거절하지 않는다."""
+        c3 = parse_netlist(_write(STAGED)).circuits[0]
+        self.assertEqual([s["node"] for s in c3.stages], [None, None])
+
     def test_단계_표는_본문에서_빠진다(self):
         """남으면 `_circuit_body` 가 참조표로 인쇄한다 — 단계 블록과 표가 두 번 찍힌다."""
         self.assertNotIn("## 단계", self.c3.body)

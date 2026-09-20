@@ -38,6 +38,12 @@ _BACKFILL = (
 STAGE_COLUMNS = ("단계", "그림", "이 단계에서", "확인")
 _STAGE_HEAD = re.compile(r"^##[ \t]+단계[ \t]*$")
 
+# 단계 `확인` 칸이 가리키는 관측 노드. 2026-09-20 단계 세분화: 단계 하나는 관측 노드
+# 하나를 세우고, 그 이름은 같은 회로 `## 노드` 표에 있어야 한다(`validate` 가 잰다).
+# 백틱이 이름의 경계다 — `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다.
+# 닫는 백틱을 선택으로 둔 이유: 셀이 백틱으로 끝나면 `_split_subtable` 이 그것을 뗀다.
+_STAGE_NODE = re.compile(r"^노드\s+`([^`]+)(?:`|$)")
+
 # 회로 절 안 `## 노드` 표의 열. 프로브로 찍을 핀과 그 기대값 식 — 2026-09-20 회고:
 # 다 꽂고 켰을 때 틀리면 용의자가 선 전부였다. 노드 하나를 찍을 때마다 절반으로 준다
 NODE_COLUMNS = ("노드", "식", "핀")
@@ -60,7 +66,7 @@ class NetlistSection:
     diagram: Optional[str] = None
     continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
     refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
-    stages: list = field(default_factory=list)   # `## 단계` 표. 칩 하나 = 단계 하나
+    stages: list = field(default_factory=list)   # `## 단계` 표. 관측 노드 하나 = 단계 하나
     nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
 
     @property
@@ -137,10 +143,19 @@ def _split_subtable(body, head_re, columns, keys, label, path, line):
 
 def _split_stages(body, path, line):
     """`## 단계` 표. 실험01 실험실 기록(2026-09-11): 복합회로를 전부 꽂고 불이 안
-    들어오자 어디가 틀렸는지 알 수 없었다. 칩 하나마다 LED 로 확인하는 단계가
-    데이터여야 체크리스트에 확인 칸이 생긴다."""
-    return _split_subtable(body, _STAGE_HEAD, STAGE_COLUMNS,
-                           ("n", "diagram", "todo", "check"), "단계", path, line)
+    들어오자 어디가 틀렸는지 알 수 없었다. 단계마다 LED 로 확인하는 자리가 데이터여야
+    체크리스트에 확인 칸이 생긴다.
+
+    2026-09-20 단계 세분화: `확인` 칸이 `노드 `<이름>`` 로 시작하면 그 이름을 `node`
+    키로 낸다. 열을 늘리지 않은 이유는 실험01·02 승인본의 단계 표 7개가 헤더 불일치로
+    통째로 거절당하기 때문이다 — 옛 표는 `node` 가 `None` 이고 검증기가 warn 만 한다.
+    """
+    rows, rest = _split_subtable(body, _STAGE_HEAD, STAGE_COLUMNS,
+                                 ("n", "diagram", "todo", "check"), "단계", path, line)
+    for row in rows:
+        m = _STAGE_NODE.match(row["check"])
+        row["node"] = m.group(1) if m else None
+    return rows, rest
 
 
 def _split_nodes(body, path, line):

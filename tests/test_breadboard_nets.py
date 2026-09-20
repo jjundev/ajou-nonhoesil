@@ -312,7 +312,9 @@ class R5(unittest.TestCase):
         # 빠져 24 다. 완성본 build_e2_tpd·build_e3_ha·build_e3_hs 는 남는다.
         # 2026-09-15 엔진·주차 분리: 빌더가 주차 `배치.py` 로 옮겨 갔다(`tests/_boards.py`).
         # 일괄 렌더 `build_eN_all` 은 원래 세지 않았으므로 수는 그대로 24 다.
-        self.assertEqual(len(builders), 24)
+        # 2026-09-20 단계 세분화: 실험03 절차 래퍼가 셋(e3_fa_s1/_s2·e3_fs_s1)에서
+        # 일곱(e3_fa_s1~_s5·e3_fs_s1/_s2)으로 늘어 28 이다.
+        self.assertEqual(len(builders), 28)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

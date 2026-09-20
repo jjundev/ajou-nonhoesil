@@ -135,7 +135,7 @@ class BreadboardCli(unittest.TestCase):
         doc = SKILL.read_text(encoding="utf-8")
         supported = {n.removeprefix("build_") for n in _builder_names()}
         for gone in ("e1_or", "e1_nor", "e2_rn", "e2_rp", "e2_tpd_s1", "e2_tpd_s2",
-                     "e3_ha_s1", "e3_ha_s2", "e3_hs_s1", "e3_hs_s2", "e3_fs_s2"):
+                     "e3_ha_s1", "e3_ha_s2", "e3_hs_s1", "e3_hs_s2"):
             if gone not in supported:
                 with self.subTest(circuit=gone):
                     self.assertNotIn(f"`{gone}`", doc)

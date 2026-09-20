@@ -786,15 +786,31 @@ def check_netlist_circuits(netlist, spec) -> list:
                     "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
+        node_names = {n["name"] for n in circuit.nodes}
         for st in circuit.stages:
             if not st["check"]:
                 out.append(Finding("error", where,
                     f"단계 {st['n']} 의 확인 칸이 비었다 — 단계 끝에서 무엇을 보는지가 "
-                    "이 표의 존재 이유다. 관측할 LED 와 입력 조합을 적는다"))
+                    "이 표의 존재 이유다. 관측할 노드와 입력 조합을 적는다"))
             if st["diagram"] and not (netlist.path.parent / st["diagram"]).exists():
                 out.append(Finding("warn", where,
                     f"단계 {st['n']} 그림 파일이 없다: {st['diagram']}. "
                     "breadboard-diagram 의 `--experiment N` 일괄 렌더로 만든다"))
+            # 단계 하나는 관측 노드 하나를 세운다(2026-09-20 단계 세분화). 0단계(걷기
+            # 보드)는 걷기만 하므로 면제이고, 노드 표가 없는 회로(실험01·02 승인본)에는
+            # 아무 말도 하지 않는다 — `_check_nodes` 의 "단계는 있는데 노드 표가 없다"
+            # warn 이 이미 그 회로를 한 번 짚었다.
+            if st["n"] == "0" or not circuit.nodes:
+                continue
+            if st["node"] is None:
+                out.append(Finding("warn", where,
+                    f"단계 {st['n']} 의 확인 칸이 관측 노드를 가리키지 않는다 — "
+                    "`노드 `<이름>`` 로 시작하고 뒤에 관측 방법과 행 범위를 잇는다. "
+                    f"이 회로의 노드: {sorted(node_names)}"))
+            elif st["node"] not in node_names:
+                out.append(Finding("error", where,
+                    f"단계 {st['n']} 이 가리키는 노드 {st['node']!r} 이 `## 노드` 표에 "
+                    f"없다. 있는 노드: {sorted(node_names)}"))
         if circuit.stages and circuit.diagram and circuit.stages[-1]["diagram"] == circuit.diagram:
             out.append(Finding("error", where,
                 f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "

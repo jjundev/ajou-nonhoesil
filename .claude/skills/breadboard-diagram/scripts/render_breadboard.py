@@ -217,6 +217,12 @@ REMOVE = (160, 30, 30, 255)
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
 PROBE = (105, 105, 110, 255)
 
+# 단계 하나가 꽂는 **새 신호선**의 상한. 2026-09-20 단계 세분화: 관측 노드 하나 =
+# 단계 하나이고 새 신호선은 셋 이하다 — 확인이 실패했을 때 용의자가 그 셋이다.
+# 전원·GND·레일 브리지·잭·LED 사슬 부품·칩 꽂기는 **기반**이라 세지 않는다: 회로가
+# 바뀌어도 그대로 있는 것들이고 첫 단계에 한꺼번에 꽂는다.
+STAGE_WIRE_BUDGET = 3
+
 # 전원 잭 세 개의 중심 x (템플릿 상단). y 는 원 아래끝 근처.
 JACKS = {'red': 439, 'yellow': 603, 'gray': 766}
 JACK_BOTTOM = 160
@@ -264,6 +270,9 @@ class BreadboardRenderer:
         # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
+        # 기준선 대비 **새로 꽂는 신호선**의 key. 예산(`STAGE_WIRE_BUDGET`)의 지표다.
+        # `content()` 에는 넣지 않는다 — 넣으면 기존 PNG 스물두 장의 도장이 바뀐다.
+        self.new_signal = []
         # R7·R8 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘거나(R7) 같은
         # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20)
         # 이전에 승인·제출된 실험01~03 빌더만 쓴다 — 승인본을 다시 그리지 않으려는
@@ -849,6 +858,8 @@ class BreadboardRenderer:
             self.touch_rail(kind, p[0])
         self._segments.append((kind, [tuple(p) for p in points], desc))
         self._register_pass(points)
+        if not kept and kind in ('sig', 'mid'):
+            self.new_signal.append(key)
         if kept:
             self.kept.append(desc)
             return None
@@ -1894,8 +1905,15 @@ class BreadboardRenderer:
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
         out.save(output_path, pnginfo=info)
+        staged = self.partial or self.baseline is not None
         print(f"[SUCCESS] Exported: {output_path} "
-              f"({out.size[0]}x{out.size[1]}, 결선 {len(self.steps)}단계)")
+              f"({out.size[0]}x{out.size[1]}, 결선 {len(self.steps)}단계, "
+              f"새 신호선 {len(self.new_signal)} · 걷는 선 {len(self.removals())})")
+        if staged and len(self.new_signal) > STAGE_WIRE_BUDGET:
+            # 막지 않는다 — 저작 중에는 넘는 보드를 그려 봐야 어디서 쪼갤지 보인다.
+            # 주차 보드 테스트(`tests/test_breadboard_boards.py`)가 승인을 막는다.
+            print(f"[WARN] 새 신호선이 {len(self.new_signal)} 가닥이다 "
+                  f"(예산 {STAGE_WIRE_BUDGET}) — 관측 노드 하나로 단계를 더 쪼갠다")
 
 
 def _tag(bb, x, y, text, col=(60, 60, 60, 255)):

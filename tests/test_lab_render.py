@@ -1,10 +1,11 @@
 import re
 import tempfile
+import types
 import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from scripts.lab import config
+from scripts.lab import config, render
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.photo_names import FILE
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
@@ -1699,3 +1700,38 @@ class TestNodeTable(unittest.TestCase):
         _, pages = self._render(_NODED_NETLIST.replace("| A·B | A·B |", "| A·B | A·Q |"))
         self.assertIn("노드 표를 계산할 수 없다", pages[0])
         self.assertNotIn("중간 노드 기대값", pages[0])
+
+
+class StageNodeLine(unittest.TestCase):
+    """단계 블록은 그 단계에서 볼 노드의 이름과 핀을 찍는다 — 핀은 `## 노드` 표에서
+    조회한다. 저작자가 핀을 단계 표에도 적으면 두 자리가 표류한다."""
+
+    def _stage(self, node):
+        return {"n": "1", "diagram": "", "todo": "칩 하나", "check": "노드 `A⊕B` — 네 조합", "node": node}
+
+    def _section(self):
+        return types.SimpleNamespace(nodes=[{"name": "A⊕B", "expr": "A⊕B", "pin": "U1 pin 3"}])
+
+    def _netlist(self):
+        return types.SimpleNamespace(path=Path(tempfile.mkdtemp()) / "결선도" / "netlist.md")
+
+    def test_노드_이름과_핀을_찍는다(self):
+        html = render._stage_html(self._stage("A⊕B"), self._netlist(), self._section())
+        self.assertIn("확인 노드", html)
+        self.assertIn("A⊕B", html)
+        self.assertIn("U1 pin 3", html)
+
+    def test_노드를_안_가리키면_그_줄이_없다(self):
+        html = render._stage_html(self._stage(None), self._netlist(), self._section())
+        self.assertNotIn("확인 노드", html)
+
+    def test_노드_표에_없는_이름이면_핀_없이_이름만_찍는다(self):
+        """검증기가 이미 error 로 막았다 — 렌더는 죽지 않고 이름만 낸다."""
+        html = render._stage_html(self._stage("L9"), self._netlist(), self._section())
+        self.assertIn("확인 노드", html)
+        self.assertIn("L9", html)
+        self.assertNotIn("U1 pin 3", html)
+
+    def test_확인_줄은_백틱_없이_인쇄된다(self):
+        html = render._stage_html(self._stage("A⊕B"), self._netlist(), self._section())
+        self.assertNotIn("`", html)

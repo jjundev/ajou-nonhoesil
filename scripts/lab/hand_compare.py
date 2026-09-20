@@ -192,8 +192,8 @@ CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e1_or_s1', 'e1_nand_s1', 'e1_nand_s2', 'e1_nor_s1', 'e1_nor_s2',
             'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3',
             'e2_inv', 'e2_schmitt', 'e2_schmitt_s1', 'e2_tpd',
-            'e3_ha', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2',
-            'e3_hs', 'e3_fs', 'e3_fs_s1')
+            'e3_ha', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2', 'e3_fa_s3', 'e3_fa_s4', 'e3_fa_s5',
+            'e3_hs', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2')
 
 
 class CompareError(ValueError):

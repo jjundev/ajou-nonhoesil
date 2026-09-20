@@ -685,11 +685,15 @@ def _diagram_html(section, netlist) -> str:
             'object-position:top">')
 
 
-def _stage_html(stage, netlist) -> str:
-    """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 칸.
+def _stage_html(stage, netlist, section) -> str:
+    """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 노드, 확인 칸.
 
     그림이 없으면 빈 브레드보드를 넣지 않는다 — 단계 그림은 회색 기준선이 요점이라
     격자로 대신할 수 없다. 부재는 validate 가 warn 으로 알렸다.
+
+    `확인 노드` 줄은 그 단계에서 볼 노드의 이름과 **핀**이다. 핀은 `## 노드` 표에서
+    조회한다 — 단계 표에 핀을 적게 하면 두 자리가 표류한다. 기대값은 같은 쪽 아래
+    중간 노드 표가 전 행 찍으므로 여기 다시 싣지 않는다.
     """
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
     if png is not None and png.exists():
@@ -697,8 +701,13 @@ def _stage_html(stage, netlist) -> str:
         img = f'<img src="{_esc(src)}" style="width:100%">'
     else:
         img = f"<p class='src'>단계 그림이 아직 없다: {_esc(stage['diagram'] or '(없음)')}</p>"
+    node = ""
+    if stage.get("node"):
+        pin = next((n["pin"] for n in section.nodes if n["name"] == stage["node"]), "")
+        tail = f" <small>({_esc(pin)})</small>" if pin else ""
+        node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
     return (f'<div class="stage"><h3>단계 {_esc(stage["n"])}</h3>{img}'
-            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>"
+            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{node}"
             f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p></div>')
 
 
@@ -848,7 +857,7 @@ def circuit_pages(spec, netlist) -> str:
         if prose_before.strip():
             out.append(_blocks(prose_before))
         for stage in section.stages:
-            out.append(_stage_html(stage, netlist))
+            out.append(_stage_html(stage, netlist, section))
         out.append('<div class="wirebox">')
         if section.stages:
             out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
