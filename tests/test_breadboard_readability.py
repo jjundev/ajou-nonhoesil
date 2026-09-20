@@ -59,6 +59,23 @@ def _badge_hits(bb, box, seg):
     return hits
 
 
+# 이미 맞닿아 있던 번호 원 — 새 겹침만 막고 이건 그대로 둔다. 빌더의 `marker_at` 을
+# 옮기면 커밋된 PNG 도장이 바뀌어 `tests/test_breadboard_boards.py` 가 깨진다
+# (2026-09-20 발견). 둘 다 별건으로 다룬다.
+#
+#  · `build_e3_fs` ⑲(좌 c19 → 우 a10)·㉒(좌 c11 → 우 a14) — 중심 (426,468)·(431,472),
+#    거리 6.4px. 반지름 합 16px 안이라 **원이 실제로 포개진다.** 진짜 겹침이다.
+#  · `build_e1_nand`·`build_e1_nor`·`build_e1_comb` ⑥(좌 d13 → 좌 GND레일13행)·
+#    ⑭(좌 a9 → 좌 a18) — 중심 (231,457)·(219,468), 거리 16.3px. 반지름 합을 0.3px
+#    넘겨 원끼리는 안 닿고 외접 상자 모서리만 겹친다. 아슬아슬하지만 읽힌다.
+KNOWN_MARKER_OVERLAPS = {
+    'build_e3_fs': [((418, 460, 434, 476), (423, 464, 439, 480))],
+    'build_e1_nand': [((223, 449, 239, 465), (211, 460, 227, 476))],
+    'build_e1_nor': [((223, 449, 239, 465), (211, 460, 227, 476))],
+    'build_e1_comb': [((223, 449, 239, 465), (211, 460, 227, 476))],
+}
+
+
 def _module():
     spec = importlib.util.spec_from_file_location("render_breadboard", SRC)
     mod = importlib.util.module_from_spec(spec)
@@ -215,6 +232,43 @@ class RenderedContract(unittest.TestCase):
                 bb, _ = self._render(fn)
                 for tag, box, seg in bb.tag_boxes:
                     self.assertEqual(_badge_hits(bb, box, seg), [], f"{name}: {tag}")
+
+    def test_번호_원끼리_겹치지_않는다(self):
+        """번호 원 둘이 포개지면 아래 번호를 읽을 수 없다 — 따라 그리는 사람이 그
+        차례를 건너뛴다. 배지 검사(`_badge_hits`)는 배지 대 번호 원만 보고 번호 원
+        끼리는 아무도 안 봤다.
+
+        `marker_boxes` 항목은 원에 **외접**하는 상자다(`_marker`: `(x-8, y-8, x+8,
+        y+8)`). 엔진도 걷기 번호 자리를 잡을 때 같은 상자끼리 `_boxes_touch` 로 보니
+        (`_ghost_wire`) 여기서도 상자로 본다 — 원이 안 닿아도 상자가 겹치면 두 원이
+        16px 안에 붙어 있다는 뜻이라 붙잡을 값은 한다.
+
+        이미 맞닿아 있던 자리는 `KNOWN_MARKER_OVERLAPS` 에 실측값으로 적어 두고 새
+        겹침만 막는다 — 승인본 PNG 를 바꿀 수 없어서다(그 주석에 쌍마다 근거).
+        """
+        for name, fn in _circuit_builders(self.mod).items():
+            with self.subTest(회로=name):
+                bb, _ = self._render(fn)
+                bad = [(a, b) for i, a in enumerate(bb.marker_boxes)
+                       for b in bb.marker_boxes[i + 1:] if _inter(a, b)]
+                self.assertEqual(bad, KNOWN_MARKER_OVERLAPS.get(name, []),
+                                 f'{name}: 번호 원이 겹친다 {bad}')
+
+    def test_같은_행에_좌_f쪽과_우_a쪽_입력을_넣으면_번호_원이_겹친다(self):
+        """위 검사가 무엇을 막는지 — 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙
+        GND 542)은 `_input_jumper` 의 배지와 번호 원 자리를 한 번에 **입력 한 행**만
+        받는다. 같은 행에 좌 f 쪽과 우 a 쪽 입력을 넣으면 기본 자리가 같아 번호 원
+        둘이 정확히 포개진다 — 상자가 같으니 원도 같은 자리다."""
+        bb = self.mod.BreadboardRenderer()
+        bb.enable_steps()
+        bb.draw_chip('74HC08', 7)
+        bb.draw_chip('74HC08', 7, block='right')
+        bb.partial = True
+        self.mod._input_jumper(bb, bb.cols['left'], 11, 'A', '74HC08 pin 10', side='f')
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'B', '74HC08 pin 1')
+        self.assertEqual(len(bb.marker_boxes), 2)
+        self.assertEqual(bb.marker_boxes[0], bb.marker_boxes[1])
+        self.assertTrue(_inter(*bb.marker_boxes))
 
     def test_배선_색이_넷을_넘지_않는다(self):
         """이전 판은 한 장에 16색을 썼고 그중 눈으로 구분 안 되는 쌍이 여럿이었다.

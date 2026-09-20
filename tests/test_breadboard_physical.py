@@ -388,6 +388,36 @@ class PhysicalRules(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "side"):
             self.mod._input_jumper(bb, bb.cols['left'], 7, 'A', 'x', side='g')
 
+    def test_걷을_입력_점퍼는_그쪽_GND_레일을_건드리지_않는다(self):
+        """걷기 보드(`removal_board`)에서 이 점퍼는 `step_wire` 가 유령선으로만 그리고
+        점유표·구간·레일 접촉을 하나도 안 남긴다 — 꽂혀 있지 않은 선이다. 그런데
+        `touch_rail` 을 먼저 부르면 우 바깥 GND 836 이 검사에 들어가 브리지를 내놓으라고
+        한다(2026-09-20)."""
+        bb = self.board()
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.partial = True
+        bb.connect_jacks()
+        self.mod._input_jumper(bb, bb.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        snap = bb.snapshot()
+
+        # 그 점퍼만 빼고 다시 그린 보드의 removals() 가 걷기 key 를 준다
+        probe = self.mod.BreadboardRenderer(baseline=snap)
+        probe.enable_steps()
+        probe.draw_chip('74HC08', 10, block='right')
+        probe.partial = True
+        probe.connect_jacks()
+        keys = [r['key'] for r in probe.removals()]
+        self.assertEqual(len(keys), 1, f'입력 점퍼 하나만 걷어야 한다: {keys}')
+
+        ghost = self.mod.BreadboardRenderer(baseline=dict(
+            snap, ghost={'wires': {keys[0]: 1}, 'title': 't', 'subtitle': 's'}))
+        ghost.enable_steps()
+        ghost.draw_chip('74HC08', 10, block='right')
+        ghost.connect_jacks()
+        self.mod._input_jumper(ghost, ghost.cols['right'], 11, 'A', '74HC08 pin 13', side='f')
+        self.assertNotIn(ghost.cols['right']['gnd'], ghost._touched['gnd'])
+        ghost.verify()
+
 
 def _render(mod, fn):
     """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""

@@ -1901,11 +1901,6 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         col = col or 'i'
     r_rail = bb.free_rail_row(row, x_rail)
     y_rail, y_row = bb.r_y(r_rail), bb.r_y(row)
-    # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안 되니까)
-    # — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가 이 레일을
-    # 아예 안 본다. 중앙 GND 468·우 바깥 GND 836 에 매달린 입력이 접지된 레일과
-    # 안 이어져 있어도 verify() 가 통과하던 자리라 여기서 직접 찍는다(2026-09-20).
-    bb.touch_rail('gnd', x_rail)
     # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌
     # 테두리~레일 사이(기존), 우 바깥 레일은 VCC 레일(852)~보드 우 테두리 사이, 중앙 레일 둘은
     # 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)이다. 번호 원은 좌·우
@@ -1921,10 +1916,26 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         badge_x = (bb.cols['left']['mid_vcc'] + bb.cols['right']['mid_gnd']) / 2
         default_marker = (badge_x, -18)
     mx, dy = marker or default_marker
-    bb.step_wire([(x_rail, y_rail), (c[col], y_row)], 'sig',
+    p0, p1 = (x_rail, y_rail), (c[col], y_row)
+    # 걷기 보드(`removal_board`)가 이 점퍼를 걷는 장이면 `step_wire` 는 유령선만 그리고
+    # 곧장 돌아온다 — 점유표도 구간도 레일 접촉도 안 남긴다. 꽂혀 있지 않은 선이다.
+    # `step_wire` 와 **같은 식**으로 판정한다(회색 유지선·번호 끔도 None 을 돌려주니
+    # 반환값으로는 못 가른다).
+    ghosted = bb.ghost is not None and (
+        'sig', bb._endpoint(p0), bb._endpoint(p1)) in bb.ghost['wires']
+    bb.step_wire([p0, p1], 'sig',
                  f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
                  marker_at=(mx, y_row + dy))
-    bb.input_node(name, c[col], row)
+    if not ghosted:
+        # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안
+        # 되니까) — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가
+        # 이 레일을 아예 안 본다. 중앙 GND 468·우 바깥 GND 836 에 매달린 입력이 접지된
+        # 레일과 안 이어져 있어도 verify() 가 통과하던 자리라 여기서 직접 찍는다
+        # (2026-09-20). 걷는 점퍼에는 찍지 않는다 — 안 꽂힌 선 때문에 브리지를 내놓으라
+        # 하게 된다. `input_node` 도 마찬가지다: 세그먼트가 안 쌓여 직전 배선(엉뚱한
+        # 것)의 끝을 가상 입력 노드로 바꾸려다 단언에 걸린다.
+        bb.touch_rail('gnd', x_rail)
+        bb.input_node(name, c[col], row)
     _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}")
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
     bb.signal_tag(name, badge_x, y_rail, seg=len(bb._segments) - 1)
