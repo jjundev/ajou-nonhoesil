@@ -325,5 +325,58 @@ class Stages(unittest.TestCase):
             parse_netlist(_write(bad))
 
 
+NODED = MINIMAL.replace(
+    "- diagram: 그림.png\n",
+    "- diagram: 그림.png\n\n## 노드\n\n"
+    "| 노드 | 식 | 핀 |\n|---|---|---|\n"
+    "| A·B | A·B | `U1 pin 3` |\n"
+    "| L2 | A·B·C | U1 pin 6 |\n")
+
+
+class ParseNodes(unittest.TestCase):
+    """`## 노드` 표 — 프로브로 찍을 핀과 그 기대값 식. 단계 표와 같은 메커니즘이다."""
+
+    def setUp(self):
+        self.c1 = parse_netlist(_write(NODED)).circuits[0]
+
+    def test_노드_표를_읽는다(self):
+        self.assertEqual([n["name"] for n in self.c1.nodes], ["A·B", "L2"])
+        self.assertEqual(self.c1.nodes[0]["expr"], "A·B")
+        self.assertEqual(self.c1.nodes[0]["pin"], "U1 pin 3")   # 백틱을 벗긴다
+        self.assertEqual(self.c1.nodes[1]["expr"], "A·B·C")
+
+    def test_노드_표는_본문에서_빠진다(self):
+        """남으면 `_circuit_body` 가 참조표로 인쇄한다 — 기대값 표가 두 번 찍힌다."""
+        self.assertNotIn("## 노드", self.c1.body)
+        self.assertNotIn("U1 pin 6", self.c1.body)
+        self.assertIn("U1 = 74HC08", self.c1.body)
+
+    def test_노드가_없으면_빈_리스트다(self):
+        self.assertEqual(parse_netlist(_write(MINIMAL)).circuits[0].nodes, [])
+
+    def test_노드_표의_열이_다르면_거절한다(self):
+        bad = NODED.replace("| 노드 | 식 | 핀 |", "| 이름 | 식 | 핀 |")
+        with self.assertRaisesRegex(NetlistError, "노드"):
+            parse_netlist(_write(bad))
+
+    def test_노드_헤딩_아래_표가_없으면_거절한다(self):
+        bad = NODED.replace("| 노드 | 식 | 핀 |\n|---|---|---|\n", "")
+        bad = bad.replace("| A·B | A·B | `U1 pin 3` |\n", "")
+        bad = bad.replace("| L2 | A·B·C | U1 pin 6 |\n", "")
+        with self.assertRaisesRegex(NetlistError, "노드"):
+            parse_netlist(_write(bad))
+
+    def test_단계와_노드가_함께_있으면_둘_다_뗀다(self):
+        both = NODED.replace(
+            "## 노드\n",
+            "## 단계\n\n| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
+            "| 1 | 1단계.png | 칩 하나 | L1 4조합 |\n\n## 노드\n")
+        c1 = parse_netlist(_write(both)).circuits[0]
+        self.assertEqual([s["n"] for s in c1.stages], ["1"])
+        self.assertEqual([n["name"] for n in c1.nodes], ["A·B", "L2"])
+        self.assertNotIn("## 단계", c1.body)
+        self.assertNotIn("## 노드", c1.body)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -38,6 +38,11 @@ _BACKFILL = (
 STAGE_COLUMNS = ("단계", "그림", "이 단계에서", "확인")
 _STAGE_HEAD = re.compile(r"^##[ \t]+단계[ \t]*$")
 
+# 회로 절 안 `## 노드` 표의 열. 프로브로 찍을 핀과 그 기대값 식 — 2026-09-20 회고:
+# 다 꽂고 켰을 때 틀리면 용의자가 선 전부였다. 노드 하나를 찍을 때마다 절반으로 준다
+NODE_COLUMNS = ("노드", "식", "핀")
+_NODE_HEAD = re.compile(r"^##[ \t]+노드[ \t]*$")
+
 
 class NetlistError(ValueError):
     """결선도를 구조적으로 읽을 수 없을 때."""
@@ -56,6 +61,7 @@ class NetlistSection:
     continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
     refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
     stages: list = field(default_factory=list)   # `## 단계` 표. 칩 하나 = 단계 하나
+    nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
 
     @property
     def ics(self) -> list:
@@ -89,18 +95,16 @@ class LabNetlist:
         return [s for s in self.sections if s.kind == kind]
 
 
-def _split_stages(body, path, line):
-    """회로 본문에서 `## 단계` 헤딩과 그 표를 떼어 `(단계 목록, 나머지 본문)` 으로.
+def _split_subtable(body, head_re, columns, keys, label, path, line):
+    """회로 본문에서 `## <label>` 헤딩과 그 표를 떼어 `(행 dict 목록, 나머지 본문)` 으로.
 
     떼어내는 이유: 남겨 두면 `render._circuit_body` 가 "칩이 아닌 헤딩 아래의
-    표" 규칙으로 참조표로 인쇄한다 — 단계 블록과 표가 두 번 찍힌다.
-    실험01 실험실 기록(2026-09-11): 복합회로를 전부 꽂고 불이 안 들어오자
-    어디가 틀렸는지 알 수 없었다. 칩 하나마다 LED 로 확인하는 단계가 데이터여야
-    체크리스트에 확인 칸이 생긴다.
+    표" 규칙으로 참조표로 인쇄한다 — 블록과 표가 두 번 찍힌다.
+    `## 단계` 와 `## 노드` 가 같은 규칙이라 한 함수다.
     """
     lines = body.split("\n")
     for i, ln in enumerate(lines):
-        if not _STAGE_HEAD.match(ln.rstrip()):
+        if not head_re.match(ln.rstrip()):
             continue
         j = i + 1
         while j < len(lines) and not lines[j].strip():
@@ -108,19 +112,33 @@ def _split_stages(body, path, line):
         table, nxt = md.parse_table_at(lines, j) if j < len(lines) else (None, j)
         if table is None:
             raise NetlistError(
-                f"{path}:{line + i} 근처 `## 단계` 아래에 표가 없다. "
-                f"`| {' | '.join(STAGE_COLUMNS)} |` 표를 헤딩 바로 아래 둔다")
-        if tuple(h.strip() for h in table.header) != STAGE_COLUMNS:
+                f"{path}:{line + i} 근처 `## {label}` 아래에 표가 없다. "
+                f"`| {' | '.join(columns)} |` 표를 헤딩 바로 아래 둔다")
+        if tuple(h.strip() for h in table.header) != columns:
             raise NetlistError(
-                f"{path}:{line + i} 근처 `## 단계` 표의 열이 {table.header} 다. "
-                f"{list(STAGE_COLUMNS)} 이어야 한다 — 렌더러가 열 이름으로 읽는다")
-        stages = [dict(zip(("n", "diagram", "todo", "check"),
-                           (c.strip().strip("`") for c in row)))
-                  for row in table.rows]
-        if not stages:
-            raise NetlistError(f"{path}:{line + i} 근처 `## 단계` 표에 행이 없다")
-        return stages, "\n".join(lines[:i] + lines[nxt:])
+                f"{path}:{line + i} 근처 `## {label}` 표의 열이 {table.header} 다. "
+                f"{list(columns)} 이어야 한다 — 렌더러가 열 이름으로 읽는다")
+        rows = [dict(zip(keys, (c.strip().strip("`") for c in row)))
+                for row in table.rows]
+        if not rows:
+            raise NetlistError(f"{path}:{line + i} 근처 `## {label}` 표에 행이 없다")
+        return rows, "\n".join(lines[:i] + lines[nxt:])
     return [], body
+
+
+def _split_stages(body, path, line):
+    """`## 단계` 표. 실험01 실험실 기록(2026-09-11): 복합회로를 전부 꽂고 불이 안
+    들어오자 어디가 틀렸는지 알 수 없었다. 칩 하나마다 LED 로 확인하는 단계가
+    데이터여야 체크리스트에 확인 칸이 생긴다."""
+    return _split_subtable(body, _STAGE_HEAD, STAGE_COLUMNS,
+                           ("n", "diagram", "todo", "check"), "단계", path, line)
+
+
+def _split_nodes(body, path, line):
+    """`## 노드` 표. 단계 끝에서 LED 만 보면 중간단은 관측점이 없다 — 프로브로 찍을
+    핀과 그 기대값 식을 데이터로 둬야 실패한 행에서 고장 노드를 좁힐 수 있다."""
+    return _split_subtable(body, _NODE_HEAD, NODE_COLUMNS,
+                           ("name", "expr", "pin"), "노드", path, line)
 
 
 def _leading_attrs(block: str):
@@ -166,6 +184,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
     if not isinstance(refs, list):
         refs = [refs]
     stages, body = _split_stages(body, path, line)
+    nodes, body = _split_nodes(body, path, line)
     return NetlistSection(
         kind=kind, title=title, body=body, line=line,
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
@@ -173,6 +192,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         continues=attrs.get("continues") or None,
         refs=[str(r) for r in refs],
         stages=stages,
+        nodes=nodes,
     )
 
 
