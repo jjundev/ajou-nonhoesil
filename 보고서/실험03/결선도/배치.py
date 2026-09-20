@@ -178,7 +178,7 @@ def _e3_draw(bb, circuit, stage):
                      'XOR1 출력 A⊕B -> XOR2 입력 (pin 3 -> pin 4)', width=4,
                      marker_at=(c['c'] - 18, L(10) + 9))
     if only(fa=1):
-        # 임시 프로브 — LED1 을 XOR1 출력에 물려 A⊕B 를 본다. 2단계 첫머리에서 걷는다
+        # 임시 프로브 — LED1 을 XOR1 출력에 물려 A⊕B 를 본다. 그 선은 다음 장(`2걷기`)이 뽑는다
         bb.step_wire([(c['b'], L(9)), (_E3_LANE, L(9)),
                       (_E3_LANE, L(_E3_LED1)), (c['a'], L(_E3_LED1))], 'sig',
                      '임시 급전: A⊕B = 74HC86 pin 3 -> LED1 (다음 장 2걷기에서 뽑는다)',
@@ -200,7 +200,7 @@ def _e3_draw(bb, circuit, stage):
         bb.draw_chip('74HC08', _E3_S3, block='right')
         if not sub:
             # A 갈래: 좌 d7 에서 칩 위 4행으로 올려 우 a4 → a10. 감산기는 인버터가
-            # 대신 pin 1 을 먹인다 — 전감산기 0단계가 걷는 세 가닥 중 하나다
+            # 대신 pin 1 을 먹인다 — 전감산기 `1걷기` 보드가 걷는 세 가닥 중 하나다
             bb.step_wire([(c['d'], L(7)), (c['d'], L(4)), (r['a'], L(4)), (r['a'], L(10))], 'sig',
                          '입력 A 갈래 -> 74HC08 pin 1', width=2,
                          marker_at=(r['a'] - 14, L(7)))
@@ -296,8 +296,8 @@ def _e3_draw(bb, circuit, stage):
         bb.mark_unused_inputs(not_u[0], _E3_S2, chip='74HC04')
         bb.mark_unused_outputs(not_u[1], _E3_S2, chip='74HC04')
     # 단계 노트는 **이 보드에서 무엇을 꽂는지** 를 말한다. 걷기 보드는 앞 회로를 그 단계로
-    # 다시 그려 만들므로(`removal_board` 가 유령선을 얹는다) 그대로 두면 0단계 종이에
-    # "5단계: … 74HC32 를 꽂아 완성한다" 가 찍힌다 — netlist 0단계 행("새로 꽂는 것은 없다")
+    # 다시 그려 만들므로(`removal_board` 가 유령선을 얹는다) 그대로 두면 걷기 종이에
+    # "5단계: … 74HC32 를 꽂아 완성한다" 가 찍힌다 — netlist 걷기 행("새로 꽂는 것은 없다")
     # 과 SKILL 의 "새 선도 순서표도 없다" 와 같은 면에서 부딪힌다. 유령 렌더면 건너뛴다.
     # 완성 경로(`stage is None`)는 애초에 노트가 없어 도장이 움직이지 않는다.
     note = None if bb.ghost is not None else _E3_STAGE_NOTE.get((circuit, stage))
