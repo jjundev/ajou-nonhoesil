@@ -804,9 +804,9 @@ def check_netlist_circuits(netlist, spec) -> list:
                 nxt = circuit.stages[i + 1] if i + 1 < len(circuit.stages) else None
                 if nxt is None:
                     out.append(Finding("error", where,
-                        f"걷기 행 {st['n']} 이 `## 단계` 표의 마지막이다 — 걷기는 "
-                        "다음 단계의 머리다. 뒤에 꽂는 단계가 없으면 무엇을 위해 "
-                        "걷는지가 없다"))
+                        f"걷기 행 {st['n']} 가 `## 단계` 표의 마지막이다 — 걷기는 "
+                        "다음 단계의 머리다. 뒤에 꽂는 단계 행을 잇거나, 걷기가 "
+                        "필요 없으면 이 행을 지운다"))
                 elif nxt["n"] != str(st["walk_of"]):
                     out.append(Finding("error", where,
                         f"걷기 행 {st['n']} 뒤의 단계가 {nxt['n']!r} 이다 — "
