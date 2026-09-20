@@ -181,7 +181,7 @@ def _e3_draw(bb, circuit, stage):
         # 임시 프로브 — LED1 을 XOR1 출력에 물려 A⊕B 를 본다. 2단계 첫머리에서 걷는다
         bb.step_wire([(c['b'], L(9)), (_E3_LANE, L(9)),
                       (_E3_LANE, L(_E3_LED1)), (c['a'], L(_E3_LED1))], 'sig',
-                     '임시 급전: A⊕B = 74HC86 pin 3 -> LED1 (2단계에서 걷는다)',
+                     '임시 급전: A⊕B = 74HC86 pin 3 -> LED1 (다음 장 2걷기에서 뽑는다)',
                      marker_at=(_E3_LANE + 13, L(17)))
     elif at(fa=2):
         src_row, src_pin = (12, 6) if full else (9, 3)
@@ -253,7 +253,7 @@ def _e3_draw(bb, circuit, stage):
               ('fs', 1): (12, "A'·B = 74HC08 pin 3")}.get((circuit, stage))
     if probe2 is not None:
         bb.step_wire([(r['c'], L(probe2[0])), (r['c'], L(_E3_LED2))], 'sig',
-                     f'임시 급전: {probe2[1]} -> LED2 (다음 단계에서 걷는다)',
+                     f'임시 급전: {probe2[1]} -> LED2 (다음 장 걷기에서 뽑는다)',
                      marker_at=(r['c'] - 16, L(20)))
     elif full and at(fa=5, fs=2):
         bb.step_wire([(r['c'], L(_E3_S4 + 2)), (r['c'], L(_E3_LED2))], 'sig',
