@@ -211,6 +211,9 @@ class StageBudget(unittest.TestCase):
     """단계 하나가 꽂는 새 신호선 수. 2026-09-20 단계 세분화: 확인이 실패했을 때
     용의자가 '방금 꽂은 셋' 으로 줄어드는 것이 이 수의 존재 이유다."""
 
+    # 2026-09-20: 이 테스트는 실험03 `배치.py` 를 다시 짜기 전까지 빨간불이다 —
+    # 구현계획 Task 8 이 고친다. 실험01·02 는 `LEGACY_BOARDS` 로 면제한다.
+
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
@@ -245,6 +248,26 @@ class StageBudget(unittest.TestCase):
         """들어가면 실험01·02·03 PNG 스물두 장이 전부 stale 이 된다."""
         bb = self.mod.BreadboardRenderer()
         self.assertNotIn('new_signal', bb.content())
+
+    # 옛 규약("칩 하나 = 단계 하나")으로 그린 승인본. 다시 쪼개면 PNG 열여섯 장과
+    # 손그림 전사 기준이 움직인다 — 소급 적용하지 않는다(2026-09-20 설계 결정 10).
+    LEGACY_BOARDS = (1, 2)
+
+    def test_절차_보드는_새_신호선이_예산_안이다(self):
+        for n in self.mod.board_numbers():
+            if n in self.LEGACY_BOARDS:
+                continue
+            board = self.mod.load_board(n)
+            with tempfile.TemporaryDirectory() as d:
+                base = None
+                for name, fn, stage in board.BOARDS:
+                    bb = fn(os.path.join(d, name), stage=stage, baseline=base)
+                    with self.subTest(실험=n, board=name):
+                        self.assertLessEqual(
+                            len(bb.new_signal), self.mod.STAGE_WIRE_BUDGET,
+                            f"{name}: 새 신호선 {len(bb.new_signal)} 가닥 — "
+                            f"{[k[1:] for k in bb.new_signal]}")
+                    base = bb.snapshot()
 
 
 class CommittedPngs(unittest.TestCase):
