@@ -14,6 +14,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from . import md
+from . import nodes
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_indices
@@ -712,6 +713,43 @@ _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: _________________
 _MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
 
 
+_NODE_HINT = ("틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 "
+              "고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트")
+
+
+def _node_table_html(spec, section) -> str:
+    """중간 노드 기대값 — 프로브로 찍을 핀. 기록표 바로 위에 온다.
+
+    `.check` 셀을 두지 않는다 — `.check` 개수는 명세의 truth-table 행 수와 대조되는
+    불변식이다(`test_check_cells_exist_for_every_truth_table_row`). 이 표는 채우는
+    표가 아니라 읽는 표다. 2026-09-20 회고: 다 꽂고 켰을 때 틀리면 용의자가 선
+    전부였다 — 노드 하나를 찍을 때마다 절반으로 준다.
+
+    계산 실패는 validate 가 먼저 error 로 막지만, 렌더는 죽지 않고 안내 한 줄을 낸다.
+    """
+    if not section.nodes:
+        return ""
+    try:
+        nt = nodes.compute(section, spec)
+    except ValueError as exc:
+        return f"<p class='src'>노드 표를 계산할 수 없다: {_esc(exc)}</p>"
+    out = ['<div class="tblock nodes">',
+           "<h3>중간 노드 기대값 — 프로브로 찍을 핀</h3>",
+           f"<p class='src'>{_esc(_NODE_HINT)}</p>",
+           "<table>", "<thead>", "<tr>"]
+    out += [f"<th>{_esc(name)}</th>" for name in nt.inputs]
+    out += [f"<th>{_esc(_plain(name))}<br><small>{_esc(pin)}</small></th>"
+            for name, pin in nt.nodes]
+    out += ["</tr>", "</thead>", "<tbody>"]
+    for cells, bits in nt.rows:
+        vals = ([nodes.format_bit(b, nt.encoding) for b in bits] if bits is not None
+                else ["—"] * len(nt.nodes))
+        out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
+                   + "".join(f"<td>{_esc(v)}</td>" for v in vals) + "</tr>")
+    out += ["</tbody>", "</table>", "</div>"]
+    return "\n".join(out)
+
+
 def _mismatch_html(kind: str, table_id: str) -> str:
     """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다.
 
@@ -845,6 +883,9 @@ def circuit_pages(spec, netlist) -> str:
         if prose_after.strip():
             # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
             out.append(_blocks(prose_after))
+        node_html = _node_table_html(spec, section)
+        if node_html:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
+            out.append(node_html)
         out.append(_circuit_tables(spec, section))
         out.append("</section>")
         previous = section
