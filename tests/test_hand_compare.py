@@ -847,7 +847,8 @@ class NewWeeks(unittest.TestCase):
 
     def test_실험02_03_회로가_자기_대조에서_조용하다(self):
         cids = [c for c in hc.CIRCUITS if c.startswith(('e2_', 'e3_'))]
-        self.assertEqual(len(cids), 11)
+        # 2026-09-20 단계 세분화: 실험03 절차 래퍼가 셋에서 일곱으로 늘어 11 → 15 다.
+        self.assertEqual(len(cids), 15)
         for cid in cids:
             with self.subTest(cid=cid):
                 ref = hc.reference_diagram(cid)
