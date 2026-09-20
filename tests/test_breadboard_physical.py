@@ -418,6 +418,77 @@ class PhysicalRules(unittest.TestCase):
         self.assertNotIn(ghost.cols['right']['gnd'], ghost._touched['gnd'])
         ghost.verify()
 
+    # ---- R8. 같은 블록 두 칩 사이 배선은 쪽을 바꾸지 않는다 ----
+
+    def _two_chips(self):
+        """좌 7행 74HC86 + 좌 18행 74HC04. 핀은 안 물렸으니 partial."""
+        bb = self.board()
+        bb.draw_chip('74HC86', 7)
+        bb.draw_chip('74HC04', 18)
+        bb.partial = True
+        return bb
+
+    def test_같은_쪽으로_잇는_칩_사이_배선은_통과한다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(20))], 'mid', 'A⊕B -> NOT2 pin 3')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_반대_쪽으로_건너는_칩_사이_배선은_R8_로_막힌다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(16)), (c['h'], bb.r_y(16)), (c['h'], bb.r_y(19))],
+                     'mid', 'A⊕B -> NOT2 pin 13')
+        w = bb.cross_side_wires()
+        self.assertEqual([(x['frm'], x['to']) for x in w], [('좌 a9', '좌 h19')])
+        self.assertEqual((w[0]['from_side']['chip'], w[0]['from_side']['side']), ('74HC86', 'a'))
+        self.assertEqual((w[0]['to_side']['chip'], w[0]['to_side']['side']), ('74HC04', 'f'))
+        with self.assertRaisesRegex(AssertionError, r'R8 칩 사이 엇갈림: 좌 a9 → 좌 h19 · A⊕B -> NOT2 pin 13 — 74HC86 a쪽 → 74HC04 f쪽'):
+            bb.verify()
+
+    def test_같은_칩_안에서_건너는_사슬은_R8_대상이_아니다(self):
+        """게이트를 나눈 칩 안의 XOR1→XOR2 사슬 — 나누기의 대가라 허용한다."""
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['c'], bb.r_y(9)), (c['c'], bb.r_y(14)), (c['h'], bb.r_y(14)), (c['h'], bb.r_y(9))],
+                     'mid', 'XOR1 -> XOR2 (pin 3 -> pin 12)')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_다른_블록으로_건너는_배선은_R8_대상이_아니다(self):
+        bb = self._two_chips()
+        c, r = bb.cols['left'], bb.cols['right']
+        bb.draw_chip('74HC08', 10, block='right')
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(6)), (r['h'], bb.r_y(6)), (r['h'], bb.r_y(12))],
+                     'mid', 'A⊕B -> 우 AND2 pin 12')
+        self.assertEqual(bb.cross_side_wires(), [])
+        bb.verify()
+
+    def test_LED_레일_끝점은_R8_대상이_아니다(self):
+        """칩 f쪽 출력 → LED 사슬(칩 행 밖) 은 칩 사이 배선이 아니다."""
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['i'], bb.r_y(10)), (c['i'], bb.r_y(15)), (212, bb.r_y(15)), (212, bb.r_y(30)), (c['a'], bb.r_y(30))],
+                     'sig', 'S -> LED1')
+        self.assertEqual(bb.cross_side_wires(), [])
+
+    def test_legacy_정책은_R8_도_끈다(self):
+        bb = self._two_chips()
+        c = bb.cols['left']
+        bb.step_wire([(c['a'], bb.r_y(9)), (c['a'], bb.r_y(16)), (c['h'], bb.r_y(16)), (c['h'], bb.r_y(19))],
+                     'mid', 'A⊕B -> NOT2 pin 13')
+        bb.density_policy = 'legacy'
+        bb.verify()
+
+
+# R8 의 승인본 예외 — 2026-09-20 실측. 실험02 t_pd 2단계(`build_e2_tpd`, legacy)는 **같은
+# 부품번호 74HC04 두 개**(좌 7행 U1, 좌 18행 U2)를 U1 pin 8(f쪽) → U2 pin 1(a쪽) 으로 잇는다.
+# 74HC04 의 핀배치상 목적지 pin 1 은 a쪽에만 있어 쪽을 바꿀 수밖에 없고, 승인·제출된 그림이라
+# 다시 그리지 않는다. R8 자체는 legacy 로 면제되므로 verify() 동작에는 영향이 없다 — 이 표는
+# 회귀선일 뿐이고, 주소까지 못 박아 두어 한 건이라도 늘면 테스트가 깨진다.
+KNOWN_CROSS_SIDE = {'build_e2_tpd': [('좌 i13', '좌 b18')]}
+
 
 def _render(mod, fn):
     """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다. export() 안에서 verify() 가 돈다."""
@@ -475,6 +546,16 @@ class AllCircuits(unittest.TestCase):
                                  f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
                 if want == 'strict':
                     self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
+
+    def test_R8_모든_회로에_칩_사이_엇갈림이_없다(self):
+        """2026-09-20 실측: 실험01~03 완성본 7장 0건, 시험 전용 build_e2_tpd 1건 —
+        legacy 라도 회귀선으로 건다. 알려진 1건까지 주소로 못 박으므로 어디서든 새 엇갈림이
+        생기거나 e2_tpd 에 하나 더 붙으면 여기서 걸린다."""
+        for name, fn in sorted(self.builders().items()):
+            with self.subTest(회로=name):
+                bb = _render(self.mod, fn)
+                self.assertEqual([(w['frm'], w['to']) for w in bb.cross_side_wires()],
+                                 KNOWN_CROSS_SIDE.get(name, []), name)
 
 
 if __name__ == '__main__':

@@ -264,8 +264,8 @@ class BreadboardRenderer:
         # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
         # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
         self.steps = []
-        # R7 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘으면 verify() 가
-        # 막는다. 'legacy' 는 R7(2026-09-20) 이전에 승인·제출된 실험01~03 빌더만 쓴다 —
+        # R7·R8 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘거나(R7) 같은
+        # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20) 이전에 승인·제출된 실험01~03 빌더만 쓴다 —
         # 승인본을 다시 그리지 않으려는 것이지 면허가 아니다. tests/test_breadboard_physical.py
         # 가 실험 4 이상은 전부 strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
         self.density_policy = 'strict'
@@ -1450,6 +1450,45 @@ class BreadboardRenderer:
                             'addrs': [self.addr(x, self.r_y(r)) for x, r in holes]})
         return out
 
+    def chip_side_of(self, end):
+        """`_endpoint()` 결과가 어느 칩의 어느 쪽 핀 스트립인가.
+
+        칩 행 범위(pin1_row~+6) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
+        a~e / f~j 는 한 스트립이라 그 홀에 꽂은 것은 그 핀에 꽂은 것이다. e·f(칩 다리)·칩 행
+        밖·레일·잭은 None. 같은 이름의 칩이 두 자리에 앉을 수 있어(실험02 t_pd) `pin1_row` 로
+        구분한다.
+        """
+        if end[0] != 'hole' or end[1] is None:
+            return None
+        blk, col, row = end[1]
+        for ch in self.chips:
+            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + 6:
+                for side, names in SIDE_COLS.items():
+                    if col in names:
+                        return {'chip': ch['label'], 'block': blk, 'pin1_row': ch['pin1_row'], 'side': side}
+                return None
+        return None
+
+    def cross_side_wires(self):
+        """R8 의 지표 — 같은 블록의 **서로 다른 두 칩** 핀 스트립을 잇는 배선 중 양 끝 쪽이 다른 것.
+
+        2026-09-20 격리 시험판(게이트를 무조건 1·4 로 나눈 판)에서 `좌 a9 → 좌 h19`(A⊕B → NOT2),
+        `우 g13 → 우 b21`(AND2 → OR) 같은 X자가 생겼다 — 승인본 실험01~03 에는 0건이다. 같은
+        칩 안의 사슬(XOR1→XOR2)은 나누기의 대가라 보지 않고, 다른 블록 사이는 차선으로 건너므로
+        보지 않는다. `wiring()` 에 넣지 않는다 — 도장.
+        """
+        out = []
+        for _kind, pts, desc in self._segments:
+            a = self.chip_side_of(self._endpoint(pts[0]))
+            b = self.chip_side_of(self._endpoint(pts[-1]))
+            if not a or not b or a['block'] != b['block']:
+                continue
+            if (a['chip'], a['pin1_row']) == (b['chip'], b['pin1_row']) or a['side'] == b['side']:
+                continue
+            out.append({'frm': self.addr(*pts[0]), 'to': self.addr(*pts[-1]), 'desc': desc,
+                        'from_side': a, 'to_side': b})
+        return out
+
     def wiring(self):
         """이 그림이 무엇을 어디에 꽂았는지 **기호 좌표**로 낸다.
 
@@ -1645,6 +1684,8 @@ class BreadboardRenderer:
             되는 우회다. R5ⓐ 가 양 끝점만 보는 틈으로 지나간 부류다.
         R7  칩 한쪽(핀 행 7 × 자유 열 4)에 꽂힌 리드가 SIDE_LEAD_MAX 를 넘지 않는다
             (`density_policy`). 실험01~03 승인본만 'legacy' 로 끈다.
+        R8  같은 블록의 두 칩을 잇는 배선은 쪽(a~d / g~j)을 바꾸지 않는다 — 게이트는 신호가
+            오는 쪽으로 배정한다(SKILL §4a). `density_policy` 가 함께 끈다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1683,6 +1724,14 @@ class BreadboardRenderer:
                     side_kr = '왼쪽' if s['side'] == 'a' else '오른쪽'
                     bad.append(f"R7 칩 한쪽 밀집: {s['chip']}({blk} {s['pin1_row']}행) {side_kr} "
                                f"{s['count']}리드 > {SIDE_LEAD_MAX}: {', '.join(s['addrs'])}")
+
+        # R8. 같은 블록 두 칩 사이 배선이 반대쪽으로 건너지 않는다 — 2026-09-20 격리 시험판의
+        # X자. 게이트를 신호가 오는 쪽으로 배정하면 생기지 않는다(SKILL §4a).
+        if self.density_policy == 'strict':
+            for w in self.cross_side_wires():
+                bad.append(f"R8 칩 사이 엇갈림: {w['frm']} → {w['to']} · {w['desc']} — "
+                           f"{w['from_side']['chip']} {w['from_side']['side']}쪽 → "
+                           f"{w['to_side']['chip']} {w['to_side']['side']}쪽")
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 
