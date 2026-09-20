@@ -319,7 +319,7 @@ def build_e3_ha(output_path, template_path=None, stage=None, baseline=None):
     else:
         title = "실험 1-1: 반가산기 — 2단계 (AND 추가, 완성)"
     bb.set_header(title, "74HC86 (XOR) 게이트 1 → S · 74HC08 (AND) 게이트 1 → C · LED 2개, 330Ω 2개",
-                  submit=baseline is None)
+                  submit=baseline is None and stage is None)
     _e3_draw(bb, 'ha', stage)
     bb.export(output_path, max_row=36)
     return bb
@@ -342,9 +342,14 @@ def build_e3_fa(output_path, template_path=None, stage=None, baseline=None):
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     _e3_stage_check('fa', stage)
+    # 손그림 제출 배너는 **완성본에만** 붙인다. 맨바닥에서 시작하는 첫 단계는
+    # `baseline is None` 이라 옛 조건(`baseline is None`)으로는 배너를 달았는데,
+    # 2026-09-20 단계 세분화 뒤 그 보드는 다음 단계에서 뽑을 임시 급전선이 붙은
+    # 프로브 보드다 — 그것을 베껴 제출하면 틀린 그림을 낸다. 따라 그릴 원도는
+    # `FINALS`(stage None) 뿐이다.
     title = _E3_FA_TITLE[stage] if stage is not None else "실험 1-2: 전가산기 결선도"
     bb.set_header(title, "74HC86 XOR 2개 + 74HC08 AND 2개 + 74HC32 OR · Co = A·B + (A⊕B)·Ci",
-                  submit=baseline is None)
+                  submit=baseline is None and stage is None)
     _e3_draw(bb, 'fa', stage)
     bb.export(output_path, max_row=36)
     return bb
@@ -362,7 +367,7 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     title = "실험 2-1: 반감산기 결선도"
     bb.set_header(title, "74HC86 (XOR) → D · 74HC04 (NOT) + 74HC08 (AND) → 내림 수 B = A'·B (입력 B 와 같은 글자)",
-                  submit=baseline is None)
+                  submit=baseline is None and stage is None)
     _e3_draw(bb, 'hs', stage)
     bb.export(output_path, max_row=36)
     return bb
@@ -388,7 +393,7 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
     _e3_stage_check('fs', stage)
     title = _E3_FS_TITLE[stage] if stage is not None else "실험 2-2: 전감산기 결선도"
     bb.set_header(title, "74HC86 XOR 2 + 74HC04 NOT 2 + 74HC08 AND 2 + 74HC32 OR · Bo = A'·B + (A⊕B)'·Bi",
-                  submit=baseline is None)
+                  submit=baseline is None and stage is None)
     _e3_draw(bb, 'fs', stage)
     bb.export(output_path, max_row=36)
     return bb
