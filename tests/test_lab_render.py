@@ -1649,6 +1649,29 @@ class TestStages(unittest.TestCase):
         self.assertIn("걷기 그림(빨간 점선)", banner)
         self.assertNotIn("'걷는다' 표", banner)
 
+    def test_회로_안_걷기만_있으면_배너는_걷기_그림을_가리키지_않는다(self):
+        """배너는 회로 **경계** 판정이라 좁은 쪽(`_has_entry_walk`)만 본다. 넓은 쪽
+        (`_has_walk`)을 쓰면 실험03 C2 처럼 회로 안에서만 걷는 회로의 배너가 없는
+        걷기 그림을 가리킨다 — 학생이 그 그림을 찾는다."""
+        text = _STAGED_NETLIST.replace(
+            "| 2 | 2단계.png |",
+            "| 2걷기 | 2걷기_프로브.png | **걷기 ① 을 뽑는다** | 뽑은 선이 손에 있다 |\n"
+            "| 2 | 2단계.png |")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        netlist = parse_netlist(path)
+        c2 = next(c for c in netlist.circuits if c.id == "C2")
+        # 지금껏 어느 테스트도 덮지 않은 조합이다 — 이 픽스처가 그 조합인지 못 박는다.
+        self.assertIs(_has_walk(c2), True)
+        self.assertIs(_has_entry_walk(c2), False)
+        pages = render_checklist(
+            self.spec, netlist, TEMPLATE
+        ).split('<section class="circuit">')[1:]
+        banner = pages[1][pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("'걷는다' 표", banner)
+        self.assertNotIn("걷기 그림", banner)
+
     def test_미사용_상자_제목이_핀_점검이다(self):
         self.assertIn("핀 점검", self.pages[0])
         self.assertIn("개방", self.pages[0])
