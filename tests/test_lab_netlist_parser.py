@@ -391,6 +391,17 @@ class ParseNodes(unittest.TestCase):
         self.assertNotIn("## 단계", c1.body)
         self.assertNotIn("## 노드", c1.body)
 
+    def test_스키마_문서가_노드_표_계약을_적는다(self):
+        """정본은 코드지만 저작자는 문서를 읽는다 — 열 이름과 핀 형식이 문서에 있어야 한다."""
+        doc = (ROOT / "docs/schema/lab-netlist-v2.md").read_text(encoding="utf-8")
+        self.assertIn("### 회로 안의 `## 노드` 표", doc)
+        self.assertIn("| 노드 | 식 | 핀 |", doc)
+        self.assertIn("U<n> pin <m>", doc)
+        for skill in ("prep-lab-checklist", "draft-lab-spec"):
+            text = (ROOT / f".claude/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
+            with self.subTest(skill=skill):
+                self.assertIn("## 노드", text)
+
 
 if __name__ == "__main__":
     unittest.main()
