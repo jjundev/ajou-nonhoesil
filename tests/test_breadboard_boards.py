@@ -207,6 +207,46 @@ class Stamp(unittest.TestCase):
                 self.assertEqual(self.mod.read_stamp(os.path.join(d, name)), s)
 
 
+class StageBudget(unittest.TestCase):
+    """단계 하나가 꽂는 새 신호선 수. 2026-09-20 단계 세분화: 확인이 실패했을 때
+    용의자가 '방금 꽂은 셋' 으로 줄어드는 것이 이 수의 존재 이유다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_예산_상수가_셋이다(self):
+        self.assertEqual(self.mod.STAGE_WIRE_BUDGET, 3)
+
+    def test_전원과_LED_사슬은_예산에_들지_않는다(self):
+        """기반 배선이다 — 회로가 바뀌어도 그대로 있고 첫 단계에 한꺼번에 꽂는다."""
+        bb = self.mod.BreadboardRenderer()
+        bb.enable_steps()
+        c = bb.cols['left']
+        bb.connect_power(7, gnd_col='b')
+        self.assertEqual(bb.new_signal, [])
+        bb.step_wire([(c['b'], bb.r_y(7)), (c['b'], bb.r_y(9))], 'sig', '신호 한 가닥')
+        bb.step_wire([(c['c'], bb.r_y(7)), (c['c'], bb.r_y(9))], 'mid', '중간 한 가닥')
+        self.assertEqual(len(bb.new_signal), 2)
+
+    def test_기준선에_있던_신호선은_새_선이_아니다(self):
+        """회색으로 그려지는 선은 실험실에서 손대지 않는다 — 용의자가 아니다."""
+        first = self.mod.BreadboardRenderer()
+        first.enable_steps()
+        c = first.cols['left']
+        first.step_wire([(c['b'], first.r_y(7)), (c['b'], first.r_y(9))], 'sig', '신호 한 가닥')
+        second = self.mod.BreadboardRenderer(baseline=first.snapshot())
+        second.enable_steps()
+        c2 = second.cols['left']
+        second.step_wire([(c2['b'], second.r_y(7)), (c2['b'], second.r_y(9))], 'sig', '신호 한 가닥')
+        self.assertEqual(second.new_signal, [])
+
+    def test_도장에는_들어가지_않는다(self):
+        """들어가면 실험01·02·03 PNG 스물두 장이 전부 stale 이 된다."""
+        bb = self.mod.BreadboardRenderer()
+        self.assertNotIn('new_signal', bb.content())
+
+
 class CommittedPngs(unittest.TestCase):
     """커밋된 결선도 PNG 가 지금 `배치.py` 에서 나온 것인가 — 도장으로 본다.
     글꼴이 다른 기계에서도 선·문구가 같으면 통과한다."""
