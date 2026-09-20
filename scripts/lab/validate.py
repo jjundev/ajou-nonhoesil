@@ -12,7 +12,7 @@ from pathlib import Path
 
 from . import config, md
 from .boolexpr import eval_boolean
-from .notation import DONT_CARE, normalize_cell
+from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
 from .spec_parser import (ENCODINGS, ROLES, column_label, derived_parts,
                           split_columns, split_indices)
@@ -47,12 +47,8 @@ class Finding:
         return f"{_MARKS.get(self.level, '!')} {self.where} — {self.message}"
 
 
-def _bit(cell, encoding):
-    """평가용 비트로 읽는다. **데이터를 바꾸지 않는다** — 검산 중에만 쓴다."""
-    c = normalize_cell(cell)
-    if encoding == "H/L":
-        return {"L": 0, "H": 1}.get(c)
-    return {"0": 0, "1": 1}.get(c)
+# 본체는 `notation.bit_of` 다 — 렌더러와 공유하려고 옮겼다. 이름은 기존 호출을 위해 남긴다.
+_bit = bit_of
 
 
 def check_table_integrity(spec) -> list:
