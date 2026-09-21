@@ -301,6 +301,24 @@ class Stages(unittest.TestCase):
         self.assertEqual(self.c3.stages[0]["todo"], "74HC08 만 꽂는다")
         self.assertEqual(self.c3.stages[1]["check"], "T3 8행")
 
+    def test_일반_단계_번호를_정수로_읽는다(self):
+        c3 = parse_netlist(_write(STAGED)).circuits[0]
+        self.assertEqual([s["stage_no"] for s in c3.stages], [1, 2])
+
+    def test_앞자리_0은_숫자로_같은_단계다(self):
+        text = STAGED.replace("| 2 | `2단계.png` |", "| 03 | `3단계.png` |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual(c3.stages[1]["stage_no"], 3)
+
+    def test_걷기_오타는_일반_단계로_강등하지_않는다(self):
+        for bad in ("2 걷기", "걷기2"):
+            with self.subTest(value=bad):
+                text = STAGED.replace("| 2 | `2단계.png` |", f"| {bad} | `2걷기.png` |")
+                row = parse_netlist(_write(text)).circuits[0].stages[1]
+                self.assertIsNone(row["stage_no"])
+                self.assertFalse(row["walk"])
+                self.assertIsNone(row["walk_of"])
+
     def test_확인_칸이_가리키는_노드를_뽑는다(self):
         """단계 하나는 관측 노드 하나를 세운다 — 그 이름이 데이터여야 검증기가 잰다.
         백틱이 이름의 경계다: `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다."""
@@ -334,6 +352,7 @@ class Stages(unittest.TestCase):
         self.assertEqual([s["n"] for s in c3.stages], ["1걷기", "1", "2"])
         self.assertEqual([s["walk"] for s in c3.stages], [True, False, False])
         self.assertEqual([s["walk_of"] for s in c3.stages], [1, None, None])
+        self.assertEqual([s["stage_no"] for s in c3.stages], [None, 1, 2])
 
     def test_두_자리_걷기_번호도_읽는다(self):
         """`10걷기` 가 `1` 로 잘리면 검증기의 '다음 행과 같은가' 가 거짓 통과한다."""
