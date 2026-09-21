@@ -329,24 +329,43 @@ class WiringE3(unittest.TestCase):
 
     def test_걷기_보드마다_뽑는_주소가_netlist와_같다(self):
         """주소 정본은 netlist 걷기 행이다. diagram 이름으로 실제 걷기 보드와 묶는다."""
-        netlist_walks = {
-            st["diagram"]: st
+        netlist_walks = [
+            st
             for circuit in self._netlist().circuits
             for st in circuit.stages
             if st["walk"]
-        }
+        ]
         rendered = {
             name: bb
             for bb, (name, _fn, stage) in zip(self._chain(), self.b3.BOARDS)
             if stage is None
         }
-        self.assertEqual(set(rendered), set(netlist_walks))
-        for name, row in netlist_walks.items():
+        self.assertEqual(set(rendered), {row["diagram"] for row in netlist_walks})
+        for row in netlist_walks:
+            name = row["diagram"]
             with self.subTest(board=name):
                 removals = rendered[name].removals()
                 self.assertEqual([r["n"] for r in removals],
                                  list(range(1, len(removals) + 1)))
                 self.assertEqual([r["addr"] for r in removals], row["walk_addresses"])
+
+    def test_중복_diagram의_앞선_걷기_행도_주소를_검사한다(self):
+        netlist = self._netlist()
+        circuit = next(c for c in netlist.circuits if any(st["walk"] for st in c.stages))
+        index = next(i for i, st in enumerate(circuit.stages) if st["walk"])
+        duplicate = dict(circuit.stages[index])
+        duplicate["walk_addresses"] = ["좌 a1 → 우 a1"]
+        circuit.stages.insert(index, duplicate)
+
+        # 독립 TestCase 결과로 subTest 실패를 받는다. 뒤의 정상 행이 앞의 오류를
+        # 덮어쓰면 원래 통합 검사가 성공하므로 이 회귀 검사는 실패해야 한다.
+        comparison = WiringE3("test_걷기_보드마다_뽑는_주소가_netlist와_같다")
+        comparison._netlist = lambda: netlist
+        result = unittest.TestResult()
+        comparison.run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(len(result.failures), 1)
+        self.assertIn("좌 a1 → 우 a1", result.failures[0][1])
 
     def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
         """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
