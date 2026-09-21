@@ -49,6 +49,26 @@ _STAGE_NODE = re.compile(r"^노드\s+`([^`]+)(?:`|$)")
 _STAGE_NUMBER = re.compile(r"^[0-9]+$")
 _STAGE_WALK = re.compile(r"^([0-9]+)걷기$")
 
+_HOLE_PATTERN = r"(?:좌|우)\s*[a-j]\s*[1-9][0-9]*"
+_HOLE = re.compile(_HOLE_PATTERN)
+_WALK_ADDRESS = re.compile(rf"({_HOLE_PATTERN})\s*→\s*({_HOLE_PATTERN})")
+
+
+def _normalise_hole(token: str) -> str:
+    match = re.fullmatch(r"(좌|우)\s*([a-j])\s*([1-9][0-9]*)", token)
+    assert match is not None
+    return f"{match.group(1)} {match.group(2)}{match.group(3)}"
+
+
+def _walk_addresses(text: str) -> list[str]:
+    return [f"{_normalise_hole(start)} → {_normalise_hole(end)}"
+            for start, end in _WALK_ADDRESS.findall(text)]
+
+
+def _holes(text: str) -> list[str]:
+    return [_normalise_hole(match.group(0)) for match in _HOLE.finditer(text)]
+
+
 # 회로 절 안 `## 노드` 표의 열. 프로브로 찍을 핀과 그 기대값 식 — 2026-09-20 회고:
 # 다 꽂고 켰을 때 틀리면 용의자가 선 전부였다. 노드 하나를 찍을 때마다 절반으로 준다
 NODE_COLUMNS = ("노드", "식", "핀")
@@ -174,6 +194,8 @@ def _split_stages(body, path, line):
         row["stage_no"] = int(number.group(0)) if number and not walk else None
         row["walk"] = walk is not None
         row["walk_of"] = int(walk.group(1)) if walk else None
+        row["walk_addresses"] = _walk_addresses(row["todo"]) if row["walk"] else []
+        row["check_holes"] = _holes(row["check"]) if row["walk"] else []
     return rows, rest
 
 

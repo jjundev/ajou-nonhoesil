@@ -354,6 +354,23 @@ class Stages(unittest.TestCase):
         self.assertEqual([s["walk_of"] for s in c3.stages], [1, None, None])
         self.assertEqual([s["stage_no"] for s in c3.stages], [None, 1, 2])
 
+    def test_걷기_주소쌍과_확인_홀을_순서대로_읽는다(self):
+        text = STAGED.replace(
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+            "| 1걷기 | `1걷기.png` | 걷기 ①(좌 d7→우 a10)·②(좌 a9 → 우 c13)를 뽑는다 | "
+            "좌 d7·우 a10·좌 a9·우 c13 홀이 비었다 |\n"
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |")
+        row = parse_netlist(_write(text)).circuits[0].stages[0]
+        self.assertEqual(row["walk_addresses"],
+                         ["좌 d7 → 우 a10", "좌 a9 → 우 c13"])
+        self.assertEqual(row["check_holes"],
+                         ["좌 d7", "우 a10", "좌 a9", "우 c13"])
+
+    def test_꽂기_행의_걷기_주소_필드는_빈_리스트다(self):
+        row = parse_netlist(_write(STAGED)).circuits[0].stages[0]
+        self.assertEqual(row["walk_addresses"], [])
+        self.assertEqual(row["check_holes"], [])
+
     def test_두_자리_걷기_번호도_읽는다(self):
         """`10걷기` 가 `1` 로 잘리면 검증기의 '다음 행과 같은가' 가 거짓 통과한다."""
         text = STAGED.replace("| 2 | `2단계.png` | 74HC00 을 더한다 | T3 8행 |",

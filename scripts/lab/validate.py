@@ -808,6 +808,18 @@ def check_netlist_circuits(netlist, spec) -> list:
                     out.append(Finding("error", where,
                         f"단계 값 {st['n']!r} 의 번호는 1 이상이어야 한다 — 0단계는 은퇴했다"))
                     continue
+                if not st["walk_addresses"]:
+                    out.append(Finding("error", where,
+                        f"걷기 행 {st['n']} 의 `이 단계에서`에 홀 주소쌍이 없다 — "
+                        "`좌 b9→좌 a25`처럼 뽑는 선의 양 끝을 적는다"))
+                else:
+                    expected_holes = [hole for address in st["walk_addresses"]
+                                      for hole in address.split(" → ")]
+                    if st["check"] and st["check_holes"] != expected_holes:
+                        out.append(Finding("error", where,
+                            f"걷기 행 {st['n']} 의 확인 홀 목록이 뽑는 주소쌍과 다르다 — "
+                            f"기대 {expected_holes}, 실제 {st['check_holes']}. "
+                            "각 선의 출발·도착 홀을 같은 순서로 모두 적는다"))
                 nxt = circuit.stages[i + 1] if i + 1 < len(circuit.stages) else None
                 if nxt is None:
                     out.append(Finding("error", where,

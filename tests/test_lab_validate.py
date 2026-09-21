@@ -686,11 +686,35 @@ spec: ../체크리스트/명세.md
         warns = self._stage_node_findings(bad, "warn")
         self.assertTrue(any("가리키지" in m and "단계 1" in m for m in warns), warns)
 
+    def _with_walk(self, todo="걷기 ①(좌 a1→좌 b2)을 뽑는다",
+                   check="좌 a1·좌 b2 홀이 비었다"):
+        return self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            f"| 1걷기 | 1걷기.png | {todo} | {check} |\n"
+            "| 1 | 1단계.png |")
+
+    def test_걷기_행에_주소쌍이_없으면_error(self):
+        errors = self._node_errors(self._with_walk(todo="걷기 ①을 뽑는다"))
+        self.assertTrue(any("주소쌍" in m for m in errors), errors)
+
+    def test_걷기_확인에_양끝_홀이_모두_있으면_조용하다(self):
+        errors = self._node_errors(self._with_walk())
+        self.assertFalse(any("홀 목록" in m or "주소쌍" in m for m in errors), errors)
+
+    def test_걷기_확인에서_출발_홀이_빠지면_error(self):
+        errors = self._node_errors(self._with_walk(check="좌 b2 홀이 비었다"))
+        self.assertTrue(any("홀 목록" in m and "좌 a1" in m for m in errors), errors)
+
+    def test_걷기_행의_빈_확인_칸은_error(self):
+        errors = self._node_errors(self._with_walk(check=""))
+        self.assertTrue(any("확인 칸" in m for m in errors), errors)
+        self.assertFalse(any("홀 목록" in m for m in errors), errors)
+
     def test_걷기_행은_노드를_가리키지_않아도_된다(self):
         """걷기 보드는 걷기만 하므로 관측할 출력이 없다."""
         text = self.STAGED_NODED_C1.replace(
             "| 1 | 1단계.png |",
-            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있고 홀이 비었다 |\n"
+            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
             "| 1 | 1단계.png |")
         warns = self._stage_node_findings(text, "warn")
         self.assertEqual([w for w in warns if "단계 1걷기" in w], [])
@@ -706,7 +730,7 @@ spec: ../체크리스트/명세.md
         text = self.STAGED_NODED_C1.replace(
             "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |",
             "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |\n"
-            "| 3걷기 | 3걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |")
+            "| 3걷기 | 3걷기.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |")
         spec = parse_spec(WEEK2_SPEC)
         errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
                   if f.level == "error"]
@@ -716,7 +740,7 @@ spec: ../체크리스트/명세.md
         """`<k>걷기` 의 k 는 바로 다음 행의 단계 번호다 — 안 묶으면 번호를 밀 때 표류한다."""
         text = self.STAGED_NODED_C1.replace(
             "| 1 | 1단계.png |",
-            "| 2걷기 | 2걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |\n"
+            "| 2걷기 | 2걷기.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
             "| 1 | 1단계.png |")
         spec = parse_spec(WEEK2_SPEC)
         errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
