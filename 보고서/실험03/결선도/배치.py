@@ -12,7 +12,8 @@ from render_breadboard import BreadboardRenderer, _input_jumper, removal_board
 # 네 회로가 칩 네 종류(74HC86·74HC08·74HC32·74HC04)를 한 패키지씩 나눠 쓴다.
 #
 # 2026-09-14 조교 공지(`_350547_1`)로 실험실에서 하는 회로는 전가산기(C2)·전감산기(C4)
-# 뿐이다. 사슬은 C2(맨바닥에서 5단계) → 걷기 → C4(2단계)다 — 단계마다 관측 노드 하나이고
+# 뿐이다. 사슬은 C2(맨바닥에서 5단계) → C4(2단계)이고, **선을 뽑는 자리마다 걷기 보드가
+# 한 장씩** 끼어 보드가 열둘이다 — 단계마다 관측 노드 하나이고
 # 새 신호선이 셋 이하다(2026-09-20 단계 세분화). 반가산기·반감산기
 # 빌더(`build_e3_ha`·`build_e3_hs`)는 완성본만 남는다 — 사슬에는 없고, 같은 글자 `B`
 # 배지와 손그림 검토의 회귀 사례로 테스트가 쓴다.
@@ -66,23 +67,26 @@ _E3_NOT2_UNUSED = ([5, 9, 11, 13], [6, 8, 10, 12])        # 인버터 1·2
 _E3_STAGES = {'ha': 2, 'fa': 5, 'fs': 2}
 
 # 단계마다 보드 아래에 붙는 한 줄. 관측 노드와 급전선을 어디로 옮기는지 말한다.
+# 걷는 것은 여기 적지 않는다 — 2026-09-20 걷기 보드 뒤로 뽑는 자리마다 전용 그림이
+# 한 장 있고(`<k>걷기`), 이 노트가 같은 말을 또 하면 두 자리가 표류한다.
 _E3_STAGE_NOTE = {
     ('fa', 1): '1단계: 74HC86 게이트 1 만 검사한다. LED1 급전선을 **임시로** pin 3 에 꽂아 '
-               'A⊕B 를 A·B 네 조합으로 본다 (01·10 만 켜짐). 2단계 첫머리에서 그 선을 '
-               '걷는다. 우 10행 전원 두 가닥은 3단계의 74HC08 자리다.',
-    ('fa', 2): '2단계: 임시 급전선을 걷고 XOR2 를 잇는다. LED1 = S = A⊕B⊕Ci 를 여덟 조합 '
-               '전부 본다 (입력에 1 이 홀수 개일 때만 켜짐).',
+               'A⊕B 를 A·B 네 조합으로 본다 (01·10 만 켜짐). 그 선은 다음 장(2걷기)이 '
+               '뽑는다. 우 10행 전원 두 가닥은 3단계의 74HC08 자리다.',
+    ('fa', 2): '2단계: 앞 장(2걷기)에서 임시 급전선을 뽑은 상태로 시작한다. XOR2 를 잇는다. '
+               'LED1 = S = A⊕B⊕Ci 를 여덟 조합 전부 본다 (입력에 1 이 홀수 개일 때만 켜짐).',
     ('fa', 3): '3단계: 74HC08 의 AND1 만 검사한다. LED2 급전선을 **임시로** U2 pin 3 에 '
-               '꽂아 A·B 를 네 조합으로 본다 (11 만 켜짐). 4단계 첫머리에서 걷는다.',
-    ('fa', 4): '4단계: 임시 급전선을 U2 pin 6 으로 옮겨 (A⊕B)·Ci 를 여덟 조합 전부 본다. '
-               '5단계 첫머리에서 걷는다.',
-    ('fa', 5): '5단계: 임시 급전선을 걷고 74HC32 를 꽂아 완성한다. LED1 = S 와 LED2 = Co '
-               '가 T3 8행에서 동시에 맞아야 한다.',
-    ('fs', 1): "1단계: 74HC04 의 NOT1 만 꽂는다. LED2 급전선(0단계에서 걷은 것)을 **임시로** "
+               '꽂아 A·B 를 네 조합으로 본다 (11 만 켜짐). 그 선은 다음 장(4걷기)이 뽑는다.',
+    ('fa', 4): '4단계: 앞 장(4걷기)에서 뽑은 자리에 임시 급전선을 U2 pin 6 으로 옮겨 '
+               '(A⊕B)·Ci 를 여덟 조합 전부 본다. 그 선은 다음 장(5걷기)이 뽑는다.',
+    ('fa', 5): '5단계: 앞 장(5걷기)에서 임시 급전선을 뽑은 상태로 시작한다. 74HC32 를 꽂아 '
+               '완성한다. LED1 = S 와 LED2 = Co 가 T3 8행에서 동시에 맞아야 한다.',
+    ('fs', 1): "1단계: 74HC04 의 NOT1 만 꽂는다. LED2 급전선(1걷기에서 뽑은 것)을 **임시로** "
                "U2 pin 3 에 꽂아 A'·B 를 T7 8행으로 본다 (A=0·B=1 인 행만 켜짐). "
-               "2단계 첫머리에서 걷는다. LED1 은 내내 D 를 보인다.",
-    ('fs', 2): "2단계: 임시 급전선을 걷고 NOT2 와 LED2 최종 급전선을 잇는다 — 완성이다. "
-               "LED1 = D 와 LED2 = Bo 가 T7 8행에서 동시에 맞아야 한다.",
+               "그 선은 다음 장(2걷기)이 뽑는다. LED1 은 내내 D 를 보인다.",
+    ('fs', 2): "2단계: 앞 장(2걷기)에서 임시 급전선을 뽑은 상태로 시작한다. NOT2 와 LED2 "
+               "최종 급전선을 잇는다 — 완성이다. LED1 = D 와 LED2 = Bo 가 T7 8행에서 "
+               "동시에 맞아야 한다.",
     ('ha', 1): '1단계: 74HC86 게이트 1 만 검사한다. LED1 = S = A⊕B 를 네 조합 전부 본다 '
                '(01·10 만 켜짐). 우 10행 전원 두 가닥은 2단계의 74HC08 자리다.',
 }
@@ -174,10 +178,10 @@ def _e3_draw(bb, circuit, stage):
                      'XOR1 출력 A⊕B -> XOR2 입력 (pin 3 -> pin 4)', width=4,
                      marker_at=(c['c'] - 18, L(10) + 9))
     if only(fa=1):
-        # 임시 프로브 — LED1 을 XOR1 출력에 물려 A⊕B 를 본다. 2단계 첫머리에서 걷는다
+        # 임시 프로브 — LED1 을 XOR1 출력에 물려 A⊕B 를 본다. 그 선은 다음 장(`2걷기`)이 뽑는다
         bb.step_wire([(c['b'], L(9)), (_E3_LANE, L(9)),
                       (_E3_LANE, L(_E3_LED1)), (c['a'], L(_E3_LED1))], 'sig',
-                     '임시 급전: A⊕B = 74HC86 pin 3 -> LED1 (2단계에서 걷는다)',
+                     '임시 급전: A⊕B = 74HC86 pin 3 -> LED1 (다음 장 2걷기에서 뽑는다)',
                      marker_at=(_E3_LANE + 13, L(17)))
     elif at(fa=2):
         src_row, src_pin = (12, 6) if full else (9, 3)
@@ -188,7 +192,7 @@ def _e3_draw(bb, circuit, stage):
     sum_desc = {'ha': 'S = A⊕B — 반가산기 진리표의 S 열', 'fa': 'S = A⊕B⊕Ci — 진리표 T3 의 S 열',
                 'hs': 'D = A⊕B — 반감산기 진리표의 D 열', 'fs': 'D = A⊕B⊕Bi — 진리표 T7 의 D 열'}[circuit]
     if only(fa=1):
-        sum_desc = '1단계에는 A⊕B 를 본다 — 임시 급전선이 2단계에서 걷힌다'
+        sum_desc = '1단계에는 A⊕B 를 본다 — 임시 급전선은 다음 장(2걷기)이 뽑는다'
     bb.led_chain(c['a'], _E3_LED1, sum_tag, sum_desc, color_rgb=(210, 140, 0))
 
     # --- 우 S3: AND + 입력 갈래 ---
@@ -196,7 +200,7 @@ def _e3_draw(bb, circuit, stage):
         bb.draw_chip('74HC08', _E3_S3, block='right')
         if not sub:
             # A 갈래: 좌 d7 에서 칩 위 4행으로 올려 우 a4 → a10. 감산기는 인버터가
-            # 대신 pin 1 을 먹인다 — 전감산기 0단계가 걷는 세 가닥 중 하나다
+            # 대신 pin 1 을 먹인다 — 전감산기 `1걷기` 보드가 걷는 세 가닥 중 하나다
             bb.step_wire([(c['d'], L(7)), (c['d'], L(4)), (r['a'], L(4)), (r['a'], L(10))], 'sig',
                          '입력 A 갈래 -> 74HC08 pin 1', width=2,
                          marker_at=(r['a'] - 14, L(7)))
@@ -249,7 +253,7 @@ def _e3_draw(bb, circuit, stage):
               ('fs', 1): (12, "A'·B = 74HC08 pin 3")}.get((circuit, stage))
     if probe2 is not None:
         bb.step_wire([(r['c'], L(probe2[0])), (r['c'], L(_E3_LED2))], 'sig',
-                     f'임시 급전: {probe2[1]} -> LED2 (다음 단계에서 걷는다)',
+                     f'임시 급전: {probe2[1]} -> LED2 (다음 장 걷기에서 뽑는다)',
                      marker_at=(r['c'] - 16, L(20)))
     elif full and at(fa=5, fs=2):
         bb.step_wire([(r['c'], L(_E3_S4 + 2)), (r['c'], L(_E3_LED2))], 'sig',
@@ -264,7 +268,7 @@ def _e3_draw(bb, circuit, stage):
                   'hs': "B = A'·B — 반감산기 진리표의 넷째 열 B (입력 B 와 같은 글자)",
                   'fs': "Bo = A'·B + (A⊕B)'·Bi — 진리표 T7 의 Bo 열"}[circuit]
     if probe2 is not None:
-        carry_desc = f'이 단계에는 {probe2[1]} 을 본다 — 임시 급전선이 다음 단계에서 걷힌다'
+        carry_desc = f'이 단계에는 {probe2[1]} 을 본다 — 임시 급전선은 다음 장(걷기)이 뽑는다'
     elif not at(fa=5, fs=2, ha=2):
         carry_desc = '아직 급전하지 않는다 — 다음 단계에서 잇는다'
     bb.led_chain(r['c'], _E3_LED2, carry_tag, carry_desc, block='right')
@@ -292,8 +296,8 @@ def _e3_draw(bb, circuit, stage):
         bb.mark_unused_inputs(not_u[0], _E3_S2, chip='74HC04')
         bb.mark_unused_outputs(not_u[1], _E3_S2, chip='74HC04')
     # 단계 노트는 **이 보드에서 무엇을 꽂는지** 를 말한다. 걷기 보드는 앞 회로를 그 단계로
-    # 다시 그려 만들므로(`removal_board` 가 유령선을 얹는다) 그대로 두면 0단계 종이에
-    # "5단계: … 74HC32 를 꽂아 완성한다" 가 찍힌다 — netlist 0단계 행("새로 꽂는 것은 없다")
+    # 다시 그려 만들므로(`removal_board` 가 유령선을 얹는다) 그대로 두면 걷기 종이에
+    # "5단계: … 74HC32 를 꽂아 완성한다" 가 찍힌다 — netlist 걷기 행("새로 꽂는 것은 없다")
     # 과 SKILL 의 "새 선도 순서표도 없다" 와 같은 면에서 부딪힌다. 유령 렌더면 건너뛴다.
     # 완성 경로(`stage is None`)는 애초에 노트가 없어 도장이 움직이지 않는다.
     note = None if bb.ghost is not None else _E3_STAGE_NOTE.get((circuit, stage))
@@ -330,7 +334,8 @@ def build_e3_fa(output_path, template_path=None, stage=None, baseline=None):
 
     실험실 사슬의 첫 회로라 맨바닥에서 시작한다(반가산기는 조교 공지 `_350547_1` 로
     하지 않는다). 단계마다 관측 노드 하나이고 새 신호선이 셋이다 — 1·3·4단계는 LED
-    급전선을 그 노드 핀으로 잠시 옮겨 보고 다음 단계 첫머리에서 걷는다.
+    급전선을 그 노드 핀으로 잠시 옮겨 보고, 그 선을 뽑는 일은 전용 걷기 보드
+    (2걷기·4걷기·5걷기)가 지시한다.
 
       stage 1  74HC86(S1) XOR1 + A·B 입력 + LED1·LED2 사슬 + 임시 급전(pin 3). A⊕B
       stage 2  + Ci·pin3→pin4·pin6→LED1. S = A⊕B⊕Ci
@@ -374,9 +379,9 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
 
 
 def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
-    """실험 2-2 · 전감산기 (네 칩 전부). netlist C4. 걷기 보드(0단계) + 2단계.
+    """실험 2-2 · 전감산기 (네 칩 전부). netlist C4. 1걷기 보드 + 2단계(2걷기가 끼어 있다).
 
-    전가산기(C2) 완성 상태에서 바꾼다 — 0단계(걷기 보드)에서 세 가닥을 뽑는다:
+    전가산기(C2) 완성 상태에서 바꾼다 — 1걷기 보드에서 세 가닥을 뽑는다:
     AND1 pin 1 로 가던 A 갈래, AND2 pin 4 로 가던 A⊕B, 그리고 LED2 최종 급전선이다.
     마지막 것은 1단계에서 프로브가 된다(Bo 는 아직 뜻이 없다). `Ci` 점퍼는 그 자리
     그대로 `Bi` 가 되고 LED1 급전선도 그대로라 LED1 은 내내 D 를 보인다.
@@ -385,7 +390,7 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
       stage 2  + NOT2 (A⊕B→pin3, (A⊕B)'→U2 pin4) + LED2 최종 급전 = 완성. Bo
 
     걷기 보드는 `BOARDS` 의 `removal_board(...)` 가 만든다 — 이 빌더에 `build_*`
-    래퍼는 없다.
+    래퍼는 없다. 1단계 앞(1걷기)과 2단계 앞(2걷기) 둘이다.
     """
     bb = BreadboardRenderer(template_path, baseline=baseline)
     bb.enable_steps()
@@ -401,21 +406,47 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
 
 # 절차 그림 사슬. 보드 n 의 기준선은 보드 n-1 의 배선이다 — 실험실에서 보드 위에
 # 실제로 남아 있는 것. 첫 보드(C2 1단계)는 맨바닥에서 시작하므로 기준선이 없다.
-# C2 → C4 경계에 걷기 보드(0단계)가 있다 — 2026-09-18 당시 걷을 두 가닥이 실험실에서
-# footer 표에만 있어 놓쳤다(지금은 LED2 급전선이 더해져 세 가닥이다 — 2026-09-20 단계
-# 세분화). 걷기 보드는 앞 회로가 전부 회색이고 뽑을 선만 빨간 점선이다.
+#
+# **선을 뽑는 자리마다 걷기 전용 보드가 한 장**이다 (2026-09-20 걷기 보드). 앞 상태가
+# 전부 회색이고 뽑을 선만 빨간 점선 + 걷기 번호이며 새 선도 순서표도 없다. 회로 경계
+# (C2 → C4)뿐 아니라 회로 **안**의 임시 프로브 급전선도 같다 — 2026-09-18 실험실에서
+# 걷을 가닥이 footer 표에 글로만 있어 놓쳤고, 그것이 걷기 보드를 만든 근거였는데
+# 회로 안의 뽑기를 바로 그 표로 보내고 있었다.
+#
+# C2 2단계 → 3단계에는 걷기 보드가 없다 — 그 전환은 걷는 선이 없다
+# (`removal_board` 가 걷을 배선이 없으면 스스로 ValueError 로 거절한다).
 BOARDS = [
     ("실험03_1-2_결선도_전가산기_1단계_XOR1.png", build_e3_fa, 1),
+    ("실험03_1-2_결선도_전가산기_2걷기_LED1프로브.png",
+     removal_board((build_e3_fa, 1), (build_e3_fa, 2),
+                   "실험 1-2: 전가산기 — 2단계 걷기 (임시 급전선 1가닥)",
+                   "A⊕B → LED1 임시 급전선을 뽑는다 · 회색은 그대로 둔다"),
+     None),
     ("실험03_1-2_결선도_전가산기_2단계_S.png", build_e3_fa, 2),
     ("실험03_1-2_결선도_전가산기_3단계_AND1.png", build_e3_fa, 3),
+    ("실험03_1-2_결선도_전가산기_4걷기_LED2프로브.png",
+     removal_board((build_e3_fa, 3), (build_e3_fa, 4),
+                   "실험 1-2: 전가산기 — 4단계 걷기 (임시 급전선 1가닥)",
+                   "A·B → LED2 임시 급전선을 뽑는다 · 회색은 그대로 둔다"),
+     None),
     ("실험03_1-2_결선도_전가산기_4단계_AND2.png", build_e3_fa, 4),
+    ("실험03_1-2_결선도_전가산기_5걷기_LED2프로브.png",
+     removal_board((build_e3_fa, 4), (build_e3_fa, 5),
+                   "실험 1-2: 전가산기 — 5단계 걷기 (임시 급전선 1가닥)",
+                   "(A⊕B)·Ci → LED2 임시 급전선을 뽑는다 · 회색은 그대로 둔다"),
+     None),
     ("실험03_1-2_결선도_전가산기_5단계_Co.png", build_e3_fa, 5),
-    ("실험03_2-2_결선도_전감산기_0단계_걷기.png",
+    ("실험03_2-2_결선도_전감산기_1걷기_세가닥.png",
      removal_board((build_e3_fa, 5), (build_e3_fs, 1),
-                   "실험 2-2: 전감산기 — 0단계 (전가산기에서 걷는 선 3가닥)",
+                   "실험 2-2: 전감산기 — 1단계 걷기 (전가산기에서 걷는 선 3가닥)",
                    "A→74HC08 pin 1 갈래 · A⊕B→74HC08 pin 4 · LED2 급전선을 뽑는다 · 회색은 그대로 둔다"),
      None),
     ("실험03_2-2_결선도_전감산기_1단계_NOT.png", build_e3_fs, 1),
+    ("실험03_2-2_결선도_전감산기_2걷기_LED2프로브.png",
+     removal_board((build_e3_fs, 1), (build_e3_fs, 2),
+                   "실험 2-2: 전감산기 — 2단계 걷기 (임시 급전선 1가닥)",
+                   "A'·B → LED2 임시 급전선을 뽑는다 · 회색은 그대로 둔다"),
+     None),
     ("실험03_2-2_결선도_전감산기_2단계_Bo.png", build_e3_fs, 2),
 ]
 
@@ -447,30 +478,30 @@ def build_e3_fa_s1(output_path, template_path=None):
 
 
 def build_e3_fa_s2(output_path, template_path=None):
-    """C2 2단계 — Ci 와 XOR2 를 잇는다. 노드 S."""
-    return _e3_board(1, output_path, template_path)
+    """C2 2단계 — 2걷기 뒤에 Ci 와 XOR2 를 잇는다. 노드 S."""
+    return _e3_board(2, output_path, template_path)
 
 
 def build_e3_fa_s3(output_path, template_path=None):
     """C2 3단계 — 74HC08 AND1 + LED2 임시 급전. 노드 A·B."""
-    return _e3_board(2, output_path, template_path)
-
-
-def build_e3_fa_s4(output_path, template_path=None):
-    """C2 4단계 — AND2 입력 둘 + LED2 임시 급전 이동. 노드 (A⊕B)·Ci."""
     return _e3_board(3, output_path, template_path)
 
 
+def build_e3_fa_s4(output_path, template_path=None):
+    """C2 4단계 — 4걷기 뒤에 AND2 입력 둘 + LED2 임시 급전. 노드 (A⊕B)·Ci."""
+    return _e3_board(5, output_path, template_path)
+
+
 def build_e3_fa_s5(output_path, template_path=None):
-    """C2 5단계 — 74HC32 OR 과 LED2 최종 급전. 노드 Co, 완성."""
-    return _e3_board(4, output_path, template_path)
+    """C2 5단계 — 5걷기 뒤에 74HC32 OR 과 LED2 최종 급전. 노드 Co, 완성."""
+    return _e3_board(7, output_path, template_path)
 
 
 def build_e3_fs_s1(output_path, template_path=None):
-    """C4 1단계 — 걷기 보드(0단계) 뒤에 74HC04 NOT1 을 끼운다. 노드 A'·B."""
-    return _e3_board(6, output_path, template_path)
+    """C4 1단계 — 1걷기 보드 뒤에 74HC04 NOT1 을 끼운다. 노드 A'·B."""
+    return _e3_board(9, output_path, template_path)
 
 
 def build_e3_fs_s2(output_path, template_path=None):
-    """C4 2단계 — NOT2 와 LED2 최종 급전. 노드 Bo, 완성."""
-    return _e3_board(7, output_path, template_path)
+    """C4 2단계 — 2걷기 뒤에 NOT2 와 LED2 최종 급전. 노드 Bo, 완성."""
+    return _e3_board(11, output_path, template_path)

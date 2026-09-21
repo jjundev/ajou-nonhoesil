@@ -323,6 +323,32 @@ class Stages(unittest.TestCase):
         c3 = parse_netlist(_write(STAGED)).circuits[0]
         self.assertEqual([s["node"] for s in c3.stages], [None, None])
 
+    def test_걷기_행을_판정한다(self):
+        """걷기 행은 관측 노드가 없다 — 판정이 데이터여야 검증기·렌더러가 한 곳만 읽는다.
+        `<k>걷기` 의 k 는 **바로 다음 행**의 단계 번호다."""
+        text = STAGED.replace(
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+            "| 1걷기 | `1걷기_세가닥.png` | **걷기 ① 을 뽑는다** | 뽑은 선이 손에 있다 |\n"
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual([s["n"] for s in c3.stages], ["1걷기", "1", "2"])
+        self.assertEqual([s["walk"] for s in c3.stages], [True, False, False])
+        self.assertEqual([s["walk_of"] for s in c3.stages], [1, None, None])
+
+    def test_두_자리_걷기_번호도_읽는다(self):
+        """`10걷기` 가 `1` 로 잘리면 검증기의 '다음 행과 같은가' 가 거짓 통과한다."""
+        text = STAGED.replace("| 2 | `2단계.png` | 74HC00 을 더한다 | T3 8행 |",
+                              "| 10걷기 | `10걷기.png` | **걷기 ① 을 뽑는다** | 손에 있다 |\n"
+                              "| 10 | `10단계.png` | 74HC00 을 더한다 | T3 8행 |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual(c3.stages[1]["walk_of"], 10)
+
+    def test_꽂기_행은_걷기가_아니다(self):
+        """실험01·02 승인본의 단계 표가 그렇다 — 파서가 거절하지 않는다."""
+        c3 = parse_netlist(_write(STAGED)).circuits[0]
+        self.assertEqual([s["walk"] for s in c3.stages], [False, False])
+        self.assertEqual([s["walk_of"] for s in c3.stages], [None, None])
+
     def test_단계_표는_본문에서_빠진다(self):
         """남으면 `_circuit_body` 가 참조표로 인쇄한다 — 단계 블록과 표가 두 번 찍힌다."""
         self.assertNotIn("## 단계", self.c3.body)

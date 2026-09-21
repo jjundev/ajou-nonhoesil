@@ -285,13 +285,14 @@ LEGEND = (
 
 
 # 공통면 물리 주의. 셋째 줄만 주차에 따라 갈린다 — 배너 원칙("모든 주차에서 참인
-# 것만")대로 걷기 보드가 없는 주차에서 0단계 그림을 가리키지 않는다.
+# 것만")대로 걷기 보드가 없는 주차에서 걷기 그림을 가리키지 않는다.
 _CAUTION = (
     "선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)",
     "칩을 꽂고 뽑을 때는 전원을 끈다",
 )
 _CAUTION_SWAP = {
-    True: "회로를 바꿀 때는 0단계 걷기 그림의 선부터 먼저 뽑고 새 선을 꽂는다",
+    True: "선을 뽑을 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고 새 선을 꽂는다 — "
+          "회로를 바꿀 때도, 회로 안에서도 같다",
     False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고 새 선을 꽂는다",
 }
 
@@ -573,10 +574,18 @@ def _circuit_body(section):
 
 
 def _has_walk(section) -> bool:
-    """`## 단계` 표에 `0` 행(걷기 보드)이 있는가. 칩 교체 배너와 공통면 주의 상자가
-    같은 판정을 쓴다 — 없는 그림을 가리키지 않기 위해서다. 단계 번호는
-    `netlist_parser` 가 문자열로 넘긴다."""
-    return any(str(st.get("n", "")).strip() == "0" for st in section.stages or ())
+    """`## 단계` 표에 걷기 행(`<k>걷기`)이 **하나라도** 있는가 — 공통면 주의 상자가
+    쓴다. 2026-09-20 걷기 보드 뒤로는 회로 **안**에서도 걷으므로 이쪽이 넓다.
+    회로 경계 판정은 `_has_entry_walk` 다. 판정 자체는 파서가 `walk` 키로 냈다."""
+    return any(st.get("walk") for st in section.stages or ())
+
+
+def _has_entry_walk(section) -> bool:
+    """`## 단계` 표의 **첫 행**이 걷기인가 — 앞 회로를 고쳐 이 회로를 만든다는 뜻이다.
+    칩 교체 배너는 회로 경계 판정이라 이것만 본다. 회로 안 걷기(실험03 C2)는
+    배너가 아니라 그 단계 블록이 지시한다."""
+    stages = section.stages or ()
+    return bool(stages) and bool(stages[0].get("walk"))
 
 
 def _chip_swap(previous, current) -> str:
@@ -594,10 +603,10 @@ def _chip_swap(previous, current) -> str:
     고정·기준선 비교로 그려져 앞 회로의 배선을 걷지 않는다. `모두 걷는다`
     문구를 그대로 두면 학생이 실제로 점퍼선을 다 뽑아 단계 그림의 회색(=
     그대로 둔다) 전제를 깬다. 대신 그림이 무엇을 걷고 새로 꽂을지
-    지시한다고 말하는데, **어느 그림인지는 `0` 단계 행이 가른다**: `0` 행
-    (걷기 보드)이 있으면 걷을 선은 0단계 걷기 그림(빨간 점선)이, 없으면
-    (실험01 처럼 걷기 보드가 없는 주차) 단계 그림의 회색·번호·`걷는다` 표가
-    지시한다. `0` 행이 없는데 걷기 그림을 가리키면 없는 그림을 찾게 된다.
+    지시한다고 말하는데, **어느 그림인지는 첫 행이 걷기냐가 가른다**: 첫 행이
+    걷기(`<k>걷기`)면 걷을 선은 걷기 그림(빨간 점선)이, 아니면 (실험01 처럼
+    걷기 보드로 들어가지 않는 회로) 단계 그림의 회색·번호·`걷는다` 표가
+    지시한다. 걷기 행이 없는데 걷기 그림을 가리키면 없는 그림을 찾게 된다.
     """
     if previous is None:
         return "준비 — 꽂는다: " + ", ".join(current.ics)
@@ -617,8 +626,8 @@ def _chip_swap(previous, current) -> str:
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
     if current.stages:
-        if _has_walk(current):
-            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 0단계 걷기 그림(빨간 점선), "
+        if _has_entry_walk(current):
+            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 걷기 그림(빨간 점선), "
                      "새 선은 단계 그림(회색·번호)이 지시한다"]
         else:
             parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
@@ -694,6 +703,9 @@ def _stage_html(stage, netlist, section) -> str:
     `확인 노드` 줄은 그 단계에서 볼 노드의 이름과 **핀**이다. 핀은 `## 노드` 표에서
     조회한다 — 단계 표에 핀을 적게 하면 두 자리가 표류한다. 기대값은 같은 쪽 아래
     중간 노드 표가 전 행 찍으므로 여기 다시 싣지 않는다.
+
+    걷기 행(`<k>걷기`)에는 `확인 노드` 줄이 없다 — 걷기만 하는 장이라 관측할
+    출력이 없고, 파서가 `node` 를 `None` 으로 낸다.
     """
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
     if png is not None and png.exists():
@@ -706,7 +718,11 @@ def _stage_html(stage, netlist, section) -> str:
         pin = next((n["pin"] for n in section.nodes if n["name"] == stage["node"]), "")
         tail = f" <small>({_esc(pin)})</small>" if pin else ""
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
-    return (f'<div class="stage"><h3>단계 {_esc(stage["n"])}</h3>{img}'
+    # 걷기 행은 `단계 2걷기` 가 아니라 `단계 2 · 걷기` 로 찍는다 — 인쇄본에서
+    # "2단계 머리의 걷기" 로 읽혀야 한다. 판정은 파서의 `walk` 키다.
+    head = (f"단계 {_esc(str(stage['walk_of']))} · 걷기" if stage.get("walk")
+            else f"단계 {_esc(stage['n'])}")
+    return (f'<div class="stage"><h3>{head}</h3>{img}'
             f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{node}"
             f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p></div>')
 

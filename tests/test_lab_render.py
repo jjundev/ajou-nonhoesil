@@ -9,7 +9,8 @@ from scripts.lab import config, render
 from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.photo_names import FILE
 from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
-                                _chip_tables, _circuit_body, _esc, _has_walk,
+                                _chip_tables, _circuit_body, _esc,
+                                _has_entry_walk, _has_walk,
                                 _plain,
                                 _truth_table_html, circuit_pages, closing_page,
                                 common_page, crop_rows, render_checklist)
@@ -484,9 +485,9 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("전원을 끈다", box)
 
     def test_걷기_보드가_없는_주차는_걷기_그림을_가리키지_않는다(self):
-        """공통면은 모든 주차에서 참인 것만 말한다 — 실험01 에는 0단계 그림이 없다."""
+        """공통면은 모든 주차에서 참인 것만 말한다 — 실험01 에는 걷기 그림이 없다."""
         self.assertIn("걷을 선부터 먼저 뽑고", self.html)
-        self.assertNotIn("0단계 걷기 그림", self.html)
+        self.assertNotIn("걷기 그림", self.html)
 
     # 2026-09-10: 실물 회귀 검사를 여기서 걷어냈다. 실험02~10 을 2026-2 교안
     # 기준으로 재저작하려고 지웠고, 이 검사들은 **그 문서가 실제로 그 결함을
@@ -496,22 +497,33 @@ class TestCommonPage(unittest.TestCase):
 
 
 class TestCautionWithWalkBoard(unittest.TestCase):
-    """실험03 C4 는 `## 단계` 표에 `0` 행(걷기 보드)이 있다."""
+    """실험03 C2·C4 는 `## 단계` 표에 걷기 행(`<k>걷기`)이 있다. C4 는 **첫 행**이
+    걷기라 회로 경계이고, C2 는 회로 **안**에서만 걷는다 — 배너와 주의 상자가
+    보는 것이 다르다."""
 
     def setUp(self):
         self.spec = parse_spec(ROOT / config.experiment_dir(3) / "체크리스트/명세.md")
         self.netlist = parse_netlist(ROOT / config.experiment_dir(3) / "결선도/netlist.md")
 
-    def test_걷기_보드가_있으면_0단계_그림의_선부터(self):
+    def test_걷기_행이_있으면_걷기_그림의_선부터(self):
         html = common_page(self.spec, self.netlist)
         box = html[html.index('class="caution"'):]
         box = box[:box.index("</div>")]
-        self.assertIn("0단계 걷기 그림의 선부터 먼저 뽑고", box)
+        self.assertIn("걷기 그림(빨간 점선)의 선부터 먼저 뽑고", box)
 
-    def test_has_walk_는_0_행만_본다(self):
-        self.assertTrue(any(_has_walk(c) for c in self.netlist.circuits))
+    def test_has_walk_는_아무_행이나_본다(self):
+        """C2 는 회로 안에서만 걷는다 — 주의 상자는 그것도 걷기로 센다."""
+        c2 = next(c for c in self.netlist.circuits if c.id == "C2")
+        self.assertTrue(_has_walk(c2))
         one = parse_netlist(ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.assertFalse(any(_has_walk(c) for c in one.circuits))
+
+    def test_has_entry_walk_는_첫_행만_본다(self):
+        """칩 교체 배너는 회로 경계 판정이다 — C2 는 회로 안 걷기뿐이라 거짓이다."""
+        c2 = next(c for c in self.netlist.circuits if c.id == "C2")
+        c4 = next(c for c in self.netlist.circuits if c.id == "C4")
+        self.assertFalse(_has_entry_walk(c2))
+        self.assertTrue(_has_entry_walk(c4))
 
 
 class TestCircuitPages(unittest.TestCase):
@@ -1614,19 +1626,18 @@ class TestStages(unittest.TestCase):
         self.assertIn("모두 걷는다", banner)
 
     def test_걷기_단계가_없는_회로는_걷기_그림을_가리키지_않는다(self):
-        """C2 는 `## 단계` 표가 있지만 `0` 행이 없다 — 걷기 보드가 없는
-        회로(실험01 전부)다. 없는 그림을 가리키면 학생이 그것을 찾는다."""
+        """C2 는 `## 단계` 표가 있지만 첫 행이 걷기가 아니다 — 걷기 보드로 들어가는
+        회로가 아니다(실험01 전부). 없는 그림을 가리키면 학생이 그것을 찾는다."""
         banner = self.pages[1][self.pages[1].index('class="banner"'):]
         banner = banner[:banner.index("</div>")]
         self.assertIn("'걷는다' 표", banner)
-        self.assertNotIn("0단계", banner)
+        self.assertNotIn("걷기 그림", banner)
 
-    def test_걷기_단계가_있으면_배너가_0단계_걷기_그림을_가리킨다(self):
-        """실험03 C4 처럼 `## 단계` 표에 `0` 행(걷기 보드)이 있는 회로만
-        빨간 점선 그림을 가리킨다."""
+    def test_첫_행이_걷기면_배너가_걷기_그림을_가리킨다(self):
+        """실험03 C4 처럼 `## 단계` 표의 첫 행이 걷기인 회로만 빨간 점선 그림을 가리킨다."""
         text = _STAGED_NETLIST.replace(
             "| 1 | 1단계.png |",
-            "| 0 | 0단계_걷기.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있다 |\n"
+            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있다 |\n"
             "| 1 | 1단계.png |")
         path = Path(tempfile.mkdtemp()) / "netlist.md"
         path.write_text(text, encoding="utf-8")
@@ -1635,8 +1646,31 @@ class TestStages(unittest.TestCase):
         ).split('<section class="circuit">')[1:]
         banner = pages[1][pages[1].index('class="banner"'):]
         banner = banner[:banner.index("</div>")]
-        self.assertIn("0단계 걷기 그림", banner)
+        self.assertIn("걷기 그림(빨간 점선)", banner)
         self.assertNotIn("'걷는다' 표", banner)
+
+    def test_회로_안_걷기만_있으면_배너는_걷기_그림을_가리키지_않는다(self):
+        """배너는 회로 **경계** 판정이라 좁은 쪽(`_has_entry_walk`)만 본다. 넓은 쪽
+        (`_has_walk`)을 쓰면 실험03 C2 처럼 회로 안에서만 걷는 회로의 배너가 없는
+        걷기 그림을 가리킨다 — 학생이 그 그림을 찾는다."""
+        text = _STAGED_NETLIST.replace(
+            "| 2 | 2단계.png |",
+            "| 2걷기 | 2걷기_프로브.png | **걷기 ① 을 뽑는다** | 뽑은 선이 손에 있다 |\n"
+            "| 2 | 2단계.png |")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        netlist = parse_netlist(path)
+        c2 = next(c for c in netlist.circuits if c.id == "C2")
+        # 지금껏 어느 테스트도 덮지 않은 조합이다 — 이 픽스처가 그 조합인지 못 박는다.
+        self.assertIs(_has_walk(c2), True)
+        self.assertIs(_has_entry_walk(c2), False)
+        pages = render_checklist(
+            self.spec, netlist, TEMPLATE
+        ).split('<section class="circuit">')[1:]
+        banner = pages[1][pages[1].index('class="banner"'):]
+        banner = banner[:banner.index("</div>")]
+        self.assertIn("'걷는다' 표", banner)
+        self.assertNotIn("걷기 그림", banner)
 
     def test_미사용_상자_제목이_핀_점검이다(self):
         self.assertIn("핀 점검", self.pages[0])
@@ -1735,3 +1769,12 @@ class StageNodeLine(unittest.TestCase):
     def test_확인_줄은_백틱_없이_인쇄된다(self):
         html = render._stage_html(self._stage("A⊕B"), self._netlist(), self._section())
         self.assertNotIn("`", html)
+
+    def test_걷기_행의_제목은_단계_k_걷기다(self):
+        """`단계 2걷기` 로 찍으면 인쇄본에서 읽히지 않는다."""
+        stage = {"n": "2걷기", "diagram": "", "todo": "걷기 ① 을 뽑는다",
+                 "check": "뽑은 선이 손에 있다", "node": None, "walk": True, "walk_of": 2}
+        html = render._stage_html(stage, self._netlist(), self._section())
+        self.assertIn("단계 2 · 걷기", html)
+        self.assertNotIn("단계 2걷기", html)
+        self.assertNotIn("확인 노드", html)

@@ -43,6 +43,7 @@ _STAGE_HEAD = re.compile(r"^##[ \t]+단계[ \t]*$")
 # 백틱이 이름의 경계다 — `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다.
 # 닫는 백틱을 선택으로 둔 이유: 셀이 백틱으로 끝나면 `_split_subtable` 이 그것을 뗀다.
 _STAGE_NODE = re.compile(r"^노드\s+`([^`]+)(?:`|$)")
+_STAGE_WALK = re.compile(r"^(\d+)걷기$")
 
 # 회로 절 안 `## 노드` 표의 열. 프로브로 찍을 핀과 그 기대값 식 — 2026-09-20 회고:
 # 다 꽂고 켰을 때 틀리면 용의자가 선 전부였다. 노드 하나를 찍을 때마다 절반으로 준다
@@ -149,12 +150,20 @@ def _split_stages(body, path, line):
     2026-09-20 단계 세분화: `확인` 칸이 `노드 `<이름>`` 로 시작하면 그 이름을 `node`
     키로 낸다. 열을 늘리지 않은 이유는 실험01·02 승인본의 단계 표 7개가 헤더 불일치로
     통째로 거절당하기 때문이다 — 옛 표는 `node` 가 `None` 이고 검증기가 warn 만 한다.
+
+    2026-09-20 걷기 보드: `단계` 칸이 `<k>걷기` 면 걷기 행이다 — 선을 뽑기만 하는
+    장이라 관측 노드도 새 신호선도 없다. `k` 는 **바로 다음 행**의 단계 번호이고,
+    그 대조는 검증기가 한다. 판정은 여기 한 곳이다 — 검증기·렌더러·체크리스트가
+    각자 문자열을 다시 재면 같은 개념에 기계가 셋이 된다.
     """
     rows, rest = _split_subtable(body, _STAGE_HEAD, STAGE_COLUMNS,
                                  ("n", "diagram", "todo", "check"), "단계", path, line)
     for row in rows:
         m = _STAGE_NODE.match(row["check"])
         row["node"] = m.group(1) if m else None
+        w = _STAGE_WALK.match(row["n"])
+        row["walk"] = w is not None
+        row["walk_of"] = int(w.group(1)) if w else None
     return rows, rest
 
 

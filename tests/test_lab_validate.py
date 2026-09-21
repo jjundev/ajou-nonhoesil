@@ -652,14 +652,42 @@ spec: ../체크리스트/명세.md
         warns = self._stage_node_findings(bad, "warn")
         self.assertTrue(any("가리키지" in m and "단계 1" in m for m in warns), warns)
 
-    def test_0단계는_노드를_가리키지_않아도_된다(self):
+    def test_걷기_행은_노드를_가리키지_않아도_된다(self):
         """걷기 보드는 걷기만 하므로 관측할 출력이 없다."""
         text = self.STAGED_NODED_C1.replace(
             "| 1 | 1단계.png |",
-            "| 0 | 0단계_걷기.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있고 홀이 비었다 |\n"
+            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있고 홀이 비었다 |\n"
             "| 1 | 1단계.png |")
         warns = self._stage_node_findings(text, "warn")
-        self.assertEqual([w for w in warns if "단계 0" in w], [])
+        self.assertEqual([w for w in warns if "단계 1걷기" in w], [])
+        # `_stage_node_findings` 는 "노드" 가 든 메시지만 남긴다 — 걷기 구조 error 에는
+        # 그 낱말이 없으니 필터 없이 전부 모아야 거짓 양성 방향을 문다.
+        spec = parse_spec(WEEK2_SPEC)
+        errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                  if f.level == "error"]
+        self.assertEqual(errors, [])
+
+    def test_걷기_행이_표의_마지막이면_error(self):
+        """걷기는 다음 단계의 머리다 — 뒤에 꽂는 단계가 없으면 무엇을 위해 걷는지가 없다."""
+        text = self.STAGED_NODED_C1.replace(
+            "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |",
+            "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |\n"
+            "| 3걷기 | 3걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |")
+        spec = parse_spec(WEEK2_SPEC)
+        errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                  if f.level == "error"]
+        self.assertTrue(any("마지막이다" in m and "3걷기" in m for m in errors), errors)
+
+    def test_걷기_번호가_다음_행과_다르면_error(self):
+        """`<k>걷기` 의 k 는 바로 다음 행의 단계 번호다 — 안 묶으면 번호를 밀 때 표류한다."""
+        text = self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            "| 2걷기 | 2걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |\n"
+            "| 1 | 1단계.png |")
+        spec = parse_spec(WEEK2_SPEC)
+        errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
+                  if f.level == "error"]
+        self.assertTrue(any("2걷기" in m and "뒤의 단계" in m for m in errors), errors)
 
     def test_노드표가_없는_회로의_단계는_노드를_묻지_않는다(self):
         """실험01·02 승인본이 그렇다 — '단계는 있는데 노드 표가 없다' warn 이 이미 한 번 말한다."""

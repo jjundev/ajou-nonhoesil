@@ -787,7 +787,7 @@ def check_netlist_circuits(netlist, spec) -> list:
             else:
                 covered.add(table_id)
         node_names = {n["name"] for n in circuit.nodes}
-        for st in circuit.stages:
+        for i, st in enumerate(circuit.stages):
             if not st["check"]:
                 out.append(Finding("error", where,
                     f"단계 {st['n']} 의 확인 칸이 비었다 — 단계 끝에서 무엇을 보는지가 "
@@ -796,11 +796,25 @@ def check_netlist_circuits(netlist, spec) -> list:
                 out.append(Finding("warn", where,
                     f"단계 {st['n']} 그림 파일이 없다: {st['diagram']}. "
                     "breadboard-diagram 의 `--experiment N` 일괄 렌더로 만든다"))
-            # 단계 하나는 관측 노드 하나를 세운다(2026-09-20 단계 세분화). 0단계(걷기
-            # 보드)는 걷기만 하므로 면제이고, 노드 표가 없는 회로(실험01·02 승인본)에는
-            # 아무 말도 하지 않는다 — `_check_nodes` 의 "단계는 있는데 노드 표가 없다"
-            # warn 이 이미 그 회로를 한 번 짚었다.
-            if st["n"] == "0" or not circuit.nodes:
+            # 걷기 행(`<k>걷기`)은 선을 뽑기만 하는 장이라 관측할 출력도 새로 꽂는
+            # 신호선도 없다 — 노드 포인터에서 면제한다(2026-09-20 걷기 보드). 대신
+            # 표 구조에 묶는다: k 는 **바로 다음 행**의 단계 번호여야 한다. 안 묶으면
+            # 단계 번호를 밀 때 걷기 행만 옛 번호를 쥔 채 남는다.
+            if st["walk"]:
+                nxt = circuit.stages[i + 1] if i + 1 < len(circuit.stages) else None
+                if nxt is None:
+                    out.append(Finding("error", where,
+                        f"걷기 행 {st['n']} 가 `## 단계` 표의 마지막이다 — 걷기는 "
+                        "다음 단계의 머리다. 뒤에 꽂는 단계 행을 잇거나, 걷기가 "
+                        "필요 없으면 이 행을 지운다"))
+                elif nxt["n"] != str(st["walk_of"]):
+                    out.append(Finding("error", where,
+                        f"걷기 행 {st['n']} 뒤의 단계가 {nxt['n']!r} 이다 — "
+                        "`<k>걷기` 의 k 는 바로 다음 행의 단계 번호여야 한다"))
+                continue
+            # 노드 표가 없는 회로(실험01·02 승인본)에는 아무 말도 하지 않는다 —
+            # `_check_nodes` 의 "단계는 있는데 노드 표가 없다" warn 이 이미 한 번 짚었다.
+            if not circuit.nodes:
                 continue
             if st["node"] is None:
                 out.append(Finding("warn", where,
