@@ -460,9 +460,10 @@ spec: ../체크리스트/명세.md
 
 """
 
-    def _netlist(self, circuits):
+    def _netlist(self, circuits, experiment=1):
         path = Path(tempfile.mkdtemp()) / "netlist.md"
-        path.write_text(self.HEAD + circuits, encoding="utf-8")
+        head = self.HEAD.replace("experiment: 1", f"experiment: {experiment}")
+        path.write_text(head + circuits, encoding="utf-8")
         return parse_netlist(path)
 
     def test_없는_항목을_가리키면_error(self):
@@ -620,6 +621,39 @@ spec: ../체크리스트/명세.md
                  if f.level == "warn"]
         self.assertTrue(any("노드" in m for m in warns), warns)
 
+    def test_실험1과_2는_단계가_있어도_노드표_부재가_warn이다(self):
+        spec = parse_spec(WEEK2_SPEC)
+        for experiment in (1, 2):
+            with self.subTest(experiment=experiment):
+                found = validate.check_netlist_circuits(
+                    self._netlist(self.STAGED_C1, experiment=experiment), spec)
+                self.assertTrue(any(f.level == "warn" and "노드" in f.message for f in found), found)
+                self.assertFalse(any(f.level == "error" and "노드" in f.message for f in found), found)
+
+    def test_실험3부터_단계가_있는데_노드표가_없으면_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        found = validate.check_netlist_circuits(
+            self._netlist(self.STAGED_C1, experiment=3), spec)
+        self.assertTrue(any(f.level == "error" and "노드" in f.message for f in found), found)
+
+    def test_걷기_오타는_노드표가_없어도_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        for bad in ("2 걷기", "걷기2"):
+            with self.subTest(value=bad):
+                text = self.STAGED_C1.replace("| 2 | 2단계.png |", f"| {bad} | 2걷기.png |")
+                errors = [f.message for f in validate.check_netlist_circuits(
+                    self._netlist(text, experiment=1), spec) if f.level == "error"]
+                self.assertTrue(any("양의 정수" in m and bad in m for m in errors), errors)
+
+    def test_0단계와_0걷기는_error(self):
+        spec = parse_spec(WEEK2_SPEC)
+        for bad in ("0", "0걷기"):
+            with self.subTest(value=bad):
+                text = self.STAGED_C1.replace("| 2 | 2단계.png |", f"| {bad} | 0단계.png |")
+                errors = [f.message for f in validate.check_netlist_circuits(
+                    self._netlist(text), spec) if f.level == "error"]
+                self.assertTrue(any("1 이상" in m and bad in m for m in errors), errors)
+
     STAGED_NODED_C1 = ("# C1\n\n- kind: circuit\n- id: C1\n- item: E1.P1-1\n- tables: [T1]\n"
                        "- diagram: 완성.png\n\n## 단계\n\n"
                        "| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
@@ -652,11 +686,35 @@ spec: ../체크리스트/명세.md
         warns = self._stage_node_findings(bad, "warn")
         self.assertTrue(any("가리키지" in m and "단계 1" in m for m in warns), warns)
 
+    def _with_walk(self, todo="걷기 ①(좌 a1→좌 b2)을 뽑는다",
+                   check="좌 a1·좌 b2 홀이 비었다"):
+        return self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            f"| 1걷기 | 1걷기.png | {todo} | {check} |\n"
+            "| 1 | 1단계.png |")
+
+    def test_걷기_행에_주소쌍이_없으면_error(self):
+        errors = self._node_errors(self._with_walk(todo="걷기 ①을 뽑는다"))
+        self.assertTrue(any("주소쌍" in m for m in errors), errors)
+
+    def test_걷기_확인에_양끝_홀이_모두_있으면_조용하다(self):
+        errors = self._node_errors(self._with_walk())
+        self.assertFalse(any("홀 목록" in m or "주소쌍" in m for m in errors), errors)
+
+    def test_걷기_확인에서_출발_홀이_빠지면_error(self):
+        errors = self._node_errors(self._with_walk(check="좌 b2 홀이 비었다"))
+        self.assertTrue(any("홀 목록" in m and "좌 a1" in m for m in errors), errors)
+
+    def test_걷기_행의_빈_확인_칸은_error(self):
+        errors = self._node_errors(self._with_walk(check=""))
+        self.assertTrue(any("확인 칸" in m for m in errors), errors)
+        self.assertFalse(any("홀 목록" in m for m in errors), errors)
+
     def test_걷기_행은_노드를_가리키지_않아도_된다(self):
         """걷기 보드는 걷기만 하므로 관측할 출력이 없다."""
         text = self.STAGED_NODED_C1.replace(
             "| 1 | 1단계.png |",
-            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①·② 를 뽑는다** | 뽑은 선이 손에 있고 홀이 비었다 |\n"
+            "| 1걷기 | 1걷기_세가닥.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
             "| 1 | 1단계.png |")
         warns = self._stage_node_findings(text, "warn")
         self.assertEqual([w for w in warns if "단계 1걷기" in w], [])
@@ -672,7 +730,7 @@ spec: ../체크리스트/명세.md
         text = self.STAGED_NODED_C1.replace(
             "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |",
             "| 2 | 2단계.png | 칩 둘 | 노드 `L2` — T1 8행 |\n"
-            "| 3걷기 | 3걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |")
+            "| 3걷기 | 3걷기.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |")
         spec = parse_spec(WEEK2_SPEC)
         errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
                   if f.level == "error"]
@@ -682,12 +740,29 @@ spec: ../체크리스트/명세.md
         """`<k>걷기` 의 k 는 바로 다음 행의 단계 번호다 — 안 묶으면 번호를 밀 때 표류한다."""
         text = self.STAGED_NODED_C1.replace(
             "| 1 | 1단계.png |",
-            "| 2걷기 | 2걷기.png | **걷기 ① 을 뽑는다** | 손에 있다 |\n"
+            "| 2걷기 | 2걷기.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
             "| 1 | 1단계.png |")
         spec = parse_spec(WEEK2_SPEC)
         errors = [f.message for f in validate.check_netlist_circuits(self._netlist(text), spec)
                   if f.level == "error"]
         self.assertTrue(any("2걷기" in m and "뒤의 단계" in m for m in errors), errors)
+
+    def test_앞자리_0_걷기와_다음_단계는_숫자로_비교한다(self):
+        text = self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            "| 03걷기 | 3걷기.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
+            "| 03 | 1단계.png |")
+        errors = self._node_errors(text)
+        self.assertFalse(any("뒤의 단계" in m for m in errors), errors)
+
+    def test_걷기_행_둘이_연달아_오면_error(self):
+        text = self.STAGED_NODED_C1.replace(
+            "| 1 | 1단계.png |",
+            "| 1걷기 | a.png | **걷기 ①(좌 a1→좌 b2)을 뽑는다** | 좌 a1·좌 b2 홀이 비었다 |\n"
+            "| 1걷기 | b.png | **걷기 ①(좌 c3→좌 d4)을 뽑는다** | 좌 c3·좌 d4 홀이 비었다 |\n"
+            "| 1 | 1단계.png |")
+        errors = self._node_errors(text)
+        self.assertTrue(any("연달아" in m for m in errors), errors)
 
     def test_노드표가_없는_회로의_단계는_노드를_묻지_않는다(self):
         """실험01·02 승인본이 그렇다 — '단계는 있는데 노드 표가 없다' warn 이 이미 한 번 말한다."""

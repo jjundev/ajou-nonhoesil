@@ -43,7 +43,31 @@ _STAGE_HEAD = re.compile(r"^##[ \t]+단계[ \t]*$")
 # 백틱이 이름의 경계다 — `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다.
 # 닫는 백틱을 선택으로 둔 이유: 셀이 백틱으로 끝나면 `_split_subtable` 이 그것을 뗀다.
 _STAGE_NODE = re.compile(r"^노드\s+`([^`]+)(?:`|$)")
-_STAGE_WALK = re.compile(r"^(\d+)걷기$")
+
+# `단계` 셀의 문법 판정은 여기 한 곳이다. 검증기는 이 정규식을 되풀이하지 않고
+# `stage_no`·`walk`·`walk_of`만 읽는다. 앞자리 0은 정수 비교에서 같은 번호다.
+_STAGE_NUMBER = re.compile(r"^[0-9]+$")
+_STAGE_WALK = re.compile(r"^([0-9]+)걷기$")
+
+_HOLE_PATTERN = r"(?:좌|우)\s*[a-j]\s*[1-9][0-9]*"
+_HOLE = re.compile(_HOLE_PATTERN)
+_WALK_ADDRESS = re.compile(rf"({_HOLE_PATTERN})\s*→\s*({_HOLE_PATTERN})")
+
+
+def _normalise_hole(token: str) -> str:
+    match = re.fullmatch(r"(좌|우)\s*([a-j])\s*([1-9][0-9]*)", token)
+    assert match is not None
+    return f"{match.group(1)} {match.group(2)}{match.group(3)}"
+
+
+def _walk_addresses(text: str) -> list[str]:
+    return [f"{_normalise_hole(start)} → {_normalise_hole(end)}"
+            for start, end in _WALK_ADDRESS.findall(text)]
+
+
+def _holes(text: str) -> list[str]:
+    return [_normalise_hole(match.group(0)) for match in _HOLE.finditer(text)]
+
 
 # 회로 절 안 `## 노드` 표의 열. 프로브로 찍을 핀과 그 기대값 식 — 2026-09-20 회고:
 # 다 꽂고 켰을 때 틀리면 용의자가 선 전부였다. 노드 하나를 찍을 때마다 절반으로 준다
@@ -151,6 +175,10 @@ def _split_stages(body, path, line):
     키로 낸다. 열을 늘리지 않은 이유는 실험01·02 승인본의 단계 표 7개가 헤더 불일치로
     통째로 거절당하기 때문이다 — 옛 표는 `node` 가 `None` 이고 검증기가 warn 만 한다.
 
+    일반 단계 번호도 `stage_no` 정수로 낸다. 검증기가 원문 문자열을 다시 정규식으로
+    재지 않아야 `03걷기`와 `03`을 같은 번호로 비교할 수 있고, `2 걷기`·`걷기2`가
+    일반 단계인 척 노드 검사 뒤로 숨지 않는다.
+
     2026-09-20 걷기 보드: `단계` 칸이 `<k>걷기` 면 걷기 행이다 — 선을 뽑기만 하는
     장이라 관측 노드도 새 신호선도 없다. `k` 는 **바로 다음 행**의 단계 번호이고,
     그 대조는 검증기가 한다. 판정은 여기 한 곳이다 — 검증기·렌더러·체크리스트가
@@ -161,9 +189,13 @@ def _split_stages(body, path, line):
     for row in rows:
         m = _STAGE_NODE.match(row["check"])
         row["node"] = m.group(1) if m else None
-        w = _STAGE_WALK.match(row["n"])
-        row["walk"] = w is not None
-        row["walk_of"] = int(w.group(1)) if w else None
+        number = _STAGE_NUMBER.match(row["n"])
+        walk = _STAGE_WALK.match(row["n"])
+        row["stage_no"] = int(number.group(0)) if number and not walk else None
+        row["walk"] = walk is not None
+        row["walk_of"] = int(walk.group(1)) if walk else None
+        row["walk_addresses"] = _walk_addresses(row["todo"]) if row["walk"] else []
+        row["check_holes"] = _holes(row["check"]) if row["walk"] else []
     return rows, rest
 
 

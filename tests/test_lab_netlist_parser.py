@@ -301,6 +301,24 @@ class Stages(unittest.TestCase):
         self.assertEqual(self.c3.stages[0]["todo"], "74HC08 만 꽂는다")
         self.assertEqual(self.c3.stages[1]["check"], "T3 8행")
 
+    def test_일반_단계_번호를_정수로_읽는다(self):
+        c3 = parse_netlist(_write(STAGED)).circuits[0]
+        self.assertEqual([s["stage_no"] for s in c3.stages], [1, 2])
+
+    def test_앞자리_0은_숫자로_같은_단계다(self):
+        text = STAGED.replace("| 2 | `2단계.png` |", "| 03 | `3단계.png` |")
+        c3 = parse_netlist(_write(text)).circuits[0]
+        self.assertEqual(c3.stages[1]["stage_no"], 3)
+
+    def test_걷기_오타는_일반_단계로_강등하지_않는다(self):
+        for bad in ("2 걷기", "걷기2"):
+            with self.subTest(value=bad):
+                text = STAGED.replace("| 2 | `2단계.png` |", f"| {bad} | `2걷기.png` |")
+                row = parse_netlist(_write(text)).circuits[0].stages[1]
+                self.assertIsNone(row["stage_no"])
+                self.assertFalse(row["walk"])
+                self.assertIsNone(row["walk_of"])
+
     def test_확인_칸이_가리키는_노드를_뽑는다(self):
         """단계 하나는 관측 노드 하나를 세운다 — 그 이름이 데이터여야 검증기가 잰다.
         백틱이 이름의 경계다: `A⊕B` 는 `(A⊕B)·Ci` 의 부분 문자열이라 공백으로는 못 가른다."""
@@ -334,6 +352,24 @@ class Stages(unittest.TestCase):
         self.assertEqual([s["n"] for s in c3.stages], ["1걷기", "1", "2"])
         self.assertEqual([s["walk"] for s in c3.stages], [True, False, False])
         self.assertEqual([s["walk_of"] for s in c3.stages], [1, None, None])
+        self.assertEqual([s["stage_no"] for s in c3.stages], [None, 1, 2])
+
+    def test_걷기_주소쌍과_확인_홀을_순서대로_읽는다(self):
+        text = STAGED.replace(
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+            "| 1걷기 | `1걷기.png` | 걷기 ①(좌 d7→우 a10)·②(좌 a9 → 우 c13)를 뽑는다 | "
+            "좌 d7·우 a10·좌 a9·우 c13 홀이 비었다 |\n"
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |")
+        row = parse_netlist(_write(text)).circuits[0].stages[0]
+        self.assertEqual(row["walk_addresses"],
+                         ["좌 d7 → 우 a10", "좌 a9 → 우 c13"])
+        self.assertEqual(row["check_holes"],
+                         ["좌 d7", "우 a10", "좌 a9", "우 c13"])
+
+    def test_꽂기_행의_걷기_주소_필드는_빈_리스트다(self):
+        row = parse_netlist(_write(STAGED)).circuits[0].stages[0]
+        self.assertEqual(row["walk_addresses"], [])
+        self.assertEqual(row["check_holes"], [])
 
     def test_두_자리_걷기_번호도_읽는다(self):
         """`10걷기` 가 `1` 로 잘리면 검증기의 '다음 행과 같은가' 가 거짓 통과한다."""
@@ -445,6 +481,12 @@ class ParseNodes(unittest.TestCase):
         self.assertIn("### 회로 안의 `## 노드` 표", doc)
         self.assertIn("| 노드 | 식 | 핀 |", doc)
         self.assertIn("U<n> pin <m>", doc)
+        self.assertIn("실험01·02", doc)
+        self.assertIn("실험03", doc)
+        self.assertIn("양의 정수", doc)
+        self.assertIn("주소쌍", doc)
+        self.assertIn("양 끝 홀", doc)
+        self.assertIn("연달아", doc)
         for skill in ("prep-lab-checklist", "draft-lab-spec"):
             text = (ROOT / f".claude/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
             with self.subTest(skill=skill):

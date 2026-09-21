@@ -327,43 +327,45 @@ class WiringE3(unittest.TestCase):
         self.assertEqual([c['label'] for c in g.wiring()['chips']],
                          ['74HC86', '74HC08', '74HC32'])
 
-    def test_걷기_보드마다_뽑는_주소가_고정이다(self):
-        """이 단언이 무는 자리는 **가닥 수는 그대로인 채 선의 주소만 조용히 옮겨가는
-        변경**이다 — 프로브 급전선의 열이나 LED 사슬 도착 행이 옮겨가는 따위. 그때
-        `test_걷기는_전용_보드에서만_일어난다` 의 `len(removals())` 수열도, 엔진
-        `export()` 의 걷기 목록 guard 둘(`missing`·`extra`/`gone`)도 울지 않는다.
-        guard 는 걷기 목록과 실제로 그린 것이 **서로** 맞는지만 보지 어느 주소가
-        옳은지는 모르고, 양쪽이 나란히 새 주소를 보면 조용하다. 남는 알람은
-        `CommittedPngs` 의 stale-PNG 경보뿐인데 그것은 "다시 뽑아라" 라고만 하지
-        **무엇이 옳은 주소인가** 를 말해 주지 않는다. 주소를 못 박는 곳은 여기뿐이다.
-
-        `removal_board` 의 prev/nxt **짝 교환 자체**는 이 테스트의 근거가 아니다 —
-        그것은 `export()` 의 `걷기 대상 배선을 앞 빌더가 그리지 않았다` assert 가
-        먼저 잡는다(사슬이 준 baseline 과 바뀐 prev_stage 가 어긋나서).
-
-        index 8 의 기대값이 `test_걷기_보드는_세_가닥이_유령이고_새_선이_없다` 와
-        겹치는 것은 의도된 것이다 — 저쪽은 그 한 보드의 유령·새 선·칩까지 함께 보고,
-        여기는 다섯 보드의 주소를 한 표로 모아 본다.
-
-        기대 주소 다섯 줄은 실행값을 받아 적은 characterization 값이다. 다만 Task 6
-        이 그 값을 `보고서/실험03/결선도/netlist.md` 의 걷기 행 `확인` 칸과 일곱 자리
-        대조해 확인했다 — 받아 적기만 한 값이 아니라 독립 출처가 있다.
-
-        이 기대값을 고치는 사람은 `보고서/실험03/결선도/netlist.md` 의 걷기 행
-        `이 단계에서` 칸과 `확인` 칸에 **같은 주소가 한 번 더 적혀 있고** 그쪽은
-        기계가 보지 않으니 함께 고쳐야 한다."""
-        chain = self._chain()
-        want = {
-            1: [(1, '좌 b9 → 좌 a25')],
-            4: [(1, '우 c12 → 우 c29')],
-            6: [(1, '우 c15 → 우 c29')],
-            8: [(1, '좌 d7 → 우 a10'), (2, '좌 a9 → 우 c13'), (3, '우 c23 → 우 c29')],
-            10: [(1, '우 c12 → 우 c29')],
+    def test_걷기_보드마다_뽑는_주소가_netlist와_같다(self):
+        """주소 정본은 netlist 걷기 행이다. diagram 이름으로 실제 걷기 보드와 묶는다."""
+        netlist_walks = [
+            st
+            for circuit in self._netlist().circuits
+            for st in circuit.stages
+            if st["walk"]
+        ]
+        rendered = {
+            name: bb
+            for bb, (name, _fn, stage) in zip(self._chain(), self.b3.BOARDS)
+            if stage is None
         }
-        for i, pairs in want.items():
-            name = self.b3.BOARDS[i][0]
+        self.assertEqual(set(rendered), {row["diagram"] for row in netlist_walks})
+        for row in netlist_walks:
+            name = row["diagram"]
             with self.subTest(board=name):
-                self.assertEqual([(r['n'], r['addr']) for r in chain[i].removals()], pairs)
+                removals = rendered[name].removals()
+                self.assertEqual([r["n"] for r in removals],
+                                 list(range(1, len(removals) + 1)))
+                self.assertEqual([r["addr"] for r in removals], row["walk_addresses"])
+
+    def test_중복_diagram의_앞선_걷기_행도_주소를_검사한다(self):
+        netlist = self._netlist()
+        circuit = next(c for c in netlist.circuits if any(st["walk"] for st in c.stages))
+        index = next(i for i, st in enumerate(circuit.stages) if st["walk"])
+        duplicate = dict(circuit.stages[index])
+        duplicate["walk_addresses"] = ["좌 a1 → 우 a1"]
+        circuit.stages.insert(index, duplicate)
+
+        # 독립 TestCase 결과로 subTest 실패를 받는다. 뒤의 정상 행이 앞의 오류를
+        # 덮어쓰면 원래 통합 검사가 성공하므로 이 회귀 검사는 실패해야 한다.
+        comparison = WiringE3("test_걷기_보드마다_뽑는_주소가_netlist와_같다")
+        comparison._netlist = lambda: netlist
+        result = unittest.TestResult()
+        comparison.run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(len(result.failures), 1)
+        self.assertIn("좌 a1 → 우 a1", result.failures[0][1])
 
     def test_주차_파일에_걷기_보드_build_래퍼가_없다(self):
         """`build_*` 래퍼는 `all_builders` 에 잡혀 가독성 검사 `steps > 0` 에 걸린다."""
