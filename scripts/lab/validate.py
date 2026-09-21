@@ -673,8 +673,10 @@ def check_netlist(netlist_path, spec) -> list:
 _NODE_PIN = re.compile(r"^U\d+ pin \d+$")
 
 
-def _check_nodes(circuit, spec, where) -> list:
-    """`## 노드` 표 — 식·핀·출력 노드. 용의자를 '선'이 아니라 '노드'로 좁히는 표다.
+def _check_nodes(circuit, spec, where, experiment) -> list:
+    """`## 노드` 표 — 식·핀·출력 노드. 실험01·02만 단계 세분화 이전 승인본이다.
+
+    용의자를 '선'이 아니라 '노드'로 좁히는 표다.
     출력 노드(명세 `derived` 의 대입 대상)만 명세 식과 대조한다 — 중간 노드의 식은
     저작자 단언이라 검산되지 않는다. 그래도 출력이 맞으면 중간단 오타는 대부분
     출력 불일치로 드러난다.
@@ -686,7 +688,8 @@ def _check_nodes(circuit, spec, where) -> list:
     out = []
     if not circuit.nodes:
         if circuit.stages:
-            out.append(Finding("warn", where,
+            level = "warn" if experiment <= 2 else "error"
+            out.append(Finding(level, where,
                 "단계는 있는데 `## 노드` 표가 없다 — 단계 끝을 프로브로 찍을 핀과 "
                 "기대값이 없다. 게이트 출력 핀마다 `| 노드 | 식 | 핀 |` 한 행을 적는다"))
         return out
@@ -801,16 +804,33 @@ def check_netlist_circuits(netlist, spec) -> list:
             # 표 구조에 묶는다: k 는 **바로 다음 행**의 단계 번호여야 한다. 안 묶으면
             # 단계 번호를 밀 때 걷기 행만 옛 번호를 쥔 채 남는다.
             if st["walk"]:
+                if st["walk_of"] < 1:
+                    out.append(Finding("error", where,
+                        f"단계 값 {st['n']!r} 의 번호는 1 이상이어야 한다 — 0단계는 은퇴했다"))
+                    continue
                 nxt = circuit.stages[i + 1] if i + 1 < len(circuit.stages) else None
                 if nxt is None:
                     out.append(Finding("error", where,
                         f"걷기 행 {st['n']} 가 `## 단계` 표의 마지막이다 — 걷기는 "
                         "다음 단계의 머리다. 뒤에 꽂는 단계 행을 잇거나, 걷기가 "
                         "필요 없으면 이 행을 지운다"))
-                elif nxt["n"] != str(st["walk_of"]):
+                elif nxt["walk"]:
+                    out.append(Finding("error", where,
+                        f"걷기 행 {st['n']} 뒤에 걷기 행 {nxt['n']} 이 연달아 온다 — "
+                        "걷기는 하나의 꽂기 단계 머리여야 한다"))
+                elif nxt["stage_no"] != st["walk_of"]:
                     out.append(Finding("error", where,
                         f"걷기 행 {st['n']} 뒤의 단계가 {nxt['n']!r} 이다 — "
                         "`<k>걷기` 의 k 는 바로 다음 행의 단계 번호여야 한다"))
+                continue
+            if st["stage_no"] is None:
+                out.append(Finding("error", where,
+                    f"단계 값 {st['n']!r} 은 양의 정수 또는 `<k>걷기`여야 한다 — "
+                    "예: `2`, `2걷기`. 공백을 넣거나 순서를 바꾸지 않는다"))
+                continue
+            if st["stage_no"] < 1:
+                out.append(Finding("error", where,
+                    f"단계 값 {st['n']!r} 의 번호는 1 이상이어야 한다 — 0단계는 은퇴했다"))
                 continue
             # 노드 표가 없는 회로(실험01·02 승인본)에는 아무 말도 하지 않는다 —
             # `_check_nodes` 의 "단계는 있는데 노드 표가 없다" warn 이 이미 한 번 짚었다.
@@ -830,7 +850,7 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "
                 "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
                 "완성본은 기준선 없이 따로 낸다 (주차 배치.py 의 FINALS)"))
-        out += _check_nodes(circuit, spec, where)
+        out += _check_nodes(circuit, spec, where, netlist.experiment)
         if circuit.continues:
             if circuit.continues == circuit.id:
                 out.append(Finding("error", where,
