@@ -481,6 +481,12 @@ class ParseNodes(unittest.TestCase):
         self.assertIn("### 회로 안의 `## 노드` 표", doc)
         self.assertIn("| 노드 | 식 | 핀 |", doc)
         self.assertIn("U<n> pin <m>", doc)
+        self.assertIn("실험01·02", doc)
+        self.assertIn("실험03", doc)
+        self.assertIn("양의 정수", doc)
+        self.assertIn("주소쌍", doc)
+        self.assertIn("양 끝 홀", doc)
+        self.assertIn("연달아", doc)
         for skill in ("prep-lab-checklist", "draft-lab-spec"):
             text = (ROOT / f".claude/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
             with self.subTest(skill=skill):

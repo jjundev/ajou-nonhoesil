@@ -211,9 +211,6 @@ class StageBudget(unittest.TestCase):
     """단계 하나가 꽂는 새 신호선 수. 2026-09-20 단계 세분화: 확인이 실패했을 때
     용의자가 '방금 꽂은 셋' 으로 줄어드는 것이 이 수의 존재 이유다."""
 
-    # 2026-09-20: 이 테스트는 실험03 `배치.py` 를 다시 짜기 전까지 빨간불이다 —
-    # 구현계획 Task 8 이 고친다. 실험01·02 는 `LEGACY_BOARDS` 로 면제한다.
-
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
