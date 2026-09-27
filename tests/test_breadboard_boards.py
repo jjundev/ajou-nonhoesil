@@ -207,6 +207,26 @@ class Stamp(unittest.TestCase):
                 self.assertEqual(self.mod.read_stamp(os.path.join(d, name)), s)
 
 
+class FreshBoard(unittest.TestCase):
+    """`rebuild: true` 회로의 첫 보드 — 앞 회로를 전부 걷으므로 기준선을 잇지 않는다.
+    이으면 앞 회로 배선이 전부 '걷는다' 로 잡혀 단계 보드가 선을 걷게 된다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_기준선을_버리고_부른다(self):
+        seen = {}
+
+        def build(output_path, template_path=None, stage=None, baseline=None):
+            seen.update(out=output_path, stage=stage, baseline=baseline)
+            return 'bb'
+
+        fresh = self.mod.fresh_board(build)
+        self.assertEqual(fresh('x.png', None, stage=1, baseline={'wires': 1}), 'bb')
+        self.assertEqual(seen, {'out': 'x.png', 'stage': 1, 'baseline': None})
+
+
 class StageBudget(unittest.TestCase):
     """단계 하나가 꽂는 새 신호선 수. 2026-09-20 단계 세분화: 확인이 실패했을 때
     용의자가 '방금 꽂은 셋' 으로 줄어드는 것이 이 수의 존재 이유다."""
@@ -217,6 +237,32 @@ class StageBudget(unittest.TestCase):
 
     def test_예산_상수가_셋이다(self):
         self.assertEqual(self.mod.STAGE_WIRE_BUDGET, 3)
+
+    def test_주차_예외가_없으면_기본_예산이다(self):
+        self.assertEqual(self.mod.stage_budget(types.ModuleType('board')), 3)
+
+    def test_주차_예외는_이유와_함께_쓴다(self):
+        """실험04: 4입력 NAND 출력 하나를 보려면 입력 넷과 관측선 하나가 한꺼번에
+        있어야 한다 — 셋으로는 관측 노드 하나를 세울 수 없다(2026-09-27 결정)."""
+        board = types.ModuleType('board')
+        board.STAGE_WIRE_BUDGET = 5
+        board.STAGE_WIRE_BUDGET_REASON = '4입력 NAND = 입력 4 + 관측선 1'
+        self.assertEqual(self.mod.stage_budget(board), 5)
+
+    def test_이유_없는_예외는_거절한다(self):
+        """이유 없이 숫자만 올리면 예산이 조용히 풀린다."""
+        board = types.ModuleType('board')
+        board.STAGE_WIRE_BUDGET = 5
+        with self.assertRaises(ValueError):
+            self.mod.stage_budget(board)
+
+    def test_양의_정수가_아닌_예외는_거절한다(self):
+        for bad in (0, -1, 2.5, '5'):
+            board = types.ModuleType('board')
+            board.STAGE_WIRE_BUDGET = bad
+            board.STAGE_WIRE_BUDGET_REASON = '이유'
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                self.mod.stage_budget(board)
 
     def test_전원과_LED_사슬은_예산에_들지_않는다(self):
         """기반 배선이다 — 회로가 바뀌어도 그대로 있고 첫 단계에 한꺼번에 꽂는다."""
@@ -255,13 +301,14 @@ class StageBudget(unittest.TestCase):
             if n in self.LEGACY_BOARDS:
                 continue
             board = self.mod.load_board(n)
+            budget = self.mod.stage_budget(board)
             with tempfile.TemporaryDirectory() as d:
                 base = None
                 for name, fn, stage in board.BOARDS:
                     bb = fn(os.path.join(d, name), stage=stage, baseline=base)
                     with self.subTest(실험=n, board=name):
                         self.assertLessEqual(
-                            len(bb.new_signal), self.mod.STAGE_WIRE_BUDGET,
+                            len(bb.new_signal), budget,
                             f"{name}: 새 신호선 {len(bb.new_signal)} 가닥 — "
                             f"{[k[1:] for k in bb.new_signal]}")
                     base = bb.snapshot()

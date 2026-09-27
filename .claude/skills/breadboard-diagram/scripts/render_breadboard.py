@@ -2099,6 +2099,40 @@ def load_board(experiment):
     return load_board_file(board_path(experiment), f'board_e{experiment}')
 
 
+def fresh_board(fn):
+    """`rebuild: true` 회로(netlist)의 첫 보드 빌더를 만든다 — 기준선을 버리고 부른다.
+
+    앞 회로의 신호선을 전부 뽑고 새로 짓는 경계라, 앞 보드를 기준선으로 이으면 그
+    배선이 전부 '걷는다' 로 잡혀 단계 보드가 선을 걷게 된다(`test_단계_보드는_아무것도_
+    걷지_않는다`). 전부 뽑으므로 걷기 보드도 없다 — 체크리스트 배너가 지시한다.
+    돌려주는 클로저는 표준 빌더 시그니처라 `BOARDS` 에 그대로 들어간다(2026-09-27, 실험04).
+    """
+    def build(output_path, template_path=None, stage=None, baseline=None):
+        return fn(output_path, template_path, stage=stage, baseline=None)
+    build.__name__ = f'fresh_{getattr(fn, "__name__", "board")}'
+    return build
+
+
+def stage_budget(board):
+    """주차 `board` 의 단계 예산 — 기본은 `STAGE_WIRE_BUDGET`(셋).
+
+    주차 파일이 `STAGE_WIRE_BUDGET` 을 두면 그 값을 쓴다. 칩 구조상 셋으로는 관측
+    노드 하나를 세울 수 없는 주차의 예외다 — 실험04 는 4입력 NAND 라 입력 넷과
+    관측선 하나가 한꺼번에 있어야 한다(2026-09-27 결정, 예산 = 게이트 입력 수 + 1).
+    **이유(`STAGE_WIRE_BUDGET_REASON`)가 없으면 거절한다** — 숫자만 올리면 예산이
+    조용히 풀리고, 무엇 때문에 풀었는지 다음 주차가 알 수 없다.
+    """
+    value = getattr(board, 'STAGE_WIRE_BUDGET', None)
+    if value is None:
+        return STAGE_WIRE_BUDGET
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(f'주차 STAGE_WIRE_BUDGET 은 양의 정수여야 한다: {value!r}')
+    if not str(getattr(board, 'STAGE_WIRE_BUDGET_REASON', '') or '').strip():
+        raise ValueError('주차 STAGE_WIRE_BUDGET 예외에는 STAGE_WIRE_BUDGET_REASON 이 있어야 한다 '
+                         '— 왜 셋으로 관측 노드 하나를 세울 수 없는지 적는다')
+    return value
+
+
 def removal_board(prev, nxt, title, subtitle):
     """걷기 보드 빌더를 만든다. `prev`·`nxt` 는 `(빌더, stage)`.
 

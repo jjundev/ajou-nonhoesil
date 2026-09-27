@@ -1358,6 +1358,44 @@ class TestContinuesBanner(unittest.TestCase):
         self.assertIn("준비 — 꽂는다", banner)
 
 
+class TestRebuildBanner(unittest.TestCase):
+    """`rebuild: true` — 앞 회로의 신호선을 전부 뽑고 새로 짓는다(2026-09-27, 실험04 C2).
+    단계 표가 있는 회로의 기본 배너는 `앞 회로 배선은 그대로 둔다` 라 그 반대를 말한다."""
+
+    STAGES = ("\n## 단계\n\n| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
+              "| 1 | `s.png` | 신호선: 입력→pin 3 | 노드 `X` — 본다 |\n")
+
+    def _banner(self, extra, tail=""):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8").replace("- tables: [T2]", f"- tables: [T2]\n{extra}") + tail
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        return TestContinuesBanner._banner(self, circuit_pages(spec, parse_netlist(path)), 1)
+
+    def test_단계가_있어도_전부_뽑으라고_한다(self):
+        banner = self._banner("- rebuild: true", self.STAGES)
+        self.assertIn("신호선을 전부 뽑는다", banner)
+        self.assertNotIn("그대로 둔다 —", banner)
+
+    def test_남기는_것을_말한다(self):
+        """전원선·LED 사슬까지 뽑으면 다음 회로 1단계의 기반을 다시 꽂게 된다."""
+        banner = self._banner("- rebuild: true", self.STAGES)
+        self.assertIn("전원", banner)
+        self.assertIn("LED", banner)
+
+    def test_칩_교체를_말한다(self):
+        banner = self._banner("- rebuild: true")
+        self.assertIn("뺀다: 7490", banner)
+        self.assertIn("꽂는다: 741", banner)
+
+    def test_rebuild_가_없으면_단계_배너_그대로다(self):
+        """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
+        banner = self._banner("", self.STAGES)
+        self.assertIn("그대로 둔다", banner)
+        self.assertNotIn("전부 뽑는다", banner)
+
+
 class TestRefsTables(unittest.TestCase):
     """실험02 T7 은 T8(데이터시트 기준값, role: reference)과 대조하는 표다.
     `tables` 에 넣으면 validate 가 error 를 내므로 갈 곳을 만든다."""

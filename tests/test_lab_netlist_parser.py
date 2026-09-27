@@ -207,6 +207,30 @@ class ContinuesField(unittest.TestCase):
         self.assertIsNone(netlist.circuits[0].continues)
 
 
+class RebuildField(unittest.TestCase):
+    """`rebuild: true` — 앞 회로의 신호선을 전부 뽑고 새로 짓는 회로 경계(2026-09-27, 실험04 C2)."""
+
+    def _netlist(self, extra):
+        return ContinuesField._netlist(self, extra)
+
+    def test_rebuild_를_읽는다(self):
+        self.assertTrue(self._netlist("- rebuild: true").circuits[1].rebuild)
+
+    def test_없으면_False_다(self):
+        netlist = self._netlist("")
+        self.assertFalse(netlist.circuits[1].rebuild)
+        self.assertFalse(netlist.circuits[0].rebuild)
+
+    def test_false_는_False_다(self):
+        self.assertFalse(self._netlist("- rebuild: false").circuits[1].rebuild)
+
+    def test_true_false_밖의_값은_거절한다(self):
+        """`yes`·`1` 을 조용히 참으로 읽으면 오타 하나로 배너가 뒤집힌다."""
+        for bad in ("yes", "1", "전부"):
+            with self.subTest(bad=bad), self.assertRaises(NetlistError):
+                self._netlist(f"- rebuild: {bad}")
+
+
 class RefsField(unittest.TestCase):
     def _netlist(self, extra):
         text = ("---\nschema: lab-netlist/v2\nexperiment: 2\n"

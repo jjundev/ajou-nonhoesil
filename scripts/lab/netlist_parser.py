@@ -90,6 +90,7 @@ class NetlistSection:
     tables: list = field(default_factory=list)
     diagram: Optional[str] = None
     continues: Optional[str] = None    # 앞 회로를 뜯지 않고 이어 붙인다
+    rebuild: bool = False              # 앞 회로의 신호선을 전부 뽑고 새로 짓는다
     refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
     stages: list = field(default_factory=list)   # `## 단계` 표. 관측 노드 하나 = 단계 하나
     nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
@@ -248,6 +249,12 @@ def _parse_section(title, block, line, path) -> NetlistSection:
     refs = md.parse_value(attrs["refs"]) if attrs.get("refs") else []
     if not isinstance(refs, list):
         refs = [refs]
+    rebuild = attrs.get("rebuild", "false").strip().lower()
+    if rebuild not in ("true", "false"):
+        # `yes`·`1` 을 조용히 참으로 읽으면 오타 하나로 배너가 뒤집힌다
+        raise NetlistError(
+            f"{path}:{line} 회로 절 {title!r} 의 rebuild 가 {attrs['rebuild']!r} 입니다. "
+            "true 또는 false 만 쓴다")
     stages, body = _split_stages(body, path, line)
     nodes, body = _split_nodes(body, path, line)
     return NetlistSection(
@@ -255,6 +262,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
         diagram=attrs.get("diagram") or None,
         continues=attrs.get("continues") or None,
+        rebuild=rebuild == "true",
         refs=[str(r) for r in refs],
         stages=stages,
         nodes=nodes,

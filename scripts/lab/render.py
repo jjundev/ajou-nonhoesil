@@ -625,7 +625,13 @@ def _chip_swap(previous, current) -> str:
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
-    if current.stages:
+    if current.rebuild:
+        # 앞 회로를 통째로 걷는 경계(2026-09-27, 실험04 C2). 단계 표가 있어도 `그대로 둔다`
+        # 가 아니다. 기반(전원·브리지·LED 사슬)은 남긴다 — 다음 회로 1단계의 기반과 같은
+        # 자리라 뽑으면 다시 꽂게 된다.
+        parts = ["앞 회로의 신호선을 전부 뽑는다 — 전원선·레일 브리지·LED 사슬은 그대로 "
+                 "둔다(새 선은 단계 그림이 지시한다)"]
+    elif current.stages:
         if _has_entry_walk(current):
             parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 걷기 그림(빨간 점선), "
                      "새 선은 단계 그림(회색·번호)이 지시한다"]
