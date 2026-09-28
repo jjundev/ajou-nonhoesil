@@ -146,7 +146,7 @@
 <p>교안 p9·p12 의 이름으로는 1A=1, 1Y=2, 2A=3, 2Y=4, 3A=5, 3Y=6, GND=7, 4Y=8, 4A=9, 5Y=10, 5A=11, 6Y=12, 6A=13, VCC=14 다. 오른쪽 열(4·5·6 번 게이트)은 입력 번호가 출력보다 크다 — 9→8, 11→10, 13→12.</p>
 </div>
 <div class="tblock"><h2>칩 자리표</h2>
-<p>두 회로가 같은 자리를 쓴다. 신호원 입력은 S1 의 pin 1, 전원은 S1 pin 14·7 — 회로가 바뀌어도 그대로다. 행 번호는 실험01 결선도의 관례를 따른 것이고 교안 근거가 없다(M9).</p>
+<p>두 회로가 같은 자리를 쓴다. 신호원 입력은 S1 의 pin 1, 전원은 S1 pin 14·7 — 회로가 바뀌어도 그대로다. 행 번호는 실험01 결선도의 관례를 따른 것이고 교안 근거가 없다.</p>
 <table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>S1</td><td>좌 7행</td><td>C1 74HC04 · C2 74HC14 (U1)</td></tr></tbody></table>
 </div></section>
 <section class="circuits"><section class="circuit">
@@ -165,7 +165,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U1 = 74HC04 (hex inverter, DIP-14)</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 3, 5 → GND (교안 p9 그림 — Pull down)</li>
 <li><span class="box"></span>미사용 입력핀: pin 9, 11, 13 → VCC (교안 p9 그림 — Pull up)</li>
@@ -174,7 +174,7 @@
 </div>
 <ul><li>함수발생기 -, CH1 -, CH2 - → GND (회로도의 접지 기호 셋)</li></ul>
 <h4>계측</h4>
-<ul><li>오실로스코프를 X-Y 모드로 놓는다: "Horiz &gt; 좌측 아래 버튼"(교안 p10 머리글 — 기종은 M8). CH1(Vin) 이 가로축, CH2(Vout) 이 세로축 — 축 배정은 X-Y 모드의 통상 정의이고 교안 원문이 아니다(M8 에서 함께 확인)</li><li>T1 캡션에 눈금(V/div)과 전이가 보이는 Vin 구간을 적는다 — 교안 원문이 아닌 기록 지시다(명세 T1 expected 와 같다)</li></ul>
+<ul><li>오실로스코프를 X-Y 모드로 놓는다: "Horiz &gt; 좌측 아래 버튼"(교안 p10 머리글). CH1(Vin) 이 가로축, CH2(Vout) 이 세로축 — 축 배정은 X-Y 모드의 통상 정의이고 교안 원문이 아니다</li><li>T1 캡션에 눈금(V/div)과 전이가 보이는 Vin 구간을 적는다 — 교안 원문이 아닌 기록 지시다(명세 T1 expected 와 같다)</li></ul>
 <div class="tblock">
 <h3>T1 · 74HC04 Inverter 입출력 특성 (X-Y)</h3>
 <p class='src'>출처: manual:p10</p>
@@ -205,7 +205,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U1 = 74HC14 (hex inverting Schmitt trigger, DIP-14) — C1 의 74HC04 자리에 꽂는다</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 3, 5 → GND (교안 p9 — 74HC14 도 같은 규칙)</li>
 <li><span class="box"></span>미사용 입력핀: pin 9, 11, 13 → VCC (교안 p9)</li>

@@ -133,7 +133,7 @@
 
 <h1>실험1 Basic Gates 체크리스트</h1>
 <section class="common"><div class="power">전원: VCC = +5V · GND = GND · 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — 미사용 핀은 회로마다 핀 점검 상자를 본다</div>
-<div class="must-read"><h2>꼭 읽을 것</h2><ul><li>74HC02 는 나머지 셋과 핀 배치가 다르다. 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li><li>사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지). 미사용 입력은 비워 두고, 미사용 출력은 아무 데도 잇지 않는다 — 출력끼리 묶거나 GND 로 내리면 칩이 상한다</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 문다. 띄워두지 않는다</li><li>각 칩을 처음 쓰는 회로에서는 진리표 전 행을 돌린다 — 조교가 일부 행만 지시해도 그렇다</li><li>칩 자리는 고정이다. 그림의 회색 선은 손대지 않는다</li></ul></div>
+<div class="must-read"><h2>꼭 읽을 것</h2><ul><li>74HC02 는 나머지 셋과 핀 배치가 다르다. 74HC00/08/32 는 핀 3·6·8·11 이 출력이지만 74HC02 는 핀 1·4·10·13 이 출력이다. 이 실험에서 가장 흔한 배선 실수다</li><li>미사용 입력은 비워 둔다. 미사용 출력은 아무 데도 잇지 않는다 — 묶거나 GND 로 내리면 칩이 상한다</li><li>입력 A·B·C 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 문다. 띄워두지 않는다</li><li>각 칩을 처음 쓰는 회로에서는 진리표 전 행을 돌린다 — 조교가 일부 행만 지시해도 그렇다</li><li>칩 자리는 고정이다. 그림의 회색 선은 손대지 않는다</li></ul></div>
 <div class="caution"><b>손으로 할 때 주의</b><ul><li>선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)</li><li>칩을 꽂고 뽑을 때는 전원을 끈다</li><li>회로를 바꿀 때는 걷을 선부터 먼저 뽑고 새 선을 꽂는다</li></ul></div>
 <p class="wire-legend">선 색 — 빨강 +5V · 파랑 0V · 검정 신호 · 초록 칩 사이 중간 노드 · 회색 = 앞 단계에서 그대로 둔다 · 빨간 점선 = 뽑는다 · 회색 점선 = 계측기(꽂지 않고 문다)</p>
 <p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
@@ -146,7 +146,7 @@
 <p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7.</p>
 </div>
 <div class="tblock"><h2>칩 자리표</h2>
-<p>다섯 회로가 같은 자리를 쓴다. 입력 A 는 b7, B 는 b8(C1~C4) 또는 b19(C5), 중간단 L1 은 c14 사슬, 최종 L2(C5 의 Z)는 a25 사슬 — 회로가 바뀌어도 그대로다.</p>
+<p>다섯 회로가 같은 자리를 쓴다 — 입력 A b7·B b8(C5 는 b19), L1 c14·L2 a25 사슬도 그대로다.</p>
 <table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>S1</td><td>좌 7행</td><td>C1 74HC08 · C2 74HC32 · C3 74HC08 · C4 74HC32 · C5 74HC04</td></tr><tr><td>S2</td><td>좌 18행</td><td>C3 74HC00 · C4 74HC02 · C5 74HC08</td></tr><tr><td>S3</td><td>우 10행</td><td>C5 74HC32</td></tr></tbody></table>
 </div></section>
 <section class="circuits"><section class="circuit">
@@ -168,7 +168,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U1 = 74HC08 (quad 2-input AND, DIP-14)</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
@@ -223,7 +223,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U2 = 74HC32 (quad 2-input OR, DIP-14)</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 8, 11 → 개방</li>
@@ -286,7 +286,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U3 = 74HC08 (quad 2-input AND, DIP-14) — U1 과 같은 물리 칩</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
@@ -354,7 +354,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U5 = 74HC32 (quad 2-input OR, DIP-14) — U2 와 같은 물리 칩</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 4, 5, 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 11 → 개방</li>
@@ -436,7 +436,7 @@
 </ol>
 </div>
 </div>
-<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>
 <div class="chipunused"><b>U7 = 74HC04 (hex inverter, DIP-14)</b><ul>
 <li><span class="box"></span>미사용 입력핀: pin 5, 9, 11, 13 → 개방 (접지 생략 — 공통 규칙)</li>
 <li><span class="box"></span>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
