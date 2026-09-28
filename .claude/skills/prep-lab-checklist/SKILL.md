@@ -126,10 +126,17 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
    out = Path('<실험NN>/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
+   from scripts.lab.fit_pages import fit_pages
+   fit_pages(out, chrome=info.get('chrome') or DEFAULT_CHROME)
    html_to_pdf(out, out.with_suffix('.pdf'),
                chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
+
+   **`fit_pages` 를 빠뜨리지 않는다** — 단계 블록마다 높이를 실측해 블록 하나를 제 높이의
+   쪽 하나로 만든다(쪽 길이 wrap_content, 2026-09-28 사용자). 빠뜨리면 단계가 기본 쪽에서
+   흘러 그림과 확인 줄·단계 진리표가 쪽 경계에서 갈린다. HTML 을 덮어쓰므로 렌더 직후에
+   부른다 — 여러 번 불러도 결과는 같다.
 
    **`chrome=` 를 반드시 넘긴다** — 안 넘기면 `과목정보.md` 의 `chrome` 필드가
    선언만 되고 아무 효과가 없다 (⑥ 표지 스킬과 같은 규칙이다).
@@ -155,14 +162,17 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
 6. **쪽 크기 실측.** 아래를 돌려 쪽 크기를 본다.
 
-   **기대값은 `209.9 420.2` 이다.** 이 PDF 는 인쇄하지 않고 태블릿으로 본다(2026-09-28
-   사용자). 폭은 A4 그대로이고 높이만 420mm 로 늘렸다 — 가장 긴 결선도(세로/가로 2.0)가
-   폭 100% 로 제목과 한 쪽에 들어가야 한다. A4 297mm 에서는 그림이 쪽보다 길어 단계마다
-   제목만 남은 빈 쪽이 생기고 그림 아래가 잘렸다. 쪽 수는 신경 쓰지 않는다.
+   **폭은 전부 `209.9`, 높이는 두 가지다.** 이 PDF 는 인쇄하지 않고 태블릿으로 본다(2026-09-28
+   사용자) — 쪽 수는 신경 쓰지 않는다.
+   - 공통면·배선 상자·기록표 쪽은 기본 쪽 `420.2` 다. 완성본 결선도(세로/가로 최대 1.9)가
+     폭 100% 로 캡션과 한 쪽에 들어가야 해서 A4 297mm 에서 늘렸다.
+   - 단계 쪽은 블록마다 다르다(실험04 실측 323~451). **단계 수만큼 420 이 아닌 쪽이 있어야
+     한다** — 단계 쪽이 전부 420 이면 4단계의 `fit_pages` 가 빠진 것이다.
+
    Chrome 헤드리스의 폭은 이름값 210mm 보다 0.11mm 좁은 `209.889mm` 로 고정이다 —
-   **결함이 아니다.** 이 값에서 눈에 띄게 벗어날 때만(예: Letter 로 나와 215.9)
-   `template.html` 의 `@page { size: 210mm 420mm }` 를 확인하고 다시 낸다. 새 주차 결선도가
-   더 길면 `test_가장_긴_결선도도_한_쪽에_폭_그대로_들어간다` 가 먼저 알린다.
+   **결함이 아니다.** 폭이 눈에 띄게 벗어날 때만(예: Letter 로 나와 215.9)
+   `template.html` 의 `@page { size: 210mm 420mm }` 를 확인하고 다시 낸다. 새 주차 완성본
+   결선도가 더 길면 `test_가장_긴_결선도도_한_쪽에_폭_그대로_들어간다` 가 먼저 알린다.
 
    ```bash
    python3 -c "

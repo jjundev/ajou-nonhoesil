@@ -996,11 +996,6 @@ class TestPrintConstraints(unittest.TestCase):
         width = w - 2 * mh - 8        # 단계 블록 테두리·안쪽 여백
         self.assertGreaterEqual(h - 2 * mv - 15, width * max(ratios))   # 15mm = 제목 줄
 
-    def test_단계_글과_단계_진리표는_한_쪽에_묶인다(self):
-        """2026-09-28 사용자: 확인 줄은 이 쪽 끝, 단계 진리표는 다음 쪽 꼭대기에 갈렸다.
-        그림 아래 글·확인·표 덩어리(`.stage-body`)는 그림보다 짧아 통짜로 넘겨도 빈 쪽이 없다."""
-        self.assertRegex(TEMPLATE, r"\.stage-body\s*\{[^}]*break-inside: avoid")
-
     def test_핀_점검_상자는_쪽에서_갈리지_않는다(self):
         """2026-09-28 실험04: 핀 점검 제목만 쪽 끝에 남고 칩 구획이 다음 쪽으로 넘어갔다.
         상자가 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다."""
@@ -1799,15 +1794,6 @@ class TestStageTable(unittest.TestCase):
 
     def test_관측_단계에_단계_진리표가_붙는다(self):
         self.assertIn('class="stage-table"', self._block("단계 1"))
-
-    def test_글_확인_진리표가_한_덩어리에_든다(self):
-        """그림 뒤 글·확인·단계 진리표는 `.stage-body` 하나에 — 쪽 경계에서 같이 움직인다."""
-        block = self._block("단계 1")
-        body = block[block.index('<div class="stage-body">'):]
-        for part in ("이 단계에서:", "확인:", 'class="stage-table"'):
-            with self.subTest(part=part):
-                self.assertIn(part, body)
-        self.assertNotIn("<img", body)
 
     def test_입력_열은_노드가_쓰는_입력만이다(self):
         block = self._block("단계 1")
