@@ -111,7 +111,7 @@
                                  margin-top: 3mm; }
   .wirebox .chip h4 { margin: 0 0 1.5mm; padding-bottom: 1mm; border-bottom: 1px solid var(--hair); }
   .wirebox .chip ol { margin: 0; padding-left: 6mm; }
-  .wirebox .chip li { font-size: 11pt; line-height: 1.6; }
+  .wirebox .chip li { font-size: 11pt; line-height: 1.8; }
   .wirebox .submit { font-size: 9.5pt; color: var(--ink); font-weight: 700; margin: 3mm 0 2mm; }
 
   /* 단계 블록 — 칩 하나 = 단계 하나. 회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다.
@@ -139,12 +139,12 @@
   .list-head { font-weight: 800; font-size: 10.5pt; margin: 3mm 0 1mm; }
   ol.steps, ol.probes, ul.removals { list-style: none; padding: 0; margin: 1mm 0 2mm; }
   .step, .probe, .removal { position: relative; display: flex; flex-wrap: wrap; align-items: baseline;
-    column-gap: 3mm; row-gap: 0; padding: 1.2mm 2mm 1.2mm 15mm; break-inside: avoid;
+    column-gap: 3mm; row-gap: 0.5mm; padding: 1.8mm 2mm 1.8mm 15mm; break-inside: avoid;
     border-bottom: 1px solid var(--tint); }
   .step:nth-child(even), .probe:nth-child(even) { background: var(--tint); }
   /* ☐ 와 번호는 줄 왼쪽 자리에 고정한다 — 번호가 없는 줄도 경로가 같은 세로선에서 시작한다. */
-  .step > .box, .probe > .box, .removal > .box { position: absolute; left: 2mm; top: 2.2mm; margin: 0; }
-  .step .n, .probe .n, .removal .n { position: absolute; left: 7.8mm; top: 1.4mm;
+  .step > .box, .probe > .box, .removal > .box { position: absolute; left: 2mm; top: 2.8mm; margin: 0; }
+  .step .n, .probe .n, .removal .n { position: absolute; left: 7.8mm; top: 2mm;
     width: var(--dot); height: var(--dot); border-radius: 50%; box-sizing: border-box;
     display: flex; align-items: center; justify-content: center;
     font-size: 8.5pt; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
@@ -203,7 +203,7 @@
   .unused .chipunused { margin-top: 2mm; padding-top: 1.5mm; border-top: 1px solid var(--hair);
                         break-inside: avoid; }
   .unused ul { list-style: none; margin: 1mm 0 0; padding: 0; }
-  .unused li { font-size: 10.5pt; line-height: 1.6; }
+  .unused li { font-size: 10.5pt; line-height: 1.8; }
 
   /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
      가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
@@ -250,7 +250,7 @@
   /* 실험실을 나오기 전에 — 펜으로 칠하는 마지막 목록. */
   .closing h2 { font-size: 14pt; padding-bottom: 1.5mm; border-bottom: 2px solid var(--ink); }
   .closing ul { list-style: none; padding: 0; margin: 0; }
-  .closing li { font-size: 11pt; line-height: 1.6; padding: 1.5mm 0; border-bottom: 1px solid var(--tint); }
+  .closing li { font-size: 11pt; line-height: 1.6; padding: 2mm 0; border-bottom: 1px solid var(--tint); }
 </style>
 
 <h1>실험2 CMOS 회로의 전기적 특성 체크리스트</h1>
@@ -352,6 +352,6 @@
 </section></section>
 <section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), 스텝표는 스텝마다, 파형은 화면마다</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>
 <style id="fit-pages">
-@page fit-0 { size: 210mm 260mm; margin: 12mm 10mm; }
+@page fit-0 { size: 210mm 265mm; margin: 12mm 10mm; }
 [data-fit="0"] { page: fit-0; }
 </style>
