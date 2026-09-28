@@ -1,5 +1,10 @@
 <style>
-  @page { size: A4; margin: 12mm 10mm; }
+  /* 태블릿으로 보는 PDF 다 — 인쇄하지 않는다(2026-09-28 사용자). 기본 쪽은 폭은 A4 그대로 두고
+     높이만 늘렸다: 완성본 결선도(세로/가로 최대 1.9)가 폭 100% 로 캡션과 한 쪽에 들어가야 한다.
+     단계 블록은 이 쪽을 쓰지 않는다 — `fit_pages` 가 블록마다 제 높이의 쪽을 준다(`.stage` 참고).
+     폭·여백은 fit_pages 가 이 규칙에서 읽으므로 `size: <폭>mm <높이>mm; margin: <세로>mm <가로>mm`
+     꼴을 유지한다. */
+  @page { size: 210mm 420mm; margin: 12mm 10mm; }
   body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
 
   /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
@@ -25,22 +30,25 @@
      칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
   .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
                    break-inside: avoid; }
-  .wirebox img { break-after: avoid; }
+  .wirebox img { break-after: avoid; max-height: 370mm; object-fit: contain; }
+  /* `완성본 — 손그림 원도` 캡션만 쪽 끝에 남지 않게 */
+  .wirebox > p.src:first-child { break-after: avoid; }
   .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
   .wirebox ol { margin: 0; padding-left: 6mm; }
   .wirebox li { font-size: 11pt; line-height: 1.6; }
 
-  /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
-     회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
-  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
-  .stage h3 { margin: 0 0 1.5mm; }
-  .stage img { break-after: avoid; }
-  /* 노드 기대값 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
-  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
-  .nodes { break-after: avoid; }
+  /* 단계 블록 — 칩 하나 = 단계 하나. 회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다.
+     블록 하나가 PDF 한 쪽이다: `scripts/lab/fit_pages.py` 가 블록 높이를 실측해 블록마다
+     제 높이의 쪽(`@page fit-<i>`)을 준다 — 2026-09-28 사용자 "쪽 길이를 내용에 맞춰".
+     고정 높이 쪽에서는 그림과 확인 줄·단계 진리표가 쪽 경계에서 갈렸다. 그래서 여기에는
+     쪽 넘김 규칙을 두지 않는다. fit_pages 를 거치지 않은 HTML 은 기본 쪽에서 흐른다. */
+  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; }
+  .stage h3 { margin: 0 0 1.5mm; break-after: avoid; }
+  .stage img { display: block; max-height: 370mm; object-fit: contain; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
-  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
   /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
      꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
      통짜로 묶어도 백지 비용이 없다. */
@@ -51,6 +59,16 @@
   .box { display: inline-block; width: 4mm; height: 4mm;
          border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
   td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+
+  /* 단계 진리표 — 그 단계 노드가 쓰는 입력만. 열 머리 둘째 줄은 노드 핀.
+     행마다 ☐ 는 `td.box` 다 — `.check` 는 기록표 행 수 불변식 전용이다.
+     단계 블록 안이라 기록표보다 조밀하게 찍는다. */
+  .stage-table { margin: 2mm 0 0; }
+  .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
+  .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+  .stage-table td.box { height: 6mm; }
+  /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
+  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
   /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
      가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.

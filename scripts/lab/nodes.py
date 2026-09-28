@@ -5,14 +5,19 @@
 그 게이트로 들어오는 두세 가닥뿐이다 (2026-09-20 디버깅 회고,
 docs/plans/2026-09-20-중간노드-기대값표-설계.md).
 
+`compute` 는 모든 노드 × 기록표 전 행이다 — `validate` 가 출력 노드를 명세 식과
+대조하는 데 쓴다. `stage_table` 은 노드 하나 × 그 노드가 쓰는 입력만이다 — 체크리스트
+단계 블록 안의 단계 진리표다 (docs/plans/2026-09-28-단계별-진리표-설계.md).
+
 이 모듈은 `spec_parser`·`boolexpr`·`notation` 만 import 한다 — `validate` 가
 `render` 를 import 하므로 둘이 공유하는 계산은 여기에 있어야 순환이 없다.
 """
 
 from dataclasses import dataclass
+from itertools import product
 
-from .boolexpr import eval_boolean
-from .notation import bit_of, normalize_cell
+from .boolexpr import eval_boolean, variables
+from .notation import DONT_CARE, bit_of, normalize_cell
 from .spec_parser import split_indices
 
 
@@ -22,6 +27,14 @@ class NodeTable:
     nodes: list       # (노드 이름, 핀) — `## 노드` 표 순서
     rows: list        # 행마다 (입력 셀 문자열 리스트, 노드 비트 리스트 | None)
     encoding: str     # 기록표의 encoding — 셀은 이것으로 찍는다 (H/L ↔ 0/1 변환 금지)
+
+
+@dataclass
+class StageTable:
+    inputs: list      # 이 노드 식에 나오는 입력 열 이름 (기록표 헤더 순서)
+    node: tuple       # (노드 이름, 핀)
+    rows: list        # 행마다 (입력 셀 문자열 리스트, 노드 비트 0/1) — 값이 정해진 행만
+    encoding: str     # 기록표의 encoding
 
 
 def record_table(circuit, spec):
@@ -84,6 +97,72 @@ def compute(circuit, spec) -> NodeTable:
     return NodeTable(inputs=names,
                      nodes=[(n["name"], n["pin"]) for n in circuit.nodes],
                      rows=rows, encoding=table.encoding or "0/1")
+
+
+def _settled(expr, fixed, free):
+    """`free` 변수에 0·1 을 다 넣어도 값이 하나면 그 값, 갈리면 None."""
+    values = {eval_boolean(expr, {**fixed, **dict(zip(free, combo))})
+              for combo in product((0, 1), repeat=len(free))}
+    return values.pop() if len(values) == 1 else None
+
+
+def stage_table(circuit, spec, node_name) -> StageTable:
+    """단계 하나에서 볼 노드의 진리표 — 입력은 그 노드 식에 나오는 것만.
+
+    행은 기록표 행을 그 입력으로 줄여 겹치는 것을 합친 것이다(처음 나온 순서). 2^k 로
+    전개하지 않는다 — 실험04 MUX 는 입력이 7개이고, 기록표가 저작자가 고른 시험 행이다.
+    줄인 입력에 X 가 남으면 0·1 을 다 넣어 보고 값이 하나로 정해질 때만 X 째 싣는다
+    (MUX `E=1` 행은 NAND 출력이 1 로 정해진다). 0/1(H/L)도 X 도 아닌 셀의 행은 뺀다.
+
+    입력 열은 이름이 아니라 `split_indices` 의 **자리**로 고른다 — 입력과 출력이 같은
+    글자인 표가 있다(실험3 반감산기 `A B D B`).
+    """
+    table = record_table(circuit, spec)
+    if table is None:
+        raise ValueError(
+            f"{circuit.id} 에 truth-table 기록표가 없다 — 단계 진리표는 입력 행이 있는 회로에만 둔다")
+    node = next((n for n in circuit.nodes if n["name"] == node_name), None)
+    if node is None:
+        raise ValueError(f"노드 {node_name!r} 가 {circuit.id} 의 `## 노드` 표에 없다")
+    inputs, _ = split_indices(table)
+    names = [table.header[i] for i in inputs]
+    try:
+        used = variables(node["expr"])
+    except ValueError as exc:
+        raise ValueError(f"노드 {node['name']} 의 식 {node['expr']!r}: {exc}") from exc
+    missing = [v for v in used if v not in names]
+    if missing:
+        raise ValueError(f"노드 {node['name']} 의 식 {node['expr']!r}: "
+                         f"입력 변수 {missing} 이(가) 기록표 {table.id} 에 없다")
+    cols = [(name, i) for name, i in zip(names, inputs) if name in used]
+    rows, seen = [], set()
+    for row in table.rows:
+        if len(row) != len(table.header):
+            continue              # 셀 수 불일치는 check_table_integrity 몫이다
+        cells = [str(normalize_cell(row[i])) for _, i in cols]
+        if tuple(cells) in seen:
+            continue
+        seen.add(tuple(cells))
+        fixed, free, settable = {}, [], True
+        for (name, i), cell in zip(cols, cells):
+            bit = bit_of(row[i], table.encoding)
+            if bit is not None:
+                fixed[name] = bit
+            elif cell == DONT_CARE:
+                free.append(name)
+            else:
+                settable = False
+        if not settable:
+            continue
+        try:
+            bit = _settled(node["expr"], fixed, free)
+        except ValueError as exc:
+            raise ValueError(f"노드 {node['name']} 의 식 {node['expr']!r}: {exc}") from exc
+        if bit is not None:
+            rows.append((cells, bit))
+    return StageTable(inputs=[name for name, _ in cols],
+                      node=(node["name"], node["pin"]),
+                      rows=rows, encoding=table.encoding or "0/1")
 
 
 def format_bit(bit, encoding) -> str:

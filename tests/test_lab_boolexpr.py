@@ -1,7 +1,7 @@
 import itertools
 import unittest
 
-from scripts.lab.boolexpr import eval_boolean
+from scripts.lab.boolexpr import eval_boolean, variables
 
 
 def truth_column(expr, names):
@@ -59,6 +59,20 @@ class TestErrors(unittest.TestCase):
                 with self.assertRaises(ValueError) as ctx:
                     eval_boolean(expr, {"A": 1, "B": 1})
                 self.assertIn("알 수 없는 문자", str(ctx.exception))
+
+
+class TestVariables(unittest.TestCase):
+    """단계 진리표의 입력 열 — 노드 식에 나오는 변수만 쓴다."""
+
+    def test_처음_나온_순서대로_중복_없이(self):
+        self.assertEqual(variables("(A⊕B)'·Ci + A·B"), ["A", "B", "Ci"])
+
+    def test_여러_글자_이름을_한_변수로_읽는다(self):
+        self.assertEqual(variables("(E'·S1'·S0'·D0)'"), ["E", "S1", "S0", "D0"])
+
+    def test_알_수_없는_문자는_거절한다(self):
+        with self.assertRaises(ValueError):
+            variables("!A·B")
 
 
 if __name__ == "__main__":

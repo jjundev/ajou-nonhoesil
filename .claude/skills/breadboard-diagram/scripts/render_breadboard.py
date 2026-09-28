@@ -143,8 +143,73 @@ def font_path(kind):
     raise FileNotFoundError(msg)
 
 
+# 출력 배율. 좌표는 전부 정본 템플릿(998px 폭) 기준으로 계산하고, **그리는 순간에만**
+# 이 배율을 곱한다(`_ScaledDraw`·`_ScaledFont`). 2026-09-28 사용자: 태블릿에서 998px 그림의
+# 글자가 작아 확대해야 읽혔다. 정본 `Breadboard.jpg` 는 998px 한 장뿐이라 격자·로고는
+# 확대해 깔고, 선·칩·글자·번호 원·결선 목록은 이 배율로 새로 그려 선명하다.
+SCALE = 2
+
+
+class _ScaledFont:
+    """논리 크기로 부르고 SCALE 배 크기로 그리는 폰트. 치수는 논리 단위로 돌려준다."""
+
+    def __init__(self, path, size):
+        self.size = size
+        self.real = ImageFont.truetype(path, size * SCALE)
+
+    def getbbox(self, text, *a, **k):
+        return tuple(v / SCALE for v in self.real.getbbox(text, *a, **k))
+
+    def getlength(self, text, *a, **k):
+        return self.real.getlength(text, *a, **k) / SCALE
+
+
+def _sc(v):
+    """좌표(숫자·점·점 목록)에 SCALE 을 곱한다."""
+    if isinstance(v, (int, float)):
+        return v * SCALE
+    return type(v)(_sc(x) for x in v) if isinstance(v, (tuple, list)) else v
+
+
+class _ScaledDraw:
+    """`ImageDraw` 를 감싼다 — 논리 좌표를 받아 SCALE 배 캔버스에 그린다."""
+
+    def __init__(self, image):
+        self._d = ImageDraw.Draw(image)
+
+    @staticmethod
+    def _kw(k):
+        k = dict(k)
+        if 'width' in k:
+            k['width'] = max(1, round(k['width'] * SCALE))
+        if isinstance(k.get('font'), _ScaledFont):
+            k['font'] = k['font'].real
+        return k
+
+    def line(self, xy, *a, **k):
+        return self._d.line(_sc(xy), *a, **self._kw(k))
+
+    def rectangle(self, xy, *a, **k):
+        return self._d.rectangle(_sc(xy), *a, **self._kw(k))
+
+    def ellipse(self, xy, *a, **k):
+        return self._d.ellipse(_sc(xy), *a, **self._kw(k))
+
+    def arc(self, xy, start, end, *a, **k):
+        return self._d.arc(_sc(xy), start, end, *a, **self._kw(k))
+
+    def text(self, xy, text, *a, **k):
+        return self._d.text(_sc(xy), text, *a, **self._kw(k))
+
+    def textbbox(self, xy, text, *a, **k):
+        return tuple(v / SCALE for v in self._d.textbbox(_sc(xy), text, *a, **self._kw(k)))
+
+    def textlength(self, text, *a, **k):
+        return self._d.textlength(text, *a, **self._kw(k)) / SCALE
+
+
 def _font(kind, size):
-    return ImageFont.truetype(font_path(kind), size)
+    return _ScaledFont(font_path(kind), size)
 
 
 def _default_template():
@@ -252,9 +317,13 @@ class BreadboardRenderer:
                 f'{self.base_im.size} ({template_path}).\n'
                 'cols·r_y() 좌표는 정본 한 장에 맞춰져 있습니다. '
                 '다른 판본을 쓰려면 좌표표를 다시 떠야 합니다.')
-        self.im = self.base_im.copy()
+        # 정본은 998px 한 장뿐이다 — 격자·로고는 확대해 깐다(`SCALE` 주석). NEAREST 는 픽셀을
+        # 그대로 늘려 원본과 같은 모양이다. LANCZOS 는 JPEG 잡티까지 매끈하게 늘려 PNG 가
+        # 장당 2.3MB 로 커졌다(NEAREST 는 1.1MB 안팎, 2026-09-28 실측)
+        self.im = self.base_im.resize((TEMPLATE_SIZE[0] * SCALE, TEMPLATE_SIZE[1] * SCALE),
+                                      Image.NEAREST)
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
-        self.draw = ImageDraw.Draw(self.overlay)
+        self.draw = _ScaledDraw(self.overlay)
         # 이미 그린 레일 브리지. 칩마다 connect_unused_inputs 를 부르면 같은
         # 레일쌍을 여러 번 잇게 되므로 한 번만 그린다
         self._bridged = set()
@@ -313,6 +382,9 @@ class BreadboardRenderer:
         self.tag_boxes = []
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
+        # 보드 밖 입력 꼬리표(`_tag`) 상자 — (글, (x0, y0, x1, y1)). 같은 행 입력이 둘이면
+        # 꼬리표가 포개진다(2026-09-28 실험04 C2 S1·D) — `_input_jumper` 가 이걸 보고 비킨다
+        self.margin_tag_boxes = []
         # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
         # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다.
@@ -814,7 +886,7 @@ class BreadboardRenderer:
         번호 원은 가장 긴 구간의 중점에, 기존 원과 겹치면 그 구간을 따라 옮긴다.
         """
         self._dashed(points, REMOVE, width=4, dash=9, gap=6,
-                     draw=ImageDraw.Draw(self.ghost_layer))
+                     draw=_ScaledDraw(self.ghost_layer))
         if len(points) < 2:
             self._marker_removed(points[0][0], points[0][1], n)
             return
@@ -992,12 +1064,15 @@ class BreadboardRenderer:
     def _vtext(self, xy, text, fill, font):
         """세로쓰기. 과거 결선도가 칩 이름을 이렇게 적었다 — 몸통 안에 넣으면
         핀 번호를 d·g 열 홀 위에 얹지 않아도 된다."""
-        bbox = font.getbbox(text)
-        w, h = bbox[2] - bbox[0] + 4, bbox[3] - bbox[1] + 4
+        real = font.real if isinstance(font, _ScaledFont) else font
+        bbox = real.getbbox(text)
+        pad = 2 * SCALE
+        w, h = bbox[2] - bbox[0] + 2 * pad, bbox[3] - bbox[1] + 2 * pad
         tmp = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-        ImageDraw.Draw(tmp).text((2 - bbox[0], 2 - bbox[1]), text, fill=fill, font=font)
+        ImageDraw.Draw(tmp).text((pad - bbox[0], pad - bbox[1]), text, fill=fill, font=real)
         rot = tmp.rotate(-90, expand=True)
-        self.overlay.alpha_composite(rot, (int(xy[0] - rot.width / 2), int(xy[1] - rot.height / 2)))
+        self.overlay.alpha_composite(rot, (int(xy[0] * SCALE - rot.width / 2),
+                                           int(xy[1] * SCALE - rot.height / 2)))
 
     def draw_chip(self, name, start_row, block='left'):
         c = self.cols[block]
@@ -1232,7 +1307,7 @@ class BreadboardRenderer:
         그림 전체를 한 번에 볼 필요 없이 이 표를 위에서 아래로 지워가며
         한 줄씩 그린다 — 30가닥을 동시에 보는 문제가 사라진다.
         """
-        d = ImageDraw.Draw(im)
+        d = _ScaledDraw(im)
         x_pad = 28
         d.line([(x_pad, y0), (998 - x_pad, y0)], fill=(190, 195, 200, 255), width=1)
         y = y0 + 14
@@ -1895,12 +1970,13 @@ class BreadboardRenderer:
         final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
                                          self.overlay)
         board_h = self.r_y(max_row) + 20
-        board = final_im.crop((0, 0, 998, board_h)).convert('RGB')
+        board = final_im.crop((0, 0, 998 * SCALE, board_h * SCALE)).convert('RGB')
 
-        canvas = Image.new('RGB', (998, board_h + 1400), (255, 255, 255))
+        # 캔버스는 SCALE 배 — `_draw_footer` 는 논리 좌표로 그리고 논리 높이를 돌려준다
+        canvas = Image.new('RGB', (998 * SCALE, (board_h + 1400) * SCALE), (255, 255, 255))
         canvas.paste(board, (0, 0))
         used = self._draw_footer(canvas, board_h)
-        out = canvas.crop((0, 0, 998, min(used, canvas.height)))
+        out = canvas.crop((0, 0, 998 * SCALE, min(used * SCALE, canvas.height)))
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
@@ -1917,8 +1993,24 @@ class BreadboardRenderer:
 
 
 def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
-    """보드 **밖** 꼬리표 — 꽂을 자리(`입력 A → b7`). 신호 이름은 `signal_tag()` 가 보드 안에 둔다."""
-    bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
+    """보드 **밖** 꼬리표 — 꽂을 자리(`입력 A → b7`). 신호 이름은 `signal_tag()` 가 보드 안에 둔다.
+
+    앞 꼬리표와 겹치면 겹치지 않을 때까지 아래로 내린다 — 같은 행에 입력이 둘이면(실험04
+    C2 의 S1·D, 31행) 뒤 꼬리표가 앞 것을 정확히 덮어 한 입력의 자리가 사라졌다."""
+    font, pad = bb.font_kr_sm, 2
+
+    def box(y_):
+        b = bb.draw.textbbox((x, y_), text, font=font)
+        return (b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad)
+
+    def hits(b):
+        return any(not (b[2] <= o[0] or o[2] <= b[0] or b[3] <= o[1] or o[3] <= b[1])
+                   for _, o in bb.margin_tag_boxes)
+
+    while hits(box(y)):
+        y += 1
+    bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=font, pad=pad)
+    bb.margin_tag_boxes.append((text, box(y)))
 
 
 def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
