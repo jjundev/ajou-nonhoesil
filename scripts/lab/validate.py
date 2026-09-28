@@ -863,6 +863,22 @@ def check_netlist_circuits(netlist, spec) -> list:
                 "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
                 "완성본은 기준선 없이 따로 낸다 (주차 배치.py 의 FINALS)"))
         out += _check_nodes(circuit, spec, where, netlist.experiment)
+        if circuit.rebuild:
+            # 앞 회로의 신호선을 전부 뽑는 경계(2026-09-27, 실험04 C2). 전부 뽑으면 놓칠 선이
+            # 없어 걷기 보드의 주소 목록이 필요 없다 — 그래서 아래 셋과 겹치면 모순이다.
+            if circuit is netlist.circuits[0]:
+                out.append(Finding("error", where,
+                    "rebuild 가 첫 회로에 있다 — 뽑을 앞 회로가 없다. 첫 회로는 원래 "
+                    "맨바닥에서 시작하므로 이 줄을 지운다"))
+            if circuit.continues:
+                out.append(Finding("error", where,
+                    f"rebuild 와 continues: {circuit.continues} 가 함께 있다 — 앞 회로를 전부 "
+                    "뽑는다는 것과 뜯지 않고 이어 붙인다는 것은 반대다. 하나만 남긴다"))
+            if circuit.stages and circuit.stages[0].get("walk"):
+                out.append(Finding("error", where,
+                    f"rebuild 인데 단계 표 첫 행이 걷기({circuit.stages[0]['n']})다 — 입구 걷기는 "
+                    "골라 뽑을 선을 주소로 적는 자리이고 rebuild 는 전부 뽑는다. 걷기 행을 "
+                    "지우거나 rebuild 를 지운다"))
         if circuit.continues:
             if circuit.continues == circuit.id:
                 out.append(Finding("error", where,

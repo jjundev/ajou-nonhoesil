@@ -439,3 +439,70 @@ class WiringE3(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class WiringE4(unittest.TestCase):
+    """실험04 — 슬롯·그림 이름·걷기 주소가 netlist 와 같은지. 정본은
+    `보고서/실험04/결선도/netlist.md` 다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.b4 = cls.mod.load_board(4)
+        cls.tmp = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def _netlist(self):
+        from scripts.lab import config
+        from scripts.lab.netlist_parser import parse_netlist
+        return parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(4), '결선도', 'netlist.md'))
+
+    def _chain(self):
+        out, base = [], None
+        for name, fn, stage in self.b4.BOARDS:
+            bb = fn(os.path.join(self.tmp, name), stage=stage, baseline=base)
+            out.append(bb)
+            base = bb.snapshot()
+        return out
+
+    def test_빌더_칩_자리가_netlist_자리표와_같다(self):
+        import re
+        from scripts.lab import md
+        layouts = self._netlist().of_kind('layout')
+        self.assertEqual(len(layouts), 1)
+        slots = {}
+        for row in md.parse_tables(layouts[0].body)[0].rows:
+            m = re.match(r'(좌|우)\s*(\d+)행', row[1])
+            self.assertIsNotNone(m, row)
+            slots[row[0]] = ({'좌': 'left', '우': 'right'}[m.group(1)], int(m.group(2)))
+        self.assertEqual(slots, self.b4.E4_SLOTS)
+
+    def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
+        wanted = set()
+        for c in self._netlist().circuits:
+            if c.diagram:
+                wanted.add(c.diagram)
+            for st in c.stages:
+                wanted.add(st['diagram'])
+        made = {n for n, _f, _s in self.b4.BOARDS} | {n for n, _f in self.b4.FINALS}
+        self.assertEqual(wanted, made)
+
+    def test_걷기_보드마다_뽑는_주소가_netlist와_같다(self):
+        walks = [st for c in self._netlist().circuits for st in c.stages if st['walk']]
+        rendered = {name: bb for bb, (name, _fn, stage) in zip(self._chain(), self.b4.BOARDS)
+                    if stage is None}
+        self.assertEqual(set(rendered), {row['diagram'] for row in walks})
+        for row in walks:
+            with self.subTest(board=row['diagram']):
+                self.assertEqual([r['addr'] for r in rendered[row['diagram']].removals()],
+                                 row['walk_addresses'])
+
+    def test_DMUX_첫_보드는_기준선을_끊는다(self):
+        """`rebuild: true` — MUX 배선이 '걷는다' 로 잡히지 않는다."""
+        chain = self._chain()
+        i = next(k for k, (n, _f, _s) in enumerate(self.b4.BOARDS) if '1x4DMUX_1단계' in n)
+        self.assertIsNone(chain[i].baseline)
+        self.assertEqual(chain[i].removed(), [])

@@ -193,7 +193,10 @@ CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3',
             'e2_inv', 'e2_schmitt', 'e2_schmitt_s1', 'e2_tpd',
             'e3_ha', 'e3_fa', 'e3_fa_s1', 'e3_fa_s2', 'e3_fa_s3', 'e3_fa_s4', 'e3_fa_s5',
-            'e3_hs', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2')
+            'e3_hs', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2',
+            'e4_mux', 'e4_mux_s1', 'e4_mux_s2', 'e4_mux_s3', 'e4_mux_s4',
+            'e4_mux_s5', 'e4_mux_s6', 'e4_mux_s7', 'e4_mux_s8',
+            'e4_dmux', 'e4_dmux_s1', 'e4_dmux_s2', 'e4_dmux_s3', 'e4_dmux_s4')
 
 
 class CompareError(ValueError):
@@ -540,6 +543,7 @@ CIRCUIT_WORDS = {
     'e3_fa_s2': ('전가산기', 'FULL ADDER'),
     'e3_hs': ('반감산기', 'HALF SUBTRACTOR'),
     'e3_fs': ('전감산기', 'FULL SUBTRACTOR'), 'e3_fs_s1': ('전감산기', 'FULL SUBTRACTOR'),
+    'e4_mux': ('MUX', '멀티플렉서'), 'e4_dmux': ('DMUX', '디멀티플렉서'),
 }
 
 

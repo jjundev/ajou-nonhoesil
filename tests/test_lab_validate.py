@@ -1731,6 +1731,42 @@ class ContinuesValidation(unittest.TestCase):
         self.assertIn("직전 회로", hits[0].message)
 
 
+class RebuildValidation(unittest.TestCase):
+    """`rebuild: true` 는 앞 회로를 전부 걷는 경계다 — 이어 붙이기·입구 걷기와 모순이다."""
+
+    STAGES = ("\n## 단계\n\n| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
+              "{rows}\n")
+
+    def _findings(self, extra, circuit="C2", tail=""):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(encoding="utf-8")
+        table = "[T2]" if circuit == "C2" else "[T1]"
+        text = text.replace(f"- tables: {table}", f"- tables: {table}\n{extra}") + tail
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        return [f for f in validate.check_netlist_circuits(parse_netlist(path), spec)
+                if "rebuild" in f.message]
+
+    def test_두번째_회로의_rebuild_는_말이_없다(self):
+        self.assertEqual(self._findings("- rebuild: true"), [])
+
+    def test_continues_와_함께면_error(self):
+        hits = self._findings("- rebuild: true\n- continues: C1")
+        self.assertEqual([f.level for f in hits], ["error"])
+
+    def test_첫_회로의_rebuild_는_error(self):
+        hits = self._findings("- rebuild: true", circuit="C1")
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("첫 회로", hits[0].message)
+
+    def test_입구_걷기_행과_함께면_error(self):
+        rows = ("| 1걷기 | `w.png` | 걷기 ①(좌 a1→좌 b2)을 뽑는다 | 좌 a1·좌 b2 홀이 비었다 |\n"
+                "| 1 | `s.png` | 신호선: A→pin 1 | 노드 `X` — 본다 |")
+        hits = self._findings("- rebuild: true", tail=self.STAGES.format(rows=rows))
+        self.assertEqual([f.level for f in hits], ["error"])
+        self.assertIn("걷기", hits[0].message)
+
+
 class RefsValidation(unittest.TestCase):
     def _findings(self, extra):
         text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(
