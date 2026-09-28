@@ -85,3 +85,16 @@ def eval_boolean(text, env):
     if p.peek() is not None:
         raise ValueError(f"식 끝에 남은 토큰: {p.peek()!r}")
     return v
+
+
+def variables(text):
+    """식에 나오는 변수 이름 — 처음 나온 순서, 중복 없이.
+
+    단계 진리표가 입력 열을 고를 때 쓴다(1단계에 아직 안 꽂은 입력을 열로 두지 않는다).
+    토큰화는 `_Parser` 와 같은 규칙이라 알 수 없는 문자는 여기서도 거절한다.
+    """
+    out = []
+    for tok in _Parser(text, {}).toks:
+        if tok[0].isalpha() and tok not in out:
+            out.append(tok)
+    return out

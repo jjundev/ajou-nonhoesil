@@ -91,5 +91,99 @@ class TestComputeSynthetic(unittest.TestCase):
             nodes.record_table(_circuit(["T1", "T2"], [("Y", "A·B", "U1 pin 3")]), _spec(t1, t2))
 
 
+def _record(header, rows, encoding="0/1", source="derived (Y = A·B)"):
+    return SpecTable(id="T9", title="x", kind="truth-table", encoding=encoding,
+                     source=source, expected=None, role="record",
+                     header=header, rows=rows, line=1)
+
+
+class TestStageTable(unittest.TestCase):
+    """단계 진리표 — 노드 식에 나오는 입력만, 기록표 행을 줄여 합친다.
+    설계: docs/plans/2026-09-28-단계별-진리표-설계.md"""
+
+    # 실험04 T1 의 축소판 — E=1 행은 나머지가 X 다.
+    MUX = _record(["E", "S0", "D0", "Y"],
+                  [["1", "X", "X", "0"], ["0", "0", "1", "1"],
+                   ["0", "0", "0", "0"], ["0", "1", "1", "0"]],
+                  source="derived (Y = E'·S0'·D0)")
+
+    def test_실험01_기록표를_노드_입력으로_줄인다(self):
+        spec = parse_spec(WEEK2_SPEC)
+        circuit = _circuit(["T1"], [("AB", "A·B", "U1 pin 3"), ("L2", "A·B·C", "U1 pin 6")])
+        st = nodes.stage_table(circuit, spec, "AB")
+        self.assertEqual(st.inputs, ["A", "B"])
+        self.assertEqual(st.node, ("AB", "U1 pin 3"))
+        self.assertEqual(st.encoding, "0/1")
+        self.assertEqual(st.rows, [(["0", "0"], 0), (["0", "1"], 0),
+                                   (["1", "0"], 0), (["1", "1"], 1)])
+
+    def test_모든_입력을_쓰는_노드는_기록표_행_그대로다(self):
+        spec = parse_spec(WEEK2_SPEC)
+        circuit = _circuit(["T1"], [("L2", "A·B·C", "U1 pin 6")])
+        st = nodes.stage_table(circuit, spec, "L2")
+        self.assertEqual(st.inputs, ["A", "B", "C"])
+        self.assertEqual(len(st.rows), 8)
+        self.assertEqual(st.rows[7], (["1", "1", "1"], 1))
+
+    def test_X_가_남아도_값이_정해지면_X_째_싣는다(self):
+        circuit = _circuit(["T9"], [("N0", "(E'·S0'·D0)'", "U1 pin 6")])
+        st = nodes.stage_table(circuit, _spec(self.MUX), "N0")
+        self.assertEqual(st.inputs, ["E", "S0", "D0"])
+        self.assertEqual(st.rows[0], (["1", "X", "X"], 1))
+        self.assertEqual(len(st.rows), 4)
+
+    def test_값이_안_정해지는_X_행은_뺀다(self):
+        circuit = _circuit(["T9"], [("S0'", "S0'", "U4 pin 2")])
+        st = nodes.stage_table(circuit, _spec(self.MUX), "S0'")
+        self.assertEqual(st.inputs, ["S0"])
+        self.assertEqual(st.rows, [(["0"], 1), (["1"], 0)])
+
+    def test_한_입력만_쓰는_노드는_기록표에_나온_순서대로_두_행이다(self):
+        circuit = _circuit(["T9"], [("E'", "E'", "U4 pin 12")])
+        st = nodes.stage_table(circuit, _spec(self.MUX), "E'")
+        self.assertEqual(st.rows, [(["1"], 0), (["0"], 1)])
+
+    def test_H_L_표는_H_L_셀과_인코딩을_낸다(self):
+        t = _record(["A", "B", "Y"],
+                    [["L", "L", "L"], ["L", "H", "L"], ["H", "L", "L"], ["H", "H", "H"]],
+                    encoding="H/L")
+        st = nodes.stage_table(_circuit(["T9"], [("A'", "A'", "U2 pin 2")]), _spec(t), "A'")
+        self.assertEqual(st.encoding, "H/L")
+        self.assertEqual(st.rows, [(["L"], 1), (["H"], 0)])
+
+    def test_입력과_출력이_같은_글자여도_입력_열을_읽는다(self):
+        # 실험3 반감산기 `A B D B` — 뒤의 B 가 출력이다(`split_indices`).
+        # 11 행은 입력 B=1, 출력 B=0 이라 출력 칸을 읽으면 A·B 가 0 이 된다.
+        t = _record(["A", "B", "D", "B"],
+                    [["0", "0", "0", "0"], ["0", "1", "1", "1"],
+                     ["1", "0", "1", "0"], ["1", "1", "0", "0"]],
+                    source="derived (D = A⊕B ; B = A'·B)")
+        st = nodes.stage_table(_circuit(["T9"], [("AB", "A·B", "U1 pin 3")]), _spec(t), "AB")
+        self.assertEqual(st.inputs, ["A", "B"])
+        self.assertEqual(st.rows[3], (["1", "1"], 1))
+
+    def test_0_1_도_X_도_아닌_셀의_행은_뺀다(self):
+        t = _record(["A", "B", "Y"], [["0", "?", "0"], ["1", "1", "1"]])
+        st = nodes.stage_table(_circuit(["T9"], [("AB", "A·B", "U1 pin 3")]), _spec(t), "AB")
+        self.assertEqual(st.rows, [(["1", "1"], 1)])
+
+    def test_노드_표에_없는_이름은_ValueError(self):
+        with self.assertRaisesRegex(ValueError, "L9"):
+            nodes.stage_table(_circuit(["T9"], [("E'", "E'", "U4 pin 12")]),
+                              _spec(self.MUX), "L9")
+
+    def test_기록표에_없는_변수는_ValueError(self):
+        with self.assertRaisesRegex(ValueError, "노드 Q"):
+            nodes.stage_table(_circuit(["T9"], [("Q", "E·Q", "U1 pin 3")]),
+                              _spec(self.MUX), "Q")
+
+    def test_기록표가_없으면_ValueError(self):
+        cap = SpecTable(id="T1", title="파형", kind="capture", encoding=None,
+                        source="manual:p3", expected="계단", role="record",
+                        header=[], rows=[], line=1)
+        with self.assertRaisesRegex(ValueError, "기록표"):
+            nodes.stage_table(_circuit(["T1"], [("Y", "A·B", "U1 pin 3")]), _spec(cap), "Y")
+
+
 if __name__ == "__main__":
     unittest.main()
