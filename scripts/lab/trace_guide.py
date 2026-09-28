@@ -14,6 +14,7 @@ import contextlib
 import html
 import inspect
 import io
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -146,18 +147,21 @@ def render_html(pages, title):
 
 
 def make_pdf(board, out):
-    """`board` 의 따라 그리기 PDF 를 `out` 에 쓴다. 쪽 수(섹션 수)를 돌려준다."""
+    """`board` 의 따라 그리기 PDF 를 `out` 에 쓴다. 쪽 수(섹션 수)를 돌려준다.
+
+    임시 폴더에서 만들고 `check_pdf` 를 통과한 뒤에만 `out` 으로 옮긴다 — 넘쳐서 실패해도
+    커밋된 PDF 는 그대로 남는다.
+    """
     out = Path(out)
     with tempfile.TemporaryDirectory() as d:
         pages = build_pages(board, d)
         html_path = Path(d) / 'guide.html'
         html_path.write_text(render_html(pages, out.stem), encoding='utf-8')
-        html_to_pdf(html_path, out)
-    try:
-        check_pdf(out, pages)
-    except LayerError:
-        out.unlink(missing_ok=True)
-        raise
+        made = Path(d) / 'guide.pdf'
+        html_to_pdf(html_path, made)
+        check_pdf(made, pages)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(made, out)
     return len(pages)
 
 

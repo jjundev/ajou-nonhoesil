@@ -173,6 +173,24 @@ class Overflow(unittest.TestCase):
                 trace_guide.make_pdf(board, out)
             self.assertFalse(out.exists())
 
+    def test_넘치면_기존_PDF_는_그대로_둔다(self):
+        """검사는 임시 파일에서 한다 — 실패해도 커밋된 PDF 를 덮어쓰거나 지우지 않는다."""
+        board = load_renderer().load_board_file(FIXTURE, 'board_layers')
+        row = {'n': 1, 'kind': 'sig', 'from': '좌 a1', 'to': '좌 b2', 'desc': '넘치는 줄', 'count': 1}
+        build = trace_guide.build_pages
+
+        def fake(_board, d):
+            real = build(board, d)
+            return [real[0], trace_guide.Page(real[1].image, '긴 층', [row] * 80, [], trace_guide.LEGEND), real[2]]
+
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / 'x.pdf'
+            out.write_bytes(b'old')
+            with mock.patch.object(trace_guide, 'build_pages', side_effect=fake), \
+                    self.assertRaises(trace_guide.LayerError):
+                trace_guide.make_pdf(board, out)
+            self.assertEqual(out.read_bytes(), b'old')
+
 
 class Main(unittest.TestCase):
     def test_시간초과는_종료코드_1(self):

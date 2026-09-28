@@ -39,12 +39,15 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
    `BreadboardRenderer(template_path, baseline=baseline, layer=layer)` 로 넘기는지 본다.
    없으면 `보고서/실험04/결선도/배치.py` 의 `build_e4_mux` 처럼 더한다 — `stage` 와 함께
    주면 `ValueError` 로 거절하는 두 줄 포함. `FINALS` 에 없는 회로는 손대지 않는다.
-3. **층.** `LAYERS` 가 이미 있으면 건너뛴다. 없으면 `결선도/<완성본>.json` 의 `steps`
+3. **층.** `LAYERS` 가 `FINALS` 의 완성본 전부를 덮고 있으면 건너뛴다. 빠진 완성본이 있으면
+   그 몫만 쓴다. 없으면 `결선도/<완성본>.json` 의 `steps`
    (번호·kind·from·to·desc)를 읽고 아래 **층 규칙**대로 `FINALS` 바로 뒤에 쓴다.
 4. **재기.** `.venv/bin/python -m pytest tests/test_trace_guide_layers.py tests/test_breadboard_boards.py -q`
 5. **뽑기.** 기존 PDF 가 있으면 먼저 스크래치 폴더에 복사해 둔다. 그다음
    `.venv/bin/python -m scripts.lab.trace_guide N`. 생성기가 쪽 넘침을 스스로 막는다 —
-   `"…" 쪽이 넘쳤다` 가 나오면 그 층을 둘로 쪼개고 4 로 돌아간다.
+   `"…" 쪽이 넘쳤다` 가 나오면 그 층을 둘로 쪼개고 4 로 돌아간다. 실패하면 기존 PDF 는 그대로
+   남는다. `LAYERS 에 층 목록이 없다` · `…번에서 시작해야 하는데` · `완성본 배선은 N개다` 는 도구
+   결함이 아니라 **`LAYERS` 가 낡은 것**이다 — 완성본 사이드카를 다시 읽고 3 에서 고친다.
 6. **보기.** `pymupdf` 로 60dpi PNG 를 스크래치 폴더에 뽑아 Read 로 본다: 표 행이 가장 많은
    층 쪽 하나 + 완성본마다 마지막 층 쪽(완성본 PNG 와 선 모양 대조). 겹치면 겹친 대로 둔다.
 7. **다시 뽑은 경우.** 5 의 사본과 새 PDF 를 쪽별로 잰다:
@@ -55,7 +58,8 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
        return [(p.get_text(), [hashlib.md5(d.extract_image(x[0])['image']).hexdigest()
                                for x in p.get_images()]) for p in d]
    ```
-   같으면 `git checkout -- <PDF>` 로 되돌리고 "바뀐 것 없음" 으로 보고한다.
+   같으면 5 의 사본을 제자리로 복사해(`cp <사본> <PDF>`) 파일을 그대로 두고 "바뀐 것 없음" 으로
+   보고한다. `git checkout` 은 쓰지 않는다 — 커밋 안 된 최신본 대신 옛 커밋본이 돌아온다.
 
 ## 층 규칙
 
@@ -96,4 +100,5 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
 | 요청받은 회로가 `FINALS` 에 없어 목록에 더한다 | 더하지 않는다 — 첫 줄과 "걸린 것" 에 적는다 |
 | 층을 예쁘게 하려고 빌더에서 배선 순서를 옮긴다 | 순서는 그대로, 이름으로 설명한다 |
 | 주차가 비었는데 비슷한 번호 실험으로 진행한다 | 후보를 들어 되묻는다 |
-| 다시 뽑은 같은 PDF 를 새 파일로 남긴다 | 사본과 해시가 같으면 되돌린다 |
+| 다시 뽑은 같은 PDF 를 새 파일로 남긴다 | 사본과 해시가 같으면 사본을 제자리로 복사한다 |
+| `LAYERS` 번호 오류를 도구 결함으로 보고 멈춘다 | `LAYERS` 가 낡은 것 — 3 에서 고친다 |
