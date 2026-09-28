@@ -9,6 +9,7 @@
 """
 
 import html
+import json
 import re
 from dataclasses import replace
 from pathlib import Path
@@ -667,6 +668,58 @@ def _schematic_html(item, spec_dir) -> str:
     return "".join(out)
 
 
+# 결선도 PNG 옆 JSON 의 스키마. 렌더러(`render_breadboard.SIDECAR_SCHEMA`)와 같은 문자열 —
+# 인쇄가 PIL 에 묶이지 않게 import 하지 않고 따로 든다
+SIDECAR_SCHEMA = "breadboard-sidecar/v1"
+
+
+def _sidecar(png: Path) -> dict:
+    """PNG 옆 사이드카. PNG 만 있고 이것이 없으면 옛 렌더러 산출물이다 — 결선 순서가
+    조용히 빠진 채 인쇄되지 않게 멈춘다."""
+    side = png.with_suffix(".json")
+    if not side.exists():
+        raise FileNotFoundError(
+            f"{side.name} 가 없다 — 결선도를 다시 뽑는다: python3 "
+            ".claude/skills/breadboard-diagram/scripts/render_breadboard.py --experiment <N>")
+    data = json.loads(side.read_text(encoding="utf-8"))
+    if data.get("schema") != SIDECAR_SCHEMA:
+        raise ValueError(f"{side.name} 의 schema 가 {data.get('schema')!r} 다 — "
+                         f"{SIDECAR_SCHEMA} 로 다시 뽑는다")
+    return data
+
+
+def _board_text_html(data) -> str:
+    """그림 옆 글자 — 걷기 · 결선 순서 · 계측 · 회색 개수. 순서가 곧 실험실 순서다:
+    먼저 뽑고, 새로 꽂고, 문다. 클래스 이름은 디자인 템플릿과의 계약이다."""
+    out = []
+    if data["removals"]:
+        items = "".join(
+            '<li class="removal"><span class="box"></span>'
+            + (f'<span class="n">{r["n"]}</span>' if r["n"] is not None else "")
+            + f'<span class="text">{_esc(r["text"])}</span></li>'
+            for r in data["removals"])
+        out.append(f'<p class="list-head">먼저 뽑는다</p><ul class="removals">{items}</ul>')
+    if data["steps"]:
+        items = "".join(
+            f'<li class="step" data-kind="{_esc(s["kind"])}"><span class="box"></span>'
+            f'<span class="n">{s["n"]}</span>'
+            f'<span class="route">{_esc(s["from"])} → {_esc(s["to"])}'
+            + (f' ×{s["count"]}' if s["count"] > 1 else "")
+            + f'</span><span class="desc">{_esc(s["desc"])}</span></li>'
+            for s in data["steps"])
+        out.append(f'<ol class="steps">{items}</ol>')
+    if data["probes"]:
+        items = "".join(
+            f'<li class="probe"><span class="box"></span><span class="n">{p["n"]}</span>'
+            f'<span class="route">{_esc(p["label"])} → {_esc(p["at"])}</span>'
+            f'<span class="desc">{_esc(p["desc"])}</span></li>'
+            for p in data["probes"])
+        out.append(f'<p class="list-head">계측 — 꽂지 않고 문다</p><ol class="probes">{items}</ol>')
+    if data["kept"]:
+        out.append(f'<p class="kept">회색 = 앞 단계에서 그대로 둔 것 {data["kept"]}개</p>')
+    return "".join(out)
+
+
 def _diagram_html(section, netlist) -> str:
     """결선도가 있으면 싣고, 없으면 그 자리에 빈 브레드보드를 넣는다.
 
@@ -680,8 +733,9 @@ def _diagram_html(section, netlist) -> str:
         png = netlist.path.parent / section.diagram
         if png.exists():
             src = f"../{netlist.path.parent.name}/{section.diagram}"
-            return (f'<img src="{_esc(src)}" style="width:100%">'
-                    f'<p class="src">결선도: {_esc(section.diagram)}</p>')
+            return (f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
+                    f'<p class="src">결선도: {_esc(section.diagram)}</p>'
+                    + _board_text_html(_sidecar(png)))
     rows = crop_rows(section.body)
     visible_mm = _BREADBOARD_HEADER_MM + rows * 6
     return (f"<h3>브레드보드 작도 ({rows}행)</h3>"
@@ -711,9 +765,11 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
     if png is not None and png.exists():
         src = f"../{netlist.path.parent.name}/{stage['diagram']}"
-        img = f'<img src="{_esc(src)}" style="width:100%">'
+        img = f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
+        text = _board_text_html(_sidecar(png))
     else:
         img = f"<p class='src'>단계 그림이 아직 없다: {_esc(stage['diagram'] or '(없음)')}</p>"
+        text = ""
     node = ""
     if stage.get("node"):
         pin = next((n["pin"] for n in section.nodes if n["name"] == stage["node"]), "")
@@ -728,7 +784,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
             else f"단계 {_esc(stage['n'])}")
     # 블록 하나가 PDF 한 쪽이다 — 쪽 높이는 `fit_pages` 가 블록 실측값으로 준다.
     return (f'<div class="stage"><h3>{head}</h3>{img}'
-            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{node}"
+            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{text}{node}"
             f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>'
             f"{table}</div>")
 
@@ -942,7 +998,7 @@ def circuit_pages(spec, netlist) -> str:
             out.append(_blocks(prose_before))
         out.append('<div class="wirebox">')
         if section.stages:
-            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
+            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음 · 학번·이름·날짜 자필)</p>")
         out.append(_diagram_html(section, netlist))
         for node in nodes:
             if node["type"] == "prose":

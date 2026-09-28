@@ -1,3 +1,4 @@
+import json
 import re
 import tempfile
 import types
@@ -709,7 +710,8 @@ class TestCircuitPages(unittest.TestCase):
         """C5 의 `LED_X 와 LED_Z 가 같이 켜져야 한다` 는 배선을 마친 뒤 하는
         검산이다. 앞으로 올리면 preamble 로 읽힌다."""
         page = self._pages()[4]
-        self.assertLess(page.index('class="unused"'), page.index("다르면 배선 오류"))
+        # "다르면 배선 오류" 는 완성본 결선 순서(LED 사슬 설명)에도 나온다(2026-09-28) — 산문 구절로 잰다
+        self.assertLess(page.index('class="unused"'), page.index("언제나 같이 켜져야 한다"))
 
     def test_배선_전_경고는_배선_앞에_온다(self):
         """C4 의 `74HC02 의 핀 순서에 주의` 를 배선을 다 마친 뒤 읽으면 늦다."""
@@ -1929,3 +1931,97 @@ class StageNodeLine(unittest.TestCase):
         self.assertIn("단계 2 · 걷기", html)
         self.assertNotIn("단계 2걷기", html)
         self.assertNotIn("확인 노드", html)
+
+
+def _board_png(folder, name, data):
+    """1×1 PNG 와 사이드카를 나란히 쓴다 — 렌더러를 돌리지 않는다."""
+    from PIL import Image
+    Image.new("RGB", (1, 1)).save(folder / name)
+    (folder / name).with_suffix(".json").write_text(
+        json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+_SIDE = {
+    "schema": "breadboard-sidecar/v1", "title": "t", "subtitle": "s", "kept": 7,
+    "steps": [{"n": 1, "kind": "sig", "from": "우 a12", "to": "좌 a18",
+               "desc": "S0' (U4 pin 6) -> U1 pin 1", "count": 1},
+              {"n": 2, "kind": "gnd", "from": "좌 b3", "to": "좌 GND레일3행",
+               "desc": "U1 GND", "count": 2}],
+    "removals": [], "probes": [],
+}
+
+
+class TestBoardText(unittest.TestCase):
+    """결선도 PNG 는 보드만 싣는다(2026-09-28) — 결선 순서·걷기·계측은 옆 JSON 에서 온다."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        self.board_dir = self.dir / "결선도"
+        self.board_dir.mkdir()
+        (self.board_dir / "netlist.md").write_text("x", encoding="utf-8")
+        self.netlist = types.SimpleNamespace(path=self.board_dir / "netlist.md")
+
+    def _stage(self, data, walk=False):
+        _board_png(self.board_dir, "s.png", data)
+        stage = {"n": "1", "diagram": "s.png", "todo": "할 일", "check": "확인",
+                 "node": None, "walk": walk, "walk_of": 1}
+        section = types.SimpleNamespace(nodes=[])
+        return render._stage_html(stage, self.netlist, section)
+
+    def test_결선_순서가_체크박스_목록으로_실린다(self):
+        html = self._stage(_SIDE)
+        steps = html[html.index('<ol class="steps">'):]
+        steps = steps[:steps.index("</ol>")]
+        self.assertEqual(steps.count('<li class="step"'), 2)
+        self.assertEqual(steps.count('<span class="box"></span>'), 2)
+        self.assertIn('data-kind="sig"', steps)
+        self.assertIn("우 a12 → 좌 a18", steps)
+        self.assertIn("×2", steps)
+
+    def test_설명의_특수문자를_이스케이프한다(self):
+        html = self._stage(_SIDE)
+        self.assertIn("S0' (U4 pin 6) -&gt; U1 pin 1", html)   # `_esc` 는 quote=False 다
+
+    def test_회색_개수를_한_줄로_싣는다(self):
+        self.assertIn('<p class="kept">회색 = 앞 단계에서 그대로 둔 것 7개</p>',
+                      self._stage(_SIDE))
+
+    def test_걷기_번호가_실린다(self):
+        data = dict(_SIDE, steps=[], removals=[
+            {"n": 1, "text": "좌 d23 → 우 c42 · 임시 급전"},
+            {"n": None, "text": "칩 74HC20 (좌 17행) 뽑는다"}])
+        html = self._stage(data, walk=True)
+        self.assertIn('<p class="list-head">먼저 뽑는다</p>', html)
+        self.assertIn('<span class="n">1</span><span class="text">좌 d23 → 우 c42', html)
+        self.assertIn('<li class="removal"><span class="box"></span><span class="text">칩 74HC20',
+                      html)
+        self.assertNotIn('<ol class="steps">', html)
+
+    def test_계측_목록이_실린다(self):
+        data = dict(_SIDE, probes=[{"n": 1, "label": "함수발생기 + CH1 (가로축)",
+                                    "at": "좌 a10", "desc": "사인파"}])
+        html = self._stage(data)
+        self.assertIn('<ol class="probes">', html)
+        self.assertIn("함수발생기 + CH1 (가로축) → 좌 a10", html)
+
+    def test_사이드카가_없으면_멈춘다(self):
+        from PIL import Image
+        Image.new("RGB", (1, 1)).save(self.board_dir / "old.png")
+        stage = {"n": "1", "diagram": "old.png", "todo": "t", "check": "c",
+                 "node": None, "walk": False, "walk_of": 1}
+        with self.assertRaises(FileNotFoundError) as e:
+            render._stage_html(stage, self.netlist, types.SimpleNamespace(nodes=[]))
+        self.assertIn("render_breadboard.py", str(e.exception))
+
+    def test_스키마가_다르면_멈춘다(self):
+        with self.assertRaises(ValueError):
+            self._stage(dict(_SIDE, schema="breadboard-sidecar/v0"))
+
+    def test_완성본에도_결선_순서가_실린다(self):
+        """손그림을 따라 그리는 순서표다 — PNG 아래에 있던 것이 여기로 온다."""
+        _board_png(self.board_dir, "f.png", dict(_SIDE, kept=None))
+        section = types.SimpleNamespace(diagram="f.png", body="")
+        html = render._diagram_html(section, self.netlist)
+        self.assertIn('<figure class="board">', html)
+        self.assertIn('<ol class="steps">', html)
+        self.assertNotIn('class="kept"', html)
