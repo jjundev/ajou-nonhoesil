@@ -363,8 +363,8 @@ class TestCapturePage(unittest.TestCase):
 
 
 class TestCommonPage(unittest.TestCase):
-    """공통면은 한 번만 보면 되는 것을 모은다 — 전원·공통규칙·참조 핀아웃·
-    실험실 확인. 회로 페이지에 반복하면 지면을 먹고 표가 밀린다."""
+    """공통면은 한 번만 보면 되는 것만 싣는다 — 전원·꼭 읽을 것·범례·흐름·핀아웃·자리표.
+    공통 규칙과 미확정 표는 읽히지 않아 인쇄하지 않는다(2026-09-28)."""
 
     def setUp(self):
         self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
@@ -393,11 +393,31 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("74HC02 (quad NOR)", self.html)
         self.assertIn("2,3 → 1", self.html)
 
-    def test_미확정_표가_체크박스로_실린다(self):
-        """옛 렌더러는 제목과 도입문만 찍고 표를 버려 문장이 끊긴 채 끝났다."""
-        self.assertIn("M1", self.html)
-        self.assertIn("M10", self.html)
-        self.assertIn('class="box"', self.html)
+    def test_공통_규칙은_인쇄하지_않는다(self):
+        self.assertNotIn("<h2>공통 규칙</h2>", self.html)
+        self.assertNotIn("74HC08 결함(2026-09-11)", self.html)   # 실험01 공통 규칙에만 있는 구절
+
+    def test_미확정_표는_인쇄하지_않는다(self):
+        self.assertNotIn("실험실에서 확인할 것", self.html)
+        self.assertNotIn('<tr><td class="box"></td>', self.html)
+
+    def test_꼭_읽을_것이_전원_박스_바로_뒤에_온다(self):
+        power = self.html.index('class="power"')
+        must = self.html.index('class="must-read"')
+        self.assertLess(power, must)
+        self.assertLess(must, self.html.index('class="caution"'))
+        box = self.html[must:self.html.index("</div>", must)]
+        self.assertEqual(box.count("<li>"), 5)
+
+    def test_선_색_범례가_있다(self):
+        self.assertIn('class="wire-legend"', self.html)
+        self.assertIn("빨간 점선 = 뽑는다", self.html)
+
+    def test_전원_박스는_공통_규칙을_가리키지_않는다(self):
+        box = self.html[self.html.index('class="power"'):]
+        box = box[:box.index("</div>")]
+        self.assertNotIn("공통 규칙", box)
+        self.assertIn("핀 점검", box)
 
     def test_핀아웃_출처는_인쇄하지_않는다(self):
         """참고문헌이 배선 단계 7~11번으로 찍히던 결함이다."""
@@ -434,32 +454,6 @@ class TestCommonPage(unittest.TestCase):
         """`_blocks` 가 표를 제자리에 싣게 되면서 `lookup` 이 중복 렌더가 됐다."""
         self.assertEqual(self.html.count("74HC02 (quad NOR)"), 1)
 
-    def test_미확정_표를_두_번_찍지_않는다(self):
-        """체크박스 없는 사본이 앞에 한 번 더 찍히면 어느 쪽에 표기할지 갈린다."""
-        self.assertEqual(self.html.count("<td class=\"box\"></td>"),
-                         self.html.count("<tr><td class=\"box\"></td>"))
-        self.assertEqual(self.html.count("M10"), 1)
-
-    def test_미확정_표가_앞뒤_문단을_붙이지_않는다(self):
-        """표 줄을 지워 버리면 표가 유일한 구분자였던 두 문단이 한 문단으로
-        합쳐진다. 실험01 의 미확정 절은 표 앞에 빈 줄이 있어 실물로는 발화하지
-        않지만, 다른 주차가 표를 문단 사이에 바로 끼우는 순간 문장이 붙는다."""
-        section = NetlistSection(
-            kind="open-issues", title="미확정 사항", line=1,
-            body=("앞 문단이다.\n"
-                  "| 항목 | 내용 |\n|---|---|\n| M1 | 값 |\n"
-                  "뒤 문단이다.\n"))
-        netlist = self.netlist
-        original = netlist.sections
-        try:
-            netlist.sections = [section]
-            html = common_page(self.spec, netlist)
-        finally:
-            netlist.sections = original
-        self.assertIn("<p>앞 문단이다.</p>", html)
-        self.assertIn("<p>뒤 문단이다.</p>", html)
-        self.assertNotIn("앞 문단이다. 뒤 문단이다", html)
-
     def test_배너가_주차마다_다른_것을_말하지_않는다(self):
         """옛 배너는 `미사용 입력핀은 전부 GND` 를 하드코딩했다 — 실험02 는
         교안 p8 도면대로 pin 9·11·13 을 **VCC** 로 올리고 결선도가 "이 주차는
@@ -470,7 +464,7 @@ class TestCommonPage(unittest.TestCase):
         banner = banner[:banner.index("</div>")]
         self.assertNotIn("전부 GND", banner)
         self.assertIn("플로팅 금지", banner)
-        self.assertIn("공통 규칙", banner)
+        self.assertIn("핀 점검", banner)   # 공통 규칙은 2026-09-28 부터 인쇄하지 않는다
 
     def test_물리_주의_상자가_전원_박스_바로_아래_온다(self):
         caution = self.html.index('class="caution"')
@@ -1062,7 +1056,9 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
 
     def test_korean_only_warnings_reach_the_printout(self):
         for warning in ("띄워두지 않는다", "가장 흔한 배선 실수",
-                        "330Ω 직렬", "칩 재사용",
+                        "330Ω 직렬",
+                        # "칩 재사용" 은 공통 규칙에만 있어 2026-09-28 부터 인쇄하지 않는다
+                        # — 칩 교체 배너가 회로마다 뺄 칩·꽂을 칩을 지시한다
                         # 아래 셋은 불릿이 아니라 열 0 산문이라 별도 결함(A2)으로
                         # 빠져 있었다 — X≡Z 자체 검증, 74HC02 핀 순서 재경고,
                         # E1.P1-2 NAND 절 도입문.
@@ -1767,7 +1763,7 @@ class TestStages(unittest.TestCase):
         power = power[:power.index("</div>")]
         self.assertIn("사용하는 게이트의 입력", power)
         self.assertIn("플로팅 금지", power)
-        self.assertIn("공통 규칙", power)
+        self.assertIn("핀 점검", power)   # 공통 규칙은 2026-09-28 부터 인쇄하지 않는다
         self.assertNotIn("전부 GND", power)
 
 

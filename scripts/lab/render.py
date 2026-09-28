@@ -296,6 +296,12 @@ _CAUTION_SWAP = {
     False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고 새 선을 꽂는다",
 }
 
+# 선 색 — 결선도 PNG 아래 범례가 사라져(2026-09-28) 공통면에 한 번 싣는다. 색은
+# 렌더러의 `WIRE`·`KEEP`·`REMOVE`·`PROBE` 와 같다(렌더러를 import 하지 않는다)
+WIRE_LEGEND = ("선 색 — 빨강 +5V · 파랑 0V · 검정 신호 · 초록 칩 사이 중간 노드 · "
+               "회색 = 앞 단계에서 그대로 둔다 · 빨간 점선 = 뽑는다 · "
+               "회색 점선 = 계측기(꽂지 않고 문다)")
+
 
 def _flow_table(spec, netlist) -> str:
     """오늘의 흐름. 도착 직후 오늘 뭘 몇 개 하는지 한눈에 본다.
@@ -320,36 +326,33 @@ def _flow_table(spec, netlist) -> str:
 def common_page(spec, netlist) -> str:
     """회로 페이지들 앞에 한 번만 오는 면.
 
-    `kind` 가 목적지를 정한다 — `sources`(핀아웃 출처)는 여기 없다. 그것은
-    ③ 예비보고서의 참고문헌 재료지 실험실에서 근거의 등급을 읽을 일은 없다.
-    옛 렌더러는 그것을 배선 단계 7~11번으로 찍었다.
+    `kind` 가 목적지를 정한다. **`common`·`open-issues` 는 싣지 않는다**(2026-09-28) —
+    공통 규칙과 미확정 표가 실험04 공통면 4쪽을 차지했는데 실험실에서 읽히지 않았다.
+    둘 다 netlist 에 저작·검토용으로 남는다. 실험실에서 손으로 해야 하는 것은
+    저작자가 `must-read` 절(불릿 다섯)로 올리고 그것만 전원 박스 바로 아래 싣는다.
+    `sources`(핀아웃 출처)는 ③ 예비보고서의 참고문헌 재료라 여기 없다.
     """
     power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
-    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구는 "미사용 입력핀은
-    # 전부 GND" 였는데 주차의 절반에서 거짓이다 — 실험02 는 교안 p8 도면대로
-    # pin 9·11·13 을 **VCC** 로 올리고("이 주차는 '전부 GND' 가 아니다"),
-    # 실험06 은 active-low 비동기 입력(`SD`·`RD`·`PRE`·`CLR`)을 VCC 로 올린다
-    # (GND 로 내리면 그 F/F 이 영구히 preset/clear 에 걸린다). 이 줄은 학생이
-    # 실험실에서 가장 먼저 읽는 줄이라, 틀리면 그대로 잘못 배선한다. 주차별
-    # 규칙은 결선도의 `kind: common` 절이 담고 바로 아래 같은 쪽에 인쇄된다.
+    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구 "미사용 입력핀은 전부 GND" 는
+    # 주차의 절반에서 거짓이었다(실험02 는 VCC 로도 올린다). 칩별 미사용 핀 지시는 회로
+    # 쪽 핀 점검 상자에 있다.
     out = [f'<div class="power">전원: {_esc(power)} · '
            "사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — "
-           "미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>"]
+           "미사용 핀은 회로마다 핀 점검 상자를 본다</div>"]
+    for section in netlist.of_kind("must-read"):
+        out.append(f'<div class="must-read"><h2>{_esc(_plain(section.title))}</h2>'
+                   f"{_blocks(section.body)}</div>")
     walk = any(_has_walk(c) for c in netlist.circuits)
     lines = _CAUTION + (_CAUTION_SWAP[walk],)
     out.append('<div class="caution"><b>손으로 할 때 주의</b><ul>'
                + "".join(f"<li>{_esc(line)}</li>" for line in lines)
                + "</ul></div>")
+    out.append(f'<p class="wire-legend">{_esc(WIRE_LEGEND)}</p>')
     out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
     out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 
-    for section in netlist.of_kind("common"):
-        out.append(f"<h2>{_esc(_plain(section.title))}</h2>")
-        out.append(_blocks(section.body))
-
     for section in netlist.of_kind("lookup"):
-        # `_blocks` 가 본문의 표를 제자리에 싣는다 — 여기서 또 렌더하면 두 번
-        # 찍힌다. 체크박스가 필요한 `open-issues` 만 따로 렌더한다.
+        # `_blocks` 가 본문의 표를 제자리에 싣는다 — 여기서 또 렌더하면 두 번 찍힌다
         out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
         out.append(_blocks(section.body))
         out.append("</div>")
@@ -359,18 +362,6 @@ def common_page(spec, netlist) -> str:
         out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
         out.append(_blocks(section.body))
         out.append("</div>")
-
-    for section in netlist.of_kind("open-issues"):
-        out.append(f"<h2>{_esc(_plain(section.title))} — 실험실에서 확인할 것</h2>")
-        # 표 줄을 **빈 줄로 바꾼다.** 지워 버리면 표가 유일한 구분자였던 두
-        # 문단이 한 문단으로 합쳐진다 — `_blocks` 는 빈 줄에서만 문단을 끊는다.
-        # 표는 아래에서 체크박스를 붙여 따로 렌더한다. `_blocks` 에 그대로
-        # 넘기면 체크박스 없는 사본이 앞에 한 번 더 찍힌다.
-        prose = "\n".join("" if line.strip().startswith("|") else line
-                          for line in section.body.split("\n"))
-        out.append(_blocks(prose))
-        for table in md.parse_tables(section.body):
-            out.append(_md_table_html(table, lead_checkbox=True))
 
     return "\n".join(out)
 
