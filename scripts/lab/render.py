@@ -735,10 +735,11 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
     # "2단계 머리의 걷기" 로 읽혀야 한다. 판정은 파서의 `walk` 키다.
     head = (f"단계 {_esc(str(stage['walk_of']))} · 걷기" if stage.get("walk")
             else f"단계 {_esc(stage['n'])}")
-    return (f'<div class="stage"><h3>{head}</h3>{img}'
+    # 그림 뒤는 `.stage-body` 한 덩어리 — 쪽 경계에서 확인 줄과 단계 진리표가 갈리지 않는다.
+    return (f'<div class="stage"><h3>{head}</h3>{img}<div class="stage-body">'
             f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{node}"
             f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>'
-            f"{table}</div>")
+            f"{table}</div></div>")
 
 
 # 단계의 관측 LED — `이 단계에서` 칸의 `…→LED<n> 급전` 표기. 실험03·04 결선도가 관측

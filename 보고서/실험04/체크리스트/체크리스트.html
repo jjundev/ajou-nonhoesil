@@ -38,13 +38,19 @@
   /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
      회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
   /* 블록을 통째로 묶지 않는다 — 그림+글+단계 진리표는 한 쪽을 넘을 수 있고, 묶으면 제목만
-     남은 빈 쪽이 생긴다. 제목은 그림에, 그림은 확인 줄에 붙어 있게만 한다. */
+     남은 빈 쪽이 생긴다. 제목은 그림에 붙어 있게만 한다.
+     그림 뒤 글·확인·단계 진리표(`.stage-body`)는 그림보다 짧으니 통짜로 넘긴다 —
+     확인 줄만 쪽 끝에 남고 표가 다음 쪽으로 가는 것을 막는다(2026-09-28). */
   .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; }
   .stage h3 { margin: 0 0 1.5mm; break-after: avoid; }
-  .stage img { display: block; break-after: avoid; max-height: 370mm; object-fit: contain; }
+  /* 그림 뒤에는 쪽 경계를 허용한다 — 막으면 그림+글이 한 쪽을 넘을 때 크롬이 `.stage-body`
+     안을 가른다(실측: 단계 4·6·7 의 확인 줄과 표가 갈렸다). */
+  .stage img { display: block; max-height: 370mm; object-fit: contain; }
+  .stage-body { break-inside: avoid; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
-  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
   /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
      꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
      통짜로 묶어도 백지 비용이 없다. */
@@ -221,7 +227,7 @@
 </ul></div>
 </div>
 <p>E' 는 네 NAND 로, S1'·S0'·S1·S0 는 각각 NAND 둘로 팬아웃한다 — E'·S0' 는 U4 에서 U1·U2 로 따로 가고, 나머지는 목적지 스트립에서 이어 간다(M11). 교안 회로도의 게이트 입력 순서(U1A 는 pin 1 = S0', pin 2 = S1', pin 4 = E', pin 5 = D0)를 그대로 따랐다.</p>
-<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_1단계_E인버터.png" style="width:100%"><p><b>이 단계에서:</b> 74HC04 를 K1, 74HC20 을 K2·K3·K4 에 꽂는다. 네 칩 전원(14→VCC, 7→GND)·레일 브리지·LED 네 사슬(330Ω→GND)을 꽂는다. 신호선: E→U4 pin 13, 임시로 U4 pin 12→LED4 급전(우 j9→우 c57)</p><p><b>확인 노드:</b> E' <small>(U4 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 E' — LED4 를 E 두 값으로 본다 (E=0 일 때만 켜짐). 74HC04 첫 사용</p><table class="stage-table">
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_1단계_E인버터.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 74HC04 를 K1, 74HC20 을 K2·K3·K4 에 꽂는다. 네 칩 전원(14→VCC, 7→GND)·레일 브리지·LED 네 사슬(330Ω→GND)을 꽂는다. 신호선: E→U4 pin 13, 임시로 U4 pin 12→LED4 급전(우 j9→우 c57)</p><p><b>확인 노드:</b> E' <small>(U4 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 E' — LED4 를 E 두 값으로 본다 (E=0 일 때만 켜짐). 74HC04 첫 사용</p><table class="stage-table">
 <thead>
 <tr><th colspan="1">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED4 = E'<br><small>예상 · U4 pin 12</small></th><th rowspan="2">확인</th></tr><tr><th>E</th></tr>
 </thead>
@@ -229,8 +235,8 @@
 <tr><td>1</td><td>0</td><td class="box"></td></tr>
 <tr><td>0</td><td>1</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_2단계_S1인버터.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: S1→U4 pin 3, 임시로 U4 pin 4→LED3 급전(우 d10→우 c51)</p><p><b>확인 노드:</b> S1' <small>(U4 pin 4)</small></p><p><span class="box"></span><b>확인:</b> 노드 S1' — LED3 을 S1 두 값으로 본다 (S1=0 일 때만 켜짐). LED4 는 내내 E' 를 보인다</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_2단계_S1인버터.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: S1→U4 pin 3, 임시로 U4 pin 4→LED3 급전(우 d10→우 c51)</p><p><b>확인 노드:</b> S1' <small>(U4 pin 4)</small></p><p><span class="box"></span><b>확인:</b> 노드 S1' — LED3 을 S1 두 값으로 본다 (S1=0 일 때만 켜짐). LED4 는 내내 E' 를 보인다</p><table class="stage-table">
 <thead>
 <tr><th colspan="1">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED3 = S1'<br><small>예상 · U4 pin 4</small></th><th rowspan="2">확인</th></tr><tr><th>S1</th></tr>
 </thead>
@@ -238,8 +244,8 @@
 <tr><td>0</td><td>1</td><td class="box"></td></tr>
 <tr><td>1</td><td>0</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_3단계_S0인버터.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: S0→U4 pin 5, 임시로 U4 pin 6→LED2 급전(우 c12→우 c46)</p><p><b>확인 노드:</b> S0' <small>(U4 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 S0' — LED2 를 S0 두 값으로 본다 (S0=0 일 때만 켜짐)</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_3단계_S0인버터.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: S0→U4 pin 5, 임시로 U4 pin 6→LED2 급전(우 c12→우 c46)</p><p><b>확인 노드:</b> S0' <small>(U4 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 S0' — LED2 를 S0 두 값으로 본다 (S0=0 일 때만 켜짐)</p><table class="stage-table">
 <thead>
 <tr><th colspan="1">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED2 = S0'<br><small>예상 · U4 pin 6</small></th><th rowspan="2">확인</th></tr><tr><th>S0</th></tr>
 </thead>
@@ -247,8 +253,8 @@
 <tr><td>0</td><td>1</td><td class="box"></td></tr>
 <tr><td>1</td><td>0</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_4단계_NAND0.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U1 pin 1, U4 pin 4→U1 pin 2, U4 pin 12→U1 pin 4, D0→U1 pin 5, 임시로 U1 pin 6→LED1 급전(좌 d23→우 c42)</p><p><b>확인 노드:</b> (E'·S1'·S0'·D0)' <small>(U1 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0'·D0)' — LED1 을 T1 아홉 행 전부로 본다 (3행 E=0·S1S0=00·D0=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U1 첫 사용</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_4단계_NAND0.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U1 pin 1, U4 pin 4→U1 pin 2, U4 pin 12→U1 pin 4, D0→U1 pin 5, 임시로 U1 pin 6→LED1 급전(좌 d23→우 c42)</p><p><b>확인 노드:</b> (E'·S1'·S0'·D0)' <small>(U1 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0'·D0)' — LED1 을 T1 아홉 행 전부로 본다 (3행 E=0·S1S0=00·D0=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U1 첫 사용</p><table class="stage-table">
 <thead>
 <tr><th colspan="4">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED1 = (E'·S1'·S0'·D0)'<br><small>예상 · U1 pin 6</small></th><th rowspan="2">확인</th></tr><tr><th>E</th><th>S1</th><th>S0</th><th>D0</th></tr>
 </thead>
@@ -263,9 +269,9 @@
 <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
 <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 5 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5걷기_인버터프로브.png" style="width:100%"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U4 pin 12→LED4, 우 j9→우 c57)·②(임시 급전 U4 pin 4→LED3, 우 d10→우 c51)·③(임시 급전 U4 pin 6→LED2, 우 c12→우 c46)을 뽑는다. 그림의 빨간 점선이 그 세 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 세 가닥이 손에 있고 우 j9·우 c57·우 d10·우 c51·우 c12·우 c46 홀이 비어 있다 (LED 검사 없음)</p></div>
-<div class="stage"><h3>단계 5</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5단계_NAND1.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 5→U1 pin 9 (S0 갈래), U1 pin 2→U1 pin 10 (S1' 이어 감), U1 pin 4→U1 pin 12 (E' 이어 감), D1→U1 pin 13, 임시로 U1 pin 8→LED2 급전(좌 j24→우 c46)</p><p><b>확인 노드:</b> (E'·S1'·S0·D1)' <small>(U1 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0·D1)' — LED2 를 T1 아홉 행 전부로 본다 (5행 E=0·S1S0=01·D1=1 에서만 꺼지고 나머지 여덟 행은 켜짐). LED1 은 내내 앞 노드를 보인다</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 5 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5걷기_인버터프로브.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U4 pin 12→LED4, 우 j9→우 c57)·②(임시 급전 U4 pin 4→LED3, 우 d10→우 c51)·③(임시 급전 U4 pin 6→LED2, 우 c12→우 c46)을 뽑는다. 그림의 빨간 점선이 그 세 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 세 가닥이 손에 있고 우 j9·우 c57·우 d10·우 c51·우 c12·우 c46 홀이 비어 있다 (LED 검사 없음)</p></div></div>
+<div class="stage"><h3>단계 5</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5단계_NAND1.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U4 pin 5→U1 pin 9 (S0 갈래), U1 pin 2→U1 pin 10 (S1' 이어 감), U1 pin 4→U1 pin 12 (E' 이어 감), D1→U1 pin 13, 임시로 U1 pin 8→LED2 급전(좌 j24→우 c46)</p><p><b>확인 노드:</b> (E'·S1'·S0·D1)' <small>(U1 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0·D1)' — LED2 를 T1 아홉 행 전부로 본다 (5행 E=0·S1S0=01·D1=1 에서만 꺼지고 나머지 여덟 행은 켜짐). LED1 은 내내 앞 노드를 보인다</p><table class="stage-table">
 <thead>
 <tr><th colspan="4">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED2 = (E'·S1'·S0·D1)'<br><small>예상 · U1 pin 8</small></th><th rowspan="2">확인</th></tr><tr><th>E</th><th>S1</th><th>S0</th><th>D1</th></tr>
 </thead>
@@ -280,8 +286,8 @@
 <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
 <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 6</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_6단계_NAND2.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U2 pin 1 (S0'), U4 pin 3→U2 pin 2 (S1 갈래), U4 pin 12→U2 pin 4 (E'), D2→U2 pin 5, 임시로 U2 pin 6→LED3 급전(좌 d35→우 c51)</p><p><b>확인 노드:</b> (E'·S1·S0'·D2)' <small>(U2 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0'·D2)' — LED3 을 T1 아홉 행 전부로 본다 (7행 E=0·S1S0=10·D2=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U2 첫 사용</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 6</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_6단계_NAND2.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U2 pin 1 (S0'), U4 pin 3→U2 pin 2 (S1 갈래), U4 pin 12→U2 pin 4 (E'), D2→U2 pin 5, 임시로 U2 pin 6→LED3 급전(좌 d35→우 c51)</p><p><b>확인 노드:</b> (E'·S1·S0'·D2)' <small>(U2 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0'·D2)' — LED3 을 T1 아홉 행 전부로 본다 (7행 E=0·S1S0=10·D2=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U2 첫 사용</p><table class="stage-table">
 <thead>
 <tr><th colspan="4">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED3 = (E'·S1·S0'·D2)'<br><small>예상 · U2 pin 6</small></th><th rowspan="2">확인</th></tr><tr><th>E</th><th>S1</th><th>S0</th><th>D2</th></tr>
 </thead>
@@ -296,8 +302,8 @@
 <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
 <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 7</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_7단계_NAND3.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U1 pin 9→U2 pin 9 (S0 이어 감), U2 pin 2→U2 pin 10 (S1 이어 감), U2 pin 4→U2 pin 12 (E' 이어 감), D3→U2 pin 13, 임시로 U2 pin 8→LED4 급전(좌 j36→우 c57)</p><p><b>확인 노드:</b> (E'·S1·S0·D3)' <small>(U2 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0·D3)' — LED4 를 T1 아홉 행 전부로 본다 (9행 E=0·S1S0=11·D3=1 에서만 꺼지고 나머지 여덟 행은 켜짐)</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 7</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_7단계_NAND3.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U1 pin 9→U2 pin 9 (S0 이어 감), U2 pin 2→U2 pin 10 (S1 이어 감), U2 pin 4→U2 pin 12 (E' 이어 감), D3→U2 pin 13, 임시로 U2 pin 8→LED4 급전(좌 j36→우 c57)</p><p><b>확인 노드:</b> (E'·S1·S0·D3)' <small>(U2 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0·D3)' — LED4 를 T1 아홉 행 전부로 본다 (9행 E=0·S1S0=11·D3=1 에서만 꺼지고 나머지 여덟 행은 켜짐)</p><table class="stage-table">
 <thead>
 <tr><th colspan="4">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED4 = (E'·S1·S0·D3)'<br><small>예상 · U2 pin 8</small></th><th rowspan="2">확인</th></tr><tr><th>E</th><th>S1</th><th>S0</th><th>D3</th></tr>
 </thead>
@@ -312,9 +318,9 @@
 <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
 <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 8 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8걷기_NAND프로브.png" style="width:100%"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U1 pin 6→LED1, 좌 d23→우 c42)·②(임시 급전 U1 pin 8→LED2, 좌 j24→우 c46)·③(임시 급전 U2 pin 6→LED3, 좌 d35→우 c51)·④(임시 급전 U2 pin 8→LED4, 좌 j36→우 c57)를 뽑는다. 그림의 빨간 점선이 그 네 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 네 가닥이 손에 있고 좌 d23·우 c42·좌 j24·우 c46·좌 d35·우 c51·좌 j36·우 c57 홀이 비어 있다 (LED 검사 없음)</p></div>
-<div class="stage"><h3>단계 8</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8단계_Y.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U1 pin 6→U3 pin 1, U1 pin 8→U3 pin 2, U2 pin 6→U3 pin 4, U2 pin 8→U3 pin 5, U3 pin 6→LED1 급전(우 c35→우 c42)</p><p><b>확인 노드:</b> Y <small>(U3 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y — T1 아홉 행 전부 (74HC20 U3 첫 사용). 1행은 E=1 이면 나머지 입력과 상관없이 꺼짐</p></div>
+</table></div></div>
+<div class="stage"><h3>단계 8 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8걷기_NAND프로브.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U1 pin 6→LED1, 좌 d23→우 c42)·②(임시 급전 U1 pin 8→LED2, 좌 j24→우 c46)·③(임시 급전 U2 pin 6→LED3, 좌 d35→우 c51)·④(임시 급전 U2 pin 8→LED4, 좌 j36→우 c57)를 뽑는다. 그림의 빨간 점선이 그 네 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 네 가닥이 손에 있고 좌 d23·우 c42·좌 j24·우 c46·좌 d35·우 c51·좌 j36·우 c57 홀이 비어 있다 (LED 검사 없음)</p></div></div>
+<div class="stage"><h3>단계 8</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8단계_Y.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U1 pin 6→U3 pin 1, U1 pin 8→U3 pin 2, U2 pin 6→U3 pin 4, U2 pin 8→U3 pin 5, U3 pin 6→LED1 급전(우 c35→우 c42)</p><p><b>확인 노드:</b> Y <small>(U3 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y — T1 아홉 행 전부 (74HC20 U3 첫 사용). 1행은 E=1 이면 나머지 입력과 상관없이 꺼짐</p></div></div>
 <div class="tblock">
 <h3>T1 · Enable을 갖는 4x1 MUX 진리표</h3>
 <p class='src'>출처: derived (Y = E'·(S1'·S0'·D0 + S1'·S0·D1 + S1·S0'·D2 + S1·S0·D3))</p>
@@ -420,7 +426,7 @@
 </ul></div>
 </div>
 <p>게이트 안의 입력 배정은 교안 p11 그대로다 — p11 의 U1 이 U5, U2 가 U6, U3 이 U4 다(M7). 입력 점퍼 S0·S1·D 는 U6 에 꽂고 거기서 이어 간다 — 1단계가 Y3 이라서다(M11). S1'·S0' 는 U4 에서 U5 의 두 핀으로 따로 간다 — U5 a쪽 리드를 8 이하로 두려는 것이다(M11).</p>
-<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_1단계_Y3.png" style="width:100%"><p><b>이 단계에서:</b> (배너대로 C1 신호선을 전부 뽑고 74HC20 셋을 빼고 74HC11 을 K2·K4 에 꽂은 상태에서) 신호선: S0→U6 pin 1, S1→U6 pin 2, D→U6 pin 13, U6 pin 12→LED4 급전</p><p><b>확인 노드:</b> Y3 <small>(U6 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y3 — LED4 를 T3 다섯 행 전부로 본다 (D=1·S1S0=11 에서만 켜짐). 74HC11 U6 첫 사용</p><table class="stage-table">
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_1단계_Y3.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> (배너대로 C1 신호선을 전부 뽑고 74HC20 셋을 빼고 74HC11 을 K2·K4 에 꽂은 상태에서) 신호선: S0→U6 pin 1, S1→U6 pin 2, D→U6 pin 13, U6 pin 12→LED4 급전</p><p><b>확인 노드:</b> Y3 <small>(U6 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y3 — LED4 를 T3 다섯 행 전부로 본다 (D=1·S1S0=11 에서만 켜짐). 74HC11 U6 첫 사용</p><table class="stage-table">
 <thead>
 <tr><th colspan="3">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED4 = Y3<br><small>예상 · U6 pin 12</small></th><th rowspan="2">확인</th></tr><tr><th>D</th><th>S1</th><th>S0</th></tr>
 </thead>
@@ -431,8 +437,8 @@
 <tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="box"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_2단계_Y1.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U6 pin 2→U4 pin 3 (S1 이어 감), U4 pin 4→U5 pin 4 (S1'), U6 pin 1→U5 pin 3 (S0 이어 감), U6 pin 13→U5 pin 5 (D 이어 감), U5 pin 6→LED2 급전</p><p><b>확인 노드:</b> Y1 <small>(U5 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y1 — LED2 를 T3 다섯 행 전부로 본다 (D=1·S1S0=01 에서만 켜짐). 74HC11 U5·74HC04 U4 첫 사용(이 회로에서)</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_2단계_Y1.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U6 pin 2→U4 pin 3 (S1 이어 감), U4 pin 4→U5 pin 4 (S1'), U6 pin 1→U5 pin 3 (S0 이어 감), U6 pin 13→U5 pin 5 (D 이어 감), U5 pin 6→LED2 급전</p><p><b>확인 노드:</b> Y1 <small>(U5 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y1 — LED2 를 T3 다섯 행 전부로 본다 (D=1·S1S0=01 에서만 켜짐). 74HC11 U5·74HC04 U4 첫 사용(이 회로에서)</p><table class="stage-table">
 <thead>
 <tr><th colspan="3">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED2 = Y1<br><small>예상 · U5 pin 6</small></th><th rowspan="2">확인</th></tr><tr><th>D</th><th>S1</th><th>S0</th></tr>
 </thead>
@@ -443,8 +449,8 @@
 <tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="box"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_3단계_Y2.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U6 pin 1→U4 pin 1 (S0 이어 감), U4 pin 2→U5 pin 10 (S0'), U4 pin 3→U5 pin 9 (S1 이어 감), U5 pin 5→U5 pin 11 (D 이어 감), U5 pin 8→LED3 급전</p><p><b>확인 노드:</b> Y2 <small>(U5 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y2 — LED3 을 T3 다섯 행 전부로 본다 (D=1·S1S0=10 에서만 켜짐)</p><table class="stage-table">
+</table></div></div>
+<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_3단계_Y2.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U6 pin 1→U4 pin 1 (S0 이어 감), U4 pin 2→U5 pin 10 (S0'), U4 pin 3→U5 pin 9 (S1 이어 감), U5 pin 5→U5 pin 11 (D 이어 감), U5 pin 8→LED3 급전</p><p><b>확인 노드:</b> Y2 <small>(U5 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y2 — LED3 을 T3 다섯 행 전부로 본다 (D=1·S1S0=10 에서만 켜짐)</p><table class="stage-table">
 <thead>
 <tr><th colspan="3">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">LED3 = Y2<br><small>예상 · U5 pin 8</small></th><th rowspan="2">확인</th></tr><tr><th>D</th><th>S1</th><th>S0</th></tr>
 </thead>
@@ -455,8 +461,8 @@
 <tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
 </tbody>
-</table></div>
-<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_4단계_Y0.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 4→U5 pin 1 (S1'), U4 pin 2→U5 pin 2 (S0'), U5 pin 11→U5 pin 13 (D 이어 감), U5 pin 12→LED1 급전</p><p><b>확인 노드:</b> Y0 <small>(U5 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y0 — T3 다섯 행 전부. 네 LED 중 D=1 인 행에서 하나만, D=0 인 행에서는 하나도 안 켜져야 한다</p></div>
+</table></div></div>
+<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_4단계_Y0.png" style="width:100%"><div class="stage-body"><p><b>이 단계에서:</b> 신호선: U4 pin 4→U5 pin 1 (S1'), U4 pin 2→U5 pin 2 (S0'), U5 pin 11→U5 pin 13 (D 이어 감), U5 pin 12→LED1 급전</p><p><b>확인 노드:</b> Y0 <small>(U5 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y0 — T3 다섯 행 전부. 네 LED 중 D=1 인 행에서 하나만, D=0 인 행에서는 하나도 안 켜져야 한다</p></div></div>
 <div class="tblock">
 <h3>T3 · Enable을 갖는 1x4 DMUX 진리표</h3>
 <p class='src'>출처: derived (Y0 = D·S1'·S0' ; Y1 = D·S1'·S0 ; Y2 = D·S1·S0' ; Y3 = D·S1·S0)</p>

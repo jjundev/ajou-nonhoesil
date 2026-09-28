@@ -38,13 +38,19 @@
   /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
      회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
   /* 블록을 통째로 묶지 않는다 — 그림+글+단계 진리표는 한 쪽을 넘을 수 있고, 묶으면 제목만
-     남은 빈 쪽이 생긴다. 제목은 그림에, 그림은 확인 줄에 붙어 있게만 한다. */
+     남은 빈 쪽이 생긴다. 제목은 그림에 붙어 있게만 한다.
+     그림 뒤 글·확인·단계 진리표(`.stage-body`)는 그림보다 짧으니 통짜로 넘긴다 —
+     확인 줄만 쪽 끝에 남고 표가 다음 쪽으로 가는 것을 막는다(2026-09-28). */
   .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; }
   .stage h3 { margin: 0 0 1.5mm; break-after: avoid; }
-  .stage img { display: block; break-after: avoid; max-height: 370mm; object-fit: contain; }
+  /* 그림 뒤에는 쪽 경계를 허용한다 — 막으면 그림+글이 한 쪽을 넘을 때 크롬이 `.stage-body`
+     안을 가른다(실측: 단계 4·6·7 의 확인 줄과 표가 갈렸다). */
+  .stage img { display: block; max-height: 370mm; object-fit: contain; }
+  .stage-body { break-inside: avoid; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
-  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
   /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
      꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
      통짜로 묶어도 백지 비용이 없다. */
