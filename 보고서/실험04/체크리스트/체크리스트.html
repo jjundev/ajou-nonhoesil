@@ -56,6 +56,8 @@
   .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
   .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
   .stage-table td.box { height: 6mm; }
+  /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
+  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
   /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
      가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
@@ -478,6 +480,28 @@
 <h3>T4 · 1x4 DMUX Truth Table — 참조</h3>
 <p class='src'>출처: manual:p12</p>
 <table><thead><tr><th>D</th><th>S1</th><th>S0</th><th>Y0</th><th>Y1</th><th>Y2</th><th>Y3</th></tr></thead><tbody><tr><td>0</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr></tbody></table>
+</div>
+<div class="tblock nodes">
+<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>
+<p class='src'>틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트</p>
+<table>
+<thead>
+<tr>
+<th>D</th>
+<th>S1</th>
+<th>S0</th>
+<th>S0'<br><small>U4 pin 2</small></th>
+<th>S1'<br><small>U4 pin 4</small></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>—</td><td>—</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
 </div>
 </section></section>
 <section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), 스텝표는 스텝마다, 파형은 화면마다</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>

@@ -777,6 +777,53 @@ _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: _________________
 _MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
 
 
+_NODE_HINT = ("틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 "
+              "고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트")
+
+
+def _record_outputs(spec, section) -> set:
+    """기록표 출력 열 이름. 기록표가 없거나 입력 열이 어긋나면(validate 가 막는다) 빈 집합."""
+    try:
+        table = node_calc.record_table(section, spec)
+    except ValueError:
+        return set()
+    if table is None:
+        return set()
+    return {table.header[i] for i in split_indices(table)[1]}
+
+
+def _unstaged_nodes_html(spec, section) -> str:
+    """단계에서 안 본 노드 — 어느 단계도 가리키지 않는 노드의 핀과 기대값. 기록표 뒤에 온다.
+
+    2026-09-28 최종 리뷰: 옛 중간 노드 표를 통째로 없애면 한 단계 안에서 함께 세운 노드
+    (실험04 C2 `S0'`·`S1'`)와 단계 없는 회로의 노드가 인쇄본에서 사라진다. 단계 진리표와
+    겹치는 열은 찍지 않는다 — N1(겹치는 표 제거)의 취지는 그대로다. 읽는 표라 `.check` 가 없다.
+    """
+    staged = {s["node"] for s in section.stages if s.get("node")}
+    keep = [k for k, n in enumerate(section.nodes) if n["name"] not in staged]
+    if not keep:
+        return ""
+    try:
+        nt = node_calc.compute(section, spec)
+    except ValueError as exc:
+        return f"<p class='src'>노드 표를 계산할 수 없다: {_esc(exc)}</p>"
+    out = ['<div class="tblock nodes">',
+           "<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>",
+           f"<p class='src'>{_esc(_NODE_HINT)}</p>",
+           "<table>", "<thead>", "<tr>"]
+    out += [f"<th>{_esc(name)}</th>" for name in nt.inputs]
+    out += [f"<th>{_esc(_plain(nt.nodes[k][0]))}<br><small>{_esc(nt.nodes[k][1])}</small></th>"
+            for k in keep]
+    out += ["</tr>", "</thead>", "<tbody>"]
+    for cells, bits in nt.rows:
+        vals = ([node_calc.format_bit(bits[k], nt.encoding) for k in keep] if bits is not None
+                else ["—"] * len(keep))
+        out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
+                   + "".join(f"<td>{_esc(v)}</td>" for v in vals) + "</tr>")
+    out += ["</tbody>", "</table>", "</div>"]
+    return "\n".join(out)
+
+
 def _mismatch_html(kind: str, table_id: str) -> str:
     """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다.
 
@@ -910,12 +957,18 @@ def circuit_pages(spec, netlist) -> str:
         if prose_after.strip():
             # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
             out.append(_blocks(prose_after))
-        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 바로 뒤 기록표가 그 표다.
+        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 바로 뒤 기록표가 그 표다. 단 그 노드가
+        # 기록표 출력 열일 때만이다 — 중간 노드면 기록표에 그 값이 없다.
         observed = [s for s in section.stages if s.get("node")]
         last = observed[-1] if observed else None
+        if last is not None and last["node"] not in _record_outputs(spec, section):
+            last = None
         for stage in section.stages:
             out.append(_stage_html(stage, netlist, section, spec, last=stage is last))
         out.append(_circuit_tables(spec, section))
+        unstaged = _unstaged_nodes_html(spec, section)
+        if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
+            out.append(unstaged)
         out.append("</section>")
         previous = section
     return "\n".join(out)

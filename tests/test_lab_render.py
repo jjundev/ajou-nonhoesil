@@ -1785,6 +1785,48 @@ class TestStageTable(unittest.TestCase):
         self.assertNotIn('class="stage-table"', pages[0])
 
 
+class TestUnstagedNodes(unittest.TestCase):
+    """최종 리뷰(2026-09-28) Important 1·2 — 단계가 가리키지 않는 노드의 핀·기대값이
+    인쇄본에서 사라지면 안 되고, 마지막 단계가 기록표 출력이 아닌 노드를 보면 그 단계에도
+    단계 진리표가 있어야 한다."""
+
+    def _page(self, text):
+        spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        return render_checklist(spec, parse_netlist(path), TEMPLATE).split(
+            '<section class="circuit">')[1]
+
+    def test_단계가_안_보는_노드는_기록표_뒤_표에_남는다(self):
+        page = self._page(_STAGE_NODED_NETLIST.replace(
+            "| L2 | A·B·C | U1 pin 6 |", "| L2 | A·B·C | U1 pin 6 |\n| C' | C' | U1 pin 8 |"))
+        self.assertIn("단계에서 안 본 노드", page)
+        block = page[page.index("단계에서 안 본 노드"):]
+        self.assertIn("<th>C'<br><small>U1 pin 8</small></th>", block)
+        self.assertNotIn("<th>A·B<br>", block)           # 단계가 본 노드는 겹쳐 찍지 않는다
+        self.assertLess(page.index("<h3>T1 ·"), page.index("단계에서 안 본 노드"))
+        self.assertIn("입력 쪽 노드부터", block)
+
+    def test_모든_노드를_단계가_보면_그_표가_없다(self):
+        self.assertNotIn("단계에서 안 본 노드", self._page(_STAGE_NODED_NETLIST))
+
+    def test_단계_없는_회로의_노드는_전부_표에_남는다(self):
+        text = _STAGE_NODED_NETLIST
+        a = text.index("## 단계"); b = text.index("## 노드")
+        page = self._page(text[:a] + text[b:])
+        block = page[page.index("단계에서 안 본 노드"):]
+        self.assertIn("<th>A·B<br><small>U1 pin 3</small></th>", block)
+        self.assertIn("<th>L2<br><small>U1 pin 6</small></th>", block)
+
+    def test_마지막_단계가_출력이_아닌_노드면_단계_진리표를_싣는다(self):
+        page = self._page(_STAGE_NODED_NETLIST
+                          .replace("| L2 | A·B·C | U1 pin 6 |",
+                                   "| L2 | A·B·C | U1 pin 6 |\n| C' | C' | U1 pin 8 |")
+                          .replace("노드 `L2` — T1 8행 전부", "노드 `C'` — 두 값"))
+        start = page.index("<h3>단계 2</h3>")
+        self.assertIn('class="stage-table"', page[start:page.index("</div>", start)])
+
+
 class StageNodeLine(unittest.TestCase):
     """단계 블록은 그 단계에서 볼 노드의 이름과 핀을 찍는다 — 핀은 `## 노드` 표에서
     조회한다. 저작자가 핀을 단계 표에도 적으면 두 자리가 표류한다."""
