@@ -67,6 +67,30 @@ class Layer(unittest.TestCase):
         self.assertEqual(set(part._leads), set(full._leads))
         self.assertEqual(part._passed, full._passed)
 
+    def _unused(self, layer=None):
+        """잭 두 가닥(1·2번) + 74HC04 미사용 입력 pin 1·3 접지(3번, 두 가닥이 번호 하나)."""
+        bb = self._jacks(layer)
+        bb.draw_chip('74HC04', 10)
+        bb.connect_unused_inputs([1, 3], 10, chip='74HC04')
+        return bb
+
+    def _unused_px(self, bb):
+        _kind, pts, _desc = next(seg for seg in bb._segments if '미사용 입력' in seg[2])
+        (x0, y0), (x1, y1) = pts[0], pts[1]
+        s = self.mod.SCALE
+        return bb.overlay.getpixel(((x0 + x1) // 2 * s, (y0 + y1) // 2 * s))
+
+    def test_미사용_입력선도_층을_따른다(self):
+        self.assertEqual(self._unused_px(self._unused()), self.mod.WIRE['gnd'])
+        self.assertEqual(self._unused_px(self._unused((3, 3))), self.mod.WIRE['gnd'])
+        self.assertEqual(self._unused_px(self._unused((4, 4))), self.mod.KEEP)
+        self.assertEqual(self._unused_px(self._unused((1, 2)))[3], 0)
+
+    def test_미사용_입력선도_점유표에_남는다(self):
+        full, part = self._unused(), self._unused((1, 2))
+        self.assertEqual(set(part._leads), set(full._leads))
+        self.assertEqual(part.sidecar()['steps'], full.sidecar()['steps'])
+
     def test_잘못된_층은_거절한다(self):
         for bad in [(0, 1), (3, 2), (1.0, 2), (1,)]:
             with self.subTest(bad=bad), self.assertRaises(ValueError):

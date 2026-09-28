@@ -1235,6 +1235,9 @@ class BreadboardRenderer:
         # — 실험02 C1→C2 는 칩만 갈아 끼우므로 pull 선 다섯 가닥이 전부 그대로다.
         # 전부 회색이면 순서표에 번호 대신 "그대로 둔다" 로 남긴다
         kept_lines = 0
+        # 따라 그리기 층 — 가닥이 여럿이어도 번호는 뒤의 `step_note` 하나라 그 번호로 정한다
+        view = self._layer_view(len(self.steps) + 1) if self.numbered else 'shown'
+        draw = self._hidden_draw if view == 'hidden' else self.draw
         for row, x_pin, p in (placed[i] for i in order):
             pick = self.nearest_vcc_rail if rail == 'vcc' else self.nearest_gnd_rail
             x_rail = pick(x_pin, block)
@@ -1243,13 +1246,13 @@ class BreadboardRenderer:
                    self._endpoint((x_rail, self.r_y(r_rail))))
             kept = self.baseline is not None and key in self.baseline['wires']
             kept_lines += kept
-            col = KEEP if kept else WIRE[rail]
-            self.draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
+            col = KEEP if kept or view == 'faded' else WIRE[rail]
+            draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
                                    f'{chip} pin {p} 미사용 입력'))
             self._register_pass([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))])
-            self.draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
-            self.draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
+            draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
+            draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
             self.lead(x_rail, self.r_y(r_rail), f'{chip} pin {p} 미사용 입력 접지선')
             self.touch_rail(rail, x_rail)
