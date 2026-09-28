@@ -45,8 +45,9 @@ from render_breadboard import BreadboardRenderer, _input_jumper, fresh_board, re
 # LED 는 네 개다(교안 준비물). 네 사슬이 우 c42·c46·c51·c57 에 고정이고 C1 은 LED1 = Y,
 # C2 는 LED1~4 = Y0~Y3 이다. C1 중간 노드는 그 시점에 빈 LED 의 급전선을 잠시 옮겨 본다.
 # **C1 완성본에는 LED1 사슬 하나만 그린다**(2026-09-28 사용자) — 출력이 Y 하나인 회로를
-# 손으로 따라 그려 제출하는 원도다. 네 사슬이면 출력이 넷인 회로로 읽힌다. LED2~4 사슬은
-# 보드에 남아 있고(C1 관측·C2 용) 절차 그림에는 그대로 그린다.
+# 손으로 따라 그려 제출하는 원도다. 네 사슬이면 출력이 넷인 회로로 읽힌다. **보드도
+# 같다** — 8걷기가 NAND 임시 급전선과 함께 LED2~4 사슬을 뽑아 8단계 보드가 완성본과 같은
+# 모양이 된다(2026-09-29 사용자). C2 는 1단계에서 LED2~4 사슬을 같은 자리에 다시 꽂는다.
 
 E4_SLOTS = {'K1': ('right', 7), 'K2': ('left', 18), 'K3': ('left', 30), 'K4': ('right', 30)}
 _K1, _K2, _K3, _K4 = (E4_SLOTS[k][1] for k in ('K1', 'K2', 'K3', 'K4'))
@@ -94,13 +95,14 @@ _MUX_STAGE_NOTE = {
        "LED2 를 **임시로** U1 pin 8 에 꽂는다 — 5행(E=0·S1S0=01·D1=1)에서만 꺼진다.",
     6: "6단계: U2 NAND A 를 잇고 LED3 을 **임시로** U2 pin 6 에 꽂는다 — 7행(E=0·S1S0=10·D2=1)에서만 꺼진다.",
     7: "7단계: U2 NAND B 를 잇고 LED4 를 **임시로** U2 pin 8 에 꽂는다 — 9행(E=0·S1S0=11·D3=1)에서만 꺼진다. "
-       "NAND 임시 급전선 넷은 다음 장(8걷기)이 뽑는다.",
-    8: "8단계: 앞 장(8걷기)에서 NAND 임시 급전선 넷을 뽑은 상태로 시작한다. U3 에 앞단 출력 넷을 "
-       "물리고 LED1 = Y 를 T1 아홉 행 전부로 본다 — 완성이다.",
+       "NAND 임시 급전선 넷과 LED2~4 사슬은 다음 장(8걷기)이 뽑는다.",
+    8: "8단계: 앞 장(8걷기)에서 NAND 임시 급전선 넷과 LED2~4 사슬을 뽑은 상태로 시작한다. U3 에 "
+       "앞단 출력 넷을 물리고 LED1 = Y 를 T1 아홉 행 전부로 본다 — 완성이다.",
 }
 _DMUX_STAGE_NOTE = {
     1: "1단계: MUX 신호선을 전부 뽑고 74HC20 셋을 빼 74HC11 을 K2·K4 에 꽂은 상태다 — 전원선·"
-       "브리지·LED 사슬만 남는다. U6 AND 1 에 S0·S1·D 를 물리고 LED4 = Y3 을 본다 (D=1·S1S0=11 에서만 켜짐).",
+       "브리지·LED1 사슬만 남는다. MUX 8걷기에서 뽑은 LED2~4 사슬을 같은 자리(우 c46·c51·c57)에 "
+       "다시 꽂고, U6 AND 1 에 S0·S1·D 를 물려 LED4 = Y3 을 본다 (D=1·S1S0=11 에서만 켜짐).",
     2: "2단계: U5 AND 2 에 S0·S1'·D 를 물린다 — LED2 = Y1 (D=1·S1S0=01 에서만 켜짐). U4 는 이 회로에서 처음 쓴다.",
     3: "3단계: U5 AND 3 에 S1·S0'·D 를 물린다 — LED3 = Y2 (D=1·S1S0=10 에서만 켜짐).",
     4: "4단계: U5 AND 1 에 S1'·S0'·D 를 물린다 — LED1 = Y0. 완성이다: D=1 인 행에서 LED 하나만, "
@@ -141,31 +143,10 @@ def _frame(bb):
 
 
 def _chains(bb, tags, descs):
-    """`tags` 길이만큼 LED1 부터 사슬을 꽂는다 — C1 완성본은 LED1 하나다."""
+    """`tags` 길이만큼 LED1 부터 사슬을 꽂는다 — C1 8단계·완성본은 LED1 하나다."""
     r = bb.cols['right']
     for i, row in enumerate(_LED[:len(tags)]):
         bb.led_chain(r['c'], row, tags[i], descs[i], block='right')
-
-
-_IDLE_LEDS = ('L2', 'L3', 'L4')
-
-
-def _verify_idle_leds(bb):
-    """MUX 완성 상태의 R5ⓒ — 뜬 것이 급전하지 않는 LED2~4 애노드뿐인가.
-
-    `partial` 은 R5ⓒ 를 통째로 끈다. 완성본에서 칩 핀이 뜨면 그것은 진짜 결함이라
-    `partial` 을 잠시 내리고 검사를 돌려, 걸린 줄이 그 세 애노드뿐인지 본다.
-    """
-    bb.partial = False
-    try:
-        bb.verify()
-    except AssertionError as e:
-        lines = [ln.strip() for ln in str(e).splitlines()[1:]]
-        idle = {f'LED {t} 애노드 가 아무 데도 안 물렸다 — 뜬 다리' for t in _IDLE_LEDS}
-        if not str(e).startswith('넷이 틀렸다') or set(lines) != idle:
-            raise
-    finally:
-        bb.partial = True
 
 
 def _mux_draw(bb, stage):
@@ -188,11 +169,9 @@ def _mux_draw(bb, stage):
         if on(s, e):
             bb.step_wire(pts, kind, desc, marker_at=marker)
 
-    # 8단계에서도 LED2~4 는 급전하지 않는다 — 중간 노드를 보던 자리라 사슬만 남는다.
-    # R5ⓒ 가 그 애노드를 뜬 다리로 잡으므로 절차 그림은 `partial` 로 끄고, 8단계에서 그
-    # 셋 말고 뜬 것이 없는지는 `_verify_idle_leds()` 가 export 전에 따로 본다. 완성본은
-    # LED1 사슬 하나뿐이라 뜬 다리가 없어야 한다 — R5ⓒ 를 켠 채 그린다.
-    bb.partial = stage is not None
+    # 1~7단계는 아직 급전하지 않는 LED 애노드가 떠 있어 R5ⓒ 를 `partial` 로 끈다. 8단계는
+    # 8걷기가 LED2~4 사슬을 뽑아 LED1 하나만 남으므로 완성본처럼 R5ⓒ 를 켠 채 그린다.
+    bb.partial = stage is not None and stage < _MUX_STAGES
 
     # --- 칩 · 전원 · LED 사슬 (1단계에 한꺼번에) ---
     bb.draw_chip('74HC04', _K1, block='right')
@@ -218,7 +197,7 @@ def _mux_draw(bb, stage):
             descs.append(f'이 단계에는 {probe[i]} 를 본다 — 임시 급전선은 걷기 그림이 뽑는다')
         else:
             descs.append('지금은 급전하지 않는다')
-    if stage is None:
+    if stage is None or stage == _MUX_STAGES:
         _chains(bb, ('Y',), descs[:1])
     else:
         _chains(bb, ('Y', 'L2', 'L3', 'L4'), descs)
@@ -316,11 +295,11 @@ def _mux_draw(bb, stage):
         bb.note(note)
     bb.note('E 인버터는 U4 게이트 6(pin 13 → 12)이다 — 교안 p8 의 게이트 1(pin 1 → 2) 대신 '
             '쓴다. U4 a쪽 리드가 8 을 넘지 않게 옮겼다(netlist M9). 논리는 같다.')
-    if stage is None:
-        bb.note('출력은 Y 하나라 LED1 사슬만 그렸다. LED2~4 사슬은 중간 노드 관측과 실험 2-1 용으로 '
-                '보드에 남아 있지만 이 회로에 속하지 않는다 — 따라 그리지 않는다.')
+    if stage is None or stage == _MUX_STAGES:
+        bb.note('출력은 Y 하나라 LED1 사슬만 남는다. LED2~4 사슬은 중간 노드를 보던 자리라 8걷기에서 '
+                '뽑았다 — 실험 2-1 이 1단계에서 같은 자리에 다시 꽂는다.')
     else:
-        bb.note('LED 는 네 개다. 완성본은 LED1 = Y 만 급전한다 — LED2~4 는 중간 노드를 보던 자리다.')
+        bb.note('LED 는 네 개다. LED2~4 는 중간 노드를 보는 자리라 8걷기에서 사슬째 뽑는다.')
     bb.note(_INPUT_NOTE)
 
 
@@ -413,7 +392,7 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, lay
 
       stage 1~3  U4 인버터 셋 — LED4·3·2 임시 급전으로 E'·S1'·S0'
       stage 4~7  앞단 NAND 넷 — LED1~4 임시 급전 (5걷기·8걷기가 뽑는다)
-      stage 8    U3 합류 NAND + LED1 = Y · 완성
+      stage 8    U3 합류 NAND + LED1 = Y · 완성 (8걷기가 LED2~4 사슬을 뽑아 LED1 사슬만 남는다)
 
     `layer=(lo, hi)` 는 완성본(stage=None)의 따라 그리기 층이다 — `LAYERS` 참고.
     """
@@ -426,8 +405,6 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, lay
     bb.set_header(title, "74HC04 NOT 3 + 74HC20 4입력 NAND 5 · Y = E'·(S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3)",
                   submit=baseline is None and stage is None)
     _mux_draw(bb, stage)
-    if stage == _MUX_STAGES and bb.ghost is None:
-        _verify_idle_leds(bb)
     bb.export(output_path, max_row=61)
     return bb
 
@@ -471,8 +448,9 @@ BOARDS = [
     ("실험04_1-1_결선도_4x1MUX_7단계_NAND3.png", build_e4_mux, 7),
     ("실험04_1-1_결선도_4x1MUX_8걷기_NAND프로브.png",
      removal_board((build_e4_mux, 7), (build_e4_mux, 8),
-                   "실험 1-1: 4x1 MUX — 8단계 걷기 (임시 급전선 4가닥)",
-                   "앞단 NAND 넷 → LED1~LED4 임시 급전선을 뽑는다 · 회색은 그대로 둔다"),
+                   "실험 1-1: 4x1 MUX — 8단계 걷기 (임시 급전선 4가닥 + LED2~4 사슬)",
+                   "앞단 NAND 넷 → LED1~LED4 임시 급전선과 LED2~4 사슬(LED·330Ω·GND 선)을 뽑는다 · "
+                   "회색은 그대로 둔다"),
      None),
     ("실험04_1-1_결선도_4x1MUX_8단계_Y.png", build_e4_mux, 8),
     ("실험04_2-1_결선도_1x4DMUX_1단계_Y3.png", fresh_board(build_e4_dmux), 1),
@@ -564,7 +542,7 @@ def build_e4_mux_s7(output_path, template_path=None):
 
 
 def build_e4_mux_s8(output_path, template_path=None):
-    """C1 8단계 — 8걷기 뒤에 U3 합류 NAND. 노드 Y, 완성."""
+    """C1 8단계 — 8걷기(NAND 임시 급전선·LED2~4 사슬) 뒤에 U3 합류 NAND. 노드 Y, 완성."""
     return _e4_board(9, output_path, template_path)
 
 

@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 1-1: 4x1 MUX — 8단계 (U3 합류 NAND, 노드 Y · 완성)",
  "subtitle": "74HC04 NOT 3 + 74HC20 4입력 NAND 5 · Y = E'·(S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3)",
- "kept": 46,
+ "kept": 40,
  "steps": [
   {
    "n": 1,
@@ -45,6 +45,19 @@
    "count": 1
   }
  ],
- "removals": [],
+ "removals": [
+  {
+   "n": null,
+   "text": "LED L2 사슬 (우 d46~우 e49) 뽑는다"
+  },
+  {
+   "n": null,
+   "text": "LED L3 사슬 (우 d51~우 e54) 뽑는다"
+  },
+  {
+   "n": null,
+   "text": "LED L4 사슬 (우 d57~우 e60) 뽑는다"
+  }
+ ],
  "probes": []
 }

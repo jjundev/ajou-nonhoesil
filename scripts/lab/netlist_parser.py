@@ -53,15 +53,21 @@ _STAGE_NODE = re.compile(r"^노드\s+`([^`]+)(?:`|$)")
 _STAGE_NUMBER = re.compile(r"^[0-9]+$")
 _STAGE_WALK = re.compile(r"^([0-9]+)걷기$")
 
-_HOLE_PATTERN = r"(?:좌|우)\s*[a-j]\s*[1-9][0-9]*"
+# 홀은 `좌 d23` 같은 열·행이고, 레일 끝점은 엔진 `_sym_addr()` 가 쓰는 `우 중앙GND레일49행`
+# 이다. LED 사슬의 GND 선을 걷는 행(실험04 8걷기, 2026-09-29)이 레일 끝점을 적는다.
+_HOLE_PATTERN = (r"(?:좌|우)\s*(?:[a-j]\s*[1-9][0-9]*"
+                 r"|(?:중앙\s*)?(?:GND|VCC)\s*레일\s*[1-9][0-9]*\s*행)")
 _HOLE = re.compile(_HOLE_PATTERN)
 _WALK_ADDRESS = re.compile(rf"({_HOLE_PATTERN})\s*→\s*({_HOLE_PATTERN})")
 
 
 def _normalise_hole(token: str) -> str:
     match = re.fullmatch(r"(좌|우)\s*([a-j])\s*([1-9][0-9]*)", token)
+    if match is not None:
+        return f"{match.group(1)} {match.group(2)}{match.group(3)}"
+    match = re.fullmatch(r"(좌|우)\s*(중앙)?\s*(GND|VCC)\s*레일\s*([1-9][0-9]*)\s*행", token)
     assert match is not None
-    return f"{match.group(1)} {match.group(2)}{match.group(3)}"
+    return f"{match.group(1)} {match.group(2) or ''}{match.group(3)}레일{match.group(4)}행"
 
 
 def _walk_addresses(text: str) -> list[str]:

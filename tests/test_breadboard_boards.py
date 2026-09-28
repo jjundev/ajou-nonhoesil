@@ -371,8 +371,9 @@ class CommittedPngs(unittest.TestCase):
 class TestE4MuxFinalOneLed(unittest.TestCase):
     """실험04 C1(4x1 MUX) 완성본은 출력이 Y 하나라 LED 사슬도 하나다(2026-09-28 사용자).
 
-    손으로 따라 그려 제출하는 원도라, 네 사슬이면 출력이 넷인 회로로 읽힌다. LED2~4 사슬은
-    C1 중간 노드 관측과 C2 용으로 보드에 남으므로 **절차 그림(8단계)에는 그대로 있다**.
+    손으로 따라 그려 제출하는 원도라, 네 사슬이면 출력이 넷인 회로로 읽힌다. 2026-09-29
+    부터는 **보드도 같다** — 8걷기가 LED2~4 사슬을 뽑아 8단계 절차 그림도 사슬 하나다.
+    7단계까지는 중간 노드를 보느라 네 사슬이 다 있다.
     """
 
     @classmethod
@@ -388,8 +389,12 @@ class TestE4MuxFinalOneLed(unittest.TestCase):
     def test_완성본은_Y_사슬_하나다(self):
         self.assertEqual(self._chains(None), ["Y"])
 
-    def test_8단계_절차_그림은_네_사슬_그대로다(self):
-        self.assertEqual(self._chains(8), ["L2", "L3", "L4", "Y"])
+    def test_7단계_절차_그림은_네_사슬이다(self):
+        self.assertEqual(self._chains(7), ["L2", "L3", "L4", "Y"])
+
+    def test_8단계_절차_그림은_Y_사슬_하나다(self):
+        self.assertEqual(self._chains(8), ["Y"])
+
 
 
 if __name__ == "__main__":
