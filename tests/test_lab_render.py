@@ -2032,3 +2032,46 @@ class TestBoardText(unittest.TestCase):
         self.assertIn('<figure class="board">', html)
         self.assertIn('<ol class="steps">', html)
         self.assertNotIn('class="kept"', html)
+
+
+class TestIssueRefsDropped(unittest.TestCase):
+    """미확정 표는 인쇄하지 않는다(2026-09-28) — 산문의 `(M9)` 같은 참조가 가리킬 곳이 없어
+    학생에게는 뜻 없는 글자다. netlist 원문은 저작용이라 그대로 두고 인쇄할 때만 벗긴다."""
+
+    def test_괄호째_참조를_벗긴다(self):
+        cases = {
+            "교안 근거가 없다(M4).": "교안 근거가 없다.",
+            "배선 편의다(M11, M12).": "배선 편의다.",
+            "(U4F — 교안은 U4A pin 1, M9)": "(U4F — 교안은 U4A pin 1)",
+            "넷~다섯이다(예산 5, M8).": "넷~다섯이다(예산 5).",
+            "새로 짓는다(M6, 2026-09-27 결정).": "새로 짓는다(2026-09-27 결정).",
+            "(교안 p10 머리글 — 기종은 M8). CH1": "(교안 p10 머리글). CH1",
+            "교안 원문이 아니다(M8 에서 함께 확인)": "교안 원문이 아니다",
+        }
+        for src, want in cases.items():
+            with self.subTest(src=src):
+                self.assertEqual(render._drop_issue_refs(src), want)
+
+    def test_M_이_아닌_괄호는_두다(self):
+        for keep in ("74HC20 (dual 4-input NAND)", "(n.c.)", "MUX(4x1)", "M 자 모양"):
+            self.assertEqual(render._drop_issue_refs(keep), keep)
+
+    def test_실험01_04_인쇄본에_M번호가_없다(self):
+        for n in (1, 2, 3, 4):
+            spec = parse_spec(ROOT / config.experiment_dir(n) / "체크리스트/명세.md")
+            netlist = parse_netlist(ROOT / config.experiment_dir(n) / "결선도/netlist.md")
+            body = common_page(spec, netlist) + circuit_pages(spec, netlist)
+            with self.subTest(실험=n):
+                self.assertEqual(re.findall(r".{0,20}\bM\d{1,2}\b.{0,10}", body), [])
+
+
+class TestPinCheckHeading(unittest.TestCase):
+    def test_핀_점검_제목이_미사용_핀을_비우라고_단정하지_않는다(self):
+        """실험02 는 미사용 입력을 GND·VCC 에 묶는다 — 전원 박스가 이 상자를 가리키므로
+        제목이 '비어 있는가' 면 그 주차에 틀린 지시가 된다(2026-09-28 최종 리뷰)."""
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+        netlist = parse_netlist(ROOT / config.experiment_dir(2) / "결선도/netlist.md")
+        html = circuit_pages(spec, netlist)
+        self.assertIn('class="unused"', html)
+        self.assertNotIn("미사용 핀은 비어 있는가", html)
+        self.assertIn("미사용 핀은 지시대로인가", html)

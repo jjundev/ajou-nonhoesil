@@ -324,6 +324,24 @@ def _flow_table(spec, netlist) -> str:
     return "".join(rows)
 
 
+# 미확정 표(`M1`~) 참조. 표를 인쇄하지 않으므로(2026-09-28) 산문의 참조는 가리킬 곳이
+# 없다 — netlist 원문은 저작·검토용이라 그대로 두고 인쇄할 때만 벗긴다. 순서가 중요하다:
+# 괄호 전체가 참조인 것 → 괄호 안 끝 항목 → 괄호 안 첫 항목 → 문장 속 "— … M8" 꼬리.
+_ISSUE_REF = r"M\d{1,2}"
+_ISSUE_REF_RULES = (
+    (re.compile(rf"\s*\((?:{_ISSUE_REF})(?:\s*[,·]\s*{_ISSUE_REF})*(?:\s+에서[^)]*)?\)"), ""),
+    (re.compile(rf"\s*,\s*{_ISSUE_REF}(?=\s*\))"), ""),
+    (re.compile(rf"\((?:{_ISSUE_REF})\s*,\s*"), "("),
+    (re.compile(rf"\s*—\s*[^()—]*?\b{_ISSUE_REF}(?=\))"), ""),
+)
+
+
+def _drop_issue_refs(text: str) -> str:
+    for rule, repl in _ISSUE_REF_RULES:
+        text = rule.sub(repl, text)
+    return text
+
+
 def common_page(spec, netlist) -> str:
     """회로 페이지들 앞에 한 번만 오는 면.
 
@@ -364,7 +382,7 @@ def common_page(spec, netlist) -> str:
         out.append(_blocks(section.body))
         out.append("</div>")
 
-    return "\n".join(out)
+    return _drop_issue_refs("\n".join(out))
 
 
 _CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
@@ -1023,7 +1041,7 @@ def circuit_pages(spec, netlist) -> str:
         unused_chips = [c for c in chips if c["unused"]]
         if unused_chips:
             out.append('<div class="unused">'
-                       "<b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>")
+                       "<b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>")
             for chip in unused_chips:
                 out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
                 out += [f'<li><span class="box"></span>{_esc(u)}</li>'
@@ -1047,7 +1065,7 @@ def circuit_pages(spec, netlist) -> str:
             out.append(unstaged)
         out.append("</section>")
         previous = section
-    return "\n".join(out)
+    return _drop_issue_refs("\n".join(out))
 
 
 CLOSING = (
