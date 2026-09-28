@@ -263,6 +263,17 @@ class RenderedContract(unittest.TestCase):
                 self.assertEqual(bad, KNOWN_MARKER_OVERLAPS.get(name, []),
                                  f'{name}: 번호 원이 겹친다 {bad}')
 
+    def test_보드_밖_입력_꼬리표끼리_겹치지_않는다(self):
+        """2026-09-28 실험04 C2: `S1`(우 a31)과 `D`(우 j31)가 같은 행이라 `입력 D → 우 j31`
+        꼬리표가 `입력 S1 → 우 a31` 을 정확히 덮었다 — 여백에서 S1 을 어디 꽂는지 사라졌다."""
+        for name, fn in _circuit_builders(self.mod).items():
+            with self.subTest(회로=name):
+                bb, _ = self._render(fn)
+                boxes = bb.margin_tag_boxes
+                bad = [(a[0], b[0]) for i, a in enumerate(boxes)
+                       for b in boxes[i + 1:] if _inter(a[1], b[1])]
+                self.assertEqual(bad, [], f'{name}: 보드 밖 꼬리표가 겹친다')
+
     def test_같은_행에_좌_f쪽과_우_a쪽_입력을_넣으면_번호_원이_겹친다(self):
         """위 검사가 무엇을 막는지 — 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙
         GND 542)은 `_input_jumper` 의 배지와 번호 원 자리를 한 번에 **입력 한 행**만

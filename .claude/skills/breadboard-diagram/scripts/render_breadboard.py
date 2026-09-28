@@ -313,6 +313,9 @@ class BreadboardRenderer:
         self.tag_boxes = []
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
+        # 보드 밖 입력 꼬리표(`_tag`) 상자 — (글, (x0, y0, x1, y1)). 같은 행 입력이 둘이면
+        # 꼬리표가 포개진다(2026-09-28 실험04 C2 S1·D) — `_input_jumper` 가 이걸 보고 비킨다
+        self.margin_tag_boxes = []
         # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
         # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
         # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다.
@@ -1917,8 +1920,24 @@ class BreadboardRenderer:
 
 
 def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
-    """보드 **밖** 꼬리표 — 꽂을 자리(`입력 A → b7`). 신호 이름은 `signal_tag()` 가 보드 안에 둔다."""
-    bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=bb.font_kr_sm, pad=2)
+    """보드 **밖** 꼬리표 — 꽂을 자리(`입력 A → b7`). 신호 이름은 `signal_tag()` 가 보드 안에 둔다.
+
+    앞 꼬리표와 겹치면 겹치지 않을 때까지 아래로 내린다 — 같은 행에 입력이 둘이면(실험04
+    C2 의 S1·D, 31행) 뒤 꼬리표가 앞 것을 정확히 덮어 한 입력의 자리가 사라졌다."""
+    font, pad = bb.font_kr_sm, 2
+
+    def box(y_):
+        b = bb.draw.textbbox((x, y_), text, font=font)
+        return (b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad)
+
+    def hits(b):
+        return any(not (b[2] <= o[0] or o[2] <= b[0] or b[3] <= o[1] or o[3] <= b[1])
+                   for _, o in bb.margin_tag_boxes)
+
+    while hits(box(y)):
+        y += 1
+    bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=font, pad=pad)
+    bb.margin_tag_boxes.append((text, box(y)))
 
 
 def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
