@@ -356,5 +356,29 @@ class CommittedPngs(unittest.TestCase):
                                  f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
 
 
+class TestE4MuxFinalOneLed(unittest.TestCase):
+    """실험04 C1(4x1 MUX) 완성본은 출력이 Y 하나라 LED 사슬도 하나다(2026-09-28 사용자).
+
+    손으로 따라 그려 제출하는 원도라, 네 사슬이면 출력이 넷인 회로로 읽힌다. LED2~4 사슬은
+    C1 중간 노드 관측과 C2 용으로 보드에 남으므로 **절차 그림(8단계)에는 그대로 있다**.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.board = cls.mod.load_board_file(cls.mod.board_path(4))
+
+    def _chains(self, stage):
+        with tempfile.TemporaryDirectory() as d:
+            bb = self.board.build_e4_mux(os.path.join(d, "x.png"), stage=stage)
+        return sorted(ch["tag"] for ch in bb.wiring()["chains"])
+
+    def test_완성본은_Y_사슬_하나다(self):
+        self.assertEqual(self._chains(None), ["Y"])
+
+    def test_8단계_절차_그림은_네_사슬_그대로다(self):
+        self.assertEqual(self._chains(8), ["L2", "L3", "L4", "Y"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -44,6 +44,9 @@ from render_breadboard import BreadboardRenderer, _input_jumper, fresh_board, re
 #
 # LED 는 네 개다(교안 준비물). 네 사슬이 우 c42·c46·c51·c57 에 고정이고 C1 은 LED1 = Y,
 # C2 는 LED1~4 = Y0~Y3 이다. C1 중간 노드는 그 시점에 빈 LED 의 급전선을 잠시 옮겨 본다.
+# **C1 완성본에는 LED1 사슬 하나만 그린다**(2026-09-28 사용자) — 출력이 Y 하나인 회로를
+# 손으로 따라 그려 제출하는 원도다. 네 사슬이면 출력이 넷인 회로로 읽힌다. LED2~4 사슬은
+# 보드에 남아 있고(C1 관측·C2 용) 절차 그림에는 그대로 그린다.
 
 E4_SLOTS = {'K1': ('right', 7), 'K2': ('left', 18), 'K3': ('left', 30), 'K4': ('right', 30)}
 _K1, _K2, _K3, _K4 = (E4_SLOTS[k][1] for k in ('K1', 'K2', 'K3', 'K4'))
@@ -138,8 +141,9 @@ def _frame(bb):
 
 
 def _chains(bb, tags, descs):
+    """`tags` 길이만큼 LED1 부터 사슬을 꽂는다 — C1 완성본은 LED1 하나다."""
     r = bb.cols['right']
-    for i, row in enumerate(_LED):
+    for i, row in enumerate(_LED[:len(tags)]):
         bb.led_chain(r['c'], row, tags[i], descs[i], block='right')
 
 
@@ -184,10 +188,11 @@ def _mux_draw(bb, stage):
         if on(s, e):
             bb.step_wire(pts, kind, desc, marker_at=marker)
 
-    # 완성 상태(8단계·완성본)에서도 LED2~4 는 급전하지 않는다 — 중간 노드를 보던 자리라
-    # 사슬만 남는다. R5ⓒ 가 그 애노드를 뜬 다리로 잡으므로 완성 상태도 `partial` 로 끄고,
-    # 그 셋 말고 뜬 것이 없는지는 `_verify_idle_leds()` 가 export 전에 따로 본다.
-    bb.partial = True
+    # 8단계에서도 LED2~4 는 급전하지 않는다 — 중간 노드를 보던 자리라 사슬만 남는다.
+    # R5ⓒ 가 그 애노드를 뜬 다리로 잡으므로 절차 그림은 `partial` 로 끄고, 8단계에서 그
+    # 셋 말고 뜬 것이 없는지는 `_verify_idle_leds()` 가 export 전에 따로 본다. 완성본은
+    # LED1 사슬 하나뿐이라 뜬 다리가 없어야 한다 — R5ⓒ 를 켠 채 그린다.
+    bb.partial = stage is not None
 
     # --- 칩 · 전원 · LED 사슬 (1단계에 한꺼번에) ---
     bb.draw_chip('74HC04', _K1, block='right')
@@ -213,7 +218,10 @@ def _mux_draw(bb, stage):
             descs.append(f'이 단계에는 {probe[i]} 를 본다 — 임시 급전선은 걷기 그림이 뽑는다')
         else:
             descs.append('지금은 급전하지 않는다')
-    _chains(bb, ('Y', 'L2', 'L3', 'L4'), descs)
+    if stage is None:
+        _chains(bb, ('Y',), descs[:1])
+    else:
+        _chains(bb, ('Y', 'L2', 'L3', 'L4'), descs)
 
     # --- 1단계: E 인버터 (U4 게이트 6, pin 13 → 12) ---
     if on(1):
@@ -308,7 +316,11 @@ def _mux_draw(bb, stage):
         bb.note(note)
     bb.note('E 인버터는 U4 게이트 6(pin 13 → 12)이다 — 교안 p8 의 게이트 1(pin 1 → 2) 대신 '
             '쓴다. U4 a쪽 리드가 8 을 넘지 않게 옮겼다(netlist M9). 논리는 같다.')
-    bb.note('LED 는 네 개다. 완성본은 LED1 = Y 만 급전한다 — LED2~4 는 중간 노드를 보던 자리다.')
+    if stage is None:
+        bb.note('출력은 Y 하나라 LED1 사슬만 그렸다. LED2~4 사슬은 중간 노드 관측과 실험 2-1 용으로 '
+                '보드에 남아 있지만 이 회로에 속하지 않는다 — 따라 그리지 않는다.')
+    else:
+        bb.note('LED 는 네 개다. 완성본은 LED1 = Y 만 급전한다 — LED2~4 는 중간 노드를 보던 자리다.')
     bb.note(_INPUT_NOTE)
 
 
@@ -410,7 +422,7 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None):
     bb.set_header(title, "74HC04 NOT 3 + 74HC20 4입력 NAND 5 · Y = E'·(S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3)",
                   submit=baseline is None and stage is None)
     _mux_draw(bb, stage)
-    if (stage is None or stage == _MUX_STAGES) and bb.ghost is None:
+    if stage == _MUX_STAGES and bb.ghost is None:
         _verify_idle_leds(bb)
     bb.export(output_path, max_row=61)
     return bb
