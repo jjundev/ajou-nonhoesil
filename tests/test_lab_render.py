@@ -2075,3 +2075,14 @@ class TestPinCheckHeading(unittest.TestCase):
         self.assertIn('class="unused"', html)
         self.assertNotIn("미사용 핀은 비어 있는가", html)
         self.assertIn("미사용 핀은 지시대로인가", html)
+
+
+class TestWalkNumberMatchesPicture(unittest.TestCase):
+    def test_걷기_번호_원은_그림처럼_빨갛게_채운다(self):
+        """결선도의 걷기 번호는 빨간 채움·흰 숫자다(`_marker_removed`, filled=True). 목록의
+        번호가 흰 바탕·점선이면 학생이 그림의 ①과 목록의 ①을 바로 짝짓지 못한다."""
+        # 공용 규칙(`.step .n, .probe .n, .removal .n`)이 아니라 걷기 전용 규칙을 본다
+        rule = re.search(r"^\s*\.removal \.n\s*\{[^}]*\}", TEMPLATE, re.M)
+        self.assertIsNotNone(rule)
+        self.assertIn("background: var(--pull)", rule.group(0))
+        self.assertIn("color: var(--paper)", rule.group(0))
