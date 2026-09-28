@@ -285,14 +285,14 @@ REMOVE = (160, 30, 30, 255)
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
 PROBE = (105, 105, 110, 255)
 
-# **입력** 신호 이름 배지의 색 — 이 색으로 채운 상자에 흰 ▶ 와 흰 글자. 네 배선색(빨강·
+# **입력** 신호 이름 배지의 색 — 이 색으로 채운 상자에 흰 화살촉(선이 뻗는 쪽)과 흰 글자. 네 배선색(빨강·
 # 파랑·검정·초록)과 출력 LED 의 빨강, 유지선 회색, 계측 회색 어느 것과도 겹치지 않는
 # 보라다. 2026-09-29 실험04 MUX: 입력 여섯이 흰 바탕 검정 글자라 흰 번호 원 41 개 사이에
-# 묻혔다. ▶ 는 글리프가 아니라 다각형이다 — 이모지·기호 글리프는 기계마다 □ 가 되고
+# 묻혔다. 화살촉(▶·◀)은 글리프가 아니라 다각형이다 — 이모지·기호 글리프는 기계마다 □ 가 되고
 # 손그림에 못 옮긴다
 INPUT = (110, 40, 160, 255)
-INPUT_TRI = 4.5   # ▶ 폭. 좌 바깥 여백(보드 테두리 149 ~ GND 레일 174, 25px)에 `D0` 배지가
-                  # 들어가는 상한이다 — 글자 15 + ▶ 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
+INPUT_TRI = 4.5   # 화살촉 폭. 좌 바깥 여백(보드 테두리 149 ~ GND 레일 174, 25px)에 `D0` 배지가
+                  # 들어가는 상한이다 — 글자 15 + 화살촉 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
 
 # 단계 하나가 꽂는 **새 신호선**의 상한. 2026-09-20 단계 세분화: 관측 노드 하나 =
 # 단계 하나이고 새 신호선은 셋 이하다 — 확인이 실패했을 때 용의자가 그 셋이다.
@@ -799,7 +799,7 @@ class BreadboardRenderer:
         self.draw.text((x, y), text, fill=text_col, font=font)
 
     def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
-                   filled=False):
+                   arrow=None):
         """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z.
 
         2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
@@ -811,24 +811,34 @@ class BreadboardRenderer:
         끝이다. `seg` 는 이 이름이 가리키는 배선의 `_segments` 번호 — 겹침 검사가
         그 선만 봐준다.
 
-        `filled=True` 는 입력 표지다 — `col` 로 채운 상자에 흰 ▶ 와 흰 글자. 좌우 여백을
-        1 로 줄여 ▶ 자리를 낸다(`INPUT_TRI`). 상자(겹침 검사 대상)는 ▶ 까지 덮는다.
+        `arrow='left'|'right'` 는 입력 표지다 — `col` 로 채운 상자에 흰 화살촉과 흰 글자.
+        화살촉은 점퍼선이 뻗는 쪽 끝에서 그쪽을 가리킨다(`D0▶`·`◀E`) — 중앙 여백의
+        배지는 이것으로 좌·우 어느 블록으로 들어가는지 갈린다. 좌우 여백을 1 로 줄여
+        화살촉 자리를 낸다(`INPUT_TRI`). 상자(겹침 검사 대상)는 화살촉까지 덮는다.
         """
+        assert arrow in (None, 'left', 'right'), f"arrow 는 None·'left'·'right' 다: {arrow!r}"
         font, pad = self.font_en_bold, 2
         b = self.draw.textbbox((0, 0), name, font=font)
         w, h = b[2] - b[0], b[3] - b[1]
-        hpad = 1 if filled else pad
-        tri, gap = (INPUT_TRI, 1) if filled else (0, 0)
+        hpad = 1 if arrow else pad
+        tri, gap = (INPUT_TRI, 1) if arrow else (0, 0)
         full = tri + gap + w
         left = x - full / 2 if align == 'center' else x + hpad
-        tx, ty = left + tri + gap - b[0], y - h / 2 - b[1]
+        lead = tri + gap if arrow == 'left' else 0     # 글자 앞에 오는 화살촉 몫
+        tx, ty = left + lead - b[0], y - h / 2 - b[1]
         box = self.draw.textbbox((tx, ty), name, font=font)
-        box = (box[0] - tri - gap - hpad, box[1] - pad, box[2] + hpad, box[3] + pad)
-        if filled:
+        box = (box[0] - lead - hpad, box[1] - pad,
+               box[2] + (tri + gap - lead) + hpad, box[3] + pad)
+        if arrow:
             self.draw.rectangle(box, fill=col, outline=col, width=1)
-            cy, x0 = (box[1] + box[3]) / 2, box[0] + hpad
-            self.draw.polygon([(x0, cy - h * 0.4), (x0 + tri, cy), (x0, cy + h * 0.4)],
-                              fill=(255, 255, 255, 255))
+            cy = (box[1] + box[3]) / 2
+            if arrow == 'right':
+                x0 = box[2] - hpad - tri
+                tip = [(x0, cy - h * 0.4), (x0 + tri, cy), (x0, cy + h * 0.4)]
+            else:
+                x0 = box[0] + hpad
+                tip = [(x0 + tri, cy - h * 0.4), (x0, cy), (x0 + tri, cy + h * 0.4)]
+            self.draw.polygon(tip, fill=(255, 255, 255, 255))
             self.draw.text((tx, ty), name, fill=(255, 255, 255, 255), font=font)
         else:
             self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
@@ -2057,7 +2067,8 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}",
          col=INPUT)
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
-    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, filled=True)
+    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1,
+                  arrow='right' if c[col] > x_rail else 'left')
 
 
 # ---------------------------------------------------------------------------
