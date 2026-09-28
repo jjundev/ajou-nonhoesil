@@ -35,9 +35,6 @@
   .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
   .stage h3 { margin: 0 0 1.5mm; }
   .stage img { break-after: avoid; }
-  /* 노드 기대값 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
-  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
-  .nodes { break-after: avoid; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
@@ -51,6 +48,14 @@
   .box { display: inline-block; width: 4mm; height: 4mm;
          border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
   td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+
+  /* 단계 진리표 — 그 단계 노드가 쓰는 입력만. 열 머리 둘째 줄은 노드 핀.
+     행마다 ☐ 는 `td.box` 다 — `.check` 는 기록표 행 수 불변식 전용이다.
+     단계 블록 안이라 기록표보다 조밀하게 찍는다. */
+  .stage-table { margin: 2mm 0 0; }
+  .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
+  .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+  .stage-table td.box { height: 6mm; }
 
   /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
      가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.

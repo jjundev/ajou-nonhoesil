@@ -614,6 +614,9 @@ class TestCircuitPages(unittest.TestCase):
             with self.subTest(circuit=circuit.id):
                 self.assertGreater(expected, 0)
                 box = page[page.index('class="unused"'):]
+                # 2026-09-28 부터 단계 블록이 핀 점검 뒤에 온다 — 단계의 ☐ 를 세지 않는다
+                if '<div class="stage">' in box:
+                    box = box[:box.index('<div class="stage">')]
                 self.assertEqual(box.count('<span class="box">'), expected)
 
     def test_회로별_경고가_그_회로_페이지에만_온다(self):
@@ -1562,18 +1565,26 @@ spec: ../체크리스트/명세.md
   - 미사용 입력핀: pin 9, 10 → 개방
 """
 
-_NODED_NETLIST = """---
+_STAGE_NODED_NETLIST = """---
 schema: lab-netlist/v2
 experiment: 1
 spec: ../체크리스트/명세.md
 ---
 
-# C1 · 노드 있는 회로
+# C1 · 단계와 노드가 있는 회로
 
 - kind: circuit
 - id: C1
 - item: E1.P1-1
 - tables: [T1]
+
+## 단계
+
+| 단계 | 그림 | 이 단계에서 | 확인 |
+|---|---|---|---|
+| 1 | 1단계.png | 앞단 AND 를 꽂는다 | 노드 `A·B` — 네 조합 |
+| 2걷기 | 2걷기.png | 걷기 ① 을 뽑는다 | 뽑은 선이 손에 있다 |
+| 2 | 2단계.png | 뒷단을 더한다 | 노드 `L2` — T1 8행 전부 |
 
 ## 노드
 
@@ -1583,17 +1594,6 @@ spec: ../체크리스트/명세.md
 | L2 | A·B·C | U1 pin 6 |
 
 - U1 = 74HC08 (quad 2-input AND)
-  - pin 14 → VCC(+5V)
-  - 미사용 입력핀: pin 9, 10 → 개방
-
-# C2 · 노드 없는 회로
-
-- kind: circuit
-- id: C2
-- item: E1.P1-2
-- tables: [T2]
-
-- U4 = 74HC32 (quad 2-input OR)
   - pin 14 → VCC(+5V)
   - 미사용 입력핀: pin 9, 10 → 개방
 """
@@ -1623,12 +1623,16 @@ class TestStages(unittest.TestCase):
 
     def test_단계_블록은_체크박스를_가진다(self):
         page = self.pages[1]
-        stage = page[page.index('class="stage"'):page.index('class="wirebox"')]
+        stage = page[page.index('class="stage"'):page.index('class="tblock"')]
         self.assertEqual(stage.count('<span class="box">'), 2)
+        self.assertNotIn('class="stage-table"', stage)   # 옛 단계 표는 노드를 안 가리킨다
 
-    def test_단계_블록이_결선도_상자_앞에_온다(self):
+    def test_결선도_상자와_핀_점검이_단계_앞에_온다(self):
+        """2026-09-28: 완성본을 먼저 보고 단계를 밟는다. 기록표는 마지막 단계 바로 뒤다."""
         page = self.pages[1]
-        self.assertLess(page.index('class="stage"'), page.index('class="wirebox"'))
+        self.assertLess(page.index('class="wirebox"'), page.index('class="unused"'))
+        self.assertLess(page.index('class="unused"'), page.index('class="stage"'))
+        self.assertLess(page.rindex('class="stage"'), page.index('class="tblock"'))
 
     def test_단계가_있으면_완성본에_캡션이_붙는다(self):
         self.assertIn("완성본 — 손그림 원도", self.pages[1])
@@ -1723,8 +1727,10 @@ class TestStages(unittest.TestCase):
         self.assertNotIn("전부 GND", power)
 
 
-class TestNodeTable(unittest.TestCase):
-    """중간 노드 기대값 표 — 기록표 바로 위, `.check` 없이. 설계 #6."""
+class TestStageTable(unittest.TestCase):
+    """단계 진리표 — 단계 블록 안, 노드 입력만, 행마다 ☐(`td.box`), `.check` 없음.
+    마지막 관측 단계는 표 대신 기록표가 바로 뒤에 온다.
+    설계: docs/plans/2026-09-28-단계별-진리표-설계.md"""
 
     def _render(self, text):
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
@@ -1733,45 +1739,50 @@ class TestNodeTable(unittest.TestCase):
         html = render_checklist(spec, parse_netlist(path), TEMPLATE)
         return html, html.split('<section class="circuit">')[1:]
 
-    def test_노드_표가_기록표_앞에_온다(self):
-        _, pages = self._render(_NODED_NETLIST)
-        page = pages[0]
-        self.assertIn("중간 노드 기대값", page)
-        self.assertLess(page.index("중간 노드 기대값"), page.index("<h3>T1 ·"))
-        self.assertLess(page.index('class="wirebox"'), page.index("중간 노드 기대값"))
+    def setUp(self):
+        self.html, pages = self._render(_STAGE_NODED_NETLIST)
+        self.page = pages[0]
 
-    def test_열_머리에_노드_이름과_핀이_있다(self):
-        _, pages = self._render(_NODED_NETLIST)
-        self.assertIn("<th>A·B<br><small>U1 pin 3</small></th>", pages[0])
-        self.assertIn("<th>L2<br><small>U1 pin 6</small></th>", pages[0])
+    def _block(self, head):
+        """`<h3>{head}</h3>` 로 시작하는 단계 블록 하나 — 블록 안에 div 가 없다."""
+        start = self.page.index(f"<h3>{head}</h3>")
+        return self.page[start:self.page.index("</div>", start)]
 
-    def test_행_값이_식대로다(self):
-        _, pages = self._render(_NODED_NETLIST)
-        block = pages[0][pages[0].index("중간 노드 기대값"):pages[0].index("<h3>T1 ·")]
-        self.assertIn("<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>", block)
-        self.assertIn("<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>", block)
-        self.assertEqual(block.count("<tr>"), 9)          # 머리 1 + 8행
+    def test_관측_단계에_단계_진리표가_붙는다(self):
+        self.assertIn('class="stage-table"', self._block("단계 1"))
 
-    def test_탐색_안내_한_줄이_붙는다(self):
-        _, pages = self._render(_NODED_NETLIST)
-        self.assertIn("입력 쪽 노드부터", pages[0])
+    def test_입력_열은_노드가_쓰는_입력만이다(self):
+        block = self._block("단계 1")
+        self.assertIn("<th>A</th><th>B</th>", block)
+        self.assertNotIn("<th>C</th>", block)
+        self.assertIn("<th>A·B예상<br><small>U1 pin 3</small></th>", block)
+
+    def test_행은_겹치지_않게_줄이고_행마다_확인_칸이_있다(self):
+        block = self._block("단계 1")
+        self.assertEqual(block.count("<tr>"), 5)          # 머리 1 + AB 네 조합
+        self.assertIn('<tr><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>', block)
+        self.assertIn('<tr><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>', block)
+
+    def test_걷기_단계와_마지막_단계에는_표가_없다(self):
+        self.assertEqual(self.page.count('class="stage-table"'), 1)
+        self.assertNotIn('class="stage-table"', self._block("단계 2 · 걷기"))
+        self.assertNotIn('class="stage-table"', self._block("단계 2"))
+
+    def test_기록표가_마지막_단계_바로_뒤에_온다(self):
+        self.assertLess(self.page.index('class="wirebox"'), self.page.index('class="stage"'))
+        self.assertLess(self.page.rindex('class="stage"'), self.page.index("<h3>T1 ·"))
 
     def test_check_셀_개수는_변하지_않는다(self):
-        html, _ = self._render(_NODED_NETLIST)
-        self.assertEqual(html.count('class="check"'), 16)   # T1 8행 + T2 8행
+        self.assertEqual(self.html.count('class="check"'), 8)   # T1 8행
 
-    def test_노드_없는_회로에는_표가_없다(self):
-        _, pages = self._render(_NODED_NETLIST)
-        self.assertNotIn("중간 노드 기대값", pages[1])
-
-    def test_노드_표가_참조표로_두_번_찍히지_않는다(self):
-        html, _ = self._render(_NODED_NETLIST)
-        self.assertNotIn("<th>식</th>", html)
+    def test_중간_노드_기대값_표는_없다(self):
+        self.assertNotIn("중간 노드 기대값", self.html)
+        self.assertNotIn("<th>식</th>", self.html)
 
     def test_계산할_수_없으면_안내_한_줄이고_죽지_않는다(self):
-        _, pages = self._render(_NODED_NETLIST.replace("| A·B | A·B |", "| A·B | A·Q |"))
-        self.assertIn("노드 표를 계산할 수 없다", pages[0])
-        self.assertNotIn("중간 노드 기대값", pages[0])
+        _, pages = self._render(_STAGE_NODED_NETLIST.replace("| A·B | A·B |", "| A·B | A·Q |"))
+        self.assertIn("단계 진리표를 계산할 수 없다", pages[0])
+        self.assertNotIn('class="stage-table"', pages[0])
 
 
 class StageNodeLine(unittest.TestCase):

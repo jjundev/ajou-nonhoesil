@@ -700,17 +700,21 @@ def _diagram_html(section, netlist) -> str:
             'object-position:top">')
 
 
-def _stage_html(stage, netlist, section) -> str:
-    """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 노드, 확인 칸.
+def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
+    """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 노드, 확인 칸, 단계 진리표.
 
     그림이 없으면 빈 브레드보드를 넣지 않는다 — 단계 그림은 회색 기준선이 요점이라
     격자로 대신할 수 없다. 부재는 validate 가 warn 으로 알렸다.
 
     `확인 노드` 줄은 그 단계에서 볼 노드의 이름과 **핀**이다. 핀은 `## 노드` 표에서
-    조회한다 — 단계 표에 핀을 적게 하면 두 자리가 표류한다. 기대값은 같은 쪽 아래
-    중간 노드 표가 전 행 찍으므로 여기 다시 싣지 않는다.
+    조회한다 — 단계 표에 핀을 적게 하면 두 자리가 표류한다.
 
-    걷기 행(`<k>걷기`)에는 `확인 노드` 줄이 없다 — 걷기만 하는 장이라 관측할
+    단계 진리표는 그 노드의 기대값을 **이 블록 안에** 싣는다 — 2026-09-28 전에는 회로 끝의
+    중간 노드 표에만 있어 학생이 단계마다 뒤로 넘겨 보고 돌아와야 했다. `spec` 이 없으면
+    (단위 테스트의 세 인자 호출) 싣지 않는다. `last` 인 단계는 싣지 않는다 — 바로 뒤에
+    기록표가 오고 그것이 그 단계의 표다.
+
+    걷기 행(`<k>걷기`)에는 `확인 노드` 줄도 단계 진리표도 없다 — 걷기만 하는 장이라 관측할
     출력이 없고, 파서가 `node` 를 `None` 으로 낸다.
     """
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
@@ -724,13 +728,42 @@ def _stage_html(stage, netlist, section) -> str:
         pin = next((n["pin"] for n in section.nodes if n["name"] == stage["node"]), "")
         tail = f" <small>({_esc(pin)})</small>" if pin else ""
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
+    table = ""
+    if spec is not None and stage.get("node") and not last:
+        table = _stage_table_html(spec, section, stage["node"])
     # 걷기 행은 `단계 2걷기` 가 아니라 `단계 2 · 걷기` 로 찍는다 — 인쇄본에서
     # "2단계 머리의 걷기" 로 읽혀야 한다. 판정은 파서의 `walk` 키다.
     head = (f"단계 {_esc(str(stage['walk_of']))} · 걷기" if stage.get("walk")
             else f"단계 {_esc(stage['n'])}")
     return (f'<div class="stage"><h3>{head}</h3>{img}'
             f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{node}"
-            f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p></div>')
+            f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>'
+            f"{table}</div>")
+
+
+def _stage_table_html(spec, section, node_name) -> str:
+    """단계 진리표 — 입력은 그 노드 식에 나오는 것만, 열 머리 둘째 줄은 노드 핀.
+
+    확인 칸은 `td.box` 다 — `.check` 개수는 명세 기록표 행 수와 대조되는 불변식이다
+    (`test_check_cells_exist_for_every_truth_table_row`). 표를 div 로 감싸지 않는다 —
+    단계 블록의 `</div>` 가 블록 끝이어야 테스트와 인쇄 묶음(`break-inside`)이 맞는다.
+
+    계산 실패는 validate 가 먼저 error 로 막지만, 렌더는 죽지 않고 안내 한 줄을 낸다.
+    """
+    try:
+        st = node_calc.stage_table(section, spec, node_name)
+    except ValueError as exc:
+        return f"<p class='src'>단계 진리표를 계산할 수 없다: {_esc(exc)}</p>"
+    name, pin = st.node
+    head = ("<tr>" + "".join(f"<th>{_esc(n)}</th>" for n in st.inputs)
+            + f"<th>{_esc(_plain(name))}예상<br><small>{_esc(pin)}</small></th>"
+            + "<th>확인</th></tr>")
+    body = ["<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
+            + f"<td>{_esc(node_calc.format_bit(bit, st.encoding))}</td>"
+            + '<td class="box"></td></tr>'
+            for cells, bit in st.rows]
+    return "\n".join(['<table class="stage-table">', "<thead>", head, "</thead>",
+                      "<tbody>", *body, "</tbody>", "</table>"])
 
 
 _MISMATCH = {
@@ -742,43 +775,6 @@ _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: _________________
 
 
 _MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
-
-
-_NODE_HINT = ("틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 "
-              "고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트")
-
-
-def _node_table_html(spec, section) -> str:
-    """중간 노드 기대값 — 프로브로 찍을 핀. 기록표 바로 위에 온다.
-
-    `.check` 셀을 두지 않는다 — `.check` 개수는 명세의 truth-table 행 수와 대조되는
-    불변식이다(`test_check_cells_exist_for_every_truth_table_row`). 이 표는 채우는
-    표가 아니라 읽는 표다. 2026-09-20 회고: 다 꽂고 켰을 때 틀리면 용의자가 선
-    전부였다 — 노드 하나를 찍을 때마다 절반으로 준다.
-
-    계산 실패는 validate 가 먼저 error 로 막지만, 렌더는 죽지 않고 안내 한 줄을 낸다.
-    """
-    if not section.nodes:
-        return ""
-    try:
-        nt = node_calc.compute(section, spec)
-    except ValueError as exc:
-        return f"<p class='src'>노드 표를 계산할 수 없다: {_esc(exc)}</p>"
-    out = ['<div class="tblock nodes">',
-           "<h3>중간 노드 기대값 — 프로브로 찍을 핀</h3>",
-           f"<p class='src'>{_esc(_NODE_HINT)}</p>",
-           "<table>", "<thead>", "<tr>"]
-    out += [f"<th>{_esc(name)}</th>" for name in nt.inputs]
-    out += [f"<th>{_esc(_plain(name))}<br><small>{_esc(pin)}</small></th>"
-            for name, pin in nt.nodes]
-    out += ["</tr>", "</thead>", "<tbody>"]
-    for cells, bits in nt.rows:
-        vals = ([node_calc.format_bit(b, nt.encoding) for b in bits] if bits is not None
-                else ["—"] * len(nt.nodes))
-        out.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
-                   + "".join(f"<td>{_esc(v)}</td>" for v in vals) + "</tr>")
-    out += ["</tbody>", "</table>", "</div>"]
-    return "\n".join(out)
 
 
 def _mismatch_html(kind: str, table_id: str) -> str:
@@ -852,8 +848,10 @@ def circuit_pages(spec, netlist) -> str:
     강의노트 회로도는 한 항목을 가리키는 회로가 여럿이어도 첫 회로에만 싣는다.
 
     면 안의 순서는 작업 순서다 — 칩 교체 → 강의노트 회로도 → 유의사항 → 결선도
-    → 배선 → 미사용핀 → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
+    → 배선 → 미사용핀 → 단계(단계 진리표) → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
     배선 앞으로 옮겼다 — 그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
+    단계는 완성본·배선 **뒤**다(2026-09-28) — 전체 모습을 먼저 보고 단계를 밟는다. 측정표는
+    마지막 단계 바로 뒤라, 마지막 관측 단계는 자기 단계 진리표 대신 기록표를 본다.
     미사용핀 상자는 칩별로 낸다 — 회로 단위로 합치면 C4 처럼 같은 핀 번호가
     칩마다 정반대 지시를 받을 때 어느 칩 것인지 사라진다.
     """
@@ -878,8 +876,6 @@ def circuit_pages(spec, netlist) -> str:
                 out.append(schematic)
         if prose_before.strip():
             out.append(_blocks(prose_before))
-        for stage in section.stages:
-            out.append(_stage_html(stage, netlist, section))
         out.append('<div class="wirebox">')
         if section.stages:
             out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
@@ -914,9 +910,11 @@ def circuit_pages(spec, netlist) -> str:
         if prose_after.strip():
             # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
             out.append(_blocks(prose_after))
-        node_html = _node_table_html(spec, section)
-        if node_html:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
-            out.append(node_html)
+        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 바로 뒤 기록표가 그 표다.
+        observed = [s for s in section.stages if s.get("node")]
+        last = observed[-1] if observed else None
+        for stage in section.stages:
+            out.append(_stage_html(stage, netlist, section, spec, last=stage is last))
         out.append(_circuit_tables(spec, section))
         out.append("</section>")
         previous = section
