@@ -972,6 +972,43 @@ class TestPrintConstraints(unittest.TestCase):
         self.assertIsNotNone(rule, "`.wirebox .chip` 규칙이 없다")
         self.assertIn("break-inside: avoid", rule.group(0))
 
+    def test_단계_블록은_통째로_묶지_않는다(self):
+        """2026-09-28: 결선도 그림이 한 쪽보다 길어 `.stage` 를 통짜로 묶으면 제목만 남은
+        빈 쪽이 단계마다 생겼다(실험04 main 56쪽 중 14쪽). 제목은 그림에 붙어만 있으면 된다."""
+        rule = re.search(r"\.stage\s*\{[^}]*\}", TEMPLATE, re.S)
+        self.assertIsNotNone(rule, "`.stage` 규칙이 없다")
+        self.assertNotIn("break-inside: avoid", rule.group(0))
+        self.assertRegex(TEMPLATE, r"\.stage h3\s*\{[^}]*break-after: avoid")
+
+    def test_가장_긴_결선도도_한_쪽에_폭_그대로_들어간다(self):
+        """태블릿으로 보는 PDF 라 쪽 높이는 자유다(2026-09-28 사용자). 그림이 쪽보다 길면
+        제목과 갈라지고 아래가 잘린다 — 커밋된 결선도 중 가장 긴 것으로 잰다."""
+        from PIL import Image
+        m = re.search(r"@page\s*\{\s*size:\s*(\d+)mm\s+(\d+)mm;\s*margin:\s*(\d+)mm\s+(\d+)mm",
+                      TEMPLATE)
+        self.assertIsNotNone(m, "`@page { size: <폭>mm <높이>mm; margin: …` 꼴이 아니다")
+        w, h, mv, mh = map(int, m.groups())
+        ratios = []
+        for png in (ROOT / "보고서").glob("실험*/결선도/*.png"):
+            with Image.open(png) as im:
+                ratios.append(im.size[1] / im.size[0])
+        self.assertTrue(ratios)
+        width = w - 2 * mh - 8        # 단계 블록 테두리·안쪽 여백
+        self.assertGreaterEqual(h - 2 * mv - 15, width * max(ratios))   # 15mm = 제목 줄
+
+    def test_완성본_캡션이_그림과_갈라지지_않는다(self):
+        """2026-09-28 실험04 5쪽: `완성본 — 손그림 원도` 캡션만 쪽 끝에 남고 그림이 넘어갔다."""
+        self.assertRegex(TEMPLATE, r"\.wirebox > p\.src:first-child\s*\{[^}]*break-after: avoid")
+
+    def test_그림은_쪽보다_길어지지_않는다(self):
+        """새 주차의 그림이 더 길어도 잘리지 않고 줄어든다 — 비율은 유지한다."""
+        for sel in (r"\.stage img", r"\.wirebox img"):
+            with self.subTest(sel=sel):
+                rule = re.search(sel + r"\s*\{[^}]*\}", TEMPLATE, re.S)
+                self.assertIsNotNone(rule)
+                self.assertIn("max-height", rule.group(0))
+                self.assertIn("object-fit: contain", rule.group(0))
+
     def test_플레이스홀더_네_개가_있다(self):
         for token in ("{{TITLE}}", "{{COMMON}}", "{{CIRCUITS}}", "{{CLOSING}}"):
             with self.subTest(token=token):

@@ -1,5 +1,8 @@
 <style>
-  @page { size: A4; margin: 12mm 10mm; }
+  /* 태블릿으로 보는 PDF 다 — 인쇄하지 않는다(2026-09-28 사용자). 폭은 A4 그대로 두고 높이만
+     늘렸다: 가장 긴 결선도(세로/가로 2.0)가 폭 100% 로 제목과 한 쪽에 들어가야 한다.
+     A4 297mm 에서는 그림이 쪽보다 길어 제목만 남은 빈 쪽이 단계마다 생기고 그림 아래가 잘렸다. */
+  @page { size: 210mm 420mm; margin: 12mm 10mm; }
   body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
 
   /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
@@ -25,16 +28,20 @@
      칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
   .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
                    break-inside: avoid; }
-  .wirebox img { break-after: avoid; }
+  .wirebox img { break-after: avoid; max-height: 370mm; object-fit: contain; }
+  /* `완성본 — 손그림 원도` 캡션만 쪽 끝에 남지 않게 */
+  .wirebox > p.src:first-child { break-after: avoid; }
   .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
   .wirebox ol { margin: 0; padding-left: 6mm; }
   .wirebox li { font-size: 11pt; line-height: 1.6; }
 
   /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
      회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
-  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
-  .stage h3 { margin: 0 0 1.5mm; }
-  .stage img { break-after: avoid; }
+  /* 블록을 통째로 묶지 않는다 — 그림+글+단계 진리표는 한 쪽을 넘을 수 있고, 묶으면 제목만
+     남은 빈 쪽이 생긴다. 제목은 그림에, 그림은 확인 줄에 붙어 있게만 한다. */
+  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; }
+  .stage h3 { margin: 0 0 1.5mm; break-after: avoid; }
+  .stage img { display: block; break-after: avoid; max-height: 370mm; object-fit: contain; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
