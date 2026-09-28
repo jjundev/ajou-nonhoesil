@@ -26,7 +26,9 @@
   }
 
   body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt;
-         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0; }
+         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0 1px 0 0; }
+  /* 오른쪽 1px: 크롬 헤드리스는 쪽 폭을 209.889mm 로 잡아 인쇄 영역을 레이아웃(190mm)보다
+     0.4px 좁게 자른다 — 폭 100% 상자의 오른쪽 테두리가 잘렸다(2026-09-29 실험04 칩 상자). */
   h1 { font-size: 17pt; font-weight: 800; letter-spacing: -0.01em;
        margin: 0 0 3mm; padding-bottom: 2mm; border-bottom: 2px solid var(--ink); }
   h2 { font-size: 13pt; font-weight: 800; margin: 4mm 0 2mm; }
@@ -652,27 +654,27 @@
 </section></section>
 <section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼나요? 사진만 찍었다면 시험한 행마다 사진이 있나요? (못 한 표에는 진행하지 않았음 이라고 적어요)</li><li><span class="box"></span>표마다 사진을 지시대로 찍었나요? 진리표는 시험한 행마다(불일치 행은 꼭), 스텝표는 스텝마다, 파형은 화면마다예요</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가요? (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했나요?</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었나요?</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었나요? 실험 폴더에 .md 로 둔 자유 메모 파일도 괜찮아요</li><li><span class="box"></span>부품을 반납했나요?</li></ul></section>
 <style id="fit-pages">
-@page fit-0 { size: 210mm 597mm; margin: 12mm 10mm; }
+@page fit-0 { size: 210mm 596mm; margin: 12mm 10mm; }
 [data-fit="0"] { page: fit-0; }
-@page fit-1 { size: 210mm 369mm; margin: 12mm 10mm; }
+@page fit-1 { size: 210mm 368mm; margin: 12mm 10mm; }
 [data-fit="1"] { page: fit-1; }
-@page fit-2 { size: 210mm 369mm; margin: 12mm 10mm; }
+@page fit-2 { size: 210mm 368mm; margin: 12mm 10mm; }
 [data-fit="2"] { page: fit-2; }
-@page fit-3 { size: 210mm 469mm; margin: 12mm 10mm; }
+@page fit-3 { size: 210mm 468mm; margin: 12mm 10mm; }
 [data-fit="3"] { page: fit-3; }
-@page fit-4 { size: 210mm 363mm; margin: 12mm 10mm; }
+@page fit-4 { size: 210mm 362mm; margin: 12mm 10mm; }
 [data-fit="4"] { page: fit-4; }
-@page fit-5 { size: 210mm 469mm; margin: 12mm 10mm; }
+@page fit-5 { size: 210mm 468mm; margin: 12mm 10mm; }
 [data-fit="5"] { page: fit-5; }
-@page fit-6 { size: 210mm 469mm; margin: 12mm 10mm; }
+@page fit-6 { size: 210mm 468mm; margin: 12mm 10mm; }
 [data-fit="6"] { page: fit-6; }
-@page fit-7 { size: 210mm 469mm; margin: 12mm 10mm; }
+@page fit-7 { size: 210mm 468mm; margin: 12mm 10mm; }
 [data-fit="7"] { page: fit-7; }
 @page fit-8 { size: 210mm 454mm; margin: 12mm 10mm; }
 [data-fit="8"] { page: fit-8; }
 @page fit-9 { size: 210mm 414mm; margin: 12mm 10mm; }
 [data-fit="9"] { page: fit-9; }
-@page fit-10 { size: 210mm 637mm; margin: 12mm 10mm; }
+@page fit-10 { size: 210mm 636mm; margin: 12mm 10mm; }
 [data-fit="10"] { page: fit-10; }
 @page fit-11 { size: 210mm 434mm; margin: 12mm 10mm; }
 [data-fit="11"] { page: fit-11; }
