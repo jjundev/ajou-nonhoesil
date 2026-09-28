@@ -45,7 +45,10 @@ description: Generate accurate, publication-quality breadboard circuit wiring di
 좌표 자체의 회귀는 못 잡으므로, `BreadboardRenderer.verify()` 가 내보내기
 직전에 **그림대로 꽂을 수 있는지**를 좌표로 확인한다 (§5).
 
-- 캔버스 원본 크기: 998 x 1345 px
+- 캔버스 원본 크기: 998 x 1345 px. **아래 좌표는 전부 이 논리 좌표다.** 출력 PNG 는
+  `SCALE`(=2) 배(폭 1996px)다 — 엔진이 그리는 순간에만 곱한다(`_ScaledDraw`). 격자는
+  NEAREST 로 늘리고 선·글자는 2배로 새로 그린다(2026-09-28, 태블릿에서 글자가 작았다).
+  PNG 픽셀을 읽는 테스트는 논리 좌표에 `SCALE` 을 곱해 읽는다.
 - **행**: 63행. `y = 272.0 + (r-1) * 16.345` (1행 y=272, 63행 y=1285)
 - **열**:
   - 좌측 블록: GND 레일 174 · VCC 레일 190 · a~e `[239, 256, 272, 288, 305]`

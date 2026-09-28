@@ -245,20 +245,22 @@ class Baseline(unittest.TestCase):
             p = os.path.join(d, 'g.png')
             bb.export(p, max_row=31)
             im = Image.open(p).convert('RGB')
-            ys = range(bb.r_y(13), bb.r_y(24))
-            self.assertTrue(any(im.getpixel((c['a'], y)) == self.mod.REMOVE[:3] for y in ys))
+            k = self.mod.SCALE     # PNG 는 SCALE 배 — 논리 좌표에 곱해 읽는다
+            ys = range(bb.r_y(13) * k, bb.r_y(24) * k)
+            self.assertTrue(any(im.getpixel((c['a'] * k, y)) == self.mod.REMOVE[:3] for y in ys))
         plain = self.first()
         with tempfile.TemporaryDirectory() as d:
             p = os.path.join(d, 'p.png')
             plain.partial = True
             plain.export(p, max_row=31)
             im = Image.open(p).convert('RGB')
-            self.assertFalse(any(im.getpixel((c['a'], y)) == self.mod.REMOVE[:3] for y in ys))
+            self.assertFalse(any(im.getpixel((c['a'] * k, y)) == self.mod.REMOVE[:3] for y in ys))
 
     def test_걷기_번호_원_안에_흰_숫자가_찍힌다(self):
         """빨간 채움 원에 숫자까지 빨갛게 찍히면 번호가 안 보인다 — 빈 빨간 점이 된다."""
         bb, _ = self.ghost_board()
-        x0, y0, x1, y1 = bb.marker_boxes[0]
+        k = self.mod.SCALE     # overlay 는 SCALE 배 캔버스다 — 상자(논리 좌표)에 곱한다
+        x0, y0, x1, y1 = (v * k for v in bb.marker_boxes[0])
         im = Image.alpha_composite(
             Image.new('RGBA', bb.overlay.size, (255, 255, 255, 255)), bb.overlay).convert('RGB')
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
@@ -266,7 +268,7 @@ class Baseline(unittest.TestCase):
         inside = [im.getpixel((x, y))
                   for x in range(int(x0), int(x1) + 1)
                   for y in range(int(y0), int(y1) + 1)
-                  if (x - cx) ** 2 + (y - cy) ** 2 <= 25]
+                  if (x - cx) ** 2 + (y - cy) ** 2 <= 25 * k * k]
         self.assertIn(self.mod.REMOVE[:3], inside)      # 빨갛게 채워졌다
         # 9px 글꼴이라 획이 안티에일리어싱으로 뭉개져 순백(255,255,255)까지는 안 간다.
         # 숫자를 빨갛게 찍으면 원 안이 전부 (160,30,30) 이라 밝은 획이 하나도 없다
