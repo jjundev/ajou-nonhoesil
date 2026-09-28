@@ -616,9 +616,6 @@ class TestCircuitPages(unittest.TestCase):
             with self.subTest(circuit=circuit.id):
                 self.assertGreater(expected, 0)
                 box = page[page.index('class="unused"'):]
-                # 2026-09-28 부터 단계 블록이 핀 점검 뒤에 온다 — 단계의 ☐ 를 세지 않는다
-                if '<div class="stage">' in box:
-                    box = box[:box.index('<div class="stage">')]
                 self.assertEqual(box.count('<span class="box">'), expected)
 
     def test_회로별_경고가_그_회로_페이지에만_온다(self):
@@ -1672,16 +1669,17 @@ class TestStages(unittest.TestCase):
 
     def test_단계_블록은_체크박스를_가진다(self):
         page = self.pages[1]
-        stage = page[page.index('class="stage"'):page.index('class="tblock"')]
+        stage = page[page.index('class="stage"'):page.index('class="wirebox"')]
         self.assertEqual(stage.count('<span class="box">'), 2)
         self.assertNotIn('class="stage-table"', stage)   # 옛 단계 표는 노드를 안 가리킨다
 
-    def test_결선도_상자와_핀_점검이_단계_앞에_온다(self):
-        """2026-09-28: 완성본을 먼저 보고 단계를 밟는다. 기록표는 마지막 단계 바로 뒤다."""
+    def test_결선도_상자와_핀_점검이_단계_뒤에_온다(self):
+        """2026-09-29 사용자: 단계를 다 밟은 뒤 완성본으로 대조한다(09-28 의 반대).
+        기록표는 핀 점검 뒤다."""
         page = self.pages[1]
+        self.assertLess(page.rindex('class="stage"'), page.index('class="wirebox"'))
         self.assertLess(page.index('class="wirebox"'), page.index('class="unused"'))
-        self.assertLess(page.index('class="unused"'), page.index('class="stage"'))
-        self.assertLess(page.rindex('class="stage"'), page.index('class="tblock"'))
+        self.assertLess(page.index('class="unused"'), page.index('class="tblock"'))
 
     def test_단계가_있으면_완성본에_캡션이_붙는다(self):
         self.assertIn("완성본 — 손그림 원도", self.pages[1])
@@ -1837,9 +1835,9 @@ class TestStageTable(unittest.TestCase):
         self.assertNotIn('class="stage-table"', self._block("2단계 전 · 걷기"))
         self.assertNotIn('class="stage-table"', self._block("단계 2"))
 
-    def test_기록표가_마지막_단계_바로_뒤에_온다(self):
-        self.assertLess(self.page.index('class="wirebox"'), self.page.index('class="stage"'))
-        self.assertLess(self.page.rindex('class="stage"'), self.page.index("<h3>T1 ·"))
+    def test_기록표가_마지막_단계와_완성본_뒤에_온다(self):
+        self.assertLess(self.page.rindex('class="stage"'), self.page.index('class="wirebox"'))
+        self.assertLess(self.page.index('class="wirebox"'), self.page.index("<h3>T1 ·"))
 
     def test_check_셀_개수는_변하지_않는다(self):
         self.assertEqual(self.html.count('class="check"'), 8)   # T1 8행
