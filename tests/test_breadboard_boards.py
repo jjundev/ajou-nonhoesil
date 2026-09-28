@@ -357,6 +357,15 @@ class CommittedPngs(unittest.TestCase):
                 stale = sorted(f for f, s in made.items() if mod.read_stamp(folder / f) != s)
                 self.assertEqual(stale, [], "코드와 어긋난 PNG — "
                                  f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
+                # 체크리스트의 결선 순서는 사이드카에서만 온다 — PNG 도장이 맞아도 JSON 이 옛것이면
+                # 틀린 순서가 인쇄된다(2026-09-28 최종 리뷰: 병합 충돌·이름 바꾸기)
+                sides = {f[:-len(".png")] + ".json" for f in made}
+                self.assertEqual({p.name for p in folder.glob("*.json")}, sides,
+                                 "결선도 폴더의 JSON 이 PNG 와 쌍이 아니다")
+                stale = sorted(f for f in sides
+                               if (folder / f).read_bytes() != (Path(d) / f).read_bytes())
+                self.assertEqual(stale, [], "코드와 어긋난 사이드카 — "
+                                 f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
 
 
 class TestE4MuxFinalOneLed(unittest.TestCase):

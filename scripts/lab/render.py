@@ -998,8 +998,11 @@ def circuit_pages(spec, netlist) -> str:
             out.append(_blocks(prose_before))
         out.append('<div class="wirebox">')
         if section.stages:
-            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음 · 학번·이름·날짜 자필)</p>")
+            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
         out.append(_diagram_html(section, netlist))
+        # 옛 PNG 머리에 있던 제출 안내 — 그림에 글자를 굽지 않게 되어(2026-09-28) 여기로 온다.
+        # 단계 유무와 상관없이 회로마다 한 번: 손그림은 완성본마다 한 장이다
+        out.append("<p class='src submit'>손그림은 이 그림을 따라 그리고 학번·이름·날짜를 자필로 적는다</p>")
         for node in nodes:
             if node["type"] == "prose":
                 out.append(_blocks(node["text"]))
