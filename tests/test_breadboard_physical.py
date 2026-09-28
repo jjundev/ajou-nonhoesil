@@ -322,7 +322,7 @@ class PhysicalRules(unittest.TestCase):
         self.assertGreater(box[0], c['mid_vcc'])
         self.assertLess(box[2], bb.cols['right']['mid_gnd'])
         # 순서표 문구는 a 쪽과 같은 틀이다 — 도장 규약을 f 쪽에서도 지킨다
-        self.assertEqual(desc, '입력 B -> 74HC08 pin 10 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+        self.assertEqual(desc, '입력 B -> 74HC08 pin 10 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요')
 
     def test_우_블록_f쪽_입력은_우_바깥_GND_레일에서_i열로_들어간다(self):
         bb = self.board()
@@ -361,7 +361,7 @@ class PhysicalRules(unittest.TestCase):
         kind, pts, desc = bb._segments[-1]
         self.assertEqual(bb.addr(*pts[0]), '좌 GND레일10행')
         self.assertEqual(bb.addr(*pts[-1]), '좌 b10')
-        self.assertEqual(desc, '입력 C -> 74HC08 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다')
+        self.assertEqual(desc, '입력 C -> 74HC08 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요')
 
     def test_f쪽_입력_레일도_레일_연결성_검사에_든다(self):
         """`kind='sig'` 라 `step_wire` 가 `touch_rail` 을 안 부른다 — 입력이 매달린

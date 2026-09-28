@@ -174,7 +174,7 @@ def _capture_html(table, spec_dir=None) -> str:
             out.append(f'<img class="expected-fig" src="{_esc(table.figure)}">'
                        f"<p class='src'>예상 그림: {_esc(name)}</p>")
         else:
-            out.append(f"<p class='src'>예상 그림이 아직 없다: {_esc(name)}</p>")
+            out.append(f"<p class='src'>예상 그림이 아직 없어요: {_esc(name)}</p>")
     out.append('<div class="sketch"></div>')
     out.append(f"<p class='readout'>{_esc(_READOUT)}</p>")
     out.append(f"<p class='readout'>{_esc(_CAPTION)}</p>")
@@ -276,25 +276,25 @@ def _md_table_html(table, lead_checkbox: bool = False) -> str:
 
 
 LEGEND = (
-    "진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. "
-    "표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.",
-    "스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). "
-    "확인 칸이 없다: 대조할 예상값이 없는 표다.",
-    "파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. "
-    "조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.",
+    "진리표 — 확인 칸에는 맞으면 ✓, 다르면 실제로 본 값을 적어요. 안 본 행은 비워 둬요. "
+    "표를 통째로 못 했으면 그 표 아래에 진행하지 않았음 이라고 적어요.",
+    "스텝표 — 회색 칸에 읽은 값을 단위와 함께 적어요 (예: 3.2 V, 47 Ω). "
+    "대조할 예상값이 없는 표라서 확인 칸은 없어요.",
+    "파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채워요. "
+    "조건을 안 적으면 결과보고서에서 화면의 칸을 볼트로 바꿀 수 없어요.",
 )
 
 
 # 공통면 물리 주의. 셋째 줄만 주차에 따라 갈린다 — 배너 원칙("모든 주차에서 참인
 # 것만")대로 걷기 보드가 없는 주차에서 걷기 그림을 가리키지 않는다.
 _CAUTION = (
-    "선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)",
-    "칩을 꽂고 뽑을 때는 전원을 끈다",
+    "선은 클립에 물릴 깊이까지만 꽂아요. 끝까지 밀어 넣으면 접촉이 끊길 수 있어요 (실험03 GND 선)",
+    "칩을 꽂거나 뺄 때는 전원부터 꺼요",
 )
 _CAUTION_SWAP = {
-    True: "선을 뽑을 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고 새 선을 꽂는다 — "
-          "회로를 바꿀 때도, 회로 안에서도 같다",
-    False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고 새 선을 꽂는다",
+    True: "선을 바꿀 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고, 그다음 새 선을 꽂아요. "
+          "회로를 바꿀 때도, 회로 안에서도 같아요",
+    False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고, 그다음 새 선을 꽂아요",
 }
 
 # 선 색 — 결선도 PNG 아래 범례가 사라져(2026-09-28) 공통면에 한 번 싣는다. 색은
@@ -356,8 +356,8 @@ def common_page(spec, netlist) -> str:
     # 주차의 절반에서 거짓이었다(실험02 는 VCC 로도 올린다). 칩별 미사용 핀 지시는 회로
     # 쪽 핀 점검 상자에 있다.
     out = [f'<div class="power">전원: {_esc(power)} · '
-           "사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — "
-           "미사용 핀은 회로마다 핀 점검 상자를 본다</div>"]
+           "쓰는 게이트의 입력은 반드시 물려요 (플로팅 금지). "
+           "미사용 핀은 회로마다 핀 점검 상자를 봐요</div>"]
     for section in netlist.of_kind("must-read"):
         out.append(f'<div class="must-read"><h2>{_esc(_plain(section.title))}</h2>'
                    f"{_blocks(section.body)}</div>")
@@ -394,14 +394,14 @@ _ANY_HEAD = re.compile(r"^#{1,}[ \t]+\S")
 
 # 사진 파일명은 `photo_names` 규칙이다. 실험02 는 `실험02 1-1 …` 처럼 접두어를 붙여
 # 시트 엔진이 전부 규칙 밖으로 거절했다 — 그래서 접두어 금지를 줄마다 적는다.
-_NO_PREFIX = "앞에 실험 번호(예: 실험03)를 붙이지 않는다"
+_NO_PREFIX = "앞에 실험 번호(예: 실험03)는 붙이지 않아요"
 _PHOTO = {
-    "truth-table": "사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — " + _NO_PREFIX,
-    "stepped": "사진: 스텝마다 1장. 파일명 '{tok} {tid} s<스텝>.jpg' — " + _NO_PREFIX,
-    "capture": "사진: 파형 자체가 결과물이다. 파일명 '{tok} {tid} <설명>.jpg' — " + _NO_PREFIX,
+    "truth-table": "사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — " + _NO_PREFIX,
+    "stepped": "사진: 스텝마다 1장씩 찍어요. 파일명 '{tok} {tid} s<스텝>.jpg' — " + _NO_PREFIX,
+    "capture": "사진: 파형 사진이 곧 결과물이에요. 파일명 '{tok} {tid} <설명>.jpg' — " + _NO_PREFIX,
 }
 # 항목 제목에 `실험 N)` 이 없으면 파일명 열이 없다 — 가리킬 열이 없으니 규칙을 적는다.
-_PHOTO_NO_TOKEN = ("사진: 시험한 행마다 1장(불일치 행 필수). 파일명 '<항목> <입력비트>.jpg' — "
+_PHOTO_NO_TOKEN = ("사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명 '<항목> <입력비트>.jpg' — "
                    + _NO_PREFIX)
 
 
@@ -619,7 +619,7 @@ def _chip_swap(previous, current) -> str:
     지시한다. 걷기 행이 없는데 걷기 그림을 가리키면 없는 그림을 찾게 된다.
     """
     if previous is None:
-        return "준비 — 꽂는다: " + ", ".join(current.ics)
+        return "준비 — 꽂을 칩: " + ", ".join(current.ics)
     if current.continues:
         # 이어 붙이는 회로가 선언한 칩은 **전부** 새로 꽂는 것이다. 앞 회로를
         # 그대로 두므로 이름이 겹쳐도 그것은 재배선이 아니라 **두 번째 패키지**다
@@ -629,9 +629,9 @@ def _chip_swap(previous, current) -> str:
         # 이유인 그 지시가 배너에서 사라진다.
         # `continues` 는 언제나 직전 회로다(validate 가 강제한다). 인쇄본에
         # 없는 내부 ID(`C1`) 대신 학생이 앞 쪽에서 실제로 읽은 제목을 말한다.
-        tail = " · 추가로 꽂는다: " + ", ".join(current.ics) if current.ics else ""
-        return (f"앞 회로({_plain(previous.title)})를 그대로 두고 이어 붙인다 — "
-                f"점퍼선을 걷지 않는다{tail}")
+        tail = " · 더 꽂을 칩: " + ", ".join(current.ics) if current.ics else ""
+        return (f"앞 회로({_plain(previous.title)})를 그대로 두고 이어 붙여요. "
+                f"점퍼선은 뽑지 않아요{tail}")
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
@@ -639,23 +639,23 @@ def _chip_swap(previous, current) -> str:
         # 앞 회로를 통째로 걷는 경계(2026-09-27, 실험04 C2). 단계 표가 있어도 `그대로 둔다`
         # 가 아니다. 기반(전원·브리지·LED 사슬)은 남긴다 — 다음 회로 1단계의 기반과 같은
         # 자리라 뽑으면 다시 꽂게 된다.
-        parts = ["앞 회로의 신호선을 전부 뽑는다 — 전원선·레일 브리지·LED 사슬은 그대로 "
-                 "둔다(새 선은 단계 그림이 지시한다)"]
+        parts = ["앞 회로의 신호선을 전부 뽑아요. 전원선·레일 브리지·LED 사슬은 그대로 "
+                 "둬요(새 선은 단계 그림을 따라 꽂아요)"]
     elif current.stages:
         if _has_entry_walk(current):
-            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선은 걷기 그림(빨간 점선), "
-                     "새 선은 단계 그림(회색·번호)이 지시한다"]
+            parts = ["앞 회로 배선은 그대로 둬요. 걷을 선은 걷기 그림(빨간 점선), "
+                     "새 선은 단계 그림(회색·번호)을 따라가요"]
         else:
-            parts = ["앞 회로 배선은 그대로 둔다 — 걷을 선·새 선은 단계 그림"
-                     "(회색·번호·'걷는다' 표)이 지시한다"]
+            parts = ["앞 회로 배선은 그대로 둬요. 걷을 선·새 선은 단계 그림"
+                     "(회색·번호·'걷는다' 표)을 따라가요"]
     else:
-        parts = ["앞 회로의 점퍼선을 모두 걷는다"]
+        parts = ["앞 회로의 점퍼선을 모두 뽑아요"]
     if remove:
-        parts.append("뺀다: " + ", ".join(remove))
+        parts.append("뺄 칩: " + ", ".join(remove))
     if add:
-        parts.append("꽂는다: " + ", ".join(add))
+        parts.append("꽂을 칩: " + ", ".join(add))
     if keep:
-        parts.append("패키지는 두고 재배선한다: " + ", ".join(keep))
+        parts.append("칩은 그대로 두고 선만 다시 꽂을 칩: " + ", ".join(keep))
     return " · ".join(parts)
 
 
@@ -680,7 +680,7 @@ def _schematic_html(item, spec_dir) -> str:
         if (Path(spec_dir) / rel).exists():
             out.append(f'<img class="schematic" src="{_esc(rel)}">')
         else:
-            out.append(f"<p class='src'>회로도가 아직 없다: {_esc(rel)}</p>")
+            out.append(f"<p class='src'>회로도가 아직 없어요: {_esc(rel)}</p>")
     if any(o.startswith("<img") for o in out):
         out.append(f"<p class='src'>{_esc(caption)}</p>")
     return "".join(out)
@@ -716,7 +716,7 @@ def _board_text_html(data) -> str:
             + (f'<span class="n">{r["n"]}</span>' if r["n"] is not None else "")
             + f'<span class="text">{_esc(r["text"])}</span></li>'
             for r in data["removals"])
-        out.append(f'<p class="list-head">먼저 뽑는다</p><ul class="removals">{items}</ul>')
+        out.append(f'<p class="list-head">먼저 뽑아요</p><ul class="removals">{items}</ul>')
     if data["steps"]:
         items = "".join(
             f'<li class="step" data-kind="{_esc(s["kind"])}"><span class="box"></span>'
@@ -732,7 +732,7 @@ def _board_text_html(data) -> str:
             f'<span class="route">{_esc(p["label"])} → {_esc(p["at"])}</span>'
             f'<span class="desc">{_esc(p["desc"])}</span></li>'
             for p in data["probes"])
-        out.append(f'<p class="list-head">계측 — 꽂지 않고 문다</p><ol class="probes">{items}</ol>')
+        out.append(f'<p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes">{items}</ol>')
     if data["kept"]:
         out.append(f'<p class="kept">회색 = 앞 단계에서 그대로 둔 것 {data["kept"]}개</p>')
     return "".join(out)
@@ -757,7 +757,7 @@ def _diagram_html(section, netlist) -> str:
     rows = crop_rows(section.body)
     visible_mm = _BREADBOARD_HEADER_MM + rows * 6
     return (f"<h3>브레드보드 작도 ({rows}행)</h3>"
-            "<p class='src'>이 회로의 결선도가 아직 없다 — 격자에 직접 그린다</p>"
+            "<p class='src'>이 회로의 결선도가 아직 없어요 — 격자에 직접 그려요</p>"
             f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
             f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
             'object-position:top">')
@@ -786,7 +786,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
         img = f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
         text = _board_text_html(_sidecar(png))
     else:
-        img = f"<p class='src'>단계 그림이 아직 없다: {_esc(stage['diagram'] or '(없음)')}</p>"
+        img = f"<p class='src'>단계 그림이 아직 없어요: {_esc(stage['diagram'] or '(없음)')}</p>"
         text = ""
     node = ""
     if stage.get("node"):
@@ -837,7 +837,7 @@ def _stage_table_html(spec, section, node_name, led="") -> str:
     try:
         st = node_calc.stage_table(section, spec, node_name)
     except ValueError as exc:
-        return f"<p class='src'>단계 진리표를 계산할 수 없다: {_esc(exc)}</p>"
+        return f"<p class='src'>단계 진리표를 계산할 수 없어요: {_esc(exc)}</p>"
     name, pin = st.node
     label = (f"{_esc(led)} = {_esc(_plain(name))}<br><small>예상 · {_esc(pin)}</small>" if led
              else f"{_esc(_plain(name))}예상<br><small>{_esc(pin)}</small>")
@@ -868,8 +868,8 @@ _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: _________________
 _MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
 
 
-_NODE_HINT = ("틀린 행에서 입력 쪽 노드부터 프로브로 찍는다. 기대값과 처음 갈라지는 노드가 "
-              "고장 자리다 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트")
+_NODE_HINT = ("틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 "
+              "노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요")
 
 
 def _record_outputs(spec, section) -> set:
@@ -897,7 +897,7 @@ def _unstaged_nodes_html(spec, section) -> str:
     try:
         nt = node_calc.compute(section, spec)
     except ValueError as exc:
-        return f"<p class='src'>노드 표를 계산할 수 없다: {_esc(exc)}</p>"
+        return f"<p class='src'>노드 표를 계산할 수 없어요: {_esc(exc)}</p>"
     out = ['<div class="tblock nodes">',
            "<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>",
            f"<p class='src'>{_esc(_NODE_HINT)}</p>",
@@ -1020,7 +1020,7 @@ def circuit_pages(spec, netlist) -> str:
         out.append(_diagram_html(section, netlist))
         # 옛 PNG 머리에 있던 제출 안내 — 그림에 글자를 굽지 않게 되어(2026-09-28) 여기로 온다.
         # 단계 유무와 상관없이 회로마다 한 번: 손그림은 완성본마다 한 장이다
-        out.append("<p class='src submit'>손그림은 이 그림을 따라 그리고 학번·이름·날짜를 자필로 적는다</p>")
+        out.append("<p class='src submit'>손그림은 이 그림을 따라 그리고, 학번·이름·날짜는 손으로 적어요</p>")
         for node in nodes:
             if node["type"] == "prose":
                 out.append(_blocks(node["text"]))
@@ -1041,7 +1041,7 @@ def circuit_pages(spec, netlist) -> str:
         unused_chips = [c for c in chips if c["unused"]]
         if unused_chips:
             out.append('<div class="unused">'
-                       "<b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 지시대로인가 (칩마다 따로)</b>")
+                       "<b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>")
             for chip in unused_chips:
                 out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
                 out += [f'<li><span class="box"></span>{_esc(u)}</li>'
@@ -1069,15 +1069,15 @@ def circuit_pages(spec, netlist) -> str:
 
 
 CLOSING = (
-    "표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 "
-    "(진행하지 않은 표에는 진행하지 않았음 을 적는다)",
-    "표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), "
-    "스텝표는 스텝마다, 파형은 화면마다",
-    "사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)",
-    "공통면의 실험실 확인 목록을 다 처리했는가",
-    "조교에게 물어볼 것을 다 물었는가",
-    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다",
-    "부품을 반납했는가",
+    "표마다 확인 칸이 다 찼나요? 사진만 찍었다면 시험한 행마다 사진이 있나요? "
+    "(못 한 표에는 진행하지 않았음 이라고 적어요)",
+    "표마다 사진을 지시대로 찍었나요? 진리표는 시험한 행마다(불일치 행은 꼭), "
+    "스텝표는 스텝마다, 파형은 화면마다예요",
+    "사진 파일명이 표에 인쇄된 이름 그대로인가요? (실험 번호 접두어 없이)",
+    "공통면의 실험실 확인 목록을 다 처리했나요?",
+    "조교에게 물어볼 것을 다 물었나요?",
+    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었나요? 실험 폴더에 .md 로 둔 자유 메모 파일도 괜찮아요",
+    "부품을 반납했나요?",
 )
 
 

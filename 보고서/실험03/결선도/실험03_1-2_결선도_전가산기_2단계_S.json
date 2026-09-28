@@ -9,7 +9,7 @@
    "kind": "sig",
    "from": "좌 GND레일11행",
    "to": "좌 b11",
-   "desc": "입력 Ci -> 74HC86 pin 5 (XOR2) · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "desc": "입력 Ci -> 74HC86 pin 5 (XOR2) · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {

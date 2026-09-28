@@ -333,7 +333,7 @@ class TestCapturePage(unittest.TestCase):
         target = self._spec_with_figure(make_png=False)
         html = _capture_html(parse_spec(target).table("T1"), target.parent)
         self.assertNotIn("<img", html)
-        self.assertIn("예상 그림이 아직 없다", html)
+        self.assertIn("예상 그림이 아직 없어요", html)
 
     def test_figure_가_없으면_그림_자리를_내지_않는다(self):
         self.assertNotIn("예상 그림", self._block())
@@ -429,8 +429,8 @@ class TestCommonPage(unittest.TestCase):
         """규약은 기록.md 에만 있었다 — 태블릿에 PDF 만 띄운 사람은 알 수 없다.
         그리고 진리표 규약 하나로는 실험02·10 을 설명하지 못한다. 두 주차에는
         진리표가 한 장도 없다."""
-        self.assertIn("불일치", self.html)
-        self.assertIn("미확인", self.html)
+        self.assertIn("다르면 실제로 본 값", self.html)
+        self.assertIn("안 본 행은 비워", self.html)
         self.assertIn("단위", self.html)          # 스텝표
         self.assertIn("판독 조건", self.html)      # 파형
         self.assertEqual(self.html.count("class=\"legend\""), 3)
@@ -477,7 +477,7 @@ class TestCommonPage(unittest.TestCase):
         box = box[:box.index("</div>")]
         self.assertEqual(box.count("<li>"), 3)
         self.assertIn("클립", box)
-        self.assertIn("전원을 끈다", box)
+        self.assertIn("전원부터 꺼요", box)
 
     def test_걷기_보드가_없는_주차는_걷기_그림을_가리키지_않는다(self):
         """공통면은 모든 주차에서 참인 것만 말한다 — 실험01 에는 걷기 그림이 없다."""
@@ -555,8 +555,8 @@ class TestCircuitPages(unittest.TestCase):
 
     def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_말한다(self):
         """C1(74HC08) → C2(74HC32) 는 칩을 갈아끼워야 한다."""
-        self.assertIn("뺀다", self.html)
-        self.assertIn("꽂는다", self.html)
+        self.assertIn("뺄 칩", self.html)
+        self.assertIn("꽂을 칩", self.html)
 
     def test_결선도가_있으면_그림을_싣는다(self):
         self.assertIn("실험01_1-1_결선도_3입력_AND.png", self.html)
@@ -635,7 +635,7 @@ class TestCircuitPages(unittest.TestCase):
                 self.assertEqual(elsewhere, [])
 
     def test_사진_지시가_표마다_붙는다(self):
-        self.assertIn("실험 번호(예: 실험03)를 붙이지 않는다", self.html)
+        self.assertIn("실험 번호(예: 실험03)는 붙이지 않아요", self.html)
         self.assertIn("불일치 행", self.html)
         self.assertNotIn("T1 row", self.html)
 
@@ -709,8 +709,8 @@ class TestCircuitPages(unittest.TestCase):
         page = self._pages()[1]
         start = page.index('class="banner"')
         banner = page[start:page.index("</div>", start)]
-        self.assertIn("뺀다: 74HC08", banner)
-        self.assertIn("꽂는다: 74HC32", banner)
+        self.assertIn("뺄 칩: 74HC08", banner)
+        self.assertIn("꽂을 칩: 74HC32", banner)
 
 
     def test_배선_뒤_검산_산문이_미사용_상자_뒤에_온다(self):
@@ -743,7 +743,7 @@ class TestCircuitPages(unittest.TestCase):
 
     def test_schematic_이_없으면_싣지_않는다(self):
         self.assertNotIn('class="schematic"', self.html)
-        self.assertNotIn("회로도가 아직 없다", self.html)
+        self.assertNotIn("회로도가 아직 없어요", self.html)
 
     def test_schematic_을_배너_뒤_작도면_앞에_싣는다(self):
         """핸드오프 B: 강의노트 회로도는 그 항목 첫머리, 브레드보드 작도면 앞이다."""
@@ -770,7 +770,7 @@ class TestCircuitPages(unittest.TestCase):
         spec = self._spec_with_schematic(make_png=False)
         html = circuit_pages(spec, _netlist_missing_diagrams())
         self.assertNotIn('class="schematic"', html)
-        self.assertIn("회로도가 아직 없다: 실험01_1-1_회로도.png", html)
+        self.assertIn("회로도가 아직 없어요: 실험01_1-1_회로도.png", html)
         # 그림이 없는데 캡션만 남으면 없는 그림을 가리킨다 — 안내 한 줄만 낸다
         self.assertNotIn("회로 구성", html)
 
@@ -1356,7 +1356,7 @@ class TestSteppedCells(unittest.TestCase):
 
 
 class TestContinuesBanner(unittest.TestCase):
-    """`앞 회로의 점퍼선을 모두 걷는다` 는 실험10 C2 에서 틀린 지시다 —
+    """`앞 회로의 점퍼선을 모두 뽑아요` 는 실험10 C2 에서 틀린 지시다 —
     E10.P2 는 다 만든 DAC 에 741 비교기를 하나 더 붙인다. 그대로 따르면
     직전 회로를 뜯는다."""
 
@@ -1377,7 +1377,7 @@ class TestContinuesBanner(unittest.TestCase):
         banner = self._banner(self._html("- continues: C1"), 1)
         self.assertIn("앞 회로(", banner)
         self.assertIn("그대로 두고", banner)
-        self.assertNotIn("점퍼선을 모두 걷는다", banner)
+        self.assertNotIn("점퍼선을 모두 뽑아요", banner)
 
     def test_continues_가_추가할_칩을_말한다(self):
         banner = self._banner(self._html("- continues: C1"), 1)
@@ -1398,21 +1398,21 @@ class TestContinuesBanner(unittest.TestCase):
         netlist = parse_netlist(path)
         self.assertEqual(netlist.circuits[0].ics, netlist.circuits[1].ics)
         banner = self._banner(circuit_pages(spec, netlist), 1)
-        self.assertIn("추가로 꽂는다: 7490", banner)
+        self.assertIn("더 꽂을 칩: 7490", banner)
 
     def test_continues_가_없으면_옛_배너_그대로다(self):
         """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
         banner = self._banner(self._html(""), 1)
-        self.assertIn("점퍼선을 모두 걷는다", banner)
+        self.assertIn("점퍼선을 모두 뽑아요", banner)
 
     def test_첫_회로에는_continues_가_무의미하다(self):
         banner = self._banner(self._html("- continues: C1"), 0)
-        self.assertIn("준비 — 꽂는다", banner)
+        self.assertIn("준비 — 꽂을 칩", banner)
 
 
 class TestRebuildBanner(unittest.TestCase):
     """`rebuild: true` — 앞 회로의 신호선을 전부 뽑고 새로 짓는다(2026-09-27, 실험04 C2).
-    단계 표가 있는 회로의 기본 배너는 `앞 회로 배선은 그대로 둔다` 라 그 반대를 말한다."""
+    단계 표가 있는 회로의 기본 배너는 `앞 회로 배선은 그대로 둬요` 라 그 반대를 말한다."""
 
     STAGES = ("\n## 단계\n\n| 단계 | 그림 | 이 단계에서 | 확인 |\n|---|---|---|---|\n"
               "| 1 | `s.png` | 신호선: 입력→pin 3 | 노드 `X` — 본다 |\n")
@@ -1427,8 +1427,8 @@ class TestRebuildBanner(unittest.TestCase):
 
     def test_단계가_있어도_전부_뽑으라고_한다(self):
         banner = self._banner("- rebuild: true", self.STAGES)
-        self.assertIn("신호선을 전부 뽑는다", banner)
-        self.assertNotIn("그대로 둔다 —", banner)
+        self.assertIn("신호선을 전부 뽑아요", banner)
+        self.assertNotIn("배선은 그대로 둬요", banner)
 
     def test_남기는_것을_말한다(self):
         """전원선·LED 사슬까지 뽑으면 다음 회로 1단계의 기반을 다시 꽂게 된다."""
@@ -1438,13 +1438,13 @@ class TestRebuildBanner(unittest.TestCase):
 
     def test_칩_교체를_말한다(self):
         banner = self._banner("- rebuild: true")
-        self.assertIn("뺀다: 7490", banner)
-        self.assertIn("꽂는다: 741", banner)
+        self.assertIn("뺄 칩: 7490", banner)
+        self.assertIn("꽂을 칩: 741", banner)
 
     def test_rebuild_가_없으면_단계_배너_그대로다(self):
         """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
         banner = self._banner("", self.STAGES)
-        self.assertIn("그대로 둔다", banner)
+        self.assertIn("그대로 둬요", banner)
         self.assertNotIn("전부 뽑는다", banner)
 
 
@@ -1546,7 +1546,7 @@ class Test배선전수(unittest.TestCase):
         banner = page[start:page.index("</div>", start)]
         self.assertIn("앞 회로(", banner)
         self.assertIn("그대로 두고", banner)
-        self.assertNotIn("점퍼선을 모두 걷는다", banner)
+        self.assertNotIn("점퍼선을 모두 뽑아요", banner)
 
     def test_전원_레일_표가_공통면에_인쇄된다(self):
         """이 주차 최대 사고 지점이다 — 두 전원의 GND 를 같은 노드로 묶는 것."""
@@ -1698,23 +1698,23 @@ class TestStages(unittest.TestCase):
         self.assertNotIn('class="stage"', self.pages[0])
 
     def test_배너가_선_단위_변경의_위치를_말한다(self):
-        """C2 는 단계가 있는 회로다 — 배너가 `모두 걷는다` 대신 단계 그림을
+        """C2 는 단계가 있는 회로다 — 배너가 `모두 뽑아요` 대신 단계 그림을
         가리켜야 한다. C1 은 첫 회로라 배너에 해당 문구가 없다."""
-        self.assertNotIn("그대로 둔다", self.pages[0])
-        self.assertIn("그대로 둔다", self.pages[1])
-        self.assertNotIn("모두 걷는다", self.pages[1])
+        self.assertNotIn("그대로 둬요", self.pages[0])
+        self.assertIn("그대로 둬요", self.pages[1])
+        self.assertNotIn("모두 뽑아요", self.pages[1])
 
     def test_단계_있는_회로_배너는_그대로_둔다_뿐이고_모두_걷는다는_없다(self):
         banner = self.pages[1][self.pages[1].index('class="banner"'):]
         banner = banner[:banner.index("</div>")]
-        self.assertIn("그대로 둔다", banner)
-        self.assertNotIn("모두 걷는다", banner)
+        self.assertIn("그대로 둬요", banner)
+        self.assertNotIn("모두 뽑아요", banner)
 
     def test_단계_없는_뒤_회로는_옛_배너_그대로다(self):
         """C3 은 단계가 없고 첫 회로도 아니다 — 기본 문구가 그대로 남는다."""
         banner = self.pages[2][self.pages[2].index('class="banner"'):]
         banner = banner[:banner.index("</div>")]
-        self.assertIn("모두 걷는다", banner)
+        self.assertIn("모두 뽑아요", banner)
 
     def test_걷기_단계가_없는_회로는_걷기_그림을_가리키지_않는다(self):
         """C2 는 `## 단계` 표가 있지만 첫 행이 걷기가 아니다 — 걷기 보드로 들어가는
@@ -1770,7 +1770,7 @@ class TestStages(unittest.TestCase):
     def test_전원_박스가_사용_게이트_입력을_말한다(self):
         power = self.html[self.html.index('class="power"'):]
         power = power[:power.index("</div>")]
-        self.assertIn("사용하는 게이트의 입력", power)
+        self.assertIn("쓰는 게이트의 입력", power)
         self.assertIn("플로팅 금지", power)
         self.assertIn("핀 점검", power)   # 공통 규칙은 2026-09-28 부터 인쇄하지 않는다
         self.assertNotIn("전부 GND", power)
@@ -1850,7 +1850,7 @@ class TestStageTable(unittest.TestCase):
 
     def test_계산할_수_없으면_안내_한_줄이고_죽지_않는다(self):
         _, pages = self._render(_STAGE_NODED_NETLIST.replace("| A·B | A·B |", "| A·B | A·Q |"))
-        self.assertIn("단계 진리표를 계산할 수 없다", pages[0])
+        self.assertIn("단계 진리표를 계산할 수 없어요", pages[0])
         self.assertNotIn('class="stage-table"', pages[0])
 
 
@@ -1998,7 +1998,7 @@ class TestBoardText(unittest.TestCase):
             {"n": 1, "text": "좌 d23 → 우 c42 · 임시 급전"},
             {"n": None, "text": "칩 74HC20 (좌 17행) 뽑는다"}])
         html = self._stage(data, walk=True)
-        self.assertIn('<p class="list-head">먼저 뽑는다</p>', html)
+        self.assertIn('<p class="list-head">먼저 뽑아요</p>', html)
         self.assertIn('<span class="n">1</span><span class="text">좌 d23 → 우 c42', html)
         self.assertIn('<li class="removal"><span class="box"></span><span class="text">칩 74HC20',
                       html)

@@ -1940,7 +1940,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     ghosted = bb.ghost is not None and (
         'sig', bb._endpoint(p0), bb._endpoint(p1)) in bb.ghost['wires']
     bb.step_wire([p0, p1], 'sig',
-                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다',
+                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요',
                  marker_at=(mx, y_row + dy))
     if not ghosted:
         # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안
