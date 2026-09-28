@@ -314,7 +314,9 @@ class R5(unittest.TestCase):
         # 일괄 렌더 `build_eN_all` 은 원래 세지 않았으므로 수는 그대로 24 다.
         # 2026-09-20 단계 세분화: 실험03 절차 래퍼가 셋(e3_fa_s1/_s2·e3_fs_s1)에서
         # 일곱(e3_fa_s1~_s5·e3_fs_s1/_s2)으로 늘어 28 이다.
-        self.assertEqual(len(builders), 28)
+        # 2026-09-28 실험04: 회로 2(e4_mux·e4_dmux) + 절차 래퍼 12(e4_mux_s1~_s8·
+        # e4_dmux_s1~_s4) = 14 가 늘어 42 다.
+        self.assertEqual(len(builders), 42)
         for name, fn in sorted(builders.items()):
             with self.subTest(회로=name):
                 _render(self.mod, fn)

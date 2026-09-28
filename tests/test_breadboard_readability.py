@@ -34,6 +34,15 @@ BOARD_L, BOARD_R = 149, 877
 # 그림 한 장의 보드 위 배지 상한. 신호 이름(입력 A·B·C, 출력 L1·L2·X·Y·Z)만 남긴
 # 결과가 한 장에 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다
 MAX_ON_BOARD_LABELS = 8
+# 신호 이름만으로 상한을 넘는 회로. 이름은 `test_신호_이름이_보드_안에_있다` 가 요구하므로
+# 뺄 수 없다 — 문구 배지가 아니라 이름 개수가 넘는 경우만 여기 적는다.
+#  · `build_e4_mux` 와 그 단계 래퍼(`build_e4_mux_s*`): 입력 7(E·S1·S0·D0~D3) + LED 4
+#    (Y·L2·L3·L4) = 11 (2026-09-28). 키는 빌더 이름의 앞머리다
+LABEL_EXCEPTIONS = {'build_e4_mux': 11}
+
+
+def _label_cap(name):
+    return next((v for k, v in LABEL_EXCEPTIONS.items() if name.startswith(k)), MAX_ON_BOARD_LABELS)
 
 
 def _inter(a, b):
@@ -189,7 +198,7 @@ class RenderedContract(unittest.TestCase):
             with self.subTest(회로=name):
                 _, labels = self._render(fn)
                 self.assertLessEqual(
-                    labels, MAX_ON_BOARD_LABELS,
+                    labels, _label_cap(name),
                     f"{name}: 보드 위 라벨 {labels}개. 손으로 옮겨 그릴 것이 아니면 "
                     "note() 로 보드 밖에 낸다")
 
