@@ -238,7 +238,7 @@ class R5(unittest.TestCase):
         bb.mark_unused_inputs([9, 10], 10, chip='74HC08')
         self.assertEqual([(u['chip'], u['pin'], u['rail']) for u in bb.wiring()['unused_inputs']],
                          [('74HC08', 9, None), ('74HC08', 10, None)])
-        self.assertTrue(any('접지하지 않는다' in n for n in bb.notes))
+        self.assertEqual(bb.notes, [])  # 문구는 체크리스트 핀 점검 상자가 싣는다
 
     def test_계측기가_무는_핀은_뜬_핀이_아니다(self):
         """실험02 인버터는 pin 1 에 함수발생기를, pin 2 에 프로브를 문다 —

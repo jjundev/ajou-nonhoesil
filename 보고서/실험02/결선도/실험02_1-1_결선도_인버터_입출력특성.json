@@ -1,0 +1,85 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-1: Inverter 입출력 특성 결선도",
+ "subtitle": "74HC04 (Hex Inverter) 게이트 1 · 오실로스코프 X-Y 모드 (CH1 = Vin, CH2 = Vout)",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "vcc",
+   "from": "좌 VCC레일27행",
+   "to": "좌 중앙VCC레일27행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 g7",
+   "to": "좌 중앙VCC레일7행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "gnd",
+   "from": "좌 d13",
+   "to": "좌 GND레일13행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "74HC04 pin 3, 5",
+   "to": "가까운 GND 레일",
+   "desc": "미사용 입력 접지",
+   "count": 2
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "74HC04 pin 9, 11, 13",
+   "to": "가까운 +5V 레일",
+   "desc": "미사용 입력 풀업",
+   "count": 3
+  }
+ ],
+ "removals": [],
+ "probes": [
+  {
+   "n": 1,
+   "label": "함수발생기 + CH1 (가로축)",
+   "at": "좌 a7",
+   "desc": "사인파 Vpp 5V · offset 2.5V (교안 p10) · 74HC04 pin 1 = Vin"
+  },
+  {
+   "n": 2,
+   "label": "CH2 (세로축)",
+   "at": "좌 a8",
+   "desc": "74HC04 pin 2 = Vout · 부하 없음, 프로브만 문다"
+  },
+  {
+   "n": 3,
+   "label": "함수발생기 -, CH1 -, CH2 -",
+   "at": "좌 GND 레일",
+   "desc": "전원장치 0V 와 같은 노드"
+  }
+ ]
+}

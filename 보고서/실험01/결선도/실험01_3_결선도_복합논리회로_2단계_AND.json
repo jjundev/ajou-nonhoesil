@@ -1,0 +1,47 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3: 복합 논리회로 — 2단계 (AND 추가, Z = (A'·B)')",
+ "subtitle": "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개",
+ "kept": 18,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC08",
+   "desc": "좌 18행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 GND레일19행",
+   "to": "좌 b19",
+   "desc": "입력 B -> 74HC08 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "mid",
+   "from": "좌 a8",
+   "to": "좌 a18",
+   "desc": "A' (74HC04 pin 2) -> 74HC08 pin 1",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "mid",
+   "from": "좌 c20",
+   "to": "좌 c9",
+   "desc": "A'·B (74HC08 pin 3) -> 74HC04 pin 3",
+   "count": 1
+  }
+ ],
+ "removals": [
+  {
+   "n": null,
+   "text": "좌 c7 → 좌 c9 · 임시: 입력 A 갈래 -> 74HC04 pin 3 (2단계에서 걷는다)"
+  }
+ ],
+ "probes": []
+}

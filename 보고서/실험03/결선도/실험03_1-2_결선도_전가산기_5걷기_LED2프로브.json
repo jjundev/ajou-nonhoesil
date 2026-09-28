@@ -1,0 +1,14 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: 전가산기 — 5단계 걷기 (임시 급전선 1가닥)",
+ "subtitle": "(A⊕B)·Ci → LED2 임시 급전선을 뽑는다 · 회색은 그대로 둔다",
+ "kept": 24,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "우 c15 → 우 c29 · 임시 급전: (A⊕B)·Ci = 74HC08 pin 6 -> LED2 (다음 장 걷기에서 뽑는다)"
+  }
+ ],
+ "probes": []
+}

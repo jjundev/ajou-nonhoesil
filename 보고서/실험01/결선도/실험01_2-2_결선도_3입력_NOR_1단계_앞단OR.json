@@ -1,0 +1,35 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: 3-Input NOR — 1단계 (앞단 OR 검사)",
+ "subtitle": "74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀",
+ "kept": 15,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "뽑는다: 74HC08",
+   "to": "꽂는다: 74HC32",
+   "desc": "좌 7행 칩 교체",
+   "count": 1
+  }
+ ],
+ "removals": [
+  {
+   "n": null,
+   "text": "좌 a9 → 좌 a18 · A·B -> 74HC00 pin 1 (칩 사이 연결)"
+  },
+  {
+   "n": null,
+   "text": "좌 GND레일19행 → 좌 b19 · 입력 C -> 74HC00 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다"
+  },
+  {
+   "n": null,
+   "text": "좌 a20 → 좌 a25 · 최종 출력 74HC00 -> L2"
+  },
+  {
+   "n": null,
+   "text": "칩 74HC00 (좌 18행) 뽑는다"
+  }
+ ],
+ "probes": []
+}

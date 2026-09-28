@@ -1,0 +1,34 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: 전감산기 — 2단계 (NOT2 추가, 노드 Bo · 완성)",
+ "subtitle": "74HC86 XOR 2 + 74HC04 NOT 2 + 74HC08 AND 2 + 74HC32 OR · Bo = A'·B + (A⊕B)'·Bi",
+ "kept": 32,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "mid",
+   "from": "좌 a9",
+   "to": "좌 a20",
+   "desc": "A⊕B (74HC86 pin 3) -> 74HC04 pin 3 (NOT2)",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "mid",
+   "from": "좌 d21",
+   "to": "우 a13",
+   "desc": "(A⊕B)' (74HC04 pin 4) -> 74HC08 pin 4 (AND2)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 c23",
+   "to": "우 c29",
+   "desc": "Bo = 74HC32 pin 3 -> LED2",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

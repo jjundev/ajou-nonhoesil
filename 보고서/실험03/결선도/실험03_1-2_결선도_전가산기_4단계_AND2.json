@@ -1,0 +1,34 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: 전가산기 — 4단계 (AND2, 노드 (A⊕B)·Ci)",
+ "subtitle": "74HC86 XOR 2개 + 74HC08 AND 2개 + 74HC32 OR · Co = A·B + (A⊕B)·Ci",
+ "kept": 22,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "mid",
+   "from": "좌 a9",
+   "to": "우 c13",
+   "desc": "A⊕B (74HC86 pin 3) -> 74HC08 pin 4 (AND2)",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 c11",
+   "to": "우 a14",
+   "desc": "입력 Ci 갈래 -> 74HC08 pin 5 (AND2)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 c15",
+   "to": "우 c29",
+   "desc": "임시 급전: (A⊕B)·Ci = 74HC08 pin 6 -> LED2 (다음 장 걷기에서 뽑는다)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

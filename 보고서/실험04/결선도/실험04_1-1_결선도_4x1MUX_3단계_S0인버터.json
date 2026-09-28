@@ -1,0 +1,26 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-1: 4x1 MUX — 3단계 (S0 인버터, 노드 S0')",
+ "subtitle": "74HC04 NOT 3 + 74HC20 4입력 NAND 5 · Y = E'·(S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3)",
+ "kept": 31,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 중앙GND레일11행",
+   "to": "우 b11",
+   "desc": "입력 S0 -> U4 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 c12",
+   "to": "우 c46",
+   "desc": "임시 급전: S0' = U4 pin 6 -> LED2 (5걷기에서 뽑는다)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

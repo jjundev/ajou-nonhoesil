@@ -1,0 +1,42 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: 3-Input NOR — 2단계 (뒷단 NOR, 완성)",
+ "subtitle": "74HC32 (OR 앞단) + 74HC02 (NOR 뒷단) · 74HC02 는 출력이 1번 핀",
+ "kept": 16,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC02",
+   "desc": "좌 18행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "mid",
+   "from": "좌 a9",
+   "to": "좌 a19",
+   "desc": "A+B -> 74HC02 pin 2 (1번 아님!) (칩 사이 연결)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 GND레일19행",
+   "to": "좌 b20",
+   "desc": "입력 C -> 74HC02 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 c18",
+   "to": "좌 c25",
+   "desc": "최종 출력 74HC02 -> L2",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

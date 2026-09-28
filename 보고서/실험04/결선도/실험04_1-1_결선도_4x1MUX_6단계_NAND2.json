@@ -1,0 +1,50 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-1: 4x1 MUX — 6단계 (U2 NAND A, 노드 (E'·S1·S0'·D2)')",
+ "subtitle": "74HC04 NOT 3 + 74HC20 4입력 NAND 5 · Y = E'·(S1'S0'D0 + S1'S0D1 + S1S0'D2 + S1S0D3)",
+ "kept": 40,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 c12",
+   "to": "좌 a30",
+   "desc": "S0' (U4 pin 6) -> U2 pin 1",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 d9",
+   "to": "좌 c31",
+   "desc": "S1 갈래 (U4 pin 3) -> U2 pin 2",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 j9",
+   "to": "좌 a33",
+   "desc": "E' (U4 pin 12) -> U2 pin 4",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 GND레일34행",
+   "to": "좌 b34",
+   "desc": "입력 D2 -> U2 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "좌 d35",
+   "to": "우 c51",
+   "desc": "임시 급전: U2 pin 6 -> LED3 (8걷기에서 뽑는다)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

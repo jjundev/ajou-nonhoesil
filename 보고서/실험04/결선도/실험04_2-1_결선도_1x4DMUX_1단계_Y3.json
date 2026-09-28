@@ -1,0 +1,210 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-1: 1x4 DMUX — 1단계 (U6 AND, 노드 Y3)",
+ "subtitle": "74HC04 NOT 2 + 74HC11 3입력 AND 4 · Y0~Y3 = D·(S1'S0' · S1'S0 · S1S0' · S1S0)",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일39행",
+   "to": "좌 중앙GND레일39행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "좌 중앙GND레일40행",
+   "to": "우 중앙GND레일40행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 VCC레일41행",
+   "to": "좌 중앙VCC레일41행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 중앙GND레일55행",
+   "to": "우 GND레일55행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 중앙VCC레일61행",
+   "to": "우 VCC레일61행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "vcc",
+   "from": "우 g7",
+   "to": "우 VCC레일7행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "gnd",
+   "from": "우 a13",
+   "to": "우 중앙GND레일13행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "vcc",
+   "from": "좌 g18",
+   "to": "좌 중앙VCC레일18행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "gnd",
+   "from": "좌 a24",
+   "to": "좌 GND레일24행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "vcc",
+   "from": "우 g30",
+   "to": "우 VCC레일30행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "gnd",
+   "from": "우 a36",
+   "to": "우 중앙GND레일36행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "sig",
+   "from": "우 d42",
+   "to": "우 e45",
+   "desc": "Y0: LED(우 d42→우 d43) + 330Ω(우 e43→우 e45) 직렬 · 아직 급전하지 않는다 — 뒤 단계에서 잇는다",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "gnd",
+   "from": "우 c45",
+   "to": "우 중앙GND레일45행",
+   "desc": "Y0 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "sig",
+   "from": "우 d46",
+   "to": "우 e49",
+   "desc": "Y1: LED(우 d46→우 d47) + 330Ω(우 e47→우 e49) 직렬 · 아직 급전하지 않는다 — 뒤 단계에서 잇는다",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "gnd",
+   "from": "우 c49",
+   "to": "우 중앙GND레일49행",
+   "desc": "Y1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "sig",
+   "from": "우 d51",
+   "to": "우 e54",
+   "desc": "Y2: LED(우 d51→우 d52) + 330Ω(우 e52→우 e54) 직렬 · 아직 급전하지 않는다 — 뒤 단계에서 잇는다",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "gnd",
+   "from": "우 c54",
+   "to": "우 중앙GND레일54행",
+   "desc": "Y2 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "sig",
+   "from": "우 d57",
+   "to": "우 e60",
+   "desc": "Y3: LED(우 d57→우 d58) + 330Ω(우 e58→우 e60) 직렬 · Y3 — 진리표 T3 의 Y3 열",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "gnd",
+   "from": "우 c60",
+   "to": "우 중앙GND레일60행",
+   "desc": "Y3 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "우 중앙GND레일30행",
+   "to": "우 a30",
+   "desc": "입력 S0 -> U6 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "sig",
+   "from": "우 중앙GND레일31행",
+   "to": "우 a31",
+   "desc": "입력 S1 -> U6 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "우 GND레일31행",
+   "to": "우 j31",
+   "desc": "입력 D -> U6 pin 13 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 25,
+   "kind": "sig",
+   "from": "우 g32",
+   "to": "우 c57",
+   "desc": "Y3 = U6 pin 12 -> LED4",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

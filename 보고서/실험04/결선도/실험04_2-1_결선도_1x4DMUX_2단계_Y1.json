@@ -1,0 +1,50 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-1: 1x4 DMUX — 2단계 (U5 AND 2, 노드 Y1)",
+ "subtitle": "74HC04 NOT 2 + 74HC11 3입력 AND 4 · Y0~Y3 = D·(S1'S0' · S1'S0 · S1S0' · S1S0)",
+ "kept": 28,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b30",
+   "to": "좌 a20",
+   "desc": "S0 이어 감 (U6 pin 1 -> U5 pin 3)",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 d31",
+   "to": "우 a9",
+   "desc": "S1 이어 감 (U6 pin 2 -> U4 pin 3)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 a10",
+   "to": "좌 b21",
+   "desc": "S1' (U4 pin 4) -> U5 pin 4",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "우 i31",
+   "to": "좌 a22",
+   "desc": "D 이어 감 (U6 pin 13 -> U5 pin 5)",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "좌 d23",
+   "to": "우 c46",
+   "desc": "Y1 = U5 pin 6 -> LED2",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

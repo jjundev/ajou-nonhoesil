@@ -1,0 +1,98 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3: 복합 논리회로 — 3단계 (OR 추가, 완성)",
+ "subtitle": "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개",
+ "kept": 22,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC32",
+   "desc": "우 10행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 c7",
+   "to": "우 a13",
+   "desc": "입력 A 갈래 -> 74HC32 pin 4",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 d13",
+   "to": "우 d10",
+   "desc": "입력 A 갈래 -> 74HC32 pin 1",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 d19",
+   "to": "우 b14",
+   "desc": "입력 B 갈래 -> 74HC32 pin 5",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "mid",
+   "from": "좌 d10",
+   "to": "우 b11",
+   "desc": "Z (74HC04 pin 4) -> 74HC32 pin 2",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "sig",
+   "from": "우 c12",
+   "to": "우 c22",
+   "desc": "74HC32 pin 3 -> X LED",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "우 d22",
+   "to": "우 e25",
+   "desc": "X: LED(우 d22→우 d23) + 330Ω(우 e23→우 e25) 직렬 · X = A + Z — Z 와 다르면 배선 오류",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "우 c25",
+   "to": "우 중앙GND레일25행",
+   "desc": "X 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "sig",
+   "from": "우 a15",
+   "to": "우 a27",
+   "desc": "74HC32 pin 6 -> Y LED",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "sig",
+   "from": "우 b27",
+   "to": "우 c30",
+   "desc": "Y: LED(우 b27→우 b28) + 330Ω(우 c28→우 c30) 직렬 · Y = A + B",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "gnd",
+   "from": "우 a30",
+   "to": "우 중앙GND레일30행",
+   "desc": "Y 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

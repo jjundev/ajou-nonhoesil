@@ -1,0 +1,22 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-1: 4x1 MUX — 5단계 걷기 (임시 급전선 3가닥)",
+ "subtitle": "E'·S1'·S0' → LED4·LED3·LED2 임시 급전선을 뽑는다 · 회색은 그대로 둔다",
+ "kept": 35,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "우 j9 → 우 c57 · 임시 급전: E' = U4 pin 12 -> LED4 (5걷기에서 뽑는다)"
+  },
+  {
+   "n": 2,
+   "text": "우 d10 → 우 c51 · 임시 급전: S1' = U4 pin 4 -> LED3 (5걷기에서 뽑는다)"
+  },
+  {
+   "n": 3,
+   "text": "우 c12 → 우 c46 · 임시 급전: S0' = U4 pin 6 -> LED2 (5걷기에서 뽑는다)"
+  }
+ ],
+ "probes": []
+}
