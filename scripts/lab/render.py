@@ -730,7 +730,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
     table = ""
     if spec is not None and stage.get("node") and not last:
-        table = _stage_table_html(spec, section, stage["node"])
+        table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]))
     # 걷기 행은 `단계 2걷기` 가 아니라 `단계 2 · 걷기` 로 찍는다 — 인쇄본에서
     # "2단계 머리의 걷기" 로 읽혀야 한다. 판정은 파서의 `walk` 키다.
     head = (f"단계 {_esc(str(stage['walk_of']))} · 걷기" if stage.get("walk")
@@ -741,8 +741,26 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
             f"{table}</div>")
 
 
-def _stage_table_html(spec, section, node_name) -> str:
+# 단계의 관측 LED — `이 단계에서` 칸의 `…→LED<n> 급전` 표기. 실험03·04 결선도가 관측
+# 단계마다 정확히 하나씩 쓴다(2026-09-28 실측). 표기가 없거나 둘 이상이면 짐작하지 않는다.
+_STAGE_LED = re.compile(r"→\s*LED\s*(\d+)\s*급전")
+
+
+def _stage_led(todo) -> str:
+    """`LED<n>` 또는 빈 문자열."""
+    found = _STAGE_LED.findall(_plain(todo or ""))
+    return f"LED{found[0]}" if len(found) == 1 else ""
+
+
+_JUMPER = {"H/L": "H=+5V · L=GND"}
+
+
+def _stage_table_html(spec, section, node_name, led="") -> str:
     """단계 진리표 — 입력은 그 노드 식에 나오는 것만, 열 머리 둘째 줄은 노드 핀.
+
+    머리는 두 줄이다. 입력 열 위에 `입력 — 점퍼 1=+5V · 0=GND` 묶음 머리를 단다 — 입력
+    열을 LED 로 읽는 학생이 있었다(2026-09-28 사용자 질문). 노드 열은 `led` 가 있으면
+    `LED4 = E'` 처럼 볼 LED 를 먼저 쓴다 — 표만 보고 어느 불을 볼지 알아야 한다.
 
     확인 칸은 `td.box` 다 — `.check` 개수는 명세 기록표 행 수와 대조되는 불변식이다
     (`test_check_cells_exist_for_every_truth_table_row`). 표를 div 로 감싸지 않는다 —
@@ -755,9 +773,16 @@ def _stage_table_html(spec, section, node_name) -> str:
     except ValueError as exc:
         return f"<p class='src'>단계 진리표를 계산할 수 없다: {_esc(exc)}</p>"
     name, pin = st.node
-    head = ("<tr>" + "".join(f"<th>{_esc(n)}</th>" for n in st.inputs)
-            + f"<th>{_esc(_plain(name))}예상<br><small>{_esc(pin)}</small></th>"
-            + "<th>확인</th></tr>")
+    label = (f"{_esc(led)} = {_esc(_plain(name))}<br><small>예상 · {_esc(pin)}</small>" if led
+             else f"{_esc(_plain(name))}예상<br><small>{_esc(pin)}</small>")
+    jumper = _JUMPER.get(st.encoding, "1=+5V · 0=GND")
+    inputs = "".join(f"<th>{_esc(n)}</th>" for n in st.inputs)
+    if st.inputs:
+        head = (f'<tr><th colspan="{len(st.inputs)}">입력 — 점퍼 {_esc(jumper)}</th>'
+                f'<th rowspan="2">{label}</th><th rowspan="2">확인</th></tr>'
+                f"<tr>{inputs}</tr>")
+    else:                         # 상수 노드 — 입력 열이 없다
+        head = f"<tr><th>{label}</th><th>확인</th></tr>"
     body = ["<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
             + f"<td>{_esc(node_calc.format_bit(bit, st.encoding))}</td>"
             + '<td class="box"></td></tr>'

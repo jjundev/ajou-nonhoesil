@@ -1753,13 +1753,33 @@ class TestStageTable(unittest.TestCase):
 
     def test_입력_열은_노드가_쓰는_입력만이다(self):
         block = self._block("단계 1")
-        self.assertIn("<th>A</th><th>B</th>", block)
+        self.assertIn("<tr><th>A</th><th>B</th></tr>", block)
         self.assertNotIn("<th>C</th>", block)
-        self.assertIn("<th>A·B예상<br><small>U1 pin 3</small></th>", block)
+        # LED 급전 표기가 없는 단계는 노드 이름만 찍는다
+        self.assertIn('<th rowspan="2">A·B예상<br><small>U1 pin 3</small></th>', block)
+
+    def test_입력_열_묶음_머리가_점퍼_규약을_말한다(self):
+        """입력 열을 LED 로 읽지 않게 — 입력은 학생이 거는 점퍼다(2026-09-28 사용자 질문)."""
+        self.assertIn('<th colspan="2">입력 — 점퍼 1=+5V · 0=GND</th>', self._block("단계 1"))
+
+    def test_급전_표기가_하나면_노드_열_머리에_LED_번호가_먼저_온다(self):
+        page = self._render(_STAGE_NODED_NETLIST.replace(
+            "| 앞단 AND 를 꽂는다 |", "| 앞단 AND 를 꽂는다. 임시로 U1 pin 3→LED2 급전 |"))[1][0]
+        start = page.index("<h3>단계 1</h3>")
+        block = page[start:page.index("</div>", start)]
+        self.assertIn('<th rowspan="2">LED2 = A·B<br><small>예상 · U1 pin 3</small></th>', block)
+
+    def test_급전_표기가_둘이면_LED_번호를_짐작하지_않는다(self):
+        page = self._render(_STAGE_NODED_NETLIST.replace(
+            "| 앞단 AND 를 꽂는다 |", "| U1 pin 3→LED2 급전, U1 pin 6→LED1 급전 |"))[1][0]
+        start = page.index("<h3>단계 1</h3>")
+        block = page[start:page.index("</div>", start)]
+        self.assertNotIn("LED2 =", block)
+        self.assertIn('<th rowspan="2">A·B예상<br>', block)
 
     def test_행은_겹치지_않게_줄이고_행마다_확인_칸이_있다(self):
         block = self._block("단계 1")
-        self.assertEqual(block.count("<tr>"), 5)          # 머리 1 + AB 네 조합
+        self.assertEqual(block.count("<tr>"), 6)          # 머리 2 + AB 네 조합
         self.assertIn('<tr><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>', block)
         self.assertIn('<tr><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>', block)
 
