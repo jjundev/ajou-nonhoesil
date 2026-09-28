@@ -89,6 +89,11 @@ class Html(unittest.TestCase):
         self.assertIn('n.c. &lt;핀&gt; &amp; 메모', out)
         self.assertIn('class="n kind-mid"', out)
 
+    def test_안내는_부품을_먼저_그리라고_한다(self):
+        """LED·저항은 모든 층에 색으로 그려진다 — 번호 없는 색 부품을 언제 그릴지 말해 준다."""
+        out = trace_guide.render_html(self._pages(), '제목')
+        self.assertIn('칩·LED·저항은 처음부터 그려 두세요', out)
+
     def test_층_쪽에만_안내가_있다(self):
         out = trace_guide.render_html(self._pages(), '제목')
         self.assertEqual(out.count('class="legend"'), 1)

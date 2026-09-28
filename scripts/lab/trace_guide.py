@@ -23,7 +23,8 @@ from scripts.lab.html2pdf import PdfError, html_to_pdf
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = '팀원전달용'
-LEGEND = '회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요.'
+LEGEND = ('회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요. '
+          '칩·LED·저항은 처음부터 그려 두세요.')
 
 CSS = """
 @page { size: 210mm 420mm; margin: 12mm 10mm; }
