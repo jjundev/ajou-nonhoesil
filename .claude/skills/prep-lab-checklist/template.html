@@ -67,6 +67,20 @@
   .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
   .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
   .stage-table td.box { height: 6mm; }
+  /* 2026-09-28 읽기면 개편 — 기능용 뼈대. 디자인 세션이 이 블록을 갈아 끼운다(클래스 이름은 계약) */
+  figure.board { margin: 0; }
+  .common .must-read { border: 2px solid #b00; padding: 2mm 3mm; margin: 2mm 0; }
+  .common .must-read h2 { margin: 0 0 1mm; }
+  .wire-legend { font-size: 9pt; margin: 1mm 0; }
+  .list-head { font-weight: 700; margin: 2mm 0 1mm; }
+  ol.steps, ol.probes, ul.removals { list-style: none; padding: 0; margin: 1mm 0; }
+  .step, .probe, .removal { display: flex; gap: 2mm; align-items: baseline;
+    padding: 0.6mm 0; break-inside: avoid; }
+  .step .n, .probe .n, .removal .n { min-width: 5mm; font-weight: 700; }
+  .step .route, .probe .route { white-space: nowrap; }
+  .step .desc, .probe .desc { color: #444; }
+  .removal { color: #a01e1e; }
+  .kept { font-size: 9pt; color: #666; margin: 1mm 0; }
   /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
   .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
