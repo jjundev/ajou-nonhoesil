@@ -17,7 +17,11 @@ from typing import Optional
 
 from . import md
 
-KINDS = ("common", "lookup", "sources", "open-issues", "circuit", "layout")
+KINDS = ("common", "lookup", "sources", "open-issues", "circuit", "layout", "must-read")
+
+# `must-read` 는 공통면 맨 위 경고 상자다(2026-09-28). 공통 규칙·미확정 표는 인쇄하지 않고
+# 이 절만 싣는다 — 학생이 실제로 읽는 유일한 규칙 자리라 길어지면 다시 안 읽힌다.
+MUST_READ_MAX = 5
 
 _H1 = re.compile(r"^#[ \t]+(?!#)(.+?)[ \t]*$", re.M)
 _ATTR = re.compile(r"^-[ \t]+([a-z_]+)[ \t]*:[ \t]*(.*)$")
@@ -228,6 +232,26 @@ def _leading_attrs(block: str):
     return attrs, "\n".join(lines[i:])
 
 
+def _check_must_read(title, body, line, path) -> None:
+    """불릿(들여쓴 이어지는 줄 포함)과 표만, 최상위 불릿은 `MUST_READ_MAX` 개까지."""
+    bullets = 0
+    for raw in body.split("\n"):
+        if not raw.strip() or raw[0] in " \t" or raw.lstrip().startswith("|"):
+            continue
+        if raw.startswith("- "):
+            bullets += 1
+            continue
+        raise NetlistError(
+            f"{path}:{line} 절 {title!r}(must-read) 에 불릿·표가 아닌 줄이 있습니다: "
+            f"{raw.strip()[:40]!r}. 이유·출처는 `kind: common` 절에 둔다 — 인쇄되지 않는다")
+    if bullets > MUST_READ_MAX:
+        raise NetlistError(
+            f"{path}:{line} 절 {title!r}(must-read) 의 불릿이 {bullets}개입니다. "
+            f"최대 {MUST_READ_MAX}개 — 실험실에서 손으로 할 일만 남긴다")
+    if bullets == 0 and "|" not in body:
+        raise NetlistError(f"{path}:{line} 절 {title!r}(must-read) 이 비어 있습니다")
+
+
 def _parse_section(title, block, line, path) -> NetlistSection:
     attrs, body = _leading_attrs(block)
     kind = attrs.get("kind")
@@ -236,6 +260,8 @@ def _parse_section(title, block, line, path) -> NetlistSection:
             f"{path}:{line} 절 {title!r} 의 kind 가 {kind!r} 입니다. "
             f"허용: {', '.join(KINDS)}. kind 가 인쇄 목적지를 정한다 — {_BACKFILL}"
         )
+    if kind == "must-read":
+        _check_must_read(title, body, line, path)
     if kind != "circuit":
         return NetlistSection(kind=kind, title=title, body=body, line=line)
     for required in ("id", "item", "tables"):
@@ -296,6 +322,12 @@ def parse_netlist(path) -> LabNetlist:
         end = heads[n + 1].start() if n + 1 < len(heads) else len(body)
         line = offset + body[: m.start()].count("\n") + 1
         sections.append(_parse_section(m.group(1), body[m.end():end], line, path))
+
+    must = [s for s in sections if s.kind == "must-read"]
+    if len(must) > 1:
+        raise NetlistError(
+            f"{path}:{must[1].line} must-read 절이 {len(must)}개입니다. 하나로 합친다 — "
+            f"상한 {MUST_READ_MAX} 은 공통면 전체의 줄 수다")
 
     seen = set()
     for c in [s for s in sections if s.kind == "circuit"]:
