@@ -113,6 +113,8 @@ python3 .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
 
   **완성본과 단계 그림을 섞지 않는다.** 예비보고서·손그림 원도는 완성본(`FINALS`)이고, 체크리스트의 단계 블록은 절차 그림(`BOARDS`)이다. netlist 의 `diagram` 은 완성본을, `## 단계` 표는 절차 그림을 가리킨다.
 
+  **따라 그리기 층.** 손그림을 팀원에게 맡길 때는 완성본을 층으로 나눈 PDF 를 준다 — `배치.py` 의 `LAYERS`(`{완성본 파일명: [(lo, hi, 이름), …]}`, 완성본 번호 1..N 을 빈틈없이)와 엔진 `BreadboardRenderer(layer=(lo, hi))`(앞 층 회색·번호 없음, 이번 층 색·완성본 번호, 뒤 층은 안 보이게 그리되 점유는 남긴다). `.venv/bin/python -m scripts.lab.trace_guide <실험번호>` 가 `결선도/팀원전달용/실험NN_따라그리기.pdf` 를 낸다. 절차 그림(`BOARDS`)은 임시 급전선이 있어 따라 그리기에 쓰지 않는다. 실물: 실험04(2026-09-28).
+
 **OR·NOR 은 2026-09-06 에 되살렸다.** 그 전에는 `e1_or`·`e1_nor` 가 각각
 AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름으로 냈다.**
 별칭을 지웠다가, `74HC32` 전용 빌더(`build_e1_or`)와 `74HC02` 빌더
