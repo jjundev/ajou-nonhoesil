@@ -1834,7 +1834,7 @@ class TestStageTable(unittest.TestCase):
 
     def test_걷기_단계와_마지막_단계에는_표가_없다(self):
         self.assertEqual(self.page.count('class="stage-table"'), 1)
-        self.assertNotIn('class="stage-table"', self._block("단계 2 · 걷기"))
+        self.assertNotIn('class="stage-table"', self._block("2단계 전 · 걷기"))
         self.assertNotIn('class="stage-table"', self._block("단계 2"))
 
     def test_기록표가_마지막_단계_바로_뒤에_온다(self):
@@ -1930,13 +1930,15 @@ class StageNodeLine(unittest.TestCase):
         html = render._stage_html(self._stage("A⊕B"), self._netlist(), self._section())
         self.assertNotIn("`", html)
 
-    def test_걷기_행의_제목은_단계_k_걷기다(self):
-        """`단계 2걷기` 로 찍으면 인쇄본에서 읽히지 않는다."""
+    def test_걷기_행의_제목은_k단계_전_걷기다(self):
+        """`단계 2걷기` 로 찍으면 인쇄본에서 읽히지 않고, `단계 2 · 걷기` 는 뒤의
+        `단계 2` 와 번호가 겹쳐 같은 단계를 두 번 하는 것처럼 읽힌다."""
         stage = {"n": "2걷기", "diagram": "", "todo": "걷기 ① 을 뽑는다",
                  "check": "뽑은 선이 손에 있다", "node": None, "walk": True, "walk_of": 2}
         html = render._stage_html(stage, self._netlist(), self._section())
-        self.assertIn("단계 2 · 걷기", html)
+        self.assertIn("<h3>2단계 전 · 걷기</h3>", html)
         self.assertNotIn("단계 2걷기", html)
+        self.assertNotIn("단계 2 · 걷기", html)
         self.assertNotIn("확인 노드", html)
 
 

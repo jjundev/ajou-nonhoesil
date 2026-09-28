@@ -796,9 +796,11 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
     table = ""
     if spec is not None and stage.get("node") and not last:
         table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]))
-    # 걷기 행은 `단계 2걷기` 가 아니라 `단계 2 · 걷기` 로 찍는다 — 인쇄본에서
-    # "2단계 머리의 걷기" 로 읽혀야 한다. 판정은 파서의 `walk` 키다.
-    head = (f"단계 {_esc(str(stage['walk_of']))} · 걷기" if stage.get("walk")
+    # 걷기 행은 `단계 2걷기` 가 아니라 `2단계 전 · 걷기` 로 찍는다 — 인쇄본에서
+    # "2단계 앞에 하는 정리" 로 읽혀야 한다. `단계 2 · 걷기` 는 바로 뒤 `단계 2`
+    # 와 번호가 겹쳐 같은 단계를 두 번 하는 것처럼 보였다(2026-09-29 실험04).
+    # 판정은 파서의 `walk` 키다.
+    head = (f"{_esc(str(stage['walk_of']))}단계 전 · 걷기" if stage.get("walk")
             else f"단계 {_esc(stage['n'])}")
     # 블록 하나가 PDF 한 쪽이다 — 쪽 높이는 `fit_pages` 가 블록 실측값으로 준다.
     return (f'<div class="stage"><h3>{head}</h3>{img}'
