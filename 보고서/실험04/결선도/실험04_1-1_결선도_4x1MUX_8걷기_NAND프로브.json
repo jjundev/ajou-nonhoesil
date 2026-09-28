@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 1-1: 4x1 MUX — 8단계 걷기 (임시 급전선 4가닥 + LED2~4 사슬)",
  "subtitle": "앞단 NAND 넷 → LED1~LED4 임시 급전선과 LED2~4 사슬(LED·330Ω·GND 선)을 뽑는다 · 회색은 그대로 둔다",
- "kept": 43,
+ "kept": 40,
  "steps": [],
  "removals": [
   {
@@ -32,6 +32,18 @@
   {
    "n": 7,
    "text": "좌 j36 → 우 c57 · 임시 급전: U2 pin 8 -> LED4 (8걷기에서 뽑는다)"
+  },
+  {
+   "n": null,
+   "text": "LED L2 사슬 (우 d46~우 e49) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)"
+  },
+  {
+   "n": null,
+   "text": "LED L3 사슬 (우 d51~우 e54) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)"
+  },
+  {
+   "n": null,
+   "text": "LED L4 사슬 (우 d57~우 e60) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)"
   }
  ],
  "probes": []

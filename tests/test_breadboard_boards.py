@@ -395,6 +395,24 @@ class TestE4MuxFinalOneLed(unittest.TestCase):
     def test_8단계_절차_그림은_Y_사슬_하나다(self):
         self.assertEqual(self._chains(8), ["Y"])
 
+    def test_8걷기는_뽑는_사슬을_번호_없는_줄로_낸다(self):
+        """사슬째 뽑는 LED·저항은 GND 선만 번호를 받는다. 부품은 빨간 점선 상자로 그리고
+        순서표에는 번호 없는 줄로 낸다 — 그림이 회색이면 "부품은 둔다" 로 읽힌다."""
+        name, fn, _stage = next(b for b in self.board.BOARDS if "8걷기" in b[0])
+        with tempfile.TemporaryDirectory() as d:
+            bb = fn(os.path.join(d, name))
+        self.assertEqual(sorted(bb.ghost["chains"].values()), ["L2", "L3", "L4"])
+        self.assertEqual(bb.ghost_chains_drawn, set(bb.ghost["chains"]))
+        lines = [r["text"] for r in bb.sidecar()["removals"] if r["n"] is None]
+        self.assertEqual(len(lines), 3)
+        self.assertTrue(all("LED·330Ω 을 뽑는다" in t for t in lines), lines)
+
+    def test_5걷기는_사슬을_뽑지_않는다(self):
+        """선만 뽑는 걷기 보드에는 `chains` 키가 없다 — 옛 걷기 보드 도장이 그대로다."""
+        name, fn, _stage = next(b for b in self.board.BOARDS if "5걷기" in b[0])
+        with tempfile.TemporaryDirectory() as d:
+            bb = fn(os.path.join(d, name))
+        self.assertNotIn("chains", bb.ghost)
 
 
 if __name__ == "__main__":
