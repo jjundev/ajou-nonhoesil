@@ -302,7 +302,7 @@ def _boxes_touch(a, b):
 
 
 class BreadboardRenderer:
-    def __init__(self, template_path=None, baseline=None):
+    def __init__(self, template_path=None, baseline=None, layer=None):
         if template_path is None:
             template_path = _default_template()
         if not os.path.exists(template_path):
@@ -409,6 +409,21 @@ class BreadboardRenderer:
         self.ghost_drawn = {}     # key -> n. export() 가 빌더가 안 그린 key 를 잡는다
         if self.ghost is not None:
             self.partial = True
+        # 따라 그리기 층 — (lo, hi). 완성본 빌더를 그대로 돌리되 번호 lo 앞 배선은 회색·번호
+        # 없이, lo~hi 는 색·완성본 번호로, hi 뒤는 버리는 판(`_hidden_draw`)에 그린다.
+        # 안 보이는 배선도 점유표·구간·결선 순서표에는 남긴다 — 빼면 뒤 배선의
+        # `free_rail_row()` 가 다른 행을 골라 완성본과 다른 그림이 된다(2026-09-28 팀원 전달용).
+        # 기준선 사슬과 섞지 않는다 — 기준선의 회색은 "실험실에서 손대지 않는다" 는 다른 뜻이다
+        if layer is not None:
+            if baseline is not None:
+                raise ValueError('layer 는 기준선 없는 완성본에만 준다 — baseline 과 함께 못 준다')
+            ok = (isinstance(layer, tuple) and len(layer) == 2
+                  and all(type(v) is int for v in layer) and 1 <= layer[0] <= layer[1])
+            if not ok:
+                raise ValueError(f'layer 는 1 <= lo <= hi 인 정수 쌍이어야 한다: {layer!r}')
+        self.layer = layer
+        self._hidden_draw = (_ScaledDraw(Image.new('RGBA', self.im.size, (0, 0, 0, 0)))
+                             if layer is not None else None)
         self.submit = True
         self.title = ""
         self.subtitle = ""
@@ -436,6 +451,17 @@ class BreadboardRenderer:
 
         self._addr_map = self._build_addr_map()
         self._sym_map = self._build_sym_map()
+
+    def _layer_view(self, n):
+        """따라 그리기 층에서 번호 n 배선의 모양 — 'shown'(색·번호) · 'faded'(회색) · 'hidden'."""
+        if self.layer is None:
+            return 'shown'
+        lo, hi = self.layer
+        if n < lo:
+            return 'faded'
+        if n > hi:
+            return 'hidden'
+        return 'shown'
 
     @property
     def partial(self):
@@ -898,6 +924,9 @@ class BreadboardRenderer:
         기준선(`baseline`)에 같은 (색, 끝점, 끝점) 이 있으면 **회색으로 그리고
         번호를 주지 않는다** — 앞 단계에서 꽂아 둔 그대로다. 점유표·구간·레일
         접촉은 똑같이 남긴다: 회색이어도 그림대로 꽂히는지는 verify() 가 본다.
+
+        따라 그리기 층(`layer`)이면 번호로 모양을 정한다(`_layer_view`). 어느 모양이든
+        점유표·구간·결선 순서표에는 남는다 — 번호와 뒤 배선 자리가 완성본과 같아야 한다.
         """
         key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
         if self.ghost is not None and key in self.ghost['wires']:
@@ -906,10 +935,12 @@ class BreadboardRenderer:
             self.ghost_drawn[key] = n
             return None
         kept = self.baseline is not None and key in self.baseline['wires']
-        color = KEEP if kept else WIRE[kind]
-        self.draw.line(points, fill=color, width=width, joint='curve')
+        view = self._layer_view(len(self.steps) + 1) if self.numbered and not kept else 'shown'
+        draw = self._hidden_draw if view == 'hidden' else self.draw
+        color = KEEP if kept or view == 'faded' else WIRE[kind]
+        draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
-            self.draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
+            draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
             self.touch_rail(kind, p[0])
@@ -924,10 +955,11 @@ class BreadboardRenderer:
             return None
 
         n = len(self.steps) + 1
-        if marker_at is None:
-            (x0, y0), (x1, y1) = points[0], points[1] if len(points) > 1 else points[0]
-            marker_at = ((x0 + x1) // 2, (y0 + y1) // 2)
-        self._marker(marker_at[0], marker_at[1], n, color)
+        if view == 'shown':
+            if marker_at is None:
+                (x0, y0), (x1, y1) = points[0], points[1] if len(points) > 1 else points[0]
+                marker_at = ((x0 + x1) // 2, (y0 + y1) // 2)
+            self._marker(marker_at[0], marker_at[1], n, color)
 
         frm = frm or self.addr(*points[0])
         to = to or self.addr(*points[-1])
@@ -948,7 +980,7 @@ class BreadboardRenderer:
         if not self.numbered:
             return None
         n = len(self.steps) + 1
-        if marker_at is not None:
+        if marker_at is not None and self._layer_view(n) == 'shown':
             self._marker(marker_at[0], marker_at[1], n, WIRE[kind])
         self.steps.append({'n': n, 'kind': kind, 'frm': frm, 'to': to,
                            'desc': desc, 'count': count})
@@ -1770,6 +1802,9 @@ class BreadboardRenderer:
             'removed': self.removed(),
             'wiring': self.wiring(),
         }
+        if self.layer is not None:
+            # 층 보드에서만 든다 — 완성본 도장은 그대로다
+            out['layer'] = list(self.layer)
         if self.ghost is not None:
             # 걷기 보드에서만 든다 — 다른 보드의 도장은 그대로라 재생성 범위가 안 번진다
             out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]

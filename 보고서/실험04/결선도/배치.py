@@ -408,14 +408,18 @@ def _dmux_draw(bb, stage):
     bb.note(_INPUT_NOTE)
 
 
-def build_e4_mux(output_path, template_path=None, stage=None, baseline=None):
+def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, layer=None):
     """실험 1-1 · Enable 을 갖는 4x1 MUX (74HC04 + 74HC20 ×3). netlist C1. 8단계.
 
       stage 1~3  U4 인버터 셋 — LED4·3·2 임시 급전으로 E'·S1'·S0'
       stage 4~7  앞단 NAND 넷 — LED1~4 임시 급전 (5걷기·8걷기가 뽑는다)
       stage 8    U3 합류 NAND + LED1 = Y · 완성
+
+    `layer=(lo, hi)` 는 완성본(stage=None)의 따라 그리기 층이다 — `LAYERS` 참고.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    if layer is not None and stage is not None:
+        raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer)
     bb.enable_steps()
     _stage_check('mux', stage)
     title = _MUX_TITLE[stage] if stage is not None else "실험 1-1: 4x1 MUX 결선도"
@@ -428,13 +432,17 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None):
     return bb
 
 
-def build_e4_dmux(output_path, template_path=None, stage=None, baseline=None):
+def build_e4_dmux(output_path, template_path=None, stage=None, baseline=None, layer=None):
     """실험 2-1 · Enable 을 갖는 1x4 DMUX (74HC04 + 74HC11 ×2). netlist C2. 4단계.
 
     MUX 신호선을 전부 뽑고 새로 짓는다(`rebuild: true`) — 사슬에는 `fresh_board` 로 들어가
     기준선 없이 그린다. 출력 넷이 곧 LED 넷이라 임시 급전선도 걷기 그림도 없다.
+
+    `layer=(lo, hi)` 는 완성본(stage=None)의 따라 그리기 층이다 — `LAYERS` 참고.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    if layer is not None and stage is not None:
+        raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림과 섞지 않는다')
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer)
     bb.enable_steps()
     _stage_check('dmux', stage)
     title = _DMUX_TITLE[stage] if stage is not None else "실험 2-1: 1x4 DMUX 결선도"
@@ -478,6 +486,31 @@ FINALS = [
     ("실험04_1-1_결선도_4x1MUX.png", build_e4_mux),
     ("실험04_2-1_결선도_1x4DMUX.png", build_e4_dmux),
 ]
+
+
+# 따라 그리기 층 — 팀원이 완성본을 한 쪽에 한 층씩 옮겨 그린다(`scripts/lab/trace_guide.py`).
+# (lo, hi, 이름): 완성본 결선 번호 lo~hi 가 그 층이다. 1..N 을 빈틈없이 덮는다
+# (`tests/test_trace_guide_layers.py`). 번호는 완성본 사이드카 `steps` 순서 그대로다 —
+# 빌더에서 배선 순서를 바꾸면 여기도 고친다.
+LAYERS = {
+    "실험04_1-1_결선도_4x1MUX.png": [
+        (1, 7, "전원 잭·레일 브리지"),
+        (8, 17, "칩 전원·Y LED"),
+        (18, 24, "입력 E·S1·S0 + NAND0 (U1)"),
+        (25, 28, "NAND1 (U1)"),
+        (29, 32, "NAND2 (U2)"),
+        (33, 36, "NAND3 (U2)"),
+        (37, 41, "합류 NAND U3 → Y"),
+    ],
+    "실험04_2-1_결선도_1x4DMUX.png": [
+        (1, 7, "전원 잭·레일 브리지"),
+        (8, 21, "칩 전원·LED 네 사슬"),
+        (22, 25, "입력 S0·S1·D + Y3 (U6)"),
+        (26, 30, "Y1 (U5)"),
+        (31, 35, "Y2 (U5)"),
+        (36, 39, "Y0 (U5)"),
+    ],
+}
 
 
 def _e4_baseline(index, template_path=None):
