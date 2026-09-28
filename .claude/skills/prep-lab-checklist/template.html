@@ -26,7 +26,9 @@
   }
 
   body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt;
-         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0; }
+         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0 1px 0 0; }
+  /* 오른쪽 1px: 크롬 헤드리스는 쪽 폭을 209.889mm 로 잡아 인쇄 영역을 레이아웃(190mm)보다
+     0.4px 좁게 자른다 — 폭 100% 상자의 오른쪽 테두리가 잘렸다(2026-09-29 실험04 칩 상자). */
   h1 { font-size: 17pt; font-weight: 800; letter-spacing: -0.01em;
        margin: 0 0 3mm; padding-bottom: 2mm; border-bottom: 2px solid var(--ink); }
   h2 { font-size: 13pt; font-weight: 800; margin: 4mm 0 2mm; }
