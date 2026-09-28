@@ -10,12 +10,19 @@
     .venv/bin/python -m scripts.lab.trace_guide 4
 """
 import argparse
+import contextlib
 import html
+import inspect
+import io
+import shutil
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import quote
+
+from pypdf import PdfReader
 
 from scripts.lab import config
 from scripts.lab.hand_grid import load_renderer
@@ -23,8 +30,7 @@ from scripts.lab.html2pdf import PdfError, html_to_pdf
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = '팀원전달용'
-LEGEND = ('회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요. '
-          '칩·LED·저항은 처음부터 그려 두세요.')
+LEGEND = '회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요.'
 
 CSS = """
 @page { size: 210mm 420mm; margin: 12mm 10mm; }
@@ -54,7 +60,7 @@ class Page:
     heading: str
     rows: list        # 사이드카 steps 중 이 쪽 번호
     notes: list       # 완성본 notes — 0쪽에만
-    legend: bool      # 층 쪽 안내 한 줄
+    legend: str       # 층 쪽 안내 한 줄 — 완성본 쪽은 ''
 
 
 def check_layers(name, layers, n_steps):
@@ -71,8 +77,15 @@ def check_layers(name, layers, n_steps):
 
 
 def build_pages(board, work_dir):
-    """완성본마다 0쪽 + 층 쪽. 그림과 사이드카는 `work_dir` 에 쓴다."""
-    work_dir = Path(work_dir)
+    """완성본마다 0쪽 + 층 쪽. 그림과 사이드카는 `work_dir` 에 쓴다.
+
+    엔진이 보드마다 찍는 `[SUCCESS] Exported: <임시 경로>` 는 삼킨다 — 곧 지워질 경로다.
+    """
+    with contextlib.redirect_stdout(io.StringIO()):
+        return _build_pages(board, Path(work_dir))
+
+
+def _build_pages(board, work_dir):
     layers = getattr(board, 'LAYERS', None)
     if not layers:
         raise LayerError('배치.py 에 LAYERS 가 없다 — 완성본마다 (lo, hi, 이름) 층 목록을 둔다')
@@ -80,19 +93,31 @@ def build_pages(board, work_dir):
     for filename, fn in board.FINALS:
         if filename not in layers:
             raise LayerError(f'{filename}: LAYERS 에 층 목록이 없다')
+        if 'layer' not in inspect.signature(fn).parameters:
+            raise LayerError(f'{filename}: 빌더 {fn.__name__} 가 layer 를 안 받는다 — 시그니처에 '
+                             'layer=None 을 더하고 BreadboardRenderer(..., layer=layer) 로 넘긴다')
         final = fn(str(work_dir / filename), None)
         steps = final.sidecar()['steps']
         check_layers(filename, layers[filename], len(steps))
         pages.append(Page(filename, f'{final.title} — 완성본 (목표 그림)', [],
-                          list(final.notes), False))
-        stem, total = Path(filename).stem, len(layers[filename])
+                          list(final.notes), ''))
+        stem, total, legend = Path(filename).stem, len(layers[filename]), legend_for(final)
         for i, (lo, hi, label) in enumerate(layers[filename], 1):
             name = f'{stem}_층{i}.png'
             fn(str(work_dir / name), None, layer=(lo, hi))
             rows = [s for s in steps if lo <= s['n'] <= hi]
             pages.append(Page(name, f'{final.title} — {i}/{total} · {label} ({lo}~{hi}번)',
-                              rows, [], True))
+                              rows, [], legend))
     return pages
+
+
+def legend_for(final):
+    """층 쪽 안내. 칩·LED·저항은 층과 상관없이 모든 쪽에 색으로 그려지므로, 그 보드에 **있는**
+    부품만 처음부터 그려 두라고 덧붙인다(실험02 는 LED·저항이 없다)."""
+    parts = (['칩'] if final.chips else []) + (['LED', '저항'] if final.led_chains else [])
+    if not parts:
+        return LEGEND
+    return f'{LEGEND} {"·".join(parts)}은 처음부터 그려 두세요.'
 
 
 def _row(s):
@@ -106,7 +131,7 @@ def render_html(pages, title):
     for p in pages:
         parts = [f'<section class="page"><h1>{html.escape(p.heading)}</h1>']
         if p.legend:
-            parts.append(f'<p class="legend">{html.escape(LEGEND)}</p>')
+            parts.append(f'<p class="legend">{html.escape(p.legend)}</p>')
         parts.append(f'<img src="{quote(p.image)}" alt="{html.escape(p.heading)}">')
         if p.rows:
             parts.append('<table><thead><tr><th>번호</th><th>홀</th><th>뜻</th></tr></thead><tbody>'
@@ -122,14 +147,33 @@ def render_html(pages, title):
 
 
 def make_pdf(board, out):
-    """`board` 의 따라 그리기 PDF 를 `out` 에 쓴다. 쪽 수(섹션 수)를 돌려준다."""
+    """`board` 의 따라 그리기 PDF 를 `out` 에 쓴다. 쪽 수(섹션 수)를 돌려준다.
+
+    임시 폴더에서 만들고 `check_pdf` 를 통과한 뒤에만 `out` 으로 옮긴다 — 넘쳐서 실패해도
+    커밋된 PDF 는 그대로 남는다.
+    """
     out = Path(out)
     with tempfile.TemporaryDirectory() as d:
         pages = build_pages(board, d)
         html_path = Path(d) / 'guide.html'
         html_path.write_text(render_html(pages, out.stem), encoding='utf-8')
-        html_to_pdf(html_path, out)
+        made = Path(d) / 'guide.pdf'
+        html_to_pdf(html_path, made)
+        check_pdf(made, pages)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(made, out)
     return len(pages)
+
+
+def check_pdf(out, pages):
+    """섹션 하나가 정확히 한 쪽, 쪽마다 그림 하나인지. 표가 넘치면 그림 없는 쪽이 끼어든다."""
+    counts = [len(p.images) for p in PdfReader(str(out)).pages]
+    if counts == [1] * len(pages):
+        return
+    k = next((i for i, c in enumerate(counts) if c != 1), len(pages))
+    culprit = pages[max(k - 1, 0)].heading
+    raise LayerError(f'PDF 가 {len(counts)}쪽이다(섹션 {len(pages)}개) — {k + 1}쪽에 그림이 없다. '
+                     f'"{culprit}" 쪽이 넘쳤다 — 그 층을 둘로 쪼갠다')
 
 
 def output_path(experiment):
@@ -151,7 +195,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         out, n = make_guide(args.experiment, args.out)
-    except (LayerError, PdfError, FileNotFoundError) as e:
+    except (LayerError, PdfError, FileNotFoundError, subprocess.TimeoutExpired) as e:
         print(f'[ERROR] {e}', file=sys.stderr)
         return 1
     print(f'[SUCCESS] {out} ({n}쪽)')

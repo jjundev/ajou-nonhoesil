@@ -58,13 +58,23 @@ class Layers(unittest.TestCase):
                 self.assertEqual(expected - 1, len(bb.steps))
 
     def test_층_보드는_완성본과_같은_결선(self):
+        """번호 배지는 층마다 완성본 배지의 제 몫만 — 층을 모으면 완성본 배지와 같다.
+
+        배지 수를 hi-lo+1 로 세지 않는다. `connect_unused_inputs` 의 `step_note` 처럼
+        배지 없이 순서표에만 오르는 번호가 있다(실험02 6·7번 — 완성본도 7번에 배지 5개).
+        """
         for filename, (fn, final, layers) in self.finals.items():
+            seen = []
             for i, (lo, hi, _label) in enumerate(layers, 1):
                 with self.subTest(filename=filename, layer=i):
                     p = os.path.join(self.tmp.name, f'{i}_{filename}')
                     bb = fn(p, None, layer=(lo, hi))
                     self.assertEqual(bb.sidecar()['steps'], final.sidecar()['steps'])
-                    self.assertEqual(len(bb.marker_boxes), hi - lo + 1)
+                    self.assertLessEqual(len(bb.marker_boxes), hi - lo + 1)
+                    self.assertTrue(set(bb.marker_boxes) <= set(final.marker_boxes))
+                    seen += bb.marker_boxes
+            with self.subTest(filename=filename, layer='합'):
+                self.assertCountEqual(seen, final.marker_boxes)
 
     def test_단계와_층은_함께_못_준다(self):
         board = self.boards[4]
