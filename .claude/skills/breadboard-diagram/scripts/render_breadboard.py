@@ -195,6 +195,9 @@ class _ScaledDraw:
     def ellipse(self, xy, *a, **k):
         return self._d.ellipse(_sc(xy), *a, **self._kw(k))
 
+    def polygon(self, xy, *a, **k):
+        return self._d.polygon(_sc(xy), *a, **self._kw(k))
+
     def arc(self, xy, start, end, *a, **k):
         return self._d.arc(_sc(xy), start, end, *a, **self._kw(k))
 
@@ -281,6 +284,15 @@ REMOVE = (160, 30, 30, 255)
 # 문다. 그래서 위 네 색에 끼워 넣지 않고 회색 점선으로 따로 그리고, 순서표도
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
 PROBE = (105, 105, 110, 255)
+
+# **입력** 신호 이름 배지의 색 — 이 색으로 채운 상자에 흰 ▶ 와 흰 글자. 네 배선색(빨강·
+# 파랑·검정·초록)과 출력 LED 의 빨강, 유지선 회색, 계측 회색 어느 것과도 겹치지 않는
+# 보라다. 2026-09-29 실험04 MUX: 입력 여섯이 흰 바탕 검정 글자라 흰 번호 원 41 개 사이에
+# 묻혔다. ▶ 는 글리프가 아니라 다각형이다 — 이모지·기호 글리프는 기계마다 □ 가 되고
+# 손그림에 못 옮긴다
+INPUT = (110, 40, 160, 255)
+INPUT_TRI = 4.5   # ▶ 폭. 좌 바깥 여백(보드 테두리 149 ~ GND 레일 174, 25px)에 `D0` 배지가
+                  # 들어가는 상한이다 — 글자 15 + ▶ 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
 
 # 단계 하나가 꽂는 **새 신호선**의 상한. 2026-09-20 단계 세분화: 관측 노드 하나 =
 # 단계 하나이고 새 신호선은 셋 이하다 — 확인이 실패했을 때 용의자가 그 셋이다.
@@ -786,7 +798,8 @@ class BreadboardRenderer:
         self.draw.rectangle([bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad], fill=bg_col, outline=text_col, width=1)
         self.draw.text((x, y), text, fill=text_col, font=font)
 
-    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None):
+    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
+                   filled=False):
         """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z.
 
         2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
@@ -797,16 +810,29 @@ class BreadboardRenderer:
         `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 배지 상자의 왼쪽
         끝이다. `seg` 는 이 이름이 가리키는 배선의 `_segments` 번호 — 겹침 검사가
         그 선만 봐준다.
+
+        `filled=True` 는 입력 표지다 — `col` 로 채운 상자에 흰 ▶ 와 흰 글자. 좌우 여백을
+        1 로 줄여 ▶ 자리를 낸다(`INPUT_TRI`). 상자(겹침 검사 대상)는 ▶ 까지 덮는다.
         """
         font, pad = self.font_en_bold, 2
         b = self.draw.textbbox((0, 0), name, font=font)
         w, h = b[2] - b[0], b[3] - b[1]
-        left = x - w / 2 if align == 'center' else x + pad
-        tx, ty = left - b[0], y - h / 2 - b[1]
-        self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
+        hpad = 1 if filled else pad
+        tri, gap = (INPUT_TRI, 1) if filled else (0, 0)
+        full = tri + gap + w
+        left = x - full / 2 if align == 'center' else x + hpad
+        tx, ty = left + tri + gap - b[0], y - h / 2 - b[1]
         box = self.draw.textbbox((tx, ty), name, font=font)
-        self.tag_boxes.append(
-            (name, (box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad), seg))
+        box = (box[0] - tri - gap - hpad, box[1] - pad, box[2] + hpad, box[3] + pad)
+        if filled:
+            self.draw.rectangle(box, fill=col, outline=col, width=1)
+            cy, x0 = (box[1] + box[3]) / 2, box[0] + hpad
+            self.draw.polygon([(x0, cy - h * 0.4), (x0 + tri, cy), (x0, cy + h * 0.4)],
+                              fill=(255, 255, 255, 255))
+            self.draw.text((tx, ty), name, fill=(255, 255, 255, 255), font=font)
+        else:
+            self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
+        self.tag_boxes.append((name, box, seg))
 
     def draw_wire(self, points, color, width=3):
         """번호 없는 생짜 배선. **지금 이 함수를 부르는 빌더는 하나도 없다.**
@@ -2028,9 +2054,10 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         # 것)의 끝을 가상 입력 노드로 바꾸려다 단언에 걸린다.
         bb.touch_rail('gnd', x_rail)
         bb.input_node(name, c[col], row)
-    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}")
+    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}",
+         col=INPUT)
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
-    bb.signal_tag(name, badge_x, y_rail, seg=len(bb._segments) - 1)
+    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, filled=True)
 
 
 # ---------------------------------------------------------------------------
