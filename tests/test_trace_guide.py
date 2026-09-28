@@ -109,6 +109,15 @@ class Pdf(unittest.TestCase):
                 self.assertEqual(len(page.images), 1)
                 self.assertAlmostEqual(float(page.mediabox.height), 420 / 25.4 * 72, delta=2)
 
+    def test_실험04_는_층마다_한_쪽(self):
+        """DMUX 2층(표 14행)이 제일 길다 — 넘치면 그림 없는 쪽이 생긴다(2026-09-28 16쪽)."""
+        from pypdf import PdfReader
+        with tempfile.TemporaryDirectory() as d:
+            out, n = trace_guide.make_guide(4, Path(d) / 'e4.pdf')
+            reader = PdfReader(str(out))
+            self.assertEqual(n, 15)
+            self.assertEqual([len(p.images) for p in reader.pages], [1] * n)
+
 
 class Main(unittest.TestCase):
     def test_PDF_실패는_종료코드_1(self):

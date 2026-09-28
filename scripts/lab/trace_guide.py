@@ -33,9 +33,10 @@ body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 11pt; color: #
 h1 { font-size: 15pt; margin: 0 0 3mm; }
 .legend { margin: 0 0 3mm; color: #555; }
 img { width: 100%; display: block; }
-table { width: 100%; border-collapse: collapse; margin-top: 4mm; }
-th, td { border-bottom: 1px solid #ccc; padding: 1.5mm 2mm; text-align: left; vertical-align: top; }
-td.n { width: 10mm; font-weight: 700; }
+table { width: 100%; border-collapse: collapse; margin-top: 3mm; font-size: 10pt; }
+th, td { border-bottom: 1px solid #ccc; padding: 1mm 2mm; text-align: left; vertical-align: top; }
+td.n { width: 8mm; font-weight: 700; }
+td.hole { white-space: nowrap; }
 .kind-vcc { color: #c81e1e; } .kind-gnd { color: #1e3cc8; }
 .kind-sig { color: #191919; } .kind-mid { color: #14823c; }
 ul.notes { margin-top: 4mm; padding-left: 5mm; }
@@ -95,7 +96,7 @@ def build_pages(board, work_dir):
 
 def _row(s):
     return (f'<tr><td class="n kind-{s["kind"]}">{s["n"]}</td>'
-            f'<td>{html.escape(s["from"])} → {html.escape(s["to"])}</td>'
+            f'<td class="hole">{html.escape(s["from"])} → {html.escape(s["to"])}</td>'
             f'<td>{html.escape(s["desc"])}</td></tr>')
 
 
