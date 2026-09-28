@@ -5,60 +5,184 @@
      폭·여백은 fit_pages 가 이 규칙에서 읽으므로 `size: <폭>mm <높이>mm; margin: <세로>mm <가로>mm`
      꼴을 유지한다. */
   @page { size: 210mm 420mm; margin: 12mm 10mm; }
-  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
 
-  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
+  /* 2026-09-28 디자인 — 실험실 조명 아래 태블릿에서 한 손으로 보는 면이다. 무채색 고대비에
+     색은 결선도의 선 색 넷(+ 뽑기 빨강)에만 쓴다: 색이 보이면 그건 그림의 선과 같은 뜻이다.
+     값은 여기서만 정한다. 선 색 RGB 는 breadboard-diagram 렌더러와 같다. */
+  :root {
+    --ink: #111111;          /* 본문·테두리 */
+    --muted: #555555;        /* 보조 글(흰 바탕 7.5:1) */
+    --rule: #333333;         /* 칸 선 */
+    --hair: #bbbbbb;         /* 얇은 구분선 */
+    --tint: #f2f2f2;         /* 줄무늬·머리칸 */
+    --paper: #ffffff;
+    --vcc: rgb(200, 30, 30);
+    --gnd: rgb(30, 60, 200);
+    --sig: rgb(25, 25, 25);
+    --mid: rgb(20, 130, 60);
+    --pull: rgb(160, 30, 30);   /* 빨간 점선 = 뽑을 선 */
+    --probe: #777777;           /* 회색 점선 = 계측기 */
+    --dot: 5.5mm;               /* 번호 원 지름 */
+  }
+
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt;
+         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0; }
+  h1 { font-size: 17pt; font-weight: 800; letter-spacing: -0.01em;
+       margin: 0 0 3mm; padding-bottom: 2mm; border-bottom: 2px solid var(--ink); }
+  h2 { font-size: 13pt; font-weight: 800; margin: 4mm 0 2mm; }
+  h3 { font-size: 12pt; font-weight: 800; margin: 3mm 0 1.5mm; }
+  h4 { font-size: 11pt; font-weight: 700; }
+  p { margin: 1.5mm 0; }
+
+  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
+     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
+  .box { display: inline-block; width: 4mm; height: 4mm; flex: none;
+         border: 1.5px solid var(--ink); border-radius: 0.6mm; background: var(--paper);
+         vertical-align: middle; margin-right: 2mm; box-sizing: border-box; }
+  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; border-radius: 0;
+           border: 1px solid var(--rule); background: var(--tint); }
+
+  /* ── 공통면 ─────────────────────────────────────────────── */
+  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. 실험01 이 이 쪽에 아슬아슬하게
+     들어간다 — 목록 글자(12pt·1.7)는 키우지 않고, 머리글·상자 여백으로 무게를 준다. */
   .common { break-after: page; }
-  .common .power { font-weight: 700; border: 2px solid #000;
-                   padding: 3mm; margin-bottom: 4mm; }
+  /* 전원 줄은 매번 같은 내용이라 한 단계 낮춘다 — 첫눈은 `꼭 읽을 것` 이 가져간다. */
+  .common .power { font-weight: 700; border: 1px solid var(--rule); background: var(--tint);
+                   padding: 2mm 3mm; margin-bottom: 3mm; border-radius: 1mm; }
   .common li { font-size: 12pt; line-height: 1.7; }
 
-  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
-  .circuit { break-before: page; }
-  .closing { break-before: page; }
+  /* 꼭 읽을 것 — 공통면에서 가장 무거운 덩어리. 검은 머리띠 + 굵은 테두리. */
+  .common .must-read { border: 2.5px solid var(--ink); border-radius: 1mm;
+                       padding: 0 3.5mm 1.5mm; margin: 0 0 3mm; break-inside: avoid; }
+  .common .must-read h2 { margin: 0 -3.5mm 1.5mm; padding: 1.5mm 3.5mm;
+                          background: var(--ink); color: var(--paper);
+                          font-size: 13pt; letter-spacing: 0.02em; }
+  .common .must-read h2::before { content: "!"; display: inline-block; width: 5mm; height: 5mm;
+                                  margin-right: 2mm; border-radius: 50%; text-align: center;
+                                  line-height: 5mm; font-size: 10pt; vertical-align: 0.3mm;
+                                  background: var(--paper); color: var(--ink); }
+  .common .must-read ul { margin: 0; padding-left: 5mm; }
+  .common .must-read li { font-weight: 600; }
+  .common .must-read li::marker { color: var(--ink); }
+
+  .common .caution { border: 1px solid var(--rule); border-radius: 1mm; padding: 1.5mm 3mm;
+                     margin: 0 0 2mm; font-size: 9.5pt; break-inside: avoid; }
+  .common .caution ul { margin: 0.5mm 0 0; padding-left: 5mm; }
+  .common .caution li { font-size: inherit; line-height: 1.4; }
+
+  /* 선 색 범례 — 그림과 목록 번호 원을 잇는 열쇠라 줄로 따로 세운다. */
+  .wire-legend { font-size: 9pt; margin: 2mm 0 1mm; padding: 1mm 0 1mm 3mm;
+                 border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .wire-legend::before { content: ""; display: inline-block; width: 15mm; height: 2.4mm;
+                         margin-right: 2mm; vertical-align: -0.2mm; border-radius: 0.4mm;
+                         background: linear-gradient(90deg,
+                           var(--vcc) 0 25%, var(--gnd) 25% 50%, var(--sig) 50% 75%, var(--mid) 75%); }
+  .legend { font-size: 9pt; color: var(--muted); margin: 0.8mm 0 0.8mm; }
+  .legend + h2 { margin-top: 3mm; }
+
+  .common th, .common td { padding: 1.2mm 2.5mm; }
+  .common table { margin-bottom: 3mm; }
+  .common .tblock p { font-size: 9pt; color: var(--muted); margin: 0 0 2mm; }
 
   /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
   .flow td, .flow th { text-align: left; }
+  .flow td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* ── 회로 ─────────────────────────────────────────────── */
+  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
+  .circuit { break-before: page; }
+  .closing { break-before: page; }
+  .circuit > h2 { font-size: 14pt; margin: 0 0 2mm; padding: 0 0 1.5mm;
+                  border-bottom: 2px solid var(--ink); }
 
   /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
-  .banner { border: 2px solid #000; padding: 2mm 3mm; margin: 2mm 0 3mm;
-            font-weight: 700; }
+  .banner { border: 2px solid var(--ink); border-radius: 1mm; background: var(--tint);
+            padding: 2mm 3mm; margin: 2mm 0 3mm; font-weight: 700; font-size: 11pt; }
 
   /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
      그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
      3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
      칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
-  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
-                   break-inside: avoid; }
+  .wirebox .chip { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm;
+                   margin-bottom: 3mm; break-inside: avoid; }
   .wirebox img { break-after: avoid; max-height: 370mm; object-fit: contain; }
   /* `완성본 — 손그림 원도` 캡션만 쪽 끝에 남지 않게 */
-  .wirebox > p.src:first-child { break-after: avoid; }
-  .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
-  .wirebox ol { margin: 0; padding-left: 6mm; }
-  .wirebox li { font-size: 11pt; line-height: 1.6; }
+  .wirebox > p.src:first-child { break-after: avoid; font-size: 10.5pt; color: var(--ink);
+                                 margin-top: 3mm; }
+  .wirebox .chip h4 { margin: 0 0 1.5mm; padding-bottom: 1mm; border-bottom: 1px solid var(--hair); }
+  .wirebox .chip ol { margin: 0; padding-left: 6mm; }
+  .wirebox .chip li { font-size: 11pt; line-height: 1.6; }
+  .wirebox .submit { font-size: 9.5pt; color: var(--ink); font-weight: 700; margin: 3mm 0 2mm; }
 
   /* 단계 블록 — 칩 하나 = 단계 하나. 회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다.
      블록 하나가 PDF 한 쪽이다: `scripts/lab/fit_pages.py` 가 블록 높이를 실측해 블록마다
      제 높이의 쪽(`@page fit-<i>`)을 준다 — 2026-09-28 사용자 "쪽 길이를 내용에 맞춰".
      고정 높이 쪽에서는 그림과 확인 줄·단계 진리표가 쪽 경계에서 갈렸다. 그래서 여기에는
-     쪽 넘김 규칙을 두지 않는다. fit_pages 를 거치지 않은 HTML 은 기본 쪽에서 흐른다. */
-  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; }
-  .stage h3 { margin: 0 0 1.5mm; break-after: avoid; }
+     쪽 넘김 규칙을 두지 않는다. fit_pages 를 거치지 않은 HTML 은 기본 쪽에서 흐른다.
+     가로 테두리+안쪽 여백은 8mm 안이다(test: 가장 긴 결선도 폭 계산). */
+  .stage { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm; margin: 3mm 0; }
+  .stage h3 { margin: 0 0 2mm; padding-bottom: 1.5mm; border-bottom: 1px solid var(--hair);
+              break-after: avoid; }
   .stage img { display: block; max-height: 370mm; object-fit: contain; }
+  .stage > p { font-size: 10pt; }
+  /* 걷기 블록 = 뽑기만 있고 새로 꽂는 목록이 없는 단계. render.py 가 따로 표시하지
+     않으므로 내용으로 가려낸다 — 테두리 두께는 같게 둬서 fit_pages 실측과 어긋나지 않는다. */
+  .stage:has(> ul.removals):not(:has(> ol.steps)) { border-style: dashed; border-color: var(--pull); }
+  .stage:has(> ul.removals):not(:has(> ol.steps)) h3 { color: var(--pull); border-bottom-color: var(--pull); }
 
-  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
-  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
-  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
-  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
-     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
-     통짜로 묶어도 백지 비용이 없다. */
-  .unused .chipunused { margin-top: 2mm; break-inside: avoid; }
+  figure.board { margin: 0 0 1mm; }
 
-  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
-     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
-  .box { display: inline-block; width: 4mm; height: 4mm;
-         border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
-  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+  /* ── 결선도 옆 목록 ─────────────────────────────────────
+     한 줄 = ☐ · 번호 원 · 어느 홀에서 어느 홀로(.route) · 보조 설명(.desc).
+     번호 원은 그림 위 번호 원과 같은 색이다(data-kind). 경로가 가장 크고 굵다 —
+     학생이 막히는 정보가 그것이다. 설명은 자리가 모자라면 경로 아래로 내려간다. */
+  .list-head { font-weight: 800; font-size: 10.5pt; margin: 3mm 0 1mm; }
+  ol.steps, ol.probes, ul.removals { list-style: none; padding: 0; margin: 1mm 0 2mm; }
+  .step, .probe, .removal { position: relative; display: flex; flex-wrap: wrap; align-items: baseline;
+    column-gap: 3mm; row-gap: 0; padding: 1.2mm 2mm 1.2mm 15mm; break-inside: avoid;
+    border-bottom: 1px solid var(--tint); }
+  .step:nth-child(even), .probe:nth-child(even) { background: var(--tint); }
+  /* ☐ 와 번호는 줄 왼쪽 자리에 고정한다 — 번호가 없는 줄도 경로가 같은 세로선에서 시작한다. */
+  .step > .box, .probe > .box, .removal > .box { position: absolute; left: 2mm; top: 2.2mm; margin: 0; }
+  .step .n, .probe .n, .removal .n { position: absolute; left: 7.8mm; top: 1.4mm;
+    width: var(--dot); height: var(--dot); border-radius: 50%; box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8.5pt; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+    background: var(--sig); color: var(--paper); }
+  .step[data-kind="vcc"] .n { background: var(--vcc); }
+  .step[data-kind="gnd"] .n { background: var(--gnd); }
+  .step[data-kind="sig"] .n { background: var(--sig); }
+  .step[data-kind="mid"] .n { background: var(--mid); }
+  .step .route, .probe .route { font-size: 12pt; font-weight: 800; line-height: 1.4;
+    white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .step .desc, .probe .desc { flex: 1 1 45mm; min-width: 0; font-size: 9.5pt; line-height: 1.4;
+    color: var(--muted); }
+
+  /* 계측 — 회색 점선 = 꽂지 않고 무는 계측기. 번호 원도 점선 테두리. */
+  .list-head:has(+ ol.probes) { color: var(--muted); }
+  .probe .n { background: var(--paper); color: var(--ink); border: 1.5px dashed var(--probe); }
+
+  /* 먼저 뽑는다 — 그림의 빨간 점선과 짝. 새로 꽂는 목록(칠이 찬 원)과 모양부터 다르다:
+     점선 상자 안, 번호는 점선 테두리 원. 뽑기 다음에 꽂기가 오면 그 머리에 표지를 단다. */
+  .list-head:has(+ ul.removals) { display: inline-block; color: var(--paper); background: var(--pull);
+    padding: 0.6mm 2.5mm; border-radius: 0.8mm; margin-bottom: 0; }
+  ul.removals { border: 1.5px dashed var(--pull); border-radius: 1mm; margin-top: 0; }
+  .removal { border-bottom: 1px dashed var(--hair); }
+  .removal:last-child { border-bottom: 0; }
+  .removal > .box { border-color: var(--pull); }
+  .removal .n { background: var(--paper); color: var(--pull); border: 1.5px dashed var(--pull); }
+  .removal .text { flex: 1 1 auto; min-width: 0; font-size: 11pt; font-weight: 700; line-height: 1.4; }
+  ul.removals + ol.steps::before { content: "그다음 꽂는다"; display: block; font-weight: 800;
+    font-size: 10.5pt; margin: 2mm 0 1mm; }
+  ul.removals:not(:has(+ ol.steps))::after { content: "새로 꽂는 것은 없다 — 뽑기만 한다";
+    display: block; padding: 1mm 2mm 1.2mm 15mm; font-size: 9.5pt; font-weight: 700; color: var(--pull);
+    border-top: 1px dashed var(--pull); }
+
+  .kept { font-size: 9pt; color: var(--muted); margin: 1mm 0; }
+  .kept::before { content: ""; display: inline-block; width: 8mm; height: 0.8mm; margin-right: 2mm;
+                  vertical-align: 0.6mm; background: var(--hair); }
+  /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
+  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
   /* 단계 진리표 — 그 단계 노드가 쓰는 입력만. 열 머리 둘째 줄은 노드 핀.
      행마다 ☐ 는 `td.box` 다 — `.check` 는 기록표 행 수 불변식 전용이다.
@@ -67,22 +191,19 @@
   .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
   .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
   .stage-table td.box { height: 6mm; }
-  /* 2026-09-28 읽기면 개편 — 기능용 뼈대. 디자인 세션이 이 블록을 갈아 끼운다(클래스 이름은 계약) */
-  figure.board { margin: 0; }
-  .common .must-read { border: 2px solid #b00; padding: 2mm 3mm; margin: 2mm 0; }
-  .common .must-read h2 { margin: 0 0 1mm; }
-  .wire-legend { font-size: 9pt; margin: 1mm 0; }
-  .list-head { font-weight: 700; margin: 2mm 0 1mm; }
-  ol.steps, ol.probes, ul.removals { list-style: none; padding: 0; margin: 1mm 0; }
-  .step, .probe, .removal { display: flex; gap: 2mm; align-items: baseline;
-    padding: 0.6mm 0; break-inside: avoid; }
-  .step .n, .probe .n, .removal .n { min-width: 5mm; font-weight: 700; }
-  .step .route, .probe .route { white-space: nowrap; }
-  .step .desc, .probe .desc { color: #444; }
-  .removal { color: #a01e1e; }
-  .kept { font-size: 9pt; color: #666; margin: 1mm 0; }
-  /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
-  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+
+  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
+  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
+  .unused { border: 2px solid var(--ink); border-radius: 1mm; padding: 2mm 3mm; margin: 3mm 0;
+            break-inside: avoid; }
+  .unused > b { display: block; font-size: 10.5pt; }
+  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
+     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
+     통짜로 묶어도 백지 비용이 없다. */
+  .unused .chipunused { margin-top: 2mm; padding-top: 1.5mm; border-top: 1px solid var(--hair);
+                        break-inside: avoid; }
+  .unused ul { list-style: none; margin: 1mm 0 0; padding: 0; }
+  .unused li { font-size: 10.5pt; line-height: 1.6; }
 
   /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
      가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
@@ -92,10 +213,11 @@
   tr { break-inside: avoid; }
   h2, h3, h4 { break-after: avoid; }
   .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
-  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  th, td { border: 1px solid var(--rule); padding: 2mm 3mm; text-align: center; }
+  th { background: var(--tint); font-weight: 700; }
   td.check { width: 10mm; height: 8mm; background: #fafafa; }
   /* 행마다 찍을 사진 파일명. 인쇄만 하고 채우지 않는다 — `.check` 와 섞지 않는다 */
-  td.photo-name { font-size: 8pt; white-space: nowrap; color: #333; }
+  td.photo-name { font-size: 8pt; white-space: nowrap; color: var(--muted); }
 
   /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
      여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
@@ -104,13 +226,8 @@
   /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
   .mismatch td { height: 8mm; background: #fafafa; }
 
-  .legend { font-size: 9pt; margin: 1mm 0 4mm; }
-  .common .caution { border: 1px solid #000; padding: 2mm 3mm; margin: 2mm 0;
-                     font-size: 9.5pt; break-inside: avoid; }
-  .common .caution ul { margin: 1mm 0 0; padding-left: 5mm; }
-  .common .caution li { font-size: inherit; line-height: 1.4; }
-  .src { font-size: 9pt; margin: 0 0 1mm; }
-  .photo { font-size: 9pt; margin: 0 0 3mm; }
+  .src { font-size: 9pt; color: var(--muted); margin: 0 0 1mm; }
+  .photo { font-size: 9pt; color: var(--muted); margin: 0 0 3mm; }
 
   /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
      으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
@@ -118,17 +235,22 @@
         line-height: 1.35; padding-top: 1px; }
   /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
      스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
-  .sketch { border: 1px solid #333; height: 65mm; }
+  .sketch { border: 1px solid var(--rule); height: 65mm; }
   /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
-  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
-              font-size: 9.5pt; line-height: 1.5; }
+  .expected { border: 1px solid var(--rule); border-radius: 1mm; background: var(--tint);
+              padding: 2mm 3mm; margin-bottom: 2mm; font-size: 9.5pt; line-height: 1.5; }
   /* 명세 `figure` 의 예상 개형 그림. 산문 아래·스케치 위에서 화면과 대조한다. */
   .expected-fig { display: block; width: 100%; break-inside: avoid; break-after: avoid; }
   .schematic { display: block; width: 80%; max-height: 70mm; object-fit: contain; margin: 2mm auto 0; break-inside: avoid; }
   .readout { font-size: 9pt; margin: 1mm 0; }
   /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
-  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+  .differs { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm; height: 16mm;
              margin-bottom: 6mm; }
+
+  /* 실험실을 나오기 전에 — 펜으로 칠하는 마지막 목록. */
+  .closing h2 { font-size: 14pt; padding-bottom: 1.5mm; border-bottom: 2px solid var(--ink); }
+  .closing ul { list-style: none; padding: 0; margin: 0; }
+  .closing li { font-size: 11pt; line-height: 1.6; padding: 1.5mm 0; border-bottom: 1px solid var(--tint); }
 </style>
 
 <h1>{{TITLE}}</h1>
