@@ -58,7 +58,8 @@ class Pages(unittest.TestCase):
             self.assertEqual(len(pages), 3)
             self.assertEqual([[r['n'] for r in p.rows] for p in pages], [[], [1], [2]])
             self.assertEqual(pages[0].notes, ['입력 <A> & 메모'])
-            self.assertEqual([p.legend for p in pages], [False, True, True])
+            self.assertEqual([bool(p.legend) for p in pages], [False, True, True])
+            self.assertNotIn('처음부터', pages[1].legend)   # 픽스처는 잭 두 가닥뿐 — 칩·LED 가 없다
             self.assertIn('1/2 · +5V 잭 (1~1번)', pages[1].heading)
             for p in pages:
                 self.assertTrue(os.path.exists(os.path.join(d, p.image)))
@@ -88,10 +89,10 @@ class Guards(unittest.TestCase):
 class Html(unittest.TestCase):
     def _pages(self):
         return [
-            trace_guide.Page('실험04_완성.png', '완성본', [], ['n.c. <핀> & 메모'], False),
+            trace_guide.Page('실험04_완성.png', '완성본', [], ['n.c. <핀> & 메모'], ''),
             trace_guide.Page('실험04_층1.png', '1/1 · 층', [
                 {'n': 3, 'kind': 'mid', 'from': '좌 d23', 'to': '우 a30',
-                 'desc': "(E'·S1'·S0'·D0)' (U1 pin 6) -> U3 pin 1", 'count': 1}], [], True),
+                 'desc': "(E'·S1'·S0'·D0)' (U1 pin 6) -> U3 pin 1", 'count': 1}], [], '안내 <한 줄>'),
         ]
 
     def test_쪽마다_섹션_하나(self):
@@ -110,10 +111,18 @@ class Html(unittest.TestCase):
         self.assertIn('n.c. &lt;핀&gt; &amp; 메모', out)
         self.assertIn('class="n kind-mid"', out)
 
-    def test_안내는_부품을_먼저_그리라고_한다(self):
-        """LED·저항은 모든 층에 색으로 그려진다 — 번호 없는 색 부품을 언제 그릴지 말해 준다."""
-        out = trace_guide.render_html(self._pages(), '제목')
-        self.assertIn('칩·LED·저항은 처음부터 그려 두세요', out)
+    def test_안내는_이스케이프해_싣는다(self):
+        self.assertIn('<p class="legend">안내 &lt;한 줄&gt;</p>', trace_guide.render_html(self._pages(), '제목'))
+
+    def test_안내는_있는_부품만_먼저_그리라고_한다(self):
+        """칩·LED·저항은 모든 층에 색으로 그려진다 — 그 보드에 있는 것만 말한다(실험02 는 LED 가 없다)."""
+        ns = types.SimpleNamespace
+        self.assertTrue(trace_guide.legend_for(ns(chips=[1], led_chains=[1]))
+                        .endswith('칩·LED·저항은 처음부터 그려 두세요.'))
+        chip_only = trace_guide.legend_for(ns(chips=[1], led_chains=[]))
+        self.assertTrue(chip_only.endswith('칩은 처음부터 그려 두세요.'))
+        self.assertNotIn('LED', chip_only)
+        self.assertEqual(trace_guide.legend_for(ns(chips=[], led_chains=[])), trace_guide.LEGEND)
 
     def test_층_쪽에만_안내가_있다(self):
         out = trace_guide.render_html(self._pages(), '제목')
@@ -155,7 +164,7 @@ class Overflow(unittest.TestCase):
 
         def fake(_board, d):
             real = build(board, d)
-            return [real[0], trace_guide.Page(real[1].image, '긴 층', [row] * 80, [], True), real[2]]
+            return [real[0], trace_guide.Page(real[1].image, '긴 층', [row] * 80, [], trace_guide.LEGEND), real[2]]
 
         with tempfile.TemporaryDirectory() as d:
             out = Path(d) / 'x.pdf'

@@ -29,8 +29,7 @@ from scripts.lab.html2pdf import PdfError, html_to_pdf
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = '팀원전달용'
-LEGEND = ('회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요. '
-          '칩·LED·저항은 처음부터 그려 두세요.')
+LEGEND = '회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요.'
 
 CSS = """
 @page { size: 210mm 420mm; margin: 12mm 10mm; }
@@ -60,7 +59,7 @@ class Page:
     heading: str
     rows: list        # 사이드카 steps 중 이 쪽 번호
     notes: list       # 완성본 notes — 0쪽에만
-    legend: bool      # 층 쪽 안내 한 줄
+    legend: str       # 층 쪽 안내 한 줄 — 완성본 쪽은 ''
 
 
 def check_layers(name, layers, n_steps):
@@ -100,15 +99,24 @@ def _build_pages(board, work_dir):
         steps = final.sidecar()['steps']
         check_layers(filename, layers[filename], len(steps))
         pages.append(Page(filename, f'{final.title} — 완성본 (목표 그림)', [],
-                          list(final.notes), False))
-        stem, total = Path(filename).stem, len(layers[filename])
+                          list(final.notes), ''))
+        stem, total, legend = Path(filename).stem, len(layers[filename]), legend_for(final)
         for i, (lo, hi, label) in enumerate(layers[filename], 1):
             name = f'{stem}_층{i}.png'
             fn(str(work_dir / name), None, layer=(lo, hi))
             rows = [s for s in steps if lo <= s['n'] <= hi]
             pages.append(Page(name, f'{final.title} — {i}/{total} · {label} ({lo}~{hi}번)',
-                              rows, [], True))
+                              rows, [], legend))
     return pages
+
+
+def legend_for(final):
+    """층 쪽 안내. 칩·LED·저항은 층과 상관없이 모든 쪽에 색으로 그려지므로, 그 보드에 **있는**
+    부품만 처음부터 그려 두라고 덧붙인다(실험02 는 LED·저항이 없다)."""
+    parts = (['칩'] if final.chips else []) + (['LED', '저항'] if final.led_chains else [])
+    if not parts:
+        return LEGEND
+    return f'{LEGEND} {"·".join(parts)}은 처음부터 그려 두세요.'
 
 
 def _row(s):
@@ -122,7 +130,7 @@ def render_html(pages, title):
     for p in pages:
         parts = [f'<section class="page"><h1>{html.escape(p.heading)}</h1>']
         if p.legend:
-            parts.append(f'<p class="legend">{html.escape(LEGEND)}</p>')
+            parts.append(f'<p class="legend">{html.escape(p.legend)}</p>')
         parts.append(f'<img src="{quote(p.image)}" alt="{html.escape(p.heading)}">')
         if p.rows:
             parts.append('<table><thead><tr><th>번호</th><th>홀</th><th>뜻</th></tr></thead><tbody>'
