@@ -1,0 +1,483 @@
+<style>
+  @page { size: A4; margin: 12mm 10mm; }
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; }
+
+  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. */
+  .common { break-after: page; }
+  .common .power { font-weight: 700; border: 2px solid #000;
+                   padding: 3mm; margin-bottom: 4mm; }
+  .common li { font-size: 12pt; line-height: 1.7; }
+
+  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
+  .circuit { break-before: page; }
+  .closing { break-before: page; }
+
+  /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
+  .flow td, .flow th { text-align: left; }
+
+  /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
+  .banner { border: 2px solid #000; padding: 2mm 3mm; margin: 2mm 0 3mm;
+            font-weight: 700; }
+
+  /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
+     그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
+     3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
+     칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
+  .wirebox .chip { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 3mm;
+                   break-inside: avoid; }
+  .wirebox img { break-after: avoid; }
+  .wirebox .chip h4 { margin: 0 0 1.5mm; font-size: 11pt; }
+  .wirebox ol { margin: 0; padding-left: 6mm; }
+  .wirebox li { font-size: 11pt; line-height: 1.6; }
+
+  /* 단계 블록 — 칩 하나 = 단계 하나. 그림이 전체 폭이라 블록마다 한 장 안팎이다.
+     회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다. */
+  .stage { border: 1px solid #333; padding: 2mm 3mm; margin: 3mm 0; break-inside: avoid; }
+  .stage h3 { margin: 0 0 1.5mm; }
+  .stage img { break-after: avoid; }
+
+  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
+  .unused { border: 2px solid #000; padding: 2mm 3mm; margin: 3mm 0; }
+  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
+     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
+     통짜로 묶어도 백지 비용이 없다. */
+  .unused .chipunused { margin-top: 2mm; break-inside: avoid; }
+
+  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
+     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
+  .box { display: inline-block; width: 4mm; height: 4mm;
+         border: 1px solid #333; vertical-align: middle; margin-right: 2mm; }
+  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; }
+
+  /* 단계 진리표 — 그 단계 노드가 쓰는 입력만. 열 머리 둘째 줄은 노드 핀.
+     행마다 ☐ 는 `td.box` 다 — `.check` 는 기록표 행 수 불변식 전용이다.
+     단계 블록 안이라 기록표보다 조밀하게 찍는다. */
+  .stage-table { margin: 2mm 0 0; }
+  .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
+  .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+  .stage-table td.box { height: 6mm; }
+
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3, h4 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid #333; padding: 2mm 3mm; text-align: center; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  /* 행마다 찍을 사진 파일명. 인쇄만 하고 채우지 않는다 — `.check` 와 섞지 않는다 */
+  td.photo-name { font-size: 8pt; white-space: nowrap; color: #333; }
+
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
+  /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
+  .mismatch td { height: 8mm; background: #fafafa; }
+
+  .legend { font-size: 9pt; margin: 1mm 0 4mm; }
+  .common .caution { border: 1px solid #000; padding: 2mm 3mm; margin: 2mm 0;
+                     font-size: 9.5pt; break-inside: avoid; }
+  .common .caution ul { margin: 1mm 0 0; padding-left: 5mm; }
+  .common .caution li { font-size: inherit; line-height: 1.4; }
+  .src { font-size: 9pt; margin: 0 0 1mm; }
+  .photo { font-size: 9pt; margin: 0 0 3mm; }
+
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid #333; height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid #333; padding: 2mm 3mm; margin-bottom: 2mm;
+              font-size: 9.5pt; line-height: 1.5; }
+  /* 명세 `figure` 의 예상 개형 그림. 산문 아래·스케치 위에서 화면과 대조한다. */
+  .expected-fig { display: block; width: 100%; break-inside: avoid; break-after: avoid; }
+  .schematic { display: block; width: 80%; max-height: 70mm; object-fit: contain; margin: 2mm auto 0; break-inside: avoid; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid #333; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
+</style>
+
+<h1>실험4 Multiplexer &amp; Demultiplexer 체크리스트</h1>
+<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지) — 미사용 게이트 입력의 처리는 아래 공통 규칙을 본다</div>
+<div class="caution"><b>손으로 할 때 주의</b><ul><li>선은 클립에 물릴 깊이까지만 꽂는다 — 끝까지 밀어 넣으면 접촉이 끊길 수 있다 (실험03 GND 선)</li><li>칩을 꽂고 뽑을 때는 전원을 끈다</li><li>선을 뽑을 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고 새 선을 꽂는다 — 회로를 바꿀 때도, 회로 안에서도 같다</li></ul></div>
+<p class="legend">진리표 — 확인 칸: ✓ 일치 / 값 = 불일치 시 실제로 관찰한 값 / 공란 = 미확인. 표를 통째로 진행하지 않았으면 그 표 아래에 진행하지 않았음 이라고 적는다.</p>
+<p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적는다 (예: 3.2 V, 47 Ω). 확인 칸이 없다: 대조할 예상값이 없는 표다.</p>
+<p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채운다. 조건이 없으면 결과보고서에서 화면의 칸을 볼트로 환산할 수 없다.</p>
+<h2>오늘의 흐름</h2>
+<table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/2</td><td>C1 · 실험 1-1) Enable을 갖는 4x1 MUX - 회로 구현 (74HC04 + 74HC20 ×3)</td><td>74HC04 · 74HC20</td><td>T1 Enable을 갖는 4x1 MUX 진리표</td></tr><tr><td>2/2</td><td>C2 · 실험 2-1) Enable을 갖는 1x4 DMUX - 회로 구현 (74HC04 + 74HC11 ×2)</td><td>74HC04 · 74HC11</td><td>T3 Enable을 갖는 1x4 DMUX 진리표</td></tr></tbody></table>
+<h2>공통 규칙</h2>
+<ul><li>모든 IC: pin 14 → VCC(+5V), pin 7 → GND. 전원은 준비물 p7 의 5V 전압원, 회로도 p8·p11 의 +5V</li><li>세 칩(74HC04·74HC20·74HC11) 모두 계열 표준 전원핀(14·7)이다. 다른 전원핀을 가진 칩은 이 주차에 없다. 74HC20 의 pin 3·11 은 미연결(n.c.) 이다 — 아무것도 꽂지 않는다(# 핀아웃 출처)</li><li>핀 번호는 교안 회로도(p8·p11)가 게이트마다 적어 둔 번호 그대로다. U 번호만 두 회로도를 한 체계로 다시 붙였다(M7): U1·U2·U3 = 74HC20(p8 과 같다), U4 = 74HC04(p8 의 U4 이자 p11 의 U3 — 같은 물리 칩이고 회로마다 배선을 새로 한다), U5·U6 = 74HC11(p11 의 U1·U2)</li><li>완성본에서 사용하는 게이트의 입력은 반드시 물린다 (플로팅 금지). 중간 단계에서 아직 세우지 않은 게이트(C1 1~3단계의 U1·U2·U3, C2 1~3단계의 U6 등)의 입력은 그 게이트를 세우는 단계까지 비어 있다 — 관측 노드의 상류가 아니므로 미사용 게이트와 같이 다룬다(M12). 관측 노드 상류의 입력은 단계마다 전부 물려 있다. 미사용 게이트의 입력은 접지하지 않는다 — 교안이 미사용 핀 처리를 말하지 않는 주차이고, 실험01 실측(2026-09-11)에서 접지 생략이 결과에 영향이 없었다. 이 규칙은 교안 원문이 아니다(M12). 미사용 출력핀은 개방한다 (출력끼리 묶거나 GND 로 직결하면 출력 정격을 넘는 전류가 흐를 수 있다 — 교안 원문이 아니다, M12)</li><li>칩을 꽂거나 뽑을 때는 전원을 끈다. 교안 원문이 아닌 안전 절차다</li><li>교안 실험 1-2·2-2(IC 활용, 74HC153·74HC139)는 하지 않는다 — 조교 공지 _350547_1. 그래서 C1 은 맨바닥에서 시작한다</li><li>C2(DMUX)는 C1(MUX)의 신호선을 전부 뽑고 새로 짓는다(M6, rebuild: true). 전원선·레일 브리지·LED 네 사슬과 K1 의 74HC04 는 남긴다. 전부 뽑으므로 놓칠 선이 없어 걷기 그림을 두지 않는다 — 체크리스트 배너가 지시한다</li><li>단계 하나는 관측 노드 하나를 세운다. 확인은 ## 단계 표의 확인 칸이 가리키는 노드 하나를 본다. 중간 노드는 그 시점에 비어 있는 LED 의 급전선을 그 핀으로 잠시 옮겨 본다(M15). 임시 급전선을 뽑는 자리마다 &lt;k&gt;걷기 행과 걷기 그림이 한 장씩 있다. 각 칩을 처음 쓰는 단계는 C1 1단계(74HC04)·C1 4단계(74HC20 U1)·C1 6단계 (74HC20 U2)·C1 8단계(74HC20 U3)·C2 1단계(74HC11 U6)·C2 2단계(74HC11 U5)이고, 두 회로 모두 마지막 단계에서 기록 진리표 전 행을 돌린다</li><li>이 주차의 새 신호선 예산은 5 다(M8, 2026-09-27 결정) — 4입력 NAND 하나의 출력을 보려면 입력 넷과 관측선 하나가 한꺼번에 있어야 한다. 예산 = 게이트 입력 수 + 1 이고 배치.py 에 STAGE_WIRE_BUDGET = 5 와 그 이유를 둔다. 단계는 여전히 관측 노드 하나씩이다</li><li>칩 자리는 고정이다 (아래 # 칩 자리표). 그림의 회색 선은 손대지 않는다 — 걷을 선은 걷기 그림(빨간 점선), 새 선은 단계 그림(회색 기준선 위 번호)이 지시한다</li><li>입력 E·S1·S0·D0~D3·D 는 점퍼선으로 +5V(=1) 또는 GND(=0) 에 직접 물린다. 띄워두지 않는다. 교안 회로도는 입력마다 SPDT 스위치를 그리지만 스위치는 준비물에 없다(M2)</li><li>LED 는 네 개다(준비물 p7 발광 다이오드 (4개)·저항 330Ω (4개)). 네 사슬을 C1 첫 단계에 한꺼번에 꽂는다 — 우 c42·c46·c51·c57 이 급전 홀이다. C2 에서도 사슬은 그대로다. C1 완성본은 LED1 = Y, C2 완성본은 LED1~LED4 = Y0~Y3 다. 애노드 쪽에 330Ω 직렬, 캐소드 → GND. 교안은 LED 를 어디에 다는지 말하지 않는다 — 이 배정은 교안 원문이 아니다(M3)</li><li>한 신호가 여러 핀으로 가면(팬아웃) 목적지 스트립에서 다음 목적지로 이어 간다 (예: E' 는 U4 pin 12 → U1 pin 4 → U1 pin 12, U4 pin 12 → U2 pin 4 → U2 pin 12). 전기적으로는 한 노드이고, 출력 스트립 한 줄에 선이 몰리지 않게 한 배선 편의다(M11)</li><li>핀 줄의 ※ 뒤는 그 점의 신호 이름과 명세 표 대응을 적은 주석이다(배선 지시가 아니다)</li></ul>
+<div class="tblock"><h2>참조 핀아웃</h2>
+<table><thead><tr><th>IC</th><th>게이트1</th><th>게이트2</th><th>게이트3</th><th>VCC</th><th>GND</th><th>미연결</th></tr></thead><tbody><tr><td>74HC20 (dual 4-input NAND)</td><td>1,2,4,5 → 6</td><td>9,10,12,13 → 8</td><td>—</td><td>14</td><td>7</td><td>3, 11</td></tr><tr><td>74HC11 (triple 3-input AND)</td><td>1,2,13 → 12</td><td>3,4,5 → 6</td><td>9,10,11 → 8</td><td>14</td><td>7</td><td>—</td></tr></tbody></table>
+<p>74HC04 (hex inverter): 1→2, 3→4, 5→6, 9→8, 11→10, 13→12. VCC 14, GND 7. 74HC11 게이트 1 은 세 번째 입력이 pin 13 이고 출력이 pin 12 다 — 반대편 줄로 건너간다. 74HC20 의 pin 3·11 은 빈 다리다 — 입력 넷이 1·2·4·5 로 한 칸 건너뛴다.</p>
+</div>
+<div class="tblock"><h2>칩 자리표</h2>
+<p>두 회로가 같은 자리를 쓴다 — C2 는 C1 신호선을 전부 뽑은 뒤 K2·K4 의 74HC20 을 74HC11 로 바꿔 꽂는다. 두 칩 모두 pin 14·7 전원이라 그 자리 전원선을 그대로 쓴다. 슬롯은 역할에 붙는다: 인버터(K1), 앞단 게이트 둘(K2·K3), 합류 NAND(K4). 슬롯 이름을 실험01~03 의 S&lt;n&gt; 대신 K&lt;n&gt; 으로 쓴다 — 이 주차는 선택 입력 이름이 S1·S0 이라 "S1 에 꽂는다" 가 칩 자리인지 입력인지 갈리지 않는다. 좌·우 는 브레드보드 두 블록, 행은 그 블록 단자대의 행 번호(칩 pin 1 이 앉는 행)다. 열은 칩 다리 한쪽이 a~e(pin 1~7 쪽), 다른 쪽이 f~j(pin 8~14 쪽)이고 칩 다리가 e·f 에 앉는다. U4·U3(U6) 은 우 블록, U1·U2(U5) 는 좌 블록이다 — 같은 블록이면 S0·S0' 중 하나가, 또 U1·U2 출력 pin 8 이 칩 사이에서 쪽(a~d / g~j)을 바꿔 건너야 해서 렌더러 R8 에 걸린다(M10). 자리는 교안 근거가 없다(M10). pin 14·pin 7 행(7·13, 18·24, 30·36)은 전원 레일 빈 행(렌더러 RAIL_GAP_ROWS: 8·14·20·26·32·38·44·50·56 …)을 피한다(M10).</p>
+<table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>K1</td><td>우 7행</td><td>C1 74HC04 · C2 74HC04 (U4, 인버터 — 같은 칩, 배선은 새로)</td></tr><tr><td>K2</td><td>좌 18행</td><td>C1 74HC20 (U1, 앞단 NAND D0·D1) · C2 74HC11 (U5, AND Y0·Y1·Y2)</td></tr><tr><td>K3</td><td>좌 30행</td><td>C1 74HC20 (U2, 앞단 NAND D2·D3) · C2 비움</td></tr><tr><td>K4</td><td>우 30행</td><td>C1 74HC20 (U3, 합류 NAND → Y) · C2 74HC11 (U6, AND Y3)</td></tr></tbody></table>
+</div>
+<h2>미확정 사항 — 실험실에서 확인할 것</h2>
+<p>교안 원문이 아닌 판단을 전부 모은다. 명세 쪽 미확정도 여기로 온다.</p>
+<table><thead><tr><th>확인</th><th>항목</th><th>내용</th><th>확인 방법</th></tr></thead><tbody><tr><td class="box"></td><td>M1</td><td>교안 표지 머리글이 25-1 논리회로실험 이다. 2026-2 배포본이 지난 학기 슬라이드를 그대로 쓴 것인지, 다른 판이 따로 배포되는지 모른다</td><td>강의 사이트에서 배포 파일 갱신 여부 확인</td></tr><tr><td class="box"></td><td>M2</td><td>교안 회로도(p8·p11)는 입력마다 SPDT 스위치(1번 +5V, 3번 GND, 2번 → 게이트)를 그리는데 스위치는 준비물 p7 에 없다. 점퍼선 직결로 가정했다 — 전기적으로는 같은 0/1 이다</td><td>실험실 키트에 딥스위치·토글스위치가 있으면 그것을 쓴다</td></tr><tr><td class="box"></td><td>M3</td><td>교안은 LED 를 어디에 다는지 말하지 않는다 — 실험 방법 쪽(p8·p11)은 "주어진 회로를 구성하고 … 관찰한다" 뿐이고 회로도에도 LED 가 없다. 준비물 발광 다이오드 (4개)·저항 330Ω (4개) 가 DMUX 출력 넷과 맞으므로 출력마다 LED 하나·330Ω 하나를 달았다. LED1 = Y(C1)·Y0(C2), LED2~4 = Y1~Y3 배정, 330Ω 을 애노드 쪽에 두는 순서는 배선 편의다. 적색 LED 순방향 강하를 2V 로 보면 330Ω 에서 (5−2)/330 ≈ 9.1 mA 다(실험03 M3 과 같은 판단). 74HC 데이터시트의 VOH 는 IO = -4.0 mA(VCC 4.5V) 조건까지만 규정되어 있어 LED 를 구동하는 출력의 전압은 규정 밖이다 — C1 1~7단계의 임시 급전 중에는 그 출력이 NAND 입력도 함께 구동한다(Nexperia 74HC20 Rev. 7 Table 6)</td><td>조교가 다른 관측 방법을 지시하면 그쪽으로 — 함수는 바뀌지 않는다</td></tr><tr><td class="box"></td><td>M4</td><td>명세 T1·T3 첫 행(막힌 상태 E = 1 / D = 0)의 출력은 0 으로 적었다. 교안 진리표 p9·p12 는 같은 칸에 X 를 적는다(명세 T2·T4 가 원문 그대로 옮겼다). 0 은 회로도 게이트 논리(C1: E' = 0 이면 앞단 NAND 가 전부 1 이고 U3 이 0, C2: D = 0 이면 AND 가 전부 0)에서 온 것이고 교안 원문이 아니다</td><td>실험실에서 그 행의 나머지 입력을 몇 가지로 바꿔 LED 가 계속 꺼져 있는지 본다. 켜지면 교안이 X 로 둔 이유(막힌 출력의 뜻)를 조교에게 묻는다</td></tr><tr><td class="box"></td><td>M5</td><td>준비물 p7 은 74HC04 에만 수량이 없다(74HC11(2개)·74HC20(3개) 와 달리). 한 패키지로 보고 C1·C2 가 같은 칩을 K1 에 둔 채 배선만 새로 하도록 짰다</td><td>실험실 키트에서 74HC04 수량 확인. 둘이어도 이 결선도대로 한다</td></tr><tr><td class="box"></td><td>M6</td><td>C2 는 C1 의 신호선을 전부 뽑고 새로 짓는다(2026-09-27 사용자 결정, rebuild: true). 교안 p11 핀 번호를 인버터까지 그대로 쓰고, C2 완성본 그림에 MUX 가 섞이지 않는다. 남기는 것(전원선·레일 브리지·LED 네 사슬·K1 의 74HC04)과 바꾸는 칩(74HC20 셋 → 74HC11 둘)은 체크리스트 배너가 말한다. 전부 뽑으므로 걷기 그림·홀 주소 목록을 두지 않는다 — 골라 뽑을 때 놓치는 사고(2026-09-18 실험03)가 전부 뽑을 때는 생기지 않는다는 판단이다</td><td>1단계 전에 보드에 전원선·브리지·LED 사슬 말고 점퍼가 하나도 남지 않았는지 눈으로 본다</td></tr><tr><td class="box"></td><td>M7</td><td>U 번호 재부여: 교안 두 회로도의 U 번호는 서로 독립이다. p8 의 U1·U2·U3(74HC20)·U4(74HC04)는 그대로 두고, p11 의 U1·U2(74HC11)를 U5·U6 로, p11 의 U3(74HC04)을 U4 로 붙였다 — 같은 물리 칩이라서다. 게이트 안의 핀 번호는 바꾸지 않았다</td><td>확인이 필요한 값은 아니다. 교안 회로도와 대조할 때 이 표를 본다</td></tr><tr><td class="box"></td><td>M8</td><td>새 신호선 예산을 이 주차만 5 로 둔다(2026-09-27 사용자 결정). 기본 예산 셋으로는 4입력 NAND 출력 하나를 관측할 수 없다 — 입력 넷과 관측 급전선 하나가 모두 있어야 한다(C1 4~8단계: 다섯 가닥). 3입력 AND 는 넷이다(C2). 입력 일부만 물리면 나머지가 떠서 관측 노드 상류 플로팅 금지에 걸린다. 예산 = 게이트 입력 수 + 1 (docs/schema/lab-netlist-v2.md 주차 예외)</td><td>breadboard-diagram 이 배치.py 에 STAGE_WIRE_BUDGET = 5 와 STAGE_WIRE_BUDGET_REASON 을 둔다 — 없으면 StageBudget 테스트가 4~8단계를 막는다</td></tr><tr><td class="box"></td><td>M9</td><td>렌더러 R7(칩 한쪽 리드 ≤ 8)을 교안 핀 번호 그대로의 C1 U4 a쪽(pin 1~7)이 넘는다 — 입력 셋(E·S1·S0 점퍼), 출력 셋, 갈래 둘, GND 가 몰려 9 가닥이다. 그래서 E 인버터를 게이트 6(pin 13 → 12)으로 옮겼다(2026-09-28 breadboard-diagram). 논리는 같고 나머지 핀 번호는 교안 그대로다. C1 완성본의 U4 a쪽은 8, f쪽은 4 다</td><td>교안 회로도와 대조할 때 U4 의 E 게이트만 번호가 다르다는 것을 본다. 실물에서 게이트 1 로 꽂아도 전기적으로 같다(그때는 결선도와 달라진다)</td></tr><tr><td class="box"></td><td>M10</td><td>칩 자리·LED 사슬 자리(우 c42·c46·c51·c57)·걷기 주소는 배치.py 렌더 검사(R1~R8·넷)를 통과한 자리다(2026-09-28). 교안 근거가 없다. U4(K1 우 7행)·U3(K4 우 30행)를 U1·U2(좌 18·30행)와 다른 블록에 둔 것은 R8 때문이다 — 같은 블록이면 인버터가 S0·S0' 를 한쪽에서 내는데 U1·U2 는 그 둘을 서로 다른 쪽(게이트 A=a쪽, 게이트 B=f쪽)에서 받아 칩 사이 엇갈림이 생기고, U3 입력(a쪽)도 U1·U2 의 pin 8(f쪽)을 받는다. C2 는 같은 이유로 U6 을 K4 에 둔다(U6 pin 13·12 가 f쪽, U5 pin 5 가 a쪽)</td><td>바꾸면 이 표와 단계 표의 주소를 같이 고친다 — 걷기 주소의 정본은 이 netlist 다</td></tr><tr><td class="box"></td><td>M11</td><td>배선 편의로 정한 것: 팬아웃을 목적지 스트립에서 이어 가는 순서(S1': U4 pin 4 → U1 pin 2 → U1 pin 10 등). E'·S0'(C1)와 S1'·S0'(C2)는 U4 에서 목적지마다 따로 간다 — 이어 가면 목적지 칩 한쪽 리드가 8 을 넘는다(R7). 교안 회로도는 한 점에서 갈라지는 가지로 그린다 — 전기적으로 같은 노드다</td><td>확인이 필요한 값은 아니다. 이어 간 선 하나가 빠지면 그 뒤 핀이 전부 뜨므로, 단계 확인이 어긋나면 그 신호의 사슬을 앞에서부터 따라간다</td></tr><tr><td class="box"></td><td>M12</td><td>미사용 게이트 입력을 개방하는 공통 규칙 자체가 교안 원문이 아니다. CMOS 는 플로팅 입력이 발진·소비 전류 증가를 부를 수 있는 계열이지만 실험01 실측(2026-09-11)에서 결과에 영향이 없었고, 이 주차 교안은 미사용 핀 처리를 말하지 않는다</td><td>조교가 접지·풀업을 지시하면 그대로 한다. LED 가 진리표와 다르면 이 자리를 본다</td></tr><tr><td class="box"></td><td>M13</td><td>회로도 두 장(p8·p11)은 래스터라 교안에 박힌 원본 이미지를 뽑아 확대해 vision 으로만 읽었다. 특히 C1 의 네 NAND 입력 배정(어느 NAND 가 S0·S1 의 반전/비반전을 받는지)과 C2 AND 세 입력은 세로선 위치와 접점 점으로 판독했다</td><td>명세 T1·T3 의 derived 식이 교안 진리표 T2·T4 의 X 없는 행과 전부 일치한다. 실험실에서 LED 가 어긋나면 이 배선부터 본다</td></tr><tr><td class="box"></td><td>M14</td><td>교안 표기는 74HC 계열이다. 실물 각인이 TI SN74HC.. 여도 핀 배치는 같지만, 74HCT·74LS 등 다른 계열이면 전기 특성이 달라 인용할 데이터시트를 바꾼다</td><td>수령한 칩의 각인 확인</td></tr><tr><td class="box"></td><td>M15</td><td>교안 부품 LED 넷을 C1 의 중간 노드 관측에 잠시 빌린다 — C1 완성본에는 LED1 하나만 급전된다. 임시 급전선 일곱 가닥은 5걷기·8걷기 두 장이 전부 뽑는다</td><td>멀티미터·로직프로브가 있으면 그것으로 대신해도 되고, 그때는 임시 급전선을 꽂지 않는다(걷기 행도 건너뛴다)</td></tr></tbody></table></section>
+<section class="circuits"><section class="circuit">
+<h2>회로 1/2 · C1 · 실험 1-1) Enable을 갖는 4x1 MUX - 회로 구현 (74HC04 + 74HC20 ×3) · 기록: T1 · 판독: LED</h2>
+<div class="banner">준비 — 꽂는다: 74HC04, 74HC20</div>
+<img class="schematic" src="실험04_1-1_회로도.png"><p class='src'>강의노트 p8 · 회로 구성</p>
+<p>교안 p8 회로도 그대로. 이 주차 첫 회로라 맨바닥에서 시작한다. 1단계에 네 칩(U4·U1·U2· U3)의 전원과 LED 네 사슬을 한꺼번에 꽂는다(기반). 관측 단계는 여덟이다 — 인버터 출력 셋(1~3), 앞단 NAND 출력 넷(4~7), Y(8) 순으로 신호가 흐르는 차례다. Y 가 설 때까지 LED 넷이 전부 비어 있으므로 중간 노드는 LED 로 본다: 인버터 출력은 LED4·LED3·LED2, NAND 출력은 LED1~LED4. 임시 급전선을 뽑는 자리마다 걷기 행과 걷기 그림이 한 장씩 있어 단계 표는 열 줄이다. 4~8단계는 새 신호선이 다섯이다 — 이 주차 예산이 5 다(M8). E 인버터는 교안의 게이트 1 대신 게이트 6(pin 13→12)이다(M9). 네 NAND 의 입력 배정은 래스터 회로도의 vision 판독이다(M13).</p>
+<div class="wirebox">
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험04_1-1_결선도_4x1MUX.png" style="width:100%"><p class="src">결선도: 실험04_1-1_결선도_4x1MUX.png</p>
+<div class="chip"><h4>U4 = 74HC04 (hex inverter, DIP-14) — K1</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 3  ← 입력 S1          (U4B)</li>
+<li><span class="box"></span>pin 3  → U2.pin2          (S1 갈래 → U2A)</li>
+<li><span class="box"></span>pin 4  → U1.pin2          (S1' → U1A)</li>
+<li><span class="box"></span>pin 5  ← 입력 S0          (U4C)</li>
+<li><span class="box"></span>pin 5  → U1.pin9          (S0 갈래 → U1B)</li>
+<li><span class="box"></span>pin 6  → U1.pin1          (S0' → U1A)</li>
+<li><span class="box"></span>pin 6  → U2.pin1          (S0' → U2A)</li>
+<li><span class="box"></span>pin 13 ← 입력 E           (U4F — 교안은 U4A pin 1, M9)</li>
+<li><span class="box"></span>pin 12 → U1.pin4          (E' → U1A)</li>
+<li><span class="box"></span>pin 12 → U2.pin4          (E' → U2A)</li>
+</ol>
+</div>
+<div class="chip"><h4>U1 = 74HC20 (dual 4-input NAND, DIP-14) — K2</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U4.pin6          (U1A, S0')</li>
+<li><span class="box"></span>pin 2  ← U4.pin4          (U1A, S1')</li>
+<li><span class="box"></span>pin 2  → U1.pin10         (S1' 이어 감)</li>
+<li><span class="box"></span>pin 4  ← U4.pin12         (U1A, E')</li>
+<li><span class="box"></span>pin 4  → U1.pin12         (E' 이어 감)</li>
+<li><span class="box"></span>pin 5  ← 입력 D0          (U1A)</li>
+<li><span class="box"></span>pin 6  → U3.pin1          (U1A 출력)    ※ (E'·S1'·S0'·D0)'</li>
+<li><span class="box"></span>pin 9  ← U4.pin5          (U1B, S0)</li>
+<li><span class="box"></span>pin 9  → U2.pin9          (S0 이어 감)</li>
+<li><span class="box"></span>pin 10 ← U1.pin2          (U1B, S1')</li>
+<li><span class="box"></span>pin 12 ← U1.pin4          (U1B, E')</li>
+<li><span class="box"></span>pin 13 ← 입력 D1          (U1B)</li>
+<li><span class="box"></span>pin 8  → U3.pin2          (U1B 출력)    ※ (E'·S1'·S0·D1)'</li>
+<li><span class="box"></span>미연결: pin 3, 11 → 아무것도 꽂지 않는다 (n.c.)</li>
+</ol>
+</div>
+<div class="chip"><h4>U2 = 74HC20 (dual 4-input NAND, DIP-14) — K3</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U4.pin6          (U2A, S0')</li>
+<li><span class="box"></span>pin 2  ← U4.pin3          (U2A, S1)</li>
+<li><span class="box"></span>pin 2  → U2.pin10         (S1 이어 감)</li>
+<li><span class="box"></span>pin 4  ← U4.pin12         (U2A, E')</li>
+<li><span class="box"></span>pin 4  → U2.pin12         (E' 이어 감)</li>
+<li><span class="box"></span>pin 5  ← 입력 D2          (U2A)</li>
+<li><span class="box"></span>pin 6  → U3.pin4          (U2A 출력)    ※ (E'·S1·S0'·D2)'</li>
+<li><span class="box"></span>pin 9  ← U1.pin9          (U2B, S0)</li>
+<li><span class="box"></span>pin 10 ← U2.pin2          (U2B, S1)</li>
+<li><span class="box"></span>pin 12 ← U2.pin4          (U2B, E')</li>
+<li><span class="box"></span>pin 13 ← 입력 D3          (U2B)</li>
+<li><span class="box"></span>pin 8  → U3.pin5          (U2B 출력)    ※ (E'·S1·S0·D3)'</li>
+<li><span class="box"></span>미연결: pin 3, 11 → 아무것도 꽂지 않는다 (n.c.)</li>
+</ol>
+</div>
+<div class="chip"><h4>U3 = 74HC20 (dual 4-input NAND, DIP-14) — K4</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U1.pin6          (U3A)</li>
+<li><span class="box"></span>pin 2  ← U1.pin8</li>
+<li><span class="box"></span>pin 4  ← U2.pin6</li>
+<li><span class="box"></span>pin 5  ← U2.pin8</li>
+<li><span class="box"></span>pin 6  → LED1 애노드 (330Ω 직렬) → GND    ※ Y, T1 의 Y 열</li>
+<li><span class="box"></span>미연결: pin 3, 11 → 아무것도 꽂지 않는다 (n.c.)</li>
+</ol>
+</div>
+</div>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="chipunused"><b>U4 = 74HC04 (hex inverter, DIP-14) — K1</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 1, 9, 11 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 2, 8, 10 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U3 = 74HC20 (dual 4-input NAND, DIP-14) — K4</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 9, 10, 12, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 8 → 개방</li>
+</ul></div>
+</div>
+<p>E' 는 네 NAND 로, S1'·S0'·S1·S0 는 각각 NAND 둘로 팬아웃한다 — E'·S0' 는 U4 에서 U1·U2 로 따로 가고, 나머지는 목적지 스트립에서 이어 간다(M11). 교안 회로도의 게이트 입력 순서(U1A 는 pin 1 = S0', pin 2 = S1', pin 4 = E', pin 5 = D0)를 그대로 따랐다.</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_1단계_E인버터.png" style="width:100%"><p><b>이 단계에서:</b> 74HC04 를 K1, 74HC20 을 K2·K3·K4 에 꽂는다. 네 칩 전원(14→VCC, 7→GND)·레일 브리지·LED 네 사슬(330Ω→GND)을 꽂는다. 신호선: E→U4 pin 13, 임시로 U4 pin 12→LED4 급전(우 j9→우 c57)</p><p><b>확인 노드:</b> E' <small>(U4 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 E' — LED4 를 E 두 값으로 본다 (E=0 일 때만 켜짐). 74HC04 첫 사용</p><table class="stage-table">
+<thead>
+<tr><th>E</th><th>E'예상<br><small>U4 pin 12</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_2단계_S1인버터.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: S1→U4 pin 3, 임시로 U4 pin 4→LED3 급전(우 d10→우 c51)</p><p><b>확인 노드:</b> S1' <small>(U4 pin 4)</small></p><p><span class="box"></span><b>확인:</b> 노드 S1' — LED3 을 S1 두 값으로 본다 (S1=0 일 때만 켜짐). LED4 는 내내 E' 를 보인다</p><table class="stage-table">
+<thead>
+<tr><th>S1</th><th>S1'예상<br><small>U4 pin 4</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_3단계_S0인버터.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: S0→U4 pin 5, 임시로 U4 pin 6→LED2 급전(우 c12→우 c46)</p><p><b>확인 노드:</b> S0' <small>(U4 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 S0' — LED2 를 S0 두 값으로 본다 (S0=0 일 때만 켜짐)</p><table class="stage-table">
+<thead>
+<tr><th>S0</th><th>S0'예상<br><small>U4 pin 6</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_4단계_NAND0.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U1 pin 1, U4 pin 4→U1 pin 2, U4 pin 12→U1 pin 4, D0→U1 pin 5, 임시로 U1 pin 6→LED1 급전(좌 d23→우 c42)</p><p><b>확인 노드:</b> (E'·S1'·S0'·D0)' <small>(U1 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0'·D0)' — LED1 을 T1 아홉 행 전부로 본다 (3행 E=0·S1S0=00·D0=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U1 첫 사용</p><table class="stage-table">
+<thead>
+<tr><th>E</th><th>S1</th><th>S0</th><th>D0</th><th>(E'·S1'·S0'·D0)'예상<br><small>U1 pin 6</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>X</td><td>X</td><td>X</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 5 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5걷기_인버터프로브.png" style="width:100%"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U4 pin 12→LED4, 우 j9→우 c57)·②(임시 급전 U4 pin 4→LED3, 우 d10→우 c51)·③(임시 급전 U4 pin 6→LED2, 우 c12→우 c46)을 뽑는다. 그림의 빨간 점선이 그 세 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 세 가닥이 손에 있고 우 j9·우 c57·우 d10·우 c51·우 c12·우 c46 홀이 비어 있다 (LED 검사 없음)</p></div>
+<div class="stage"><h3>단계 5</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_5단계_NAND1.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 5→U1 pin 9 (S0 갈래), U1 pin 2→U1 pin 10 (S1' 이어 감), U1 pin 4→U1 pin 12 (E' 이어 감), D1→U1 pin 13, 임시로 U1 pin 8→LED2 급전(좌 j24→우 c46)</p><p><b>확인 노드:</b> (E'·S1'·S0·D1)' <small>(U1 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1'·S0·D1)' — LED2 를 T1 아홉 행 전부로 본다 (5행 E=0·S1S0=01·D1=1 에서만 꺼지고 나머지 여덟 행은 켜짐). LED1 은 내내 앞 노드를 보인다</p><table class="stage-table">
+<thead>
+<tr><th>E</th><th>S1</th><th>S0</th><th>D1</th><th>(E'·S1'·S0·D1)'예상<br><small>U1 pin 8</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>X</td><td>X</td><td>X</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 6</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_6단계_NAND2.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 6→U2 pin 1 (S0'), U4 pin 3→U2 pin 2 (S1 갈래), U4 pin 12→U2 pin 4 (E'), D2→U2 pin 5, 임시로 U2 pin 6→LED3 급전(좌 d35→우 c51)</p><p><b>확인 노드:</b> (E'·S1·S0'·D2)' <small>(U2 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0'·D2)' — LED3 을 T1 아홉 행 전부로 본다 (7행 E=0·S1S0=10·D2=1 에서만 꺼지고 나머지 여덟 행은 켜짐). 74HC20 U2 첫 사용</p><table class="stage-table">
+<thead>
+<tr><th>E</th><th>S1</th><th>S0</th><th>D2</th><th>(E'·S1·S0'·D2)'예상<br><small>U2 pin 6</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>X</td><td>X</td><td>X</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 7</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_7단계_NAND3.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U1 pin 9→U2 pin 9 (S0 이어 감), U2 pin 2→U2 pin 10 (S1 이어 감), U2 pin 4→U2 pin 12 (E' 이어 감), D3→U2 pin 13, 임시로 U2 pin 8→LED4 급전(좌 j36→우 c57)</p><p><b>확인 노드:</b> (E'·S1·S0·D3)' <small>(U2 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 (E'·S1·S0·D3)' — LED4 를 T1 아홉 행 전부로 본다 (9행 E=0·S1S0=11·D3=1 에서만 꺼지고 나머지 여덟 행은 켜짐)</p><table class="stage-table">
+<thead>
+<tr><th>E</th><th>S1</th><th>S0</th><th>D3</th><th>(E'·S1·S0·D3)'예상<br><small>U2 pin 8</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>X</td><td>X</td><td>X</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 8 · 걷기</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8걷기_NAND프로브.png" style="width:100%"><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(임시 급전 U1 pin 6→LED1, 좌 d23→우 c42)·②(임시 급전 U1 pin 8→LED2, 좌 j24→우 c46)·③(임시 급전 U2 pin 6→LED3, 좌 d35→우 c51)·④(임시 급전 U2 pin 8→LED4, 좌 j36→우 c57)를 뽑는다. 그림의 빨간 점선이 그 네 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p><span class="box"></span><b>확인:</b> 뽑은 네 가닥이 손에 있고 좌 d23·우 c42·좌 j24·우 c46·좌 d35·우 c51·좌 j36·우 c57 홀이 비어 있다 (LED 검사 없음)</p></div>
+<div class="stage"><h3>단계 8</h3><img src="../결선도/실험04_1-1_결선도_4x1MUX_8단계_Y.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U1 pin 6→U3 pin 1, U1 pin 8→U3 pin 2, U2 pin 6→U3 pin 4, U2 pin 8→U3 pin 5, U3 pin 6→LED1 급전(우 c35→우 c42)</p><p><b>확인 노드:</b> Y <small>(U3 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y — T1 아홉 행 전부 (74HC20 U3 첫 사용). 1행은 E=1 이면 나머지 입력과 상관없이 꺼짐</p></div>
+<div class="tblock">
+<h3>T1 · Enable을 갖는 4x1 MUX 진리표</h3>
+<p class='src'>출처: derived (Y = E'·(S1'·S0'·D0 + S1'·S0·D1 + S1·S0'·D2 + S1·S0·D3))</p>
+<table>
+<thead>
+<tr>
+<th>E</th>
+<th>S1</th>
+<th>S0</th>
+<th>D0</th>
+<th>D1</th>
+<th>D2</th>
+<th>D3</th>
+<th>Y예상</th>
+<th>확인</th><th>사진 파일명</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>0</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-1 0000111.jpg</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-1 0001000.jpg</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-1 0011011.jpg</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-1 0010100.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">1-1 0101101.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">1-1 0100010.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">1-1 0111110.jpg</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td class="check"></td><td class="photo-name">1-1 0110001.jpg</td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — 앞에 실험 번호(예: 실험03)를 붙이지 않는다</p>
+<h4>T1 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock">
+<h3>T2 · 4x1 MUX Truth Table — 참조</h3>
+<p class='src'>출처: manual:p9</p>
+<table><thead><tr><th>E</th><th>S1</th><th>S0</th><th>D0</th><th>D1</th><th>D2</th><th>D3</th><th>Y</th></tr></thead><tbody><tr><td>1</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr></tbody></table>
+</div>
+</section>
+<section class="circuit">
+<h2>회로 2/2 · C2 · 실험 2-1) Enable을 갖는 1x4 DMUX - 회로 구현 (74HC04 + 74HC11 ×2) · 기록: T3 · 판독: LED</h2>
+<div class="banner">앞 회로의 신호선을 전부 뽑는다 — 전원선·레일 브리지·LED 사슬은 그대로 둔다(새 선은 단계 그림이 지시한다) · 뺀다: 74HC20 · 꽂는다: 74HC11 · 패키지는 두고 재배선한다: 74HC04</div>
+<img class="schematic" src="실험04_2-1_회로도.png"><p class='src'>강의노트 p11 · 회로 구성</p>
+<p>교안 p11 회로도 그대로, C1 을 걷고 새로 짓는다(M6, 2026-09-27 결정). 전원을 끄고 C1 의 신호선(입력 점퍼·칩 사이 선·LED 급전선)을 전부 뽑는다. 전원선·레일 브리지·LED 네 사슬은 그대로 두고, 74HC20 셋을 빼고 74HC11 둘을 K2·K4 에 꽂는다 — 두 칩 모두 pin 14·7 전원이라 K2·K4 전원선을 그대로 쓴다. K3 의 전원선은 칩 없이 남아도 된다. 74HC04(U4)는 K1 에 두되 배선은 교안 p11 대로 다시 한다(pin 1 → 2 = S0', pin 3 → 4 = S1'). 전부 뽑으므로 걷기 그림이 없다 — 체크리스트 배너가 지시하고, 확인은 "보드에 전원선·브리지·LED 사슬 말고 점퍼가 하나도 없다" 로 눈으로 한다.</p>
+<p>관측 단계는 넷이고 AND 하나가 단계 하나다. 출력 넷이 곧 LED 넷이라 임시 급전선이 없다(걷기 행도 없다). 인버터가 필요 없는 Y3 부터 세우고, S1' 이 들어오는 Y1, S0' 이 들어오는 Y2, 둘 다 쓰는 Y0 순이다 — 앞 단계에 꽂은 입력 스트립에서 이어 가도록 짠 순서이고 교안 원문이 아니다(M11). 각 단계의 새 신호선은 넷~다섯이다(예산 5, M8).</p>
+<div class="wirebox">
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<img src="../결선도/실험04_2-1_결선도_1x4DMUX.png" style="width:100%"><p class="src">결선도: 실험04_2-1_결선도_1x4DMUX.png</p>
+<div class="chip"><h4>U4 = 74HC04 (hex inverter, DIP-14) — K1, C1 과 같은 칩 (배선은 새로)</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U6.pin1          (교안 U3A, S0 이어 옴)</li>
+<li><span class="box"></span>pin 2  → U5.pin10         (S0')</li>
+<li><span class="box"></span>pin 2  → U5.pin2          (S0')</li>
+<li><span class="box"></span>pin 3  ← U6.pin2          (교안 U3B, S1 이어 옴)</li>
+<li><span class="box"></span>pin 3  → U5.pin9          (S1 이어 감)</li>
+<li><span class="box"></span>pin 4  → U5.pin4          (S1')</li>
+<li><span class="box"></span>pin 4  → U5.pin1          (S1')</li>
+</ol>
+</div>
+<div class="chip"><h4>U5 = 74HC11 (triple 3-input AND, DIP-14) — K2</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U4.pin4          (교안 U1A, S1')</li>
+<li><span class="box"></span>pin 2  ← U4.pin2          (교안 U1A, S0')</li>
+<li><span class="box"></span>pin 13 ← U5.pin11         (교안 U1A, D)</li>
+<li><span class="box"></span>pin 12 → LED1 애노드 (330Ω 직렬) → GND    ※ Y0, T3 의 Y0 열</li>
+<li><span class="box"></span>pin 3  ← U6.pin1          (교안 U1B, S0)</li>
+<li><span class="box"></span>pin 4  ← U4.pin4          (교안 U1B, S1')</li>
+<li><span class="box"></span>pin 5  ← U6.pin13         (교안 U1B, D)</li>
+<li><span class="box"></span>pin 5  → U5.pin11         (D 이어 감)</li>
+<li><span class="box"></span>pin 6  → LED2 애노드 (330Ω 직렬) → GND    ※ Y1, T3 의 Y1 열</li>
+<li><span class="box"></span>pin 9  ← U4.pin3          (교안 U1C, S1)</li>
+<li><span class="box"></span>pin 10 ← U4.pin2          (교안 U1C, S0')</li>
+<li><span class="box"></span>pin 11 ← U5.pin5          (교안 U1C, D)</li>
+<li><span class="box"></span>pin 11 → U5.pin13         (D 이어 감)</li>
+<li><span class="box"></span>pin 8  → LED3 애노드 (330Ω 직렬) → GND    ※ Y2, T3 의 Y2 열</li>
+</ol>
+</div>
+<div class="chip"><h4>U6 = 74HC11 (triple 3-input AND, DIP-14) — K4</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 S0          (교안 U2A)</li>
+<li><span class="box"></span>pin 1  → U5.pin3          (S0 이어 감)</li>
+<li><span class="box"></span>pin 1  → U4.pin1          (S0 이어 감)</li>
+<li><span class="box"></span>pin 2  ← 입력 S1          (교안 U2A)</li>
+<li><span class="box"></span>pin 2  → U4.pin3          (S1 이어 감)</li>
+<li><span class="box"></span>pin 13 ← 입력 D           (교안 U2A)</li>
+<li><span class="box"></span>pin 13 → U5.pin5          (D 이어 감)</li>
+<li><span class="box"></span>pin 12 → LED4 애노드 (330Ω 직렬) → GND    ※ Y3, T3 의 Y3 열</li>
+</ol>
+</div>
+</div>
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸는가 · 미사용 핀은 비어 있는가 (칩마다 따로)</b>
+<div class="chipunused"><b>U4 = 74HC04 (hex inverter, DIP-14) — K1, C1 과 같은 칩 (배선은 새로)</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 5, 9, 11, 13 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 6, 8, 10, 12 → 개방</li>
+</ul></div>
+<div class="chipunused"><b>U6 = 74HC11 (triple 3-input AND, DIP-14) — K4</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 3, 4, 5, 9, 10, 11 → 개방 (접지 생략 — 공통 규칙)</li>
+<li><span class="box"></span>미사용 출력핀: pin 6, 8 → 개방</li>
+</ul></div>
+</div>
+<p>게이트 안의 입력 배정은 교안 p11 그대로다 — p11 의 U1 이 U5, U2 가 U6, U3 이 U4 다(M7). 입력 점퍼 S0·S1·D 는 U6 에 꽂고 거기서 이어 간다 — 1단계가 Y3 이라서다(M11). S1'·S0' 는 U4 에서 U5 의 두 핀으로 따로 간다 — U5 a쪽 리드를 8 이하로 두려는 것이다(M11).</p>
+<div class="stage"><h3>단계 1</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_1단계_Y3.png" style="width:100%"><p><b>이 단계에서:</b> (배너대로 C1 신호선을 전부 뽑고 74HC20 셋을 빼고 74HC11 을 K2·K4 에 꽂은 상태에서) 신호선: S0→U6 pin 1, S1→U6 pin 2, D→U6 pin 13, U6 pin 12→LED4 급전</p><p><b>확인 노드:</b> Y3 <small>(U6 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y3 — LED4 를 T3 다섯 행 전부로 본다 (D=1·S1S0=11 에서만 켜짐). 74HC11 U6 첫 사용</p><table class="stage-table">
+<thead>
+<tr><th>D</th><th>S1</th><th>S0</th><th>Y3예상<br><small>U6 pin 12</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 2</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_2단계_Y1.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U6 pin 2→U4 pin 3 (S1 이어 감), U4 pin 4→U5 pin 4 (S1'), U6 pin 1→U5 pin 3 (S0 이어 감), U6 pin 13→U5 pin 5 (D 이어 감), U5 pin 6→LED2 급전</p><p><b>확인 노드:</b> Y1 <small>(U5 pin 6)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y1 — LED2 를 T3 다섯 행 전부로 본다 (D=1·S1S0=01 에서만 켜짐). 74HC11 U5·74HC04 U4 첫 사용(이 회로에서)</p><table class="stage-table">
+<thead>
+<tr><th>D</th><th>S1</th><th>S0</th><th>Y1예상<br><small>U5 pin 6</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 3</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_3단계_Y2.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U6 pin 1→U4 pin 1 (S0 이어 감), U4 pin 2→U5 pin 10 (S0'), U4 pin 3→U5 pin 9 (S1 이어 감), U5 pin 5→U5 pin 11 (D 이어 감), U5 pin 8→LED3 급전</p><p><b>확인 노드:</b> Y2 <small>(U5 pin 8)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y2 — LED3 을 T3 다섯 행 전부로 본다 (D=1·S1S0=10 에서만 켜짐)</p><table class="stage-table">
+<thead>
+<tr><th>D</th><th>S1</th><th>S0</th><th>Y2예상<br><small>U5 pin 8</small></th><th>확인</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="stage"><h3>단계 4</h3><img src="../결선도/실험04_2-1_결선도_1x4DMUX_4단계_Y0.png" style="width:100%"><p><b>이 단계에서:</b> 신호선: U4 pin 4→U5 pin 1 (S1'), U4 pin 2→U5 pin 2 (S0'), U5 pin 11→U5 pin 13 (D 이어 감), U5 pin 12→LED1 급전</p><p><b>확인 노드:</b> Y0 <small>(U5 pin 12)</small></p><p><span class="box"></span><b>확인:</b> 노드 Y0 — T3 다섯 행 전부. 네 LED 중 D=1 인 행에서 하나만, D=0 인 행에서는 하나도 안 켜져야 한다</p></div>
+<div class="tblock">
+<h3>T3 · Enable을 갖는 1x4 DMUX 진리표</h3>
+<p class='src'>출처: derived (Y0 = D·S1'·S0' ; Y1 = D·S1'·S0 ; Y2 = D·S1·S0' ; Y3 = D·S1·S0)</p>
+<table>
+<thead>
+<tr>
+<th>D</th>
+<th>S1</th>
+<th>S0</th>
+<th>Y0예상</th>
+<th>Y1예상</th>
+<th>Y2예상</th>
+<th>Y3예상</th>
+<th>확인</th><th>사진 파일명</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">2-1 100.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td class="check"></td><td class="photo-name">2-1 101.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td class="check"></td><td class="photo-name">2-1 110.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td class="check"></td><td class="photo-name">2-1 111.jpg</td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 시험한 행마다 1장(불일치 행 필수). 파일명은 표의 '사진 파일명' 열 그대로 — 앞에 실험 번호(예: 실험03)를 붙이지 않는다</p>
+<h4>T3 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock">
+<h3>T4 · 1x4 DMUX Truth Table — 참조</h3>
+<p class='src'>출처: manual:p12</p>
+<table><thead><tr><th>D</th><th>S1</th><th>S0</th><th>Y0</th><th>Y1</th><th>Y2</th><th>Y3</th></tr></thead><tbody><tr><td>0</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr></tbody></table>
+</div>
+</section></section>
+<section class="closing"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼는가 — 사진만 찍었으면 시험한 행마다 사진이 있는가 (진행하지 않은 표에는 진행하지 않았음 을 적는다)</li><li><span class="box"></span>표마다 사진 지시대로 찍었는가 — 진리표는 시험한 행마다(불일치 행 필수), 스텝표는 스텝마다, 파형은 화면마다</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가 (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했는가</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었는가</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었는가 — 실험 폴더에 .md 로 둔 자유 메모 파일도 된다</li><li><span class="box"></span>부품을 반납했는가</li></ul></section>
