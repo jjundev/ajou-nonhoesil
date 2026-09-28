@@ -988,10 +988,12 @@ def circuit_pages(spec, netlist) -> str:
     강의노트 회로도는 한 항목을 가리키는 회로가 여럿이어도 첫 회로에만 싣는다.
 
     면 안의 순서는 작업 순서다 — 칩 교체 → 강의노트 회로도 → 유의사항 → 결선도
-    → 배선 → 미사용핀 → 단계(단계 진리표) → 측정표. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
+    → 배선 → 미사용핀 → 측정표. 단계가 있는 회로는 유의사항 → 단계(단계 진리표) →
+    결선도 → 배선 → 미사용핀 → 측정표다. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
     배선 앞으로 옮겼다 — 그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
-    단계는 완성본·배선 **뒤**다(2026-09-28) — 전체 모습을 먼저 보고 단계를 밟는다. 측정표는
-    마지막 단계 바로 뒤라, 마지막 관측 단계는 자기 단계 진리표 대신 기록표를 본다.
+    단계는 완성본·배선 **앞**이다(2026-09-29 사용자, 09-28 의 반대) — 단계를 다 밟은 뒤
+    완성본으로 전체를 대조하고 핀을 점검한다. 측정표는 그 뒤라, 마지막 관측 단계는 자기
+    단계 진리표 대신 (완성본 대조를 거친) 기록표를 본다.
     미사용핀 상자는 칩별로 낸다 — 회로 단위로 합치면 C4 처럼 같은 핀 번호가
     칩마다 정반대 지시를 받을 때 어느 칩 것인지 사라진다.
     """
@@ -1016,44 +1018,45 @@ def circuit_pages(spec, netlist) -> str:
                 out.append(schematic)
         if prose_before.strip():
             out.append(_blocks(prose_before))
-        out.append('<div class="wirebox">')
+        wiring = []           # 완성본·배선 상자·핀 점검·배선 뒤 검산 — 단계 뒤에 붙인다
+        wiring.append('<div class="wirebox">')
         if section.stages:
-            out.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
-        out.append(_diagram_html(section, netlist))
+            wiring.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
+        wiring.append(_diagram_html(section, netlist))
         # 옛 PNG 머리에 있던 제출 안내 — 그림에 글자를 굽지 않게 되어(2026-09-28) 여기로 온다.
         # 단계 유무와 상관없이 회로마다 한 번: 손그림은 완성본마다 한 장이다
-        out.append("<p class='src submit'>손그림은 이 그림을 따라 그리고, 학번·이름·날짜는 손으로 적어요</p>")
+        wiring.append("<p class='src submit'>손그림은 이 그림을 따라 그리고, 학번·이름·날짜는 손으로 적어요</p>")
         for node in nodes:
             if node["type"] == "prose":
-                out.append(_blocks(node["text"]))
+                wiring.append(_blocks(node["text"]))
                 continue
-            out.append(f'<div class="chip"><h4>{_esc(node["head"])}</h4>')
+            wiring.append(f'<div class="chip"><h4>{_esc(node["head"])}</h4>')
             if node["wires"]:
-                out.append('<ol start="1">')
-                out += [f'<li><span class="box"></span>{_esc(w)}</li>'
-                        for w in node["wires"]]
-                out.append("</ol>")
+                wiring.append('<ol start="1">')
+                wiring += [f'<li><span class="box"></span>{_esc(w)}</li>'
+                           for w in node["wires"]]
+                wiring.append("</ol>")
             # 상자 안은 원문 순서다. 고정 순서로 찍으면 표 앞에 있어야 할 경고가
             # 표 아래로 밀린다 (실험02 U1) — 주차마다 표와 산문의 순서가 다르다.
             for kind, payload in node["blocks"]:
-                out.append(_md_table_html(payload, lead_checkbox=True)
-                           if kind == "table" else _blocks(payload))
-            out.append("</div>")
-        out.append("</div>")
+                wiring.append(_md_table_html(payload, lead_checkbox=True)
+                              if kind == "table" else _blocks(payload))
+            wiring.append("</div>")
+        wiring.append("</div>")
         unused_chips = [c for c in chips if c["unused"]]
         if unused_chips:
-            out.append('<div class="unused">'
-                       "<b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>")
+            wiring.append('<div class="unused">'
+                          "<b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>")
             for chip in unused_chips:
-                out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
-                out += [f'<li><span class="box"></span>{_esc(u)}</li>'
-                        for u in chip["unused"]]
-                out.append("</ul></div>")
-            out.append("</div>")
+                wiring.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
+                wiring += [f'<li><span class="box"></span>{_esc(u)}</li>'
+                           for u in chip["unused"]]
+                wiring.append("</ul></div>")
+            wiring.append("</div>")
         if prose_after.strip():
             # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
-            out.append(_blocks(prose_after))
-        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 바로 뒤 기록표가 그 표다. 단 그 노드가
+            wiring.append(_blocks(prose_after))
+        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 완성본 대조 뒤 기록표가 그 표다. 단 그 노드가
         # 기록표 출력 열일 때만이다 — 중간 노드면 기록표에 그 값이 없다.
         observed = [s for s in section.stages if s.get("node")]
         last = observed[-1] if observed else None
@@ -1061,6 +1064,8 @@ def circuit_pages(spec, netlist) -> str:
             last = None
         for stage in section.stages:
             out.append(_stage_html(stage, netlist, section, spec, last=stage is last))
+        # 단계가 있으면 단계를 다 밟은 뒤 완성본으로 대조한다(2026-09-29). 없으면 루프가 비어 제자리다
+        out += wiring
         out.append(_circuit_tables(spec, section))
         unstaged = _unstaged_nodes_html(spec, section)
         if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
