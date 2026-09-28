@@ -390,6 +390,20 @@ class Stages(unittest.TestCase):
         self.assertEqual(row["check_holes"],
                          ["좌 d7", "우 a10", "좌 a9", "우 c13"])
 
+    def test_레일_끝점도_걷기_주소로_읽는다(self):
+        """LED 사슬의 GND 선은 한 끝이 레일이다(실험04 8걷기, 2026-09-29). 엔진
+        `removals()` 가 `우 중앙GND레일49행` 으로 적으므로 netlist 도 같은 말로 적는다."""
+        text = STAGED.replace(
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |",
+            "| 1걷기 | `1걷기.png` | 걷기 ①(우 c49→우 중앙GND레일49행)·②(좌 j3 → 좌 VCC레일 5행)를 뽑는다 | "
+            "우 c49·우 중앙GND레일49행·좌 j3·좌 VCC레일5행 홀이 비었다 |\n"
+            "| 1 | `1단계.png` | 74HC08 만 꽂는다 | L1 = A·B, AB = 00·01·10·11 |")
+        row = parse_netlist(_write(text)).circuits[0].stages[0]
+        self.assertEqual(row["walk_addresses"],
+                         ["우 c49 → 우 중앙GND레일49행", "좌 j3 → 좌 VCC레일5행"])
+        self.assertEqual(row["check_holes"],
+                         ["우 c49", "우 중앙GND레일49행", "좌 j3", "좌 VCC레일5행"])
+
     def test_꽂기_행의_걷기_주소_필드는_빈_리스트다(self):
         row = parse_netlist(_write(STAGED)).circuits[0].stages[0]
         self.assertEqual(row["walk_addresses"], [])

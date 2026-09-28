@@ -371,8 +371,9 @@ class CommittedPngs(unittest.TestCase):
 class TestE4MuxFinalOneLed(unittest.TestCase):
     """실험04 C1(4x1 MUX) 완성본은 출력이 Y 하나라 LED 사슬도 하나다(2026-09-28 사용자).
 
-    손으로 따라 그려 제출하는 원도라, 네 사슬이면 출력이 넷인 회로로 읽힌다. LED2~4 사슬은
-    C1 중간 노드 관측과 C2 용으로 보드에 남으므로 **절차 그림(8단계)에는 그대로 있다**.
+    손으로 따라 그려 제출하는 원도라, 네 사슬이면 출력이 넷인 회로로 읽힌다. 2026-09-29
+    부터는 **보드도 같다** — 8걷기가 LED2~4 사슬을 뽑아 8단계 절차 그림도 사슬 하나다.
+    7단계까지는 중간 노드를 보느라 네 사슬이 다 있다.
     """
 
     @classmethod
@@ -388,8 +389,30 @@ class TestE4MuxFinalOneLed(unittest.TestCase):
     def test_완성본은_Y_사슬_하나다(self):
         self.assertEqual(self._chains(None), ["Y"])
 
-    def test_8단계_절차_그림은_네_사슬_그대로다(self):
-        self.assertEqual(self._chains(8), ["L2", "L3", "L4", "Y"])
+    def test_7단계_절차_그림은_네_사슬이다(self):
+        self.assertEqual(self._chains(7), ["L2", "L3", "L4", "Y"])
+
+    def test_8단계_절차_그림은_Y_사슬_하나다(self):
+        self.assertEqual(self._chains(8), ["Y"])
+
+    def test_8걷기는_뽑는_사슬을_번호_없는_줄로_낸다(self):
+        """사슬째 뽑는 LED·저항은 GND 선만 번호를 받는다. 부품은 빨간 점선 상자로 그리고
+        순서표에는 번호 없는 줄로 낸다 — 그림이 회색이면 "부품은 둔다" 로 읽힌다."""
+        name, fn, _stage = next(b for b in self.board.BOARDS if "8걷기" in b[0])
+        with tempfile.TemporaryDirectory() as d:
+            bb = fn(os.path.join(d, name))
+        self.assertEqual(sorted(bb.ghost["chains"].values()), ["L2", "L3", "L4"])
+        self.assertEqual(bb.ghost_chains_drawn, set(bb.ghost["chains"]))
+        lines = [r["text"] for r in bb.sidecar()["removals"] if r["n"] is None]
+        self.assertEqual(len(lines), 3)
+        self.assertTrue(all("LED·330Ω 을 뽑는다" in t for t in lines), lines)
+
+    def test_5걷기는_사슬을_뽑지_않는다(self):
+        """선만 뽑는 걷기 보드에는 `chains` 키가 없다 — 옛 걷기 보드 도장이 그대로다."""
+        name, fn, _stage = next(b for b in self.board.BOARDS if "5걷기" in b[0])
+        with tempfile.TemporaryDirectory() as d:
+            bb = fn(os.path.join(d, name))
+        self.assertNotIn("chains", bb.ghost)
 
 
 if __name__ == "__main__":
