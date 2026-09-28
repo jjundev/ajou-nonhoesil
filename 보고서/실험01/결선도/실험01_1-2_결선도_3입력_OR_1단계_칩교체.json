@@ -1,0 +1,18 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: 3-Input OR — 1단계 (칩 교체)",
+ "subtitle": "74HC32 (Quad 2-Input OR) 한 개를 2단으로 · C1 과 배선이 같다",
+ "kept": 16,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "뽑는다: 74HC08",
+   "to": "꽂는다: 74HC32",
+   "desc": "좌 7행 칩 교체",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

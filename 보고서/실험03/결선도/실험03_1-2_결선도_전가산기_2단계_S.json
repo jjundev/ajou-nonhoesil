@@ -1,0 +1,34 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: 전가산기 — 2단계 (XOR2, 노드 S)",
+ "subtitle": "74HC86 XOR 2개 + 74HC08 AND 2개 + 74HC32 OR · Co = A·B + (A⊕B)·Ci",
+ "kept": 16,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 GND레일11행",
+   "to": "좌 b11",
+   "desc": "입력 Ci -> 74HC86 pin 5 (XOR2) · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "mid",
+   "from": "좌 c9",
+   "to": "좌 c10",
+   "desc": "XOR1 출력 A⊕B -> XOR2 입력 (pin 3 -> pin 4)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 b12",
+   "to": "좌 a25",
+   "desc": "S = 74HC86 pin 6 -> LED1",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

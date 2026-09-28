@@ -1,0 +1,47 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-1: 3-Input NAND — 1단계 (앞단 AND 검사)",
+ "subtitle": "74HC08 (AND 앞단) + 74HC00 (NAND 뒷단) · LED 마다 330Ω 직렬",
+ "kept": 13,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "뽑는다: 74HC32",
+   "to": "꽂는다: 74HC08",
+   "desc": "좌 7행 칩 교체",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "vcc",
+   "from": "좌 g18",
+   "to": "좌 중앙VCC레일18행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 d24",
+   "to": "좌 GND레일24행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  }
+ ],
+ "removals": [
+  {
+   "n": null,
+   "text": "좌 d9 → 좌 d10 · 1단 출력 A+B -> 2단 입력 (pin 3 -> pin 4)"
+  },
+  {
+   "n": null,
+   "text": "좌 GND레일11행 → 좌 b11 · 입력 C -> 74HC32 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다"
+  },
+  {
+   "n": null,
+   "text": "좌 a12 → 좌 a25 · 최종 출력 pin 6 -> L2"
+  }
+ ],
+ "probes": []
+}

@@ -1,0 +1,107 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3: 복합 논리회로 — 1단계 (인버터, Z = A')",
+ "subtitle": "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개",
+ "kept": 11,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "뽑는다: 74HC32",
+   "to": "꽂는다: 74HC04",
+   "desc": "좌 7행 칩 교체",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "좌 중앙GND레일31행",
+   "to": "우 중앙GND레일31행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "우 중앙GND레일33행",
+   "to": "우 GND레일33행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 중앙VCC레일34행",
+   "to": "우 VCC레일34행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "우 g10",
+   "to": "우 VCC레일10행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 d16",
+   "to": "우 중앙GND레일16행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "좌 b10",
+   "to": "좌 a25",
+   "desc": "Z (74HC04 pin 4) -> Z LED",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "sig",
+   "from": "좌 c7",
+   "to": "좌 c9",
+   "desc": "임시: 입력 A 갈래 -> 74HC04 pin 3 (2단계에서 걷는다)",
+   "count": 1
+  }
+ ],
+ "removals": [
+  {
+   "n": null,
+   "text": "좌 GND레일9행 → 좌 b8 · 입력 B -> 74HC32 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다"
+  },
+  {
+   "n": null,
+   "text": "좌 c9 → 좌 c14 · 중간단 확인용 갈래"
+  },
+  {
+   "n": null,
+   "text": "좌 c17 → 좌 GND레일17행 · L1 저항 아래 -> GND"
+  },
+  {
+   "n": null,
+   "text": "좌 a9 → 좌 a19 · A+B -> 74HC02 pin 2 (1번 아님!) (칩 사이 연결)"
+  },
+  {
+   "n": null,
+   "text": "좌 GND레일19행 → 좌 b20 · 입력 C -> 74HC02 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다"
+  },
+  {
+   "n": null,
+   "text": "좌 c18 → 좌 c25 · 최종 출력 74HC02 -> L2"
+  },
+  {
+   "n": null,
+   "text": "칩 74HC02 (좌 18행) 뽑는다"
+  },
+  {
+   "n": null,
+   "text": "LED L1 사슬 (좌 d14~좌 e17) 뽑는다"
+  }
+ ],
+ "probes": []
+}

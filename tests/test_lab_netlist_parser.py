@@ -517,5 +517,65 @@ class ParseNodes(unittest.TestCase):
                 self.assertIn("## 노드", text)
 
 
+MUST_READ = """
+# 꼭 읽을 것
+
+- kind: must-read
+
+- 하나
+- 둘은 두 줄이다
+  이어지는 줄
+- 셋
+
+| 레일 | 값 |
+|---|---|
+| VCC | +5V |
+"""
+
+
+class MustRead(unittest.TestCase):
+    """공통면 맨 위 경고 상자. 학생이 실제로 읽는 유일한 규칙 자리라 짧아야 한다
+    (2026-09-28 — 공통 규칙·미확정 표는 읽히지 않았다)."""
+
+    def _parse(self, extra):
+        return parse_netlist(_write(MINIMAL.replace("# C1 ·", extra + "\n# C1 ·", 1)))
+
+    def test_불릿과_표를_받는다(self):
+        netlist = self._parse(MUST_READ)
+        [section] = netlist.of_kind("must-read")
+        self.assertEqual(section.title, "꼭 읽을 것")
+        self.assertIn("이어지는 줄", section.body)
+        self.assertIn("| VCC | +5V |", section.body)
+
+    def test_불릿이_다섯을_넘으면_거절한다(self):
+        extra = "\n# 꼭 읽을 것\n\n- kind: must-read\n\n" + "".join(f"- {k}\n" for k in range(6))
+        with self.assertRaises(NetlistError) as e:
+            self._parse(extra)
+        self.assertIn("6", str(e.exception))
+        self.assertIn("5", str(e.exception))
+
+    def test_불릿_다섯은_받는다(self):
+        extra = "\n# 꼭 읽을 것\n\n- kind: must-read\n\n" + "".join(f"- {k}\n" for k in range(5))
+        self.assertEqual(len(self._parse(extra).of_kind("must-read")), 1)
+
+    def test_must_read_에_산문이_있으면_거절한다(self):
+        extra = "\n# 꼭 읽을 것\n\n- kind: must-read\n\n- 하나\n\n이유를 적은 문단이다.\n"
+        with self.assertRaises(NetlistError) as e:
+            self._parse(extra)
+        self.assertIn("이유를 적은 문단", str(e.exception))
+
+    def test_빈_must_read_는_거절한다(self):
+        with self.assertRaises(NetlistError):
+            self._parse("\n# 꼭 읽을 것\n\n- kind: must-read\n\n")
+
+    def test_must_read_는_하나뿐이다(self):
+        with self.assertRaises(NetlistError) as e:
+            self._parse(MUST_READ + MUST_READ.replace("꼭 읽을 것", "또 읽을 것"))
+        self.assertIn("must-read", str(e.exception))
+
+    def test_없어도_된다(self):
+        self.assertEqual(parse_netlist(_write(MINIMAL)).of_kind("must-read"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

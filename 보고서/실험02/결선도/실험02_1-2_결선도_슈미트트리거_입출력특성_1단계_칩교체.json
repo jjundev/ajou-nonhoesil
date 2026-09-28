@@ -1,0 +1,37 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: Schmitt-trigger — 1단계 (칩 교체)",
+ "subtitle": "74HC14 (Hex Schmitt inverter) · C1 과 배선이 같다 — 칩만 갈아 끼운다",
+ "kept": 7,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "뽑는다: 74HC04",
+   "to": "꽂는다: 74HC14",
+   "desc": "좌 7행 칩 교체",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [
+  {
+   "n": 1,
+   "label": "함수발생기 + CH1 (가로축)",
+   "at": "좌 a7",
+   "desc": "사인파 Vpp 5V · offset 2.5V (교안 p10) · 74HC14 pin 1 = Vin"
+  },
+  {
+   "n": 2,
+   "label": "CH2 (세로축)",
+   "at": "좌 a8",
+   "desc": "74HC14 pin 2 = Vout · 부하 없음, 프로브만 문다"
+  },
+  {
+   "n": 3,
+   "label": "함수발생기 -, CH1 -, CH2 -",
+   "at": "좌 GND 레일",
+   "desc": "전원장치 0V 와 같은 노드"
+  }
+ ]
+}

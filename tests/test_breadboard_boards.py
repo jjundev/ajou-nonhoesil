@@ -75,7 +75,9 @@ class BuildAll(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             made = mod.build_all(mod.load_board_file(FIXTURE), d)
             self.assertEqual(sorted(made), ["min.png", "min_1단계_잭.png"])
-            self.assertEqual(sorted(os.listdir(d)), ["min.png", "min_1단계_잭.png"])
+            # PNG 마다 사이드카 JSON 이 붙는다(2026-09-28)
+            self.assertEqual(sorted(os.listdir(d)), ["min.json", "min.png",
+                                                     "min_1단계_잭.json", "min_1단계_잭.png"])
 
     def test_빌더가_None을_돌려주면_알아볼_수_있는_TypeError를_던진다(self):
         """`return bb` 를 빠뜨린 빌더는 `'NoneType' object has no attribute
@@ -128,7 +130,8 @@ class Cli(unittest.TestCase):
 
     def test_experiment_로_그_주차를_전부_뽑는다(self):
         board = _load().load_board(2)
-        want = sorted([n for n, _f, _s in board.BOARDS] + [n for n, _f in board.FINALS])
+        pngs = [n for n, _f, _s in board.BOARDS] + [n for n, _f in board.FINALS]
+        want = sorted(pngs + [n[:-len(".png")] + ".json" for n in pngs])   # 사이드카 쌍
         with tempfile.TemporaryDirectory() as d:
             r = self._run("--experiment", "2", "--output", d)
             self.assertEqual(r.returncode, 0, r.stderr)
@@ -168,7 +171,7 @@ class Stamp(unittest.TestCase):
 
     def test_PNG_에_도장이_찍힌다(self):
         bb, got, _png = self._render_final(self.mod)
-        self.assertRegex(got, r"^v1:[0-9a-f]{64}$")
+        self.assertRegex(got, r"^v2:[0-9a-f]{64}$")
         self.assertEqual(got, bb.stamp())
 
     def test_글꼴이_달라도_도장은_같다(self):
@@ -353,6 +356,15 @@ class CommittedPngs(unittest.TestCase):
                                  "결선도 폴더의 PNG 와 배치.py 의 BOARDS·FINALS 가 다르다")
                 stale = sorted(f for f, s in made.items() if mod.read_stamp(folder / f) != s)
                 self.assertEqual(stale, [], "코드와 어긋난 PNG — "
+                                 f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
+                # 체크리스트의 결선 순서는 사이드카에서만 온다 — PNG 도장이 맞아도 JSON 이 옛것이면
+                # 틀린 순서가 인쇄된다(2026-09-28 최종 리뷰: 병합 충돌·이름 바꾸기)
+                sides = {f[:-len(".png")] + ".json" for f in made}
+                self.assertEqual({p.name for p in folder.glob("*.json")}, sides,
+                                 "결선도 폴더의 JSON 이 PNG 와 쌍이 아니다")
+                stale = sorted(f for f in sides
+                               if (folder / f).read_bytes() != (Path(d) / f).read_bytes())
+                self.assertEqual(stale, [], "코드와 어긋난 사이드카 — "
                                  f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
 
 

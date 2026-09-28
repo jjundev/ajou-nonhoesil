@@ -1,3 +1,4 @@
+import json
 import re
 import tempfile
 import types
@@ -363,8 +364,8 @@ class TestCapturePage(unittest.TestCase):
 
 
 class TestCommonPage(unittest.TestCase):
-    """공통면은 한 번만 보면 되는 것을 모은다 — 전원·공통규칙·참조 핀아웃·
-    실험실 확인. 회로 페이지에 반복하면 지면을 먹고 표가 밀린다."""
+    """공통면은 한 번만 보면 되는 것만 싣는다 — 전원·꼭 읽을 것·범례·흐름·핀아웃·자리표.
+    공통 규칙과 미확정 표는 읽히지 않아 인쇄하지 않는다(2026-09-28)."""
 
     def setUp(self):
         self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
@@ -393,11 +394,31 @@ class TestCommonPage(unittest.TestCase):
         self.assertIn("74HC02 (quad NOR)", self.html)
         self.assertIn("2,3 → 1", self.html)
 
-    def test_미확정_표가_체크박스로_실린다(self):
-        """옛 렌더러는 제목과 도입문만 찍고 표를 버려 문장이 끊긴 채 끝났다."""
-        self.assertIn("M1", self.html)
-        self.assertIn("M10", self.html)
-        self.assertIn('class="box"', self.html)
+    def test_공통_규칙은_인쇄하지_않는다(self):
+        self.assertNotIn("<h2>공통 규칙</h2>", self.html)
+        self.assertNotIn("74HC08 결함(2026-09-11)", self.html)   # 실험01 공통 규칙에만 있는 구절
+
+    def test_미확정_표는_인쇄하지_않는다(self):
+        self.assertNotIn("실험실에서 확인할 것", self.html)
+        self.assertNotIn('<tr><td class="box"></td>', self.html)
+
+    def test_꼭_읽을_것이_전원_박스_바로_뒤에_온다(self):
+        power = self.html.index('class="power"')
+        must = self.html.index('class="must-read"')
+        self.assertLess(power, must)
+        self.assertLess(must, self.html.index('class="caution"'))
+        box = self.html[must:self.html.index("</div>", must)]
+        self.assertEqual(box.count("<li>"), 5)
+
+    def test_선_색_범례가_있다(self):
+        self.assertIn('class="wire-legend"', self.html)
+        self.assertIn("빨간 점선 = 뽑는다", self.html)
+
+    def test_전원_박스는_공통_규칙을_가리키지_않는다(self):
+        box = self.html[self.html.index('class="power"'):]
+        box = box[:box.index("</div>")]
+        self.assertNotIn("공통 규칙", box)
+        self.assertIn("핀 점검", box)
 
     def test_핀아웃_출처는_인쇄하지_않는다(self):
         """참고문헌이 배선 단계 7~11번으로 찍히던 결함이다."""
@@ -434,32 +455,6 @@ class TestCommonPage(unittest.TestCase):
         """`_blocks` 가 표를 제자리에 싣게 되면서 `lookup` 이 중복 렌더가 됐다."""
         self.assertEqual(self.html.count("74HC02 (quad NOR)"), 1)
 
-    def test_미확정_표를_두_번_찍지_않는다(self):
-        """체크박스 없는 사본이 앞에 한 번 더 찍히면 어느 쪽에 표기할지 갈린다."""
-        self.assertEqual(self.html.count("<td class=\"box\"></td>"),
-                         self.html.count("<tr><td class=\"box\"></td>"))
-        self.assertEqual(self.html.count("M10"), 1)
-
-    def test_미확정_표가_앞뒤_문단을_붙이지_않는다(self):
-        """표 줄을 지워 버리면 표가 유일한 구분자였던 두 문단이 한 문단으로
-        합쳐진다. 실험01 의 미확정 절은 표 앞에 빈 줄이 있어 실물로는 발화하지
-        않지만, 다른 주차가 표를 문단 사이에 바로 끼우는 순간 문장이 붙는다."""
-        section = NetlistSection(
-            kind="open-issues", title="미확정 사항", line=1,
-            body=("앞 문단이다.\n"
-                  "| 항목 | 내용 |\n|---|---|\n| M1 | 값 |\n"
-                  "뒤 문단이다.\n"))
-        netlist = self.netlist
-        original = netlist.sections
-        try:
-            netlist.sections = [section]
-            html = common_page(self.spec, netlist)
-        finally:
-            netlist.sections = original
-        self.assertIn("<p>앞 문단이다.</p>", html)
-        self.assertIn("<p>뒤 문단이다.</p>", html)
-        self.assertNotIn("앞 문단이다. 뒤 문단이다", html)
-
     def test_배너가_주차마다_다른_것을_말하지_않는다(self):
         """옛 배너는 `미사용 입력핀은 전부 GND` 를 하드코딩했다 — 실험02 는
         교안 p8 도면대로 pin 9·11·13 을 **VCC** 로 올리고 결선도가 "이 주차는
@@ -470,7 +465,7 @@ class TestCommonPage(unittest.TestCase):
         banner = banner[:banner.index("</div>")]
         self.assertNotIn("전부 GND", banner)
         self.assertIn("플로팅 금지", banner)
-        self.assertIn("공통 규칙", banner)
+        self.assertIn("핀 점검", banner)   # 공통 규칙은 2026-09-28 부터 인쇄하지 않는다
 
     def test_물리_주의_상자가_전원_박스_바로_아래_온다(self):
         caution = self.html.index('class="caution"')
@@ -536,6 +531,13 @@ class TestCircuitPages(unittest.TestCase):
         self.netlist = parse_netlist(
             ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = circuit_pages(self.spec, self.netlist)
+
+    def test_완성본마다_자필_안내가_한_번씩_있다(self):
+        """옛 PNG 머리의 제출 안내가 사이드카로 가며 단계 있는 회로에만 남았다(2026-09-28
+        최종 리뷰) — 실험01 1-1 AND 처럼 단계 없는 완성본에서 학번·이름·날짜가 빠진다."""
+        for n, page in enumerate(self._pages(), start=1):
+            with self.subTest(회로=n):
+                self.assertEqual(page.count("학번·이름·날짜"), 1)
 
     def _pages(self):
         """회로 페이지를 하나씩 자른다. 문서 전체에서 찾으면 어느 회로 것인지
@@ -715,7 +717,8 @@ class TestCircuitPages(unittest.TestCase):
         """C5 의 `LED_X 와 LED_Z 가 같이 켜져야 한다` 는 배선을 마친 뒤 하는
         검산이다. 앞으로 올리면 preamble 로 읽힌다."""
         page = self._pages()[4]
-        self.assertLess(page.index('class="unused"'), page.index("다르면 배선 오류"))
+        # "다르면 배선 오류" 는 완성본 결선 순서(LED 사슬 설명)에도 나온다(2026-09-28) — 산문 구절로 잰다
+        self.assertLess(page.index('class="unused"'), page.index("언제나 같이 켜져야 한다"))
 
     def test_배선_전_경고는_배선_앞에_온다(self):
         """C4 의 `74HC02 의 핀 순서에 주의` 를 배선을 다 마친 뒤 읽으면 늦다."""
@@ -1062,7 +1065,9 @@ class TestProcedureCarriesEveryWarning(unittest.TestCase):
 
     def test_korean_only_warnings_reach_the_printout(self):
         for warning in ("띄워두지 않는다", "가장 흔한 배선 실수",
-                        "330Ω 직렬", "칩 재사용",
+                        "330Ω 직렬",
+                        # "칩 재사용" 은 공통 규칙에만 있어 2026-09-28 부터 인쇄하지 않는다
+                        # — 칩 교체 배너가 회로마다 뺄 칩·꽂을 칩을 지시한다
                         # 아래 셋은 불릿이 아니라 열 0 산문이라 별도 결함(A2)으로
                         # 빠져 있었다 — X≡Z 자체 검증, 74HC02 핀 순서 재경고,
                         # E1.P1-2 NAND 절 도입문.
@@ -1767,7 +1772,7 @@ class TestStages(unittest.TestCase):
         power = power[:power.index("</div>")]
         self.assertIn("사용하는 게이트의 입력", power)
         self.assertIn("플로팅 금지", power)
-        self.assertIn("공통 규칙", power)
+        self.assertIn("핀 점검", power)   # 공통 규칙은 2026-09-28 부터 인쇄하지 않는다
         self.assertNotIn("전부 GND", power)
 
 
@@ -1933,3 +1938,140 @@ class StageNodeLine(unittest.TestCase):
         self.assertIn("단계 2 · 걷기", html)
         self.assertNotIn("단계 2걷기", html)
         self.assertNotIn("확인 노드", html)
+
+
+def _board_png(folder, name, data):
+    """1×1 PNG 와 사이드카를 나란히 쓴다 — 렌더러를 돌리지 않는다."""
+    from PIL import Image
+    Image.new("RGB", (1, 1)).save(folder / name)
+    (folder / name).with_suffix(".json").write_text(
+        json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+_SIDE = {
+    "schema": "breadboard-sidecar/v1", "title": "t", "subtitle": "s", "kept": 7,
+    "steps": [{"n": 1, "kind": "sig", "from": "우 a12", "to": "좌 a18",
+               "desc": "S0' (U4 pin 6) -> U1 pin 1", "count": 1},
+              {"n": 2, "kind": "gnd", "from": "좌 b3", "to": "좌 GND레일3행",
+               "desc": "U1 GND", "count": 2}],
+    "removals": [], "probes": [],
+}
+
+
+class TestBoardText(unittest.TestCase):
+    """결선도 PNG 는 보드만 싣는다(2026-09-28) — 결선 순서·걷기·계측은 옆 JSON 에서 온다."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+        self.board_dir = self.dir / "결선도"
+        self.board_dir.mkdir()
+        (self.board_dir / "netlist.md").write_text("x", encoding="utf-8")
+        self.netlist = types.SimpleNamespace(path=self.board_dir / "netlist.md")
+
+    def _stage(self, data, walk=False):
+        _board_png(self.board_dir, "s.png", data)
+        stage = {"n": "1", "diagram": "s.png", "todo": "할 일", "check": "확인",
+                 "node": None, "walk": walk, "walk_of": 1}
+        section = types.SimpleNamespace(nodes=[])
+        return render._stage_html(stage, self.netlist, section)
+
+    def test_결선_순서가_체크박스_목록으로_실린다(self):
+        html = self._stage(_SIDE)
+        steps = html[html.index('<ol class="steps">'):]
+        steps = steps[:steps.index("</ol>")]
+        self.assertEqual(steps.count('<li class="step"'), 2)
+        self.assertEqual(steps.count('<span class="box"></span>'), 2)
+        self.assertIn('data-kind="sig"', steps)
+        self.assertIn("우 a12 → 좌 a18", steps)
+        self.assertIn("×2", steps)
+
+    def test_설명의_특수문자를_이스케이프한다(self):
+        html = self._stage(_SIDE)
+        self.assertIn("S0' (U4 pin 6) -&gt; U1 pin 1", html)   # `_esc` 는 quote=False 다
+
+    def test_회색_개수를_한_줄로_싣는다(self):
+        self.assertIn('<p class="kept">회색 = 앞 단계에서 그대로 둔 것 7개</p>',
+                      self._stage(_SIDE))
+
+    def test_걷기_번호가_실린다(self):
+        data = dict(_SIDE, steps=[], removals=[
+            {"n": 1, "text": "좌 d23 → 우 c42 · 임시 급전"},
+            {"n": None, "text": "칩 74HC20 (좌 17행) 뽑는다"}])
+        html = self._stage(data, walk=True)
+        self.assertIn('<p class="list-head">먼저 뽑는다</p>', html)
+        self.assertIn('<span class="n">1</span><span class="text">좌 d23 → 우 c42', html)
+        self.assertIn('<li class="removal"><span class="box"></span><span class="text">칩 74HC20',
+                      html)
+        self.assertNotIn('<ol class="steps">', html)
+
+    def test_계측_목록이_실린다(self):
+        data = dict(_SIDE, probes=[{"n": 1, "label": "함수발생기 + CH1 (가로축)",
+                                    "at": "좌 a10", "desc": "사인파"}])
+        html = self._stage(data)
+        self.assertIn('<ol class="probes">', html)
+        self.assertIn("함수발생기 + CH1 (가로축) → 좌 a10", html)
+
+    def test_사이드카가_없으면_멈춘다(self):
+        from PIL import Image
+        Image.new("RGB", (1, 1)).save(self.board_dir / "old.png")
+        stage = {"n": "1", "diagram": "old.png", "todo": "t", "check": "c",
+                 "node": None, "walk": False, "walk_of": 1}
+        with self.assertRaises(FileNotFoundError) as e:
+            render._stage_html(stage, self.netlist, types.SimpleNamespace(nodes=[]))
+        self.assertIn("render_breadboard.py", str(e.exception))
+
+    def test_스키마가_다르면_멈춘다(self):
+        with self.assertRaises(ValueError):
+            self._stage(dict(_SIDE, schema="breadboard-sidecar/v0"))
+
+    def test_완성본에도_결선_순서가_실린다(self):
+        """손그림을 따라 그리는 순서표다 — PNG 아래에 있던 것이 여기로 온다."""
+        _board_png(self.board_dir, "f.png", dict(_SIDE, kept=None))
+        section = types.SimpleNamespace(diagram="f.png", body="")
+        html = render._diagram_html(section, self.netlist)
+        self.assertIn('<figure class="board">', html)
+        self.assertIn('<ol class="steps">', html)
+        self.assertNotIn('class="kept"', html)
+
+
+class TestIssueRefsDropped(unittest.TestCase):
+    """미확정 표는 인쇄하지 않는다(2026-09-28) — 산문의 `(M9)` 같은 참조가 가리킬 곳이 없어
+    학생에게는 뜻 없는 글자다. netlist 원문은 저작용이라 그대로 두고 인쇄할 때만 벗긴다."""
+
+    def test_괄호째_참조를_벗긴다(self):
+        cases = {
+            "교안 근거가 없다(M4).": "교안 근거가 없다.",
+            "배선 편의다(M11, M12).": "배선 편의다.",
+            "(U4F — 교안은 U4A pin 1, M9)": "(U4F — 교안은 U4A pin 1)",
+            "넷~다섯이다(예산 5, M8).": "넷~다섯이다(예산 5).",
+            "새로 짓는다(M6, 2026-09-27 결정).": "새로 짓는다(2026-09-27 결정).",
+            "(교안 p10 머리글 — 기종은 M8). CH1": "(교안 p10 머리글). CH1",
+            "교안 원문이 아니다(M8 에서 함께 확인)": "교안 원문이 아니다",
+        }
+        for src, want in cases.items():
+            with self.subTest(src=src):
+                self.assertEqual(render._drop_issue_refs(src), want)
+
+    def test_M_이_아닌_괄호는_두다(self):
+        for keep in ("74HC20 (dual 4-input NAND)", "(n.c.)", "MUX(4x1)", "M 자 모양"):
+            self.assertEqual(render._drop_issue_refs(keep), keep)
+
+    def test_실험01_04_인쇄본에_M번호가_없다(self):
+        for n in (1, 2, 3, 4):
+            spec = parse_spec(ROOT / config.experiment_dir(n) / "체크리스트/명세.md")
+            netlist = parse_netlist(ROOT / config.experiment_dir(n) / "결선도/netlist.md")
+            body = common_page(spec, netlist) + circuit_pages(spec, netlist)
+            with self.subTest(실험=n):
+                self.assertEqual(re.findall(r".{0,20}\bM\d{1,2}\b.{0,10}", body), [])
+
+
+class TestPinCheckHeading(unittest.TestCase):
+    def test_핀_점검_제목이_미사용_핀을_비우라고_단정하지_않는다(self):
+        """실험02 는 미사용 입력을 GND·VCC 에 묶는다 — 전원 박스가 이 상자를 가리키므로
+        제목이 '비어 있는가' 면 그 주차에 틀린 지시가 된다(2026-09-28 최종 리뷰)."""
+        spec = parse_spec(ROOT / config.experiment_dir(2) / "체크리스트/명세.md")
+        netlist = parse_netlist(ROOT / config.experiment_dir(2) / "결선도/netlist.md")
+        html = circuit_pages(spec, netlist)
+        self.assertIn('class="unused"', html)
+        self.assertNotIn("미사용 핀은 비어 있는가", html)
+        self.assertIn("미사용 핀은 지시대로인가", html)

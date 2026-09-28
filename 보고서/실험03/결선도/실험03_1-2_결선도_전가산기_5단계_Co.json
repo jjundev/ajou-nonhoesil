@@ -1,0 +1,58 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2: 전가산기 — 5단계 (OR 추가, 노드 Co · 완성)",
+ "subtitle": "74HC86 XOR 2개 + 74HC08 AND 2개 + 74HC32 OR · Co = A·B + (A⊕B)·Ci",
+ "kept": 24,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC32",
+   "desc": "우 21행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "mid",
+   "from": "우 d12",
+   "to": "우 d22",
+   "desc": "AND1 출력 (74HC08 pin 3) -> 74HC32 pin 2",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "mid",
+   "from": "우 b15",
+   "to": "우 b21",
+   "desc": "AND2 출력 (74HC08 pin 6) -> 74HC32 pin 1",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "우 c23",
+   "to": "우 c29",
+   "desc": "Co = 74HC32 pin 3 -> LED2",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "우 g21",
+   "to": "우 VCC레일21행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 d27",
+   "to": "우 중앙GND레일27행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

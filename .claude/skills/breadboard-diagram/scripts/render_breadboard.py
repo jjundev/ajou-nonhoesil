@@ -722,12 +722,8 @@ class BreadboardRenderer:
     # ---------------- 머리글 ----------------
 
     def set_header(self, title, subtitle, submit=True):
-        """제목은 **잭 아래 빈 띠(y 165~238)** 에 넣는다.
-
-        이전 판은 `[370,30,850,160]` 을 흰색으로 덮고 그 자리에 제목을 썼는데,
-        하필 그 사각형 안에 **전원 잭 세 개가 들어 있었다.** 과거 예비보고서의
-        결선도는 예외 없이 그 잭에서 보드까지 전원선을 그린다 — 실험대 전원이
-        그 잭이기 때문이다. 덮어버리면 "5V 를 어디서 따오지"에서 막힌다.
+        """제목·부제는 **그리지 않는다** — 사이드카 JSON 으로 가고 체크리스트가 싣는다
+        (2026-09-28 읽기면 개편: 그림에 구운 글자는 태블릿에서 작고 체크할 수 없었다).
 
         걷기 보드(ghost 모드)는 앞 회로 빌더가 부르는 제목 대신 `ghost` 의 제목을 쓴다 —
         빌더는 자기가 걷기 보드로 렌더되는지 모른다.
@@ -735,16 +731,7 @@ class BreadboardRenderer:
         if self.ghost is not None:
             title, subtitle, submit = self.ghost['title'], self.ghost['subtitle'], False
         self.title, self.subtitle = title, subtitle
-        self.draw.text((28, 170), title, fill=(20, 40, 90, 255), font=self.font_title)
-        self.draw.text((30, 200), subtitle, fill=(80, 90, 100, 255), font=self.font_subtitle)
         self.submit = submit
-        if submit:
-            line = "※ 이 그림을 손으로 따라 그린 뒤 학번/이름/날짜를 자필로 적어 제출한다"
-        elif self.ghost is not None:
-            line = "※ 걷기 그림 — 빨간 점선만 뽑는다(전원을 끄고). 회색은 그대로 둔다. 새로 꽂는 것은 없다"
-        else:
-            line = "※ 체크리스트용 절차 그림 — 회색은 앞 단계에서 그대로 둔 것. 손그림은 완성본으로 그린다"
-        self.draw.text((30, 220), line, fill=(180, 50, 50, 255), font=self.font_kr_sm)
 
     def connect_jacks(self, block='left'):
         """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다."""
@@ -756,8 +743,6 @@ class BreadboardRenderer:
         self.step_wire([(JACKS['gray'], JACK_BOTTOM), (JACKS['gray'], 258),
                         (c['gnd'], 258), (c['gnd'], self.r_y(r_g))],
                        'gnd', '전원장치 0V 잭', marker_at=(JACKS['gray'] + 46, 118))
-        self.note('잭 색과 전압 표기는 실험대 전원장치에서 직접 확인할 것 '
-                  '(교안에 잭 색 규정이 없다). 가운데 노란 잭은 쓰지 않는다.')
 
     # ---------------- 낱개 그리기 ----------------
 
@@ -1265,9 +1250,6 @@ class BreadboardRenderer:
         for p in pins:
             self.unused_outputs.append({'chip': chip, 'pin': p,
                                         'block': block, 'pin1_row': start_row})
-        pin_str = ", ".join(str(p) for p in pins)
-        self.note(f'{chip} 미사용 출력 pin {pin_str} 은 **아무 데도 연결하지 않는다** '
-                  f'— 개방(NC). GND 로 내리거나 출력끼리 묶으면 칩이 상한다.')
 
     def mark_unused_inputs(self, pins, start_row, block='left', chip=''):
         """미사용 게이트 입력을 **개방**으로 등록한다. 아무것도 그리지 않는다.
@@ -1282,157 +1264,8 @@ class BreadboardRenderer:
         for p in pins:
             self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': None,
                                        'block': block, 'pin1_row': start_row})
-        pin_str = ", ".join(str(p) for p in pins)
-        self.note(f'{chip} 미사용 입력 pin {pin_str} 은 접지하지 않는다 — 결과에 영향 '
-                  '없음(실험01 실측). 사용하는 게이트의 입력만 반드시 물린다.')
 
     # ---------------- 내보내기 ----------------
-
-    def _wrap(self, text, font, max_w):
-        out, line = [], ''
-        for ch in text:
-            if self.draw.textlength(line + ch, font=font) > max_w and line:
-                out.append(line)
-                line = ch
-            else:
-                line += ch
-        if line:
-            out.append(line)
-        return out
-
-    def _draw_footer(self, im, y0):
-        """보드 아래 흰 띠에 **범례 + 결선 순서표**.
-
-        보드 위에서 걷어낸 규칙 문구가 여기로 내려온다. 손으로 그리는 사람은
-        그림 전체를 한 번에 볼 필요 없이 이 표를 위에서 아래로 지워가며
-        한 줄씩 그린다 — 30가닥을 동시에 보는 문제가 사라진다.
-        """
-        d = _ScaledDraw(im)
-        x_pad = 28
-        d.line([(x_pad, y0), (998 - x_pad, y0)], fill=(190, 195, 200, 255), width=1)
-        y = y0 + 14
-
-        # 색 규칙 범례는 순서표를 켠 그림에만 붙인다. 지금은 13장 빌더가 전부
-        # 켜므로 전부 붙고, 전부 참이다 — e1·e2 가릴 것 없이 `WIRE` 네 색만 쓴다
-        if self.numbered:
-            d.text((x_pad, y), "배선 색 규칙", fill=(20, 40, 90, 255), font=self.font_kr_bold)
-            x = x_pad + 84
-            for kind in ('vcc', 'gnd', 'sig', 'mid'):
-                d.line([(x, y + 7), (x + 24, y + 7)], fill=WIRE[kind], width=4)
-                d.text((x + 30, y), KIND_KR[kind], fill=(60, 60, 60, 255), font=self.font_step)
-                x += 96
-            if self.ghost is not None:
-                for k in range(0, 24, 12):
-                    d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=REMOVE, width=3)
-                d.text((x + 30, y), '뽑는다 (빨간 점선 · 빨간 번호)',
-                       fill=(60, 60, 60, 255), font=self.font_step)
-                x += 190
-            if self.probes:
-                for k in range(0, 24, 12):
-                    d.line([(x + k, y + 7), (x + k + 7, y + 7)], fill=PROBE, width=3)
-                d.text((x + 30, y), '계측기(점선 — 꽂는 게 아니라 문다)',
-                       fill=(60, 60, 60, 255), font=self.font_step)
-            y += 24
-
-        for n in self.notes:
-            for ln in self._wrap('· ' + n.replace('**', ''), self.font_step, 998 - 2 * x_pad):
-                d.text((x_pad, y), ln, fill=(90, 70, 70, 255), font=self.font_step)
-                y += 15
-        if self.baseline is not None:
-            if self.ghost is not None:
-                line = (f'· 회색 = 그대로 둔다 ({len(self.kept)}개). '
-                        '빨간 점선 + 빨간 번호 = 이 그림에서 뽑는다. 새로 꽂는 것은 없다')
-            else:
-                line = (f'· 회색 = 앞 단계에서 그대로 둔다 ({len(self.kept)}개). '
-                        '번호 = 이번 단계에서 새로 한다')
-            d.text((x_pad, y), line, fill=(90, 90, 90, 255), font=self.font_step)
-            y += 15
-            wires = self.removals()
-            others = self.removed()[len(wires):]
-            if wires or others:
-                y += 6
-                d.text((x_pad, y), "앞 단계에서 걷는다 — 먼저 뽑고 ☐ 를 채운다",
-                       fill=REMOVE, font=self.font_kr_bold)
-                y += 20
-                for r in wires:
-                    d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
-                                outline=(120, 125, 130, 255), width=1)
-                    x_text = x_pad + 18
-                    if self.ghost is not None:
-                        # 그림 위 빨간 원과 같은 번호 — 걷기 보드에서만. 보통 보드는
-                        # 그림에 원이 없어 번호가 가리킬 데가 없다
-                        self._marker_on(d, x_pad + 28, y + 8, r['n'], REMOVE, filled=True)
-                        x_text = x_pad + 42
-                    lines = self._wrap(f"걷기: {r['addr']} · {r['desc']}", self.font_step,
-                                       998 - x_text - x_pad)[:2]
-                    for k, ln in enumerate(lines):
-                        d.text((x_text, y + k * 14), ln, fill=REMOVE, font=self.font_step)
-                    y += max(18, len(lines) * 14 + 4)
-                for g in others:
-                    d.rectangle([x_pad, y + 2, x_pad + 11, y + 13],
-                                outline=(120, 125, 130, 255), width=1)
-                    lines = self._wrap('걷기: ' + g, self.font_step, 998 - 2 * x_pad - 20)[:2]
-                    for k, ln in enumerate(lines):
-                        d.text((x_pad + 18, y + k * 14), ln, fill=REMOVE, font=self.font_step)
-                    y += max(18, len(lines) * 14 + 4)
-        y += 8
-
-        if not (self.numbered and self.steps):
-            return self._draw_probe_table(d, y, x_pad) if self.probes else y
-
-        d.line([(x_pad, y), (998 - x_pad, y)], fill=(225, 228, 232, 255), width=1)
-        y += 12
-        d.text((x_pad, y), "결선 순서 — 위에서 아래로 한 줄씩 그리고 ☐ 를 채운다",
-               fill=(20, 40, 90, 255), font=self.font_kr_bold)
-        y += 22
-
-        col_w = (998 - 2 * x_pad) // 2
-        text_w = col_w - 58
-        blocks = []
-        for st in self.steps:
-            mult = f" x{st['count']}" if st['count'] > 1 else ""
-            blocks.append((st, self._wrap(f"{st['frm']} → {st['to']}{mult} · {st['desc']}",
-                                          self.font_step, text_w)[:2]))
-
-        # 두 단으로 나눈다. 줄 수 기준으로 갈라야 단 높이가 맞는다
-        total = sum(len(b[1]) for b in blocks)
-        half, acc, cut = (total + 1) // 2, 0, len(blocks)
-        for i, b in enumerate(blocks):
-            if acc >= half:
-                cut = i
-                break
-            acc += len(b[1])
-
-        bottom = y
-        for ci, chunk in enumerate((blocks[:cut], blocks[cut:])):
-            cx, cy = x_pad + ci * col_w, y
-            for st, lines in chunk:
-                d.rectangle([cx, cy + 2, cx + 11, cy + 13], outline=(120, 125, 130, 255), width=1)
-                self._marker_on(d, cx + 28, cy + 8, st['n'], WIRE[st['kind']])
-                for k, ln in enumerate(lines):
-                    d.text((cx + 42, cy + k * 14), ln, fill=(45, 45, 45, 255), font=self.font_step)
-                cy += max(18, len(lines) * 14 + 4)
-            bottom = max(bottom, cy)
-        y = bottom + 14
-        return self._draw_probe_table(d, y, x_pad) if self.probes else y + 10
-
-    def _draw_probe_table(self, d, y, x_pad):
-        """계측표. 결선표와 **따로** 쌓는다 — 프로브는 꽂는 게 아니라 무는 것이라
-        결선 순서에 섞으면 조원이 점퍼선을 찾게 된다."""
-        d.line([(x_pad, y), (998 - x_pad, y)], fill=(225, 228, 232, 255), width=1)
-        y += 12
-        d.text((x_pad, y), "계측 · 신호원 — 어디에 무는가 (배선이 아니다)",
-               fill=(20, 40, 90, 255), font=self.font_kr_bold)
-        y += 22
-        for pr in self.probes:
-            d.rectangle([x_pad, y + 2, x_pad + 11, y + 13], outline=(120, 125, 130, 255), width=1)
-            d.text((x_pad + 20, y), f"{pr['n']}.", fill=PROBE, font=self.font_step)
-            lines = self._wrap(f"{pr['label']} → {pr['at']} · {pr['desc']}",
-                               self.font_step, 998 - 2 * x_pad - 60)[:2]
-            for k, ln in enumerate(lines):
-                d.text((x_pad + 42, y + k * 14), ln, fill=(45, 45, 45, 255), font=self.font_step)
-            y += max(18, len(lines) * 14 + 4)
-        return y + 10
 
     def _marker_on(self, d, x, y, n, color, filled=False):
         """번호 원. `filled` 면 색 채움·흰 숫자 — 걷기 번호가 순서표 번호와 헷갈리지 않게."""
@@ -1942,9 +1775,33 @@ class BreadboardRenderer:
             out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
         return out
 
+    def sidecar(self):
+        """그림 옆에 실을 글자 — 체크리스트가 읽는다. PNG 에는 보드만 있다(2026-09-28).
+
+        걷기 번호는 걷기 보드에서만 준다 — 그 보드만 그림에 빨간 번호 원이 있다. 칩·사슬
+        걷기(`removed()` 의 배선 뒤쪽)는 번호가 없다.
+        """
+        ghost = self.ghost is not None
+        wires = self.removals()
+        removals = [{'n': r['n'] if ghost else None, 'text': f"{r['addr']} · {r['desc']}"}
+                    for r in wires]
+        removals += [{'n': None, 'text': g} for g in self.removed()[len(wires):]]
+        return {
+            'schema': SIDECAR_SCHEMA,
+            'title': self.title,
+            'subtitle': self.subtitle,
+            'kept': len(self.kept) if self.baseline is not None else None,
+            'steps': [{'n': s['n'], 'kind': s['kind'], 'from': s['frm'], 'to': s['to'],
+                       'desc': s['desc'], 'count': s['count']} for s in self.steps],
+            'removals': removals,
+            'probes': [{'n': p['n'], 'label': p['label'], 'at': p['at'], 'desc': p['desc']}
+                       for p in self.probes],
+        }
+
     def stamp(self):
+        # v2 = 보드만 담은 PNG(2026-09-28). 접두어가 바뀌어 옛 PNG 는 전부 stale 로 잡힌다
         blob = json.dumps(self.content(), ensure_ascii=False, sort_keys=True, default=_jsonable)
-        return 'v1:' + hashlib.sha256(blob.encode('utf-8')).hexdigest()
+        return 'v2:' + hashlib.sha256(blob.encode('utf-8')).hexdigest()
 
     def export(self, output_path, max_row=35):
         self.verify()
@@ -1970,17 +1827,14 @@ class BreadboardRenderer:
         final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
                                          self.overlay)
         board_h = self.r_y(max_row) + 20
-        board = final_im.crop((0, 0, 998 * SCALE, board_h * SCALE)).convert('RGB')
-
-        # 캔버스는 SCALE 배 — `_draw_footer` 는 논리 좌표로 그리고 논리 높이를 돌려준다
-        canvas = Image.new('RGB', (998 * SCALE, (board_h + 1400) * SCALE), (255, 255, 255))
-        canvas.paste(board, (0, 0))
-        used = self._draw_footer(canvas, board_h)
-        out = canvas.crop((0, 0, 998 * SCALE, min(used * SCALE, canvas.height)))
+        out = final_im.crop((0, 0, 998 * SCALE, board_h * SCALE)).convert('RGB')
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
         out.save(output_path, pnginfo=info)
+        with open(os.path.splitext(output_path)[0] + '.json', 'w', encoding='utf-8') as f:
+            json.dump(self.sidecar(), f, ensure_ascii=False, indent=1)
+            f.write('\n')
         staged = self.partial or self.baseline is not None
         print(f"[SUCCESS] Exported: {output_path} "
               f"({out.size[0]}x{out.size[1]}, 결선 {len(self.steps)}단계, "
@@ -2116,6 +1970,9 @@ BOARD_FILE = '배치.py'
 # 글꼴·줄바꿈은 들지 않는다 — 기계가 달라도 선과 문구가 같으면 도장이 같다.
 # `tests/test_breadboard_boards.py` 가 커밋된 PNG 의 도장을 지금 코드와 맞댄다.
 STAMP_KEY = 'breadboard-stamp'
+# PNG 옆 JSON 의 스키마. 체크리스트(`scripts/lab/render.py`)가 같은 문자열을 따로 들고
+# 대조한다 — 그쪽은 이 모듈을 import 하지 않는다
+SIDECAR_SCHEMA = 'breadboard-sidecar/v1'
 
 
 def _jsonable(o):

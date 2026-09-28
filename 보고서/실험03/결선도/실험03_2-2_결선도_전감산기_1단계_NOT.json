@@ -1,0 +1,58 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: 전감산기 — 1단계 (74HC04 NOT1, 노드 A'·B)",
+ "subtitle": "74HC86 XOR 2 + 74HC04 NOT 2 + 74HC08 AND 2 + 74HC32 OR · Bo = A'·B + (A⊕B)'·Bi",
+ "kept": 27,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC04",
+   "desc": "좌 18행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 d7",
+   "to": "좌 d18",
+   "desc": "입력 A 갈래 -> 74HC04 pin 1",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "mid",
+   "from": "좌 c19",
+   "to": "우 a10",
+   "desc": "A' (74HC04 pin 2) -> 74HC08 pin 1",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "우 c12",
+   "to": "우 c29",
+   "desc": "임시 급전: A'·B = 74HC08 pin 3 -> LED2 (다음 장 걷기에서 뽑는다)",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 g18",
+   "to": "좌 중앙VCC레일18행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 a24",
+   "to": "좌 GND레일24행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

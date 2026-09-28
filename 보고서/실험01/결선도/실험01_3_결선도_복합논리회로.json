@@ -1,0 +1,250 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3: 복합 논리회로 결선도 (X, Y, Z 동시 관찰)",
+ "subtitle": "74HC04 (NOT) + 74HC08 (AND) + 74HC32 (OR) · LED 3개 · 330Ω 3개",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일29행",
+   "to": "좌 중앙GND레일29행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일30행",
+   "to": "좌 중앙VCC레일30행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 g7",
+   "to": "좌 중앙VCC레일7행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 d13",
+   "to": "좌 GND레일13행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 g18",
+   "to": "좌 중앙VCC레일18행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 d24",
+   "to": "좌 GND레일24행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "gnd",
+   "from": "좌 중앙GND레일31행",
+   "to": "우 중앙GND레일31행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "gnd",
+   "from": "우 중앙GND레일33행",
+   "to": "우 GND레일33행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "vcc",
+   "from": "좌 중앙VCC레일34행",
+   "to": "우 VCC레일34행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "vcc",
+   "from": "우 g10",
+   "to": "우 VCC레일10행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "gnd",
+   "from": "우 d16",
+   "to": "우 중앙GND레일16행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "sig",
+   "from": "좌 GND레일7행",
+   "to": "좌 b7",
+   "desc": "입력 A -> 74HC04 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "sig",
+   "from": "좌 b10",
+   "to": "좌 a25",
+   "desc": "Z (74HC04 pin 4) -> Z LED",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "sig",
+   "from": "좌 b25",
+   "to": "좌 c28",
+   "desc": "Z: LED(좌 b25→좌 b26) + 330Ω(좌 c26→좌 c28) 직렬 · Z = (A'·B)' — X 와 항상 같아야 한다",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "gnd",
+   "from": "좌 a28",
+   "to": "좌 GND레일28행",
+   "desc": "Z 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "sig",
+   "from": "좌 GND레일19행",
+   "to": "좌 b19",
+   "desc": "입력 B -> 74HC08 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮긴다",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "mid",
+   "from": "좌 a8",
+   "to": "좌 a18",
+   "desc": "A' (74HC04 pin 2) -> 74HC08 pin 1",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "mid",
+   "from": "좌 c20",
+   "to": "좌 c9",
+   "desc": "A'·B (74HC08 pin 3) -> 74HC04 pin 3",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "sig",
+   "from": "좌 c7",
+   "to": "우 a13",
+   "desc": "입력 A 갈래 -> 74HC32 pin 4",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "우 d13",
+   "to": "우 d10",
+   "desc": "입력 A 갈래 -> 74HC32 pin 1",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "sig",
+   "from": "좌 d19",
+   "to": "우 b14",
+   "desc": "입력 B 갈래 -> 74HC32 pin 5",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "mid",
+   "from": "좌 d10",
+   "to": "우 b11",
+   "desc": "Z (74HC04 pin 4) -> 74HC32 pin 2",
+   "count": 1
+  },
+  {
+   "n": 25,
+   "kind": "sig",
+   "from": "우 c12",
+   "to": "우 c22",
+   "desc": "74HC32 pin 3 -> X LED",
+   "count": 1
+  },
+  {
+   "n": 26,
+   "kind": "sig",
+   "from": "우 d22",
+   "to": "우 e25",
+   "desc": "X: LED(우 d22→우 d23) + 330Ω(우 e23→우 e25) 직렬 · X = A + Z — Z 와 다르면 배선 오류",
+   "count": 1
+  },
+  {
+   "n": 27,
+   "kind": "gnd",
+   "from": "우 c25",
+   "to": "우 중앙GND레일25행",
+   "desc": "X 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 28,
+   "kind": "sig",
+   "from": "우 a15",
+   "to": "우 a27",
+   "desc": "74HC32 pin 6 -> Y LED",
+   "count": 1
+  },
+  {
+   "n": 29,
+   "kind": "sig",
+   "from": "우 b27",
+   "to": "우 c30",
+   "desc": "Y: LED(우 b27→우 b28) + 330Ω(우 c28→우 c30) 직렬 · Y = A + B",
+   "count": 1
+  },
+  {
+   "n": 30,
+   "kind": "gnd",
+   "from": "우 a30",
+   "to": "우 중앙GND레일30행",
+   "desc": "Y 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": []
+}

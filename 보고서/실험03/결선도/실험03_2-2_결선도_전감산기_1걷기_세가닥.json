@@ -1,0 +1,22 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: 전감산기 — 1단계 걷기 (전가산기에서 걷는 선 3가닥)",
+ "subtitle": "A→74HC08 pin 1 갈래 · A⊕B→74HC08 pin 4 · LED2 급전선을 뽑는다 · 회색은 그대로 둔다",
+ "kept": 27,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 d7 → 우 a10 · 입력 A 갈래 -> 74HC08 pin 1"
+  },
+  {
+   "n": 2,
+   "text": "좌 a9 → 우 c13 · A⊕B (74HC86 pin 3) -> 74HC08 pin 4 (AND2)"
+  },
+  {
+   "n": 3,
+   "text": "우 c23 → 우 c29 · Co = 74HC32 pin 3 -> LED2"
+  }
+ ],
+ "probes": []
+}
