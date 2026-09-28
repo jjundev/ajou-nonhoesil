@@ -10,12 +10,18 @@
     .venv/bin/python -m scripts.lab.trace_guide 4
 """
 import argparse
+import contextlib
 import html
+import inspect
+import io
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import quote
+
+from pypdf import PdfReader
 
 from scripts.lab import config
 from scripts.lab.hand_grid import load_renderer
@@ -71,8 +77,15 @@ def check_layers(name, layers, n_steps):
 
 
 def build_pages(board, work_dir):
-    """완성본마다 0쪽 + 층 쪽. 그림과 사이드카는 `work_dir` 에 쓴다."""
-    work_dir = Path(work_dir)
+    """완성본마다 0쪽 + 층 쪽. 그림과 사이드카는 `work_dir` 에 쓴다.
+
+    엔진이 보드마다 찍는 `[SUCCESS] Exported: <임시 경로>` 는 삼킨다 — 곧 지워질 경로다.
+    """
+    with contextlib.redirect_stdout(io.StringIO()):
+        return _build_pages(board, Path(work_dir))
+
+
+def _build_pages(board, work_dir):
     layers = getattr(board, 'LAYERS', None)
     if not layers:
         raise LayerError('배치.py 에 LAYERS 가 없다 — 완성본마다 (lo, hi, 이름) 층 목록을 둔다')
@@ -80,6 +93,9 @@ def build_pages(board, work_dir):
     for filename, fn in board.FINALS:
         if filename not in layers:
             raise LayerError(f'{filename}: LAYERS 에 층 목록이 없다')
+        if 'layer' not in inspect.signature(fn).parameters:
+            raise LayerError(f'{filename}: 빌더 {fn.__name__} 가 layer 를 안 받는다 — 시그니처에 '
+                             'layer=None 을 더하고 BreadboardRenderer(..., layer=layer) 로 넘긴다')
         final = fn(str(work_dir / filename), None)
         steps = final.sidecar()['steps']
         check_layers(filename, layers[filename], len(steps))
@@ -129,7 +145,23 @@ def make_pdf(board, out):
         html_path = Path(d) / 'guide.html'
         html_path.write_text(render_html(pages, out.stem), encoding='utf-8')
         html_to_pdf(html_path, out)
+    try:
+        check_pdf(out, pages)
+    except LayerError:
+        out.unlink(missing_ok=True)
+        raise
     return len(pages)
+
+
+def check_pdf(out, pages):
+    """섹션 하나가 정확히 한 쪽, 쪽마다 그림 하나인지. 표가 넘치면 그림 없는 쪽이 끼어든다."""
+    counts = [len(p.images) for p in PdfReader(str(out)).pages]
+    if counts == [1] * len(pages):
+        return
+    k = next((i for i, c in enumerate(counts) if c != 1), len(pages))
+    culprit = pages[max(k - 1, 0)].heading
+    raise LayerError(f'PDF 가 {len(counts)}쪽이다(섹션 {len(pages)}개) — {k + 1}쪽에 그림이 없다. '
+                     f'"{culprit}" 쪽이 넘쳤다 — 그 층을 둘로 쪼갠다')
 
 
 def output_path(experiment):
@@ -151,7 +183,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         out, n = make_guide(args.experiment, args.out)
-    except (LayerError, PdfError, FileNotFoundError) as e:
+    except (LayerError, PdfError, FileNotFoundError, subprocess.TimeoutExpired) as e:
         print(f'[ERROR] {e}', file=sys.stderr)
         return 1
     print(f'[SUCCESS] {out} ({n}쪽)')

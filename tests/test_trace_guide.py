@@ -1,6 +1,11 @@
 """따라 그리기 PDF 생성기 (`scripts/lab/trace_guide.py`, 2026-09-28)."""
+import contextlib
+import io
 import os
+import shutil
+import subprocess
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -64,6 +69,22 @@ class Pages(unittest.TestCase):
             trace_guide.build_pages(board, d)
 
 
+class Guards(unittest.TestCase):
+    def test_layer_를_안_받는_빌더는_이름을_말한다(self):
+        mini = load_renderer().load_board_file(ROOT / "tests/fixtures/board_min/배치.py", 'board_min')
+        board = types.SimpleNamespace(FINALS=mini.FINALS, LAYERS={'min.png': [(1, 2, '잭')]})
+        with tempfile.TemporaryDirectory() as d, \
+                self.assertRaisesRegex(trace_guide.LayerError, r'build_min.*layer=None'):
+            trace_guide.build_pages(board, d)
+
+    def test_층_보드_출력을_삼킨다(self):
+        board = load_renderer().load_board_file(FIXTURE, 'board_layers')
+        buf = io.StringIO()
+        with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(buf):
+            trace_guide.build_pages(board, d)
+        self.assertEqual(buf.getvalue(), '')
+
+
 class Html(unittest.TestCase):
     def _pages(self):
         return [
@@ -124,7 +145,33 @@ class Pdf(unittest.TestCase):
             self.assertEqual([len(p.images) for p in reader.pages], [1] * n)
 
 
+@unittest.skipUnless(_chrome(), 'Chrome 없음')
+class Overflow(unittest.TestCase):
+    def test_쪽이_넘치면_층을_말하고_PDF_를_지운다(self):
+        board = load_renderer().load_board_file(FIXTURE, 'board_layers')
+        row = {'n': 1, 'kind': 'sig', 'from': '좌 a1', 'to': '좌 b2', 'desc': '넘치는 줄', 'count': 1}
+
+        build = trace_guide.build_pages     # 패치 전 원본
+
+        def fake(_board, d):
+            real = build(board, d)
+            return [real[0], trace_guide.Page(real[1].image, '긴 층', [row] * 80, [], True), real[2]]
+
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / 'x.pdf'
+            with mock.patch.object(trace_guide, 'build_pages', side_effect=fake), \
+                    self.assertRaisesRegex(trace_guide.LayerError, '긴 층'):
+                trace_guide.make_pdf(board, out)
+            self.assertFalse(out.exists())
+
+
 class Main(unittest.TestCase):
+    def test_시간초과는_종료코드_1(self):
+        with mock.patch.object(trace_guide, 'make_guide',
+                               side_effect=subprocess.TimeoutExpired('chrome', 120)), \
+             mock.patch('sys.stderr'):
+            self.assertEqual(trace_guide.main(['4']), 1)
+
     def test_PDF_실패는_종료코드_1(self):
         with mock.patch.object(trace_guide, 'make_guide', side_effect=PdfError('Chrome 없음')), \
              mock.patch('sys.stderr') as err:
