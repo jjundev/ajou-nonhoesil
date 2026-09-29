@@ -519,6 +519,33 @@ class SkillDocInvariants(unittest.TestCase):
             self.assertTrue((CANON.parent / target).exists(),
                             f"{head}: {target} 이 없다")
 
+    def test_wiring_subsection_is_image_then_bare_table(self):
+        # 규칙 13 부가("맨몸, 부울식 불릿 없음")와 규칙 20·섹션별 재료 표
+        # ("부울식 불릿과 핀 표")가 반대로 말해, 2026-09-29 격리 재생성
+        # 네 회차가 모두 이 충돌을 보고했다. 승인본 02·03 은 그림 한 줄 +
+        # 맨몸 표다(01 은 그 전에 낸 부울식 불릿 모양이 남아 있다).
+        flat = self.flat["예보"]
+        self.assertNotIn("부울식 불릿과 핀 표", flat)
+        self.assertNotIn("그 아래에 부울식과 핀 표를 둔다", flat)
+        self.assertIn("맨몸 핀 표", flat)
+        shared = _flat((ROOT / ".claude/보고서서식.md").read_text(encoding="utf-8"))
+        self.assertIn("이미지 한 줄은 \"사이\"로 치지 않는다", shared)
+        image = re.compile(r"^!\[[^\]]*\]\(\S+\)\s*$")
+        for n in (2, 3):
+            canon = (ROOT / config.experiment_dir(n)
+                     / f"output/실험{n:02d}_예비보고서.md").read_text(encoding="utf-8")
+            body = re.split(r"^# 회로 결선도\n", canon, flags=re.M)[1]
+            body = re.split(r"^# ", body, flags=re.M)[0]
+            for chunk in body.split("\n## ")[1:]:
+                head, *lines = chunk.splitlines()
+                if head.startswith(("공통 결선 규칙", "실험 전 확인할 사항")):
+                    continue
+                lines = [ln for ln in lines
+                         if ln.strip() and ln.strip() != "<empty-block/>"]
+                self.assertTrue(image.match(lines[0]), f"{n}/{head}: 첫 줄이 그림이 아니다")
+                self.assertTrue(lines[1].startswith("|"),
+                                f"{n}/{head}: 그림과 표 사이에 {lines[1]!r}")
+
     def test_subsection_count_is_derived_from_the_spec(self):
         # 규칙만으로 재생성하면 소절이 늘어난다 (8,345자 → 11,130자 실측).
         self.assertIn("소절 수는 명세에서 파생한다", self.flat["예보"])
