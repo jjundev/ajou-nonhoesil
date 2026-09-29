@@ -24,3 +24,159 @@ def test_unknown_authoring_field_rejected():
 def test_loader_reports_invalid_json(tmp_path):
     path = tmp_path / 'bank.json'; path.write_text('{', encoding='utf-8')
     with pytest.raises(ValueError): load_question_bank(path)
+
+def location():
+    return dict(source_id='s1', pdf_page=None, printed_page=None, locator='document:1', bbox=None, image_size=None)
+
+def populated():
+    data = bank()
+    data['sources'] = [dict(id='s1', path='quiz.txt', sha256='0'*64, format='text',
+        filename_metadata={'year':None,'term':None}, observed_metadata={'year':None,'term':None},
+        conflicts=[], processing='complete', reason='', unit_kind='document', unit_count=1)]
+    data['occurrences'] = [dict(id='o1', role='question', location=location(), original_number='1',
+        blocks=[dict(id='b1',type='text',text='입력이 0일 때 출력은?',tex=None,cells=None,asset_id=None)], reading='readable', uncertainties=[])]
+    data['questions'] = [dict(id='q1',occurrence_ids=['o1'],representative_occurrence_id='o1',kind='unknown',
+        classification_reason='실제 시험 여부 미확인',evidence=[location()],subparts=[],answers=[])]
+    data['audit']['units'] = [dict(source_id='s1',index=1,outcome='questions',occurrence_ids=['o1'],reason='')]
+    return data
+
+@pytest.mark.parametrize('change', [
+    lambda d: d['questions'][0].update(representative_occurrence_id='missing'),
+    lambda d: d['occurrences'][0].update(reading='partial'),
+    lambda d: d['occurrences'][0]['blocks'][0].update(id='q1'),
+    lambda d: d['audit'].update(status='complete'),
+    lambda d: d['questions'][0]['answers'].append(dict(occurrence_id='o1',target_id='q1',status='confirmed',reason='번호만 같음')),
+])
+def test_semantic_errors(change):
+    data = populated(); change(data)
+    assert validate_question_bank(data)
+
+def test_variant_is_not_merged_or_mutated():
+    data = populated()
+    occ = copy.deepcopy(data['occurrences'][0]); occ['id']='o2'; occ['blocks'][0].update(id='b2',text='입력이 1일 때 출력은?')
+    data['occurrences'].append(occ)
+    q = copy.deepcopy(data['questions'][0]); q.update(id='q2',occurrence_ids=['o2'],representative_occurrence_id='o2')
+    data['questions'].append(q)
+    data['audit']['units'][0]['occurrence_ids'].append('o2')
+    data['relations'].append(dict(from_id='q1',to_id='q2',type='variant_of',reason='입력값이 다름',evidence=[location()]))
+    before=copy.deepcopy(data)
+    assert validate_question_bank(data)==[]
+    assert len(data['questions'])==2 and data==before
+
+def test_conflicting_provided_answers_remain_candidates():
+    data=populated()
+    for number, value in [(2,'0'),(3,'1')]:
+        occ=copy.deepcopy(data['occurrences'][0]); occ.update(id=f'o{number}',role='answer')
+        occ['blocks'][0].update(id=f'b{number}',text=value)
+        data['occurrences'].append(occ)
+        data['questions'][0]['answers'].append(dict(occurrence_id=occ['id'],target_id='q1',status='candidate',reason='분반 미확인'))
+        data['audit']['units'][0]['occurrence_ids'].append(occ['id'])
+    before=copy.deepcopy(data)
+    assert validate_question_bank(data)==[]
+    assert data==before
+def test_exposed_image_cannot_be_problem_asset():
+    data=populated()
+    data['assets']=[dict(id='a1',path='assets/a.png',sha256='0'*64,location=location(),role='problem',answer_exposure='present')]
+    assert validate_question_bank(data)
+
+def test_complete_with_holds_is_valid_but_not_complete():
+    data=populated(); data['occurrences'][0]['reading']='partial'
+    data['occurrences'][0]['uncertainties']=[dict(block_id='b1',symbol='오버바',candidates=[],reason='흐림',location=location())]
+    data['audit'].update(status='complete_with_holds',unresolved=[dict(target_id='o1',reason='오버바 판독 보류')])
+    data['audit']['checks']['source_visual']='partial'
+    assert validate_question_bank(data)==[]
+    data['audit']['status']='complete'
+    assert validate_question_bank(data)
+
+@pytest.mark.parametrize('page', [0, 3, True])
+def test_invalid_pdf_page(page):
+    data=populated(); data['sources'][0].update(format='pdf',path='quiz.pdf',unit_kind='page',unit_count=2)
+    data['occurrences'][0]['location']['pdf_page']=page
+    data['questions'][0]['evidence'][0]['pdf_page']=1
+    assert validate_question_bank(data)
+
+def test_order_does_not_reissue_ids():
+    data=populated()
+    occurrence=copy.deepcopy(data['occurrences'][0]); occurrence['id']='o2'; occurrence['blocks'][0].update(id='b2',text='다른 조건')
+    data['occurrences'].append(occurrence)
+    question=copy.deepcopy(data['questions'][0]); question.update(id='q2',occurrence_ids=['o2'],representative_occurrence_id='o2')
+    data['questions'].append(question)
+    data['audit']['units'][0]['occurrence_ids'].append('o2')
+    before=copy.deepcopy(data)
+    for key in ('sources','assets','occurrences','questions','relations'): data[key].reverse()
+    assert validate_question_bank(data)==[]
+    assert {q['id'] for q in data['questions']}=={q['id'] for q in before['questions']}
+
+def test_filename_header_conflict_requires_evidence():
+    data=populated(); source=data['sources'][0]
+    source['filename_metadata']['year']='2016'; source['observed_metadata']['year']='2017'
+    assert validate_question_bank(data)
+    source['conflicts']=[dict(field='year',filename_value='2016',observed_value='2017',location=location())]
+    assert validate_question_bank(data)==[]
+
+def test_shared_stem_subpart_references_existing_blocks():
+    data=populated()
+    data['questions'][0]['subparts']=[dict(id='part1',label='가',occurrence_id='o1',block_ids=['b1'])]
+    assert validate_question_bank(data)==[]
+    data['questions'][0]['subparts'][0]['block_ids']=['missing']
+    assert validate_question_bank(data)
+
+def test_duplicate_candidate_does_not_require_merge():
+    data=populated()
+    occurrence=copy.deepcopy(data['occurrences'][0]); occurrence['id']='o2'; occurrence['blocks'][0]['id']='b2'
+    data['occurrences'].append(occurrence)
+    question=copy.deepcopy(data['questions'][0]); question.update(id='q2',occurrence_ids=['o2'],representative_occurrence_id='o2')
+    data['questions'].append(question); data['audit']['units'][0]['occurrence_ids'].append('o2')
+    data['relations']=[dict(from_id='q1',to_id='q2',type='duplicate_candidate',reason='극성 재확인 필요',evidence=[location()])]
+    assert validate_question_bank(data)==[]
+    assert len(data['questions'])==2
+
+def test_complete_pdf_must_account_for_every_page():
+    data=populated(); data['sources'][0].update(format='pdf',path='quiz.pdf',unit_kind='page',unit_count=2)
+    data['occurrences'][0]['location']['pdf_page']=1; data['questions'][0]['evidence'][0]['pdf_page']=1
+    data['audit']['status']='complete'; data['audit']['checks']['source_visual']='pass'
+    assert validate_question_bank(data)
+    data['audit']['units'].append(dict(source_id='s1',index=2,outcome='blank',occurrence_ids=[],reason='빈 뒷면'))
+    assert validate_question_bank(data)==[]
+
+
+@pytest.mark.parametrize('change', [
+    lambda d: d['sources'][0].update(unit_count=2),
+    lambda d: d['sources'][0].update(processing='held'),
+    lambda d: d['occurrences'][0]['location'].update(source_id='missing'),
+    lambda d: d['occurrences'][0]['location'].update(pdf_page=1),
+    lambda d: d['occurrences'][0]['location'].update(locator=' '),
+    lambda d: d['occurrences'][0]['location'].update(bbox=[.7,0,.2,1],image_size=[100,100]),
+    lambda d: d['occurrences'][0]['location'].update(bbox=[0,0,1,1]),
+    lambda d: d['occurrences'][0].update(blocks=[]),
+    lambda d: d['occurrences'][0]['blocks'][0].update(type='math'),
+    lambda d: d['occurrences'][0]['blocks'][0].update(type='table',cells=[['a'],['b','c']]),
+    lambda d: d['occurrences'][0]['blocks'][0].update(type='figure',asset_id='missing'),
+    lambda d: d['occurrences'][0]['blocks'][0].update(tex='unexpected'),
+    lambda d: d['questions'][0].update(occurrence_ids=['o1','o1']),
+    lambda d: d['questions'][0].update(classification_reason=' '),
+    lambda d: d['audit']['units'].append(copy.deepcopy(d['audit']['units'][0])),
+    lambda d: d['audit']['units'][0].update(occurrence_ids=['missing']),
+    lambda d: d['audit']['units'][0].update(outcome='blank'),
+    lambda d: d['audit']['unresolved'].append(dict(target_id='missing',reason='test')),
+    lambda d: d['relations'].append(dict(from_id='q1',to_id='q1',type='variant_of',reason='test',evidence=[location()])),
+])
+def test_invalid_evidence_is_rejected(change):
+    data=populated(); change(data)
+    assert validate_question_bank(data)
+
+
+def test_orphan_answer_needs_audit_reason():
+    data=populated(); occurrence=copy.deepcopy(data['occurrences'][0])
+    occurrence.update(id='o2',role='answer'); occurrence['blocks'][0]['id']='b2'
+    data['occurrences'].append(occurrence); data['audit']['units'][0]['occurrence_ids'].append('o2')
+    assert validate_question_bank(data)
+    data['audit']['unresolved']=[dict(target_id='o2',reason='Matching exam unknown')]
+    assert validate_question_bank(data)==[]
+
+
+def test_summary_reports_kinds_and_holds_without_changing_data():
+    from scripts.lab.review_pack.question_bank import summarize_question_bank
+    data=populated(); before=copy.deepcopy(data)
+    assert summarize_question_bank(data)==dict(sources=1,occurrences=1,unique_questions=1,past=0,predicted=0,unknown=1,unreadable=0,partial=0,candidate_relations=0,unresolved=0)
+    assert data==before
