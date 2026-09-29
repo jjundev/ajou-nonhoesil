@@ -14,7 +14,7 @@ import importlib.util
 import os
 import unittest
 
-from tests._boards import all_builders
+from tests._boards import all_builders, builder_names, load_once, per_builder
 from tests._renders import render
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -286,8 +286,7 @@ class R5(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, '단락'):
             bb.verify()
 
-    def test_모든_회로가_넷_검사를_통과한다(self):
-        """`export()` 안에서 `verify()` 가 돈다 — 렌더가 되면 통과한 것이다."""
+    def test_회로_수와_이름이_엔진과_같다(self):
         builders = all_builders(self.mod)
         # 2026-09-12 슬롯 고정: 실험01 절차 CLI 래퍼 5개(e1_or_s1·e1_nand_s1/_s2·
         # e1_nor_s1/_s2)가 늘어 기존 13(실험01 8 + 실험02 5)에서 18이 됐다.
@@ -304,9 +303,9 @@ class R5(unittest.TestCase):
         # 2026-09-28 실험04: 회로 2(e4_mux·e4_dmux) + 절차 래퍼 12(e4_mux_s1~_s8·
         # e4_dmux_s1~_s4) = 14 가 늘어 42 다.
         self.assertEqual(len(builders), 42)
-        for name, fn in sorted(builders.items()):
-            with self.subTest(회로=name):
-                _render(self.mod, fn)
+        # 넷 검사 자체는 회로마다 `AllCircuitNets_<빌더>` 가 한다. 그 클래스 이름은
+        # ast 로 읽은 이름(`builder_names`)에서 나오니 엔진이 보는 집합과 같아야 한다.
+        self.assertEqual(sorted(builders), builder_names())
 
 
 class R6(unittest.TestCase):
@@ -363,6 +362,19 @@ class R6(unittest.TestCase):
         c = bb.cols['left']
         bb.step_wire([(c['b'], bb.r_y(25)), (c['i'], bb.r_y(25))], 'sig', '골 건너기')
         bb.verify()
+
+
+class AllCircuitNets(unittest.TestCase):
+    """`export()` 안에서 `verify()` 가 돈다 — 렌더가 되면 넷 검사를 통과한 것이다.
+    회로마다 클래스가 하나씩 생긴다(`per_builder`)."""
+    builder_name = None
+
+    def test_넷_검사를_통과한다(self):
+        mod, builders = load_once(_load)
+        _render(mod, builders[self.builder_name])
+
+
+per_builder(AllCircuitNets, globals())
 
 
 if __name__ == '__main__':

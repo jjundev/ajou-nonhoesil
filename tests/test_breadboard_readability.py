@@ -22,7 +22,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from tests._boards import all_builders, board_files
+from tests._boards import board_files, load_once, per_builder
 from tests._renders import BOARD_L, BOARD_R, render
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -91,11 +91,6 @@ def _module():
     return mod
 
 
-def _circuit_builders(mod):
-    """모든 주차 `배치.py` 의 빌더 — 엔진 `mod` 로 불러 스파이가 그 클래스에 걸린다."""
-    return all_builders(mod)
-
-
 class BuilderApiContract(unittest.TestCase):
     """소스를 ast 로 읽어 옛 API 로 새는지 본다."""
 
@@ -158,33 +153,6 @@ class RenderedContract(unittest.TestCase):
         """`(렌더러, 보드 위 배지 수)` — 프로세스에서 한 번만 그린다(`tests/_renders.py`)."""
         return render(self.mod, fn)
 
-    def test_모든_회로가_결선_순서표를_낸다(self):
-        """번호와 순서표가 없으면 조원은 30가닥을 동시에 봐야 한다."""
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                bb, _ = self._render(fn)
-                self.assertTrue(bb.numbered, f"{name}: enable_steps() 를 안 불렀다")
-                self.assertGreater(len(bb.steps), 0, f"{name}: 결선 순서표가 비었다")
-
-    def test_보드_위_꼬리표가_적다(self):
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                _, labels = self._render(fn)
-                self.assertLessEqual(
-                    labels, _label_cap(name),
-                    f"{name}: 보드 위 라벨 {labels}개. 손으로 옮겨 그릴 것이 아니면 "
-                    "note() 로 보드 밖에 낸다")
-
-    def test_신호_이름이_보드_안에_있다(self):
-        """2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
-        없었다. 원도가 입력 이름을 보드 밖(x=12) 꼬리표에만 적었고, 학생은 보드
-        판형 위만 따라 그려 그 글자가 옮겨지지 않았다."""
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                bb, _ = self._render(fn)
-                self.assertEqual(_missing_signal_names(bb), Counter(),
-                                 f"{name}: 보드 안에 없는 신호 이름")
-
     def test_둘째_B_배지가_빠지면_잡는다(self):
         """위 단언이 같은 글자를 개수로 세는지 — 반감산기 LED2 의 B 배지를 지워 본다."""
         bb, _ = self._render(self.b3.build_e3_hs)
@@ -208,45 +176,6 @@ class RenderedContract(unittest.TestCase):
                 got = [n for n, box, _s in bb.tag_boxes
                        if BOARD_L < box[0] and box[2] < BOARD_R]
                 self.assertEqual(sorted(got), sorted(want))
-
-    def test_신호_이름_배지가_번호_원_배선_홀을_가리지_않는다(self):
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                bb, _ = self._render(fn)
-                for tag, box, seg in bb.tag_boxes:
-                    self.assertEqual(_badge_hits(bb, box, seg), [], f"{name}: {tag}")
-
-    def test_번호_원끼리_겹치지_않는다(self):
-        """번호 원 둘이 포개지면 아래 번호를 읽을 수 없다 — 따라 그리는 사람이 그
-        차례를 건너뛴다. 배지 검사(`_badge_hits`)는 배지 대 번호 원만 보고 번호 원
-        끼리는 아무도 안 봤다.
-
-        `marker_boxes` 항목은 원에 **외접**하는 상자다(`_marker`: `(x-8, y-8, x+8,
-        y+8)`). 엔진도 걷기 번호 자리를 잡을 때 같은 상자끼리 `_boxes_touch` 로 보니
-        (`_ghost_wire`) 여기서도 상자로 본다 — 원이 안 닿아도 상자가 겹치면 두 원이
-        16px 안에 붙어 있다는 뜻이라 붙잡을 값은 한다.
-
-        이미 맞닿아 있던 자리는 `KNOWN_MARKER_OVERLAPS` 에 실측값으로 적어 두고 새
-        겹침만 막는다 — 승인본 PNG 를 바꿀 수 없어서다(그 주석에 쌍마다 근거).
-        """
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                bb, _ = self._render(fn)
-                bad = [(a, b) for i, a in enumerate(bb.marker_boxes)
-                       for b in bb.marker_boxes[i + 1:] if _inter(a, b)]
-                self.assertEqual(bad, KNOWN_MARKER_OVERLAPS.get(name, []),
-                                 f'{name}: 번호 원이 겹친다 {bad}')
-
-    def test_보드_밖_입력_꼬리표끼리_겹치지_않는다(self):
-        """2026-09-28 실험04 C2: `S1`(우 a31)과 `D`(우 j31)가 같은 행이라 `입력 D → 우 j31`
-        꼬리표가 `입력 S1 → 우 a31` 을 정확히 덮었다 — 여백에서 S1 을 어디 꽂는지 사라졌다."""
-        for name, fn in _circuit_builders(self.mod).items():
-            with self.subTest(회로=name):
-                bb, _ = self._render(fn)
-                boxes = bb.margin_tag_boxes
-                bad = [(a[0], b[0]) for i, a in enumerate(boxes)
-                       for b in boxes[i + 1:] if _inter(a[1], b[1])]
-                self.assertEqual(bad, [], f'{name}: 보드 밖 꼬리표가 겹친다')
 
     def test_같은_행에_좌_f쪽과_우_a쪽_입력을_넣으면_번호_원이_겹친다(self):
         """위 검사가 무엇을 막는지 — 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙
@@ -275,6 +204,82 @@ class RenderedContract(unittest.TestCase):
         점퍼선을 찾는다."""
         self.assertNotIn(self.mod.PROBE, set(self.mod.WIRE.values()))
 
+class EveryCircuit(unittest.TestCase):
+    """회로 하나를 그려 보고 센다. 회로마다 클래스가 하나씩 생긴다(`per_builder`) —
+    xdist 가 회로를 워커에 나눠 그리게 하려는 것이다(2026-09-29)."""
+    builder_name = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod, builders = load_once(_module)
+        cls.fn = staticmethod(builders[cls.builder_name])
+
+    def _render(self, fn):
+        """`(렌더러, 보드 위 배지 수)` — 프로세스에서 한 번만 그린다(`tests/_renders.py`)."""
+        return render(self.mod, fn)
+
+    def test_결선_순서표를_낸다(self):
+        """번호와 순서표가 없으면 조원은 30가닥을 동시에 봐야 한다."""
+        name, fn = self.builder_name, self.fn
+        bb, _ = self._render(fn)
+        self.assertTrue(bb.numbered, f"{name}: enable_steps() 를 안 불렀다")
+        self.assertGreater(len(bb.steps), 0, f"{name}: 결선 순서표가 비었다")
+
+    def test_보드_위_꼬리표가_적다(self):
+        name, fn = self.builder_name, self.fn
+        _, labels = self._render(fn)
+        self.assertLessEqual(
+            labels, _label_cap(name),
+            f"{name}: 보드 위 라벨 {labels}개. 손으로 옮겨 그릴 것이 아니면 "
+            "note() 로 보드 밖에 낸다")
+
+    def test_신호_이름이_보드_안에_있다(self):
+        """2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
+        없었다. 원도가 입력 이름을 보드 밖(x=12) 꼬리표에만 적었고, 학생은 보드
+        판형 위만 따라 그려 그 글자가 옮겨지지 않았다."""
+        name, fn = self.builder_name, self.fn
+        bb, _ = self._render(fn)
+        self.assertEqual(_missing_signal_names(bb), Counter(),
+                         f"{name}: 보드 안에 없는 신호 이름")
+
+    def test_신호_이름_배지가_번호_원_배선_홀을_가리지_않는다(self):
+        name, fn = self.builder_name, self.fn
+        bb, _ = self._render(fn)
+        for tag, box, seg in bb.tag_boxes:
+            self.assertEqual(_badge_hits(bb, box, seg), [], f"{name}: {tag}")
+
+    def test_번호_원끼리_겹치지_않는다(self):
+        """번호 원 둘이 포개지면 아래 번호를 읽을 수 없다 — 따라 그리는 사람이 그
+        차례를 건너뛴다. 배지 검사(`_badge_hits`)는 배지 대 번호 원만 보고 번호 원
+        끼리는 아무도 안 봤다.
+
+        `marker_boxes` 항목은 원에 **외접**하는 상자다(`_marker`: `(x-8, y-8, x+8,
+        y+8)`). 엔진도 걷기 번호 자리를 잡을 때 같은 상자끼리 `_boxes_touch` 로 보니
+        (`_ghost_wire`) 여기서도 상자로 본다 — 원이 안 닿아도 상자가 겹치면 두 원이
+        16px 안에 붙어 있다는 뜻이라 붙잡을 값은 한다.
+
+        이미 맞닿아 있던 자리는 `KNOWN_MARKER_OVERLAPS` 에 실측값으로 적어 두고 새
+        겹침만 막는다 — 승인본 PNG 를 바꿀 수 없어서다(그 주석에 쌍마다 근거).
+        """
+        name, fn = self.builder_name, self.fn
+        bb, _ = self._render(fn)
+        bad = [(a, b) for i, a in enumerate(bb.marker_boxes)
+               for b in bb.marker_boxes[i + 1:] if _inter(a, b)]
+        self.assertEqual(bad, KNOWN_MARKER_OVERLAPS.get(name, []),
+                         f'{name}: 번호 원이 겹친다 {bad}')
+
+    def test_보드_밖_입력_꼬리표끼리_겹치지_않는다(self):
+        """2026-09-28 실험04 C2: `S1`(우 a31)과 `D`(우 j31)가 같은 행이라 `입력 D → 우 j31`
+        꼬리표가 `입력 S1 → 우 a31` 을 정확히 덮었다 — 여백에서 S1 을 어디 꽂는지 사라졌다."""
+        name, fn = self.builder_name, self.fn
+        bb, _ = self._render(fn)
+        boxes = bb.margin_tag_boxes
+        bad = [(a[0], b[0]) for i, a in enumerate(boxes)
+               for b in boxes[i + 1:] if _inter(a[1], b[1])]
+        self.assertEqual(bad, [], f'{name}: 보드 밖 꼬리표가 겹친다')
+
+
+per_builder(EveryCircuit, globals())
 
 if __name__ == '__main__':
     unittest.main()
