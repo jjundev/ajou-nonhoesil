@@ -34,6 +34,10 @@
 
 ---
 
+## 실행 기록
+
+2026-09-29: Task 1~5 구현 및 독립 코드 리뷰 수정 완료. 관련 109개 테스트 통과. 전체 저장소에는 기존 영역 및 병렬 경합 실패가 남아 있다. 실제 추출·import·Task 8·통합은 미실행. 상세 결과는 [검증 기록](../../verify/2026-09-29-question-bank-extraction.md)을 참조한다.
+
 ## 작업 환경과 파일 지도
 
 모든 명령의 cwd는 Global Constraints의 워크트리다. 현재 시작 커밋은 0d56b13f3bfe04e0483e142eb6ad698695e91752. 다른 변경이 있으면 보존하고 이 계획 파일만 stage한다. 원래 Desktop 체크아웃에서 실행하지 않는다.
@@ -65,7 +69,7 @@
 - `_shape_errors(value: object, rule: dict, at: str = '$') -> list[str]`: 이 스키마에서 사용한 키워드만 처리하는 비공개 함수.
 - `SCHEMA_PATH: Path`: `Path(__file__).resolve().parents[3] / '.claude/skills/logic-lab-review-pack/references/question-bank.schema.json'`.
 
-- [ ] **1. 실행 환경과 기준 상태를 확인한다.**
+- [x] **1. 실행 환경과 기준 상태를 확인한다.**
 
 ```powershell
 git status --short
@@ -76,7 +80,7 @@ python -m pytest -n0 tests/test_review_pack_manifest.py tests/test_review_pack_s
 
 예상: 지정 브랜치, 기존 관련 테스트 통과. 환경 문제는 먼저 구분한다. 인계된 전체 관련 검사 416개 통과와 기존 config 14개 실패는 과거 결과이지 이번 실행 증거가 아니다.
 
-- [ ] **2. 최소 fixture를 아래 내용으로 작성한다.** 이 fixture는 문항이 없는 draft의 형식 예제이며 실제 원문 hash 검사용이 아니다.
+- [x] **2. 최소 fixture를 아래 내용으로 작성한다.** 이 fixture는 문항이 없는 draft의 형식 예제이며 실제 원문 hash 검사용이 아니다.
 
 ```json
 {
@@ -87,7 +91,7 @@ python -m pytest -n0 tests/test_review_pack_manifest.py tests/test_review_pack_s
 }
 ```
 
-- [ ] **3. 형식 실패 테스트를 쓴다.** 다음 helper는 이 테스트 파일의 후속 task에서도 사용한다.
+- [x] **3. 형식 실패 테스트를 쓴다.** 다음 helper는 이 테스트 파일의 후속 task에서도 사용한다.
 
 ```python
 import copy
@@ -118,9 +122,9 @@ def test_loader_reports_invalid_json(tmp_path):
     with pytest.raises(ValueError): load_question_bank(path)
 ```
 
-- [ ] **4. 실패를 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q`. 예상: 아직 모듈이 없어 collection 오류. 다른 오류와 혼동하지 않는다.
+- [x] **4. 실패를 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q`. 예상: 아직 모듈이 없어 collection 오류. 다른 오류와 혼동하지 않는다.
 
-- [ ] **5. 다음 생성 코드를 일회성 Python으로 실행해 schema JSON을 쓴다.** 코드는 생성 스크립트로 별도 추적하지 않는다. `obj()`는 모든 필드를 required로 만들므로 nullable 필드도 명시적으로 null을 기록한다.
+- [x] **5. 다음 생성 코드를 일회성 Python으로 실행해 schema JSON을 쓴다.** 코드는 생성 스크립트로 별도 추적하지 않는다. `obj()`는 모든 필드를 required로 만들므로 nullable 필드도 명시적으로 null을 기록한다.
 
 ```python
 import json
@@ -164,7 +168,7 @@ path = Path('.claude/skills/logic-lab-review-pack/references/question-bank.schem
 path.write_text(json.dumps(schema, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 ```
 
-- [ ] **6. 입력을 변경하지 않는 형식 검사와 로더를 구현한다.** 아래 구현에서 시작해 Task 2에서 의미 검사를 추가한다. 네트워크에서 schema를 가져오지 않는다.
+- [x] **6. 입력을 변경하지 않는 형식 검사와 로더를 구현한다.** 아래 구현에서 시작해 Task 2에서 의미 검사를 추가한다. 네트워크에서 schema를 가져오지 않는다.
 
 ```python
 import json
@@ -214,7 +218,7 @@ def load_question_bank(path):
     return data
 ```
 
-- [ ] **7. 형식 검사 테스트를 통과시키고 커밋한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q` → PASS. JSON Schema 생성 코드를 실행한 결과를 눈으로 확인한다.
+- [x] **7. 형식 검사 테스트를 통과시키고 커밋한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q` → PASS. JSON Schema 생성 코드를 실행한 결과를 눈으로 확인한다.
 
 ```powershell
 git add .claude/skills/logic-lab-review-pack/references/question-bank.schema.json scripts/lab/review_pack/question_bank.py tests/test_review_pack_question_bank.py tests/fixtures/review_pack/question_bank/minimal.json
@@ -227,7 +231,7 @@ git commit -m "feat: define question bank extraction contract"
 
 **Interfaces:** `validate_question_bank(data: object) -> list[str]`를 확장한다. `summarize_question_bank(data: dict) -> dict`를 추가한다. 반환 키는 sources, occurrences, unique_questions, past, predicted, unknown, unreadable, partial, candidate_relations, unresolved이며 값은 정수다. 형식 검사를 통과한 입력만 집계한다. 검사기는 병합·정렬·상태 갱신을 하지 않는다.
 
-- [ ] **1. 테스트에 실제 형태의 작은 문제 fixture helper를 추가한다.**
+- [x] **1. 테스트에 실제 형태의 작은 문제 fixture helper를 추가한다.**
 
 ```python
 def location():
@@ -281,9 +285,9 @@ def test_conflicting_provided_answers_remain_candidates():
     assert data==before
 ```
 
-- [ ] **2. 위 의미 검사가 실패하는지 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q`. 예상: 현재는 형식만 검사하므로 의미 오류 테스트 실패.
+- [x] **2. 위 의미 검사가 실패하는지 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q`. 예상: 현재는 형식만 검사하므로 의미 오류 테스트 실패.
 
-- [ ] **3. validate에 의미 검사를 추가한다.** 형식 오류가 있으면 즉시 반환해 malformed 입력에서 KeyError를 막는다. 아래 코드 패턴으로 인덱스와 JSON 경로를 유지한다.
+- [x] **3. validate에 의미 검사를 추가한다.** 형식 오류가 있으면 즉시 반환해 malformed 입력에서 KeyError를 막는다. 아래 코드 패턴으로 인덱스와 JSON 경로를 유지한다.
 
 ```python
 # validate_question_bank의 기존 즉시 반환을 다음 흐름으로 바꾼다.
@@ -340,7 +344,7 @@ def summarize_question_bank(data):
     return result
 ```
 
-- [ ] **4. 페이지·그림·보류와 재정렬 회귀 테스트를 추가한다.**
+- [x] **4. 페이지·그림·보류와 재정렬 회귀 테스트를 추가한다.**
 
 ```python
 def test_exposed_image_cannot_be_problem_asset():
@@ -409,7 +413,7 @@ def test_complete_pdf_must_account_for_every_page():
     assert validate_question_bank(data)==[]
 ```
 
-- [ ] **5. 해당 파일 테스트를 통과시키고 커밋한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q` → PASS.
+- [x] **5. 해당 파일 테스트를 통과시키고 커밋한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py -q` → PASS.
 
 ```powershell
 git add scripts/lab/review_pack/question_bank.py tests/test_review_pack_question_bank.py
@@ -425,7 +429,7 @@ git commit -m "feat: validate question provenance and audit states"
 - `check_question_bank_files(data: dict, *, root: Path, bank_dir: Path) -> list[str]`: 유효한 JSON의 source/asset 경로와 해시 검사; write 없음.
 - source ID는 `s-` + NFC 정규화 POSIX 상대 경로 SHA256 앞 16자. 실제 path는 파일시스템 원형을 보존한다. 정규화 경로 충돌과 ID 충돌은 ValueError. 빈/없는 폴더도 ValueError.
 
-- [ ] **1. 확장자 누락 및 원문 변경 테스트를 쓴다.**
+- [x] **1. 확장자 누락 및 원문 변경 테스트를 쓴다.**
 
 ```python
 # tests/test_review_pack_question_bank_sources.py
@@ -451,7 +455,7 @@ def test_source_id_survives_content_change(tmp_path):
     assert first['id']==second['id'] and first['sha256']!=second['sha256']
 ```
 
-- [ ] **2. 파일 검사 테스트를 question_bank 테스트 파일에 추가한다.**
+- [x] **2. 파일 검사 테스트를 question_bank 테스트 파일에 추가한다.**
 
 ```python
 from hashlib import sha256
@@ -473,9 +477,9 @@ def test_unsafe_source_path(tmp_path,path):
     assert check_question_bank_files(data,root=tmp_path,bank_dir=tmp_path)
 ```
 
-- [ ] **3. 두 테스트 파일을 실행해 새 함수가 없어 실패하는지 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py tests/test_review_pack_question_bank_sources.py -q`.
+- [x] **3. 두 테스트 파일을 실행해 새 함수가 없어 실패하는지 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank.py tests/test_review_pack_question_bank_sources.py -q`.
 
-- [ ] **4. 전체 파일 목록화와 containment 검사를 구현한다.** 기존 `config.experiment_folder_name`으로 실험 번호를 검사하고 `sources.file_sha256`을 재사용한다. 아래가 경로·형식 처리의 핵심 코드다.
+- [x] **4. 전체 파일 목록화와 containment 검사를 구현한다.** 기존 `config.experiment_folder_name`으로 실험 번호를 검사하고 `sources.file_sha256`을 재사용한다. 아래가 경로·형식 처리의 핵심 코드다.
 
 ```python
 # inventory_quiz_sources에서 사용하는 형식 표
@@ -504,7 +508,7 @@ else:
 
 source의 base=root, asset의 base=bank_dir. asset은 relative.parts[0]=='assets'도 검사한다. OSError는 해당 JSON 경로 오류로 변환한다. 각 경로 segment의 symlink/junction도 검사한다. NFC 경로 충돌은 다른 원문으로 자동 합치지 않는다.
 
-- [ ] **5. 링크·유니코드·미지원 PDF 보류 테스트를 추가한다.**
+- [x] **5. 링크·유니코드·미지원 PDF 보류 테스트를 추가한다.**
 
 ```python
 # question_bank_sources 테스트 파일
@@ -533,7 +537,7 @@ def test_unknown_page_count_is_explicit_hold():
     assert validate_question_bank(data)==[]
 ```
 
-- [ ] **6. 두 테스트 파일을 통과시키고 커밋한다.** skip은 통과로 숨기지 않고 검증 기록에 남긴다.
+- [x] **6. 두 테스트 파일을 통과시키고 커밋한다.** skip은 통과로 숨기지 않고 검증 기록에 남긴다.
 
 ```powershell
 python -m pytest -n0 tests/test_review_pack_question_bank.py tests/test_review_pack_question_bank_sources.py -q
@@ -554,7 +558,7 @@ python -m scripts.lab.review_pack.question_bank_cli check --root . --bank 문제
 
 inventory는 `{experiment,sources}` JSON, check는 `{mechanical_check,audit_status,recorded_source_visual,counts}` JSON. 성공 0, JSON/검사/파일/빈 자료 오류 1, argparse 사용 오류 2. 실패는 stderr에 FAIL 및 이유. stdout은 UTF-8 JSON, ensure_ascii=False. 두 명령 모두 파일을 쓰지 않는다. checks.structure 값을 자동 수정하지 않는다.
 
-- [ ] **1. CLI 통합 테스트를 쓴다.**
+- [x] **1. CLI 통합 테스트를 쓴다.**
 
 ```python
 import json
@@ -578,9 +582,9 @@ def test_inventory_missing_is_failure(tmp_path,capsys):
     assert 'FAIL' in capsys.readouterr().err
 ```
 
-- [ ] **2. 모듈 부재로 테스트 실패를 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank_cli.py -q`.
+- [x] **2. 모듈 부재로 테스트 실패를 확인한다.** `python -m pytest -n0 tests/test_review_pack_question_bank_cli.py -q`.
 
-- [ ] **3. CLI를 아래 형태로 구현한다.** 모듈 import에 부작용이 없어야 한다.
+- [x] **3. CLI를 아래 형태로 구현한다.** 모듈 import에 부작용이 없어야 한다.
 
 ```python
 import argparse
@@ -615,7 +619,7 @@ if __name__=='__main__':
     raise SystemExit(main())
 ```
 
-- [ ] **4. CLI 테스트와 실험4 목록화만 실행한다.** 실제 판독이나 학습팩 생성은 하지 않는다.
+- [x] **4. CLI 테스트와 실험4 목록화만 실행한다.** 실제 판독이나 학습팩 생성은 하지 않는다.
 
 ```powershell
 python -m pytest -n0 tests/test_review_pack_question_bank_cli.py -q
@@ -624,7 +628,7 @@ python -m scripts.lab.review_pack.question_bank_cli inventory --root . --experim
 
 2026-09-29 탐색 시 실험4에는 PDF/JPG/PNG/DOCX를 합쳐 11개 파일이 있었다. 변경 가능한 숫자이므로 테스트에 11을 고정하지 않는다. 현재 Get-ChildItem -Recurse -File 목록과 CLI의 path 집합을 대조한다.
 
-- [ ] **5. 커밋한다.**
+- [x] **5. 커밋한다.**
 
 ```powershell
 git add scripts/lab/review_pack/question_bank_cli.py tests/test_review_pack_question_bank_cli.py
@@ -637,9 +641,9 @@ git commit -m "feat: expose read-only question bank checks"
 
 **Interfaces:** 새 세션은 실제 source와 계약/CLI만 입력으로 받는다. 출력은 문제은행/실험04/question-bank.json, assets/, 검증결과.md. 이 task의 완료물은 도구와 인계 문서이며 실제 문제은행을 만들었다고 보고하지 않는다.
 
-- [ ] **1. question-bank.md에 설계의 각 객체·enum·위치 규칙·상태 전이를 문서화한다.** schema JSON이 형식 정본, 설계와 question_bank.py가 의미 규칙임을 명시한다. 위 두 CLI 명령과 출력 키를 그대로 싣는다. 예제는 minimal.json을 가리키며 실제 기출로 오해시키지 않는다. import 경계에는 bank_id/schema_version/JSON SHA256 추적, 제공 답안 다중 보존, 독립 풀이 단계 분리, checks 전이 금지를 쓴다.
+- [x] **1. question-bank.md에 설계의 각 객체·enum·위치 규칙·상태 전이를 문서화한다.** schema JSON이 형식 정본, 설계와 question_bank.py가 의미 규칙임을 명시한다. 위 두 CLI 명령과 출력 키를 그대로 싣는다. 예제는 minimal.json을 가리키며 실제 기출로 오해시키지 않는다. import 경계에는 bank_id/schema_version/JSON SHA256 추적, 제공 답안 다중 보존, 독립 풀이 단계 분리, checks 전이 금지를 쓴다.
 
-- [ ] **2. SKILL.md 자료 확인 절 앞에 다음 안내를 넣는다.** 기존 생성 절을 지우거나 아직 없는 import 명령을 안내하지 않는다.
+- [x] **2. SKILL.md 자료 확인 절 앞에 다음 안내를 넣는다.** 기존 생성 절을 지우거나 아직 없는 import 명령을 안내하지 않는다.
 
 ```markdown
 ### 별도 세션에서 추출한 문제은행
@@ -651,7 +655,7 @@ git commit -m "feat: expose read-only question bank checks"
 기존 임시 분석을 검증된 문제은행으로 사용하지 않는다.
 ```
 
-- [ ] **3. 새 세션 인계 문서에 아래 요청과 순서를 기록한다.** 새 chat을 자동 생성하지 않는다. 사용자가 새 세션에 이 문서를 전달하면 그 세션에서 실행한다.
+- [x] **3. 새 세션 인계 문서에 아래 요청과 순서를 기록한다.** 새 chat을 자동 생성하지 않는다. 사용자가 새 세션에 이 문서를 전달하면 그 세션에서 실행한다.
 
 ```text
 기존 codex/logic-lab-review-pack 워크트리에서 실험4의 원자료 전체를 새로 판독하여
@@ -671,9 +675,9 @@ pdf 스킬로 회로·표·기호를 시각 대조하고 DOCX는 documents 스�
 7. 최종 폴더가 없을 때만 JSON/근거 이미지/검증결과.md를 복사하고 최종 경로에서 CLI check를 다시 실행한다. 기존 폴더가 있으면 새 작업본과 차이를 보고하고 덮어쓰지 않는다.
 8. 보고는 경로·기계 검사·시각 판독 범위·고유 기출/예상/미확인 수·보류·미연결 답안을 포함한다. 독립 풀이 검증이나 학습팩 완성을 주장하지 않는다. 원래 계획 Task 8을 재개하지 않는다.
 
-- [ ] **4. 문서·스키마와 코드를 자체 대조한다.** 모든 키/enum/API/CLI 옵션이 일치하는지 확인한다. schema가 사용하는 키워드는 type/enum/properties/required/additionalProperties/items/minItems/maxItems/pattern/minimum/maximum 및 $schema 메타데이터뿐이어야 한다. 다른 키워드를 추가하면 _shape_errors가 무시하지 않도록 지원을 먼저 구현하거나 사용을 철회한다.
+- [x] **4. 문서·스키마와 코드를 자체 대조한다.** 모든 키/enum/API/CLI 옵션이 일치하는지 확인한다. schema가 사용하는 키워드는 type/enum/properties/required/additionalProperties/items/minItems/maxItems/pattern/minimum/maximum 및 $schema 메타데이터뿐이어야 한다. 다른 키워드를 추가하면 _shape_errors가 무시하지 않도록 지원을 먼저 구현하거나 사용을 철회한다.
 
-- [ ] **5. 관련 회귀 검사와 diff 검토를 한다.** 테스트 대상은 신규 세 파일과 기존 review_pack 여섯 파일이다.
+- [x] **5. 관련 회귀 검사와 diff 검토를 한다.** 테스트 대상은 신규 세 파일과 기존 review_pack 여섯 파일이다.
 
 ```powershell
 python -m pytest -n0 tests/test_review_pack_question_bank.py tests/test_review_pack_question_bank_sources.py tests/test_review_pack_question_bank_cli.py tests/test_review_pack_sources.py tests/test_review_pack_manifest.py tests/test_review_pack_render.py tests/test_review_pack_md.py tests/test_review_pack_checks.py tests/test_review_pack_publish.py -q
@@ -684,9 +688,9 @@ git status --short
 
 원자료·템플릿·보고서 및 기존 manifest 계약 변경이 없는지 확인한다. 이 범위 밖 전체 테스트는 실행한 경우에만 보고하며 config의 알려진 Windows 실패를 새 기능 실패와 구분한다. 생명과학 화면이나 브라우저 검증을 이번 CLI 검증으로 대체하지 않는다.
 
-- [ ] **6. Native 실행의 최종 독립 코드 리뷰를 요청한다.** 전체 이번 변경과 설계·테스트 결과를 리뷰어에게 전달한다. 누락·잘못된 완료 상태·원문 변조 가능성·예외 누출을 검토한다. 실제 기출 해석에 대한 독립 리뷰가 아니며 그렇게 표기하지 않는다. 발견 사항 수정 후 해당 검사만 재실행한다. 리뷰 도구를 사용할 수 없으면 독립 리뷰 미실시를 명시한다.
+- [x] **6. Native 실행의 최종 독립 코드 리뷰를 요청한다.** 전체 이번 변경과 설계·테스트 결과를 리뷰어에게 전달한다. 누락·잘못된 완료 상태·원문 변조 가능성·예외 누출을 검토한다. 실제 기출 해석에 대한 독립 리뷰가 아니며 그렇게 표기하지 않는다. 발견 사항 수정 후 해당 검사만 재실행한다. 리뷰 도구를 사용할 수 없으면 독립 리뷰 미실시를 명시한다.
 
-- [ ] **7. 문서를 커밋하고 도구 단계 완료를 보고한다.**
+- [x] **7. 문서를 커밋하고 도구 단계 완료를 보고한다.**
 
 ```powershell
 git add .claude/skills/logic-lab-review-pack/references/question-bank.md .claude/skills/logic-lab-review-pack/references/question-bank-extraction-session.md .claude/skills/logic-lab-review-pack/SKILL.md

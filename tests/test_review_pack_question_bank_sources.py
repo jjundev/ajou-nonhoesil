@@ -33,5 +33,3 @@ def test_nfd_filename_keeps_resolvable_path(tmp_path):
     path=folder/unicodedata.normalize('NFD','기출.txt'); path.write_bytes(b'x')
     row=inventory_quiz_sources(tmp_path,4)[0]
     assert (tmp_path/row['path']).is_file()
-
-
