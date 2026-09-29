@@ -36,8 +36,7 @@ CANON = ROOT / config.experiment_dir(1) / "output/실험01_예비보고서.md"
 # 검사 대상 문서와, 그 문서에서 번호 매긴 항목이 사는 절 이름.
 #
 # 나머지 다섯 스킬은 **일부러 뺐다.** 관례가 달라 통짜로 넣으면 오탐이 난다 —
-# `explain-lab-preview` 는 `## 0.`~`## 8.` 로 자기 절을 번호 매기고 `§0`~`§8` 로
-# 참조하며(21건), `sync-report-to-notion` 은 단계가 `## 실행 절차` 가 아니라
+# `explain-lab-preview` 는 학습팩으로 이어지는 호환 안내이며, `sync-report-to-notion` 은 단계가 `## 실행 절차` 가 아니라
 # `## push`·`## pull` 안에 산다(7건). 거짓 경보를 내는 검사는 없느니만 못하다.
 # `DOCS` 편입과 `check_report_sections` 호출 여부는 별개다 — 상호참조를 보는
 # 목록(`DOCS`)과 그 호출부를 보는 목록(`REPORT_SECTION_DOCS`)이 갈려 있다.
@@ -893,7 +892,7 @@ class SkillDocInvariants(unittest.TestCase):
         sec = sections(text)["답안지 목록"]
         before, marker, after = sec.partition("남기는 것:")
         self.assertNotEqual(marker, "", "\"남기는 것:\" 문장이 없다 — 앵커가 바뀌었다")
-        # 불릿 단위로 나눈다 — "스킬 여덟" 불릿은 `draft-lab-spec` 과
+        # 불릿 단위로 나눈다 — "스킬 아홉" 불릿은 `draft-lab-spec` 과
         # `write-pre-report` 둘 다 예시 인용이지 답안지 경로가 아니다.
         # 불릿 전체를 통짜로 빼야 그 안의 backtick 이 전부 빠진다.
         bullets = [b for b in re.split(r"(?m)^- ", before)[1:]]
@@ -901,26 +900,26 @@ class SkillDocInvariants(unittest.TestCase):
         excluded = set()
         for b in bullets:
             toks = {m.rstrip("/") for m in re.findall(r"`([^`]+)`", b)}
-            if "<실험NN>" in b or "스킬 여덟" in b:
+            if "<실험NN>" in b or "스킬 아홉" in b:
                 excluded |= toks
             else:
                 prose |= toks
         prose_all = prose | excluded
 
-        # `draft-lab-spec` 을 뺀 스킬 여덟은 §답안지 목록이 "스킬 여덟" 이라는
+        # `draft-lab-spec` 을 뺀 스킬 아홉은 §답안지 목록이 "스킬 아홉" 이라는
         # 구절로만 가리키고 이름을 나열하지 않는다 — KEYS 쪽 개수·이름으로
         # 따로 잰다.
         other_skills = {k for k in keys if k.startswith(".claude/skills/")
                         and "/verify-" not in k} - {".claude/skills/breadboard-diagram"}
-        self.assertEqual(len(other_skills), 8, other_skills)
+        self.assertEqual(len(other_skills), 9, other_skills)
         self.assertNotIn(".claude/skills/draft-lab-spec", other_skills)
 
-        # 보고서 불릿(`<실험NN>` 자리표시자)과 "스킬 여덟" 불릿의 backtick 은
+        # 보고서 불릿(`<실험NN>` 자리표시자)과 "스킬 아홉" 불릿의 backtick 은
         # KEYS 에 문자 그대로는 없다 — 위 두 이유로 뺀다. 나머지는 KEYS 에
         # 전부 있어야 한다.
         self.assertEqual(prose - keys, set(), prose - keys)
 
-        # 반대 방향: 스킬 여덟을 뺀 KEYS 는 전부 산문 불릿에 실려 있어야 한다.
+        # 반대 방향: 스킬 아홉을 뺀 KEYS 는 전부 산문 불릿에 실려 있어야 한다.
         self.assertEqual((keys - other_skills) - prose_all, set(),
                          (keys - other_skills) - prose_all)
 
@@ -958,7 +957,7 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("커밋하지 않는다", sec)
 
     def test_the_result_verifier_answer_keys_agree_with_its_prose(self):
-        # `verify-write-result-report` 판. "스킬 여덟" 예외는 없고, `{exp}` 로
+        # `verify-write-result-report` 판. "스킬 아홉" 예외는 없고, `{exp}` 로
         # 실험 폴더를 끼우는 f-string 키는 `<실험NN>` 불릿이 맡는다.
         text = self.docs["결보검증"]
         proc = sections(text)["실행 절차"]

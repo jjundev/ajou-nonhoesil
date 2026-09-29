@@ -470,3 +470,7 @@ check-ignore는 출력 없음(exit 1)이 정상이다. 적용 중인 skill-creat
 - public API와 반환 키는 위 Interfaces가 정본이다. reference와 CLI가 다른 함수명이나 키를 만들지 않는다.
 - 계획 작성은 구현·테스트 실행을 뜻하지 않는다. 문서의 명령과 코드는 실행자가 수행할 단계다.
 - 실행 권장: Native. 자료→manifest→HTML→MD 계약이 연속적으로 연결돼 동일 구현자가 맥락을 유지하기 좋다. 끝에 독립적인 전체 변경·교육 내용 리뷰를 수행한다. 사용자가 Subagent-driven을 선택하면 각 task별 구현·리뷰를 나누되 동일한 interface를 사용한다.
+
+## 구현 중 사용자 확정 (2026-09-29)
+
+Native 실행. 학습 화면은 생명과학 note-template.html/review-template.html 원본을 그대로 사용한다. 새 page.html/style.css 디자인은 폐기한다. 렌더 시 placeholder와 외부 자원 URL만 로컬 번들로 교체한다. 원본 템플릿 파일의 SHA256을 기록한다.

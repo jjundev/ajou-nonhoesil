@@ -1009,7 +1009,7 @@ class TestRenderedHtmlChecks(unittest.TestCase):
         self.assertTrue(any("백틱" in f.message
                             for f in validate.check_rendered_html(path)))
 
-    def test_real_preview_template_is_clean(self):
+    def test_legacy_preview_template_is_clean(self):
         """① 프리뷰 템플릿(사용자가 디자인한 실물)이 통과해야 한다."""
         tmpl = ROOT / ".claude/skills/explain-lab-preview/template.html"
         rendered = self.dir / "preview.html"

@@ -151,7 +151,7 @@ for e, d in sorted(config.EXPERIMENT_DATES.items()):
   "있으면" 읽는 자리라 빈 폴더와 없는 폴더가 똑같이 동작한다 —
   `manual_candidates` 는 폴더가 아니라 파일 실재를 보고,
   `write-result-report` 8단계의 퀴즈 해설은 양식이 `generate: false` 라 열지도
-  않으며, `explain-lab-preview` 는 녹취가 있을 때만 읽는다. 셋 다 어느 실험
+  않으며, `logic-lab-review-pack` 은 녹취가 있을 때만 읽는다. 셋 다 어느 실험
   폴더에서도 파일이 커밋된 적이 없고, 실험01 은 셋 없이 결과보고서까지
   나갔다. 쓸 날 손으로 만든다.
 - 하위 산출물 폴더 `결선도/손그림/`·`실험사진/시트/`·`output/손그림검토/`
