@@ -20,7 +20,8 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
   `notion.json` 에 `결과보고서` 레코드가 있으며, 그 최신 판본의
   `_notion_baseline_v<N>.md` 와 원본이 `report_compare` 로 산문 밖 0건이어야
   한다(0단계가 잰다). 하나라도 아니면 "통제군이 없다" 로 거절한다.
-  2026-09-12 기준 자격이 있는 것은 실험01(v5) 뿐이다.
+  2026-09-29 기준 자격이 있는 것은 실험01(v5)·실험03(v2)이다. 실험02(v2)는
+  원본↔baseline 차이 2건이 노션의 `~` → `\~` 이스케이프뿐이라 판정에 적고 쓴다.
 
 ## 절대 규칙
 
@@ -227,7 +228,8 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 
 남기는 것: `체크리스트/{명세,기록}.md`·`결선도/`·`실험사진/`(시트 포함)·
 `실험중있었던일.md`·`강의노트/`·`.claude/데이터시트_출처.md`·
-`.claude/과목정보.md`·`.claude/보고서양식.md`·`docs/schema/`·`scripts/lab/`
+`.claude/과목정보.md`·`.claude/보고서양식.md`·`.claude/보고서서식.md`·
+`docs/schema/`·`scripts/lab/`
 나머지·④ ⑤ `export-photo-sheet` 를 비롯한 다른 스킬·다른 실험 폴더. ④·⑤ 가
 참조하거나 그 절차가 실물로 드는 것들이다.
 
