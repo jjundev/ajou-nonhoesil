@@ -31,7 +31,9 @@ _TOC = re.compile(r"^\s*<table_of_contents\b")
 _TR = re.compile(r"<tr\b[^>]*>(.*?)</tr>", re.IGNORECASE | re.DOTALL)
 _TD = re.compile(r"<t[dh]\b[^>]*>(.*?)</t[dh]>", re.IGNORECASE | re.DOTALL)
 _BOLD = re.compile(r"\*\*(.*?)\*\*")
-_ESCAPED = re.compile(r"\\([{}_*\[\]])")
+# 마크다운 백슬래시 이스케이프(CommonMark 의 ASCII 구두점 전부). 노션 되읽기는
+# 셀의 `~` 도 `\~` 로 돌려준다(실험02 baseline_v2 의 `약 0V\~5V`).
+_ESCAPED = re.compile(r"\\([!-/:-@\[-`{-~])")
 _SENT_SPLIT = re.compile(r"(?<=[.。!?])\s+")
 # 노션은 본문의 맨 URL 을 `[url](url)` 자기참조 링크로 되돌린다(참고문헌 절의
 # 데이터시트 URL 이 baseline v5 에서 전부 이 꼴이다). 텍스트와 대상이 같을 때만

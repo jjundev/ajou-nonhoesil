@@ -67,6 +67,19 @@ class Compare(unittest.TestCase):
         d = compare_reports(_text(APPROVED), _text(BASELINE_V5))
         self.assertEqual(counted(d), 0, {k: v for k, v in d.items() if k != "wording"})
 
+    def test_노션이_이스케이프한_셀_기호는_같게_읽는다(self):
+        # 노션 되읽기는 셀의 `~` 를 `\~` 로 돌려준다(실험02 baseline_v2 의 `약 0V\~5V`).
+        table = "# T\n\n## 결과\n\n| 범위 | 값 |\n| --- | --- |\n| {} | {} |\n"
+        a = report_shape(table.format("약 0V~5V", "a_b"))
+        b = report_shape(table.format(r"약 0V\~5V", r"a\_b"))
+        self.assertEqual(a.sections[1].tables, b.sections[1].tables)
+
+    def test_실험02_승인본과_baseline_v2는_wording_밖_0건이다(self):
+        out2 = ROOT / config.experiment_dir(2) / "output"
+        d = compare_reports(_text(out2 / "실험02_결과보고서.md"),
+                            _text(out2 / "실험02_결과보고서_notion_baseline_v2.md"))
+        self.assertEqual(counted(d), 0, {k: v for k, v in d.items() if k != "wording"})
+
     def test_셀_하나가_다르면_cell_1건(self):
         d = compare_reports(_text(APPROVED), _variant([("\t| 1 | 1 | 1 | 1 | 1 |", "\t| 1 | 1 | 1 | 1 | 0 |")]))
         self.assertEqual(len(d["cell"]), 1, d["cell"])

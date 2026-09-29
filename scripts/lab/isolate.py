@@ -10,6 +10,7 @@
 둘이 되어 표류한다.
 """
 
+import fnmatch
 import io
 import os
 import re
@@ -69,11 +70,18 @@ def _rmtree(path: Path) -> None:
 
 
 def _restore(archive: bytes, dest: Path, rel: str) -> None:
-    """아카이브에서 `rel` 하나를 다시 꺼낸다. 없으면 KeyError — 조용히 넘기면
-    '예비보고서 없이 돌았다' 가 판정에서 '④ 가 예보를 안 읽었다' 로 보인다."""
+    """아카이브에서 `rel` 을 다시 꺼낸다. 글롭(`output/*예상결과*.png`)이면 맞는
+    파일을 모두 꺼낸다. 하나도 없으면 KeyError — 조용히 넘기면 '예비보고서 없이
+    돌았다' 가 판정에서 '④ 가 예보를 안 읽었다' 로 보인다."""
     with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as tf:
-        member = tf.getmember(rel)
-        tf.extract(member, dest, filter="data")
+        if any(ch in rel for ch in _GLOB_CHARS):
+            members = [m for m in tf.getmembers() if m.isfile() and fnmatch.fnmatchcase(m.name, rel)]
+            if not members:
+                raise KeyError(f"keep 글롭에 맞는 파일이 없다: {rel!r}")
+        else:
+            members = [tf.getmember(rel)]
+        for member in members:
+            tf.extract(member, dest, filter="data")
 
 
 def build_isolated_tree(root, dest, experiment: int, answer_keys,
