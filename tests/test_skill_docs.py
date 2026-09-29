@@ -1169,6 +1169,12 @@ class SharedReportStyle(unittest.TestCase):
             with self.subTest(rest):
                 self.assertTrue(any(rest.startswith(n) for n in SHARED_RULES), rest)
 
+    def test_the_result_report_keeps_its_own_caption_example(self):
+        # 공용 §표 캡션 의 예시는 ③ 판(`- **AND** (식)`)이다. ④ 의 옛 예시(식 없는
+        # 표 이름)를 잃었더니 격리 재생성의 결과 표 라벨이 ③ 모양을 따라갔다
+        # (2026-09-29 최종 리뷰). ④ 판 예시는 ④14 부가로 남는다.
+        self.assertIn("- **3-input AND 진리표**", self.rules["결과"][14])
+
     def test_the_moved_bodies_are_not_duplicated_back(self):
         # 공용화의 목적이 한 벌이다. 본문이 스킬 문서로 돌아오면 다시 두 벌이 된다.
         for key in REPORT_DOCS:
