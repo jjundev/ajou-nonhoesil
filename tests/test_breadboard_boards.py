@@ -16,6 +16,7 @@ from pathlib import Path
 from PIL import Image
 
 from scripts.lab import config
+from tests._boards import experiment_numbers, per_experiment
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
@@ -299,22 +300,32 @@ class StageBudget(unittest.TestCase):
     # 손그림 전사 기준이 움직인다 — 소급 적용하지 않는다(2026-09-20 설계 결정 10).
     LEGACY_BOARDS = (1, 2)
 
+
+class StageBoards(unittest.TestCase):
+    """실험 하나의 절차 보드를 차례로 그려 본다. 실험마다 클래스가 하나씩 생긴다
+    (`per_experiment`) — xdist 가 실험을 워커에 나눠 그리게 하려는 것이다(2026-09-29)."""
+    experiment = None
+
+    @classmethod
+    def setUpClass(cls):
+        if cls.experiment in StageBudget.LEGACY_BOARDS:
+            raise unittest.SkipTest(f"실험{cls.experiment:02d} 는 옛 규약 승인본이라 면제다")
+        cls.mod = _load()
+        cls.board = cls.mod.load_board(cls.experiment)
+
     def test_절차_보드는_새_신호선이_예산_안이다(self):
-        for n in self.mod.board_numbers():
-            if n in self.LEGACY_BOARDS:
-                continue
-            board = self.mod.load_board(n)
-            budget = self.mod.stage_budget(board)
-            with tempfile.TemporaryDirectory() as d:
-                base = None
-                for name, fn, stage in board.BOARDS:
-                    bb = fn(os.path.join(d, name), stage=stage, baseline=base)
-                    with self.subTest(실험=n, board=name):
-                        self.assertLessEqual(
-                            len(bb.new_signal), budget,
-                            f"{name}: 새 신호선 {len(bb.new_signal)} 가닥 — "
-                            f"{[k[1:] for k in bb.new_signal]}")
-                    base = bb.snapshot()
+        board = self.board
+        budget = self.mod.stage_budget(board)
+        with tempfile.TemporaryDirectory() as d:
+            base = None
+            for name, fn, stage in board.BOARDS:
+                bb = fn(os.path.join(d, name), stage=stage, baseline=base)
+                with self.subTest(board=name):
+                    self.assertLessEqual(
+                        len(bb.new_signal), budget,
+                        f"{name}: 새 신호선 {len(bb.new_signal)} 가닥 — "
+                        f"{[k[1:] for k in bb.new_signal]}")
+                base = bb.snapshot()
 
     def test_단계_보드는_아무것도_걷지_않는다(self):
         """뽑는 자리는 전용 걷기 보드다 (2026-09-20). 단계 보드가 선을 걷으면 그
@@ -323,50 +334,57 @@ class StageBudget(unittest.TestCase):
 
         `stage is None` 인 보드가 걷기 보드다(`removal_board` 클로저는 stage 를
         거절한다). 실험01·02 는 옛 규약 승인본이라 면제다."""
-        for n in self.mod.board_numbers():
-            if n in self.LEGACY_BOARDS:
-                continue
-            board = self.mod.load_board(n)
-            with tempfile.TemporaryDirectory() as d:
-                base = None
-                for name, fn, stage in board.BOARDS:
-                    bb = fn(os.path.join(d, name), stage=stage, baseline=base)
-                    if stage is not None:
-                        with self.subTest(실험=n, board=name):
-                            self.assertEqual(
-                                [r['addr'] for r in bb.removals()], [],
-                                f"{name}: 단계 보드가 선을 걷는다 — 그 전환 앞에 "
-                                f"removal_board 를 끼운다")
-                    base = bb.snapshot()
+        with tempfile.TemporaryDirectory() as d:
+            base = None
+            for name, fn, stage in self.board.BOARDS:
+                bb = fn(os.path.join(d, name), stage=stage, baseline=base)
+                if stage is not None:
+                    with self.subTest(board=name):
+                        self.assertEqual(
+                            [r['addr'] for r in bb.removals()], [],
+                            f"{name}: 단계 보드가 선을 걷는다 — 그 전환 앞에 "
+                            f"removal_board 를 끼운다")
+                base = bb.snapshot()
 
+
+per_experiment(StageBoards, globals())
 
 class CommittedPngs(unittest.TestCase):
     """커밋된 결선도 PNG 가 지금 `배치.py` 에서 나온 것인가 — 도장으로 본다.
-    글꼴이 다른 기계에서도 선·문구가 같으면 통과한다."""
+    글꼴이 다른 기계에서도 선·문구가 같으면 통과한다. 실험마다 클래스가 하나씩
+    생긴다(`per_experiment`)."""
+    experiment = None
 
     def test_결선도_폴더가_코드와_같다(self):
-        mod = _load()
-        nums = mod.board_numbers()
-        self.assertTrue({1, 2, 3} <= set(nums), nums)
-        for n in nums:
-            folder = Path(mod.board_path(n)).parent
-            with self.subTest(실험=n), tempfile.TemporaryDirectory() as d:
-                made = mod.build_all(mod.load_board(n), d)
-                self.assertEqual({p.name for p in folder.glob("*.png")}, set(made),
-                                 "결선도 폴더의 PNG 와 배치.py 의 BOARDS·FINALS 가 다르다")
-                stale = sorted(f for f, s in made.items() if mod.read_stamp(folder / f) != s)
-                self.assertEqual(stale, [], "코드와 어긋난 PNG — "
-                                 f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
-                # 체크리스트의 결선 순서는 사이드카에서만 온다 — PNG 도장이 맞아도 JSON 이 옛것이면
-                # 틀린 순서가 인쇄된다(2026-09-28 최종 리뷰: 병합 충돌·이름 바꾸기)
-                sides = {f[:-len(".png")] + ".json" for f in made}
-                self.assertEqual({p.name for p in folder.glob("*.json")}, sides,
-                                 "결선도 폴더의 JSON 이 PNG 와 쌍이 아니다")
-                stale = sorted(f for f in sides
-                               if (folder / f).read_bytes() != (Path(d) / f).read_bytes())
-                self.assertEqual(stale, [], "코드와 어긋난 사이드카 — "
-                                 f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
+        mod, n = _load(), self.experiment
+        folder = Path(mod.board_path(n)).parent
+        with tempfile.TemporaryDirectory() as d:
+            made = mod.build_all(mod.load_board(n), d)
+            self.assertEqual({p.name for p in folder.glob("*.png")}, set(made),
+                             "결선도 폴더의 PNG 와 배치.py 의 BOARDS·FINALS 가 다르다")
+            stale = sorted(f for f, s in made.items() if mod.read_stamp(folder / f) != s)
+            self.assertEqual(stale, [], "코드와 어긋난 PNG — "
+                             f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
+            # 체크리스트의 결선 순서는 사이드카에서만 온다 — PNG 도장이 맞아도 JSON 이 옛것이면
+            # 틀린 순서가 인쇄된다(2026-09-28 최종 리뷰: 병합 충돌·이름 바꾸기)
+            sides = {f[:-len(".png")] + ".json" for f in made}
+            self.assertEqual({p.name for p in folder.glob("*.json")}, sides,
+                             "결선도 폴더의 JSON 이 PNG 와 쌍이 아니다")
+            stale = sorted(f for f in sides
+                           if (folder / f).read_bytes() != (Path(d) / f).read_bytes())
+            self.assertEqual(stale, [], "코드와 어긋난 사이드카 — "
+                             f"`render_breadboard.py --experiment {n}` 으로 다시 뽑는다")
 
+
+per_experiment(CommittedPngs, globals())
+
+
+class ExperimentNumbers(unittest.TestCase):
+    def test_실험별_클래스의_번호가_엔진과_같다(self):
+        """실험별 클래스 이름은 폴더 이름(`experiment_numbers`)에서 나온다."""
+        nums = _load().board_numbers()
+        self.assertTrue({1, 2, 3} <= set(nums), nums)
+        self.assertEqual(experiment_numbers(), nums)
 
 class TestE4MuxFinalOneLed(unittest.TestCase):
     """실험04 C1(4x1 MUX) 완성본은 출력이 Y 하나라 LED 사슬도 하나다(2026-09-28 사용자).

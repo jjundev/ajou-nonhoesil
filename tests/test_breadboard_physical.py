@@ -12,7 +12,7 @@ import importlib.util
 import os
 import unittest
 
-from tests._boards import all_builders
+from tests._boards import load_once, per_builder
 from tests._renders import render
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -498,53 +498,51 @@ def _render(mod, fn):
 
 
 class AllCircuits(unittest.TestCase):
-    """12장 전부가 그림대로 꽂힌다. 2026-09-08 까지 복합 회로만 포개짐 경고 둘을
-    안고 경고 모드였다 — 초록 Z 선을 11행으로 옮겨 0 이 됐고 엄격 모드다."""
+    """회로 전부가 그림대로 꽂힌다. 2026-09-08 까지 복합 회로만 포개짐 경고 둘을
+    안고 경고 모드였다 — 초록 Z 선을 11행으로 옮겨 0 이 됐고 엄격 모드다.
+
+    회로마다 클래스가 하나씩 생긴다(`per_builder`) — xdist 가 회로를 워커에 나눠
+    그리게 하려는 것이다(2026-09-29)."""
+    builder_name = None
 
     @classmethod
     def setUpClass(cls):
-        cls.mod = _load()
+        cls.mod, builders = load_once(_load)
+        cls.fn = staticmethod(builders[cls.builder_name])
 
-    def builders(self):
-        return all_builders(self.mod)
+    def test_그림대로_꽂힌다(self):
+        bb = _render(self.mod, self.fn)
+        self.assertEqual(bb._not_holes, [])
+        self.assertEqual(bb._double, [])
 
-    def test_모든_회로가_그림대로_꽂힌다(self):
-        for name, fn in sorted(self.builders().items()):
-            with self.subTest(회로=name):
-                bb = _render(self.mod, fn)
-                self.assertEqual(bb._not_holes, [])
-                self.assertEqual(bb._double, [])
-
-    def test_모든_회로가_엄격_모드로_포개짐_없이_통과한다(self):
-        for name, fn in sorted(self.builders().items()):
-            with self.subTest(회로=name):
-                bb = _render(self.mod, fn)
-                self.assertEqual(bb.overlap_policy, 'strict', f'{name}: 경고 모드로 도는 회로가 없어야 한다')
-                self.assertEqual(bb.overlap_warnings, [])
+    def test_엄격_모드로_포개짐_없이_통과한다(self):
+        bb = _render(self.mod, self.fn)
+        self.assertEqual(bb.overlap_policy, 'strict', f'{self.builder_name}: 경고 모드로 도는 회로가 없어야 한다')
+        self.assertEqual(bb.overlap_warnings, [])
 
     def test_R7_legacy_는_실험_1_2_3_뿐이고_그_뒤는_엄격_모드다(self):
         """실험01~03 은 R7(2026-09-20) 이전 승인본이라 legacy 로 고정한다. 실험04부터
         새 빌더가 legacy 를 붙이면 여기서 걸린다 — 밀집은 게이트 배정으로 풀지 정책으로
         끄지 않는다."""
-        for name, fn in sorted(self.builders().items()):
-            with self.subTest(회로=name):
-                exp = int(fn.__module__.rsplit('board_e', 1)[1])
-                bb = _render(self.mod, fn)
-                want = 'legacy' if exp <= 3 else 'strict'
-                self.assertEqual(bb.density_policy, want,
-                                 f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
-                if want == 'strict':
-                    self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
+        name, fn = self.builder_name, self.fn
+        exp = int(fn.__module__.rsplit('board_e', 1)[1])
+        bb = _render(self.mod, fn)
+        want = 'legacy' if exp <= 3 else 'strict'
+        self.assertEqual(bb.density_policy, want,
+                         f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
+        if want == 'strict':
+            self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
 
-    def test_R8_모든_회로에_칩_사이_엇갈림이_없다(self):
+    def test_R8_칩_사이_엇갈림이_없다(self):
         """2026-09-20 실측: 실험01~03 완성본 7장 0건, 시험 전용 build_e2_tpd 1건 —
         legacy 라도 회귀선으로 건다. 알려진 1건까지 주소로 못 박으므로 어디서든 새 엇갈림이
         생기거나 e2_tpd 에 하나 더 붙으면 여기서 걸린다."""
-        for name, fn in sorted(self.builders().items()):
-            with self.subTest(회로=name):
-                bb = _render(self.mod, fn)
-                self.assertEqual([(w['frm'], w['to']) for w in bb.cross_side_wires()],
-                                 KNOWN_CROSS_SIDE.get(name, []), name)
+        bb = _render(self.mod, self.fn)
+        self.assertEqual([(w['frm'], w['to']) for w in bb.cross_side_wires()],
+                         KNOWN_CROSS_SIDE.get(self.builder_name, []), self.builder_name)
+
+
+per_builder(AllCircuits, globals())
 
 
 if __name__ == '__main__':

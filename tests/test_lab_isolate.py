@@ -50,6 +50,8 @@ def _fake_repo():
 
 
 class BuildIsolatedTree(unittest.TestCase):
+    xdist_per_test = True   # setUp 이 트리를 매번 새로 만든다 — tests/conftest.py
+
     def setUp(self):
         self.root = _fake_repo()
         self.dest = Path(tempfile.mkdtemp()) / "iso"
@@ -139,6 +141,7 @@ class ResultReportMode(unittest.TestCase):
     명세·기록·결선도·사진 시트는 ④ 의 **입력**이라 남아야 한다. 답안은
     output/ 의 결과보고서 계열과 리뷰 문서뿐이다.
     """
+    xdist_per_test = True   # setUp 이 트리를 매번 새로 만든다 — tests/conftest.py
 
     def setUp(self):
         self.root = _fake_repo()
