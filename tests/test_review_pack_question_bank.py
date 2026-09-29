@@ -207,3 +207,17 @@ def test_unknown_page_count_is_explicit_hold():
     data['audit'].update(status='complete_with_holds',units=[dict(source_id='s1',index=1,outcome='held',occurrence_ids=[],reason='암호화')],unresolved=[dict(target_id='s1',reason='페이지 수 확인 불가')])
     data['audit']['checks']['source_visual']='partial'
     assert validate_question_bank(data)==[]
+
+
+@pytest.mark.parametrize('change', [
+    lambda d: d.update(schema=['logic-lab-question-bank']),
+    lambda d: d['sources'][0].update(processing=['complete']),
+    lambda d: d['occurrences'][0].update(role=['question']),
+])
+def test_array_in_enum_returns_errors_instead_of_raising(change):
+    data = populated()
+    change(data)
+    before = copy.deepcopy(data)
+    errors = validate_question_bank(data)
+    assert errors and all(error.startswith('$.') for error in errors)
+    assert data == before

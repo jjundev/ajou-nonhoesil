@@ -17,3 +17,17 @@ def test_invalid_json_has_nonzero_status(tmp_path,capsys):
 def test_inventory_missing_is_failure(tmp_path,capsys):
     assert main(['inventory','--root',str(tmp_path),'--experiment','4'])==1
     assert 'FAIL' in capsys.readouterr().err
+
+
+def test_invalid_enum_array_is_a_reported_input_error(tmp_path, capsys):
+    from pathlib import Path
+    data = json.loads(Path('tests/fixtures/review_pack/question_bank/minimal.json').read_text(encoding='utf-8'))
+    data['schema'] = ['logic-lab-question-bank']
+    path = tmp_path / 'bad-enum.json'
+    path.write_text(json.dumps(data), encoding='utf-8')
+    before = path.read_bytes()
+    assert main(['check', '--root', str(tmp_path), '--bank', str(path)]) == 1
+    output = capsys.readouterr()
+    assert output.out == ''
+    assert 'FAIL' in output.err and '$.schema' in output.err
+    assert path.read_bytes() == before

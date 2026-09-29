@@ -16,7 +16,7 @@ def _shape_errors(value, rule, at='$'):
         names = expected if isinstance(expected, list) else [expected]
         if not any(kinds[n](value) for n in names): return [f'{at}: invalid type']
     if 'enum' in rule and not any(type(value) is type(v) and value == v for v in rule['enum']):
-        errors.append(f'{at}: invalid value')
+        return [f'{at}: invalid value']
     if value is None: return errors
     if isinstance(value, dict):
         props = rule.get('properties', {})
