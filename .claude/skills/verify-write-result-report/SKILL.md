@@ -227,7 +227,8 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 
 남기는 것: `체크리스트/{명세,기록}.md`·`결선도/`·`실험사진/`(시트 포함)·
 `실험중있었던일.md`·`강의노트/`·`.claude/데이터시트_출처.md`·
-`.claude/과목정보.md`·`.claude/보고서양식.md`·`docs/schema/`·`scripts/lab/`
+`.claude/과목정보.md`·`.claude/보고서양식.md`·`.claude/보고서서식.md`·
+`docs/schema/`·`scripts/lab/`
 나머지·④ ⑤ `export-photo-sheet` 를 비롯한 다른 스킬·다른 실험 폴더. ④·⑤ 가
 참조하거나 그 절차가 실물로 드는 것들이다.
 

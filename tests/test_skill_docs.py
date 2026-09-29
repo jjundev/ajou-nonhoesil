@@ -75,6 +75,25 @@ MARKERS = {"③": "예보", "④": "결과", "⑤": "리뷰"}
 # 문서가 조용히 거짓말을 한다 — `Breadboard.jpg` 가 정확히 그렇게 깨졌다.
 DATASHEET_DIR = "from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃"
 
+# ③·④ 가 함께 따르는 서식 규칙의 본문. 두 스킬 문서의 해당 번호에는 굵은 첫
+# 문장과 포인터만 남는다 — 같은 규칙을 두 벌 두었더니 한쪽만 고쳐져 벌어졌다
+# (2026-09-29 측정: 열 쌍 중 넷이 유사도 0.55~0.79).
+SHARED = ROOT / ".claude/보고서서식.md"
+# 공용 절 이름 → (③ 번호, ④ 번호). 번호는 바꾸지 않는다 — 저장소 전체 인용이 442곳이다.
+SHARED_RULES = {
+    "강의노트 호칭": (6, 7),
+    "AI 티": (7, 8),
+    "다른 파일 언급": (8, 9),
+    "목차 블록": (10, 11),
+    "헤딩": (11, 12),
+    "여백 블록": (12, 13),
+    "표 캡션": (13, 14),
+    "관찰 문장": (14, 15),
+    "표 예고": (15, 16),
+    "붙여쓰기": (21, 18),
+}
+SHARED_POINTER = "`.claude/보고서서식.md` §"
+
 
 def sections(text):
     """`## 제목` 으로 문서를 갈라 {제목: 본문} 으로 돌려준다."""
@@ -139,6 +158,39 @@ def _expand(token):
     return out
 
 
+def _flat(text):
+    """줄바꿈·들여쓰기를 공백 하나로 누른다. 문단을 다시 접어도 문장 검사가 같다."""
+    return re.sub(r"\s+", " ", text)
+
+
+def rule_blocks(section_body):
+    """번호 항목마다 본문을 돌려준다(`5b.` 는 5 에 붙는다). 다음 번호 줄 앞까지다."""
+    out, cur = {}, None
+    for line in section_body.splitlines():
+        m = re.match(r"^(\d+)[a-z]?\. ", line)
+        if m:
+            cur = int(m.group(1))
+            out.setdefault(cur, [])
+        if cur is not None:
+            out[cur].append(line)
+    return {n: "\n".join(v) for n, v in out.items()}
+
+
+def shared_pointer_targets(text):
+    """`SHARED_POINTER` 바로 뒤의 글 40자씩을 돌려준다.
+
+    절 이름에 공백이 있어(`여백 블록`) 정규식으로 이름을 자르지 않는다 — 받은 쪽이
+    알려진 이름으로 시작하는지 본다.
+    """
+    flat = _flat(text)
+    out, i = [], flat.find(SHARED_POINTER)
+    while i != -1:
+        j = i + len(SHARED_POINTER)
+        out.append(flat[j:j + 40])
+        i = flat.find(SHARED_POINTER, j)
+    return out
+
+
 def cross_reference_errors(text, titles=("절대 규칙", "실행 절차")):
     """`§절대 규칙 N`·`§실행 절차 N`·`N단계` 가 실재하는 항목을 가리키는지 본다.
 
@@ -149,6 +201,9 @@ def cross_reference_errors(text, titles=("절대 규칙", "실행 절차")):
     # 다른 문서를 가리키는 참조는 여기서 풀지 않는다 (위 `CROSS_DOC` 참조).
     # `test_cross_document_references_resolve_in_the_target_doc` 가 본다.
     text = CROSS_DOC.sub(" ", text)
+    # 공용 서식 파일의 절(`.claude/보고서서식.md` §여백 블록)도 이 문서의 절이
+    # 아니다. `SharedReportStyle` 이 공용 파일 쪽에서 푼다.
+    text = re.sub(r"`\.claude/보고서서식\.md`\s+§", " ", text)
     sec = sections(text)
     rules = numbered_items(sec["절대 규칙"]) if "절대 규칙" in titles else None
     steps = numbered_items(sec["실행 절차"]) if "실행 절차" in titles else None
@@ -239,6 +294,14 @@ class CrossReferenceChecker(unittest.TestCase):
                "\n## 실행 절차\n\n0. **영.** §실행 절차 0 본문\n")
         self.assertEqual(cross_reference_errors(doc), [])
 
+    def test_shared_style_pointers_are_left_to_the_shared_file(self):
+        # `.claude/보고서서식.md` §여백 블록 은 이 문서의 절이 아니다 — 풀이는
+        # `SharedReportStyle` 이 한다. 포인터 없이 쓴 `§여백` 은 여전히 죽은 참조다.
+        doc = ("## 절대 규칙\n\n1. **하나.** 본문은 `.claude/보고서서식.md`\n"
+               "   §여백 블록. 그리고 §여백 을 본다\n"
+               "\n## 실행 절차\n\n0. **영.** 본문\n")
+        self.assertEqual(cross_reference_errors(doc), ["§여백 절 없음"])
+
 
 class SkillDocInvariants(unittest.TestCase):
     def setUp(self):
@@ -287,7 +350,8 @@ class SkillDocInvariants(unittest.TestCase):
         잡지 않는다. draft-lab-spec 규칙은 원문자가 없어 스킬 이름으로 인용한다.
         """
         files = (sorted((ROOT / "scripts/lab").glob("*.py"))
-                 + sorted((ROOT / "docs/schema").glob("*.md")))
+                 + sorted((ROOT / "docs/schema").glob("*.md"))
+                 + [SHARED])
         checked = 0
         for path in files:
             for marker, title, token in CROSS_DOC.findall(path.read_text(encoding="utf-8")):
@@ -330,18 +394,16 @@ class SkillDocInvariants(unittest.TestCase):
 
     def test_sibling_subsection_scope_is_defined(self):
         # 형제를 문서 전체로 읽으면 소절 제목이 표 제목을 겸하는 예외가
-        # 무너져 표 레이아웃이 통째로 뒤집힌다. 두 스킬이 같은 기계를 쓴다.
-        # ⑤ 는 보고서를 검사하는 스킬이라 작성 규칙을 갖지 않는다.
-        for name in REPORT_DOCS:
-            with self.subTest(name):
-                self.assertIn("형제 소절(같은 대절 안의 소절)", self.flat[name])
+        # 무너져 표 레이아웃이 통째로 뒤집힌다. 두 스킬이 같은 기계를 쓰고,
+        # 그 기계는 공용 서식 파일 한 곳에 산다(§표 캡션).
+        self.assertIn("형제 소절(같은 대절 안의 소절)",
+                      _flat(SHARED.read_text(encoding="utf-8")))
 
     def test_heading_levels_are_capped_at_two(self):
         # `###` 를 허용하면 여백 규칙이 정의되지 않은 자리가 생긴다.
-        # ⑤ 는 보고서를 검사하는 스킬이라 작성 규칙을 갖지 않는다.
-        for name in REPORT_DOCS:
-            with self.subTest(name):
-                self.assertIn("`###` 이하는 쓰지 않는다", self.flat[name])
+        # 공용 서식 파일 §헤딩 에 산다.
+        self.assertIn("`###` 이하는 쓰지 않는다",
+                      _flat(SHARED.read_text(encoding="utf-8")))
 
     def test_the_fresh_review_step_withholds_the_manual(self):
         # 저작한 에이전트는 오염돼 있다 — 교안을 20번 읽고 나면 자기가 쓴
@@ -1059,6 +1121,61 @@ class InitSkill(unittest.TestCase):
                        "`결선도/손그림/`", "`실험사진/시트/`", "`output/손그림검토/`"):
             with self.subTest(folder=folder):
                 self.assertIn(folder, sec)
+
+
+class SharedReportStyle(unittest.TestCase):
+    """③·④ 의 공용 서식 규칙(`.claude/보고서서식.md`)."""
+
+    def setUp(self):
+        self.shared = SHARED.read_text(encoding="utf-8")
+        self.rules = {
+            key: rule_blocks(sections(DOCS[key][0].read_text(encoding="utf-8"))["절대 규칙"])
+            for key in REPORT_DOCS
+        }
+
+    def test_shared_sections_are_exactly_the_listed_rules(self):
+        self.assertEqual(set(sections(self.shared)), set(SHARED_RULES))
+
+    def test_every_listed_rule_is_a_stub_pointing_to_its_section(self):
+        # 그루터기에 포인터가 없으면 ⑤·⑦ 처럼 번호로 따라온 쪽이 본문을 못 찾는다.
+        for name, numbers in SHARED_RULES.items():
+            for key, n in zip(REPORT_DOCS, numbers):
+                with self.subTest(f"{key} §절대 규칙 {n} → §{name}"):
+                    self.assertIn(n, self.rules[key])
+                    self.assertIn(SHARED_POINTER + name, _flat(self.rules[key][n]))
+
+    def test_every_pointer_resolves(self):
+        files = [SHARED, PRE, RESULT, REVIEW, SYNC] + sorted((ROOT / "scripts/lab").glob("*.py"))
+        checked = 0
+        for path in files:
+            for rest in shared_pointer_targets(path.read_text(encoding="utf-8")):
+                checked += 1
+                with self.subTest(f"{path.name}: §{rest}"):
+                    self.assertTrue(any(rest.startswith(n) for n in SHARED_RULES), rest)
+        # 그루터기만 해도 열 쌍이다. 못 찾으면 이 테스트는 공허하다.
+        self.assertGreaterEqual(checked, 2 * len(SHARED_RULES))
+
+    def test_internal_references_use_names(self):
+        # 같은 규칙의 번호가 ③ 과 ④ 에서 다르다(③ 12 = ④ 13). 원문자 없는 번호
+        # 인용은 어느 문서의 번호인지 말하지 않는다. 원문자 인용(`③ §절대 규칙 6`)은
+        # `test_code_and_schema_cross_references_resolve` 가 푼다.
+        bad = re.findall(r"(?<![①-⑦] )§(?:절대 규칙|실행 절차) \d|\d+단계|\d+번대로|Task \d+",
+                         self.shared)
+        self.assertEqual(bad, [])
+        for m in re.finditer("§", self.shared):
+            rest = self.shared[m.end():m.end() + 40]
+            if rest[:1].isdigit() or rest.startswith(("절대 규칙", "실행 절차")):
+                continue   # `§5.2` 는 §헤딩 이 "쓰지 말라" 고 드는 예시다
+            with self.subTest(rest):
+                self.assertTrue(any(rest.startswith(n) for n in SHARED_RULES), rest)
+
+    def test_the_moved_bodies_are_not_duplicated_back(self):
+        # 공용화의 목적이 한 벌이다. 본문이 스킬 문서로 돌아오면 다시 두 벌이 된다.
+        for key in REPORT_DOCS:
+            flat = _flat(DOCS[key][0].read_text(encoding="utf-8"))
+            for phrase in ("형제 소절(같은 대절 안의 소절)", "`###` 이하는 쓰지 않는다"):
+                with self.subTest(f"{key}: {phrase}"):
+                    self.assertNotIn(phrase, flat)
 
 
 if __name__ == "__main__":
