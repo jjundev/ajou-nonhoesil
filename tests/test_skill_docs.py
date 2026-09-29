@@ -1274,6 +1274,14 @@ class SkillFolderSiblings(unittest.TestCase):
                 self.assertIn(f"`.claude/skills/write-result-report/{name}` 를 지금 읽고", flat)
                 self.assertIn(condition, flat)
 
+    def test_the_always_loaded_stub_keeps_the_transcription_safety_rule(self):
+        # 전사 본문은 `필기전사.md` 에 산다. 포인터를 따라가지 않은 에이전트도 손으로
+        # 채운 칸을 사진 판독으로 덮어쓰거나 확정 없이 기록하지 않도록, 두 금지만은
+        # 항상 싣는 SKILL.md 3단계에 남긴다(분할 뒤 최종 리뷰).
+        step = _flat(rule_blocks(sections(RESULT.read_text(encoding="utf-8"))["실행 절차"])[3])
+        self.assertIn("이미 채워진 칸은 덮어쓰지 않고", step)
+        self.assertIn("판독한 칸은 사용자 확정 뒤에만 기록한다", step)
+
 
 class SharedReportStyle(unittest.TestCase):
     """③·④ 의 공용 서식 규칙(`.claude/보고서서식.md`)."""
