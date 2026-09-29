@@ -180,3 +180,30 @@ def test_summary_reports_kinds_and_holds_without_changing_data():
     data=populated(); before=copy.deepcopy(data)
     assert summarize_question_bank(data)==dict(sources=1,occurrences=1,unique_questions=1,past=0,predicted=0,unknown=1,unreadable=0,partial=0,candidate_relations=0,unresolved=0)
     assert data==before
+
+from hashlib import sha256
+from scripts.lab.review_pack.question_bank import check_question_bank_files
+
+def test_changed_source_and_missing_asset(tmp_path):
+    data=populated(); (tmp_path/'quiz.txt').write_bytes(b'original')
+    data['sources'][0]['sha256']=sha256(b'original').hexdigest()
+    assert check_question_bank_files(data,root=tmp_path,bank_dir=tmp_path)==[]
+    (tmp_path/'quiz.txt').write_bytes(b'changed')
+    assert check_question_bank_files(data,root=tmp_path,bank_dir=tmp_path)
+    data['sources'][0]['sha256']=sha256(b'changed').hexdigest()
+    data['assets']=[dict(id='a1',path='assets/missing.png',sha256='0'*64,location=location(),role='mixed',answer_exposure='unknown')]
+    assert check_question_bank_files(data,root=tmp_path,bank_dir=tmp_path)
+
+@pytest.mark.parametrize('path',['../outside.txt','C:/outside.txt','/absolute.txt','a\\b.txt','.'])
+def test_unsafe_source_path(tmp_path,path):
+    data=populated(); data['sources'][0]['path']=path
+    assert check_question_bank_files(data,root=tmp_path,bank_dir=tmp_path)
+
+def test_unknown_page_count_is_explicit_hold():
+    data=bank()
+    source=populated()['sources'][0]
+    source.update(path='locked.pdf',format='pdf',unit_kind='page',unit_count=None,processing='held',reason='암호화')
+    data['sources']=[source]
+    data['audit'].update(status='complete_with_holds',units=[dict(source_id='s1',index=1,outcome='held',occurrence_ids=[],reason='암호화')],unresolved=[dict(target_id='s1',reason='페이지 수 확인 불가')])
+    data['audit']['checks']['source_visual']='partial'
+    assert validate_question_bank(data)==[]

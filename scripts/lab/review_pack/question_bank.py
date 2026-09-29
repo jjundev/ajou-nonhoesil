@@ -332,3 +332,25 @@ def summarize_question_bank(data):
     result['candidate_relations'] = sum(r['type'] != 'variant_of' for r in data['relations'])
     result['unresolved'] = len(data['audit']['unresolved'])
     return result
+
+
+def check_question_bank_files(data: dict, *, root: Path, bank_dir: Path) -> list[str]:
+    """Check evidence bytes on disk; input must first pass validate_question_bank."""
+    from .question_bank_sources import _evidence_path
+    from .sources import file_sha256
+
+    errors = []
+    for collection, base in (('sources', root), ('assets', bank_dir)):
+        for i, row in enumerate(data[collection]):
+            at = f'$.{collection}[{i}]'
+            try:
+                target = _evidence_path(base, row['path'])
+                if collection == 'assets' and row['path'].split('/')[0] != 'assets':
+                    raise ValueError('asset must be under assets/')
+                if not target.is_file():
+                    raise ValueError('missing evidence file')
+                if file_sha256(target) != row['sha256']:
+                    errors.append(f'{at}.sha256: changed evidence file')
+            except (OSError, ValueError) as exc:
+                errors.append(f'{at}.path: {exc}')
+    return errors
