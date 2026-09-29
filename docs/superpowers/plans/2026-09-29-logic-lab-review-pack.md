@@ -474,3 +474,13 @@ check-ignore는 출력 없음(exit 1)이 정상이다. 적용 중인 skill-creat
 ## 구현 중 사용자 확정 (2026-09-29)
 
 Native 실행. 학습 화면은 생명과학 note-template.html/review-template.html 원본을 그대로 사용한다. 새 page.html/style.css 디자인은 폐기한다. 렌더 시 placeholder와 외부 자원 URL만 로컬 번들로 교체한다. 원본 템플릿 파일의 SHA256을 기록한다.
+
+## 사용자 요청으로 중단한 지점
+
+2026-09-29: Task 1~7의 스킬·보조 코드 구현 후 사용자가 기출 분석을 새 세션으로 분리하도록 요청했다. Task 8은 완료하지 않았으며, 실험04 저작 초안은 tmp/review-pack-work/experiment04에만 있다. 학습팩은 발행하지 않았다.
+
+다음 흐름은 별도 세션에서 기출을 검토하여 문제은행 JSON으로 추출한 뒤 스킬을 실행하는 것이다. 현재 manifest.json은 학습팩 저작 계약이며 외부 문제은행 JSON 전용 import 인터페이스는 아직 없다. 새 추출 계약을 정할 때 연결 방식을 검토한다. 이번 세션 임시 분석을 검증된 문제은행으로 사용하지 않는다.
+
+검증 현황: 새 기능 테스트 43개를 포함한 관련 검사 416 passed, 373 subtests passed. 기존 config 테스트에는 Windows 경로 구분자 비교 때문에 기준 실행부터 14 failures가 있었다(기준 로그: tmp/review-pack-work/baseline.txt). 최종 독립 리뷰·실제 브라우저 검증·전체 테스트 실행·원래 체크아웃 통합은 미완료다. 템플릿 원본 두 개는 생명과학 원본과 바이트 일치하며, 렌더 시 CDN 주소만 로컬 번들 주소로 치환한다.
+
+구현 브랜치: codex/logic-lab-review-pack. 스킬 경로는 사용자 지정 .claude/skills/logic-lab-review-pack이다. 커밋은 격리 워크트리에 있고 원래 체크아웃에 merge/cherry-pick하지 않았다.
