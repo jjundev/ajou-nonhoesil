@@ -1,0 +1,6 @@
+{
+  "schema": "logic-lab-question-bank", "schema_version": 1,
+  "bank_id": "bank-exp04", "experiment": 4,
+  "sources": [], "assets": [], "occurrences": [], "questions": [], "relations": [],
+  "audit": {"status": "draft", "checks": {"structure": "not_run", "source_visual": "not_run"}, "units": [], "unresolved": []}
+}
