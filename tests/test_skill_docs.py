@@ -109,6 +109,29 @@ SHARED_MARKERS = {
     "붙여쓰기": "라틴 문자·숫자·닫는 괄호 바로 뒤",
 }
 
+# ④ 스킬 폴더 안의 조건부 본문. SKILL.md 의 번호 항목에는 굵은 첫 문장·발동 조건
+# 판정문·포인터만 남고, 조건이 참일 때만 필요한 본문은 형제 파일에 산다 — 보통
+# 실행에서 컨텍스트에 싣지 않으려는 것이다. 포인터는 저장소 경로를 통째로 쓴다
+# (격리 에이전트는 스킬 폴더가 아니라 저장소 루트에서 읽는다).
+SIBLING_POINTER = re.compile(r"`\.claude/skills/([\w-]+)/([^/`\s]+\.md)`")
+SIBLINGS = {
+    "결과": ("필기전사.md", "퀴즈해설.md", "항목반복.md"),
+}
+# 파일마다 본문에만 있는 구절 하나. 형제 파일에 있고 SKILL.md 에는 없어야 한다 —
+# SKILL.md 로 본문이 되돌아오면 보통 실행이 다시 그것을 싣는다.
+SIBLING_MARKERS = {
+    "필기전사.md": "체크 표시(`✓`)와 숫자·문자를 혼동하기 쉽다",
+    "퀴즈해설.md": "월요반과 금요반 문제지가 다르다",
+    "항목반복.md": "임의로 쪼개 배정하지 않는다",
+}
+
+
+def sibling_texts(key):
+    """`SIBLINGS[key]` 의 형제 파일을 {파일명: 본문} 으로 읽는다."""
+    folder = DOCS[key][0].parent
+    return {name: (folder / name).read_text(encoding="utf-8")
+            for name in SIBLINGS.get(key, ())}
+
 
 def sections(text):
     """`## 제목` 으로 문서를 갈라 {제목: 본문} 으로 돌려준다."""
@@ -321,9 +344,13 @@ class CrossReferenceChecker(unittest.TestCase):
 class SkillDocInvariants(unittest.TestCase):
     def setUp(self):
         self.docs = {k: p.read_text(encoding="utf-8") for k, (p, _) in DOCS.items()}
+        # 번호·절 구조는 SKILL.md(`self.docs`)에서만 본다. 문장과 금지 표기는 스킬
+        # 폴더 전체(`self.full`)에서 본다 — 본문이 형제 파일로 옮겨가도 규칙은 같다.
+        self.full = {k: "\n".join([v, *sibling_texts(k).values()])
+                     for k, v in self.docs.items()}
         # 산문 규칙을 문장으로 찾을 때 쓴다. 문단을 다시 감싸도 규칙이 같으면
         # 통과해야 하므로, 줄바꿈·들여쓰기를 공백 하나로 눌러 둔 사본이다.
-        self.flat = {k: re.sub(r"\s+", " ", v) for k, v in self.docs.items()}
+        self.flat = {k: re.sub(r"\s+", " ", v) for k, v in self.full.items()}
 
     def test_no_dangling_cross_references(self):
         for name, text in self.docs.items():
@@ -338,7 +365,7 @@ class SkillDocInvariants(unittest.TestCase):
         겹쳐 통과한다(무음). 둘 다 실제로 있었던 상태다.
         """
         checked = 0
-        for name, text in self.docs.items():
+        for name, text in self.full.items():
             for marker, title, token in CROSS_DOC.findall(text):
                 target = MARKERS.get(marker)
                 if target is None:
@@ -385,14 +412,14 @@ class SkillDocInvariants(unittest.TestCase):
         # `§3` 은 어느 번호 체계인지 말하지 않아 규칙 3 으로도 절차 3 으로도
         # 읽힌다. (`§5.2`·`§3.2` 는 §절대 규칙 11 이 "쓰지 말라"고 인용하는
         # 형태이므로 제외한다 — 숫자 뒤에 점이 온다.)
-        for name, text in self.docs.items():
+        for name, text in self.full.items():
             with self.subTest(name):
                 self.assertEqual(re.findall(r"§\d+(?!\.\d)", text), [])
 
     def test_no_unchecked_rule_reference_notation(self):
         # `§규칙 N` 은 상호참조 검사기가 보지 않는 표기다 — 실제로 이 표기로
         # 쓰인 죽은 참조가 한 번 있었다(§실행 절차 7).
-        for name, text in self.docs.items():
+        for name, text in self.full.items():
             with self.subTest(name):
                 self.assertEqual(re.findall(r"§규칙 \d", text), [])
 
@@ -706,8 +733,8 @@ class SkillDocInvariants(unittest.TestCase):
     def test_table_bullet_example_does_not_teach_internal_ids(self):
         # 이 문서는 예시를 따라 쓰기 쉬워서 예시가 규칙을 이긴다.
         # §절대 규칙 9 가 이름을 대어 금지한 표 ID 를 규칙 14 예시가 가르쳤다.
-        self.assertNotIn("- **T1 결과**", self.docs["결과"])
-        self.assertNotIn("![T1 row5", self.docs["결과"])
+        self.assertNotIn("- **T1 결과**", self.full["결과"])
+        self.assertNotIn("![T1 row5", self.full["결과"])
 
     def test_photo_naming_is_the_contact_sheet_rule(self):
         # 2026-09-19: 옛 관례 `T<n> row<m>.jpg` 가 세 문서에 남아 시트 엔진
@@ -792,7 +819,7 @@ class SkillDocInvariants(unittest.TestCase):
 
     def test_no_leaked_plan_task_numbers(self):
         # 구현 계획의 작업 번호는 문서를 읽는 사람이 닿을 수 없는 좌표다.
-        for name, text in self.docs.items():
+        for name, text in self.full.items():
             with self.subTest(name):
                 self.assertEqual(re.findall(r"Task \d+", text), [])
 
@@ -1165,6 +1192,89 @@ class InitSkill(unittest.TestCase):
                 self.assertIn(folder, sec)
 
 
+class SkillFolderSiblings(unittest.TestCase):
+    """SKILL.md 옆의 조건부 본문 파일(`SIBLINGS`)."""
+
+    def test_the_listed_siblings_are_exactly_the_md_files_in_the_folder(self):
+        # 목록에 없는 .md 가 폴더에 있으면 문장 검사·상호참조 검사가 그 파일을 못 본다.
+        for folder in sorted((ROOT / ".claude/skills").iterdir()):
+            if not folder.is_dir():
+                continue
+            key = next((k for k, (p, _) in DOCS.items() if p.parent == folder), None)
+            found = {p.name for p in folder.glob("*.md")} - {"SKILL.md"}
+            with self.subTest(folder.name):
+                self.assertEqual(found, set(SIBLINGS.get(key, ())))
+
+    def test_every_sibling_is_pointed_to_from_its_skill(self):
+        # 가리키는 곳이 없는 형제 파일은 아무도 읽지 않는다.
+        for key, names in SIBLINGS.items():
+            skill = DOCS[key][0]
+            pointed = {name for folder, name in
+                       SIBLING_POINTER.findall(skill.read_text(encoding="utf-8"))
+                       if folder == skill.parent.name}
+            for name in names:
+                with self.subTest(f"{key}: {name}"):
+                    self.assertIn(name, pointed)
+
+    def test_every_pointer_resolves(self):
+        files = (sorted((ROOT / ".claude/skills").glob("*/*.md"))
+                 + sorted((ROOT / "scripts/lab").glob("*.py")))
+        checked = 0
+        for path in files:
+            for folder, name in SIBLING_POINTER.findall(path.read_text(encoding="utf-8")):
+                if name == "SKILL.md":
+                    continue
+                checked += 1
+                with self.subTest(f"{path.relative_to(ROOT)} → {folder}/{name}"):
+                    self.assertTrue((ROOT / ".claude/skills" / folder / name).is_file())
+        # ④ 의 포인터만 다섯이다(절대 규칙 12, 실행 절차 3·4·7·8).
+        self.assertGreaterEqual(checked, 5, "포인터를 못 찾으면 이 테스트는 공허하다")
+
+    def test_siblings_do_not_point_onward(self):
+        # 깊이 1단. 형제가 형제를 가리키면 한쪽만 읽혀 규칙이 빠진다.
+        for key in SIBLINGS:
+            for name, text in sibling_texts(key).items():
+                with self.subTest(name):
+                    onward = [n for _, n in SIBLING_POINTER.findall(text) if n != "SKILL.md"]
+                    self.assertEqual(onward, [])
+
+    def test_sibling_references_resolve_in_the_skill(self):
+        # 형제 파일의 `N단계`·`§절대 규칙 N`·`§사진 배치` 는 SKILL.md 의 항목·절이다.
+        # SKILL.md 뒤에 붙여 한 문서로 푼다 — SKILL.md 단독은
+        # `test_no_dangling_cross_references` 가 이미 0 으로 지킨다.
+        for key in SIBLINGS:
+            skill = DOCS[key][0].read_text(encoding="utf-8")
+            for name, text in sibling_texts(key).items():
+                with self.subTest(name):
+                    self.assertEqual(
+                        cross_reference_errors(skill + "\n" + text, DOCS[key][1]), [])
+
+    def test_the_moved_bodies_are_not_duplicated_back(self):
+        self.assertEqual(set(SIBLING_MARKERS), {n for v in SIBLINGS.values() for n in v})
+        for key, names in SIBLINGS.items():
+            skill = _flat(DOCS[key][0].read_text(encoding="utf-8"))
+            texts = sibling_texts(key)
+            for name in names:
+                with self.subTest(name):
+                    self.assertIn(SIBLING_MARKERS[name], _flat(texts[name]))
+                    self.assertNotIn(SIBLING_MARKERS[name], skill)
+
+    def test_each_stub_says_when_to_read(self):
+        # 발동 조건 판정문은 SKILL.md 에 남는다 — 파일을 열어야 판정할 수 있으면
+        # 순환이다. 포인터는 "지금 읽고" 로 읽는 시점을 못박는다.
+        steps = rule_blocks(sections(RESULT.read_text(encoding="utf-8"))["실행 절차"])
+        cases = [
+            (3, "필기전사.md", "print(p.name, '→', state)"),
+            (4, "항목반복.md", "`repeat: per-item` 인 섹션이 있으면"),
+            (8, "퀴즈해설.md", "`generate: false`"),
+        ]
+        for n, name, condition in cases:
+            flat = _flat(steps[n])
+            with self.subTest(f"{n}단계 → {name}"):
+                self.assertIn(f"`.claude/skills/write-result-report/{name}` 를 지금 읽고", flat)
+                self.assertIn(condition, flat)
+
+
 class SharedReportStyle(unittest.TestCase):
     """③·④ 의 공용 서식 규칙(`.claude/보고서서식.md`)."""
 
@@ -1187,7 +1297,7 @@ class SharedReportStyle(unittest.TestCase):
                     self.assertIn(SHARED_POINTER + name, _flat(self.rules[key][n]))
 
     def test_every_pointer_resolves(self):
-        files = ([SHARED] + sorted((ROOT / ".claude/skills").glob("*/SKILL.md"))
+        files = ([SHARED] + sorted((ROOT / ".claude/skills").glob("*/*.md"))
                  + sorted((ROOT / "scripts/lab").glob("*.py")))
         checked = 0
         for path in files:
@@ -1223,7 +1333,8 @@ class SharedReportStyle(unittest.TestCase):
         self.assertEqual(set(SHARED_MARKERS), set(SHARED_RULES))
         shared = _flat(self.shared)
         for key in REPORT_DOCS:
-            flat = _flat(DOCS[key][0].read_text(encoding="utf-8"))
+            flat = _flat("\n".join([DOCS[key][0].read_text(encoding="utf-8"),
+                                    *sibling_texts(key).values()]))
             for name, phrase in SHARED_MARKERS.items():
                 with self.subTest(f"{key} §{name}: {phrase}"):
                     self.assertIn(phrase, shared)
