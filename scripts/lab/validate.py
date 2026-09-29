@@ -1172,8 +1172,8 @@ def check_heading_backticks(md_text) -> list:
     헤딩 두 개에서 직접 백틱을 지웠고, 남은 두 개를 어떻게 볼지 물었더니
     **체계적**이라고 확인해 주었다(실험01 승인본에는 백틱 헤딩이 0개다).
 
-    2026-09-12 부터는 본문의 백틱도 쓰지 않는다(③ §절대 규칙 11, ④ §절대
-    규칙 8). 이 검사는 **헤딩 줄만** 본다(error) — 본문은 `check_body_style`
+    2026-09-12 부터는 본문의 백틱도 쓰지 않는다(③ §절대 규칙 7, ④ §절대
+    규칙 8 — 본문은 `.claude/보고서서식.md` §AI 티). 이 검사는 **헤딩 줄만** 본다(error) — 본문은 `check_body_style`
     이 warn 으로 본다(같은 날 결보 v5 회차에서 승격).
     """
     hits = [i for i, line in enumerate(md_text.splitlines(), 1)

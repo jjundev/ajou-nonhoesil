@@ -93,6 +93,21 @@ SHARED_RULES = {
     "붙여쓰기": (21, 18),
 }
 SHARED_POINTER = "`.claude/보고서서식.md` §"
+# 절마다 본문에만 있는 구절 하나. 공용 파일에 있고 ③·④ 에는 없어야 한다 —
+# 스킬 문서로 본문이 되돌아오면 다시 두 벌이 된다. 옮기기 전(dc6e11e)의 ③·④ 는
+# 열 구절을 전부 갖고 있었다.
+SHARED_MARKERS = {
+    "강의노트 호칭": "배포본과 아카이브는",
+    "AI 티": "프로그램이 만들었기 때문에만 말이 되는 문장",
+    "다른 파일 언급": "언급해도 이해하지 못하고",
+    "목차 블록": "원시 HTML 이 아니다",
+    "헤딩": "`###` 이하는 쓰지 않는다",
+    "여백 블록": "헤딩 23개 전부가",
+    "표 캡션": "형제 소절(같은 대절 안의 소절)",
+    "관찰 문장": "표를 다시 읽어 주는 문장",
+    "표 예고": "표 앞에서 표를 소개하지 않는다",
+    "붙여쓰기": "라틴 문자·숫자·닫는 괄호 바로 뒤",
+}
 
 
 def sections(text):
@@ -1145,7 +1160,8 @@ class SharedReportStyle(unittest.TestCase):
                     self.assertIn(SHARED_POINTER + name, _flat(self.rules[key][n]))
 
     def test_every_pointer_resolves(self):
-        files = [SHARED, PRE, RESULT, REVIEW, SYNC] + sorted((ROOT / "scripts/lab").glob("*.py"))
+        files = ([SHARED] + sorted((ROOT / ".claude/skills").glob("*/SKILL.md"))
+                 + sorted((ROOT / "scripts/lab").glob("*.py")))
         checked = 0
         for path in files:
             for rest in shared_pointer_targets(path.read_text(encoding="utf-8")):
@@ -1177,10 +1193,13 @@ class SharedReportStyle(unittest.TestCase):
 
     def test_the_moved_bodies_are_not_duplicated_back(self):
         # 공용화의 목적이 한 벌이다. 본문이 스킬 문서로 돌아오면 다시 두 벌이 된다.
+        self.assertEqual(set(SHARED_MARKERS), set(SHARED_RULES))
+        shared = _flat(self.shared)
         for key in REPORT_DOCS:
             flat = _flat(DOCS[key][0].read_text(encoding="utf-8"))
-            for phrase in ("형제 소절(같은 대절 안의 소절)", "`###` 이하는 쓰지 않는다"):
-                with self.subTest(f"{key}: {phrase}"):
+            for name, phrase in SHARED_MARKERS.items():
+                with self.subTest(f"{key} §{name}: {phrase}"):
+                    self.assertIn(phrase, shared)
                     self.assertNotIn(phrase, flat)
 
 
