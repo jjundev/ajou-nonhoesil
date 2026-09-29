@@ -20,7 +20,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
   `notion.json` 에 `결과보고서` 레코드가 있으며, 그 최신 판본의
   `_notion_baseline_v<N>.md` 와 원본이 `report_compare` 로 산문 밖 0건이어야
   한다(0단계가 잰다). 하나라도 아니면 "통제군이 없다" 로 거절한다.
-  2026-09-12 기준 자격이 있는 것은 실험01(v5) 뿐이다.
+  2026-09-29 기준 자격이 있는 것은 실험01(v5)·실험02(v2)다.
 
 ## 절대 규칙
 
@@ -84,7 +84,10 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 
 1. **격리 트리를 만든다.** 시스템 임시 폴더 아래에 둔다. 답안지 목록은
    §답안지 목록을 **그대로** 옮긴다. `output/` 은 통째로 비운 뒤 예비보고서 md
-   만 되살린다 — "예비보고서와의 비교" 절의 입력이다.
+   와 예상결과 그림(`*예상결과*.png`)만 되살린다 — 앞의 것은 "예비보고서와의
+   비교" 절의 입력이고, 뒤의 것은 체크리스트 HTML 이 싣는 그림이라 없으면 ⑤ 4b
+   가 이미지 누락 error 를 낸다(실험02, 2026-09-29). 그림이 없는 실험이면
+   `keep` 에서 그 줄을 뺀다 — 맞는 파일이 없는 글롭은 KeyError 다.
 
    ```bash
    python3 -c "
@@ -105,7 +108,8 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
    dest = Path(tempfile.gettempdir()) / f'iso-{name}'
    build_isolated_tree(Path('.'), dest, <실험번호>, KEYS,
                        clear_subdirs=('output',),
-                       keep=[f'{exp}/output/{name}_예비보고서.md'])
+                       keep=[f'{exp}/output/{name}_예비보고서.md',
+                             f'{exp}/output/*예상결과*.png'])
    print(dest)
    "
    ```

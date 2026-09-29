@@ -41,6 +41,7 @@ def _fake_repo():
     (exp / "output/실험01_결과보고서_notion_baseline_v5.md").write_text("답\n", encoding="utf-8")
     (exp / "output/result_review_round1.md").write_text("리뷰\n", encoding="utf-8")
     (exp / "실험사진/시트/실험01_1-1_사진_3입력_AND.jpg").write_bytes(b"jpg")
+    (exp / "output/실험01_1-1_예상결과_AND.png").write_bytes(b"png")
     (root / "keep.md").write_text("남는 파일 E1.P1-1 언급\n", encoding="utf-8")
     _git(root, "init", "-q")
     _git(root, "add", "-A")
@@ -168,7 +169,24 @@ class ResultReportMode(unittest.TestCase):
         exp = config.experiment_dir(1)
         build_isolated_tree(self.root, dest, 1, [f"{exp}/output/*결과보고서*"], clear_subdirs=())
         names = sorted(p.name for p in (dest / exp / "output").iterdir())
-        self.assertEqual(names, ["result_review_round1.md", "실험01_예비보고서.md"])
+        self.assertEqual(names, ["result_review_round1.md", "실험01_1-1_예상결과_AND.png", "실험01_예비보고서.md"])
+
+    def test_글롭_keep_은_맞는_파일을_모두_되살린다(self):
+        # 체크리스트 HTML 이 output/ 의 예상결과 그림을 싣는다 — output/ 을 비우면
+        # ⑤ 4b 가 이미지 누락 error 를 낸다(실험02, 2026-09-29).
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        exp = config.experiment_dir(1)
+        build_isolated_tree(self.root, dest, 1, [], clear_subdirs=("output",),
+                            keep=[f"{exp}/output/*예상결과*.png"])
+        self.assertEqual(sorted(p.name for p in (dest / exp / "output").iterdir()),
+                         ["실험01_1-1_예상결과_AND.png"])
+        self.assertEqual((dest / exp / "output/실험01_1-1_예상결과_AND.png").read_bytes(), b"png")
+
+    def test_아무것도_안_맞는_글롭_keep_은_예외다(self):
+        dest = Path(tempfile.mkdtemp()) / "iso"
+        with self.assertRaises(KeyError):
+            build_isolated_tree(self.root, dest, 1, [], clear_subdirs=("output",),
+                                keep=["없는/*.png"])
 
     def test_없는_keep_경로는_예외다(self):
         dest = Path(tempfile.mkdtemp()) / "iso"
