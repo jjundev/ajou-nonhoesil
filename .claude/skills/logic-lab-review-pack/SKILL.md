@@ -22,6 +22,14 @@ REPO는 scripts/lab/config.py가 있는 저장소 루트. SKILL은 이 폴더. R
 
 ## 2. 자료 확인
 
+### 별도 세션에서 추출한 문제은행
+
+기출 원문 추출은 [문제은행 계약](references/question-bank.md)과
+[새 추출 세션 절차](references/question-bank-extraction-session.md)를 따른다.
+문제은행 JSON은 manifest.json과 다른 계약이다. 현재 전용 import는 미구현이다.
+문제은행 추출 요청에서는 여기의 학습팩 build/publish 절을 실행하지 않는다.
+기존 임시 분석을 검증된 문제은행으로 사용하지 않는다.
+
 [sources.md](references/sources.md)를 읽고 자료를 목록화한다.
 
 ```powershell
