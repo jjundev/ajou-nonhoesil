@@ -761,9 +761,11 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("입력 조합은 **파일명에서만** 읽는다", result)
         self.assertIn("채워진 칸이 0개이고 행 사진도 스텝표·파형 사진도 없으면", result)
         self.assertIn("행 사진(`<항목> <입력비트>.jpg`)도 없으면", result)
-        self.assertIn("사진이 찍힌 행에 아직 빈 확인 칸이 있으면 아래 사진 전사로 간다",
+        self.assertIn("사진이 찍힌 행에 아직 빈 확인 칸이 있으면 사진 전사(`필기전사.md`)로 간다",
                       result)
         self.assertNotIn("행 사진이 있으면 아래 사진 전사로 간다", result)
+        # 사진 전사 본문은 형제 파일로 옮겼다 — SKILL.md 의 '아래' 는 가리킬 곳이 없다.
+        self.assertNotIn("아래 사진 전사로 간다", self.docs["결과"])
 
     def test_photo_transcription_never_overwrites_hand_filled_cells(self):
         # 최종 리뷰: 사진이 있다는 이유만으로 손으로 채운 칸을 사진 판독으로
@@ -1270,9 +1272,22 @@ class SkillFolderSiblings(unittest.TestCase):
         ]
         for n, name, condition in cases:
             flat = _flat(steps[n])
+            pointer = f"`.claude/skills/write-result-report/{name}` 를 지금 읽고"
             with self.subTest(f"{n}단계 → {name}"):
-                self.assertIn(f"`.claude/skills/write-result-report/{name}` 를 지금 읽고", flat)
+                self.assertIn(pointer, flat)
                 self.assertIn(condition, flat)
+                # 판정문이 포인터보다 앞이다. 뒤로 가면 조건을 따지기 전에 파일부터 연다.
+                self.assertLess(flat.index(condition), flat.index(pointer))
+
+    def test_step3_says_where_to_go_when_nothing_to_transcribe_before_the_pointer(self):
+        # "없으면 4단계로" 가 포인터·안전 문장 뒤에 오면 '없으면' 의 주어가 두 문장
+        # 앞으로 멀어진다(분할 뒤 최종 리뷰). 건너뛰는 갈래를 먼저, 읽는 갈래를 뒤에 둔다.
+        step = _flat(rule_blocks(sections(RESULT.read_text(encoding="utf-8"))["실행 절차"])[3])
+        skip = step.find("전사할 것이 없으면")
+        pointer = step.find("`.claude/skills/write-result-report/필기전사.md` 를 지금 읽고")
+        self.assertNotEqual(skip, -1, "건너뛰는 갈래 문장이 없다")
+        self.assertLess(skip, pointer)
+        self.assertLess(step.find("4단계로 간다", skip), pointer)
 
     def test_the_always_loaded_stub_keeps_the_transcription_safety_rule(self):
         # 전사 본문은 `필기전사.md` 에 산다. 포인터를 따라가지 않은 에이전트도 손으로
