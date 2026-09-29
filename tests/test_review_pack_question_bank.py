@@ -221,3 +221,71 @@ def test_array_in_enum_returns_errors_instead_of_raising(change):
     errors = validate_question_bank(data)
     assert errors and all(error.startswith('$.') for error in errors)
     assert data == before
+
+
+@pytest.mark.parametrize('status', ['draft', 'complete', 'complete_with_holds'])
+def test_readable_cannot_hide_unresolved_symbols(status):
+    data = populated()
+    data['audit']['status'] = status
+    data['audit']['checks']['source_visual'] = 'pass'
+    data['occurrences'][0]['uncertainties'] = [dict(
+        block_id='b1', symbol='overbar', candidates=['present', 'absent'],
+        reason='blurred symbol', location=location())]
+    if status == 'complete_with_holds':
+        data['audit']['unresolved'] = [dict(target_id='o1', reason='blurred symbol')]
+    before = copy.deepcopy(data)
+    errors = validate_question_bank(data)
+    assert any('$.occurrences[0].reading' in error for error in errors)
+    assert data == before
+    data['occurrences'][0]['reading'] = 'partial'
+    data['audit']['status'] = 'complete_with_holds'
+    data['audit']['unresolved'] = [dict(target_id='o1', reason='blurred symbol')]
+    assert validate_question_bank(data) == []
+
+
+@pytest.mark.parametrize('nested', [False, True])
+def test_duplicate_json_keys_are_rejected_without_losing_evidence(tmp_path, nested):
+    raw = json.dumps(populated())
+    if nested:
+        raw = raw.replace('"text": ', '"text": "discarded condition", "text": ', 1)
+        key = 'text'
+    else:
+        raw = raw.replace('"experiment": 4', '"experiment": 3, "experiment": 4', 1)
+        key = 'experiment'
+    path = tmp_path / 'duplicate.json'
+    path.write_text(raw, encoding='utf-8')
+    with pytest.raises(ValueError, match='Duplicate JSON key.*' + key):
+        load_question_bank(path)
+    assert path.read_text(encoding='utf-8') == raw
+
+
+@pytest.mark.parametrize('value', [10**400, -(10**400)], ids=['positive', 'negative'])
+def test_huge_bbox_integer_returns_range_error(value):
+    data = populated()
+    data['occurrences'][0]['location'].update(bbox=[0, 0, value, 1], image_size=[100, 100])
+    errors = validate_question_bank(data)
+    assert any('$.occurrences[0].location.bbox[2]' in error for error in errors)
+
+
+@pytest.mark.parametrize('case', ['uncertainty', 'duplicate', 'huge_integer'])
+def test_invalid_evidence_cli_reports_error_without_mutating_json(tmp_path, capsys, case):
+    from scripts.lab.review_pack.question_bank_cli import main
+    data = populated()
+    (tmp_path / 'quiz.txt').write_bytes(b'evidence')
+    data['sources'][0]['sha256'] = sha256(b'evidence').hexdigest()
+    data['audit']['status'] = 'complete'
+    data['audit']['checks']['source_visual'] = 'pass'
+    if case == 'uncertainty':
+        data['occurrences'][0]['uncertainties'] = [dict(
+            block_id='b1', symbol='overbar', candidates=[], reason='blurred', location=location())]
+    elif case == 'huge_integer':
+        data['occurrences'][0]['location'].update(bbox=[0, 0, 10**400, 1], image_size=[100, 100])
+    raw = json.dumps(data)
+    if case == 'duplicate':
+        raw = raw.replace('"text": ', '"text": "lost condition", "text": ', 1)
+    path = tmp_path / 'bank.json'
+    path.write_text(raw, encoding='utf-8')
+    assert main(['check', '--root', str(tmp_path), '--bank', str(path)]) == 1
+    output = capsys.readouterr()
+    assert output.out == '' and 'FAIL' in output.err
+    assert path.read_text(encoding='utf-8') == raw

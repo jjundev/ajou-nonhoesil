@@ -25,6 +25,8 @@ python -m scripts.lab.review_pack.question_bank_cli check --root . --bank 문제
 
 최상위 키는 schema=`logic-lab-question-bank`, schema_version=1, bank_id, experiment(정수 1~10), sources, assets, occurrences, questions, relations, audit. 선언되지 않은 키는 거부한다. HTML fragment/topics/derived_answer/answer_status는 사용하지 않는다.
 
+같은 JSON 객체 안의 중복 키는 값이 같더라도 거부한다. 중첩된 문제 본문에도 적용하며 마지막 값으로 원문 조건을 덮어쓰지 않는다.
+
 ID는 영문자로 시작하고 영문·숫자·하이픈·밑줄만 허용한다. source/asset/occurrence/question/block/subpart 전체에서 유일하다. 재정렬과 전사 교정은 기존 ID를 유지하고 실질적 문제 조건 변경은 새 ID와 variant_of로 남긴다. ID를 배열 위치나 문제 텍스트 해시에서 재발급하지 않는다.
 
 source.path는 저장소 상대, asset.path는 은행 폴더 상대 `assets/` 아래 POSIX 경로다. 절대 경로, 역슬래시, `..`, `.` 경로 요소, 빈 요소, 드라이브/스트림 구분자 및 링크를 허용하지 않는다. 파일의 SHA256을 소문자 64자리로 기록한다. 검증은 원문과 그림 모두의 파일 존재·경로·해시를 확인한다.
@@ -70,6 +72,8 @@ Block은 `id`, `type`, `text`, `tex`, `cells`, `asset_id`다. 배열 순서를 �
 | figure | 존재하는 asset_id, text에 그림 설명 | tex/cells=null |
 
 partial/unreadable은 uncertainties가 필요하다. 각 항목은 `{block_id,symbol,candidates,reason,location}`이다. block_id는 해당 occurrence 안의 block 또는 null, candidates는 가능한 해석의 문자열 배열이다. 판독 불가 문제는 blocks가 비어 있어도 원문 위치와 이유를 보존한다. 해당 occurrence를 audit.unresolved에도 기록한다. 오버바·엣지·X/Z·활성 극성을 추측해 채우지 않는다.
+
+uncertainties가 남아 있으면 readable을 사용할 수 없다. partial/unreadable과 unresolved로 보류를 기록한다. 원문 대조로 의문을 해결한 뒤 uncertainties를 비우고 관련 unresolved를 정리해야 readable 및 complete로 전환할 수 있다.
 
 ### questions 및 제공 답안
 

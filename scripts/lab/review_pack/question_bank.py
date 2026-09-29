@@ -9,7 +9,8 @@ SCHEMA_PATH = Path(__file__).resolve().parents[3] / '.claude/skills/logic-lab-re
 def _shape_errors(value, rule, at='$'):
     kinds = {'object': lambda v: isinstance(v, dict), 'array': lambda v: isinstance(v, list),
              'string': lambda v: isinstance(v, str), 'integer': lambda v: type(v) is int,
-             'number': lambda v: type(v) in (int, float) and math.isfinite(v), 'null': lambda v: v is None}
+             'number': lambda v: type(v) is int or (type(v) is float and math.isfinite(v)),
+             'null': lambda v: v is None}
     errors = []
     expected = rule.get('type')
     if expected is not None:
@@ -43,8 +44,19 @@ def validate_question_bank(data):
     validator = _EvidenceValidator(data)
     return validator.check()
 
+def _unique_json_object(pairs):
+    """Reject evidence loss before JSON objects collapse duplicate keys."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f'Duplicate JSON key: {key!r}')
+        result[key] = value
+    return result
+
+
 def load_question_bank(path):
-    data = json.loads(Path(path).read_text(encoding='utf-8-sig'))
+    data = json.loads(Path(path).read_text(encoding='utf-8-sig'),
+                      object_pairs_hook=_unique_json_object)
     errors = validate_question_bank(data)
     if errors: raise ValueError('\n'.join(errors))
     return data
@@ -163,6 +175,8 @@ class _EvidenceValidator:
             blocks = {b['id']: b for b in row['blocks']}
             if row['reading'] == 'readable' and not blocks:
                 self.error(at + '.blocks', 'readable occurrence needs content')
+            if row['reading'] == 'readable' and row['uncertainties']:
+                self.error(at + '.reading', 'unresolved symbols require partial or unreadable')
             if row['reading'] != 'readable':
                 if not row['uncertainties']:
                     self.error(at + '.uncertainties', 'partial/unreadable needs evidence')

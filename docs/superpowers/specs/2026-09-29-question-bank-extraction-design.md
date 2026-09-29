@@ -26,6 +26,8 @@
 
 최상위 키: schema="logic-lab-question-bank", schema_version=1, bank_id, experiment(정수 1~10), sources, assets, occurrences, questions, relations, audit. 모든 레코드는 스키마에서 선언한 필드만 허용한다. 알 수 없는 버전과 필드 오타는 오류다.
 
+같은 JSON 객체의 중복 키는 중첩 깊이와 값의 동일 여부에 관계없이 로딩 시 거부한다. 원문 조건을 마지막 값으로 조용히 대체하지 않는다.
+
 ID는 [A-Za-z][A-Za-z0-9_-]*. bank_id를 제외한 source/asset/occurrence/question/block/subpart ID는 은행 안에서 전역 유일하다. 기존 은행을 다시 추출할 때 ID를 유지한다. 순서와 전사 교정은 새 ID 사유가 아니다. 실질적 문제 조건 변경은 새 문항 및 variant_of 관계로 남긴다.
 
 ### 원문 위치 Location
@@ -47,6 +49,8 @@ id, path(은행 폴더 상대, assets/ 아래), sha256, location, role(problem/a
 ### Occurrences와 Blocks
 
 Occurrence: id, role(question/answer/explanation/mixed), location, original_number(str|null), blocks, reading(readable/partial/unreadable), uncertainties([{block_id:str|null,symbol:str,candidates:[str],reason:str,location}]). partial/unreadable은 최소 하나의 uncertainty가 필요하다. 문항 본문이 없더라도 원문 위치와 판독 불가 이유를 남긴다.
+
+readable은 uncertainties가 비어 있을 때만 허용한다. 불확실한 기호가 남은 문항은 partial/unreadable과 unresolved로 보존하며 complete로 인정하지 않는다.
 
 Block: id, type(text/math/table/figure), text(str), tex(str|null), cells([[str]]|null), asset_id(str|null). 모든 필드를 명시한다. text는 원문 전사 또는 그림 설명이다. math는 tex 필수, table은 cells 필수이며 행 길이가 같아야 하고, figure는 asset_id 필수. 다른 형식에서 해당 필드는 null. 그림은 원문 대조 없이 텍스트나 LaTeX만으로 대체하지 않는다. blocks 배열 순서가 원문 순서다.
 

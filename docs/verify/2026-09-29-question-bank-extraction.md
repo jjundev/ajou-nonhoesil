@@ -84,3 +84,13 @@ FAILED tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽@test_
 ## 다음 세션
 
 [실험4 새 세션 요청문](../../.claude/skills/logic-lab-review-pack/references/question-bank-extraction-session.md)을 새 세션에 전달한다. [문제은행 계약](../../.claude/skills/logic-lab-review-pack/references/question-bank.md)에 따라 JSON과 근거 그림을 추출한 뒤, 별도 import 작업으로 연결한다.
+
+## 사용자 요청에 따른 추가 수정
+
+후속 재점검에서 발견한 세 문제를 수정했다.
+
+- readable이면서 uncertainties가 남은 문항은 모든 audit 상태에서 오류다. partial/unreadable 및 unresolved로 기록하면 complete_with_holds를 사용할 수 있다.
+- JSON 로더는 최상위와 중첩 객체의 중복 키를 거부한다. 원문 조건이 마지막 값으로 덮여 사라지는 것을 방지한다.
+- 수치 검사에서 큰 정수를 float로 변환하지 않는다. 범위를 벗어난 좌표는 JSON 경로를 포함한 검증 오류로 반환한다.
+
+API·CLI 회귀 사례 10개 모두 수정 전 실패를 확인했고 수정 후 통과했다. CLI 실패에서도 입력 파일을 수정하지 않음을 확인했다. 신규와 기존 review_pack을 합친 관련 테스트는 **119 passed**다. 이 후속 수정에서는 전체 저장소 테스트를 재실행하지 않았으며, 위 전체 검사 21건 실패 기록은 이전 실행 결과로 유지한다. 실제 추출·import·Task 8·통합도 실행하지 않았다.
