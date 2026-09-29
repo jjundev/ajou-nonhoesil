@@ -1,0 +1,33 @@
+/* Progressive enhancement: original source remains readable without scripts. */
+.review-ready .choices { list-style:none; padding:0; }
+.review-ready .choices > li { margin:0 0 var(--s3); }
+.review-choice {
+  display:block; width:100%; min-height:44px; text-align:left; font:inherit;
+  color:var(--ink); background:var(--surface); border:1px solid var(--line);
+  border-radius:8px; padding:12px 16px; cursor:pointer; overflow-wrap:anywhere;
+}
+.review-choice:hover { border-color:var(--accent); }
+.review-choice:focus-visible, .review-reset:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+.review-choice[aria-expanded] { position:relative; padding-right:44px; }
+.review-choice[aria-expanded]::after { content:""; position:absolute; right:18px; top:20px; width:8px; height:8px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg); }
+.review-choice[aria-expanded="true"]::after { transform:rotate(225deg); top:24px; }
+.review-choice[data-result="correct"], .review-choice[data-result="intended"] { border-color:var(--accent); }
+.review-choice[data-selected="true"] { box-shadow:inset 0 0 0 1px var(--ink); }
+.review-choice-label { display:block; margin-top:6px; font-size:var(--fs-small); font-weight:700; color:var(--ink); }
+.review-choice-label[hidden], .review-diagnostic[hidden], .review-extra[hidden],
+.review-help[hidden], .review-reset[hidden], .review-diagnostics[hidden] { display:none; }
+.review-diagnostics { list-style:none; padding:0; margin:0; }
+.review-diagnostic { padding:12px 16px 8px; color:var(--ink-2); overflow-wrap:anywhere; }
+.review-status { margin:var(--s3) 0; font-weight:650; }
+.review-status:empty { display:none; }
+.review-help { color:var(--ink-2); font-size:var(--fs-small); }
+.review-reset { min-height:44px; margin:var(--s2) 0 var(--s4); }
+.review-choice-content { padding:var(--s2) 0; }
+@media print {
+  .review-reset, .review-status, .review-help, .review-choice-label { display:none !important; }
+  .review-diagnostic[hidden] { display:list-item !important; }
+  .review-diagnostics[hidden] { display:block !important; }
+  .review-choice::after { display:none; }
+  .review-extra[hidden] { display:block !important; }
+  .review-choice { border:0; box-shadow:none !important; padding:0; }
+}

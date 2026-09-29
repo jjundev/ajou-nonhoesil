@@ -34,17 +34,16 @@ def assemble(manifest,run,out,assets):
         return '<p class="sources">출처: '+(' · '.join(links) or '새로 구성한 설명·연습')+'</p>'
     note=[];review=[]
     for t in manifest['topics']:
-        note.append(f'<article id="{t["id"]}"><h2>{esc(t["title"])}</h2>'+read_fragment(run,t['fragment'],names)+refs(t)+'</article>')
+        note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+read_fragment(run,t['fragment'],names)+refs(t)+'</article>')
     for p in manifest['problems']:
         if p['status']!='included': continue
         head=f'<p class="eyebrow">{KINDS[p["kind"]]} · {ANSWERS[p["answer_status"]]} · {esc(p["scope"])}</p>'
         conflict=(f'<aside>제공 답안: {esc(p.get("given_answer"))} / 도출 답안: {esc(p.get("derived_answer"))}. 충돌·불확실성을 확인하세요.</aside>' if p['answer_status']!='verified' else '')
-        review.append(f'<article id="{p["id"]}"><h2>{esc(p.get("title",p["id"]))}</h2>'+head+refs(p)+conflict+read_fragment(run,p['fragment'],names)+'</article>')
+        review.append(f'<article class="card" id="{p["id"]}" data-source="{esc(KINDS[p["kind"]])}"><h3>{esc(p.get("title",p["id"]))}</h3>'+head+refs(p)+conflict+read_fragment(run,p['fragment'],names)+'</article>')
     if not review: review=['<p>수록할 문항이 없습니다. 출처와 문항목록에서 자료·보류 상태를 확인하세요.</p>']
     held=[p for p in manifest['problems'] if p['status']!='included']
     if held:
         review.append('<section><h2>중복·보류·다른 실험 문항</h2><ul>'+''.join(f'<li id="{p["id"]}">{esc(p["id"])} · {esc(p["status"])}: {esc(p["reason"])}</li>' for p in held)+'</ul></section>')
-    template=(assets/'page.html').read_text(encoding='utf-8')
     out.mkdir(parents=True)
     shutil.copytree(assets,out/'assets')
     if (run/'figures').exists():
@@ -58,9 +57,18 @@ def assemble(manifest,run,out,assets):
         rows=manifest['topics'] if kind=='note' else [p for p in manifest['problems'] if p['status']=='included']
         nav=f'<a href="{names["note_html"]}">실험 설명</a><a href="{names["review_html"]}">기출 풀이</a>'
         nav+=''.join(f'<a href="#{r["id"]}">{esc(r.get("title",r["id"]))}</a>' for r in rows)
-        text=template
-        for key,val in dict(TITLE=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이'),NAV=nav,CONTENT='\n'.join(body),STATUS=status).items():
+        text=(assets/f'{kind}-template.html').read_text(encoding='utf-8')
+        title=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이')
+        content='<section id="learning"><h2>'+('실험 이해' if kind=='note' else '문제와 풀이')+'</h2>'+'\n'.join(body)+'</section>'
+        values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,TOC=nav,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS='<script src="assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
+        for key,val in values.items():
             text=text.replace('{{'+key+'}}',val)
+        for url,local in {
+            'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css':'assets/vendor/pretendard/pretendard.css',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':'assets/vendor/katex/katex.min.css',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':'assets/vendor/katex/katex.min.js',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':'assets/vendor/katex/auto-render.min.js',
+        }.items(): text=text.replace(url,local)
         if '{{' in text: raise ValueError('Unreplaced placeholder')
         path=out/names[kind+'_html'];path.write_text(text,encoding='utf-8');paths[kind+'_html']=path
     audit=['# 출처와 문항목록','',f'판본 상태: {status}','']
