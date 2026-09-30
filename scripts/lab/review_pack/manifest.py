@@ -3,6 +3,7 @@ import json
 import re
 from pathlib import Path, PurePosixPath
 from scripts.lab import config
+from .bank_index import validate_bank_import_fields
 
 def safe_relative(value):
     return isinstance(value,str) and bool(value) and not PurePosixPath(value).is_absolute() and not any(x in value for x in ('\\',':')) and '..' not in PurePosixPath(value).parts
@@ -94,7 +95,7 @@ def validate_manifest(data):
         if checks.get(key) not in {'pass','fail','not_run','self_review'}: errors.append('invalid check: '+key)
     files=data.get('generated_files',[])
     if not isinstance(files,list) or any(not safe_relative(p) for p in files): errors.append('unsafe generated_files')
-    return errors
+    return errors + validate_bank_import_fields(data)
 
 def load_manifest(path):
     data=json.loads(Path(path).read_text(encoding='utf-8'))
