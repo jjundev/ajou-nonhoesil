@@ -7,6 +7,8 @@ import re
 from scripts.lab.boolexpr import variables,eval_boolean
 from .manifest import load_manifest,output_names
 from .html2md import Parser,check_md
+from .bank_provenance import check_bank_import
+from .bank_asset_checks import check_bank_problem_assets
 
 def boolean_equivalent(left,right):
     names=sorted(set(variables(left))|set(variables(right)))
@@ -18,6 +20,10 @@ def check_pack(folder):
     try:m=load_manifest(folder/'manifest.json')
     except (ValueError,OSError) as e:return [str(e)]
     names=output_names(m['experiment']);errors=[];trees={}
+    bank_errors=check_bank_import(folder,m)
+    errors.extend(bank_errors)
+    if not bank_errors:
+        errors.extend(check_bank_problem_assets(folder,m))
     for key in ('note_html','review_html'):
         path=folder/names[key]
         if not path.exists():errors.append('Missing page: '+str(path));continue

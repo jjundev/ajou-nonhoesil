@@ -39,7 +39,14 @@ def assemble(manifest,run,out,assets):
         if p['status']!='included': continue
         head=f'<p class="eyebrow">{KINDS[p["kind"]]} · {ANSWERS[p["answer_status"]]} · {esc(p["scope"])}</p>'
         conflict=(f'<aside>제공 답안: {esc(p.get("given_answer"))} / 도출 답안: {esc(p.get("derived_answer"))}. 충돌·불확실성을 확인하세요.</aside>' if p['answer_status']!='verified' else '')
-        review.append(f'<article class="card" id="{p["id"]}" data-source="{esc(KINDS[p["kind"]])}"><h3>{esc(p.get("title",p["id"]))}</h3>'+head+refs(p)+conflict+read_fragment(run,p['fragment'],names)+'</article>')
+        body=read_fragment(run,p['fragment'],names)
+        guide=''
+        if 'bank_question_id' in p:
+            guide=f'<p><a href="원문과_저작안내.md#{p["id"]}">원문·제공 답안 연결·보류 기록</a></p>'
+            if conflict:
+                body+='<details class="original"><summary>답안 대조 기록</summary>'+conflict+'</details>'
+                conflict=''
+        review.append(f'<article class="card" id="{p["id"]}" data-source="{esc(KINDS[p["kind"]])}"><h3>{esc(p.get("title",p["id"]))}</h3>'+head+refs(p)+guide+conflict+body+'</article>')
     if not review: review=['<p>수록할 문항이 없습니다. 출처와 문항목록에서 자료·보류 상태를 확인하세요.</p>']
     held=[p for p in manifest['problems'] if p['status']!='included']
     if held:
