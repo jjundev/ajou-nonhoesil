@@ -4,6 +4,7 @@ import re
 from pathlib import Path, PurePosixPath
 from scripts.lab import config
 from .bank_index import validate_bank_import_fields
+from .question_bank import _unique_json_object
 
 def safe_relative(value):
     return isinstance(value,str) and bool(value) and not PurePosixPath(value).is_absolute() and not any(x in value for x in ('\\',':')) and '..' not in PurePosixPath(value).parts
@@ -98,7 +99,7 @@ def validate_manifest(data):
     return errors + validate_bank_import_fields(data)
 
 def load_manifest(path):
-    data=json.loads(Path(path).read_text(encoding='utf-8'))
+    data=json.loads(Path(path).read_text(encoding='utf-8-sig'),object_pairs_hook=_unique_json_object)
     errors=validate_manifest(data)
     if errors: raise ValueError('\n'.join(errors))
     return data

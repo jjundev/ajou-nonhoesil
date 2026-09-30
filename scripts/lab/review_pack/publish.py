@@ -8,12 +8,15 @@ from .checks import check_pack
 from .manifest import load_manifest
 from .sources import file_sha256
 from scripts.lab import config
+from .bank_provenance import check_bank_import
 
 def publish(stage,destination,root):
     root=Path(root).resolve();stage=Path(stage).resolve();dest=Path(destination).resolve()
     errors=check_pack(stage)
     if errors:raise ValueError('\n'.join(errors))
     data=load_manifest(stage/'manifest.json')
+    errors=check_bank_import(stage,data,root=root)
+    if errors:raise ValueError('\n'.join(errors))
     expected=root/'복습노트'/config.experiment_folder_name(data['experiment'])
     if dest!=expected or stage==dest or stage.is_relative_to(dest) or dest.is_relative_to(stage):
         raise ValueError('Invalid/overlapping destination')

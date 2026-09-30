@@ -6,6 +6,8 @@ import re
 import shutil
 from urllib.parse import quote
 from .manifest import validate_manifest, output_names
+from .bank_import import copy_import_material
+from .bank_provenance import check_bank_import
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -22,6 +24,8 @@ def assemble(manifest,run,out,assets):
     if errors: raise ValueError('\n'.join(errors))
     run,out,assets=map(Path,(run,out,assets))
     if out.exists(): raise ValueError('Stage already exists; choose a new directory')
+    errors=check_bank_import(run,manifest)
+    if errors:raise ValueError('\n'.join(errors))
     names=output_names(manifest['experiment']); sources={s['id']:s for s in manifest['sources']}
     esc=lambda v:html.escape(str(v),quote=True)
     def refs(row):
@@ -52,6 +56,7 @@ def assemble(manifest,run,out,assets):
     if held:
         review.append('<section><h2>중복·보류·다른 실험 문항</h2><ul>'+''.join(f'<li id="{p["id"]}">{esc(p["id"])} · {esc(p["status"])}: {esc(p["reason"])}</li>' for p in held)+'</ul></section>')
     out.mkdir(parents=True)
+    copy_import_material(run,out,manifest)
     shutil.copytree(assets,out/'assets')
     if (run/'figures').exists():
         for p in (run/'figures').rglob('*'):

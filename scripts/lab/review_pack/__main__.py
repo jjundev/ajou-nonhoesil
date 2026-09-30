@@ -10,6 +10,7 @@ from .checks import check_pack
 from .publish import publish
 from scripts.lab import config
 from .bank_import import import_bank
+from .bank_provenance import check_bank_import
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
@@ -35,6 +36,8 @@ def main(argv=None):
                               'status':'authoring_pending'},ensure_ascii=False))
         elif args.command=='build':
             data=load_manifest(args.run/'manifest.json')
+            errors=check_bank_import(args.run,data,root=args.root)
+            if errors:raise ValueError('\n'.join(errors))
             assets=args.root/'.claude/skills/logic-lab-review-pack/assets'
             paths=assemble(data,args.run,args.stage,assets)
             convert_pack(paths['note_html'],paths['review_html'])
