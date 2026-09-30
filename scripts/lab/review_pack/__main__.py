@@ -1,4 +1,4 @@
-"""python -m scripts.lab.review_pack: sources, build, check, publish."""
+"""python -m scripts.lab.review_pack: sources, import-bank, build, check, publish."""
 import argparse
 import json
 from pathlib import Path
@@ -9,21 +9,30 @@ from .html2md import convert_pack
 from .checks import check_pack
 from .publish import publish
 from scripts.lab import config
+from .bank_import import import_bank
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     sub=parser.add_subparsers(dest='command',required=True)
-    for cmd in ('sources','build','check','publish'):
+    for cmd in ('sources','import-bank','build','check','publish'):
         p=sub.add_parser(cmd)
         if cmd!='check':p.add_argument('--root',type=Path,required=True)
         if cmd in {'sources','publish'}:p.add_argument('--experiment',type=int,required=True)
         if cmd in {'build','publish'}:p.add_argument('--stage',type=Path,required=True)
         if cmd=='build':p.add_argument('--run',type=Path,required=True)
+        if cmd=='import-bank':
+            p.add_argument('--bank',type=Path,required=True)
+            p.add_argument('--run',type=Path,required=True)
         if cmd=='check':p.add_argument('--folder',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
         if args.command=='sources':
             print(json.dumps(inventory(args.root,args.experiment),ensure_ascii=False,indent=2))
+        elif args.command=='import-bank':
+            run=import_bank(args.root,args.bank,args.run)
+            imported=load_manifest(run/'manifest.json')
+            print(json.dumps({'run':str(run),'items':len(imported['problems']),
+                              'status':'authoring_pending'},ensure_ascii=False))
         elif args.command=='build':
             data=load_manifest(args.run/'manifest.json')
             assets=args.root/'.claude/skills/logic-lab-review-pack/assets'
