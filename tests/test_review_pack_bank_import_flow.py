@@ -84,3 +84,21 @@ def test_duplicate_manifest_keys_rejected(tmp_path):
     p.write_text(text.replace('"bank_id":','"bank_id":"wrong","bank_id":',1),encoding='utf-8')
     with pytest.raises(ValueError,match='Duplicate JSON key'):
         load_manifest(p)
+
+@pytest.mark.parametrize('body',[
+    '<div class="problem"><img src="figures/safe.png" srcset="figures/renamed.png 1x"></div>',
+    '<div class="problem"><p>문제</p></div><style>.problem{background-image:url(figures/renamed.png)}</style>',
+    '<div class="problem"><p>문제</p></div><details class="original"><summary><img src="figures/renamed.png"></summary></details>',
+    '<div class="problem"><p>문제</p></div><details class="original" open><summary>원문</summary><img src="figures/renamed.png"></details>',
+])
+def test_review_findings_fail_end_to_end_build(tmp_path,body):
+    path,bank=create_bank(tmp_path)
+    add_asset(path,bank,'exposed','mixed','present',b'answer image');save_bank(path,bank)
+    run=tmp_path/'run';import_bank(tmp_path,path,run);author_fixture(tmp_path,run)
+    (run/'figures/renamed.png').write_bytes(b'answer image')
+    (run/'figures/safe.png').write_bytes(b'new teaching image')
+    (run/'problems/q1.html').write_text(body+
+        '<a href="{{NOTE_HREF}}#t-example">개념</a>'
+        '<details class="hint"><summary>힌트</summary>hint</details>'
+        '<details class="solution"><summary>풀이</summary>answer</details>',encoding='utf-8')
+    assert main(['build','--root',str(tmp_path),'--run',str(run),'--stage',str(tmp_path/'stage')])==1

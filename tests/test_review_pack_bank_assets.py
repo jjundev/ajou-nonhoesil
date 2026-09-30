@@ -78,3 +78,24 @@ def test_new_teaching_image_allowed(tmp_path):
     run,m=asset_pack(tmp_path);(run/'figures/new.svg').write_text('<svg/>')
     write_card(run,'<div class="problem"><img src="figures/new.svg"></div>')
     assert check_bank_problem_assets(run,m)==[]
+
+@pytest.mark.parametrize('body',[
+    '<div class="problem"><img src="figures/safe.png" srcset="figures/renamed.png 1x"></div>',
+    '<div class="problem"><picture><source srcset="figures/renamed.png 2x"><img src="figures/safe.png"></picture></div>',
+    '<div class="problem"><p>문제</p></div><style>.problem{background-image:url(figures/renamed.png)}</style>',
+    '<div class="problem"><p>문제</p></div><details class="original"><summary><img src="figures/renamed.png"></summary></details>',
+    '<div class="problem"><p>문제</p></div><details class="original" open><summary>원문</summary><img src="figures/renamed.png"></details>',
+    '<div class="problem"><p>문제</p></div><details class="solution" open><summary>풀이</summary><img src="figures/renamed.png"></details>',
+])
+def test_review_exposure_reproductions(tmp_path,body):
+    run,m=asset_pack(tmp_path)
+    (run/'figures/safe.png').write_bytes(b'new teaching image')
+    write_card(run,body)
+    assert check_bank_problem_assets(run,m)
+
+def test_style_outside_card_is_not_a_bypass(tmp_path):
+    run,m=asset_pack(tmp_path)
+    write_card(run,'<div class="problem"><p>문제</p></div>')
+    p=run/'실험04_기출풀이.html'
+    p.write_text(p.read_text(encoding='utf-8')+'<style>.problem{background:url(figures/renamed.png)}</style>',encoding='utf-8')
+    assert check_bank_problem_assets(run,m)
