@@ -1,6 +1,6 @@
 # 독립 기출 문제은행 v1
 
-문제은행은 원자료의 전사와 증거를 보존한다. 학습팩 `manifest.json`은 설명·개념 링크·독립 풀이·HTML 조각을 담는 별도 계약이다. 현재 문제은행 전용 import는 없으므로 이 JSON을 기존 build에 넣지 않는다.
+문제은행은 원자료의 전사와 증거를 보존한다. 학습팩 `manifest.json`은 설명·개념 링크·독립 풀이·HTML 조각을 담는 별도 계약이다. import-bank로 새 저작 RUN을 만든 뒤 설명·독립 풀이를 저작하고 build한다.
 
 형식 정본은 [question-bank.schema.json](question-bank.schema.json), 의미 규칙은 [설계](../../../../docs/superpowers/specs/2026-09-29-question-bank-extraction-design.md)와 [검증기](../../../../scripts/lab/review_pack/question_bank.py)다. [최소 fixture](../../../../tests/fixtures/review_pack/question_bank/minimal.json)는 문항이 없는 형식 예제이며 실제 기출이 아니다.
 
@@ -113,6 +113,21 @@ unresolved 항목은 `{target_id,reason}`이며 실제 source/asset/occurrence/q
 
 완료 상태에는 sources가 필요하다. complete source는 draft에서도 모든 단위 감사가 필요하다. 판독 보류는 정직하게 남길 수 있으나 오류가 있는 JSON이나 draft를 최종 은행으로 발행하지 않는다.
 
-## 후속 import 경계
+## 학습팩 import
 
-후속 작업은 bank_id/schema_version/JSON SHA256과 기존 문항 ID·원문 위치·모든 제공 답안을 저작 입력에 보존한다. 예상문제 선별 → 개념 매핑 → 독립 풀이 → HTML 조각 작성 후 학습팩 manifest를 만든다. 문제은행 checks를 content/independent/browser=pass로 복사하지 않는다. 이 문서는 import 구현을 제공하지 않는다.
+```powershell
+python -m scripts.lab.review_pack import-bank --root . --bank 문제은행/실험04/question-bank.json --run tmp/review-pack/실험04-import-01
+```
+
+complete/complete_with_holds만 가져오며 기존 RUN은 덮어쓰지 않는다. draft·해시 불일치·입력과 겹치는 출력 경로는 거절한다.
+RUN에는 바이트 동일 evidence/question-bank.json, 선언 자산 전체, authoring-index.json, 원문과_저작안내.md, 유효한 초기 manifest와 빈 저작 디렉터리를 만든다.
+초기 checks는 모두 not_run이며 모든 문제는 held/독립 풀이 없음으로 시작한다. confirmed는 답안 연결 상태 그대로 보존한다.
+
+authoring-index의 question별 원문 등장·소문항·답안·관계·보류·허용 자산은 고정이다. authoring_status(pending/reading_hold/ready/not_selected/held)와 selection_reason만 수정한다. ready는 검증 완료가 아니다.
+모든 고유 문항을 manifest에 남기고 미수록·보류 이유를 기록한다. 새로운 practice는 별도 ID로 추가한다.
+부분 판독 문항은 은행에서 해결 후 다시 import하며, 제공 답안에 대한 의문만 있는 readable 문항은 독립 풀이와 불일치를 공개하며 저작할 수 있다.
+
+build는 로컬 증거와 원래 은행·원자료를 대조한다. check는 현재 폴더의 snapshot·asset·인덱스·문항 연결을 검사한다. publish는 현재 저장소의 원래 입력도 다시 검사한다.
+원래 은행을 바꾼 경우 metadata.sha256만 수정해 과거 저작을 재사용하지 말고 새 import 후 변경된 문항을 재검토한다.
+안전한 원문 그림은 role=problem/exposure=none이다. present/unknown 이미지의 문제 화면 사용은 파일명을 바꿔도 해시 검사로 거절된다. 원문·답안 증거는 details.original/solution에서 확인한다.
+새 교육용 그림은 원문 증거가 아니며 후속 내용 검토 대상이다. 실제 HTML/MD 저작과 브라우저 검증은 import 다음 단계다.

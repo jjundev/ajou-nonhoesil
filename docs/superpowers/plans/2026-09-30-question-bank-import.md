@@ -84,7 +84,7 @@ python -m pytest -n0 @reviewPackTests -q
 - authoring_status enum은 pending/reading_hold/ready/not_selected/held로 정한다. ready는 독립 검토 완료를 뜻하지 않는다. not_selected/held는 비어 있지 않은 selection_reason을 요구한다.
 - bank_import는 bank_id/schema_version/source_path/sha256/snapshot_path/index_path 6개 필드만 허용한다. 경로는 import 생성값 evidence/question-bank.json, authoring-index.json을 사용한다.
 
-- [ ] **Step 1: 파일이 있는 최소 은행 fixture를 작성한다.** 테스트 전용 코드이며 생산 모듈은 아직 만들지 않는다.
+- [x] **Step 1: 파일이 있는 최소 은행 fixture를 작성한다.** 테스트 전용 코드이며 생산 모듈은 아직 만들지 않는다.
 
 ```python
 # tests/_bank_import_fixture.py
@@ -144,7 +144,7 @@ def mark_partial(bank: dict):
 
 현재 test module의 populated가 fixture 제공 함수다. import 방향은 테스트→테스트만이며 생산 코드에서 import하지 않는다. 이후 기존 함수 변경이 필요해지면 테스트 공용 helper로 함께 옮긴다.
 
-- [ ] **Step 2: 상태 승격·연결 누락을 잡는 테스트를 먼저 작성한다.**
+- [x] **Step 2: 상태 승격·연결 누락을 잡는 테스트를 먼저 작성한다.**
 
 ```python
 from scripts.lab.review_pack.bank_index import build_authoring_index, initial_manifest
@@ -173,8 +173,8 @@ def test_partial_stays_reading_hold(tmp_path):
     assert row['unresolved'] == [dict(target_id='o1', reason='blurred')]
 ```
 
-- [ ] **Step 3: RED를 확인한다.** Run `python -m pytest -n0 tests/test_review_pack_bank_index.py -q`. Expected: 새 bank_index import 부재. 문법·fixture 실패이면 먼저 고친다.
-- [ ] **Step 4: 결정적 파생과 형식 검사를 구현한다.**
+- [x] **Step 3: RED를 확인한다.** Run `python -m pytest -n0 tests/test_review_pack_bank_index.py -q`. Expected: 새 bank_index import 부재. 문법·fixture 실패이면 먼저 고친다.
+- [x] **Step 4: 결정적 파생과 형식 검사를 구현한다.**
 
 ```python
 def question_sources(bank, question):
@@ -194,7 +194,7 @@ initial_manifest는 spec 초기값을 사용한다. problems의 id=bank_question
 
 validate_bank_import_fields는 bank_import 객체의 정확한 키·문자열 bank ID·정수 버전 1·SHA256·엄격한 경로를 검사한다. bank_question_id가 있는데 bank_import가 없으면 오류다. 은행 수입 행은 id와 bank_question_id가 같아야 한다. legacy manifest는 이 필드가 없으면 빈 오류 목록이다. bool/list/dict를 enum/hash 검사에 넣어도 예외가 아니라 finding을 반환한다. 기존 validate_manifest 끝에서 이 함수의 오류를 합친다.
 
-- [ ] **Step 5: 추가 행동 테스트를 작성·실행한다.**
+- [x] **Step 5: 추가 행동 테스트를 작성·실행한다.**
 
 ```python
 def test_reordering_preserves_question_id(tmp_path):
@@ -239,7 +239,7 @@ def test_subpart_candidate_and_source_hold_are_preserved(tmp_path):
 ```
 
 잘못된 bank_import 경로 `../bank.json`, 배열 schema_version, 알 수 없는 필드, 다른 bank_question_id도 오류로 검사한다. Run `python -m pytest -n0 tests/test_review_pack_bank_index.py tests/test_review_pack_manifest.py -q`. Expected: PASS.
-- [ ] **Step 6: 커밋한다.** `git add scripts/lab/review_pack/bank_index.py scripts/lab/review_pack/manifest.py tests/_bank_import_fixture.py tests/test_review_pack_bank_index.py`; `git commit -m "feat: define question bank authoring bridge"`.
+- [x] **Step 6: 커밋한다.** `git add scripts/lab/review_pack/bank_index.py scripts/lab/review_pack/manifest.py tests/_bank_import_fixture.py tests/test_review_pack_bank_index.py`; `git commit -m "feat: define question bank authoring bridge"`.
 
 ## Task 2: 검증 후 증거가 보존되는 import 명령
 
@@ -250,7 +250,7 @@ def test_subpart_candidate_and_source_hold_are_preserved(tmp_path):
 - Produces: `import_bank(root: Path, bank_path: Path, run: Path) -> Path`; `copy_import_material(run: Path, out: Path, manifest: dict) -> None`.
 - CLI import-bank는 --root/--bank/--run 필수, --experiment 불필요(은행 값 사용). 성공은 새 run 경로와 import된 항목 수, 실패는 기존 CLI의 FAIL과 exit 1.
 
-- [ ] **Step 1: 새 run 생성과 원문 보존 테스트를 작성한다.**
+- [x] **Step 1: 새 run 생성과 원문 보존 테스트를 작성한다.**
 
 ```python
 import json
@@ -282,8 +282,8 @@ def test_invalid_asset_does_not_create_run(tmp_path):
     assert not run.exists()
 ```
 
-- [ ] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_import.py -q`. Expected: bank_import import 부재.
-- [ ] **Step 3: 읽기 전용 사전 검사와 배타적 출력 생성을 구현한다.**
+- [x] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_import.py -q`. Expected: bank_import import 부재.
+- [x] **Step 3: 읽기 전용 사전 검사와 배타적 출력 생성을 구현한다.**
 
 ```python
 bank = load_question_bank(bank_path)
@@ -304,7 +304,7 @@ snapshot은 raw를 write_bytes한다. 선언된 asset만 _evidence_path로 찾�
 
 copy_import_material은 manifest.bank_import가 없으면 아무것도 하지 않는다. 있으면 snapshot·선언 자산·index·안내만 out에 복사한다. 내부 검사 실패 또는 대상 파일 충돌은 ValueError이며 임의 다른 run 파일을 복사하지 않는다.
 
-- [ ] **Step 4: CLI를 연결하고 draft·경로·overwrite를 검사한다.**
+- [x] **Step 4: CLI를 연결하고 draft·경로·overwrite를 검사한다.**
 
 ```python
 def test_existing_run_is_preserved(tmp_path):
@@ -332,7 +332,7 @@ def test_nfd_filename_survives(tmp_path):
 ```
 
 추가 테스트: 외부 bank 경로, run=bank_dir, 잘못된 은행 버전·실험 번호, symlink/junction, 출력 생성 도중 OSError. 링크 권한이 없는 Windows는 테스트를 skip하고 가능한 플랫폼에서 실행한다. CLI 테스트는 main을 실제 argument 배열로 호출해 exit code와 파일 효과를 확인한다. Run `python -m pytest -n0 tests/test_review_pack_bank_import.py tests/test_review_pack_question_bank_cli.py -q`. Expected: PASS.
-- [ ] **Step 5: 커밋한다.** `git add scripts/lab/review_pack/bank_import.py scripts/lab/review_pack/__main__.py tests/test_review_pack_bank_import.py`; `git commit -m "feat: import question banks without changing evidence"`.
+- [x] **Step 5: 커밋한다.** `git add scripts/lab/review_pack/bank_import.py scripts/lab/review_pack/__main__.py tests/test_review_pack_bank_import.py`; `git commit -m "feat: import question banks without changing evidence"`.
 
 ## Task 3: 로컬 snapshot·인덱스·현재 은행의 검증
 
@@ -343,7 +343,7 @@ def test_nfd_filename_survives(tmp_path):
 - Produces: `check_bank_import(folder: Path, manifest: dict, *, root: Path | None = None) -> list[str]`.
 - root=None은 로컬 snapshot/assets/index/manifest 연결만 확인한다. root가 있으면 원래 bank_path bytes와 원자료·원래 자산도 확인한다. legacy manifest는 [].
 
-- [ ] **Step 1: 인덱스 변조·현재 은행 변경 테스트를 작성한다.**
+- [x] **Step 1: 인덱스 변조·현재 은행 변경 테스트를 작성한다.**
 
 ```python
 import json
@@ -372,8 +372,8 @@ def test_fixed_index_data_cannot_be_rewritten(tmp_path):
     assert check_bank_import(run,manifest)
 ```
 
-- [ ] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_provenance.py -q`. Expected: bank_provenance import 부재.
-- [ ] **Step 3: 추출 정보의 일치 검사를 구현한다.**
+- [x] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_provenance.py -q`. Expected: bank_provenance import 부재.
+- [x] **Step 3: 추출 정보의 일치 검사를 구현한다.**
 
 ```python
 snapshot = _evidence_path(folder, manifest['bank_import']['snapshot_path'])
@@ -391,7 +391,7 @@ manifest에서 bank_question_id를 가진 행의 집합은 bank questions 집합
 
 은행 representative reading이 partial/unreadable이면 included를 거절한다. 답안 관련 hold만 있는 readable 문제는 disputed/unresolved로 저작 가능하다. root가 있으면 original JSON bytes 해시와 check_question_bank_files도 재확인한다. 오류 문자열에는 문제 ID 또는 JSON 경로와 source/asset ID를 넣는다.
 
-- [ ] **Step 4: 누락·관계·보류·가변 필드 테스트를 추가한다.**
+- [x] **Step 4: 누락·관계·보류·가변 필드 테스트를 추가한다.**
 
 ```python
 def test_question_cannot_disappear(tmp_path):
@@ -416,7 +416,7 @@ def test_selection_reason_is_editable(tmp_path):
 ```
 
 추가 테스트: snapshot 파일 bytes 변경, snapshot 자산 누락/해시 변경, 원자료 해시 변경, bank_question_id 탈락, ID/분류/소문항 답안 대상 변조, 새로운 practice 문항 허용, 배열 버전·알 수 없는 metadata key가 오류로 반환됨. Run `python -m pytest -n0 tests/test_review_pack_bank_provenance.py -q`. Expected: PASS.
-- [ ] **Step 5: 커밋한다.** `git add scripts/lab/review_pack/bank_provenance.py tests/test_review_pack_bank_provenance.py`; `git commit -m "feat: validate imported bank provenance"`.
+- [x] **Step 5: 커밋한다.** `git add scripts/lab/review_pack/bank_provenance.py tests/test_review_pack_bank_provenance.py`; `git commit -m "feat: validate imported bank provenance"`.
 
 ## Task 4: 답 노출 원문이 문제 화면에 들어가는 것 차단
 
@@ -427,7 +427,7 @@ def test_selection_reason_is_editable(tmp_path):
 - Produces: `check_bank_problem_assets(folder: Path, manifest: dict) -> list[str]`. root 없이 작동한다. 은행이 없는 legacy면 [].
 - 이미지는 경로와 SHA256으로 은행 자산에 대응시킨다. 같은 bytes에 안전·비안전 선언이 함께 있으면 보수적으로 문제 사용을 거절한다.
 
-- [ ] **Step 1: 합성 카드로 자산 재명명 우회 테스트를 작성한다.**
+- [x] **Step 1: 합성 카드로 자산 재명명 우회 테스트를 작성한다.**
 
 ```python
 import json, shutil
@@ -460,8 +460,8 @@ def test_unknown_exposure_is_not_safe(tmp_path):
     assert check_bank_problem_assets(run,manifest)
 ```
 
-- [ ] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_assets.py -q`. Expected: bank_asset_checks import 부재.
-- [ ] **Step 3: 카드의 문제 영역과 답안 증거 영역을 검사한다.**
+- [x] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_assets.py -q`. Expected: bank_asset_checks import 부재.
+- [x] **Step 3: 카드의 문제 영역과 답안 증거 영역을 검사한다.**
 
 ```python
 unsafe_hashes = {
@@ -479,7 +479,7 @@ unsafe_hashes = {
 
 render는 bank 수입 행의 scalar provided/derived answer 안내를 문제 앞에 노출하지 않는다. 기존 legacy conflict 표시 방식은 유지하고 imported 문제에는 안내를 details.original에 두며 “원문과_저작안내.md” 링크를 제공한다. 노트·기출 HTML 목차의 템플릿 CSS·스크립트 파일은 수정하지 않는다.
 
-- [ ] **Step 4: 허용 위치·우회 마크업과 기존 검사 연결을 검증한다.**
+- [x] **Step 4: 허용 위치·우회 마크업과 기존 검사 연결을 검증한다.**
 
 ```python
 def test_exposed_evidence_allowed_only_in_solution(tmp_path):
@@ -498,7 +498,7 @@ def test_safe_image_allowed(tmp_path):
 fixture는 원문 이미지를 question figure block에 연결하므로 authoring-index의 허용 목록과 대응한다. 이미지 percent-encoded 한글 경로, inline SVG image, inline CSS 배경, div.problem 누락, 안전/비안전의 동일 hash, unknown 이미지 outside problem을 각각 재현한다.
 
 check_pack는 manifest 로딩 다음 check_bank_import를 호출하고, 증거 검증이 통과한 경우 bank asset 검사를 수행한다. 잘못된 증거에 대한 traceback 대신 finding을 반환한다. Run `python -m pytest -n0 tests/test_review_pack_bank_assets.py tests/test_review_pack_checks.py tests/test_review_pack_render.py -q`. Expected: PASS.
-- [ ] **Step 5: 커밋한다.** Task 4 파일만 stage하고 `git commit -m "feat: keep exposed source answers out of questions"`.
+- [x] **Step 5: 커밋한다.** Task 4 파일만 stage하고 `git commit -m "feat: keep exposed source answers out of questions"`.
 
 ## Task 5: build/check/publish에서 연결 계약 적용
 
@@ -509,7 +509,7 @@ check_pack는 manifest 로딩 다음 check_bank_import를 호출하고, 증거 �
 - Produces: 기존 build/check/publish CLI 계약 유지. bank_import 없는 호출은 기존 행동 그대로.
 - build는 out 생성 전 current evidence 검사; render는 로컬 import 증거를 stage에 복사; publish는 filesystem 변경 전 current evidence 검사.
 
-- [ ] **Step 1: 가짜 학습 fixture로 end-to-end 테스트를 작성한다. 실제 실험4 내용을 저작하지 않는다.**
+- [x] **Step 1: 가짜 학습 fixture로 end-to-end 테스트를 작성한다. 실제 실험4 내용을 저작하지 않는다.**
 
 ```python
 # tests/test_review_pack_bank_import_flow.py
@@ -554,8 +554,8 @@ def test_cli_preserves_evidence_through_build_and_check(tmp_path):
     assert 'authoring-index.json' in m['generated_files']
 ```
 
-- [ ] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_import_flow.py -q`. Expected: build가 증거를 복사하지 않거나 imported 안내 링크 누락으로 실패. import-bank의 parser 통과 여부는 Task 2에서 이미 검증되어 있어야 한다.
-- [ ] **Step 3: 기존 흐름에 최소 호출을 연결한다.**
+- [x] **Step 2: RED를 확인한다.** `python -m pytest -n0 tests/test_review_pack_bank_import_flow.py -q`. Expected: build가 증거를 복사하지 않거나 imported 안내 링크 누락으로 실패. import-bank의 parser 통과 여부는 Task 2에서 이미 검증되어 있어야 한다.
+- [x] **Step 3: 기존 흐름에 최소 호출을 연결한다.**
 
 ```python
 # __main__.py, build에서 assemble 전에
@@ -576,7 +576,7 @@ copy 작업은 한 곳(render)에만 둔다. build는 generated_files를 증거 
 
 manifest 로더는 imported provenance가 포함될 때 중복 JSON 키를 거절하도록 기존 question_bank의 strict JSON object 로더 패턴을 재사용한다. 일반 manifest도 중복 키 손실을 방지하되 기존 정상 fixture는 바꾸지 않는다.
 
-- [ ] **Step 4: 현재 입력 변경·발행 gate·legacy 회귀를 검사한다.**
+- [x] **Step 4: 현재 입력 변경·발행 gate·legacy 회귀를 검사한다.**
 
 ```python
 def test_changed_bank_blocks_build_without_creating_stage(tmp_path):
@@ -592,7 +592,7 @@ def test_changed_bank_blocks_build_without_creating_stage(tmp_path):
 별도 test에서는 정상 build 후 은행·원자료·원래 자산을 각각 바꾸고 publish가 기존 destination/memo를 보존하는지 검사한다. unchanged origin에서는 기존 검증 gate가 not_run으로 발행을 거절한다. 테스트 fixture만 source_visual/content/browser를 수동 pass/self_review로 설정해 backup/사용자 memo/증거 파일 유지·rollback을 확인한다. 이 fixture 상태를 실제 은행 검증 기록으로 사용하지 않는다.
 
 Run `python -m pytest -n0 tests/test_review_pack_bank_import_flow.py tests/test_review_pack_publish.py tests/test_review_pack_manifest.py tests/test_review_pack_md.py -q`. Expected: PASS.
-- [ ] **Step 5: 커밋한다.** Task 5 수정 코드·테스트만 stage하고 `git commit -m "feat: preserve bank provenance through pack generation"`.
+- [x] **Step 5: 커밋한다.** Task 5 수정 코드·테스트만 stage하고 `git commit -m "feat: preserve bank provenance through pack generation"`.
 
 ## Task 6: 스킬 연결·실제 은행 import 수용 검증
 
@@ -600,7 +600,7 @@ Run `python -m pytest -n0 tests/test_review_pack_bank_import_flow.py tests/test_
 
 **Interfaces:** 기존 스킬의 자료·문항 저작 전에 완성 은행 존재 확인→import-bank. 이후 기존 설명·독립 풀이 저작 절차를 사용하며 추출을 다시 수행하지 않는다.
 
-- [ ] **Step 1: 스킬과 references를 갱신한다.** 다음 명령과 의미를 문서에 넣는다.
+- [x] **Step 1: 스킬과 references를 갱신한다.** 다음 명령과 의미를 문서에 넣는다.
 
 ```powershell
 python -m scripts.lab.review_pack.question_bank_cli check --root . --bank 문제은행/실험04/question-bank.json
@@ -609,7 +609,7 @@ python -m scripts.lab.review_pack import-bank --root . --bank 문제은행/실�
 
 새 bank가 이미 있으면 raw 퀴즈 재추출 대신 은행을 입력으로 사용한다. run manifest의 topics·fragment·독립 풀이를 저작하고 bank snapshot/index 고정 필드를 편집하지 않는다. 부분 판독 문제는 원래 은행에서 해결한 뒤 새 import를 한다. 예상문제 선별 이유는 index/manifest에 남긴다. question-bank.md의 “import 없음” 설명은 실제 제공 기능과 명령으로 교체한다. format/verification에 optional 계약·current input 대조·답 노출 이미지 규칙을 적는다.
 
-- [ ] **Step 2: 실제 은행을 읽기 전용으로 검증하고 새 tmp run으로 import한다.** 위 명령을 실제로 실행하며 run이 이미 있으면 다른 고유 이름을 사용한다. 다음 수용 검사를 실행한다.
+- [x] **Step 2: 실제 은행을 읽기 전용으로 검증하고 새 tmp run으로 import한다.** 위 명령을 실제로 실행하며 run이 이미 있으면 다른 고유 이름을 사용한다. 다음 수용 검사를 실행한다.
 
 ```python
 from pathlib import Path
@@ -634,8 +634,8 @@ print('Import acceptance passed; no learning pack authored or published')
 
 source/asset bytes의 before/after 해시도 전체 11/34개 대조한다. 통계는 검증 기록에만 쓰며 코드에는 하드코딩하지 않는다. 실제 은행의 confirmed 30/candidate 8, 판독 보류 q-empty-six, 답 노출 자산의 안전 목록 제외를 확인한다. 실제 학습팩 HTML/MD·독립 풀이·browser pass를 만들지 않는다.
 
-- [ ] **Step 3: 검증 기록을 작성한다.** 시작/종료 커밋, 실제 명령·종료 코드, 대상 run, 보존된 항목 수, 기존 실패, 검사 범위·미수행(실제 내용·브라우저·Task 8·통합)을 기록한다.
-- [ ] **Step 4: 관련 회귀와 전체 저장소 검사를 수행한다.**
+- [x] **Step 3: 검증 기록을 작성한다.** 시작/종료 커밋, 실제 명령·종료 코드, 대상 run, 보존된 항목 수, 기존 실패, 검사 범위·미수행(실제 내용·브라우저·Task 8·통합)을 기록한다.
+- [x] **Step 4: 관련 회귀와 전체 저장소 검사를 수행한다.**
 
 ```powershell
 $reviewPackTests = @(Get-ChildItem tests -Filter 'test_review_pack*.py' | ForEach-Object FullName)
@@ -646,8 +646,8 @@ git diff --check
 
 전체 검사는 이전 알려진 실패가 있을 수 있으므로 실제 이름과 결과를 기록한다. 신규 변경과 연관된 실패는 수정하고 관련 검사를 다시 수행한다. 같은 오류를 반복해 보기 위해 전체 검사를 재실행하지 않는다. 단독 실행으로만 확인 가능한 경합은 해당 테스트 하나를 확인하고 전체 통과로 표현하지 않는다.
 
-- [ ] **Step 5: Native 최종 독립 리뷰를 수행한다.** requesting-code-review/verification-before-completion을 사용한다. 리뷰어에게 spec/plan·이번 import 변경 범위·Review Focus·실제 수용 기록·ledger ruling만 전달하며 실험4의 답안 도출을 요청하지 않는다. Major/Critical은 재현 테스트 RED→GREEN 후 수정한다. 템플릿 bytes와 실제 은행·원문이 변경되지 않았는지 확인한다.
-- [ ] **Step 6: 커밋하고 사용자에게 결과를 전달한다.** 스킬 문서와 수용 기록만 stage 후 `git commit -m "docs: document question bank import workflow"`. Native 리뷰 수정이 있으면 별도 fix commit. 최종 보고는 import 명령·검사 결과·남은 전체 실패·다음 저작 단계만 포함한다. 실제 학습팩 생성/Task 8/merge/push를 자동 시작하지 않는다.
+- [x] **Step 5: Native 최종 독립 리뷰를 수행한다.** requesting-code-review/verification-before-completion을 사용한다. 리뷰어에게 spec/plan·이번 import 변경 범위·Review Focus·실제 수용 기록·ledger ruling만 전달하며 실험4의 답안 도출을 요청하지 않는다. Major/Critical은 재현 테스트 RED→GREEN 후 수정한다. 템플릿 bytes와 실제 은행·원문이 변경되지 않았는지 확인한다.
+- [x] **Step 6: 커밋하고 사용자에게 결과를 전달한다.** 스킬 문서와 수용 기록만 stage 후 `git commit -m "docs: document question bank import workflow"`. Native 리뷰 수정이 있으면 별도 fix commit. 최종 보고는 import 명령·검사 결과·남은 전체 실패·다음 저작 단계만 포함한다. 실제 학습팩 생성/Task 8/merge/push를 자동 시작하지 않는다.
 
 ## 계획 자체 검토
 
@@ -656,3 +656,7 @@ git diff --check
 - 모든 public 함수의 정의·소비 위치가 Interfaces에 연결되어 있다. CLI signature는 import-bank에 --root/--bank/--run만 추가한다.
 - 구현 전 spec과 계획을 모두 읽고, 실행 중 필요한 수정은 ledger에 근거·영향을 남긴다.
 - 계획 문서의 코드는 앞으로 작성·실행할 단계이며 현재 구현·통과 결과가 아니다.
+
+## 실행 완료 (2026-09-30)
+
+Native로 6개 작업 완료. 관련 207 passed, 전체 20 failed/2276 passed/4 skipped. 기존 실패는 검증 기록 참조. 실제 은행 import만 수행했고 학습팩 저작·발행·Task 8·통합은 하지 않았다. 독립 리뷰 2건은 재현 테스트로 수정했다.

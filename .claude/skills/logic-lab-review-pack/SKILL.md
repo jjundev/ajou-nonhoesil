@@ -22,11 +22,22 @@ REPO는 scripts/lab/config.py가 있는 저장소 루트. SKILL은 이 폴더. R
 
 ## 2. 자료 확인
 
-### 별도 세션에서 추출한 문제은행
+### 완료된 문제은행을 저작에 연결
 
 기출 원문 추출은 [문제은행 계약](references/question-bank.md)과
 [새 추출 세션 절차](references/question-bank-extraction-session.md)를 따른다.
-문제은행 JSON은 manifest.json과 다른 계약이다. 현재 전용 import는 미구현이다.
+문제은행 JSON은 manifest.json과 다른 계약이다. 완료된 은행이 있으면 재추출하지 않고 새 RUN으로 가져온다.
+실험 번호에 맞는 문제은행/실험NN/question-bank.json이 complete 또는 complete_with_holds인지 먼저 검사한다.
+
+```powershell
+python -m scripts.lab.review_pack.question_bank_cli check --root . --bank 문제은행/실험04/question-bank.json
+python -m scripts.lab.review_pack import-bank --root . --bank 문제은행/실험04/question-bank.json --run RUN
+```
+
+import는 원문 증거·인덱스·모든 문항이 held인 manifest만 만든다. 독립 풀이와 설명은 이어서 저작한다.
+RUN/evidence/question-bank.json과 authoring-index의 고정 필드는 수정하지 않는다.
+기출·미확인·예상·부분 판독·후보 답안 연결을 유지하고, 예상문제 선별 이유는 index와 manifest에 남긴다.
+은행이 없으면 아래 원자료 탐색 절차를 사용한다. 초안 은행(draft)을 완료 은행으로 가장하지 않는다.
 문제은행 추출 요청에서는 여기의 학습팩 build/publish 절을 실행하지 않는다.
 기존 임시 분석을 검증된 문제은행으로 사용하지 않는다.
 
@@ -46,8 +57,13 @@ python -m scripts.lab.review_pack sources --root . --experiment 4
 [format.md](references/format.md), [authoring.md](references/authoring.md)를 읽는다.
 RUN/manifest.json에 자료·판본·토픽·문항·출처·답안 상태를 기록한다.
 자료 탐색 결과를 전부 사용했다고 주장하지 말고 실제로 참조한 자료만 최종 manifest에 남긴다.
+은행에서 가져온 sources와 문항·모든 원문 위치는 유지한다. 위 규칙은 추가로 탐색한 자료의 선택에 적용한다.
 기출·미확인·예상·새 연습을 구분한다. 원본_docx 포함 전체 후보를 감사하고 중복·보류의 이유를 남긴다.
 문항을 재정렬해도 ID를 유지한다. 예상문제는 기출의 개념 공백만 보충한다.
+수입 문항의 bank_question_id/id/kind/sources는 고정이며 새 practice 문항은 별도 ID로 만든다.
+부분 판독 문항은 원래 은행에서 확인을 해결한 뒤 새 import를 한다. 문제의 조건을 추측해 채우지 않는다.
+원문 자산의 present/unknown 답 노출 상태를 안전으로 바꾸거나 정답을 지워 원문 증거라고 표시하지 않는다.
+문제용은 role=problem/answer_exposure=none 자산만 사용한다. 답 노출 증거는 details.original/solution에 둔다.
 
 RUN/sections/<id>.html, RUN/problems/<id>.html, RUN/figures/를 작성한다.
 설명은 완성 예제→일부 단계 연습→기출 풀이로 이어진다. 문제에는 필요한 개념으로 돌아가는 링크를 넣는다.
@@ -62,6 +78,8 @@ python -m scripts.lab.review_pack check --folder STAGE
 ```
 
 build는 두 HTML, 두 MD, manifest, 출처와_문항목록.md, figures, assets를 만든다.
+은행 수입 팩에는 evidence/, authoring-index.json, 원문과_저작안내.md도 복사한다.
+build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
 생명과학 원본 템플릿은 그대로 보존하고, 생성 결과에서만 CDN URL을 번들된 로컬 자원으로 바꾼다.
 MD에는 힌트·풀이·정적 위젯 설명을 모두 남긴다. 오류가 나면 fragment를 수정하고 새 stage로 다시 build한다.
 
