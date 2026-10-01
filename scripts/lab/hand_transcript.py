@@ -50,7 +50,7 @@ class Diagram:
     bridges: list = field(default_factory=list)
     overlaps: list = field(default_factory=list)
     uncertain: set = field(default_factory=set)
-    # 보드 위에 적힌 신호 이름. [{'name': 'A', 'at': 홀 | None}]. H15 가 본다
+    # 연결 대상을 판독할 수 있는 신호 이름. at 은 글자 위치가 아닌 대상 홀. H15 가 본다
     labels: list = field(default_factory=list)
     title: str = ""
     circuit: str = ""

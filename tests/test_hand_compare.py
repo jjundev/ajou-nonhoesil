@@ -804,6 +804,8 @@ class Labels(unittest.TestCase):
         found = hc.compare(ref, hand)
         self.assertEqual([(f.grade, f.where) for f in found if f.rule == 'H15'],
                          [('기능', 'B')])
+        self.assertIn('연결 대상을 판독할 수 없다',
+                      next(f.message for f in found if f.rule == 'H15'))
         self.assertEqual(hc.verdict(found), '수정 필요')
 
     def test_이름이_다_있으면_조용하다(self):
