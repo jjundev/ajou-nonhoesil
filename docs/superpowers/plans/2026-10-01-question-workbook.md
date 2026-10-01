@@ -240,7 +240,7 @@ if p.get('status') == 'included' and not safe_relative(p.get(field)):
 
 **Interfaces:** Consumes Task 1 manifest와 작성 JSON. Produces `load_workbook_content`, `build_workbook_data`, `check_redrawn_figures`; 테스트 helper `add_redrawn_figure(m, run, *, role='problem', exposure='none') -> dict`.
 
-- [ ] **Step 1: 누출·입력·변조 실패 테스트 작성.** 다음 실제 helper와 테스트를 추가한다.
+- [x] **Step 1: 누출·입력·변조 실패 테스트 작성.** 다음 실제 helper와 테스트를 추가한다.
 
 ```python
 def add_redrawn_figure(m, run, *, role='problem', exposure='none'):
@@ -323,8 +323,8 @@ def test_changed_svg_or_unreviewed_figure_fails(tmp_path):
     assert check_redrawn_figures(run, m)
 ```
 
-- [ ] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_content.py tests/test_review_pack_workbook_figures.py -n 0 -q`; 새 모듈이 없어 collection FAIL.
-- [ ] **Step 3: 엄격 로드와 그림 기록 검사 구현.** JSON은 `_unique_json_object`로 읽는다. 새 authored JSON은 지정된 7키만 허용한다. original/conditions/ask는 str, hints는 label/html 및 선택 formula(str|list[str]), solution은 steps/answer, notes는 list[str], problem_figures는 list[str]. steps는 label/html dict 목록이며 included 문항은 steps와 answer 중 하나 이상 있어야 한다. 허용되지 않은 키·unknown figure·중복 figure ID·잘못된 번호형·NaN/무한대·음수 크기·경로 탈출은 ValueError로 실패시킨다.
+- [x] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_content.py tests/test_review_pack_workbook_figures.py -n 0 -q`; 새 모듈이 없어 collection FAIL.
+- [x] **Step 3: 엄격 로드와 그림 기록 검사 구현.** JSON은 `_unique_json_object`로 읽는다. 새 authored JSON은 지정된 7키만 허용한다. original/conditions/ask는 str, hints는 label/html 및 선택 formula(str|list[str]), solution은 steps/answer, notes는 list[str], problem_figures는 list[str]. steps는 label/html dict 목록이며 included 문항은 steps와 answer 중 하나 이상 있어야 한다. 허용되지 않은 키·unknown figure·중복 figure ID·잘못된 번호형·NaN/무한대·음수 크기·경로 탈출은 ValueError로 실패시킨다.
 
 ```python
 # workbook_content.py의 안전한 JSON 로드에 사용
@@ -350,7 +350,7 @@ def _within(folder, relative):
 
 workbook_figures는 workbook_content의 `_within`/`_strict_json` helper를 사용한다. workbook_content에서 workbook_figures를 필요로 하는 import는 load_workbook_content 함수 안에서 수행해 순환 import를 피한다. 파일 크기/숫자 검사는 bool과 유한하지 않은 값을 제외한다. SVG는 ElementTree로 파싱해 script/image/foreignObject 및 이벤트 속성·외부 href·CSS url/import를 금지한다. 원문 비트맵을 SVG 안에 감싼 그림은 허용하지 않는다. PNG 시그니처와 SVG/PNG/인쇄 크기의 가로세로 비율이 일치하는지 확인한다. source_refs는 manifest에 있는 source_id/페이지를 사용한다. bank_import가 있으면 source_asset_ids의 소속 문항과 원문 asset hash를 index/evidence로 대조하고 problem 그림은 safe_problem_asset_ids만 참조한다. 은행 수입 문항의 독립 도출 solution은 source_refs와 derivation이 필수다. 은행이 없는 practice fixture는 source_refs=[]를 허용하되 derivation은 필수다. JSON 필드 검사는 구체적인 위치를 오류에 포함한다.
 
-- [ ] **Step 4: HTML 조각 검사와 payload 허용 목록 구현.** Parser로 교육 마크업을 읽는다. script/style/iframe/object/embed/svg, on* 이벤트, javascript URL을 거부한다. 조각 style은 해설 img의 `max-width:100%;height:auto`만 허용하며 CSS 배경 자원은 금지한다. img는 registry의 해당 문항 그림만 허용한다. 문제 텍스트 영역에는 solution role 그림이나 evidence 원문을 허용하지 않는다. 링크는 같은 팩의 개념/대조 링크만 생성기가 추가하고 사용자 조각의 링크는 로컬 상대 경로로 제한한다.
+- [x] **Step 4: HTML 조각 검사와 payload 허용 목록 구현.** Parser로 교육 마크업을 읽는다. script/style/iframe/object/embed/svg, on* 이벤트, javascript URL을 거부한다. 조각 style은 해설 img의 `max-width:100%;height:auto`만 허용하며 CSS 배경 자원은 금지한다. img는 registry의 해당 문항 그림만 허용한다. 문제 텍스트 영역에는 solution role 그림이나 evidence 원문을 허용하지 않는다. 링크는 같은 팩의 개념/대조 링크만 생성기가 추가하고 사용자 조각의 링크는 로컬 상대 경로로 제한한다.
 
 ```python
 # workbook_content.py의 projection 핵심: 원본 dict를 통째로 복사하지 않는다
@@ -368,7 +368,7 @@ def _project_row(row, mode):
 
 canonical row의 figures는 registry에서 `{src: png, w_mm, h_mm}`로 만들고 solution 단계의 img는 SVG/PNG 실제 경로를 갖는다. build_workbook_data는 mode를 먼저 검증하고 번호를 included 순서의 1부터 부여한다. notes·분류·답안 상태·개념 링크를 해설 단계로 조립한다. 본문과 최종 답을 임의로 계산·변경하지 않는다. 0문항에는 meta.total=0과 빈 problems를 반환한다.
 
-- [ ] **Step 5: PASS 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_contract.py tests/test_review_pack_workbook_content.py tests/test_review_pack_workbook_figures.py -n 0 -q`; 모두 PASS. 위 소스/테스트만 stage하고 `git commit -m "feat: validate authored workbook content and redrawn figures"`.
+- [x] **Step 5: PASS 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_contract.py tests/test_review_pack_workbook_content.py tests/test_review_pack_workbook_figures.py -n 0 -q`; 모두 PASS. 위 소스/테스트만 stage하고 `git commit -m "feat: validate authored workbook content and redrawn figures"`.
 
 ### Task 3: 원본 템플릿으로 HTML을 생성하고 동일 데이터로 MD 작성
 
