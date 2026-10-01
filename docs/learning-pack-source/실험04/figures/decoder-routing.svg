@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 510" role="img">
+<title>디코더: 두 비트 주소를 네 선택 신호로 바꿔요</title>
+<style>text{font-family:Arial,"Malgun Gothic",sans-serif;font-size:24px;fill:#18212e} .wire{fill:none;stroke:#18212e;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .gate{fill:#fff;stroke:#18212e;stroke-width:3} .accent{fill:#e8f1ff;stroke:#2674df;stroke-width:3}</style>
+<rect width="640" height="510" rx="16" fill="#fff"/>
+<text x="24" y="38" text-anchor="start">2→4 디코더 · 활성 High 출력</text>
+<text x="24" y="160" text-anchor="start">S1S0</text>
+<polyline class="wire" points="95,152 160,152"/>
+<rect class="accent" x="160" y="80" width="170" height="220" rx="8"/>
+<text x="245.0" y="198.0" text-anchor="middle">디코더</text>
+<polyline class="wire" points="330,110 410,110"/>
+<text x="425" y="118" text-anchor="start">C0</text>
+<polyline class="wire" points="330,165 410,165"/>
+<text x="425" y="173" text-anchor="start">C1</text>
+<polyline class="wire" points="330,220 410,220"/>
+<text x="425" y="228" text-anchor="start">C2</text>
+<polyline class="wire" points="330,275 410,275"/>
+<text x="425" y="283" text-anchor="start">C3</text>
+<text x="24" y="345" text-anchor="start">주소 10 → C0,C1,C2,C3 = 0,0,1,0</text>
+<text x="24" y="390" text-anchor="start">MUX: 각 Ck × Ik → 모두 OR → Y</text>
+<text x="24" y="435" text-anchor="start">DMUX: 각 Ck × D → 출력 Yk</text>
+<text x="24" y="480" text-anchor="start">DMUX에서 D=1로 고정하면 디코더예요.</text>
+</svg>

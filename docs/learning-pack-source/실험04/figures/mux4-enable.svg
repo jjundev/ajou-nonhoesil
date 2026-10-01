@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 580" role="img">
+<title>활성 Low E를 갖는 NAND 기반 4×1 MUX</title>
+<style>text{font-family:Arial,"Malgun Gothic",sans-serif;font-size:24px;fill:#18212e} .wire{fill:none;stroke:#18212e;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .gate{fill:#fff;stroke:#18212e;stroke-width:3} .accent{fill:#e8f1ff;stroke:#2674df;stroke-width:3}</style>
+<rect width="640" height="580" rx="16" fill="#fff"/>
+<text x="24" y="38" text-anchor="start">4×1 MUX · E=0에서 동작해요</text>
+<text x="24" y="93" text-anchor="start">I0, E′</text>
+<text x="24" y="126" text-anchor="start">S1′ S0′</text>
+<polyline class="wire" points="160,80 205,80"/>
+<polyline class="wire" points="160,97 205,97"/>
+<polyline class="wire" points="160,114 205,114"/>
+<polyline class="wire" points="160,131 205,131"/>
+<path class="gate" d="M205,70 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="235" y="113" text-anchor="middle">&amp;</text>
+<circle class="gate" cx="288" cy="105" r="8"/>
+<polyline class="wire" points="296,105 335,105 335,210 430,210"/>
+<text x="24" y="188" text-anchor="start">I1, E′</text>
+<text x="24" y="221" text-anchor="start">S1′ S0</text>
+<polyline class="wire" points="160,175 205,175"/>
+<polyline class="wire" points="160,192 205,192"/>
+<polyline class="wire" points="160,209 205,209"/>
+<polyline class="wire" points="160,226 205,226"/>
+<path class="gate" d="M205,165 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="235" y="208" text-anchor="middle">&amp;</text>
+<circle class="gate" cx="288" cy="200" r="8"/>
+<polyline class="wire" points="296,200 350,200 350,232 430,232"/>
+<text x="24" y="283" text-anchor="start">I2, E′</text>
+<text x="24" y="316" text-anchor="start">S1 S0′</text>
+<polyline class="wire" points="160,270 205,270"/>
+<polyline class="wire" points="160,287 205,287"/>
+<polyline class="wire" points="160,304 205,304"/>
+<polyline class="wire" points="160,321 205,321"/>
+<path class="gate" d="M205,260 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="235" y="303" text-anchor="middle">&amp;</text>
+<circle class="gate" cx="288" cy="295" r="8"/>
+<polyline class="wire" points="296,295 365,295 365,254 430,254"/>
+<text x="24" y="378" text-anchor="start">I3, E′</text>
+<text x="24" y="411" text-anchor="start">S1 S0</text>
+<polyline class="wire" points="160,365 205,365"/>
+<polyline class="wire" points="160,382 205,382"/>
+<polyline class="wire" points="160,399 205,399"/>
+<polyline class="wire" points="160,416 205,416"/>
+<path class="gate" d="M205,355 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="235" y="398" text-anchor="middle">&amp;</text>
+<circle class="gate" cx="288" cy="390" r="8"/>
+<polyline class="wire" points="296,390 380,390 380,276 430,276"/>
+<path class="gate" d="M430,190 h35 a65,65 0 0 1 0,130 h-35 z"/><circle class="gate" cx="538" cy="255" r="8"/>
+<text x="465" y="263" text-anchor="middle">&amp;</text>
+<polyline class="wire" points="546,255 585,255"/>
+<text x="595" y="263" text-anchor="start">Y</text>
+<text x="24" y="475" text-anchor="start">각 행의 네 입력을 모두 곱해요.</text>
+<text x="24" y="510" text-anchor="start">입력 신호: S1, S0, E → NOT → S1′, S0′, E′</text>
+<text x="24" y="550" text-anchor="start">E=1 → 앞 NAND 네 출력 1 → Y=0</text>
+</svg>
