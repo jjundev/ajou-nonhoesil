@@ -851,9 +851,9 @@ def verify_print(pdf_path, output_dir):
 
 **Interfaces:** Consumes Task 6의 실제 검증 및 `publish(stage,destination,root)` 기존 API. Produces 검증된 최종 학습팩과 backup 경로. merger는 이 task에 포함하지 않는다.
 
-- [ ] **Step 1: 현재 diff와 test baseline을 기록한다.** `git status --short`, `git diff --stat`, `python -m pytest tests -k review_pack -n 0 -q`, `python -m pytest tests -n 0 -q`를 실행한다. 전체 실패가 있으면 위치·이 변경과의 관계·재현 명령을 검증 문서에 적고 새 회귀는 고친다. 기존 실패를 통과한 것으로 보고하지 않는다.
-- [ ] **Step 2: Native 작업의 최종 독립 리뷰 1회.** requesting-code-review 스킬을 읽고 실행 시작 기준 SHA부터 현재 변경·설계·계획·실제 12문항·새 그림·검증 결과를 독립 리뷰어에게 전달한다. 계획 작성 시에는 subagent를 띄우지 않는다. reviewer는 template 동일성, 문제 JSON 답 노출, active Low/Z/X, 그림 접속, MD 보존, version 분기, stage/backup을 확인한다. 실제 독립 검토가 안 되면 independent=pass를 기록하지 않는다. 리뷰 수정은 관련 자동/시각 검증을 다시 수행한다.
-- [ ] **Step 3: 검증 상태를 실제 결과로 갱신하고 최종 stage를 새로 생성한다.** 이전 학습팩의 pass를 복사하지 않는다. source_visual은 모든 새 그림 대조 완료, content는 실제 본문/풀이/검산 확인, independent는 리뷰 결과, browser는 두 HTML와 기존 note의 실제 화면/인쇄 결과다. source authoring 검증 문서와 최종 파일 해시를 함께 기록한다.
+- [x] **Step 1: 현재 diff와 test baseline을 기록한다.** `git status --short`, `git diff --stat`, `python -m pytest tests -k review_pack -n 0 -q`, `python -m pytest tests -n 0 -q`를 실행한다. 전체 실패가 있으면 위치·이 변경과의 관계·재현 명령을 검증 문서에 적고 새 회귀는 고친다. 기존 실패를 통과한 것으로 보고하지 않는다.
+- [x] **Step 2: Native 작업의 최종 독립 리뷰 1회.** requesting-code-review 스킬을 읽고 실행 시작 기준 SHA부터 현재 변경·설계·계획·실제 12문항·새 그림·검증 결과를 독립 리뷰어에게 전달한다. 계획 작성 시에는 subagent를 띄우지 않는다. reviewer는 template 동일성, 문제 JSON 답 노출, active Low/Z/X, 그림 접속, MD 보존, version 분기, stage/backup을 확인한다. 실제 독립 검토가 안 되면 independent=pass를 기록하지 않는다. 리뷰 수정은 관련 자동/시각 검증을 다시 수행한다.
+- [x] **Step 3: 검증 상태를 실제 결과로 갱신하고 최종 stage를 새로 생성한다.** 이전 학습팩의 pass를 복사하지 않는다. source_visual은 모든 새 그림 대조 완료, content는 실제 본문/풀이/검산 확인, independent는 리뷰 결과, browser는 두 HTML와 기존 note의 실제 화면/인쇄 결과다. source authoring 검증 문서와 최종 파일 해시를 함께 기록한다.
 
 ```powershell
 python -m scripts.lab.review_pack build --root . --run docs/learning-pack-source/실험04 --stage tmp/review-pack/실험04-workbook-20261001-final
@@ -862,7 +862,7 @@ python -m scripts.lab.review_pack check --folder tmp/review-pack/실험04-workbo
 
 최종 stage의 HTML/그림 콘텐츠가 검토한 stage와 동일한지 확인한다. 생성본 내용이 달라졌으면 해당 화면·내용·인쇄 검증을 다시 한다. build/check 통과만으로 최종 browser=pass를 추정하지 않는다. 실제 included ID 목록이 Task 5 EXPECTED와 정확히 같아야 한다.
 
-- [ ] **Step 4: 최종 stage를 발행한다.**
+- [x] **Step 4: 최종 stage를 발행한다.**
 
 ```powershell
 python -m scripts.lab.review_pack publish --root . --stage tmp/review-pack/실험04-workbook-20261001-final --experiment 4
@@ -870,7 +870,7 @@ python -m scripts.lab.review_pack check --folder 복습노트/실험04
 ```
 
 publish가 만든 backup 경로를 기록하고 삭제하지 않는다. 최종 위치에서 note→question/review, answer→note concept, MD→MD 및 evidence 원문 링크를 실제 확인한다. 이전 팩의 사용자 파일 충돌이면 오류를 해결하기 전까지 덮어쓰지 않는다.
-- [ ] **Step 5: 선택적으로 stage하고 commit.**
+- [x] **Step 5: 선택적으로 stage하고 commit.**
 
 ```powershell
 git add docs/learning-pack-source/실험04/manifest.json docs/learning-pack-source/실험04/검증결과.md docs/verify/logic-lab-review-pack-question-workbook.md 복습노트/실험04
@@ -880,7 +880,7 @@ git status --short
 ```
 
 백업 폴더·tmp stage·검증 PDF는 학습팩 출력으로 commit하지 않는다. 범위 밖 사용자 변경을 묶지 않는다.
-- [ ] **Step 6: 사용자에게 결과와 후속 통합 정보를 전달한다.** 새 문제지/해설지와 MD 링크, 작업 worktree/branch/최종 commit, included 12/held 3, 그림 수, 실제 테스트/브라우저/인쇄 결과, 답안 충돌 두 문항, 미해결, backup 경로를 전달한다. 원래 체크아웃에는 미통합임을 명시한다.
+- [x] **Step 6: 사용자에게 결과와 후속 통합 정보를 전달한다.** 새 문제지/해설지와 MD 링크, 작업 worktree/branch/최종 commit, included 12/held 3, 그림 수, 실제 테스트/브라우저/인쇄 결과, 답안 충돌 두 문항, 미해결, backup 경로를 전달한다. 원래 체크아웃에는 미통합임을 명시한다.
 
 ## 계획 자체 검토
 

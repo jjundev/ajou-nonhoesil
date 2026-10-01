@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "q-mux4-given-01",
+      "question_id": "q-mux4",
+      "role": "problem",
+      "svg": "figures/questions/q-mux4-given-01.svg",
+      "png": "figures/questions/q-mux4-given-01.png",
+      "svg_sha256": "6a3b7ce826db127328de2d04500d9d61e9e5130245ee0e2af38f5e9fb3481ead",
+      "png_sha256": "7b34ac05bc71cb20e87a48997061e01ad5d548b60f4022346c02f75be2ea126e",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [
+        "a-s03-p1-o-s03-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5〜P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문에서 읽은 논리 조건을 직접 도식화했어요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-design4-given-01",
+      "question_id": "q-design4",
+      "role": "problem",
+      "svg": "figures/questions/q-design4-given-01.svg",
+      "png": "figures/questions/q-design4-given-01.png",
+      "svg_sha256": "456cb46d19400d91624c87fc0ca5054f6bb2d08e24e2ed00670679f312f0befa",
+      "png_sha256": "032b98865bf21130e3b3c57d96b3ddb626ba97061cfc893887441c7a78d6085b",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [
+        "a-s07-p1-o-s07-q5"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P17〜P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "derivation": "원문에서 읽은 논리 조건을 직접 도식화했어요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-tri-given-01",
+      "question_id": "q-tri",
+      "role": "problem",
+      "svg": "figures/questions/q-tri-given-01.svg",
+      "png": "figures/questions/q-tri-given-01.png",
+      "svg_sha256": "78a256f087180051d994f4b182f67decf8d039b62abb6550b71f5297ec817f15",
+      "png_sha256": "f2ed5c619e846978e6d26c38d415ed72bc79fe363060a1493bc8700679a45345",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [
+        "a-s03-p1-o-s03-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "derivation": "원문에서 읽은 논리 조건을 직접 도식화했어요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-mux2-solution-01",
+      "question_id": "q-mux2",
+      "role": "solution",
+      "svg": "figures/solutions/q-mux2-solution-01.svg",
+      "png": "figures/solutions/q-mux2-solution-01.png",
+      "svg_sha256": "abd432c91bb14c70d7087810435a4a434bac37f4bb2151d687720165df06b172",
+      "png_sha256": "998b6daf6e95b10eabbf4fafc868b541189886eaddf7da361d84a599e96aac91",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-demux2-solution-01",
+      "question_id": "q-demux2",
+      "role": "solution",
+      "svg": "figures/solutions/q-demux2-solution-01.svg",
+      "png": "figures/solutions/q-demux2-solution-01.png",
+      "svg_sha256": "67285996fd2ba9fba135b3b1ec35fe1e2f18323a514fcb30822f57a715798f33",
+      "png_sha256": "d2c6160c33f5174b253bee24b3dd8b8dc7bbd342b5a8ef2ec3fe9fffa21904eb",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-design4-solution-01",
+      "question_id": "q-design4",
+      "role": "solution",
+      "svg": "figures/solutions/q-design4-solution-01.svg",
+      "png": "figures/solutions/q-design4-solution-01.png",
+      "svg_sha256": "68237193345030992c1796229cc64619444a5a6a0c24afbec6bf7d2cc9ef449b",
+      "png_sha256": "d6a6418062eb04fad9f768713512db20d73cfd8f0b6716cff3d0a406311e192f",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P17〜P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-decoder-solution-01",
+      "question_id": "q-decoder",
+      "role": "solution",
+      "svg": "figures/solutions/q-decoder-solution-01.svg",
+      "png": "figures/solutions/q-decoder-solution-01.png",
+      "svg_sha256": "958abb845123981a79a7c882868f629be02c932aa98deb51b933468ba39d2c0b",
+      "png_sha256": "1d0e5e816270ba0499b0af385a7d531c0065884f174d82f9581ebf54da0370c9",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P26〜P27; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-tri-solution-01",
+      "question_id": "q-tri",
+      "role": "solution",
+      "svg": "figures/solutions/q-tri-solution-01.svg",
+      "png": "figures/solutions/q-tri-solution-01.png",
+      "svg_sha256": "98a2be7ec9321426a7042d7e7bfdb29f97aa27f070a20f580f55bbe0bb8a8a0c",
+      "png_sha256": "06d60cb79c10fc94c64586aef790b2940ec319b9038c2bdae702cfbfbde75829",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    },
+    {
+      "id": "q-mux2-graded-solution-01",
+      "question_id": "q-mux2-graded",
+      "role": "solution",
+      "svg": "figures/solutions/q-mux2-graded-solution-01.svg",
+      "png": "figures/solutions/q-mux2-graded-solution-01.png",
+      "svg_sha256": "1e458d09536c89ca975c037f9daa57b24cc8a5b2d49bdbde072f01192d92d96c",
+      "png_sha256": "890bfadea847367f1ed0eed416b96f491f17363fc96423e046511c74b6f4300e",
+      "w_mm": 140.0,
+      "h_mm": 84.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "문제 조건에서 도출한 완성 회로예요. 같은 신호 이름은 같은 연결 노드예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 원문 조건의 신호·게이트 수·반전·nOE 극성, 비접속 교차와 공통 버스 접속점을 대조했어요. 도출한 완성 회로는 풀이용으로 구분했어요."
+    }
+  ]
+}

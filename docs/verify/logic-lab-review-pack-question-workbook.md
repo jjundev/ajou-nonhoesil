@@ -124,3 +124,19 @@ FAILED tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽 - Ass
 템플릿 두 파일은 Git 줄바꿈 정규화가 원본 해시를 바꾸는 것을 git show의 저장 바이트와 실제 renderer로 재현했다. .gitattributes에 이 두 source/published snapshot만 -text로 고정하여 커밋/내보내기에서도 원본 바이트를 유지한다. 생성된 학습 HTML 본문은 바꾸지 않았다.
 
 발행 경로: 복습노트/실험04. 백업: 실험04.backup-c55e41868ee4. 최종 HTML/MD/그림/증거는 검토된 stage c와 바이트 일치하며 published check 및 개념·원문 상대 링크 검사 통과. 원래 체크아웃에는 통합하지 않았다.
+
+최종 관련 검사: **273 passed, 2083 deselected**. Git에 저장한 템플릿을 꺼내 실제 renderer에 넣는 추가 회귀까지 통과했다. 스킬 형식 검사 valid, git diff whitespace 검사 통과.
+
+## 구현 중 확정한 판단
+
+- Windows PowerShell uses Python task bookkeeping instead of POSIX helper scripts; same task briefs, BASE, test logs, and completion ledger. Cost: maintain the equivalent bookkeeping here.
+- isolated MD preservation test omitted its linked note/question files; fixture now creates these required companions. Cost: unit test setup only; link validation remains strict.
+- generated HTML newline normalization avoids Windows CRLF comparison mismatch while asset snapshot bytes stay identical. Cost: generated text newline normalization only.
+- original q-tri drawing contains a single 74HC125 buffer (pins 1/2/3), not two buffers plus inverter. Given diagram will reproduce that single symbol; two-buffer/not circuit appears only in solution. Cost: none; preserves source.
+- reproducible refresh_workbook.py added to preserve legacy text while migrating 12 JSON files. Cost: a small source-only authoring helper.
+- MuPDF ignores SVG class paint; explicit SVG paint attributes keep browser/SVG/PNG consistent. Raster regression observed RED then GREEN. Cost: redundant explicit paint attributes.
+- preserve the approved worktree/branch and no merge; full-suite failures are investigated separately and reported rather than modifying unrelated modules. Cost: baseline environment failures remain visible.
+- problem-authored href links are forbidden; guide/concept navigation stays in answers and generator-owned MD navigation. Cost: future authored question links require an explicitly safe navigation contract.
+- Git snapshot normalization changed the stored literal hashes; scope -text attributes to the two EC2 snapshot paths and their published copies. Export-consumer test RED→GREEN. Cost: those snapshots retain original line endings.
+
+미반영 Minor: 없음. 기존 실패 모듈 수정·원래 체크아웃 통합·push는 승인된 구현 범위에 포함하지 않았다.

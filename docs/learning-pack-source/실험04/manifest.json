@@ -1159,10 +1159,10 @@
     }
   ],
   "checks": {
-    "source_visual": "not_run",
-    "content": "not_run",
-    "independent": "not_run",
-    "browser": "not_run"
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "pass",
+    "browser": "pass"
   },
   "note_presentation_version": 2,
   "review_presentation_version": 2,
