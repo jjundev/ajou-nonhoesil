@@ -1,0 +1,46 @@
+{
+  "original": "<p>다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오. (Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖는다. 동작은 enable 핀이 Enable일 때 “출력=입력”이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1채널 switch 역할을 함으로 Mux를 구성할 수 있다.)</p>",
+  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>A</th><th>nOE</th><th>B</th></tr></thead><tbody><tr><td>X</td><td>High</td><td>HIGH-Z</td></tr><tr><td>High</td><td>Low</td><td>High</td></tr><tr><td>Low</td><td>Low</td><td>Low</td></tr></tbody></table></div>",
+  "ask": "<p>Tri-state 버퍼와 인버터를 결선하여 2×1 MUX를 설계하세요.</p>",
+  "problem_figures": [
+    "q-tri-given-01"
+  ],
+  "hints": [
+    {
+      "label": "접근 순서",
+      "html": "<p>nOE=0에서 버퍼가 구동해요. 두 출력이 공통선에서 동시에 구동하지 않도록 제어하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>원문 nOE 표는 0에서 입력을 전달하고 1에서 Z를 출력한다. I0 버퍼의 nOE0=S, I1 버퍼의 nOE1=S′로 만든다. NOT 한 개로 S′를 만들고 각 A에는 I0,I1을 연결하며 B 출력은 공통 Y다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-tri-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"활성 Low tri-state 버퍼로 MUX 설계 완성 회로\"></p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>S</th><th>nOE0</th><th>nOE1</th><th>버퍼0</th><th>버퍼1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>I0</td><td>Z</td><td>I0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>Z</td><td>I1</td><td>I1</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "풀이",
+        "html": "<p>원문 제공 답안의 active high 캡션은 이 조건과 다르다. 그 그림의 반전 위치를 그대로 옮기지 않는다. 이 풀이는 원문 활성 Low 표에 대한 설계이며 제공 답안의 조건 충돌은 남긴다.</p>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 안정된 S에서 구동 버퍼가 정확히 하나임을 확인. I0,I1 네 조합에서도 선택값과 동일.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> Z를 0으로 생각하거나 두 버퍼를 동시에 활성화하지 않는다.</p>"
+      }
+    ],
+    "answer": "<p>nOE0=S, nOE1=S′, 출력 공통 연결</p>"
+  },
+  "notes": [
+    "원문 버퍼 표는 nOE가 Low일 때 동작해요. 제공 답안의 Active High 캡션과 다르므로 이 해설은 활성 Low 표를 기준으로 설계했어요."
+  ]
+}

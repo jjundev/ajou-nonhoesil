@@ -7,7 +7,7 @@ description: 논리회로실험 1~10의 실험 설명, 예습·복습 자료, �
 
 오래전에 논리회로를 배운 학생이 기초부터 회로를 이해하고 기출을 풀 수 있게 한다.
 기존 보고서에 등장하는 용어를 안다고 가정하지 않는다. 완전판 설명+앞부분 요약과 고유 기출 전체가 기본이다.
-설명·기출 풀이 HTML 두 개와 같은 내용의 MD 두 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
+실험설명·기출문제·기출풀이 HTML 세 개와 같은 내용의 MD 세 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
 
 REPO는 scripts/lab/config.py가 있는 저장소 루트. SKILL은 이 폴더. RUN은 REPO/tmp/review-pack/<실험NN>-<고유실행ID>.
 셸 작업 디렉터리를 REPO로 두고 Python 모듈을 실행한다. 실제 사용 가능한 Python 실행 파일을 확인한다.
@@ -65,12 +65,12 @@ RUN/manifest.json에 자료·판본·토픽·문항·출처·답안 상태를 �
 원문 자산의 present/unknown 답 노출 상태를 안전으로 바꾸거나 정답을 지워 원문 증거라고 표시하지 않는다.
 문제용은 role=problem/answer_exposure=none 자산만 사용한다. 답 노출 증거는 details.original/solution에 둔다.
 
-RUN/sections/<id>.html, RUN/problems/<id>.html, RUN/figures/를 작성한다.
+RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. 새 문제지·해설지는 manifest.review_presentation_version=2로 지정하고 [문제지·해설지 계약](references/workbook.md)을 따른다. 기존 표시 버전 없는 팩은 RUN/problems/<id>.html을 쓰는 legacy 형식으로 계속 읽을 수 있다.
 새 실험설명에는 manifest.note_presentation_version=2를 지정한다. 본문·요약·힌트·그림 설명을 생명과학 정리노트처럼 짧고 다정한 ‘~해요’체로 쓴다. 정의·성립 조건·인과는 줄이지 않는다.
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
 실험설명의 모든 설명 그림은 원문을 읽어 직접 SVG로 다시 제작하고 진리표는 텍스트 표로 쓴다. 스캔/스크린샷을 설명 그림으로 첨부하지 않는다. 원문·문제은행 증거와 기출풀이 원본 이미지는 보존한다.
 설명은 완성 예제→일부 단계 연습→기출 풀이로 이어진다. 문제에는 필요한 개념으로 돌아가는 링크를 넣는다.
-생명과학의 note-template.html/review-template.html과 동일한 화면을 사용한다. 템플릿 디자인을 재작성하지 않는다.
+실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷을 그대로 사용한다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
 우측 요약은 div.sum, 도움말은 details.hint/solution을 사용한다. 자세한 마크업은 authoring.md.
 
 ## 4. 조립과 MD 생성
@@ -80,7 +80,7 @@ python -m scripts.lab.review_pack build --root . --run RUN --stage STAGE
 python -m scripts.lab.review_pack check --folder STAGE
 ```
 
-build는 두 HTML, 두 MD, manifest, 출처와_문항목록.md, figures, assets를 만든다.
+build는 새 표시 버전에서 세 HTML, 세 MD, manifest, 출처와_문항목록.md, figures, assets를 만든다. legacy 팩은 두 HTML·두 MD를 유지한다.
 은행 수입 팩에는 evidence/, authoring-index.json, 원문과_저작안내.md도 복사한다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
 생명과학 원본 템플릿은 그대로 보존하고, 생성 결과에서만 CDN URL을 번들된 로컬 자원으로 바꾼다.
@@ -91,7 +91,7 @@ MD에는 힌트·풀이·정적 위젯 설명을 모두 남긴다. 오류가 나
 [verification.md](references/verification.md)를 따른다.
 원문 대조·독립 계산·노트의 풀이 충분성을 확인한다. 정답지와 충돌하면 양쪽을 재검토하고 미확정이면 그대로 표시한다.
 독립 리뷰어가 실제로 검토하지 않았으면 independent=pass를 쓰지 않는다.
-브라우저에서 375px/1280px, 다크모드, 이전/다음, 목차, 우측 요약·힌트·풀이, 위젯과 인쇄를 확인한다.
+실험설명은 브라우저에서 375px/1280px, 다크모드, 이전/다음, 목차, 우측 요약과 위젯을 확인한다. 새 문제지·해설지는 전자회로2의 A4 가로 페이지·화면 축소·Hint 링크·인쇄 동작을 검증한다. data-ready=true, data-overflow 빈 문자열, 깨진 그림·수식 오류 0, 표와 마지막 답의 잘림 없음을 확인한다. raw HTML에 문항 article가 없는 것은 JS 템플릿의 정상 동작이며 payload와 실제 DOM을 모두 확인한다.
 RUN/검증결과.md에 확인한 대상·결과·미해결을 남기고 manifest.checks를 실제 결과로 갱신한다.
 업데이트 후 새 stage로 build한다. 최종 stage와 검사 대상이 같아야 한다. 검토 후 내용 변경은 관련 검토를 다시 수행한다.
 수정은 최대 2회. 이후 남은 결함은 정직하게 보고하고 검증되지 않은 초안으로 기존 팩을 교체하지 않는다.
@@ -105,7 +105,7 @@ python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
-보고: 네 학습 파일 링크, 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
+보고: 여섯 학습 파일 링크(legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
 파일 생성 완료를 학생의 이해 완료라고 표현하지 않는다.
 
 ## 후속 요청과 경계

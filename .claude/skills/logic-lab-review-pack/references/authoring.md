@@ -17,7 +17,7 @@ eli5(직관) → formal(정확한 원리·조건) → warn(혼동 방지) → su
 새 manifest에는 note_presentation_version=2를 지정한다. fragment에 ‘이 개념으로 풀 문제’, 출처 문구·sources 요소를 넣지 않는다. topics[].sources와 included 문제의 topics로 해당 토픽 MD 끝에 출처·문제 링크를 자동 생성한다. 원자료 쪽수·판본 파일명·재제작 대조 기록 등 추가 근거는 topics[].md_notes에 쓴다. 개념 이해에 필요한 불확실성·극성·실험 수행 범위 경고는 HTML 본문에도 남긴다.
 설명 그림은 직접 SVG로 다시 그린다. 원문 스캔, 낡은 그림의 확대/덧칠, evidence 이미지를 설명용으로 재사용하지 않는다. 신호 방향·반전 bubble·접속점·비접속 교차·비트 순서·enable 극성을 원문 및 식/진리표와 대조한다. 원문과 도출값 충돌이 있으면 이상 모델임을 설명하고 대조 기록은 MD에 남긴다. 모든 SVG에 viewBox/title을 넣고 외부 이미지 없이 제작한다. 글자는 최소 18px, 선·라벨은 양쪽 테마에서 읽혀야 한다. HTML과 MD는 같은 SVG를 참조한다. 진리표는 텍스트 표로 작성한다.
 이미지는 div.figure 또는 figure.figure로 감싼다. 원본 템플릿은 .figure 안의 이미지에만 너비 제한을 적용하므로, 원문·풀이 details 안의 이미지도 같은 규칙을 따른다. 모바일과 인쇄에서 그림의 오른쪽이 잘리지 않는지 확인한다.
-기출 fragment는 div.problem, details.original, details.hint, details.solution 순서다.
+표시 버전 없는 기존 기출 fragment는 div.problem, details.original, details.hint, details.solution 순서다. 새 review_presentation_version=2는 [문제지·해설지 작성 계약](workbook.md)의 문항 JSON을 사용한다. 문제에 주어진 그림과 완성 회로를 각각 questions/solutions로 저장하고 텍스트 표·수식을 유지한다.
 문제·출처 → 필요한 개념 링크 → 힌트 → 단계별 풀이 → 최종 답 → 검산 → 흔한 실수를 모두 제공한다.
 카드 제목은 조립기가 article.card/h3로 붙인다. 번호가 정답 검증 상태를 대신하지 않는다.
 객관식 원문이 아니면 객관식으로 바꾸지 않는다. 진리표·부울식·설계·타이밍·계산·서술형을 유지한다.

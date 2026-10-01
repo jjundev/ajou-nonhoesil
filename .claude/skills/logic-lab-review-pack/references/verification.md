@@ -24,3 +24,6 @@ build/publish는 원래 은행 JSON·원자료·원래 자산의 현재 해시�
 srcset 후보와 스타일의 로컬 이미지 URL도 검사한다. summary는 항상 보이므로 답 노출 증거를 넣지 않으며, 증거 details의 초기 open 상태도 허용하지 않는다.
 은행 카드의 CSS @import/image-set은 지원하지 않는다. 원문 그림은 직접 로컬 URL을 사용하는 img로 배치한다.
 snapshot·인덱스·안내를 최종 팩과 함께 보존하며 독립 검토·실제 브라우저 확인 전 완료 상태를 표시하지 않는다.
+# 새 문제지·해설지 표시 검증
+
+review_presentation_version=2에서는 전자회로2 원본 스냅샷 해시, 두 payload의 문항 순서·조건·힌트·그림 일치, 문제지에 해설·답안 포함 증거가 없는지, SVG/PNG 출처·용도·해시·시각 검토를 확인한다. A4 가로 인쇄와 1280px/375px 화면 축소를 확인하고 data-ready=true 및 data-overflow 빈 문자열을 요구한다. 실제 그림 decode, 넓은 표, 마지막 답, Hint anchor, offline 로딩을 확인한다. MD에는 본문·표·TeX·그림·개념 링크·출처·보류 기록이 남아야 한다. 기존 생명과학 실험설명의 다크모드·목차·요약·위젯 검증은 유지한다.

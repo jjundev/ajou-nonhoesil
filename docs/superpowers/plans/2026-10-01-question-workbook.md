@@ -605,7 +605,7 @@ check_workbook_pack은 포함 문항 ID·번호·kind/answer status·problem htm
 
 **Interfaces:** Consumes 기존 committed 저작 HTML·manifest·은행 증거. Produces 위 새 작성 JSON·registry·그림, schema_version=1/review_presentation_version=2 저작 manifest. 기존 note source 파일과 고정 bank fields는 바꾸지 않는다.
 
-- [ ] **Step 1: 실제 콘텐츠 보존 실패 테스트 작성.**
+- [x] **Step 1: 실제 콘텐츠 보존 실패 테스트 작성.**
 
 ```python
 import json
@@ -645,8 +645,8 @@ def test_mux_and_tristate_models_match_selected_output():
 
 이 식 검산만으로 새 SVG가 정확하다고 주장하지 않는다. 도식 연결은 원문 대조와 실제 SVG 접속 확인을 별도로 수행한다. 실제 입력표·서술형 조건·disputed 표기는 이 테스트와 함께 확인한다.
 
-- [ ] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_experiment04.py -n 0 -q`; 새 버전/작성 파일 부재로 FAIL.
-- [ ] **Step 3: 12문항을 아래 배치로 저작한다.** 각 문항별로 기존 div.problem의 원문 문장·조건·표를 읽고 original/conditions/ask로 분리한다. 제공 답안/채점 수기와 인쇄 조건을 구분한다. 기존 풀이와 검산·흔한 실수를 단계로 모두 옮기며 원문 조건에 없는 enable·부품명·회로를 추가하지 않는다.
+- [x] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_experiment04.py -n 0 -q`; 새 버전/작성 파일 부재로 FAIL.
+- [x] **Step 3: 12문항을 아래 배치로 저작한다.** 각 문항별로 기존 div.problem의 원문 문장·조건·표를 읽고 original/conditions/ask로 분리한다. 제공 답안/채점 수기와 인쇄 조건을 구분한다. 기존 풀이와 검산·흔한 실수를 단계로 모두 옮기며 원문 조건에 없는 enable·부품명·회로를 추가하지 않는다.
 
 | 문항 | 문제지 그림/표 | 해설지 그림·핵심 |
 |---|---|---|
@@ -667,22 +667,22 @@ def test_mux_and_tristate_models_match_selected_output():
 
 Step 3은 한 번에 12문항을 작성하는 작업이 아니다. 아래 체크 한 개마다 해당 문항의 원문·조건·표·풀이를 읽고 위 7키 JSON으로 작성한 뒤 `load_workbook_content`의 해당 문항 오류를 확인한다. 그림 ID 연결은 Step 4~5의 기록이 생긴 뒤 검증한다.
 
-- [ ] **Step 3a:** `workbook/q-mux2.json` 작성·8행과 게이트 수 확인.
-- [ ] **Step 3b:** `workbook/q-mux4.json` 작성·D3→D0 열 순서와 빈 출력 4칸 확인.
-- [ ] **Step 3c:** `workbook/q-demux2.json` 작성·독립 출력 2개와 4행 확인.
-- [ ] **Step 3d:** `workbook/q-design4.json` 작성·enable 없는 기능표와 지정 게이트 수 확인.
-- [ ] **Step 3e:** `workbook/q-decoder.json` 작성·Ck와 데이터 경로 관계 확인.
-- [ ] **Step 3f:** `workbook/q-tri.json` 작성·nOE 기능표·High-Z·충돌 조건 확인.
-- [ ] **Step 3g:** `workbook/q-muxdef.json` 작성·선택 데이터가 0일 때의 출력 확인.
-- [ ] **Step 3h:** `workbook/q-demuxdef.json` 작성·기출 여부 미확인 분류 유지.
-- [ ] **Step 3i:** `workbook/q-difference.json` 작성·N→1/1→N과 입력 정보 손실 설명 확인.
-- [ ] **Step 3j:** `workbook/q-demux4.json` 작성·+5/0 입력, 전사 빈칸, 원문 X와 계산 0 구분.
-- [ ] **Step 3k:** `workbook/q-mux2-graded.json` 작성·원문 지정 4행을 8행 일반표로 대체하지 않음.
-- [ ] **Step 3l:** `workbook/q-active-general.json` 작성·기능 활성과 출력 논리값을 구분.
+- [x] **Step 3a:** `workbook/q-mux2.json` 작성·8행과 게이트 수 확인.
+- [x] **Step 3b:** `workbook/q-mux4.json` 작성·D3→D0 열 순서와 빈 출력 4칸 확인.
+- [x] **Step 3c:** `workbook/q-demux2.json` 작성·독립 출력 2개와 4행 확인.
+- [x] **Step 3d:** `workbook/q-design4.json` 작성·enable 없는 기능표와 지정 게이트 수 확인.
+- [x] **Step 3e:** `workbook/q-decoder.json` 작성·Ck와 데이터 경로 관계 확인.
+- [x] **Step 3f:** `workbook/q-tri.json` 작성·nOE 기능표·High-Z·충돌 조건 확인.
+- [x] **Step 3g:** `workbook/q-muxdef.json` 작성·선택 데이터가 0일 때의 출력 확인.
+- [x] **Step 3h:** `workbook/q-demuxdef.json` 작성·기출 여부 미확인 분류 유지.
+- [x] **Step 3i:** `workbook/q-difference.json` 작성·N→1/1→N과 입력 정보 손실 설명 확인.
+- [x] **Step 3j:** `workbook/q-demux4.json` 작성·+5/0 입력, 전사 빈칸, 원문 X와 계산 0 구분.
+- [x] **Step 3k:** `workbook/q-mux2-graded.json` 작성·원문 지정 4행을 8행 일반표로 대체하지 않음.
+- [x] **Step 3l:** `workbook/q-active-general.json` 작성·기능 활성과 출력 논리값을 구분.
 
 문항 힌트는 접근 순서만 제공하고 완성 배선·최종 출력열·정답 회로식을 그대로 노출하지 않는다. 두 판의 original/conditions/ask는 동일한 JSON을 사용한다.
 
-- [ ] **Step 4: 새 도식을 직접 SVG로 제작하고 PNG를 만든다.** 기존 `redraw_figures.py`는 노트 전용이므로 수정 없이 도형 작성을 참고한다. `redraw_questions.py`는 이 실험의 직접 도식 함수와 등록 목록만 가진다. 회로는 직교 배선·접속점·명확한 비접속 교차·반전 bubble·이름 있는 단자를 쓰고 원문 NAND를 AND/OR로 조용히 치환하지 않는다. q-tri 미결선 그림에 해답 배선을 그리지 않는다. SVG는 아래 저장 형태를 사용하고 PNG 래스터화는 기존 fitz로 수행한다.
+- [x] **Step 4: 새 도식을 직접 SVG로 제작하고 PNG를 만든다.** 기존 `redraw_figures.py`는 노트 전용이므로 수정 없이 도형 작성을 참고한다. `redraw_questions.py`는 이 실험의 직접 도식 함수와 등록 목록만 가진다. 회로는 직교 배선·접속점·명확한 비접속 교차·반전 bubble·이름 있는 단자를 쓰고 원문 NAND를 AND/OR로 조용히 치환하지 않는다. q-tri 미결선 그림에 해답 배선을 그리지 않는다. SVG는 아래 저장 형태를 사용하고 PNG 래스터화는 기존 fitz로 수행한다.
 
 ```python
 from pathlib import Path
@@ -706,21 +706,21 @@ def save_drawing(destination, title, body, width_mm=120, height_mm=72):
 
 Step 4는 도식별로 나누어 수행한다. 복잡한 회로는 먼저 신호/게이트 위치를 작성하고 다음 체크에서 배선·교차·접속을 연결한다. 저장·래스터화 함수는 위 save_drawing을 공통으로 쓴다.
 
-- [ ] **Step 4a:** q-mux4 given-01의 원문 부품·핀·입력 극성을 읽고 게이트 위치를 작성.
-- [ ] **Step 4b:** q-mux4 given-01의 배선·반전·접속점을 연결하고 PNG 저장.
-- [ ] **Step 4c:** q-design4 given-01의 원문 블록·신호 단자만 작성하고 PNG 저장.
-- [ ] **Step 4d:** q-tri given-01의 미결선 버퍼·인버터·활성 Low 단자를 작성하고 PNG 저장.
-- [ ] **Step 4e:** q-mux2 solution-01의 NOT/AND/OR와 배선을 작성하고 PNG 저장.
-- [ ] **Step 4f:** q-demux2 solution-01의 NOT/AND와 독립 출력 배선을 작성하고 PNG 저장.
-- [ ] **Step 4g:** q-design4 solution-01의 게이트 위치와 S1/S0 반전선을 작성.
-- [ ] **Step 4h:** q-design4 solution-01의 네 AND 입력과 OR 합성 배선을 연결하고 PNG 저장.
-- [ ] **Step 4i:** q-decoder solution-01의 Ck·MUX·DMUX 흐름을 작성하고 PNG 저장.
-- [ ] **Step 4j:** q-tri solution-01의 nOE0/nOE1·공통 버스·I0/I1를 연결하고 PNG 저장.
-- [ ] **Step 4k:** q-mux2-graded solution-01을 Sel/X0/X1 원문 신호명으로 작성하고 PNG 저장.
+- [x] **Step 4a:** q-mux4 given-01의 원문 부품·핀·입력 극성을 읽고 게이트 위치를 작성.
+- [x] **Step 4b:** q-mux4 given-01의 배선·반전·접속점을 연결하고 PNG 저장.
+- [x] **Step 4c:** q-design4 given-01의 원문 블록·신호 단자만 작성하고 PNG 저장.
+- [x] **Step 4d:** q-tri given-01의 미결선 버퍼·인버터·활성 Low 단자를 작성하고 PNG 저장.
+- [x] **Step 4e:** q-mux2 solution-01의 NOT/AND/OR와 배선을 작성하고 PNG 저장.
+- [x] **Step 4f:** q-demux2 solution-01의 NOT/AND와 독립 출력 배선을 작성하고 PNG 저장.
+- [x] **Step 4g:** q-design4 solution-01의 게이트 위치와 S1/S0 반전선을 작성.
+- [x] **Step 4h:** q-design4 solution-01의 네 AND 입력과 OR 합성 배선을 연결하고 PNG 저장.
+- [x] **Step 4i:** q-decoder solution-01의 Ck·MUX·DMUX 흐름을 작성하고 PNG 저장.
+- [x] **Step 4j:** q-tri solution-01의 nOE0/nOE1·공통 버스·I0/I1를 연결하고 PNG 저장.
+- [x] **Step 4k:** q-mux2-graded solution-01을 Sel/X0/X1 원문 신호명으로 작성하고 PNG 저장.
 
-- [ ] **Step 5: 출처·대조·해시를 기록한다.** 새 그림마다 source_refs/asset IDs·role/exposure·svg/png hash·인쇄 크기·도출 설명을 registry에 기록한다. source_asset_ids는 실제 index에서 확인한 ID만 사용한다. 그림의 wire 끝점·게이트 입력 개수·pin/극성·교차/접속점·기능표를 원문 PNG와 함께 읽고 review_notes에 확인 내용을 적은 뒤에만 review_status=pass로 한다. 정답 도식은 조건에서 도출한 설계임을 표시한다. 모든 새 JSON에는 문항별 힌트를 작성하고 generic 동일 힌트를 반복하지 않는다.
+- [x] **Step 5: 출처·대조·해시를 기록한다.** 새 그림마다 source_refs/asset IDs·role/exposure·svg/png hash·인쇄 크기·도출 설명을 registry에 기록한다. source_asset_ids는 실제 index에서 확인한 ID만 사용한다. 그림의 wire 끝점·게이트 입력 개수·pin/극성·교차/접속점·기능표를 원문 PNG와 함께 읽고 review_notes에 확인 내용을 적은 뒤에만 review_status=pass로 한다. 정답 도식은 조건에서 도출한 설계임을 표시한다. 모든 새 JSON에는 문항별 힌트를 작성하고 generic 동일 힌트를 반복하지 않는다.
 
-- [ ] **Step 6: manifest·검증 상태와 스킬 지침 갱신.** p.workbook_fragment와 figure_manifest/version만 추가하고 은행 고정필드를 보존한다. 새 콘텐츠 검토 상태는 아래처럼 초기화하며 최종 단계의 검증 뒤에만 변경한다.
+- [x] **Step 6: manifest·검증 상태와 스킬 지침 갱신.** p.workbook_fragment와 figure_manifest/version만 추가하고 은행 고정필드를 보존한다. 새 콘텐츠 검토 상태는 아래처럼 초기화하며 최종 단계의 검증 뒤에만 변경한다.
 
 ```python
 m['review_presentation_version'] = 2
@@ -732,7 +732,7 @@ for p in m['problems']:
 
 SKILL.md의 출력 수를 HTML 3/MD 3으로 바꾸고 생명과학 템플릿은 실험설명, 전자회로2 템플릿은 문제/풀이에 적용한다고 명시한다. authoring에 새 JSON 예시, SVG/PNG registry, 문제/해설 역할을 적고 verification에 workbook의 A4 가로·확대·Hint·인쇄 검사를 추가한다. 기존 독립 검토/증거 보존 규칙을 유지한다.
 
-- [ ] **Step 7: PASS·보존 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_experiment04.py tests/test_review_pack_note_figures.py tests/test_review_pack_bank_provenance.py -n 0 -q`. `git diff -- docs/learning-pack-source/실험04/sections docs/learning-pack-source/실험04/evidence 문제은행`은 변경이 없어야 한다. 위 작성/그림/지침/테스트만 stage하고 `git commit -m "docs: redraw experiment 4 question and solution diagrams"`.
+- [x] **Step 7: PASS·보존 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_experiment04.py tests/test_review_pack_note_figures.py tests/test_review_pack_bank_provenance.py -n 0 -q`. `git diff -- docs/learning-pack-source/실험04/sections docs/learning-pack-source/실험04/evidence 문제은행`은 변경이 없어야 한다. 위 작성/그림/지침/테스트만 stage하고 `git commit -m "docs: redraw experiment 4 question and solution diagrams"`.
 
 ### Task 6: 실제 브라우저·A4 인쇄로 오류와 내용 잘림 검사
 

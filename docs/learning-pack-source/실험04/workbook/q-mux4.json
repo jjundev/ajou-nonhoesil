@@ -1,0 +1,40 @@
+{
+  "original": "<p>다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)</p>",
+  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>E</th><th>S1</th><th>S0</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+  "ask": "<p>표의 빈 출력 Y 네 칸을 채우세요.</p>",
+  "problem_figures": [
+    "q-mux4-given-01"
+  ],
+  "hints": [
+    {
+      "label": "접근 순서",
+      "html": "<p>주소는 S1S0예요. 데이터 열은 D3부터 D0까지 역순이며 E가 활성인 조건도 확인하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>회로의 E는 NOT을 거쳐 들어가므로 E=0에서 활성이다. 주소 k=2S1+S0로 선택 입력을 찾는다. 출력 열 앞의 데이터 순서가 D3,D2,D1,D0임에 주의한다.</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>E</th><th>S1S0</th><th>선택</th><th>선택 데이터</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>00</td><td>D0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>01</td><td>D1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>10</td><td>D2</td><td>0</td><td>0</td></tr><tr><td>0</td><td>11</td><td>D3</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "결과",
+        "html": "<p>최종 답: 위에서 아래로 0, 1, 0, 0.</p>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 각 행에 E′와 네 주소 항을 대입해 선택 항 하나만 남음을 확인.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 표를 왼쪽부터 D0로 읽거나 enable 0을 비활성으로 읽지 않는다.</p>"
+      }
+    ],
+    "answer": "<p>0,1,0,0</p>"
+  },
+  "notes": []
+}

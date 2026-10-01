@@ -455,7 +455,8 @@
       "derived_answer": "S′I0+SI1",
       "answer_status": "verified",
       "title": "2×1 MUX의 게이트 설계",
-      "fragment": "problems/q-mux2.html"
+      "fragment": "problems/q-mux2.html",
+      "workbook_fragment": "workbook/q-mux2.json"
     },
     {
       "id": "q-mux4",
@@ -528,7 +529,8 @@
       "derived_answer": "0,1,0,0",
       "answer_status": "verified",
       "title": "Enable 있는 4×1 MUX 표 완성",
-      "fragment": "problems/q-mux4.html"
+      "fragment": "problems/q-mux4.html",
+      "workbook_fragment": "workbook/q-mux4.json"
     },
     {
       "id": "q-active",
@@ -652,7 +654,8 @@
       "derived_answer": "Y0=DS′, Y1=DS",
       "answer_status": "verified",
       "title": "보충: 1×2 DMUX의 게이트 설계",
-      "fragment": "problems/q-demux2.html"
+      "fragment": "problems/q-demux2.html",
+      "workbook_fragment": "workbook/q-demux2.json"
     },
     {
       "id": "q-design4",
@@ -716,7 +719,8 @@
       "derived_answer": "S1′S0′I0+S1′S0I1+S1S0′I2+S1S0I3",
       "answer_status": "verified",
       "title": "보충: 지정 게이트로 4×1 MUX 설계",
-      "fragment": "problems/q-design4.html"
+      "fragment": "problems/q-design4.html",
+      "workbook_fragment": "workbook/q-design4.json"
     },
     {
       "id": "q-switch",
@@ -849,7 +853,8 @@
       "derived_answer": "디코더 선택 신호로 MUX의 항을 합산하거나 DMUX 출력을 분배",
       "answer_status": "verified",
       "title": "디코더와 MUX·DMUX의 관계",
-      "fragment": "problems/q-decoder.html"
+      "fragment": "problems/q-decoder.html",
+      "workbook_fragment": "workbook/q-decoder.json"
     },
     {
       "id": "q-tri",
@@ -922,7 +927,8 @@
       "derived_answer": "nOE0=S, nOE1=S′, 출력 공통 연결",
       "answer_status": "disputed",
       "title": "활성 Low tri-state 버퍼로 MUX 설계",
-      "fragment": "problems/q-tri.html"
+      "fragment": "problems/q-tri.html",
+      "workbook_fragment": "workbook/q-tri.json"
     },
     {
       "id": "q-muxdef",
@@ -959,7 +965,8 @@
       "derived_answer": "여러 데이터 중 선택한 하나를 한 출력으로 전달",
       "answer_status": "verified",
       "title": "MUX를 간단히 서술",
-      "fragment": "problems/q-muxdef.html"
+      "fragment": "problems/q-muxdef.html",
+      "workbook_fragment": "workbook/q-muxdef.json"
     },
     {
       "id": "q-demuxdef",
@@ -987,7 +994,8 @@
       "derived_answer": "하나의 데이터를 선택한 출력으로 분배",
       "answer_status": "verified",
       "title": "DMUX를 간단히 서술 — 기출 여부 미확인",
-      "fragment": "problems/q-demuxdef.html"
+      "fragment": "problems/q-demuxdef.html",
+      "workbook_fragment": "workbook/q-demuxdef.json"
     },
     {
       "id": "q-difference",
@@ -1016,7 +1024,8 @@
       "derived_answer": "MUX N→1, DMUX 1→N (데이터 경로)",
       "answer_status": "verified",
       "title": "MUX와 DMUX의 차이 — 기출 여부 미확인",
-      "fragment": "problems/q-difference.html"
+      "fragment": "problems/q-difference.html",
+      "workbook_fragment": "workbook/q-difference.json"
     },
     {
       "id": "q-demux4",
@@ -1044,7 +1053,8 @@
       "derived_answer": "Y3Y2Y1Y0: D=0→0000; D=1→0001,0010,0100,1000",
       "answer_status": "disputed",
       "title": "1×4 DMUX 출력표 — 기출 여부 미확인",
-      "fragment": "problems/q-demux4.html"
+      "fragment": "problems/q-demux4.html",
+      "workbook_fragment": "workbook/q-demux4.json"
     },
     {
       "id": "q-mux2-graded",
@@ -1072,7 +1082,8 @@
       "derived_answer": "Y=X0·Sel′+X1·Sel; 0,1,1,1",
       "answer_status": "verified",
       "title": "채점본 2×1 MUX의 지정 네 행",
-      "fragment": "problems/q-mux2-graded.html"
+      "fragment": "problems/q-mux2-graded.html",
+      "workbook_fragment": "workbook/q-mux2-graded.json"
     },
     {
       "id": "q-active-general",
@@ -1101,7 +1112,8 @@
       "derived_answer": "기능이 1에서 유효하면 High 활성, 0에서 유효하면 Low 활성",
       "answer_status": "verified",
       "title": "Active High와 Active Low의 정의",
-      "fragment": "problems/q-active-general.html"
+      "fragment": "problems/q-active-general.html",
+      "workbook_fragment": "workbook/q-active-general.json"
     },
     {
       "id": "q-empty-six",
@@ -1147,10 +1159,12 @@
     }
   ],
   "checks": {
-    "source_visual": "pass",
-    "content": "self_review",
-    "independent": "pass",
-    "browser": "pass"
+    "source_visual": "not_run",
+    "content": "not_run",
+    "independent": "not_run",
+    "browser": "not_run"
   },
-  "note_presentation_version": 2
+  "note_presentation_version": 2,
+  "review_presentation_version": 2,
+  "figure_manifest": "figures/redraw-manifest.json"
 }

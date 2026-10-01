@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>활성 Low 버퍼 두 개와 NOT으로 구성한 MUX</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="38" font-family="Arial" fill="#222" font-size="30" text-anchor="start">74HC125 / active LOW nOE</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M380,85 L380,205 L510,145 Z"/>
+<text x="380" y="65" font-family="Arial" fill="#222" font-size="24" text-anchor="start">Buffer 0 / 74HC125</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="422" cy="185" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="422,193 422,240"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="200,145 380,145"/>
+<text x="170" y="153" font-family="Arial" fill="#222" font-size="26" text-anchor="end">I0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="510,145 790,145"/>
+<text x="470" y="225" font-family="Arial" fill="#222" font-size="25" text-anchor="start">nOE0 = S</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M380,290 L380,410 L510,350 Z"/>
+<text x="380" y="270" font-family="Arial" fill="#222" font-size="24" text-anchor="start">Buffer 1 / 74HC125</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="422" cy="390" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="422,398 422,445"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="200,350 380,350"/>
+<text x="170" y="358" font-family="Arial" fill="#222" font-size="26" text-anchor="end">I1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="510,350 790,350"/>
+<text x="470" y="430" font-family="Arial" fill="#222" font-size="25" text-anchor="start">nOE1 = S&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="790,145 790,350"/>
+<circle cx="790" cy="145" r="5" fill="#222"/>
+<circle cx="790" cy="350" r="5" fill="#222"/>
+<circle cx="790" cy="247" r="5" fill="#222"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="790,247 935,247"/>
+<text x="950" y="255" font-family="Arial" fill="#222" font-size="28" text-anchor="start">Y</text>
+<text x="207" y="475" font-family="Arial" fill="#222" font-size="20" text-anchor="start">NOT</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="140,510 215,510"/>
+<text x="135" y="500" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M215,485 L215,535 L265,510 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="273" cy="510" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="281,510 335,510"/>
+<text x="340" y="518" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S&#x27;</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>
