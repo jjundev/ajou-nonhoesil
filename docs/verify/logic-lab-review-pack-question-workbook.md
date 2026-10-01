@@ -140,3 +140,18 @@ FAILED tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽 - Ass
 - Git snapshot normalization changed the stored literal hashes; scope -text attributes to the two EC2 snapshot paths and their published copies. Export-consumer test RED→GREEN. Cost: those snapshots retain original line endings.
 
 미반영 Minor: 없음. 기존 실패 모듈 수정·원래 체크아웃 통합·push는 승인된 구현 범위에 포함하지 않았다.
+
+## main 통합 (2026-10-02)
+
+원래 체크아웃 `C:/Users/Hyunjun/Desktop/현준대학/26-2/논회실`의 main에 통합했다. 머지 커밋은 `eba5e9654eba08532fd6a1c5077a7f4ed0c0a5db`, 작업 브랜치는 `7b9b677`이다. 같은 이름의 초안 문서 두 개는 구현 완료·사용자 확정 기록이 있는 최신본으로 정리했고, 원래 초안은 선행 문서 커밋 f5c379b에 보존했다.
+
+사용자 후속 요청에 따라 발행 백업 커밋을 main/작업 브랜치 이력에서 제외했다. 세 백업 폴더와 파일은 로컬에 유지하고 `.gitignore`의 `복습노트/실험*.backup-*/`로 추적에서 제외했다. 원격 push는 수행하지 않았다.
+
+머지 후 학습팩 mechanical check 통과. config·workbook 핵심 검사 **124 passed, 50 subtests passed**. 전체 검사 **2347 passed, 6 failed, 4 skipped, 1092 subtests passed**. main의 기존 config 수정으로 이전 14개 실패가 해소됐다. 남은 실패는 변경되지 않은 기존 Windows/렌더링 테스트다:
+
+- tests/test_lab_figure_export.py::CaptureCopy::test_dump_dom_은_원본이_아니라_사본을_연다
+- tests/test_lab_html2pdf.py::TestSuccessRule::test_clean_exit_without_a_file_still_fails
+- tests/test_lab_html2pdf.py::TestSuccessRule::test_nonzero_exit_and_stderr_noise_still_succeed
+- tests/test_merge_report.py::TestIntegration::test_merge_lab_report_clean_body_false_keeps_file
+- tests/test_merge_report.py::TestIntegration::test_merge_lab_report_with_explicit_body_cleans_by_default
+- tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽
