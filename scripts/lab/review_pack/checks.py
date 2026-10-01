@@ -20,12 +20,13 @@ def check_pack(folder):
     folder=Path(folder)
     try:m=load_manifest(folder/'manifest.json')
     except (ValueError,OSError) as e:return [str(e)]
-    names=output_names(m['experiment']);errors=[];trees={}
+    workbook=m.get('review_presentation_version')==2
+    names=output_names(m['experiment'],review_presentation_version=m.get('review_presentation_version'));errors=[];trees={}
     bank_errors=check_bank_import(folder,m)
     errors.extend(bank_errors)
     if not bank_errors:
         errors.extend(check_bank_problem_assets(folder,m))
-    for key in ('note_html','review_html'):
+    for key in (('note_html',) if workbook else ('note_html','review_html')):
         path=folder/names[key]
         if not path.exists():errors.append('Missing page: '+str(path));continue
         text=path.read_text(encoding='utf-8')
@@ -51,6 +52,12 @@ def check_pack(folder):
             dest=folder/part if part else folder/names[key]
             if not dest.is_file():errors.append('Missing resource: '+value);continue
             if frag and dest.suffix=='.html':
+                if workbook and dest.name in (names['review_html'],names['question_html']):
+                    from .workbook_render import read_workbook_payload
+                    try:
+                        if frag not in {p['id'] for p in read_workbook_payload(dest)['problems']}: errors.append('Missing workbook anchor: '+value)
+                    except (ValueError,OSError,KeyError,TypeError) as exc: errors.append(str(exc))
+                    continue
                 other=Parser();other.feed(dest.read_text(encoding='utf-8'))
                 if not any(n.attrs.get('id')==frag for n in other.root.walk()):errors.append('Missing anchor: '+value)
     for row in m['topics']+[p for p in m['problems'] if p['status']=='included']:

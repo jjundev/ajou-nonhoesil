@@ -123,9 +123,19 @@ def convert_pack(note_path,review_path,manifest=None):
     if manifest and manifest.get('note_presentation_version')==2:
         from .note_metadata import topic_metadata
         metadata=topic_metadata(manifest)
+    workbook=bool(manifest and manifest.get('review_presentation_version')==2)
+    if workbook:
+        paths=paths[:1]
     for path in paths:
         text,n=export_document(path,note_metadata=metadata if path==paths[0] else None);out=path.with_suffix('.md')
         out.write_text(text,encoding='utf-8');outputs.append(out);count+=n
+    if workbook:
+        from .manifest import output_names
+        names=output_names(manifest['experiment'],review_presentation_version=2)
+        for key in ('question_md','review_md'):
+            path=paths[0].parent/names[key]
+            if not path.is_file(): raise ValueError('Workbook MD missing: '+str(path))
+            outputs.append(path)
     return outputs,count
 
 def check_md(html_path,md_path):

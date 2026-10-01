@@ -483,7 +483,7 @@ check_workbook_md는 작성 함수를 다시 호출해 전체 문자열만 비�
 
 **Interfaces:** Consumes Task 1~3 functions. Produces `check_workbook_pack(folder,manifest)`와 확장된 assemble 반환값(question_html/question_md 추가). 기존 CLI 인자와 publish destination은 동일하다.
 
-- [ ] **Step 1: 생성·legacy·누출·실제 payload anchor 테스트 작성.**
+- [x] **Step 1: 생성·legacy·누출·실제 payload anchor 테스트 작성.**
 
 ```python
 import json
@@ -569,8 +569,8 @@ def test_exposed_bank_asset_cannot_author_problem_diagram(tmp_path):
     assert check_redrawn_figures(run,m)
 ```
 
-- [ ] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_flow.py -n 0 -q`; question_html 반환·새 분기 부재로 FAIL.
-- [ ] **Step 3: assemble를 분기한다.** v2 작성 데이터/그림 검사를 출력 디렉터리 생성보다 먼저 실행한다. 기존 note 렌더링과 audit 생성은 유지하고 legacy review 생성만 v2에서 건너뛴다. assets/evidence/figures 복사 이후 아래 동작을 넣는다. paths['question_md']/['review_md']도 반환한다.
+- [x] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_flow.py -n 0 -q`; question_html 반환·새 분기 부재로 FAIL.
+- [x] **Step 3: assemble를 분기한다.** v2 작성 데이터/그림 검사를 출력 디렉터리 생성보다 먼저 실행한다. 기존 note 렌더링과 audit 생성은 유지하고 legacy review 생성만 v2에서 건너뛴다. assets/evidence/figures 복사 이후 아래 동작을 넣는다. paths['question_md']/['review_md']도 반환한다.
 
 ```python
 if manifest.get('review_presentation_version') == 2:
@@ -586,13 +586,13 @@ if manifest.get('review_presentation_version') == 2:
 
 실제로 preflight content 로드는 함수 앞에서 한 번만 하고 여기서 재사용한다. read_fragment의 NOTE_HREF/REVIEW_HREF와 note navigation을 유지하고 v2 note navigation에 기출문제 링크를 추가한다. footer/메타데이터 분리는 note_presentation_version의 기존 동작을 유지한다.
 
-- [ ] **Step 4: 검사·변환 분기 구현.** convert_pack은 v2에서 note만 정적 변환하고 workbook MD 파일이 이미 있음을 확인하며 빈 review MD로 덮어쓰지 않는다. check_pack은 note의 기존 검사·note_metadata를 그대로 수행하고 v2 review/question 검사만 check_workbook_pack에 위임한다. bank_asset_checks도 v2에 정적 card/details 요구를 적용하지 않고 새 payload 자산 검사 경로로 간다. 모든 output_names 호출에서 표시 버전을 전달하고 note→dynamic 문항 anchor 검사는 payload ID로 확인한다.
+- [x] **Step 4: 검사·변환 분기 구현.** convert_pack은 v2에서 note만 정적 변환하고 workbook MD 파일이 이미 있음을 확인하며 빈 review MD로 덮어쓰지 않는다. check_pack은 note의 기존 검사·note_metadata를 그대로 수행하고 v2 review/question 검사만 check_workbook_pack에 위임한다. bank_asset_checks도 v2에 정적 card/details 요구를 적용하지 않고 새 payload 자산 검사 경로로 간다. 모든 output_names 호출에서 표시 버전을 전달하고 note→dynamic 문항 anchor 검사는 payload ID로 확인한다.
 
 check_workbook_pack은 포함 문항 ID·번호·kind/answer status·problem html/figures/hints의 두 payload 일치, 문제 payload 허용 키, 해설 steps/answer 존재, registry role/exposure·hash·evidence 소속, MD 보존·link를 검사한다. HTML payload를 읽는 것으로 끝내지 말고 삽입 script 외의 HTML img/CSS 외부 자원도 기존 검사로 확인한다. 두 HTML이 읽은 payload를 원본 snapshot에 재주입한 결과와 동일한지 대조해 script 밖에 추가한 답안 img/DOM을 거부한다. browser 검증은 별도이며 자동 구조 PASS를 browser PASS로 기록하지 않는다.
 
-- [ ] **Step 5: 발행 사전 조건 확장.** 기존 publish의 checks 조건 전후에 v2만 `check_redrawn_figures(stage,data,require_review=True)`를 요구한다. 시각 검토 not_run인 도식을 발행하지 않는다. checks.browser/source_visual/content는 기존에 요구되던 검토와 함께 새 두 파일을 대상으로 한다. 사용자 파일 충돌·generated_files·원문 해시·backup/rollback 기존 검사는 유지한다. tests/test_review_pack_publish.py에 not_run 그림 기록 및 새 기출문제 파일과 사용자 파일 충돌 실패를 추가한다.
+- [x] **Step 5: 발행 사전 조건 확장.** 기존 publish의 checks 조건 전후에 v2만 `check_redrawn_figures(stage,data,require_review=True)`를 요구한다. 시각 검토 not_run인 도식을 발행하지 않는다. checks.browser/source_visual/content는 기존에 요구되던 검토와 함께 새 두 파일을 대상으로 한다. 사용자 파일 충돌·generated_files·원문 해시·backup/rollback 기존 검사는 유지한다. tests/test_review_pack_publish.py에 not_run 그림 기록 및 새 기출문제 파일과 사용자 파일 충돌 실패를 추가한다.
 
-- [ ] **Step 6: 전체 관련 회귀 및 commit.** `python -m pytest tests -k review_pack -n 0 -q`; legacy, note metadata/figures/print, bank import tests 포함. 모두 새 회귀 없이 PASS 후 위 파일만 stage하고 `git commit -m "feat: integrate workbook sheets with review pack validation and publishing"`.
+- [x] **Step 6: 전체 관련 회귀 및 commit.** `python -m pytest tests -k review_pack -n 0 -q`; legacy, note metadata/figures/print, bank import tests 포함. 모두 새 회귀 없이 PASS 후 위 파일만 stage하고 `git commit -m "feat: integrate workbook sheets with review pack validation and publishing"`.
 
 ### Task 5: 실제 12문항을 새로 저작하고 회로를 직접 제작
 

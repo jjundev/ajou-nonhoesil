@@ -15,6 +15,10 @@ def publish(stage,destination,root):
     errors=check_pack(stage)
     if errors:raise ValueError('\n'.join(errors))
     data=load_manifest(stage/'manifest.json')
+    if data.get('review_presentation_version')==2:
+        from .workbook_figures import check_redrawn_figures
+        errors=check_redrawn_figures(stage,data,require_review=True)
+        if errors: raise ValueError('\n'.join(errors))
     errors=check_bank_import(stage,data,root=root)
     if errors:raise ValueError('\n'.join(errors))
     expected=root/'복습노트'/config.experiment_folder_name(data['experiment'])

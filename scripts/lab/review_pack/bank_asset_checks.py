@@ -10,6 +10,9 @@ from .sources import file_sha256
 from .html2md import Parser,Node
 
 def check_bank_problem_assets(folder,manifest):
+    if manifest.get('review_presentation_version')==2:
+        from .workbook_checks import check_workbook_pack
+        return check_workbook_pack(folder,manifest)
     if 'bank_import' not in manifest:return []
     folder=Path(folder);errors=[]
     try:

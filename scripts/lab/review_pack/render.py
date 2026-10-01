@@ -27,7 +27,13 @@ def assemble(manifest,run,out,assets):
     if out.exists(): raise ValueError('Stage already exists; choose a new directory')
     errors=check_bank_import(run,manifest)
     if errors:raise ValueError('\n'.join(errors))
-    names=output_names(manifest['experiment']); sources={s['id']:s for s in manifest['sources']}
+    workbook=manifest.get('review_presentation_version')==2
+    names=output_names(manifest['experiment'],review_presentation_version=manifest.get('review_presentation_version')); sources={s['id']:s for s in manifest['sources']}
+    if workbook:
+        from .workbook_content import load_workbook_content,build_workbook_data
+        from .workbook_render import render_workbook_html
+        from .workbook_md import write_workbook_md
+        authored=load_workbook_content(manifest,run)
     esc=lambda v:html.escape(str(v),quote=True)
     def refs(row):
         links=[]
@@ -45,6 +51,7 @@ def assemble(manifest,run,out,assets):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
         note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+fragment+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
+        if workbook: break
         if p['status']!='included': continue
         head=f'<p class="eyebrow">{KINDS[p["kind"]]} · {ANSWERS[p["answer_status"]]} · {esc(p["scope"])}</p>'
         conflict=(f'<aside>제공 답안: {esc(p.get("given_answer"))} / 도출 답안: {esc(p.get("derived_answer"))}. 충돌·불확실성을 확인하세요.</aside>' if p['answer_status']!='verified' else '')
@@ -70,8 +77,9 @@ def assemble(manifest,run,out,assets):
     else: (out/'figures').mkdir()
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
-    for kind,body in [('note',note),('review',review)]:
+    for kind,body in ([('note',note)] if workbook else [('note',note),('review',review)]):
         nav=f'<a href="{names["note_html"]}">실험 설명</a><a href="{names["review_html"]}">기출 풀이</a>'
+        if workbook: nav+=f'<a href="{names["question_html"]}">기출 문제</a>'
         # Biology's pager expands section links into article links itself.
         nav+='<a href="#learning">'+('실험 이해' if kind=='note' else '문제와 풀이')+'</a>'
         text=(assets/f'{kind}-template.html').read_text(encoding='utf-8')
@@ -90,6 +98,13 @@ def assemble(manifest,run,out,assets):
         }.items(): text=text.replace(url,local)
         if '{{' in text: raise ValueError('Unreplaced placeholder')
         path=out/names[kind+'_html'];path.write_text(text,encoding='utf-8');paths[kind+'_html']=path
+    if workbook:
+        for mode,key in [('problems','question'),('answers','review')]:
+            data=build_workbook_data(manifest,authored,mode)
+            path=out/names[key+'_html']
+            path.write_text(render_workbook_html(data,assets),encoding='utf-8')
+            paths[key+'_html']=path
+            paths[key+'_md']=write_workbook_md(data,manifest,out/names[key+'_md'])
     audit=['# 출처와 문항목록','',f'판본 상태: {status}','']
     for p in manifest['problems']:
         audit.extend([f'## {p["id"]} · {KINDS[p["kind"]]}',f'- 분류: {p["status"]} / 범위: {p["scope"]}',f'- 사유: {p["reason"]}',f'- 대표 문항: {p.get("duplicate_of")}',f'- 제공 답안: {p.get("given_answer")}',f'- 도출 답안: {p.get("derived_answer")} / {ANSWERS[p["answer_status"]]}'])

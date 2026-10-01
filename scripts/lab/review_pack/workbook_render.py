@@ -22,7 +22,7 @@ def render_workbook_html(data, assets):
     provenance=_strict_json(folder/'provenance.json')
     blob=(folder/name).read_bytes()
     if hashlib.sha256(blob).hexdigest()!=provenance['sha256'][name]: raise ValueError('Template snapshot changed: '+name)
-    template=blob.decode('utf-8')
+    template=blob.decode('utf-8').replace('\r\n','\n')
     if template.count(TOKEN)!=1: raise ValueError('Expected one workbook data slot')
     text=template.replace(TOKEN,json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c'))
     for remote,local in URL_MAP.items(): text=text.replace(remote,local)
