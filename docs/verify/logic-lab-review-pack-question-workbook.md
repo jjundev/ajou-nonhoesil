@@ -116,3 +116,11 @@ FAILED tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽 - Ass
 ```
 
 독립 리뷰: [원문과 수정 판정](logic-lab-review-pack-question-workbook-review.md). Critical 0, Important 1(문제 링크 검사), Minor 0. Important를 12개 회귀 입력으로 재현하고 차단했다.
+
+## 최종 수정 후 검사
+
+전체 재실행: **2341 passed, 20 failed, 4 skipped, 1082 subtests passed** (209.64초). 실패 노드 집합은 변경 전 기준선과 정확히 같다. 문제 href 회귀 12건이 추가되어 통과 수가 늘었다.
+
+템플릿 두 파일은 Git 줄바꿈 정규화가 원본 해시를 바꾸는 것을 git show의 저장 바이트와 실제 renderer로 재현했다. .gitattributes에 이 두 source/published snapshot만 -text로 고정하여 커밋/내보내기에서도 원본 바이트를 유지한다. 생성된 학습 HTML 본문은 바꾸지 않았다.
+
+발행 경로: 복습노트/실험04. 백업: 실험04.backup-c55e41868ee4. 최종 HTML/MD/그림/증거는 검토된 stage c와 바이트 일치하며 published check 및 개념·원문 상대 링크 검사 통과. 원래 체크아웃에는 통합하지 않았다.

@@ -38,3 +38,19 @@ def test_changed_template_is_rejected(tmp_path):
     m, run = create_workbook_run(tmp_path/'input')
     data = build_workbook_data(m,load_workbook_content(m,run),'problems')
     with pytest.raises(ValueError): render_workbook_html(data,copied)
+
+def test_git_export_keeps_the_literal_template_contract(tmp_path):
+    import subprocess
+    import pytest
+    exported=tmp_path/'exported'; (exported/'workbook').mkdir(parents=True)
+    for name in ('problem.html','answer.html','provenance.json'):
+        result=subprocess.run(['git','show',':.claude/skills/logic-lab-review-pack/assets/workbook/'+name],capture_output=True)
+        if result.returncode:
+            pytest.skip('Git index is unavailable in this source distribution')
+        (exported/'workbook'/name).write_bytes(result.stdout)
+    m,run=create_workbook_run(tmp_path/'authoring')
+    for mode in ('problems','answers'):
+        data=build_workbook_data(m,load_workbook_content(m,run),mode)
+        target=tmp_path/(mode+'.html')
+        target.write_text(render_workbook_html(data,exported),encoding='utf-8')
+        assert read_workbook_payload(target)==data

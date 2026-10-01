@@ -1,0 +1,5 @@
+# Template snapshots are byte contracts; do not normalize their line endings.
+.claude/skills/logic-lab-review-pack/assets/workbook/problem.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+.claude/skills/logic-lab-review-pack/assets/workbook/answer.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+복습노트/**/assets/workbook/problem.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+복습노트/**/assets/workbook/answer.html -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
