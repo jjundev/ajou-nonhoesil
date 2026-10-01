@@ -43,3 +43,15 @@ def test_solution_figure_cannot_be_used_as_problem(tmp_path):
     path.write_text(json.dumps(obj), encoding='utf-8')
     with pytest.raises(ValueError): load_workbook_content(m, run)
 
+@pytest.mark.parametrize('target', ['evidence/assets/answer.png','figures/solutions/answer.svg','원문과_저작안내.md'])
+@pytest.mark.parametrize('field', ['original','conditions','ask','hint'])
+def test_problem_links_cannot_expose_answers(tmp_path,target,field):
+    m,run=create_workbook_run(tmp_path)
+    path=run/m['problems'][0]['workbook_fragment']
+    obj=json.loads(path.read_text(encoding='utf-8'))
+    link=f'<p><a href="{target}">원문 보기</a></p>'
+    if field=='hint': obj['hints'][0]['html']+=link
+    else: obj[field]+=link
+    path.write_text(json.dumps(obj,ensure_ascii=False),encoding='utf-8')
+    with pytest.raises(ValueError,match='question hyperlink'):
+        load_workbook_content(m,run)

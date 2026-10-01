@@ -44,6 +44,8 @@ def check_authored_html(text, folder, question_id, figures, *, problem=False):
     forbidden={'script','style','iframe','object','embed','svg','link','meta','base','video','audio','source'}
     for node in parser.root.walk():
         if node.tag in forbidden: raise ValueError(question_id+': forbidden markup '+node.tag)
+        if problem and node.tag=='a' and 'href' in node.attrs:
+            raise ValueError(question_id+': question hyperlink may expose an answer; put review links in the solution')
         for key,value in node.attrs.items():
             if key.lower().startswith('on'): raise ValueError(question_id+': active attribute')
             if key=='style':

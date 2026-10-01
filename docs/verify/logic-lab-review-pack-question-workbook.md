@@ -87,3 +87,32 @@
 ## 전체 검사와 독립 리뷰
 
 전체 실행: `python -m pytest tests -n 0 -q`: 2329 passed, 20 failed, 4 skipped, 1082 subtests passed. 실패는 lab_config, lab_figure_export, lab_html2pdf, merge_report, trace_guide에 있으며 이 작업에서 해당 모듈을 수정하지 않았다. 변경 전 175a6f8 코드의 별도 사본에서 같은 실패를 재현해 비교한다. 실제 실패 목록과 독립 리뷰 결과는 발행 전 이 문서에 기록한다.
+
+## 기준선 실패 대조
+
+175a6f8의 별도 사본에 같은 배포 교안·아카이브 교안을 놓고 실패한 테스트만 실행했다. **20 failed, 1 passed**이며 FAILED/SUBFAILED 노드 집합이 현재 전체 검사와 정확히 같았다. 실패 모듈 코드는 git diff에서 변경되지 않았다.
+
+```text
+SUBFAILED(n=1) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=2) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=3) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=4) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=5) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=6) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=7) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=8) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=9) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+SUBFAILED(n=10) tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보가_열_개_다_실재한다
+FAILED tests/test_lab_config.py::TestManualCandidates::test_아카이브_후보에는_실험_기반_경로가_붙지_않는다
+FAILED tests/test_lab_config.py::TestManualCandidates::test_주차_폴더_사본이_아카이브보다_먼저다
+FAILED tests/test_lab_config.py::TestManualCandidates::test_파일_이름은_0_을_채우지_않는다
+FAILED tests/test_lab_config.py::ExperimentBaseTest::test_기반이_두_입구_전부에_적용된다
+FAILED tests/test_lab_figure_export.py::CaptureCopy::test_dump_dom_은_원본이_아니라_사본을_연다
+FAILED tests/test_lab_html2pdf.py::TestSuccessRule::test_clean_exit_without_a_file_still_fails
+FAILED tests/test_lab_html2pdf.py::TestSuccessRule::test_nonzero_exit_and_stderr_noise_still_succeed
+FAILED tests/test_merge_report.py::TestIntegration::test_merge_lab_report_clean_body_false_keeps_file
+FAILED tests/test_merge_report.py::TestIntegration::test_merge_lab_report_with_explicit_body_cleans_by_default
+FAILED tests/test_trace_guide.py::Pdf::test_실험04_는_층마다_한_쪽 - Assertio...
+```
+
+독립 리뷰: [원문과 수정 판정](logic-lab-review-pack-question-workbook-review.md). Critical 0, Important 1(문제 링크 검사), Minor 0. Important를 12개 회귀 입력으로 재현하고 차단했다.

@@ -29,7 +29,7 @@ manifest.schema_version=1, review_presentation_version=2, figure_manifest='figur
 style="max-width:100%;height:auto" alt="2×1 MUX 완성 회로"></p>
 ```
 
-문제지 JSON에는 solution·notes·증거를 넣지 않는다. 해설지는 동일 문제 데이터에 단계/답/대조 기록/개념 링크를 추가한다. source evidence는 원문과_저작안내.md에서 접근한다. 두 판의 문항 번호·ID·조건·힌트·문제 그림은 일치해야 한다.
+문제지 JSON에는 solution·notes·증거를 넣지 않는다. 문제 본문·조건·구할 것·힌트의 작성 HTML에는 하이퍼링크를 넣지 않는다. 원문·해설 자료에 접근하는 링크는 해설에서만 제공한다. 해설지는 동일 문제 데이터에 단계/답/대조 기록/개념 링크를 추가한다. source evidence는 원문과_저작안내.md에서 접근한다. 두 판의 문항 번호·ID·조건·힌트·문제 그림은 일치해야 한다.
 
 세 HTML/세 MD를 같은 작성 데이터로 생성한다. JavaScript 템플릿 전체를 정적 HTML→MD에 넣지 않는다. 변환기는 실험설명에만 사용하고 workbook MD는 payload에서 생성하며 본문·TeX·표 셀·이미지·anchor 보존을 별도로 검사한다.
 
