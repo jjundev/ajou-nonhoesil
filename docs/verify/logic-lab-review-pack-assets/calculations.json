@@ -1,0 +1,22 @@
+{
+  "mux2_rows": 8,
+  "mux4_cases": 64,
+  "nand_enable_cases": 128,
+  "demux4_cases": 8,
+  "demux2_rows": 4,
+  "tri_state_cases": 8,
+  "mux4_question_outputs": [
+    0,
+    1,
+    0,
+    0
+  ],
+  "graded_outputs": [
+    0,
+    1,
+    1,
+    1
+  ],
+  "given_power_fixture_W": 0.00024999999999999995,
+  "status": "pass"
+}

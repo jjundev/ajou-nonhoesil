@@ -1,0 +1,7 @@
+{
+  "source": "생명과학/.agents/skills/bio-review-pack/assets",
+  "sha256": {
+    "note-template.html": "e7fb01b2a4fb0f47d669b6f8075512af955a3249ff476fcb79db60fc749bc79d",
+    "review-template.html": "b9638be03535dda6bd5878cfe59a5d4704259a8d695e7f35dc3c92a2f3fbc80b"
+  }
+}
