@@ -9,9 +9,12 @@ from .question_bank import _unique_json_object
 def safe_relative(value):
     return isinstance(value,str) and bool(value) and not PurePosixPath(value).is_absolute() and not any(x in value for x in ('\\',':')) and '..' not in PurePosixPath(value).parts
 
-def output_names(experiment):
+def output_names(experiment, *, review_presentation_version=None):
     base=config.experiment_folder_name(experiment)
-    return {f'{kind}_{ext}':f'{base}_{label}.{ext}' for kind,label in [('note','실험설명'),('review','기출풀이')] for ext in ('html','md')}
+    names={f'{kind}_{ext}':f'{base}_{label}.{ext}' for kind,label in [('note','실험설명'),('review','기출풀이')] for ext in ('html','md')}
+    if review_presentation_version == 2:
+        names.update({f'question_{ext}':f'{base}_기출문제.{ext}' for ext in ('html','md')})
+    return names
 
 def validate_manifest(data):
     errors=[]
@@ -21,6 +24,11 @@ def validate_manifest(data):
         errors.append('schema_version must be 1')
     if 'note_presentation_version' in data and (type(data['note_presentation_version']) is not int or data['note_presentation_version'] != 2):
         errors.append('note_presentation_version must be 2 or absent')
+    modern=data.get('review_presentation_version') == 2
+    if 'review_presentation_version' in data and (type(data['review_presentation_version']) is not int or not modern):
+        errors.append('review_presentation_version must be 2 or absent')
+    if modern and not safe_relative(data.get('figure_manifest')):
+        errors.append('unsafe/missing figure_manifest')
     try: config.experiment_folder_name(data.get('experiment'))
     except (ValueError,TypeError): errors.append('invalid experiment')
     if not isinstance(data.get('title'),str) or not data['title'].strip():
@@ -75,7 +83,8 @@ def validate_manifest(data):
         links=p.get('topics')
         if not isinstance(links,list) or any(t not in topics for t in links) or (p.get('status')=='included' and not links): errors.append(ident+': unknown/missing topics')
         if p.get('status')=='included':
-            if not safe_relative(p.get('fragment')): errors.append(ident+': unsafe fragment')
+            field='workbook_fragment' if modern else 'fragment'
+            if not safe_relative(p.get(field)): errors.append(ident+': unsafe/missing '+field)
             if p.get('answer_status')=='verified' and not p.get('derived_answer'): errors.append(ident+': missing derived_answer')
         elif not p.get('reason'): errors.append(ident+': missing reason')
         if p.get('status')=='duplicate' and p.get('duplicate_of') not in problems: errors.append(ident+': missing duplicate target')
