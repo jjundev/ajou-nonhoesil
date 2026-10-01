@@ -378,7 +378,7 @@ canonical row의 figures는 registry에서 `{src: png, w_mm, h_mm}`로 만들고
 
 **Interfaces:** Consumes Task 2 payload. Produces `render_workbook_html`, `read_workbook_payload`, `write_workbook_md`, `check_workbook_md`. html2md.export_document는 교육 조각의 MD 렌더링에만 사용하고 dynamic workbook HTML 전체에는 사용하지 않는다.
 
-- [ ] **Step 1: 주입·이스케이프·MD 보존 실패 테스트 작성.**
+- [x] **Step 1: 주입·이스케이프·MD 보존 실패 테스트 작성.**
 
 ```python
 import copy
@@ -437,8 +437,8 @@ def test_changed_template_is_rejected(tmp_path):
     with pytest.raises(ValueError): render_workbook_html(data,copied)
 ```
 
-- [ ] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_render.py tests/test_review_pack_workbook_md.py -n 0 -q`.
-- [ ] **Step 3: 주입 구현.** 원본 snapshot hash를 provenance로 검사한 뒤 아래 핵심을 적용한다. generated HTML을 read_workbook_payload로 읽을 때 script id/mime 중복과 JSON 중복 키도 거부한다. 원본 외부 URL이 예상 목록 밖이면 로컬화 실패로 오류를 낸다.
+- [x] **Step 2: FAIL 확인.** `python -m pytest tests/test_review_pack_workbook_render.py tests/test_review_pack_workbook_md.py -n 0 -q`.
+- [x] **Step 3: 주입 구현.** 원본 snapshot hash를 provenance로 검사한 뒤 아래 핵심을 적용한다. generated HTML을 read_workbook_payload로 읽을 때 script id/mime 중복과 JSON 중복 키도 거부한다. 원본 외부 URL이 예상 목록 밖이면 로컬화 실패로 오류를 낸다.
 
 ```python
 import json
@@ -456,7 +456,7 @@ def _inject(template, data):
     return text
 ```
 
-- [ ] **Step 4: MD를 작성 데이터에서 생성하고 독립 검사 구현.** 교육 HTML 조각은 아래 helper로 기존 변환기를 재사용한다. 출력 본문의 문항 anchor는 원래 ID이며 HTML 링크의 학습 파일 suffix만 .md로 변경한다. problem payload의 original/conditions/ask/문제 그림/힌트만 출력하고 answers는 추가 steps/answer·출처·개념 링크·notes·held 기록을 출력한다. 표는 모든 셀 순서와 빈 출력 셀을 유지한다.
+- [x] **Step 4: MD를 작성 데이터에서 생성하고 독립 검사 구현.** 교육 HTML 조각은 아래 helper로 기존 변환기를 재사용한다. 출력 본문의 문항 anchor는 원래 ID이며 HTML 링크의 학습 파일 suffix만 .md로 변경한다. problem payload의 original/conditions/ask/문제 그림/힌트만 출력하고 answers는 추가 steps/answer·출처·개념 링크·notes·held 기록을 출력한다. 표는 모든 셀 순서와 빈 출력 셀을 유지한다.
 
 ```python
 from pathlib import Path
@@ -472,7 +472,7 @@ def _fragment_md(text):
 
 check_workbook_md는 작성 함수를 다시 호출해 전체 문자열만 비교하지 않는다. payload HTML의 text leaf·수식 문자열·표 셀을 Parser로 독립 순회하고 MD에서 보존을 검사한다. figure.src와 단계 img의 상대 URL을 확인하고 이미지 파일이 존재해야 한다. notes와 감사 필드는 answers에서만 검사한다. 파일명에 공백/한글/퍼센트가 있으면 quote/unquote로 처리하고 로컬 anchor를 MD의 `<a id>`로 검사한다. source PDF는 기존 규칙대로 stage 외부 링크로 예외 처리한다.
 
-- [ ] **Step 5: PASS 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_render.py tests/test_review_pack_workbook_md.py -n 0 -q`; `git commit -m "feat: render workbook sheets and preserve markdown from shared data"`.
+- [x] **Step 5: PASS 확인 및 commit.** `python -m pytest tests/test_review_pack_workbook_render.py tests/test_review_pack_workbook_md.py -n 0 -q`; `git commit -m "feat: render workbook sheets and preserve markdown from shared data"`.
 
 ### Task 4: 기존 build/check/publish에 새 표시 방식 연결
 
