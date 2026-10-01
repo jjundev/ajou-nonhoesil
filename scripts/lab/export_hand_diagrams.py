@@ -5,6 +5,7 @@
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -13,11 +14,8 @@ from typing import List, Optional
 
 from . import config
 from . import hand_grid
+from . import hand_crop
 from . import netlist_parser
-
-# 브레드보드 템플릿 영역 기준 크롭 좌표 (가로: 행 화살표 포함, 세로: 상단 검은선/공백 및 하단 캡션 제외)
-BOARD_CROP_TEMPLATE_X = (20, 565)
-BOARD_CROP_TEMPLATE_Y = (30, 740)
 
 
 def find_default_pdf(experiment: int) -> Path:
@@ -67,6 +65,14 @@ def resolve_circuit_filenames(
     파일명 규칙: {실험폴더명}_{소단원}_손그림_{회로명}.png
     (예: 실험01_1-1_손그림_3입력_AND.png, 실험01_3_손그림_복합논리회로.png)
     """
+    # Resolve against the same complete PDF on full and partial runs.
+    # Otherwise resuming page 2 can reassign the first circuit's filename.
+    if pages is not None and pdf_path is not None:
+        import fitz
+        with fitz.open(str(pdf_path)) as doc:
+            count = len(doc)
+        all_names = resolve_circuit_filenames(experiment, count, round_dir, pdf_path)
+        return [all_names[p] for p in pages]
     try:
         folder_name = config.experiment_folder_name(experiment)
         netlist_path = Path(config.experiment_dir(experiment)) / "결선도" / "netlist.md"
@@ -83,7 +89,7 @@ def resolve_circuit_filenames(
             circuit_sections = []
 
     if not circuit_sections:
-        return [f"{folder_name}_손그림_p{i+1}.png" for i in range(page_count)]
+        return [f"{folder_name}_손그림_p{i+1}.png" for i in (pages if pages is not None else range(page_count))]
 
     # 회로 섹션별 메타데이터 추출
     circuit_info = []
@@ -278,6 +284,7 @@ def export_hand_diagrams(
     dpi: int = 300,
     crop_board: bool = False,
     pages: Optional[List[int]] = None,
+    crop_plan: Optional[str | Path] = None,
 ) -> List[Path]:
     """손그림 PDF 의 쪽들을 개별 고해상도 PNG 파일로 내보낸다.
 
@@ -286,12 +293,17 @@ def export_hand_diagrams(
         pdf_path: 대상 PDF 파일 경로 (None 이면 최신 파일 자동 탐색)
         out_dir: 출력 디렉토리 (None 이면 `보고서/실험NN/결선도/손그림`)
         dpi: 렌더링 해상도 (기본 300 DPI)
-        crop_board: 브레드보드 및 상단 전원 잭 부분만 타이트하게 크롭할지 여부 (기본 False: 전체 페이지 유지)
+        crop_board: 의미 판독 계획에 따라 크롭 (기본 False: 전체 페이지 유지)
+        crop_plan: crop_board=True일 때 필수인 hand-crop/v1 JSON 경로
         pages: 추출할 페이지의 0-based 인덱스 목록 (None 이면 PDF 전체 페이지)
 
     Returns:
         생성된 PNG 파일의 Path 목록
     """
+    if type(dpi) is not int or dpi <= 0:
+        raise ValueError("DPI must be a positive integer")
+    if crop_board and crop_plan is None:
+        raise ValueError("--crop requires --crop-plan PATH; 스킬의 시각 판독 단계로 계획을 생성하세요.")
     round_dir: Optional[Path] = None
     if pdf_path is None:
         src_pdf = find_default_pdf(experiment)
@@ -320,7 +332,14 @@ def export_hand_diagrams(
     if pages is None:
         target_pages = list(range(total_pages))
     else:
-        target_pages = [p for p in pages if 0 <= p < total_pages]
+        if not pages or any(type(p) is not int or not 0 <= p < total_pages for p in pages):
+            raise ValueError("선택 페이지가 PDF 범위를 벗어났습니다.")
+        target_pages = sorted(set(pages))
+
+    crop_entries = hand_crop.load_crop_plan(crop_plan, src_pdf, target_pages) if crop_board else {}
+    crop_report = dict(schema="hand-crop-report/v1",
+                       source_sha256=hashlib.sha256(src_pdf.read_bytes()).hexdigest(),
+                       dpi=dpi, pages=[])
 
     filenames = resolve_circuit_filenames(
         experiment,
@@ -337,22 +356,19 @@ def export_hand_diagrams(
         im = hand_grid.render_page(str(src_pdf), p_num, dpi=dpi)
 
         if crop_board:
-            # 브레드보드 판형 영역과 상단 잭 영역만 크롭하고 좌우 여백/필기 제목/하단 실체도 캡션을 제거한다.
-            b = hand_grid.board_image(str(src_pdf), p_num)
-            w_t, h_t = b.width, b.height
-            bx0, by0, bx1, by1 = b.rect
-            s = dpi / 72.0
-            # 템플릿 좌표 기준: 가로 [20, 565] (행 라벨 화살표 포함, 우측 자필 제목 제외)
-            # 세로 [30, 740] (상단 얇은 검은 줄 및 불필요한 공백 제거, 상단 전원 잭 및 배선 포함, 63행 아래 실체도 캡션 제외)
-            px_x0 = max(0, int((bx0 + BOARD_CROP_TEMPLATE_X[0] / w_t * (bx1 - bx0)) * s))
-            px_y0 = max(0, int((by0 + BOARD_CROP_TEMPLATE_Y[0] / h_t * (by1 - by0)) * s))
-            px_x1 = min(im.width, int((bx0 + BOARD_CROP_TEMPLATE_X[1] / w_t * (bx1 - bx0)) * s))
-            px_y1 = min(im.height, int((by0 + BOARD_CROP_TEMPLATE_Y[1] / h_t * (by1 - by0)) * s))
-            im = im.crop((px_x0, px_y0, px_x1, px_y1))
+            im, result = hand_crop.render_crop(im, crop_entries[p_num], target_dir, p_num+1)
+            crop_report['pages'].append(result)
+            if im is None:
+                result['existing_output_unchanged'] = str(out_path) if out_path.exists() else None
+                continue
+            result['output'] = str(out_path)
 
         im.save(str(out_path), format="PNG")
         saved_paths.append(out_path)
 
+    if crop_board:
+        (target_dir / "crop-report.json").write_text(
+            json.dumps(crop_report, ensure_ascii=False, indent=2), encoding="utf-8")
     return saved_paths
 
 
@@ -364,12 +380,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("pdf", nargs="?", default=None, help="손그림 PDF 파일 경로 (생략 시 최신 검토본 사용)")
     parser.add_argument("--out", "-o", default=None, help="출력 디렉토리 (기본: 보고서/실험NN/결선도/손그림)")
     parser.add_argument("--pages", default=None, help="추출할 페이지 번호 (1-based, 예: '1,2' 또는 '3-4')")
+    parser.add_argument("--crop-plan", help="시각 판독으로 작성한 hand-crop/v1 JSON")
     parser.add_argument("--dpi", type=int, default=300, help="해상도 DPI (기본: 300)")
     parser.add_argument(
         "--crop",
         action="store_true",
         default=False,
-        help="브레드보드 본체 영역만 정밀 크롭하여 저장 (기본값: False, 크롭하지 않고 전체 페이지 저장)",
+        help="전원·보드 전체·외부 결선 표기를 보존하여 크롭 (--crop-plan 필수)",
     )
     parser.add_argument(
         "--no-crop",
@@ -387,7 +404,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     crop_board = bool(args.crop and not (args.no_crop or args.full_page))
-    parsed_pages = parse_pages_arg(args.pages) if args.pages else None
+    try:
+        parsed_pages = parse_pages_arg(args.pages) if args.pages else None
+    except ValueError as exc:
+        print(f"[ERROR] 페이지 선택 오류: {exc}", file=sys.stderr)
+        return 1
 
     # 주차 토큰 처리 (예: "3주차", "week3")
     m_week = re.search(r"(\d+)\s*주차|week\s*(\d+)", str(args.experiment), re.IGNORECASE)
@@ -409,6 +430,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     try:
         total_saved = []
+        pending = []
+        reports_by_directory = {}
         for exp in exp_list:
             exp_pages = parsed_pages
             if exp_pages is None and len(exp_list) > 1 and args.pdf:
@@ -426,13 +449,29 @@ def main(argv: Optional[List[str]] = None) -> int:
                 dpi=args.dpi,
                 crop_board=crop_board,
                 pages=exp_pages,
+                crop_plan=args.crop_plan,
             )
             total_saved.extend(paths)
+            if crop_board:
+                directory = Path(args.out) if args.out else Path(config.experiment_dir(exp))/"결선도"/"손그림"
+                report = json.loads((directory/"crop-report.json").read_text(encoding="utf-8"))
+                pending.extend(p["page"] for p in report["pages"] if p["status"] == "pending")
+                for page in report['pages']:
+                    page['experiment'] = exp
+                previous = reports_by_directory.get(directory)
+                if previous is not None:
+                    report['pages'] = previous['pages'] + report['pages']
+                reports_by_directory[directory] = report
+                (directory/'crop-report.json').write_text(
+                    json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
 
-        print(f"[SUCCESS] {len(total_saved)}개의 손그림 PNG 생성 완료:")
+        status = "PENDING" if pending else "SUCCESS"
+        print(f"[{status}] {len(total_saved)}개의 손그림 PNG 생성 완료:")
+        if pending:
+            print(f"사용자 확인 필요 페이지: {pending}; crop-report.json과 candidates/를 확인하세요.")
         for p in total_saved:
             print(f"  - {p} ({p.stat().st_size // 1024} KB)")
-        return 0
+        return 2 if pending else 0
     except Exception as e:
         print(f"[ERROR] 손그림 추출 실패: {e}", file=sys.stderr)
         return 1
