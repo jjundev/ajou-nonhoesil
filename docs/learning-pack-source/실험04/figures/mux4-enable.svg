@@ -12,7 +12,7 @@
 <path class="gate" d="M205,70 h40 a35,35 0 0 1 0,70 h-40 z"/>
 <text x="235" y="113" text-anchor="middle">&amp;</text>
 <circle class="gate" cx="288" cy="105" r="8"/>
-<polyline class="wire" points="296,105 335,105 335,210 430,210"/>
+<polyline class="wire" points="296,105 380,105 380,210 430,210"/>
 <text x="24" y="188" text-anchor="start">I1, E′</text>
 <text x="24" y="221" text-anchor="start">S1′ S0</text>
 <polyline class="wire" points="160,175 205,175"/>
@@ -22,7 +22,7 @@
 <path class="gate" d="M205,165 h40 a35,35 0 0 1 0,70 h-40 z"/>
 <text x="235" y="208" text-anchor="middle">&amp;</text>
 <circle class="gate" cx="288" cy="200" r="8"/>
-<polyline class="wire" points="296,200 350,200 350,232 430,232"/>
+<polyline class="wire" points="296,200 355,200 355,232 430,232"/>
 <text x="24" y="283" text-anchor="start">I2, E′</text>
 <text x="24" y="316" text-anchor="start">S1 S0′</text>
 <polyline class="wire" points="160,270 205,270"/>
@@ -32,7 +32,7 @@
 <path class="gate" d="M205,260 h40 a35,35 0 0 1 0,70 h-40 z"/>
 <text x="235" y="303" text-anchor="middle">&amp;</text>
 <circle class="gate" cx="288" cy="295" r="8"/>
-<polyline class="wire" points="296,295 365,295 365,254 430,254"/>
+<polyline class="wire" points="296,295 355,295 355,254 430,254"/>
 <text x="24" y="378" text-anchor="start">I3, E′</text>
 <text x="24" y="411" text-anchor="start">S1 S0</text>
 <polyline class="wire" points="160,365 205,365"/>

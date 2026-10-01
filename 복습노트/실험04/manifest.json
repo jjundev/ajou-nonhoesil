@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "experiment": 4,
-  "title": "Multiplexer & Demultiplexer — 기초부터 실험과 기출까지",
+  "title": "Multiplexer & Demultiplexer — 경로를 고르는 회로를 배워요",
   "edition_status": "current",
   "bank_import": {
     "bank_id": "bank-exp04",
@@ -107,7 +107,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "먼저 보는 전체 그림과 학습 순서",
+      "title": "전체 흐름을 먼저 살펴봐요",
       "requires": [],
       "sources": [
         {
@@ -131,11 +131,12 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-start.html"
+      "fragment": "sections/t-start.html",
+      "md_notes": "판본 기록: 2026-2 배포 교안의 표지에는 25-1로 적혀 있어요. 수행 범위는 9월 14일 공지의 1-1·2-1이에요. 기출 파일명 2016-1의 시험지 헤더는 2017-1이에요. 빈 예상문제 6번은 보류했어요."
     },
     {
       "id": "t-basics",
-      "title": "0·1, 게이트와 진리표를 다시 읽기",
+      "title": "0·1, 게이트와 진리표를 다시 읽어요",
       "requires": [
         "t-start"
       ],
@@ -155,7 +156,7 @@
     },
     {
       "id": "t-mux2",
-      "title": "2×1 MUX: 경로를 고르는 완성 예제",
+      "title": "2×1 MUX의 경로를 골라 봐요",
       "requires": [
         "t-basics"
       ],
@@ -171,11 +172,12 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-mux2.html"
+      "fragment": "sections/t-mux2.html",
+      "md_notes": "그림 재제작: 정의와 교안 PDF p3–4를 바탕으로 NOT 1개, AND 2개, OR 1개를 새로 그렸어요. 8가지 입력 조합을 식과 대조했어요."
     },
     {
       "id": "t-mux4",
-      "title": "4×1 MUX와 활성 Low enable",
+      "title": "4×1 MUX와 활성 Low enable을 배워요",
       "requires": [
         "t-mux2"
       ],
@@ -196,11 +198,12 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-mux4.html"
+      "fragment": "sections/t-mux4.html",
+      "md_notes": "그림 재제작: 교안 PDF p8의 NAND 회로를 신호 이름으로 다시 그렸어요. S1·S0·E의 NOT 보수 신호는 아래 줄에 정의했어요. p9의 E=1 출력 X와 달리 이 회로의 이상 출력은 0이에요. 원문 스캔은 설명 화면에 첨부하지 않아요."
     },
     {
       "id": "t-demux",
-      "title": "DMUX: 한 값을 지정한 출력으로 분배",
+      "title": "DMUX로 데이터를 나눠 보내요",
       "requires": [
         "t-basics",
         "t-mux4"
@@ -227,11 +230,12 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-demux.html"
+      "fragment": "sections/t-demux.html",
+      "md_notes": "그림 재제작: 교안 PDF p11의 NOT 2개·AND 4개 회로를 새로 그렸어요. p12 원문 및 제공 퀴즈의 D=0 출력 X는 유지된 증거에서 확인할 수 있어요. 새 표는 AND 회로의 도출값 0000이에요."
     },
     {
       "id": "t-decoder",
-      "title": "디코더와 MUX·DMUX의 연결",
+      "title": "디코더와 MUX·DMUX를 연결해 봐요",
       "requires": [
         "t-mux4",
         "t-demux"
@@ -248,11 +252,12 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-decoder.html"
+      "fragment": "sections/t-decoder.html",
+      "md_notes": "그림 재제작: 주소 10의 one-hot 선택과 Ck·Ik 합산/Ck·D 분배 관계를 직접 블록도로 그렸어요. 활성 High 출력에 한정한 이상 모델이에요."
     },
     {
       "id": "t-tristate",
-      "title": "Tri-state MUX와 출력 충돌",
+      "title": "Tri-state로 출력선을 함께 써요",
       "requires": [
         "t-mux2",
         "t-mux4"
@@ -313,11 +318,12 @@
           "question": "9"
         }
       ],
-      "fragment": "sections/t-tristate.html"
+      "fragment": "sections/t-tristate.html",
+      "md_notes": "그림 재제작: 기출의 74HC125 제공 조건 nOE=0 활성에 맞춰 nOE0=S, nOE1=S′로 새로 그렸어요. 예상문제의 active high enables 답안 그림과 극성이 달라요. 기존 답안 충돌 상태를 유지했어요."
     },
     {
       "id": "t-lab",
-      "title": "실험 1-1·2-1: 무엇을 바꾸고 무엇을 관찰할까",
+      "title": "실험에서 바꾸고 관찰할 것을 정리해요",
       "requires": [
         "t-mux4",
         "t-demux"
@@ -364,7 +370,8 @@
           "printed_page": null
         }
       ],
-      "fragment": "sections/t-lab.html"
+      "fragment": "sections/t-lab.html",
+      "md_notes": "그림 재제작: 교안 PDF p8·p11의 회로는 앞 개념 토픽의 SVG로 대체하고 p9·p12 스캔 표는 텍스트 표 및 불일치 설명으로 대체했어요. 실험 조작은 별도 흐름도로 새로 그렸어요. 그림은 핀 배치도가 아니에요."
     }
   ],
   "problems": [
@@ -1141,10 +1148,11 @@
   ],
   "checks": {
     "source_visual": "pass",
-    "content": "pass",
+    "content": "self_review",
     "independent": "pass",
     "browser": "pass"
   },
+  "note_presentation_version": 2,
   "generated_files": [
     "assets/note-template.html",
     "assets/review-interaction.css",
@@ -1273,10 +1281,12 @@
     "evidence/assets/s11-p3.png",
     "evidence/assets/s11-p4.png",
     "evidence/question-bank.json",
-    "figures/manual-11.png",
-    "figures/manual-12.png",
-    "figures/manual-8.png",
-    "figures/manual-9.png",
+    "figures/decoder-routing.svg",
+    "figures/demux4-gates.svg",
+    "figures/lab-signal-flow.svg",
+    "figures/mux2-gates.svg",
+    "figures/mux4-enable.svg",
+    "figures/tristate-bus.svg",
     "manifest.json",
     "검증결과.md",
     "실험04_기출풀이.html",

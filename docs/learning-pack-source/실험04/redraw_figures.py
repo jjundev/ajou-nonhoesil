@@ -35,7 +35,7 @@ def mux2():
         d.text(24,y+24,data);d.wire((60,y+16),(175,y+16))
         d.text(24,y+64,control);d.wire((60,y+54),(175,y+54))
         x,oy=d.gate(175,y,'&')
-        d.wire((x,oy),(320,oy),(320,195 if y==110 else 235),(390,195 if y==110 else 235))
+        d.wire((x,oy),(320,oy),(320,195 if y==110 else 235),(401.25,195 if y==110 else 235))
     # OR symbol: curved input side, pointed output side.
     d.items.append('<path class="gate" d="M390,175 Q420,215 390,255 Q455,255 475,215 Q455,175 390,175 Z"/>')
     d.text(430,223,'≥1','middle');d.wire((475,215),(580,215));d.text(590,223,'Y')
@@ -54,7 +54,8 @@ def mux4():
         # Four separate inputs; named signals avoid ambiguous bus crossings.
         for offset in [10,27,44,61]:d.wire((160,y+offset),(205,y+offset))
         x,oy=d.gate(205,y,'&',True)
-        d.wire((x,oy),(335+k*15,oy),(335+k*15,210+k*22),(430,210+k*22))
+        lane=[380,355,355,380][k]
+        d.wire((x,oy),(lane,oy),(lane,210+k*22),(430,210+k*22))
     d.items.append('<path class="gate" d="M430,190 h35 a65,65 0 0 1 0,130 h-35 z"/><circle class="gate" cx="538" cy="255" r="8"/>')
     d.text(465,263,'&','middle');d.wire((546,255),(585,255));d.text(595,263,'Y')
     d.text(24,475,'각 행의 네 입력을 모두 곱해요.')

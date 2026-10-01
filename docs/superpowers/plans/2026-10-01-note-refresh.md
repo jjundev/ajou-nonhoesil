@@ -1,6 +1,6 @@
 # 실험설명 문체·정보·그림 수정 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 실험설명 HTML을 생명과학의 다정한 말투와 새 그림으로 개선하고, 출처·연결 문제는 MD에 보존한다.
 
@@ -56,7 +56,7 @@
 - `export_document(path, export=True, note_metadata=None) -> tuple[str, int]`: 기존 인자를 유지하고 article.topic 끝에 해당 metadata를 추가한다.
 - `convert_pack(note_path, review_path, manifest=None)`: 기존 반환값 유지. manifest가 없으면 같은 폴더 manifest.json을 읽고, 없는 경우 기존 변환을 유지한다.
 
-- [ ] **Step 1: 실패 테스트 작성.** 신규 테스트의 최소 핵심:
+- [x] **Step 1: 실패 테스트 작성.** 신규 테스트의 최소 핵심:
 
 ```python
 from pathlib import Path
@@ -84,8 +84,8 @@ def test_note_metadata_only_in_md(tmp_path):
 
 추가 독립 사례는 같은 fixture의 topics[0].sources=[] / problems=[]에서 metadata 결과가 빈 문자열인 것, 문제 status='held'에서 링크가 없는 것, legacy fixture에서 기존 출처 HTML과 check_pack 성공이다. HTML의 sources 클래스뿐 아니라 main 안 ‘출처:’와 연결 문제 문구를 검사한다. fixture의 refs 없는 practice 문제에는 기존 review 출력 유지.
 
-- [ ] **Step 2:** `python -m pytest tests/test_review_pack_note_metadata.py -v` 실행. 새 manifest 인자 또는 분리 출력 assertion에서 실패해야 한다.
-- [ ] **Step 3: 최소 구현.** metadata의 생성 규칙:
+- [x] **Step 2:** `python -m pytest tests/test_review_pack_note_metadata.py -v` 실행. 새 manifest 인자 또는 분리 출력 assertion에서 실패해야 한다.
+- [x] **Step 3: 최소 구현.** metadata의 생성 규칙:
 
 ```python
 from urllib.parse import quote
@@ -119,8 +119,8 @@ def topic_metadata(manifest):
 ```
 
 `manifest.py`는 필드 없음 또는 정수 2만 허용한다(bool 제외). render는 v2 note에서 refs(t)를 붙이지 않고 FOOTER=''로 한다. v2 fragment 안 metadata 문구/출처 클래스가 있으면 해당 토픽 id를 담은 ValueError로 거부한다. 저작자는 Task 2에서 본문 metadata를 제거한다. converter는 v2에만 topic_metadata를 전달하고 article 렌더 종료 직전에 삽입한다. checks는 manifest 기반으로 각 토픽 MD 구간에서 metadata 문자열을 확인하고 HTML main의 텍스트·sources 요소를 별도 검사한다. 기존 check_md의 학습 내용 보존 검사는 유지한다. 문서에 v2의 분리 규칙과 build 예시를 추가한다.
-- [ ] **Step 4:** `python -m pytest tests/test_review_pack_note_metadata.py tests/test_review_pack_render.py tests/test_review_pack_md.py tests/test_review_pack_manifest.py -v` 실행. 모든 선택 테스트 PASS.
-- [ ] **Step 5:** 수정 파일만 git add하고 `git commit -m "feat: separate note metadata from learning HTML"`.
+- [x] **Step 4:** `python -m pytest tests/test_review_pack_note_metadata.py tests/test_review_pack_render.py tests/test_review_pack_md.py tests/test_review_pack_manifest.py -v` 실행. 모든 선택 테스트 PASS.
+- [x] **Step 5:** 수정 파일만 git add하고 `git commit -m "feat: separate note metadata from learning HTML"`.
 
 ### Task 2: 실험04 말투와 설명 그림 교체
 
@@ -128,8 +128,8 @@ def topic_metadata(manifest):
 
 **Interfaces:** 원본 run의 manifest/sections/problems/figures/evidence 파일 계약은 그대로 유지. 기존 `tmp/review-pack/실험04-learning-20261001`에서 시작하여 원본을 새 경로에 보존한다. manifest에 `note_presentation_version: 2`를 추가한다. bank snapshot·import index·34개 자산은 바이트 그대로 유지한다.
 
-- [ ] **Step 1:** 기존 run과 최종 팩의 manifest 및 HTML을 대조하여 최종 수정 내용이 포함된 저작 원본을 확정한다. 새 폴더로 복사하고 과거 stage·임시 PDF·검증 pass 상태는 가져오지 않는다. checks는 전부 not_run으로 초기화한다. 최종에서 고친 한국어 문장과 template provenance를 복사본에 동기화한다.
-- [ ] **Step 2: 그림 교체 실패 테스트 작성.**
+- [x] **Step 1:** 기존 run과 최종 팩의 manifest 및 HTML을 대조하여 최종 수정 내용이 포함된 저작 원본을 확정한다. 새 폴더로 복사하고 과거 stage·임시 PDF·검증 pass 상태는 가져오지 않는다. checks는 전부 not_run으로 초기화한다. 최종에서 고친 한국어 문장과 template provenance를 복사본에 동기화한다.
+- [x] **Step 2: 그림 교체 실패 테스트 작성.**
 
 ```python
 from pathlib import Path
@@ -147,8 +147,8 @@ def test_experiment4_has_redrawn_note_figures():
         assert any(n.tag.endswith('title') for n in tree.iter())
 ```
 
-- [ ] **Step 3:** `python -m pytest tests/test_review_pack_note_figures.py -v` 실행. SVG 파일이 없어서 FAIL.
-- [ ] **Step 4:** 8개 토픽의 본문·제목·요약·힌트를 한국어 ‘~해요’체로 다시 쓴다. 규칙의 예:
+- [x] **Step 3:** `python -m pytest tests/test_review_pack_note_figures.py -v` 실행. SVG 파일이 없어서 FAIL.
+- [x] **Step 4:** 8개 토픽의 본문·제목·요약·힌트를 한국어 ‘~해요’체로 다시 쓴다. 규칙의 예:
 
 ```html
 <div class="layer eli5"><span class="layer-title">두 입력 중 하나를 골라요</span>
@@ -159,10 +159,10 @@ alt="선택선 S와 그 반전 신호가 두 AND 경로를 열고 OR로 출력 Y
 ```
 
 본문의 연결 문제 p와 출처 메타데이터는 제거한다. 원문 쪽수·판본 파일명 등 근거 안내는 MD로 옮기되 ‘이상값과 원문 답안이 달라요’ 같은 학습상 필요한 경고는 HTML에 남긴다. 모든 새 문장은 한국어로 작성한다.
-- [ ] **Step 5:** 여섯 SVG를 직접 제작한다. mux2는 NOT+AND 2+OR, mux4는 네 주소 항과 enable 극성, demux4는 NOT 2+AND 4와 별도 출력, decoder는 00~11 one-hot 주소 신호, tri-state는 nOE=0 통과/nOE=1 Z와 공통 버스, lab은 실험1-1·2-1의 조작·관찰 신호 흐름이다. 각 그림은 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" role="img"><title>…</title>…</svg>` 형식을 사용한다. 배경과 선의 대비를 보장하고 text는 최소 18px, 접속점은 circle, 비접속 교차는 분리/bridge, 출력 반전은 bubble로 표현한다. SVG마다 읽을 수 있는 설명과 원자료 대조 기록을 MD 원본에 남긴다.
-- [ ] **Step 6:** 원문 설명 그림을 목록화하여 새 그림/텍스트 표 대응을 기록한다. 기존 note의 img가 PNG/JPG 또는 evidence 은행 이미지를 참조하지 않음을 검사한다. widget은 정적 표를 유지한다. 새 그림의 모든 출력을 `itertools.product((0,1), repeat=n)`으로 계산하여 본문 표와 대조한다. DMUX D=0의 0000과 원문 X, nOE=1의 Z와 active-High 제공 그림 차이를 명시한다.
-- [ ] **Step 7:** 그림 테스트 PASS 후 SKILL.md와 authoring.md에 생명과학 content-rules.md:75–78 문체 및 설명 그림 재제작 규칙을 추가한다. 한국어 문체·표기·조건을 문장 단위로 자체 검토한다. 문체는 어미 regex로 통과 판정하지 않는다.
-- [ ] **Step 8:** 원본·그림·문서·테스트만 git add하고 `git commit -m "docs: redraw experiment 4 learning explanations"`.
+- [x] **Step 5:** 여섯 SVG를 직접 제작한다. mux2는 NOT+AND 2+OR, mux4는 네 주소 항과 enable 극성, demux4는 NOT 2+AND 4와 별도 출력, decoder는 00~11 one-hot 주소 신호, tri-state는 nOE=0 통과/nOE=1 Z와 공통 버스, lab은 실험1-1·2-1의 조작·관찰 신호 흐름이다. 각 그림은 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" role="img"><title>…</title>…</svg>` 형식을 사용한다. 배경과 선의 대비를 보장하고 text는 최소 18px, 접속점은 circle, 비접속 교차는 분리/bridge, 출력 반전은 bubble로 표현한다. SVG마다 읽을 수 있는 설명과 원자료 대조 기록을 MD 원본에 남긴다.
+- [x] **Step 6:** 원문 설명 그림을 목록화하여 새 그림/텍스트 표 대응을 기록한다. 기존 note의 img가 PNG/JPG 또는 evidence 은행 이미지를 참조하지 않음을 검사한다. widget은 정적 표를 유지한다. 새 그림의 모든 출력을 `itertools.product((0,1), repeat=n)`으로 계산하여 본문 표와 대조한다. DMUX D=0의 0000과 원문 X, nOE=1의 Z와 active-High 제공 그림 차이를 명시한다.
+- [x] **Step 7:** 그림 테스트 PASS 후 SKILL.md와 authoring.md에 생명과학 content-rules.md:75–78 문체 및 설명 그림 재제작 규칙을 추가한다. 한국어 문체·표기·조건을 문장 단위로 자체 검토한다. 문체는 어미 regex로 통과 판정하지 않는다.
+- [x] **Step 8:** 원본·그림·문서·테스트만 git add하고 `git commit -m "docs: redraw experiment 4 learning explanations"`.
 
 ### Task 3: 실제 팩 생성·브라우저·인쇄 검증과 재발행
 
@@ -170,8 +170,8 @@ alt="선택선 S와 그 반전 신호가 두 AND 경로를 열고 OR로 출력 Y
 
 **Interfaces:** 기존 build/check/publish CLI를 사용한다. publish는 check_pack 및 원자료 hash, 브라우저/내용/원문 검토 상태와 generated_files 일치를 요구한다. 검토를 수행한 뒤에만 상태를 pass/self_review로 기록한다.
 
-- [ ] **Step 1:** `python -m pytest tests -k review_pack -q` 실행. 실패 시 원인을 확인하고 관련 변경 회귀와 기존 기준선 실패를 구분한다.
-- [ ] **Step 2:** PowerShell에서 새 stage로 빌드:
+- [x] **Step 1:** `python -m pytest tests -k review_pack -q` 실행. 실패 시 원인을 확인하고 관련 변경 회귀와 기존 기준선 실패를 구분한다.
+- [x] **Step 2:** PowerShell에서 새 stage로 빌드:
 
 ```powershell
 python -m scripts.lab.review_pack build --root . --run docs/learning-pack-source/실험04 --stage tmp/review-pack/실험04-note-refresh-20261001-a
@@ -179,11 +179,11 @@ python -m scripts.lab.review_pack check --folder tmp/review-pack/실험04-note-r
 ```
 
 stage 존재 오류이면 덮어쓰지 않고 다음 접미사를 쓴다. 실패한 build의 부분 stage를 publish하지 않는다.
-- [ ] **Step 3:** 생성 HTML의 학습 main·요약·footer에서 metadata 부재, MD의 8토픽별 metadata 보존과 링크를 검사한다. 6 SVG와 해당 MD 참조가 같은 파일인지 확인한다. 기출풀이 원문·답안·증거 이미지가 이전 팩과 동일함을 대조한다.
-- [ ] **Step 4:** native browser로 1280×900 및 375×812, 밝은/어두운 테마에서 8개 토픽과 모든 새 그림을 확인한다. 목차·이전/다음·요약·개념 링크·MUX 8조합을 조작한다. console 오류/깨진 그림/가로 넘침을 확인한다. 캡션과 문체를 화면에서 읽고 수정 사항이 있으면 새 stage로 다시 생성한다.
-- [ ] **Step 5:** Chrome 인쇄 PDF를 생성해 페이지별 렌더로 그림의 선·라벨·오른쪽 경계·페이지 분할을 확인한다. 실험설명 인쇄에도 metadata가 없고, 기출풀이 인쇄에는 기존 풀이가 모두 남는지 확인한다. PDF는 검증 산출물로만 관리한다.
-- [ ] **Step 6:** `docs/verify/logic-lab-review-pack-note-refresh.md`에 명령·결과·SVG 대조·화면·인쇄 검증과 제한을 기록한다. 실행 방식 native의 마지막 독립 리뷰는 requesting-code-review 절차에 따라 수행한다. 검토하지 않은 내용을 pass라고 기록하지 않는다.
-- [ ] **Step 7:** 검토 결과를 저작 원본 checks에 반영하고 새로운 stage로 재생성한다. `check` 통과 후 publish:
+- [x] **Step 3:** 생성 HTML의 학습 main·요약·footer에서 metadata 부재, MD의 8토픽별 metadata 보존과 링크를 검사한다. 6 SVG와 해당 MD 참조가 같은 파일인지 확인한다. 기출풀이 원문·답안·증거 이미지가 이전 팩과 동일함을 대조한다.
+- [x] **Step 4:** native browser로 1280×900 및 375×812, 밝은/어두운 테마에서 8개 토픽과 모든 새 그림을 확인한다. 목차·이전/다음·요약·개념 링크·MUX 8조합을 조작한다. console 오류/깨진 그림/가로 넘침을 확인한다. 캡션과 문체를 화면에서 읽고 수정 사항이 있으면 새 stage로 다시 생성한다.
+- [x] **Step 5:** Chrome 인쇄 PDF를 생성해 페이지별 렌더로 그림의 선·라벨·오른쪽 경계·페이지 분할을 확인한다. 실험설명 인쇄에도 metadata가 없고, 기출풀이 인쇄에는 기존 풀이가 모두 남는지 확인한다. PDF는 검증 산출물로만 관리한다.
+- [x] **Step 6:** `docs/verify/logic-lab-review-pack-note-refresh.md`에 명령·결과·SVG 대조·화면·인쇄 검증과 제한을 기록한다. 실행 방식 native의 마지막 독립 리뷰는 requesting-code-review 절차에 따라 수행한다. 검토하지 않은 내용을 pass라고 기록하지 않는다.
+- [x] **Step 7:** 검토 결과를 저작 원본 checks에 반영하고 새로운 stage로 재생성한다. `check` 통과 후 publish:
 
 ```powershell
 python -m scripts.lab.review_pack publish --root . --experiment 4 --stage tmp/review-pack/실험04-note-refresh-20261001-b
@@ -191,7 +191,7 @@ python -m scripts.lab.review_pack check --folder 복습노트/실험04
 ```
 
 위 b는 최종 검토 stage를 가리키도록 맞춘다. 기존 팩은 publish가 백업한다. 실제 최종 위치의 상대 링크를 확인하고 user_files/백업은 보존한다.
-- [ ] **Step 8:** 생성 팩·검증 문서와 최종 저작 원본만 선택해 커밋한다. `git status --short`를 확인하고 `git commit -m "docs: publish refreshed experiment 4 learning pack"`. 사용자에게 HTML/MD 링크, 검증 결과, commit을 전달한다. push·merge·원래 checkout 통합은 이 작업 범위에 포함하지 않는다.
+- [x] **Step 8:** 생성 팩·검증 문서와 최종 저작 원본만 선택해 커밋한다. `git status --short`를 확인하고 `git commit -m "docs: publish refreshed experiment 4 learning pack"`. 사용자에게 HTML/MD 링크, 검증 결과, commit을 전달한다. push·merge·원래 checkout 통합은 이 작업 범위에 포함하지 않는다.
 
 ## 계획 자체 검토
 - spec의 문체: Task 2; HTML/MD 분리와 legacy: Task 1; 직접 그림 제작: Task 2; 화면 유지·검증·저장: Task 3.

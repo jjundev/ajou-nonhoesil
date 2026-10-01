@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" role="img">
+<title>2×1 MUX: NOT 한 개와 AND 두 개, OR 한 개로 경로를 골라요</title>
+<style>text{font-family:Arial,"Malgun Gothic",sans-serif;font-size:24px;fill:#18212e} .wire{fill:none;stroke:#18212e;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .gate{fill:#fff;stroke:#18212e;stroke-width:3} .accent{fill:#e8f1ff;stroke:#2674df;stroke-width:3}</style>
+<rect width="640" height="460" rx="16" fill="#fff"/>
+<text x="24" y="40" text-anchor="start">2×1 MUX · Y = S′I0 + SI1</text>
+<text x="24" y="134" text-anchor="start">I0</text>
+<polyline class="wire" points="60,126 175,126"/>
+<text x="24" y="174" text-anchor="start">S′</text>
+<polyline class="wire" points="60,164 175,164"/>
+<path class="gate" d="M175,110 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="205" y="153" text-anchor="middle">&amp;</text>
+<polyline class="wire" points="250,145 320,145 320,195 401.25,195"/>
+<text x="24" y="274" text-anchor="start">I1</text>
+<polyline class="wire" points="60,266 175,266"/>
+<text x="24" y="314" text-anchor="start">S</text>
+<polyline class="wire" points="60,304 175,304"/>
+<path class="gate" d="M175,250 h40 a35,35 0 0 1 0,70 h-40 z"/>
+<text x="205" y="293" text-anchor="middle">&amp;</text>
+<polyline class="wire" points="250,285 320,285 320,235 401.25,235"/>
+<path class="gate" d="M390,175 Q420,215 390,255 Q455,255 475,215 Q455,175 390,175 Z"/>
+<text x="430" y="223" text-anchor="middle">≥1</text>
+<polyline class="wire" points="475,215 580,215"/>
+<text x="590" y="223" text-anchor="start">Y</text>
+<text x="24" y="400" text-anchor="start">S</text>
+<polyline class="wire" points="55,392 90,392"/>
+<path class="gate" d="M90,365 L90,419 L140,392 Z"/><circle class="gate" cx="148" cy="392" r="8"/>
+<polyline class="wire" points="156,392 205,392"/>
+<text x="215" y="400" text-anchor="start">S′</text>
+<text x="320" y="400" text-anchor="start">&amp;: AND   ≥1: OR</text>
+</svg>

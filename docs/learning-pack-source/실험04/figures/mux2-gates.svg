@@ -9,14 +9,14 @@
 <polyline class="wire" points="60,164 175,164"/>
 <path class="gate" d="M175,110 h40 a35,35 0 0 1 0,70 h-40 z"/>
 <text x="205" y="153" text-anchor="middle">&amp;</text>
-<polyline class="wire" points="250,145 320,145 320,195 390,195"/>
+<polyline class="wire" points="250,145 320,145 320,195 401.25,195"/>
 <text x="24" y="274" text-anchor="start">I1</text>
 <polyline class="wire" points="60,266 175,266"/>
 <text x="24" y="314" text-anchor="start">S</text>
 <polyline class="wire" points="60,304 175,304"/>
 <path class="gate" d="M175,250 h40 a35,35 0 0 1 0,70 h-40 z"/>
 <text x="205" y="293" text-anchor="middle">&amp;</text>
-<polyline class="wire" points="250,285 320,285 320,235 390,235"/>
+<polyline class="wire" points="250,285 320,285 320,235 401.25,235"/>
 <path class="gate" d="M390,175 Q420,215 390,255 Q455,255 475,215 Q455,175 390,175 Z"/>
 <text x="430" y="223" text-anchor="middle">≥1</text>
 <polyline class="wire" points="475,215 580,215"/>

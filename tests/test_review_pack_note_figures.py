@@ -30,3 +30,31 @@ def test_note_images_are_only_redrawn_vectors():
                 assert src in {f'figures/{name}.svg' for name in NAMES}
                 assert n.attrs.get('alt')
     assert set(images) == {f'figures/{name}.svg' for name in NAMES}
+
+def polylines(name):
+    tree = ET.parse(ROOT/'figures'/f'{name}.svg')
+    return [[tuple(map(float, p.split(','))) for p in node.get('points').split()]
+            for node in tree.iter() if node.tag.endswith('polyline')]
+
+def test_mux2_wires_reach_curved_or_boundary():
+    paths = [p for p in polylines('mux2-gates') if p[0][0] == 250]
+    assert len(paths) == 2
+    for path in paths:
+        x, y = path[-1]
+        # Quadratic input edge M390,175 Q420,215 390,255.
+        t = (y-175)/80
+        boundary_x = (1-t)**2*390 + 2*(1-t)*t*420 + t*t*390
+        assert abs(x-boundary_x) < 0.1
+
+def test_mux4_independent_outputs_do_not_cross():
+    paths = [p for p in polylines('mux4-enable') if p[0][0] == 296]
+    assert len(paths) == 4
+    segments = [[(a,b) for a,b in zip(p,p[1:])] for p in paths]
+    for i, first in enumerate(segments):
+        for second in segments[i+1:]:
+            for a,b in first:
+                for c,d in second:
+                    if a[0]==b[0] and c[1]==d[1]:
+                        assert not (min(c[0],d[0])<=a[0]<=max(c[0],d[0]) and min(a[1],b[1])<=c[1]<=max(a[1],b[1]))
+                    if a[1]==b[1] and c[0]==d[0]:
+                        assert not (min(a[0],b[0])<=c[0]<=max(a[0],b[0]) and min(c[1],d[1])<=a[1]<=max(c[1],d[1]))
