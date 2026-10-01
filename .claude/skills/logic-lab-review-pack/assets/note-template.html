@@ -419,6 +419,11 @@
         get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
         set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
       };
+      // 푼 기록은 탭(세션) 단위로만 유지: 뒤로가기·새로고침엔 남고, 창을 닫고 다시 열면 초기화
+      const tabStore = {
+        get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
       const PREF = 'od-panels:' + kind;
       // 팩마다 문제·토픽 id가 p1, s1-…로 겹치므로 진행 기록은 기간별로 나눈다
       const RANGE = body.dataset.range || '';
@@ -584,7 +589,7 @@
         const empty = panels.right.querySelector('.panel-empty');
         const btn = document.getElementById('solved-btn');
         const groups = {};
-        const solved = new Set(store.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
+        const solved = new Set(tabStore.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
         cards.forEach((card) => {
           const g = document.createElement('div');
           g.className = 'aid';
@@ -602,7 +607,7 @@
         btn.addEventListener('click', () => {
           if (!curId) return;
           if (solved.has(curId)) solved.delete(curId); else solved.add(curId);
-          store.set(KEY, Array.from(solved));
+          tabStore.set(KEY, Array.from(solved));
           paintBtn();
           markToc(solved, cards.length, '푼 문제');
         });

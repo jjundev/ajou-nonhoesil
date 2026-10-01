@@ -39,3 +39,11 @@ def test_removed_solution_detected(tmp_path):
     outputs,_=convert_pack(a,b)
     outputs[1].write_text('',encoding='utf-8')
     assert check_md(b,outputs[1])
+def test_held_question_list_item_keeps_anchor(tmp_path):
+    from scripts.lab.review_pack.html2md import export_document, check_md
+    source = tmp_path / 'held.html'
+    source.write_text('<main><ul><li id="q-held">조건이 없어 보류</li></ul></main>', encoding='utf-8')
+    markdown, _ = export_document(source)
+    source.with_suffix('.md').write_text(markdown, encoding='utf-8')
+    assert '<a id="q-held"></a>' in markdown
+    assert check_md(source, source.with_suffix('.md')) == []

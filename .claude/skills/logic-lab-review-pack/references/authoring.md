@@ -13,6 +13,7 @@ assets/note-template.html, review-template.html은 생명과학 원본을 그대
 eli5(직관) → formal(정확한 원리·조건) → warn(혼동 방지) → supp(보충, 필요할 때).
 각 layer는 div.layer + span.layer-title로 표시한다. 교수 발언 자료가 없으면 prof를 만들지 않는다.
 토픽 마지막에 직계 자식 div.sum[hidden]을 두고 본문에 나온 핵심 1~3개만 적는다. 이 내용이 우측 요약 패널로 이동한다.
+이미지는 div.figure 또는 figure.figure로 감싼다. 원본 템플릿은 .figure 안의 이미지에만 너비 제한을 적용하므로, 원문·풀이 details 안의 이미지도 같은 규칙을 따른다. 모바일과 인쇄에서 그림의 오른쪽이 잘리지 않는지 확인한다.
 기출 fragment는 div.problem, details.original, details.hint, details.solution 순서다.
 문제·출처 → 필요한 개념 링크 → 힌트 → 단계별 풀이 → 최종 답 → 검산 → 흔한 실수를 모두 제공한다.
 카드 제목은 조립기가 article.card/h3로 붙인다. 번호가 정답 검증 상태를 대신하지 않는다.

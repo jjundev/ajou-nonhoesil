@@ -89,7 +89,7 @@ def export_document(path, export=True):
         if tag=='br':return '<br>'
         if tag=='hr':return '\n---\n'
         if tag=='summary':return '\n#### '+body.strip()+'\n\n'
-        if tag=='li':return '- '+body.strip()+'\n'
+        if tag=='li':return anchor+'- '+body.strip()+'\n'
         if tag=='table':
             rows=[]
             for tr in n.walk():

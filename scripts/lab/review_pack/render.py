@@ -66,9 +66,9 @@ def assemble(manifest,run,out,assets):
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
     for kind,body in [('note',note),('review',review)]:
-        rows=manifest['topics'] if kind=='note' else [p for p in manifest['problems'] if p['status']=='included']
         nav=f'<a href="{names["note_html"]}">실험 설명</a><a href="{names["review_html"]}">기출 풀이</a>'
-        nav+=''.join(f'<a href="#{r["id"]}">{esc(r.get("title",r["id"]))}</a>' for r in rows)
+        # Biology's pager expands section links into article links itself.
+        nav+='<a href="#learning">'+('실험 이해' if kind=='note' else '문제와 풀이')+'</a>'
         text=(assets/f'{kind}-template.html').read_text(encoding='utf-8')
         title=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이')
         content='<section id="learning"><h2>'+('실험 이해' if kind=='note' else '문제와 풀이')+'</h2>'+'\n'.join(body)+'</section>'
