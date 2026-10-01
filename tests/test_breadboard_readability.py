@@ -15,21 +15,20 @@
 (`draw_wire`, `draw_badge`)가 그대로 살아 있고 더 짧기 때문이다. 그래서 센다.
 """
 import ast
+import copy
 import importlib.util
-import os
 import re
-import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
 
 from tests._boards import all_builders, board_files
+from tests._renders import BOARD_L, BOARD_R, render
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 
 # 보드 안쪽 x 범위. 이 밖에 앉는 배지는 여백이라 홀을 가리지 않는다
-BOARD_L, BOARD_R = 149, 877
 
 # 그림 한 장의 보드 위 배지 상한. 신호 이름(입력 A·B·C, 출력 L1·L2·X·Y·Z)만 남긴
 # 결과가 한 장에 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다
@@ -156,34 +155,8 @@ class RenderedContract(unittest.TestCase):
         cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def _render(self, fn):
-        # 그림 한 장만 센다. 단계 그림은 기준선을 얻으려고 앞 보드를 한 번 더
-        # 그리는데, 그 배지까지 합치면 한 장에 5개인 그림이 10개로 잡힌다
-        counted = {}
-        mod = self.mod
-        orig_badge = mod.BreadboardRenderer.draw_badge
-        captured = {}
-
-        def spy_badge(self_, x, y, text, *a, **k):
-            if BOARD_L < x < BOARD_R:
-                counted[self_] = counted.get(self_, 0) + 1
-            return orig_badge(self_, x, y, text, *a, **k)
-
-        orig_export = mod.BreadboardRenderer.export
-
-        def spy_export(self_, *a, **k):
-            captured['bb'] = self_
-            return orig_export(self_, *a, **k)
-
-        mod.BreadboardRenderer.draw_badge = spy_badge
-        mod.BreadboardRenderer.export = spy_export
-        try:
-            with tempfile.TemporaryDirectory() as d:
-                fn(os.path.join(d, 'x.png'))
-        finally:
-            mod.BreadboardRenderer.draw_badge = orig_badge
-            mod.BreadboardRenderer.export = orig_export
-        bb = captured['bb']
-        return bb, counted.get(bb, 0)
+        """`(렌더러, 보드 위 배지 수)` — 프로세스에서 한 번만 그린다(`tests/_renders.py`)."""
+        return render(self.mod, fn)
 
     def test_모든_회로가_결선_순서표를_낸다(self):
         """번호와 순서표가 없으면 조원은 30가닥을 동시에 봐야 한다."""
@@ -215,6 +188,7 @@ class RenderedContract(unittest.TestCase):
     def test_둘째_B_배지가_빠지면_잡는다(self):
         """위 단언이 같은 글자를 개수로 세는지 — 반감산기 LED2 의 B 배지를 지워 본다."""
         bb, _ = self._render(self.b3.build_e3_hs)
+        bb = copy.copy(bb)   # 나눠 쓰는 렌더러라 원본은 건드리지 않는다
         drop = max(k for k, (n, _b, _s) in enumerate(bb.tag_boxes) if n == 'B')
         bb.tag_boxes = [t for k, t in enumerate(bb.tag_boxes) if k != drop]
         self.assertEqual(_missing_signal_names(bb), Counter({'B': 1}))

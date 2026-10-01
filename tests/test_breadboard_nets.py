@@ -12,10 +12,10 @@
 """
 import importlib.util
 import os
-import tempfile
 import unittest
 
 from tests._boards import all_builders
+from tests._renders import render
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(REPO_ROOT, '.claude', 'skills', 'breadboard-diagram',
@@ -30,21 +30,8 @@ def _load():
 
 
 def _render(mod, fn):
-    """빌더를 임시 파일로 렌더하고 렌더러 객체를 돌려준다."""
-    captured = {}
-    orig = mod.BreadboardRenderer.export
-
-    def spy(self_, *a, **k):
-        captured['bb'] = self_
-        return orig(self_, *a, **k)
-
-    mod.BreadboardRenderer.export = spy
-    try:
-        with tempfile.TemporaryDirectory() as d:
-            fn(os.path.join(d, 'x.png'))
-    finally:
-        mod.BreadboardRenderer.export = orig
-    return captured['bb']
+    """빌더를 그려 렌더러 객체를 돌려준다 — 프로세스에서 한 번만 그린다(`tests/_renders.py`)."""
+    return render(mod, fn)[0]
 
 
 def _net_of(bb, label):

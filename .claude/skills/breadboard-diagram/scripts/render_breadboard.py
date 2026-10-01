@@ -195,6 +195,9 @@ class _ScaledDraw:
     def ellipse(self, xy, *a, **k):
         return self._d.ellipse(_sc(xy), *a, **self._kw(k))
 
+    def polygon(self, xy, *a, **k):
+        return self._d.polygon(_sc(xy), *a, **self._kw(k))
+
     def arc(self, xy, start, end, *a, **k):
         return self._d.arc(_sc(xy), start, end, *a, **self._kw(k))
 
@@ -281,6 +284,15 @@ REMOVE = (160, 30, 30, 255)
 # 문다. 그래서 위 네 색에 끼워 넣지 않고 회색 점선으로 따로 그리고, 순서표도
 # '결선' 이 아니라 '계측' 표에 따로 쌓는다
 PROBE = (105, 105, 110, 255)
+
+# **입력** 신호 이름 배지의 색 — 이 색으로 채운 상자에 흰 ▶ 와 흰 글자. 네 배선색(빨강·
+# 파랑·검정·초록)과 출력 LED 의 빨강, 유지선 회색, 계측 회색 어느 것과도 겹치지 않는
+# 보라다. 2026-09-29 실험04 MUX: 입력 여섯이 흰 바탕 검정 글자라 흰 번호 원 41 개 사이에
+# 묻혔다. ▶ 는 글리프가 아니라 다각형이다 — 이모지·기호 글리프는 기계마다 □ 가 되고
+# 손그림에 못 옮긴다
+INPUT = (110, 40, 160, 255)
+INPUT_TRI = 4.5   # ▶ 폭. 좌 바깥 여백(보드 테두리 149 ~ GND 레일 174, 25px)에 `D0` 배지가
+                  # 들어가는 상한이다 — 글자 15 + ▶ 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
 
 # 단계 하나가 꽂는 **새 신호선**의 상한. 2026-09-20 단계 세분화: 관측 노드 하나 =
 # 단계 하나이고 새 신호선은 셋 이하다 — 확인이 실패했을 때 용의자가 그 셋이다.
@@ -399,7 +411,9 @@ class BreadboardRenderer:
         self.kept = []          # 그대로 두는 배선·부품의 desc
         self.swaps = []         # (앞 칩, 새 칩, block, pin1_row)
         self._keep_parts = False  # led_chain 이 기준선 사슬을 그리는 동안 참
+        self._pull_parts = False  # led_chain 이 걷기 보드가 뽑는 사슬을 그리는 동안 참
         # 걷기 보드 — 기준선 dict 의 `ghost` 키 `{'wires': {key: n}, 'title', 'subtitle'}`.
+        # 사슬째 뽑는 LED 사슬이 있으면 `'chains': {사슬 key: tag}` 도 든다.
         # `step_wire()` 가 그 key 를 만나면 점유표·구간에 안 남기고 `ghost_layer` 에 빨간
         # 점선으로 그린다. 뽑은 선의 핀이 뜨는 것이 정상이라 `partial` 이다.
         # 기준선 dict 에 키를 얹는 이유: `set_header()` 가 제목을 즉시 그려 사후에 못 바꾸고,
@@ -407,6 +421,7 @@ class BreadboardRenderer:
         self.ghost = (baseline or {}).get('ghost')
         self.ghost_layer = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.ghost_drawn = {}     # key -> n. export() 가 빌더가 안 그린 key 를 잡는다
+        self.ghost_chains_drawn = set()   # 사슬 key. export() 가 안 그린 사슬을 잡는다
         if self.ghost is not None:
             self.partial = True
         # 따라 그리기 층 — (lo, hi). 완성본 빌더를 그대로 돌리되 번호 lo 앞 배선은 회색·번호
@@ -783,7 +798,8 @@ class BreadboardRenderer:
         self.draw.rectangle([bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad], fill=bg_col, outline=text_col, width=1)
         self.draw.text((x, y), text, fill=text_col, font=font)
 
-    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None):
+    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
+                   filled=False):
         """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z.
 
         2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
@@ -794,16 +810,29 @@ class BreadboardRenderer:
         `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 배지 상자의 왼쪽
         끝이다. `seg` 는 이 이름이 가리키는 배선의 `_segments` 번호 — 겹침 검사가
         그 선만 봐준다.
+
+        `filled=True` 는 입력 표지다 — `col` 로 채운 상자에 흰 ▶ 와 흰 글자. 좌우 여백을
+        1 로 줄여 ▶ 자리를 낸다(`INPUT_TRI`). 상자(겹침 검사 대상)는 ▶ 까지 덮는다.
         """
         font, pad = self.font_en_bold, 2
         b = self.draw.textbbox((0, 0), name, font=font)
         w, h = b[2] - b[0], b[3] - b[1]
-        left = x - w / 2 if align == 'center' else x + pad
-        tx, ty = left - b[0], y - h / 2 - b[1]
-        self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
+        hpad = 1 if filled else pad
+        tri, gap = (INPUT_TRI, 1) if filled else (0, 0)
+        full = tri + gap + w
+        left = x - full / 2 if align == 'center' else x + hpad
+        tx, ty = left + tri + gap - b[0], y - h / 2 - b[1]
         box = self.draw.textbbox((tx, ty), name, font=font)
-        self.tag_boxes.append(
-            (name, (box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad), seg))
+        box = (box[0] - tri - gap - hpad, box[1] - pad, box[2] + hpad, box[3] + pad)
+        if filled:
+            self.draw.rectangle(box, fill=col, outline=col, width=1)
+            cy, x0 = (box[1] + box[3]) / 2, box[0] + hpad
+            self.draw.polygon([(x0, cy - h * 0.4), (x0 + tri, cy), (x0, cy + h * 0.4)],
+                              fill=(255, 255, 255, 255))
+            self.draw.text((tx, ty), name, fill=(255, 255, 255, 255), font=font)
+        else:
+            self.draw_badge(tx, ty, name, (255, 255, 255, 235), col, font=font, pad=pad)
+        self.tag_boxes.append((name, box, seg))
 
     def draw_wire(self, points, color, width=3):
         """번호 없는 생짜 배선. **지금 이 함수를 부르는 빌더는 하나도 없다.**
@@ -977,6 +1006,8 @@ class BreadboardRenderer:
         if self._keep_parts:
             self.kept.append(desc)      # 기준선 사슬의 부품 줄 — 번호 없이 회색
             return None
+        if self._pull_parts:
+            return None                 # 걷기 보드가 뽑는 사슬 — 새로 꽂는 것이 아니다
         if not self.numbered:
             return None
         n = len(self.steps) + 1
@@ -996,6 +1027,8 @@ class BreadboardRenderer:
         body_col = (215, 215, 215, 255) if self._keep_parts else (225, 195, 145, 255)
         if self._keep_parts:
             bands = [KEEP] * 4
+        if self._pull_parts:
+            wire_col, body_col, bands = REMOVE, (240, 200, 200, 255), [REMOVE] * 4
         ymid = (y1 + y2) // 2
         self.draw.line([(x, y1), (x, ymid - 12)], fill=wire_col, width=2)
         self.draw.line([(x, ymid + 12), (x, y2)], fill=wire_col, width=2)
@@ -1016,9 +1049,12 @@ class BreadboardRenderer:
                           'cathode': self.sym(x, self._row_of(y_cathode))})
         if self._keep_parts:
             color_rgb = KEEP[:3]
+        lead_col = (130, 130, 130, 255)
+        if self._pull_parts:
+            color_rgb, lead_col = REMOVE[:3], REMOVE
         ymid = (y_anode + y_cathode) // 2
-        self.draw.line([(x, y_anode), (x, ymid - 8)], fill=(130, 130, 130, 255), width=2)
-        self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=(130, 130, 130, 255), width=2)
+        self.draw.line([(x, y_anode), (x, ymid - 8)], fill=lead_col, width=2)
+        self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=lead_col, width=2)
         self.draw.ellipse([x - 8, ymid - 8, x + 8, ymid + 8], fill=(*color_rgb, 240), outline=(255, 255, 255, 255), width=2)
         if label:
             self.signal_tag(label, x + 10, ymid, align='left', col=color_rgb)
@@ -1051,11 +1087,22 @@ class BreadboardRenderer:
                self.sym(x_res, top_row + 1), self.sym(x_res, top_row + 3))
         # 기준선에 같은 네 홀의 사슬이 있으면 LED·저항·GND 점퍼 전부 회색이고
         # 번호가 없다 — 앞 단계에서 꽂아 둔 그대로다. 플래그는 사슬을 그리는 동안만 선다
-        self._keep_parts = self.baseline is not None and key in self.baseline['chains']
+        # 걷기 보드가 사슬째 뽑는 사슬(`ghost['chains']`)은 LED·저항을 걷기 빨강으로 칠하고
+        # 점선 상자로 두른다 — 번호는 GND 점퍼(유령선)가 받는다. 선만 빨갛고 부품이 회색이면
+        # 그림이 "부품은 둔다" 로 읽힌다(2026-09-29 실험04 8걷기, 사용자)
+        self._pull_parts = self.ghost is not None and key in self.ghost.get('chains', {})
+        self._keep_parts = (self.baseline is not None and key in self.baseline['chains']
+                            and not self._pull_parts)
         try:
             y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
             self.draw_led(x_led, y_a, y_k, color_rgb, tag)
             self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+            if self._pull_parts:
+                x0, x1 = min(x_led, x_res) - 12, max(x_led, x_res) + 12
+                self._dashed([(x0, y_a - 12), (x1, y_a - 12), (x1, y_r + 12), (x0, y_r + 12),
+                              (x0, y_a - 12)], REMOVE, width=3, dash=7, gap=5,
+                             draw=_ScaledDraw(self.ghost_layer))
+                self.ghost_chains_drawn.add(key)
             self.led_chains.append({'tag': tag,
                                     'signal': self.sym(x, top_row),
                                     'anode': self.sym(x_led, top_row),
@@ -1075,6 +1122,7 @@ class BreadboardRenderer:
                            width=2, marker_at=(x_from - 22, y_r + 2))
         finally:
             self._keep_parts = False
+            self._pull_parts = False
 
     # ---------------- 칩 ----------------
 
@@ -1811,7 +1859,17 @@ class BreadboardRenderer:
         if self.ghost is not None:
             # 걷기 보드에서만 든다 — 다른 보드의 도장은 그대로라 재생성 범위가 안 번진다
             out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
+            if self.ghost.get('chains'):
+                # 사슬째 뽑는 걷기 보드에서만 든다 — 옛 걷기 보드 도장은 그대로다
+                out['ghost_chains'] = self._ghost_chain_lines()
         return out
+
+    def _ghost_chain_lines(self):
+        """걷기 보드가 사슬째 뽑는 LED 사슬 — 번호 없는 한 줄씩. 그리기 순서대로."""
+        chains = self.ghost.get('chains', {}) if self.ghost is not None else {}
+        return [f'LED {chains[k]} 사슬 ({self._sym_addr(("hole", k[0]))}~'
+                f'{self._sym_addr(("hole", k[3]))}) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)'
+                for k in chains]
 
     def sidecar(self):
         """그림 옆에 실을 글자 — 체크리스트가 읽는다. PNG 에는 보드만 있다(2026-09-28).
@@ -1824,6 +1882,7 @@ class BreadboardRenderer:
         removals = [{'n': r['n'] if ghost else None, 'text': f"{r['addr']} · {r['desc']}"}
                     for r in wires]
         removals += [{'n': None, 'text': g} for g in self.removed()[len(wires):]]
+        removals += [{'n': None, 'text': g} for g in self._ghost_chain_lines()]
         return {
             'schema': SIDECAR_SCHEMA,
             'title': self.title,
@@ -1861,6 +1920,11 @@ class BreadboardRenderer:
                 f'걷기 목록과 실제로 걷히는 배선이 다르다 — 목록에 없는데 걷히는 것: '
                 f'{extra}, 목록에 있는데 안 걷히는 것: {gone} — '
                 'removal_board 의 nxt 빌더가 기준선을 만든 prev 와 짝이 맞아야 한다')
+            undrawn = [self.ghost['chains'][k] for k in self.ghost.get('chains', {})
+                       if k not in self.ghost_chains_drawn]
+            assert not undrawn, (
+                f'걷기 대상 LED 사슬을 앞 빌더가 그리지 않았다: {undrawn} — '
+                'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
         # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
         final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
                                          self.overlay)
@@ -1990,9 +2054,10 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         # 것)의 끝을 가상 입력 노드로 바꾸려다 단언에 걸린다.
         bb.touch_rail('gnd', x_rail)
         bb.input_node(name, c[col], row)
-    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}")
+    _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}",
+         col=INPUT)
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
-    bb.signal_tag(name, badge_x, y_rail, seg=len(bb._segments) - 1)
+    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, filled=True)
 
 
 # ---------------------------------------------------------------------------
@@ -2150,9 +2215,16 @@ def removal_board(prev, nxt, title, subtitle):
             nb = nxt_fn(os.path.join(d, 'next.png'), template_path,
                         stage=nxt_stage, baseline=base)
             wires = {r['key']: r['n'] for r in nb.removals()}
+            here = {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom'])
+                    for ch in nb.led_chains}
+            chains = {k: tag for k, tag in base['chains'].items() if k not in here}
         if not wires:
             raise ValueError(f'{title}: 걷을 배선이 없다 — 걷기 보드가 필요 없는 경계다')
-        ghost = dict(base, ghost={'wires': wires, 'title': title, 'subtitle': subtitle})
+        spec = {'wires': wires, 'title': title, 'subtitle': subtitle}
+        if chains:
+            # 사슬째 뽑는 경계(실험04 8걷기) — 없으면 키를 안 둬 옛 걷기 보드 도장이 그대로다
+            spec['chains'] = chains
+        ghost = dict(base, ghost=spec)
         return prev_fn(output_path, template_path, stage=prev_stage, baseline=ghost)
 
     build.__name__ = f'removal_{nxt_fn.__name__}'
