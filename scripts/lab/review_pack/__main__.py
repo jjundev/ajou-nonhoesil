@@ -40,7 +40,7 @@ def main(argv=None):
             if errors:raise ValueError('\n'.join(errors))
             assets=args.root/'.claude/skills/logic-lab-review-pack/assets'
             paths=assemble(data,args.run,args.stage,assets)
-            convert_pack(paths['note_html'],paths['review_html'])
+            convert_pack(paths['note_html'],paths['review_html'],manifest=data)
             evidence=args.run/'검증결과.md'
             if evidence.exists():(args.stage/'검증결과.md').write_bytes(evidence.read_bytes())
             data['generated_files']=sorted(p.relative_to(args.stage).as_posix() for p in args.stage.rglob('*') if p.is_file())

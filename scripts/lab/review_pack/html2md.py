@@ -8,6 +8,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import hashlib
 import html
+import json
 import re
 from urllib.parse import quote, unquote, urlsplit
 
@@ -49,7 +50,7 @@ def serialize(node):
     attrs=''.join(f' {k}="{html.escape(str(v or ""),quote=True)}"' for k,v in node.attrs.items())
     return '<'+node.tag+attrs+'>'+''.join(serialize(c) for c in node.children)+'</'+node.tag+'>'
 
-def export_document(path, export=True):
+def export_document(path, export=True, note_metadata=None):
     path=Path(path);tree=parse(path);figures=set()
     def render(n):
         if isinstance(n,str):return n.replace('|',r'\|')
@@ -71,6 +72,9 @@ def export_document(path, export=True):
             title=next((''.join(c for c in x.children if isinstance(c,str)) for x in n.walk() if x.tag=='title'),'회로 그림')
             return f'![{title}](figures/{filename})\n\n'
         body=''.join(render(c) for c in n.children)
+        if note_metadata and n.tag=='article' and 'topic' in n.attrs.get('class','').split():
+            metadata=note_metadata.get(n.attrs.get('id'),'')
+            if metadata:body+='\n\n'+metadata+'\n'
         anchor=f'<a id="{n.attrs["id"]}"></a>\n' if n.attrs.get('id') else ''
         if tag in {'h1','h2','h3','h4','h5','h6'}:return '\n'+anchor+'#'*int(tag[1])+' '+body.strip()+'\n\n'
         if tag=='a':
@@ -107,14 +111,20 @@ def export_document(path, export=True):
         raise ValueError('Unsupported learning markup: '+tag)
     return re.sub(r'\n{3,}','\n\n',render(tree)).strip()+'\n',len(figures)
 
-def convert_pack(note_path,review_path):
+def convert_pack(note_path,review_path,manifest=None):
     paths=[Path(note_path),Path(review_path)]
     names=[re.fullmatch(r'(실험\d{2})_(실험설명|기출풀이)\.html',p.name) for p in paths]
     if not all(names) or names[0][1]!=names[1][1] or [m[2] for m in names]!=['실험설명','기출풀이'] or paths[0].parent!=paths[1].parent:
         raise ValueError('Mismatched learning pack names')
     outputs=[];count=0
+    if manifest is None and (paths[0].parent/'manifest.json').is_file():
+        manifest=json.loads((paths[0].parent/'manifest.json').read_text(encoding='utf-8'))
+    metadata=None
+    if manifest and manifest.get('note_presentation_version')==2:
+        from .note_metadata import topic_metadata
+        metadata=topic_metadata(manifest)
     for path in paths:
-        text,n=export_document(path);out=path.with_suffix('.md')
+        text,n=export_document(path,note_metadata=metadata if path==paths[0] else None);out=path.with_suffix('.md')
         out.write_text(text,encoding='utf-8');outputs.append(out);count+=n
     return outputs,count
 

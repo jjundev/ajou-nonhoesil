@@ -19,6 +19,8 @@ def validate_manifest(data):
         return ['manifest must be an object']
     if data.get('schema_version')!=1:
         errors.append('schema_version must be 1')
+    if 'note_presentation_version' in data and (type(data['note_presentation_version']) is not int or data['note_presentation_version'] != 2):
+        errors.append('note_presentation_version must be 2 or absent')
     try: config.experiment_folder_name(data.get('experiment'))
     except (ValueError,TypeError): errors.append('invalid experiment')
     if not isinstance(data.get('title'),str) or not data['title'].strip():
@@ -58,6 +60,8 @@ def validate_manifest(data):
                 if type(page) is not int or page<1: errors.append(ident+': invalid pdf_page')
             if ref.get('printed_page') is not None and not isinstance(ref['printed_page'],str): errors.append(ident+': invalid printed_page')
     for ident,t in topics.items():
+        if 'md_notes' in t and not isinstance(t['md_notes'],str):
+            errors.append(ident+': md_notes must be text')
         refs(ident,t)
         if not safe_relative(t.get('fragment')): errors.append(ident+': unsafe fragment')
         if not isinstance(t.get('title'),str): errors.append(ident+': missing topic title')

@@ -9,6 +9,7 @@ from .manifest import load_manifest,output_names
 from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
+from .note_metadata import check_note_metadata
 
 def boolean_equivalent(left,right):
     names=sorted(set(variables(left))|set(variables(right)))
@@ -35,6 +36,8 @@ def check_pack(folder):
         try:errors+=check_md(path,path.with_suffix('.md'))
         except (ValueError,OSError) as e:errors.append(str(e))
     for key,tree in trees.items():
+        if key=='note_html' and (folder/names['note_md']).is_file():
+            errors+=check_note_metadata(m,(folder/names[key]).read_text(encoding='utf-8'),(folder/names['note_md']).read_text(encoding='utf-8'))
         for node in tree.walk():
             attr='src' if node.tag in {'img','script','source'} else 'href' if node.tag in {'a','link'} else None
             value=node.attrs.get(attr) if attr else None

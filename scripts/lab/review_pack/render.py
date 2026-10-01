@@ -8,6 +8,7 @@ from urllib.parse import quote
 from .manifest import validate_manifest, output_names
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
+from .note_metadata import forbidden_note_metadata
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -38,7 +39,11 @@ def assemble(manifest,run,out,assets):
         return '<p class="sources">출처: '+(' · '.join(links) or '새로 구성한 설명·연습')+'</p>'
     note=[];review=[]
     for t in manifest['topics']:
-        note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+read_fragment(run,t['fragment'],names)+refs(t)+'</article>')
+        fragment=read_fragment(run,t['fragment'],names)
+        modern=manifest.get('note_presentation_version')==2
+        if modern and forbidden_note_metadata(fragment):
+            raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
+        note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+fragment+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
         if p['status']!='included': continue
         head=f'<p class="eyebrow">{KINDS[p["kind"]]} · {ANSWERS[p["answer_status"]]} · {esc(p["scope"])}</p>'
@@ -73,6 +78,8 @@ def assemble(manifest,run,out,assets):
         title=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이')
         content='<section id="learning"><h2>'+('실험 이해' if kind=='note' else '문제와 풀이')+'</h2>'+'\n'.join(body)+'</section>'
         values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,TOC=nav,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS='<script src="assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
+        if kind=='note' and manifest.get('note_presentation_version')==2:
+            values['FOOTER']=''
         for key,val in values.items():
             text=text.replace('{{'+key+'}}',val)
         for url,local in {
