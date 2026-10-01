@@ -1,0 +1,44 @@
+{
+  "original": "<p>다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)</p>",
+  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>S1</th><th>S0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>I0</td></tr><tr><td>0</td><td>1</td><td>I1</td></tr><tr><td>1</td><td>0</td><td>I2</td></tr><tr><td>1</td><td>1</td><td>I3</td></tr></tbody></table></div>",
+  "ask": "<p>지정한 게이트 수로 블록 내부 회로를 설계하세요.</p>",
+  "problem_figures": [
+    "q-design4-given-01"
+  ],
+  "hints": [
+    {
+      "label": "주소별 AND",
+      "html": "<p>기능표의 주소마다 데이터 하나를 통과시킬 AND 경로가 필요해요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>기존 4×1 기출은 출력표를 묻지만 이 문항은 지정한 게이트 수로 회로를 설계하게 하므로 선별했다. NOT 두 개로 S1′와 S0′를 만든다. 네 3입력 AND에는 각 주소 조건 두 개와 데이터 하나를 넣는다. 네 AND의 출력을 한 4입력 OR로 합친다. 원문 함수표에는 enable이 없으므로 E를 추가하지 않는다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-design4-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"보충: 지정 게이트로 4×1 MUX 설계 완성 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$F=\\overline{S_1}\\overline{S_0}I_0+\\overline{S_1}S_0I_1+S_1\\overline{S_0}I_2+S_1S_0I_3$$</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>AND</th><th>3입력</th></tr></thead><tbody><tr><td>0</td><td>S1′,S0′,I0</td></tr><tr><td>1</td><td>S1′,S0,I1</td></tr><tr><td>2</td><td>S1,S0′,I2</td></tr><tr><td>3</td><td>S1,S0,I3</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 선택 네 조합과 데이터 열여섯 조합의 총 64조합에서 Y가 선택된 입력과 같았다. 각 AND의 입력은 3개이며 요구한 게이트 수와 일치한다.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> enable이 추가된 실험의 4입력 NAND 회로와 혼동하지 않는다.</p>"
+      }
+    ],
+    "answer": "<p>S1′S0′I0+S1′S0I1+S1S0′I2+S1S0I3</p>"
+  },
+  "notes": []
+}

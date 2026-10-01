@@ -1,0 +1,42 @@
+{
+  "original": "<p>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.</p>",
+  "conditions": "",
+  "ask": "<p>회로, 논리식, 진리표를 작성하세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "선택선별 경로",
+      "html": "<p>S가 0일 때와 1일 때 전달할 입력을 따로 정한 뒤 두 경로를 합쳐 보세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>선택선 S를 한 NOT에 넣는다. 첫 AND에는 S′, I0를 연결하고 둘째 AND에는 S, I1을 연결한다. 두 출력을 한 OR에 연결한다. 게이트 수는 NOT 1, AND 2, OR 1로 요구와 일치한다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-mux2-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"2×1 MUX의 게이트 설계 완성 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$Y=\\overline{S}I_0+SI_1$$</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>S</th><th>I0</th><th>I1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> S=0과 1을 따로 대입하면 Y=I0 또는 I1. 8개 입력 조합 전수검사.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> S를 두 AND에 모두 그대로 넣으면 두 경로가 동시에 열리거나 닫힌다.</p>"
+      }
+    ],
+    "answer": "<p>S′I0+SI1</p>"
+  },
+  "notes": []
+}

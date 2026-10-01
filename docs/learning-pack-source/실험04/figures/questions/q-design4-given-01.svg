@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>원문 4×1 MUX의 블록도: 내부 회로는 설계할 부분</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="38" font-family="Arial" fill="#222" font-size="30" text-anchor="start">4 x 1 MUX / given block</text>
+<rect class="gate" fill="white" stroke="#222" stroke-width="3" x="400" y="100" width="230" height="340"/>
+<text x="515" y="205" font-family="Arial" fill="#222" font-size="36" text-anchor="middle">4 x 1</text>
+<text x="515" y="250" font-family="Arial" fill="#222" font-size="36" text-anchor="middle">MUX</text>
+<text x="210" y="148" font-family="Arial" fill="#222" font-size="30" text-anchor="start">I0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="260,140 400,140"/>
+<text x="420" y="148" font-family="Arial" fill="#222" font-size="26" text-anchor="start">0</text>
+<text x="210" y="228" font-family="Arial" fill="#222" font-size="30" text-anchor="start">I1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="260,220 400,220"/>
+<text x="420" y="228" font-family="Arial" fill="#222" font-size="26" text-anchor="start">1</text>
+<text x="210" y="308" font-family="Arial" fill="#222" font-size="30" text-anchor="start">I2</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="260,300 400,300"/>
+<text x="420" y="308" font-family="Arial" fill="#222" font-size="26" text-anchor="start">2</text>
+<text x="210" y="388" font-family="Arial" fill="#222" font-size="30" text-anchor="start">I3</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="260,380 400,380"/>
+<text x="420" y="388" font-family="Arial" fill="#222" font-size="26" text-anchor="start">3</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="630,270 850,270"/>
+<text x="865" y="278" font-family="Arial" fill="#222" font-size="30" text-anchor="start">Y</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="460,440 460,520"/>
+<text x="460" y="550" font-family="Arial" fill="#222" font-size="30" text-anchor="middle">S1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="570,440 570,520"/>
+<text x="570" y="550" font-family="Arial" fill="#222" font-size="30" text-anchor="middle">S0</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>

@@ -1,0 +1,36 @@
+# 실험04 실험설명 수정 검증 — 2026-10-01
+
+## 결과와 범위
+실험설명 8개 토픽의 본문·요약·힌트·캡션을 생명과학 정리노트의 짧고 다정한 ‘~해요’체로 다시 작성했다. 생성 규칙과 스킬 문서도 함께 수정했다. note_presentation_version=2에서 출처·‘이 개념으로 풀 문제’는 manifest 기반으로 MD에만 생성하며 HTML DOM과 footer에 넣지 않는다. 판본·추가 재제작 근거는 topics[].md_notes에 보존한다.
+
+교안 스캔 4장(manual-8/9/11/12)을 설명에서 제거했다. 회로는 mux2-gates, mux4-enable, demux4-gates, decoder-routing, tristate-bus, lab-signal-flow의 6개 SVG로 직접 제작했다. 원문 진리표는 텍스트 표 및 불일치 설명으로 대체했다. SVG와 생성 스크립트, 8개 section, 12개 problem 및 증거를 docs/learning-pack-source/실험04에 보존했다.
+
+생명과학 원본 템플릿 HTML의 CSS·레이아웃·패널·조작 코드는 수정하지 않았다. 템플릿 FOOTER 슬롯은 새 설명에서 빈 값으로 채우며 generated HTML에는 출처가 없다. 기출풀이 본문·원문 이미지·문제은행은 보존했다. 기출풀이의 페이지 제목만 공통 manifest.title 변경을 따른다.
+
+## 테스트 및 내용 검토
+- 신규 metadata 테스트 RED: 11개 실패(미구현 API·버전 검사). 구현 후 관련 35개 PASS.
+- SVG 신규 테스트 RED: 2개 실패(미작성 자산). 그림·원본 작성 후 PASS.
+- 독립 리뷰: [원문 보고](note-refresh-assets/independent-review.md). 2건의 P2 그림 결함을 재현 테스트로 RED→GREEN 수정했다. 리뷰 이후 수정의 재리뷰를 수행했다고 주장하지 않는다.
+- 최종 관련 suite: `python -m pytest -o addopts='' tests -k review_pack -q` → **226 passed, 2083 deselected**, 13.94초. Chrome 실제 인쇄 회귀·beforeprint/afterprint 복원 테스트 포함.
+- independent reviewer가 MUX2 8행, DMUX4 8행, enable NAND MUX4 128조합을 계산했다. 원문 X와 이상 0, 활성 High 답안과 활성 Low nOE 충돌 상태는 계속 명시한다.
+- 기존 12개 problem fragment가 기존 최종 HTML에 그대로 포함됨을 작성자가 확인했고 리뷰어도 원본 run과 바이트 비교했다. 35개 evidence 파일도 보존했다.
+- 새 설명 section과 제작 스크립트에 일본어 문자가 없음을 검사했다. 정의·성립 조건·부품 수·수행 범위·측정/예상 구분을 읽어 확인했다.
+- 저장소 전체 suite는 이번 수정에서 실행하지 않았다. 이전 최종 검증의 unrelated Windows 기준선 실패 20건은 이 226개 결과에 포함하지 않는다.
+
+## 브라우저 검증
+Native CUA in-app browser에서 stage c를 확인했다. 1280×900과 375×812에서 6개 그림을 모두 화면 중앙에 표시하여 확인했다. 모든 이미지 loaded, 깨진 이미지 0, scrollWidth/clientWidth 1280/1280 및 375/375, console warn/error 0. 흰 SVG 배경을 사용하여 다크 모드에서도 선·라벨·반전 원·접속점이 읽힌다. 페이지의 긴 수식은 템플릿의 내부 가로 스크롤을 유지한다.
+
+8개 토픽의 목차·페이지 이동 및 요약, MUX 위젯 8입력 조합(0,0,1,1,0,1,0,1), 힌트와 연습 답 펼침을 확인했다. 실험 조작 토픽에서 MUX/DMUX 개념으로 돌아가는 링크를 확인했다. 최종 여섯 그림은 desktop/mobile dark에서 다시 확인하고 mobile light도 확인했다. source metadata가 main text에 없음을 확인했다.
+
+스크린샷의 `*-final.png`가 수정 후 stage c 증거다. 접미사 없는 초기 스크린샷은 stage a의 발견 기록이며 최종 결과로 사용하지 않는다.
+
+## 인쇄 검증
+Chrome headless로 설명 14쪽, 기출풀이 24쪽을 PDF로 출력하고 Poppler로 38쪽 모두 렌더했다. 전체 contact sheet와 MUX2 상세 페이지를 시각 검토하여 그림 잘림·겹침·빈 페이지가 없음을 확인했다. 설명 PDF의 텍스트에 출처·연결 문제 항목이 없으며 기출풀이의 힌트·풀이·검산은 남는다. 실제 프린터 대화상자나 종이 출력을 검사한 것은 아니다. PDF는 tmp/review-pack/note-refresh-print에 있는 검증용 산출물이다.
+
+## 발행 계약
+최종 source checks는 실제 검토에 따라 source_visual=pass, content=self_review, independent=pass, browser=pass로 기록한다. 검토한 stage c와 발행 stage의 네 HTML·MD 및 6 SVG가 바이트 일치하는지 확인한 뒤 기존 publish CLI를 사용한다. 기존 팩과 백업은 삭제하지 않는다. 발행 후 최종 폴더의 source 링크를 포함한 상대 자원 경로를 확인한다. 원래 checkout으로 merge/push하지 않는다.
+
+## 발행 완료
+stage d의 네 HTML/MD와 6 SVG가 검토한 stage c와 바이트 동일함을 확인한 뒤 publish했다. `복습노트/실험04`의 check 명령 통과. 교체 전 백업은 `복습노트/실험04.backup-d198e3d9e306`이며 과거 백업도 보존했다.
+
+최종 위치의 HTML 링크 77개·이미지 21개(새 설명 6개와 보존된 기출 이미지 15개), 두 MD의 상대 링크·anchor가 모두 실제 파일로 연결된다. 35개 evidence 파일과 생명과학 원본 템플릿을 바이트 비교하여 동일함을 확인했다. [최종 경로 검사](note-refresh-assets/final-path-checks.json)와 [발행 화면](note-refresh-assets/published-desktop-mux2.png)을 남겼다. 실제 최종 URL에서 설명 화면과 기출 페이지 간 이동도 확인했다.

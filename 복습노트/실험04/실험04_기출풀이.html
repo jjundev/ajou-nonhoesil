@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>답안지</title>
+<link rel="stylesheet" href="assets/vendor/pretendard/pretendard.css">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<script defer src="assets/vendor/katex/katex.min.js"></script>
+<script defer src="assets/vendor/katex/auto-render.min.js"></script>
+<style>
+/* ==========================================================================
+   답안지 템플릿 (문제 + 풀이 + Hint). 생성기 계약: #workbook-data 자리표시자(한 곳에만 둠),
+   html[data-ready], body[data-overflow]. 문제 데이터는 문제집과 같고, 문제마다
+   solution {steps: [{label, html}], answer} 를 더한다. 1–3절은 문제집 템플릿과 같다.
+   ========================================================================== */
+
+/* 1. 토큰 ------------------------------------------------------------------ */
+:root {
+  --page-w: 297mm;
+  --page-h: 209.8mm;          /* 210mm보다 조금 작게: 빈 쪽이 끼는 것을 막음 */
+  --page-pad: 8mm;
+  --head-h: 10mm;
+  --head-gap: 3mm;
+
+  --font: Pretendard, -apple-system, "Apple SD Gothic Neo", system-ui, "Segoe UI", sans-serif;
+  --fs-body: 10pt;
+  --lh-body: 1.5;
+
+  --ink: #1a1a1a;
+  --muted: #888;
+  --rule: #ddd;
+  --paper: #fff;
+
+  --kind-example: #2F6FB0;    /* 예제 */
+  --kind-exercise: #3C8C5A;   /* 연습문제 */
+  --kind-problem: #C0622B;    /* 장말문제 */
+  --kind-exam: #7A4FA0;       /* 기출 */
+
+  --panel-bg: #F6F6F3;
+  --panel-block-gap: 8mm;     /* 조건 ↔ 구할 것 사이 상하 여백 */
+  --grid-dot: #C8C8C8;
+  --grid-step: 5mm;
+
+  --hint-label: #8a6d20;
+  --hint-ink: #5a5140;
+  --hint-ink-strong: #6b5a2e;
+  --hint-num-bg: #e9e1c9;
+  --hint-bg: #FAF8F2;
+  --hint-rule: #cfc7b0;
+  --hint-badge: #a08a4f;
+
+  --overflow: #D33;
+  --screen-bg: #E9E9E6;
+  --focus: #2F6FB0;
+}
+[data-kind="example"]  { --kind: var(--kind-example); }
+[data-kind="exercise"] { --kind: var(--kind-exercise); }
+[data-kind="problem"]  { --kind: var(--kind-problem); }
+[data-kind="exam"]     { --kind: var(--kind-exam); }
+[data-kind="hint"]     { --kind: var(--hint-badge); }
+
+/* 2. 쪽 틀 (공용) ------------------------------------------------------------ */
+@page { size: 297mm 210mm; margin: 0; }
+* { box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body { font-family: var(--font); font-size: var(--fs-body); line-height: var(--lh-body); }
+
+.page {
+  position: relative;
+  width: var(--page-w); height: var(--page-h); padding: var(--page-pad);
+  overflow: hidden; break-after: page; background: var(--paper);
+  display: flex; flex-direction: column;
+}
+.page:last-child { break-after: auto; }
+.page-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 3mm; container-type: size; }
+
+/* 제작자 표기: 모든 쪽 우측 최하단 여백 */
+.page::before {
+  content: "made by jjundev"; position: absolute; bottom: 2.5mm; right: var(--page-pad);
+  color: var(--muted); font-size: 6.5pt; line-height: 1; letter-spacing: .02em; pointer-events: none;
+}
+/* "넘침" 표시와 겹치지 않도록 그 왼쪽으로 비킨다 */
+.page[data-overflow]::before { right: calc(var(--page-pad) + 8mm); }
+
+.page[data-overflow]::after {
+  content: "넘침"; position: absolute; right: var(--page-pad); bottom: 2.5mm;
+  color: var(--overflow); font-size: 7pt; font-weight: 700;
+}
+
+a:focus-visible { outline: .5mm solid var(--focus); outline-offset: .5mm; }
+
+/* 책갈피용 숨김 글자: display:none은 PDF 책갈피에서 빠지므로 clip으로 숨긴다 */
+.sr {
+  position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* 3. 헤더 (공용) ------------------------------------------------------------- */
+.page-head {
+  position: relative; flex: none; height: var(--head-h); margin-bottom: var(--head-gap);
+  display: flex; align-items: center; gap: 3mm;
+  border-bottom: .3mm solid var(--rule);
+}
+.head-lead { flex: none; display: flex; align-items: center; gap: 2mm; white-space: nowrap; }
+.kind-badge {
+  font-size: 7pt; font-weight: 700; line-height: 1.4; color: var(--paper); background: var(--kind);
+  border-radius: 1mm; padding: .5mm 1.6mm;
+}
+.head-num { font-size: 15pt; font-weight: 800; letter-spacing: -.02em; }
+.head-stars { color: var(--kind); font-size: 9pt; letter-spacing: .05em; }
+.sol-tag {
+  font-size: 6.5pt; font-weight: 700; line-height: 1.4; color: var(--muted);
+  border: .25mm solid var(--muted); border-radius: 1mm; padding: 0 1mm;
+}
+.ans-tag {
+  font-size: 6.5pt; font-weight: 700; line-height: 1.4; color: var(--kind);
+  border: .25mm solid var(--kind); border-radius: 1mm; padding: 0 1mm;
+}
+.page-title {
+  flex: 1 1 auto; min-width: 0; margin: 0;
+  font-size: 10pt; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.head-meta {
+  flex: 0 1 auto; min-width: 0; max-width: 45%;
+  display: flex; align-items: center; gap: 2mm;
+  font-size: 7.5pt; color: var(--muted); white-space: nowrap;
+}
+.head-info { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* 4. 문제 쪽 본문 ------------------------------------------------------------ */
+.fig-band {
+  --fig-frac: .40;
+  --fig-h: calc(var(--fig-frac) * 100cqh);   /* 본문(.page-body) 높이 기준 */
+  flex: none; display: flex; justify-content: center; align-items: flex-start; gap: 3mm;
+}
+/* 회로도는 모두 가운데 칸 맨 위에. 여러 장이면 폭을 나눠 갖고 비율은 그대로 */
+.fig-band > .fig { flex: 0 1 auto; min-width: 0; margin-inline: 0; }
+/* 가운데 칸: 위 회로도 + 아래 풀이 공간. 좌(조건)·우(Hint) 패널은 줄 높이 그대로 */
+.page-center { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3mm; }
+.page-center > .work { flex: 1; min-height: 0; }
+.page-row { --strip-w: 0mm; flex: 1; min-height: 0; display: flex; }
+.page-row.has-strip { --strip-w: 24mm; }
+.page-row.has-formula { --strip-w: 40mm; }      /* 띠에 식을 직접 보일 때 */
+
+.panel {
+  --pw: 33%; --fs: 1;
+  /* 풀이 공간 폭 100mm 이상: 패널 ≤ 줄 폭 − 5mm(간격) − 100mm − 띠 폭 */
+  flex: none; width: min(var(--pw), calc(100% - 105mm - var(--strip-w))); margin-right: 5mm;
+  background: var(--panel-bg); border-radius: 2mm; padding: 4mm; overflow: hidden;
+  display: flex; flex-direction: column; gap: var(--panel-block-gap);
+  font-size: calc(var(--fs-body) * var(--fs));
+}
+.panel > * { flex: none; }
+
+/* 그림: 너비 = min(칸 폭, 교재 크기 × 1.5, 최대 높이 × 가로세로비). 비율은 그대로, 잘리지 않음 */
+.fig {
+  display: block; margin-inline: auto; flex: none;
+  width: min(100%, var(--w-cap), calc(var(--fig-h) * var(--ratio)));
+  height: auto; aspect-ratio: var(--ratio);
+  background: var(--paper); border-radius: 1mm;
+}
+
+.block-label {
+  font-size: 7pt; font-weight: 700; color: var(--muted); letter-spacing: .08em;
+  line-height: 1.3; margin-bottom: 1.2mm;
+}
+.ask-box {
+  background: var(--paper); border-left: .8mm solid var(--kind); border-radius: 0 1mm 1mm 0;
+  padding: 2.5mm 3mm; font-size: 1.05em; font-weight: 500;
+}
+
+/* 본문 목록: 1단계 회색 원점(내어쓰기 3.5mm), 2단계 '–'(3mm 더) */
+.prose { word-break: keep-all; overflow-wrap: anywhere; }
+.prose ul { list-style: none; margin: 0; padding: 0; }
+.prose li { position: relative; padding-left: 3.5mm; }
+.prose li + li { margin-top: .8mm; }
+.prose li::before {
+  content: ""; position: absolute; left: .8mm; top: calc(.75em - .6mm);
+  width: 1.2mm; height: 1.2mm; border-radius: 50%; background: var(--muted);
+}
+.prose li li { padding-left: 3mm; }
+.prose li ul { margin-top: .4mm; }
+.prose li li::before {
+  content: "–"; top: 0; left: 0; width: auto; height: auto; border-radius: 0;
+  background: none; color: var(--muted);
+}
+.prose code { font-size: .92em; }
+.prose p { margin: 0; }
+
+/* 문제 원문: 맨 위, 조건·구할 것과 구분되게 가는 선 아래 한 단계 작게 (문제지와 같음) */
+.original {
+  font-size: .95em; line-height: 1.45; color: var(--ink);
+  word-break: normal; overflow-wrap: break-word; hyphens: auto;
+  padding-bottom: 3mm; border-bottom: .25mm solid var(--rule);
+}
+
+.work {
+  flex: 1; min-width: 0;
+  background-image: radial-gradient(circle, var(--grid-dot) .2mm, transparent .22mm);
+  background-size: var(--grid-step) var(--grid-step); background-position: 0 0;
+}
+
+/* 풀이 칸 (답안지): 점 격자 위에 번호 단계, 맨 아래 답. 맞춤: 글자 0.9 → 0.8 → 2단 */
+.work {
+  --sfs: 1;
+  --sol-step-gap: 10mm;          /* 풀이 단계 사이 상하 여백 */
+  display: flex; flex-direction: column; gap: 3mm; overflow: hidden;
+  padding: 1mm 2mm 0 1mm;
+  font-size: calc(var(--fs-body) * var(--sfs));
+}
+.sol-flow { flex: 1; min-height: 0; overflow: hidden; padding-top: 2.5mm; column-gap: 8mm; column-fill: auto; }
+.sol-flow.is-2col { column-count: 2; }
+.sol-steps { list-style: none; margin: 0; padding: 0; }
+.sol-step {
+  display: grid; grid-template-columns: 5mm minmax(0, 1fr); column-gap: 2mm;
+  break-inside: avoid;
+}
+.sol-step + .sol-step { margin-top: var(--sol-step-gap); }
+.sol-step::before {
+  content: attr(data-n); grid-column: 1; grid-row: 1; align-self: start;
+  width: 5mm; height: 5mm; border-radius: 50%;
+  background: var(--kind); color: var(--paper);
+  font-size: 7pt; font-weight: 700; line-height: 5mm; text-align: center;
+}
+.sol-step-label {
+  grid-column: 2; grid-row: 1; align-self: center;
+  font-size: .9em; font-weight: 700; line-height: 1.3;
+}
+.sol-step-body { grid-column: 2; margin-top: 2.5mm; }
+.sol-step-body:first-child { grid-row: 1; margin-top: 0; }
+.sol-step-body .katex-display { overflow-x: clip; }
+.sol-answer { flex: none; }
+
+/* Hint 띠: 전체가 Hint 쪽 링크 */
+.hint-strip {
+  display: block; flex: none; width: var(--strip-w); overflow: hidden;
+  border-left: .3mm dashed var(--hint-rule); padding-left: 3mm;
+  color: inherit; text-decoration: none;
+}
+.hint-strip-label { font-size: 9pt; font-weight: 700; line-height: 1.3; color: var(--hint-label); margin-bottom: 2mm; }
+.hint-strip-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.6mm; }
+.hint-strip-item {
+  display: grid; grid-template-columns: 3.4mm minmax(0, 1fr); column-gap: 1mm; align-items: start;
+  font-size: 7.5pt; line-height: 1.35; color: var(--hint-ink);
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+.hint-strip-item::before {
+  content: attr(data-n); width: 3.4mm; height: 3.4mm; margin-top: .1mm; border-radius: 50%;
+  background: var(--hint-num-bg); color: var(--hint-ink-strong);
+  font-size: 6pt; font-weight: 700; line-height: 3.4mm; text-align: center;
+}
+
+.hint-strip-formula { display: block; white-space: nowrap; transform-origin: left center; }
+
+/* 수식 */
+.katex { font-size: 1.05em; }
+.katex-display { margin: 1mm 0; }
+.katex-display.fleqn > .katex { padding-left: 0; }   /* 본문 display 식은 왼쪽 맞춤 */
+
+/* 5. Hint 쪽 ----------------------------------------------------------------- */
+.hint-cols { flex: 1; min-height: 0; column-count: 2; column-gap: 10mm; column-fill: auto; overflow: hidden; }
+.hint-entry {
+  background: var(--hint-bg); border-radius: 2mm; padding: 3.5mm 4mm; margin-bottom: 5mm;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.hint-entry-num {
+  display: block; margin-bottom: 2mm; break-after: avoid;
+  font-size: 9.5pt; font-weight: 700; line-height: 1.3; color: var(--hint-ink-strong); text-decoration: none;
+}
+.hint-items { list-style: none; margin: 0; padding: 0; }
+.hint-item {
+  display: grid; grid-template-columns: 4mm minmax(0, 1fr); column-gap: 1.5mm;
+  break-inside: avoid; font-size: 9pt;
+}
+.hint-item + .hint-item { margin-top: 2.2mm; }
+.hint-item::before {
+  content: attr(data-n); grid-column: 1; grid-row: 1; align-self: center;
+  width: 4mm; height: 4mm; border-radius: 50%;
+  background: var(--hint-num-bg); color: var(--hint-ink-strong);
+  font-size: 6.5pt; font-weight: 700; line-height: 4mm; text-align: center;
+}
+.hint-item-label { grid-column: 2; grid-row: 1; font-size: 8.5pt; font-weight: 700; color: var(--hint-ink-strong); }
+.hint-item-body { grid-column: 2; margin-top: .6mm; }
+.hint-item-body li { padding-left: 0; }
+.hint-item-body li li { padding-left: 3mm; }
+.hint-item-body li::before,
+.hint-item-body li li::before { display: none; }
+
+/* 7. 준비용·오류 ------------------------------------------------------------- */
+.staging { position: absolute; left: 0; top: 0; width: 135mm; visibility: hidden; pointer-events: none; }
+.load-error { margin: 16px auto; max-width: 720px; padding: 16px; background: var(--paper); color: var(--overflow); }
+
+/* 8. 화면 모드 ----------------------------------------------------------------- */
+@media screen {
+  html { background: var(--screen-bg); scroll-snap-type: y proximity; }
+  body { background: var(--screen-bg); padding: 16px 0; }
+  .page { margin: 0 auto 16px; box-shadow: 0 1px 4px rgba(0, 0, 0, .15); scroll-snap-align: start; }
+  .page:last-child { margin-bottom: 0; }
+}
+@media print {
+  .page { zoom: 1 !important; }
+}
+</style>
+</head>
+<body>
+<script type="application/json" id="workbook-data">{"meta": {"mode": "answers", "title": "실험 4 · 기출 풀이", "chapter": 0, "total": 12}, "problems": [{"id": "q-mux2", "kind": "기출", "number": "1", "title": "2×1 MUX의 게이트 설계", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.\u003c/p>", "conditions": "", "ask": "\u003cp>회로, 논리식, 진리표를 작성하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "선택선별 경로", "html": "\u003cp>S가 0일 때와 1일 때 전달할 입력을 따로 정한 뒤 두 경로를 합쳐 보세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>선택선 S를 한 NOT에 넣는다. 첫 AND에는 S′, I0를 연결하고 둘째 AND에는 S, I1을 연결한다. 두 출력을 한 OR에 연결한다. 게이트 수는 NOT 1, AND 2, OR 1로 요구와 일치한다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-mux2-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"2×1 MUX의 게이트 설계 완성 회로\">\u003c/p>"}, {"label": "논리식", "html": "\u003cp>$$Y=\\overline{S}I_0+SI_1$$\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>S\u003c/th>\u003cth>I0\u003c/th>\u003cth>I1\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> S=0과 1을 따로 대입하면 Y=I0 또는 I1. 8개 입력 조합 전수검사.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> S를 두 AND에 모두 그대로 넣으면 두 경로가 동시에 열리거나 닫힌다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux2\">2×1 MUX의 경로를 골라 봐요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-mux2\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>S′I0+SI1\u003c/p>"}}, {"id": "q-mux4", "kind": "기출", "number": "2", "title": "Enable 있는 4×1 MUX 표 완성", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)\u003c/p>", "conditions": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>E\u003c/th>\u003cth>S1\u003c/th>\u003cth>S0\u003c/th>\u003cth>D3\u003c/th>\u003cth>D2\u003c/th>\u003cth>D1\u003c/th>\u003cth>D0\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>", "ask": "\u003cp>표의 빈 출력 Y 네 칸을 채우세요.\u003c/p>"}, "figures": [{"src": "figures/questions/q-mux4-given-01.png", "w_mm": 140.0, "h_mm": 84.0}], "hints": [{"label": "주소·열 순서", "html": "\u003cp>주소는 S1S0예요. 데이터 열은 D3부터 D0까지 역순이며 E가 활성인 조건도 확인하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>회로의 E는 NOT을 거쳐 들어가므로 E=0에서 활성이다. 주소 k=2S1+S0로 선택 입력을 찾는다. 출력 열 앞의 데이터 순서가 D3,D2,D1,D0임에 주의한다.\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>E\u003c/th>\u003cth>S1S0\u003c/th>\u003cth>선택\u003c/th>\u003cth>선택 데이터\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>00\u003c/td>\u003ctd>D0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>01\u003c/td>\u003ctd>D1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>10\u003c/td>\u003ctd>D2\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>11\u003c/td>\u003ctd>D3\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "결과", "html": "\u003cp>최종 답: 위에서 아래로 0, 1, 0, 0.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 각 행에 E′와 네 주소 항을 대입해 선택 항 하나만 남음을 확인.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 표를 왼쪽부터 D0로 읽거나 enable 0을 비활성으로 읽지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux4\">4×1 MUX와 활성 Low enable을 배워요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-mux4\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>0,1,0,0\u003c/p>"}}, {"id": "q-demux2", "kind": "예상문제", "number": "3", "title": "보충: 1×2 DMUX의 게이트 설계", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.\u003c/p>", "conditions": "", "ask": "\u003cp>회로, 각 출력의 논리식, 진리표를 작성하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "선택된 출력", "html": "\u003cp>데이터를 두 AND 경로에 나누고 선택선과 그 보수로 한 경로씩 열어 보세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>1×2 회로 설계는 기존의 정의·비교 문제에서 직접 요구되지 않는다. 데이터 분배를 회로로 만드는 연습으로 선별했다. S를 NOT에 넣어 S′를 만든다. 첫 AND는 D와 S′를 받아 Y0를 만들고, 둘째 AND는 D와 S를 받아 Y1을 만든다. 출력 두 개는 서로 묶지 않는다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-demux2-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"보충: 1×2 DMUX의 게이트 설계 완성 회로\">\u003c/p>"}, {"label": "논리식", "html": "\u003cp>$$Y_0=D\\overline{S},\\quad Y_1=DS$$\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>D\u003c/th>\u003cth>S\u003c/th>\u003cth>Y0\u003c/th>\u003cth>Y1\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 입력 네 조합을 전수 확인했다. D=1이면 선택 출력만 1이고 D=0이면 둘 다 0이다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> MUX와 달리 출력 둘을 OR로 합치지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-demux\">DMUX로 데이터를 나눠 보내요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-demux2\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>Y0=DS′, Y1=DS\u003c/p>"}}, {"id": "q-design4", "kind": "예상문제", "number": "4", "title": "보충: 지정 게이트로 4×1 MUX 설계", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)\u003c/p>", "conditions": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>S1\u003c/th>\u003cth>S0\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>I0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>I1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>I2\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>I3\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>", "ask": "\u003cp>지정한 게이트 수로 블록 내부 회로를 설계하세요.\u003c/p>"}, "figures": [{"src": "figures/questions/q-design4-given-01.png", "w_mm": 140.0, "h_mm": 84.0}], "hints": [{"label": "주소별 AND", "html": "\u003cp>기능표의 주소마다 데이터 하나를 통과시킬 AND 경로가 필요해요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>기존 4×1 기출은 출력표를 묻지만 이 문항은 지정한 게이트 수로 회로를 설계하게 하므로 선별했다. NOT 두 개로 S1′와 S0′를 만든다. 네 3입력 AND에는 각 주소 조건 두 개와 데이터 하나를 넣는다. 네 AND의 출력을 한 4입력 OR로 합친다. 원문 함수표에는 enable이 없으므로 E를 추가하지 않는다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-design4-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"보충: 지정 게이트로 4×1 MUX 설계 완성 회로\">\u003c/p>"}, {"label": "논리식", "html": "\u003cp>$$F=\\overline{S_1}\\overline{S_0}I_0+\\overline{S_1}S_0I_1+S_1\\overline{S_0}I_2+S_1S_0I_3$$\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>AND\u003c/th>\u003cth>3입력\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>S1′,S0′,I0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>S1′,S0,I1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>2\u003c/td>\u003ctd>S1,S0′,I2\u003c/td>\u003c/tr>\u003ctr>\u003ctd>3\u003c/td>\u003ctd>S1,S0,I3\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 선택 네 조합과 데이터 열여섯 조합의 총 64조합에서 Y가 선택된 입력과 같았다. 각 AND의 입력은 3개이며 요구한 게이트 수와 일치한다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> enable이 추가된 실험의 4입력 NAND 회로와 혼동하지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux4\">4×1 MUX와 활성 Low enable을 배워요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-design4\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>S1′S0′I0+S1′S0I1+S1S0′I2+S1S0I3\u003c/p>"}}, {"id": "q-decoder", "kind": "기출", "number": "5", "title": "디코더와 MUX·DMUX의 관계", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)\u003c/p>", "conditions": "", "ask": "\u003cp>디코더와 연관 지어 MUX와 DMUX의 특징을 설명하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "선택 신호·데이터", "html": "\u003cp>주소를 출력 선택 신호로 바꾼 다음, 데이터를 어디서 곱하고 어디서 합치는지 비교하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>활성 High 디코더의 출력 Ck는 주소가 k일 때 1이다. MUX는 각 Ck와 Ik를 AND한 뒤 OR하므로 Y=ΣCkIk. DMUX는 각 출력에 Yk=DCk를 둔다. D=1로 고정한 DMUX는 디코더와 같은 one-hot 출력을 낸다. 별도 데이터 입력 유무와 출력 결합 방식이 차이점이다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-decoder-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"디코더와 MUX·DMUX의 관계 완성 회로\">\u003c/p>"}, {"label": "풀이", "html": "\u003cp>n비트 코드는 최대 2ⁿ개 출력 선택을 구분한다. MUX의 n개 선택선과 2ⁿ개 데이터 입력을 혼동하지 않는다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 주소 10에서 C2=1, 나머지 0을 넣으면 MUX Y=I2, DMUX Y2=D.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 입력·출력 선 수가 2배라는 잘못된 일반화를 피한다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-decoder\">디코더와 MUX·DMUX를 연결해 봐요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-decoder\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>디코더 선택 신호로 MUX의 항을 합산하거나 DMUX 출력을 분배\u003c/p>"}}, {"id": "q-tri", "kind": "기출", "number": "6", "title": "활성 Low tri-state 버퍼로 MUX 설계", "section": "실험 4 · 답안 충돌", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오. (Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖는다. 동작은 enable 핀이 Enable일 때 “출력=입력”이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1채널 switch 역할을 함으로 Mux를 구성할 수 있다.)\u003c/p>", "conditions": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>A\u003c/th>\u003cth>nOE\u003c/th>\u003cth>B\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>X\u003c/td>\u003ctd>High\u003c/td>\u003ctd>HIGH-Z\u003c/td>\u003c/tr>\u003ctr>\u003ctd>High\u003c/td>\u003ctd>Low\u003c/td>\u003ctd>High\u003c/td>\u003c/tr>\u003ctr>\u003ctd>Low\u003c/td>\u003ctd>Low\u003c/td>\u003ctd>Low\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>", "ask": "\u003cp>Tri-state 버퍼와 인버터를 결선하여 2×1 MUX를 설계하세요.\u003c/p>"}, "figures": [{"src": "figures/questions/q-tri-given-01.png", "w_mm": 140.0, "h_mm": 84.0}], "hints": [{"label": "nOE·Z·공통선", "html": "\u003cp>nOE=0에서 버퍼가 구동해요. 두 출력이 공통선에서 동시에 구동하지 않도록 제어하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>원문 nOE 표는 0에서 입력을 전달하고 1에서 Z를 출력한다. I0 버퍼의 nOE0=S, I1 버퍼의 nOE1=S′로 만든다. NOT 한 개로 S′를 만들고 각 A에는 I0,I1을 연결하며 B 출력은 공통 Y다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-tri-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"활성 Low tri-state 버퍼로 MUX 설계 완성 회로\">\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>S\u003c/th>\u003cth>nOE0\u003c/th>\u003cth>nOE1\u003c/th>\u003cth>버퍼0\u003c/th>\u003cth>버퍼1\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>I0\u003c/td>\u003ctd>Z\u003c/td>\u003ctd>I0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>Z\u003c/td>\u003ctd>I1\u003c/td>\u003ctd>I1\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "풀이", "html": "\u003cp>원문 제공 답안의 active high 캡션은 이 조건과 다르다. 그 그림의 반전 위치를 그대로 옮기지 않는다. 이 풀이는 원문 활성 Low 표에 대한 설계이며 제공 답안의 조건 충돌은 남긴다.\u003c/p>"}, {"label": "검산 · 주의", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 안정된 S에서 구동 버퍼가 정확히 하나임을 확인. I0,I1 네 조합에서도 선택값과 동일.\u003c/p>\u003cp>\u003cstrong>흔한 실수:\u003c/strong> Z를 0으로 생각하거나 두 버퍼를 동시에 활성화하지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003cstrong>답안 충돌\u003c/strong>: 원문 조건과 제공 답안의 차이 및 도출 답안의 가정을 확인하세요.\u003c/p>\u003cp>원문 버퍼 표는 nOE가 Low일 때 동작해요. 제공 답안의 Active High 캡션과 다르므로 이 해설은 활성 Low 표를 기준으로 설계했어요.\u003c/p>\u003cp>\u003ca href=\"실험04_실험설명.html#t-tristate\">Tri-state로 출력선을 함께 써요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-tri\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>nOE0=S, nOE1=S′, 출력 공통 연결\u003c/p>"}}, {"id": "q-muxdef", "kind": "기출", "number": "7", "title": "MUX를 간단히 서술", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>멀티플렉서에 대해서 간단하게 서술하시오. (인쇄 배점 2점, 수기 배점 3)\u003c/p>", "conditions": "", "ask": "\u003cp>멀티플렉서를 간단히 서술하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "데이터·선택·출력", "html": "\u003cp>데이터 입력 수, 선택 신호, 데이터 출력 수를 나누어 설명하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>MUX는 선택 신호가 지정한 여러 데이터 입력 중 하나를 골라 하나의 데이터 출력으로 전달하는 조합회로다. 4×1이라면 데이터 입력 4개, 선택선 2개, 데이터 출력 1개다. S1S0=01이면 출력은 I1이다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> I1=0일 때 출력도 0. 선택은 출력 1을 강제하는 기능이 아니다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 선택선까지 데이터 입력으로 세거나 입력 데이터를 모두 합산한다고 쓰지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux2\">2×1 MUX의 경로를 골라 봐요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-muxdef\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>여러 데이터 중 선택한 하나를 한 출력으로 전달\u003c/p>"}}, {"id": "q-demuxdef", "kind": "출처 미확인", "number": "8", "title": "DMUX를 간단히 서술 — 기출 여부 미확인", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>디멀티플렉서에 대해서 간단하게 서술하시오.\u003c/p>", "conditions": "", "ask": "\u003cp>디멀티플렉서를 간단히 서술하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "입력·분배 경로", "html": "\u003cp>데이터가 들어오는 곳과 선택 신호가 지정하는 출력 경로를 구분하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>DMUX는 하나의 데이터 입력을 선택 신호가 지정한 여러 출력 중 하나에 전달하는 조합회로다. 활성 High 이상 모델에서 선택되지 않은 출력은 0이다. D=1, 주소 10이면 Y2=1, 나머지는 0이다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> D=0에서는 선택 출력도 0임을 식 Yk=DCk로 확인.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 모든 출력에 같은 데이터를 동시에 복제한다고 쓰지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요.\u003c/p>\u003cp>\u003ca href=\"실험04_실험설명.html#t-demux\">DMUX로 데이터를 나눠 보내요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-demuxdef\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>하나의 데이터를 선택한 출력으로 분배\u003c/p>"}}, {"id": "q-difference", "kind": "출처 미확인", "number": "9", "title": "MUX와 DMUX의 차이 — 기출 여부 미확인", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>멀티플렉서와 디멀티플렉서의 차이를 알기 쉽게 서술하시오.\u003c/p>", "conditions": "", "ask": "\u003cp>MUX와 DMUX의 차이를 설명하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "데이터 흐름 방향", "html": "\u003cp>데이터 경로가 모이는지 흩어지는지, 선택되지 않은 데이터가 남는지 비교하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>MUX는 여러 데이터 입력 중 하나를 골라 한 출력에 모은다. DMUX는 한 데이터 입력을 여러 출력 중 한 곳으로 보낸다. 둘 다 선택선으로 경로를 고른다. 4×1 MUX와 1×4 DMUX에는 각각 선택선 2개가 필요하다. 데이터 경로의 N→1과 1→N을 비교하는 것이며 전체 핀 수 비교가 아니다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 주소 10에서 MUX는 I2→Y, DMUX는 D→Y2.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 단순 역함수라고 쓰지 않는다. MUX에서 선택되지 않은 입력의 값은 출력에 남지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요.\u003c/p>\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux2\">2×1 MUX의 경로를 골라 봐요\u003c/a> · \u003ca href=\"실험04_실험설명.html#t-demux\">DMUX로 데이터를 나눠 보내요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-difference\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>MUX N→1, DMUX 1→N (데이터 경로)\u003c/p>"}}, {"id": "q-demux4", "kind": "출처 미확인", "number": "10", "title": "1×4 DMUX 출력표 — 기출 여부 미확인", "section": "실험 4 · 답안 충돌", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>다음과 다음과 같이 Enable을 갖는 1x4 디멀티플렉서를 참고하여, 아래 진리표의 맞은 출력값을 기록하라. (데이터 입력 D는 enable 입력의 역할도 동시에 함을 주목하라)\u003c/p>", "conditions": "\u003cp>아래는 원자료의 입력 조건을 옮기고 학습용 출력란만 비운 전사 표다. 원자료는 이미 답이 채워진 표이다.\u003c/p>\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>D\u003c/th>\u003cth>S1\u003c/th>\u003cth>S0\u003c/th>\u003cth>Y3\u003c/th>\u003cth>Y2\u003c/th>\u003cth>Y1\u003c/th>\u003cth>Y0\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>X\u003c/td>\u003ctd>X\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>+5\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>+5\u003c/td>\u003ctd>0\u003c/td>\u003ctd>+5\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>+5\u003c/td>\u003ctd>+5\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>+5\u003c/td>\u003ctd>+5\u003c/td>\u003ctd>+5\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>", "ask": "\u003cp>주어진 입력 조건의 출력란을 채우세요.\u003c/p>"}, "figures": [], "hints": [{"label": "논리값·출력 순서", "html": "\u003cp>High/Low를 먼저 읽고 주소마다 선택되는 출력 하나를 찾으세요. 원문 X와 계산값은 구분해요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>원문에서 +5는 High(1), 0은 Low(0)로 읽는다. 이 자료는 출력이 이미 채워진 표를 제공하므로, 문제 영역에는 같은 입력 조건을 옮기고 출력란을 비웠음을 명시했다. D=0에서 원문 출력 X를 계산값과 구분한다.\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>D\u003c/th>\u003cth>S1\u003c/th>\u003cth>S0\u003c/th>\u003cth>Y3\u003c/th>\u003cth>Y2\u003c/th>\u003cth>Y1\u003c/th>\u003cth>Y0\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>X\u003c/td>\u003ctd>X\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "풀이", "html": "\u003cp>Y0=DS1′S0′, Y1=DS1′S0, Y2=DS1S0′, Y3=DS1S0이다. AND형 이상 DMUX에서 D=0이면 모든 출력은 0이다. 원문 X 표기는 원문 증거에 보존하고, 0은 해당 이상 모델의 계산 결과로 설명한다. 이 원문 페이지에는 회로도가 없으므로 실제 부품의 비활성 출력이나 측정값을 확정하지 않는다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> D=1인 네 행에서는 1이 정확히 하나 있고 D=0에서는 모두 0이다. 표의 출력 열은 Y3부터 Y0까지 거꾸로 배열되어 있다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 원문 X를 Z로 바꾸어 읽지 않는다. +5는 논리값 5가 아니다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003cstrong>답안 충돌\u003c/strong>: 원문 조건과 제공 답안의 차이 및 도출 답안의 가정을 확인하세요.\u003c/p>\u003cp>원자료는 출력이 채워진 표예요. 문제지는 같은 입력 조건으로 출력란만 비웠어요. 원문 D=0의 X 표기와 이상 AND형 DMUX의 계산값 0을 구분해요.\u003c/p>\u003cp>기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요.\u003c/p>\u003cp>\u003ca href=\"실험04_실험설명.html#t-demux\">DMUX로 데이터를 나눠 보내요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-demux4\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>Y3Y2Y1Y0: D=0→0000; D=1→0001,0010,0100,1000\u003c/p>"}}, {"id": "q-mux2-graded", "kind": "기출", "number": "11", "title": "채점본 2×1 MUX의 지정 네 행", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 작성하시오. (3점)\u003c/p>", "conditions": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>Sel\u003c/th>\u003cth>X0\u003c/th>\u003cth>X1\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>", "ask": "\u003cp>회로와 논리식을 쓰고 지정된 네 행의 출력을 구하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "지정된 네 행", "html": "\u003cp>일반 8행 표를 다시 쓰기보다 인쇄된 네 행의 Sel 값을 먼저 확인하세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>일반 2×1 MUX에서 입력 이름만 X0와 X1, 선택선 이름은 Sel로 바꾼다. NOT으로 Sel′를 만들고, AND 두 개로 X0Sel′와 X1Sel을 만든 뒤 OR로 합쳐 Y를 얻는다.\u003c/p>"}, {"label": "완성 회로", "html": "\u003cp>\u003cimg src=\"figures/solutions/q-mux2-graded-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"채점본 2×1 MUX의 지정 네 행 완성 회로\">\u003c/p>"}, {"label": "논리식", "html": "\u003cp>$$Y=X_0\\overline{Sel}+X_1Sel$$\u003c/p>"}, {"label": "표로 확인", "html": "\u003cdiv class=\"table-wrap\">\u003ctable>\u003cthead>\u003ctr>\u003cth>Sel\u003c/th>\u003cth>X0\u003c/th>\u003cth>X1\u003c/th>\u003cth>선택\u003c/th>\u003cth>Y\u003c/th>\u003c/tr>\u003c/thead>\u003ctbody>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>0\u003c/td>\u003ctd>X0\u003c/td>\u003ctd>0\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>X1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>0\u003c/td>\u003ctd>1\u003c/td>\u003ctd>0\u003c/td>\u003ctd>X0\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003ctr>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>1\u003c/td>\u003ctd>X1\u003c/td>\u003ctd>1\u003c/td>\u003c/tr>\u003c/tbody>\u003c/table>\u003c/div>"}, {"label": "결과", "html": "\u003cp>최종 출력은 위에서부터 0, 1, 1, 1이다. 채점본은 지정된 이 네 행을 묻는다. 일반적인 여덟 조합 진리표는 노트에서 확인할 수 있다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> 원문의 인쇄된 입력 조건과 손으로 쓴 출력을 분리하여 네 행을 다시 계산했다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 일반 설계 문항과 지정 입력 조건이 달라 별도의 문항으로 보존한다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux2\">2×1 MUX의 경로를 골라 봐요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-mux2-graded\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>Y=X0·Sel′+X1·Sel; 0,1,1,1\u003c/p>"}}, {"id": "q-active-general", "kind": "기출", "number": "12", "title": "Active High와 Active Low의 정의", "section": "실험 4 · 풀이 검토됨", "book_page": null, "difficulty": null, "sol": null, "original_lang": "ko", "depends_on": [], "html": {"original": "\u003cp>논리회로에서 다루는 신호는 크게 active high와 active low로 구분된다. Active high와 active low에 대해서 서술하시오. (인쇄 배점 2점, 수기 배점 4)\u003c/p>", "conditions": "", "ask": "\u003cp>Active High와 Active Low를 각각 서술하세요.\u003c/p>"}, "figures": [], "hints": [{"label": "전압·기능 구분", "html": "\u003cp>전압이 높은 것과 기능이 유효한 것은 같지 않아요. enable을 예로 생각해 보세요.\u003c/p>"}], "solution": {"steps": [{"label": "풀이", "html": "\u003cp>Active High는 신호가 1일 때 해당 기능이 유효하고, Active Low는 0일 때 유효하다는 뜻이다. 예를 들어 enable이 Active Low이면 0에서 데이터를 통과시키고 1에서 기능을 막는다. 출력이 0인지 1인지는 데이터와 회로의 기능에 따라 별도로 정해진다. 입력의 원형 표시, 윗줄, nOE는 활성 Low의 단서이며 기능표로 확인한다.\u003c/p>"}, {"label": "검산", "html": "\u003cp>\u003cstrong>검산:\u003c/strong> E=0이어도 선택 데이터가 1이면 MUX 출력은 1이다. Low 활성이라는 이유로 출력을 0이라고 할 수 없다.\u003c/p>"}, {"label": "흔한 실수", "html": "\u003cp>\u003cstrong>흔한 실수:\u003c/strong> 신호의 전압이 높다는 것과 기능이 활성이라는 것을 같은 뜻으로 쓰지 않는다.\u003c/p>"}, {"label": "원문 대조 · 다시 볼 개념", "html": "\u003cp>\u003ca href=\"실험04_실험설명.html#t-mux4\">4×1 MUX와 활성 Low enable을 배워요\u003c/a> · \u003ca href=\"실험04_실험설명.html#t-tristate\">Tri-state로 출력선을 함께 써요\u003c/a> · \u003ca href=\"원문과_저작안내.md#q-active-general\">원문·제공 답안 대조\u003c/a>\u003c/p>"}], "answer": "\u003cp>기능이 1에서 유효하면 High 활성, 0에서 유효하면 Low 활성\u003c/p>"}}]}</script>
+<main id="book"></main>
+<script>
+'use strict';
+
+// 생성기가 문자열 치환으로 바꾸는 자리표시자. 여기서 이어 붙여 두어 치환 대상이 되지 않게 한다.
+const PLACEHOLDER = '__WORKBOOK' + '_DATA__';
+const KIND_SLUG = { '예제': 'example', '연습문제': 'exercise', '장말문제': 'problem', '기출': 'exam' };
+const KIND_SHORT = { '예제': '예제', '연습문제': '연습', '장말문제': '문제', '기출': '문항' };   // Hint 쪽 항목 번호 앞 (번호가 종류끼리 겹침)
+const FIG_SCALE_CAP = 1.5;        // 교재 인쇄 크기 대비 확대 상한
+const MATH_MIN_SCALE = 0.7;
+const STRIP_MATH_MIN_SCALE = 0.5;  // Hint 띠 속 식은 띠 폭에 맞춰 더 줄일 수 있음
+// 쪽 맞춤 순서: 폭 → 글자. 앞 단계 값은 유지한 채 다음 단계로 간다.
+const FIT_STEPS = [
+  ['--pw', '40%'], ['--pw', '50%'],
+  ['--fs', '0.9'], ['--fs', '0.8'],
+];
+// 풀이 칸 맞춤 순서: 글자 → 위 회로도 높이 → 2단
+const SOL_FIT_STEPS = [['sfs', '0.9'], ['sfs', '0.8'], ['fig', '0.30'], ['fig', '0.22'], ['cols', '2']];
+const PAGE_W_PX = 297 * 96 / 25.4;
+
+const book = document.getElementById('book');
+
+/* ---------- 작은 도우미 ---------- */
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function txt(tag, cls, text) {
+  const e = el(tag, cls);
+  e.textContent = text;
+  return e;
+}
+const kindSlug = kind => KIND_SLUG[kind] || 'problem';
+
+async function loadData() {
+  const q = new URLSearchParams(location.search).get('data');
+  const raw = document.getElementById('workbook-data').textContent.trim();
+  const url = q || (raw === PLACEHOLDER ? 'sample.json' : null);
+  if (!url) return JSON.parse(raw);
+  const res = await fetch(url, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+  return res.json();
+}
+
+function renderMath(root) {
+  if (typeof renderMathInElement !== 'function') return;
+  renderMathInElement(root, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false },
+    ],
+    throwOnError: false,
+    fleqn: true,
+  });
+}
+
+/* ---------- 등식 줄바꿈 ---------- */
+// 긴 등식(=, ≈ 등이 있고 EQ_SPLIT_LEN자보다 긴 식)만 한 줄을 따로 차지하는 display 식으로 바꾸고,
+// 관계 기호마다 줄을 바꿔 세로로 맞춘다. 짧은 식은 문장 속에 그대로 둔다.
+const MATH_RE = /\$\$([\s\S]+?)\$\$|\$([^$]+?)\$/g;
+const REL_RE = /^(?:=|\\(?:approx|Rightarrow|leq?|geq?)(?![a-zA-Z]))/;
+const EQ_SPLIT_LEN = 40;
+
+// 중괄호·\left…\right 바깥의 관계 기호에서 나눈다: [lhs, [rel, rhs], …]
+function splitRelations(tex) {
+  const parts = [];
+  let depth = 0, start = 0, rel = null;
+  for (let i = 0; i < tex.length; i++) {
+    const c = tex[i];
+    if (depth === 0) {
+      const m = (c === '=' || c === '\\') && REL_RE.exec(tex.slice(i));
+      if (m) {
+        parts.push(rel ? [rel, tex.slice(start, i).trim()] : tex.slice(start, i).trim());
+        rel = m[0]; i += m[0].length - 1; start = i + 1;
+        continue;
+      }
+    }
+    if (c === '{') depth++;
+    else if (c === '}') depth--;
+    else if (c === '\\') {
+      const cmd = (/^\\([a-zA-Z]+|.)/.exec(tex.slice(i)) || [, ""])[1];
+      if (cmd === 'left') depth++;
+      else if (cmd === 'right') depth--;
+      i += cmd.length;
+    }
+  }
+  if (!rel) return null;
+  parts.push([rel, tex.slice(start).trim()]);
+  return parts;
+}
+
+function equationTex(tex, parts, prefix) {
+  const [lhs, ...rest] = parts;
+  if (!lhs) return prefix + tex;
+  const lines = rest.map(([rel, rhs], i) => `${i ? '' : prefix + lhs} &amp;${rel} ${rhs}`);
+  return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
+}
+
+function breakEquations(html) {
+  if (!html) return html;
+  const toks = [];
+  let last = 0;
+  for (const m of html.matchAll(MATH_RE)) {
+    toks.push({ text: html.slice(last, m.index) });
+    const tex = (m[1] ?? m[2]).trim();
+    const parts = tex.length > EQ_SPLIT_LEN ? splitRelations(tex) : null;
+    toks.push({ tex, parts, display: !!m[1] || !!parts, prefix: '' });
+    last = m.index + m[0].length;
+  }
+  if (!toks.length) return html;
+  toks.push({ text: html.slice(last) });
+
+  // 줄로 나뉜 식 사이에 남는 쉼표는 지우고, 식 사이의 → 는 다음 식 앞으로 옮긴다
+  toks.forEach((t, k) => {
+    if (t.text == null) return;
+    const prev = toks[k - 1], next = toks[k + 1];
+    const pd = prev && prev.display, nd = next && next.display;
+    if (pd && nd && /^\s*(→|⇒)\s*$/.test(t.text)) { t.text = ''; next.prefix = '\\Rightarrow\\ '; return; }
+    if (pd) t.text = t.text.replace(/^\s*[,，]\s*/, '');
+    if (nd) t.text = t.text.replace(/\s*[,，]\s*$/, ' ');
+    if (pd && nd && !t.text.trim()) t.text = '';
+  });
+
+  return toks.map(t => {
+    if (t.text != null) return t.text;
+    if (!t.display) return `$${t.tex}$`;
+    return `$$${t.parts ? equationTex(t.tex, t.parts, t.prefix) : t.prefix + t.tex}$$`;
+  }).join('');
+}
+
+// display 식이 칸보다 넓으면 그 식만 줄인다 (최소 70%)
+function fitDisplayMath(root) {
+  for (const d of root.querySelectorAll('.katex-display')) {
+    const k = d.firstElementChild;
+    if (!k) continue;
+    k.style.transform = '';
+    const avail = d.clientWidth, need = k.scrollWidth;
+    if (need > avail + 1) {
+      k.style.transformOrigin = 'left center';
+      k.style.transform = `scale(${Math.max(MATH_MIN_SCALE, avail / need)})`;
+    }
+  }
+}
+
+function nextLayout() {
+  void book.offsetHeight;          // 레이아웃을 돌려 새 글꼴(KaTeX 등) 로드를 시작시킴
+  return document.fonts.ready;
+}
+
+/* ---------- 쪽 틀과 헤더 (공용) ---------- */
+function makePage(kind, cls) {
+  const page = el('section', `page ${cls}`);
+  page.dataset.kind = kind;
+  const head = el('header', 'page-head');
+  const body = el('div', 'page-body');
+  page.append(head, body);
+  return { page, head, body };
+}
+
+function problemHead(p, n, total) {
+  const frag = document.createDocumentFragment();
+  const lead = el('div', 'head-lead');
+  lead.append(txt('span', 'kind-badge', p.kind), txt('span', 'head-num', p.number));
+  if (p.difficulty > 0) lead.append(txt('span', 'head-stars', '★'.repeat(p.difficulty)));
+  if (p.sol) lead.append(txt('span', 'sol-tag', 'SOL'));
+  lead.append(txt('span', 'ans-tag', '답안'));
+
+  const h2 = el('h2', 'page-title');
+  h2.append(txt('span', 'sr', `${p.kind} ${p.number} — `), document.createTextNode(p.title));
+
+  const meta = el('div', 'head-meta');
+  const info = [p.section, p.book_page != null ? `p.${p.book_page}` : '', `${n} / ${total}`];
+  meta.append(txt('span', 'head-info', info.filter(Boolean).join(' · ')));
+
+  frag.append(lead, h2, meta);
+  return frag;
+}
+
+/* ---------- 문제 쪽 ---------- */
+function figureImg(f) {
+  const img = el('img', 'fig');
+  img.src = f.src;
+  img.alt = '';
+  img.width = Math.round(f.w_mm * 10);
+  img.height = Math.round(f.h_mm * 10);
+  img.style.setProperty('--w-cap', `${f.w_mm * FIG_SCALE_CAP}mm`);
+  img.style.setProperty('--ratio', f.w_mm / f.h_mm);
+  return img;
+}
+
+function block(label, html, cls, lang) {
+  const b = el('section', 'block');
+  const body = el('div', `prose ${cls}`, breakEquations(html));
+  if (lang) body.lang = lang;
+  b.append(txt('div', 'block-label', label), body);
+  return b;
+}
+
+function hintStrip(p) {
+  const a = el('a', 'hint-strip');
+  a.href = `#hint-${p.id}`;
+  a.append(txt('div', 'hint-strip-label', 'Hint'));
+  const ol = el('ol', 'hint-strip-list');
+  p.hints.forEach((h, i) => {
+    const li = el('li', 'hint-strip-item');
+    li.dataset.n = i + 1;
+    if (h.formula) li.append(stripFormula(h.formula));
+    else li.append(el('span', 'hint-strip-text', h.label));   // 이름표 속 KaTeX가 grid 칸으로 흩어지지 않게
+    ol.append(li);
+  });
+  a.append(ol);
+  return a;
+}
+
+// 'formula'(구분자 없는 LaTeX)가 있으면 띠에는 이름표 대신 식을 보인다
+function stripFormula(tex) {
+  const span = el('span', 'hint-strip-formula');
+  if (typeof katex !== 'undefined') katex.render(tex, span, { throwOnError: false });
+  else span.textContent = tex;
+  return span;
+}
+
+function fitStripFormulas(page) {
+  for (const f of page.querySelectorAll('.hint-strip-formula')) {
+    f.style.transform = '';
+    const avail = f.clientWidth, need = f.scrollWidth;
+    if (need > avail + 1) f.style.transform = `scale(${Math.max(STRIP_MATH_MIN_SCALE, avail / need)})`;
+  }
+}
+
+// 가운데 칸: 풀이 단계와 답. solution이 없으면 빈 점 격자
+function solutionArea(p) {
+  const work = el('div', 'work');
+  const s = p.solution;
+  if (!s) return work;
+  const flow = el('div', 'sol-flow');
+  const ol = el('ol', 'sol-steps');
+  (s.steps || []).forEach((st, i) => {
+    const li = el('li', 'sol-step');
+    li.dataset.n = i + 1;
+    if (st.label) li.append(el('div', 'sol-step-label', st.label));
+    li.append(el('div', 'prose sol-step-body', breakEquations(st.html)));
+    ol.append(li);
+  });
+  flow.append(ol);
+  work.append(flow);
+  if (s.answer) {
+    const a = block('답', s.answer, 'ask-box');
+    a.classList.add('sol-answer');
+    work.append(a);
+  }
+  return work;
+}
+
+function problemPage(p, n, total) {
+  const { page, head, body } = makePage(kindSlug(p.kind), 'page--problem');
+  page.id = p.id;
+  head.append(problemHead(p, n, total));
+
+  const row = el('div', 'page-row');
+  const panel = el('div', 'panel');
+  if (p.html.original) panel.append(block('문제 원문', p.html.original, 'original', p.original_lang || 'en'));   // 원문은 맨 처음
+  panel.append(block('조건', p.html.conditions, 'conditions'), block('구할 것', p.html.ask, 'ask-box'));
+  const center = el('div', 'page-center');
+  const figs = p.figures || [];
+  if (figs.length) {
+    const band = el('div', 'fig-band');
+    figs.forEach(f => band.append(figureImg(f)));
+    center.append(band);
+  }
+  center.append(solutionArea(p));
+  row.append(panel, center);
+  if (p.hints && p.hints.length) {
+    row.classList.add('has-strip');
+    if (p.hints.some(h => h.formula)) row.classList.add('has-formula');
+    row.append(hintStrip(p));
+  }
+  body.append(row);
+  return page;
+}
+
+// 6.5 쪽 맞춤. 들어가면 멈추고, 끝까지 넘치면 false.
+function fitProblemPage(page) {
+  const panel = page.querySelector('.panel');
+  const fits = () => panel.scrollHeight <= panel.clientHeight + 1;
+  const state = { pw: '33%', fs: '1' };
+  for (const [prop, val] of FIT_STEPS) {
+    if (fits()) break;
+    panel.style.setProperty(prop, val);
+    state[{ '--pw': 'pw', '--fs': 'fs' }[prop]] = val;
+  }
+  page.dataset.fit = `pw=${state.pw} fs=${state.fs}`;
+  fitDisplayMath(panel);
+  fitStripFormulas(page);
+  const ok = fits();
+  if (!ok) page.dataset.overflow = '';
+  return ok;
+}
+
+// 풀이 칸 맞춤. 마지막 단계가 칸 아래나 오른쪽(넘친 단)으로 나가면 넘침.
+function fitSolution(page) {
+  const work = page.querySelector('.work');
+  const flow = work.querySelector('.sol-flow');
+  const last = flow && flow.querySelector('.sol-step:last-child');
+  if (!last) return true;
+  const fits = () => {
+    fitDisplayMath(flow);
+    const f = flow.getBoundingClientRect(), l = last.getBoundingClientRect();
+    return l.bottom <= f.bottom + 1 && l.right <= f.right + 1;
+  };
+  const band = page.querySelector('.fig-band');
+  const state = { sfs: '1', fig: '0.40', cols: '1' };
+  for (const [key, val] of SOL_FIT_STEPS) {
+    if (fits()) break;
+    if (key === 'fig') {
+      if (!band) continue;
+      band.style.setProperty('--fig-frac', val);
+    }
+    else if (key === 'cols') flow.classList.add('is-2col');
+    else work.style.setProperty(`--${key}`, val);
+    state[key] = val;
+  }
+  const ok = fits();
+  fitDisplayMath(work.querySelector('.sol-answer') || work);
+  page.dataset.fit += ` sfs=${state.sfs} fig=${state.fig} cols=${state.cols}`;
+  if (!ok) page.dataset.overflow = '';
+  return ok;
+}
+
+/* ---------- Hint 쪽 ---------- */
+function hintItem(h, i) {
+  const li = el('li', 'hint-item');
+  li.dataset.n = i + 1;
+  li.append(el('div', 'hint-item-label', h.label), el('div', 'prose hint-item-body', breakEquations(h.html)));
+  return li;
+}
+
+function hintPage(title, first) {
+  const { page, head, body } = makePage('hint', 'page--hint');
+  // 이어지는 Hint 쪽은 책갈피가 겹치지 않게 제목을 h2가 아닌 div로 둔다
+  head.append(txt('span', 'kind-badge', 'Hint'), txt(first ? 'h2' : 'div', 'page-title', `Hint — ${title}`));
+  const cols = el('div', 'hint-cols');
+  body.append(cols);
+  book.append(page);
+  return cols;
+}
+
+function hintEntry(p, withId) {
+  const root = el('article', 'hint-entry');
+  if (withId) root.id = `hint-${p.id}`;
+  const num = txt('a', 'hint-entry-num', `${KIND_SHORT[p.kind] || ''} ${p.number}`.trim());
+  num.href = `#${p.id}`;
+  const list = el('ol', 'hint-items');
+  root.append(num, list);
+  return { root, list };
+}
+
+// 6.6 항목을 하나씩 넣고, 단이 넘치면 새 Hint 쪽에 같은 문제 칸을 열어 잇는다.
+function flowHints(meta, problems, staged) {
+  const overflow = [];
+  const list = problems.filter(p => p.hints && p.hints.length);
+  if (!list.length) return overflow;
+
+  let cols = hintPage(meta.title, true);
+  const over = () => cols.scrollWidth > cols.clientWidth + 1;
+
+  for (const p of list) {
+    let idPlaced = false;
+    let entry = hintEntry(p, true);
+    cols.append(entry.root);
+    for (const li of staged.get(p.id)) {
+      entry.list.append(li);
+      fitDisplayMath(li);
+      if (!over()) continue;
+
+      li.remove();
+      if (entry.list.children.length) idPlaced = true;
+      else entry.root.remove();
+      cols = hintPage(meta.title, false);
+      entry = hintEntry(p, !idPlaced);
+      cols.append(entry.root);
+      entry.list.append(li);
+      fitDisplayMath(li);
+      if (over()) {                 // 빈 쪽에도 안 들어가는 항목
+        cols.closest('.page').dataset.overflow = '';
+        overflow.push(`hint-${p.id}`);
+      }
+    }
+  }
+  return overflow;
+}
+
+/* ---------- 화면 배율 ---------- */
+function applyZoom(z) {
+  for (const page of book.querySelectorAll(':scope > .page')) page.style.zoom = z;
+}
+const screenZoom = () => applyZoom(Math.min(1, (innerWidth - 32) / PAGE_W_PX));
+
+/* ---------- 실행 (6.9) ---------- */
+async function main() {
+  try {
+    const data = await loadData();
+    const { meta, problems } = data;
+    document.title = meta.title;
+
+    // DOM 생성
+    const total = meta.total || problems.length;
+    problems.forEach((p, i) => book.append(problemPage(p, i + 1, total)));
+    const staging = el('div', 'staging');
+    staging.setAttribute('aria-hidden', 'true');
+    const staged = new Map();
+    for (const p of problems) {
+      const items = (p.hints || []).map(hintItem);
+      staged.set(p.id, items);
+      staging.append(...items);
+    }
+    document.body.append(staging);
+
+    // 글꼴 + 그림 → KaTeX (수식 글꼴도 다 받은 뒤 잰다)
+    await Promise.all([nextLayout(), ...[...document.images].map(img => img.decode().catch(() => {}))]);
+    renderMath(book);
+    renderMath(staging);
+    await nextLayout();
+
+    const overflow = [];
+    for (const page of book.querySelectorAll('.page--problem')) {
+      const panelOk = fitProblemPage(page);
+      const solOk = fitSolution(page);
+      if (!panelOk || !solOk) overflow.push(page.id);
+    }
+    overflow.push(...flowHints(meta, problems, staged));
+    staging.remove();
+
+    document.body.dataset.overflow = overflow.join(',');
+    document.documentElement.dataset.ready = 'true';
+  } catch (err) {
+    console.error(err);
+    book.append(txt('p', 'load-error', `문제 데이터를 읽지 못했습니다: ${err.message}`));
+    document.body.dataset.overflow = '';
+    document.documentElement.dataset.ready = 'error';
+    return;
+  }
+
+  // 배율은 맞춤과 Hint 쪽 나누기가 끝난 뒤에만
+  screenZoom();
+  addEventListener('resize', screenZoom);
+  addEventListener('beforeprint', () => applyZoom(''));
+  addEventListener('afterprint', screenZoom);
+}
+
+addEventListener('DOMContentLoaded', main);
+</script>
+</body>
+</html>

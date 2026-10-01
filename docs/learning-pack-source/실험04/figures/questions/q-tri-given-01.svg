@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>원문 74HC125의 A/nOE/B와 활성 Low 제어</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="38" font-family="Arial" fill="#222" font-size="30" text-anchor="start">74HC125 / active LOW nOE</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M420,175 L420,295 L550,235 Z"/>
+<text x="420" y="155" font-family="Arial" fill="#222" font-size="24" text-anchor="start">U1A 74HC125</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="462" cy="275" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="462,283 462,330"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="250,235 420,235"/>
+<text x="250" y="220" font-family="Arial" fill="#222" font-size="28" text-anchor="start">A</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="550,235 720,235"/>
+<text x="720" y="220" font-family="Arial" fill="#222" font-size="28" text-anchor="start">B</text>
+<text x="400" y="222" font-family="Arial" fill="#222" font-size="22" text-anchor="start">2</text>
+<text x="560" y="222" font-family="Arial" fill="#222" font-size="22" text-anchor="start">3</text>
+<text x="478" y="320" font-family="Arial" fill="#222" font-size="22" text-anchor="start">1</text>
+<text x="462" y="365" font-family="Arial" fill="#222" font-size="28" text-anchor="middle">nOE</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>

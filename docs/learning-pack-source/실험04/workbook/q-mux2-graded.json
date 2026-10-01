@@ -1,0 +1,46 @@
+{
+  "original": "<p>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 작성하시오. (3점)</p>",
+  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>Sel</th><th>X0</th><th>X1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+  "ask": "<p>회로와 논리식을 쓰고 지정된 네 행의 출력을 구하세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "지정된 네 행",
+      "html": "<p>일반 8행 표를 다시 쓰기보다 인쇄된 네 행의 Sel 값을 먼저 확인하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>일반 2×1 MUX에서 입력 이름만 X0와 X1, 선택선 이름은 Sel로 바꾼다. NOT으로 Sel′를 만들고, AND 두 개로 X0Sel′와 X1Sel을 만든 뒤 OR로 합쳐 Y를 얻는다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-mux2-graded-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"채점본 2×1 MUX의 지정 네 행 완성 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$Y=X_0\\overline{Sel}+X_1Sel$$</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>Sel</th><th>X0</th><th>X1</th><th>선택</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>X0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>X1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>X0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>X1</td><td>1</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "결과",
+        "html": "<p>최종 출력은 위에서부터 0, 1, 1, 1이다. 채점본은 지정된 이 네 행을 묻는다. 일반적인 여덟 조합 진리표는 노트에서 확인할 수 있다.</p>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 원문의 인쇄된 입력 조건과 손으로 쓴 출력을 분리하여 네 행을 다시 계산했다.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 일반 설계 문항과 지정 입력 조건이 달라 별도의 문항으로 보존한다.</p>"
+      }
+    ],
+    "answer": "<p>Y=X0·Sel′+X1·Sel; 0,1,1,1</p>"
+  },
+  "notes": []
+}

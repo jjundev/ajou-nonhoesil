@@ -1,0 +1,966 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "enum": [
+        "logic-lab-question-bank"
+      ]
+    },
+    "schema_version": {
+      "type": "integer",
+      "enum": [
+        1
+      ]
+    },
+    "bank_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "experiment": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "format": {
+            "enum": [
+              "pdf",
+              "docx",
+              "doc",
+              "image",
+              "text",
+              "other"
+            ]
+          },
+          "filename_metadata": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "term": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "year",
+              "term"
+            ],
+            "additionalProperties": false
+          },
+          "observed_metadata": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "term": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "year",
+              "term"
+            ],
+            "additionalProperties": false
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "enum": [
+                    "year",
+                    "term"
+                  ]
+                },
+                "filename_value": {
+                  "type": "string"
+                },
+                "observed_value": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "source_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                    },
+                    "pdf_page": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1
+                    },
+                    "printed_page": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "locator": {
+                      "type": "string"
+                    },
+                    "bbox": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "minItems": 4,
+                      "maxItems": 4
+                    },
+                    "image_size": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "source_id",
+                    "pdf_page",
+                    "printed_page",
+                    "locator",
+                    "bbox",
+                    "image_size"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "field",
+                "filename_value",
+                "observed_value",
+                "location"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "processing": {
+            "enum": [
+              "pending",
+              "complete",
+              "held"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "unit_kind": {
+            "enum": [
+              "page",
+              "document",
+              "image"
+            ]
+          },
+          "unit_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "sha256",
+          "format",
+          "filename_metadata",
+          "observed_metadata",
+          "conflicts",
+          "processing",
+          "reason",
+          "unit_kind",
+          "unit_count"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "pdf_page": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "printed_page": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "locator": {
+                "type": "string"
+              },
+              "bbox": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "image_size": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": [
+              "source_id",
+              "pdf_page",
+              "printed_page",
+              "locator",
+              "bbox",
+              "image_size"
+            ],
+            "additionalProperties": false
+          },
+          "role": {
+            "enum": [
+              "problem",
+              "answer",
+              "mixed"
+            ]
+          },
+          "answer_exposure": {
+            "enum": [
+              "none",
+              "present",
+              "unknown"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "sha256",
+          "location",
+          "role",
+          "answer_exposure"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "occurrences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "role": {
+            "enum": [
+              "question",
+              "answer",
+              "explanation",
+              "mixed"
+            ]
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "pdf_page": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "printed_page": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "locator": {
+                "type": "string"
+              },
+              "bbox": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "image_size": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": [
+              "source_id",
+              "pdf_page",
+              "printed_page",
+              "locator",
+              "bbox",
+              "image_size"
+            ],
+            "additionalProperties": false
+          },
+          "original_number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "type": {
+                  "enum": [
+                    "text",
+                    "math",
+                    "table",
+                    "figure"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                },
+                "tex": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "cells": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "asset_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "text",
+                "tex",
+                "cells",
+                "asset_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "reading": {
+            "enum": [
+              "readable",
+              "partial",
+              "unreadable"
+            ]
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "block_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "symbol": {
+                  "type": "string"
+                },
+                "candidates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "source_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                    },
+                    "pdf_page": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1
+                    },
+                    "printed_page": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "locator": {
+                      "type": "string"
+                    },
+                    "bbox": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "minItems": 4,
+                      "maxItems": 4
+                    },
+                    "image_size": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "source_id",
+                    "pdf_page",
+                    "printed_page",
+                    "locator",
+                    "bbox",
+                    "image_size"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "block_id",
+                "symbol",
+                "candidates",
+                "reason",
+                "location"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "location",
+          "original_number",
+          "blocks",
+          "reading",
+          "uncertainties"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "occurrence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "minItems": 1
+          },
+          "representative_occurrence_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "kind": {
+            "enum": [
+              "past",
+              "predicted",
+              "unknown"
+            ]
+          },
+          "classification_reason": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "pdf_page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                },
+                "printed_page": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "locator": {
+                  "type": "string"
+                },
+                "bbox": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "image_size": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "source_id",
+                "pdf_page",
+                "printed_page",
+                "locator",
+                "bbox",
+                "image_size"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          },
+          "subparts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "occurrence_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "block_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "occurrence_id",
+                "block_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "occurrence_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "target_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "status": {
+                  "enum": [
+                    "confirmed",
+                    "candidate"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "occurrence_id",
+                "target_id",
+                "status",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "occurrence_ids",
+          "representative_occurrence_id",
+          "kind",
+          "classification_reason",
+          "evidence",
+          "subparts",
+          "answers"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "to_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "type": {
+            "enum": [
+              "duplicate_candidate",
+              "variant_of",
+              "answer_candidate"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "pdf_page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                },
+                "printed_page": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "locator": {
+                  "type": "string"
+                },
+                "bbox": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "image_size": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "source_id",
+                "pdf_page",
+                "printed_page",
+                "locator",
+                "bbox",
+                "image_size"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "from_id",
+          "to_id",
+          "type",
+          "reason",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "complete",
+            "complete_with_holds"
+          ]
+        },
+        "checks": {
+          "type": "object",
+          "properties": {
+            "structure": {
+              "enum": [
+                "not_run",
+                "pass",
+                "fail"
+              ]
+            },
+            "source_visual": {
+              "enum": [
+                "not_run",
+                "partial",
+                "pass"
+              ]
+            }
+          },
+          "required": [
+            "structure",
+            "source_visual"
+          ],
+          "additionalProperties": false
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "index": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "outcome": {
+                "enum": [
+                  "questions",
+                  "reference",
+                  "blank",
+                  "held"
+                ]
+              },
+              "occurrence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                }
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_id",
+              "index",
+              "outcome",
+              "occurrence_ids",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "target_id",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "status",
+        "checks",
+        "units",
+        "unresolved"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "schema_version",
+    "bank_id",
+    "experiment",
+    "sources",
+    "assets",
+    "occurrences",
+    "questions",
+    "relations",
+    "audit"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,38 @@
+{
+  "original": "<p>디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)</p>",
+  "conditions": "",
+  "ask": "<p>디코더와 연관 지어 MUX와 DMUX의 특징을 설명하세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "선택 신호·데이터",
+      "html": "<p>주소를 출력 선택 신호로 바꾼 다음, 데이터를 어디서 곱하고 어디서 합치는지 비교하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>활성 High 디코더의 출력 Ck는 주소가 k일 때 1이다. MUX는 각 Ck와 Ik를 AND한 뒤 OR하므로 Y=ΣCkIk. DMUX는 각 출력에 Yk=DCk를 둔다. D=1로 고정한 DMUX는 디코더와 같은 one-hot 출력을 낸다. 별도 데이터 입력 유무와 출력 결합 방식이 차이점이다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-decoder-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"디코더와 MUX·DMUX의 관계 완성 회로\"></p>"
+      },
+      {
+        "label": "풀이",
+        "html": "<p>n비트 코드는 최대 2ⁿ개 출력 선택을 구분한다. MUX의 n개 선택선과 2ⁿ개 데이터 입력을 혼동하지 않는다.</p>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 주소 10에서 C2=1, 나머지 0을 넣으면 MUX Y=I2, DMUX Y2=D.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 입력·출력 선 수가 2배라는 잘못된 일반화를 피한다.</p>"
+      }
+    ],
+    "answer": "<p>디코더 선택 신호로 MUX의 항을 합산하거나 DMUX 출력을 분배</p>"
+  },
+  "notes": []
+}

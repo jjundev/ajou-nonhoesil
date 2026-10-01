@@ -59,3 +59,7 @@ HTML 본문 조각과 manifest에서 두 HTML을 조립하고 MD를 변환한다
 새 스킬은 `.claude/skills/logic-lab-review-pack/`에 정본을 둔다. 사용자가 지정한 `.claude/` 경로를 사용하며 `.gitignore`는 변경하지 않는다. 기존 explain-lab-preview는 호환 안내로 교체하고 직접 템플릿 참조와 다른 스킬의 오래된 설명을 갱신한다. 구 템플릿은 전환 시 보존하되 새 스킬에서 사용하지 않는다.
 
 실험4를 첫 실제 학습팩으로 검증한다. 별도 작은 사례로 CMOS 수치 계산과 순서회로 타이밍을 검토한다. 모든 포함 문항에 원문 위치·개념 링크·풀이가 있고, 보류 문항에는 이유가 있으며, HTML·MD가 대응하고, 오프라인 브라우저에서 실제로 읽혀야 한다. 코드 검사는 학습 내용의 정확성 검토를 대체하지 않는다.
+
+## 구현 중 사용자 확정 (2026-09-29)
+
+Native 실행. 학습 화면은 생명과학 note-template.html/review-template.html 원본을 그대로 사용한다. 새 page.html/style.css 디자인은 폐기한다. 렌더 시 placeholder와 외부 자원 URL만 로컬 번들로 교체한다. 원본 템플릿 파일의 SHA256을 기록한다.

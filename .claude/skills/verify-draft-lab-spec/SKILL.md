@@ -82,7 +82,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
    from scripts.lab.isolate import build_isolated_tree
    KEYS = [
        '.claude/skills/verify-draft-lab-spec',
-       'docs/verify', 'docs/plans', 'docs/study', 'docs/rule-friction',
+       'docs/verify', 'docs/plans', '복습노트', 'docs/superpowers', 'docs/study', 'docs/rule-friction',
        'docs/notion-feedback', 'docs/강의노트_이론_실험_매핑_정리.md',
        'docs/corpus-audit',
        'scripts/lab/specdiff.py', 'scripts/lab/regen_compare.py',
@@ -90,7 +90,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
        'scripts/lab/export_hand_diagrams.py', 'scripts/lab/report_compare.py',
        '.claude/skills/verify-write-result-report', 'tests',
        '.claude/skills/breadboard-diagram',
-       '.claude/skills/explain-lab-preview', '.claude/skills/init-lab-experiment',
+       '.claude/skills/explain-lab-preview', '.claude/skills/logic-lab-review-pack', '.claude/skills/init-lab-experiment',
        '.claude/skills/make-lab-report-cover', '.claude/skills/prep-lab-checklist',
        '.claude/skills/review-lab-report', '.claude/skills/sync-report-to-notion',
        '.claude/skills/write-pre-report', '.claude/skills/write-result-report',
@@ -190,7 +190,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
   있다
 - `docs/verify/` — 런북. 시나리오와 회차 기록
 - `docs/plans/` — 합격 조건이 표와 문장으로 들어 있다
-- `docs/study/`·`docs/rule-friction/`·`docs/notion-feedback/`·
+- `복습노트/`·`docs/superpowers/`·`docs/study/`·`docs/rule-friction/`·`docs/notion-feedback/`·
   `docs/강의노트_이론_실험_매핑_정리.md` — 실험 내용의 파생 서술
 - `docs/corpus-audit/` — 과거 제출본 감사. 어느 표가 맞는지를 문장으로 적는다
 - `scripts/lab/specdiff.py`·`scripts/lab/regen_compare.py`·
@@ -202,7 +202,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
   결과보고서 검증 도구와 형제 스킬. 같은 시험 형식과 답안지 목록을 싣는다
 - `tests/` — 실험01 값을 픽스처로 읽는 테스트가 열 개 넘는다
 - `.claude/skills/breadboard-diagram/` — 실험01 배선이 코드로 있다
-- `draft-lab-spec` 을 뺀 스킬 여덟 — `write-pre-report` 가 실험01 제목표를
+- `draft-lab-spec` 을 뺀 스킬 아홉 — `write-pre-report` 가 실험01 제목표를
   싣는 등 값이 샌다
 - `보고서/<실험NN>/{체크리스트,결선도,output}/` **내용물** — 폴더는 둔다
 - `보고서/<실험NN>/` 의 **그 밖의 내용물 전부** — 예비보고서 PDF(승인본 명세가

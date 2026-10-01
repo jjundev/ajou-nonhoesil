@@ -1,0 +1,6890 @@
+{
+  "schema": "logic-lab-question-bank",
+  "schema_version": 1,
+  "bank_id": "bank-exp04",
+  "experiment": 4,
+  "sources": [
+    {
+      "id": "s-27f6ba34223ad22f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 개념_Mux_Demux_Decoder_동작비교.jpg",
+      "sha256": "dc96e22d4caa9fb34542b1705f6710352556ec186e81570d883ac30414989e6b",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-27d934ca08d1d323",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 개념_디코더vs디멀티플렉서_비교.png",
+      "sha256": "19554f16e1e09b2260c71398a8d970b0ad41b77c2bdeaa1eae5a027ee2cd92d5",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-c6b90e2bf528e3f8",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출 2016-1.pdf",
+      "sha256": "7dc6cf0541e6256bfe6402ba3bd2536ed3103cd6bfe6b3447c3b7d10cb65549a",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": "2016",
+        "term": "1"
+      },
+      "observed_metadata": {
+        "year": "2017",
+        "term": "1"
+      },
+      "conflicts": [
+        {
+          "field": "year",
+          "filename_value": "2016",
+          "observed_value": "2017",
+          "location": {
+            "source_id": "s-c6b90e2bf528e3f8",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "시험지 상단 2017-1학기 논리회로실험 실험4",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-38c4935d41954dba",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출_정답.pdf",
+      "sha256": "29c6eaaab11d3b3c996bbbae49ea249b51de9a199981b1e11b4c73a31ab24adc",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-629c5360df5e914f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출_채점본.jpg",
+      "sha256": "c4ac7f7c9c1f371a0afd872c9c4920793881932a3da3b386550cfa9c51063aad",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-0e23b69092f2c27f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v2.pdf",
+      "sha256": "4af91d6b5e63f850a6cc875cbb4123f736da0b2ebade08220ba28a95852f2e14",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 4
+    },
+    {
+      "id": "s-945854091c3730e0",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v3.pdf",
+      "sha256": "02614a195a5b551db20a4f23023c13a1716e5fd531a12d9eb89f9c32c259b846",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 2
+    },
+    {
+      "id": "s-4ba2974bd67ee53e",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v4.pdf",
+      "sha256": "91d8e6bc904776ac41b645fbe68bd83c3001b795fd61c6111aa4c98f4b84ba34",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 3
+    },
+    {
+      "id": "s-c58df44e4ea74e19",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 종합_기출문제 (5p).pdf",
+      "sha256": "5df9854b0aec37ba6ee5acbc908b710538a82b4d733dd7dc30e6816be0c187fd",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 5
+    },
+    {
+      "id": "s-647d8c4265478aad",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 해설.pdf",
+      "sha256": "9641789cea8548c89300359a2e50ecd602adacb37f3453a71dde33b801feb89f",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-2e9fe8e9e027f953",
+      "path": "from_the_past/정리/퀴즈/실험4/원본_docx/실험 4.docx",
+      "sha256": "8040c2dcb3f2cee968d128cbcd96129be701b4f639e51a9423ca87eb0795b827",
+      "format": "docx",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "document",
+      "unit_count": 1
+    }
+  ],
+  "assets": [
+    {
+      "id": "a-s01-p1",
+      "path": "assets/s01-p1.jpg",
+      "sha256": "dc96e22d4caa9fb34542b1705f6710352556ec186e81570d883ac30414989e6b",
+      "location": {
+        "source_id": "s-27f6ba34223ad22f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          960,
+          540
+        ]
+      },
+      "role": "answer",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s02-p1",
+      "path": "assets/s02-p1.png",
+      "sha256": "19554f16e1e09b2260c71398a8d970b0ad41b77c2bdeaa1eae5a027ee2cd92d5",
+      "location": {
+        "source_id": "s-27d934ca08d1d323",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          986,
+          229
+        ]
+      },
+      "role": "answer",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s03-p1",
+      "path": "assets/s03-p1.png",
+      "sha256": "44d62c95612a848f75c466ce09b7d79afe3fb68499b28fa449657d92e955d8e2",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s04-p1",
+      "path": "assets/s04-p1.png",
+      "sha256": "eba50973538dfc70ec9b1bbd44b81fbb1d4319c1b081dfea488de246f9421f00",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1012,
+          1430
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p1",
+      "path": "assets/s06-p1.png",
+      "sha256": "92ae8cf798e08a4876483d6812e22af7f52e149eae263d98eae5a52d43145e9a",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p2",
+      "path": "assets/s06-p2.png",
+      "sha256": "c36237f754f663e8c4fa68291e9d85937a49369c4ab08cd2ccfa604a45c95c71",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p3",
+      "path": "assets/s06-p3.png",
+      "sha256": "318c4b6ce4cadcfb1b7bd6033bae38a689429f89b75cbdf5556fd4c0cdf7b5e1",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p4",
+      "path": "assets/s06-p4.png",
+      "sha256": "6152a60eb958e03d97b22bb3b6a322671f0042053829fb7d9fb220318aa4b589",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "PDF page 4",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s07-p1",
+      "path": "assets/s07-p1.png",
+      "sha256": "8c9c77dbb9104a9d17d37cf27b7b7d24b0f003fda2af7e18cfed2f33530ba593",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p2",
+      "path": "assets/s07-p2.png",
+      "sha256": "ba9526de5c74366770ec37b5c63d783235dcf9db277dcb9348ba48ec07fb6213",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s08-p1",
+      "path": "assets/s08-p1.png",
+      "sha256": "e51578968b839572e1aea942a43979d5645b2cfc3fc78a84b94d6a61751edf25",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s08-p2",
+      "path": "assets/s08-p2.png",
+      "sha256": "9b517f623239b2cf5a502ae1ebf00b7cfa07b2e11319fbe2ae826f9c0673261b",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s08-p3",
+      "path": "assets/s08-p3.png",
+      "sha256": "b2514b25cf420d9bcfca445452629c929e2e2014319627ab45d5aa2c041dd7bb",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s09-p1",
+      "path": "assets/s09-p1.png",
+      "sha256": "1ea77577d9d423a5d0b9bc6f4d85b7fd8e9099c295c84236320fde4b493a57f6",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          774,
+          999
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s09-p2",
+      "path": "assets/s09-p2.png",
+      "sha256": "3b364c42703310f6bf32611be0f21b0eddeebc6420348f48e87b48d439803044",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s09-p3",
+      "path": "assets/s09-p3.png",
+      "sha256": "974b6d06200f6bdd9ffa80cdc786e9fda8bbfcf77aff757395d3e7b4340560d8",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s09-p4",
+      "path": "assets/s09-p4.png",
+      "sha256": "3fb4a10298a6e09101b4403677f0a75964372920be47475a4be37729db6ffae1",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "PDF page 4",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s09-p5",
+      "path": "assets/s09-p5.png",
+      "sha256": "b16a2746765120fa75d298c4c8846c3b8f98ef10a01b8c51569504d258c3bc78",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 5,
+        "printed_page": null,
+        "locator": "PDF page 5",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s10-p1",
+      "path": "assets/s10-p1.png",
+      "sha256": "44d6e8c86c80a7b215d1e31bbea40e38b5257b29c958167ed21bd84cab2a6e3b",
+      "location": {
+        "source_id": "s-647d8c4265478aad",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1012,
+          1432
+        ]
+      },
+      "role": "answer",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s11-p1",
+      "path": "assets/s11-p1.png",
+      "sha256": "38e5d7d619abfbf5e0c348ce91c3d7babff6ce5671b8152d90abe906df53c4d3",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1132,
+          1600
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s11-p2",
+      "path": "assets/s11-p2.png",
+      "sha256": "8e35bc967bef34e2f2569e6bf79fd4e8c03d0d9d2578a405aaff4764f2b0711e",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1132,
+          1600
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s11-p3",
+      "path": "assets/s11-p3.png",
+      "sha256": "72d6482a4cf63914739842079aecaefa924b37a2a6f68e33d2c29b91e2d99497",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1132,
+          1600
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s11-p4",
+      "path": "assets/s11-p4.png",
+      "sha256": "0cd7e1014e69930cd44d27815ee41b41feed48c0f8b0eeb7651476d1b99549ea",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 4",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1132,
+          1600
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p1-q1",
+      "path": "assets/s05-p1-q1.png",
+      "sha256": "abb2a3a8d7ea2d43c7de3219fb6b4490ea3ea95e8edafaf50687234d70c75298",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0.046296296296296294,
+          0.2552083333333333,
+          0.9629629629629629,
+          0.31979166666666664
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p1-q2",
+      "path": "assets/s05-p1-q2.png",
+      "sha256": "e62799fbd12bbec9e60eb1d7dc74cce7ee5102a89581065151ee18d0b6eac556",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0.046296296296296294,
+          0.31979166666666664,
+          0.9629629629629629,
+          0.4895833333333333
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p1-q3",
+      "path": "assets/s05-p1-q3.png",
+      "sha256": "c72d6286e920c6c87211f028410666848127e69a33db8118c88d0637bf476c21",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0.046296296296296294,
+          0.4895833333333333,
+          0.9629629629629629,
+          0.6614583333333334
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s03-p1-o-s03-q1",
+      "path": "assets/s03-p1-o-s03-q1.png",
+      "sha256": "f7e4d924e471de2477b7ad9283c4262ba7bc04dea6fd17e5c32add69948bd1a5",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.07996051332675222,
+          0.07332402234636871,
+          0.9595261599210266,
+          0.12569832402234637
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s03-p1-o-s03-q2",
+      "path": "assets/s03-p1-o-s03-q2.png",
+      "sha256": "4139d26b39beb8b452f2be8f8d7e68bf671ed90474b707acb066d84d16471b39",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.024679170779861797,
+          0.16410614525139663,
+          0.9595261599210266,
+          0.43575418994413406
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s03-p1-o-s03-q3",
+      "path": "assets/s03-p1-o-s03-q3.png",
+      "sha256": "85e8fda35fc9dd393362bb0032240e05798c3b11e4670082cc40dc13857c3156",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.07502467917077986,
+          0.4511173184357542,
+          0.9595261599210266,
+          0.7108938547486033
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s03-p1-o-s03-q4",
+      "path": "assets/s03-p1-o-s03-q4.png",
+      "sha256": "d15b35741dfda15c9b18519f368f2cd61af4e4b7b6779b982c2fa381ae22c426",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.07502467917077986,
+          0.7108938547486033,
+          0.9595261599210266,
+          0.7967877094972067
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p1-o-s07-q3",
+      "path": "assets/s07-p1-o-s07-q3.png",
+      "sha256": "51da1dc0c3ac46a0ae4aa6d80c6b42ff71be082b30368b35e9d26638236c197d",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.4371508379888268,
+          0.9595261599210266,
+          0.49511173184357543
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p1-o-s07-q4",
+      "path": "assets/s07-p1-o-s07-q4.png",
+      "sha256": "f7478785cc8e857f8a7a92784e88ca96c4d9e847f8463a24123b6f1df4a0efc4",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.5900837988826816,
+          0.9595261599210266,
+          0.6361731843575419
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p1-o-s07-q5",
+      "path": "assets/s07-p1-o-s07-q5.png",
+      "sha256": "d62998bdf0d0da1267248ba660e89214a4cb3575c01a8753b14e6c22e75955ed",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.055281342546890426,
+          0.7248603351955307,
+          0.7601184600197434,
+          0.9099162011173184
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p2-o-s07-q6",
+      "path": "assets/s07-p2-o-s07-q6.png",
+      "sha256": "7269e17245b1ae1596bbec378310ae2fab95ac215931be20949ae975ffd6bd49",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0.16979269496544916,
+          0.023743016759776536,
+          0.9200394866732478,
+          0.21298882681564246
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    }
+  ],
+  "occurrences": [
+    {
+      "id": "o-s03-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s03-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q1-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1-o-s03-q1"
+        },
+        {
+          "id": "b-o-s03-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s03-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1-o-s03-q2"
+        },
+        {
+          "id": "b-o-s03-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s03-q3-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오. (Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖는다. 동작은 enable 핀이 Enable일 때 “출력=입력”이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1채널 switch 역할을 함으로 Mux를 구성할 수 있다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q3-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1-o-s03-q3"
+        },
+        {
+          "id": "b-o-s03-q3-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s03-q4-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1-o-s03-q4"
+        },
+        {
+          "id": "b-o-s03-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s04-q1-text",
+          "type": "text",
+          "text": "멀티플렉서에 대해서 간단하게 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s04-a1-text",
+          "type": "text",
+          "text": "복수개의 입력선 중에 하나를 선택하여 그 선의 정보를 출력선(하나)로 보낼 수 있게 하는 조합회로",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-q2-text",
+          "type": "text",
+          "text": "디멀티플렉서에 대해서 간단하게 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-a2-text",
+          "type": "text",
+          "text": "하나의 입력선으로 데이터를 받아 여러 개의 출력선 중 하나에 출력하는 조합회로",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s04-q3-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 차이를 알기 쉽게 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s04-a3-text",
+          "type": "text",
+          "text": "멀티플렉서는 복수개의 입력 중 하나를 출력, 디멀티플렉서는 하나의 데이터를 여러 출력선 중 하나에 출력 (의미 맞으면 1점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s04-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a4",
+      "role": "answer",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s04-a4-text",
+          "type": "text",
+          "text": "Y = S’A + SB. 그림: S를 반전하여 A와 AND, S와 B를 AND한 두 출력을 OR에 연결한 제공 회로.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a4-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}A+SB",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a4-table1",
+          "type": "table",
+          "text": "원문 제공 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "A"
+            ],
+            [
+              "1",
+              "B"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s04-q5-text",
+          "type": "text",
+          "text": "다음과 다음과 같이 Enable을 갖는 1x4 디멀티플렉서를 참고하여, 아래 진리표의 맞은 출력값을 기록하라. (데이터 입력 D는 enable 입력의 역할도 동시에 함을 주목하라)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-38c4935d41954dba",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s04-a5-text",
+          "type": "text",
+          "text": "제공 표의 D=0 행 출력은 모두 X로 인쇄되어 있다. X를 0이나 Z로 교정하지 않고 그대로 전사한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a5-table1",
+          "type": "table",
+          "text": "원문 제공 답안 표: +5와 X 표기를 보존",
+          "tex": null,
+          "cells": [
+            [
+              "D",
+              "S1",
+              "S0",
+              "Y3",
+              "Y2",
+              "Y1",
+              "Y0"
+            ],
+            [
+              "0",
+              "X",
+              "X",
+              "X",
+              "X",
+              "X",
+              "X"
+            ],
+            [
+              "+5",
+              "0",
+              "0",
+              "0",
+              "0",
+              "0",
+              "1"
+            ],
+            [
+              "+5",
+              "0",
+              "+5",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            [
+              "+5",
+              "+5",
+              "0",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "+5",
+              "+5",
+              "+5",
+              "1",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s05-q1-text",
+          "type": "text",
+          "text": "멀티플렉서에 대해서 간단하게 서술하시오. (인쇄 배점 2점, 수기 배점 3)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s05-a1-text",
+          "type": "text",
+          "text": "다수의 입력 중 하나의 입력만을 선택, 연결하여 출력하는 소자",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s05-q2-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 작성하시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q2-table1",
+          "type": "table",
+          "text": "인쇄된 입력 조건; 수기 출력은 답안에 별도 기록",
+          "tex": null,
+          "cells": [
+            [
+              "Sel",
+              "X0",
+              "X1",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s05-a2-text",
+          "type": "text",
+          "text": "수기 회로: X0와 반전 Sel을 AND, X1과 Sel을 AND한 출력을 OR로 연결. 표에 선택 입력을 동그라미로 표시함.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a2-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=X_0\\overline{Sel}+X_1Sel",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a2-table1",
+          "type": "table",
+          "text": "수기 제공 답안",
+          "tex": null,
+          "cells": [
+            [
+              "Sel",
+              "X0",
+              "X1",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s05-q3-text",
+          "type": "text",
+          "text": "논리회로에서 다루는 신호는 크게 active high와 active low로 구분된다. Active high와 active low에 대해서 서술하시오. (인쇄 배점 2점, 수기 배점 4)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-629c5360df5e914f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s05-a3-text",
+          "type": "text",
+          "text": "“H” 입력에 대해 활성화되면 active high. “L” 입력에 대해 활성화되면 active Low. (Enable 입력 등.) 수기 그림에는 E와 입력 버블이 붙은 E̅가 대조되어 있음.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-q3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s06-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s06-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s06-q3-text",
+          "type": "text",
+          "text": "active high와 active low에 대해서 멀티플렉서 혹은 디멀티플렉서와 연관지어 아는대로 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s06-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s06-q5-text",
+          "type": "text",
+          "text": "다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q5-table1",
+          "type": "table",
+          "text": "원문 설계 요구 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S1",
+              "S0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "I0"
+            ],
+            [
+              "0",
+              "1",
+              "I1"
+            ],
+            [
+              "1",
+              "0",
+              "I2"
+            ],
+            [
+              "1",
+              "1",
+              "I3"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s06-q7-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 특징을 다음 그림과 관련 지어 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q7-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        },
+        {
+          "id": "b-o-s06-q7-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s06-q8-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q8-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s06-q9-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오.(Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖기 때문에 Tri-state buffer (3상태 버퍼)라 불린다. 동작은 enable 핀이 Enable일 때 “출력=입력” 이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1 채널 switch 역할을 함으로 Mux를 구성할 수 있다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q9-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q9-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s07-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s07-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s07-q3-text",
+          "type": "text",
+          "text": "active high와 active low에 대해서 멀티플렉서 혹은 디멀티플렉서와 연관지어 아는대로 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q3-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1-o-s07-q3"
+        },
+        {
+          "id": "b-o-s07-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s07-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1-o-s07-q4"
+        },
+        {
+          "id": "b-o-s07-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s07-q5-text",
+          "type": "text",
+          "text": "다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q5-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1-o-s07-q5"
+        },
+        {
+          "id": "b-o-s07-q5-table1",
+          "type": "table",
+          "text": "원문 설계 요구 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S1",
+              "S0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "I0"
+            ],
+            [
+              "0",
+              "1",
+              "I1"
+            ],
+            [
+              "1",
+              "0",
+              "I2"
+            ],
+            [
+              "1",
+              "1",
+              "I3"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s07-q6-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 특징을 다음 그림과 관련 지어 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q6-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2-o-s07-q6"
+        },
+        {
+          "id": "b-o-s07-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p1"
+        },
+        {
+          "id": "b-o-s07-q6-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s07-q7-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q7-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-945854091c3730e0",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s07-q8-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오.(Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖기 때문에 Tri-state buffer (3상태 버퍼)라 불린다. 동작은 enable 핀이 Enable일 때 “출력=입력” 이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1 채널 switch 역할을 함으로 Mux를 구성할 수 있다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q8-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q8-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s08-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.\nBy using 2 AND gates, 1 OR gate, and 1 NOT gate, design a circuit of 2x1 Multiplexer, write a logic equation and truth table of the Multiplexer you designed.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s08-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)\nReferring to the 4x1 Multiplexer with an Enable input, Fill in the blanks. (E: Enable input, S0, S1: Selection input, D0~D3: Data input)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s08-q3-text",
+          "type": "text",
+          "text": "active high와 active low에 대해서 멀티플렉서 혹은 디멀티플렉서와 연관지어 아는대로 서술하시오.\nDescribe the terms “Active High” and “Active Low” using Multiplexer and De-multiplexer.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s08-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.\nUsing 2 AND gates, and 1 NOT gate, design a circuit of 1x2 De-multiplexer, write a logic equation and truth table of the De-multiplexer you designed.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s08-q5-text",
+          "type": "text",
+          "text": "다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)\nDesign a internal circuit of a following block diagram operating as a truth table below. (Use 2 NOT gates, 4 3-input AND gates, and 1 4-input OR gate)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q5-table1",
+          "type": "table",
+          "text": "원문 설계 요구 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S1",
+              "S0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "I0"
+            ],
+            [
+              "0",
+              "1",
+              "I1"
+            ],
+            [
+              "1",
+              "0",
+              "I2"
+            ],
+            [
+              "1",
+              "1",
+              "I3"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        },
+        {
+          "id": "b-o-s08-q5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s08-q6-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 특징을 다음 그림과 관련 지어 설명하시오.\nDescribe the characteristics of a Multiplexer and De-multiplexer by using the figure below.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q6-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s08-q7-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)\nDescribe the characteristics of a Multiplexer and a De-multiplexer using decoder. (Decoder is a combinational circuit that receives the n bits of binary code value as input, and provides the maximum of 2ⁿ different information.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q7-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-4ba2974bd67ee53e",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s08-q8-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오. (Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖는다. 동작은 enable 핀이 Enable일 때 “출력=입력”이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1채널 switch 역할을 함으로 Mux를 구성할 수 있다.)\nBy using Tri-state buffer and inverter, design a circuit of 2x1 Mux. (Buffer has 2 states (High, Low) of output. By comparison, Tri-state buffer has 3 states, consisted of 2 states above, and High-Z (impedance) state. When enable pin receives the signal “Enable”, it outputs the same signal as input. When enable pin receives the signal “Disable”, it outputs the “HIGH-Z” state. Tri-state buffer works as a single channel switch, this makes us to design a Multiplexer.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q8-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q8-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        },
+        {
+          "id": "b-o-s08-q8-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s09-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q1-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s09-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q2-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s09-q3-text",
+          "type": "text",
+          "text": "active high와 active low에 대해서 멀티플렉서 혹은 디멀티플렉서와 연관지어 아는대로 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q3-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s09-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s09-q5-text",
+          "type": "text",
+          "text": "다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-table1",
+          "type": "table",
+          "text": "원문 설계 요구 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S1",
+              "S0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "I0"
+            ],
+            [
+              "0",
+              "1",
+              "I1"
+            ],
+            [
+              "1",
+              "0",
+              "I2"
+            ],
+            [
+              "1",
+              "1",
+              "I3"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s09-q7-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 특징을 다음 그림과 관련 지어 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q7-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s09-q8-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q8-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s09-q9-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오.(Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖기 때문에 Tri-state buffer (3상태 버퍼)라 불린다. 동작은 enable 핀이 Enable일 때 “출력=입력” 이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1 채널 switch 역할을 함으로 Mux를 구성할 수 있다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q9-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q9-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s11-q1-text",
+          "type": "text",
+          "text": "And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; OOXML 본문 P5〜P6; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s11-q2-text",
+          "type": "text",
+          "text": "다음과 같이 Enable을 갖는 4x1멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q2-table1",
+          "type": "table",
+          "text": "원문 문제의 입력 조건과 빈 출력란",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; OOXML 본문 P8; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s11-q3-text",
+          "type": "text",
+          "text": "active high와active low에 대해서 멀티플렉서 혹은 디멀티플렉서와 연관지어 아는대로 서술하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 4; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s11-q4-text",
+          "type": "text",
+          "text": "And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 5; OOXML 본문 P17〜P19; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s11-q5-text",
+          "type": "text",
+          "text": "다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. \n(2개의 NOT, 4개의 3input AND, 1개의 4input OR)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q5-table1",
+          "type": "table",
+          "text": "원문 설계 요구 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S1",
+              "S0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "I0"
+            ],
+            [
+              "0",
+              "1",
+              "I1"
+            ],
+            [
+              "1",
+              "0",
+              "I2"
+            ],
+            [
+              "1",
+              "1",
+              "I3"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 7; OOXML 본문 P22〜P23; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s11-q7-text",
+          "type": "text",
+          "text": "멀티플렉서와 디멀티플렉서의 특징을 다음 그림과 관련 지어 설명 하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q7-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 8; OOXML 본문 P26〜P27; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s11-q8-text",
+          "type": "text",
+          "text": "디코더와 연관지어 멀티플레서와 디멀티플렉서의 특징을 설명하시오.\n(디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2n개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q8-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s11-q9-text",
+          "type": "text",
+          "text": "다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오.(Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖기 때문에 Tri-state buffer (3상태 버퍼)라 불린다. 동작은 enable 핀이 Enable일 때 “출력=입력” 이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1 채널 switch 역할을 함으로 Mux를 구성할 수 있다.)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q9-table1",
+          "type": "table",
+          "text": "원문 74HC125의 진리표: 문제에서 제공한 조건",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "nOE",
+              "B"
+            ],
+            [
+              "X",
+              "High",
+              "HIGH-Z"
+            ],
+            [
+              "High",
+              "Low",
+              "High"
+            ],
+            [
+              "Low",
+              "Low",
+              "Low"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q9-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s06-q6-text",
+          "type": "text",
+          "text": "6. [원문에 문항 본문과 조건이 없음]",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q6-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s06-q6-text",
+          "symbol": "문항 6 본문",
+          "candidates": [],
+          "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다.",
+          "location": {
+            "source_id": "s-0e23b69092f2c27f",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 2",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s09-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s09-q6-text",
+          "type": "text",
+          "text": "6. [원문에 문항 본문과 조건이 없음]",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q6-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p3"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s09-q6-text",
+          "symbol": "문항 6 본문",
+          "candidates": [],
+          "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다.",
+          "location": {
+            "source_id": "s-c58df44e4ea74e19",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 3",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s11-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 6; OOXML 본문 P21 (빈 번호 목록 문단); Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s11-q6-text",
+          "type": "text",
+          "text": "6. [원문에 문항 본문과 조건이 없음]",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-q6-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s11-q6-text",
+          "symbol": "문항 6 본문",
+          "candidates": [],
+          "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다.",
+          "location": {
+            "source_id": "s-2e9fe8e9e027f953",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 6; OOXML 본문 P21 (빈 번호 목록 문단); Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s06-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s06-a1-text",
+          "type": "text",
+          "text": "Y=S’A+SB. S를 반전해 A와 AND, S와 B를 AND한 후 OR로 합치는 제공 회로.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a1-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}A+SB",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a1-table1",
+          "type": "table",
+          "text": "원문 제공 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "A"
+            ],
+            [
+              "1",
+              "B"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s06-a2-text",
+          "type": "text",
+          "text": "위에서부터 0,1,0,0",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a2-table1",
+          "type": "table",
+          "text": "원문에 순서로 제시된 답을 원문 입력표에 대응",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s06-a3-text",
+          "type": "text",
+          "text": "일반적으로 논리회로에소는 신호의 출력을 0과 1로 둔다. 이때 의미있는 신호를 0에 둘것인가 1에둘것인가를 두고, a.h,a.l으로 둔다. 특정핀이 평상시 출력이 0이다가 특정경우에 1이 되는 것을 a.h라 한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a4-note",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s06-a4-note-text",
+          "type": "text",
+          "text": "진리표 알아서 그려라",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-note-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a4-image",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s06-a4-image-text",
+          "type": "text",
+          "text": "4번 뒤에 배치된 원문 이미지: S=0이면 I0, S=1이면 I1을 Y로 출력하는 표, Y=S̅I0+SI1, 2개 AND와 1개 OR 회로가 그려져 있음. 문항은 1×2 DEMUX 설계를 요구한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-image-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}I_0+SI_1",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-image-table1",
+          "type": "table",
+          "text": "원문 이미지의 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "I0"
+            ],
+            [
+              "1",
+              "I1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-image-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s06-a5-text",
+          "type": "text",
+          "text": "제공 회로: S1과 S0를 각각 반전하는 NOT 2개, I0~I3에 각각 연결된 3입력 AND 4개, 네 AND 출력을 합치는 OR 1개. 선택선 해독 부분에 “점선 안은 2x4 해독기 회로와 동일”이라고 표시됨.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a7",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s06-a7-text",
+          "type": "text",
+          "text": "먼저 멀티플레서와 디멀티플렉서는 서로 상반된 관계인데, 멀티플렉서2^n개의 입력을 받아서 n개의 출력을 나타내며, 반대로 디멀티플렉서의 경우 n개의 입력선을 통하여 2^n개의 출력을 만들어내는 회로이다",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a7-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a8",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s06-a8-text",
+          "type": "text",
+          "text": "먼저 디코더는 디멀티플렉서와 유사한 부분이 많은데 디멀티플렉서의 경우 마찬가지로 n개의 입력을 받아서 2^n개이 출력을 만들어 내는 장치를 한다. 이러한 분배의 관점에서 보면 디멀티플렉서와 유사하다. 하지만, 이렇게 받은 입력을 통하여 만들어내는 출력들 중에서 서로다른 선택된 입력선의 2진정보를 출력선으로 넘겨주기 때문에 데이터 선택기의 역할까지 같이 한다. 필터의 역할을 한다고 할 수 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a8-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a9",
+      "role": "answer",
+      "location": {
+        "source_id": "s-0e23b69092f2c27f",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s06-a9-text",
+          "type": "text",
+          "text": "제공 그림: 입력 두 개의 3상태 버퍼 출력을 F에 연결하고 SelectInput을 한 OE와 인버터 입력에, 인버터 출력을 다른 OE에 연결함. 캡션에 “active high enables”라고 쓰여 있음.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a9-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s09-a1-text",
+          "type": "text",
+          "text": "Y=S’A+SB. S를 반전해 A와 AND, S와 B를 AND한 후 OR로 합치는 제공 회로.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a1-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}A+SB",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a1-table1",
+          "type": "table",
+          "text": "원문 제공 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "A"
+            ],
+            [
+              "1",
+              "B"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a1-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s09-a2-text",
+          "type": "text",
+          "text": "위에서부터 0,1,0,0",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a2-table1",
+          "type": "table",
+          "text": "원문에 순서로 제시된 답을 원문 입력표에 대응",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a2-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s09-a3-text",
+          "type": "text",
+          "text": "일반적으로 논리회로에소는 신호의 출력을 0과 1로 둔다. 이때 의미있는 신호를 0에 둘것인가 1에둘것인가를 두고, a.h,a.l으로 둔다. 특정핀이 평상시 출력이 0이다가 특정경우에 1이 되는 것을 a.h라 한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a3-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a4-note",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s09-a4-note-text",
+          "type": "text",
+          "text": "진리표 알아서 그려라",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a4-note-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a4-image",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s09-a4-image-text",
+          "type": "text",
+          "text": "4번 뒤에 배치된 원문 이미지: S=0이면 I0, S=1이면 I1을 Y로 출력하는 표, Y=S̅I0+SI1, 2개 AND와 1개 OR 회로가 그려져 있음. 문항은 1×2 DEMUX 설계를 요구한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a4-image-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}I_0+SI_1",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a4-image-table1",
+          "type": "table",
+          "text": "원문 이미지의 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "I0"
+            ],
+            [
+              "1",
+              "I1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a4-image-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s09-a5-text",
+          "type": "text",
+          "text": "제공 회로: S1과 S0를 각각 반전하는 NOT 2개, I0~I3에 각각 연결된 3입력 AND 4개, 네 AND 출력을 합치는 OR 1개. 선택선 해독 부분에 “점선 안은 2x4 해독기 회로와 동일”이라고 표시됨.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a5-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a7",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s09-a7-text",
+          "type": "text",
+          "text": "먼저 멀티플레서와 디멀티플렉서는 서로 상반된 관계인데, 멀티플렉서2^n개의 입력을 받아서 n개의 출력을 나타내며, 반대로 디멀티플렉서의 경우 n개의 입력선을 통하여 2^n개의 출력을 만들어내는 회로이다",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a7-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a8",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s09-a8-text",
+          "type": "text",
+          "text": "먼저 디코더는 디멀티플렉서와 유사한 부분이 많은데 디멀티플렉서의 경우 마찬가지로 n개의 입력을 받아서 2^n개이 출력을 만들어 내는 장치를 한다. 이러한 분배의 관점에서 보면 디멀티플렉서와 유사하다. 하지만, 이렇게 받은 입력을 통하여 만들어내는 출력들 중에서 서로다른 선택된 입력선의 2진정보를 출력선으로 넘겨주기 때문에 데이터 선택기의 역할까지 같이 한다. 필터의 역할을 한다고 할 수 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a8-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-a9",
+      "role": "answer",
+      "location": {
+        "source_id": "s-c58df44e4ea74e19",
+        "pdf_page": 5,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 5",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s09-a9-text",
+          "type": "text",
+          "text": "제공 그림: 입력 두 개의 3상태 버퍼 출력을 F에 연결하고 SelectInput을 한 OE와 인버터 입력에, 인버터 출력을 다른 OE에 연결함. 캡션에 “active high enables”라고 쓰여 있음.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-a9-image5",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p5"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s11-a1-text",
+          "type": "text",
+          "text": "Y=S’A+SB. S를 반전해 A와 AND, S와 B를 AND한 후 OR로 합치는 제공 회로.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a1-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}A+SB",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a1-table1",
+          "type": "table",
+          "text": "원문 제공 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "A"
+            ],
+            [
+              "1",
+              "B"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; OOXML 본문 P7; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s11-a2-text",
+          "type": "text",
+          "text": "위에서부터 0,1,0,0",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a2-table1",
+          "type": "table",
+          "text": "원문에 순서로 제시된 답을 원문 입력표에 대응",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s11-a3-text",
+          "type": "text",
+          "text": "일반적으로 논리회로에소는 신호의 출력을 0과 1로 둔다. 이때 의미있는 신호를 0에 둘것인가 1에둘것인가를 두고, a.h,a.l으로 둔다. 특정핀이 평상시 출력이 0이다가 특정경우에 1이 되는 것을 a.h라 한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a4-note",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 4; OOXML 본문 P13; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s11-a4-note-text",
+          "type": "text",
+          "text": "진리표 알아서 그려라",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a4-note-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a4-image",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 4; OOXML 본문 P15; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s11-a4-image-text",
+          "type": "text",
+          "text": "4번 뒤에 배치된 원문 이미지: S=0이면 I0, S=1이면 I1을 Y로 출력하는 표, Y=S̅I0+SI1, 2개 AND와 1개 OR 회로가 그려져 있음. 문항은 1×2 DEMUX 설계를 요구한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a4-image-math",
+          "type": "math",
+          "text": "원문 제공 식",
+          "tex": "Y=\\overline{S}I_0+SI_1",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a4-image-table1",
+          "type": "table",
+          "text": "원문 이미지의 함수표",
+          "tex": null,
+          "cells": [
+            [
+              "S",
+              "Y"
+            ],
+            [
+              "0",
+              "I0"
+            ],
+            [
+              "1",
+              "I1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a4-image-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 5; OOXML 본문 P20; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s11-a5-text",
+          "type": "text",
+          "text": "제공 회로: S1과 S0를 각각 반전하는 NOT 2개, I0~I3에 각각 연결된 3입력 AND 4개, 네 AND 출력을 합치는 OR 1개. 선택선 해독 부분에 “점선 안은 2x4 해독기 회로와 동일”이라고 표시됨.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a7",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 7; OOXML 본문 P24; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s11-a7-text",
+          "type": "text",
+          "text": "먼저 멀티플레서와 디멀티플렉서는 서로 상반된 관계인데, 멀티플렉서2^n개의 입력을 받아서 n개의 출력을 나타내며, 반대로 디멀티플렉서의 경우 n개의 입력선을 통하여 2^n개의 출력을 만들어내는 회로이다",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a7-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a8",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 8; OOXML 본문 P28〜P29; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s11-a8-text",
+          "type": "text",
+          "text": "먼저 디코더는 디멀티플렉서와 유사한 부분이 많은데 디멀티플렉서의 경우 마찬가지로 n개의 입력을 받아서 2^n개이 출력을 만들어 내는 장치를 한다. 이러한 분배의 관점에서 보면 디멀티플렉서와 유사하다. 하지만, 이렇게 받은 입력을 통하여 만들어내는 출력들 중에서 서로다른 선택된 입력선의 2진정보를 출력선으로 넘겨주기 때문에 데이터 선택기의 역할까지 같이 한다. 필터의 역할을 한다고 할 수 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a8-image3",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s11-a9",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2e9fe8e9e027f953",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 9; OOXML 본문 P33; Word 읽기 전용 렌더 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s11-a9-text",
+          "type": "text",
+          "text": "제공 그림: 입력 두 개의 3상태 버퍼 출력을 F에 연결하고 SelectInput을 한 OE와 인버터 입력에, 인버터 출력을 다른 OE에 연결함. 캡션에 “active high enables”라고 쓰여 있음.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s11-a9-image4",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s11-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-explanation",
+      "role": "explanation",
+      "location": {
+        "source_id": "s-647d8c4265478aad",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1. Quiz해설; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1. Quiz해설",
+      "blocks": [
+        {
+          "id": "b-o-s10-explanation-text",
+          "type": "text",
+          "text": "위의 logic diagram은 4X1 Mutiplexer를 사용하였다. 멀티플렉서는 여러 개의 입력 중 하나를 선택하여 하나의 출력으로 내보내는 조합회로를 의미한다. Enable값이 1일 때는 회로가 동작하지 않고, Enable값이 0일 때 회로가 동작한다. 또한 4X1 Multiplexer는 2개의 선택입력 S0, S1을 통해 4개의 입력(D0, D1, D2, D3) 중 하나를 선택하여 Y로 출력한다. 위의 solution을 보면 enable은 모두 0으로써 회로는 선택입력에 따라 동작을 하게 된다. 선택입력 S1, S0 모두 0일 때는 D0의 값(0) 출력. S1=0, S0=1일 때는 D1의 값(1) 출력. S1=1, S0=0일 때는 D2의 값(0) 출력. S1=1, S0=1일 때는 D3의 값(0) 출력.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-explanation-table1",
+          "type": "table",
+          "text": "원문 SOLUTION 표",
+          "tex": null,
+          "cells": [
+            [
+              "E",
+              "S1",
+              "S0",
+              "D3",
+              "D2",
+              "D1",
+              "D0",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "1",
+              "1",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-explanation-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-note",
+      "role": "explanation",
+      "location": {
+        "source_id": "s-27f6ba34223ad22f",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "참고 해설; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": null,
+      "blocks": [
+        {
+          "id": "b-o-s01-note-text",
+          "type": "text",
+          "text": "디코더: 입력에 따라 하나의 출력을 활성화. 멀티플렉서: 선택선에 따라 하나의 입력을 활성화. 디멀티플렉서: 선택선에 따라 하나의 출력을 활성화.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-note-table1",
+          "type": "table",
+          "text": "원문 수기 비교표",
+          "tex": null,
+          "cells": [
+            [
+              "대상",
+              "기준",
+              "서술"
+            ],
+            [
+              "디코더",
+              "입력에 따라",
+              "하나의 출력을 활성화"
+            ],
+            [
+              "멀티플렉서",
+              "선택선에 따라",
+              "하나의 입력을 활성화"
+            ],
+            [
+              "디멀티플렉서",
+              "선택선에 따라",
+              "하나의 출력을 활성화"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-note-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-note",
+      "role": "explanation",
+      "location": {
+        "source_id": "s-27d934ca08d1d323",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "참고 해설; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": null,
+      "blocks": [
+        {
+          "id": "b-o-s02-note-text",
+          "type": "text",
+          "text": "디코더는 입력에 따라서 출력을 결정한다. 출력이 하나가 1이면 나머지는 0. (반전 출력하는 경우도 있음) 구동입력(E)이 있는경우 활성화 될 때만 디코더로써 기능을 발휘한다. 이진 입력코드를 출력으로 변환시키는 해독기. (코딩이 암호화 하는거라면 디코딩은 해독..)\n디멀티 플렉서는 입력<선택선>으로 출력선을 결정하여 1개의 데이터입력(E)에 들어온 신호를 내보낸다. (반전 출력하는 경우도 있음) 입력된 데이터를 선택선에 따라서 출력을 정하는 데이터 분배기.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-note-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-mux2",
+      "occurrence_ids": [
+        "o-s03-q1",
+        "o-s04-q4",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1",
+        "o-s09-q1",
+        "o-s11-q1"
+      ],
+      "representative_occurrence_id": "o-s03-q1",
+      "kind": "past",
+      "classification_reason": "2017-1학기 시험지 헤더·반/조/이름/학번 칸과 해당 문항을 직접 확인. 예상문제 자료의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a4",
+          "target_id": "q-mux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-mux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a1",
+          "target_id": "q-mux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a1",
+          "target_id": "q-mux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-mux4",
+      "occurrence_ids": [
+        "o-s03-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2",
+        "o-s09-q2",
+        "o-s11-q2"
+      ],
+      "representative_occurrence_id": "o-s03-q2",
+      "kind": "past",
+      "classification_reason": "2017-1학기 시험지 헤더·반/조/이름/학번 칸과 해당 문항을 직접 확인. 예상문제 자료의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5〜P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-mux4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a2",
+          "target_id": "q-mux4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a2",
+          "target_id": "q-mux4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-explanation",
+          "target_id": "q-mux4",
+          "status": "confirmed",
+          "reason": "원문 회로 및 E/S1/S0/D3/D2/D1/D0의 네 입력 행이 시험지·예상문제의 MUX 출력 문항과 일치한다. 답안 자체의 독립 검증은 하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "q-active",
+      "occurrence_ids": [
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3",
+        "o-s09-q3",
+        "o-s11-q3"
+      ],
+      "representative_occurrence_id": "o-s07-q3",
+      "kind": "predicted",
+      "classification_reason": "원문 문서 상단에 “실험4 퀴즈 예상문제”라고 명시. 실제 시행 시험의 동일 조건 출처는 이번 자료에서 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-active",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a3",
+          "target_id": "q-active",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a3",
+          "target_id": "q-active",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-demux2",
+      "occurrence_ids": [
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4",
+        "o-s09-q4",
+        "o-s11-q4"
+      ],
+      "representative_occurrence_id": "o-s07-q4",
+      "kind": "predicted",
+      "classification_reason": "원문 문서 상단에 “실험4 퀴즈 예상문제”라고 명시. 실제 시행 시험의 동일 조건 출처는 이번 자료에서 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a4-note",
+          "target_id": "q-demux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a4-image",
+          "target_id": "q-demux2",
+          "status": "candidate",
+          "reason": "문서 배치상 4번 뒤이지만 요구한 DEMUX와 이미지의 MUX 구성이 다르므로 제공 답안 연결을 후보로만 둠."
+        },
+        {
+          "occurrence_id": "o-s09-a4-note",
+          "target_id": "q-demux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a4-image",
+          "target_id": "q-demux2",
+          "status": "candidate",
+          "reason": "문서 배치상 4번 뒤이지만 요구한 DEMUX와 이미지의 MUX 구성이 다르므로 제공 답안 연결을 후보로만 둠."
+        },
+        {
+          "occurrence_id": "o-s11-a4-note",
+          "target_id": "q-demux2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a4-image",
+          "target_id": "q-demux2",
+          "status": "candidate",
+          "reason": "문서 배치상 4번 뒤이지만 요구한 DEMUX와 이미지의 MUX 구성이 다르므로 제공 답안 연결을 후보로만 둠."
+        }
+      ]
+    },
+    {
+      "id": "q-design4",
+      "occurrence_ids": [
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5",
+        "o-s09-q5",
+        "o-s11-q5"
+      ],
+      "representative_occurrence_id": "o-s07-q5",
+      "kind": "predicted",
+      "classification_reason": "원문 문서 상단에 “실험4 퀴즈 예상문제”라고 명시. 실제 시행 시험의 동일 조건 출처는 이번 자료에서 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P17〜P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-design4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a5",
+          "target_id": "q-design4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a5",
+          "target_id": "q-design4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-switch",
+      "occurrence_ids": [
+        "o-s06-q7",
+        "o-s07-q6",
+        "o-s08-q6",
+        "o-s09-q7",
+        "o-s11-q7"
+      ],
+      "representative_occurrence_id": "o-s07-q6",
+      "kind": "predicted",
+      "classification_reason": "원문 문서 상단에 “실험4 퀴즈 예상문제”라고 명시. 실제 시행 시험의 동일 조건 출처는 이번 자료에서 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 4",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P22〜P23; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a7",
+          "target_id": "q-switch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a7",
+          "target_id": "q-switch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a7",
+          "target_id": "q-switch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-decoder",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s06-q8",
+        "o-s07-q7",
+        "o-s08-q7",
+        "o-s09-q8",
+        "o-s11-q8"
+      ],
+      "representative_occurrence_id": "o-s03-q4",
+      "kind": "past",
+      "classification_reason": "2017-1학기 시험지 헤더·반/조/이름/학번 칸과 해당 문항을 직접 확인. 예상문제 자료의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 4",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P26〜P27; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a8",
+          "target_id": "q-decoder",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a8",
+          "target_id": "q-decoder",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a8",
+          "target_id": "q-decoder",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s01-note",
+          "target_id": "q-decoder",
+          "status": "candidate",
+          "reason": "문항 번호가 없는 개념 메모이며 디코더/MUX/DEMUX 비교 문항의 참고 설명으로만 연결."
+        },
+        {
+          "occurrence_id": "o-s02-note",
+          "target_id": "q-decoder",
+          "status": "candidate",
+          "reason": "문항 번호가 없는 개념 정리 이미지이며 관련 비교 문항의 참고 설명으로만 연결."
+        }
+      ]
+    },
+    {
+      "id": "q-tri",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s06-q9",
+        "o-s07-q8",
+        "o-s08-q8",
+        "o-s09-q9",
+        "o-s11-q9"
+      ],
+      "representative_occurrence_id": "o-s03-q3",
+      "kind": "past",
+      "classification_reason": "2017-1학기 시험지 헤더·반/조/이름/학번 칸과 해당 문항을 직접 확인. 예상문제 자료의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a9",
+          "target_id": "q-tri",
+          "status": "candidate",
+          "reason": "앞선 9번의 제공 후속 그림이지만 문제의 nOE/74HC125 표는 활성 Low이고 그림 캡션은 active high enables이므로 조건 일치 여부를 보류."
+        },
+        {
+          "occurrence_id": "o-s09-a9",
+          "target_id": "q-tri",
+          "status": "candidate",
+          "reason": "앞선 9번의 제공 후속 그림이지만 문제의 nOE/74HC125 표는 활성 Low이고 그림 캡션은 active high enables이므로 조건 일치 여부를 보류."
+        },
+        {
+          "occurrence_id": "o-s11-a9",
+          "target_id": "q-tri",
+          "status": "candidate",
+          "reason": "앞선 9번의 제공 후속 그림이지만 문제의 nOE/74HC125 표는 활성 Low이고 그림 캡션은 active high enables이므로 조건 일치 여부를 보류."
+        }
+      ]
+    },
+    {
+      "id": "q-muxdef",
+      "occurrence_ids": [
+        "o-s04-q1",
+        "o-s05-q1"
+      ],
+      "representative_occurrence_id": "o-s05-q1",
+      "kind": "past",
+      "classification_reason": "월요일반 실제 채점 퀴즈의 문항·배점·수기 답안과 동일 질문을 확인.",
+      "evidence": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-muxdef",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-muxdef",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-demuxdef",
+      "occurrence_ids": [
+        "o-s04-q2"
+      ],
+      "representative_occurrence_id": "o-s04-q2",
+      "kind": "unknown",
+      "classification_reason": "“실험4. Quiz” 헤더와 제공 답안은 확인했으나, 이 고유 문항은 시행 연도·분반·실제 채점본 대조가 없어 실제 기출 여부는 미확인. 파일명만으로 확정하지 않음.",
+      "evidence": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-demuxdef",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-difference",
+      "occurrence_ids": [
+        "o-s04-q3"
+      ],
+      "representative_occurrence_id": "o-s04-q3",
+      "kind": "unknown",
+      "classification_reason": "“실험4. Quiz” 헤더와 제공 답안은 확인했으나, 이 고유 문항은 시행 연도·분반·실제 채점본 대조가 없어 실제 기출 여부는 미확인. 파일명만으로 확정하지 않음.",
+      "evidence": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-difference",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-demux4",
+      "occurrence_ids": [
+        "o-s04-q5"
+      ],
+      "representative_occurrence_id": "o-s04-q5",
+      "kind": "unknown",
+      "classification_reason": "“실험4. Quiz” 헤더와 제공 답안은 확인했으나, 이 고유 문항은 시행 연도·분반·실제 채점본 대조가 없어 실제 기출 여부는 미확인. 파일명만으로 확정하지 않음.",
+      "evidence": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a5",
+          "target_id": "q-demux4",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-mux2-graded",
+      "occurrence_ids": [
+        "o-s05-q2"
+      ],
+      "representative_occurrence_id": "o-s05-q2",
+      "kind": "past",
+      "classification_reason": "월요일반 실제 채점 퀴즈에서 배점·채점 표시·수기 회로·표를 확인. 입력 네 행이 주어진 변형이므로 일반 설계 문항과 별도 보존.",
+      "evidence": [
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-mux2-graded",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-active-general",
+      "occurrence_ids": [
+        "o-s05-q3"
+      ],
+      "representative_occurrence_id": "o-s05-q3",
+      "kind": "past",
+      "classification_reason": "월요일반 실제 채점 퀴즈 3번의 인쇄 문항과 수기 답안·배점 수정 표시를 확인. MUX/DEMUX 연계를 명시한 예상문항과 요구 범위가 달라 별도 보존.",
+      "evidence": [
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s05-a3",
+          "target_id": "q-active-general",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-empty-six",
+      "occurrence_ids": [
+        "o-s06-q6",
+        "o-s09-q6",
+        "o-s11-q6"
+      ],
+      "representative_occurrence_id": "o-s06-q6",
+      "kind": "predicted",
+      "classification_reason": "예상문제 v2·종합본 예상문제 절·원본 DOCX의 5번과 7번 사이에 번호 6만 있고 본문·조건이 없는 동일 편집 흔적. 완성 문항 수와 구분해야 함.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P21 (빈 번호 목록 문단); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    }
+  ],
+  "relations": [
+    {
+      "from_id": "q-mux2",
+      "to_id": "q-mux2-graded",
+      "type": "variant_of",
+      "reason": "게이트 수와 2×1 MUX 주제는 같지만 채점본에는 특정 입력 네 행과 표 완성 조건이 주어져 있어 별도 변형으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-active",
+      "to_id": "q-active-general",
+      "type": "variant_of",
+      "reason": "일반 활성 극성 서술과 MUX/DEMUX와 연관지은 서술은 요구 범위가 다름.",
+      "evidence": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-difference",
+      "to_id": "q-switch",
+      "type": "variant_of",
+      "reason": "일반적인 차이 서술과 스위치 도해를 사용한 비교는 제시 조건이 다름.",
+      "evidence": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "status": "complete_with_holds",
+    "checks": {
+      "structure": "pass",
+      "source_visual": "partial"
+    },
+    "units": [
+      {
+        "source_id": "s-27f6ba34223ad22f",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s01-note"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-27d934ca08d1d323",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s02-note"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c6b90e2bf528e3f8",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s03-q1",
+          "o-s03-q2",
+          "o-s03-q3",
+          "o-s03-q4"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-38c4935d41954dba",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s04-q1",
+          "o-s04-a1",
+          "o-s04-q2",
+          "o-s04-a2",
+          "o-s04-q3",
+          "o-s04-a3",
+          "o-s04-q4",
+          "o-s04-a4",
+          "o-s04-q5",
+          "o-s04-a5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-629c5360df5e914f",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q1",
+          "o-s05-a1",
+          "o-s05-q2",
+          "o-s05-a2",
+          "o-s05-q3",
+          "o-s05-a3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-0e23b69092f2c27f",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q1",
+          "o-s06-q2",
+          "o-s06-q3",
+          "o-s06-q4",
+          "o-s06-a1",
+          "o-s06-a2",
+          "o-s06-a3",
+          "o-s06-a4-note"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-0e23b69092f2c27f",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q5",
+          "o-s06-q7",
+          "o-s06-q6",
+          "o-s06-a4-image",
+          "o-s06-a5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-0e23b69092f2c27f",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q7",
+          "o-s06-q8",
+          "o-s06-q9",
+          "o-s06-a7",
+          "o-s06-a8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-0e23b69092f2c27f",
+        "index": 4,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-a9"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-945854091c3730e0",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q1",
+          "o-s07-q2",
+          "o-s07-q3",
+          "o-s07-q4",
+          "o-s07-q5",
+          "o-s07-q6"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-945854091c3730e0",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q6",
+          "o-s07-q7",
+          "o-s07-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-4ba2974bd67ee53e",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s08-q1",
+          "o-s08-q2",
+          "o-s08-q3",
+          "o-s08-q4",
+          "o-s08-q5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-4ba2974bd67ee53e",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s08-q5",
+          "o-s08-q6",
+          "o-s08-q7",
+          "o-s08-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-4ba2974bd67ee53e",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s08-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c58df44e4ea74e19",
+        "index": 1,
+        "outcome": "reference",
+        "occurrence_ids": [],
+        "reason": "표지에 “실험 4”만 표시되어 있으며 문제·답안·해설은 없음."
+      },
+      {
+        "source_id": "s-c58df44e4ea74e19",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-q1",
+          "o-s09-q2",
+          "o-s09-q3",
+          "o-s09-q4",
+          "o-s09-a1",
+          "o-s09-a2",
+          "o-s09-a3",
+          "o-s09-a4-note"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c58df44e4ea74e19",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-q5",
+          "o-s09-q6",
+          "o-s09-a4-image",
+          "o-s09-a5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c58df44e4ea74e19",
+        "index": 4,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-q7",
+          "o-s09-q8",
+          "o-s09-q9",
+          "o-s09-a7",
+          "o-s09-a8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c58df44e4ea74e19",
+        "index": 5,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-a9"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-647d8c4265478aad",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s10-explanation"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-2e9fe8e9e027f953",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s11-q1",
+          "o-s11-q2",
+          "o-s11-q3",
+          "o-s11-q4",
+          "o-s11-q5",
+          "o-s11-q7",
+          "o-s11-q8",
+          "o-s11-q9",
+          "o-s11-q6",
+          "o-s11-a1",
+          "o-s11-a2",
+          "o-s11-a3",
+          "o-s11-a4-note",
+          "o-s11-a4-image",
+          "o-s11-a5",
+          "o-s11-a7",
+          "o-s11-a8",
+          "o-s11-a9"
+        ],
+        "reason": ""
+      }
+    ],
+    "unresolved": [
+      {
+        "target_id": "s-c6b90e2bf528e3f8",
+        "reason": "파일명 연도 2016과 시험지 헤더 2017이 다르다. 헤더와 파일명을 모두 보존했으며 실제 시행 연도는 외부 자료로 확정하지 않았다."
+      },
+      {
+        "target_id": "o-s04-a5",
+        "reason": "원문 D=0 행에 출력 X가 명시됨. 이 표기의 의미와 회로 조건에 대한 정답 타당성은 독립 풀이 단계에서 검토해야 하며 원문 그대로 보존했다."
+      },
+      {
+        "target_id": "q-demuxdef",
+        "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+      },
+      {
+        "target_id": "q-difference",
+        "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+      },
+      {
+        "target_id": "q-demux4",
+        "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+      },
+      {
+        "target_id": "o-s06-q6",
+        "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다."
+      },
+      {
+        "target_id": "o-s09-q6",
+        "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다."
+      },
+      {
+        "target_id": "o-s11-q6",
+        "reason": "원문에는 번호 6만 있고 문제 조건이 없다. 다른 버전의 6번으로 자동 대체하지 않았다."
+      },
+      {
+        "target_id": "o-s06-a4-image",
+        "reason": "4번은 1×2 DEMUX를 요구하지만 다음 페이지 제공 그림은 2×1 MUX 표·논리식이다. 편집 오류 또는 다른 문항 해설의 삽입 여부를 확정하지 않음."
+      },
+      {
+        "target_id": "o-s06-a7",
+        "reason": "제공 해설의 “MUX 2^n 입력 → n 출력, DEMUX n 입력 → 2^n 출력” 표현을 그대로 보존했다. 같은 페이지 그림은 MUX 한 출력·DEMUX 한 입력으로 표현되어 있으므로 선 종류와 수를 후속 독립 풀이에서 검토해야 함."
+      },
+      {
+        "target_id": "o-s06-a8",
+        "reason": "제공 해설에 디코더/디멀티플렉서의 입력선과 데이터 선택기 역할을 혼용한 설명이 있다. 원문 설명을 보존하며 정답으로 검증하지 않음."
+      },
+      {
+        "target_id": "o-s06-a9",
+        "reason": "문제의 nOE 표는 Low에서 입력을 통과시키지만 제공 후속 그림은 active high enables이라고 명시한다. 해당 그림을 74HC125의 확정 답안으로 바꾸지 않았다."
+      },
+      {
+        "target_id": "o-s09-a4-image",
+        "reason": "4번은 1×2 DEMUX를 요구하지만 다음 페이지 제공 그림은 2×1 MUX 표·논리식이다. 편집 오류 또는 다른 문항 해설의 삽입 여부를 확정하지 않음."
+      },
+      {
+        "target_id": "o-s09-a7",
+        "reason": "제공 해설의 “MUX 2^n 입력 → n 출력, DEMUX n 입력 → 2^n 출력” 표현을 그대로 보존했다. 같은 페이지 그림은 MUX 한 출력·DEMUX 한 입력으로 표현되어 있으므로 선 종류와 수를 후속 독립 풀이에서 검토해야 함."
+      },
+      {
+        "target_id": "o-s09-a8",
+        "reason": "제공 해설에 디코더/디멀티플렉서의 입력선과 데이터 선택기 역할을 혼용한 설명이 있다. 원문 설명을 보존하며 정답으로 검증하지 않음."
+      },
+      {
+        "target_id": "o-s09-a9",
+        "reason": "문제의 nOE 표는 Low에서 입력을 통과시키지만 제공 후속 그림은 active high enables이라고 명시한다. 해당 그림을 74HC125의 확정 답안으로 바꾸지 않았다."
+      },
+      {
+        "target_id": "o-s11-a4-image",
+        "reason": "4번은 1×2 DEMUX를 요구하지만 다음 페이지 제공 그림은 2×1 MUX 표·논리식이다. 편집 오류 또는 다른 문항 해설의 삽입 여부를 확정하지 않음."
+      },
+      {
+        "target_id": "o-s11-a7",
+        "reason": "제공 해설의 “MUX 2^n 입력 → n 출력, DEMUX n 입력 → 2^n 출력” 표현을 그대로 보존했다. 같은 페이지 그림은 MUX 한 출력·DEMUX 한 입력으로 표현되어 있으므로 선 종류와 수를 후속 독립 풀이에서 검토해야 함."
+      },
+      {
+        "target_id": "o-s11-a8",
+        "reason": "제공 해설에 디코더/디멀티플렉서의 입력선과 데이터 선택기 역할을 혼용한 설명이 있다. 원문 설명을 보존하며 정답으로 검증하지 않음."
+      },
+      {
+        "target_id": "o-s11-a9",
+        "reason": "문제의 nOE 표는 Low에서 입력을 통과시키지만 제공 후속 그림은 active high enables이라고 명시한다. 해당 그림을 74HC125의 확정 답안으로 바꾸지 않았다."
+      }
+    ]
+  }
+}

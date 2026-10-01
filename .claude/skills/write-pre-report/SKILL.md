@@ -491,7 +491,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    `Q(t-1)'` 은 상태 토큰이지 부울식이 아니라서, 승격하면 진리표가 망가진다.
 
    `to_overbar_html` 자체는 지우지 않는다 — ②`prep-lab-checklist` 와
-   ①`explain-lab-preview` 는 아직 HTML→PDF 를 내므로 그쪽에서는 정상 동작한다.
+   과거 ①`explain-lab-preview` 산출물의 호환 경로에서 사용한다. 새 학습팩은 HTML·MD를 생성한다.
 
 6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. **이 md 가
    유일한 산출물이다** — HTML 로 옮기지 않는다 (8단계).

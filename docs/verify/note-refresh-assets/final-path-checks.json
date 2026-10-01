@@ -1,0 +1,8 @@
+{
+  "html_links": 77,
+  "html_images": 21,
+  "md_relative_links": "all resolve",
+  "note_metadata": "absent from HTML, complete per topic in MD",
+  "evidence": "byte-identical to previous pack",
+  "templates": "byte-identical to biology"
+}

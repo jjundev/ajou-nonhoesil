@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>1×2 DMUX의 독립된 두 출력</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="38" font-family="Arial" fill="#222" font-size="32" text-anchor="start">1 x 2 DMUX</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M360,125 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="398" y="174.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="360" y="121" font-family="Arial" fill="#222" font-size="20" text-anchor="start">AND</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="290,145 360,145"/>
+<text x="275" y="152.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="290,185 360,185"/>
+<text x="275" y="192.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="450,165 800,165"/>
+<text x="820" y="173.0" font-family="Arial" fill="#222" font-size="28" text-anchor="start">Y0</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M360,305 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="398" y="354.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="360" y="301" font-family="Arial" fill="#222" font-size="20" text-anchor="start">AND</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="290,325 360,325"/>
+<text x="275" y="332.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="290,365 360,365"/>
+<text x="275" y="372.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="450,345 800,345"/>
+<text x="820" y="353.0" font-family="Arial" fill="#222" font-size="28" text-anchor="start">Y1</text>
+<text x="272" y="455" font-family="Arial" fill="#222" font-size="20" text-anchor="start">NOT</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="205,490 280,490"/>
+<text x="200" y="480" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M280,465 L280,515 L330,490 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="338" cy="490" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="346,490 400,490"/>
+<text x="405" y="498" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S&#x27;</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>

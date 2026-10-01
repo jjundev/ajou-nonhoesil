@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img">
+<title>실험 조작 흐름: 입력과 선택선을 바꾸고 출력을 관찰해요</title>
+<style>text{font-family:Arial,"Malgun Gothic",sans-serif;font-size:24px;fill:#18212e} .wire{fill:none;stroke:#18212e;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .gate{fill:#fff;stroke:#18212e;stroke-width:3} .accent{fill:#e8f1ff;stroke:#2674df;stroke-width:3}</style>
+<rect width="640" height="560" rx="16" fill="#fff"/>
+<text x="24" y="38" text-anchor="start">입력을 바꾸고 예상값과 비교해요</text>
+<text x="24" y="85" text-anchor="start">1-1 · MUX</text>
+<rect class="accent" x="24" y="110" width="170" height="75" rx="8"/>
+<text x="109.0" y="155.5" text-anchor="middle">E=0</text>
+<polyline class="wire" points="194,147 230,147"/>
+<rect class="gate" x="230" y="110" width="170" height="75" rx="8"/>
+<text x="315.0" y="155.5" text-anchor="middle">주소 선택</text>
+<polyline class="wire" points="400,147 436,147"/>
+<rect class="gate" x="436" y="110" width="180" height="75" rx="8"/>
+<text x="526.0" y="155.5" text-anchor="middle">Y 관찰</text>
+<text x="24" y="225" text-anchor="start">선택 입력 변경 → Y가 따라와요.</text>
+<text x="24" y="268" text-anchor="start">비선택 입력 변경 → Y는 그대로예요.</text>
+<text x="24" y="325" text-anchor="start">2-1 · DMUX</text>
+<rect class="accent" x="24" y="350" width="170" height="75" rx="8"/>
+<text x="109.0" y="395.5" text-anchor="middle">D=1</text>
+<polyline class="wire" points="194,387 230,387"/>
+<rect class="gate" x="230" y="350" width="170" height="75" rx="8"/>
+<text x="315.0" y="395.5" text-anchor="middle">주소 선택</text>
+<polyline class="wire" points="400,387 436,387"/>
+<rect class="gate" x="436" y="350" width="180" height="75" rx="8"/>
+<text x="526.0" y="395.5" text-anchor="middle">Y0~Y3 관찰</text>
+<text x="24" y="475" text-anchor="start">선택 출력 하나만 1이 돼요.</text>
+<text x="24" y="522" text-anchor="start">D=0으로 바꾸면 네 출력이 모두 0이에요.</text>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>지정 게이트로 구성한 2×1 MUX 완성 회로</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="38" font-family="Arial" fill="#222" font-size="32" text-anchor="start">2 x 1 MUX</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M300,125 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="338" y="174.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="300" y="121" font-family="Arial" fill="#222" font-size="20" text-anchor="start">AND</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="230,145 300,145"/>
+<text x="215" y="152.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">X0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="230,185 300,185"/>
+<text x="215" y="192.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">Sel&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="390,165 520,165 520,225 750.66,225"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M300,305 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="338" y="354.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="300" y="301" font-family="Arial" fill="#222" font-size="20" text-anchor="start">AND</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="230,325 300,325"/>
+<text x="215" y="332.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">X1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="230,365 300,365"/>
+<text x="215" y="372.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">Sel</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="390,345 520,345 520,275 750.66,275"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M730,190 Q780,250.0 730,310 Q840,310 880,250.0 Q840,190 730,190 Z"/>
+<text x="802" y="259.0" font-family="Arial" fill="#222" font-size="24" text-anchor="middle">OR</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="880,250 950,250"/>
+<text x="965" y="258.0" font-family="Arial" fill="#222" font-size="26" text-anchor="start">Y</text>
+<text x="262" y="455" font-family="Arial" fill="#222" font-size="20" text-anchor="start">NOT</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="195,490 270,490"/>
+<text x="190" y="480" font-family="Arial" fill="#222" font-size="24" text-anchor="start">Sel</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M270,465 L270,515 L320,490 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="328" cy="490" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="336,490 390,490"/>
+<text x="395" y="498" font-family="Arial" fill="#222" font-size="24" text-anchor="start">Sel&#x27;</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>

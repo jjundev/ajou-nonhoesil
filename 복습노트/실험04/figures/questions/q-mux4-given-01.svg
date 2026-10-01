@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140mm" height="84mm" viewBox="0 0 1000 600" role="img"><title>활성 Low enable을 갖는 원문 NAND 기반 4×1 MUX</title><style>text{font-family:Arial,sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/><text x="30" y="34" font-family="Arial" fill="#222" font-size="28" text-anchor="start">4 x 1 MUX / 74HC20 NAND network</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M370,70 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="408" y="119.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="370" y="66" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U1A 74HC20</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,80 370,80"/>
+<text x="285" y="87.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,100 370,100"/>
+<text x="285" y="107.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S0&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,120 370,120"/>
+<text x="285" y="127.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S1&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,140 370,140"/>
+<text x="285" y="147.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">E&#x27;</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="468.0" cy="110.0" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="476,110 620,110 620,240 770,240"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M370,175 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="408" y="224.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="370" y="171" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U1B 74HC20</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,185 370,185"/>
+<text x="285" y="192.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,205 370,205"/>
+<text x="285" y="212.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,225 370,225"/>
+<text x="285" y="232.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S1&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,245 370,245"/>
+<text x="285" y="252.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">E&#x27;</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="468.0" cy="215.0" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="476,215 580,215 580,280 770,280"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M370,280 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="408" y="329.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="370" y="276" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U2A 74HC20</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,290 370,290"/>
+<text x="285" y="297.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D2</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,310 370,310"/>
+<text x="285" y="317.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S0&#x27;</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,330 370,330"/>
+<text x="285" y="337.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,350 370,350"/>
+<text x="285" y="357.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">E&#x27;</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="468.0" cy="320.0" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="476,320 580,320 580,320 770,320"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M370,385 h50 a40.0,40.0 0 0 1 0,80 h-50 Z"/>
+<text x="408" y="434.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="370" y="381" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U2B 74HC20</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,395 370,395"/>
+<text x="285" y="402.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">D3</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,415 370,415"/>
+<text x="285" y="422.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S0</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,435 370,435"/>
+<text x="285" y="442.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">S1</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="300,455 370,455"/>
+<text x="285" y="462.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end">E&#x27;</text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="468.0" cy="425.0" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="476,425 620,425 620,360 770,360"/>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M770,220 h50 a80.0,80.0 0 0 1 0,160 h-50 Z"/>
+<text x="808" y="309.0" font-family="Arial" fill="#222" font-size="26" text-anchor="middle">&amp;</text>
+<text x="770" y="216" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U3A 74HC20</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="700,240 770,240"/>
+<text x="685" y="247.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end"></text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="700,280 770,280"/>
+<text x="685" y="287.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end"></text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="700,320 770,320"/>
+<text x="685" y="327.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end"></text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="700,360 770,360"/>
+<text x="685" y="367.0" font-family="Arial" fill="#222" font-size="24" text-anchor="end"></text>
+<circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="908.0" cy="300.0" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="916,300 965,300"/>
+<text x="970" y="308.0" font-family="Arial" fill="#222" font-size="24" text-anchor="start">Y</text>
+<text x="107" y="480" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U4A 74HC04</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="40,515 115,515"/>
+<text x="35" y="505" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S0</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M115,490 L115,540 L165,515 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="173" cy="515" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="181,515 235,515"/>
+<text x="240" y="523" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S0&#x27;</text>
+<text x="412" y="480" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U4B 74HC04</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="345,515 420,515"/>
+<text x="340" y="505" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S1</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M420,490 L420,540 L470,515 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="478" cy="515" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="486,515 540,515"/>
+<text x="545" y="523" font-family="Arial" fill="#222" font-size="24" text-anchor="start">S1&#x27;</text>
+<text x="737" y="480" font-family="Arial" fill="#222" font-size="20" text-anchor="start">U4C 74HC04</text>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="670,515 745,515"/>
+<text x="665" y="505" font-family="Arial" fill="#222" font-size="24" text-anchor="start">E</text>
+<path class="gate" fill="white" stroke="#222" stroke-width="3" d="M745,490 L745,540 L795,515 Z"/><circle class="gate" fill="white" stroke="#222" stroke-width="3" cx="803" cy="515" r="8"/>
+<polyline class="wire" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="811,515 865,515"/>
+<text x="870" y="523" font-family="Arial" fill="#222" font-size="24" text-anchor="start">E&#x27;</text>
+<text x="30" y="555" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Input block: +5 V / GND</text>
+<text x="30" y="575" font-family="Arial" fill="#222" font-size="20" text-anchor="start">Same signal label = same connected net.</text></svg>

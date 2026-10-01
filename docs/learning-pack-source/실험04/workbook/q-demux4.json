@@ -1,0 +1,41 @@
+{
+  "original": "<p>다음과 다음과 같이 Enable을 갖는 1x4 디멀티플렉서를 참고하여, 아래 진리표의 맞은 출력값을 기록하라. (데이터 입력 D는 enable 입력의 역할도 동시에 함을 주목하라)</p>",
+  "conditions": "<p>아래는 원자료의 입력 조건을 옮기고 학습용 출력란만 비운 전사 표다. 원자료는 이미 답이 채워진 표이다.</p><div class=\"table-wrap\"><table><thead><tr><th>D</th><th>S1</th><th>S0</th><th>Y3</th><th>Y2</th><th>Y1</th><th>Y0</th></tr></thead><tbody><tr><td>0</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>0</td><td>0</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>0</td><td>+5</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>+5</td><td>0</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>+5</td><td>+5</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>",
+  "ask": "<p>주어진 입력 조건의 출력란을 채우세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "논리값·출력 순서",
+      "html": "<p>High/Low를 먼저 읽고 주소마다 선택되는 출력 하나를 찾으세요. 원문 X와 계산값은 구분해요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>원문에서 +5는 High(1), 0은 Low(0)로 읽는다. 이 자료는 출력이 이미 채워진 표를 제공하므로, 문제 영역에는 같은 입력 조건을 옮기고 출력란을 비웠음을 명시했다. D=0에서 원문 출력 X를 계산값과 구분한다.</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>D</th><th>S1</th><th>S0</th><th>Y3</th><th>Y2</th><th>Y1</th><th>Y0</th></tr></thead><tbody><tr><td>0</td><td>X</td><td>X</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "풀이",
+        "html": "<p>Y0=DS1′S0′, Y1=DS1′S0, Y2=DS1S0′, Y3=DS1S0이다. AND형 이상 DMUX에서 D=0이면 모든 출력은 0이다. 원문 X 표기는 원문 증거에 보존하고, 0은 해당 이상 모델의 계산 결과로 설명한다. 이 원문 페이지에는 회로도가 없으므로 실제 부품의 비활성 출력이나 측정값을 확정하지 않는다.</p>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> D=1인 네 행에서는 1이 정확히 하나 있고 D=0에서는 모두 0이다. 표의 출력 열은 Y3부터 Y0까지 거꾸로 배열되어 있다.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 원문 X를 Z로 바꾸어 읽지 않는다. +5는 논리값 5가 아니다.</p>"
+      }
+    ],
+    "answer": "<p>Y3Y2Y1Y0: D=0→0000; D=1→0001,0010,0100,1000</p>"
+  },
+  "notes": [
+    "원자료는 출력이 채워진 표예요. 문제지는 같은 입력 조건으로 출력란만 비웠어요. 원문 D=0의 X 표기와 이상 AND형 DMUX의 계산값 0을 구분해요.",
+    "기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요."
+  ]
+}

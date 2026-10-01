@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img">
+<title>활성 Low tri-state 버퍼 두 개를 공통 출력에 연결한 MUX</title>
+<style>text{font-family:Arial,"Malgun Gothic",sans-serif;font-size:24px;fill:#18212e} .wire{fill:none;stroke:#18212e;stroke-width:3;stroke-linejoin:round;stroke-linecap:round} .gate{fill:#fff;stroke:#18212e;stroke-width:3} .accent{fill:#e8f1ff;stroke:#2674df;stroke-width:3}</style>
+<rect width="640" height="560" rx="16" fill="#fff"/>
+<text x="24" y="38" text-anchor="start">Tri-state MUX · nOE=0에서 동작해요</text>
+<text x="24" y="158" text-anchor="start">I0</text>
+<polyline class="wire" points="65,150 185,150"/>
+<path class="gate" d="M185,110 L185,190 L275,150 Z"/>
+<circle class="gate" cx="215" cy="180" r="8"/>
+<polyline class="wire" points="215,188 215,226"/>
+<text x="24" y="258" text-anchor="start">nOE0 = S</text>
+<polyline class="wire" points="275,150 445,150"/>
+<text x="24" y="348" text-anchor="start">I1</text>
+<polyline class="wire" points="65,340 185,340"/>
+<path class="gate" d="M185,300 L185,380 L275,340 Z"/>
+<circle class="gate" cx="215" cy="370" r="8"/>
+<polyline class="wire" points="215,378 215,416"/>
+<text x="24" y="448" text-anchor="start">nOE1 = S′</text>
+<polyline class="wire" points="275,340 445,340"/>
+<polyline class="wire" points="445,150 445,340"/>
+<circle cx="445" cy="150" r="5" fill="#18212e"/>
+<circle cx="445" cy="340" r="5" fill="#18212e"/>
+<polyline class="wire" points="445,245 580,245"/>
+<circle cx="445" cy="245" r="5" fill="#18212e"/>
+<text x="590" y="253" text-anchor="start">Y</text>
+<text x="24" y="495" text-anchor="start">S=0: I0를 보내요 / S=1: I1을 보내요</text>
+<text x="24" y="535" text-anchor="start">꺼진 버퍼는 Z예요. Z는 논리 0이 아니에요.</text>
+</svg>

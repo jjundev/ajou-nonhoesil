@@ -247,7 +247,7 @@ description: 논리회로실험 명세·결선도·예비보고서·결과보고
     대상은 그 주차의 HTML **전부**다 —
     `<실험NN>/체크리스트/` 와 `<실험NN>/output/` 를 **둘 다** 본다.
     `output/` 의 HTML 은 옛 파이프라인의 잔재가 아니다:
-    `explain-lab-preview` 가 실험프리뷰 HTML 을 거기 내고, ⑥ 은 PDF 변환이
+    과거 `explain-lab-preview` 의 실험프리뷰 HTML 이 남아 있고, ⑥ 은 PDF 변환이
     실패하면 표지 HTML 을 남긴다.
 
     ```bash

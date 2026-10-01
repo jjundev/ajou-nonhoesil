@@ -1,0 +1,42 @@
+{
+  "original": "<p>And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.</p>",
+  "conditions": "",
+  "ask": "<p>회로, 각 출력의 논리식, 진리표를 작성하세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "선택된 출력",
+      "html": "<p>데이터를 두 AND 경로에 나누고 선택선과 그 보수로 한 경로씩 열어 보세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>1×2 회로 설계는 기존의 정의·비교 문제에서 직접 요구되지 않는다. 데이터 분배를 회로로 만드는 연습으로 선별했다. S를 NOT에 넣어 S′를 만든다. 첫 AND는 D와 S′를 받아 Y0를 만들고, 둘째 AND는 D와 S를 받아 Y1을 만든다. 출력 두 개는 서로 묶지 않는다.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-demux2-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"보충: 1×2 DMUX의 게이트 설계 완성 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$Y_0=D\\overline{S},\\quad Y_1=DS$$</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>D</th><th>S</th><th>Y0</th><th>Y1</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 입력 네 조합을 전수 확인했다. D=1이면 선택 출력만 1이고 D=0이면 둘 다 0이다.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> MUX와 달리 출력 둘을 OR로 합치지 않는다.</p>"
+      }
+    ],
+    "answer": "<p>Y0=DS′, Y1=DS</p>"
+  },
+  "notes": []
+}
