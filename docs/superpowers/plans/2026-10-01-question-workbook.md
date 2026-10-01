@@ -743,7 +743,7 @@ SKILL.md의 출력 수를 HTML 3/MD 3으로 바꾸고 생명과학 템플릿은 
 
 **Interfaces:** Consumes Task 5 source와 build CLI. Produces 최종 stage에 대한 실제 browser/print 결과와 파일 해시 기록. 검증용 PDF는 학습팩의 공식 출력에 추가하지 않는다.
 
-- [ ] **Step 1: 브라우저 검증 test를 작성한다.** 기존 Chrome을 사용하는 선택 테스트이며 도구 부재로 skip이면 브라우저 검증 완료로 간주하지 않는다. 실행 시 Native 브라우저 도구로 같은 조건을 검사할 수 있다.
+- [x] **Step 1: 브라우저 검증 test를 작성한다.** 기존 Chrome을 사용하는 선택 테스트이며 도구 부재로 skip이면 브라우저 검증 완료로 간주하지 않는다. 실행 시 Native 브라우저 도구로 같은 조건을 검사할 수 있다.
 
 ```python
 import json
@@ -808,7 +808,7 @@ def assert_offline_reload(page):
 
 Step 1의 key 루프 안에서 두 함수를 호출한다. 문제지 q-mux4의 빈 출력은 `page.locator('#q-mux4 tbody tr td:last-child').all_text_contents()`가 `['','','','']`인지 검사한다. blank table/그림이 브라우저에서 식으로 채워지지 않아야 한다.
 
-- [ ] **Step 2: 첫 실제 stage를 생성하고 브라우저 테스트 실행.**
+- [x] **Step 2: 첫 실제 stage를 생성하고 브라우저 테스트 실행.**
 
 ```powershell
 python -m scripts.lab.review_pack build --root . --run docs/learning-pack-source/실험04 --stage tmp/review-pack/실험04-workbook-20261001-a
@@ -818,9 +818,9 @@ python -m pytest tests/test_review_pack_workbook_browser.py -n 0 -q
 
 stage가 이미 있으면 새 접미사를 사용한다. 처음 검사에서 내용 넘침 FAIL이면 test를 약하게 만들지 않고 JSON의 문장 배치·그림 폭을 수정해 새 stage에서 다시 검사한다. 실패 이유와 수정 내용을 기록한다.
 
-- [ ] **Step 3: 두 HTML을 실제로 읽고 스크린샷을 확인한다.** 12문항을 모두 넘겨 문제와 해설 조건·빈 표·완성 회로·일반 정의를 읽는다. 1280px 화면에서는 모든 칸의 라벨·신호명이 읽혀야 한다. 375px에서는 원본 screenZoom 동작과 링크가 작동해야 한다. 실험설명 목차·이전/다음·요약·MUX 조작은 유지되어야 한다. 두 파일을 offline로 reload해 폰트·수식·이미지가 모두 로컬로 로드되는지 확인한다. console error 및 이미지 실패는 0이어야 한다.
+- [x] **Step 3: 두 HTML을 실제로 읽고 스크린샷을 확인한다.** 12문항을 모두 넘겨 문제와 해설 조건·빈 표·완성 회로·일반 정의를 읽는다. 1280px 화면에서는 모든 칸의 라벨·신호명이 읽혀야 한다. 375px에서는 원본 screenZoom 동작과 링크가 작동해야 한다. 실험설명 목차·이전/다음·요약·MUX 조작은 유지되어야 한다. 두 파일을 offline로 reload해 폰트·수식·이미지가 모두 로컬로 로드되는지 확인한다. console error 및 이미지 실패는 0이어야 한다.
 
-- [ ] **Step 4: 검증 PDF를 생성하고 모든 쪽을 렌더링해 확인한다.** 자동 브라우저가 가능하면 data-ready=true와 이미지 완료 이후 `page.pdf(path=...,prefer_css_page_size=True,print_background=True)`로 저장한다. 아래 물리 크기 검사를 실행하고 그림·진리표·마지막 답이 있는 모든 쪽을 PNG로 렌더링해 시각 점검한다. Hint 추가 쪽 수가 있어서 PDF 쪽 수를 12로 고정하지 않는다.
+- [x] **Step 4: 검증 PDF를 생성하고 모든 쪽을 렌더링해 확인한다.** 자동 브라우저가 가능하면 data-ready=true와 이미지 완료 이후 `page.pdf(path=...,prefer_css_page_size=True,print_background=True)`로 저장한다. 아래 물리 크기 검사를 실행하고 그림·진리표·마지막 답이 있는 모든 쪽을 PNG로 렌더링해 시각 점검한다. Hint 추가 쪽 수가 있어서 PDF 쪽 수를 12로 고정하지 않는다.
 
 ```python
 from pathlib import Path
@@ -839,8 +839,8 @@ def verify_print(pdf_path, output_dir):
             page.get_pixmap(matrix=fitz.Matrix(1.5,1.5),alpha=False).save(target/f'page-{i+1:02}.png')
 ```
 
-- [ ] **Step 5: 검증 기록을 작성한다.** 정확한 명령·결과·stage·template hash·HTML/그림 hash·12문항 체크 목록·인쇄 쪽 목록·원문 극성 대조·모바일 화면·offline 결과를 `docs/verify/logic-lab-review-pack-question-workbook.md`에 남긴다. 실제 수행되지 않은 테스트는 not_run/skip으로 적는다. 수정은 최대 두 차례로 하고 남은 오류가 있으면 초안으로 보고하며 기존 팩을 발행하지 않는다.
-- [ ] **Step 6: 관련 테스트 PASS 후 commit.** `python -m pytest tests -k review_pack -n 0 -q`; browser test, 검증 문서와 실제 필요했던 작성 수정만 stage하고 `git commit -m "test: verify workbook rendering and landscape print layout"`.
+- [x] **Step 5: 검증 기록을 작성한다.** 정확한 명령·결과·stage·template hash·HTML/그림 hash·12문항 체크 목록·인쇄 쪽 목록·원문 극성 대조·모바일 화면·offline 결과를 `docs/verify/logic-lab-review-pack-question-workbook.md`에 남긴다. 실제 수행되지 않은 테스트는 not_run/skip으로 적는다. 수정은 최대 두 차례로 하고 남은 오류가 있으면 초안으로 보고하며 기존 팩을 발행하지 않는다.
+- [x] **Step 6: 관련 테스트 PASS 후 commit.** `python -m pytest tests -k review_pack -n 0 -q`; browser test, 검증 문서와 실제 필요했던 작성 수정만 stage하고 `git commit -m "test: verify workbook rendering and landscape print layout"`.
 
 ### Task 7: 독립 리뷰·최종 발행·원래 체크아웃용 핸드오프
 

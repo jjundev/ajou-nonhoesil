@@ -5,7 +5,7 @@
   "problem_figures": [],
   "hints": [
     {
-      "label": "접근 순서",
+      "label": "논리값·출력 순서",
       "html": "<p>High/Low를 먼저 읽고 주소마다 선택되는 출력 하나를 찾으세요. 원문 X와 계산값은 구분해요.</p>"
     }
   ],

@@ -5,7 +5,7 @@
   "problem_figures": [],
   "hints": [
     {
-      "label": "접근 순서",
+      "label": "전압·기능 구분",
       "html": "<p>전압이 높은 것과 기능이 유효한 것은 같지 않아요. enable을 예로 생각해 보세요.</p>"
     }
   ],

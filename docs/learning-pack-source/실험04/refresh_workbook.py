@@ -38,6 +38,12 @@ HINT={
 }
 GIVEN={'q-mux4','q-design4','q-tri'}
 SOLUTIONS={'q-mux2','q-demux2','q-design4','q-decoder','q-tri','q-mux2-graded'}
+HINT_LABEL={
+ 'q-mux2':'선택선별 경로', 'q-mux4':'주소·열 순서', 'q-demux2':'선택된 출력',
+ 'q-design4':'주소별 AND', 'q-decoder':'선택 신호·데이터', 'q-tri':'nOE·Z·공통선',
+ 'q-muxdef':'데이터·선택·출력', 'q-demuxdef':'입력·분배 경로', 'q-difference':'데이터 흐름 방향',
+ 'q-demux4':'논리값·출력 순서', 'q-mux2-graded':'지정된 네 행', 'q-active-general':'전압·기능 구분',
+}
 
 def plain(node):
     return ''.join(c if isinstance(c,str) else plain(c) for c in node.children)
@@ -67,13 +73,17 @@ def main():
         if ident in SOLUTIONS:
             image=f'figures/solutions/{ident}-solution-01.png'
             steps.insert(1,dict(label='완성 회로',html=f'<p><img src="{image}" width="400" style="max-width:100%;height:auto" alt="{html.escape(p["title"],quote=True)} 완성 회로"></p>'))
+        if ident=='q-tri':
+            # Keep both paragraphs, with a single step heading/gap in the A4
+            # template. Separate headings left too little room for review links.
+            steps[-2:]=[dict(label='검산 · 주의',html=steps[-2]['html']+steps[-1]['html'])]
         notes=[]
         if ident=='q-tri': notes.append('원문 버퍼 표는 nOE가 Low일 때 동작해요. 제공 답안의 Active High 캡션과 다르므로 이 해설은 활성 Low 표를 기준으로 설계했어요.')
         if ident=='q-demux4': notes.append('원자료는 출력이 채워진 표예요. 문제지는 같은 입력 조건으로 출력란만 비웠어요. 원문 D=0의 X 표기와 이상 AND형 DMUX의 계산값 0을 구분해요.')
         if ident in {'q-demuxdef','q-difference','q-demux4'}: notes.append('기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요.')
         obj=dict(original=original,conditions=conditions,ask='<p>'+ASK[ident]+'</p>',
             problem_figures=[ident+'-given-01'] if ident in GIVEN else [],
-            hints=[dict(label='접근 순서',html='<p>'+HINT[ident]+'</p>')],
+            hints=[dict(label=HINT_LABEL[ident],html='<p>'+HINT[ident]+'</p>')],
             solution=dict(steps=steps,answer='<p>'+html.escape(p.get('derived_answer') or '해설의 조건과 검산 결과를 확인하세요.')+'</p>'),notes=notes)
         p['workbook_fragment']='workbook/'+ident+'.json'
         (ROOT/p['workbook_fragment']).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

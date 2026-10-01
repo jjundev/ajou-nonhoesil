@@ -132,13 +132,15 @@ def build_workbook_data(manifest, content, mode):
             figures=deepcopy(row['figures']),hints=deepcopy(row['hints']))
         if mode=='answers':
             solution=deepcopy(row['solution'])
+            review=[]
             if row['answer_status']!='verified':
-                solution['steps'].append(dict(label=STATES[row['answer_status']],html='<p>원문 조건과 제공 답안의 충돌·불확실성을 유지해요. 도출 답안의 가정을 확인하세요.</p>'))
+                review.append('<p><strong>'+STATES[row['answer_status']]+'</strong>: 원문 조건과 제공 답안의 차이 및 도출 답안의 가정을 확인하세요.</p>')
             if row['notes']:
-                solution['steps'].append(dict(label='원문 대조',html=''.join('<p>'+html.escape(n)+'</p>' for n in row['notes'])))
+                review.extend('<p>'+html.escape(n)+'</p>' for n in row['notes'])
             links=' · '.join(f'<a href="{names["note_html"]}#{t}">{html.escape(topics[t]["title"])}</a>' for t in row['topics'])
             guide=f'<a href="원문과_저작안내.md#{row["id"]}">원문·제공 답안 대조</a>' if 'bank_import' in manifest else ''
-            if links or guide: solution['steps'].append(dict(label='다시 볼 개념',html='<p>'+links+(' · ' if links and guide else '')+guide+'</p>'))
+            if links or guide: review.append('<p>'+links+(' · ' if links and guide else '')+guide+'</p>')
+            if review: solution['steps'].append(dict(label='원문 대조 · 다시 볼 개념',html=''.join(review)))
             entry['solution']=solution
         entries.append(entry)
     label='기출 문제' if mode=='problems' else '기출 풀이'
