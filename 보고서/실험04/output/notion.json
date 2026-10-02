@@ -2,6 +2,14 @@
   "schema": "notion-uploads/v1",
   "uploads": [
     {
+      "kind": "예비보고서",
+      "version": 1,
+      "page_id": "3e9b06d2-63bc-8139-839a-ccc6586da1e2",
+      "url": "https://app.notion.com/p/4-Multiplexer-Demultiplexer-v1-3e9b06d263bc8139839accc6586da1e2",
+      "source": "실험04_예비보고서.md",
+      "uploaded_at": "2026-09-28 22:21"
+    },
+    {
       "kind": "결과보고서",
       "version": 1,
       "page_id": "3edb06d2-63bc-8108-a069-c082c7ee3342",
