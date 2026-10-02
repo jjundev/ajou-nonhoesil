@@ -845,6 +845,25 @@ class SkillDocInvariants(unittest.TestCase):
         # 상호참조 검사가 통째로 무음이 된다. 선언한 절이 있는지까지 본다.
         self.assertTrue(DOCS["리뷰"][1], DOCS["리뷰"])
 
+    def test_the_review_skill_cross_checks_claims(self):
+        # ③·④ 가 같은 `validate.py` 검사를 자기 절차에서 이미 돌려서, 실험01~03
+        # 라운드 21개 중 자동 검사가 error 를 낸 것은 하나뿐이었다. 수정 필요
+        # 판정 네 건(실험02 예보 r1, 실험03 예보 r2·결보 r1·r3)은 전부 사실
+        # 문장을 근거와 다시 맞대서 나왔다. 그 다시 읽기가 ⑤ 의 본업이다.
+        flat = self.flat["리뷰"]
+        self.assertIn("내용 대조", sections(self.docs["리뷰"])["실행 절차"])
+        # 쓴 세션에서 그대로 부르면 '쓴 것' 이 아니라 '의도한 것' 을 읽는다 —
+        # ⑨ 의 fresh 검토(위 `test_the_fresh_review_step_withholds_the_manual`)와
+        # 같은 이유다. 다만 ⑤ 는 근거 파일은 넘긴다: 잡아야 할 것이 근거와의 불일치다.
+        self.assertIn("작성 맥락은 넘기지 않는다", flat)
+        self.assertIn("근거 없음", flat)
+        # error 0 인데 수정 필요라는 판정이 손으로 내려지고 있었다. 규칙으로 둔다.
+        self.assertIn("내용 ✗ 0", flat)
+
+    def test_the_review_skill_no_longer_disclaims_judgment(self):
+        # "판단을 새로 만들지 않는다" 는 ⑤ 가 실제로 쓸모 있던 일을 금지하는 문장이었다.
+        self.assertNotIn("판단을 새로 만들지 않는다", self.flat["리뷰"])
+
     def test_the_spec_producer_is_covered_by_the_net(self):
         # ⑨ 는 저장소에서 명세를 **만드는** 유일한 스킬이다. 소비자 여덟이
         # 전부 그 산출물에 기대므로, 죽은 상호참조가 여기 생기면 그 아래가
