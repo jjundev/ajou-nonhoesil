@@ -1,0 +1,165 @@
+{
+  "schema": "breadboard-geometry/v1",
+  "board": "v2",
+  "source": "Breadboard_v2.html",
+  "png": "Breadboard_v2.png",
+  "png_sha256": "f10bbd2e82cfb537a47a145235caba5990b6b8356521a3e81b67b5d7f0c5c5a3",
+  "export_scale": 1,
+  "note": "PNG 은 1배(1200x1600)로 고정한다. 2배로 뽑으면 레일 극성선이 4px 가 되어 hand_grid 열 검출이 레일 열을 6.5px 밀어 잡는다.",
+  "image": {
+    "width": 1200,
+    "height": 1600
+  },
+  "rows": 63,
+  "row1_center_y": 336,
+  "row_pitch": 19,
+  "rail_gap_rows": [
+    1,
+    2,
+    8,
+    14,
+    20,
+    26,
+    32,
+    38,
+    44,
+    50,
+    56,
+    62,
+    63
+  ],
+  "columns": [
+    {
+      "name": "left.gnd",
+      "x": 176
+    },
+    {
+      "name": "left.vcc",
+      "x": 200
+    },
+    {
+      "name": "left.a",
+      "x": 272
+    },
+    {
+      "name": "left.b",
+      "x": 296
+    },
+    {
+      "name": "left.c",
+      "x": 320
+    },
+    {
+      "name": "left.d",
+      "x": 344
+    },
+    {
+      "name": "left.e",
+      "x": 368
+    },
+    {
+      "name": "left.f",
+      "x": 440
+    },
+    {
+      "name": "left.g",
+      "x": 464
+    },
+    {
+      "name": "left.h",
+      "x": 488
+    },
+    {
+      "name": "left.i",
+      "x": 512
+    },
+    {
+      "name": "left.j",
+      "x": 536
+    },
+    {
+      "name": "mid.gnd",
+      "x": 588
+    },
+    {
+      "name": "mid.vcc",
+      "x": 612
+    },
+    {
+      "name": "right.a",
+      "x": 664
+    },
+    {
+      "name": "right.b",
+      "x": 688
+    },
+    {
+      "name": "right.c",
+      "x": 712
+    },
+    {
+      "name": "right.d",
+      "x": 736
+    },
+    {
+      "name": "right.e",
+      "x": 760
+    },
+    {
+      "name": "right.f",
+      "x": 832
+    },
+    {
+      "name": "right.g",
+      "x": 856
+    },
+    {
+      "name": "right.h",
+      "x": 880
+    },
+    {
+      "name": "right.i",
+      "x": 904
+    },
+    {
+      "name": "right.j",
+      "x": 928
+    },
+    {
+      "name": "right.gnd",
+      "x": 1000
+    },
+    {
+      "name": "right.vcc",
+      "x": 1024
+    }
+  ],
+  "border": {
+    "left": 144,
+    "right": 1056,
+    "top": 304,
+    "bottom": 1540
+  },
+  "jacks": [
+    {
+      "name": "+5V",
+      "center_x": 400,
+      "center_y": 168,
+      "bottom_y": 200
+    },
+    {
+      "name": "yellow",
+      "center_x": 600,
+      "center_y": 168,
+      "bottom_y": 200
+    },
+    {
+      "name": "0V",
+      "center_x": 800,
+      "center_y": 168,
+      "bottom_y": 200
+    }
+  ],
+  "hole_size": 8,
+  "rail_line_width": 2
+}

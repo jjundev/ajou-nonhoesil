@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>브레드보드 v2 · 논리회로실험</title>
+<style>
+/* OD-LAYOUT-PRIMITIVES v1 — structure only: display, flex/grid, overflow, wrapping, ratio.
+   Put this @layer first; product CSS outside the layer always wins. */
+@layer od-layout {
+  :where(.od-stack,.od-row,.od-row-top,.od-cluster,.od-grid,.od-field,.od-stat,.od-cell,.od-tile) > :where(*) { min-width: 0; }
+
+  /* containers */
+  .od-stack   { display: flex; flex-direction: column; gap: var(--od-gap, 8px); }
+  .od-row     { display: flex; align-items: center; gap: var(--od-gap, 8px); }
+  .od-row-top { display: flex; align-items: flex-start; gap: var(--od-gap, 8px); }
+  .od-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--od-gap, 8px); }
+  .od-fill    { flex: 1 1 0; min-width: 0; }
+  .od-fixed   { flex: none; }
+  .od-grid    { display: grid; gap: var(--od-gap, 12px); grid-template-columns: repeat(var(--od-cols, 3), minmax(0, 1fr)); }
+
+  /* stacked information: each piece is its own line — never sibling inline spans */
+  .od-stat, .od-field, .od-cell { display: grid; gap: var(--od-gap, 2px); }
+  :where(.od-stat,.od-field,.od-cell) > :where(*) { display: block; }
+  .od-tile { display: grid; grid-template-rows: auto 1fr; }
+  :where(.od-tile) > :where(*) { display: block; }
+
+  /* media keeps its intrinsic ratio by default; never a distorted or cropped
+     cover by accident. height:auto lets the ratio win over an <img height="…">
+     attribute. Cropping to a uniform box is an explicit opt-in: set --od-ratio
+     AND add .od-media-cover together (per the core rule, only where a crop is
+     deliberate — tile thumbs, decorative fills — never on full-frame content). */
+  .od-media { display: block; width: 100%; height: auto; aspect-ratio: var(--od-ratio, auto); }
+  .od-media-cover { object-fit: cover; }
+
+  /* data text only — authored copy is rewritten to its budget instead */
+  .od-truncate { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .od-clamp-2, .od-clamp-3 { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .od-clamp-2 { -webkit-line-clamp: 2; }
+  .od-clamp-3 { -webkit-line-clamp: 3; }
+  .od-lines-2 { min-height: calc(2 * 1.4em); }   /* block-level reservation for a shared baseline */
+  .od-nowrap  { white-space: nowrap; }           /* 数字+单位 · 价格+起 · 日期+星期 */
+  .od-keep    { word-break: keep-all; overflow-wrap: anywhere; } /* CJK labels break at spaces / <wbr> first */
+
+  /* screen skeleton (optional): bars take their own space, the middle scrolls — no padding guessed for chrome */
+  .od-screen { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; }
+  .od-scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+
+  /* horizontal rail: the next item peeks at the edge; trailing room survives overflow */
+  .od-rail { display: flex; gap: var(--od-gap, 8px); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+             padding-inline: var(--od-rail-pad, 16px); scroll-padding-inline: var(--od-rail-pad, 16px); }
+  .od-rail::-webkit-scrollbar { display: none; }
+  :where(.od-rail) > :where(*) { flex: none; scroll-snap-align: start; }
+  :where(.od-rail) > :where(:last-child) { margin-inline-end: var(--od-rail-pad, 16px); }
+
+  .od-spacer { flex: none; visibility: hidden; pointer-events: none; }
+  .od-touch  { min-width: 44px; min-height: 44px; }
+}
+/* /OD-LAYOUT-PRIMITIVES v1 */
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  --muted: #6b7280;
+  --surface: #f7f8fa;
+  --border: #d9dee7;
+  --gnd: #2563eb;
+  --vcc: #dc2626;
+  --jack-yellow: #facc15;
+  --jack-zero: #6b7280;
+  --font: Pretendard, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --title-size: 32px;
+  --body-size: 20px;
+  --grid-label-size: 16px;
+  --canvas-width: 1200px;
+  --page-gap: 8px;
+}
+* { box-sizing: border-box; }
+html { background: var(--background); color: var(--foreground); }
+body { margin: 0; font-family: var(--font); line-height: 1.5; }
+main { width: 100%; max-width: var(--canvas-width); margin-inline: auto; }
+.board { display: block; width: 100%; height: auto; background: var(--background); }
+.board text { font-family: var(--font); fill: var(--foreground); }
+.board .title { font-size: var(--title-size); font-weight: 700; }
+.board .body { font-size: var(--body-size); }
+.board .label { font-size: var(--grid-label-size); }
+.board .muted { fill: var(--muted); }
+.board .rule { fill: none; stroke: var(--border); stroke-width: 1; }
+.board .surface { fill: var(--surface); }
+.board .hole { fill: var(--foreground); }
+.board .rail-line { fill: none; stroke-width: 2; stroke-linecap: butt; }
+.board .gnd { stroke: var(--gnd); }
+.board .vcc { stroke: var(--vcc); }
+.board .gnd-text { fill: var(--gnd); }
+.board .vcc-text { fill: var(--vcc); }
+@media (min-width: 768px) { main { width: 100%; } }
+@media (min-width: 1024px) { main { width: 100%; } }
+@media (min-width: 1440px) { main { max-width: var(--canvas-width); } }
+@media print { @page { size: 1200px 1600px; margin: 0; } main { width: 1200px; } }
+</style>
+</head>
+<body>
+<main class="od-stack" aria-label="브레드보드 v2 판형">
+<svg id="board" class="board" xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="board-title board-description">
+  <title id="board-title">논리회로실험 브레드보드 v2</title>
+  <desc id="board-description">26열, 63행의 브레드보드. 왼쪽 바깥 전원 레일 두 열, 왼쪽 단자대 열 열, 중앙 공유 전원 레일 두 열, 오른쪽 단자대 열 열, 오른쪽 바깥 전원 레일 두 열 순서입니다. 각 전원 레일은 왼쪽 GND, 오른쪽 VCC이며 5홀씩 묶여 있습니다. 위에는 빨강 +5V, 노랑, 회색 0V 잭이 있습니다. 각 단자대의 e와 f 사이에는 칩 골이 있습니다.</desc>
+</svg>
+<noscript>이 HTML 판형은 내장 JavaScript로 홀 격자를 그립니다. JavaScript를 허용한 브라우저에서 열어 주세요.</noscript>
+</main>
+<script>
+'use strict';
+/* EDITABLE GEOMETRY — all values use the 1200 × 1600 source coordinate system.
+   The HTML is the editable master. PNG/PDF exports and geometry.json are
+   intentionally outside this delivery. Do not treat browser vector printing
+   as the raster-embedded PDF required by the later hand-grid workflow. */
+const GEOMETRY = {
+  width: 1200, height: 1600,
+  rows: 63, row1CenterY: 336, rowPitch: 19,
+  terminalColumnPitch: 24, holeSize: 8, railLineWidth: 2,
+  railGapRows: [1, 2, 8, 14, 20, 26, 32, 38, 44, 50, 56, 62, 63],
+  border: {left: 144, right: 1056, top: 304, bottom: 1540},
+  columns: [
+    {name: 'left.gnd', x: 176}, {name: 'left.vcc', x: 200},
+    {name: 'left.a', x: 272}, {name: 'left.b', x: 296},
+    {name: 'left.c', x: 320}, {name: 'left.d', x: 344},
+    {name: 'left.e', x: 368}, {name: 'left.f', x: 440},
+    {name: 'left.g', x: 464}, {name: 'left.h', x: 488},
+    {name: 'left.i', x: 512}, {name: 'left.j', x: 536},
+    {name: 'mid.gnd', x: 588}, {name: 'mid.vcc', x: 612},
+    {name: 'right.a', x: 664}, {name: 'right.b', x: 688},
+    {name: 'right.c', x: 712}, {name: 'right.d', x: 736},
+    {name: 'right.e', x: 760}, {name: 'right.f', x: 832},
+    {name: 'right.g', x: 856}, {name: 'right.h', x: 880},
+    {name: 'right.i', x: 904}, {name: 'right.j', x: 928},
+    {name: 'right.gnd', x: 1000}, {name: 'right.vcc', x: 1024}
+  ],
+  jacks: [
+    {name: '+5V', centerX: 400, centerY: 168, bottomY: 200, color: 'var(--vcc)'},
+    {name: 'yellow', centerX: 600, centerY: 168, bottomY: 200, color: 'var(--jack-yellow)'},
+    {name: '0V', centerX: 800, centerY: 168, bottomY: 200, color: 'var(--jack-zero)'}
+  ],
+  regions: [
+    {name: 'left-rail', left: 144, right: 232},
+    {name: 'left-terminal', left: 256, right: 552},
+    {name: 'middle-rail', left: 568, right: 632},
+    {name: 'right-terminal', left: 648, right: 944},
+    {name: 'right-rail', left: 968, right: 1056}
+  ],
+  grooves: [{left: 392, right: 416}, {left: 784, right: 808}],
+  rowLabels: [1, 10, 20, 30, 40, 50, 60],
+  rowLabelLeftX: 120, rowLabelRightX: 1080,
+  header: {left: 64, right: 1136, eyebrowY: 64, titleY: 104},
+  labelY: 288, regionLabelY: 256, footerY: 1580,
+  railLineOffsets: {gnd: -16, vcc: 16}
+};
+window.BREADBOARD_GEOMETRY = GEOMETRY;
+const svg = document.getElementById('board');
+const NS = 'http://www.w3.org/2000/svg';
+const fragment = document.createDocumentFragment();
+function element(tag, attributes, text, parent = fragment) {
+  const node = document.createElementNS(NS, tag);
+  for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, value);
+  if (text !== undefined) node.textContent = text;
+  parent.appendChild(node);
+  return node;
+}
+function label(x, y, text, className = 'label', anchor = 'middle', parent = fragment) {
+  return element('text', {x, y, class: className, 'text-anchor': anchor}, text, parent);
+}
+function rowY(row) { return GEOMETRY.row1CenterY + (row - 1) * GEOMETRY.rowPitch; }
+const b = GEOMETRY.border;
+svg.setAttribute('viewBox', `0 0 ${GEOMETRY.width} ${GEOMETRY.height}`);
+svg.setAttribute('width', GEOMETRY.width);
+svg.setAttribute('height', GEOMETRY.height);
+element('rect', {x: 0, y: 0, width: GEOMETRY.width, height: GEOMETRY.height, fill: 'var(--background)'});
+const jacks = element('g', {'aria-hidden': 'true'});
+for (const jack of GEOMETRY.jacks) {
+  const radius = jack.bottomY - jack.centerY;
+  const group = element('g', {'data-jack': jack.name}, undefined, jacks);
+  element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius, fill: jack.color}, undefined, group);
+  element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius * 0.625, fill: 'var(--background)'}, undefined, group);
+  element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius * 0.375, fill: 'var(--foreground)'}, undefined, group);
+  if (jack.name !== 'yellow') label(jack.centerX, jack.bottomY + 24, jack.name, 'body', 'middle', group);
+}
+const structure = element('g', {'aria-hidden': 'true'});
+for (const region of GEOMETRY.regions) {
+  element('rect', {x: region.left, y: b.top, width: region.right - region.left, height: b.bottom - b.top, class: 'rule'}, undefined, structure);
+}
+for (const groove of GEOMETRY.grooves) {
+  element('rect', {x: groove.left, y: b.top + 1, width: groove.right - groove.left, height: b.bottom - b.top - 2, class: 'surface'}, undefined, structure);
+  for (const x of [groove.left, groove.right]) element('line', {x1: x, x2: x, y1: b.top, y2: b.bottom, class: 'rule'}, undefined, structure);
+}
+const gaps = new Set(GEOMETRY.railGapRows);
+const railStart = rowY(3) - GEOMETRY.holeSize / 2;
+const railEnd = rowY(61) + GEOMETRY.holeSize / 2;
+const rails = element('g', {'aria-hidden': 'true'});
+const holes = element('g', {'aria-hidden': 'true'});
+for (const column of GEOMETRY.columns) {
+  const suffix = column.name.split('.').at(-1);
+  const isRail = suffix === 'gnd' || suffix === 'vcc';
+  if (isRail) {
+    const lineX = column.x + GEOMETRY.railLineOffsets[suffix];
+    element('line', {x1: lineX, x2: lineX, y1: railStart, y2: railEnd, class: `rail-line ${suffix}`, 'stroke-width': GEOMETRY.railLineWidth}, undefined, rails);
+    label(column.x, GEOMETRY.labelY, suffix === 'gnd' ? '−' : '+', `body ${suffix}-text`, 'middle', rails);
+  } else {
+    label(column.x, GEOMETRY.labelY, suffix, 'label', 'middle', rails);
+  }
+  const group = element('g', {'data-column': column.name, 'data-center-x': column.x}, undefined, holes);
+  for (let row = 1; row <= GEOMETRY.rows; row++) {
+    if (isRail && gaps.has(row)) continue;
+    element('rect', {
+      x: column.x - GEOMETRY.holeSize / 2,
+      y: rowY(row) - GEOMETRY.holeSize / 2,
+      width: GEOMETRY.holeSize, height: GEOMETRY.holeSize,
+      class: 'hole', 'data-row': row
+    }, undefined, group);
+  }
+}
+const numbers = element('g', {'aria-hidden': 'true'});
+for (const row of GEOMETRY.rowLabels) {
+  for (const [x, anchor] of [[GEOMETRY.rowLabelLeftX, 'end'], [GEOMETRY.rowLabelRightX, 'start']]) {
+    element('text', {x, y: rowY(row), class: 'body muted', 'text-anchor': anchor, 'dominant-baseline': 'central'}, String(row), numbers);
+  }
+}
+svg.appendChild(fragment);
+</script>
+</body>
+</html>
