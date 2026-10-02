@@ -40,22 +40,10 @@ class TestExportHandDiagrams(unittest.TestCase):
                     self.assertEqual(img.format, "PNG")
                     self.assertGreater(img.width, img.height)
 
-    def test_export_hand_diagrams_cropped(self):
+    def test_export_hand_diagrams_cropped_requires_visual_plan(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_paths = ehd.export_hand_diagrams(
-                experiment=1,
-                pdf_path=self.pdf_path,
-                out_dir=tmpdir,
-                dpi=150,
-                crop_board=True,
-            )
-            self.assertEqual(len(out_paths), 5)
-            for p in out_paths:
-                with Image.open(p) as img:
-                    self.assertEqual(img.format, "PNG")
-                    # Cropped aspect ratio: height should be greater than width (tall vertical breadboard)
-                    self.assertGreater(img.height, img.width)
-                    self.assertLess(img.width, 1500)
+            with self.assertRaisesRegex(ValueError, "crop-plan"):
+                ehd.export_hand_diagrams(1, self.pdf_path, tmpdir, crop_board=True)
 
     def test_resolve_circuit_filenames_from_netlist(self):
         filenames = ehd.resolve_circuit_filenames(1, 5)

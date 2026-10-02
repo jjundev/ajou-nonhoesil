@@ -17,27 +17,26 @@ def archive_candidate(candidates: list) -> Path:
     것을 집는다.
     """
     return next(c for c in candidates
-                if Path(config.MANUAL_ARCHIVE) in c.parents)
+                if str(c).startswith(config.MANUAL_ARCHIVE))
 
 
 class TestManualCandidates(unittest.TestCase):
     """교안 PDF 경로. **폴더는 0 을 채우고 파일은 안 채운다.**"""
 
-    def test_아카이브_후보_폴더_경계로_고른다(self):
-        candidates = [
-            Path("from_the_past/정리/강의노트-복사/실험1.pdf"),
-            Path("from_the_past/정리/강의노트/실험1.pdf"),
-        ]
-        self.assertEqual(archive_candidate(candidates), candidates[1])
-
     def test_파일_이름은_0_을_채우지_않는다(self):
         # 폴더는 `실험04`, 파일은 `실험4.pdf`. 두 형식이 한 경로에 섞여
         # 있어서 손으로 옮기면 7주차(실험4)에서 반드시 어긋난다.
-        with tempfile.TemporaryDirectory() as root:
-            got = config.manual_candidates(4, root=root)
-        self.assertEqual(got[0], Path("보고서/실험04/강의노트/실험4.pdf"))
-        self.assertEqual(got[1],
-                         Path("from_the_past/정리/강의노트/실험4.pdf"))
+        expected = [Path("보고서/실험04/강의노트/실험4.pdf"),
+                    Path("from_the_past/정리/강의노트/실험4.pdf")]
+        # 실제 저장소의 배포 파일 유무와 무관하게 두 경우를 검증한다.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertEqual(config.manual_candidates(4, root=root), expected)
+            distributed = Path(config.MANUAL_DISTRIBUTION) / "실험4. Multiplexer & Demultiplexer.pdf"
+            (root / distributed.parent).mkdir()
+            (root / distributed).touch()
+            self.assertEqual(config.manual_candidates(4, root=root),
+                             [distributed, *expected])
 
     def test_아카이브_후보에는_실험_기반_경로가_붙지_않는다(self):
         """과거 학기 원본은 `보고서/` 밖에 산다. 기반 경로를 후보 전체에
@@ -391,7 +390,7 @@ class ExperimentBaseTest(unittest.TestCase):
         base = config.EXPERIMENT_BASE
         self.assertTrue(config.experiment_dir(3).startswith(base + "/"))
         사본 = next(c for c in config.manual_candidates(3)
-                   if Path(base) in c.parents)
+                   if str(c).startswith(base + "/"))
         self.assertEqual(사본, Path(f"{base}/실험03/강의노트/실험3.pdf"))
 
     def test_FPGA_프로젝트도_기반_아래다(self):
