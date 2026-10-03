@@ -46,7 +46,7 @@ class BreadboardCoords(unittest.TestCase):
         cls.mod = _load()
         cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
         from PIL import Image
-        path = cls.mod._default_template()
+        path = cls.mod._default_template(cls.mod.board_spec('v1'))
         cls.im = Image.open(path).convert('L')
         cls.px = cls.im.load()
         cls.W, cls.H = cls.im.size
@@ -69,7 +69,7 @@ class BreadboardCoords(unittest.TestCase):
     def test_열_좌표가_실제_홀_중심과_맞는다(self):
         centers = self._col_centers()
         self.assertGreaterEqual(len(centers), 24, '홀 열을 못 찾았다')
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         for block in ('left', 'right'):
             for key, x in bb.cols[block].items():
                 if key.startswith('chip'):
@@ -84,7 +84,7 @@ class BreadboardCoords(unittest.TestCase):
         centers = self._row_centers()
         self.assertEqual(len(centers), self.mod.ROW_MAX,
                          f'단자대 행이 {self.mod.ROW_MAX} 개가 아니다: {len(centers)}')
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         for r in range(1, self.mod.ROW_MAX + 1):
             self.assertLessEqual(
                 abs(centers[r - 1] - bb.r_y(r)), 3.0,
@@ -92,7 +92,7 @@ class BreadboardCoords(unittest.TestCase):
 
     def test_레일_빈_행_목록이_실측과_같다(self):
         """레일은 5홀씩 묶여 있다. 빈 행에 배선을 끝내면 꽂을 데가 없다."""
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         measured = set()
         for r in range(1, self.mod.ROW_MAX + 1):
             y = bb.r_y(r)
@@ -150,7 +150,7 @@ class BreadboardCoords(unittest.TestCase):
         배선이 얌전히 꽂혀 있고 색도 맞기 때문이다. 실제로 실험01 그림 다섯 장이
         이 상태로 나갔다가 이 검사로 잡혔다.
         """
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         c = bb.cols['left']
         bb.step_wire([(c['f'], bb.r_y(10)), (c['mid_vcc'], bb.r_y(10))], 'vcc', 'pin 14')

@@ -6,6 +6,9 @@ import tempfile
 
 from render_breadboard import BreadboardRenderer, _input_jumper, fresh_board, removal_board
 
+# 실험01~04 는 v1 판형으로 승인·도장이 끝났다 — 렌더러 기본값(v2)을 따르지 않게 못 박는다
+BOARD = 'v1'
+
 
 # 실험 4 · Multiplexer & Demultiplexer — 2026-2 배포본 기준, 2026-09-28 저작
 #
@@ -398,7 +401,7 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, lay
     """
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     _stage_check('mux', stage)
     title = _MUX_TITLE[stage] if stage is not None else "실험 1-1: 4x1 MUX 결선도"
@@ -419,7 +422,7 @@ def build_e4_dmux(output_path, template_path=None, stage=None, baseline=None, la
     """
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림과 섞지 않는다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     _stage_check('dmux', stage)
     title = _DMUX_TITLE[stage] if stage is not None else "실험 2-1: 1x4 DMUX 결선도"

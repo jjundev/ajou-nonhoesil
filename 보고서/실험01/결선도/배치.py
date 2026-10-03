@@ -6,6 +6,9 @@ import tempfile
 
 from render_breadboard import BreadboardRenderer, _input_jumper
 
+# 실험01~04 는 v1 판형으로 승인·도장이 끝났다 — 렌더러 기본값(v2)을 따르지 않게 못 박는다
+BOARD = 'v1'
+
 
 # 실험 1 · 기본 게이트 — 슬롯 고정 배치
 #
@@ -71,7 +74,7 @@ def _e1_single(bb, chip, op):
 
 def build_e1_and(output_path, template_path=None, stage=None, baseline=None):
     """실험 1-1 · 3입력 AND (74HC08 2단 캐스케이드). netlist C1. 단계 없음 — 첫 보드다."""
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-1: 3-Input AND Gate 결선도",
@@ -88,7 +91,7 @@ def build_e1_or(output_path, template_path=None, stage=None, baseline=None):
     Nexperia 74HC32 Rev. 10 (2025-04-30) §5.2: `1A~4A = 1,4,9,12` / `1B~4B =
     2,5,10,13` / `1Y~4Y = 3,6,8,11` / GND 7 / VCC 14 — 74HC08 과 같은 배치다.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-2: 3-Input OR Gate 결선도" if baseline is None
@@ -134,7 +137,7 @@ def _e1_two_chip(bb, front, back, op, stage, back_in_row, back_in_label,
 
 def build_e1_nand(output_path, template_path=None, stage=None, baseline=None):
     """실험 2-1 · 3입력 NAND (74HC08 앞단 + 74HC00 뒷단). netlist C3. 2단계."""
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
@@ -160,7 +163,7 @@ def build_e1_nor(output_path, template_path=None, stage=None, baseline=None):
     **74HC02 는 출력이 1번 핀이다** (2,3 -> 1). A+B 는 pin 2(19행), C 는 pin 3
     (20행), 출력 pin 1(18행)은 c 열로 내린다 — a 열은 a9→a19 가 지난다.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
@@ -192,7 +195,7 @@ def build_e1_comb(output_path, template_path=None, stage=None, baseline=None):
     1단계에서 꽂는다 — 회로가 바뀌어도 그대로인 선이다.
     """
     st = 3 if stage is None else stage
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.partial = st < 3

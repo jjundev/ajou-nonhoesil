@@ -33,7 +33,7 @@ class PhysicalRules(unittest.TestCase):
         cls.mod = _load()
 
     def board(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         return bb
 
@@ -401,7 +401,7 @@ class PhysicalRules(unittest.TestCase):
         snap = bb.snapshot()
 
         # 그 점퍼만 빼고 다시 그린 보드의 removals() 가 걷기 key 를 준다
-        probe = self.mod.BreadboardRenderer(baseline=snap)
+        probe = self.mod.BreadboardRenderer(baseline=snap, board='v1')
         probe.enable_steps()
         probe.draw_chip('74HC08', 10, block='right')
         probe.partial = True
@@ -410,7 +410,7 @@ class PhysicalRules(unittest.TestCase):
         self.assertEqual(len(keys), 1, f'입력 점퍼 하나만 걷어야 한다: {keys}')
 
         ghost = self.mod.BreadboardRenderer(baseline=dict(
-            snap, ghost={'wires': {keys[0]: 1}, 'title': 't', 'subtitle': 's'}))
+            snap, ghost={'wires': {keys[0]: 1}, 'title': 't', 'subtitle': 's'}), board='v1')
         ghost.enable_steps()
         ghost.draw_chip('74HC08', 10, block='right')
         ghost.connect_jacks()

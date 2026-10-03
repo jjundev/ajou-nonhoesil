@@ -224,7 +224,7 @@ def _default_template(spec=None):
     **다른 판형으로 넘어가지 않는다** — v2 양식이 없는데 v1 로 그리면 열 표와 그림이 어긋난
     채 그럴듯하게 나온다. 후보가 다 없으면 멈춘다.
     """
-    spec = spec or board_spec('v1')
+    spec = spec or board_spec(DEFAULT_BOARD)
     tried = []
     for rel in spec.template:
         for base in (REPO_ROOT, os.getcwd()):
@@ -333,6 +333,8 @@ def _boxes_touch(a, b):
 # 설계: docs/plans/2026-10-02-브레드보드-v2-구조-설계.md
 
 BOARD_VERSIONS = ('v1', 'v2')
+# `board` 를 안 넘기면 쓰는 판형 — 실물 보드가 v2 다. v1 주차(01~04)는 `배치.py` 에 `BOARD = 'v1'` 을 적어 둔다
+DEFAULT_BOARD = 'v2'
 
 V2_GEOMETRY = os.path.join(REPO_ROOT, '.claude', 'assets', 'breadboard_v2', 'geometry.json')
 
@@ -462,7 +464,7 @@ def _hole_columns(cols):
     return out
 
 
-def column_table(board='v1'):
+def column_table(board=DEFAULT_BOARD):
     """판형 `board` 의 홀 열 — x -> (블록, 열 이름). 손그림 검토가 렌더러를 띄우지 않고 읽는다."""
     return _hole_columns(board_spec(board).cols)
 
@@ -474,13 +476,13 @@ def _shared_of(cols):
     return left & right
 
 
-def shared_columns(board='v1'):
+def shared_columns(board=DEFAULT_BOARD):
     """판형 `board` 에서 두 블록이 나눠 쓰는 열의 x. 손그림 검토의 격자 라벨이 접두어를 뺄 때 쓴다."""
     return _shared_of(board_spec(board).cols)
 
 
 class BreadboardRenderer:
-    def __init__(self, template_path=None, baseline=None, layer=None, board='v1'):
+    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD):
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
         self.board = board
         self.spec = board_spec(board)
@@ -2421,7 +2423,7 @@ def load_board_file(path, name=None):
             sys.modules.pop('render_breadboard', None)
         else:
             sys.modules['render_breadboard'] = saved
-    board = getattr(mod, 'BOARD', 'v1')
+    board = getattr(mod, 'BOARD', DEFAULT_BOARD)
     if board not in BOARD_VERSIONS:
         raise ValueError(f'{path}: BOARD 는 {BOARD_VERSIONS} 중 하나다: {board!r}')
     return mod
@@ -2435,17 +2437,18 @@ def load_board(experiment):
 
 
 def require_board(board, experiment, label):
-    """판형이 v2 로 바뀐 실험(`config.BOARD_V2_FROM`~)은 `BOARD` 를 꼭 적는다. 없으면 v1 이라
-    저자가 빠뜨린 줄을 아무도 모른 채 v1 그림이 나간다. `BOARD = 'v1'` 을 적어 두면 연다."""
+    """주차 `배치.py` 는 `BOARD` 를 꼭 적는다. 빠뜨리면 렌더러 기본값(`DEFAULT_BOARD`)으로 그려져
+    v1 주차(`config.BOARD_V2_FROM` 앞)가 아무도 모른 채 v2 그림으로 나가고, v2 주차도 기본값이
+    바뀌는 날 같은 일을 겪는다. 실험 번호가 정하는 판형과 달라도 적어 두면 연다."""
     want = _config().default_board(experiment)
-    if not hasattr(board, 'BOARD') and want != 'v1':
+    if not hasattr(board, 'BOARD'):
         raise ValueError(f"{label}: 실험{experiment} 부터 판형은 {want} 다 — 머리에 BOARD = '{want}' 를 "
                          "두고 빌더마다 BreadboardRenderer(..., board=BOARD) 로 넘긴다")
 
 
 def board_version(board):
-    """주차 결선 모듈의 판형 — 모듈 상수 `BOARD`, 없으면 'v1'."""
-    return getattr(board, 'BOARD', 'v1')
+    """주차 결선 모듈의 판형 — 모듈 상수 `BOARD`, 없으면 렌더러 기본값(`DEFAULT_BOARD`)."""
+    return getattr(board, 'BOARD', DEFAULT_BOARD)
 
 
 def check_board(board, bb, label):

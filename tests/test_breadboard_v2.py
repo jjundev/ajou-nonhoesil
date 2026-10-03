@@ -83,8 +83,16 @@ class V1Spec(unittest.TestCase):
         self.assertEqual(s.mid_badge_x, 513.0)
         self.assertEqual((s.chip_blocks, s.led_only_blocks, s.sha256), (('left', 'right'), (), None))
 
-    def test_렌더러는_기본이_v1_이다(self):
+    def test_렌더러는_기본이_v2_이다(self):
+        # 실물 보드가 v2 다 — v1 주차(01~04)는 `배치.py` 에 BOARD = 'v1' 을 적고 넘긴다
         bb = self.mod.BreadboardRenderer()
+        self.assertEqual(bb.board, 'v2')
+        self.assertIs(bb.spec, self.mod.board_spec('v2'))
+        self.assertEqual(self.mod.column_table(), self.mod.column_table('v2'))
+        self.assertEqual(self.mod.shared_columns(), self.mod.shared_columns('v2'))
+
+    def test_v1_렌더러의_열_표는_사양의_사본이다(self):
+        bb = self.mod.BreadboardRenderer(board='v1')
         self.assertEqual(bb.board, 'v1')
         self.assertIs(bb.spec, self.mod.board_spec('v1'))
         self.assertEqual(bb.cols, self.mod.board_spec('v1').cols)
@@ -95,7 +103,7 @@ class V1Spec(unittest.TestCase):
         self.assertEqual(self.mod.board_spec('v1').cols['left']['mid_gnd'], 468)
 
     def test_잭_판정은_사양을_따른다(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         self.assertEqual(bb._jack_at(439, 160), 'red')
         self.assertEqual(bb._jack_at(766, 200), 'gray')
         self.assertIsNone(bb._jack_at(439, 245))      # 보드 위 테두리(242) 아래
@@ -178,7 +186,7 @@ class V2Spec(unittest.TestCase):
     def test_v1_양식을_v2_로_넘기면_크기로_잡는다(self):
         """Review Focus 2 — `--template <v1 jpg>` 를 v2 주차에 넘긴 경우."""
         with self.assertRaisesRegex(ValueError, "1200x1600"):
-            self.mod.BreadboardRenderer(self.mod._default_template(), board='v2')
+            self.mod.BreadboardRenderer(self.mod._default_template(self.mod.board_spec('v1')), board='v2')
 
     def test_잭_선이_v2_에서도_그림대로_꽂힌다(self):
         bb = self.mod.BreadboardRenderer(board='v2')
@@ -214,7 +222,7 @@ class SharedMidRail(unittest.TestCase):
         self.assertEqual(self.mod.shared_columns('v2'), {L['mid_gnd'], L['mid_vcc']})
 
     def test_v1_은_가운데_레일이_넷이다(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         c = bb.cols
         self.assertEqual(self.mod.shared_columns('v1'), set())
         self.assertEqual(bb.addr(c['left']['mid_gnd'], bb.r_y(11)), '좌 중앙GND레일11행')
@@ -270,7 +278,7 @@ class BlockRoles(unittest.TestCase):
             bb.verify()
 
     def test_R9_R10_은_v1_에서_안_돈다(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.partial = True
         bb.draw_chip('74HC08', 7, block='right')
         bb.verify()
@@ -361,8 +369,9 @@ class BoardContract(unittest.TestCase):
         self.assertEqual((v2['schema'], v2['board']), ('breadboard-sidecar/v1', 'v2'))
         self.assertNotIn('board', v1)      # v1 사이드카는 바이트 그대로 — 없으면 v1 로 읽는다
 
-    def test_board_version_은_없으면_v1(self):
-        self.assertEqual(self.mod.board_version(types.SimpleNamespace()), 'v1')
+    def test_board_version_은_없으면_렌더러_기본값(self):
+        self.assertEqual(self.mod.board_version(types.SimpleNamespace()), 'v2')
+        self.assertEqual(self.mod.board_version(types.SimpleNamespace(BOARD='v1')), 'v1')
         self.assertEqual(self.mod.board_version(types.SimpleNamespace(BOARD='v2')), 'v2')
 
     def _write_board(self, d, src):
@@ -376,22 +385,26 @@ class BoardContract(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'BOARD'):
                 self.mod.load_board_file(self._write_board(d, "BOARD = 'V2'\nBOARDS = []\nFINALS = []\n"))
 
-    def test_실험05_부터는_BOARD_를_빠뜨리면_멈춘다(self):
-        """BOARD 가 없으면 v1 이라 실험05 저자가 빠뜨리면 v1 그림이 조용히 나간다 — 판형이 v2 로
-        바뀐 실험부터는 BOARD 를 꼭 적게 한다. 기준 실험은 config.BOARD_V2_FROM 한 곳이다."""
+    def test_BOARD_를_빠뜨리면_멈춘다(self):
+        """BOARD 가 없으면 렌더러 기본값(v2)으로 그려져 v1 주차가 조용히 v2 그림으로 나간다 — 어느
+        실험이든 BOARD 를 꼭 적게 한다. 판형이 갈리는 실험은 config.BOARD_V2_FROM 한 곳이다."""
         from scripts.lab import config
         first = config.BOARD_V2_FROM
         with self.assertRaisesRegex(ValueError, "BOARD = 'v2'"):
             self.mod.require_board(types.SimpleNamespace(), first, '배치.py')
+        with self.assertRaisesRegex(ValueError, "BOARD = 'v1'"):
+            self.mod.require_board(types.SimpleNamespace(), first - 1, '배치.py')
         self.mod.require_board(types.SimpleNamespace(BOARD='v2'), first, '배치.py')
         self.mod.require_board(types.SimpleNamespace(BOARD='v1'), first, '배치.py')   # 적어 두면 연다
-        self.mod.require_board(types.SimpleNamespace(), first - 1, '배치.py')        # 실험01~04 는 그대로
+        self.mod.require_board(types.SimpleNamespace(BOARD='v1'), first - 1, '배치.py')
+        self.assertEqual(self.mod.DEFAULT_BOARD, 'v2')
         self.assertEqual((config.default_board(first - 1), config.default_board(first)), ('v1', 'v2'))
 
     def test_빌더가_board_를_안_넘기면_build_all_이_멈춘다(self):
+        # 렌더러 기본값이 v2 라 v1 주차에서 board= 를 빠뜨리면 v2 그림이 나간다
         src = (
             "from render_breadboard import BreadboardRenderer\n"
-            "BOARD = 'v2'\n"
+            "BOARD = 'v1'\n"
             "def build_forgot(output_path, template_path=None, stage=None, baseline=None):\n"
             "    bb = BreadboardRenderer(template_path, baseline=baseline)\n"
             "    bb.enable_steps()\n"
