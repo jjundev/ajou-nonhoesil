@@ -309,6 +309,14 @@ class BlockRoles(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'R10 건너는 선 엇갈림'):
             bb.verify()
 
+    def test_R10_은_레일끼리_잇는_전원_브리지를_안_본다(self):
+        """설계 §5 — 전원 브리지는 레일끼리라 R10 대상이 아니다. 좌 바깥 ↔ 우 바깥도 그렇다
+        (2026-10-03 최종 리뷰)."""
+        bb, L, R = self.v2()
+        bb.bridge_rails(L['gnd'], R['gnd'], 39, kind='gnd')
+        self.assertEqual(bb.block_crossings(), [])
+        self.assertEqual(bb._block_role_violations(), [])
+
     def test_우_f쪽_LED_사슬은_레일_연결성에_걸린다(self):
         """Review Focus 1 — 우 f~j 의 사슬은 GND 를 쓰지 않는 우 바깥 레일로 내린다."""
         bb, L, R = self.v2()

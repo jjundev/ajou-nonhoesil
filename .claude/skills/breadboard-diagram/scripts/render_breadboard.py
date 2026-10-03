@@ -1700,13 +1700,16 @@ class BreadboardRenderer:
         return None if self.cols[block][col] in shared else block
 
     def block_crossings(self):
-        """R10 의 지표 — 양 끝이 서로 다른 블록인 배선. 레일↔레일 전원 브리지는 가운데 레일이
-        어느 블록도 아니라 여기 안 든다. `wiring()` 에 넣지 않는다 — 도장."""
+        """R10 의 지표 — 양 끝이 서로 다른 블록인 배선. 레일↔레일 전원 브리지는 안 든다(설계 §5)
+        — 가운데 레일은 어느 블록도 아니고, 좌 바깥 ↔ 우 바깥 브리지는 양 끝이 레일이라 뺀다.
+        `wiring()` 에 넣지 않는다 — 도장."""
         shared, out = self._shared_xs(), []
         for _kind, pts, desc in self._segments:
             a, b = self._endpoint(pts[0]), self._endpoint(pts[-1])
             za, zb = self._zone(a, shared), self._zone(b, shared)
             if {za, zb} != {'left', 'right'}:
+                continue
+            if self._strip(a[1])[0] == 'rail' and self._strip(b[1])[0] == 'rail':
                 continue
             out.append({'ends': {za: a[1], zb: b[1]}, 'desc': desc,
                         'frm': self.addr(*pts[0]), 'to': self.addr(*pts[-1])})

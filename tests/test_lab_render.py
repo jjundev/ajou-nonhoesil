@@ -1,5 +1,6 @@
 import json
 import re
+import shutil
 import tempfile
 import types
 import unittest
@@ -940,6 +941,36 @@ class TestBlankBoardVersion(unittest.TestCase):
     def test_모르는_BOARD_는_거절한다(self):
         with self.assertRaises(ValueError):
             render.circuit_pages(self.spec, self._netlist("BOARD = 'v3'\n"))
+
+    def _with_diagram(self, board_src, sidecar_board):
+        """결선도 하나가 실린 주차 — 사이드카의 `board` 와 `배치.py` 의 `BOARD` 를 따로 정한다."""
+        d = Path(tempfile.mkdtemp())
+        src = ROOT / config.experiment_dir(1) / "결선도/실험01_1-1_결선도_3입력_AND"
+        shutil.copy(src.with_suffix(".png"), d / "x.png")
+        side = json.loads(src.with_suffix(".json").read_text(encoding="utf-8"))
+        if sidecar_board is not None:
+            side["board"] = sidecar_board
+        (d / "x.json").write_text(json.dumps(side, ensure_ascii=False), encoding="utf-8")
+        (d / "netlist.md").write_text(
+            _MISSING_DIAGRAM_NETLIST.replace("- tables: [T1]\n", "- tables: [T1]\n- diagram: x.png\n", 1),
+            encoding="utf-8")
+        if board_src is not None:
+            (d / "배치.py").write_text(board_src, encoding="utf-8")
+        return parse_netlist(d / "netlist.md")
+
+    def test_v2_주차에_v1_결선도가_남아_있으면_멈춘다(self):
+        """빌더가 board=BOARD 를 빠뜨리면 build_all 이 멈추기 전에 v1 PNG·JSON 을 써 둔다 —
+        체크리스트가 그것을 조용히 싣지 않는다(2026-10-03 최종 리뷰)."""
+        with self.assertRaisesRegex(ValueError, "판형"):
+            render.circuit_pages(self.spec, self._with_diagram("BOARD = 'v2'\n", None))
+
+    def test_v1_주차에_v2_결선도가_있으면_멈춘다(self):
+        with self.assertRaisesRegex(ValueError, "판형"):
+            render.circuit_pages(self.spec, self._with_diagram(None, "v2"))
+
+    def test_판형이_맞으면_결선도를_싣는다(self):
+        html = render.circuit_pages(self.spec, self._with_diagram("BOARD = 'v2'\n", "v2"))
+        self.assertIn("x.png", html)
 
     def test_v2_머리띠는_geometry_에서_셈한_값이다(self):
         g = json.loads((ROOT / ".claude/assets/breadboard_v2/geometry.json").read_text(encoding="utf-8"))

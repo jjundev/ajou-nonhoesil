@@ -720,9 +720,13 @@ def _schematic_html(item, spec_dir) -> str:
 SIDECAR_SCHEMA = "breadboard-sidecar/v1"
 
 
-def _sidecar(png: Path) -> dict:
+def _sidecar(png: Path, board: str = "v1") -> dict:
     """PNG 옆 사이드카. PNG 만 있고 이것이 없으면 옛 렌더러 산출물이다 — 결선 순서가
-    조용히 빠진 채 인쇄되지 않게 멈춘다."""
+    조용히 빠진 채 인쇄되지 않게 멈춘다.
+
+    `board` 는 그 주차 `배치.py` 의 판형이다. 사이드카의 `board`(없으면 v1)와 다르면 멈춘다 —
+    빌더가 `board=BOARD` 를 빠뜨리면 `build_all` 이 멈추기 전에 v1 그림을 이미 써 두므로,
+    v2 주차 체크리스트에 v1 판형 그림이 조용히 실리지 않게 여기서 막는다."""
     side = png.with_suffix(".json")
     if not side.exists():
         raise FileNotFoundError(
@@ -732,6 +736,10 @@ def _sidecar(png: Path) -> dict:
     if data.get("schema") != SIDECAR_SCHEMA:
         raise ValueError(f"{side.name} 의 schema 가 {data.get('schema')!r} 다 — "
                          f"{SIDECAR_SCHEMA} 로 다시 뽑는다")
+    got = data.get("board", "v1")
+    if got != board:
+        raise ValueError(f"{side.name} 는 {got} 판형 그림인데 주차 배치.py 의 BOARD 는 {board} 다 — "
+                         "빌더가 BreadboardRenderer(..., board=BOARD) 로 넘기는지 보고 다시 뽑는다")
     return data
 
 
@@ -782,7 +790,7 @@ def _diagram_html(section, netlist) -> str:
             src = f"../{netlist.path.parent.name}/{section.diagram}"
             return (f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
                     f'<p class="src">결선도: {_esc(section.diagram)}</p>'
-                    + _board_text_html(_sidecar(png)))
+                    + _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py"))))
     rows = crop_rows(section.body)
     # 빈 판형은 그 주차 판형이다 — v2 주차에 v1 격자를 깔면 열이 둘 더 있는 판에 그리게 된다
     asset, header_mm = BLANK_BOARDS[board_version_of(netlist.path.parent / "배치.py")]
@@ -815,7 +823,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
     if png is not None and png.exists():
         src = f"../{netlist.path.parent.name}/{stage['diagram']}"
         img = f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
-        text = _board_text_html(_sidecar(png))
+        text = _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py")))
     else:
         img = f"<p class='src'>단계 그림이 아직 없어요: {_esc(stage['diagram'] or '(없음)')}</p>"
         text = ""
