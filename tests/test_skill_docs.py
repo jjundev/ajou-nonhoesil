@@ -1209,6 +1209,18 @@ class BreadboardV2Docs(unittest.TestCase):
                   "parse_transcript(p, board=board)", "판형 버전 불일치", "중앙GND레일"):
             self.assertIn(s, text)
 
+    def test_손그림_전사_예시에_v2_꼴이_있고_그대로_읽힌다(self):
+        """전사 예시는 실험01(v1) 회로다 — v2 주차의 같은 줄은 가운데 레일에 접두어가 없다."""
+        import re
+        from scripts.lab import hand_transcript as ht
+        text = HAND.read_text(encoding="utf-8")
+        block = text.split("v2 주차(실험05~)라면", 1)[1].split("```json\n", 1)[1].split("\n```", 1)[0]
+        addrs = re.findall(r'"(?:from|to)": "([^"]+)"', block)
+        self.assertIn("중앙VCC레일7행", addrs)
+        self.assertIn("중앙GND레일29행", addrs)
+        for a in addrs:
+            ht.parse_address(a, "v2")
+
     def test_따라_그리기_문서가_board_를_넘기라고_한다(self):
         self.assertIn("board=BOARD", TRACE_SKILL.read_text(encoding="utf-8"))
 
