@@ -291,15 +291,10 @@ def calibrate(board, dpi=300):
 def _reference_cols(mod):
     """렌더러가 아는 열 x 들. 칩 몸통 경계(`chip_x1`·`chip_x2`)는 홀이 아니다.
 
-    숫자를 베껴 적지 않는다 — 렌더러 `cols` 가 유일한 권위다. 템플릿 이미지를
-    열지 않으려고 `__new__` 로 껍데기만 만들고 좌표표만 채운다.
+    숫자를 베껴 적지 않는다 — 렌더러 `column_table()` 이 유일한 권위다. 템플릿 이미지를
+    열지 않고 판형 사양의 열 표만 읽는다.
     """
-    bb = mod.BreadboardRenderer.__new__(mod.BreadboardRenderer)
-    mod.BreadboardRenderer._init_cols(bb)
-    out = []
-    for block in bb.cols.values():
-        out.extend(x for key, x in block.items() if not key.startswith('chip'))
-    return out
+    return list(mod.column_table('v1'))
 
 
 # 오버레이 색. 격자선은 **읽는 보조선**이지 판정 근거가 아니다 — 손그림 잉크
@@ -329,14 +324,7 @@ def render_page(pdf_path, page_index=0, dpi=300):
 
 def _col_names(mod):
     """(블록, 열) -> 렌더러 x. 오버레이 라벨과 크롭이 함께 쓴다."""
-    bb = mod.BreadboardRenderer.__new__(mod.BreadboardRenderer)
-    mod.BreadboardRenderer._init_cols(bb)
-    out = {}
-    for block, cols in bb.cols.items():
-        for key, x in cols.items():
-            if not key.startswith('chip'):
-                out[(block, key)] = x
-    return out
+    return {name: x for x, name in mod.column_table('v1').items()}
 
 
 _SHORT = {'gnd': 'G-', 'vcc': 'V+', 'mid_gnd': 'g-', 'mid_vcc': 'v+'}

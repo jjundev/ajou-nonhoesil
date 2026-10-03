@@ -66,5 +66,45 @@ class V2Template(unittest.TestCase):
                 self.assertTrue(any(sum(p) < 300 for p in left), f"{j['name']} 글자가 잭 왼쪽에 없다")
 
 
+class V1Spec(unittest.TestCase):
+    """v1 사양은 옛 모듈 상수 그대로다 — 실험01~04 PNG 가 바이트 하나 안 바뀌는 근거."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_v1_사양은_모듈_상수와_같다(self):
+        m, s = self.mod, self.mod.board_spec('v1')
+        self.assertEqual((s.name, s.size, s.row0, s.row_pitch),
+                         ('v1', m.TEMPLATE_SIZE, m.ROW0, m.ROW_PITCH))
+        self.assertEqual((s.board_left, s.board_right), (m.BOARD_LEFT, m.BOARD_RIGHT))
+        self.assertEqual((s.jacks, s.jack_bottom), (m.JACKS, m.JACK_BOTTOM))
+        self.assertEqual((s.jack_y_max, s.jack_route_y, s.jack_marker_y), (240, (250, 258), 118))
+        self.assertEqual(s.mid_badge_x, 513.0)
+        self.assertEqual((s.chip_blocks, s.led_only_blocks, s.sha256), (('left', 'right'), (), None))
+
+    def test_렌더러는_기본이_v1_이다(self):
+        bb = self.mod.BreadboardRenderer()
+        self.assertEqual(bb.board, 'v1')
+        self.assertIs(bb.spec, self.mod.board_spec('v1'))
+        self.assertEqual(bb.cols, self.mod.board_spec('v1').cols)
+        self.assertIsNot(bb.cols, self.mod.board_spec('v1').cols)   # 사본 — 빌더가 고쳐도 사양은 그대로
+
+    def test_v1_열_표는_28열이고_겹치는_x_가_없다(self):
+        self.assertEqual(len(self.mod.column_table('v1')), 28)
+        self.assertEqual(self.mod.board_spec('v1').cols['left']['mid_gnd'], 468)
+
+    def test_잭_판정은_사양을_따른다(self):
+        bb = self.mod.BreadboardRenderer()
+        self.assertEqual(bb._jack_at(439, 160), 'red')
+        self.assertEqual(bb._jack_at(766, 200), 'gray')
+        self.assertIsNone(bb._jack_at(439, 245))      # 보드 위 테두리(242) 아래
+        self.assertIsNone(bb._jack_at(520, 160))      # 잭 x 30px 밖
+
+    def test_모르는_판형은_거절한다(self):
+        with self.assertRaises(ValueError):
+            self.mod.board_spec('v3')
+
+
 if __name__ == "__main__":
     unittest.main()

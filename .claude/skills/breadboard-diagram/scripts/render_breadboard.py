@@ -7,6 +7,9 @@ import types
 import hashlib
 import argparse
 import tempfile
+import copy
+from dataclasses import dataclass
+from functools import lru_cache
 from PIL import Image, ImageDraw, ImageFont
 from PIL.PngImagePlugin import PngInfo
 
@@ -215,10 +218,15 @@ def _font(kind, size):
     return _ScaledFont(font_path(kind), size)
 
 
-def _default_template():
-    """정본 템플릿 경로. 저장소 루트를 먼저 보고, 없으면 cwd 도 본다."""
+def _default_template(spec=None):
+    """판형 양식 경로. 후보를 저장소 루트에서 먼저 보고, 없으면 cwd 도 본다.
+
+    **다른 판형으로 넘어가지 않는다** — v2 양식이 없는데 v1 로 그리면 열 표와 그림이 어긋난
+    채 그럴듯하게 나온다. 후보가 다 없으면 멈춘다.
+    """
+    spec = spec or board_spec('v1')
     tried = []
-    for rel in TEMPLATE_CANDIDATES:
+    for rel in spec.template:
         for base in (REPO_ROOT, os.getcwd()):
             path = os.path.join(base, rel)
             if path in tried:
@@ -227,7 +235,7 @@ def _default_template():
             if os.path.exists(path):
                 return path
     raise FileNotFoundError(
-        '브레드보드 템플릿을 찾지 못했습니다. 찾아본 곳:\n  ' + '\n  '.join(tried))
+        f'브레드보드 템플릿({spec.name})을 찾지 못했습니다. 찾아본 곳:\n  ' + '\n  '.join(tried))
 
 
 # ---------------------------------------------------------------------------
@@ -291,8 +299,8 @@ PROBE = (105, 105, 110, 255)
 # 묻혔다. 화살촉(▶·◀)은 글리프가 아니라 다각형이다 — 이모지·기호 글리프는 기계마다 □ 가 되고
 # 손그림에 못 옮긴다
 INPUT = (110, 40, 160, 255)
-INPUT_TRI = 4.5   # 화살촉 폭. 좌 바깥 여백(보드 테두리 149 ~ GND 레일 174, 25px)에 `D0` 배지가
-                  # 들어가는 상한이다 — 글자 15 + 화살촉 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
+INPUT_TRI = 4.5   # 화살촉 폭. 좌 바깥 여백(v1 보드 테두리 149 ~ GND 레일 174 = 25px, v2 144 ~ 176 = 32px)에
+                  # `D0` 배지가 들어가는 상한이다 — 글자 15 + 화살촉 4.5 + 틈 1 + 좌우 여백 1·1 = 22.5
 
 # 단계 하나가 꽂는 **새 신호선**의 상한. 2026-09-20 단계 세분화: 관측 노드 하나 =
 # 단계 하나이고 새 신호선은 셋 이하다 — 확인이 실패했을 때 용의자가 그 셋이다.
@@ -313,27 +321,126 @@ def _boxes_touch(a, b):
     return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
 
 
+# ---------------------------------------------------------------------------
+# 판형 버전 — 버전마다 짝으로 바뀌는 것을 한 객체에 묶는다. 렌더러 본문은 `self.spec` 만
+# 읽고 버전 이름으로 분기하지 않는다.
+#
+# v1 = `.claude/assets/Breadboard.jpg` — 실험01~04 전용. 숫자는 위 모듈 상수 그대로이고,
+#      그 상수들(`ROW0`·`BOARD_LEFT`·`JACKS`…)은 v1 의 별칭으로 남는다(손그림 검토·테스트가 읽는다).
+# v2 = `.claude/assets/breadboard_v2/` — 실험05 부터. 숫자는 `geometry.json` 에서만 읽는다 —
+#      베껴 적으면 판형을 다시 뽑았을 때 한쪽만 바뀐다. 가운데 레일이 2열 하나뿐이라 두
+#      블록이 같은 x 를 `mid_gnd`·`mid_vcc` 로 부른다.
+# 설계: docs/plans/2026-10-02-브레드보드-v2-구조-설계.md
+
+BOARD_VERSIONS = ('v1', 'v2')
+
+V2_GEOMETRY = os.path.join(REPO_ROOT, '.claude', 'assets', 'breadboard_v2', 'geometry.json')
+
+# geometry.json 의 잭 이름 -> 렌더러 잭 키. 키는 v1 그대로다 — 끝점 기호 `('jack', 'red')` 가
+# 도장과 손그림 전사 문법(`전원잭(빨강)`)에 들어 있다
+_V2_JACK_KEYS = {'+5V': 'red', 'yellow': 'yellow', '0V': 'gray'}
+
+# v1 열 표 — `Breadboard.jpg` 실측(2026-09-07). 옛 `_init_cols` 의 표를 그대로 옮겼다
+_V1_COLS = {
+    'left': {
+        'gnd': 174, 'vcc': 190,
+        'a': 239, 'b': 256, 'c': 272, 'd': 288, 'e': 305,
+        'chip_x1': 310, 'chip_x2': 349,
+        'f': 354, 'g': 370, 'h': 386, 'i': 403, 'j': 419,
+        'mid_gnd': 468, 'mid_vcc': 484,
+    },
+    'right': {
+        'mid_gnd': 542, 'mid_vcc': 558,
+        'a': 607, 'b': 623, 'c': 640, 'd': 656, 'e': 672,
+        'chip_x1': 677, 'chip_x2': 716,
+        'f': 721, 'g': 738, 'h': 754, 'i': 770, 'j': 786,
+        'gnd': 836, 'vcc': 852,
+    },
+}
+
+
+@dataclass(frozen=True)
+class BoardSpec:
+    """판형 하나에 묶인 값. 렌더러는 이것만 보고 그린다."""
+    name: str               # 'v1' | 'v2'
+    template: tuple         # 양식 후보 경로(저장소 루트 기준 또는 절대). 앞에서부터 쓴다
+    size: tuple             # 양식 크기 (w, h) — 좌표표가 이 크기에 묶여 있다
+    row0: float             # 1행 홀 중심 y
+    row_pitch: float        # 행 간격
+    board_left: int         # 보드 좌·우 테두리 x — 이 밖은 여백
+    board_right: int
+    jacks: dict             # 잭 키 -> 중심 x
+    jack_bottom: int        # 잭 선이 출발하는 y
+    jack_y_max: int         # 이보다 위이고 잭 x 30px 안이면 잭 — 보드 밖의 유일한 합법 끝점
+    jack_route_y: tuple     # (+5V 선, 0V 선) 이 보드 위 테두리 바로 안쪽을 가로지르는 y
+    jack_marker_y: int      # 잭 선 번호 원의 y (x 는 잭 + 46)
+    cols: dict              # 열 표 — {'left': {...}, 'right': {...}}
+    mid_badge_x: float      # 가운데 레일에서 출발하는 입력 점퍼의 이름 배지 x
+    chip_blocks: tuple      # 칩을 둘 수 있는 블록 (R9)
+    led_only_blocks: tuple  # LED 사슬만 두는 블록 (R10). 비면 R10 을 안 돈다
+    sha256: str = None      # 양식 PNG 해시. 있으면 대조한다 — 다시 뽑은 PNG 를 잡는다
+
+
+_V1 = BoardSpec(
+    name='v1', template=TEMPLATE_CANDIDATES, size=TEMPLATE_SIZE,
+    row0=ROW0, row_pitch=ROW_PITCH, board_left=BOARD_LEFT, board_right=BOARD_RIGHT,
+    jacks=dict(JACKS), jack_bottom=JACK_BOTTOM,
+    # 보드 위 테두리 y=242 바로 위가 잭 영역이고, 잭 선은 242 + 8·16 에서 가로지른다
+    jack_y_max=240, jack_route_y=(250, 258), jack_marker_y=118,
+    cols=_V1_COLS,
+    # 좌 중앙 VCC 484 ~ 우 중앙 GND 542 사이 여백의 가운데
+    mid_badge_x=(_V1_COLS['left']['mid_vcc'] + _V1_COLS['right']['mid_gnd']) / 2,
+    chip_blocks=('left', 'right'), led_only_blocks=())
+
+
+@lru_cache(maxsize=None)
+def board_spec(name='v1'):
+    """판형 버전 이름 -> `BoardSpec`."""
+    if name == 'v1':
+        return _V1
+    raise ValueError(f'판형 버전은 {BOARD_VERSIONS} 중 하나다: {name!r}')
+
+
+def _hole_columns(cols):
+    """열 표 -> {x: (블록, 열 이름)}. 칩 몸통 경계(`chip_x1`·`chip_x2`)는 홀이 아니라 뺀다.
+    두 블록이 같은 x 를 부르면(v2 가운데 레일) 먼저 나온 `left` 를 남긴다."""
+    out = {}
+    for block in ('left', 'right'):
+        for key, x in cols[block].items():
+            if not key.startswith('chip'):
+                out.setdefault(x, (block, key))
+    return out
+
+
+def column_table(board='v1'):
+    """판형 `board` 의 홀 열 — x -> (블록, 열 이름). 손그림 검토가 렌더러를 띄우지 않고 읽는다."""
+    return _hole_columns(board_spec(board).cols)
+
+
 class BreadboardRenderer:
-    def __init__(self, template_path=None, baseline=None, layer=None):
+    def __init__(self, template_path=None, baseline=None, layer=None, board='v1'):
+        # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
+        self.board = board
+        self.spec = board_spec(board)
         if template_path is None:
-            template_path = _default_template()
+            template_path = _default_template(self.spec)
         if not os.path.exists(template_path):
             raise FileNotFoundError(f"Breadboard template not found: {template_path}")
 
         self.base_im = Image.open(template_path).convert('RGBA')
         # 좌표표가 이 크기에 묶여 있다. 다른 판본이 들어오면 여기서 걸린다 —
         # 갈아끼운 그림은 결과가 그럴듯해서 눈으로는 안 잡히기 때문이다.
-        if self.base_im.size != TEMPLATE_SIZE:
+        w, h = self.spec.size
+        if self.base_im.size != self.spec.size:
             raise ValueError(
-                f'템플릿 크기가 {TEMPLATE_SIZE[0]}x{TEMPLATE_SIZE[1]} 가 아닙니다: '
+                f'템플릿 크기가 {w}x{h} 가 아닙니다: '
                 f'{self.base_im.size} ({template_path}).\n'
                 'cols·r_y() 좌표는 정본 한 장에 맞춰져 있습니다. '
                 '다른 판본을 쓰려면 좌표표를 다시 떠야 합니다.')
         # 정본은 998px 한 장뿐이다 — 격자·로고는 확대해 깐다(`SCALE` 주석). NEAREST 는 픽셀을
         # 그대로 늘려 원본과 같은 모양이다. LANCZOS 는 JPEG 잡티까지 매끈하게 늘려 PNG 가
         # 장당 2.3MB 로 커졌다(NEAREST 는 1.1MB 안팎, 2026-09-28 실측)
-        self.im = self.base_im.resize((TEMPLATE_SIZE[0] * SCALE, TEMPLATE_SIZE[1] * SCALE),
-                                      Image.NEAREST)
+        self.im = self.base_im.resize((w * SCALE, h * SCALE), Image.NEAREST)
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.draw = _ScaledDraw(self.overlay)
         # 이미 그린 레일 브리지. 칩마다 connect_unused_inputs 를 부르면 같은
@@ -497,24 +604,9 @@ class BreadboardRenderer:
     # ---------------- 좌표 ----------------
 
     def _init_cols(self):
-        """열 좌표표. 템플릿 없이 좌표만 쓰려는 쪽(손그림 검토)이 있어
-        `__init__` 에서 뽑아 놓는다. 이 표가 열 좌표의 **유일한 권위**다."""
-        self.cols = {
-            'left': {
-                'gnd': 174, 'vcc': 190,
-                'a': 239, 'b': 256, 'c': 272, 'd': 288, 'e': 305,
-                'chip_x1': 310, 'chip_x2': 349,
-                'f': 354, 'g': 370, 'h': 386, 'i': 403, 'j': 419,
-                'mid_gnd': 468, 'mid_vcc': 484,
-            },
-            'right': {
-                'mid_gnd': 542, 'mid_vcc': 558,
-                'a': 607, 'b': 623, 'c': 640, 'd': 656, 'e': 672,
-                'chip_x1': 677, 'chip_x2': 716,
-                'f': 721, 'g': 738, 'h': 754, 'i': 770, 'j': 786,
-                'gnd': 836, 'vcc': 852,
-            },
-        }
+        """열 좌표표 — 판형 사양(`self.spec.cols`)의 사본. 렌더러 안에서는 이 표가 열 좌표의
+        **유일한 권위**다. 손그림 검토는 같은 사양을 `column_table()` 로 읽는다."""
+        self.cols = copy.deepcopy(self.spec.cols)
         # 레일 x -> 어느 전원인가. 넷 검사가 +5V 와 GND 가 한 넷이 됐는지 볼 때
         # 쓴다. 열 **이름**에서 뽑으므로 이 표가 유일한 권위라는 규칙을 지킨다
         self._rail_kind = {}
@@ -526,16 +618,15 @@ class BreadboardRenderer:
                     self._rail_kind[x] = 'vcc'
 
     def r_y(self, r):
-        return int(round(ROW0 + (r - 1) * ROW_PITCH))
+        return int(round(self.spec.row0 + (r - 1) * self.spec.row_pitch))
 
     @staticmethod
     def is_rail_row(r):
         return 1 <= r <= ROW_MAX and r not in RAIL_GAP_ROWS
 
-    @staticmethod
-    def _row_of(y):
+    def _row_of(self, y):
         """y 좌표에 제일 가까운 행 번호. addr() 과 hole_at() 이 같은 식을 쓴다 — 한쪽만 고치면 갈린다."""
-        return int(round((y - ROW0) / ROW_PITCH)) + 1
+        return int(round((y - self.spec.row0) / self.spec.row_pitch)) + 1
 
     def hole_at(self, x, y):
         """(x, y) 가 실제 홀이면 그 홀의 키 (열 x, 행), 아니면 None.
@@ -543,6 +634,7 @@ class BreadboardRenderer:
         레일은 5홀씩 묶여 빈 행이 있고, 단자대는 63행 전부 홀이다. 열·행 모두
         홀 중심에서 5px 안이어야 한다 — 열 피치가 16px 라 9px 로는 인접 열
         사이에 거부 구간이 없었다. 그 밖은 배선 통로거나 밀린 좌표다.
+        v2 는 열 24px·행 19px 라 5px 허용치가 더 넉넉하다.
         """
         r = self._row_of(y)
         if not 1 <= r <= ROW_MAX:
@@ -609,14 +701,25 @@ class BreadboardRenderer:
                         out.append(f'{self.addr(px, py)} {what} ← 그 위를 지나는 [{KIND_KR[kj]}] {dj}')
         return sorted(set(out))
 
+    def _jack_at(self, x, y):
+        """(x, y) 가 전원 잭이면 그 잭 키('red'·'yellow'·'gray'), 아니면 None.
+
+        잭은 보드 밖의 유일한 합법 끝점이다. `lead`·`_endpoint`·`nets` 가 같은 규칙을 써야 해서
+        한 자리에 둔다 — 판형마다 잭 자리와 보드 위 테두리가 다르다(`self.spec`).
+        """
+        s = self.spec
+        if y < s.jack_y_max and any(abs(x - jx) < 30 for jx in s.jacks.values()):
+            return min(s.jacks, key=lambda k: abs(s.jacks[k] - x))
+        return None
+
     def lead(self, x, y, what):
         """홀 (x, y) 에 리드 하나를 꽂는다.
 
-        전원잭(y < 240)은 보드 밖의 유일한 합법 끝점이라 건너뛴다. 홀이 아니면
+        전원잭(`_jack_at`)은 보드 밖의 유일한 합법 끝점이라 건너뛴다. 홀이 아니면
         R1 위반, 이미 차 있으면 R2 위반으로 적어 두고 verify() 가 한꺼번에 낸다
         — 그리는 도중에 던지면 어디까지 그렸는지 알 수 없다.
         """
-        if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
+        if self._jack_at(x, y) is not None:
             return   # 전원잭 — 보드 밖의 유일한 합법 끝점
         key = self.hole_at(x, y)
         if key is None:
@@ -722,14 +825,9 @@ class BreadboardRenderer:
         return out
 
     def _build_sym_map(self):
-        """x 좌표 -> (블록, 열 이름). `_addr_map` 의 기계용 짝이다."""
-        out = {}
-        for block in ('left', 'right'):
-            for key, x in self.cols[block].items():
-                if key.startswith('chip'):
-                    continue
-                out[x] = (block, key)
-        return out
+        """x 좌표 -> (블록, 열 이름). `_addr_map` 의 기계용 짝이다. 두 블록이 같은 x 를 부르면
+        (v2 가운데 레일) `left` 다."""
+        return _hole_columns(self.cols)
 
     def sym(self, x, row):
         """(x, 행) -> (블록, 열 이름, 행). 홀이 아니면 None.
@@ -746,14 +844,16 @@ class BreadboardRenderer:
 
     def addr(self, x, y):
         """(x, y) 를 '좌 e7' 처럼 읽히는 주소로. 표에 그대로 들어간다."""
-        if y < 240:
+        s = self.spec
+        if y < s.jack_y_max:
             return '전원잭'
-        if x < 149:
+        if x < s.board_left:
             return '보드밖(입력)'
-        if x > BOARD_RIGHT:
+        if x > s.board_right:
             return '보드밖'
         r = self._row_of(y)
         best = min(self._addr_map, key=lambda k: abs(k - x))
+        # 9px 는 v1 열 피치(16)의 절반 남짓이고 v2(24)에서도 절반보다 작다
         if abs(best - x) > 9:
             # 홀이 아니라 배선 통로다. 분기점(T 접속)일 때만 여기 온다
             return '분기점'
@@ -775,15 +875,20 @@ class BreadboardRenderer:
         self.submit = submit
 
     def connect_jacks(self, block='left'):
-        """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다."""
-        c = self.cols[block]
+        """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다.
+
+        잭 아래 끝에서 내려와 보드 위 테두리 바로 안쪽(`spec.jack_route_y`)을 가로질러 레일로
+        간다. v1 은 테두리 242 + 8·16 = 250·258, v2 는 304 + 8·16 = 312·320 — 같은 식이다.
+        """
+        c, s = self.cols[block], self.spec
+        y_v, y_g = s.jack_route_y
         r_v, r_g = self.free_rail_row(3, c['vcc']), self.free_rail_row(4, c['gnd'])
-        self.step_wire([(JACKS['red'], JACK_BOTTOM), (JACKS['red'], 250),
-                        (c['vcc'], 250), (c['vcc'], self.r_y(r_v))],
-                       'vcc', '전원장치 +5V 잭', marker_at=(JACKS['red'] + 46, 118))
-        self.step_wire([(JACKS['gray'], JACK_BOTTOM), (JACKS['gray'], 258),
-                        (c['gnd'], 258), (c['gnd'], self.r_y(r_g))],
-                       'gnd', '전원장치 0V 잭', marker_at=(JACKS['gray'] + 46, 118))
+        self.step_wire([(s.jacks['red'], s.jack_bottom), (s.jacks['red'], y_v),
+                        (c['vcc'], y_v), (c['vcc'], self.r_y(r_v))],
+                       'vcc', '전원장치 +5V 잭', marker_at=(s.jacks['red'] + 46, s.jack_marker_y))
+        self.step_wire([(s.jacks['gray'], s.jack_bottom), (s.jacks['gray'], y_g),
+                        (c['gnd'], y_g), (c['gnd'], self.r_y(r_g))],
+                       'gnd', '전원장치 0V 잭', marker_at=(s.jacks['gray'] + 46, s.jack_marker_y))
 
     # ---------------- 낱개 그리기 ----------------
 
@@ -886,6 +991,7 @@ class BreadboardRenderer:
         """
         y = self.r_y(row)
         lane_y = self.r_y(lane_row) if lane_row else y
+        # x=140·100·12 는 좌 여백 안이다 — v1 테두리 149, v2 144 둘 다 그 오른쪽이라 판형과 무관하다
         pts = [(x, y), (140, y)] + ([(140, lane_y)] if lane_row else []) + [(100, lane_y)]
         self._dashed(pts, PROBE)
         self.draw.ellipse([x - 5, y - 5, x + 5, y + 5], outline=PROBE, width=2)
@@ -1374,8 +1480,8 @@ class BreadboardRenderer:
         """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))`. `wiring()`
         과 기준선 비교가 **같은 규칙**을 써야 해서 한 자리에 둔다."""
         x, y = p
-        if y < 240 and any(abs(x - jx) < 30 for jx in JACKS.values()):
-            color = min(JACKS, key=lambda k: abs(JACKS[k] - x))
+        color = self._jack_at(x, y)
+        if color is not None:
             return ('jack', color)
         return ('hole', self.sym(x, self._row_of(y)))
 
@@ -1654,8 +1760,8 @@ class BreadboardRenderer:
         for i, (kind, pts, desc) in enumerate(self._segments):
             ends = []
             for p in (pts[0], pts[-1]):
-                if p[1] < 240 and any(abs(p[0] - jx) < 30 for jx in JACKS.values()):
-                    color = min(JACKS, key=lambda k: abs(JACKS[k] - p[0]))
+                color = self._jack_at(*p)
+                if color is not None:
                     ends.append(('jack', color))
                     put(('jack', color), f'{JACK_KR[color]} 잭')
                 else:
@@ -1939,7 +2045,7 @@ class BreadboardRenderer:
         final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
                                          self.overlay)
         board_h = self.r_y(max_row) + 20
-        out = final_im.crop((0, 0, 998 * SCALE, board_h * SCALE)).convert('RGB')
+        out = final_im.crop((0, 0, self.spec.size[0] * SCALE, board_h * SCALE)).convert('RGB')
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
@@ -1984,7 +2090,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
 
     `side` 는 입력이 들어가는 핀이 칩의 어느 쪽인가다 — `'a'`(핀 1~7, a~e 쪽) 또는
     `'f'`(핀 8~14, f~j 쪽). 레일은 그쪽에 붙은 GND 다: 좌 블록은 a 쪽이 바깥 174, f 쪽이
-    중앙 468 이고 우 블록은 뒤집혀 a 쪽이 중앙 542, f 쪽이 바깥 836 이다. 열 기본값은
+    중앙 468 이고 우 블록은 뒤집혀 a 쪽이 중앙 542, f 쪽이 바깥 836 이다(v1 기준. v2 는 가운데 레일이 하나라 좌 f 쪽과 우 a 쪽이 같은 레일이다). 열 기본값은
     a 쪽 `b`, f 쪽 `i`(핀 홀 e·f 옆 d·g 는 전원선 자리라 한 칸 띈다 — `connect_power`).
     2026-09-18 실험03 에서 네 칩이 게이트 1·2 만 써 왼쪽에 11리드가 몰렸다(R7) — 게이트를
     좌·우로 나누면 오른쪽 게이트의 입력이 이 분기를 쓴다.
@@ -2029,19 +2135,21 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         col = col or 'i'
     r_rail = bb.free_rail_row(row, x_rail)
     y_rail, y_row = bb.r_y(r_rail), bb.r_y(row)
-    # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌
-    # 테두리~레일 사이(기존), 우 바깥 레일은 VCC 레일(852)~보드 우 테두리 사이, 중앙 레일 둘은
-    # 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙 GND 542)이다. 번호 원은 좌·우
-    # 바깥이면 보드 밖 같은 행, 중앙이면 배지 위 18px 다 — 여백이 58px 라 나란히 못 놓는다.
+    # 신호 이름 배지와 번호 원의 기본 자리 — 레일 바깥 여백. 좌 바깥 레일은 보드 좌 테두리~레일
+    # 사이, 우 바깥 레일은 VCC 레일~보드 우 테두리 사이, 가운데 레일은 판형이 정한
+    # `spec.mid_badge_x`(v1: 좌 중앙 VCC 484 ~ 우 중앙 GND 542 의 가운데, v2: 가운데 VCC ~ 우 a 열의
+    # 가운데)다. 번호 원은 좌·우 바깥이면 보드 밖 같은 행, 가운데면 배지 위 18px 다 — 여백이
+    # 52~58px 라 나란히 못 놓는다.
+    s = bb.spec
     if x_rail == bb.cols['left']['gnd']:
-        badge_x, default_marker = (BOARD_LEFT + x_rail) / 2, (130, 0)
+        badge_x, default_marker = (s.board_left + x_rail) / 2, (130, 0)
     elif x_rail == bb.cols['right']['gnd']:
-        badge_x, default_marker = (bb.cols['right']['vcc'] + BOARD_RIGHT) / 2, (BOARD_RIGHT + 24, 0)
+        badge_x, default_marker = (bb.cols['right']['vcc'] + s.board_right) / 2, (s.board_right + 24, 0)
     else:
-        # 중앙 레일 둘(좌 중앙 468·우 중앙 542)이 이 자리를 같이 쓴다 — 같은 행에 좌 f쪽
-        # 입력과 우 a쪽 입력을 함께 넣으면 배지와 번호 원이 서로 위에 겹친다(58px 여백은
-        # 한 번에 입력 한 행만 받는다). 배지 겹침은 가독성 테스트가 잡는다.
-        badge_x = (bb.cols['left']['mid_vcc'] + bb.cols['right']['mid_gnd']) / 2
+        # 가운데 레일(v1 은 좌 중앙 468·우 중앙 542 둘, v2 는 하나)이 이 자리를 같이 쓴다 — 같은
+        # 행에 입력 둘을 넣으면 배지와 번호 원이 서로 위에 겹친다(가운데 여백은 한 번에 입력 한
+        # 행만 받는다). 배지 겹침은 가독성 테스트가 잡는다.
+        badge_x = s.mid_badge_x
         default_marker = (badge_x, -18)
     mx, dy = marker or default_marker
     p0, p1 = (x_rail, y_rail), (c[col], y_row)
