@@ -37,6 +37,8 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
    한다. 빨강이면 완성본 PNG 가 낡은 것이다 — `breadboard-diagram` 으로 넘기고 멈춘다.
 2. **빌더.** `FINALS` 의 빌더마다 시그니처에 `layer=None` 이 있고
    `BreadboardRenderer(template_path, baseline=baseline, layer=layer)` 로 넘기는지 본다.
+   v2 주차(`BOARD = 'v2'`)는 `board=BOARD` 도 넘긴다 —
+   `BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)`.
    없으면 `보고서/실험04/결선도/배치.py` 의 `build_e4_mux` 처럼 더한다 — `stage` 와 함께
    주면 `ValueError` 로 거절하는 두 줄 포함. `FINALS` 에 없는 회로는 손대지 않는다.
 3. **층.** `LAYERS` 가 `FINALS` 의 완성본 전부를 덮고 있으면 건너뛴다. 빠진 완성본이 있으면

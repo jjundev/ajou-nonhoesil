@@ -53,21 +53,21 @@ print(config.experiment_dir(<실험번호>))
 python3 -c "
 from scripts.lab import hand_grid
 import sys
-pdf = sys.argv[1]
-out = sys.argv[2]
+pdf, out, exp = sys.argv[1], sys.argv[2], int(sys.argv[3])
+board = hand_grid.expected_board(exp)   # 승인 결선의 판형 — 그 주차 배치.py 의 BOARD
 import fitz
 n = len(fitz.open(pdf))
 for i in range(n):
     b = hand_grid.board_image(pdf, i)
-    cal = hand_grid.calibrate(b)
+    cal = hand_grid.calibrate(b, board)
     page = hand_grid.render_page(pdf, i)
     hand_grid.overlay_grid(page, cal, f'{out}/격자/p{i+1}.png')
-    print(i+1, b.md5[:8], round(cal.res_x,2), round(cal.res_y,2))
-" <PDF> <출력폴더>
+    print(i+1, board, b.md5[:8], round(cal.res_x,2), round(cal.res_y,2))
+" <PDF> <출력폴더> <실험번호>
 ```
 
 `GridError` 가 나면 그대로 알리고 중단한다. 판형이 다른 그림 위에 그렸거나
-판형이 바뀐 것이다 — 추측으로 넘어가지 않는다.
+판형이 바뀐 것이다 — 추측으로 넘어가지 않는다. `판형 버전 불일치` 면 학생이 다른 배포본(v1 ↔ v2) 위에 그린 것이다 — 그대로 알리고 멈춘다. 다른 판형으로 보정해 넘어가지 않는다.
 
 ### 3. 격자 그림을 보고 전사한다
 
@@ -132,26 +132,29 @@ for i in range(n):
   것으로 잡는다.
   H15 는 개수만 세고 자리는 보지 않으므로, 입력 `B` 를 두 번 적고 출력 `B` 를
   빠뜨린 그림도 조용하다 — 반감산기는 LED 옆 `B` 를 사람이 눈으로 확인한다.
+- **v2 판형(실험05~)의 가운데 레일은 접두어 없이 적는다** — `중앙GND레일9행`. 격자 그림의 라벨도
+  접두어가 없다(`g-`·`v+`). 좌·우를 붙여도 같은 레일로 읽지만, v1 은 좌·우 중앙 레일이 따로라
+  `좌 중앙GND레일9행` 처럼 블록을 꼭 적는다.
 
 ### 4. 대조하고 판정문을 낸다
 
 ```bash
 python3 -c "
 from pathlib import Path
-from scripts.lab import hand_compare as hc
+from scripts.lab import hand_compare as hc, hand_grid
 from scripts.lab.hand_transcript import parse_transcript
 import sys
-out = Path(sys.argv[1]); rnd = int(sys.argv[2])
+out = Path(sys.argv[1]); rnd = int(sys.argv[2]); board = hand_grid.expected_board(int(sys.argv[3]))
 pages = []
 for p in sorted((out/'전사').glob('p*.json')):
-    hand = parse_transcript(p)
+    hand = parse_transcript(p, board=board)
     ref = hc.reference_diagram(hand.circuit)
     pages.append((hand.page, hand.circuit, hc.compare(ref, hand), hand))
 (out/'판정.md').write_text(hc.judgment_markdown(pages, rnd), encoding='utf-8')
 for page, _c, fs, _h in pages:
     for f in fs:
         print(page, f)
-" <출력폴더> <라운드번호>
+" <출력폴더> <라운드번호> <실험번호>
 ```
 
 ### 5. 치명 결함마다 증거 크롭을 만들어 보낸다

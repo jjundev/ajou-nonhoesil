@@ -26,6 +26,8 @@ SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 VERIFY_RESULT = ROOT / ".claude/skills/verify-write-result-report/SKILL.md"
 HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
+BREADBOARD_SKILL = ROOT / ".claude/skills/breadboard-diagram/SKILL.md"
+TRACE_SKILL = ROOT / ".claude/skills/make-trace-guide/SKILL.md"
 INIT = ROOT / ".claude/skills/init-lab-experiment/SKILL.md"
 FIGURE = ROOT / ".claude/skills/draw-expected-figure/SKILL.md"
 FIGURE_TEMPLATE = ROOT / ".claude/skills/draw-expected-figure/template.html"
@@ -507,6 +509,9 @@ class SkillDocInvariants(unittest.TestCase):
                 if ln.startswith("| 회로 결선도 |")]
         self.assertEqual(len(rows), 1, rows)
         self.assertIn(".claude/assets/Breadboard.jpg", rows[0])
+        # v2 주차(실험05~)의 빈 판형도 같은 행에 못박는다 — BOARD 로 고른다
+        self.assertIn(".claude/assets/breadboard_v2/Breadboard_v2.png", rows[0])
+        self.assertIn("BOARD", rows[0])
         # 그림의 근원이 netlist 의 `diagram` 이라는 것과, 그림이 회로 소절
         # 안에 산다는 것 둘 다 재료 표에 있어야 한다. 앞의 것이 없으면
         # 파일명을 짐작해 쓰고, 뒤의 것이 없으면 다시 절 끝에 몰아 둔다.
@@ -1187,6 +1192,25 @@ class HandDiagramSkill(unittest.TestCase):
         text = HAND.read_text(encoding="utf-8")
         self.assertIn("전사", text)
         self.assertIn("uncertain", text)
+
+
+class BreadboardV2Docs(unittest.TestCase):
+    """v2 판형 계약이 문서에 있어야 다음 주차 빌더가 v1 습관으로 돌아가지 않는다."""
+
+    def test_렌더러_문서가_v2_계약을_적는다(self):
+        text = BREADBOARD_SKILL.read_text(encoding="utf-8")
+        for s in ("BOARD = 'v2'", "board=BOARD", "| R9 |", "| R10 |",
+                  "breadboard_v2/geometry.json", "실험01~04 전용", "tests/fixtures/board_v2/배치.py"):
+            self.assertIn(s, text)
+
+    def test_손그림_검토가_승인_판형으로_보정하고_읽는다(self):
+        text = HAND.read_text(encoding="utf-8")
+        for s in ("hand_grid.expected_board(", "hand_grid.calibrate(b, board)",
+                  "parse_transcript(p, board=board)", "판형 버전 불일치", "중앙GND레일"):
+            self.assertIn(s, text)
+
+    def test_따라_그리기_문서가_board_를_넘기라고_한다(self):
+        self.assertIn("board=BOARD", TRACE_SKILL.read_text(encoding="utf-8"))
 
 
 class InitSkill(unittest.TestCase):
