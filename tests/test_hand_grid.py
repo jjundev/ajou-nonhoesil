@@ -217,6 +217,23 @@ class V2Grid(unittest.TestCase):
             self.assertTrue(os.path.exists(out))
 
 
+    def test_우_블록_크롭은_가운데_레일을_품는다(self):
+        """우 LED 사슬의 GND 는 가운데 레일에 꽂힌다. 그 열은 소속이 left 라 block='right' 필터에서
+        빠지면 크롭 여백에만 기대게 된다 — 두 블록이 나눠 쓰는 열은 늘 넣는다."""
+        cal = hand_grid.calibrate(hand_grid.board_image(V2_PDF), 'v2', dpi=100)
+        page = hand_grid.render_page(V2_PDF, 0, dpi=100)
+        mod = hand_grid.load_renderer()
+        spec = mod.board_spec('v2')
+        mid = cal.to_px(spec.cols['right']['mid_gnd'], spec.row0)[0]
+        right = cal.to_px(spec.cols['right']['vcc'], spec.row0)[0]
+        with tempfile.TemporaryDirectory() as d:
+            out = hand_grid.crop_rows(page, cal, 10, 20, os.path.join(d, "c.png"), scale=1, block='right')
+            from PIL import Image
+            with Image.open(out) as im:
+                width = im.width
+        self.assertEqual(width, int(right + 40) - int(mid - 80))
+
+
 class BoardMismatch(unittest.TestCase):
     """승인 결선의 판형과 제출 PDF 의 판형이 다르면 추측으로 넘어가지 않고 멈춘다."""
 

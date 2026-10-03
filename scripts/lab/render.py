@@ -42,21 +42,31 @@ BLANK_BOARDS = {
 }
 
 
-def board_version_of(board_file: Path) -> str:
-    """주차 `배치.py` 의 `BOARD` — 엔진을 import 하지 않고 ast 로 읽는다. 파일이나 상수가 없으면 v1.
+def board_version_of(board_file: Path, experiment: int = 1) -> str:
+    """주차 `배치.py` 의 `BOARD` — 엔진을 import 하지 않고 ast 로 읽는다.
 
-    인쇄가 PIL·렌더러에 묶이면 안 된다(`_diagram_html`). 상수는 문자열 리터럴이어야 한다 —
-    엔진 `load_board_file()` 도 같은 값만 받는다.
+    파일이 없으면 그 실험의 기본 판형(`config.default_board`)이다 — 체크리스트는 결선도보다
+    먼저 나올 수 있다. 파일이 있는데 상수가 없으면 v1 이되, 판형이 v2 로 바뀐 실험부터는
+    엔진 `require_board()` 처럼 거절한다. 상수는 문자열 리터럴이어야 한다 — 인쇄가
+    PIL·렌더러에 묶이면 안 된다(`_diagram_html`).
     """
     if not board_file.exists():
-        return "v1"
+        return config.default_board(experiment)
     for node in ast.parse(board_file.read_text(encoding="utf-8")).body:
         if isinstance(node, ast.Assign) and any(
                 isinstance(t, ast.Name) and t.id == "BOARD" for t in node.targets):
-            value = ast.literal_eval(node.value)
+            try:
+                value = ast.literal_eval(node.value)
+            except ValueError:
+                raise ValueError(f"{board_file}: BOARD 는 문자열 리터럴로 적는다 — "
+                                 f"BOARD = 'v2' 꼴 ({ast.unparse(node.value)!r})") from None
             if value not in BLANK_BOARDS:
                 raise ValueError(f"{board_file}: BOARD 는 {tuple(BLANK_BOARDS)} 중 하나다: {value!r}")
             return value
+    want = config.default_board(experiment)
+    if want != "v1":
+        raise ValueError(f"{board_file}: 실험{experiment} 부터 판형은 {want} 다 — "
+                         f"머리에 BOARD = '{want}' 를 둔다")
     return "v1"
 
 
@@ -790,10 +800,10 @@ def _diagram_html(section, netlist) -> str:
             src = f"../{netlist.path.parent.name}/{section.diagram}"
             return (f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
                     f'<p class="src">결선도: {_esc(section.diagram)}</p>'
-                    + _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py"))))
+                    + _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))))
     rows = crop_rows(section.body)
     # 빈 판형은 그 주차 판형이다 — v2 주차에 v1 격자를 깔면 열이 둘 더 있는 판에 그리게 된다
-    asset, header_mm = BLANK_BOARDS[board_version_of(netlist.path.parent / "배치.py")]
+    asset, header_mm = BLANK_BOARDS[board_version_of(netlist.path.parent / "배치.py", netlist.experiment)]
     visible_mm = header_mm + rows * 6
     return (f"<h3>브레드보드 작도 ({rows}행)</h3>"
             "<p class='src'>이 회로의 결선도가 아직 없어요 — 격자에 직접 그려요</p>"
@@ -823,7 +833,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False) -> str:
     if png is not None and png.exists():
         src = f"../{netlist.path.parent.name}/{stage['diagram']}"
         img = f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
-        text = _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py")))
+        text = _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment)))
     else:
         img = f"<p class='src'>단계 그림이 아직 없어요: {_esc(stage['diagram'] or '(없음)')}</p>"
         text = ""

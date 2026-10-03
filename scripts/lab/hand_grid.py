@@ -422,7 +422,10 @@ def crop_rows(page_im, cal, row_from, row_to, out_path, scale=3, block=None):
     spec = mod.board_spec(cal.version)
     names = _col_names(mod, cal.version)
     if block:
-        names = {k: v for k, v in names.items() if k[0] == block}
+        # 두 블록이 나눠 쓰는 열(v2 가운데 레일)은 소속이 left 라도 우 블록 크롭에 넣는다 —
+        # 우 LED 사슬의 GND 가 거기 꽂힌다
+        shared = mod.shared_columns(cal.version)
+        names = {k: v for k, v in names.items() if k[0] == block or v in shared}
     xs = [cal.to_px(x, spec.row0)[0] for x in names.values()]
     y0 = cal.to_px(0, spec.row0 + (row_from - 1) * spec.row_pitch)[1]
     y1 = cal.to_px(0, spec.row0 + (row_to - 1) * spec.row_pitch)[1]

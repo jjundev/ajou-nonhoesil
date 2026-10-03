@@ -88,6 +88,17 @@ EXPERIMENT_DIR_DEPTH = len(Path(EXPERIMENT_BASE).parts) + 1
 EXPERIMENT_SUBDIRS = ("체크리스트", "결선도", "실험사진", "output")
 
 
+# 브레드보드 판형이 v2(가운데 전원 레일 2열)로 바뀌는 첫 실험. 그 앞(실험01~04)은 v1 이다 —
+# 승인·손그림 검토·도장이 끝난 그림이라 옮기지 않는다(docs/plans/2026-10-02-브레드보드-v2-구조-설계.md).
+# 렌더러(`require_board`)와 체크리스트 빈 판형(`render.board_version_of`)이 이 값 하나를 읽는다
+BOARD_V2_FROM = 5
+
+
+def default_board(experiment: int) -> str:
+    """그 실험이 써야 하는 판형 — `BOARD_V2_FROM` 부터 v2."""
+    return "v2" if experiment >= BOARD_V2_FROM else "v1"
+
+
 def root_relative_prefix(subfolder_depth: int = 1) -> str:
     """실험 폴더 아래 `subfolder_depth` 겹 안에서 저장소 루트까지의 `../` 사슬.
 

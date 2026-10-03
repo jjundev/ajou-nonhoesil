@@ -972,6 +972,29 @@ class TestBlankBoardVersion(unittest.TestCase):
         html = render.circuit_pages(self.spec, self._with_diagram("BOARD = 'v2'\n", "v2"))
         self.assertIn("x.png", html)
 
+    def _netlist_exp(self, experiment, board_src):
+        d = Path(tempfile.mkdtemp())
+        (d / "netlist.md").write_text(
+            _MISSING_DIAGRAM_NETLIST.replace("experiment: 1\n", f"experiment: {experiment}\n", 1),
+            encoding="utf-8")
+        if board_src is not None:
+            (d / "배치.py").write_text(board_src, encoding="utf-8")
+        return parse_netlist(d / "netlist.md")
+
+    def test_실험05_부터는_배치_py_가_없어도_v2_판형을_깐다(self):
+        """체크리스트는 결선도보다 먼저 나올 수 있다 — 그때 배치.py 가 아직 없다."""
+        html = render.circuit_pages(self.spec, self._netlist_exp(config.BOARD_V2_FROM, None))
+        self.assertIn("breadboard_v2/Breadboard_v2.png", html)
+        self.assertNotIn("Breadboard.jpg", html)
+
+    def test_실험05_부터는_BOARD_없는_배치_py_를_거절한다(self):
+        with self.assertRaisesRegex(ValueError, "BOARD = 'v2'"):
+            render.circuit_pages(self.spec, self._netlist_exp(config.BOARD_V2_FROM, "BOARDS = []\n"))
+
+    def test_리터럴이_아닌_BOARD_는_파일_이름과_함께_거절한다(self):
+        with self.assertRaisesRegex(ValueError, "배치.py.*문자열 리터럴"):
+            render.circuit_pages(self.spec, self._netlist("V = 'v2'\nBOARD = V\n"))
+
     def test_v2_머리띠는_geometry_에서_셈한_값이다(self):
         g = json.loads((ROOT / ".claude/assets/breadboard_v2/geometry.json").read_text(encoding="utf-8"))
         want = (g["row1_center_y"] - g["hole_size"] / 2) / g["image"]["width"] * 190
@@ -1972,7 +1995,7 @@ class StageNodeLine(unittest.TestCase):
         return types.SimpleNamespace(nodes=[{"name": "A⊕B", "expr": "A⊕B", "pin": "U1 pin 3"}])
 
     def _netlist(self):
-        return types.SimpleNamespace(path=Path(tempfile.mkdtemp()) / "결선도" / "netlist.md")
+        return types.SimpleNamespace(experiment=1, path=Path(tempfile.mkdtemp()) / "결선도" / "netlist.md")
 
     def test_노드_이름과_핀을_찍는다(self):
         html = render._stage_html(self._stage("A⊕B"), self._netlist(), self._section())
@@ -2033,7 +2056,7 @@ class TestBoardText(unittest.TestCase):
         self.board_dir = self.dir / "결선도"
         self.board_dir.mkdir()
         (self.board_dir / "netlist.md").write_text("x", encoding="utf-8")
-        self.netlist = types.SimpleNamespace(path=self.board_dir / "netlist.md")
+        self.netlist = types.SimpleNamespace(experiment=1, path=self.board_dir / "netlist.md")
 
     def _stage(self, data, walk=False):
         _board_png(self.board_dir, "s.png", data)

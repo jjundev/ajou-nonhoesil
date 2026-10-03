@@ -376,6 +376,18 @@ class BoardContract(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'BOARD'):
                 self.mod.load_board_file(self._write_board(d, "BOARD = 'V2'\nBOARDS = []\nFINALS = []\n"))
 
+    def test_실험05_부터는_BOARD_를_빠뜨리면_멈춘다(self):
+        """BOARD 가 없으면 v1 이라 실험05 저자가 빠뜨리면 v1 그림이 조용히 나간다 — 판형이 v2 로
+        바뀐 실험부터는 BOARD 를 꼭 적게 한다. 기준 실험은 config.BOARD_V2_FROM 한 곳이다."""
+        from scripts.lab import config
+        first = config.BOARD_V2_FROM
+        with self.assertRaisesRegex(ValueError, "BOARD = 'v2'"):
+            self.mod.require_board(types.SimpleNamespace(), first, '배치.py')
+        self.mod.require_board(types.SimpleNamespace(BOARD='v2'), first, '배치.py')
+        self.mod.require_board(types.SimpleNamespace(BOARD='v1'), first, '배치.py')   # 적어 두면 연다
+        self.mod.require_board(types.SimpleNamespace(), first - 1, '배치.py')        # 실험01~04 는 그대로
+        self.assertEqual((config.default_board(first - 1), config.default_board(first)), ('v1', 'v2'))
+
     def test_빌더가_board_를_안_넘기면_build_all_이_멈춘다(self):
         src = (
             "from render_breadboard import BreadboardRenderer\n"

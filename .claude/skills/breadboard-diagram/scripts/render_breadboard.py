@@ -2428,7 +2428,19 @@ def load_board_file(path, name=None):
 
 
 def load_board(experiment):
-    return load_board_file(board_path(experiment), f'board_e{experiment}')
+    path = board_path(experiment)
+    mod = load_board_file(path, f'board_e{experiment}')
+    require_board(mod, experiment, path)
+    return mod
+
+
+def require_board(board, experiment, label):
+    """판형이 v2 로 바뀐 실험(`config.BOARD_V2_FROM`~)은 `BOARD` 를 꼭 적는다. 없으면 v1 이라
+    저자가 빠뜨린 줄을 아무도 모른 채 v1 그림이 나간다. `BOARD = 'v1'` 을 적어 두면 연다."""
+    want = _config().default_board(experiment)
+    if not hasattr(board, 'BOARD') and want != 'v1':
+        raise ValueError(f"{label}: 실험{experiment} 부터 판형은 {want} 다 — 머리에 BOARD = '{want}' 를 "
+                         "두고 빌더마다 BreadboardRenderer(..., board=BOARD) 로 넘긴다")
 
 
 def board_version(board):
@@ -2558,7 +2570,7 @@ def main():
                         help="실험 번호 — 보고서/실험NN/결선도/배치.py 의 결선도를 전부 뽑는다")
     parser.add_argument("--output", default=None,
                         help="출력 폴더 (기본: 그 배치.py 가 있는 결선도 폴더)")
-    parser.add_argument("--template", default=None, help="Path to Breadboard.jpg")
+    parser.add_argument("--template", default=None, help="양식 이미지 경로 (기본: 주차 BOARD 의 양식 — v1 Breadboard.jpg, v2 breadboard_v2/Breadboard_v2.png)")
     args = parser.parse_args()
     try:
         path = board_path(args.experiment)

@@ -74,8 +74,10 @@ v1(§2)은 실험01~04 전용으로 남는다 — 승인·손그림 검토·도�
 
 - **고르기.** 주차 `배치.py` 에 `BOARD = 'v2'` 를 두고, 빌더마다
   `BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)` 로 넘긴다.
-  없으면 v1 이다. 빠뜨리면 `build_all` 과 손그림 참조가 `check_board()` 로 멈춘다 — v2 주차가
-  v1 그림으로 조용히 나가지 않는다.
+  `BOARD` 가 없으면 v1 이지만, 판형이 바뀐 실험(`config.BOARD_V2_FROM` = 5)부터는 불러올 때
+  `require_board()` 가 멈춘다. 빌더가 `board=BOARD` 를 빠뜨리면 `build_all` 과 손그림 참조가
+  `check_board()` 로, 체크리스트가 사이드카 `board` 대조로 멈춘다 — v2 주차가 v1 그림으로
+  조용히 나가지 않는다. 체크리스트 빈 판형은 `배치.py` 가 아직 없어도 실험 번호로 v2 를 깐다.
 - **좌표는 `.claude/assets/breadboard_v2/geometry.json` 에서만 읽는다.** 숫자를 문서·코드에
   베껴 적지 않는다. 양식 PNG(1200×1600)는 **1배 고정**이다 — 2배로 뽑으면 레일 극성선이 4px 가
   되어 손그림 검토가 레일 열을 6.5px 밀어 잡는다. 렌더러가 PNG 해시를 `png_sha256` 과 맞대므로,
