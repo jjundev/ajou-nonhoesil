@@ -1691,6 +1691,59 @@ class BreadboardRenderer:
                         'from_side': a, 'to_side': b})
         return out
 
+    def _zone(self, end, shared):
+        """끝점이 어느 블록 편인가 — 단자대·바깥 레일은 그 블록, 두 블록이 같이 쓰는 레일
+        (`shared`, v2 가운데)과 잭·여백은 None."""
+        if end[0] != 'hole' or end[1] is None:
+            return None
+        block, col, _row = end[1]
+        return None if self.cols[block][col] in shared else block
+
+    def block_crossings(self):
+        """R10 의 지표 — 양 끝이 서로 다른 블록인 배선. 레일↔레일 전원 브리지는 가운데 레일이
+        어느 블록도 아니라 여기 안 든다. `wiring()` 에 넣지 않는다 — 도장."""
+        shared, out = self._shared_xs(), []
+        for _kind, pts, desc in self._segments:
+            a, b = self._endpoint(pts[0]), self._endpoint(pts[-1])
+            za, zb = self._zone(a, shared), self._zone(b, shared)
+            if {za, zb} != {'left', 'right'}:
+                continue
+            out.append({'ends': {za: a[1], zb: b[1]}, 'desc': desc,
+                        'frm': self.addr(*pts[0]), 'to': self.addr(*pts[-1])})
+        return out
+
+    def _block_role_violations(self):
+        """R10 — LED 전용 블록으로 건너는 선은 칩 핀 스트립 → LED 사슬 신호 스트립뿐이고, 건너는
+        선끼리 위아래 순서가 LED 순서와 같다(설계 §5).
+
+        핀 방향표가 없어 '출력' 인지는 보지 않는다(2026-10-03 결정) — LED 에 무엇이 물렸는지는
+        R5 와 netlist 대조가 본다. `spec.led_only_blocks` 가 비면(v1) 아무것도 안 낸다.
+        """
+        led_blocks = self.spec.led_only_blocks
+        if not led_blocks:
+            return []
+        chip_strips = {self._strip(sym) for ch in self.chips
+                       if ch['block'] in self.spec.chip_blocks for sym in ch['pins'].values()}
+        led_strips = {self._strip(ch['signal']) for ch in self.led_chains
+                      if ch['signal'] is not None and ch['signal'][0] in led_blocks}
+        bad, ok = [], []
+        for w in self.block_crossings():
+            led_end = next((s for z, s in w['ends'].items() if z in led_blocks), None)
+            chip_end = next((s for z, s in w['ends'].items() if z not in led_blocks), None)
+            if (led_end is None or chip_end is None
+                    or self._strip(chip_end) not in chip_strips
+                    or self._strip(led_end) not in led_strips):
+                bad.append(f"R10 블록 건너기 위반: {w['frm']} → {w['to']} · {w['desc']} — "
+                           "블록을 건너는 선은 칩 핀 스트립에서 LED 사슬 스트립으로만 간다")
+            else:
+                ok.append((led_end[2], chip_end[2], w))
+        ok.sort(key=lambda t: t[0])
+        for (_l1, c1, w1), (_l2, c2, w2) in zip(ok, ok[1:]):
+            if c1 > c2:
+                bad.append(f"R10 건너는 선 엇갈림: {w1['frm']} → {w1['to']} / "
+                           f"{w2['frm']} → {w2['to']} — 칩 쪽 행 순서를 LED 순서와 맞춘다")
+        return bad
+
     def wiring(self):
         """이 그림이 무엇을 어디에 꽂았는지 **기호 좌표**로 낸다.
 
@@ -1888,6 +1941,11 @@ class BreadboardRenderer:
             (`density_policy`). 실험01~03 승인본만 'legacy' 로 끈다.
         R8  같은 블록의 두 칩을 잇는 배선은 쪽(a~d / g~j)을 바꾸지 않는다 — 게이트는 신호가
             오는 쪽으로 배정한다(SKILL §4a). `density_policy` 가 함께 끈다.
+        R9  칩은 판형이 허용한 블록에만 둔다(`spec.chip_blocks`) — v2 는 좌 블록만.
+        R10 LED 전용 블록(`spec.led_only_blocks`, v2 는 우)으로 건너는 선은 칩 핀 스트립 →
+            LED 사슬 신호 스트립뿐이고, 건너는 선끼리 위아래 순서가 LED 순서와 같다. 핀
+            방향표가 없어 '출력' 인지는 안 본다. v1 은 R9 가 두 블록을 다 허용하고 R10 이
+            비어 있어 실험01~04 가 그대로다.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -1934,6 +1992,15 @@ class BreadboardRenderer:
                 bad.append(f"R8 칩 사이 엇갈림: {w['frm']} → {w['to']} · {w['desc']} — "
                            f"{w['from_side']['chip']} {w['from_side']['side']}쪽 → "
                            f"{w['to_side']['chip']} {w['to_side']['side']}쪽")
+        # R9·R10. 블록 역할 — 판형이 정한다(`spec.chip_blocks`·`led_only_blocks`). v2 는 칩을
+        # 좌 블록에만 두고 우 블록에는 LED 사슬만 둔다(설계 §5)
+        allowed = '·'.join('좌' if b == 'left' else '우' for b in self.spec.chip_blocks)
+        for ch in self.chips:
+            if ch['block'] not in self.spec.chip_blocks:
+                blk = '좌' if ch['block'] == 'left' else '우'
+                bad.append(f"R9 칩 블록 위반: {ch['label']}({blk} {ch['pin1_row']}행) — "
+                           f"{self.board} 판형은 칩을 {allowed} 블록에만 둔다")
+        bad += self._block_role_violations()
         if bad:
             raise AssertionError('그림대로 꽂을 수 없다:\n  ' + '\n  '.join(bad))
 

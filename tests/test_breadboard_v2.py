@@ -250,5 +250,75 @@ class SharedMidRail(unittest.TestCase):
         self.assertLess(box[2], R['a'])
 
 
+class BlockRoles(unittest.TestCase):
+    """v2 배치 규약 — 칩은 좌 블록만(R9), 우 블록으로 건너는 선은 칩 → LED 만(R10)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def v2(self):
+        bb = self.mod.BreadboardRenderer(board='v2')
+        bb.enable_steps()
+        bb.partial = True        # 덜 그린 그림 — R5 뜬 핀은 안 본다
+        return bb, bb.cols['left'], bb.cols['right']
+
+    def test_R9_v2_에서_칩을_우_블록에_두면_오류다(self):
+        bb, _L, _R = self.v2()
+        bb.draw_chip('74HC08', 5, block='right')
+        with self.assertRaisesRegex(AssertionError, 'R9 칩 블록 위반'):
+            bb.verify()
+
+    def test_R9_R10_은_v1_에서_안_돈다(self):
+        bb = self.mod.BreadboardRenderer()
+        bb.partial = True
+        bb.draw_chip('74HC08', 7, block='right')
+        bb.verify()
+        self.assertEqual(bb._block_role_violations(), [])
+
+    def test_R10_칩_핀에서_LED_로_건너는_선은_통과한다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)
+        bb.step_wire([(L['j'], bb.r_y(11)), (R['a'], bb.r_y(11))], 'sig', 'L1 급전')
+        bb.led_chain(R['a'], 11, 'L1', '시험', block='right')
+        self.assertEqual(len(bb.block_crossings()), 1)
+        self.assertEqual(bb._block_role_violations(), [])
+
+    def test_R10_LED_가_아닌_곳으로_건너면_오류다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)
+        bb.step_wire([(L['j'], bb.r_y(11)), (R['c'], bb.r_y(40))], 'sig', '빈 곳으로')
+        with self.assertRaisesRegex(AssertionError, 'R10 블록 건너기 위반'):
+            bb.verify()
+
+    def test_R10_칩이_없는_스트립에서_건너면_오류다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)
+        bb.step_wire([(L['b'], bb.r_y(40)), (R['a'], bb.r_y(40))], 'sig', '중계에서')
+        bb.led_chain(R['a'], 40, 'L1', '시험', block='right')
+        with self.assertRaisesRegex(AssertionError, 'R10 블록 건너기 위반'):
+            bb.verify()
+
+    def test_R10_건너는_선의_순서가_LED_와_엇갈리면_오류다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)                       # pin 11 = 8행, pin 8 = 11행
+        bb.step_wire([(L['j'], bb.r_y(8)), (R['a'], bb.r_y(30))], 'sig', 'pin 11 → L2')
+        bb.step_wire([(L['j'], bb.r_y(11)), (R['a'], bb.r_y(20))], 'sig', 'pin 8 → L1')
+        bb.led_chain(R['a'], 20, 'L1', '시험', block='right')
+        bb.led_chain(R['a'], 30, 'L2', '시험', block='right')
+        with self.assertRaisesRegex(AssertionError, 'R10 건너는 선 엇갈림'):
+            bb.verify()
+
+    def test_우_f쪽_LED_사슬은_레일_연결성에_걸린다(self):
+        """Review Focus 1 — 우 f~j 의 사슬은 GND 를 쓰지 않는 우 바깥 레일로 내린다."""
+        bb, L, R = self.v2()
+        bb.connect_jacks()
+        bb.bridge_rails(L['gnd'], L['mid_gnd'], 33, kind='gnd')
+        bb.bridge_rails(L['vcc'], L['mid_vcc'], 34, kind='vcc')
+        bb.led_chain(R['f'], 20, 'L1', '시험', block='right')
+        with self.assertRaisesRegex(AssertionError, '레일이 끊겨'):
+            bb.verify()
+
+
 if __name__ == "__main__":
     unittest.main()
