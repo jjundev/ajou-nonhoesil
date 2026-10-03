@@ -1,0 +1,5243 @@
+{
+  "schema": "logic-lab-question-bank",
+  "schema_version": 1,
+  "bank_id": "bank-exp02",
+  "experiment": 2,
+  "sources": [
+    {
+      "id": "s-9c940f4bcff5718b",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출 2016-1.pdf",
+      "sha256": "5927960a62b7bbe4f1f21b3a69baf0c507de890a7810625f31c94af554e094b0",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": "2016",
+        "term": "1"
+      },
+      "observed_metadata": {
+        "year": "2016",
+        "term": "2"
+      },
+      "conflicts": [
+        {
+          "field": "term",
+          "filename_value": "1",
+          "observed_value": "2",
+          "location": {
+            "source_id": "s-9c940f4bcff5718b",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "시험지 상단 제목 “2016-2학기 논리회로실험 실험 3”",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 2
+    },
+    {
+      "id": "s-886f91d7155f4ccd",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출 2017-1.pdf",
+      "sha256": "cf280a899a8b398d947d1647e9bcb54206a52699987bb8ae574ce9b87a51c090",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": "2017",
+        "term": "1"
+      },
+      "observed_metadata": {
+        "year": "2017",
+        "term": "1"
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 2
+    },
+    {
+      "id": "s-6d16b68ac54a1ce3",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출_단답형 (1p).pdf",
+      "sha256": "fecba3589029a508a8bd629aec570035c3892171e7c5dcdaae197349508eea3a",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-a5c6c19f4df2edef",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출_채점본.jpg",
+      "sha256": "f80adb73da8753399707f078658588cf9bb4c6ff107c396fcbb15171c20da265",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-227672800905ee78",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 예상문제_v3.pdf",
+      "sha256": "2b6b7b6793977b380bdc7a212ba1de103ec8255d1608bc35095b67df6cf19034",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 3
+    },
+    {
+      "id": "s-cd8d9005a4b82c18",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 예상문제_v4.pdf",
+      "sha256": "687e088e395de991d775d7658b67c92b3865a6733423b6023b3ba0e1b819e0ad",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 2
+    },
+    {
+      "id": "s-689ef38376d1d0a4",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 종합_기출문제 (3p).pdf",
+      "sha256": "7de8062a27a55cf314d36e672663c0d2ad5d1e0a7213e180e614a8e2f89f7f35",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 3
+    },
+    {
+      "id": "s-d7200ab4ba3c6199",
+      "path": "from_the_past/정리/퀴즈/실험2/원본_docx/실험 2.docx",
+      "sha256": "91a4deb395249fcc826f868719440d27f7b1a0e4f92c586b3ec8fe675db0acb3",
+      "format": "docx",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "document",
+      "unit_count": 1
+    },
+    {
+      "id": "s-53e40adacbc0eaea",
+      "path": "from_the_past/정리/퀴즈/실험2/원본_docx/퀴즈2_2017-1.docx",
+      "sha256": "6a85033f3ca87d96be64ae233584d295c848f5069d33b8bef6500c02425f8e09",
+      "format": "docx",
+      "filename_metadata": {
+        "year": "2017",
+        "term": "1"
+      },
+      "observed_metadata": {
+        "year": "2017",
+        "term": "1"
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "document",
+      "unit_count": 1
+    }
+  ],
+  "assets": [
+    {
+      "id": "a-s01-p1",
+      "path": "assets/s01-p1.png",
+      "sha256": "0ad33aa8b7ee3ec95ea2063a895903f658fe650d476dbadf325d74940fbf2234",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1",
+      "path": "assets/s02-p1.png",
+      "sha256": "28506b38059562dde50f8b2075b223c5837f622bdc841b96215cab9bd39bb440",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s03-p1",
+      "path": "assets/s03-p1.png",
+      "sha256": "91a4b5307cce6a203ebe29b55f0be8809fa979eebe5b672b4e0a71b335039b57",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1012,
+          1430
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p1",
+      "path": "assets/s05-p1.png",
+      "sha256": "2fb1db64f0f13e940c2d1781fe9f9b850a5270015ced1c732a2c66761dc158dd",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p2",
+      "path": "assets/s05-p2.png",
+      "sha256": "29496901850b062ee9cfd585f70a1814c210763c06deaa6b3096486b413e9e02",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p3",
+      "path": "assets/s05-p3.png",
+      "sha256": "3a1f767361064991cc9e307de55f6c03e0e7fd3c6cb342848e507f235bc38441",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p1",
+      "path": "assets/s06-p1.png",
+      "sha256": "e20b4506fa0fafcc08108ac9fed29a4884c553cff3240651858406cb988a46ed",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2",
+      "path": "assets/s06-p2.png",
+      "sha256": "381711e0ad71c7a73b9337c76a3403e5bbf4ac026255b2b5718f04d661cbc4c3",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p2",
+      "path": "assets/s07-p2.png",
+      "sha256": "8e6bf7a964fdc487fd03b54a8a2f02ec2334038ede504063bd8c57725b33c826",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p3",
+      "path": "assets/s07-p3.png",
+      "sha256": "c23bd186e91a95188add7332b70e5bf896131d95bdccc27cec160907809b1bfc",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s08-p1",
+      "path": "assets/s08-p1.png",
+      "sha256": "3df0dafa1c7186667c79008b31aecc0076c14bad872e73953e97f0f431f412c4",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s08-p2",
+      "path": "assets/s08-p2.png",
+      "sha256": "5b1b2e8a72480d1ae4b37ad86038ce394d1ae3a862af31345a0847edc42769ec",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s08-p3",
+      "path": "assets/s08-p3.png",
+      "sha256": "07dddbabe4f9c82acf571c9002d3bd762298a604ea76cc44fd3ff9f6c816915f",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s09-p1",
+      "path": "assets/s09-p1.png",
+      "sha256": "cc518042d7dc29151e736077457a97821482b67262fabb7d3cf996492b8ebe8a",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q1",
+      "path": "assets/s01-p1-o-s01-q1.png",
+      "sha256": "e31f9539b1469f9e922a723872e5a4ad9c5e03d1c7ee629bdf9271b1eeee5e72",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 1 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.08868715083798882,
+          0.9496544916090819,
+          0.3442737430167598
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q2",
+      "path": "assets/s01-p1-o-s01-q2.png",
+      "sha256": "de84be610c6ef179312436759c614e04ebcbf44f8cf18105a491560097de4474",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 2 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.3477653631284916,
+          0.9496544916090819,
+          0.4448324022346369
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q3",
+      "path": "assets/s01-p1-o-s01-q3.png",
+      "sha256": "966cb7ec4904182f1bf7d68125bfe213b4f6f2e68290118b80a83d69b1e9096b",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 3 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.44692737430167595,
+          0.9496544916090819,
+          0.7688547486033519
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q4",
+      "path": "assets/s01-p1-o-s01-q4.png",
+      "sha256": "a3abe68b5f81a8519db4b71af978dca3deae322acfb7ae03ab1cc824f9766c8e",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 4 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.7702513966480447,
+          0.9496544916090819,
+          0.8449720670391061
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q5",
+      "path": "assets/s01-p1-o-s01-q5.png",
+      "sha256": "c17a9000762883d6a3d2fa45a9789ee598a5ebeecee6683dcf1866ef8dce38af",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 5 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.8449720670391061,
+          0.9496544916090819,
+          0.9497206703910615
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q1",
+      "path": "assets/s02-p1-o-s02-q1.png",
+      "sha256": "4da00064599578f596ee402d104de986db60b439198e4bbbaf61ef93933a46b0",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 1 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.09008379888268156,
+          0.9496544916090819,
+          0.29678770949720673
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q2",
+      "path": "assets/s02-p1-o-s02-q2.png",
+      "sha256": "79f04acb59e2b918a659cd4536450daa64582f4c4e8139df27aee5efd7d1f5fa",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 2 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.2988826815642458,
+          0.9496544916090819,
+          0.3819832402234637
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q3",
+      "path": "assets/s02-p1-o-s02-q3.png",
+      "sha256": "9f52a4a92499b721550487c38dbf13ec4f380501b03480a3cb8a40108a6853f0",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 3 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.3819832402234637,
+          0.9496544916090819,
+          0.6466480446927374
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q4",
+      "path": "assets/s02-p1-o-s02-q4.png",
+      "sha256": "7bf84484854cf6e17297a5b0a37d21321151d5d63ab61d7723d9e781666eb201",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 4 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.7046089385474861,
+          0.9496544916090819,
+          0.8568435754189944
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q5",
+      "path": "assets/s02-p1-o-s02-q5.png",
+      "sha256": "c78b9bf16f9a00ee5164681b14b398c0420eccefe11ac715e3c53b7af4ecb3b6",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 5 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.8603351955307262,
+          0.9496544916090819,
+          0.9567039106145251
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p1-o-s06-q5",
+      "path": "assets/s06-p1-o-s06-q5.png",
+      "sha256": "ea0224e774789903178492e6140d4e9887bc5ad573878d08615b7e033f7b4fba",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 5 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.8505586592178771,
+          0.9496544916090819,
+          0.9022346368715084
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2-o-s06-q6",
+      "path": "assets/s06-p2-o-s06-q6.png",
+      "sha256": "988413228ad61ca952b0087adc1ff085bb8421233bdb0d39295b54d43b0fa5a7",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2 문항 6 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.09706703910614525,
+          0.9496544916090819,
+          0.15991620111731844
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2-o-s06-q7",
+      "path": "assets/s06-p2-o-s06-q7.png",
+      "sha256": "2eb8d124ca44edd9e4b322328d6c8fdb10182c55023c821b75f0bd33c4030698",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2 문항 7 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.16620111731843576,
+          0.9496544916090819,
+          0.26675977653631283
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2-o-s06-q8",
+      "path": "assets/s06-p2-o-s06-q8.png",
+      "sha256": "ba18ba8994f3cf1151fbdf1a030cfd7d0ff18434a302c0c3d43fd68594a0a763",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2 문항 8 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.2751396648044693,
+          0.9496544916090819,
+          0.48044692737430167
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2-o-s06-q9",
+      "path": "assets/s06-p2-o-s06-q9.png",
+      "sha256": "36e8db2c8d22cfe4f60ddf382b6120cb0cadbfd65c6bc95e75a29f692990ebbb",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2 문항 9 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.5684357541899442,
+          0.9496544916090819,
+          0.6885474860335196
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p2-o-s06-q10",
+      "path": "assets/s06-p2-o-s06-q10.png",
+      "sha256": "15c4331ec03c93255b8cbe0364e679abf87cc99478d917d43708c7ca483f28f2",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2 문항 10 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.7060055865921788,
+          0.9496544916090819,
+          0.7451117318435754
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p1-o-s06-q4",
+      "path": "assets/s06-p1-o-s06-q4.png",
+      "sha256": "61b1291e988b33c3811cae104b33562face3bcf751a2f49d0642f7b564c1c65c",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1 문항 4 영역",
+        "bbox": [
+          0.049358341559723594,
+          0.7688547486033519,
+          0.9496544916090819,
+          0.8449720670391061
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s04-head",
+      "path": "assets/s04-head.png",
+      "sha256": "3eae7cc482225b90d7c5d31d6c0fc35340b7804f24296f36a07720b4e908d9a2",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지 제목·과목 영역(성명·학번 줄 제외)",
+        "bbox": [
+          0.0,
+          0.14583333333333334,
+          1.0,
+          0.2604166666666667
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s04-q1",
+      "path": "assets/s04-q1.png",
+      "sha256": "6a4667364db997b18bcc38f83831d57058d5c1c844c62c346f370ca0ac121190",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지 문항 1 영역",
+        "bbox": [
+          0.0,
+          0.29375,
+          1.0,
+          0.440625
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s04-q2",
+      "path": "assets/s04-q2.png",
+      "sha256": "e9fb35783d19e0225050256a8f1c72b9764916b99fa1cf03d7669f76e400f7d8",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지 문항 2 영역",
+        "bbox": [
+          0.0,
+          0.440625,
+          1.0,
+          0.5708333333333333
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s04-q3",
+      "path": "assets/s04-q3.png",
+      "sha256": "cfd825f5d80e7a0e00e1835baa2258600a02d90b12a070d3851231fe70b2e3d8",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지 문항 3 영역",
+        "bbox": [
+          0.0,
+          0.56875,
+          1.0,
+          1.0
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    }
+  ],
+  "occurrences": [
+    {
+      "id": "o-s01-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s01-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS inverter의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q1"
+        },
+        {
+          "id": "b-o-s01-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s01-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q2"
+        },
+        {
+          "id": "b-o-s01-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s01-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 저항 Rp와 Rn이 CMOS의 출력에 미치는 영향에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 3번 답안 공간 아래, 4번 바로 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q3"
+        },
+        {
+          "id": "b-o-s01-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s01-q4-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q4"
+        },
+        {
+          "id": "b-o-s01-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-9c940f4bcff5718b",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s01-q5-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameters에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q5-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VIHmin :"
+            ],
+            [
+              "VOLmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q5-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q5"
+        },
+        {
+          "id": "b-o-s01-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s02-q1-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q1-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q1"
+        },
+        {
+          "id": "b-o-s02-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s02-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q2"
+        },
+        {
+          "id": "b-o-s02-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s02-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 2번 답안 공간 아래, 3번 문장 바로 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q3"
+        },
+        {
+          "id": "b-o-s02-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s02-q4-text",
+          "type": "text",
+          "text": "CMOS의 전달 지연과 천이 시간에 대해 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q4-sub1",
+          "type": "text",
+          "text": "(1) 전달 지연(Propagation delay)가 나타나는 이유",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q4-sub2",
+          "type": "text",
+          "text": "(2) 천이 시간(Transition time)이 H->L 일때와 L->H일때 다른 이유",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q4"
+        },
+        {
+          "id": "b-o-s02-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-886f91d7155f4ccd",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s02-q5-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameter에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q5-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VILmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q5-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q5"
+        },
+        {
+          "id": "b-o-s02-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s03-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다. (페이지 렌더에서 확인)",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        },
+        {
+          "id": "b-o-s03-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s03-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s03-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s03-q4-text",
+          "type": "text",
+          "text": "CMOS의 출력 특성 중 전달지연(Propagation delay)가 나타나는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s03-a1-text",
+          "type": "text",
+          "text": "-> Low < 1.5 < abnormal < 3.5 < High",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s03-a2-text",
+          "type": "text",
+          "text": "-> 기준치에 의해 Low, High가 정해졌을 시 잡음이 들어와도 abnormal 영역 내에서까지 값이 유지되므로 영향을 덜 받는다. 의미 맞으면 만점",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s03-a3-circuit",
+          "type": "figure",
+          "text": "제공 해설 그림: 'sourcing current' 표시, V_CC–R_p–출력–R_n(>1 MΩ)–GND, V_IN = Low, 출력 노드에 V_OHmin, 전류 I_OHmax가 resistive load를 거쳐 흐르는 화살표, 'CMOS inverter' 라벨.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        },
+        {
+          "id": "b-o-s03-a3-math",
+          "type": "math",
+          "text": "R_p(on) = (V_DD − V_OHmin) / |I_OHmax|",
+          "tex": "R_{p(on)} = \\frac{V_{DD} - V_{OH\\,\\min}}{\\left|I_{OH\\,\\max}\\right|}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a3-text",
+          "type": "text",
+          "text": "-> 그림상 Vcc가 맞음. 위 식도 강의노트 내용이므로 맞게 함. 그냥 식만 외워서 쓴 경우가 많은데 위 그림처럼 어디가 Vohmin인지 Iohmax인지 표시하셔야 됩니다. 이번에는 모두 맞는걸로 채점했습니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a4",
+      "role": "answer",
+      "location": {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s03-a4-text",
+          "type": "text",
+          "text": "-> 입력이 출력으로 전달되는데 이론상으론 존재하지 않지만 실제로는 존재하는 capacitive load, 저항 등의 이유로 전달이 지연되게 된다. 의미 맞으면 만점",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s04-q1-head",
+          "type": "figure",
+          "text": "시험지 제목 영역: “퀴즈 (실험 2. CMOS 회로의 전기적 특성) 논리회로실험 월요일반”과 붉은 총점 표기.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-head"
+        },
+        {
+          "id": "b-o-s04-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라. 단, Vcc=5V, VIHmin = 3.5V, VILmax = 1.5V, GND = 0V이다. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 학생 필기와 붉은 채점 표시가 함께 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q1"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s04-q1-image1",
+          "symbol": "인쇄된 입력 전압 그래프",
+          "candidates": [
+            "원 시험지에 그래프가 없고 학생이 직접 레벨도를 그렸다",
+            "인쇄 그래프가 학생 필기에 가려졌다"
+          ],
+          "reason": "사진에서 문항 아래에는 학생이 그린 Vcc/VIHmin/VILmax/GND 레벨도만 보이고 다른 자료의 램프 그래프는 식별되지 않는다.",
+          "location": {
+            "source_id": "s-a5c6c19f4df2edef",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s04-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.(3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 학생 필기와 붉은 채점 표시가 함께 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s04-q3-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.(4점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q3-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프(흐릿함): 세로축 V_IN, 수평 기준선 3개(라벨 V_T+, V_T, V_T−로 보이나 수치 판독 불확실), 잡음이 섞인 곡선형 입력이 상승·최고점·하강한다. 다른 자료의 꺾은선 그림과 선 모양이 다르다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q3"
+        },
+        {
+          "id": "b-o-s04-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 학생 필기와 붉은 채점 표시가 함께 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q3"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s04-q3-wave",
+          "symbol": "기준선 수치 라벨",
+          "candidates": [
+            "V_T+ = 2.9, V_T = 2.5, V_T− = 2.1(다른 자료와 동일)",
+            "다른 수치"
+          ],
+          "reason": "사진 해상도가 낮아 기준선 라벨 숫자를 판독할 수 없다. 학생 필기의 2.1V/2.9V는 인쇄값 근거가 아니다.",
+          "location": {
+            "source_id": "s-a5c6c19f4df2edef",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+            "bbox": null,
+            "image_size": null
+          }
+        },
+        {
+          "block_id": "b-o-s04-q3-wave",
+          "symbol": "입력 파형 모양",
+          "candidates": [
+            "2017-1 시험지 꺾은선 파형과 같은 원 그림의 다른 판본",
+            "다른 입력 파형"
+          ],
+          "reason": "곡선형으로 인쇄되어 있어 꺾은선 판본과 교차 시점이 같은지 확정할 수 없다.",
+          "location": {
+            "source_id": "s-a5c6c19f4df2edef",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s04-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "학생 답안·채점 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s04-a1-text",
+          "type": "text",
+          "text": "학생 답안: Vcc(5V)–VIHmin(3.5V)–VILmax(1.5V)–GND(0V) 수평 레벨도를 그리고 위에서부터 High / Abnormal(빗금) / Low 구간을 표시, 오른쪽에 High, Abnormal 상태, Low를 화살표로 적음. 채점: 문항 번호에 붉은 원 표시.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "학생 답안·채점 2; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-a2-text",
+          "type": "text",
+          "text": "학생 답안(수기, 일부 판독 불확실): “Abnormal 구간에 해당하는 noise일 경우 … 같은 특성으로 출력의 H, L 레벨을 분명히 정해준다(?)” 및 2.1V·2.9V를 표시한 히스테리시스 입출력 곡선. 채점: 번호에 붉은 원, 붉은 글씨 “Hysteresis”.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s04-a2-text",
+          "symbol": "학생 수기 문장",
+          "candidates": [],
+          "reason": "필기가 흐리고 겹쳐 있어 문장 일부를 판독할 수 없다.",
+          "location": {
+            "source_id": "s-a5c6c19f4df2edef",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "학생 답안·채점 2; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s04-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-a5c6c19f4df2edef",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "학생 답안·채점 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s04-a3-text",
+          "type": "text",
+          "text": "학생 답안: Schmitt-trigger inverter 출력을 High→Low→High로 그림, inverter 출력 칸은 줄을 긋고 Abnormal 등을 적음. 채점: 붉은 원·삼각형 표시와 붉은 글씨 “inverter는 V_T에서 반전(?)” 및 V_T 교차마다 High/Low가 바뀌는 붉은 펄스 파형.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-q3"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s04-a3-text",
+          "symbol": "채점자 붉은 메모",
+          "candidates": [
+            "inverter는 V_T에서 반전됨",
+            "판독 불가"
+          ],
+          "reason": "붉은 수기 메모 일부 글자를 판독할 수 없고 붉은 파형의 전이 시점도 사진에서 정밀 대조할 수 없다.",
+          "location": {
+            "source_id": "s-a5c6c19f4df2edef",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "학생 답안·채점 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s05-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s05-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        },
+        {
+          "id": "b-o-s05-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s05-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s05-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 저항 Rp와 Rn이 CMOS의 출력에 미치는 영향에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 3번 아래, 4번 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        },
+        {
+          "id": "b-o-s05-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s05-q4-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s05-q5-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rn의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s05-q6-text",
+          "type": "text",
+          "text": "CMOS의 출력 특성 중 전달지연(Propagation delay)가 나타나는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s05-q7-text",
+          "type": "text",
+          "text": "CMOS에서 천이시간(Transition time)이 H->L일 때와, L->H일 때 timing 특성이 달라지는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s05-q8-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q8-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        },
+        {
+          "id": "b-o-s05-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s05-q9-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameters에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q9-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VIHmin :"
+            ],
+            [
+              "VILmax :"
+            ],
+            [
+              "VOLmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q9-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q10",
+      "role": "question",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 10; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "10",
+      "blocks": [
+        {
+          "id": "b-o-s05-q10-text",
+          "type": "text",
+          "text": "COMS의 동작속도를 결정짓는 2가지 요소와 각 요소에 따른 동작속도에 미치는 영향을 timing diagram을 그려 설명하여라. (원문 표기 COMS 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q10-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s06-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        },
+        {
+          "id": "b-o-s06-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s06-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s06-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 저항 Rp와 Rn이 CMOS의 출력에 미치는 영향에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 3번 아래, 4번 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        },
+        {
+          "id": "b-o-s06-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s06-q4-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1-o-s06-q4"
+        },
+        {
+          "id": "b-o-s06-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s06-q5-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rn의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q5-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1-o-s06-q5"
+        },
+        {
+          "id": "b-o-s06-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s06-q6-text",
+          "type": "text",
+          "text": "CMOS의 출력 특성 중 전달지연(Propagation delay)가 나타나는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q6-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2-o-s06-q6"
+        },
+        {
+          "id": "b-o-s06-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s06-q7-text",
+          "type": "text",
+          "text": "CMOS에서 천이시간(Transition time)이 H->L일 때와, L->H일 때 timing 특성이 달라지는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q7-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2-o-s06-q7"
+        },
+        {
+          "id": "b-o-s06-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s06-q8-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q8-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2-o-s06-q8"
+        },
+        {
+          "id": "b-o-s06-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s06-q9-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameters에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q9-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VIHmin :"
+            ],
+            [
+              "VILmax :"
+            ],
+            [
+              "VOLmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q9-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2-o-s06-q9"
+        },
+        {
+          "id": "b-o-s06-q9-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q10",
+      "role": "question",
+      "location": {
+        "source_id": "s-cd8d9005a4b82c18",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 10; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "10",
+      "blocks": [
+        {
+          "id": "b-o-s06-q10-text",
+          "type": "text",
+          "text": "COMS의 동작속도를 결정짓는 2가지 요소와 각 요소에 따른 동작속도에 미치는 영향을 timing diagram을 그려 설명하여라. (원문 표기 COMS 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q10-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 크롭. 생성·수정한 그림이 아니다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2-o-s06-q10"
+        },
+        {
+          "id": "b-o-s06-q10-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s07-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        },
+        {
+          "id": "b-o-s07-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s07-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s07-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 저항 Rp와 Rn이 CMOS의 출력에 미치는 영향에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 3번 아래, 4번 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        },
+        {
+          "id": "b-o-s07-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 4; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s07-q4-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 5; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s07-q5-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rn의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 6; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s07-q6-text",
+          "type": "text",
+          "text": "CMOS의 출력 특성 중 전달지연(Propagation delay)가 나타나는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 7; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s07-q7-text",
+          "type": "text",
+          "text": "CMOS에서 천이시간(Transition time)이 H->L일 때와, L->H일 때 timing 특성이 달라지는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 8; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s07-q8-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q8-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        },
+        {
+          "id": "b-o-s07-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 9; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s07-q9-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameters에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q9-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VIHmin :"
+            ],
+            [
+              "VILmax :"
+            ],
+            [
+              "VOLmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q9-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q10",
+      "role": "question",
+      "location": {
+        "source_id": "s-689ef38376d1d0a4",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 10; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "10",
+      "blocks": [
+        {
+          "id": "b-o-s07-q10-text",
+          "type": "text",
+          "text": "COMS의 동작속도를 결정짓는 2가지 요소와 각 요소에 따른 동작속도에 미치는 영향을 timing diagram을 그려 설명하여라. (원문 표기 COMS 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q10-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s08-q1-text",
+          "type": "text",
+          "text": "다음 그림은 CMOS의 입력 전압 값의 변화를 나타낸 것이다. 아래 그림에 CMOS의 출력이 High, Low, Abnormal 상태가 되는 구간을 표시하여라.(단, VCC= 5V, VIHmin= 3.5V, VILmax=1.5V, GND=0V이다)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q1-ramp",
+          "type": "figure",
+          "text": "입력 전압 그래프: 세로축 Voltage(GND~VCC), 가로축 Time. 입력이 GND에 머물다 직선으로 VCC까지 상승한 뒤 VCC로 유지된다. 축 외에 VIH/VIL 눈금은 표시되어 있지 않다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        },
+        {
+          "id": "b-o-s08-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s08-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; OOXML 본문 P12~P17; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s08-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 저항 Rp와 Rn이 CMOS의 출력에 미치는 영향에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문에서 이 그림은 3번 아래, 4번 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        },
+        {
+          "id": "b-o-s08-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        },
+        {
+          "id": "b-o-s08-q3-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 4; OOXML 본문 P19; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s08-q4-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 5; OOXML 본문 P24; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s08-q5-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rn의 값을 유도하여라.(입력 level에 따른 전류의 흐름을 이용하여 설명하시오)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 6; OOXML 본문 P27; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "6",
+      "blocks": [
+        {
+          "id": "b-o-s08-q6-text",
+          "type": "text",
+          "text": "CMOS의 출력 특성 중 전달지연(Propagation delay)가 나타나는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 7; OOXML 본문 P32; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "7",
+      "blocks": [
+        {
+          "id": "b-o-s08-q7-text",
+          "type": "text",
+          "text": "CMOS에서 천이시간(Transition time)이 H->L일 때와, L->H일 때 timing 특성이 달라지는 이유를 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 8; OOXML 본문 P39~P40; Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "8",
+      "blocks": [
+        {
+          "id": "b-o-s08-q8-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q8-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        },
+        {
+          "id": "b-o-s08-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q9",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 9; OOXML 본문 P45~P52; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "9",
+      "blocks": [
+        {
+          "id": "b-o-s08-q9-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameters에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q9-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VIHmin :"
+            ],
+            [
+              "VILmax :"
+            ],
+            [
+              "VOLmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q9-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q10",
+      "role": "question",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 10; OOXML 본문 P55; Word 읽기 전용 렌더 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "10",
+      "blocks": [
+        {
+          "id": "b-o-s08-q10-text",
+          "type": "text",
+          "text": "COMS의 동작속도를 결정짓는 2가지 요소와 각 요소에 따른 동작속도에 미치는 영향을 timing diagram을 그려 설명하여라. (원문 표기 COMS 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q10-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s05-a1-text",
+          "type": "text",
+          "text": "GND(=0)<LOW<1.5 / 1.5<Adnormal<3.5 / 3.5<HIGH<5 (원문 표기 Adnormal 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-227672800905ee78",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s05-a2-text",
+          "type": "text",
+          "text": "즉 V_i과 V_o이 계속 변화하는데, 새로 입력되는 V_i에 있는 노이즈 때문에 V_o의 값이 일정치 못할 수 있는데, hysteresis로 인하여, 새로 입력된 V_i는 이전상태의 V_i를 따라가게 되므로, 노이즈가 줄어든다. 따라서 V_o도 일정하게 유지 될 수 있다. 이러한 특징으로 입력신호의 노이즈로 인한 오작동을 줄일 수 있다.(그래프 그리기) (V_i, V_o는 원문에서 작은 인라인 그림 글자)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1 답; OOXML 본문 P5~P7; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s08-a1-text",
+          "type": "text",
+          "text": "GND(=0)<LOW<1.5 / 1.5<Adnormal<3.5 / 3.5<HIGH<5 (원문 표기 Adnormal 그대로)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-d7200ab4ba3c6199",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2 답; OOXML 본문 P10; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s08-a2-text",
+          "type": "text",
+          "text": "즉 V_i과 V_o이 계속 변화하는데, 새로 입력되는 V_i에 있는 노이즈 때문에 V_o의 값이 일정치 못할 수 있는데, hysteresis로 인하여, 새로 입력된 V_i는 이전상태의 V_i를 따라가게 되므로, 노이즈가 줄어든다. 따라서 V_o도 일정하게 유지 될 수 있다. 이러한 특징으로 입력신호의 노이즈로 인한 오작동을 줄일 수 있다.(그래프 그리기) (V_i, V_o는 원문 인라인 그림 글자)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s09-q1-text",
+          "type": "text",
+          "text": "아래 그림과 같은 입력이 인버터와 Schmitt-trigger inverter에 입력될 경우 각각의 출력을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q1-wave",
+          "type": "figure",
+          "text": "입력 파형 그래프: 세로축 V_IN(0~5.0), 가로축 t. 수평 기준선 V_T+ = 2.9, V_T = 2.5, V_T− = 2.1. 꺾은선 입력이 0 근처에서 출발해 기준선 주변을 여러 번 오르내린 뒤 5.0 근처 최고점을 지나 0 근처로 내려간다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        },
+        {
+          "id": "b-o-s09-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; OOXML 본문 P5~P10; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s09-q2-text",
+          "type": "text",
+          "text": "Schmitt-trigger inverter의 출력이 입력 잡음에 영향을 덜 받게 되는 이유를 입출력 특성을 이용하여 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s09-q3-text",
+          "type": "text",
+          "text": "CMOS의 내부 회로도를 이용하여 내부저항 Rp의 값을 유도하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q3-circuit",
+          "type": "figure",
+          "text": "CMOS 등가 회로: VCC–Rp–출력 노드–Rn–GND의 직렬 구조(음영 상자) 왼쪽에 Vin 단자, 출력 노드는 Resistive load에 연결되고 load의 다른 끝은 위로 VCC 선, 아래로 GND 선에 연결된다. 원문(P10)에서 이 그림은 2번 답안 공간 아래, 3번 문장 바로 위에 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        },
+        {
+          "id": "b-o-s09-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 4; OOXML 본문 P16~P21; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "4",
+      "blocks": [
+        {
+          "id": "b-o-s09-q4-text",
+          "type": "text",
+          "text": "CMOS의 전달 지연과 천이 시간에 대해 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-sub1",
+          "type": "text",
+          "text": "(1) 전달 지연(Propagation delay)가 나타나는 이유",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-sub2",
+          "type": "text",
+          "text": "(2) 천이 시간(Transition time)이 H->L 일때와 L->H일때 다른 이유",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-53e40adacbc0eaea",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 5; OOXML 본문 P25~P29; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "5",
+      "blocks": [
+        {
+          "id": "b-o-s09-q5-text",
+          "type": "text",
+          "text": "CMOS의 주요 parameter에 대해 설명하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-table",
+          "type": "table",
+          "text": "답 칸 목록(원문 순서)",
+          "tex": null,
+          "cells": [
+            [
+              "항목"
+            ],
+            [
+              "VOHmin :"
+            ],
+            [
+              "VILmax :"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·그래프·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-region",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s03-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1"
+      ],
+      "representative_occurrence_id": "o-s01-q1",
+      "kind": "past",
+      "classification_reason": "2016-2학기 헤더와 반/조/이름/학번 칸을 갖춘 시험지(파일명 2016-1)에서 직접 확인; 이름/학번 칸과 채점 메모(“이번에는 모두 맞는걸로 채점했습니다”, “의미 맞으면 만점”)가 있는 실험2 Quiz 정답·채점 기준본에서 확인. 2016 시험지는 ‘CMOS inverter의 출력’, 나머지는 ‘CMOS의 출력’으로 표기만 다르고 그래프·수치 조건은 같다. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 1번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-region-graded",
+      "occurrence_ids": [
+        "o-s04-q1"
+      ],
+      "representative_occurrence_id": "o-s04-q1",
+      "kind": "past",
+      "classification_reason": "‘퀴즈 (실험 2. CMOS 회로의 전기적 특성) 논리회로실험 월요일반’ 실제 채점본(학생 답안·붉은 채점 표시). 인쇄 그래프 유무를 확인하지 못해 q-region과 합치지 않았다.",
+      "evidence": [
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-region-graded",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "q-schmitt-noise",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s02-q2",
+        "o-s09-q2",
+        "o-s03-q2",
+        "o-s04-q2",
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2"
+      ],
+      "representative_occurrence_id": "o-s02-q2",
+      "kind": "past",
+      "classification_reason": "2017-1학기 헤더와 교수님 반/이름/학번 칸을 갖춘 시험지 PDF와 원본 DOCX에서 직접 확인; 2016-2학기 헤더와 반/조/이름/학번 칸을 갖춘 시험지(파일명 2016-1)에서 직접 확인; 월요일반 채점본(3점)과 채점 기준본에도 같은 문장. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5~P10; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 2번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        },
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-rprn-effect",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3"
+      ],
+      "representative_occurrence_id": "o-s01-q3",
+      "kind": "past",
+      "classification_reason": "2016-2학기 헤더와 반/조/이름/학번 칸을 갖춘 시험지(파일명 2016-1)에서 직접 확인. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P12~P17; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-rp-derive",
+      "occurrence_ids": [
+        "o-s01-q4",
+        "o-s02-q3",
+        "o-s09-q3"
+      ],
+      "representative_occurrence_id": "o-s02-q3",
+      "kind": "past",
+      "classification_reason": "2017-1학기 헤더와 교수님 반/이름/학번 칸을 갖춘 시험지 PDF와 원본 DOCX에서 직접 확인; 2016-2학기 헤더와 반/조/이름/학번 칸을 갖춘 시험지(파일명 2016-1)에서 직접 확인. 전류 흐름 설명 지시가 없는 판본.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-rp-derive-current",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4"
+      ],
+      "representative_occurrence_id": "o-s06-q4",
+      "kind": "past",
+      "classification_reason": "이름/학번 칸과 채점 메모(“이번에는 모두 맞는걸로 채점했습니다”, “의미 맞으면 만점”)가 있는 실험2 Quiz 정답·채점 기준본에서 확인. ‘입력 level에 따른 전류의 흐름을 이용하여 설명하시오’ 조건이 붙은 판본. 대표 등장은 답이 없는 v4. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-rp-derive-current",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 3번 문항 바로 아래 제공된 그림·식·채점 메모. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-rn-derive",
+      "occurrence_ids": [
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5"
+      ],
+      "representative_occurrence_id": "o-s06-q5",
+      "kind": "predicted",
+      "classification_reason": "시험지·채점본에서 확인되지 않고 예상문제 10문항 세트(v3·v4·종합본·DOCX)에만 등장.",
+      "evidence": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P24; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-prop-delay",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6"
+      ],
+      "representative_occurrence_id": "o-s06-q6",
+      "kind": "past",
+      "classification_reason": "이름/학번 칸과 채점 메모(“이번에는 모두 맞는걸로 채점했습니다”, “의미 맞으면 만점”)가 있는 실험2 Quiz 정답·채점 기준본에서 확인. 대표 등장은 답이 없는 v4. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P27; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-prop-delay",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 4번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-delay-transition",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s09-q4"
+      ],
+      "representative_occurrence_id": "o-s02-q4",
+      "kind": "past",
+      "classification_reason": "2017-1학기 헤더와 교수님 반/이름/학번 칸을 갖춘 시험지 PDF와 원본 DOCX에서 직접 확인. 전달 지연과 천이 시간을 (1)(2) 소문항으로 묶은 판본.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P16~P21; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [
+        {
+          "id": "sp-delay-transition-1",
+          "label": "(1)",
+          "occurrence_id": "o-s02-q4",
+          "block_ids": [
+            "b-o-s02-q4-sub1"
+          ]
+        },
+        {
+          "id": "sp-delay-transition-2",
+          "label": "(2)",
+          "occurrence_id": "o-s02-q4",
+          "block_ids": [
+            "b-o-s02-q4-sub2"
+          ]
+        }
+      ],
+      "answers": []
+    },
+    {
+      "id": "q-transition",
+      "occurrence_ids": [
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s08-q7"
+      ],
+      "representative_occurrence_id": "o-s06-q7",
+      "kind": "predicted",
+      "classification_reason": "독립 문항 형태로는 예상문제 10문항 세트에만 등장. 2017-1 시험지에는 4번 (2) 소문항으로 출제(q-delay-transition, variant_of).",
+      "evidence": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P32; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s09-q1",
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s08-q8"
+      ],
+      "representative_occurrence_id": "o-s02-q1",
+      "kind": "past",
+      "classification_reason": "2017-1학기 헤더와 교수님 반/이름/학번 칸을 갖춘 시험지 PDF와 원본 DOCX에서 직접 확인. 예상문제 v3·v4·종합본·원본 DOCX의 10문항 세트 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P39~P40; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-schmitt-waveform-graded",
+      "occurrence_ids": [
+        "o-s04-q3"
+      ],
+      "representative_occurrence_id": "o-s04-q3",
+      "kind": "past",
+      "classification_reason": "월요일반 실제 채점본 3번(4점). 입력 파형이 곡선형이고 기준선 수치가 판독되지 않아 q-schmitt-waveform과 합치지 않았다.",
+      "evidence": [
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-schmitt-waveform-graded",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "q-params-4",
+      "occurrence_ids": [
+        "o-s05-q9",
+        "o-s06-q9",
+        "o-s07-q9",
+        "o-s08-q9"
+      ],
+      "representative_occurrence_id": "o-s06-q9",
+      "kind": "predicted",
+      "classification_reason": "VOHmin·VIHmin·VILmax·VOLmax 네 항목 판본은 예상문제 10문항 세트에만 등장.",
+      "evidence": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P45~P52; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-params-2017",
+      "occurrence_ids": [
+        "o-s02-q5",
+        "o-s09-q5"
+      ],
+      "representative_occurrence_id": "o-s02-q5",
+      "kind": "past",
+      "classification_reason": "2017-1학기 헤더와 교수님 반/이름/학번 칸을 갖춘 시험지 PDF와 원본 DOCX에서 직접 확인. 답 칸은 VOHmin·VILmax 두 항목.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P25~P29; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-params-2016",
+      "occurrence_ids": [
+        "o-s01-q5"
+      ],
+      "representative_occurrence_id": "o-s01-q5",
+      "kind": "past",
+      "classification_reason": "2016-2학기 헤더와 반/조/이름/학번 칸을 갖춘 시험지(파일명 2016-1)에서 직접 확인. 답 칸은 VIHmin·VOLmax 두 항목.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-speed",
+      "occurrence_ids": [
+        "o-s05-q10",
+        "o-s06-q10",
+        "o-s07-q10",
+        "o-s08-q10"
+      ],
+      "representative_occurrence_id": "o-s06-q10",
+      "kind": "predicted",
+      "classification_reason": "시험지·채점본에서 확인되지 않고 예상문제 10문항 세트에만 등장(원문 표기 COMS).",
+      "evidence": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P55; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    }
+  ],
+  "relations": [
+    {
+      "from_id": "q-region",
+      "to_id": "q-region-graded",
+      "type": "duplicate_candidate",
+      "reason": "문장·수치 조건은 같으나 채점본 사진에서 인쇄 입력 그래프를 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-schmitt-waveform",
+      "to_id": "q-schmitt-waveform-graded",
+      "type": "duplicate_candidate",
+      "reason": "문장은 같으나 채점본 입력 파형은 곡선형이고 기준선 수치가 판독되지 않음.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-rp-derive",
+      "to_id": "q-rp-derive-current",
+      "type": "variant_of",
+      "reason": "‘입력 level에 따른 전류의 흐름을 이용하여 설명하시오’ 지시 유무가 다름.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-delay-transition",
+      "to_id": "q-prop-delay",
+      "type": "variant_of",
+      "reason": "2017-1은 전달 지연을 (1) 소문항으로 묶어 출제.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-delay-transition",
+      "to_id": "q-transition",
+      "type": "variant_of",
+      "reason": "2017-1은 천이 시간을 (2) 소문항으로 묶어 출제.",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-params-4",
+      "to_id": "q-params-2017",
+      "type": "variant_of",
+      "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VOHmin·VILmax).",
+      "evidence": [
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-params-4",
+      "to_id": "q-params-2016",
+      "type": "variant_of",
+      "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VIHmin·VOLmax).",
+      "evidence": [
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-params-2017",
+      "to_id": "q-params-2016",
+      "type": "variant_of",
+      "reason": "요구 파라미터 항목이 서로 다름(VOHmin·VILmax vs VIHmin·VOLmax).",
+      "evidence": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "status": "complete_with_holds",
+    "checks": {
+      "structure": "pass",
+      "source_visual": "partial"
+    },
+    "units": [
+      {
+        "source_id": "s-9c940f4bcff5718b",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s01-q1",
+          "o-s01-q2",
+          "o-s01-q3",
+          "o-s01-q4",
+          "o-s01-q5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-9c940f4bcff5718b",
+        "index": 2,
+        "outcome": "blank",
+        "occurrence_ids": [],
+        "reason": "렌더 결과 전 화소가 흰색(255)인 빈 페이지."
+      },
+      {
+        "source_id": "s-886f91d7155f4ccd",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s02-q1",
+          "o-s02-q2",
+          "o-s02-q3",
+          "o-s02-q4",
+          "o-s02-q5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-886f91d7155f4ccd",
+        "index": 2,
+        "outcome": "blank",
+        "occurrence_ids": [],
+        "reason": "렌더 결과 전 화소가 흰색(255)인 빈 페이지."
+      },
+      {
+        "source_id": "s-6d16b68ac54a1ce3",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s03-q1",
+          "o-s03-q2",
+          "o-s03-q3",
+          "o-s03-q4",
+          "o-s03-a1",
+          "o-s03-a2",
+          "o-s03-a3",
+          "o-s03-a4"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-a5c6c19f4df2edef",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s04-q1",
+          "o-s04-q2",
+          "o-s04-q3",
+          "o-s04-a1",
+          "o-s04-a2",
+          "o-s04-a3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-227672800905ee78",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q1",
+          "o-s05-q2",
+          "o-s05-q3",
+          "o-s05-a1",
+          "o-s05-a2"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-227672800905ee78",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q4",
+          "o-s05-q5",
+          "o-s05-q6",
+          "o-s05-q7",
+          "o-s05-q8",
+          "o-s05-q9"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-227672800905ee78",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q10"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-cd8d9005a4b82c18",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q1",
+          "o-s06-q2",
+          "o-s06-q3",
+          "o-s06-q4",
+          "o-s06-q5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-cd8d9005a4b82c18",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q6",
+          "o-s06-q7",
+          "o-s06-q8",
+          "o-s06-q9",
+          "o-s06-q10"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-689ef38376d1d0a4",
+        "index": 1,
+        "outcome": "reference",
+        "occurrence_ids": [],
+        "reason": "손글씨 표지 “실험 2”만 있으며 문제·답안·해설은 없음."
+      },
+      {
+        "source_id": "s-689ef38376d1d0a4",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q1",
+          "o-s07-q2",
+          "o-s07-q3",
+          "o-s07-q4"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-689ef38376d1d0a4",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q5",
+          "o-s07-q6",
+          "o-s07-q7",
+          "o-s07-q8",
+          "o-s07-q9",
+          "o-s07-q10"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-d7200ab4ba3c6199",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s08-q1",
+          "o-s08-q2",
+          "o-s08-q3",
+          "o-s08-q4",
+          "o-s08-q5",
+          "o-s08-q6",
+          "o-s08-q7",
+          "o-s08-q8",
+          "o-s08-q9",
+          "o-s08-q10",
+          "o-s08-a1",
+          "o-s08-a2"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-53e40adacbc0eaea",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-q1",
+          "o-s09-q2",
+          "o-s09-q3",
+          "o-s09-q4",
+          "o-s09-q5"
+        ],
+        "reason": ""
+      }
+    ],
+    "unresolved": [
+      {
+        "target_id": "s-9c940f4bcff5718b",
+        "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+      },
+      {
+        "target_id": "o-s04-q1",
+        "reason": "채점본 사진에서 1번 인쇄 입력 그래프가 보이지 않는다. 그래프 생략 판본인지 필기에 가려진 것인지 확정하지 않아 q-region과 duplicate_candidate로만 연결."
+      },
+      {
+        "target_id": "o-s04-q3",
+        "reason": "채점본 3번 입력 파형의 기준선 수치가 판독되지 않고 파형이 곡선형이다. 2017-1 꺾은선 파형과 같은 조건인지 확정하지 않음."
+      },
+      {
+        "target_id": "o-s04-a2",
+        "reason": "학생 수기 답안 일부 문장을 판독하지 못함. 원문 크롭으로 보존."
+      },
+      {
+        "target_id": "o-s04-a3",
+        "reason": "채점자 붉은 메모 일부와 붉은 예시 파형의 전이 시점을 사진에서 정밀 판독하지 못함."
+      },
+      {
+        "target_id": "o-s01-q3",
+        "reason": "Rp/Rn 등가 회로 그림이 3번 답안 공간 아래·4번 위에 있다(2017-1에서는 3번 Rp 유도 문장 위). 위치에 따라 3번에 연결했고 4번과의 소속은 확정하지 않음."
+      },
+      {
+        "target_id": "o-s05-a2",
+        "reason": "제공 답안 끝에 ‘(그래프 그리기)’라는 지시만 있고 그래프는 실려 있지 않다. 누락된 그래프를 만들어 넣지 않았다."
+      },
+      {
+        "target_id": "o-s08-a2",
+        "reason": "제공 답안 끝에 ‘(그래프 그리기)’라는 지시만 있고 그래프는 실려 있지 않다. 누락된 그래프를 만들어 넣지 않았다."
+      }
+    ]
+  }
+}
