@@ -23,11 +23,14 @@ RAIL_NAMES = {
     '중앙GND레일': 'mid_gnd', '중앙VCC레일': 'mid_vcc',
 }
 BLOCKS = {'좌': 'left', '우': 'right'}
+# 가운데 레일을 두 블록이 나눠 쓰는 판형 — 렌더러 `shared_columns()` 가 비지 않는 판형과 같다
+# (`test_hand_transcript` 가 맞댄다). 이 모듈은 표준 라이브러리만 써서 렌더러를 띄우지 않는다
+SHARED_MID_BOARDS = frozenset({'v2'})
 JACK_COLORS = {'빨강': 'red', '노랑': 'yellow', '회색': 'gray'}
 ROW_MIN, ROW_MAX = 1, 63
 
 _TERMINAL = re.compile(r'^(좌|우)\s+([a-j])(\d{1,2})$')
-_RAIL = re.compile(r'^(좌|우)\s+(중앙GND레일|중앙VCC레일|GND레일|VCC레일)(\d{1,2})행$')
+_RAIL = re.compile(r'^(?:(좌|우)\s+)?(중앙GND레일|중앙VCC레일|GND레일|VCC레일)(\d{1,2})행$')
 _JACK = re.compile(r'^전원잭\((빨강|노랑|회색)\)$')
 
 REQUIRED_KEYS = ('page', 'circuit', 'chips', 'wires')
@@ -56,6 +59,7 @@ class Diagram:
     circuit: str = ""
     signed: bool = False
     page: int = 0
+    board: str = 'v1'       # 판형 — 참조는 빌더에서, 손그림은 승인 결선의 판형을 받는다
 
 
 def chip_pins(block, pin1_row, pin1_col='e'):
@@ -76,8 +80,14 @@ def chip_pins(block, pin1_row, pin1_col='e'):
     return pins
 
 
-def parse_address(text):
-    """'좌 b10' -> ('hole', ('left', 'b', 10)). 홀이 아니면 거절한다."""
+def parse_address(text, board='v1'):
+    """'좌 b10' -> ('hole', ('left', 'b', 10)). 홀이 아니면 거절한다.
+
+    `board` 는 승인 결선의 판형이다. 가운데 레일을 두 블록이 나눠 쓰는 판형(v2)에서는
+    `중앙GND레일9행`·`좌 중앙GND레일9행`·`우 중앙GND레일9행` 이 모두 한 레일
+    `('left', 'mid_gnd', 9)` 다 — 렌더러가 소속을 `left` 로 정했다. v1 은 좌·우 중앙 레일이
+    따로라 블록을 적어야 한다.
+    """
     s = (text or "").strip()
     m = _JACK.match(s)
     if m:
@@ -91,10 +101,18 @@ def parse_address(text):
     if m:
         row = int(m.group(3))
         _check_row(row, s)
-        return ('hole', (BLOCKS[m.group(1)], RAIL_NAMES[m.group(2)], row))
+        side, col = m.group(1), RAIL_NAMES[m.group(2)]
+        if col.startswith('mid_') and board in SHARED_MID_BOARDS:
+            return ('hole', ('left', col, row))
+        if side is None:
+            raise TranscriptError(
+                f"{s!r} — {board} 판형에서는 이 레일이 좌·우에 따로 있다. "
+                f"'좌 {m.group(2)}{row}행' 처럼 블록을 적는다")
+        return ('hole', (BLOCKS[side], col, row))
     raise TranscriptError(
         f"홀 주소로 읽을 수 없다: {s!r} — "
-        "'좌 b10' · '좌 GND레일10행' · '전원잭(빨강)' 꼴로 적는다")
+        "'좌 b10' · '좌 GND레일10행' · '전원잭(빨강)' 꼴로 적는다 "
+        "(v2 가운데 레일은 '중앙GND레일10행')")
 
 
 def _check_row(row, s):
@@ -102,8 +120,8 @@ def _check_row(row, s):
         raise TranscriptError(f"{ROW_MIN}~{ROW_MAX}행 밖이다: {s!r}")
 
 
-def parse_transcript(path):
-    """전사 JSON -> `Diagram`."""
+def parse_transcript(path, board='v1'):
+    """전사 JSON -> `Diagram`. `board` 는 승인 결선의 판형(`hand_grid.expected_board()`)."""
     path = Path(path)
     try:
         obj = json.loads(path.read_text(encoding="utf-8"))
@@ -150,7 +168,7 @@ def parse_transcript(path):
         except KeyError as e:
             raise TranscriptError(f"배선 항목에 필수 키 {e} 가 없다: {w}") from e
         wires.append({'kind': w.get('color', ''), 'desc': w.get('desc', ''),
-                      'frm': parse_address(w_from), 'to': parse_address(w_to)})
+                      'frm': parse_address(w_from, board), 'to': parse_address(w_to, board)})
 
     leds = []
     for l in obj.get('leds', []):
@@ -161,8 +179,8 @@ def parse_transcript(path):
         except KeyError as e:
             raise TranscriptError(f"LED 항목에 필수 키 {e} 가 없다: {l}") from e
         leds.append({'tag': tag,
-                     'anode': parse_address(anode)[1],
-                     'cathode': parse_address(cathode)[1]})
+                     'anode': parse_address(anode, board)[1],
+                     'cathode': parse_address(cathode, board)[1]})
 
     resistors = []
     for r in obj.get('resistors', []):
@@ -172,8 +190,8 @@ def parse_transcript(path):
         except KeyError as e:
             raise TranscriptError(f"저항 항목에 필수 키 {e} 가 없다: {r}") from e
         resistors.append({'tag': r.get('tag', ''), 'label': r.get('label', '330Ω'),
-                          'top': parse_address(top)[1],
-                          'bottom': parse_address(bottom)[1]})
+                          'top': parse_address(top, board)[1],
+                          'bottom': parse_address(bottom, board)[1]})
 
     by_tag = {l['tag']: l for l in leds}
     chains = []
@@ -194,11 +212,11 @@ def parse_transcript(path):
             b_to = b['to']
         except KeyError as e:
             raise TranscriptError(f"브리지 항목에 필수 키 {e} 가 없다: {b}") from e
-        a = parse_address(b_from)[1]
-        z = parse_address(b_to)[1]
+        a = parse_address(b_from, board)[1]
+        z = parse_address(b_to, board)[1]
         bridges.append((b.get('kind', ''), a, z))
 
-    uncertain = {parse_address(u)[1] for u in obj.get('uncertain', [])}
+    uncertain = {parse_address(u, board)[1] for u in obj.get('uncertain', [])}
 
     # 선택 키다 — 2026-09-12 이전 전사에는 없다. 없으면 빈 목록이고 H15 가 이름마다 잡는다
     labels = []
@@ -210,7 +228,7 @@ def parse_transcript(path):
         name = str(name).strip()
         if not name:
             raise TranscriptError(f"이름표 항목의 name 이 비어 있다: {lb}")
-        at = parse_address(lb['at'])[1] if lb.get('at') else None
+        at = parse_address(lb['at'], board)[1] if lb.get('at') else None
         labels.append({'name': name, 'at': at})
 
     return Diagram(chips=chips, wires=wires, leds=leds, resistors=resistors,
@@ -218,4 +236,4 @@ def parse_transcript(path):
                    labels=labels,
                    title=obj.get('title', ''), circuit=obj['circuit'],
                    signed=bool(obj.get('signed', False)),
-                   page=int(obj['page']))
+                   page=int(obj['page']), board=board)

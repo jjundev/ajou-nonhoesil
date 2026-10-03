@@ -151,8 +151,8 @@ def net_findings(ref, new):
     `error` 가 따로 말한다."""
     if ref is None or new is None or ref.bb is None or new.bb is None:
         return []
-    return _compare_diagrams(_from_wiring(ref.bb.wiring(), ref.cid),
-                             _from_wiring(new.bb.wiring(), ref.cid))
+    return _compare_diagrams(_from_wiring(ref.bb.wiring(), ref.cid, ref.bb.board),
+                             _from_wiring(new.bb.wiring(), ref.cid, new.bb.board))
 
 
 def layout_slots(netlist_path):

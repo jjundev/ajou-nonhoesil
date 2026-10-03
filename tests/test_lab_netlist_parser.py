@@ -591,5 +591,19 @@ class MustRead(unittest.TestCase):
         self.assertEqual(parse_netlist(_write(MINIMAL)).of_kind("must-read"), [])
 
 
+class V2MidRailAddress(unittest.TestCase):
+    """v2 엔진은 가운데 레일을 접두어 없이 적는다 — 걷기 행이 그 주소를 그대로 옮긴다."""
+
+    def test_접두어_없는_가운데_레일을_읽는다(self):
+        from scripts.lab.netlist_parser import _holes, _walk_addresses
+        self.assertEqual(_holes("우 c49 · 중앙GND레일49행"), ["우 c49", "중앙GND레일49행"])
+        self.assertEqual(_walk_addresses("우 c49 → 중앙GND레일49행"), ["우 c49 → 중앙GND레일49행"])
+
+    def test_v1_주소는_그대로다(self):
+        from scripts.lab.netlist_parser import _holes
+        self.assertEqual(_holes("우 중앙GND레일49행·좌 VCC레일5행"),
+                         ["우 중앙GND레일49행", "좌 VCC레일5행"])
+
+
 if __name__ == "__main__":
     unittest.main()

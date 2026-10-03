@@ -32,7 +32,7 @@ from collections import Counter
 from dataclasses import dataclass
 
 from .hand_grid import load_renderer
-from .hand_transcript import Diagram
+from .hand_transcript import SHARED_MID_BOARDS, Diagram
 
 RAIL_COLS = frozenset({'gnd', 'vcc', 'mid_gnd', 'mid_vcc'})
 VCC_COLS = frozenset({'vcc', 'mid_vcc'})
@@ -213,7 +213,8 @@ def reference_diagram(circuit_id):
         raise CompareError(
             f"모르는 회로 ID: {circuit_id!r}. "
             f"쓸 수 있는 것: {', '.join(CIRCUITS)}")
-    board = load_renderer().load_board(int(circuit_id.split("_", 1)[0][1:]))
+    mod = load_renderer()
+    board = mod.load_board(int(circuit_id.split("_", 1)[0][1:]))
     builder = getattr(board, f"build_{circuit_id}", None)
     if builder is None:
         raise CompareError(f"빌더가 없다: build_{circuit_id}")
@@ -223,10 +224,12 @@ def reference_diagram(circuit_id):
         raise CompareError(
             f"build_{circuit_id} 가 렌더러를 돌려주지 않는다 — "
             "빌더 끝에 `return bb` 가 있어야 한다")
-    return _from_wiring(bb.wiring(), circuit_id)
+    # 빌더가 board=BOARD 를 빠뜨리면 v2 주차의 참조가 v1 로 나온다 — 여기서 멈춘다
+    mod.check_board(board, bb, f"build_{circuit_id}")
+    return _from_wiring(bb.wiring(), circuit_id, bb.board)
 
 
-def _from_wiring(w, circuit_id):
+def _from_wiring(w, circuit_id, board='v1'):
     """`wiring()` 출력 -> `Diagram`. 손그림 쪽과 같은 모양으로 맞춘다.
 
     브리지는 `wires` 에서 빼고 `bridges` 로만 보낸다 — 양쪽에 두면
@@ -268,17 +271,21 @@ def _from_wiring(w, circuit_id):
         bridges=bridges,
         overlaps=list(w['overlaps']),
         labels=labels,
+        board=board,
         circuit=circuit_id)
 
 
 
-def _addr(hole):
-    """홀 -> 사람이 읽는 주소. 판정문에 그대로 들어간다."""
+def _addr(hole, board='v1'):
+    """홀 -> 사람이 읽는 주소. 판정문에 그대로 들어간다. 두 블록이 나눠 쓰는 가운데 레일(v2)은
+    렌더러처럼 접두어가 없다."""
     block, col, row = hole
     prefix = '좌' if block == 'left' else '우'
     names = {'gnd': 'GND레일', 'vcc': 'VCC레일',
              'mid_gnd': '중앙GND레일', 'mid_vcc': '중앙VCC레일'}
     if col in RAIL_COLS:
+        if col.startswith('mid_') and board in SHARED_MID_BOARDS:
+            return f'{names[col]}{row}행'
         return f'{prefix} {names[col]}{row}행'
     return f'{prefix} {col}{row}'
 
@@ -299,19 +306,19 @@ def check_holes(ref, hand):
         block, col, row = hole
         if not 1 <= row <= mod.ROW_MAX:
             out.append(HandFinding(
-                'H1', '치명', _addr(hole),
+                'H1', '치명', _addr(hole, hand.board),
                 f'{row}행은 판에 없다 (1~{mod.ROW_MAX}행)'))
             return
         if col in RAIL_COLS and row in mod.RAIL_GAP_ROWS:
             out.append(HandFinding(
-                'H1', '치명', _addr(hole),
+                'H1', '치명', _addr(hole, hand.board),
                 f'레일 {row}행에는 홀이 없다 — 5홀씩 묶여 빈 행이다. '
                 f'{what} 를 이웃 행으로 옮긴다'))
             return
         key = (block, col, row)
         if key in leads:
             out.append(HandFinding(
-                'H2', '치명', _addr(hole),
+                'H2', '치명', _addr(hole, hand.board),
                 f'한 홀에 둘: {leads[key]} + {what}. '
                 '같은 행 a~e 는 한 노드라 옆 홀로 옮기면 된다'))
         else:
@@ -482,15 +489,15 @@ def check_led_chains(ref, hand):
         t_net = nets.get(node_of(hcn['res_top']))
         if k_net != t_net:
             out.append(HandFinding(
-                'H7', '치명', f"{tag} ({_addr(hcn['cathode'])})",
-                f"LED 캐소드({_addr(hcn['cathode'])})와 "
-                f"저항 윗다리({_addr(hcn['res_top'])})가 다른 줄이다. "
+                'H7', '치명', f"{tag} ({_addr(hcn['cathode'], hand.board)})",
+                f"LED 캐소드({_addr(hcn['cathode'], hand.board)})와 "
+                f"저항 윗다리({_addr(hcn['res_top'], hand.board)})가 다른 줄이다. "
                 'LED 가 안 켜지고 전류는 저항으로만 빠진다'))
         b_net = nets.get(node_of(hcn['res_bottom']))
         if ('RAIL', 'GND') not in att.get(b_net, set()):
             touched = ', '.join(sorted(_describe(a) for a in att.get(b_net, set())))
             out.append(HandFinding(
-                'H7', '치명', f"{tag} ({_addr(hcn['res_bottom'])})",
+                'H7', '치명', f"{tag} ({_addr(hcn['res_bottom'], hand.board)})",
                 f"저항 아랫다리가 GND 레일에 닿지 않는다"
                 + (f' — 대신 {touched} 에 닿아 있다' if touched else '')))
     return out
@@ -639,7 +646,7 @@ def check_chip_follow(ref, hand):
                 continue
             where = (f'pin {h_pin} 행' if h_pin is not None
                      else f'참조에서는 pin {r_pin} 행, 지금은 칩 밖')
-            stuck.append(f'{desc} {_addr(hole)} ({where})')
+            stuck.append(f'{desc} {_addr(hole, hand.board)} ({where})')
         if not stuck:
             continue
         how = []
@@ -716,7 +723,7 @@ def check_paperwork(ref, hand):
             '학번·이름·날짜가 없다. 참조 도면이 제출 조건으로 요구한다'))
     for hole in sorted(hand.uncertain):
         out.append(HandFinding(
-            'H13', '보류', _addr(hole),
+            'H13', '보류', _addr(hole, hand.board),
             '전사가 확신하지 못한 끝점이다. 그 자리를 확대해 다시 읽는다'))
     return out
 
@@ -768,7 +775,14 @@ _RULES = [check_holes, check_power, check_signals, check_led_chains,
 
 
 def compare(ref, hand):
-    """참조와 손그림을 견준다. 심한 것부터 정렬해서 준다."""
+    """참조와 손그림을 견준다. 심한 것부터 정렬해서 준다.
+
+    판형이 다르면 견주지 않는다 — 열 이름이 같아도 가운데 레일의 뜻이 다르다.
+    """
+    if ref.board != hand.board:
+        raise CompareError(
+            f"판형 버전 불일치 — 참조 {ref.circuit} 는 {ref.board} 판형인데 전사는 {hand.board} "
+            "판형으로 읽었다. parse_transcript(p, board=hand_grid.expected_board(N)) 로 읽는다")
     out = []
     for rule in _RULES:
         out.extend(rule(ref, hand))

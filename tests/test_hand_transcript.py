@@ -191,5 +191,38 @@ class Parse(unittest.TestCase):
             ht.parse_transcript(_write(obj))
 
 
+class V2Address(unittest.TestCase):
+    """v2 가운데 레일은 두 블록이 나눠 쓰는 한 레일이다 — 렌더러가 접두어 없이 적고 소속을 left 로 둔다."""
+
+    def test_v2_가운데_레일은_접두어와_상관없이_한_레일이다(self):
+        want = ('hole', ('left', 'mid_gnd', 9))
+        for text in ("중앙GND레일9행", "좌 중앙GND레일9행", "우 중앙GND레일9행"):
+            self.assertEqual(ht.parse_address(text, 'v2'), want, text)
+
+    def test_v2_바깥_레일은_좌우가_그대로다(self):
+        self.assertEqual(ht.parse_address("우 GND레일9행", 'v2'), ('hole', ('right', 'gnd', 9)))
+
+    def test_v1_에서_접두어_없는_가운데_레일은_거절한다(self):
+        with self.assertRaises(ht.TranscriptError):
+            ht.parse_address("중앙GND레일9행")
+
+    def test_바깥_레일은_어느_판형이든_블록을_적는다(self):
+        for board in ('v1', 'v2'):
+            with self.assertRaises(ht.TranscriptError):
+                ht.parse_address("GND레일9행", board)
+
+    def test_parse_transcript_가_판형을_싣는다(self):
+        obj = dict(MINIMAL, wires=[{"color": "빨강", "from": "좌 g7", "to": "중앙VCC레일7행"}])
+        d = ht.parse_transcript(_write(obj), board='v2')
+        self.assertEqual(d.board, 'v2')
+        self.assertEqual(d.wires[0]['to'], ('hole', ('left', 'mid_vcc', 7)))
+
+    def test_가운데_레일_공유_판형이_렌더러와_같다(self):
+        from scripts.lab.hand_grid import load_renderer
+        mod = load_renderer()
+        self.assertEqual({v for v in mod.BOARD_VERSIONS if mod.shared_columns(v)},
+                         set(ht.SHARED_MID_BOARDS))
+
+
 if __name__ == '__main__':
     unittest.main()

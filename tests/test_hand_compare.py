@@ -7,10 +7,14 @@
 살아 있는 실험01 참조 결선도를 한 군데씩 망가뜨려 검사기가 그 자리를 짚는지
 본다. 합성 픽스처로는 실물에서만 나오는 배치를 못 밟는다.
 """
+import os
+import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from scripts.lab import hand_compare as hc
+from scripts.lab.hand_grid import load_renderer
 from scripts.lab.hand_transcript import Diagram, chip_pins, parse_transcript
 
 
@@ -917,6 +921,33 @@ class RuleRegistry(unittest.TestCase):
         src = inspect.getsource(hc)
         for n in range(1, 16):
             self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
+
+
+class V2Compare(unittest.TestCase):
+    """판형이 다르면 견주지 않고, v2 가운데 레일은 한 레일로 본다."""
+
+    def test_판형이_다르면_견주지_않는다(self):
+        ref = hc.reference_diagram('e1_nand')
+        hand = replace(hc.reference_diagram('e1_nand'), board='v2')
+        with self.assertRaisesRegex(hc.CompareError, '판형 버전 불일치'):
+            hc.compare(ref, hand)
+
+    def test_참조는_빌더의_판형을_싣는다(self):
+        self.assertEqual(hc.reference_diagram('e1_nand').board, 'v1')
+
+    def test_v2_가운데_레일_주소는_접두어가_없다(self):
+        self.assertEqual(hc._addr(('left', 'mid_gnd', 9), 'v2'), '중앙GND레일9행')
+        self.assertEqual(hc._addr(('left', 'mid_gnd', 9)), '좌 중앙GND레일9행')
+
+    def test_v2_연기_시험판은_자기_자신과_넷이_같다(self):
+        root = Path(__file__).resolve().parents[1]
+        board = load_renderer().load_board_file(root / 'tests/fixtures/board_v2/배치.py', 'board_v2')
+        with tempfile.TemporaryDirectory() as d:
+            bb = board.build_v2_smoke(os.path.join(d, 'x.png'))
+        ref = hc._from_wiring(bb.wiring(), 'v2_smoke', bb.board)
+        for rule in (hc.check_holes, hc.check_power, hc.check_signals,
+                     hc.check_led_chains, hc.check_rails):
+            self.assertEqual(rule(ref, ref), [], rule.__name__)
 
 
 if __name__ == '__main__':
