@@ -1,0 +1,220 @@
+[
+  {
+    "page": 1,
+    "auto": "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/output/validation/hand-diagram-crop/round01/fresh/실험04_1-1_손그림_4x1MUX.png",
+    "manual": "/Users/hyunjun_macbook_pro/Downloads/Screenshot_20261001_154344_Samsung Notes.jpg",
+    "auto_board": [
+      190.5,
+      416.5,
+      1592,
+      2489
+    ],
+    "manual_board": [
+      83.5,
+      189.5,
+      692,
+      1087.5
+    ],
+    "ink_margins": [
+      37,
+      32,
+      45,
+      34
+    ],
+    "measurements": {
+      "manual": {
+        "size": [
+          761,
+          1115
+        ],
+        "board_width_px": 608.5,
+        "board_height_px": 898.0,
+        "corners": [
+          [
+            83.5,
+            189.5
+          ],
+          [
+            692,
+            189.5
+          ],
+          [
+            83.5,
+            1087.5
+          ],
+          [
+            692,
+            1087.5
+          ]
+        ],
+        "boundary_extension_percent_board_width": [
+          13.72226787181594,
+          31.14215283483977,
+          11.33935907970419,
+          4.519309778142975
+        ],
+        "scale_xy": [
+          1.3968775677896468,
+          1.3997772828507795
+        ]
+      },
+      "auto": {
+        "size": [
+          1758,
+          2524
+        ],
+        "board_width_px": 1401.5,
+        "board_height_px": 2072.5,
+        "corners": [
+          [
+            190.5,
+            416.5
+          ],
+          [
+            1592,
+            416.5
+          ],
+          [
+            190.5,
+            2489
+          ],
+          [
+            1592,
+            2489
+          ]
+        ],
+        "boundary_extension_percent_board_width": [
+          13.592579379236533,
+          29.71815911523368,
+          11.84445237245808,
+          2.497324295397788
+        ],
+        "scale_xy": [
+          0.6064930431680342,
+          0.6065138721351025
+        ]
+      }
+    },
+    "boundary_delta_auto_minus_manual_percent": [
+      -0.12968849257940818,
+      -1.4239937196060914,
+      0.5050932927538909,
+      -2.021985482745187
+    ],
+    "visible_ink_margin_percent": [
+      2.6400285408490904,
+      2.2832679272208347,
+      3.210845522654299,
+      2.425972172672137
+    ]
+  },
+  {
+    "page": 2,
+    "auto": "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/output/validation/hand-diagram-crop/round01/fresh/실험04_2-1_손그림_1x4DMUX.png",
+    "manual": "/Users/hyunjun_macbook_pro/Downloads/Screenshot_20261001_154402_Samsung Notes.jpg",
+    "auto_board": [
+      123.5,
+      336.5,
+      1525,
+      2409
+    ],
+    "manual_board": [
+      56,
+      152.5,
+      628,
+      998
+    ],
+    "ink_margins": [
+      33,
+      31,
+      40,
+      34
+    ],
+    "measurements": {
+      "manual": {
+        "size": [
+          702,
+          1011
+        ],
+        "board_width_px": 572,
+        "board_height_px": 845.5,
+        "corners": [
+          [
+            56,
+            152.5
+          ],
+          [
+            628,
+            152.5
+          ],
+          [
+            56,
+            998
+          ],
+          [
+            628,
+            998
+          ]
+        ],
+        "boundary_extension_percent_board_width": [
+          9.79020979020979,
+          26.66083916083916,
+          12.937062937062937,
+          2.272727272727273
+        ],
+        "scale_xy": [
+          1.486013986013986,
+          1.4866942637492608
+        ]
+      },
+      "auto": {
+        "size": [
+          1696,
+          2444
+        ],
+        "board_width_px": 1401.5,
+        "board_height_px": 2072.5,
+        "corners": [
+          [
+            123.5,
+            336.5
+          ],
+          [
+            1525,
+            336.5
+          ],
+          [
+            123.5,
+            2409
+          ],
+          [
+            1525,
+            2409
+          ]
+        ],
+        "boundary_extension_percent_board_width": [
+          8.81198715661791,
+          24.00998929718159,
+          12.201212986086336,
+          2.497324295397788
+        ],
+        "scale_xy": [
+          0.6064930431680342,
+          0.6065138721351025
+        ]
+      }
+    },
+    "boundary_delta_auto_minus_manual_percent": [
+      -0.97822263359188,
+      -2.6508498636575695,
+      -0.7358499509766006,
+      0.22459702267051496
+    ],
+    "visible_ink_margin_percent": [
+      2.3546200499464858,
+      2.2119158044951837,
+      2.8540849090260436,
+      2.425972172672137
+    ]
+  }
+]

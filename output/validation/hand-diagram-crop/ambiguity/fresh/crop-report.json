@@ -1,0 +1,45 @@
+{
+  "schema": "hand-crop-report/v1",
+  "source_sha256": "d6c9bc6a1531e20246363148b77c57b02f778793fa2b773b8945f86f55fdb24d",
+  "dpi": 300,
+  "pages": [
+    {
+      "page": 1,
+      "status": "pending",
+      "box": null,
+      "output": null,
+      "margin_clipped": false,
+      "candidates": [
+        "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-exclude.png",
+        "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-include.png"
+      ],
+      "preview": "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-boundaries.png",
+      "ambiguous": [
+        {
+          "label": "왼쪽 아래 보라색 물음표",
+          "box": [
+            384.66,
+            460.0,
+            399.34,
+            482.0
+          ],
+          "reason": "보드 외부에 독립된 물음표가 있으나 결선 지시인지 설명/검토 메모인지 확정 불가"
+        }
+      ],
+      "existing_output_unchanged": null
+    },
+    {
+      "page": 2,
+      "status": "saved",
+      "box": [
+        411.88640000000004,
+        47.2264,
+        819.4436,
+        633.4436
+      ],
+      "output": "output/validation/hand-diagram-crop/ambiguity/fresh/실험04_2-1_손그림_1x4DMUX.png",
+      "margin_clipped": false,
+      "candidates": []
+    }
+  ]
+}

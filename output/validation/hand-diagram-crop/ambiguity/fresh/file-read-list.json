@@ -1,0 +1,32 @@
+{
+  "explicit_source_reads": [
+    ".claude/skills/export-hand-diagram/SKILL.md",
+    ".claude/skills/export-hand-diagram/references/crop-plan.md",
+    "scripts/lab/export_hand_diagrams.py",
+    "scripts/lab/hand_crop.py",
+    "scripts/lab/config.py",
+    "보고서/실험04/결선도/netlist.md",
+    "output/validation/hand-diagram-crop/ambiguity/source.pdf"
+  ],
+  "generated_artifacts_viewed": [
+    "full-p001.png",
+    "full-p002.png",
+    "detail-p001.png",
+    "detail-p002.png",
+    "candidates/p001-exclude.png",
+    "candidates/p001-include.png",
+    "candidates/p001-boundaries.png",
+    "실험04_2-1_손그림_1x4DMUX.png"
+  ],
+  "runtime_imports": [
+    "scripts/lab/config.py",
+    "scripts/lab/hand_grid.py",
+    "scripts/lab/hand_crop.py",
+    "scripts/lab/netlist_parser.py"
+  ],
+  "failed_read_attempts": [
+    "報告書/実験04/結線図/netlist.md (nonexistent mistyped path; no content read)"
+  ],
+  "directory_listing": "rg --files 보고서, filtered to 실험04/결선도/netlist.md",
+  "outside_validation_reads": false
+}

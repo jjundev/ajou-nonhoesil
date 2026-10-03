@@ -1,0 +1,35 @@
+{
+  "schema": "hand-crop-report/v1",
+  "source_sha256": "c6139e2a6ba5852b290b2c4e2aad3e64baa8b355b27326d082f803044ebbe4e7",
+  "dpi": 300,
+  "pages": [
+    {
+      "page": 1,
+      "status": "saved",
+      "box": [
+        396.23,
+        28.23,
+        816.77,
+        632.77
+      ],
+      "output": "output/validation/hand-diagram-crop/round02/fresh/실험04_1-1_손그림_4x1MUX.png",
+      "margin_clipped": false,
+      "candidates": [],
+      "experiment": 4
+    },
+    {
+      "page": 2,
+      "status": "saved",
+      "box": [
+        411.23,
+        47.23,
+        819.77,
+        632.77
+      ],
+      "output": "output/validation/hand-diagram-crop/round02/fresh/실험04_2-1_손그림_1x4DMUX.png",
+      "margin_clipped": false,
+      "candidates": [],
+      "experiment": 4
+    }
+  ]
+}

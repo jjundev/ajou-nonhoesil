@@ -1,0 +1,136 @@
+test_모르는_종류는_거절한다 (test_lab_config.DocumentTitleTest.test_모르는_종류는_거절한다) ... ok
+test_빈_제목은_거절한다 (test_lab_config.DocumentTitleTest.test_빈_제목은_거절한다) ... ok
+test_실험번호_판정은_experiment_dir_와_같다 (test_lab_config.DocumentTitleTest.test_실험번호_판정은_experiment_dir_와_같다) ... ok
+test_제목에_주차가_들어가지_않는다 (test_lab_config.DocumentTitleTest.test_제목에_주차가_들어가지_않는다) ... ok
+test_폴더와_달리_0을_채우지_않는다 (test_lab_config.DocumentTitleTest.test_폴더와_달리_0을_채우지_않는다) ... ok
+test_형식은_실험번호_이름_종류다 (test_lab_config.DocumentTitleTest.test_형식은_실험번호_이름_종류다) ... ok
+test_FPGA_프로젝트도_기반_아래다 (test_lab_config.ExperimentBaseTest.test_FPGA_프로젝트도_기반_아래다) ... ok
+test_경로는_이름_앞에_기반을_붙인_것과_같다 (test_lab_config.ExperimentBaseTest.test_경로는_이름_앞에_기반을_붙인_것과_같다) ... ok
+test_기반_아래_실재하는_실험_폴더가_상수와_왕복한다 (test_lab_config.ExperimentBaseTest.test_기반_아래_실재하는_실험_폴더가_상수와_왕복한다)
+상수가 실물과 어긋나면 여기서 걸린다. ... ok
+test_기반_폴더는_보고서다 (test_lab_config.ExperimentBaseTest.test_기반_폴더는_보고서다) ... ok
+test_기반이_두_입구_전부에_적용된다 (test_lab_config.ExperimentBaseTest.test_기반이_두_입구_전부에_적용된다)
+폴더를 얻는 입구는 이 둘뿐이다. 하나만 빠뜨리면 그 스킬만 조용히 ... ok
+test_깊이가_정수가_아니면_거절한다 (test_lab_config.ExperimentBaseTest.test_깊이가_정수가_아니면_거절한다) ... ok
+test_루트로_거슬러_올라가는_사슬이_기반_깊이를_따라간다 (test_lab_config.ExperimentBaseTest.test_루트로_거슬러_올라가는_사슬이_기반_깊이를_따라간다)
+②·③ 이 낸 문서가 `.claude/assets/` 그림을 가리킬 때 쓰는 `../` ... ok
+test_루트에는_실험_폴더가_남아_있지_않다 (test_lab_config.ExperimentBaseTest.test_루트에는_실험_폴더가_남아_있지_않다)
+이동이 절반만 끝난 상태를 잡는다 — 루트 사본과 `보고서/` 사본이 ... ok
+test_사슬이_실제로_루트에_닿는다 (test_lab_config.ExperimentBaseTest.test_사슬이_실제로_루트에_닿는다)
+`../` 개수를 리터럴로만 고정하면 두 리터럴이 함께 틀릴 수 있다. ... ok
+test_이름과_위치는_다른_함수다 (test_lab_config.ExperimentBaseTest.test_이름과_위치는_다른_함수다) ... ok
+test_0을_채워야_사전순_정렬이_시간순과_맞는다 (test_lab_config.ExperimentDirTest.test_0을_채워야_사전순_정렬이_시간순과_맞는다) ... ok
+test_bool은_정수가_아니다 (test_lab_config.ExperimentDirTest.test_bool은_정수가_아니다) ... ok
+test_두_자리로_0을_채운다 (test_lab_config.ExperimentDirTest.test_두_자리로_0을_채운다) ... ok
+test_범위_밖_번호는_거절한다 (test_lab_config.ExperimentDirTest.test_범위_밖_번호는_거절한다) ... ok
+test_열_번째는_그대로_두_자리다 (test_lab_config.ExperimentDirTest.test_열_번째는_그대로_두_자리다) ... ok
+test_격리_트리가_비우는_폴더는_골격_안에_있다 (test_lab_config.ExperimentSubdirsTest.test_격리_트리가_비우는_폴더는_골격_안에_있다) ... ok
+test_골격은_네_폴더다 (test_lab_config.ExperimentSubdirsTest.test_골격은_네_폴더다) ... ok
+test_선택_폴더는_골격에_없다 (test_lab_config.ExperimentSubdirsTest.test_선택_폴더는_골격에_없다) ... ok
+test_None_과_빈_문자열을_모두_미확정으로_본다 (test_lab_config.MissingIdentityTest.test_None_과_빈_문자열을_모두_미확정으로_본다) ... ok
+test_게이트와_표지_인쇄값이_일치한다 (test_lab_config.MissingIdentityTest.test_게이트와_표지_인쇄값이_일치한다)
+게이트에는 실제로 표지에 찍히는 값만 두고, 찍히는 신원 값은 전부 둔다. ... ok
+test_다_채워지면_빈_리스트다 (test_lab_config.MissingIdentityTest.test_다_채워지면_빈_리스트다) ... ok
+test_모든_필드가_비면_전부_보고한다 (test_lab_config.MissingIdentityTest.test_모든_필드가_비면_전부_보고한다) ... ok
+test_실제_과목정보로_돌아간다 (test_lab_config.MissingIdentityTest.test_실제_과목정보로_돌아간다) ... ok
+test_치환된_템플릿이_렌더_검사를_통과한다 (test_lab_config.SkillTemplateTest.test_치환된_템플릿이_렌더_검사를_통과한다) ... ok
+test_ai_usage_log_defaults_to_none (test_lab_config.TestCourseInfo.test_ai_usage_log_defaults_to_none)
+표기 의무가 미확인이므로 자리만 비워둔다. 값이 없으면 로깅하지 않는다. ... ok
+test_ai_usage_log_defaults_when_the_key_is_absent (test_lab_config.TestCourseInfo.test_ai_usage_log_defaults_when_the_key_is_absent) ... ok
+test_notion_parent_page_id_defaults_when_the_key_is_absent (test_lab_config.TestCourseInfo.test_notion_parent_page_id_defaults_when_the_key_is_absent)
+미확정이면 지어내지 않는다. `ai_usage_log` 와 같은 규칙이다. ... ok
+test_notion_parent_page_id_defaults_when_the_value_is_tilde (test_lab_config.TestCourseInfo.test_notion_parent_page_id_defaults_when_the_value_is_tilde)
+ROOT 는 이제 실값이 있어 이 경로를 못 덮는다. 리포를 새로 클론해 ... ok
+test_notion_parent_page_id_is_read (test_lab_config.TestCourseInfo.test_notion_parent_page_id_is_read)
+값까지 확인한다. 키 존재만 보면 프론트매터의 id 가 손으로 편집하다 ... ok
+test_reads_required_fields (test_lab_config.TestCourseInfo.test_reads_required_fields) ... ok
+test_PDF_가_아닌_파일은_후보가_아니다 (test_lab_config.TestDistributedManual.test_PDF_가_아닌_파일은_후보가_아니다) ... ok
+test_배포_폴더가_없으면_후보가_둘이다 (test_lab_config.TestDistributedManual.test_배포_폴더가_없으면_후보가_둘이다) ... ok
+test_배포본이_주차_폴더_사본보다_먼저다 (test_lab_config.TestDistributedManual.test_배포본이_주차_폴더_사본보다_먼저다)
+사본은 언제나 다른 데서 복사해 온 것이라 배포본보다 새로울 수 ... ok
+test_재귀_탐색도_두_자리_번호를_삼키지_않는다 (test_lab_config.TestDistributedManual.test_재귀_탐색도_두_자리_번호를_삼키지_않는다) ... ok
+test_최상위_배포본이_하위_사본을_이긴다 (test_lab_config.TestDistributedManual.test_최상위_배포본이_하위_사본을_이긴다) ... ok
+test_하위_폴더의_교안도_찾는다 (test_lab_config.TestDistributedManual.test_하위_폴더의_교안도_찾는다) ... ok
+test_한_자리_번호가_두_자리를_집어삼키지_않는다 (test_lab_config.TestDistributedManual.test_한_자리_번호가_두_자리를_집어삼키지_않는다)
+`실험1` 로 앞자리만 맞추면 `실험10` 이 걸린다. 이 과목은 실험이 ... ok
+test_9월18일에_실험이_둘이다 (test_lab_config.TestExperimentDates.test_9월18일에_실험이_둘이다) ... ok
+test_FPGA_세_주차도_리터럴로_고정된다 (test_lab_config.TestExperimentDates.test_FPGA_세_주차도_리터럴로_고정된다) ... ok
+test_bool은_실험_번호가_아니다 (test_lab_config.TestExperimentDates.test_bool은_실험_번호가_아니다) ... ok
+test_다음_실험을_오늘_날짜로_찾는다 (test_lab_config.TestExperimentDates.test_다음_실험을_오늘_날짜로_찾는다) ... ok
+test_실험1은_9월11일이다 (test_lab_config.TestExperimentDates.test_실험1은_9월11일이다) ... ok
+test_실험2와_실험3이_같은_날이다 (test_lab_config.TestExperimentDates.test_실험2와_실험3이_같은_날이다) ... ok
+test_실험_당일에는_그날을_준다 (test_lab_config.TestExperimentDates.test_실험_당일에는_그날을_준다) ... ok
+test_없는_실험_번호는_거절한다 (test_lab_config.TestExperimentDates.test_없는_실험_번호는_거절한다) ... ok
+test_열_실험이_모두_리터럴로_고정된다 (test_lab_config.TestExperimentDates.test_열_실험이_모두_리터럴로_고정된다) ... ok
+test_주차_함수는_사라졌다 (test_lab_config.TestExperimentDates.test_주차_함수는_사라졌다) ... ok
+test_중간고사에는_실험이_없다 (test_lab_config.TestExperimentDates.test_중간고사에는_실험이_없다) ... ok
+test_추석에는_실험이_없다 (test_lab_config.TestExperimentDates.test_추석에는_실험이_없다) ... ok
+test_학기가_끝나면_None (test_lab_config.TestExperimentDates.test_학기가_끝나면_None) ... ok
+test_회전_구간이_운영계획과_같다 (test_lab_config.TestExperimentDates.test_회전_구간이_운영계획과_같다) ... ok
+test_P_가_없는_id_는_범위_밖이다 (test_lab_config.TestExperimentScope.test_P_가_없는_id_는_범위_밖이다) ... ok
+test_가지_번호는_정확히_맞아야_한다 (test_lab_config.TestExperimentScope.test_가지_번호는_정확히_맞아야_한다) ... ok
+test_가지_없는_토큰은_그_아래_가지를_덮는다 (test_lab_config.TestExperimentScope.test_가지_없는_토큰은_그_아래_가지를_덮는다) ... ok
+test_공지_표를_그대로_옮겼다 (test_lab_config.TestExperimentScope.test_공지_표를_그대로_옮겼다) ... ok
+test_범위_표의_실험은_일정표에_있다 (test_lab_config.TestExperimentScope.test_범위_표의_실험은_일정표에_있다) ... ok
+test_실험02_는_AC_특성을_하지_않는다 (test_lab_config.TestExperimentScope.test_실험02_는_AC_특성을_하지_않는다) ... ok
+test_실험1_은_범위가_없다 (test_lab_config.TestExperimentScope.test_실험1_은_범위가_없다) ... ok
+test_앞자리만_같은_번호는_덮지_않는다 (test_lab_config.TestExperimentScope.test_앞자리만_같은_번호는_덮지_않는다)
+`1` 이 `10` 을, `1-1` 이 `1-10` 을 삼키면 안 된다 — 가지 구분자 `-` 까지 본다. ... ok
+test_틀린_실험_번호는_거절한다 (test_lab_config.TestExperimentScope.test_틀린_실험_번호는_거절한다) ... ok
+test_13_14_15주차는_프로젝트_주차다 (test_lab_config.TestIsProjectWeek.test_13_14_15주차는_프로젝트_주차다) ... ok
+test_16주차는_프로젝트_주차가_아니다 (test_lab_config.TestIsProjectWeek.test_16주차는_프로젝트_주차가_아니다) ... ok
+test_2_4_8주차는_프로젝트_주차가_아니다 (test_lab_config.TestIsProjectWeek.test_2_4_8주차는_프로젝트_주차가_아니다) ... ok
+test_bool은_주차가_아니다 (test_lab_config.TestIsProjectWeek.test_bool은_주차가_아니다) ... ok
+test_week_date_로_도출된다 (test_lab_config.TestIsProjectWeek.test_week_date_로_도출된다) ... ok
+test_모든_실험_주차는_프로젝트_주차가_아니다 (test_lab_config.TestIsProjectWeek.test_모든_실험_주차는_프로젝트_주차가_아니다) ... ok
+test_범위_밖_주차는_거절한다 (test_lab_config.TestIsProjectWeek.test_범위_밖_주차는_거절한다) ... ok
+test_범위_밖_번호는_거절한다 (test_lab_config.TestManualCandidates.test_범위_밖_번호는_거절한다) ... ok
+test_아카이브_후보가_열_개_다_실재한다 (test_lab_config.TestManualCandidates.test_아카이브_후보가_열_개_다_실재한다) ... ok
+test_아카이브_후보에는_실험_기반_경로가_붙지_않는다 (test_lab_config.TestManualCandidates.test_아카이브_후보에는_실험_기반_경로가_붙지_않는다)
+과거 학기 원본은 `보고서/` 밖에 산다. 기반 경로를 후보 전체에 ... ok
+test_주차_폴더_사본이_아카이브보다_먼저다 (test_lab_config.TestManualCandidates.test_주차_폴더_사본이_아카이브보다_먼저다) ... ok
+test_파일_이름은_0_을_채우지_않는다 (test_lab_config.TestManualCandidates.test_파일_이름은_0_을_채우지_않는다) ... FAIL
+test_raises_outside_project (test_lab_config.TestProjectRoot.test_raises_outside_project) ... ok
+test_walks_up_to_dotclaude (test_lab_config.TestProjectRoot.test_walks_up_to_dotclaude) ... ok
+test_default_preset_is_intersection (test_lab_config.TestReportFormat.test_default_preset_is_intersection) ... ok
+test_distributed_form_preset (test_lab_config.TestReportFormat.test_distributed_form_preset)
+예비보고서 양식.pdf 의 목차 (권위 1순위, 2017~2019 실증). ... ok
+test_empty_section_list_raises_instead_of_returning_nothing (test_lab_config.TestReportFormat.test_empty_section_list_raises_instead_of_returning_nothing)
+이 파일은 학기 중에 손으로 고친다. 키 한 줄이 들여쓰기되는 실수가 ... ok
+test_intersection_pre_report_sections (test_lab_config.TestReportFormat.test_intersection_pre_report_sections) ... ok
+test_intersection_result_report_covers_grading_rubric (test_lab_config.TestReportFormat.test_intersection_result_report_covers_grading_rubric)
+평가기준.txt(권위 2순위)가 요구하는 결보 섹션이 전부 있어야 한다. ... ok
+test_optional_sections_are_not_generated (test_lab_config.TestReportFormat.test_optional_sections_are_not_generated)
+`generate: false` 는 지어낼 수 없는 섹션이다. 2026-09-12 에 `추가 공부` 가 ... ok
+test_repeat_per_item_flag_survives (test_lab_config.TestReportFormat.test_repeat_per_item_flag_survives)
+항목반복형은 결보 29편 중 14편의 실제 구조다 (R2). ... ok
+test_unknown_preset_raises (test_lab_config.TestReportFormat.test_unknown_preset_raises) ... ok
+test_16주차는_12월18일이다 (test_lab_config.TestWeekAnchor.test_16주차는_12월18일이다) ... ok
+test_1주차_오리엔테이션엔_실험이_없다 (test_lab_config.TestWeekAnchor.test_1주차_오리엔테이션엔_실험이_없다) ... ok
+test_1주차는_9월4일이다 (test_lab_config.TestWeekAnchor.test_1주차는_9월4일이다) ... ok
+test_2주차는_9월11일이다 (test_lab_config.TestWeekAnchor.test_2주차는_9월11일이다) ... ok
+test_2주차엔_실험1이다 (test_lab_config.TestWeekAnchor.test_2주차엔_실험1이다) ... ok
+test_3주차엔_실험2와_3이_같이_있다 (test_lab_config.TestWeekAnchor.test_3주차엔_실험2와_3이_같이_있다) ... ok
+test_4주차_추석엔_실험이_없다 (test_lab_config.TestWeekAnchor.test_4주차_추석엔_실험이_없다) ... ok
+test_8주차_중간고사엔_실험이_없다 (test_lab_config.TestWeekAnchor.test_8주차_중간고사엔_실험이_없다) ... ok
+test_experiments_in_week_bool은_주차가_아니다 (test_lab_config.TestWeekAnchor.test_experiments_in_week_bool은_주차가_아니다) ... ok
+test_experiments_in_week_범위_밖_주차는_거절한다 (test_lab_config.TestWeekAnchor.test_experiments_in_week_범위_밖_주차는_거절한다) ... ok
+test_week_date_bool은_주차가_아니다 (test_lab_config.TestWeekAnchor.test_week_date_bool은_주차가_아니다) ... ok
+test_week_date_범위_밖_주차는_거절한다 (test_lab_config.TestWeekAnchor.test_week_date_범위_밖_주차는_거절한다) ... ok
+test_앵커가_모든_실험일을_실제로_맞힌다 (test_lab_config.TestWeekAnchor.test_앵커가_모든_실험일을_실제로_맞힌다) ... ok
+test_학기_1주차_리터럴이_고정된다 (test_lab_config.TestWeekAnchor.test_학기_1주차_리터럴이_고정된다) ... ok
+test_회전_구간이_운영계획과_같다 (test_lab_config.TestWeekAnchor.test_회전_구간이_운영계획과_같다) ... ok
+
+======================================================================
+FAIL: test_파일_이름은_0_을_채우지_않는다 (test_lab_config.TestManualCandidates.test_파일_이름은_0_을_채우지_않는다)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/tests/test_lab_config.py", line 30, in test_파일_이름은_0_을_채우지_않는다
+    self.assertEqual(got[0], Path("보고서/실험04/강의노트/실험4.pdf"))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: PosixPath('강의노트/실험4. Multiplexer & Demultiplexer.pdf') != PosixPath('보고서/실험04/강의노트/실험4.pdf')
+
+----------------------------------------------------------------------
+Ran 103 tests in 0.047s
+
+FAILED (failures=1)

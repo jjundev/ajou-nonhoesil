@@ -1,0 +1,118 @@
+test_content_and_dpi (test_hand_crop_export.TestCropExport.test_content_and_dpi) ... ERROR
+test_invalid_page_is_not_silently_dropped (test_hand_crop_export.TestCropExport.test_invalid_page_is_not_silently_dropped) ... usage: python3.14 -m unittest [-h] [--out OUT] [--pages PAGES] [--dpi DPI]
+                              [--crop] [--no-crop]
+                              experiment [pdf]
+python3.14 -m unittest: error: unrecognized arguments: --crop-plan /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp7g_ie2rj/plan.json
+ERROR
+test_invalid_plan_writes_no_png (test_hand_crop_export.TestCropExport.test_invalid_plan_writes_no_png) ... usage: python3.14 -m unittest [-h] [--out OUT] [--pages PAGES] [--dpi DPI]
+                              [--crop] [--no-crop]
+                              experiment [pdf]
+python3.14 -m unittest: error: unrecognized arguments: --crop-plan /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp5k9hm3yz/plan.json
+ERROR
+test_missing_plan_and_default (test_hand_crop_export.TestCropExport.test_missing_plan_and_default) ... [ERROR] 손그림 추출 실패: source.pdf 1쪽에 판형 이미지가 없다. 배포본 판형 위에 그린 PDF 만 검토한다
+ok
+test_pending_and_resume (test_hand_crop_export.TestCropExport.test_pending_and_resume) ... usage: python3.14 -m unittest [-h] [--out OUT] [--pages PAGES] [--dpi DPI]
+                              [--crop] [--no-crop]
+                              experiment [pdf]
+python3.14 -m unittest: error: unrecognized arguments: --crop-plan /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp36dd5wux/plan.json
+ERROR
+test_rotation (test_hand_crop_export.TestCropExport.test_rotation) ... ERROR
+
+======================================================================
+ERROR: test_content_and_dpi (test_hand_crop_export.TestCropExport.test_content_and_dpi)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 29, in test_content_and_dpi
+    paths=ehd.export_hand_diagrams(99,self.pdf,self.out,dpi=dpi,crop_board=True,crop_plan=self.plan)
+TypeError: export_hand_diagrams() got an unexpected keyword argument 'crop_plan'
+
+======================================================================
+ERROR: test_invalid_page_is_not_silently_dropped (test_hand_crop_export.TestCropExport.test_invalid_page_is_not_silently_dropped)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 56, in test_invalid_page_is_not_silently_dropped
+    self.assertEqual(self.run_cli('--crop','--crop-plan',str(self.plan),'--pages','1,3'),1)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 26, in run_cli
+    return ehd.main(['99',str(self.pdf),'--out',str(self.out),'--dpi','72',*extra])
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/scripts/lab/export_hand_diagrams.py", line 387, in main
+    args = parser.parse_args(argv)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2009, in parse_args
+    self.error(msg)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2782, in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2769, in exit
+    _sys.exit(status)
+    ~~~~~~~~~^^^^^^^^
+SystemExit: 2
+
+======================================================================
+ERROR: test_invalid_plan_writes_no_png (test_hand_crop_export.TestCropExport.test_invalid_plan_writes_no_png)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 53, in test_invalid_plan_writes_no_png
+    self.assertEqual(self.run_cli('--crop','--crop-plan',str(self.plan)),1)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 26, in run_cli
+    return ehd.main(['99',str(self.pdf),'--out',str(self.out),'--dpi','72',*extra])
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/scripts/lab/export_hand_diagrams.py", line 387, in main
+    args = parser.parse_args(argv)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2009, in parse_args
+    self.error(msg)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2782, in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2769, in exit
+    _sys.exit(status)
+    ~~~~~~~~~^^^^^^^^
+SystemExit: 2
+
+======================================================================
+ERROR: test_pending_and_resume (test_hand_crop_export.TestCropExport.test_pending_and_resume)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 42, in test_pending_and_resume
+    self.assertEqual(self.run_cli('--crop','--crop-plan',str(self.plan)),2)
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 26, in run_cli
+    return ehd.main(['99',str(self.pdf),'--out',str(self.out),'--dpi','72',*extra])
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/scripts/lab/export_hand_diagrams.py", line 387, in main
+    args = parser.parse_args(argv)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2009, in parse_args
+    self.error(msg)
+    ~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2782, in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/argparse.py", line 2769, in exit
+    _sys.exit(status)
+    ~~~~~~~~~^^^^^^^^
+SystemExit: 2
+
+======================================================================
+ERROR: test_rotation (test_hand_crop_export.TestCropExport.test_rotation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 66, in test_rotation
+    paths=ehd.export_hand_diagrams(99,rotated,self.out,dpi=72,crop_board=True,crop_plan=self.plan)
+TypeError: export_hand_diagrams() got an unexpected keyword argument 'crop_plan'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.052s
+
+FAILED (errors=5)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt3waeju0/out/실험99_손그림_p2.png (3 KB)

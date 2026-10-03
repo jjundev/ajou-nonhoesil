@@ -1,0 +1,400 @@
+test_cli (test_export_hand_diagrams.TestExportHandDiagrams.test_cli) ... ok
+test_export_hand_diagrams_cropped_requires_visual_plan (test_export_hand_diagrams.TestExportHandDiagrams.test_export_hand_diagrams_cropped_requires_visual_plan) ... ok
+test_export_hand_diagrams_default_no_crop (test_export_hand_diagrams.TestExportHandDiagrams.test_export_hand_diagrams_default_no_crop) ... ok
+test_export_hand_diagrams_pages_subset (test_export_hand_diagrams.TestExportHandDiagrams.test_export_hand_diagrams_pages_subset) ... ok
+test_find_default_pdf (test_export_hand_diagrams.TestExportHandDiagrams.test_find_default_pdf) ... ok
+test_parse_pages_arg (test_export_hand_diagrams.TestExportHandDiagrams.test_parse_pages_arg) ... ok
+test_resolve_circuit_filenames_fallback (test_export_hand_diagrams.TestExportHandDiagrams.test_resolve_circuit_filenames_fallback) ... ok
+test_resolve_circuit_filenames_from_netlist (test_export_hand_diagrams.TestExportHandDiagrams.test_resolve_circuit_filenames_from_netlist) ... ok
+test_resolve_circuit_filenames_shuffled_pdf (test_export_hand_diagrams.TestExportHandDiagrams.test_resolve_circuit_filenames_shuffled_pdf) ... ok
+test_resolve_circuit_filenames_with_transcripts (test_export_hand_diagrams.TestExportHandDiagrams.test_resolve_circuit_filenames_with_transcripts) ... ok
+test_아래로_내려간_브리지에는_경고를_붙인다 (test_hand_compare.BridgeRows.test_아래로_내려간_브리지에는_경고를_붙인다) ... ok
+test_위로_올라간_브리지에는_경고를_안_붙인다 (test_hand_compare.BridgeRows.test_위로_올라간_브리지에는_경고를_안_붙인다)
+round2 는 28·29행인데 '30행 아래' 경고를 받았다. ... ok
+test_종류가_없어도_행이_같으면_조용하다 (test_hand_compare.BridgeRows.test_종류가_없어도_행이_같으면_조용하다)
+전사가 kind 를 빠뜨리면 '[29,30]인데 [29,30]이다' 가 나왔다. ... ok
+test_H14_는_증상_줄을_지우지_않는다 (test_hand_compare.ChipFollow.test_H14_는_증상_줄을_지우지_않는다)
+H7 은 여전히 저항 아랫다리를 짚는다. H14 는 원인 줄이다. ... ok
+test_H14_실물_전사에서_칩이_올라가고_L1_저항이_남으면_잡는다 (test_hand_compare.ChipFollow.test_H14_실물_전사에서_칩이_올라가고_L1_저항이_남으면_잡는다) ... ok
+test_권장_수정을_적용하면_H14_와_H7_이_사라진다 (test_hand_compare.ChipFollow.test_권장_수정을_적용하면_H14_와_H7_이_사라진다)
+실물 전사에서 저항 아랫다리만 e17 → e16 으로 올린다. L1 LED(d14·d15)와 ... ok
+test_배선까지_함께_뒤집으면_H14_없이_H10_표기만_난다 (test_hand_compare.ChipFollow.test_배선까지_함께_뒤집으면_H14_없이_H10_표기만_난다)
+넷이 같으면 유효한 그림이다 — 행 밀림과 같은 원리. ... ok
+test_전체가_함께_밀린_그림에는_H14_가_없다 (test_hand_compare.ChipFollow.test_전체가_함께_밀린_그림에는_H14_가_없다) ... ok
+test_칩만_뒤집고_배선을_두면_H14_가_난다 (test_hand_compare.ChipFollow.test_칩만_뒤집고_배선을_두면_H14_가_난다) ... ok
+test_치명이_있으면_총평이_수정_필요다 (test_hand_compare.Judgment.test_치명이_있으면_총평이_수정_필요다) ... ok
+test_판정문에_쪽별_결함과_총평이_들어간다 (test_hand_compare.Judgment.test_판정문에_쪽별_결함과_총평이_들어간다) ... ok
+test_같은_글자의_둘째가_빠지면_개수로_잡는다 (test_hand_compare.Labels.test_같은_글자의_둘째가_빠지면_개수로_잡는다) ... ok
+test_계측_지점_이름도_참조_이름이_된다 (test_hand_compare.Labels.test_계측_지점_이름도_참조_이름이_된다)
+입력 점퍼도 LED 도 없는 주차(실험02) — 교안 회로도의 신호원·출력·채널 이름이 ... ok
+test_대소문자는_가리지_않는다 (test_hand_compare.Labels.test_대소문자는_가리지_않는다) ... ok
+test_반감산기_참조는_입력_B_와_출력_B_를_둘_다_갖는다 (test_hand_compare.Labels.test_반감산기_참조는_입력_B_와_출력_B_를_둘_다_갖는다)
+실험3 반감산기는 교안 p6 그대로 입력과 출력이 같은 글자 `B` 다. ... ok
+test_이름이_다_있으면_조용하다 (test_hand_compare.Labels.test_이름이_다_있으면_조용하다) ... ok
+test_이름이_하나_빠지면_기능으로_잡는다 (test_hand_compare.Labels.test_이름이_하나_빠지면_기능으로_잡는다) ... ok
+test_이름표가_없는_전사는_이름마다_잡힌다 (test_hand_compare.Labels.test_이름표가_없는_전사는_이름마다_잡힌다)
+2026-09 실험01 제출 손그림이 이 상태였다 — A·B·C 가 한 글자도 없었다. ... ok
+test_참조는_입력과_LED_꼬리표를_이름으로_갖는다 (test_hand_compare.Labels.test_참조는_입력과_LED_꼬리표를_이름으로_갖는다) ... ok
+test_H7_사슬이_통째로_없으면_잡는다 (test_hand_compare.LedChain.test_H7_사슬이_통째로_없으면_잡는다) ... ok
+test_H7_저항_아랫다리가_GND_에_안_닿으면_잡는다 (test_hand_compare.LedChain.test_H7_저항_아랫다리가_GND_에_안_닿으면_잡는다) ... ok
+test_H7_저항이_한_행_위면_잡는다 (test_hand_compare.LedChain.test_H7_저항이_한_행_위면_잡는다) ... ok
+test_LED_는_스트립을_잇지_않는다 (test_hand_compare.Nets.test_LED_는_스트립을_잇지_않는다) ... ok
+test_점퍼가_두_스트립을_잇는다 (test_hand_compare.Nets.test_점퍼가_두_스트립을_잇는다) ... ok
+test_실험02_03_회로가_자기_대조에서_조용하다 (test_hand_compare.NewWeeks.test_실험02_03_회로가_자기_대조에서_조용하다) ... ok
+test_같은_행_a부터e_는_한_노드다 (test_hand_compare.Nodes.test_같은_행_a부터e_는_한_노드다) ... ok
+test_같은_행이라도_f부터j_는_다른_노드다 (test_hand_compare.Nodes.test_같은_행이라도_f부터j_는_다른_노드다) ... ok
+test_레일은_행을_무시한다 (test_hand_compare.Nodes.test_레일은_행을_무시한다) ... ok
+test_좌우_중앙레일은_서로_다른_도체다 (test_hand_compare.Nodes.test_좌우_중앙레일은_서로_다른_도체다) ... ok
+test_H10_칩이_뒤집히면_표기로_알린다 (test_hand_compare.Paperwork.test_H10_칩이_뒤집히면_표기로_알린다)
+노치가 아래를 보게 그린 칩. 배선이 함께 뒤집혀 있으면 회로는 맞다. ... ok
+test_H10_칩이_밀리면_표기로만_알린다 (test_hand_compare.Paperwork.test_H10_칩이_밀리면_표기로만_알린다) ... ok
+test_H11_제목이_회로와_다르면_잡는다 (test_hand_compare.Paperwork.test_H11_제목이_회로와_다르면_잡는다) ... ok
+test_H12_학번_미기재를_잡는다 (test_hand_compare.Paperwork.test_H12_학번_미기재를_잡는다) ... ok
+test_H13_uncertain_은_보류로_나온다 (test_hand_compare.Paperwork.test_H13_uncertain_은_보류로_나온다) ... ok
+test_H9_브리지_행이_다르면_표기로_알린다 (test_hand_compare.Paperwork.test_H9_브리지_행이_다르면_표기로_알린다) ... ok
+test_H1_63행_밖은_잡는다 (test_hand_compare.Physical.test_H1_63행_밖은_잡는다) ... ok
+test_H1_레일_빈_행에_꽂은_끝점을_잡는다 (test_hand_compare.Physical.test_H1_레일_빈_행에_꽂은_끝점을_잡는다) ... ok
+test_H2_는_참조에서는_안_난다 (test_hand_compare.Physical.test_H2_는_참조에서는_안_난다) ... ok
+test_H2_한_홀에_리드_둘을_잡는다 (test_hand_compare.Physical.test_H2_한_홀에_리드_둘을_잡는다) ... ok
+test_H3_pin14_를_GND_에_물리면_잡는다 (test_hand_compare.Power.test_H3_pin14_를_GND_에_물리면_잡는다) ... ok
+test_H3_pin14_전원이_없으면_잡는다 (test_hand_compare.Power.test_H3_pin14_전원이_없으면_잡는다) ... ok
+test_H3_pin7_접지가_없으면_잡는다 (test_hand_compare.Power.test_H3_pin7_접지가_없으면_잡는다) ... ok
+test_H3_참조_칩이_손그림에_없으면_잡는다 (test_hand_compare.Power.test_H3_참조_칩이_손그림에_없으면_잡는다) ... ok
+test_H4_개방_미사용_입력은_아무것도_요구하지_않는다 (test_hand_compare.Power.test_H4_개방_미사용_입력은_아무것도_요구하지_않는다)
+`rail: None` 은 접지 생략(실험01 규칙)이다. 손그림에 선이 없어도 H4 가 아니다. ... ok
+test_H4_미사용_입력_접지가_빠지면_잡는다 (test_hand_compare.Power.test_H4_미사용_입력_접지가_빠지면_잡는다)
+참조가 `rail: 'gnd'` 로 접지한 미사용 입력이 손그림에 없으면 H4 다 ... ok
+test_H5_미사용_출력을_접지하면_잡는다 (test_hand_compare.Power.test_H5_미사용_출력을_접지하면_잡는다) ... ok
+test_H8_브리지가_없으면_잡는다 (test_hand_compare.Rails.test_H8_브리지가_없으면_잡는다) ... ok
+test_H8_브리지가_있으면_안_난다 (test_hand_compare.Rails.test_H8_브리지가_있으면_안_난다) ... ok
+test_from_wiring_은_입력_w의_resistors를_변형하지_않는다 (test_hand_compare.Reference.test_from_wiring_은_입력_w의_resistors를_변형하지_않는다) ... ok
+test_다섯_회로가_모두_열린다 (test_hand_compare.Reference.test_다섯_회로가_모두_열린다) ... ok
+test_모르는_회로_ID_는_거절한다 (test_hand_compare.Reference.test_모르는_회로_ID_는_거절한다) ... ok
+test_배선_설명_문구가_바뀌어도_브리지가_남는다 (test_hand_compare.Reference.test_배선_설명_문구가_바뀌어도_브리지가_남는다)
+산문 대조를 쓰면 문구 한 글자에 참조 브리지가 통째로 사라지고, ... ok
+test_참조_LED_사슬은_캐소드와_저항_윗다리가_한_넷이다 (test_hand_compare.Reference.test_참조_LED_사슬은_캐소드와_저항_윗다리가_한_넷이다) ... ok
+test_참조_pin14_는_VCC_이고_pin7_은_GND_다 (test_hand_compare.Reference.test_참조_pin14_는_VCC_이고_pin7_은_GND_다) ... ok
+test_참조_미사용_출력은_아무_데도_안_닿는다 (test_hand_compare.Reference.test_참조_미사용_출력은_아무_데도_안_닿는다) ... ok
+test_참조_배선에는_브리지가_없다 (test_hand_compare.Reference.test_참조_배선에는_브리지가_없다)
+브리지가 wires 와 bridges 양쪽에 있으면 `check_holes` 가 같은 홀을 ... ok
+test_참조_칩_사이_연결이_서명에_보인다 (test_hand_compare.Reference.test_참조_칩_사이_연결이_서명에_보인다) ... ok
+test_참조가_Diagram_으로_나온다 (test_hand_compare.Reference.test_참조가_Diagram_으로_나온다) ... ok
+test_check_로_시작하는_함수는_전부_규칙_목록에_있다 (test_hand_compare.RuleRegistry.test_check_로_시작하는_함수는_전부_규칙_목록에_있다)
+함수만 만들고 `_RULES` 에 안 올리면 검사가 조용히 빠진다. ... ok
+test_규칙_코드가_H1부터_H15까지_빠짐없다 (test_hand_compare.RuleRegistry.test_규칙_코드가_H1부터_H15까지_빠짐없다) ... ok
+test_참조를_그대로_손그림으로_넣으면_결함_0건 (test_hand_compare.SelfCompare.test_참조를_그대로_손그림으로_넣으면_결함_0건)
+정답을 정답과 견주어 결함이 나오면 검사기가 틀린 것이다. ... ok
+test_H6_입력이_빠지면_잡는다 (test_hand_compare.Signals.test_H6_입력이_빠지면_잡는다) ... ok
+test_H6_참조_숨김_배선은_칩과_핀_모두_일치할_때만_알린다 (test_hand_compare.Signals.test_H6_참조_숨김_배선은_칩과_핀_모두_일치할_때만_알린다)
+오버랩 경고가 다른 칩의 같은 번호 핀에 오탐으로 붙지 않는다. ... ok
+test_H6_출력_둘이_한_넷이면_잡는다 (test_hand_compare.Signals.test_H6_출력_둘이_한_넷이면_잡는다)
+5쪽에서 Z 선과 A·B 선이 한 홀에서 만났다 — 출력끼리 맞물린다. ... ok
+test_H6_칩_사이_연결이_빠지면_잡는다 (test_hand_compare.Signals.test_H6_칩_사이_연결이_빠지면_잡는다) ... ok
+test_H6_행이_통째로_밀린_그림은_통과한다 (test_hand_compare.Signals.test_H6_행이_통째로_밀린_그림은_통과한다)
+칩과 배선이 함께 한 행 내려간 그림은 유효하다. ... ok
+test_레일_넷은_극성_토큰_하나로_접힌다 (test_hand_compare.Signals.test_레일_넷은_극성_토큰_하나로_접힌다)
+입력은 GND 레일 홀에서 들어오도록 그려져 입력 핀이 GND 넷에 앉는다. ... ok
+test_레일이_없는_넷은_그대로_열거된다 (test_hand_compare.Signals.test_레일이_없는_넷은_그대로_열거된다)
+칩 사이 연결은 접으면 안 된다 — 거기가 신호선이다. ... ok
+test_미사용_입력_접지가_빠져도_입력핀은_조용하다 (test_hand_compare.Signals.test_미사용_입력_접지가_빠져도_입력핀은_조용하다)
+접기 전에는 이 한 가닥 때문에 H6 이 3건 헛났다. ... ok
+test_입력이_통째로_빠지면_접은_뒤에도_잡는다 (test_hand_compare.Signals.test_입력이_통째로_빠지면_접은_뒤에도_잡는다)
+접기가 진짜 결함까지 삼키면 안 된다 — 4쪽의 실제 결함이다. ... ok
+test_LED_애노드가_핀_서명에_들어간다 (test_hand_compare.Signatures.test_LED_애노드가_핀_서명에_들어간다) ... ok
+test_pin14_가_VCC_레일에_닿으면_서명에_VCC_가_있다 (test_hand_compare.Signatures.test_pin14_가_VCC_레일에_닿으면_서명에_VCC_가_있다) ... ok
+test_같은_종류_칩_둘이면_둘째에_샵2_가_붙는다 (test_hand_compare.Signatures.test_같은_종류_칩_둘이면_둘째에_샵2_가_붙는다) ... ok
+test_레일_이름이_아니라_극성만_서명에_들어간다 (test_hand_compare.Signatures.test_레일_이름이_아니라_극성만_서명에_들어간다)
+좌 GND 로 내렸든 중앙 GND 로 내렸든 같은 뜻이다 — 브리지 유무는 ... ok
+test_행이_통째로_밀려도_서명은_같다 (test_hand_compare.Signatures.test_행이_통째로_밀려도_서명은_같다)
+칩과 배선이 함께 옮겨지면 유효한 그림이다. ... ok
+test_레일_끝점의_행은_따라옴_판정에_안_들어간다 (test_hand_compare.UnshiftedRailEndpoints.test_레일_끝점의_행은_따라옴_판정에_안_들어간다) ... ok
+test_레일이_아닌_끝점은_행이_다르면_안_따라온_것이다 (test_hand_compare.UnshiftedRailEndpoints.test_레일이_아닌_끝점은_행이_다르면_안_따라온_것이다) ... ok
+test_기능이_있으면_수정_필요 (test_hand_compare.Verdict.test_기능이_있으면_수정_필요) ... ok
+test_보류만_있으면_제출_가능 (test_hand_compare.Verdict.test_보류만_있으면_제출_가능) ... ok
+test_치명이_있으면_수정_필요 (test_hand_compare.Verdict.test_치명이_있으면_수정_필요) ... ok
+test_표기만_있으면_제출_가능 (test_hand_compare.Verdict.test_표기만_있으면_제출_가능)
+학번 미기재는 막지 않는다 — 별도 줄로만 알린다. ... ok
+test_clamp_margin (test_hand_crop.TestCropGeometry.test_clamp_margin) ... ok
+test_content_and_margin (test_hand_crop.TestCropGeometry.test_content_and_margin) ... ok
+test_invalid (test_hand_crop.TestCropGeometry.test_invalid) ... ok
+test_round_outwards (test_hand_crop.TestCropGeometry.test_round_outwards) ... ok
+test_identity_structure_and_rotation (test_hand_crop.TestPlan.test_identity_structure_and_rotation) ... ok
+test_content_and_dpi (test_hand_crop_export.TestCropExport.test_content_and_dpi) ... /Users/hyunjun_macbook_pro/Documents/Univ/논회실/tests/test_hand_crop_export.py:34: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  self.assertLess(min(im.convert('L').crop((60*dpi//72,626*dpi//72,460*dpi//72,630*dpi//72)).getdata()),100)
+ok
+test_invalid_page_is_not_silently_dropped (test_hand_crop_export.TestCropExport.test_invalid_page_is_not_silently_dropped) ... [ERROR] 손그림 추출 실패: 선택 페이지가 PDF 범위를 벗어났습니다.
+ok
+test_invalid_plan_writes_no_png (test_hand_crop_export.TestCropExport.test_invalid_plan_writes_no_png) ... [ERROR] 손그림 추출 실패: crop content outside page
+ok
+test_missing_plan_and_default (test_hand_crop_export.TestCropExport.test_missing_plan_and_default) ... [ERROR] 손그림 추출 실패: --crop requires --crop-plan PATH; 스킬의 시각 판독 단계로 계획을 생성하세요.
+ok
+test_multi_experiment_report_keeps_pending (test_hand_crop_export.TestCropExport.test_multi_experiment_report_keeps_pending) ... ok
+test_netlist_subset_name_stability (test_hand_crop_export.TestCropExport.test_netlist_subset_name_stability) ... ok
+test_pending_and_resume (test_hand_crop_export.TestCropExport.test_pending_and_resume) ... ok
+test_rotation (test_hand_crop_export.TestCropExport.test_rotation) ... ok
+test_배포본에서_판형_래스터를_꺼낸다 (test_hand_grid.BoardExtraction.test_배포본에서_판형_래스터를_꺼낸다) ... ok
+test_없는_쪽을_부르면_거절한다 (test_hand_grid.BoardExtraction.test_없는_쪽을_부르면_거절한다) ... ok
+test_추가_사진이나_스탬프가_있어도_타일_판형을_정상_추출한다 (test_hand_grid.BoardExtraction.test_추가_사진이나_스탬프가_있어도_타일_판형을_정상_추출한다) ... ok
+test_가로줄이_행_위치를_밀지_않는다 (test_hand_grid.BorderLine.test_가로줄이_행_위치를_밀지_않는다)
+개수만 맞고 자리가 밀리면 맞춤 잔차가 관문을 넘는다. ... ok
+test_꽉_찬_가로줄이_있어도_63행_28열을_찾는다 (test_hand_grid.BorderLine.test_꽉_찬_가로줄이_있어도_63행_28열을_찾는다) ... ok
+test_홀_행은_거르지_않는다 (test_hand_grid.BorderLine.test_홀_행은_거르지_않는다)
+홀 행의 어둠 비율은 0.33 을 넘지 않는다 — 문턱 0.45 아래다. ... ok
+test_렌더러_홀이_페이지_픽셀로_옮겨진다 (test_hand_grid.Fit.test_렌더러_홀이_페이지_픽셀로_옮겨진다) ... ok
+test_잔차가_3px_아래다 (test_hand_grid.Fit.test_잔차가_3px_아래다) ... ok
+test_좌표표를_렌더러에서_읽는다 (test_hand_grid.Fit.test_좌표표를_렌더러에서_읽는다)
+숫자를 베껴 적으면 한쪽만 고쳤을 때 갈린다. ... ok
+test_행_간격이_단조_증가한다 (test_hand_grid.Fit.test_행_간격이_단조_증가한다) ... ok
+test_검출된_열은_왼쪽에서_오른쪽_순이다 (test_hand_grid.GridDetection.test_검출된_열은_왼쪽에서_오른쪽_순이다) ... ok
+test_열_28개와_행_63개를_찾는다 (test_hand_grid.GridDetection.test_열_28개와_행_63개를_찾는다) ... ok
+test_거꾸로_된_행_범위는_거절한다 (test_hand_grid.Overlay.test_거꾸로_된_행_범위는_거절한다) ... ok
+test_격자를_덮은_그림이_원본과_크기가_같다 (test_hand_grid.Overlay.test_격자를_덮은_그림이_원본과_크기가_같다) ... /Users/hyunjun_macbook_pro/Documents/Univ/논회실/tests/test_hand_grid.py:159: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_ek6ka5m/grid.png'>
+  self.assertEqual(Image.open(out).size, self.page.size)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_쪽을_300dpi_로_그린다 (test_hand_grid.Overlay.test_쪽을_300dpi_로_그린다) ... ok
+test_크롭은_요청한_행_범위만큼_잘라_확대한다 (test_hand_grid.Overlay.test_크롭은_요청한_행_범위만큼_잘라_확대한다) ... /opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/case.py:615: ResourceWarning: unclosed file <_io.BufferedReader name='/var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_ek6ka5m/crop.png'>
+  result = method()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_단자대_주소를_읽는다 (test_hand_transcript.Address.test_단자대_주소를_읽는다) ... ok
+test_레일_주소를_읽는다 (test_hand_transcript.Address.test_레일_주소를_읽는다) ... ok
+test_렌더러가_내는_주소를_그대로_읽는다 (test_hand_transcript.Address.test_렌더러가_내는_주소를_그대로_읽는다)
+`addr()` 출력과 문법이 갈리면 비교가 성립하지 않는다. ... ok
+test_모르는_주소는_거절한다 (test_hand_transcript.Address.test_모르는_주소는_거절한다) ... ok
+test_전원잭을_읽는다 (test_hand_transcript.Address.test_전원잭을_읽는다) ... ok
+test_pin1_col_f_면_핀이_거울상이다 (test_hand_transcript.ChipPins.test_pin1_col_f_면_핀이_거울상이다)
+노치가 아래를 보게 그린 칩. pin 1~7 이 f 열, 8~14 가 e 열이다. ... ok
+test_pin1_col_은_e_나_f_만_받는다 (test_hand_transcript.ChipPins.test_pin1_col_은_e_나_f_만_받는다)
+DIP-14 는 채널을 걸친다. 다른 열은 핀 모델이 없다. ... ok
+test_핀_배치가_렌더러와_같다 (test_hand_transcript.ChipPins.test_핀_배치가_렌더러와_같다)
+`draw_chip` 이 꽂는 자리와 한 글자도 갈리면 안 된다. ... ok
+test_LED_와_저항을_꼬리표로_묶어_사슬을_만든다 (test_hand_transcript.Parse.test_LED_와_저항을_꼬리표로_묶어_사슬을_만든다) ... ok
+test_pin1_col_f_를_읽는다 (test_hand_transcript.Parse.test_pin1_col_f_를_읽는다) ... ok
+test_pin1_col_이_e_f_밖이면_TranscriptError (test_hand_transcript.Parse.test_pin1_col_이_e_f_밖이면_TranscriptError)
+채널을 안 걸친 칩은 전사가 못 담는다. uncertain 으로 보내라고 말한다. ... ok
+test_pin1_col_이_없으면_e_다 (test_hand_transcript.Parse.test_pin1_col_이_없으면_e_다)
+기존 전사 파일은 pin1_col 이 없다. 그대로 읽혀야 한다. ... ok
+test_uncertain_은_주소로_보관된다 (test_hand_transcript.Parse.test_uncertain_은_주소로_보관된다) ... ok
+test_배선_내부_필수_열쇠가_없으면_TranscriptError (test_hand_transcript.Parse.test_배선_내부_필수_열쇠가_없으면_TranscriptError) ... ok
+test_브리지를_읽는다 (test_hand_transcript.Parse.test_브리지를_읽는다) ... ok
+test_이름표가_없으면_빈_목록이다 (test_hand_transcript.Parse.test_이름표가_없으면_빈_목록이다)
+2026-09-12 이전 전사에는 labels 가 없다. 그대로 읽혀야 한다. ... ok
+test_이름표를_읽는다 (test_hand_transcript.Parse.test_이름표를_읽는다) ... ok
+test_이름표에_name_이_없으면_거절한다 (test_hand_transcript.Parse.test_이름표에_name_이_없으면_거절한다) ... ok
+test_이름표의_name_이_비어_있으면_거절한다 (test_hand_transcript.Parse.test_이름표의_name_이_비어_있으면_거절한다) ... ok
+test_짝_없는_저항은_거절한다 (test_hand_transcript.Parse.test_짝_없는_저항은_거절한다) ... ok
+test_최소_전사를_읽는다 (test_hand_transcript.Parse.test_최소_전사를_읽는다) ... ok
+test_칩_내부_필수_열쇠가_없으면_TranscriptError (test_hand_transcript.Parse.test_칩_내부_필수_열쇠가_없으면_TranscriptError) ... ok
+test_필수_열쇠가_없으면_거절한다 (test_hand_transcript.Parse.test_필수_열쇠가_없으면_거절한다) ... ok
+
+----------------------------------------------------------------------
+Ran 143 tests in 12.621s
+
+OK
+[SUCCESS] 5개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp08d2ws6r/실험01_1-1_손그림_3입력_AND.png (464 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp08d2ws6r/실험01_1-2_손그림_3입력_OR.png (463 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp08d2ws6r/실험01_2-1_손그림_3입력_NAND.png (464 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp08d2ws6r/실험01_2-2_손그림_3입력_NOR.png (467 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp08d2ws6r/실험01_3_손그림_복합논리회로.png (470 KB)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmps22adksz/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp6cj6b59a/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpp1prxbe_/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpwg30se4q/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpfzyhwsjc/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpw6udvdgd/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp96w0p2nx/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmptnaiy96e/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpo7jfiu7d/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9uhjdok8/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9mqlfk9p/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpf_6h_p5q/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp06t49iv1/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmkk7j25p/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpjnka0svt/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmphkm0dim3/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp5yavvfou/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9hc19lst/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpovrqb3w_/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpntf4buzg/e3_hs.png (1996x1728, 결선 22단계, 새 신호선 7 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpuv33m7um/e3_hs.png (1996x1728, 결선 22단계, 새 신호선 7 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp0mgzn4aj/e2_inv.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpodpp_w8z/e2_tpd.png (1996x1564, 결선 15단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpua2vycc_/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmptj4t_i63/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpk2ldeewq/e3_hs.png (1996x1728, 결선 22단계, 새 신호선 7 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpsrkq3ova/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3vtyb27e/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp4229j9co/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpux4qycnu/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpk5phr7j7/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp4jnlgbh8/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp0h77v28q/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpypeyup4h/e1_comb.png (1996x1662, 결선 30단계, 새 신호선 11 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp85kbap6v/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp0q2apil9/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpzmwe1z1a/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpm90xl5ev/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_7hblwva/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpzthnhx3b/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3eh3wfrf/e2_inv.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpnl5rku3g/e2_inv.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpokup2kns/e2_schmitt.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpgbcp_sgo/e2_schmitt.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmppyw9mftw/prev.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_vhbfexm/e2_schmitt_s1.png (1996x1564, 결선 1단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpwho4ob6j/prev.png (1996x1564, 결선 7단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp4gno1_1y/e2_schmitt_s1.png (1996x1564, 결선 1단계, 새 신호선 0 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp49lonyjd/e2_tpd.png (1996x1564, 결선 15단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpb7oaf6g0/e2_tpd.png (1996x1564, 결선 15단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmprj15tn5q/e3_ha.png (1996x1728, 결선 19단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmparfiw91s/e3_ha.png (1996x1728, 결선 19단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpxbt6h9af/e3_fa.png (1996x1728, 결선 27단계, 새 신호선 12 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpw7og5kdv/e3_fa.png (1996x1728, 결선 27단계, 새 신호선 12 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpzbrticva/e3_fa_s1.png (1996x1728, 결선 16단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp0mr9ih64/e3_fa_s1.png (1996x1728, 결선 16단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8rc4qhqd/prev.png (1996x1728, 결선 16단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8rc4qhqd/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp6d7ldjg5/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpyerg30ou/e3_fa_s2.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmmkjvu3g/prev.png (1996x1728, 결선 16단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmmkjvu3g/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpes6mj3n1/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpigk9zc9g/e3_fa_s2.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp93db_coc/prev.png (1996x1728, 결선 18단계, 새 신호선 5 · 걷는 선 0)
+[WARN] 새 신호선이 5 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpnh3fnjpp/e3_fa_s3.png (1996x1728, 결선 4단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_cgeoz9d/prev.png (1996x1728, 결선 18단계, 새 신호선 5 · 걷는 선 0)
+[WARN] 새 신호선이 5 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmph82zi9q1/e3_fa_s3.png (1996x1728, 결선 4단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpk3bu2qj3/prev.png (1996x1728, 결선 21단계, 새 신호선 8 · 걷는 선 0)
+[WARN] 새 신호선이 8 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpk3bu2qj3/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpgoizbx7y/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpllywlvtj/e3_fa_s4.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3hb62kt1/prev.png (1996x1728, 결선 21단계, 새 신호선 8 · 걷는 선 0)
+[WARN] 새 신호선이 8 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3hb62kt1/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpnd172scb/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpo51fjwd3/e3_fa_s4.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpp47tou_8/prev.png (1996x1728, 결선 23단계, 새 신호선 10 · 걷는 선 0)
+[WARN] 새 신호선이 10 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpp47tou_8/next.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpntlql_hr/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_lzaj8di/e3_fa_s5.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp6x1tvutn/prev.png (1996x1728, 결선 23단계, 새 신호선 10 · 걷는 선 0)
+[WARN] 새 신호선이 10 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp6x1tvutn/next.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpg75b2b1w/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp5xzyv4kn/e3_fa_s5.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_nxvc62n/e3_hs.png (1996x1728, 결선 22단계, 새 신호선 7 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp7kj2t588/e3_hs.png (1996x1728, 결선 22단계, 새 신호선 7 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpt33qnipe/e3_fs.png (1996x1728, 결선 31단계, 새 신호선 14 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9z70f_lk/e3_fs.png (1996x1728, 결선 31단계, 새 신호선 14 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpzg8e6t3l/prev.png (1996x1728, 결선 27단계, 새 신호선 12 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpzg8e6t3l/next.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 3)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpw_a3k8w3/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 3)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpdk5q4clo/e3_fs_s1.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpramx8ucw/prev.png (1996x1728, 결선 27단계, 새 신호선 12 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpramx8ucw/next.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 3)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp5zv5gsy0/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 3)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpvwy6n15h/e3_fs_s1.png (1996x1728, 결선 6단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmk1m__rw/prev.png (1996x1728, 결선 29단계, 새 신호선 12 · 걷는 선 0)
+[WARN] 새 신호선이 12 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmk1m__rw/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp14rztgm9/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1aj_3dym/e3_fs_s2.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpbbd68e2g/prev.png (1996x1728, 결선 29단계, 새 신호선 12 · 걷는 선 0)
+[WARN] 새 신호선이 12 가닥이다 (예산 3) — 관측 노드 하나로 단계를 더 쪼갠다
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpbbd68e2g/next.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpr_m203tx/prev.png (1996x1728, 결선 0단계, 새 신호선 0 · 걷는 선 1)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmplm_pgqe9/e3_fs_s2.png (1996x1728, 결선 3단계, 새 신호선 3 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpg4yvnk1e/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp15l3vr5b/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_trlpiki/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpwk16s7ff/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpxbw0g9e3/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpq2b0gjnx/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9k76cxnr/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpbh334jyd/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp735o9b6t/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmppkdql9rc/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp6652m8z_/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpqk9m9jd9/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpqcrv62sd/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpx3l9rmwy/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp559jvohu/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmphpdqw5rd/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmphtyydc_d/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpag7wh1jy/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpjbmbz965/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8_p2wz2d/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmplaw7_muz/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpcbitymbq/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpnbznbpnb/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_s8vy75_/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpfibasgcy/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpr8wtvpq_/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpkf75o9lw/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpej_mamlx/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmppmocca8k/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpyroz_mgj/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp7iheoakv/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp7acp29bi/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp5jgjjhgt/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3q2xro0l/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpv27bzlbd/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp371g0aqj/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpxvc90280/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpv4h7zz3c/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp3p4dwt4n/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1528gzeg/e1_or.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpr85nlsyt/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpvwg7tg5r/e1_nor.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpteer_dut/e1_comb.png (1996x1662, 결선 30단계, 새 신호선 11 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpp05sv3gf/x.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpnyionclw/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmposj43t2m/e1_and.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpyat70a8u/e1_or.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpz8unks99/e1_or.png (1996x1564, 결선 16단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpcgk9nyky/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp2kp124ob/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpk2g_ypzn/e1_nor.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpso_dol8u/e1_nor.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpxhkl58wr/e1_nor.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp_5wr3muo/e1_nor.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8bj9n3p4/e1_comb.png (1996x1662, 결선 30단계, 새 신호선 11 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp79rgg0xy/e1_comb.png (1996x1662, 결선 30단계, 새 신호선 11 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpp3jkkbqc/e1_comb.png (1996x1662, 결선 30단계, 새 신호선 11 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1gf156cu/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmplztwa9eu/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmph9rb8guf/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9_z5mjrh/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpmintwb0n/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpbkf_daxy/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp4xcj3o8f/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp9044t3_x/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp0cjk8q4b/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpsvnp66_v/e1_nand.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpju1nbugk/out/실험99_손그림_p2.png (3 KB)
+[PENDING] 3개의 손그림 PNG 생성 완료:
+사용자 확인 필요 페이지: [1]; crop-report.json과 candidates/를 확인하세요.
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmptvyit_k2/out/실험02_손그림_p2.png (2 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmptvyit_k2/out/실험03_손그림_p3.png (2 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmptvyit_k2/out/실험03_손그림_p4.png (2 KB)
+[PENDING] 1개의 손그림 PNG 생성 완료:
+사용자 확인 필요 페이지: [2]; crop-report.json과 candidates/를 확인하세요.
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp86_ky3wh/out/실험99_손그림_p1.png (2 KB)
+[SUCCESS] 1개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp86_ky3wh/out/실험99_손그림_p2.png (2 KB)
+[SUCCESS] Exported: /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmphu__5ehv/x.png (1996x1564, 결선 18단계, 새 신호선 6 · 걷는 선 0)
+<sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

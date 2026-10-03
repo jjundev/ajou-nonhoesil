@@ -1,0 +1,6 @@
+{
+  ".claude/skills/export-hand-diagram/SKILL.md": "42eb349995cb288271fce92d651dcb2ddf9aae9c9777a8fe7879d9e73765c9cc",
+  ".claude/skills/export-hand-diagram/references/crop-plan.md": "5c8c385f165251f51ddfe5d4086620ac284e7433d10ff3101b197ce61106b006",
+  "scripts/lab/export_hand_diagrams.py": "6ecb07eb445c34f4177b43f03f90850ee0efb1baf27b179f87693147e5d3b61a",
+  "output/validation/hand-diagram-crop/ambiguity/source.pdf": "d6c9bc6a1531e20246363148b77c57b02f778793fa2b773b8945f86f55fdb24d"
+}

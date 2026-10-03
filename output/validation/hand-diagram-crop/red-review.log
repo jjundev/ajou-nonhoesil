@@ -1,0 +1,78 @@
+test_content_and_dpi (test_hand_crop_export.TestCropExport.test_content_and_dpi) ... /Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py:34: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  self.assertLess(min(im.convert('L').crop((60*dpi//72,626*dpi//72,460*dpi//72,630*dpi//72)).getdata()),100)
+ok
+test_invalid_page_is_not_silently_dropped (test_hand_crop_export.TestCropExport.test_invalid_page_is_not_silently_dropped) ... [ERROR] 손그림 추출 실패: 선택 페이지가 PDF 범위를 벗어났습니다.
+ok
+test_invalid_plan_writes_no_png (test_hand_crop_export.TestCropExport.test_invalid_plan_writes_no_png) ... [ERROR] 손그림 추출 실패: crop content outside page
+ok
+test_missing_plan_and_default (test_hand_crop_export.TestCropExport.test_missing_plan_and_default) ... [ERROR] 손그림 추출 실패: --crop requires --crop-plan PATH; 스킬의 시각 판독 단계로 계획을 생성하세요.
+ok
+test_multi_experiment_report_keeps_pending (test_hand_crop_export.TestCropExport.test_multi_experiment_report_keeps_pending) ... FAIL
+test_netlist_subset_name_stability (test_hand_crop_export.TestCropExport.test_netlist_subset_name_stability) ... FAIL
+test_pending_and_resume (test_hand_crop_export.TestCropExport.test_pending_and_resume) ... ok
+test_rotation (test_hand_crop_export.TestCropExport.test_rotation) ... ok
+
+======================================================================
+FAIL: test_multi_experiment_report_keeps_pending (test_hand_crop_export.TestCropExport.test_multi_experiment_report_keeps_pending)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 90, in test_multi_experiment_report_keeps_pending
+    self.assertEqual([p['page'] for p in report['pages']],[1,2,3,4])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [3, 4] != [1, 2, 3, 4]
+
+First differing element 0:
+3
+1
+
+Second list contains 2 additional elements.
+First extra element 2:
+3
+
+- [3, 4]
++ [1, 2, 3, 4]
+
+======================================================================
+FAIL: test_netlist_subset_name_stability (test_hand_crop_export.TestCropExport.test_netlist_subset_name_stability)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py", line 77, in test_netlist_subset_name_stability
+    self.assertEqual(subset,[full[1]])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['실험01_1-1_손그림_3입력_AND.png'] != ['실험01_1-2_손그림_3입력_OR.png']
+
+First differing element 0:
+'실험01_1-1_손그림_3입력_AND.png'
+'실험01_1-2_손그림_3입력_OR.png'
+
+- ['실험01_1-1_손그림_3입력_AND.png']
+?          ^         ^^^
+
++ ['실험01_1-2_손그림_3입력_OR.png']
+?          ^         ^^
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.105s
+
+FAILED (failures=2)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp8vl1lxt3/out/실험99_손그림_p2.png (3 KB)
+[PENDING] 3개의 손그림 PNG 생성 완료:
+사용자 확인 필요 페이지: [1]; crop-report.json과 candidates/를 확인하세요.
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp2argq0bp/out/실험02_1-2_손그림_슈미트트리거_입출력특성.png (2 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp2argq0bp/out/실험03_1-2_손그림_전가산기.png (2 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp2argq0bp/out/실험03_2-2_손그림_전감산기.png (2 KB)
+[PENDING] 1개의 손그림 PNG 생성 완료:
+사용자 확인 필요 페이지: [2]; crop-report.json과 candidates/를 확인하세요.
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpgs0eds4u/out/실험99_손그림_p1.png (2 KB)
+[SUCCESS] 1개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmpgs0eds4u/out/실험99_손그림_p2.png (2 KB)
+<sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

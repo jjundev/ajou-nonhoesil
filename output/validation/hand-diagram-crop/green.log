@@ -1,0 +1,36 @@
+test_clamp_margin (test_hand_crop.TestCropGeometry.test_clamp_margin) ... ok
+test_content_and_margin (test_hand_crop.TestCropGeometry.test_content_and_margin) ... ok
+test_invalid (test_hand_crop.TestCropGeometry.test_invalid) ... ok
+test_round_outwards (test_hand_crop.TestCropGeometry.test_round_outwards) ... ok
+test_identity_structure_and_rotation (test_hand_crop.TestPlan.test_identity_structure_and_rotation) ... ok
+test_content_and_dpi (test_hand_crop_export.TestCropExport.test_content_and_dpi) ... /Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop_export.py:34: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  self.assertLess(min(im.convert('L').crop((60*dpi//72,626*dpi//72,460*dpi//72,630*dpi//72)).getdata()),100)
+ok
+test_invalid_page_is_not_silently_dropped (test_hand_crop_export.TestCropExport.test_invalid_page_is_not_silently_dropped) ... [ERROR] 손그림 추출 실패: 선택 페이지가 PDF 범위를 벗어났습니다.
+ok
+test_invalid_plan_writes_no_png (test_hand_crop_export.TestCropExport.test_invalid_plan_writes_no_png) ... [ERROR] 손그림 추출 실패: crop content outside page
+ok
+test_missing_plan_and_default (test_hand_crop_export.TestCropExport.test_missing_plan_and_default) ... [ERROR] 손그림 추출 실패: --crop requires --crop-plan PATH; 스킬의 시각 판독 단계로 계획을 생성하세요.
+ok
+test_pending_and_resume (test_hand_crop_export.TestCropExport.test_pending_and_resume) ... ok
+test_rotation (test_hand_crop_export.TestCropExport.test_rotation) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.094s
+
+OK
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p2.png (3 KB)
+[SUCCESS] 2개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p1.png (3 KB)
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp1a1z3054/out/실험99_손그림_p2.png (3 KB)
+[PENDING] 1개의 손그림 PNG 생성 완료:
+사용자 확인 필요 페이지: [2]; crop-report.json과 candidates/를 확인하세요.
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp41b65oeq/out/실험99_손그림_p1.png (2 KB)
+[SUCCESS] 1개의 손그림 PNG 생성 완료:
+  - /var/folders/t7/zhvnpb1j4tb2pszpcnhlnt2h0000gn/T/tmp41b65oeq/out/실험99_손그림_p1.png (2 KB)
+<sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

@@ -1,0 +1,143 @@
+[
+  {
+    "path": "boundaries-p001.png",
+    "bytes": 563478,
+    "sha256": "8086293261067b499b79b66099ee92aed9554f8157baa146bb7b2b148b8c84ce",
+    "size": [
+      1815,
+      1251
+    ]
+  },
+  {
+    "path": "boundaries-p002.png",
+    "bytes": 560886,
+    "sha256": "d4d3e4d72705d92ad7314958c602932283f60b517f6772357c5a08de13681e9e",
+    "size": [
+      1815,
+      1251
+    ]
+  },
+  {
+    "path": "crop-plan.json",
+    "bytes": 2975,
+    "sha256": "d8ad1715ad6780e0f371a88c5a053b21a3295e2ed2155c9c95a35b82975689fb"
+  },
+  {
+    "path": "crop-report.json",
+    "bytes": 798,
+    "sha256": "6557a429321bde2557ca3474ca3eea07bacc26bf27ad83d74ef617743c3cadb4"
+  },
+  {
+    "path": "execution-log.md",
+    "bytes": 4076,
+    "sha256": "1b125606e35aaf65ea102b55504772aae23e428329f864e66238f6101e166da2"
+  },
+  {
+    "path": "full-p001.png",
+    "bytes": 567992,
+    "sha256": "992bdaddfb31ba7be72fe670d9d6ae0d69721484bd993969af35e20301d2b2d6",
+    "size": [
+      1815,
+      1251
+    ]
+  },
+  {
+    "path": "full-p002.png",
+    "bytes": 563643,
+    "sha256": "92483e8ffa0f2b86c3f038794d2e8dbcd32d07f68d4550a0285d9095ea24acbe",
+    "size": [
+      1815,
+      1251
+    ]
+  },
+  {
+    "path": "zoom-p1-bottom.png",
+    "bytes": 39208,
+    "sha256": "799c2cc9d028a9a0685d754249f9301fdaae3c925fce1411648de98d4ca59b5c",
+    "size": [
+      1100,
+      240
+    ]
+  },
+  {
+    "path": "zoom-p1-left.png",
+    "bytes": 90616,
+    "sha256": "2b84b413782926f6cd8481b5dd6c8f3823efa28b2316b7095c5ebf1f311b3aab",
+    "size": [
+      250,
+      1010
+    ]
+  },
+  {
+    "path": "zoom-p1-right.png",
+    "bytes": 116507,
+    "sha256": "3e95b862d115c740ebdd6bc7e192d1c491c5f465ccd568e0b3e85b5e09dc9127",
+    "size": [
+      700,
+      1010
+    ]
+  },
+  {
+    "path": "zoom-p1-top.png",
+    "bytes": 144736,
+    "sha256": "a1fbe24e2e3e50c7b8f3f206af302e9d92f9ce13df88221c91fb692c8300b5c2",
+    "size": [
+      1500,
+      380
+    ]
+  },
+  {
+    "path": "zoom-p2-bottom.png",
+    "bytes": 39208,
+    "sha256": "799c2cc9d028a9a0685d754249f9301fdaae3c925fce1411648de98d4ca59b5c",
+    "size": [
+      1100,
+      240
+    ]
+  },
+  {
+    "path": "zoom-p2-left.png",
+    "bytes": 86028,
+    "sha256": "d2e06a4be005992e4538ade50d0e03d2ac5eaa236c6db99ebdf35a73d96d2351",
+    "size": [
+      250,
+      1010
+    ]
+  },
+  {
+    "path": "zoom-p2-right.png",
+    "bytes": 110643,
+    "sha256": "759c4cd869191cbaf51ae8ab126f329e80f31b532022a21532400799999a66d2",
+    "size": [
+      700,
+      1010
+    ]
+  },
+  {
+    "path": "zoom-p2-top.png",
+    "bytes": 147492,
+    "sha256": "aefd7816646a36981be48b5eefe55ae93eae1c16a4b4b8dcded3ac730ad82adc",
+    "size": [
+      1500,
+      380
+    ]
+  },
+  {
+    "path": "실험04_1-1_손그림_4x1MUX.png",
+    "bytes": 1995349,
+    "sha256": "a1e306df030f6dbc49fbfcc6239eb7acfd5985e2875e8fe49ab04d38c4408743",
+    "size": [
+      1753,
+      2520
+    ]
+  },
+  {
+    "path": "실험04_2-1_손그림_1x4DMUX.png",
+    "bytes": 1959727,
+    "sha256": "d94fe2802ae1ea97b368276ccc4922fd093c3799ee432545db2459a3188c0212",
+    "size": [
+      1703,
+      2441
+    ]
+  }
+]

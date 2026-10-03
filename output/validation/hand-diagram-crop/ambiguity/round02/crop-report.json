@@ -1,0 +1,59 @@
+{
+  "schema": "hand-crop-report/v1",
+  "source_sha256": "d6c9bc6a1531e20246363148b77c57b02f778793fa2b773b8945f86f55fdb24d",
+  "dpi": 300,
+  "pages": [
+    {
+      "page": 1,
+      "status": "pending",
+      "box": null,
+      "output": null,
+      "margin_clipped": false,
+      "candidates": [
+        "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p001-exclude.png",
+        "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p001-include.png"
+      ],
+      "preview": "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p001-boundaries.png",
+      "ambiguous": [
+        {
+          "label": "왼쪽 40~50행 높이의 보라색 물음표",
+          "box": [
+            385,
+            459,
+            400,
+            483
+          ],
+          "reason": "고립된 물음표이며 결선 확인 지시인지 설명 메모인지 시각 정보만으로 판정 불가"
+        }
+      ],
+      "existing_output_unchanged": null,
+      "experiment": 4
+    },
+    {
+      "page": 2,
+      "status": "pending",
+      "box": null,
+      "output": null,
+      "margin_clipped": false,
+      "candidates": [
+        "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p002-exclude.png",
+        "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p002-include.png"
+      ],
+      "preview": "output/validation/hand-diagram-crop/ambiguity/round02/candidates/p002-boundaries.png",
+      "ambiguous": [
+        {
+          "label": "왼쪽 40~50행 높이의 보라색 물음표",
+          "box": [
+            385,
+            459,
+            400,
+            483
+          ],
+          "reason": "고립된 물음표이며 결선 확인 지시인지 설명 메모인지 시각 정보만으로 판정 불가"
+        }
+      ],
+      "existing_output_unchanged": null,
+      "experiment": 4
+    }
+  ]
+}

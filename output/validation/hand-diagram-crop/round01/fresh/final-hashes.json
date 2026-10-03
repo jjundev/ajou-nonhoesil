@@ -1,0 +1,20 @@
+[
+  {
+    "file": "실험04_1-1_손그림_4x1MUX.png",
+    "sha256": "50a26968b7eb69d94509c75d99f5cce55c6699b078f85d635b4a6fac7c3e5c80",
+    "size_px": [
+      1758,
+      2524
+    ],
+    "bytes": 1995909
+  },
+  {
+    "file": "실험04_2-1_손그림_1x4DMUX.png",
+    "sha256": "64e986f3118fcf1ef25d99869a98a5fdadabb7adab4100646622ce83c21dece6",
+    "size_px": [
+      1696,
+      2444
+    ],
+    "bytes": 1958979
+  }
+]

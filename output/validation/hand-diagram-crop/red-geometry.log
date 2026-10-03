@@ -1,0 +1,21 @@
+test_hand_crop (unittest.loader._FailedTest.test_hand_crop) ... ERROR
+
+======================================================================
+ERROR: test_hand_crop (unittest.loader._FailedTest.test_hand_crop)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_hand_crop
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 426, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 367, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/Users/hyunjun_macbook_pro/.codex/worktrees/hand-diagram-crop/논회실/tests/test_hand_crop.py", line 7, in <module>
+    from scripts.lab.hand_crop import crop_box, pixel_box, load_crop_plan
+ModuleNotFoundError: No module named 'scripts.lab.hand_crop'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

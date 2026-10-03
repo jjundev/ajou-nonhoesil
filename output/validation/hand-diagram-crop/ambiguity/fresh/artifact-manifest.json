@@ -1,0 +1,50 @@
+[
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-boundaries.png",
+    "width": 5042,
+    "height": 3475,
+    "bytes": 2245926
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-exclude.png",
+    "width": 1758,
+    "height": 2524,
+    "bytes": 1996322
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/candidates/p001-include.png",
+    "width": 1830,
+    "height": 2524,
+    "bytes": 2005258
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/detail-p001.png",
+    "width": 230,
+    "height": 130,
+    "bytes": 7368
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/detail-p002.png",
+    "width": 220,
+    "height": 126,
+    "bytes": 19652
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/full-p001.png",
+    "width": 1815,
+    "height": 1251,
+    "bytes": 568478
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/full-p002.png",
+    "width": 1815,
+    "height": 1251,
+    "bytes": 564155
+  },
+  {
+    "path": "output/validation/hand-diagram-crop/ambiguity/fresh/실험04_2-1_손그림_1x4DMUX.png",
+    "width": 1699,
+    "height": 2444,
+    "bytes": 1959320
+  }
+]
