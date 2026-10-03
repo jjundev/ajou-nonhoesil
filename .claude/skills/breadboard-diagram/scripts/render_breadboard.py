@@ -467,6 +467,18 @@ def column_table(board='v1'):
     return _hole_columns(board_spec(board).cols)
 
 
+def _shared_of(cols):
+    """두 블록이 같은 x 로 부르는 홀 열 — v2 가운데 레일. v1 은 빈 집합이다."""
+    left = {x for k, x in cols['left'].items() if not k.startswith('chip')}
+    right = {x for k, x in cols['right'].items() if not k.startswith('chip')}
+    return left & right
+
+
+def shared_columns(board='v1'):
+    """판형 `board` 에서 두 블록이 나눠 쓰는 열의 x. 손그림 검토의 격자 라벨이 접두어를 뺄 때 쓴다."""
+    return _shared_of(board_spec(board).cols)
+
+
 class BreadboardRenderer:
     def __init__(self, template_path=None, baseline=None, layer=None, board='v1'):
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
@@ -865,21 +877,28 @@ class BreadboardRenderer:
         if ra != rb:
             self._rail_uf[rb] = ra
 
+    def _shared_xs(self):
+        """두 블록이 같은 x 로 부르는 열(v2 가운데 레일). v1 은 빈 집합이다."""
+        return _shared_of(self.cols)
+
     def touch_rail(self, kind, x):
         """이 배선이 어느 전원 레일에 닿았는지 적어 둔다."""
         if kind in self._touched and x in self._rail_xs():
             self._touched[kind].add(x)
 
     def _build_addr_map(self):
-        """x 좌표 -> 사람이 읽는 이름. 결선 순서표의 주소를 자동으로 만든다."""
-        out = {}
+        """x 좌표 -> 사람이 읽는 이름. 결선 순서표의 주소를 자동으로 만든다.
+
+        두 블록이 같은 x 로 부르는 열(v2 가운데 레일)은 좌·우 접두어 없이 한 번만 적는다 —
+        한 레일이다(설계 §3). v1 은 그런 열이 없어 이름이 그대로다.
+        """
         names = {'gnd': 'GND레일', 'vcc': 'VCC레일',
                  'mid_gnd': '중앙GND레일', 'mid_vcc': '중앙VCC레일'}
-        for block, blabel in (('left', '좌'), ('right', '우')):
-            for key, x in self.cols[block].items():
-                if key.startswith('chip'):
-                    continue
-                out[x] = f'{blabel} {names.get(key, key)}'
+        shared = self._shared_xs()
+        out = {}
+        for x, (block, key) in _hole_columns(self.cols).items():
+            name = names.get(key, key)
+            out[x] = name if x in shared else f"{'좌' if block == 'left' else '우'} {name}"
         return out
 
     def _build_sym_map(self):
@@ -1377,11 +1396,15 @@ class BreadboardRenderer:
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
         """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
 
-        이 템플릿의 레일쌍(좌 174/190, 중앙좌 468/484, 중앙우 542/558,
+        v1 기준 — 이 템플릿의 레일쌍(좌 174/190, 중앙좌 468/484, 중앙우 542/558,
         우 836/852)은 각각 **별개 스트립**이다. 칩 7번 핀을 좌측 GND 레일에
         내리고 미사용 입력을 중앙 GND 레일에 내리면 두 레일이 이어져 있지
         않아 미사용 입력이 뜬다. 그 점퍼를 명시적으로 그린다.
+        v2 는 가운데 레일이 하나라 좌 바깥 ↔ 가운데 두 가닥이면 된다. 같은 열을 이으면 오류다.
         """
+        if x_a == x_b:
+            raise ValueError(f'같은 레일 열을 잇는 브리지다(x={x_a}, {self._addr_map.get(x_a)}) — '
+                             '두 블록이 이름만 다르게 부르는 한 레일이다. 브리지할 것이 없다')
         key = (kind, min(x_a, x_b), max(x_a, x_b))
         if key in self._bridged:
             return

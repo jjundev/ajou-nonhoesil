@@ -192,5 +192,63 @@ class V2Spec(unittest.TestCase):
         self.assertEqual(red[1][1], self.spec.jack_route_y[0])
 
 
+class SharedMidRail(unittest.TestCase):
+    """v2 가운데 레일은 한 넷이고 접두어 없이 부른다(설계 §2·§3)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def v2(self):
+        bb = self.mod.BreadboardRenderer(board='v2')
+        bb.enable_steps()
+        return bb, bb.cols['left'], bb.cols['right']
+
+    def test_가운데_레일은_접두어_없이_부르고_소속은_좌다(self):
+        bb, L, R = self.v2()
+        self.assertEqual(bb.addr(R['mid_gnd'], bb.r_y(9)), '중앙GND레일9행')
+        self.assertEqual(bb.addr(L['mid_vcc'], bb.r_y(7)), '중앙VCC레일7행')
+        self.assertEqual(bb.sym(R['mid_gnd'], 9), ('left', 'mid_gnd', 9))
+        self.assertEqual(bb.addr(L['gnd'], bb.r_y(4)), '좌 GND레일4행')
+        self.assertEqual(bb.addr(R['gnd'], bb.r_y(4)), '우 GND레일4행')
+        self.assertEqual(self.mod.shared_columns('v2'), {L['mid_gnd'], L['mid_vcc']})
+
+    def test_v1_은_가운데_레일이_넷이다(self):
+        bb = self.mod.BreadboardRenderer()
+        c = bb.cols
+        self.assertEqual(self.mod.shared_columns('v1'), set())
+        self.assertEqual(bb.addr(c['left']['mid_gnd'], bb.r_y(11)), '좌 중앙GND레일11행')
+        self.assertEqual(bb.addr(c['right']['mid_gnd'], bb.r_y(10)), '우 중앙GND레일10행')
+
+    def test_왼쪽_칩_VCC와_오른쪽_LED_GND_가_브리지_없이_한_레일이다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)
+        bb.connect_power(5)                                  # pin 14 → 가운데 VCC
+        bb.led_chain(R['a'], 20, 'L1', '시험', block='right')  # 저항 아래 → 가운데 GND
+        nets = bb.nets()
+        vcc = next(n for n in nets if '74HC08#5 pin 14' in n['labels'])
+        gnd = next(n for n in nets if '저항1(330Ω) 아랫다리' in n['labels'])
+        self.assertIn('중앙VCC레일', vcc['labels'])
+        self.assertEqual(vcc['rails'], {'vcc'})
+        self.assertIn('중앙GND레일', gnd['labels'])
+        self.assertEqual(gnd['rails'], {'gnd'})
+        self.assertEqual(bb.bridges, [])
+
+    def test_가운데끼리_브리지하면_오류다(self):
+        bb, L, R = self.v2()
+        with self.assertRaisesRegex(ValueError, '같은 레일 열'):
+            bb.bridge_rails(L['mid_gnd'], R['mid_gnd'], 29, kind='gnd')
+
+    def test_가운데_레일_입력_배지는_가운데_VCC와_우_a_사이다(self):
+        bb, L, R = self.v2()
+        bb.draw_chip('74HC08', 5)
+        bb.partial = True
+        self.mod._input_jumper(bb, L, 9, 'A', '74HC08 pin 10', side='f')
+        name, box, _seg = bb.tag_boxes[-1]
+        self.assertEqual(name, 'A')
+        self.assertGreater(box[0], L['mid_vcc'])
+        self.assertLess(box[2], R['a'])
+
+
 if __name__ == "__main__":
     unittest.main()
