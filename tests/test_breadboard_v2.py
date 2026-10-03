@@ -387,5 +387,62 @@ class BoardContract(unittest.TestCase):
                 self.mod.build_all(board, os.path.join(d, 'out'))
 
 
+class Smoke(unittest.TestCase):
+    """v2 연기 시험 — 74HC08·74HC32 좌, LED 둘 우, 잭 → 좌 바깥 → 가운데 브리지.
+    R1~R10 을 다 통과해 PNG·사이드카가 나오고, 읽기면·따라 그리기 PDF 도 성립한다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.board = cls.mod.load_board_file(SMOKE, 'board_v2')
+        cls.tmp = tempfile.mkdtemp()
+        cls.made = cls.mod.build_all(cls.board, cls.tmp)
+        cls.bb = cls.board.build_v2_smoke(os.path.join(cls.tmp, 'again.png'))
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_PNG_와_사이드카가_나온다(self):
+        self.assertEqual(list(self.made), ['v2_smoke.png'])
+        with Image.open(os.path.join(self.tmp, 'v2_smoke.png')) as im:
+            self.assertEqual(im.size, (1200 * 2, (self.bb.r_y(35) + 20) * 2))
+        side = json.loads(Path(self.tmp, 'v2_smoke.json').read_text(encoding='utf-8'))
+        self.assertEqual(side['board'], 'v2')
+        self.assertEqual(len(side['steps']), 18)
+
+    def test_칩은_좌_LED_는_우_건너는_선은_둘이다(self):
+        self.assertEqual({ch['block'] for ch in self.bb.chips}, {'left'})
+        self.assertEqual({c['signal'][0] for c in self.bb.led_chains}, {'right'})
+        self.assertEqual(len(self.bb.block_crossings()), 2)
+        self.assertEqual(self.bb._block_role_violations(), [])
+
+    def test_전원은_잭에서_좌_바깥으로_들어와_가운데로_브리지된다(self):
+        self.assertEqual({(k, a[1], b[1]) for k, a, b in self.bb.bridges},
+                         {('gnd', 'gnd', 'mid_gnd'), ('vcc', 'vcc', 'mid_vcc')})
+        jack_ends = {w['to'][1] for w in self.bb.wiring()['wires'] if w['frm'][0] == 'jack'}
+        self.assertEqual({(blk, col) for blk, col, _r in jack_ends}, {('left', 'gnd'), ('left', 'vcc')})
+        R = self.bb.cols['right']
+        self.assertFalse([h for h in self.bb._leads if h[0] in (R['gnd'], R['vcc'])],
+                         '우 바깥 레일은 기본 배선에서 쓰지 않는다')
+
+    def test_배지가_번호_원_배선_홀을_가리지_않는다(self):
+        from tests.test_breadboard_readability import _badge_hits
+        for name, box, seg in self.bb.tag_boxes:
+            self.assertEqual(_badge_hits(self.bb, box, seg), [], name)
+
+    def test_번호_원끼리_겹치지_않는다(self):
+        from tests.test_breadboard_readability import _inter
+        boxes = self.bb.marker_boxes
+        hits = [(a, b) for i, a in enumerate(boxes) for b in boxes[i + 1:] if _inter(a, b)]
+        self.assertEqual(hits, [])
+
+    def test_따라_그리기_PDF_가_층마다_한_쪽이다(self):
+        """1200px 그림이 태블릿 쪽(210x420mm)에서 넘치거나 잘리면 `check_pdf` 가 멈춘다."""
+        from scripts.lab import trace_guide
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(trace_guide.make_pdf(self.board, Path(d) / 'guide.pdf'), 5)
+
+
 if __name__ == "__main__":
     unittest.main()
