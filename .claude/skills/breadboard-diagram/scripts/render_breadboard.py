@@ -572,6 +572,10 @@ class BreadboardRenderer:
         self.tag_boxes = []
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
+        # 번호 원의 **자리** — 그렸든 안 그렸든(층 그림의 흐린·숨긴 번호, 기준선 회색 선). v2 자동
+        # 자리(`_auto_marker`)는 이것을 피한다. 그려진 원만 피하면 층 그림과 완성본의 자리가
+        # 갈라져, 완성본은 통과하는데 층 그림이 R11 로 멈춘다(2026-10-04 검토). `readability` 만
+        self._marker_slots = []
         # 보드 밖 입력 꼬리표(`_tag`) 상자 — (글, (x0, y0, x1, y1)). 같은 행 입력이 둘이면
         # 꼬리표가 포개진다(2026-09-28 실험04 C2 S1·D) — `_input_jumper` 가 이걸 보고 비킨다
         self.margin_tag_boxes = []
@@ -1171,6 +1175,16 @@ class BreadboardRenderer:
         self._register_pass(points)
         if not kept and kind in ('sig', 'mid'):
             self.new_signal.append(key)
+        if self.spec.readability:
+            # 자리는 보이든 말든 늘 정한다 — 같은 선 순서면 완성본·층 그림·단계 그림이 같은 자리다
+            if marker_at is None:
+                marker_at = self._auto_marker(len(self._segments) - 1)
+                if marker_at is None:
+                    print(f'[WARN] 번호 원 자동 자리 없음 — {desc}: 옛 자리(첫 구간 가운데)에 찍는다. '
+                          'R11 에 걸리면 marker_at 을 직접 주거나 경로를 바꾼다', file=sys.stderr)
+            if marker_at is not None:
+                self._marker_slots.append((marker_at[0] - 8, marker_at[1] - 8,
+                                           marker_at[0] + 8, marker_at[1] + 8))
         if kept:
             self.kept.append(desc)
             return None
@@ -1179,8 +1193,6 @@ class BreadboardRenderer:
 
         n = len(self.steps) + 1
         if view == 'shown':
-            if marker_at is None and self.spec.readability:
-                marker_at = self._auto_marker(len(self._segments) - 1)
             if marker_at is None:
                 (x0, y0), (x1, y1) = points[0], points[1] if len(points) > 1 else points[0]
                 marker_at = ((x0 + x1) // 2, (y0 + y1) // 2)
@@ -1199,6 +1211,9 @@ class BreadboardRenderer:
         단계에는 반드시 준다** — 안 주면 표에는 번호가 있는데 그림에는 없어서,
         따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다.
         """
+        if self.spec.readability and marker_at is not None and not self._pull_parts:
+            self._marker_slots.append((marker_at[0] - 8, marker_at[1] - 8,
+                                       marker_at[0] + 8, marker_at[1] + 8))
         if self._keep_parts:
             self.kept.append(desc)      # 기준선 사슬의 부품 줄 — 번호 없이 회색
             return None
@@ -1726,8 +1741,9 @@ class BreadboardRenderer:
         box = (x - 8 - pad, y - 8 - pad, x + 8 + pad, y + 8 + pad)
         if any(box[0] <= hx <= box[2] and box[1] <= self.r_y(hr) <= box[3] for hx, hr in self._leads):
             return False
+        # 그려진 원이 아니라 정해진 **자리**를 피한다 — 층 그림에서 흐리게 둔 앞 번호도 완성본에선 있다
         if any(not (box[2] <= m[0] or m[2] <= box[0] or box[3] <= m[1] or m[3] <= box[1])
-               for m in self.marker_boxes):
+               for m in self._marker_slots + self.marker_boxes):
             return False
         if any(not (box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1])
                for b, _cx, _ch in self._chip_bodies()):
@@ -1749,7 +1765,7 @@ class BreadboardRenderer:
             if length < 24:
                 continue
             mid = length / 2
-            for off in range(0, int(mid - 12), 4):
+            for off in range(0, int(mid - 12) + 1, 4):     # +1: 길이 24~25 구간도 가운데 한 점은 본다
                 for t in sorted({mid - off, mid + off}):
                     x = round(a[0] + (b[0] - a[0]) * t / length)
                     y = round(a[1] + (b[1] - a[1]) * t / length)
@@ -1804,7 +1820,9 @@ class BreadboardRenderer:
     def needless_body_crossings(self):
         """R13 — 양 끝이 칩 기둥의 같은 쪽인데 그 칩 몸통을 가로지르는 신호선. 칩 이름·핀 번호를
         덮고 쓸데없이 돌아간다. 양 끝이 다른 쪽(칩 안 a↔f 이어 가기, a쪽 출력 → LED)이면 한 번은
-        건너야 하므로 안 본다."""
+        건너야 하므로 안 본다. 가로로 건너는 것만이 아니라 몸통 상자에 **들어가기만** 해도 본다 —
+        e·f 사이 골을 세로로 타는 선은 홀이 없어 R12 가 못 보고 칩 이름·핀 번호를 길게 덮는다
+        (2026-10-04 검토)."""
         out = []
         for kind, pts, desc in self._segments:
             if kind not in ('sig', 'mid'):
@@ -1812,9 +1830,7 @@ class BreadboardRenderer:
             for box, cx, ch in self._chip_bodies():
                 if (pts[0][0] < cx) != (pts[-1][0] < cx):
                     continue
-                if any(abs(a[1] - b[1]) < .5 and box[1] <= a[1] <= box[3]
-                       and min(a[0], b[0]) < box[0] and max(a[0], b[0]) > box[2]
-                       for a, b in zip(pts, pts[1:])):
+                if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])):
                     out.append(f"{desc} — 칩 {ch['label']}({ch['pin1_row']}행)")
         return out
 

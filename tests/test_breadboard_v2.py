@@ -418,6 +418,43 @@ class Readability(unittest.TestCase):
                       (L['d'], bb.r_y(9))], 'sig', '이어 감')
         self.assertEqual(bb.needless_body_crossings(), [])
 
+    def test_R13_같은_쪽_선이_칩_골을_세로로_타도_오류다(self):
+        """2026-10-04 검토 — e·f 사이 골은 홀이 없어 R12 가 못 보고, 몸통 전체를 가로지르는
+        구간도 없어 옛 R13 이 못 봤다. 칩 이름·핀 번호를 그 길이만큼 덮는다."""
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        cx, h = (L['e'] + L['f']) / 2, bb.spec.row_pitch / 2
+        bb.step_wire([(L['d'], bb.r_y(3)), (L['d'], bb.r_y(3) - h), (cx, bb.r_y(3) - h),
+                      (cx, bb.r_y(14) + h), (L['d'], bb.r_y(14) + h), (L['d'], bb.r_y(14))],
+                     'sig', '골 타기', marker_at=(L['a'] - 30, bb.r_y(30)))
+        with self.assertRaisesRegex(AssertionError, 'R13'):
+            bb.verify()
+
+    def _three(self, layer=None):
+        """셋째 선만 번호 원 자리를 손으로 준다 — 첫째·둘째는 자동 자리."""
+        bb = self.mod.BreadboardRenderer(board='v2', layer=layer)
+        bb.enable_steps()
+        bb.partial = True
+        a, h, y = bb.cols['left']['a'], bb.spec.row_pitch / 2, bb.r_y
+        bb.step_wire([(a, y(20)), (a, y(20) + h), (a - 20, y(20) + h), (a - 20, y(40) - h),
+                      (a, y(40) - h), (a, y(40))], 'sig', 'w1')
+        bb.step_wire([(a, y(22)), (a, y(22) + h), (a - 8, y(22) + h), (a - 8, y(38) - h),
+                      (a, y(38) - h), (a, y(38))], 'sig', 'w2')
+        bb.step_wire([(a, y(30)), (a - 10, y(30)), (a - 10, y(45)), (a, y(45))], 'sig', 'w3',
+                     marker_at=(a - 10, y(43)))
+        return bb
+
+    def test_자동_번호_원_자리는_층_그림에서도_완성본과_같다(self):
+        """2026-10-04 검토 재현 — 층 그림은 앞 번호의 원을 안 그린다. 자동 자리가 그려진 원만
+        피하면 층마다 자리가 달라져, 완성본은 통과하는데 층 (2,3) 이 R11 로 멈췄다
+        (make-trace-guide 가 층마다 export 한다)."""
+        final = self._three()
+        final.verify()
+        for lay in ((1, 3), (2, 3), (3, 3)):
+            bb = self._three(layer=lay)
+            bb.verify()
+            self.assertEqual(bb._marker_slots, final._marker_slots, lay)
+
     def test_v1_은_읽기_규칙을_안_돈다(self):
         bb, L = self.board('v1')
         bb.step_wire([(L['b'], bb.r_y(20)), (L['b'], bb.r_y(30))], 'sig', '홀 열 위 세로선')
