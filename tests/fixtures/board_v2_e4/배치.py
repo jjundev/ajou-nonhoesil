@@ -244,29 +244,11 @@ _R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
 
 
 def _box_clear(bb, x, y, path_pts):
-    """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀·다른 번호 원·자기 것 아닌 배선."""
-    x0, y0, x1, y1 = x - _R - 2, y - _R - 2, x + _R + 2, y + _R + 2
-    holes = [(hx, bb.r_y(hr)) for hx, hr in bb._leads] + [path_pts[0], path_pts[-1]]
-    if any(x0 <= hx <= x1 and y0 <= hy <= y1 for hx, hy in holes):
+    """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가. 판정은 엔진 `_marker_clear`(R11 과 같은
+    식)이고, 이 선은 아직 안 그렸으니 제 끝점 두 홀만 더 본다."""
+    if any(abs(hx - x) <= _R + 2 and abs(hy - y) <= _R + 2 for hx, hy in (path_pts[0], path_pts[-1])):
         return False
-    # 칩 몸통 — 칩 이름과 핀 번호가 거기 찍혀 있다
-    L = bb.cols['left']
-    for ch in bb.chips:
-        cy0, cy1 = bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10
-        if not (x1 <= L['e'] + 4 or L['f'] - 4 <= x0 or y1 <= cy0 or cy1 <= y0):
-            return False
-    for m in bb.marker_boxes:
-        if not (x1 <= m[0] or m[2] <= x0 or y1 <= m[1] or m[3] <= y0):
-            return False
-    for _k, pts, _d in bb._segments:
-        if pts is path_pts:
-            continue
-        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
-            n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
-            if any(x0 < ax + (bx - ax) * t / n < x1 and y0 < ay + (by - ay) * t / n < y1
-                   for t in range(n + 1)):
-                return False
-    return True
+    return bb._marker_clear(x, y)
 
 
 def _marker_spot(bb, path):
