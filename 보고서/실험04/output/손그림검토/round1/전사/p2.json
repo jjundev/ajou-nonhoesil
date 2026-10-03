@@ -1,0 +1,298 @@
+{
+  "page": 2,
+  "circuit": "e4_dmux",
+  "title": "1×4 DMUX 결선도",
+  "signed": false,
+  "chips": [
+    {
+      "label": "74HC04",
+      "block": "우",
+      "pin1_row": 7,
+      "pin1_col": "e"
+    },
+    {
+      "label": "74HC11",
+      "block": "좌",
+      "pin1_row": 18,
+      "pin1_col": "e"
+    },
+    {
+      "label": "74HC11",
+      "block": "우",
+      "pin1_row": 30,
+      "pin1_col": "e"
+    }
+  ],
+  "wires": [
+    {
+      "color": "vcc",
+      "from": "전원잭(빨강)",
+      "to": "좌 VCC레일3행",
+      "desc": "전원장치 +5V 잭"
+    },
+    {
+      "color": "gnd",
+      "from": "전원잭(회색)",
+      "to": "좌 GND레일4행",
+      "desc": "전원장치 0V 잭"
+    },
+    {
+      "color": "vcc",
+      "from": "우 g7",
+      "to": "우 VCC레일7행",
+      "desc": "pin 14 -> +5V 레일"
+    },
+    {
+      "color": "gnd",
+      "from": "우 a13",
+      "to": "우 중앙GND레일13행",
+      "desc": "pin 7 -> GND 레일"
+    },
+    {
+      "color": "vcc",
+      "from": "좌 g18",
+      "to": "좌 중앙VCC레일18행",
+      "desc": "pin 14 -> +5V 레일"
+    },
+    {
+      "color": "gnd",
+      "from": "좌 a24",
+      "to": "좌 GND레일24행",
+      "desc": "pin 7 -> GND 레일"
+    },
+    {
+      "color": "vcc",
+      "from": "우 g30",
+      "to": "우 VCC레일30행",
+      "desc": "pin 14 -> +5V 레일"
+    },
+    {
+      "color": "gnd",
+      "from": "우 a36",
+      "to": "우 중앙GND레일36행",
+      "desc": "pin 7 -> GND 레일"
+    },
+    {
+      "color": "gnd",
+      "from": "우 c45",
+      "to": "우 중앙GND레일45행",
+      "desc": "Y0 저항 아래 -> GND"
+    },
+    {
+      "color": "gnd",
+      "from": "우 c49",
+      "to": "우 중앙GND레일49행",
+      "desc": "Y1 저항 아래 -> GND"
+    },
+    {
+      "color": "gnd",
+      "from": "우 c54",
+      "to": "우 중앙GND레일54행",
+      "desc": "Y2 저항 아래 -> GND"
+    },
+    {
+      "color": "gnd",
+      "from": "우 c60",
+      "to": "우 중앙GND레일60행",
+      "desc": "Y3 저항 아래 -> GND"
+    },
+    {
+      "color": "sig",
+      "from": "우 중앙GND레일30행",
+      "to": "우 a30",
+      "desc": "입력 S0 -> U6 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+    },
+    {
+      "color": "sig",
+      "from": "우 중앙GND레일31행",
+      "to": "우 a31",
+      "desc": "입력 S1 -> U6 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+    },
+    {
+      "color": "sig",
+      "from": "우 GND레일31행",
+      "to": "우 j31",
+      "desc": "입력 D -> U6 pin 13 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+    },
+    {
+      "color": "sig",
+      "from": "우 g32",
+      "to": "우 c57",
+      "desc": "Y3 = U6 pin 12 -> LED4"
+    },
+    {
+      "color": "sig",
+      "from": "우 b30",
+      "to": "좌 a20",
+      "desc": "S0 이어 감 (U6 pin 1 -> U5 pin 3)"
+    },
+    {
+      "color": "sig",
+      "from": "우 d31",
+      "to": "우 a9",
+      "desc": "S1 이어 감 (U6 pin 2 -> U4 pin 3)"
+    },
+    {
+      "color": "sig",
+      "from": "우 a10",
+      "to": "좌 b21",
+      "desc": "S1' (U4 pin 4) -> U5 pin 4"
+    },
+    {
+      "color": "sig",
+      "from": "우 i31",
+      "to": "좌 a22",
+      "desc": "D 이어 감 (U6 pin 13 -> U5 pin 5)"
+    },
+    {
+      "color": "sig",
+      "from": "좌 d23",
+      "to": "우 c46",
+      "desc": "Y1 = U5 pin 6 -> LED2"
+    },
+    {
+      "color": "sig",
+      "from": "우 c30",
+      "to": "우 a7",
+      "desc": "S0 이어 감 (U6 pin 1 -> U4 pin 1)"
+    },
+    {
+      "color": "sig",
+      "from": "우 b8",
+      "to": "좌 j22",
+      "desc": "S0' (U4 pin 2) -> U5 pin 10"
+    },
+    {
+      "color": "sig",
+      "from": "우 c9",
+      "to": "좌 j23",
+      "desc": "S1 이어 감 (U4 pin 3 -> U5 pin 9)"
+    },
+    {
+      "color": "sig",
+      "from": "좌 c22",
+      "to": "좌 h21",
+      "desc": "D 이어 감 (U5 pin 5 -> U5 pin 11)"
+    },
+    {
+      "color": "sig",
+      "from": "좌 j24",
+      "to": "우 c51",
+      "desc": "Y2 = U5 pin 8 -> LED3"
+    },
+    {
+      "color": "sig",
+      "from": "우 d10",
+      "to": "좌 d18",
+      "desc": "S1' 이어 감 (U4 pin 4 -> U5 pin 1)"
+    },
+    {
+      "color": "sig",
+      "from": "우 a8",
+      "to": "좌 c19",
+      "desc": "S0' 이어 감 (U4 pin 2 -> U5 pin 2)"
+    },
+    {
+      "color": "sig",
+      "from": "좌 i21",
+      "to": "좌 i19",
+      "desc": "D 이어 감 (U5 pin 11 -> U5 pin 13)"
+    },
+    {
+      "color": "sig",
+      "from": "좌 j20",
+      "to": "우 c42",
+      "desc": "Y0 = U5 pin 12 -> LED1"
+    }
+  ],
+  "leds": [
+    {
+      "tag": "Y0",
+      "anode": "우 d42",
+      "cathode": "우 d43"
+    },
+    {
+      "tag": "Y1",
+      "anode": "우 d46",
+      "cathode": "우 d47"
+    },
+    {
+      "tag": "Y2",
+      "anode": "우 d51",
+      "cathode": "우 d52"
+    },
+    {
+      "tag": "Y3",
+      "anode": "우 d57",
+      "cathode": "우 d58"
+    }
+  ],
+  "resistors": [
+    {
+      "tag": "Y0",
+      "top": "우 e43",
+      "bottom": "우 e45"
+    },
+    {
+      "tag": "Y1",
+      "top": "우 e47",
+      "bottom": "우 e49"
+    },
+    {
+      "tag": "Y2",
+      "top": "우 e52",
+      "bottom": "우 e54"
+    },
+    {
+      "tag": "Y3",
+      "top": "우 e58",
+      "bottom": "우 e60"
+    }
+  ],
+  "bridges": [
+    {
+      "kind": "gnd",
+      "from": "좌 GND레일39행",
+      "to": "좌 중앙GND레일39행"
+    },
+    {
+      "kind": "gnd",
+      "from": "좌 중앙GND레일40행",
+      "to": "우 중앙GND레일40행"
+    },
+    {
+      "kind": "vcc",
+      "from": "좌 VCC레일41행",
+      "to": "좌 중앙VCC레일41행"
+    },
+    {
+      "kind": "gnd",
+      "from": "우 중앙GND레일55행",
+      "to": "우 GND레일55행"
+    },
+    {
+      "kind": "vcc",
+      "from": "좌 중앙VCC레일61행",
+      "to": "우 VCC레일61행"
+    }
+  ],
+  "labels": [
+    {
+      "name": "Y0",
+      "at": "우 d42"
+    },
+    {
+      "name": "Y1",
+      "at": "우 d46"
+    },
+    {
+      "name": "Y2",
+      "at": "우 d51"
+    },
+    {
+      "name": "Y3",
+      "at": "우 d57"
+    }
+  ],
+  "uncertain": []
+}
