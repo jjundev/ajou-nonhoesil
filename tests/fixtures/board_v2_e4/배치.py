@@ -406,5 +406,39 @@ def build_trial_dmux(output_path, template_path=None, stage=None, baseline=None,
     return bb
 
 
-BOARDS = []
+BOARDS = [
+    ('trial_e4_mux_1.png', build_trial_mux, 1),
+    ('trial_e4_mux_2.png', build_trial_mux, 2),
+    ('trial_e4_mux_3.png', build_trial_mux, 3),
+    ('trial_e4_mux_4걷기.png',
+     removal_board((build_trial_mux, 3), (build_trial_mux, 4),
+                   '시험판 MUX — 4단계 걷기', '인버터 임시 급전선 셋을 뽑는다'), None),
+    ('trial_e4_mux_4.png', build_trial_mux, 4),
+    ('trial_e4_mux_5.png', build_trial_mux, 5),
+    ('trial_e4_mux_6.png', build_trial_mux, 6),
+    ('trial_e4_mux_7.png', build_trial_mux, 7),
+    ('trial_e4_mux_8걷기.png',
+     removal_board((build_trial_mux, 7), (build_trial_mux, 8),
+                   '시험판 MUX — 8단계 걷기', 'NAND 임시 급전선 넷과 LED2~4 사슬을 뽑는다'), None),
+    ('trial_e4_mux_8.png', build_trial_mux, 8),
+    ('trial_e4_dmux_1.png', fresh_board(build_trial_dmux), 1),
+    ('trial_e4_dmux_2.png', build_trial_dmux, 2),
+    ('trial_e4_dmux_3.png', build_trial_dmux, 3),
+    ('trial_e4_dmux_4.png', build_trial_dmux, 4),
+]
+
+# 기준선을 끊고 새 회로를 시작하는 보드 — 앞 회로가 막혀도 여기서 다시 잰다.
+RESTART = {'trial_e4_dmux_1.png'}
+# 측정값(2026-10-03, 계획 Task 4 Step 4) — 보드마다 새 신호선 수(입력 점퍼 포함). 승인본
+# 예산 5 를 넘는 것은 MUX 4·6·8단계와 DMUX 3단계(각 7)다 — 같은 칩 안 이어 가기와 중계가
+# 한 관측 노드에 두세 가닥씩 더 든다. 막힘(R7·R8·R10)은 없다.
+MEASURED_NEW_SIGNAL = {
+    'trial_e4_mux_1.png': 2, 'trial_e4_mux_2.png': 2, 'trial_e4_mux_3.png': 2,
+    'trial_e4_mux_4걷기.png': 0, 'trial_e4_mux_4.png': 7, 'trial_e4_mux_5.png': 4,
+    'trial_e4_mux_6.png': 7, 'trial_e4_mux_7.png': 4, 'trial_e4_mux_8걷기.png': 0,
+    'trial_e4_mux_8.png': 7,
+    'trial_e4_dmux_1.png': 5, 'trial_e4_dmux_2.png': 5, 'trial_e4_dmux_3.png': 7,
+    'trial_e4_dmux_4.png': 2,
+}
+KNOWN_BLOCKERS = {}
 FINALS = [('trial_e4_mux.png', build_trial_mux), ('trial_e4_dmux.png', build_trial_dmux)]

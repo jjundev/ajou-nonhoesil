@@ -87,5 +87,45 @@ class MuxFinal(_Trial):
         self.assertEqual(len(relay), 4, [w['desc'] for w in relay])
 
 
+def _walk(board):
+    """사슬 순서대로 (이름, 빌더, 단계, 그릴지) 를 낸다. 막힌 보드 뒤는 기준선이 없으므로
+    다음 회로의 첫 보드(`RESTART`, `fresh_board` 로 기준선을 끊는 자리)까지 건너뛴다 —
+    MUX 가 막혀도 DMUX 는 잰다."""
+    skipping = False
+    for name, fn, stage in board.BOARDS:
+        if name in board.RESTART:
+            skipping = False
+        yield name, fn, stage, not skipping
+        if name in board.KNOWN_BLOCKERS:
+            skipping = True
+
+
+class Chain(_Trial):
+    """단계 사슬 — 막힘은 `KNOWN_BLOCKERS` 로, 새 신호선 수는 `MEASURED_NEW_SIGNAL` 로 고정한다."""
+
+    def test_단계_보드마다_R10_이_통과하거나_기록된_막힘이다(self):
+        base = None
+        for name, fn, stage, draw in _walk(self.board):
+            if name in self.board.RESTART:
+                base = None
+            if not draw:
+                continue
+            path = os.path.join(self.tmp, name)
+            want = self.board.KNOWN_BLOCKERS.get(name)
+            if want:
+                with self.assertRaisesRegex(AssertionError, want):
+                    fn(path, None, stage=stage, baseline=base)
+                continue
+            bb = fn(path, None, stage=stage, baseline=base)
+            self.assertEqual(bb._block_role_violations(), [], name)
+            self.assertEqual(len(bb.new_signal), self.board.MEASURED_NEW_SIGNAL[name], name)
+            base = bb.snapshot()
+
+    def test_측정표가_그린_보드를_빠짐없이_덮는다(self):
+        drawn = [n for n, _f, _s, draw in _walk(self.board)
+                 if draw and n not in self.board.KNOWN_BLOCKERS]
+        self.assertEqual(list(self.board.MEASURED_NEW_SIGNAL), drawn)
+
+
 if __name__ == '__main__':
     unittest.main()
