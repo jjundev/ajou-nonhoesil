@@ -6,6 +6,7 @@
 그래서 검출한 격자를 렌더러의 권위 있는 좌표표에 1차식으로 맞추고, 잔차가
 크면 소리를 내며 멈춘다.
 """
+import json
 import os
 import shutil
 import tempfile
@@ -16,6 +17,8 @@ from scripts.lab import hand_grid
 
 ROOT = Path(__file__).resolve().parents[1]
 HANDOUT = ROOT / "강의노트/공지사항/Breadboard.pdf"
+V2_DIR = ROOT / ".claude/assets/breadboard_v2"
+V2_PDF = V2_DIR / "Breadboard_v2.pdf"
 
 
 class BoardExtraction(unittest.TestCase):
@@ -170,6 +173,64 @@ class Overlay(unittest.TestCase):
         out = os.path.join(self.tmp, 'x.png')
         with self.assertRaises(hand_grid.GridError):
             hand_grid.crop_rows(self.page, self.cal, 20, 10, out)
+
+
+class V2Grid(unittest.TestCase):
+    """v2 판형 — 26열·63행, geometry.json 과 1px 안. 배포본은 PNG 를 그대로 얹어 보정이 항등이다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.g = json.loads((V2_DIR / "geometry.json").read_text(encoding="utf-8"))
+
+    def _check(self, data):
+        cols, rows = hand_grid.detect_grid(data, 'v2')
+        self.assertEqual((len(cols), len(rows)), (26, 63))
+        for got, c in zip(cols, self.g["columns"]):
+            self.assertLessEqual(abs(got - c["x"]), 1.0, c["name"])
+        for i, y in enumerate(rows):
+            want = self.g["row1_center_y"] + i * self.g["row_pitch"]
+            self.assertLessEqual(abs(y - want), 1.0, f"{i + 1}행")
+
+    def test_PNG_에서_26열_63행을_찾는다(self):
+        self._check((V2_DIR / "Breadboard_v2.png").read_bytes())
+
+    def test_배포본_PDF_에서_26열_63행을_찾는다(self):
+        self._check(hand_grid.board_image(V2_PDF).data)
+
+    def test_배포본_보정은_항등에_가깝다(self):
+        """v1 배포본은 가로가 5% 넓었다. v2 배포본은 PNG 를 그대로 얹었다."""
+        cal = hand_grid.calibrate(hand_grid.board_image(V2_PDF), 'v2')
+        self.assertEqual(cal.version, 'v2')
+        self.assertAlmostEqual(cal.ax, 1.0, delta=0.01)
+        self.assertAlmostEqual(cal.ay, 1.0, delta=0.01)
+        self.assertLess(max(cal.res_x, cal.res_y), 1.0)
+
+    def test_기준_열은_중복_없이_26개다(self):
+        cols = hand_grid._reference_cols(hand_grid.load_renderer(), 'v2')
+        self.assertEqual((len(cols), len(set(cols))), (26, 26))
+
+    def test_격자_그림을_v2_로_덮는다(self):
+        cal = hand_grid.calibrate(hand_grid.board_image(V2_PDF), 'v2', dpi=100)
+        page = hand_grid.render_page(V2_PDF, 0, dpi=100)
+        with tempfile.TemporaryDirectory() as d:
+            out = hand_grid.overlay_grid(page, cal, os.path.join(d, "p1.png"))
+            self.assertTrue(os.path.exists(out))
+
+
+class BoardMismatch(unittest.TestCase):
+    """승인 결선의 판형과 제출 PDF 의 판형이 다르면 추측으로 넘어가지 않고 멈춘다."""
+
+    def test_승인본_v2_에_v1_배포본이면_멈춘다(self):
+        with self.assertRaisesRegex(hand_grid.GridError, "판형 버전 불일치"):
+            hand_grid.calibrate(hand_grid.board_image(HANDOUT), 'v2')
+
+    def test_옛_호출처럼_v1_로_v2_배포본을_보정하면_멈춘다(self):
+        """Review Focus 4 — 옛 스킬 문서의 `calibrate(b)` 는 기본 v1 이다."""
+        with self.assertRaisesRegex(hand_grid.GridError, "판형 버전 불일치"):
+            hand_grid.calibrate(hand_grid.board_image(V2_PDF))
+
+    def test_기대_판형은_주차_배치_py_에서_읽는다(self):
+        self.assertEqual(hand_grid.expected_board(1), 'v1')
 
 
 if __name__ == '__main__':

@@ -10,8 +10,9 @@
 1. 손그림 PDF 의 각 쪽에는 판형 래스터가 **이미지로** 박혀 있고, 놓인 자리도
    PDF 안에 있다. 잉크가 없는 깨끗한 판형을 그대로 꺼낸다.
 2. 그 래스터에서 홀 열·행을 검출한다.
-3. 검출된 열 28개·행 63개를 렌더러의 `cols`·`r_y()` 에 순서대로 짝지어 축마다
-   1차식을 맞춘다. 균일 가로 확대는 1차식이 정확히 흡수한다.
+3. 검출된 열(v1 28개·v2 26개)·행 63개를 그 판형 렌더러 좌표표에 순서대로 짝지어 축마다
+   1차식을 맞춘다. 균일 가로 확대는 1차식이 정확히 흡수한다. 판형은 승인 결선의 것을
+   받는다(`expected_board()`) — 검출에서 추측하지 않는다.
 4. 잔차가 3px 를 넘으면 중단한다. 판형이 바뀐 것이다.
 
 쪽 크기로 막지 않는 이유: 학생 PDF 는 필기 앱 내보내기라 1210x834pt 이고
@@ -30,8 +31,9 @@ RENDERER = (REPO_ROOT / ".claude/skills/breadboard-diagram/scripts"
             / "render_breadboard.py")
 
 # 판형 한 장에 있는 홀 열과 행. 렌더러 좌표표가 정하는 값이라 여기서 세지
-# 않고 맞춰만 본다 — 검출이 이 수와 다르면 판형이 다른 것이다
-EXPECTED_COLS = 28
+# 않고 맞춰만 본다 — 검출이 이 수와 다르면 판형이 다른 것이다. v2 는 가운데
+# 레일이 2열 하나라 26열이다
+EXPECTED_COLS = {'v1': 28, 'v2': 26}
 EXPECTED_ROWS = 63
 
 # 잔차 한계. 렌더러 `hole_at()` 의 홀 허용치가 5px 이므로 그보다 넉넉히 안쪽
@@ -76,6 +78,7 @@ class Calibration:
     rect: tuple
     board_size: tuple
     dpi: int
+    version: str = 'v1'   # 이 보정이 맞춘 판형
 
     def to_px(self, x, y):
         """렌더러 좌표 -> 그 쪽을 dpi 로 그렸을 때의 픽셀.
@@ -216,8 +219,9 @@ def _merge_to_count(runs, expected):
         "판형이 바뀌었거나 해상도가 모자란다")
 
 
-def detect_grid(data):
+def detect_grid(data, version='v1'):
     """판형 래스터에서 홀 열 중심 x 들과 행 중심 y 들.
+    `version` 판형의 열 수로 모은다 — 다른 판형이면 개수가 안 맞거나 맞아도 잔차가 크다.
 
     잉크가 없는 원본 래스터를 본다 — 학생 필기는 PDF 의 다른 층에 있다.
     """
@@ -250,7 +254,7 @@ def detect_grid(data):
                 col_prof[x] += 1
 
     col_runs = [r for r in _runs(col_prof, max(col_prof) * 0.12) if r[1] - r[0] >= 4]
-    cols = _merge_to_count(col_runs, EXPECTED_COLS)
+    cols = _merge_to_count(col_runs, EXPECTED_COLS[version])
 
     return cols, [y + y0 for y in rows]
 
@@ -269,32 +273,63 @@ def _fit(src, dst):
     return a, b, res
 
 
-def calibrate(board, dpi=300):
-    """검출한 격자를 렌더러 좌표표에 맞춘다."""
+def _fit_version(board, version, dpi):
+    """`version` 판형의 렌더러 좌표표로 맞춘 보정. 검출이 그 판형 열 수로 안 모이면 `GridError`."""
     mod = load_renderer()
-    cols, rows = detect_grid(board.data)
-
-    ref_cols = sorted(_reference_cols(mod))
-    ref_rows = [mod.ROW0 + (r - 1) * mod.ROW_PITCH for r in range(1, mod.ROW_MAX + 1)]
-
+    spec = mod.board_spec(version)
+    cols, rows = detect_grid(board.data, version)
+    ref_cols = sorted(_reference_cols(mod, version))
+    ref_rows = [spec.row0 + (r - 1) * spec.row_pitch for r in range(1, mod.ROW_MAX + 1)]
     ax, bx, res_x = _fit(ref_cols, cols)
     ay, by, res_y = _fit(ref_rows, rows)
-    if res_x > MAX_RESIDUAL or res_y > MAX_RESIDUAL:
-        raise GridError(
-            f"판형이 렌더러 좌표표와 맞지 않는다 "
-            f"(가로 잔차 {res_x:.1f}px, 세로 {res_y:.1f}px, 한계 {MAX_RESIDUAL}). "
-            "다른 판형 위에 그렸거나 판형이 바뀌었다")
-    return Calibration(ax, bx, ay, by, res_x, res_y,
-                       board.rect, (board.width, board.height), dpi)
+    return Calibration(ax, bx, ay, by, res_x, res_y, board.rect,
+                       (board.width, board.height), dpi, version)
 
 
-def _reference_cols(mod):
-    """렌더러가 아는 열 x 들. 칩 몸통 경계(`chip_x1`·`chip_x2`)는 홀이 아니다.
+def _fits(cal):
+    return cal.res_x <= MAX_RESIDUAL and cal.res_y <= MAX_RESIDUAL
 
-    숫자를 베껴 적지 않는다 — 렌더러 `column_table()` 이 유일한 권위다. 템플릿 이미지를
-    열지 않고 판형 사양의 열 표만 읽는다.
+
+def _try_fit(board, version, dpi):
+    """맞으면 보정, 검출이 안 되거나 잔차가 크면 None."""
+    try:
+        cal = _fit_version(board, version, dpi)
+    except GridError:
+        return None
+    return cal if _fits(cal) else None
+
+
+def calibrate(board, version='v1', dpi=300):
+    """검출한 격자를 `version` 판형의 렌더러 좌표표에 맞춘다.
+
+    `version` 은 **승인 결선의 판형**이다(`expected_board()`). 그 판형으로 안 맞으면 다른
+    판형으로도 맞춰 보되 **진단만 한다** — 맞으면 "판형 버전 불일치" 로 멈추고, 그 판형으로
+    계속 가지 않는다. 학생이 다른 배포본 위에 그렸으면 다시 그려야 한다. 검출은 열 수를
+    억지로 맞추므로(`_merge_to_count`) 열 수만으로는 판형을 못 가른다.
     """
-    return list(mod.column_table('v1'))
+    mod = load_renderer()
+    cal = _try_fit(board, version, dpi)
+    if cal is not None:
+        return cal
+    for other in mod.BOARD_VERSIONS:
+        if other != version and _try_fit(board, other, dpi) is not None:
+            raise GridError(
+                f"판형 버전 불일치 — 승인 결선은 {version} 판형인데 제출 PDF 는 {other} 판형 "
+                f"위에 그렸다. {version} 배포본 위에 다시 그려야 한다")
+    cal = _fit_version(board, version, dpi)   # 검출 실패면 그 GridError 가 그대로 난다
+    raise GridError(
+        f"판형이 렌더러 좌표표와 맞지 않는다 "
+        f"(가로 잔차 {cal.res_x:.1f}px, 세로 {cal.res_y:.1f}px, 한계 {MAX_RESIDUAL}). "
+        "다른 판형 위에 그렸거나 판형이 바뀌었다")
+
+
+def _reference_cols(mod, version='v1'):
+    """렌더러가 아는 홀 열 x 들 — `version` 판형. 칩 몸통 경계는 홀이 아니다.
+
+    숫자를 베껴 적지 않는다 — 렌더러 `column_table()` 이 유일한 권위다. 두 블록이 같은 x 로
+    부르는 v2 가운데 레일은 한 번만 나와 26 이 된다.
+    """
+    return list(mod.column_table(version))
 
 
 # 오버레이 색. 격자선은 **읽는 보조선**이지 판정 근거가 아니다 — 손그림 잉크
@@ -322,9 +357,10 @@ def render_page(pdf_path, page_index=0, dpi=300):
         doc.close()
 
 
-def _col_names(mod):
-    """(블록, 열) -> 렌더러 x. 오버레이 라벨과 크롭이 함께 쓴다."""
-    return {name: x for x, name in mod.column_table('v1').items()}
+def _col_names(mod, version='v1'):
+    """(블록, 열) -> 렌더러 x. 오버레이 라벨과 크롭이 함께 쓴다. 두 블록이 같이 쓰는 열(v2
+    가운데 레일)은 `left` 로 한 번만 나온다."""
+    return {name: x for x, name in mod.column_table(version).items()}
 
 
 _SHORT = {'gnd': 'G-', 'vcc': 'V+', 'mid_gnd': 'g-', 'mid_vcc': 'v+'}
@@ -339,6 +375,8 @@ def overlay_grid(page_im, cal, out_path, max_row=35):
     from PIL import Image, ImageDraw, ImageFont
 
     mod = load_renderer()
+    spec = mod.board_spec(cal.version)
+    shared = mod.shared_columns(cal.version)
     im = page_im.convert("RGBA")
     ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(ov)
@@ -347,24 +385,25 @@ def overlay_grid(page_im, cal, out_path, max_row=35):
     except OSError:
         font = ImageFont.load_default()
 
-    names = _col_names(mod)
-    xs = [cal.to_px(x, mod.ROW0)[0] for x in names.values()]
+    names = _col_names(mod, cal.version)
+    xs = [cal.to_px(x, spec.row0)[0] for x in names.values()]
     x_lo, x_hi = min(xs), max(xs)
 
     for r in range(1, min(max_row, mod.ROW_MAX) + 1):
-        y = cal.to_px(0, mod.ROW0 + (r - 1) * mod.ROW_PITCH)[1]
+        y = cal.to_px(0, spec.row0 + (r - 1) * spec.row_pitch)[1]
         d.line([(x_lo - 60, y), (x_hi + 20, y)], fill=GRID_ROW, width=1)
         label = f'{r} gap' if r in mod.RAIL_GAP_ROWS else str(r)
         d.text((x_lo - 58, y - 10), label, fill=GRID_TEXT_ROW, font=font)
 
-    y_top = cal.to_px(0, mod.ROW0)[1]
-    y_bot = cal.to_px(0, mod.ROW0 + (min(max_row, mod.ROW_MAX) - 1)
-                      * mod.ROW_PITCH)[1]
+    y_top = cal.to_px(0, spec.row0)[1]
+    y_bot = cal.to_px(0, spec.row0 + (min(max_row, mod.ROW_MAX) - 1)
+                      * spec.row_pitch)[1]
     for (block, key), x in names.items():
-        px = cal.to_px(x, mod.ROW0)[0]
+        px = cal.to_px(x, spec.row0)[0]
         d.line([(px, y_top - 30), (px, y_bot)], fill=GRID_COL, width=1)
         tag = _SHORT.get(key, key)
-        prefix = '좌' if block == 'left' else '우'
+        # 두 블록이 나눠 쓰는 열(v2 가운데 레일)은 좌·우가 없다 — 렌더러 주소도 접두어가 없다
+        prefix = '' if x in shared else ('좌' if block == 'left' else '우')
         d.text((px - 9, y_top - 52), f'{prefix}{tag}',
                fill=GRID_TEXT_COL, font=font)
 
@@ -380,12 +419,13 @@ def crop_rows(page_im, cal, row_from, row_to, out_path, scale=3, block=None):
     if row_to <= row_from:
         raise GridError(f"행 범위가 거꾸로다: {row_from} -> {row_to}")
     mod = load_renderer()
-    names = _col_names(mod)
+    spec = mod.board_spec(cal.version)
+    names = _col_names(mod, cal.version)
     if block:
         names = {k: v for k, v in names.items() if k[0] == block}
-    xs = [cal.to_px(x, mod.ROW0)[0] for x in names.values()]
-    y0 = cal.to_px(0, mod.ROW0 + (row_from - 1) * mod.ROW_PITCH)[1]
-    y1 = cal.to_px(0, mod.ROW0 + (row_to - 1) * mod.ROW_PITCH)[1]
+    xs = [cal.to_px(x, spec.row0)[0] for x in names.values()]
+    y0 = cal.to_px(0, spec.row0 + (row_from - 1) * spec.row_pitch)[1]
+    y1 = cal.to_px(0, spec.row0 + (row_to - 1) * spec.row_pitch)[1]
     box = (max(0, int(min(xs) - 80)), max(0, int(y0 - 20)),
            min(page_im.width, int(max(xs) + 40)),
            min(page_im.height, int(y1 + 20)))
@@ -395,3 +435,12 @@ def crop_rows(page_im, cal, row_from, row_to, out_path, scale=3, block=None):
     c.save(out_path)
     return out_path
 
+
+def expected_board(experiment):
+    """그 주차 승인 결선의 판형 — `배치.py` 의 `BOARD`(없으면 v1).
+
+    격자 보정은 전사보다 먼저라 회로 ID 를 모른다. 한 주차의 회로는 판형이 같으므로 주차
+    결선 파일에서 읽는다 — 사이드카의 `board` 도 같은 값에서 나온다.
+    """
+    mod = load_renderer()
+    return mod.board_version(mod.load_board(experiment))
