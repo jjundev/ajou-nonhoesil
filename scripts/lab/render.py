@@ -8,6 +8,7 @@
 예비보고서 이론 절의 재료다.
 """
 
+import ast
 import html
 import json
 import re
@@ -29,6 +30,34 @@ MAX_BREADBOARD_ROWS = 30
 # 아래에서 시작한다. object-position: top 크롭이 이 띠를 예산에 안 넣으면,
 # IC 가 적은 주차는 격자가 한 줄도 없이 로고만 인쇄된다 (B1).
 _BREADBOARD_HEADER_MM = 51.4
+
+
+# 결선도가 없는 회로 자리에 까는 빈 판형 — 판형 버전 -> (루트 기준 경로, 격자 머리띠 mm).
+# 머리띠는 인쇄 폭 190mm 로 그렸을 때 1행 홀 위끝까지의 높이다. v1 은 위 실측값, v2 는
+# geometry.json 에서 셈한다: (row1_center_y 336 − hole_size/2 4) / 폭 1200 × 190 = 52.6
+# (`test_lab_render` 가 geometry 와 맞댄다 — 판형을 다시 뽑으면 거기서 걸린다)
+BLANK_BOARDS = {
+    "v1": (".claude/assets/Breadboard.jpg", _BREADBOARD_HEADER_MM),
+    "v2": (".claude/assets/breadboard_v2/Breadboard_v2.png", 52.6),
+}
+
+
+def board_version_of(board_file: Path) -> str:
+    """주차 `배치.py` 의 `BOARD` — 엔진을 import 하지 않고 ast 로 읽는다. 파일이나 상수가 없으면 v1.
+
+    인쇄가 PIL·렌더러에 묶이면 안 된다(`_diagram_html`). 상수는 문자열 리터럴이어야 한다 —
+    엔진 `load_board_file()` 도 같은 값만 받는다.
+    """
+    if not board_file.exists():
+        return "v1"
+    for node in ast.parse(board_file.read_text(encoding="utf-8")).body:
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == "BOARD" for t in node.targets):
+            value = ast.literal_eval(node.value)
+            if value not in BLANK_BOARDS:
+                raise ValueError(f"{board_file}: BOARD 는 {tuple(BLANK_BOARDS)} 중 하나다: {value!r}")
+            return value
+    return "v1"
 
 
 def crop_rows(netlist_text: str) -> int:
@@ -755,10 +784,12 @@ def _diagram_html(section, netlist) -> str:
                     f'<p class="src">결선도: {_esc(section.diagram)}</p>'
                     + _board_text_html(_sidecar(png)))
     rows = crop_rows(section.body)
-    visible_mm = _BREADBOARD_HEADER_MM + rows * 6
+    # 빈 판형은 그 주차 판형이다 — v2 주차에 v1 격자를 깔면 열이 둘 더 있는 판에 그리게 된다
+    asset, header_mm = BLANK_BOARDS[board_version_of(netlist.path.parent / "배치.py")]
+    visible_mm = header_mm + rows * 6
     return (f"<h3>브레드보드 작도 ({rows}행)</h3>"
             "<p class='src'>이 회로의 결선도가 아직 없어요 — 격자에 직접 그려요</p>"
-            f'<img src="{config.root_relative_prefix()}.claude/assets/Breadboard.jpg" '
+            f'<img src="{config.root_relative_prefix()}{asset}" '
             f'style="width:100%;max-height:{visible_mm:.1f}mm;object-fit:cover;'
             'object-position:top">')
 

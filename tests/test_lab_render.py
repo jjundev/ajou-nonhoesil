@@ -911,6 +911,42 @@ class TestCrop(unittest.TestCase):
         self.assertGreater(crop_rows(with_ic), crop_rows(without_ic))
 
 
+class TestBlankBoardVersion(unittest.TestCase):
+    """결선도가 없는 회로의 빈 판형은 그 주차 `배치.py` 의 BOARD 를 따른다(2026-10-03 v2)."""
+
+    def setUp(self):
+        self.spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
+
+    def _netlist(self, board_src):
+        d = Path(tempfile.mkdtemp())
+        (d / "netlist.md").write_text(_MISSING_DIAGRAM_NETLIST, encoding="utf-8")
+        if board_src is not None:
+            (d / "배치.py").write_text(board_src, encoding="utf-8")
+        return parse_netlist(d / "netlist.md")
+
+    def test_v2_주차는_v2_판형을_깐다(self):
+        netlist = self._netlist("BOARD = 'v2'\n")
+        html = render.circuit_pages(self.spec, netlist)
+        self.assertEqual(html.count("breadboard_v2/Breadboard_v2.png"), len(netlist.circuits))
+        self.assertNotIn("Breadboard.jpg", html)
+        heights = [float(h) for h in re.findall(r"max-height:([\d.]+)mm", html)]
+        rows = [render.crop_rows(c.body) for c in netlist.circuits]
+        self.assertEqual(heights, [round(52.6 + r * 6, 1) for r in rows])
+
+    def test_BOARD_가_없으면_v1_이다(self):
+        html = render.circuit_pages(self.spec, self._netlist(None))
+        self.assertEqual(html.count(".claude/assets/Breadboard.jpg"), 2)
+
+    def test_모르는_BOARD_는_거절한다(self):
+        with self.assertRaises(ValueError):
+            render.circuit_pages(self.spec, self._netlist("BOARD = 'v3'\n"))
+
+    def test_v2_머리띠는_geometry_에서_셈한_값이다(self):
+        g = json.loads((ROOT / ".claude/assets/breadboard_v2/geometry.json").read_text(encoding="utf-8"))
+        want = (g["row1_center_y"] - g["hole_size"] / 2) / g["image"]["width"] * 190
+        self.assertAlmostEqual(render.BLANK_BOARDS["v2"][1], want, delta=0.05)
+
+
 class TestBreadboardHeaderBand(unittest.TestCase):
     """Breadboard.jpg 상단 로고·범례 띠가 크롭 계산에 없으면, `object-position:
     top` 크롭이 머리띠부터 자르기 시작해 캡션이 약속하는 행 수만큼의 실제
