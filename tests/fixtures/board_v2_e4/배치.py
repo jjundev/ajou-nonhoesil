@@ -16,7 +16,9 @@
 # 가로는 **반 행**(두 행 사이), 세로는 **홀 열 사이**나 여백 차선을 탄다. 경로는 회로마다 한 번,
 # 모든 단계의 선을 한 판에 올린 superset 판에서 정하고 단계 그림은 그 경로를 그대로 쓴다 —
 # 단계마다 경로가 달라지면 기준선 회색 선과 새 선이 어긋난다.
+import bisect
 import functools
+import math
 
 from render_breadboard import BreadboardRenderer, _input_jumper, fresh_board, removal_board
 
@@ -65,12 +67,13 @@ def _end_holes(bb, chips, end):
 def _lanes(bb, led):
     """세로선이 달릴 x 후보. 홀 열 자체와 홀 열 사이(±12), 좌 여백·가운데 여백 차선.
     칩 몸통(e~f 사이)은 뺀다 — 세로선이 칩 위를 덮는다. LED 로 가는 선은 가운데 여백만 쓴다."""
-    L, R = bb.cols['left'], bb.cols['right']
-    if led:
-        return [548, 560, 572, 600, 624, 636, 648]
+    L = bb.cols['left']
+    mid = [x for x in range(542, 660, 6) if min(abs(x - L['mid_gnd']), abs(x - L['mid_vcc'])) > 4]
     xs = [L[c] for c in 'abcdghij'] + [L[c] + 12 for c in 'abcghi'] + [L['j'] + 12]
-    xs += [212, 224, 236, 248, 260, 560, 572]
-    return sorted(set(xs))
+    xs += [212, 224, 236, 248, 260]
+    if led:
+        return sorted(set(mid + [L[c] for c in 'ghij'] + [L[c] + 12 for c in 'ghi']))
+    return sorted(set(xs + [560, 572]))
 
 
 def _axis(a, b):
@@ -105,14 +108,30 @@ def _clean(path):
     return out
 
 
-def _cost(bb, path):
-    cost = 40 * (len(path) - 2)
-    for a, b in zip(path, path[1:]):
-        cost += abs(a[0] - b[0]) + abs(a[1] - b[1])
-        # 행 위를 그대로 지나는 가로선은 그 행의 홀 위를 덮는다 — 반 행보다 비싸게
-        if _axis(a, b) == 'h' and bb.hole_at(a[0], a[1]) is not None or (
-                _axis(a, b) == 'h' and abs((a[1] - bb.spec.row0) / bb.spec.row_pitch % 1) < .1):
-            cost += abs(a[0] - b[0]) * .5
+def _holes_passed(a, b, xs, xset, pitch, row0):
+    """축 구간 ab 가 덮는 홀 수(양 끝 제외) — 홀 열 위 세로선, 행 위 가로선. 덮인 홀은
+    뒤 배선의 끝점이 될 수 없어서(R3) 길게 덮을수록 뒤 배선이 갈 데가 없어진다."""
+    if abs(a[0] - b[0]) < .5:
+        if round(a[0]) not in xset:
+            return 0
+        lo, hi = sorted((a[1], b[1]))
+        return max(0, math.ceil((hi - 1 - row0) / pitch) - math.floor((lo + 1 - row0) / pitch) - 1)
+    f = (a[1] - row0) / pitch % 1
+    if .05 < f < .95:
+        return 0
+    lo, hi = sorted((a[0], b[0]))
+    return bisect.bisect_left(xs, hi - 1) - bisect.bisect_right(xs, lo + 1)
+
+
+def _coster(bb):
+    xs = sorted(round(x) for x in bb._addr_map)
+    xset, pitch, row0 = set(xs), bb.spec.row_pitch, bb.spec.row0
+
+    def cost(path):
+        c = 40 * (len(path) - 2)
+        for a, b in zip(path, path[1:]):
+            c += abs(a[0] - b[0]) + abs(a[1] - b[1]) + 30 * _holes_passed(a, b, xs, xset, pitch, row0)
+        return c
     return cost
 
 
@@ -167,11 +186,17 @@ def _route(bb, chips, frm, to):
     led = to[0] == 'LED'
     half = bb.spec.row_pitch / 2
     srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
+    # 가로 통로: 끝 행 그대로, 또는 반 행 위아래로 ±0.5·1.5·…·4.5 행 — 칩 안쪽 통로가 차면
+    # 칩 위아래 행을 돌아간다
+    ds = (0,) + tuple(s * half * n for n in (1, 3, 5, 7, 9) for s in (-1, 1))
+    lo_y, hi_y = bb.r_y(1), bb.r_y(63)
     cands = []
     for A in srcs:
         for B in dsts:
-            for d1 in (0, -half, half):
-                for d2 in ((0,) if led else (0, -half, half)):
+            for d1 in ds:
+                for d2 in ds:
+                    if not (lo_y <= A[1] + d1 <= hi_y and lo_y <= B[1] + d2 <= hi_y):
+                        continue
                     y1, y2 = A[1] + d1, B[1] + d2
                     for X in _lanes(bb, led) + [A[0], B[0]]:
                         p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
@@ -183,14 +208,10 @@ def _route(bb, chips, frm, to):
     for (x, r), what in bb._leads.items():
         if '다리' in what or '애노드' in what or '캐소드' in what:
             others.append((x, bb.r_y(r)))
-    seen = set()
-    for p in sorted(cands, key=lambda p: (_cost(bb, p), p)):
-        t = tuple(p)
-        if t in seen:
-            continue
-        seen.add(t)
+    cost = _coster(bb)
+    for p in sorted(set(map(tuple, cands)), key=lambda p: (cost(p), p)):
         if _valid(bb, p, others, segs):
-            return p
+            return list(p)
     raise AssertionError(f'경로 없음: {frm} -> {to}')
 
 
@@ -215,6 +236,99 @@ def _draw_wires(bb, wires, paths, stage):
         elif not (s <= stage and (e is None or stage <= e)):
             continue
         bb.step_wire(p, kind, desc)
+
+
+# ---------------- C1 4x1 MUX ----------------
+
+_MUX_CHIPS = {'U4': K1, 'U1': K2, 'U2': K3, 'U3': K4}
+_ML = MUX_LED_TOP
+# 인버터: S0 = 게이트 3 (5→6, a), S1 = 게이트 4 (9→8, f), E = 게이트 6 (13→12, f).
+# 앞단: U1 A = D0 항, U1 B = D1 항, U2 A = D2 항, U2 B = D3 항. 합류: U3 **게이트 B**(→ pin 8, f쪽).
+# 임시 급전선(끝 단계가 있는 줄)은 superset 판에 함께 올려 경로를 정한다 — 완성본에는 안 그린다.
+# 인버터 임시선은 E'·S0'·S1' 행 순서(7·10·11)대로 LED1·2·3 이고 4걷기에서 뽑는다(R10).
+_MUX_WIRES = [
+    (1, 3, 'sig', ('U4', 12), ('LED', _ML[0]), "임시 급전: E' = U4 pin 12 -> LED1 (4걷기에서 뽑는다)"),
+    (2, 3, 'sig', ('U4', 8), ('LED', _ML[2]), "임시 급전: S1' = U4 pin 8 -> LED3 (4걷기에서 뽑는다)"),
+    (3, 3, 'sig', ('U4', 6), ('LED', _ML[1]), "임시 급전: S0' = U4 pin 6 -> LED2 (4걷기에서 뽑는다)"),
+    (4, None, 'sig', ('U4', 6), ('U1', 1), "S0' (U4 pin 6) -> U1 pin 1"),
+    (4, None, 'sig', ('U4', 8), ('U1', 10), "S1' (U4 pin 8) -> U1 pin 10"),
+    (4, None, 'sig', ('U1', 10), ('U1', 2), "S1' 이어 감 (U1 pin 10 -> U1 pin 2)"),
+    (4, None, 'sig', ('U4', 12), ('U1', 12), "E' (U4 pin 12) -> U1 pin 12"),
+    (4, None, 'sig', ('U1', 12), ('U1', 4), "E' 이어 감 (U1 pin 12 -> U1 pin 4)"),
+    (4, 7, 'sig', ('U1', 6), ('LED', _ML[0]), '임시 급전: U1 pin 6 -> LED1 (8걷기에서 뽑는다)'),
+    (5, None, 'sig', ('U4', 5), ('U1', 3), 'S0 (U4 pin 5) -> U1 pin 3 (n.c. 중계)'),
+    (5, None, 'sig', ('U1', 3), ('U1', 9), 'S0 이어 감 (U1 pin 3 -> U1 pin 9)'),
+    (5, 7, 'sig', ('U1', 8), ('LED', _ML[1]), '임시 급전: U1 pin 8 -> LED2 (8걷기에서 뽑는다)'),
+    (6, None, 'sig', ('U4', 6), ('U2', 1), "S0' (U4 pin 6) -> U2 pin 1"),
+    (6, None, 'sig', ('U4', 9), ('U2', 10), 'S1 (U4 pin 9) -> U2 pin 10'),
+    (6, None, 'sig', ('U2', 10), ('U2', 2), 'S1 이어 감 (U2 pin 10 -> U2 pin 2)'),
+    (6, None, 'sig', ('U4', 12), ('U2', 12), "E' (U4 pin 12) -> U2 pin 12"),
+    (6, None, 'sig', ('U2', 12), ('U2', 4), "E' 이어 감 (U2 pin 12 -> U2 pin 4)"),
+    (6, 7, 'sig', ('U2', 6), ('LED', _ML[2]), '임시 급전: U2 pin 6 -> LED3 (8걷기에서 뽑는다)'),
+    (7, None, 'sig', ('U4', 5), ('U2', 3), 'S0 (U4 pin 5) -> U2 pin 3 (n.c. 중계)'),
+    (7, None, 'sig', ('U2', 3), ('U2', 9), 'S0 이어 감 (U2 pin 3 -> U2 pin 9)'),
+    (7, 7, 'sig', ('U2', 8), ('LED', _ML[3]), '임시 급전: U2 pin 8 -> LED4 (8걷기에서 뽑는다)'),
+    (8, None, 'mid', ('U1', 8), ('U3', 12), "(E'·S1'·S0·D1)' (U1 pin 8) -> U3 pin 12"),
+    (8, None, 'mid', ('U2', 8), ('U3', 9), "(E'·S1·S0·D3)' (U2 pin 8) -> U3 pin 9"),
+    (8, None, 'mid', ('U1', 6), ('U3', 3), "(E'·S1'·S0'·D0)' (U1 pin 6) -> U3 pin 3 (n.c. 중계)"),
+    (8, None, 'mid', ('U3', 3), ('U3', 13), '이어 감 (U3 pin 3 -> U3 pin 13)'),
+    (8, None, 'mid', ('U2', 6), ('U3', 1), "(E'·S1·S0'·D2)' (U2 pin 6) -> U3 pin 1 (미사용 입력 중계)"),
+    (8, None, 'mid', ('U3', 1), ('U3', 10), '이어 감 (U3 pin 1 -> U3 pin 10)'),
+    (8, None, 'sig', ('U3', 8), ('LED', _ML[0]), 'Y = U3 pin 8 -> LED1'),
+]
+_MUX_INPUTS = [(1, 'E', 'U4', 13), (2, 'S1', 'U4', 9), (3, 'S0', 'U4', 5),
+               (4, 'D0', 'U1', 5), (5, 'D1', 'U1', 13), (6, 'D2', 'U2', 5), (7, 'D3', 'U2', 13)]
+
+
+def _mark_nc(bb, k, pins):
+    for p in pins:
+        bb.unused_inputs.append({'chip': '74HC20', 'pin': p, 'rail': None,
+                                 'block': 'left', 'pin1_row': k})
+
+
+def _mux_fixed(bb, stage, superset=False):
+    R = bb.cols['right']
+    bb.draw_chip('74HC04', K1)
+    for k in (K2, K3, K4):
+        bb.draw_chip('74HC20', k)
+    _frame(bb)
+    for k in (K1, K2, K3, K4):
+        bb.connect_power(k, gnd_col='a')
+    if superset or (stage is not None and stage < 8):
+        for i, tag in enumerate(('L1', 'L2', 'L3', 'L4')):
+            bb.led_chain(R['a'], _ML[i], tag, '중간 노드 관측 — 임시 급전선은 걷기 그림이 뽑는다',
+                         block='right')
+    else:
+        bb.led_chain(R['a'], _ML[0], 'Y', 'Y — 진리표 T1 의 Y 열', block='right')
+    _inputs(bb, _MUX_CHIPS, _MUX_INPUTS, stage, superset)
+
+
+@functools.lru_cache(maxsize=None)
+def _mux_paths():
+    return _plan(_mux_fixed, _MUX_CHIPS, _MUX_WIRES)
+
+
+def _mux_draw(bb, stage):
+    bb.partial = stage is not None and stage < 8
+    _mux_fixed(bb, stage)
+    _draw_wires(bb, _MUX_WIRES, _mux_paths(), stage)
+    bb.mark_unused_inputs([1, 3, 11], K1, chip='74HC04')
+    bb.mark_unused_outputs([2, 4, 10], K1, chip='74HC04')
+    for k in (K2, K3, K4):
+        _mark_nc(bb, k, (11,))
+    bb.mark_unused_inputs([2, 4, 5], K4, chip='74HC20 (U3)')
+    bb.mark_unused_outputs([6], K4, chip='74HC20 (U3)')
+    bb.note(_INPUT_NOTE)
+
+
+def build_trial_mux(output_path, template_path=None, stage=None, baseline=None, layer=None):
+    """C1 4x1 MUX v2 시험판. `stage` 1..8 또는 None(완성)."""
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
+    bb.enable_steps()
+    bb.set_header('실험04 v2 시험판: 4x1 MUX', '74HC04 + 74HC20 ×3 · 칩 좌 블록, LED 우 블록')
+    _mux_draw(bb, stage)
+    bb.export(output_path, max_row=63)
+    return bb
 
 
 # ---------------- C2 1x4 DMUX ----------------
@@ -293,4 +407,4 @@ def build_trial_dmux(output_path, template_path=None, stage=None, baseline=None,
 
 
 BOARDS = []
-FINALS = [('trial_e4_dmux.png', build_trial_dmux)]
+FINALS = [('trial_e4_mux.png', build_trial_mux), ('trial_e4_dmux.png', build_trial_dmux)]

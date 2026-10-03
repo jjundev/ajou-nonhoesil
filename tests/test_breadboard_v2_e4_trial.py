@@ -64,5 +64,28 @@ class DmuxFinal(_Trial):
                 self.assertEqual(got, want, f'Y{i} @ {ins}')
 
 
+class MuxFinal(_Trial):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.bb = cls.board.build_trial_mux(os.path.join(cls.tmp, 'mux.png'))
+
+    def test_v2_규약을_지킨다(self):
+        self.assert_v2_layout(self.bb)
+
+    def test_진리표_전_행(self):
+        nets = self.bb.nets()
+        names = ('E', 'S1', 'S0', 'D0', 'D1', 'D2', 'D3')
+        for vals in itertools.product((0, 1), repeat=7):
+            ins = dict(zip(names, vals))
+            sel = ins['S1'] * 2 + ins['S0']
+            want = 1 if ins['E'] == 0 and ins[f'D{sel}'] else 0
+            self.assertEqual(value_of(nets, 'LED Y 애노드', ins), want, str(ins))
+
+    def test_중계는_n_c_셋과_미사용_입력_하나다(self):
+        relay = [w for w in self.bb.wiring()['wires'] if '중계' in w['desc']]
+        self.assertEqual(len(relay), 4, [w['desc'] for w in relay])
+
+
 if __name__ == '__main__':
     unittest.main()
