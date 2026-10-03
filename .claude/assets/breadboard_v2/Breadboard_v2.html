@@ -180,7 +180,8 @@ for (const jack of GEOMETRY.jacks) {
   element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius, fill: jack.color}, undefined, group);
   element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius * 0.625, fill: 'var(--background)'}, undefined, group);
   element('circle', {cx: jack.centerX, cy: jack.centerY, r: radius * 0.375, fill: 'var(--foreground)'}, undefined, group);
-  if (jack.name !== 'yellow') label(jack.centerX, jack.bottomY + 24, jack.name, 'body', 'middle', group);
+  // 글자는 잭 왼쪽, 세로 가운데 — 잭 전원선이 잭 아래로 곧장 내려가고 번호 원이 잭 오른쪽에 앉는다(2026-10-03)
+  if (jack.name !== 'yellow') element('text', {x: jack.centerX - radius - 10, y: jack.centerY, class: 'body', 'text-anchor': 'end', 'dominant-baseline': 'central'}, jack.name, group);
 }
 const structure = element('g', {'aria-hidden': 'true'});
 for (const region of GEOMETRY.regions) {

@@ -3,7 +3,7 @@
   "board": "v2",
   "source": "Breadboard_v2.html",
   "png": "Breadboard_v2.png",
-  "png_sha256": "f10bbd2e82cfb537a47a145235caba5990b6b8356521a3e81b67b5d7f0c5c5a3",
+  "png_sha256": "50cc17bc5b560b69e270a4659895f5890e6b3fc4d884d2b3a8f65b89f1cae178",
   "export_scale": 1,
   "note": "PNG 은 1배(1200x1600)로 고정한다. 2배로 뽑으면 레일 극성선이 4px 가 되어 hand_grid 열 검출이 레일 열을 6.5px 밀어 잡는다.",
   "image": {
