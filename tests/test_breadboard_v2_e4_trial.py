@@ -87,6 +87,55 @@ class MuxFinal(_Trial):
         self.assertEqual(len(relay), 4, [w['desc'] for w in relay])
 
 
+def _nand(*v):
+    return 0 if all(v) else 1
+
+
+# 단계마다 LED 가 보여야 할 함수 — 학생이 그 단계에서 확인하는 것이다. 임시 급전선이 엉뚱한
+# 핀에 꽂히면 R1~R10 은 통과해도 여기서 걸린다.
+_MUX_STAGE_LEDS = {
+    1: {'L1': lambda i: 1 - i['E']},
+    2: {'L1': lambda i: 1 - i['E'], 'L3': lambda i: 1 - i['S1']},
+    3: {'L1': lambda i: 1 - i['E'], 'L3': lambda i: 1 - i['S1'], 'L2': lambda i: 1 - i['S0']},
+}
+_T = {
+    'L1': lambda i: _nand(1 - i['E'], 1 - i['S1'], 1 - i['S0'], i['D0']),
+    'L2': lambda i: _nand(1 - i['E'], 1 - i['S1'], i['S0'], i['D1']),
+    'L3': lambda i: _nand(1 - i['E'], i['S1'], 1 - i['S0'], i['D2']),
+    'L4': lambda i: _nand(1 - i['E'], i['S1'], i['S0'], i['D3']),
+}
+for _s, _tags in ((4, 'L1'), (5, 'L1 L2'), (6, 'L1 L2 L3'), (7, 'L1 L2 L3 L4')):
+    _MUX_STAGE_LEDS[_s] = {t: _T[t] for t in _tags.split()}
+_MUX_STAGE_LEDS[8] = {'Y': lambda i: 1 if i['E'] == 0 and i[f"D{i['S1'] * 2 + i['S0']}"] else 0}
+
+_Y = {f'Y{n}': (lambda n: lambda i: 1 if i['D'] and i['S1'] * 2 + i['S0'] == n else 0)(n)
+      for n in range(4)}
+_DMUX_STAGE_LEDS = {1: ('Y3',), 2: ('Y3', 'Y1'), 3: ('Y3', 'Y1', 'Y2'), 4: ('Y3', 'Y1', 'Y2', 'Y0')}
+
+
+class StageTruth(_Trial):
+    """단계 그림마다 그 단계에 급전된 LED 가 맞는 함수를 보이는가 — 모든 입력 조합."""
+
+    def check(self, bb, leds, names, stage):
+        nets = bb.nets()
+        for vals in itertools.product((0, 1), repeat=len(names)):
+            ins = dict(zip(names, vals))
+            for tag, f in leds.items():
+                self.assertEqual(value_of(nets, f'LED {tag} 애노드', ins), f(ins),
+                                 f'{stage}단계 {tag} @ {ins}')
+
+    def test_MUX_단계마다_LED_가_그_노드를_보인다(self):
+        names = ('E', 'S1', 'S0', 'D0', 'D1', 'D2', 'D3')
+        for stage, leds in _MUX_STAGE_LEDS.items():
+            bb = self.board.build_trial_mux(os.path.join(self.tmp, f'm{stage}.png'), stage=stage)
+            self.check(bb, leds, names, stage)
+
+    def test_DMUX_단계마다_LED_가_그_노드를_보인다(self):
+        for stage, tags in _DMUX_STAGE_LEDS.items():
+            bb = self.board.build_trial_dmux(os.path.join(self.tmp, f'd{stage}.png'), stage=stage)
+            self.check(bb, {t: _Y[t] for t in tags}, ('D', 'S1', 'S0'), stage)
+
+
 def _walk(board):
     """사슬 순서대로 (이름, 빌더, 단계, 그릴지) 를 낸다. 막힌 보드 뒤는 기준선이 없으므로
     다음 회로의 첫 보드(`RESTART`, `fresh_board` 로 기준선을 끊는 자리)까지 건너뛴다 —
