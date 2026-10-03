@@ -393,11 +393,61 @@ _V1 = BoardSpec(
     chip_blocks=('left', 'right'), led_only_blocks=())
 
 
+def _spec_from_geometry(path):
+    """v2 판형 사양을 `geometry.json` 에서 짓는다. 행 수·레일 빈 행·잭 이름이 렌더러가 아는 것과
+    다르면 멈춘다 — 판형이 바뀐 것이다. 양식 PNG 는 그 파일 옆에 있다."""
+    if not os.path.exists(path):
+        raise FileNotFoundError(f'v2 판형 좌표 파일이 없다: {path} — v1 로 넘어가지 않는다')
+    with open(path, encoding='utf-8') as f:
+        g = json.load(f)
+    if g.get('rows') != ROW_MAX or set(g.get('rail_gap_rows', ())) != set(RAIL_GAP_ROWS):
+        raise ValueError(f'{path}: 행 수·레일 빈 행이 렌더러({ROW_MAX}행, '
+                         f'{sorted(RAIL_GAP_ROWS)})와 다르다')
+    cols = {'left': {}, 'right': {}}
+    for c in g['columns']:
+        side, key = c['name'].split('.')
+        if side == 'mid':
+            # 가운데 레일은 한 열을 두 블록이 같은 이름으로 부른다 — 넷 단위가 ('rail', x) 라
+            # 이것만으로 한 넷이다(설계 §2)
+            cols['left'][f'mid_{key}'] = cols['right'][f'mid_{key}'] = c['x']
+        else:
+            cols[side][key] = c['x']
+    for blk in cols.values():
+        # 칩 몸통은 e·f 핀 열 안쪽 5px — v1 의 310·349 가 같은 식이다(305+5, 354-5)
+        blk['chip_x1'], blk['chip_x2'] = blk['e'] + 5, blk['f'] - 5
+    try:
+        jacks = {_V2_JACK_KEYS[j['name']]: j['center_x'] for j in g['jacks']}
+    except KeyError as e:
+        raise ValueError(f'{path}: 모르는 잭 이름 {e} — {sorted(_V2_JACK_KEYS)} 중 하나다') from None
+    bottoms = {j['bottom_y'] for j in g['jacks']}
+    centers = {j['center_y'] for j in g['jacks']}
+    if len(bottoms) != 1 or len(centers) != 1:
+        raise ValueError(f'{path}: 잭 높이가 제각각이다 — 잭 선 경로가 하나로 안 정해진다')
+    top = g['border']['top']
+    return BoardSpec(
+        name='v2',
+        template=(os.path.join(os.path.dirname(os.path.abspath(path)), g['png']),),
+        size=(g['image']['width'], g['image']['height']),
+        row0=float(g['row1_center_y']), row_pitch=float(g['row_pitch']),
+        board_left=g['border']['left'], board_right=g['border']['right'],
+        jacks=jacks, jack_bottom=bottoms.pop(),
+        # 잭 영역은 보드 위 테두리 위, 잭 선은 테두리 + 8·16 에서 가로지른다 — v1 과 같은 식
+        jack_y_max=top, jack_route_y=(top + 8, top + 16), jack_marker_y=centers.pop(),
+        cols=cols,
+        # 입력선은 가운데 레일에서 왼쪽(좌 블록 f~j)으로 뻗는다 — 배지는 반대쪽 여백, 가운데
+        # VCC 와 우 a 열 사이에 둔다
+        mid_badge_x=(cols['left']['mid_vcc'] + cols['right']['a']) / 2,
+        chip_blocks=('left',), led_only_blocks=('right',),
+        sha256=g['png_sha256'])
+
+
 @lru_cache(maxsize=None)
 def board_spec(name='v1'):
-    """판형 버전 이름 -> `BoardSpec`."""
+    """판형 버전 이름 -> `BoardSpec`. v2 는 처음 부를 때 `geometry.json` 을 읽는다."""
     if name == 'v1':
         return _V1
+    if name == 'v2':
+        return _spec_from_geometry(V2_GEOMETRY)
     raise ValueError(f'판형 버전은 {BOARD_VERSIONS} 중 하나다: {name!r}')
 
 
@@ -437,6 +487,14 @@ class BreadboardRenderer:
                 f'{self.base_im.size} ({template_path}).\n'
                 'cols·r_y() 좌표는 정본 한 장에 맞춰져 있습니다. '
                 '다른 판본을 쓰려면 좌표표를 다시 떠야 합니다.')
+        if self.spec.sha256 is not None:
+            with open(template_path, 'rb') as f:
+                digest = hashlib.sha256(f.read()).hexdigest()
+            if digest != self.spec.sha256:
+                raise ValueError(
+                    f'{self.board} 양식 PNG 의 해시가 geometry.json 의 png_sha256 과 다르다: '
+                    f'{template_path}.\n판형을 다시 뽑았으면 1배(1200x1600)인지, '
+                    'hand_grid.detect_grid 가 0px 로 맞는지 확인하고 png_sha256 을 같이 고친다')
         # 정본은 998px 한 장뿐이다 — 격자·로고는 확대해 깐다(`SCALE` 주석). NEAREST 는 픽셀을
         # 그대로 늘려 원본과 같은 모양이다. LANCZOS 는 JPEG 잡티까지 매끈하게 늘려 PNG 가
         # 장당 2.3MB 로 커졌다(NEAREST 는 1.1MB 안팎, 2026-09-28 실측)

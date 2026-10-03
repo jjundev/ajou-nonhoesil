@@ -106,5 +106,91 @@ class V1Spec(unittest.TestCase):
             self.mod.board_spec('v3')
 
 
+class V2Spec(unittest.TestCase):
+    """v2 사양은 geometry.json 에서만 나온다. 양식이 없거나 바뀌었으면 v1 로 넘어가지 않고 멈춘다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.g = json.loads(GEOMETRY.read_text(encoding="utf-8"))
+        cls.spec = cls.mod.board_spec('v2')
+
+    def test_열_표의_순서와_이름이_geometry_와_같다(self):
+        got = []
+        for x, (block, key) in sorted(self.mod.column_table('v2').items()):
+            got.append((f"mid.{key[4:]}" if key.startswith("mid_") else f"{block}.{key}", x))
+        self.assertEqual(got, [(c["name"], c["x"]) for c in self.g["columns"]])
+
+    def test_가운데_레일은_두_블록이_같은_x_다(self):
+        L, R = self.spec.cols['left'], self.spec.cols['right']
+        self.assertEqual((L['mid_gnd'], L['mid_vcc']), (R['mid_gnd'], R['mid_vcc']))
+
+    def test_칩_몸통은_e_f_안쪽_5px(self):
+        for blk in self.spec.cols.values():
+            self.assertEqual((blk['chip_x1'], blk['chip_x2']), (blk['e'] + 5, blk['f'] - 5))
+
+    def test_행과_잭은_geometry_를_따른다(self):
+        g, s = self.g, self.spec
+        self.assertEqual((s.size, s.row0, s.row_pitch),
+                         ((g["image"]["width"], g["image"]["height"]), g["row1_center_y"], g["row_pitch"]))
+        jx = {j["name"]: j["center_x"] for j in g["jacks"]}
+        self.assertEqual(s.jacks, {'red': jx['+5V'], 'yellow': jx['yellow'], 'gray': jx['0V']})
+        top = g["border"]["top"]
+        self.assertEqual((s.jack_bottom, s.jack_y_max, s.jack_route_y, s.jack_marker_y),
+                         (g["jacks"][0]["bottom_y"], top, (top + 8, top + 16), g["jacks"][0]["center_y"]))
+        self.assertEqual(s.mid_badge_x, (s.cols['left']['mid_vcc'] + s.cols['right']['a']) / 2)
+        self.assertEqual((s.chip_blocks, s.led_only_blocks, s.sha256),
+                         (('left',), ('right',), g["png_sha256"]))
+
+    def test_v2_렌더러가_v2_양식을_쓴다(self):
+        bb = self.mod.BreadboardRenderer(board='v2')
+        self.assertEqual(bb.base_im.size, (1200, 1600))
+        self.assertEqual((bb.r_y(1), bb.r_y(63)),
+                         (self.g["row1_center_y"], self.g["row1_center_y"] + 62 * self.g["row_pitch"]))
+
+    def test_양식_후보가_없으면_v1_로_넘어가지_않는다(self):
+        spec = replace(self.spec, template=(str(ROOT / "없는폴더/Breadboard_v2.png"),))
+        with self.assertRaisesRegex(FileNotFoundError, "v2"):
+            self.mod._default_template(spec)
+
+    def test_geometry_가_없으면_멈춘다(self):
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(FileNotFoundError):
+                self.mod._spec_from_geometry(os.path.join(d, "geometry.json"))
+
+    def test_geometry_의_행이_렌더러와_다르면_멈춘다(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "geometry.json"
+            p.write_text(json.dumps(dict(self.g, rows=62)), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "행"):
+                self.mod._spec_from_geometry(str(p))
+
+    def test_다시_뽑은_PNG_는_해시로_잡는다(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "Breadboard_v2.png"
+            with Image.open(V2_DIR / "Breadboard_v2.png") as im:
+                im = im.convert("RGB")
+                im.putpixel((0, 0), (0, 0, 0))
+                im.save(p)
+            with self.assertRaisesRegex(ValueError, "png_sha256"):
+                self.mod.BreadboardRenderer(str(p), board='v2')
+
+    def test_v1_양식을_v2_로_넘기면_크기로_잡는다(self):
+        """Review Focus 2 — `--template <v1 jpg>` 를 v2 주차에 넘긴 경우."""
+        with self.assertRaisesRegex(ValueError, "1200x1600"):
+            self.mod.BreadboardRenderer(self.mod._default_template(), board='v2')
+
+    def test_잭_선이_v2_에서도_그림대로_꽂힌다(self):
+        bb = self.mod.BreadboardRenderer(board='v2')
+        bb.enable_steps()
+        bb.connect_jacks()
+        bb.verify()
+        self.assertEqual([(s['frm'], s['to']) for s in bb.steps],
+                         [('전원잭', '좌 VCC레일3행'), ('전원잭', '좌 GND레일4행')])
+        red = bb._segments[0][1]
+        self.assertEqual(red[0], (self.spec.jacks['red'], self.spec.jack_bottom))
+        self.assertEqual(red[1][1], self.spec.jack_route_y[0])
+
+
 if __name__ == "__main__":
     unittest.main()
