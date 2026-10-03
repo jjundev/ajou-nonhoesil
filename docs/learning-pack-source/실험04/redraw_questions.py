@@ -58,7 +58,7 @@ class Drawing:
              f'<title>{escape(self.title)}</title><style>text{{font-family:Arial,sans-serif;fill:#222}}'
              '.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}'
              '.gate{fill:white;stroke:#222;stroke-width:3}</style><rect width="1000" height="600" fill="white"/>'+body+'</svg>')
-        path.write_text(svg,encoding='utf-8')
+        path.write_text(svg,encoding='utf-8',newline='\n')
         with fitz.open(stream=svg.encode('utf-8'),filetype='svg') as image:
             with fitz.open(stream=image.convert_to_pdf(),filetype='pdf') as pdf:
                 pdf[0].get_pixmap(matrix=fitz.Matrix(300/72,300/72),alpha=False).save(path.with_suffix('.png'))
