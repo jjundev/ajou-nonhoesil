@@ -2117,6 +2117,9 @@ class BreadboardRenderer:
             'removed': self.removed(),
             'wiring': self.wiring(),
         }
+        if self.board != 'v1':
+            # v2 부터만 든다 — v1 도장은 그대로이고, 결선이 같아도 판형을 바꾸면 도장이 바뀐다
+            out['board'] = self.board
         if self.layer is not None:
             # 층 보드에서만 든다 — 완성본 도장은 그대로다
             out['layer'] = list(self.layer)
@@ -2147,7 +2150,7 @@ class BreadboardRenderer:
                     for r in wires]
         removals += [{'n': None, 'text': g} for g in self.removed()[len(wires):]]
         removals += [{'n': None, 'text': g} for g in self._ghost_chain_lines()]
-        return {
+        side = {
             'schema': SIDECAR_SCHEMA,
             'title': self.title,
             'subtitle': self.subtitle,
@@ -2158,6 +2161,10 @@ class BreadboardRenderer:
             'probes': [{'n': p['n'], 'label': p['label'], 'at': p['at'], 'desc': p['desc']}
                        for p in self.probes],
         }
+        if self.board != 'v1':
+            # v2 부터만 든다. 커밋된 v1 사이드카는 바이트로 대조된다(`CommittedPngs`) — 없으면 v1 이다
+            side['board'] = self.board
+        return side
 
     def stamp(self):
         # v2 = 보드만 담은 PNG(2026-09-28). 접두어가 바뀌어 옛 PNG 는 전부 stale 로 잡힌다
@@ -2411,11 +2418,29 @@ def load_board_file(path, name=None):
             sys.modules.pop('render_breadboard', None)
         else:
             sys.modules['render_breadboard'] = saved
+    board = getattr(mod, 'BOARD', 'v1')
+    if board not in BOARD_VERSIONS:
+        raise ValueError(f'{path}: BOARD 는 {BOARD_VERSIONS} 중 하나다: {board!r}')
     return mod
 
 
 def load_board(experiment):
     return load_board_file(board_path(experiment), f'board_e{experiment}')
+
+
+def board_version(board):
+    """주차 결선 모듈의 판형 — 모듈 상수 `BOARD`, 없으면 'v1'."""
+    return getattr(board, 'BOARD', 'v1')
+
+
+def check_board(board, bb, label):
+    """빌더가 그린 판형이 주차 `BOARD` 와 같은가. 빌더가 `board=BOARD` 를 빠뜨리면 v2 주차가 v1
+    그림으로 **조용히** 나간다 — `build_all` 과 손그림 참조(`hand_compare.reference_diagram`)가
+    부른다."""
+    want = board_version(board)
+    if bb.board != want:
+        raise ValueError(f"{label}: 주차 BOARD 는 '{want}' 인데 렌더러는 '{bb.board}' 판형이다 — "
+                         "빌더가 BreadboardRenderer(..., board=BOARD) 로 넘겨야 한다")
 
 
 def fresh_board(fn):
@@ -2510,6 +2535,7 @@ def build_all(board, output_dir, template_path=None):
             raise TypeError(
                 f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
                 "빌더 끝에 `return bb` 가 있어야 한다")
+        check_board(board, bb, filename)
         base = bb.snapshot()
         made[filename] = bb.stamp()
     for filename, fn in board.FINALS:
@@ -2518,6 +2544,7 @@ def build_all(board, output_dir, template_path=None):
             raise TypeError(
                 f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
                 "빌더 끝에 `return bb` 가 있어야 한다")
+        check_board(board, bb, filename)
         made[filename] = bb.stamp()
     return made
 

@@ -320,5 +320,72 @@ class BlockRoles(unittest.TestCase):
             bb.verify()
 
 
+class BoardContract(unittest.TestCase):
+    """판형은 도장·사이드카에 남고, 주차 BOARD 와 렌더러 판형이 어긋나면 멈춘다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def jacks(self, board):
+        bb = self.mod.BreadboardRenderer(board=board)
+        bb.enable_steps()
+        bb.set_header('잭', '')
+        bb.connect_jacks()
+        return bb
+
+    def test_v1_도장에는_board_가_없다(self):
+        self.assertNotIn('board', self.jacks('v1').content())
+        self.assertEqual(self.jacks('v2').content()['board'], 'v2')
+
+    def test_판형만_바꿔도_도장이_바뀐다(self):
+        """Review Focus 3 — 기호 결선이 같아도 판형이 다르면 다른 그림이다."""
+        b1, b2 = self.jacks('v1'), self.jacks('v2')
+        self.assertEqual(b1.wiring(), b2.wiring())
+        self.assertNotEqual(b1.stamp(), b2.stamp())
+
+    def test_사이드카에_board_가_든다(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.jacks('v2').export(os.path.join(d, 'v2.png'))
+            self.jacks('v1').export(os.path.join(d, 'v1.png'))
+            v2 = json.loads(Path(d, 'v2.json').read_text(encoding='utf-8'))
+            v1 = json.loads(Path(d, 'v1.json').read_text(encoding='utf-8'))
+        self.assertEqual((v2['schema'], v2['board']), ('breadboard-sidecar/v1', 'v2'))
+        self.assertNotIn('board', v1)      # v1 사이드카는 바이트 그대로 — 없으면 v1 로 읽는다
+
+    def test_board_version_은_없으면_v1(self):
+        self.assertEqual(self.mod.board_version(types.SimpleNamespace()), 'v1')
+        self.assertEqual(self.mod.board_version(types.SimpleNamespace(BOARD='v2')), 'v2')
+
+    def _write_board(self, d, src):
+        p = Path(d) / '배치.py'
+        p.write_text(src, encoding='utf-8')
+        return p
+
+    def test_BOARD_오타는_불러올_때_거절한다(self):
+        """Review Focus 5."""
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(ValueError, 'BOARD'):
+                self.mod.load_board_file(self._write_board(d, "BOARD = 'V2'\nBOARDS = []\nFINALS = []\n"))
+
+    def test_빌더가_board_를_안_넘기면_build_all_이_멈춘다(self):
+        src = (
+            "from render_breadboard import BreadboardRenderer\n"
+            "BOARD = 'v2'\n"
+            "def build_forgot(output_path, template_path=None, stage=None, baseline=None):\n"
+            "    bb = BreadboardRenderer(template_path, baseline=baseline)\n"
+            "    bb.enable_steps()\n"
+            "    bb.set_header('잊음', '')\n"
+            "    bb.connect_jacks()\n"
+            "    bb.export(output_path)\n"
+            "    return bb\n"
+            "BOARDS = []\n"
+            "FINALS = [('forgot.png', build_forgot)]\n")
+        with tempfile.TemporaryDirectory() as d:
+            board = self.mod.load_board_file(self._write_board(d, src))
+            with self.assertRaisesRegex(ValueError, "board=BOARD"):
+                self.mod.build_all(board, os.path.join(d, 'out'))
+
+
 if __name__ == "__main__":
     unittest.main()
