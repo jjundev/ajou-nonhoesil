@@ -379,6 +379,7 @@ class BoardSpec:
     chip_blocks: tuple      # 칩을 둘 수 있는 블록 (R9)
     led_only_blocks: tuple  # LED 사슬만 두는 블록 (R10). 비면 R10 을 안 돈다
     sha256: str = None      # 양식 PNG 해시. 있으면 대조한다 — 다시 뽑은 PNG 를 잡는다
+    readability: bool = False   # 읽기 규칙 R11~R13 과 번호 원 자동 자리. v2 만 켠다 — v1 승인본은 소급 안 함
 
 
 _V1 = BoardSpec(
@@ -438,7 +439,7 @@ def _spec_from_geometry(path):
         # VCC 와 우 a 열 사이에 둔다
         mid_badge_x=(cols['left']['mid_vcc'] + cols['right']['a']) / 2,
         chip_blocks=('left',), led_only_blocks=('right',),
-        sha256=g['png_sha256'])
+        sha256=g['png_sha256'], readability=True)
 
 
 @lru_cache(maxsize=None)
@@ -1178,6 +1179,8 @@ class BreadboardRenderer:
 
         n = len(self.steps) + 1
         if view == 'shown':
+            if marker_at is None and self.spec.readability:
+                marker_at = self._auto_marker(len(self._segments) - 1)
             if marker_at is None:
                 (x0, y0), (x1, y1) = points[0], points[1] if len(points) > 1 else points[0]
                 marker_at = ((x0 + x1) // 2, (y0 + y1) // 2)
@@ -1691,6 +1694,130 @@ class BreadboardRenderer:
                         'from_side': a, 'to_side': b})
         return out
 
+    # ---------------- 읽기 규칙 R11~R13 (spec.readability, v2) ----------------
+    #
+    # 2026-10-03 실험04 v2 시험판(`docs/plans/2026-10-03-실험04-v2-시험판-결과.md`)은 R1~R10 을
+    # 다 통과했는데 **따라 그릴 수 없었다**(사용자). 번호 원이 끝점 홀을 덮었고 — 기본 자리가
+    # 첫 구간 가운데인데 첫 구간이 반 행(9.5px) 토막이었다 — 검정 선이 검정 홀 열 위를 지나가
+    # 꽂힌 것인지 지나가는 것인지 안 보였다. 칩 넷이 한 블록에 몰리는 v2 에서 처음 드러났다.
+    # v1 승인본(실험01~04)은 소급하지 않는다.
+
+    def _chip_bodies(self):
+        """칩마다 (몸통 상자, 칩 기둥 가운데 x, 칩) — 몸통은 e·f 핀 열 안쪽, pin 1 행 위 ~ pin 7 행 아래."""
+        out = []
+        for ch in self.chips:
+            c = self.cols[ch['block']]
+            box = (c['chip_x1'] - 1, self.r_y(ch['pin1_row']) - 10,
+                   c['chip_x2'] + 1, self.r_y(ch['pin1_row'] + 6) + 10)
+            out.append((box, (c['e'] + c['f']) / 2, ch))
+        return out
+
+    @staticmethod
+    def _seg_in_box(a, b, box):
+        """구간 ab 가 상자 **안쪽**을 지나가는가 — 2px 간격으로 훑는다(대각선도 잡는다)."""
+        x0, y0, x1, y1 = box
+        n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) / 2) + 1
+        return any(x0 < a[0] + (b[0] - a[0]) * t / n < x1 and y0 < a[1] + (b[1] - a[1]) * t / n < y1
+                   for t in range(n + 1))
+
+    def _marker_clear(self, x, y, own=None, pad=2):
+        """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀, 다른 번호 원, 칩 몸통,
+        `own` 번째가 아닌 배선."""
+        box = (x - 8 - pad, y - 8 - pad, x + 8 + pad, y + 8 + pad)
+        if any(box[0] <= hx <= box[2] and box[1] <= self.r_y(hr) <= box[3] for hx, hr in self._leads):
+            return False
+        if any(not (box[2] <= m[0] or m[2] <= box[0] or box[3] <= m[1] or m[3] <= box[1])
+               for m in self.marker_boxes):
+            return False
+        if any(not (box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1])
+               for b, _cx, _ch in self._chip_bodies()):
+            return False
+        return not any(i != own and self._seg_in_box(a, b, box)
+                       for i, (_k, pts, _d) in enumerate(self._segments)
+                       for a, b in zip(pts, pts[1:]))
+
+    def _auto_marker(self, idx):
+        """`_segments[idx]` 의 번호 원 자리 — R11 을 지키는 첫 점. 가로 구간을 먼저, 그다음 긴
+        구간 순으로 가운데부터 4px 씩 밖으로 훑는다. 세로 차선 한복판에 앉은 원은 이웃 차선을
+        막는다(시험판 MUX U1 pin 8 임시선). 자리가 없으면 None — 호출자가 옛 자리에 찍고
+        verify() 의 R11 이 멈춘다."""
+        pts = self._segments[idx][1]
+        segs = sorted(zip(pts, pts[1:]), key=lambda s: (abs(s[0][1] - s[1][1]) > .5,
+                                                        -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
+        for a, b in segs:
+            length = ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** .5
+            if length < 24:
+                continue
+            mid = length / 2
+            for off in range(0, int(mid - 12), 4):
+                for t in sorted({mid - off, mid + off}):
+                    x = round(a[0] + (b[0] - a[0]) * t / length)
+                    y = round(a[1] + (b[1] - a[1]) * t / length)
+                    if self._marker_clear(x, y, own=idx):
+                        return (x, y)
+        return None
+
+    def marker_problems(self):
+        """R11 — 번호 원이 가리는 것: 꽂힌 홀(끝점·부품 다리), 다른 번호 원, 칩 몸통(칩 이름·핀
+        번호), 그리고 **둘 이상의** 배선(원은 자기 배선 위에 앉으니 둘째부터는 남의 것이다)."""
+        out = []
+        boxes = self.marker_boxes
+        for i, (x0, y0, x1, y1) in enumerate(boxes):
+            at = f'번호 원({x0 + 8},{y0 + 8})'
+            for (hx, hr), what in self._leads.items():
+                if x0 - 1 <= hx <= x1 + 1 and y0 - 1 <= self.r_y(hr) <= y1 + 1:
+                    out.append(f'{at} 이 꽂힌 홀 {self.addr(hx, self.r_y(hr))} 을 가린다')
+            for b in boxes[i + 1:]:
+                if not (x1 <= b[0] or b[2] <= x0 or y1 <= b[1] or b[3] <= y0):
+                    out.append(f'{at} 과 번호 원({b[0] + 8},{b[1] + 8}) 이 겹친다')
+            for b, _cx, ch in self._chip_bodies():
+                if not (x1 <= b[0] or b[2] <= x0 or y1 <= b[1] or b[3] <= y0):
+                    out.append(f"{at} 이 칩 {ch['label']}({ch['pin1_row']}행) 몸통을 가린다")
+            under = [d for _k, pts, d in self._segments
+                     if any(self._seg_in_box(a, b, (x0, y0, x1, y1)) for a, b in zip(pts, pts[1:]))]
+            if len(under) > 1:
+                out.append(f'{at} 아래 배선 {len(under)}가닥: {", ".join(under)}')
+        return out
+
+    def wires_over_holes(self):
+        """R12 — 신호선(`sig`·`mid`)이 끝점 말고 지나가는 홀. 검정 선이 검정 홀 위를 지나가면 거기
+        꽂힌 것인지 지나가는 것인지 안 보인다. 전원·GND·레일 브리지·잭 선과 입력 점퍼(레일에서
+        같은 행으로 곧게 들어온다)는 안 본다."""
+        input_segs = {inp['seg'] for inp in self.inputs}
+        out = []
+        for i, (kind, pts, desc) in enumerate(self._segments):
+            if kind not in ('sig', 'mid') or i in input_segs:
+                continue
+            ends = {self.hole_at(*pts[0]), self.hole_at(*pts[-1])}
+            seen = []
+            for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+                n = max(1, int(max(abs(x1 - x0), abs(y1 - y0)) / 2))
+                for t in range(n + 1):
+                    h = self.hole_at(x0 + (x1 - x0) * t / n, y0 + (y1 - y0) * t / n)
+                    if h is not None and h not in ends and h not in seen:
+                        seen.append(h)
+            if seen:
+                out.append(f"{desc}: {', '.join(self.addr(x, self.r_y(r)) for x, r in seen[:4])}"
+                           + (f' 외 {len(seen) - 4}' if len(seen) > 4 else ''))
+        return out
+
+    def needless_body_crossings(self):
+        """R13 — 양 끝이 칩 기둥의 같은 쪽인데 그 칩 몸통을 가로지르는 신호선. 칩 이름·핀 번호를
+        덮고 쓸데없이 돌아간다. 양 끝이 다른 쪽(칩 안 a↔f 이어 가기, a쪽 출력 → LED)이면 한 번은
+        건너야 하므로 안 본다."""
+        out = []
+        for kind, pts, desc in self._segments:
+            if kind not in ('sig', 'mid'):
+                continue
+            for box, cx, ch in self._chip_bodies():
+                if (pts[0][0] < cx) != (pts[-1][0] < cx):
+                    continue
+                if any(abs(a[1] - b[1]) < .5 and box[1] <= a[1] <= box[3]
+                       and min(a[0], b[0]) < box[0] and max(a[0], b[0]) > box[2]
+                       for a, b in zip(pts, pts[1:])):
+                    out.append(f"{desc} — 칩 {ch['label']}({ch['pin1_row']}행)")
+        return out
+
     def _zone(self, end, shared):
         """끝점이 어느 블록 편인가 — 단자대·바깥 레일은 그 블록, 두 블록이 같이 쓰는 레일
         (`shared`, v2 가운데)과 잭·여백은 None."""
@@ -1949,6 +2076,10 @@ class BreadboardRenderer:
             LED 사슬 신호 스트립뿐이고, 건너는 선끼리 위아래 순서가 LED 순서와 같다. 핀
             방향표가 없어 '출력' 인지는 안 본다. v1 은 R9 가 두 블록을 다 허용하고 R10 이
             비어 있어 실험01~04 가 그대로다.
+        R11 번호 원이 꽂힌 홀·다른 번호 원·칩 몸통·남의 배선을 가리지 않는다.
+        R12 신호선은 끝점 말고 홀 위를 지나지 않는다 — 닿은 홀은 전부 꽂는 홀이다.
+        R13 양 끝이 칩의 같은 쪽인 신호선은 그 칩 몸통을 건너지 않는다.
+            R11~R13 은 `spec.readability`(v2)만 돈다 — 2026-10-03 실험04 v2 시험판.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -2103,6 +2234,16 @@ class BreadboardRenderer:
                 raise AssertionError(
                     f'{KIND_KR[kind]} 레일이 끊겨 있다 — 브리지가 없다: {desc}\n'
                     '  레일쌍 넷은 별개 스트립이다. bridge_rails() 로 이어라.')
+
+        # R11~R13. 읽기 규칙 — 꽂을 수 있고 회로도 맞는데 **따라 그릴 수 없는** 그림
+        # (2026-10-03 실험04 v2 시험판, 사용자). 기하·넷·레일보다 뒤에 본다 — 그것들이
+        # 틀린 그림의 읽기는 따질 필요가 없다. v2(`spec.readability`)만
+        if self.spec.readability:
+            rd = [f'R11 번호 원 가림: {p}' for p in self.marker_problems()]
+            rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
+            rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
+            if rd:
+                raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))
 
     def content(self):
         """도장에 드는 것 — 이 그림이 **무엇을** 싣는가. 주차 파일이 넘긴 문자열과 홀

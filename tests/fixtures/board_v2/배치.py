@@ -35,8 +35,11 @@ def build_v2_smoke(output_path, template_path=None, stage=None, baseline=None, l
         bb.mark_unused_outputs([3, 6, 11], row, chip=chip)
     for row, tag in ((U1, 'L1'), (U2, 'L2')):
         out = row + 6                                    # pin 8 행
-        bb.step_wire([(L['j'], bb.r_y(out)), (R['a'], bb.r_y(out))], 'sig',
-                     f'{tag} 급전 (pin 8)')               # ⑬ ⑯ 가운데를 건너는 선
+        # ⑬ ⑯ 가운데를 건너는 선 — 반 행 아래로 건넌다. 같은 행으로 곧게 건너면 가운데 레일
+        # 홀 위를 지나 GND 레일에 꽂힌 것으로 읽힌다(R12, 2026-10-03)
+        y, h = bb.r_y(out), bb.spec.row_pitch / 2
+        bb.step_wire([(L['j'], y), (L['j'], y + h), (R['a'], y + h), (R['a'], y)], 'sig',
+                     f'{tag} 급전 (pin 8)')
         bb.led_chain(R['a'], out, tag, f'{tag} = pin 8', block='right')   # ⑭⑮ ⑰⑱
     bb.export(output_path)
     return bb

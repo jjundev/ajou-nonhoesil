@@ -328,6 +328,110 @@ class BlockRoles(unittest.TestCase):
             bb.verify()
 
 
+class Readability(unittest.TestCase):
+    """v2 읽기 규칙 R11~R13 — 그림대로 꽂을 수는 있어도 **따라 그릴 수 없는** 그림을 막는다.
+
+    2026-10-03 실험04 v2 시험판: R1~R10 을 다 통과했는데 번호 원이 끝점 홀을 덮고(엔진이
+    원을 첫 구간 가운데에 찍는데 첫 구간이 반 행 토막이었다), 검정 선이 검정 홀 열 위를
+    지나가 꽂힌 것인지 지나가는 것인지 안 보였다(사용자). v1 승인본은 소급하지 않는다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def board(self, name='v2'):
+        bb = self.mod.BreadboardRenderer(board=name)
+        bb.enable_steps()
+        bb.partial = True
+        return bb, bb.cols['left']
+
+    def test_사양에_읽기_규칙_스위치가_있다(self):
+        self.assertTrue(self.mod.board_spec('v2').readability)
+        self.assertFalse(self.mod.board_spec('v1').readability)
+
+    def test_R11_번호_원이_끝점_홀을_덮으면_오류다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        bb.step_wire([(L['a'], bb.r_y(5)), (L['a'] - 30, bb.r_y(5)), (L['a'] - 30, bb.r_y(30)),
+                      (L['a'], bb.r_y(30))], 'sig', '시험', marker_at=(L['a'] - 4, bb.r_y(5)))
+        with self.assertRaisesRegex(AssertionError, 'R11'):
+            bb.verify()
+
+    def test_R11_번호_원이_칩_몸통을_덮으면_오류다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        bb.step_wire([(L['a'], bb.r_y(20)), (L['a'] - 30, bb.r_y(20)), (L['a'] - 30, bb.r_y(30)),
+                      (L['a'], bb.r_y(30))], 'sig', '시험',
+                     marker_at=((L['e'] + L['f']) // 2, bb.r_y(8)))
+        with self.assertRaisesRegex(AssertionError, 'R11'):
+            bb.verify()
+
+    def test_R11_번호_원_아래로_남의_배선이_지나가면_오류다(self):
+        bb, L = self.board()
+        x = L['a'] - 30                              # 좌 VCC 레일과 a 열 사이 여백 차선
+        bb.step_wire([(L['a'], bb.r_y(20)), (x, bb.r_y(20)), (x, bb.r_y(30)), (L['a'], bb.r_y(30))],
+                     'sig', '첫 선', marker_at=(x, bb.r_y(25)))
+        # 6px 옆 차선 — 첫 선의 번호 원 상자(±8) 안을 지난다
+        bb.step_wire([(L['a'], bb.r_y(22)), (x + 6, bb.r_y(22)), (x + 6, bb.r_y(40)), (L['a'], bb.r_y(40))],
+                     'sig', '둘째 선', marker_at=(x + 6, bb.r_y(35)))
+        with self.assertRaisesRegex(AssertionError, 'R11.*아래 배선 2가닥'):
+            bb.verify()
+
+    def test_R12_신호선이_끝점_말고_홀_위를_지나면_오류다(self):
+        bb, L = self.board()
+        bb.step_wire([(L['b'], bb.r_y(20)), (L['b'], bb.r_y(30))], 'sig', '홀 열 위 세로선')
+        with self.assertRaisesRegex(AssertionError, 'R12'):
+            bb.verify()
+
+    def test_R12_반_행과_홀_열_사이로_가면_통과한다(self):
+        bb, L = self.board()
+        h = bb.spec.row_pitch / 2
+        bb.step_wire([(L['b'], bb.r_y(20)), (L['b'], bb.r_y(20) + h), (L['b'] + 12, bb.r_y(20) + h),
+                      (L['b'] + 12, bb.r_y(30) - h), (L['b'], bb.r_y(30) - h), (L['b'], bb.r_y(30))],
+                     'sig', '사이로')
+        bb.verify()
+
+    def test_R12_는_전원선과_입력_점퍼를_안_본다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        bb.connect_power(5)                         # pin 14 선은 h~j·가운데 GND 홀 위를 지난다
+        self.mod._input_jumper(bb, L, 6, 'A', 'pin 2', col='a')   # 좌 VCC 레일 홀 위를 지난다
+        self.assertEqual(bb.wires_over_holes(), [])
+
+    def test_R13_같은_쪽끼리_잇는_선이_칩_몸통을_건너면_오류다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        bb.draw_chip('74HC32', 17)
+        h = bb.spec.row_pitch / 2
+        y = bb.r_y(7) + h                            # U1 몸통을 가로지르는 반 행
+        bb.step_wire([(L['j'], bb.r_y(6)), (L['j'], y), (L['a'] - 30, y), (L['a'] - 30, bb.r_y(30)),
+                      (L['j'] + 12, bb.r_y(30)), (L['j'] + 12, bb.r_y(19) + h), (L['j'], bb.r_y(19) + h),
+                      (L['j'], bb.r_y(19))], 'sig', 'f쪽 → f쪽 우회')
+        with self.assertRaisesRegex(AssertionError, 'R13'):
+            bb.verify()
+
+    def test_R13_칩_안_a_f_이어_가기는_건너도_된다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC08', 5)
+        h = bb.spec.row_pitch / 2
+        bb.step_wire([(L['g'], bb.r_y(8)), (L['g'], bb.r_y(8) + h), (L['d'], bb.r_y(8) + h),
+                      (L['d'], bb.r_y(9))], 'sig', '이어 감')
+        self.assertEqual(bb.needless_body_crossings(), [])
+
+    def test_v1_은_읽기_규칙을_안_돈다(self):
+        bb, L = self.board('v1')
+        bb.step_wire([(L['b'], bb.r_y(20)), (L['b'], bb.r_y(30))], 'sig', '홀 열 위 세로선')
+        bb.verify()
+
+    def test_v2_기본_번호_원은_첫_토막이_짧아도_끝점을_안_덮는다(self):
+        bb, L = self.board()
+        h = bb.spec.row_pitch / 2
+        bb.step_wire([(L['b'], bb.r_y(20)), (L['b'], bb.r_y(20) + h), (L['b'] + 12, bb.r_y(20) + h),
+                      (L['b'] + 12, bb.r_y(40) - h), (L['b'], bb.r_y(40) - h), (L['b'], bb.r_y(40))],
+                     'sig', '첫 토막이 반 행')
+        self.assertEqual(bb.marker_problems(), [])
+
+
 class BoardContract(unittest.TestCase):
     """판형은 도장·사이드카에 남고, 주차 BOARD 와 렌더러 판형이 어긋나면 멈춘다."""
 
