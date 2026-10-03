@@ -87,6 +87,118 @@ class MuxFinal(_Trial):
         self.assertEqual(len(relay), 4, [w['desc'] for w in relay])
 
 
+def _marker_problems(bb):
+    """번호 원이 가리는 것 — 꽂힌 홀(끝점·부품 다리), 다른 번호 원, 자기 것 말고 다른 배선.
+    번호 원은 자기 배선 위에 앉으므로 상자를 지나는 배선이 **둘 이상**이면 남의 배선을 덮는다.
+    2026-10-03 사용자: "번호 표시가 배선을 가리고, 배선 끝이 어느 칸에 꽂히는지 모른다"."""
+    out = []
+    boxes = bb.marker_boxes
+    for i, (x0, y0, x1, y1) in enumerate(boxes):
+        for (hx, hr), what in bb._leads.items():
+            if x0 - 1 <= hx <= x1 + 1 and y0 - 1 <= bb.r_y(hr) <= y1 + 1:
+                out.append(f'번호 원 {(x0 + 8, y0 + 8)} 이 꽂힌 홀 {bb.addr(hx, bb.r_y(hr))} 을 가린다')
+        for b in boxes[i + 1:]:
+            if not (x1 <= b[0] or b[2] <= x0 or y1 <= b[1] or b[3] <= y0):
+                out.append(f'번호 원 {(x0 + 8, y0 + 8)} 과 {(b[0] + 8, b[1] + 8)} 이 겹친다')
+        L = bb.cols[bb.chips[0]['block']] if bb.chips else None
+        for ch in bb.chips:
+            cx0, cx1 = L['e'] + 4, L['f'] - 4
+            cy0, cy1 = bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10
+            if not (x1 <= cx0 or cx1 <= x0 or y1 <= cy0 or cy1 <= y0):
+                out.append(f"번호 원 {(x0 + 8, y0 + 8)} 이 칩 {ch['label']}({ch['pin1_row']}행) 몸통을 가린다")
+        crossing = []
+        for _k, pts, desc in bb._segments:
+            for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+                n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
+                if any(x0 < ax + (bx - ax) * t / n < x1 and y0 < ay + (by - ay) * t / n < y1
+                       for t in range(n + 1)):
+                    crossing.append(desc)
+                    break
+        if len(crossing) > 1:
+            out.append(f'번호 원 {(x0 + 8, y0 + 8)} 아래 배선 {len(crossing)}가닥: {crossing}')
+    return out
+
+
+def _wires_over_holes(bb):
+    """신호선(`sig`·`mid`)이 끝점 말고 지나가는 홀. 검정 선이 검정 홀 위를 지나가면 거기
+    꽂힌 것인지 지나가는 것인지 안 보인다(2026-10-03 사용자). 전원·GND·입력 점퍼(엔진이
+    그린다)는 뺀다."""
+    input_segs = {inp['seg'] for inp in bb.inputs}
+    out = []
+    for i, (kind, pts, desc) in enumerate(bb._segments):
+        if kind not in ('sig', 'mid') or i in input_segs:
+            continue
+        ends = {bb.hole_at(*pts[0]), bb.hole_at(*pts[-1])}
+        seen = set()
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            n = max(1, int(max(abs(x1 - x0), abs(y1 - y0)) / 2))
+            for t in range(n + 1):
+                h = bb.hole_at(x0 + (x1 - x0) * t / n, y0 + (y1 - y0) * t / n)
+                if h is not None and h not in ends and h not in seen:
+                    seen.add(h)
+        if seen:
+            out.append(f'{desc}: 홀 {len(seen)}개 위를 지난다')
+    return out
+
+
+def _needless_body_crossings(bb):
+    """양 끝이 칩 기둥(e~f)의 같은 쪽인데 칩 몸통을 가로지르는 신호선 — 칩 이름·핀 번호를
+    덮고 쓸데없이 돌아간다. 양 끝이 다른 쪽(칩 안 이어 가기, a쪽 출력 → LED)이면 한 번은
+    건너야 하므로 본다."""
+    L = bb.cols['left']
+    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10) for ch in bb.chips]
+    out = []
+    for kind, pts, desc in bb._segments:
+        if kind not in ('sig', 'mid'):
+            continue
+        if (pts[0][0] < L['e']) != (pts[-1][0] < L['e']):
+            continue
+        for a, b in zip(pts, pts[1:]):
+            if (abs(a[1] - b[1]) < .5 and min(a[0], b[0]) < L['e'] and max(a[0], b[0]) > L['f']
+                    and any(y0 <= a[1] <= y1 for y0, y1 in bodies)):
+                out.append(desc)
+                break
+    return out
+
+
+class WiresOverHoles(_Trial):
+    def test_양_끝이_같은_쪽인_신호선은_칩_몸통을_건너지_않는다(self):
+        bad = {}
+        for name, fn in self.board.FINALS:
+            got = _needless_body_crossings(fn(os.path.join(self.tmp, name)))
+            if got:
+                bad[name] = got
+        self.assertEqual(bad, {})
+
+    def test_신호선은_끝점_말고_홀_위를_지나지_않는다(self):
+        bad = {}
+        for name, fn in self.board.FINALS:
+            got = _wires_over_holes(fn(os.path.join(self.tmp, name)))
+            if got:
+                bad[name] = got
+        self.assertEqual(bad, {}, '\n'.join(f'{k}: {len(v)}가닥 — {v[:3]}' for k, v in bad.items()))
+
+
+class Markers(_Trial):
+    """번호 원이 배선 끝과 다른 배선을 가리지 않는다 — 완성본과 단계 그림 전부."""
+
+    def test_완성본과_단계_그림의_번호_원이_아무것도_가리지_않는다(self):
+        bad = {}
+        base = None
+        for name, fn, stage in self.board.BOARDS:
+            if name in self.board.RESTART:
+                base = None
+            bb = fn(os.path.join(self.tmp, name), None, stage=stage, baseline=base)
+            base = bb.snapshot()
+            if _marker_problems(bb):
+                bad[name] = _marker_problems(bb)
+        for name, fn in self.board.FINALS:
+            bb = fn(os.path.join(self.tmp, name))
+            if _marker_problems(bb):
+                bad[name] = _marker_problems(bb)
+        self.assertEqual(bad, {}, '\n'.join(f'{k}: {len(v)}건 — {v[:3]}' for k, v in bad.items()))
+
+
 def _nand(*v):
     return 0 if all(v) else 1
 

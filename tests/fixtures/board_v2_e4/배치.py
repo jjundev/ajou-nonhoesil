@@ -73,7 +73,7 @@ def _lanes(bb, led):
     xs += [212, 224, 236, 248, 260]
     if led:
         return sorted(set(mid + [L[c] for c in 'ghij'] + [L[c] + 12 for c in 'ghi']))
-    return sorted(set(xs + [560, 572]))
+    return sorted(set(xs + [x for x in mid if x < L['mid_gnd']]))
 
 
 def _axis(a, b):
@@ -126,12 +126,26 @@ def _holes_passed(a, b, xs, xset, pitch, row0):
 def _coster(bb):
     xs = sorted(round(x) for x in bb._addr_map)
     xset, pitch, row0 = set(xs), bb.spec.row_pitch, bb.spec.row0
+    L = bb.cols['left']
+    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10) for ch in bb.chips]
+
+    def body_crossings(path):
+        """칩 몸통(e~f 사이)을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다. 칩 안
+        a↔f 이어 가기는 한 번은 건너야 하지만 칩 사이 선이 몸통을 넘을 이유는 없다."""
+        n = 0
+        for a, b in zip(path, path[1:]):
+            if abs(a[1] - b[1]) < .5 and min(a[0], b[0]) < L['e'] and max(a[0], b[0]) > L['f']:
+                n += sum(1 for y0, y1 in bodies if y0 <= a[1] <= y1)
+        return n
 
     def cost(path):
-        c = 40 * (len(path) - 2)
+        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 하나라도 있으면 `_route` 가 버린다 — 검정
+        선이 검정 홀 위를 지나면 꽂힌 것인지 지나가는 것인지 안 보인다(2026-10-03 사용자)."""
+        over = sum(_holes_passed(a, b, xs, xset, pitch, row0) for a, b in zip(path, path[1:]))
+        c = 40 * (len(path) - 2) + 400 * body_crossings(path)
         for a, b in zip(path, path[1:]):
-            c += abs(a[0] - b[0]) + abs(a[1] - b[1]) + 30 * _holes_passed(a, b, xs, xset, pitch, row0)
-        return c
+            c += abs(a[0] - b[0]) + abs(a[1] - b[1])
+        return over, c
     return cost
 
 
@@ -159,6 +173,13 @@ def _valid(bb, path, others_pts, segs):
     for q in others_pts:
         for a, b in zip(path, path[1:]):
             if _on_seg(q, a, b):
+                return False
+    # 이미 찍힌 번호 원 아래로 지나가거나 그 아래 홀에 꽂지 않는다 — 원이 선·끝점을 가린다
+    for m in bb.marker_boxes:
+        x0, y0, x1, y1 = m[0] - 1, m[1] - 1, m[2] + 1, m[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
                 return False
     # 같은 축 포개짐(R4) — 색과 무관하게 8px 로 본다
     for a, b in zip(path, path[1:]):
@@ -209,33 +230,89 @@ def _route(bb, chips, frm, to):
         if '다리' in what or '애노드' in what or '캐소드' in what:
             others.append((x, bb.r_y(r)))
     cost = _coster(bb)
-    for p in sorted(set(map(tuple, cands)), key=lambda p: (cost(p), p)):
+    scored = [(cost(p), p) for p in set(map(tuple, cands))]
+    for (over, _c), p in sorted((s for s in scored if s[0][0] == 0), key=lambda s: (s[0][1], s[1])):
         if _valid(bb, p, others, segs):
-            return list(p)
+            p = list(p)
+            m = _marker_spot(bb, p)
+            if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
+                return p, m
     raise AssertionError(f'경로 없음: {frm} -> {to}')
 
 
+_R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
+
+
+def _box_clear(bb, x, y, path_pts):
+    """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀·다른 번호 원·자기 것 아닌 배선."""
+    x0, y0, x1, y1 = x - _R - 2, y - _R - 2, x + _R + 2, y + _R + 2
+    holes = [(hx, bb.r_y(hr)) for hx, hr in bb._leads] + [path_pts[0], path_pts[-1]]
+    if any(x0 <= hx <= x1 and y0 <= hy <= y1 for hx, hy in holes):
+        return False
+    # 칩 몸통 — 칩 이름과 핀 번호가 거기 찍혀 있다
+    L = bb.cols['left']
+    for ch in bb.chips:
+        cy0, cy1 = bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10
+        if not (x1 <= L['e'] + 4 or L['f'] - 4 <= x0 or y1 <= cy0 or cy1 <= y0):
+            return False
+    for m in bb.marker_boxes:
+        if not (x1 <= m[0] or m[2] <= x0 or y1 <= m[1] or m[3] <= y0):
+            return False
+    for _k, pts, _d in bb._segments:
+        if pts is path_pts:
+            continue
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
+            if any(x0 < ax + (bx - ax) * t / n < x1 and y0 < ay + (by - ay) * t / n < y1
+                   for t in range(n + 1)):
+                return False
+    return True
+
+
+def _marker_spot(bb, path):
+    """경로 위에서 번호 원 자리. 엔진 기본(첫 구간 가운데)은 배선기 경로의 첫 토막이 반 행
+    (9.5px)짜리라 원이 끝점 홀을 덮는다(2026-10-03 사용자 지적). 긴 구간 가운데부터 4px 씩
+    밖으로 훑어 `_box_clear` 인 첫 점을 쓴다."""
+    # 가로 구간 먼저 — 세로 차선 한복판에 앉은 원은 6px 간격 이웃 차선 셋을 막아 뒤 배선이
+    # 갈 데가 없어진다(MUX U1 pin 8 임시선). 그다음 긴 구간 순.
+    segs = sorted(zip(path, path[1:]), key=lambda s: (_axis(*s) != 'h',
+                                                      -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
+    for a, b in segs:
+        length = abs(a[0] - b[0]) + abs(a[1] - b[1])
+        if length < 2 * _R + 8:
+            continue
+        mid = length / 2
+        for off in range(0, int(mid - _R - 4), 4):
+            for t in {mid - off, mid + off}:
+                f = t / length
+                x, y = round(a[0] + (b[0] - a[0]) * f), round(a[1] + (b[1] - a[1]) * f)
+                if _box_clear(bb, x, y, path):
+                    return (x, y)
+    return None
+
+
 def _plan(build_fixed, chips, wires):
-    """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로를 정한다 — `wires` 순서대로."""
+    """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로와 번호 원 자리를 정한다 — `wires`
+    순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다."""
     bb = BreadboardRenderer(None, board=BOARD)
     bb.enable_steps()
     build_fixed(bb, None, superset=True)
-    paths = []
+    plans = []
     for _s, _e, kind, frm, to, desc in wires:
-        p = _route(bb, chips, frm, to)
-        bb.step_wire(p, kind, desc)
-        paths.append(p)
-    return paths
+        p, m = _route(bb, chips, frm, to)     # 번호 원 자리까지 함께 고른다
+        bb.step_wire(p, kind, desc, marker_at=m)
+        plans.append((p, m))
+    return plans
 
 
-def _draw_wires(bb, wires, paths, stage):
-    for (s, e, kind, _frm, _to, desc), p in zip(wires, paths):
+def _draw_wires(bb, wires, plans, stage):
+    for (s, e, kind, _frm, _to, desc), (p, m) in zip(wires, plans):
         if stage is None:
             if e is not None:
                 continue
         elif not (s <= stage and (e is None or stage <= e)):
             continue
-        bb.step_wire(p, kind, desc)
+        bb.step_wire(p, kind, desc, marker_at=m)
 
 
 # ---------------- C1 4x1 MUX ----------------
