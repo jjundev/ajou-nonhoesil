@@ -8,6 +8,9 @@ import hashlib
 import argparse
 import tempfile
 import copy
+import bisect
+import itertools
+import math
 from dataclasses import dataclass
 from functools import lru_cache
 from PIL import Image, ImageDraw, ImageFont
@@ -2517,6 +2520,352 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     # 신호 이름은 보드 안, 레일 쪽 끝 옆. 0/1 을 바꿀 때 옮겨 꽂는 바로 그 끝이다
     bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1,
                   arrow='right' if c[col] > x_rail else 'left')
+
+
+# ---------------------------------------------------------------------------
+# 배선기 (v2) — 배선표(어느 핀을 어느 핀에)만 받아 경로와 번호 원 자리를 고른다.
+#
+# 2026-10-03 실험04 v2 시험판(`tests/fixtures/board_v2_e4/배치.py`)에서 태어나 2026-10-04 엔진으로
+# 올라왔다(`docs/plans/2026-10-04-v2-배선기-밀도-설계.md`). 칩 넷이 좌 블록 한 줄에 서면 a~d / g~j
+# 열이 끝점으로 차서 손좌표로는 R3·R4 가 쏟아진다. 가로는 반 행, 세로는 홀 열 사이나 여백 차선을 탄다.
+# 차선 x 값(212~260, 542~660)은 v2 판형 기하에 맞춘 것이라 v1 에서는 안 부른다.
+
+
+def _dip_pin_row(k, pin):
+    """칩 pin 1 행 `k` 에서 DIP-14 핀 `pin` 이 앉는 행."""
+    return k + pin - 1 if pin <= 7 else k + 14 - pin
+
+
+def _dip_side(pin):
+    return 'a' if pin <= 7 else 'f'
+
+
+_STRIP_COLS = {'a': 'abcd', 'f': 'ghij'}
+
+
+def _end_holes(bb, chips, end):
+    """배선 끝 하나가 꽂힐 수 있는 홀 후보 [(x, y)]. `end` 는 ('U5', 13) 또는 ('LED', top_row)."""
+    L, R = bb.cols['left'], bb.cols['right']
+    if end[0] == 'LED':
+        return [(R['a'], bb.r_y(end[1]))]
+    k, pin = chips[end[0]], end[1]
+    row = _dip_pin_row(k, pin)
+    return [(L[c], bb.r_y(row)) for c in _STRIP_COLS[_dip_side(pin)]
+            if (L[c], row) not in bb._leads and (L[c], row) not in bb._passed]
+
+
+def _lanes(bb, led):
+    """세로선이 달릴 x 후보. 홀 열 자체와 홀 열 사이(±12), 좌 여백·가운데 여백 차선.
+    칩 몸통(e~f 사이)은 뺀다 — 세로선이 칩 위를 덮는다. LED 로 가는 선은 가운데 여백만 쓴다."""
+    L = bb.cols['left']
+    mid = [x for x in range(542, 660, 6) if min(abs(x - L['mid_gnd']), abs(x - L['mid_vcc'])) > 4]
+    xs = [L[c] for c in 'abcdghij'] + [L[c] + 12 for c in 'abcghi'] + [L['j'] + 12]
+    xs += [212, 224, 236, 248, 260]
+    if led:
+        return sorted(set(mid + [L[c] for c in 'ghij'] + [L[c] + 12 for c in 'ghi']))
+    return sorted(set(xs + [x for x in mid if x < L['mid_gnd']]))
+
+
+def _axis(a, b):
+    if abs(a[0] - b[0]) < .5:
+        return 'v'
+    if abs(a[1] - b[1]) < .5:
+        return 'h'
+    return None
+
+
+def _on_seg(p, a, b, margin=6):
+    """엔진 `_endpoints_under_wires` 와 같은 식 — p 가 구간 ab 의 **중간** 위에 있는가."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = (dx * dx + dy * dy) ** .5
+    if length < 1:
+        return False
+    along = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length
+    if along <= margin or length - along <= margin:
+        return False
+    return abs((p[0] - a[0]) * dy - (p[1] - a[1]) * dx) / length < 1.5
+
+
+def _clean(path):
+    out = []
+    for p in path:
+        if out and abs(out[-1][0] - p[0]) < .5 and abs(out[-1][1] - p[1]) < .5:
+            continue
+        if len(out) >= 2 and _axis(out[-2], out[-1]) and _axis(out[-2], out[-1]) == _axis(out[-1], p):
+            out[-1] = p
+            continue
+        out.append(p)
+    return out
+
+
+def _holes_passed(a, b, xs, xset, pitch, row0):
+    """축 구간 ab 가 덮는 홀 수(양 끝 제외) — 홀 열 위 세로선, 행 위 가로선. 덮인 홀은
+    뒤 배선의 끝점이 될 수 없어서(R3) 길게 덮을수록 뒤 배선이 갈 데가 없어진다."""
+    if abs(a[0] - b[0]) < .5:
+        if round(a[0]) not in xset:
+            return 0
+        lo, hi = sorted((a[1], b[1]))
+        return max(0, math.ceil((hi - 1 - row0) / pitch) - math.floor((lo + 1 - row0) / pitch) - 1)
+    f = (a[1] - row0) / pitch % 1
+    if .05 < f < .95:
+        return 0
+    lo, hi = sorted((a[0], b[0]))
+    return bisect.bisect_left(xs, hi - 1) - bisect.bisect_right(xs, lo + 1)
+
+
+def _coster(bb):
+    xs = sorted(round(x) for x in bb._addr_map)
+    xset, pitch, row0 = set(xs), bb.spec.row_pitch, bb.spec.row0
+    L = bb.cols['left']
+    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10) for ch in bb.chips]
+
+    def body_crossings(path):
+        """칩 몸통(e~f 사이)을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다. 칩 안
+        a↔f 이어 가기는 한 번은 건너야 하지만 칩 사이 선이 몸통을 넘을 이유는 없다."""
+        n = 0
+        for a, b in zip(path, path[1:]):
+            if abs(a[1] - b[1]) < .5 and min(a[0], b[0]) < L['e'] and max(a[0], b[0]) > L['f']:
+                n += sum(1 for y0, y1 in bodies if y0 <= a[1] <= y1)
+        return n
+
+    def cost(path):
+        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 하나라도 있으면 `_route` 가 버린다 — 검정
+        선이 검정 홀 위를 지나면 꽂힌 것인지 지나가는 것인지 안 보인다(2026-10-03 사용자)."""
+        over = sum(_holes_passed(a, b, xs, xset, pitch, row0) for a, b in zip(path, path[1:]))
+        c = 40 * (len(path) - 2) + 400 * body_crossings(path)
+        for a, b in zip(path, path[1:]):
+            c += abs(a[0] - b[0]) + abs(a[1] - b[1])
+        return over, c
+    return cost
+
+
+def _valid(bb, path, others_pts, segs):
+    # R6 — 두 점이 다 같은 스트립의 홀이면 그 구간은 전기적으로 없는 것과 같다
+    for a, b in zip(path, path[1:]):
+        sa = bb._strip(bb.sym(a[0], bb._row_of(a[1]))) if bb.hole_at(*a) else None
+        sb = bb._strip(bb.sym(b[0], bb._row_of(b[1]))) if bb.hole_at(*b) else None
+        if sa is not None and sa == sb:
+            return False
+        if _axis(a, b) is None:
+            return False
+    # 칩 이름 글자 위를 지나지 않는다(엔진 R14) — 이어 가기는 이름 위아래 반 행으로 건넌다
+    for box, _ch in bb.chip_label_boxes:
+        if any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:])):
+            return False
+    # 꺾임점이 리드가 있는 홀 위에 앉으면 안 된다
+    for c in path[1:-1]:
+        h = bb.hole_at(*c)
+        if h is not None and h in bb._leads:
+            return False
+    # 새 선의 끝점이 기존 선 아래
+    for q in (path[0], path[-1]):
+        for _k, pts in segs:
+            for a, b in zip(pts, pts[1:]):
+                if _on_seg(q, a, b):
+                    return False
+    # 기존 끝점·부품 다리가 새 선 아래
+    for q in others_pts:
+        for a, b in zip(path, path[1:]):
+            if _on_seg(q, a, b):
+                return False
+    # 이미 찍힌 번호 원 아래로 지나가거나 그 아래 홀에 꽂지 않는다 — 원이 선·끝점을 가린다
+    for m in bb.marker_boxes:
+        x0, y0, x1, y1 = m[0] - 1, m[1] - 1, m[2] + 1, m[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
+                return False
+    # 꺾임점이 남의 선에 닿거나 남의 꺾임점이 새 선에 닿지 않는다 — 끝과 끝이 맞닿은 두 선은
+    # 한 가닥으로 읽힌다(2026-10-04, R4 는 2px 이하 겹침을 봐줘서 못 본다)
+    for c in path[1:-1]:           # 끝점(홀)끼리는 R2·단계 겹침을 위에서 따로 본다
+        for _k, pts in segs:
+            if any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts) or                     any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:])):
+                return False
+    for _k, pts in segs:
+        for q in pts[1:-1]:
+            if any(_on_seg(q, a, b, margin=0) for a, b in zip(path, path[1:])):
+                return False
+    # 같은 축 포개짐(R4) — 색과 무관하게 8px 로 본다
+    for a, b in zip(path, path[1:]):
+        ax = _axis(a, b)
+        for _k, pts in segs:
+            for c, d in zip(pts, pts[1:]):
+                if _axis(c, d) != ax:
+                    continue
+                if ax == 'v' and abs(a[0] - c[0]) < 1.5:
+                    lo = max(min(a[1], b[1]), min(c[1], d[1]))
+                    hi = min(max(a[1], b[1]), max(c[1], d[1]))
+                    if hi - lo > 2:
+                        return False
+                if ax == 'h' and abs(a[1] - c[1]) < 1.5:
+                    lo = max(min(a[0], b[0]), min(c[0], d[0]))
+                    hi = min(max(a[0], b[0]), max(c[0], d[0]))
+                    if hi - lo > 2:
+                        return False
+    return True
+
+
+def _route(bb, chips, frm, to):
+    """`frm`→`to` 의 가장 싼 합법 경로와 번호 원 자리."""
+    for found in _routes(bb, chips, frm, to):
+        return found
+    raise AssertionError(f'경로 없음: {frm} -> {to}')
+
+
+def _routes(bb, chips, frm, to):
+    """`frm`→`to` 의 합법 경로를 싼 순으로 낸다. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B]
+    꼴이다 — y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`."""
+    led = to[0] == 'LED'
+    srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
+    others = []
+    segs = [(k, pts) for k, pts, _d in bb._segments]
+    for _k, pts, _d in bb._segments:
+        others += [pts[0], pts[-1]]
+    for (x, r), what in bb._leads.items():
+        if '다리' in what or '애노드' in what or '캐소드' in what:
+            others.append((x, bb.r_y(r)))
+    chip_rows = tuple(ch['pin1_row'] for ch in bb.chips)
+    for p in _ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led):
+        if _valid(bb, p, others, segs):
+            p = list(p)
+            m = _marker_spot(bb, p)
+            if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
+                yield p, m
+
+
+_ORDERED = {}
+
+
+def _ordered(bb, chip_rows, srcs, dsts, led):
+    """후보 경로를 싼 순으로 — 덮는 홀이 있는 것은 뺀다. 비용은 칩 자리와 끝 홀에만 달렸고 깔린
+    배선과 무관해서, 수리(`_plan`)가 같은 선을 다시 깔 때 그대로 쓴다."""
+    key = (bb.spec.name, chip_rows, srcs, dsts, led)
+    if key in _ORDERED:
+        return _ORDERED[key]
+    half = bb.spec.row_pitch / 2
+    # 가로 통로: 끝 행 그대로, 또는 반 행 위아래로 ±0.5·1.5·…·4.5 행 — 칩 안쪽 통로가 차면
+    # 칩 위아래 행을 돌아간다
+    ds = (0,) + tuple(s * half * n for n in (1, 3, 5, 7, 9) for s in (-1, 1))
+    lo_y, hi_y = bb.r_y(1), bb.r_y(63)
+    cands = []
+    for A in srcs:
+        for B in dsts:
+            for d1 in ds:
+                for d2 in ds:
+                    if not (lo_y <= A[1] + d1 <= hi_y and lo_y <= B[1] + d2 <= hi_y):
+                        continue
+                    y1, y2 = A[1] + d1, B[1] + d2
+                    for X in _lanes(bb, led) + [A[0], B[0]]:
+                        p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
+                        cands.append(p)
+    cost = _coster(bb)
+    scored = [(cost(p), p) for p in set(map(tuple, cands))]
+    out = [p for (_over, _c), p in sorted((s for s in scored if s[0][0] == 0),
+                                          key=lambda s: (s[0][1], s[1]))]
+    _ORDERED[key] = out
+    return out
+
+
+_R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
+
+
+def _box_clear(bb, x, y, path_pts):
+    """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가. 판정은 엔진 `_marker_clear`(R11 과 같은
+    식)이고, 이 선은 아직 안 그렸으니 제 끝점 두 홀만 더 본다."""
+    if any(abs(hx - x) <= _R + 2 and abs(hy - y) <= _R + 2 for hx, hy in (path_pts[0], path_pts[-1])):
+        return False
+    return bb._marker_clear(x, y)
+
+
+def _marker_spot(bb, path):
+    """경로 위에서 번호 원 자리. 엔진 기본(첫 구간 가운데)은 배선기 경로의 첫 토막이 반 행
+    (9.5px)짜리라 원이 끝점 홀을 덮는다(2026-10-03 사용자 지적). 긴 구간 가운데부터 4px 씩
+    밖으로 훑어 `_box_clear` 인 첫 점을 쓴다."""
+    # 가로 구간 먼저 — 세로 차선 한복판에 앉은 원은 6px 간격 이웃 차선 셋을 막아 뒤 배선이
+    # 갈 데가 없어진다(MUX U1 pin 8 임시선). 그다음 긴 구간 순.
+    segs = sorted(zip(path, path[1:]), key=lambda s: (_axis(*s) != 'h',
+                                                      -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
+    for a, b in segs:
+        length = abs(a[0] - b[0]) + abs(a[1] - b[1])
+        if length < 2 * _R + 8:
+            continue
+        mid = length / 2
+        for off in range(0, int(mid - _R - 4), 4):
+            for t in {mid - off, mid + off}:
+                f = t / length
+                x, y = round(a[0] + (b[0] - a[0]) * f), round(a[1] + (b[1] - a[1]) * f)
+                if _box_clear(bb, x, y, path):
+                    return (x, y)
+    return None
+
+
+_REPAIR_BACK, _REPAIR_ALTS = 4, 8   # 막히면 직전 몇 가닥을, 가닥마다 몇 후보까지 바꿔 보는가
+
+
+def route_plan(build_fixed, chips, wires, board='v2'):
+    """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로와 번호 원 자리를 정한다 — `wires`
+    순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다. v2 판형만.
+
+    앞 선이 가장 싼 자리를 먼저 가져가 뒤 선이 막히면, 직전 `_REPAIR_BACK` 가닥 중 **한 가닥만**
+    다음 후보로 바꾸고 그 뒤를 다시 깐다. 칩 이름을 피하면(R14) 칩 하나를 건널 수 있는 반 행이
+    pin 1~3·5~7 사이 넷뿐이라, 한 칩 안 이어 가기가 셋이면 싼 자리부터 고르다 막힌다(2026-10-04
+    MUX U1). 아무 데로나 되돌아가는 탐색은 가짓수가 터져 10분을 넘겼다."""
+    if not board_spec(board).readability:
+        raise ValueError(f'route_plan 은 v2 판형만 고른다(차선이 v2 기하다): {board!r}')
+
+    def board_(upto):
+        bb = BreadboardRenderer(None, board=board)
+        bb.enable_steps()
+        build_fixed(bb, None, superset=True)
+        for (_s, _e, kind, _f, _t, desc), (p, m) in zip(wires, upto):
+            bb.step_wire(p, kind, desc, marker_at=m)
+        return bb
+
+    def greedy(start, upto, stop):
+        """`upto` 뒤로 `stop` 가닥째까지 가장 싼 경로를 깐다. 막히면 None."""
+        bb, plans = board_(upto), list(upto)
+        for _s, _e, kind, frm, to, desc in wires[start:stop + 1]:
+            found = next(_routes(bb, chips, frm, to), None)
+            if found is None:
+                return None
+            bb.step_wire(found[0], kind, desc, marker_at=found[1])
+            plans.append(found)
+        return plans
+
+    plans, bb = [], board_([])
+    while len(plans) < len(wires):
+        i = len(plans)
+        _s, _e, kind, frm, to, desc = wires[i]
+        found = next(_routes(bb, chips, frm, to), None)
+        if found is not None:
+            bb.step_wire(found[0], kind, desc, marker_at=found[1])
+            plans.append(found)
+            continue
+        for j in range(i - 1, max(-1, i - 1 - _REPAIR_BACK), -1):
+            _s, _e, _k, frm, to, _d = wires[j]
+            alts = itertools.islice(_routes(board_(plans[:j]), chips, frm, to), 1, 1 + _REPAIR_ALTS)
+            for alt in alts:
+                more = greedy(j + 1, plans[:j] + [alt], i)
+                if more is not None:
+                    plans = more
+                    break
+            else:
+                continue
+            break
+        else:
+            raise AssertionError(f'경로 없음: {frm} -> {to} ({desc})')
+        bb = board_(plans)
+    return plans
+
+
+def draw_routed(bb, wires, plans, stage):
+    for (s, e, kind, _frm, _to, desc), (p, m) in zip(wires, plans):
+        if stage is None:
+            if e is not None:
+                continue
+        elif not (s <= stage and (e is None or stage <= e)):
+            continue
+        bb.step_wire(p, kind, desc, marker_at=m)
 
 
 # ---------------------------------------------------------------------------

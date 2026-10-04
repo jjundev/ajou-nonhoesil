@@ -43,5 +43,12 @@ class LambdaZero(unittest.TestCase):
         self.assertEqual(_plain(self.board._dmux_paths()), self.snap['dmux'])
 
 
+class RoutePlanBoard(unittest.TestCase):
+    def test_v1_이면_멈춘다(self):
+        mod = _load()
+        with self.assertRaisesRegex(ValueError, 'v2'):
+            mod.route_plan(lambda bb, stage, superset=False: None, {}, [], board='v1')
+
+
 if __name__ == '__main__':
     unittest.main()
