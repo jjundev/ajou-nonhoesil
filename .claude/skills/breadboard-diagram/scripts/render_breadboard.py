@@ -2935,6 +2935,87 @@ def wire_metrics(bb):
 
 
 # ---------------------------------------------------------------------------
+# 배치기 (v2) — 칩 슬롯 행·LED 윗행·브리지 행을 고른다
+#
+# 배선기(`route_plan`)는 자리를 받아 길만 고른다. 배치기는 그 자리 자체를 고른다 — 근사 비용으로
+# 후보 전부의 순위를 매기고 앞 `PLACE_TOP` 개만 route_plan 으로 실측한다. 저작 때
+# `python -m scripts.lab.place_search <배치.py>` 로 한 번 돌리고, 고른 자리는 주차 `LAYOUT` 과 netlist
+# `kind: layout` 표에 옮겨 적는다. 설계: `docs/plans/2026-10-05-v2-배치기-설계.md`.
+#
+# layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]}
+# — 보고서 JSON 과 그대로 맞대려고 리스트·문자열 키만 쓴다.
+
+# 배선기가 아는 칩 — `_dip_pin_row` 가 DIP-14 를 가정한다. 16핀(74HC138 따위)·7-segment 는 배선기부터 넓힌다
+DIP14 = frozenset({'74HC00', '74HC02', '74HC04', '74HC08', '74HC10', '74HC11', '74HC20',
+                   '74HC21', '74HC27', '74HC32', '74HC74', '74HC86'})
+PLACE_GMIN = 3      # 칩 사이 최소 빈 행 — 실물에서 손이 들어갈 여유(2026-10-05 사용자 N2)
+PLACE_GMAX = 6
+PLACE_STARTS = tuple(range(3, 9))   # 맨 위 칩 pin 1 행 후보
+PLACE_TOP = 8       # 근사 순위 앞 몇 개를 route_plan 으로 실측하나 (한 판에 약 1분)
+PLACE_ROUNDS = 3
+LED_SPAN = 4        # LED 사슬 한 벌 = 윗행 ~ 윗행+3 (LED 두 행 + 저항 아랫다리)
+PLACE_ROW_LAST = 61  # 칩·LED·브리지가 쓸 마지막 행 — 62·63 은 레일 빈 행
+PLACE_REPORT = '배치탐색.md'
+
+
+@dataclass(frozen=True)
+class PlaceCircuit:
+    """배치기가 보는 회로 하나.
+
+    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP14`), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
+    2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 태그 `('LED', 'L1')`.
+    `fixed(bb, stage, superset, layout)` 는 칩·전원·입력·LED 사슬·브리지를 `layout` 자리에 그린다.
+    `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀) — f쪽이면 가운데 GND 레일의 그 행을 쓴다."""
+    name: str
+    chips: dict
+    models: dict
+    leds: tuple
+    wires: tuple
+    fixed: object
+    inputs: tuple = ()
+
+
+def layout_key(layout):
+    """layout → 캐시 열쇠(키 정렬 JSON)."""
+    return json.dumps(layout, sort_keys=True, ensure_ascii=False)
+
+
+def place_check(circuit):
+    """배치기가 다룰 수 있는 회로인가. 아니면 ValueError."""
+    bad = sorted({m for m in circuit.models.values() if m not in DIP14})
+    if bad:
+        raise ValueError(f'{circuit.name}: 배치기는 14핀 칩만 놓는다(`_dip_pin_row` 가 DIP-14 가정) — {bad}')
+    tags = {end[1] for w in circuit.wires for end in (w[3], w[4]) if end[0] == 'LED'}
+    unknown = sorted(tags - set(circuit.leds))
+    if unknown:
+        raise ValueError(f'{circuit.name}: leds 에 없는 LED 태그 {unknown}')
+
+
+def place_chips(circuit, layout):
+    """칩 → pin 1 행."""
+    return {chip: layout['slots'][slot] for chip, slot in circuit.chips.items()}
+
+
+def place_wires(circuit, layout):
+    """LED 태그 끝을 그 회로의 LED 윗행으로 바꾼 `route_plan` 배선표."""
+    rows = layout['leds'].get(circuit.name, {})
+
+    def end(e):
+        return ('LED', rows[e[1]]) if e[0] == 'LED' else e
+    return [(s, e, kind, end(f), end(t), desc) for s, e, kind, f, t, desc in circuit.wires]
+
+
+def place_hash(circuits, slots, gmin=PLACE_GMIN):
+    """배선표 지문(16자리). 바뀌면 배치를 다시 찾아야 한다 — `fixed` 함수는 안 본다."""
+    body = {'slots': list(slots), 'gmin': gmin, 'circuits': [
+        {'name': c.name, 'chips': c.chips, 'models': c.models, 'leds': list(c.leds),
+         'wires': [list(w) for w in c.wires], 'inputs': [list(i) for i in c.inputs]}
+        for c in circuits]}
+    text = json.dumps(body, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()[:16]
+
+
+# ---------------------------------------------------------------------------
 # 주차 결선 파일 — `보고서/실험NN/결선도/배치.py`
 #
 # 엔진은 주차를 모른다. 주차마다 결선(칩 자리·배선 순서·단계)은 그 실험 폴더의
