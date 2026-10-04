@@ -1,0 +1,44 @@
+{
+  "original": "<p>2x4 Decoder의 회로를 설계하시오.(Not gate 2개, 2-input And gate 4개)</p><p>Design a circuit diagram of 2x4 decoder. (2 NOT gates, 4 2-input AND gates)</p>",
+  "conditions": "<p>입력은 I1, I0 두 개, 출력은 O0~O3 네 개예요. 출력 Ok는 I1I0가 k를 이진수로 쓴 값일 때만 1이에요.</p>",
+  "ask": "<p>NOT 2개와 2입력 AND 4개로 회로를 그리고 논리식을 쓰세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "출력마다 한 조합",
+      "html": "<p>네 출력이 각각 입력 조합 하나만 1로 만들어야 해요. 조합마다 I1과 I0 중 어느 쪽에 NOT을 붙일지 정해 보세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>I1과 I0를 각각 NOT에 넣어 I1′, I0′를 만들어요. 각 AND에는 그 출력이 선택하는 조합의 값(원래 신호 또는 반전 신호)을 하나씩 넣어요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-dec2x4-design-solution-01.png\" width=\"400\" style=\"max-width:100%;height:auto\" alt=\"2×4 디코더 완성 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$O_0=\\overline{I_1}\\,\\overline{I_0},\\ O_1=\\overline{I_1}I_0,\\ O_2=I_1\\overline{I_0},\\ O_3=I_1I_0$$</p>"
+      },
+      {
+        "label": "표로 확인",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>I1</th><th>I0</th><th>O3</th><th>O2</th><th>O1</th><th>O0</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 게이트 수는 NOT 2개, 2입력 AND 4개로 요구와 같아요. 네 입력 조합에서 켜진 출력이 정확히 하나씩이에요.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 두 NOT 출력을 서로 바꾸어 연결하면 O1과 O2가 뒤바뀌어요. I1이 상위 비트라는 점을 기준으로 맞춰요.</p>"
+      }
+    ],
+    "answer": "<p>O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0 (NOT 2개, AND 4개)</p>"
+  },
+  "notes": [
+    "제공 답안 그림(입력 I0·I1, NOT 2개, AND 4개, 출력 O0~O3)과 같은 구조예요."
+  ]
+}

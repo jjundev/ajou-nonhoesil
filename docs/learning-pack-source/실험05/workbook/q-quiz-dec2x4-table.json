@@ -1,0 +1,36 @@
+{
+  "original": "<p>1. 2X4 Decoder의 회로를 보고 Truth table을 완성하시오.</p>",
+  "conditions": "<p>원문 회로 그림은 해설이 같은 쪽에 섞여 있어 이 문제지에는 싣지 않고 글로 옮겼어요. 스위치 SW1(= bit0)과 SW2(= bit1)가 입력이고, 스위치를 VCC에 연결하면 1이에요. U1A(74HC04)는 SW1을, U1B는 SW2를 반전해요. 네 AND(74HC08)의 출력은 저항 330Ω을 거쳐 LED D1~D4에 연결돼 있고, 출력이 1이면 해당 LED가 켜져요.</p><div class=\"table-wrap\"><table><thead><tr><th>게이트</th><th>입력 1</th><th>입력 2</th><th>출력</th></tr></thead><tbody><tr><td>U2A (74HC08)</td><td>SW1</td><td>SW2</td><td>D1</td></tr><tr><td>U2B</td><td>U1A 출력 (SW1 반전)</td><td>SW2</td><td>D2</td></tr><tr><td>U2C</td><td>SW1</td><td>U1B 출력 (SW2 반전)</td><td>D3</td></tr><tr><td>U2D</td><td>U1A 출력</td><td>U1B 출력</td><td>D4</td></tr></tbody></table></div>",
+  "ask": "<p>bit0, bit1의 네 가지 조합마다 D1~D4의 값을 채우세요. (표의 입력은 bit0, bit1 순서로 00, 10, 01, 11이에요.)</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "출력별 식",
+      "html": "<p>먼저 D1~D4 각각이 bit0와 bit1의 어떤 AND인지 식으로 쓰세요. 그다음 입력 조합을 하나씩 넣어요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "식 세우기",
+        "html": "<p>$$D_1=b_0b_1,\\ D_2=\\overline{b_0}\\,b_1,\\ D_3=b_0\\overline{b_1},\\ D_4=\\overline{b_0}\\,\\overline{b_1}$$</p>"
+      },
+      {
+        "label": "완성한 표",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>bit0</th><th>bit1</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 각 행에서 1이 정확히 하나이고, 그 출력은 입력 조합과 맞는 AND예요. 예: bit0=1, bit1=0이면 D3만 켜져요.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> D1~D4의 번호를 입력 번호와 같다고 읽으면 안 돼요. 이 회로에서 D1이 입력 11, D4가 입력 00에 대응해요. bit0와 bit1이 표에서 bit0가 먼저 나오는 점도 확인해요.</p>"
+      }
+    ],
+    "answer": "<p>00 → D4만 1, 10 → D3만 1, 01 → D2만 1, 11 → D1만 1 (bit0 bit1 순서)</p>"
+  },
+  "notes": [
+    "제공 답안 표(bit0 bit1 D1 D2 D3 D4: 00→0001, 10→0010, 01→0100, 11→1000)와 같아요. 회로 배선은 저해상도 원문 그림을 확대해 읽었어요. 원문 그림에는 정답 표가 같은 쪽에 있어 문제지에는 글로만 옮겼어요."
+  ]
+}

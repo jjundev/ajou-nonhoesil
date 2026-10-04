@@ -1,0 +1,36 @@
+{
+  "original": "<p>3X8 Decoder의 Truth table을 완성하시오.</p><div class=\"table-wrap\"><table><thead><tr><th>A</th><th>D7</th><th>D6</th><th>D5</th><th>D4</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th></tr></thead><tbody><tr><td>000</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>001</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>010</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>011</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>100</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>101</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>110</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>111</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div><p>(원문 표의 첫 행 A=000은 이미 채워져 있어요.)</p>",
+  "conditions": "<p>A는 세 비트 A2A1A0이고 출력은 D7~D0 여덟 줄이에요.</p>",
+  "ask": "<p>A=001부터 111까지 일곱 행의 D7~D0을 채우세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "읽는 법",
+      "html": "<p>A를 이진수에서 십진수로 바꿔 보세요. 그 번호의 출력 하나만 1이에요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>3×8 디코더는 입력 A2A1A0가 가리키는 번호의 출력 Dk만 1이고 나머지는 0이에요. 001은 1이라서 D1, 010은 2라서 D2, … 111은 7이라서 D7만 1이에요.</p>"
+      },
+      {
+        "label": "완성한 표",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>A</th><th>D7</th><th>D6</th><th>D5</th><th>D4</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th></tr></thead><tbody><tr><td>000</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>001</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>010</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>011</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>100</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>101</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>110</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>111</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 각 행에서 1이 정확히 하나이고, 그 자리 번호가 A의 십진수와 같아요. 예: 101=5 → D5.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 출력의 열 순서(D7이 왼쪽)를 잘못 읽어 1이 반대쪽에 오는 경우예요. 000 행의 1이 D0(맨 오른쪽)인 것을 기준으로 맞춰요.</p>"
+      }
+    ],
+    "answer": "<p>A=k(십진수)이면 Dk만 1이에요. 000→D0, 001→D1, …, 111→D7.</p>"
+  },
+  "notes": [
+    "제공 답안(예상문제 자료의 답안 표)과 같은 표예요."
+  ]
+}

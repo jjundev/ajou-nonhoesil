@@ -1,0 +1,36 @@
+{
+  "original": "<p>다음 1-out-of-4 코드를 Excess-3 코드로 변환 하시오.</p><div class=\"table-wrap\"><table><thead><tr><th>D0D1D2D3</th><th></th><th>Excess-3</th></tr></thead><tbody><tr><td>1000</td><td>-></td><td></td></tr><tr><td>0100</td><td>-></td><td></td></tr><tr><td>0010</td><td>-></td><td></td></tr></tbody></table></div>",
+  "conditions": "<p>1-out-of-4 코드는 네 비트 중 한 비트만 1인 코드(one-hot)예요. D0D1D2D3에서 왼쪽이 D0이고, 1이 있는 자리의 번호가 십진수 0~3을 뜻해요.</p>",
+  "ask": "<p>세 행을 Excess-3 코드(4비트)로 바꾸세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "번호 먼저",
+      "html": "<p>각 행에서 1이 몇 번째 자리(D0부터)인지 십진수로 바꾼 다음, Excess-3 코드의 정의를 적용하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>1000은 D0 자리가 1이라서 숫자 0, 0100은 D1 자리라서 숫자 1, 0010은 D2 자리라서 숫자 2예요. Excess-3 코드는 숫자+3의 4비트라서 0→0011, 1→0100, 2→0101이에요.</p>"
+      },
+      {
+        "label": "완성한 표",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>D0D1D2D3</th><th></th><th>Excess-3</th></tr></thead><tbody><tr><td>1000</td><td>-></td><td>0011</td></tr><tr><td>0100</td><td>-></td><td>0100</td></tr><tr><td>0010</td><td>-></td><td>0101</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 0+3=3=0011, 1+3=4=0100, 2+3=5=0101.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 1000을 이진수 8로 읽어 1011을 쓰면 안 돼요. 이 문제의 입력은 이진수가 아니라 1의 위치를 나타내는 one-hot 코드예요.</p>"
+      }
+    ],
+    "answer": "<p>1000 → 0011, 0100 → 0100, 0010 → 0101</p>"
+  },
+  "notes": [
+    "같은 틀의 채점본에서는 입력 이름이 BCD로 수기 수정되고 세 번째 행이 0001로 인쇄되어 있어 읽기 불확실로 보류했어요. 그 판을 BCD로 읽으면 1000→1011, 0100→0111, 0001→0100이에요."
+  ]
+}

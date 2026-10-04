@@ -1,0 +1,38 @@
+{
+  "original": "<p>아래의 2 to 4 Decoder의 Gate 회로를 활용하여 1 to 4 Demultiplexer의 Gate회로를 작성하시오.</p>",
+  "conditions": "<p>그림은 선택 입력 S0, S1과 NOT 2개, 2입력 AND 4개로 이루어진 2 to 4 디코더 게이트 회로예요. 출력 네 줄에는 이름이 없어요.</p>",
+  "ask": "<p>데이터 입력 D를 추가해 1 to 4 디멀티플렉서의 게이트 회로를 그리고 출력 식을 쓰세요.</p>",
+  "problem_figures": [
+    "q-demux-from-dec-given-01"
+  ],
+  "hints": [
+    {
+      "label": "바꿀 곳",
+      "html": "<p>디코더의 출력은 선택된 한 줄만 1이에요. 그 1 대신 데이터 D가 나오게 하려면 각 AND에 무엇을 더해야 할지 생각하세요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>디코더의 AND 네 개는 위에서부터 S1S0=00, 01, 10, 11을 골라내요. 각 AND에 데이터 D를 입력으로 하나 더 넣으면 선택된 AND만 D를 통과시켜요. AND를 3입력으로 바꾸고 D를 네 AND 모두에 연결해요.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-demux-from-dec-solution-01.png\" width=\"260\" style=\"max-width:100%;height:auto\" alt=\"디코더를 활용한 1×4 디멀티플렉서 회로\"></p>"
+      },
+      {
+        "label": "논리식",
+        "html": "<p>$$Y_0=\\overline{S_1}\\,\\overline{S_0}D,\\ Y_1=\\overline{S_1}S_0D,\\ Y_2=S_1\\overline{S_0}D,\\ Y_3=S_1S_0D$$</p>"
+      },
+      {
+        "label": "검산·주의",
+        "html": "<p><strong>검산:</strong> S1S0=10, D=1이면 Y2만 1이고 D=0이면 모두 0이에요. <strong>흔한 실수:</strong> D를 일부 AND에만 연결하거나 NOT에 넣지 않아요.</p>"
+      }
+    ],
+    "answer": "<p>AND를 3입력으로 바꾸고 D를 모두에 연결해요. Y0=S1′S0′D, Y1=S1′S0D, Y2=S1S0′D, Y3=S1S0D</p>"
+  },
+  "notes": [
+    "제공 답안 회로(+5V 스위치 S0·S1·D, 74HC04 2개, 74HC11 3입력 AND 4개, 출력 Y0~Y3)와 같은 구조예요."
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "q-74hc148-table-given-01",
+      "question_id": "q-74hc148-table",
+      "role": "problem",
+      "svg": "figures/questions/q-74hc148-table-given-01.svg",
+      "png": "figures/questions/q-74hc148-table-given-01.png",
+      "svg_sha256": "c854832188038f6c84bcd42d32ff1050d73d8aa161f690700088fadc3012a1f2",
+      "png_sha256": "5133ba7e8cfbeb45c6f992567778da9a68a303c800a230dbb75640cef8eb75d2",
+      "w_mm": 150.0,
+      "h_mm": 90.625,
+      "source_asset_ids": [
+        "a-s05-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-32f862c9e26368e3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문 그림의 74HC148 핀(IN0~IN7, EI, A0~A2, GS, EO)과 스위치 두 개의 짝수/홀수 묶음, EI의 GND 연결을 읽고 새로 그렸어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "스위치-입력 묶음은 문제 표의 행 패턴(짝수 입력끼리, 홀수 입력끼리 같은 값)과 원문 그림을 대조했어요. 출력 값은 그림에 없어요."
+    },
+    {
+      "id": "q-dec2x4-design-solution-01",
+      "question_id": "q-dec2x4-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-dec2x4-design-solution-01.svg",
+      "png": "figures/solutions/q-dec2x4-design-solution-01.png",
+      "svg_sha256": "e34870b5d1f4074d0f47c7e0aa488720b88470608b9245c251354c6b9c710bdf",
+      "png_sha256": "24f4cbd72eae26f85848df313edd461e69b9c4783bf7277bcc4193bafe6c3d70",
+      "w_mm": 150.0,
+      "h_mm": 118.605,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-79ca3a1c1d1bc3fb",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "NOT 2개와 2입력 AND 4개로 각 출력이 입력 조합 하나만 고르도록 직접 설계했어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "네 입력 조합을 계산해 각 출력이 번호와 맞는지, 게이트 수가 요구와 같은지 확인했어요."
+    },
+    {
+      "id": "q-demux-from-dec-given-01",
+      "question_id": "q-demux-from-dec",
+      "role": "problem",
+      "svg": "figures/questions/q-demux-from-dec-given-01.svg",
+      "png": "figures/questions/q-demux-from-dec-given-01.png",
+      "svg_sha256": "3f0baaa2284a3f670a51b432f3ae447e0603f5d436f7edf348106e4d81fc90c7",
+      "png_sha256": "6b02f42244ea1b957c5688899ee606ebdeb04769f1926c073e6cda1960d74e33",
+      "w_mm": 150.0,
+      "h_mm": 104.651,
+      "source_asset_ids": [
+        "a-s05-p1-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-32f862c9e26368e3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문 그림의 NOT 2개와 AND 4개 배선을 확대해 읽고 새로 그렸어요. 출력 이름은 원문처럼 붙이지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "위에서부터 S1S0=00, 01, 10, 11을 고르는 AND 순서와 NOT 위치를 원문 배선과 대조했어요. 정답(DMUX)은 그림에 없어요."
+    },
+    {
+      "id": "q-demux-from-dec-graded-solution-01",
+      "question_id": "q-demux-from-dec-graded",
+      "role": "solution",
+      "svg": "figures/solutions/q-demux-from-dec-graded-solution-01.svg",
+      "png": "figures/solutions/q-demux-from-dec-graded-solution-01.png",
+      "svg_sha256": "68bd4da45cf114322bf0d30bdba0994602668d7ffcfe2f2887ad4a5df8a13518",
+      "png_sha256": "d1a5c28406598e254fde675abc4f386b21a60c06797d8f82607717b6c2246e85",
+      "w_mm": 150.0,
+      "h_mm": 114.894,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-ed4cac1e3951b66e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "디코더의 AND를 3입력으로 바꾸고 D를 연결한 회로를 직접 그렸어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "모든 S1S0·D 조합을 계산해 Yk=D·(S1S0=k)인지 확인했어요."
+    },
+    {
+      "id": "q-demux-from-dec-solution-01",
+      "question_id": "q-demux-from-dec",
+      "role": "solution",
+      "svg": "figures/solutions/q-demux-from-dec-solution-01.svg",
+      "png": "figures/solutions/q-demux-from-dec-solution-01.png",
+      "svg_sha256": "68bd4da45cf114322bf0d30bdba0994602668d7ffcfe2f2887ad4a5df8a13518",
+      "png_sha256": "d1a5c28406598e254fde675abc4f386b21a60c06797d8f82607717b6c2246e85",
+      "w_mm": 150.0,
+      "h_mm": 114.894,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-32f862c9e26368e3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "디코더의 AND를 3입력으로 바꾸고 D를 연결한 회로를 직접 그렸어요. 제공 답안의 74HC11 구성과 같은 구조예요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "모든 S1S0·D 조합을 계산해 Yk=D·(S1S0=k)인지 확인했어요."
+    },
+    {
+      "id": "q-enc4x2-design-solution-01",
+      "question_id": "q-enc4x2-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-enc4x2-design-solution-01.svg",
+      "png": "figures/solutions/q-enc4x2-design-solution-01.png",
+      "svg_sha256": "679e1207a6ac8d1d0ce88bf62f31c9e37a3a5f26c9c91c633413152485d6b734",
+      "png_sha256": "9f8f9d71a93fc42645d45dd8dba23ac6d1f5aa489e891fab642fcca9bfb1c688",
+      "w_mm": 150.0,
+      "h_mm": 104.237,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-79ca3a1c1d1bc3fb",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "요구 게이트 수(NOT 4, 4입력 NAND 3, 2입력 NAND 2)에 맞춰 직접 설계했어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "한 줄만 켜진 네 경우를 회로대로 계산해 AB가 00, 01, 10, 11인지 확인했어요."
+    },
+    {
+      "id": "q-excess3-enc-6row-given-01",
+      "question_id": "q-excess3-enc-6row",
+      "role": "problem",
+      "svg": "figures/questions/q-excess3-enc-6row-given-01.svg",
+      "png": "figures/questions/q-excess3-enc-6row-given-01.png",
+      "svg_sha256": "6524ce533cc2d466b91548c29f19d55aab1ef1e36112f309ab49d4c404ea11e8",
+      "png_sha256": "700d439b0cb4228385e31c7f6b258133f907b67aaab94bfa748fddcba17619c7",
+      "w_mm": 150.0,
+      "h_mm": 81.696,
+      "source_asset_ids": [
+        "a-s11-p1-q7"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-e15e546d7f1ab7ea",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "derivation": "교안 p12와 기출 원문의 회로(스위치 6개, NOT 6개, 74HC20 4개)를 읽고 신호 연결을 직접 다시 그렸어요. 남는 NAND 입력은 VCC, 비트 이름과 SW5/SW0 위치는 원문과 같아요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "원문 회로의 NOT 배선과 74HC20 핀 연결을 확대해 대조했고, 같은 netlist를 계산해 Excess-3 값이 나오는지 확인했어요. 답 표는 그림에 넣지 않았어요."
+    },
+    {
+      "id": "q-excess3-enc-exam-given-01",
+      "question_id": "q-excess3-enc-exam",
+      "role": "problem",
+      "svg": "figures/questions/q-excess3-enc-exam-given-01.svg",
+      "png": "figures/questions/q-excess3-enc-exam-given-01.png",
+      "svg_sha256": "6524ce533cc2d466b91548c29f19d55aab1ef1e36112f309ab49d4c404ea11e8",
+      "png_sha256": "700d439b0cb4228385e31c7f6b258133f907b67aaab94bfa748fddcba17619c7",
+      "w_mm": 150.0,
+      "h_mm": 81.696,
+      "source_asset_ids": [
+        "a-s03-p1-q5"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-79ca3a1c1d1bc3fb",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "derivation": "교안 p12와 기출 원문의 회로(스위치 6개, NOT 6개, 74HC20 4개)를 읽고 신호 연결을 직접 다시 그렸어요. 남는 NAND 입력은 VCC, 비트 이름과 SW5/SW0 위치는 원문과 같아요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "원문 회로의 NOT 배선과 74HC20 핀 연결을 확대해 대조했고, 같은 netlist를 계산해 Excess-3 값이 나오는지 확인했어요. 답 표는 그림에 넣지 않았어요."
+    }
+  ]
+}

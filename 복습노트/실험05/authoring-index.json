@@ -1,0 +1,1940 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp05",
+  "bank_sha256": "3548bad0420ff66c7e4dc2088ce75119bd9ac1ea44fe98a94bf5c6a8a6be1f0c",
+  "experiment": 5,
+  "questions": [
+    {
+      "question_id": "q-dec3x8",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s11-q1",
+      "occurrence_ids": [
+        "o-s11-q1",
+        "o-s10-q1",
+        "o-s12-q1",
+        "o-s13-q1",
+        "o-s15-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-dec3x8",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a1",
+          "target_id": "q-dec3x8",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a1",
+          "target_id": "q-dec3x8",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-dec3x8",
+          "to_id": "q-dec3x8",
+          "type": "duplicate_candidate",
+          "reason": "같은 3X8 Decoder 진리표 작성이나 단답형에는 첫 행 제시 표가 없고 출처가 정리본이라 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s11-p1-q1",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p1",
+        "a-s13-p2",
+        "a-s15-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-prio-onehot",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s11-q2",
+      "occurrence_ids": [
+        "o-s11-q2",
+        "o-s10-q2",
+        "o-s12-q2",
+        "o-s13-q2",
+        "o-s15-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-prio-onehot",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a2",
+          "target_id": "q-prio-onehot",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a2",
+          "target_id": "q-prio-onehot",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-prio-exam",
+          "to_id": "q-prio-onehot",
+          "type": "variant_of",
+          "reason": "같은 8X3 Priority Encoder 진리표지만 시험지는 여러 비트가 1인 입력 행, 예상문제는 한 비트만 1인 여덟 행을 준다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-sa-enc8x3",
+          "to_id": "q-prio-onehot",
+          "type": "variant_of",
+          "reason": "같은 한 비트 1 입력 여덟 행이지만 일반 8X3 Encoder와 Priority Encoder로 대상이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s12-q2",
+          "reason": "한국어 문장은 “8X3 Priority Encoder”, 영어 병기는 “3x8 priority decoder”로 서로 다르다. 원문 그대로 보존했다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s11-p1-q2",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p1",
+        "a-s13-p2",
+        "a-s15-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-prio-exam",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q1",
+      "occurrence_ids": [
+        "o-s03-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-prio-exam",
+          "to_id": "q-prio-onehot",
+          "type": "variant_of",
+          "reason": "같은 8X3 Priority Encoder 진리표지만 시험지는 여러 비트가 1인 입력 행, 예상문제는 한 비트만 1인 여덟 행을 준다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s03-q1",
+          "reason": "한국어 문장은 “8X3 Priority Encoder”, 영어 병기는 “3x8 priority decoder”로 서로 다르다. 원문 그대로 보존했다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-q1",
+        "a-s03-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-prio-behavior",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s11-q3",
+      "occurrence_ids": [
+        "o-s11-q3",
+        "o-s10-q3",
+        "o-s12-q3",
+        "o-s13-q3",
+        "o-s15-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a3",
+          "target_id": "q-prio-behavior",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a3",
+          "target_id": "q-prio-behavior",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a3",
+          "target_id": "q-prio-behavior",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-prio-behavior",
+          "to_id": "q-prio-vs-binary",
+          "type": "variant_of",
+          "reason": "동작 특징(입력별 출력) 서술과 Binary encoder와의 비교 서술은 요구 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-sa-prio-why",
+          "to_id": "q-prio-behavior",
+          "type": "variant_of",
+          "reason": "단답형은 사용이유를, 예상문제는 입력별 출력 동작을 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s11-p1-q3",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p1",
+        "a-s13-p2",
+        "a-s15-r1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "묻는 개념(동시 입력에서 우선순위 인코더가 어떤 출력을 내는가)과 모범 답이 q-prio-vs-binary 의 부분집합이에요."
+    },
+    {
+      "question_id": "q-dec2x4-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q2",
+      "occurrence_ids": [
+        "o-s03-q2",
+        "o-s10-q4",
+        "o-s11-q4",
+        "o-s12-q4",
+        "o-s13-q4",
+        "o-s15-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a4",
+          "target_id": "q-dec2x4-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a4",
+          "target_id": "q-dec2x4-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a4",
+          "target_id": "q-dec2x4-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-q2",
+        "a-s03-p1",
+        "a-s11-p1-q4",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p1",
+        "a-s13-p2",
+        "a-s15-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-enc4x2-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q3",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s10-q5",
+        "o-s11-q5",
+        "o-s12-q5",
+        "o-s13-q5",
+        "o-s15-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a5",
+          "target_id": "q-enc4x2-design",
+          "status": "candidate",
+          "reason": "문항 5 뒤에 붙은 제공 그림이지만 문제는 NOT·NAND 구성을 요구하고 그림은 AND·OR 모양 게이트를 쓴 “기본형 4X2 인코더 회로”라 조건 일치 여부를 보류."
+        },
+        {
+          "occurrence_id": "o-s13-a5",
+          "target_id": "q-enc4x2-design",
+          "status": "candidate",
+          "reason": "문항 5 뒤에 붙은 제공 그림이지만 문제는 NOT·NAND 구성을 요구하고 그림은 AND·OR 모양 게이트를 쓴 “기본형 4X2 인코더 회로”라 조건 일치 여부를 보류."
+        },
+        {
+          "occurrence_id": "o-s15-a5",
+          "target_id": "q-enc4x2-design",
+          "status": "candidate",
+          "reason": "문항 5 뒤에 붙은 제공 그림이지만 문제는 NOT·NAND 구성을 요구하고 그림은 AND·OR 모양 게이트를 쓴 “기본형 4X2 인코더 회로”라 조건 일치 여부를 보류."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s03-q3",
+          "reason": "한국어 문장은 “4x2 Encoder”, 영어 병기는 “2x4 Encoder”로 서로 다르다. 원문 그대로 보존했다."
+        },
+        {
+          "target_id": "o-s12-q5",
+          "reason": "한국어 문장은 “4x2 Encoder”, 영어 병기는 “2x4 Encoder”로 서로 다르다. 원문 그대로 보존했다."
+        },
+        {
+          "target_id": "o-s10-a5",
+          "reason": "4x2 Encoder 문항(NOT·NAND 구성 요구) 뒤의 제공 그림은 AND·OR 모양 게이트의 기본형 회로다. 확정 답안으로 승격하지 않았다."
+        },
+        {
+          "target_id": "o-s13-a5",
+          "reason": "4x2 Encoder 문항(NOT·NAND 구성 요구) 뒤의 제공 그림은 AND·OR 모양 게이트의 기본형 회로다. 확정 답안으로 승격하지 않았다."
+        },
+        {
+          "target_id": "o-s15-a5",
+          "reason": "4x2 Encoder 문항(NOT·NAND 구성 요구) 뒤의 제공 그림은 AND·OR 모양 게이트의 기본형 회로다. 확정 답안으로 승격하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-q3",
+        "a-s03-p1",
+        "a-s11-p1-q5",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p1",
+        "a-s13-p3",
+        "a-s15-r2",
+        "a-s10-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-excess3-why",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q4",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s10-q6",
+        "o-s11-q6",
+        "o-s12-q6",
+        "o-s13-q6",
+        "o-s15-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s10-a6",
+          "target_id": "q-excess3-why",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a6",
+          "target_id": "q-excess3-why",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a6",
+          "target_id": "q-excess3-why",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-excess3-why",
+          "to_id": "q-quiz-excess3-merit",
+          "type": "variant_of",
+          "reason": "특징과 사용이유 서술과 장점만의 서술은 요구 범위가 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a8cee5d4d1faeece",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "Quiz 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-excess3-why",
+          "to_id": "q-sa-excess3",
+          "type": "variant_of",
+          "reason": "단답형은 진리표와 사용이유를 함께 요구해 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-q4",
+        "a-s03-p1",
+        "a-s11-p1-q6",
+        "a-s11-p1",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p2",
+        "a-s13-p3",
+        "a-s15-r2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-excess3-enc-exam",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q5",
+      "occurrence_ids": [
+        "o-s03-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-excess3-enc-exam",
+          "to_id": "q-excess3-enc-6row",
+          "type": "variant_of",
+          "reason": "같은 회로 그림이지만 시험지는 SW 입력 네 행, 예상문제는 여섯 행을 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-sa-excess3-enc",
+          "to_id": "q-excess3-enc-exam",
+          "type": "duplicate_candidate",
+          "reason": "단답형에는 회로와 입력 행이 없어 시험지 네 행 판인지 확정할 수 없음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 8; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-q5",
+        "a-s03-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-excess3-enc-6row",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s11-q7",
+      "occurrence_ids": [
+        "o-s11-q7",
+        "o-s10-q7",
+        "o-s12-q7",
+        "o-s13-q7",
+        "o-s15-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-excess3-enc-exam",
+          "to_id": "q-excess3-enc-6row",
+          "type": "variant_of",
+          "reason": "같은 회로 그림이지만 시험지는 SW 입력 네 행, 예상문제는 여섯 행을 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-sa-excess3-enc",
+          "to_id": "q-excess3-enc-6row",
+          "type": "duplicate_candidate",
+          "reason": "단답형에는 회로와 입력 행이 없어 예상문제 여섯 행 판인지 확정할 수 없음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 8; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s11-p1-q7",
+        "a-s11-p1",
+        "a-s12-p2",
+        "a-s12-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s10-p2",
+        "a-s13-p3",
+        "a-s15-r2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-1of4-excess3",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s05-q1",
+      "occurrence_ids": [
+        "o-s05-q1",
+        "o-s08-q1",
+        "o-s16-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-1of4-excess3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a1",
+          "target_id": "q-1of4-excess3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-1of4-excess3",
+          "to_id": "q-1of4-excess3-graded",
+          "type": "variant_of",
+          "reason": "같은 변환 문항이지만 입력 세 번째 행이 0010(문제지)과 0001(채점본)로 다르고 채점본에는 BCD 수기 정정이 있다.",
+          "evidence": [
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-ed4cac1e3951b66e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-1of4-excess3",
+          "reason": "같은 양식의 채점본은 있으나 이 판의 조건 그대로 시행된 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-q1",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s16-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-1of4-excess3-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s07-q1",
+      "occurrence_ids": [
+        "o-s07-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s07-a1",
+          "target_id": "q-1of4-excess3-graded",
+          "status": "confirmed",
+          "reason": "채점본의 같은 문항 영역에 있는 응시자 답과 채점 표시. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-1of4-excess3",
+          "to_id": "q-1of4-excess3-graded",
+          "type": "variant_of",
+          "reason": "같은 변환 문항이지만 입력 세 번째 행이 0010(문제지)과 0001(채점본)로 다르고 채점본에는 BCD 수기 정정이 있다.",
+          "evidence": [
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-ed4cac1e3951b66e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s07-q1",
+          "reason": "인쇄된 “1-out-of-4”와 열 머리에 취소선과 손글씨 “BCD”가 있다. 공식 정정인지 응시자 메모인지 확인하지 못해 원문 인쇄 조건과 수기 수정을 모두 보존했다."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s07-q1"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "채점본 사진의 문항이 부분 판독이에요. 인쇄된 “1-out-of-4”와 열 머리가 취소선으로 지워지고 BCD가 손글씨로 쓰여 있어 공식 정정인지 응시자 메모인지 알 수 없어요. 세 번째 행이 0001로 인쇄되어 있어 q-1of4-excess3 와 조건이 달라요. 추측해 채우지 않았어요."
+    },
+    {
+      "question_id": "q-prio-vs-binary",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q2",
+      "occurrence_ids": [
+        "o-s05-q2",
+        "o-s07-q2",
+        "o-s08-q2",
+        "o-s16-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-prio-vs-binary",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a2",
+          "target_id": "q-prio-vs-binary",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a2",
+          "target_id": "q-prio-vs-binary",
+          "status": "confirmed",
+          "reason": "채점본의 같은 문항 영역에 있는 응시자 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-prio-behavior",
+          "to_id": "q-prio-vs-binary",
+          "type": "variant_of",
+          "reason": "동작 특징(입력별 출력) 서술과 Binary encoder와의 비교 서술은 요구 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s07-a2",
+          "reason": "저해상도 손글씨 답의 일부 어절을 문맥으로 판독했다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-q2",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s07-q2",
+        "a-s08-p1",
+        "a-s16-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-demux-from-dec",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s05-q3",
+      "occurrence_ids": [
+        "o-s05-q3",
+        "o-s08-q3",
+        "o-s16-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-demux-from-dec",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a3",
+          "target_id": "q-demux-from-dec",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-demux-from-dec",
+          "to_id": "q-demux-from-dec-graded",
+          "type": "variant_of",
+          "reason": "채점본은 회로 작성에 두 회로의 차이를 묻는 소문항과 배점을 더했다.",
+          "evidence": [
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-ed4cac1e3951b66e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s08-a3",
+          "reason": "문제는 “1 to 4 Demultiplexer”를 요구하지만 제공 회로 캡션은 “2 to 4 Demultiplexer”다. 캡션을 고치지 않았다."
+        },
+        {
+          "target_id": "o-s16-a3",
+          "reason": "문제는 “1 to 4 Demultiplexer”를 요구하지만 제공 회로 캡션은 “2 to 4 Demultiplexer”다. 캡션을 고치지 않았다."
+        },
+        {
+          "target_id": "q-demux-from-dec",
+          "reason": "같은 양식의 채점본은 있으나 이 판의 조건 그대로 시행된 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-q3",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s16-r1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-demux-from-dec-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s07-q3",
+      "occurrence_ids": [
+        "o-s07-q3"
+      ],
+      "subparts": [
+        {
+          "id": "sp-q-demux-from-dec-graded-build",
+          "label": "2 (회로 작성, 2점)",
+          "occurrence_id": "o-s07-q3",
+          "block_ids": [
+            "b-o-s07-q3-1"
+          ]
+        },
+        {
+          "id": "sp-q-demux-from-dec-graded-diff",
+          "label": "2 (두 회로 차이, 2점)",
+          "occurrence_id": "o-s07-q3",
+          "block_ids": [
+            "b-o-s07-q3-2"
+          ]
+        }
+      ],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s07-a3",
+          "target_id": "q-demux-from-dec-graded",
+          "status": "confirmed",
+          "reason": "채점본의 같은 문항 영역에 있는 응시자 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s01-note",
+          "target_id": "sp-q-demux-from-dec-graded-diff",
+          "status": "candidate",
+          "reason": "문항 번호가 없는 디코더/MUX/DEMUX 비교 개념 메모이며 디코더와 DEMUX 차이 소문항의 참고 설명으로만 연결."
+        },
+        {
+          "occurrence_id": "o-s02-note",
+          "target_id": "sp-q-demux-from-dec-graded-diff",
+          "status": "candidate",
+          "reason": "문항 번호가 없는 디코더/디멀티플렉서 비교 정리 이미지이며 차이 소문항의 참고 설명으로만 연결."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-demux-from-dec",
+          "to_id": "q-demux-from-dec-graded",
+          "type": "variant_of",
+          "reason": "채점본은 회로 작성에 두 회로의 차이를 묻는 소문항과 배점을 더했다.",
+          "evidence": [
+            {
+              "source_id": "s-32f862c9e26368e3",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-ed4cac1e3951b66e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s07-a3",
+          "reason": "회로도 위 “Vcc”·“Input 등” 메모와 붉은 원·물음표의 작성 주체를 구분하지 못했다. 손글씨 비교표도 판독 보류 요소가 있다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s07-q2",
+        "a-s07-q3",
+        "a-s01-p1",
+        "a-s02-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-74hc148-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s05-q4",
+      "occurrence_ids": [
+        "o-s05-q4",
+        "o-s08-q4",
+        "o-s16-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-74hc148-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a4",
+          "target_id": "q-74hc148-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-explanation",
+          "target_id": "q-74hc148-table",
+          "status": "confirmed",
+          "reason": "해설의 74HC148 8x3 Priority Encoder 회로와 EI/0~7 입력 세 행이 문제 표와 일치한다. 답안 자체의 독립 검증은 하지 않음."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-74hc148-table",
+          "reason": "문제 표 머리는 “E1”로 인쇄되어 있고 회로 그림과 해설 표는 “EI”로 표기한다. 원문 표기를 그대로 보존했다."
+        },
+        {
+          "target_id": "o-s14-explanation",
+          "reason": "해설은 “IN0가 가장 높은 우선순위, IN7이 가장 낮은 우선순위”라고 서술한다. 74HC148 우선순위에 대한 타당성은 독립 풀이 단계에서 검토해야 하며 원문 그대로 보존했다."
+        },
+        {
+          "target_id": "q-74hc148-table",
+          "reason": "같은 양식의 채점본은 있으나 이 판의 조건 그대로 시행된 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-q4",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s16-r1",
+        "a-s14-p1-sec1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-quiz-dec2x4-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q1",
+      "occurrence_ids": [
+        "o-s06-q1",
+        "o-s09-q1",
+        "o-s13-quiz-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-quiz-dec2x4-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a1",
+          "target_id": "q-quiz-dec2x4-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-quiz-a1",
+          "target_id": "q-quiz-dec2x4-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-dec2x4-table",
+          "to_id": "q-quiz-dec2x4-table",
+          "type": "duplicate_candidate",
+          "reason": "문항 문장과 bit0·bit1·D1~D4 열 순서의 답 표가 같지만 단답형에는 회로 그림이 없어 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a8cee5d4d1faeece",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "Quiz 문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-quiz-dec2x4-table",
+          "reason": "Quiz 정답지 형식·채점 기준은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s13-p4"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-quiz-excess3-merit",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q2",
+      "occurrence_ids": [
+        "o-s06-q2",
+        "o-s09-q2",
+        "o-s13-quiz-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-quiz-excess3-merit",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a2",
+          "target_id": "q-quiz-excess3-merit",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-quiz-a2",
+          "target_id": "q-quiz-excess3-merit",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-excess3-why",
+          "to_id": "q-quiz-excess3-merit",
+          "type": "variant_of",
+          "reason": "특징과 사용이유 서술과 장점만의 서술은 요구 범위가 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a8cee5d4d1faeece",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "Quiz 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-quiz-excess3-merit",
+          "reason": "Quiz 정답지 형식·채점 기준은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s13-p4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "Excess-3 코드의 장점(9의 보수)을 묻는 문항으로, q-excess3-why 의 답에 포함돼요. 문장은 달라요."
+    },
+    {
+      "question_id": "q-quiz-latch-ff",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q3",
+      "occurrence_ids": [
+        "o-s06-q3",
+        "o-s09-q3",
+        "o-s13-quiz-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-quiz-latch-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a3",
+          "target_id": "q-quiz-latch-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-quiz-a3",
+          "target_id": "q-quiz-latch-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-quiz-latch-ff",
+          "reason": "Quiz 정답지 형식·채점 기준은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s13-p4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "Latch와 Flip-Flop는 실험 5(Decoder & Encoder)의 교안 범위가 아니에요. 순서회로 실험에서 다뤄요."
+    },
+    {
+      "question_id": "q-quiz-rs-ff",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q4",
+      "occurrence_ids": [
+        "o-s06-q4",
+        "o-s09-q4",
+        "o-s13-quiz-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-quiz-rs-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a4",
+          "target_id": "q-quiz-rs-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-quiz-a4",
+          "target_id": "q-quiz-rs-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s06-a4",
+          "reason": "제공 R-S F/F 표의 S=1, R=1, C=1 행 출력이 “1”로 적혀 있다. 원문 그대로 보존했으며 타당성은 독립 풀이 단계에서 검토해야 함."
+        },
+        {
+          "target_id": "o-s09-a4",
+          "reason": "제공 R-S F/F 표의 S=1, R=1, C=1 행 출력이 “1”로 적혀 있다. 원문 그대로 보존했으며 타당성은 독립 풀이 단계에서 검토해야 함."
+        },
+        {
+          "target_id": "o-s13-quiz-a4",
+          "reason": "제공 R-S F/F 표의 S=1, R=1, C=1 행 출력이 “1”로 적혀 있다. 원문 그대로 보존했으며 타당성은 독립 풀이 단계에서 검토해야 함."
+        },
+        {
+          "target_id": "q-quiz-rs-ff",
+          "reason": "Quiz 정답지 형식·채점 기준은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s13-p4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "R-S Flip-Flop 진리표는 실험 5(Decoder & Encoder)의 교안 범위가 아니에요. 순서회로 실험에서 다뤄요."
+    },
+    {
+      "question_id": "q-quiz-jk-clr-pr",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q5",
+      "occurrence_ids": [
+        "o-s06-q5",
+        "o-s09-q5",
+        "o-s13-quiz-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-quiz-jk-clr-pr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a5",
+          "target_id": "q-quiz-jk-clr-pr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-quiz-a5",
+          "target_id": "q-quiz-jk-clr-pr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-quiz-jk-clr-pr",
+          "reason": "Quiz 정답지 형식·채점 기준은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s13-p4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "74HC76 J-K Flip-Flop의 CLR/PR은 실험 5의 교안 범위가 아니에요. 플립플롭 실험에서 다뤄요."
+    },
+    {
+      "question_id": "q-sa-decoder-def",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q1",
+      "occurrence_ids": [
+        "o-s04-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-sa-decoder-def",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-note",
+          "target_id": "q-sa-decoder-def",
+          "status": "candidate",
+          "reason": "예상문제_v1 상단의 디코딩 개념 메모. 문항 번호가 없어 참고 설명 후보로만 연결."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-sa-decoder-def",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s09-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-sa-encoder-def",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q2",
+      "occurrence_ids": [
+        "o-s04-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-sa-encoder-def",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-note",
+          "target_id": "q-sa-encoder-def",
+          "status": "candidate",
+          "reason": "예상문제_v1 상단의 인코딩 개념 메모. 문항 번호가 없어 참고 설명 후보로만 연결."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-sa-encoder-def",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s09-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-sa-dec3x8",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q3",
+      "occurrence_ids": [
+        "o-s04-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-sa-dec3x8",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-dec3x8",
+          "to_id": "q-dec3x8",
+          "type": "duplicate_candidate",
+          "reason": "같은 3X8 Decoder 진리표 작성이나 단답형에는 첫 행 제시 표가 없고 출처가 정리본이라 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-sa-dec3x8",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 문장의 3×8 디코더 진리표 문항이고 답 표도 같아요(열 순서만 A 쪽이 앞)."
+    },
+    {
+      "question_id": "q-sa-enc8x3",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q4",
+      "occurrence_ids": [
+        "o-s04-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a4",
+          "target_id": "q-sa-enc8x3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-enc8x3",
+          "to_id": "q-prio-onehot",
+          "type": "variant_of",
+          "reason": "같은 한 비트 1 입력 여덟 행이지만 일반 8X3 Encoder와 Priority Encoder로 대상이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-sa-enc8x3",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-sa-prio-why",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q5",
+      "occurrence_ids": [
+        "o-s04-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a5",
+          "target_id": "q-sa-prio-why",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-prio-why",
+          "to_id": "q-prio-behavior",
+          "type": "variant_of",
+          "reason": "단답형은 사용이유를, 예상문제는 입력별 출력 동작을 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-sa-prio-why",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-sa-dec2x4-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q6",
+      "occurrence_ids": [
+        "o-s04-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a6",
+          "target_id": "q-sa-dec2x4-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-dec2x4-table",
+          "to_id": "q-quiz-dec2x4-table",
+          "type": "duplicate_candidate",
+          "reason": "문항 문장과 bit0·bit1·D1~D4 열 순서의 답 표가 같지만 단답형에는 회로 그림이 없어 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a8cee5d4d1faeece",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "Quiz 문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s04-q6",
+          "reason": "“회로를 보고” 진리표를 완성하라는 문항이지만 이 자료에는 회로 그림이 없다."
+        },
+        {
+          "target_id": "q-sa-dec2x4-table",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 문장·같은 답 표지만 이 자료에는 회로 그림이 없어요. 회로가 있는 q-quiz-dec2x4-table 로 풀어요."
+    },
+    {
+      "question_id": "q-sa-excess3",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q7",
+      "occurrence_ids": [
+        "o-s04-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a7",
+          "target_id": "q-sa-excess3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-excess3-why",
+          "to_id": "q-sa-excess3",
+          "type": "variant_of",
+          "reason": "단답형은 진리표와 사용이유를 함께 요구해 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-sa-excess3",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "“Excess-3 코드 설명(진리표, 사용이유)” 문항이고 제공 답은 사용 이유(9의 보수)뿐이에요. q-excess3-why 와 표(노트)로 다뤄요."
+    },
+    {
+      "question_id": "q-sa-excess3-enc",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q8",
+      "occurrence_ids": [
+        "o-s04-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a8",
+          "target_id": "q-sa-excess3-enc",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-sa-excess3-enc",
+          "to_id": "q-excess3-enc-exam",
+          "type": "duplicate_candidate",
+          "reason": "단답형에는 회로와 입력 행이 없어 시험지 네 행 판인지 확정할 수 없음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 8; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-79ca3a1c1d1bc3fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-sa-excess3-enc",
+          "to_id": "q-excess3-enc-6row",
+          "type": "duplicate_candidate",
+          "reason": "단답형에는 회로와 입력 행이 없어 예상문제 여섯 행 판인지 확정할 수 없음.",
+          "evidence": [
+            {
+              "source_id": "s-107f6ce47fba6884",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 8; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e15e546d7f1ab7ea",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s04-q8",
+          "reason": "“회로를 보고” 진리표를 완성하라는 문항이지만 이 자료에는 회로 그림과 입력 행이 없다."
+        },
+        {
+          "target_id": "o-s04-a8",
+          "reason": "답 자리에 “?????”만 있어 실제 제공 답이 없다."
+        },
+        {
+          "target_id": "q-sa-excess3-enc",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p2"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 개념의 Excess-3 인코더 진리표 문항인데 이 자료에는 회로 그림과 표 입력 행이 없고 답 자리가 물음표뿐이에요. q-excess3-enc-6row 로 풀어요."
+    },
+    {
+      "question_id": "q-sa-enc-from-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q9",
+      "occurrence_ids": [
+        "o-s04-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a9",
+          "target_id": "q-sa-enc-from-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a9",
+          "reason": "답 자리에 “???????”만 있어 실제 제공 답이 없다."
+        },
+        {
+          "target_id": "q-sa-enc-from-table",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p2"
+      ],
+      "authoring_status": "held",
+      "selection_reason": "표(Normal Count 00~11 → 1000, 0100, 0010, 0001)는 2비트 입력과 one-hot 출력이라 디코더로 보이는데 문장은 “Encoder 회로를 그려라”이고 제공 답이 물음표뿐이에요. 용어와 조건이 충돌해 조건을 정하지 못해 보류했어요."
+    },
+    {
+      "question_id": "q-sa-74hc143",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s04-q10",
+      "occurrence_ids": [
+        "o-s04-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a10",
+          "target_id": "q-sa-74hc143",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 바로 아래에 적힌 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-q10",
+          "reason": "문항은 “74HC143”을 Priority Encoder라고 한다. 다른 자료의 74HC148과 같은 부품인지 확정하지 않고 원문 부품명을 보존했다."
+        },
+        {
+          "target_id": "q-sa-74hc143",
+          "reason": "시험 헤더 없는 단답형 정리본에만 있어 실제 시험 시행 근거를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    }
+  ]
+}

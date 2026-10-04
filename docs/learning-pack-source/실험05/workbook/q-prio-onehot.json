@@ -1,0 +1,36 @@
+{
+  "original": "<p>8X3 Priority Encoder의 Truth table을 완성하시오</p><div class=\"table-wrap\"><table><thead><tr><th>D</th><th>A2</th><th>A1</th><th>A0</th></tr></thead><tbody><tr><td>0000 0001</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0000 0010</td><td></td><td></td><td></td></tr><tr><td>0000 0100</td><td></td><td></td><td></td></tr><tr><td>0000 1000</td><td></td><td></td><td></td></tr><tr><td>0001 0000</td><td></td><td></td><td></td></tr><tr><td>0010 0000</td><td></td><td></td><td></td></tr><tr><td>0100 0000</td><td></td><td></td><td></td></tr><tr><td>1000 0000</td><td></td><td></td><td></td></tr></tbody></table></div><p>(원문 표의 첫 행은 이미 채워져 있어요.)</p>",
+  "conditions": "<p>D는 D7…D0 여덟 비트이고, 각 행에서 한 비트만 1이에요. 출력은 A2A1A0예요.</p>",
+  "ask": "<p>나머지 일곱 행의 A2A1A0를 채우세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "1의 위치",
+      "html": "<p>각 행에서 1이 있는 자리의 번호를 먼저 찾아요. 오른쪽 끝이 D0이에요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<p>한 비트만 1이면 우선순위를 가릴 일이 없어요. 1이 있는 자리 번호를 이진수로 쓴 값이 A2A1A0예요. 0000 0010은 D1이라서 001, 0000 0100은 D2라서 010, … 1000 0000은 D7이라서 111이에요.</p>"
+      },
+      {
+        "label": "완성한 표",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>D</th><th>A2</th><th>A1</th><th>A0</th></tr></thead><tbody><tr><td>0000 0001</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0000 0010</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0000 0100</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0000 1000</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0001 0000</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0010 0000</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0100 0000</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1000 0000</td><td>1</td><td>1</td><td>1</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> 첫 행(D0 → 000)과 마지막 행(D7 → 111)이 일치하고, 여덟 행이 000부터 111까지 한 번씩 나와요.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> 왼쪽 끝을 D0으로 읽으면 코드가 거꾸로 나와요.</p>"
+      }
+    ],
+    "answer": "<p>D0→000, D1→001, D2→010, D3→011, D4→100, D5→101, D6→110, D7→111</p>"
+  },
+  "notes": [
+    "제공 답안과 같아요. 한 비트만 1인 행에서는 우선순위 방향이 결과를 바꾸지 않아요."
+  ]
+}

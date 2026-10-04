@@ -1,0 +1,32 @@
+{
+  "original": "<p>74HC143은 Priority Encoder이다. 각 Output port A0, A1, A2, GS, EO에 대해서 설명하시오.</p>",
+  "conditions": "<p>원문은 칩 이름을 74HC143으로 적었어요. 교안에서 쓰는 우선순위 인코더 IC는 74HC148이고, 핀 이름 A0~A2, GS, EO가 같아서 74HC148의 핀으로 읽어요.</p>",
+  "ask": "<p>다섯 출력 핀의 역할을 각각 설명하세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "나눠 보기",
+      "html": "<p>A0~A2는 하나의 묶음이에요. GS와 EO는 각각 “입력이 있나”와 “다음 칩에 넘길 enable”과 관련이 있어요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "풀이",
+        "html": "<ul><li>A0, A1, A2: 우선순위가 가장 높은 활성 입력의 번호를 나타내는 3비트 데이터 출력이에요. Active Low라서 이진수를 비트마다 뒤집은 값이 나와요.</li><li>GS: Priority Flag 출력이에요. EI가 Low이고 하나 이상의 입력이 활성(Low)일 때 Low가 되어 “입력이 있다”를 알려요.</li><li>EO: Enable 출력이에요. EI가 Low이고 모든 입력이 High일 때 Low가 되어 다음 칩의 EI에 연결해 칩을 이어 붙일 때 써요.</li></ul>"
+      },
+      {
+        "label": "검산",
+        "html": "<p><strong>검산:</strong> IN0만 Low일 때와 모두 High일 때 A2A1A0는 같은 HHH예요. 두 경우는 GS(Low/High)로 구분할 수 있어요.</p>"
+      },
+      {
+        "label": "흔한 실수",
+        "html": "<p><strong>흔한 실수:</strong> GS를 번호를 나타내는 네 번째 비트로 쓰면 안 돼요. 코드는 A2A1A0 세 핀이에요.</p>"
+      }
+    ],
+    "answer": "<p>A0~A2는 데이터 출력, GS는 Priority Flag 출력, EO는 Enable 출력이에요.</p>"
+  },
+  "notes": [
+    "제공 답안(A0~A2 Data Output, GS Priority Flag Output, EO Enable Output)과 같아요. GS와 EO의 Low 조건은 이 저장소에 74HC148 데이터시트가 없어 일반적인 74HC148 설명 기준이에요."
+  ]
+}

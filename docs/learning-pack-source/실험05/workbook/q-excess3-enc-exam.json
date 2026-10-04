@@ -1,0 +1,38 @@
+{
+  "original": "<p>10진 Excess 3코드 Encoder의 회로를 보고 Truth table을 완성하시오.()</p><p>Referring to the circuit diagram below (decimal excess-3 code encoder), fill in the blanks of the truth table.</p><div class=\"table-wrap\"><table><thead><tr><th>SW</th><th>Bit3</th><th>Bit2</th><th>Bit1</th><th>Bit0</th></tr></thead><tbody><tr><td>000001</td><td></td><td></td><td></td><td></td></tr><tr><td>000100</td><td></td><td></td><td></td><td></td></tr><tr><td>010000</td><td></td><td></td><td></td><td></td></tr><tr><td>100000</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>",
+  "conditions": "<p>회로는 아래 그림과 같아요. SW5~SW0은 십진수 5~0을 나타내는 스위치이고 NOT 6개와 4입력 NAND 4개(74HC20)로 되어 있어요. 스위치를 VCC에 연결하면 그 입력은 1, 아니면 0이에요. 표의 SW 열은 왼쪽부터 SW5, SW4, …, SW0의 값이에요. NAND의 남는 입력은 VCC에 연결돼 있어요.</p>",
+  "ask": "<p>표의 Bit3~Bit0 값을 채우세요.</p>",
+  "problem_figures": [
+    "q-excess3-enc-exam-given-01"
+  ],
+  "hints": [
+    {
+      "label": "식으로 바꾸기",
+      "html": "<p>NAND 앞의 NOT과 드모르간 법칙을 이용하면 각 Bit가 어떤 스위치들의 OR인지 알 수 있어요. 한 스위치만 1인 행에서는 그 스위치가 들어간 Bit만 1이에요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "회로 읽기",
+        "html": "<p>Bit3 NAND에는 SW5의 반전이, Bit2에는 SW4·SW3·SW2·SW1의 반전이, Bit1에는 SW4·SW3·SW0의 반전이, Bit0에는 SW4·SW2·SW0의 반전이 들어가요(남는 입력은 VCC). NAND(X′, Y′, …)=X+Y+…이므로 각 Bit는 연결된 스위치들의 OR예요.</p>"
+      },
+      {
+        "label": "식",
+        "html": "<p>$$\\mathrm{Bit3}=SW5,\\ \\mathrm{Bit2}=SW1+SW2+SW3+SW4,\\ \\mathrm{Bit1}=SW0+SW3+SW4,\\ \\mathrm{Bit0}=SW0+SW2+SW4$$</p>"
+      },
+      {
+        "label": "완성한 표",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>SW</th><th>Bit3</th><th>Bit2</th><th>Bit1</th><th>Bit0</th></tr></thead><tbody><tr><td>000001</td><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>000100</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>010000</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>100000</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>"
+      },
+      {
+        "label": "검산·주의",
+        "html": "<p><strong>검산:</strong> 각 행이 십진수+3의 4비트와 같아요(SW5만 켜면 5+3=8=1000). <strong>흔한 실수:</strong> SW 열을 오른쪽부터 SW5로 읽으면 행이 뒤바뀌어요. 표 열은 왼쪽이 SW5예요.</p>"
+      }
+    ],
+    "answer": "<p>000001 → 0011; 000100 → 0101; 010000 → 0111; 100000 → 1000</p>"
+  },
+  "notes": [
+    "원문은 SW 열의 비트 순서를 적지 않았어요. 회로 그림의 SW5가 위, SW0이 아래라서 왼쪽이 SW5라고 읽었어요. 반대로 읽으면 행 순서만 바뀌어요."
+  ]
+}

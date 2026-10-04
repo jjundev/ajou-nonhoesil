@@ -1,0 +1,36 @@
+{
+  "original": "<p>4x2 Encoder의 회로를 설계하시오.(Not gate 4개, 4-input nand gate 3개, 2-input nand gate 2개)</p><p>Design a circuit diagram of 2x4 Encoder. (4 NOT gates, 3 4-input NAND gates, 2 2-input NAND gates)</p>",
+  "conditions": "<p>입력 D0~D3 중 한 줄만 1이라고 가정하고, 출력은 상위 비트 A와 하위 비트 B로 두어요. 영어 문장은 2x4라고 쓰였지만 한국어 문장과 게이트 수에 맞춰 4×2 인코더로 읽어요.</p>",
+  "ask": "<p>주어진 게이트 수로 회로를 그리고 A, B의 논리식을 쓰세요.</p>",
+  "problem_figures": [],
+  "hints": [
+    {
+      "label": "식부터",
+      "html": "<p>D0~D3의 번호 0~3을 이진수로 쓰고, A와 B가 1이 되는 번호를 찾으세요. 그다음 NAND 두 단계가 OR을 만든다는 점을 떠올려요.</p>"
+    }
+  ],
+  "solution": {
+    "steps": [
+      {
+        "label": "식 세우기",
+        "html": "<p>번호 0~3의 이진수는 00, 01, 10, 11이에요. 그래서 A=D2+D3, B=D1+D3이에요. D0은 코드가 00이라 더할 항이 없어요.</p>"
+      },
+      {
+        "label": "NAND로 바꾸기",
+        "html": "<p>D1, D2, D3 각각 “자기만 켜진 항”을 4입력 NAND로 만들어요(그래서 NOT이 D0~D3에 하나씩 4개). 두 번째 단계의 2입력 NAND가 A(D2항, D3항)와 B(D1항, D3항)를 합쳐요. 드모르간 법칙으로 NAND(X′, Y′)=X+Y예요.</p>"
+      },
+      {
+        "label": "완성 회로",
+        "html": "<p><img src=\"figures/solutions/q-enc4x2-design-solution-01.png\" width=\"280\" style=\"max-width:100%;height:auto\" alt=\"4×2 인코더 NAND 구성 회로\"></p>"
+      },
+      {
+        "label": "표와 검산",
+        "html": "<div class=\"table-wrap\"><table><thead><tr><th>D3</th><th>D2</th><th>D1</th><th>D0</th><th>A</th><th>B</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr></tbody></table></div><p><strong>검산:</strong> NOT 4개, 4입력 NAND 3개, 2입력 NAND 2개이고 AB가 번호와 같아요. <strong>흔한 실수:</strong> 두 번째 NAND를 AND로 읽지 않아요.</p>"
+      }
+    ],
+    "answer": "<p>A=D2+D3, B=D1+D3 (NOT 4개, 4입력 NAND 3개, 2입력 NAND 2개의 NAND-NAND 회로)</p>"
+  },
+  "notes": [
+    "제공 답안은 교재식 4×2 인코더 그림(NOT 4개, AND 3개, OR 2개)으로, NAND 구성과 게이트 종류가 달라서 후보 연결로만 두었어요. AND-OR 구조를 드모르간 법칙으로 NAND-NAND로 바꾼 것과 같은 동작이에요."
+  ]
+}
