@@ -340,5 +340,24 @@ class SearchCli(unittest.TestCase):
         self.assertEqual(mod.read_place_report(d / mod.PLACE_REPORT), {'hash': 'abc', 'layout': _LAY})
 
 
+class InputRows(unittest.TestCase):
+    """입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면 점퍼가 옆 행으로 비켜 사선이 된다 — 후보에서 뺀다
+    (2026-10-05 시험판 첫 탐색: S1·D1 이 j8·j14 에 꽂혀 사선이 셋 생겼다)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_입력_핀_행이_레일_빈_행이면_None(self):
+        c = _toy(self.mod, [], inputs=[('U1', 9)])                 # pin 9 = k+5
+        self.assertIsNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 17}))    # 8행 = 빈 행
+        self.assertIsNotNone(self.mod.place_proxy([c], {'K1': 5, 'K2': 17}))  # 10행
+
+    def test_a쪽_입력도_같다(self):
+        c = _toy(self.mod, [], inputs=[('U2', 4)])                 # pin 4 = k+3
+        self.assertIsNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 17}))    # 20행 = 빈 행
+        self.assertIsNotNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 18}))
+
+
 if __name__ == '__main__':
     unittest.main()

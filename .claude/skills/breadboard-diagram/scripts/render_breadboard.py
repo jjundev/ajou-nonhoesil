@@ -3148,7 +3148,11 @@ def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS
 
 def place_proxy(circuits, slots):
     """슬롯 후보 하나 → (근사 비용 합, layout). 회로마다 LED 행을 DP 로 고른다. LED 를 못 놓거나
-    R10 이 미리 어긋나면 None."""
+    R10 이 미리 어긋나거나, 입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면(점퍼가 옆 행으로 비켜 사선)
+    None."""
+    for c in circuits:
+        if any(_dip_pin_row(slots[c.chips[chip]], pin) in RAIL_GAP_ROWS for chip, pin in c.inputs):
+            return None
     bridge = bridge_rows(slots)
     layout = {'slots': dict(slots), 'leds': {}, 'bridge': bridge}
     total = 0.0
