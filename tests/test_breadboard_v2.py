@@ -337,7 +337,7 @@ class BlockRoles(unittest.TestCase):
 
 
 class Readability(unittest.TestCase):
-    """v2 읽기 규칙 R11~R13 — 그림대로 꽂을 수는 있어도 **따라 그릴 수 없는** 그림을 막는다.
+    """v2 읽기 규칙 R11~R14 — 그림대로 꽂을 수는 있어도 **따라 그릴 수 없는** 그림을 막는다.
 
     2026-10-03 실험04 v2 시험판: R1~R10 을 다 통과했는데 번호 원이 끝점 홀을 덮고(엔진이
     원을 첫 구간 가운데에 찍는데 첫 구간이 반 행 토막이었다), 검정 선이 검정 홀 열 위를
@@ -437,6 +437,37 @@ class Readability(unittest.TestCase):
                      'sig', '골 타기', marker_at=(L['a'] - 30, bb.r_y(30)))
         with self.assertRaisesRegex(AssertionError, 'R13'):
             bb.verify()
+
+    def test_R14_칩_안_이어_가기가_칩_이름을_지나면_오류다(self):
+        """2026-10-04 실험04 v2 시험판 검토 — R13 이 허용한 a↔f 이어 가기가 칩 이름 한복판을
+        건너 '7⁴HC20' 처럼 읽혔다. 칩 이름은 pin 4 행 둘레에 세로로 적힌다."""
+        bb, L = self.board()
+        bb.draw_chip('74HC20', 5)
+        h = bb.spec.row_pitch / 2
+        bb.step_wire([(L['g'], bb.r_y(8)), (L['g'], bb.r_y(8) + h), (L['d'], bb.r_y(8) + h),
+                      (L['d'], bb.r_y(9))], 'sig', '이름 위 이어 감', marker_at=(L['a'] - 30, bb.r_y(30)))
+        self.assertEqual(bb.needless_body_crossings(), [])
+        with self.assertRaisesRegex(AssertionError, 'R14.*74HC20'):
+            bb.verify()
+
+    def test_R14_칩_이름을_비켜_건너면_통과한다(self):
+        bb, L = self.board()
+        bb.draw_chip('74HC20', 5)
+        h = bb.spec.row_pitch / 2
+        bb.step_wire([(L['g'], bb.r_y(5)), (L['g'], bb.r_y(5) + h), (L['d'], bb.r_y(5) + h),
+                      (L['d'], bb.r_y(6))], 'sig', 'pin 1·2 사이로 이어 감')
+        self.assertEqual(bb.wires_over_chip_labels(), [])
+
+    def test_R14_칩_이름_상자는_이름_길이를_따른다(self):
+        """상자가 몸통 전체면 이어 가기가 갈 데가 없다 — 이름 글자만큼만 막는다."""
+        bb, L = self.board()
+        bb.draw_chip('74HC20', 5)
+        x0, y0, x1, y1 = bb.chip_label_boxes[0][0]
+        self.assertNotIn('label_box', bb.chips[0])   # 글꼴 픽셀은 도장(`wiring()['chips']`)에 안 든다
+        self.assertLess(y1 - y0, bb.spec.row_pitch * 3)
+        self.assertTrue(y0 < bb.r_y(8) < y1)
+        self.assertGreater(y0, bb.r_y(5) + bb.spec.row_pitch / 2)
+        self.assertLess(y1, bb.r_y(11) - bb.spec.row_pitch / 2)
 
     def _three(self, layer=None):
         """셋째 선만 번호 원 자리를 손으로 준다 — 첫째·둘째는 자동 자리."""

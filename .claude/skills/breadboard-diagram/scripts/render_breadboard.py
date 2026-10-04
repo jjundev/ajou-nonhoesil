@@ -381,7 +381,7 @@ class BoardSpec:
     chip_blocks: tuple      # 칩을 둘 수 있는 블록 (R9)
     led_only_blocks: tuple  # LED 사슬만 두는 블록 (R10). 비면 R10 을 안 돈다
     sha256: str = None      # 양식 PNG 해시. 있으면 대조한다 — 다시 뽑은 PNG 를 잡는다
-    readability: bool = False   # 읽기 규칙 R11~R13 과 번호 원 자동 자리. v2 만 켠다 — v1 승인본은 소급 안 함
+    readability: bool = False   # 읽기 규칙 R11~R14 과 번호 원 자동 자리. v2 만 켠다 — v1 승인본은 소급 안 함
 
 
 _V1 = BoardSpec(
@@ -642,6 +642,8 @@ class BreadboardRenderer:
         # 읽는다. `_leads` 의 뜻풀이 문자열을 파싱하게 두면 말이 바뀔 때마다
         # 검사기가 조용히 깨진다 — 검사기는 코드를 읽어야지 산문을 읽으면 안 된다
         self.chips = []
+        # 칩마다 이름 글자 상자(논리 좌표) — R14. 글꼴 따라 달라지는 픽셀이라 `chips`(도장에 든다)와 따로 둔다
+        self.chip_label_boxes = []
         self.leds = []
         self.resistors = []
         self.led_chains = []
@@ -1374,7 +1376,13 @@ class BreadboardRenderer:
         self.draw.rectangle([x1, y_top, x2, y_bot], fill=body_fill, outline=body_outline, width=2)
         notch_w = (x2 - x1) // 3
         self.draw.arc([x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6], 0, 180, fill=(200, 200, 200, 255), width=2)
-        self._vtext(((x1 + x2) / 2, (y_top + y_bot) / 2), name, text_fill, self.font_chip)
+        label_at = ((x1 + x2) / 2, (y_top + y_bot) / 2)
+        self._vtext(label_at, name, text_fill, self.font_chip)
+        # 세로로 돌린 이름 글자가 차지하는 상자(논리 좌표, `_vtext` 의 여백 2 포함) — R14
+        lb = self.font_chip.getbbox(name)
+        half_w, half_h = (lb[3] - lb[1]) / 2 + 2, (lb[2] - lb[0]) / 2 + 2
+        label_box = (label_at[0] - half_w, label_at[1] - half_h,
+                     label_at[0] + half_w, label_at[1] + half_h)
 
         # 핀 번호는 **몸통 안쪽**에 찍는다. 이전 판은 e-15 / f+6 에 찍어서
         # d 열과 g 열 홀을 가렸다 — 정작 배선을 꽂는 자리다
@@ -1395,6 +1403,7 @@ class BreadboardRenderer:
             pins[14 - i] = self.sym(c['f'], start_row + i)
         self.chips.append({'label': name, 'block': block,
                            'pin1_row': start_row, 'pins': pins})
+        self.chip_label_boxes.append((label_box, self.chips[-1]))
         if self.baseline is not None:
             if kept_chip:
                 self.kept.append(f'{name} 칩 그대로')
@@ -1711,7 +1720,7 @@ class BreadboardRenderer:
                         'from_side': a, 'to_side': b})
         return out
 
-    # ---------------- 읽기 규칙 R11~R13 (spec.readability, v2) ----------------
+    # ---------------- 읽기 규칙 R11~R14 (spec.readability, v2) ----------------
     #
     # 2026-10-03 실험04 v2 시험판(`docs/plans/2026-10-03-실험04-v2-시험판-결과.md`)은 R1~R10 을
     # 다 통과했는데 **따라 그릴 수 없었다**(사용자). 번호 원이 끝점 홀을 덮었고 — 기본 자리가
@@ -1832,6 +1841,18 @@ class BreadboardRenderer:
             for box, cx, ch in self._chip_bodies():
                 if (pts[0][0] < cx) != (pts[-1][0] < cx):
                     continue
+                if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])):
+                    out.append(f"{desc} — 칩 {ch['label']}({ch['pin1_row']}행)")
+        return out
+
+    def wires_over_chip_labels(self):
+        """R14 — 칩 이름 글자 위를 지나는 배선. R13 이 허용한 칩 안 a↔f 이어 가기도 이름
+        한복판을 건너면 '7⁴HC20' 처럼 읽혀 어느 칩인지 안 보인다(2026-10-04 실험04 v2 시험판
+        검토). 이름은 몸통 가운데(pin 4 행 둘레)에 세로로 적히므로 이어 가기는 그 위아래 반 행
+        — pin 1~3 이나 pin 5~7 사이 — 으로 건넌다. 전원선도 본다 — 가리는 것은 색과 무관하다."""
+        out = []
+        for _kind, pts, desc in self._segments:
+            for box, ch in self.chip_label_boxes:
                 if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])):
                     out.append(f"{desc} — 칩 {ch['label']}({ch['pin1_row']}행)")
         return out
@@ -2097,7 +2118,8 @@ class BreadboardRenderer:
         R11 번호 원이 꽂힌 홀·다른 번호 원·칩 몸통·남의 배선을 가리지 않는다.
         R12 신호선은 끝점 말고 홀 위를 지나지 않는다 — 닿은 홀은 전부 꽂는 홀이다.
         R13 양 끝이 칩의 같은 쪽인 신호선은 그 칩 몸통을 건너지 않는다.
-            R11~R13 은 `spec.readability`(v2)만 돈다 — 2026-10-03 실험04 v2 시험판.
+        R14 어떤 배선도 칩 이름 글자 위를 지나지 않는다 — 칩 안 이어 가기도 이름 위아래로 건넌다.
+            R11~R14 는 `spec.readability`(v2)만 돈다 — 2026-10-03 실험04 v2 시험판.
         그리고 레일 연결성 — 같은 전원을 나르는 레일이 브리지로 이어져 있는가.
 
         R1~R4 는 전부 **기하**다. 2026-09-09 까지 "이 배선이 무엇을 잇는가" 는
@@ -2253,13 +2275,14 @@ class BreadboardRenderer:
                     f'{KIND_KR[kind]} 레일이 끊겨 있다 — 브리지가 없다: {desc}\n'
                     '  레일쌍 넷은 별개 스트립이다. bridge_rails() 로 이어라.')
 
-        # R11~R13. 읽기 규칙 — 꽂을 수 있고 회로도 맞는데 **따라 그릴 수 없는** 그림
+        # R11~R14. 읽기 규칙 — 꽂을 수 있고 회로도 맞는데 **따라 그릴 수 없는** 그림
         # (2026-10-03 실험04 v2 시험판, 사용자). 기하·넷·레일보다 뒤에 본다 — 그것들이
         # 틀린 그림의 읽기는 따질 필요가 없다. v2(`spec.readability`)만
         if self.spec.readability:
             rd = [f'R11 번호 원 가림: {p}' for p in self.marker_problems()]
             rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
             rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
+            rd += [f'R14 배선이 칩 이름을 가린다: {p}' for p in self.wires_over_chip_labels()]
             if rd:
                 raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))
 
