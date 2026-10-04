@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="159.0mm" height="63.0mm" viewBox="0 0 1060 420" role="img"><title>전감산기 회로</title><desc>반감산기 두 개와 OR 하나. 첫 XOR 출력 x와 Bi가 둘째 반감산기로 들어가 D와 b2를 만들고 b1과 b2가 OR로 합쳐져 Bo가 된다</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif}</style><rect width="1060" height="420" fill="white"/><text x="60" y="72" font-size="22" text-anchor="end" fill="#222">Bi</text>
+<text x="60" y="122" font-size="22" text-anchor="end" fill="#222">A</text>
+<text x="60" y="152" font-size="22" text-anchor="end" fill="#222">B</text>
+<path d="M250,100 Q295,100 330,130 Q295,160 250,160 Q270,130 250,100 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<path d="M240,100 Q260,130 240,160" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+<text x="292" y="137" font-size="20" text-anchor="middle" fill="#222">XOR</text>
+<path d="M190,230 L230,250 L190,270 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="236" cy="250" r="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<path d="M300,235 H350 A30,30 0 0 1 350,295 H300 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="332" y="272" font-size="20" text-anchor="middle" fill="#222">AND</text>
+<path d="M460,195 L500,215 L460,235 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="506" cy="215" r="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<path d="M560,50 Q605,50 640,80 Q605,110 560,110 Q580,80 560,50 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<path d="M550,50 Q570,80 550,110" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+<text x="602" y="87" font-size="20" text-anchor="middle" fill="#222">XOR</text>
+<path d="M560,200 H610 A30,30 0 0 1 610,260 H560 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="592" y="237" font-size="20" text-anchor="middle" fill="#222">AND</text>
+<path d="M720,315 Q765,315 800,345 Q765,375 720,375 Q740,345 720,315 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="762" y="352" font-size="20" text-anchor="middle" fill="#222">OR</text>
+<path d="M70,115 L248,115" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="120" cy="115" r="6" fill="#222"/>
+<path d="M120,115 L120,137 A8,8 0 0 1 120,153 L120,250 L190,250" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M70,145 L248,145" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="160" cy="145" r="6" fill="#222"/>
+<path d="M160,145 L160,242 A8,8 0 0 1 160,258 L160,280 L300,280" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M242,250 L300,250" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M330,130 L430,130" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="430" cy="130" r="6" fill="#222"/>
+<path d="M430,130 L430,95 L524,95 A8,8 0 0 1 540,95 L558,95" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M430,130 L430,215 L460,215" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M512,215 L524,215 A8,8 0 0 1 540,215 L560,215" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M70,65 L558,65" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="532" cy="65" r="6" fill="#222"/>
+<path d="M532,65 L532,87 A8,8 0 0 1 532,103 L532,207 A8,8 0 0 1 532,223 L532,245 L560,245" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M380,265 L380,330 L672,330 A8,8 0 0 1 688,330 L727.5,330" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M640,230 L680,230 L680,360 L727.5,360" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M640,80 L790,80" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M800,345 L840,345" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="290" y="90" font-size="20" text-anchor="middle" fill="#555">74HC86</text>
+<text x="215" y="222" font-size="20" text-anchor="middle" fill="#555">74HC04</text>
+<text x="342" y="226" font-size="20" text-anchor="middle" fill="#555">74HC08</text>
+<text x="485" y="188" font-size="20" text-anchor="middle" fill="#555">74HC04</text>
+<text x="600" y="192" font-size="20" text-anchor="middle" fill="#555">74HC08</text>
+<text x="600" y="42" font-size="20" text-anchor="middle" fill="#555">74HC86</text>
+<text x="760" y="306" font-size="20" text-anchor="middle" fill="#555">74HC32</text>
+<text x="800" y="88" font-size="22" text-anchor="start" fill="#222">D</text>
+<text x="850" y="353" font-size="22" text-anchor="start" fill="#222">Bo</text>
+<text x="380" y="120" font-size="22" text-anchor="middle" fill="#b3261e">x = A⊕B</text>
+<text x="395" y="305" font-size="22" text-anchor="start" fill="#b3261e">b<tspan font-size="16" dy="5">1</tspan><tspan dy="-5">​</tspan> = A′B</text>
+<text x="692" y="222" font-size="22" text-anchor="start" fill="#b3261e">b<tspan font-size="16" dy="5">2</tspan><tspan dy="-5">​</tspan> = x′Bi</text>
+<text x="800" y="122" font-size="22" text-anchor="start" fill="#555">D = x⊕Bi</text>
+<text x="850" y="390" font-size="22" text-anchor="start" fill="#555">Bo = b<tspan font-size="16" dy="5">1</tspan><tspan dy="-5">​</tspan> + b<tspan font-size="16" dy="5">2</tspan><tspan dy="-5">​</tspan></text></svg>

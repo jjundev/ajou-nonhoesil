@@ -1,0 +1,847 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp03",
+  "bank_sha256": "feb0f8e4b8a7afaea1f1073a7c6fcf170f201e42acb0d3e1d7ad58cf704cea6c",
+  "experiment": 3,
+  "questions": [
+    {
+      "question_id": "q-fa-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a5",
+          "target_id": "q-fa-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-fa-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-note5",
+          "target_id": "q-fa-design",
+          "status": "candidate",
+          "reason": "5번 제공 회로 바로 아래 작성자 메모. 답안이 아닌 학습 메모라 후보 연결로만 둔다."
+        },
+        {
+          "occurrence_id": "o-s08-note5",
+          "target_id": "q-fa-design",
+          "status": "candidate",
+          "reason": "5번 제공 회로 바로 아래 작성자 메모. 답안이 아닌 학습 메모라 후보 연결로만 둔다."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-df7465f9bb70ceb2",
+          "reason": "파일명 학기 2016-1과 시험지 헤더 2016-2학기가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q1",
+        "a-s01-p1",
+        "a-s06-p1",
+        "a-s07-p3"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p1",
+        "a-s08-p1",
+        "a-s05-p2-a5",
+        "a-s08-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-fs-roles",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q2",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s05-q10",
+        "o-s06-q10",
+        "o-s07-q10",
+        "o-s08-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a10",
+          "target_id": "q-fs-roles",
+          "status": "confirmed",
+          "reason": "같은 자료 10번 바로 뒤 제공 답안. 내용은 D·B 역할보다 반감산기/전감산기 사용 범위를 서술함(unresolved 참조). 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a10",
+          "target_id": "q-fs-roles",
+          "status": "confirmed",
+          "reason": "같은 자료 10번 바로 뒤 제공 답안. 내용은 D·B 역할보다 반감산기/전감산기 사용 범위를 서술함(unresolved 참조). 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-df7465f9bb70ceb2",
+          "reason": "파일명 학기 2016-1과 시험지 헤더 2016-2학기가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        },
+        {
+          "target_id": "q-fs-roles",
+          "reason": "국문은 “전감산기에서의 D 와 B”, 영문 병기는 “in half-adder and full-subtractor”로 대상이 다르게 적혀 있다. 원문 그대로 보존."
+        },
+        {
+          "target_id": "o-s05-a10",
+          "reason": "10번(D·B 출력 역할) 바로 뒤 제공 답안이 반감산기/전감산기의 사용 범위를 서술한다. 7번 답안과 뒤바뀐 것인지 확정하지 않고 원문 그대로 연결만 했다."
+        },
+        {
+          "target_id": "o-s08-a10",
+          "reason": "10번(D·B 출력 역할) 바로 뒤 제공 답안이 반감산기/전감산기의 사용 범위를 서술한다. 7번 답안과 뒤바뀐 것인지 확정하지 않고 원문 그대로 연결만 했다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1",
+        "a-s06-p2",
+        "a-s07-p4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p3",
+        "a-s08-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-cs-roles",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s02-q1",
+        "o-s09-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-cs-roles",
+          "to_id": "q-cs-roles-sub",
+          "type": "duplicate_candidate",
+          "reason": "영문 병기(종합본 4번 “roles of C, S in half-adder and full-adder”)와 제공 답안은 가산기 C, S를 다루지만 국문은 “반감산기, 전감산기”라 적혀 있다. 원문 오기인지 다른 문항인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-df7465f9bb70ceb2",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-bda8a046c15efa89",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-df7465f9bb70ceb2",
+          "reason": "파일명 학기 2016-1과 시험지 헤더 2016-2학기가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1",
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-cs-roles-sub",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q3",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-cs-roles-sub",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a4",
+          "target_id": "q-cs-roles-sub",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-cs-roles-sub",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-cs-roles",
+          "to_id": "q-cs-roles-sub",
+          "type": "duplicate_candidate",
+          "reason": "영문 병기(종합본 4번 “roles of C, S in half-adder and full-adder”)와 제공 답안은 가산기 C, S를 다루지만 국문은 “반감산기, 전감산기”라 적혀 있다. 원문 오기인지 다른 문항인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-df7465f9bb70ceb2",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-bda8a046c15efa89",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-df7465f9bb70ceb2",
+          "reason": "파일명 학기 2016-1과 시험지 헤더 2016-2학기가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        },
+        {
+          "target_id": "q-cs-roles-sub",
+          "reason": "국문은 “반감산기, 전감산기 에서의 C, S 출력”이지만 감산기 출력 이름은 B, D이고, 영문 병기와 세 제공 답안은 가산기 C, S를 설명한다. 원문 오기 여부를 확정하지 않고 q-cs-roles와 duplicate_candidate로만 연결."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-fs-table",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q4",
+      "occurrence_ids": [
+        "o-s01-q4",
+        "o-s05-q11",
+        "o-s06-q11",
+        "o-s07-q11",
+        "o-s08-q11"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a11",
+          "target_id": "q-fs-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a11",
+          "target_id": "q-fs-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-df7465f9bb70ceb2",
+          "reason": "파일명 학기 2016-1과 시험지 헤더 2016-2학기가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        },
+        {
+          "target_id": "q-fs-table",
+          "reason": "문제 그림의 입력은 Bi, A, B인데 표는 x, y, z로 주어지고 대응이 적혀 있지 않다. 제공 답안(v1·HWP)의 대응 가정도 확정하지 않았으며 독립 풀이 단계에서 검토해야 한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q4",
+        "a-s01-p2-q4",
+        "a-s01-p1",
+        "a-s06-p3",
+        "a-s07-p5"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p3",
+        "a-s08-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-ha-lsb",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s09-q3",
+        "o-s04-q1-2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a1-2",
+          "target_id": "q-ha-lsb",
+          "status": "confirmed",
+          "reason": "월요일반 채점본 1-2번 아래 수험자 수기 답안과 채점 표시. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a1-2",
+          "reason": "540×960 저해상도 사진의 수기 답안이라 일부 어절을 확정하지 못함. 원문 크롭 a-s04-q1-2를 기준으로 한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-q1-2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-fs-equation",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s09-q4",
+        "o-s04-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-fs-equation",
+          "status": "confirmed",
+          "reason": "월요일반 채점본 2번 회로 옆 수험자 수기 답안과 채점 표시. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a2",
+          "reason": "수기 답안의 프라임·오버바 위치와 빨간 첨삭 끝부분을 확정하지 못함. 원문 크롭 a-s04-q2를 기준으로 한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-q4",
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-q2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-hs-circuit",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q2",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s09-q2",
+        "o-s05-q9",
+        "o-s06-q9",
+        "o-s07-q9",
+        "o-s08-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-hs-circuit",
+          "to_id": "q-hs-bool",
+          "type": "variant_of",
+          "reason": "같은 반감산기 진리표를 주지만 한쪽은 게이트 회로도, 다른 쪽은 단순화 부울 함수를 요구한다.",
+          "evidence": [
+            {
+              "source_id": "s-8a9389399acc3a17",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-0150079ac1cce345",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-q2",
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s06-p2",
+        "a-s07-p4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p3",
+        "a-s08-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-ha-design-ic",
+      "kind": "past",
+      "representative_occurrence_id": "o-s04-q1-1",
+      "occurrence_ids": [
+        "o-s04-q1-1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a1-1",
+          "target_id": "q-ha-design-ic",
+          "status": "confirmed",
+          "reason": "월요일반 채점본 1-1번 아래 수험자 수기 회로와 채점 표시. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ha-design-ic",
+          "to_id": "q-ha-design-eq",
+          "type": "variant_of",
+          "reason": "둘 다 XOR 1개·AND 1개 반가산기 회로 설계지만 채점본은 7486/7408 IC와 A, B/S, Co 표기를, 예상문제는 식(1)을 조건으로 준다.",
+          "evidence": [
+            {
+              "source_id": "s-e81d2c88f7288b6e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1; 원본 이미지 영역(이름·학번 헤더 제외)",
+              "bbox": [
+                0,
+                0.28125,
+                1,
+                0.4166666666666667
+              ],
+              "image_size": [
+                540,
+                960
+              ]
+            },
+            {
+              "source_id": "s-1b0720165b76716e",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-q1-1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-ha-design-eq",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q2",
+      "occurrence_ids": [
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-ha-design-eq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-ha-design-eq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ha-design-ic",
+          "to_id": "q-ha-design-eq",
+          "type": "variant_of",
+          "reason": "둘 다 XOR 1개·AND 1개 반가산기 회로 설계지만 채점본은 7486/7408 IC와 A, B/S, Co 표기를, 예상문제는 식(1)을 조건으로 준다.",
+          "evidence": [
+            {
+              "source_id": "s-e81d2c88f7288b6e",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1; 원본 이미지 영역(이름·학번 헤더 제외)",
+              "bbox": [
+                0,
+                0.28125,
+                1,
+                0.4166666666666667
+              ],
+              "image_size": [
+                540,
+                960
+              ]
+            },
+            {
+              "source_id": "s-1b0720165b76716e",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p1",
+        "a-s08-p1",
+        "a-s05-p1-a2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-adder-diff",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q1",
+      "occurrence_ids": [
+        "o-s03-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-adder-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-adder-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-adder-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-adder-diff",
+          "reason": "“실험3. Quiz” 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-ha-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q2",
+      "occurrence_ids": [
+        "o-s03-q2",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-ha-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a3",
+          "target_id": "q-ha-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-ha-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-ha-table",
+          "reason": "“실험3. Quiz” 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-fa-table",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q4",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-fa-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a6",
+          "target_id": "q-fa-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a6",
+          "target_id": "q-fa-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-fa-table",
+          "reason": "“실험3. Quiz” 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p1",
+        "a-s07-p3"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p2",
+        "a-s08-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-hs-bool",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q5",
+      "occurrence_ids": [
+        "o-s03-q5",
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s08-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a5",
+          "target_id": "q-hs-bool",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a8",
+          "target_id": "q-hs-bool",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a8",
+          "target_id": "q-hs-bool",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-hs-circuit",
+          "to_id": "q-hs-bool",
+          "type": "variant_of",
+          "reason": "같은 반감산기 진리표를 주지만 한쪽은 게이트 회로도, 다른 쪽은 단순화 부울 함수를 요구한다.",
+          "evidence": [
+            {
+              "source_id": "s-8a9389399acc3a17",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-0150079ac1cce345",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-hs-bool",
+          "reason": "“실험3. Quiz” 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p2",
+        "a-s07-p4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p2",
+        "a-s08-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    },
+    {
+      "question_id": "q-sub-diff",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q7",
+      "occurrence_ids": [
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s08-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a7",
+          "target_id": "q-sub-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a7",
+          "target_id": "q-sub-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s06-p2",
+        "a-s07-p3"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p2",
+        "a-s08-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건을 모두 수록하고 독립 풀이를 작성함"
+    }
+  ]
+}

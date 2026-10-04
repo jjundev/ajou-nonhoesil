@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="135.0mm" height="45.0mm" viewBox="0 0 900 300" role="img"><title>출력 확인용 LED 연결</title><desc>게이트 출력에 330옴 저항과 LED를 직렬로 달아 GND에 연결하고 입력선은 5V나 GND에 꽂는다</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif}</style><rect width="900" height="300" fill="white"/><rect x="40" y="70" width="70" height="40" rx="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<text x="75.0" y="98.0" font-size="22" text-anchor="middle" fill="#222">5V</text>
+<rect x="40" y="190" width="70" height="40" rx="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<text x="75.0" y="218.0" font-size="22" text-anchor="middle" fill="#222">GND</text>
+<text x="75" y="56" font-size="20" text-anchor="middle" fill="#555">1(H)</text>
+<text x="75" y="256" font-size="20" text-anchor="middle" fill="#555">0(L)</text>
+<path d="M110,90 L250,150" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M110,210 L250,150" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5"/>
+<circle cx="250" cy="150" r="6" fill="#222"/>
+<path d="M250,150 L400,150" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="325" y="132" font-size="20" text-anchor="middle" fill="#555">입력선</text>
+<rect x="400" y="60" width="110" height="180" rx="6" fill="#eaf1fb" stroke="#222" stroke-width="3"/>
+<text x="455" y="140" font-size="22" text-anchor="middle" fill="#222">게이트</text>
+<text x="455" y="172" font-size="22" text-anchor="middle" fill="#222">IC</text>
+<text x="450" y="285" font-size="20" text-anchor="middle" fill="#555">입력선을 5V나 GND에 번갈아 꽂아요</text>
+<path d="M510,150 L580,150" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="545" y="132" font-size="20" text-anchor="middle" fill="#555">출력</text>
+<rect x="580" y="130" width="90" height="40" rx="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<text x="625.0" y="158.0" font-size="20" text-anchor="middle" fill="#222">330 Ω</text>
+<path d="M670,150 L720,150" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M720,125 L720,175 L760,150 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<path d="M764,125 L764,175" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M764,150 L820,150 L820,200" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M795,200 L845,200" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M803,214 L837,214" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M811,228 L829,228" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="742" y="112" font-size="20" text-anchor="middle" fill="#555">LED</text>
+<text x="842" y="160" font-size="20" text-anchor="start" fill="#555">GND</text></svg>

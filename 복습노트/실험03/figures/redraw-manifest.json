@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "q-fs-table-given-01",
+      "question_id": "q-fs-table",
+      "role": "problem",
+      "svg": "figures/questions/q-fs-table-given-01.svg",
+      "png": "figures/questions/q-fs-table-given-01.png",
+      "svg_sha256": "90fabb2667779a8216e49b8ff5aa8080c03a88ebb686395dab3ae7ed774fd8f1",
+      "png_sha256": "e99210510251ab26e960b8ed2eba429c72bc2567844f0a6eedf76244a7200989",
+      "w_mm": 135.0,
+      "h_mm": 51.0,
+      "source_asset_ids": [
+        "a-s01-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-df7465f9bb70ceb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1~2 (표 1행은 page 1, 나머지 3행은 page 2)",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문 그림의 블록 구성을 직접 도식화했어요. 표에 채울 값과 답은 넣지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-fs-equation-given-01",
+      "question_id": "q-fs-equation",
+      "role": "problem",
+      "svg": "figures/questions/q-fs-equation-given-01.svg",
+      "png": "figures/questions/q-fs-equation-given-01.png",
+      "svg_sha256": "a81db5fd668e97442e328efc7902eb036e684715b46b87ec989072c98dfa41dd",
+      "png_sha256": "449123c0942076047d0a62cc58b6ef5c0d3b20e48e57daa23c9ee582bbc920eb",
+      "w_mm": 159.0,
+      "h_mm": 63.0,
+      "source_asset_ids": [
+        "a-s02-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-8a9389399acc3a17",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문 그림의 게이트 연결을 직접 도식화했어요. D와 Bo의 식과 중간 신호 이름은 넣지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-fa-design-solution-01",
+      "question_id": "q-fa-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-fa-design-solution-01.svg",
+      "png": "figures/solutions/q-fa-design-solution-01.png",
+      "svg_sha256": "193998361bfbdf150f1c278a6ae8477d05dab58d2dc0b7b4fd18dd4a3c66368a",
+      "png_sha256": "5e18d94c23f4eafe953e208a0e9c59485fe383e92d47173ebe1059bec9b350c7",
+      "w_mm": 135.0,
+      "h_mm": 78.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-df7465f9bb70ceb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "식(1)에서 S=x⊕y⊕z, C=xy+yz+zx를 직접 도출해 게이트 수 조건(AND 3, OR 1, XOR 2)에 맞게 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-fa-design-solution-02",
+      "question_id": "q-fa-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-fa-design-solution-02.svg",
+      "png": "figures/solutions/q-fa-design-solution-02.png",
+      "svg_sha256": "90baf0b4745a0b198164fd8fc9fd561017f320e1bd6c0fa2ea77dd427f1c872a",
+      "png_sha256": "884d847163535a6f8363e7c7c14882d41a46c2984162d969be7132ac49cfa66b",
+      "w_mm": 150.0,
+      "h_mm": 60.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-df7465f9bb70ceb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "제공 답안의 구조(반가산기 두 개와 OR)를 직접 다시 그렸어요. AND가 두 개라서 문제의 AND 3개 조건과 다르다는 점은 풀이에 적었어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-hs-circuit-solution-01",
+      "question_id": "q-hs-circuit",
+      "role": "solution",
+      "svg": "figures/solutions/q-hs-circuit-solution-01.svg",
+      "png": "figures/solutions/q-hs-circuit-solution-01.png",
+      "svg_sha256": "18d862269431a5936b51814001e219f760deccb2ea30cda2e6b658a794b24ea2",
+      "png_sha256": "c096121f31e480c56b661ab15cf28018912580e222dbba0a990fd15289824a47",
+      "w_mm": 135.0,
+      "h_mm": 48.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-8a9389399acc3a17",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "진리표에서 D=x⊕y, B=x′y를 직접 도출해 XOR 1, NOT 1, AND 1개로 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-ha-design-ic-solution-01",
+      "question_id": "q-ha-design-ic",
+      "role": "solution",
+      "svg": "figures/solutions/q-ha-design-ic-solution-01.svg",
+      "png": "figures/solutions/q-ha-design-ic-solution-01.png",
+      "svg_sha256": "40655bac3d9b3498e1fccec2b8d1e458744c2e30b86aaf763ac4bc53c6b0ee2f",
+      "png_sha256": "8c946e711ae8d407d4e1dbe69d16b7365d4e5595233213f4953fc1d250961b37",
+      "w_mm": 135.0,
+      "h_mm": 48.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-e81d2c88f7288b6e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1-1; 원본 이미지 영역(이름·학번 헤더 제외)",
+          "bbox": [
+            0,
+            0.28125,
+            1,
+            0.4166666666666667
+          ],
+          "image_size": [
+            540,
+            960
+          ],
+          "question": "1-1"
+        }
+      ],
+      "derivation": "문제의 IC 지정(7486 XOR, 7408 AND)과 출력 이름 S, Co에 맞춰 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-ha-design-eq-solution-01",
+      "question_id": "q-ha-design-eq",
+      "role": "solution",
+      "svg": "figures/solutions/q-ha-design-eq-solution-01.svg",
+      "png": "figures/solutions/q-ha-design-eq-solution-01.png",
+      "svg_sha256": "f54032dadc3995ef2606c0f21e1d8500f9a77683802475cc0b692bf2629aa2c0",
+      "png_sha256": "bb689671dd06a8eaca9e057f836b1c31dcb608480cf68382a29cc8f3bcf3e378",
+      "w_mm": 135.0,
+      "h_mm": 48.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-1b0720165b76716e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "식(1)에서 S=x′y+xy′=x⊕y, C=xy를 직접 도출해 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-fs-equation-solution-01",
+      "question_id": "q-fs-equation",
+      "role": "solution",
+      "svg": "figures/solutions/q-fs-equation-solution-01.svg",
+      "png": "figures/solutions/q-fs-equation-solution-01.png",
+      "svg_sha256": "0ef5eb9fdf4cef8b536552cec9eddaec6dae3dc0876fcf14f0b265f92b5d78cb",
+      "png_sha256": "e508a095beeed15a39234f4c4121f7cf85ca2b2373d8854cf231be041d448a74",
+      "w_mm": 159.0,
+      "h_mm": 63.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-8a9389399acc3a17",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "회로를 직접 따라가며 중간 신호 x, b1, b2의 이름을 붙이고 식을 도출했어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-fs-table-solution-01",
+      "question_id": "q-fs-table",
+      "role": "solution",
+      "svg": "figures/solutions/q-fs-table-solution-01.svg",
+      "png": "figures/solutions/q-fs-table-solution-01.png",
+      "svg_sha256": "be66cb31ae6c366bb5c52bd5ed06bcda0985fdff82e938067ee283e9630e00fc",
+      "png_sha256": "dd0a3d0a7e5cc51b0de70eb7c14982edbf2cebf042c4466478a742b8f9a65805",
+      "w_mm": 135.0,
+      "h_mm": 51.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-df7465f9bb70ceb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1~2 (표 1행은 page 1, 나머지 3행은 page 2)",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문 회로 구성에 입력 011을 직접 대입해 각 선의 값을 표시했어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 비접속 교차, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    }
+  ]
+}

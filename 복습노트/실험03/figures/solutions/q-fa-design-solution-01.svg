@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="135.0mm" height="78.0mm" viewBox="0 0 900 520" role="img"><title>식(1)로 만든 전가산기</title><desc>AND 세 개, 3입력 OR 하나, XOR 두 개. S는 x XOR y XOR z, C는 xy+yz+zx</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif}</style><rect width="900" height="520" fill="white"/><text x="60" y="68" font-size="22" text-anchor="end" fill="#222">x</text>
+<text x="60" y="98" font-size="22" text-anchor="end" fill="#222">y</text>
+<text x="60" y="123" font-size="22" text-anchor="end" fill="#222">z</text>
+<path d="M330,45 Q375,45 410,75 Q375,105 330,105 Q350,75 330,45 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<path d="M320,45 Q340,75 320,105" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+<text x="372" y="82" font-size="20" text-anchor="middle" fill="#222">XOR</text>
+<path d="M520,70 Q565,70 600,100 Q565,130 520,130 Q540,100 520,70 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<path d="M510,70 Q530,100 510,130" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+<text x="562" y="107" font-size="20" text-anchor="middle" fill="#222">XOR</text>
+<path d="M330,220 H380 A30,30 0 0 1 380,280 H330 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="362" y="257" font-size="20" text-anchor="middle" fill="#222">AND</text>
+<path d="M330,320 H380 A30,30 0 0 1 380,380 H330 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="362" y="357" font-size="20" text-anchor="middle" fill="#222">AND</text>
+<path d="M330,420 H380 A30,30 0 0 1 380,480 H330 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="362" y="457" font-size="20" text-anchor="middle" fill="#222">AND</text>
+<path d="M560,290 Q605,290 640,350 Q605,410 560,410 Q590,350 560,290 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="602" y="357" font-size="20" text-anchor="middle" fill="#222">OR</text>
+<path d="M70,60 L328,60" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="100" cy="60" r="6" fill="#222"/>
+<path d="M70,90 L92,90 A8,8 0 0 1 108,90 L328,90" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="140" cy="90" r="6" fill="#222"/>
+<path d="M70,115 L92,115 A8,8 0 0 1 108,115 L132,115 A8,8 0 0 1 148,115 L518,115" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="180" cy="115" r="6" fill="#222"/>
+<path d="M100,60 L100,465" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M140,90 L140,335" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M180,115 L180,435" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M410,75 L450,75 L450,85 L518,85" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M100,235 L132,235 A8,8 0 0 1 148,235 L172,235 A8,8 0 0 1 188,235 L330,235" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="100" cy="235" r="6" fill="#222"/>
+<path d="M140,265 L172,265 A8,8 0 0 1 188,265 L330,265" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="140" cy="265" r="6" fill="#222"/>
+<path d="M140,335 L172,335 A8,8 0 0 1 188,335 L330,335" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M180,365 L330,365" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="180" cy="365" r="6" fill="#222"/>
+<path d="M180,435 L330,435" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M100,465 L330,465" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M410,250 L480,250 L480,315 L570,315" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M410,350 L575,350" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M410,450 L480,450 L480,385 L570,385" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M600,100 L800,100" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M640,350 L800,350" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="420" y="62" font-size="20" text-anchor="start" fill="#b3261e">x⊕y</text>
+<text x="425" y="243" font-size="20" text-anchor="start" fill="#b3261e">xy</text>
+<text x="425" y="343" font-size="20" text-anchor="start" fill="#b3261e">yz</text>
+<text x="425" y="443" font-size="20" text-anchor="start" fill="#b3261e">zx</text>
+<text x="820" y="108" font-size="22" text-anchor="start" fill="#222">S</text>
+<text x="820" y="358" font-size="22" text-anchor="start" fill="#222">C</text>
+<text x="660" y="140" font-size="22" text-anchor="start" fill="#555">S = x⊕y⊕z</text>
+<text x="660" y="398" font-size="22" text-anchor="start" fill="#555">C = xy+yz+zx</text></svg>

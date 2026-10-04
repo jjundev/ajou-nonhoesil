@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="135.0mm" height="51.0mm" viewBox="0 0 900 340" role="img"><title>전감산기 간략 회로의 입력 011 추적</title><desc>A=0, B=1, Bi=1일 때 첫 반감산기 D0=1, B0=1이고 둘째 반감산기에서 D=0, B0=0이며 OR 출력 B=1이다</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif}</style><rect width="900" height="340" fill="white"/><text x="50" y="238" font-size="22" text-anchor="end" fill="#222">A</text>
+<text x="50" y="288" font-size="22" text-anchor="end" fill="#222">B</text>
+<text x="50" y="98" font-size="22" text-anchor="end" fill="#222">B<tspan font-size="16" dy="5">i</tspan><tspan dy="-5">​</tspan></text>
+<rect x="200" y="200" width="120" height="100" rx="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<text x="260.0" y="262" font-size="28" text-anchor="middle" fill="#222">HS</text>
+<rect x="420" y="60" width="120" height="100" rx="6" fill="#fff" stroke="#222" stroke-width="3"/>
+<text x="480.0" y="122" font-size="28" text-anchor="middle" fill="#222">HS</text>
+<text x="208" y="236" font-size="20" text-anchor="start" fill="#222">A</text>
+<text x="208" y="286" font-size="20" text-anchor="start" fill="#222">B</text>
+<text x="312" y="236" font-size="20" text-anchor="end" fill="#222">D<tspan font-size="15" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<text x="312" y="286" font-size="20" text-anchor="end" fill="#222">B<tspan font-size="15" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<text x="428" y="96" font-size="20" text-anchor="start" fill="#222">B</text>
+<text x="428" y="146" font-size="20" text-anchor="start" fill="#222">A</text>
+<text x="532" y="96" font-size="20" text-anchor="end" fill="#222">D<tspan font-size="15" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<text x="532" y="146" font-size="20" text-anchor="end" fill="#222">B<tspan font-size="15" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<path d="M60,230 L200,230" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M60,280 L200,280" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M60,90 L420,90" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M320,230 L380,230 L380,140 L420,140" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M540,90 L780,90" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M540,140 L580,140 L580,250 L617.5,250" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M610,235 Q655,235 690,265 Q655,295 610,295 Q630,265 610,235 Z" fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round"/>
+<text x="652" y="272" font-size="20" text-anchor="middle" fill="#222">OR</text>
+<path d="M320,280 L617.5,280" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M690,265 L780,265" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="800" y="98" font-size="22" text-anchor="start" fill="#222">D<tspan font-size="16" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<text x="800" y="273" font-size="22" text-anchor="start" fill="#222">B<tspan font-size="16" dy="5">0</tspan><tspan dy="-5">​</tspan></text>
+<text x="110" y="222" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">0</text>
+<text x="110" y="272" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">1</text>
+<text x="110" y="82" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">1</text>
+<text x="356" y="185" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">1</text>
+<text x="450" y="268" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">1</text>
+<text x="600" y="80" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">0</text>
+<text x="562" y="128" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">0</text>
+<text x="740" y="255" font-size="22" text-anchor="middle" fill="#b3261e" font-weight="bold">1</text>
+<text x="450" y="325" font-size="20" text-anchor="middle" fill="#555">A=0, B=1, Bi=1 (표의 x=A, y=B, z=Bi 가정)</text></svg>
