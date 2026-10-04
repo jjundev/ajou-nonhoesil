@@ -50,7 +50,7 @@ class NetModel(unittest.TestCase):
         cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         return bb
 
@@ -166,7 +166,7 @@ class R5(unittest.TestCase):
         cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         return bb
 
@@ -320,7 +320,7 @@ class R6(unittest.TestCase):
         cls.b1, cls.b2, cls.b3 = (cls.mod.load_board(n) for n in (1, 2, 3))
 
     def board(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         return bb
 

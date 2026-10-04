@@ -6,6 +6,9 @@ import tempfile
 
 from render_breadboard import BreadboardRenderer, _input_jumper, removal_board
 
+# 실험01~04 는 v1 판형으로 승인·도장이 끝났다 — 렌더러 기본값(v2)을 따르지 않게 못 박는다
+BOARD = 'v1'
+
 
 # 실험 3 · 가산기 & 감산기 — 2026-2 배포본(9쪽) 기준, 2026-09-14 저작
 #
@@ -313,7 +316,7 @@ def build_e3_ha(output_path, template_path=None, stage=None, baseline=None):
       stage 1  74HC86(S1) + LED1. S = A⊕B
       stage 2  + 74HC08(S3, 우측) + A·B 갈래 + LED2 = 완성. C = A·B
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     if stage == 1:
@@ -343,7 +346,7 @@ def build_e3_fa(output_path, template_path=None, stage=None, baseline=None):
       stage 4  + AND2 (A⊕B·Ci 입력) + 임시 급전(U2 pin 6). (A⊕B)·Ci
       stage 5  + 74HC32(S4) OR + LED2 최종 급전 = 완성. Co
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     _e3_stage_check('fa', stage)
@@ -367,7 +370,7 @@ def build_e3_hs(output_path, template_path=None, stage=None, baseline=None):
     같은 글자 `B` 인 유일한 회로라 가독성·손그림 테스트가 쓴다. 1단계는 없다
     (`_e3_draw` 가 거절한다).
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     title = "실험 2-1: 반감산기 결선도"
@@ -392,7 +395,7 @@ def build_e3_fs(output_path, template_path=None, stage=None, baseline=None):
     걷기 보드는 `BOARDS` 의 `removal_board(...)` 가 만든다 — 이 빌더에 `build_*`
     래퍼는 없다. 1단계 앞(1걷기)과 2단계 앞(2걷기) 둘이다.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     _e3_stage_check('fs', stage)

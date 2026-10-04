@@ -1,9 +1,11 @@
 # 따라 그리기 생성기 테스트용 — 전원 잭 두 가닥, 층 둘.
 from render_breadboard import BreadboardRenderer
 
+BOARD = 'v1'
+
 
 def build_min(output_path, template_path=None, stage=None, baseline=None, layer=None):
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     bb.set_header('최소 보드', '생성기 테스트')
     bb.connect_jacks()

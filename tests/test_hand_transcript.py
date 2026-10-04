@@ -48,7 +48,7 @@ class Address(unittest.TestCase):
         """`addr()` 출력과 문법이 갈리면 비교가 성립하지 않는다."""
         from scripts.lab.hand_grid import load_renderer
         mod = load_renderer()
-        bb = mod.BreadboardRenderer()
+        bb = mod.BreadboardRenderer(board='v1')
         c = bb.cols['left']
         for x, row in [(c['b'], 10), (c['gnd'], 10), (c['mid_vcc'], 7)]:
             got = ht.parse_address(bb.addr(x, bb.r_y(row)))

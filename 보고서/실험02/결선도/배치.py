@@ -6,6 +6,9 @@ import tempfile
 
 from render_breadboard import BreadboardRenderer
 
+# 실험01~04 는 v1 판형으로 승인·도장이 끝났다 — 렌더러 기본값(v2)을 따르지 않게 못 박는다
+BOARD = 'v1'
+
 
 # 실험 2 · CMOS 회로의 전기적 특성 — 2026-2 배포본(12쪽) 기준, 2026-09-13 재저작
 #
@@ -90,7 +93,7 @@ def _e2_vtc(bb, chip):
 
 def build_e2_inv(output_path, template_path=None, stage=None, baseline=None):
     """실험 1-1 · Inverter 입출력 특성 (74HC04, X-Y). netlist C1. 첫 보드 — 완성본 겸용."""
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-1: Inverter 입출력 특성 결선도",
@@ -107,7 +110,7 @@ def build_e2_schmitt(output_path, template_path=None, stage=None, baseline=None)
     Nexperia 74HC14 Rev. 10 (2024-02-29) §6.2: 입력 1,3,5,9,11,13 / 출력 2,4,6,8,
     10,12 / GND 7 / VCC 14 — 74HC04 와 같은 배치라 칩만 갈아 끼운다.
     """
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.set_header("실험 1-2: Schmitt-trigger 입출력 특성 결선도" if baseline is None
@@ -136,7 +139,7 @@ def build_e2_tpd(output_path, template_path=None, stage=None, baseline=None):
     측정값에서 역산하지 않고 이 점퍼 넷을 세어 확인한다.
     """
     st = 2 if stage is None else stage
-    bb = BreadboardRenderer(template_path, baseline=baseline)
+    bb = BreadboardRenderer(template_path, baseline=baseline, board=BOARD)
     bb.enable_steps()
     bb.density_policy = 'legacy'   # R7(2026-09-20) 이전 승인본 — 도장 고정, 재작성 안 함
     bb.partial = st < 2
