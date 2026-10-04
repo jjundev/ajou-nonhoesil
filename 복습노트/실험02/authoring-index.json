@@ -1,0 +1,983 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp02",
+  "bank_sha256": "3af0ce09854078f724956c9225d2e48bfd21f4bfb6807a6ecfb3e0082496d569",
+  "experiment": 2,
+  "questions": [
+    {
+      "question_id": "q-region",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s03-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 1번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-region",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-region",
+          "to_id": "q-region-graded",
+          "type": "duplicate_candidate",
+          "reason": "문장·수치 조건은 같으나 채점본 사진에서 인쇄 입력 그래프를 확인하지 못함.",
+          "evidence": [
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a5c6c19f4df2edef",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q1",
+        "a-s01-p1",
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. 제공 답안은 전압 구역(입력 기준) 표기라 출력 기준 풀이와 라벨이 달라 disputed로 둠"
+    },
+    {
+      "question_id": "q-region-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s04-q1",
+      "occurrence_ids": [
+        "o-s04-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-region-graded",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-region",
+          "to_id": "q-region-graded",
+          "type": "duplicate_candidate",
+          "reason": "문장·수치 조건은 같으나 채점본 사진에서 인쇄 입력 그래프를 확인하지 못함.",
+          "evidence": [
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a5c6c19f4df2edef",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        },
+        {
+          "target_id": "o-s04-q1",
+          "reason": "채점본 사진에서 1번 인쇄 입력 그래프가 보이지 않는다. 그래프 생략 판본인지 필기에 가려진 것인지 확정하지 않아 q-region과 duplicate_candidate로만 연결."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-head",
+        "a-s04-q1"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "채점본 사진의 같은 문장이에요. 인쇄 입력 그래프를 판독하지 못했고(생략본인지 필기에 가려졌는지 미확정) q-region과 같은 그래프라고 확정하지 못해 수록하지 않았어요. 학생 답안·채점 흔적은 원문과_저작안내.md에 보존했어요."
+    },
+    {
+      "question_id": "q-schmitt-noise",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q2",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s02-q2",
+        "o-s09-q2",
+        "o-s03-q2",
+        "o-s04-q2",
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 2번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        },
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-schmitt-noise",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        },
+        {
+          "target_id": "o-s04-a2",
+          "reason": "학생 수기 답안 일부 문장을 판독하지 못함. 원문 크롭으로 보존."
+        },
+        {
+          "target_id": "o-s05-a2",
+          "reason": "제공 답안 끝에 ‘(그래프 그리기)’라는 지시만 있고 그래프는 실려 있지 않다. 누락된 그래프를 만들어 넣지 않았다."
+        },
+        {
+          "target_id": "o-s08-a2",
+          "reason": "제공 답안 끝에 ‘(그래프 그리기)’라는 지시만 있고 그래프는 실려 있지 않다. 누락된 그래프를 만들어 넣지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q2",
+        "a-s01-p1",
+        "a-s02-p1-o-s02-q2",
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s06-p1",
+        "a-s07-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-q2",
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출 문항, 제공 답안과 독립 도출이 같은 뜻"
+    },
+    {
+      "question_id": "q-rprn-effect",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        },
+        {
+          "target_id": "o-s01-q3",
+          "reason": "Rp/Rn 등가 회로 그림이 3번 답안 공간 아래·4번 위에 있다(2017-1에서는 3번 Rp 유도 문장 위). 위치에 따라 3번에 연결했고 4번과의 소속은 확정하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q3",
+        "a-s01-p1",
+        "a-s06-p1",
+        "a-s07-p2",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-p1",
+        "a-s08-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출 문항"
+    },
+    {
+      "question_id": "q-rp-derive",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q3",
+      "occurrence_ids": [
+        "o-s01-q4",
+        "o-s02-q3",
+        "o-s09-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-rp-derive",
+          "to_id": "q-rp-derive-current",
+          "type": "variant_of",
+          "reason": "‘입력 level에 따른 전류의 흐름을 이용하여 설명하시오’ 지시 유무가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q4",
+        "a-s01-p1",
+        "a-s02-p1-o-s02-q3",
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. 제공 답안이 같은 식(교안 6쪽)"
+    },
+    {
+      "question_id": "q-rp-derive-current",
+      "kind": "past",
+      "representative_occurrence_id": "o-s06-q4",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-rp-derive-current",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 3번 문항 바로 아래 제공된 그림·식·채점 메모. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-rp-derive",
+          "to_id": "q-rp-derive-current",
+          "type": "variant_of",
+          "reason": "‘입력 level에 따른 전류의 흐름을 이용하여 설명하시오’ 지시 유무가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2",
+        "a-s06-p1-o-s06-q4",
+        "a-s06-p1",
+        "a-s07-p2",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. 제공 답안과 독립 도출이 같음"
+    },
+    {
+      "question_id": "q-rn-derive",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s06-q5",
+      "occurrence_ids": [
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2",
+        "a-s06-p1-o-s06-q5",
+        "a-s06-p1",
+        "a-s07-p3",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "예상문제. Rp 유도 기출과 짝이 되는 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-prop-delay",
+      "kind": "past",
+      "representative_occurrence_id": "o-s06-q6",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-prop-delay",
+          "status": "confirmed",
+          "reason": "채점 기준본에서 4번 문항 바로 아래 제공된 답. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-delay-transition",
+          "to_id": "q-prop-delay",
+          "type": "variant_of",
+          "reason": "2017-1은 전달 지연을 (1) 소문항으로 묶어 출제.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2",
+        "a-s06-p2-o-s06-q6",
+        "a-s06-p2",
+        "a-s07-p3",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. 제공 답안과 같은 뜻"
+    },
+    {
+      "question_id": "q-delay-transition",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s09-q4"
+      ],
+      "subparts": [
+        {
+          "id": "sp-delay-transition-1",
+          "label": "(1)",
+          "occurrence_id": "o-s02-q4",
+          "block_ids": [
+            "b-o-s02-q4-sub1"
+          ]
+        },
+        {
+          "id": "sp-delay-transition-2",
+          "label": "(2)",
+          "occurrence_id": "o-s02-q4",
+          "block_ids": [
+            "b-o-s02-q4-sub2"
+          ]
+        }
+      ],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-delay-transition",
+          "to_id": "q-prop-delay",
+          "type": "variant_of",
+          "reason": "2017-1은 전달 지연을 (1) 소문항으로 묶어 출제.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-delay-transition",
+          "to_id": "q-transition",
+          "type": "variant_of",
+          "reason": "2017-1은 천이 시간을 (2) 소문항으로 묶어 출제.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q4",
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. (1)은 제공 답안과 일치하나 (2)는 제공 답안이 없어 도출 해석만 있음"
+    },
+    {
+      "question_id": "q-transition",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s06-q7",
+      "occurrence_ids": [
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s08-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-delay-transition",
+          "to_id": "q-transition",
+          "type": "variant_of",
+          "reason": "2017-1은 천이 시간을 (2) 소문항으로 묶어 출제.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 7; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2",
+        "a-s06-p2-o-s06-q7",
+        "a-s06-p2",
+        "a-s07-p3",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "예상문제. 천이 시간 개념 공백 보충. 제공 답안이 없어 정답 미확정"
+    },
+    {
+      "question_id": "q-schmitt-waveform",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q1",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s09-q1",
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s08-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-schmitt-waveform",
+          "to_id": "q-schmitt-waveform-graded",
+          "type": "duplicate_candidate",
+          "reason": "문장은 같으나 채점본 입력 파형은 곡선형이고 기준선 수치가 판독되지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a5c6c19f4df2edef",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q1",
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s05-p2",
+        "a-s06-p2-o-s06-q8",
+        "a-s06-p2",
+        "a-s07-p3",
+        "a-s08-p2"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출. 꼭짓점을 읽어 독립 계산"
+    },
+    {
+      "question_id": "q-schmitt-waveform-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s04-q3",
+      "occurrence_ids": [
+        "o-s04-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-schmitt-waveform-graded",
+          "status": "confirmed",
+          "reason": "학생 답안과 채점 흔적. 문항과의 연결 확인이며 학생 답의 정답 여부는 검증하지 않음."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-schmitt-waveform",
+          "to_id": "q-schmitt-waveform-graded",
+          "type": "duplicate_candidate",
+          "reason": "문장은 같으나 채점본 입력 파형은 곡선형이고 기준선 수치가 판독되지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a5c6c19f4df2edef",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s04-q3",
+          "reason": "채점본 3번 입력 파형의 기준선 수치가 판독되지 않고 파형이 곡선형이다. 2017-1 꺾은선 파형과 같은 조건인지 확정하지 않음."
+        },
+        {
+          "target_id": "o-s04-a3",
+          "reason": "채점자 붉은 메모 일부와 붉은 예시 파형의 전이 시점을 사진에서 정밀 판독하지 못함."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-q3"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "채점본 사진의 같은 문장이에요. 입력이 곡선형이고 기준선 수치를 판독하지 못해 q-schmitt-waveform의 꺾은선 그림과 같은 조건인지 확정하지 못했어요. 수록하지 않았어요."
+    },
+    {
+      "question_id": "q-params-4",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s06-q9",
+      "occurrence_ids": [
+        "o-s05-q9",
+        "o-s06-q9",
+        "o-s07-q9",
+        "o-s08-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-params-4",
+          "to_id": "q-params-2017",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VOHmin·VILmax).",
+          "evidence": [
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 9; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-params-4",
+          "to_id": "q-params-2016",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VIHmin·VOLmax).",
+          "evidence": [
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 9; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2",
+        "a-s06-p2-o-s06-q9",
+        "a-s06-p2",
+        "a-s07-p3",
+        "a-s08-p3"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "예상문제(2016·2017 기출 변형을 합친 형태). 기출 두 개와 함께 수록"
+    },
+    {
+      "question_id": "q-params-2017",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q5",
+      "occurrence_ids": [
+        "o-s02-q5",
+        "o-s09-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-params-4",
+          "to_id": "q-params-2017",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VOHmin·VILmax).",
+          "evidence": [
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 9; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-params-2017",
+          "to_id": "q-params-2016",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목이 서로 다름(VOHmin·VILmax vs VIHmin·VOLmax).",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q5",
+        "a-s02-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출(2017-1)"
+    },
+    {
+      "question_id": "q-params-2016",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q5",
+      "occurrence_ids": [
+        "o-s01-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-params-4",
+          "to_id": "q-params-2016",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목 수·종류가 다름(4개 vs VIHmin·VOLmax).",
+          "evidence": [
+            {
+              "source_id": "s-cd8d9005a4b82c18",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 9; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-params-2017",
+          "to_id": "q-params-2016",
+          "type": "variant_of",
+          "reason": "요구 파라미터 항목이 서로 다름(VOHmin·VILmax vs VIHmin·VOLmax).",
+          "evidence": [
+            {
+              "source_id": "s-886f91d7155f4ccd",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c940f4bcff5718b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-9c940f4bcff5718b",
+          "reason": "파일명은 ‘2016-1’이고 폴더는 실험2지만 시험지 헤더는 ‘2016-2학기 논리회로실험 실험 3’이다. 두 값을 모두 보존했고 시행 학기·실험 번호를 외부 자료로 확정하지 않았다. 내용은 실험2 CMOS 전기적 특성 문항과 같다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q5",
+        "a-s01-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "읽을 수 있는 고유 기출(2016 헤더본)"
+    },
+    {
+      "question_id": "q-speed",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s06-q10",
+      "occurrence_ids": [
+        "o-s05-q10",
+        "o-s06-q10",
+        "o-s07-q10",
+        "o-s08-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p3",
+        "a-s06-p2-o-s06-q10",
+        "a-s06-p2",
+        "a-s07-p3",
+        "a-s08-p3"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "예상문제. 동작속도 개념 공백 보충. 제공 답안이 없어 정답 미확정"
+    }
+  ]
+}

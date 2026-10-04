@@ -1,0 +1,499 @@
+{
+ "schema_version": 1,
+ "figures": [
+  {
+   "id": "q-region-given-01",
+   "question_id": "q-region",
+   "role": "problem",
+   "svg": "figures/questions/q-region-given-01.svg",
+   "png": "figures/questions/q-region-given-01.png",
+   "svg_sha256": "f21900a038198999aa4c1de5f182b5eed886c295476623d13d6679735226458c",
+   "png_sha256": "2722da5a8ca9cac6e86ceb884e3baf1c6d030b72679087e15ec7e77385cf1091",
+   "w_mm": 130.0,
+   "h_mm": 55.0,
+   "source_asset_ids": [
+    "a-s01-p1-o-s01-q1"
+   ],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 1; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "1"
+    }
+   ],
+   "derivation": "원문 이미지에서 읽은 축·곡선·기호를 직접 도식화했어요. 답(구간 표시, 출력 파형, 식)은 넣지 않았어요. 입력은 GND에서 직선으로 VCC까지 올라 유지되는 모양이고 눈금선은 원문처럼 넣지 않았어요.",
+   "answer_exposure": "none",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rprn-effect-given-01",
+   "question_id": "q-rprn-effect",
+   "role": "problem",
+   "svg": "figures/questions/q-rprn-effect-given-01.svg",
+   "png": "figures/questions/q-rprn-effect-given-01.png",
+   "svg_sha256": "690b1c42e1d5c919a36703c418b25dc96adf04ba68aa025365820e299204f7d4",
+   "png_sha256": "74d5b34c63b81546b4b2e64f89838d0622e918a73887a7663d3211059c0793f8",
+   "w_mm": 90.0,
+   "h_mm": 62.0,
+   "source_asset_ids": [
+    "a-s01-p1-o-s01-q3"
+   ],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 3; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "3"
+    }
+   ],
+   "derivation": "원문 이미지에서 읽은 축·곡선·기호를 직접 도식화했어요. 답(구간 표시, 출력 파형, 식)은 넣지 않았어요. 회로 연결은 VCC–Rp–노드–Rn–GND, 노드–부하, 부하 양 끝 VCC·GND예요.",
+   "answer_exposure": "none",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rp-derive-given-01",
+   "question_id": "q-rp-derive",
+   "role": "problem",
+   "svg": "figures/questions/q-rp-derive-given-01.svg",
+   "png": "figures/questions/q-rp-derive-given-01.png",
+   "svg_sha256": "690b1c42e1d5c919a36703c418b25dc96adf04ba68aa025365820e299204f7d4",
+   "png_sha256": "74d5b34c63b81546b4b2e64f89838d0622e918a73887a7663d3211059c0793f8",
+   "w_mm": 90.0,
+   "h_mm": 62.0,
+   "source_asset_ids": [
+    "a-s02-p1-o-s02-q3"
+   ],
+   "source_refs": [
+    {
+     "source_id": "s-886f91d7155f4ccd",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 3; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "3"
+    }
+   ],
+   "derivation": "원문 이미지에서 읽은 축·곡선·기호를 직접 도식화했어요. 답(구간 표시, 출력 파형, 식)은 넣지 않았어요.",
+   "answer_exposure": "none",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-schmitt-waveform-given-01",
+   "question_id": "q-schmitt-waveform",
+   "role": "problem",
+   "svg": "figures/questions/q-schmitt-waveform-given-01.svg",
+   "png": "figures/questions/q-schmitt-waveform-given-01.png",
+   "svg_sha256": "251324c42fbf986fcc5d0e65dbaed91c211abf3c0b97db6f1125f8882e1ac2d8",
+   "png_sha256": "8793297082038a0654d36a94a87c669728da47ba0173892676cf3ee5ac9d3e0f",
+   "w_mm": 129.0,
+   "h_mm": 60.0,
+   "source_asset_ids": [
+    "a-s02-p1-o-s02-q1"
+   ],
+   "source_refs": [
+    {
+     "source_id": "s-886f91d7155f4ccd",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 1; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "1"
+    }
+   ],
+   "derivation": "원문 이미지에서 읽은 축·곡선·기호를 직접 도식화했어요. 답(구간 표시, 출력 파형, 식)은 넣지 않았어요. 입력 꼭짓점은 원문 이미지의 픽셀에서 읽었고, 세 기준선(2.9, 2.5, 2.1)도 원문 라벨 그대로예요.",
+   "answer_exposure": "none",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-region-solution-01",
+   "question_id": "q-region",
+   "role": "solution",
+   "svg": "figures/solutions/q-region-solution-01.svg",
+   "png": "figures/solutions/q-region-solution-01.png",
+   "svg_sha256": "c9b5f1281828701dff8bbc2acba8532964cf60f6274dc31056ba4d2c12fc71bb",
+   "png_sha256": "ad623f01998a2fd2a4e99167116b0a961399f113b816bb824ceef29d9f797a97",
+   "w_mm": 130.0,
+   "h_mm": 75.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 1; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "1"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 1.5 V와 3.5 V에서 입력이 만나는 점의 시각 t₁, t₂를 직선 위에서 계산했어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-schmitt-noise-solution-01",
+   "question_id": "q-schmitt-noise",
+   "role": "solution",
+   "svg": "figures/solutions/q-schmitt-noise-solution-01.svg",
+   "png": "figures/solutions/q-schmitt-noise-solution-01.png",
+   "svg_sha256": "337d24c00d69d025835fc02435f740410f8f335f0ac9768f3fe4f61c9bdd5310",
+   "png_sha256": "de28e1217a1a43f82c63bb9622649aec3d1a05c74e7eb27fb3b978d4a65edd6a",
+   "w_mm": 120.0,
+   "h_mm": 94.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 2; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "2"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 잡음 예시 입력은 직접 만든 연습 데이터예요(원문 그림 아님).",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rprn-effect-solution-01",
+   "question_id": "q-rprn-effect",
+   "role": "solution",
+   "svg": "figures/solutions/q-rprn-effect-solution-01.svg",
+   "png": "figures/solutions/q-rprn-effect-solution-01.png",
+   "svg_sha256": "719b29b353fe20aedc8dbe7e3979db3ff5322c7993041cc36fa0cccea27b1cf2",
+   "png_sha256": "692f13ff82c262fce74afcb0c8045abb0d0ede4166be7fb792f97e8d2a2efe9c",
+   "w_mm": 150.0,
+   "h_mm": 74.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 3; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "3"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rp-derive-solution-01",
+   "question_id": "q-rp-derive",
+   "role": "solution",
+   "svg": "figures/solutions/q-rp-derive-solution-01.svg",
+   "png": "figures/solutions/q-rp-derive-solution-01.png",
+   "svg_sha256": "20d6faa2e5f1c9e51dc9fe978f449ba07eeae94e0579ea7a9f5afd6f9d99ec09",
+   "png_sha256": "6b2f5f19a1814bd359882e6643e5fc4bba718b6a1456c9d3b769884fff615f28",
+   "w_mm": 105.0,
+   "h_mm": 63.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 4; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "4"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rp-derive-current-solution-01",
+   "question_id": "q-rp-derive-current",
+   "role": "solution",
+   "svg": "figures/solutions/q-rp-derive-current-solution-01.svg",
+   "png": "figures/solutions/q-rp-derive-current-solution-01.png",
+   "svg_sha256": "20d6faa2e5f1c9e51dc9fe978f449ba07eeae94e0579ea7a9f5afd6f9d99ec09",
+   "png_sha256": "6b2f5f19a1814bd359882e6643e5fc4bba718b6a1456c9d3b769884fff615f28",
+   "w_mm": 105.0,
+   "h_mm": 63.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-6d16b68ac54a1ce3",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 3; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "3"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-rn-derive-solution-01",
+   "question_id": "q-rn-derive",
+   "role": "solution",
+   "svg": "figures/solutions/q-rn-derive-solution-01.svg",
+   "png": "figures/solutions/q-rn-derive-solution-01.png",
+   "svg_sha256": "c5702801395b3fb188e9b686017dbcea9189485dbed90953c3b9bbc0e7819968",
+   "png_sha256": "7c8bba627a68e3d8509db09d2c777922f789e2bef64b48dbe6b30e29cd96bc40",
+   "w_mm": 105.0,
+   "h_mm": 63.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-227672800905ee78",
+     "pdf_page": 2,
+     "printed_page": null,
+     "locator": "문항 5; 원문 page 2",
+     "bbox": null,
+     "image_size": null,
+     "question": "5"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-prop-delay-solution-01",
+   "question_id": "q-prop-delay",
+   "role": "solution",
+   "svg": "figures/solutions/q-prop-delay-solution-01.svg",
+   "png": "figures/solutions/q-prop-delay-solution-01.png",
+   "svg_sha256": "bdf3bcdb355aa58cc786fcad162ab096da3ebdaa10b108f33b696cb33bd66bb7",
+   "png_sha256": "421e1e58367173e83398572f160f0db86b830c8f6ca8e62a217c50d4595a052a",
+   "w_mm": 135.0,
+   "h_mm": 66.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-6d16b68ac54a1ce3",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 4; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "4"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 출력은 시간 상수가 같은 지수 곡선이고 50% 지점을 계산해 표시했어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-delay-transition-solution-01",
+   "question_id": "q-delay-transition",
+   "role": "solution",
+   "svg": "figures/solutions/q-delay-transition-solution-01.svg",
+   "png": "figures/solutions/q-delay-transition-solution-01.png",
+   "svg_sha256": "bdf3bcdb355aa58cc786fcad162ab096da3ebdaa10b108f33b696cb33bd66bb7",
+   "png_sha256": "421e1e58367173e83398572f160f0db86b830c8f6ca8e62a217c50d4595a052a",
+   "w_mm": 135.0,
+   "h_mm": 66.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-886f91d7155f4ccd",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 4; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "4"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 출력은 시간 상수가 같은 지수 곡선이고 50% 지점을 계산해 표시했어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-transition-solution-01",
+   "question_id": "q-transition",
+   "role": "solution",
+   "svg": "figures/solutions/q-transition-solution-01.svg",
+   "png": "figures/solutions/q-transition-solution-01.png",
+   "svg_sha256": "bdf3bcdb355aa58cc786fcad162ab096da3ebdaa10b108f33b696cb33bd66bb7",
+   "png_sha256": "421e1e58367173e83398572f160f0db86b830c8f6ca8e62a217c50d4595a052a",
+   "w_mm": 135.0,
+   "h_mm": 66.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-227672800905ee78",
+     "pdf_page": 2,
+     "printed_page": null,
+     "locator": "문항 7; 원문 page 2",
+     "bbox": null,
+     "image_size": null,
+     "question": "7"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 출력은 시간 상수가 같은 지수 곡선이고 50% 지점을 계산해 표시했어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-speed-solution-01",
+   "question_id": "q-speed",
+   "role": "solution",
+   "svg": "figures/solutions/q-speed-solution-01.svg",
+   "png": "figures/solutions/q-speed-solution-01.png",
+   "svg_sha256": "56dd8bcae11de1d0e84f3d487a16334be55ca8f7011c916c7213161fe1f17f75",
+   "png_sha256": "bedc17b9c37cb78723da45e9d7d26cd88ab033faee5ca491f616402f4d7f87ed",
+   "w_mm": 135.0,
+   "h_mm": 78.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-227672800905ee78",
+     "pdf_page": 3,
+     "printed_page": null,
+     "locator": "문항 10; 원문 page 3",
+     "bbox": null,
+     "image_size": null,
+     "question": "10"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-schmitt-waveform-solution-01",
+   "question_id": "q-schmitt-waveform",
+   "role": "solution",
+   "svg": "figures/solutions/q-schmitt-waveform-solution-01.svg",
+   "png": "figures/solutions/q-schmitt-waveform-solution-01.png",
+   "svg_sha256": "8c7fb385787708cc17015f1e60974a70fc0d20335bd6e101cc9d08ebbf3dec3d",
+   "png_sha256": "2584010de899a11ce60456ab305b299b2239711dd8b6fd033dc52f80e8481aef",
+   "w_mm": 129.0,
+   "h_mm": 114.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-886f91d7155f4ccd",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 1; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "1"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요. 입력 꼭짓점과 세 기준선에서 교차점을 계산해 출력 파형을 만들었어요(인버터 12번, Schmitt 2번 전이).",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-params-4-solution-01",
+   "question_id": "q-params-4",
+   "role": "solution",
+   "svg": "figures/solutions/q-params-4-solution-01.svg",
+   "png": "figures/solutions/q-params-4-solution-01.png",
+   "svg_sha256": "6232e0d08a4879248e727d5ecd4e894c9e4daf52669854f1222427fe5733bdee",
+   "png_sha256": "072e0c73b769276ca24092fbcea553a912165a9c863f529de72a1483ba4fad79",
+   "w_mm": 130.0,
+   "h_mm": 81.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-227672800905ee78",
+     "pdf_page": 2,
+     "printed_page": null,
+     "locator": "문항 9; 원문 page 2",
+     "bbox": null,
+     "image_size": null,
+     "question": "9"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-params-2017-solution-01",
+   "question_id": "q-params-2017",
+   "role": "solution",
+   "svg": "figures/solutions/q-params-2017-solution-01.svg",
+   "png": "figures/solutions/q-params-2017-solution-01.png",
+   "svg_sha256": "6232e0d08a4879248e727d5ecd4e894c9e4daf52669854f1222427fe5733bdee",
+   "png_sha256": "072e0c73b769276ca24092fbcea553a912165a9c863f529de72a1483ba4fad79",
+   "w_mm": 130.0,
+   "h_mm": 81.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-886f91d7155f4ccd",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 5; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "5"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  },
+  {
+   "id": "q-params-2016-solution-01",
+   "question_id": "q-params-2016",
+   "role": "solution",
+   "svg": "figures/solutions/q-params-2016-solution-01.svg",
+   "png": "figures/solutions/q-params-2016-solution-01.png",
+   "svg_sha256": "6232e0d08a4879248e727d5ecd4e894c9e4daf52669854f1222427fe5733bdee",
+   "png_sha256": "072e0c73b769276ca24092fbcea553a912165a9c863f529de72a1483ba4fad79",
+   "w_mm": 130.0,
+   "h_mm": 81.0,
+   "source_asset_ids": [],
+   "source_refs": [
+    {
+     "source_id": "s-9c940f4bcff5718b",
+     "pdf_page": 1,
+     "printed_page": null,
+     "locator": "문항 5; 원문 page 1",
+     "bbox": null,
+     "image_size": null,
+     "question": "5"
+    }
+   ],
+   "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 그림을 직접 그렸어요.",
+   "answer_exposure": "present",
+   "review_status": "pass",
+   "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 기호, 연결, 곡선과 라벨을 원문 조건 또는 직접 도출한 값과 대조했어요."
+  }
+ ]
+}
