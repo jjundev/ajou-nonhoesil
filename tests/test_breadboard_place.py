@@ -234,6 +234,66 @@ class Plan(unittest.TestCase):
         self.assertNotIn(self.base, calls)
         self.assertEqual(sum(1 for r in got['rows'] if r['status'] == '✔ 고름'), 1)
 
+    def test_병렬_실측은_라운드마다_한_묶음(self):
+        """`mapper` 로 받은 실측은 라운드마다 한 번에 — 1라운드 묶음에는 기준도 든다."""
+        batches = []
+
+        def mapper(fn, items):
+            batches.append((fn, len(items)))
+            return [fn(x) for x in items]
+
+        def measure(lay):
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+        self.mod.place_plan(self.module(), top=4, measure=measure, verify=lambda lay: None,
+                            mapper=mapper, chunk=3)
+        self.assertEqual(batches[0], (measure, 5))
+
+    def test_verify_묶음에서는_통과한_것_중_가장_짧은_것(self):
+        """`chunk` 개씩 함께 verify 하고 통과한 것 중 길이 순 첫째를 고른다 — chunk=1 과 같은 답."""
+        key = self.mod.layout_key
+        batches, calls = [], []
+
+        def mapper(fn, items):
+            batches.append((fn, len(items)))
+            return [fn(x) for x in items]
+
+        def measure(lay):
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+
+        def verify(lay):
+            calls.append(key(lay))
+            return 'R3 가림' if len(calls) == 1 else None
+        got = self.mod.place_plan(self.module(), top=100, measure=measure, verify=verify,
+                                  mapper=mapper, chunk=3)
+        self.assertEqual([n for fn, n in batches if fn is verify], [3])
+        self.assertEqual(key(got['layout']), calls[1])
+        status = {key(r['layout']): r['status'] for r in got['rows']}
+        self.assertEqual(status[calls[0]], 'verify: R3 가림')
+        self.assertEqual(status[calls[1]], '✔ 고름')
+        self.assertEqual(status[calls[2]], '통과 — 더 짧은 것을 고름')
+
+    def test_실측과_verify_는_늘_mapper_로(self):
+        """작업 프로세스에만 상태가 있으니 기준의 마지막 verify 도 mapper 를 거친다."""
+        inside = []
+
+        def mapper(fn, items):
+            inside.append(True)
+            try:
+                return [fn(x) for x in items]
+            finally:
+                inside.pop()
+
+        def measure(lay):
+            assert inside, 'mapper 밖에서 실측'
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+
+        def verify(lay):
+            assert inside, 'mapper 밖에서 verify'
+            return None if lay == self.base else 'R2 겹침'
+        got = self.mod.place_plan(self.module(), top=2, measure=measure, verify=verify,
+                                  mapper=mapper, chunk=2)
+        self.assertEqual(got['layout'], self.base)
+
     def test_후보가_없으면_기준(self):
         m = self.module()
         m.SLOTS = ('K1', 'K2')
@@ -354,6 +414,25 @@ class SearchCli(unittest.TestCase):
         self.assertEqual(got_args, [3])
         self.assertEqual(mod.read_place_report(d / mod.PLACE_REPORT), {'hash': 'abc', 'layout': _LAY})
 
+
+    def test_jobs_면_프로세스_풀로_실측과_verify_를_나눈다(self):
+        from scripts.lab import place_search as ps
+        mod = _load()
+        result = {'hash': 'abc', 'layout': _LAY,
+                  'rows': [dict(rank='기준', proxy=None, layout=_LAY, length=1.0, bends=0,
+                                density=0.0, status='✔ 고름')]}
+        got = {}
+
+        def fake_plan(board, top, **kw):
+            got.update(kw)
+            return result
+        mod.place_plan = fake_plan
+        d = Path(tempfile.mkdtemp())
+        ps.run(mod, SimpleNamespace(), d / '배치.py', 3, jobs=4)
+        self.assertEqual(got['chunk'], 4)
+        self.assertIs(got['measure'], ps.worker_measure)
+        self.assertIs(got['verify'], ps.worker_verify)
+        self.assertTrue(callable(got['mapper']))
 
 class InputRows(unittest.TestCase):
     """입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면 점퍼가 옆 행으로 비켜 사선이 된다 — 후보에서 뺀다

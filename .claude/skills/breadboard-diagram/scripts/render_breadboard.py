@@ -3235,8 +3235,12 @@ def place_module_hash(module):
     return place_hash(module.PLACE, module.SLOTS, getattr(module, 'GMIN', PLACE_GMIN))
 
 
+def _serial_map(fn, items):
+    return [fn(x) for x in items]
+
+
 def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=None,
-               measure=None, verify=None):
+               measure=None, verify=None, mapper=None, chunk=1):
     """주차 모듈의 칩 행·LED 행·브리지 행을 고른다.
 
     1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
@@ -3245,6 +3249,9 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
        단계 사슬 전부) 해 처음 통과한 것을 고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을
        때만 기준을 verify 해 고른다 — 기준이 1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(2026-10-05
        사용자). 기준보다 긴 배치는 고르지 않는다(N1).
+    병렬: `mapper(fn, items) -> [fn(x)…]`(기본 차례대로) 로 라운드마다 실측을 한 묶음에 돌리고(1라운드
+    묶음에 기준도 든다), verify 는 길이 순으로 `chunk` 개씩 함께 돌려 통과한 것 중 가장 짧은 것을 고른다
+    — chunk=1 과 같은 답이다. `place_search --jobs` 가 프로세스 풀을 넘긴다(2026-10-05 사용자).
     돌려주는 값 {'hash', 'layout', 'rows'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
     'length', 'bends', 'density' | 'blocked', 'status'}."""
     circuits, slots = list(module.PLACE), tuple(module.SLOTS)
@@ -3259,31 +3266,42 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
             return place_verify(module, lay, tmp)
     ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
                      if r is not None), key=lambda r: (r[0], layout_key(r[1])))
-    base = dict(rank='기준', proxy=None, layout=module.LAYOUT, **measure(module.LAYOUT))
-    if 'blocked' in base:
-        raise AssertionError(f"기준 LAYOUT 이 막힌다 — {base['blocked']}")
-    rows, chosen, seen = [base], None, {layout_key(module.LAYOUT)}
-    limit = base['density'] + 1e-9
+    mapper = mapper or _serial_map
+    base, rows, chosen, seen = None, [], None, {layout_key(module.LAYOUT)}
     for r in range(rounds):
+        todo = [] if base else [dict(rank='기준', proxy=None, layout=module.LAYOUT)]
         for i in range(r * top, min((r + 1) * top, len(ranked))):
             proxy, lay = ranked[i]
             if layout_key(lay) in seen:
                 continue
             seen.add(layout_key(lay))
-            rows.append(dict(rank=i + 1, proxy=round(proxy), layout=lay, **measure(lay)))
+            todo.append(dict(rank=i + 1, proxy=round(proxy), layout=lay))
+        for x, m in zip(todo, mapper(measure, [x['layout'] for x in todo])):
+            x.update(m)
+        rows += todo
+        if base is None:
+            base = rows[0]
+            if 'blocked' in base:
+                raise AssertionError(f"기준 LAYOUT 이 막힌다 — {base['blocked']}")
+            limit = base['density'] + 1e-9
         ok = sorted((x for x in rows[1:] if 'blocked' not in x and 'status' not in x
                      and x['density'] <= limit and x['length'] < base['length']),
                     key=lambda x: (x['length'], x['density'], layout_key(x['layout'])))
-        for x in ok:
-            why = verify(x['layout'])
-            x['status'] = '✔ 고름' if why is None else f'verify: {why}'
-            if why is None:
-                chosen = x
+        for j in range(0, len(ok), chunk):
+            part = ok[j:j + chunk]
+            for x, why in zip(part, mapper(verify, [x['layout'] for x in part])):
+                if why is not None:
+                    x['status'] = f'verify: {why}'
+                elif chosen is None:
+                    x['status'], chosen = '✔ 고름', x
+                else:
+                    x['status'] = '통과 — 더 짧은 것을 고름'
+            if chosen is not None:
                 break
         if chosen is not None:
             break
     if chosen is None:
-        why = verify(base['layout'])
+        why = mapper(verify, [base['layout']])[0]
         base['status'] = '✔ 고름' if why is None else f'verify: {why}'
         if why is None:
             chosen = base
