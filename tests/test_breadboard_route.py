@@ -8,6 +8,7 @@ import importlib.util
 import json
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
@@ -48,6 +49,50 @@ class RoutePlanBoard(unittest.TestCase):
         mod = _load()
         with self.assertRaisesRegex(ValueError, 'v2'):
             mod.route_plan(lambda bb, stage, superset=False: None, {}, [], board='v1')
+
+
+class Metrics(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_붙어_달리는_정도(self):
+        c = self.mod._crowding
+        self.assertEqual(c(('v', 0, 0, 100), ('h', 0, 0, 100), 19), 0)         # 축이 다르다
+        self.assertEqual(c(('v', 0, 0, 100), ('v', 0, 0, 100), 19), 0)         # 포개짐은 R4 몫
+        self.assertEqual(c(('v', 0, 0, 100), ('v', 19, 0, 100), 19), 0)        # 1칸 떨어지면 0
+        self.assertAlmostEqual(c(('v', 0, 0, 100), ('v', 9.5, 50, 200), 19), 25)  # 겹침 50 × 0.5
+
+    def test_지표(self):
+        bb = SimpleNamespace(spec=SimpleNamespace(row_pitch=19.0), _segments=[
+            ('sig', [(0, 0), (0, 190)], 'a'),
+            ('mid', [(9.5, 0), (9.5, 95), (50, 95)], 'b'),
+            ('gnd', [(4, 0), (4, 190)], '전원은 안 센다'),
+        ])
+        m = self.mod.wire_metrics(bb)
+        self.assertAlmostEqual(m['length'], (190 + 95 + 40.5) / 19)
+        self.assertEqual(m['bends'], 1)
+        self.assertAlmostEqual(m['density'], 95 * 0.5 / 19)
+
+    def test_사선은_밀도에_안_든다(self):
+        bb = SimpleNamespace(spec=SimpleNamespace(row_pitch=19.0), _segments=[
+            ('sig', [(0, 0), (30, 40)], '사선'),
+            ('sig', [(5, 0), (35, 40)], '사선'),
+        ])
+        m = self.mod.wire_metrics(bb)
+        self.assertAlmostEqual(m['length'], 100 / 19)
+        self.assertEqual(m['density'], 0)
+
+    def test_같은_선_안은_안_센다(self):
+        bb = SimpleNamespace(spec=SimpleNamespace(row_pitch=19.0), _segments=[
+            ('sig', [(0, 0), (0, 100), (6, 100), (6, 0)], 'U자'),
+        ])
+        self.assertEqual(self.mod.wire_metrics(bb)['density'], 0)
+
+    def test_새_경로의_밀도_증분(self):
+        placed = [('v', 100, 0, 200)]
+        self.assertAlmostEqual(self.mod._density_cost(((105, 0), (105, 200)), placed, 19),
+                               200 * (1 - 5 / 19))
 
 
 if __name__ == '__main__':

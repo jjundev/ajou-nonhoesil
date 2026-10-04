@@ -2867,6 +2867,51 @@ def draw_routed(bb, wires, plans, stage):
             continue
         bb.step_wire(p, kind, desc, marker_at=m)
 
+def _axis_segs(pts):
+    """축 정렬 구간만 [(축, 고정 좌표, lo, hi)] 로. 사선 구간은 밀도에서 뺀다."""
+    out = []
+    for a, b in zip(pts, pts[1:]):
+        if abs(a[0] - b[0]) < .5:
+            out.append(('v', a[0], min(a[1], b[1]), max(a[1], b[1])))
+        elif abs(a[1] - b[1]) < .5:
+            out.append(('h', a[1], min(a[0], b[0]), max(a[0], b[0])))
+    return out
+
+
+def _crowding(sa, sb, pitch):
+    """두 축 구간이 1칸보다 가깝게 나란히 달린 정도(px) — 겹친 길이 × (1 − 간격/칸). 간격 0 은
+    포개짐이라 R4 가 따로 본다. 2026-10-04 사용자: 빽빽함 = 가까운 평행선, 가까울수록 무겁게."""
+    if sa[0] != sb[0]:
+        return 0.0
+    gap = abs(sa[1] - sb[1])
+    if gap <= .5 or gap >= pitch:
+        return 0.0
+    over = min(sa[3], sb[3]) - max(sa[2], sb[2])
+    return over * (1 - gap / pitch) if over > 0 else 0.0
+
+
+def _density_cost(path, placed, pitch):
+    """새 경로가 이미 깔린 신호선 구간(`_axis_segs` 꼴) 옆을 얼마나 붙어 달리는가(px)."""
+    return sum(_crowding(s, t, pitch) for s in _axis_segs(path) for t in placed)
+
+
+def _placed_signal_segs(bb):
+    return [s for kind, pts, _d in bb._segments if kind in ('sig', 'mid') for s in _axis_segs(pts)]
+
+
+def wire_metrics(bb):
+    """신호선(sig·mid)의 길이(칸)·꺾임·밀도(칸). 밀도는 서로 다른 두 선의 구간 쌍마다 `_crowding`
+    을 더한다 — 한 선 안의 구간끼리는 안 센다. 전원·GND·브리지는 안 본다."""
+    p = bb.spec.row_pitch
+    wires = [pts for kind, pts, _d in bb._segments if kind in ('sig', 'mid')]
+    segs = [_axis_segs(pts) for pts in wires]
+    length = sum(math.dist(a, b) for pts in wires for a, b in zip(pts, pts[1:]))
+    bends = sum(max(len(pts) - 2, 0) for pts in wires)
+    dens = sum(_crowding(s, t, p)
+               for i in range(len(segs)) for j in range(i + 1, len(segs))
+               for s in segs[i] for t in segs[j])
+    return {'length': length / p, 'bends': bends, 'density': dens / p}
+
 
 # ---------------------------------------------------------------------------
 # 주차 결선 파일 — `보고서/실험NN/결선도/배치.py`
