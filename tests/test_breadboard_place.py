@@ -296,5 +296,29 @@ class Paths(unittest.TestCase):
         self.assertEqual(calls[0][2], mod.DENSITY_WEIGHT)
 
 
+class TrialInterface(unittest.TestCase):
+    """시험판이 배치 계약(PLACE·SLOTS·LAYOUT)을 따른다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
+
+    def test_PLACE_는_두_회로다(self):
+        self.assertEqual([c.name for c in self.board.PLACE], ['mux', 'dmux'])
+        for c in self.board.PLACE:
+            self.mod.place_check(c)
+
+    def test_LED_끝은_태그다(self):
+        ends = {e for c in self.board.PLACE for w in c.wires for e in (w[3], w[4]) if e[0] == 'LED'}
+        self.assertTrue(ends)
+        self.assertTrue(all(isinstance(e[1], str) for e in ends), ends)
+
+    def test_LAYOUT_은_JSON_꼴이다(self):
+        import json
+        self.assertEqual(json.loads(json.dumps(self.board.LAYOUT)), self.board.LAYOUT)
+        self.assertEqual(set(self.board.LAYOUT['slots']), set(self.board.SLOTS))
+
+
 if __name__ == '__main__':
     unittest.main()

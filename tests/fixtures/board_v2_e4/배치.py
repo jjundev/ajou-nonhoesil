@@ -5,10 +5,12 @@
 # 바꾸지 않고, 쪽을 바꿔야 하는 신호는 **같은 칩 안에서** 이어 가거나 n.c. 핀·미사용 게이트
 # 입력을 중계로 거친다. 교안 핀 번호는 그 때문에 바뀐다(승인본 netlist 와 다르다).
 #
-#   K1 좌 5행  : 74HC04 (U4)
-#   K2 좌 17행 : 74HC20 (U1) / 74HC11 (U5)
-#   K3 좌 29행 : 74HC20 (U2) / 비움
-#   K4 좌 41행 : 74HC20 (U3) / 74HC11 (U6)
+#   K1 : 74HC04 (U4)
+#   K2 : 74HC20 (U1) / 74HC11 (U5)
+#   K3 : 74HC20 (U2) / 비움
+#   K4 : 74HC20 (U3) / 74HC11 (U6)
+#   행은 `LAYOUT` — 배치기(`python -m scripts.lab.place_search tests/fixtures/board_v2_e4/배치.py`)가
+#   고른 값을 옮겨 적는다(SKILL §4). 손으로 고치지 않는다 — PlaceEnforced 가 `배치탐색.md` 와 맞댄다.
 #
 # **경로는 손으로 찍지 않는다.** 배선표(어느 핀을 어느 핀에)만 적고, 경로는 엔진 `route_plan()` 이
 # R3(끝점이 선 아래)·R4(같은 축 포개짐)·R6(자기 스트립 안 구간)과 같은 식으로 골라 낸다.
@@ -16,65 +18,67 @@
 # 가로는 **반 행**(두 행 사이), 세로는 **홀 열 사이**나 여백 차선을 탄다. 경로는 회로마다 한 번,
 # 모든 단계의 선을 한 판에 올린 superset 판에서 정하고 단계 그림은 그 경로를 그대로 쓴다 —
 # 단계마다 경로가 달라지면 기준선 회색 선과 새 선이 어긋난다.
-import functools
-
 from render_breadboard import (BreadboardRenderer, _input_jumper, fresh_board, removal_board,
-                               route_plan, draw_routed, _dip_pin_row as _pin_row, _dip_side as _side)
+                               PlaceCircuit, place_chips, place_paths, draw_routed,
+                               _dip_pin_row as _pin_row, _dip_side as _side)
 
 BOARD = 'v2'
-K1, K2, K3, K4 = 5, 17, 29, 41
-LED_TOP = (19, 23, 27, 43)            # DMUX 우 a 열 LED1~4 사슬 윗행 — Y0·Y3 이 곧게 건넌다
-MUX_LED_TOP = (47, 51, 55, 59)        # MUX — LED1 이 Y(U3 pin 8, 47행)와 같은 행
+SLOTS = ('K1', 'K2', 'K3', 'K4')
+LAYOUT = {'slots': {'K1': 5, 'K2': 17, 'K3': 29, 'K4': 41},
+          'leds': {'mux': {'L1': 47, 'L2': 51, 'L3': 55, 'L4': 59},
+                   'dmux': {'Y0': 19, 'Y1': 23, 'Y2': 27, 'Y3': 43}},
+          'bridge': [53, 54]}
 
 _INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
                '빨간 +5V 레일로 옮겨 꽂는다.')
 
 
-def _frame(bb):
+def _frame(bb, layout):
     """잭 → 좌 바깥 레일, 좌 바깥 → 가운데 브리지 두 가닥(SKILL §2b). 우 바깥 레일은 안 쓴다."""
     L = bb.cols['left']
+    gnd_row, vcc_row = layout['bridge']
     bb.connect_jacks()
-    bb.bridge_rails(L['gnd'], L['mid_gnd'], 53, kind='gnd')
-    bb.bridge_rails(L['vcc'], L['mid_vcc'], 54, kind='vcc')
+    bb.bridge_rails(L['gnd'], L['mid_gnd'], gnd_row, kind='gnd')
+    bb.bridge_rails(L['vcc'], L['mid_vcc'], vcc_row, kind='vcc')
 
 
 # ---------------- C1 4x1 MUX ----------------
 
-_MUX_CHIPS = {'U4': K1, 'U1': K2, 'U2': K3, 'U3': K4}
-_ML = MUX_LED_TOP
+_MUX_SLOTS = {'U4': 'K1', 'U1': 'K2', 'U2': 'K3', 'U3': 'K4'}
+_MUX_MODELS = {'U4': '74HC04', 'U1': '74HC20', 'U2': '74HC20', 'U3': '74HC20'}
 # 인버터: S0 = 게이트 3 (5→6, a), S1 = 게이트 4 (9→8, f), E = 게이트 6 (13→12, f).
 # 앞단: U1 A = D0 항, U1 B = D1 항, U2 A = D2 항, U2 B = D3 항. 합류: U3 **게이트 B**(→ pin 8, f쪽).
 # 임시 급전선(끝 단계가 있는 줄)은 superset 판에 함께 올려 경로를 정한다 — 완성본에는 안 그린다.
 # 인버터 임시선은 E'·S0'·S1' 행 순서(7·10·11)대로 LED1·2·3 이고 4걷기에서 뽑는다(R10).
 _MUX_WIRES = [
-    (1, 3, 'sig', ('U4', 12), ('LED', _ML[0]), "임시 급전: E' = U4 pin 12 -> LED1 (4걷기에서 뽑는다)"),
-    (2, 3, 'sig', ('U4', 8), ('LED', _ML[2]), "임시 급전: S1' = U4 pin 8 -> LED3 (4걷기에서 뽑는다)"),
-    (3, 3, 'sig', ('U4', 6), ('LED', _ML[1]), "임시 급전: S0' = U4 pin 6 -> LED2 (4걷기에서 뽑는다)"),
+    (1, 3, 'sig', ('U4', 12), ('LED', 'L1'), "임시 급전: E' = U4 pin 12 -> LED1 (4걷기에서 뽑는다)"),
+    (2, 3, 'sig', ('U4', 8), ('LED', 'L3'), "임시 급전: S1' = U4 pin 8 -> LED3 (4걷기에서 뽑는다)"),
+    (3, 3, 'sig', ('U4', 6), ('LED', 'L2'), "임시 급전: S0' = U4 pin 6 -> LED2 (4걷기에서 뽑는다)"),
     (4, None, 'sig', ('U4', 6), ('U1', 1), "S0' (U4 pin 6) -> U1 pin 1"),
     (4, None, 'sig', ('U4', 12), ('U1', 12), "E' (U4 pin 12) -> U1 pin 12"),
     (4, None, 'sig', ('U1', 12), ('U1', 4), "E' 이어 감 (U1 pin 12 -> U1 pin 4)"),
     (4, None, 'sig', ('U4', 8), ('U1', 10), "S1' (U4 pin 8) -> U1 pin 10"),
     (4, None, 'sig', ('U1', 10), ('U1', 2), "S1' 이어 감 (U1 pin 10 -> U1 pin 2)"),
-    (4, 7, 'sig', ('U1', 6), ('LED', _ML[0]), '임시 급전: U1 pin 6 -> LED1 (8걷기에서 뽑는다)'),
+    (4, 7, 'sig', ('U1', 6), ('LED', 'L1'), '임시 급전: U1 pin 6 -> LED1 (8걷기에서 뽑는다)'),
     (5, None, 'sig', ('U4', 5), ('U1', 3), 'S0 (U4 pin 5) -> U1 pin 3 (n.c. 중계)'),
     (5, None, 'sig', ('U1', 3), ('U1', 9), 'S0 이어 감 (U1 pin 3 -> U1 pin 9)'),
-    (5, 7, 'sig', ('U1', 8), ('LED', _ML[1]), '임시 급전: U1 pin 8 -> LED2 (8걷기에서 뽑는다)'),
+    (5, 7, 'sig', ('U1', 8), ('LED', 'L2'), '임시 급전: U1 pin 8 -> LED2 (8걷기에서 뽑는다)'),
     (6, None, 'sig', ('U4', 6), ('U2', 1), "S0' (U4 pin 6) -> U2 pin 1"),
     (6, None, 'sig', ('U4', 12), ('U2', 12), "E' (U4 pin 12) -> U2 pin 12"),
     (6, None, 'sig', ('U2', 12), ('U2', 4), "E' 이어 감 (U2 pin 12 -> U2 pin 4)"),
     (6, None, 'sig', ('U4', 9), ('U2', 10), 'S1 (U4 pin 9) -> U2 pin 10'),
     (6, None, 'sig', ('U2', 10), ('U2', 2), 'S1 이어 감 (U2 pin 10 -> U2 pin 2)'),
-    (6, 7, 'sig', ('U2', 6), ('LED', _ML[2]), '임시 급전: U2 pin 6 -> LED3 (8걷기에서 뽑는다)'),
+    (6, 7, 'sig', ('U2', 6), ('LED', 'L3'), '임시 급전: U2 pin 6 -> LED3 (8걷기에서 뽑는다)'),
     (7, None, 'sig', ('U4', 5), ('U2', 3), 'S0 (U4 pin 5) -> U2 pin 3 (n.c. 중계)'),
     (7, None, 'sig', ('U2', 3), ('U2', 9), 'S0 이어 감 (U2 pin 3 -> U2 pin 9)'),
-    (7, 7, 'sig', ('U2', 8), ('LED', _ML[3]), '임시 급전: U2 pin 8 -> LED4 (8걷기에서 뽑는다)'),
+    (7, 7, 'sig', ('U2', 8), ('LED', 'L4'), '임시 급전: U2 pin 8 -> LED4 (8걷기에서 뽑는다)'),
     (8, None, 'mid', ('U1', 8), ('U3', 12), "(E'·S1'·S0·D1)' (U1 pin 8) -> U3 pin 12"),
     (8, None, 'mid', ('U2', 8), ('U3', 9), "(E'·S1·S0·D3)' (U2 pin 8) -> U3 pin 9"),
     (8, None, 'mid', ('U1', 6), ('U3', 3), "(E'·S1'·S0'·D0)' (U1 pin 6) -> U3 pin 3 (n.c. 중계)"),
     (8, None, 'mid', ('U3', 3), ('U3', 13), '이어 감 (U3 pin 3 -> U3 pin 13)'),
     (8, None, 'mid', ('U2', 6), ('U3', 1), "(E'·S1·S0'·D2)' (U2 pin 6) -> U3 pin 1 (미사용 입력 중계)"),
     (8, None, 'mid', ('U3', 1), ('U3', 10), '이어 감 (U3 pin 1 -> U3 pin 10)'),
-    (8, None, 'sig', ('U3', 8), ('LED', _ML[0]), 'Y = U3 pin 8 -> LED1'),
+    (8, None, 'sig', ('U3', 8), ('LED', 'L1'), 'Y = U3 pin 8 -> LED1'),
 ]
 _MUX_INPUTS = [(1, 'E', 'U4', 13), (2, 'S1', 'U4', 9), (3, 'S0', 'U4', 5),
                (4, 'D0', 'U1', 5), (5, 'D1', 'U1', 13), (6, 'D2', 'U2', 5), (7, 'D3', 'U2', 13)]
@@ -86,38 +90,39 @@ def _mark_nc(bb, k, pins):
                                  'block': 'left', 'pin1_row': k})
 
 
-def _mux_fixed(bb, stage, superset=False):
-    R = bb.cols['right']
-    bb.draw_chip('74HC04', K1)
-    for k in (K2, K3, K4):
-        bb.draw_chip('74HC20', k)
-    _frame(bb)
-    for k in (K1, K2, K3, K4):
-        bb.connect_power(k, gnd_col='a')
+def _mux_fixed(bb, stage, superset=False, layout=None):
+    lay = layout or LAYOUT
+    R, k, leds = bb.cols['right'], place_chips(MUX, lay), lay['leds']['mux']
+    bb.draw_chip('74HC04', k['U4'])
+    for u in ('U1', 'U2', 'U3'):
+        bb.draw_chip('74HC20', k[u])
+    _frame(bb, lay)
+    for u in ('U4', 'U1', 'U2', 'U3'):
+        bb.connect_power(k[u], gnd_col='a')
     if superset or (stage is not None and stage < 8):
-        for i, tag in enumerate(('L1', 'L2', 'L3', 'L4')):
-            bb.led_chain(R['a'], _ML[i], tag, '중간 노드 관측 — 임시 급전선은 걷기 그림이 뽑는다',
+        for tag in ('L1', 'L2', 'L3', 'L4'):
+            bb.led_chain(R['a'], leds[tag], tag, '중간 노드 관측 — 임시 급전선은 걷기 그림이 뽑는다',
                          block='right')
     else:
-        bb.led_chain(R['a'], _ML[0], 'Y', 'Y — 진리표 T1 의 Y 열', block='right')
-    _inputs(bb, _MUX_CHIPS, _MUX_INPUTS, stage, superset)
+        bb.led_chain(R['a'], leds['L1'], 'Y', 'Y — 진리표 T1 의 Y 열', block='right')
+    _inputs(bb, k, _MUX_INPUTS, stage, superset)
 
 
-@functools.lru_cache(maxsize=None)
 def _mux_paths(density_weight=None):
-    return route_plan(_mux_fixed, _MUX_CHIPS, _MUX_WIRES, board=BOARD, density_weight=density_weight)
+    return place_paths(MUX, LAYOUT, density_weight)
 
 
 def _mux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 8
     _mux_fixed(bb, stage)
-    draw_routed(bb, _MUX_WIRES, _mux_paths(density_weight), stage)
-    bb.mark_unused_inputs([1, 3, 11], K1, chip='74HC04')
-    bb.mark_unused_outputs([2, 4, 10], K1, chip='74HC04')
-    for k in (K2, K3, K4):
-        _mark_nc(bb, k, (11,))
-    bb.mark_unused_inputs([2, 4, 5], K4, chip='74HC20 (U3)')
-    bb.mark_unused_outputs([6], K4, chip='74HC20 (U3)')
+    draw_routed(bb, MUX.wires, _mux_paths(density_weight), stage)
+    k = place_chips(MUX, LAYOUT)
+    bb.mark_unused_inputs([1, 3, 11], k['U4'], chip='74HC04')
+    bb.mark_unused_outputs([2, 4, 10], k['U4'], chip='74HC04')
+    for u in ('U1', 'U2', 'U3'):
+        _mark_nc(bb, k[u], (11,))
+    bb.mark_unused_inputs([2, 4, 5], k['U3'], chip='74HC20 (U3)')
+    bb.mark_unused_outputs([6], k['U3'], chip='74HC20 (U3)')
     bb.note(_INPUT_NOTE)
 
 
@@ -134,25 +139,26 @@ def build_trial_mux(output_path, template_path=None, stage=None, baseline=None, 
 
 # ---------------- C2 1x4 DMUX ----------------
 
-_DMUX_CHIPS = {'U4': K1, 'U5': K2, 'U6': K4}
+_DMUX_SLOTS = {'U4': 'K1', 'U5': 'K2', 'U6': 'K4'}
+_DMUX_MODELS = {'U4': '74HC04', 'U5': '74HC11', 'U6': '74HC11'}
 # (첫 단계, 끝 단계(임시선만), 색, 출발, 도착, 설명). 순서 = 그리는 순서 = 경로를 정하는 순서.
 _DMUX_WIRES = [
     (1, None, 'sig', ('U4', 9), ('U6', 13), 'S1 (U4 pin 9) -> U6 pin 13'),
-    (1, None, 'sig', ('U6', 12), ('LED', LED_TOP[3]), 'Y3 = U6 pin 12 -> LED4'),
+    (1, None, 'sig', ('U6', 12), ('LED', 'Y3'), 'Y3 = U6 pin 12 -> LED4'),
     (2, None, 'sig', ('U6', 1), ('U5', 3), 'S0 (U6 pin 1) -> U5 pin 3'),
     (2, None, 'sig', ('U4', 8), ('U5', 13), "S1' (U4 pin 8) -> U5 pin 13"),
     (2, None, 'sig', ('U5', 13), ('U5', 4), "S1' 이어 감 (U5 pin 13 -> U5 pin 4)"),
     (2, None, 'sig', ('U6', 2), ('U5', 5), 'D (U6 pin 2) -> U5 pin 5'),
-    (2, None, 'sig', ('U5', 6), ('LED', LED_TOP[1]), 'Y1 = U5 pin 6 -> LED2'),
+    (2, None, 'sig', ('U5', 6), ('LED', 'Y1'), 'Y1 = U5 pin 6 -> LED2'),
     (3, None, 'sig', ('U6', 1), ('U4', 1), 'S0 (U6 pin 1) -> U4 pin 1'),
     (3, None, 'sig', ('U4', 2), ('U5', 2), "S0' (U4 pin 2) -> U5 pin 2"),
     (3, None, 'sig', ('U5', 2), ('U5', 10), "S0' 이어 감 (U5 pin 2 -> U5 pin 10)"),
     (3, None, 'sig', ('U4', 9), ('U5', 9), 'S1 (U4 pin 9) -> U5 pin 9'),
     (3, None, 'sig', ('U6', 2), ('U6', 11), 'D 이어 감 (U6 pin 2 -> U6 pin 11, 미사용 입력 중계)'),
     (3, None, 'sig', ('U6', 11), ('U5', 11), 'D (U6 pin 11) -> U5 pin 11'),
-    (3, None, 'sig', ('U5', 8), ('LED', LED_TOP[2]), 'Y2 = U5 pin 8 -> LED3'),
+    (3, None, 'sig', ('U5', 8), ('LED', 'Y2'), 'Y2 = U5 pin 8 -> LED3'),
     (4, None, 'sig', ('U6', 2), ('U5', 1), 'D (U6 pin 2) -> U5 pin 1'),
-    (4, None, 'sig', ('U5', 12), ('LED', LED_TOP[0]), 'Y0 = U5 pin 12 -> LED1'),
+    (4, None, 'sig', ('U5', 12), ('LED', 'Y0'), 'Y0 = U5 pin 12 -> LED1'),
 ]
 # 입력 점퍼 (단계, 이름, 칩, 핀). 고정물과 함께 경로보다 **먼저** 그린다 — 레일 착지 행이
 # 앞 선에 따라 바뀌지 않게.
@@ -168,32 +174,33 @@ def _inputs(bb, chips, inputs, stage, superset):
                           side=side, col='a' if side == 'a' else 'j')
 
 
-def _dmux_fixed(bb, stage, superset=False):
-    R = bb.cols['right']
-    bb.draw_chip('74HC04', K1)
-    bb.draw_chip('74HC11', K2)
-    bb.draw_chip('74HC11', K4)
-    _frame(bb)
-    for k in (K1, K2, K4):
-        bb.connect_power(k, gnd_col='a')
-    for i, tag in enumerate(('Y0', 'Y1', 'Y2', 'Y3')):
-        bb.led_chain(R['a'], LED_TOP[i], tag, f'{tag} — 진리표 T3 의 {tag} 열', block='right')
-    _inputs(bb, _DMUX_CHIPS, _DMUX_INPUTS, stage, superset)
+def _dmux_fixed(bb, stage, superset=False, layout=None):
+    lay = layout or LAYOUT
+    R, k, leds = bb.cols['right'], place_chips(DMUX, lay), lay['leds']['dmux']
+    bb.draw_chip('74HC04', k['U4'])
+    bb.draw_chip('74HC11', k['U5'])
+    bb.draw_chip('74HC11', k['U6'])
+    _frame(bb, lay)
+    for u in ('U4', 'U5', 'U6'):
+        bb.connect_power(k[u], gnd_col='a')
+    for tag in ('Y0', 'Y1', 'Y2', 'Y3'):
+        bb.led_chain(R['a'], leds[tag], tag, f'{tag} — 진리표 T3 의 {tag} 열', block='right')
+    _inputs(bb, k, _DMUX_INPUTS, stage, superset)
 
 
-@functools.lru_cache(maxsize=None)
 def _dmux_paths(density_weight=None):
-    return route_plan(_dmux_fixed, _DMUX_CHIPS, _DMUX_WIRES, board=BOARD, density_weight=density_weight)
+    return place_paths(DMUX, LAYOUT, density_weight)
 
 
 def _dmux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 4
     _dmux_fixed(bb, stage)
-    draw_routed(bb, _DMUX_WIRES, _dmux_paths(density_weight), stage)
-    bb.mark_unused_inputs([3, 5, 11, 13], K1, chip='74HC04')
-    bb.mark_unused_outputs([4, 6, 10, 12], K1, chip='74HC04')
-    bb.mark_unused_inputs([3, 4, 5, 9, 10], K4, chip='74HC11 (U6)')
-    bb.mark_unused_outputs([6, 8], K4, chip='74HC11 (U6)')
+    draw_routed(bb, DMUX.wires, _dmux_paths(density_weight), stage)
+    k = place_chips(DMUX, LAYOUT)
+    bb.mark_unused_inputs([3, 5, 11, 13], k['U4'], chip='74HC04')
+    bb.mark_unused_outputs([4, 6, 10, 12], k['U4'], chip='74HC04')
+    bb.mark_unused_inputs([3, 4, 5, 9, 10], k['U6'], chip='74HC11 (U6)')
+    bb.mark_unused_outputs([6, 8], k['U6'], chip='74HC11 (U6)')
     bb.note(_INPUT_NOTE)
 
 
@@ -207,6 +214,12 @@ def build_trial_dmux(output_path, template_path=None, stage=None, baseline=None,
     bb.export(output_path, max_row=63)
     return bb
 
+
+MUX = PlaceCircuit('mux', _MUX_SLOTS, _MUX_MODELS, ('L1', 'L2', 'L3', 'L4'), tuple(_MUX_WIRES),
+                   _mux_fixed, tuple((c, p) for _s, _n, c, p in _MUX_INPUTS))
+DMUX = PlaceCircuit('dmux', _DMUX_SLOTS, _DMUX_MODELS, ('Y0', 'Y1', 'Y2', 'Y3'), tuple(_DMUX_WIRES),
+                    _dmux_fixed, tuple((c, p) for _s, _n, c, p in _DMUX_INPUTS))
+PLACE = [MUX, DMUX]
 
 BOARDS = [
     ('trial_e4_mux_1.png', build_trial_mux, 1),
