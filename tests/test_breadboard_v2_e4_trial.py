@@ -88,14 +88,14 @@ class MuxFinal(_Trial):
 
 
 class Readability(_Trial):
-    """읽기 규칙 R11~R13 — 완성본과 단계 그림 전부. 엔진 `verify()` 가 v2 에서 집행하므로
+    """읽기 규칙 R11~R14 — 완성본과 단계 그림 전부. 엔진 `verify()` 가 v2 에서 집행하므로
     그리기만 해도 걸리지만, 판형 스위치가 꺼지면 조용히 안 돌기 때문에 여기서 직접도 본다.
     2026-10-03 사용자: "번호 표시가 배선을 가리고, 배선 끝이 어느 칸에 꽂히는지 모른다"."""
 
     def test_시험판_판형은_읽기_규칙을_돈다(self):
         self.assertTrue(self.mod.board_spec(self.board.BOARD).readability)
 
-    def test_완성본과_단계_그림이_R11_R13_을_지킨다(self):
+    def test_완성본과_단계_그림이_R11_R14_를_지킨다(self):
         bad, base = {}, None
         boards = [(n, f, s) for n, f, s in self.board.BOARDS] + [(n, f, 'final') for n, f in self.board.FINALS]
         for name, fn, stage in boards:
@@ -106,7 +106,8 @@ class Readability(_Trial):
                     base = None
                 bb = fn(os.path.join(self.tmp, name), None, stage=stage, baseline=base)
                 base = bb.snapshot()
-            got = bb.marker_problems() + bb.wires_over_holes() + bb.needless_body_crossings()
+            got = (bb.marker_problems() + bb.wires_over_holes() + bb.needless_body_crossings()
+                   + bb.wires_over_chip_labels())
             if got:
                 bad[name] = got
         self.assertEqual(bad, {}, '\n'.join(f'{k}: {len(v)}건 — {v[:3]}' for k, v in bad.items()))

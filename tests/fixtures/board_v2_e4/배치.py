@@ -18,6 +18,7 @@
 # 단계마다 경로가 달라지면 기준선 회색 선과 새 선이 어긋난다.
 import bisect
 import functools
+import itertools
 import math
 
 from render_breadboard import BreadboardRenderer, _input_jumper, fresh_board, removal_board
@@ -158,6 +159,10 @@ def _valid(bb, path, others_pts, segs):
             return False
         if _axis(a, b) is None:
             return False
+    # 칩 이름 글자 위를 지나지 않는다(엔진 R14) — 이어 가기는 이름 위아래 반 행으로 건넌다
+    for box, _ch in bb.chip_label_boxes:
+        if any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:])):
+            return False
     # 꺾임점이 리드가 있는 홀 위에 앉으면 안 된다
     for c in path[1:-1]:
         h = bb.hole_at(*c)
@@ -181,6 +186,16 @@ def _valid(bb, path, others_pts, segs):
             if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
                     and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
                 return False
+    # 꺾임점이 남의 선에 닿거나 남의 꺾임점이 새 선에 닿지 않는다 — 끝과 끝이 맞닿은 두 선은
+    # 한 가닥으로 읽힌다(2026-10-04, R4 는 2px 이하 겹침을 봐줘서 못 본다)
+    for c in path[1:-1]:           # 끝점(홀)끼리는 R2·단계 겹침을 위에서 따로 본다
+        for _k, pts in segs:
+            if any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts) or                     any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:])):
+                return False
+    for _k, pts in segs:
+        for q in pts[1:-1]:
+            if any(_on_seg(q, a, b, margin=0) for a, b in zip(path, path[1:])):
+                return False
     # 같은 축 포개짐(R4) — 색과 무관하게 8px 로 본다
     for a, b in zip(path, path[1:]):
         ax = _axis(a, b)
@@ -202,11 +217,43 @@ def _valid(bb, path, others_pts, segs):
 
 
 def _route(bb, chips, frm, to):
-    """`frm`→`to` 의 경로. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B] 꼴이다 —
-    y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`. 싼 순으로 보며 첫 합법 경로를 쓴다."""
+    """`frm`→`to` 의 가장 싼 합법 경로와 번호 원 자리."""
+    for found in _routes(bb, chips, frm, to):
+        return found
+    raise AssertionError(f'경로 없음: {frm} -> {to}')
+
+
+def _routes(bb, chips, frm, to):
+    """`frm`→`to` 의 합법 경로를 싼 순으로 낸다. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B]
+    꼴이다 — y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`."""
     led = to[0] == 'LED'
-    half = bb.spec.row_pitch / 2
     srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
+    others = []
+    segs = [(k, pts) for k, pts, _d in bb._segments]
+    for _k, pts, _d in bb._segments:
+        others += [pts[0], pts[-1]]
+    for (x, r), what in bb._leads.items():
+        if '다리' in what or '애노드' in what or '캐소드' in what:
+            others.append((x, bb.r_y(r)))
+    chip_rows = tuple(ch['pin1_row'] for ch in bb.chips)
+    for p in _ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led):
+        if _valid(bb, p, others, segs):
+            p = list(p)
+            m = _marker_spot(bb, p)
+            if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
+                yield p, m
+
+
+_ORDERED = {}
+
+
+def _ordered(bb, chip_rows, srcs, dsts, led):
+    """후보 경로를 싼 순으로 — 덮는 홀이 있는 것은 뺀다. 비용은 칩 자리와 끝 홀에만 달렸고 깔린
+    배선과 무관해서, 수리(`_plan`)가 같은 선을 다시 깔 때 그대로 쓴다."""
+    key = (bb.spec.name, chip_rows, srcs, dsts, led)
+    if key in _ORDERED:
+        return _ORDERED[key]
+    half = bb.spec.row_pitch / 2
     # 가로 통로: 끝 행 그대로, 또는 반 행 위아래로 ±0.5·1.5·…·4.5 행 — 칩 안쪽 통로가 차면
     # 칩 위아래 행을 돌아간다
     ds = (0,) + tuple(s * half * n for n in (1, 3, 5, 7, 9) for s in (-1, 1))
@@ -222,22 +269,12 @@ def _route(bb, chips, frm, to):
                     for X in _lanes(bb, led) + [A[0], B[0]]:
                         p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
                         cands.append(p)
-    others = []
-    segs = [(k, pts) for k, pts, _d in bb._segments]
-    for _k, pts, _d in bb._segments:
-        others += [pts[0], pts[-1]]
-    for (x, r), what in bb._leads.items():
-        if '다리' in what or '애노드' in what or '캐소드' in what:
-            others.append((x, bb.r_y(r)))
     cost = _coster(bb)
     scored = [(cost(p), p) for p in set(map(tuple, cands))]
-    for (over, _c), p in sorted((s for s in scored if s[0][0] == 0), key=lambda s: (s[0][1], s[1])):
-        if _valid(bb, p, others, segs):
-            p = list(p)
-            m = _marker_spot(bb, p)
-            if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
-                return p, m
-    raise AssertionError(f'경로 없음: {frm} -> {to}')
+    out = [p for (_over, _c), p in sorted((s for s in scored if s[0][0] == 0),
+                                          key=lambda s: (s[0][1], s[1]))]
+    _ORDERED[key] = out
+    return out
 
 
 _R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
@@ -273,17 +310,59 @@ def _marker_spot(bb, path):
     return None
 
 
+_REPAIR_BACK, _REPAIR_ALTS = 4, 8   # 막히면 직전 몇 가닥을, 가닥마다 몇 후보까지 바꿔 보는가
+
+
 def _plan(build_fixed, chips, wires):
     """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로와 번호 원 자리를 정한다 — `wires`
-    순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다."""
-    bb = BreadboardRenderer(None, board=BOARD)
-    bb.enable_steps()
-    build_fixed(bb, None, superset=True)
-    plans = []
-    for _s, _e, kind, frm, to, desc in wires:
-        p, m = _route(bb, chips, frm, to)     # 번호 원 자리까지 함께 고른다
-        bb.step_wire(p, kind, desc, marker_at=m)
-        plans.append((p, m))
+    순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다.
+
+    앞 선이 가장 싼 자리를 먼저 가져가 뒤 선이 막히면, 직전 `_REPAIR_BACK` 가닥 중 **한 가닥만**
+    다음 후보로 바꾸고 그 뒤를 다시 깐다. 칩 이름을 피하면(R14) 칩 하나를 건널 수 있는 반 행이
+    pin 1~3·5~7 사이 넷뿐이라, 한 칩 안 이어 가기가 셋이면 싼 자리부터 고르다 막힌다(2026-10-04
+    MUX U1). 아무 데로나 되돌아가는 탐색은 가짓수가 터져 10분을 넘겼다."""
+    def board(upto):
+        bb = BreadboardRenderer(None, board=BOARD)
+        bb.enable_steps()
+        build_fixed(bb, None, superset=True)
+        for (_s, _e, kind, _f, _t, desc), (p, m) in zip(wires, upto):
+            bb.step_wire(p, kind, desc, marker_at=m)
+        return bb
+
+    def greedy(start, upto, stop):
+        """`upto` 뒤로 `stop` 가닥째까지 가장 싼 경로를 깐다. 막히면 None."""
+        bb, plans = board(upto), list(upto)
+        for _s, _e, kind, frm, to, desc in wires[start:stop + 1]:
+            found = next(_routes(bb, chips, frm, to), None)
+            if found is None:
+                return None
+            bb.step_wire(found[0], kind, desc, marker_at=found[1])
+            plans.append(found)
+        return plans
+
+    plans, bb = [], board([])
+    while len(plans) < len(wires):
+        i = len(plans)
+        _s, _e, kind, frm, to, desc = wires[i]
+        found = next(_routes(bb, chips, frm, to), None)
+        if found is not None:
+            bb.step_wire(found[0], kind, desc, marker_at=found[1])
+            plans.append(found)
+            continue
+        for j in range(i - 1, max(-1, i - 1 - _REPAIR_BACK), -1):
+            _s, _e, _k, frm, to, _d = wires[j]
+            alts = itertools.islice(_routes(board(plans[:j]), chips, frm, to), 1, 1 + _REPAIR_ALTS)
+            for alt in alts:
+                more = greedy(j + 1, plans[:j] + [alt], i)
+                if more is not None:
+                    plans = more
+                    break
+            else:
+                continue
+            break
+        else:
+            raise AssertionError(f'경로 없음: {frm} -> {to} ({desc})')
+        bb = board(plans)
     return plans
 
 
@@ -310,19 +389,19 @@ _MUX_WIRES = [
     (2, 3, 'sig', ('U4', 8), ('LED', _ML[2]), "임시 급전: S1' = U4 pin 8 -> LED3 (4걷기에서 뽑는다)"),
     (3, 3, 'sig', ('U4', 6), ('LED', _ML[1]), "임시 급전: S0' = U4 pin 6 -> LED2 (4걷기에서 뽑는다)"),
     (4, None, 'sig', ('U4', 6), ('U1', 1), "S0' (U4 pin 6) -> U1 pin 1"),
-    (4, None, 'sig', ('U4', 8), ('U1', 10), "S1' (U4 pin 8) -> U1 pin 10"),
-    (4, None, 'sig', ('U1', 10), ('U1', 2), "S1' 이어 감 (U1 pin 10 -> U1 pin 2)"),
     (4, None, 'sig', ('U4', 12), ('U1', 12), "E' (U4 pin 12) -> U1 pin 12"),
     (4, None, 'sig', ('U1', 12), ('U1', 4), "E' 이어 감 (U1 pin 12 -> U1 pin 4)"),
+    (4, None, 'sig', ('U4', 8), ('U1', 10), "S1' (U4 pin 8) -> U1 pin 10"),
+    (4, None, 'sig', ('U1', 10), ('U1', 2), "S1' 이어 감 (U1 pin 10 -> U1 pin 2)"),
     (4, 7, 'sig', ('U1', 6), ('LED', _ML[0]), '임시 급전: U1 pin 6 -> LED1 (8걷기에서 뽑는다)'),
     (5, None, 'sig', ('U4', 5), ('U1', 3), 'S0 (U4 pin 5) -> U1 pin 3 (n.c. 중계)'),
     (5, None, 'sig', ('U1', 3), ('U1', 9), 'S0 이어 감 (U1 pin 3 -> U1 pin 9)'),
     (5, 7, 'sig', ('U1', 8), ('LED', _ML[1]), '임시 급전: U1 pin 8 -> LED2 (8걷기에서 뽑는다)'),
     (6, None, 'sig', ('U4', 6), ('U2', 1), "S0' (U4 pin 6) -> U2 pin 1"),
-    (6, None, 'sig', ('U4', 9), ('U2', 10), 'S1 (U4 pin 9) -> U2 pin 10'),
-    (6, None, 'sig', ('U2', 10), ('U2', 2), 'S1 이어 감 (U2 pin 10 -> U2 pin 2)'),
     (6, None, 'sig', ('U4', 12), ('U2', 12), "E' (U4 pin 12) -> U2 pin 12"),
     (6, None, 'sig', ('U2', 12), ('U2', 4), "E' 이어 감 (U2 pin 12 -> U2 pin 4)"),
+    (6, None, 'sig', ('U4', 9), ('U2', 10), 'S1 (U4 pin 9) -> U2 pin 10'),
+    (6, None, 'sig', ('U2', 10), ('U2', 2), 'S1 이어 감 (U2 pin 10 -> U2 pin 2)'),
     (6, 7, 'sig', ('U2', 6), ('LED', _ML[2]), '임시 급전: U2 pin 6 -> LED3 (8걷기에서 뽑는다)'),
     (7, None, 'sig', ('U4', 5), ('U2', 3), 'S0 (U4 pin 5) -> U2 pin 3 (n.c. 중계)'),
     (7, None, 'sig', ('U2', 3), ('U2', 9), 'S0 이어 감 (U2 pin 3 -> U2 pin 9)'),
