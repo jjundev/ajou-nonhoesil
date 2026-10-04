@@ -1203,6 +1203,14 @@ class BreadboardV2Docs(unittest.TestCase):
                   "breadboard_v2/geometry.json", "실험01~04 전용", "tests/fixtures/board_v2/배치.py"):
             self.assertIn(s, text)
 
+    def test_명세_저작_문서가_v2_칩_자리표_규약을_적는다(self):
+        """netlist 칩 자리표는 결선도보다 먼저 쓴다. v2 규약(칩 좌 블록만·LED 우 a 열·LED 구동
+        게이트 f쪽)이 없으면 실험04 v1 처럼 칩을 두 블록에 나눠 적고, 결선도 단계에서 R9 에
+        막혀 netlist 로 되돌아온다(2026-10-04)."""
+        text = DRAFT.read_text(encoding="utf-8")
+        for s in ("BOARD_V2_FROM", "좌 블록", "R9", "우 a 열", "R10", "f쪽(pin 8~14)"):
+            self.assertIn(s, text)
+
     def test_렌더러_문서가_v2_읽기_규칙을_적는다(self):
         """2026-10-03 실험04 v2 시험판 — R1~R10 을 다 통과한 그림을 따라 그릴 수 없었다.
         규칙과 그 배치 요령(반 행·홀 열 사이, 칩 안 이어 가기, n.c. 디딤돌)이 문서에 없으면
