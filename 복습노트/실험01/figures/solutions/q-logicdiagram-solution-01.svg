@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="117.0mm" height="57.0mm" viewBox="0 0 780 380" role="img"><title>(A+B′)′ · (C+D′) 의 논리 다이어그램</title><desc>B를 NOT한 뒤 A와 NOR, D를 NOT한 뒤 C와 OR, 두 결과를 AND</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="780" height="380" fill="white"/><text x="50" y="67" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,60 268,60"/>
+<text x="50" y="127" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,120 120,120"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M120,90 L180,120 L120,150 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="186" cy="120" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="192,120 225,120 225,90 268,90"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M260,45 C295,45 328,53 340,75 C328,97 295,105 260,105 Q282,75 260,45 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="346" cy="75" r="6"/>
+<text x="50" y="247" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,240 268,240"/>
+<text x="50" y="307" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">D</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,300 120,300"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M120,270 L180,300 L120,330 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="186" cy="300" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="192,300 225,300 225,270 268,270"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M260,225 C295,225 328,233 340,255 C328,277 295,285 260,285 Q282,255 260,225 Z"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M480,135 H530 A30,30 0 0 1 530,195 H480 Z"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="352,75 410,75 410,150 480,150"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="340,255 410,255 410,180 480,180"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="560,165 680,165"/>
+<text x="695" y="172" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">F</text>
+<text x="415" y="68" font-size="18" text-anchor="start" font-family="Arial, sans-serif" fill="#222">(A+B′)′</text>
+<text x="415" y="280" font-size="18" text-anchor="start" font-family="Arial, sans-serif" fill="#222">C+D′</text></svg>

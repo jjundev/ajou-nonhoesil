@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108.0mm" height="45.0mm" viewBox="0 0 720 300" role="img"><title>3입력 게이트: OR 다음 NOR</title><desc>A·B가 첫 게이트로, 그 출력과 C가 둘째 게이트로 들어가요</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="720" height="300" fill="white"/><path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,30 C235,30 268,38 280,60 C268,82 235,90 200,90 Q222,60 200,30 Z"/>
+<text x="240" y="112" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC32</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,45 208,45"/>
+<text x="100" y="52" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,75 208,75"/>
+<text x="100" y="82" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="280,60 620,60"/>
+<text x="635" y="67" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">L1</text>
+<circle cx="350" cy="60" r="5.5" fill="#222"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M420,170 C455,170 488,178 500,200 C488,222 455,230 420,230 Q442,200 420,170 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="506" cy="200" r="6"/>
+<text x="460" y="252" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC02</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="350,60 350,185 428,185"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,215 428,215"/>
+<text x="100" y="222" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="512,200 620,200"/>
+<text x="635" y="207" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">L2</text></svg>

@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "q-xor2-tt-given-01",
+      "question_id": "q-xor2-tt",
+      "role": "problem",
+      "svg": "figures/questions/q-xor2-tt-given-01.svg",
+      "png": "figures/questions/q-xor2-tt-given-01.png",
+      "svg_sha256": "64d9fb3f1cdec8e3fd95d51391eb98e4e085ab4d9275cad23cb4e75c3a7d749f",
+      "png_sha256": "e2de255982d017356aa7765ad2acfbefdcce4b8315b2e868451b44be0bb781d0",
+      "w_mm": 78.0,
+      "h_mm": 33.0,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q1"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "원문에서 읽은 기호와 연결을 직접 도식화했어요. 답(식·값)은 넣지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-deq-given-01",
+      "question_id": "q-deq",
+      "role": "problem",
+      "svg": "figures/questions/q-deq-given-01.svg",
+      "png": "figures/questions/q-deq-given-01.png",
+      "svg_sha256": "531f6c404f8d37862e172d90efbf63fd2888a8a9ae6aa0211826941f9da6cb24",
+      "png_sha256": "46eb195c2b2186012916a271445fb72ec103afe9c6baaf26b9d88c239715fa5e",
+      "w_mm": 99.0,
+      "h_mm": 40.5,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문에서 읽은 기호와 연결을 직접 도식화했어요. 답(식·값)은 넣지 않았어요. B에서만 분기하는 점과 D 쪽 반전 원을 원문과 대조했어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-nand3-given-01",
+      "question_id": "q-nand3",
+      "role": "problem",
+      "svg": "figures/questions/q-nand3-given-01.svg",
+      "png": "figures/questions/q-nand3-given-01.png",
+      "svg_sha256": "d7e442a4c480168637119cad9a9197dd95766e0bbe5b5d4bcbdfb47a25605d64",
+      "png_sha256": "6d8b6e26d2b4e2fc927589c7bd8b420d820ecb1542755c56066ad7ad54b73cba",
+      "w_mm": 105.0,
+      "h_mm": 39.0,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문에서 읽은 기호와 연결을 직접 도식화했어요. 답(식·값)은 넣지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-xor-graded-solution-01",
+      "question_id": "q-xor-graded",
+      "role": "solution",
+      "svg": "figures/solutions/q-xor-graded-solution-01.svg",
+      "png": "figures/solutions/q-xor-graded-solution-01.png",
+      "svg_sha256": "8796c192677f739a599a2f54d8418e87240065c25dab0fbe5476fabad0fd61dc",
+      "png_sha256": "7c1fe54c03201647c2195f517dbf8b37ae591b01c8f0c8530e1a31eece83d841",
+      "w_mm": 78.0,
+      "h_mm": 33.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-e1f586ae83ba044a",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1-1·1-2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-deq-solution-01",
+      "question_id": "q-deq",
+      "role": "solution",
+      "svg": "figures/solutions/q-deq-solution-01.svg",
+      "png": "figures/solutions/q-deq-solution-01.png",
+      "svg_sha256": "1b8212d5c52749f64e0bbbb09dc2c51e57f3f2aa16eab2a46768d06d72d2622d",
+      "png_sha256": "d1b79d4135b5a887e71eafd8261cf0f86f030d3e689851ea9e2b3aa681e61b98",
+      "w_mm": 120.0,
+      "h_mm": 49.5,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-logicdiagram-solution-01",
+      "question_id": "q-logicdiagram",
+      "role": "solution",
+      "svg": "figures/solutions/q-logicdiagram-solution-01.svg",
+      "png": "figures/solutions/q-logicdiagram-solution-01.png",
+      "svg_sha256": "fae388a8913e49356624f849f47cf57ec307e1db81f0f7fab410d1b6226d6743",
+      "png_sha256": "583cf840530962728968a8ed409c2bc8b4bad328374d8eb0be1493cb5dc6e261",
+      "w_mm": 117.0,
+      "h_mm": 57.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (4); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "(4)"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-nand-xor-solution-01",
+      "question_id": "q-nand-xor",
+      "role": "solution",
+      "svg": "figures/solutions/q-nand-xor-solution-01.svg",
+      "png": "figures/solutions/q-nand-xor-solution-01.png",
+      "svg_sha256": "3771da9a769ecb08a836745b4f0b65d647175dec9c4d93b5c13f04eb66c46f27",
+      "png_sha256": "d096c39a37f73e32a0636e0924380e4083e13264fe61555b13d8c032131201c8",
+      "w_mm": 135.0,
+      "h_mm": 60.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-79f4f8b678ea622f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (3); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "(3)"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-nand3-solution-01",
+      "question_id": "q-nand3",
+      "role": "solution",
+      "svg": "figures/solutions/q-nand3-solution-01.svg",
+      "png": "figures/solutions/q-nand3-solution-01.png",
+      "svg_sha256": "6dd861e0a013b77a6bdfc05737c0b8a0aa9c55e63ed47cfc14345e63f79aa609",
+      "png_sha256": "38c4a8ac3261a74f8cb0b46af44136ee5a7dd05c70fc53109065afeef3fac187",
+      "w_mm": 123.0,
+      "h_mm": 45.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-nor3-or-inv-solution-01",
+      "question_id": "q-nor3-or-inv",
+      "role": "solution",
+      "svg": "figures/solutions/q-nor3-or-inv-solution-01.svg",
+      "png": "figures/solutions/q-nor3-or-inv-solution-01.png",
+      "svg_sha256": "8673ebc6825e1cf08f4ed3beffc59fa5ee6be799234235599b21bb80de95d3b6",
+      "png_sha256": "896fdd5308f35beed8f1f22b54b4bd2c8531a25b0a9fd93720c51ba8cf2d9d01",
+      "w_mm": 117.0,
+      "h_mm": 40.5,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-e1f586ae83ba044a",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    },
+    {
+      "id": "q-cmos-nand3-solution-01",
+      "question_id": "q-cmos-nand3",
+      "role": "solution",
+      "svg": "figures/solutions/q-cmos-nand3-solution-01.svg",
+      "png": "figures/solutions/q-cmos-nand3-solution-01.png",
+      "svg_sha256": "d750f9be6dd081ca4e2f7f385463bdfc552decd0728dbd8736bcd1e057136a96",
+      "png_sha256": "82a3d8748eff0baf1b783675c236e1b91e013be723ddb7a47545ed11bb75e056",
+      "w_mm": 114.0,
+      "h_mm": 90.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (5); 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "(5)"
+        }
+      ],
+      "derivation": "원문 조건과 직접 도출한 답을 바탕으로 풀이용 완성 회로를 직접 그렸어요. 원문 증거가 아니에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "SVG와 300dpi PNG를 직접 확인했어요. 게이트 종류, 반전 원, 분기점, 연결을 원문 조건 또는 직접 도출한 식과 대조했어요."
+    }
+  ]
+}

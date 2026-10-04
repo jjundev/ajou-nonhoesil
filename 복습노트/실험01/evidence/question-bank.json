@@ -1,0 +1,5695 @@
+{
+  "schema": "logic-lab-question-bank",
+  "schema_version": 1,
+  "bank_id": "bank-exp01",
+  "experiment": 1,
+  "sources": [
+    {
+      "id": "s-79f4f8b678ea622f",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 기출_단답형.pdf",
+      "sha256": "1c0b46fb27ac48dfd1a5d1895eec1f9f0535b342db4ed5bc5e0a05016f5d763d",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-99473e7d541532a1",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 기출_문제.pdf",
+      "sha256": "76791d1334227197b8b53f9fb75a98e4347b3d07ddb9a658c38fdb8e4d2fb4a5",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-3b893e4e1daf844f",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 기출_정답.pdf",
+      "sha256": "a47102ea0df0f6d95e10228b902384ead19f554812e8b83f8961f679fe907fe5",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 1
+    },
+    {
+      "id": "s-e1f586ae83ba044a",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 기출_채점본.jpg",
+      "sha256": "d2027faa001746c5c35e3c24a70c3ececd47d441eb865c39f87c696c067b7570",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-b1e4e317b26b1acc",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 예상문제_v1.pdf",
+      "sha256": "c9c34057dcbba727e0755c1f8970775cda920dfc121f9940bec8a96734e60471",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 2
+    },
+    {
+      "id": "s-2bf422df9f5fcf32",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 예상문제_v2.pdf",
+      "sha256": "64a4108b105e0e6d994db3bfa4b0668798200a66d6c2c7079b18eae99a294420",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 4
+    },
+    {
+      "id": "s-f3e8534dcccbf6dc",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 종합_기출문제 (3p).pdf",
+      "sha256": "2544cae91c15478f0986ae26aabaa30956a8f6e12a8f48a6c95bc3755ca164bd",
+      "format": "pdf",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "page",
+      "unit_count": 3
+    },
+    {
+      "id": "s-46d18ba8187d4ab1",
+      "path": "from_the_past/정리/퀴즈/실험1/실험1 퀴즈 풀이_수기메모.jpg",
+      "sha256": "453e6e1ed18962efbbdccf642b0fba6f5c62811bc282919115547568cad7b26c",
+      "format": "image",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "image",
+      "unit_count": 1
+    },
+    {
+      "id": "s-c97642215a896d66",
+      "path": "from_the_past/정리/퀴즈/실험1/원본_docx/실험1.doc",
+      "sha256": "05b507540d3561137e223c725b7146429323fcecb84fa14daa1a189e200d7f92",
+      "format": "doc",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "document",
+      "unit_count": 1
+    },
+    {
+      "id": "s-93c28fff0eb40f42",
+      "path": "from_the_past/정리/퀴즈/실험1/원본_docx/퀴즈1_답.docx",
+      "sha256": "76997677b8218efcdead1919361fb2060699c12a1bd3039e76688a2bcc6bc114",
+      "format": "docx",
+      "filename_metadata": {
+        "year": null,
+        "term": null
+      },
+      "observed_metadata": {
+        "year": null,
+        "term": null
+      },
+      "conflicts": [],
+      "processing": "complete",
+      "reason": "",
+      "unit_kind": "document",
+      "unit_count": 1
+    }
+  ],
+  "assets": [
+    {
+      "id": "a-s01-p1",
+      "path": "assets/s01-p1.png",
+      "sha256": "c999d934306451d272150175aeee820bf7392e918d5dca804866502042ba17cf",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1",
+      "path": "assets/s02-p1.png",
+      "sha256": "867fb5f692127e321529244dec7d000aeb9b134cceab413267ed97a60b2ffc8a",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s03-p1",
+      "path": "assets/s03-p1.png",
+      "sha256": "30405e52dbdc3983da45a3306328840408267342f2182b76182f3ed25c961147",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s05-p1",
+      "path": "assets/s05-p1.png",
+      "sha256": "d8f7096ac6979ff7763fdb78325144a0318ade658bb088e134cd5c7efad41778",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p2",
+      "path": "assets/s05-p2.png",
+      "sha256": "11d70881e2a3922bbae9d0ffb0424cf2689a35fb3fd61cdf66b5f2d058fa2411",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s06-p1",
+      "path": "assets/s06-p1.png",
+      "sha256": "c91e80bd3bb4101cb0e86cc5e31524f4ea5b31d2edaf155f40ebda1a241408d4",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p2",
+      "path": "assets/s06-p2.png",
+      "sha256": "4c26a47df0ef5975f40a3e5c16fbb9a735a2fd1fdcbcdb3b33984cce511fa1db",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p3",
+      "path": "assets/s06-p3.png",
+      "sha256": "0853f62a2dfc9ba6dcb319ed0a790418a417e00ab57edc873426ecf230fcb0f6",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s06-p4",
+      "path": "assets/s06-p4.png",
+      "sha256": "bb3c82e1f4809fa2b66e968983edf2a15e0a5931292fa79a4357db6b9de15823",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "PDF page 4",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s07-p1",
+      "path": "assets/s07-p1.png",
+      "sha256": "e38982c192aacbcfe923b2722f43cb84cefad95c262147679aa1a9ee2697bf07",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          774,
+          999
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p2",
+      "path": "assets/s07-p2.png",
+      "sha256": "4116dc763647c5f88c51263b8f4c7f23dd4de40ac6bea56982e2c2c2b1a618ca",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s07-p3",
+      "path": "assets/s07-p3.png",
+      "sha256": "f12a1e558ce09292110e73e425827f96928fd6e7c3626d0bcb3a990a79667f96",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "PDF page 3",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s09-p1",
+      "path": "assets/s09-p1.png",
+      "sha256": "a440f51a18eb4ae21c24f00a8ebb2f66e7c8f04b697921cfe7dcc98d719c5a60",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s09-p2",
+      "path": "assets/s09-p2.png",
+      "sha256": "542ebe82e987406ade66f4b2f591a38c4a537cb0d0130c173907e2d509f26337",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 2",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s10-p1",
+      "path": "assets/s10-p1.png",
+      "sha256": "0d73f2afb80e21c87d143809b2ca27719322a8ccd81da7c705b762ce82699069",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "Word 읽기 전용 렌더 page 1",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s08-p1",
+      "path": "assets/s08-p1.jpg",
+      "sha256": "453e6e1ed18962efbbdccf642b0fba6f5c62811bc282919115547568cad7b26c",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "image_size": [
+          2448,
+          3264
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q1",
+      "path": "assets/s01-p1-o-s01-q1.png",
+      "sha256": "89eb9652e85fae3db8a2a0636205b8e2af4e7b2a0e79a4d98cf3eb7acb83cea6",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.15502793296089384,
+          0.9595261599210266,
+          0.3547486033519553
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q2",
+      "path": "assets/s01-p1-o-s01-q2.png",
+      "sha256": "f488061f950414aa64e5fb5d5ba2c99a99438bb4be3fcca185eab1927876b15e",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.36033519553072624,
+          0.9595261599210266,
+          0.7751396648044693
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s01-p1-o-s01-q3",
+      "path": "assets/s01-p1-o-s01-q3.png",
+      "sha256": "1f9c327fcb75f584616e152ffaa718c16e66e33df4fca66d7913d46e49146b17",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.821927374301676,
+          0.9595261599210266,
+          0.861731843575419
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q1",
+      "path": "assets/s02-p1-o-s02-q1.png",
+      "sha256": "71656f89f79781c7a14156da1bc05228d4e73fb38376e2417a1af83921bf5d7c",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.1717877094972067,
+          0.9595261599210266,
+          0.32192737430167595
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q2",
+      "path": "assets/s02-p1-o-s02-q2.png",
+      "sha256": "815f9b93be8b10752187c01ea4eda3df8deea255a34bec79bfe4847a20ab0e21",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.32192737430167595,
+          0.9595261599210266,
+          0.5
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s02-p1-o-s02-q3",
+      "path": "assets/s02-p1-o-s02-q3.png",
+      "sha256": "65e62037b140ef9b83a4b4285e53a40fc24366a7e8c8995648da413c8d26931b",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.5027932960893855,
+          0.9595261599210266,
+          0.6019553072625698
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p1-o-s05-q1",
+      "path": "assets/s05-p1-o-s05-q1.png",
+      "sha256": "68a38a45c19b1b17b3cfa4f52b5a134e6e021946f00971a8c9606aa5962ab9c8",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.09497206703910614,
+          0.9595261599210266,
+          0.388268156424581
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p1-o-s05-q2",
+      "path": "assets/s05-p1-o-s05-q2.png",
+      "sha256": "70ff409f288f91dcc3adf877577ed9af60dbb8b184e30851fb16075b0435bae2",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.4001396648044693,
+          0.9595261599210266,
+          0.6550279329608939
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p1-o-s05-q3",
+      "path": "assets/s05-p1-o-s05-q3.png",
+      "sha256": "8bd03d6948b4a2dfbc7929ba62ae757d885b1a935c26e931afa03609e70267a5",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.6696927374301676,
+          0.9595261599210266,
+          0.6997206703910615
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p1-o-s05-q4",
+      "path": "assets/s05-p1-o-s05-q4.png",
+      "sha256": "79d61897f72769ed51931bb080072565a6908b9c2dabddde6a0b3dd1c1f89a88",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.7618715083798883,
+          0.9595261599210266,
+          0.8149441340782123
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p1-o-s05-q5",
+      "path": "assets/s05-p1-o-s05-q5.png",
+      "sha256": "2cf4cd64a8650faceb80b78f280afe7ffcd15a6f826368af645c93e1e8292a5a",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "PDF page 1",
+        "bbox": [
+          0.0700888450148075,
+          0.8798882681564246,
+          0.9595261599210266,
+          0.9120111731843575
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p2-o-s05-q5",
+      "path": "assets/s05-p2-o-s05-q5.png",
+      "sha256": "36f7e6eddf83a45edab257a04e1f7cc616a6a2175a240e7765ad0114a1e62e56",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0.0700888450148075,
+          0.09287709497206705,
+          0.9595261599210266,
+          0.125
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p2-o-s05-q6",
+      "path": "assets/s05-p2-o-s05-q6.png",
+      "sha256": "570c68e131655b610ac7cecfd224d714e2ba238ec3ffd37dd5b1c3cb699e5b5c",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0.0700888450148075,
+          0.164804469273743,
+          0.9595261599210266,
+          0.625
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p2-o-s05-q7",
+      "path": "assets/s05-p2-o-s05-q7.png",
+      "sha256": "1fb425b027317c23980d892f8fe074ea48d96799292dd9f475085036417e050f",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0.0700888450148075,
+          0.638268156424581,
+          0.9595261599210266,
+          0.6696927374301676
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s05-p2-o-s05-q8",
+      "path": "assets/s05-p2-o-s05-q8.png",
+      "sha256": "598f8cf7df8a10db664f9e552475fbe3e5a356bb58cddf1723346638cf172608",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "PDF page 2",
+        "bbox": [
+          0.0700888450148075,
+          0.8198324022346368,
+          0.9595261599210266,
+          0.8547486033519553
+        ],
+        "image_size": [
+          1013,
+          1432
+        ]
+      },
+      "role": "problem",
+      "answer_exposure": "none"
+    },
+    {
+      "id": "a-s04-p1-q1",
+      "path": "assets/s04-p1-q1.png",
+      "sha256": "cc9fd241337bb9fe9f2ed8bc6a58df0bb5357d3cf1d7b51b54a1258150d5203b",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0.046296296296296294,
+          0.15625,
+          0.9629629629629629,
+          0.3541666666666667
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    },
+    {
+      "id": "a-s04-p1-q2",
+      "path": "assets/s04-p1-q2.png",
+      "sha256": "eacb8540f94fcd623eb977e6eaa3abdd378141c35dc1d9f3d618e4bec8f9a0cf",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "원본 이미지",
+        "bbox": [
+          0.046296296296296294,
+          0.3541666666666667,
+          0.9629629629629629,
+          0.8020833333333334
+        ],
+        "image_size": [
+          540,
+          960
+        ]
+      },
+      "role": "mixed",
+      "answer_exposure": "present"
+    }
+  ],
+  "occurrences": [
+    {
+      "id": "o-s01-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (1); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s01-q1-text",
+          "type": "text",
+          "text": "다음 3 Input Logic Gate의 진리표를 완성하시오.(0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q1-table1",
+          "type": "table",
+          "text": "원문 표: 머리 INPUT(A·B·C)·OUTPUT(4열), 입력 4행만 제시, 출력 칸은 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q1-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q1"
+        },
+        {
+          "id": "b-o-s01-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (2); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s01-q2-text",
+          "type": "text",
+          "text": "아래의 Switching Algebra를 사용하여 다음 식을 최대한 간단히 하시오",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q2-math1",
+          "type": "math",
+          "text": "문제: (V̄ + X)·(W·(Ȳ + Z)) + (V̄ + X)·[(W·(Ȳ + Z)) 전체 오버바]. 위에 Switching Algebra Axioms & Theorems 표(A1~A5′, T1~T14, EECC341 - Shaaban)가 그림으로 제시됨(원문 시각 확인).",
+          "tex": "(\\overline{V}+X)\\cdot(W\\cdot(\\overline{Y}+Z))+(\\overline{V}+X)\\cdot\\overline{(W\\cdot(\\overline{Y}+Z))}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q2"
+        },
+        {
+          "id": "b-o-s01-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s01-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-79f4f8b678ea622f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (3); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s01-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s01-q3-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1-o-s01-q3"
+        },
+        {
+          "id": "b-o-s01-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s01-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s02-q1-text",
+          "type": "text",
+          "text": "아래 2-input XOR gate의 Truth table을 완성 하시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q1-table1",
+          "type": "table",
+          "text": "원문 그림2 Truth Table: 머리 INPUT(A·B)·OUTPUT(C), 출력 C 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C"
+            ],
+            [
+              "L",
+              "L",
+              ""
+            ],
+            [
+              "L",
+              "H",
+              ""
+            ],
+            [
+              "H",
+              "L",
+              ""
+            ],
+            [
+              "H",
+              "H",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q1-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q1"
+        },
+        {
+          "id": "b-o-s02-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 그림1 XOR gate: 입력 A, B, 출력 C인 XOR 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s02-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q2"
+        },
+        {
+          "id": "b-o-s02-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s02-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-99473e7d541532a1",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s02-q3-text",
+          "type": "text",
+          "text": "2-input NAND gate와 AND gate를 활용하여 3-input NAND gate를 구성 하시오. (4점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s02-q3-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1-o-s02-q3"
+        },
+        {
+          "id": "b-o-s02-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 그림3 2-input AND Gate(74HC08) 기호, 그림4 2-input NAND gate(74HC00) 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s02-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s03-q1-text",
+          "type": "text",
+          "text": "아래 2-input XOR gate의 Truth table을 완성 하시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q1-table1",
+          "type": "table",
+          "text": "원문 그림2 Truth Table: 머리 INPUT(A·B)·OUTPUT(C), 출력 C 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C"
+            ],
+            [
+              "L",
+              "L",
+              ""
+            ],
+            [
+              "L",
+              "H",
+              ""
+            ],
+            [
+              "H",
+              "L",
+              ""
+            ],
+            [
+              "H",
+              "H",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 그림1 XOR gate: 입력 A, B, 출력 C인 XOR 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s03-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s03-q3-text",
+          "type": "text",
+          "text": "2-input NAND gate와 AND gate를 활용하여 3-input NAND gate를 구성 하시오. (4점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 그림3 2-input AND Gate(74HC08) 기호, 그림4 2-input NAND gate(74HC00) 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1; Word 본문 P6~P8; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s10-q1-text",
+          "type": "text",
+          "text": "아래 2-input XOR gate의 Truth table을 완성 하시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-q1-table1",
+          "type": "table",
+          "text": "원문 그림2 Truth Table: 머리 INPUT(A·B)·OUTPUT(C), 출력 C 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C"
+            ],
+            [
+              "L",
+              "L",
+              ""
+            ],
+            [
+              "L",
+              "H",
+              ""
+            ],
+            [
+              "H",
+              "L",
+              ""
+            ],
+            [
+              "H",
+              "H",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 그림1 XOR gate: 입력 A, B, 출력 C인 XOR 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; Word 본문 P10~P14; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s10-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오. (3점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3; Word 본문 P16~P19; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s10-q3-text",
+          "type": "text",
+          "text": "2-input NAND gate와 AND gate를 활용하여 3-input NAND gate를 구성 하시오. (4점)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 그림3 2-input AND Gate(74HC08) 기호, 그림4 2-input NAND gate(74HC00) 기호.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 1 정답 표; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s03-a1-table1",
+          "type": "table",
+          "text": "빨간색으로 채워진 출력 C",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C"
+            ],
+            [
+              "L",
+              "L",
+              "L"
+            ],
+            [
+              "L",
+              "H",
+              "H"
+            ],
+            [
+              "H",
+              "L",
+              "H"
+            ],
+            [
+              "H",
+              "H",
+              "L"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 2 정답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s03-a2-text",
+          "type": "text",
+          "text": "빨간색 제공 답: D= (A+B)’ / E= A · B / Q=(A+B)’ + A · B",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a2-math1",
+          "type": "math",
+          "text": "제공 답안 수식 전사",
+          "tex": "D=(A+B)',\\quad E=A\\cdot B,\\quad Q=(A+B)'+A\\cdot B",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s03-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-3b893e4e1daf844f",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 3 답 회로; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s03-a3-text",
+          "type": "text",
+          "text": "빨간색 \"답:\" 옆 제공 회로: A, B → 74HC08 AND → 출력선 L1; L1에서 분기한 선과 C → 74HC00 NAND → L2.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s03-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s03-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1 정답 표(그림 개체); Word 본문 P7; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s10-a1-table1",
+          "type": "table",
+          "text": "빨간색으로 채워진 출력 C",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C"
+            ],
+            [
+              "L",
+              "L",
+              "L"
+            ],
+            [
+              "L",
+              "H",
+              "H"
+            ],
+            [
+              "H",
+              "L",
+              "H"
+            ],
+            [
+              "H",
+              "H",
+              "L"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2 정답; Word 본문 P12~P14; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s10-a2-text",
+          "type": "text",
+          "text": "빨간색 제공 답: D= (A+B)’ / E= A · B / Q=(A+B)’ + A · B",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-a2-math1",
+          "type": "math",
+          "text": "제공 답안 수식 전사",
+          "tex": "D=(A+B)',\\quad E=A\\cdot B,\\quad Q=(A+B)'+A\\cdot B",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s10-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-93c28fff0eb40f42",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 3 답 회로; Word 본문 P19; Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "3",
+      "blocks": [
+        {
+          "id": "b-o-s10-a3-text",
+          "type": "text",
+          "text": "빨간색 \"답:\" 옆 제공 회로: A, B → 74HC08 AND → 출력선 L1; L1에서 분기한 선과 C → 74HC00 NAND → L2.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s10-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s10-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1-1·1-2; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1",
+      "blocks": [
+        {
+          "id": "b-o-s04-q1-text1",
+          "type": "text",
+          "text": "1-1) 2 input 1 output XOR Gate의 Logic symbol (Gate)을 그리고 truth Table 을 작성하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q1-text2",
+          "type": "text",
+          "text": "1-2) XOR Gate의 Logic function을 작성하시오. (빈칸 F = ____)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a1-1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1-1 수기 답안; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1-1",
+      "blocks": [
+        {
+          "id": "b-o-s04-a1-1-text",
+          "type": "text",
+          "text": "수기 답안: 입력 A, B와 출력 Y인 XOR 기호를 그림. 문항 번호에 빨간 원 채점 표시.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a1-1-table1",
+          "type": "table",
+          "text": "수기 진리표",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "Y"
+            ],
+            [
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "1",
+              "1"
+            ],
+            [
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "1",
+              "1",
+              "0"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a1-1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a1-2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 1-2 수기 답안; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "1-2",
+      "blocks": [
+        {
+          "id": "b-o-s04-a1-2-math1",
+          "type": "math",
+          "text": "수기 답안 F = (Ā·B)+(A·B̄). 문항 번호에 빨간 원 채점 표시.",
+          "tex": "F=(\\overline{A}\\cdot B)+(A\\cdot\\overline{B})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a1-2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1-q1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-q2-text",
+          "type": "text",
+          "text": "2) OR Gate와 Inverter를 활용하여 3 input NOR Gate의 Logic Diagram을 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1-q2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s04-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-e1f586ae83ba044a",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 2 수기 답안; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "2",
+      "blocks": [
+        {
+          "id": "b-o-s04-a2-text",
+          "type": "text",
+          "text": "수기 답안: A, B → OR, 그 출력과 C → OR, 이어서 인버터(출력 버블) → Y. 문항 번호에 빨간 원 채점 표시. 아래에 흐린 연필 메모가 있고, 그 아래 큰 회로 스케치는 사선으로 지워져 있다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s04-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s04-p1-q2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s04-a2-text",
+          "symbol": "답안 아래 흐린 연필 메모·지운 회로",
+          "candidates": [],
+          "reason": "연필 메모가 흐려 판독할 수 없고, 사선으로 지운 회로는 답안으로 쓰인 것인지 확정할 수 없어 전사하지 않았다.",
+          "location": {
+            "source_id": "s-e1f586ae83ba044a",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2 아래 영역; 이미지 영역",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s05-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (1); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q1-text",
+          "type": "text",
+          "text": "다음 진리표를 완성하시오. (3 input, 0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q1-table1",
+          "type": "table",
+          "text": "원문 표: 첫 머리 행 INPUT(A~C 위)·OUTPUT(출력 4열 위), 출력 칸은 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q1-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-o-s05-q1"
+        },
+        {
+          "id": "b-o-s05-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (2); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q2-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-o-s05-q2"
+        },
+        {
+          "id": "b-o-s05-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (3); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q3-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-o-s05-q3"
+        },
+        {
+          "id": "b-o-s05-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (4); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q4-text",
+          "type": "text",
+          "text": "아래 식의 Logic Diagram을 변형 없이 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q4-math1",
+          "type": "math",
+          "text": "식: (A + B̄) 전체 위 오버바, 그 뒤 · (C + D̄). 오버바는 첫 괄호에만 걸린다(원문 시각 확인).",
+          "tex": "\\overline{(A+\\overline{B})}\\cdot(C+\\overline{D})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q4-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-o-s05-q4"
+        },
+        {
+          "id": "b-o-s05-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (5) 지시문 page 1, 식 page 2 상단; 원문 page 1~2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q5-text",
+          "type": "text",
+          "text": "De Morgan 식을 사용하여 다음을 전개 하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q5-math1",
+          "type": "math",
+          "text": "식: 전체 위 오버바 아래 (Ā + B̄ + C̄) · (D̄ · Ē). 각 문자에 개별 오버바(원문 시각 확인).",
+          "tex": "\\overline{(\\overline{A}+\\overline{B}+\\overline{C})\\cdot(\\overline{D}\\cdot\\overline{E})}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q5-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1-o-s05-q5"
+        },
+        {
+          "id": "b-o-s05-q5-bounded2",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2-o-s05-q5"
+        },
+        {
+          "id": "b-o-s05-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p1"
+        },
+        {
+          "id": "b-o-s05-q5-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (6); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(6)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q6-text",
+          "type": "text",
+          "text": "아래의 Switching Algebra를 사용하여 다음식을 최대한 간단히 하시오",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q6-math1",
+          "type": "math",
+          "text": "문제: (V̄ + X)·(W·(Ȳ + Z)) + (V̄ + X)·[(W·(Ȳ + Z)) 전체 오버바]. 위에 Switching Algebra Axioms & Theorems 표(A1~A5′, T1~T14, EECC341 - Shaaban)가 그림으로 제시됨(원문 시각 확인).",
+          "tex": "(\\overline{V}+X)\\cdot(W\\cdot(\\overline{Y}+Z))+(\\overline{V}+X)\\cdot\\overline{(W\\cdot(\\overline{Y}+Z))}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q6-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2-o-s05-q6"
+        },
+        {
+          "id": "b-o-s05-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (7); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(7)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q7-text",
+          "type": "text",
+          "text": "CMOS 3-input NAND gate를 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q7-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2-o-s05-q7"
+        },
+        {
+          "id": "b-o-s05-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s05-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-b1e4e317b26b1acc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (8); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(8)",
+      "blocks": [
+        {
+          "id": "b-o-s05-q8-text",
+          "type": "text",
+          "text": "Pull-up 저항에 대하여 간단히 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s05-q8-bounded",
+          "type": "figure",
+          "text": "해당 문항의 원문 영역 또는 제공 도해. 생성·수정한 회로가 아닌 원문 크롭이다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2-o-s05-q8"
+        },
+        {
+          "id": "b-o-s05-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s05-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (1); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q1-text",
+          "type": "text",
+          "text": "다음 진리표를 완성하시오. (3 input, 0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q1-table1",
+          "type": "table",
+          "text": "원문 표: 첫 머리 행 INPUT(A~C 위)·OUTPUT(출력 4열 위), 출력 칸은 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (2); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (3); 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (4); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q4-text",
+          "type": "text",
+          "text": "아래 식의 Logic Diagram을 변형 없이 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q4-math1",
+          "type": "math",
+          "text": "식: (A + B̄) 전체 위 오버바, 그 뒤 · (C + D̄). 오버바는 첫 괄호에만 걸린다(원문 시각 확인).",
+          "tex": "\\overline{(A+\\overline{B})}\\cdot(C+\\overline{D})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (5); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q5-text",
+          "type": "text",
+          "text": "De Morgan 식을 사용하여 다음을 전개 하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q5-math1",
+          "type": "math",
+          "text": "식: 전체 위 오버바 아래 (Ā + B̄ + C̄) · (D̄ · Ē). 각 문자에 개별 오버바(원문 시각 확인).",
+          "tex": "\\overline{(\\overline{A}+\\overline{B}+\\overline{C})\\cdot(\\overline{D}\\cdot\\overline{E})}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (6); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(6)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q6-text",
+          "type": "text",
+          "text": "아래의 Switching Algebra를 사용하여 다음식을 최대한 간단히 하시오",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q6-math1",
+          "type": "math",
+          "text": "문제: (V̄ + X)·(W·(Ȳ + Z)) + (V̄ + X)·[(W·(Ȳ + Z)) 전체 오버바]. 위에 Switching Algebra Axioms & Theorems 표(A1~A5′, T1~T14, EECC341 - Shaaban)가 그림으로 제시됨(원문 시각 확인).",
+          "tex": "(\\overline{V}+X)\\cdot(W\\cdot(\\overline{Y}+Z))+(\\overline{V}+X)\\cdot\\overline{(W\\cdot(\\overline{Y}+Z))}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (7); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(7)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q7-text",
+          "type": "text",
+          "text": "CMOS 3-input NAND gate를 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 (8); 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(8)",
+      "blocks": [
+        {
+          "id": "b-o-s06-q8-text",
+          "type": "text",
+          "text": "Pull-up 저항에 대하여 간단히 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (1) 빨간 답 표와 수기 여백 메모; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a1-table1",
+          "type": "table",
+          "text": "빨간색으로 채워진 출력값(일부 노란 형광 표시)",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "1",
+              "1",
+              "0",
+              "1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a1-text",
+          "type": "text",
+          "text": "XOR 출력 머리 위 여백 수기 메모: A⊕B, A′B+A·B′ (노란 형광 표시).",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (2) 빨간 답; 원문 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a2-math1",
+          "type": "math",
+          "text": "빨간색 제공 답: D = (A+B) 오버바 = Ā·B̄, E = B·C, Q = D + E = (Ā·B̄) + (B·C)",
+          "tex": "D=\\overline{A+B}=\\overline{A}\\cdot\\overline{B},\\quad E=B\\cdot C,\\quad Q=D+E=(\\overline{A}\\cdot\\overline{B})+(B\\cdot C)",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 1,
+        "printed_page": null,
+        "locator": "문항 (3) 답 사진 2장(page 1 하단 사진, page 2 상단 사진); 원문 page 1~2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a3-text1",
+          "type": "text",
+          "text": "page 1 사진: 인쇄된 \"(3) NAND gate만을 이용하여 XOR gate를 구성하여라.\" 문항 아래 연필로 그린 NAND 게이트 회로(입력 A, B, 출력선). 사진 하단에 다음 문항 \"(4)아래 식의 Logic Diagram을 변형 없이 그리시오\" 일부가 보인다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a3-math1",
+          "type": "math",
+          "text": "page 2 사진(제목 XOR): C = A⊕B = (A′·B)+(A·B′) = [(A+B′)·(A′+B)] 오버바 = [(A′·B) 오버바 · (A·B′) 오버바] 오버바. 옆 메모 * C′+D′ = (C·D) 오버바.",
+          "tex": "C=A\\oplus B=(A'\\cdot B)+(A\\cdot B')=\\overline{(A+B')\\cdot(A'+B)}=\\overline{\\overline{(A'\\cdot B)}\\cdot\\overline{(A\\cdot B')}}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a3-text2",
+          "type": "text",
+          "text": "page 2 사진 회로: 입력선 A, A′, B, B′; NAND(A′, B)와 NAND(A, B′)의 출력이 NAND로 들어가 C.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p1"
+        },
+        {
+          "id": "b-o-s06-a3-image2",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s06-a3-text1",
+          "symbol": "page 1 사진 회로의 배선·게이트 종류",
+          "candidates": [
+            "4-NAND XOR 표준 배선",
+            "다른 배선"
+          ],
+          "reason": "연필 선이 흐리고 사진이 비스듬해 각 게이트 입력선의 연결점과 하단 오른쪽 게이트 모양을 확정할 수 없다.",
+          "location": {
+            "source_id": "s-2bf422df9f5fcf32",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 (3) 답 사진; 원문 page 1",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s06-a4",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (4) 답 사진 2장; 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a4-text1",
+          "type": "text",
+          "text": "첫째 사진: A와 (B → 삼각형 기호) 가 뒷면이 두 줄로 보이는 OR 계열 게이트(출력 버블)로 들어가고, C와 다른 입력이 OR 게이트로 들어가 두 출력이 AND로 합쳐진다. 사진 아래쪽이 잘려 둘째 OR 입력이 보이지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-text2",
+          "type": "text",
+          "text": "둘째 사진: A와 B̄(B → 인버터)가 NOR(출력 버블 OR)로, C와 D̄(D → 인버터)가 OR로 들어가고 두 출력이 AND로 합쳐져 출력.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p2"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s06-a4-text1",
+          "symbol": "첫째 사진의 B 경로 기호와 첫 게이트 종류, 잘린 하단 입력",
+          "candidates": [
+            "B 인버터(버블 누락)",
+            "B 버퍼",
+            "첫 게이트 NOR",
+            "첫 게이트 XNOR"
+          ],
+          "reason": "삼각형 끝 버블이 보이지 않고 첫 게이트 뒷면이 이중선처럼 그려져 있으며, 사진 아래가 잘려 둘째 OR의 입력을 확인할 수 없다.",
+          "location": {
+            "source_id": "s-2bf422df9f5fcf32",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 (4) 첫째 답 사진; 원문 page 2",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s06-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (5) 빨간 답; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a5-math1",
+          "type": "math",
+          "text": "빨간색 제공 답: = (A·B·C) + (D + E)",
+          "tex": "=(A\\cdot B\\cdot C)+(D+E)",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a6",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (6) 빨간 풀이; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(6)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a6-math1",
+          "type": "math",
+          "text": "빨간색 제공 풀이: (V′ + X)·(WY′ + WZ + W′ + YZ′) = (V′ + X)·(W(Y′ + Z) + (W(Y′ + Z))′) = V′ + X",
+          "tex": "(V'+X)\\cdot(WY'+WZ+W'+YZ')=(V'+X)\\cdot\\left(W(Y'+Z)+(W(Y'+Z))'\\right)=V'+X",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a7",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (7) 제공 그림과 빨간 메모; 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(7)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a7-text",
+          "type": "text",
+          "text": "제공 CMOS 회로 그림: VDD 아래 PMOS Q2·Q4·Q6 병렬, 출력 Z, 그 아래 NMOS Q1·Q3·Q5 직렬로 접지, 입력 A·B·C. 빨간 손글씨 메모 \"PMOS 병렬\"(Q6 원 표시), \"NMOS 직렬\"(Q5 원 표시).",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s06-a8",
+      "role": "answer",
+      "location": {
+        "source_id": "s-2bf422df9f5fcf32",
+        "pdf_page": 4,
+        "printed_page": null,
+        "locator": "문항 (8) 빨간 답; 원문 page 4",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(8)",
+      "blocks": [
+        {
+          "id": "b-o-s06-a8-text",
+          "type": "text",
+          "text": "Floating 되지 않고 항상 High 상태를 유지할 수 있도록 Vcc 전원 단자와 신호의 입출력 단자 사이에 접속하는 저항",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s06-a8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s06-p4"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (1); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q1-text",
+          "type": "text",
+          "text": "다음 진리표를 완성하시오. (3 input, 0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q1-table1",
+          "type": "table",
+          "text": "원문 표: 첫 머리 행 INPUT(A~C 위)·OUTPUT(출력 4열 위), 출력 칸은 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (2); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (3); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 2,
+        "printed_page": null,
+        "locator": "문항 (4); 원문 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q4-text",
+          "type": "text",
+          "text": "아래 식의 Logic Diagram을 변형 없이 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q4-math1",
+          "type": "math",
+          "text": "식: (A + B̄) 전체 위 오버바, 그 뒤 · (C + D̄). 오버바는 첫 괄호에만 걸린다(원문 시각 확인).",
+          "tex": "\\overline{(A+\\overline{B})}\\cdot(C+\\overline{D})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (5); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q5-text",
+          "type": "text",
+          "text": "De Morgan 식을 사용하여 다음을 전개 하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q5-math1",
+          "type": "math",
+          "text": "식: 전체 위 오버바 아래 (Ā + B̄ + C̄) · (D̄ · Ē). 각 문자에 개별 오버바(원문 시각 확인).",
+          "tex": "\\overline{(\\overline{A}+\\overline{B}+\\overline{C})\\cdot(\\overline{D}\\cdot\\overline{E})}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (6); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(6)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q6-text",
+          "type": "text",
+          "text": "아래의 Switching Algebra를 사용하여 다음식을 최대한 간단히 하시오",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q6-math1",
+          "type": "math",
+          "text": "문제: (V̄ + X)·(W·(Ȳ + Z)) + (V̄ + X)·[(W·(Ȳ + Z)) 전체 오버바]. 위에 Switching Algebra Axioms & Theorems 표(A1~A5′, T1~T14, EECC341 - Shaaban)가 그림으로 제시됨(원문 시각 확인).",
+          "tex": "(\\overline{V}+X)\\cdot(W\\cdot(\\overline{Y}+Z))+(\\overline{V}+X)\\cdot\\overline{(W\\cdot(\\overline{Y}+Z))}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (7); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(7)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q7-text",
+          "type": "text",
+          "text": "CMOS 3-input NAND gate를 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s07-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "pdf_page": 3,
+        "printed_page": null,
+        "locator": "문항 (8); 원문 page 3",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(8)",
+      "blocks": [
+        {
+          "id": "b-o-s07-q8-text",
+          "type": "text",
+          "text": "Pull-up 저항에 대하여 간단히 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s07-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s07-p3"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (1); 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s08-q1-text",
+          "type": "text",
+          "text": "다음 진리표를 완성하시오. (3 input, 0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q1-table1",
+          "type": "table",
+          "text": "원문 표: 첫 머리 행 INPUT(A~C 위)·OUTPUT(출력 4열 위), 출력 칸은 빈칸(사진에서는 답이 채워져 있어 입력 조건만 전사)",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (2); 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s08-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (3); 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s08-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (4); 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s08-q4-text",
+          "type": "text",
+          "text": "De Morgan 식을 사용하여 다음을 전개 하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q4-math1",
+          "type": "math",
+          "text": "식: 전체 위 오버바 아래 (Ā + B̄ + C̄) · (D̄ · Ē). 각 문자에 개별 오버바(원문 시각 확인).",
+          "tex": "\\overline{(\\overline{A}+\\overline{B}+\\overline{C})\\cdot(\\overline{D}\\cdot\\overline{E})}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (5); 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s08-q5-text",
+          "type": "text",
+          "text": "CMOS 3-input NAND gate를 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a1",
+      "role": "answer",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (1) 채워진 출력값; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s08-a1-table1",
+          "type": "table",
+          "text": "사진 속 채워진 출력값",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "0",
+              "0",
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "0",
+              "1",
+              "0",
+              "1"
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "1",
+              "1",
+              "0",
+              "1"
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a2",
+      "role": "answer",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (2) 수기 답; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s08-a2-math1",
+          "type": "math",
+          "text": "수기 답: D = (A+B) 오버바 or Ā·B̄, E = B·C, Q = (A+B) 오버바 + B·C, 그 아래 괄호 (Ā·B̄)",
+          "tex": "D=\\overline{A+B}\\ \\text{or}\\ \\overline{A}\\cdot\\overline{B},\\quad E=B\\cdot C,\\quad Q=\\overline{A+B}+B\\cdot C\\ (\\overline{A}\\cdot\\overline{B})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a3",
+      "role": "answer",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (3) 수기 회로; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s08-a3-text",
+          "type": "text",
+          "text": "수기 회로: A, B → NAND1; A와 NAND1 출력 → NAND2; NAND1 출력과 B → NAND3; NAND2·NAND3 출력 → NAND4 → C.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a4",
+      "role": "answer",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (4) 수기 답; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s08-a4-math1",
+          "type": "math",
+          "text": "수기 답: A·B·C + D+E",
+          "tex": "A\\cdot B\\cdot C+D+E",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s08-a5",
+      "role": "answer",
+      "location": {
+        "source_id": "s-46d18ba8187d4ab1",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (5) 수기 CMOS 회로; 이미지 영역",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s08-a5-text",
+          "type": "text",
+          "text": "수기 회로: Vcc 아래 PMOS 3개 병렬, 공통 출력선(라벨 \"C\"), 그 아래 NMOS 3개 직렬로 접지, 입력 A·B·C.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s08-a5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 제공 답안 또는 해설이 포함되어 있으므로 답 없는 문제 그림으로 사용하지 않는다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s08-p1"
+        }
+      ],
+      "reading": "partial",
+      "uncertainties": [
+        {
+          "block_id": "b-o-s08-a5-text",
+          "symbol": "입력 A·B·C와 각 PMOS·NMOS 게이트의 대응",
+          "candidates": [],
+          "reason": "게이트 배선이 여러 번 교차해 각 입력이 어느 트랜지스터 게이트에 연결되는지 사진으로 확정할 수 없다. 출력 라벨 C가 입력 C와 같은 문자다.",
+          "location": {
+            "source_id": "s-46d18ba8187d4ab1",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 (5) 수기 CMOS 회로; 이미지 영역",
+            "bbox": null,
+            "image_size": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "o-s09-q1",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (1); Word 문단 P1~P83(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(1)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q1-text",
+          "type": "text",
+          "text": "다음 진리표를 완성하시오. (3 input, 0 = low, 1 = high)",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q1-table1",
+          "type": "table",
+          "text": "원문 표: 첫 머리 행 INPUT(A~C 위)·OUTPUT(출력 4열 위), 출력 칸은 빈칸",
+          "tex": null,
+          "cells": [
+            [
+              "A",
+              "B",
+              "C",
+              "AND출력",
+              "OR출력",
+              "NOR출력",
+              "XOR출력"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "0",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "0",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "1",
+              "1",
+              "1",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q1-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q2",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (2); Word 문단 P84~P88(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(2)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q2-text",
+          "type": "text",
+          "text": "아래 회로의 D, E, Q의 Boolean equation을 적으시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q2-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다. 원문 회로: A와 B가 출력 버블이 있는 OR(=NOR) 게이트로 들어가 D, B에서 분기한 선과 C가 AND 게이트로 들어가 E, D와 E가 OR 게이트로 들어가 Q. 아래에 빈칸 D=, E=, Q=.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q3",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (3); Word 문단 P90(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(3)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q3-text",
+          "type": "text",
+          "text": "NAND gate만을 이용하여 XOR gate를 구성하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q3-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q4",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (4); Word 문단 P94~P97(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(4)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q4-text",
+          "type": "text",
+          "text": "아래 식의 Logic Diagram을 변형 없이 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-math1",
+          "type": "math",
+          "text": "식: (A + B̄) 전체 위 오버바, 그 뒤 · (C + D̄). 오버바는 첫 괄호에만 걸린다(원문 시각 확인).",
+          "tex": "\\overline{(A+\\overline{B})}\\cdot(C+\\overline{D})",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q4-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p1"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q5",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (5); Word 문단 P99~P101(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(5)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q5-text",
+          "type": "text",
+          "text": "De Morgan 식을 사용하여 다음을 전개 하여라.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-math1",
+          "type": "math",
+          "text": "식: 전체 위 오버바 아래 (Ā + B̄ + C̄) · (D̄ · Ē). 각 문자에 개별 오버바(원문 시각 확인).",
+          "tex": "\\overline{(\\overline{A}+\\overline{B}+\\overline{C})\\cdot(\\overline{D}\\cdot\\overline{E})}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q5-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q6",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (6); Word 문단 P103~P105(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(6)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q6-text",
+          "type": "text",
+          "text": "아래의 Switching Algebra를 사용하여 다음식을 최대한 간단히 하시오",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q6-math1",
+          "type": "math",
+          "text": "문제: (V̄ + X)·(W·(Ȳ + Z)) + (V̄ + X)·[(W·(Ȳ + Z)) 전체 오버바]. 위에 Switching Algebra Axioms & Theorems 표(A1~A5′, T1~T14, EECC341 - Shaaban)가 그림으로 제시됨(원문 시각 확인).",
+          "tex": "(\\overline{V}+X)\\cdot(W\\cdot(\\overline{Y}+Z))+(\\overline{V}+X)\\cdot\\overline{(W\\cdot(\\overline{Y}+Z))}",
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q6-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q7",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (7); Word 문단 P107(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(7)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q7-text",
+          "type": "text",
+          "text": "CMOS 3-input NAND gate를 그리시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q7-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    },
+    {
+      "id": "o-s09-q8",
+      "role": "question",
+      "location": {
+        "source_id": "s-c97642215a896d66",
+        "pdf_page": null,
+        "printed_page": null,
+        "locator": "문항 (8); Word 문단 P115(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+        "bbox": null,
+        "image_size": null
+      },
+      "original_number": "(8)",
+      "blocks": [
+        {
+          "id": "b-o-s09-q8-text",
+          "type": "text",
+          "text": "Pull-up 저항에 대하여 간단히 설명하시오.",
+          "tex": null,
+          "cells": null,
+          "asset_id": null
+        },
+        {
+          "id": "b-o-s09-q8-image1",
+          "type": "figure",
+          "text": "원문 증거 이미지. 회로·표·문항 배치와 기호의 원형을 보존한다.",
+          "tex": null,
+          "cells": null,
+          "asset_id": "a-s09-p2"
+        }
+      ],
+      "reading": "readable",
+      "uncertainties": []
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-tt3-4row",
+      "occurrence_ids": [
+        "o-s01-q1"
+      ],
+      "representative_occurrence_id": "o-s01-q1",
+      "kind": "past",
+      "classification_reason": "\"퀴즈1\" 제목과 학번·이름·반(교수님) 응시자 칸을 갖춘 시험지(기출_단답형.pdf)에서 직접 확인. 연도·학기 표기는 없음. 입력 4행만 제시된 형태.",
+      "evidence": [
+        {
+          "source_id": "s-79f4f8b678ea622f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (1); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": []
+    },
+    {
+      "id": "q-switching",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s09-q6"
+      ],
+      "representative_occurrence_id": "o-s01-q2",
+      "kind": "past",
+      "classification_reason": "\"퀴즈1\" 제목과 학번·이름·반(교수님) 응시자 칸을 갖춘 시험지(기출_단답형.pdf)에서 직접 확인. 연도·학기 표기는 없음. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존. 식과 정리표가 시각적으로 같음.",
+      "evidence": [
+        {
+          "source_id": "s-79f4f8b678ea622f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (2); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (6); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (6); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (6); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (6); Word 문단 P103~P105(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a6",
+          "target_id": "q-switching",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-nand-xor",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s08-q3",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s09-q3"
+      ],
+      "representative_occurrence_id": "o-s01-q3",
+      "kind": "past",
+      "classification_reason": "\"퀴즈1\" 제목과 학번·이름·반(교수님) 응시자 칸을 갖춘 시험지(기출_단답형.pdf)에서 직접 확인. 연도·학기 표기는 없음. \"실험1. Quiz\" 제목과 이름·학번 응시자 칸을 갖춘 인쇄 시험지 사진(풀이_수기메모.jpg)에서 해당 문항을 확인. 연도·학기·분반 표기는 없음. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-79f4f8b678ea622f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (3); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (3); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (3); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (3); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (3); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (3); Word 문단 P90(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-nand-xor",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-nand-xor",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-xor2-tt",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s03-q1",
+        "o-s10-q1"
+      ],
+      "representative_occurrence_id": "o-s02-q1",
+      "kind": "past",
+      "classification_reason": "\"퀴즈 실험 1. Basic Gates\", 논리회로실험 이정원 교수님반, 학번·이름 칸, 문항별 배점을 갖춘 시험지와 같은 시험지의 정답본(PDF·DOCX)에서 확인. 연도·학기 표기는 없음.",
+      "evidence": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-3b893e4e1daf844f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-93c28fff0eb40f42",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; Word 본문 P6~P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-xor2-tt",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-xor2-tt",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-deq",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s03-q2",
+        "o-s10-q2",
+        "o-s08-q2",
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s09-q2"
+      ],
+      "representative_occurrence_id": "o-s02-q2",
+      "kind": "past",
+      "classification_reason": "\"퀴즈 실험 1. Basic Gates\", 논리회로실험 이정원 교수님반, 학번·이름 칸, 문항별 배점을 갖춘 시험지와 같은 시험지의 정답본(PDF·DOCX)에서 확인. 연도·학기 표기는 없음. \"실험1. Quiz\" 제목과 이름·학번 응시자 칸을 갖춘 인쇄 시험지 사진(풀이_수기메모.jpg)에서 해당 문항을 확인. 연도·학기·분반 표기는 없음. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존. 회로(NOR→D, AND(B,C)→E, OR→Q)가 모든 출처에서 같음을 시각 확인. 배점 표기 유무만 다름.",
+      "evidence": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-3b893e4e1daf844f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-93c28fff0eb40f42",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; Word 본문 P10~P14; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (2); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (2); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (2); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (2); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (2); Word 문단 P84~P88(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-nand3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s03-q3",
+        "o-s10-q3"
+      ],
+      "representative_occurrence_id": "o-s02-q3",
+      "kind": "past",
+      "classification_reason": "\"퀴즈 실험 1. Basic Gates\", 논리회로실험 이정원 교수님반, 학번·이름 칸, 문항별 배점을 갖춘 시험지와 같은 시험지의 정답본(PDF·DOCX)에서 확인. 연도·학기 표기는 없음.",
+      "evidence": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-3b893e4e1daf844f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-93c28fff0eb40f42",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; Word 본문 P16~P19; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a3",
+          "target_id": "q-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-xor-graded",
+      "occurrence_ids": [
+        "o-s04-q1"
+      ],
+      "representative_occurrence_id": "o-s04-q1",
+      "kind": "past",
+      "classification_reason": "조·학번·이름 칸과 빨간 채점 표시·점수가 있는 실제 채점 퀴즈 사진에서 확인(개인 식별 정보는 전사하지 않음). 연도·학기 표기는 없음. 1-1·1-2 소문항 구성.",
+      "evidence": [
+        {
+          "source_id": "s-e1f586ae83ba044a",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1-1·1-2; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [
+        {
+          "id": "p-o-s04-q1-1",
+          "label": "1-1",
+          "occurrence_id": "o-s04-q1",
+          "block_ids": [
+            "b-o-s04-q1-text1"
+          ]
+        },
+        {
+          "id": "p-o-s04-q1-2",
+          "label": "1-2",
+          "occurrence_id": "o-s04-q1",
+          "block_ids": [
+            "b-o-s04-q1-text2"
+          ]
+        }
+      ],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a1-1",
+          "target_id": "p-o-s04-q1-1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a1-2",
+          "target_id": "p-o-s04-q1-2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "occurrence_ids": [
+        "o-s04-q2"
+      ],
+      "representative_occurrence_id": "o-s04-q2",
+      "kind": "past",
+      "classification_reason": "조·학번·이름 칸과 빨간 채점 표시·점수가 있는 실제 채점 퀴즈 사진에서 확인(개인 식별 정보는 전사하지 않음). 연도·학기 표기는 없음.",
+      "evidence": [
+        {
+          "source_id": "s-e1f586ae83ba044a",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-nor3-or-inv",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-tt3-8row",
+      "occurrence_ids": [
+        "o-s08-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s09-q1"
+      ],
+      "representative_occurrence_id": "o-s08-q1",
+      "kind": "past",
+      "classification_reason": "\"실험1. Quiz\" 제목과 이름·학번 응시자 칸을 갖춘 인쇄 시험지 사진(풀이_수기메모.jpg)에서 해당 문항을 확인. 연도·학기·분반 표기는 없음. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존. 입력 8행 전체가 제시된 형태.",
+      "evidence": [
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (1); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (1); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (1); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (1); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (1); Word 문단 P1~P83(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-tt3-8row",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-tt3-8row",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-demorgan",
+      "occurrence_ids": [
+        "o-s08-q4",
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s09-q5"
+      ],
+      "representative_occurrence_id": "o-s08-q4",
+      "kind": "past",
+      "classification_reason": "\"실험1. Quiz\" 제목과 이름·학번 응시자 칸을 갖춘 인쇄 시험지 사진(풀이_수기메모.jpg)에서 해당 문항을 확인. 연도·학기·분반 표기는 없음. 수기메모 시험지에서는 (4)번, 예상문제 세트에서는 (5)번. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존. 식의 오버바 배치가 같음을 시각 확인.",
+      "evidence": [
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (4); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (5) 지시문 page 1, 식 page 2 상단; 원문 page 1~2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (5); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (5); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (5); Word 문단 P99~P101(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-demorgan",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-demorgan",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-cmos-nand3",
+      "occurrence_ids": [
+        "o-s08-q5",
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s09-q7"
+      ],
+      "representative_occurrence_id": "o-s08-q5",
+      "kind": "past",
+      "classification_reason": "\"실험1. Quiz\" 제목과 이름·학번 응시자 칸을 갖춘 인쇄 시험지 사진(풀이_수기메모.jpg)에서 해당 문항을 확인. 연도·학기·분반 표기는 없음. 수기메모 시험지에서는 (5)번, 예상문제 세트에서는 (7)번. 예상문제 v1·v2·종합본·원본 DOC의 동일 조건 재수록도 출처별 등장으로 보존.",
+      "evidence": [
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (5); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (7); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (7); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (7); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (7); Word 문단 P107(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a7",
+          "target_id": "q-cmos-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-cmos-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-logicdiagram",
+      "occurrence_ids": [
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s09-q4"
+      ],
+      "representative_occurrence_id": "o-s05-q4",
+      "kind": "predicted",
+      "classification_reason": "예상문제 v1·v2, 응시자 칸이 없는 종합본(파일명은 \"기출문제\"), 원본 DOC에만 있고, 응시자 칸이나 채점 표시가 있는 시험지 자료(단답형·Basic Gates 퀴즈·채점본·수기메모 시험지)에는 없음. 수기메모 사진은 (5)번 아래가 사진 끝이라 이후 문항 유무는 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (4); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (4); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (4); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (4); Word 문단 P94~P97(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-logicdiagram",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    },
+    {
+      "id": "q-pullup",
+      "occurrence_ids": [
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s09-q8"
+      ],
+      "representative_occurrence_id": "o-s05-q8",
+      "kind": "predicted",
+      "classification_reason": "예상문제 v1·v2, 응시자 칸이 없는 종합본(파일명은 \"기출문제\"), 원본 DOC에만 있고, 응시자 칸이나 채점 표시가 있는 시험지 자료(단답형·Basic Gates 퀴즈·채점본·수기메모 시험지)에는 없음. 수기메모 사진은 (5)번 아래가 사진 끝이라 이후 문항 유무는 확인하지 못함.",
+      "evidence": [
+        {
+          "source_id": "s-b1e4e317b26b1acc",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 (8); 원문 page 2",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-2bf422df9f5fcf32",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 (8); 원문 page 4",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-f3e8534dcccbf6dc",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 (8); 원문 page 3",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-c97642215a896d66",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (8); Word 문단 P115(식·회로·표 그림은 개체); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null
+        }
+      ],
+      "subparts": [],
+      "answers": [
+        {
+          "occurrence_id": "o-s06-a8",
+          "target_id": "q-pullup",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from_id": "q-tt3-4row",
+      "to_id": "q-tt3-8row",
+      "type": "variant_of",
+      "reason": "같은 3입력 AND/OR/NOR/XOR 진리표 문항이지만 단답형 시험지는 입력 4행(000, 001, 101, 111)만, 다른 자료는 8행 전체를 제시해 조건이 다름.",
+      "evidence": [
+        {
+          "source_id": "s-79f4f8b678ea622f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 (1); 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (1); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-xor2-tt",
+      "to_id": "q-xor-graded",
+      "type": "variant_of",
+      "reason": "둘 다 2입력 XOR 진리표를 다루지만 Basic Gates 퀴즈는 기호와 L/H 입력표를 주고 출력만 요구하고, 채점본은 기호·진리표를 직접 그리고 논리식까지 요구함.",
+      "evidence": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-e1f586ae83ba044a",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1-1·1-2; 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    },
+    {
+      "from_id": "q-nand3",
+      "to_id": "q-cmos-nand3",
+      "type": "variant_of",
+      "reason": "같은 3-input NAND 구현이지만 한쪽은 2-input NAND·AND 게이트로, 다른 쪽은 CMOS 트랜지스터로 구성하라는 조건이 다름.",
+      "evidence": [
+        {
+          "source_id": "s-99473e7d541532a1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null
+        },
+        {
+          "source_id": "s-46d18ba8187d4ab1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 (5); 이미지 영역",
+          "bbox": null,
+          "image_size": null
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "status": "complete_with_holds",
+    "checks": {
+      "structure": "pass",
+      "source_visual": "partial"
+    },
+    "units": [
+      {
+        "source_id": "s-79f4f8b678ea622f",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s01-q1",
+          "o-s01-q2",
+          "o-s01-q3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-99473e7d541532a1",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s02-q1",
+          "o-s02-q2",
+          "o-s02-q3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-3b893e4e1daf844f",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s03-q1",
+          "o-s03-a1",
+          "o-s03-q2",
+          "o-s03-a2",
+          "o-s03-q3",
+          "o-s03-a3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-e1f586ae83ba044a",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s04-q1",
+          "o-s04-a1-1",
+          "o-s04-a1-2",
+          "o-s04-q2",
+          "o-s04-a2"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-b1e4e317b26b1acc",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q1",
+          "o-s05-q2",
+          "o-s05-q3",
+          "o-s05-q4",
+          "o-s05-q5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-b1e4e317b26b1acc",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s05-q5",
+          "o-s05-q6",
+          "o-s05-q7",
+          "o-s05-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-2bf422df9f5fcf32",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q1",
+          "o-s06-a1",
+          "o-s06-q2",
+          "o-s06-a2",
+          "o-s06-q3",
+          "o-s06-a3"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-2bf422df9f5fcf32",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-a3",
+          "o-s06-q4",
+          "o-s06-a4"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-2bf422df9f5fcf32",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q5",
+          "o-s06-a5",
+          "o-s06-q6",
+          "o-s06-a6",
+          "o-s06-q7",
+          "o-s06-a7"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-2bf422df9f5fcf32",
+        "index": 4,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s06-q8",
+          "o-s06-a8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "index": 1,
+        "outcome": "reference",
+        "occurrence_ids": [],
+        "reason": "손글씨 \"실험 1\" 표지. 문항 없음."
+      },
+      {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "index": 2,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q1",
+          "o-s07-q2",
+          "o-s07-q3",
+          "o-s07-q4"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-f3e8534dcccbf6dc",
+        "index": 3,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s07-q5",
+          "o-s07-q6",
+          "o-s07-q7",
+          "o-s07-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-46d18ba8187d4ab1",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s08-q1",
+          "o-s08-q2",
+          "o-s08-q3",
+          "o-s08-q4",
+          "o-s08-q5",
+          "o-s08-a1",
+          "o-s08-a2",
+          "o-s08-a3",
+          "o-s08-a4",
+          "o-s08-a5"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-c97642215a896d66",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s09-q1",
+          "o-s09-q2",
+          "o-s09-q3",
+          "o-s09-q4",
+          "o-s09-q5",
+          "o-s09-q6",
+          "o-s09-q7",
+          "o-s09-q8"
+        ],
+        "reason": ""
+      },
+      {
+        "source_id": "s-93c28fff0eb40f42",
+        "index": 1,
+        "outcome": "questions",
+        "occurrence_ids": [
+          "o-s10-q1",
+          "o-s10-a1",
+          "o-s10-q2",
+          "o-s10-a2",
+          "o-s10-q3",
+          "o-s10-a3"
+        ],
+        "reason": ""
+      }
+    ],
+    "unresolved": [
+      {
+        "target_id": "o-s03-a2",
+        "reason": "제공 답안의 E = A · B 는 같은 쪽 회로 그림(AND 입력이 B 분기선과 C)과 다르고, 다른 자료의 제공 답안(B·C)과도 충돌한다. 원문 그대로 보존하고 정답을 판정하지 않음."
+      },
+      {
+        "target_id": "o-s10-a2",
+        "reason": "제공 답안의 E = A · B 는 같은 쪽 회로 그림(AND 입력이 B 분기선과 C)과 다르고, 다른 자료의 제공 답안(B·C)과도 충돌한다. 원문 그대로 보존하고 정답을 판정하지 않음. DOCX 정답본도 PDF 정답본과 같은 값이다."
+      },
+      {
+        "target_id": "o-s04-a2",
+        "reason": "채점본 2번 답안 아래 흐린 연필 메모는 판독 불가, 사선으로 지운 회로는 답안 여부 미확정이라 전사하지 않음."
+      },
+      {
+        "target_id": "o-s06-a3",
+        "reason": "예상문제 v2 (3)번 page 1 답 사진의 NAND 배선·하단 게이트 모양을 확정하지 못함. page 2 사진의 식·회로는 전사함."
+      },
+      {
+        "target_id": "o-s06-a4",
+        "reason": "예상문제 v2 (4)번 첫째 답 사진은 B 경로 기호(버블 유무)·첫 게이트 종류가 불명확하고 하단이 잘림. 둘째 사진은 전사함. 두 사진의 관계(수정 전·후 여부)도 확정하지 않음."
+      },
+      {
+        "target_id": "o-s08-a5",
+        "reason": "수기 CMOS 3-input NAND 회로의 입력-트랜지스터 게이트 대응을 사진으로 확정하지 못함."
+      },
+      {
+        "target_id": "s-46d18ba8187d4ab1",
+        "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+      },
+      {
+        "target_id": "s-f3e8534dcccbf6dc",
+        "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+      }
+    ]
+  }
+}

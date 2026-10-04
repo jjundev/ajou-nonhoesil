@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="135.0mm" height="60.0mm" viewBox="0 0 900 400" role="img"><title>NAND 네 개로 만든 XOR</title><desc>N1=(AB)′, N2=(A·N1)′, N3=(B·N1)′, 출력 C=(N2·N3)′</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="900" height="400" fill="white"/><text x="50" y="127" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<text x="50" y="302" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,120 130,120"/>
+<circle cx="130" cy="120" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="130,120 130,75 420,75"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="130,120 130,165 200,165"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,295 420,295"/>
+<circle cx="150" cy="295" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="150,295 150,195 200,195"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,150 H250 A30,30 0 0 1 250,210 H200 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="286" cy="180" r="6"/>
+<text x="240" y="140" font-size="20" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">N1</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="292,180 330,180"/>
+<circle cx="330" cy="180" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="330,180 330,105 420,105"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="330,180 330,265 420,265"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M420,60 H470 A30,30 0 0 1 470,120 H420 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="506" cy="90" r="6"/>
+<text x="460" y="50" font-size="20" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">N2</text>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M420,250 H470 A30,30 0 0 1 470,310 H420 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="506" cy="280" r="6"/>
+<text x="460" y="240" font-size="20" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">N3</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="512,90 560,90 560,165 620,165"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="512,280 560,280 560,195 620,195"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M620,150 H670 A30,30 0 0 1 670,210 H620 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="706" cy="180" r="6"/>
+<text x="660" y="140" font-size="20" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">N4</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="712,180 800,180"/>
+<text x="815" y="187" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">C</text>
+<text x="340" y="170" font-size="18" text-anchor="start" font-family="Arial, sans-serif" fill="#222">(AB)′</text></svg>

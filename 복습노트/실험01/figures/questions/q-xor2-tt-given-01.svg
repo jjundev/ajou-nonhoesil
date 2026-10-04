@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="78.0mm" height="33.0mm" viewBox="0 0 520 220" role="img"><title>2입력 XOR 게이트 기호</title><desc>A와 B를 받아 C를 내는 XOR 게이트</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="520" height="220" fill="white"/><path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M170,60 C205,60 238,68 250,90 C238,112 205,120 170,120 Q192,90 170,60 Z"/>
+<path fill="none" stroke="#222" stroke-width="3" d="M160,60 Q182,90 160,120"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="100,75 168,75"/>
+<text x="90" y="82" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="100,105 168,105"/>
+<text x="90" y="112" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="250,90 330,90"/>
+<text x="345" y="97" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">C</text></svg>

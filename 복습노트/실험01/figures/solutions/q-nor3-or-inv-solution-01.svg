@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="117.0mm" height="40.5mm" viewBox="0 0 780 270" role="img"><title>OR 두 개와 NOT 하나로 만든 3입력 NOR</title><desc>(A+B+C)′ = NOT(OR(OR(A,B),C))</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="780" height="270" fill="white"/><path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,40 C235,40 268,48 280,70 C268,92 235,100 200,100 Q222,70 200,40 Z"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,55 208,55"/>
+<text x="100" y="62" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,85 208,85"/>
+<text x="100" y="92" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M360,130 C395,130 428,138 440,160 C428,182 395,190 360,190 Q382,160 360,130 Z"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="280,70 330,70 330,145 368,145"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,175 368,175"/>
+<text x="100" y="182" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M500,130 L560,160 L500,190 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="566" cy="160" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="440,160 500,160"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="572,160 700,160"/>
+<text x="715" y="167" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">F</text>
+<text x="330" y="60" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">A+B</text></svg>

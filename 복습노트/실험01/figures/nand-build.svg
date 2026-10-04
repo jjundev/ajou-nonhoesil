@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="135.0mm" height="114.0mm" viewBox="0 0 900 760" role="img"><title>NAND 하나로 NOT, AND, OR를 만드는 방법</title><desc>NAND 입력을 묶으면 NOT, NAND 뒤에 NOT을 붙이면 AND, 입력마다 NOT을 앞에 붙이면 OR</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="900" height="760" fill="white"/><text x="30" y="50" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">NOT: 입력 둘을 묶어요</text>
+<text x="40" y="130" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,125 120,125"/>
+<circle cx="120" cy="125" r="5.5" fill="#222"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,95 H250 A30,30 0 0 1 250,155 H200 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="286" cy="125" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="120,125 120,110 200,110"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="120,125 120,140 200,140"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="292,125 420,125"/>
+<text x="435" y="132" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">A′</text>
+<text x="30" y="250" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">AND: NAND 뒤에 NOT(묶은 NAND)을 붙여요</text>
+<text x="40" y="305" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,300 200,300"/>
+<text x="40" y="345" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,340 200,340"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,285 H250 A30,30 0 0 1 250,345 H200 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="286" cy="315" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="292,315 330,315"/>
+<circle cx="350" cy="315" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="330,315 350,315 350,300 410,300"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="350,315 350,330 410,330"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M410,285 H460 A30,30 0 0 1 460,345 H410 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="496" cy="315" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="502,315 700,315"/>
+<text x="715" y="322" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">A·B</text>
+<text x="30" y="470" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">OR: 입력마다 NOT을 앞에 붙인 뒤 NAND</text>
+<text x="40" y="540" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,535 70,535"/>
+<circle cx="70" cy="535" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="70,535 70,520 150,520"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="70,535 70,550 150,550"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M150,505 H200 A30,30 0 0 1 200,565 H150 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="236" cy="535" r="6"/>
+<text x="40" y="660" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,655 70,655"/>
+<circle cx="70" cy="655" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="70,655 70,640 150,640"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="70,655 70,670 150,670"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M150,625 H200 A30,30 0 0 1 200,685 H150 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="236" cy="655" r="6"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M450,565 H500 A30,30 0 0 1 500,625 H450 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="536" cy="595" r="6"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="242,535 330,535 330,580 450,580"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="242,655 330,655 330,610 450,610"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="542,595 760,595"/>
+<text x="775" y="602" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">A+B</text></svg>

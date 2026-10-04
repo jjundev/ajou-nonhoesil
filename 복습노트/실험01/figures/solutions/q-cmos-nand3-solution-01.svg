@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="114.0mm" height="90.0mm" viewBox="0 0 760 600" role="img"><title>CMOS 3입력 NAND: 위쪽 PMOS 병렬, 아래쪽 NMOS 직렬</title><desc>PMOS 셋은 VDD와 출력 사이에 병렬, NMOS 셋은 출력과 GND 사이에 직렬</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="760" height="600" fill="white"/><text x="40" y="52" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">VDD</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="100,70 560,70"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,70 100,70"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M172,130 H172 M172,106 V154 M172,110 H194 V90 M172,150 H194 V170"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M164,112 V148"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="157" cy="130" r="5"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M150,130 H152"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M162,130 H164"/>
+<text x="204" y="136" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">P1</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="194,70 194,90"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="194,170 194,210"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="144,130 150,130"/>
+<text x="138" y="137" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<circle cx="194" cy="210" r="5.5" fill="#222"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M322,130 H322 M322,106 V154 M322,110 H344 V90 M322,150 H344 V170"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M314,112 V148"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="307" cy="130" r="5"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M300,130 H302"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M312,130 H314"/>
+<text x="354" y="136" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">P2</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,70 344,90"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,170 344,210"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="294,130 300,130"/>
+<text x="288" y="137" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<circle cx="344" cy="210" r="5.5" fill="#222"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M472,130 H472 M472,106 V154 M472,110 H494 V90 M472,150 H494 V170"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M464,112 V148"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="457" cy="130" r="5"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M450,130 H452"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M462,130 H464"/>
+<text x="504" y="136" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">P3</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="494,70 494,90"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="494,170 494,210"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="444,130 450,130"/>
+<text x="438" y="137" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<circle cx="494" cy="210" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="194,210 640,210"/>
+<text x="655" y="217" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">Z</text>
+<circle cx="344" cy="210" r="5.5" fill="#222"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M322,280 H322 M322,256 V304 M322,260 H344 V240 M322,300 H344 V320"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M314,262 V298"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M300,280 H314"/>
+<text x="354" y="286" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">N1</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="294,280 300,280"/>
+<text x="288" y="287" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,210 344,240"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M322,360 H322 M322,336 V384 M322,340 H344 V320 M322,380 H344 V400"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M314,342 V378"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M300,360 H314"/>
+<text x="354" y="366" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">N2</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="294,360 300,360"/>
+<text x="288" y="367" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,320 344,320"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M322,440 H322 M322,416 V464 M322,420 H344 V400 M322,460 H344 V480"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M314,422 V458"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M300,440 H314"/>
+<text x="354" y="446" font-size="20" text-anchor="start" font-family="Arial, sans-serif" fill="#222">N3</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="294,440 300,440"/>
+<text x="288" y="447" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,400 344,400"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="344,480 344,500"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="314,500 374,500"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="324,510 364,510"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="334,520 354,520"/>
+<text x="386" y="512" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">GND</text></svg>

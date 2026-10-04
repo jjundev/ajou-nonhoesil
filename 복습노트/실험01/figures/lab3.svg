@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="129.0mm" height="81.0mm" viewBox="0 0 860 540" role="img"><title>실험 3 회로: 입력 A·B, 출력 X·Y·Z</title><desc>NOT, AND, OR 게이트로 X, Y, Z를 만드는 회로</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="860" height="540" fill="white"/><text x="40" y="237" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<text x="40" y="337" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="50,230 140,230"/>
+<circle cx="140" cy="230" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="140,55 140,415"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="140,55 528,55"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="140,230 200,230"/>
+<path fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M50,330 H131 a9,9 0 0 1 18,0 H360"/>
+<circle cx="110" cy="330" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="110,330 110,445 368,445"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="140,415 368,415"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M200,200 L260,230 L200,260 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="266" cy="230" r="6"/>
+<text x="230" y="282" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC04</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="272,230 320,230 320,300 360,300"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M360,285 H410 A30,30 0 0 1 410,345 H360 Z"/>
+<text x="400" y="367" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC08</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="440,315 480,315"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M480,285 L540,315 L480,345 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="546" cy="315" r="6"/>
+<text x="510" y="367" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC04</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="552,315 760,315"/>
+<text x="775" y="322" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">Z</text>
+<circle cx="600" cy="315" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="600,315 600,130 480,130 480,85 528,85"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M520,40 C555,40 588,48 600,70 C588,92 555,100 520,100 Q542,70 520,40 Z"/>
+<text x="560" y="122" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC32</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="600,70 760,70"/>
+<text x="775" y="77" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">X</text>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M360,400 C395,400 428,408 440,430 C428,452 395,460 360,460 Q382,430 360,400 Z"/>
+<text x="400" y="482" font-size="18" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">74HC32</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="440,430 760,430"/>
+<text x="775" y="437" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">Y</text></svg>

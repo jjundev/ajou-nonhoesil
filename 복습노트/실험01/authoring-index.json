@@ -1,0 +1,765 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp01",
+  "bank_sha256": "38a7e891a6c03982a80cef94b815f2d509e39d67f94dc81e7d9f57ccfe1eefec",
+  "experiment": 1,
+  "questions": [
+    {
+      "question_id": "q-tt3-4row",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-tt3-4row",
+          "to_id": "q-tt3-8row",
+          "type": "variant_of",
+          "reason": "같은 3입력 AND/OR/NOR/XOR 진리표 문항이지만 단답형 시험지는 입력 4행(000, 001, 101, 111)만, 다른 자료는 8행 전체를 제시해 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-79f4f8b678ea622f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 (1); 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-46d18ba8187d4ab1",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 (1); 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q1",
+        "a-s01-p1"
+      ],
+      "evidence_only_asset_ids": [],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-switching",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q2",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s09-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a6",
+          "target_id": "q-switching",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q2",
+        "a-s01-p1",
+        "a-s05-p2-o-s05-q6",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-nand-xor",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s08-q3",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s09-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-nand-xor",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-nand-xor",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s06-a3",
+          "reason": "예상문제 v2 (3)번 page 1 답 사진의 NAND 배선·하단 게이트 모양을 확정하지 못함. page 2 사진의 식·회로는 전사함."
+        },
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q3",
+        "a-s01-p1",
+        "a-s05-p1-o-s05-q3",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s06-p1",
+        "a-s06-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-xor2-tt",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q1",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s03-q1",
+        "o-s10-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-xor2-tt",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-xor2-tt",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-xor2-tt",
+          "to_id": "q-xor-graded",
+          "type": "variant_of",
+          "reason": "둘 다 2입력 XOR 진리표를 다루지만 Basic Gates 퀴즈는 기호와 L/H 입력표를 주고 출력만 요구하고, 채점본은 기호·진리표를 직접 그리고 논리식까지 요구함.",
+          "evidence": [
+            {
+              "source_id": "s-99473e7d541532a1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e1f586ae83ba044a",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1·1-2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q1",
+        "a-s02-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s10-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-deq",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q2",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s03-q2",
+        "o-s10-q2",
+        "o-s08-q2",
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s09-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-deq",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s03-a2",
+          "reason": "제공 답안의 E = A · B 는 같은 쪽 회로 그림(AND 입력이 B 분기선과 C)과 다르고, 다른 자료의 제공 답안(B·C)과도 충돌한다. 원문 그대로 보존하고 정답을 판정하지 않음."
+        },
+        {
+          "target_id": "o-s10-a2",
+          "reason": "제공 답안의 E = A · B 는 같은 쪽 회로 그림(AND 입력이 B 분기선과 C)과 다르고, 다른 자료의 제공 답안(B·C)과도 충돌한다. 원문 그대로 보존하고 정답을 판정하지 않음. DOCX 정답본도 PDF 정답본과 같은 값이다."
+        },
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q2",
+        "a-s02-p1",
+        "a-s05-p1-o-s05-q2",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s10-p1",
+        "a-s08-p1",
+        "a-s06-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-nand3",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s03-q3",
+        "o-s10-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a3",
+          "target_id": "q-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-nand3",
+          "to_id": "q-cmos-nand3",
+          "type": "variant_of",
+          "reason": "같은 3-input NAND 구현이지만 한쪽은 2-input NAND·AND 게이트로, 다른 쪽은 CMOS 트랜지스터로 구성하라는 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-99473e7d541532a1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-46d18ba8187d4ab1",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 (5); 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q3",
+        "a-s02-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s10-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-xor-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s04-q1",
+      "occurrence_ids": [
+        "o-s04-q1"
+      ],
+      "subparts": [
+        {
+          "id": "p-o-s04-q1-1",
+          "label": "1-1",
+          "occurrence_id": "o-s04-q1",
+          "block_ids": [
+            "b-o-s04-q1-text1"
+          ]
+        },
+        {
+          "id": "p-o-s04-q1-2",
+          "label": "1-2",
+          "occurrence_id": "o-s04-q1",
+          "block_ids": [
+            "b-o-s04-q1-text2"
+          ]
+        }
+      ],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a1-1",
+          "target_id": "p-o-s04-q1-1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a1-2",
+          "target_id": "p-o-s04-q1-2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-xor2-tt",
+          "to_id": "q-xor-graded",
+          "type": "variant_of",
+          "reason": "둘 다 2입력 XOR 진리표를 다루지만 Basic Gates 퀴즈는 기호와 L/H 입력표를 주고 출력만 요구하고, 채점본은 기호·진리표를 직접 그리고 논리식까지 요구함.",
+          "evidence": [
+            {
+              "source_id": "s-99473e7d541532a1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-e1f586ae83ba044a",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1-1·1-2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1-q1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-nor3-or-inv",
+      "kind": "past",
+      "representative_occurrence_id": "o-s04-q2",
+      "occurrence_ids": [
+        "o-s04-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-nor3-or-inv",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a2",
+          "reason": "채점본 2번 답안 아래 흐린 연필 메모는 판독 불가, 사선으로 지운 회로는 답안 여부 미확정이라 전사하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s04-p1-q2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-tt3-8row",
+      "kind": "past",
+      "representative_occurrence_id": "o-s08-q1",
+      "occurrence_ids": [
+        "o-s08-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s09-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-tt3-8row",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-tt3-8row",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-tt3-4row",
+          "to_id": "q-tt3-8row",
+          "type": "variant_of",
+          "reason": "같은 3입력 AND/OR/NOR/XOR 진리표 문항이지만 단답형 시험지는 입력 4행(000, 001, 101, 111)만, 다른 자료는 8행 전체를 제시해 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-79f4f8b678ea622f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 (1); 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-46d18ba8187d4ab1",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 (1); 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q1",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s06-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-demorgan",
+      "kind": "past",
+      "representative_occurrence_id": "o-s08-q4",
+      "occurrence_ids": [
+        "o-s08-q4",
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s09-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-demorgan",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-demorgan",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q5",
+        "a-s05-p2-o-s05-q5",
+        "a-s05-p1",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s06-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-cmos-nand3",
+      "kind": "past",
+      "representative_occurrence_id": "o-s08-q5",
+      "occurrence_ids": [
+        "o-s08-q5",
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s09-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a7",
+          "target_id": "q-cmos-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-cmos-nand3",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-nand3",
+          "to_id": "q-cmos-nand3",
+          "type": "variant_of",
+          "reason": "같은 3-input NAND 구현이지만 한쪽은 2-input NAND·AND 게이트로, 다른 쪽은 CMOS 트랜지스터로 구성하라는 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-99473e7d541532a1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-46d18ba8187d4ab1",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 (5); 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s08-a5",
+          "reason": "수기 CMOS 3-input NAND 회로의 입력-트랜지스터 게이트 대응을 사진으로 확정하지 못함."
+        },
+        {
+          "target_id": "s-46d18ba8187d4ab1",
+          "reason": "수기메모 사진은 (5)번 회로 아래에서 끝나 뒷면·추가 문항 유무를 확인할 수 없다. 연도·학기·분반 표기도 없음. q-logicdiagram·q-pullup 의 predicted 분류는 이 한계 위에 있다."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2-o-s05-q7",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s06-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-logicdiagram",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q4",
+      "occurrence_ids": [
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s09-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-logicdiagram",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s06-a4",
+          "reason": "예상문제 v2 (4)번 첫째 답 사진은 B 경로 기호(버블 유무)·첫 게이트 종류가 불명확하고 하단이 잘림. 둘째 사진은 전사함. 두 사진의 관계(수정 전·후 여부)도 확정하지 않음."
+        },
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q4",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 독립 계산을 진행할 저작 완료 문항"
+    },
+    {
+      "question_id": "q-pullup",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q8",
+      "occurrence_ids": [
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s09-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a8",
+          "target_id": "q-pullup",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤(또는 같은 자리)에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-f3e8534dcccbf6dc",
+          "reason": "파일명은 \"종합_기출문제\"지만 1쪽은 손글씨 표지, 2~3쪽은 응시자 칸·배점 없이 예상문제 v1·원본 DOC와 같은 8문항이다. 파일명으로 기출을 확정하지 않고 문항 단위로 분류함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p2-o-s05-q8",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "서술형 한 줄 문항으로 교안 범위 밖이다. 개념은 t-cmos 보충 설명에 담고 카드로는 수록하지 않았다."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120.0mm" height="49.5mm" viewBox="0 0 800 330" role="img"><title>게이트 세 개로 D, E, Q를 만드는 회로</title><desc>A와 B가 반전 출력 OR로 D, B 분기와 C가 AND로 E, D와 E가 OR로 Q</desc><style>text{font-family:Arial,"Malgun Gothic",sans-serif;fill:#222}.wire{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.gate{fill:#fff;stroke:#222;stroke-width:3;stroke-linejoin:round}</style><rect width="800" height="330" fill="white"/><text x="50" y="72" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">A</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,65 188,65"/>
+<text x="50" y="102" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">B</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,95 188,95"/>
+<circle cx="130" cy="95" r="5.5" fill="#222"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="130,95 130,185 180,185"/>
+<text x="50" y="222" font-size="22" text-anchor="end" font-family="Arial, sans-serif" fill="#222">C</text>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="60,215 180,215"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M180,50 C215,50 248,58 260,80 C248,102 215,110 180,110 Q202,80 180,50 Z"/>
+<circle fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" cx="266" cy="80" r="6"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M180,170 H230 A30,30 0 0 1 230,230 H180 Z"/>
+<path fill="#fff" stroke="#222" stroke-width="3" stroke-linejoin="round" d="M400,105 C435,105 468,113 480,135 C468,157 435,165 400,165 Q422,135 400,105 Z"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="272,80 330,80 330,120 408,120"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="260,200 330,200 330,150 408,150"/>
+<polyline fill="none" stroke="#222" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="480,135 560,135"/>
+<text x="575" y="142" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222">Q</text>
+<text x="300" y="70" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">D</text>
+<text x="262" y="192" font-size="22" text-anchor="start" font-family="Arial, sans-serif" fill="#222" font-weight="700">E</text>
+<text x="60" y="290" font-size="24" text-anchor="start" font-family="Arial, sans-serif" fill="#222">D = (A+B)′  /  E = B·C  /  Q = D+E = (A+B)′ + B·C</text></svg>
