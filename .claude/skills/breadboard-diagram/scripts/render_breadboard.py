@@ -3164,6 +3164,160 @@ def place_proxy(circuits, slots):
     return total, layout
 
 
+_PLACE_PATHS = {}
+
+
+def place_paths(circuit, layout, density_weight=None):
+    """`layout` 자리에서 `route_plan` 경로 — 회로·배선표·자리·λ 마다 한 번(엔진 안 캐시). 주차 빌더와
+    배치기가 같은 캐시를 쓴다."""
+    w = DENSITY_WEIGHT if density_weight is None else density_weight
+    key = (circuit.name, place_hash([circuit], ()), layout_key(layout), w)
+    if key not in _PLACE_PATHS:
+        def fixed(bb, stage, superset=False):
+            circuit.fixed(bb, stage, superset, layout)
+        _PLACE_PATHS[key] = route_plan(fixed, place_chips(circuit, layout), place_wires(circuit, layout),
+                                       board='v2', density_weight=w)
+    return _PLACE_PATHS[key]
+
+
+def place_metrics(circuit, layout, density_weight=None):
+    """superset 판(모든 단계의 선 — 학생이 그 회로를 꽂는 동안 꽂는 선 전부)의 `wire_metrics`."""
+    plans = place_paths(circuit, layout, density_weight)
+    bb = BreadboardRenderer(None, board='v2')
+    bb.enable_steps()
+    circuit.fixed(bb, None, True, layout)
+    for (_s, _e, kind, _f, _t, desc), (p, m) in zip(place_wires(circuit, layout), plans):
+        bb.step_wire(p, kind, desc, marker_at=m)
+    return wire_metrics(bb)
+
+
+def _place_measure(circuits, layout):
+    """회로마다 superset 지표를 더한다. 막히면 {'blocked': 첫 줄}."""
+    tot = {'length': 0.0, 'bends': 0, 'density': 0.0}
+    try:
+        for c in circuits:
+            m = place_metrics(c, layout)
+            for k in tot:
+                tot[k] += m[k]
+    except AssertionError as e:
+        return {'blocked': str(e).splitlines()[0]}
+    return tot
+
+
+def place_verify(module, layout, out_dir):
+    """주차 모듈의 `BOARDS` 사슬(기준선 이어 가며, `RESTART` 에서 끊고)과 `FINALS` 를 `layout` 으로 다
+    그려 본다 — `verify()`(R1~R14) 가 막으면 '보드: 사유' 한 줄, 통과하면 None. 모듈 `LAYOUT` 은
+    그리는 동안만 바꾼다(빌더가 전역 `LAYOUT` 을 읽는다)."""
+    saved, name = module.LAYOUT, None
+    module.LAYOUT = layout
+    try:
+        base = None
+        for name, fn, stage in module.BOARDS:
+            if name in getattr(module, 'RESTART', ()):
+                base = None
+            bb = fn(os.path.join(out_dir, name), None, stage=stage, baseline=base)
+            base = bb.snapshot()
+        for name, fn in module.FINALS:
+            fn(os.path.join(out_dir, name))
+    except AssertionError as e:
+        lines = [x.strip() for x in str(e).splitlines() if x.strip()]
+        return f'{name}: ' + ' '.join(lines[:2])
+    finally:
+        module.LAYOUT = saved
+    return None
+
+
+def place_module_hash(module):
+    return place_hash(module.PLACE, module.SLOTS, getattr(module, 'GMIN', PLACE_GMIN))
+
+
+def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=None,
+               measure=None, verify=None):
+    """주차 모듈의 칩 행·LED 행·브리지 행을 고른다.
+
+    1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
+    2. 지금 `LAYOUT`(기준)과 앞 `top` 개를 실측한다(`measure`, 기본 `_place_measure` — route_plan).
+    3. 막히지 않고 밀도 합이 기준 이하인 것을 길이 순으로 `verify`(기본 `place_verify` — 단계 사슬
+       전부) 해 처음 통과한 것을 고른다. 없으면 다음 `top` 개, `rounds` 번까지. 기준도 후보라 나빠지는
+       배치는 고르지 않는다(N1).
+    돌려주는 값 {'hash', 'layout', 'rows'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
+    'length', 'bends', 'density' | 'blocked', 'status'}."""
+    circuits, slots = list(module.PLACE), tuple(module.SLOTS)
+    for c in circuits:
+        place_check(c)
+    gmin = getattr(module, 'GMIN', PLACE_GMIN) if gmin is None else gmin
+    measure = measure or (lambda lay: _place_measure(circuits, lay))
+    if verify is None:
+        tmp = out_dir or tempfile.mkdtemp()
+
+        def verify(lay):
+            return place_verify(module, lay, tmp)
+    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
+                     if r is not None), key=lambda r: (r[0], layout_key(r[1])))
+    base = dict(rank='기준', proxy=None, layout=module.LAYOUT, **measure(module.LAYOUT))
+    if 'blocked' in base:
+        raise AssertionError(f"기준 LAYOUT 이 막힌다 — {base['blocked']}")
+    rows, chosen, seen = [base], None, {layout_key(module.LAYOUT)}
+    limit = base['density'] + 1e-9
+    for r in range(rounds):
+        for i in range(r * top, min((r + 1) * top, len(ranked))):
+            proxy, lay = ranked[i]
+            if layout_key(lay) in seen:
+                continue
+            seen.add(layout_key(lay))
+            rows.append(dict(rank=i + 1, proxy=round(proxy), layout=lay, **measure(lay)))
+        ok = sorted((x for x in rows if 'blocked' not in x and 'status' not in x and x['density'] <= limit),
+                    key=lambda x: (x['length'], x['density'], layout_key(x['layout'])))
+        for x in ok:
+            why = verify(x['layout'])
+            x['status'] = '✔ 고름' if why is None else f'verify: {why}'
+            if why is None:
+                chosen = x
+                break
+        if chosen is not None:
+            break
+    for x in rows:
+        x.setdefault('status', f"막힘: {x['blocked']}" if 'blocked' in x
+                     else '밀도 초과' if x['density'] > limit else '')
+    if chosen is None:
+        raise AssertionError('고를 배치가 없다 — ' + rows[-1]['status'])
+    return {'hash': place_hash(circuits, slots, gmin), 'layout': chosen['layout'], 'rows': rows}
+
+
+def place_report(result, title):
+    """`배치탐색.md` 본문. 첫 JSON 블록(지문·고른 layout)을 테스트가 읽는다 — 손으로 고치지 않는다."""
+    head = json.dumps({'hash': result['hash'], 'layout': result['layout']},
+                      ensure_ascii=False, indent=1, sort_keys=True)
+    lines = [f'# 배치 탐색 — {title}', '',
+             '`python -m scripts.lab.place_search <배치.py>` 가 쓴다. 배선표가 바뀌면 다시 돌린다 — '
+             '고른 layout 은 `배치.py` 의 `LAYOUT` 과 netlist `kind: layout` 표에 옮겨 적는다.', '',
+             '```json', head, '```', '',
+             '길이·밀도는 superset 판(모든 단계의 선) 칸 단위, 회로 합이다. 기준 = 탐색 시점 `LAYOUT`.', '',
+             '| 순위 | 근사(px) | 길이 | 꺾임 | 밀도 | 슬롯 | LED | 결과 |',
+             '|---|---|---|---|---|---|---|---|']
+    for x in result['rows']:
+        slots = ' '.join(f'{k}:{v}' for k, v in sorted(x['layout']['slots'].items()))
+        leds = ' '.join(f'{t}:{r}' for c in sorted(x['layout']['leds'])
+                        for t, r in x['layout']['leds'][c].items())
+        proxy = '' if x['proxy'] is None else x['proxy']
+        if 'blocked' in x:
+            lines.append(f"| {x['rank']} | {proxy} | — | — | — | {slots} | {leds} | {x['status']} |")
+        else:
+            lines.append(f"| {x['rank']} | {proxy} | {x['length']:.1f} | {x['bends']} | "
+                         f"{x['density']:.1f} | {slots} | {leds} | {x['status']} |")
+    return '\n'.join(lines) + '\n'
+
+
+def read_place_report(path):
+    """`배치탐색.md` 의 첫 JSON 블록 → {'hash', 'layout'}."""
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    m = re.search(r'```json\n(.*?)\n```', text, re.S)
+    if not m:
+        raise ValueError(f'{path}: JSON 블록이 없다')
+    return json.loads(m.group(1))
+
+
 # ---------------------------------------------------------------------------
 # 주차 결선 파일 — `보고서/실험NN/결선도/배치.py`
 #

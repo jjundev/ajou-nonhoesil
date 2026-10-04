@@ -171,5 +171,130 @@ class R10AndCandidates(unittest.TestCase):
         self.assertGreater(cost, 0)
 
 
+def _gap(lay):
+    return abs(lay['slots']['K2'] - lay['slots']['K1'])
+
+
+class Plan(unittest.TestCase):
+    """선택 로직 — 실측·검증은 가짜로 주입한다(진짜는 시험판 시험이 잰다)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.toy = _toy(cls.mod, [_w(('U1', 12), ('U2', 13)), _w(('U2', 8), ('LED', 'L1'))])
+        cls.base = {'slots': {'K1': 5, 'K2': 23}, 'leds': {'toy': {'L1': 23}}, 'bridge': [33, 34]}
+
+    def module(self):
+        return SimpleNamespace(PLACE=[self.toy], SLOTS=('K1', 'K2'), LAYOUT=self.base)
+
+    @staticmethod
+    def measure(lay):
+        d = _gap(lay)
+        if d == 10:
+            return {'blocked': '경로 없음: x'}
+        return {'length': float(d), 'bends': 0, 'density': 99.0 if d == 11 else 1.0}
+
+    def test_막힘_밀도초과_verify실패를_건너뛰고_가장_짧은_것(self):
+        seen = []
+
+        def verify(lay):
+            seen.append(_gap(lay))
+            return 'R3 가림' if _gap(lay) == 12 else None
+        got = self.mod.place_plan(self.module(), top=100, measure=self.measure, verify=verify)
+        self.assertEqual(_gap(got['layout']), 13)
+        self.assertNotIn(10, seen)
+        self.assertNotIn(11, seen)
+        self.assertEqual(seen[-1], 13)
+        status = {r['status'] for r in got['rows']}
+        self.assertIn('막힘: 경로 없음: x', status)
+        self.assertIn('밀도 초과', status)
+        self.assertIn('verify: R3 가림', status)
+        self.assertIn('✔ 고름', status)
+        self.assertEqual(got['hash'], self.mod.place_module_hash(self.module()))
+
+    def test_기준이_가장_짧으면_기준(self):
+        def measure(lay):
+            return {'length': 0.0 if lay == self.base else 50.0, 'bends': 0, 'density': 1.0}
+        got = self.mod.place_plan(self.module(), top=100, measure=measure, verify=lambda lay: None)
+        self.assertEqual(got['layout'], self.base)
+        self.assertEqual(got['rows'][0]['rank'], '기준')
+
+    def test_후보가_없으면_기준(self):
+        m = self.module()
+        m.SLOTS = ('K1', 'K2')
+        got = self.mod.place_plan(m, top=100, gmin=40, measure=self.measure, verify=lambda lay: None)
+        self.assertEqual(got['layout'], self.base)
+        self.assertEqual(len(got['rows']), 1)
+
+    def test_기준이_막히면_멈춘다(self):
+        with self.assertRaisesRegex(AssertionError, '기준 LAYOUT'):
+            self.mod.place_plan(self.module(), measure=lambda lay: {'blocked': '경로 없음: y'},
+                                verify=lambda lay: None)
+
+    def test_고를_것이_없으면_멈춘다(self):
+        with self.assertRaisesRegex(AssertionError, '고를 배치가 없다'):
+            self.mod.place_plan(self.module(), top=100, measure=self.measure,
+                                verify=lambda lay: 'R2 겹침')
+
+    def test_보고서_왕복(self):
+        got = self.mod.place_plan(self.module(), top=100, measure=self.measure,
+                                  verify=lambda lay: None)
+        text = self.mod.place_report(got, '장난감 — 한글 제목')
+        d = tempfile.mkdtemp()
+        p = os.path.join(d, self.mod.PLACE_REPORT)
+        with open(p, 'w', encoding='utf-8') as f:
+            f.write(text)
+        self.assertEqual(self.mod.read_place_report(p), {'hash': got['hash'], 'layout': got['layout']})
+        self.assertIn('| 순위 |', text)
+
+
+class Verify(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_그리는_동안만_LAYOUT_을_바꾼다(self):
+        seen = []
+        m = SimpleNamespace(LAYOUT='원래', RESTART=set(), FINALS=[])
+
+        def fn(path, template_path=None, stage=None, baseline=None):
+            seen.append(m.LAYOUT)
+            return SimpleNamespace(snapshot=lambda: None)
+        m.BOARDS = [('a.png', fn, 1), ('b.png', fn, 2)]
+        self.assertIsNone(self.mod.place_verify(m, '후보', tempfile.mkdtemp()))
+        self.assertEqual(seen, ['후보', '후보'])
+        self.assertEqual(m.LAYOUT, '원래')
+
+    def test_막혀도_LAYOUT_을_되돌린다(self):
+        m = SimpleNamespace(LAYOUT='원래', RESTART=set(), FINALS=[])
+
+        def fn(path, template_path=None, stage=None, baseline=None):
+            raise AssertionError('그림대로 꽂을 수 없다:\n  R3 끝점 가림: 좌 j7')
+        m.BOARDS = [('a.png', fn, 1)]
+        got = self.mod.place_verify(m, '후보', tempfile.mkdtemp())
+        self.assertIn('a.png', got)
+        self.assertIn('R3 끝점 가림', got)
+        self.assertEqual(m.LAYOUT, '원래')
+
+
+class Paths(unittest.TestCase):
+    def test_자리마다_한_번_배선한다(self):
+        mod = _load()
+        calls = []
+
+        def fake_route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
+            calls.append((chips, wires, density_weight))
+            return [('경로', None)] * len(wires)
+        mod.route_plan = fake_route_plan
+        c = _toy(mod, [_w(('U2', 8), ('LED', 'L1'))])
+        other = dict(_LAY, slots={'K1': 5, 'K2': 18})
+        mod.place_paths(c, _LAY)
+        mod.place_paths(c, _LAY)
+        mod.place_paths(c, other)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0][1][0][4], ('LED', 7))
+        self.assertEqual(calls[0][2], mod.DENSITY_WEIGHT)
+
+
 if __name__ == '__main__':
     unittest.main()
