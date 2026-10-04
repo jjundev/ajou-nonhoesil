@@ -219,6 +219,21 @@ class Plan(unittest.TestCase):
         self.assertEqual(got['layout'], self.base)
         self.assertEqual(got['rows'][0]['rank'], '기준')
 
+    def test_기준은_다음_라운드를_다_본_뒤에(self):
+        """1라운드 후보가 verify 에서 떨어져도 기준으로 끝내지 않고 다음 라운드를 본다(2026-10-05 사용자)."""
+        calls = []
+
+        def measure(lay):
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+
+        def verify(lay):
+            calls.append(lay)
+            return 'R11 번호 원 가림' if len(calls) == 1 else None
+        got = self.mod.place_plan(self.module(), top=1, measure=measure, verify=verify)
+        self.assertNotEqual(got['layout'], self.base)
+        self.assertNotIn(self.base, calls)
+        self.assertEqual(sum(1 for r in got['rows'] if r['status'] == '✔ 고름'), 1)
+
     def test_후보가_없으면_기준(self):
         m = self.module()
         m.SLOTS = ('K1', 'K2')

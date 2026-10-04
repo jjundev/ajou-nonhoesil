@@ -3241,9 +3241,10 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
 
     1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
     2. 지금 `LAYOUT`(기준)과 앞 `top` 개를 실측한다(`measure`, 기본 `_place_measure` — route_plan).
-    3. 막히지 않고 밀도 합이 기준 이하인 것을 길이 순으로 `verify`(기본 `place_verify` — 단계 사슬
-       전부) 해 처음 통과한 것을 고른다. 없으면 다음 `top` 개, `rounds` 번까지. 기준도 후보라 나빠지는
-       배치는 고르지 않는다(N1).
+    3. 막히지 않고 기준보다 짧고 밀도 합이 기준 이하인 것을 길이 순으로 `verify`(기본 `place_verify` —
+       단계 사슬 전부) 해 처음 통과한 것을 고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을
+       때만 기준을 verify 해 고른다 — 기준이 1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(2026-10-05
+       사용자). 기준보다 긴 배치는 고르지 않는다(N1).
     돌려주는 값 {'hash', 'layout', 'rows'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
     'length', 'bends', 'density' | 'blocked', 'status'}."""
     circuits, slots = list(module.PLACE), tuple(module.SLOTS)
@@ -3270,7 +3271,8 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
                 continue
             seen.add(layout_key(lay))
             rows.append(dict(rank=i + 1, proxy=round(proxy), layout=lay, **measure(lay)))
-        ok = sorted((x for x in rows if 'blocked' not in x and 'status' not in x and x['density'] <= limit),
+        ok = sorted((x for x in rows[1:] if 'blocked' not in x and 'status' not in x
+                     and x['density'] <= limit and x['length'] < base['length']),
                     key=lambda x: (x['length'], x['density'], layout_key(x['layout'])))
         for x in ok:
             why = verify(x['layout'])
@@ -3280,9 +3282,15 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
                 break
         if chosen is not None:
             break
+    if chosen is None:
+        why = verify(base['layout'])
+        base['status'] = '✔ 고름' if why is None else f'verify: {why}'
+        if why is None:
+            chosen = base
     for x in rows:
         x.setdefault('status', f"막힘: {x['blocked']}" if 'blocked' in x
-                     else '밀도 초과' if x['density'] > limit else '')
+                     else '밀도 초과' if x['density'] > limit
+                     else '기준보다 김' if x is not base and x['length'] >= base['length'] else '')
     if chosen is None:
         raise AssertionError('고를 배치가 없다 — ' + rows[-1]['status'])
     return {'hash': place_hash(circuits, slots, gmin), 'layout': chosen['layout'], 'rows': rows}
