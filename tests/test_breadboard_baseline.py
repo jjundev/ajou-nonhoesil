@@ -4,6 +4,10 @@
 실험01 실험실 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 되는 회로였는데
 결선도가 회로마다 처음부터 그려져 있어 전부 걷었다. 회로 사이의 **차이**가
 그림에 보여야 한다.
+
+합성 보드는 전부 `board='v1'` 이다 — v1 좌표(홀 열 위 세로선, 칩 몸통 위 번호 원)로 짜인
+기준선·걷기 시험이라, 기본 판형이 v2 로 바뀐 뒤(3bc3a2b) v2 읽기 규칙 R11~R13 이 기준선과
+무관한 이유로 막는다. 같은 커밋이 `test_breadboard_nets` 등에 한 것과 같다.
 """
 import importlib.util
 import os
@@ -31,7 +35,7 @@ class Baseline(unittest.TestCase):
 
     def first(self):
         """앞 보드: 칩 하나 + 전원 + 배선 하나 + LED 사슬."""
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         c = bb.cols['left']
         bb.draw_chip('74HC08', 7)
@@ -51,7 +55,7 @@ class Baseline(unittest.TestCase):
 
     def test_removals_는_걷을_배선에_번호를_준다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC08', 7)
         rs = bb.removals()
@@ -77,7 +81,7 @@ class Baseline(unittest.TestCase):
 
     def test_기준선에_있는_배선은_회색이고_번호가_없다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         c = bb.cols['left']
         bb.draw_chip('74HC08', 7)
@@ -92,7 +96,7 @@ class Baseline(unittest.TestCase):
 
     def test_새_배선은_번호를_받는다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         c = bb.cols['left']
         n = bb.step_wire([(c['b'], bb.r_y(12)), (c['b'], bb.r_y(20))], 'sig', '새 선')
@@ -101,7 +105,7 @@ class Baseline(unittest.TestCase):
 
     def test_removed_는_안_그린_기준선_배선을_주소로_낸다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC08', 7)
         gone = bb.removed()
@@ -114,7 +118,7 @@ class Baseline(unittest.TestCase):
 
     def test_같은_자리에_다른_칩이면_교체_단계가_생긴다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC32', 7)
         self.assertEqual(bb.swaps, [('74HC08', '74HC32', 'left', 7)])
@@ -123,7 +127,7 @@ class Baseline(unittest.TestCase):
 
     def test_같은_칩이면_교체_단계가_없다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC08', 7)
         self.assertEqual(bb.swaps, [])
@@ -133,7 +137,7 @@ class Baseline(unittest.TestCase):
         """몸통을 회색으로 그리는 것은 픽셀이라 직접 못 본다 — `kept` 에 남는
         관측 가능한 상태로 대신 검사한다."""
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC08', 7)
         self.assertIn('74HC08 칩 그대로', bb.kept)
@@ -142,7 +146,7 @@ class Baseline(unittest.TestCase):
         """S2(18행)는 기준선(첫 보드)에 칩이 없던 자리다 — "뽑는다: (빈 자리)"
         처럼 뽑을 것도 없는데 교체라 부르면 안 된다."""
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         bb.draw_chip('74HC00', 18)
         self.assertEqual(bb.swaps, [(None, '74HC00', 'left', 18)])
@@ -152,13 +156,13 @@ class Baseline(unittest.TestCase):
 
     def test_뽑힌_칩은_removed_에_나온다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         self.assertTrue(any('칩 74HC08' in g for g in bb.removed()))
 
     def test_기준선에_있는_사슬은_번호_없이_kept_에_남는다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         c = bb.cols['left']
         bb.led_chain(c['a'], 25, 'L2', '최종')
@@ -168,7 +172,7 @@ class Baseline(unittest.TestCase):
 
     def test_기준선이_있는_그림도_그림대로_꽂힌다(self):
         base = self.first().snapshot()
-        bb = self.mod.BreadboardRenderer(baseline=base)
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=base)
         bb.enable_steps()
         c = bb.cols['left']
         bb.draw_chip('74HC32', 7)
@@ -184,7 +188,7 @@ class Baseline(unittest.TestCase):
         self.assertEqual(bb.steps[0]['desc'], '좌 7행 칩 교체')
 
     def test_submit_False_면_손그림_안내줄이_바뀐다(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.set_header('t', 's', submit=False)
         self.assertFalse(bb.submit)
 
@@ -201,7 +205,7 @@ class Baseline(unittest.TestCase):
         if extra_baseline_wire:
             base = dict(base, wires={**base['wires'], self.EXTRA_KEY: '목록에 없는 선'})
         ghost = {'wires': {self.GHOST_KEY: 1}, 'title': '걷기 제목', 'subtitle': '걷기 부제'}
-        bb = self.mod.BreadboardRenderer(baseline=dict(base, ghost=ghost))
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=dict(base, ghost=ghost))
         bb.enable_steps()
         bb.set_header('무시되는 제목', '무시되는 부제')
         c = bb.cols['left']
@@ -313,7 +317,7 @@ class RemovalBoard(unittest.TestCase):
 
     def prev_fn(self, output_path, template_path=None, stage=None, baseline=None):
         """앞 회로: 출력 배선 + LED 사슬."""
-        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline)
+        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline, board='v1')
         bb.set_header('앞 회로', '출력 -> L2')
         c = self._frame(bb)
         bb.step_wire([(c['a'], bb.r_y(12)), (c['a'], bb.r_y(25))], 'sig', '출력 -> L2')
@@ -324,7 +328,7 @@ class RemovalBoard(unittest.TestCase):
 
     def next_fn(self, output_path, template_path=None, stage=None, baseline=None):
         """다음 회로: 출력 배선이 없고 LED 사슬만 남는다."""
-        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline)
+        bb = self.mod.BreadboardRenderer(template_path, baseline=baseline, board='v1')
         bb.set_header('다음 회로', '출력 없음')
         c = self._frame(bb)
         bb.led_chain(c['a'], 25, 'L2', '최종')
@@ -379,7 +383,7 @@ class RemovalBoard(unittest.TestCase):
         self.assertTrue(g.partial, '걷기 보드는 정의상 partial 이다')
 
     def test_보통_보드는_partial_을_내리면_내려간다(self):
-        bb = self.mod.BreadboardRenderer()
+        bb = self.mod.BreadboardRenderer(board='v1')
         self.assertFalse(bb.partial)
         bb.partial = True
         self.assertTrue(bb.partial)
