@@ -38,10 +38,10 @@ class LambdaZero(unittest.TestCase):
         cls.snap = json.loads(SNAP.read_text(encoding='utf-8'))
 
     def test_MUX(self):
-        self.assertEqual(_plain(self.board._mux_paths()), self.snap['mux'])
+        self.assertEqual(_plain(self.board._mux_paths(0.0)), self.snap['mux'])
 
     def test_DMUX(self):
-        self.assertEqual(_plain(self.board._dmux_paths()), self.snap['dmux'])
+        self.assertEqual(_plain(self.board._dmux_paths(0.0)), self.snap['dmux'])
 
 
 class RoutePlanBoard(unittest.TestCase):
@@ -93,6 +93,32 @@ class Metrics(unittest.TestCase):
         placed = [('v', 100, 0, 200)]
         self.assertAlmostEqual(self.mod._density_cost(((105, 0), (105, 200)), placed, 19),
                                200 * (1 - 5 / 19))
+
+
+class Rerank(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    A = ((105, 0), (105, 200))      # 깔린 선(x=100) 5px 옆 — 싸지만 붙어 달린다
+    B = ((150, 0), (150, 200))      # 50px 떨어짐 — 조금 비싸다
+
+    def test_λ0_은_정적_순서다(self):
+        got = self.mod._rerank([(200, self.A), (210, self.B)], [('v', 100, 0, 200)], 19, 0.0)
+        self.assertEqual(got, [self.A, self.B])
+
+    def test_λ_가_크면_떨어진_선이_앞선다(self):
+        got = self.mod._rerank([(200, self.A), (210, self.B)], [('v', 100, 0, 200)], 19, 1.0)
+        self.assertEqual(got, [self.B, self.A])
+
+    def test_앞_top_개만_다시_매긴다(self):
+        got = self.mod._rerank([(200, self.A), (210, self.B)], [('v', 100, 0, 200)], 19, 1.0, top=1)
+        self.assertEqual(got, [self.A, self.B])
+
+    def test_동률은_경로_순서다(self):
+        C = ((160, 0), (160, 200))
+        got = self.mod._rerank([(210, C), (210, self.B)], [], 19, 1.0)
+        self.assertEqual(got, [self.B, C])
 
 
 if __name__ == '__main__':

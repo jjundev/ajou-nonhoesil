@@ -104,14 +104,14 @@ def _mux_fixed(bb, stage, superset=False):
 
 
 @functools.lru_cache(maxsize=None)
-def _mux_paths():
-    return route_plan(_mux_fixed, _MUX_CHIPS, _MUX_WIRES, board=BOARD)
+def _mux_paths(density_weight=None):
+    return route_plan(_mux_fixed, _MUX_CHIPS, _MUX_WIRES, board=BOARD, density_weight=density_weight)
 
 
-def _mux_draw(bb, stage):
+def _mux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 8
     _mux_fixed(bb, stage)
-    draw_routed(bb, _MUX_WIRES, _mux_paths(), stage)
+    draw_routed(bb, _MUX_WIRES, _mux_paths(density_weight), stage)
     bb.mark_unused_inputs([1, 3, 11], K1, chip='74HC04')
     bb.mark_unused_outputs([2, 4, 10], K1, chip='74HC04')
     for k in (K2, K3, K4):
@@ -121,12 +121,13 @@ def _mux_draw(bb, stage):
     bb.note(_INPUT_NOTE)
 
 
-def build_trial_mux(output_path, template_path=None, stage=None, baseline=None, layer=None):
-    """C1 4x1 MUX v2 시험판. `stage` 1..8 또는 None(완성)."""
+def build_trial_mux(output_path, template_path=None, stage=None, baseline=None, layer=None,
+                    density_weight=None):
+    """C1 4x1 MUX v2 시험판. `stage` 1..8 또는 None(완성). `density_weight` None = 엔진 DENSITY_WEIGHT."""
     bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     bb.set_header('실험04 v2 시험판: 4x1 MUX', '74HC04 + 74HC20 ×3 · 칩 좌 블록, LED 우 블록')
-    _mux_draw(bb, stage)
+    _mux_draw(bb, stage, density_weight)
     bb.export(output_path, max_row=63)
     return bb
 
@@ -181,14 +182,14 @@ def _dmux_fixed(bb, stage, superset=False):
 
 
 @functools.lru_cache(maxsize=None)
-def _dmux_paths():
-    return route_plan(_dmux_fixed, _DMUX_CHIPS, _DMUX_WIRES, board=BOARD)
+def _dmux_paths(density_weight=None):
+    return route_plan(_dmux_fixed, _DMUX_CHIPS, _DMUX_WIRES, board=BOARD, density_weight=density_weight)
 
 
-def _dmux_draw(bb, stage):
+def _dmux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 4
     _dmux_fixed(bb, stage)
-    draw_routed(bb, _DMUX_WIRES, _dmux_paths(), stage)
+    draw_routed(bb, _DMUX_WIRES, _dmux_paths(density_weight), stage)
     bb.mark_unused_inputs([3, 5, 11, 13], K1, chip='74HC04')
     bb.mark_unused_outputs([4, 6, 10, 12], K1, chip='74HC04')
     bb.mark_unused_inputs([3, 4, 5, 9, 10], K4, chip='74HC11 (U6)')
@@ -196,12 +197,13 @@ def _dmux_draw(bb, stage):
     bb.note(_INPUT_NOTE)
 
 
-def build_trial_dmux(output_path, template_path=None, stage=None, baseline=None, layer=None):
-    """C2 1x4 DMUX v2 시험판. `stage` 1..4 또는 None(완성)."""
+def build_trial_dmux(output_path, template_path=None, stage=None, baseline=None, layer=None,
+                     density_weight=None):
+    """C2 1x4 DMUX v2 시험판. `stage` 1..4 또는 None(완성). `density_weight` None = 엔진 DENSITY_WEIGHT."""
     bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     bb.set_header('실험04 v2 시험판: 1x4 DMUX', '74HC04 + 74HC11 ×2 · 칩 좌 블록, LED 우 블록')
-    _dmux_draw(bb, stage)
+    _dmux_draw(bb, stage, density_weight)
     bb.export(output_path, max_row=63)
     return bb
 

@@ -2540,6 +2540,12 @@ def _dip_side(pin):
     return 'a' if pin <= 7 else 'f'
 
 
+# 밀도 가중치 λ — 비용 = 길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도증분(px). 0 이면 밀도를 안 본다.
+# 값은 `python -m scripts.lab.route_sweep` 로 정한다(설계 #11: 길이 +15% 안에서 밀도 최소).
+DENSITY_WEIGHT = 0.0
+_RERANK_TOP = 400   # 정적 순위 앞 몇 개만 밀도로 다시 매기나 — 나머지는 정적 순서 그대로
+
+
 _STRIP_COLS = {'a': 'abcd', 'f': 'ghij'}
 
 
@@ -2712,7 +2718,7 @@ def _route(bb, chips, frm, to):
     raise AssertionError(f'경로 없음: {frm} -> {to}')
 
 
-def _routes(bb, chips, frm, to):
+def _routes(bb, chips, frm, to, density_weight=0.0):
     """`frm`→`to` 의 합법 경로를 싼 순으로 낸다. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B]
     꼴이다 — y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`."""
     led = to[0] == 'LED'
@@ -2725,7 +2731,10 @@ def _routes(bb, chips, frm, to):
         if '다리' in what or '애노드' in what or '캐소드' in what:
             others.append((x, bb.r_y(r)))
     chip_rows = tuple(ch['pin1_row'] for ch in bb.chips)
-    for p in _ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led):
+    placed = _placed_signal_segs(bb) if density_weight else []
+    order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led), placed,
+                    bb.spec.row_pitch, density_weight)
+    for p in order:
         if _valid(bb, p, others, segs):
             p = list(p)
             m = _marker_spot(bb, p)
@@ -2760,10 +2769,19 @@ def _ordered(bb, chip_rows, srcs, dsts, led):
                         cands.append(p)
     cost = _coster(bb)
     scored = [(cost(p), p) for p in set(map(tuple, cands))]
-    out = [p for (_over, _c), p in sorted((s for s in scored if s[0][0] == 0),
-                                          key=lambda s: (s[0][1], s[1]))]
+    out = [(c, p) for (_over, c), p in sorted((s for s in scored if s[0][0] == 0),
+                                              key=lambda s: (s[0][1], s[1]))]
     _ORDERED[key] = out
     return out
+
+
+def _rerank(scored, placed, pitch, weight, top=_RERANK_TOP):
+    """정적 순위 [(비용, 경로)] 의 앞 `top` 개를 `비용 + weight·밀도증분` 으로 다시 매긴다. 뒤는
+    정적 순서 그대로. weight 0 이면 순서가 안 바뀐다 — 정적 정렬 열쇠도 (비용, 경로) 다."""
+    if not weight:
+        return [p for _c, p in scored]
+    head = sorted(scored[:top], key=lambda s: (s[0] + weight * _density_cost(s[1], placed, pitch), s[1]))
+    return [p for _c, p in head] + [p for _c, p in scored[top:]]
 
 
 _R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
@@ -2802,7 +2820,7 @@ def _marker_spot(bb, path):
 _REPAIR_BACK, _REPAIR_ALTS = 4, 8   # 막히면 직전 몇 가닥을, 가닥마다 몇 후보까지 바꿔 보는가
 
 
-def route_plan(build_fixed, chips, wires, board='v2'):
+def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
     """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로와 번호 원 자리를 정한다 — `wires`
     순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다. v2 판형만.
 
@@ -2812,6 +2830,7 @@ def route_plan(build_fixed, chips, wires, board='v2'):
     MUX U1). 아무 데로나 되돌아가는 탐색은 가짓수가 터져 10분을 넘겼다."""
     if not board_spec(board).readability:
         raise ValueError(f'route_plan 은 v2 판형만 고른다(차선이 v2 기하다): {board!r}')
+    w = DENSITY_WEIGHT if density_weight is None else density_weight
 
     def board_(upto):
         bb = BreadboardRenderer(None, board=board)
@@ -2825,7 +2844,7 @@ def route_plan(build_fixed, chips, wires, board='v2'):
         """`upto` 뒤로 `stop` 가닥째까지 가장 싼 경로를 깐다. 막히면 None."""
         bb, plans = board_(upto), list(upto)
         for _s, _e, kind, frm, to, desc in wires[start:stop + 1]:
-            found = next(_routes(bb, chips, frm, to), None)
+            found = next(_routes(bb, chips, frm, to, w), None)
             if found is None:
                 return None
             bb.step_wire(found[0], kind, desc, marker_at=found[1])
@@ -2836,14 +2855,14 @@ def route_plan(build_fixed, chips, wires, board='v2'):
     while len(plans) < len(wires):
         i = len(plans)
         _s, _e, kind, frm, to, desc = wires[i]
-        found = next(_routes(bb, chips, frm, to), None)
+        found = next(_routes(bb, chips, frm, to, w), None)
         if found is not None:
             bb.step_wire(found[0], kind, desc, marker_at=found[1])
             plans.append(found)
             continue
         for j in range(i - 1, max(-1, i - 1 - _REPAIR_BACK), -1):
             _s, _e, _k, frm, to, _d = wires[j]
-            alts = itertools.islice(_routes(board_(plans[:j]), chips, frm, to), 1, 1 + _REPAIR_ALTS)
+            alts = itertools.islice(_routes(board_(plans[:j]), chips, frm, to, w), 1, 1 + _REPAIR_ALTS)
             for alt in alts:
                 more = greedy(j + 1, plans[:j] + [alt], i)
                 if more is not None:
