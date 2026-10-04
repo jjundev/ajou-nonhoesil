@@ -320,5 +320,25 @@ class TrialInterface(unittest.TestCase):
         self.assertEqual(set(self.board.LAYOUT['slots']), set(self.board.SLOTS))
 
 
+class SearchCli(unittest.TestCase):
+    def test_run_은_배치_파일_옆에_보고서를_쓴다(self):
+        from scripts.lab import place_search as ps
+        mod = _load()
+        result = {'hash': 'abc', 'layout': _LAY,
+                  'rows': [dict(rank='기준', proxy=None, layout=_LAY, length=1.0, bends=0,
+                                density=0.0, status='✔ 고름')]}
+        got_args = []
+
+        def fake_plan(board, top):
+            got_args.append(top)
+            return result
+        mod.place_plan = fake_plan
+        d = Path(tempfile.mkdtemp())
+        out = ps.run(mod, SimpleNamespace(), d / '배치.py', 3)
+        self.assertEqual(out, result)
+        self.assertEqual(got_args, [3])
+        self.assertEqual(mod.read_place_report(d / mod.PLACE_REPORT), {'hash': 'abc', 'layout': _LAY})
+
+
 if __name__ == '__main__':
     unittest.main()
