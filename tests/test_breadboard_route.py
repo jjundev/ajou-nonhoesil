@@ -52,6 +52,24 @@ class RoutePlanBoard(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'v2'):
             mod.route_plan(lambda bb, stage, superset=False: None, {}, [], board='v1')
 
+    def test_막히면_막힌_선을_댄다(self):
+        """수리가 앞 선을 바꿔 봐도 안 풀리면, 메시지는 수리하던 앞 선이 아니라 막힌 선의 끝을 댄다
+        (2026-10-04 최종 검토 — 수리 루프가 frm·to 를 덮어써 앞 선 끝 + 막힌 선 설명이 섞였다)."""
+        mod = _load()
+
+        def fake_routes(bb, chips, frm, to, density_weight=0.0):
+            if to == ('U', 99):
+                return
+            x, y = bb.cols['left']['b'], bb.r_y(frm[1])
+            yield [(x, y), (x, y + 2 * bb.spec.row_pitch)], (x + 12, y + bb.spec.row_pitch)
+
+        mod._routes = fake_routes
+        wires = [(1, None, 'sig', ('U', 10), ('U', 12), '앞 선'),
+                 (1, None, 'sig', ('U', 30), ('U', 99), '막힌 선')]
+        with self.assertRaises(AssertionError) as cm:
+            mod.route_plan(lambda bb, stage, superset=False: None, {}, wires)
+        self.assertEqual(str(cm.exception), "경로 없음: ('U', 30) -> ('U', 99) (막힌 선)")
+
 
 class Metrics(unittest.TestCase):
     @classmethod

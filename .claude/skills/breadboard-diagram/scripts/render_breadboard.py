@@ -2863,8 +2863,8 @@ def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
             plans.append(found)
             continue
         for j in range(i - 1, max(-1, i - 1 - _REPAIR_BACK), -1):
-            _s, _e, _k, frm, to, _d = wires[j]
-            alts = itertools.islice(_routes(board_(plans[:j]), chips, frm, to, w), 1, 1 + _REPAIR_ALTS)
+            _s, _e, _k, frm_j, to_j, _d = wires[j]     # 수리할 앞 선 — 막힌 선의 frm·to 는 메시지에 남긴다
+            alts = itertools.islice(_routes(board_(plans[:j]), chips, frm_j, to_j, w), 1, 1 + _REPAIR_ALTS)
             for alt in alts:
                 more = greedy(j + 1, plans[:j] + [alt], i)
                 if more is not None:
