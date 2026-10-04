@@ -2,7 +2,7 @@
   "schema": "logic-lab-bank-import",
   "schema_version": 1,
   "bank_id": "bank-exp04",
-  "bank_sha256": "f264d0d777be8cbbb02dc340c06da539b3a53dc3454355fe1239c780154b020c",
+  "bank_sha256": "7e9c5d6c2cb39b046fc4ee4a54a0aba63218007e927b49340fae681b98988ed5",
   "experiment": 4,
   "questions": [
     {

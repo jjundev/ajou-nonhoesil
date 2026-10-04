@@ -36,6 +36,9 @@ API 수용 경로: tmp/review-pack/실험04-import-20260930. 실제 CLI 수용 �
 은행 SHA256: `f264d0d777be8cbbb02dc340c06da539b3a53dc3454355fe1239c780154b020c`.
 snapshot bytes는 원래 JSON과 같고, 원자료 11개·자산 34개·은행 1개의 해시가 전후 동일하다.
 모든 15개 문항은 held, 독립 풀이 없음으로 시작한다. q-empty-six는 reading_hold다. 모든 학습팩 checks는 not_run이다.
+
+> 2026-10-04 정정: 위 해시는 Windows CRLF 작업 트리 바이트의 해시다. git 에 담긴 LF 바이트 기준 은행 SHA256 은 `7e9c5d6c2cb39b046fc4ee4a54a0aba63218007e927b49340fae681b98988ed5` 이고, manifest·authoring-index 도 이 값으로 고쳤다. 내용은 그대로다.
+
 confirmed 30은 답안 연결 확인일 뿐 정답 검증이 아니다. 원문 판독·출처·답안 보류를 import가 해결하지 않았다.
 
 ## 구현된 동작
