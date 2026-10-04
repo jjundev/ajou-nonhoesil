@@ -10,6 +10,8 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+from scripts.lab import route_sweep as rs
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e4/배치.py'
@@ -119,6 +121,64 @@ class Rerank(unittest.TestCase):
         C = ((160, 0), (160, 200))
         got = self.mod._rerank([(210, C), (210, self.B)], [], 19, 1.0)
         self.assertEqual(got, [self.B, C])
+
+
+def _row(w, length, density):
+    return {'weight': w, 'length': length, 'bends': 0, 'density': density}
+
+
+class Sweep(unittest.TestCase):
+    def test_한도_안에서_밀도_합_최소(self):
+        rows = {'mux': [_row(0, 100, 10), _row(1, 110, 6), _row(2, 120, 2)],
+                'dmux': [_row(0, 50, 5), _row(1, 52, 4), _row(2, 53, 1)]}
+        self.assertEqual(rs.pick(rows), 1)        # λ=2 는 MUX 길이 +20%
+
+    def test_줄지_않으면_0(self):
+        rows = {'mux': [_row(0, 100, 10), _row(1, 101, 10)], 'dmux': [_row(0, 50, 5), _row(1, 50, 5)]}
+        self.assertEqual(rs.pick(rows), 0)
+
+    def test_막힌_λ_는_건너뛴다(self):
+        rows = {'mux': [_row(0, 100, 10), {'weight': 1, 'blocked': '경로 없음'}],
+                'dmux': [_row(0, 50, 5), _row(1, 50, 1)]}
+        self.assertEqual(rs.pick(rows), 0)
+
+    def test_기준_행이_없으면_멈춘다(self):
+        with self.assertRaises(ValueError):
+            rs.pick({'mux': [{'weight': 0, 'blocked': '경로 없음'}], 'dmux': [_row(0, 50, 5)]})
+        with self.assertRaises(ValueError):
+            rs.pick({'mux': [_row(1, 100, 10)], 'dmux': [_row(1, 50, 5)]})
+
+    def test_막히면_막힘_행이다(self):
+        def build(path, density_weight):
+            raise AssertionError('경로 없음: U1 -> U3\n자세히')
+        got = rs.measure(None, build, 'x.png', 4.0)
+        self.assertEqual(got, {'weight': 4.0, 'blocked': '경로 없음: U1 -> U3'})
+
+
+class ChosenWeight(unittest.TestCase):
+    """엔진 DENSITY_WEIGHT 가 설계 #11 을 지킨다 — 두 회로 모두 길이 ≤ λ=0 × 1.15, 밀도 합은 줄었다.
+    2026-10-04 스윕에서 λ=0.5 가 골라졌다(밀도 합 40.7 → 26.9칸) — 0 으로 돌아가면 걸린다."""
+
+    @classmethod
+    def setUpClass(cls):
+        import tempfile
+        cls.mod = _load()
+        cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
+        cls.tmp = tempfile.mkdtemp()
+
+    def _m(self, build, name, w):
+        import os
+        return self.mod.wire_metrics(build(os.path.join(self.tmp, name), density_weight=w))
+
+    def test_설계_11(self):
+        w = self.mod.DENSITY_WEIGHT
+        self.assertGreater(w, 0)
+        got = {}
+        for key, build in (('mux', self.board.build_trial_mux), ('dmux', self.board.build_trial_dmux)):
+            got[key] = (self._m(build, f'{key}0.png', 0.0), self._m(build, f'{key}w.png', w))
+            self.assertLessEqual(got[key][1]['length'], got[key][0]['length'] * 1.15, key)
+        self.assertLess(sum(v[1]['density'] for v in got.values()),
+                        sum(v[0]['density'] for v in got.values()))
 
 
 if __name__ == '__main__':
