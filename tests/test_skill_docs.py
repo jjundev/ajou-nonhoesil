@@ -1356,11 +1356,22 @@ class BreadboardSkillSize(unittest.TestCase):
     def test_줄이며_흐려진_규칙이_본문에_있다(self):
         # 2026-10-05 분할 리뷰: "단계 노트를 건다" 는 '단다' 로 읽혔고, 출력 둘을 한 사슬에 묶지 않는 규칙은
         # 실험03 문단과 함께 주차별.md 로 갔다 — `verify()` 는 출력끼리 붙은 것을 못 잡는다.
-        for s in ("단계 노트를 넣지 않는다(`note = None`)", "두 출력을 한 LED 사슬에 묶지 않는다"):
+        # "받으면 거절하고(받으면 조용히 무시돼…)" 는 앞뒤가 부딪혔다.
+        for s in ("단계 노트를 넣지 않는다(`note = None`)", "두 출력을 한 LED 사슬에 묶지 않는다",
+                  "거절하지 않으면 조용히 무시돼"):
             with self.subTest(s):
                 self.assertIn(s, self.text)
         # 자리를 내려고 본문에서 뺀 실험실 기록은 연혁에 남는다.
-        self.assertIn("칩만 갈아끼우면 되는데", (BREADBOARD_DIR / "연혁.md").read_text(encoding="utf-8"))
+        history = (BREADBOARD_DIR / "연혁.md").read_text(encoding="utf-8")
+        for s in ("칩만 갈아끼우면 되는데", "2026-09-11 실험01 실측"):
+            with self.subTest(s):
+                self.assertIn(s, history)
+                self.assertNotIn(s, self.text)
+
+    def test_상한에_걸리면_엔진_내부는_docstring_으로_보낸다(self):
+        # 엔진이 여러 파일로 나뉘면(2026-10-05 engine-split) 파일 지도가 본문 여유를 넘는다. §8 이 사건·주차·v1
+        # 만 길로 주면 남는 배출구가 날짜 몇 줄뿐이라 상한을 올리고 싶어진다.
+        self.assertIn("→ 그 함수의 docstring", self.text.split("## 8. 이 문서에 쓰는 법")[1])
 
 
 class InitSkill(unittest.TestCase):
