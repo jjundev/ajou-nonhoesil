@@ -8,9 +8,12 @@ TDD tests for scripts/lab/merge_report.py:
 - Validation of merged PDF
 """
 
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pypdf
 
@@ -169,6 +172,26 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(out.is_file())
         self.assertTrue(tmp_path.is_file())
 
+    def test_merge_lab_report_warns_when_body_cannot_be_removed(self):
+        """원본을 못 지워도 제출본은 이미 만들어졌으니 성공이다. 다만 조용히
+        넘기면 원본이 남은 줄 모른다 — stderr 에 경고를 남긴다."""
+        from scripts.lab.merge_report import merge_lab_report
+        tmp_path = _blank_pdf("_notion_export_locked_예비보고서.pdf", pages=1)
+        self.addCleanup(tmp_path.unlink, missing_ok=True)
+        real_unlink = Path.unlink
+
+        def locked(self, *a, **kw):
+            if self == tmp_path:
+                raise PermissionError("locked")
+            return real_unlink(self, *a, **kw)
+
+        err = io.StringIO()
+        with mock.patch.object(Path, "unlink", locked), contextlib.redirect_stderr(err):
+            out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
+        self.assertTrue(out.is_file())
+        self.assertTrue(tmp_path.is_file())
+        self.assertIn("지우지 못했습니다", err.getvalue())
+        self.assertIn(tmp_path.name, err.getvalue())
 
 
 if __name__ == "__main__":
