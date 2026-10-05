@@ -253,6 +253,13 @@ class BadgeObstacle(unittest.TestCase):
         path = [(212, bb.r_y(10)), (212, bb.r_y(20))]
         self.assertTrue(self.mod._valid(bb, path, [], []))
 
+    def test_배지_위에는_번호_원을_안_둔다(self):
+        bb = self._bb()
+        x, y = 640, bb.r_y(15)
+        self.assertTrue(bb._marker_clear(x, y))
+        bb.signal_tag('Bit0', x, y)
+        self.assertFalse(bb._marker_clear(x, y))
+
 
 if __name__ == '__main__':
     unittest.main()

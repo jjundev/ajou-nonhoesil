@@ -1069,7 +1069,7 @@ class BreadboardRenderer(_RuleChecks):
         return out
 
     def _marker_clear(self, x, y, own=None, pad=2):
-        """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀, 다른 번호 원, 칩 몸통,
+        """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀, 다른 번호 원, 칩 몸통, 신호 이름 배지,
         `own` 번째가 아닌 배선."""
         box = (x - 8 - pad, y - 8 - pad, x + 8 + pad, y + 8 + pad)
         if any(box[0] <= hx <= box[2] and box[1] <= self.r_y(hr) <= box[3] for hx, hr in self._leads):
@@ -1080,6 +1080,9 @@ class BreadboardRenderer(_RuleChecks):
             return False
         if any(not (box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1])
                for b, _cx, _ch in self._chip_bodies()):
+            return False
+        # 신호 이름 배지 — `_marker_fits` 는 보는데 이쪽은 안 봐 경로 번호 원이 배지를 덮었다(2026-10-05 실험05)
+        if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
             return False
         return not any(i != own and self._seg_in_box(a, b, box)
                        for i, (_k, pts, _d) in enumerate(self._segments)
