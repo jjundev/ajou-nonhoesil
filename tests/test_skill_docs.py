@@ -1226,7 +1226,7 @@ class BreadboardV2Docs(unittest.TestCase):
         도구·강제·순위·병렬이 문서에 없으면 다음 주차가 손 배치로 돌아간다."""
         text = BREADBOARD_SKILL.read_text(encoding="utf-8")
         for s in ("place_search", "PLACE", "배치탐색.md", "PlaceEnforced", "PLACE_LENGTH_SLACK", "--jobs",
-                  "marker_near"):
+                  "marker_near", "place_marker_hints"):
             self.assertIn(s, text)
         self.assertIn("place_search", DRAFT.read_text(encoding="utf-8"))
 

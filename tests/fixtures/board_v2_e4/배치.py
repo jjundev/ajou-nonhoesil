@@ -19,7 +19,7 @@
 # 모든 단계의 선을 한 판에 올린 superset 판에서 정하고 단계 그림은 그 경로를 그대로 쓴다 —
 # 단계마다 경로가 달라지면 기준선 회색 선과 새 선이 어긋난다.
 from render_breadboard import (BreadboardRenderer, _input_jumper, fresh_board, removal_board,
-                               PlaceCircuit, place_chips, place_paths, draw_routed,
+                               PlaceCircuit, place_chips, place_paths, place_marker_hints, draw_routed,
                                _dip_pin_row as _pin_row, _dip_side as _side)
 
 BOARD = 'v2'
@@ -114,6 +114,7 @@ def _mux_paths(density_weight=None):
 
 def _mux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 8
+    bb.marker_hints = place_marker_hints(MUX, LAYOUT)
     _mux_fixed(bb, stage)
     draw_routed(bb, MUX.wires, _mux_paths(density_weight), stage)
     k = place_chips(MUX, LAYOUT)
@@ -194,6 +195,7 @@ def _dmux_paths(density_weight=None):
 
 def _dmux_draw(bb, stage, density_weight=None):
     bb.partial = stage is not None and stage < 4
+    bb.marker_hints = place_marker_hints(DMUX, LAYOUT)
     _dmux_fixed(bb, stage)
     draw_routed(bb, DMUX.wires, _dmux_paths(density_weight), stage)
     k = place_chips(DMUX, LAYOUT)

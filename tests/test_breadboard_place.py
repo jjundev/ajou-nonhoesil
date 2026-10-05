@@ -578,6 +578,24 @@ class InputRows(unittest.TestCase):
         self.assertIsNotNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 18}))
 
 
+class TrialMarkers(unittest.TestCase):
+    """시험판의 엔진 고정 부품(전원선·LED 사슬·입력 점퍼) 번호 원은 단계 그림·완성본 어디서나 같은 자리다
+    — `place_marker_hints`(superset 판에서 비킨 자리)를 빌더가 준다(2026-10-05 최종 검토)."""
+
+    def test_고정_부품_원은_그림마다_같은_자리(self):
+        mod = _load()
+        b = mod.load_board_file(TRIAL, 'board_v2_e4')
+        for draw, stages in ((b._mux_draw, [1, 2, 3, 4, 5, 6, 7, 8, None]), (b._dmux_draw, [1, 2, 3, 4, None])):
+            seen = {}
+            for st in stages:
+                bb = mod.BreadboardRenderer(None, board='v2')
+                bb.enable_steps()
+                draw(bb, st)
+                for key, at in bb.settled_markers.items():
+                    seen.setdefault(key, set()).add(tuple(at))
+            moved = {k: v for k, v in seen.items() if len(v) > 1}
+            self.assertEqual(moved, {}, draw.__name__)
+
 class PlaceEnforced(unittest.TestCase):
     """v2 주차(와 시험판)는 `배치탐색.md` 가 있고, 지문이 지금 배선표와 같고, `LAYOUT` 이 보고서가 고른
     것과 같다 — 배선표를 바꾸고 배치를 다시 안 찾으면 여기서 걸린다(SKILL §4, 2026-10-05)."""

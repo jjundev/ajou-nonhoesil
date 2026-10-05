@@ -540,6 +540,20 @@ class Readability(unittest.TestCase):
         bb._ghost_wire([(L['j'], y), (L['mid_gnd'] * 2 - L['j'], y)], 5)
         self.assertEqual([p for p in bb.marker_problems() if '홀' in p], [])
 
+    def test_고정_부품_원은_힌트가_있으면_그_자리(self):
+        """비킨 자리는 그 그림에 무엇이 있느냐에 달렸다 — 완성본에 없는 LED 사슬 때문에 단계 그림에서만
+        비키면 같은 선의 번호 원이 그림마다 다른 자리다(2026-10-05 최종 검토, MUX 입력 E·D3). superset
+        판에서 비킨 자리(`settled_markers`)를 힌트로 주면 어느 그림이든 그 자리다."""
+        bb, L = self.board()
+        bb.step_note('sig', '우 b28', '우 c31', 'LED', marker_near=(643, bb.r_y(29)))
+        wire = [(L['mid_gnd'], bb.r_y(30)), (L['j'], bb.r_y(30))]
+        bb.step_wire(wire, 'sig', '입력', marker_near=(638, bb.r_y(30) - 18))
+        moved = bb._marker_slots[-1]
+        bb2, _ = self.board()                     # LED 사슬이 없는 그림
+        bb2.marker_hints = dict(bb.settled_markers)
+        bb2.step_wire(wire, 'sig', '입력', marker_near=(638, bb.r_y(30) - 18))
+        self.assertEqual(bb2._marker_slots[-1], moved)
+
 class BoardContract(unittest.TestCase):
     """판형은 도장·사이드카에 남고, 주차 BOARD 와 렌더러 판형이 어긋나면 멈춘다."""
 

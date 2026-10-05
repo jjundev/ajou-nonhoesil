@@ -465,7 +465,8 @@ LED 를 구동하는 게이트는 **f~j 쪽(pin 8~14)** 에 배정해 건너는 
   결정, 설계 `docs/plans/2026-10-05-v2-배치기-설계.md`). 주차 `배치.py` 는 `PLACE`(`PlaceCircuit` 목록 —
   칩→슬롯·모델·LED 태그 위→아래·배선표(LED 끝은 태그 `('LED', 'L1')`)·`fixed(bb, stage, superset,
   layout)`·입력 핀)·`SLOTS`·`LAYOUT` 을 두고, 빌더는 행 상수 대신 `LAYOUT` 을 읽는다(경로는
-  `place_paths(circuit, LAYOUT)`). 배선표를 쓰거나 바꾸면 `python -m scripts.lab.place_search <배치.py>`
+  `place_paths(circuit, LAYOUT)`, 고정물을 그리기 전에 `bb.marker_hints = place_marker_hints(circuit,
+  LAYOUT)` — 고정 부품 번호 원이 단계 그림·완성본 어디서나 같은 자리다). 배선표를 쓰거나 바꾸면 `python -m scripts.lab.place_search <배치.py>`
   를 돌려 같은 폴더 `배치탐색.md` 를 만들고, 고른 layout 을 `LAYOUT` 과 netlist `kind: layout` 표에
   옮겨 적는다. 테스트 `PlaceEnforced` 가 지문·layout 을 맞댄다.
   - 후보: 칩 사이 빈 행 3~6(`PLACE_GMIN`), 슬롯 순서는 탐색, LED 는 태그 순서 고정. 칩 행 k·k+6,

@@ -575,6 +575,11 @@ class BreadboardRenderer:
         # 보드 안에 찍은 신호 이름 배지. (이름, 상자 (x0, y0, x1, y1), 가리키는 배선 번호 | None).
         # 가독성 테스트가 번호 원·배선·꽂힌 홀을 가리는지 본다
         self.tag_boxes = []
+        # 엔진 고정 부품(`marker_near`) 번호 원 — 비킨 자리를 적어 두고(`settled_markers`), 힌트가 있으면
+        # 그 자리를 쓴다(`marker_hints`, 보통 `place_marker_hints` 가 superset 판에서 뽑은 것). 그림마다
+        # 있는 부품이 달라도 같은 선의 원이 같은 자리다(2026-10-05 최종 검토)
+        self.marker_hints = {}
+        self.settled_markers = {}
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
         # 번호 원의 **자리** — 그렸든 안 그렸든(층 그림의 흐린·숨긴 번호, 기준선 회색 선). v2 자동
@@ -1203,7 +1208,9 @@ class BreadboardRenderer:
         if self.spec.readability:
             # 자리는 보이든 말든 늘 정한다 — 같은 선 순서면 완성본·층 그림·단계 그림이 같은 자리다
             if marker_at is None and marker_near is not None:
-                marker_at = self._settle_marker(*marker_near, own=len(self._segments) - 1)
+                marker_at = (self.marker_hints.get(key)
+                             or self._settle_marker(*marker_near, own=len(self._segments) - 1))
+                self.settled_markers[key] = marker_at
             if marker_at is None:
                 marker_at = self._auto_marker(len(self._segments) - 1)
                 if marker_at is None:
@@ -1239,8 +1246,12 @@ class BreadboardRenderer:
         따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다. `marker_near` 는 `step_wire` 와 같다.
         """
         if marker_near is not None and marker_at is None:
-            marker_at = (self._settle_marker(*marker_near) if self.spec.readability and not self._pull_parts
-                         else marker_near)
+            if self.spec.readability and not self._pull_parts:
+                nkey = ('note', kind, frm, to)
+                marker_at = self.marker_hints.get(nkey) or self._settle_marker(*marker_near)
+                self.settled_markers[nkey] = marker_at
+            else:
+                marker_at = marker_near
         if self.spec.readability and marker_at is not None and not self._pull_parts:
             self._marker_slots.append((marker_at[0] - 8, marker_at[1] - 8,
                                        marker_at[0] + 8, marker_at[1] + 8))
@@ -3265,6 +3276,22 @@ def place_paths(circuit, layout, density_weight=None):
         _PLACE_PATHS[key] = route_plan(fixed, place_chips(circuit, layout), place_wires(circuit, layout),
                                        board='v2', density_weight=w)
     return _PLACE_PATHS[key]
+
+
+_PLACE_HINTS = {}
+
+
+def place_marker_hints(circuit, layout):
+    """superset 판(모든 단계의 고정물)에서 엔진 고정 부품 번호 원이 비킨 자리 {열쇠: (x, y)}. 빌더가
+    고정물을 그리기 전에 `bb.marker_hints` 로 주면 단계 그림·완성본이 같은 자리를 쓴다 — 완성본에 없는
+    LED 사슬 때문에 단계 그림에서만 비키던 입력 원(시험판 MUX E·D3, 2026-10-05 최종 검토)."""
+    key = (circuit.name, place_hash([circuit], ()), layout_key(layout))
+    if key not in _PLACE_HINTS:
+        bb = BreadboardRenderer(None, board='v2')
+        bb.enable_steps()
+        circuit.fixed(bb, None, True, layout)
+        _PLACE_HINTS[key] = dict(bb.settled_markers)
+    return _PLACE_HINTS[key]
 
 
 def place_metrics(circuit, layout, density_weight=None):
