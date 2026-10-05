@@ -10,6 +10,7 @@
 import inspect
 import os
 import tempfile
+from pathlib import Path
 
 BOARD_L, BOARD_R = 149, 877
 
@@ -52,3 +53,26 @@ def _render(mod, fn):
         cls.draw_badge, cls.export = orig_badge, orig_export
     bb = captured['bb']
     return bb, counted.get(bb, 0)
+
+
+ENGINE_SCRIPT = Path(__file__).resolve().parents[1] / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
+
+_ENGINE = None
+
+
+def engine():
+    """엔진을 프로세스에 한 번 로드해 돌려준다 — 경로 캐시 `_PLACE_PATHS` 를 시험끼리 나눠 쓴다.
+
+    2026-10-05 실측: 실험04 v2 시험판 MUX 경로 탐색이 약 28초인데, 시험 아홉 클래스가 저마다
+    `_load()` 로 새 사본을 만들어 매번 다시 쟀다. 이 사본은 **여러 시험이 같이 보는 객체**다 —
+    엔진 전역을 바꿔 끼우는 시험(`mod.route_plan = …` 꼴)은 쓰지 말고 각자 로드한다
+    (`tests/test_shared_engine.py` 가 지킨다).
+    """
+    global _ENGINE
+    if _ENGINE is None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('render_breadboard', ENGINE_SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _ENGINE = mod
+    return _ENGINE

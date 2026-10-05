@@ -12,6 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from scripts.lab import route_sweep as rs
+from tests import _renders
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
@@ -33,10 +34,11 @@ def _plain(plans):
 
 class LambdaZero(unittest.TestCase):
     """λ=0 이면 옮기기 전 시험판 배선기와 같은 경로·번호 원 자리."""
+    render_group = 'board_v2_e4'
 
     @classmethod
     def setUpClass(cls):
-        cls.mod = _load()
+        cls.mod = _renders.engine()
         cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
         cls.snap = json.loads(SNAP.read_text(encoding='utf-8'))
 
@@ -201,11 +203,12 @@ class Sweep(unittest.TestCase):
 class ChosenWeight(unittest.TestCase):
     """엔진 DENSITY_WEIGHT 가 설계 #11 을 지킨다 — 두 회로 모두 길이 ≤ λ=0 × 1.15, 밀도 합은 줄었다.
     2026-10-04 스윕에서 λ=0.5 가 골라졌다(밀도 합 40.7 → 26.9칸) — 0 으로 돌아가면 걸린다."""
+    render_group = 'board_v2_e4'
 
     @classmethod
     def setUpClass(cls):
         import tempfile
-        cls.mod = _load()
+        cls.mod = _renders.engine()
         cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
         cls.tmp = tempfile.mkdtemp()
 
