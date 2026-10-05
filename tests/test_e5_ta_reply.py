@@ -29,5 +29,23 @@ class TestT1Scope(unittest.TestCase):
             self.assertEqual([i for i, v in enumerate(ys) if v == "0"], [n], row)
 
 
+class TestNetlistWording(unittest.TestCase):
+    def setUp(self):
+        self.text = (E5 / "결선도" / "netlist.md").read_text(encoding="utf-8")
+
+    def test_C1_단계_확인에_열여섯_행이_남지_않는다(self):
+        c1 = self.text.split("# C1 ·")[1].split("# C2 ·")[0]
+        self.assertNotIn("열여섯", c1)
+
+    def test_4단계는_10_15_를_선택_확인으로_안내한다(self):
+        c1 = self.text.split("# C1 ·")[1].split("# C2 ·")[0]
+        self.assertIn("선택", c1)
+        self.assertIn("1010~1111", c1)
+
+    def test_M4_M5_가_닫힘_표시다(self):
+        self.assertIn("| ~~M4~~ |", self.text)
+        self.assertIn("| ~~M5~~ |", self.text)
+
+
 if __name__ == "__main__":
     unittest.main()
