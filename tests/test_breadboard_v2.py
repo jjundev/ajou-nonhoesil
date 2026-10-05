@@ -531,6 +531,15 @@ class Readability(unittest.TestCase):
         bb._ghost_wire([(L['j'], bb.r_y(23)), (L['mid_gnd'] * 2 - L['j'], bb.r_y(23))], 5)
         self.assertEqual([p for p in bb.marker_problems() if '홀' in p], [])
 
+    def test_걷기_번호_원은_반_행_선에서도_정수_자리로_잰다(self):
+        """반 행(9.5px) 위 유령선 — 실수 자리로 재고 정수로 찍으면 1px 차이로 홀을 덮는다(2026-10-05 배치
+        탐색 8걷기, 번호 원(584,763) 이 중앙 GND 레일 23행을 가렸다)."""
+        bb, L = self.board()
+        bb.lead(L['mid_gnd'], bb.r_y(23), '점퍼')
+        y = bb.r_y(23) + bb.spec.row_pitch / 2
+        bb._ghost_wire([(L['j'], y), (L['mid_gnd'] * 2 - L['j'], y)], 5)
+        self.assertEqual([p for p in bb.marker_problems() if '홀' in p], [])
+
 class BoardContract(unittest.TestCase):
     """판형은 도장·사이드카에 남고, 주차 BOARD 와 렌더러 판형이 어긋나면 멈춘다."""
 

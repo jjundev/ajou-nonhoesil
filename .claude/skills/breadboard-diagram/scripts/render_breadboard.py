@@ -1145,13 +1145,13 @@ class BreadboardRenderer:
             # v2: 다른 번호 원만이 아니라 꽂힌 홀·칩 몸통도 피한다(R11). 2026-10-05 배치 탐색 8걷기 —
             # 유령선 번호 원이 중앙 GND 레일 홀을 덮었다. 구간을 따라 4px 씩 가운데부터 훑는다
             for k in sorted(range(-int(span / 2) + 8, int(span / 2) - 7, 4), key=lambda k: (abs(k), k)):
-                cx, cy = mx + ux * k, my + uy * k
+                cx, cy = int(mx + ux * k), int(my + uy * k)    # 찍는 자리(정수)로 잰다 — 반 행 선은 .5 다
                 box = (cx - 8, cy - 8, cx + 8, cy + 8)
                 if (not any(_boxes_touch(box, b) for b in self.marker_boxes)
                         and not any(box[0] - 1 <= hx <= box[2] + 1 and box[1] - 1 <= self.r_y(hr) <= box[3] + 1
                                     for hx, hr in self._leads)
                         and not any(_boxes_touch(box, b) for b, _cx, _ch in self._chip_bodies())):
-                    self._marker_removed(int(cx), int(cy), n)
+                    self._marker_removed(cx, cy, n)
                     return
         for k in (0, 24, -24, 48):
             x, y = mx + ux * k, my + uy * k
