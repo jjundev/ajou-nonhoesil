@@ -1299,6 +1299,81 @@ class BreadboardV2Docs(unittest.TestCase):
             self.assertIn(s, draft)
 
 
+BREADBOARD_DIR = BREADBOARD_SKILL.parent
+# 본문은 스킬을 부를 때마다 통째로 실린다. 2026-09-10 16.7KB → 2026-10-05 66KB 로 한 달에 네 배가 됐다.
+# 넘기면 본문 §8 「이 문서에 쓰는 법」대로 사건·지난 주차·v1 내용을 형제 문서로 뺀다 — 상한을 올리지 않는다.
+BREADBOARD_SKILL_MAX = 40000
+# 형제 문서마다 그 문서에만 있는 구절. SKILL.md 로 되돌아오면 다시 매번 실린다.
+BREADBOARD_SIBLINGS = {
+    "v1.md": "y = 272.0 + (r-1) * 16.345",
+    "주차별.md": "`e3_fa_s4`",
+    "연혁.md": "검사를 통과시키려는 최소",
+}
+
+
+class BreadboardSkillSize(unittest.TestCase):
+    """breadboard-diagram 본문은 지금 지킬 규칙만 싣는다(2026-10-05 분할)."""
+
+    def setUp(self):
+        self.text = BREADBOARD_SKILL.read_text(encoding="utf-8")
+
+    def test_본문이_상한_안이다(self):
+        size = len(self.text.encode("utf-8"))
+        self.assertLessEqual(
+            size, BREADBOARD_SKILL_MAX,
+            f"SKILL.md {size}B > {BREADBOARD_SKILL_MAX}B — 본문 §8 「이 문서에 쓰는 법」대로 "
+            "사건은 연혁.md, 지난 주차는 주차별.md, v1 은 v1.md 로 옮긴다")
+
+    def test_형제_문서를_전체_경로로_가리킨다(self):
+        for name in BREADBOARD_SIBLINGS:
+            with self.subTest(name):
+                self.assertTrue((BREADBOARD_DIR / name).is_file())
+                self.assertIn(f"`.claude/skills/breadboard-diagram/{name}`", self.text)
+
+    def test_형제_본문이_SKILL_로_돌아오지_않는다(self):
+        for name, marker in BREADBOARD_SIBLINGS.items():
+            with self.subTest(name):
+                self.assertIn(marker, (BREADBOARD_DIR / name).read_text(encoding="utf-8"))
+                self.assertNotIn(marker, self.text)
+
+    def test_형제_문서는_서로를_가리키지_않는다(self):
+        # 깊이 1단 — `test_siblings_do_not_point_onward` 와 같은 이유: 한쪽만 읽혀 규칙이 빠진다.
+        for name in BREADBOARD_SIBLINGS:
+            text = (BREADBOARD_DIR / name).read_text(encoding="utf-8")
+            for other in BREADBOARD_SIBLINGS:
+                if other != name:
+                    with self.subTest(f"{name} → {other}"):
+                        self.assertNotIn(f"breadboard-diagram/{other}`", text)
+
+    def test_다른_문서가_인용하는_문단이_본문에_남는다(self):
+        # draft-lab-spec SKILL·lab-netlist-v2 가 이 이름으로 본문 문단을 가리킨다. 레일 빈 행은 v1 절에서
+        # 왔지만 v2 도 같아서 본문에 남는다.
+        for s in ("## 4a. 슬롯 · 기준선 · 단계", "**게이트 좌우 배정.**", "**파일명 규칙.**",
+                  "배치기가 고른다", "**레일에는 홀이 없는 행이 있다**"):
+            with self.subTest(s):
+                self.assertIn(s, self.text)
+
+    def test_줄이며_흐려진_규칙이_본문에_있다(self):
+        # 2026-10-05 분할 리뷰: "단계 노트를 건다" 는 '단다' 로 읽혔고, 출력 둘을 한 사슬에 묶지 않는 규칙은
+        # 실험03 문단과 함께 주차별.md 로 갔다 — `verify()` 는 출력끼리 붙은 것을 못 잡는다.
+        # "받으면 거절하고(받으면 조용히 무시돼…)" 는 앞뒤가 부딪혔다.
+        for s in ("단계 노트를 넣지 않는다(`note = None`)", "두 출력을 한 LED 사슬에 묶지 않는다",
+                  "거절하지 않으면 조용히 무시돼"):
+            with self.subTest(s):
+                self.assertIn(s, self.text)
+        # 자리를 내려고 본문에서 뺀 실험실 기록은 연혁에 남는다.
+        history = (BREADBOARD_DIR / "연혁.md").read_text(encoding="utf-8")
+        for s in ("칩만 갈아끼우면 되는데", "2026-09-11 실험01 실측"):
+            with self.subTest(s):
+                self.assertIn(s, history)
+                self.assertNotIn(s, self.text)
+
+    def test_상한에_걸리면_엔진_내부는_docstring_으로_보낸다(self):
+        # 엔진이 여러 파일로 나뉘면(2026-10-05 engine-split) 파일 지도가 본문 여유를 넘는다. §8 이 사건·주차·v1
+        # 만 길로 주면 남는 배출구가 날짜 몇 줄뿐이라 상한을 올리고 싶어진다.
+        self.assertIn("→ 그 함수의 docstring", self.text.split("## 8. 이 문서에 쓰는 법")[1])
+
+
 class InitSkill(unittest.TestCase):
     """폴더 골격은 `config.EXPERIMENT_SUBDIRS` 한 곳에만 있다."""
 
@@ -1332,8 +1407,10 @@ class SkillFolderSiblings(unittest.TestCase):
                 continue
             key = next((k for k, (p, _) in DOCS.items() if p.parent == folder), None)
             found = {p.name for p in folder.glob("*.md")} - {"SKILL.md"}
+            # breadboard-diagram 은 `DOCS` 밖이라 형제 목록을 `BreadboardSkillSize` 가 따로 든다.
+            listed = BREADBOARD_SIBLINGS if folder == BREADBOARD_DIR else SIBLINGS.get(key, ())
             with self.subTest(folder.name):
-                self.assertEqual(found, set(SIBLINGS.get(key, ())))
+                self.assertEqual(found, set(listed))
 
     def test_every_sibling_is_pointed_to_from_its_skill(self):
         # 가리키는 곳이 없는 형제 파일은 아무도 읽지 않는다.

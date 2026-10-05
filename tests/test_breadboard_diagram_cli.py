@@ -132,7 +132,9 @@ class BreadboardCli(unittest.TestCase):
                 self.assertEqual(len(names), len(set(names)), names)
 
     def test_지원하지_않는_회로를_SKILL_문서가_광고하지_않는다(self):
-        doc = SKILL.read_text(encoding="utf-8")
+        # 회로 목록은 2026-10-05 에 형제 문서 주차별.md 로 옮겼다 — SKILL.md 만 보면 공허하게 통과한다.
+        doc = (SKILL.read_text(encoding="utf-8")
+               + (SKILL.parent / "주차별.md").read_text(encoding="utf-8"))
         supported = {n.removeprefix("build_") for n in _builder_names()}
         for gone in ("e1_or", "e1_nor", "e2_rn", "e2_rp", "e2_tpd_s1", "e2_tpd_s2",
                      "e3_ha_s1", "e3_ha_s2", "e3_hs_s1", "e3_hs_s2"):
