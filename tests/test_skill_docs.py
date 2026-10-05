@@ -1256,6 +1256,16 @@ class BreadboardV2Docs(unittest.TestCase):
                   "n.c.", "2026-10-03-실험04-v2-시험판-결과.md"):
             self.assertIn(s, text)
 
+
+    def test_렌더러_문서가_v2_배치기를_적는다(self):
+        """칩 행·LED 행을 손으로 정하면 배선이 다시 길어진다(2026-10-05 배치기 — 시험판 −23%).
+        도구·강제·순위·병렬이 문서에 없으면 다음 주차가 손 배치로 돌아간다."""
+        text = BREADBOARD_SKILL.read_text(encoding="utf-8")
+        for s in ("place_search", "PLACE", "배치탐색.md", "PlaceEnforced", "PLACE_LENGTH_SLACK", "--jobs",
+                  "marker_near", "place_marker_hints"):
+            self.assertIn(s, text)
+        self.assertIn("place_search", DRAFT.read_text(encoding="utf-8"))
+
     def test_손그림_검토가_승인_판형으로_보정하고_읽는다(self):
         text = HAND.read_text(encoding="utf-8")
         for s in ("hand_grid.expected_board(", "hand_grid.calibrate(b, board)",

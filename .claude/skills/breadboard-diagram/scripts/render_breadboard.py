@@ -575,6 +575,11 @@ class BreadboardRenderer:
         # 보드 안에 찍은 신호 이름 배지. (이름, 상자 (x0, y0, x1, y1), 가리키는 배선 번호 | None).
         # 가독성 테스트가 번호 원·배선·꽂힌 홀을 가리는지 본다
         self.tag_boxes = []
+        # 엔진 고정 부품(`marker_near`) 번호 원 — 비킨 자리를 적어 두고(`settled_markers`), 힌트가 있으면
+        # 그 자리를 쓴다(`marker_hints`, 보통 `place_marker_hints` 가 superset 판에서 뽑은 것). 그림마다
+        # 있는 부품이 달라도 같은 선의 원이 같은 자리다(2026-10-05 최종 검토)
+        self.marker_hints = {}
+        self.settled_markers = {}
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
         # 번호 원의 **자리** — 그렸든 안 그렸든(층 그림의 흐린·숨긴 번호, 기준선 회색 선). v2 자동
@@ -1141,6 +1146,18 @@ class BreadboardRenderer:
         ux, uy = (x1 - x0) / span, (y1 - y0) / span
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
         x, y = mx, my
+        if self.spec.readability:
+            # v2: 다른 번호 원만이 아니라 꽂힌 홀·칩 몸통도 피한다(R11). 2026-10-05 배치 탐색 8걷기 —
+            # 유령선 번호 원이 중앙 GND 레일 홀을 덮었다. 구간을 따라 4px 씩 가운데부터 훑는다
+            for k in sorted(range(-int(span / 2) + 8, int(span / 2) - 7, 4), key=lambda k: (abs(k), k)):
+                cx, cy = int(mx + ux * k), int(my + uy * k)    # 찍는 자리(정수)로 잰다 — 반 행 선은 .5 다
+                box = (cx - 8, cy - 8, cx + 8, cy + 8)
+                if (not any(_boxes_touch(box, b) for b in self.marker_boxes)
+                        and not any(box[0] - 1 <= hx <= box[2] + 1 and box[1] - 1 <= self.r_y(hr) <= box[3] + 1
+                                    for hx, hr in self._leads)
+                        and not any(_boxes_touch(box, b) for b, _cx, _ch in self._chip_bodies())):
+                    self._marker_removed(cx, cy, n)
+                    return
         for k in (0, 24, -24, 48):
             x, y = mx + ux * k, my + uy * k
             box = (x - 8, y - 8, x + 8, y + 8)
@@ -1149,7 +1166,7 @@ class BreadboardRenderer:
         self._marker_removed(int(x), int(y), n)
 
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
-                  frm=None, to=None):
+                  frm=None, to=None, marker_near=None):
         """배선 하나 + 결선 순서표 한 줄.
 
         `desc` 는 짧은 뜻풀이만 준다 — 어디서 어디로 가는지는 좌표에서
@@ -1161,7 +1178,13 @@ class BreadboardRenderer:
 
         따라 그리기 층(`layer`)이면 번호로 모양을 정한다(`_layer_view`). 어느 모양이든
         점유표·구간·결선 순서표에는 남는다 — 번호와 뒤 배선 자리가 완성본과 같아야 한다.
+
+        `marker_near` 는 엔진 고정 부품(전원선·LED 사슬·입력 점퍼)의 기본 자리다 — v2 는 그 자리가
+        R11 에 걸리면 가까운 빈 자리로 비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라
+        그대로 찍는다.
         """
+        if marker_near is not None and not self.spec.readability and marker_at is None:
+            marker_at = marker_near
         key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
         if self.ghost is not None and key in self.ghost['wires']:
             n = self.ghost['wires'][key]
@@ -1184,6 +1207,10 @@ class BreadboardRenderer:
             self.new_signal.append(key)
         if self.spec.readability:
             # 자리는 보이든 말든 늘 정한다 — 같은 선 순서면 완성본·층 그림·단계 그림이 같은 자리다
+            if marker_at is None and marker_near is not None:
+                marker_at = (self.marker_hints.get(key)
+                             or self._settle_marker(*marker_near, own=len(self._segments) - 1))
+                self.settled_markers[key] = marker_at
             if marker_at is None:
                 marker_at = self._auto_marker(len(self._segments) - 1)
                 if marker_at is None:
@@ -1211,13 +1238,20 @@ class BreadboardRenderer:
                            'desc': desc, 'count': count})
         return n
 
-    def step_note(self, kind, frm, to, desc, count=1, marker_at=None):
+    def step_note(self, kind, frm, to, desc, count=1, marker_at=None, marker_near=None):
         """그림에 이미 그려진 것을 표에 한 줄로 묶는다.
 
         `marker_at` 을 주면 보드 위에도 번호 원을 찍는다. **부품을 꽂는
         단계에는 반드시 준다** — 안 주면 표에는 번호가 있는데 그림에는 없어서,
-        따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다.
+        따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다. `marker_near` 는 `step_wire` 와 같다.
         """
+        if marker_near is not None and marker_at is None:
+            if self.spec.readability and not self._pull_parts:
+                nkey = ('note', kind, frm, to)
+                marker_at = self.marker_hints.get(nkey) or self._settle_marker(*marker_near)
+                self.settled_markers[nkey] = marker_at
+            else:
+                marker_at = marker_near
         if self.spec.readability and marker_at is not None and not self._pull_parts:
             self._marker_slots.append((marker_at[0] - 8, marker_at[1] - 8,
                                        marker_at[0] + 8, marker_at[1] + 8))
@@ -1330,14 +1364,14 @@ class BreadboardRenderer:
             self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
                            f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
                            f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
-                           marker_at=(x + marker_dx, y_k))
+                           marker_near=(x + marker_dx, y_k))
             x_gnd = self.nearest_gnd_rail(x_led, block)
             free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
             x_from = min(free, key=lambda h: abs(h - x_gnd))
             r_gnd = self.free_rail_row(top_row + 3, x_gnd)
             self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
                            'gnd', f'{tag} 저항 아래 -> GND',
-                           width=2, marker_at=(x_from - 22, y_r + 2))
+                           width=2, marker_near=(x_from - 22, y_r + 2))
         finally:
             self._keep_parts = False
             self._pull_parts = False
@@ -1469,11 +1503,11 @@ class BreadboardRenderer:
         r14 = self.free_rail_row(start_row, x_vcc)
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', 'pin 14 -> +5V 레일',
-                       marker_at=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
+                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
         r7 = self.free_rail_row(start_row + 6, x_gnd)
         self.step_wire([(c[gnd_col], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
-                       'gnd', 'pin 7 -> GND 레일',
-                       marker_at=gnd_marker_at or ((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+                       'gnd', 'pin 7 -> GND 레일', marker_at=gnd_marker_at,
+                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -1786,6 +1820,42 @@ class BreadboardRenderer:
                     if self._marker_clear(x, y, own=idx):
                         return (x, y)
         return None
+
+    # 엔진 고정 부품 번호 원이 비킬 때 훑는 자리 — 4px 격자, 32px 안, 가까운 순(동률은 가로 먼저)
+    _SETTLE_OFFSETS = sorted(((dx, dy) for dx in range(-32, 33, 4) for dy in range(-32, 33, 4)
+                              if (dx, dy) != (0, 0)),
+                             key=lambda d: (d[0] ** 2 + d[1] ** 2, abs(d[1]), d[0], d[1]))
+
+    def _marker_fits(self, x, y, own=None):
+        """(x, y) 번호 원이 `marker_problems()` 에 안 걸리는가 — 꽂힌 홀, 다른 번호 원(자리), 칩 몸통,
+        배선 둘 이상(자기 배선 포함), 그리고 이미 그린 신호 이름 배지."""
+        box = (x - 8, y - 8, x + 8, y + 8)
+        if any(box[0] - 1 <= hx <= box[2] + 1 and box[1] - 1 <= self.r_y(hr) <= box[3] + 1
+               for hx, hr in self._leads):
+            return False
+        if any(not (box[2] <= m[0] or m[2] <= box[0] or box[3] <= m[1] or m[3] <= box[1])
+               for m in self._marker_slots + self.marker_boxes):
+            return False
+        if any(not (box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1])
+               for b, _cx, _ch in self._chip_bodies()):
+            return False
+        if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
+            return False
+        under = sum(1 for _k, pts, _d in self._segments
+                    if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])))
+        return under <= 1
+
+    def _settle_marker(self, x, y, own=None):
+        """엔진 고정 부품의 번호 원 자리 — 기본 자리 (x, y) 가 R11 을 지키면 그대로(지금 그림이 안
+        바뀐다), 아니면 가까운 순으로 아무것도 안 가리는 자리. 없으면 기본 자리 — verify() 가 멈춘다.
+        2026-10-05 배치 탐색: 입력 행이 LED 행 바로 아래면 입력 점퍼 원이 LED 사슬 원과 겹쳤다."""
+        if self._marker_fits(x, y, own):
+            return (x, y)
+        for dx, dy in self._SETTLE_OFFSETS:
+            cx, cy = x + dx, y + dy
+            if self._marker_clear(cx, cy, own=own) and self._marker_fits(cx, cy, own):
+                return (cx, cy)
+        return (x, y)
 
     def marker_problems(self):
         """R11 — 번호 원이 가리는 것: 꽂힌 홀(끝점·부품 다리), 다른 번호 원, 칩 몸통(칩 이름·핀
@@ -2495,6 +2565,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         badge_x = s.mid_badge_x
         default_marker = (badge_x, -18)
     mx, dy = marker or default_marker
+    pin = {'marker_at': (mx, y_row + dy)} if marker else {'marker_near': (mx, y_row + dy)}
     p0, p1 = (x_rail, y_rail), (c[col], y_row)
     # 걷기 보드(`removal_board`)가 이 점퍼를 걷는 장이면 `step_wire` 는 유령선만 그리고
     # 곧장 돌아온다 — 점유표도 구간도 레일 접촉도 안 남긴다. 꽂혀 있지 않은 선이다.
@@ -2503,8 +2574,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     ghosted = bb.ghost is not None and (
         'sig', bb._endpoint(p0), bb._endpoint(p1)) in bb.ghost['wires']
     bb.step_wire([p0, p1], 'sig',
-                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요',
-                 marker_at=(mx, y_row + dy))
+                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요', **pin)
     if not ghosted:
         # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안
         # 되니까) — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가
@@ -2876,7 +2946,29 @@ def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
         else:
             raise AssertionError(f'경로 없음: {frm} -> {to} ({desc})')
         bb = board_(plans)
-    return plans
+    return _resettle_markers(bb, plans)
+
+
+def _resettle_markers(bb, plans):
+    """다 깐 superset 판(`bb`)에서 경로 번호 원을 다시 본다. 원은 그 선을 깔 때 고르므로 **뒤에 깐 선의
+    끝점**을 모른다 — 2026-10-05 배치 탐색 후보에서 DMUX Y1 원이 나중에 꽂힌 좌 i22 를 덮었다.
+    R11 에 걸리는 원만 `_auto_marker` 로 다시 고르고, 통과하는 원은 그대로 둔다."""
+    first = len(bb._segments) - len(plans)
+    out = list(plans)
+    for i, (p, m) in enumerate(plans):
+        if m is None:
+            continue
+        box = (m[0] - 8, m[1] - 8, m[0] + 8, m[1] + 8)
+        mine = [lst for lst in (bb._marker_slots, bb.marker_boxes) if box in lst]
+        for lst in mine:
+            lst.remove(box)                      # 제 원은 빼고 잰다
+        if not bb._marker_fits(*m, own=first + i):
+            m = bb._auto_marker(first + i) or m
+            out[i] = (p, m)
+            box = (m[0] - 8, m[1] - 8, m[0] + 8, m[1] + 8)
+        for lst in mine:
+            lst.append(box)
+    return out
 
 
 def draw_routed(bb, wires, plans, stage):
@@ -2932,6 +3024,450 @@ def wire_metrics(bb):
                for i in range(len(segs)) for j in range(i + 1, len(segs))
                for s in segs[i] for t in segs[j])
     return {'length': length / p, 'bends': bends, 'density': dens / p}
+
+
+# ---------------------------------------------------------------------------
+# 배치기 (v2) — 칩 슬롯 행·LED 윗행·브리지 행을 고른다
+#
+# 배선기(`route_plan`)는 자리를 받아 길만 고른다. 배치기는 그 자리 자체를 고른다 — 근사 비용으로
+# 후보 전부의 순위를 매기고 앞 `PLACE_TOP` 개만 route_plan 으로 실측한다. 저작 때
+# `python -m scripts.lab.place_search <배치.py>` 로 한 번 돌리고, 고른 자리는 주차 `LAYOUT` 과 netlist
+# `kind: layout` 표에 옮겨 적는다. 설계: `docs/plans/2026-10-05-v2-배치기-설계.md`.
+#
+# layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]}
+# — 보고서 JSON 과 그대로 맞대려고 리스트·문자열 키만 쓴다.
+
+# 배선기가 아는 칩 — `_dip_pin_row` 가 DIP-14 를 가정한다. 16핀(74HC138 따위)·7-segment 는 배선기부터 넓힌다
+DIP14 = frozenset({'74HC00', '74HC02', '74HC04', '74HC08', '74HC10', '74HC11', '74HC20',
+                   '74HC21', '74HC27', '74HC32', '74HC74', '74HC86'})
+PLACE_GMIN = 3      # 칩 사이 최소 빈 행 — 실물에서 손이 들어갈 여유(2026-10-05 사용자 N2)
+PLACE_GMAX = 6
+PLACE_STARTS = tuple(range(3, 9))   # 맨 위 칩 pin 1 행 후보
+PLACE_TOP = 8       # 근사 순위 앞 몇 개를 route_plan 으로 실측하나 (한 판에 약 1분)
+PLACE_ROUNDS = 3
+PLACE_LENGTH_SLACK = 1.02   # 순위 띠 — verify 통과 최단의 ×1.02 안에서 밀도 최소(2026-10-05 사용자 N6)
+LED_SPAN = 4        # LED 사슬 한 벌 = 윗행 ~ 윗행+3 (LED 두 행 + 저항 아랫다리)
+PLACE_ROW_LAST = 61  # 칩·LED·브리지가 쓸 마지막 행 — 62·63 은 레일 빈 행
+PLACE_REPORT = '배치탐색.md'
+
+
+@dataclass(frozen=True)
+class PlaceCircuit:
+    """배치기가 보는 회로 하나.
+
+    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP14`), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
+    2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 태그 `('LED', 'L1')`.
+    `fixed(bb, stage, superset, layout)` 는 칩·전원·입력·LED 사슬·브리지를 `layout` 자리에 그린다.
+    `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀) — f쪽이면 가운데 GND 레일의 그 행을 쓴다."""
+    name: str
+    chips: dict
+    models: dict
+    leds: tuple
+    wires: tuple
+    fixed: object
+    inputs: tuple = ()
+
+
+def layout_key(layout):
+    """layout → 캐시 열쇠(키 정렬 JSON)."""
+    return json.dumps(layout, sort_keys=True, ensure_ascii=False)
+
+
+def place_check(circuit):
+    """배치기가 다룰 수 있는 회로인가. 아니면 ValueError."""
+    bad = sorted({m for m in circuit.models.values() if m not in DIP14})
+    if bad:
+        raise ValueError(f'{circuit.name}: 배치기는 14핀 칩만 놓는다(`_dip_pin_row` 가 DIP-14 가정) — {bad}')
+    tags = {end[1] for w in circuit.wires for end in (w[3], w[4]) if end[0] == 'LED'}
+    unknown = sorted(tags - set(circuit.leds))
+    if unknown:
+        raise ValueError(f'{circuit.name}: leds 에 없는 LED 태그 {unknown}')
+
+
+def place_chips(circuit, layout):
+    """칩 → pin 1 행."""
+    return {chip: layout['slots'][slot] for chip, slot in circuit.chips.items()}
+
+
+def place_wires(circuit, layout):
+    """LED 태그 끝을 그 회로의 LED 윗행으로 바꾼 `route_plan` 배선표."""
+    rows = layout['leds'].get(circuit.name, {})
+
+    def end(e):
+        return ('LED', rows[e[1]]) if e[0] == 'LED' else e
+    return [(s, e, kind, end(f), end(t), desc) for s, e, kind, f, t, desc in circuit.wires]
+
+
+def place_hash(circuits, slots, gmin=PLACE_GMIN, slack=PLACE_LENGTH_SLACK):
+    """배선표 지문(16자리). 바뀌면 배치를 다시 찾아야 한다 — `fixed` 함수는 안 본다. 순위 여유
+    `slack` 도 든다 — 엔진 ε 를 바꾸면 모든 v2 주차가 다시 돌린다."""
+    body = {'slots': list(slots), 'gmin': gmin, 'slack': slack, 'circuits': [
+        {'name': c.name, 'chips': c.chips, 'models': c.models, 'leds': list(c.leds),
+         'wires': [list(w) for w in c.wires], 'inputs': [list(i) for i in c.inputs]}
+        for c in circuits]}
+    text = json.dumps(body, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()[:16]
+
+
+@lru_cache(maxsize=None)
+def _place_geom():
+    s = board_spec('v2')
+    return s.cols['left'], s.cols['right'], s.row_pitch
+
+
+def place_wire_cost(chips, wire):
+    """선 하나의 근사 비용(px) — 끝 홀 후보 사이 최소 맨해튼 + 40·꺾임 + 400·몸통(배선기 `_coster` 와
+    같은 상수). 꺾임은 행이 다르거나 가운데를 건너면(LED — R12 때문에 반 행으로 돈다) 2, 몸통은 쪽이
+    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다."""
+    L, R, pitch = _place_geom()
+    _s, _e, _k, frm, to, _d = wire
+
+    def holes(end):
+        if end[0] == 'LED':
+            return [(R['a'], end[1])], None
+        row = _dip_pin_row(chips[end[0]], end[1])
+        side = _dip_side(end[1])
+        return [(L[c], row) for c in _STRIP_COLS[side]], side
+
+    ha, sa = holes(frm)
+    hb, sb = holes(to)
+    dist = min(abs(xa - xb) + abs(ra - rb) * pitch for xa, ra in ha for xb, rb in hb)
+    led = 'LED' in (frm[0], to[0])
+    bends = 2 if led or ha[0][1] != hb[0][1] else 0
+    if led:
+        body = 1 if 'a' in (sa, sb) else 0
+    else:
+        body = 1 if frm[0] == to[0] and sa != sb else 0
+    return dist + 40 * bends + 400 * body
+
+
+def mid_rail_rows(circuit, slots, bridge):
+    """가운데 레일에서 이미 쓰는 행 — 칩 pin 14 전원선(그 행 GND 홀 위를 지나 VCC 에 꽂힌다), 브리지
+    둘, f쪽 입력 점퍼. LED GND 점퍼가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
+    used = {slots[s] for s in circuit.chips.values()}
+    rows = used | set(bridge)
+    for chip, pin in circuit.inputs:
+        if _dip_side(pin) == 'f':
+            rows.add(_dip_pin_row(slots[circuit.chips[chip]], pin))
+    return rows
+
+
+def bridge_rows(slots):
+    """브리지 두 가닥 [GND 행, VCC 행] — 맨 아래 칩 아래로 2행 이상 띄운 첫 연속 비간극 두 행.
+    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None."""
+    r = max(slots.values()) + 6 + 3
+    while r + 1 <= PLACE_ROW_LAST:
+        if r not in RAIL_GAP_ROWS and r + 1 not in RAIL_GAP_ROWS:
+            return [r, r + 1]
+        r += 1
+    return None
+
+
+def led_rows(circuit, slots, bridge):
+    """회로의 LED 윗행 {태그: 행} — DP.
+
+    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(저항 아랫다리 = GND 점퍼
+    출발 행)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
+    — MUX L1 처럼 임시 급전과 최종 Y 를 같이 받는 LED 도 그냥 더한다)의 근사 비용 합이 가장 작은
+    조합, 동률이면 위쪽. LED 가 없으면 {}, 다 놓을 수 없으면 None."""
+    if not circuit.leds:
+        return {}
+    chips = {c: slots[s] for c, s in circuit.chips.items()}
+    busy = RAIL_GAP_ROWS | mid_rail_rows(circuit, slots, bridge)
+    tops = [t for t in range(3, PLACE_ROW_LAST - LED_SPAN + 2) if t + LED_SPAN - 1 not in busy]
+    # 태그마다 그 LED 로 가는 선만 — 후보 수천 개 × 윗행 56개마다 배선표 전체를 훑지 않게
+    mine = {tag: [w for w in circuit.wires if ('LED', tag) in (w[3], w[4])] for tag in circuit.leds}
+
+    def cost(tag, top):
+        def sub(e):
+            return ('LED', top) if e == ('LED', tag) else e
+        return sum(place_wire_cost(chips, (s, e, k, sub(f), sub(t), d)) for s, e, k, f, t, d in mine[tag])
+
+    prev = None
+    for tag in circuit.leds:
+        here = [cost(tag, t) for t in tops]
+        if prev is None:
+            cur = [(c, (t,)) for c, t in zip(here, tops)]
+        else:
+            cur, best, j = [], None, 0
+            for t, c in zip(tops, here):
+                while j < len(tops) and tops[j] + LED_SPAN <= t:
+                    if prev[j] is not None and (best is None or prev[j] < best):
+                        best = prev[j]
+                    j += 1
+                cur.append(None if best is None else (best[0] + c, best[1] + (t,)))
+        prev = cur
+    done = [x for x in prev if x is not None]
+    if not done:
+        return None
+    return dict(zip(circuit.leds, min(done)[1]))
+
+
+def place_r10_ok(circuit, chips, leds):
+    """단계마다 LED 로 건너는 선의 칩 쪽 행 순서가 LED 위아래 순서와 같은가 — `verify()` R10 을 미리
+    본다. 단계 k 에 살아 있는 선 = `s <= k` 이고 끝 단계가 없거나 `k <= e` (`draw_routed` 와 같다)."""
+    stages = {w[0] for w in circuit.wires} | {w[1] for w in circuit.wires if w[1] is not None}
+    for st in sorted(stages):
+        live = []
+        for s, e, _k, f, t, _d in circuit.wires:
+            if not (s <= st and (e is None or st <= e)):
+                continue
+            for led, chip in ((t, f), (f, t)):
+                if led[0] == 'LED' and chip[0] != 'LED':
+                    live.append((leds[led[1]], _dip_pin_row(chips[chip[0]], chip[1])))
+        live.sort()
+        if any(c1 > c2 for (_a, c1), (_b, c2) in zip(live, live[1:])):
+            return False
+    return True
+
+
+def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS):
+    """슬롯 → pin 1 행 후보 [dict]. 순서(순열, N4) × 맨 위 행 × 칩 사이 빈 행 gmin~gmax. 칩 행 k 나
+    k+6 이 레일 빈 행이면 버린다 — pin 14·pin 7 전원선이 옆 행으로 비켜 사선이 된다. 브리지 둘
+    자리가 없어도 버린다."""
+    out = []
+    for order in itertools.permutations(slots):
+        for k0 in starts:
+            for gaps in itertools.product(range(gmin, gmax + 1), repeat=len(slots) - 1):
+                rows = [k0]
+                for g in gaps:
+                    rows.append(rows[-1] + 7 + g)
+                if any(k in RAIL_GAP_ROWS or k + 6 in RAIL_GAP_ROWS for k in rows):
+                    continue
+                cand = dict(zip(order, rows))
+                if bridge_rows(cand) is not None:
+                    out.append(cand)
+    return out
+
+
+def place_proxy(circuits, slots):
+    """슬롯 후보 하나 → (근사 비용 합, layout). 회로마다 LED 행을 DP 로 고른다. LED 를 못 놓거나
+    R10 이 미리 어긋나거나, 입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면(점퍼가 옆 행으로 비켜 사선)
+    None."""
+    for c in circuits:
+        if any(_dip_pin_row(slots[c.chips[chip]], pin) in RAIL_GAP_ROWS for chip, pin in c.inputs):
+            return None
+    bridge = bridge_rows(slots)
+    layout = {'slots': dict(slots), 'leds': {}, 'bridge': bridge}
+    total = 0.0
+    for c in circuits:
+        leds = led_rows(c, slots, bridge)
+        if leds is None:
+            return None
+        chips = place_chips(c, layout)
+        if not place_r10_ok(c, chips, leds):
+            return None
+        layout['leds'][c.name] = leds
+        total += sum(place_wire_cost(chips, w) for w in place_wires(c, layout))
+    return total, layout
+
+
+_PLACE_PATHS = {}
+
+
+def place_paths(circuit, layout, density_weight=None):
+    """`layout` 자리에서 `route_plan` 경로 — 회로·배선표·자리·λ 마다 한 번(엔진 안 캐시). 주차 빌더와
+    배치기가 같은 캐시를 쓴다."""
+    w = DENSITY_WEIGHT if density_weight is None else density_weight
+    key = (circuit.name, place_hash([circuit], ()), layout_key(layout), w)
+    if key not in _PLACE_PATHS:
+        def fixed(bb, stage, superset=False):
+            circuit.fixed(bb, stage, superset, layout)
+        _PLACE_PATHS[key] = route_plan(fixed, place_chips(circuit, layout), place_wires(circuit, layout),
+                                       board='v2', density_weight=w)
+    return _PLACE_PATHS[key]
+
+
+_PLACE_HINTS = {}
+
+
+def place_marker_hints(circuit, layout):
+    """superset 판(모든 단계의 고정물)에서 엔진 고정 부품 번호 원이 비킨 자리 {열쇠: (x, y)}. 빌더가
+    고정물을 그리기 전에 `bb.marker_hints` 로 주면 단계 그림·완성본이 같은 자리를 쓴다 — 완성본에 없는
+    LED 사슬 때문에 단계 그림에서만 비키던 입력 원(시험판 MUX E·D3, 2026-10-05 최종 검토)."""
+    key = (circuit.name, place_hash([circuit], ()), layout_key(layout))
+    if key not in _PLACE_HINTS:
+        bb = BreadboardRenderer(None, board='v2')
+        bb.enable_steps()
+        circuit.fixed(bb, None, True, layout)
+        _PLACE_HINTS[key] = dict(bb.settled_markers)
+    return _PLACE_HINTS[key]
+
+
+def place_metrics(circuit, layout, density_weight=None):
+    """superset 판(모든 단계의 선 — 학생이 그 회로를 꽂는 동안 꽂는 선 전부)의 `wire_metrics`."""
+    plans = place_paths(circuit, layout, density_weight)
+    bb = BreadboardRenderer(None, board='v2')
+    bb.enable_steps()
+    circuit.fixed(bb, None, True, layout)
+    for (_s, _e, kind, _f, _t, desc), (p, m) in zip(place_wires(circuit, layout), plans):
+        bb.step_wire(p, kind, desc, marker_at=m)
+    return wire_metrics(bb)
+
+
+def _place_measure(circuits, layout):
+    """회로마다 superset 지표를 더한다. 막히면 {'blocked': 첫 줄}."""
+    tot = {'length': 0.0, 'bends': 0, 'density': 0.0}
+    try:
+        for c in circuits:
+            m = place_metrics(c, layout)
+            for k in tot:
+                tot[k] += m[k]
+    except AssertionError as e:
+        return {'blocked': str(e).splitlines()[0]}
+    return tot
+
+
+def place_verify(module, layout, out_dir):
+    """주차 모듈의 `BOARDS` 사슬(기준선 이어 가며, `RESTART` 에서 끊고)과 `FINALS` 를 `layout` 으로 다
+    그려 본다 — `verify()`(R1~R14) 가 막으면 '보드: 사유' 한 줄, 통과하면 None. 모듈 `LAYOUT` 은
+    그리는 동안만 바꾼다(빌더가 전역 `LAYOUT` 을 읽는다)."""
+    saved, name = module.LAYOUT, None
+    module.LAYOUT = layout
+    try:
+        base = None
+        for name, fn, stage in module.BOARDS:
+            if name in getattr(module, 'RESTART', ()):
+                base = None
+            bb = fn(os.path.join(out_dir, name), None, stage=stage, baseline=base)
+            base = bb.snapshot()
+        for name, fn in module.FINALS:
+            fn(os.path.join(out_dir, name))
+    except AssertionError as e:
+        lines = [x.strip() for x in str(e).splitlines() if x.strip()]
+        return f'{name}: ' + ' '.join(lines[:2])
+    finally:
+        module.LAYOUT = saved
+    return None
+
+
+def place_module_hash(module):
+    return place_hash(module.PLACE, module.SLOTS, getattr(module, 'GMIN', PLACE_GMIN))
+
+
+def _serial_map(fn, items):
+    return [fn(x) for x in items]
+
+
+def place_pick(rows, slack=PLACE_LENGTH_SLACK):
+    """verify 를 통과한 후보 → (고를 행, 띠 상한). 띠 = 최단 길이 L* × `slack` 이하, 그 안에서 (밀도,
+    꺾임, 길이, layout 키) 최소 — 길이가 사실상 같으면 덜 빽빽한(따라 그리기 쉬운) 쪽(2026-10-05 사용자
+    N6). 배선기 λ 고르기(`scripts/lab/route_sweep.py` `pick`)와 같은 꼴이다."""
+    band = min(x['length'] for x in rows) * slack
+    inside = [x for x in rows if x['length'] <= band + 1e-9]
+    return min(inside, key=lambda x: (x['density'], x['bends'], x['length'], layout_key(x['layout']))), band
+
+
+def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=None,
+               measure=None, verify=None, mapper=None, chunk=1, slack=PLACE_LENGTH_SLACK):
+    """주차 모듈의 칩 행·LED 행·브리지 행을 고른다.
+
+    1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
+    2. 지금 `LAYOUT`(기준)과 앞 `top` 개를 실측한다(`measure`, 기본 `_place_measure` — route_plan).
+    3. 막히지 않고 기준보다 짧고 밀도 합이 기준 이하인 것을 **전부** `verify`(기본 `place_verify` — 단계
+       사슬 전부) 하고, 통과한 것이 있으면 `place_pick`(최단의 ×`slack` 안에서 밀도 최소, N6)으로
+       고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을 때만 기준을 verify 해 고른다 — 기준이
+       1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(N5). 기준보다 긴 배치는 고르지 않는다.
+    병렬: `mapper(fn, items) -> [fn(x)…]`(기본 차례대로) 로 라운드마다 실측을 한 묶음에 돌리고(1라운드
+    묶음에 기준도 든다), verify 는 길이 순으로 `chunk` 개씩 돌린다. `place_search --jobs` 가 프로세스
+    풀을 넘긴다(2026-10-05 사용자).
+    돌려주는 값 {'hash', 'layout', 'rows', 'slack'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
+    'length', 'bends', 'density' | 'blocked', 'status'}."""
+    circuits, slots = list(module.PLACE), tuple(module.SLOTS)
+    for c in circuits:
+        place_check(c)
+    gmin = getattr(module, 'GMIN', PLACE_GMIN) if gmin is None else gmin
+    measure = measure or (lambda lay: _place_measure(circuits, lay))
+    if verify is None:
+        def verify(lay):
+            if out_dir:
+                return place_verify(module, lay, out_dir)
+            # 단계 그림 열여섯 장 남짓 — 판마다 지운다(안 지우면 탐색마다 수백 MB, 2026-10-05 최종 검토)
+            with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+                return place_verify(module, lay, tmp)
+    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
+                     if r is not None), key=lambda r: (r[0], layout_key(r[1])))
+    mapper = mapper or _serial_map
+    base, rows, chosen, seen = None, [], None, {layout_key(module.LAYOUT)}
+    for r in range(rounds):
+        todo = [] if base else [dict(rank='기준', proxy=None, layout=module.LAYOUT)]
+        for i in range(r * top, min((r + 1) * top, len(ranked))):
+            proxy, lay = ranked[i]
+            if layout_key(lay) in seen:
+                continue
+            seen.add(layout_key(lay))
+            todo.append(dict(rank=i + 1, proxy=round(proxy), layout=lay))
+        for x, m in zip(todo, mapper(measure, [x['layout'] for x in todo])):
+            x.update(m)
+        rows += todo
+        if base is None:
+            base = rows[0]
+            if 'blocked' in base:
+                raise AssertionError(f"기준 LAYOUT 이 막힌다 — {base['blocked']}")
+            limit = base['density'] + 1e-9
+        ok = sorted((x for x in rows[1:] if 'blocked' not in x and 'status' not in x
+                     and x['density'] <= limit and x['length'] < base['length']),
+                    key=lambda x: (x['length'], x['density'], layout_key(x['layout'])))
+        for j in range(0, len(ok), chunk):
+            part = ok[j:j + chunk]
+            for x, why in zip(part, mapper(verify, [x['layout'] for x in part])):
+                x['status'] = '통과' if why is None else f'verify: {why}'
+        passed = [x for x in ok if x['status'] == '통과']
+        if passed:
+            chosen, band = place_pick(passed, slack)
+            for x in passed:
+                x['status'] = ('✔ 고름' if x is chosen
+                               else '통과 — 띠 안' if x['length'] <= band + 1e-9 else '통과 — 띠 밖')
+            break
+    if chosen is None:
+        why = mapper(verify, [base['layout']])[0]
+        base['status'] = '✔ 고름' if why is None else f'verify: {why}'
+        if why is None:
+            chosen = base
+    for x in rows:
+        x.setdefault('status', f"막힘: {x['blocked']}" if 'blocked' in x
+                     else '밀도 초과' if x['density'] > limit
+                     else '기준보다 김' if x is not base and x['length'] >= base['length'] else '')
+    if chosen is None:
+        raise AssertionError('고를 배치가 없다 — 기준 ' + base['status'])
+    return {'hash': place_hash(circuits, slots, gmin, slack), 'layout': chosen['layout'], 'rows': rows,
+            'slack': slack}
+
+
+def place_report(result, title):
+    """`배치탐색.md` 본문. 첫 JSON 블록(지문·고른 layout)을 테스트가 읽는다 — 손으로 고치지 않는다."""
+    head = json.dumps({'hash': result['hash'], 'layout': result['layout']},
+                      ensure_ascii=False, indent=1, sort_keys=True)
+    lines = [f'# 배치 탐색 — {title}', '',
+             '`python -m scripts.lab.place_search <배치.py>` 가 쓴다. 배선표가 바뀌면 다시 돌린다 — '
+             '고른 layout 은 `배치.py` 의 `LAYOUT` 과 netlist `kind: layout` 표에 옮겨 적는다.', '',
+             '```json', head, '```', '',
+             '길이·밀도는 superset 판(모든 단계의 선) 칸 단위, 회로 합이다. 기준 = 탐색 시점 `LAYOUT`.', '',
+             f"순위: 기준보다 짧고 밀도가 기준 이하인 후보를 모두 verify 하고, 통과한 것 중 최단 길이의 "
+             f"×{result.get('slack', PLACE_LENGTH_SLACK):g} 안에서 밀도가 가장 낮은 것(동률은 꺾임·길이).", '',
+             '| 순위 | 근사(px) | 길이 | 꺾임 | 밀도 | 슬롯 | LED | 결과 |',
+             '|---|---|---|---|---|---|---|---|']
+    for x in result['rows']:
+        slots = ' '.join(f'{k}:{v}' for k, v in sorted(x['layout']['slots'].items()))
+        leds = ' '.join(f'{t}:{r}' for c in sorted(x['layout']['leds'])
+                        for t, r in x['layout']['leds'][c].items())
+        proxy = '' if x['proxy'] is None else x['proxy']
+        if 'blocked' in x:
+            lines.append(f"| {x['rank']} | {proxy} | — | — | — | {slots} | {leds} | {x['status']} |")
+        else:
+            lines.append(f"| {x['rank']} | {proxy} | {x['length']:.1f} | {x['bends']} | "
+                         f"{x['density']:.1f} | {slots} | {leds} | {x['status']} |")
+    return '\n'.join(lines) + '\n'
+
+
+def read_place_report(path):
+    """`배치탐색.md` 의 첫 JSON 블록 → {'hash', 'layout'}."""
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    m = re.search(r'```json\n(.*?)\n```', text, re.S)
+    if not m:
+        raise ValueError(f'{path}: JSON 블록이 없다')
+    return json.loads(m.group(1))
 
 
 # ---------------------------------------------------------------------------
