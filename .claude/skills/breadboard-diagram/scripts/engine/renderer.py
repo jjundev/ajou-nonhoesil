@@ -567,13 +567,14 @@ class BreadboardRenderer(_RuleChecks):
         self._marker_removed(int(x), int(y), n)
 
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
-                  frm=None, to=None, marker_near=None):
+                  frm=None, to=None, marker_near=None, color=None):
         """배선 하나 + 결선 순서표 한 줄. `desc` 는 짧은 뜻풀이 — 주소는 좌표에서 뽑는다.
 
         기준선에 같은 (색, 끝점, 끝점) 이 있으면 회색·번호 없이 그린다. 따라 그리기 층이면 번호로
         모양을 정한다(`_layer_view`). 어느 쪽이든 점유표·구간은 남는다 — verify() 와 뒤 배선 자리가
         완성본과 같아야 한다. `marker_near` 는 엔진 고정 부품의 기본 자리 — v2 는 R11 에 걸리면
         비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라 그대로 찍는다.
+        `color` 는 선 색만 덮어쓴다 — kind 는 그대로라 검사·순서표는 같다(입력 점퍼 보라, 2026-10-06).
         """
         if marker_near is not None and not self.spec.readability and marker_at is None:
             marker_at = marker_near
@@ -586,7 +587,7 @@ class BreadboardRenderer(_RuleChecks):
         kept = self.baseline is not None and key in self.baseline['wires']
         view = self._layer_view(len(self.steps) + 1) if self.numbered and not kept else 'shown'
         draw = self._hidden_draw if view == 'hidden' else self.draw
-        color = KEEP if kept or view == 'faded' else WIRE[kind]
+        color = KEEP if kept or view == 'faded' else (color or WIRE[kind])
         draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
             draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
