@@ -74,6 +74,10 @@ class _RuleChecks:
     def _seg_in_box(a, b, box):
         """구간 ab 가 상자 **안쪽**을 지나가는가 — 2px 간격으로 훑는다(대각선도 잡는다)."""
         x0, y0, x1, y1 = box
+        # 범위가 상자와 안 겹치면 훑지 않는다. 여유 1 — 훑기 점은 반올림으로 끝점을 ulp 만큼 넘는다
+        # (0.7000000000000001 → 1.8 의 끝 점은 1.8000000000000003). 2026-10-05 배선기 속도.
+        if max(a[0], b[0]) < x0 - 1 or min(a[0], b[0]) > x1 + 1 or max(a[1], b[1]) < y0 - 1 or min(a[1], b[1]) > y1 + 1:
+            return False
         n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) / 2) + 1
         return any(x0 < a[0] + (b[0] - a[0]) * t / n < x1 and y0 < a[1] + (b[1] - a[1]) * t / n < y1
                    for t in range(n + 1))

@@ -7,6 +7,8 @@
 """
 import importlib.util
 import json
+import math
+import random
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -281,6 +283,273 @@ class BadgeObstacle(unittest.TestCase):
         hits = [(n, m) for n, box, _s in bb.tag_boxes for m in bb.marker_boxes
                 if self.mod._boxes_touch(box, m)]
         self.assertEqual(hits, [])
+
+
+def _ref_on_seg(p, a, b, margin=6):
+    """선검사를 넣기 전 엔진 `_on_seg` 본문 그대로(2026-10-05 `engine/router.py`)."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = (dx * dx + dy * dy) ** .5
+    if length < 1:
+        return False
+    along = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length
+    if along <= margin or length - along <= margin:
+        return False
+    return abs((p[0] - a[0]) * dy - (p[1] - a[1]) * dx) / length < 1.5
+
+
+def _ref_seg_in_box(a, b, box):
+    """선검사를 넣기 전 엔진 `_seg_in_box` 본문 그대로(2026-10-05 `engine/checks.py`)."""
+    x0, y0, x1, y1 = box
+    n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) / 2) + 1
+    return any(x0 < a[0] + (b[0] - a[0]) * t / n < x1 and y0 < a[1] + (b[1] - a[1]) * t / n < y1
+               for t in range(n + 1))
+
+
+def _coord(rng, hi):
+    """판 좌표 꼴 — 정수, 반 px, 아무 실수, 0.1 배수(0.1 + 0.2 꼴 반올림이 나온다)."""
+    k = rng.randrange(4)
+    if k == 0:
+        return rng.randint(0, hi)
+    if k == 1:
+        return rng.randint(0, 2 * hi) / 2
+    if k == 2:
+        return rng.random() * hi
+    return 0.1 * rng.randint(0, 10 * hi)
+
+
+def _segment(rng, hi):
+    """가로·세로·대각선·1px 미만 구간 하나."""
+    a = (_coord(rng, hi), _coord(rng, hi))
+    k = rng.randrange(4)
+    if k == 0:
+        return a, (_coord(rng, hi), a[1])
+    if k == 1:
+        return a, (a[0], _coord(rng, hi))
+    if k == 2:
+        return a, (_coord(rng, hi), _coord(rng, hi))
+    return a, (a[0] + rng.random() * .9, a[1])
+
+
+def _near_points(rng, a, b):
+    """구간 ab 둘레의 점 — 끝 여백(6) 경계 앞뒤, 수직 거리 1.5·2 경계 앞뒤, 반 px 로 맞춘 것도."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = math.hypot(dx, dy) or 1.0
+    ux, uy = dx / length, dy / length
+    pts = [a, b]
+    for t in (0, .01, 5.99, 6, 6.01, length / 2, length - 6.01, length - 6, length, rng.random() * length):
+        for s in (0, 1.49, 1.5, 1.51, 1.99, 2, 2.01, rng.uniform(-5, 5)):
+            for sign in (1, -1):
+                p = (a[0] + t * ux - sign * s * uy, a[1] + t * uy + sign * s * ux)
+                pts += [p, (round(p[0] * 2) / 2, round(p[1] * 2) / 2)]
+    return pts
+
+
+def _boxes(rng, a, b):
+    """구간 ab 의 끝 둘레에 변이 걸치는 상자 — 변이 끝점과 같음·±ulp·±0.5·±1·±1.000001, 아무 상자 하나."""
+    xs, ys = sorted((a[0], b[0])), sorted((a[1], b[1]))
+    out = []
+    for e in (0, 1e-9, -1e-9, .5, -.5, 1, -1, 1.000001, -1.000001):
+        out += [(xs[1] + e, ys[0] - 5, xs[1] + 20, ys[1] + 5),
+                (xs[0] - 20, ys[0] - 5, xs[0] - e, ys[1] + 5),
+                (xs[0] - 5, ys[1] + e, xs[1] + 5, ys[1] + 20),
+                (xs[0] - 5, ys[0] - 20, xs[1] + 5, ys[0] - e)]
+    x0, y0 = _coord(rng, 200), _coord(rng, 200)
+    out.append((x0, y0, x0 + rng.uniform(1, 40), y0 + rng.uniform(1, 40)))
+    return out
+
+
+class PrefilterSame(unittest.TestCase):
+    """`_on_seg`·`_seg_in_box` 의 범위 선검사가 답을 안 바꾼다 — 경로가 한 칸도 안 바뀌어야 하는 속도
+    개선이다(`docs/plans/2026-10-05-배선기-속도-설계.md`). 대조용 `_ref_*` 는 선검사 전 본문이다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _renders.engine()
+
+    def test_구간_위_점_검사가_원래와_같다(self):
+        rng = random.Random(20261005)
+        bad = []
+        for _ in range(1000):
+            a, b = _segment(rng, 800)
+            for p in _near_points(rng, a, b):
+                for margin in (6, 0):
+                    want = _ref_on_seg(p, a, b, margin)
+                    if self.mod._on_seg(p, a, b, margin) != want:
+                        bad.append((p, a, b, margin, want))
+        self.assertEqual(bad[:5], [], f'{len(bad)}건 다름')
+
+    def test_선분_상자_검사가_원래와_같다(self):
+        rng = random.Random(20261005)
+        bad = []
+        for _ in range(500):
+            a, b = _segment(rng, 200)
+            for box in _boxes(rng, a, b):
+                want = _ref_seg_in_box(a, b, box)
+                if self.mod.BreadboardRenderer._seg_in_box(a, b, box) != want:
+                    bad.append((a, b, box, want))
+        self.assertEqual(bad[:5], [], f'{len(bad)}건 다름')
+
+    def test_반올림으로_끝점을_넘는_훑기점(self):
+        # 0.7000000000000001 + (1.8 - 0.7000000000000001) == 1.8000000000000003 — 원래 훑기는 왼쪽 변이
+        # 1.8 인 상자 안이라고 본다. 딱 맞는 경계로 일찍 끝내면 이 답이 바뀐다.
+        a, b, box = (0.1 * 7, 5), (1.8, 5), (1.8, 0, 10, 10)
+        self.assertTrue(_ref_seg_in_box(a, b, box))
+        self.assertTrue(self.mod.BreadboardRenderer._seg_in_box(a, b, box))
+
+    def test_꺾임_정리가_원래와_같다(self):
+        rng = random.Random(20261005)
+        bad = []
+        for _ in range(20000):          # `_ordered` 꼴 후보 — 반 행 통로, 차선 X 가 끝 열과 같을 때도
+            A = (_coord(rng, 800), _coord(rng, 800))
+            B = (_coord(rng, 800), _coord(rng, 800))
+            y1 = A[1] + rng.choice((0, 7.5, -7.5, 22.5, .3))
+            y2 = B[1] + rng.choice((0, 7.5, -7.5, 22.5, .3))
+            X = rng.choice((A[0], B[0], A[0] + .3, _coord(rng, 800)))
+            raw = [A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B]
+            got, want = self.mod._clean(list(raw)), _ref_clean(self.mod, list(raw))
+            if got != want or repr(got) != repr(want):
+                bad.append(raw)
+        grid = (0, .3, .6, 10, 10.4, 20)
+        for _ in range(20000):          # 0.5px 미만 중복과 같은 축 합치기가 섞인 아무 경로
+            raw = [(rng.choice(grid), rng.choice(grid)) for _ in range(rng.randint(1, 7))]
+            got, want = self.mod._clean(list(raw)), _ref_clean(self.mod, list(raw))
+            if got != want or repr(got) != repr(want):
+                bad.append(raw)
+        self.assertEqual(bad[:5], [], f'{len(bad)}건 다름')
+
+
+def _ref_clean(mod, path):
+    """꺾임 정리 전 엔진 `_clean` 본문 그대로(2026-10-05 `engine/router.py`)."""
+    _axis = mod._axis
+    out = []
+    for p in path:
+        if out and abs(out[-1][0] - p[0]) < .5 and abs(out[-1][1] - p[1]) < .5:
+            continue
+        if len(out) >= 2 and _axis(out[-2], out[-1]) and _axis(out[-2], out[-1]) == _axis(out[-1], p):
+            out[-1] = p
+            continue
+        out.append(p)
+    return out
+
+
+def _ref_valid(mod, bb, path, others_pts, segs):
+    """근처 선 고르기 전 엔진 `_valid` 본문 그대로(2026-10-05 배선기 속도 1차 뒤 `engine/router.py`, 신호
+    이름 배지 검사 4f40b8a 포함)."""
+    _axis, _on_seg = mod._axis, mod._on_seg
+    for a, b in zip(path, path[1:]):
+        sa = bb._strip(bb.sym(a[0], bb._row_of(a[1]))) if bb.hole_at(*a) else None
+        sb = bb._strip(bb.sym(b[0], bb._row_of(b[1]))) if bb.hole_at(*b) else None
+        if sa is not None and sa == sb:
+            return False
+        if _axis(a, b) is None:
+            return False
+    for box, _ch in bb.chip_label_boxes:
+        if any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:])):
+            return False
+    for c in path[1:-1]:
+        h = bb.hole_at(*c)
+        if h is not None and h in bb._leads:
+            return False
+    for q in (path[0], path[-1]):
+        for _k, pts in segs:
+            for a, b in zip(pts, pts[1:]):
+                if _on_seg(q, a, b):
+                    return False
+    for q in others_pts:
+        for a, b in zip(path, path[1:]):
+            if _on_seg(q, a, b):
+                return False
+    for m in bb.marker_boxes:
+        x0, y0, x1, y1 = m[0] - 1, m[1] - 1, m[2] + 1, m[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
+                return False
+    for _n, box, _seg in bb.tag_boxes:
+        x0, y0, x1, y1 = box[0] - 1, box[1] - 1, box[2] + 1, box[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
+                return False
+    for c in path[1:-1]:
+        for _k, pts in segs:
+            if (any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts)
+                    or any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:]))):
+                return False
+    for _k, pts in segs:
+        for q in pts[1:-1]:
+            if any(_on_seg(q, a, b, margin=0) for a, b in zip(path, path[1:])):
+                return False
+    for a, b in zip(path, path[1:]):
+        ax = _axis(a, b)
+        for _k, pts in segs:
+            for c, d in zip(pts, pts[1:]):
+                if _axis(c, d) != ax:
+                    continue
+                if ax == 'v' and abs(a[0] - c[0]) < 1.5:
+                    lo = max(min(a[1], b[1]), min(c[1], d[1]))
+                    hi = min(max(a[1], b[1]), max(c[1], d[1]))
+                    if hi - lo > 2:
+                        return False
+                if ax == 'h' and abs(a[1] - c[1]) < 1.5:
+                    lo = max(min(a[0], b[0]), min(c[0], d[0]))
+                    hi = min(max(a[0], b[0]), max(c[0], d[0]))
+                    if hi - lo > 2:
+                        return False
+    return True
+
+
+def _stage(mod, board, circuit, plans, k):
+    """`plans` 앞 k 가닥을 깐 superset 판과 k 번째 선의 `_valid` 입력 (판, 후보, others, segs) —
+    `route_plan` 의 `board_`·`_routes` 머리와 같은 꼴이다."""
+    wires = mod.place_wires(circuit, board.LAYOUT)
+    chips = mod.place_chips(circuit, board.LAYOUT)
+    bb = mod.BreadboardRenderer(None, board='v2')
+    bb.enable_steps()
+    circuit.fixed(bb, None, True, board.LAYOUT)
+    for (_s, _e, kind, _f, _t, desc), (p, m) in zip(wires[:k], plans[:k]):
+        bb.step_wire(p, kind, desc, marker_at=m)
+    _s, _e, _kind, frm, to, _desc = wires[k]
+    srcs, dsts = mod._end_holes(bb, chips, frm), mod._end_holes(bb, chips, to)
+    segs = [(kk, pts) for kk, pts, _d in bb._segments]
+    others = [q for _kk, pts, _d in bb._segments for q in (pts[0], pts[-1])]
+    others += [(x, bb.r_y(r)) for (x, r), what in bb._leads.items()
+               if '다리' in what or '애노드' in what or '캐소드' in what]
+    chip_rows = tuple((ch['pin1_row'], len(ch['pins'])) for ch in bb.chips)
+    cands = [p for _c, p in mod._ordered(bb, chip_rows, tuple(srcs), tuple(dsts), to[0] == 'LED')]
+    return bb, cands, others, segs
+
+
+class ValidSame(unittest.TestCase):
+    """`_valid` 가 후보 근처 선만 봐도 답이 같다 — 배선기 속도 2차(`docs/plans/2026-10-05-배선기-속도-2차-설계.md`).
+    판은 커밋된 λ=0 경로(`plans_lambda0.json`)를 단계 k 까지 깐 것, 후보는 k 번째 선의 `_ordered` 전부.
+    경로를 새로 재지 않으므로 느린 그룹에 안 넣는다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _renders.engine()
+        cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
+        cls.snap = json.loads(SNAP.read_text(encoding='utf-8'))
+
+    def _check(self, circuit, name):
+        plans = [([tuple(q) for q in p], tuple(m)) for p, m in self.snap[name]]
+        seen, bad = set(), []
+        for k in range(0, len(plans), 5):
+            bb, cands, others, segs = _stage(self.mod, self.board, circuit, plans, k)
+            boxes = self.mod._seg_boxes(segs)
+            for p in cands:
+                want = _ref_valid(self.mod, bb, p, others, segs)
+                seen.add(want)
+                if self.mod._valid(bb, p, others, segs, boxes) != want:
+                    bad.append((k, p, want))
+        self.assertEqual(seen, {True, False})      # 맞댄 답이 한쪽뿐이면 헛돈 시험이다
+        self.assertEqual(bad[:3], [], f'{len(bad)}건 다름')
+
+    def test_MUX(self):
+        self._check(self.board.MUX, 'mux')
+
+    def test_DMUX(self):
+        self._check(self.board.DMUX, 'dmux')
 
 
 if __name__ == '__main__':
