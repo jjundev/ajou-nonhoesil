@@ -71,6 +71,30 @@ class RoutePlanBoard(unittest.TestCase):
         self.assertEqual(str(cm.exception), "경로 없음: ('U', 30) -> ('U', 99) (막힌 선)")
 
 
+    def test_뒤_선_끝점을_덮은_번호_원은_다시_고른다(self):
+        """번호 원은 그 선을 깔 때 고르니 **뒤에 깔린 선의 끝점**을 모른다 — 배치 탐색 후보 3 의 DMUX 에서
+        Y1 번호 원이 나중에 꽂힌 좌 i22 를 덮었다(2026-10-05). 다 깐 superset 판에서 다시 본다."""
+        mod = _load()
+        L = mod.board_spec('v2').cols['left']
+        y = lambda r: mod.board_spec('v2').row0 + (r - 1) * mod.board_spec('v2').row_pitch
+
+        def fake_routes(bb, chips, frm, to, density_weight=0.0):
+            if frm == ('U', 1):    # 앞 선 — 번호 원을 (아직 빈) c12 위에 둔다
+                yield [(L['a'], y(10)), (L['a'] - 30, y(10)), (L['a'] - 30, y(14)), (L['a'], y(14))], (L['c'], y(12))
+            else:                  # 뒤 선 — c12 에 꽂힌다
+                yield [(L['c'], y(12)), (L['c'] + 12, y(12)), (L['c'] + 12, y(30)), (L['c'], y(30))], (L['c'] + 12, y(21))
+
+        mod._routes = fake_routes
+        wires = [(1, None, 'sig', ('U', 1), ('U', 2), '앞 선'),
+                 (1, None, 'sig', ('U', 3), ('U', 4), '뒤 선')]
+        plans = mod.route_plan(lambda bb, stage, superset=False: None, {}, wires)
+        self.assertNotEqual(plans[0][1], (L['c'], y(12)))
+        bb = mod.BreadboardRenderer(None, board='v2')
+        bb.enable_steps()
+        for (_s, _e, kind, _f, _t, desc), (p, m) in zip(wires, plans):
+            bb.step_wire(p, kind, desc, marker_at=m)
+        self.assertEqual([x for x in bb.marker_problems() if '홀' in x], [])
+
 class Metrics(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

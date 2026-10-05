@@ -2935,7 +2935,29 @@ def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
         else:
             raise AssertionError(f'경로 없음: {frm} -> {to} ({desc})')
         bb = board_(plans)
-    return plans
+    return _resettle_markers(bb, plans)
+
+
+def _resettle_markers(bb, plans):
+    """다 깐 superset 판(`bb`)에서 경로 번호 원을 다시 본다. 원은 그 선을 깔 때 고르므로 **뒤에 깐 선의
+    끝점**을 모른다 — 2026-10-05 배치 탐색 후보에서 DMUX Y1 원이 나중에 꽂힌 좌 i22 를 덮었다.
+    R11 에 걸리는 원만 `_auto_marker` 로 다시 고르고, 통과하는 원은 그대로 둔다."""
+    first = len(bb._segments) - len(plans)
+    out = list(plans)
+    for i, (p, m) in enumerate(plans):
+        if m is None:
+            continue
+        box = (m[0] - 8, m[1] - 8, m[0] + 8, m[1] + 8)
+        mine = [lst for lst in (bb._marker_slots, bb.marker_boxes) if box in lst]
+        for lst in mine:
+            lst.remove(box)                      # 제 원은 빼고 잰다
+        if not bb._marker_fits(*m, own=first + i):
+            m = bb._auto_marker(first + i) or m
+            out[i] = (p, m)
+            box = (m[0] - 8, m[1] - 8, m[0] + 8, m[1] + 8)
+        for lst in mine:
+            lst.append(box)
+    return out
 
 
 def draw_routed(bb, wires, plans, stage):
