@@ -22,7 +22,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from tests._boards import board_files, load_once, per_builder
+from tests._boards import board_files, engine_files, load_once, per_builder
 from tests._renders import BOARD_L, BOARD_R, render
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,8 +109,8 @@ class BuilderApiContract(unittest.TestCase):
 
     @staticmethod
     def _trees():
-        """엔진과 주차 `배치.py` 전부 — 빌더는 주차 파일에, 헬퍼 일부는 엔진에 있다."""
-        return [ast.parse(p.read_text(encoding="utf-8")) for p in [SRC, *board_files()]]
+        """엔진과 주차 `배치.py` 전부 — 빌더는 주차 파일에, 헬퍼 일부는 엔진 조각에 있다."""
+        return [ast.parse(p.read_text(encoding="utf-8")) for p in [*engine_files(), *board_files()]]
 
     def test_빌더가_번호_없는_배선을_그리지_않는다(self):
         bad = [n.name for t in self._trees() for n in self._builder_like(t)

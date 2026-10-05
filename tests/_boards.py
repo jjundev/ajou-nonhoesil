@@ -10,6 +10,16 @@ from pathlib import Path
 from scripts.lab import config
 
 ROOT = Path(__file__).resolve().parents[1]
+ENGINE = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
+
+
+def engine_files():
+    """엔진 소스 파일 — 진입점, 그다음 `_PARTS` 조각(실행 순서). ast 로 읽는 시험용이라 엔진을 불러오지
+    않는다. 진입점에 `_PARTS` 가 없으면 진입점 하나다."""
+    tree = ast.parse(ENGINE.read_text(encoding="utf-8"))
+    parts = next((ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+                  and any(isinstance(t, ast.Name) and t.id == "_PARTS" for t in n.targets)), ())
+    return [ENGINE, *(ENGINE.parent / "engine" / p for p in parts)]
 
 
 def board_files():

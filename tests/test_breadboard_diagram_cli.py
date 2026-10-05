@@ -20,7 +20,7 @@ import ast
 import unittest
 from pathlib import Path
 
-from tests._boards import board_files
+from tests._boards import board_files, engine_files
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
@@ -31,7 +31,7 @@ def _tree():
     """엔진과 주차 `배치.py` 전부를 한 모듈처럼 이어 읽는다 — 상수·빌더가 어느
     파일에 있든 아래 도우미가 그대로 찾는다."""
     body = []
-    for p in [SRC, *board_files()]:
+    for p in [*engine_files(), *board_files()]:
         body += ast.parse(p.read_text(encoding="utf-8")).body
     return ast.Module(body=body, type_ignores=[])
 
