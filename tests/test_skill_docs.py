@@ -1353,6 +1353,15 @@ class BreadboardSkillSize(unittest.TestCase):
             with self.subTest(s):
                 self.assertIn(s, self.text)
 
+    def test_줄이며_흐려진_규칙이_본문에_있다(self):
+        # 2026-10-05 분할 리뷰: "단계 노트를 건다" 는 '단다' 로 읽혔고, 출력 둘을 한 사슬에 묶지 않는 규칙은
+        # 실험03 문단과 함께 주차별.md 로 갔다 — `verify()` 는 출력끼리 붙은 것을 못 잡는다.
+        for s in ("단계 노트를 넣지 않는다(`note = None`)", "두 출력을 한 LED 사슬에 묶지 않는다"):
+            with self.subTest(s):
+                self.assertIn(s, self.text)
+        # 자리를 내려고 본문에서 뺀 실험실 기록은 연혁에 남는다.
+        self.assertIn("칩만 갈아끼우면 되는데", (BREADBOARD_DIR / "연혁.md").read_text(encoding="utf-8"))
+
 
 class InitSkill(unittest.TestCase):
     """폴더 골격은 `config.EXPERIMENT_SUBDIRS` 한 곳에만 있다."""
