@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.lab.fit_pages import FIT_OPEN, fit_pages, page_box, strip, tag, fit_style
+from scripts.lab.fit_pages import FIT_OPEN, FIT_PLAIN, fit_pages, page_box, strip, tag, fit_style
 from scripts.lab.html2pdf import PdfError, html_to_pdf, resolve_chrome
 
 _PAGE = "<style>@page { size: 210mm 420mm; margin: 12mm 10mm; }</style>"
@@ -36,6 +36,14 @@ class TestTag(unittest.TestCase):
         html = _PAGE + f"{FIT_OPEN}a</div>{FIT_OPEN}c</div>"
         once = tag(html) + fit_style([10.0, 20.0], (210, 12, 10))
         self.assertEqual(tag(strip(once)), tag(html))
+    def test_fit_래퍼도_단계와_한_번호열이다(self):
+        html = f"{FIT_PLAIN}a</div>{FIT_OPEN}b</div>{FIT_PLAIN}c</div>"
+        once = tag(html)
+        self.assertEqual(once,
+                         '<div class="fit" data-fit="0">a</div>'
+                         '<div class="stage" data-fit="1">b</div>'
+                         '<div class="fit" data-fit="2">c</div>')
+        self.assertEqual(tag(once), once)
 
 
 class TestFitStyle(unittest.TestCase):

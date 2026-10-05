@@ -22,6 +22,7 @@ from .notation import normalize_cell
 from .spec_parser import split_indices
 from .photo_names import item_token, photo_name
 from . import config
+from .fit_pages import FIT_PLAIN
 
 MAX_BREADBOARD_ROWS = 30
 # Breadboard.jpg(998×1345px) 상단에 아주대학교 로고 + 범례 원 3개가 있다.
@@ -1061,6 +1062,7 @@ def circuit_pages(spec, netlist) -> str:
         item = next((i for i in spec.items if i.id == section.item), None)
         device = f" · 판독: {', '.join(item.device)}" if item else ""
         out.append('<section class="circuit">')
+        out.append(FIT_PLAIN)         # 머리글 쪽 — `fit_pages` 가 제 높이의 쪽을 준다
         out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
                    f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
         banner = _chip_swap(previous, section)
@@ -1072,7 +1074,9 @@ def circuit_pages(spec, netlist) -> str:
                 out.append(schematic)
         if prose_before.strip():
             out.append(_blocks(prose_before))
+        out.append("</div>")
         wiring = []           # 완성본·배선 상자·핀 점검·배선 뒤 검산 — 단계 뒤에 붙인다
+        wiring.append(FIT_PLAIN)      # A 쪽: 완성본 그림·배선 목록
         wiring.append('<div class="wirebox">')
         if section.stages:
             wiring.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
@@ -1097,6 +1101,8 @@ def circuit_pages(spec, netlist) -> str:
                               if kind == "table" else _blocks(payload))
             wiring.append("</div>")
         wiring.append("</div>")
+        wiring.append("</div>")       # A 쪽 끝
+        wiring.append(FIT_PLAIN)      # B 쪽: 핀 점검·기록표·안 본 노드
         unused_chips = [c for c in chips if c["unused"]]
         if unused_chips:
             wiring.append('<div class="unused">'
@@ -1124,6 +1130,7 @@ def circuit_pages(spec, netlist) -> str:
         unstaged = _unstaged_nodes_html(spec, section)
         if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
             out.append(unstaged)
+        out.append("</div>")      # B 쪽 끝
         out.append("</section>")
         previous = section
     return _drop_issue_refs("\n".join(out))
@@ -1146,7 +1153,7 @@ def closing_page() -> str:
     """실험실을 나오기 전 30초. 여기서 빠뜨린 것은 결과보고서에서 못 채운다."""
     items = "".join(f'<li><span class="box"></span>{_esc(c)}</li>'
                     for c in CLOSING)
-    return f"<h2>실험실을 나오기 전에</h2><ul>{items}</ul>"
+    return f"{FIT_PLAIN}<h2>실험실을 나오기 전에</h2><ul>{items}</ul></div>"
 
 
 def render_checklist(spec, netlist, template) -> str:
