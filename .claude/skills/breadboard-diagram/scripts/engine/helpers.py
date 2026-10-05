@@ -74,7 +74,8 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     if s.readability:
         bb.tag_boxes.append(held)
     bb.step_wire([p0, p1], 'sig',
-                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요', **pin)
+                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요',
+                 color=INPUT, **pin)
     if s.readability:
         bb.tag_boxes.remove(held)
     if not ghosted:
