@@ -50,10 +50,6 @@ def check_workbook_pack(folder,manifest):
                         if not isinstance(step,dict) or set(step)!={'label','html'}: raise ValueError(p['id']+': invalid solution step')
                         for field in ('label','html'): check_authored_html(step[field],folder,p['id'],figures)
                     check_authored_html(sol['answer'],folder,p['id'],figures)
-                    parser=Parser();parser.feed(''.join(step['html'] for step in sol['steps']))
-                    hrefs=[unquote(node.attrs.get('href','')) for node in parser.root.walk() if node.tag=='a']
-                    for topic in original['topics']:
-                        if names['note_html']+'#'+topic not in hrefs: errors.append(p['id']+': missing concept link '+topic)
                 for fragment in _html_fields(p):
                     parser=Parser();parser.feed(fragment)
                     for node in parser.root.walk():

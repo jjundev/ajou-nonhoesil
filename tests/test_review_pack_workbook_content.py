@@ -19,6 +19,13 @@ def test_problem_projection_excludes_answers_and_notes(tmp_path):
     assert problem['problems'][0]['html'] == answer['problems'][0]['html']
     assert answer['problems'][0]['solution']['answer'] == '<p>Y=I0</p>'
 
+def test_answer_sheet_has_no_source_comparison_step(tmp_path):
+    m, run = create_workbook_run(tmp_path)
+    answer = build_workbook_data(m, load_workbook_content(m, run), 'answers')
+    text = json.dumps(answer, ensure_ascii=False)
+    assert '원문 대조' not in text and '다시 볼 개념' not in text
+    assert '해설 전용 대조 기록' not in text  # fixture notes 도 해설지에 싣지 않는다
+
 @pytest.mark.parametrize('html', ['<script>1</script>', '<img onerror="alert(1)" src="x">',
     '<a href="javascript:alert(1)">x</a>', '<svg><script>1</script></svg>',
     '<div style="background:url(evidence/assets/answer.png)">x</div>'])

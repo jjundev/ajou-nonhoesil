@@ -2,13 +2,11 @@
 from copy import deepcopy
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
-import html
 import json
 import re
 from .question_bank import _unique_json_object
 from .bank_index import canonical_relative
 from .html2md import Parser
-from .manifest import output_names
 
 AUTHOR_KEYS = {'original','conditions','ask','problem_figures','hints','solution','notes'}
 KINDS = {'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
@@ -124,8 +122,6 @@ def load_workbook_content(manifest, run):
 
 def build_workbook_data(manifest, content, mode):
     if mode not in {'problems','answers'}: raise ValueError('Unknown workbook mode: '+str(mode))
-    names=output_names(manifest['experiment'],review_presentation_version=2)
-    topics={t['id']:t for t in manifest['topics']}
     entries=[]
     for row in content:
         entry=dict(id=row['id'],kind=row['kind'],number=row['number'],title=row['title'],
@@ -134,15 +130,6 @@ def build_workbook_data(manifest, content, mode):
             figures=deepcopy(row['figures']),hints=deepcopy(row['hints']))
         if mode=='answers':
             solution=deepcopy(row['solution'])
-            review=[]
-            if row['answer_status']!='verified':
-                review.append('<p><strong>'+STATES[row['answer_status']]+'</strong>: 원문 조건과 제공 답안의 차이 및 도출 답안의 가정을 확인하세요.</p>')
-            if row['notes']:
-                review.extend('<p>'+html.escape(n)+'</p>' for n in row['notes'])
-            links=' · '.join(f'<a href="{names["note_html"]}#{t}">{html.escape(topics[t]["title"])}</a>' for t in row['topics'])
-            guide=f'<a href="원문과_저작안내.md#{row["id"]}">원문·제공 답안 대조</a>' if 'bank_import' in manifest else ''
-            if links or guide: review.append('<p>'+links+(' · ' if links and guide else '')+guide+'</p>')
-            if review: solution['steps'].append(dict(label='원문 대조 · 다시 볼 개념',html=''.join(review)))
             entry['solution']=solution
         entries.append(entry)
     label='기출 문제' if mode=='problems' else '기출 풀이'

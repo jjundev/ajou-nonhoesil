@@ -54,3 +54,19 @@ def test_git_export_keeps_the_literal_template_contract(tmp_path):
         target=tmp_path/(mode+'.html')
         target.write_text(render_workbook_html(data,exported),encoding='utf-8')
         assert read_workbook_payload(target)==data
+
+
+def test_local_patches_add_table_borders_and_optional_conditions(tmp_path):
+    m, run = create_workbook_run(tmp_path)
+    content = load_workbook_content(m, run)
+    for mode in ('problems', 'answers'):
+        text = render_workbook_html(build_workbook_data(m, content, mode), ASSETS)
+        assert '#book th, #book td' in text and 'border: .3mm solid var(--ink)' in text
+        assert '#book .original td { height: 7mm; }' in text
+        assert "if (p.html.conditions && p.html.conditions.trim()) panel.append(block('조건'" in text
+        assert "block('조건', p.html.conditions, 'conditions'), block('구할 것'" not in text
+
+def test_local_patch_anchor_loss_is_rejected():
+    import pytest
+    from scripts.lab.review_pack.workbook_render import apply_local_patches
+    with pytest.raises(ValueError): apply_local_patches('<style></style>', 'x.html')
