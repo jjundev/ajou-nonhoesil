@@ -254,8 +254,10 @@ def merge_lab_report(
     if clean_body and body_pdf.is_file() and body_pdf.resolve() != out_path.resolve():
         try:
             body_pdf.unlink()
-        except OSError:
-            pass
+        except OSError as e:
+            # 제출본은 이미 만들어졌으니 실패로 돌리지 않는다. 다만 조용히 넘기면
+            # 원본이 남은 줄 모르므로 알린다(Windows 에서 열린 파일은 못 지운다).
+            print(f"경고: 본문 원본을 지우지 못했습니다: {body_pdf} ({e})", file=sys.stderr)
 
     return result
 
