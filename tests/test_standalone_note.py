@@ -44,7 +44,7 @@ def test_defer_scripts_move_after_body_with_onload(note):
     assert html.index("var W=1") < html.index("var K=1") < html.index("var R=1")
     assert html.index('render({d:"$"})') > html.index("var R=1")
     assert html.index("var K=1") < html.index("</body>")
-    assert "//<\/script>" in html
+    assert r"//<\/script>" in html
 
 
 def test_sibling_links_and_fonts(note):
