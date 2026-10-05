@@ -102,12 +102,12 @@
    `docs/schema/lab-netlist-v2.md`, `보고서/실험01/결선도/netlist.md`,
    `.claude/skills/draft-lab-spec/SKILL.md`(파일명 예시), `scripts/lab/render.py`·
    `validate.py`(단계 표 열 이름), `보고서/실험01/체크리스트/{명세,기록}.md`, 엔진
-   `render_breadboard.py` 의 `hashlib.sha256(` 줄(`leak_scan` 이 부분 문자열 매칭이라
+   조각 `engine/renderer.py`·`engine/placer.py` 의 `hashlib.sha256(` 줄(`leak_scan` 이 부분 문자열 매칭이라
    토큰 `a25` 가 `sha256` 의 부분 문자열로 걸리는 거짓 양성), 그리고
    **다른 실험 폴더**(`보고서/실험02/`·`실험03/` …)의 `배치.py`·`netlist.md`·`명세.md`·`기록.md` —
    슬롯 관례(`좌 7행` 등)와 단계 파일명(`1단계_`)이 겹친다. 다른 주차는 예시로 남기는 것이라
    빼지 않고 판정.md 1절에 적는다(분리 전에는 같은 문구가 엔진 파일의 실험02·03 구간에 있었다).
-   엔진 `render_breadboard.py` 는 §답안지 목록에 넣지 않는다 — 엔진에서 걸리면 그 줄을
+   엔진(진입점 `render_breadboard.py` 와 `engine/` 조각)은 §답안지 목록에 넣지 않는다 — 엔진에서 걸리면 그 줄을
    읽고, 진짜 홀 주소·주차 이름이면 엔진을 고친다(도구 변경, 따로 커밋한다).
    **그 밖의 파일**이 나오면 §답안지 목록에 더하고 1단계부터 다시 한다.
 
@@ -126,9 +126,10 @@
 5. **산출물을 보존한다.** 끝나면 격리 트리에서 저장소 `tmp/verify-artifacts/
    실험01-breadboard-격리-<YYYY-MM-DD>/` 로 복사한다: `보고서/실험01/결선도/`
    (재생성 PNG 와 재생성 빌더 `배치.py`), `tmp/격리보고.md`,
-   2단계의 `누출-실험01-bb.txt`, 그리고 격리 트리의 엔진
+   2단계의 `누출-실험01-bb.txt`, 그리고 격리 트리의 엔진 — 진입점
    (`.claude/skills/breadboard-diagram/scripts/render_breadboard.py`)을
-   `render_breadboard.py` 로 복사한다 — 에이전트가 엔진에 헬퍼를 더했으면 그
+   `render_breadboard.py` 로, 조각 폴더(같은 곳의 `engine/`)를 `engine/` 으로
+   복사한다 — 에이전트가 엔진에 헬퍼를 더했으면(대개 `engine/helpers.py`) 그
    신호가 여기 없으면 사라진다. 격리 트리를 지우기 전에 한다.
 
 6. **판정 초안을 낸다.** 두 `배치.py` 는 저장소 엔진 하나로 불러온다
@@ -162,9 +163,11 @@
    ```bash
    git diff --no-index .claude/skills/breadboard-diagram/scripts/render_breadboard.py \
        tmp/verify-artifacts/실험01-breadboard-격리-<YYYY-MM-DD>/render_breadboard.py
+   git diff --no-index .claude/skills/breadboard-diagram/scripts/engine \
+       tmp/verify-artifacts/실험01-breadboard-격리-<YYYY-MM-DD>/engine
    ```
 
-   차이가 있으면 판정.md 에 "엔진 변경(도구 변경)" 으로 적는다 — 에이전트가
+   둘 중 하나라도 차이가 있으면(조각 폴더에 새 파일이 생긴 것도) 판정.md 에 "엔진 변경(도구 변경)" 으로 적는다 — 에이전트가
    엔진에 헬퍼를 더했다는 뜻이고, `judge()` 의 넷·자리·전환 대조는 저장소
    엔진으로 다시 잰 것이니 그 헬퍼가 판정에 반영되지 않았을 수 있다.
 

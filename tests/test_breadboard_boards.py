@@ -16,7 +16,7 @@ from pathlib import Path
 from PIL import Image
 
 from scripts.lab import config
-from tests._boards import experiment_numbers, per_experiment
+from tests._boards import engine_files, experiment_numbers, per_experiment
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
@@ -115,10 +115,12 @@ class RealBoards(unittest.TestCase):
                 self.assertTrue(all(len(t) == 2 for t in board.FINALS), board.FINALS)
 
     def test_엔진은_주차_결선을_정의하지_않는다(self):
-        tree = ast.parse(SCRIPT.read_text(encoding="utf-8"))
-        names = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
-        names += [t.id for n in tree.body if isinstance(n, ast.Assign)
-                  for t in n.targets if isinstance(t, ast.Name)]
+        names = []
+        for p in engine_files():
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+            names += [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
+            names += [t.id for n in tree.body if isinstance(n, ast.Assign)
+                      for t in n.targets if isinstance(t, ast.Name)]
         bad = [n for n in names if n.startswith("build_e") or re.match(r"_e\d+_", n)
                or n[:1] == "E" and n[1:2].isdigit()]
         self.assertEqual(bad, [])
