@@ -13,8 +13,7 @@ class BreadboardRenderer(_RuleChecks):
             raise FileNotFoundError(f"Breadboard template not found: {template_path}")
 
         self.base_im = Image.open(template_path).convert('RGBA')
-        # 좌표표가 이 크기에 묶여 있다. 다른 판본이 들어오면 여기서 걸린다 —
-        # 갈아끼운 그림은 결과가 그럴듯해서 눈으로는 안 잡히기 때문이다.
+        # 좌표표가 이 크기에 묶여 있다 — 갈아끼운 판본은 눈으로 안 잡히니 여기서 건다
         w, h = self.spec.size
         if self.base_im.size != self.spec.size:
             raise ValueError(
@@ -30,114 +29,77 @@ class BreadboardRenderer(_RuleChecks):
                     f'{self.board} 양식 PNG 의 해시가 geometry.json 의 png_sha256 과 다르다: '
                     f'{template_path}.\n판형을 다시 뽑았으면 1배(1200x1600)인지, '
                     'hand_grid.detect_grid 가 0px 로 맞는지 확인하고 png_sha256 을 같이 고친다')
-        # 정본은 998px 한 장뿐이다 — 격자·로고는 확대해 깐다(`SCALE` 주석). NEAREST 는 픽셀을
-        # 그대로 늘려 원본과 같은 모양이다. LANCZOS 는 JPEG 잡티까지 매끈하게 늘려 PNG 가
-        # 장당 2.3MB 로 커졌다(NEAREST 는 1.1MB 안팎, 2026-09-28 실측)
+        # 양식은 확대해 깐다. NEAREST — LANCZOS 는 JPEG 잡티까지 늘려 PNG 가 두 배로 컸다(2026-09-28)
         self.im = self.base_im.resize((w * SCALE, h * SCALE), Image.NEAREST)
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.draw = _ScaledDraw(self.overlay)
-        # 이미 그린 레일 브리지. 칩마다 connect_unused_inputs 를 부르면 같은
-        # 레일쌍을 여러 번 잇게 되므로 한 번만 그린다
+        # 이미 그린 레일 브리지 키(kind, x, x) — 같은 레일쌍을 한 번만 잇는다
         self._bridged = set()
-        # 실제로 꽂힌 브리지. `_bridged` 는 중복 방지 키(kind, x, x)라 **행이 없다**.
-        # 행을 안 담으면 `wiring()` 이 1행을 주는데 1행은 레일 빈 행이라,
-        # 손그림 검토가 참조 브리지마다 H1 치명을 헛낸다
+        # 실제로 꽂힌 브리지(행 포함) — `wiring()` 이 낸다. 행이 없으면 손그림 검토가 H1 을 헛낸다
         self.bridges = []
-        # 어느 레일 스트립에 무엇이 닿았는지. 레일쌍 넷은 서로 **별개
-        # 스트립**이라, +5V 를 한 레일에 넣고 칩 14번 핀을 다른 레일에 물리면
-        # 그림은 멀쩡한데 전원이 안 간다. verify() 가 이걸로 잡는다
+        # 레일 스트립마다 닿은 전원 — 레일쌍은 별개 스트립이라 verify() 레일 연결성이 본다
         self._touched = {'vcc': set(), 'gnd': set()}
         self._rail_uf = {}
-        # 결선 순서표. 손으로 그리는 사람은 그림 전체를 한 번에 볼 필요 없이
-        # 이 표를 위에서 아래로 지워가며 한 줄씩 그린다
+        # 결선 순서표 — 손으로 그리는 사람이 위에서부터 한 줄씩 지운다
         self.steps = []
-        # 기준선 대비 **새로 꽂는 신호선**의 key. 예산(`STAGE_WIRE_BUDGET`)의 지표다.
-        # `content()` 에는 넣지 않는다 — 넣으면 기존 PNG 스물두 장의 도장이 바뀐다.
+        # 기준선 대비 새로 꽂는 신호선 key — 예산(`STAGE_WIRE_BUDGET`) 지표. `content()` 밖(도장)
         self.new_signal = []
-        # R7·R8 정책. 'strict' 가 기본 — 칩 한쪽 리드가 SIDE_LEAD_MAX 를 넘거나(R7) 같은
-        # 블록 두 칩 사이 배선이 쪽을 바꾸면(R8) verify() 가 막는다. 'legacy' 는 R7(2026-09-20)
-        # 이전에 승인·제출된 실험01~03 빌더만 쓴다 — 승인본을 다시 그리지 않으려는
-        # 것이지 면허가 아니다. tests/test_breadboard_physical.py 가 실험 4 이상은 전부
-        # strict 인지 본다. content() 에 들지 않아 도장은 그대로다.
+        # R7·R8 정책. 'legacy' 는 R7(2026-09-20) 이전 승인본 실험01~03 빌더만 —
+        # `test_breadboard_physical.py` 가 실험 4 이상은 strict 인지 본다. `content()` 밖
         self.density_policy = 'strict'
-        # 홀 점유표. (열 x, 행) -> 무엇이 꽂혀 있는가. 배선 끝점·부품 다리·칩 핀이
-        # 전부 여기 등록되고 verify() 가 본다 — 끝점은 홀이어야 하고(R1), 한 홀에는
-        # 리드 하나만 들어간다(R2). 2026-09-07 까지 verify() 는 주소 문자열을 파싱해
-        # 레일 끝점의 빈 행만 봤고, 허공(x=95)에서 출발한 입력선이 그 틈으로 지나갔다
+        # 홀 점유표 (열 x, 행) -> 무엇. 끝점·부품 다리·칩 핀 전부 — verify() R1·R2 가 본다
         self._leads = {}
-        # 배선이 **지나가는** 홀. 비어 있지만 여기에 끝점을 두면 점이 선 아래
-        # 깔린다 — free_rail_row() 가 피하고 verify() R3 가 끝점과 대조한다
+        # 배선이 지나가는 홀 — free_rail_row() 가 피하고 R3 가 끝점과 대조한다
         self._passed = set()
         self._not_holes = []
         self._double = []
-        # 배선 구간 목록. (색, 꼭짓점들, 뜻). 서로 다른 배선이 같은 축 위에
-        # 포개지면 그림에서 한 선으로 보인다 — 2026-09-07 실험 1-1 에서 입력 C 가
-        # 초록 중간단 선에 삼켜져 다른 회로로 읽혔다. 'strict' 면 verify() 가
-        # 던지고, 'warn' 이면 stderr 에 적고 overlap_warnings 에 남긴다
+        # 배선 구간 (색, 꼭짓점들, 뜻). R4 포개짐 — 'strict' 면 던지고 'warn' 이면 stderr 와 overlap_warnings
         self._segments = []
         self.overlap_policy = 'strict'
         self.overlap_warnings = []
-        # 결선 순서표와 번호 원을 켜는 스위치. **지금은 13장 빌더가 전부 켠다** —
-        # e1 계열도 e2 계열도 `enable_steps()` + `step_wire()` 에 네 색 팔레트(`WIRE`)를
-        # 쓴다. 옛 `draw_wire()` 를 쓰는 빌더는 하나도 없다 (2026-09-10 확인)
+        # 결선 순서표·번호 원 스위치 — 빌더가 `enable_steps()` 로 켠다
         self.numbered = False
-        # 보드 밖으로 뺀 규칙 문구. 배선이 아니라 배선의 *이유* 라서 손으로
-        # 옮겨 그릴 대상이 아니다 — 보드 위에 두면 그릴 홀만 가린다
+        # 보드 밖 규칙 문구 — 배선의 이유라 보드 위에 두지 않는다
         self.notes = []
         # 계측기·신호원 접점. 결선표와 섞지 않는다
         self.probes = []
-        # 입력 점퍼가 꽂힌 자리. 넷 검사가 레일 쪽 끝을 **가상 입력 노드**로
-        # 바꿔 세는 데 쓴다 — `input_node()` 주석 참조
+        # 입력 점퍼 자리 — 넷 검사가 레일 끝을 가상 입력 노드로 센다(`input_node()`)
         self.inputs = []
-        # 보드 안에 찍은 신호 이름 배지. (이름, 상자 (x0, y0, x1, y1), 가리키는 배선 번호 | None).
-        # 가독성 테스트가 번호 원·배선·꽂힌 홀을 가리는지 본다
+        # 보드 안 신호 이름 배지 (이름, 상자, 배선 번호 | None) — 가독성 시험이 본다
         self.tag_boxes = []
-        # 엔진 고정 부품(`marker_near`) 번호 원 — 비킨 자리를 적어 두고(`settled_markers`), 힌트가 있으면
-        # 그 자리를 쓴다(`marker_hints`, 보통 `place_marker_hints` 가 superset 판에서 뽑은 것). 그림마다
-        # 있는 부품이 달라도 같은 선의 원이 같은 자리다(2026-10-05 최종 검토)
+        # 엔진 고정 부품(`marker_near`) 번호 원 — 비킨 자리(`settled_markers`)와 힌트(`marker_hints`,
+        # `place_marker_hints`). 그림마다 부품이 달라도 같은 선의 원이 같은 자리다(2026-10-05)
         self.marker_hints = {}
         self.settled_markers = {}
         # 번호 원의 상자. 같은 검사가 쓴다
         self.marker_boxes = []
-        # 번호 원의 **자리** — 그렸든 안 그렸든(층 그림의 흐린·숨긴 번호, 기준선 회색 선). v2 자동
-        # 자리(`_auto_marker`)는 이것을 피한다. 그려진 원만 피하면 층 그림과 완성본의 자리가
-        # 갈라져, 완성본은 통과하는데 층 그림이 R11 로 멈춘다(2026-10-04 검토). `readability` 만
+        # 번호 원의 자리 — 그리지 않은 것까지(층 그림의 흐린·숨긴 번호). `_auto_marker` 가 피한다 —
+        # 그린 원만 피하면 층 그림만 R11 로 멈춘다(2026-10-04). `readability` 만
         self._marker_slots = []
-        # 보드 밖 입력 꼬리표(`_tag`) 상자 — (글, (x0, y0, x1, y1)). 같은 행 입력이 둘이면
-        # 꼬리표가 포개진다(2026-09-28 실험04 C2 S1·D) — `_input_jumper` 가 이걸 보고 비킨다
+        # 보드 밖 입력 꼬리표(`_tag`) 상자 — `_tag` 가 보고 비킨다
         self.margin_tag_boxes = []
-        # 일부러 덜 그린 그림인가 (복합 회로 누적 1·2단계). '아무 데도 안 물렸다'
-        # 갈래만 건너뛴다 — 칩 핀도 부품 다리도 아직 안 붙었을 수 있다. 같은
-        # 스트립 점퍼도 전원 단락도 덜 그렸다고 봐줄 것이 아니다.
-        # 걷기 보드에서는 프로퍼티(`partial` setter)가 False 를 받아도 True 로 남긴다 —
-        # 아래 `self.ghost` 를 먼저 정해 두어야 setter 가 그것을 볼 수 있다
+        # 일부러 덜 그린 그림 — R5 '아무 데도 안 물렸다' 만 건너뛴다. 걷기 보드는 setter 가 True 로
+        # 남긴다 — 그래서 `self.ghost` 를 먼저 정한다
         self._partial = False
-        # 앞 보드의 `snapshot()`. 같은 홀 쌍의 배선·같은 홀의 LED 사슬은 회색으로
-        # 그리고 번호를 주지 않는다 — 실험실에서는 그 선을 손대지 않는다.
-        # 기준선에 있었는데 이번에 안 그린 것은 `removed()` 가 "걷는다" 로 낸다.
-        # 실험01 실험실 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 됐다
+        # 앞 보드의 `snapshot()`. 같은 배선·LED 사슬은 회색·번호 없이 그리고(손대지 않는다), 이번에
+        # 안 그린 것은 `removed()` 가 걷는다로 낸다
         self.baseline = baseline
         self.kept = []          # 그대로 두는 배선·부품의 desc
         self.swaps = []         # (앞 칩, 새 칩, block, pin1_row)
         self._keep_parts = False  # led_chain 이 기준선 사슬을 그리는 동안 참
         self._pull_parts = False  # led_chain 이 걷기 보드가 뽑는 사슬을 그리는 동안 참
-        # 걷기 보드 — 기준선 dict 의 `ghost` 키 `{'wires': {key: n}, 'title', 'subtitle'}`.
-        # 사슬째 뽑는 LED 사슬이 있으면 `'chains': {사슬 key: tag}` 도 든다.
-        # `step_wire()` 가 그 key 를 만나면 점유표·구간에 안 남기고 `ghost_layer` 에 빨간
-        # 점선으로 그린다. 뽑은 선의 핀이 뜨는 것이 정상이라 `partial` 이다.
-        # 기준선 dict 에 키를 얹는 이유: `set_header()` 가 제목을 즉시 그려 사후에 못 바꾸고,
-        # 빌더 시그니처를 늘리면 세 주차 스물세 빌더를 고쳐야 한다. `removal_board()` 가 만든다
+        # 걷기 보드 — 기준선 dict 의 `ghost` 키 `{'wires': {key: n}, 'title', 'subtitle'[, 'chains']}`,
+        # `removal_board()` 가 얹는다. `step_wire()` 가 그 key 를 만나면 점유표에 안 남기고
+        # `ghost_layer` 에 빨간 점선으로 그린다. 뽑은 선의 핀이 뜨는 게 정상이라 `partial` 이다
         self.ghost = (baseline or {}).get('ghost')
         self.ghost_layer = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
         self.ghost_drawn = {}     # key -> n. export() 가 빌더가 안 그린 key 를 잡는다
         self.ghost_chains_drawn = set()   # 사슬 key. export() 가 안 그린 사슬을 잡는다
         if self.ghost is not None:
             self.partial = True
-        # 따라 그리기 층 — (lo, hi). 완성본 빌더를 그대로 돌리되 번호 lo 앞 배선은 회색·번호
-        # 없이, lo~hi 는 색·완성본 번호로, hi 뒤는 버리는 판(`_hidden_draw`)에 그린다.
-        # 안 보이는 배선도 점유표·구간·결선 순서표에는 남긴다 — 빼면 뒤 배선의
-        # `free_rail_row()` 가 다른 행을 골라 완성본과 다른 그림이 된다(2026-09-28 팀원 전달용).
-        # 기준선 사슬과 섞지 않는다 — 기준선의 회색은 "실험실에서 손대지 않는다" 는 다른 뜻이다
+        # 따라 그리기 층 (lo, hi) — 번호 lo 앞은 회색, lo~hi 는 색, hi 뒤는 버리는 판(`_hidden_draw`).
+        # 안 보이는 배선도 점유표·구간에는 남긴다 — 빼면 뒤 배선이 완성본과 다른 자리를 고른다.
+        # 기준선과 섞지 않는다 — 기준선의 회색은 다른 뜻이다
         if layer is not None:
             if baseline is not None:
                 raise ValueError('layer 는 기준선 없는 완성본에만 준다 — baseline 과 함께 못 준다')
@@ -163,9 +125,7 @@ class BreadboardRenderer(_RuleChecks):
         self.font_step = _font('kr', 11)
 
         self._init_cols()
-        # 그린 것을 **사실 그대로** 적어 둔다. 손그림 검토가 이걸 정답으로
-        # 읽는다. `_leads` 의 뜻풀이 문자열을 파싱하게 두면 말이 바뀔 때마다
-        # 검사기가 조용히 깨진다 — 검사기는 코드를 읽어야지 산문을 읽으면 안 된다
+        # 그린 것을 구조로 적어 둔다 — 손그림 검토의 정답. 검사기는 뜻풀이 문자열을 파싱하지 않는다
         self.chips = []
         # 칩마다 이름 글자 상자(논리 좌표) — R14. 글꼴 따라 달라지는 픽셀이라 `chips`(도장에 든다)와 따로 둔다
         self.chip_label_boxes = []
@@ -195,24 +155,18 @@ class BreadboardRenderer(_RuleChecks):
 
     @partial.setter
     def partial(self, value):
-        """걷기 보드는 정의상 `partial` 이다 — 내려도 다시 올린다.
-
-        걷어낸 가닥의 핀은 아무 데도 안 물린다(74HC08 pin 1·4). 그게 이 그림의 요점인데
-        `verify()` R5 는 뜬 핀을 오류로 잡는다. 주차 파일들은 `bb.partial = st < 3`
-        처럼 단계로 값을 정하므로, 생성자가 켜 둔 것을 빌더가 뒤에서 도로 내린다
-        (2026-09-19 실험03 걷기 보드가 이걸로 PNG 재생성에서 죽었다). 세 주차 스물세
-        빌더에 `or bb.ghost` 를 덧대는 대신 여기서 한 번 막는다.
+        """걷기 보드는 정의상 `partial` 이다 — 빌더가 `bb.partial = st < 3` 으로 내려도 다시 올린다
+        (2026-09-19 실험03, 걷어낸 핀이 R5 뜬 핀으로 잡혔다).
         """
         self._partial = bool(value) or getattr(self, 'ghost', None) is not None
 
     # ---------------- 좌표 ----------------
 
     def _init_cols(self):
-        """열 좌표표 — 판형 사양(`self.spec.cols`)의 사본. 렌더러 안에서는 이 표가 열 좌표의
-        **유일한 권위**다. 손그림 검토는 같은 사양을 `column_table()` 로 읽는다."""
+        """열 좌표표 — 판형 사양(`self.spec.cols`)의 사본, 렌더러 안 열 좌표의 유일한 권위.
+        손그림 검토는 `column_table()` 로 같은 사양을 읽는다."""
         self.cols = copy.deepcopy(self.spec.cols)
-        # 레일 x -> 어느 전원인가. 넷 검사가 +5V 와 GND 가 한 넷이 됐는지 볼 때
-        # 쓴다. 열 **이름**에서 뽑으므로 이 표가 유일한 권위라는 규칙을 지킨다
+        # 레일 x -> 어느 전원인가 — 열 이름에서 뽑는다. 넷 검사의 단락 판정용
         self._rail_kind = {}
         for blk in self.cols.values():
             for key, x in blk.items():
@@ -233,12 +187,8 @@ class BreadboardRenderer(_RuleChecks):
         return int(round((y - self.spec.row0) / self.spec.row_pitch)) + 1
 
     def hole_at(self, x, y):
-        """(x, y) 가 실제 홀이면 그 홀의 키 (열 x, 행), 아니면 None.
-
-        레일은 5홀씩 묶여 빈 행이 있고, 단자대는 63행 전부 홀이다. 열·행 모두
-        홀 중심에서 5px 안이어야 한다 — 열 피치가 16px 라 9px 로는 인접 열
-        사이에 거부 구간이 없었다. 그 밖은 배선 통로거나 밀린 좌표다.
-        v2 는 열 24px·행 19px 라 5px 허용치가 더 넉넉하다.
+        """(x, y) 가 실제 홀이면 그 홀의 키 (열 x, 행), 아니면 None. 열·행 모두 홀 중심 5px 안 —
+        v1 열 피치가 16px 라 더 넓히면 인접 열 사이에 거부 구간이 없다. 레일 빈 행은 홀이 아니다.
         """
         r = self._row_of(y)
         if not 1 <= r <= ROW_MAX:
@@ -253,11 +203,7 @@ class BreadboardRenderer(_RuleChecks):
         return (best, r)
 
     def _register_pass(self, points):
-        """폴리라인이 지나가는 홀을 `_passed` 에 적는다 (양 끝점은 뺀다).
-
-        2px 간격으로 훑어 `hole_at()` 에 걸리는 홀을 모은다 — 대각선도 같은
-        식으로 잡힌다. 꺾이는 점이 홀 위에 있으면 그것도 '지나간 홀' 이다.
-        """
+        """폴리라인이 지나가는 홀을 `_passed` 에 적는다(양 끝점 빼고, 2px 간격, 꺾임점 포함)."""
         ends = {self.hole_at(*points[0]), self.hole_at(*points[-1])}
         for (x0, y0), (x1, y1) in zip(points, points[1:]):
             length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** .5
@@ -269,17 +215,8 @@ class BreadboardRenderer(_RuleChecks):
                     self._passed.add(key)
 
     def _endpoints_under_wires(self, margin=6):
-        """R3. 배선 끝점이나 부품 다리가 다른 배선 구간의 **중간**에 놓인 곳.
-
-        점이 선 아래 깔리면 그 선에서 갈라지는 T 접속으로 읽힌다. 점퍼는 이어
-        붙일 수 없으니 그런 접속은 없다 — **같은 넷이라도 봐주지 않는다.**
-        2026-09-08 복합 회로 a7·a19 가 같은 넷이었고, 그래서 더 헷갈렸다.
-        R4 가 같은 색 30px 이하를 밑동으로 봐주더라도 그 밑동의 끝점은 여기서
-        걸린다 — 갈래는 옆 홀에서 세로로 뺀다.
-
-        칩 핀 홀은 뺀다. 칩을 가로지르는 선은 핀 행을 지날 수밖에 없고 핀
-        스텁은 회색이라 구분된다. 구간 양끝 `margin` px 안은 그 배선 자신의
-        끝이라 뺀다 — 옆 홀(16px)에 나란히 끝나는 두 점퍼는 걸리지 않는다.
+        """R3. 배선 끝점이나 부품 다리가 다른 배선 구간의 **중간**에 놓인 곳 — T 접속으로 읽힌다.
+        같은 넷이라도 봐주지 않는다(2026-09-08). 칩 핀 홀과 구간 양끝 `margin` px 안은 뺀다.
         """
         pts = []
         for i, (kind, points, desc) in enumerate(self._segments):
@@ -306,10 +243,8 @@ class BreadboardRenderer(_RuleChecks):
         return sorted(set(out))
 
     def _jack_at(self, x, y):
-        """(x, y) 가 전원 잭이면 그 잭 키('red'·'yellow'·'gray'), 아니면 None.
-
-        잭은 보드 밖의 유일한 합법 끝점이다. `lead`·`_endpoint`·`nets` 가 같은 규칙을 써야 해서
-        한 자리에 둔다 — 판형마다 잭 자리와 보드 위 테두리가 다르다(`self.spec`).
+        """(x, y) 가 전원 잭이면 그 잭 키, 아니면 None — 보드 밖의 유일한 합법 끝점.
+        `lead`·`_endpoint`·`nets` 가 같은 규칙을 쓰도록 한 자리에 둔다.
         """
         s = self.spec
         if y < s.jack_y_max and any(abs(x - jx) < 30 for jx in s.jacks.values()):
@@ -317,11 +252,8 @@ class BreadboardRenderer(_RuleChecks):
         return None
 
     def lead(self, x, y, what):
-        """홀 (x, y) 에 리드 하나를 꽂는다.
-
-        전원잭(`_jack_at`)은 보드 밖의 유일한 합법 끝점이라 건너뛴다. 홀이 아니면
-        R1 위반, 이미 차 있으면 R2 위반으로 적어 두고 verify() 가 한꺼번에 낸다
-        — 그리는 도중에 던지면 어디까지 그렸는지 알 수 없다.
+        """홀 (x, y) 에 리드 하나를 꽂는다. 잭은 건너뛴다. R1·R2 위반은 적어 두고 verify() 가 한꺼번에
+        낸다 — 그리는 도중에 던지면 어디까지 그렸는지 모른다.
         """
         if self._jack_at(x, y) is not None:
             return   # 전원잭 — 보드 밖의 유일한 합법 끝점
@@ -336,17 +268,8 @@ class BreadboardRenderer(_RuleChecks):
             self._leads[key] = what
 
     def free_rail_row(self, row, *xs):
-        """`row` 에서 가장 가까운, `xs` 열의 홀이 전부 비어 있는 레일 행.
-
-        `snap_rail_row()` 는 홀이 있는 행만 찾았다. 그래서 7행·8행에 나란히
-        들어가는 입력 A·B 가 둘 다 7행 홀로 스냅돼 한 홀을 두고 다퉜고, 레일
-        브리지 셋을 31행에 이으면 가운데 레일 31행에 점퍼 둘이 꽂혔다. 한 홀에
-        리드 둘은 못 꽂는다 — 점유표를 보고 비어 있는 이웃으로 간다. 가까운
-        순(같은 행, 위, 아래, 두 칸 위, …)이라 결과가 결정적이다.
-
-        다른 배선이 **지나가는** 홀(`_passed`)도 찬 것으로 본다. pin 14 전원선이
-        같은 행 중앙 GND 레일 홀 위를 지나는데 거기에 미사용 핀 접지선이 착지하면
-        파란 점이 빨간 선 아래 깔린다 (R3). 먼저 그린 선이 지나간 자리는 비켜 간다.
+        """`row` 에서 가장 가까운, `xs` 열의 홀이 전부 비어 있는 레일 행 — 같은 행, 위, 아래, 두 칸 위
+        … 순이라 결정적이다. 지나가는 홀(`_passed`)도 찬 것으로 본다 — 끝점이 선 아래 깔린다(R3).
         """
         for d in range(0, 8):
             for cand in ((row,) if d == 0 else (row - d, row + d)):
@@ -356,15 +279,8 @@ class BreadboardRenderer(_RuleChecks):
         raise ValueError(f'{row}행 근처에 빈 레일 홀이 없다: x={xs}')
 
     def _overlaps(self):
-        """서로 다른 배선의 구간이 같은 축 위에 포개진 곳. 축 방향 구간만 본다.
-
-        다른 색이면 8px 만 포개져도 잡는다. 같은 색은 30px(두 홀 폭 안)까지
-        봐준다 — 같은 스트립의 옆 홀에 꽂은 두 번째 점퍼가 첫 점퍼 위를 되짚어
-        여백으로 나가는 갈래 밑동이 그렇다. 다만 그 밑동은 굵은 선 아래 깔려
-        "선 중간에서 얇은 선이 솟는" 그림이 되므로(2026-09-08 복합 회로 a7·a19
-        지적) 봐준다고 해서 써도 되는 건 아니다 — 갈래는 옆 홀에서 세로로 뺀다.
-        그 이상 같은 색으로 포개지면 두 넷이 한 선으로 보인다 (검정은 모든
-        신호선의 색이다).
+        """서로 다른 배선의 구간이 같은 축 위에 포개진 곳(축 방향 구간만). 다른 색은 8px, 같은 색은
+        30px(갈래 밑동)까지 봐준다 — 그래도 갈래는 옆 홀에서 세로로 뺀다(2026-09-08).
         """
         segs = []
         for i, (kind, pts, desc) in enumerate(self._segments):
@@ -421,11 +337,8 @@ class BreadboardRenderer(_RuleChecks):
             self._touched[kind].add(x)
 
     def _build_addr_map(self):
-        """x 좌표 -> 사람이 읽는 이름. 결선 순서표의 주소를 자동으로 만든다.
-
-        두 블록이 같은 x 로 부르는 열(v2 가운데 레일)은 좌·우 접두어 없이 한 번만 적는다 —
-        한 레일이다(설계 §3). v1 은 그런 열이 없어 이름이 그대로다.
-        """
+        """x 좌표 -> 사람이 읽는 이름(결선 순서표 주소). 두 블록이 같이 쓰는 열(v2 가운데 레일)은
+        좌·우 접두어 없이 적는다."""
         names = {'gnd': 'GND레일', 'vcc': 'VCC레일',
                  'mid_gnd': '중앙GND레일', 'mid_vcc': '중앙VCC레일'}
         shared = self._shared_xs()
@@ -441,11 +354,8 @@ class BreadboardRenderer(_RuleChecks):
         return _hole_columns(self.cols)
 
     def sym(self, x, row):
-        """(x, 행) -> (블록, 열 이름, 행). 홀이 아니면 None.
-
-        `addr()` 이 사람이 읽는 '좌 b10' 을 만든다면 이쪽은 기계가 비교하는
-        ('left', 'b', 10) 을 만든다. 허용치는 `hole_at()` 과 같은 5px 다 —
-        열 피치가 16px 라 그보다 넓으면 인접 열 사이에 거부 구간이 없다.
+        """(x, 행) -> (블록, 열 이름, 행), 홀이 아니면 None — `addr()` 의 기계용 짝. 허용치는 `hole_at()` 과
+        같은 5px.
         """
         best = min(self._sym_map, key=lambda k: abs(k - x))
         if abs(best - x) > 5:
@@ -474,11 +384,8 @@ class BreadboardRenderer(_RuleChecks):
     # ---------------- 머리글 ----------------
 
     def set_header(self, title, subtitle, submit=True):
-        """제목·부제는 **그리지 않는다** — 사이드카 JSON 으로 가고 체크리스트가 싣는다
-        (2026-09-28 읽기면 개편: 그림에 구운 글자는 태블릿에서 작고 체크할 수 없었다).
-
-        걷기 보드(ghost 모드)는 앞 회로 빌더가 부르는 제목 대신 `ghost` 의 제목을 쓴다 —
-        빌더는 자기가 걷기 보드로 렌더되는지 모른다.
+        """제목·부제는 그리지 않는다 — 사이드카 JSON 으로 가고 체크리스트가 싣는다(2026-09-28).
+        걷기 보드는 빌더가 준 제목 대신 `ghost` 의 제목을 쓴다 — 빌더는 자기가 걷기 보드인지 모른다.
         """
         if self.ghost is not None:
             title, subtitle, submit = self.ghost['title'], self.ghost['subtitle'], False
@@ -486,11 +393,7 @@ class BreadboardRenderer(_RuleChecks):
         self.submit = submit
 
     def connect_jacks(self, block='left'):
-        """전원 잭 -> 보드 레일. 과거 결선도가 모두 그리던 선이다.
-
-        잭 아래 끝에서 내려와 보드 위 테두리 바로 안쪽(`spec.jack_route_y`)을 가로질러 레일로
-        간다. v1 은 테두리 242 + 8·16 = 250·258, v2 는 304 + 8·16 = 312·320 — 같은 식이다.
-        """
+        """전원 잭 -> 보드 레일. 보드 위 테두리 바로 안쪽(`spec.jack_route_y`)을 가로지른다."""
         c, s = self.cols[block], self.spec
         y_v, y_g = s.jack_route_y
         r_v, r_g = self.free_rail_row(3, c['vcc']), self.free_rail_row(4, c['gnd'])
@@ -516,21 +419,12 @@ class BreadboardRenderer(_RuleChecks):
 
     def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
                    arrow=None):
-        """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z.
+        """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z. 손그림이 판형 위만 따라 그려
+        보드 밖 이름이 빠졌다(2026-09 실험01 감점).
 
-        2026-09 실험01 예보 조교 감점(-1): 손그림 결선도에 입력 A·B·C 위치 표기가
-        없었다. 원도는 입력 이름을 보드 밖(x=12) 꼬리표에만 적었고, 학생은 보드
-        판형 위만 따라 그려 그 글자가 옮겨지지 않았다. 신호 이름은 그림의 일부라
-        이 함수로 보드 안에 둔다. 규칙 문구는 여전히 `note()` 로 보드 밖이다.
-
-        `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 배지 상자의 왼쪽
-        끝이다. `seg` 는 이 이름이 가리키는 배선의 `_segments` 번호 — 겹침 검사가
-        그 선만 봐준다.
-
-        `arrow='left'|'right'` 는 입력 표지다 — `col` 로 채운 상자에 흰 화살촉과 흰 글자.
-        화살촉은 점퍼선이 뻗는 쪽 끝에서 그쪽을 가리킨다(`D0▶`·`◀E`) — 중앙 여백의
-        배지는 이것으로 좌·우 어느 블록으로 들어가는지 갈린다. 좌우 여백을 1 로 줄여
-        화살촉 자리를 낸다(`INPUT_TRI`). 상자(겹침 검사 대상)는 화살촉까지 덮는다.
+        `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 상자 왼쪽 끝. `seg` 는 가리키는 배선
+        번호 — 겹침 검사가 그 선만 봐준다. `arrow='left'|'right'` 는 입력 표지 — `col` 로 채운 상자에
+        흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다.
         """
         assert arrow in (None, 'left', 'right'), f"arrow 는 None·'left'·'right' 다: {arrow!r}"
         font, pad = self.font_en_bold, 2
@@ -561,12 +455,8 @@ class BreadboardRenderer(_RuleChecks):
         self.tag_boxes.append((name, box, seg))
 
     def draw_wire(self, points, color, width=3):
-        """번호 없는 생짜 배선. **지금 이 함수를 부르는 빌더는 하나도 없다.**
-
-        `_segments` 에도 `_leads` 에도 아무것도 남기지 않는다 — 그래서 이걸로 그린
-        선은 `verify()` 를 통째로 우회한다. 끝점이 홀인지(R1), 한 홀에 리드가
-        둘인지(R2), 다른 배선 아래 깔리는지(R3·R4), 무엇과 무엇을 잇는지(R5)
-        아무도 보지 않는다. 순서표에도 안 오른다. `step_wire()` 를 써라.
+        """번호 없는 생짜 배선 — 부르는 빌더가 없다. 점유표·구간에 안 남아 `verify()` 를 통째로
+        우회하므로 `step_wire()` 를 쓴다.
         """
         self.draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
@@ -586,19 +476,9 @@ class BreadboardRenderer(_RuleChecks):
                 t = e + gap
 
     def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None):
-        """계측기·신호원 접점. **배선이 아니다** — 점퍼로 꽂는 게 아니라
-        프로브 팁이나 집게로 문다. 회색 점선으로 그리고 계측표에 따로 쌓는다.
-
-        보드 왼쪽 여백으로 뺀다. `lane_row` 를 주면 여백 안(x=140)에서 꺾어
-        그 행으로 옮긴다 — 접점 두 개가 이웃한 행이면 꼬리표가 겹치기 때문이다.
-
-        `name` 은 교안 회로도가 그 접점에 붙인 신호 이름이다(실험02 `VIN`·`VOUT`·
-        `CH1`·`CH2`). 주면 **보드 안에도** 배지로 적는다 — 꼬리표만 보드 밖에 두면
-        판형 위만 따라 그리는 손그림에서 이름이 빠진다(2026-09 실험01 조교 감점과
-        같은 꼴, 2026-09-14 실험02 pre_review_round3). 자리는 그 접점과 같은
-        스트립의 끝 여백이다: 칩 왼쪽 스트립(a~e)이면 레일과 a 열 사이, 오른쪽
-        스트립(f~j)이면 j 열 바깥. 한 행의 다섯 홀은 한 노드라 스트립 끝에 적어도
-        같은 핀을 가리킨다.
+        """계측기·신호원 접점 — 배선이 아니다. 회색 점선을 보드 왼쪽 여백으로 빼고 계측표에 따로 쌓는다.
+        `lane_row` 는 이웃 행 접점의 꼬리표가 겹칠 때 여백 안에서 꺾을 행이다. `name`(교안 신호 이름)을
+        주면 같은 스트립 끝 여백에 배지로도 적는다 — 손그림이 보드 밖 이름을 빠뜨린다.
         """
         y = self.r_y(row)
         lane_y = self.r_y(lane_row) if lane_row else y
@@ -646,11 +526,8 @@ class BreadboardRenderer(_RuleChecks):
         self._marker_on(self.draw, x, y, n, REMOVE, filled=True)
 
     def _ghost_wire(self, points, n):
-        """걷기 보드의 뽑을 배선. 유령 레이어에 빨간 점선, overlay 에 걷기 번호 원.
-
-        점유표·구간·레일 접촉에 아무것도 안 남긴다 — 이 선은 이제 없는 것이고, 그 홀에
-        다음 회로의 새 선이 앉을 수 있다(실험03 좌 d7·a9). 끝점 원도 안 찍는다.
-        번호 원은 가장 긴 구간의 중점에, 기존 원과 겹치면 그 구간을 따라 옮긴다.
+        """걷기 보드의 뽑을 배선 — 유령 레이어에 빨간 점선, overlay 에 걷기 번호 원. 점유표에 안 남긴다 —
+        그 홀에 다음 회로의 새 선이 앉을 수 있다. 번호 원은 가장 긴 구간 중점에서 비켜 간다.
         """
         self._dashed(points, REMOVE, width=4, dash=9, gap=6,
                      draw=_ScaledDraw(self.ghost_layer))
@@ -664,8 +541,7 @@ class BreadboardRenderer(_RuleChecks):
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
         x, y = mx, my
         if self.spec.readability:
-            # v2: 다른 번호 원만이 아니라 꽂힌 홀·칩 몸통도 피한다(R11). 2026-10-05 배치 탐색 8걷기 —
-            # 유령선 번호 원이 중앙 GND 레일 홀을 덮었다. 구간을 따라 4px 씩 가운데부터 훑는다
+            # v2: 꽂힌 홀·칩 몸통도 피한다(R11, 2026-10-05). 구간을 따라 4px 씩 가운데부터 훑는다
             for k in sorted(range(-int(span / 2) + 8, int(span / 2) - 7, 4), key=lambda k: (abs(k), k)):
                 cx, cy = int(mx + ux * k), int(my + uy * k)    # 찍는 자리(정수)로 잰다 — 반 행 선은 .5 다
                 box = (cx - 8, cy - 8, cx + 8, cy + 8)
@@ -684,21 +560,12 @@ class BreadboardRenderer(_RuleChecks):
 
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
                   frm=None, to=None, marker_near=None):
-        """배선 하나 + 결선 순서표 한 줄.
+        """배선 하나 + 결선 순서표 한 줄. `desc` 는 짧은 뜻풀이 — 주소는 좌표에서 뽑는다.
 
-        `desc` 는 짧은 뜻풀이만 준다 — 어디서 어디로 가는지는 좌표에서
-        자동으로 뽑는다 ('좌 b7 -> 좌 GND레일7행').
-
-        기준선(`baseline`)에 같은 (색, 끝점, 끝점) 이 있으면 **회색으로 그리고
-        번호를 주지 않는다** — 앞 단계에서 꽂아 둔 그대로다. 점유표·구간·레일
-        접촉은 똑같이 남긴다: 회색이어도 그림대로 꽂히는지는 verify() 가 본다.
-
-        따라 그리기 층(`layer`)이면 번호로 모양을 정한다(`_layer_view`). 어느 모양이든
-        점유표·구간·결선 순서표에는 남는다 — 번호와 뒤 배선 자리가 완성본과 같아야 한다.
-
-        `marker_near` 는 엔진 고정 부품(전원선·LED 사슬·입력 점퍼)의 기본 자리다 — v2 는 그 자리가
-        R11 에 걸리면 가까운 빈 자리로 비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라
-        그대로 찍는다.
+        기준선에 같은 (색, 끝점, 끝점) 이 있으면 회색·번호 없이 그린다. 따라 그리기 층이면 번호로
+        모양을 정한다(`_layer_view`). 어느 쪽이든 점유표·구간은 남는다 — verify() 와 뒤 배선 자리가
+        완성본과 같아야 한다. `marker_near` 는 엔진 고정 부품의 기본 자리 — v2 는 R11 에 걸리면
+        비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라 그대로 찍는다.
         """
         if marker_near is not None and not self.spec.readability and marker_at is None:
             marker_at = marker_near
@@ -756,11 +623,8 @@ class BreadboardRenderer(_RuleChecks):
         return n
 
     def step_note(self, kind, frm, to, desc, count=1, marker_at=None, marker_near=None):
-        """그림에 이미 그려진 것을 표에 한 줄로 묶는다.
-
-        `marker_at` 을 주면 보드 위에도 번호 원을 찍는다. **부품을 꽂는
-        단계에는 반드시 준다** — 안 주면 표에는 번호가 있는데 그림에는 없어서,
-        따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다. `marker_near` 는 `step_wire` 와 같다.
+        """그림에 이미 그려진 것을 표에 한 줄로 묶는다. 부품을 꽂는 단계에는 `marker_at` 을 꼭 준다 —
+        표에만 번호가 있으면 따라 그리다 막힌다. `marker_near` 는 `step_wire` 와 같다.
         """
         if marker_near is not None and marker_at is None:
             if self.spec.readability and not self._pull_parts:
@@ -830,28 +694,13 @@ class BreadboardRenderer(_RuleChecks):
 
     def led_chain(self, x, top_row, tag, desc, block='left', color_rgb=(220, 20, 20),
                   marker_dx=-21, active_low=False):
-        """LED + 330Ω + GND 한 벌. `x` 는 **신호가 도착하는 열**이다.
+        """LED + 330Ω + GND 한 벌. `x` 는 **신호가 도착하는 열**이다. LED 는 옆 열, 저항은 그다음 열 —
+        한 홀에는 다리 하나다. 오른쪽에 두 열이 없으면 왼쪽으로 자란다. 레일 점퍼는 윗행+3 에서 레일에
+        가장 가까운 빈 홀로 뽑는다 — 다리 위를 안 지나게. 보드 위에는 신호 이름만, 긴 문구는 순서표로.
 
-        LED 는 그 옆 열, 저항은 그 다음 열에 꽂는다. 같은 행 a~e(또는 f~j)는
-        한 노드라 어느 홀이든 이어지지만, **한 홀에는 다리 하나만** 들어간다.
-        이전 판은 배선 끝·LED 애노드·LED 캐소드·저항 윗다리를 전부 한 열에
-        포개 그렸다 — 그림대로면 한 홀에 둘씩 꽂아야 했다. 사슬은 빈 열 쪽으로
-        자란다: 오른쪽에 두 열이 없으면(d 열) 왼쪽으로 간다.
-
-        저항 아래 GND 점퍼는 저항 행에서 **레일에 가장 가까운 빈 홀**에서 뽑는다.
-        LED 열에서 뽑으면 왼쪽으로 자란 사슬(도착 d → LED c → 저항 b)의 가로선이
-        저항 아랫다리 b 위를 지나간다 — 검정 선 아래 다리가 깔리는 그림이다.
-
-        보드 위에는 **신호 이름만** 붙인다 (L1, X, Z…) — `draw_led()` 가
-        `signal_tag()` 로 찍는다. 'L2 최종 LED (L2=A·B·C)' 같은 긴 문구는 결선
-        순서표로 내려보낸다 — 손으로 옮겨 그릴 것이 아니면서 정작 그릴 홀을
-        가리기 때문이다.
-
-        `active_low` 면 **Negative Logic** 사슬이다(실험05 1-2, 교안 p9 "Output 을 Negative Logic
-        으로 구축") — 출력이 0 일 때 켜진다. 신호 → 330Ω(옆 열, 윗행~윗행+2) → LED(그다음 열, 캐소드
-        윗행+2 → 애노드 윗행+3) → +5V. 저항과 LED 의 열 쓰임이 보통 사슬과 뒤집힌다. 레일 점퍼는 보통
-        사슬과 같은 윗행+3 에서 나가 배치기 `led_rows` 가 극성을 몰라도 된다. 레코드에는
-        `'active_low': True` 를 더한다 — 보통 사슬에는 키를 넣지 않는다(`wiring()` → 도장).
+        `active_low` 면 Negative Logic 사슬(실험05, 출력 0 이면 켜짐) — 신호 → 330Ω(옆 열) → LED(캐소드
+        위) → +5V. 레일 점퍼 행은 같아 배치기 `led_rows` 가 극성을 몰라도 된다. 레코드에
+        `'active_low': True` 를 더한다 — 보통 사슬에는 키를 넣지 않는다(도장).
         """
         c = self.cols[block]
         group = [c[k] for k in 'abcde'] if x <= c['e'] else [c[k] for k in 'fghij']
@@ -866,11 +715,8 @@ class BreadboardRenderer(_RuleChecks):
             x_r, rt_row, rb_row = x_res, top_row + 1, top_row + 3
         key = (self.sym(x_l, a_row), self.sym(x_l, k_row),
                self.sym(x_r, rt_row), self.sym(x_r, rb_row))
-        # 기준선에 같은 네 홀의 사슬이 있으면 LED·저항·GND 점퍼 전부 회색이고
-        # 번호가 없다 — 앞 단계에서 꽂아 둔 그대로다. 플래그는 사슬을 그리는 동안만 선다
-        # 걷기 보드가 사슬째 뽑는 사슬(`ghost['chains']`)은 LED·저항을 걷기 빨강으로 칠하고
-        # 점선 상자로 두른다 — 번호는 GND 점퍼(유령선)가 받는다. 선만 빨갛고 부품이 회색이면
-        # 그림이 "부품은 둔다" 로 읽힌다(2026-09-29 실험04 8걷기, 사용자)
+        # 기준선에 같은 사슬이 있으면 전부 회색·번호 없음. 걷기 보드가 사슬째 뽑으면(`ghost['chains']`)
+        # 부품까지 빨강에 점선 상자 — 부품이 회색이면 "둔다" 로 읽힌다(2026-09-29). 그리는 동안만 선다
         self._pull_parts = self.ghost is not None and key in self.ghost.get('chains', {})
         self._keep_parts = (self.baseline is not None and key in self.baseline['chains']
                             and not self._pull_parts)
@@ -908,8 +754,7 @@ class BreadboardRenderer(_RuleChecks):
                                f'330Ω({self.addr(x_r, y_k)}→{self.addr(x_r, y_rb)}) 직렬 · {desc}',
                                marker_near=(x + marker_dx, y_k))
                 x_rail, kind, what = self.nearest_gnd_rail(x_led, block), 'gnd', f'{tag} 저항 아래 -> GND'
-            # 레일 점퍼는 윗행+3 에서 레일에 가장 가까운 빈 홀로 — 그 행에서 비어 있는 열은 두 극성 모두
-            # 신호 열과 `x_led` 다(보통 사슬은 LED 가 윗행~+1, Negative 는 저항이 윗행~+2)
+            # 윗행+3 에서 비어 있는 열은 두 극성 모두 신호 열과 `x_led` 다
             free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
             x_from = min(free, key=lambda h: abs(h - x_rail))
             r_rail = self.free_rail_row(top_row + 3, x_rail)
@@ -922,8 +767,7 @@ class BreadboardRenderer(_RuleChecks):
     # ---------------- 칩 ----------------
 
     def _vtext(self, xy, text, fill, font):
-        """세로쓰기. 과거 결선도가 칩 이름을 이렇게 적었다 — 몸통 안에 넣으면
-        핀 번호를 d·g 열 홀 위에 얹지 않아도 된다."""
+        """세로쓰기 — 칩 이름을 몸통 안에 넣는다."""
         real = font.real if isinstance(font, _ScaledFont) else font
         bbox = real.getbbox(text)
         pad = 2 * SCALE
@@ -935,9 +779,8 @@ class BreadboardRenderer(_RuleChecks):
                                            int(xy[1] * SCALE - rot.height / 2)))
 
     def _chip_font(self, name, rows):
-        """칩 이름 글꼴. DIP-14 는 늘 `font_chip`(11pt). DIP-16 은 세로 글자 상자가 `2·pitch − 4` 이하인
-        가장 큰 크기다 — 몸통 가운데 반 행(k+3.5) 하나만 막아 a쪽 pin 1~7 이 그 위·아래 반 행 일곱으로
-        건넌다. 74HC42 는 출력 일곱이 a쪽이다. 11pt(44px)면 반 행 셋을 막아 Y3·Y4 가 못 건넌다(2026-10-05 설계 #5)."""
+        """칩 이름 글꼴. DIP-14 는 `font_chip`(11pt). DIP-16 은 글자 상자가 `2·pitch − 4` 이하인 가장 큰
+        크기 — 가운데 반 행 하나만 막아야 a쪽 pin 1~7 이 R14 없이 건넌다(2026-10-05, 74HC42)."""
         if rows == 7:
             return self.font_chip
         limit = 2 * self.spec.row_pitch - 4
@@ -956,16 +799,12 @@ class BreadboardRenderer(_RuleChecks):
         y_top = self.r_y(start_row) - 8
         y_bot = self.r_y(start_row + rows - 1) + 8
 
-        # 기준선의 같은 자리에 같은 칩이 있으면 몸통을 회색으로 그린다 — 앞
-        # 단계에서 꽂아 둔 그대로라는 뜻이다(footer 범례 "회색 = 앞 단계에서
-        # 그대로 둔다"). 배선·LED 사슬과 같은 규칙을 칩에도 적용한다.
+        # 기준선의 같은 자리에 같은 칩이면 몸통이 회색 — 배선·LED 사슬과 같은 규칙
         prev = (self.baseline['chips'].get((block, start_row))
                 if self.baseline is not None else None)
         kept_chip = self.baseline is not None and prev == name
         body_fill = (200, 200, 200, 255) if kept_chip else (30, 33, 36, 255)
         body_outline = KEEP if kept_chip else (130, 140, 150, 255)
-        # 몸통이 밝아지면 흰 글씨는 안 보인다 — 진한 회색으로 바꿔 pin 번호·
-        # 이름을 계속 읽을 수 있게 한다
         text_fill = (55, 55, 55, 255) if kept_chip else (255, 255, 255, 255)
         num_fill = (90, 90, 90, 255) if kept_chip else (215, 215, 215, 255)
 
@@ -981,8 +820,7 @@ class BreadboardRenderer(_RuleChecks):
         label_box = (label_at[0] - half_w, label_at[1] - half_h,
                      label_at[0] + half_w, label_at[1] + half_h)
 
-        # 핀 번호는 **몸통 안쪽**에 찍는다. 이전 판은 e-15 / f+6 에 찍어서
-        # d 열과 g 열 홀을 가렸다 — 정작 배선을 꽂는 자리다
+        # 핀 번호는 몸통 안쪽 — 밖이면 배선을 꽂는 d·g 열 홀을 가린다
         for i in range(rows):
             y = self.r_y(start_row + i)
             self.draw.line([(c['e'], y), (x1, y)], fill=(170, 170, 170, 255), width=3)
@@ -1013,20 +851,14 @@ class BreadboardRenderer(_RuleChecks):
             else:
                 # 같은 자리의 칩이 다르다 — 실험실에서 첫 번째로 할 일이다
                 self.swaps.append((prev, name, block, start_row))
-                # 번호 원은 칩 몸통 안, 위쪽 가장자리 근처에 찍는다 — 몸통 위 행은
-                # 홀이 있고(복합회로에서는 가로 배선도 지나가) 원이 겹쳐 가린다
+                # 번호 원은 몸통 안 위쪽 — 몸통 위 행은 홀·배선을 가린다
                 self.step_note('sig', f'뽑는다: {prev}', f'꽂는다: {name}',
                                f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체',
                                marker_at=((x1 + x2) // 2, y_top + 12))
 
     def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
-        """물리적으로 분리된 전원 레일 모듈 둘을 잇는 점퍼.
-
-        v1 기준 — 이 템플릿의 레일쌍(좌 174/190, 중앙좌 468/484, 중앙우 542/558,
-        우 836/852)은 각각 **별개 스트립**이다. 칩 7번 핀을 좌측 GND 레일에
-        내리고 미사용 입력을 중앙 GND 레일에 내리면 두 레일이 이어져 있지
-        않아 미사용 입력이 뜬다. 그 점퍼를 명시적으로 그린다.
-        v2 는 가운데 레일이 하나라 좌 바깥 ↔ 가운데 두 가닥이면 된다. 같은 열을 이으면 오류다.
+        """물리적으로 분리된 전원 레일 둘을 잇는 점퍼 — 레일쌍은 별개 스트립이라 안 이으면 전원이 안
+        간다. 같은 열을 이으면 오류다(v2 가운데 레일은 두 블록이 같이 부르는 한 열).
         """
         if x_a == x_b:
             raise ValueError(f'같은 레일 열을 잇는 브리지다(x={x_a}, {self._addr_map.get(x_a)}) — '
@@ -1044,18 +876,9 @@ class BreadboardRenderer(_RuleChecks):
                        marker_at=((x_a + x_b) // 2, y - 12))
 
     def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
-        """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
-        빌더가 지정할 때만 준다 — 기본 자리(레일과 d열 사이, 한 행 위)에 다른
-        배선의 모서리가 오는 경우다. `gnd_col` 은 pin 7 접지선이 출발하는 열로,
-        `connect_unused_inputs(col=)` 과 같은 이유로 바꾼다.
-
-        어느 레일로 가는지는 블록마다 다르다. 좌측 보드는 f~j 쪽(pin 8~14)이
-        중앙 레일에, a~e 쪽(pin 1~7)이 바깥 왼쪽 레일에 붙는다. 우측 보드는
-        좌우가 뒤집힌다 — 이전 판은 좌측 기준 배선을 우측에도 그대로 써서
-        복합회로 빌더가 전원 배선을 손으로 다시 썼다.
-
-        점퍼는 핀 홀 바로 옆(d·g 열)에서 출발한다 — e·f 열 홀에는 칩 다리가
-        꽂혀 있다. `connect_unused_inputs()` 가 처음부터 그렇게 했다.
+        """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. 점퍼는 핀 홀 옆 d·g 열에서 출발하고,
+        어느 레일로 가는지는 블록마다 뒤집힌다. `gnd_marker_at` 은 기본 번호 원 자리에 다른 배선 모서리가
+        올 때만, `gnd_col` 은 d 열 위로 다른 선이 지날 때 준다.
         """
         c = self.cols[block]
         n = self._pins_at(block, start_row)
@@ -1063,9 +886,8 @@ class BreadboardRenderer(_RuleChecks):
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
         r14 = self.free_rail_row(start_row, x_vcc)
-        # DIP-16 은 번호 원을 선 위에 바로 얹는다 — 기본 자리(11px 위)는 반 행 k−0.5 를 덮는데, 그 반 행이
-        # a쪽 pin 1 이 가운데 여백으로 건널 유일한 통로다(74HC42 는 a쪽 출력 일곱이 다 LED 로 간다, 설계 #5).
-        # DIP-14 는 그대로(v1 도장·e4 스냅숏)
+        # DIP-16 은 번호 원을 선 위에 얹는다 — 11px 위는 a쪽 pin 1 이 건널 반 행을 덮는다(2026-10-05).
+        # DIP-14 는 그대로(도장)
         dy_vcc = 0 if n == 16 else -11
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', f'pin {n} -> +5V 레일',
@@ -1076,8 +898,7 @@ class BreadboardRenderer(_RuleChecks):
                        marker_near=((c['d'] + x_gnd) // 2, self.r_y(g) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
-        """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
-        붙는 레일이 서로 뒤집혀 있어서 블록 이름만으로는 못 고른다."""
+        """그 자리에서 제일 가까운 GND 레일 — 블록마다 뒤집혀 있어 블록 이름만으로는 못 고른다."""
         c = self.cols[block]
         return min((c['gnd'], c['mid_gnd']), key=lambda xr: abs(xr - x))
 
@@ -1086,10 +907,9 @@ class BreadboardRenderer(_RuleChecks):
         return min((c['vcc'], c['mid_vcc']), key=lambda xr: abs(xr - x))
 
     def _pins_at(self, block, start_row):
-        """그 자리에 그린 칩의 핀 수. 칩 레코드에 키를 더하지 않고 `pins` 개수로 읽는다 — 레코드는
-        `wiring()` 으로 도장에 든다. 아직 안 그렸으면 14 로 보고 경고한다(16핀 칩을 그리기 전에 전원을
-        부르면 pin 7 출력을 GND 에 묶는 그림이 조용히 나간다). v1 은 경고하지 않는다 — 승인 빌더(실험01~03)는
-        뒤 단계에 꽂을 칩의 빈 소켓 전원을 먼저 깔고, 전부 14핀이다."""
+        """그 자리에 그린 칩의 핀 수 — 레코드에 키를 더하지 않고 `pins` 개수로 읽는다(도장). 아직 안
+        그렸으면 14 로 보고 경고한다 — 16핀이면 pin 7 출력을 GND 에 묶는다. v1 은 빈 소켓 전원을 먼저
+        까는 승인 빌더가 있어 경고하지 않는다."""
         for ch in self.chips:
             if ch['block'] == block and ch['pin1_row'] == start_row:
                 return len(ch['pins'])
@@ -1101,18 +921,9 @@ class BreadboardRenderer(_RuleChecks):
 
     def connect_unused_inputs(self, pins, start_row, block='left', bridge_row=None,
                               chip='', rail='gnd', col='d'):
-        """미사용 입력핀을 전원 레일로. 여러 가닥이지만 표에는 **한 줄**로 묶는다.
-
-        `rail='vcc'` 면 GND 가 아니라 +5V 로 올린다. 실험02 교안 p8 도면이
-        미사용 입력 일부를 VCC 로 묶으라고 지정한다 — CMOS 입력은 뜨면 안 될
-        뿐이지 어느 쪽으로 묶든 상관없고, 도면을 그대로 따르는 편이 대조하기 쉽다.
-
-        `col` 은 pin 1~7 쪽 접지선이 출발하는 열이다 (기본 d — 핀 홀 e 바로 옆).
-        그 열 위로 다른 세로선이 지나가면(복합 회로의 초록 A'·B 선이 d열을 탄다)
-        접지선 끝점이 그 선 아래 깔리므로 빈 열로 옮긴다.
-
-        착지는 **자기 행에 레일 홀이 있는 핀부터** 한다. 빈 행(8·14·20행)의 핀은
-        이웃 행으로 밀리는데, 그 핀이 먼저 착지하면 정작 그 행의 주인 핀이 밀린다.
+        """미사용 입력핀을 전원 레일로 — 여러 가닥을 표에는 한 줄로 묶는다. `rail='vcc'` 면 +5V 로
+        (실험02 교안 도면). `col` 은 a쪽 접지선 출발 열 — 다른 세로선이 지나면 옮긴다. 착지는 자기 행에
+        레일 홀이 있는 핀부터 — 빈 행 핀이 먼저 착지하면 주인 핀이 밀린다.
         """
         c = self.cols[block]
         n = self._pins_at(block, start_row)
@@ -1124,9 +935,7 @@ class BreadboardRenderer(_RuleChecks):
             elif h < p <= n:
                 placed.append((start_row + (n - p), c['g'], p))
         order = sorted(range(len(placed)), key=lambda i: (not self.is_rail_row(placed[i][0]), i))
-        # 기준선에 같은 (색, 끝점, 끝점) 이 있으면 `step_wire` 와 같은 규칙으로 회색이다
-        # — 실험02 C1→C2 는 칩만 갈아 끼우므로 pull 선 다섯 가닥이 전부 그대로다.
-        # 전부 회색이면 순서표에 번호 대신 "그대로 둔다" 로 남긴다
+        # 기준선에 같은 가닥은 `step_wire` 처럼 회색 — 전부 회색이면 번호 대신 "그대로 둔다"
         kept_lines = 0
         # 따라 그리기 층 — 가닥이 여럿이어도 번호는 뒤의 `step_note` 하나라 그 번호로 정한다
         view = self._layer_view(len(self.steps) + 1) if self.numbered else 'shown'
@@ -1170,24 +979,15 @@ class BreadboardRenderer(_RuleChecks):
                 self.bridge_rails(c['mid_gnd'], c['gnd'], bridge_row, kind='gnd')
 
     def mark_unused_outputs(self, pins, start_row, block='left', chip=''):
-        """미사용 출력은 **아무것도 그리지 않는다.** 개방이 곧 배선 없음이다.
-
-        이전 판은 핀마다 'Pin 8: NC (개방)' 배지를 보드 위에 찍었다. 손으로
-        옮겨 그릴 것이 하나도 없는 문구가 정작 그릴 홀을 덮었다.
-        """
+        """미사용 출력은 아무것도 그리지 않는다 — 개방이 곧 배선 없음. R5 뜬 핀 면제로만 적는다."""
         for p in pins:
             self.unused_outputs.append({'chip': chip, 'pin': p,
                                         'block': block, 'pin1_row': start_row})
 
     def mark_unused_inputs(self, pins, start_row, block='left', chip=''):
-        """미사용 게이트 입력을 **개방**으로 등록한다. 아무것도 그리지 않는다.
-
-        2026-09-11 실험01 실측: 미사용 입력을 접지하지 않아도 진리표가 같았고,
-        접지선은 NAND 순서표 20줄 중 12줄이었다. 학교 규정도 아니다(운영계획서
-        3.2 6) 은 손그림·학번·이름·날짜만 요구한다). 그래서 뺀다 — 교안이
-        미사용 핀 처리를 지시한 주차(실험02 p9)만 `connect_unused_inputs` 로
-        그린다. **사용하는 게이트의 입력은 여전히 반드시 물린다** — 그쪽이
-        R5ⓒ 가 잡는 진짜 결함이다.
+        """미사용 게이트 입력을 **개방**으로 등록한다 — 아무것도 안 그린다(2026-09-11 실험01, 접지선이
+        순서표를 늘리기만 했다). 교안이 지시한 주차만 `connect_unused_inputs` 로 그린다. 쓰는 게이트의
+        입력은 여전히 물려야 한다 — R5ⓒ.
         """
         for p in pins:
             self.unused_inputs.append({'chip': chip, 'pin': p, 'rail': None,
@@ -1206,8 +1006,8 @@ class BreadboardRenderer(_RuleChecks):
                t, fill=text, font=self.font_num)
 
     def _endpoint(self, p):
-        """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))`. `wiring()`
-        과 기준선 비교가 **같은 규칙**을 써야 해서 한 자리에 둔다."""
+        """배선 끝점 -> `('jack', 색)` 또는 `('hole', (블록, 열, 행))` — `wiring()` 과 기준선 비교가 같은 규칙을
+        쓰도록 한 자리에 둔다."""
         x, y = p
         color = self._jack_at(x, y)
         if color is not None:
@@ -1223,10 +1023,8 @@ class BreadboardRenderer(_RuleChecks):
         return f'{name}{row}행' if '레일' in name else f'{name}{row}'
 
     def snapshot(self):
-        """이 보드의 배선·사슬·칩을 **다음 보드의 기준선**으로 쓸 수 있게 낸다.
-
-        끝점 기호만 담는다 — 꼭짓점은 여기 없다. 걷기 보드(`removal_board`)는 앞 회로
-        빌더를 **다시 돌려** 그리므로 살아 있는 빌더의 꼭짓점을 쓴다(`_ghost_wire`).
+        """이 보드의 배선·사슬·칩을 다음 보드의 기준선으로 낸다 — 끝점 기호만. 걷기 보드는 앞 빌더를
+        다시 돌려 꼭짓점을 얻는다.
         """
         w = self.wiring()
         return {
@@ -1237,14 +1035,8 @@ class BreadboardRenderer(_RuleChecks):
         }
 
     def removals(self):
-        """기준선에 있었는데 이번 보드에 없는 **배선** — 걷기 번호를 매겨 낸다.
-
-        순서는 기준선(앞 보드)의 그리기 순서라 결정적이다. netlist 단계 표가 이
-        번호(걷기 ①·②)를 인용한다. 칩·사슬은 여기 없고 `removed()` 에만 있다 —
-        칩 교체는 순서표에 이미 번호 원이 있다.
-
-        꼭짓점은 내지 않는다 — 걷기 보드는 앞 회로 빌더를 다시 돌려 그리므로 그림은
-        살아 있는 빌더의 꼭짓점으로 그려진다(`_ghost_wire`).
+        """기준선에 있었는데 이번 보드에 없는 **배선** — 앞 보드 그리기 순서로 걷기 번호를 매긴다(netlist
+        단계 표가 인용한다). 칩·사슬은 `removed()` 에만 있다.
         """
         if self.baseline is None:
             return []
@@ -1294,10 +1086,8 @@ class BreadboardRenderer(_RuleChecks):
                        for a, b in zip(pts, pts[1:]))
 
     def _auto_marker(self, idx):
-        """`_segments[idx]` 의 번호 원 자리 — R11 을 지키는 첫 점. 가로 구간을 먼저, 그다음 긴
-        구간 순으로 가운데부터 4px 씩 밖으로 훑는다. 세로 차선 한복판에 앉은 원은 이웃 차선을
-        막는다(시험판 MUX U1 pin 8 임시선). 자리가 없으면 None — 호출자가 옛 자리에 찍고
-        verify() 의 R11 이 멈춘다."""
+        """`_segments[idx]` 의 번호 원 자리 — R11 을 지키는 첫 점. 가로 구간 먼저(세로 차선의 원은 이웃
+        차선을 막는다), 그다음 긴 구간 순으로 가운데부터 4px 씩. 없으면 None — R11 이 멈춘다."""
         pts = self._segments[idx][1]
         segs = sorted(zip(pts, pts[1:]), key=lambda s: (abs(s[0][1] - s[1][1]) > .5,
                                                         -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
@@ -1339,9 +1129,8 @@ class BreadboardRenderer(_RuleChecks):
         return under <= 1
 
     def _settle_marker(self, x, y, own=None):
-        """엔진 고정 부품의 번호 원 자리 — 기본 자리 (x, y) 가 R11 을 지키면 그대로(지금 그림이 안
-        바뀐다), 아니면 가까운 순으로 아무것도 안 가리는 자리. 없으면 기본 자리 — verify() 가 멈춘다.
-        2026-10-05 배치 탐색: 입력 행이 LED 행 바로 아래면 입력 점퍼 원이 LED 사슬 원과 겹쳤다."""
+        """엔진 고정 부품의 번호 원 자리 — 기본 자리가 R11 을 지키면 그대로(도장 불변), 아니면 가까운 순
+        첫 빈 자리, 없으면 기본 자리(verify() 가 멈춘다). 2026-10-05 배치 탐색에서 생겼다."""
         if self._marker_fits(x, y, own):
             return (x, y)
         for dx, dy in self._SETTLE_OFFSETS:
@@ -1351,11 +1140,9 @@ class BreadboardRenderer(_RuleChecks):
         return (x, y)
 
     def content(self):
-        """도장에 드는 것 — 이 그림이 **무엇을** 싣는가. 주차 파일이 넘긴 문자열과 홀
-        주소뿐이다. 픽셀·글꼴·줄바꿈 결과·엔진 범례 문구는 넣지 않는다 — 기계마다
-        글꼴이 달라도 같은 결선이면 같은 도장이 나와야 한다.
-
-        `verify()` 뒤에 불러야 `wiring()['overlaps']` 가 찬다 — `export()` 가 그렇게 한다.
+        """도장에 드는 것 — 주차 파일이 넘긴 문자열과 홀 주소뿐. 픽셀·글꼴은 넣지 않는다 — 기계가 달라도
+        같은 결선이면 같은 도장. 새 키는 그 보드 종류에서만 넣는다 — 지난 도장이 안 깨지게.
+        `verify()` 뒤에 불러야 `overlaps` 가 찬다(`export()`).
         """
         out = {
             'title': self.title, 'subtitle': self.subtitle, 'submit': self.submit,
@@ -1367,16 +1154,13 @@ class BreadboardRenderer(_RuleChecks):
             'wiring': self.wiring(),
         }
         if self.board != 'v1':
-            # v2 부터만 든다 — v1 도장은 그대로이고, 결선이 같아도 판형을 바꾸면 도장이 바뀐다
+            # v2 부터만 — 결선이 같아도 판형이 다르면 도장이 다르다
             out['board'] = self.board
         if self.layer is not None:
-            # 층 보드에서만 든다 — 완성본 도장은 그대로다
             out['layer'] = list(self.layer)
         if self.ghost is not None:
-            # 걷기 보드에서만 든다 — 다른 보드의 도장은 그대로라 재생성 범위가 안 번진다
             out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
             if self.ghost.get('chains'):
-                # 사슬째 뽑는 걷기 보드에서만 든다 — 옛 걷기 보드 도장은 그대로다
                 out['ghost_chains'] = self._ghost_chain_lines()
         return out
 
@@ -1387,17 +1171,14 @@ class BreadboardRenderer(_RuleChecks):
                 for k in chains]
 
     def _chain_span(self, key):
-        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀'. 보통 사슬은 애노드~
-        저항 아랫다리 그대로(도장 불변). Negative 사슬은 저항 윗다리(윗행)~애노드(윗행+3)다."""
+        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀' — 극성과 무관하게."""
         top = min((key[0], key[2]), key=lambda h: h[2])
         bottom = max((key[0], key[3]), key=lambda h: h[2])
         return f'{self._sym_addr(("hole", top))}~{self._sym_addr(("hole", bottom))}'
 
     def sidecar(self):
-        """그림 옆에 실을 글자 — 체크리스트가 읽는다. PNG 에는 보드만 있다(2026-09-28).
-
-        걷기 번호는 걷기 보드에서만 준다 — 그 보드만 그림에 빨간 번호 원이 있다. 칩·사슬
-        걷기(`removed()` 의 배선 뒤쪽)는 번호가 없다.
+        """그림 옆에 실을 글자 — 체크리스트가 읽는다(PNG 에는 보드만). 걷기 번호는 걷기 보드에서만 —
+        그 보드만 빨간 번호 원이 있다.
         """
         ghost = self.ghost is not None
         wires = self.removals()
@@ -1417,7 +1198,7 @@ class BreadboardRenderer(_RuleChecks):
                        for p in self.probes],
         }
         if self.board != 'v1':
-            # v2 부터만 든다. 커밋된 v1 사이드카는 바이트로 대조된다(`CommittedPngs`) — 없으면 v1 이다
+            # v2 부터만 — 커밋된 v1 사이드카는 바이트로 대조된다(`CommittedPngs`)
             side['board'] = self.board
         return side
 
@@ -1434,8 +1215,7 @@ class BreadboardRenderer(_RuleChecks):
             assert not missing, (
                 f'걷기 대상 배선을 앞 빌더가 그리지 않았다: {missing} — '
                 'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
-            # 반대쪽도 본다 — 유령 목록이 실제로 걷히는 배선의 부분집합이어도 안 된다.
-            # 번호 없는 가닥이 조용히 사라지면 그림이 무엇을 뽑는지 말해 주지 않는다.
+            # 반대쪽도 — 번호 없이 조용히 사라지는 가닥이 없어야 한다
             listed = set(self.ghost['wires'])
             actual = {r['key'] for r in self.removals()}
             extra = [self._sym_addr(k[1]) + ' → ' + self._sym_addr(k[2])
@@ -1468,7 +1248,6 @@ class BreadboardRenderer(_RuleChecks):
               f"({out.size[0]}x{out.size[1]}, 결선 {len(self.steps)}단계, "
               f"새 신호선 {len(self.new_signal)} · 걷는 선 {len(self.removals())})")
         if staged and len(self.new_signal) > STAGE_WIRE_BUDGET:
-            # 막지 않는다 — 저작 중에는 넘는 보드를 그려 봐야 어디서 쪼갤지 보인다.
-            # 주차 보드 테스트(`tests/test_breadboard_boards.py`)가 승인을 막는다.
+            # 막지 않는다 — 그려 봐야 어디서 쪼갤지 보인다. 승인은 `test_breadboard_boards.py` 가 막는다
             print(f"[WARN] 새 신호선이 {len(self.new_signal)} 가닥이다 "
                   f"(예산 {STAGE_WIRE_BUDGET}) — 관측 노드 하나로 단계를 더 쪼갠다")
