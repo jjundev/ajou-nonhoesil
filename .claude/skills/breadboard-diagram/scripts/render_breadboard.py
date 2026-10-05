@@ -1570,11 +1570,14 @@ class BreadboardRenderer:
 
     def _pins_at(self, block, start_row):
         """그 자리에 그린 칩의 핀 수. 칩 레코드에 키를 더하지 않고 `pins` 개수로 읽는다 — 레코드는
-        `wiring()` 으로 도장에 든다. 아직 안 그렸으면 14 로 보고 경고한다(v1 빌더는 전부 14핀이다. 16핀 칩을
-        그리기 전에 전원을 부르면 pin 7 출력을 GND 에 묶는 그림이 조용히 나간다)."""
+        `wiring()` 으로 도장에 든다. 아직 안 그렸으면 14 로 보고 경고한다(16핀 칩을 그리기 전에 전원을
+        부르면 pin 7 출력을 GND 에 묶는 그림이 조용히 나간다). v1 은 경고하지 않는다 — 승인 빌더(실험01~03)는
+        뒤 단계에 꽂을 칩의 빈 소켓 전원을 먼저 깔고, 전부 14핀이다."""
         for ch in self.chips:
             if ch['block'] == block and ch['pin1_row'] == start_row:
                 return len(ch['pins'])
+        if self.board == 'v1':
+            return 14
         print(f'[WARN] {block} {start_row}행에 그린 칩이 없다 — 14핀으로 본다. draw_chip 을 먼저 부른다',
               file=sys.stderr)
         return 14
@@ -1753,8 +1756,7 @@ class BreadboardRenderer:
                   for ch in self.led_chains}
         for key, tag in self.baseline['chains'].items():
             if key not in chains:
-                out.append(f'LED {tag} 사슬 ({self._sym_addr(("hole", key[0]))}~'
-                           f'{self._sym_addr(("hole", key[3]))}) 뽑는다')
+                out.append(f'LED {tag} 사슬 ({self._chain_span(key)}) 뽑는다')
         return out
 
     def side_leads(self):
@@ -2454,9 +2456,15 @@ class BreadboardRenderer:
     def _ghost_chain_lines(self):
         """걷기 보드가 사슬째 뽑는 LED 사슬 — 번호 없는 한 줄씩. 그리기 순서대로."""
         chains = self.ghost.get('chains', {}) if self.ghost is not None else {}
-        return [f'LED {chains[k]} 사슬 ({self._sym_addr(("hole", k[0]))}~'
-                f'{self._sym_addr(("hole", k[3]))}) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)'
+        return [f'LED {chains[k]} 사슬 ({self._chain_span(k)}) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)'
                 for k in chains]
+
+    def _chain_span(self, key):
+        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀'. 보통 사슬은 애노드~
+        저항 아랫다리 그대로(도장 불변). Negative 사슬은 저항 윗다리(윗행)~애노드(윗행+3)다."""
+        top = min((key[0], key[2]), key=lambda h: h[2])
+        bottom = max((key[0], key[3]), key=lambda h: h[2])
+        return f'{self._sym_addr(("hole", top))}~{self._sym_addr(("hole", bottom))}'
 
     def sidecar(self):
         """그림 옆에 실을 글자 — 체크리스트가 읽는다. PNG 에는 보드만 있다(2026-09-28).

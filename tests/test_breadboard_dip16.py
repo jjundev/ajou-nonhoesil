@@ -113,6 +113,16 @@ class DrawDip16(unittest.TestCase):
                if m[0] - 1 < 656 and m[2] + 1 > self.L['d'] and m[1] - 1 < y < m[3] + 1]
         self.assertEqual(hit, [])
 
+    def test_v1_은_빈_소켓_전원에_경고하지_않는다(self):
+        """v1 승인 빌더(실험01~03)는 뒤 단계에 꽂을 칩의 전원을 먼저 깐다 — 고칠 수 없는 빌더에 경고를
+        내지 않는다(2026-10-05 최종 검토)."""
+        bb = self.mod.BreadboardRenderer(None, board='v1')
+        bb.enable_steps()
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            bb.connect_power(10)
+        self.assertNotIn('[WARN]', err.getvalue())
+
     def test_칩보다_전원을_먼저_부르면_경고(self):
         bb = _board(self.mod)
         err = io.StringIO()
@@ -203,6 +213,15 @@ class NegativeLed(unittest.TestCase):
         bb.led_chain(self.R['a'], 10, 'Y0', '시험', block='right')
         self.assertEqual(set(bb.led_chains[-1]),
                          {'tag', 'signal', 'anode', 'cathode', 'res_top', 'res_bottom'})
+
+    def test_뽑는_Negative_사슬은_윗행부터_아랫행까지_적는다(self):
+        """사슬 걷기 줄은 사슬이 차지하는 위·아래 끝 홀이다. Negative 는 맨 위가 330Ω 윗다리(b 윗행),
+        맨 아래가 LED 애노드(c 윗행+3)다 — 보통 사슬 열쇠 순서(애노드~저항 아랫다리)로 읽으면 c13~b12 가
+        된다(2026-10-05 최종 검토)."""
+        bb = _board(self.mod, baseline=self.bb.snapshot())
+        (line,) = [s for s in bb.removed() if 'LED Y0 사슬' in s]
+        self.assertIn('b10~', line)
+        self.assertIn('c13)', line)
 
     def test_기준선의_Negative_사슬은_그대로(self):
         """다음 단계 그림에서 같은 사슬은 회색·번호 없음이다 — 열쇠가 극성 따라 어긋나면 매 단계
