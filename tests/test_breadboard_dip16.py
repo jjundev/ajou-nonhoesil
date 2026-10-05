@@ -127,5 +127,31 @@ class DrawDip16(unittest.TestCase):
         self.assertIn(self.bb.addr(self.L['a'], self.bb.r_y(17)), a_side['addrs'])   # pin 8 GND 점퍼
 
 
+class RouterDip16(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_끝_홀은_16핀_기하(self):
+        bb = _board(self.mod)
+        bb.draw_chip('74HC42', 10)
+        L = bb.cols['left']
+        self.assertEqual(self.mod._end_holes(bb, {'U1': 10}, ('U1', 9)),
+                         [(L[c], bb.r_y(17)) for c in 'ghij'])
+        self.assertEqual(self.mod._end_holes(bb, {'U1': 10}, ('U1', 8)),
+                         [(L[c], bb.r_y(17)) for c in 'abcd'])
+
+    def test_a쪽_가운데_아래_핀은_아래_반_행으로_건넌다(self):
+        """pin 5(행 14)의 위 반 행 13.5 는 이름 상자가 막는다 — 아래 14.5 로 건너야 한다."""
+        def fixed(bb, stage, superset=False):
+            bb.draw_chip('74HC42', 10)
+            bb.led_chain(bb.cols['right']['a'], 21, 'Y4', '시험', block='right')
+
+        (path, _m), = self.mod.route_plan(fixed, {'U1': 10},
+                                          [(1, None, 'sig', ('U1', 5), ('LED', 21), 'Y4')])
+        bb = _board(self.mod)
+        self.assertEqual(path[1][1], (bb.r_y(14) + bb.r_y(15)) / 2)
+
+
 if __name__ == '__main__':
     unittest.main()

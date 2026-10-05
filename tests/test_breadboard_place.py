@@ -745,5 +745,62 @@ class PlacedTrial(unittest.TestCase):
         self.assertLessEqual(m['density'], self.HAND_DENSITY + 1e-9)
 
 
+class Dip16Place(unittest.TestCase):
+    """배치기의 DIP-16 — 슬롯 높이·레일 빈 행·브리지·핀 기하(설계 #6)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def _one(self, model, wires=(), leds=(), inputs=()):
+        return self.mod.PlaceCircuit('d', {'U1': 'K1'}, {'U1': model}, tuple(leds), tuple(wires),
+                                     lambda bb, stage, superset, layout: None, tuple(inputs))
+
+    def test_슬롯_행_수는_그_슬롯의_칩들(self):
+        a = _toy(self.mod, [], models={'U1': '74HC42', 'U2': '74HC08'})
+        b = self.mod.PlaceCircuit('b', {'U9': 'K1'}, {'U9': '74HC04'}, (), (),
+                                  lambda bb, stage, superset, layout: None)
+        self.assertEqual(self.mod.slot_rows([a, b], ('K1', 'K2', 'K3')),
+                         {'K1': {7, 8}, 'K2': {7}, 'K3': {7}})
+
+    def test_섞인_슬롯은_두_GND_행을_다_본다(self):
+        # 3..8 중 k·k+6·k+7 이 레일 빈 행(8·14)이 아닌 것. 7 은 k+7 = 14, 8 은 k = 8
+        ks = [c['K1'] for c in self.mod.slot_candidates(('K1',), rows={'K1': {7, 8}})]
+        self.assertEqual(ks, [3, 4, 5, 6])
+        self.assertIn(7, [c['K1'] for c in self.mod.slot_candidates(('K1',))])   # 14핀이면 7 도 된다
+
+    def test_16핀_간격은_8행_더하기_빈_행(self):
+        for c in self.mod.slot_candidates(('K1', 'K2'), rows={'K1': {8}, 'K2': {7}}):
+            if c['K1'] < c['K2']:
+                self.assertTrue(8 + 3 <= c['K2'] - c['K1'] <= 8 + 6, c)
+            else:
+                self.assertTrue(7 + 3 <= c['K1'] - c['K2'] <= 7 + 6, c)
+
+    def test_브리지는_16핀_마지막_행_아래(self):
+        self.assertEqual(self.mod.bridge_rows({'K1': 36}, {'K1': {8}}), [46, 47])   # 36+7+3
+        self.assertEqual(self.mod.bridge_rows({'K1': 36}), [45, 46])                # 36+6+3
+
+    def test_비용은_16핀_기하(self):
+        f = self.mod.place_wire_cost({'U1': 10}, _w(('U1', 9), ('LED', 17)), {'U1': 16})   # 행 17, f쪽
+        a = self.mod.place_wire_cost({'U1': 10}, _w(('U1', 8), ('LED', 17)), {'U1': 16})   # 행 17, a쪽
+        self.assertGreaterEqual(a - f, 400)
+
+    def test_가운데_레일_입력_행은_16핀_기하(self):
+        c = self._one('74HC42', inputs=[('U1', 15), ('U1', 12)])    # 행 4, 7
+        self.assertEqual(self.mod.mid_rail_rows(c, {'K1': 3}, [15, 16]), {3, 4, 7, 15, 16})
+
+    def test_R10_은_16핀_행으로(self):
+        w9, w11 = _w(('U1', 9), ('LED', 'L1')), _w(('U1', 11), ('LED', 'L2'))   # 행 k+7, k+5
+        bad = self._one('74HC42', [w9, w11], leds=('L1', 'L2'))
+        self.assertFalse(self.mod.place_r10_ok(bad, {'U1': 3}, {'L1': 10, 'L2': 20}))
+        good = self._one('74HC42', [w11, w9], leds=('L2', 'L1'))
+        self.assertTrue(self.mod.place_r10_ok(good, {'U1': 3}, {'L2': 10, 'L1': 20}))
+
+    def test_근사는_16핀_슬롯의_브리지를_쓴다(self):
+        c = self._one('74HC42', [_w(('U1', 9), ('LED', 'L1'))], leds=('L1',))
+        _cost, lay = self.mod.place_proxy([c], {'K1': 3})
+        self.assertEqual(lay['bridge'], self.mod.bridge_rows({'K1': 3}, {'K1': {8}}))
+
+
 if __name__ == '__main__':
     unittest.main()

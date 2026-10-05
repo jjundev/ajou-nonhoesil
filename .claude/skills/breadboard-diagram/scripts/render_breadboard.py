@@ -2672,14 +2672,21 @@ _RERANK_TOP = 400   # 정적 순위 앞 몇 개만 밀도로 다시 매기나 �
 _STRIP_COLS = {'a': 'abcd', 'f': 'ghij'}
 
 
+def _chip_pins(bb):
+    """좌 블록 칩 pin 1 행 → 핀 수. 칩마다 행이 달라 행 하나로 칩이 정해진다. 칩 레코드에 키를 더하지
+    않고 `pins` 개수로 읽는다(`wiring()` → 도장)."""
+    return {ch['pin1_row']: len(ch['pins']) for ch in bb.chips if ch['block'] == 'left'}
+
+
 def _end_holes(bb, chips, end):
     """배선 끝 하나가 꽂힐 수 있는 홀 후보 [(x, y)]. `end` 는 ('U5', 13) 또는 ('LED', top_row)."""
     L, R = bb.cols['left'], bb.cols['right']
     if end[0] == 'LED':
         return [(R['a'], bb.r_y(end[1]))]
     k, pin = chips[end[0]], end[1]
-    row = _dip_pin_row(k, pin)
-    return [(L[c], bb.r_y(row)) for c in _STRIP_COLS[_dip_side(pin)]
+    n = _chip_pins(bb).get(k, 14)
+    row = _dip_pin_row(k, pin, n)
+    return [(L[c], bb.r_y(row)) for c in _STRIP_COLS[_dip_side(pin, n)]
             if (L[c], row) not in bb._leads and (L[c], row) not in bb._passed]
 
 
@@ -2746,7 +2753,8 @@ def _coster(bb):
     xs = sorted(round(x) for x in bb._addr_map)
     xset, pitch, row0 = set(xs), bb.spec.row_pitch, bb.spec.row0
     L = bb.cols['left']
-    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10) for ch in bb.chips]
+    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + len(ch['pins']) // 2 - 1) + 10)
+              for ch in bb.chips]
 
     def body_crossings(path):
         """칩 몸통(e~f 사이)을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다. 칩 안
@@ -2853,7 +2861,7 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
     for (x, r), what in bb._leads.items():
         if '다리' in what or '애노드' in what or '캐소드' in what:
             others.append((x, bb.r_y(r)))
-    chip_rows = tuple(ch['pin1_row'] for ch in bb.chips)
+    chip_rows = tuple((ch['pin1_row'], len(ch['pins'])) for ch in bb.chips)
     placed = _placed_signal_segs(bb) if density_weight else []
     order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led), placed,
                     bb.spec.row_pitch, density_weight)
@@ -3163,18 +3171,37 @@ def _place_geom():
     return s.cols['left'], s.cols['right'], s.row_pitch
 
 
-def place_wire_cost(chips, wire):
+def circuit_pins(circuit):
+    """칩 → 핀 수. `place_check` 를 지난 회로만 — 모르는 칩은 ValueError."""
+    return {chip: dip_pins(m, strict=True) for chip, m in circuit.models.items()}
+
+
+def slot_rows(circuits, slots):
+    """슬롯 → 그 슬롯에 앉는 칩들의 행 수 집합(14핀 7, 16핀 8). 슬롯 높이는 최댓값이고, 레일 빈 행
+    검사는 모든 GND 핀 행(k+행수−1)에 한다 — 회로마다 같은 슬롯에 14핀·16핀이 앉을 수 있다. 칩이
+    없는 슬롯은 {7}."""
+    out = {s: set() for s in slots}
+    for c in circuits:
+        for chip, s in c.chips.items():
+            out[s].add(dip_pins(c.models[chip], strict=True) // 2)
+    return {s: (v or {7}) for s, v in out.items()}
+
+
+def place_wire_cost(chips, wire, pins=None):
     """선 하나의 근사 비용(px) — 끝 홀 후보 사이 최소 맨해튼 + 40·꺾임 + 400·몸통(배선기 `_coster` 와
     같은 상수). 꺾임은 행이 다르거나 가운데를 건너면(LED — R12 때문에 반 행으로 돈다) 2, 몸통은 쪽이
-    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다."""
+    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다. `pins` 는 칩 →
+    핀 수(없으면 14)."""
     L, R, pitch = _place_geom()
     _s, _e, _k, frm, to, _d = wire
+    pins = pins or {}
 
     def holes(end):
         if end[0] == 'LED':
             return [(R['a'], end[1])], None
-        row = _dip_pin_row(chips[end[0]], end[1])
-        side = _dip_side(end[1])
+        n = pins.get(end[0], 14)
+        row = _dip_pin_row(chips[end[0]], end[1], n)
+        side = _dip_side(end[1], n)
         return [(L[c], row) for c in _STRIP_COLS[side]], side
 
     ha, sa = holes(frm)
@@ -3194,16 +3221,19 @@ def mid_rail_rows(circuit, slots, bridge):
     둘, f쪽 입력 점퍼. LED GND 점퍼가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
     used = {slots[s] for s in circuit.chips.values()}
     rows = used | set(bridge)
+    pins = circuit_pins(circuit)
     for chip, pin in circuit.inputs:
-        if _dip_side(pin) == 'f':
-            rows.add(_dip_pin_row(slots[circuit.chips[chip]], pin))
+        if _dip_side(pin, pins[chip]) == 'f':
+            rows.add(_dip_pin_row(slots[circuit.chips[chip]], pin, pins[chip]))
     return rows
 
 
-def bridge_rows(slots):
+def bridge_rows(slots, rows=None):
     """브리지 두 가닥 [GND 행, VCC 행] — 맨 아래 칩 아래로 2행 이상 띄운 첫 연속 비간극 두 행.
-    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None."""
-    r = max(slots.values()) + 6 + 3
+    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None. `rows` 는
+    `slot_rows` — 없으면 모든 슬롯 7행."""
+    rows = rows or {}
+    r = max(k + max(rows.get(s, {7})) - 1 for s, k in slots.items()) + 3
     while r + 1 <= PLACE_ROW_LAST:
         if r not in RAIL_GAP_ROWS and r + 1 not in RAIL_GAP_ROWS:
             return [r, r + 1]
@@ -3221,6 +3251,7 @@ def led_rows(circuit, slots, bridge):
     if not circuit.leds:
         return {}
     chips = {c: slots[s] for c, s in circuit.chips.items()}
+    pins = circuit_pins(circuit)
     busy = RAIL_GAP_ROWS | mid_rail_rows(circuit, slots, bridge)
     tops = [t for t in range(3, PLACE_ROW_LAST - LED_SPAN + 2) if t + LED_SPAN - 1 not in busy]
     # 태그마다 그 LED 로 가는 선만 — 후보 수천 개 × 윗행 56개마다 배선표 전체를 훑지 않게
@@ -3229,7 +3260,8 @@ def led_rows(circuit, slots, bridge):
     def cost(tag, top):
         def sub(e):
             return ('LED', top) if e == ('LED', tag) else e
-        return sum(place_wire_cost(chips, (s, e, k, sub(f), sub(t), d)) for s, e, k, f, t, d in mine[tag])
+        return sum(place_wire_cost(chips, (s, e, k, sub(f), sub(t), d), pins)
+                   for s, e, k, f, t, d in mine[tag])
 
     prev = None
     for tag in circuit.leds:
@@ -3254,6 +3286,7 @@ def led_rows(circuit, slots, bridge):
 def place_r10_ok(circuit, chips, leds):
     """단계마다 LED 로 건너는 선의 칩 쪽 행 순서가 LED 위아래 순서와 같은가 — `verify()` R10 을 미리
     본다. 단계 k 에 살아 있는 선 = `s <= k` 이고 끝 단계가 없거나 `k <= e` (`draw_routed` 와 같다)."""
+    pins = circuit_pins(circuit)
     stages = {w[0] for w in circuit.wires} | {w[1] for w in circuit.wires if w[1] is not None}
     for st in sorted(stages):
         live = []
@@ -3262,28 +3295,31 @@ def place_r10_ok(circuit, chips, leds):
                 continue
             for led, chip in ((t, f), (f, t)):
                 if led[0] == 'LED' and chip[0] != 'LED':
-                    live.append((leds[led[1]], _dip_pin_row(chips[chip[0]], chip[1])))
+                    live.append((leds[led[1]], _dip_pin_row(chips[chip[0]], chip[1], pins[chip[0]])))
         live.sort()
         if any(c1 > c2 for (_a, c1), (_b, c2) in zip(live, live[1:])):
             return False
     return True
 
 
-def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS):
+def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS, rows=None):
     """슬롯 → pin 1 행 후보 [dict]. 순서(순열, N4) × 맨 위 행 × 칩 사이 빈 행 gmin~gmax. 칩 행 k 나
     k+6 이 레일 빈 행이면 버린다 — pin 14·pin 7 전원선이 옆 행으로 비켜 사선이 된다. 브리지 둘
-    자리가 없어도 버린다."""
+    자리가 없어도 버린다. `rows` 는 `slot_rows` — 칩 사이 간격은 위 칩 높이 + g, 레일 빈 행 검사는
+    k 와 그 슬롯의 모든 GND 행."""
+    rows = rows or {}
     out = []
     for order in itertools.permutations(slots):
         for k0 in starts:
             for gaps in itertools.product(range(gmin, gmax + 1), repeat=len(slots) - 1):
-                rows = [k0]
-                for g in gaps:
-                    rows.append(rows[-1] + 7 + g)
-                if any(k in RAIL_GAP_ROWS or k + 6 in RAIL_GAP_ROWS for k in rows):
+                ks = [k0]
+                for s, g in zip(order, gaps):
+                    ks.append(ks[-1] + max(rows.get(s, {7})) + g)
+                if any(k in RAIL_GAP_ROWS or any(k + r - 1 in RAIL_GAP_ROWS for r in rows.get(s, {7}))
+                       for s, k in zip(order, ks)):
                     continue
-                cand = dict(zip(order, rows))
-                if bridge_rows(cand) is not None:
+                cand = dict(zip(order, ks))
+                if bridge_rows(cand, rows) is not None:
                     out.append(cand)
     return out
 
@@ -3293,9 +3329,10 @@ def place_proxy(circuits, slots):
     R10 이 미리 어긋나거나, 입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면(점퍼가 옆 행으로 비켜 사선)
     None."""
     for c in circuits:
-        if any(_dip_pin_row(slots[c.chips[chip]], pin) in RAIL_GAP_ROWS for chip, pin in c.inputs):
+        pins = circuit_pins(c)
+        if any(_dip_pin_row(slots[c.chips[chip]], pin, pins[chip]) in RAIL_GAP_ROWS for chip, pin in c.inputs):
             return None
-    bridge = bridge_rows(slots)
+    bridge = bridge_rows(slots, slot_rows(circuits, slots))
     layout = {'slots': dict(slots), 'leds': {}, 'bridge': bridge}
     total = 0.0
     for c in circuits:
@@ -3306,7 +3343,7 @@ def place_proxy(circuits, slots):
         if not place_r10_ok(c, chips, leds):
             return None
         layout['leds'][c.name] = leds
-        total += sum(place_wire_cost(chips, w) for w in place_wires(c, layout))
+        total += sum(place_wire_cost(chips, w, circuit_pins(c)) for w in place_wires(c, layout))
     return total, layout
 
 
@@ -3433,7 +3470,8 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
             # 단계 그림 열여섯 장 남짓 — 판마다 지운다(안 지우면 탐색마다 수백 MB, 2026-10-05 최종 검토)
             with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
                 return place_verify(module, lay, tmp)
-    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
+    rows_ = slot_rows(circuits, slots)
+    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin, rows=rows_))
                      if r is not None), key=lambda r: (r[0], layout_key(r[1])))
     mapper = mapper or _serial_map
     base, rows, chosen, seen = None, [], None, {layout_key(module.LAYOUT)}
