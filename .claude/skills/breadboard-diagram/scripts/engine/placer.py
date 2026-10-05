@@ -64,7 +64,8 @@ def place_wires(circuit, layout):
 
 
 def place_hash(circuits, slots, gmin=PLACE_GMIN, slack=PLACE_LENGTH_SLACK):
-    """배선표 지문(16자리) — 바뀌면 배치를 다시 찾는다. `fixed` 는 안 보고 `slack` 은 든다."""
+    """배선표 지문(16자리) — 바뀌면 배치를 다시 찾는다. `fixed` 는 안 보고 `slack` 은 든다 —
+    `PLACE_LENGTH_SLACK` 을 바꾸면 모든 v2 주차가 다시 돌린다."""
     body = {'slots': list(slots), 'gmin': gmin, 'slack': slack, 'circuits': [
         {'name': c.name, 'chips': c.chips, 'models': c.models, 'leds': list(c.leds),
          'wires': [list(w) for w in c.wires], 'inputs': [list(i) for i in c.inputs]}
@@ -344,8 +345,9 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
     2. 기준(지금 `LAYOUT`)과 앞 `top` 개를 실측한다(`measure`).
     3. 기준보다 짧고 밀도가 기준 이하인 것을 전부 `verify` 하고, 통과한 것 중 `place_pick`(N6). 없으면
        다음 `top` 개, `rounds` 번까지. 그래도 없을 때만 기준을 verify 한다(N5). 기준보다 긴 배치는 안 고른다.
-    `mapper(fn, items)` 로 실측·verify 를 묶어 돌린다 — `place_search --jobs` 가 프로세스 풀을 넘긴다.
-    돌려주는 값 {'hash', 'layout', 'rows', 'slack'}."""
+    `mapper(fn, items)` 로 라운드마다 실측을 한 묶음에, verify 는 길이 순 `chunk` 개씩 돌린다 —
+    `place_search --jobs` 가 프로세스 풀을 넘긴다. 돌려주는 값 {'hash', 'layout', 'rows', 'slack'} —
+    rows 는 실측한 후보마다 {'rank', 'proxy', 'layout', 'length', 'bends', 'density' | 'blocked', 'status'}."""
     circuits, slots = list(module.PLACE), tuple(module.SLOTS)
     for c in circuits:
         place_check(c)

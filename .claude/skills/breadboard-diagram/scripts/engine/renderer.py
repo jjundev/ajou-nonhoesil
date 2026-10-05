@@ -1129,7 +1129,7 @@ class BreadboardRenderer(_RuleChecks):
         return under <= 1
 
     def _settle_marker(self, x, y, own=None):
-        """엔진 고정 부품의 번호 원 자리 — 기본 자리가 R11 을 지키면 그대로(도장 불변), 아니면 가까운 순
+        """엔진 고정 부품의 번호 원 자리 — 기본 자리가 R11 을 지키면 그대로(그림 불변), 아니면 가까운 순
         첫 빈 자리, 없으면 기본 자리(verify() 가 멈춘다). 2026-10-05 배치 탐색에서 생겼다."""
         if self._marker_fits(x, y, own):
             return (x, y)
@@ -1171,7 +1171,8 @@ class BreadboardRenderer(_RuleChecks):
                 for k in chains]
 
     def _chain_span(self, key):
-        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀' — 극성과 무관하게."""
+        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀' — 극성과 무관하게.
+        보통 사슬은 애노드~저항 아랫다리 그대로라 옛 도장이 안 바뀐다."""
         top = min((key[0], key[2]), key=lambda h: h[2])
         bottom = max((key[0], key[3]), key=lambda h: h[2])
         return f'{self._sym_addr(("hole", top))}~{self._sym_addr(("hole", bottom))}'

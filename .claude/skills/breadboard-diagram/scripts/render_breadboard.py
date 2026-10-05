@@ -183,7 +183,8 @@ def removal_board(prev, nxt, title, subtitle):
     없는 배선만 빨간 점선 + 걷기 번호로 그린다 — 선을 뽑는 자리마다 한 장.
 
     클로저의 `__module__` 이 엔진이라 `build_*` 열거(`tests/_boards.py`)에 안 잡힌다 — 주차 파일에
-    `build_` 래퍼를 두지 않는다. `baseline` 이 없으면 앞 보드를 임시 렌더한다. `stage` 는 거절한다 —
+    `build_` 래퍼를 두지 않는다(걷기 보드는 `steps` 가 비어 가독성 검사 `steps > 0` 에 걸린다).
+    `baseline` 이 없으면 앞 보드를 임시 렌더한다. `stage` 는 거절한다 —
     단계는 `prev`·`nxt` 가 정해, 또 주면 조용히 무시돼 엉뚱한 단계가 나간다.
     """
     prev_fn, prev_stage = prev

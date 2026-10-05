@@ -37,7 +37,8 @@ def _dip_side(pin, n=14):
 
 
 # 밀도 가중치 λ — 비용 = 길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도증분(px). 0 이면 밀도를 안 본다.
-# `python -m scripts.lab.route_sweep` 로 정한다 — 스윕 수치는 `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`.
+# `python -m scripts.lab.route_sweep` 로 정한다(고르는 규칙 `docs/plans/2026-10-04-v2-배선기-밀도-설계.md` #11,
+# 스윕 표 `docs/plans/2026-10-03-실험04-v2-시험판-결과.md` §배선기 밀도 스윕).
 DENSITY_WEIGHT = 0.5
 _RERANK_TOP = 400   # 정적 순위 앞 몇 개만 밀도로 다시 매기나 — 나머지는 정적 순서 그대로
 
@@ -294,7 +295,8 @@ def _box_clear(bb, x, y, path_pts):
 
 def _marker_spot(bb, path):
     """경로 위 번호 원 자리 — 가로 구간 먼저(세로 차선의 원은 이웃 차선을 막는다), 긴 구간 순으로
-    가운데부터 4px 씩 훑어 `_box_clear` 인 첫 점. 첫 토막은 반 행이라 원이 끝점을 덮는다."""
+    가운데부터 4px 씩 훑어 `_box_clear` 인 첫 점. 엔진 기본(첫 구간 가운데)은 첫 토막이 반 행이라
+    원이 끝점을 덮는다."""
     segs = sorted(zip(path, path[1:]), key=lambda s: (_axis(*s) != 'h',
                                                       -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
     for a, b in segs:
