@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 import unittest
 import urllib.parse
+import urllib.request
 from pathlib import Path
 from unittest import mock
 
@@ -27,7 +28,8 @@ def _chrome_available() -> bool:
 
 
 def _uri_path(uri) -> Path:
-    return Path(urllib.parse.unquote(urllib.parse.urlparse(uri).path))
+    # `.path` 를 그대로 쓰면 Windows 에서 `/C:/...` 가 남는다.
+    return Path(urllib.request.url2pathname(urllib.parse.urlparse(uri).path))
 
 
 class CaptureCopy(unittest.TestCase):

@@ -1,3 +1,5 @@
+import os
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -60,25 +62,35 @@ class TestSuccessRule(unittest.TestCase):
         self.html.write_text("<h1>표지</h1>", encoding="utf-8")
 
     def _stub(self, script: str) -> str:
-        path = Path(self.tmp.name) / "fake-chrome"
-        path.write_text("#!/bin/sh\n" + script, encoding="utf-8")
-        path.chmod(0o755)
+        """스텁 본문은 파이썬이다 — `#!/bin/sh` 는 Windows 가 실행하지 못한다.
+        POSIX 에서는 shebang 으로, Windows 에서는 `.cmd` 감싸개로 부른다."""
+        script = "import sys\n" + script
+        if os.name == "nt":
+            body = Path(self.tmp.name) / "fake_chrome.py"
+            body.write_text(script, encoding="utf-8")
+            path = Path(self.tmp.name) / "fake-chrome.cmd"
+            path.write_text(f'@"{sys.executable}" "{body}" %*\r\n', encoding="utf-8")
+        else:
+            path = Path(self.tmp.name) / "fake-chrome"
+            path.write_text(f"#!{sys.executable}\n" + script, encoding="utf-8")
+            path.chmod(0o755)
         return str(path)
 
     def test_nonzero_exit_and_stderr_noise_still_succeed(self):
         chrome = self._stub(
-            'for arg in "$@"; do\n'
-            '  case "$arg" in --print-to-pdf=*) out="${arg#--print-to-pdf=}";; esac\n'
-            "done\n"
-            "printf '%s' '%PDF-1.4 stub' > \"$out\"\n"
-            "echo 'task_policy_set TASK_CATEGORY_POLICY: (os/kern) invalid argument' >&2\n"
-            "exit 1\n"
+            "for arg in sys.argv[1:]:\n"
+            "    if arg.startswith('--print-to-pdf='):\n"
+            "        out = arg.split('=', 1)[1]\n"
+            "open(out, 'w').write('%PDF-1.4 stub')\n"
+            "print('task_policy_set TASK_CATEGORY_POLICY: (os/kern) invalid argument',"
+            " file=sys.stderr)\n"
+            "sys.exit(1)\n"
         )
         out = html_to_pdf(self.html, Path(self.tmp.name) / "ok.pdf", chrome=chrome)
         self.assertTrue(out.exists())
 
     def test_clean_exit_without_a_file_still_fails(self):
-        chrome = self._stub("echo noise >&2\nexit 0\n")
+        chrome = self._stub("print('noise', file=sys.stderr)\nsys.exit(0)\n")
         with self.assertRaises(PdfError):
             html_to_pdf(self.html, Path(self.tmp.name) / "none.pdf", chrome=chrome)
 
