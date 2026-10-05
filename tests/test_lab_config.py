@@ -17,7 +17,7 @@ def archive_candidate(candidates: list) -> Path:
     것을 집는다.
     """
     return next(c for c in candidates
-                if str(c).startswith(config.MANUAL_ARCHIVE))
+                if c.as_posix().startswith(config.MANUAL_ARCHIVE))
 
 
 class TestManualCandidates(unittest.TestCase):
@@ -44,7 +44,7 @@ class TestManualCandidates(unittest.TestCase):
         파일이 없으므로 스킬은 "교안을 못 찾았다"로 넘어가고, 원인은
         한참 뒤에나 드러난다."""
         got = archive_candidate(config.manual_candidates(1))
-        self.assertFalse(str(got).startswith(config.EXPERIMENT_BASE))
+        self.assertFalse(got.as_posix().startswith(config.EXPERIMENT_BASE))
         self.assertEqual(got, Path("from_the_past/정리/강의노트/실험1.pdf"))
 
     def test_주차_폴더_사본이_아카이브보다_먼저다(self):
@@ -390,7 +390,7 @@ class ExperimentBaseTest(unittest.TestCase):
         base = config.EXPERIMENT_BASE
         self.assertTrue(config.experiment_dir(3).startswith(base + "/"))
         사본 = next(c for c in config.manual_candidates(3)
-                   if str(c).startswith(base + "/"))
+                   if c.as_posix().startswith(base + "/"))
         self.assertEqual(사본, Path(f"{base}/실험03/강의노트/실험3.pdf"))
 
     def test_FPGA_프로젝트도_기반_아래다(self):

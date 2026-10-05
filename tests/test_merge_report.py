@@ -24,6 +24,18 @@ from scripts.lab.merge_report import (
 )
 
 
+def _blank_pdf(suffix: str, pages: int) -> Path:
+    """빈 쪽 PDF 를 임시 파일로 만들고 **닫은 뒤** 경로를 돌려준다.
+    Windows 는 열려 있는 파일을 지우지 못하므로 `with` 안에서 넘기면
+    `clean_body` 의 삭제가 조용히 실패한다."""
+    fd, name = tempfile.mkstemp(suffix=suffix)
+    writer = pypdf.PdfWriter()
+    for _ in range(pages):
+        writer.add_blank_page(width=595.27, height=841.89)
+    with open(fd, "wb") as f:
+        writer.write(f)
+    return Path(name)
+
 class TestOutputFilename(unittest.TestCase):
     def test_replaces_spaces_with_underscores(self):
         self.assertEqual(
@@ -137,41 +149,25 @@ class TestIntegration(unittest.TestCase):
         from scripts.lab.merge_report import merge_lab_report
         root = config.find_project_root(Path("."))
         exp_dir = root / config.experiment_dir(1)
-        with tempfile.NamedTemporaryFile(suffix="_notion_export_예비보고서.pdf", delete=False) as tmp_body:
-            writer = pypdf.PdfWriter()
-            for _ in range(3):
-                writer.add_blank_page(width=595.27, height=841.89)
-            with open(tmp_body.name, "wb") as f:
-                writer.write(f)
-
-            tmp_path = Path(tmp_body.name)
-            out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
-            self.assertTrue(out.is_file())
-            self.assertEqual(out.name, "실험1_Basic_Gates_예비보고서.pdf")
-            reader = pypdf.PdfReader(str(out))
-            self.assertEqual(len(reader.pages), 4)  # 1 cover + 3 body
-            # clean_body=True 가 기본이므로 원본 파일이 자동 삭제되어야 함
-            self.assertFalse(tmp_path.exists())
+        tmp_path = _blank_pdf("_notion_export_예비보고서.pdf", pages=3)
+        self.addCleanup(tmp_path.unlink, missing_ok=True)
+        out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
+        self.assertTrue(out.is_file())
+        self.assertEqual(out.name, "실험1_Basic_Gates_예비보고서.pdf")
+        reader = pypdf.PdfReader(str(out))
+        self.assertEqual(len(reader.pages), 4)  # 1 cover + 3 body
+        # clean_body=True 가 기본이므로 원본 파일이 자동 삭제되어야 함
+        self.assertFalse(tmp_path.exists())
 
     def test_merge_lab_report_clean_body_false_keeps_file(self):
         from scripts.lab.merge_report import merge_lab_report
         root = config.find_project_root(Path("."))
         exp_dir = root / config.experiment_dir(1)
-        with tempfile.NamedTemporaryFile(suffix="_notion_export_keep_예비보고서.pdf", delete=False) as tmp_body:
-            writer = pypdf.PdfWriter()
-            for _ in range(2):
-                writer.add_blank_page(width=595.27, height=841.89)
-            with open(tmp_body.name, "wb") as f:
-                writer.write(f)
-
-            tmp_path = Path(tmp_body.name)
-            try:
-                out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path, clean_body=False)
-                self.assertTrue(out.is_file())
-                self.assertTrue(tmp_path.is_file())
-            finally:
-                if tmp_path.exists():
-                    tmp_path.unlink()
+        tmp_path = _blank_pdf("_notion_export_keep_예비보고서.pdf", pages=2)
+        self.addCleanup(tmp_path.unlink, missing_ok=True)
+        out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path, clean_body=False)
+        self.assertTrue(out.is_file())
+        self.assertTrue(tmp_path.is_file())
 
 
 
