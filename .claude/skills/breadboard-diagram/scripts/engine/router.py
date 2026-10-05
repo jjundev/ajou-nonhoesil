@@ -85,6 +85,9 @@ def _axis(a, b):
 
 def _on_seg(p, a, b, margin=6):
     """엔진 `_endpoints_under_wires` 와 같은 식 — p 가 구간 ab 의 **중간** 위에 있는가."""
+    # 범위 선검사 — 참이면 p 는 구간 범위 ±1.5 안이다. 여유 2 는 아래 나눗셈의 반올림 몫(2026-10-05 속도)
+    if not (min(a[0], b[0]) - 2 < p[0] < max(a[0], b[0]) + 2 and min(a[1], b[1]) - 2 < p[1] < max(a[1], b[1]) + 2):
+        return False
     dx, dy = b[0] - a[0], b[1] - a[1]
     length = (dx * dx + dy * dy) ** .5
     if length < 1:
