@@ -56,3 +56,23 @@ def assert_offline_reload(page):
         assert page.locator('img').evaluate_all('(imgs)=>imgs.every(i=>i.complete && i.naturalWidth>0)')
     finally:
         page.context.set_offline(False)
+
+
+def test_published_pack_table_borders_and_no_empty_condition_label():
+    pw = pytest.importorskip('playwright.sync_api')
+    pack = Path('복습노트/실험05')
+    if not (pack/'실험05_기출문제.html').exists(): pytest.skip('실험05 없음')
+    with pw.sync_playwright() as driver:
+        with driver.chromium.launch(channel='chrome') as browser:
+            page = browser.new_page(viewport={'width':1280,'height':900})
+            for name in ('실험05_기출문제.html','실험05_기출풀이.html'):
+                page.goto((pack/name).resolve().as_uri())
+                page.wait_for_function('document.documentElement.dataset.ready',timeout=60000)
+                assert page.locator('body').get_attribute('data-overflow') == ''
+                assert page.locator('#book table').first.evaluate('t=>getComputedStyle(t.querySelector("td")).borderTopWidth') != '0px'
+                # q-excess3-why 는 조건이 비어 있다: 라벨도 없고, 구할 것은 남는다
+                labels = page.locator('#q-excess3-why .block-label').all_text_contents()
+                assert '조건' not in labels and '구할 것' in labels
+                labels = page.locator('#q-dec3x8 .block-label').all_text_contents()
+                assert '조건' in labels
+                assert '원문 대조' not in page.locator('body').inner_text()

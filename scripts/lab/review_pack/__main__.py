@@ -15,16 +15,16 @@ from .bank_provenance import check_bank_import
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     sub=parser.add_subparsers(dest='command',required=True)
-    for cmd in ('sources','import-bank','build','check','publish'):
+    for cmd in ('sources','import-bank','build','check','publish','rerender'):
         p=sub.add_parser(cmd)
-        if cmd!='check':p.add_argument('--root',type=Path,required=True)
+        if cmd not in {'check','rerender'}:p.add_argument('--root',type=Path,required=True)
         if cmd in {'sources','publish'}:p.add_argument('--experiment',type=int,required=True)
         if cmd in {'build','publish'}:p.add_argument('--stage',type=Path,required=True)
         if cmd=='build':p.add_argument('--run',type=Path,required=True)
         if cmd=='import-bank':
             p.add_argument('--bank',type=Path,required=True)
             p.add_argument('--run',type=Path,required=True)
-        if cmd=='check':p.add_argument('--folder',type=Path,required=True)
+        if cmd in {'check','rerender'}:p.add_argument('--folder',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
         if args.command=='sources':
@@ -52,6 +52,11 @@ def main(argv=None):
             errors=check_pack(args.folder)
             if errors:raise ValueError('\n'.join(errors))
             print('OK (mechanical checks only)')
+        elif args.command=='rerender':
+            from .workbook_rerender import rerender_workbook
+            errors=rerender_workbook(args.folder)
+            if errors:raise ValueError(chr(10).join(errors))
+            print('OK '+str(args.folder))
         else:
             stage_data=load_manifest(args.stage/'manifest.json')
             if stage_data['experiment']!=args.experiment:raise ValueError('Experiment mismatch')

@@ -70,7 +70,7 @@ RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. �
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
 실험설명의 모든 설명 그림은 원문을 읽어 직접 SVG로 다시 제작하고 진리표는 텍스트 표로 쓴다. 스캔/스크린샷을 설명 그림으로 첨부하지 않는다. 원문·문제은행 증거와 기출풀이 원본 이미지는 보존한다.
 설명은 완성 예제→일부 단계 연습→기출 풀이로 이어진다. 문제에는 필요한 개념으로 돌아가는 링크를 넣는다.
-실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷을 그대로 사용한다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
+실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render.LOCAL_PATCHES 두 건(표 테두리 CSS, 빈 조건 블록 생략)만 덧씌운다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
 우측 요약은 div.sum, 도움말은 details.hint/solution을 사용한다. 자세한 마크업은 authoring.md.
 
 ## 4. 조립과 MD 생성
@@ -105,11 +105,12 @@ python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
+publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML이 바뀌면 PDF를 다시 만든다.
 보고: 여섯 학습 파일 링크(legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
 파일 생성 완료를 학생의 이해 완료라고 표현하지 않는다.
 
 ## 후속 요청과 경계
 
 특정 부분에 대한 질문은 기존 팩을 읽고 설명한다. 질문만으로 파일을 수정하지 않는다.
-'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 HTML의 인쇄 기능을 안내한다.
+'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(payload에서 HTML·MD 재생성 후 검사)을 쓴다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.

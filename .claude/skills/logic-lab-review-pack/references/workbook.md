@@ -1,6 +1,6 @@
 # 전자회로2 템플릿의 문제지·해설지
 
-원본 HTML은 assets/workbook/의 problem.html과 answer.html이다. 원본 바이트·해시를 유지하고 생성 시 JSON과 로컬 자원 URL만 바꾼다. 생명과학 note-template은 실험설명에 계속 사용한다.
+원본 HTML은 assets/workbook/의 problem.html과 answer.html이다. 원본 바이트·해시를 유지하고 생성 시 JSON, 로컬 자원 URL, workbook_render.LOCAL_PATCHES(표 테두리 CSS·빈 조건 블록 생략 2건)만 바꾼다. 패치 anchor가 사라지면 렌더가 실패한다. 생명과학 note-template은 실험설명에 계속 사용한다.
 
 manifest.schema_version=1, review_presentation_version=2, figure_manifest='figures/redraw-manifest.json'을 지정한다. included 문항에는 workbook_fragment='workbook/<id>.json'을 지정한다. 은행 고정 필드와 원문 이미지는 수정하지 않는다.
 
@@ -29,7 +29,7 @@ manifest.schema_version=1, review_presentation_version=2, figure_manifest='figur
 style="max-width:100%;height:auto" alt="2×1 MUX 완성 회로"></p>
 ```
 
-문제지 JSON에는 solution·notes·증거를 넣지 않는다. 문제 본문·조건·구할 것·힌트의 작성 HTML에는 하이퍼링크를 넣지 않는다. 원문·해설 자료에 접근하는 링크는 해설에서만 제공한다. 해설지는 동일 문제 데이터에 단계/답/대조 기록/개념 링크를 추가한다. source evidence는 원문과_저작안내.md에서 접근한다. 두 판의 문항 번호·ID·조건·힌트·문제 그림은 일치해야 한다.
+문제지 JSON에는 solution·notes·증거를 넣지 않는다. 문제 본문·조건·구할 것·힌트의 작성 HTML에는 하이퍼링크를 넣지 않는다. 해설지는 동일 문제 데이터에 단계/답을 추가한다. 「원문 대조·다시 볼 개념」 단계와 개념·원문 링크는 두지 않는다(답안 상태는 쪽 머리 section에만 남긴다). source evidence는 원문과_저작안내.md에서 접근한다. 두 판의 문항 번호·ID·조건·힌트·문제 그림은 일치해야 한다.
 
 세 HTML/세 MD를 같은 작성 데이터로 생성한다. JavaScript 템플릿 전체를 정적 HTML→MD에 넣지 않는다. 변환기는 실험설명에만 사용하고 workbook MD는 payload에서 생성하며 본문·TeX·표 셀·이미지·anchor 보존을 별도로 검사한다.
 

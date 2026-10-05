@@ -1,4 +1,4 @@
-"""Use unmodified EC2 template snapshots with local resources."""
+"""Use EC2 template snapshots (hash-pinned) with local resources and LOCAL_PATCHES."""
 from pathlib import Path
 import hashlib
 import json
@@ -14,6 +14,29 @@ URL_MAP={
     'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':'assets/vendor/katex/auto-render.min.js',
 }
 
+CONDITIONS_OLD="  panel.append(block('조건', p.html.conditions, 'conditions'), block('구할 것', p.html.ask, 'ask-box'));"
+CONDITIONS_NEW=("  if (p.html.conditions && p.html.conditions.trim()) panel.append(block('조건', p.html.conditions, 'conditions'));   // 조건이 없으면 라벨도 없다\n"
+                "  panel.append(block('구할 것', p.html.ask, 'ask-box'));")
+TABLE_ANCHOR='/* 수식 */'
+TABLE_CSS='''/* 표: 격자선, 머리행 강조. 원문 표의 빈 칸은 태블릿 펜으로 쓸 높이(7mm)를 갖는다 */
+#book table { border-collapse: collapse; width: 100%; margin: 1mm 0; }
+#book th, #book td {
+  border: .3mm solid var(--ink); padding: 1.2mm 1.2mm; text-align: center;
+  overflow-wrap: break-word; word-break: keep-all; line-height: 1.3;
+}
+#book th { font-weight: 700; background: var(--paper); }
+#book .original td { height: 7mm; }
+
+'''
+# 원본 스냅샷 위에 덧씌우는 두 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
+LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR)]
+
+def apply_local_patches(text, name):
+    for old,new in LOCAL_PATCHES:
+        if text.count(old)!=1: raise ValueError('Local patch anchor not unique in '+name+': '+old[:30])
+        text=text.replace(old,new)
+    return text
+
 def render_workbook_html(data, assets):
     mode=data.get('meta',{}).get('mode')
     if mode not in {'problems','answers'}: raise ValueError('Invalid workbook mode')
@@ -22,7 +45,7 @@ def render_workbook_html(data, assets):
     provenance=_strict_json(folder/'provenance.json')
     blob=(folder/name).read_bytes()
     if hashlib.sha256(blob).hexdigest()!=provenance['sha256'][name]: raise ValueError('Template snapshot changed: '+name)
-    template=blob.decode('utf-8').replace('\r\n','\n')
+    template=apply_local_patches(blob.decode('utf-8').replace('\r\n','\n'),name)  # 데이터 슬롯을 채우기 전에 덧씌운다
     if template.count(TOKEN)!=1: raise ValueError('Expected one workbook data slot')
     text=template.replace(TOKEN,json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c'))
     for remote,local in URL_MAP.items(): text=text.replace(remote,local)
