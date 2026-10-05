@@ -1,0 +1,259 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2) BCD to Decimal Decoder — 1단계",
+ "subtitle": "74HC42 · Y0~Y9 = 입력 BCD 의 그 수에서만 0 (LED 는 0 에서 켜짐)",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일41행",
+   "to": "중앙GND레일41행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일42행",
+   "to": "중앙VCC레일42행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 g3",
+   "to": "중앙VCC레일3행",
+   "desc": "pin 16 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 a10",
+   "to": "좌 GND레일10행",
+   "desc": "pin 8 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "중앙GND레일4행",
+   "to": "좌 j4",
+   "desc": "입력 Bit0 -> U4 pin 15 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "sig",
+   "from": "중앙GND레일5행",
+   "to": "좌 j5",
+   "desc": "입력 Bit1 -> U4 pin 14 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "sig",
+   "from": "중앙GND레일6행",
+   "to": "좌 j6",
+   "desc": "입력 Bit2 -> U4 pin 13 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "sig",
+   "from": "중앙GND레일7행",
+   "to": "좌 j7",
+   "desc": "입력 Bit3 -> U4 pin 12 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "sig",
+   "from": "우 b6",
+   "to": "우 c9",
+   "desc": "Y0: 330Ω(우 b6→우 b8) + LED(캐소드 우 c8→애노드 우 c9) 직렬 · 0 이면 켜짐 · Y0 — 진리표 T1 의 Y0 열",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "vcc",
+   "from": "우 a9",
+   "to": "중앙VCC레일9행",
+   "desc": "Y0 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "sig",
+   "from": "우 b10",
+   "to": "우 c13",
+   "desc": "Y1: 330Ω(우 b10→우 b12) + LED(캐소드 우 c12→애노드 우 c13) 직렬 · 0 이면 켜짐 · Y1 — 진리표 T1 의 Y1 열",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "vcc",
+   "from": "우 a13",
+   "to": "중앙VCC레일13행",
+   "desc": "Y1 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "sig",
+   "from": "우 b14",
+   "to": "우 c17",
+   "desc": "Y2: 330Ω(우 b14→우 b16) + LED(캐소드 우 c16→애노드 우 c17) 직렬 · 0 이면 켜짐 · Y2 — 진리표 T1 의 Y2 열",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "vcc",
+   "from": "우 a17",
+   "to": "중앙VCC레일17행",
+   "desc": "Y2 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "Y3: 330Ω(우 b18→우 b20) + LED(캐소드 우 c20→애노드 우 c21) 직렬 · 0 이면 켜짐 · Y3 — 진리표 T1 의 Y3 열",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "vcc",
+   "from": "우 a21",
+   "to": "중앙VCC레일21행",
+   "desc": "Y3 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "sig",
+   "from": "우 b22",
+   "to": "우 c25",
+   "desc": "Y4: 330Ω(우 b22→우 b24) + LED(캐소드 우 c24→애노드 우 c25) 직렬 · 0 이면 켜짐 · Y4 — 진리표 T1 의 Y4 열",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "vcc",
+   "from": "우 a25",
+   "to": "중앙VCC레일25행",
+   "desc": "Y4 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "sig",
+   "from": "우 b26",
+   "to": "우 c29",
+   "desc": "Y5: 330Ω(우 b26→우 b28) + LED(캐소드 우 c28→애노드 우 c29) 직렬 · 0 이면 켜짐 · Y5 — 진리표 T1 의 Y5 열",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "vcc",
+   "from": "우 a29",
+   "to": "중앙VCC레일29행",
+   "desc": "Y5 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "sig",
+   "from": "우 b30",
+   "to": "우 c33",
+   "desc": "Y9: 330Ω(우 b30→우 b32) + LED(캐소드 우 c32→애노드 우 c33) 직렬 · 0 이면 켜짐 · Y9 — 진리표 T1 의 Y9 열",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "vcc",
+   "from": "우 a33",
+   "to": "중앙VCC레일33행",
+   "desc": "Y9 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 25,
+   "kind": "sig",
+   "from": "우 b34",
+   "to": "우 c37",
+   "desc": "Y6: 330Ω(우 b34→우 b36) + LED(캐소드 우 c36→애노드 우 c37) 직렬 · 0 이면 켜짐 · Y6 — 진리표 T1 의 Y6 열",
+   "count": 1
+  },
+  {
+   "n": 26,
+   "kind": "vcc",
+   "from": "우 a37",
+   "to": "중앙VCC레일37행",
+   "desc": "Y6 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 27,
+   "kind": "sig",
+   "from": "우 b38",
+   "to": "우 c41",
+   "desc": "Y8: 330Ω(우 b38→우 b40) + LED(캐소드 우 c40→애노드 우 c41) 직렬 · 0 이면 켜짐 · Y8 — 진리표 T1 의 Y8 열",
+   "count": 1
+  },
+  {
+   "n": 28,
+   "kind": "vcc",
+   "from": "우 a41",
+   "to": "중앙VCC레일41행",
+   "desc": "Y8 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 29,
+   "kind": "sig",
+   "from": "우 b42",
+   "to": "우 c45",
+   "desc": "Y7: 330Ω(우 b42→우 b44) + LED(캐소드 우 c44→애노드 우 c45) 직렬 · 0 이면 켜짐 · Y7 — 진리표 T1 의 Y7 열",
+   "count": 1
+  },
+  {
+   "n": 30,
+   "kind": "vcc",
+   "from": "우 a45",
+   "to": "중앙VCC레일45행",
+   "desc": "Y7 LED 애노드 -> +5V",
+   "count": 1
+  },
+  {
+   "n": 31,
+   "kind": "sig",
+   "from": "좌 d3",
+   "to": "우 a6",
+   "desc": "Y0 = U4 pin 1 -> LED Y0",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2"
+}

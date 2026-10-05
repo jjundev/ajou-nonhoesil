@@ -224,6 +224,15 @@ class RebuildField(unittest.TestCase):
     def test_false_는_False_다(self):
         self.assertFalse(self._netlist("- rebuild: false").circuits[1].rebuild)
 
+    def test_all_은_LED_사슬까지_뽑는다(self):
+        """실험05 C2 — 앞 회로와 LED 방향이 반대라 사슬도 남길 수 없다(netlist M16)."""
+        c = self._netlist("- rebuild: all").circuits[1]
+        self.assertTrue(c.rebuild)
+        self.assertTrue(c.rebuild_all)
+
+    def test_true_는_사슬을_남긴다(self):
+        self.assertFalse(self._netlist("- rebuild: true").circuits[1].rebuild_all)
+
     def test_true_false_밖의_값은_거절한다(self):
         """`yes`·`1` 을 조용히 참으로 읽으면 오타 하나로 배너가 뒤집힌다."""
         for bad in ("yes", "1", "전부"):

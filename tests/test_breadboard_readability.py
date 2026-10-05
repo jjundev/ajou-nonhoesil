@@ -23,7 +23,7 @@ from collections import Counter
 from pathlib import Path
 
 from tests._boards import board_files, engine_files, load_once, per_builder
-from tests._renders import BOARD_L, BOARD_R, render
+from tests._renders import board_bounds, render
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
@@ -37,7 +37,9 @@ MAX_ON_BOARD_LABELS = 8
 # 뺄 수 없다 — 문구 배지가 아니라 이름 개수가 넘는 경우만 여기 적는다.
 #  · `build_e4_mux` 와 그 단계 래퍼(`build_e4_mux_s*`): 입력 7(E·S1·S0·D0~D3) + LED 4
 #    (Y·L2·L3·L4) = 11 (2026-09-28). 키는 빌더 이름의 앞머리다
-LABEL_EXCEPTIONS = {'build_e4_mux': 11}
+#  · `build_e5_bcd`: 입력 4(Bit0~Bit3) + LED 10(Y0~Y9) = 14 (2026-10-05)
+#  · `build_e5_xs3`: 입력 6(D0~D5) + LED 4(A3~A0) = 10 (2026-10-05)
+LABEL_EXCEPTIONS = {'build_e4_mux': 11, 'build_e5_bcd': 14, 'build_e5_xs3': 10}
 
 
 def _label_cap(name):
@@ -136,8 +138,8 @@ def _missing_signal_names(bb):
     want = Counter(list(dict.fromkeys(i['name'] for i in bb.inputs))
                    + [ch['tag'] for ch in bb.led_chains]
                    + list(dict.fromkeys(p['name'] for p in bb.probes if p.get('name'))))
-    got = Counter(n for n, box, _s in bb.tag_boxes
-                  if BOARD_L < box[0] and box[2] < BOARD_R)
+    lo, hi = board_bounds(bb)
+    got = Counter(n for n, box, _s in bb.tag_boxes if lo < box[0] and box[2] < hi)
     return want - got
 
 
@@ -173,8 +175,8 @@ class RenderedContract(unittest.TestCase):
             with self.subTest(회로=name):
                 bb, _ = self._render(getattr(self.b2, name))
                 self.assertEqual([p['name'] for p in bb.probes if p.get('name')], want)
-                got = [n for n, box, _s in bb.tag_boxes
-                       if BOARD_L < box[0] and box[2] < BOARD_R]
+                lo, hi = board_bounds(bb)
+                got = [n for n, box, _s in bb.tag_boxes if lo < box[0] and box[2] < hi]
                 self.assertEqual(sorted(got), sorted(want))
 
     def test_같은_행에_좌_f쪽과_우_a쪽_입력을_넣으면_번호_원이_겹친다(self):

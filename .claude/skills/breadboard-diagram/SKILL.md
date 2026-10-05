@@ -52,10 +52,8 @@ v1(§2)은 실험01~04 전용으로 남는다 — 승인·손그림 검토·도�
   `tests/fixtures/board_v2_e4/배치.py` 다(§4a).
 - **DIP-16 칩(74HC42 따위).** 칩 핀 수는 엔진의 칩 모델 표 `DIP_PINS`(이름 → 14/16)에서 온다 — 배치기는 표에
   없는 칩을 거절하고, 그리기는 모르는 이름을 14핀으로 본다. 16핀 칩은 8행이고 pin 16 → 가운데 VCC(행 k),
-  pin 8 → GND(행 k+7)다. 이름 글자는 몸통 가운데 반 행 하나만 막는다 — 74HC42 는 a쪽 pin 1~7 이 전부 출력이라
-  일곱 가닥이 몸통을 건너는데 건널 반 행이 핀마다 하나뿐이다. 그래서 a쪽 출력 → LED 선은 배선표에 **이름 상자에
-  가까운 핀부터**(pin 4, 3, 2, 1, 5, 6, 7) 적는다 — 배선기 수리는 막힌 선 앞 한 가닥만 바꿔 보므로 위에서부터
-  적으면 pin 4 가 막힌다. 본보기 `tests/fixtures/board_v2_e5/배치.py`(실험05 1-2 시험판).
+  pin 8 → GND(행 k+7)다. a쪽 출력 → LED 선은 배선표에 **이름 상자에 가까운 핀부터**(pin 4, 3, 2, 1, 5, 6, 7)
+  적는다(이유는 `.claude/skills/breadboard-diagram/연혁.md`). 본보기 `tests/fixtures/board_v2_e5/배치.py`.
 - **Negative Logic LED.** 출력이 0 일 때 켜지는 회로(교안 "Output 을 Negative Logic 으로 구축")는
   `bb.led_chain(R['a'], top, 'Y0', desc, block='right', active_low=True)` 로 그린다 — 신호 우 a 윗행 →
   330Ω(b, 윗행~윗행+2) → LED(c, 캐소드 윗행+2 → 애노드 윗행+3) → a 윗행+3 에서 가운데 VCC 레일. 레일 점퍼
@@ -268,6 +266,9 @@ DIP-16), 사슬은 **우 a 열**에서 받아 GND 를 가운데 레일로 내린
   `route_plan` 을 먼저 넓힌다. 비용은 `길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도`(λ = 엔진 `DENSITY_WEIGHT`, 근거
   `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`, 다시 재려면 `python -m scripts.lab.route_sweep`)이고 밀도 지표는
   `wire_metrics(bb)` 다. 최종 판정은 늘 엔진 `verify()` 다.
+- **배선기는 신호 이름 배지를 피한다**(경로·번호 원 둘 다). 그때까지 **그려진** 배지만 보므로 고정 빌더는
+  입력 점퍼·LED 사슬을 경로보다 먼저 그린다. 고정물끼리도 같다(실험05 C1 은 입력이 사슬보다 먼저).
+  `verify()` 는 배지를 안 본다.
 - **v2 주차의 칩 행·LED 윗행·브리지 행도 손으로 정하지 않는다 — 배치기가 고른다**(설계
   `docs/plans/2026-10-05-v2-배치기-설계.md`). 주차 `배치.py` 는 `PLACE`(`PlaceCircuit` 목록 — 칩→슬롯·모델·LED
   태그 위→아래·배선표(LED 끝은 태그 `('LED', 'L1')`)·`fixed(bb, stage, superset, layout)`·입력 핀)·`SLOTS`·`LAYOUT`

@@ -182,6 +182,14 @@ def _valid(bb, path, others_pts, segs):
             if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
                     and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
                 return False
+    # 신호 이름 배지 위를 지나지 않는다 — 배지가 선을 가리고 선이 이름을 가른다(2026-10-05 실험05 C1
+    # `Y0` 급전이 가운데 레일 입력 배지 `Bit0`~`Bit2` 위로 내려갔다). 고정물이 먼저 그린 배지만 보인다
+    for _n, box, _seg in bb.tag_boxes:
+        x0, y0, x1, y1 = box[0] - 1, box[1] - 1, box[2] + 1, box[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
+                return False
     # 꺾임점이 남의 선에 닿지 않는다 — 맞닿은 두 선은 한 가닥으로 읽힌다(R4 가 못 보는 2px 이하)
     for c in path[1:-1]:           # 끝점(홀)끼리는 R2·단계 겹침을 위에서 따로 본다
         for _k, pts in segs:

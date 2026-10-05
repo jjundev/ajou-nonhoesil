@@ -3,7 +3,7 @@
 설계: `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`. 기준 데이터는 실험04 v2 시험판
 (`tests/fixtures/board_v2_e4/배치.py`). `plans_lambda0.json` 은 지금 `LAYOUT` 에서 λ=0 경로·번호 원
 자리다 — 배선기를 바꿔도 λ=0 이면 그대로 나와야 한다. 배치(`LAYOUT`)를 바꾸면 다시 뜬다(2026-10-05
-배치기 적용 때 다시 떴다).
+배치기 적용 때, 배선기가 신호 이름 배지를 피하게 고칠 때 다시 떴다).
 """
 import importlib.util
 import json
@@ -225,6 +225,62 @@ class ChosenWeight(unittest.TestCase):
             self.assertLessEqual(got[key][1]['length'], got[key][0]['length'] * 1.15, key)
         self.assertLess(sum(v[1]['density'] for v in got.values()),
                         sum(v[0]['density'] for v in got.values()))
+
+
+class BadgeObstacle(unittest.TestCase):
+    """2026-10-05 실험05 — v2 배선기가 신호 이름 배지를 장애물로 본다. C1 `Y0` 급전선이 가운데 레일 입력
+    배지 `Bit0`~`Bit2` 위로 내려갔고, 번호 원이 `Bit1`~`Bit3`·`D1` 을 덮었다
+    (설계 `docs/plans/2026-10-05-v2-배선기-배지회피-설계.md`)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def _bb(self):
+        bb = self.mod.BreadboardRenderer(None, board='v2')
+        bb.enable_steps()
+        return bb
+
+    def test_배지를_지나는_경로는_거절한다(self):
+        bb = self._bb()
+        bb.signal_tag('Bit0', 212, bb.r_y(15))
+        path = [(212, bb.r_y(10)), (212, bb.r_y(20))]
+        self.assertFalse(self.mod._valid(bb, path, [], []))
+
+    def test_배지를_비켜_가는_경로는_그대로다(self):
+        bb = self._bb()
+        bb.signal_tag('Bit0', 212, bb.r_y(30))
+        path = [(212, bb.r_y(10)), (212, bb.r_y(20))]
+        self.assertTrue(self.mod._valid(bb, path, [], []))
+
+    def test_배지_위에는_번호_원을_안_둔다(self):
+        bb = self._bb()
+        x, y = 640, bb.r_y(15)
+        self.assertTrue(bb._marker_clear(x, y))
+        bb.signal_tag('Bit0', x, y)
+        self.assertFalse(bb._marker_clear(x, y))
+
+    def test_빈_행_핀의_가운데_레일_입력은_번호_원이_제_배지를_안_덮는다(self):
+        bb = self._bb()
+        bb.draw_chip('74HC04', 17)
+        bb.partial = True
+        L = bb.cols['left']
+        self.mod._input_jumper(bb, L, 20, 'D1', 'U1 pin 11', side='f', col='j')
+        (_n, box, _s), = [t for t in bb.tag_boxes if t[0] == 'D1']
+        self.assertEqual([m for m in bb.marker_boxes if self.mod._boxes_touch(box, m)], [])
+
+    def test_가운데_레일에_배지가_쌓여도_번호_원이_어느_배지도_안_덮는다(self):
+        # 실험05 C1 — 74HC42 pin 15~12 입력 넷이 가운데 레일에 한 행씩 배지를 쌓는다. 원 자리를 고를 때
+        # 제 배지가 아직 없어 `Bit1` 원이 곧 그려질 `Bit1` 배지 위에 앉았다
+        bb = self._bb()
+        bb.draw_chip('74HC42', 3)
+        bb.partial = True
+        L = bb.cols['left']
+        for name, row in (('Bit0', 4), ('Bit1', 5), ('Bit2', 6), ('Bit3', 7)):
+            self.mod._input_jumper(bb, L, row, name, name, side='f', col='j')
+        hits = [(n, m) for n, box, _s in bb.tag_boxes for m in bb.marker_boxes
+                if self.mod._boxes_touch(box, m)]
+        self.assertEqual(hits, [])
 
 
 if __name__ == '__main__':

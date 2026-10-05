@@ -423,6 +423,24 @@ def check_manual_quotes(text, manual_text, where) -> list:
 _LATIN_TOKEN = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 _MANUAL_PAGE = re.compile(r"manual:p(\d+)")
 
+# 강의노트 머리말의 범위 표기 — `Bit0-3`·`Y0-Y9`·`D0-5`·`A0 ~ A3`. 교안이 열 이름을
+# 범위로만 적은 쪽이 있다(실험05 p9: 텍스트 층에 `Bit1`·`Y5` 가 없다, 2026-10-05).
+# 같은 접두어·오름차순·폭 16 이하만 펼친다 — 문서번호·연도(`Rev1-2024`)를 이름으로
+# 만들지 않으려고. 내림차순(`Y9-Y0`)은 교안 실물이 없어 범위로 보지 않는다.
+_RANGE = re.compile(
+    r"(?<![A-Za-z0-9_])([A-Za-z][A-Za-z_]*)(\d+)\s*[-~]\s*(?:\1)?(\d+)(?![A-Za-z0-9_])")
+_RANGE_MAX = 16
+
+
+def _range_tokens(text) -> set:
+    """`text` 의 범위 표기를 이름 토큰으로 펼친다. `Bit0-3` → {Bit0, Bit1, Bit2, Bit3}."""
+    out = set()
+    for m in _RANGE.finditer(text or ""):
+        prefix, lo, hi = m.group(1), int(m.group(2)), int(m.group(3))
+        if lo < hi and hi - lo <= _RANGE_MAX:
+            out |= {f"{prefix}{n}" for n in range(lo, hi + 1)}
+    return out
+
 
 def extract_manual_pages(manual_path) -> list:
     """강의노트 PDF 의 쪽별 텍스트. 1쪽이 `[0]` 이다. 못 열면 빈 리스트.
@@ -474,7 +492,8 @@ def check_manual_names(spec, pages) -> list:
       둘까지 본다(실험3 p6 `A B D B`).
     - 파생표(`derived`): 열 이름마다 그 표를 쓰는 항목의 `pages` 쪽 텍스트에 토큰으로
       있어야 한다. 이름이 회로도 꼬리표·절차 문장에 흩어져 있어서다(실험1 p11
-      "L1과 L2에 330Ω 저항", "INPUT(A, B, C)").
+      "L1과 L2에 330Ω 저항", "INPUT(A, B, C)"). 범위 표기(`Bit0-3`·`Y0-Y9`)는 펼쳐 센다
+      (실험05 p9, 2026-10-05) — 교안 표를 옮긴 표의 머리 연속열 대조에는 쓰지 않는다.
     - 파생표를 쓰는 항목에 `pages` 가 없으면 error, 강의노트 쪽 수를 넘는 쪽은 error.
     - 텍스트 층이 없는 쪽(래스터)은 info — 대조를 못 했다는 뜻이지 틀렸다는 뜻이
       아니다(`check_manual_quotes` 와 같은 이유). `pages` 가 빈 리스트면(PDF 를 못
@@ -544,6 +563,7 @@ def check_manual_names(spec, pages) -> list:
             if not ok:
                 continue
             have = set().union(*(tokens[n - 1] for n in ok))
+            have |= set().union(*(_range_tokens(pages[n - 1]) for n in ok))
             for c in dict.fromkeys(header):
                 if c not in have:
                     out.append(Finding("error", where,

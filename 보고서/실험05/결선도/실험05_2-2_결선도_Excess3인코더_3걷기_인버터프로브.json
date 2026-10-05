@@ -1,0 +1,15 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2: Excess-3 인코더 — 3단계 걷기 (임시 급전선 1가닥)",
+ "subtitle": "D0' → LED A2 임시 급전선을 뽑는다 · 회색은 그대로 둔다",
+ "kept": 33,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 j19 → 우 a13 · 임시 급전: D0' = U1 pin 12 -> LED A2 (3걷기에서 뽑는다)"
+  }
+ ],
+ "probes": [],
+ "board": "v2"
+}

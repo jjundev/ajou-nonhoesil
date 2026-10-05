@@ -1,0 +1,51 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-2) Decimal to Excess-3 Code Encoder — 4단계",
+ "subtitle": "74HC04 NOT 6 + 74HC20 4입력 NAND 4 · A3 = D5, A2 = D4+D3+D2+D1, A1 = D4+D3+D0, A0 = D4+D2+D0",
+ "kept": 38,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "중앙GND레일22행",
+   "to": "좌 j22",
+   "desc": "입력 D2 -> U1 pin 9 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 d29",
+   "to": "좌 h34",
+   "desc": "D4' 이어 감 (U3 pin 1 -> U3 pin 9)",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 h23",
+   "to": "좌 h7",
+   "desc": "D2' (U1 pin 8) -> U2 pin 12",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 i7",
+   "to": "좌 i33",
+   "desc": "D2' 이어 감 (U2 pin 12 -> U3 pin 10)",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "좌 j35",
+   "to": "우 a38",
+   "desc": "A0 = U3 pin 8 -> LED A0",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2"
+}

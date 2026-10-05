@@ -1,0 +1,35 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1-2) BCD to Decimal Decoder — 4단계",
+ "subtitle": "74HC42 · Y0~Y9 = 입력 BCD 의 그 수에서만 0 (LED 는 0 에서 켜짐)",
+ "kept": 38,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 j8",
+   "to": "우 a30",
+   "desc": "Y9 = U4 pin 11 -> LED Y9",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 j9",
+   "to": "우 a38",
+   "desc": "Y8 = U4 pin 10 -> LED Y8",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 j10",
+   "to": "우 a42",
+   "desc": "Y7 = U4 pin 9 -> LED Y7",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2"
+}
