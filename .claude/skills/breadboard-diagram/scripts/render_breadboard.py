@@ -3034,6 +3034,7 @@ PLACE_GMAX = 6
 PLACE_STARTS = tuple(range(3, 9))   # 맨 위 칩 pin 1 행 후보
 PLACE_TOP = 8       # 근사 순위 앞 몇 개를 route_plan 으로 실측하나 (한 판에 약 1분)
 PLACE_ROUNDS = 3
+PLACE_LENGTH_SLACK = 1.02   # 순위 띠 — verify 통과 최단의 ×1.02 안에서 밀도 최소(2026-10-05 사용자 N6)
 LED_SPAN = 4        # LED 사슬 한 벌 = 윗행 ~ 윗행+3 (LED 두 행 + 저항 아랫다리)
 PLACE_ROW_LAST = 61  # 칩·LED·브리지가 쓸 마지막 행 — 62·63 은 레일 빈 행
 PLACE_REPORT = '배치탐색.md'
@@ -3086,9 +3087,10 @@ def place_wires(circuit, layout):
     return [(s, e, kind, end(f), end(t), desc) for s, e, kind, f, t, desc in circuit.wires]
 
 
-def place_hash(circuits, slots, gmin=PLACE_GMIN):
-    """배선표 지문(16자리). 바뀌면 배치를 다시 찾아야 한다 — `fixed` 함수는 안 본다."""
-    body = {'slots': list(slots), 'gmin': gmin, 'circuits': [
+def place_hash(circuits, slots, gmin=PLACE_GMIN, slack=PLACE_LENGTH_SLACK):
+    """배선표 지문(16자리). 바뀌면 배치를 다시 찾아야 한다 — `fixed` 함수는 안 본다. 순위 여유
+    `slack` 도 든다 — 엔진 ε 를 바꾸면 모든 v2 주차가 다시 돌린다."""
+    body = {'slots': list(slots), 'gmin': gmin, 'slack': slack, 'circuits': [
         {'name': c.name, 'chips': c.chips, 'models': c.models, 'leds': list(c.leds),
          'wires': [list(w) for w in c.wires], 'inputs': [list(i) for i in c.inputs]}
         for c in circuits]}
@@ -3320,20 +3322,29 @@ def _serial_map(fn, items):
     return [fn(x) for x in items]
 
 
+def place_pick(rows, slack=PLACE_LENGTH_SLACK):
+    """verify 를 통과한 후보 → (고를 행, 띠 상한). 띠 = 최단 길이 L* × `slack` 이하, 그 안에서 (밀도,
+    꺾임, 길이, layout 키) 최소 — 길이가 사실상 같으면 덜 빽빽한(따라 그리기 쉬운) 쪽(2026-10-05 사용자
+    N6). 배선기 λ 고르기(`scripts/lab/route_sweep.py` `pick`)와 같은 꼴이다."""
+    band = min(x['length'] for x in rows) * slack
+    inside = [x for x in rows if x['length'] <= band + 1e-9]
+    return min(inside, key=lambda x: (x['density'], x['bends'], x['length'], layout_key(x['layout']))), band
+
+
 def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=None,
-               measure=None, verify=None, mapper=None, chunk=1):
+               measure=None, verify=None, mapper=None, chunk=1, slack=PLACE_LENGTH_SLACK):
     """주차 모듈의 칩 행·LED 행·브리지 행을 고른다.
 
     1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
     2. 지금 `LAYOUT`(기준)과 앞 `top` 개를 실측한다(`measure`, 기본 `_place_measure` — route_plan).
-    3. 막히지 않고 기준보다 짧고 밀도 합이 기준 이하인 것을 길이 순으로 `verify`(기본 `place_verify` —
-       단계 사슬 전부) 해 처음 통과한 것을 고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을
-       때만 기준을 verify 해 고른다 — 기준이 1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(2026-10-05
-       사용자). 기준보다 긴 배치는 고르지 않는다(N1).
+    3. 막히지 않고 기준보다 짧고 밀도 합이 기준 이하인 것을 **전부** `verify`(기본 `place_verify` — 단계
+       사슬 전부) 하고, 통과한 것이 있으면 `place_pick`(최단의 ×`slack` 안에서 밀도 최소, N6)으로
+       고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을 때만 기준을 verify 해 고른다 — 기준이
+       1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(N5). 기준보다 긴 배치는 고르지 않는다.
     병렬: `mapper(fn, items) -> [fn(x)…]`(기본 차례대로) 로 라운드마다 실측을 한 묶음에 돌리고(1라운드
-    묶음에 기준도 든다), verify 는 길이 순으로 `chunk` 개씩 함께 돌려 통과한 것 중 가장 짧은 것을 고른다
-    — chunk=1 과 같은 답이다. `place_search --jobs` 가 프로세스 풀을 넘긴다(2026-10-05 사용자).
-    돌려주는 값 {'hash', 'layout', 'rows'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
+    묶음에 기준도 든다), verify 는 길이 순으로 `chunk` 개씩 돌린다. `place_search --jobs` 가 프로세스
+    풀을 넘긴다(2026-10-05 사용자).
+    돌려주는 값 {'hash', 'layout', 'rows', 'slack'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
     'length', 'bends', 'density' | 'blocked', 'status'}."""
     circuits, slots = list(module.PLACE), tuple(module.SLOTS)
     for c in circuits:
@@ -3371,15 +3382,13 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
         for j in range(0, len(ok), chunk):
             part = ok[j:j + chunk]
             for x, why in zip(part, mapper(verify, [x['layout'] for x in part])):
-                if why is not None:
-                    x['status'] = f'verify: {why}'
-                elif chosen is None:
-                    x['status'], chosen = '✔ 고름', x
-                else:
-                    x['status'] = '통과 — 더 짧은 것을 고름'
-            if chosen is not None:
-                break
-        if chosen is not None:
+                x['status'] = '통과' if why is None else f'verify: {why}'
+        passed = [x for x in ok if x['status'] == '통과']
+        if passed:
+            chosen, band = place_pick(passed, slack)
+            for x in passed:
+                x['status'] = ('✔ 고름' if x is chosen
+                               else '통과 — 띠 안' if x['length'] <= band + 1e-9 else '통과 — 띠 밖')
             break
     if chosen is None:
         why = mapper(verify, [base['layout']])[0]
@@ -3392,7 +3401,8 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
                      else '기준보다 김' if x is not base and x['length'] >= base['length'] else '')
     if chosen is None:
         raise AssertionError('고를 배치가 없다 — ' + rows[-1]['status'])
-    return {'hash': place_hash(circuits, slots, gmin), 'layout': chosen['layout'], 'rows': rows}
+    return {'hash': place_hash(circuits, slots, gmin, slack), 'layout': chosen['layout'], 'rows': rows,
+            'slack': slack}
 
 
 def place_report(result, title):
@@ -3404,6 +3414,8 @@ def place_report(result, title):
              '고른 layout 은 `배치.py` 의 `LAYOUT` 과 netlist `kind: layout` 표에 옮겨 적는다.', '',
              '```json', head, '```', '',
              '길이·밀도는 superset 판(모든 단계의 선) 칸 단위, 회로 합이다. 기준 = 탐색 시점 `LAYOUT`.', '',
+             f"순위: 기준보다 짧고 밀도가 기준 이하인 후보를 모두 verify 하고, 통과한 것 중 최단 길이의 "
+             f"×{result.get('slack', PLACE_LENGTH_SLACK):g} 안에서 밀도가 가장 낮은 것(동률은 꺾임·길이).", '',
              '| 순위 | 근사(px) | 길이 | 꺾임 | 밀도 | 슬롯 | LED | 결과 |',
              '|---|---|---|---|---|---|---|---|']
     for x in result['rows']:

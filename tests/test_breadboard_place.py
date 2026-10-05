@@ -70,6 +70,11 @@ class Model(unittest.TestCase):
         b = {'bridge': [1, 2], 'slots': {'K2': 17, 'K1': 5}}
         self.assertEqual(self.mod.layout_key(a), self.mod.layout_key(b))
 
+    def test_지문은_순위_여유가_바뀌면_바뀐다(self):
+        a = _toy(self.mod, [])
+        self.assertNotEqual(self.mod.place_hash([a], ('K1', 'K2')),
+                            self.mod.place_hash([a], ('K1', 'K2'), slack=1.05))
+
 
 def _w(frm, to, s=1, e=None):
     return (s, e, 'sig', frm, to, f'{frm}->{to}')
@@ -175,6 +180,41 @@ def _gap(lay):
     return abs(lay['slots']['K2'] - lay['slots']['K1'])
 
 
+class PlacePick(unittest.TestCase):
+    """N6 — 통과 후보 중 최단 L* 의 ×slack 안에서 (밀도, 꺾임, 길이, layout 키) 최소(2026-10-05 사용자)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    @staticmethod
+    def row(n, length, density, bends=0):
+        return {'rank': n, 'layout': {'slots': {'K1': n}}, 'length': length, 'density': density, 'bends': bends}
+
+    def test_띠_안에서는_밀도가_낮은_것(self):
+        a, b = self.row(1, 10.0, 9.0), self.row(2, 10.1, 1.0)
+        chosen, band = self.mod.place_pick([a, b], 1.02)
+        self.assertIs(chosen, b)
+        self.assertAlmostEqual(band, 10.2)
+
+    def test_띠_밖은_밀도가_낮아도_못_이긴다(self):
+        a, b = self.row(1, 10.0, 9.0), self.row(2, 11.0, 1.0)
+        self.assertIs(self.mod.place_pick([a, b], 1.02)[0], a)
+
+    def test_띠_경계는_안이다(self):
+        a, b = self.row(1, 100.0, 9.0), self.row(2, 102.0, 1.0)
+        self.assertIs(self.mod.place_pick([a, b], 1.02)[0], b)
+
+    def test_동률이면_꺾임이_적은_것(self):
+        a, b = self.row(1, 10.0, 1.0, bends=5), self.row(2, 10.1, 1.0, bends=3)
+        self.assertIs(self.mod.place_pick([a, b], 1.02)[0], b)
+
+    def test_완전_동률은_layout_키(self):
+        a, b = self.row(2, 10.0, 1.0), self.row(1, 10.0, 1.0)
+        self.assertIs(self.mod.place_pick([a, b], 1.02)[0], b)      # {"K1": 1} < {"K1": 2}
+        self.assertIs(self.mod.place_pick([b, a], 1.02)[0], b)
+
+
 class Plan(unittest.TestCase):
     """선택 로직 — 실측·검증은 가짜로 주입한다(진짜는 시험판 시험이 잰다)."""
 
@@ -233,6 +273,7 @@ class Plan(unittest.TestCase):
         self.assertNotEqual(got['layout'], self.base)
         self.assertNotIn(self.base, calls)
         self.assertEqual(sum(1 for r in got['rows'] if r['status'] == '✔ 고름'), 1)
+        self.assertEqual(len(calls), 2)
 
     def test_병렬_실측은_라운드마다_한_묶음(self):
         """`mapper` 로 받은 실측은 라운드마다 한 번에 — 1라운드 묶음에는 기준도 든다."""
@@ -248,29 +289,64 @@ class Plan(unittest.TestCase):
                             mapper=mapper, chunk=3)
         self.assertEqual(batches[0], (measure, 5))
 
-    def test_verify_묶음에서는_통과한_것_중_가장_짧은_것(self):
-        """`chunk` 개씩 함께 verify 하고 통과한 것 중 길이 순 첫째를 고른다 — chunk=1 과 같은 답."""
+    def test_verify_는_라운드_대상을_chunk_개씩_전부(self):
+        """띠 판정에는 통과 집합이 필요하니 라운드의 verify 대상은 첫 통과에서 멈추지 않고 전부 본다
+        — `chunk` 개씩 묶어서(2026-10-05 순위 기준 N6)."""
         key = self.mod.layout_key
-        batches, calls = [], []
-
-        def mapper(fn, items):
-            batches.append((fn, len(items)))
-            return [fn(x) for x in items]
-
-        def measure(lay):
-            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+        sizes, calls = [], []
 
         def verify(lay):
             calls.append(key(lay))
             return 'R3 가림' if len(calls) == 1 else None
+
+        def mapper(fn, items):
+            if fn is verify:
+                sizes.append(len(items))
+            return [fn(x) for x in items]
+
+        def measure(lay):
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
         got = self.mod.place_plan(self.module(), top=100, measure=measure, verify=verify,
                                   mapper=mapper, chunk=3)
-        self.assertEqual([n for fn, n in batches if fn is verify], [3])
-        self.assertEqual(key(got['layout']), calls[1])
+        eligible = [r for r in got['rows'] if r['rank'] != '기준']
+        self.assertEqual(sum(sizes), len(eligible))
+        self.assertTrue(all(n <= 3 for n in sizes), sizes)
         status = {key(r['layout']): r['status'] for r in got['rows']}
         self.assertEqual(status[calls[0]], 'verify: R3 가림')
-        self.assertEqual(status[calls[1]], '✔ 고름')
-        self.assertEqual(status[calls[2]], '통과 — 더 짧은 것을 고름')
+        self.assertEqual(key(got['layout']), calls[1])
+
+    def test_통과한_것_중_띠_안에서_밀도가_낮은_것(self):
+        """N6 — 최단 통과 L*=100 의 ×1.02 안(≤102)에서 밀도 최소. 띠 밖(103)은 밀도가 낮아도 못 이긴다."""
+        length = {10: 100.0, 11: 101.0, 12: 101.5, 13: 103.0}
+        density = {10: 9.0, 11: 3.0, 12: 1.0, 13: 0.5}
+
+        def measure(lay):
+            if lay == self.base:
+                return {'length': 200.0, 'bends': 0, 'density': 10.0}
+            return {'length': length[_gap(lay)], 'bends': 0, 'density': density[_gap(lay)]}
+        got = self.mod.place_plan(self.module(), top=100, measure=measure, verify=lambda lay: None)
+        self.assertEqual(_gap(got['layout']), 12)
+        self.assertEqual(got['slack'], self.mod.PLACE_LENGTH_SLACK)
+        status = {}
+        for r in got['rows']:
+            if r['rank'] != '기준':
+                status.setdefault(_gap(r['layout']), set()).add(r['status'])
+        self.assertEqual(status[10], {'통과 — 띠 안'})
+        self.assertEqual(status[13], {'통과 — 띠 밖'})
+        self.assertIn('✔ 고름', status[12])
+
+    def test_slack_1_이면_가장_짧은_것(self):
+        length = {10: 100.0, 11: 101.0, 12: 101.5, 13: 103.0}
+        density = {10: 9.0, 11: 3.0, 12: 1.0, 13: 0.5}
+
+        def measure(lay):
+            if lay == self.base:
+                return {'length': 200.0, 'bends': 0, 'density': 10.0}
+            return {'length': length[_gap(lay)], 'bends': 0, 'density': density[_gap(lay)]}
+        got = self.mod.place_plan(self.module(), top=100, measure=measure, verify=lambda lay: None,
+                                  slack=1.0)
+        self.assertEqual(_gap(got['layout']), 10)
+        self.assertNotEqual(got['hash'], self.mod.place_module_hash(self.module()))
 
     def test_실측과_verify_는_늘_mapper_로(self):
         """작업 프로세스에만 상태가 있으니 기준의 마지막 verify 도 mapper 를 거친다."""
@@ -321,6 +397,12 @@ class Plan(unittest.TestCase):
             f.write(text)
         self.assertEqual(self.mod.read_place_report(p), {'hash': got['hash'], 'layout': got['layout']})
         self.assertIn('| 순위 |', text)
+
+    def test_보고서_머리에_순위_규칙(self):
+        got = self.mod.place_plan(self.module(), top=100, measure=self.measure, verify=lambda lay: None)
+        self.assertIn('×1.02', self.mod.place_report(got, '장난감'))
+        fake = {'hash': 'abc', 'layout': _LAY, 'rows': []}           # slack 없는 옛 결과
+        self.assertIn('×1.02', self.mod.place_report(fake, '장난감'))
 
 
 class Verify(unittest.TestCase):
