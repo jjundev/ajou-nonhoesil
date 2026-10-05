@@ -140,8 +140,11 @@ def _coster(bb):
         return n
 
     def cost(path):
-        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 있는 경로는 버린다(R12)."""
+        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 있는 경로는 버린다(R12) — 그런 경로는 벌점을 안 재고
+        0 을 둔다(`_ordered` 가 덮는 홀 수만 보고 거른다)."""
         over = sum(_holes_passed(a, b, xs, xset, pitch, row0) for a, b in zip(path, path[1:]))
+        if over:
+            return over, 0
         c = 40 * (len(path) - 2) + 400 * body_crossings(path)
         for a, b in zip(path, path[1:]):
             c += abs(a[0] - b[0]) + abs(a[1] - b[1])
@@ -258,6 +261,7 @@ def _ordered(bb, chip_rows, srcs, dsts, led):
     # 가로 통로: 끝 행, 또는 ±0.5·1.5·…·4.5 행
     ds = (0,) + tuple(s * half * n for n in (1, 3, 5, 7, 9) for s in (-1, 1))
     lo_y, hi_y = bb.r_y(1), bb.r_y(63)
+    lanes = _lanes(bb, led)
     cands = []
     for A in srcs:
         for B in dsts:
@@ -266,7 +270,7 @@ def _ordered(bb, chip_rows, srcs, dsts, led):
                     if not (lo_y <= A[1] + d1 <= hi_y and lo_y <= B[1] + d2 <= hi_y):
                         continue
                     y1, y2 = A[1] + d1, B[1] + d2
-                    for X in _lanes(bb, led) + [A[0], B[0]]:
+                    for X in lanes + [A[0], B[0]]:
                         p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
                         cands.append(p)
     cost = _coster(bb)
