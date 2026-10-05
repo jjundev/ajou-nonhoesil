@@ -4,7 +4,6 @@
 진리표는 넷을 `tests/_gate_sim.py` 로 돌려 맞댄다 — 시험판은 교안 핀 번호를 일부러 바꿔서
 netlist 핀 줄 대조를 쓸 수 없다.
 """
-import importlib.util
 import itertools
 import os
 import shutil
@@ -12,24 +11,19 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests import _renders
 from tests._gate_sim import value_of
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e4/배치.py'
 
 
-def _load():
-    spec = importlib.util.spec_from_file_location('render_breadboard', SCRIPT)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
 class _Trial(unittest.TestCase):
+    render_group = 'board_v2_e4'     # 공용 엔진의 경로 캐시를 한 워커에서 나눠 쓴다 — tests/conftest.py
+
     @classmethod
     def setUpClass(cls):
-        cls.mod = _load()
+        cls.mod = _renders.engine()
         cls.board = cls.mod.load_board_file(TRIAL, 'board_v2_e4')
         cls.tmp = tempfile.mkdtemp()
 

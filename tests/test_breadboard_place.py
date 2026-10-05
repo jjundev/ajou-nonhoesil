@@ -11,6 +11,8 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+from tests import _renders
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e4/배치.py'
@@ -586,9 +588,10 @@ class InputRows(unittest.TestCase):
 class TrialMarkers(unittest.TestCase):
     """시험판의 엔진 고정 부품(전원선·LED 사슬·입력 점퍼) 번호 원은 단계 그림·완성본 어디서나 같은 자리다
     — `place_marker_hints`(superset 판에서 비킨 자리)를 빌더가 준다(2026-10-05 최종 검토)."""
+    render_group = 'board_v2_e4'
 
     def test_고정_부품_원은_그림마다_같은_자리(self):
-        mod = _load()
+        mod = _renders.engine()
         b = mod.load_board_file(TRIAL, 'board_v2_e4')
         for draw, stages in ((b._mux_draw, [1, 2, 3, 4, 5, 6, 7, 8, None]), (b._dmux_draw, [1, 2, 3, 4, None])):
             seen = {}
@@ -737,9 +740,10 @@ class PlacedTrial(unittest.TestCase):
     손 배치 자신(962.58)이 통과하므로 px 그대로 적는다 — 길이 12515 + 5774 px, 밀도 859 + 119.5 px."""
     HAND_LENGTH = (12515 + 5774) / 19
     HAND_DENSITY = (859 + 119.5) / 19
+    render_group = 'board_v2_e4'
 
     def test_손_배치보다_짧고_밀도는_안_는다(self):
-        mod = _load()
+        mod = _renders.engine()
         b = mod.load_board_file(TRIAL, 'board_v2_e4')
         m = mod._place_measure(list(b.PLACE), b.LAYOUT)
         self.assertNotIn('blocked', m)
