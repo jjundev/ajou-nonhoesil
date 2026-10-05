@@ -164,7 +164,9 @@ def _seg_boxes(segs):
     return out
 
 
-def _valid(bb, path, others_pts, segs, seg_boxes):
+def _valid(bb, path, others_pts, segs, seg_boxes=None):
+    if seg_boxes is None:          # `_routes` 는 생성기마다 한 번 구해 넘긴다
+        seg_boxes = _seg_boxes(segs)
     # R6 — 두 점이 다 같은 스트립의 홀이면 그 구간은 전기적으로 없는 것과 같다
     for a, b in zip(path, path[1:]):
         sa = bb._strip(bb.sym(a[0], bb._row_of(a[1]))) if bb.hole_at(*a) else None
@@ -204,6 +206,14 @@ def _valid(bb, path, others_pts, segs, seg_boxes):
     # 이미 찍힌 번호 원 아래로 지나가거나 그 아래 홀에 꽂지 않는다 — 원이 선·끝점을 가린다
     for m in bb.marker_boxes:
         x0, y0, x1, y1 = m[0] - 1, m[1] - 1, m[2] + 1, m[3] + 1
+        for a, b in zip(path, path[1:]):
+            if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
+                    and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
+                return False
+    # 신호 이름 배지 위를 지나지 않는다 — 배지가 선을 가리고 선이 이름을 가른다(2026-10-05 실험05 C1
+    # `Y0` 급전이 가운데 레일 입력 배지 `Bit0`~`Bit2` 위로 내려갔다). 고정물이 먼저 그린 배지만 보인다
+    for _n, box, _seg in bb.tag_boxes:
+        x0, y0, x1, y1 = box[0] - 1, box[1] - 1, box[2] + 1, box[3] + 1
         for a, b in zip(path, path[1:]):
             if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
                     and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
