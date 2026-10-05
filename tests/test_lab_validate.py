@@ -2419,6 +2419,84 @@ class ManualNames(unittest.TestCase):
         self.assertEqual([f.level for f in found], ["info"])
 
 
+_RANGE_SPEC = """---
+schema: lab-spec/v2
+experiment: 5
+title: t
+source_manual: x.pdf
+power: {VCC: "+5V", GND: "GND"}
+items:
+  - id: E5.P1-2
+    title: t
+    device: [LED]
+    ics: ["74HC42"]
+    tables: [T1]
+    pages: [1]
+---
+
+## T1 · t
+
+- kind: truth-table
+- encoding: 0/1
+- source: derived (OUT = IN)
+
+| IN | OUT |
+|---|---|
+| 0 | 0 |
+| 1 | 1 |
+"""
+
+
+class ManualNameRanges(unittest.TestCase):
+    """강의노트가 열 이름을 범위로만 적은 쪽 — 실험05 p9 `Bit0-3: Input, Y0-Y9: Output`.
+
+    텍스트 층에 `Bit1`·`Y5` 토큰이 없어 교안 이름 그대로인 명세가 error 11건을 냈다
+    (2026-10-05).
+    """
+
+    def _found(self, inp, out, page):
+        text = _RANGE_SPEC.replace("OUT = IN", f"{out} = {inp}").replace(
+            "| IN | OUT |", f"| {inp} | {out} |")
+        return validate.check_manual_names(spec_from(text), [page])
+
+    def test_범위_안의_이름은_조용하다(self):
+        page = "※ Bit0-3:  Input, Y0-Y9: Output"
+        self.assertEqual(self._found("Bit2", "Y5", page), [])
+
+    def test_접두어를_되풀이한_범위도_펼친다(self):
+        self.assertEqual(self._found("D2", "A1", "D0-D5 입력, A0-A3 출력"), [])
+
+    def test_물결표와_공백도_펼친다(self):
+        self.assertEqual(self._found("Bit1", "A2", "Bit0 - 3 입력, A0 ~ A3 출력"), [])
+
+    def test_범위_밖_번호는_여전히_error(self):
+        found = self._found("Bit2", "Y10", "Bit0-3: Input, Y0-Y9: Output")
+        self.assertEqual([f.level for f in found], ["error"])
+        self.assertIn("열 `Y10` 가 교안 p1 에 없다", found[0].message)
+
+    def test_폭이_16_을_넘으면_펼치지_않는다(self):
+        found = self._found("Rev5", "Y1", "Rev1-2024 개정, Y0-Y9")
+        self.assertEqual([f.level for f in found], ["error"])
+        self.assertIn("열 `Rev5`", found[0].message)
+
+    def test_내림차순은_펼치지_않는다(self):
+        found = self._found("Bit0", "Y5", "Bit0 입력, Y9-Y0 출력")
+        self.assertEqual([f.level for f in found], ["error"])
+        self.assertIn("열 `Y5`", found[0].message)
+
+    def test_교안_표_머리는_펼친_토큰으로_통과하지_않는다(self):
+        """`manual:pN` 표는 머리 토큰열이 그 쪽에 순서대로 있어야 한다 — 범위로 대신할 수 없다."""
+        text = (_RANGE_SPEC.replace("tables: [T1]", "tables: [T1, T2]")
+                .replace("OUT = IN", "Y0 = Bit0").replace("| IN | OUT |", "| Bit0 | Y0 |")
+                + "\n## T2 · r\n\n- kind: truth-table\n- encoding: 0/1\n"
+                  "- source: manual:p1\n- role: reference\n\n"
+                  "| Bit1 | Y5 |\n|---|---|\n| 0 | 1 |\n| 1 | 0 |\n")
+        found = validate.check_manual_names(spec_from(text), ["Bit0-3: Input, Y0-Y9: Output"])
+        self.assertEqual([(f.level, f.where.rsplit(":", 1)[-1]) for f in found],
+                         [("error", "T2")])
+        self.assertIn("머리 `Bit1 Y5`", found[0].message)
+
+
 class RealReportTables(unittest.TestCase):
     def test_실제_실험1_예비보고서의_표가_명세와_맞다(self):
         """2026-09 조교 감점(-1) 뒤 T1~T4 를 명세의 `A B C L1 L2` 로 되돌렸다."""
