@@ -152,7 +152,17 @@ def _coster(bb):
     return cost
 
 
-def _valid(bb, path, others_pts, segs):
+def _seg_boxes(segs):
+    """기존 선마다 범위 상자 (x0, y0, x1, y1), `segs` 순서 — `_valid` 가 후보 근처 선만 고르는 데 쓴다.
+    `_routes` 가 생성기마다 한 번 구한다(그동안 `segs` 는 고정)."""
+    out = []
+    for _k, pts in segs:
+        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+        out.append((min(xs), min(ys), max(xs), max(ys)))
+    return out
+
+
+def _valid(bb, path, others_pts, segs, seg_boxes):
     # R6 — 두 점이 다 같은 스트립의 홀이면 그 구간은 전기적으로 없는 것과 같다
     for a, b in zip(path, path[1:]):
         sa = bb._strip(bb.sym(a[0], bb._row_of(a[1]))) if bb.hole_at(*a) else None
@@ -170,14 +180,22 @@ def _valid(bb, path, others_pts, segs):
         h = bb.hole_at(*c)
         if h is not None and h in bb._leads:
             return False
+    # 아래 검사들은 새 선과 남의 선·점이 경로 상자 ±2 안에서 겹쳐야 걸린다(`_on_seg` 범위 선검사, 꺾임점
+    # 1.5px, R4 1.5px) — 상자 ±3(반올림 여유 1) 밖의 선·점은 안 본다. 2026-10-05 배선기 속도 2차.
+    px0, px1 = min(p[0] for p in path) - 3, max(p[0] for p in path) + 3
+    py0, py1 = min(p[1] for p in path) - 3, max(p[1] for p in path) + 3
+    near = [pts for (_k, pts), (x0, y0, x1, y1) in zip(segs, seg_boxes)
+            if x1 > px0 and x0 < px1 and y1 > py0 and y0 < py1]
     # 새 선의 끝점이 기존 선 아래
     for q in (path[0], path[-1]):
-        for _k, pts in segs:
+        for pts in near:
             for a, b in zip(pts, pts[1:]):
                 if _on_seg(q, a, b):
                     return False
     # 기존 끝점·부품 다리가 새 선 아래
     for q in others_pts:
+        if not (px0 < q[0] < px1 and py0 < q[1] < py1):
+            continue
         for a, b in zip(path, path[1:]):
             if _on_seg(q, a, b):
                 return False
@@ -190,17 +208,18 @@ def _valid(bb, path, others_pts, segs):
                 return False
     # 꺾임점이 남의 선에 닿지 않는다 — 맞닿은 두 선은 한 가닥으로 읽힌다(R4 가 못 보는 2px 이하)
     for c in path[1:-1]:           # 끝점(홀)끼리는 R2·단계 겹침을 위에서 따로 본다
-        for _k, pts in segs:
-            if any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts) or                     any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:])):
+        for pts in near:
+            if (any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts)
+                    or any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:]))):
                 return False
-    for _k, pts in segs:
+    for pts in near:
         for q in pts[1:-1]:
             if any(_on_seg(q, a, b, margin=0) for a, b in zip(path, path[1:])):
                 return False
     # 같은 축 포개짐(R4) — 색과 무관하게 8px 로 본다
     for a, b in zip(path, path[1:]):
         ax = _axis(a, b)
-        for _k, pts in segs:
+        for pts in near:
             for c, d in zip(pts, pts[1:]):
                 if _axis(c, d) != ax:
                     continue
@@ -231,6 +250,7 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
     srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
     others = []
     segs = [(k, pts) for k, pts, _d in bb._segments]
+    boxes = _seg_boxes(segs)
     for _k, pts, _d in bb._segments:
         others += [pts[0], pts[-1]]
     for (x, r), what in bb._leads.items():
@@ -241,7 +261,7 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
     order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led), placed,
                     bb.spec.row_pitch, density_weight)
     for p in order:
-        if _valid(bb, p, others, segs):
+        if _valid(bb, p, others, segs, boxes):
             p = list(p)
             m = _marker_spot(bb, p)
             if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
