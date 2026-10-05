@@ -674,7 +674,12 @@ def _chip_swap(previous, current) -> str:
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
     keep = [c for c in current.ics if c in previous.ics]
-    if current.rebuild:
+    if current.rebuild_all:
+        # 기반까지 걷는 경계(2026-10-05, 실험05 C2). 앞 회로와 LED 방향이 반대라(Negative Logic
+        # → 보통) 사슬을 남길 수 없고, 칩 자리가 겹쳐 전원선도 다시 꽂는다(netlist M16)
+        parts = ["앞 회로의 선과 LED 사슬까지 전부 뽑아요. 레일 브리지만 그대로 둬요"
+                 "(새 선·부품은 단계 그림을 따라 꽂아요)"]
+    elif current.rebuild:
         # 앞 회로를 통째로 걷는 경계(2026-09-27, 실험04 C2). 단계 표가 있어도 `그대로 둔다`
         # 가 아니다. 기반(전원·브리지·LED 사슬)은 남긴다 — 다음 회로 1단계의 기반과 같은
         # 자리라 뽑으면 다시 꽂게 된다.
