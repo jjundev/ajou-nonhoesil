@@ -3,15 +3,10 @@
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 # ---------------------------------------------------------------------------
-# 배치기 (v2) — 칩 슬롯 행·LED 윗행·브리지 행을 고른다
-#
-# 배선기(`route_plan`)는 자리를 받아 길만 고른다. 배치기는 그 자리 자체를 고른다 — 근사 비용으로
-# 후보 전부의 순위를 매기고 앞 `PLACE_TOP` 개만 route_plan 으로 실측한다. 저작 때
-# `python -m scripts.lab.place_search <배치.py>` 로 한 번 돌리고, 고른 자리는 주차 `LAYOUT` 과 netlist
-# `kind: layout` 표에 옮겨 적는다. 설계: `docs/plans/2026-10-05-v2-배치기-설계.md`.
-#
-# layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]}
-# — 보고서 JSON 과 그대로 맞대려고 리스트·문자열 키만 쓴다.
+# 배치기 (v2) — 칩 슬롯 행·LED 윗행·브리지 행을 고른다. 근사 비용으로 후보 전부를 줄 세우고 앞
+# `PLACE_TOP` 개만 route_plan 으로 실측한다. 저작 때 `python -m scripts.lab.place_search <배치.py>` 로
+# 돌려 주차 `LAYOUT` 에 옮긴다. 설계: `docs/plans/2026-10-05-v2-배치기-설계.md`.
+# layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]} — JSON 그대로.
 
 PLACE_GMIN = 3      # 칩 사이 최소 빈 행 — 실물에서 손이 들어갈 여유(2026-10-05 사용자 N2)
 PLACE_GMAX = 6
@@ -26,12 +21,9 @@ PLACE_REPORT = '배치탐색.md'
 
 @dataclass(frozen=True)
 class PlaceCircuit:
-    """배치기가 보는 회로 하나.
-
-    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP_PINS` 의 이름), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
-    2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 태그 `('LED', 'L1')`.
-    `fixed(bb, stage, superset, layout)` 는 칩·전원·입력·LED 사슬·브리지를 `layout` 자리에 그린다.
-    `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀) — f쪽이면 가운데 GND 레일의 그 행을 쓴다."""
+    """배치기가 보는 회로 하나. `chips` 칩 → 슬롯, `models` 칩 → 모델, `leds` LED 태그 위→아래(진리표 열
+    순서, 2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 `('LED', 'L1')`. `fixed(bb, stage,
+    superset, layout)` 는 고정물을 `layout` 자리에 그린다. `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀)."""
     name: str
     chips: dict
     models: dict
@@ -72,8 +64,7 @@ def place_wires(circuit, layout):
 
 
 def place_hash(circuits, slots, gmin=PLACE_GMIN, slack=PLACE_LENGTH_SLACK):
-    """배선표 지문(16자리). 바뀌면 배치를 다시 찾아야 한다 — `fixed` 함수는 안 본다. 순위 여유
-    `slack` 도 든다 — 엔진 ε 를 바꾸면 모든 v2 주차가 다시 돌린다."""
+    """배선표 지문(16자리) — 바뀌면 배치를 다시 찾는다. `fixed` 는 안 보고 `slack` 은 든다."""
     body = {'slots': list(slots), 'gmin': gmin, 'slack': slack, 'circuits': [
         {'name': c.name, 'chips': c.chips, 'models': c.models, 'leds': list(c.leds),
          'wires': [list(w) for w in c.wires], 'inputs': [list(i) for i in c.inputs]}
@@ -94,9 +85,7 @@ def circuit_pins(circuit):
 
 
 def slot_rows(circuits, slots):
-    """슬롯 → 그 슬롯에 앉는 칩들의 행 수 집합(14핀 7, 16핀 8). 슬롯 높이는 최댓값이고, 레일 빈 행
-    검사는 모든 GND 핀 행(k+행수−1)에 한다 — 회로마다 같은 슬롯에 14핀·16핀이 앉을 수 있다. 칩이
-    없는 슬롯은 {7}."""
+    """슬롯 → 그 슬롯에 앉는 칩들의 행 수 집합(14핀 7, 16핀 8) — 회로마다 다를 수 있다. 빈 슬롯은 {7}."""
     out = {s: set() for s in slots}
     for c in circuits:
         for chip, s in c.chips.items():
@@ -105,10 +94,8 @@ def slot_rows(circuits, slots):
 
 
 def place_wire_cost(chips, wire, pins=None):
-    """선 하나의 근사 비용(px) — 끝 홀 후보 사이 최소 맨해튼 + 40·꺾임 + 400·몸통(배선기 `_coster` 와
-    같은 상수). 꺾임은 행이 다르거나 가운데를 건너면(LED — R12 때문에 반 행으로 돈다) 2, 몸통은 쪽이
-    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다. `pins` 는 칩 →
-    핀 수(없으면 14)."""
+    """선 하나의 근사 비용(px) — 최소 맨해튼 + 40·꺾임 + 400·몸통(`_coster` 와 같은 상수). 경로·점유는
+    안 본다 — 순위만 매긴다. `pins` 는 칩 → 핀 수(없으면 14)."""
     L, R, pitch = _place_geom()
     _s, _e, _k, frm, to, _d = wire
     pins = pins or {}
@@ -134,8 +121,8 @@ def place_wire_cost(chips, wire, pins=None):
 
 
 def mid_rail_rows(circuit, slots, bridge):
-    """가운데 레일에서 이미 쓰는 행 — 칩 pin 14 전원선(그 행 GND 홀 위를 지나 VCC 에 꽂힌다), 브리지
-    둘, f쪽 입력 점퍼. LED 레일 점퍼(GND·VCC)가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
+    """가운데 레일에서 이미 쓰는 행 — 칩 전원선·브리지·f쪽 입력 점퍼. LED 레일 점퍼가 여기 착지하면
+    옆 행으로 비켜 사선이 된다."""
     used = {slots[s] for s in circuit.chips.values()}
     rows = used | set(bridge)
     pins = circuit_pins(circuit)
@@ -146,9 +133,8 @@ def mid_rail_rows(circuit, slots, bridge):
 
 
 def bridge_rows(slots, rows=None):
-    """브리지 두 가닥 [GND 행, VCC 행] — 맨 아래 칩 아래로 2행 이상 띄운 첫 연속 비간극 두 행.
-    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None. `rows` 는
-    `slot_rows` — 없으면 모든 슬롯 7행."""
+    """브리지 두 가닥 [GND 행, VCC 행] — 맨 아래 칩 아래로 2행 이상 띄운 첫 연속 비간극 두 행(칩 행이면
+    핀 위를 지난다). 자리가 없으면 None. `rows` 는 `slot_rows`."""
     rows = rows or {}
     r = max(k + max(rows.get(s, {7})) - 1 for s, k in slots.items()) + 3
     while r + 1 <= PLACE_ROW_LAST:
@@ -159,19 +145,16 @@ def bridge_rows(slots, rows=None):
 
 
 def led_rows(circuit, slots, bridge):
-    """회로의 LED 윗행 {태그: 행} — DP.
-
-    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(레일 점퍼 출발 행 — 보통
-    사슬은 저항 아랫다리 → GND, Negative 사슬은 LED 애노드 → +5V)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
-    — MUX L1 처럼 임시 급전과 최종 Y 를 같이 받는 LED 도 그냥 더한다)의 근사 비용 합이 가장 작은
-    조합, 동률이면 위쪽. LED 가 없으면 {}, 다 놓을 수 없으면 None."""
+    """회로의 LED 윗행 {태그: 행} — DP. 태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상,
+    윗행+3(레일 점퍼 행)이 레일 빈 행·가운데 레일 사용 행이 아니다. 그 LED 로 가는 모든 단계 선의 근사
+    비용 합이 가장 작은 조합(동률은 위쪽). LED 가 없으면 {}, 못 놓으면 None."""
     if not circuit.leds:
         return {}
     chips = {c: slots[s] for c, s in circuit.chips.items()}
     pins = circuit_pins(circuit)
     busy = RAIL_GAP_ROWS | mid_rail_rows(circuit, slots, bridge)
     tops = [t for t in range(3, PLACE_ROW_LAST - LED_SPAN + 2) if t + LED_SPAN - 1 not in busy]
-    # 태그마다 그 LED 로 가는 선만 — 후보 수천 개 × 윗행 56개마다 배선표 전체를 훑지 않게
+    # 태그마다 그 LED 로 가는 선만 미리 — 후보마다 배선표 전체를 훑지 않게
     mine = {tag: [w for w in circuit.wires if ('LED', tag) in (w[3], w[4])] for tag in circuit.leds}
 
     def cost(tag, top):
@@ -220,10 +203,8 @@ def place_r10_ok(circuit, chips, leds):
 
 
 def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS, rows=None):
-    """슬롯 → pin 1 행 후보 [dict]. 순서(순열, N4) × 맨 위 행 × 칩 사이 빈 행 gmin~gmax. 칩 행 k 나
-    k+6 이 레일 빈 행이면 버린다 — pin 14·pin 7 전원선이 옆 행으로 비켜 사선이 된다. 브리지 둘
-    자리가 없어도 버린다. `rows` 는 `slot_rows` — 칩 사이 간격은 위 칩 높이 + g, 레일 빈 행 검사는
-    k 와 그 슬롯의 모든 GND 행."""
+    """슬롯 → pin 1 행 후보 [dict]. 순서(순열, N4) × 맨 위 행 × 칩 사이 빈 행 gmin~gmax. 칩 VCC·GND 행이
+    레일 빈 행이거나(전원선이 사선이 된다) 브리지 자리가 없으면 버린다. `rows` 는 `slot_rows`."""
     rows = rows or {}
     out = []
     for order in itertools.permutations(slots):
@@ -242,9 +223,8 @@ def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS
 
 
 def place_proxy(circuits, slots):
-    """슬롯 후보 하나 → (근사 비용 합, layout). 회로마다 LED 행을 DP 로 고른다. LED 를 못 놓거나
-    R10 이 미리 어긋나거나, 입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면(점퍼가 옆 행으로 비켜 사선)
-    None."""
+    """슬롯 후보 하나 → (근사 비용 합, layout). LED 를 못 놓거나 R10 이 어긋나거나 입력 핀 행이 레일
+    빈 행이면 None."""
     for c in circuits:
         pins = circuit_pins(c)
         if any(_dip_pin_row(slots[c.chips[chip]], pin, pins[chip]) in RAIL_GAP_ROWS for chip, pin in c.inputs):
@@ -268,8 +248,7 @@ _PLACE_PATHS = {}
 
 
 def place_paths(circuit, layout, density_weight=None):
-    """`layout` 자리에서 `route_plan` 경로 — 회로·배선표·자리·λ 마다 한 번(엔진 안 캐시). 주차 빌더와
-    배치기가 같은 캐시를 쓴다."""
+    """`layout` 자리에서 `route_plan` 경로 — 회로·배선표·자리·λ 마다 한 번(사본별 캐시 `_PLACE_PATHS`)."""
     w = DENSITY_WEIGHT if density_weight is None else density_weight
     key = (circuit.name, place_hash([circuit], ()), layout_key(layout), w)
     if key not in _PLACE_PATHS:
@@ -284,9 +263,8 @@ _PLACE_HINTS = {}
 
 
 def place_marker_hints(circuit, layout):
-    """superset 판(모든 단계의 고정물)에서 엔진 고정 부품 번호 원이 비킨 자리 {열쇠: (x, y)}. 빌더가
-    고정물을 그리기 전에 `bb.marker_hints` 로 주면 단계 그림·완성본이 같은 자리를 쓴다 — 완성본에 없는
-    LED 사슬 때문에 단계 그림에서만 비키던 입력 원(시험판 MUX E·D3, 2026-10-05 최종 검토)."""
+    """superset 판에서 엔진 고정 부품 번호 원이 비킨 자리 {열쇠: (x, y)}. 빌더가 `bb.marker_hints` 로 주면
+    단계 그림·완성본이 같은 자리를 쓴다(2026-10-05)."""
     key = (circuit.name, place_hash([circuit], ()), layout_key(layout))
     if key not in _PLACE_HINTS:
         bb = BreadboardRenderer(None, board='v2')
@@ -321,9 +299,8 @@ def _place_measure(circuits, layout):
 
 
 def place_verify(module, layout, out_dir):
-    """주차 모듈의 `BOARDS` 사슬(기준선 이어 가며, `RESTART` 에서 끊고)과 `FINALS` 를 `layout` 으로 다
-    그려 본다 — `verify()`(R1~R14) 가 막으면 '보드: 사유' 한 줄, 통과하면 None. 모듈 `LAYOUT` 은
-    그리는 동안만 바꾼다(빌더가 전역 `LAYOUT` 을 읽는다)."""
+    """주차 모듈의 `BOARDS` 사슬(`RESTART` 에서 끊고)과 `FINALS` 를 `layout` 으로 다 그려 본다 — 막히면
+    '보드: 사유' 한 줄, 통과하면 None. 모듈 `LAYOUT` 은 그리는 동안만 바꾼다."""
     saved, name = module.LAYOUT, None
     module.LAYOUT = layout
     try:
@@ -352,9 +329,8 @@ def _serial_map(fn, items):
 
 
 def place_pick(rows, slack=PLACE_LENGTH_SLACK):
-    """verify 를 통과한 후보 → (고를 행, 띠 상한). 띠 = 최단 길이 L* × `slack` 이하, 그 안에서 (밀도,
-    꺾임, 길이, layout 키) 최소 — 길이가 사실상 같으면 덜 빽빽한(따라 그리기 쉬운) 쪽(2026-10-05 사용자
-    N6). 배선기 λ 고르기(`scripts/lab/route_sweep.py` `pick`)와 같은 꼴이다."""
+    """verify 를 통과한 후보 → (고를 행, 띠 상한). 최단 길이 × `slack` 띠 안에서 (밀도, 꺾임, 길이) 최소
+    (2026-10-05 사용자 N6). `route_sweep.py` `pick` 과 같은 꼴."""
     band = min(x['length'] for x in rows) * slack
     inside = [x for x in rows if x['length'] <= band + 1e-9]
     return min(inside, key=lambda x: (x['density'], x['bends'], x['length'], layout_key(x['layout']))), band
@@ -364,17 +340,12 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
                measure=None, verify=None, mapper=None, chunk=1, slack=PLACE_LENGTH_SLACK):
     """주차 모듈의 칩 행·LED 행·브리지 행을 고른다.
 
-    1. 슬롯 후보 전부를 근사 비용(`place_proxy`)으로 줄 세운다.
-    2. 지금 `LAYOUT`(기준)과 앞 `top` 개를 실측한다(`measure`, 기본 `_place_measure` — route_plan).
-    3. 막히지 않고 기준보다 짧고 밀도 합이 기준 이하인 것을 **전부** `verify`(기본 `place_verify` — 단계
-       사슬 전부) 하고, 통과한 것이 있으면 `place_pick`(최단의 ×`slack` 안에서 밀도 최소, N6)으로
-       고른다. 없으면 다음 `top` 개, `rounds` 번까지. 그래도 없을 때만 기준을 verify 해 고른다 — 기준이
-       1라운드에서 먼저 통과해 뒤 라운드를 막지 않게(N5). 기준보다 긴 배치는 고르지 않는다.
-    병렬: `mapper(fn, items) -> [fn(x)…]`(기본 차례대로) 로 라운드마다 실측을 한 묶음에 돌리고(1라운드
-    묶음에 기준도 든다), verify 는 길이 순으로 `chunk` 개씩 돌린다. `place_search --jobs` 가 프로세스
-    풀을 넘긴다(2026-10-05 사용자).
-    돌려주는 값 {'hash', 'layout', 'rows', 'slack'} — rows 는 실측한 후보마다 {'rank', 'proxy', 'layout',
-    'length', 'bends', 'density' | 'blocked', 'status'}."""
+    1. 슬롯 후보 전부를 `place_proxy` 로 줄 세운다.
+    2. 기준(지금 `LAYOUT`)과 앞 `top` 개를 실측한다(`measure`).
+    3. 기준보다 짧고 밀도가 기준 이하인 것을 전부 `verify` 하고, 통과한 것 중 `place_pick`(N6). 없으면
+       다음 `top` 개, `rounds` 번까지. 그래도 없을 때만 기준을 verify 한다(N5). 기준보다 긴 배치는 안 고른다.
+    `mapper(fn, items)` 로 실측·verify 를 묶어 돌린다 — `place_search --jobs` 가 프로세스 풀을 넘긴다.
+    돌려주는 값 {'hash', 'layout', 'rows', 'slack'}."""
     circuits, slots = list(module.PLACE), tuple(module.SLOTS)
     for c in circuits:
         place_check(c)
@@ -384,7 +355,7 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
         def verify(lay):
             if out_dir:
                 return place_verify(module, lay, out_dir)
-            # 단계 그림 열여섯 장 남짓 — 판마다 지운다(안 지우면 탐색마다 수백 MB, 2026-10-05 최종 검토)
+            # 판마다 지운다 — 안 지우면 탐색마다 수백 MB
             with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
                 return place_verify(module, lay, tmp)
     rows_ = slot_rows(circuits, slots)

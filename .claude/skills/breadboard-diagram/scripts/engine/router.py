@@ -3,16 +3,13 @@
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 # ---------------------------------------------------------------------------
-# 배선기 (v2) — 배선표(어느 핀을 어느 핀에)만 받아 경로와 번호 원 자리를 고른다.
-#
-# 2026-10-03 실험04 v2 시험판(`tests/fixtures/board_v2_e4/배치.py`)에서 태어나 2026-10-04 엔진으로
-# 올라왔다(`docs/plans/2026-10-04-v2-배선기-밀도-설계.md`). 칩 넷이 좌 블록 한 줄에 서면 a~d / g~j
-# 열이 끝점으로 차서 손좌표로는 R3·R4 가 쏟아진다. 가로는 반 행, 세로는 홀 열 사이나 여백 차선을 탄다.
-# 차선 x 값(212~260, 542~660)은 v2 판형 기하에 맞춘 것이라 v1 에서는 안 부른다.
+# 배선기 (v2) — 배선표(어느 핀을 어느 핀에)만 받아 경로와 번호 원 자리를 고른다. 가로는 반 행, 세로는
+# 홀 열 사이나 여백 차선을 탄다. 차선 x 값은 v2 기하라 v1 에서는 안 부른다.
+# 설계: `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`.
 
 
-# 칩 모델 표 — 이름 → DIP 핀 수. VCC 는 마지막 핀, GND 는 n/2 핀(74HC DIP 공통)이라 식으로 얻는다.
-# 배치기는 여기 없는 칩을 거절한다(`place_check`). 그리기(`draw_chip`)는 v1 빌더 호환으로 14핀으로 본다.
+# 칩 모델 표 — 이름 → DIP 핀 수(VCC 는 마지막 핀, GND 는 n/2). 배치기는 없는 칩을 거절하고
+# 그리기는 14핀으로 본다(v1 빌더 호환).
 DIP_PINS = {
     '74HC00': 14, '74HC02': 14, '74HC04': 14, '74HC08': 14, '74HC10': 14, '74HC11': 14,
     '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
@@ -40,9 +37,7 @@ def _dip_side(pin, n=14):
 
 
 # 밀도 가중치 λ — 비용 = 길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도증분(px). 0 이면 밀도를 안 본다.
-# 값은 `python -m scripts.lab.route_sweep` 로 정한다(설계 #11: 길이 +15% 안에서 밀도 최소).
-# 2026-10-04 스윕: MUX 길이 348→355칸·밀도 26.4→20.6, DMUX 303→304·14.3→6.3. λ 1·2 는 MUX 밀도가
-# 다시 늘고(먼저 깐 선이 뒤 선을 모른다) λ 4·8 은 MUX 가 막혔다.
+# `python -m scripts.lab.route_sweep` 로 정한다 — 스윕 수치는 `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`.
 DENSITY_WEIGHT = 0.5
 _RERANK_TOP = 400   # 정적 순위 앞 몇 개만 밀도로 다시 매기나 — 나머지는 정적 순서 그대로
 
@@ -51,8 +46,7 @@ _STRIP_COLS = {'a': 'abcd', 'f': 'ghij'}
 
 
 def _chip_pins(bb):
-    """좌 블록 칩 pin 1 행 → 핀 수. 칩마다 행이 달라 행 하나로 칩이 정해진다. 칩 레코드에 키를 더하지
-    않고 `pins` 개수로 읽는다(`wiring()` → 도장)."""
+    """좌 블록 칩 pin 1 행 → 핀 수 — `pins` 개수로 읽는다(레코드에 키를 더하면 도장이 바뀐다)."""
     return {ch['pin1_row']: len(ch['pins']) for ch in bb.chips if ch['block'] == 'left'}
 
 
@@ -69,8 +63,8 @@ def _end_holes(bb, chips, end):
 
 
 def _lanes(bb, led):
-    """세로선이 달릴 x 후보. 홀 열 자체와 홀 열 사이(±12), 좌 여백·가운데 여백 차선.
-    칩 몸통(e~f 사이)은 뺀다 — 세로선이 칩 위를 덮는다. LED 로 가는 선은 가운데 여백만 쓴다."""
+    """세로선이 달릴 x 후보 — 홀 열과 그 사이, 좌·가운데 여백 차선. 칩 몸통은 뺀다. LED 로 가는 선은
+    가운데 여백 쪽만."""
     L = bb.cols['left']
     mid = [x for x in range(542, 660, 6) if min(abs(x - L['mid_gnd']), abs(x - L['mid_vcc'])) > 4]
     xs = [L[c] for c in 'abcdghij'] + [L[c] + 12 for c in 'abcghi'] + [L['j'] + 12]
@@ -113,8 +107,7 @@ def _clean(path):
 
 
 def _holes_passed(a, b, xs, xset, pitch, row0):
-    """축 구간 ab 가 덮는 홀 수(양 끝 제외) — 홀 열 위 세로선, 행 위 가로선. 덮인 홀은
-    뒤 배선의 끝점이 될 수 없어서(R3) 길게 덮을수록 뒤 배선이 갈 데가 없어진다."""
+    """축 구간 ab 가 덮는 홀 수(양 끝 제외) — 홀 열 위 세로선, 행 위 가로선."""
     if abs(a[0] - b[0]) < .5:
         if round(a[0]) not in xset:
             return 0
@@ -135,8 +128,7 @@ def _coster(bb):
               for ch in bb.chips]
 
     def body_crossings(path):
-        """칩 몸통(e~f 사이)을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다. 칩 안
-        a↔f 이어 가기는 한 번은 건너야 하지만 칩 사이 선이 몸통을 넘을 이유는 없다."""
+        """칩 몸통을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다."""
         n = 0
         for a, b in zip(path, path[1:]):
             if abs(a[1] - b[1]) < .5 and min(a[0], b[0]) < L['e'] and max(a[0], b[0]) > L['f']:
@@ -144,8 +136,7 @@ def _coster(bb):
         return n
 
     def cost(path):
-        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 하나라도 있으면 `_route` 가 버린다 — 검정
-        선이 검정 홀 위를 지나면 꽂힌 것인지 지나가는 것인지 안 보인다(2026-10-03 사용자)."""
+        """(덮는 홀 수, 길이 + 꺾임 벌점). 덮는 홀이 있는 경로는 버린다(R12)."""
         over = sum(_holes_passed(a, b, xs, xset, pitch, row0) for a, b in zip(path, path[1:]))
         c = 40 * (len(path) - 2) + 400 * body_crossings(path)
         for a, b in zip(path, path[1:]):
@@ -190,8 +181,7 @@ def _valid(bb, path, others_pts, segs):
             if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
                     and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
                 return False
-    # 꺾임점이 남의 선에 닿거나 남의 꺾임점이 새 선에 닿지 않는다 — 끝과 끝이 맞닿은 두 선은
-    # 한 가닥으로 읽힌다(2026-10-04, R4 는 2px 이하 겹침을 봐줘서 못 본다)
+    # 꺾임점이 남의 선에 닿지 않는다 — 맞닿은 두 선은 한 가닥으로 읽힌다(R4 가 못 보는 2px 이하)
     for c in path[1:-1]:           # 끝점(홀)끼리는 R2·단계 겹침을 위에서 따로 본다
         for _k, pts in segs:
             if any(abs(c[0] - q[0]) < 1.5 and abs(c[1] - q[1]) < 1.5 for q in pts) or                     any(_on_seg(c, a, b, margin=0) for a, b in zip(pts, pts[1:])):
@@ -255,14 +245,13 @@ _ORDERED = {}
 
 
 def _ordered(bb, chip_rows, srcs, dsts, led):
-    """후보 경로를 싼 순으로 — 덮는 홀이 있는 것은 뺀다. 비용은 칩 자리와 끝 홀에만 달렸고 깔린
-    배선과 무관해서, 수리(`_plan`)가 같은 선을 다시 깔 때 그대로 쓴다."""
+    """후보 경로를 싼 순으로 — 덮는 홀이 있는 것은 뺀다. 칩 자리와 끝 홀에만 달려 사본마다 캐시한다
+    (`_ORDERED`) — 수리가 같은 선을 다시 깔 때 그대로 쓴다."""
     key = (bb.spec.name, chip_rows, srcs, dsts, led)
     if key in _ORDERED:
         return _ORDERED[key]
     half = bb.spec.row_pitch / 2
-    # 가로 통로: 끝 행 그대로, 또는 반 행 위아래로 ±0.5·1.5·…·4.5 행 — 칩 안쪽 통로가 차면
-    # 칩 위아래 행을 돌아간다
+    # 가로 통로: 끝 행, 또는 ±0.5·1.5·…·4.5 행
     ds = (0,) + tuple(s * half * n for n in (1, 3, 5, 7, 9) for s in (-1, 1))
     lo_y, hi_y = bb.r_y(1), bb.r_y(63)
     cands = []
@@ -297,19 +286,15 @@ _R = 8   # 번호 원 반지름 (엔진 `_marker` 상자 ±8)
 
 
 def _box_clear(bb, x, y, path_pts):
-    """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가. 판정은 엔진 `_marker_clear`(R11 과 같은
-    식)이고, 이 선은 아직 안 그렸으니 제 끝점 두 홀만 더 본다."""
+    """(x, y) 번호 원이 아무것도 안 가리는가 — `_marker_clear` 에 아직 안 그린 제 끝점 두 홀을 더 본다."""
     if any(abs(hx - x) <= _R + 2 and abs(hy - y) <= _R + 2 for hx, hy in (path_pts[0], path_pts[-1])):
         return False
     return bb._marker_clear(x, y)
 
 
 def _marker_spot(bb, path):
-    """경로 위에서 번호 원 자리. 엔진 기본(첫 구간 가운데)은 배선기 경로의 첫 토막이 반 행
-    (9.5px)짜리라 원이 끝점 홀을 덮는다(2026-10-03 사용자 지적). 긴 구간 가운데부터 4px 씩
-    밖으로 훑어 `_box_clear` 인 첫 점을 쓴다."""
-    # 가로 구간 먼저 — 세로 차선 한복판에 앉은 원은 6px 간격 이웃 차선 셋을 막아 뒤 배선이
-    # 갈 데가 없어진다(MUX U1 pin 8 임시선). 그다음 긴 구간 순.
+    """경로 위 번호 원 자리 — 가로 구간 먼저(세로 차선의 원은 이웃 차선을 막는다), 긴 구간 순으로
+    가운데부터 4px 씩 훑어 `_box_clear` 인 첫 점. 첫 토막은 반 행이라 원이 끝점을 덮는다."""
     segs = sorted(zip(path, path[1:]), key=lambda s: (_axis(*s) != 'h',
                                                       -(abs(s[0][0] - s[1][0]) + abs(s[0][1] - s[1][1]))))
     for a, b in segs:
@@ -330,13 +315,11 @@ _REPAIR_BACK, _REPAIR_ALTS = 4, 8   # 막히면 직전 몇 가닥을, 가닥마�
 
 
 def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
-    """superset 판(모든 단계의 고정물 + 앞 선)에서 선마다 경로와 번호 원 자리를 정한다 — `wires`
-    순서대로. 번호 원도 superset 에서 정하므로 단계 그림마다 같은 자리다. v2 판형만.
+    """superset 판(모든 단계의 고정물 + 앞 선)에서 `wires` 순서대로 선마다 경로와 번호 원 자리를 정한다 —
+    단계 그림마다 같은 자리다. v2 판형만.
 
-    앞 선이 가장 싼 자리를 먼저 가져가 뒤 선이 막히면, 직전 `_REPAIR_BACK` 가닥 중 **한 가닥만**
-    다음 후보로 바꾸고 그 뒤를 다시 깐다. 칩 이름을 피하면(R14) 칩 하나를 건널 수 있는 반 행이
-    pin 1~3·5~7 사이 넷뿐이라, 한 칩 안 이어 가기가 셋이면 싼 자리부터 고르다 막힌다(2026-10-04
-    MUX U1). 아무 데로나 되돌아가는 탐색은 가짓수가 터져 10분을 넘겼다."""
+    뒤 선이 막히면 직전 `_REPAIR_BACK` 가닥 중 **한 가닥만** 다음 후보로 바꾸고 그 뒤를 다시 깐다
+    (2026-10-04 MUX U1). 아무 데로나 되돌아가는 탐색은 가짓수가 터졌다."""
     if not board_spec(board).readability:
         raise ValueError(f'route_plan 은 v2 판형만 고른다(차선이 v2 기하다): {board!r}')
     w = DENSITY_WEIGHT if density_weight is None else density_weight
@@ -387,9 +370,8 @@ def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
 
 
 def _resettle_markers(bb, plans):
-    """다 깐 superset 판(`bb`)에서 경로 번호 원을 다시 본다. 원은 그 선을 깔 때 고르므로 **뒤에 깐 선의
-    끝점**을 모른다 — 2026-10-05 배치 탐색 후보에서 DMUX Y1 원이 나중에 꽂힌 좌 i22 를 덮었다.
-    R11 에 걸리는 원만 `_auto_marker` 로 다시 고르고, 통과하는 원은 그대로 둔다."""
+    """다 깐 superset 판에서 경로 번호 원을 다시 본다 — 원은 뒤에 깐 선의 끝점을 모른다(2026-10-05).
+    R11 에 걸리는 원만 `_auto_marker` 로 다시 고른다."""
     first = len(bb._segments) - len(plans)
     out = list(plans)
     for i, (p, m) in enumerate(plans):
@@ -429,8 +411,8 @@ def _axis_segs(pts):
 
 
 def _crowding(sa, sb, pitch):
-    """두 축 구간이 1칸보다 가깝게 나란히 달린 정도(px) — 겹친 길이 × (1 − 간격/칸). 간격 0 은
-    포개짐이라 R4 가 따로 본다. 2026-10-04 사용자: 빽빽함 = 가까운 평행선, 가까울수록 무겁게."""
+    """두 축 구간이 1칸보다 가깝게 나란히 달린 정도(px) — 겹친 길이 × (1 − 간격/칸). 간격 0 은 R4 몫.
+    (2026-10-04 사용자: 빽빽함 = 가까운 평행선)"""
     if sa[0] != sb[0]:
         return 0.0
     gap = abs(sa[1] - sb[1])
