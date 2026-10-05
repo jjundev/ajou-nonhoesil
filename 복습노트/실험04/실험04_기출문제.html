@@ -220,6 +220,15 @@ a:focus-visible { outline: .5mm solid var(--focus); outline-offset: .5mm; }
 .hint-strip-math { display: flex; flex-direction: column; gap: .8mm; min-width: 0; }
 .hint-strip-formula { display: block; white-space: nowrap; transform-origin: left center; }
 
+/* 표: 격자선, 머리행 강조. 원문 표의 빈 칸은 태블릿 펜으로 쓸 높이(7mm)를 갖는다 */
+#book table { border-collapse: collapse; width: 100%; margin: 1mm 0; }
+#book th, #book td {
+  border: .3mm solid var(--ink); padding: 1.2mm 1.2mm; text-align: center;
+  overflow-wrap: break-word; word-break: keep-all; line-height: 1.3;
+}
+#book th { font-weight: 700; background: var(--paper); }
+#book .original td { height: 7mm; }
+
 /* 수식 */
 .katex { font-size: 1.05em; }
 .katex-display { margin: 1mm 0; }
@@ -511,7 +520,8 @@ function problemPage(p, n, total) {
   const row = el('div', 'page-row');
   const panel = el('div', 'panel');
   if (p.html.original) panel.append(block('문제 원문', p.html.original, 'original', p.original_lang || 'en'));   // 원문은 맨 처음
-  panel.append(block('조건', p.html.conditions, 'conditions'), block('구할 것', p.html.ask, 'ask-box'));
+  if (p.html.conditions && p.html.conditions.trim()) panel.append(block('조건', p.html.conditions, 'conditions'));   // 조건이 없으면 라벨도 없다
+  panel.append(block('구할 것', p.html.ask, 'ask-box'));
   const center = el('div', 'page-center');
   const figs = p.figures || [];
   if (figs.length) {
