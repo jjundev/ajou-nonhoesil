@@ -1,4 +1,4 @@
-"""단계 블록마다 제 높이의 쪽을 준다 — 쪽 길이 wrap_content.
+"""단계·구역 블록마다 제 높이의 쪽을 준다 — 쪽 길이 wrap_content.
 
 체크리스트 PDF 는 태블릿으로 본다(2026-09-28 사용자). 고정 높이 쪽에서는 결선도 그림과
 그 아래 확인·단계 진리표가 쪽 경계에서 갈렸다. 가장 긴 블록에 맞춰 모든 쪽을 늘리면 짧은
@@ -8,7 +8,7 @@ CSS 에는 "내용만큼" 쪽 크기가 없어 두 번 간다: 크롬에 HTML �
 (`measure`), 그 값으로 쪽 규칙을 HTML 에 심는다(`fit_pages`). 그다음 `html_to_pdf` 는 평소대로.
 크롬은 `page` 값이 바뀌는 곳에서 쪽을 넘기므로 블록마다 이름이 달라야 한다.
 
-블록이 아닌 부분(공통면·배선 상자·기록표)은 HTML 의 기본 `@page` 를 그대로 쓴다.
+블록이 아닌 부분(공통면)은 HTML 의 기본 `@page` 를 그대로 쓴다.
 """
 
 import math
@@ -18,9 +18,12 @@ from pathlib import Path
 
 from scripts.lab.html2pdf import DEFAULT_CHROME, PdfError, resolve_chrome
 
-# 렌더러가 찍는 단계 블록 여는 태그 그대로 — 렌더 테스트들이 이 문자열로 블록을 자른다.
+# 렌더러가 찍는 블록 여는 태그 그대로 — 렌더 테스트들이 이 문자열로 블록을 자른다.
+# `stage` 는 단계 블록(테두리 있음), `fit` 은 스타일 없는 래퍼(회로 머리글·완성본·핀 점검+기록표·마무리).
 FIT_OPEN = '<div class="stage">'
-_TAGGED = re.compile(r'<div class="stage" data-fit="\d+">')
+FIT_PLAIN = '<div class="fit">'
+_OPEN = re.compile(r'<div class="(stage|fit)">')
+_TAGGED = re.compile(r'<div class="(stage|fit)" data-fit="\d+">')
 _STYLE = re.compile(r'<style id="fit-pages">.*?</style>\n?', re.S)
 _PAGE = re.compile(r"@page\s*\{\s*size:\s*(\d+)mm\s+\d+mm;\s*margin:\s*(\d+)mm\s+(\d+)mm")
 _PAD = 4      # mm — 실측(화면)과 인쇄의 반올림 차이를 덮는 여유
@@ -37,14 +40,14 @@ def page_box(html: str) -> tuple[int, int, int]:
 
 def strip(html: str) -> str:
     """앞서 심은 쪽 규칙과 번호를 걷어 낸다 — 다시 돌려도 같은 결과가 나오게."""
-    return _TAGGED.sub(FIT_OPEN, _STYLE.sub("", html))
+    return _TAGGED.sub(lambda m: f'<div class="{m.group(1)}">', _STYLE.sub("", html))
 
 
 def tag(html: str) -> str:
-    """단계 블록마다 `data-fit="<i>"` 를 문서 순서대로 단다."""
-    parts = strip(html).split(FIT_OPEN)
-    return parts[0] + "".join(f'<div class="stage" data-fit="{i}">{p}'
-                              for i, p in enumerate(parts[1:]))
+    """`stage`·`fit` 블록마다 `data-fit="<i>"` 를 문서 순서대로 단다."""
+    parts = _OPEN.split(strip(html))        # [앞, 클래스, 뒤, 클래스, 뒤, ...]
+    return parts[0] + "".join(f'<div class="{parts[k]}" data-fit="{(k - 1) // 2}">{parts[k + 1]}'
+                              for k in range(1, len(parts), 2))
 
 
 def fit_style(heights: list[float], box: tuple[int, int, int]) -> str:
