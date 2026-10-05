@@ -25,6 +25,7 @@ DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 VERIFY_RESULT = ROOT / ".claude/skills/verify-write-result-report/SKILL.md"
+NOTES = ROOT / ".claude/skills/record-lab-notes/SKILL.md"
 HAND = ROOT / ".claude/skills/review-hand-diagram/SKILL.md"
 BREADBOARD_SKILL = ROOT / ".claude/skills/breadboard-diagram/SKILL.md"
 TRACE_SKILL = ROOT / ".claude/skills/make-trace-guide/SKILL.md"
@@ -52,6 +53,7 @@ DOCS = {
     "검증": (VERIFY, ("절대 규칙", "실행 절차")),
     "결보검증": (VERIFY_RESULT, ("절대 규칙", "실행 절차")),
     "그림": (FIGURE, ("절대 규칙", "실행 절차")),
+    "메모": (NOTES, ("절대 규칙", "실행 절차")),
 }
 
 # 보고서를 **쓰는** 두 스킬. 작성 규칙(여백·표 제목·이론 범위 등)은 여기에만 있다.
@@ -809,6 +811,40 @@ class SkillDocInvariants(unittest.TestCase):
         self.assertIn("자유 메모 파일이 있으면 그것이 재료다", result)
         self.assertIn("**`기록.md` 종료 메모를 먼저 채우고**", result)
         self.assertIn("4문항이 전부 공란이고 자유 메모 파일도 없으면", result)
+
+    def test_the_notes_skill_stops_at_the_record(self):
+        # 실험 직후 메모 정리는 기록.md 에서 끝난다 — 보고서는 ④ 가 쓴다.
+        notes = self.flat["메모"]
+        self.assertIn("보고서는 쓰지 않는다", notes)
+        self.assertIn("커밋은 하지 않는다", notes)
+        self.assertIn("쓰기 전에 계획을 보여 주고 승인받는다", notes)
+
+    def test_report_content_also_goes_to_the_end_memo(self):
+        # 항목 메모에만 둔 사건은 고찰의 재료(4문항)에서 빠진다. 그래서 ④ 는
+        # 항목 메모를 4문항으로 옮기지 않고 사용자에게 돌려보낸다 — 두 규칙은 짝이다.
+        self.assertIn("보고서에 들어갈 내용은 반드시 종료 메모 4문항에도 넣는다",
+                      self.flat["메모"])
+        self.assertIn("항목 메모를 4문항으로 옮겨 쓰지 않는다", self.flat["결과"])
+
+    def test_inferences_stay_marked_from_record_to_report(self):
+        # 실험04 2-1 의 "어느 두 선이 닿았나" 는 결선으로 좁힌 추정이다.
+        # 기록에서 표시가 빠지거나 ④ 가 사실로 옮기면 추정이 보고서의 사실이 된다.
+        self.assertIn("(추정 — 근거…; 미확인: …)", self.flat["메모"])
+        self.assertIn("`(추정 — …)` 으로 적힌 것은 추정으로 쓴다", self.flat["결과"])
+
+    def test_the_notes_skill_does_not_invent_unasked_details(self):
+        # 수용 검증(2026-10-05)에서 묻지 않은 추정("이상해 보인 행")과 떨어진 대체
+        # 후보가 기록에 들어갔고, 두 사건이 메모 한 줄에 이어 붙었다.
+        notes = self.flat["메모"]
+        self.assertIn("사용자가 묻지 않은 빈자리는 추정하지 않는다", notes)
+        self.assertIn("대화로만 알리고 기록에는 적지 않는다", notes)
+        self.assertIn("사건 하나를 줄 하나로 적는다", notes)
+
+    def test_the_result_skill_reads_item_memos(self):
+        # 항목 `- 메모:` 줄은 ④ 가 한 번도 읽지 않던 자리였다.
+        result = self.flat["결과"]
+        self.assertIn("**항목 메모도 읽는다.**", result)
+        self.assertIn("확인 칸 + 항목 메모 + 실험사진 + 종료 메모", result)
 
     def test_end_memo_transcription_handles_internal_ids(self):
         # 학생 메모에 표 ID 가 있으면 "지어내지 않는다"와 규칙 9 가 부딪힌다.
