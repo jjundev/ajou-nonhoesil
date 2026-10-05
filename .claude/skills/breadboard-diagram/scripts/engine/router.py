@@ -103,9 +103,11 @@ def _clean(path):
     for p in path:
         if out and abs(out[-1][0] - p[0]) < .5 and abs(out[-1][1] - p[1]) < .5:
             continue
-        if len(out) >= 2 and _axis(out[-2], out[-1]) and _axis(out[-2], out[-1]) == _axis(out[-1], p):
-            out[-1] = p
-            continue
+        if len(out) >= 2:
+            ax = _axis(out[-2], out[-1])       # 한 번만 잰다(2026-10-05 배선기 속도 2차)
+            if ax and ax == _axis(out[-1], p):
+                out[-1] = p
+                continue
         out.append(p)
     return out
 
