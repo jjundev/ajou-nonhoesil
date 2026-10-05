@@ -277,7 +277,7 @@ AND·NAND 빌더를 가리키는 별칭이라 **틀린 그림을 OR·NOR 이름�
 **슬롯.** 한 실험의 모든 회로가 칩 자리를 공유한다. 정본은 netlist 의 `kind: layout` 표이고
 주차 `배치.py` 의 슬롯 상수(`E1_SLOTS`)는 사본이다 — `tests/test_breadboard_wiring.py` 가 맞댄다. 실험01 실험실
 기록(2026-09-11): 1-1→1-2 는 칩만 갈아끼우면 되는데 그림이 회로마다 달라 전부 걷었다. v2 주차의 슬롯
-**행**은 배치기(`place_search`)가 정하고 netlist 표가 그 값을 받아 적는다(§4).
+**행**은 배치기(`place_search`)가 정하고 netlist 표가 그 값을 받아 적는다(§4) — `tests/test_breadboard_place.py` `PlaceLayoutTable` 이 맞댄다.
 
 **기준선.** `BreadboardRenderer(baseline=앞_보드.snapshot())` 로 그리면 같은 (색, 끝점, 끝점)
 의 배선과 같은 네 홀의 LED 사슬은 **회색**이고 번호를 받지 않는다. 기준선에 있었는데 이번에
@@ -468,7 +468,7 @@ LED 를 구동하는 게이트는 **f~j 쪽(pin 8~14)** 에 배정해 건너는 
   `place_paths(circuit, LAYOUT)`, 고정물을 그리기 전에 `bb.marker_hints = place_marker_hints(circuit,
   LAYOUT)` — 고정 부품 번호 원이 단계 그림·완성본 어디서나 같은 자리다). 배선표를 쓰거나 바꾸면 `python -m scripts.lab.place_search <배치.py>`
   를 돌려 같은 폴더 `배치탐색.md` 를 만들고, 고른 layout 을 `LAYOUT` 과 netlist `kind: layout` 표에
-  옮겨 적는다. 테스트 `PlaceEnforced` 가 지문·layout 을 맞댄다.
+  옮겨 적는다. 테스트 `PlaceEnforced` 가 지문·layout 을, `PlaceLayoutTable` 이 netlist 표 행과 `LAYOUT` 을 맞댄다.
   - 후보: 칩 사이 빈 행 3~6(`PLACE_GMIN`), 슬롯 순서는 탐색, LED 는 태그 순서 고정. 칩 행 k·k+6,
     LED 윗행+3, 입력 핀 행은 레일 빈 행(LED 윗행+3 은 가운데 레일 사용 행도)을 피한다 — 전원선·GND·입력
     점퍼가 곧다.

@@ -619,6 +619,79 @@ class PlaceEnforced(unittest.TestCase):
         self.assertIn(TRIAL, checked)
 
 
+def _layout_table_mismatches(mod, root):
+    """`root` 아래 v2 주차마다 netlist `kind: layout` 표의 슬롯 행을 `LAYOUT['slots']` 와 맞댄다.
+    돌려주는 값은 (맞댄 `배치.py` 목록, 어긋남 문장 목록)."""
+    import re
+    from scripts.lab import md
+    from scripts.lab.netlist_parser import parse_netlist
+    checked, errors = [], []
+    for f in sorted(root.glob('보고서/실험*/결선도/배치.py')):
+        net = f.parent / 'netlist.md'
+        if not net.exists():
+            continue
+        b = mod.load_board_file(f, f.parent.parent.name)
+        if getattr(b, 'BOARD', None) != 'v2':
+            continue
+        layouts = parse_netlist(net).of_kind('layout')
+        if not layouts:
+            continue
+        rel = net.relative_to(root).as_posix()
+        fix = f'{mod.PLACE_REPORT} 의 layout 을 netlist `kind: layout` 표에 옮겨 적는다(SKILL §4)'
+        checked.append(f)
+        if len(layouts) > 1:
+            errors.append(f'{rel}: kind: layout 절이 {len(layouts)}개다 — 하나만 둔다')
+            continue
+        table = {}
+        for row in md.parse_tables(layouts[0].body)[0].rows:
+            m = re.match(r'(?:좌|우)\s*(\d+)행', row[1])
+            table[row[0]] = int(m.group(1)) if m else row[1]
+        want = b.LAYOUT['slots']
+        for slot in sorted(set(table) | set(want)):
+            got, row = table.get(slot, '(표에 없음)'), want.get(slot, '(LAYOUT 에 없음)')
+            if got != row:
+                errors.append(f'{rel}: 슬롯 {slot} 이 표에서 {got}행인데 LAYOUT 은 {row}행이다 — {fix}')
+    return checked, errors
+
+
+class PlaceLayoutTable(unittest.TestCase):
+    """v2 주차 netlist `kind: layout` 표의 행은 배치기가 고른 `LAYOUT['slots']` 를 옮겨 적은 것이다
+    (SKILL §4 배치기 문단·§4a 슬롯). v1 주차는 `test_breadboard_wiring` 이 빌더 슬롯 상수와 맞댄다."""
+
+    _BOARD = "BOARD = 'v2'\nSLOTS = ('K1', 'K2')\nLAYOUT = {'slots': {'K1': 6, 'K2': 16}, 'leds': {}, 'bridge': [48, 49]}\n"
+    _NETLIST = ('---\nschema: lab-netlist/v2\nexperiment: 99\nspec: ../체크리스트/명세.md\n---\n\n'
+                '# 칩 자리표\n\n- kind: layout\n\n| 슬롯 | 자리 | 회로별 칩 |\n|---|---|---|\n'
+                '| K1 | 좌 6행 | C1 74HC04 |\n| K2 | 좌 {k2}행 | C1 74HC20 |\n\n'
+                '# C1 · 장난감\n\n- kind: circuit\n- id: C1\n- item: E99.P1\n- tables: [T1]\n')
+
+    def _week(self, k2):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(__import__('shutil').rmtree, tmp, True)
+        d = tmp / '보고서/실험99/결선도'
+        d.mkdir(parents=True)
+        (d / '배치.py').write_text(self._BOARD, encoding='utf-8')
+        (d / 'netlist.md').write_text(self._NETLIST.format(k2=k2), encoding='utf-8')
+        return tmp, d / '배치.py'
+
+    def test_표_행이_LAYOUT_과_다르면_걸린다(self):
+        root, f = self._week(k2=17)
+        checked, errors = _layout_table_mismatches(_load(), root)
+        self.assertEqual(checked, [f])
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn('K2', errors[0])
+        self.assertIn('배치탐색.md', errors[0])
+
+    def test_표_행이_LAYOUT_과_같으면_통과한다(self):
+        root, f = self._week(k2=16)
+        self.assertEqual(_layout_table_mismatches(_load(), root), ([f], []))
+
+    def test_v2_주차_netlist_자리표는_LAYOUT_을_옮겨_적는다(self):
+        checked, errors = _layout_table_mismatches(_load(), ROOT)
+        if not checked:
+            self.skipTest('netlist kind: layout 이 있는 v2 주차가 아직 없다 — 첫 v2 주차가 생기면 여기서 잰다')
+        self.assertEqual(errors, [], '\n'.join(errors))
+
+
 class PlacedTrial(unittest.TestCase):
     """시험판 LAYOUT 은 손 배치(2026-10-03)보다 superset 신호선 총길이가 짧고 밀도 합은 안 늘었다.
     손 배치 실측(2026-10-05, λ=0.5): MUX 길이 658.7·밀도 45.2, DMUX 303.9·6.3칸. 반올림한 값을 더하면
