@@ -1312,7 +1312,7 @@ class BreadboardRenderer:
             self.signal_tag(label, x + 10, ymid, align='left', col=color_rgb)
 
     def led_chain(self, x, top_row, tag, desc, block='left', color_rgb=(220, 20, 20),
-                  marker_dx=-21):
+                  marker_dx=-21, active_low=False):
         """LED + 330Ω + GND 한 벌. `x` 는 **신호가 도착하는 열**이다.
 
         LED 는 그 옆 열, 저항은 그 다음 열에 꽂는다. 같은 행 a~e(또는 f~j)는
@@ -1329,14 +1329,26 @@ class BreadboardRenderer:
         `signal_tag()` 로 찍는다. 'L2 최종 LED (L2=A·B·C)' 같은 긴 문구는 결선
         순서표로 내려보낸다 — 손으로 옮겨 그릴 것이 아니면서 정작 그릴 홀을
         가리기 때문이다.
+
+        `active_low` 면 **Negative Logic** 사슬이다(실험05 1-2, 교안 p9 "Output 을 Negative Logic
+        으로 구축") — 출력이 0 일 때 켜진다. 신호 → 330Ω(옆 열, 윗행~윗행+2) → LED(그다음 열, 캐소드
+        윗행+2 → 애노드 윗행+3) → +5V. 저항과 LED 의 열 쓰임이 보통 사슬과 뒤집힌다. 레일 점퍼는 보통
+        사슬과 같은 윗행+3 에서 나가 배치기 `led_rows` 가 극성을 몰라도 된다. 레코드에는
+        `'active_low': True` 를 더한다 — 보통 사슬에는 키를 넣지 않는다(`wiring()` → 도장).
         """
         c = self.cols[block]
         group = [c[k] for k in 'abcde'] if x <= c['e'] else [c[k] for k in 'fghij']
         i = group.index(x)
         step = 1 if i + 2 < len(group) else -1
         x_led, x_res = group[i + step], group[i + 2 * step]
-        key = (self.sym(x_led, top_row), self.sym(x_led, top_row + 1),
-               self.sym(x_res, top_row + 1), self.sym(x_res, top_row + 3))
+        if active_low:
+            x_l, a_row, k_row = x_res, top_row + 3, top_row + 2      # LED: 캐소드 위, 애노드 아래
+            x_r, rt_row, rb_row = x_led, top_row, top_row + 2        # 330Ω: 신호 스트립 → 캐소드 스트립
+        else:
+            x_l, a_row, k_row = x_led, top_row, top_row + 1
+            x_r, rt_row, rb_row = x_res, top_row + 1, top_row + 3
+        key = (self.sym(x_l, a_row), self.sym(x_l, k_row),
+               self.sym(x_r, rt_row), self.sym(x_r, rb_row))
         # 기준선에 같은 네 홀의 사슬이 있으면 LED·저항·GND 점퍼 전부 회색이고
         # 번호가 없다 — 앞 단계에서 꽂아 둔 그대로다. 플래그는 사슬을 그리는 동안만 선다
         # 걷기 보드가 사슬째 뽑는 사슬(`ghost['chains']`)은 LED·저항을 걷기 빨강으로 칠하고
@@ -1346,32 +1358,46 @@ class BreadboardRenderer:
         self._keep_parts = (self.baseline is not None and key in self.baseline['chains']
                             and not self._pull_parts)
         try:
-            y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
-            self.draw_led(x_led, y_a, y_k, color_rgb, tag)
-            self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+            y_a, y_k = self.r_y(a_row), self.r_y(k_row)
+            y_rt, y_rb = self.r_y(rt_row), self.r_y(rb_row)
+            y_top, y_end = self.r_y(top_row), self.r_y(top_row + 3)
+            self.draw_led(x_l, y_a, y_k, color_rgb, tag)
+            self.draw_resistor(x_r, y_rt, y_rb, label="330Ω")
             if self._pull_parts:
-                x0, x1 = min(x_led, x_res) - 12, max(x_led, x_res) + 12
-                self._dashed([(x0, y_a - 12), (x1, y_a - 12), (x1, y_r + 12), (x0, y_r + 12),
-                              (x0, y_a - 12)], REMOVE, width=3, dash=7, gap=5,
+                x0, x1 = min(x_l, x_r) - 12, max(x_l, x_r) + 12
+                self._dashed([(x0, y_top - 12), (x1, y_top - 12), (x1, y_end + 12), (x0, y_end + 12),
+                              (x0, y_top - 12)], REMOVE, width=3, dash=7, gap=5,
                              draw=_ScaledDraw(self.ghost_layer))
                 self.ghost_chains_drawn.add(key)
-            self.led_chains.append({'tag': tag,
-                                    'signal': self.sym(x, top_row),
-                                    'anode': self.sym(x_led, top_row),
-                                    'cathode': self.sym(x_led, top_row + 1),
-                                    'res_top': self.sym(x_res, top_row + 1),
-                                    'res_bottom': self.sym(x_res, top_row + 3)})
-            self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
-                           f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
-                           f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
-                           marker_near=(x + marker_dx, y_k))
-            x_gnd = self.nearest_gnd_rail(x_led, block)
+            rec = {'tag': tag,
+                   'signal': self.sym(x, top_row),
+                   'anode': self.sym(x_l, a_row),
+                   'cathode': self.sym(x_l, k_row),
+                   'res_top': self.sym(x_r, rt_row),
+                   'res_bottom': self.sym(x_r, rb_row)}
+            if active_low:
+                rec['active_low'] = True
+            self.led_chains.append(rec)
+            if active_low:
+                self.step_note('sig', self.addr(x_r, y_rt), self.addr(x_l, y_a),
+                               f'{tag}: 330Ω({self.addr(x_r, y_rt)}→{self.addr(x_r, y_rb)}) + '
+                               f'LED(캐소드 {self.addr(x_l, y_k)}→애노드 {self.addr(x_l, y_a)}) 직렬 · '
+                               f'0 이면 켜짐 · {desc}',
+                               marker_near=(x + marker_dx, self.r_y(top_row + 1)))
+                x_rail, kind, what = self.nearest_vcc_rail(x_led, block), 'vcc', f'{tag} LED 애노드 -> +5V'
+            else:
+                self.step_note('sig', self.addr(x_l, y_a), self.addr(x_r, y_rb),
+                               f'{tag}: LED({self.addr(x_l, y_a)}→{self.addr(x_l, y_k)}) + '
+                               f'330Ω({self.addr(x_r, y_k)}→{self.addr(x_r, y_rb)}) 직렬 · {desc}',
+                               marker_near=(x + marker_dx, y_k))
+                x_rail, kind, what = self.nearest_gnd_rail(x_led, block), 'gnd', f'{tag} 저항 아래 -> GND'
+            # 레일 점퍼는 윗행+3 에서 레일에 가장 가까운 빈 홀로 — 그 행에서 비어 있는 열은 두 극성 모두
+            # 신호 열과 `x_led` 다(보통 사슬은 LED 가 윗행~+1, Negative 는 저항이 윗행~+2)
             free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
-            x_from = min(free, key=lambda h: abs(h - x_gnd))
-            r_gnd = self.free_rail_row(top_row + 3, x_gnd)
-            self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
-                           'gnd', f'{tag} 저항 아래 -> GND',
-                           width=2, marker_near=(x_from - 22, y_r + 2))
+            x_from = min(free, key=lambda h: abs(h - x_rail))
+            r_rail = self.free_rail_row(top_row + 3, x_rail)
+            self.step_wire([(x_from, y_end), (x_rail, self.r_y(r_rail))],
+                           kind, what, width=2, marker_near=(x_from - 22, y_end + 2))
         finally:
             self._keep_parts = False
             self._pull_parts = False
@@ -1391,11 +1417,27 @@ class BreadboardRenderer:
         self.overlay.alpha_composite(rot, (int(xy[0] * SCALE - rot.width / 2),
                                            int(xy[1] * SCALE - rot.height / 2)))
 
+    def _chip_font(self, name, rows):
+        """칩 이름 글꼴. DIP-14 는 늘 `font_chip`(11pt). DIP-16 은 세로 글자 상자가 `2·pitch − 4` 이하인
+        가장 큰 크기다 — 몸통 가운데 반 행(k+3.5) 하나만 막아 a쪽 pin 1~7 이 그 위·아래 반 행 일곱으로
+        건넌다. 74HC42 는 출력 일곱이 a쪽이다. 11pt(44px)면 반 행 셋을 막아 Y3·Y4 가 못 건넌다(2026-10-05 설계 #5)."""
+        if rows == 7:
+            return self.font_chip
+        limit = 2 * self.spec.row_pitch - 4
+        for size in range(11, 5, -1):
+            f = _font('en', size)
+            b = f.getbbox(name)
+            if b[2] - b[0] + 4 <= limit:
+                return f
+        return _font('en', 6)
+
     def draw_chip(self, name, start_row, block='left'):
         c = self.cols[block]
+        n = dip_pins(name)
+        rows = n // 2
         x1, x2 = c['chip_x1'], c['chip_x2']
         y_top = self.r_y(start_row) - 8
-        y_bot = self.r_y(start_row + 6) + 8
+        y_bot = self.r_y(start_row + rows - 1) + 8
 
         # 기준선의 같은 자리에 같은 칩이 있으면 몸통을 회색으로 그린다 — 앞
         # 단계에서 꽂아 둔 그대로라는 뜻이다(footer 범례 "회색 = 앞 단계에서
@@ -1414,30 +1456,31 @@ class BreadboardRenderer:
         notch_w = (x2 - x1) // 3
         self.draw.arc([x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6], 0, 180, fill=(200, 200, 200, 255), width=2)
         label_at = ((x1 + x2) / 2, (y_top + y_bot) / 2)
-        self._vtext(label_at, name, text_fill, self.font_chip)
+        font = self._chip_font(name, rows)
+        self._vtext(label_at, name, text_fill, font)
         # 세로로 돌린 이름 글자가 차지하는 상자(논리 좌표, `_vtext` 의 여백 2 포함) — R14
-        lb = self.font_chip.getbbox(name)
+        lb = font.getbbox(name)
         half_w, half_h = (lb[3] - lb[1]) / 2 + 2, (lb[2] - lb[0]) / 2 + 2
         label_box = (label_at[0] - half_w, label_at[1] - half_h,
                      label_at[0] + half_w, label_at[1] + half_h)
 
         # 핀 번호는 **몸통 안쪽**에 찍는다. 이전 판은 e-15 / f+6 에 찍어서
         # d 열과 g 열 홀을 가렸다 — 정작 배선을 꽂는 자리다
-        for i in range(7):
+        for i in range(rows):
             y = self.r_y(start_row + i)
             self.draw.line([(c['e'], y), (x1, y)], fill=(170, 170, 170, 255), width=3)
             self.draw.line([(x2, y), (c['f'], y)], fill=(170, 170, 170, 255), width=3)
             self.draw.text((x1 + 3, y - 6), str(i + 1), fill=num_fill, font=self.font_num)
-            rt = str(14 - i)
+            rt = str(n - i)
             w = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]
             self.draw.text((x2 - 3 - w, y - 6), rt, fill=num_fill, font=self.font_num)
             self.lead(c['e'], y, f'{name} pin {i + 1}')
-            self.lead(c['f'], y, f'{name} pin {14 - i}')
+            self.lead(c['f'], y, f'{name} pin {n - i}')
 
         pins = {}
-        for i in range(7):
+        for i in range(rows):
             pins[i + 1] = self.sym(c['e'], start_row + i)
-            pins[14 - i] = self.sym(c['f'], start_row + i)
+            pins[n - i] = self.sym(c['f'], start_row + i)
         self.chips.append({'label': name, 'block': block,
                            'pin1_row': start_row, 'pins': pins})
         self.chip_label_boxes.append((label_box, self.chips[-1]))
@@ -1484,7 +1527,7 @@ class BreadboardRenderer:
                        marker_at=((x_a + x_b) // 2, y - 12))
 
     def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
-        """pin 14 -> +5V, pin 7 -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
+        """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
         빌더가 지정할 때만 준다 — 기본 자리(레일과 d열 사이, 한 행 위)에 다른
         배선의 모서리가 오는 경우다. `gnd_col` 은 pin 7 접지선이 출발하는 열로,
         `connect_unused_inputs(col=)` 과 같은 이유로 바꾼다.
@@ -1498,16 +1541,22 @@ class BreadboardRenderer:
         꽂혀 있다. `connect_unused_inputs()` 가 처음부터 그렇게 했다.
         """
         c = self.cols[block]
+        n = self._pins_at(block, start_row)
+        g = start_row + n // 2 - 1          # GND 핀 행 — DIP-14 pin 7 은 k+6, DIP-16 pin 8 은 k+7
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
         r14 = self.free_rail_row(start_row, x_vcc)
+        # DIP-16 은 번호 원을 선 위에 바로 얹는다 — 기본 자리(11px 위)는 반 행 k−0.5 를 덮는데, 그 반 행이
+        # a쪽 pin 1 이 가운데 여백으로 건널 유일한 통로다(74HC42 는 a쪽 출력 일곱이 다 LED 로 간다, 설계 #5).
+        # DIP-14 는 그대로(v1 도장·e4 스냅숏)
+        dy_vcc = 0 if n == 16 else -11
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
-                       'vcc', 'pin 14 -> +5V 레일',
-                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
-        r7 = self.free_rail_row(start_row + 6, x_gnd)
-        self.step_wire([(c[gnd_col], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
-                       'gnd', 'pin 7 -> GND 레일', marker_at=gnd_marker_at,
-                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+                       'vcc', f'pin {n} -> +5V 레일',
+                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) + dy_vcc))
+        r7 = self.free_rail_row(g, x_gnd)
+        self.step_wire([(c[gnd_col], self.r_y(g)), (x_gnd, self.r_y(r7))],
+                       'gnd', f'pin {n // 2} -> GND 레일', marker_at=gnd_marker_at,
+                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(g) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -1518,6 +1567,20 @@ class BreadboardRenderer:
     def nearest_vcc_rail(self, x, block='left'):
         c = self.cols[block]
         return min((c['vcc'], c['mid_vcc']), key=lambda xr: abs(xr - x))
+
+    def _pins_at(self, block, start_row):
+        """그 자리에 그린 칩의 핀 수. 칩 레코드에 키를 더하지 않고 `pins` 개수로 읽는다 — 레코드는
+        `wiring()` 으로 도장에 든다. 아직 안 그렸으면 14 로 보고 경고한다(16핀 칩을 그리기 전에 전원을
+        부르면 pin 7 출력을 GND 에 묶는 그림이 조용히 나간다). v1 은 경고하지 않는다 — 승인 빌더(실험01~03)는
+        뒤 단계에 꽂을 칩의 빈 소켓 전원을 먼저 깔고, 전부 14핀이다."""
+        for ch in self.chips:
+            if ch['block'] == block and ch['pin1_row'] == start_row:
+                return len(ch['pins'])
+        if self.board == 'v1':
+            return 14
+        print(f'[WARN] {block} {start_row}행에 그린 칩이 없다 — 14핀으로 본다. draw_chip 을 먼저 부른다',
+              file=sys.stderr)
+        return 14
 
     def connect_unused_inputs(self, pins, start_row, block='left', bridge_row=None,
                               chip='', rail='gnd', col='d'):
@@ -1535,12 +1598,14 @@ class BreadboardRenderer:
         이웃 행으로 밀리는데, 그 핀이 먼저 착지하면 정작 그 행의 주인 핀이 밀린다.
         """
         c = self.cols[block]
+        n = self._pins_at(block, start_row)
+        h = n // 2
         placed = []
         for p in pins:
-            if 1 <= p <= 7:
+            if 1 <= p <= h:
                 placed.append((start_row + (p - 1), c[col], p))
-            elif 8 <= p <= 14:
-                placed.append((start_row + (14 - p), c['g'], p))
+            elif h < p <= n:
+                placed.append((start_row + (n - p), c['g'], p))
         order = sorted(range(len(placed)), key=lambda i: (not self.is_rail_row(placed[i][0]), i))
         # 기준선에 같은 (색, 끝점, 끝점) 이 있으면 `step_wire` 와 같은 규칙으로 회색이다
         # — 실험02 C1→C2 는 칩만 갈아 끼우므로 pull 선 다섯 가닥이 전부 그대로다.
@@ -1579,7 +1644,7 @@ class BreadboardRenderer:
                            '가까운 +5V 레일' if rail == 'vcc' else '가까운 GND 레일',
                            desc, count=len(pins))
 
-        if rail == 'gnd' and any(8 <= p <= 14 for p in pins):
+        if rail == 'gnd' and any(h < p <= n for p in pins):
             if bridge_row is None:
                 print(f"[WARN] {block} 블록 미사용 입력 {pin_str} 이 중앙 GND 레일에 "
                       f"내려갔는데 bridge_row 가 없다 — 7번 핀 레일과 이어지지 않아 "
@@ -1691,8 +1756,7 @@ class BreadboardRenderer:
                   for ch in self.led_chains}
         for key, tag in self.baseline['chains'].items():
             if key not in chains:
-                out.append(f'LED {tag} 사슬 ({self._sym_addr(("hole", key[0]))}~'
-                           f'{self._sym_addr(("hole", key[3]))}) 뽑는다')
+                out.append(f'LED {tag} 사슬 ({self._chain_span(key)}) 뽑는다')
         return out
 
     def side_leads(self):
@@ -1706,7 +1770,7 @@ class BreadboardRenderer:
         out = []
         for ch in self.chips:
             c = self.cols[ch['block']]
-            rows = range(ch['pin1_row'], ch['pin1_row'] + 7)
+            rows = range(ch['pin1_row'], ch['pin1_row'] + len(ch['pins']) // 2)
             for side, names in SIDE_COLS.items():
                 xs = {c[k] for k in names}
                 holes = sorted((h for h in self._leads if h[0] in xs and h[1] in rows),
@@ -1719,7 +1783,7 @@ class BreadboardRenderer:
     def chip_side_of(self, end):
         """`_endpoint()` 결과가 어느 칩의 어느 쪽 핀 스트립인가.
 
-        칩 행 범위(pin1_row~+6) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
+        칩 행 범위(pin1_row ~ pin1_row+행수−1) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
         a~e / f~j 는 한 스트립이라 그 홀에 꽂은 것은 그 핀에 꽂은 것이다. e·f(칩 다리)·칩 행
         밖·레일·잭은 None. 같은 이름의 칩이 두 자리에 앉을 수 있어(실험02 t_pd) `pin1_row` 로
         구분한다.
@@ -1728,7 +1792,7 @@ class BreadboardRenderer:
             return None
         blk, col, row = end[1]
         for ch in self.chips:
-            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + 6:
+            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + len(ch['pins']) // 2 - 1:
                 for side, names in SIDE_COLS.items():
                     if col in names:
                         return {'chip': ch['label'], 'block': blk, 'pin1_row': ch['pin1_row'], 'side': side}
@@ -1766,12 +1830,12 @@ class BreadboardRenderer:
     # v1 승인본(실험01~04)은 소급하지 않는다.
 
     def _chip_bodies(self):
-        """칩마다 (몸통 상자, 칩 기둥 가운데 x, 칩) — 몸통은 e·f 핀 열 안쪽, pin 1 행 위 ~ pin 7 행 아래."""
+        """칩마다 (몸통 상자, 칩 기둥 가운데 x, 칩) — 몸통은 e·f 핀 열 안쪽, pin 1 행 위 ~ 마지막 a쪽 핀 행 아래."""
         out = []
         for ch in self.chips:
             c = self.cols[ch['block']]
             box = (c['chip_x1'] - 1, self.r_y(ch['pin1_row']) - 10,
-                   c['chip_x2'] + 1, self.r_y(ch['pin1_row'] + 6) + 10)
+                   c['chip_x2'] + 1, self.r_y(ch['pin1_row'] + len(ch['pins']) // 2 - 1) + 10)
             out.append((box, (c['e'] + c['f']) / 2, ch))
         return out
 
@@ -2392,9 +2456,15 @@ class BreadboardRenderer:
     def _ghost_chain_lines(self):
         """걷기 보드가 사슬째 뽑는 LED 사슬 — 번호 없는 한 줄씩. 그리기 순서대로."""
         chains = self.ghost.get('chains', {}) if self.ghost is not None else {}
-        return [f'LED {chains[k]} 사슬 ({self._sym_addr(("hole", k[0]))}~'
-                f'{self._sym_addr(("hole", k[3]))}) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)'
+        return [f'LED {chains[k]} 사슬 ({self._chain_span(k)}) 의 LED·330Ω 을 뽑는다 (빨간 점선 상자)'
                 for k in chains]
+
+    def _chain_span(self, key):
+        """사슬 열쇠(애노드, 캐소드, 저항 윗다리, 저항 아랫다리) → '맨 위 홀~맨 아래 홀'. 보통 사슬은 애노드~
+        저항 아랫다리 그대로(도장 불변). Negative 사슬은 저항 윗다리(윗행)~애노드(윗행+3)다."""
+        top = min((key[0], key[2]), key=lambda h: h[2])
+        bottom = max((key[0], key[3]), key=lambda h: h[2])
+        return f'{self._sym_addr(("hole", top))}~{self._sym_addr(("hole", bottom))}'
 
     def sidecar(self):
         """그림 옆에 실을 글자 — 체크리스트가 읽는다. PNG 에는 보드만 있다(2026-09-28).
@@ -2601,13 +2671,32 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
 # 차선 x 값(212~260, 542~660)은 v2 판형 기하에 맞춘 것이라 v1 에서는 안 부른다.
 
 
-def _dip_pin_row(k, pin):
-    """칩 pin 1 행 `k` 에서 DIP-14 핀 `pin` 이 앉는 행."""
-    return k + pin - 1 if pin <= 7 else k + 14 - pin
+# 칩 모델 표 — 이름 → DIP 핀 수. VCC 는 마지막 핀, GND 는 n/2 핀(74HC DIP 공통)이라 식으로 얻는다.
+# 배치기는 여기 없는 칩을 거절한다(`place_check`). 그리기(`draw_chip`)는 v1 빌더 호환으로 14핀으로 본다.
+DIP_PINS = {
+    '74HC00': 14, '74HC02': 14, '74HC04': 14, '74HC08': 14, '74HC10': 14, '74HC11': 14,
+    '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
+    '74HC42': 16, '74HC138': 16, '74HC148': 16,
+}
 
 
-def _dip_side(pin):
-    return 'a' if pin <= 7 else 'f'
+def dip_pins(model, strict=False):
+    """칩 이름 → 핀 수. 모르면 `strict` 에서 ValueError, 아니면 14."""
+    n = DIP_PINS.get(model)
+    if n is None:
+        if strict:
+            raise ValueError(f'모르는 칩 {model!r} — 칩 모델 표 `DIP_PINS` 에 핀 수를 올린다')
+        return 14
+    return n
+
+
+def _dip_pin_row(k, pin, n=14):
+    """칩 pin 1 행 `k` 에서 DIP-`n` 핀 `pin` 이 앉는 행."""
+    return k + pin - 1 if pin <= n // 2 else k + n - pin
+
+
+def _dip_side(pin, n=14):
+    return 'a' if pin <= n // 2 else 'f'
 
 
 # 밀도 가중치 λ — 비용 = 길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도증분(px). 0 이면 밀도를 안 본다.
@@ -2621,14 +2710,21 @@ _RERANK_TOP = 400   # 정적 순위 앞 몇 개만 밀도로 다시 매기나 �
 _STRIP_COLS = {'a': 'abcd', 'f': 'ghij'}
 
 
+def _chip_pins(bb):
+    """좌 블록 칩 pin 1 행 → 핀 수. 칩마다 행이 달라 행 하나로 칩이 정해진다. 칩 레코드에 키를 더하지
+    않고 `pins` 개수로 읽는다(`wiring()` → 도장)."""
+    return {ch['pin1_row']: len(ch['pins']) for ch in bb.chips if ch['block'] == 'left'}
+
+
 def _end_holes(bb, chips, end):
     """배선 끝 하나가 꽂힐 수 있는 홀 후보 [(x, y)]. `end` 는 ('U5', 13) 또는 ('LED', top_row)."""
     L, R = bb.cols['left'], bb.cols['right']
     if end[0] == 'LED':
         return [(R['a'], bb.r_y(end[1]))]
     k, pin = chips[end[0]], end[1]
-    row = _dip_pin_row(k, pin)
-    return [(L[c], bb.r_y(row)) for c in _STRIP_COLS[_dip_side(pin)]
+    n = _chip_pins(bb).get(k, 14)
+    row = _dip_pin_row(k, pin, n)
+    return [(L[c], bb.r_y(row)) for c in _STRIP_COLS[_dip_side(pin, n)]
             if (L[c], row) not in bb._leads and (L[c], row) not in bb._passed]
 
 
@@ -2695,7 +2791,8 @@ def _coster(bb):
     xs = sorted(round(x) for x in bb._addr_map)
     xset, pitch, row0 = set(xs), bb.spec.row_pitch, bb.spec.row0
     L = bb.cols['left']
-    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + 6) + 10) for ch in bb.chips]
+    bodies = [(bb.r_y(ch['pin1_row']) - 10, bb.r_y(ch['pin1_row'] + len(ch['pins']) // 2 - 1) + 10)
+              for ch in bb.chips]
 
     def body_crossings(path):
         """칩 몸통(e~f 사이)을 가로지르는 가로 구간 수 — 칩 이름·핀 번호를 덮는다. 칩 안
@@ -2802,7 +2899,7 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
     for (x, r), what in bb._leads.items():
         if '다리' in what or '애노드' in what or '캐소드' in what:
             others.append((x, bb.r_y(r)))
-    chip_rows = tuple(ch['pin1_row'] for ch in bb.chips)
+    chip_rows = tuple((ch['pin1_row'], len(ch['pins'])) for ch in bb.chips)
     placed = _placed_signal_segs(bb) if density_weight else []
     order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led), placed,
                     bb.spec.row_pitch, density_weight)
@@ -3037,9 +3134,6 @@ def wire_metrics(bb):
 # layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]}
 # — 보고서 JSON 과 그대로 맞대려고 리스트·문자열 키만 쓴다.
 
-# 배선기가 아는 칩 — `_dip_pin_row` 가 DIP-14 를 가정한다. 16핀(74HC138 따위)·7-segment 는 배선기부터 넓힌다
-DIP14 = frozenset({'74HC00', '74HC02', '74HC04', '74HC08', '74HC10', '74HC11', '74HC20',
-                   '74HC21', '74HC27', '74HC32', '74HC74', '74HC86'})
 PLACE_GMIN = 3      # 칩 사이 최소 빈 행 — 실물에서 손이 들어갈 여유(2026-10-05 사용자 N2)
 PLACE_GMAX = 6
 PLACE_STARTS = tuple(range(3, 9))   # 맨 위 칩 pin 1 행 후보
@@ -3055,7 +3149,7 @@ PLACE_REPORT = '배치탐색.md'
 class PlaceCircuit:
     """배치기가 보는 회로 하나.
 
-    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP14`), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
+    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP_PINS` 의 이름), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
     2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 태그 `('LED', 'L1')`.
     `fixed(bb, stage, superset, layout)` 는 칩·전원·입력·LED 사슬·브리지를 `layout` 자리에 그린다.
     `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀) — f쪽이면 가운데 GND 레일의 그 행을 쓴다."""
@@ -3075,9 +3169,9 @@ def layout_key(layout):
 
 def place_check(circuit):
     """배치기가 다룰 수 있는 회로인가. 아니면 ValueError."""
-    bad = sorted({m for m in circuit.models.values() if m not in DIP14})
+    bad = sorted({m for m in circuit.models.values() if m not in DIP_PINS})
     if bad:
-        raise ValueError(f'{circuit.name}: 배치기는 14핀 칩만 놓는다(`_dip_pin_row` 가 DIP-14 가정) — {bad}')
+        raise ValueError(f'{circuit.name}: 배치기는 칩 모델 표(`DIP_PINS`)에 있는 칩만 놓는다 — {bad}')
     tags = {end[1] for w in circuit.wires for end in (w[3], w[4]) if end[0] == 'LED'}
     unknown = sorted(tags - set(circuit.leds))
     if unknown:
@@ -3115,18 +3209,37 @@ def _place_geom():
     return s.cols['left'], s.cols['right'], s.row_pitch
 
 
-def place_wire_cost(chips, wire):
+def circuit_pins(circuit):
+    """칩 → 핀 수. `place_check` 를 지난 회로만 — 모르는 칩은 ValueError."""
+    return {chip: dip_pins(m, strict=True) for chip, m in circuit.models.items()}
+
+
+def slot_rows(circuits, slots):
+    """슬롯 → 그 슬롯에 앉는 칩들의 행 수 집합(14핀 7, 16핀 8). 슬롯 높이는 최댓값이고, 레일 빈 행
+    검사는 모든 GND 핀 행(k+행수−1)에 한다 — 회로마다 같은 슬롯에 14핀·16핀이 앉을 수 있다. 칩이
+    없는 슬롯은 {7}."""
+    out = {s: set() for s in slots}
+    for c in circuits:
+        for chip, s in c.chips.items():
+            out[s].add(dip_pins(c.models[chip], strict=True) // 2)
+    return {s: (v or {7}) for s, v in out.items()}
+
+
+def place_wire_cost(chips, wire, pins=None):
     """선 하나의 근사 비용(px) — 끝 홀 후보 사이 최소 맨해튼 + 40·꺾임 + 400·몸통(배선기 `_coster` 와
     같은 상수). 꺾임은 행이 다르거나 가운데를 건너면(LED — R12 때문에 반 행으로 돈다) 2, 몸통은 쪽이
-    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다."""
+    다른 같은 칩 안 선이나 a쪽 출력 → LED 면 1. 경로·점유는 안 본다 — 순위만 매긴다. `pins` 는 칩 →
+    핀 수(없으면 14)."""
     L, R, pitch = _place_geom()
     _s, _e, _k, frm, to, _d = wire
+    pins = pins or {}
 
     def holes(end):
         if end[0] == 'LED':
             return [(R['a'], end[1])], None
-        row = _dip_pin_row(chips[end[0]], end[1])
-        side = _dip_side(end[1])
+        n = pins.get(end[0], 14)
+        row = _dip_pin_row(chips[end[0]], end[1], n)
+        side = _dip_side(end[1], n)
         return [(L[c], row) for c in _STRIP_COLS[side]], side
 
     ha, sa = holes(frm)
@@ -3143,19 +3256,22 @@ def place_wire_cost(chips, wire):
 
 def mid_rail_rows(circuit, slots, bridge):
     """가운데 레일에서 이미 쓰는 행 — 칩 pin 14 전원선(그 행 GND 홀 위를 지나 VCC 에 꽂힌다), 브리지
-    둘, f쪽 입력 점퍼. LED GND 점퍼가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
+    둘, f쪽 입력 점퍼. LED 레일 점퍼(GND·VCC)가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
     used = {slots[s] for s in circuit.chips.values()}
     rows = used | set(bridge)
+    pins = circuit_pins(circuit)
     for chip, pin in circuit.inputs:
-        if _dip_side(pin) == 'f':
-            rows.add(_dip_pin_row(slots[circuit.chips[chip]], pin))
+        if _dip_side(pin, pins[chip]) == 'f':
+            rows.add(_dip_pin_row(slots[circuit.chips[chip]], pin, pins[chip]))
     return rows
 
 
-def bridge_rows(slots):
+def bridge_rows(slots, rows=None):
     """브리지 두 가닥 [GND 행, VCC 행] — 맨 아래 칩 아래로 2행 이상 띄운 첫 연속 비간극 두 행.
-    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None."""
-    r = max(slots.values()) + 6 + 3
+    브리지는 좌 블록을 가로지르니 칩 행에 오면 핀 위를 지난다. 자리가 없으면 None. `rows` 는
+    `slot_rows` — 없으면 모든 슬롯 7행."""
+    rows = rows or {}
+    r = max(k + max(rows.get(s, {7})) - 1 for s, k in slots.items()) + 3
     while r + 1 <= PLACE_ROW_LAST:
         if r not in RAIL_GAP_ROWS and r + 1 not in RAIL_GAP_ROWS:
             return [r, r + 1]
@@ -3166,13 +3282,14 @@ def bridge_rows(slots):
 def led_rows(circuit, slots, bridge):
     """회로의 LED 윗행 {태그: 행} — DP.
 
-    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(저항 아랫다리 = GND 점퍼
-    출발 행)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
+    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(레일 점퍼 출발 행 — 보통
+    사슬은 저항 아랫다리 → GND, Negative 사슬은 LED 애노드 → +5V)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
     — MUX L1 처럼 임시 급전과 최종 Y 를 같이 받는 LED 도 그냥 더한다)의 근사 비용 합이 가장 작은
     조합, 동률이면 위쪽. LED 가 없으면 {}, 다 놓을 수 없으면 None."""
     if not circuit.leds:
         return {}
     chips = {c: slots[s] for c, s in circuit.chips.items()}
+    pins = circuit_pins(circuit)
     busy = RAIL_GAP_ROWS | mid_rail_rows(circuit, slots, bridge)
     tops = [t for t in range(3, PLACE_ROW_LAST - LED_SPAN + 2) if t + LED_SPAN - 1 not in busy]
     # 태그마다 그 LED 로 가는 선만 — 후보 수천 개 × 윗행 56개마다 배선표 전체를 훑지 않게
@@ -3181,7 +3298,8 @@ def led_rows(circuit, slots, bridge):
     def cost(tag, top):
         def sub(e):
             return ('LED', top) if e == ('LED', tag) else e
-        return sum(place_wire_cost(chips, (s, e, k, sub(f), sub(t), d)) for s, e, k, f, t, d in mine[tag])
+        return sum(place_wire_cost(chips, (s, e, k, sub(f), sub(t), d), pins)
+                   for s, e, k, f, t, d in mine[tag])
 
     prev = None
     for tag in circuit.leds:
@@ -3206,6 +3324,7 @@ def led_rows(circuit, slots, bridge):
 def place_r10_ok(circuit, chips, leds):
     """단계마다 LED 로 건너는 선의 칩 쪽 행 순서가 LED 위아래 순서와 같은가 — `verify()` R10 을 미리
     본다. 단계 k 에 살아 있는 선 = `s <= k` 이고 끝 단계가 없거나 `k <= e` (`draw_routed` 와 같다)."""
+    pins = circuit_pins(circuit)
     stages = {w[0] for w in circuit.wires} | {w[1] for w in circuit.wires if w[1] is not None}
     for st in sorted(stages):
         live = []
@@ -3214,28 +3333,31 @@ def place_r10_ok(circuit, chips, leds):
                 continue
             for led, chip in ((t, f), (f, t)):
                 if led[0] == 'LED' and chip[0] != 'LED':
-                    live.append((leds[led[1]], _dip_pin_row(chips[chip[0]], chip[1])))
+                    live.append((leds[led[1]], _dip_pin_row(chips[chip[0]], chip[1], pins[chip[0]])))
         live.sort()
         if any(c1 > c2 for (_a, c1), (_b, c2) in zip(live, live[1:])):
             return False
     return True
 
 
-def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS):
+def slot_candidates(slots, gmin=PLACE_GMIN, gmax=PLACE_GMAX, starts=PLACE_STARTS, rows=None):
     """슬롯 → pin 1 행 후보 [dict]. 순서(순열, N4) × 맨 위 행 × 칩 사이 빈 행 gmin~gmax. 칩 행 k 나
     k+6 이 레일 빈 행이면 버린다 — pin 14·pin 7 전원선이 옆 행으로 비켜 사선이 된다. 브리지 둘
-    자리가 없어도 버린다."""
+    자리가 없어도 버린다. `rows` 는 `slot_rows` — 칩 사이 간격은 위 칩 높이 + g, 레일 빈 행 검사는
+    k 와 그 슬롯의 모든 GND 행."""
+    rows = rows or {}
     out = []
     for order in itertools.permutations(slots):
         for k0 in starts:
             for gaps in itertools.product(range(gmin, gmax + 1), repeat=len(slots) - 1):
-                rows = [k0]
-                for g in gaps:
-                    rows.append(rows[-1] + 7 + g)
-                if any(k in RAIL_GAP_ROWS or k + 6 in RAIL_GAP_ROWS for k in rows):
+                ks = [k0]
+                for s, g in zip(order, gaps):
+                    ks.append(ks[-1] + max(rows.get(s, {7})) + g)
+                if any(k in RAIL_GAP_ROWS or any(k + r - 1 in RAIL_GAP_ROWS for r in rows.get(s, {7}))
+                       for s, k in zip(order, ks)):
                     continue
-                cand = dict(zip(order, rows))
-                if bridge_rows(cand) is not None:
+                cand = dict(zip(order, ks))
+                if bridge_rows(cand, rows) is not None:
                     out.append(cand)
     return out
 
@@ -3245,9 +3367,10 @@ def place_proxy(circuits, slots):
     R10 이 미리 어긋나거나, 입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면(점퍼가 옆 행으로 비켜 사선)
     None."""
     for c in circuits:
-        if any(_dip_pin_row(slots[c.chips[chip]], pin) in RAIL_GAP_ROWS for chip, pin in c.inputs):
+        pins = circuit_pins(c)
+        if any(_dip_pin_row(slots[c.chips[chip]], pin, pins[chip]) in RAIL_GAP_ROWS for chip, pin in c.inputs):
             return None
-    bridge = bridge_rows(slots)
+    bridge = bridge_rows(slots, slot_rows(circuits, slots))
     layout = {'slots': dict(slots), 'leds': {}, 'bridge': bridge}
     total = 0.0
     for c in circuits:
@@ -3258,7 +3381,7 @@ def place_proxy(circuits, slots):
         if not place_r10_ok(c, chips, leds):
             return None
         layout['leds'][c.name] = leds
-        total += sum(place_wire_cost(chips, w) for w in place_wires(c, layout))
+        total += sum(place_wire_cost(chips, w, circuit_pins(c)) for w in place_wires(c, layout))
     return total, layout
 
 
@@ -3385,7 +3508,8 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
             # 단계 그림 열여섯 장 남짓 — 판마다 지운다(안 지우면 탐색마다 수백 MB, 2026-10-05 최종 검토)
             with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
                 return place_verify(module, lay, tmp)
-    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
+    rows_ = slot_rows(circuits, slots)
+    ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin, rows=rows_))
                      if r is not None), key=lambda r: (r[0], layout_key(r[1])))
     mapper = mapper or _serial_map
     base, rows, chosen, seen = None, [], None, {layout_key(module.LAYOUT)}

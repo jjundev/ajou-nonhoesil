@@ -1287,6 +1287,17 @@ class BreadboardV2Docs(unittest.TestCase):
     def test_따라_그리기_문서가_board_를_넘기라고_한다(self):
         self.assertIn("board=BOARD", TRACE_SKILL.read_text(encoding="utf-8"))
 
+    def test_렌더러_문서가_DIP16_과_Negative_LED_를_적는다(self):
+        """실험05 1-2(74HC42) — 16핀 칩과 출력 0 에서 켜지는 LED(2026-10-05). 문서에 없으면 다음 주차
+        빌더가 14핀·GND 사슬 습관으로 돌아가거나, a쪽 출력을 위에서부터 적어 배선기가 막힌다."""
+        text = BREADBOARD_SKILL.read_text(encoding="utf-8")
+        for s in ("DIP_PINS", "active_low=True", "Negative Logic", "pin 4, 3, 2, 1, 5, 6, 7",
+                  "tests/fixtures/board_v2_e5/배치.py", "Y0, Y1, Y2, Y3, Y4, Y5, Y9, Y6, Y8, Y7"):
+            self.assertIn(s, text)
+        draft = DRAFT.read_text(encoding="utf-8")
+        for s in ("Negative Logic", "+5V → LED → 330Ω → 출력", "MSI"):
+            self.assertIn(s, draft)
+
 
 class InitSkill(unittest.TestCase):
     """폴더 골격은 `config.EXPERIMENT_SUBDIRS` 한 곳에만 있다."""
