@@ -387,6 +387,13 @@ class Plan(unittest.TestCase):
             self.mod.place_plan(self.module(), top=100, measure=self.measure,
                                 verify=lambda lay: 'R2 겹침')
 
+    def test_고를_것이_없을_때는_기준의_verify_사유를_댄다(self):
+        """마지막 후보의 상태(기준보다 김 따위)가 아니라 기준이 떨어진 이유를 댄다(2026-10-05 최종 검토)."""
+        def verify(lay):
+            return 'R2 기준 겹침' if lay == self.base else 'R3 후보 가림'
+        with self.assertRaisesRegex(AssertionError, 'R2 기준 겹침'):
+            self.mod.place_plan(self.module(), top=100, measure=self.measure, verify=verify)
+
     def test_보고서_왕복(self):
         got = self.mod.place_plan(self.module(), top=100, measure=self.measure,
                                   verify=lambda lay: None)

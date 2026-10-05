@@ -3400,7 +3400,7 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
                      else '밀도 초과' if x['density'] > limit
                      else '기준보다 김' if x is not base and x['length'] >= base['length'] else '')
     if chosen is None:
-        raise AssertionError('고를 배치가 없다 — ' + rows[-1]['status'])
+        raise AssertionError('고를 배치가 없다 — 기준 ' + base['status'])
     return {'hash': place_hash(circuits, slots, gmin, slack), 'layout': chosen['layout'], 'rows': rows,
             'slack': slack}
 
