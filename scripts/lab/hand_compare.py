@@ -120,6 +120,19 @@ def chip_keys(diagram):
     return out
 
 
+def power_pins(diagram):
+    """칩 이름 -> ((VCC 핀, GND 핀)). DIP-n 은 VCC n · GND n/2 다.
+
+    핀 수는 칩 레코드 `pins` 에서 읽는다 — 14핀이면 (14, 7), 16핀(74HC42)이면 (16, 8).
+    (14, 7) 을 박아 두면 DIP-16 에서 전원을 못 보고, 신호 핀 7·14 를 H6 이 건너뛴다.
+    """
+    out = {}
+    for key, ch in zip(chip_keys(diagram), diagram.chips):
+        n = len(ch['pins'])
+        out[key] = (n, n // 2)
+    return out
+
+
 def chip_key(diagram, index):
     """지정한 인덱스의 칩 이름."""
     return chip_keys(diagram)[index]
@@ -353,19 +366,21 @@ def check_power(ref, hand):
     out = []
     hsig = signatures(hand)
     hkeys = set(chip_keys(hand))
+    power = power_pins(ref)
 
     for key in chip_keys(ref):
         if key not in hkeys:
             out.append(HandFinding(
                 'H3', '치명', key, '참조에 있는 칩이 손그림에 없다'))
             continue
-        for pin, want, avoid in ((14, 'VCC', 'GND'), (7, 'GND', 'VCC')):
+        vcc_pin, gnd_pin = power[key]
+        for pin, want, avoid in ((vcc_pin, 'VCC', 'GND'), (gnd_pin, 'GND', 'VCC')):
             sig = hsig.get((key, pin), frozenset())
             if ('RAIL', want) not in sig:
                 out.append(HandFinding(
                     'H3', '치명', f'{key} pin {pin}',
                     f'{want} 레일에 닿지 않는다. '
-                    f'{"전원이 안 들어가 칩이 동작하지 않는다" if pin == 14 else "접지가 없어 칩이 동작하지 않는다"}'))
+                    f'{"전원이 안 들어가 칩이 동작하지 않는다" if pin == vcc_pin else "접지가 없어 칩이 동작하지 않는다"}'))
             if ('RAIL', avoid) in sig:
                 out.append(HandFinding(
                     'H3', '치명', f'{key} pin {pin}',
@@ -425,9 +440,10 @@ def check_signals(ref, hand):
     hkeys = set(chip_keys(hand))
     skip = {(u['chip'], u['pin']) for u in ref.unused_inputs}
     skip |= {(u['chip'], u['pin']) for u in ref.unused_outputs}
+    power = power_pins(ref)
 
     for (key, pin), want in sorted(rsig.items()):
-        if key not in hkeys or pin in (7, 14) or (key, pin) in skip:
+        if key not in hkeys or pin in power[key] or (key, pin) in skip:
             continue
         got = hsig.get((key, pin), frozenset())
         missing = want - got
@@ -463,18 +479,25 @@ def _reference_hidden(ref, key, pin):
 def check_led_chains(ref, hand):
     """H7 LED 사슬이 이어져 있는가.
 
-    신호 -> LED 애노드 -> 캐소드 -> 저항 윗다리 -> 아랫다리 -> GND 로 다섯
-    자리가 사슬로 이어져야 한다. 어느 한 마디만 어긋나도 LED 는 안 켜지는데
+    보통 사슬은 신호 -> LED 애노드 -> 캐소드 -> 저항 윗다리 -> 아랫다리 -> GND 로
+    다섯 자리가 사슬로 이어져야 한다. 어느 한 마디만 어긋나도 LED 는 안 켜지는데
     **칩 배선만 보면 멀쩡해 보인다.** 2026-09-08 1차 검토가 이 검사를 건너뛰어
     3·4쪽의 죽은 L1 을 통과시켰다.
 
-    신호가 애노드에 도달하는지는 H6 이 이미 본다(핀 서명에 LED 애노드가
-    들어간다). 여기는 캐소드부터 GND 까지를 본다.
+    Negative 사슬(참조 사슬에 `'active_low': True`, 실험05)은 신호 -> 저항 윗다리 ->
+    아랫다리 -> LED 캐소드 -> 애노드 -> +5V 다. 극성은 **참조 사슬**에서 읽는다 —
+    손그림 전사에는 극성이 없고, 어느 쪽이어야 하는지는 참조가 정한다.
+
+    신호가 사슬 첫 다리(보통: 애노드, Negative: 저항 윗다리)에 도달하는지는 H6 이
+    이미 본다(핀 서명에 그 다리가 들어간다). 여기는 그 뒤부터 레일까지를 본다.
     """
     out = []
     nets = build_nets(hand)
     att = attachments(hand, nets)
     by_tag = {c['tag']: c for c in hand.chains}
+
+    def net(hole):
+        return nets.get(node_of(hole))
 
     for rc in ref.chains:
         tag = rc['tag']
@@ -485,20 +508,31 @@ def check_led_chains(ref, hand):
                 '참조에 있는 LED 사슬이 손그림에 없다 '
                 '(LED 와 330Ω 을 같은 꼬리표로 적었는지 본다)'))
             continue
-        k_net = nets.get(node_of(hcn['cathode']))
-        t_net = nets.get(node_of(hcn['res_top']))
-        if k_net != t_net:
+        k_addr = _addr(hcn['cathode'], hand.board)
+        if rc.get('active_low'):
+            b_addr = _addr(hcn['res_bottom'], hand.board)
+            if net(hcn['res_bottom']) != net(hcn['cathode']):
+                out.append(HandFinding(
+                    'H7', '치명', f"{tag} ({b_addr})",
+                    f"저항 아랫다리({b_addr})와 LED 캐소드({k_addr})가 다른 줄이다. "
+                    'LED 가 안 켜진다'))
+            end, want = hcn['anode'], 'VCC'
+            what, rail = 'LED 애노드', '+5V(VCC) 레일'
+        else:
+            t_addr = _addr(hcn['res_top'], hand.board)
+            if net(hcn['cathode']) != net(hcn['res_top']):
+                out.append(HandFinding(
+                    'H7', '치명', f"{tag} ({k_addr})",
+                    f"LED 캐소드({k_addr})와 저항 윗다리({t_addr})가 다른 줄이다. "
+                    'LED 가 안 켜지고 전류는 저항으로만 빠진다'))
+            end, want = hcn['res_bottom'], 'GND'
+            what, rail = '저항 아랫다리', 'GND 레일'
+        got = att.get(net(end), set())
+        if ('RAIL', want) not in got:
+            touched = ', '.join(sorted(_describe(a) for a in got))
             out.append(HandFinding(
-                'H7', '치명', f"{tag} ({_addr(hcn['cathode'], hand.board)})",
-                f"LED 캐소드({_addr(hcn['cathode'], hand.board)})와 "
-                f"저항 윗다리({_addr(hcn['res_top'], hand.board)})가 다른 줄이다. "
-                'LED 가 안 켜지고 전류는 저항으로만 빠진다'))
-        b_net = nets.get(node_of(hcn['res_bottom']))
-        if ('RAIL', 'GND') not in att.get(b_net, set()):
-            touched = ', '.join(sorted(_describe(a) for a in att.get(b_net, set())))
-            out.append(HandFinding(
-                'H7', '치명', f"{tag} ({_addr(hcn['res_bottom'], hand.board)})",
-                f"저항 아랫다리가 GND 레일에 닿지 않는다"
+                'H7', '치명', f"{tag} ({_addr(end, hand.board)})",
+                f"{what}가 {rail}에 닿지 않는다"
                 + (f' — 대신 {touched} 에 닿아 있다' if touched else '')))
     return out
 

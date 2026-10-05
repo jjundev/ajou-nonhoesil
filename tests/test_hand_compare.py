@@ -950,6 +950,113 @@ class V2Compare(unittest.TestCase):
             self.assertEqual(rule(ref, ref), [], rule.__name__)
 
 
+class Dip16Negative(unittest.TestCase):
+    """실험05 74HC42(DIP-16) + Negative LED 10벌 시험판을 자기 자신과 견준다.
+
+    전원 핀은 칩 레코드 핀 수에서 읽는다 — DIP-16 은 VCC 16 · GND 8 이고 pin 7·14 는
+    신호(Y6·B)다. Negative 사슬은 신호 → 330Ω → LED 캐소드 → 애노드 → +5V 라 보통 사슬의
+    '캐소드 ↔ 저항 윗다리 · 아랫다리 ↔ GND' 를 그대로 대면 10벌 전부가 헛난다.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        root = Path(__file__).resolve().parents[1]
+        board = load_renderer().load_board_file(
+            root / 'tests/fixtures/board_v2_e5/배치.py', 'board_v2_e5')
+        with tempfile.TemporaryDirectory() as d:
+            bb = board.build_trial_bcd(os.path.join(d, 'x.png'))
+        cls.wiring = bb.wiring()
+        cls.board = bb.board
+
+    def _pair(self):
+        ref = hc._from_wiring(self.wiring, 'e5_trial', self.board)
+        hand = hc._from_wiring(self.wiring, 'e5_trial', self.board)
+        hand.signed = True
+        return ref, hand
+
+    def _drop_wires_touching(self, d, hole):
+        node = hc.node_of(hole)
+        d.wires = [w for w in d.wires
+                   if hc._endpoint_node(w['frm']) != node
+                   and hc._endpoint_node(w['to']) != node]
+
+    def _chain(self, d, tag):
+        return next(c for c in d.chains if c['tag'] == tag)
+
+    def _rules(self, ref, hand, rule):
+        return [f for f in hc.compare(ref, hand) if f.rule == rule]
+
+    def test_참조를_그대로_넣으면_결함_0건(self):
+        ref, hand = self._pair()
+        bad = [str(f) for f in hc.compare(ref, hand) if f.grade != '표기']
+        self.assertEqual(bad, [])
+
+    def test_H3_pin16_전원이_없으면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[0]['pins'][16])
+        found = self._rules(ref, hand, 'H3')
+        self.assertEqual([f.where for f in found], ['74HC42 pin 16'])
+        self.assertIn('VCC', found[0].message)
+
+    def test_H3_pin8_접지가_없으면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[0]['pins'][8])
+        found = self._rules(ref, hand, 'H3')
+        self.assertEqual([f.where for f in found], ['74HC42 pin 8'])
+        self.assertIn('GND', found[0].message)
+
+    def test_H6_pin14_는_신호라_빠지면_잡는다(self):
+        """DIP-16 pin 14 는 입력 B 다. 14핀 전원 자리로 보고 건너뛰면 안 된다."""
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, hand.chips[0]['pins'][14])
+        self.assertIn('74HC42 pin 14', [f.where for f in self._rules(ref, hand, 'H6')])
+        self.assertEqual(self._rules(ref, hand, 'H3'), [])
+
+    def test_H7_Negative_저항_아랫다리가_캐소드_줄이_아니면_잡는다(self):
+        ref, hand = self._pair()
+        ch = self._chain(hand, 'Y3')
+        b = ch['res_bottom']
+        ch['res_bottom'] = (b[0], b[1], b[2] + 1)
+        for r in hand.resistors:
+            if r['tag'] == 'Y3':
+                r['bottom'] = ch['res_bottom']
+        found = self._rules(ref, hand, 'H7')
+        self.assertEqual(len(found), 1, [str(f) for f in found])
+        self.assertIn('Y3', found[0].where)
+        self.assertIn('캐소드', found[0].message)
+        self.assertIn('저항 아랫다리', found[0].message)
+
+    def test_H7_Negative_애노드가_5V_에_안_닿으면_잡는다(self):
+        ref, hand = self._pair()
+        self._drop_wires_touching(hand, self._chain(hand, 'Y7')['anode'])
+        found = self._rules(ref, hand, 'H7')
+        self.assertEqual(len(found), 1, [str(f) for f in found])
+        self.assertIn('Y7', found[0].where)
+        self.assertIn('+5V', found[0].message)
+
+    def test_H7_Negative_애노드를_GND_에_물리면_잡는다(self):
+        ref, hand = self._pair()
+        anode = self._chain(hand, 'Y7')['anode']
+        self._drop_wires_touching(hand, anode)
+        hand.wires.append(_wire(('right', 'e', anode[2]), ('right', 'gnd', anode[2]), 'gnd'))
+        found = self._rules(ref, hand, 'H7')
+        self.assertTrue(found)
+        self.assertIn('GND', found[0].message)
+
+    def test_Negative_신호가_저항_윗다리에_안_닿으면_H6_이_잡는다(self):
+        """신호 ↔ 저항 윗다리는 보통 사슬의 신호 ↔ 애노드처럼 칩 핀 서명(H6)에 든다."""
+        ref, hand = self._pair()
+        ch = self._chain(hand, 'Y0')
+        t = ch['res_top']
+        ch['res_top'] = (t[0], t[1], t[2] - 1)
+        for r in hand.resistors:
+            if r['tag'] == 'Y0':
+                r['top'] = ch['res_top']
+        found = self._rules(ref, hand, 'H6')
+        self.assertIn('74HC42 pin 1', [f.where for f in found])
+        self.assertIn('Y0 저항 윗다리', next(f for f in found if f.where == '74HC42 pin 1').message)
+
+
 if __name__ == '__main__':
     unittest.main()
 
