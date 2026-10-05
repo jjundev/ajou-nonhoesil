@@ -101,6 +101,8 @@ def _bcd_draw(bb, stage):
 
 def build_e5_bcd(output_path, template_path=None, stage=None, baseline=None, layer=None):
     """C1 BCD → 10진 디코더(74HC42). `stage` 1..4 또는 None(완성)."""
+    if layer is not None and stage is not None:
+        raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
     bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     title = '실험 1-2) BCD to Decimal Decoder' + (f' — {stage}단계' if stage else '')
@@ -189,6 +191,8 @@ def _xs3_draw(bb, stage):
 def build_e5_xs3(output_path, template_path=None, stage=None, baseline=None, layer=None):
     """C2 10진 → Excess-3 인코더(74HC04 + 74HC20 ×2). `stage` 1..5 또는 None(완성). C1 을 전부 뽑고
     새로 짓는다(`rebuild: true`) — 사슬에는 `fresh_board` 로 들어가 기준선 없이 그린다."""
+    if layer is not None and stage is not None:
+        raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
     bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
     bb.enable_steps()
     title = '실험 2-2) Decimal to Excess-3 Code Encoder' + (f' — {stage}단계' if stage else '')
@@ -228,3 +232,23 @@ FINALS = [
     ('실험05_1-2_결선도_BCD디코더.png', build_e5_bcd),
     ('실험05_2-2_결선도_Excess3인코더.png', build_e5_xs3),
 ]
+
+# 따라 그리기 층 — 완성본 번호 1..N 을 이어 자른 구간 (lo, hi, 이름). `make-trace-guide` 가 쓴다.
+LAYERS = {
+    f'{_C1}.png': [
+        (1, 4, '전원 잭·레일 브리지'),
+        (5, 6, 'U4 전원'),
+        (7, 10, '입력 Bit0~3 → U4'),
+        (11, 22, 'LED 사슬 Y0~Y5'),
+        (23, 30, 'LED 사슬 Y9·Y6·Y8·Y7'),
+        (31, 40, 'Y 출력 → LED (U4)'),
+    ],
+    f'{_C2}.png': [
+        (1, 4, '전원 잭·레일 브리지'),
+        (5, 15, '칩 전원 U1·U2·U3'),
+        (16, 23, 'LED 사슬 A3~A0'),
+        (24, 29, '입력 D5~D0 → U1'),
+        (30, 37, 'A3 (U2) · A1 (U3)'),
+        (38, 45, 'A0 (U3) · A2 (U2)'),
+    ],
+}
