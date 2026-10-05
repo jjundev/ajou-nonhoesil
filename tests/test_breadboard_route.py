@@ -1,8 +1,9 @@
 """v2 배선기 — 엔진 `route_plan`·`wire_metrics`·밀도 재순위.
 
 설계: `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`. 기준 데이터는 실험04 v2 시험판
-(`tests/fixtures/board_v2_e4/배치.py`). `plans_lambda0.json` 은 배선기를 엔진으로 옮기기 **전**
-시험판이 고른 경로·번호 원 자리다 — λ=0 이면 그대로 나와야 한다.
+(`tests/fixtures/board_v2_e4/배치.py`). `plans_lambda0.json` 은 지금 `LAYOUT` 에서 λ=0 경로·번호 원
+자리다 — 배선기를 바꿔도 λ=0 이면 그대로 나와야 한다. 배치(`LAYOUT`)를 바꾸면 다시 뜬다(2026-10-05
+배치기 적용 때 다시 떴다).
 """
 import importlib.util
 import json

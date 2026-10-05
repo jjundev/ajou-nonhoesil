@@ -535,5 +535,44 @@ class InputRows(unittest.TestCase):
         self.assertIsNotNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 18}))
 
 
+class PlaceEnforced(unittest.TestCase):
+    """v2 주차(와 시험판)는 `배치탐색.md` 가 있고, 지문이 지금 배선표와 같고, `LAYOUT` 이 보고서가 고른
+    것과 같다 — 배선표를 바꾸고 배치를 다시 안 찾으면 여기서 걸린다(SKILL §4, 2026-10-05)."""
+
+    def test_v2_주차는_배치를_찾았다(self):
+        mod = _load()
+        checked = []
+        for f in sorted(ROOT.glob('보고서/실험*/결선도/배치.py')) + [TRIAL]:
+            b = mod.load_board_file(f, f.parent.name)
+            if getattr(b, 'BOARD', None) != 'v2':
+                continue
+            rel = f.relative_to(ROOT).as_posix()
+            self.assertTrue(hasattr(b, 'PLACE'), f'{rel}: v2 주차는 PLACE·SLOTS·LAYOUT 을 둔다(SKILL §4)')
+            rep = f.parent / mod.PLACE_REPORT
+            self.assertTrue(rep.exists(), f'{rep.name} 없음 — python -m scripts.lab.place_search {rel}')
+            got = mod.read_place_report(rep)
+            self.assertEqual(got['hash'], mod.place_module_hash(b),
+                             f'{rel}: 배선표가 바뀌었다 — python -m scripts.lab.place_search {rel}')
+            self.assertEqual(b.LAYOUT, got['layout'], f'{rel}: LAYOUT 이 {rep.name} 과 다르다')
+            checked.append(f)
+        self.assertIn(TRIAL, checked)
+
+
+class PlacedTrial(unittest.TestCase):
+    """시험판 LAYOUT 은 손 배치(2026-10-03)보다 superset 신호선 총길이가 짧고 밀도 합은 안 늘었다.
+    손 배치 실측(2026-10-05, λ=0.5): MUX 길이 658.7·밀도 45.2, DMUX 303.9·6.3칸. 반올림한 값을 더하면
+    손 배치 자신(962.58)이 통과하므로 px 그대로 적는다 — 길이 12515 + 5774 px, 밀도 859 + 119.5 px."""
+    HAND_LENGTH = (12515 + 5774) / 19
+    HAND_DENSITY = (859 + 119.5) / 19
+
+    def test_손_배치보다_짧고_밀도는_안_는다(self):
+        mod = _load()
+        b = mod.load_board_file(TRIAL, 'board_v2_e4')
+        m = mod._place_measure(list(b.PLACE), b.LAYOUT)
+        self.assertNotIn('blocked', m)
+        self.assertLess(m['length'], self.HAND_LENGTH)
+        self.assertLessEqual(m['density'], self.HAND_DENSITY + 1e-9)
+
+
 if __name__ == '__main__':
     unittest.main()

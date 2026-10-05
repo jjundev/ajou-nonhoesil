@@ -24,10 +24,10 @@ from render_breadboard import (BreadboardRenderer, _input_jumper, fresh_board, r
 
 BOARD = 'v2'
 SLOTS = ('K1', 'K2', 'K3', 'K4')
-LAYOUT = {'slots': {'K1': 5, 'K2': 17, 'K3': 29, 'K4': 41},
-          'leds': {'mux': {'L1': 47, 'L2': 51, 'L3': 55, 'L4': 59},
-                   'dmux': {'Y0': 19, 'Y1': 23, 'Y2': 27, 'Y3': 43}},
-          'bridge': [53, 54]}
+LAYOUT = {'slots': {'K1': 29, 'K2': 6, 'K3': 39, 'K4': 16},
+          'leds': {'mux': {'L1': 22, 'L2': 28, 'L3': 38, 'L4': 44},
+                   'dmux': {'Y0': 6, 'Y1': 10, 'Y2': 14, 'Y3': 18}},
+          'bridge': [48, 49]}
 
 _INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
                '빨간 +5V 레일로 옮겨 꽂는다.')
