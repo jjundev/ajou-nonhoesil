@@ -417,15 +417,9 @@ class BreadboardRenderer(_RuleChecks):
         self.draw.rectangle([bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad], fill=bg_col, outline=text_col, width=1)
         self.draw.text((x, y), text, fill=text_col, font=font)
 
-    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
-                   arrow=None):
-        """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z. 손그림이 판형 위만 따라 그려
-        보드 밖 이름이 빠졌다(2026-09 실험01 감점).
-
-        `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 상자 왼쪽 끝. `seg` 는 가리키는 배선
-        번호 — 겹침 검사가 그 선만 봐준다. `arrow='left'|'right'` 는 입력 표지 — `col` 로 채운 상자에
-        흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다.
-        """
+    def _signal_tag_geom(self, name, x, y, align='center', arrow=None):
+        """`signal_tag()` 배지의 (상자, 글자 x, 글자 y, 글자 높이) — 그리지 않는다. 입력 점퍼가 번호 원
+        자리를 고르기 전에 제 배지 자리를 잡아 두는 데도 쓴다."""
         assert arrow in (None, 'left', 'right'), f"arrow 는 None·'left'·'right' 다: {arrow!r}"
         font, pad = self.font_en_bold, 2
         b = self.draw.textbbox((0, 0), name, font=font)
@@ -439,6 +433,20 @@ class BreadboardRenderer(_RuleChecks):
         box = self.draw.textbbox((tx, ty), name, font=font)
         box = (box[0] - lead - hpad, box[1] - pad,
                box[2] + (tri + gap - lead) + hpad, box[3] + pad)
+        return box, tx, ty, h
+
+    def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
+                   arrow=None):
+        """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z. 손그림이 판형 위만 따라 그려
+        보드 밖 이름이 빠졌다(2026-09 실험01 감점).
+
+        `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 상자 왼쪽 끝. `seg` 는 가리키는 배선
+        번호 — 겹침 검사가 그 선만 봐준다. `arrow='left'|'right'` 는 입력 표지 — `col` 로 채운 상자에
+        흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다.
+        """
+        box, tx, ty, h = self._signal_tag_geom(name, x, y, align, arrow)
+        font, pad = self.font_en_bold, 2
+        hpad, tri = (1, INPUT_TRI) if arrow else (pad, 0)     # `_signal_tag_geom` 과 같은 값
         if arrow:
             self.draw.rectangle(box, fill=col, outline=col, width=1)
             cy = (box[1] + box[3]) / 2

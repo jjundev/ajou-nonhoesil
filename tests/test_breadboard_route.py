@@ -260,6 +260,28 @@ class BadgeObstacle(unittest.TestCase):
         bb.signal_tag('Bit0', x, y)
         self.assertFalse(bb._marker_clear(x, y))
 
+    def test_빈_행_핀의_가운데_레일_입력은_번호_원이_제_배지를_안_덮는다(self):
+        bb = self._bb()
+        bb.draw_chip('74HC04', 17)
+        bb.partial = True
+        L = bb.cols['left']
+        self.mod._input_jumper(bb, L, 20, 'D1', 'U1 pin 11', side='f', col='j')
+        (_n, box, _s), = [t for t in bb.tag_boxes if t[0] == 'D1']
+        self.assertEqual([m for m in bb.marker_boxes if self.mod._boxes_touch(box, m)], [])
+
+    def test_가운데_레일에_배지가_쌓여도_번호_원이_어느_배지도_안_덮는다(self):
+        # 실험05 C1 — 74HC42 pin 15~12 입력 넷이 가운데 레일에 한 행씩 배지를 쌓는다. 원 자리를 고를 때
+        # 제 배지가 아직 없어 `Bit1` 원이 곧 그려질 `Bit1` 배지 위에 앉았다
+        bb = self._bb()
+        bb.draw_chip('74HC42', 3)
+        bb.partial = True
+        L = bb.cols['left']
+        for name, row in (('Bit0', 4), ('Bit1', 5), ('Bit2', 6), ('Bit3', 7)):
+            self.mod._input_jumper(bb, L, row, name, name, side='f', col='j')
+        hits = [(n, m) for n, box, _s in bb.tag_boxes for m in bb.marker_boxes
+                if self.mod._boxes_touch(box, m)]
+        self.assertEqual(hits, [])
+
 
 if __name__ == '__main__':
     unittest.main()
