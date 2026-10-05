@@ -3352,10 +3352,12 @@ def place_plan(module, top=PLACE_TOP, rounds=PLACE_ROUNDS, gmin=None, out_dir=No
     gmin = getattr(module, 'GMIN', PLACE_GMIN) if gmin is None else gmin
     measure = measure or (lambda lay: _place_measure(circuits, lay))
     if verify is None:
-        tmp = out_dir or tempfile.mkdtemp()
-
         def verify(lay):
-            return place_verify(module, lay, tmp)
+            if out_dir:
+                return place_verify(module, lay, out_dir)
+            # 단계 그림 열여섯 장 남짓 — 판마다 지운다(안 지우면 탐색마다 수백 MB, 2026-10-05 최종 검토)
+            with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+                return place_verify(module, lay, tmp)
     ranked = sorted((r for r in (place_proxy(circuits, s) for s in slot_candidates(slots, gmin))
                      if r is not None), key=lambda r: (r[0], layout_key(r[1])))
     mapper = mapper or _serial_map

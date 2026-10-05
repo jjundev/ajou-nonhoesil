@@ -394,6 +394,24 @@ class Plan(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'R2 기준 겹침'):
             self.mod.place_plan(self.module(), top=100, measure=self.measure, verify=verify)
 
+    def test_기본_verify_는_그림_폴더를_남기지_않는다(self):
+        """verify 한 번에 단계 그림 열여섯 장 — 임시 폴더를 안 지우면 탐색마다 수백 MB 가 쌓인다(2026-10-05
+        최종 검토)."""
+        dirs = []
+
+        def fn(path, template_path=None, stage=None, baseline=None):
+            dirs.append(os.path.dirname(path))
+            Path(path).write_bytes(b'png')
+            return SimpleNamespace(snapshot=lambda: None)
+        m = self.module()
+        m.BOARDS, m.FINALS, m.RESTART = [('a.png', fn, 1)], [], set()
+
+        def measure(lay):
+            return {'length': 100.0 if lay == self.base else float(_gap(lay)), 'bends': 0, 'density': 1.0}
+        self.mod.place_plan(m, top=2, rounds=1, measure=measure)
+        self.assertTrue(dirs)
+        self.assertFalse([d for d in dirs if os.path.exists(d)])
+
     def test_보고서_왕복(self):
         got = self.mod.place_plan(self.module(), top=100, measure=self.measure,
                                   verify=lambda lay: None)
@@ -522,6 +540,24 @@ class SearchCli(unittest.TestCase):
         self.assertIs(got['measure'], ps.worker_measure)
         self.assertIs(got['verify'], ps.worker_verify)
         self.assertTrue(callable(got['mapper']))
+
+    def test_작업_프로세스_verify_는_그림_폴더를_지운다(self):
+        from scripts.lab import place_search as ps
+        dirs = []
+
+        def place_verify(board, lay, out_dir):
+            dirs.append(out_dir)
+            Path(out_dir, 'a.png').write_bytes(b'png')
+            return None
+        saved = dict(ps._W)
+        ps._W.update(mod=SimpleNamespace(place_verify=place_verify), board=SimpleNamespace())
+        try:
+            self.assertIsNone(ps.worker_verify(_LAY))
+        finally:
+            ps._W.clear()
+            ps._W.update(saved)
+        self.assertEqual(len(dirs), 1)
+        self.assertFalse(os.path.exists(dirs[0]))
 
 class InputRows(unittest.TestCase):
     """입력 점퍼가 꽂히는 핀 행이 레일 빈 행이면 점퍼가 옆 행으로 비켜 사선이 된다 — 후보에서 뺀다

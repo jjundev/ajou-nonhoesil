@@ -40,7 +40,8 @@ def worker_measure(lay):
 
 
 def worker_verify(lay):
-    return _W['mod'].place_verify(_W['board'], lay, tempfile.mkdtemp())
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:     # 그림은 판마다 지운다
+        return _W['mod'].place_verify(_W['board'], lay, tmp)
 
 
 def run(mod, board, path, top, jobs=1):
