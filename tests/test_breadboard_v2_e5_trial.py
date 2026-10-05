@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests._gate_sim import led_on
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e5/배치.py'
@@ -52,6 +54,14 @@ class BcdFinal(_Trial):
         tops = self.board.LAYOUT['leds']['bcd']
         self.assertEqual(sorted(tops, key=tops.get), list(self.board._LEDS))
         self.assertEqual(self.board._LEDS, ('Y0', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y9', 'Y6', 'Y8', 'Y7'))
+
+    def test_진리표_BCD_0_15(self):
+        """BCD 값 n 이면 Y_n LED 하나만 켜진다. 10~15 면 다 꺼진다(교안 p9 — Negative Logic)."""
+        nets = self.bb.nets()
+        for v in range(16):
+            ins = {'A': v & 1, 'B': v >> 1 & 1, 'C': v >> 2 & 1, 'D': v >> 3 & 1}
+            for n in range(10):
+                self.assertEqual(led_on(self.bb, nets, f'Y{n}', ins), v == n, (v, n))
 
 
 class Readability(_Trial):
