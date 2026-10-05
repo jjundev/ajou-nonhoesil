@@ -48,10 +48,13 @@ class Model(unittest.TestCase):
         c = _toy(self.mod, [w])
         self.assertEqual(self.mod.place_wires(c, _LAY), [(1, None, 'sig', ('U1', 12), ('LED', 7), 'x')])
 
-    def test_14핀이_아니면_멈춘다(self):
-        c = _toy(self.mod, [], models={'U1': '74HC04', 'U2': '74HC138'})
-        with self.assertRaisesRegex(ValueError, '14핀'):
+    def test_모르는_칩이면_멈춘다(self):
+        c = _toy(self.mod, [], models={'U1': '74HC04', 'U2': '74HC4511'})
+        with self.assertRaisesRegex(ValueError, 'DIP_PINS'):
             self.mod.place_check(c)
+
+    def test_16핀_칩은_받는다(self):
+        self.mod.place_check(_toy(self.mod, [], models={'U1': '74HC42', 'U2': '74HC08'}))
 
     def test_leds_에_없는_태그면_멈춘다(self):
         c = _toy(self.mod, [(1, None, 'sig', ('U1', 12), ('LED', 'L9'), 'x')])

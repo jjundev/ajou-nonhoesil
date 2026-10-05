@@ -2601,13 +2601,32 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
 # 차선 x 값(212~260, 542~660)은 v2 판형 기하에 맞춘 것이라 v1 에서는 안 부른다.
 
 
-def _dip_pin_row(k, pin):
-    """칩 pin 1 행 `k` 에서 DIP-14 핀 `pin` 이 앉는 행."""
-    return k + pin - 1 if pin <= 7 else k + 14 - pin
+# 칩 모델 표 — 이름 → DIP 핀 수. VCC 는 마지막 핀, GND 는 n/2 핀(74HC DIP 공통)이라 식으로 얻는다.
+# 배치기는 여기 없는 칩을 거절한다(`place_check`). 그리기(`draw_chip`)는 v1 빌더 호환으로 14핀으로 본다.
+DIP_PINS = {
+    '74HC00': 14, '74HC02': 14, '74HC04': 14, '74HC08': 14, '74HC10': 14, '74HC11': 14,
+    '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
+    '74HC42': 16, '74HC138': 16, '74HC148': 16,
+}
 
 
-def _dip_side(pin):
-    return 'a' if pin <= 7 else 'f'
+def dip_pins(model, strict=False):
+    """칩 이름 → 핀 수. 모르면 `strict` 에서 ValueError, 아니면 14."""
+    n = DIP_PINS.get(model)
+    if n is None:
+        if strict:
+            raise ValueError(f'모르는 칩 {model!r} — 칩 모델 표 `DIP_PINS` 에 핀 수를 올린다')
+        return 14
+    return n
+
+
+def _dip_pin_row(k, pin, n=14):
+    """칩 pin 1 행 `k` 에서 DIP-`n` 핀 `pin` 이 앉는 행."""
+    return k + pin - 1 if pin <= n // 2 else k + n - pin
+
+
+def _dip_side(pin, n=14):
+    return 'a' if pin <= n // 2 else 'f'
 
 
 # 밀도 가중치 λ — 비용 = 길이 + 40·꺾임 + 400·몸통횡단 + λ·밀도증분(px). 0 이면 밀도를 안 본다.
@@ -3037,9 +3056,6 @@ def wire_metrics(bb):
 # layout = {'slots': {슬롯: pin 1 행}, 'leds': {회로: {태그: 윗행}}, 'bridge': [GND 행, VCC 행]}
 # — 보고서 JSON 과 그대로 맞대려고 리스트·문자열 키만 쓴다.
 
-# 배선기가 아는 칩 — `_dip_pin_row` 가 DIP-14 를 가정한다. 16핀(74HC138 따위)·7-segment 는 배선기부터 넓힌다
-DIP14 = frozenset({'74HC00', '74HC02', '74HC04', '74HC08', '74HC10', '74HC11', '74HC20',
-                   '74HC21', '74HC27', '74HC32', '74HC74', '74HC86'})
 PLACE_GMIN = 3      # 칩 사이 최소 빈 행 — 실물에서 손이 들어갈 여유(2026-10-05 사용자 N2)
 PLACE_GMAX = 6
 PLACE_STARTS = tuple(range(3, 9))   # 맨 위 칩 pin 1 행 후보
@@ -3055,7 +3071,7 @@ PLACE_REPORT = '배치탐색.md'
 class PlaceCircuit:
     """배치기가 보는 회로 하나.
 
-    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP14`), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
+    `chips` 칩 → 슬롯, `models` 칩 → 모델(`DIP_PINS` 의 이름), `leds` LED 태그 위→아래(R10 — 진리표 열 순서,
     2026-10-05 사용자 N3), `wires` 는 `route_plan` 꼴이되 LED 끝은 태그 `('LED', 'L1')`.
     `fixed(bb, stage, superset, layout)` 는 칩·전원·입력·LED 사슬·브리지를 `layout` 자리에 그린다.
     `inputs` 는 입력 점퍼가 꽂히는 (칩, 핀) — f쪽이면 가운데 GND 레일의 그 행을 쓴다."""
@@ -3075,9 +3091,9 @@ def layout_key(layout):
 
 def place_check(circuit):
     """배치기가 다룰 수 있는 회로인가. 아니면 ValueError."""
-    bad = sorted({m for m in circuit.models.values() if m not in DIP14})
+    bad = sorted({m for m in circuit.models.values() if m not in DIP_PINS})
     if bad:
-        raise ValueError(f'{circuit.name}: 배치기는 14핀 칩만 놓는다(`_dip_pin_row` 가 DIP-14 가정) — {bad}')
+        raise ValueError(f'{circuit.name}: 배치기는 칩 모델 표(`DIP_PINS`)에 있는 칩만 놓는다 — {bad}')
     tags = {end[1] for w in circuit.wires for end in (w[3], w[4]) if end[0] == 'LED'}
     unknown = sorted(tags - set(circuit.leds))
     if unknown:
