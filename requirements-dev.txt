@@ -1,8 +1,8 @@
 # 테스트 스위트를 돌리는 데 필요한 것 전부.
 #
 # 이 목록이 없어서 실측으로 하나씩 찾아 넣은 적이 있다 — pytest 만 넣고
-# 돌리면 `fitz` 없다는 collection 에러 3개(`test_hwp_splitter`·
-# `test_rename_reports`·`test_split_quiz_etc`)가 나면서 **스위트 전체가
+# 돌리면 `fitz` 없다는 collection 에러(당시 `test_hwp_splitter` 등, 지금은
+# `test_lab_schematic`·`test_hand_crop` 등)가 나면서 **스위트 전체가
 # 멈춘다.** 일부 실패가 아니라 한 줄도 못 돈다. 그래서 넷을 한 곳에 적는다.
 #
 # 아래 버전은 2026-09-06 에 python 3.14.6 / macOS 에서 477 tests +
@@ -36,8 +36,8 @@ pytest-xdist>=3.8.0
 # 에서 이것을 예비로 쓴다 — 없으면 조용히 건너뛴다.
 pypdf>=6.17.0
 
-# pymupdf(`import fitz`) — hwp/PDF 분할·이름변경 스크립트의 테스트, 그리고
-# 강의노트 회로도 크롭(`scripts/lab/schematic.py`, draft-lab-spec 4단계 끝).
+# pymupdf(`import fitz`) — 강의노트 회로도 크롭(`scripts/lab/schematic.py`,
+# draft-lab-spec 4단계 끝)과 손그림 PDF 크롭·격자(`hand_crop`·`hand_grid`).
 pymupdf>=1.28.2
 
 # pillow — 교안 렌더 PNG 를 크롭·확대해 회로도를 vision 판독할 때.

@@ -42,8 +42,9 @@
     끝의 대조표를 보면 됩니다.
   - 그 밖의 원본(양식·모범답안·강의 슬라이드·텀프로젝트 문서)은 표준 PDF에
     대응본이 없으므로 같은 폴더에 동일 이름 PDF를 함께 둡니다.
-  - HWP -> PDF: `scripts/convert_hwp_to_pdf.py` (Allinpdf)
-  - doc/docx/ppt/pptx/xlsx -> PDF: `scripts/convert_docs_to_pdf.py` (로컬 LibreOffice)
+  - HWP -> PDF: `scripts/convert_hwp_to_pdf.py` (Allinpdf), doc/docx/ppt/pptx/xlsx -> PDF:
+    `scripts/convert_docs_to_pdf.py` (로컬 LibreOffice). 두 스크립트는 일회성으로 끝나
+    지웠으며 커밋 b376d023 에서 꺼내 볼 수 있습니다. HWP 변환은 이제 전역 hwp-to-pdf 스킬이 맡습니다.
 - **Quartus/ModelSim 빌드 산출물은 보관하지 않습니다.** `db/`, `incremental_db/`,
   `output_files/`, `simulation/` 은 `.gitignore` 처리되어 있으며 `.qpf`/`.qsf`/`.xise`
   와 HDL 소스로 재생성합니다.
