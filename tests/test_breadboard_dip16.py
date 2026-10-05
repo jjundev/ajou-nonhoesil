@@ -105,6 +105,14 @@ class DrawDip16(unittest.TestCase):
         self.assertEqual(gnd[0], (self.L['a'], self.bb.r_y(17)))
         self.assertEqual(gnd[-1][0], self.L['gnd'])
 
+    def test_16핀_VCC_번호_원은_pin_1_의_반_행을_비운다(self):
+        """a쪽 pin 1 이 LED 로 건널 반 행은 k−0.5 하나뿐이다(설계 #5). pin 16 전원선 번호 원이 그 반 행
+        위(기본 자리 = 선 11px 위)에 앉으면 가운데 여백으로 못 간다 — 2026-10-05 e5 시험판 Y0 경로 없음."""
+        y = self.half(9)
+        hit = [m for m in self.bb.marker_boxes + self.bb._marker_slots
+               if m[0] - 1 < 656 and m[2] + 1 > self.L['d'] and m[1] - 1 < y < m[3] + 1]
+        self.assertEqual(hit, [])
+
     def test_칩보다_전원을_먼저_부르면_경고(self):
         bb = _board(self.mod)
         err = io.StringIO()

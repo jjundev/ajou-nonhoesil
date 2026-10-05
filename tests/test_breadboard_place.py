@@ -14,6 +14,7 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e4/배치.py'
+TRIAL_E5 = ROOT / 'tests/fixtures/board_v2_e5/배치.py'
 
 
 def _load():
@@ -607,7 +608,7 @@ class PlaceEnforced(unittest.TestCase):
     def test_v2_주차는_배치를_찾았다(self):
         mod = _load()
         checked = []
-        for f in sorted(ROOT.glob('보고서/실험*/결선도/배치.py')) + [TRIAL]:
+        for f in sorted(ROOT.glob('보고서/실험*/결선도/배치.py')) + [TRIAL, TRIAL_E5]:
             b = mod.load_board_file(f, f.parent.name)
             if getattr(b, 'BOARD', None) != 'v2':
                 continue
@@ -621,6 +622,7 @@ class PlaceEnforced(unittest.TestCase):
             self.assertEqual(b.LAYOUT, got['layout'], f'{rel}: LAYOUT 이 {rep.name} 과 다르다')
             checked.append(f)
         self.assertIn(TRIAL, checked)
+        self.assertIn(TRIAL_E5, checked)
 
 
 def _layout_table_mismatches(mod, root):

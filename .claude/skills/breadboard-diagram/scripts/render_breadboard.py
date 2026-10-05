@@ -1520,9 +1520,13 @@ class BreadboardRenderer:
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
         r14 = self.free_rail_row(start_row, x_vcc)
+        # DIP-16 은 번호 원을 선 위에 바로 얹는다 — 기본 자리(11px 위)는 반 행 k−0.5 를 덮는데, 그 반 행이
+        # a쪽 pin 1 이 가운데 여백으로 건널 유일한 통로다(74HC42 는 a쪽 출력 일곱이 다 LED 로 간다, 설계 #5).
+        # DIP-14 는 그대로(v1 도장·e4 스냅숏)
+        dy_vcc = 0 if n == 16 else -11
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', f'pin {n} -> +5V 레일',
-                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
+                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) + dy_vcc))
         r7 = self.free_rail_row(g, x_gnd)
         self.step_wire([(c[gnd_col], self.r_y(g)), (x_gnd, self.r_y(r7))],
                        'gnd', f'pin {n // 2} -> GND 레일', marker_at=gnd_marker_at,
