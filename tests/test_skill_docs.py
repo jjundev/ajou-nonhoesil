@@ -1373,6 +1373,21 @@ class BreadboardSkillSize(unittest.TestCase):
         # 만 길로 주면 남는 배출구가 날짜 몇 줄뿐이라 상한을 올리고 싶어진다.
         self.assertIn("→ 그 함수의 docstring", self.text.split("## 8. 이 문서에 쓰는 법")[1])
 
+    def test_엔진_조각_폴더를_가리킨다(self):
+        # 2026-10-05 엔진이 진입점과 `scripts/engine/` 조각으로 나뉘었다. 본문이 진입점만 말하면 엔진을 고칠
+        # 세션이 4천 줄 파일을 찾는다. 조각 목록은 진입점 머리 주석에만 둔다(본문에 베끼면 둘이 어긋난다).
+        self.assertTrue((BREADBOARD_DIR / "scripts/engine").is_dir())
+        self.assertIn("`scripts/engine/`", self.text)
+        self.assertIn("진입점 머리 주석", self.text)
+
+    def test_엔진이_회귀_사례를_연혁으로_가리킨다(self):
+        # R 표의 「잡는 결함」 칸(회귀 사례)은 2026-10-05 에 연혁.md 로 갔다 — `verify()` docstring 이 그것을
+        # 아직 SKILL.md §5 에 있다고 하면 엔진을 읽는 세션이 본문에서 헛걸음한다.
+        doc = (BREADBOARD_DIR / "scripts/engine/checks.py").read_text(encoding="utf-8")
+        verify_doc = doc.split("def verify(self):")[1].split('"""')[1]
+        self.assertNotIn("회귀 사례는 SKILL.md", verify_doc)
+        self.assertIn("연혁.md", verify_doc)
+
 
 class InitSkill(unittest.TestCase):
     """폴더 골격은 `config.EXPERIMENT_SUBDIRS` 한 곳에만 있다."""
