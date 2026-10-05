@@ -14,7 +14,7 @@
 격리 트리에서 지워지기 때문이다)
 
 1. 답안지를 전부 뺀 트리에서만 돈다. 목록은 §답안지 목록.
-2. 못 빼는 누출은 적는다. SKILL.md §3 회로 ID 목록·§4a 「슬롯·기준선·단계」·
+2. 못 빼는 누출은 적는다. 형제 문서 `주차별.md` 의 회로 ID 목록·SKILL.md §4a 「슬롯·기준선·단계」·
    「파일명 규칙」 문단, `docs/schema/lab-netlist-v2.md` 의 `E1_SLOTS` 언급,
    그리고 **netlist.md 의 `## 단계` 표 자체**(`c7→c9`·`b19`·`a8→a18` 같은 홀
    주소를 적는다 — 그것이 입력이다)는 계약서라 못 뺀다. 판정.md 1절에 적고
@@ -75,7 +75,7 @@
    "
    ```
 
-   남는 것: `breadboard-diagram/SKILL.md`·엔진 `render_breadboard.py`(주차 결선 없음)·
+   남는 것: `breadboard-diagram/` 의 `SKILL.md` 와 형제 문서 셋(`v1.md`·`주차별.md`·`연혁.md`)·엔진 `render_breadboard.py`(주차 결선 없음)·
    `.claude/assets/Breadboard.jpg`·`보고서/실험01/결선도/netlist.md`(입력)·
    `체크리스트/{명세,기록}.md`·`docs/schema/`·`강의노트/`·`.claude/데이터시트_출처.md`·
    `draft-lab-spec` 등 나머지 스킬·`scripts/lab/` 나머지·다른 실험 폴더.
@@ -98,7 +98,7 @@
    "
    ```
 
-   **정상(구조적 누출)**: `.claude/skills/breadboard-diagram/SKILL.md`,
+   **정상(구조적 누출)**: `.claude/skills/breadboard-diagram/` 의 `SKILL.md`·`주차별.md`·`연혁.md`(「줄이기 전 원문」),
    `docs/schema/lab-netlist-v2.md`, `보고서/실험01/결선도/netlist.md`,
    `.claude/skills/draft-lab-spec/SKILL.md`(파일명 예시), `scripts/lab/render.py`·
    `validate.py`(단계 표 열 이름), `보고서/실험01/체크리스트/{명세,기록}.md`, 엔진
