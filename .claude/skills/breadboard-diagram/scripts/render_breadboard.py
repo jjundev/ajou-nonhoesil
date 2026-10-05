@@ -1391,11 +1391,27 @@ class BreadboardRenderer:
         self.overlay.alpha_composite(rot, (int(xy[0] * SCALE - rot.width / 2),
                                            int(xy[1] * SCALE - rot.height / 2)))
 
+    def _chip_font(self, name, rows):
+        """칩 이름 글꼴. DIP-14 는 늘 `font_chip`(11pt). DIP-16 은 세로 글자 상자가 `2·pitch − 4` 이하인
+        가장 큰 크기다 — 몸통 가운데 반 행(k+3.5) 하나만 막아 a쪽 pin 1~7 이 그 위·아래 반 행 일곱으로
+        건넌다. 74HC42 는 출력 일곱이 a쪽이다. 11pt(44px)면 반 행 셋을 막아 Y3·Y4 가 못 건넌다(2026-10-05 설계 #5)."""
+        if rows == 7:
+            return self.font_chip
+        limit = 2 * self.spec.row_pitch - 4
+        for size in range(11, 5, -1):
+            f = _font('en', size)
+            b = f.getbbox(name)
+            if b[2] - b[0] + 4 <= limit:
+                return f
+        return _font('en', 6)
+
     def draw_chip(self, name, start_row, block='left'):
         c = self.cols[block]
+        n = dip_pins(name)
+        rows = n // 2
         x1, x2 = c['chip_x1'], c['chip_x2']
         y_top = self.r_y(start_row) - 8
-        y_bot = self.r_y(start_row + 6) + 8
+        y_bot = self.r_y(start_row + rows - 1) + 8
 
         # 기준선의 같은 자리에 같은 칩이 있으면 몸통을 회색으로 그린다 — 앞
         # 단계에서 꽂아 둔 그대로라는 뜻이다(footer 범례 "회색 = 앞 단계에서
@@ -1414,30 +1430,31 @@ class BreadboardRenderer:
         notch_w = (x2 - x1) // 3
         self.draw.arc([x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6], 0, 180, fill=(200, 200, 200, 255), width=2)
         label_at = ((x1 + x2) / 2, (y_top + y_bot) / 2)
-        self._vtext(label_at, name, text_fill, self.font_chip)
+        font = self._chip_font(name, rows)
+        self._vtext(label_at, name, text_fill, font)
         # 세로로 돌린 이름 글자가 차지하는 상자(논리 좌표, `_vtext` 의 여백 2 포함) — R14
-        lb = self.font_chip.getbbox(name)
+        lb = font.getbbox(name)
         half_w, half_h = (lb[3] - lb[1]) / 2 + 2, (lb[2] - lb[0]) / 2 + 2
         label_box = (label_at[0] - half_w, label_at[1] - half_h,
                      label_at[0] + half_w, label_at[1] + half_h)
 
         # 핀 번호는 **몸통 안쪽**에 찍는다. 이전 판은 e-15 / f+6 에 찍어서
         # d 열과 g 열 홀을 가렸다 — 정작 배선을 꽂는 자리다
-        for i in range(7):
+        for i in range(rows):
             y = self.r_y(start_row + i)
             self.draw.line([(c['e'], y), (x1, y)], fill=(170, 170, 170, 255), width=3)
             self.draw.line([(x2, y), (c['f'], y)], fill=(170, 170, 170, 255), width=3)
             self.draw.text((x1 + 3, y - 6), str(i + 1), fill=num_fill, font=self.font_num)
-            rt = str(14 - i)
+            rt = str(n - i)
             w = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]
             self.draw.text((x2 - 3 - w, y - 6), rt, fill=num_fill, font=self.font_num)
             self.lead(c['e'], y, f'{name} pin {i + 1}')
-            self.lead(c['f'], y, f'{name} pin {14 - i}')
+            self.lead(c['f'], y, f'{name} pin {n - i}')
 
         pins = {}
-        for i in range(7):
+        for i in range(rows):
             pins[i + 1] = self.sym(c['e'], start_row + i)
-            pins[14 - i] = self.sym(c['f'], start_row + i)
+            pins[n - i] = self.sym(c['f'], start_row + i)
         self.chips.append({'label': name, 'block': block,
                            'pin1_row': start_row, 'pins': pins})
         self.chip_label_boxes.append((label_box, self.chips[-1]))
@@ -1484,7 +1501,7 @@ class BreadboardRenderer:
                        marker_at=((x_a + x_b) // 2, y - 12))
 
     def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
-        """pin 14 -> +5V, pin 7 -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
+        """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. `gnd_marker_at` 은 pin 7 번호 원 자리를
         빌더가 지정할 때만 준다 — 기본 자리(레일과 d열 사이, 한 행 위)에 다른
         배선의 모서리가 오는 경우다. `gnd_col` 은 pin 7 접지선이 출발하는 열로,
         `connect_unused_inputs(col=)` 과 같은 이유로 바꾼다.
@@ -1498,16 +1515,18 @@ class BreadboardRenderer:
         꽂혀 있다. `connect_unused_inputs()` 가 처음부터 그렇게 했다.
         """
         c = self.cols[block]
+        n = self._pins_at(block, start_row)
+        g = start_row + n // 2 - 1          # GND 핀 행 — DIP-14 pin 7 은 k+6, DIP-16 pin 8 은 k+7
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
         r14 = self.free_rail_row(start_row, x_vcc)
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
-                       'vcc', 'pin 14 -> +5V 레일',
+                       'vcc', f'pin {n} -> +5V 레일',
                        marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
-        r7 = self.free_rail_row(start_row + 6, x_gnd)
-        self.step_wire([(c[gnd_col], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
-                       'gnd', 'pin 7 -> GND 레일', marker_at=gnd_marker_at,
-                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+        r7 = self.free_rail_row(g, x_gnd)
+        self.step_wire([(c[gnd_col], self.r_y(g)), (x_gnd, self.r_y(r7))],
+                       'gnd', f'pin {n // 2} -> GND 레일', marker_at=gnd_marker_at,
+                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(g) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -1518,6 +1537,17 @@ class BreadboardRenderer:
     def nearest_vcc_rail(self, x, block='left'):
         c = self.cols[block]
         return min((c['vcc'], c['mid_vcc']), key=lambda xr: abs(xr - x))
+
+    def _pins_at(self, block, start_row):
+        """그 자리에 그린 칩의 핀 수. 칩 레코드에 키를 더하지 않고 `pins` 개수로 읽는다 — 레코드는
+        `wiring()` 으로 도장에 든다. 아직 안 그렸으면 14 로 보고 경고한다(v1 빌더는 전부 14핀이다. 16핀 칩을
+        그리기 전에 전원을 부르면 pin 7 출력을 GND 에 묶는 그림이 조용히 나간다)."""
+        for ch in self.chips:
+            if ch['block'] == block and ch['pin1_row'] == start_row:
+                return len(ch['pins'])
+        print(f'[WARN] {block} {start_row}행에 그린 칩이 없다 — 14핀으로 본다. draw_chip 을 먼저 부른다',
+              file=sys.stderr)
+        return 14
 
     def connect_unused_inputs(self, pins, start_row, block='left', bridge_row=None,
                               chip='', rail='gnd', col='d'):
@@ -1535,12 +1565,14 @@ class BreadboardRenderer:
         이웃 행으로 밀리는데, 그 핀이 먼저 착지하면 정작 그 행의 주인 핀이 밀린다.
         """
         c = self.cols[block]
+        n = self._pins_at(block, start_row)
+        h = n // 2
         placed = []
         for p in pins:
-            if 1 <= p <= 7:
+            if 1 <= p <= h:
                 placed.append((start_row + (p - 1), c[col], p))
-            elif 8 <= p <= 14:
-                placed.append((start_row + (14 - p), c['g'], p))
+            elif h < p <= n:
+                placed.append((start_row + (n - p), c['g'], p))
         order = sorted(range(len(placed)), key=lambda i: (not self.is_rail_row(placed[i][0]), i))
         # 기준선에 같은 (색, 끝점, 끝점) 이 있으면 `step_wire` 와 같은 규칙으로 회색이다
         # — 실험02 C1→C2 는 칩만 갈아 끼우므로 pull 선 다섯 가닥이 전부 그대로다.
@@ -1579,7 +1611,7 @@ class BreadboardRenderer:
                            '가까운 +5V 레일' if rail == 'vcc' else '가까운 GND 레일',
                            desc, count=len(pins))
 
-        if rail == 'gnd' and any(8 <= p <= 14 for p in pins):
+        if rail == 'gnd' and any(h < p <= n for p in pins):
             if bridge_row is None:
                 print(f"[WARN] {block} 블록 미사용 입력 {pin_str} 이 중앙 GND 레일에 "
                       f"내려갔는데 bridge_row 가 없다 — 7번 핀 레일과 이어지지 않아 "
@@ -1706,7 +1738,7 @@ class BreadboardRenderer:
         out = []
         for ch in self.chips:
             c = self.cols[ch['block']]
-            rows = range(ch['pin1_row'], ch['pin1_row'] + 7)
+            rows = range(ch['pin1_row'], ch['pin1_row'] + len(ch['pins']) // 2)
             for side, names in SIDE_COLS.items():
                 xs = {c[k] for k in names}
                 holes = sorted((h for h in self._leads if h[0] in xs and h[1] in rows),
@@ -1719,7 +1751,7 @@ class BreadboardRenderer:
     def chip_side_of(self, end):
         """`_endpoint()` 결과가 어느 칩의 어느 쪽 핀 스트립인가.
 
-        칩 행 범위(pin1_row~+6) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
+        칩 행 범위(pin1_row ~ pin1_row+행수−1) 안의 a~d 열이면 그 칩의 'a' 쪽, g~j 열이면 'f' 쪽 — 같은 행
         a~e / f~j 는 한 스트립이라 그 홀에 꽂은 것은 그 핀에 꽂은 것이다. e·f(칩 다리)·칩 행
         밖·레일·잭은 None. 같은 이름의 칩이 두 자리에 앉을 수 있어(실험02 t_pd) `pin1_row` 로
         구분한다.
@@ -1728,7 +1760,7 @@ class BreadboardRenderer:
             return None
         blk, col, row = end[1]
         for ch in self.chips:
-            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + 6:
+            if ch['block'] == blk and ch['pin1_row'] <= row <= ch['pin1_row'] + len(ch['pins']) // 2 - 1:
                 for side, names in SIDE_COLS.items():
                     if col in names:
                         return {'chip': ch['label'], 'block': blk, 'pin1_row': ch['pin1_row'], 'side': side}
@@ -1766,12 +1798,12 @@ class BreadboardRenderer:
     # v1 승인본(실험01~04)은 소급하지 않는다.
 
     def _chip_bodies(self):
-        """칩마다 (몸통 상자, 칩 기둥 가운데 x, 칩) — 몸통은 e·f 핀 열 안쪽, pin 1 행 위 ~ pin 7 행 아래."""
+        """칩마다 (몸통 상자, 칩 기둥 가운데 x, 칩) — 몸통은 e·f 핀 열 안쪽, pin 1 행 위 ~ 마지막 a쪽 핀 행 아래."""
         out = []
         for ch in self.chips:
             c = self.cols[ch['block']]
             box = (c['chip_x1'] - 1, self.r_y(ch['pin1_row']) - 10,
-                   c['chip_x2'] + 1, self.r_y(ch['pin1_row'] + 6) + 10)
+                   c['chip_x2'] + 1, self.r_y(ch['pin1_row'] + len(ch['pins']) // 2 - 1) + 10)
             out.append((box, (c['e'] + c['f']) / 2, ch))
         return out
 
