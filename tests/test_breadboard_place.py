@@ -5,6 +5,7 @@
 """
 import importlib.util
 import os
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -642,15 +643,26 @@ def _layout_table_mismatches(mod, root):
         if len(layouts) > 1:
             errors.append(f'{rel}: kind: layout 절이 {len(layouts)}개다 — 하나만 둔다')
             continue
+        tables = md.parse_tables(layouts[0].body)
+        if not tables:
+            errors.append(f'{rel}: kind: layout 절에 `| 슬롯 | 자리 | 회로별 칩 |` 표가 없다 — {fix}')
+            continue
         table = {}
-        for row in md.parse_tables(layouts[0].body)[0].rows:
-            m = re.match(r'(?:좌|우)\s*(\d+)행', row[1])
+        for row in tables[0].rows:
+            m = re.fullmatch(r'(?:좌|우)\s*(\d+)행', row[1].strip())
             table[row[0]] = int(m.group(1)) if m else row[1]
         want = b.LAYOUT['slots']
+
+        def say(v, missing):
+            if v is None:
+                return missing
+            return f'{v}행' if isinstance(v, int) else f'`{v}`(`좌 <행>행` 꼴이 아니다)'
+
         for slot in sorted(set(table) | set(want)):
-            got, row = table.get(slot, '(표에 없음)'), want.get(slot, '(LAYOUT 에 없음)')
+            got, row = table.get(slot), want.get(slot)
             if got != row:
-                errors.append(f'{rel}: 슬롯 {slot} 이 표에서 {got}행인데 LAYOUT 은 {row}행이다 — {fix}')
+                errors.append(f'{rel}: 슬롯 {slot} — 표는 {say(got, "표에 없음")}, '
+                              f'LAYOUT 은 {say(row, "LAYOUT 에 없음")} — {fix}')
     return checked, errors
 
 
@@ -660,30 +672,52 @@ class PlaceLayoutTable(unittest.TestCase):
 
     _BOARD = "BOARD = 'v2'\nSLOTS = ('K1', 'K2')\nLAYOUT = {'slots': {'K1': 6, 'K2': 16}, 'leds': {}, 'bridge': [48, 49]}\n"
     _NETLIST = ('---\nschema: lab-netlist/v2\nexperiment: 99\nspec: ../체크리스트/명세.md\n---\n\n'
-                '# 칩 자리표\n\n- kind: layout\n\n| 슬롯 | 자리 | 회로별 칩 |\n|---|---|---|\n'
-                '| K1 | 좌 6행 | C1 74HC04 |\n| K2 | 좌 {k2}행 | C1 74HC20 |\n\n'
+                '# 칩 자리표\n\n- kind: layout\n\n{table}\n'
                 '# C1 · 장난감\n\n- kind: circuit\n- id: C1\n- item: E99.P1\n- tables: [T1]\n')
 
-    def _week(self, k2):
+    def _week(self, k2='좌 16행', k1=True, table=True):
+        """K1·K2 두 슬롯 주차. `k2` 는 K2 의 `자리` 칸, `k1=False` 면 K1 행을 빼고, `table=False` 면 표가 없다."""
+        rows = ['| 슬롯 | 자리 | 회로별 칩 |', '|---|---|---|']
+        rows += ['| K1 | 좌 6행 | C1 74HC04 |'] if k1 else []
+        rows += [f'| K2 | {k2} | C1 74HC20 |']
         tmp = Path(tempfile.mkdtemp())
-        self.addCleanup(__import__('shutil').rmtree, tmp, True)
+        self.addCleanup(shutil.rmtree, tmp, True)
         d = tmp / '보고서/실험99/결선도'
         d.mkdir(parents=True)
         (d / '배치.py').write_text(self._BOARD, encoding='utf-8')
-        (d / 'netlist.md').write_text(self._NETLIST.format(k2=k2), encoding='utf-8')
+        body = '\n'.join(rows) + '\n' if table else '표 없이 산문만 있다.\n'
+        (d / 'netlist.md').write_text(self._NETLIST.format(table=body), encoding='utf-8')
         return tmp, d / '배치.py'
 
-    def test_표_행이_LAYOUT_과_다르면_걸린다(self):
-        root, f = self._week(k2=17)
+    def _errors(self, **week):
+        root, f = self._week(**week)
         checked, errors = _layout_table_mismatches(_load(), root)
         self.assertEqual(checked, [f])
+        return errors
+
+    def test_표_행이_LAYOUT_과_다르면_걸린다(self):
+        errors = self._errors(k2='좌 17행')
         self.assertEqual(len(errors), 1, errors)
-        self.assertIn('K2', errors[0])
+        self.assertIn('슬롯 K2 — 표는 17행, LAYOUT 은 16행', errors[0])
         self.assertIn('배치탐색.md', errors[0])
 
     def test_표_행이_LAYOUT_과_같으면_통과한다(self):
-        root, f = self._week(k2=16)
-        self.assertEqual(_layout_table_mismatches(_load(), root), ([f], []))
+        self.assertEqual(self._errors(), [])
+
+    def test_표에_없는_슬롯도_걸린다(self):
+        errors = self._errors(k1=False)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn('슬롯 K1 — 표는 표에 없음, LAYOUT 은 6행', errors[0])
+
+    def test_자리_칸_꼴이_틀리면_원문을_댄다(self):
+        errors = self._errors(k2='좌 16')
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn('표는 `좌 16`(`좌 <행>행` 꼴이 아니다)', errors[0])
+
+    def test_표가_없는_layout_절도_걸린다(self):
+        errors = self._errors(table=False)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertIn('표가 없다', errors[0])
 
     def test_v2_주차_netlist_자리표는_LAYOUT_을_옮겨_적는다(self):
         checked, errors = _layout_table_mismatches(_load(), ROOT)
