@@ -116,13 +116,50 @@ def _mutates_engine(nodes):
     return False
 
 
+def _effective_group(cls, module):
+    """`tests/conftest.py` 가 이 클래스 시험에 붙일 xdist 그룹 — 가까운 명시 마크(클래스 > 모듈) >
+    `xdist_per_test`(시험마다 흩음 → None) > `render_group`."""
+    for m in list(getattr(cls, 'pytestmark', [])) + list(getattr(module, 'pytestmark', [])):
+        if m.name == 'xdist_group':
+            return m.args[0] if m.args else m.kwargs.get('name')
+    if getattr(cls, 'xdist_per_test', False):
+        return None
+    return getattr(cls, 'render_group', None)
+
+
+class EffectiveGroup(unittest.TestCase):
+    """그룹 확인은 `render_group` 속성이 아니라 `tests/conftest.py` 가 실제로 붙일 그룹을 본다 —
+    명시 `xdist_group` 마크와 `xdist_per_test` 가 `render_group` 을 덮는다(2026-10-05 최종 검토)."""
+
+    def test_덮어쓰기를_conftest_순서대로_본다(self):
+        import types
+
+        import pytest
+        module = types.SimpleNamespace()
+
+        class Plain:
+            render_group = GROUP
+
+        class PerTest(Plain):
+            xdist_per_test = True
+
+        class Marked(Plain):
+            pytestmark = [pytest.mark.xdist_group('other').mark]
+
+        self.assertEqual(_effective_group(Plain, module), GROUP)
+        self.assertIsNone(_effective_group(PerTest, module))
+        self.assertEqual(_effective_group(Marked, module), 'other')
+        module.pytestmark = [pytest.mark.xdist_group('mod').mark]
+        self.assertEqual(_effective_group(Plain, module), 'mod')
+
+
 class Grouping(unittest.TestCase):
     def test_대상_클래스는_한_그룹이다(self):
         import importlib
         for stem, names in SHARED.items():
             m = importlib.import_module(f'tests.{stem}')
             for name in names:
-                self.assertEqual(getattr(getattr(m, name), 'render_group', None), GROUP, f'{stem}::{name}')
+                self.assertEqual(_effective_group(getattr(m, name), m), GROUP, f'{stem}::{name}')
 
     def test_대상_클래스는_공용_사본을_쓴다(self):
         for stem, names in SHARED.items():
@@ -172,7 +209,7 @@ class MutationGuard(unittest.TestCase):
 
 
 class CacheKey(unittest.TestCase):
-    render_group = GROUP     # 같은 워커의 공용 캐시를 쓰므로 이 시험 자체는 거의 공짜다
+    render_group = GROUP     # 그룹 안에서 다른 시험 뒤에 돌면 캐시라 거의 공짜, 혼자 돌면 DMUX 탐색 약 4.5초
 
     def test_기본_λ_와_엔진_λ_가_같은_경로를_쓴다(self):
         mod = _renders.engine()
