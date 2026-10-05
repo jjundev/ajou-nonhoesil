@@ -86,7 +86,7 @@ for i in range(n):
   ],
   "wires": [
     {"color": "빨강", "from": "좌 g7", "to": "좌 중앙VCC레일7행"},
-    {"color": "검정", "from": "좌 GND레일7행", "to": "좌 b7"}
+    {"color": "보라", "from": "좌 GND레일7행", "to": "좌 b7"}
   ],
   "leds": [{"tag": "L1", "anode": "좌 c14", "cathode": "좌 c15"}],
   "resistors": [{"tag": "L1", "top": "좌 d15", "bottom": "좌 d16"}],
