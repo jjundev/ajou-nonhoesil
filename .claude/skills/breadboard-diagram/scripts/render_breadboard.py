@@ -1312,7 +1312,7 @@ class BreadboardRenderer:
             self.signal_tag(label, x + 10, ymid, align='left', col=color_rgb)
 
     def led_chain(self, x, top_row, tag, desc, block='left', color_rgb=(220, 20, 20),
-                  marker_dx=-21):
+                  marker_dx=-21, active_low=False):
         """LED + 330Ω + GND 한 벌. `x` 는 **신호가 도착하는 열**이다.
 
         LED 는 그 옆 열, 저항은 그 다음 열에 꽂는다. 같은 행 a~e(또는 f~j)는
@@ -1329,14 +1329,26 @@ class BreadboardRenderer:
         `signal_tag()` 로 찍는다. 'L2 최종 LED (L2=A·B·C)' 같은 긴 문구는 결선
         순서표로 내려보낸다 — 손으로 옮겨 그릴 것이 아니면서 정작 그릴 홀을
         가리기 때문이다.
+
+        `active_low` 면 **Negative Logic** 사슬이다(실험05 1-2, 교안 p9 "Output 을 Negative Logic
+        으로 구축") — 출력이 0 일 때 켜진다. 신호 → 330Ω(옆 열, 윗행~윗행+2) → LED(그다음 열, 캐소드
+        윗행+2 → 애노드 윗행+3) → +5V. 저항과 LED 의 열 쓰임이 보통 사슬과 뒤집힌다. 레일 점퍼는 보통
+        사슬과 같은 윗행+3 에서 나가 배치기 `led_rows` 가 극성을 몰라도 된다. 레코드에는
+        `'active_low': True` 를 더한다 — 보통 사슬에는 키를 넣지 않는다(`wiring()` → 도장).
         """
         c = self.cols[block]
         group = [c[k] for k in 'abcde'] if x <= c['e'] else [c[k] for k in 'fghij']
         i = group.index(x)
         step = 1 if i + 2 < len(group) else -1
         x_led, x_res = group[i + step], group[i + 2 * step]
-        key = (self.sym(x_led, top_row), self.sym(x_led, top_row + 1),
-               self.sym(x_res, top_row + 1), self.sym(x_res, top_row + 3))
+        if active_low:
+            x_l, a_row, k_row = x_res, top_row + 3, top_row + 2      # LED: 캐소드 위, 애노드 아래
+            x_r, rt_row, rb_row = x_led, top_row, top_row + 2        # 330Ω: 신호 스트립 → 캐소드 스트립
+        else:
+            x_l, a_row, k_row = x_led, top_row, top_row + 1
+            x_r, rt_row, rb_row = x_res, top_row + 1, top_row + 3
+        key = (self.sym(x_l, a_row), self.sym(x_l, k_row),
+               self.sym(x_r, rt_row), self.sym(x_r, rb_row))
         # 기준선에 같은 네 홀의 사슬이 있으면 LED·저항·GND 점퍼 전부 회색이고
         # 번호가 없다 — 앞 단계에서 꽂아 둔 그대로다. 플래그는 사슬을 그리는 동안만 선다
         # 걷기 보드가 사슬째 뽑는 사슬(`ghost['chains']`)은 LED·저항을 걷기 빨강으로 칠하고
@@ -1346,32 +1358,46 @@ class BreadboardRenderer:
         self._keep_parts = (self.baseline is not None and key in self.baseline['chains']
                             and not self._pull_parts)
         try:
-            y_a, y_k, y_r = self.r_y(top_row), self.r_y(top_row + 1), self.r_y(top_row + 3)
-            self.draw_led(x_led, y_a, y_k, color_rgb, tag)
-            self.draw_resistor(x_res, y_k, y_r, label="330Ω")
+            y_a, y_k = self.r_y(a_row), self.r_y(k_row)
+            y_rt, y_rb = self.r_y(rt_row), self.r_y(rb_row)
+            y_top, y_end = self.r_y(top_row), self.r_y(top_row + 3)
+            self.draw_led(x_l, y_a, y_k, color_rgb, tag)
+            self.draw_resistor(x_r, y_rt, y_rb, label="330Ω")
             if self._pull_parts:
-                x0, x1 = min(x_led, x_res) - 12, max(x_led, x_res) + 12
-                self._dashed([(x0, y_a - 12), (x1, y_a - 12), (x1, y_r + 12), (x0, y_r + 12),
-                              (x0, y_a - 12)], REMOVE, width=3, dash=7, gap=5,
+                x0, x1 = min(x_l, x_r) - 12, max(x_l, x_r) + 12
+                self._dashed([(x0, y_top - 12), (x1, y_top - 12), (x1, y_end + 12), (x0, y_end + 12),
+                              (x0, y_top - 12)], REMOVE, width=3, dash=7, gap=5,
                              draw=_ScaledDraw(self.ghost_layer))
                 self.ghost_chains_drawn.add(key)
-            self.led_chains.append({'tag': tag,
-                                    'signal': self.sym(x, top_row),
-                                    'anode': self.sym(x_led, top_row),
-                                    'cathode': self.sym(x_led, top_row + 1),
-                                    'res_top': self.sym(x_res, top_row + 1),
-                                    'res_bottom': self.sym(x_res, top_row + 3)})
-            self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
-                           f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
-                           f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
-                           marker_near=(x + marker_dx, y_k))
-            x_gnd = self.nearest_gnd_rail(x_led, block)
+            rec = {'tag': tag,
+                   'signal': self.sym(x, top_row),
+                   'anode': self.sym(x_l, a_row),
+                   'cathode': self.sym(x_l, k_row),
+                   'res_top': self.sym(x_r, rt_row),
+                   'res_bottom': self.sym(x_r, rb_row)}
+            if active_low:
+                rec['active_low'] = True
+            self.led_chains.append(rec)
+            if active_low:
+                self.step_note('sig', self.addr(x_r, y_rt), self.addr(x_l, y_a),
+                               f'{tag}: 330Ω({self.addr(x_r, y_rt)}→{self.addr(x_r, y_rb)}) + '
+                               f'LED(캐소드 {self.addr(x_l, y_k)}→애노드 {self.addr(x_l, y_a)}) 직렬 · '
+                               f'0 이면 켜짐 · {desc}',
+                               marker_near=(x + marker_dx, self.r_y(top_row + 1)))
+                x_rail, kind, what = self.nearest_vcc_rail(x_led, block), 'vcc', f'{tag} LED 애노드 -> +5V'
+            else:
+                self.step_note('sig', self.addr(x_l, y_a), self.addr(x_r, y_rb),
+                               f'{tag}: LED({self.addr(x_l, y_a)}→{self.addr(x_l, y_k)}) + '
+                               f'330Ω({self.addr(x_r, y_k)}→{self.addr(x_r, y_rb)}) 직렬 · {desc}',
+                               marker_near=(x + marker_dx, y_k))
+                x_rail, kind, what = self.nearest_gnd_rail(x_led, block), 'gnd', f'{tag} 저항 아래 -> GND'
+            # 레일 점퍼는 윗행+3 에서 레일에 가장 가까운 빈 홀로 — 그 행에서 비어 있는 열은 두 극성 모두
+            # 신호 열과 `x_led` 다(보통 사슬은 LED 가 윗행~+1, Negative 는 저항이 윗행~+2)
             free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
-            x_from = min(free, key=lambda h: abs(h - x_gnd))
-            r_gnd = self.free_rail_row(top_row + 3, x_gnd)
-            self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
-                           'gnd', f'{tag} 저항 아래 -> GND',
-                           width=2, marker_near=(x_from - 22, y_r + 2))
+            x_from = min(free, key=lambda h: abs(h - x_rail))
+            r_rail = self.free_rail_row(top_row + 3, x_rail)
+            self.step_wire([(x_from, y_end), (x_rail, self.r_y(r_rail))],
+                           kind, what, width=2, marker_near=(x_from - 22, y_end + 2))
         finally:
             self._keep_parts = False
             self._pull_parts = False
@@ -3222,7 +3248,7 @@ def place_wire_cost(chips, wire, pins=None):
 
 def mid_rail_rows(circuit, slots, bridge):
     """가운데 레일에서 이미 쓰는 행 — 칩 pin 14 전원선(그 행 GND 홀 위를 지나 VCC 에 꽂힌다), 브리지
-    둘, f쪽 입력 점퍼. LED GND 점퍼가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
+    둘, f쪽 입력 점퍼. LED 레일 점퍼(GND·VCC)가 여기 착지하면 `free_rail_row` 가 옆 행으로 비켜 사선이 된다."""
     used = {slots[s] for s in circuit.chips.values()}
     rows = used | set(bridge)
     pins = circuit_pins(circuit)
@@ -3248,8 +3274,8 @@ def bridge_rows(slots, rows=None):
 def led_rows(circuit, slots, bridge):
     """회로의 LED 윗행 {태그: 행} — DP.
 
-    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(저항 아랫다리 = GND 점퍼
-    출발 행)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
+    태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상, 윗행+3(레일 점퍼 출발 행 — 보통
+    사슬은 저항 아랫다리 → GND, Negative 사슬은 LED 애노드 → +5V)이 레일 빈 행·가운데 레일 사용 행이 아니다(GND 점퍼가 곧다). 그 LED 로 가는 선(모든 단계
     — MUX L1 처럼 임시 급전과 최종 Y 를 같이 받는 LED 도 그냥 더한다)의 근사 비용 합이 가장 작은
     조합, 동률이면 위쪽. LED 가 없으면 {}, 다 놓을 수 없으면 None."""
     if not circuit.leds:

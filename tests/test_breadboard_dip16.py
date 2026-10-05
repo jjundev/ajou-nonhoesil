@@ -161,5 +161,58 @@ class RouterDip16(unittest.TestCase):
         self.assertEqual(path[1][1], (bb.r_y(14) + bb.r_y(15)) / 2)
 
 
+class NegativeLed(unittest.TestCase):
+    """출력 0 에서 켜지는 LED(교안 실험5 p9) — 신호 → 330Ω → LED(캐소드 → 애노드) → +5V."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.bb = _board(cls.mod)
+        cls.R = cls.bb.cols['right']
+        cls.bb.led_chain(cls.R['a'], 10, 'Y0', '시험', block='right', active_low=True)
+        cls.ch = cls.bb.led_chains[-1]
+
+    def test_저항이_신호_옆_LED_가_그다음(self):
+        s, R = self.bb.sym, self.R
+        self.assertEqual(self.ch['signal'], s(R['a'], 10))
+        self.assertEqual(self.ch['res_top'], s(R['b'], 10))
+        self.assertEqual(self.ch['res_bottom'], s(R['b'], 12))
+        self.assertEqual(self.ch['cathode'], s(R['c'], 12))
+        self.assertEqual(self.ch['anode'], s(R['c'], 13))
+        self.assertIs(self.ch['active_low'], True)
+
+    def test_애노드_줄에서_가운데_VCC_로(self):
+        (kind, pts), = [(k, p) for k, p, d in self.bb._segments if d == 'Y0 LED 애노드 -> +5V']
+        self.assertEqual(kind, 'vcc')
+        self.assertEqual(pts[0], (self.R['a'], self.bb.r_y(13)))
+        self.assertEqual(pts[-1], (self.R['mid_vcc'], self.bb.r_y(13)))
+
+    def test_넷은_신호_저항_캐소드_애노드_VCC(self):
+        nets = self.bb.nets()
+
+        def net_of(label):
+            return next(n for n in nets if label in n['labels'])
+        self.assertIn('vcc', net_of('LED Y0 애노드')['rails'])
+        self.assertIs(net_of('LED Y0 캐소드'), net_of('저항1(330Ω) 아랫다리'))
+
+    def test_순서표_사슬_줄에_0_이면_켜짐(self):
+        self.assertTrue(any('0 이면 켜짐' in st['desc'] for st in self.bb.steps))
+
+    def test_보통_사슬은_키가_그대로(self):
+        bb = _board(self.mod)
+        bb.led_chain(self.R['a'], 10, 'Y0', '시험', block='right')
+        self.assertEqual(set(bb.led_chains[-1]),
+                         {'tag', 'signal', 'anode', 'cathode', 'res_top', 'res_bottom'})
+
+    def test_기준선의_Negative_사슬은_그대로(self):
+        """다음 단계 그림에서 같은 사슬은 회색·번호 없음이다 — 열쇠가 극성 따라 어긋나면 매 단계
+        새로 꽂으라고 나온다."""
+        snap = self.bb.snapshot()
+        bb = _board(self.mod, baseline=snap)
+        bb.led_chain(self.R['a'], 10, 'Y0', '시험', block='right', active_low=True)
+        self.assertFalse(any('0 이면 켜짐' in st['desc'] for st in bb.steps))
+        self.assertTrue(any('0 이면 켜짐' in k for k in bb.kept))
+
+
 if __name__ == '__main__':
     unittest.main()

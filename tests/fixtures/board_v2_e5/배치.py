@@ -3,6 +3,7 @@
 #
 #   K1 : 74HC42 (U1) — 입력 A·B·C·D = pin 15·14·13·12(f쪽, 가운데 GND 레일에서), 출력 Y0~Y9 =
 #        pin 1~7·9~11. 칩 핀은 전부 쓴다(미사용 없음).
+#   LED 사슬은 Negative Logic(교안 p9) — 신호 → 330Ω → LED → +5V, 출력 0 에서 켜진다.
 #   LED 는 칩 핀 행 순서다(R10, 사용자 #13): Y0 Y1 Y2 Y3 Y4 Y5 Y9 Y6 Y8 Y7. Y7·Y8·Y9 가 pin 9·10·11
 #   (행 k+7·k+6·k+5)이라 진리표 순서로 두면 건너는 선이 엇갈린다.
 #   a쪽 출력 → LED 선은 칩 이름 상자에 가까운 핀부터 적는다(pin 4, 3, 2, 1, 5, 6, 7) — 이름 상자가
@@ -32,6 +33,7 @@ _INPUTS = [(1, 'A', 'U1', 15), (1, 'B', 'U1', 14), (1, 'C', 'U1', 13), (1, 'D', 
 
 _INPUT_NOTE = ('입력은 GND(=0) 에 꽂힌 자리로 그렸다. 1 을 줄 때는 그 점퍼의 레일 쪽 끝만 '
                '빨간 +5V 레일로 옮겨 꽂는다.')
+_LOW_NOTE = 'Y0~Y9 LED 는 출력 0 에서 켜진다(Negative Logic).'
 
 
 def _fixed(bb, stage, superset=False, layout=None):
@@ -46,7 +48,8 @@ def _fixed(bb, stage, superset=False, layout=None):
     bb.bridge_rails(L['vcc'], L['mid_vcc'], vcc_row, kind='vcc')
     bb.connect_power(k, gnd_col='a')
     for tag in _LEDS:
-        bb.led_chain(R['a'], lay['leds']['bcd'][tag], tag, f'{tag} — 진리표 {tag} 열', block='right')
+        bb.led_chain(R['a'], lay['leds']['bcd'][tag], tag, f'{tag} — 진리표 {tag} 열', block='right',
+                     active_low=True)
     for _s, name, chip, pin in _INPUTS:
         _input_jumper(bb, L, _dip_pin_row(k, pin, 16), name, f'{chip} pin {pin}', side='f', col='j')
 
@@ -57,6 +60,7 @@ def _draw(bb, stage):
     _fixed(bb, stage)
     draw_routed(bb, BCD.wires, place_paths(BCD, LAYOUT), stage)
     bb.note(_INPUT_NOTE)
+    bb.note(_LOW_NOTE)
 
 
 def build_trial_bcd(output_path, template_path=None, stage=None, baseline=None, layer=None):
