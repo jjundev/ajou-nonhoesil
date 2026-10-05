@@ -181,8 +181,8 @@ class RenderedContract(unittest.TestCase):
         """위 검사가 무엇을 막는지 — 중앙 레일쌍 사이 여백(좌 중앙 VCC 484 ~ 우 중앙
         GND 542)은 `_input_jumper` 의 배지와 번호 원 자리를 한 번에 **입력 한 행**만
         받는다. 같은 행에 좌 f 쪽과 우 a 쪽 입력을 넣으면 기본 자리가 같아 번호 원
-        둘이 정확히 포개진다 — 상자가 같으니 원도 같은 자리다."""
-        bb = self.mod.BreadboardRenderer()
+        둘이 정확히 포개진다 — 상자가 같으니 원도 같은 자리다. v1 판형 이야기다 — v2 는 아래."""
+        bb = self.mod.BreadboardRenderer(board='v1')
         bb.enable_steps()
         bb.draw_chip('74HC08', 7)
         bb.draw_chip('74HC08', 7, block='right')
@@ -192,6 +192,25 @@ class RenderedContract(unittest.TestCase):
         self.assertEqual(len(bb.marker_boxes), 2)
         self.assertEqual(bb.marker_boxes[0], bb.marker_boxes[1])
         self.assertTrue(_inter(*bb.marker_boxes))
+
+    def test_v2_는_겹치는_입력_번호_원이_비킨다(self):
+        """v2(읽기 규칙)는 엔진 고정 부품 번호 원이 R11 에 걸리면 가까운 빈 자리로 비킨다
+        (`_settle_marker`, 2026-10-05 배치 탐색)."""
+        bb = self.mod.BreadboardRenderer(board='v2')        # 입력 원의 기본 자리를 재는 판
+        bb.enable_steps()
+        bb.draw_chip('74HC08', 7)
+        bb.partial = True
+        L = bb.cols['left']
+        self.mod._input_jumper(bb, L, 11, 'A', '74HC08 pin 10', side='f')
+        bb2 = self.mod.BreadboardRenderer(board='v2')
+        bb2.enable_steps()
+        bb2.draw_chip('74HC08', 7)
+        bb2.partial = True
+        x0, y0, _x1, _y1 = bb._marker_slots[0]
+        bb2.step_note('sig', 'x', 'y', '먼저 앉은 원', marker_at=(x0 + 8, y0 + 8))
+        self.mod._input_jumper(bb2, L, 11, 'A', '74HC08 pin 10', side='f')
+        self.assertEqual(len(bb2.marker_boxes), 2)
+        self.assertFalse(_inter(*bb2.marker_boxes))
 
     def test_배선_색이_넷을_넘지_않는다(self):
         """이전 판은 한 장에 16색을 썼고 그중 눈으로 구분 안 되는 쌍이 여럿이었다.

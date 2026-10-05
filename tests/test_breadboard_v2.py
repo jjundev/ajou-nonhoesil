@@ -508,6 +508,29 @@ class Readability(unittest.TestCase):
         self.assertEqual(bb.marker_problems(), [])
 
 
+    def test_고정_부품_번호_원은_겹치면_가까운_빈_자리로_비킨다(self):
+        """2026-10-05 배치 탐색 — 입력 행이 LED 행 바로 아래면 입력 점퍼 번호 원(가운데 여백, 18px
+        위)이 LED 사슬 번호 원과 겹쳐 후보가 R11 로 떨어졌다. 엔진 고정 부품(`marker_near`)만 비킨다."""
+        bb, L = self.board()
+        bb.step_note('sig', '우 b28', '우 c31', 'LED', marker_near=(643, bb.r_y(29)))
+        bb.step_wire([(L['mid_gnd'], bb.r_y(30)), (L['j'], bb.r_y(30))], 'sig', '입력',
+                     marker_near=(638, bb.r_y(30) - 18))
+        self.assertEqual(bb.marker_problems(), [])
+        self.assertNotEqual(bb._marker_slots[-1][:2], (638 - 8, bb.r_y(30) - 18 - 8))
+
+    def test_고정_부품_번호_원은_비어_있으면_그_자리(self):
+        bb, L = self.board()
+        bb.step_note('sig', '우 b28', '우 c31', 'LED', marker_near=(643, bb.r_y(29)))
+        self.assertEqual(bb._marker_slots, [(635, bb.r_y(29) - 8, 651, bb.r_y(29) + 8)])
+        self.assertEqual(bb.marker_boxes, bb._marker_slots)
+
+    def test_걷기_번호_원은_꽂힌_홀을_안_덮는다(self):
+        """2026-10-05 배치 탐색 8걷기 — 유령선 번호 원이 다른 번호 원만 피하고 중앙 GND 레일 홀을 덮었다."""
+        bb, L = self.board()
+        bb.lead(L['mid_gnd'], bb.r_y(23), '점퍼')
+        bb._ghost_wire([(L['j'], bb.r_y(23)), (L['mid_gnd'] * 2 - L['j'], bb.r_y(23))], 5)
+        self.assertEqual([p for p in bb.marker_problems() if '홀' in p], [])
+
 class BoardContract(unittest.TestCase):
     """판형은 도장·사이드카에 남고, 주차 BOARD 와 렌더러 판형이 어긋나면 멈춘다."""
 

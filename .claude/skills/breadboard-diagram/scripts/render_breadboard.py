@@ -1141,6 +1141,18 @@ class BreadboardRenderer:
         ux, uy = (x1 - x0) / span, (y1 - y0) / span
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
         x, y = mx, my
+        if self.spec.readability:
+            # v2: 다른 번호 원만이 아니라 꽂힌 홀·칩 몸통도 피한다(R11). 2026-10-05 배치 탐색 8걷기 —
+            # 유령선 번호 원이 중앙 GND 레일 홀을 덮었다. 구간을 따라 4px 씩 가운데부터 훑는다
+            for k in sorted(range(-int(span / 2) + 8, int(span / 2) - 7, 4), key=lambda k: (abs(k), k)):
+                cx, cy = mx + ux * k, my + uy * k
+                box = (cx - 8, cy - 8, cx + 8, cy + 8)
+                if (not any(_boxes_touch(box, b) for b in self.marker_boxes)
+                        and not any(box[0] - 1 <= hx <= box[2] + 1 and box[1] - 1 <= self.r_y(hr) <= box[3] + 1
+                                    for hx, hr in self._leads)
+                        and not any(_boxes_touch(box, b) for b, _cx, _ch in self._chip_bodies())):
+                    self._marker_removed(int(cx), int(cy), n)
+                    return
         for k in (0, 24, -24, 48):
             x, y = mx + ux * k, my + uy * k
             box = (x - 8, y - 8, x + 8, y + 8)
@@ -1149,7 +1161,7 @@ class BreadboardRenderer:
         self._marker_removed(int(x), int(y), n)
 
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
-                  frm=None, to=None):
+                  frm=None, to=None, marker_near=None):
         """배선 하나 + 결선 순서표 한 줄.
 
         `desc` 는 짧은 뜻풀이만 준다 — 어디서 어디로 가는지는 좌표에서
@@ -1161,7 +1173,13 @@ class BreadboardRenderer:
 
         따라 그리기 층(`layer`)이면 번호로 모양을 정한다(`_layer_view`). 어느 모양이든
         점유표·구간·결선 순서표에는 남는다 — 번호와 뒤 배선 자리가 완성본과 같아야 한다.
+
+        `marker_near` 는 엔진 고정 부품(전원선·LED 사슬·입력 점퍼)의 기본 자리다 — v2 는 그 자리가
+        R11 에 걸리면 가까운 빈 자리로 비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라
+        그대로 찍는다.
         """
+        if marker_near is not None and not self.spec.readability and marker_at is None:
+            marker_at = marker_near
         key = (kind, self._endpoint(points[0]), self._endpoint(points[-1]))
         if self.ghost is not None and key in self.ghost['wires']:
             n = self.ghost['wires'][key]
@@ -1184,6 +1202,8 @@ class BreadboardRenderer:
             self.new_signal.append(key)
         if self.spec.readability:
             # 자리는 보이든 말든 늘 정한다 — 같은 선 순서면 완성본·층 그림·단계 그림이 같은 자리다
+            if marker_at is None and marker_near is not None:
+                marker_at = self._settle_marker(*marker_near, own=len(self._segments) - 1)
             if marker_at is None:
                 marker_at = self._auto_marker(len(self._segments) - 1)
                 if marker_at is None:
@@ -1211,13 +1231,16 @@ class BreadboardRenderer:
                            'desc': desc, 'count': count})
         return n
 
-    def step_note(self, kind, frm, to, desc, count=1, marker_at=None):
+    def step_note(self, kind, frm, to, desc, count=1, marker_at=None, marker_near=None):
         """그림에 이미 그려진 것을 표에 한 줄로 묶는다.
 
         `marker_at` 을 주면 보드 위에도 번호 원을 찍는다. **부품을 꽂는
         단계에는 반드시 준다** — 안 주면 표에는 번호가 있는데 그림에는 없어서,
-        따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다.
+        따라 그리는 사람이 그 차례에서 그림을 뒤지다 막힌다. `marker_near` 는 `step_wire` 와 같다.
         """
+        if marker_near is not None and marker_at is None:
+            marker_at = (self._settle_marker(*marker_near) if self.spec.readability and not self._pull_parts
+                         else marker_near)
         if self.spec.readability and marker_at is not None and not self._pull_parts:
             self._marker_slots.append((marker_at[0] - 8, marker_at[1] - 8,
                                        marker_at[0] + 8, marker_at[1] + 8))
@@ -1330,14 +1353,14 @@ class BreadboardRenderer:
             self.step_note('sig', self.addr(x_led, y_a), self.addr(x_res, y_r),
                            f'{tag}: LED({self.addr(x_led, y_a)}→{self.addr(x_led, y_k)}) + '
                            f'330Ω({self.addr(x_res, y_k)}→{self.addr(x_res, y_r)}) 직렬 · {desc}',
-                           marker_at=(x + marker_dx, y_k))
+                           marker_near=(x + marker_dx, y_k))
             x_gnd = self.nearest_gnd_rail(x_led, block)
             free = [x, x_led] + ([group[i + 3 * step]] if 0 <= i + 3 * step < len(group) else [])
             x_from = min(free, key=lambda h: abs(h - x_gnd))
             r_gnd = self.free_rail_row(top_row + 3, x_gnd)
             self.step_wire([(x_from, y_r), (x_gnd, self.r_y(r_gnd))],
                            'gnd', f'{tag} 저항 아래 -> GND',
-                           width=2, marker_at=(x_from - 22, y_r + 2))
+                           width=2, marker_near=(x_from - 22, y_r + 2))
         finally:
             self._keep_parts = False
             self._pull_parts = False
@@ -1469,11 +1492,11 @@ class BreadboardRenderer:
         r14 = self.free_rail_row(start_row, x_vcc)
         self.step_wire([(c['g'], self.r_y(start_row)), (x_vcc, self.r_y(r14))],
                        'vcc', 'pin 14 -> +5V 레일',
-                       marker_at=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
+                       marker_near=((c['g'] + x_vcc) // 2, self.r_y(start_row) - 11))
         r7 = self.free_rail_row(start_row + 6, x_gnd)
         self.step_wire([(c[gnd_col], self.r_y(start_row + 6)), (x_gnd, self.r_y(r7))],
-                       'gnd', 'pin 7 -> GND 레일',
-                       marker_at=gnd_marker_at or ((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
+                       'gnd', 'pin 7 -> GND 레일', marker_at=gnd_marker_at,
+                       marker_near=((c['d'] + x_gnd) // 2, self.r_y(start_row + 6) - 11))
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일. 좌우 블록은 a~e 쪽과 f~j 쪽에
@@ -1786,6 +1809,42 @@ class BreadboardRenderer:
                     if self._marker_clear(x, y, own=idx):
                         return (x, y)
         return None
+
+    # 엔진 고정 부품 번호 원이 비킬 때 훑는 자리 — 4px 격자, 32px 안, 가까운 순(동률은 가로 먼저)
+    _SETTLE_OFFSETS = sorted(((dx, dy) for dx in range(-32, 33, 4) for dy in range(-32, 33, 4)
+                              if (dx, dy) != (0, 0)),
+                             key=lambda d: (d[0] ** 2 + d[1] ** 2, abs(d[1]), d[0], d[1]))
+
+    def _marker_fits(self, x, y, own=None):
+        """(x, y) 번호 원이 `marker_problems()` 에 안 걸리는가 — 꽂힌 홀, 다른 번호 원(자리), 칩 몸통,
+        배선 둘 이상(자기 배선 포함), 그리고 이미 그린 신호 이름 배지."""
+        box = (x - 8, y - 8, x + 8, y + 8)
+        if any(box[0] - 1 <= hx <= box[2] + 1 and box[1] - 1 <= self.r_y(hr) <= box[3] + 1
+               for hx, hr in self._leads):
+            return False
+        if any(not (box[2] <= m[0] or m[2] <= box[0] or box[3] <= m[1] or m[3] <= box[1])
+               for m in self._marker_slots + self.marker_boxes):
+            return False
+        if any(not (box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1])
+               for b, _cx, _ch in self._chip_bodies()):
+            return False
+        if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
+            return False
+        under = sum(1 for _k, pts, _d in self._segments
+                    if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])))
+        return under <= 1
+
+    def _settle_marker(self, x, y, own=None):
+        """엔진 고정 부품의 번호 원 자리 — 기본 자리 (x, y) 가 R11 을 지키면 그대로(지금 그림이 안
+        바뀐다), 아니면 가까운 순으로 아무것도 안 가리는 자리. 없으면 기본 자리 — verify() 가 멈춘다.
+        2026-10-05 배치 탐색: 입력 행이 LED 행 바로 아래면 입력 점퍼 원이 LED 사슬 원과 겹쳤다."""
+        if self._marker_fits(x, y, own):
+            return (x, y)
+        for dx, dy in self._SETTLE_OFFSETS:
+            cx, cy = x + dx, y + dy
+            if self._marker_clear(cx, cy, own=own) and self._marker_fits(cx, cy, own):
+                return (cx, cy)
+        return (x, y)
 
     def marker_problems(self):
         """R11 — 번호 원이 가리는 것: 꽂힌 홀(끝점·부품 다리), 다른 번호 원, 칩 몸통(칩 이름·핀
@@ -2495,6 +2554,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         badge_x = s.mid_badge_x
         default_marker = (badge_x, -18)
     mx, dy = marker or default_marker
+    pin = {'marker_at': (mx, y_row + dy)} if marker else {'marker_near': (mx, y_row + dy)}
     p0, p1 = (x_rail, y_rail), (c[col], y_row)
     # 걷기 보드(`removal_board`)가 이 점퍼를 걷는 장이면 `step_wire` 는 유령선만 그리고
     # 곧장 돌아온다 — 점유표도 구간도 레일 접촉도 안 남긴다. 꽂혀 있지 않은 선이다.
@@ -2503,8 +2563,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     ghosted = bb.ghost is not None and (
         'sig', bb._endpoint(p0), bb._endpoint(p1)) in bb.ghost['wires']
     bb.step_wire([p0, p1], 'sig',
-                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요',
-                 marker_at=(mx, y_row + dy))
+                 f'입력 {name} -> {target} · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요', **pin)
     if not ghosted:
         # 이 점퍼는 `kind='sig'` 로 그린다(넷 검사가 입력을 GND 와 한 넷으로 세면 안
         # 되니까) — 그래서 `step_wire` 가 `touch_rail` 을 안 부르고, 레일 연결성 검사가
