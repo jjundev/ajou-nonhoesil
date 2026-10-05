@@ -1528,6 +1528,15 @@ class TestRebuildBanner(unittest.TestCase):
         self.assertIn("뺄 칩: 7490", banner)
         self.assertIn("꽂을 칩: 741", banner)
 
+    def test_all_은_레일_브리지만_남긴다(self):
+        """실험05 C2 — LED 방향이 반대라 사슬·전원선까지 뽑는다(netlist M16). 사슬을 남기라는
+        문구가 남으면 1단계 지시와 어긋난다."""
+        banner = self._banner("- rebuild: all", self.STAGES)
+        self.assertIn("LED 사슬까지 전부 뽑아요", banner)
+        self.assertIn("레일 브리지만 그대로", banner)
+        self.assertNotIn("LED 사슬은 그대로", banner)
+        self.assertIn("뺄 칩: 7490", banner)
+
     def test_rebuild_가_없으면_단계_배너_그대로다(self):
         """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
         banner = self._banner("", self.STAGES)

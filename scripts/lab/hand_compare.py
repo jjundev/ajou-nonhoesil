@@ -209,7 +209,8 @@ CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e3_hs', 'e3_fs', 'e3_fs_s1', 'e3_fs_s2',
             'e4_mux', 'e4_mux_s1', 'e4_mux_s2', 'e4_mux_s3', 'e4_mux_s4',
             'e4_mux_s5', 'e4_mux_s6', 'e4_mux_s7', 'e4_mux_s8',
-            'e4_dmux', 'e4_dmux_s1', 'e4_dmux_s2', 'e4_dmux_s3', 'e4_dmux_s4')
+            'e4_dmux', 'e4_dmux_s1', 'e4_dmux_s2', 'e4_dmux_s3', 'e4_dmux_s4',
+            'e5_bcd', 'e5_xs3')
 
 
 class CompareError(ValueError):

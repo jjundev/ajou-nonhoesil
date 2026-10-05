@@ -14,6 +14,15 @@ from pathlib import Path
 
 BOARD_L, BOARD_R = 149, 877
 
+
+def board_bounds(bb):
+    """보드 안쪽 x 범위 — 이 밖의 배지는 여백이다. `BOARD_L`·`BOARD_R` 은 v1 양식(998 폭) 값이라 v2 는
+    판형 테두리(`spec.board_left`·`board_right`)를 쓴다. v2 의 a쪽 입력 배지는 좌 바깥 레일 왼쪽, 테두리
+    안에 앉는다(SKILL §4 `INPUT_TRI`) — v1 값으로 재면 보드 밖으로 잡힌다(2026-10-05 실험05)."""
+    if bb.board == 'v1':
+        return BOARD_L, BOARD_R
+    return bb.spec.board_left, bb.spec.board_right
+
 _CACHE = {}
 
 
@@ -37,7 +46,8 @@ def _render(mod, fn):
     orig_badge, orig_export = cls.draw_badge, cls.export
 
     def spy_badge(self_, x, y, text, *a, **k):
-        if BOARD_L < x < BOARD_R:
+        lo, hi = board_bounds(self_)
+        if lo < x < hi:
             counted[self_] = counted.get(self_, 0) + 1
         return orig_badge(self_, x, y, text, *a, **k)
 
