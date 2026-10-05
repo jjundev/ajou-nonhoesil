@@ -47,5 +47,19 @@ class TestNetlistWording(unittest.TestCase):
         self.assertIn("| ~~M5~~ |", self.text)
 
 
+class TestDerivedFiles(unittest.TestCase):
+    def test_기록_T1_은_열_행이다(self):
+        text = (E5 / "체크리스트" / "기록.md").read_text(encoding="utf-8")
+        t1 = text.split("### T1")[1].split("\n## ")[0].split("\n### ")[0]
+        rows = [l for l in t1.splitlines() if l.startswith("|") and "---" not in l][1:]
+        self.assertEqual(len(rows), 10)
+
+    def test_인쇄본에_10_15_흔적이_없다(self):
+        html = (E5 / "체크리스트" / "체크리스트.html").read_text(encoding="utf-8")
+        self.assertNotIn("열여섯 행", html)
+        for n in range(10, 16):
+            self.assertNotIn(f"1-2 {n:04b}.jpg", html)
+
+
 if __name__ == "__main__":
     unittest.main()
