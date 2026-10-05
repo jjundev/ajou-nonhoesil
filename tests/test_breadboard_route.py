@@ -7,6 +7,8 @@
 """
 import importlib.util
 import json
+import math
+import random
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -229,3 +231,115 @@ class ChosenWeight(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def _ref_on_seg(p, a, b, margin=6):
+    """선검사를 넣기 전 엔진 `_on_seg` 본문 그대로(2026-10-05 `engine/router.py`)."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = (dx * dx + dy * dy) ** .5
+    if length < 1:
+        return False
+    along = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length
+    if along <= margin or length - along <= margin:
+        return False
+    return abs((p[0] - a[0]) * dy - (p[1] - a[1]) * dx) / length < 1.5
+
+
+def _ref_seg_in_box(a, b, box):
+    """선검사를 넣기 전 엔진 `_seg_in_box` 본문 그대로(2026-10-05 `engine/checks.py`)."""
+    x0, y0, x1, y1 = box
+    n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) / 2) + 1
+    return any(x0 < a[0] + (b[0] - a[0]) * t / n < x1 and y0 < a[1] + (b[1] - a[1]) * t / n < y1
+               for t in range(n + 1))
+
+
+def _coord(rng, hi):
+    """판 좌표 꼴 — 정수, 반 px, 아무 실수, 0.1 배수(0.1 + 0.2 꼴 반올림이 나온다)."""
+    k = rng.randrange(4)
+    if k == 0:
+        return rng.randint(0, hi)
+    if k == 1:
+        return rng.randint(0, 2 * hi) / 2
+    if k == 2:
+        return rng.random() * hi
+    return 0.1 * rng.randint(0, 10 * hi)
+
+
+def _segment(rng, hi):
+    """가로·세로·대각선·1px 미만 구간 하나."""
+    a = (_coord(rng, hi), _coord(rng, hi))
+    k = rng.randrange(4)
+    if k == 0:
+        return a, (_coord(rng, hi), a[1])
+    if k == 1:
+        return a, (a[0], _coord(rng, hi))
+    if k == 2:
+        return a, (_coord(rng, hi), _coord(rng, hi))
+    return a, (a[0] + rng.random() * .9, a[1])
+
+
+def _near_points(rng, a, b):
+    """구간 ab 둘레의 점 — 끝 여백(6) 경계 앞뒤, 수직 거리 1.5·2 경계 앞뒤, 반 px 로 맞춘 것도."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = math.hypot(dx, dy) or 1.0
+    ux, uy = dx / length, dy / length
+    pts = [a, b]
+    for t in (0, .01, 5.99, 6, 6.01, length / 2, length - 6.01, length - 6, length, rng.random() * length):
+        for s in (0, 1.49, 1.5, 1.51, 1.99, 2, 2.01, rng.uniform(-5, 5)):
+            for sign in (1, -1):
+                p = (a[0] + t * ux - sign * s * uy, a[1] + t * uy + sign * s * ux)
+                pts += [p, (round(p[0] * 2) / 2, round(p[1] * 2) / 2)]
+    return pts
+
+
+def _boxes(rng, a, b):
+    """구간 ab 의 끝 둘레에 변이 걸치는 상자 — 변이 끝점과 같음·±ulp·±0.5·±1·±1.000001, 아무 상자 하나."""
+    xs, ys = sorted((a[0], b[0])), sorted((a[1], b[1]))
+    out = []
+    for e in (0, 1e-9, -1e-9, .5, -.5, 1, -1, 1.000001, -1.000001):
+        out += [(xs[1] + e, ys[0] - 5, xs[1] + 20, ys[1] + 5),
+                (xs[0] - 20, ys[0] - 5, xs[0] - e, ys[1] + 5),
+                (xs[0] - 5, ys[1] + e, xs[1] + 5, ys[1] + 20),
+                (xs[0] - 5, ys[0] - 20, xs[1] + 5, ys[0] - e)]
+    x0, y0 = _coord(rng, 200), _coord(rng, 200)
+    out.append((x0, y0, x0 + rng.uniform(1, 40), y0 + rng.uniform(1, 40)))
+    return out
+
+
+class PrefilterSame(unittest.TestCase):
+    """`_on_seg`·`_seg_in_box` 의 범위 선검사가 답을 안 바꾼다 — 경로가 한 칸도 안 바뀌어야 하는 속도
+    개선이다(`docs/plans/2026-10-05-배선기-속도-설계.md`). 대조용 `_ref_*` 는 선검사 전 본문이다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _renders.engine()
+
+    def test_구간_위_점_검사가_원래와_같다(self):
+        rng = random.Random(20261005)
+        bad = []
+        for _ in range(1000):
+            a, b = _segment(rng, 800)
+            for p in _near_points(rng, a, b):
+                for margin in (6, 0):
+                    want = _ref_on_seg(p, a, b, margin)
+                    if self.mod._on_seg(p, a, b, margin) != want:
+                        bad.append((p, a, b, margin, want))
+        self.assertEqual(bad[:5], [], f'{len(bad)}건 다름')
+
+    def test_선분_상자_검사가_원래와_같다(self):
+        rng = random.Random(20261005)
+        bad = []
+        for _ in range(500):
+            a, b = _segment(rng, 200)
+            for box in _boxes(rng, a, b):
+                want = _ref_seg_in_box(a, b, box)
+                if self.mod.BreadboardRenderer._seg_in_box(a, b, box) != want:
+                    bad.append((a, b, box, want))
+        self.assertEqual(bad[:5], [], f'{len(bad)}건 다름')
+
+    def test_반올림으로_끝점을_넘는_훑기점(self):
+        # 0.7000000000000001 + (1.8 - 0.7000000000000001) == 1.8000000000000003 — 원래 훑기는 왼쪽 변이
+        # 1.8 인 상자 안이라고 본다. 딱 맞는 경계로 일찍 끝내면 이 답이 바뀐다.
+        a, b, box = (0.1 * 7, 5), (1.8, 5), (1.8, 0, 10, 10)
+        self.assertTrue(_ref_seg_in_box(a, b, box))
+        self.assertTrue(self.mod.BreadboardRenderer._seg_in_box(a, b, box))
