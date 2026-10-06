@@ -1,6 +1,6 @@
 {
   "original": "<p>다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)</p>",
-  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>E</th><th>S1</th><th>S0</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+  "conditions": "<div class=\"table-wrap work-table\"><table><thead><tr><th>E</th><th>S1</th><th>S0</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
   "ask": "<p>표의 빈 출력 Y 네 칸을 채우세요.</p>",
   "problem_figures": [
     "q-mux4-given-01"

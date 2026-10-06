@@ -1,5 +1,5 @@
 {
-  "original": "<p>다음 1-out-of-4 코드를 Excess-3 코드로 변환 하시오.</p><div class=\"table-wrap\"><table><thead><tr><th>D0D1D2D3</th><th></th><th>Excess-3</th></tr></thead><tbody><tr><td>1000</td><td>-></td><td></td></tr><tr><td>0100</td><td>-></td><td></td></tr><tr><td>0010</td><td>-></td><td></td></tr></tbody></table></div>",
+  "original": "<p>다음 1-out-of-4 코드를 Excess-3 코드로 변환 하시오.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>D0D1D2D3</th><th></th><th>Excess-3</th></tr></thead><tbody><tr><td>1000</td><td>-></td><td></td></tr><tr><td>0100</td><td>-></td><td></td></tr><tr><td>0010</td><td>-></td><td></td></tr></tbody></table></div>",
   "conditions": "<p>1-out-of-4 코드는 네 비트 중 한 비트만 1인 코드(one-hot)예요. D0D1D2D3에서 왼쪽이 D0이고, 1이 있는 자리의 번호가 십진수 0~3을 뜻해요.</p>",
   "ask": "<p>세 행을 Excess-3 코드(4비트)로 바꾸세요.</p>",
   "problem_figures": [],

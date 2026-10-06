@@ -7,6 +7,7 @@ import html
 ROOT=Path(__file__).parent
 sys.path.insert(0,str(ROOT.parents[2]))
 from scripts.lab.review_pack.html2md import Parser,Node,serialize
+from scripts.lab.review_pack.work_table import mark_work_tables
 
 ASK={
  'q-mux2':'회로, 논리식, 진리표를 작성하세요.',
@@ -81,6 +82,7 @@ def main():
         if ident=='q-tri': notes.append('원문 버퍼 표는 nOE가 Low일 때 동작해요. 제공 답안의 Active High 캡션과 다르므로 이 해설은 활성 Low 표를 기준으로 설계했어요.')
         if ident=='q-demux4': notes.append('원자료는 출력이 채워진 표예요. 문제지는 같은 입력 조건으로 출력란만 비웠어요. 원문 D=0의 X 표기와 이상 AND형 DMUX의 계산값 0을 구분해요.')
         if ident in {'q-demuxdef','q-difference','q-demux4'}: notes.append('기출 여부를 확인하지 못한 자료의 문항이에요. 실제 기출로 단정하지 않아요.')
+        original,conditions=mark_work_tables(original),mark_work_tables(conditions)   # 채울 표는 풀이 칸으로
         obj=dict(original=original,conditions=conditions,ask='<p>'+ASK[ident]+'</p>',
             problem_figures=[ident+'-given-01'] if ident in GIVEN else [],
             hints=[dict(label=HINT_LABEL[ident],html='<p>'+HINT[ident]+'</p>')],

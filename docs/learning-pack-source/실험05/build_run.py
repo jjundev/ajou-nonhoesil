@@ -2,6 +2,8 @@
 import json, sys, shutil
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from scripts.lab.review_pack.work_table import mark_work_tables, FIELDS
 from figlib import render_png, sha
 import figs
 from sections import S, TOPICS
@@ -109,6 +111,7 @@ registry.sort(key=lambda r: r['id'])
 for tid, html in S.items():
     (RUN / 'sections' / f'{tid}.html').write_text(html, encoding='utf-8')
 for pid, obj in PR.P.items():
+    obj = {**obj, **{k: mark_work_tables(obj[k]) for k in FIELDS}}     # 채울 표는 풀이 칸으로
     (RUN / 'workbook' / f'{pid}.json').write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding='utf-8')
 
 # ------------------------------------------------------------------ manifest

@@ -56,3 +56,45 @@ def test_migrate_keeps_trailing_newline_and_other_fields(tmp_path):
         assert text.endswith('\n') == bool(newline)
         assert json.loads(text)['original'] == MARKED and json.loads(text)['notes'] == []
         assert migrate_workbook_json(path) is False
+
+import glob
+from pathlib import Path
+from scripts.lab.review_pack.work_table import FIELDS
+
+SOURCES = sorted(glob.glob('docs/learning-pack-source/*/workbook/*.json'))
+EXPECTED = {
+    '실험04': {'q-demux4', 'q-mux2-graded', 'q-mux4'},
+    '실험05': {'q-1of4-excess3', 'q-74hc148-table', 'q-dec3x8', 'q-excess3-enc-6row',
+               'q-excess3-enc-exam', 'q-prio-exam', 'q-prio-onehot'},
+}
+
+def _fragments():
+    for f in SOURCES:
+        obj = json.loads(Path(f).read_text(encoding='utf-8'))
+        if isinstance(obj, dict) and all(k in obj for k in FIELDS):
+            yield Path(f).parts[-3], Path(f).stem, obj
+
+def test_every_authored_fragment_obeys_the_work_table_rule():
+    seen = list(_fragments())
+    assert seen, '작성 JSON 을 못 찾았다'
+    for exp, qid, obj in seen:
+        for key in FIELDS: check_work_tables(obj[key], f'{exp}/{qid}')
+
+def test_exactly_the_expected_questions_carry_a_work_table():
+    found = {}
+    for exp, qid, obj in _fragments():
+        if any('work-table' in obj[k] for k in FIELDS): found.setdefault(exp, set()).add(qid)
+    assert found == EXPECTED
+
+def test_content_loader_rejects_a_blank_table_left_in_the_panel(tmp_path):
+    from scripts.lab.review_pack.workbook_content import load_workbook_content
+    from tests._workbook_fixture import create_workbook_run
+    m, run = create_workbook_run(tmp_path)
+    path = run / m['problems'][0]['workbook_fragment']
+    obj = json.loads(path.read_text(encoding='utf-8'))
+    obj['conditions'] = BLANK
+    path.write_text(json.dumps(obj, ensure_ascii=False), encoding='utf-8')
+    with pytest.raises(ValueError, match='work-table'): load_workbook_content(m, run)
+    obj['conditions'] = MARKED
+    path.write_text(json.dumps(obj, ensure_ascii=False), encoding='utf-8')
+    load_workbook_content(m, run)             # 표지가 있으면 통과
