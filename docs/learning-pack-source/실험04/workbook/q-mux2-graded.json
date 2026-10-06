@@ -1,6 +1,6 @@
 {
   "original": "<p>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 작성하시오. (3점)</p>",
-  "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>Sel</th><th>X0</th><th>X1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+  "conditions": "<div class=\"table-wrap work-table\"><table><thead><tr><th>Sel</th><th>X0</th><th>X1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
   "ask": "<p>회로와 논리식을 쓰고 지정된 네 행의 출력을 구하세요.</p>",
   "problem_figures": [],
   "hints": [

@@ -26,13 +26,40 @@ TABLE_CSS='''/* 표: 격자선, 머리행 강조. 원문 표의 빈 칸은 태�
 }
 #book th { font-weight: 700; background: var(--paper); }
 #book .original td { height: 7mm; }
+/* 채울 표(work-table)는 풀이 칸 맨 위(.work-block)로 옮겨진다. 풀이 공간은 최소 25mm를 남긴다 */
+#book .work-block { flex: none; }
+#book .work-block .table-wrap { margin: 0; }
+#book .work-block table { table-layout: fixed; margin: 0; }
+#book .work-block td { height: 7mm; }
+.page-center > .work-block ~ .work { min-height: 25mm; }
 
 '''
 # 원본 스냅샷 위에 덧씌우는 두 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
 LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR)]
 
+MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로\n"
+             "  if (moved.length) {\n"
+             "    const wb = el('div', 'work-block');\n"
+             "    for (const t of moved) {\n"
+             "      const owner = t.closest('.block');\n"
+             "      wb.append(t);\n"
+             "      if (!owner.querySelector('.prose').textContent.trim() && !owner.querySelector('img, table, .katex')) owner.remove();   // 표만 있던 블록은 빈 라벨째 지운다\n"
+             "    }\n"
+             "    center.append(wb);\n"
+             "  }\n")
+FIT_OLD="  fitStripFormulas(page);\n  const ok = fits();"
+FIT_NEW=("  fitStripFormulas(page);\n"
+         "  const center = page.querySelector('.page-center');   // 풀이 칸으로 옮긴 표가 칸에 안 들어가면 넘침으로 알린다\n"
+         "  const ok = fits() && (!center.querySelector('.work-block') || (center.scrollHeight <= center.clientHeight + 1 && center.scrollWidth <= center.clientWidth + 1));")
+PROBLEM_CENTER="  center.append(el('div', 'work'));"
+# 문제지 템플릿에만 둔다. 해설지는 풀이 단계가 들어갈 높이를 지키려고 빈 표를 패널에 남긴다(완성된 표는 풀이 단계에 있다).
+# 스냅샷이 바뀌어 anchor 가 사라지거나 둘이 되면 실패한다.
+TEMPLATE_PATCHES={
+    'problem.html':[(PROBLEM_CENTER,MOVE_TABLES+PROBLEM_CENTER),(FIT_OLD,FIT_NEW)],
+}
+
 def apply_local_patches(text, name):
-    for old,new in LOCAL_PATCHES:
+    for old,new in LOCAL_PATCHES+TEMPLATE_PATCHES.get(name,[]):
         if text.count(old)!=1: raise ValueError('Local patch anchor not unique in '+name+': '+old[:30])
         text=text.replace(old,new)
     return text

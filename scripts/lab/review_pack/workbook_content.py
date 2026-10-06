@@ -7,6 +7,7 @@ import re
 from .question_bank import _unique_json_object
 from .bank_index import canonical_relative
 from .html2md import Parser
+from .work_table import check_work_tables
 
 AUTHOR_KEYS = {'original','conditions','ask','problem_figures','hints','solution','notes'}
 KINDS = {'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
@@ -83,6 +84,7 @@ def load_workbook_content(manifest, run):
         _shape(obj,AUTHOR_KEYS,p['id'])
         for field in ('original','conditions','ask'):
             check_authored_html(obj[field],run,p['id'],figures,problem=True)
+            check_work_tables(obj[field],p['id'])
         if not isinstance(obj['problem_figures'],list) or any(not isinstance(f,str) for f in obj['problem_figures']):
             raise ValueError(p['id']+': invalid problem figures')
         if len(set(obj['problem_figures']))!=len(obj['problem_figures']):

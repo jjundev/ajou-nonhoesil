@@ -262,6 +262,12 @@ a:focus-visible { outline: .5mm solid var(--focus); outline-offset: .5mm; }
 }
 #book th { font-weight: 700; background: var(--paper); }
 #book .original td { height: 7mm; }
+/* 채울 표(work-table)는 풀이 칸 맨 위(.work-block)로 옮겨진다. 풀이 공간은 최소 25mm를 남긴다 */
+#book .work-block { flex: none; }
+#book .work-block .table-wrap { margin: 0; }
+#book .work-block table { table-layout: fixed; margin: 0; }
+#book .work-block td { height: 7mm; }
+.page-center > .work-block ~ .work { min-height: 25mm; }
 
 /* 수식 */
 .katex { font-size: 1.05em; }

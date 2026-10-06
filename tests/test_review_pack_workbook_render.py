@@ -70,3 +70,22 @@ def test_local_patch_anchor_loss_is_rejected():
     import pytest
     from scripts.lab.review_pack.workbook_render import apply_local_patches
     with pytest.raises(ValueError): apply_local_patches('<style></style>', 'x.html')
+
+def test_work_table_patch_is_only_in_the_problem_template(tmp_path):
+    m, run = create_workbook_run(tmp_path)
+    content = load_workbook_content(m, run)
+    moved = ("panel.querySelectorAll('.work-table')", "el('div', 'work-block')", "center.querySelector('.work-block')")
+    for mode in ('problems', 'answers'):
+        text = render_workbook_html(build_workbook_data(m, content, mode), ASSETS)
+        assert '#book .work-block td' in text and '#book .original td { height: 7mm; }' in text   # CSS 는 공통
+        assert all((s in text) == (mode == 'problems') for s in moved)    # 옮기기·넘침 검사는 문제지에만(해설지는 패널에 둔다)
+
+def test_work_table_patch_anchor_loss_is_rejected():
+    import pytest
+    from scripts.lab.review_pack.workbook_render import apply_local_patches, TEMPLATE_PATCHES
+    anchor = "  center.append(el('div', 'work'));"
+    text = (ASSETS/'workbook'/'problem.html').read_bytes().decode('utf-8').replace('\r\n', '\n')
+    apply_local_patches(text, 'problem.html')                                # 원본은 통과
+    with pytest.raises(ValueError): apply_local_patches(text.replace(anchor, '// gone'), 'problem.html')
+    with pytest.raises(ValueError): apply_local_patches(text + '\n' + anchor, 'problem.html')   # 두 번 나와도 거부
+    assert set(TEMPLATE_PATCHES) == {'problem.html'}
