@@ -76,3 +76,74 @@ def test_published_pack_table_borders_and_no_empty_condition_label():
                 labels = page.locator('#q-dec3x8 .block-label').all_text_contents()
                 assert '조건' in labels
                 assert '원문 대조' not in page.locator('body').inner_text()
+
+def _synthetic_pack(tmp_path, problems, mode):
+    """합성 문항으로 문제지·해설지를 렌더해 로컬 자원과 함께 tmp 에 둔다."""
+    import shutil
+    from scripts.lab.review_pack.workbook_render import render_workbook_html
+    assets = Path('.claude/skills/logic-lab-review-pack/assets')
+    shutil.copytree(assets/'vendor', tmp_path/'assets'/'vendor', dirs_exist_ok=True)
+    entries = []
+    for i, p in enumerate(problems, 1):
+        e = dict(id=p['id'], kind='기출', number=str(i), title=p['id'], section='실험 9 · 테스트', book_page=None,
+                 difficulty=None, sol=None, original_lang='ko', depends_on=[], figures=[],
+                 html={k: p.get(k, '') for k in ('original', 'conditions', 'ask')}, hints=[])
+        if mode == 'answers': e['solution'] = dict(steps=[dict(label='식', html='<p>풀이</p>')], answer='<p>답</p>')
+        entries.append(e)
+    data = dict(meta=dict(mode=mode, title='합성', chapter=0, total=len(entries)), problems=entries)
+    out = tmp_path/f'{mode}.html'
+    out.write_text(render_workbook_html(data, assets), encoding='utf-8')
+    return out
+
+def _table(cols, rows, blank=True, marked=True):
+    head = ''.join(f'<th>H{c}</th>' for c in range(cols))
+    row = '<tr>' + ('<td></td>' if blank else '<td>1</td>') * cols + '</tr>'
+    cls = 'table-wrap work-table' if marked else 'table-wrap'
+    return f'<div class="{cls}"><table><thead><tr>{head}</tr></thead><tbody>{row * rows}</tbody></table></div>'
+
+SYNTH = [
+    dict(id='q-only-table', original='<p>표를 완성하시오.</p>', conditions=_table(8, 4), ask='<p>채우세요.</p>'),
+    dict(id='q-two-tables', original='<p>두 표.</p>' + _table(4, 2), conditions='<p>보조</p>' + _table(4, 2, blank=False, marked=False) + _table(3, 2), ask='<p>채우세요.</p>'),
+    dict(id='q-wide', original='<p>넓은 표</p>' + _table(11, 8), ask='<p>채우세요.</p>'),
+    dict(id='q-plain', original='<p>표 없음</p>', conditions='<p>조건</p>', ask='<p>구하세요.</p>'),
+    dict(id='q-too-big', original='<p>안 들어가는 표</p>' + _table(6, 40), ask='<p>채우세요.</p>'),
+]
+
+def test_work_table_moves_to_the_work_area(tmp_path):
+    pw = pytest.importorskip('playwright.sync_api')
+    path = _synthetic_pack(tmp_path, SYNTH, 'problems')
+    with pw.sync_playwright() as driver:
+        with driver.chromium.launch(channel='chrome') as browser:
+            page = browser.new_page(viewport={'width': 1280, 'height': 900})
+            page.goto(path.resolve().as_uri())
+            page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
+            count = lambda sel: page.locator(sel).count()
+            # 표만 있던 「조건」 블록은 라벨까지 사라지고, 구할 것은 남는다
+            assert '조건' not in page.locator('#q-only-table .panel .block-label').all_text_contents()
+            assert '구할 것' in page.locator('#q-only-table .panel .block-label').all_text_contents()
+            assert count('#q-only-table .panel table') == 0 and count('#q-only-table .page-center > .work-block table') == 1
+            # 표 둘: 둘 다 옮기고 순서를 지키며, 표지 없는 표(내용이 찬 표)는 패널에 남는다
+            assert count('#q-two-tables .page-center > .work-block table') == 2
+            assert page.locator('#q-two-tables .work-block table th').evaluate_all('t=>t.length') == 4 + 3
+            assert count('#q-two-tables .panel table') == 1 and count('#q-two-tables .panel td:empty') == 0
+            # 표가 없는 문항은 그대로
+            assert count('#q-plain .work-block') == 0
+            # 넓은 표는 중앙 폭 안에 들어온다
+            assert page.locator('#q-wide .work-block').evaluate('w=>w.scrollWidth<=w.clientWidth+1')
+            # 표는 풀이 칸 위, 풀이 공간은 25mm 이상 남는다
+            assert page.locator('#q-wide .page-center').evaluate("c=>c.children[0].classList.contains('work-block')")
+            assert page.locator('#q-wide .work').evaluate('w=>w.getBoundingClientRect().height') >= 25 * 96 / 25.4 - 1
+            # 안 들어가는 표는 조용히 잘리지 않고 넘침으로 드러난다
+            assert page.locator('body').get_attribute('data-overflow') == 'q-too-big'
+
+def test_answer_sheet_keeps_the_blank_table_in_the_panel(tmp_path):
+    pw = pytest.importorskip('playwright.sync_api')
+    path = _synthetic_pack(tmp_path, SYNTH[:4], 'answers')
+    with pw.sync_playwright() as driver:
+        with driver.chromium.launch(channel='chrome') as browser:
+            page = browser.new_page(viewport={'width': 1280, 'height': 900})
+            page.goto(path.resolve().as_uri())
+            page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
+            assert page.locator('.work-block').count() == 0          # 풀이 단계가 들어갈 높이를 지킨다
+            assert page.locator('#q-only-table .panel table').count() == 1
+            assert page.locator('body').get_attribute('data-overflow') == ''
