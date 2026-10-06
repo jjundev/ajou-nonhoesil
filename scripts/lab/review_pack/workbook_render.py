@@ -43,7 +43,7 @@ MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // �
              "    for (const t of moved) {\n"
              "      const owner = t.closest('.block');\n"
              "      wb.append(t);\n"
-             "      if (!owner.querySelector('.prose').textContent.trim()) owner.remove();   // 표만 있던 블록은 빈 라벨째 지운다\n"
+             "      if (!owner.querySelector('.prose').textContent.trim() && !owner.querySelector('img, table, .katex')) owner.remove();   // 표만 있던 블록은 빈 라벨째 지운다\n"
              "    }\n"
              "    center.append(wb);\n"
              "  }\n")

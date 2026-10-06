@@ -7,7 +7,7 @@ import sys
 FIELDS = ('original', 'conditions', 'ask')
 MARK = 'work-table'
 WRAP_RE = re.compile(r'<div class="(table-wrap(?: work-table)?)">(.*?)</div>', re.S)
-EMPTY_CELL_RE = re.compile(r'<td>\s*</td>')     # 머리칸(<th>)이 비어 있는 것은 채울 표가 아니다
+EMPTY_CELL_RE = re.compile(r'<td\b[^>]*>(?:\s|&nbsp;|<br\s*/?>)*</td>')     # 머리칸(<th>)이 비어 있는 것은 채울 표가 아니다
 
 def mark_work_tables(html):
     def fix(m):
@@ -21,6 +21,7 @@ def check_work_tables(html, question_id):
     if html.count('<table') != len(wraps):
         raise ValueError(question_id + ': 표는 <div class="table-wrap"> 안에 둬야 한다')
     for cls, body in wraps:
+        if '<div' in body: raise ValueError(question_id + ': table-wrap 안에 다른 div 를 두지 않는다')
         empty, marked = bool(EMPTY_CELL_RE.search(body)), MARK in cls.split()
         if empty and not marked:
             raise ValueError(question_id + ': 빈 칸이 있는 표에 work-table 표지가 없다(좌측 패널에 남는다)')

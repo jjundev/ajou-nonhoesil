@@ -124,3 +124,13 @@ def test_docs_state_the_work_table_rule():
     assert 'work-table' in ref and 'work_table' in ref and 'TEMPLATE_PATCHES' in ref
     assert 'work-table' in skill and 'TEMPLATE_PATCHES' in skill
     assert '두 건' not in skill and '2건' not in ref        # 패치 개수 문구가 낡지 않게
+
+@pytest.mark.parametrize('cell', ['<td>&nbsp;</td>', '<td colspan="2"></td>', '<td><br></td>', '<td> <br/> </td>'])
+def test_other_empty_cell_forms_are_fill_in_cells(cell):
+    html = BLANK.replace('<td></td>', cell)
+    assert 'work-table' in mark_work_tables(html)
+    with pytest.raises(ValueError): check_work_tables(html, 'q')
+
+def test_nested_div_in_table_wrap_is_rejected():
+    with pytest.raises(ValueError, match='q-x'):
+        check_work_tables('<div class="table-wrap"><div>t</div><table><tr><td></td></tr></table></div>', 'q-x')
