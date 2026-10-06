@@ -117,3 +117,10 @@ def test_published_payloads_obey_the_rule_and_match_the_source():
                 check_work_tables(p['html'][key], p['id'])
                 if 'work-table' in p['html'][key]: marked.add(p['id'])
         assert marked == PUBLISHED.get(path.parent.name, set()), f'{path}: 표지 달린 문항이 기대와 다르다'
+
+def test_docs_state_the_work_table_rule():
+    skill = Path('.claude/skills/logic-lab-review-pack/SKILL.md').read_text(encoding='utf-8')
+    ref = Path('.claude/skills/logic-lab-review-pack/references/workbook.md').read_text(encoding='utf-8')
+    assert 'work-table' in ref and 'work_table' in ref and 'TEMPLATE_PATCHES' in ref
+    assert 'work-table' in skill and 'TEMPLATE_PATCHES' in skill
+    assert '두 건' not in skill and '2건' not in ref        # 패치 개수 문구가 낡지 않게

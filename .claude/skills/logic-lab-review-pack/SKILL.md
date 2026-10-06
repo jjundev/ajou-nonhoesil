@@ -70,7 +70,7 @@ RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. �
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
 실험설명의 모든 설명 그림은 원문을 읽어 직접 SVG로 다시 제작하고 진리표는 텍스트 표로 쓴다. 스캔/스크린샷을 설명 그림으로 첨부하지 않는다. 원문·문제은행 증거와 기출풀이 원본 이미지는 보존한다.
 설명은 완성 예제→일부 단계 연습→기출 풀이로 이어진다. 문제에는 필요한 개념으로 돌아가는 링크를 넣는다.
-실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render.LOCAL_PATCHES 두 건(표 테두리 CSS, 빈 조건 블록 생략)만 덧씌운다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
+실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render의 LOCAL_PATCHES(표 테두리 CSS, 빈 조건 블록 생략)와 TEMPLATE_PATCHES(문제지의 채울 표를 work-table 표지로 풀이 칸 맨 위에 옮김)만 덧씌운다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
 우측 요약은 div.sum, 도움말은 details.hint/solution을 사용한다. 자세한 마크업은 authoring.md.
 
 ## 4. 조립과 MD 생성
