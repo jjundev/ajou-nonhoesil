@@ -147,3 +147,30 @@ def test_answer_sheet_keeps_the_blank_table_in_the_panel(tmp_path):
             assert page.locator('.work-block').count() == 0          # 풀이 단계가 들어갈 높이를 지킨다
             assert page.locator('#q-only-table .panel table').count() == 1
             assert page.locator('body').get_attribute('data-overflow') == ''
+
+@pytest.mark.parametrize('exp,ids', [
+    ('실험01', ['q-tt3-4row', 'q-tt3-8row', 'q-xor2-tt']),
+    ('실험03', ['q-ha-table', 'q-fa-table', 'q-fs-table']),
+    ('실험04', ['q-demux4', 'q-mux2-graded', 'q-mux4']),
+    ('실험05', ['q-1of4-excess3', 'q-74hc148-table', 'q-dec3x8', 'q-excess3-enc-6row', 'q-excess3-enc-exam', 'q-prio-exam', 'q-prio-onehot']),
+])
+def test_published_packs_keep_fill_in_tables_out_of_the_question_panel(exp, ids):
+    pw = pytest.importorskip('playwright.sync_api')
+    pack = Path('복습노트')/exp
+    if not (pack/f'{exp}_기출문제.html').exists(): pytest.skip(exp+' 없음')
+    with pw.sync_playwright() as driver:
+        with driver.chromium.launch(channel='chrome') as browser:
+            page = browser.new_page(viewport={'width': 1280, 'height': 900})
+            for name in (f'{exp}_기출문제.html', f'{exp}_기출풀이.html'):
+                question = name.endswith('기출문제.html')
+                page.goto((pack/name).resolve().as_uri())
+                page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
+                assert page.locator('body').get_attribute('data-overflow') == ''
+                for qid in ids:
+                    in_panel = page.locator(f'#{qid} .panel table td:empty').count()
+                    in_work = page.locator(f'#{qid} .page-center > .work-block td:empty').count()
+                    # 문제지: 빈 칸 표는 풀이 칸에 있고 패널에는 없다. 해설지: 풀이 높이를 지키려고 패널에 둔다
+                    assert (in_panel == 0 and in_work > 0) if question else (in_panel > 0 and in_work == 0)
+                    assert '구할 것' in page.locator(f'#{qid} .panel .block-label').all_text_contents()
+                if question:
+                    assert page.locator('#q-mux4 .work-block tbody tr td:last-child').all_text_contents() == ['', '', '', ''] if exp == '실험04' else True

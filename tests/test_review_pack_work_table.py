@@ -68,6 +68,12 @@ EXPECTED = {
                'q-excess3-enc-exam', 'q-prio-exam', 'q-prio-onehot'},
 }
 
+# 발행된 팩에서 표지가 달린 문항. 실험01·03 은 작성 JSON 이 저장소에 없어 발행 payload 로만 확인한다.
+PUBLISHED = {**EXPECTED,
+    '실험01': {'q-tt3-4row', 'q-tt3-8row', 'q-xor2-tt'},
+    '실험03': {'q-ha-table', 'q-fa-table', 'q-fs-table'},
+}
+
 def _fragments():
     for f in SOURCES:
         obj = json.loads(Path(f).read_text(encoding='utf-8'))
@@ -98,3 +104,16 @@ def test_content_loader_rejects_a_blank_table_left_in_the_panel(tmp_path):
     obj['conditions'] = MARKED
     path.write_text(json.dumps(obj, ensure_ascii=False), encoding='utf-8')
     load_workbook_content(m, run)             # 표지가 있으면 통과
+
+def test_published_payloads_obey_the_rule_and_match_the_source():
+    from scripts.lab.review_pack.workbook_render import read_workbook_payload
+    packs = sorted(Path('복습노트').glob('실험*/실험*_기출문제.html')) + sorted(Path('복습노트').glob('실험*/실험*_기출풀이.html'))
+    assert packs
+    for path in packs:
+        data = read_workbook_payload(path)
+        marked = set()
+        for p in data['problems']:
+            for key in FIELDS:
+                check_work_tables(p['html'][key], p['id'])
+                if 'work-table' in p['html'][key]: marked.add(p['id'])
+        assert marked == PUBLISHED.get(path.parent.name, set()), f'{path}: 표지 달린 문항이 기대와 다르다'

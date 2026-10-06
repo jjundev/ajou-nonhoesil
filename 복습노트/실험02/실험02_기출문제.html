@@ -228,6 +228,12 @@ a:focus-visible { outline: .5mm solid var(--focus); outline-offset: .5mm; }
 }
 #book th { font-weight: 700; background: var(--paper); }
 #book .original td { height: 7mm; }
+/* 채울 표(work-table)는 풀이 칸 맨 위(.work-block)로 옮겨진다. 풀이 공간은 최소 25mm를 남긴다 */
+#book .work-block { flex: none; }
+#book .work-block .table-wrap { margin: 0; }
+#book .work-block table { table-layout: fixed; margin: 0; }
+#book .work-block td { height: 7mm; }
+.page-center > .work-block ~ .work { min-height: 25mm; }
 
 /* 수식 */
 .katex { font-size: 1.05em; }
@@ -529,6 +535,16 @@ function problemPage(p, n, total) {
     figs.forEach(f => band.append(figureImg(f)));
     center.append(band);
   }
+  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로
+  if (moved.length) {
+    const wb = el('div', 'work-block');
+    for (const t of moved) {
+      const owner = t.closest('.block');
+      wb.append(t);
+      if (!owner.querySelector('.prose').textContent.trim()) owner.remove();   // 표만 있던 블록은 빈 라벨째 지운다
+    }
+    center.append(wb);
+  }
   center.append(el('div', 'work'));
   row.append(panel, center);
   if (p.hints && p.hints.length) {
@@ -553,7 +569,8 @@ function fitProblemPage(page) {
   page.dataset.fit = `pw=${state.pw} fs=${state.fs}`;
   fitDisplayMath(panel);
   fitStripFormulas(page);
-  const ok = fits();
+  const center = page.querySelector('.page-center');   // 풀이 칸으로 옮긴 표가 칸에 안 들어가면 넘침으로 알린다
+  const ok = fits() && (!center.querySelector('.work-block') || (center.scrollHeight <= center.clientHeight + 1 && center.scrollWidth <= center.clientWidth + 1));
   if (!ok) page.dataset.overflow = '';
   return ok;
 }
