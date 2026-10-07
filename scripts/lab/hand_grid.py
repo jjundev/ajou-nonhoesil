@@ -366,15 +366,18 @@ def _col_names(mod, version='v1'):
 _SHORT = {'gnd': 'G-', 'vcc': 'V+', 'mid_gnd': 'g-', 'mid_vcc': 'v+'}
 
 
-def overlay_grid(page_im, cal, out_path, max_row=35):
+def overlay_grid(page_im, cal, out_path, max_row=None):
     """행 번호·열 이름·레일 빈 행을 반투명으로 덮은 그림.
 
     Claude 가 끝점을 읽는 **보조선**이다. 사람이 눈금을 세지 않게 하려고
     있는 것이지, 이 그림으로 판정하지 않는다 — 판정은 전사 파일로 한다.
+    `max_row` 를 안 주면 판 끝(`ROW_MAX`)까지 긋는다 — 실험05 LED 사슬은 45행까지 간다.
     """
     from PIL import Image, ImageDraw, ImageFont
 
     mod = load_renderer()
+    if max_row is None:
+        max_row = mod.ROW_MAX
     spec = mod.board_spec(cal.version)
     shared = mod.shared_columns(cal.version)
     im = page_im.convert("RGBA")
@@ -433,7 +436,7 @@ def crop_rows(page_im, cal, row_from, row_to, out_path, scale=3, block=None):
            min(page_im.width, int(max(xs) + 40)),
            min(page_im.height, int(y1 + 20)))
     c = page_im.crop(box)
-    c = c.resize((c.width * scale, c.height * scale), Image.LANCZOS)
+    c = c.resize((round(c.width * scale), round(c.height * scale)), Image.LANCZOS)
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     c.save(out_path)
     return out_path
