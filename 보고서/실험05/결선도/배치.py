@@ -73,6 +73,8 @@ _BCD_WIRES = [(s, None, 'sig', ('U4', _BCD_OUT[t]), ('LED', t), f'{t} = U4 pin {
 # 입력 점퍼 (단계, 이름, 칩, 핀). Bit0 이 최하위(교안 p9 SW1 = 74HC42 A).
 _BCD_INPUTS = [(1, 'Bit0', 'U4', 15), (1, 'Bit1', 'U4', 14), (1, 'Bit2', 'U4', 13), (1, 'Bit3', 'U4', 12)]
 _LOW_NOTE = 'Y0~Y9 LED 는 출력 0 에서 켜진다(Negative Logic).'
+_ORDER_NOTE = ('LED 는 74HC42 출력 핀의 행 순서로 붙는다 — 위에서부터 Y0~Y5, Y9, Y6, Y8, Y7'
+               '(Y7·Y8·Y9 = pin 9·10·11 이 아래에서 위로 올라간다). 진리표 열 순서(Y0~Y9)와 다르다(netlist M17).')
 
 
 def _bcd_fixed(bb, stage, superset=False, layout=None):
@@ -97,6 +99,7 @@ def _bcd_draw(bb, stage):
     draw_routed(bb, BCD.wires, place_paths(BCD, LAYOUT), stage)
     bb.note(_INPUT_NOTE)
     bb.note(_LOW_NOTE)
+    bb.note(_ORDER_NOTE)
 
 
 def build_e5_bcd(output_path, template_path=None, stage=None, baseline=None, layer=None):
@@ -241,7 +244,8 @@ LAYERS = {
         (7, 10, '입력 Bit0~3 → U4'),
         (11, 22, 'LED 사슬 Y0~Y5'),
         (23, 30, 'LED 사슬 Y9·Y6·Y8·Y7'),
-        (31, 40, 'Y 출력 → LED (U4)'),
+        (31, 37, 'a쪽 Y0~Y6 → LED (U4)'),
+        (38, 40, 'f쪽 Y9·Y8·Y7 → LED (U4)'),
     ],
     f'{_C2}.png': [
         (1, 4, '전원 잭·레일 브리지'),
