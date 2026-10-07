@@ -10,7 +10,8 @@
    "from": "좌 d6",
    "to": "우 a18",
    "desc": "Y3 = U4 pin 4 -> LED Y3",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   },
   {
    "n": 2,
@@ -18,7 +19,8 @@
    "from": "좌 d5",
    "to": "우 a14",
    "desc": "Y2 = U4 pin 3 -> LED Y2",
-   "count": 1
+   "count": 1,
+   "color": "#009696"
   },
   {
    "n": 3,
@@ -26,7 +28,8 @@
    "from": "좌 d4",
    "to": "우 a10",
    "desc": "Y1 = U4 pin 2 -> LED Y1",
-   "count": 1
+   "count": 1,
+   "color": "#c81e96"
   }
  ],
  "removals": [],

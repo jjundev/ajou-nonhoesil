@@ -18,7 +18,8 @@
    "from": "좌 d29",
    "to": "좌 h34",
    "desc": "D4' 이어 감 (U3 pin 1 -> U3 pin 9)",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   },
   {
    "n": 3,
@@ -26,7 +27,8 @@
    "from": "좌 h23",
    "to": "좌 h7",
    "desc": "D2' (U1 pin 8) -> U2 pin 12",
-   "count": 1
+   "count": 1,
+   "color": "#009696"
   },
   {
    "n": 4,
@@ -34,7 +36,8 @@
    "from": "좌 i7",
    "to": "좌 i33",
    "desc": "D2' 이어 감 (U2 pin 12 -> U3 pin 10)",
-   "count": 1
+   "count": 1,
+   "color": "#c81e96"
   },
   {
    "n": 5,
@@ -42,7 +45,8 @@
    "from": "좌 j35",
    "to": "우 a38",
    "desc": "A0 = U3 pin 8 -> LED A0",
-   "count": 1
+   "count": 1,
+   "color": "#788c00"
   }
  ],
  "removals": [],

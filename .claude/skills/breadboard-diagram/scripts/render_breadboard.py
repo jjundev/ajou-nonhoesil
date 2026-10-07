@@ -152,6 +152,14 @@ def check_board(board, bb, label):
                          "빌더가 BreadboardRenderer(..., board=BOARD) 로 넘겨야 한다")
 
 
+def check_palette(bb, label):
+    """한 보드의 팔레트 색 신호선이 팔레트 크기를 넘는가 — 넘으면 같은 색이 두 번 나와 오히려 헷갈린다."""
+    n = len(bb.wire_colors)
+    if n > len(LAYER_PALETTE):
+        raise ValueError(f'{label}: 색 신호선이 {n}가닥인데 팔레트는 {len(LAYER_PALETTE)}색이다 — '
+                         '같은 색이 두 번 나온다. 그 단계를 쪼갠다')
+
+
 def fresh_board(fn):
     """`rebuild: true` 회로의 첫 보드 빌더 — 기준선을 버리고 부른다. 앞 보드를 이으면 단계 보드가
     선을 걷게 된다(`test_단계_보드는_아무것도_걷지_않는다`). 클로저는 표준 빌더 시그니처다(2026-09-27, 실험04).
@@ -228,6 +236,7 @@ def build_all(board, output_dir, template_path=None):
                 f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
                 "빌더 끝에 `return bb` 가 있어야 한다")
         check_board(board, bb, filename)
+        check_palette(bb, filename)
         base = bb.snapshot()
         made[filename] = bb.stamp()
     for filename, fn in board.FINALS:
@@ -237,6 +246,7 @@ def build_all(board, output_dir, template_path=None):
                 f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
                 "빌더 끝에 `return bb` 가 있어야 한다")
         check_board(board, bb, filename)
+        check_palette(bb, filename)
         made[filename] = bb.stamp()
     return made
 

@@ -250,7 +250,8 @@
    "from": "좌 d3",
    "to": "우 a6",
    "desc": "Y0 = U4 pin 1 -> LED Y0",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   }
  ],
  "removals": [],

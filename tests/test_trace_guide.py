@@ -70,6 +70,48 @@ class Pages(unittest.TestCase):
             trace_guide.build_pages(board, d)
 
 
+def _sig_builder(n_sig):
+    """잭 두 가닥 + 세로 신호선 n_sig 가닥. 그림은 안 뽑는다 — build_pages 는 사이드카·wire_colors 만 본다."""
+    R = load_renderer()
+
+    def build_sig(output_path, template_path=None, stage=None, baseline=None, layer=None):
+        bb = R.BreadboardRenderer(template_path, baseline=baseline, layer=layer, board='v1')
+        bb.enable_steps()
+        bb.set_header('신호선', '생성기 테스트')
+        bb.connect_jacks()
+        c = bb.cols['left']
+        for i in range(n_sig):
+            bb.step_wire([(c['a'], bb.r_y(5 + 2 * i)), (c['a'], bb.r_y(6 + 2 * i))], 'sig', f'신호 {i}')
+        return bb
+    return build_sig
+
+
+class Colors(unittest.TestCase):
+    def test_층_쪽은_엔진이_칠한_색을_가진다(self):
+        P = load_renderer().LAYER_PALETTE
+        board = types.SimpleNamespace(FINALS=[('sig.png', _sig_builder(2))],
+                                      LAYERS={'sig.png': [(1, 2, '잭'), (3, 4, '신호')]})
+        with tempfile.TemporaryDirectory() as d:
+            pages = trace_guide.build_pages(board, d)
+        self.assertEqual([p.colors for p in pages], [{}, {}, {3: P[0], 4: P[1]}])
+
+    def test_팔레트를_넘는_층은_멈춘다(self):
+        board = types.SimpleNamespace(FINALS=[('sig.png', _sig_builder(11))],
+                                      LAYERS={'sig.png': [(1, 2, '잭'), (3, 13, '신호 열하나')]})
+        with tempfile.TemporaryDirectory() as d, \
+                self.assertRaisesRegex(trace_guide.LayerError, r'"신호 열하나".*11.*10.*쪼갠다'):
+            trace_guide.build_pages(board, d)
+
+    def test_번호_칸을_같은_색으로_칠한다(self):
+        row = {'n': 7, 'kind': 'sig', 'from': '좌 a5', 'to': '좌 a6', 'desc': '신호', 'count': 1}
+        self.assertIn('style="color:rgb(230,120,0)"', trace_guide._row(row, {7: (230, 120, 0, 255)}))
+        self.assertNotIn('style=', trace_guide._row(row))
+
+    def test_안내는_색을_설명한다(self):
+        self.assertIn('같은 색 점끼리 이으면 돼요', trace_guide.LEGEND)
+        self.assertIn('원래 펜 색', trace_guide.LEGEND)
+
+
 class Guards(unittest.TestCase):
     def test_layer_를_안_받는_빌더는_이름을_말한다(self):
         mini = load_renderer().load_board_file(ROOT / "tests/fixtures/board_min/배치.py", 'board_min')

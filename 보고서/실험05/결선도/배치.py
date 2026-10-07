@@ -73,6 +73,8 @@ _BCD_WIRES = [(s, None, 'sig', ('U4', _BCD_OUT[t]), ('LED', t), f'{t} = U4 pin {
 # 입력 점퍼 (단계, 이름, 칩, 핀). Bit0 이 최하위(교안 p9 SW1 = 74HC42 A).
 _BCD_INPUTS = [(1, 'Bit0', 'U4', 15), (1, 'Bit1', 'U4', 14), (1, 'Bit2', 'U4', 13), (1, 'Bit3', 'U4', 12)]
 _LOW_NOTE = 'Y0~Y9 LED 는 출력 0 에서 켜진다(Negative Logic).'
+_ORDER_NOTE = ('LED 는 74HC42 출력 핀의 행 순서로 붙는다 — 위에서부터 Y0~Y5, Y9, Y6, Y8, Y7'
+               '(Y7·Y8·Y9 = pin 9·10·11 이 아래에서 위로 올라간다). 진리표 열 순서(Y0~Y9)와 다르다(netlist M17).')
 
 
 def _bcd_fixed(bb, stage, superset=False, layout=None):
@@ -97,13 +99,15 @@ def _bcd_draw(bb, stage):
     draw_routed(bb, BCD.wires, place_paths(BCD, LAYOUT), stage)
     bb.note(_INPUT_NOTE)
     bb.note(_LOW_NOTE)
+    bb.note(_ORDER_NOTE)
 
 
 def build_e5_bcd(output_path, template_path=None, stage=None, baseline=None, layer=None):
     """C1 BCD → 10진 디코더(74HC42). `stage` 1..4 또는 None(완성)."""
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD,
+                            palette=stage is not None)   # 단계 그림만 선마다 색(체크리스트)
     bb.enable_steps()
     title = '실험 1-2) BCD to Decimal Decoder' + (f' — {stage}단계' if stage else '')
     bb.set_header(title, '74HC42 · Y0~Y9 = 입력 BCD 의 그 수에서만 0 (LED 는 0 에서 켜짐)',
@@ -193,7 +197,8 @@ def build_e5_xs3(output_path, template_path=None, stage=None, baseline=None, lay
     새로 짓는다(`rebuild: true`) — 사슬에는 `fresh_board` 로 들어가 기준선 없이 그린다."""
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD,
+                            palette=stage is not None)   # 단계 그림만 선마다 색(체크리스트)
     bb.enable_steps()
     title = '실험 2-2) Decimal to Excess-3 Code Encoder' + (f' — {stage}단계' if stage else '')
     bb.set_header(title, "74HC04 NOT 6 + 74HC20 4입력 NAND 4 · A3 = D5, A2 = D4+D3+D2+D1, "
@@ -241,7 +246,8 @@ LAYERS = {
         (7, 10, '입력 Bit0~3 → U4'),
         (11, 22, 'LED 사슬 Y0~Y5'),
         (23, 30, 'LED 사슬 Y9·Y6·Y8·Y7'),
-        (31, 40, 'Y 출력 → LED (U4)'),
+        (31, 37, 'a쪽 Y0~Y6 → LED (U4)'),
+        (38, 40, 'f쪽 Y9·Y8·Y7 → LED (U4)'),
     ],
     f'{_C2}.png': [
         (1, 4, '전원 잭·레일 브리지'),
