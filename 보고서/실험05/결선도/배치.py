@@ -106,7 +106,8 @@ def build_e5_bcd(output_path, template_path=None, stage=None, baseline=None, lay
     """C1 BCD → 10진 디코더(74HC42). `stage` 1..4 또는 None(완성)."""
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD,
+                            palette=stage is not None)   # 단계 그림만 선마다 색(체크리스트)
     bb.enable_steps()
     title = '실험 1-2) BCD to Decimal Decoder' + (f' — {stage}단계' if stage else '')
     bb.set_header(title, '74HC42 · Y0~Y9 = 입력 BCD 의 그 수에서만 0 (LED 는 0 에서 켜짐)',
@@ -196,7 +197,8 @@ def build_e5_xs3(output_path, template_path=None, stage=None, baseline=None, lay
     새로 짓는다(`rebuild: true`) — 사슬에는 `fresh_board` 로 들어가 기준선 없이 그린다."""
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD,
+                            palette=stage is not None)   # 단계 그림만 선마다 색(체크리스트)
     bb.enable_steps()
     title = '실험 2-2) Decimal to Excess-3 Code Encoder' + (f' — {stage}단계' if stage else '')
     bb.set_header(title, "74HC04 NOT 6 + 74HC20 4입력 NAND 4 · A3 = D5, A2 = D4+D3+D2+D1, "

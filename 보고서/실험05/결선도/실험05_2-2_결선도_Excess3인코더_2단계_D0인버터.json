@@ -42,7 +42,8 @@
    "from": "좌 j19",
    "to": "우 a13",
    "desc": "임시 급전: D0' = U1 pin 12 -> LED A2 (3걷기에서 뽑는다)",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   }
  ],
  "removals": [],

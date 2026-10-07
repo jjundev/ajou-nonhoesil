@@ -202,7 +202,8 @@
    "from": "좌 a18",
    "to": "좌 a5",
    "desc": "D5' (U1 pin 2) -> U2 pin 1",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   },
   {
    "n": 26,
@@ -210,7 +211,8 @@
    "from": "좌 d10",
    "to": "우 a7",
    "desc": "A3 = U2 pin 6 -> LED A3",
-   "count": 1
+   "count": 1,
+   "color": "#009696"
   }
  ],
  "removals": [],

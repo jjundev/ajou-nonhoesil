@@ -10,7 +10,8 @@
    "from": "좌 j34",
    "to": "좌 j10",
    "desc": "D4' 이어 감 (U3 pin 9 -> U2 pin 9)",
-   "count": 1
+   "count": 1,
+   "color": "#e67800"
   },
   {
    "n": 2,
@@ -18,7 +19,8 @@
    "from": "좌 c30",
    "to": "좌 c7",
    "desc": "D3' 이어 감 (U3 pin 2 -> U2 pin 3, n.c. 중계)",
-   "count": 1
+   "count": 1,
+   "color": "#009696"
   },
   {
    "n": 3,
@@ -26,7 +28,8 @@
    "from": "좌 d7",
    "to": "좌 g9",
    "desc": "D3' 이어 감 (U2 pin 3 -> U2 pin 10)",
-   "count": 1
+   "count": 1,
+   "color": "#c81e96"
   },
   {
    "n": 4,
@@ -34,7 +37,8 @@
    "from": "좌 j21",
    "to": "좌 j6",
    "desc": "D1' (U1 pin 10) -> U2 pin 13",
-   "count": 1
+   "count": 1,
+   "color": "#788c00"
   },
   {
    "n": 5,
@@ -42,7 +46,8 @@
    "from": "좌 j11",
    "to": "우 a13",
    "desc": "A2 = U2 pin 8 -> LED A2",
-   "count": 1
+   "count": 1,
+   "color": "#2896dc"
   }
  ],
  "removals": [],

@@ -3,6 +3,7 @@
 선·끝점·번호 원이 같은 색이라 같은 색 점끼리 이으면 된다. 완성본(layer 없음)은 그대로다.
 """
 import importlib.util
+import json
 import os
 import unittest
 
@@ -159,6 +160,21 @@ class StageColor(unittest.TestCase):
         self.assertEqual(len(bb.wire_colors), 2)
         self.assertNotIn('palette', bb.content())
         self.assertFalse(any('color' in s for s in bb.sidecar()['steps']))
+
+
+class Experiment05(unittest.TestCase):
+    """실험05 는 단계 그림만 팔레트를 켠다 — 완성본은 보고서 그림이라 그대로."""
+    folder = os.path.join(REPO_ROOT, '보고서', '실험05', '결선도')
+
+    def side(self, name):
+        with open(os.path.join(self.folder, name), encoding='utf-8') as f:
+            return json.load(f)
+
+    def test_단계_사이드카는_색을_싣고_완성본은_안_싣는다(self):
+        for stage in ('실험05_1-2_결선도_BCD디코더_1단계_Y0.json', '실험05_2-2_결선도_Excess3인코더_2단계_D0인버터.json'):
+            self.assertTrue(any('color' in s for s in self.side(stage)['steps']), stage)
+        for final in ('실험05_1-2_결선도_BCD디코더.json', '실험05_2-2_결선도_Excess3인코더.json'):
+            self.assertFalse(any('color' in s for s in self.side(final)['steps']), final)
 
 
 if __name__ == '__main__':
