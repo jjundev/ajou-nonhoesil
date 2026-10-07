@@ -174,6 +174,30 @@ class Overlay(unittest.TestCase):
         with self.assertRaises(hand_grid.GridError):
             hand_grid.crop_rows(self.page, self.cal, 20, 10, out)
 
+    def test_크롭은_소수_배율도_받는다(self):
+        from PIL import Image
+        one = os.path.join(self.tmp, 'c1.png')
+        half = os.path.join(self.tmp, 'c15.png')
+        hand_grid.crop_rows(self.page, self.cal, 10, 20, one, scale=1)
+        hand_grid.crop_rows(self.page, self.cal, 10, 20, half, scale=1.5)
+        w1, h1 = Image.open(one).size
+        self.assertEqual(Image.open(half).size, (round(w1 * 1.5), round(h1 * 1.5)))
+
+    def test_격자는_기본으로_63행까지_긋는다(self):
+        """실험05 LED 사슬은 45행까지 간다. 35행에서 끊기면 사람이 행을 센다."""
+        from PIL import Image
+        mod = hand_grid.load_renderer()
+        spec = mod.board_spec(self.cal.version)
+        out = os.path.join(self.tmp, 'grid63.png')
+        hand_grid.overlay_grid(self.page, self.cal, out)
+        im = Image.open(out).convert('RGB')
+        src = self.page.convert('RGB')
+        xs = [self.cal.to_px(x, spec.row0)[0]
+              for x in hand_grid._col_names(mod, self.cal.version).values()]
+        x = int(min(xs) - 40)                       # 행 선이 지나는 왼쪽 여백
+        y = int(self.cal.to_px(0, spec.row0 + 49 * spec.row_pitch)[1])   # 50행
+        self.assertNotEqual(im.getpixel((x, y)), src.getpixel((x, y)))
+
 
 class V2Grid(unittest.TestCase):
     """v2 판형 — 26열·63행, geometry.json 과 1px 안. 배포본은 PNG 를 그대로 얹어 보정이 항등이다."""
