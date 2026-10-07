@@ -18,7 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import quote
 
@@ -30,7 +30,8 @@ from scripts.lab.html2pdf import PdfError, html_to_pdf
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = '팀원전달용'
-LEGEND = '회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요.'
+LEGEND = ('회색 선은 앞 쪽에서 이미 그렸어요. 이번 쪽에서는 색 선만 번호 순서대로 그려요. '
+          '신호선은 선마다 색이 달라요 — 같은 색 점끼리 이으면 돼요. 이 색은 찾기용이라 손그림은 원래 펜 색으로 그려요.')
 
 CSS = """
 @page { size: 210mm 420mm; margin: 12mm 10mm; }
@@ -61,6 +62,7 @@ class Page:
     rows: list        # 사이드카 steps 중 이 쪽 번호
     notes: list       # 완성본 notes — 0쪽에만
     legend: str       # 층 쪽 안내 한 줄 — 완성본 쪽은 ''
+    colors: dict = field(default_factory=dict)   # 번호 → RGBA, 엔진 층 렌더가 칠한 신호선 색(`layer_colors`)
 
 
 def check_layers(name, layers, n_steps):
@@ -102,12 +104,17 @@ def _build_pages(board, work_dir):
         pages.append(Page(filename, f'{final.title} — 완성본 (목표 그림)', [],
                           list(final.notes), ''))
         stem, total, legend = Path(filename).stem, len(layers[filename]), legend_for(final)
+        palette = len(load_renderer().LAYER_PALETTE)
         for i, (lo, hi, label) in enumerate(layers[filename], 1):
             name = f'{stem}_층{i}.png'
-            fn(str(work_dir / name), None, layer=(lo, hi))
+            part = fn(str(work_dir / name), None, layer=(lo, hi))
+            colors = dict(part.layer_colors)
+            if len(colors) > palette:
+                raise LayerError(f'{filename}: 층 "{label}" 의 색 신호선이 {len(colors)}가닥인데 팔레트는 '
+                                 f'{palette}색이다 — 같은 색이 두 번 나온다. 그 층을 쪼갠다')
             rows = [s for s in steps if lo <= s['n'] <= hi]
             pages.append(Page(name, f'{final.title} — {i}/{total} · {label} ({lo}~{hi}번)',
-                              rows, [], legend))
+                              rows, [], legend, colors))
     return pages
 
 
@@ -120,8 +127,10 @@ def legend_for(final):
     return f'{LEGEND} {"·".join(parts)}은 처음부터 그려 두세요.'
 
 
-def _row(s):
-    return (f'<tr><td class="n kind-{s["kind"]}">{s["n"]}</td>'
+def _row(s, colors=None):
+    rgba = (colors or {}).get(s['n'])
+    style = f' style="color:rgb({rgba[0]},{rgba[1]},{rgba[2]})"' if rgba else ''
+    return (f'<tr><td class="n kind-{s["kind"]}"{style}>{s["n"]}</td>'
             f'<td class="hole">{html.escape(s["from"])} → {html.escape(s["to"])}</td>'
             f'<td>{html.escape(s["desc"])}</td></tr>')
 
@@ -135,7 +144,7 @@ def render_html(pages, title):
         parts.append(f'<img src="{quote(p.image)}" alt="{html.escape(p.heading)}">')
         if p.rows:
             parts.append('<table><thead><tr><th>번호</th><th>홀</th><th>뜻</th></tr></thead><tbody>'
-                         + ''.join(_row(s) for s in p.rows) + '</tbody></table>')
+                         + ''.join(_row(s, p.colors) for s in p.rows) + '</tbody></table>')
         if p.notes:
             parts.append('<ul class="notes">'
                          + ''.join(f'<li>{html.escape(t)}</li>' for t in p.notes) + '</ul>')
