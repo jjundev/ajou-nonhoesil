@@ -108,6 +108,9 @@ class BreadboardRenderer(_RuleChecks):
             if not ok:
                 raise ValueError(f'layer 는 1 <= lo <= hi 인 정수 쌍이어야 한다: {layer!r}')
         self.layer = layer
+        # 층 렌더에서 팔레트 색을 받은 배선 번호 → RGBA. 따라 그리기 표가 번호 칸을 같은 색으로 칠한다.
+        # 도장(`content()`)에는 넣지 않는다 — 결선이 아니라 표시다
+        self.layer_colors = {}
         self._hidden_draw = (_ScaledDraw(Image.new('RGBA', self.im.size, (0, 0, 0, 0)))
                              if layer is not None else None)
         self.submit = True
@@ -575,6 +578,7 @@ class BreadboardRenderer(_RuleChecks):
         완성본과 같아야 한다. `marker_near` 는 엔진 고정 부품의 기본 자리 — v2 는 R11 에 걸리면
         비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라 그대로 찍는다.
         `color` 는 선 색만 덮어쓴다 — kind 는 그대로라 검사·순서표는 같다(입력 점퍼 보라, 2026-10-06).
+        따라 그리기 층에서 `color` 없이 보이는 sig·mid 선은 `LAYER_PALETTE` 를 차례로 받는다(`layer_colors`).
         """
         if marker_near is not None and not self.spec.readability and marker_at is None:
             marker_at = marker_near
@@ -587,10 +591,20 @@ class BreadboardRenderer(_RuleChecks):
         kept = self.baseline is not None and key in self.baseline['wires']
         view = self._layer_view(len(self.steps) + 1) if self.numbered and not kept else 'shown'
         draw = self._hidden_draw if view == 'hidden' else self.draw
-        color = KEEP if kept or view == 'faded' else (color or WIRE[kind])
+        dot = 3
+        if kept or view == 'faded':
+            color = KEEP
+        elif (color is None and self.layer is not None and self.numbered and view == 'shown'
+              and kind in ('sig', 'mid')):
+            # 따라 그리기 층 — 이번 층 신호선은 선마다 다른 색, 끝점도 크게(같은 색 점끼리 잇게)
+            color = LAYER_PALETTE[len(self.layer_colors) % len(LAYER_PALETTE)]
+            self.layer_colors[len(self.steps) + 1] = color
+            dot = 5
+        else:
+            color = color or WIRE[kind]
         draw.line(points, fill=color, width=width, joint='curve')
         for p in (points[0], points[-1]):
-            draw.ellipse([p[0]-3, p[1]-3, p[0]+3, p[1]+3], fill=color)
+            draw.ellipse([p[0]-dot, p[1]-dot, p[0]+dot, p[1]+dot], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
             self.touch_rail(kind, p[0])
