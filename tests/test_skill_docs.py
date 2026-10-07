@@ -1208,10 +1208,14 @@ class HandDiagramSkill(unittest.TestCase):
         self.assertLess(text.index("experiment_dir"),
                         text.index("init-lab-experiment"))
 
-    def test_규칙_열다섯개가_검사_목록_표에_있다(self):
+    def test_규칙_열네개가_검사_목록_표에_있다(self):
+        """H12(학번·이름·날짜)는 폐지했다 — 번호는 당기지 않고 비운다."""
         text = HAND.read_text(encoding="utf-8")
         for n in range(1, 16):
-            self.assertIn(f"| H{n} |", text)
+            if n == 12:
+                self.assertNotIn("| H12 |", text)
+            else:
+                self.assertIn(f"| H{n} |", text)
 
     def test_전사가_신호_이름을_적는다고_돼_있다(self):
         """H15 는 전사의 labels 로만 판정한다. 적으라는 말이 없으면 늘 비어서 잡힌다."""

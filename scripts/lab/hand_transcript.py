@@ -59,7 +59,6 @@ class Diagram:
     labels: list = field(default_factory=list)
     title: str = ""
     circuit: str = ""
-    signed: bool = False
     page: int = 0
     board: str = 'v1'       # 판형 — 참조는 빌더에서, 손그림은 승인 결선의 판형을 받는다
 
@@ -243,5 +242,4 @@ def parse_transcript(path, board='v1'):
                    chains=chains, bridges=bridges, uncertain=uncertain,
                    labels=labels,
                    title=obj.get('title', ''), circuit=obj['circuit'],
-                   signed=bool(obj.get('signed', False)),
                    page=int(obj['page']), board=board)

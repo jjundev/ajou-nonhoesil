@@ -31,7 +31,7 @@ from .hand_compare import BLOCKING, _from_wiring, compare
 from .hand_grid import load_renderer
 from .netlist_parser import parse_netlist
 
-PAPERWORK = ("H11", "H12", "H13")   # 제목·서명·전사 불확실 — 손그림에만 있는 것
+PAPERWORK = ("H11", "H13")   # 제목·전사 불확실 — 손그림에만 있는 것
 _SEAT = re.compile(r"(좌|우)\s*(\d+)행")
 _BLOCK = {"좌": "left", "우": "right"}
 STAGE_RE = re.compile(r"^실험(\d{2})_(\d+(?:-\d+)?)_결선도_(.+)_(\d+)단계_([^_]+)\.png$")
@@ -141,7 +141,6 @@ def pair_boards(ref, new):
 
 
 def _compare_diagrams(ref_d, new_d):
-    new_d.signed = True
     new_d.title = ref_d.circuit
     return [f for f in compare(ref_d, new_d) if f.rule not in PAPERWORK]
 

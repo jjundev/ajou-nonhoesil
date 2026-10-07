@@ -18,7 +18,7 @@ def _write(obj):
 
 
 MINIMAL = {
-    "page": 3, "circuit": "e1_nand", "title": "2-1 NAND Gate", "signed": False,
+    "page": 3, "circuit": "e1_nand", "title": "2-1 NAND Gate",
     "chips": [{"label": "74HC08", "block": "left", "pin1_row": 7}],
     "wires": [{"color": "빨강", "from": "좌 g7", "to": "좌 중앙VCC레일7행"}],
     "leds": [{"tag": "L1", "anode": "좌 c14", "cathode": "좌 c15"}],
@@ -116,7 +116,6 @@ class Parse(unittest.TestCase):
         d = ht.parse_transcript(_write(MINIMAL))
         self.assertEqual(d.circuit, "e1_nand")
         self.assertEqual(d.page, 3)
-        self.assertFalse(d.signed)
         self.assertEqual(len(d.wires), 1)
         self.assertEqual(d.chips[0]['pins'][1], ('left', 'e', 7))
 

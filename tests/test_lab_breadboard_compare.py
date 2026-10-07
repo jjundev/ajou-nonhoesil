@@ -44,7 +44,7 @@ class Rendered(unittest.TestCase):
 
     def test_자기대조는_서류_규칙을_안_낸다(self):
         rules = {f.rule for f in bc.net_findings(self.boards[3], self.boards[3])}
-        self.assertFalse(rules & {"H11", "H12", "H13"}, rules)
+        self.assertFalse(rules & {"H11", "H13"}, rules)
 
     def test_자리표는_빌더가_앉힌_자리와_같다(self):
         slots = bc.layout_slots(NETLIST)

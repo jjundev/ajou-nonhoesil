@@ -248,7 +248,6 @@ class SelfCompare(unittest.TestCase):
         for cid in ('e1_and', 'e1_or', 'e1_nand', 'e1_nor'):
             ref = hc.reference_diagram(cid)
             hand = hc.reference_diagram(cid)
-            hand.signed = True
             hand.title = cid
             bad = [f for f in hc.compare(ref, hand) if f.grade != '표기']
             self.assertEqual(bad, [], f"{cid}: {[str(x) for x in bad]}")
@@ -257,7 +256,6 @@ class SelfCompare(unittest.TestCase):
 class Physical(unittest.TestCase):
     def _hand(self, cid='e1_nand'):
         d = hc.reference_diagram(cid)
-        d.signed = True
         return d
 
     def test_H1_레일_빈_행에_꽂은_끝점을_잡는다(self):
@@ -300,7 +298,6 @@ class Power(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         return ref, hand
 
     def _drop_wires_touching(self, d, hole):
@@ -379,7 +376,6 @@ class Signals(unittest.TestCase):
     def _pair(self, cid='e1_nor'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         return ref, hand
 
     def test_레일_넷은_극성_토큰_하나로_접힌다(self):
@@ -416,7 +412,6 @@ class Signals(unittest.TestCase):
             return d
         ref = _prep()
         hand = _prep()
-        hand.signed = True
         node = hc.node_of(hand.chips[0]['pins'][9])
         hand.wires = [w for w in hand.wires
                       if hc._endpoint_node(w['frm']) != node
@@ -429,7 +424,6 @@ class Signals(unittest.TestCase):
         """접기가 진짜 결함까지 삼키면 안 된다 — 4쪽의 실제 결함이다."""
         ref = hc.reference_diagram('e1_nand')
         hand = hc.reference_diagram('e1_nand')
-        hand.signed = True
         node = hc.node_of(hand.chips[1]['pins'][2])
         hand.wires = [w for w in hand.wires
                       if hc._endpoint_node(w['frm']) != node
@@ -473,7 +467,6 @@ class Signals(unittest.TestCase):
         """칩과 배선이 함께 한 행 내려간 그림은 유효하다."""
         ref = hc.reference_diagram('e1_nand')
         hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
-        hand.signed = True
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H6']
         self.assertEqual([str(x) for x in found], [])
 
@@ -494,7 +487,6 @@ class LedChain(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         return ref, hand
 
     def _chain(self, d, tag):
@@ -538,7 +530,6 @@ class Rails(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         return ref, hand
 
     def test_H8_브리지가_없으면_잡는다(self):
@@ -559,7 +550,6 @@ class BridgeRows(unittest.TestCase):
     def _pair(self):
         ref = hc.reference_diagram('e1_nand')
         hand = hc.reference_diagram('e1_nand')
-        hand.signed = True
         hand.title = '2-1 NAND Gate'
         return ref, hand
 
@@ -642,7 +632,6 @@ class ChipFollow(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         hand.title = '2-1 NAND Gate'
         return ref, hand
 
@@ -672,7 +661,6 @@ class ChipFollow(unittest.TestCase):
     def test_전체가_함께_밀린_그림에는_H14_가_없다(self):
         ref = hc.reference_diagram('e1_nand')
         hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
-        hand.signed = True
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H14']
         self.assertEqual([str(x) for x in found], [])
 
@@ -722,14 +710,12 @@ class Paperwork(unittest.TestCase):
     def _pair(self, cid='e1_nand'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         hand.title = '2-1 NAND Gate'
         return ref, hand
 
     def test_H9_브리지_행이_다르면_표기로_알린다(self):
         ref = hc.reference_diagram('e1_nand')
         hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
-        hand.signed = True
         hand.title = '2-1 NAND Gate'
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H9']
         self.assertTrue(found)
@@ -738,7 +724,6 @@ class Paperwork(unittest.TestCase):
     def test_H10_칩이_밀리면_표기로만_알린다(self):
         ref = hc.reference_diagram('e1_nand')
         hand = _shift_rows(hc.reference_diagram('e1_nand'), +1)
-        hand.signed = True
         hand.title = '2-1 NAND Gate'
         found = [f for f in hc.compare(ref, hand) if f.rule == 'H10']
         self.assertTrue(found)
@@ -756,12 +741,9 @@ class Paperwork(unittest.TestCase):
         self.assertEqual(found[0].where, '74HC00')
         self.assertIn('f 열', found[0].message)
 
-    def test_H12_학번_미기재를_잡는다(self):
+    def test_서명이_없어도_H12_를_내지_않는다(self):
         ref, hand = self._pair()
-        hand.signed = False
-        found = [f for f in hc.compare(ref, hand) if f.rule == 'H12']
-        self.assertTrue(found)
-        self.assertEqual(found[0].grade, '표기')
+        self.assertNotIn('H12', [f.rule for f in hc.compare(ref, hand)])
 
     def test_H11_제목이_회로와_다르면_잡는다(self):
         ref, hand = self._pair()
@@ -784,7 +766,6 @@ class Labels(unittest.TestCase):
     def _pair(self, cid='e1_and'):
         ref = hc.reference_diagram(cid)
         hand = hc.reference_diagram(cid)
-        hand.signed = True
         hand.title = '1-1 AND Gate'
         return ref, hand
 
@@ -859,7 +840,6 @@ class NewWeeks(unittest.TestCase):
             with self.subTest(cid=cid):
                 ref = hc.reference_diagram(cid)
                 hand = hc.reference_diagram(cid)
-                hand.signed = True
                 self.assertEqual([str(f) for f in hc.compare(ref, hand)], [])
 
 
@@ -873,8 +853,8 @@ class Verdict(unittest.TestCase):
         self.assertEqual(hc.verdict(f), '수정 필요')
 
     def test_표기만_있으면_제출_가능(self):
-        """학번 미기재는 막지 않는다 — 별도 줄로만 알린다."""
-        f = [hc.HandFinding('H12', '표기', 'x', 'y')]
+        """표기는 막지 않는다 — 별도 줄로만 알린다."""
+        f = [hc.HandFinding('H11', '표기', 'x', 'y')]
         self.assertEqual(hc.verdict(f), '제출 가능')
 
     def test_보류만_있으면_제출_가능(self):
@@ -886,20 +866,19 @@ class Judgment(unittest.TestCase):
     def test_판정문에_쪽별_결함과_총평이_들어간다(self):
         ref = hc.reference_diagram('e1_nand')
         hand = hc.reference_diagram('e1_nand')
-        hand.signed = False
-        hand.title = '2-1 NAND Gate'
+        hand.title = '2-2 NAND Gate'
+        hand.circuit = 'e1_nor'
         hand.page = 3
         md = hc.judgment_markdown([(3, 'e1_nand', hc.compare(ref, hand), hand)],
                                   round_no=1)
         self.assertIn('round1', md)
         self.assertIn('3쪽', md)
         self.assertIn('제출 가능', md)
-        self.assertIn('H12', md)
+        self.assertIn('H11', md)
 
     def test_치명이_있으면_총평이_수정_필요다(self):
         ref = hc.reference_diagram('e1_nand')
         hand = hc.reference_diagram('e1_nand')
-        hand.signed = True
         node = hc.node_of(hand.chips[1]['pins'][14])
         hand.wires = [w for w in hand.wires
                       if hc._endpoint_node(w['frm']) != node
@@ -916,11 +895,14 @@ class RuleRegistry(unittest.TestCase):
                    if k.startswith('check_') and callable(v)}
         self.assertEqual(defined, set(hc._RULES))
 
-    def test_규칙_코드가_H1부터_H15까지_빠짐없다(self):
+    def test_규칙_코드가_H12_만_빼고_H1부터_H15까지_빠짐없다(self):
         import inspect
         src = inspect.getsource(hc)
         for n in range(1, 16):
-            self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
+            if n == 12:
+                self.assertNotIn("'H12'", src)
+            else:
+                self.assertIn(f"'H{n}'", src, f'H{n} 규칙이 없다')
 
 
 class V2Compare(unittest.TestCase):
@@ -971,7 +953,6 @@ class Dip16Negative(unittest.TestCase):
     def _pair(self):
         ref = hc._from_wiring(self.wiring, 'e5_trial', self.board)
         hand = hc._from_wiring(self.wiring, 'e5_trial', self.board)
-        hand.signed = True
         return ref, hand
 
     def _drop_wires_touching(self, d, hole):

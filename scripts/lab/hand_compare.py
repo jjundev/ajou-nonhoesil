@@ -199,8 +199,7 @@ def signatures(diagram):
 # "모르는 회로 ID" 로 멈춰 두 주차 손그림을 검토할 수 없었다. 같은 날 조교 공지
 # `_350547_1` 로 실험02 AC 특성·실험03 반가산기·반감산기를 하지 않게 되어 그 단계
 # 그림 ID 가 빠졌다 — 완성본 `e2_tpd`·`e3_ha`·`e3_hs` 는 렌더러 회귀 사례로 남는다.
-# 실험02·03 의 11개 모두 자기 대조에서 H12(서명 없음) 하나만 난다 — 참조 그림에는
-# 서명이 없다.
+# 실험02·03 의 11개 모두 자기 대조에서 아무것도 나지 않는다.
 CIRCUITS = ('e1_and', 'e1_or', 'e1_nand', 'e1_nor', 'e1_comb',
             'e1_or_s1', 'e1_nand_s1', 'e1_nand_s2', 'e1_nor_s1', 'e1_nor_s2',
             'e1_comb_s1', 'e1_comb_s2', 'e1_comb_s3',
@@ -743,7 +742,7 @@ def check_placement(ref, hand):
 
 
 def check_paperwork(ref, hand):
-    """H11 제목 · H12 자필 기재 · H13 전사 보류."""
+    """H11 제목 · H13 전사 보류."""
     out = []
     words = CIRCUIT_WORDS.get(hand.circuit or ref.circuit, ())
     title = (hand.title or '').upper()
@@ -752,10 +751,6 @@ def check_paperwork(ref, hand):
             'H11', '표기', '제목',
             f'제목 {hand.title!r} 에 {" 또는 ".join(words)} 가 없다. '
             '회로와 제목 중 어느 쪽이 틀렸는지 함께 본다'))
-    if not hand.signed:
-        out.append(HandFinding(
-            'H12', '표기', '자필 기재',
-            '학번·이름·날짜가 없다. 참조 도면이 제출 조건으로 요구한다'))
     for hole in sorted(hand.uncertain):
         out.append(HandFinding(
             'H13', '보류', _addr(hole, hand.board),
