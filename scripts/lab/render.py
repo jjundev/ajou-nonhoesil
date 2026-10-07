@@ -1089,7 +1089,7 @@ def circuit_pages(spec, netlist) -> str:
         wiring.append(_diagram_html(section, netlist))
         # 옛 PNG 머리에 있던 제출 안내 — 그림에 글자를 굽지 않게 되어(2026-09-28) 여기로 온다.
         # 단계 유무와 상관없이 회로마다 한 번: 손그림은 완성본마다 한 장이다
-        wiring.append("<p class='src submit'>손그림은 이 그림을 따라 그리고, 학번·이름·날짜는 손으로 적어요</p>")
+        wiring.append("<p class='src submit'>손그림은 이 그림을 따라 그려요</p>")
         for node in nodes:
             if node["type"] == "prose":
                 wiring.append(_blocks(node["text"]))

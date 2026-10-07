@@ -533,12 +533,14 @@ class TestCircuitPages(unittest.TestCase):
             ROOT / config.experiment_dir(1) / "결선도/netlist.md")
         self.html = circuit_pages(self.spec, self.netlist)
 
-    def test_완성본마다_자필_안내가_한_번씩_있다(self):
+    def test_완성본마다_따라_그리기_안내가_한_번씩_있고_서명_안내는_없다(self):
         """옛 PNG 머리의 제출 안내가 사이드카로 가며 단계 있는 회로에만 남았다(2026-09-28
-        최종 리뷰) — 실험01 1-1 AND 처럼 단계 없는 완성본에서 학번·이름·날짜가 빠진다."""
+        최종 리뷰) — 실험01 1-1 AND 처럼 단계 없는 완성본에서 안내가 빠진다.
+        학번·이름·날짜는 적지 않아도 되므로 안내하지 않는다."""
         for n, page in enumerate(self._pages(), start=1):
             with self.subTest(회로=n):
-                self.assertEqual(page.count("학번·이름·날짜"), 1)
+                self.assertEqual(page.count("<p class='src submit'>"), 1)
+                self.assertNotIn("학번", page)
 
     def _pages(self):
         """회로 페이지를 하나씩 자른다. 문서 전체에서 찾으면 어느 회로 것인지
