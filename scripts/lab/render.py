@@ -759,6 +759,12 @@ def _sidecar(png: Path, board: str = "v1") -> dict:
     return data
 
 
+def _step_n(s) -> str:
+    """결선 순서 번호 원 — 단계 그림 팔레트 색(`color`)이 있으면 바탕을 그 색으로(그림 위 번호 원과 같게)."""
+    style = f' style="background:{_esc(s["color"])}"' if s.get("color") else ""
+    return f'<span class="n"{style}>{s["n"]}</span>'
+
+
 def _board_text_html(data) -> str:
     """그림 옆 글자 — 걷기 · 결선 순서 · 계측 · 회색 개수. 순서가 곧 실험실 순서다:
     먼저 뽑고, 새로 꽂고, 문다. 클래스 이름은 디자인 템플릿과의 계약이다."""
@@ -773,8 +779,8 @@ def _board_text_html(data) -> str:
     if data["steps"]:
         items = "".join(
             f'<li class="step" data-kind="{_esc(s["kind"])}"><span class="box"></span>'
-            f'<span class="n">{s["n"]}</span>'
-            f'<span class="route">{_esc(s["from"])} → {_esc(s["to"])}'
+            + _step_n(s)
+            + f'<span class="route">{_esc(s["from"])} → {_esc(s["to"])}'
             + (f' ×{s["count"]}' if s["count"] > 1 else "")
             + f'</span><span class="desc">{_esc(s["desc"])}</span></li>'
             for s in data["steps"])

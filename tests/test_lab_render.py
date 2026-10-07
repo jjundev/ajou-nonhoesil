@@ -2084,6 +2084,13 @@ class TestBoardText(unittest.TestCase):
         self.assertIn("우 a12 → 좌 a18", steps)
         self.assertIn("×2", steps)
 
+    def test_팔레트_색이_있으면_번호_원_바탕이_그_색이다(self):
+        side = json.loads(json.dumps(_SIDE))
+        side["steps"][0]["color"] = "#e67800"
+        html = self._stage(side)
+        self.assertIn('<span class="n" style="background:#e67800">1</span>', html)
+        self.assertIn('<span class="n">2</span>', html)   # color 없는 줄은 예전 그대로
+
     def test_설명의_특수문자를_이스케이프한다(self):
         html = self._stage(_SIDE)
         self.assertIn("S0' (U4 pin 6) -&gt; U1 pin 1", html)   # `_esc` 는 quote=False 다
