@@ -85,6 +85,31 @@ class ChipPins(unittest.TestCase):
         with self.assertRaises(ValueError):
             ht.chip_pins('left', 17, 'd')
 
+    def test_16핀_칩은_pin_1_8_이_pin1_열_9_16_이_건너편이다(self):
+        pins = ht.chip_pins('left', 3, 'e', 16)
+        self.assertEqual(len(pins), 16)
+        self.assertEqual(pins[1], ('left', 'e', 3))
+        self.assertEqual(pins[8], ('left', 'e', 10))
+        self.assertEqual(pins[9], ('left', 'f', 10))
+        self.assertEqual(pins[16], ('left', 'f', 3))
+
+    def test_16핀_pin1_col_f_면_거울상이다(self):
+        pins = ht.chip_pins('left', 3, 'f', 16)
+        self.assertEqual(pins[1], ('left', 'f', 3))
+        self.assertEqual(pins[8], ('left', 'f', 10))
+        self.assertEqual(pins[9], ('left', 'e', 10))
+        self.assertEqual(pins[16], ('left', 'e', 3))
+
+    def test_16핀_핀_배치가_참조_빌더와_같다(self):
+        """실험05 74HC42. 14핀판 `test_핀_배치가_렌더러와_같다` 의 짝이다 —
+        e5 자기 대조 테스트는 양쪽을 `_from_wiring` 으로 만들어 이 파서를 안 거쳤다."""
+        from scripts.lab import hand_compare as hc
+        ref = hc.reference_diagram('e5_bcd')
+        chip = ref.chips[0]
+        self.assertEqual(chip['label'], '74HC42')
+        self.assertEqual(ht.chip_pins(chip['block'], chip['pin1_row'], 'e', 16),
+                         chip['pins'])
+
 
 class Parse(unittest.TestCase):
     def test_최소_전사를_읽는다(self):
@@ -189,6 +214,33 @@ class Parse(unittest.TestCase):
         obj['labels'] = [{"name": "  "}]
         with self.assertRaises(ht.TranscriptError):
             ht.parse_transcript(_write(obj))
+
+    def _with_chip(self, label, row, col='e'):
+        obj = dict(MINIMAL)
+        obj['chips'] = [{"label": label, "block": "left", "pin1_row": row,
+                         "pin1_col": col}]
+        return ht.parse_transcript(_write(obj))
+
+    def test_74HC42_는_16핀으로_읽는다(self):
+        d = self._with_chip('74HC42', 3)
+        pins = d.chips[0]['pins']
+        self.assertEqual(len(pins), 16)
+        self.assertEqual(pins[16], ('left', 'f', 3))
+        self.assertEqual(pins[8], ('left', 'e', 10))
+
+    def test_14핀_칩은_그대로_14핀이다(self):
+        d = self._with_chip('74HC20', 5)
+        self.assertEqual(len(d.chips[0]['pins']), 14)
+        self.assertEqual(d.chips[0]['pins'][14], ('left', 'f', 5))
+
+    def test_모르는_칩은_14핀으로_읽는다(self):
+        d = self._with_chip('74HC4 2', 5)
+        self.assertEqual(len(d.chips[0]['pins']), 14)
+
+    def test_16핀_칩이_63행을_넘으면_거절한다(self):
+        self._with_chip('74HC42', 56)            # pin 8 이 63행 — 받는다
+        with self.assertRaises(ht.TranscriptError):
+            self._with_chip('74HC42', 57)        # pin 8 이 64행
 
 
 class V2Address(unittest.TestCase):

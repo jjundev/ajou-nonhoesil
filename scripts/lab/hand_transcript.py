@@ -17,6 +17,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .hand_grid import load_renderer
+
 TERMINAL_COLS = tuple('abcdefghij')
 RAIL_NAMES = {
     'GND레일': 'gnd', 'VCC레일': 'vcc',
@@ -62,21 +64,22 @@ class Diagram:
     board: str = 'v1'       # 판형 — 참조는 빌더에서, 손그림은 승인 결선의 판형을 받는다
 
 
-def chip_pins(block, pin1_row, pin1_col='e'):
-    """DIP-14 가 꽂히는 홀. pin 1~7 은 pin 1 열, pin 8~14 는 건너편 열.
+def chip_pins(block, pin1_row, pin1_col='e', n=14):
+    """DIP-n 이 꽂히는 홀. pin 1~n/2 는 pin 1 열, n/2+1~n 은 건너편 열을 거꾸로 올라온다.
 
     `pin1_col='e'` 가 렌더러 `draw_chip()` 이 꽂는 자리와 같아야 한다 —
-    `test_핀_배치가_렌더러와_같다` 가 그것을 묶어 둔다. `'f'` 는 노치가 아래를
-    보게 그린 칩이다. 채널을 걸치지 않는 열은 핀 모델이 없어 거절한다.
+    `test_핀_배치가_렌더러와_같다`(14핀)·`test_16핀_핀_배치가_참조_빌더와_같다` 가 그것을
+    묶어 둔다. `'f'` 는 노치가 아래를 보게 그린 칩이다. 채널을 걸치지 않는 열은 핀 모델이
+    없어 거절한다. `n` 은 핀 수 — 호출자가 칩 모델 표(`dip_pins`)에서 얻어 넘긴다.
     """
     across = {'e': 'f', 'f': 'e'}
     if pin1_col not in across:
         raise ValueError(
-            f"pin 1 열은 e 또는 f 다 — DIP-14 는 채널을 걸친다: {pin1_col!r}")
+            f"pin 1 열은 e 또는 f 다 — DIP 칩은 채널을 걸친다: {pin1_col!r}")
     pins = {}
-    for i in range(7):
+    for i in range(n // 2):
         pins[i + 1] = (block, pin1_col, pin1_row + i)
-        pins[14 - i] = (block, across[pin1_col], pin1_row + i)
+        pins[n - i] = (block, across[pin1_col], pin1_row + i)
     return pins
 
 
@@ -156,9 +159,14 @@ def parse_transcript(path, board='v1'):
             raise TranscriptError(
                 f"{label} pin1_col={pin1_col!r} — pin 1 열은 e 또는 f 다. "
                 "채널을 안 걸친 칩은 pin 1 홀을 uncertain 에 올린다")
+        # 핀 수는 칩 모델 표에서 — 74HC42 는 16, 모르는 이름은 14(렌더러 그리기와 같다).
+        # 14 를 박아 두면 16핀 칩의 pin 8~16 이 한 행씩 어긋나 H3·H6 가 헛난다(2026-10-07 실험05).
+        n = load_renderer().dip_pins(label)
+        last = row + n // 2 - 1
+        _check_row(last, f"{label} pin {n // 2} 행={last}")
         chips.append({'label': label, 'block': block,
                       'pin1_row': row, 'pin1_col': pin1_col,
-                      'pins': chip_pins(block, row, pin1_col)})
+                      'pins': chip_pins(block, row, pin1_col, n)})
 
     wires = []
     for w in obj['wires']:
