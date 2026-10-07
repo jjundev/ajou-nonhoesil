@@ -71,7 +71,7 @@ class Pages(unittest.TestCase):
 
 
 def _sig_builder(n_sig):
-    """잭 두 가닥 + 세로 신호선 n_sig 가닥. 그림은 안 뽑는다 — build_pages 는 사이드카·layer_colors 만 본다."""
+    """잭 두 가닥 + 세로 신호선 n_sig 가닥. 그림은 안 뽑는다 — build_pages 는 사이드카·wire_colors 만 본다."""
     R = load_renderer()
 
     def build_sig(output_path, template_path=None, stage=None, baseline=None, layer=None):

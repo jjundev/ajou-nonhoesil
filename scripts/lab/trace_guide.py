@@ -62,7 +62,7 @@ class Page:
     rows: list        # 사이드카 steps 중 이 쪽 번호
     notes: list       # 완성본 notes — 0쪽에만
     legend: str       # 층 쪽 안내 한 줄 — 완성본 쪽은 ''
-    colors: dict = field(default_factory=dict)   # 번호 → RGBA, 엔진 층 렌더가 칠한 신호선 색(`layer_colors`)
+    colors: dict = field(default_factory=dict)   # 번호 → RGBA, 엔진 층 렌더가 칠한 신호선 색(`wire_colors`)
 
 
 def check_layers(name, layers, n_steps):
@@ -108,7 +108,7 @@ def _build_pages(board, work_dir):
         for i, (lo, hi, label) in enumerate(layers[filename], 1):
             name = f'{stem}_층{i}.png'
             part = fn(str(work_dir / name), None, layer=(lo, hi))
-            colors = dict(part.layer_colors)
+            colors = dict(part.wire_colors)
             if len(colors) > palette:
                 raise LayerError(f'{filename}: 층 "{label}" 의 색 신호선이 {len(colors)}가닥인데 팔레트는 '
                                  f'{palette}색이다 — 같은 색이 두 번 나온다. 그 층을 쪼갠다')

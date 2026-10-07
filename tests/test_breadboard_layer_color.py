@@ -56,7 +56,7 @@ class LayerColor(unittest.TestCase):
 
     def test_층_신호선은_선마다_다른_팔레트_색이다(self):
         bb = self.board((3, 5))
-        self.assertEqual(bb.layer_colors, {3: self.mod.LAYER_PALETTE[0], 4: self.mod.LAYER_PALETTE[1],
+        self.assertEqual(bb.wire_colors, {3: self.mod.LAYER_PALETTE[0], 4: self.mod.LAYER_PALETTE[1],
                                            5: self.mod.LAYER_PALETTE[2]})
         for i, n in enumerate((3, 4, 5)):
             self.assertEqual(_pixel(bb, *_mid(bb, n - 1)), self.mod.LAYER_PALETTE[i])
@@ -65,7 +65,7 @@ class LayerColor(unittest.TestCase):
         bb = self.board((1, 5))
         self.assertEqual(_pixel(bb, *_mid(bb, 0)), self.mod.WIRE['vcc'])
         self.assertEqual(_pixel(bb, *_mid(bb, 1)), self.mod.WIRE['gnd'])
-        self.assertEqual(sorted(bb.layer_colors), [3, 4, 5])
+        self.assertEqual(sorted(bb.wire_colors), [3, 4, 5])
 
     def test_끝점_점이_커진다(self):
         bb = self.board((3, 3), n_sig=1)
@@ -75,7 +75,7 @@ class LayerColor(unittest.TestCase):
 
     def test_층_없으면_팔레트를_안_쓴다(self):
         bb = self.board(None)
-        self.assertEqual(bb.layer_colors, {})
+        self.assertEqual(bb.wire_colors, {})
         self.assertEqual(_pixel(bb, *_mid(bb, 2)), self.mod.WIRE['sig'])
         _kind, pts, _d = bb._segments[2]
         x, y = pts[0]
@@ -83,7 +83,7 @@ class LayerColor(unittest.TestCase):
 
     def test_앞뒤_층_신호선은_팔레트를_안_받는다(self):
         bb = self.board((4, 4))
-        self.assertEqual(bb.layer_colors, {4: self.mod.LAYER_PALETTE[0]})
+        self.assertEqual(bb.wire_colors, {4: self.mod.LAYER_PALETTE[0]})
         self.assertEqual(_pixel(bb, *_mid(bb, 2)), self.mod.KEEP)
         self.assertEqual(_pixel(bb, *_mid(bb, 4))[3], 0)
 
@@ -97,13 +97,68 @@ class LayerColor(unittest.TestCase):
         bb.step_wire([(c['a'], bb.r_y(30)), (c['a'], bb.r_y(31))], 'sig', '출력')
         i = next(i for i, s in enumerate(bb._segments) if '입력 A' in s[2])
         self.assertEqual(_pixel(bb, *_mid(bb, i)), self.mod.INPUT)
-        self.assertEqual(list(bb.layer_colors.values()), [self.mod.LAYER_PALETTE[0]])
+        self.assertEqual(list(bb.wire_colors.values()), [self.mod.LAYER_PALETTE[0]])
 
     def test_층_색은_도장에_없다(self):
         a, b = self.board((3, 5)), self.board((3, 5))
-        b.layer_colors.clear()
+        b.wire_colors.clear()
         self.assertEqual(a.content(), b.content())
         self.assertEqual(self.board(None).sidecar()['steps'], a.sidecar()['steps'])
+
+
+class StageColor(unittest.TestCase):
+    """체크리스트 단계 그림 — 빌더가 `palette=True` 로 켜면 층 없이도 새 신호선이 팔레트 색이다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def board(self, palette, baseline=None, n_sig=2, layer=None):
+        bb = self.mod.BreadboardRenderer(board='v1', baseline=baseline, palette=palette, layer=layer)
+        bb.enable_steps()
+        bb.set_header('단계 색', '테스트')
+        bb.connect_jacks()
+        c = bb.cols['left']
+        for i in range(n_sig):
+            bb.step_wire([(c['a'], bb.r_y(10 + 5 * i)), (c['a'], bb.r_y(14 + 5 * i))], 'sig', f'신호 {i}')
+        return bb
+
+    def test_palette_를_켜면_층_없이도_선마다_색이다(self):
+        P = self.mod.LAYER_PALETTE
+        bb = self.board(True)
+        self.assertEqual(bb.wire_colors, {3: P[0], 4: P[1]})
+        self.assertEqual(_pixel(bb, *_mid(bb, 2)), P[0])
+        self.assertEqual(_pixel(bb, *_mid(bb, 0)), self.mod.WIRE['vcc'])
+
+    def test_도장과_사이드카에_색이_실린다(self):
+        bb = self.board(True)
+        self.assertEqual(bb.content()['palette'], [[3, '#e67800'], [4, '#009696']])
+        steps = bb.sidecar()['steps']
+        self.assertEqual([s.get('color') for s in steps], [None, None, '#e67800', '#009696'])
+
+    def test_끄면_예전_그대로다(self):
+        bb = self.board(False)
+        self.assertEqual(bb.wire_colors, {})
+        self.assertNotIn('palette', bb.content())
+        self.assertFalse(any('color' in s for s in bb.sidecar()['steps']))
+        self.assertEqual(_pixel(bb, *_mid(bb, 2)), self.mod.WIRE['sig'])
+
+    def test_색_받은_선이_없으면_도장에_palette_가_없다(self):
+        bb = self.board(True, n_sig=0)
+        self.assertEqual(bb.content(), self.board(False, n_sig=0).content())
+
+    def test_기준선_회색은_팔레트를_안_받는다(self):
+        first = self.board(True, n_sig=2)
+        second = self.board(True, baseline=first.snapshot(), n_sig=3)
+        self.assertEqual(second.wire_colors, {1: self.mod.LAYER_PALETTE[0]})
+        self.assertEqual(_pixel(second, *_mid(second, 2)), self.mod.KEEP)
+
+    def test_층_렌더는_사이드카와_도장에_색을_안_싣는다(self):
+        bb = self.board(False, layer=(3, 4))
+        self.assertTrue(bb.palette)
+        self.assertEqual(len(bb.wire_colors), 2)
+        self.assertNotIn('palette', bb.content())
+        self.assertFalse(any('color' in s for s in bb.sidecar()['steps']))
 
 
 if __name__ == '__main__':

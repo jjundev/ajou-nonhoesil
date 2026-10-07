@@ -3,7 +3,7 @@
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 class BreadboardRenderer(_RuleChecks):
-    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD):
+    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False):
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
         self.board = board
         self.spec = board_spec(board)
@@ -108,9 +108,12 @@ class BreadboardRenderer(_RuleChecks):
             if not ok:
                 raise ValueError(f'layer 는 1 <= lo <= hi 인 정수 쌍이어야 한다: {layer!r}')
         self.layer = layer
-        # 층 렌더에서 팔레트 색을 받은 배선 번호 → RGBA. 따라 그리기 표가 번호 칸을 같은 색으로 칠한다.
-        # 도장(`content()`)에는 넣지 않는다 — 결선이 아니라 표시다
-        self.layer_colors = {}
+        # 선마다 다른 색(`LAYER_PALETTE`) — 따라 그리기 층은 늘, 단계 그림은 빌더가 `palette=stage is not None`
+        # 으로 켠다(2026-10-07 체크리스트). 완성본은 끈다 — 초록=mid 뜻과 보고서 그림을 지킨다
+        self.palette = palette or layer is not None
+        # 팔레트 색을 받은 배선 번호 → RGBA. 따라 그리기 표·체크리스트 번호 원이 같은 색으로 칠한다.
+        # 층 렌더는 표시일 뿐이라 도장·사이드카에 안 싣는다(`content`·`sidecar`)
+        self.wire_colors = {}
         self._hidden_draw = (_ScaledDraw(Image.new('RGBA', self.im.size, (0, 0, 0, 0)))
                              if layer is not None else None)
         self.submit = True
@@ -578,7 +581,7 @@ class BreadboardRenderer(_RuleChecks):
         완성본과 같아야 한다. `marker_near` 는 엔진 고정 부품의 기본 자리 — v2 는 R11 에 걸리면
         비킨다(`_settle_marker`). `marker_at` 은 빌더가 고른 자리라 그대로 찍는다.
         `color` 는 선 색만 덮어쓴다 — kind 는 그대로라 검사·순서표는 같다(입력 점퍼 보라, 2026-10-06).
-        따라 그리기 층에서 `color` 없이 보이는 sig·mid 선은 `LAYER_PALETTE` 를 차례로 받는다(`layer_colors`).
+        `palette`(따라 그리기 층·단계 그림)면 `color` 없이 보이는 sig·mid 선은 `LAYER_PALETTE` 를 차례로 받는다(`wire_colors`).
         """
         if marker_near is not None and not self.spec.readability and marker_at is None:
             marker_at = marker_near
@@ -594,11 +597,11 @@ class BreadboardRenderer(_RuleChecks):
         dot = 3
         if kept or view == 'faded':
             color = KEEP
-        elif (color is None and self.layer is not None and self.numbered and view == 'shown'
+        elif (color is None and self.palette and self.numbered and view == 'shown'
               and kind in ('sig', 'mid')):
-            # 따라 그리기 층 — 이번 층 신호선은 선마다 다른 색, 끝점도 크게(같은 색 점끼리 잇게)
-            color = LAYER_PALETTE[len(self.layer_colors) % len(LAYER_PALETTE)]
-            self.layer_colors[len(self.steps) + 1] = color
+            # 따라 그리기 층·단계 그림 — 새 신호선은 선마다 다른 색, 끝점도 크게(같은 색 점끼리 잇게)
+            color = LAYER_PALETTE[len(self.wire_colors) % len(LAYER_PALETTE)]
+            self.wire_colors[len(self.steps) + 1] = color
             dot = 5
         else:
             color = color or WIRE[kind]
@@ -1184,6 +1187,9 @@ class BreadboardRenderer(_RuleChecks):
             out['board'] = self.board
         if self.layer is not None:
             out['layer'] = list(self.layer)
+        if self.wire_colors and self.layer is None:
+            # 단계 그림 팔레트 — 색이 바뀌면 PNG 도 다시 굽게. 색 받은 선이 없으면 키도 없다(옛 도장 유지)
+            out['palette'] = [[n, _hex_color(c)] for n, c in sorted(self.wire_colors.items())]
         if self.ghost is not None:
             out['ghost'] = [(r['n'], r['addr']) for r in self.removals()]
             if self.ghost.get('chains'):
@@ -1213,13 +1219,19 @@ class BreadboardRenderer(_RuleChecks):
                     for r in wires]
         removals += [{'n': None, 'text': g} for g in self.removed()[len(wires):]]
         removals += [{'n': None, 'text': g} for g in self._ghost_chain_lines()]
+        steps = []
+        for s in self.steps:
+            row = {'n': s['n'], 'kind': s['kind'], 'from': s['frm'], 'to': s['to'],
+                   'desc': s['desc'], 'count': s['count']}
+            if self.layer is None and s['n'] in self.wire_colors:
+                row['color'] = _hex_color(self.wire_colors[s['n']])   # 체크리스트 번호 원 색
+            steps.append(row)
         side = {
             'schema': SIDECAR_SCHEMA,
             'title': self.title,
             'subtitle': self.subtitle,
             'kept': len(self.kept) if self.baseline is not None else None,
-            'steps': [{'n': s['n'], 'kind': s['kind'], 'from': s['frm'], 'to': s['to'],
-                       'desc': s['desc'], 'count': s['count']} for s in self.steps],
+            'steps': steps,
             'removals': removals,
             'probes': [{'n': p['n'], 'label': p['label'], 'at': p['at'], 'desc': p['desc']}
                        for p in self.probes],

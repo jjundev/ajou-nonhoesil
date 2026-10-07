@@ -103,6 +103,11 @@ PNG 옆 같은 이름의 `.json`(`breadboard-sidecar/v1`: `title`·`subtitle`·`
 새 주차의 완성본 빌더는 처음부터 `layer=None` 을 받아 `BreadboardRenderer(..., layer=layer)` 로 넘긴다. 절차
 그림(`BOARDS`)은 임시 급전선이 있어 따라 그리기에 쓰지 않는다.
 
+**단계 그림 선색.** 빌더가 `BreadboardRenderer(..., palette=stage is not None)` 을 넘기면 단계 그림에서
+새로 꽂는 신호선(sig·mid)이 선마다 다른 팔레트 색이 되고, 사이드카 step 에 `color` 가 실려 체크리스트
+번호 원이 같은 색이 된다(2026-10-07, 실험05 부터). 완성본은 켜지 않는다. 한 보드 10가닥을 넘으면
+`build_all` 이 멈춘다 — 그 단계를 쪼갠다.
+
 ## 4. 그림을 두 층으로 나눈다
 
 운영계획서 3.2 6) 은 **"직접 손으로 작성한 회로 결선도 첨부"** 를 요구한다.

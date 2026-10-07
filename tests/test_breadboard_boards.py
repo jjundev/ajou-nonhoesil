@@ -96,6 +96,23 @@ class BuildAll(unittest.TestCase):
             self.assertIn("none_builder", str(cm.exception))
             self.assertIn("return bb", str(cm.exception))
 
+    def test_팔레트를_넘는_단계는_멈춘다(self):
+        mod = _load()
+
+        def eleven(path, template_path=None, stage=None, baseline=None):
+            bb = mod.BreadboardRenderer(template_path, baseline=baseline, palette=True, board='v1')
+            bb.enable_steps()
+            bb.connect_jacks()
+            c = bb.cols['left']
+            for i in range(11):
+                bb.step_wire([(c['a'], bb.r_y(5 + 2 * i)), (c['a'], bb.r_y(6 + 2 * i))], 'sig', f'신호 {i}')
+            return bb
+
+        board = types.SimpleNamespace(BOARD='v1', BOARDS=[("x.png", eleven, 1)], FINALS=[])
+        with tempfile.TemporaryDirectory() as d, \
+                self.assertRaisesRegex(ValueError, r'x\.png.*11.*10.*쪼갠다'):
+            mod.build_all(board, d)
+
 
 class RealBoards(unittest.TestCase):
     """세 주차의 결선이 실험 폴더로 옮겨 갔고, 엔진에는 주차 이름이 없다."""
