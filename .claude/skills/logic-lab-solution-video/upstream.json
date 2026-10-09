@@ -315,7 +315,7 @@
   "tests/test_fork.py": "논회실 신규: 포크 무결성(형제 스킬 참조 없음·상류 해시·내재화 파일) 검사",
   "SKILL.md": "frontmatter name/description 을 논회실용으로 바꿈",
   "agents/openai.yaml": "display_name·default_prompt 를 논회실 스킬 이름으로",
-  "scripts/video.py": "자막 폰트를 형제 스킬 대신 내재화한 assets/fonts 에서",
+  "scripts/video.py": "자막 폰트를 형제 스킬 대신 내재화한 assets/fonts 에서; 실패 항목 키 date → experiment",
   "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib",
   "scripts/solution_video/publication.py": "게시 lock 모듈 이름 _logic_lab_tts_lib",
   "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서",
@@ -327,7 +327,10 @@
   "tests/test_writing_flow.py": "GSAP 경로를 내재화한 assets/runtime 에서",
   "tests/test_media.py": "폰트를 내재화한 assets/fonts 에서",
   "tests/test_cli.py": "전자회로2 복습노트/1002 실데이터에 묶인 테스트 3개 삭제(Task 6 이 실험05 로 대체)",
-  "tests/test_annotations.py": "PyMuPDF 1.28 은 import fitz 경고를 stdout 에 찍어서 하위 프로세스 출력의 마지막 줄만 JSON 으로 읽음"
+  "tests/test_annotations.py": "PyMuPDF 1.28 은 import fitz 경고를 stdout 에 찍어서 하위 프로세스 출력의 마지막 줄만 JSON 으로 읽음",
+  "scripts/solution_video/sources.py": "논회실 소스 탐색: 복습노트/실험NN manifest 순서 라벨, 배지+제목 쪽 짝짓기, figure_refs. 풀이 쪽이 문제 표를 조건 패널로 옮기므로 조건 대조는 문제 쪽 작업 영역 글자까지 센 글자 multiset 비교",
+  "scripts/solution_video/contracts.py": "PagePair 에 label·title·experiments·figure_refs",
+  "tests/test_sources_lab.py": "논회실 신규: 실험05 실데이터 소스 탐색·라벨·NFD·figure_refs"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",

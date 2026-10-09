@@ -6,6 +6,7 @@ class PageRef(TypedDict):
     snapshot:str; page_index:int; width_pt:float; height_pt:float
 class PagePair(TypedDict):
     problem_id:str; problem:PageRef; answer:PageRef; md_snapshot:str|None
+    label:str; title:str; experiments:list[str]; figure_refs:list[str]
 class Step(TypedDict):
     id:str; glyph_ids:list[str]; shape_ids:list[str]
 class PageMap(TypedDict):

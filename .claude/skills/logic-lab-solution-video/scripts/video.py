@@ -47,9 +47,9 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
         write(batch/'batch.json',data)
     grouped={}
     for failure in failures:
-        pid=failure['problem_id'] or 'date-'+failure['date'];grouped.setdefault(pid,dict(failure,correspondences=[]))['correspondences'].append(failure)
+        pid=failure['problem_id'] or 'experiment-'+failure['experiment'];grouped.setdefault(pid,dict(failure,correspondences=[]))['correspondences'].append(failure)
     for failure in grouped.values():
-        pid=failure['problem_id'] or 'date-'+failure['date'];key='failed-'+digest(failure)[:12];run=batch/'videos'/key
+        pid=failure['problem_id'] or 'experiment-'+failure['experiment'];key='failed-'+digest(failure)[:12];run=batch/'videos'/key
         write(run/'source/prepare-error.json',failure)
         items.append({'id':pid,'run':'videos/'+key,'filename':pid+' — 풀이.mp4','status':'failed','reason':failure['reason']})
     write(batch/'batch.json',data);return batch
