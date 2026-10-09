@@ -1,7 +1,7 @@
 from fixtures import *
 import os
 class LabAcceptanceTests(Sandbox):
-    """Opt-in: inspects a real Aoede batch made by the skill (실험05 기출3·기출4)."""
+    """Opt-in: inspects a real Aoede batch made by the skill (실험05 기출3·기출12)."""
     def batch(self):
         target=os.environ.get('LOGIC_LAB_ACCEPTANCE_BATCH')
         if not target: self.skipTest('set LOGIC_LAB_ACCEPTANCE_BATCH to a published 실험05 batch')
@@ -9,7 +9,7 @@ class LabAcceptanceTests(Sandbox):
     def test_live_batch_complete(self):
         batch=self.batch(); data=json.loads((batch/'batch.json').read_text(encoding='utf-8'))
         items={i['id']:i for i in data['items']}
-        self.assertEqual(set(items),{'q-prio-exam','q-dec2x4-design'})
+        self.assertEqual(set(items),{'q-prio-exam','q-demux-from-dec-graded'})
         for item in items.values():
             report=json.loads((batch/item['run']/'verification/report.json').read_text(encoding='utf-8'))
             self.assertTrue(report['complete'],item['id']); self.assertEqual(report['live_audio'],'verified')
@@ -17,9 +17,9 @@ class LabAcceptanceTests(Sandbox):
         root=batch.parents[2]
         for entry in catalog['files']:
             self.assertEqual(entry['sha256'],hashlib.sha256((root/entry['path']).read_bytes()).hexdigest())
-        self.assertEqual(sorted(e['path'][:3] for e in catalog['files']),['기출3','기출4'])
+        self.assertEqual(sorted(e['path'].split(' — ')[0] for e in catalog['files']),['기출12','기출3'])
     def test_figure_problem_uses_figure_unit(self):
         batch=self.batch(); data=json.loads((batch/'batch.json').read_text(encoding='utf-8'))
-        run=batch/next(i['run'] for i in data['items'] if i['id']=='q-dec2x4-design')
+        run=batch/next(i['run'] for i in data['items'] if i['id']=='q-demux-from-dec-graded')
         layers=json.loads((run/'layers/layers.json').read_text(encoding='utf-8'))
         self.assertTrue(any(s['kind']=='figure' for s in layers['shapes']))

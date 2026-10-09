@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "selector": "실험05",
+  "review": false,
+  "items": [
+    {
+      "id": "q-prio-exam",
+      "label": "기출3",
+      "run": "videos/problem-2c770d8e1d3a",
+      "filename": "기출3 — 풀이.mp4",
+      "status": "author-required"
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "label": "기출12",
+      "run": "videos/problem-aa5c5271b881",
+      "filename": "기출12 — 풀이.mp4",
+      "status": "author-required"
+    }
+  ]
+}

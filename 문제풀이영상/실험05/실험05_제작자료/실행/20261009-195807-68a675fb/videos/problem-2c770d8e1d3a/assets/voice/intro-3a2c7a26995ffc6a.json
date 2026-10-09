@@ -1,0 +1,14 @@
+{
+  "id": "intro",
+  "path": "assets/voice/intro-3a2c7a26995ffc6a.wav",
+  "samples": 573383,
+  "rate": 24000,
+  "key": "3a2c7a26995ffc6a502bb914cf99a97173be8c8ce697dad137dc25a21e6b9f73",
+  "sha256": "50ebe7db6fe5a2fcc2bdb3ea2c1a391d09b3037a335af1d283cc69e42f471dbe",
+  "output_sha256": "50ebe7db6fe5a2fcc2bdb3ea2c1a391d09b3037a335af1d283cc69e42f471dbe",
+  "usage": {
+    "promptTokenCount": 135,
+    "candidatesTokenCount": 597,
+    "totalTokenCount": 732
+  }
+}

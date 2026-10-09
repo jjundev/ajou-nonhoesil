@@ -1,0 +1,14 @@
+{
+  "id": "write_sol",
+  "path": "assets/voice/write_sol-e08fcec7c52017d8.wav",
+  "samples": 613703,
+  "rate": 24000,
+  "key": "e08fcec7c52017d8c33829d6b21c4110459b2185c7b32d02eb7400eae44773a3",
+  "sha256": "e5533e3684588dd100299eaab53ea8af97ffcccc3c4da778c51d7c977b4ada47",
+  "output_sha256": "e5533e3684588dd100299eaab53ea8af97ffcccc3c4da778c51d7c977b4ada47",
+  "usage": {
+    "promptTokenCount": 138,
+    "candidatesTokenCount": 639,
+    "totalTokenCount": 777
+  }
+}

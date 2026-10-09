@@ -1,0 +1,88 @@
+{
+  "voices": [
+    {
+      "id": "intro",
+      "path": "assets/voice/intro-16cf0c7a571017e5.wav",
+      "samples": 610823,
+      "rate": 24000,
+      "key": "16cf0c7a571017e59df1270274108a21afa628b154a9771c1e1969370a7dcbf6",
+      "sha256": "ec138b01b28bdb299c439c353506221255eee79b4db8ad0dd18ebac14eb65b6e",
+      "output_sha256": "ec138b01b28bdb299c439c353506221255eee79b4db8ad0dd18ebac14eb65b6e",
+      "usage": {
+        "promptTokenCount": 151,
+        "candidatesTokenCount": 636,
+        "totalTokenCount": 787
+      }
+    },
+    {
+      "id": "write_sol",
+      "path": "assets/voice/write_sol-e08fcec7c52017d8.wav",
+      "samples": 613703,
+      "rate": 24000,
+      "key": "e08fcec7c52017d8c33829d6b21c4110459b2185c7b32d02eb7400eae44773a3",
+      "sha256": "e5533e3684588dd100299eaab53ea8af97ffcccc3c4da778c51d7c977b4ada47",
+      "output_sha256": "e5533e3684588dd100299eaab53ea8af97ffcccc3c4da778c51d7c977b4ada47",
+      "usage": {
+        "promptTokenCount": 138,
+        "candidatesTokenCount": 639,
+        "totalTokenCount": 777
+      }
+    },
+    {
+      "id": "write_circuit",
+      "path": "assets/voice/write_circuit-b832b31d7042cc0f.wav",
+      "samples": 774983,
+      "rate": 24000,
+      "key": "b832b31d7042cc0ffa3e18ff8ef6137216d37d65eb461cc96f546f1aed951c50",
+      "sha256": "36b9da5e8265b64ef6f42259dcc39bedec1ef74c9fc32169705c771f26ab88df",
+      "output_sha256": "36b9da5e8265b64ef6f42259dcc39bedec1ef74c9fc32169705c771f26ab88df",
+      "usage": {
+        "promptTokenCount": 161,
+        "candidatesTokenCount": 807,
+        "totalTokenCount": 968
+      }
+    },
+    {
+      "id": "write_formula",
+      "path": "assets/voice/write_formula-1cec4a6f2838fd81.wav",
+      "samples": 459143,
+      "rate": 24000,
+      "key": "1cec4a6f2838fd81da5dc074b312f9a39fdbb2596679d073b2579d5d7526d2bf",
+      "sha256": "4978f8670326f265303d378d38a652f6b3765526e52266a909c170af3925e070",
+      "output_sha256": "4978f8670326f265303d378d38a652f6b3765526e52266a909c170af3925e070",
+      "usage": {
+        "promptTokenCount": 113,
+        "candidatesTokenCount": 478,
+        "totalTokenCount": 591
+      }
+    },
+    {
+      "id": "write_diff",
+      "path": "assets/voice/write_diff-ca1bc712dace7c42.wav",
+      "samples": 296903,
+      "rate": 24000,
+      "key": "ca1bc712dace7c4206841995781cb53813302b265772087ceba3215f0ce941f9",
+      "sha256": "9b18f39c5982f9cdbd862503f5bee342539eaa27993891500bf8742e1edfe5e1",
+      "output_sha256": "9b18f39c5982f9cdbd862503f5bee342539eaa27993891500bf8742e1edfe5e1",
+      "usage": {
+        "promptTokenCount": 85,
+        "candidatesTokenCount": 309,
+        "totalTokenCount": 394
+      }
+    },
+    {
+      "id": "write_answer",
+      "path": "assets/voice/write_answer-03b7503fa48f72b0.wav",
+      "samples": 588743,
+      "rate": 24000,
+      "key": "03b7503fa48f72b0fdf6bf876bc6548ccc4c75fd4d666d629225c8b59c62a6d9",
+      "sha256": "4616a989a9492c32574d5b4b639c49401ef5b40ac20756eafe2adbfc075f8454",
+      "output_sha256": "4616a989a9492c32574d5b4b639c49401ef5b40ac20756eafe2adbfc075f8454",
+      "usage": {
+        "promptTokenCount": 129,
+        "candidatesTokenCount": 613,
+        "totalTokenCount": 742
+      }
+    }
+  ]
+}

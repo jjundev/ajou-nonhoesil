@@ -16,7 +16,7 @@ pencil의 `writing_animation`은 현재 composition을 실제 브라우저에서
 LOGIC_LAB_ACCEPTANCE_BATCH=/ABS/문제풀이영상/실험05/실험05_제작자료/실행/RUN_ID .venv/bin/python -m unittest discover -s .claude/skills/logic-lab-solution-video/tests -p test_lab_acceptance.py -v
 ```
 
-`LOGIC_LAB_ACCEPTANCE_BATCH` 가 없으면 skip 한다. 지정하면 batch 의 각 문항 report 가 complete·live_audio verified 인지, catalog SHA256 이 실제 MP4 와 같은지, figure 문항의 layers 에 figure 도형이 있는지 검사한다.
+`LOGIC_LAB_ACCEPTANCE_BATCH` 가 없으면 skip 한다. 지정하면 batch(실험05 기출3·기출12)의 각 문항 report 가 complete·live_audio verified 인지, catalog SHA256 이 실제 MP4 와 같은지, figure 문항의 layers 에 figure 도형이 있는지 검사한다.
 
 검증된 Manifest.title을 실제 파일명에 사용하며 금지된 파일명 문자는 공백으로 정리한다. 게시 영수증은 실제 MP4와 catalog SHA256을 저장한다. 정상 게시 후 재개는 완료로 판정하며, 게시된 파일이 바뀌면 publish 단계부터 다시 확인한다. 명시적 카메라도 마지막 전체 답안 hold를 덮을 수 없다.
 

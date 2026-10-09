@@ -1,0 +1,14 @@
+{
+  "id": "write_rows_b",
+  "path": "assets/voice/write_rows_b-b2721bc76aca89dc.wav",
+  "samples": 942023,
+  "rate": 24000,
+  "key": "b2721bc76aca89dca275b2d13ddb27c24716a48aacc46562bab28ce62a157665",
+  "sha256": "1b94c80f616ce13d5f92286a02c8332d47de151831b92f9f20dcc1514ae83f75",
+  "output_sha256": "1b94c80f616ce13d5f92286a02c8332d47de151831b92f9f20dcc1514ae83f75",
+  "usage": {
+    "promptTokenCount": 162,
+    "candidatesTokenCount": 981,
+    "totalTokenCount": 1143
+  }
+}
