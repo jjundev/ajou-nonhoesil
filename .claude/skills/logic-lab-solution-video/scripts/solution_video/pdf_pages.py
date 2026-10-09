@@ -1,11 +1,11 @@
 """Export original glyph outlines. Bboxes are measured from the same SVG DOM."""
 from pathlib import Path
-import copy,xml.etree.ElementTree as ET,unicodedata
+import copy,hashlib,io,xml.etree.ElementTree as ET,unicodedata
 from .util import browser,write,read,file_hash
 from .contracts import ExtractionError
 NS='http://www.w3.org/2000/svg'
 ET.register_namespace('',NS); ET.register_namespace('xlink','http://www.w3.org/1999/xlink')
-ALLOWED={'fraction_bar','radical_bar','step_badge','answer_box','bullet'}
+ALLOWED={'fraction_bar','radical_bar','step_badge','answer_box','bullet','figure'}
 def _painted(root):
     out=[]
     def walk(node,in_defs=False):
@@ -14,7 +14,13 @@ def _painted(root):
         for child in node: walk(child,in_defs)
     walk(root); return out
 
-def export_page(pdf,page_index,dest):
+def figure_pixel_hash(data):
+    """Decoded RGB pixels, so PNG re-encoding inside the PDF does not matter."""
+    from PIL import Image
+    with Image.open(io.BytesIO(data)) as im:
+        rgb=im.convert('RGB'); return hashlib.sha256(f'{rgb.width}x{rgb.height}'.encode()+rgb.tobytes()).hexdigest()
+
+def export_page(pdf,page_index,dest,figure_refs=None):
     try: import fitz
     except ImportError: raise ExtractionError('PyMuPDF missing in this Python; use a configured interpreter') from None
     dest=Path(dest); dest.mkdir(parents=True,exist_ok=True)
@@ -23,6 +29,13 @@ def export_page(pdf,page_index,dest):
         if 'data-text=' not in svg: raise ExtractionError('scan-only or no extractable glyphs')
         pg.get_pixmap(matrix=fitz.Matrix(2,2)).save(dest/'native.png')
         metadata={'source_sha256':file_hash(pdf),'page_index':page_index,'width_pt':pg.rect.width,'height_pt':pg.rect.height,'pymupdf':fitz.VersionBind}
+        # Only this problem's own solution PNGs may become figure units; identical pixels elsewhere do not count.
+        refs={figure_pixel_hash(Path(r).read_bytes()):Path(r).name for r in figure_refs or []}
+        placed=[]
+        for info in pg.get_image_info(xrefs=True) if refs else []:
+            if info['xref']<=0: continue
+            name=refs.get(figure_pixel_hash(doc.extract_image(info['xref'])['image']))
+            if name: placed.append((list(info['bbox']),name))
     original=dest/'original.svg'; original.write_text(svg,encoding='utf-8')
     items=browser(['--mode','inventory','--svg',str(original.resolve())]); root=ET.fromstring(svg); nodes=_painted(root)
     if len(items)!=len(nodes): raise ExtractionError('SVG paint inventory differs')
@@ -35,7 +48,10 @@ def export_page(pdf,page_index,dest):
             if glyphs and (unicodedata.combining(g['text']) or '\u1160'<=g['text'][:1]<='\u11ff'):
                 prev=glyphs[-1]; prev['text']+=g['text']; prev['svg_ids']+=g['svg_ids']; prev['bbox']=[min(prev['bbox'][0],b[0]),min(prev['bbox'][1],b[1]),max(prev['bbox'][2],b[2]),max(prev['bbox'][3],b[3])]
             else: glyphs.append(g)
-        elif item['tag']=='image': images.append(item)
+        elif item['tag']=='image':
+            name=next((n for pb,n in placed if all(abs(a-c)<=.5 for a,c in zip(pb,b))),None)
+            if name: shapes.append(dict(id=f's{i:05d}',bbox=b,svg_ids=[item['id']],kind='figure',paint_order=i,figure_source=name))
+            else: images.append(item)
         else:
             w,h=b[2]-b[0],b[3]-b[1]
             kind='answer_box' if w<=3 and h>=15 else 'fraction_bar' if h<=2 and w>3 else 'radical_bar' if w<=2 and h>3 else 'step_badge' if 6<=w<=20 and 6<=h<=20 else 'bullet' if w<=5 and h<=5 else 'answer_box' if w>50 and 15<=h<=180 else 'unclassified'

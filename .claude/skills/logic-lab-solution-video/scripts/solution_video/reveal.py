@@ -2,6 +2,7 @@ import math
 from .contracts import InputError
 from .review_adapter import validate_config
 from .writing import validate_writing,representative_height
+FIGURE_DRAW_FRAMES=60  # one solution figure wipes in 2 s; longer voice still stretches the segment
 
 def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=None):
     validate_config(config); fps,rate=30,24000; per_frame=800
@@ -11,7 +12,7 @@ def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=No
     if writing is not None: validate_writing(writing)
     settings=writing or config; pencil=writing is not None and writing['mode']=='pencil'
     interval=math.ceil(fps/float(settings['chars_per_second'])); hold=math.ceil(float(settings['read_hold_seconds'])*fps)
-    glyphs={g['id']:g for g in layers['glyphs']}; spans=[]; previous=None; previous_step=None
+    glyphs={g['id']:g for g in layers['glyphs']}; figures={x['id'] for x in layers.get('shapes',[]) if x.get('kind')=='figure'}; spans=[]; previous=None; previous_step=None
     spatial=pencil and any('writing_units' in s for s in layers['map']['steps'])
     units=[]; unit_spans=[]; previous_piece=None; previous_unit=None
     if spatial:
@@ -35,7 +36,7 @@ def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=No
                         space=kind=='glyph' and glyphs[gid]['text'].isspace()
                         lifted=previous_unit is not None and previous_unit['line_id']!=u['line_id']
                         move=interval if space else max(8,writing['lifted_move_frames']) if lifted else writing['adjacent_move_frames']
-                        draw=0 if space else max(18 if kind=='shape' else 2,interval-writing['adjacent_move_frames'])
+                        draw=0 if space else FIGURE_DRAW_FRAMES if kind=='shape' and gid in figures else max(18 if kind=='shape' else 2,interval-writing['adjacent_move_frames'])
                         base=dict(id=gid,from_id=previous_piece['id'] if previous_piece else None,from_bbox=previous_piece['clip_bbox'] if previous_piece else None,
                                   target_kind=kind,step_id=seg['step_id'],unit_id=u['id'],piece_index=i,clip_bbox=b)
                         spans.append(dict(base,kind='move',start_frame=frame+offset,end_frame=frame+offset+move,lifted=lifted));offset+=move
