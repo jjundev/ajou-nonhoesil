@@ -336,7 +336,11 @@
   "scripts/solution_video/pdf_pages.py": "문항 풀이 PNG 와 디코딩 픽셀이 같은 PDF 이미지를 figure 도형으로 승격(figure_pixel_hash, export_page figure_refs)",
   "scripts/solution_video/reveal.py": "figure 조각 draw 길이 FIGURE_DRAW_FRAMES=60",
   "scripts/solution_video/writing_camera.py": "figure 묶음이 26px 로 안 들어가면 전체 쪽 배율까지 줄여 맞춤",
-  "tests/test_figure_unit.py": "논회실 신규: 그림 단위 승격·게이트·draw 길이·카메라 대체"
+  "tests/test_figure_unit.py": "논회실 신규: 그림 단위 승격·게이트·draw 길이·카메라 대체",
+  "assets/defaults.json": "pronunciation·direction 을 논리회로용으로",
+  "scripts/solution_video/subtitles.py": "logic_bar_word 경고 규칙 추가",
+  "references/narration-and-timing.md": "논리식 음성·자막과 ~해요체 절 추가",
+  "tests/test_caption_notation.py": "논리식 경고·기본값 테스트 추가"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",

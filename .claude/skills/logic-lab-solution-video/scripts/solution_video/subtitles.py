@@ -28,7 +28,9 @@ _NOTATION_RULES=[
     ('warning','spoken_divisor',r'(?<![가-힣])'+_KOREAN_NUMBER+r'(?:으로|로)\s+나눈',
      '나누는 수를 뜻하는지 문맥으로 확인하세요.'),
     ('warning','numeric_predicate',r'(?:값|계수|답|전류|전압)(?:은|는)\s+(?P<number>'+_KOREAN_NUMBER+r')(?=입니다|이다)',
-     '수치 서술 문맥의 한글 수사입니다. 원본과 대조하여 숫자인지 확인하세요.')]
+     '수치 서술 문맥의 한글 수사입니다. 원본과 대조하여 숫자인지 확인하세요.'),
+    ('warning','logic_bar_word',r'(?<![A-Za-z0-9_])[A-Z][A-Za-z0-9_]*\s*(바|낫)(?![가-힣])',
+     '논리 부정은 자막에 ′ 로 씁니다 (예: S1′)')]
 _NOTATION_RULES=[(severity,code,re.compile(pattern),reason)
                  for severity,code,pattern,reason in _NOTATION_RULES]
 

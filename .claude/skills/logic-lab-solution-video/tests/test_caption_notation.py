@@ -65,3 +65,19 @@ class CaptionNotationTests(unittest.TestCase):
         issues=inspect(text,'s')
         self.assertEqual([i['severity'] for i in issues],['warning','error','error','warning'])
         self.assertEqual(len({tuple(i['span']) for i in issues}),4)
+
+class LogicNotationTests(unittest.TestCase):
+    def test_logic_bar_word_warns(self):
+        from solution_video.subtitles import caption_notation_warnings
+        w=caption_notation_warnings([{'id':'a','caption_text':'Y0는 S1 바 S0 바 D예요.'}])
+        self.assertEqual({i['code'] for i in w},{'logic_bar_word'})
+        self.assertEqual(len(w),2)
+    def test_logic_prime_and_korean_ba_are_quiet(self):
+        from solution_video.subtitles import caption_notation_warnings
+        for text in ['Y0=S1′S0′D예요.','이 바를 보면 출력이 정해져요.','A+B는 OR예요.','E 낫이 아니라 E′예요.']:
+            with self.subTest(text=text): self.assertEqual(caption_notation_warnings([{'id':'a','caption_text':text}]),[])
+    def test_defaults_are_logic_lab(self):
+        from solution_video.review_adapter import default_config
+        d=default_config(); self.assertEqual(d['pronunciation']['′'],' 바'); self.assertEqual(d['voice'],'Aoede')
+        self.assertEqual(d['pronunciation']['V_CC'],'브이 씨씨'); self.assertNotIn('g_m',d['pronunciation'])
+        self.assertIn('논리회로',d['direction'])
