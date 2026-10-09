@@ -84,6 +84,11 @@ def extract_layers(page,mapping):
             n=dom[sid]; n.set('data-reveal',i); n.set('style',n.get('style','')+';opacity:0')
     dest=Path(page['original_svg']).parent/'animated.svg'; dest.write_text(ET.tostring(root,encoding='unicode'),encoding='utf-8'); result['animated_svg']=str(dest.resolve()); return result
 
+NON_TARGET_TOLERANCE=2  # Chrome re-rasterizes repeated thin table rules ±1 level when other rules are hidden
+def changed_pixels(a,b,tolerance=0):
+    from PIL import ImageChops
+    return sum(max(p)>tolerance for p in ImageChops.difference(a,b).getdata())
+
 def compare_completed(page,evidence):
     from PIL import Image,ImageChops
     evidence=Path(evidence).resolve(); evidence.mkdir(parents=True,exist_ok=True); write(evidence/'layers.json',page)
@@ -97,5 +102,5 @@ def compare_completed(page,evidence):
     draw=ImageDraw.Draw(outside); meta=page['metadata']; sx=r['width']/meta['width_pt']; sy=r['height']/meta['height_pt']
     for obj in page['glyphs']+page['shapes']:
         x0,y0,x1,y1=obj['bbox']; draw.rectangle((x0*sx-3,y0*sy-3,x1*sx+3,y1*sy+3),fill=(0,0,0))
-    result=dict(pixel_diff=diff(a,b),non_target_diff=sum(p!=(0,0,0) for p in outside.getdata()),hidden_leaks=diff(empty,removed),evidence=[str(evidence/n) for n in r['evidence']])
+    result=dict(pixel_diff=diff(a,b),non_target_diff=changed_pixels(outside,Image.new('RGB',outside.size),NON_TARGET_TOLERANCE),hidden_leaks=diff(empty,removed),evidence=[str(evidence/n) for n in r['evidence']])
     write(evidence/'gate.json',result); return result

@@ -6,7 +6,7 @@
 
 범위 안의 모든 글자와 풀이 도형을 한 번씩 포함한다. 문제 그림, 조건, Hint, 격자 이미지는 지정하지 않는다. 도형 후보의 `unclassified`는 직접 확인 후 `fraction_bar|radical_bar|step_badge|answer_box|bullet` 중 해당 값을 지정한다. 근호와 장식 선은 실제 의미를 보고 분류한다. 그 문항의 `figures/solutions/<id>-solution-NN.png` 와 디코딩 픽셀이 같은 풀이 그림은 prepare 가 `kind:'figure'` 도형(`figure_source` 에 PNG 이름)으로 올려 두었다. figure 는 다른 도형처럼 shape_ids 와 writing_units 에 넣고, '완성 회로' 같은 제목 글자가 있는 step 에 같이 둔다(글자 없는 step 은 `empty writing step` 으로 거부된다). 띠 하나에 그림 하나를 넣으면 연필이 그림 폭을 2초에 왼→오로 지나간다. 그 밖의 이미지가 풀이 영역 안에 있으면 중단한다. 이미지 배경 전체에 걸치는 격자는 그대로 둔다. 기존 SVG의 path, transform, clipPath, defs와 data-text를 편집하지 않는다.
 
-`extract` 후 `layers/layers.json`이 확정되며 gate는 원본/빈 화면/삭제 대조/일부 공개/완성 PNG를 만든다. 완성 픽셀 차이, 숨김 대조 차이, 비대상 변경이 모두 0이어야 한다. `native.png`와 원본 SVG PNG는 서로 다른 렌더러이므로 직접 시각 검토한다. 그림 교체로 완성 오류를 감추지 않는다.
+`extract` 후 `layers/layers.json`이 확정되며 gate는 원본/빈 화면/삭제 대조/일부 공개/완성 PNG를 만든다. 완성 픽셀 차이, 숨김 대조 차이, 비대상 변경이 모두 0이어야 한다(비대상 변경은 채널 차 2 이하의 래스터 잡음을 세지 않는다 — 같은 모양의 얇은 표 선이 많은 쪽에서 Chrome 이 ±1 단계로 다시 그린다). `native.png`와 원본 SVG PNG는 서로 다른 렌더러이므로 직접 시각 검토한다. 그림 교체로 완성 오류를 감추지 않는다.
 
 `source/manifest.json`: schema_version=1, problem_id, 자연스러운 한국어 title, segments, reveal_order, shape_anchors, cameras. segments의 id는 영문으로 시작하는 ASCII 안전 문자열, kind는 problem/reason/write/check/summary, step_id와 text/source_refs가 있다. 첫 segment는 problem이고 각 mapped step에 write 하나씩 순서대로 둔다. reveal_order는 PageMap glyph_ids를 순서대로 합친 값이다. shape_anchors는 shape ID→같은 단계 glyph ID다. cameras는 `{at_frame,viewbox:[x0,y0,width,height]}`, 빈 배열이면 측정 타이밍과 원본 글자 크기로 기본 확대를 만든다.
 

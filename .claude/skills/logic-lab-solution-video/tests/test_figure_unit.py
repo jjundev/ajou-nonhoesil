@@ -56,3 +56,13 @@ class FigureUnitTests(Sandbox):
         im=Image.new('RGB',(3,2),(1,2,3)); a=io.BytesIO(); b=io.BytesIO(); im.save(a,'PNG'); im.save(b,'PNG',compress_level=0)
         self.assertEqual(figure_pixel_hash(a.getvalue()),figure_pixel_hash(b.getvalue()))
         c=io.BytesIO(); Image.new('RGB',(2,3),(1,2,3)).save(c,'PNG'); self.assertNotEqual(figure_pixel_hash(a.getvalue()),figure_pixel_hash(c.getvalue()))
+
+class GateNoiseTests(Sandbox):
+    def test_non_target_ignores_one_level_raster_noise(self):
+        from PIL import Image
+        from solution_video.pdf_pages import changed_pixels
+        a=Image.new('RGB',(4,1),(54,54,54)); b=a.copy(); b.putpixel((0,0),(55,55,55)); b.putpixel((1,0),(56,54,54))
+        self.assertEqual(changed_pixels(a,b,tolerance=2),0)
+        b.putpixel((2,0),(57,54,54)); b.putpixel((3,0),(255,255,255))
+        self.assertEqual(changed_pixels(a,b,tolerance=2),2)
+        self.assertEqual(changed_pixels(a,b),4)
