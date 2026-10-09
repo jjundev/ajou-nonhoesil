@@ -8,6 +8,7 @@ import shutil
 import tempfile
 from urllib.parse import quote
 from .bank_index import build_authoring_index,initial_manifest
+from .manifest import DATA
 from .question_bank import load_question_bank,validate_question_bank,check_question_bank_files,_unique_json_object
 from .question_bank_sources import _evidence_path
 from .sources import file_sha256
@@ -108,11 +109,14 @@ def copy_import_material(run,out,manifest):
     binding=manifest['bank_import']
     snapshot=_evidence_path(run,binding['snapshot_path'])
     bank=load_question_bank(snapshot)
-    paths=[binding['snapshot_path'],binding['index_path'],GUIDE_NAME]
+    paths=[binding['snapshot_path'],binding['index_path']]
     paths += ['evidence/'+a['path'] for a in bank['assets']]
+    # 안내문은 .md 라서 루트에 두고, 나머지 증거는 자료/ 로 간다. 안내문 속 evidence/ 링크는 자료/ 를 단다.
+    def destination(relative):return out/GUIDE_NAME if relative==GUIDE_NAME else _evidence_path(out/DATA,relative)
+    for relative in paths+[GUIDE_NAME]:
+        if destination(relative).exists():raise ValueError('Stage evidence collision: '+relative)
     for relative in paths:
-        target=_evidence_path(out,relative)
-        if target.exists():raise ValueError('Stage evidence collision: '+relative)
-    for relative in paths:
-        source=_evidence_path(run,relative);target=_evidence_path(out,relative)
+        source=_evidence_path(run,relative);target=destination(relative)
         target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+    guide=_evidence_path(run,GUIDE_NAME).read_text(encoding='utf-8')
+    destination(GUIDE_NAME).write_text(guide.replace('](evidence/','](%s/evidence/'%DATA),encoding='utf-8')

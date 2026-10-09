@@ -2,7 +2,7 @@
 
 원본 HTML은 assets/workbook/의 problem.html과 answer.html이다. 원본 바이트·해시를 유지하고 생성 시 JSON, 로컬 자원 URL, workbook_render.LOCAL_PATCHES(표 테두리 CSS·빈 조건 블록 생략, 모든 템플릿 공통)와 TEMPLATE_PATCHES(문제지의 채울 표를 풀이 칸으로 옮기기·넘침 검사, problem.html에만)만 바꾼다. 패치 anchor가 사라지면 렌더가 실패한다. 생명과학 note-template은 실험설명에 계속 사용한다.
 
-manifest.schema_version=1, review_presentation_version=2, figure_manifest='figures/redraw-manifest.json'을 지정한다. included 문항에는 workbook_fragment='workbook/<id>.json'을 지정한다. 은행 고정 필드와 원문 이미지는 수정하지 않는다.
+manifest.schema_version=1, review_presentation_version=2, figure_manifest='figures/redraw-manifest.json'을 지정한다(발행본에서는 `자료/` 기준이다). 문제지·해설지 HTML 속 그림 링크는 build가 `자료/figures/..` 로 쓴다. included 문항에는 workbook_fragment='workbook/<id>.json'을 지정한다. 은행 고정 필드와 원문 이미지는 수정하지 않는다.
 
 문항 JSON 예:
 

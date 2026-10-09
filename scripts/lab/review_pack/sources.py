@@ -25,7 +25,7 @@ def file_sha256(path):
 def inventory(root, experiment):
     root = Path(root).resolve()
     config.experiment_folder_name(experiment)
-    old = root / '복습노트' / config.experiment_folder_name(experiment) / 'manifest.json'
+    old = root / '복습노트' / config.experiment_folder_name(experiment) / config.PACK_DATA_DIR / 'manifest.json'
     old_ids = {}
     if old.exists():
         data = json.loads(old.read_text(encoding='utf-8'))

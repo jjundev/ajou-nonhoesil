@@ -71,3 +71,24 @@ def test_exposed_bank_asset_cannot_author_problem_diagram(tmp_path):
     row['source_asset_ids'] = [bank['assets'][0]['id']]
     (run/m['figure_manifest']).write_text(json.dumps(dict(schema_version=1,figures=[row])),encoding='utf-8')
     assert check_redrawn_figures(run,m)
+
+def test_build_puts_data_under_data_folder_and_links_follow(tmp_path):
+    from tests._workbook_fixture import add_redrawn_figure
+    m, run = create_workbook_run(tmp_path)
+    add_redrawn_figure(m, run)
+    fragment = run/m['problems'][0]['workbook_fragment']
+    authored = json.loads(fragment.read_text(encoding='utf-8'))
+    authored['problem_figures'] = ['f1']
+    fragment.write_text(json.dumps(authored, ensure_ascii=False), encoding='utf-8')
+    stage = tmp_path/'stage'; paths = assemble(m,run,stage,ASSETS)
+    convert_pack(paths['note_html'],paths['review_html'],manifest=m)
+    assert {p.name for p in stage.iterdir() if p.is_dir()} == {'자료'}
+    assert not {'assets','figures','evidence','manifest.json'} & {p.name for p in stage.iterdir()}
+    for name in ('manifest.json','assets','figures/questions/diagram.png'):
+        assert (stage/'자료'/name).exists()
+    payload = read_workbook_payload(paths['question_html'])
+    assert payload['problems'][0]['figures'][0]['src'] == '자료/figures/questions/diagram.png'
+    assert '자료/figures/questions/diagram.png' in paths['question_md'].read_text(encoding='utf-8') or \
+        '%EC%9E%90%EB%A3%8C/figures/questions/diagram.png' in paths['question_md'].read_text(encoding='utf-8')
+    assert 'href="자료/assets/vendor/' in paths['question_html'].read_text(encoding='utf-8')
+    assert check_pack(stage) == []

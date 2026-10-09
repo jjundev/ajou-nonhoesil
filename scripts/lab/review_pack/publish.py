@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import uuid
 from .checks import check_pack
-from .manifest import load_manifest
+from .manifest import load_manifest,DATA
 from .sources import file_sha256
 from scripts.lab import config
 from .bank_provenance import check_bank_import
@@ -14,7 +14,7 @@ def publish(stage,destination,root):
     root=Path(root).resolve();stage=Path(stage).resolve();dest=Path(destination).resolve()
     errors=check_pack(stage)
     if errors:raise ValueError('\n'.join(errors))
-    data=load_manifest(stage/'manifest.json')
+    data=load_manifest(stage/DATA/'manifest.json')
     if data.get('review_presentation_version')==2:
         from .workbook_figures import check_redrawn_figures
         errors=check_redrawn_figures(stage,data,require_review=True)
@@ -36,8 +36,8 @@ def publish(stage,destination,root):
     actual={p.relative_to(stage).as_posix() for p in stage.rglob('*') if p.is_file()}
     if new_owned!=actual:raise ValueError('generated_files must match stage')
     old_owned=set()
-    if (dest/'manifest.json').exists():
-        old_owned=set(load_manifest(dest/'manifest.json').get('generated_files',[]))
+    if (dest/DATA/'manifest.json').exists():
+        old_owned=set(load_manifest(dest/DATA/'manifest.json').get('generated_files',[]))
     user_files=[p for p in dest.rglob('*') if p.is_file() and p.relative_to(dest).as_posix() not in old_owned] if dest.exists() else []
     if any(p.relative_to(dest).as_posix() in new_owned for p in user_files):raise ValueError('User file collision')
     dest.parent.mkdir(parents=True,exist_ok=True)

@@ -6,6 +6,7 @@ import json
 import re
 from .question_bank import _unique_json_object
 from .bank_index import canonical_relative
+from .manifest import strip_data, link_data, data_url
 from .html2md import Parser
 from .work_table import check_work_tables
 
@@ -58,7 +59,7 @@ def check_authored_html(text, folder, question_id, figures, *, problem=False):
             if parts.scheme or parts.netloc or attr not in {'src','href'}:
                 raise ValueError(question_id+': unsupported resource '+value)
             if attr=='src':
-                path=unquote(parts.path)
+                path=strip_data(unquote(parts.path))   # 발행본은 문서 기준 `자료/..`, 저작 RUN 은 `figures/..`
                 _within(folder,path)
                 matching=[f for f in figures.values() if path in (f['svg'],f['png'])]
                 if not matching or not any(f['question_id']==question_id for f in matching):
@@ -128,10 +129,12 @@ def build_workbook_data(manifest, content, mode):
     for row in content:
         entry=dict(id=row['id'],kind=row['kind'],number=row['number'],title=row['title'],
             section=row['section'],book_page=None,difficulty=None,sol=None,original_lang='ko',depends_on=[],
-            html={key:row[key] for key in ('original','conditions','ask')},
-            figures=deepcopy(row['figures']),hints=deepcopy(row['hints']))
+            html={key:link_data(row[key]) for key in ('original','conditions','ask')},
+            figures=[dict(f,src=data_url(f['src'])) for f in row['figures']],
+            hints=[{k:(link_data(v) if k in ('label','html') else v) for k,v in h.items()} for h in row['hints']])
         if mode=='answers':
-            solution=deepcopy(row['solution'])
+            solution=dict(steps=[dict(label=link_data(s['label']),html=link_data(s['html'])) for s in row['solution']['steps']],
+                          answer=link_data(row['solution']['answer']))
             entry['solution']=solution
         entries.append(entry)
     label='기출 문제' if mode=='problems' else '기출 풀이'

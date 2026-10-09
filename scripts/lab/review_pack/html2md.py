@@ -11,6 +11,7 @@ import html
 import json
 import re
 from urllib.parse import quote, unquote, urlsplit
+from scripts.lab.config import PACK_DATA_DIR as DATA
 
 @dataclass
 class Node:
@@ -65,12 +66,12 @@ def export_document(path, export=True, note_metadata=None):
             text=serialize(n)
             if 'xmlns=' not in text:text=text.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"',1)
             filename='md-'+hashlib.sha256(text.encode()).hexdigest()[:16]+'.svg'
-            dest=path.parent/'figures'/filename
+            dest=path.parent/DATA/'figures'/filename
             if export:
-                dest.parent.mkdir(exist_ok=True);dest.write_text(text,encoding='utf-8')
+                dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text,encoding='utf-8')
             figures.add(filename)
             title=next((''.join(c for c in x.children if isinstance(c,str)) for x in n.walk() if x.tag=='title'),'회로 그림')
-            return f'![{title}](figures/{filename})\n\n'
+            return f'![{title}]({quote(DATA)}/figures/{filename})\n\n'
         body=''.join(render(c) for c in n.children)
         if note_metadata and n.tag=='article' and 'topic' in n.attrs.get('class','').split():
             metadata=note_metadata.get(n.attrs.get('id'),'')
@@ -117,8 +118,8 @@ def convert_pack(note_path,review_path,manifest=None):
     if not all(names) or names[0][1]!=names[1][1] or [m[2] for m in names]!=['실험설명','기출풀이'] or paths[0].parent!=paths[1].parent:
         raise ValueError('Mismatched learning pack names')
     outputs=[];count=0
-    if manifest is None and (paths[0].parent/'manifest.json').is_file():
-        manifest=json.loads((paths[0].parent/'manifest.json').read_text(encoding='utf-8'))
+    if manifest is None and (paths[0].parent/DATA/'manifest.json').is_file():
+        manifest=json.loads((paths[0].parent/DATA/'manifest.json').read_text(encoding='utf-8'))
     metadata=None
     if manifest and manifest.get('note_presentation_version')==2:
         from .note_metadata import topic_metadata

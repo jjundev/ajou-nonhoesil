@@ -5,7 +5,7 @@ import json
 import re
 import shutil
 from urllib.parse import quote
-from .manifest import validate_manifest, output_names
+from .manifest import validate_manifest, output_names, DATA, link_data
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata
@@ -18,7 +18,7 @@ def read_fragment(run,relative,names):
     if not candidate.is_relative_to(run.resolve()): raise ValueError('fragment outside run')
     text=candidate.read_text(encoding='utf-8')
     if re.search(r'<script\b|\son\w+\s*=|javascript:',text,re.I): raise ValueError('Active fragment code is forbidden')
-    return text.replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
+    return link_data(text).replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
 
 def assemble(manifest,run,out,assets):
     errors=validate_manifest(manifest)
@@ -69,12 +69,13 @@ def assemble(manifest,run,out,assets):
         review.append('<section><h2>중복·보류·다른 실험 문항</h2><ul>'+''.join(f'<li id="{p["id"]}">{esc(p["id"])} · {esc(p["status"])}: {esc(p["reason"])}</li>' for p in held)+'</ul></section>')
     out.mkdir(parents=True)
     copy_import_material(run,out,manifest)
-    shutil.copytree(assets,out/'assets')
+    data_out=out/DATA
+    shutil.copytree(assets,data_out/'assets')
     if (run/'figures').exists():
         for p in (run/'figures').rglob('*'):
             if p.is_symlink(): raise ValueError('No symlink figures')
-        shutil.copytree(run/'figures',out/'figures')
-    else: (out/'figures').mkdir()
+        shutil.copytree(run/'figures',data_out/'figures')
+    else: (data_out/'figures').mkdir()
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
     for kind,body in ([('note',note)] if workbook else [('note',note),('review',review)]):
@@ -85,16 +86,16 @@ def assemble(manifest,run,out,assets):
         text=(assets/f'{kind}-template.html').read_text(encoding='utf-8')
         title=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이')
         content='<section id="learning"><h2>'+('실험 이해' if kind=='note' else '문제와 풀이')+'</h2>'+'\n'.join(body)+'</section>'
-        values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,TOC=nav,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS='<script src="assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
+        values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,TOC=nav,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS=f'<script src="{DATA}/assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
         if kind=='note' and manifest.get('note_presentation_version')==2:
             values['FOOTER']=''
         for key,val in values.items():
             text=text.replace('{{'+key+'}}',val)
         for url,local in {
-            'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css':'assets/vendor/pretendard/pretendard.css',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':'assets/vendor/katex/katex.min.css',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':'assets/vendor/katex/katex.min.js',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':'assets/vendor/katex/auto-render.min.js',
+            'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css':DATA+'/assets/vendor/pretendard/pretendard.css',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':DATA+'/assets/vendor/katex/katex.min.css',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':DATA+'/assets/vendor/katex/katex.min.js',
+            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':DATA+'/assets/vendor/katex/auto-render.min.js',
         }.items(): text=text.replace(url,local)
         if '{{' in text: raise ValueError('Unreplaced placeholder')
         path=out/names[kind+'_html'];path.write_text(text,encoding='utf-8');paths[kind+'_html']=path
@@ -112,5 +113,5 @@ def assemble(manifest,run,out,assets):
             audit.append(f'- 출처: {sources[ref["source_id"]]["path"]} / PDF {ref.get("pdf_page")} / 인쇄 {ref.get("printed_page")} / 문항 {ref.get("question","미표기")}')
         audit.append('')
     paths['audit']=out/'출처와_문항목록.md';paths['audit'].write_text('\n'.join(audit),encoding='utf-8')
-    paths['manifest']=out/'manifest.json';paths['manifest'].write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
+    paths['manifest']=data_out/'manifest.json';paths['manifest'].write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
     return paths

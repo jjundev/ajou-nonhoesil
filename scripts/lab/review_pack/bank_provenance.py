@@ -5,6 +5,7 @@ from .bank_index import (AUTHORING_STATES,build_authoring_index,initial_manifest
                          validate_bank_import_fields)
 from .question_bank import load_question_bank,check_question_bank_files,_unique_json_object
 from .question_bank_sources import _evidence_path
+from .manifest import data_dir
 from .sources import file_sha256
 
 def strict_json(path):
@@ -50,9 +51,9 @@ def _index_errors(actual,expected):
 def check_bank_import(folder,manifest,*,root=None):
     errors=validate_bank_import_fields(manifest)
     if errors or 'bank_import' not in manifest:return errors
-    folder=Path(folder);binding=manifest['bank_import']
+    folder=Path(folder);data=data_dir(folder);binding=manifest['bank_import']
     try:
-        snapshot=_evidence_path(folder,binding['snapshot_path'])
+        snapshot=_evidence_path(data,binding['snapshot_path'])
         if file_sha256(snapshot)!=binding['sha256']:return ['$.bank_import.sha256: snapshot changed']
         bank=load_question_bank(snapshot)
         if bank['audit']['status'] not in ('complete','complete_with_holds'):
@@ -63,7 +64,7 @@ def check_bank_import(folder,manifest,*,root=None):
             path=_evidence_path(snapshot.parent,asset['path'])
             if file_sha256(path)!=asset['sha256']:errors.append('Asset changed: '+asset['id'])
         expected=build_authoring_index(bank,binding['sha256'])
-        index=strict_json(_evidence_path(folder,binding['index_path']))
+        index=strict_json(_evidence_path(data,binding['index_path']))
         errors.extend(_index_errors(index,expected))
         guide=_evidence_path(folder,'원문과_저작안내.md')
         if not guide.is_file():errors.append('Missing authoring guide')
