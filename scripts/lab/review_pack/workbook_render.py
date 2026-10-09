@@ -34,8 +34,16 @@ TABLE_CSS='''/* 표: 격자선, 머리행 강조. 원문 표의 빈 칸은 태�
 .page-center > .work-block ~ .work { min-height: 25mm; }
 
 '''
-# 원본 스냅샷 위에 덧씌우는 두 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
-LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR)]
+# 그림은 decode() 가 아니라 load 를 기다린다. 프레임을 그리지 않는 문서(헤드리스 인쇄·숨은 탭)에서는
+# 화면 밖 그림의 decode() 가 끝나지 않아 KaTeX·쪽 맞춤 전에 멈췄다(2026-10-09 실험02 해설지).
+# 쪽 맞춤에 필요한 크기는 load 로 정해진다.
+IMAGE_WAIT_OLD="[...document.images].map(img => img.decode().catch(() => {}))"
+IMAGE_WAIT_NEW=("[...document.images].map(img => img.complete ? null : new Promise(done => {\n"
+                "      img.addEventListener('load', done, { once: true });\n"
+                "      img.addEventListener('error', done, { once: true });\n"
+                "    }))")
+# 원본 스냅샷 위에 덧씌우는 세 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
+LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW)]
 
 MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로\n"
              "  if (moved.length) {\n"

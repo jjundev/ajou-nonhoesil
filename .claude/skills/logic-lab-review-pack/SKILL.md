@@ -105,7 +105,7 @@ python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
-publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML이 바뀌면 PDF를 다시 만든다.
+publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX·답 상자 밑 그림 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML이 바뀌면 PDF를 다시 만든다.
 보고: 여섯 학습 파일 링크(legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
 파일 생성 완료를 학생의 이해 완료라고 표현하지 않는다.
 

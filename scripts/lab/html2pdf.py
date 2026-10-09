@@ -42,7 +42,10 @@ def resolve_chrome(chrome=DEFAULT_CHROME) -> str:
     )
 
 
-def html_to_pdf(html_path, pdf_path, chrome=DEFAULT_CHROME, timeout=120) -> Path:
+def html_to_pdf(html_path, pdf_path, chrome=DEFAULT_CHROME, timeout=120,
+                virtual_time_budget=None) -> Path:
+    """`virtual_time_budget`(ms)를 주면 Chrome 이 그만큼의 가상 시간이 흐를 때까지 인쇄를
+    미룬다. 비동기 스크립트로 쪽을 맞추는 페이지는 이것 없이는 맞춤 전 상태가 찍힌다."""
     html_path, pdf_path = Path(html_path).resolve(), Path(pdf_path).resolve()
     if not html_path.exists():
         raise PdfError(f"입력 HTML 이 없습니다: {html_path}")
@@ -51,8 +54,9 @@ def html_to_pdf(html_path, pdf_path, chrome=DEFAULT_CHROME, timeout=120) -> Path
     pdf_path.parent.mkdir(parents=True, exist_ok=True)
     before = pdf_path.stat().st_mtime if pdf_path.exists() else None
 
+    budget = [f"--virtual-time-budget={virtual_time_budget}"] if virtual_time_budget else []
     proc = subprocess.run(
-        [chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
+        [chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer", *budget,
          f"--print-to-pdf={pdf_path}", html_path.as_uri()],
         capture_output=True, text=True, timeout=timeout,
     )

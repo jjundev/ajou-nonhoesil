@@ -743,7 +743,10 @@ async function main() {
     document.body.append(staging);
 
     // 글꼴 + 그림 → KaTeX (수식 글꼴도 다 받은 뒤 잰다)
-    await Promise.all([nextLayout(), ...[...document.images].map(img => img.decode().catch(() => {}))]);
+    await Promise.all([nextLayout(), ...[...document.images].map(img => img.complete ? null : new Promise(done => {
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    }))]);
     renderMath(book);
     renderMath(staging);
     await nextLayout();
