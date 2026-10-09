@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "provider": "vertex-ai-express",
+  "model": "gemini-2.5-flash-tts",
+  "voice": "Aoede",
+  "language": "ko-KR",
+  "budget_usd": null,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "sample_rate": 24000,
+  "tts_concurrency": 2,
+  "max_attempts": 4,
+  "max_output_tokens": 2048,
+  "pronunciation": {
+    "V_GS": "게이트 소스 전압",
+    "V_DS": "드레인 소스 전압",
+    "R_out": "출력 저항",
+    "I_SS": "테일 전류",
+    "g_m": "트랜스컨덕턴스",
+    "r_O": "소신호 출력 저항",
+    "v_CM": "공통 모드 전압",
+    "v_DM": "차동 모드 전압"
+  },
+  "chars_per_second": 7,
+  "read_hold_seconds": 0.75,
+  "pdf_viewport_height": 900,
+  "direction": "한국어로 차분하게 문제를 함께 푸는 느낌으로 읽으세요. 수식은 뜻을 설명하며 정확하게 읽습니다. 과장하지 않습니다."
+}

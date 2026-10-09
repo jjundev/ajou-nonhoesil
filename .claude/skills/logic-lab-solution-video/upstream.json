@@ -1,0 +1,341 @@
+{
+ "source_repo": "../전자회로2",
+ "source_commit": "af86ffbc1004ca1e1f08c0c9125f3dc8272a8409",
+ "files": {
+  "SKILL.md": {
+   "upstream_path": ".agents/skills/ec2-solution-video/SKILL.md",
+   "sha256": "df378e3d2eb8d9f05e173c12c840939b73afc16de6b9083fc88dfb79beb48197"
+  },
+  "agents/openai.yaml": {
+   "upstream_path": ".agents/skills/ec2-solution-video/agents/openai.yaml",
+   "sha256": "ee03274450b3f87ffad42a190d55d5bf5591b7f102234ee5e57f5f0465b1a41a"
+  },
+  "assets/annotations.js": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/annotations.js",
+   "sha256": "1476d9b14358baa559cd2d8327d0f0287d678d7802bf713d32a2015ed62cba68"
+  },
+  "assets/camera.js": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/camera.js",
+   "sha256": "a71f0dbda997a89dcc3f4defa99524b2039c87b42dbea41d047b30714e11c4ec"
+  },
+  "assets/defaults.json": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/defaults.json",
+   "sha256": "01e55859849555051ccf4327a43eec06aedd23240af1877f210d0b57ff49707d"
+  },
+  "assets/fonts/Pretendard-Bold.ttf": {
+   "upstream_path": ".agents/skills/ec2-review-video/assets/fonts/Pretendard-Bold.ttf",
+   "sha256": "f01aac555db30f589b4dd98e1b4bb9400de623cbf059f70939de90c5e8419498"
+  },
+  "assets/fonts/SOURCE.md": {
+   "upstream_path": ".agents/skills/ec2-review-video/assets/fonts/SOURCE.md",
+   "sha256": "837885f3a479e71471a6d4273922a079e568d1667a594153f651a826335cdbe5"
+  },
+  "assets/layout.css": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/layout.css",
+   "sha256": "eb6c04ae2c14fcc68359d12a51b449a20796f57d69e93f4dc7fd617254f05ee4"
+  },
+  "assets/pencil/pencil-yellow-v1.json": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/pencil/pencil-yellow-v1.json",
+   "sha256": "4ae10674938464d17f49c48af44b1e69ef842ac21112b4aa10e9dbdf00af363c"
+  },
+  "assets/pencil/pencil-yellow-v1.png": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/pencil/pencil-yellow-v1.png",
+   "sha256": "8f09ff6af2689c9cb50bab4382c4d18a46639312ea8d2edf42ad82c774d20269"
+  },
+  "assets/pencil/pencil-yellow-v1.prompt.txt": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/pencil/pencil-yellow-v1.prompt.txt",
+   "sha256": "3e53589ff655a4e59ce2186f2b8eccf762b723475919c0f531925ce357f5840e"
+  },
+  "assets/pencil.js": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/pencil.js",
+   "sha256": "a986dfaaadc55be6ae22ed1a3cfb71f8a98176909c765911d1be6233a5645794"
+  },
+  "assets/player.js": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/player.js",
+   "sha256": "16ba639655a9a00cf1282acb352a50cddd9047caaa0d0e264626ddc929ed6de8"
+  },
+  "assets/runtime/GSAP-README.md": {
+   "upstream_path": ".agents/skills/ec2-review-video/assets/runtime/vendor/GSAP-README.md",
+   "sha256": "7675b3310fbe9bbed4d904d9f9afc617ae923f0463b30e4a47ae37c6bf9abb93"
+  },
+  "assets/runtime/gsap.min.js": {
+   "upstream_path": ".agents/skills/ec2-review-video/assets/runtime/vendor/gsap.min.js",
+   "sha256": "96c01b81f44a3290e2b4532f55e2c9534b2adc43273a19f3756b2cb41f0fd0b6"
+  },
+  "assets/writing-defaults.json": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/writing-defaults.json",
+   "sha256": "002ddb6e2b0df9226bc6e5436a0bc0197f64bc2c5fcf3b703d34b6888ec85c14"
+  },
+  "assets/writing.js": {
+   "upstream_path": ".agents/skills/ec2-solution-video/assets/writing.js",
+   "sha256": "f123dc2e31ad8963ab9d871eff959a97bbaacff123d7d2c6d256768b20a96678"
+  },
+  "references/narration-and-timing.md": {
+   "upstream_path": ".agents/skills/ec2-solution-video/references/narration-and-timing.md",
+   "sha256": "3659bcb12d5475a7d4b75b66b82fae7e4e5f8625ff0b9d2d8ab400e63b40f5c4"
+  },
+  "references/pdf-and-coverage.md": {
+   "upstream_path": ".agents/skills/ec2-solution-video/references/pdf-and-coverage.md",
+   "sha256": "9d38d684543338f1ab64c762209421d2c6c0ac2557760ba4d523659b1d79b548"
+  },
+  "references/verification.md": {
+   "upstream_path": ".agents/skills/ec2-solution-video/references/verification.md",
+   "sha256": "d1f228fb21b3ed51062ec86f19967e31e9b6f605de9b4c37d907ca7ff048ac67"
+  },
+  "scripts/solution_video/__init__.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/__init__.py",
+   "sha256": "02ddb1d7e13d9a627ec60ad251a7c9c319656fdf8ed5a7131e86f83ed253ffb2"
+  },
+  "scripts/solution_video/annotations.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/annotations.py",
+   "sha256": "268e5d473e7e0b526c186fc305fcf679db17745d3e597758cb029c55f5307542"
+  },
+  "scripts/solution_video/composition.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/composition.py",
+   "sha256": "d61ada41b57a0330642a844884b4fa3dc403654ae3fc516a2fa857c1417cb351"
+  },
+  "scripts/solution_video/contracts.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/contracts.py",
+   "sha256": "95c59e1e9fcc8bb75a033cd43f44f184380c7917cfeffdc011b39b17fa9c5531"
+  },
+  "scripts/solution_video/focus.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/focus.py",
+   "sha256": "b8447086674b4ab93dfba3c61d089231ab3f52c83527dff554f99ae75bdd9c80"
+  },
+  "scripts/solution_video/lesson.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/lesson.py",
+   "sha256": "65075441f1eea7738db4902a2aaaf53b401357458d0d95c54d31a84389f9be00"
+  },
+  "scripts/solution_video/manifest.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/manifest.py",
+   "sha256": "ff6e33fc3428df2efe0a6bb92866412f9e6a7a2395c29616ad4b92797247d81d"
+  },
+  "scripts/solution_video/media.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/media.py",
+   "sha256": "5e7fc3ffaf8167e57c0e4714bbe430ddef398a8d76880444a3edb49ee5239566"
+  },
+  "scripts/solution_video/narration_pacing.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/narration_pacing.py",
+   "sha256": "b383317b1c19d5c33facca93a4d75108383c31b9c7af6df3701024dd165fcf2a"
+  },
+  "scripts/solution_video/page_layout.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/page_layout.py",
+   "sha256": "a37cfa7b7c7b1847aeffdcb6ec085d61499a6963594ed65db0bfe1e62f7028b1"
+  },
+  "scripts/solution_video/pdf_pages.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/pdf_pages.py",
+   "sha256": "ef83ff01a4ff902e266ae10294780b37d6075c9bfc867206019e4dd401835775"
+  },
+  "scripts/solution_video/publication.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/publication.py",
+   "sha256": "8dd52cde4c309e28ae1fe6d3cf4b1da5fc22d098bc4d975736e788ec5d3bb5f6"
+  },
+  "scripts/solution_video/reveal.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/reveal.py",
+   "sha256": "95685ff2a4d1e7169ed0e2318f85946266b2a1dc3d445aa37cb0f1a3640bb1b9"
+  },
+  "scripts/solution_video/review_adapter.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/review_adapter.py",
+   "sha256": "ec36b535a1804890b0bdb4c22d7758612b30a2cc256f12289f0b0ba05f0d0d3d"
+  },
+  "scripts/solution_video/sources.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/sources.py",
+   "sha256": "c4e86af0720e62cb48abeb72adc6792117e46ff12d4a7b870479aad516fa491e"
+  },
+  "scripts/solution_video/state.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/state.py",
+   "sha256": "e499b3a38e9ed7ba44402a4614fb8d4dd2526cd54f160730d3169d2269120ad7"
+  },
+  "scripts/solution_video/subtitles.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/subtitles.py",
+   "sha256": "3da2902a747ee886323ce32dccbe87d17bdc4e96bdab0398a7b3ee0af200e300"
+  },
+  "scripts/solution_video/teaching.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/teaching.py",
+   "sha256": "cb5455a33a65b2a2dc3e4c53802b2c177cfbf37684f4e444f543139a65507209"
+  },
+  "scripts/solution_video/util.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/util.py",
+   "sha256": "c37f81a8b3a61fc314dfafd5f6abce822f45fd9ab7cac03b5ed9912645dfe6fc"
+  },
+  "scripts/solution_video/verify.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/verify.py",
+   "sha256": "1dfed18384197501a9775a69d25860c3d179f9ed908a4e10a2a8c0e4a23104e4"
+  },
+  "scripts/solution_video/writing.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/writing.py",
+   "sha256": "b8e61b57f6b5c2d1f1d5ebeff02c8c66b8a3d410f9fcf5c4da98e4b5de1e9ad2"
+  },
+  "scripts/solution_video/writing_camera.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/writing_camera.py",
+   "sha256": "c7da783785aeeaf3969bb243fa08e40c15fcb12bf28457dc638d1431cafbeb20"
+  },
+  "scripts/solution_video/writing_units.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/solution_video/writing_units.py",
+   "sha256": "c5d56194a9ae371ecdc991a1c49a54c7021b974366392bc33d445b7525b18f95"
+  },
+  "scripts/tts_lib/__init__.py": {
+   "upstream_path": ".agents/skills/ec2-review-video/scripts/lib/__init__.py",
+   "sha256": "8ac8cedc1c14e617b81ab16d2044a8e828f25e51e97b44272714d87b4e7841bb"
+  },
+  "scripts/tts_lib/budget.py": {
+   "upstream_path": ".agents/skills/ec2-review-video/scripts/lib/budget.py",
+   "sha256": "24f46689be169ef28152f843807cf7fe33c78d8268e33751a313ab2582d77aea"
+  },
+  "scripts/tts_lib/cache.py": {
+   "upstream_path": ".agents/skills/ec2-review-video/scripts/lib/cache.py",
+   "sha256": "c40032b9b13ff45149b42b0a43d0e3e77e75a158800d6fade5988b847f593637"
+  },
+  "scripts/tts_lib/vertex_tts.py": {
+   "upstream_path": ".agents/skills/ec2-review-video/scripts/lib/vertex_tts.py",
+   "sha256": "dfee132f26b69436b50decbcbefcb3e28bc3c704be053296cb84f6e2d97e38cc"
+  },
+  "scripts/video.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/scripts/video.py",
+   "sha256": "bd4945acecdb09ee95242d5c2e2840d2d1a7b6c5852f61e58509880d87595f5d"
+  },
+  "tests/authored_writing.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/authored_writing.py",
+   "sha256": "5f053b4a525e06297effac8c515222e5bdce026629c50061f97d94dfeaa1a138"
+  },
+  "tests/browser_check.mjs": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/browser_check.mjs",
+   "sha256": "c475874a8297f90334060cefa709062e36be60b7a74b28daacad205461233ab5"
+  },
+  "tests/fixtures.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/fixtures.py",
+   "sha256": "2b6287a607c1821069189816dcb6a96fd19282ba3d55cd80d45b8a6f4e7859d5"
+  },
+  "tests/teaching_check.mjs": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/teaching_check.mjs",
+   "sha256": "633a2fc856b8741b36e2e34d987a2a2068ee31f054dea8832fc10cabca81011a"
+  },
+  "tests/test_annotations.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_annotations.py",
+   "sha256": "569f15b9cb914831472c5e573132ea27234c1d29f694602c39b52c9f8a2e8b5c"
+  },
+  "tests/test_caption_notation.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_caption_notation.py",
+   "sha256": "f519f492bd0a75615886a5a0d665eed601cda48c0c6c891509b303020513b2ac"
+  },
+  "tests/test_cli.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_cli.py",
+   "sha256": "59f5568a75b49d4c18c2dca03e77ac70730367f552608ff543b4298602e7a196"
+  },
+  "tests/test_composition.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_composition.py",
+   "sha256": "cf8f05ffbdbe0107602efc48d4d205dc988c92496c63036cd61917bb56554d9b"
+  },
+  "tests/test_focus.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_focus.py",
+   "sha256": "b01371fab802841cb71be78339cb16005a7000415d854382a15451c348dde3ba"
+  },
+  "tests/test_lesson.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_lesson.py",
+   "sha256": "74c40f957416d133047bfe0f230b3c6a13422047d230c618c0a4994070f579f6"
+  },
+  "tests/test_lesson_runtime.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_lesson_runtime.py",
+   "sha256": "607c747ee30b2bd74e7f6e925ae3bd30e126c86481d632d27bbd2af479d24e5a"
+  },
+  "tests/test_manifest.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_manifest.py",
+   "sha256": "82671618b8266d4541ca6b96eede85133c7b301e33cb96a7f72a574b0aecc161"
+  },
+  "tests/test_media.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_media.py",
+   "sha256": "40297ab568a0889a54d25b9124f28ca3a0170b0aa54de1c3df34eddb63824b9a"
+  },
+  "tests/test_narration_pacing.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_narration_pacing.py",
+   "sha256": "a3376dc1d108b6c53613e18cedecf36ffdc07fe3907f27261503eb4419c8ed99"
+  },
+  "tests/test_pdf_pages.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_pdf_pages.py",
+   "sha256": "e798b9c061f6ca27b055b434fe6383fe4cb204312f9737c8d70f1d9e10b8e9be"
+  },
+  "tests/test_publication.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_publication.py",
+   "sha256": "2014561b32c1761f9958417405a4e002433dfcb5a58cf53d05ce4375f1b83124"
+  },
+  "tests/test_reveal.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_reveal.py",
+   "sha256": "9ec89cd0ec2558aba78ba0132f14178435e322cdef3a8c4997bc035c0d7180f1"
+  },
+  "tests/test_state.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_state.py",
+   "sha256": "d658a6b49b8daf89f0fa98a7cb1600558dce19dc8a0068bc6f9a01806d6462bf"
+  },
+  "tests/test_subtitles.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_subtitles.py",
+   "sha256": "77534a48197266b6586b30cf274738225fa2d9dc158a582df4c7c0bcdca81666"
+  },
+  "tests/test_teaching.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_teaching.py",
+   "sha256": "b82dfe61075a05a46fb1e08032c7fef407c22c66b76492e0e6daf22daa6a70e0"
+  },
+  "tests/test_teaching_runtime.cjs": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_teaching_runtime.cjs",
+   "sha256": "5207d313e226eda718f32cb5b61d4ba95c368de01d3fcfa58c6f999698b87fbf"
+  },
+  "tests/test_verify.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_verify.py",
+   "sha256": "400dd12655ac43b3355c239dcb50eb41becb7c05edba3b5979d3da8f33984734"
+  },
+  "tests/test_voice.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_voice.py",
+   "sha256": "889a069400178a9a7a3b81c3bd8cc0c129c08ba46f66f2305d2904cb109cd75a"
+  },
+  "tests/test_writing.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_writing.py",
+   "sha256": "1bbf82ca6a0b5c0e3e318338ebe2642153f360e6edf62ab5befb76b7b7fd2cf5"
+  },
+  "tests/test_writing_camera.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_writing_camera.py",
+   "sha256": "a850f14a90fb1787750a85540b1ab1d4cf247fcf8dbda2f2200caf48dc567e19"
+  },
+  "tests/test_writing_flow.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_writing_flow.py",
+   "sha256": "96788134cfb1d93497ef189490d2cf399c3fdaf73af14da49ab6cf44403357c8"
+  },
+  "tests/test_writing_runtime.cjs": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_writing_runtime.cjs",
+   "sha256": "1dfafd0a8597caafe08c763d2a3733418381e5c7d3d35503f9a9ea97386638f7"
+  },
+  "tests/test_writing_units.py": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/test_writing_units.py",
+   "sha256": "17b4f238dc527e734376e54938b65fb2553467215bda8efa1ee35a7d3b57f0c3"
+  },
+  "tests/writing_flow_check.mjs": {
+   "upstream_path": ".agents/skills/ec2-solution-video/tests/writing_flow_check.mjs",
+   "sha256": "a623719af2a52da83ee5c3a5956cefc26710a6537e923118318d3a38ddbaa3d2"
+  }
+ },
+ "local_changes": {
+  "tests/test_fork.py": "논회실 신규: 포크 무결성(형제 스킬 참조 없음·상류 해시·내재화 파일) 검사",
+  "SKILL.md": "frontmatter name/description 을 논회실용으로 바꿈",
+  "agents/openai.yaml": "display_name·default_prompt 를 논회실 스킬 이름으로",
+  "scripts/video.py": "자막 폰트를 형제 스킬 대신 내재화한 assets/fonts 에서",
+  "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib",
+  "scripts/solution_video/publication.py": "게시 lock 모듈 이름 _logic_lab_tts_lib",
+  "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서",
+  "scripts/solution_video/state.py": "폰트를 내재화한 assets/fonts 에서",
+  "scripts/solution_video/util.py": "환경변수 접두사 EC2_ → LOGIC_LAB_",
+  "scripts/solution_video/media.py": "환경변수 접두사 EC2_ → LOGIC_LAB_",
+  "tests/test_composition.py": "GSAP 경로를 내재화한 assets/runtime 에서",
+  "tests/test_verify.py": "GSAP 경로를 내재화한 assets/runtime 에서",
+  "tests/test_writing_flow.py": "GSAP 경로를 내재화한 assets/runtime 에서",
+  "tests/test_media.py": "폰트를 내재화한 assets/fonts 에서",
+  "tests/test_cli.py": "전자회로2 복습노트/1002 실데이터에 묶인 테스트 3개 삭제(Task 6 이 실험05 로 대체)",
+  "tests/test_annotations.py": "PyMuPDF 1.28 은 import fitz 경고를 stdout 에 찍어서 하위 프로세스 출력의 마지막 줄만 JSON 으로 읽음"
+ },
+ "removed": {
+  ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/test_acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/teaching_acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/test_teaching_acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/guided_acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
+  ".agents/skills/ec2-solution-video/tests/test_guided_acceptance.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음"
+ }
+}

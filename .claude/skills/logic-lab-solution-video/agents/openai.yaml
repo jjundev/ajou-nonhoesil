@@ -1,0 +1,4 @@
+interface:
+  display_name: "논리회로실험 문제풀이 영상"
+  short_description: "복습문제 PDF 원본을 보존하며 중앙 풀이를 한 글자씩 공개하는 영상 제작"
+  default_prompt: "Use $logic-lab-solution-video to make Korean solution videos from the selected review PDFs."
