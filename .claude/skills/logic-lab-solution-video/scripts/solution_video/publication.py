@@ -9,7 +9,7 @@ def report_current(run,report):
     reviews=report.get('review_hashes',{})
     return (report.get('input_hash')==verification_fingerprint(run) and report.get('live_audio')=='verified'
         and required<=report.get('checks',{}).keys() and all(report['checks'][k]['status']=='passed' for k in required)
-        and len(reviews)==2 and all(local(run,p).is_file() and file_hash(local(run,p))==sha for p,sha in reviews.items()))
+        and {'verification/audio-review.json','verification/visual-review.json'}<=reviews.keys() and all(local(run,p).is_file() and file_hash(local(run,p))==sha for p,sha in reviews.items()))
 
 def output_filename(item,run):
     manifest=run/'source/manifest.json'

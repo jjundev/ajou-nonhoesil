@@ -47,3 +47,13 @@ class PublicationTests(Sandbox):
         from solution_video.publication import output_filename
         run=self.run/'r'; write(run/'source/manifest.json',{'problem_id':'q-prio-exam','title':'8×3 우선순위 인코더 — 여러 비트가 켜진 입력'})
         self.assertEqual(output_filename({'id':'q-prio-exam','label':'기출3','filename':'x.mp4'},run),'기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4')
+    def test_pacing_review_does_not_block_publication(self):
+        from solution_video.publication import report_current
+        from solution_video.verify import verification_fingerprint
+        run=self.batch/'videos/p0'
+        for name in ['audio','visual','pacing']: write(run/f'verification/{name}-review.json',{'name':name})
+        checks={k:{'status':'passed'} for k in ['content','original_svg','hyperframes','final_media','captions','audio_meaning','visual_meaning']}
+        reviews={f'verification/{n}-review.json':file_hash(run/f'verification/{n}-review.json') for n in ['audio','visual','pacing']}
+        report={'input_hash':verification_fingerprint(run),'live_audio':'verified','checks':checks,'review_hashes':reviews}
+        self.assertTrue(report_current(run,report))
+        del reviews['verification/audio-review.json']; self.assertFalse(report_current(run,report))
