@@ -25,6 +25,10 @@ class LabSourceTests(Sandbox):
         self.assertEqual([p['problem_id'] for p in discover(REPO,'실험05',['기출3'])],['q-prio-exam'])
         self.assertEqual([p['label'] for p in discover(REPO,'실험05',['q-dec2x4-design'])],['기출4'])
         with self.assertRaisesRegex(InputError,'outside range'): discover(REPO,'실험05',['기출99'])
+    def test_range_label_must_be_qualified(self):
+        with self.assertRaisesRegex(InputError,'ambiguous label'): discover(REPO,'03-05',['기출3'],[])
+        self.assertEqual([p['problem_id'] for p in discover(REPO,'03-05',['실험05:기출3'],[])],['q-prio-exam'])
+        self.assertEqual([p['problem_id'] for p in discover(REPO,'03-05',['q-prio-exam'],[])],['q-prio-exam'])
     def test_figure_refs_are_exact_per_problem(self):
         p=discover(REPO,'실험05',['q-dec2x4-design'])[0]
         self.assertEqual([Path(f).name for f in p['figure_refs']],['q-dec2x4-design-solution-01.png'])

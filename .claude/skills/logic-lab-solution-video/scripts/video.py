@@ -40,7 +40,8 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
         write(run/'source/inputs.json',read(batch/'source/inputs.json')); write(run/'source/pair.json',pair);write(run/'source/config.json',default_config())
         write(run/'source/writing.json',writing)
         write(run/'run.json',{'batch':str(batch),'review':review,'problem_id':p['problem_id']})
-        item={'id':p['problem_id'],'label':p['label'],'run':'videos/'+key,'filename':p['label']+' — 풀이.mp4','status':'author-required'}
+        label=p['label'] if len(experiments)==1 else p['experiments'][0]+' '+p['label']  # labels repeat across experiments
+        item={'id':p['problem_id'],'label':label,'run':'videos/'+key,'filename':label+' — 풀이.mp4','status':'author-required'}
         items.append(item);write(batch/'batch.json',data)
         try:
             export_page(local(run,pair['answer']['snapshot']),pair['answer']['page_index'],run/'layers',[local(run,r) for r in pair.get('figure_refs',[])])

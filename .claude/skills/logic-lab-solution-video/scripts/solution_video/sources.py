@@ -67,21 +67,27 @@ def validate_pairs(pairs):
 
 def discover(repo,selector,problem_ids=None,failures=None):
     repo=Path(repo); experiments=parse_selector(selector)
+    # A token is an internal ID, a label, or '실험NN:<label or ID>'; labels repeat across experiments.
     selected={_norm(p).strip() for p in problem_ids} if problem_ids else None
     root=_child(repo,'복습노트')
     if root is None: raise InputError('review folder missing')
     def fail(pid,experiment,reason):
         if failures is None: raise InputError(reason)
         failures.append({'problem_id':pid,'experiment':experiment,'reason':reason})
-    pairs=[];listed=set()
+    packs={};listed=set()
     for name in experiments:
         folder=_child(root,name); manifest=_child(folder,'manifest.json') if folder else None
         if manifest is None: fail(None,name,'experiment pack missing: '+name);continue
         included=[p for p in json.loads(manifest.read_text(encoding='utf-8'))['problems'] if p.get('status')=='included']
         # Labels come from the current manifest order every time; the PDF badge must agree.
-        problems=[(_norm(p['id']),KINDS[p['kind']]+str(n),_norm(p['title'])) for n,p in enumerate(included,1)]
-        for pid,label,_ in problems: listed.update([pid,label])
-        problems=[p for p in problems if selected is None or p[0] in selected or p[1] in selected]
+        packs[name]=(folder,[(_norm(p['id']),KINDS[p['kind']]+str(n),_norm(p['title'])) for n,p in enumerate(included,1)])
+        for pid,label,_ in packs[name][1]: listed.update([pid,label,name+':'+pid,name+':'+label])
+    for token in selected or ():
+        owners=[name for name,(_,problems) in packs.items() if any(token==label for _,label,_ in problems)]
+        if len(owners)>1: raise InputError('ambiguous label '+token+' in '+', '.join(owners)+'; use '+owners[-1]+':'+token)
+    pairs=[]
+    for name,(folder,problems) in packs.items():
+        problems=[p for p in problems if selected is None or {p[0],p[1],name+':'+p[0],name+':'+p[1]}&selected]
         if not problems: continue
         pdfs=[p for p in folder.iterdir() if p.suffix.lower()=='.pdf']
         ps=[p for p in pdfs if _norm(p.name).endswith('_기출문제.pdf')];ans=[p for p in pdfs if _norm(p.name).endswith('_기출풀이.pdf')]

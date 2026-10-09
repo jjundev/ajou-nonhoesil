@@ -11,7 +11,7 @@ description: 논리회로실험 복습팩의 기출문제·기출풀이 PDF 원�
 
 - `/logic-lab-solution-video 실험05`: 그 실험 팩의 포함(`included`) 문항 전부, 문항별 MP4. `05`·`5` 도 같다.
 - `/logic-lab-solution-video 실험05 --problems 기출3,q-dec2x4-design`: 선택한 문항. 표시 라벨(`기출3`)과 내부 ID(`q-prio-exam`)를 모두 받는다.
-- `/logic-lab-solution-video 실험03-05 --review`: 범위 문항의 대본을 묶어 한 번 사용자 검토.
+- `/logic-lab-solution-video 실험03-05 --review`: 범위 문항의 대본을 묶어 한 번 사용자 검토. 라벨은 실험마다 1부터 다시 세므로 범위에서는 `--problems 실험05:기출3` 처럼 실험을 붙인다(붙이지 않은 라벨이 두 실험에 있으면 멈춘다). 범위 batch 의 파일 이름은 `실험05 기출3 — <제목>.mp4` 다.
 - `/logic-lab-solution-video 실험05 --writing-mode typing`: 기존 타이핑 방식 선택. 신규 실행은 pencil이 기본이다.
 - 재개 요청: 이전 batch의 `resume-set`으로 처음 무효인 단계를 확인한다.
 
@@ -44,7 +44,7 @@ PDF 흰 화면과 회로·격자·조건·Hint를 보존한다. 복습팩 PDF �
 
 ## 출력
 
-`문제풀이영상/<실험NN 또는 실험NN-MM>/<라벨> — <문항 제목>.mp4`(예: `기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4`)에 최종 하드 자막본만 둔다. `_자막` 접미사를 쓰지 않는다. 소스·대본·SVG·HTML·WAV·마스터·자막·검증·사용량은 `<실험NN>_제작자료/실행/<YYYYMMDD-HHMMSS-8hex>/videos/<안전한 키>/`에 둔다. 같은 제목의 이전 결과는 제작자료 안에 보존한다. catalog/README는 실제 최종 파일 SHA256과 내부 문항 ID 를 기록하고 latest는 전체 성공일 때만 갱신한다.
+`문제풀이영상/<실험NN 또는 실험NN-MM>/<라벨> — <문항 제목>.mp4`(예: `기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4`)에 최종 하드 자막본만 둔다. `_자막` 접미사를 쓰지 않는다. 소스·대본·SVG·HTML·WAV·마스터·자막·검증·사용량은 `<실험NN 또는 실험NN-MM>_제작자료/실행/<YYYYMMDD-HHMMSS-8hex>/videos/<안전한 키>/`에 둔다. 같은 제목의 이전 결과는 제작자료 안에 보존한다. catalog/README는 실제 최종 파일 SHA256과 내부 문항 ID 를 기록하고 latest는 전체 성공일 때만 갱신한다.
 
 git 에는 최종 MP4·catalog/README·`source/`·`layers/*.json`·`usage.json`·WAV 가 들어가고, 유료 호출 없이 다시 만들 수 있는 `renders/`·`verification/`·`composition/`·`caption-original/` 은 저장소 `.gitignore` 가 뺀다.
 

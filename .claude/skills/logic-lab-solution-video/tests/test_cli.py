@@ -185,7 +185,7 @@ class CLITests(Sandbox):
 class LabPrepareTests(Sandbox):
     def sandbox_repo(self):
         repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)
-        for n in ['실험02','실험05']: (repo/'복습노트'/n).symlink_to(REPO/'복습노트'/n)
+        for n in ['실험02','실험04','실험05']: (repo/'복습노트'/n).symlink_to(REPO/'복습노트'/n)
         return repo
     def test_prepare_labels_and_paths(self):
         import io,contextlib
@@ -214,5 +214,7 @@ class LabPrepareTests(Sandbox):
             batch=cli.prepare_batch(repo,'실험05',['기출3'],False,mode)
             self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험05')
             self.assertEqual(read(batch/read(batch/'batch.json')['items'][0]['run']/'source/writing.json')['mode'],mode)
-        batch=cli.prepare_batch(repo,'실험04-05',['기출3'])
+        batch=cli.prepare_batch(repo,'실험04-05',['실험05:기출3'])
         self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험04-05')
+        item=read(batch/'batch.json')['items'][0]
+        self.assertEqual((item['label'],item['filename']),('실험05 기출3','실험05 기출3 — 풀이.mp4'))

@@ -74,10 +74,20 @@ class LogicNotationTests(unittest.TestCase):
         self.assertEqual(len(w),2)
     def test_logic_prime_and_korean_ba_are_quiet(self):
         from solution_video.subtitles import caption_notation_warnings
-        for text in ['Y0=S1′S0′D예요.','이 바를 보면 출력이 정해져요.','A+B는 OR예요.','E 낫이 아니라 E′예요.']:
+        for text in ['Y0=S1′S0′D예요.','이 바를 보면 출력이 정해져요.','A+B는 OR예요.','바닥 전압과 낫 모양 기호를 봐요.']:
             with self.subTest(text=text): self.assertEqual(caption_notation_warnings([{'id':'a','caption_text':text}]),[])
+    def test_logic_bar_word_with_particles_warns(self):
+        from solution_video.subtitles import caption_notation_warnings
+        for text in ['S1 바가 0이면 출력이 꺼져요.','B 바는 1이에요.','A 바와 B를 AND해요.','E 낫이면 꺼져요.']:
+            with self.subTest(text=text):
+                self.assertEqual({i['code'] for i in caption_notation_warnings([{'id':'a','caption_text':text}])},{'logic_bar_word'})
+    def test_prime_pronunciation_keeps_word_boundaries(self):
+        from solution_video.review_adapter import default_config
+        text='S1′S0′D'
+        for a,b in default_config()['pronunciation'].items(): text=text.replace(a,b)
+        self.assertNotIn('바D',text); self.assertNotIn('바S',text)
     def test_defaults_are_logic_lab(self):
         from solution_video.review_adapter import default_config
-        d=default_config(); self.assertEqual(d['pronunciation']['′'],' 바'); self.assertEqual(d['voice'],'Aoede')
+        d=default_config(); self.assertEqual(d['pronunciation']['′'],' 바 '); self.assertEqual(d['voice'],'Aoede')
         self.assertEqual(d['pronunciation']['V_CC'],'브이 씨씨'); self.assertNotIn('g_m',d['pronunciation'])
         self.assertIn('논리회로',d['direction'])
