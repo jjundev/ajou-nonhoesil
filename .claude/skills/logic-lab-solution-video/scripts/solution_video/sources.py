@@ -3,6 +3,7 @@ import copy,json,re,shutil,unicodedata
 from .contracts import InputError
 from .util import file_hash,digest,write
 from .page_layout import page_layout
+from .input_gate import input_defects
 
 KINDS={'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
 def parse_selector(selector):
@@ -93,6 +94,8 @@ def discover(repo,selector,problem_ids=None,failures=None):
             try:
                 pp,aa=_pages(ps[0],[(pid,label,title)]),_pages(ans[0],[(pid,label,title)])
                 if pid not in pp or pid not in aa: raise InputError('header/list mismatch: '+pid)
+                defects=[d['code']+' p.'+str(ref['page_index']+1) for ref in (pp[pid],aa[pid]) for d in input_defects(ref['snapshot'],ref['page_index'])]
+                if defects: raise InputError('input defect: '+';'.join(defects))
                 figures=sorted(str(x.resolve()) for x in (solutions.iterdir() if solutions else []) if re.fullmatch(re.escape(pid)+r'-solution-\d{2}\.png',_norm(x.name)))
                 pair=dict(problem_id=pid,label=label,title=title,problem=pp[pid],answer=aa[pid],md_snapshot=str(md.resolve()) if md and md.is_file() else None,experiments=[name],figure_refs=figures)
                 validate_pairs([pair]);pairs.append(pair)

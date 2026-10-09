@@ -328,9 +328,11 @@
   "tests/test_media.py": "폰트를 내재화한 assets/fonts 에서",
   "tests/test_cli.py": "전자회로2 복습노트/1002 실데이터에 묶인 테스트 3개 삭제(Task 6 이 실험05 로 대체)",
   "tests/test_annotations.py": "PyMuPDF 1.28 은 import fitz 경고를 stdout 에 찍어서 하위 프로세스 출력의 마지막 줄만 JSON 으로 읽음",
-  "scripts/solution_video/sources.py": "논회실 소스 탐색: 복습노트/실험NN manifest 순서 라벨, 배지+제목 쪽 짝짓기, figure_refs. 풀이 쪽이 문제 표를 조건 패널로 옮기므로 조건 대조는 문제 쪽 작업 영역 글자까지 센 글자 multiset 비교",
+  "scripts/solution_video/sources.py": "논회실 소스 탐색: 복습노트/실험NN manifest 순서 라벨, 배지+제목 쪽 짝짓기, figure_refs. 풀이 쪽이 문제 표를 조건 패널로 옮기므로 조건 대조는 문제 쪽 작업 영역 글자까지 센 글자 multiset 비교; 짝지은 두 쪽에 input_gate 적용",
   "scripts/solution_video/contracts.py": "PagePair 에 label·title·experiments·figure_refs",
-  "tests/test_sources_lab.py": "논회실 신규: 실험05 실데이터 소스 탐색·라벨·NFD·figure_refs"
+  "tests/test_sources_lab.py": "논회실 신규: 실험05 실데이터 소스 탐색·라벨·NFD·figure_refs",
+  "scripts/solution_video/input_gate.py": "논회실 신규: 원문 LaTeX·답 상자 아래로 잘린 풀이 그림 쪽을 유료 호출 전에 문항 단위로 거름",
+  "tests/test_input_gate.py": "논회실 신규: 입력 게이트 합성 PDF·실데이터 검사"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",

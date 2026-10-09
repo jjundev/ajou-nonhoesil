@@ -14,7 +14,7 @@ class LabSourceTests(Sandbox):
         for bad in ['실험00','실험11','05-03','abc','']:
             with self.assertRaises(InputError): parse_selector(bad)
     def test_experiment05_pairs_and_labels(self):
-        pairs={p['problem_id']:p for p in discover(REPO,'실험05')}
+        pairs={p['problem_id']:p for p in discover(REPO,'실험05',None,[])}
         self.assertEqual(pairs['q-dec3x8']['label'],'예상문제1')
         self.assertEqual((pairs['q-dec3x8']['problem']['page_index'],pairs['q-dec3x8']['answer']['page_index']),(0,0))
         self.assertEqual(pairs['q-prio-exam']['label'],'기출3')
@@ -39,7 +39,7 @@ class LabSourceTests(Sandbox):
     def test_nfd_folder_names(self):
         repo=self.run/'repo'; root=repo/unicodedata.normalize('NFD','복습노트'); root.mkdir(parents=True)
         shutil.copytree(REPO/'복습노트/실험05',root/unicodedata.normalize('NFD','실험05'))
-        self.assertEqual(len(discover(repo,'실험05')),len(discover(REPO,'실험05')))
+        self.assertEqual(len(discover(repo,'실험05',None,[])),len(discover(REPO,'실험05',None,[])))
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])
