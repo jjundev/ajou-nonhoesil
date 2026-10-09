@@ -181,3 +181,38 @@ class CLITests(Sandbox):
         self.retime_fixture();write(self.run/'source/writing.json',default_writing())
         with patch.object(cli,'_gate'),patch.object(cli,'recover_run',return_value='script'):
             with self.assertRaisesRegex(ValueError,'writing_units'):cli.run_stage('check',self.run,SimpleNamespace())
+
+class LabPrepareTests(Sandbox):
+    def sandbox_repo(self):
+        repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)
+        for n in ['실험02','실험05']: (repo/'복습노트'/n).symlink_to(REPO/'복습노트'/n)
+        return repo
+    def test_prepare_labels_and_paths(self):
+        import io,contextlib
+        repo=self.sandbox_repo()
+        with contextlib.redirect_stdout(io.StringIO()): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        self.assertEqual(code,0)
+        batch=next((repo/'문제풀이영상/실험05/실험05_제작자료/실행').iterdir())
+        items={i['id']:i for i in read(batch/'batch.json')['items']}
+        self.assertEqual(items['q-dec2x4-design']['label'],'기출4'); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
+        self.assertEqual(items['q-dec2x4-design']['filename'],'기출4 — 풀이.mp4')
+        self.assertEqual(items['q-demux-from-dec']['status'],'failed'); self.assertIn('clipped_figure',items['q-demux-from-dec']['reason'])
+        run=batch/items['q-dec2x4-design']['run']; pair=read(run/'source/pair.json')
+        self.assertTrue(all((run/f).is_file() for f in pair['figure_refs']))
+        self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
+    def test_prepare_all_failed_experiment(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); out=io.StringIO()
+        with contextlib.redirect_stdout(out): cli.main(['prepare','실험02','--repo',str(repo)])
+        result=json.loads(out.getvalue()); self.assertEqual(result['paid_requests'],0)
+        batch=Path(result['batch']); items=read(batch/'batch.json')['items']
+        self.assertTrue(items and all(i['status']=='failed' for i in items))
+        self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험02')
+    def test_prepare_range_folder_name_and_writing_mode(self):
+        repo=self.sandbox_repo()
+        for mode in ['pencil','typing']:
+            batch=cli.prepare_batch(repo,'실험05',['기출3'],False,mode)
+            self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험05')
+            self.assertEqual(read(batch/read(batch/'batch.json')['items'][0]['run']/'source/writing.json')['mode'],mode)
+        batch=cli.prepare_batch(repo,'실험04-05',['기출3'])
+        self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험04-05')

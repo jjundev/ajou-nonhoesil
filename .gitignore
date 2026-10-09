@@ -37,3 +37,10 @@ venv/
 
 # 학습팩 발행 전 자동 백업은 로컬에 보존하고 Git에는 넣지 않는다.
 복습노트/실험*.backup-*/
+
+# 풀이영상 제작자료 중 유료 호출 없이 다시 만들 수 있는 것(렌더·검증 프레임·조립본·자막 원본).
+# 최종 MP4·catalog·source/·layers/*.json·usage.json·WAV 는 추적한다 (logic-lab-solution-video).
+문제풀이영상/**/실행/**/renders/
+문제풀이영상/**/실행/**/verification/
+문제풀이영상/**/실행/**/composition/
+문제풀이영상/**/실행/**/caption-original/

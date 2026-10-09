@@ -10,16 +10,13 @@ pencil의 `writing_animation`은 현재 composition을 실제 브라우저에서
 
 게시 직전에 최종 파일/검증 지문을 다시 확인한다. 같은 파일시스템 staging, 이전버전 backup, journal로 파일과 latest를 교체한다. 이동 실패 시 이미 교체한 파일도 복구한다. 중단된 pending journal은 다음 게시 때 복구한다. 같은 제목/문항 키 충돌은 오류다. 부분 성공은 현재 검증된 파일만 게시하되 latest를 유지한다. 기존 결과는 이전버전에 남고 마스터는 run에 남는다.
 
-개발 수용 테스트는 실제 1002 E10.11/E10.13/2021-1_중간-Q3와 로컬 PCM을 별도 scratch에서 만든다. 개발 미디어 검사 통과와 실제 Aoede 청취 통과를 분리하여 기록한다. 승인 없는 유료 테스트·가짜 audio review로 게시하지 않는다.
-
-수용 테스트 명령 (선택 실행은 `--problems E10.11`, 생략하면 대표 3문항):
+실측 수용 테스트는 실제 Aoede 음성으로 만든 batch 를 검사한다. 개발 미디어 검사 통과와 실제 Aoede 청취 통과를 분리하여 기록한다. 승인 없는 유료 테스트·가짜 audio review로 게시하지 않는다.
 
 ```sh
-python3 .agents/skills/ec2-solution-video/tests/acceptance.py --dest /ABS/SCRATCH --hyperframes-entry /ABS/hyperframes/dist/cli.js
-EC2_ACCEPTANCE_BATCH=/ABS/SCRATCH/문제풀이영상/1002/1002_제작자료/실행/RUN_ID python3 -m unittest discover -s .agents/skills/ec2-solution-video/tests -v
+LOGIC_LAB_ACCEPTANCE_BATCH=/ABS/문제풀이영상/실험05/실험05_제작자료/실행/RUN_ID .venv/bin/python -m unittest discover -s .claude/skills/logic-lab-solution-video/tests -p test_lab_acceptance.py -v
 ```
 
-기본 suite의 실제 미디어 수용 테스트는 명시적 scratch batch가 없으면 skip한다. 출력 로그의 BATCH 경로를 지정하면 selected_ids에 기록된 문항의 전체 글자 공개·미디어·최종 해시와 비용 0을 검사한다. 입력 원본과 기존 스킬 해시 보존도 검사하고 fake PCM을 production publish가 거부해야 통과한다.
+`LOGIC_LAB_ACCEPTANCE_BATCH` 가 없으면 skip 한다. 지정하면 batch 의 각 문항 report 가 complete·live_audio verified 인지, catalog SHA256 이 실제 MP4 와 같은지, figure 문항의 layers 에 figure 도형이 있는지 검사한다.
 
 검증된 Manifest.title을 실제 파일명에 사용하며 금지된 파일명 문자는 공백으로 정리한다. 게시 영수증은 실제 MP4와 catalog SHA256을 저장한다. 정상 게시 후 재개는 완료로 판정하며, 게시된 파일이 바뀌면 publish 단계부터 다시 확인한다. 명시적 카메라도 마지막 전체 답안 hold를 덮을 수 없다.
 
@@ -27,9 +24,9 @@ EC2_ACCEPTANCE_BATCH=/ABS/SCRATCH/문제풀이영상/1002/1002_제작자료/실�
 
 verify의 teaching_animation은 현재 sidecar/WAV로 schedule, geometry, camera를 독립 재생성하여 실제 composition과 대조한다. verification/teaching.json과 teaching-frames에는 카메라 전환 시작/중간/끝, 주석 작성·숨김, 최종 전체 화면, 역방향·GSAP seek 증거와 해시를 남긴다. 원본은 주석을 숨긴 상태로 별도 기준 SVG와 비교하고, 주석은 렌더러의 opacity/mask를 복사하지 않는 기준 화면과 비교한다.
 
-촉 오차는 최대 1px, 기본 연필 길이는 160±0.5px, 전체 경계는 1920×900이다. 원본 필기와 주석은 한 연필을 공유하며 동시에 표시하지 않는다. typing 풀이에서도 주석 검증은 필수다. 누락·선공개·최종 잔류·촉 또는 카메라 변조는 실패한다. label 본문은 화면상 26px 이상이며 그림/주석/연필을 동시에 맞출 수 없으면 영역 ID와 이유를 보고한다.
+촉 오차는 최대 1px, 기본 연필 길이는 160±0.5px, 전체 경계는 1920×900이다. 원본 필기와 주석은 한 연필을 공유하며 동시에 표시하지 않는다. typing 풀이에서도 주석 검증은 필수다. 누락·선공개·최종 잔류·촉 또는 카메라 변조는 실패한다. label 본문은 화면상 26px 이상이며 문제 그림/주석/연필을 동시에 맞출 수 없으면 영역 ID와 이유를 보고한다.
 
-개발 수용 검증은 tests/teaching_acceptance.py의 scratch 실행을 사용한다. E10.11/E10.13/2021-1_중간-Q3의 frozen 원자료와 fake PCM으로 렌더·자막·브라우저·미디어를 검증한다. 유료 요청은 0이다. fake PCM은 audio_meaning을 승인하지 않으며 production 게시를 통과하지 못한다. 실제 Aoede 최종 음성·주석 의미를 직접 검토한 증거가 별도로 필요하다.
+fake PCM 으로 만든 개발 검증은 렌더·자막·브라우저·미디어만 확인한다. fake PCM은 audio_meaning을 승인하지 않으며 production 게시를 통과하지 못한다. 실제 Aoede 최종 음성·주석 의미를 직접 검토한 증거가 별도로 필요하다.
 
 Spatial pencil verification additionally requires `writing_flow` and
 `narration_pacing`. Original geometry/authored bands independently define

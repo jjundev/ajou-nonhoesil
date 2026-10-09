@@ -43,3 +43,7 @@ class PublicationTests(Sandbox):
             run=self.batch/f'videos/p{i}';write(run/'source/manifest.json',{'problem_id':str(i),'title':'전압/이득: 확인'})
         with patch('solution_video.publication.report_current',return_value=True):result=publish_batch(self.batch)
         self.assertEqual(result['published'],['0 — 전압 이득 확인.mp4','1 — 전압 이득 확인.mp4'])
+    def test_label_prefix_filename(self):
+        from solution_video.publication import output_filename
+        run=self.run/'r'; write(run/'source/manifest.json',{'problem_id':'q-prio-exam','title':'8×3 우선순위 인코더 — 여러 비트가 켜진 입력'})
+        self.assertEqual(output_filename({'id':'q-prio-exam','label':'기출3','filename':'x.mp4'},run),'기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4')

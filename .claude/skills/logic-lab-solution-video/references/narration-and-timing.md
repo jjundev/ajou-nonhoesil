@@ -38,11 +38,11 @@ to satisfy a metric. Fake PCM and pacing PASS cannot approve audio meaning.
 
 ## 회로 근거와 필기 음성 저작
 
-신규 교육 흐름은 `source/lesson.json`(schema_version=1)에 PageMap 순서의 steps를 작성한다. 각 row는 step_id, mode, reason_segment_ids, check_segment_ids, region_ids, annotation_ids, meaning_notes, source_refs를 가진다. circuit 단계는 관련 회로 reason과 표시가 각각 필요하며 식을 쓰기 전에 회로 연결/가정을 설명한다. calculation 단계는 회로 목록을 비우고 exemption_reason에 제목·기존 근거의 후속 정리 등 이유를 명시한다. 단순 제목이나 계산마다 왕복하지 않는다. 기존 lesson 없는 run은 재개 가능하다.
+신규 교육 흐름은 `source/lesson.json`(schema_version=1)에 PageMap 순서의 steps를 작성한다. 각 row는 step_id, mode, reason_segment_ids, check_segment_ids, region_ids, annotation_ids, meaning_notes, source_refs를 가진다. circuit 단계(논회실에서는 문제 그림 — 회로도·진리표·파형 — 을 근거로 삼는 단계)는 관련 reason과 표시가 각각 필요하며 식을 쓰기 전에 연결/가정을 설명한다. calculation 단계는 회로 목록을 비우고 exemption_reason에 제목·기존 근거의 후속 정리 등 이유를 명시한다. 단순 제목이나 계산마다 왕복하지 않는다. 기존 lesson 없는 run은 재개 가능하다.
 
 핵심 논리마다 회로 근거 → 해당 내용 필기를 배치하고 필요한 경우 check로 돌아온다. 필기 text에는 지금 쓰는 문장/식의 읽기와 기호·항의 의미를 넣는다. 긴 원고 하나를 붙이지 말고 PageMap을 의미 단위로 분할하며 glyph/shape 중복·누락을 막는다. 필기 기본 7.5 chars/sec를 유지하고 영상 길이는 이해 우선으로 늘린다.
 
-guided manifest의 모든 segment에 음성 `text`와 표시 `caption_text`를 별도로 작성한다. ‘알 오 원’은 음성으로 읽고 자막에는 `r_O1`을 쓴다. `r_O3`, `g_m1`, `V_BE`, `R₁`, `Q₁`, `∥` 등의 기호와 원문 대소문자를 보존하며 LaTeX 원문을 자막에 출력하지 않는다. caption_text가 없는 기존 run만 text로 fallback한다. 기호 토큰을 줄 중간에서 자르지 않으며 34자를 넘는 단일 토큰은 저작 오류다. 자막만 변경해도 후속 결과를 갱신하되 동일 text의 WAV는 TTS cache로 재사용한다.
+guided manifest의 모든 segment에 음성 `text`와 표시 `caption_text`를 별도로 작성한다. ‘에스원 바 에스제로 바 디’는 음성으로 읽고 자막에는 `S1′S0′D`를 쓴다. `+`, `V_CC`, `74HC138`, `Y0` 등의 기호와 원문 대소문자를 보존하며 LaTeX 원문을 자막에 출력하지 않는다. caption_text가 없는 기존 run만 text로 fallback한다. 기호 토큰을 줄 중간에서 자르지 않으며 34자를 넘는 단일 토큰은 저작 오류다. 자막만 변경해도 후속 결과를 갱신하되 동일 text의 WAV는 TTS cache로 재사용한다.
 
 현재 입력에 대한 lesson_flow는 회로 근거의 순서/안정 화면/표시 가시성을 검사한다. 의미 검토에서는 원문 회로, 실제 표시, 음성, 기호 자막을 함께 대조한다. 필기 음성의 2초 초과 무음은 narration_pacing 검토 대상이고 70–85% 밀도는 저작 가이드다. 카메라/픽셀 검사 통과나 synthetic PCM으로 교육 품질과 실제 음성을 승인하지 않는다.
 
@@ -59,6 +59,6 @@ SRT 시간은 실측 voice_samples 안에서 원문 의미 단위의 글자 수 
 자막을 수정하면 WAV와 음성 `text` 해시를 보존하고, 현재 검토 지문·타임라인·자막·최종 MP4·검증을 갱신한다. 동일 음성은 캐시를 재사용하며 유료 재합성을 하지 않는다. 기호·첨자·분수·괄호, 문장/쉼표 경계, 두 줄 제한 및 실제 하단 박스를 확인한다.
 
 ### 논리식의 음성·자막 (논회실)
-자막 `caption_text`는 원문 기호를 그대로 쓴다: 부정은 `′`(`S1′S0′D`), OR 는 `+`, AND 는 붙여 쓰기, 첨자 이름은 `V_CC`, 칩 이름은 `74HC138`. 음성 `text`는 읽는 소리로 쓴다: ‘에스원 바 에스제로 바 디’, ‘칠사 에이치씨 일삼팔’, ‘브이 씨씨’. OR 의 `+` 를 ‘더하기’로 읽지 않는다 — ‘오어’ 또는 ‘플러스’ 대신 문장으로 ‘A 또는 B’ 처럼 뜻을 말한다. `defaults.json` 의 `pronunciation` 은 `′`→‘ 바’, `V_CC`·`V_IH`·`V_IL`·`GND` 만 TTS 직전에 치환하고, 그 밖의 신호 이름은 원고에서 직접 소리로 쓴다.
+자막 `caption_text`는 원문 기호를 그대로 쓴다: 부정은 `′`(`S1′S0′D`), OR 는 `+`, AND 는 붙여 쓰기, 첨자 이름은 `V_CC`, 칩 이름은 `74HC138`. 음성 `text`는 읽는 소리로 쓴다: ‘에스원 바 에스제로 바 디’, ‘칠사 에이치씨 일삼팔’, ‘브이 씨씨’. OR 의 `+` 는 ‘오어’로 읽고 ‘더하기’로 읽지 않는다. `defaults.json` 의 `pronunciation` 은 `′`→‘ 바’, `V_CC`·`V_IH`·`V_IL`·`GND` 만 TTS 직전에 치환하고, 그 밖의 신호 이름은 원고에서 직접 소리로 쓴다.
 자막에 "신호 이름 + 바/낫"(`S1 바`, `E 낫`)이 보이면 `logic_bar_word` warning 이다. 자막에는 `S1′` 로 쓴다. ‘이 바를’ 같은 일반 한국어와 ‘낫이’ 같은 조사 붙은 말은 경고하지 않는다.
 음성 원고는 복습팩 풀이와 같은 ~해요체로 쓴다(‘~예요’, ‘~해요’). 상류 예시의 ‘~입니다’ 체를 섞지 않는다.

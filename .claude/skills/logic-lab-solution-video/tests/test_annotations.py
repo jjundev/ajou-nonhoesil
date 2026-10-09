@@ -73,4 +73,4 @@ c=compile_annotations(validate_teaching(f,a,m,l),l,Path({str(self.run/'standalon
 print(json.dumps(c['items'][0]['body_height']))
 """
   result=subprocess.run([sys.executable,'-c',code],capture_output=True,text=True,check=True)
-  self.assertGreater(json.loads(result.stdout.strip().splitlines()[-1]),2)
+  self.assertGreater(json.loads(result.stdout.strip()),2)

@@ -5,7 +5,7 @@ import argparse,copy,json,os,shutil,sys,uuid,wave
 from datetime import datetime
 from solution_video.util import S,read,write,digest,file_hash,local
 from solution_video.contracts import InputError,ReviewError
-from solution_video.sources import discover,freeze_sources
+from solution_video.sources import discover,freeze_sources,parse_selector
 from solution_video.pdf_pages import export_page,extract_layers,compare_completed
 from solution_video.manifest import validate_manifest,content_fingerprint
 from solution_video.review_adapter import default_config,generate_voice,validate_config
@@ -21,11 +21,12 @@ from solution_video.state import STAGES,recover_run,finish_stage,stage_fingerpri
 from solution_video.publication import publish_batch
 
 def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="pencil"):
-    writing=default_writing(writing_mode)
+    writing=default_writing(writing_mode); experiments=parse_selector(selector)
     repo=Path(repo).resolve(); failures=[];pairs=discover(repo,selector,problem_ids,failures=failures)
-    root=repo/'문제풀이영상'/selector; production=root/(selector+'_제작자료'); ident=datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:8]; batch=production/'실행'/ident;batch.mkdir(parents=True)
+    name=experiments[0] if len(experiments)==1 else experiments[0]+'-'+experiments[-1][2:]
+    root=repo/'문제풀이영상'/name; production=root/(name+'_제작자료'); ident=datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:8]; batch=production/'실행'/ident;batch.mkdir(parents=True)
     frozen=freeze_sources(pairs,batch); items=[]
-    data={'schema_version':1,'selector':selector,'review':review,'items':items};write(batch/'batch.json',data)
+    data={'schema_version':1,'selector':name,'review':review,'items':items};write(batch/'batch.json',data)
     for p in frozen:
         key='problem-'+digest(p['problem_id'])[:12]; run=batch/'videos'/key; run.mkdir(parents=True)
         pair=copy.deepcopy(p)
@@ -34,13 +35,15 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
                 target=run/ref['snapshot'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/ref['snapshot'],target)
             if source['md_snapshot']:
                 target=run/source['md_snapshot'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/source['md_snapshot'],target)
+        for ref in pair.get('figure_refs',[]):
+            target=run/ref;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/ref,target)
         write(run/'source/inputs.json',read(batch/'source/inputs.json')); write(run/'source/pair.json',pair);write(run/'source/config.json',default_config())
         write(run/'source/writing.json',writing)
         write(run/'run.json',{'batch':str(batch),'review':review,'problem_id':p['problem_id']})
-        item={'id':p['problem_id'],'run':'videos/'+key,'filename':p['problem_id']+' — 풀이.mp4','status':'author-required'}
+        item={'id':p['problem_id'],'label':p['label'],'run':'videos/'+key,'filename':p['label']+' — 풀이.mp4','status':'author-required'}
         items.append(item);write(batch/'batch.json',data)
         try:
-            export_page(local(run,pair['answer']['snapshot']),pair['answer']['page_index'],run/'layers')
+            export_page(local(run,pair['answer']['snapshot']),pair['answer']['page_index'],run/'layers',[local(run,r) for r in pair.get('figure_refs',[])])
             finish_stage(run,'inputs',[run/'source/inputs.json',run/'source/pair.json'])
         except Exception as ex:
             item.update(status='failed',reason=str(ex)[:500]);write(run/'source/prepare-error.json',{'reason':item['reason']})
@@ -82,7 +85,7 @@ def run_stage(action,run,args,transport=None):
 def _run_stage(action,run,args,transport=None):
     run=Path(run).resolve()
     if action=='extract' and not (run/'layers/candidates.json').is_file() and (run/'source/pair.json').is_file():
-        pair=read(run/'source/pair.json');export_page(local(run,pair['answer']['snapshot']),pair['answer']['page_index'],run/'layers')
+        pair=read(run/'source/pair.json');export_page(local(run,pair['answer']['snapshot']),pair['answer']['page_index'],run/'layers',[local(run,r) for r in pair.get('figure_refs',[])])
         finish_stage(run,'inputs',[run/'source/inputs.json',run/'source/pair.json'])
         (run/'source/prepare-error.json').unlink(missing_ok=True)
     needed=['source/map.json'] if action=='extract' else ['source/manifest.json','layers/layers.json','source/coverage.json','source/circuit-review.json']

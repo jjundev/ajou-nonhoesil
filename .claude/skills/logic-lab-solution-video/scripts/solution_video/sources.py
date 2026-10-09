@@ -115,8 +115,10 @@ def discover(repo,selector,problem_ids=None,failures=None):
 
 def freeze_sources(pairs,batch):
     batch=Path(batch); dest=batch/'source/snapshots'; dest.mkdir(parents=True,exist_ok=True); result=copy.deepcopy(pairs); provenance={}
-    def freeze(path):
-        src=Path(path); sha=file_hash(src); target=dest/(sha+src.suffix); shutil.copyfile(src,target) if not target.exists() else None
+    def freeze(path,keep_name=False):
+        # Figures keep their PNG name (figure_source, coverage evidence) under a content-addressed folder.
+        src=Path(path); sha=file_hash(src); target=dest/'figures'/sha/_norm(src.name) if keep_name else dest/(sha+src.suffix)
+        target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(src,target) if not target.exists() else None
         rel=target.relative_to(batch).as_posix(); provenance[rel]={'original':str(src.resolve()),'sha256':sha}; return rel
     for p in result:
         for source in p.get('sources',[]):
@@ -124,6 +126,6 @@ def freeze_sources(pairs,batch):
             if source['md_snapshot']: source['md_snapshot']=freeze(source['md_snapshot'])
         for role in ['problem','answer']: p[role]['snapshot']=freeze(p[role]['snapshot'])
         if p['md_snapshot']: p['md_snapshot']=freeze(p['md_snapshot'])
-        p['figure_refs']=[freeze(f) for f in p.get('figure_refs',[])]
+        p['figure_refs']=[freeze(f,True) for f in p.get('figure_refs',[])]
     import fitz,sys
     write(batch/'source/inputs.json',{'files':provenance,'pairs':result,'tools':{'python':sys.version,'pymupdf':fitz.VersionBind}}); return result

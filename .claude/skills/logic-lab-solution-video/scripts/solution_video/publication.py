@@ -20,7 +20,7 @@ def output_filename(item,run):
     title=re.sub(r'[\\/:*?"<>|\x00-\x1f]+',' ',title)
     title=' '.join(title.split()).strip(' .')
     if not title:raise InputError('empty sanitized title')
-    result=item['id']+' — '+title
+    result=(item.get('label') or item['id'])+' — '+title
     while len((result+'.mp4').encode('utf-8'))>240:result=result[:-1]
     return result.rstrip(' .')+'.mp4'
 

@@ -46,3 +46,4 @@ class LabSourceTests(Sandbox):
         frozen=freeze_sources(discover(REPO,'실험05',['q-dec2x4-design']),self.run)
         self.assertFalse(Path(frozen[0]['figure_refs'][0]).is_absolute())
         self.assertTrue((self.run/frozen[0]['figure_refs'][0]).is_file())
+        self.assertEqual(Path(frozen[0]['figure_refs'][0]).name,'q-dec2x4-design-solution-01.png')

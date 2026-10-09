@@ -1,7 +1,12 @@
 from pathlib import Path
 import hashlib,json,os,subprocess
+import contextlib,sys
 from .contracts import InputError
 S=Path(__file__).resolve().parents[2]
+# PyMuPDF 1.28 prints its 'fitz API is deprecated' notice to stdout on first import; keep CLI stdout pure JSON.
+with contextlib.redirect_stdout(sys.stderr):
+    try: import fitz  # noqa: F401
+    except ImportError: pass
 def digest(v): return hashlib.sha256(json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def file_hash(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def read(p): return json.loads(Path(p).read_text(encoding='utf-8'))
