@@ -92,7 +92,7 @@
     {
       "id": "s-406ef36195bcd5e2",
       "path": "보고서/실험02/결선도/netlist.md",
-      "sha256": "16104b31b23c79f776ac0f5f58c814cbed64ad45adc98261649ef6fbc8ccb3e3",
+      "sha256": "333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b1f50f61b2ca857f",
       "kind": "record",
       "edition": "current"
     }
@@ -100,7 +100,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "전체 흐름을 먼저 살펴봐요",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
       "requires": [],
       "sources": [
         {
@@ -122,10 +122,25 @@
           "source_id": "s-130a964ad2ce2dbf",
           "pdf_page": null,
           "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 11,
+          "printed_page": null
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "판본 기록: 배포 교안(12쪽) 표지는 25-1이에요. 이번 학기 수행 범위는 2026-09-14 공지의 실험 1-1·1-2이고 교안 실험 2(12쪽)는 하지 않아요. 기출 파일명 2016-1의 시험지 머리글은 “2016-2학기 … 실험 3”이라 학기·번호가 서로 달라요."
+      "md_notes": "판본 기록: 배포 교안(12쪽) 표지는 25-1이에요. 이번 학기 수행 범위는 2026-09-14 공지의 실험 1-1·1-2이고 교안 실험 2(12쪽)는 하지 않아요. 기출 파일명 2016-1의 시험지 머리글은 “2016-2학기 … 실험 3”이라 학기·번호가 서로 달라요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
     },
     {
       "id": "t-levels",
@@ -1110,6 +1125,14 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험02_기출문제.html",
+    "실험02_기출문제.md",
+    "실험02_기출풀이.html",
+    "실험02_기출풀이.md",
+    "실험02_실험설명.html",
+    "실험02_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1284,14 +1307,6 @@
     "자료/figures/solutions/q-transition-solution-01.svg",
     "자료/figures/timing.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험02_기출문제.html",
-    "실험02_기출문제.md",
-    "실험02_기출풀이.html",
-    "실험02_기출풀이.md",
-    "실험02_실험설명.html",
-    "실험02_실험설명.md",
-    "원문과_저작안내.md",
     "출처와_문항목록.md"
   ]
 }

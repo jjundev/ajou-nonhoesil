@@ -107,7 +107,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "전체 흐름을 먼저 살펴봐요",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
       "requires": [],
       "sources": [
         {
@@ -129,10 +129,30 @@
           "source_id": "s-130a964ad2ce2dbf",
           "pdf_page": null,
           "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 11,
+          "printed_page": null
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "판본 기록: 2026-2 배포 교안의 표지에는 25-1로 적혀 있어요. 수행 범위는 9월 14일 공지의 1-1·2-1이에요. 기출 파일명 2016-1의 시험지 헤더는 2017-1이에요. 빈 예상문제 6번은 보류했어요."
+      "md_notes": "판본 기록: 2026-2 배포 교안의 표지에는 25-1로 적혀 있어요. 수행 범위는 9월 14일 공지의 1-1·2-1이에요. 기출 파일명 2016-1의 시험지 헤더는 2017-1이에요. 빈 예상문제 6번은 보류했어요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
     },
     {
       "id": "t-basics",
@@ -1161,13 +1181,21 @@
   "checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "pass",
+    "independent": "not_run",
     "browser": "pass"
   },
   "note_presentation_version": 2,
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험04_기출문제.html",
+    "실험04_기출문제.md",
+    "실험04_기출풀이.html",
+    "실험04_기출풀이.md",
+    "실험04_실험설명.html",
+    "실험04_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1324,14 +1352,6 @@
     "자료/figures/solutions/q-tri-solution-01.svg",
     "자료/figures/tristate-bus.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험04_기출문제.html",
-    "실험04_기출문제.md",
-    "실험04_기출풀이.html",
-    "실험04_기출풀이.md",
-    "실험04_실험설명.html",
-    "실험04_실험설명.md",
-    "원문과_저작안내.md",
     "출처와_문항목록.md"
   ]
 }

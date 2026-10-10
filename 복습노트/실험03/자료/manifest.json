@@ -86,7 +86,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "전체 흐름을 먼저 살펴봐요",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
       "requires": [],
       "sources": [
         {
@@ -106,7 +106,7 @@
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "판본 기록: 교안 표지에는 25-1로 적혀 있고 파일 이름은 “(25.03.25 수정)”이라 현재 판으로 봤어요. 교안 1~3쪽, 8쪽, 9쪽을 이미지로 읽고 대조했어요. 이진수 덧셈·뺄셈 예시와 표는 일반 이론이에요."
+      "md_notes": "판본 기록: 교안 표지에는 25-1로 적혀 있고 파일 이름은 “(25.03.25 수정)”이라 현재 판으로 봤어요. 교안 1~3쪽, 8쪽, 9쪽을 이미지로 읽고 대조했어요. 이진수 덧셈·뺄셈 예시와 표는 일반 이론이에요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
     },
     {
       "id": "t-gates",
@@ -1160,6 +1160,14 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험03_기출문제.html",
+    "실험03_기출문제.md",
+    "실험03_기출풀이.html",
+    "실험03_기출풀이.md",
+    "실험03_실험설명.html",
+    "실험03_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1312,14 +1320,6 @@
     "자료/figures/solutions/q-hs-circuit-solution-01.png",
     "자료/figures/solutions/q-hs-circuit-solution-01.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험03_기출문제.html",
-    "실험03_기출문제.md",
-    "실험03_기출풀이.html",
-    "실험03_기출풀이.md",
-    "실험03_실험설명.html",
-    "실험03_실험설명.md",
-    "원문과_저작안내.md",
     "출처와_문항목록.md"
   ]
 }
