@@ -139,8 +139,15 @@ def discover(repo,selector,problem_ids=None,failures=None):
                 if pid not in pp or pid not in aa: raise InputError('header/list mismatch: '+pid)
                 defects=[d['code']+' p.'+str(ref['page_index']+1) for ref in (pp[pid],aa[pid]) for d in input_defects(ref['snapshot'],ref['page_index'])]
                 if defects: raise InputError('input defect: '+';'.join(defects))
-                figures=sorted(str(x.resolve()) for x in (solutions.iterdir() if solutions else []) if re.fullmatch(re.escape(pid)+r'-solution-\d{2}\.png',_norm(x.name)))
-                pair=dict(problem_id=pid,label=label,title=title,problem=pp[pid],answer=aa[pid],md_snapshot=str(md.resolve()) if md and md.is_file() else None,experiments=[name],figure_refs=figures)
+                # PNG (pixel comparison) and its SVG (evidence of what the figure means) share one name rule: exactly <id>-solution-NN.
+                listing=list(solutions.iterdir()) if solutions else []
+                by_ext=lambda ext:sorted(str(x.resolve()) for x in listing if re.fullmatch(re.escape(pid)+r'-solution-\d{2}\.'+ext,_norm(x.name)))
+                pngs,svgs=by_ext('png'),by_ext('svg')
+                # A PNG without its SVG is a warning, not a failure: the pixels are still frozen and compared.
+                svg_stems={_norm(Path(f).stem) for f in svgs}
+                svg_missing=[_norm(Path(f).name) for f in pngs if _norm(Path(f).stem) not in svg_stems]
+                pair=dict(problem_id=pid,label=label,title=title,problem=pp[pid],answer=aa[pid],md_snapshot=str(md.resolve()) if md and md.is_file() else None,experiments=[name],
+                    figure_refs=pngs,figure_svg_refs=svgs,figure_svg_missing=svg_missing)
                 validate_pairs([pair]);pairs.append(pair)
             except (InputError,OSError,ValueError,RuntimeError) as ex: fail(pid,name,str(ex))
     if selected and selected-listed: raise InputError('problem IDs outside range: '+str(sorted(selected-listed)))
@@ -170,5 +177,6 @@ def freeze_sources(pairs,batch):
         for role in ['problem','answer']: p[role]['snapshot']=freeze(p[role]['snapshot'])
         if p['md_snapshot']: p['md_snapshot']=freeze(p['md_snapshot'])
         p['figure_refs']=[freeze(f,True) for f in p.get('figure_refs',[])]
+        p['figure_svg_refs']=[freeze(f,True) for f in p.get('figure_svg_refs',[])]  # evidence only; never fed to the pixel comparison
     import fitz,sys
     write(batch/'source/inputs.json',{'files':provenance,'pairs':result,'tools':{'python':sys.version,'pymupdf':fitz.VersionBind}}); return result

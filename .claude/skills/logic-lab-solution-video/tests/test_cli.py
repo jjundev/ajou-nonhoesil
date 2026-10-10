@@ -204,6 +204,14 @@ class LabPrepareTests(Sandbox):
         run=batch/items['q-dec2x4-design']['run']; pair=read(run/'source/pair.json')
         self.assertTrue(all((run/f).is_file() for f in pair['figure_refs']))
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
+    def test_prepare_copies_svg_into_run(self):
+        repo=self.sandbox_repo(); batch=cli.prepare_batch(repo,'실험05',['기출4'])
+        item=read(batch/'batch.json')['items'][0]; run=batch/item['run']; pair=read(run/'source/pair.json')
+        self.assertEqual([Path(f).name for f in pair['figure_svg_refs']],['q-dec2x4-design-solution-01.svg'])
+        self.assertTrue(pair['figure_svg_refs'] and all((run/f).is_file() for f in pair['figure_svg_refs']))
+        self.assertTrue(set(pair['figure_svg_refs'])<=set(read(run/'source/inputs.json')['files']))
+        # export_page 는 PNG 만 받는다: SVG 는 도형 후보(figure_source)가 되지 않는다.
+        self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
     def test_prepare_all_failed_experiment(self):
         import io,contextlib,json
         repo=self.sandbox_repo(); out=io.StringIO()

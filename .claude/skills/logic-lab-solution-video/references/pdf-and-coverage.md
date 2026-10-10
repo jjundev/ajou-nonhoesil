@@ -1,6 +1,6 @@
 # 원본 화면과 작성 계약
 
-`prepare`는 입력 PDF 쌍, `실험NN_기출풀이.md`, 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 를 SHA256으로 동결하고(PNG 는 원래 이름 유지) 각 페이지의 `layers/candidates.json`, `candidate.svg`, `native.png`를 만든다. 후보 목록은 전체 페이지의 원본 그림이고 작성 영역은 아직 없다. `source/pair.json`과 동결 MD를 읽고 PDF 화면을 직접 확인한다.
+`prepare`는 입력 PDF 쌍, `실험NN_기출풀이.md`, 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 를 SHA256으로 동결하고(PNG 는 원래 이름 유지) 같은 이름의 짝 `.svg`(그림 의미의 근거)도 `source/snapshots/figures/<sha>/` 에 같은 방식으로 동결해 `pair.json` 의 `figure_svg_refs`·`inputs.json` 의 `files` 에 남긴다(SVG 는 픽셀 대조에 쓰지 않으며, 짝 SVG 가 없는 PNG 는 `figure_svg_missing` 경고일 뿐 문항을 막지 않는다). 각 페이지의 `layers/candidates.json`, `candidate.svg`, `native.png`를 만든다. 후보 목록은 전체 페이지의 원본 그림이고 작성 영역은 아직 없다. `source/pair.json`과 동결 MD를 읽고 PDF 화면을 직접 확인한다.
 
 `source/map.json`에 중앙 풀이만 들어가는 `work_bbox: [x0,y0,x1,y1]`를 PDF point 좌표로 작성한다. `steps: [{id,glyph_ids,shape_ids}]`는 원본 단계 순서, 각 glyph_ids는 사람이 읽는 순서다. 두 단에서는 왼쪽 위→왼쪽 아래→오른쪽 위→오른쪽 아래 순서를 원문과 대조한다. 분수의 분자/분모, 첨자와 병렬 기호의 순서를 개별 검토한다. 좌표 정렬만으로 읽기 순서를 승인하지 않는다. 마지막 단계의 id를 `answer_step_id`로 적는다. 짧은 발화와 작성 단위를 원하면 원본 단계를 작은 연속 단위로 나눈다.
 

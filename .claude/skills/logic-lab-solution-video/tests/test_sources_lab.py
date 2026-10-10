@@ -198,6 +198,48 @@ class LabSourceTests(Sandbox):
                     same=[a for a in panel if [len(r) for r in a]==[len(r) for r in table]]
                     total+=1; checked+=bool(same); matched+=table in same
             self.assertEqual((total,checked,matched),(count,count,count),n)
+    def test_svg_refs_are_exact_per_problem(self):
+        p=discover(REPO,'실험05',['q-dec2x4-design'])[0]
+        self.assertEqual([Path(f).name for f in p['figure_svg_refs']],['q-dec2x4-design-solution-01.svg'])
+        self.assertTrue(all(Path(f).is_absolute() for f in p['figure_svg_refs'])); self.assertEqual(p['figure_svg_missing'],[])
+        # 접두가 겹치는 다른 문항(q-demux-from-dec / q-demux-from-dec-graded)의 SVG 는 섞이지 않는다.
+        pairs={x['problem_id']:x for x in discover(REPO,'실험05',['q-demux-from-dec','q-demux-from-dec-graded'])}
+        self.assertEqual([Path(f).name for f in pairs['q-demux-from-dec']['figure_svg_refs']],['q-demux-from-dec-solution-01.svg'])
+        self.assertEqual([Path(f).name for f in pairs['q-demux-from-dec-graded']['figure_svg_refs']],['q-demux-from-dec-graded-solution-01.svg'])
+    def test_svg_is_frozen_with_provenance(self):
+        frozen=freeze_sources(discover(REPO,'실험05',['q-dec2x4-design']),self.run)
+        rel=frozen[0]['figure_svg_refs'][0]
+        self.assertFalse(Path(rel).is_absolute()); self.assertTrue((self.run/rel).is_file())
+        self.assertEqual(Path(rel).name,'q-dec2x4-design-solution-01.svg')
+        files=json.loads((self.run/'source/inputs.json').read_text(encoding='utf-8'))['files']
+        self.assertIn(rel,files); self.assertTrue(files[rel]['original'].endswith('q-dec2x4-design-solution-01.svg'))
+        # PNG 와 같은 규칙(source/snapshots/figures/<파일 sha>/<이름>)으로 동결된다. 픽셀 대조는 PNG 만 쓴다.
+        self.assertEqual(Path(rel).parent.parent,Path('source/snapshots/figures'))
+        self.assertEqual(Path(rel).parent.name,files[rel]['sha256'])
+        self.assertEqual(Path(rel).parent.parent,Path(frozen[0]['figure_refs'][0]).parent.parent)
+    def solutions_copy(self):
+        repo=self.run/'repo'; shutil.copytree(REPO/'복습노트/실험05',repo/'복습노트/실험05')
+        return repo,repo/'복습노트/실험05/자료/figures/solutions'
+    def test_missing_svg_warns_without_failing(self):
+        repo,solutions=self.solutions_copy(); (solutions/'q-dec2x4-design-solution-01.svg').unlink()
+        failures=[]; pairs={p['problem_id']:p for p in discover(repo,'실험05',['q-dec2x4-design'],failures)}
+        self.assertEqual(failures,[])
+        self.assertEqual(pairs['q-dec2x4-design']['figure_svg_refs'],[]); self.assertEqual(pairs['q-dec2x4-design']['figure_svg_missing'],['q-dec2x4-design-solution-01.png'])
+        self.assertEqual([Path(f).name for f in pairs['q-dec2x4-design']['figure_refs']],['q-dec2x4-design-solution-01.png'])
+    def test_svg_without_png_and_extra_svg(self):
+        # SVG 는 근거 보존용이라 PNG 와 짝이 맞지 않아도 모은다. 누락 경고는 PNG 기준이다.
+        repo,solutions=self.solutions_copy(); shutil.copyfile(solutions/'q-dec2x4-design-solution-01.svg',solutions/'q-dec2x4-design-solution-02.svg')
+        (solutions/'q-enc4x2-design-solution-01.png').unlink()
+        pairs={p['problem_id']:p for p in discover(repo,'실험05',['q-dec2x4-design','q-enc4x2-design'],[])}
+        a,b=pairs['q-dec2x4-design'],pairs['q-enc4x2-design']
+        self.assertEqual([Path(f).name for f in a['figure_svg_refs']],['q-dec2x4-design-solution-01.svg','q-dec2x4-design-solution-02.svg'])
+        self.assertEqual(a['figure_svg_missing'],[])
+        self.assertEqual((b['figure_refs'],[Path(f).name for f in b['figure_svg_refs']],b['figure_svg_missing']),([],['q-enc4x2-design-solution-01.svg'],[]))
+    def test_freeze_accepts_pair_without_svg_keys(self):
+        # 옛 pair 에는 두 키가 없다. 읽는 쪽은 .get 으로 받는다.
+        pair=discover(REPO,'실험05',['q-dec2x4-design'])[0]; del pair['figure_svg_refs'],pair['figure_svg_missing']
+        frozen=freeze_sources([pair],self.run)
+        self.assertEqual(frozen[0].get('figure_svg_refs',[]),[]); self.assertEqual(len(frozen[0]['figure_refs']),1)
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])

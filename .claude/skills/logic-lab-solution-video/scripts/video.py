@@ -35,7 +35,7 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
                 target=run/ref['snapshot'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/ref['snapshot'],target)
             if source['md_snapshot']:
                 target=run/source['md_snapshot'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/source['md_snapshot'],target)
-        for ref in pair.get('figure_refs',[]):
+        for ref in [*pair.get('figure_refs',[]),*pair.get('figure_svg_refs',[])]:
             target=run/ref;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(batch/ref,target)
         write(run/'source/inputs.json',read(batch/'source/inputs.json')); write(run/'source/pair.json',pair);write(run/'source/config.json',default_config())
         write(run/'source/writing.json',writing)

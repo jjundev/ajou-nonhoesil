@@ -7,6 +7,7 @@ class PageRef(TypedDict):
 class PagePair(TypedDict):
     problem_id:str; problem:PageRef; answer:PageRef; md_snapshot:str|None
     label:str; title:str; experiments:list[str]; figure_refs:list[str]
+    figure_svg_refs:NotRequired[list[str]]; figure_svg_missing:NotRequired[list[str]]  # absent in older pair.json: read with .get
 class Step(TypedDict):
     id:str; glyph_ids:list[str]; shape_ids:list[str]
 class PageMap(TypedDict):
