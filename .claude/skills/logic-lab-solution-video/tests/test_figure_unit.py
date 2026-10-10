@@ -67,6 +67,24 @@ class FigureUnitTests(Sandbox):
         l=dict(glyphs=gs,shapes=ss,metadata=dict(width_pt=1010,height_pt=568),map=dict(steps=[dict(id='step',glyph_ids=['a','b'],shape_ids=['f'],writing_units=us)]))
         t=self.timeline(l)
         with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: wide$'): build_writing_camera_keys(l,t,compile_writing_units(l))
+    def mixed_chunk(self,width,height,text_boxes,fig_bbox):
+        # 글자와 그림이 한 묶음('mix')에 든 쪽. 그림 혼자는 전체 쪽 배율에서 들어가는 작은 그림이다.
+        gs=[dict(id='t%d'%i,text='가',bbox=list(b),paint_order=i) for i,b in enumerate(text_boxes)]
+        ss=[dict(id='f',bbox=list(fig_bbox),kind='figure',paint_order=len(gs),svg_ids=['x'],figure_source='a.png')]
+        ids=[g['id'] for g in gs]
+        l=dict(glyphs=gs,shapes=ss,metadata=dict(width_pt=width,height_pt=height),
+               map=dict(steps=[dict(id='step',glyph_ids=ids,shape_ids=['f'],writing_units=[unit('u1',[0,width],ids,['f'],chunk='mix')])]))
+        return l,self.timeline(l)
+    def test_small_figure_in_oversized_text_chunk_gets_text_message(self):
+        # 묶음이 쪽 높이 전체에 걸쳐 안 들어간다. 그림(30x30)은 혼자 들어가므로 원인은 묶음 구성이다.
+        l,t=self.mixed_chunk(841.9,595,[[100,10,109,19],[100,570,109,579]],[300,300,330,330])
+        with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: mix$'): build_writing_camera_keys(l,t,compile_writing_units(l))
+    def test_small_figure_in_page_wide_text_chunk_on_16x9_page_gets_text_message(self):
+        l,t=self.mixed_chunk(1440,810,[[0,300,9,309],[1431,300,1440,309]],[600,100,630,130])
+        with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: mix$'): build_writing_camera_keys(l,t,compile_writing_units(l))
+    def test_big_figure_with_small_text_in_one_chunk_keeps_figure_message(self):
+        l,t=self.mixed_chunk(1010,568,[[10,10,19,19]],[0,40,1000,540])
+        with self.assertRaisesRegex(InputError,r'figure chunk cannot fit even at the full-page view; crop or split the figure: mix$'): build_writing_camera_keys(l,t,compile_writing_units(l))
     def test_pixel_hash_ignores_encoding(self):
         import io; from PIL import Image
         im=Image.new('RGB',(3,2),(1,2,3)); a=io.BytesIO(); b=io.BytesIO(); im.save(a,'PNG'); im.save(b,'PNG',compress_level=0)
