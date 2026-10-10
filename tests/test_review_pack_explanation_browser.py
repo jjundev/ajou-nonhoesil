@@ -78,6 +78,12 @@ def test_all_published_explanation_articles(browser,number,width,theme):
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
         assert page.locator('#'+ident).is_visible()
         assert page.locator('#'+ident+' [data-explanation="solve"]').is_visible()
+        assert page.locator('#'+ident+' .equation-card').evaluate_all('''cards => cards.every(el => {
+            const style = getComputedStyle(el);
+            return parseFloat(style.borderTopWidth) >= 1 && parseFloat(style.paddingTop) >= 16
+                && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.overflowX === 'auto';
+        })''')
+        assert_explanation_section_gap(page, '#'+ident+' [data-explanation="understand"]')
         assert page.locator('.katex-error').count()==0
         assert page.locator('img').evaluate_all('(a)=>a.every(x=>x.complete&&x.naturalWidth>0)')
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -91,4 +97,55 @@ def test_all_published_explanations_without_js(browser,number):
     ctx=browser.new_context(java_script_enabled=False);page=ctx.new_page();page.goto(path.as_uri())
     assert page.locator('article.topic').count()==[12,14,15,12,19][number-1]
     assert page.locator('[data-explanation="verify"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
+    ctx.close()
+
+
+def assert_explanation_section_gap(page, selector):
+    spacing = page.locator(selector).evaluate('''el => {
+        const previous = el.previousElementSibling;
+        const heading = el.querySelector('.layer-title');
+        const style = getComputedStyle(el);
+        return {
+            gap: heading.getBoundingClientRect().top - previous.getBoundingClientRect().bottom,
+            margin: parseFloat(style.marginTop),
+            padding: parseFloat(style.paddingTop),
+            border: parseFloat(style.borderTopWidth)
+        };
+    }''')
+    assert spacing['gap'] >= 48, spacing
+    assert spacing['margin'] >= 24, spacing
+    assert spacing['padding'] >= 24, spacing
+    assert spacing['border'] >= 1, spacing
+
+
+@pytest.mark.parametrize('width', [375, 1280])
+@pytest.mark.parametrize('theme', ['light', 'dark'])
+def test_generated_explanation_separates_problem_from_first_instruction(browser, pages, width, theme):
+    ctx = browser.new_context(viewport=dict(width=width, height=900), color_scheme=theme)
+    page = ctx.new_page()
+    page.goto(pages['explanation_html'].as_uri() + '#q-mux-001')
+    assert_explanation_section_gap(page, '#q-mux-001 [data-explanation="understand"]')
+    note = Path(__file__).resolve().parents[1] / '복습노트/실험04/실험04_실험설명.html'
+    page.goto(note.as_uri())
+    assert page.locator('article.topic .layer.eli5').first.evaluate('el => parseFloat(getComputedStyle(el).marginTop)') == 0
+    ctx.close()
+
+
+@pytest.mark.parametrize('theme', ['light', 'dark'])
+def test_formula_card_scroll_does_not_turn_the_page(browser, theme):
+    root = Path(__file__).resolve().parents[1]
+    ctx = browser.new_context(viewport=dict(width=375, height=900), color_scheme=theme, has_touch=True)
+    page = ctx.new_page()
+    page.goto((root/'복습노트/실험03/실험03_문제설명.html').as_uri() + '#q-fa-design')
+    card = page.locator('#q-fa-design .equation-card').first
+    assert card.is_visible()
+    assert card.evaluate('el => el.scrollWidth > el.clientWidth')
+    card.evaluate('''el => {
+        el.dispatchEvent(new TouchEvent('touchstart', {bubbles:true, touches:[new Touch({identifier:1,target:el,clientX:300,clientY:200})]}));
+        el.dispatchEvent(new TouchEvent('touchend', {bubbles:true, changedTouches:[new Touch({identifier:1,target:el,clientX:100,clientY:200})]}));
+    }''')
+    assert page.evaluate('location.hash') == '#q-fa-design'
+    card.evaluate('el => el.scrollLeft = 60')
+    assert card.evaluate('el => el.scrollLeft') > 0
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
     ctx.close()

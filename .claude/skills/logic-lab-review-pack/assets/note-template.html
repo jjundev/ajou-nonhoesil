@@ -75,6 +75,8 @@
     /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
     .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
     .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
+    .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
     .layer > :first-child { margin-top: 0; }
     .layer > :last-child { margin-bottom: 0; }
     .layer-title { display: block; font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin-bottom: var(--s3); }
@@ -103,6 +105,10 @@
     .figure img { max-width: 100%; height: auto; }
     .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
     .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
+    .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
+    .equation-card .katex-display { margin: 0; text-align: left; }
+    .equation-card .katex-display > .katex { text-align: left; }
     .table-wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
     th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
@@ -749,7 +755,7 @@
       main.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         sx = t.clientX; sy = t.clientY;
-        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .katex-display, .table-wrap, svg, input, details'));
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .katex-display, .table-wrap, svg, input, details'));
       }, { passive: true });
       main.addEventListener('touchend', (e) => {
         if (skip) return;

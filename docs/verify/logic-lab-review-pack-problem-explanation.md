@@ -60,3 +60,21 @@ publish의 sibling 백업을 기존 테스트가 active pack으로 읽어 두 �
 두 건 각각 실패 재현 테스트를 실행하여 실제 실패를 확인한 뒤 수정하여 통과했다. 독립 블라인드 풀이를 실시한 것은 아니므로 각 팩의 independent 상태는 not_run을 유지한다. 리뷰에서 판단을 보류한 항목과 미해결 minor는 없다.
 
 최종 수정 후 전체 스위트: 433 passed in 64.26s. 5개 최종 팩 검사와 git diff --check도 통과했다.
+
+## 단락 간격 수정 (2026-10-10)
+
+`문제 읽기` 뒤에 오는 `.layer.eli5`에 첫 단락용 간격 제거 규칙이 적용되어 제목 위 간격이 0px이었다. 생성본의 375px/1280px × light/dark 회귀 검사에서 실제 간격 0px로 네 조건 모두 실패하는 것을 확인했다. 공통 note-template에 `.layer + .layer.eli5` 규칙을 추가해 위 여백 24px, 안쪽 여백 24px, 구분선 1px를 적용했다. 실험01~05의 저장 템플릿과 문제설명을 재생성하고, upstream provenance를 유지한 채 local_adjustments에 수정본 해시를 기록했다. 기존 실험설명/문제지/풀이/MD 내용은 변경하지 않았다.
+
+생성본 검사와 모든 72문항 × 네 화면 조건(288개)의 간격 검사를 자동화했다. 간격이 다시 사라지거나 구분선이 제거되면 실패한다. 검증 스킬 지침에도 같은 기준을 추가했다. 실제 실험설명의 첫 eli5 단락은 기존 여백 0px를 유지하는지 함께 확인한다. 첨부 이미지 문항(실험04 q-decoder)의 수정 화면은 `output/validation/problem-explanations/section-spacing-dark.png`에 보존했다.
+
+최종 검증: `check_pack` 다섯 팩 통과. 생성본 네 화면 조건과 발행본 288개 간격 검사 통과. `pytest -n4 -q` 전체 실행은 2883 passed, 1206 subtests passed, 9 skipped, 1 failed(70.11s). 유일한 실패는 변경하지 않은 `tests/test_merge_report.py::TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed`이며 단독 실행에서도 실패한다. 보고서 병합의 삭제 실패 경고 테스트이고 이번 HTML/CSS 변경과 무관하다. 22 warnings는 기존 Pillow deprecated API 경고 등이다. 검증 중 새 회귀 테스트의 실험설명 예제에 eli5 요소가 없었던 테스트 오류를 발견하여 실제 발행 실험설명으로 간격 보존을 검사하도록 수정했다. 최종 실행에서 문제설명 관련 실패는 없다. 기존 발행 HTML/MD/PDF 65개는 HEAD와 바이트 동일함을 확인했다. `git diff --check` 통과.
+
+## 수식 카드 수정 (2026-10-10)
+
+첨부 문항 `q-ha-design-eq`의 식 `S = x′y + xy′, C = xy (1)`이 일반 문단으로 표시되는 것을 확인했다. `equation_cards.py`에서 HTML 위치를 기록해 독립 수식 문단만 카드로 감싼다. 원래 문단의 텍스트·태그·LaTeX·식 번호를 그대로 보존하고, 설명 문장과 이미 만든 수식 카드는 건드리지 않는다. 문제 읽기와 저작 설명 모두 렌더링 시 적용하여 향후 생성에도 반영한다. 다섯 팩의 독립 수식 32개(14/2/2/7/7)를 분리했다. 배경·1px 테두리·16px 안쪽 여백·내부 가로 스크롤을 공통 템플릿에 추가하고 저장 템플릿 및 local_adjustments 해시를 동기화했다.
+
+일반식/블록 LaTeX/독립 inline LaTeX가 문제와 풀이 모두 카드가 되는지 RED(세 조건 카드 수 0)→GREEN을 확인했다. 원래 문장·기존 카드가 보존되는 검사도 통과했다. 모바일 긴 수식의 터치 제스처가 다음 문제로 넘기는 문제를 추가로 재현하여(두 theme 모두 hash 변경) 카드 내부는 페이지 넘기기에서 제외했고 두 조건 모두 통과했다. 전체 문항 화면 검사에서 카드 테두리·배경·여백·스크롤 스타일을 검사한다. 기존 간격 회귀 검사도 유지한다.
+
+다섯 팩 check_pack 통과. 기존 발행 HTML/MD/PDF 65개는 HEAD와 바이트 동일하다. 원문 PDF와 문제지의 수식은 변경하지 않았다. 첨부 문항의 dark 1280px 및 light 375px 화면을 `output/validation/problem-explanations/equation-card-*.png`에 보존하고 시각 확인했다. 저작 및 검증 지침에 독립 수식 문단과 카드/스크롤 기준을 추가했다.
+
+최종 전체 실행 `pytest -n4 -q`: 2889 passed, 1206 subtests passed, 9 skipped, 1 failed(60.34s). 유일한 실패는 앞서 독립 재현한 기존 `TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed`이며 수식/간격/브라우저 관련 검사는 모두 통과했다. `git diff --check` 통과.

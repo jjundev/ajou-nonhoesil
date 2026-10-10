@@ -53,3 +53,35 @@ def test_future_workbook_build_includes_explanations(tmp_path):
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
     for label in ('실험설명','기출문제','기출풀이','문제설명'):
         for ext in ('html','md'):assert (tmp_path/'stage'/f'실험04_{label}.{ext}').is_file()
+
+
+@pytest.mark.parametrize('equation', [
+    '<p>S = x′y + xy′,  C = xy  (1)</p>',
+    '<p>$$Y=\\overline{S}I_0+SI_1$$</p>',
+    '<p>$R_{p(on)} = \\dfrac{V_{DD}-V_{OHmin}}{|I_{OHmax}|}$</p>',
+])
+def test_standalone_equations_are_cards_in_problem_and_solution(tmp_path, equation):
+    m, root, data = setup(tmp_path)
+    folder = tmp_path / 'stage'; folder.mkdir()
+    data['problems'][0]['html']['original'] = '<p>식을 보고 회로를 그려요.</p>' + equation
+    fragment = root / m['problems'][0]['explanation_fragment']
+    fragment.write_text(FRAGMENT.replace('<p>Y=I0예요.</p>', equation))
+    paths = write_explanations(m, data, root, folder, ASSETS)
+    parser = Parser(); parser.feed(paths['explanation_html'].read_text())
+    cards = [n for n in parser.root.walk() if 'equation-card' in n.attrs.get('class', '').split()]
+    assert len(cards) == 2
+    assert all(n.attrs.get('aria-label') == '수식' for n in cards)
+    assert equation in paths['explanation_html'].read_text()
+    assert '식을 보고 회로를 그려요.' in paths['explanation_md'].read_text()
+
+
+def test_equation_cards_keep_prose_and_do_not_nest(tmp_path):
+    m, root, data = setup(tmp_path)
+    folder = tmp_path / 'stage'; folder.mkdir()
+    prose = '<p>S=0이면 I0를 선택해요.</p>'
+    card = '<div class="equation-card" role="group" aria-label="수식"><p>Y=I0</p></div>'
+    data['problems'][0]['html']['original'] = prose + card
+    paths = write_explanations(m, data, root, folder, ASSETS)
+    html = paths['explanation_html'].read_text()
+    assert prose in html
+    assert html.count('class="equation-card"') == 1
