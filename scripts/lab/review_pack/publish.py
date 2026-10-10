@@ -15,6 +15,10 @@ def publish(stage,destination,root):
     errors=check_pack(stage)
     if errors:raise ValueError('\n'.join(errors))
     data=load_manifest(stage/DATA/'manifest.json')
+    if data.get('problem_explanation_version')==1:
+        checks=data['explanation_checks']
+        if checks['source_visual']!='pass' or checks['content'] not in {'pass','self_review'} or checks['browser']!='pass':
+            raise ValueError('문제설명 검토: 원문·내용·브라우저 확인이 필요합니다')
     if data.get('review_presentation_version')==2:
         from .workbook_figures import check_redrawn_figures
         errors=check_redrawn_figures(stage,data,require_review=True)

@@ -60,3 +60,18 @@ def test_real_note_smoke(tmp_path):
         pytest.skip("실험05 없음")
     assert sn.main(["실험05", "--out", str(tmp_path)]) == 0
     assert (tmp_path / "실험05_실험설명_standalone.html").exists()
+
+
+def test_sibling_links_with_current_page_attributes(note):
+    src = note/'실험99_실험설명.html'
+    src.write_text(src.read_text().replace('<a href="실험99_기출풀이.html">',
+        '<a class="document" aria-current="page" href="실험99_기출풀이.html">'))
+    result = sn.build(note, '실험설명')
+    assert sn.leftovers(result) == []
+    assert '<span class="document" aria-current="page">풀이</span>' in result
+
+
+def test_standalone_keeps_topic_hash_links(note):
+    src = note/'실험99_실험설명.html'
+    src.write_text(src.read_text().replace('</body>', '<a href="#t-start">토픽</a></body>'))
+    assert '<a href="#t-start">토픽</a>' in sn.build(note, '실험설명')

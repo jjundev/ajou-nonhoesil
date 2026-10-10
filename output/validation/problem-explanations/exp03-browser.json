@@ -1,0 +1,306 @@
+{
+  "folder": "/Users/hyunjun_macbook_pro/.codex/worktrees/problem-explanations/논회실/복습노트/실험03",
+  "checks": [
+    {
+      "id": "q-ha-table",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-design-eq",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-design-ic",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-cs-roles",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-lsb",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-adder-diff",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-fa-table",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-fa-design",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-hs-bool",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-hs-circuit",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sub-diff",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-table",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-equation",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-roles",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-cs-roles-sub",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-table",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-design-eq",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-design-ic",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cs-roles",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-lsb",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-adder-diff",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fa-table",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fa-design",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-hs-bool",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-hs-circuit",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sub-diff",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-table",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-equation",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-roles",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cs-roles-sub",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-table",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-design-eq",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-design-ic",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-cs-roles",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-lsb",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-adder-diff",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-fa-table",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-fa-design",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-hs-bool",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-hs-circuit",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sub-diff",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-table",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-equation",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-fs-roles",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-cs-roles-sub",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-ha-table",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-design-eq",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-design-ic",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cs-roles",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-ha-lsb",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-adder-diff",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fa-table",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fa-design",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-hs-bool",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-hs-circuit",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sub-diff",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-table",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-equation",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-fs-roles",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cs-roles-sub",
+      "width": 1280,
+      "theme": "dark"
+    }
+  ],
+  "no_js": "pass"
+}

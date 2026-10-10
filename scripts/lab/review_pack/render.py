@@ -9,6 +9,7 @@ from .manifest import validate_manifest, output_names, DATA, link_data
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata
+from .navigation import render_navigation
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -79,14 +80,11 @@ def assemble(manifest,run,out,assets):
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
     for kind,body in ([('note',note)] if workbook else [('note',note),('review',review)]):
-        nav=f'<a href="{names["note_html"]}">실험 설명</a><a href="{names["review_html"]}">기출 풀이</a>'
-        if workbook: nav+=f'<a href="{names["question_html"]}">기출 문제</a>'
-        # Biology's pager expands section links into article links itself.
-        nav+='<a href="#learning">'+('실험 이해' if kind=='note' else '문제와 풀이')+'</a>'
+        navigation=render_navigation(names,kind,manifest['topics'] if kind=='note' else [p for p in manifest['problems'] if p['status']=='included'])
         text=(assets/f'{kind}-template.html').read_text(encoding='utf-8')
         title=f'실험 {manifest["experiment"]} · {esc(manifest["title"])} · '+('실험 설명' if kind=='note' else '기출 풀이')
         content='<section id="learning"><h2>'+('실험 이해' if kind=='note' else '문제와 풀이')+'</h2>'+'\n'.join(body)+'</section>'
-        values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,TOC=nav,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS=f'<script src="{DATA}/assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
+        values=dict(PAGE_TITLE=title,DESCRIPTION=status,BRAND='실험 설명',TITLE=title,**navigation,SUBTITLE=status,INTRO=status,SECTIONS=content,PARTS=content,FOOTER='출처와 문항목록.md에서 판본·분류·미해결 사항을 확인하세요.',SCRIPTS=f'<script src="{DATA}/assets/widgets.js"></script>',RANGE=f'logic-lab-{manifest["experiment"]:02d}',NOTE_HREF=names['note_html'])
         if kind=='note' and manifest.get('note_presentation_version')==2:
             values['FOOTER']=''
         for key,val in values.items():
@@ -106,6 +104,10 @@ def assemble(manifest,run,out,assets):
             path.write_text(render_workbook_html(data,assets),encoding='utf-8')
             paths[key+'_html']=path
             paths[key+'_md']=write_workbook_md(data,manifest,out/names[key+'_md'])
+    if manifest.get('problem_explanation_version')==1:
+        from .explanation_render import write_explanations
+        from .workbook_render import read_workbook_payload
+        paths.update(write_explanations(manifest,read_workbook_payload(paths['question_html']),run,out,assets))
     audit=['# 출처와 문항목록','',f'판본 상태: {status}','']
     for p in manifest['problems']:
         audit.extend([f'## {p["id"]} · {KINDS[p["kind"]]}',f'- 분류: {p["status"]} / 범위: {p["scope"]}',f'- 사유: {p["reason"]}',f'- 대표 문항: {p.get("duplicate_of")}',f'- 제공 답안: {p.get("given_answer")}',f'- 도출 답안: {p.get("derived_answer")} / {ANSWERS[p["answer_status"]]}'])

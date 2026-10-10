@@ -1,0 +1,246 @@
+{
+  "folder": "/Users/hyunjun_macbook_pro/.codex/worktrees/problem-explanations/논회실/tmp/review-pack/explain-01-final",
+  "checks": [
+    {
+      "id": "q-tt3-4row",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-switching",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demorgan",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-deq",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-nand3",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-switching",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demorgan",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-deq",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nand3",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-switching",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demorgan",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-deq",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-nand3",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-switching",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demorgan",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-deq",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nand3",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 1280,
+      "theme": "dark"
+    }
+  ],
+  "no_js": "pass"
+}

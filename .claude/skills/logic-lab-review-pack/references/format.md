@@ -38,3 +38,11 @@ not_selected/held에는 selection_reason이 필요하다. manifest에서도 미�
 문제 fragment에는 div.problem이 정확히 하나 있어야 한다. 답 노출 원문은 details.original/solution 안에만 두고 hint에 넣지 않는다.
 답 노출 그림은 details의 summary에 넣지 않고 open 속성 없이 시작한다. srcset 후보와 스타일 URL도 답 노출 검사 대상이다.
 evidence/와 인덱스·안내는 build의 generated_files에 포함한다(발행본에서는 `자료/evidence/`, `자료/authoring-index.json`, 루트의 원문과_저작안내.md). 템플릿을 수정해 출처 검사를 우회하지 않는다.
+
+## 문제설명 표시 계약 v1
+
+schema_version=1 유지. problem_explanation_version=1은 선택적이며 review_presentation_version=2가 필요하다. 활성 시 included 문항의 explanation_fragment는 정확히 problem-explanations/<문항ID>.html이다. 다른 status 문항은 설명을 요구하지 않는다. 문제지 payload와 ID·번호·제목·순서가 정확히 일치해야 한다.
+
+explanation_checks는 source_visual/content/independent/browser 네 키를 가지며 값은 pass/fail/not_run/self_review다. 기존 checks와 별도이고 신규 또는 내용 변경 시 not_run부터 시작한다. publish에는 source_visual=pass, content=pass 또는 self_review, browser=pass가 필요하다. independent는 실제 수행 상태 그대로 기록한다. 기존 답안 상태는 자동으로 바꾸지 않는다.
+
+새 생성 파일/설명 조각/그림/검증 기록을 generated_files에 넣는다. stage의 실제 파일 집합과 같아야 하고 사용자 파일은 편입하지 않는다. 기본 파일명은 실험NN_문제설명.html/.md이다. optional version이 없는 팩에는 설명을 강제하지 않는다.

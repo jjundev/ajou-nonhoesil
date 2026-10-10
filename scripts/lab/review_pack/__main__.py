@@ -15,16 +15,19 @@ from .bank_provenance import check_bank_import
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     sub=parser.add_subparsers(dest='command',required=True)
-    for cmd in ('sources','import-bank','build','check','publish','rerender'):
+    for cmd in ('sources','import-bank','build','check','publish','rerender','explain-stage'):
         p=sub.add_parser(cmd)
-        if cmd not in {'check','rerender'}:p.add_argument('--root',type=Path,required=True)
+        if cmd not in {'check','rerender','explain-stage'}:p.add_argument('--root',type=Path,required=True)
         if cmd in {'sources','publish'}:p.add_argument('--experiment',type=int,required=True)
         if cmd in {'build','publish'}:p.add_argument('--stage',type=Path,required=True)
         if cmd=='build':p.add_argument('--run',type=Path,required=True)
         if cmd=='import-bank':
             p.add_argument('--bank',type=Path,required=True)
             p.add_argument('--run',type=Path,required=True)
-        if cmd in {'check','rerender'}:p.add_argument('--folder',type=Path,required=True)
+        if cmd in {'check','rerender','explain-stage'}:p.add_argument('--folder',type=Path,required=True)
+        if cmd=='explain-stage':
+            p.add_argument('--author-root',type=Path,required=True)
+            p.add_argument('--stage',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
         if args.command=='sources':
@@ -48,6 +51,9 @@ def main(argv=None):
             errors=check_pack(args.stage)
             if errors:raise ValueError('\n'.join(errors))
             print(args.stage)
+        elif args.command=='explain-stage':
+            from .explanation_stage import prepare_explanation_stage
+            print(prepare_explanation_stage(args.folder,args.author_root,args.stage))
         elif args.command=='check':
             errors=check_pack(args.folder)
             if errors:raise ValueError('\n'.join(errors))

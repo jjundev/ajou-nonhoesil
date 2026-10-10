@@ -149,7 +149,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "디코더와 인코더가 하는 일을 먼저 살펴봐요",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
       "requires": [],
       "sources": [
         {
@@ -171,10 +171,30 @@
           "source_id": "s-130a964ad2ce2dbf",
           "pdf_page": null,
           "printed_page": null
+        },
+        {
+          "source_id": "s-977902e67f269bac",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-977902e67f269bac",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-977902e67f269bac",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-977902e67f269bac",
+          "pdf_page": 11,
+          "printed_page": null
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "판본 기록: 교안 표지는 25-1이에요. 수행 범위는 9월 14일 공지의 실험 1-2·2-2예요. 그림은 교안 p3·p5의 설명을 바탕으로 직접 다시 그렸어요."
+      "md_notes": "판본 기록: 교안 표지는 25-1이에요. 수행 범위는 9월 14일 공지의 실험 1-2·2-2예요. 그림은 교안 p3·p5의 설명을 바탕으로 직접 다시 그렸어요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
     },
     {
       "id": "t-basics",
@@ -434,7 +454,8 @@
       "derived_answer": "A=k이면 Dk만 1 (000→D0, …, 111→D7)",
       "answer_status": "verified",
       "title": "3×8 디코더의 진리표",
-      "workbook_fragment": "workbook/q-dec3x8.json"
+      "workbook_fragment": "workbook/q-dec3x8.json",
+      "explanation_fragment": "problem-explanations/q-dec3x8.html"
     },
     {
       "id": "q-prio-onehot",
@@ -498,7 +519,8 @@
       "derived_answer": "Dk→k의 3비트 이진수 (D0→000, …, D7→111)",
       "answer_status": "verified",
       "title": "8×3 우선순위 인코더 — 한 줄만 켜진 입력",
-      "workbook_fragment": "workbook/q-prio-onehot.json"
+      "workbook_fragment": "workbook/q-prio-onehot.json",
+      "explanation_fragment": "problem-explanations/q-prio-onehot.html"
     },
     {
       "id": "q-prio-exam",
@@ -526,7 +548,8 @@
       "derived_answer": "0011 1010→101, 0101 1110→110, 0001 1101→100, 0110 0100→110, 1111 1111→111 (번호가 큰 입력 우선)",
       "answer_status": "verified",
       "title": "8×3 우선순위 인코더 — 여러 비트가 켜진 입력",
-      "workbook_fragment": "workbook/q-prio-exam.json"
+      "workbook_fragment": "workbook/q-prio-exam.json",
+      "explanation_fragment": "problem-explanations/q-prio-exam.html"
     },
     {
       "id": "q-prio-behavior",
@@ -659,7 +682,8 @@
       "derived_answer": "O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0",
       "answer_status": "verified",
       "title": "2×4 디코더의 게이트 설계",
-      "workbook_fragment": "workbook/q-dec2x4-design.json"
+      "workbook_fragment": "workbook/q-dec2x4-design.json",
+      "explanation_fragment": "problem-explanations/q-dec2x4-design.html"
     },
     {
       "id": "q-enc4x2-design",
@@ -732,7 +756,8 @@
       "derived_answer": "A=D2+D3, B=D1+D3 (NOT 4, 4입력 NAND 3, 2입력 NAND 2)",
       "answer_status": "verified",
       "title": "4×2 인코더의 NAND 설계",
-      "workbook_fragment": "workbook/q-enc4x2-design.json"
+      "workbook_fragment": "workbook/q-enc4x2-design.json",
+      "explanation_fragment": "problem-explanations/q-enc4x2-design.html"
     },
     {
       "id": "q-excess3-why",
@@ -805,7 +830,8 @@
       "derived_answer": "십진 한 자리 BCD+3; 비트 반전=9의 보수; 0000 미사용",
       "answer_status": "verified",
       "title": "Excess-3 코드의 특징과 사용 이유",
-      "workbook_fragment": "workbook/q-excess3-why.json"
+      "workbook_fragment": "workbook/q-excess3-why.json",
+      "explanation_fragment": "problem-explanations/q-excess3-why.html"
     },
     {
       "id": "q-excess3-enc-exam",
@@ -833,7 +859,8 @@
       "derived_answer": "000001→0011, 000100→0101, 010000→0111, 100000→1000",
       "answer_status": "verified",
       "title": "Excess-3 인코더 회로의 진리표(네 행)",
-      "workbook_fragment": "workbook/q-excess3-enc-exam.json"
+      "workbook_fragment": "workbook/q-excess3-enc-exam.json",
+      "explanation_fragment": "problem-explanations/q-excess3-enc-exam.html"
     },
     {
       "id": "q-excess3-enc-6row",
@@ -897,7 +924,8 @@
       "derived_answer": "000001→0011, 000010→0100, 000100→0101, 001000→0110, 010000→0111, 100000→1000",
       "answer_status": "verified",
       "title": "Excess-3 인코더 회로의 진리표(여섯 행)",
-      "workbook_fragment": "workbook/q-excess3-enc-6row.json"
+      "workbook_fragment": "workbook/q-excess3-enc-6row.json",
+      "explanation_fragment": "problem-explanations/q-excess3-enc-6row.html"
     },
     {
       "id": "q-1of4-excess3",
@@ -943,7 +971,8 @@
       "derived_answer": "1000→0011, 0100→0100, 0010→0101",
       "answer_status": "verified",
       "title": "1-out-of-4 코드를 Excess-3로 변환",
-      "workbook_fragment": "workbook/q-1of4-excess3.json"
+      "workbook_fragment": "workbook/q-1of4-excess3.json",
+      "explanation_fragment": "problem-explanations/q-1of4-excess3.html"
     },
     {
       "id": "q-1of4-excess3-graded",
@@ -1023,7 +1052,8 @@
       "derived_answer": "동시 입력 시 Binary는 잘못된 코드, Priority는 우선순위가 높은 입력의 코드",
       "answer_status": "verified",
       "title": "우선순위 인코더와 Binary 인코더의 비교",
-      "workbook_fragment": "workbook/q-prio-vs-binary.json"
+      "workbook_fragment": "workbook/q-prio-vs-binary.json",
+      "explanation_fragment": "problem-explanations/q-prio-vs-binary.html"
     },
     {
       "id": "q-demux-from-dec",
@@ -1069,7 +1099,8 @@
       "derived_answer": "AND를 3입력으로 바꾸고 D 연결: Y0=S1′S0′D, Y1=S1′S0D, Y2=S1S0′D, Y3=S1S0D",
       "answer_status": "verified",
       "title": "디코더 회로로 1 to 4 디멀티플렉서 만들기",
-      "workbook_fragment": "workbook/q-demux-from-dec.json"
+      "workbook_fragment": "workbook/q-demux-from-dec.json",
+      "explanation_fragment": "problem-explanations/q-demux-from-dec.html"
     },
     {
       "id": "q-demux-from-dec-graded",
@@ -1097,7 +1128,8 @@
       "derived_answer": "AND 3입력+D 연결; 차이: 데이터 입력 D의 유무, D=1이면 디코더와 같음",
       "answer_status": "verified",
       "title": "디코더로 DMUX 만들기와 두 회로의 차이",
-      "workbook_fragment": "workbook/q-demux-from-dec-graded.json"
+      "workbook_fragment": "workbook/q-demux-from-dec-graded.json",
+      "explanation_fragment": "problem-explanations/q-demux-from-dec-graded.html"
     },
     {
       "id": "q-74hc148-table",
@@ -1143,7 +1175,8 @@
       "derived_answer": "둘째 행 LLH, 셋째 행 LLL",
       "answer_status": "verified",
       "title": "74HC148 우선순위 인코더의 진리표",
-      "workbook_fragment": "workbook/q-74hc148-table.json"
+      "workbook_fragment": "workbook/q-74hc148-table.json",
+      "explanation_fragment": "problem-explanations/q-74hc148-table.html"
     },
     {
       "id": "q-quiz-dec2x4-table",
@@ -1189,7 +1222,8 @@
       "derived_answer": "00→D4, 10→D3, 01→D2, 11→D1만 1",
       "answer_status": "verified",
       "title": "2×4 디코더 회로의 진리표",
-      "workbook_fragment": "workbook/q-quiz-dec2x4-table.json"
+      "workbook_fragment": "workbook/q-quiz-dec2x4-table.json",
+      "explanation_fragment": "problem-explanations/q-quiz-dec2x4-table.html"
     },
     {
       "id": "q-quiz-excess3-merit",
@@ -1385,7 +1419,8 @@
       "derived_answer": "n비트 코드를 2ⁿ개 중 한 줄 활성화",
       "answer_status": "verified",
       "title": "Decoder를 설명",
-      "workbook_fragment": "workbook/q-sa-decoder-def.json"
+      "workbook_fragment": "workbook/q-sa-decoder-def.json",
+      "explanation_fragment": "problem-explanations/q-sa-decoder-def.html"
     },
     {
       "id": "q-sa-encoder-def",
@@ -1413,7 +1448,8 @@
       "derived_answer": "2ⁿ개 입력 중 활성 입력 위치를 n비트 코드로",
       "answer_status": "verified",
       "title": "Encoder를 설명",
-      "workbook_fragment": "workbook/q-sa-encoder-def.json"
+      "workbook_fragment": "workbook/q-sa-encoder-def.json",
+      "explanation_fragment": "problem-explanations/q-sa-encoder-def.html"
     },
     {
       "id": "q-sa-dec3x8",
@@ -1465,7 +1501,8 @@
       "derived_answer": "Dk→k의 3비트 이진수",
       "answer_status": "verified",
       "title": "8×3 인코더 진리표",
-      "workbook_fragment": "workbook/q-sa-enc8x3.json"
+      "workbook_fragment": "workbook/q-sa-enc8x3.json",
+      "explanation_fragment": "problem-explanations/q-sa-enc8x3.html"
     },
     {
       "id": "q-sa-prio-why",
@@ -1494,7 +1531,8 @@
       "derived_answer": "동시 입력 충돌 해결: 우선순위가 높은 입력 선택",
       "answer_status": "verified",
       "title": "Priority Encoder의 사용 이유",
-      "workbook_fragment": "workbook/q-sa-prio-why.json"
+      "workbook_fragment": "workbook/q-sa-prio-why.json",
+      "explanation_fragment": "problem-explanations/q-sa-prio-why.html"
     },
     {
       "id": "q-sa-dec2x4-table",
@@ -1618,19 +1656,30 @@
       "derived_answer": "A0~A2 데이터 출력, GS Priority Flag, EO Enable 출력",
       "answer_status": "verified",
       "title": "우선순위 인코더 IC의 출력 핀",
-      "workbook_fragment": "workbook/q-sa-74hc143.json"
+      "workbook_fragment": "workbook/q-sa-74hc143.json",
+      "explanation_fragment": "problem-explanations/q-sa-74hc143.html"
     }
   ],
   "checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "pass",
+    "independent": "not_run",
     "browser": "pass"
   },
   "note_presentation_version": 2,
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험05_기출문제.html",
+    "실험05_기출문제.md",
+    "실험05_기출풀이.html",
+    "실험05_기출풀이.md",
+    "실험05_문제설명.html",
+    "실험05_문제설명.md",
+    "실험05_실험설명.html",
+    "실험05_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1793,14 +1842,33 @@
     "자료/figures/solutions/q-enc4x2-design-solution-01.png",
     "자료/figures/solutions/q-enc4x2-design-solution-01.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험05_기출문제.html",
-    "실험05_기출문제.md",
-    "실험05_기출풀이.html",
-    "실험05_기출풀이.md",
-    "실험05_실험설명.html",
-    "실험05_실험설명.md",
-    "원문과_저작안내.md",
+    "자료/problem-explanations/q-1of4-excess3.html",
+    "자료/problem-explanations/q-74hc148-table.html",
+    "자료/problem-explanations/q-dec2x4-design.html",
+    "자료/problem-explanations/q-dec3x8.html",
+    "자료/problem-explanations/q-demux-from-dec-graded.html",
+    "자료/problem-explanations/q-demux-from-dec.html",
+    "자료/problem-explanations/q-enc4x2-design.html",
+    "자료/problem-explanations/q-excess3-enc-6row.html",
+    "자료/problem-explanations/q-excess3-enc-exam.html",
+    "자료/problem-explanations/q-excess3-why.html",
+    "자료/problem-explanations/q-prio-exam.html",
+    "자료/problem-explanations/q-prio-onehot.html",
+    "자료/problem-explanations/q-prio-vs-binary.html",
+    "자료/problem-explanations/q-quiz-dec2x4-table.html",
+    "자료/problem-explanations/q-sa-74hc143.html",
+    "자료/problem-explanations/q-sa-decoder-def.html",
+    "자료/problem-explanations/q-sa-enc8x3.html",
+    "자료/problem-explanations/q-sa-encoder-def.html",
+    "자료/problem-explanations/q-sa-prio-why.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
-  ]
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
 }

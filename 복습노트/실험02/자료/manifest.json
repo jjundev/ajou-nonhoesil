@@ -92,7 +92,7 @@
     {
       "id": "s-406ef36195bcd5e2",
       "path": "보고서/실험02/결선도/netlist.md",
-      "sha256": "16104b31b23c79f776ac0f5f58c814cbed64ad45adc98261649ef6fbc8ccb3e3",
+      "sha256": "333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b1f50f61b2ca857f",
       "kind": "record",
       "edition": "current"
     }
@@ -100,7 +100,7 @@
   "topics": [
     {
       "id": "t-start",
-      "title": "전체 흐름을 먼저 살펴봐요",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
       "requires": [],
       "sources": [
         {
@@ -122,10 +122,25 @@
           "source_id": "s-130a964ad2ce2dbf",
           "pdf_page": null,
           "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 11,
+          "printed_page": null
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "판본 기록: 배포 교안(12쪽) 표지는 25-1이에요. 이번 학기 수행 범위는 2026-09-14 공지의 실험 1-1·1-2이고 교안 실험 2(12쪽)는 하지 않아요. 기출 파일명 2016-1의 시험지 머리글은 “2016-2학기 … 실험 3”이라 학기·번호가 서로 달라요."
+      "md_notes": "판본 기록: 배포 교안(12쪽) 표지는 25-1이에요. 이번 학기 수행 범위는 2026-09-14 공지의 실험 1-1·1-2이고 교안 실험 2(12쪽)는 하지 않아요. 기출 파일명 2016-1의 시험지 머리글은 “2016-2학기 … 실험 3”이라 학기·번호가 서로 달라요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
     },
     {
       "id": "t-levels",
@@ -316,7 +331,8 @@
       "derived_answer": "t₁ 이전 입력 Low(출력 High), t₁~t₂ Abnormal, t₂ 이후 입력 High(출력 Low); 경계는 입력이 1.5 V, 3.5 V를 지나는 시각",
       "answer_status": "disputed",
       "title": "입력 전압 구간 표시하기",
-      "workbook_fragment": "workbook/q-region.json"
+      "workbook_fragment": "workbook/q-region.json",
+      "explanation_fragment": "problem-explanations/q-region.html"
     },
     {
       "id": "q-params-4",
@@ -371,7 +387,8 @@
       "derived_answer": "V_{OHmin} / V_{IHmin} / V_{ILmax} / V_{OLmax} 의 교안 정의",
       "answer_status": "verified",
       "title": "CMOS 주요 파라미터 네 가지",
-      "workbook_fragment": "workbook/q-params-4.json"
+      "workbook_fragment": "workbook/q-params-4.json",
+      "explanation_fragment": "problem-explanations/q-params-4.html"
     },
     {
       "id": "q-params-2017",
@@ -408,7 +425,8 @@
       "derived_answer": "V_{OHmin} / V_{ILmax} 의 교안 정의",
       "answer_status": "verified",
       "title": "CMOS 주요 파라미터 (VOHmin, VILmax)",
-      "workbook_fragment": "workbook/q-params-2017.json"
+      "workbook_fragment": "workbook/q-params-2017.json",
+      "explanation_fragment": "problem-explanations/q-params-2017.html"
     },
     {
       "id": "q-params-2016",
@@ -436,7 +454,8 @@
       "derived_answer": "V_{IHmin} / V_{OLmax} 의 교안 정의",
       "answer_status": "verified",
       "title": "CMOS 주요 파라미터 (VIHmin, VOLmax)",
-      "workbook_fragment": "workbook/q-params-2016.json"
+      "workbook_fragment": "workbook/q-params-2016.json",
+      "explanation_fragment": "problem-explanations/q-params-2016.html"
     },
     {
       "id": "q-schmitt-noise",
@@ -536,7 +555,8 @@
       "derived_answer": "문턱이 V_T+와 V_T−로 둘이고 그 사이에서는 출력이 직전 값을 유지해서 잡음에 덜 민감함",
       "answer_status": "verified",
       "title": "Schmitt-trigger가 잡음에 덜 민감한 이유",
-      "workbook_fragment": "workbook/q-schmitt-noise.json"
+      "workbook_fragment": "workbook/q-schmitt-noise.json",
+      "explanation_fragment": "problem-explanations/q-schmitt-noise.html"
     },
     {
       "id": "q-schmitt-waveform",
@@ -609,7 +629,8 @@
       "derived_answer": "인버터: V_T=2.5 지날 때마다 뒤집혀 12번; Schmitt: High 시작, 첫 V_T+ 돌파에서 Low, 마지막 V_T− 하향 돌파에서 High (2번)",
       "answer_status": "verified",
       "title": "같은 입력에 대한 인버터와 Schmitt 출력",
-      "workbook_fragment": "workbook/q-schmitt-waveform.json"
+      "workbook_fragment": "workbook/q-schmitt-waveform.json",
+      "explanation_fragment": "problem-explanations/q-schmitt-waveform.html"
     },
     {
       "id": "q-rprn-effect",
@@ -673,7 +694,8 @@
       "derived_answer": "켜진 저항에서 전압이 떨어져 V_OH = V_DD − |I_OH|·Rp, V_OL = I_OL·Rn; 저항이 작을수록 출력 레벨이 좋음",
       "answer_status": "verified",
       "title": "Rp와 Rn이 출력에 미치는 영향",
-      "workbook_fragment": "workbook/q-rprn-effect.json"
+      "workbook_fragment": "workbook/q-rprn-effect.json",
+      "explanation_fragment": "problem-explanations/q-rprn-effect.html"
     },
     {
       "id": "q-rp-derive",
@@ -719,7 +741,8 @@
       "derived_answer": "R_p(on) = (V_DD − V_OHmin) / |I_OHmax|",
       "answer_status": "verified",
       "title": "Rp 값 유도",
-      "workbook_fragment": "workbook/q-rp-derive.json"
+      "workbook_fragment": "workbook/q-rp-derive.json",
+      "explanation_fragment": "problem-explanations/q-rp-derive.html"
     },
     {
       "id": "q-rp-derive-current",
@@ -783,7 +806,8 @@
       "derived_answer": "입력 Low: VCC→Rp→부하 sourcing, R_p(on) = (V_DD − V_OHmin)/|I_OHmax|",
       "answer_status": "verified",
       "title": "Rp 유도: 입력 level별 전류 흐름",
-      "workbook_fragment": "workbook/q-rp-derive-current.json"
+      "workbook_fragment": "workbook/q-rp-derive-current.json",
+      "explanation_fragment": "problem-explanations/q-rp-derive-current.html"
     },
     {
       "id": "q-rn-derive",
@@ -838,7 +862,8 @@
       "derived_answer": "입력 High: 부하→Rn→GND sinking, R_n(on) = V_OLmax / I_OLmax",
       "answer_status": "verified",
       "title": "Rn 유도: 입력 level별 전류 흐름",
-      "workbook_fragment": "workbook/q-rn-derive.json"
+      "workbook_fragment": "workbook/q-rn-derive.json",
+      "explanation_fragment": "problem-explanations/q-rn-derive.html"
     },
     {
       "id": "q-prop-delay",
@@ -902,7 +927,8 @@
       "derived_answer": "capacitive load와 저항(RC)으로 충·방전에 시간이 걸려서",
       "answer_status": "verified",
       "title": "전달 지연이 나타나는 이유",
-      "workbook_fragment": "workbook/q-prop-delay.json"
+      "workbook_fragment": "workbook/q-prop-delay.json",
+      "explanation_fragment": "problem-explanations/q-prop-delay.html"
     },
     {
       "id": "q-delay-transition",
@@ -939,7 +965,8 @@
       "derived_answer": null,
       "answer_status": "unresolved",
       "title": "전달 지연과 천이 시간 (묶음)",
-      "workbook_fragment": "workbook/q-delay-transition.json"
+      "workbook_fragment": "workbook/q-delay-transition.json",
+      "explanation_fragment": "problem-explanations/q-delay-transition.html"
     },
     {
       "id": "q-transition",
@@ -994,7 +1021,8 @@
       "derived_answer": null,
       "answer_status": "unresolved",
       "title": "천이 시간이 H→L과 L→H에서 다른 이유",
-      "workbook_fragment": "workbook/q-transition.json"
+      "workbook_fragment": "workbook/q-transition.json",
+      "explanation_fragment": "problem-explanations/q-transition.html"
     },
     {
       "id": "q-speed",
@@ -1049,7 +1077,8 @@
       "derived_answer": null,
       "answer_status": "unresolved",
       "title": "동작속도를 정하는 두 요소",
-      "workbook_fragment": "workbook/q-speed.json"
+      "workbook_fragment": "workbook/q-speed.json",
+      "explanation_fragment": "problem-explanations/q-speed.html"
     },
     {
       "id": "q-region-graded",
@@ -1110,6 +1139,16 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험02_기출문제.html",
+    "실험02_기출문제.md",
+    "실험02_기출풀이.html",
+    "실험02_기출풀이.md",
+    "실험02_문제설명.html",
+    "실험02_문제설명.md",
+    "실험02_실험설명.html",
+    "실험02_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1284,14 +1323,28 @@
     "자료/figures/solutions/q-transition-solution-01.svg",
     "자료/figures/timing.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험02_기출문제.html",
-    "실험02_기출문제.md",
-    "실험02_기출풀이.html",
-    "실험02_기출풀이.md",
-    "실험02_실험설명.html",
-    "실험02_실험설명.md",
-    "원문과_저작안내.md",
+    "자료/problem-explanations/q-delay-transition.html",
+    "자료/problem-explanations/q-params-2016.html",
+    "자료/problem-explanations/q-params-2017.html",
+    "자료/problem-explanations/q-params-4.html",
+    "자료/problem-explanations/q-prop-delay.html",
+    "자료/problem-explanations/q-region.html",
+    "자료/problem-explanations/q-rn-derive.html",
+    "자료/problem-explanations/q-rp-derive-current.html",
+    "자료/problem-explanations/q-rp-derive.html",
+    "자료/problem-explanations/q-rprn-effect.html",
+    "자료/problem-explanations/q-schmitt-noise.html",
+    "자료/problem-explanations/q-schmitt-waveform.html",
+    "자료/problem-explanations/q-speed.html",
+    "자료/problem-explanations/q-transition.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
-  ]
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
 }

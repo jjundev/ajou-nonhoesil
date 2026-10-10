@@ -3,5 +3,11 @@
   "sha256": {
     "note-template.html": "505ac9bf934fd0fe553f221abc75d1acc7d18fc5825c56f75677b95b901f15fc",
     "review-template.html": "eac88787bc99b12129d428181681059a46d1fb64b52b41436a9c11cbb138c6cb"
+  },
+  "local_adjustments": {
+    "note-template.html": {
+      "sha256": "96c6b1f458cb571fd4be42baa796c3c9c6a919393f6c0e361f34e514aa66310b",
+      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards."
+    }
   }
 }

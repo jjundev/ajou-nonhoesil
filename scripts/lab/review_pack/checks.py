@@ -10,6 +10,7 @@ from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
 from .note_metadata import check_note_metadata
+from .navigation import check_navigation
 
 def boolean_equivalent(left,right):
     names=sorted(set(variables(left))|set(variables(right)))
@@ -36,6 +37,7 @@ def check_pack(folder):
         text=path.read_text(encoding='utf-8')
         if '{{' in text:errors.append('Unreplaced placeholder: '+path.name)
         parser=Parser();parser.feed(text);trees[key]=parser.root
+        errors.extend(check_navigation(parser.root,names[key]))
         ids=[n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id')]
         errors += ['duplicate ID: '+i for i,n in Counter(ids).items() if n>1]
         try:errors+=check_md(path,path.with_suffix('.md'))
@@ -81,4 +83,6 @@ def check_pack(folder):
             if urlsplit(url).scheme or url.startswith('//'):errors.append('remote CSS resource: '+url)
             elif not (css.parent/unquote(url)).is_file():errors.append('Missing CSS resource: '+url)
         if re.search(r'@import\s+[\x22\x27]https?:',text):errors.append('remote CSS import: '+str(css))
+    from .explanation_checks import check_explanations
+    errors.extend(check_explanations(folder,m))
     return errors

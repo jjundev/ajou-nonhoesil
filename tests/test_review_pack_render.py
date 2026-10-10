@@ -41,12 +41,13 @@ def test_disputed_answer_not_labelled_verified(tmp_path):
     paths=assemble(m,RUN,tmp_path/'stage',ASSETS)
     text=paths['review_html'].read_text(encoding='utf-8')
     assert '답안 충돌' in text and 'I1' in text
-def test_toc_supplies_section_for_template_generated_topic_links(tmp_path):
+def test_toc_supplies_flat_article_links(tmp_path):
     from scripts.lab.review_pack.html2md import Parser, Node
     paths = assemble(fixture(), RUN, tmp_path/'stage', ASSETS)
     for kind in ('note_html', 'review_html'):
         parser = Parser()
         parser.feed(paths[kind].read_text(encoding='utf-8'))
         nav = next(n for n in parser.root.walk() if n.tag == 'nav' and n.attrs.get('class') == 'toc')
-        hashes = [n.attrs['href'] for n in nav.children if isinstance(n, Node) and n.tag == 'a' and n.attrs.get('href', '').startswith('#')]
-        assert hashes == ['#learning']
+        hashes = [n.attrs['href'] for n in nav.walk() if n.tag == 'a']
+        ids = [n.attrs['id'] for n in parser.root.walk() if n.tag == 'article' and n.attrs.get('class') in ('topic','card')]
+        assert hashes == ['#'+id for id in ids]

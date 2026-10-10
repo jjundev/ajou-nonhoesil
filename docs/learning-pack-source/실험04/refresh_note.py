@@ -21,11 +21,7 @@ def author():
     basic=tables('t-basics');mux2=tables('t-mux2');mux4=tables('t-mux4')
     demux=tables('t-demux');decoder=tables('t-decoder');tri=tables('t-tristate')
     text={}
-    text['t-start']=layer('eli5','오늘은 경로를 고르는 회로를 배워요',
-        'MUX는 여러 입력 중 하나를 골라 한 출력으로 보내요. DMUX는 한 입력을 여러 출력 중 한 곳으로 보내요. 선택선은 데이터를 보내는 선이 아니라 경로를 고르는 주소예요.')+layer('formal','이 순서로 읽어 봐요',
-        '신호와 게이트부터 시작해서 2×1 MUX, 4×1 MUX와 enable, DMUX, 디코더, tri-state를 차례로 살펴봐요. 마지막에는 실험에서 무엇을 바꾸고 관찰할지 정리해요.',
-        '이번 수행 범위는 1-1과 2-1이에요. 1-2와 2-2는 보충으로 다뤄요. 수행하지 않는다고 시험에도 나오지 않는다는 뜻은 아니에요.')+layer('warn','예상값과 측정값을 구분해요',
-        '여기서 계산한 출력은 이상적인 회로의 예상값이에요. 실제 측정값은 실험에서 따로 기록해야 해요. 원문 표기와 회로 계산이 어긋난 부분은 해당 설명에서 함께 확인해요.')+summary('선택선은 경로를 고르고 데이터선은 값을 보내요. 이번 실험에서는 1-1과 2-1을 수행해요.')
+    text['t-start']=(ROOT/'sections/t-start.html').read_text(encoding='utf-8').strip()
     text['t-basics']=layer('eli5','전압을 0과 1로 읽어요',
         '디지털 회로는 입력 전압을 Low(0)와 High(1)로 나눠 읽어요. 이번 5V 전원 실험에서는 GND와 +5V를 입력으로 써요. 중간 전압까지 모두 유효한 0이나 1인 건 아니에요.')+layer('formal','기호부터 같이 읽어 봐요',
         'A·B는 AND예요. 두 입력이 모두 1일 때만 출력이 1이에요. A+B는 OR예요. 하나라도 1이면 출력이 1이에요. A′나 윗줄은 NOT으로, 0과 1을 뒤집어요.',
@@ -93,7 +89,7 @@ def author():
     m['note_presentation_version']=2;m.pop('generated_files',None)
     m['checks']={k:'not_run' for k in m['checks']}
     m['title']='Multiplexer & Demultiplexer — 경로를 고르는 회로를 배워요'
-    titles=['전체 흐름을 먼저 살펴봐요','0·1, 게이트와 진리표를 다시 읽어요',
+    titles=['왜 이 회로를 쓰는지 먼저 알아봐요','0·1, 게이트와 진리표를 다시 읽어요',
             '2×1 MUX의 경로를 골라 봐요','4×1 MUX와 활성 Low enable을 배워요',
             'DMUX로 데이터를 나눠 보내요','디코더와 MUX·DMUX를 연결해 봐요',
             'Tri-state로 출력선을 함께 써요','실험에서 바꾸고 관찰할 것을 정리해요']
@@ -107,7 +103,7 @@ def author():
         't-lab':'그림 재제작: 교안 PDF p8·p11의 회로는 앞 개념 토픽의 SVG로 대체하고 p9·p12 스캔 표는 텍스트 표 및 불일치 설명으로 대체했어요. 실험 조작은 별도 흐름도로 새로 그렸어요. 그림은 핀 배치도가 아니에요.'}
     for t,title in zip(m['topics'],titles):
         t['title']=title
-        if t['id'] in notes:t['md_notes']=notes[t['id']]
+        if t['id'] in notes and t['id'] != 't-start':t['md_notes']=notes[t['id']]
     (ROOT/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 if __name__=='__main__':author()

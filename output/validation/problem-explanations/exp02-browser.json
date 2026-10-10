@@ -1,0 +1,286 @@
+{
+  "folder": "/Users/hyunjun_macbook_pro/.codex/worktrees/problem-explanations/논회실/tmp/review-pack/explain-02-final",
+  "checks": [
+    {
+      "id": "q-region",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-4",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-2017",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-2016",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-transition",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-speed",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-region",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-4",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-2017",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-2016",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-transition",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-speed",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-region",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-4",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-2017",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-params-2016",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-transition",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-speed",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-region",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-4",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-2017",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-params-2016",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-transition",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-speed",
+      "width": 1280,
+      "theme": "dark"
+    }
+  ],
+  "no_js": "pass"
+}

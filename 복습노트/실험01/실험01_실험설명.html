@@ -172,6 +172,18 @@
     .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
     @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
 
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
     /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
     html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
     html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
@@ -338,9 +350,7 @@
           <h2 id="panel-left-title">목차</h2>
           <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
         </div>
-        <p class="panel-meta">읽은 토픽 <b id="progress-n">0</b> / <span id="progress-total">0</span></p>
-        <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
-        <nav class="toc" aria-label="목차"><a href="실험01_실험설명.html">실험 설명</a><a href="실험01_기출풀이.html">기출 풀이</a><a href="실험01_기출문제.html">기출 문제</a><a href="#learning">실험 이해</a></nav>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#t-start">왜 이 회로를 쓰는지 먼저 알아봐요</a></li><li><a href="#t-gates"><span class="toc-title">게이트 여섯 개와 진리표를 읽어요</span></a></li><li><a href="#t-algebra"><span class="toc-title">부울대수와 드모르간 법칙을 익혀요</span></a></li><li><a href="#t-circuit"><span class="toc-title">회로를 읽고 식을 회로로 그려요</span></a></li><li><a href="#t-universal"><span class="toc-title">NAND로 다른 게이트를 만들어요</span></a></li><li><a href="#t-cmos"><span class="toc-title">CMOS NAND와 Pull-up을 살펴봐요 (보충)</span></a></li><li><a href="#t-lab"><span class="toc-title">실험 1-1부터 3까지 확인해요</span></a></li></ol></nav>
       </div>
     </aside>
     <div class="content">
@@ -349,7 +359,7 @@
       <h1>실험 1 · Basic Gates — 게이트와 부울식을 처음부터 배워요 · 실험 설명</h1>
       <p>이번 학기 교안 기준</p>
     </div>
-<section id="learning"><h2>실험 이해</h2><article class="topic" id="t-start"><h3>전체 흐름을 먼저 살펴봐요</h3><div class="layer eli5"><span class="layer-title">게이트는 0과 1을 가공하는 작은 부품이에요</span><p>논리 게이트는 0과 1 두 가지 값만 받아서 규칙대로 새 값을 내보내는 부품이에요. 이번 실험은 이 부품을 하나씩 확인하고, 여러 개를 이어 붙여 원하는 규칙을 만드는 연습이에요.</p></div><div class="layer formal"><span class="layer-title">이번 실험에서 하는 일</span><p>교안은 신호 값을 이렇게 정해요. Low(L)는 논리값 0이고 물리값은 GND를 걸어 0V예요. High(H)는 논리값 1이고 물리값은 3~5V예요. 이번 실험에서는 5V 전압원과 GND를 입력에 번갈아 걸어요.</p><div class="table-wrap"><table><thead><tr><th>실험</th><th>만드는 것</th><th>쓰는 IC</th></tr></thead><tbody><tr><td>1-1</td><td>3입력 AND (L1=A·B, L2=A·B·C)</td><td>74HC08 두 개</td></tr><tr><td>1-2</td><td>3입력 OR (L1=A+B, L2=A+B+C)</td><td>74HC32 두 개</td></tr><tr><td>2-1</td><td>3입력 NAND (L2=(A·B·C)′)</td><td>74HC08, 74HC00</td></tr><tr><td>2-2</td><td>3입력 NOR (L2=(A+B+C)′)</td><td>74HC32, 74HC02</td></tr><tr><td>3</td><td>출력 X, Y, Z를 내는 회로</td><td>74HC04, 74HC08, 74HC32</td></tr></tbody></table></div><p>준비물은 5V 전압원, IC(74HC00, 02, 04, 08, 32, 86), LED 3개, 330Ω 저항 3개예요. 출력 선마다 LED와 330Ω 저항을 달아서 출력이 1인지 0인지 눈으로 확인해요.</p></div><div class="layer warn"><span class="layer-title">이 팩이 다루는 범위</span><p>74HC86(XOR)은 준비물에 적혀 있지만 위 다섯 회로에는 쓰이지 않아요. 기출은 진리표, 부울식, 드모르간, NAND만으로 만들기, CMOS까지 나와서 교안에 없는 내용은 <strong>보충</strong>이라고 표시해 둘게요. LED가 켜지는 것은 출력이 1일 때로 읽지만, 실제로는 결선 방향에도 달려 있어요.</p></div><div class="sum" hidden><p>H는 1(3~5V), L은 0(GND)이에요. 실험은 AND, OR, NAND, NOR 3입력 회로 네 가지와 X·Y·Z 회로 하나예요.</p></div></article>
+<section id="learning"><h2>실험 이해</h2><article class="topic" id="t-start"><h3>왜 이 회로를 쓰는지 먼저 알아봐요</h3><div class="layer eli5"><span class="layer-title">이해를 위한 예시 · 회로가 해결하는 문제</span><p>이해를 위한 예시로, 문이 닫혀 있고 시작 버튼도 눌렸을 때만 장치를 작동시키고 싶다고 해 봐요. 문 상태 A와 버튼 상태 B를 각각 0(조건을 만족하지 않음), 1(조건을 만족함)로 나타내면 두 조건을 함께 판단해야 해요.</p><p>스위치 상태를 따로 읽는 것만으로는 “둘 다 만족할 때만 작동”이라는 규칙이 만들어지지 않아요. 논리 게이트는 입력의 0과 1을 받아 정해진 규칙에 맞는 출력으로 바꿔요. AND는 모든 조건을 만족할 때, OR는 하나라도 만족할 때 1을 내보내요.</p><p>A=1, B=0이면 AND 출력은 0이라 작동 조건을 만족하지 않아요. B도 1로 바꾸면 출력이 1이 돼요. 이 예시는 논리 판단을 설명하는 것이며 실제 장치 구동 회로를 만드는 실험은 아니에요.</p><p>이번 실험에서는 5V와 GND로 입력을 바꾸고 LED로 출력 논리값을 확인해요. AND·OR·NAND·NOR를 비교한 뒤 여러 게이트를 이어 붙여, 원하는 조건을 부울식과 회로로 만드는 연습을 해요.</p></div><div class="layer formal"><span class="layer-title">이번 실험에서 하는 일</span><p>교안은 신호 값을 이렇게 정해요. Low(L)는 논리값 0이고 물리값은 GND를 걸어 0V예요. High(H)는 논리값 1이고 물리값은 3~5V예요. 이번 실험에서는 5V 전압원과 GND를 입력에 번갈아 걸어요.</p><div class="table-wrap"><table><thead><tr><th>실험</th><th>만드는 것</th><th>쓰는 IC</th></tr></thead><tbody><tr><td>1-1</td><td>3입력 AND (L1=A·B, L2=A·B·C)</td><td>74HC08 두 개</td></tr><tr><td>1-2</td><td>3입력 OR (L1=A+B, L2=A+B+C)</td><td>74HC32 두 개</td></tr><tr><td>2-1</td><td>3입력 NAND (L2=(A·B·C)′)</td><td>74HC08, 74HC00</td></tr><tr><td>2-2</td><td>3입력 NOR (L2=(A+B+C)′)</td><td>74HC32, 74HC02</td></tr><tr><td>3</td><td>출력 X, Y, Z를 내는 회로</td><td>74HC04, 74HC08, 74HC32</td></tr></tbody></table></div><p>준비물은 5V 전압원, IC(74HC00, 02, 04, 08, 32, 86), LED 3개, 330Ω 저항 3개예요. 출력 선마다 LED와 330Ω 저항을 달아서 출력이 1인지 0인지 눈으로 확인해요.</p></div><div class="layer warn"><span class="layer-title">이 팩이 다루는 범위</span><p>74HC86(XOR)은 준비물에 적혀 있지만 위 다섯 회로에는 쓰이지 않아요. 기출은 진리표, 부울식, 드모르간, NAND만으로 만들기, CMOS까지 나와서 교안에 없는 내용은 <strong>보충</strong>이라고 표시해 둘게요. LED가 켜지는 것은 출력이 1일 때로 읽지만, 실제로는 결선 방향에도 달려 있어요.</p></div><div class="sum" hidden><p>게이트는 여러 입력 조건을 함께 판단해 원하는 출력 규칙을 만들어요. H는 1(3~5V), L은 0(GND)이고 AND·OR·NAND·NOR와 X·Y·Z 회로를 확인해요.</p></div></article>
 <article class="topic" id="t-gates"><h3>게이트 여섯 개와 진리표를 읽어요</h3><div class="layer eli5"><span class="layer-title">게이트마다 말하는 규칙이 달라요</span><p>NOT은 뒤집어요. AND는 “전부 1이어야 1”이라고 말해요. OR는 “하나라도 1이면 1”이에요. XOR는 “서로 다를 때만 1”이에요. NAND와 NOR는 AND, OR의 결과를 한 번 뒤집은 게이트예요.</p></div><div class="layer formal"><span class="layer-title">기호와 진리표를 읽어 봐요</span><p>A·B는 AND, A+B는 OR, A′나 윗줄은 NOT, A⊕B는 XOR예요. 여기의 +는 덧셈이 아니라서 1+1=1이에요. 진리표의 한 행은 입력을 동시에 정했을 때의 출력이에요. 예를 들어 A=1, B=0인 행에서 AND는 0, OR는 1이에요.</p><figure class="figure"><img src="자료/figures/gate-symbols.svg" alt="여섯 게이트의 기호와 부울식"><figcaption>삼각형 끝이나 게이트 끝의 작은 원은 출력을 뒤집는다는 뜻이에요.</figcaption></figure><div class="table-wrap"><table><thead><tr><th>A</th><th>B</th><th>NOT A</th><th>A·B</th><th>A+B</th><th>A⊕B</th><th>(A·B)′</th><th>(A+B)′</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div><p>기호 모양도 읽을 수 있어야 해요. AND는 반원 모양이고, OR는 뾰족한 방패 모양이에요. XOR는 OR 모양에 입력 쪽 곡선이 하나 더 있어요. 출력에 작은 원이 붙으면 반전이라서 AND 모양에 원이 붙으면 NAND, OR 모양에 원이 붙으면 NOR예요.</p><p>교안은 0 대신 L, 1 대신 H로 적어요. 같은 표예요. 입력이 3개이면 2³=8가지 조합이 있고, 3입력 게이트는 이렇게 읽어요.</p><p>3입력 AND는 A·B·C, 3입력 OR는 A+B+C, 3입력 NAND는 (A·B·C)′, 3입력 NOR는 (A+B+C)′예요. 3입력 XOR는 1이 홀수 개일 때 1이에요.</p><div class="table-wrap"><table><thead><tr><th>A</th><th>B</th><th>C</th><th>AND</th><th>OR</th><th>NOR</th><th>XOR</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr></tbody></table></div></div><div class="layer warn"><span class="layer-title">XOR와 OR, NAND와 NOR를 섞지 않아요</span><p>XOR는 A=B=1일 때 0이지만 OR는 1이에요. 3입력 XOR에서 1이 두 개면 0이고, 셋이면 1이에요. NOR는 “전부 0일 때만 1”이고, NAND는 “전부 1일 때만 0”이에요.</p></div><div class="layer warn"><span class="layer-title">한 단계만 풀어 봐요</span><p>A=1, B=1, C=0일 때 AND, OR, NOR, XOR의 출력을 구해 봐요.</p><details class="hint"><summary>힌트</summary><p>1의 개수를 먼저 세요. XOR는 1의 개수가 홀수인지 봐요.</p></details><details class="solution"><summary>연습 답</summary><p>AND는 0, OR는 1, NOR는 0, XOR는 0이에요. 1이 두 개라서 XOR는 짝수 개가 되어 0이에요.</p></details></div><div class="sum" hidden><p>AND는 전부 1일 때, OR는 하나라도 1일 때 1이에요. XOR는 1이 홀수 개일 때, NAND·NOR는 AND·OR의 반대예요.</p></div></article>
 <article class="topic" id="t-algebra"><h3>부울대수와 드모르간 법칙을 익혀요</h3><div class="layer eli5"><span class="layer-title">0과 1만 쓰는 계산 규칙이에요</span><p>부울대수는 식을 더 짧게 바꾸는 규칙 모음이에요. 규칙을 쓰면 게이트 수를 줄이거나 식을 다른 모양으로 바꿀 수 있어요. 드모르간은 “윗줄을 쪼갤 때 AND와 OR를 서로 바꾼다”는 규칙이에요.</p></div><div class="layer formal"><span class="layer-title">자주 쓰는 규칙과 드모르간</span><p>X, Y, Z는 0 또는 1인 변수예요. 이 자리에 식 덩어리를 통째로 넣어도 돼요. 예를 들어 X·Y+X·Y′=X에서 Y 자리에 (W·Z)를 넣으면 X·(W·Z)+X·(W·Z)′=X예요. 윗줄과 ′는 NOT이에요.</p><div class="table-wrap"><table><thead><tr><th>이름</th><th>합(OR) 꼴</th><th>곱(AND) 꼴</th></tr></thead><tbody><tr><td>항등</td><td>X+0 = X</td><td>X·1 = X</td></tr><tr><td>지배</td><td>X+1 = 1</td><td>X·0 = 0</td></tr><tr><td>멱등</td><td>X+X = X</td><td>X·X = X</td></tr><tr><td>보수</td><td>X+X′ = 1</td><td>X·X′ = 0</td></tr><tr><td>이중부정</td><td>(X′)′ = X</td><td></td></tr><tr><td>분배</td><td>X·Y+X·Z = X·(Y+Z)</td><td>(X+Y)·(X+Z) = X+Y·Z</td></tr><tr><td>흡수</td><td>X+X·Y = X</td><td>X·(X+Y) = X</td></tr><tr><td>묶기(Combining)</td><td>X·Y+X·Y′ = X</td><td>(X+Y)·(X+Y′) = X</td></tr></tbody></table></div><p>드모르간 법칙은 식 전체를 덮은 윗줄을 안으로 넣는 규칙이에요.</p><p>$$\overline{X_1\cdot X_2\cdots X_n}=\overline{X_1}+\overline{X_2}+\cdots+\overline{X_n}$$</p><p>$$\overline{X_1+X_2+\cdots+X_n}=\overline{X_1}\cdot\overline{X_2}\cdots\overline{X_n}$$</p><p>윗줄을 쪼개면 안에 있는 AND는 OR로, OR는 AND로 바뀌고 각 변수에는 윗줄이 붙어요. 교안은 NAND와 NOR를 이 법칙으로 소개해요. 예를 들어 (A·B)′ = A′+B′, (A+B)′ = A′·B′예요.</p><p>예제로 (A′·B + C)′를 전개해 볼게요. 먼저 전체 윗줄을 쪼개면 (A′·B)′ · C′이 돼요. 이어서 (A′·B)′ = A+B′이므로 결과는 (A+B′)·C′이에요. 값을 넣어 확인할게요. A=1, B=0, C=0이면 원래 식은 (0·0+0)′=1이고 결과는 (1+1)·1=1이에요. A=0, B=1, C=0이면 원래 식은 (1·1+0)′=0이고 결과는 (0+0)·1=0이에요. 두 경우 모두 같아요.</p><p>단순화 예제도 하나 볼게요. X·Y+X·Y′는 X로 묶으면 X·(Y+Y′)=X·1=X예요. 이때 Y가 0이든 1이든 X만 남아요.</p></div><div class="layer warn"><span class="layer-title">윗줄이 어디까지 덮는지 확인해요</span><p>(A·B)′와 A′·B′는 달라요. A=1, B=0이면 (A·B)′=1이지만 A′·B′=0·1=0이에요. 윗줄이 식 전체를 덮는지 일부만 덮는지에 따라 답이 달라지니 괄호를 먼저 살펴요.</p></div><div class="layer warn"><span class="layer-title">한 단계만 풀어 봐요</span><p>(A′+B)′를 드모르간으로 전개해 봐요.</p><details class="hint"><summary>힌트</summary><p>윗줄을 쪼개면 +가 ·로 바뀌어요. A′에 윗줄이 이미 있으니 이중부정도 써요.</p></details><details class="solution"><summary>연습 답</summary><p>(A′+B)′ = (A′)′·B′ = A·B′이에요. A=1, B=0일 때만 1이에요.</p></details></div><div class="sum" hidden><p>드모르간은 윗줄을 쪼개고 AND와 OR를 바꿔요. X·Y+X·Y′=X처럼 규칙을 쓰면 식이 짧아져요.</p></div></article>
 <article class="topic" id="t-circuit"><h3>회로를 읽고 식을 회로로 그려요</h3><div class="layer eli5"><span class="layer-title">회로를 읽는 건 길을 따라가는 일이에요</span><p>입력에서 출발해 게이트를 지날 때마다 이름을 붙이며 식을 써요. 반대로 식을 그릴 때는 가장 마지막에 일어나는 연산이 출력 쪽 게이트가 돼요.</p></div><div class="layer formal"><span class="layer-title">회로를 읽는 순서와 그리는 순서</span><p>선이 만나는 곳에 점이 있으면 연결이고, 점 없이 교차하면 연결이 아니에요. 게이트 출력의 작은 원은 NOT이 붙어 있다는 뜻이에요. 같은 이름의 선은 같은 신호예요.</p><p>읽는 순서는 입력에 가까운 게이트부터예요. 각 게이트의 출력에 이름(D, E, Z 등)을 붙이고, 그 이름을 다음 게이트의 식에 넣어요. 실험 3 회로로 해 볼게요.</p><figure class="figure"><img src="자료/figures/lab3.svg" alt="입력 A, B로 X, Y, Z를 만드는 실험 3 회로"><figcaption>B 선이 A의 세로선을 넘어갈 때 점이 없으면 연결이 아니에요.</figcaption></figure><p>A를 NOT에 넣으면 A′, 그것과 B를 AND하면 A′·B예요. 이것을 한 번 더 NOT하면 Z=(A′·B)′예요. 드모르간을 쓰면 Z=A+B′예요. X는 A와 Z의 OR라서 X=A+Z=A+A+B′=A+B′이고, Y는 A와 B를 바로 OR해서 Y=A+B예요.</p><div class="table-wrap"><table><thead><tr><th>A</th><th>B</th><th>Z = A+B′</th><th>X = A+Z</th><th>Y = A+B</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table></div><p>식에서 회로로 갈 때 “변형 없이 그리라”는 말은 식을 줄이지 않고 적힌 연산을 그대로 게이트로 만들라는 뜻이에요. 식의 바깥 연산이 출력 게이트이고, 괄호 안쪽 연산이 앞쪽 게이트예요. 윗줄이 괄호 하나만 덮었다면 그 괄호의 결과에만 NOT이나 반전 게이트가 붙어요.</p></div><div class="layer warn"><span class="layer-title">교차와 분기를 구분해요</span><p>같은 입력이 여러 게이트로 갈 때는 분기점에 점이 있어요. 점이 없는 교차를 연결로 읽으면 식이 완전히 달라져요. 기출의 D, E, Q 문제에서도 B에서 갈라지는 점이 핵심이에요.</p></div><div class="layer warn"><span class="layer-title">한 단계만 풀어 봐요</span><p>실험 3 회로에서 A=0, B=1일 때 Z, X, Y 값을 구해 봐요.</p><details class="hint"><summary>힌트</summary><p>Z=A+B′부터 구하고, 그 값으로 X를 구해요.</p></details><details class="solution"><summary>연습 답</summary><p>Z=0+0=0이에요. X=A+Z=0이고, Y=A+B=1이에요.</p></details></div><div class="sum" hidden><p>회로는 입력에서 출력으로 게이트마다 이름을 붙이며 읽고, 식을 그릴 땐 바깥 연산이 출력 게이트예요. 점이 있어야 연결이에요.</p></div></article>
@@ -557,12 +567,10 @@
       roomyMq.addEventListener('change', onMq);
 
       // ---------- 목차의 진행 표시 ----------
-      const progressN = document.getElementById('progress-n');
-      const progressBar = document.getElementById('progress-bar');
-      const progressTotal = document.getElementById('progress-total');
       function markToc(done, total, doneLabel) {
         panels.left.querySelectorAll('.toc-list a').forEach((a) => {
-          const id = decodeURIComponent(a.getAttribute('href').slice(1));
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
           let mark = a.querySelector('.toc-mark');
           if (!mark) {
             mark = document.createElement('span');
@@ -577,9 +585,6 @@
           mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
           a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
         });
-        progressN.textContent = String(done.size);
-        progressTotal.textContent = String(total);
-        progressBar.style.transform = 'scaleX(' + (total ? done.size / total : 0) + ')';
       }
       function revealCurrent() {
         const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
@@ -687,33 +692,13 @@
       const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
       let cur = -1;
 
-      // 목차: 섹션 링크 아래에 화면(토픽·카드) 목록을 붙인다
-      const tocLinks = [];
-      Array.from(toc.querySelectorAll(':scope > a')).forEach((a) => {
-        const sec = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
-        const group = document.createElement('div');
-        group.className = 'toc-group';
-        a.replaceWith(group);
-        group.appendChild(a);
-        if (!sec) return;
-        const list = document.createElement('ol');
-        list.className = 'toc-list';
-        screens.forEach((s, i) => {
-          if (!sec.contains(s)) return;
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = '#' + s.id;
-          link.innerHTML = '<span class="toc-title"></span>';
-          link.firstChild.textContent = titleOf(s);
-          li.appendChild(link);
-          list.appendChild(li);
-          tocLinks[i] = link;
-        });
-        group.appendChild(list);
-      });
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
 
       function indexFor(hash) {
-        const id = decodeURIComponent((hash || '').replace(/^#/, ''));
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
         const el = id && document.getElementById(id);
         if (!el || !main.contains(el)) return { i: 0 };
         const i = screens.findIndex((s) => s.contains(el) || el.contains(s));
