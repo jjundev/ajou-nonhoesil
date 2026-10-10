@@ -185,7 +185,8 @@ class CLITests(Sandbox):
 class LabPrepareTests(Sandbox):
     def sandbox_repo(self):
         repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)
-        for n in ['실험02','실험04','실험05']: (repo/'복습노트'/n).symlink_to(REPO/'복습노트'/n)
+        (repo/'복습노트/실험04').symlink_to(REPO/'복습노트/실험04')
+        defective_pack(repo,'실험02','all'); defective_pack(repo,'실험05',[10])  # 출처 미확인11 q-demux-from-dec
         return repo
     def test_prepare_labels_and_paths(self):
         import io,contextlib
@@ -196,7 +197,7 @@ class LabPrepareTests(Sandbox):
         items={i['id']:i for i in read(batch/'batch.json')['items']}
         self.assertEqual(items['q-dec2x4-design']['label'],'기출4'); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
         self.assertEqual(items['q-dec2x4-design']['filename'],'기출4 — 풀이.mp4')
-        self.assertEqual(items['q-demux-from-dec']['status'],'failed'); self.assertIn('clipped_figure',items['q-demux-from-dec']['reason'])
+        self.assertEqual(items['q-demux-from-dec']['status'],'failed'); self.assertIn('raw_latex p.11',items['q-demux-from-dec']['reason'])
         run=batch/items['q-dec2x4-design']['run']; pair=read(run/'source/pair.json')
         self.assertTrue(all((run/f).is_file() for f in pair['figure_refs']))
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])

@@ -18,9 +18,12 @@ class InputGateTests(Sandbox):
     def test_clipped_figure(self):
         self.assertEqual(self.codes(self.pdf(image_bottom=540)),['clipped_figure'])
         self.assertEqual(self.codes(self.pdf(image_bottom=470)),[])
-    def test_real_packs(self):
-        failures=[]; ok=discover(REPO,'실험05',None,failures)
-        bad={f['problem_id']:f['reason'] for f in failures}
-        self.assertIn('clipped_figure',bad['q-demux-from-dec']); self.assertIn('q-prio-exam',[p['problem_id'] for p in ok])
-        failures=[]; self.assertEqual(discover(REPO,'실험02',None,failures),[])
-        self.assertTrue(failures and all('raw_latex' in f['reason'] for f in failures))
+    def test_real_packs_have_no_false_defects(self):
+        # 2026-10-09 re-render fixed every raw_latex/clipped_figure page; the gate must stay quiet on clean packs.
+        for n in ['실험01','실험02','실험03','실험04','실험05']:
+            failures=[]; discover(REPO,n,None,failures)
+            self.assertEqual([f['reason'] for f in failures if 'input defect' in f['reason']],[],n)
+    def test_stamped_raw_latex_fails_only_that_problem(self):
+        failures=[]; ok=discover(defective_pack(self.run/'repo','실험05',[10]).parents[1],'실험05',None,failures)
+        self.assertEqual([(f['problem_id'],f['reason']) for f in failures],[('q-demux-from-dec','input defect: raw_latex p.11')])
+        self.assertEqual(len(ok),18)

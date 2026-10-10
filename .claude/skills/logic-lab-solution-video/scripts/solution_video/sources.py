@@ -5,6 +5,7 @@ from .util import file_hash,digest,write
 from .page_layout import page_layout
 from .input_gate import input_defects
 
+DATA_DIR='자료'  # scripts/lab/config.PACK_DATA_DIR: manifest.json·figures/ live here since 2026-10-09
 KINDS={'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
 def parse_selector(selector):
     m=re.fullmatch(r'(?:실험)?(\d{1,2})(?:-(?:실험)?(\d{1,2}))?',_norm(selector or '').strip())
@@ -76,7 +77,7 @@ def discover(repo,selector,problem_ids=None,failures=None):
         failures.append({'problem_id':pid,'experiment':experiment,'reason':reason})
     packs={};listed=set()
     for name in experiments:
-        folder=_child(root,name); manifest=_child(folder,'manifest.json') if folder else None
+        folder=_child(root,name); data=_child(folder,DATA_DIR) if folder else None; manifest=_child(data,'manifest.json') if data else None
         if manifest is None: fail(None,name,'experiment pack missing: '+name);continue
         included=[p for p in json.loads(manifest.read_text(encoding='utf-8'))['problems'] if p.get('status')=='included']
         # Labels come from the current manifest order every time; the PDF badge must agree.
@@ -94,7 +95,7 @@ def discover(repo,selector,problem_ids=None,failures=None):
         if len(ps)!=1 or len(ans)!=1:
             for pid,_,_ in problems: fail(pid,name,'missing or ambiguous PDF pair')
             continue
-        md=_child(folder,name+'_기출풀이.md'); solutions=_child(_child(folder,'figures') or folder,'solutions')
+        md=_child(folder,name+'_기출풀이.md'); figures=_child(_child(folder,DATA_DIR),'figures'); solutions=_child(figures,'solutions') if figures else None
         # Match each selected ID independently; unrelated damaged pages cannot stop it.
         for pid,label,title in problems:
             try:

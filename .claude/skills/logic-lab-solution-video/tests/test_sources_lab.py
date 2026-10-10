@@ -1,12 +1,16 @@
 from fixtures import *
 import json,shutil,unicodedata
-from solution_video.sources import discover,freeze_sources,parse_selector,KINDS
+from solution_video.sources import discover,freeze_sources,parse_selector,KINDS,DATA_DIR
 from solution_video.contracts import InputError
 class LabSourceTests(Sandbox):
     def test_kinds_match_review_pack(self):
         sys.path.insert(0,str(REPO))
         from scripts.lab.review_pack.workbook_content import KINDS as PACK
         self.assertEqual(KINDS,PACK)
+    def test_data_dir_matches_review_pack(self):
+        sys.path.insert(0,str(REPO))
+        from scripts.lab.config import PACK_DATA_DIR
+        self.assertEqual(DATA_DIR,PACK_DATA_DIR)
     def test_selector_forms(self):
         self.assertEqual(parse_selector('실험05'),['실험05']); self.assertEqual(parse_selector('5'),['실험05'])
         self.assertEqual(parse_selector('05'),['실험05']); self.assertEqual(parse_selector('03-05'),['실험03','실험04','실험05'])
@@ -35,9 +39,9 @@ class LabSourceTests(Sandbox):
         self.assertTrue(all(Path(f).is_absolute() for f in p['figure_refs']))
     def test_labels_follow_current_manifest_order(self):
         repo=self.run/'repo'; pack=repo/'복습노트/실험05'; shutil.copytree(REPO/'복습노트/실험05',pack)
-        m=json.loads((pack/'manifest.json').read_text(encoding='utf-8')); inc=[p for p in m['problems'] if p['status']=='included']
+        m=json.loads((pack/'자료/manifest.json').read_text(encoding='utf-8')); inc=[p for p in m['problems'] if p['status']=='included']
         a,b=m['problems'].index(inc[0]),m['problems'].index(inc[1]); m['problems'][a],m['problems'][b]=m['problems'][b],m['problems'][a]
-        (pack/'manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+        (pack/'자료/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
         failures=[]; discover(repo,'실험05',None,failures)
         self.assertIn('header/list mismatch',' '.join(f['reason'] for f in failures))
     def test_nfd_folder_names(self):

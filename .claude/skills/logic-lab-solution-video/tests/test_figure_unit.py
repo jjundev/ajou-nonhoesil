@@ -13,21 +13,23 @@ class FigureUnitTests(Sandbox):
     def page(self,refs):
         return export_page(PACK/'실험05_기출풀이.pdf',3,self.run/'layers',refs)  # 기출4 q-dec2x4-design (쪽 인덱스 3, 실측)
     def mapping(self,p):
+        for s in p['shapes']:
+            if s['kind']=='unclassified' and inside(s['bbox'],WORK): s['kind']='answer_box'  # 표 칸 선: 저작자가 지정하는 값
         ids=lambda kind:[o['id'] for o in p[kind] if inside(o['bbox'],WORK)]
         return {'work_bbox':WORK,'steps':[{'id':'s','glyph_ids':ids('glyphs'),'shape_ids':ids('shapes')}],'answer_step_id':'s'}
     def test_matching_image_becomes_figure_shape(self):
-        p=self.page([PACK/'figures/solutions/q-dec2x4-design-solution-01.png'])
+        p=self.page([PACK/'자료/figures/solutions/q-dec2x4-design-solution-01.png'])
         figs=[s for s in p['shapes'] if s['kind']=='figure']
         self.assertEqual([f['figure_source'] for f in figs],['q-dec2x4-design-solution-01.png'])
-        self.assertEqual([round(x) for x in figs[0]['bbox']],[322,170,622,407])
+        self.assertEqual([round(x) for x in figs[0]['bbox']],[322,188,513,339])
         self.assertFalse(any(inside(i['bbox'],WORK) for i in p['images']))
     def test_unmatched_solution_image_still_stops(self):
-        p=self.page([PACK/'figures/solutions/q-enc4x2-design-solution-01.png'])  # 다른 문항 그림은 대응하지 않는다
+        p=self.page([PACK/'자료/figures/solutions/q-enc4x2-design-solution-01.png'])  # 다른 문항 그림은 대응하지 않는다
         self.assertFalse(any(s['kind']=='figure' for s in p['shapes']))
         with self.assertRaisesRegex(ExtractionError,'solution region contains image'):
             extract_layers(p,self.mapping(p))
     def test_gate_zero_with_figure_target(self):
-        p=self.page([PACK/'figures/solutions/q-dec2x4-design-solution-01.png'])
+        p=self.page([PACK/'자료/figures/solutions/q-dec2x4-design-solution-01.png'])
         r=compare_completed(extract_layers(p,self.mapping(p)),self.run/'evidence')
         self.assertEqual((r['pixel_diff'],r['non_target_diff'],r['hidden_leaks']),(0,0,0))
     def layers(self,fig_bbox,glyph_h=9):

@@ -15,13 +15,13 @@ description: 논리회로실험 복습팩의 기출문제·기출풀이 PDF 원�
 - `/logic-lab-solution-video 실험05 --writing-mode typing`: 기존 타이핑 방식 선택. 신규 실행은 pencil이 기본이다.
 - 재개 요청: 이전 batch의 `resume-set`으로 처음 무효인 단계를 확인한다.
 
-라벨은 실행할 때마다 `manifest.json` 의 `problems` 중 `status=='included'` 순서로 다시 센다: `KINDS[kind]+n`(기출·예상문제·출처 미확인·연습문제). PDF 머리말 배지(왼쪽 위 첫 줄)가 라벨과 같고 머리말에 문항 `title` 이 들어 있는 쪽을 짝짓는다. 팩을 다시 만들어 순서가 바뀌었는데 PDF 가 옛것이면 `header/list mismatch` 로 그 문항을 멈춘다.
+라벨은 실행할 때마다 팩의 `자료/manifest.json` 의 `problems` 중 `status=='included'` 순서로 다시 센다: `KINDS[kind]+n`(기출·예상문제·출처 미확인·연습문제). PDF 머리말 배지(왼쪽 위 첫 줄)가 라벨과 같고 머리말에 문항 `title` 이 들어 있는 쪽을 짝짓는다. 팩을 다시 만들어 순서가 바뀌었는데 PDF 가 옛것이면 `header/list mismatch` 로 그 문항을 멈춘다.
 
 한국어 Aoede / Vertex AI Express / gemini-2.5-flash-tts, 1920×1080/30fps, mono PCM 24kHz. 연필 작성 기본 초당 7.5글자, 음성이 짧으면 작성 시간을 늘린다. 배경음·필기·타이핑 소리는 없음. 예산 상한 없음이며 요청 전체 사용량을 ledger에 기록한다. 공급자·모델을 자동 대체하지 않는다. 키는 환경변수 또는 `--env-file` 로만 받고 출력하지 않는다.
 
 연필 PNG 한 장을 촉 중심으로 움직이며 원본 윤곽을 왼쪽에서 오른쪽으로 공개한다. 실제 한글·수식 획순을 복원하는 연출은 아니다. 연필 길이는 촉부터 지우개 끝까지 화면상 160px이며 확대와 무관하다. 줄바꿈에서는 들어 옮기고 작성 완료·설명·최종 hold에서는 숨긴다. pencil은 PageMap의 writing_units에 저작한 줄·가로 영역 순서로 공개한다. 원문 glyph_ids 순서는 보존한다. typing은 기존 anchor 공개를 유지한다.
 
-**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 chunk ID 를 담아 멈춘다. 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
+**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 chunk ID 를 담아 멈춘다. 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
 
 **입력 게이트(유료 호출 전).** 문제·답안 쪽에 원문 LaTeX(`raw_latex`)가 찍혔거나, 풀이 그림이 '답' 상자 위쪽보다 아래로 내려가 잘렸으면(`clipped_figure`) 그 문항만 failed 로 남기고 나머지를 계속한다. 고치는 곳은 복습팩(`logic-lab-review-pack`)이다.
 

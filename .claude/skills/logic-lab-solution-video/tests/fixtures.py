@@ -21,3 +21,10 @@ def make_audio(segment_id,samples,run):
     p=run/(segment_id+'.wav'); p.parent.mkdir(parents=True,exist_ok=True)
     with wave.open(str(p),'wb') as w: w.setparams((1,2,24000,0,'NONE','')); w.writeframes(b'\0\0'*samples)
     return dict(id=segment_id,path=p.relative_to(run).as_posix(),samples=samples,rate=24000,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def defective_pack(repo,name,pages):
+    """Copy a real pack into repo and stamp raw LaTeX on the given answer pages (real packs are clean since 2026-10-09)."""
+    import fitz,shutil
+    dest=repo/'복습노트'/name; shutil.copytree(REPO/'복습노트'/name,dest)
+    pdf=dest/(name+'_기출풀이.pdf'); doc=fitz.open(pdf)
+    for i in (range(len(doc)) if pages=='all' else pages): doc[i].insert_text((330,575),'$V_{CC}=5\\,\\mathrm{V}$',fontsize=6)
+    doc.save(dest/'tmp.pdf'); doc.close(); (dest/'tmp.pdf').replace(pdf); return dest
