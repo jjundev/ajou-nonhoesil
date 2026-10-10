@@ -32,6 +32,8 @@ def validate_config(config):
     if not 0<float(config.get('chars_per_second',7))<=8: raise InputError('invalid writing speed')
 def generate_voice(segments,run,config,ledger,transport=None,env_file=None):
     validate_config(config); tts,budget=_modules(); run=Path(run)
+    # spoken-text-only-v1: 옛 config 의 direction 은 요청에 들어가지 않는다. 동결 config 에도 남기지 않아 보낸 것과 맞춘다.
+    config={k:v for k,v in config.items() if k!='direction'}
     write(run/'source/adapter.json',{'sha256':adapter_hash(),'files':{str(p):file_hash(p) for p in adapter_files()}})
     write(run/'source/config.json',config)
     # Credentials stay in memory inside live_transport; its errors are sanitized.

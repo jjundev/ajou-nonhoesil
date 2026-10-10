@@ -2,6 +2,8 @@
 
 음성 설정은 assets/defaults.json, 작성 설정은 assets/writing-defaults.json이며 각각 source/config.json과 source/writing.json에 동결한다. Aoede/한국어/24kHz mono PCM, 1920×1080/30fps이며 모델과 공급자를 자동 대체하지 않는다. 환경 GOOGLE_API_KEY 또는 GEMINI_API_KEY를 사용한다. --env-file은 메모리로만 읽고 config/로그에 키를 넣지 않는다. budget_usd=null은 상한 없음이며 명시 상한을 주면 price 요율과 기존 예산 규칙을 따른다. 모든 문항은 batch/usage.json 하나를 쓴다.
 
+TTS 요청 정책은 `spoken-text-only-v1`이다. 텍스트 입력에는 발음 사전(`pronunciation`)을 적용한 읽을 대본만 넣고, 지침(direction)·"원고:" 같은 안내문·caption_text는 보내지 않는다. 음성(Aoede)·언어(ko-KR)·모델·오디오 형식은 설정 필드로만 정한다. 지침 문장을 함께 보내면 모델이 그 문장까지 읽어 버릴 수 있다(상류 전자회로2 영상에서 "과장하지 않습니다" 류 발화가 들렸다). 그래서 `defaults.json`에 direction이 없고, 옛 run의 config에 남은 direction은 요청에 넣지 않으며 tts가 다시 동결하는 config에서도 지운다. 말투·속도는 대본 문장(~해요체, 쉼표 위치)으로만 조절한다. 캐시 키에는 정책 버전과 실제 전송 대본이 들어가므로 지침을 포함하던 옛 캐시 WAV는 재사용되지 않고 새로 합성된다(유료). caption_text만 바꾸면 키가 같아 재합성하지 않는다. WAV 영수증(`assets/voice/*.json`)에는 policy와 payload_hash가 기록된다.
+
 문제를 확인하는 발화로 시작한다. 판단 이유(reason), 원문을 쓰는 동안의 설명(write), 계산 확인(check), 답 확인(summary)을 원자료에 연결한다. PDF에 없는 새 계산이나 풀이를 만들지 않는다. 한 발화가 길면 PageMap 단계도 작은 연속 단위로 나눈다. 실패한 문항만 재개하고 성공 WAV는 내용/설정 해시로 재사용한다.
 
 연필 기본은 7.5글자/초이며 인접 글자마다 이동 1프레임 + 작성 3프레임이다. 사용자 요청에 따라 이전 5글자/초(이동 1+작성 5프레임)보다 1.5배 빠르다. 긴 이동·줄바꿈·단계 이동은 최소 8프레임 이동을 사용하고 작성 시간을 줄이지 않는다. write 구간은 max(실제 WAV 길이, 모든 이동·작성 길이)+ceil(0.75×30)=23프레임이다. typing 선택은 기존 ceil(30/7) 프레임 간격을 사용한다. 작성 파일이 없는 legacy 실행은 기존 config의 속도/hold를 그대로 쓴다. 공백은 이동 시간만 사용하며 연필은 숨긴다. typing의 shape는 같은 단계의 anchor glyph 완료 시점에 공개한다. pencil은 writing_units의 shape piece를 최소 18프레임씩 작성하며, 폭 0인 세로 선은 위에서 아래로 공개한다. 전체 타이밍은 800샘플=1프레임이며 실제 PCM은 자르거나 늘이지 않고 남는 구간을 무음으로 채운다. 마지막은 최소 1초 전체 답안 확인이다. 단어별 실제 음성 정렬을 주장하지 않는다.

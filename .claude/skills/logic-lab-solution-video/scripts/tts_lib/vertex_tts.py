@@ -20,10 +20,25 @@ def load_key(env_file=None):
     if not key: raise VertexError(reason='missing API key')
     return key
 
-def make_payload(text,config,direction):
-    return {'contents':[{'role':'user','parts':[{'text':direction+'\n\n원고:\n'+text}]}],
+# 요청 정책: 텍스트 입력에는 읽을 대본만 넣는다. 지침(direction)·"원고:" 같은 안내문은 모델이 그대로 읽어 버린 적이
+# 있어(전자회로2 P10.72) 보내지 않는다. 음성·언어·모델·형식은 설정 필드로만 정한다. 바꾸면 캐시 키가 갈린다.
+POLICY='spoken-text-only-v1'
+
+def spoken_text(text,config):
+    """The exact script sent to TTS: the authored text after the pronunciation dictionary, nothing else."""
+    if not isinstance(text,str) or not text.strip(): raise ValueError('nonempty spoken text required')
+    for a,b in config.get('pronunciation',{}).items(): text=text.replace(a,b)
+    return text
+
+def make_payload(text,config):
+    return {'contents':[{'role':'user','parts':[{'text':text}]}],
       'generationConfig':{'responseModalities':['AUDIO'],'maxOutputTokens':config['max_output_tokens'],
        'speechConfig':{'languageCode':'ko-KR','voiceConfig':{'prebuiltVoiceConfig':{'voiceName':config['voice']}}}}}
+
+def speech_key(text,config):
+    """Cache key: request policy + the script actually sent + model/payload. caption_text never enters it."""
+    spoken=spoken_text(text,config); payload=make_payload(spoken,config)
+    return digest({'policy':POLICY,'text':text,'spoken_text':spoken,'pronunciation':config.get('pronunciation',{}),'model':config['model'],'payload':payload})
 
 def live_transport(key,model):
     if not re.fullmatch(r'[A-Za-z0-9._-]+',model): raise ValueError('invalid model')
@@ -77,15 +92,12 @@ def synthesize(items,run,config,budget,transport,sleep=time.sleep):
     throttled=threading.Event()
     def one(item):
         if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',item['id']): raise ValueError('invalid segment ID')
-        text=item['text']
-        for a,b in config.get('pronunciation',{}).items(): text=text.replace(a,b)
-        payload=make_payload(text,config,config['direction'])
-        key=digest({'text':item['text'],'pronunciation':config.get('pronunciation',{}),'model':config['model'],'payload':payload})
+        text=spoken_text(item['text'],config); payload=make_payload(text,config); key=speech_key(item['text'],config)
         wav=dest/(item['id']+'-'+key[:16]+'.wav'); receipt=wav.with_suffix('.json')
         if receipt.exists():
             try:
                 rec=json.loads(receipt.read_text(encoding='utf-8'))
-                if cache_valid(wav,rec,key):
+                if cache_valid(wav,rec,key) and rec.get('policy')==POLICY and rec.get('payload_hash')==digest(payload):
                     with wave.open(str(wav),'rb') as f:
                         if (f.getnchannels(),f.getsampwidth(),f.getframerate(),f.getnframes())==(1,2,24000,rec['samples']):
                             return rec
@@ -116,7 +128,7 @@ def synthesize(items,run,config,budget,transport,sleep=time.sleep):
                 f.setparams((1,2,24000,0,'NONE','not compressed')); f.writeframes(raw)
             os.replace(pending,wav)
             rec={'id':item['id'],'path':wav.relative_to(run).as_posix(),'samples':len(raw)//2,'rate':24000,
-                 'key':key,'sha256':file_hash(wav),'output_sha256':file_hash(wav),
+                 'key':key,'sha256':file_hash(wav),'output_sha256':file_hash(wav),'policy':POLICY,'payload_hash':digest(payload),
                  'usage':{k:v for k,v in usage.items() if type(v) is int}}
             atomic_json(receipt,rec); return rec
         raise VertexError(reason='attempts exhausted')

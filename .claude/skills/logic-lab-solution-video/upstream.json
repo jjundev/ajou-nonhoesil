@@ -316,7 +316,7 @@
   "SKILL.md": "frontmatter 와 본문을 논회실용으로 다시 씀(실험 선택자·라벨·입력 게이트·그림 단위·출력 이름·git 정책); 안 들어가는 그림 묶음의 오류 문구; prepare 의 warnings 출력; layers/ 의 svg·png 는 git 에서 뺌(extract 로 재생성, 새 clone 은 candidates.json 을 지우고 extract)",
   "agents/openai.yaml": "display_name·default_prompt 를 논회실 스킬 이름으로",
   "scripts/video.py": "자막 폰트를 형제 스킬 대신 내재화한 assets/fonts 에서; 실패 항목 키 date → experiment; prepare 출력 폴더 실험NN(범위 실험NN-MM), item label·라벨 파일 이름, figure_refs 복사·export_page 전달(재시도 경로 포함); 범위 batch 라벨에 실험 접두(탈락 항목 포함, display_label 하나로); figure_refs 와 함께 짝 SVG(figure_svg_refs)를 런 폴더로 복사; 탈락 항목에 label·라벨 파일 이름 부여; prepare 결과에 prepared·failed 를 싣고 전부 탈락하면 status failed(종료 코드 1); 짝 SVG 가 없는 풀이 그림은 통과한 batch 항목의 warnings 와 prepare 결과 warnings 로 알림(없으면 키를 만들지 않음, batch_warnings)",
-  "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib",
+  "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib; generate_voice 가 옛 config 의 direction 을 빼고 동결(spoken-text-only-v1)",
   "scripts/solution_video/publication.py": "게시 lock 모듈 이름 _logic_lab_tts_lib; 최종 파일 이름 접두어를 표시 라벨로; 게시 전 검토 파일을 정확히 2개가 아니라 audio·visual 포함으로 확인(pacing-review.json 도 *-review.json 이라 게시가 막혔다)",
   "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서; region 검사에서 \"work_bbox 보다 위\" 규칙을 지우고 \"work_bbox 와 겹침\"만 남김(왼쪽 조건 패널의 표·문장·회로를 확대·주석 대상으로)",
   "scripts/solution_video/state.py": "폰트를 내재화한 assets/fonts 에서; inputs 지문 글롭을 source/snapshots/**/* 로(동결한 그림 snapshots/figures/<sha>/ 의 변조·삭제를 잡는다)",
@@ -336,10 +336,10 @@
   "scripts/solution_video/reveal.py": "figure 조각 draw 길이 FIGURE_DRAW_FRAMES=60",
   "scripts/solution_video/writing_camera.py": "figure 묶음이 26px 로 안 들어가면 전체 쪽 배율까지 줄여 맞춤; 그래도 안 들어가면 그림 피스만으로 같은 하향을 한 번 더 돌려, 그림 혼자도 안 들어가면 \"그림을 자르거나 나누라\"(figure chunk cannot fit even at the full-page view), 그림은 들어가면(글자만이거나 묶음 구성이 원인) 기존 \"글자 묶음을 작게 나누라\" 문구",
   "tests/test_figure_unit.py": "논회실 신규: 그림 단위 승격·게이트·draw 길이·카메라 대체; 게이트 잡음 허용 테스트; 다시 렌더한 팩(자료/·두 단 판형·결함 없음)에 맞춤; 안 들어가는 그림 묶음 문구(큰 그림만·큰 그림+작은 글자)와 그림이 다른 묶음에 있는 글자 묶음의 글자 문구, 작은 그림이 든 묶음이 글자 때문에 안 들어가면(쪽 높이 전체·16:9 쪽 폭 전체) 글자 문구",
-  "assets/defaults.json": "pronunciation·direction 을 논리회로용으로; ′ 발음은 앞뒤 띄운 ' 바 '",
+  "assets/defaults.json": "pronunciation 을 논리회로용으로; ′ 발음은 앞뒤 띄운 ' 바 '; direction 삭제(spoken-text-only-v1 — 지침은 TTS 에 보내지 않음)",
   "scripts/solution_video/subtitles.py": "logic_bar_word 경고 규칙 추가; 조사가 붙은 바/낫도 경고",
-  "references/narration-and-timing.md": "논리식 음성·자막과 ~해요체 절, 기호 예시를 논리회로로; 바/낫 경고·발음 띄움 갱신",
-  "tests/test_caption_notation.py": "논리식 경고·기본값 테스트 추가",
+  "references/narration-and-timing.md": "논리식 음성·자막과 ~해요체 절, 기호 예시를 논리회로로; 바/낫 경고·발음 띄움 갱신; TTS 요청 정책 spoken-text-only-v1(지침 미전송·캐시 키) 절",
+  "tests/test_caption_notation.py": "논리식 경고·기본값 테스트 추가; 기본값에 direction 이 없음을 확인",
   "references/pdf-and-coverage.md": "figure 도형 규칙, md_text 출처 실험NN_기출풀이.md, 논리회로 검토 근거, circuit 모드 의미; 게이트 비대상 잡음 허용; 탈락 항목 라벨·전부 탈락 시 failed; 조건 대조가 표의 행·열 순서까지 봄; 풀이 그림 짝 SVG 동결; region 은 work_bbox 와 겹치지 않으면 어디든(왼쪽 조건 패널의 표·문장도, 패널 전체는 피함)",
   "references/verification.md": "수용 테스트를 LOGIC_LAB_ACCEPTANCE_BATCH·test_lab_acceptance 로; 동결 그림 변조는 inputs부터 재개; 새 clone 의 resume-set 이 layers 부터 무효를 돌려줌",
   "tests/test_publication.py": "라벨 접두어 파일 이름 테스트 추가; pacing-review 가 게시를 막지 않는 테스트",
@@ -348,7 +348,9 @@
   "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부",
   "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
   "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구",
-  "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers"
+  "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers",
+  "scripts/tts_lib/vertex_tts.py": "spoken-text-only-v1: make_payload 가 지침(direction)·\"원고:\" 없이 읽을 대본만 보냄(spoken_text); 캐시 키(speech_key)에 정책 버전·실제 전송 대본을 넣어 옛 지침 포함 캐시를 재사용하지 않음; 영수증에 policy·payload_hash, 캐시 재사용에 둘 다 요구",
+  "tests/test_voice.py": "spoken-text-only-v1 테스트: 요청 텍스트가 발음 치환한 대본뿐·옛 config direction 미전송·미동결·옛 지침 포함 캐시와 정책 표지 없는 영수증 무효·캐시 키가 전송 대본을 따름"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",

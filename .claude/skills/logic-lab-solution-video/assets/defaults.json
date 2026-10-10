@@ -21,6 +21,5 @@
   },
   "chars_per_second": 7,
   "read_hold_seconds": 0.75,
-  "pdf_viewport_height": 900,
-  "direction": "한국어로 차분하게 논리회로 실험 기출을 함께 푸는 느낌으로 읽으세요. 부울식은 신호 이름과 바를 또박또박 읽습니다. 과장하지 않습니다."
+  "pdf_viewport_height": 900
 }
