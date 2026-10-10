@@ -83,4 +83,6 @@ def check_pack(folder):
             if urlsplit(url).scheme or url.startswith('//'):errors.append('remote CSS resource: '+url)
             elif not (css.parent/unquote(url)).is_file():errors.append('Missing CSS resource: '+url)
         if re.search(r'@import\s+[\x22\x27]https?:',text):errors.append('remote CSS import: '+str(css))
+    from .explanation_checks import check_explanations
+    errors.extend(check_explanations(folder,m))
     return errors
