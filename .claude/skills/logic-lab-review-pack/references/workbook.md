@@ -22,7 +22,7 @@ manifest.schema_version=1, review_presentation_version=2, figure_manifest='figur
 
 학생이 채울 표(빈 `<td>`가 있는 표)는 `<div class="table-wrap work-table">`로 쓴다. 문제지에서는 이 표가 좌측 패널이 아니라 가운데 풀이 칸 맨 위에 나온다. 표지는 손으로 달지 말고 `mark_work_tables`(scripts/lab/review_pack/work_table.py)로 단다. 생성기가 JSON을 쓸 때 부르고, 이미 쓴 JSON은 `python -m scripts.lab.review_pack.work_table <폴더>`로 단다. 빈 칸이 있는데 표지가 없거나, 표지가 있는데 빈 칸이 없으면 build가 거부한다. 해설 단계의 완성된 표(`solution`)에는 표지를 달지 않는다. 해설지는 풀이 단계가 들어갈 높이를 지키려고 빈 표를 패널에 남긴다. 배선표처럼 빈 칸이 없는 표도 패널에 남는다. 이미 발행된 팩은 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`이 표지를 달아 다시 만든다. 표가 칸에 안 들어가면 `data-overflow`로 드러나며 글자를 줄이지 않는다.
 
-긴 논리식(`$$…$$` 40자 초과)은 관계 기호(`=`·`\approx` 등)마다 줄을 바꿔 세로로 맞춘다. 여러 식이 쉼표로 이어진 목록(`O_0=…,\ O_1=…`)은 식마다 한 줄(`aligned` 행)로 나뉘고, 각 식의 관계 기호는 그 줄 안에서만 이어진다. 조각마다 최상위 `=` 가 있을 때만 나누며 `f(a,b)=…` 의 괄호 안 쉼표나 관계 기호가 없는 조각이 낀 목록은 나누지 않는다. 이 규칙은 `workbook_render.LOCAL_PATCHES` 의 `EQUATION_NEW`(`splitEquationList`)에 있고 테스트는 `tests/test_workbook_equations.py` 다.
+긴 논리식(`$$…$$` 40자 초과)은 관계 기호(`=`·`\approx` 등)마다 줄을 바꿔 세로로 맞춘다. 여러 식이 쉼표로 이어진 목록(`O_0=…,\ O_1=…`)은 식마다 한 줄(`aligned` 행)로 나뉘고, 각 식의 관계 기호는 그 줄 안에서만 이어진다. 조각마다 최상위 `=` 가 있을 때만 나누고(말미 쉼표가 남긴 빈 조각은 무시) `f(a,b)=…` 의 괄호 안 쉼표나 관계 기호가 없는 조각이 낀 목록은 나누지 않는다. 이 규칙은 `workbook_render.LOCAL_PATCHES` 의 `EQUATION_NEW`(`splitEquationList`)에 있고 테스트는 `tests/test_workbook_equations.py` 다.
 
 회로는 figures/questions/<id>-given-01.svg/.png와 figures/solutions/<id>-solution-01.svg/.png로 구분한다. 새 그림을 원문 자산이라고 표시하지 않는다. registry에는 ID/문항/role/두 파일의 hash/인쇄 mm/source_asset_ids/source_refs/derivation/answer_exposure/review_status/review_notes를 기록한다. 문제 그림은 problem/none 및 원문 safe_problem_asset_ids를 사용한다. source_refs와 도출 설명은 실제로 확인한 자료에 결합한다. 시각 검토 전에 pass로 표시하지 않는다.
 

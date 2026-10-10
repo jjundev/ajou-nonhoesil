@@ -46,7 +46,7 @@ IMAGE_WAIT_NEW=("[...document.images].map(img => img.complete ? null : new Promi
 # 쉼표로 이어진 식 목록(`O_0=…,\ O_1=…`)이 모든 최상위 `=` 에서 잘려 다음 식의 꼬리표(`O_1`)가 앞 줄 끝에 남던 문제
 # (2026-10-10 실험05 기출4·7·12 해설지). 최상위 쉼표로 식 목록을 먼저 나눈 뒤 식마다 aligned 행을 만든다.
 # 조각마다 최상위 관계 기호가 있을 때만 나누고, `f(a,b)=…` 의 괄호 안 쉼표나 한 조각이라도 관계 기호가 없는 목록은
-# 기존 동작(splitRelations 결과 그대로)을 지킨다.
+# 기존 동작(splitRelations 결과 그대로)을 지킨다. 말미 쉼표가 남긴 빈 마지막 조각은 버리고 나머지로 판단한다.
 EQUATION_OLD=r'''function equationTex(tex, parts, prefix) {
   const [lhs, ...rest] = parts;
   if (!lhs) return prefix + tex;
@@ -74,9 +74,11 @@ function splitEquationList(tex) {
   }
   if (depth !== 0 || !pieces.length) return null;
   pieces.push(tex.slice(start));
-  // 조각 머리·꼬리의 간격 명령(`\ `, `\,`, `\quad` …)은 식 바깥이라 지운다
-  const SPACE = /^(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+|(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+$/g;
+  // 조각 머리의 간격 명령(`\ `, `\,`, `\quad` …)은 식 바깥이라 지운다. 꼬리는 건드리지 않는다.
+  const SPACE = /^(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+/;
   const list = pieces.map(p => p.replace(SPACE, ''));
+  if (list.length > 1 && !list[list.length - 1]) list.pop();   // 말미 쉼표: 빈 마지막 조각은 버린다
+  if (list.length < 2) return null;
   const ok = list.every(p => { const r = splitRelations(p); return r && r[0]; });
   return ok ? list : null;
 }
