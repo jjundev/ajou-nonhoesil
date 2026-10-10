@@ -22,7 +22,11 @@ export async function teachingCheck(page,opt){
    const corners=[[b[0],b[1]],[b[2],b[3]]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m));
    const regionOK=corners.every(p=>p.x>=0&&p.x<=1920&&p.y>=0&&p.y<=900);
    const shown=node=>{if(!node)return false;for(let n=node;n&&n instanceof Element;n=n.parentElement)if(getComputedStyle(n).opacity==='0'||getComputedStyle(n).display==='none'||getComputedStyle(n).visibility==='hidden')return false;return true;};
-   return regionOK&&probe.annotation_ids.every(id=>{const n=svg.querySelector('#annotation-'+id);if(!shown(n))return false;const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=0&&r.right<=1920&&r.top>=0&&r.bottom<=900;});
+   return regionOK&&probe.annotation_ids.every(id=>{const n=svg.querySelector('#annotation-'+id);if(!shown(n))return false;const r=n.getBoundingClientRect(),path=n.querySelector('path[stroke]');
+    // SVG geometric rectangles exclude stroke; a horizontal underline has zero
+    // geometric height while its painted stroke is valid teaching evidence.
+    const radius=path?parseFloat(getComputedStyle(path).strokeWidth)*Math.hypot(m.a,m.b)/2:0;
+    return r.width+2*radius>0&&r.height+2*radius>0&&r.left-radius>=0&&r.right+radius<=1920&&r.top-radius>=0&&r.bottom+radius<=900;});
   },probe);
  }
  const frames=new Set([0,t.total_frames-1]);
@@ -39,7 +43,7 @@ export async function teachingCheck(page,opt){
    const svg=document.querySelector('#answer-page>svg'),actualBox=svg.getAttribute('viewBox').split(/\s+/).map(Number),camera_ok=box.every((v,n)=>Math.abs(v-actualBox[n])<1e-6);
    const span=t.teaching.spans.find(s=>s.start_frame<=frame&&frame<s.end_frame&&frame<s.hide_frame),should=span&&span.kind!=='space',im=document.getElementById('pencil'),snapshot=window.solutionPen?.snapshot(),visible=!!im&&getComputedStyle(im).opacity!=='0';
    const originalActive=(t.writing_spans||[]).find(s=>s.start_frame<=frame&&frame<s.end_frame);
-   let bounds_ok=true,tip=0;
+   let bounds_ok=true,tip=0,bounds_debug=[];
    if(visible){
     const meta=window.pencilMeta,m=new DOMMatrix(getComputedStyle(im).transform),b=meta.visible_bounds_px,origin=meta.tip_px;
     const cs=[[b[0],b[1]],[b[2],b[1]],[b[2],b[3]],[b[0],b[3]]].map(([x,y])=>new DOMPoint(x-origin[0],y-origin[1]).matrixTransform(m)).map(p=>[p.x+origin[0],p.y+origin[1]]);
@@ -53,9 +57,15 @@ export async function teachingCheck(page,opt){
     }
    }
    let future=0,final=false;
-   for(const i of compiled?.items||[]){const node=svg.querySelector('#annotation-'+i.id),spans=t.teaching.spans.filter(s=>s.id===i.id),show=spans.some(s=>s.kind==='draw'&&s.start_frame<=frame&&frame<s.hide_frame),painted=node&&getComputedStyle(node).opacity!=='0';if(painted&&!show)future++;if(frame===t.total_frames-1&&painted)final=true;if(!node)bounds_ok=false;}
-   return {camera_ok,bounds_ok,tip,future,final,inactive_hidden:should?visible&&snapshot?.owner==='annotation':originalActive?true:!visible};
+   for(const i of compiled?.items||[]){const node=svg.querySelector('#annotation-'+i.id),spans=t.teaching.spans.filter(s=>s.id===i.id),show=spans.some(s=>s.kind==='draw'&&s.start_frame<=frame&&frame<s.hide_frame),painted=node&&getComputedStyle(node).opacity!=='0';if(painted&&!show)future++;if(frame===t.total_frames-1&&painted)final=true;if(!node)bounds_ok=false;
+    const focused=t.teaching.cues.some(c=>c.target===i.region_id&&c.start_frame+12<=frame&&frame<c.end_frame-12);
+    if(painted&&node&&focused){const r=node.getBoundingClientRect(),radius=i.kind==='label'?0:(i.stroke_width_px??3)/2;
+     const fits=r.left-radius>=-1e-3&&r.right+radius<=1920.001&&r.top-radius>=-1e-3&&r.bottom+radius<=900.001;bounds_ok&&=fits;if(!fits)bounds_debug.push({id:i.id,rect:[r.left,r.top,r.right,r.bottom],radius});
+     if(i.path_id){const path=svg.querySelector('#'+i.path_id),sc=Math.min(1920/box[2],window.solutionLayout.height/box[3]);const width=parseFloat(getComputedStyle(path).strokeWidth)*sc,ok=Math.abs(width-(i.stroke_width_px??3))<1e-3;bounds_ok&&=ok;if(!ok)bounds_debug.push({id:i.id,width,expected:i.stroke_width_px??3});}
+    }}
+   return {camera_ok,bounds_ok,bounds_debug,tip,future,final,inactive_hidden:should?visible&&snapshot?.owner==='annotation':originalActive?true:!visible};
   },{t,compiled,frame});
+  if(stats.bounds_debug.length)(result.bounds_debug??=[]).push({frame,items:stats.bounds_debug});
   result.cameras_equal&&=stats.camera_ok;result.bounds_ok&&=stats.bounds_ok;result.inactive_hidden&&=stats.inactive_hidden;result.tip_error_px=Math.max(result.tip_error_px,stats.tip);result.future_leaks+=stats.future;result.final_visible||=stats.final;
   // Backward and GSAP seeks must reconstruct the same pixels including the pencil.
   const shot=await capture();await page.evaluate(()=>window.renderSolutionFrame(0));await page.evaluate(f=>window.renderSolutionFrame(f),frame);const backward=await capture();const seekOK=Buffer.from(shot).equals(Buffer.from(backward));result.seek_equal&&=seekOK;if(!seekOK&&dest){fs.writeFileSync(dest+'/seek-before-'+frame+'.png',shot);fs.writeFileSync(dest+'/seek-after-'+frame+'.png',backward);result.seek_debug.push(frame);}
@@ -98,7 +108,7 @@ export async function teachingCheck(page,opt){
       const left=[b[0]-size*ux-size*.5*uy,b[1]-size*uy+size*.5*ux],right=[b[0]-size*ux+size*.5*uy,b[1]-size*uy-size*.5*ux];
       path.setAttribute('d',`M ${a[0]} ${a[1]} L ${b[0]} ${b[1]} L ${left[0]} ${left[1]} L ${b[0]} ${b[1]} L ${right[0]} ${right[1]}`);
      }
-     path.setAttribute('vector-effect','none');path.style.strokeWidth=String(3/sc);path.style.strokeDasharray=String(path.getTotalLength());path.style.strokeDashoffset=String(path.getTotalLength()*(1-p));}
+     path.setAttribute('vector-effect','none');path.style.strokeWidth=String((item.stroke_width_px??3)/sc);path.style.strokeDasharray=String(path.getTotalLength());path.style.strokeDashoffset=String(path.getTotalLength()*(1-p));}
      else for(const [u,glyph] of item.glyphs.entries()){const s=spans.find(s=>s.kind==='draw'&&s.unit_index===u),show=s&&s.start_frame<=frame&&frame<s.hide_frame;for(const sid of glyph.svg_ids){const n=node.querySelector('[id="'+sid+'"]');n.style.opacity=show?'1':'0';if(show&&frame<s.end_frame)clip(n,glyph.bbox,(frame-s.start_frame)/(s.end_frame-s.start_frame-1),'oracle-label-'+sid);}}
     }
     namespace(g);

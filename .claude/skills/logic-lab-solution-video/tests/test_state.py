@@ -117,3 +117,17 @@ class FrozenFigureFingerprintTests(Sandbox):
             path.write_bytes(original);self.assertEqual(recover_run(run),'layers',path.name+' 복원')
             path.unlink();self.assertEqual(recover_run(run),'inputs',path.name+' 삭제')
             path.write_bytes(original);self.assertEqual(recover_run(run),'layers')
+
+    def test_chunk_and_style_invalidation(self):
+        from test_annotations import teaching_fixture
+        from solution_video.state import stage_fingerprint
+        from solution_video.util import file_hash
+        f,a,m,l=teaching_fixture();m['caption_timing']='pcm-chunks-v1';m['segments'][1]['chunks']=[dict(id='c1'),dict(id='c2')];a['items'][0].update(chunk_id='c1',offset_frames=0)
+        write(self.run/'source/manifest.json',m);write(self.run/'layers/layers.json',l);write(self.run/'source/focus.json',f);write(self.run/'source/annotations.json',a)
+        wav=make_audio('r',2400,self.run);sha=file_hash(self.run/wav['path']);voice=stage_fingerprint(self.run,'voice')
+        def finish():
+            for stage in STAGES[:6]:
+                out=self.run/(stage+'.txt');out.write_text(stage);finish_stage(self.run,stage,[out])
+        finish();a['items'][0]['chunk_id']='c2';write(self.run/'source/annotations.json',a);self.assertEqual(recover_run(self.run),'timing')
+        finish();a['items'][0].update(stroke_width_px=8,color='#C45100');write(self.run/'source/annotations.json',a);self.assertEqual(recover_run(self.run),'composition')
+        self.assertEqual(stage_fingerprint(self.run,'voice'),voice);self.assertEqual(file_hash(self.run/wav['path']),sha)

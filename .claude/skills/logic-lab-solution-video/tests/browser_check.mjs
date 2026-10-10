@@ -4,7 +4,7 @@ import {pathToFileURL} from 'node:url';
 const argv=process.argv.slice(2), opt=k=>argv.includes('--'+k)?argv[argv.indexOf('--'+k)+1]:undefined;
 const require=createRequire(opt('puppeteer-package'));
 const puppeteer=require('puppeteer-core');
-const browser=await puppeteer.launch({executablePath:opt('chrome'),headless:true,args:['--no-sandbox','--allow-file-access-from-files']});
+const browser=await puppeteer.launch({executablePath:opt('chrome'),headless:true,args:['--no-sandbox','--allow-file-access-from-files',...(opt('mode')==='gate'?['--disable-gpu']:[])]});
 try {
  const page=await browser.newPage();
  const mode=opt('mode');
@@ -31,6 +31,7 @@ try {
    const shot=async(svg,name,action)=>{
      await page.setContent('<style>html,body{margin:0;background:white}svg{width:100vw;height:100vh}</style>'+svg);
      if(action) await page.evaluate(action);
+     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
      await page.screenshot({path:dest+'/'+name+'.png'});
    };
    await shot(original,'original');

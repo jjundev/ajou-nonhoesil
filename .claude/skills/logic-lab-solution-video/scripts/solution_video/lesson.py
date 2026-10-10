@@ -75,4 +75,13 @@ def lesson_expectations(lesson:dict,manifest:dict,timeline:dict,teaching:dict)->
             frame=max(cue['start_frame']+12,max(s['end_frame'] for s in spans))
             _require(frame<cue['end_frame']-12 and all(frame<s['hide_frame'] for s in spans),name,'no stable completed evidence frame')
             result['probes'].append(dict(step_id=name,segment_id=sid,frame=frame,region_bbox=regions[cue['target']],annotation_ids=ids))
+            chunk_ids=list(dict.fromkeys(items[i]['chunk_id'] for i in ids if 'chunk_id' in items[i]))
+            for chunk_id in chunk_ids:
+                chunk=next((c for c in timeline.get('caption_cues',[]) if c['segment_id']==sid and c['chunk_id']==chunk_id),None)
+                _require(chunk is not None,name,f'missing speech evidence {chunk_id}')
+                marks=[i for i in ids if items[i].get('chunk_id')==chunk_id]
+                draws=[s for s in spans if s['id'] in marks]
+                probe=max(cue['start_frame']+12,max(s['end_frame'] for s in draws))
+                _require(probe<=chunk['end_sample']//800 and probe<cue['end_frame']-12 and all(probe<s['hide_frame'] for s in draws),name,f'no stable completed evidence for {chunk_id}')
+                result['probes'].append(dict(step_id=name,segment_id=sid,chunk_id=chunk_id,frame=probe,region_bbox=regions[cue['target']],annotation_ids=marks))
     return result

@@ -64,11 +64,15 @@ def _validate(focus,annotations,manifest,layers):
   if c.get('target') not in region_ids:fail(name,'unknown region target')
  items=named_list((annotations or {}).get('items',[]),'annotations')
  if cues and manifest.get('cameras'):fail('focus.json','manual cameras conflict with focus cues')
- bycue={c['segment_id']:c['target'] for c in cues};offsets={}
+ bycue={c['segment_id']:c['target'] for c in cues};offsets={};modes={}
  font=None
  for i in items:
   name=i['id'];sid=i.get('segment_id');kind=i.get('kind');g=i.get('geometry')
   if sid not in bycue or bycue[sid]!=i.get('region_id'):fail(name,'matching segment/region cue required')
+  chunk=i.get('chunk_id');chunk_mode='chunk_id' in i
+  if chunk_mode and (manifest.get('caption_timing')!='pcm-chunks-v1' or not isinstance(chunk,str) or chunk not in {c.get('id') for c in segs[sid].get('chunks',[])}):fail(name,'unknown chunk for segment '+sid)
+  if sid in modes and modes[sid]!=chunk_mode:fail(name,'mixed segment/chunk timing for '+sid)
+  modes[sid]=chunk_mode;offset_key=(sid,chunk) if chunk_mode else sid;minimum=0 if chunk_mode else 12
   if not isinstance(i.get('source_refs'),list) or not i['source_refs'] or any(not isinstance(s,str) or not s.strip() for s in i['source_refs']):fail(name,'source_refs required')
   if not isinstance(i.get('meaning_notes'),str) or not i['meaning_notes'].strip():fail(name,'meaning_notes required')
   if not isinstance(g,dict):fail(name,'geometry required')
@@ -79,6 +83,7 @@ def _validate(focus,annotations,manifest,layers):
    bounds=[min(a[0],b[0]),min(a[1],b[1]),max(a[0],b[0]),max(a[1],b[1])]
   elif kind=='ellipse':bounds=bbox(g.get('bbox'),name)
   elif kind=='label':
+   if 'stroke_width_px' in i:fail(name,'label uses font size, not stroke_width_px')
    if 'duration_frames' in i:fail(name,'label duration is fixed by character rate')
    runs=g.get('runs')
    if not isinstance(runs,list) or not runs:fail(name,'label runs required')
@@ -100,16 +105,21 @@ def _validate(focus,annotations,manifest,layers):
   check_box(bounds,layers,name)
   color=i.get('color','#1565C0')
   if not isinstance(color,str) or not re.fullmatch('#[0-9a-fA-F]{6}',color):fail(name,'color must be #RRGGBB')
-  i.update(color=color,units=units,offset_frames=integer(i.get('offset_frames',offsets.get(sid,12)),name,12),hide_at=i.get('hide_at','final'))
-  if kind!='label':i['duration_frames']=integer(i.get('duration_frames',18),name,18)
-  if i['offset_frames']<offsets.get(sid,12):fail(name,'overlapping or reversed annotation offset')
-  offsets[sid]=i['offset_frames']+annotation_duration(i)
+  i.update(color=color,units=units,offset_frames=integer(i.get('offset_frames',0 if chunk_mode else offsets.get(sid,12)),name,minimum),hide_at=i.get('hide_at','final'))
+  if kind!='label':
+   width=i.get('stroke_width_px',3)
+   if type(width) not in (int,float) or not math.isfinite(width) or not 2<=width<=12:fail(name,'stroke_width_px must be finite number in 2..12')
+   i['stroke_width_px']=width
+   i['duration_frames']=integer(i.get('duration_frames',18),name,18)
+  # 청크 항목의 오프셋은 그 청크 시작 기준이라 청크마다 따로 쌓는다. 같은 segment 안 hide 비교는 resolve_annotation_windows 가 실측 프레임으로 한다.
+  if i['offset_frames']<offsets.get(offset_key,minimum):fail(name,'overlapping or reversed annotation offset')
+  offsets[offset_key]=i['offset_frames']+annotation_duration(i)
   hide=i['hide_at']
   if hide!='final':
    if not isinstance(hide,dict) or hide.get('segment_id') not in segs:fail(name,'unknown hide segment')
    offset=integer(hide.get('offset_frames'),name)
    order=[s['id'] for s in manifest['segments']]
-   if order.index(hide['segment_id'])<order.index(sid) or (hide['segment_id']==sid and offset<offsets[sid]):fail(name,'hide must follow annotation completion')
+   if order.index(hide['segment_id'])<order.index(sid) or (not chunk_mode and hide['segment_id']==sid and offset<offsets[offset_key]):fail(name,'hide must follow annotation completion')
  return dict(schema_version=1,regions=regions,cues=cues,items=items) if cues or items else None
 
 def validate_teaching(focus,annotations,manifest,layers):
@@ -147,7 +157,10 @@ def compile_annotations(plan,layers,dest):
    inventory=browser(['--mode','inventory','--svg',str(filename.resolve())]);paint=[n for n in sub.iter() if n.tag.split('}')[-1]=='use' and 'data-text' in n.attrib];inv=[e for e in inventory if e['text'] is not None];chars=[u for u in units if not u['text'].isspace()]
    if len(inv)!=len(chars) or len(paint)!=len(chars):fail(ident,'font outline inventory differs from label')
    for u,n,e in zip(chars,paint,inv):
-    if e['text']!=u['text']:fail(ident,'font outline order differs')
+    if e['text']!=u['text']:
+     # MuPDF 는 공유 글리프를 정규 cmap 별칭으로 내보낸다(Δ → ∆ 등). 실제 글리프가 같을 때만 받고 저작 글자를 남긴다.
+     if len(e['text'])!=1 or not font.has_glyph(ord(u['text'])) or font.has_glyph(ord(e['text']))!=font.has_glyph(ord(u['text'])):fail(ident,'font outline order differs')
+    n.set('data-text',u['text'])
     if e['bbox'][0]>=e['bbox'][2] or e['bbox'][1]>=e['bbox'][3]:fail(ident,'font outline has no measurable bounds')
     sid='annotation-'+ident+'-'+e['id'];u.update(svg_ids=[sid],bbox=e['bbox']);n.set('id',sid);check_box(e['bbox'],layers,ident)
    for n in list(sub):node.append(n)
@@ -162,7 +175,7 @@ def compile_annotations(plan,layers,dest):
      dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy);size=min(6,length/3);ux,uy=dx/length,dy/length
      left=[b[0]-size*ux-size*.5*uy,b[1]-size*uy+size*.5*ux];right=[b[0]-size*ux+size*.5*uy,b[1]-size*uy-size*.5*ux]
      d+=f' L {left[0]} {left[1]} L {b[0]} {b[1]} L {right[0]} {right[1]}'
-   path=ET.SubElement(node,'{'+ns+'}path',id='annotation-'+ident+'-path',d=d,fill='none',stroke=i['color'],**{'stroke-width':'3','vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'})
+   path=ET.SubElement(node,'{'+ns+'}path',id='annotation-'+ident+'-path',d=d,fill='none',stroke=i['color'],**{'stroke-width':str(i['stroke_width_px']),'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'})
    i.update(path=d,path_id=path.get('id'),start_point=start,body_height=None)
    temp=dest/(ident+'.svg');temp.write_text(ET.tostring(root,encoding='unicode'))
    inv=browser(['--mode','inventory','--svg',str(temp.resolve())]);entry=inv[-1];boxes=[entry['bbox']]

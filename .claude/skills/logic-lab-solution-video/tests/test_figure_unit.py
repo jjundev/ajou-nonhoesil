@@ -32,6 +32,13 @@ class FigureUnitTests(Sandbox):
         p=self.page([PACK/'자료/figures/solutions/q-dec2x4-design-solution-01.png'])
         r=compare_completed(extract_layers(p,self.mapping(p)),self.run/'evidence')
         self.assertEqual((r['pixel_diff'],r['non_target_diff'],r['hidden_leaks']),(0,0,0))
+    def test_repeated_gate_stays_exact(self):
+        # 같은 정적 SVG 를 다시 찍어도 합성 중간 화면을 잡지 않아야 한다(부하 중 721px 차이가 났던 경우).
+        p=self.page([PACK/'자료/figures/solutions/q-dec2x4-design-solution-01.png']);l=extract_layers(p,self.mapping(p))
+        for attempt in range(8):
+            with self.subTest(attempt=attempt):
+                r=compare_completed(l,self.run/('evidence-'+str(attempt)))
+                self.assertEqual((r['pixel_diff'],r['non_target_diff'],r['hidden_leaks']),(0,0,0))
     def layers(self,fig_bbox,glyph_h=9):
         x0,y0,x1,y1=fig_bbox
         gs=[dict(id='t',text='완',bbox=[x0,y0-glyph_h-4,x0+glyph_h,y0-4],paint_order=0)]

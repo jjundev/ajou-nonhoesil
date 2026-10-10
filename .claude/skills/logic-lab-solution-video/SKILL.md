@@ -90,3 +90,23 @@ TTS 에는 읽을 대본만 보낸다(`spoken-text-only-v1`, 지침·"원고:"·
 ```
 
 `tts` 는 청크마다 WAV 를 만들고(`source/chunk-audio.json`), raw PCM 을 이어 segment WAV 와 청크별 상대 샘플 경계를 `source/audio.json` 에 싣는다. 자막은 그 실측 경계로 나온다. 청크가 일부 segment 에만 있으면 거부한다(글자 수 방식으로 메우지 않는다). 청크 없는 기존 run(실험05 기출3·기출12 등)은 예전 글자 수 비례 자막 그대로 동작한다. 청취 후 긴 앞뒤 무음만 `source/chunk-trims.json` 에 사람이 정수 샘플로 적고 `tts` 를 다시 돌린다(캐시라 유료 요청 없음). 자동으로 자르지 않는다. 청크 모드의 audio-review 는 모든 청크의 청취 확인(`chunk_checks`)이 있어야 통과하며, 청취하지 않았으면 complete/live_audio 를 승인하지 않고 게시하지 않는다. 자세한 내용은 [음성과 실측 타이밍](references/narration-and-timing.md)과 [최종 검증과 게시](references/verification.md)의 청크 절.
+
+### 발화에 맞춘 회로 필기
+같은 타원을 되풀이해서 설명을 대신하지 않는다. 선택 조건·데이터 경로·출력을 그 말을 하는 발화에 맞춰 표시한다. 짧은 기호·화살표·0/1 값 label 은 원본 선과 신호 이름 **옆**에 두고 선을 덮지 않는다. 교차점에 점이 없는 두 선을 연결처럼 잇지 않는다. 신호 이름은 원본 표기 그대로 쓴다.
+
+**굵기.** 도형(arrow·ellipse·underline)마다 `stroke_width_px` 를 유한한 숫자 2~12px 로 줄 수 있고, 생략하면 3px 다. 새로 저작할 때는 보조 4px·경로 6px·강조 8px 를 쓴다. label 에는 굵기를 주지 않고(오류) runs 의 `font_size_pt` 로 크기를 정한다.
+
+**색 역할(논리회로).** 색만으로 구분하지 않고 위치·기호로도 구분한다.
+
+| 색 | 역할 | 예 |
+|---|---|---|
+| 파랑 `#1565C0`(기본) | 선택 조건 | S1S0 값, 선택된 진리표 행 |
+| 주황 `#C45100` | 데이터·켜진 입력 | 선택된 D 경로, 우선순위 인코더의 가장 왼쪽 1 |
+| 초록 `#237A43` | 출력·결과 | Yk, A2A1A0 |
+| 자주 `#8E348E` | 대조·흔한 실수 | 고르지 않은 경로, 틀리기 쉬운 값 |
+
+**label 글자.** label 폰트(Pretendard)에 `⊕` 글리프가 없어 `A⊕B` label 은 `unsupported font glyph` 로 막힌다. XOR 은 label 에서 글자로 쓴다(‘A XOR B’). 프라임 `′` 은 쓸 수 있다(`S1′S0′`).
+
+**청크에 묶기.** manifest 가 `caption_timing: "pcm-chunks-v1"` 일 때만 항목에 `chunk_id`(그 reason/check segment 의 `chunks[].id`)를 줄 수 있다. 오프셋은 그 청크 발화 시작 기준 정수 ≥0(기본 0)이고, 한 segment 안에서 청크 항목과 legacy 항목을 섞지 않는다(다른 segment 끼리는 섞어도 된다). 서로 다른 청크의 항목은 같은 오프셋을 써도 된다. 그리기는 ceil(청크 start_sample/800)+오프셋과 segment 시작+12(카메라 이동) 중 늦은 프레임에 시작하고, move 8프레임과 필기 전체가 floor(청크 end_sample/800) 와 카메라 복귀 직전(segment 끝−13) 이내에 끝나야 한다. 넘치면 `<id> segment <sid> chunk <cid>` 오류가 나며, 표시나 label 을 줄이고 무음을 늘리지 않는다. `chunk_id` 없는 항목은 예전처럼 segment 기준 오프셋(하한 12)과 최소 길이 보정을 받는다.
+
+**범위.** 주석은 `work_bbox` 밖(왼쪽 조건 패널의 회로도·진리표·파형)에만 둔다. 중앙 풀이 칸 그림 위 주석은 아직 지원하지 않는다. 설명 중 표시는 누적하고 다음 풀이로 돌아갈 때 `hide_at` 으로 정리하며 최종 전체 화면에서는 숨긴다. label 본문은 화면에서 26px 이상이어야 한다. `chunk_id` 를 바꾸면 timing 부터, 굵기·색만 바꾸면 composition 부터 다시 하고 WAV 는 그대로 쓴다. 기술 검사 통과가 음성 청취를 대신하지 않는다.

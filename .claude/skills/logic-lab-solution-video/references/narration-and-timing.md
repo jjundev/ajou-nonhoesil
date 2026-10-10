@@ -78,3 +78,23 @@ guided manifest의 모든 segment에 음성 `text`와 표시 `caption_text`를 �
 **명시 절단(선택).** 기본은 청크 WAV 전체를 쓴다. 청취해서 긴 앞뒤 무음을 확인한 청크만 `source/chunk-trims.json` 에 적는다: `{"schema_version":1,"rows":[{"segment_id","chunk_id","raw_sha256","start_sample","end_sample","reason"}]}`. 정수 `0 <= start_sample < end_sample <= raw samples`, raw_sha256 은 현재 원본 청크 WAV, reason 은 비우지 않는다. 자동 에너지 탐지로 자르지 않는다(약한 발음 ‘에프’·‘디’ 끝이 잘린다). 원본 WAV 는 보존된다. 절단표를 바꾸면 `resume-set` 이 voice 부터 돌려주며, `tts` 를 다시 돌리면 캐시 원본으로 연결본만 갱신한다(유료 요청 없음). 대본을 바꾼 청크의 절단 행은 유료 요청 전에 거부되므로 행을 지우거나 다시 쓴다.
 
 **타이밍.** timeline 에 `caption_timing` 과 `caption_cues[{segment_id, chunk_id, caption_text, start_sample, end_sample}]` 가 생긴다. 절대 샘플 = segment 시작 샘플 + 상대 경계다. cue 는 segment 의 실측 voice 를 빈틈없이 덮고 필기·카메라 때문에 늘어난 segment 끝 hold 에는 자막을 늘리지 않는다. SRT 는 이 샘플을 밀리초로 반올림만 하므로 오차는 0.5ms 이하이고, 30fps 영상의 표시 전환은 1프레임 이내다. 청크 안의 단어 단위 정렬은 주장하지 않는다. `retime` 은 청크 영수증·원본·연결본·절단을 다시 대조한 뒤에만 timeline 을 만든다.
+
+## 발화에 맞춘 회로 필기
+같은 타원을 되풀이해서 설명을 대신하지 않는다. 선택 조건·데이터 경로·출력을 그 말을 하는 발화에 맞춰 표시한다. 짧은 기호·화살표·0/1 값 label 은 원본 선과 신호 이름 **옆**에 두고 선을 덮지 않는다. 교차점에 점이 없는 두 선을 연결처럼 잇지 않는다. 신호 이름은 원본 표기 그대로 쓴다.
+
+**굵기.** 도형(arrow·ellipse·underline)마다 `stroke_width_px` 를 유한한 숫자 2~12px 로 줄 수 있고, 생략하면 3px 다. 새로 저작할 때는 보조 4px·경로 6px·강조 8px 를 쓴다. label 에는 굵기를 주지 않고(오류) runs 의 `font_size_pt` 로 크기를 정한다.
+
+**색 역할(논리회로).** 색만으로 구분하지 않고 위치·기호로도 구분한다.
+
+| 색 | 역할 | 예 |
+|---|---|---|
+| 파랑 `#1565C0`(기본) | 선택 조건 | S1S0 값, 선택된 진리표 행 |
+| 주황 `#C45100` | 데이터·켜진 입력 | 선택된 D 경로, 우선순위 인코더의 가장 왼쪽 1 |
+| 초록 `#237A43` | 출력·결과 | Yk, A2A1A0 |
+| 자주 `#8E348E` | 대조·흔한 실수 | 고르지 않은 경로, 틀리기 쉬운 값 |
+
+**label 글자.** label 폰트(Pretendard)에 `⊕` 글리프가 없어 `A⊕B` label 은 `unsupported font glyph` 로 막힌다. XOR 은 label 에서 글자로 쓴다(‘A XOR B’). 프라임 `′` 은 쓸 수 있다(`S1′S0′`).
+
+**청크에 묶기.** manifest 가 `caption_timing: "pcm-chunks-v1"` 일 때만 항목에 `chunk_id`(그 reason/check segment 의 `chunks[].id`)를 줄 수 있다. 오프셋은 그 청크 발화 시작 기준 정수 ≥0(기본 0)이고, 한 segment 안에서 청크 항목과 legacy 항목을 섞지 않는다(다른 segment 끼리는 섞어도 된다). 서로 다른 청크의 항목은 같은 오프셋을 써도 된다. 그리기는 ceil(청크 start_sample/800)+오프셋과 segment 시작+12(카메라 이동) 중 늦은 프레임에 시작하고, move 8프레임과 필기 전체가 floor(청크 end_sample/800) 와 카메라 복귀 직전(segment 끝−13) 이내에 끝나야 한다. 넘치면 `<id> segment <sid> chunk <cid>` 오류가 나며, 표시나 label 을 줄이고 무음을 늘리지 않는다. `chunk_id` 없는 항목은 예전처럼 segment 기준 오프셋(하한 12)과 최소 길이 보정을 받는다.
+
+**범위.** 주석은 `work_bbox` 밖(왼쪽 조건 패널의 회로도·진리표·파형)에만 둔다. 중앙 풀이 칸 그림 위 주석은 아직 지원하지 않는다. 설명 중 표시는 누적하고 다음 풀이로 돌아갈 때 `hide_at` 으로 정리하며 최종 전체 화면에서는 숨긴다. label 본문은 화면에서 26px 이상이어야 한다. `chunk_id` 를 바꾸면 timing 부터, 굵기·색만 바꾸면 composition 부터 다시 하고 WAV 는 그대로 쓴다. 기술 검사 통과가 음성 청취를 대신하지 않는다.

@@ -56,3 +56,14 @@ class FocusTests(Sandbox):
    for x,y in [(b[0],b[1]),(b[2],b[1]),(b[2],b[3]),(b[0],b[3])]:
     dx=(x-meta['tip_px'][0])*unit;dy=(y-meta['tip_px'][1])*unit;sx=tip[0]+dx*math.cos(r)-dy*math.sin(r);sy=tip[1]+dx*math.sin(r)+dy*math.cos(r)
     self.assertGreaterEqual(sx,0);self.assertLessEqual(sx,1920);self.assertGreaterEqual(sy,0);self.assertLessEqual(sy,900)
+
+ def test_thick_arrow_screen_bounds(self):
+  _,_,m,l=teaching_fixture();p=make_teaching_plan();p['regions'][0]['bbox']=[20,40,180,90]
+  t=build_teaching_timeline(m,l,[make_audio(s['id'],800,self.run) for s in m['segments']],default_config(),None,p)
+  c={'items':[dict(id='a',kind='arrow',bbox=[5,30,190,90],stroke_width_px=12,body_height=None)]}
+  v=compile_focus_keys(m,l,t,p,c,[dict(at_frame=0,viewbox=[0,0,400,300])])[1]['viewbox'];sc=min(1920/v[2],900/v[3])
+  # 둥근 끝·화살촉까지 칠해진 범위 밖으로 연필 여백(180/200/30)을 남긴다.
+  self.assertGreaterEqual((5-v[0])*sc-6,180-1e-6)
+  self.assertGreaterEqual((30-v[1])*sc-6,200-1e-6)
+  self.assertLessEqual((190-v[0])*sc+6,1920-180+1e-6)
+  self.assertLessEqual((90-v[1])*sc+6,900-30+1e-6)
