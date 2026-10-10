@@ -212,6 +212,24 @@ class LabPrepareTests(Sandbox):
         self.assertTrue(set(pair['figure_svg_refs'])<=set(read(run/'source/inputs.json')['files']))
         # export_page 는 PNG 만 받는다: SVG 는 도형 후보(figure_source)가 되지 않는다.
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
+    def test_prepare_reports_missing_pair_svg_as_warning(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); (repo/'복습노트/실험05/자료/figures/solutions/q-dec2x4-design-solution-01.svg').unlink()  # 팩 사본이라 원본은 그대로다
+        out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue()); self.assertEqual(code,0)
+        want=['figure SVG missing: q-dec2x4-design-solution-01.png']
+        self.assertEqual(result['warnings'],want)
+        self.assertEqual((result['prepared'],result['failed'],result['status']),(1,1,'author-required'))  # 기존 키·상태는 그대로
+        items={i['id']:i for i in read(Path(result['batch'])/'batch.json')['items']}
+        self.assertEqual(items['q-dec2x4-design']['warnings'],want); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
+        self.assertNotIn('warnings',items['q-demux-from-dec'])  # 입력 게이트에서 탈락한 항목 형식은 그대로
+    def test_prepare_without_missing_svg_has_no_warnings_key(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue()); self.assertEqual(code,0); self.assertNotIn('warnings',result)
+        self.assertTrue(all('warnings' not in i for i in read(Path(result['batch'])/'batch.json')['items']))
     def test_prepare_all_failed_experiment(self):
         import io,contextlib,json
         repo=self.sandbox_repo(); out=io.StringIO()

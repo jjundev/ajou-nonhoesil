@@ -48,6 +48,9 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
             finish_stage(run,'inputs',[run/'source/inputs.json',run/'source/pair.json'])
         except Exception as ex:
             item.update(status='failed',reason=str(ex)[:500]);write(run/'source/prepare-error.json',{'reason':item['reason']})
+        # 짝 SVG 가 없는 풀이 그림은 pair.json 에만 남던 경고다: 통과한 항목에 실어 사용자가 보게 한다(없으면 키를 만들지 않는다).
+        warnings=['figure SVG missing: '+name for name in pair.get('figure_svg_missing',[])]
+        if warnings and item['status']!='failed':item['warnings']=warnings
         write(batch/'batch.json',data)
     grouped={}
     for failure in failures:
@@ -64,6 +67,13 @@ def summarize_batch(batch):
     """Counts of batch.json items that passed the input gate (anything not failed) and those that did not."""
     statuses=[i.get('status') for i in read(Path(batch)/'batch.json')['items']]
     return {'prepared':sum(s!='failed' for s in statuses),'failed':sum(s=='failed' for s in statuses)}
+
+def batch_warnings(batch):
+    """Warnings of the batch.json items that passed the input gate, in item order (each string once)."""
+    found=[]
+    for item in read(Path(batch)/'batch.json')['items']:
+        if item.get('status')!='failed':found+=[w for w in item.get('warnings',[]) if w not in found]
+    return found
 
 def resume_batch(batch):
     batch=Path(batch);data=read(batch/'batch.json');items=[]
@@ -189,6 +199,7 @@ def main(argv=None):
         if args.action=='prepare':
             batch=prepare_batch(args.repo,args.selector,args.problems.split(',') if args.problems else None,args.review,args.writing_mode)
             counts=summarize_batch(batch); result={'status':'author-required','batch':str(batch),**counts,'paid_requests':0}
+            if batch_warnings(batch):result['warnings']=batch_warnings(batch)
             # Some dropped is still work to do; nothing left to author means the whole selection failed the input gate.
             if counts['prepared']==0 and counts['failed']>0: result.update(status='failed',reason='all problems failed the input gate; see batch.json')
         elif args.action=='resume-set': result=dict(resume_batch(args.batch),paid_requests=0)
