@@ -371,7 +371,8 @@
   "scripts/solution_video/lesson.py": "상류 eeec3d5 설계 재구현: chunk_id 주석이 있으면 청크마다 완성 검증점(청크 발화 끝·cue 끝 12f 전·hide 전)",
   "tests/test_lesson.py": "상류 eeec3d5 설계 재구현: chunk_id 주석이 있으면 청크마다 완성 검증점(청크 발화 끝·cue 끝 12f 전·hide 전)",
   "tests/teaching_check.mjs": "상류 eeec3d5 설계 재구현: lesson 가시성에 stroke 반경 포함(수평 밑줄 높이 0 허용), 포커스 구간 주석 bbox±반경 화면 안·화면 굵기 일치를 bounds_ok 에 넣고 실패 시 bounds_debug",
-  "tests/test_lesson_runtime.py": "상류 eeec3d5 설계 재구현: lesson 가시성에 stroke 반경 포함(수평 밑줄 높이 0 허용), 포커스 구간 주석 bbox±반경 화면 안·화면 굵기 일치를 bounds_ok 에 넣고 실패 시 bounds_debug"
+  "tests/test_lesson_runtime.py": "상류 eeec3d5 설계 재구현: lesson 가시성에 stroke 반경 포함(수평 밑줄 높이 0 허용), 포커스 구간 주석 bbox±반경 화면 안·화면 굵기 일치를 bounds_ok 에 넣고 실패 시 bounds_debug",
+  "tests/browser_check.mjs": "상류 eeec3d5: gate 모드 브라우저는 --disable-gpu, 스크린샷 전 requestAnimationFrame 두 번 대기(부하 중 test_gate_zero_with_figure_target 의 721px 흔들림)"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
