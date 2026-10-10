@@ -34,18 +34,26 @@ def build_writing_camera_keys(layers:dict,timeline:dict,units:list)->list[dict]:
         if any(start-12<=k['at_frame']<end or k['at_frame']<start-12<k['at_frame']+k.get('transition_frames',0) for k in manual):raise InputError('manual camera conflicts with writing chunk')
         base=min(bases[u['step_id']] for u in group)
         pieces=[p for u in group for p in u['pieces'] if p['kind']=='shape' or not glyphs[p['id']]['text'].isspace()]
+        # 글자 없는 도형 전용 묶음(답 상자·표 선 등)은 글자 높이 확대 대신 쪽 전체와 연필 여백이 들어오는 구도.
+        # 풀이 그림 묶음은 그림 확대(descend) 규칙을 그대로 따른다.
+        shape_only=bool(pieces) and all(p['kind']=='shape' and p['id'] not in figures for p in pieces)
         def fit(scale,only=None):
-            bounds=[]
+            bounds=[[0,0,full[2]*scale,full[3]*scale]] if shape_only else []
             for p in only or pieces:
                 b=p['clip_bbox'];vertical=p['kind']=='shape' and b[2]==b[0];lo=b[1] if vertical else b[1]+.8*(b[3]-b[1]);hi=b[3] if vertical else lo
                 bounds.append([min(b[0]*scale,b[0]*scale+envelope[0]),min(b[1]*scale,lo*scale+envelope[1]),max(b[2]*scale,b[2]*scale+envelope[2]),max(b[3]*scale,hi*scale+envelope[3])])
             a=[min(b[0] for b in bounds),min(b[1] for b in bounds),max(b[2] for b in bounds),max(b[3] for b in bounds)]
             if a[2]-a[0]>1900 or a[3]-a[1]>880:return None
-            box=[min(u['bbox'][0] for u in group),min(u['bbox'][1] for u in group),max(u['bbox'][2] for u in group),max(u['bbox'][3] for u in group)]
+            box=full if shape_only else [min(u['bbox'][0] for u in group),min(u['bbox'][1] for u in group),max(u['bbox'][2] for u in group),max(u['bbox'][3] for u in group)]
             preferred_x=(box[0]+box[2])*scale/2-960;preferred_y=(box[1]+box[3])*scale/2-450
             left=max(a[2]-1910,min(a[0]-10,preferred_x));top=max(a[3]-890,min(a[1]-10,preferred_y))
             return [left/scale,top/scale,1920/scale,height/scale]
-        candidates=[c for c in (fit(body/base) for body in (28,27,26)) if c][:1]
+        if shape_only:
+            scale=min((1900-(envelope[2]-envelope[0]))/full[2],(880-(envelope[3]-envelope[1]))/full[3])
+            if scale<=0:raise InputError('pencil cannot fit page context: '+group[0]['chunk_id'])
+            candidates=[c for c in [fit(scale)] if c]
+            if not candidates:raise InputError('shape-only chunk cannot fit page context with pencil: '+group[0]['chunk_id'])
+        else:candidates=[c for c in (fit(body/base) for body in (28,27,26)) if c][:1]
         figure_pieces=[p for p in pieces if p['kind']=='shape' and p['id'] in figures]
         def descend(only=None):
             # A solution figure may be shown smaller than 26px text, but never smaller than the full-page view.
