@@ -315,7 +315,8 @@
       "derived_answer": "(0,0)→c0 s0, (0,1)→c0 s1, (1,0)→c0 s1, (1,1)→c1 s0",
       "answer_status": "verified",
       "title": "반가산기 진리표 채우기",
-      "workbook_fragment": "workbook/q-ha-table.json"
+      "workbook_fragment": "workbook/q-ha-table.json",
+      "explanation_fragment": "problem-explanations/q-ha-table.html"
     },
     {
       "id": "q-ha-design-eq",
@@ -371,7 +372,8 @@
       "derived_answer": "S=x⊕y (XOR 1), C=xy (AND 1)",
       "answer_status": "verified",
       "title": "식(1)로 반가산기 설계",
-      "workbook_fragment": "workbook/q-ha-design-eq.json"
+      "workbook_fragment": "workbook/q-ha-design-eq.json",
+      "explanation_fragment": "problem-explanations/q-ha-design-eq.html"
     },
     {
       "id": "q-ha-design-ic",
@@ -409,7 +411,8 @@
       "derived_answer": "S=A⊕B (7486), Co=A·B (7408)",
       "answer_status": "verified",
       "title": "7486·7408로 반가산기 설계",
-      "workbook_fragment": "workbook/q-ha-design-ic.json"
+      "workbook_fragment": "workbook/q-ha-design-ic.json",
+      "explanation_fragment": "problem-explanations/q-ha-design-ic.html"
     },
     {
       "id": "q-cs-roles",
@@ -456,7 +459,8 @@
       "derived_answer": "S=합의 한 자리 값, C=윗자리로 넘기는 올림",
       "answer_status": "verified",
       "title": "반가산기·전가산기의 C, S 역할",
-      "workbook_fragment": "workbook/q-cs-roles.json"
+      "workbook_fragment": "workbook/q-cs-roles.json",
+      "explanation_fragment": "problem-explanations/q-cs-roles.html"
     },
     {
       "id": "q-ha-lsb",
@@ -511,7 +515,8 @@
       "derived_answer": "LSB에는 아래 자리 올림이 없어 올림 입력 없는 반가산기로 충분",
       "answer_status": "verified",
       "title": "반가산기를 LSB에만 쓰는 이유",
-      "workbook_fragment": "workbook/q-ha-lsb.json"
+      "workbook_fragment": "workbook/q-ha-lsb.json",
+      "explanation_fragment": "problem-explanations/q-ha-lsb.html"
     },
     {
       "id": "q-adder-diff",
@@ -576,7 +581,8 @@
       "derived_answer": "전가산기는 올림 입력 Ci를 받고 반가산기는 받지 않음",
       "answer_status": "verified",
       "title": "전가산기와 반가산기의 차이",
-      "workbook_fragment": "workbook/q-adder-diff.json"
+      "workbook_fragment": "workbook/q-adder-diff.json",
+      "explanation_fragment": "problem-explanations/q-adder-diff.html"
     },
     {
       "id": "q-fa-table",
@@ -640,7 +646,8 @@
       "derived_answer": "011→C1 S0, 100→C0 S1, 101→C1 S0",
       "answer_status": "verified",
       "title": "전가산기 진리표 일부 채우기",
-      "workbook_fragment": "workbook/q-fa-table.json"
+      "workbook_fragment": "workbook/q-fa-table.json",
+      "explanation_fragment": "problem-explanations/q-fa-table.html"
     },
     {
       "id": "q-fa-design",
@@ -705,7 +712,8 @@
       "derived_answer": "S=(x⊕y)⊕z, C=xy+yz+zx (AND 3, 3입력 OR 1, XOR 2). 제공 답안은 AND 2개 구성",
       "answer_status": "disputed",
       "title": "식(1)로 전가산기 설계",
-      "workbook_fragment": "workbook/q-fa-design.json"
+      "workbook_fragment": "workbook/q-fa-design.json",
+      "explanation_fragment": "problem-explanations/q-fa-design.html"
     },
     {
       "id": "q-hs-bool",
@@ -769,7 +777,8 @@
       "derived_answer": "B=x′y, D=x′y+xy′(=x⊕y)",
       "answer_status": "verified",
       "title": "반감산기의 단순화 부울 함수",
-      "workbook_fragment": "workbook/q-hs-bool.json"
+      "workbook_fragment": "workbook/q-hs-bool.json",
+      "explanation_fragment": "problem-explanations/q-hs-bool.html"
     },
     {
       "id": "q-hs-circuit",
@@ -843,7 +852,8 @@
       "derived_answer": "D=x⊕y(XOR), B=x′y(NOT x, AND)",
       "answer_status": "verified",
       "title": "반감산기 회로 설계",
-      "workbook_fragment": "workbook/q-hs-circuit.json"
+      "workbook_fragment": "workbook/q-hs-circuit.json",
+      "explanation_fragment": "problem-explanations/q-hs-circuit.html"
     },
     {
       "id": "q-sub-diff",
@@ -899,7 +909,8 @@
       "derived_answer": "전감산기는 내림 입력 Bi를 받고 반감산기는 받지 않음",
       "answer_status": "verified",
       "title": "반감산기와 전감산기의 차이",
-      "workbook_fragment": "workbook/q-sub-diff.json"
+      "workbook_fragment": "workbook/q-sub-diff.json",
+      "explanation_fragment": "problem-explanations/q-sub-diff.html"
     },
     {
       "id": "q-fs-table",
@@ -963,7 +974,8 @@
       "derived_answer": "011→B1 D0, 100→B0 D1, 101→B0 D0, 110→B0 D0 (x=A,y=B,z=Bi 가정)",
       "answer_status": "verified",
       "title": "전감산기 간략 회로도로 진리표 채우기",
-      "workbook_fragment": "workbook/q-fs-table.json"
+      "workbook_fragment": "workbook/q-fs-table.json",
+      "explanation_fragment": "problem-explanations/q-fs-table.html"
     },
     {
       "id": "q-fs-equation",
@@ -1017,7 +1029,8 @@
       "derived_answer": "D=A⊕B⊕Bi, Bo=A′B+(A⊕B)′Bi",
       "answer_status": "verified",
       "title": "전감산기 회로의 D, Bo 식",
-      "workbook_fragment": "workbook/q-fs-equation.json"
+      "workbook_fragment": "workbook/q-fs-equation.json",
+      "explanation_fragment": "problem-explanations/q-fs-equation.html"
     },
     {
       "id": "q-fs-roles",
@@ -1081,7 +1094,8 @@
       "derived_answer": "D=세 입력을 뺀 차, B=윗자리에서 빌려 와야 한다는 내림 (국문 해석)",
       "answer_status": "disputed",
       "title": "전감산기 D, B 출력의 역할",
-      "workbook_fragment": "workbook/q-fs-roles.json"
+      "workbook_fragment": "workbook/q-fs-roles.json",
+      "explanation_fragment": "problem-explanations/q-fs-roles.html"
     },
     {
       "id": "q-cs-roles-sub",
@@ -1147,7 +1161,8 @@
       "derived_answer": "가산기 해석: S=합, C=올림 / 감산기 해석: D=차, B=내림 (원문 표기 불일치)",
       "answer_status": "unresolved",
       "title": "“반감산기·전감산기”의 C, S 역할(표기 불일치)",
-      "workbook_fragment": "workbook/q-cs-roles-sub.json"
+      "workbook_fragment": "workbook/q-cs-roles-sub.json",
+      "explanation_fragment": "problem-explanations/q-cs-roles-sub.html"
     }
   ],
   "checks": {
@@ -1160,6 +1175,16 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험03_기출문제.html",
+    "실험03_기출문제.md",
+    "실험03_기출풀이.html",
+    "실험03_기출풀이.md",
+    "실험03_문제설명.html",
+    "실험03_문제설명.md",
+    "실험03_실험설명.html",
+    "실험03_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1312,14 +1337,30 @@
     "자료/figures/solutions/q-hs-circuit-solution-01.png",
     "자료/figures/solutions/q-hs-circuit-solution-01.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험03_기출문제.html",
-    "실험03_기출문제.md",
-    "실험03_기출풀이.html",
-    "실험03_기출풀이.md",
-    "실험03_실험설명.html",
-    "실험03_실험설명.md",
-    "원문과_저작안내.md",
+    "자료/problem-explanations/figures/q-ha-design-ic.svg",
+    "자료/problem-explanations/q-adder-diff.html",
+    "자료/problem-explanations/q-cs-roles-sub.html",
+    "자료/problem-explanations/q-cs-roles.html",
+    "자료/problem-explanations/q-fa-design.html",
+    "자료/problem-explanations/q-fa-table.html",
+    "자료/problem-explanations/q-fs-equation.html",
+    "자료/problem-explanations/q-fs-roles.html",
+    "자료/problem-explanations/q-fs-table.html",
+    "자료/problem-explanations/q-ha-design-eq.html",
+    "자료/problem-explanations/q-ha-design-ic.html",
+    "자료/problem-explanations/q-ha-lsb.html",
+    "자료/problem-explanations/q-ha-table.html",
+    "자료/problem-explanations/q-hs-bool.html",
+    "자료/problem-explanations/q-hs-circuit.html",
+    "자료/problem-explanations/q-sub-diff.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
-  ]
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
 }

@@ -19,7 +19,7 @@ def audit_experiment(number):
         numbers=([str(i) for i in range(1,len(selected)+1)],[p['number'] for p in q],[re.search(r'문제 (\d+)',text(n)).group(1) for n in articles]),
         subparts_complete=all('| '+p['id']+' |' in report for p in selected),answer_status={p['id']:p['answer_status'] for p in selected},articles=articles)
 
-@pytest.mark.parametrize('number,expected',[(1,12),(2,14)])
+@pytest.mark.parametrize('number,expected',[(1,12),(2,14),(3,15)])
 def test_experiment_coverage(number,expected):
     result=audit_experiment(number)
     assert result['counts']==(expected,expected,expected)
@@ -30,7 +30,7 @@ def test_experiment_coverage(number,expected):
         for key in ('understand','start','solve','verify','pitfall','retry'):
             assert sum(n.attrs.get('data-explanation')==key for n in article.walk())==1
 
-@pytest.mark.parametrize('number,states',[(1,{'q-deq':'disputed'}),(2,{'q-region':'disputed','q-delay-transition':'unresolved','q-transition':'unresolved','q-speed':'unresolved'})])
+@pytest.mark.parametrize('number,states',[(1,{'q-deq':'disputed'}),(2,{'q-region':'disputed','q-delay-transition':'unresolved','q-transition':'unresolved','q-speed':'unresolved'}),(3,{'q-fa-design':'disputed','q-fs-roles':'disputed','q-cs-roles-sub':'unresolved'})])
 def test_experiment_answer_states(number,states):
     result=audit_experiment(number)
     for ident,state in states.items():
