@@ -348,7 +348,9 @@
   "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부",
   "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
   "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구",
-  "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers"
+  "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers",
+  "scripts/solution_video/shape_timing.py": "논회실 신규(상류 a017c9d 설계 재구현): 같은 step_id+shape_id 의 전체 폭 W·대표 높이 H 로 B=min(90,max(18,ceil(W/H*interval))) draw 예산을 잡고 clip 폭 비례 배분(조각당 ≥1, 합=B, 최대 나머지·동률 저작 순), 조각 수>B 는 InputError, 폭 0 도형은 18, figure 는 그림 단위 wipe 몫이라 제외",
+  "tests/test_shape_timing.py": "논회실 신규: 도형 예산 분할 불변·폭 비례·동률 저작 순·최소 1프레임·과분할 오류·세로선·상한 90·figure 제외"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
