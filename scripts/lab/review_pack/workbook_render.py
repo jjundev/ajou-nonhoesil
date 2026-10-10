@@ -43,8 +43,56 @@ IMAGE_WAIT_NEW=("[...document.images].map(img => img.complete ? null : new Promi
                 "      img.addEventListener('load', done, { once: true });\n"
                 "      img.addEventListener('error', done, { once: true });\n"
                 "    }))")
-# 원본 스냅샷 위에 덧씌우는 세 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
-LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW)]
+# 쉼표로 이어진 식 목록(`O_0=…,\ O_1=…`)이 모든 최상위 `=` 에서 잘려 다음 식의 꼬리표(`O_1`)가 앞 줄 끝에 남던 문제
+# (2026-10-10 실험05 기출4·7·12 해설지). 최상위 쉼표로 식 목록을 먼저 나눈 뒤 식마다 aligned 행을 만든다.
+# 조각마다 최상위 관계 기호가 있을 때만 나누고, `f(a,b)=…` 의 괄호 안 쉼표나 한 조각이라도 관계 기호가 없는 목록은
+# 기존 동작(splitRelations 결과 그대로)을 지킨다.
+EQUATION_OLD=r'''function equationTex(tex, parts, prefix) {
+  const [lhs, ...rest] = parts;
+  if (!lhs) return prefix + tex;
+  const lines = rest.map(([rel, rhs], i) => `${i ? '' : prefix + lhs} &amp;${rel} ${rhs}`);
+  return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
+}'''
+EQUATION_NEW=r'''// 중괄호·\left…\right·소괄호·대괄호 바깥의 쉼표에서 식 목록을 나눈다. 조각이 둘 이상이고
+// 모든 조각이 (왼쪽 변이 있는) 관계식일 때만 조각 배열을, 아니면 null 을 돌려준다.
+function splitEquationList(tex) {
+  const pieces = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < tex.length; i++) {
+    const c = tex[i];
+    if (c === '{' || c === '(' || c === '[') depth++;
+    else if (c === '}' || c === ')' || c === ']') depth--;
+    else if (c === '\\') {
+      const cmd = (/^\\([a-zA-Z]+|.)/.exec(tex.slice(i)) || [, ""])[1];
+      if (cmd === 'left') depth++;
+      else if (cmd === 'right') depth--;
+      i += cmd.length;
+    } else if (c === ',' && depth === 0) {
+      pieces.push(tex.slice(start, i));
+      start = i + 1;
+    }
+  }
+  if (depth !== 0 || !pieces.length) return null;
+  pieces.push(tex.slice(start));
+  // 조각 머리·꼬리의 간격 명령(`\ `, `\,`, `\quad` …)은 식 바깥이라 지운다
+  const SPACE = /^(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+|(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+$/g;
+  const list = pieces.map(p => p.replace(SPACE, ''));
+  const ok = list.every(p => { const r = splitRelations(p); return r && r[0]; });
+  return ok ? list : null;
+}
+function equationTex(tex, parts, prefix) {
+  const [lhs, ...rest] = parts;
+  if (!lhs) return prefix + tex;
+  const rowsOf = (head, relations) => relations.map(([rel, rhs], i) => `${i ? '' : head} &amp;${rel} ${rhs}`);
+  const list = splitEquationList(tex);
+  const lines = list
+    ? list.flatMap((piece, k) => { const [l, ...r] = splitRelations(piece); return rowsOf((k ? '' : prefix) + l, r); })
+    : rowsOf(prefix + lhs, rest);
+  return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
+}'''
+
+# 원본 스냅샷 위에 덧씌우는 네 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
+LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW),(EQUATION_OLD,EQUATION_NEW)]
 
 MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로\n"
              "  if (moved.length) {\n"
