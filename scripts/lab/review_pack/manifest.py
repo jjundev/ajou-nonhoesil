@@ -30,11 +30,13 @@ def link_data(text):
     """저작 조각 속 `figures/..` 링크를 문서 기준 `자료/figures/..` 로."""
     return _AUTHORED_RESOURCE.sub(lambda m:m.group(1)+DATA+'/'+m.group(2)+'/',text)
 
-def output_names(experiment, *, review_presentation_version=None):
+def output_names(experiment, *, review_presentation_version=None, problem_explanation_version=None):
     base=config.experiment_folder_name(experiment)
     names={f'{kind}_{ext}':f'{base}_{label}.{ext}' for kind,label in [('note','실험설명'),('review','기출풀이')] for ext in ('html','md')}
     if review_presentation_version == 2:
         names.update({f'question_{ext}':f'{base}_기출문제.{ext}' for ext in ('html','md')})
+    if problem_explanation_version == 1:
+        names.update({f'explanation_{ext}':f'{base}_문제설명.{ext}' for ext in ('html','md')})
     return names
 
 def validate_manifest(data):
@@ -48,6 +50,14 @@ def validate_manifest(data):
     modern=data.get('review_presentation_version') == 2
     if 'review_presentation_version' in data and (type(data['review_presentation_version']) is not int or not modern):
         errors.append('review_presentation_version must be 2 or absent')
+    explanation='problem_explanation_version' in data
+    if explanation:
+        if type(data['problem_explanation_version']) is not int or data['problem_explanation_version']!=1 or not modern:
+            errors.append('problem_explanation_version requires version 1 and workbook version 2')
+        checks=data.get('explanation_checks',{})
+        for key in ('source_visual','content','independent','browser'):
+            if not isinstance(checks,dict) or checks.get(key) not in {'pass','fail','not_run','self_review'}:
+                errors.append('invalid explanation check: '+key)
     if modern and not safe_relative(data.get('figure_manifest')):
         errors.append('unsafe/missing figure_manifest')
     try: config.experiment_folder_name(data.get('experiment'))
@@ -104,6 +114,8 @@ def validate_manifest(data):
         links=p.get('topics')
         if not isinstance(links,list) or any(t not in topics for t in links) or (p.get('status')=='included' and not links): errors.append(ident+': unknown/missing topics')
         if p.get('status')=='included':
+            if explanation and p.get('explanation_fragment')!=f'problem-explanations/{ident}.html':
+                errors.append(ident+': missing/canonical explanation_fragment required')
             field='workbook_fragment' if modern else 'fragment'
             if not safe_relative(p.get(field)): errors.append(ident+': unsafe/missing '+field)
             if p.get('answer_status')=='verified' and not p.get('derived_answer'): errors.append(ident+': missing derived_answer')
