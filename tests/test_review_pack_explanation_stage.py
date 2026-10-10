@@ -64,3 +64,18 @@ def test_original_publish_guards_remain(tmp_path):
     (folder/'자료/assets/widgets.js').unlink()
     with pytest.raises(ValueError):prepare_explanation_stage(folder,author,tmp_path/'stage')
     assert hashes(folder)=={k:v for k,v in before.items() if k!='자료/assets/widgets.js'}
+
+def test_duplicate_html_id_cannot_break_question_navigation(tmp_path):
+    folder,author=pack(tmp_path)
+    path=author/'q-mux-001.html'
+    path.write_text(path.read_text().replace('선택선이 고른 입력을 찾아요.','<span id="q-mux-001">선택선이 고른 입력을 찾아요.</span>'))
+    with pytest.raises(ValueError,match='duplicate ID'):
+        prepare_explanation_stage(folder,author,tmp_path/'stage')
+
+def test_workbook_question_and_review_anchors_are_valid(tmp_path):
+    folder,author=pack(tmp_path)
+    path=author/'q-mux-001.html'
+    path.write_text(path.read_text().replace('Y=I0예요.','Y=I0예요. <a href="{{REVIEW_HREF}}#q-mux-001">기출풀이의 같은 문항</a>'))
+    stage=prepare_explanation_stage(folder,author,tmp_path/'stage')
+    m=json.loads((stage/'자료/manifest.json').read_text())
+    assert check_explanations(stage,m)==[]

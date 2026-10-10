@@ -1,12 +1,13 @@
 """Reuse the learning-note shell for the complete problem walkthroughs."""
 from pathlib import Path
+from collections import Counter
 from urllib.parse import quote
 import html
 import shutil
 from .explanation_content import load_explanations, within
 from .manifest import output_names, DATA
 from .navigation import render_navigation
-from .html2md import export_document
+from .html2md import export_document, Parser
 
 VENDOR = {
  'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css': 'pretendard/pretendard.css',
@@ -67,6 +68,10 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     for key,value in values.items():document=document.replace('{{'+key+'}}',value)
     for url,local in VENDOR.items():document=document.replace(url,DATA+'/assets/vendor/'+local)
     if '{{' in document:raise ValueError('Unreplaced explanation placeholder')
+    parser=Parser();parser.feed(document)
+    counts=Counter(n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id'))
+    duplicates=[ident for ident,count in counts.items() if count>1]
+    if duplicates:raise ValueError('duplicate ID: '+', '.join(duplicates))
     path=folder/names['explanation_html'];path.write_text(document,encoding='utf-8')
     md,_=export_document(path,note_metadata=explanation_metadata(manifest))
     mdpath=folder/names['explanation_md'];mdpath.write_text(md,encoding='utf-8')

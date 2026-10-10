@@ -1,5 +1,6 @@
 """Compare published explanation documents with their canonical teaching fragments."""
 from pathlib import Path
+from collections import Counter
 from tempfile import TemporaryDirectory
 from urllib.parse import unquote,urlsplit
 from .manifest import output_names,DATA
@@ -22,6 +23,8 @@ def check_explanations(folder: Path, manifest: dict) -> list[str]:
             for key,path in paths.items():
                 if (folder/names[key]).read_bytes()!=path.read_bytes():errors.append(key+': explanation differs from authored content')
         source=folder/names['explanation_html'];parser=Parser();parser.feed(source.read_text(encoding='utf-8'))
+        ids=[n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id')]
+        errors.extend('duplicate ID: '+ident for ident,count in Counter(ids).items() if count>1)
         errors.extend(check_navigation(parser.root,names['explanation_html']))
         errors.extend(check_md(source,folder/names['explanation_md']))
         for n in parser.root.walk():
@@ -33,7 +36,11 @@ def check_explanations(folder: Path, manifest: dict) -> list[str]:
             dest=within(folder,parts.path) if parts.path else source
             if not dest.is_file():errors.append('Missing explanation resource: '+value);continue
             if parts.fragment and dest.suffix=='.html':
-                tree=Parser();tree.feed(dest.read_text(encoding='utf-8'))
-                if not any(x.attrs.get('id')==parts.fragment for x in tree.root.walk()):errors.append('Missing explanation anchor: '+value)
+                if dest.name in (names['question_html'],names['review_html']):
+                    ids={p['id'] for p in read_workbook_payload(dest)['problems']}
+                else:
+                    tree=Parser();tree.feed(dest.read_text(encoding='utf-8'))
+                    ids={x.attrs.get('id') for x in tree.root.walk()}
+                if parts.fragment not in ids:errors.append('Missing explanation anchor: '+value)
     except (OSError,ValueError,KeyError,TypeError) as exc:errors.append('Explanation inspection: '+str(exc))
     return errors

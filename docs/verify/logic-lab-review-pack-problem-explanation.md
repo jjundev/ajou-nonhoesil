@@ -24,7 +24,7 @@
 
 ```sh
 .venv/bin/python -m pytest -n0 tests/test_review_pack_*.py -q
-# 431 passed in 66.57s
+# 433 passed in 64.26s
 
 .venv/bin/python -m scripts.lab.review_pack check --folder 복습노트/실험01
 # 실험01~05 모두 OK (mechanical checks only)
@@ -49,3 +49,14 @@ publish의 sibling 백업을 기존 테스트가 active pack으로 읽어 두 �
 - `output/validation/problem-explanations/expNN-preservation.json`, `final-preservation.json`: 전후 파일 hash와 원래 commit.
 - `output/validation/problem-explanations/*-teaching.png`: 풀이·회로·파형·첫 줄 화면.
 - `docs/learning-pack-source/실험NN/problem-explanations/`: 재현 가능한 저작 원고와 내용 대조표.
+
+## 별도 최종 코드 리뷰
+
+새 리뷰어가 읽기 전용으로 신규 모듈·발행·rerender·목차 갱신 연동과 실험별 설명 16개를 표본 검토했다. 표본에서 명백한 논리식·계산 오류를 발견하지 않았으며, 다음 P2 두 건을 보고했다.
+
+1. 조립 문서의 중복 ID가 문항 목차 이동을 방해할 수 있음: 조립 시와 검사 시 전체 ID 중복을 거절하도록 수정했다.
+2. 기출풀이 문항 앵커는 워크북 payload에서 동적으로 생성되어 정적 앵커 검사로는 오판함: 문제지·풀이 문서 앵커를 payload ID로 검증하도록 수정했다.
+
+두 건 각각 실패 재현 테스트를 실행하여 실제 실패를 확인한 뒤 수정하여 통과했다. 독립 블라인드 풀이를 실시한 것은 아니므로 각 팩의 independent 상태는 not_run을 유지한다. 리뷰에서 판단을 보류한 항목과 미해결 minor는 없다.
+
+최종 수정 후 전체 스위트: 433 passed in 64.26s. 5개 최종 팩 검사와 git diff --check도 통과했다.
