@@ -27,6 +27,8 @@ def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=No
             if pencil and not count:raise InputError('empty writing step')
             height=representative_height([glyphs[g] for g in step['glyph_ids']]) if pencil else None
             if spatial:
+                from .shape_timing import allocate_shape_frames
+                shape_frames=allocate_shape_frames(units,layers,seg['step_id'],height,interval)
                 for u in [u for u in units if u['step_id']==seg['step_id']]:
                     transition=previous_unit is None or (u['line_id'],u['chunk_id'])!=(previous_unit['line_id'],previous_unit['chunk_id'])
                     if transition: offset+=12
@@ -34,9 +36,10 @@ def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=No
                     for i,piece in enumerate(u['pieces']):
                         b=piece['clip_bbox']; gid=piece['id'];kind=piece['kind']
                         space=kind=='glyph' and glyphs[gid]['text'].isspace()
-                        lifted=previous_unit is not None and previous_unit['line_id']!=u['line_id']
-                        move=interval if space else max(8,writing['lifted_move_frames']) if lifted else writing['adjacent_move_frames']
-                        draw=0 if space else FIGURE_DRAW_FRAMES if kind=='shape' and gid in figures else max(18 if kind=='shape' else 2,interval-writing['adjacent_move_frames'])
+                        # 줄 바꿈 들어 옮기기는 새 줄 첫 대상에만(공백이어도) 한 번.
+                        lifted=i==0 and previous_unit is not None and previous_unit['line_id']!=u['line_id']
+                        move=max(8,writing['lifted_move_frames']) if lifted else interval if space else writing['adjacent_move_frames']
+                        draw=0 if space else FIGURE_DRAW_FRAMES if kind=='shape' and gid in figures else shape_frames[(u['id'],i)] if kind=='shape' else max(2,interval-writing['adjacent_move_frames'])
                         base=dict(id=gid,from_id=previous_piece['id'] if previous_piece else None,from_bbox=previous_piece['clip_bbox'] if previous_piece else None,
                                   target_kind=kind,step_id=seg['step_id'],unit_id=u['id'],piece_index=i,clip_bbox=b)
                         spans.append(dict(base,kind='move',start_frame=frame+offset,end_frame=frame+offset+move,lifted=lifted));offset+=move
