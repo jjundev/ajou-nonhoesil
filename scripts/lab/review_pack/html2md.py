@@ -80,7 +80,7 @@ def export_document(path, export=True, note_metadata=None):
         if tag in {'h1','h2','h3','h4','h5','h6'}:return '\n'+anchor+'#'*int(tag[1])+' '+body.strip()+'\n\n'
         if tag=='a':
             href=n.attrs.get('href','')
-            href=re.sub(r'(실험\d{2}_(?:실험설명|기출풀이))\.html',r'\1.md',unquote(href))
+            href=re.sub(r'(실험\d{2}_(?:실험설명|기출풀이|문제설명))\.html',r'\1.md',unquote(href))
             href=quote(href,safe='/#:.?=&%_-')
             return f'[{body}]({href})' if href else body
         if tag=='img':
@@ -137,6 +137,11 @@ def convert_pack(note_path,review_path,manifest=None):
             path=paths[0].parent/names[key]
             if not path.is_file(): raise ValueError('Workbook MD missing: '+str(path))
             outputs.append(path)
+    if manifest and manifest.get('problem_explanation_version')==1:
+        names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
+        path=paths[0].parent/names['explanation_md']
+        if not path.is_file():raise ValueError('Explanation MD missing: '+str(path))
+        outputs.append(path)
     return outputs,count
 
 def check_md(html_path,md_path):
