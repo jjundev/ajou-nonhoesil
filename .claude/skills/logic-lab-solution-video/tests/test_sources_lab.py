@@ -80,6 +80,7 @@ class LabSourceTests(Sandbox):
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])
+        self.assertEqual([f['label'] for f in failures],[None])  # experiment-level: no problem, so no label
         frozen=freeze_sources(discover(REPO,'실험05',['q-dec2x4-design']),self.run)
         self.assertFalse(Path(frozen[0]['figure_refs'][0]).is_absolute())
         self.assertTrue((self.run/frozen[0]['figure_refs'][0]).is_file())

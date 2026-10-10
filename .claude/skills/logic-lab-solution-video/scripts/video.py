@@ -5,7 +5,7 @@ import argparse,copy,json,os,shutil,sys,uuid,wave
 from datetime import datetime
 from solution_video.util import S,read,write,digest,file_hash,local
 from solution_video.contracts import InputError,ReviewError
-from solution_video.sources import discover,freeze_sources,parse_selector
+from solution_video.sources import discover,display_label,freeze_sources,parse_selector
 from solution_video.pdf_pages import export_page,extract_layers,compare_completed
 from solution_video.manifest import validate_manifest,content_fingerprint
 from solution_video.review_adapter import default_config,generate_voice,validate_config
@@ -40,7 +40,7 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
         write(run/'source/inputs.json',read(batch/'source/inputs.json')); write(run/'source/pair.json',pair);write(run/'source/config.json',default_config())
         write(run/'source/writing.json',writing)
         write(run/'run.json',{'batch':str(batch),'review':review,'problem_id':p['problem_id']})
-        label=p['label'] if len(experiments)==1 else p['experiments'][0]+' '+p['label']  # labels repeat across experiments
+        label=display_label(p['label'],experiments,p['experiments'][0])
         item={'id':p['problem_id'],'label':label,'run':'videos/'+key,'filename':label+' — 풀이.mp4','status':'author-required'}
         items.append(item);write(batch/'batch.json',data)
         try:
@@ -55,8 +55,15 @@ def prepare_batch(repo,selector,problem_ids=None,review=False,writing_mode="penc
     for failure in grouped.values():
         pid=failure['problem_id'] or 'experiment-'+failure['experiment'];key='failed-'+digest(failure)[:12];run=batch/'videos'/key
         write(run/'source/prepare-error.json',failure)
-        items.append({'id':pid,'run':'videos/'+key,'filename':pid+' — 풀이.mp4','status':'failed','reason':failure['reason']})
+        # A dropped problem keeps its display label (same rule as a passing one); only an experiment-level failure has none.
+        label=display_label(failure['label'],experiments,failure['experiment']) if failure.get('label') else None
+        items.append({'id':pid,'label':label,'run':'videos/'+key,'filename':(label or pid)+' — 풀이.mp4','status':'failed','reason':failure['reason']})
     write(batch/'batch.json',data);return batch
+
+def summarize_batch(batch):
+    """Counts of batch.json items that passed the input gate (anything not failed) and those that did not."""
+    statuses=[i.get('status') for i in read(Path(batch)/'batch.json')['items']]
+    return {'prepared':sum(s!='failed' for s in statuses),'failed':sum(s=='failed' for s in statuses)}
 
 def resume_batch(batch):
     batch=Path(batch);data=read(batch/'batch.json');items=[]
@@ -179,7 +186,11 @@ def main(argv=None):
         p=subs.add_parser(name);p.add_argument('--batch',required=True,type=Path)
     args=parser.parse_args(argv)
     try:
-        if args.action=='prepare': result={'status':'author-required','batch':str(prepare_batch(args.repo,args.selector,args.problems.split(',') if args.problems else None,args.review,args.writing_mode)),'paid_requests':0}
+        if args.action=='prepare':
+            batch=prepare_batch(args.repo,args.selector,args.problems.split(',') if args.problems else None,args.review,args.writing_mode)
+            counts=summarize_batch(batch); result={'status':'author-required','batch':str(batch),**counts,'paid_requests':0}
+            # Some dropped is still work to do; nothing left to author means the whole selection failed the input gate.
+            if counts['prepared']==0 and counts['failed']>0: result.update(status='failed',reason='all problems failed the input gate; see batch.json')
         elif args.action=='resume-set': result=dict(resume_batch(args.batch),paid_requests=0)
         elif args.action=='publish-set':
             result=publish_batch(args.batch);result.update(status='passed' if result['complete'] else 'failed',paid_requests=0)

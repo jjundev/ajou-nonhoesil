@@ -13,6 +13,9 @@ def parse_selector(selector):
     if not (1<=lo<=hi<=10): raise InputError('invalid experiment selector: '+str(selector))
     return ['실험%02d'%n for n in range(lo,hi+1)]
 def _norm(s): return unicodedata.normalize('NFC',s)
+def display_label(label,experiments,experiment):
+    """Label shown to the user and used in the file name. Labels repeat across experiments, so a range prefixes it."""
+    return label if len(experiments)==1 else experiment+' '+label
 def _child(folder,name):
     return next((x for x in folder.iterdir() if _norm(x.name)==name),None) if folder.is_dir() else None
 def _squash(s): return re.sub(r'\s+','',_norm(s))
@@ -72,17 +75,18 @@ def discover(repo,selector,problem_ids=None,failures=None):
     selected={_norm(p).strip() for p in problem_ids} if problem_ids else None
     root=_child(repo,'복습노트')
     if root is None: raise InputError('review folder missing')
+    packs={};listed=set();labels={}  # (experiment, id) -> label counted in manifest order; filled as each pack is read
     def fail(pid,experiment,reason):
         if failures is None: raise InputError(reason)
-        failures.append({'problem_id':pid,'experiment':experiment,'reason':reason})
-    packs={};listed=set()
+        # label is None for an experiment-level failure (pack or PDF pair missing before any problem is known).
+        failures.append({'problem_id':pid,'experiment':experiment,'label':labels.get((experiment,pid)),'reason':reason})
     for name in experiments:
         folder=_child(root,name); data=_child(folder,DATA_DIR) if folder else None; manifest=_child(data,'manifest.json') if data else None
         if manifest is None: fail(None,name,'experiment pack missing: '+name);continue
         included=[p for p in json.loads(manifest.read_text(encoding='utf-8'))['problems'] if p.get('status')=='included']
         # Labels come from the current manifest order every time; the PDF badge must agree.
         packs[name]=(folder,[(_norm(p['id']),KINDS[p['kind']]+str(n),_norm(p['title'])) for n,p in enumerate(included,1)])
-        for pid,label,_ in packs[name][1]: listed.update([pid,label,name+':'+pid,name+':'+label])
+        for pid,label,_ in packs[name][1]: listed.update([pid,label,name+':'+pid,name+':'+label]);labels[(name,pid)]=label
     for token in selected or ():
         owners=[name for name,(_,problems) in packs.items() if any(token==label for _,label,_ in problems)]
         if len(owners)>1: raise InputError('ambiguous label '+token+' in '+', '.join(owners)+'; use '+owners[-1]+':'+token)

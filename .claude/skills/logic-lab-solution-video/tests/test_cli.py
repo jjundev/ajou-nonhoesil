@@ -198,17 +198,52 @@ class LabPrepareTests(Sandbox):
         self.assertEqual(items['q-dec2x4-design']['label'],'기출4'); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
         self.assertEqual(items['q-dec2x4-design']['filename'],'기출4 — 풀이.mp4')
         self.assertEqual(items['q-demux-from-dec']['status'],'failed'); self.assertIn('raw_latex p.11',items['q-demux-from-dec']['reason'])
+        # A dropped problem keeps the same display label the passing ones get; its file name no longer falls back to the ID.
+        self.assertEqual(items['q-demux-from-dec']['label'],'출처 미확인11')
+        self.assertEqual(items['q-demux-from-dec']['filename'],'출처 미확인11 — 풀이.mp4')
         run=batch/items['q-dec2x4-design']['run']; pair=read(run/'source/pair.json')
         self.assertTrue(all((run/f).is_file() for f in pair['figure_refs']))
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
     def test_prepare_all_failed_experiment(self):
         import io,contextlib,json
         repo=self.sandbox_repo(); out=io.StringIO()
-        with contextlib.redirect_stdout(out): cli.main(['prepare','실험02','--repo',str(repo)])
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험02','--repo',str(repo)])
         result=json.loads(out.getvalue()); self.assertEqual(result['paid_requests'],0)
+        # Nothing passed the input gate: the stage must not claim 'author-required' (there is nothing to author).
+        self.assertEqual(code,1); self.assertEqual(result['status'],'failed')
+        self.assertEqual(result['prepared'],0); self.assertGreater(result['failed'],0)
+        self.assertEqual(result['reason'],'all problems failed the input gate; see batch.json')
         batch=Path(result['batch']); items=read(batch/'batch.json')['items']
         self.assertTrue(items and all(i['status']=='failed' for i in items))
+        self.assertEqual(result['failed'],len(items))
+        # Every dropped problem still says which one it is.
+        self.assertTrue(all(i['label'] and i['filename']==i['label']+' — 풀이.mp4' for i in items),items)
         self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험02')
+    def test_prepare_partial_failure_exits_zero(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue())
+        self.assertEqual(code,0); self.assertEqual(result['status'],'author-required')
+        self.assertEqual((result['prepared'],result['failed']),(1,1)); self.assertNotIn('reason',result)
+        self.assertEqual(result['paid_requests'],0)
+    def test_range_prefix_on_failed_label(self):
+        repo=self.sandbox_repo()
+        batch=cli.prepare_batch(repo,'실험04-05',['실험05:기출4','실험05:q-demux-from-dec'])
+        items={i['id']:i for i in read(batch/'batch.json')['items']}
+        # Same rule for both: a range prefixes the experiment, a single experiment does not.
+        self.assertEqual(items['q-dec2x4-design']['label'],'실험05 기출4')
+        self.assertEqual(items['q-demux-from-dec']['status'],'failed')
+        self.assertEqual(items['q-demux-from-dec']['label'],'실험05 출처 미확인11')
+        self.assertEqual(items['q-demux-from-dec']['filename'],'실험05 출처 미확인11 — 풀이.mp4')
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':1,'failed':1})
+    def test_experiment_level_failure_has_no_label(self):
+        repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)  # 실험03 pack folder absent
+        batch=cli.prepare_batch(repo,'실험03')
+        items=read(batch/'batch.json')['items']
+        self.assertEqual([(i['id'],i['label'],i['filename'],i['status']) for i in items],
+            [('experiment-실험03',None,'experiment-실험03 — 풀이.mp4','failed')])
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':0,'failed':1})
     def test_prepare_range_folder_name_and_writing_mode(self):
         repo=self.sandbox_repo()
         for mode in ['pencil','typing']:
