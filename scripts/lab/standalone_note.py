@@ -85,7 +85,19 @@ def build(note_dir, kind):
     html = re.sub(r'<link[^>]*rel="stylesheet"[^>]*href="(?!https?:)[^"]+"[^>]*>', link, html)
     html = re.sub(r'(<img[^>]*?)src="(?!data:|https?:)([^"]+)"',
                   lambda m: f'{m.group(1)}src="{_uri(note_dir / m.group(2))}"', html)
-    html = re.sub(rf'<a href="{note_dir.name}_[^"]*\.html">([^<]*)</a>', r"<span>\1</span>", html)
+    def sibling(m):
+        attrs, content = m.group(1), m.group(2)
+        href = re.search(r'\bhref="([^"]*)"', attrs)
+        if not href or not re.fullmatch(re.escape(note_dir.name) + r'_(?:실험설명|기출문제|기출풀이)\.html', href.group(1)):
+            return m.group(0)
+        attrs = attrs[:href.start()] + attrs[href.end():]
+        attrs = attrs.rstrip()
+        return f'<span{attrs}>{content}</span>'
+
+    html = re.sub(r'<a\b([^>]*)>(.*?)</a>', sibling, html, flags=re.S)
+    html = html.replace('.pack-nav a {', '.pack-nav a, .pack-nav span {')
+    html = html.replace('.pack-nav a[aria-current="page"] {',
+                        '.pack-nav a[aria-current="page"], .pack-nav span[aria-current="page"] {')
     return html.replace("</body>", "".join(late) + "</body>", 1)
 
 

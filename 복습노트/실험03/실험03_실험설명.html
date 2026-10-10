@@ -172,6 +172,18 @@
     .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
     @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
 
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
     /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
     html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
     html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
@@ -338,9 +350,7 @@
           <h2 id="panel-left-title">목차</h2>
           <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
         </div>
-        <p class="panel-meta">읽은 토픽 <b id="progress-n">0</b> / <span id="progress-total">0</span></p>
-        <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
-        <nav class="toc" aria-label="목차"><a href="실험03_실험설명.html">실험 설명</a><a href="실험03_기출풀이.html">기출 풀이</a><a href="실험03_기출문제.html">기출 문제</a><a href="#learning">실험 이해</a></nav>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#t-start"><span class="toc-title">전체 흐름을 먼저 살펴봐요</span></a></li><li><a href="#t-gates"><span class="toc-title">게이트 네 개를 먼저 익혀요</span></a></li><li><a href="#t-half-adder"><span class="toc-title">반가산기로 두 비트를 더해요</span></a></li><li><a href="#t-full-adder"><span class="toc-title">전가산기는 올림까지 받아요</span></a></li><li><a href="#t-chain"><span class="toc-title">여러 자리 덧셈은 이렇게 이어져요</span></a></li><li><a href="#t-half-sub"><span class="toc-title">반감산기로 두 비트를 빼요</span></a></li><li><a href="#t-full-sub"><span class="toc-title">전감산기는 내림까지 받아요</span></a></li><li><a href="#t-lab"><span class="toc-title">실험은 이렇게 확인해요</span></a></li></ol></nav>
       </div>
     </aside>
     <div class="content">
@@ -566,12 +576,10 @@
       roomyMq.addEventListener('change', onMq);
 
       // ---------- 목차의 진행 표시 ----------
-      const progressN = document.getElementById('progress-n');
-      const progressBar = document.getElementById('progress-bar');
-      const progressTotal = document.getElementById('progress-total');
       function markToc(done, total, doneLabel) {
         panels.left.querySelectorAll('.toc-list a').forEach((a) => {
-          const id = decodeURIComponent(a.getAttribute('href').slice(1));
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
           let mark = a.querySelector('.toc-mark');
           if (!mark) {
             mark = document.createElement('span');
@@ -586,9 +594,6 @@
           mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
           a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
         });
-        progressN.textContent = String(done.size);
-        progressTotal.textContent = String(total);
-        progressBar.style.transform = 'scaleX(' + (total ? done.size / total : 0) + ')';
       }
       function revealCurrent() {
         const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
@@ -696,33 +701,13 @@
       const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
       let cur = -1;
 
-      // 목차: 섹션 링크 아래에 화면(토픽·카드) 목록을 붙인다
-      const tocLinks = [];
-      Array.from(toc.querySelectorAll(':scope > a')).forEach((a) => {
-        const sec = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
-        const group = document.createElement('div');
-        group.className = 'toc-group';
-        a.replaceWith(group);
-        group.appendChild(a);
-        if (!sec) return;
-        const list = document.createElement('ol');
-        list.className = 'toc-list';
-        screens.forEach((s, i) => {
-          if (!sec.contains(s)) return;
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = '#' + s.id;
-          link.innerHTML = '<span class="toc-title"></span>';
-          link.firstChild.textContent = titleOf(s);
-          li.appendChild(link);
-          list.appendChild(li);
-          tocLinks[i] = link;
-        });
-        group.appendChild(list);
-      });
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
 
       function indexFor(hash) {
-        const id = decodeURIComponent((hash || '').replace(/^#/, ''));
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
         const el = id && document.getElementById(id);
         if (!el || !main.contains(el)) return { i: 0 };
         const i = screens.findIndex((s) => s.contains(el) || el.contains(s));

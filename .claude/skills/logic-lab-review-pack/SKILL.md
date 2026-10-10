@@ -70,7 +70,9 @@ RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. �
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
 실험설명의 모든 설명 그림은 원문을 읽어 직접 SVG로 다시 제작하고 진리표는 텍스트 표로 쓴다. 스캔/스크린샷을 설명 그림으로 첨부하지 않는다. 원문·문제은행 증거와 기출풀이 원본 이미지는 보존한다.
 설명은 완성 예제→일부 단계 연습→기출 풀이로 이어진다. 문제에는 필요한 개념으로 돌아가는 링크를 넣는다.
-실험설명은 생명과학의 note-template.html을 유지한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render의 LOCAL_PATCHES(표 테두리 CSS, 빈 조건 블록 생략)와 TEMPLATE_PATCHES(문제지의 채울 표를 work-table 표지로 풀이 칸 맨 위에 옮김)만 덧씌운다. 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
+실험설명은 생명과학 note-template.html에서 가져온 논회실 로컬 템플릿을 사용한다. upstream 원본은 보존하고 논회실의 탐색 개선은 로컬 템플릿·생성기·검사기에 함께 반영한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render의 LOCAL_PATCHES(표 테두리 CSS, 빈 조건 블록 생략)와 TEMPLATE_PATCHES(문제지의 채울 표를 work-table 표지로 풀이 칸 맨 위에 옮김)만 덧씌운다. 워크북 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
+
+**탐색 계약.** 실험설명과 legacy 기출풀이의 왼쪽 패널에는 현재 문서 목차만 둔다. `자료 이동` 제목·문서 링크·pack-nav·구분선을 추가하지 않는다. 패널의 `목차` 제목 바로 아래에 토픽/문항 목록만 둔다. `실험 이해` 등 섹션 링크를 목차에 넣지 않는다. `이 페이지 목차` 소제목, 읽은 토픽/푼 문제 합계와 진행 막대를 표시하지 않는다. `<nav class="toc" aria-label="이 페이지 목차">` 안에 `<ol class="toc-list">`와 토픽/문항 hash 링크를 정적으로 생성한다. 들여쓰기는 0이며 JS는 기존 링크를 화면·읽음 체크와 연결한다. JS 비활성에서도 전체 토픽 링크를 제공한다. 문서 링크를 TOC에 혼합하거나 모든 링크를 section으로 해석하지 않는다. 잘못된 hash 인코딩은 예외를 처리한다. 개별 토픽/문항의 읽음·풂 체크는 유지하되 진행 합계는 표시하지 않는다. 현재 토픽의 기존 `aria-current="true"`와 읽음/풂 저장 키·IDs를 유지한다. 모바일에서는 목차 선택 후 drawer를 닫는다. 별도 A4 워크북은 이 패널 계약의 대상이 아니다.
 우측 요약은 div.sum, 도움말은 details.hint/solution을 사용한다. 자세한 마크업은 authoring.md.
 
 ## 4. 조립과 MD 생성
@@ -84,7 +86,7 @@ build는 새 표시 버전에서 세 HTML, 세 MD, 출처와_문항목록.md를 
 은행 수입 팩에는 원문과_저작안내.md(루트)와 evidence/·authoring-index.json(`자료/`)도 복사한다.
 RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/를 예전처럼 RUN 루트에 둔다. build가 `자료/` 로 옮긴다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
-생명과학 원본 템플릿은 그대로 보존하고, 생성 결과에서만 CDN URL을 번들된 로컬 자원으로 바꾼다.
+생명과학 저장소의 원본 템플릿은 그대로 보존하고, 논회실 로컬 템플릿으로 생성한 결과에서 CDN URL을 번들된 로컬 자원으로 바꾼다.
 MD에는 힌트·풀이·정적 위젯 설명을 모두 남긴다. 오류가 나면 fragment를 수정하고 새 stage로 다시 build한다.
 
 ## 5. 검증
@@ -121,5 +123,7 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 ## 후속 요청과 경계
 
 특정 부분에 대한 질문은 기존 팩을 읽고 설명한다. 질문만으로 파일을 수정하지 않는다.
-'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(payload에서 HTML·MD 재생성 후 검사)을 쓴다.
+'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. **워크북** 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(워크북 payload에서 HTML·MD 재생성 후 검사)을 쓴다. 이 명령은 실험설명을 재생성하지 않는다.
+
+**기존 목차 일괄 갱신.** `python -m scripts.lab.review_pack.navigation_upgrade --all`로 dry-run 목록을 확인하고 `python -m scripts.lab.review_pack.navigation_upgrade --all --apply --backup-dir <새 백업 폴더>`로 적용한다. 한 팩은 `--all` 대신 `--folder 복습노트/실험NN`을 쓴다. 명령은 모든 대상의 구조를 사전 검사하고 전체 팩을 백업한 뒤 탐색 부분과 동봉 note/review 템플릿만 바꾼다. 알 수 없는 HTML은 쓰기 전에 실패하며 본문·IDs·워크북 payload는 보존한다. 재실행의 변경 목록은 0이어야 한다. 적용 후 각 팩의 check와 브라우저 검증을 수행한다. 이미 내보낸 standalone HTML이 있으면 갱신한 원본으로 다시 내보낸다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.
