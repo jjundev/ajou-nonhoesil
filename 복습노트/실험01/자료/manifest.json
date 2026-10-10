@@ -307,7 +307,8 @@
       "derived_answer": "000→0,0,1,0 / 001→0,1,0,1 / 101→0,1,0,0 / 111→1,1,0,1 (AND,OR,NOR,XOR)",
       "answer_status": "verified",
       "title": "3입력 게이트 진리표 (4행)",
-      "workbook_fragment": "workbook/q-tt3-4row.json"
+      "workbook_fragment": "workbook/q-tt3-4row.json",
+      "explanation_fragment": "problem-explanations/q-tt3-4row.html"
     },
     {
       "id": "q-tt3-8row",
@@ -371,7 +372,8 @@
       "derived_answer": "8행 진리표: AND=111에서만 1, OR=000에서만 0, NOR=000에서만 1, XOR=1이 홀수 개",
       "answer_status": "verified",
       "title": "3입력 게이트 진리표 (8행)",
-      "workbook_fragment": "workbook/q-tt3-8row.json"
+      "workbook_fragment": "workbook/q-tt3-8row.json",
+      "explanation_fragment": "problem-explanations/q-tt3-8row.html"
     },
     {
       "id": "q-xor2-tt",
@@ -417,7 +419,8 @@
       "derived_answer": "L L→L, L H→H, H L→H, H H→L",
       "answer_status": "verified",
       "title": "2입력 XOR 진리표",
-      "workbook_fragment": "workbook/q-xor2-tt.json"
+      "workbook_fragment": "workbook/q-xor2-tt.json",
+      "explanation_fragment": "problem-explanations/q-xor2-tt.html"
     },
     {
       "id": "q-xor-graded",
@@ -445,7 +448,8 @@
       "derived_answer": "F = A⊕B = A′B + AB′; 진리표 0,1,1,0",
       "answer_status": "verified",
       "title": "XOR 게이트 기호, 진리표, 논리식",
-      "workbook_fragment": "workbook/q-xor-graded.json"
+      "workbook_fragment": "workbook/q-xor-graded.json",
+      "explanation_fragment": "problem-explanations/q-xor-graded.html"
     },
     {
       "id": "q-switching",
@@ -509,7 +513,8 @@
       "derived_answer": "V′+X",
       "answer_status": "verified",
       "title": "Switching Algebra로 식 간단히 하기",
-      "workbook_fragment": "workbook/q-switching.json"
+      "workbook_fragment": "workbook/q-switching.json",
+      "explanation_fragment": "problem-explanations/q-switching.html"
     },
     {
       "id": "q-demorgan",
@@ -573,7 +578,8 @@
       "derived_answer": "A·B·C + D + E",
       "answer_status": "verified",
       "title": "드모르간으로 식 전개",
-      "workbook_fragment": "workbook/q-demorgan.json"
+      "workbook_fragment": "workbook/q-demorgan.json",
+      "explanation_fragment": "problem-explanations/q-demorgan.html"
     },
     {
       "id": "q-deq",
@@ -664,7 +670,8 @@
       "derived_answer": "D=(A+B)′, E=B·C, Q=(A+B)′+B·C",
       "answer_status": "disputed",
       "title": "회로의 D, E, Q 부울식",
-      "workbook_fragment": "workbook/q-deq.json"
+      "workbook_fragment": "workbook/q-deq.json",
+      "explanation_fragment": "problem-explanations/q-deq.html"
     },
     {
       "id": "q-logicdiagram",
@@ -719,7 +726,8 @@
       "derived_answer": "게이트 5개: NOT 2, NOR 1, OR 1, AND 1 — F=(A+B′)′·(C+D′)",
       "answer_status": "verified",
       "title": "식의 논리 다이어그램 그리기",
-      "workbook_fragment": "workbook/q-logicdiagram.json"
+      "workbook_fragment": "workbook/q-logicdiagram.json",
+      "explanation_fragment": "problem-explanations/q-logicdiagram.html"
     },
     {
       "id": "q-nand-xor",
@@ -792,7 +800,8 @@
       "derived_answer": "NAND 4개: N1=(AB)′, N2=(A·N1)′, N3=(B·N1)′, C=(N2·N3)′",
       "answer_status": "verified",
       "title": "NAND만으로 XOR 구성",
-      "workbook_fragment": "workbook/q-nand-xor.json"
+      "workbook_fragment": "workbook/q-nand-xor.json",
+      "explanation_fragment": "problem-explanations/q-nand-xor.html"
     },
     {
       "id": "q-nand3",
@@ -838,7 +847,8 @@
       "derived_answer": "(A·B·C)′ = NAND(AND(A,B), C)",
       "answer_status": "verified",
       "title": "AND와 NAND로 3입력 NAND",
-      "workbook_fragment": "workbook/q-nand3.json"
+      "workbook_fragment": "workbook/q-nand3.json",
+      "explanation_fragment": "problem-explanations/q-nand3.html"
     },
     {
       "id": "q-nor3-or-inv",
@@ -866,7 +876,8 @@
       "derived_answer": "(A+B+C)′ = NOT(OR(OR(A,B),C))",
       "answer_status": "verified",
       "title": "OR와 인버터로 3입력 NOR",
-      "workbook_fragment": "workbook/q-nor3-or-inv.json"
+      "workbook_fragment": "workbook/q-nor3-or-inv.json",
+      "explanation_fragment": "problem-explanations/q-nor3-or-inv.html"
     },
     {
       "id": "q-cmos-nand3",
@@ -930,7 +941,8 @@
       "derived_answer": "PMOS 3개 병렬(VDD-출력), NMOS 3개 직렬(출력-GND), 입력 A,B,C가 각 쌍의 게이트에 연결",
       "answer_status": "verified",
       "title": "CMOS 3입력 NAND 그리기",
-      "workbook_fragment": "workbook/q-cmos-nand3.json"
+      "workbook_fragment": "workbook/q-cmos-nand3.json",
+      "explanation_fragment": "problem-explanations/q-cmos-nand3.html"
     },
     {
       "id": "q-pullup",
@@ -994,6 +1006,16 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험01_기출문제.html",
+    "실험01_기출문제.md",
+    "실험01_기출풀이.html",
+    "실험01_기출풀이.md",
+    "실험01_문제설명.html",
+    "실험01_문제설명.md",
+    "실험01_실험설명.html",
+    "실험01_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1154,14 +1176,26 @@
     "자료/figures/solutions/q-xor-graded-solution-01.svg",
     "자료/figures/xor-nand4.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험01_기출문제.html",
-    "실험01_기출문제.md",
-    "실험01_기출풀이.html",
-    "실험01_기출풀이.md",
-    "실험01_실험설명.html",
-    "실험01_실험설명.md",
-    "원문과_저작안내.md",
+    "자료/problem-explanations/q-cmos-nand3.html",
+    "자료/problem-explanations/q-demorgan.html",
+    "자료/problem-explanations/q-deq.html",
+    "자료/problem-explanations/q-logicdiagram.html",
+    "자료/problem-explanations/q-nand-xor.html",
+    "자료/problem-explanations/q-nand3.html",
+    "자료/problem-explanations/q-nor3-or-inv.html",
+    "자료/problem-explanations/q-switching.html",
+    "자료/problem-explanations/q-tt3-4row.html",
+    "자료/problem-explanations/q-tt3-8row.html",
+    "자료/problem-explanations/q-xor-graded.html",
+    "자료/problem-explanations/q-xor2-tt.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
-  ]
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
 }
