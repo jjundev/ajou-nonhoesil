@@ -28,3 +28,28 @@ def defective_pack(repo,name,pages):
     pdf=dest/(name+'_기출풀이.pdf'); doc=fitz.open(pdf)
     for i in (range(len(doc)) if pages=='all' else pages): doc[i].insert_text((330,575),'$V_{CC}=5\\,\\mathrm{V}$',fontsize=6)
     doc.save(dest/'tmp.pdf'); doc.close(); (dest/'tmp.pdf').replace(pdf); return dest
+
+def synthetic_pack(repo,name,problems,table=None,answer_table=None):
+    """Write a minimal pack discover() accepts: 복습노트/<name>/자료/manifest.json plus the problem and answer PDFs.
+    problems: [dict(id,kind,title)] in manifest order. A page per problem carries its label badge (KINDS[kind]+n, n =
+    position in the manifest) and title in the header. table goes in the problem page's work area (300,200), answer_table
+    in the answer page's condition panel (34,200); both are a grid of 60x24 cells. Calling again with another order
+    rewrites the manifest and both PDFs, so labels are recomputed the way a rebuilt pack would."""
+    import fitz
+    from solution_video.sources import DATA_DIR,KINDS
+    pack=Path(repo)/'복습노트'/name; (pack/DATA_DIR).mkdir(parents=True,exist_ok=True)
+    included=[dict(id=p['id'],kind=p['kind'],title=p['title'],status='included') for p in problems]
+    (pack/DATA_DIR/'manifest.json').write_text(json.dumps({'problems':included},ensure_ascii=False),encoding='utf-8')
+    for suffix,rows,x0 in (('기출문제',table,300),('기출풀이',answer_table,34)):
+        doc=fitz.open()
+        for n,p in enumerate(problems,1):
+            page=doc.new_page(width=841.9,height=595.3)
+            page.insert_text((30,40),KINDS[p['kind']]+str(n),fontname='korea',fontsize=11)
+            page.insert_text((150,40),p['title'],fontname='korea',fontsize=14)
+            for r,row in enumerate(rows or []):
+                for c,text in enumerate(row):
+                    cell=fitz.Rect(x0+60*c,200+24*r,x0+60*(c+1),200+24*(r+1))
+                    page.draw_rect(cell,color=(0,0,0),width=.8)
+                    page.insert_text((cell.x0+4,cell.y0+16),text,fontname='korea',fontsize=10)
+        doc.save(pack/(name+'_'+suffix+'.pdf')); doc.close()
+    return pack

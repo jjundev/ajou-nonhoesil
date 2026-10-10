@@ -48,6 +48,35 @@ class LabSourceTests(Sandbox):
         repo=self.run/'repo'; root=repo/unicodedata.normalize('NFD','복습노트'); root.mkdir(parents=True)
         shutil.copytree(REPO/'복습노트/실험05',root/unicodedata.normalize('NFD','실험05'))
         self.assertEqual(len(discover(repo,'실험05',None,[])),len(discover(REPO,'실험05',None,[])))
+    def test_nfd_file_names(self):
+        # 폴더 이름만 NFD 이던 test_nfd_folder_names 의 빈틈: 팩 안의 모든 파일·폴더 이름이 NFD 여도 같은 문항을 찾는다.
+        nfd=lambda s:unicodedata.normalize('NFD',s)
+        def copy_nfd(src,dst):
+            dst.mkdir(parents=True)
+            for x in src.iterdir():
+                if x.is_dir(): copy_nfd(x,dst/nfd(x.name))
+                else: shutil.copyfile(x,dst/nfd(x.name))
+        repo=self.run/'repo'; pack=repo/nfd('복습노트')/nfd('실험05'); copy_nfd(REPO/'복습노트/실험05',pack)
+        if any(x.name!=nfd(x.name) for x in pack.rglob('*')): self.skipTest('this file system does not keep NFD file names')
+        def shape(root):
+            failures=[]; pairs=discover(root,'실험05',None,failures)
+            self.assertEqual(failures,[])
+            return [(p['problem_id'],len(p['figure_refs']),bool(p['md_snapshot'])) for p in pairs]
+        expected=shape(REPO)
+        self.assertTrue(expected and any(n for _,n,_ in expected) and all(has for _,_,has in expected))
+        self.assertEqual(shape(repo),expected)
+    def test_labels_are_recomputed_when_pack_is_rebuilt(self):
+        repo=self.run/'repo'; table=[['A','B','Y'],['0','1','가']]
+        problems=[dict(id='q-a',kind='past',title='가산기 설계'),dict(id='q-b',kind='past',title='감산기 설계')]
+        synthetic_pack(repo,'실험06',problems,table,table)
+        failures=[]; pairs=discover(repo,'실험06',None,failures)
+        self.assertEqual(failures,[]); self.assertEqual([(p['problem_id'],p['label']) for p in pairs],[('q-a','기출1'),('q-b','기출2')])
+        self.assertEqual([p['problem_id'] for p in discover(repo,'실험06',['기출1'],[])],['q-a'])
+        # 순서를 바꿔 다시 만들면 라벨이 새 순서로 다시 계산되고, 쪽 머리와도 어긋나지 않는다(성공 경로).
+        synthetic_pack(repo,'실험06',problems[::-1],table,table)
+        failures=[]; pairs=discover(repo,'실험06',None,failures)
+        self.assertEqual(failures,[]); self.assertEqual([(p['problem_id'],p['label']) for p in pairs],[('q-b','기출1'),('q-a','기출2')])
+        self.assertEqual([p['problem_id'] for p in discover(repo,'실험06',['기출1'],[])],['q-b'])
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])
