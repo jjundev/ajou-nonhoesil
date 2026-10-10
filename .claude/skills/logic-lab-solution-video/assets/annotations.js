@@ -28,7 +28,7 @@
     const itemSpans=schedule.spans.filter(s=>s.id===id),shown=fs.visible_ids.includes(id);entry.group.style.opacity=shown?'1':'0';
     if(entry.path){
      // Screen-constant width without Blink's viewBox-dependent non-scaling-stroke cache.
-     entry.path.setAttribute('vector-effect','none');entry.path.style.strokeWidth=String(3/Math.min(1920/camera[2],layout.height/camera[3]));
+     entry.path.setAttribute('vector-effect','none');entry.path.style.strokeWidth=String((entry.item.stroke_width_px??3)/Math.min(1920/camera[2],layout.height/camera[3]));
      const draw=itemSpans.find(s=>s.kind==='draw'),progress=draw&&frame>=draw.start_frame&&frame<draw.hide_frame?(frame>=draw.end_frame?1:clamp((frame-draw.start_frame)/(draw.end_frame-draw.start_frame-1))):0;
      const length=entry.path.getTotalLength();entry.path.style.strokeDasharray=String(length);entry.path.style.strokeDashoffset=String(length*(1-progress));
     }

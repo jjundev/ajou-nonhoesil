@@ -157,7 +157,10 @@ def compile_annotations(plan,layers,dest):
    inventory=browser(['--mode','inventory','--svg',str(filename.resolve())]);paint=[n for n in sub.iter() if n.tag.split('}')[-1]=='use' and 'data-text' in n.attrib];inv=[e for e in inventory if e['text'] is not None];chars=[u for u in units if not u['text'].isspace()]
    if len(inv)!=len(chars) or len(paint)!=len(chars):fail(ident,'font outline inventory differs from label')
    for u,n,e in zip(chars,paint,inv):
-    if e['text']!=u['text']:fail(ident,'font outline order differs')
+    if e['text']!=u['text']:
+     # MuPDF 는 공유 글리프를 정규 cmap 별칭으로 내보낸다(Δ → ∆ 등). 실제 글리프가 같을 때만 받고 저작 글자를 남긴다.
+     if len(e['text'])!=1 or not font.has_glyph(ord(u['text'])) or font.has_glyph(ord(e['text']))!=font.has_glyph(ord(u['text'])):fail(ident,'font outline order differs')
+    n.set('data-text',u['text'])
     if e['bbox'][0]>=e['bbox'][2] or e['bbox'][1]>=e['bbox'][3]:fail(ident,'font outline has no measurable bounds')
     sid='annotation-'+ident+'-'+e['id'];u.update(svg_ids=[sid],bbox=e['bbox']);n.set('id',sid);check_box(e['bbox'],layers,ident)
    for n in list(sub):node.append(n)
@@ -172,7 +175,7 @@ def compile_annotations(plan,layers,dest):
      dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy);size=min(6,length/3);ux,uy=dx/length,dy/length
      left=[b[0]-size*ux-size*.5*uy,b[1]-size*uy+size*.5*ux];right=[b[0]-size*ux+size*.5*uy,b[1]-size*uy-size*.5*ux]
      d+=f' L {left[0]} {left[1]} L {b[0]} {b[1]} L {right[0]} {right[1]}'
-   path=ET.SubElement(node,'{'+ns+'}path',id='annotation-'+ident+'-path',d=d,fill='none',stroke=i['color'],**{'stroke-width':'3','vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'})
+   path=ET.SubElement(node,'{'+ns+'}path',id='annotation-'+ident+'-path',d=d,fill='none',stroke=i['color'],**{'stroke-width':str(i['stroke_width_px']),'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round'})
    i.update(path=d,path_id=path.get('id'),start_point=start,body_height=None)
    temp=dest/(ident+'.svg');temp.write_text(ET.tostring(root,encoding='unicode'))
    inv=browser(['--mode','inventory','--svg',str(temp.resolve())]);entry=inv[-1];boxes=[entry['bbox']]

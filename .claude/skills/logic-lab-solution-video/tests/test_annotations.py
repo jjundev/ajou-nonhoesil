@@ -137,3 +137,26 @@ class ChunkAnnotationTests(Sandbox):
   a['items'].append({k:v for k,v in dict(a['items'][0],id='b',segment_id='r2').items() if k not in ('chunk_id','offset_frames')})
   items=validate_teaching(f,a,m,l)['items']
   self.assertEqual([(i['id'],i.get('chunk_id'),i['offset_frames']) for i in items],[('a','c1',0),('b',None,12)])
+
+class InkCompileTests(Sandbox):
+ def test_compiled_stroke_and_color(self):
+  from solution_video.annotations import compile_annotations
+  import xml.etree.ElementTree as ET
+  f,a,m,l=teaching_fixture();a['items'][0].update(stroke_width_px=6,color='#C45100')
+  c=compile_annotations(validate_teaching(f,a,m,l),l,self.run/'ink')
+  path=ET.parse(c['svg']).find('.//{http://www.w3.org/2000/svg}path')
+  self.assertEqual(float(path.get('stroke-width')),6);self.assertEqual(path.get('stroke'),'#C45100')
+  self.assertEqual(c['items'][0]['stroke_width_px'],6)
+
+class LogicLabelGlyphTests(Sandbox):
+ # 논리식 label 은 프라임(′)을 쓴다. MuPDF 가 공유 글리프를 다른 코드포인트로 내보내도 저작 글자를 남겨야 한다.
+ def test_logic_label_keeps_authored_unicode(self):
+  from solution_video.annotations import compile_annotations
+  f,a,m,l=teaching_fixture();a['items'][0].update(kind='label',geometry={'runs':[dict(text='S1′S0′',origin=[40,60],font_size_pt=12)]})
+  c=compile_annotations(validate_teaching(f,a,m,l),l,self.run/'logic-label')
+  self.assertEqual([g['text'] for g in c['items'][0]['glyphs']],['S','1','′','S','0','′'])
+  self.assertIn('data-text="′"',Path(c['svg']).read_text())
+ def test_xor_symbol_rejected(self):
+  # Pretendard 에 ⊕ 글리프가 없다. 조용히 빠지지 않고 막혀야 한다(XOR 은 글자로 쓴다).
+  f,a,m,l=teaching_fixture();a['items'][0].update(kind='label',geometry={'runs':[dict(text='A⊕B',origin=[40,60],font_size_pt=12)]})
+  with self.assertRaisesRegex(InputError,'unsupported font glyph'):validate_teaching(f,a,m,l)

@@ -318,7 +318,7 @@
   "scripts/video.py": "자막 폰트를 형제 스킬 대신 내재화한 assets/fonts 에서; 실패 항목 키 date → experiment; prepare 출력 폴더 실험NN(범위 실험NN-MM), item label·라벨 파일 이름, figure_refs 복사·export_page 전달(재시도 경로 포함); 범위 batch 라벨에 실험 접두(탈락 항목 포함, display_label 하나로); figure_refs 와 함께 짝 SVG(figure_svg_refs)를 런 폴더로 복사; 탈락 항목에 label·라벨 파일 이름 부여; prepare 결과에 prepared·failed 를 싣고 전부 탈락하면 status failed(종료 코드 1); 짝 SVG 가 없는 풀이 그림은 통과한 batch 항목의 warnings 와 prepare 결과 warnings 로 알림(없으면 키를 만들지 않음, batch_warnings); tts 가 청크 영수증·연결본을 검증하고 voice 출력에 chunk-audio.json 포함(검증 실패도 paid_requests 보고); retime 도 validate_chunk_audio",
   "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib; generate_voice 가 옛 config 의 direction 을 빼고 동결(spoken-text-only-v1); 청크 모드 generate_voice: 청크별 합성 → source/chunk-audio.json → segment 연결 → 끝난 뒤에만 audio.json; 청크 일부 누락은 legacy 로 대체하지 않고 거부",
   "scripts/solution_video/publication.py": "게시 lock 모듈 이름 _logic_lab_tts_lib; 최종 파일 이름 접두어를 표시 라벨로; 게시 전 검토 파일을 정확히 2개가 아니라 audio·visual 포함으로 확인(pacing-review.json 도 *-review.json 이라 게시가 막혔다); 청크 모드 게시 판정은 chunk_sync 통과도 요구",
-  "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서; region 검사에서 \"work_bbox 보다 위\" 규칙을 지우고 \"work_bbox 와 겹침\"만 남김(왼쪽 조건 패널의 표·문장·회로를 확대·주석 대상으로); 상류 eeec3d5 설계 재구현: stroke_width_px 2..12(생략 3)·label 금지; pcm-chunks-v1 의 chunk_id(청크 시작 기준 오프셋, 같은 segment 혼합 금지)",
+  "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서; region 검사에서 \"work_bbox 보다 위\" 규칙을 지우고 \"work_bbox 와 겹침\"만 남김(왼쪽 조건 패널의 표·문장·회로를 확대·주석 대상으로); 상류 eeec3d5 설계 재구현: stroke_width_px 2..12(생략 3)·label 금지; pcm-chunks-v1 의 chunk_id(청크 시작 기준 오프셋, 같은 segment 혼합 금지); SVG path stroke-width 에 stroke_width_px; label 글리프가 MuPDF 별칭으로 나와도 같은 글리프면 받고 data-text 에 저작 글자 보존(논리식 ′ 테스트, Pretendard 에 없는 ⊕ 거부 테스트)",
   "scripts/solution_video/state.py": "폰트를 내재화한 assets/fonts 에서; inputs 지문 글롭을 source/snapshots/**/* 로(동결한 그림 snapshots/figures/<sha>/ 의 변조·삭제를 잡는다); voice 지문에 source/chunk-trims.json, timing 지문에 source/chunk-audio.json; speech_chunks 모듈을 script·voice·timing 에; timing 모듈 지문에 shape_timing 추가(도형 예산이 바뀌면 timing 부터 다시, WAV 보존)",
   "scripts/solution_video/util.py": "환경변수 접두사 EC2_ → LOGIC_LAB_; PyMuPDF 1.28 의 import fitz 경고를 stderr 로 돌려 CLI stdout 을 JSON 으로 유지",
   "scripts/solution_video/media.py": "환경변수 접두사 EC2_ → LOGIC_LAB_",
@@ -345,7 +345,7 @@
   "tests/test_publication.py": "라벨 접두어 파일 이름 테스트 추가; pacing-review 가 게시를 막지 않는 테스트",
   "tests/test_lab_acceptance.py": "논회실 신규: 실험05 실측 batch opt-in 검사(LOGIC_LAB_ACCEPTANCE_BATCH)",
   "tests/fixtures.py": "defective_pack: 실제 팩 사본에 원문 LaTeX 를 찍어 게이트 실패를 재현(2026-10-09 다시 렌더한 팩은 결함이 없다); synthetic_pack: 순서·표를 마음대로 바꿔 쓰는 합성 팩(manifest·문제/풀이 PDF, 칸 글자의 \\n 은 접힌 칸)",
-  "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부; 상류 eeec3d5 설계 재구현: stroke_width_px 2..12(생략 3)·label 금지; pcm-chunks-v1 의 chunk_id(청크 시작 기준 오프셋, 같은 segment 혼합 금지)",
+  "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부; 상류 eeec3d5 설계 재구현: stroke_width_px 2..12(생략 3)·label 금지; pcm-chunks-v1 의 chunk_id(청크 시작 기준 오프셋, 같은 segment 혼합 금지); SVG path stroke-width 에 stroke_width_px; label 글리프가 MuPDF 별칭으로 나와도 같은 글리프면 받고 data-text 에 저작 글자 보존(논리식 ′ 테스트, Pretendard 에 없는 ⊕ 거부 테스트)",
   "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
   "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구; 도형 전용 묶음은 쪽 전체가 화면 안·글자 묶음은 26px 유지, 그림만 든 묶음은 그림 확대 유지",
   "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers; 청크 영수증 변경은 timing, 절단표 변경은 voice 부터; shape_timing 변경은 timing 부터 무효·WAV 보존",
@@ -362,7 +362,9 @@
   "tests/test_reveal.py": "상류 a017c9d 설계 재구현: 도형 조각 최소 18 검사를 예산 배분 검사로 바꿈, 한 조각 상자 18·24조각 상자 90(432 아님)·5조각 이상 같은 예산, 새 줄 lifted 한 번",
   "scripts/solution_video/narration_pacing.py": "상류 a017c9d 설계 재구현: 구간마다 voice_end_frame(PCM 끝 올림)·writing_end_frame·writing_lag_frames·completed_hold_frames; 음성 뒤 필기 지연 >60 이면 review-required, 예외는 현재 input_hash 의 pacing-review writing_lags 행만(gaps 사유로 승인 불가), unreviewed_writing_lags",
   "tests/test_narration_pacing.py": "상류 a017c9d 설계 재구현: 지연 경계 60/61·완성 hold·PCM 끝 올림·gaps 로 지연 승인 불가·writing_lags 로 gap 승인 불가·옛 gaps 만 있는 리뷰 호환",
-  "tests/writing_flow_check.mjs": "상류 a017c9d 설계 재구현: 글자 없는 도형 전용 묶음(figure 제외)은 26px 검사 대신 쪽 전체가 화면 안인지 확인"
+  "tests/writing_flow_check.mjs": "상류 a017c9d 설계 재구현: 글자 없는 도형 전용 묶음(figure 제외)은 26px 검사 대신 쪽 전체가 화면 안인지 확인",
+  "assets/annotations.js": "상류 eeec3d5 설계 재구현: 화면 굵기를 항목의 stroke_width_px(생략 3)로",
+  "tests/test_teaching_runtime.cjs": "상류 eeec3d5 설계 재구현: 화면 굵기를 항목의 stroke_width_px(생략 3)로"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",

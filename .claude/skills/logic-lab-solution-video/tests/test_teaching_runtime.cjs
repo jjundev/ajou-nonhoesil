@@ -25,3 +25,17 @@ test('one pen selects owner and refuses concurrent drawing',()=>{
  assert.equal(ctrl.apply(off,on).owner,'annotation');assert.equal(elem.style.opacity,'1');assert.equal(ctrl.apply(off,off).visible,false);
  assert.throws(()=>ctrl.apply(on,on),/overlap/);
 });
+
+test('renderer preserves mixed screen widths across camera scales and backward seeks',()=>{
+ const element=()=>({style:{},setAttribute(k,v){this[k]=v;},getTotalLength(){return 20;},append(){}});
+ const nodes={};for(const id of ['a','b','c','d']){nodes['#annotation-'+id]=element();nodes['#path-'+id]=element();}
+ const svg={append(){},querySelector(s){return nodes[s];}};
+ global.document={createElementNS(){return element();}};
+ const renderer=annotations.createRenderer(svg,{items:[{id:'a',path_id:'path-a',stroke_width_px:6},{id:'b',path_id:'path-b',stroke_width_px:4},{id:'c',path_id:'path-c',stroke_width_px:8},{id:'d',path_id:'path-d'}]});
+ const schedule={spans:[],cues:[]};
+ for(const [frame,view] of [[50,[0,0,400,300]],[100,[50,30,200,150]],[50,[0,0,400,300]]]){
+  renderer.render(schedule,frame,view,{height:900});const scale=Math.min(1920/view[2],900/view[3]);
+  for(const [id,width] of [['a',6],['b',4],['c',8],['d',3]])assert.equal(Number(nodes['#path-'+id].style.strokeWidth)*scale,width);
+ }
+ delete global.document;
+});
