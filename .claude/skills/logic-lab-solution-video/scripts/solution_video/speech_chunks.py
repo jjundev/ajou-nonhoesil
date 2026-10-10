@@ -204,3 +204,46 @@ def validate_caption_cues(timeline:dict)->list[dict]:
         if cursor!=seg['start_sample']+seg['voice_samples'] or cursor>seg['end_sample']:raise InputError('caption/voice coverage mismatch: '+seg['id'])
     if index!=len(cues):raise InputError('extra caption cue')
     return cues
+
+# --- verification -------------------------------------------------------------------------------------------------
+REVIEW_FLAGS=('transcript_match','no_instruction_speech','natural_join','sync_passed')
+
+def chunk_review_passed(review:dict,manifest:dict)->bool:
+    """Chunk mode audio-review: a live listener checked every chunk in order. Structure checks never stand in for it."""
+    if manifest.get('caption_timing')!=MODE:return True
+    if review.get('mode')!='live-listened':return False
+    expected=[(s['id'],c['id']) for s in manifest['segments'] for c in s.get('chunks',[])]
+    rows=review.get('chunk_checks')
+    if not isinstance(rows,list) or any(not isinstance(r,dict) for r in rows):return False
+    if [(r.get('segment_id'),r.get('chunk_id')) for r in rows]!=expected:return False
+    return all(all(r.get(k) is True for k in REVIEW_FLAGS) and isinstance(r.get('notes'),str) and r['notes'].strip() for r in rows)
+
+def verify_chunk_sync(run:Path)->dict:
+    """Structural sync evidence (verification/chunk-sync.json): receipts, raw/joined PCM, timeline cues and SRT all
+    rebuild from the measured samples. It is not evidence that anyone listened."""
+    import tempfile
+    from .subtitles import write_srt
+    from .teaching import build_teaching_timeline
+    from .annotations import load_teaching
+    from .writing import load_writing
+    from .util import local
+    run=Path(run).resolve();issues=[];hashes={}
+    try:
+        m=read(run/'source/manifest.json');t=read(run/'source/timeline.json')
+        if m.get('caption_timing')!=MODE or t.get('caption_timing')!=MODE:raise InputError('chunk timing mode required')
+        cfg=read(run/'source/config.json');voices=read(run/'source/audio.json')['voices']
+        validate_chunk_audio(m['segments'],voices,run,cfg);validate_caption_cues(t)
+        l=read(run/'layers/layers.json')
+        writing=load_writing(run,cfg) if (run/'source/writing.json').is_file() else None
+        expected=build_teaching_timeline(m,l,voices,cfg,writing,load_teaching(run,m,l))
+        if t['caption_cues']!=expected['caption_cues']:raise InputError('timeline cues differ from measured chunk PCM')
+        with tempfile.TemporaryDirectory(prefix='logic-lab-chunk-sync-') as td:
+            if write_srt(expected,Path(td)/'expected.srt').read_bytes()!=(run/'renders/captions.srt').read_bytes():raise InputError('SRT differs from measured chunk boundaries')
+        paths=[run/'source/manifest.json',run/'source/audio.json',run/CHUNK_AUDIO,run/'source/timeline.json',run/'renders/captions.srt']
+        paths+=[local(run,a['path']) for a in voices]+[local(run,a['path']) for a in read(run/CHUNK_AUDIO)['voices']]
+        if (run/CHUNK_TRIMS).is_file():paths.append(run/CHUNK_TRIMS)
+        hashes={p.relative_to(run).as_posix():file_hash(p) for p in paths}
+    except (InputError,OSError,KeyError,TypeError,ValueError) as ex:issues.append(str(ex)[:500])
+    result=dict(status='passed' if not issues else 'unverified',caption_timing=MODE,live_listening='not-evidence',
+                input_hash=digest(hashes),evidence_hashes=hashes,issues=issues)
+    write(run/'verification/chunk-sync.json',result);return result

@@ -6,6 +6,10 @@ from .contracts import InputError
 
 def report_current(run,report):
     required={'content','original_svg','hyperframes','final_media','captions','audio_meaning','visual_meaning'}
+    from .speech_chunks import MODE
+    try:
+        if read(Path(run)/'source/manifest.json').get('caption_timing')==MODE:required=required|{'chunk_sync'}  # 청크 모드는 구조 동기화도 통과해야 게시
+    except (OSError,ValueError):pass
     reviews=report.get('review_hashes',{})
     return (report.get('input_hash')==verification_fingerprint(run) and report.get('live_audio')=='verified'
         and required<=report.get('checks',{}).keys() and all(report['checks'][k]['status']=='passed' for k in required)

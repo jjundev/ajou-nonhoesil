@@ -100,3 +100,61 @@ class ChunkSyncTests(Sandbox):
             result=cli.run_stage('retime',self.run,SimpleNamespace(writing_config=None));self.assertEqual(result['status'],'passed')
             raw=self.run/read(self.run/'source/chunk-audio.json')['voices'][1]['path'];raw.write_bytes(raw.read_bytes()[:-2]+b'\1\0')
             with self.assertRaisesRegex(InputError,'provenance mismatch: write__c1'):cli.run_stage('retime',self.run,SimpleNamespace(writing_config=None))
+
+class ChunkGateTests(Sandbox):
+    def make_run(self):
+        from solution_video.subtitles import write_srt
+        b=ChunkSyncTests('test_legacy_srt_unchanged');b.run=self.run
+        m,l,audio,t=b.build()
+        write(self.run/'source/manifest.json',m);write(self.run/'layers/layers.json',l);write(self.run/'source/timeline.json',t)
+        write_srt(t,self.run/'renders/captions.srt');return m,t
+    def review(self,m,**over):
+        rows=[dict(segment_id=s['id'],chunk_id=c['id'],transcript_match=True,no_instruction_speech=True,natural_join=True,sync_passed=True,notes='대본대로, 지침 발화 없음')
+              for s in m['segments'] for c in s['chunks']]
+        return dict(dict(status='passed',mode='live-listened',notes='전체 청취',chunk_checks=rows),**over)
+    def test_structural_sync_passes_and_tampering_fails(self):
+        from solution_video.speech_chunks import verify_chunk_sync
+        m,t=self.make_run();r=verify_chunk_sync(self.run)
+        self.assertEqual(r['status'],'passed',r['issues']);self.assertEqual(r['live_listening'],'not-evidence')
+        self.assertTrue((self.run/'verification/chunk-sync.json').is_file());self.assertIn('source/chunk-audio.json',r['evidence_hashes'])
+        srt=self.run/'renders/captions.srt';good=srt.read_text(encoding='utf-8')
+        srt.write_text(good.replace('00:00:01,100','00:00:01,200',1),encoding='utf-8')
+        self.assertEqual(verify_chunk_sync(self.run)['status'],'unverified');srt.write_text(good,encoding='utf-8')
+        tt=copy.deepcopy(t);tt['caption_cues'][1]['end_sample']+=800;tt['caption_cues'][2]['start_sample']+=800;write(self.run/'source/timeline.json',tt)
+        self.assertEqual(verify_chunk_sync(self.run)['status'],'unverified');write(self.run/'source/timeline.json',t)
+        raw=self.run/read(self.run/'source/chunk-audio.json')['voices'][2]['path'];rgood=raw.read_bytes();raw.write_bytes(rgood[:-2]+b'\1\0')
+        r=verify_chunk_sync(self.run);self.assertEqual(r['status'],'unverified');self.assertTrue(r['issues'])
+        raw.write_bytes(rgood);self.assertEqual(verify_chunk_sync(self.run)['status'],'passed')
+    def test_no_listening_or_incomplete_chunk_review_blocks(self):
+        from solution_video.speech_chunks import chunk_review_passed
+        m,_=self.make_run();self.assertTrue(chunk_review_passed(self.review(m),m))
+        rows=self.review(m)['chunk_checks']
+        for bad in [self.review(m,mode='not-listened'),self.review(m,chunk_checks=rows[:-1]),self.review(m,chunk_checks=rows+rows[-1:]),
+                    self.review(m,chunk_checks=rows[::-1]),self.review(m,chunk_checks=None)]+[
+                    self.review(m,chunk_checks=[dict(rows[0],**{k:v}),*rows[1:]]) for k in ['transcript_match','no_instruction_speech','natural_join','sync_passed'] for v in [False,'true',None]]+[
+                    self.review(m,chunk_checks=[dict(rows[0],notes=' '),*rows[1:]])]:
+            with self.subTest(bad=str(bad)[:80]):self.assertFalse(chunk_review_passed(bad,m))
+        legacy=example()[0];self.assertTrue(chunk_review_passed({'mode':'live-listened'},legacy))
+    def test_verify_run_gates_chunk_mode_and_synthetic_pcm_is_not_live_audio(self):
+        from solution_video.verify import verify_run,verification_fingerprint
+        from solution_video.publication import report_current
+        m,_=self.make_run()
+        report=verify_run(self.run,self.run/'missing-hyperframes')
+        self.assertEqual(report['checks']['chunk_sync']['status'],'passed')  # 합성 PCM 구조는 맞아도
+        self.assertEqual(report['live_audio'],'unverified');self.assertFalse(report['complete'])  # 청취 없이는 승인 없음
+        h=verification_fingerprint(self.run);ev={'renders/captions.srt':cli_hash(self.run/'renders/captions.srt')}
+        write(self.run/'verification/audio-review.json',dict(self.review(m,chunk_checks=self.review(m)['chunk_checks'][:-1]),input_hash=h,evidence=ev))
+        self.assertEqual(verify_run(self.run,self.run/'x')['checks']['audio_meaning']['status'],'unverified')
+        write(self.run/'verification/audio-review.json',dict(self.review(m),input_hash=h,evidence=ev))
+        report=verify_run(self.run,self.run/'x');self.assertEqual(report['checks']['audio_meaning']['status'],'passed');self.assertEqual(report['live_audio'],'verified')
+        # 게시 판정은 청크 모드에서 chunk_sync 를 요구한다.
+        write(self.run/'verification/visual-review.json',{'status':'passed'})
+        reviews={p:cli_hash(self.run/p) for p in ['verification/audio-review.json','verification/visual-review.json']}
+        base={k:{'status':'passed'} for k in ['content','original_svg','hyperframes','final_media','captions','audio_meaning','visual_meaning']}
+        fake=dict(input_hash=verification_fingerprint(self.run),live_audio='verified',review_hashes=reviews,checks=base)
+        self.assertFalse(report_current(self.run,fake))
+        self.assertFalse(report_current(self.run,dict(fake,checks=dict(base,chunk_sync={'status':'unverified'}))))
+        self.assertTrue(report_current(self.run,dict(fake,checks=dict(base,chunk_sync={'status':'passed'}))))
+def cli_hash(p):
+    from solution_video.util import file_hash
+    return file_hash(p)
