@@ -101,14 +101,15 @@ function equationTex(tex, parts, prefix) {
 # 단 사이 여백으로 나왔을 뿐 전부 보였다). 실제로 잘리거나 옆 글을 침범할 때만 센다 — 가장 가까운 clip 조상의 오른쪽을
 # 넘거나, `.sol-flow` 가 다단이면 다음 단의 왼쪽(현재 단 오른쪽 + column-gap)을, 단일 단이면 flow 오른쪽을 넘을 때.
 # 식은 `.katex` 블록 자체의 rect 로 재면 안 된다: 줄인 블록은 transform 으로 작아져 늘 박스 안에 있다. `.katex-html`
-# 안쪽 내용의 범위(Range)를 재어 display 박스 오른쪽과 비교한다. 훑기는 `.page--problem` 마다 한 번, 맞춤이 모두 끝난
+# 안쪽 내용의 범위(Range)를 재어 display 박스 오른쪽과 비교한다. 줄바꿈 지점이 없는 인라인 식(`$\overline{…}$`)은
+# 맞춤이 줄이지도 않고 흐름이 잘라 버리므로, 그 식이 놓인 글 상자(호스트) 오른쪽과 같은 방식으로 비교한다.
+# 표는 `.table-wrap` 이 없어도(생 `<table>`) 잰다. 훑기는 `.page--problem` 마다 한 번, 맞춤이 모두 끝난
 # 뒤(overflow.join 직전)에만 돌아 맞춤 도중의 일시적 넘침을 보고하지 않는다. 이미 넘침으로 오른 쪽은 건너뛴다.
 CLIP_HELPER_ANCHOR='async function main() {'
-CLIP_HELPER=r'''// 표가 실제로 잘리거나 옆 단 글을 침범하는가. 오른쪽 가장자리(T)만 본다.
-function tableClipped(wrap) {
-  const tables = [...wrap.querySelectorAll('table')];
-  if (!tables.length) return false;
-  const T = Math.max(...tables.map(t => t.getBoundingClientRect().right));
+CLIP_HELPER=r'''// 표가 실제로 잘리거나 옆 단 글을 침범하는가. 오른쪽 가장자리(T)만 본다. wrap 이 없는 생 table 은 table 자신이 호스트.
+function tableClipped(table) {
+  const wrap = table.closest('.table-wrap') || table;
+  const T = table.getBoundingClientRect().right;
   // (a) 가장 가까운 clip 조상(overflow-x 가 visible 이 아닌 요소, wrap 자신 포함)의 오른쪽 안쪽 가장자리를 넘는가
   for (let el = wrap; el && el !== document.documentElement; el = el.parentElement) {
     const cs = getComputedStyle(el);
@@ -133,7 +134,7 @@ function tableClipped(wrap) {
   return T > limit + 1;
 }
 
-// 맞춤이 끝난 쪽에 잘린 식·잘리거나 옆 단을 침범한 표·칸 밖으로 나간 풀이 단계가 남았는가
+// 맞춤이 끝난 쪽에 잘린 식(display·인라인)·잘리거나 옆 단을 침범한 표·칸 밖으로 나간 풀이 단계가 남았는가
 function hasClippedContent(page) {
   for (const d of page.querySelectorAll('.katex-display')) {
     const k = d.firstElementChild;
@@ -142,8 +143,18 @@ function hasClippedContent(page) {
     range.selectNodeContents(k.querySelector('.katex-html') || k);
     if (range.getBoundingClientRect().right > d.getBoundingClientRect().right + 1) return true;
   }
-  for (const w of page.querySelectorAll('.table-wrap')) {
-    if (tableClipped(w)) return true;
+  // 인라인 식: 가장 가까운 글 상자 오른쪽 + 1 을 넘으면 흐름·칸이 잘라 낸다. display 식은 위에서 봤고,
+  // Hint 띠의 식(.hint-strip-formula)은 따로 줄이므로 여기서 보지 않는다.
+  for (const k of page.querySelectorAll('.katex')) {
+    if (k.closest('.katex-display, .hint-strip-formula')) continue;
+    const host = k.closest('.sol-step-body, .prose, td, th, .hint-strip-item, .sol-answer, .block');
+    if (!host) continue;
+    const range = document.createRange();
+    range.selectNodeContents(k.querySelector('.katex-html') || k);
+    if (range.getBoundingClientRect().right > host.getBoundingClientRect().right + 1) return true;
+  }
+  for (const t of page.querySelectorAll('table')) {
+    if (tableClipped(t)) return true;
   }
   for (const flow of page.querySelectorAll('.sol-flow')) {
     const f = flow.getBoundingClientRect();

@@ -34,7 +34,7 @@ def write_pack(tmp, problems, mode):
                  difficulty=None, sol=None, original_lang='ko', depends_on=[], figures=[],
                  html={k: p.get(k, '') for k in ('original', 'conditions', 'ask')}, hints=[])
         if mode == 'answers':
-            e['solution'] = dict(steps=[dict(label='식', html=h) for h in p.get('steps', ['<p>풀이</p>'])], answer='<p>답</p>')
+            e['solution'] = dict(steps=[dict(label='식', html=h) for h in p.get('steps', ['<p>풀이</p>'])], answer=p.get('answer', '<p>답</p>'))
         entries.append(e)
     data = dict(meta=dict(mode=mode, title='합성', chapter=0, total=len(entries)), problems=entries)
     out = tmp/f'{mode}.html'
@@ -107,6 +107,82 @@ def test_panel_display_formula_is_checked_too(browser, tmp_path):
     assert overflow_of(page).split(',') == ['q-panel']
 
 
+def test_inline_formula_without_break_points_is_reported(browser, tmp_path):
+    # 줄바꿈 지점이 없는 인라인 식($…$)은 맞춤이 줄이지 않고, 풀이 흐름 overflow:hidden 이 잘라 낸다.
+    for n in (22, 26, 36):
+        steps = ['<p>값은 $\\overline{' + terms(n) + '}$ 이다.</p>']
+        path = write_pack(tmp_path, [dict(id=f'q-inline{n}', original='<p>식</p>', ask='<p>구하세요.</p>', steps=steps)], 'answers')
+        page = open_page(browser, path, display=False)
+        assert page.locator('.katex-display').count() == 0       # 인라인이다
+        assert overflow_of(page).split(',') == [f'q-inline{n}'], n
+        page.close()
+
+
+def test_long_inline_mathrm_is_reported(browser, tmp_path):
+    steps = ['<p>$\\mathrm{' + 'ABCDEFGHIJ' * 16 + '}$</p>']      # 160자, 줄바꿈 지점 없음
+    path = write_pack(tmp_path, [dict(id='q-mathrm', original='<p>식</p>', ask='<p>구하세요.</p>', steps=steps)], 'answers')
+    page = open_page(browser, path, display=False)
+    assert page.locator('.katex-display').count() == 0
+    assert overflow_of(page).split(',') == ['q-mathrm']
+
+
+def test_inline_formula_in_panel_and_answer_is_reported(browser, tmp_path):
+    wide = '$\\overline{' + terms(40) + '}$'
+    path = write_pack(tmp_path, [dict(id='q-panel-inline', original=f'<p>{wide}</p>', ask='<p>구하세요.</p>')], 'problems')
+    assert overflow_of(open_page(browser, path, display=False)).split(',') == ['q-panel-inline']
+    path = write_pack(tmp_path, [dict(id='q-answer-inline', original='<p>식</p>', ask='<p>구하세요.</p>', answer=f'<p>{wide}</p>')], 'answers')
+    assert overflow_of(open_page(browser, path, display=False)).split(',') == ['q-answer-inline']
+
+
+def test_short_inline_formulas_are_not_reported(browser, tmp_path):
+    # 대조군: 짧은 인라인 식과 호스트 안에서 줄이 바뀌는 글
+    steps = ['<p>$x_1+x_2$ 이고 $\\overline{' + terms(4) + '}$ 이다. ' + '글 ' * 60 + '</p>']
+    path = write_pack(tmp_path, [dict(id='q-ok', original='<p>$a+b$</p>', ask='<p>$y$</p>', steps=steps)], 'answers')
+    assert overflow_of(open_page(browser, path, display=False)) == ''
+
+
+# ---------- 쪽 순회 범위: 문항이 여럿인 팩 ----------
+
+def three(bad):
+    wide = ['<p>$$' + terms(90) + '$$</p>']
+    ok = ['<p>$$x+y$$</p>']
+    return [dict(id=f'q{i}', original='<p>식</p>', ask='<p>구하세요.</p>', steps=wide if i in bad else ok) for i in (1, 2, 3)]
+
+
+@pytest.mark.parametrize('bad,expected', [({1}, 'q1'), ({2}, 'q2'), ({3}, 'q3'), ({1, 3}, 'q1,q3'), ({1, 2, 3}, 'q1,q2,q3')])
+def test_only_the_clipped_pages_are_reported_in_a_multi_problem_pack(browser, tmp_path, bad, expected):
+    page = open_page(browser, write_pack(tmp_path, three(bad), 'answers'))
+    assert overflow_of(page) == expected
+    for i in (1, 2, 3):                     # 쪽 표시도 걸린 쪽에만
+        assert (page.locator(f'#q{i}').get_attribute('data-overflow') is not None) == (i in bad)
+
+
+def test_page_already_overflowing_is_listed_once(browser, tmp_path):
+    # 풀이가 칸에 안 들어가(fitSolution 이 이미 넘침으로 올림) 훑기에도 걸리는 쪽: id 는 한 번만
+    tall = ['<p>$$' + terms(90) + '$$</p>'] + ['<p>' + '긴 풀이 문장입니다. ' * 12 + '</p>'] * 60
+    probs = [dict(id='q-dup', original='<p>식</p>', ask='<p>구하세요.</p>', steps=tall),
+             dict(id='q-clean', original='<p>식</p>', ask='<p>구하세요.</p>'),
+             dict(id='q-scan-only', original='<p>식</p>', ask='<p>구하세요.</p>', steps=['<p>$$' + terms(90) + '$$</p>'])]
+    page = open_page(browser, write_pack(tmp_path, probs, 'answers'))
+    assert overflow_of(page) == 'q-dup,q-scan-only'
+    # q-dup 은 맞춤 쪽에서 이미 넘침이고(마지막 단계가 칸 밖) 훑기 조건도 참이다
+    assert page.evaluate("(() => { const f = document.querySelector('#q-dup .sol-flow').getBoundingClientRect();"
+                         " const l = document.querySelector('#q-dup .sol-step:last-child').getBoundingClientRect();"
+                         " return l.bottom > f.bottom + 1 || l.right > f.right + 1; })()")
+    assert page.evaluate("hasClippedContent(document.getElementById('q-dup'))")
+
+
+def test_bare_table_without_wrapper_is_checked(browser, tmp_path):
+    # `.table-wrap` 없이 쓴 30열 표(풀이 단계). 옛 선택(.table-wrap)은 못 봤다.
+    head = ''.join(f'<th>H{i}</th>' for i in range(30))
+    row = ''.join('<td>1</td>' for _ in range(30))
+    steps = [f'<table><thead><tr>{head}</tr></thead><tbody><tr>{row}</tr></tbody></table>']
+    path = write_pack(tmp_path, [dict(id='q-bare', original='<p>표</p>', ask='<p>구하세요.</p>', steps=steps)], 'answers')
+    page = open_page(browser, path, display=False)
+    assert page.locator('#q-bare .table-wrap').count() == 0
+    assert overflow_of(page).split(',') == ['q-bare']
+
+
 # ---------- 합성 DOM 으로 훑기 함수만 ----------
 
 @pytest.fixture(scope='module')
@@ -162,16 +238,43 @@ def tbl(width):
     return f'<table style="width:{width}px;table-layout:fixed;border-collapse:collapse"><tr><td style="padding:0">1</td></tr></table>'
 
 
-def wrap_in_column(table_width, first_column=True, overflow='hidden'):
+def wrap_in_column(table_width, first_column=True, overflow='hidden', bare=False):
     filler = '' if first_column else '<div style="height:200px"></div>'
-    return PAGE.format(COLS.format(f'{filler}<div class="table-wrap" style="width:285px">{tbl(table_width)}</div>',
-                                   cls=' is-2col', overflow=overflow))
+    body = tbl(table_width) if bare else f'<div class="table-wrap" style="width:285px">{tbl(table_width)}</div>'
+    return PAGE.format(COLS.format(filler + body, cls=' is-2col', overflow=overflow))
 
 
 def test_table_spilling_into_the_column_gap_is_not_reported(scratch):
     # 실험05 q-sa-enc8x3 꼴: 첫 단 폭(285)을 11px 넘었지만 단 사이 여백(30px) 안에서 끝난다 → 보이고 겹치지 않는다
     assert clipped(scratch, wrap_in_column(296)) is False
     assert clipped(scratch, wrap_in_column(285)) is False
+
+
+def test_bare_table_follows_the_same_rules(scratch):
+    # `.table-wrap` 없는 table: 단 사이 여백은 통과, 다음 단 침범은 참(11px 오탐 판정은 그대로)
+    assert clipped(scratch, wrap_in_column(296, bare=True)) is False
+    assert clipped(scratch, wrap_in_column(330, bare=True)) is True
+    assert clipped(scratch, wrap_in_column(300, first_column=False, bare=True)) is True
+    assert clipped(scratch, PAGE.format(f'<div style="width:200px;overflow:hidden">{tbl(260)}</div>')) is True
+
+
+def test_inline_formula_is_checked_against_its_text_box(scratch):
+    def inline(host_cls, content_width, tag='div', extra=''):
+        return PAGE.format(f'<{tag} class="{host_cls}" style="width:200px;{extra}"><span class="katex"><span class="katex-html">'
+                           f'<span style="display:inline-block;width:{content_width}px;height:10px"></span></span></span></{tag}>')
+    for host in ('prose sol-step-body', 'prose', 'hint-strip-item', 'sol-answer'):
+        assert clipped(scratch, inline(host, 260)) is True, host
+        assert clipped(scratch, inline(host, 180)) is False, host
+    # 표 칸 안
+    cell = PAGE.format('<table style="table-layout:fixed;width:100px"><tr><td style="padding:0">'
+                       '<span class="katex"><span class="katex-html"><span style="display:inline-block;width:{}px;height:10px"></span></span></span>'
+                       '</td></tr></table>')
+    assert clipped(scratch, cell.format(160)) is True
+    assert clipped(scratch, cell.format(90)) is False
+    # display 식 안의 .katex 는 이미 display 검사가 맡는다, Hint 띠 식은 범위 밖(문서의 한계)
+    strip = PAGE.format('<div class="hint-strip-item" style="width:100px"><span class="hint-strip-formula"><span class="katex">'
+                        '<span class="katex-html"><span style="display:inline-block;width:300px;height:10px"></span></span></span></span></div>')
+    assert clipped(scratch, strip) is False
 
 
 def test_table_reaching_into_the_next_column_is_reported(scratch):
