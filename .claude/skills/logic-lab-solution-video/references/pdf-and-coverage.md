@@ -1,6 +1,6 @@
 # 원본 화면과 작성 계약
 
-`prepare`는 입력 PDF 쌍, `실험NN_기출풀이.md`, 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 를 SHA256으로 동결하고(PNG 는 원래 이름 유지) 각 페이지의 `layers/candidates.json`, `candidate.svg`, `native.png`를 만든다. 후보 목록은 전체 페이지의 원본 그림이고 작성 영역은 아직 없다. `source/pair.json`과 동결 MD를 읽고 PDF 화면을 직접 확인한다.
+`prepare`는 입력 PDF 쌍, `실험NN_기출풀이.md`, 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 를 SHA256으로 동결하고(PNG 는 원래 이름 유지) 같은 이름의 짝 `.svg`(그림 의미의 근거)도 `source/snapshots/figures/<sha>/` 에 같은 방식으로 동결해 `pair.json` 의 `figure_svg_refs`·`inputs.json` 의 `files` 에 남긴다(SVG 는 픽셀 대조에 쓰지 않으며, 짝 SVG 가 없는 PNG 는 `figure_svg_missing` 경고일 뿐 문항을 막지 않는다). 각 페이지의 `layers/candidates.json`, `candidate.svg`, `native.png`를 만든다. 후보 목록은 전체 페이지의 원본 그림이고 작성 영역은 아직 없다. `source/pair.json`과 동결 MD를 읽고 PDF 화면을 직접 확인한다.
 
 `source/map.json`에 중앙 풀이만 들어가는 `work_bbox: [x0,y0,x1,y1]`를 PDF point 좌표로 작성한다. `steps: [{id,glyph_ids,shape_ids}]`는 원본 단계 순서, 각 glyph_ids는 사람이 읽는 순서다. 두 단에서는 왼쪽 위→왼쪽 아래→오른쪽 위→오른쪽 아래 순서를 원문과 대조한다. 분수의 분자/분모, 첨자와 병렬 기호의 순서를 개별 검토한다. 좌표 정렬만으로 읽기 순서를 승인하지 않는다. 마지막 단계의 id를 `answer_step_id`로 적는다. 짧은 발화와 작성 단위를 원하면 원본 단계를 작은 연속 단위로 나눈다.
 
@@ -16,11 +16,11 @@
 
 구현 검증에서 확대 기준을 단계 본문 글자의 대표 높이 26px로 적용했다. 등호·분수선·첨자는 본문과의 원래 비율을 유지한다. 납작한 기호 하나가 전체 문장을 과도하게 확대하지 않도록 단계별 배율을 고정하며, 필요한 경우 명시적 카메라로 작은 첨자를 확인한다.
 
-문항은 manifest 의 내부 ID(`q-prio-exam`)로 대응하고 표시 라벨(`기출3`)은 현재 manifest 순서로 계산한다. 실험 범위의 동일 ID는 고정 제목/페이지 번호/footer를 제외한 원본 본문 그림으로 비교한다. 회로·조건·풀이·Hint·본문 배치가 다르면 충돌이다. 모든 실험의 동결 PDF/MD 대응은 PagePair.sources에 남는다. prepare는 실패 문항을 batch에 기록하면서 다른 문항을 계속 준비한다. 실패한 export는 같은 동결 run에서 extract로 재시도할 수 있다. 선택하지 않은 문항 때문에 선택 문항을 중단하지 않는다.
+문항은 manifest 의 내부 ID(`q-prio-exam`)로 대응하고 표시 라벨(`기출3`)은 현재 manifest 순서로 계산한다. 실험 범위의 동일 ID는 고정 제목/페이지 번호/footer를 제외한 원본 본문 그림으로 비교한다. 회로·조건·풀이·Hint·본문 배치가 다르면 충돌이다. 모든 실험의 동결 PDF/MD 대응은 PagePair.sources에 남는다. 문제지와 해설지의 조건은 글자 구성이 같아야 하고(문제지 표가 해설지 조건 패널로 옮겨지므로 문제지 작업 영역 글자까지 센다), 표는 행·열 순서까지 같아야 하며 비교 대상은 해설지 조건 패널 안의 표뿐이다(풀이 단계의 표는 후보가 아니다). 모양이 같은 표가 패널에 없으면 건너뛰고(비정사각 표의 순수 전치는 모양이 달라 이 검사로는 못 잡고, 글자가 바뀐 경우만 글자 대조가 막는다), 패널에 같은 모양 표가 여럿이면 하나와 일치하면 통과한다. 문제지 쪽 같은 모양 표 수가 패널 후보 수보다 많아도 판정을 보류하지 않는다. 어긋난 문항은 `table rows differ: <id> table <i> row <r>` 로 탈락한다. prepare는 실패 문항을 batch에 기록하면서 다른 문항을 계속 준비한다. 실패 항목도 `label`(범위 선택이면 `실험05 출처 미확인11`)과 `<라벨> — 풀이.mp4` 이름을 가지며, 선택한 문항이 전부 실패하면 status 는 failed 다. 실패한 export는 같은 동결 run에서 extract로 재시도할 수 있다. 선택하지 않은 문항 때문에 선택 문항을 중단하지 않는다.
 
 ## 회로 포커스와 추가 표시
 
-`source/focus.json`은 선택적인 연출 입력이다. lesson 의 `circuit` 모드는 논회실에서 문제 그림(회로도·진리표·파형)을 근거로 삼는 단계를 뜻한다. schema_version=1, 답안 PDF의 source_sha256, regions와 cues를 작성한다. region은 실제 PDF point의 bbox이며 페이지 안, work_bbox보다 위에 있어야 한다. 그림 이름·칩 번호·입출력 핀·표 머리글을 모두 포함한다. cue의 segment_id는 reason/check, target은 region ID다. manifest.cameras와 혼용하지 않는다. 그림이 없으면 이 파일을 만들지 않는다.
+`source/focus.json`은 선택적인 연출 입력이다. lesson 의 `circuit` 모드는 논회실에서 문제 그림(회로도·진리표·파형)을 근거로 삼는 단계를 뜻한다. schema_version=1, 답안 PDF의 source_sha256, regions와 cues를 작성한다. region은 실제 PDF point의 bbox이며 페이지 안에 있고 work_bbox 와 겹치지 않아야 한다(닿기만 하는 것은 된다). 왼쪽 조건 패널의 표·문장도 대상이 되지만 패널 전체가 아니라 필요한 표·문장 단위로 잡는다(패널 전체를 잡으면 배율이 쪽 전체 아래로 내려가 읽기 어렵다 — 쪽 841.9×595pt 기준 region 높이가 약 440pt 를 넘으면 쪽 전체 배율보다 작아진다). 쪽 가장자리에 붙은 region 은 여백을 우선하므로 확대 뷰가 쪽 밖의 흰 바탕까지 비칠 수 있다. 그림 이름·칩 번호·입출력 핀·표 머리글을 모두 포함한다. cue의 segment_id는 reason/check, target은 region ID다. manifest.cameras와 혼용하지 않는다. 그림이 없으면 이 파일을 만들지 않는다.
 
 `source/annotations.json`은 같은 해시와 items를 가진다. 각 item은 안전한 ASCII id, region_id, segment_id, kind, geometry, source_refs, meaning_notes를 가진다. 해당 segment/region cue가 필수다. arrow/underline은 from/to 좌표, ellipse는 bbox, label은 text/origin baseline/font_size_pt를 가진 runs를 받는다. 첨자는 작은 별도 run으로 표현한다. label은 비공백 최대 24자이며 LaTeX·줄바꿈·없는 글꼴 문자를 거부한다. 원문에 없는 계산을 추가하지 않는다.
 

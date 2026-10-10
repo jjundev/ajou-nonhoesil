@@ -13,6 +13,9 @@ def parse_selector(selector):
     if not (1<=lo<=hi<=10): raise InputError('invalid experiment selector: '+str(selector))
     return ['실험%02d'%n for n in range(lo,hi+1)]
 def _norm(s): return unicodedata.normalize('NFC',s)
+def display_label(label,experiments,experiment):
+    """Label shown to the user and used in the file name. Labels repeat across experiments, so a range prefixes it."""
+    return label if len(experiments)==1 else experiment+' '+label
 def _child(folder,name):
     return next((x for x in folder.iterdir() if _norm(x.name)==name),None) if folder.is_dir() else None
 def _squash(s): return re.sub(r'\s+','',_norm(s))
@@ -32,22 +35,52 @@ def _pages(pdf,problems):
                     found[pid]=dict(snapshot=str(pdf.resolve()),page_index=idx,width_pt=pg.rect.width,height_pt=pg.rect.height)
     return found
 
+def _panel_clip(page):
+    """The gray condition panel's actual PDF rectangle (it can widen during fitting); the layout's fixed one when none is drawn."""
+    import fitz
+    panels=[draw['rect'] for draw in page.get_drawings() if draw.get('fill') and
+        max(abs(a-b) for a,b in zip(draw['fill'],(246/255,246/255,243/255)))<.002]
+    return max(panels,key=lambda r:r.get_area()) if panels else fitz.Rect(22,60,286,573)
 def _conditions(ref,with_work=False):
     """Condition panel text. The workbook moves the problem's own table from the problem page's work area into the
     answer page's panel (with a '조건' heading), so the problem side also counts its work-area text, Hint column excluded."""
     import fitz
     with fitz.open(ref['snapshot']) as d:
         p=d[ref['page_index']]
-        # The gray condition panel can widen during fitting; use its actual PDF rectangle.
-        panels=[draw['rect'] for draw in p.get_drawings() if draw.get('fill') and
-            max(abs(a-b) for a,b in zip(draw['fill'],(246/255,246/255,243/255)))<.002]
-        clip=max(panels,key=lambda r:r.get_area()) if panels else fitz.Rect(22,60,286,573)
+        clip=_panel_clip(p)
         text=p.get_text(clip=clip)
         if with_work:
             layout=page_layout(p.rect.width,p.rect.height)
             hint=[w[0] for w in p.get_text('words') if w[4]=='Hint' and w[0]>clip.x1]
             text+=p.get_text(clip=fitz.Rect(clip.x1,layout['header_bottom'],min(hint)-2 if hint else p.rect.width,layout['body_bottom']))
     return re.sub(r'\s+','',_norm(text))
+def _tables(ref,panel=False):
+    """Cell matrices (NFC, whitespace stripped, None -> '') of the tables PyMuPDF finds on the page; panel=True keeps only
+    those inside the condition panel. A page whose tables cannot be read counts as having none: this check must never
+    block an input the character comparison already accepted."""
+    import fitz
+    try:
+        with fitz.open(ref['snapshot']) as d:
+            page=d[ref['page_index']]; area=None
+            if panel: c=_panel_clip(page); area=fitz.Rect(c.x0-2,c.y0-2,c.x1+2,c.y1+2)
+            return [[[_squash(cell or '') for cell in row] for row in t.extract()]
+                for t in page.find_tables().tables if area is None or area.contains(fitz.Rect(t.bbox))]
+    except Exception: return []
+def _table_mismatch(problem_ref,answer_ref):
+    """The character multiset ignores order, so a transposed or row-swapped table slips through it. Each problem table is
+    held against the tables of the same shape (same row lengths) inside the answer page's condition panel — the only place
+    the problem's table is copied to, so a solution-step table cannot vouch for a damaged copy: one of them must match cell
+    for cell. No table of that shape in the panel means nothing to compare, so it is skipped (a pure transpose of a
+    non-square table has another shape and is not caught here; only changed characters are, by the multiset). Several
+    same-shape panel tables: matching any one passes. Returns 'table <i> row <r>' (1-based, the first row that differs from
+    the closest candidate) or None."""
+    answers=_tables(answer_ref,panel=True)
+    for i,table in enumerate(_tables(problem_ref),1):
+        shape=[len(row) for row in table]; same=[a for a in answers if [len(row) for row in a]==shape]
+        if not same or table in same: continue
+        close=min(same,key=lambda a:sum(x!=y for x,y in zip(a,table)))
+        return 'table %d row %d'%(i,next(r for r,(x,y) in enumerate(zip(close,table),1) if x!=y))
+    return None
 def _answer_hash(ref):
     import fitz
     with fitz.open(ref['snapshot']) as d:
@@ -62,6 +95,8 @@ def validate_pairs(pairs):
     for p in pairs:
         same=lambda s:sorted(s.replace('조건',''))
         if same(_conditions(p['problem'],True))!=same(_conditions(p['answer'])): raise InputError('problem/answer conditions differ: '+p['problem_id'])
+        mismatch=_table_mismatch(p['problem'],p['answer'])
+        if mismatch: raise InputError('table rows differ: '+p['problem_id']+' '+mismatch)
         key=_answer_hash(p['answer'])
         if p['problem_id'] in seen and seen[p['problem_id']]!=key: raise InputError('different answers for '+p['problem_id'])
         seen[p['problem_id']]=key
@@ -72,17 +107,18 @@ def discover(repo,selector,problem_ids=None,failures=None):
     selected={_norm(p).strip() for p in problem_ids} if problem_ids else None
     root=_child(repo,'복습노트')
     if root is None: raise InputError('review folder missing')
+    packs={};listed=set();labels={}  # (experiment, id) -> label counted in manifest order; filled as each pack is read
     def fail(pid,experiment,reason):
         if failures is None: raise InputError(reason)
-        failures.append({'problem_id':pid,'experiment':experiment,'reason':reason})
-    packs={};listed=set()
+        # label is None only when the pack itself is missing (no manifest, so no problem is known); a missing PDF pair fails per problem and keeps its label.
+        failures.append({'problem_id':pid,'experiment':experiment,'label':labels.get((experiment,pid)),'reason':reason})
     for name in experiments:
         folder=_child(root,name); data=_child(folder,DATA_DIR) if folder else None; manifest=_child(data,'manifest.json') if data else None
         if manifest is None: fail(None,name,'experiment pack missing: '+name);continue
         included=[p for p in json.loads(manifest.read_text(encoding='utf-8'))['problems'] if p.get('status')=='included']
         # Labels come from the current manifest order every time; the PDF badge must agree.
         packs[name]=(folder,[(_norm(p['id']),KINDS[p['kind']]+str(n),_norm(p['title'])) for n,p in enumerate(included,1)])
-        for pid,label,_ in packs[name][1]: listed.update([pid,label,name+':'+pid,name+':'+label])
+        for pid,label,_ in packs[name][1]: listed.update([pid,label,name+':'+pid,name+':'+label]);labels[(name,pid)]=label
     for token in selected or ():
         owners=[name for name,(_,problems) in packs.items() if any(token==label for _,label,_ in problems)]
         if len(owners)>1: raise InputError('ambiguous label '+token+' in '+', '.join(owners)+'; use '+owners[-1]+':'+token)
@@ -103,8 +139,15 @@ def discover(repo,selector,problem_ids=None,failures=None):
                 if pid not in pp or pid not in aa: raise InputError('header/list mismatch: '+pid)
                 defects=[d['code']+' p.'+str(ref['page_index']+1) for ref in (pp[pid],aa[pid]) for d in input_defects(ref['snapshot'],ref['page_index'])]
                 if defects: raise InputError('input defect: '+';'.join(defects))
-                figures=sorted(str(x.resolve()) for x in (solutions.iterdir() if solutions else []) if re.fullmatch(re.escape(pid)+r'-solution-\d{2}\.png',_norm(x.name)))
-                pair=dict(problem_id=pid,label=label,title=title,problem=pp[pid],answer=aa[pid],md_snapshot=str(md.resolve()) if md and md.is_file() else None,experiments=[name],figure_refs=figures)
+                # PNG (pixel comparison) and its SVG (evidence of what the figure means) share one name rule: exactly <id>-solution-NN.
+                listing=list(solutions.iterdir()) if solutions else []
+                by_ext=lambda ext:sorted(str(x.resolve()) for x in listing if re.fullmatch(re.escape(pid)+r'-solution-\d{2}\.'+ext,_norm(x.name)))
+                pngs,svgs=by_ext('png'),by_ext('svg')
+                # A PNG without its SVG is a warning, not a failure: the pixels are still frozen and compared.
+                svg_stems={_norm(Path(f).stem) for f in svgs}
+                svg_missing=[_norm(Path(f).name) for f in pngs if _norm(Path(f).stem) not in svg_stems]
+                pair=dict(problem_id=pid,label=label,title=title,problem=pp[pid],answer=aa[pid],md_snapshot=str(md.resolve()) if md and md.is_file() else None,experiments=[name],
+                    figure_refs=pngs,figure_svg_refs=svgs,figure_svg_missing=svg_missing)
                 validate_pairs([pair]);pairs.append(pair)
             except (InputError,OSError,ValueError,RuntimeError) as ex: fail(pid,name,str(ex))
     if selected and selected-listed: raise InputError('problem IDs outside range: '+str(sorted(selected-listed)))
@@ -134,5 +177,6 @@ def freeze_sources(pairs,batch):
         for role in ['problem','answer']: p[role]['snapshot']=freeze(p[role]['snapshot'])
         if p['md_snapshot']: p['md_snapshot']=freeze(p['md_snapshot'])
         p['figure_refs']=[freeze(f,True) for f in p.get('figure_refs',[])]
+        p['figure_svg_refs']=[freeze(f,True) for f in p.get('figure_svg_refs',[])]  # evidence only; never fed to the pixel comparison
     import fitz,sys
     write(batch/'source/inputs.json',{'files':provenance,'pairs':result,'tools':{'python':sys.version,'pymupdf':fitz.VersionBind}}); return result

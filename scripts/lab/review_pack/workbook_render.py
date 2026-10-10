@@ -43,8 +43,141 @@ IMAGE_WAIT_NEW=("[...document.images].map(img => img.complete ? null : new Promi
                 "      img.addEventListener('load', done, { once: true });\n"
                 "      img.addEventListener('error', done, { once: true });\n"
                 "    }))")
-# 원본 스냅샷 위에 덧씌우는 세 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
-LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW)]
+# 쉼표로 이어진 식 목록(`O_0=…,\ O_1=…`)이 모든 최상위 `=` 에서 잘려 다음 식의 꼬리표(`O_1`)가 앞 줄 끝에 남던 문제
+# (2026-10-10 실험05 기출4·7·12 해설지). 최상위 쉼표로 식 목록을 먼저 나눈 뒤 식마다 aligned 행을 만든다.
+# 조각마다 최상위 관계 기호가 있을 때만 나누고, `f(a,b)=…` 의 괄호 안 쉼표나 한 조각이라도 관계 기호가 없는 목록은
+# 기존 동작(splitRelations 결과 그대로)을 지킨다. 말미 쉼표가 남긴 빈 마지막 조각은 버리고 나머지로 판단한다.
+EQUATION_OLD=r'''function equationTex(tex, parts, prefix) {
+  const [lhs, ...rest] = parts;
+  if (!lhs) return prefix + tex;
+  const lines = rest.map(([rel, rhs], i) => `${i ? '' : prefix + lhs} &amp;${rel} ${rhs}`);
+  return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
+}'''
+EQUATION_NEW=r'''// 중괄호·\left…\right·소괄호·대괄호 바깥의 쉼표에서 식 목록을 나눈다. 조각이 둘 이상이고
+// 모든 조각이 (왼쪽 변이 있는) 관계식일 때만 조각 배열을, 아니면 null 을 돌려준다.
+function splitEquationList(tex) {
+  const pieces = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < tex.length; i++) {
+    const c = tex[i];
+    if (c === '{' || c === '(' || c === '[') depth++;
+    else if (c === '}' || c === ')' || c === ']') depth--;
+    else if (c === '\\') {
+      const cmd = (/^\\([a-zA-Z]+|.)/.exec(tex.slice(i)) || [, ""])[1];
+      if (cmd === 'left') depth++;
+      else if (cmd === 'right') depth--;
+      i += cmd.length;
+    } else if (c === ',' && depth === 0) {
+      pieces.push(tex.slice(start, i));
+      start = i + 1;
+    }
+  }
+  if (depth !== 0 || !pieces.length) return null;
+  pieces.push(tex.slice(start));
+  // 조각 머리의 간격 명령(`\ `, `\,`, `\quad` …)은 식 바깥이라 지운다. 꼬리는 건드리지 않는다.
+  const SPACE = /^(?:\s|\\[ ,;:!]|\\q?quad(?![a-zA-Z]))+/;
+  const list = pieces.map(p => p.replace(SPACE, ''));
+  if (list.length > 1 && !list[list.length - 1]) list.pop();   // 말미 쉼표: 빈 마지막 조각은 버린다
+  if (list.length < 2) return null;
+  const ok = list.every(p => { const r = splitRelations(p); return r && r[0]; });
+  return ok ? list : null;
+}
+function equationTex(tex, parts, prefix) {
+  const [lhs, ...rest] = parts;
+  if (!lhs) return prefix + tex;
+  const rowsOf = (head, relations) => relations.map(([rel, rhs], i) => `${i ? '' : head} &amp;${rel} ${rhs}`);
+  const list = splitEquationList(tex);
+  const lines = list
+    ? list.flatMap((piece, k) => { const [l, ...r] = splitRelations(piece); return rowsOf((k ? '' : prefix) + l, r); })
+    : rowsOf(prefix + lhs, rest);
+  return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
+}'''
+
+# 맞춤이 끝난 뒤에도 남은 잘림·넘침을 data-overflow 로 알리는 훑기(2026-10-10). 기존 맞춤은 사각지대가 셋이었다.
+#  - fitDisplayMath 는 70% 까지만 줄이고, 그 뒤로 넘치는 식은 `.katex-display` 의 overflow-x 가 눈에 안 띄게 잘랐다.
+#  - fitSolution 의 fits() 는 마지막 풀이 단계만 쟀다(앞 단계가 칸 밖이어도 통과).
+#  - 표는 칸 폭을 넘어도 맞춤이 보지 않았다.
+# 표는 wrap 보다 넓다는 이유만으로는 걸지 않는다(2026-10-10 실험05 q-sa-enc8x3: 11열 표가 2단 흐름의 첫 단을 11px 넘어
+# 단 사이 여백으로 나왔을 뿐 전부 보였다). 실제로 잘리거나 옆 글을 침범할 때만 센다 — 가장 가까운 clip 조상의 오른쪽을
+# 넘거나, `.sol-flow` 가 다단이면 다음 단의 왼쪽(현재 단 오른쪽 + column-gap)을, 단일 단이면 flow 오른쪽을 넘을 때.
+# 식은 `.katex` 블록 자체의 rect 로 재면 안 된다: 줄인 블록은 transform 으로 작아져 늘 박스 안에 있다. `.katex-html`
+# 안쪽 내용의 범위(Range)를 재어 display 박스 오른쪽과 비교한다. 줄바꿈 지점이 없는 인라인 식(`$\overline{…}$`)은
+# 맞춤이 줄이지도 않고 흐름이 잘라 버리므로, 그 식이 놓인 글 상자(호스트) 오른쪽과 같은 방식으로 비교한다.
+# 표는 `.table-wrap` 이 없어도(생 `<table>`) 잰다. 훑기는 `.page--problem` 마다 한 번, 맞춤이 모두 끝난
+# 뒤(overflow.join 직전)에만 돌아 맞춤 도중의 일시적 넘침을 보고하지 않는다. 이미 넘침으로 오른 쪽은 건너뛴다.
+CLIP_HELPER_ANCHOR='async function main() {'
+CLIP_HELPER=r'''// 표가 실제로 잘리거나 옆 단 글을 침범하는가. 오른쪽 가장자리(T)만 본다. wrap 이 없는 생 table 은 table 자신이 호스트.
+function tableClipped(table) {
+  const wrap = table.closest('.table-wrap') || table;
+  const T = table.getBoundingClientRect().right;
+  // (a) 가장 가까운 clip 조상(overflow-x 가 visible 이 아닌 요소, wrap 자신 포함)의 오른쪽 안쪽 가장자리를 넘는가
+  for (let el = wrap; el && el !== document.documentElement; el = el.parentElement) {
+    const cs = getComputedStyle(el);
+    if (cs.overflowX === 'visible') continue;
+    if (T > el.getBoundingClientRect().right - parseFloat(cs.borderRightWidth) + 1) return true;
+    break;
+  }
+  // (b) 풀이 흐름 안이면: 다단은 다음 단의 왼쪽(단 오른쪽 + column-gap), 단일 단은 flow 의 오른쪽을 넘는가
+  const flow = wrap.closest('.sol-flow');
+  if (!flow) return false;
+  const cs = getComputedStyle(flow), fr = flow.getBoundingClientRect();
+  const left = fr.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+  const right = fr.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+  const n = parseInt(cs.columnCount, 10) || 1;   // 단일 단은 'auto'
+  let limit = right;
+  if (n > 1) {
+    const gap = cs.columnGap === 'normal' ? parseFloat(cs.fontSize) : parseFloat(cs.columnGap);
+    const colW = (right - left - gap * (n - 1)) / n;
+    const col = Math.min(n - 1, Math.max(0, Math.floor((wrap.getBoundingClientRect().left - left + 1) / (colW + gap))));
+    if (col < n - 1) limit = left + (col + 1) * (colW + gap);   // 다음 단의 왼쪽 가장자리
+  }
+  return T > limit + 1;
+}
+
+// 맞춤이 끝난 쪽에 잘린 식(display·인라인)·잘리거나 옆 단을 침범한 표·칸 밖으로 나간 풀이 단계가 남았는가
+function hasClippedContent(page) {
+  for (const d of page.querySelectorAll('.katex-display')) {
+    const k = d.firstElementChild;
+    if (!k) continue;
+    const range = document.createRange();
+    range.selectNodeContents(k.querySelector('.katex-html') || k);
+    if (range.getBoundingClientRect().right > d.getBoundingClientRect().right + 1) return true;
+  }
+  // 인라인 식: 가장 가까운 글 상자 오른쪽 + 1 을 넘으면 흐름·칸이 잘라 낸다. display 식은 위에서 봤고,
+  // Hint 띠의 식(.hint-strip-formula)은 따로 줄이므로 여기서 보지 않는다.
+  for (const k of page.querySelectorAll('.katex')) {
+    if (k.closest('.katex-display, .hint-strip-formula')) continue;
+    const host = k.closest('.sol-step-body, .prose, td, th, .hint-strip-item, .sol-answer, .block');
+    if (!host) continue;
+    const range = document.createRange();
+    range.selectNodeContents(k.querySelector('.katex-html') || k);
+    if (range.getBoundingClientRect().right > host.getBoundingClientRect().right + 1) return true;
+  }
+  for (const t of page.querySelectorAll('table')) {
+    if (tableClipped(t)) return true;
+  }
+  for (const flow of page.querySelectorAll('.sol-flow')) {
+    const f = flow.getBoundingClientRect();
+    for (const step of flow.querySelectorAll('.sol-step')) {
+      const s = step.getBoundingClientRect();
+      if (s.bottom > f.bottom + 1 || s.right > f.right + 1) return true;
+    }
+  }
+  return false;
+}
+
+'''
+CLIP_SCAN_ANCHOR="    document.body.dataset.overflow = overflow.join(',');"
+CLIP_SCAN=r'''    for (const page of book.querySelectorAll('.page--problem')) {   // 맞춤이 끝난 뒤 한 번 훑는다
+      if (overflow.includes(page.id) || !hasClippedContent(page)) continue;
+      page.dataset.overflow = '';
+      overflow.push(page.id);
+    }
+'''
+
+# 원본 스냅샷 위에 덧씌우는 여섯 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
+LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW),(EQUATION_OLD,EQUATION_NEW),
+               (CLIP_HELPER_ANCHOR,CLIP_HELPER+CLIP_HELPER_ANCHOR),(CLIP_SCAN_ANCHOR,CLIP_SCAN+CLIP_SCAN_ANCHOR)]
 
 MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로\n"
              "  if (moved.length) {\n"

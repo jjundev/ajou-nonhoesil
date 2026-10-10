@@ -21,7 +21,7 @@ description: 논리회로실험 복습팩의 기출문제·기출풀이 PDF 원�
 
 연필 PNG 한 장을 촉 중심으로 움직이며 원본 윤곽을 왼쪽에서 오른쪽으로 공개한다. 실제 한글·수식 획순을 복원하는 연출은 아니다. 연필 길이는 촉부터 지우개 끝까지 화면상 160px이며 확대와 무관하다. 줄바꿈에서는 들어 옮기고 작성 완료·설명·최종 hold에서는 숨긴다. pencil은 PageMap의 writing_units에 저작한 줄·가로 영역 순서로 공개한다. 원문 glyph_ids 순서는 보존한다. typing은 기존 anchor 공개를 유지한다.
 
-**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 chunk ID 를 담아 멈춘다. 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
+**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 같은 이름의 짝 SVG 는 의미의 근거로 PNG 와 함께 동결되며(`figure_svg_refs`), 없으면 `figure_svg_missing` 경고만 남는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 멈춘다. 그림 혼자도 전체 쪽 배율에서 안 들어가면 `figure chunk cannot fit even at the full-page view; crop or split the figure: <chunk_id>`(그림을 자르거나 나눠 저작한다), 그림은 들어가는데 묶음(글자·범위)이 안 들어가면 `writing chunk cannot fit at 26px; author smaller chunks: <chunk_id>`(묶음을 더 작게 나눠 저작한다). 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
 
 **입력 게이트(유료 호출 전).** 문제·답안 쪽에 원문 LaTeX(`raw_latex`)가 찍혔거나, 풀이 그림이 '답' 상자 위쪽보다 아래로 내려가 잘렸으면(`clipped_figure`) 그 문항만 failed 로 남기고 나머지를 계속한다. 고치는 곳은 복습팩(`logic-lab-review-pack`)이다.
 
@@ -31,7 +31,7 @@ PDF 흰 화면과 회로·격자·조건·Hint를 보존한다. 복습팩 PDF �
 
 이 저장소의 `.venv`(PyMuPDF·Pillow), Node, 로컬 GSAP/HyperFrames/puppeteer-core/Chrome, libass 포함 FFmpeg를 사용한다. 없는 패키지를 자동 전역 설치하지 않는다. `LOGIC_LAB_PUPPETEER_CORE_PACKAGE`는 package.json 절대 경로, `LOGIC_LAB_CHROME`, `LOGIC_LAB_FFMPEG`는 실행 파일 절대 경로로 지정할 수 있다. HyperFrames 는 `ls ~/.npm/_npx/*/node_modules/hyperframes/dist/cli.js` 로 찾은 절대 경로를 쓴다. 현재 환경의 설치 경로는 매 실행 확인한다. Node CLI가 없으면 렌더를 검증 완료로 보고하지 않는다.
 
-1. `.venv/bin/python .claude/skills/logic-lab-solution-video/scripts/video.py prepare 실험05 --repo "$PWD" [--problems 기출3,q-dec2x4-design] [--review] [--writing-mode pencil|typing]`. 반환된 batch와 문항별 run을 사용한다. 원자료(PDF 쌍·`실험NN_기출풀이.md`·그 문항 풀이 PNG)를 동결하며 비용은 0이다. 게이트에 걸린 문항은 batch 에 failed 와 사유로 남는다.
+1. `.venv/bin/python .claude/skills/logic-lab-solution-video/scripts/video.py prepare 실험05 --repo "$PWD" [--problems 기출3,q-dec2x4-design] [--review] [--writing-mode pencil|typing]`. 반환된 batch와 문항별 run을 사용한다. 원자료(PDF 쌍·`실험NN_기출풀이.md`·그 문항 풀이 PNG)를 동결하며 비용은 0이다. 게이트에 걸린 문항은 batch 에 failed 와 사유로 남고(표시 라벨·파일 이름도 성공 문항과 같은 규칙으로 붙는다), 결과 JSON 의 `prepared`·`failed` 로 개수를 본다. 골라 둔 문항이 전부 걸리면 status 가 failed(종료 코드 1)다 — 일부만 걸린 것은 author-required 그대로다. 풀이 그림의 짝 SVG 가 없으면 통과한 문항의 batch 항목 `warnings` 와 결과 JSON `warnings` 에 `figure SVG missing: <PNG 이름>` 이 실린다(없으면 키 자체가 없다. 멈추지 않는다).
 2. [PDF와 내용 대응](references/pdf-and-coverage.md)을 읽는다. 실제 문제/답안 PDF, 동결 MD, 후보 SVG와 native PNG를 읽고 `source/map.json`을 작성한다. `extract --run RUN`으로 빈/부분/완성 프레임 게이트를 실행한다. native PDF와 원본 SVG도 직접 대조한다. 픽셀 비교 0만으로 의미 검토를 승인하지 않는다.
 3. 원문과 일치하는 `manifest.json`, `coverage.json`, `circuit-review.json`을 작성하고 `check --run RUN`으로 검증한다. 문제 그림(회로도·진리표·파형)을 설명할 때 이 단계에서 선택적으로 focus.json과 annotations.json도 작성한다. 의미에 맞는 reason/check cue에 확대·화살표/타원/밑줄/짧은 label을 연결하고, TTS 전에 check로 검증한다. 원본 풀이와 한 연필을 공유하고 최종 전체 화면에서 주석을 숨긴다. 한글 음절/조판 기호를 공개하며 답 상자·그림을 누락하지 않는다. PDF/MD 충돌, 대응 PNG 없는 풀이 이미지, 해석할 수 없는 클립/도형은 해당 문항을 중단한다. 새 풀이·계산을 창작하거나 오류를 조용히 수정하지 않는다.
 4. [음성과 실측 타이밍](references/narration-and-timing.md)을 읽는다. `tts --run RUN [--config JSON] [--env-file ENV]`를 실행한다. 최초 SVG 게이트와 현재 내용 검토 전에는 유료 요청을 하지 않는다. `--review`이면 전체 대본을 사용자에게 보여 주고 승인 후 한 번 `--approve-review`를 사용한다. 기본 모드에는 사용자 승인 단계를 추가하지 않는다.
@@ -47,6 +47,8 @@ PDF 흰 화면과 회로·격자·조건·Hint를 보존한다. 복습팩 PDF �
 `문제풀이영상/<실험NN 또는 실험NN-MM>/<라벨> — <문항 제목>.mp4`(예: `기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4`)에 최종 하드 자막본만 둔다. `_자막` 접미사를 쓰지 않는다. 소스·대본·SVG·HTML·WAV·마스터·자막·검증·사용량은 `<실험NN 또는 실험NN-MM>_제작자료/실행/<YYYYMMDD-HHMMSS-8hex>/videos/<안전한 키>/`에 둔다. 같은 제목의 이전 결과는 제작자료 안에 보존한다. catalog/README는 실제 최종 파일 SHA256과 내부 문항 ID 를 기록하고 latest는 전체 성공일 때만 갱신한다.
 
 git 에는 최종 MP4·catalog/README·`source/`·`layers/*.json`·`usage.json`·WAV 가 들어가고, 유료 호출 없이 다시 만들 수 있는 `renders/`·`verification/`·`composition/`·`caption-original/` 은 저장소 `.gitignore` 가 뺀다.
+
+`layers/` 의 svg·png(`original`·`candidate`·`animated`·`native`)도 동결 PDF 에서 `extract` 로 다시 만들 수 있어(비용 0, 같은 PDF·PyMuPDF 면 바이트까지 같다) `.gitignore` 가 뺀다. 새 clone 에서 이어 작업하면 `layers/candidates.json`·`layers.json` 이 옛 체크아웃의 절대 경로를 품고 있고 `candidates.json` 이 있으면 `extract` 가 PDF 를 다시 읽지 않으므로, `layers/candidates.json` 을 지운 뒤 `extract` 를 돌린다.
 
 복습노트·문제은행·보고서·전자회로2 의 파일을 수정하지 않는다. TTS/cache/budget 은 스킬 안 `scripts/tts_lib/` 를 이름이 격리된 adapter로 사용한다. 스캔 완전 자동 처리, 손글씨, 실제 키보드 녹화, 음성만 교체하는 별도 기능은 제공하지 않는다. 전달 시 검증한 범위와 실제 음성 미검증 여부를 구분한다.
 

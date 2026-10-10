@@ -32,8 +32,15 @@ class WritingCameraTests(Sandbox):
         self.assertEqual(keys[1]['transition_frames'],12)
     def test_long_line_requires_authored_chunks(self):
         l,t=self.fixture(800)
-        with self.assertRaisesRegex(InputError,'chunk'):self.keys(l,t)
+        with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: chunk1'):self.keys(l,t)  # 글자 문구는 그림 문구로 바뀌지 않는다
         l,t=self.fixture(800,True);self.assertEqual(len(self.keys(l,t)),4)
+    def test_long_line_with_plain_shape_is_not_a_figure_chunk(self):
+        # 밑줄·답 상자 같은 도형이 든 글자 묶음은 그림 문구가 아니라 글자 문구를 받는다.
+        l,t=self.fixture(800)
+        l['shapes']=[dict(id='bar',bbox=[100,312,110,313],kind='unclassified',paint_order=2,svg_ids=['x'])]
+        l['map']['steps'][0]['shape_ids']=['bar'];l['map']['steps'][0]['writing_units'][0]['shape_ids']=['bar']
+        self.assertTrue(l['map']['steps'][0]['writing_units'][1]['chunk_id']==l['map']['steps'][0]['writing_units'][0]['chunk_id'])
+        with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: chunk1'):self.keys(l,t)
     def test_column_change_and_long_pen(self):
         l,t=self.fixture(500,length=400);self.assertEqual(len(self.keys(l,t)),3)
     def test_transition_has_no_draw(self):

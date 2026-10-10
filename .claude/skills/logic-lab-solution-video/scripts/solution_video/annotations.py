@@ -56,8 +56,8 @@ def _validate(focus,annotations,manifest,layers):
  regions=named_list(focus.get('regions'),'regions');cues=named_list(focus.get('cues'),'cues','segment_id')
  region_ids={r['id'] for r in regions};segs={s['id']:s for s in manifest['segments']}
  for r in regions:
+  # 왼쪽 조건 패널은 중앙 풀이 칸 옆이라 상류(전자회로2)의 "work_bbox 위" 규칙을 두지 않는다. 겹침만 check_box 가 막는다.
   r['bbox']=bbox(r.get('bbox'),r['id']);check_box(r['bbox'],layers,r['id'])
-  if r['bbox'][3]>layers['map']['work_bbox'][1]:fail(r['id'],'region must be above work_bbox')
  for c in cues:
   name=c['segment_id']
   if name not in segs or segs[name]['kind'] not in ('reason','check'):fail(name,'cue must target a reason/check segment')

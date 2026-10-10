@@ -26,4 +26,5 @@ class InputGateTests(Sandbox):
     def test_stamped_raw_latex_fails_only_that_problem(self):
         failures=[]; ok=discover(defective_pack(self.run/'repo','실험05',[10]).parents[1],'실험05',None,failures)
         self.assertEqual([(f['problem_id'],f['reason']) for f in failures],[('q-demux-from-dec','input defect: raw_latex p.11')])
+        self.assertEqual([f['label'] for f in failures],['출처 미확인11'])  # manifest-order label travels with the failure
         self.assertEqual(len(ok),18)

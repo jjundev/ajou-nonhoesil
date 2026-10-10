@@ -198,17 +198,90 @@ class LabPrepareTests(Sandbox):
         self.assertEqual(items['q-dec2x4-design']['label'],'기출4'); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
         self.assertEqual(items['q-dec2x4-design']['filename'],'기출4 — 풀이.mp4')
         self.assertEqual(items['q-demux-from-dec']['status'],'failed'); self.assertIn('raw_latex p.11',items['q-demux-from-dec']['reason'])
+        # A dropped problem keeps the same display label the passing ones get; its file name no longer falls back to the ID.
+        self.assertEqual(items['q-demux-from-dec']['label'],'출처 미확인11')
+        self.assertEqual(items['q-demux-from-dec']['filename'],'출처 미확인11 — 풀이.mp4')
         run=batch/items['q-dec2x4-design']['run']; pair=read(run/'source/pair.json')
         self.assertTrue(all((run/f).is_file() for f in pair['figure_refs']))
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
+    def test_prepare_copies_svg_into_run(self):
+        repo=self.sandbox_repo(); batch=cli.prepare_batch(repo,'실험05',['기출4'])
+        item=read(batch/'batch.json')['items'][0]; run=batch/item['run']; pair=read(run/'source/pair.json')
+        self.assertEqual([Path(f).name for f in pair['figure_svg_refs']],['q-dec2x4-design-solution-01.svg'])
+        self.assertTrue(pair['figure_svg_refs'] and all((run/f).is_file() for f in pair['figure_svg_refs']))
+        self.assertTrue(set(pair['figure_svg_refs'])<=set(read(run/'source/inputs.json')['files']))
+        # export_page 는 PNG 만 받는다: SVG 는 도형 후보(figure_source)가 되지 않는다.
+        self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
+    def test_prepare_reports_missing_pair_svg_as_warning(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); (repo/'복습노트/실험05/자료/figures/solutions/q-dec2x4-design-solution-01.svg').unlink()  # 팩 사본이라 원본은 그대로다
+        out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue()); self.assertEqual(code,0)
+        want=['figure SVG missing: q-dec2x4-design-solution-01.png']
+        self.assertEqual(result['warnings'],want)
+        self.assertEqual((result['prepared'],result['failed'],result['status']),(1,1,'author-required'))  # 기존 키·상태는 그대로
+        items={i['id']:i for i in read(Path(result['batch'])/'batch.json')['items']}
+        self.assertEqual(items['q-dec2x4-design']['warnings'],want); self.assertEqual(items['q-dec2x4-design']['status'],'author-required')
+        self.assertNotIn('warnings',items['q-demux-from-dec'])  # 입력 게이트에서 탈락한 항목 형식은 그대로
+    def test_prepare_without_missing_svg_has_no_warnings_key(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue()); self.assertEqual(code,0); self.assertNotIn('warnings',result)
+        self.assertTrue(all('warnings' not in i for i in read(Path(result['batch'])/'batch.json')['items']))
     def test_prepare_all_failed_experiment(self):
         import io,contextlib,json
         repo=self.sandbox_repo(); out=io.StringIO()
-        with contextlib.redirect_stdout(out): cli.main(['prepare','실험02','--repo',str(repo)])
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험02','--repo',str(repo)])
         result=json.loads(out.getvalue()); self.assertEqual(result['paid_requests'],0)
+        # Nothing passed the input gate: the stage must not claim 'author-required' (there is nothing to author).
+        self.assertEqual(code,1); self.assertEqual(result['status'],'failed')
+        self.assertEqual(result['prepared'],0); self.assertGreater(result['failed'],0)
+        self.assertEqual(result['reason'],'all problems failed the input gate; see batch.json')
         batch=Path(result['batch']); items=read(batch/'batch.json')['items']
         self.assertTrue(items and all(i['status']=='failed' for i in items))
+        self.assertEqual(result['failed'],len(items))
+        # Every dropped problem still says which one it is.
+        self.assertTrue(all(i['label'] and i['filename']==i['label']+' — 풀이.mp4' for i in items),items)
         self.assertEqual(batch.parents[2],repo.resolve()/'문제풀이영상/실험02')
+    def test_prepare_partial_failure_exits_zero(self):
+        import io,contextlib,json
+        repo=self.sandbox_repo(); out=io.StringIO()
+        with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
+        result=json.loads(out.getvalue())
+        self.assertEqual(code,0); self.assertEqual(result['status'],'author-required')
+        self.assertEqual((result['prepared'],result['failed']),(1,1)); self.assertNotIn('reason',result)
+        self.assertEqual(result['paid_requests'],0)
+    def test_range_prefix_on_failed_label(self):
+        repo=self.sandbox_repo()
+        batch=cli.prepare_batch(repo,'실험04-05',['실험05:기출4','실험05:q-demux-from-dec'])
+        items={i['id']:i for i in read(batch/'batch.json')['items']}
+        # Same rule for both: a range prefixes the experiment, a single experiment does not.
+        self.assertEqual(items['q-dec2x4-design']['label'],'실험05 기출4')
+        self.assertEqual(items['q-demux-from-dec']['status'],'failed')
+        self.assertEqual(items['q-demux-from-dec']['label'],'실험05 출처 미확인11')
+        self.assertEqual(items['q-demux-from-dec']['filename'],'실험05 출처 미확인11 — 풀이.mp4')
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':1,'failed':1})
+    def test_range_prefix_follows_each_items_own_experiment(self):
+        # 마지막 실험(실험05)만 보면 접두를 experiments[-1] 로 고정한 구현도 통과한다: 실험04 쪽 탈락·성공 항목도 본다.
+        repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)
+        defective_pack(repo,'실험04',[0]); defective_pack(repo,'실험05',[10])  # 기출1 q-mux2 / 출처 미확인11 q-demux-from-dec
+        batch=cli.prepare_batch(repo,'실험04-05',['실험04:q-mux2','실험04:q-mux4','실험05:기출4','실험05:q-demux-from-dec'])
+        items={i['id']:i for i in read(batch/'batch.json')['items']}
+        self.assertEqual({k:(v['status'],v['label']) for k,v in items.items()},{
+            'q-mux2':('failed','실험04 기출1'),'q-mux4':('author-required','실험04 기출2'),
+            'q-dec2x4-design':('author-required','실험05 기출4'),'q-demux-from-dec':('failed','실험05 출처 미확인11')})
+        self.assertEqual(items['q-mux2']['filename'],'실험04 기출1 — 풀이.mp4')
+        self.assertEqual(items['q-mux4']['filename'],'실험04 기출2 — 풀이.mp4')
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':2,'failed':2})
+    def test_experiment_level_failure_has_no_label(self):
+        repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)  # 실험03 pack folder absent
+        batch=cli.prepare_batch(repo,'실험03')
+        items=read(batch/'batch.json')['items']
+        self.assertEqual([(i['id'],i['label'],i['filename'],i['status']) for i in items],
+            [('experiment-실험03',None,'experiment-실험03 — 풀이.mp4','failed')])
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':0,'failed':1})
     def test_prepare_range_folder_name_and_writing_mode(self):
         repo=self.sandbox_repo()
         for mode in ['pencil','typing']:
