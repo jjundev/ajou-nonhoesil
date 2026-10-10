@@ -138,11 +138,16 @@ def verify_run(run,hyperframes_entry):
             if max(ImageStat.Stat(diff.crop((0,0,1920,900))).mean)>3: return False
         return True
     check('captions',captions)
+    from .speech_chunks import MODE,verify_chunk_sync,chunk_review_passed
+    try:manifest=read(run/'source/manifest.json')
+    except (OSError,ValueError):manifest={}
+    if manifest.get('caption_timing')==MODE:check('chunk_sync',lambda:verify_chunk_sync(run)['status']=='passed')
     for kind in ['audio','visual']:
         def review(k=kind):
             r=read(run/'verification'/f'{k}-review.json')
             if r.get('status')!='passed' or r.get('input_hash')!=h or not r.get('notes') or not r.get('evidence'): return False
             if k=='audio' and r.get('mode')!='live-listened': return False
+            if k=='audio' and not chunk_review_passed(r,manifest): return False  # 청크 모드: 모든 청크의 청취 확인
             return all(local(run,p).is_file() and file_hash(local(run,p))==sha for p,sha in r['evidence'].items())
         check(kind+'_meaning',review)
     complete=all(v['status']=='passed' for v in checks.values())

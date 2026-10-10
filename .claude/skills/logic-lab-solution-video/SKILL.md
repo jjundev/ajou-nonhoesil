@@ -76,3 +76,15 @@ SRT 시간은 실측 voice_samples 안에서 원문 의미 단위의 글자 수 
 
 ### 논리식
 자막은 원문 기호(`S1′S0′D`, `+`, `V_CC`, `74HC138`), 음성은 읽는 소리다. 자막에 "신호 이름 + 바/낫" 이 보이면 `logic_bar_word` warning 이다. 음성 원고는 복습팩 풀이와 같은 ~해요체로 쓴다. 자세한 규칙은 [음성과 실측 타이밍](references/narration-and-timing.md)의 논리식 절.
+
+### 청크 동기화 (pcm-chunks-v1)
+TTS 에는 읽을 대본만 보낸다(`spoken-text-only-v1`, 지침·"원고:"·자막은 보내지 않음). 자막을 실제 발화 경계에 맞추려면 manifest 에 `"caption_timing": "pcm-chunks-v1"` 을 두고 **모든** segment 에 `chunks: [{id, text, caption_text}]` 를 쓴다. 청크 하나가 음성 클립 하나이자 자막 cue 하나다(문장·쉼표 경계마다 한 청크). 청크 text·caption_text 를 공백으로 이으면 부모 text·caption_text 와 같아야 한다. 예(기출3 류):
+
+```json
+{"id":"write_out","kind":"write","step_id":"out","text":"출력은 에스원 바 에스제로 바 디예요. 그래서 와이영이 켜져요.",
+ "caption_text":"출력은 S1′S0′D예요. 그래서 Y0이 켜져요.",
+ "chunks":[{"id":"c1","text":"출력은 에스원 바 에스제로 바 디예요.","caption_text":"출력은 S1′S0′D예요."},
+           {"id":"c2","text":"그래서 와이영이 켜져요.","caption_text":"그래서 Y0이 켜져요."}]}
+```
+
+`tts` 는 청크마다 WAV 를 만들고(`source/chunk-audio.json`), raw PCM 을 이어 segment WAV 와 청크별 상대 샘플 경계를 `source/audio.json` 에 싣는다. 자막은 그 실측 경계로 나온다. 청크가 일부 segment 에만 있으면 거부한다(글자 수 방식으로 메우지 않는다). 청크 없는 기존 run(실험05 기출3·기출12 등)은 예전 글자 수 비례 자막 그대로 동작한다. 청취 후 긴 앞뒤 무음만 `source/chunk-trims.json` 에 사람이 정수 샘플로 적고 `tts` 를 다시 돌린다(캐시라 유료 요청 없음). 자동으로 자르지 않는다. 청크 모드의 audio-review 는 모든 청크의 청취 확인(`chunk_checks`)이 있어야 통과하며, 청취하지 않았으면 complete/live_audio 를 승인하지 않고 게시하지 않는다. 자세한 내용은 [음성과 실측 타이밍](references/narration-and-timing.md)과 [최종 검증과 게시](references/verification.md)의 청크 절.

@@ -34,6 +34,11 @@ def validate_manifest(manifest,layers,coverage,circuit_review):
     require(all(g in gs and glyph_step[g]==shape_step[s] for s,g in anchors.items()),'shape anchor must belong to same step')
     segs=manifest.get('segments',[]); require(bool(segs),'narration segments required')
     require(len({s['id'] for s in segs})==len(segs),'duplicate segment ID')
+    # 청크 동기화(pcm-chunks-v1)는 명시 모드에서만, 그 모드에서는 모든 segment 에 청크가 있어야 한다(글자 수 방식으로 대체 금지).
+    from .speech_chunks import validate_speech_chunks,MODE
+    require(manifest.get('caption_timing') in (None,MODE),'unsupported caption timing mode')
+    require(manifest.get('caption_timing')==MODE or not any('chunks' in s for s in segs),'speech chunks require caption_timing '+MODE)
+    validate_speech_chunks(segs,required=manifest.get('caption_timing')==MODE)
     writing=[]
     for s in segs:
         require(bool(re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',s['id'])),'segment ID must be safe ASCII')

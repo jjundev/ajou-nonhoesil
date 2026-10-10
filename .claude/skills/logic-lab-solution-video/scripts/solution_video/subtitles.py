@@ -46,10 +46,18 @@ def inspect_caption_notation(text:str,segment_id:str)->list[dict]:
     return [issues[span] for span in sorted(issues)]
 
 def caption_notation_warnings(segments:list[dict])->list[dict]:
-    return [issue for segment in segments if isinstance(segment,dict)
-            and isinstance(segment.get('caption_text'),str)
-            for issue in inspect_caption_notation(segment['caption_text'],segment.get('id','unknown'))
-            if issue['severity']=='warning']
+    warnings=[]
+    for segment in segments:
+        if not isinstance(segment,dict):continue
+        # pcm-chunks-v1: 경고는 cue 하나인 청크 자막 기준(span 도 청크 안), 어느 청크인지 chunk_id 로 알린다.
+        chunked=isinstance(segment.get('chunks'),list)
+        for item in segment['chunks'] if chunked else [segment]:
+            if not isinstance(item,dict) or not isinstance(item.get('caption_text'),str):continue
+            for issue in inspect_caption_notation(item['caption_text'],segment.get('id','unknown')):
+                if issue['severity']!='warning':continue
+                if chunked:issue['chunk_id']=item.get('id','unknown')
+                warnings.append(issue)
+    return warnings
 
 def validate_caption_notation(text:str,segment_id:str)->None:
     errors=[i for i in inspect_caption_notation(text,segment_id) if i['severity']=='error']
@@ -127,9 +135,21 @@ def wrap_caption(text:str,max_chars:int=34,max_lines:int=2)->str:
 def split_caption(text:str,max_chars:int=34)->list[str]:
     return [wrap_caption(unit,max_chars) for unit in caption_units(text)]
 
+def chunk_caption(text:str)->str:
+    """One authored speech chunk = exactly one cue (same sentence/comma rules as split_caption); a comma-ending clause keeps its comma."""
+    units=_caption_units(text,not text.rstrip().endswith(','))
+    if len(units)!=1:raise InputError('speech chunk must contain exactly one caption cue (split it at the sentence/comma boundary): '+text)
+    return wrap_caption(units[0])
+
 def write_srt(timeline,dest):
     lines=[]; num=0
-    for seg in timeline['segments']:
+    from .speech_chunks import MODE,validate_caption_cues
+    if timeline.get('caption_timing') not in (None,MODE):raise InputError('unsupported caption timing mode')
+    chunk_mode=timeline.get('caption_timing')==MODE
+    # pcm-chunks-v1: cue 시간은 실측 청크 샘플 경계 그대로(글자 수 비례 배분 없음). legacy 는 아래 기존 방식.
+    for num,cue in enumerate(validate_caption_cues(timeline) if chunk_mode else [],1):
+        lines.append(f'{num}\n{_stamp(cue["start_sample"],timeline["rate"])} --> {_stamp(cue["end_sample"],timeline["rate"])}\n{chunk_caption(caption_text(cue))}\n')
+    for seg in [] if chunk_mode else timeline['segments']:
         text=caption_text(seg); chunks=split_caption(text)
         lengths=[len(unit) for unit in _caption_units(text,False)]
         duration=seg.get('voice_samples',seg['end_sample']-seg['start_sample']); weights=sum(lengths); start=seg['start_sample']; offset=0

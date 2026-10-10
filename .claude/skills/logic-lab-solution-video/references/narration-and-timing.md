@@ -2,6 +2,8 @@
 
 음성 설정은 assets/defaults.json, 작성 설정은 assets/writing-defaults.json이며 각각 source/config.json과 source/writing.json에 동결한다. Aoede/한국어/24kHz mono PCM, 1920×1080/30fps이며 모델과 공급자를 자동 대체하지 않는다. 환경 GOOGLE_API_KEY 또는 GEMINI_API_KEY를 사용한다. --env-file은 메모리로만 읽고 config/로그에 키를 넣지 않는다. budget_usd=null은 상한 없음이며 명시 상한을 주면 price 요율과 기존 예산 규칙을 따른다. 모든 문항은 batch/usage.json 하나를 쓴다.
 
+TTS 요청 정책은 `spoken-text-only-v1`이다. 텍스트 입력에는 발음 사전(`pronunciation`)을 적용한 읽을 대본만 넣고, 지침(direction)·"원고:" 같은 안내문·caption_text는 보내지 않는다. 음성(Aoede)·언어(ko-KR)·모델·오디오 형식은 설정 필드로만 정한다. 지침 문장을 함께 보내면 모델이 그 문장까지 읽어 버릴 수 있다(상류 전자회로2 영상에서 "과장하지 않습니다" 류 발화가 들렸다). 그래서 `defaults.json`에 direction이 없고, 옛 run의 config에 남은 direction은 요청에 넣지 않으며 tts가 다시 동결하는 config에서도 지운다. 말투·속도는 대본 문장(~해요체, 쉼표 위치)으로만 조절한다. 캐시 키에는 정책 버전과 실제 전송 대본이 들어가므로 지침을 포함하던 옛 캐시 WAV는 재사용되지 않고 새로 합성된다(유료). caption_text만 바꾸면 키가 같아 재합성하지 않는다. WAV 영수증(`assets/voice/*.json`)에는 policy와 payload_hash가 기록된다.
+
 문제를 확인하는 발화로 시작한다. 판단 이유(reason), 원문을 쓰는 동안의 설명(write), 계산 확인(check), 답 확인(summary)을 원자료에 연결한다. PDF에 없는 새 계산이나 풀이를 만들지 않는다. 한 발화가 길면 PageMap 단계도 작은 연속 단위로 나눈다. 실패한 문항만 재개하고 성공 WAV는 내용/설정 해시로 재사용한다.
 
 연필 기본은 7.5글자/초이며 인접 글자마다 이동 1프레임 + 작성 3프레임이다. 사용자 요청에 따라 이전 5글자/초(이동 1+작성 5프레임)보다 1.5배 빠르다. 긴 이동·줄바꿈·단계 이동은 최소 8프레임 이동을 사용하고 작성 시간을 줄이지 않는다. write 구간은 max(실제 WAV 길이, 모든 이동·작성 길이)+ceil(0.75×30)=23프레임이다. typing 선택은 기존 ceil(30/7) 프레임 간격을 사용한다. 작성 파일이 없는 legacy 실행은 기존 config의 속도/hold를 그대로 쓴다. 공백은 이동 시간만 사용하며 연필은 숨긴다. typing의 shape는 같은 단계의 anchor glyph 완료 시점에 공개한다. pencil은 writing_units의 shape piece를 최소 18프레임씩 작성하며, 폭 0인 세로 선은 위에서 아래로 공개한다. 전체 타이밍은 800샘플=1프레임이며 실제 PCM은 자르거나 늘이지 않고 남는 구간을 무음으로 채운다. 마지막은 최소 1초 전체 답안 확인이다. 단어별 실제 음성 정렬을 주장하지 않는다.
@@ -62,3 +64,15 @@ SRT 시간은 실측 voice_samples 안에서 원문 의미 단위의 글자 수 
 자막 `caption_text`는 원문 기호를 그대로 쓴다: 부정은 `′`(`S1′S0′D`), OR 는 `+`, AND 는 붙여 쓰기, 첨자 이름은 `V_CC`, 칩 이름은 `74HC138`. 음성 `text`는 읽는 소리로 쓴다: ‘에스원 바 에스제로 바 디’, ‘칠사 에이치씨 일삼팔’, ‘브이 씨씨’. OR 의 `+` 는 ‘오어’로 읽고 ‘더하기’로 읽지 않는다. `defaults.json` 의 `pronunciation` 은 `′`→‘ 바 ’(앞뒤 띄움 — ‘바디’로 붙어 읽히지 않게), `V_CC`·`V_IH`·`V_IL`·`GND` 만 TTS 직전에 치환하고, 그 밖의 신호 이름은 원고에서 직접 소리로 쓴다.
 자막에 "신호 이름 + 바/낫"(`S1 바`, `B 바는`, `E 낫이면`)이 보이면 조사가 붙어도 `logic_bar_word` warning 이다. 자막에는 `S1′` 로 쓴다. 앞에 대문자 신호 이름이 없는 ‘이 바를’ 같은 일반 한국어는 경고하지 않는다.
 음성 원고는 복습팩 풀이와 같은 ~해요체로 쓴다(‘~예요’, ‘~해요’). 상류 예시의 ‘~입니다’ 체를 섞지 않는다.
+
+## 청크 동기화 (pcm-chunks-v1)
+
+목표: 자막 cue 하나에 읽을 대본 한 청크를 명시적으로 대응시키고, 생성된 PCM 의 실측 샘플 위치로 자막 시간을 정한다. 글자 수 비례 배분은 실제 문장 발화 경계를 재지 않아 cue 가 음성보다 앞서거나 늦는다.
+
+**저작.** manifest `schema_version` 은 1 그대로, `caption_timing: "pcm-chunks-v1"` 을 추가하고 모든 segment 에 `chunks` 를 쓴다. 각 청크는 `{id, text, caption_text}` 이고 id 는 segment 안에서 고유한 안전한 ASCII(`[A-Za-z][A-Za-z0-9_-]*`)다. 합성 ID `segment_id__chunk_id` 는 run 전체에서 겹치면 안 된다. 공백 정규화 후 청크 text 를 공백으로 이으면 부모 text, caption_text 도 같은 규칙으로 부모 caption_text 와 같아야 한다. 각 청크 caption_text 는 기존 문장·쉼표 규칙으로 cue 가 정확히 하나여야 한다(화면 두 줄 줄바꿈은 허용, 쉼표로 끝나는 청크는 쉼표를 유지). 청크 text 에는 지침 문구를 넣지 않는다 — 읽을 소리만 쓴다(‘에스원 바 에스제로 바 디예요.’). 자막 표기 규칙(‘S1′S0′D’, 논리식 경고 등)은 청크 caption_text 에 그대로 적용되고 경고에는 `chunk_id` 가 붙는다. 모드 없이 청크를 쓰거나, 모드에서 청크 없는 segment 가 있으면 check/tts 전에 오류다. 기존 run 에 적용하려면 기존 cue 경계(문장·쉼표)를 출발점으로 청크를 나누고 내용 지문이 바뀌므로 coverage/circuit-review 를 새 지문으로 갱신한다.
+
+**합성과 연결.** 청크마다 spoken-text-only 요청을 보내 `assets/voice/<segment>__<chunk>-<key16>.wav` 와 영수증(policy·payload_hash·samples·sha256·usage, 비밀정보 없음)을 만들고 목록을 `source/chunk-audio.json`(`{policy, voices}`)에 둔다. segment WAV(`<segment>-joined-<key16>.wav`)는 청크 raw PCM 을 순서대로 이은 것이다 — 청크 사이에 무음을 넣지 않고 AAC 등 중간 인코딩도 없다. `source/audio.json` 의 segment 영수증에는 순서 있는 `chunks[{id, source_id, raw_sha256, trim_start_sample, trim_end_sample, start_sample, end_sample}]` 가 붙고 start/end 는 segment WAV 기준 상대 샘플이다. 일부 청크가 실패하면 성공한 청크 WAV 는 남고(재실행 시 캐시) `audio.json` 은 연결이 끝난 뒤에만 바뀐다. caption_text 만 바꾸면 캐시 키가 같아 재합성하지 않는다.
+
+**명시 절단(선택).** 기본은 청크 WAV 전체를 쓴다. 청취해서 긴 앞뒤 무음을 확인한 청크만 `source/chunk-trims.json` 에 적는다: `{"schema_version":1,"rows":[{"segment_id","chunk_id","raw_sha256","start_sample","end_sample","reason"}]}`. 정수 `0 <= start_sample < end_sample <= raw samples`, raw_sha256 은 현재 원본 청크 WAV, reason 은 비우지 않는다. 자동 에너지 탐지로 자르지 않는다(약한 발음 ‘에프’·‘디’ 끝이 잘린다). 원본 WAV 는 보존된다. 절단표를 바꾸면 `resume-set` 이 voice 부터 돌려주며, `tts` 를 다시 돌리면 캐시 원본으로 연결본만 갱신한다(유료 요청 없음). 대본을 바꾼 청크의 절단 행은 유료 요청 전에 거부되므로 행을 지우거나 다시 쓴다.
+
+**타이밍.** timeline 에 `caption_timing` 과 `caption_cues[{segment_id, chunk_id, caption_text, start_sample, end_sample}]` 가 생긴다. 절대 샘플 = segment 시작 샘플 + 상대 경계다. cue 는 segment 의 실측 voice 를 빈틈없이 덮고 필기·카메라 때문에 늘어난 segment 끝 hold 에는 자막을 늘리지 않는다. SRT 는 이 샘플을 밀리초로 반올림만 하므로 오차는 0.5ms 이하이고, 30fps 영상의 표시 전환은 1프레임 이내다. 청크 안의 단어 단위 정렬은 주장하지 않는다. `retime` 은 청크 영수증·원본·연결본·절단을 다시 대조한 뒤에만 timeline 을 만든다.

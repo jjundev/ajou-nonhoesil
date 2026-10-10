@@ -8,10 +8,10 @@ FACTORS={
  'inputs':['source/inputs.json','source/pair.json','source/snapshots/**/*'],  # 동결한 그림은 snapshots/figures/<sha>/ 아래라 재귀 글롭이어야 한다
  'layers':['source/map.json','layers/candidates.json','layers/original.svg'],
  'script':['source/manifest.json','source/coverage.json','source/circuit-review.json','source/lesson.json','verification/gate.json'],
- 'voice':['source/config.json'], 'timing':['source/audio.json','assets/voice/*.wav'],
+ 'voice':['source/config.json','source/chunk-trims.json'], 'timing':['source/audio.json','source/chunk-audio.json','assets/voice/*.wav'],  # 사람이 정한 청크 절단은 tts 가 연결본에 적용한다
  'composition':['source/timeline.json'], 'render':['source/parts.json','composition/**/*'],
  'captions':['renders/master.mp4'], 'verify':['renders/final.mp4','renders/captions.srt','verification/audio-review.json','verification/visual-review.json','verification/pacing-review.json'], 'publish':['verification/report.json']}
-MODULES={'inputs':['sources'],'layers':['pdf_pages','writing_units'],'script':['manifest','lesson','subtitles'],'voice':['review_adapter'],'timing':['reveal','writing'],'composition':['composition','writing_camera'],'render':['media'],'captions':['subtitles'],'verify':['verify','narration_pacing'],'publish':['publication']}
+MODULES={'inputs':['sources'],'layers':['pdf_pages','writing_units'],'script':['manifest','lesson','subtitles','speech_chunks'],'voice':['review_adapter','speech_chunks'],'timing':['reveal','writing','speech_chunks'],'composition':['composition','writing_camera'],'render':['media'],'captions':['subtitles'],'verify':['verify','narration_pacing'],'publish':['publication']}
 def stage_fingerprint(run,stage):
     run=Path(run); n=STAGES.index(stage); files={}
     for s in STAGES[:n+1]:

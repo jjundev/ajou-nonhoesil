@@ -90,4 +90,4 @@ class LogicNotationTests(unittest.TestCase):
         from solution_video.review_adapter import default_config
         d=default_config(); self.assertEqual(d['pronunciation']['′'],' 바 '); self.assertEqual(d['voice'],'Aoede')
         self.assertEqual(d['pronunciation']['V_CC'],'브이 씨씨'); self.assertNotIn('g_m',d['pronunciation'])
-        self.assertIn('논리회로',d['direction'])
+        self.assertNotIn('direction',d)  # spoken-text-only-v1: 지침은 TTS 에 보내지 않는다

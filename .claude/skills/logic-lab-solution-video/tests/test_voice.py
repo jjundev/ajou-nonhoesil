@@ -1,6 +1,53 @@
 from fixtures import *
 from solution_video.review_adapter import generate_voice,default_config
-import base64
+import base64,wave
+def _ok(payload,samples=2400):
+    return {'candidates':[{'finishReason':'STOP','content':{'parts':[{'inlineData':{'mimeType':'audio/L16;rate=24000','data':base64.b64encode(b'\0\0'*samples).decode()}}]}}]}
+class SpokenTextOnlyTests(Sandbox):
+    def test_payload_contains_only_spoken_text(self):
+        cfg=default_config();cfg.update(max_attempts=1,tts_concurrency=1);calls=[]
+        def transport(payload):calls.append(payload);return _ok(payload)
+        out=generate_voice([dict(id='one',text='출력은 S1′S0′D 예요.',caption_text='출력은 S1′S0′D예요.')],self.run,cfg,self.run/'ledger.json',transport)
+        self.assertEqual(len(calls),1);payload=calls[0]
+        parts=payload['contents'][0]['parts'];self.assertEqual(len(parts),1)
+        expected='출력은 S1′S0′D 예요.'
+        for a,b in cfg['pronunciation'].items():expected=expected.replace(a,b)
+        self.assertEqual(parts[0]['text'],expected)
+        for bad in ['원고','읽으세요','caption','S1′S0′D예요']:self.assertNotIn(bad,json.dumps(payload,ensure_ascii=False))
+        g=payload['generationConfig'];self.assertEqual(g['responseModalities'],['AUDIO'])
+        self.assertEqual(g['speechConfig']['languageCode'],'ko-KR');self.assertEqual(g['speechConfig']['voiceConfig']['prebuiltVoiceConfig']['voiceName'],'Aoede')
+        self.assertEqual(out[0]['policy'],'spoken-text-only-v1')
+    def test_old_config_direction_is_not_sent_or_frozen(self):
+        cfg=default_config();cfg.update(max_attempts=1,tts_concurrency=1,direction='차분하게 읽으세요. 과장하지 않습니다.');calls=[]
+        def transport(payload):calls.append(payload);return _ok(payload)
+        generate_voice([dict(id='one',text='첫 문단')],self.run,cfg,self.run/'ledger.json',transport)
+        self.assertEqual(calls[0]['contents'][0]['parts'][0]['text'],'첫 문단')
+        self.assertNotIn('direction',json.loads((self.run/'source/config.json').read_text(encoding='utf-8')))
+    def test_policy_invalidates_old_direction_cache(self):
+        from solution_video.review_adapter import _modules
+        tts,_=_modules();cfg=default_config();cfg.update(max_attempts=1,tts_concurrency=1);calls=[]
+        def transport(payload):calls.append(payload);return _ok(payload)
+        # 옛 방식(지침 포함, 정책 없음) 키로 저장된 캐시를 흉내 낸다.
+        old_payload=tts.make_payload('옛 지침\n\n원고:\n첫 문단',cfg)
+        old_key=tts.digest({'text':'첫 문단','pronunciation':cfg.get('pronunciation',{}),'model':cfg['model'],'payload':old_payload})
+        self.assertNotEqual(old_key,tts.speech_key('첫 문단',cfg))
+        wav=self.run/'assets/voice'/('one-'+old_key[:16]+'.wav');wav.parent.mkdir(parents=True)
+        with wave.open(str(wav),'wb') as w:w.setparams((1,2,24000,0,'NONE',''));w.writeframes(b'\0\0'*2400)
+        (wav.with_suffix('.json')).write_text(json.dumps(dict(id='one',path=wav.relative_to(self.run).as_posix(),samples=2400,rate=24000,key=old_key,sha256=tts.file_hash(wav),output_sha256=tts.file_hash(wav))),encoding='utf-8')
+        out=generate_voice([dict(id='one',text='첫 문단')],self.run,cfg,self.run/'ledger.json',transport)
+        self.assertEqual(len(calls),1);self.assertNotEqual(out[0]['key'],old_key)
+        # 같은 키의 영수증이라도 정책 표지가 없으면 다시 만든다.
+        rec=json.loads(Path(self.run/out[0]['path']).with_suffix('.json').read_text(encoding='utf-8'));rec.pop('policy')
+        Path(self.run/out[0]['path']).with_suffix('.json').write_text(json.dumps(rec),encoding='utf-8')
+        generate_voice([dict(id='one',text='첫 문단')],self.run,cfg,self.run/'ledger.json',transport)
+        self.assertEqual(len(calls),2)
+        generate_voice([dict(id='one',text='첫 문단')],self.run,cfg,self.run/'ledger.json',transport)
+        self.assertEqual(len(calls),2)
+    def test_cache_key_follows_sent_script(self):
+        from solution_video.review_adapter import _modules
+        tts,_=_modules();cfg=default_config()
+        a=tts.speech_key('S1′ 이에요.',cfg);b=tts.speech_key('S1′ 이에요.',dict(cfg,pronunciation=dict(cfg['pronunciation'],**{'′':' 프라임 '})))
+        self.assertNotEqual(a,b)
 class VoiceTests(Sandbox):
     def test_caption_change_reuses_voice(self):
         cfg=default_config();cfg.update(max_attempts=1,tts_concurrency=1);calls=[]
