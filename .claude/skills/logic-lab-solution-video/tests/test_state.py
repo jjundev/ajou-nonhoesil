@@ -18,6 +18,17 @@ class StateTests(Sandbox):
         before=stage_fingerprint(self.run,'script')
         write(self.run/'source/manifest.json',dict(segments=[dict(id='w',text='알 오 원',caption_text='저항 r_O1')]))
         self.assertNotEqual(before,stage_fingerprint(self.run,'script'));self.assertEqual(sha,file_hash(self.run/a['path']))
+    def test_chunk_trims_reopen_voice_and_chunk_receipts_reopen_timing(self):
+        (self.run/'source').mkdir(); write(self.run/'source/config.json',{'voice':'Aoede'})
+        from solution_video.util import file_hash
+        pub=self.run/'published.mp4';pub.write_bytes(b'published');write(self.run/'verification/publication.json',{'published':{str(pub):file_hash(pub)}})
+        for stage in STAGES:
+            out=self.run/(stage+'.txt'); out.write_text(stage); finish_stage(self.run,stage,[out])
+        self.assertIsNone(recover_run(self.run))
+        write(self.run/'source/chunk-audio.json',{'policy':'spoken-text-only-v1','voices':[]}); self.assertEqual(recover_run(self.run),'timing')
+        (self.run/'source/chunk-audio.json').unlink(); self.assertIsNone(recover_run(self.run))
+        # 사람이 정한 절단은 tts 가 연결본에 적용하므로 voice 부터(유료 재합성은 캐시가 막는다).
+        write(self.run/'source/chunk-trims.json',{'schema_version':1,'rows':[]}); self.assertEqual(recover_run(self.run),'voice')
     def test_first_invalid_stage_and_voice_preservation(self):
         (self.run/'source').mkdir(); (self.run/'layers').mkdir(); write(self.run/'source/map.json',{'work_bbox':[1,2,3,4]}); write(self.run/'source/config.json',{'voice':'Aoede'})
         pub=self.run/'published.mp4';pub.write_bytes(b'published')

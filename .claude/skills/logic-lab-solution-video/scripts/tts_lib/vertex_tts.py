@@ -87,7 +87,8 @@ def _decode(response):
     if not raw or len(raw)%2: raise ValueError('PCM length')
     return raw
 
-def synthesize(items,run,config,budget,transport,sleep=time.sleep):
+def synthesize(items,run,config,budget,transport,sleep=time.sleep,audio_index='source/audio.json'):
+    """audio_index=None leaves the run index to the caller (chunk receipts go to source/chunk-audio.json, not audio.json)."""
     run=Path(run); dest=run/'assets/voice'; dest.mkdir(parents=True,exist_ok=True)
     throttled=threading.Event()
     def one(item):
@@ -139,5 +140,5 @@ def synthesize(items,run,config,budget,transport,sleep=time.sleep):
         with ThreadPoolExecutor(max_workers=workers) as pool:
             out.extend(pool.map(one,batch))
         index+=len(batch)
-    atomic_json(run/'source/audio.json',{'voices':out})
+    if audio_index: atomic_json(run/audio_index,{'voices':out})
     return out

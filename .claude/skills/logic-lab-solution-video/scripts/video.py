@@ -9,6 +9,7 @@ from solution_video.sources import discover,display_label,freeze_sources,parse_s
 from solution_video.pdf_pages import export_page,extract_layers,compare_completed
 from solution_video.manifest import validate_manifest,content_fingerprint
 from solution_video.review_adapter import default_config,generate_voice,validate_config
+from solution_video.speech_chunks import validate_chunk_audio
 from solution_video.teaching import build_teaching_timeline
 from solution_video.annotations import load_teaching
 from solution_video.lesson import load_lesson
@@ -147,12 +148,15 @@ def _run_stage(action,run,args,transport=None):
             if not approval.exists() or read(approval).get('input_hash')!=review_hash: return {'status':'awaiting-review','paid_requests':0,'input_hash':review_hash}
         ledger=batch/'usage.json'; count=lambda:len(read(ledger)['requests']) if ledger.is_file() else 0
         before=count()
-        try: audio=generate_voice(m['segments'],run,cfg,ledger,transport,env_file=args.env_file)
+        try:
+            audio=generate_voice(m['segments'],run,cfg,ledger,transport,env_file=args.env_file)
+            validate_chunk_audio(m['segments'],audio,run,read(run/'source/config.json'))
         except Exception as ex:
             ex.paid_requests=0 if transport else count()-before
             raise
         paid=0 if transport else count()-before
-        finish_stage(run,'voice',[run/'source/audio.json']);t=build_teaching_timeline(m,l,audio,cfg,writing,teaching);write(run/'source/timeline.json',t);finish_stage(run,'timing',[run/'source/timeline.json'])
+        outputs=[run/'source/audio.json']+([run/'source/chunk-audio.json'] if m.get('caption_timing')=='pcm-chunks-v1' else [])
+        finish_stage(run,'voice',outputs);t=build_teaching_timeline(m,l,audio,cfg,writing,teaching);write(run/'source/timeline.json',t);finish_stage(run,'timing',[run/'source/timeline.json'])
         return {'status':'passed','segments':len(audio),'paid_requests':paid}
     if action=='retime':
         cfg=read(run/'source/config.json');validate_config(cfg)
@@ -167,6 +171,7 @@ def _run_stage(action,run,args,transport=None):
                 with wave.open(str(path),'rb') as wav:
                     if (wav.getnchannels(),wav.getsampwidth(),wav.getframerate(),wav.getnframes())!=(1,2,24000,a['samples']):raise InputError('PCM provenance mismatch')
         except (OSError,wave.Error,KeyError) as ex:raise InputError('invalid saved PCM') from ex
+        validate_chunk_audio(m['segments'],audio,run,cfg)  # 청크 모드: 영수증·원본 청크·연결본·절단이 그대로인지(유료 호출 없음)
         t=build_teaching_timeline(m,l,audio,cfg,writing,teaching)
         if proposed is not None:write(run/'source/writing.json',proposed)
         write(run/'source/timeline.json',t);finish_stage(run,'timing',[run/'source/timeline.json'])

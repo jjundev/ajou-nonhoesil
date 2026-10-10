@@ -2,8 +2,10 @@
 
 A chunked segment keeps its parent text/caption_text; each chunk is one spoken clip and exactly one caption cue.
 """
-import re
+from pathlib import Path
+import os,re,wave
 from .contracts import InputError
+from .util import digest,file_hash,read,write
 
 MODE='pcm-chunks-v1'
 _ID=r'[A-Za-z][A-Za-z0-9_-]*'
@@ -55,3 +57,116 @@ def speech_items(segments:list[dict])->list[dict]:
         for chunk in segment['chunks']:
             items.append(dict(id=segment['id']+'__'+chunk['id'],segment_id=segment['id'],chunk_id=chunk['id'],text=chunk['text']))
     return items
+
+# --- measured PCM: chunk clips -> segment WAV, segment-relative sample boundaries ---------------------------------
+RATE=24000
+CHUNK_AUDIO='source/chunk-audio.json'
+CHUNK_TRIMS='source/chunk-trims.json'
+
+def _pcm(record,run):
+    """Raw PCM16 bytes of a receipt's WAV after checking hash, format and length."""
+    from .util import local,file_hash
+    try:
+        path=local(run,record['path'])
+        if type(record['samples']) is not int or record['samples']<=0 or record['rate']!=RATE or file_hash(path)!=record['sha256']:
+            raise InputError('PCM provenance mismatch: '+str(record.get('id')))
+        with wave.open(str(path),'rb') as w:
+            if (w.getnchannels(),w.getsampwidth(),w.getframerate(),w.getnframes(),w.getcomptype())!=(1,2,RATE,record['samples'],'NONE'):
+                raise InputError('PCM format mismatch: '+str(record.get('id')))
+            raw=w.readframes(w.getnframes())
+        if len(raw)!=record['samples']*2:raise InputError('PCM truncated: '+str(record.get('id')))
+        return raw
+    except (OSError,KeyError,TypeError,wave.Error) as ex:raise InputError('invalid chunk PCM: '+str(record.get('id') if isinstance(record,dict) else record)) from ex
+
+def _trim_rows(trims,items):
+    """Human-reviewed integer sample cuts only; never inferred from audio energy."""
+    if trims is None:return {}
+    if not isinstance(trims,dict) or trims.get('schema_version')!=1 or not isinstance(trims.get('rows'),list):raise InputError('invalid chunk trims: schema_version 1 with rows required')
+    allowed={(i['segment_id'],i['chunk_id']) for i in items if 'chunk_id' in i};rows={}
+    for row in trims['rows']:
+        if not isinstance(row,dict):raise InputError('invalid chunk trim row')
+        pair=(row.get('segment_id'),row.get('chunk_id'))
+        if pair not in allowed:raise InputError('chunk trim for unknown chunk: '+str(pair))
+        if pair in rows:raise InputError('duplicate chunk trim: '+str(pair))
+        if not isinstance(row.get('reason'),str) or not row['reason'].strip():raise InputError('chunk trim reason required: '+str(pair))
+        rows[pair]=row
+    return rows
+
+def _segment_plans(segments,chunk_audio,run,trims):
+    validate_speech_chunks(segments,required=True)
+    items=speech_items(segments);records={a.get('id'):a for a in chunk_audio}
+    if len(records)!=len(chunk_audio) or set(records)!={i['id'] for i in items}:raise InputError('chunk audio/manifest mismatch')
+    rows=_trim_rows(trims,items);plans=[]
+    for segment in segments:
+        chunks=[];parts=[];offset=0
+        for chunk in segment['chunks']:
+            ident=segment['id']+'__'+chunk['id'];a=records[ident];raw=_pcm(a,run)
+            lo,hi=0,a['samples'];trim=rows.get((segment['id'],chunk['id']))
+            if trim:
+                lo,hi=trim.get('start_sample'),trim.get('end_sample')
+                if type(lo) is not int or type(hi) is not int or not 0<=lo<hi<=a['samples']:raise InputError('invalid chunk trim range '+ident)
+                if trim.get('raw_sha256')!=a['sha256']:raise InputError('stale chunk trim (raw WAV changed) '+ident)
+            chunks.append(dict(id=chunk['id'],source_id=ident,raw_sha256=a['sha256'],trim_start_sample=lo,trim_end_sample=hi,start_sample=offset,end_sample=offset+hi-lo))
+            parts.append(raw[lo*2:hi*2]);offset+=hi-lo  # no inserted silence between chunks
+        key=digest(dict(policy=MODE,segment_id=segment['id'],chunks=chunks))
+        plans.append(dict(id=segment['id'],raw=b''.join(parts),samples=offset,rate=RATE,key=key,chunks=chunks))
+    return plans
+
+def join_segment_audio(segments:list[dict],chunk_audio:list[dict],run:Path,trims:dict|None=None)->list[dict]:
+    """Concatenate raw chunk PCM (no re-encoding, no silence) into one segment WAV; raw chunk WAVs stay untouched."""
+    run=Path(run);dest=run/'assets/voice';dest.mkdir(parents=True,exist_ok=True);out=[]
+    for plan in _segment_plans(segments,chunk_audio,run,trims):
+        path=dest/(plan['id']+'-joined-'+plan['key'][:16]+'.wav');pending=path.with_suffix('.pending.wav')
+        with wave.open(str(pending),'wb') as w:w.setparams((1,2,RATE,0,'NONE','not compressed'));w.writeframes(plan['raw'])
+        os.replace(pending,path)
+        rec={k:v for k,v in plan.items() if k!='raw'}
+        rec.update(path=path.relative_to(run).as_posix(),sha256=file_hash(path),output_sha256=file_hash(path),policy=MODE)
+        write(path.with_suffix('.json'),rec);out.append(rec)
+    return out
+
+def _current_key_check(records,items,config):
+    """Receipts must come from the current spoken-text-only request for the current chunk text."""
+    from .review_adapter import _modules
+    tts,_=_modules();by_item={i['id']:i for i in items}
+    for rec in records:
+        item=by_item.get(rec.get('id'))
+        if item is None:raise InputError('unknown chunk receipt: '+str(rec.get('id')))
+        if rec.get('policy')!=tts.POLICY or rec.get('key')!=tts.speech_key(item['text'],config):raise InputError('stale speech chunk receipt: '+rec['id'])
+
+def check_trims_before_tts(segments,run,config)->dict|None:
+    """Before any paid request: a trims file needs chunk speech and must still refer to the saved raw clips of the current text."""
+    run=Path(run);path=run/CHUNK_TRIMS
+    if not path.is_file():return None
+    trims=read(path)
+    if not any('chunks' in s for s in segments):raise InputError('chunk trims require chunk speech')
+    items=speech_items(segments);rows=_trim_rows(trims,items)
+    if not rows:return trims
+    try:previous={a['id']:a for a in read(run/CHUNK_AUDIO)['voices']}
+    except (OSError,KeyError,ValueError,TypeError) as ex:raise InputError('chunk trims need saved chunk audio; remove '+CHUNK_TRIMS+' first') from ex
+    by_item={i['id']:i for i in items}
+    for sid,cid in rows:
+        ident=sid+'__'+cid
+        if ident not in previous:raise InputError('trimmed chunk has no saved raw clip: '+ident)
+        try:_current_key_check([previous[ident]],[by_item[ident]],config)
+        except InputError as ex:raise InputError('trimmed speech input changed; remove or reauthor the trim for '+ident) from ex
+        if rows[(sid,cid)].get('raw_sha256')!=previous[ident].get('sha256'):raise InputError('stale chunk trim (raw WAV changed) '+ident)
+        lo,hi=rows[(sid,cid)].get('start_sample'),rows[(sid,cid)].get('end_sample')
+        if type(lo) is not int or type(hi) is not int or not 0<=lo<hi<=previous[ident].get('samples',0):raise InputError('invalid chunk trim range '+ident)
+    return trims
+
+def validate_chunk_audio(segments:list[dict],voices:list[dict],run:Path,config:dict)->None:
+    """Chunk mode: receipts current, raw clips intact, joined segment WAVs exactly equal to raw PCM + trims. Legacy: no-op."""
+    if not any('chunks' in s for s in segments):return
+    run=Path(run)
+    try:data=read(run/CHUNK_AUDIO)
+    except (OSError,ValueError) as ex:raise InputError('chunk audio receipts missing: '+CHUNK_AUDIO) from ex
+    from .review_adapter import _modules
+    if not isinstance(data,dict) or data.get('policy')!=_modules()[0].POLICY or not isinstance(data.get('voices'),list):raise InputError('invalid chunk audio receipts')
+    records=data['voices'];_current_key_check(records,speech_items(segments),config)
+    trims=read(run/CHUNK_TRIMS) if (run/CHUNK_TRIMS).is_file() else None
+    plans=_segment_plans(segments,records,run,trims);actual={v.get('id'):v for v in voices}
+    if len(actual)!=len(voices) or set(actual)!={s['id'] for s in segments}:raise InputError('joined segment mismatch')
+    for expected in plans:
+        record=actual[expected['id']]
+        if any(record.get(k)!=expected[k] for k in ['samples','rate','key','chunks']) or _pcm(record,run)!=expected['raw']:
+            raise InputError('joined PCM/chunk boundaries changed: '+expected['id'])
