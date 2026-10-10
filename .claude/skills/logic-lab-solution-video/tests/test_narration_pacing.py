@@ -1,7 +1,7 @@
 from fixtures import *
 import array,importlib
 from solution_video.contracts import InputError
-from solution_video.util import file_hash,write
+from solution_video.util import file_hash,write,read
 
 class NarrationPacingTests(Sandbox):
     def api(self):
@@ -49,3 +49,48 @@ class NarrationPacingTests(Sandbox):
         self.assertEqual(api.analyze_narration_pacing(self.timeline(150),[a],self.run)['status'],'passed')
         a=self.voice(150,silent=61)
         self.assertEqual(api.analyze_narration_pacing(self.timeline(150),[a],self.run)['status'],'review-required')
+    def test_lag_boundary_and_hold(self):
+        a=self.voice(90);api=self.api()
+        for end,status in [(150,'passed'),(151,'review-required')]:
+            r=api.analyze_narration_pacing(self.timeline(end),[a],self.run)
+            row=r['segments'][0];self.assertEqual((row['voice_end_frame'],row['writing_end_frame'],row['writing_lag_frames']),(90,end,end-90))
+            self.assertEqual(bool(r['unreviewed_writing_lags']),status=='review-required')
+        a=self.voice(120);r=api.analyze_narration_pacing(self.timeline(90,110),[a],self.run)
+        self.assertEqual((r['segments'][0]['completed_hold_frames'],r['segments'][0]['writing_lag_frames']),(80,0))
+    def test_voice_end_rounds_pcm_up_to_frame(self):
+        p=self.run/'w.wav'
+        with wave.open(str(p),'wb') as w:w.setparams((1,2,24000,0,'NONE',''));w.writeframes(array.array('h',[8000,-8000]*(400*89+1)).tobytes())
+        a=dict(id='w',path='w.wav',sha256=file_hash(p),rate=24000,samples=89*800+2)
+        self.assertEqual(self.api().analyze_narration_pacing(self.timeline(),[a],self.run)['segments'][0]['voice_end_frame'],90)
+    def test_gap_review_cannot_approve_lag(self):
+        a=self.voice(90);t=self.timeline(151);api=self.api();r=api.analyze_narration_pacing(t,[a],self.run)
+        gap=r['segments'][0]['gaps'][0]
+        write(self.run/'verification/pacing-review.json',dict(input_hash=r['input_hash'],gaps=[dict(segment_id='w',**gap,reason='연필이 마저 쓰는 무음')]))
+        self.assertEqual(api.analyze_narration_pacing(t,[a],self.run)['status'],'review-required')
+        review=read(self.run/'verification/pacing-review.json');review['writing_lags']=[dict(segment_id='w',voice_end_frame=90,writing_end_frame=151,reason='intentional remaining writing')];write(self.run/'verification/pacing-review.json',review)
+        self.assertEqual(api.analyze_narration_pacing(t,[a],self.run)['status'],'passed')
+        for change in [dict(reason=''),dict(reason='  '),dict(voice_end_frame=89),dict(writing_end_frame=150),dict(segment_id='x')]:
+            bad=dict(review);bad['writing_lags']=[dict(review['writing_lags'][0],**change)]
+            write(self.run/'verification/pacing-review.json',bad)
+            self.assertEqual(api.analyze_narration_pacing(t,[a],self.run)['status'],'review-required')
+        review['input_hash']='stale';write(self.run/'verification/pacing-review.json',review)
+        self.assertEqual(api.analyze_narration_pacing(t,[a],self.run)['status'],'review-required')
+    def test_lag_review_cannot_approve_gap(self):
+        a=self.voice(90,silent=61);t=self.timeline();api=self.api();r=api.analyze_narration_pacing(t,[a],self.run)
+        self.assertEqual(r['status'],'review-required');self.assertEqual(r['unreviewed_writing_lags'],[])
+        write(self.run/'verification/pacing-review.json',dict(input_hash=r['input_hash'],writing_lags=[dict(segment_id='w',voice_end_frame=90,writing_end_frame=90,reason='x')]))
+        self.assertEqual(api.analyze_narration_pacing(t,[a],self.run)['status'],'review-required')
+    def test_pcm_end_separate_from_energy(self):
+        a=self.voice(90,silent=61);r=self.api().analyze_narration_pacing(self.timeline(),[a],self.run)
+        self.assertEqual(r['segments'][0]['voice_end_frame'],90);self.assertEqual(r['segments'][0]['writing_lag_frames'],0)
+        self.assertEqual(r['segments'][0]['longest_gap_frames'],61)
+    def test_old_review_without_writing_lags_still_reads(self):
+        # 기출3 처럼 gaps 만 있는 옛 pacing-review.json 은 읽히고, 지연이 없으면 결과도 그대로다.
+        a=self.voice(150,silent=61);t=self.timeline(150);api=self.api()
+        p=self.run/'w.wav'
+        with wave.open(str(p),'rb') as w:data=w.readframes(w.getnframes())
+        with wave.open(str(p),'wb') as w:w.setparams((1,2,24000,0,'NONE',''));w.writeframes(data[:45*1600]+data[89*1600:]+data[45*1600:89*1600])
+        a['sha256']=file_hash(p);r=api.analyze_narration_pacing(t,[a],self.run);gap=r['segments'][0]['gaps'][0]
+        write(self.run/'verification/pacing-review.json',dict(input_hash=r['input_hash'],gaps=[dict(segment_id='w',**gap,reason='생각하는 쉼')]))
+        r=api.analyze_narration_pacing(t,[a],self.run)
+        self.assertEqual((r['status'],r['unreviewed_writing_lags']),('passed',[]))
