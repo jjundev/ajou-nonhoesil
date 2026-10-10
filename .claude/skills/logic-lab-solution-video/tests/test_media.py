@@ -37,6 +37,32 @@ class MediaTests(Sandbox):
         gray=Image.open(png).convert('L');x=box[0]+8
         shades=[gray.getpixel((x,y+900)) for y in range(box[1]+5,box[3]-5)]
         self.assertLessEqual(max(shades)-min(shades),5,'background opacity is uniform between lines')
+    def test_libass_keeps_authored_lines(self):
+        # WrapStyle=2: libass draws exactly the SRT line breaks and never re-wraps a long line on its own.
+        import io,subprocess
+        from PIL import Image
+        from solution_video.media import ffmpeg
+        master=self.run/'black.mp4'
+        checked([ffmpeg(),'-y','-v','error','-f','lavfi','-i','color=c=black:s=1920x1080:r=30:d=1','-c:v','libx264','-pix_fmt','yuv420p',master])
+        def text_bands(text):
+            srt=self.run/'lines.srt';srt.write_text('1\n00:00:00,000 --> 00:00:01,000\n'+text+'\n',encoding='utf-8')
+            final=burn_subtitles(master,srt,self.run/'lines.mp4',S/'assets/fonts/Pretendard-Bold.ttf')
+            png=subprocess.run([ffmpeg(),'-v','error','-ss','0.5','-i',str(final),'-frames:v','1','-f','image2pipe','-vcodec','png','-'],check=True,capture_output=True).stdout
+            pixels=Image.open(io.BytesIO(png)).convert('RGB').load();rows=[];xs=[]
+            for y in range(600,1080):
+                found=[x for x in range(1920) if min(pixels[x,y])>=230]
+                if len(found)>=3:rows.append(y);xs.extend(found)
+            bands=[]
+            for y in rows:
+                if bands and y-bands[-1][-1]<=3:bands[-1].append(y)
+                else:bands.append([y])
+            return len(bands),min(xs),max(xs),rows[0]
+        one=text_bands('반감산기에서 빌림 출력 Bo는 A′B이고 차 출력 D는 같아요')
+        self.assertEqual(one[0],1);self.assertGreater(one[1],0);self.assertLess(one[2],1919);self.assertGreaterEqual(one[3],900)
+        two=text_bands('그래서 반가산기의 합 출력 S는\nA′B + AB′이고 XOR와 같아요.')
+        self.assertEqual(two[0],2);self.assertGreaterEqual(two[3],900)
+        # Without WrapStyle=2 libass splits this 89-character line in two by itself.
+        self.assertEqual(text_bands(' '.join(['반가산기 합 출력']*9))[0],1)
     def test_padded_segments_place_pcm_at_shifted_start(self):
         from solution_video.media import render_master
         from solution_video.util import file_hash
