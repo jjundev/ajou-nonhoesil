@@ -105,3 +105,35 @@ print(json.dumps(c['items'][0]['body_height']))
 """
   result=subprocess.run([sys.executable,'-c',code],capture_output=True,text=True,check=True)
   self.assertGreater(json.loads(result.stdout.strip()),2)
+
+class InkWidthTests(Sandbox):
+ def test_stroke_width_contract(self):
+  self.assertEqual(make_teaching_plan()['items'][0].get('stroke_width_px'),3)
+  for width in [2,4,6,8,12,4.5]:
+   f,a,m,l=teaching_fixture();a['items'][0]['stroke_width_px']=width
+   self.assertEqual(validate_teaching(f,a,m,l)['items'][0]['stroke_width_px'],width)
+  for width in [1.9,12.1,True,'6',float('nan'),float('inf')]:
+   f,a,m,l=teaching_fixture();a['items'][0]['stroke_width_px']=width
+   with self.subTest(width=width),self.assertRaises(InputError):validate_teaching(f,a,m,l)
+ def test_label_rejects_stroke_width(self):
+  f,a,m,l=teaching_fixture();a['items'][0].update(kind='label',stroke_width_px=6,geometry={'runs':[dict(text='v',origin=[40,60],font_size_pt=12)]})
+  with self.assertRaises(InputError):validate_teaching(f,a,m,l)
+
+class ChunkAnnotationTests(Sandbox):
+ def fixture(self):
+  f,a,m,l=teaching_fixture();m['caption_timing']='pcm-chunks-v1';m['segments'][1]['chunks']=[dict(id='c1'),dict(id='c2')];m['segments'][0]['chunks']=[dict(id='other')]
+  a['items'][0].update(chunk_id='c1',offset_frames=0);return f,a,m,l
+ def test_chunk_annotation_contract(self):
+  f,a,m,l=self.fixture();a['items'].append(dict(a['items'][0],id='b',chunk_id='c2'))
+  self.assertEqual([i['offset_frames'] for i in validate_teaching(f,a,m,l)['items']],[0,0])
+  mutations=[lambda f,a,m,l:a['items'][0].update(chunk_id='missing'),lambda f,a,m,l:a['items'][0].update(chunk_id='other'),lambda f,a,m,l:m.pop('caption_timing'),lambda f,a,m,l:a['items'][0].update(offset_frames=-1),lambda f,a,m,l:a['items'][0].update(offset_frames=True),lambda f,a,m,l:a['items'].append(dict(a['items'][0],id='b',chunk_id='c1',offset_frames=25)),lambda f,a,m,l:a['items'].append({k:v for k,v in dict(a['items'][0],id='b',offset_frames=40).items() if k!='chunk_id'})]
+  for mutate in mutations:
+   f,a,m,l=self.fixture();mutate(f,a,m,l)
+   with self.subTest(mutate=mutate),self.assertRaises(InputError):validate_teaching(f,a,m,l)
+ def test_chunk_and_legacy_in_different_segments(self):
+  # 섞임 금지는 같은 segment 안만이다. 다른 segment 의 legacy 항목은 예전 기본값(오프셋 12)을 그대로 받는다.
+  f,a,m,l=self.fixture();m['segments'].insert(2,dict(id='r2',kind='reason',step_id='',text='reason two',chunks=[dict(id='k1')]))
+  f['cues'].append(dict(segment_id='r2',target='circuit'))
+  a['items'].append({k:v for k,v in dict(a['items'][0],id='b',segment_id='r2').items() if k not in ('chunk_id','offset_frames')})
+  items=validate_teaching(f,a,m,l)['items']
+  self.assertEqual([(i['id'],i.get('chunk_id'),i['offset_frames']) for i in items],[('a','c1',0),('b',None,12)])
