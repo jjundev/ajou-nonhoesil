@@ -53,3 +53,9 @@ guided manifest의 모든 segment에 음성 `text`와 표시 `caption_text`를 �
 SRT 시간은 실측 voice_samples 안에서 원문 의미 단위의 글자 수 비율로 배분한다. 줄바꿈과 표시용 추가 온점은 시간 가중치에 넣지 않는다. cue 사이 임의 공백은 추가하지 않으며 실제 문장·쉼표 발화 시점과의 정밀 정렬은 제공하지 않는다. 자막만 바꾸어도 기존 final/SRT 검증은 다시 수행하고 같은 음성 WAV는 cache로 재사용한다. 두 줄 자막은 실제 libass 화면에서 하단 900..1080 영역과 기호 보존을 확인한다.
 
 두 줄 자막 배경은 libass BorderStyle4/Outline0/Shadow4로 cue 전체에 하나의 균일한 박스를 그린다. 줄별 박스를 겹치는 BorderStyle3은 사용하지 않는다. 실제 두 줄·서로 다른 줄 길이에서 박스 가장자리와 불투명도 균일성 및 기호·글자 가독성을 확인한다.
+
+## 청크 동기화 검증 (pcm-chunks-v1)
+
+청크 모드 manifest 이면 verify 에 `chunk_sync` 검사가 붙는다. `verification/chunk-sync.json` 에 status·input_hash·evidence_hashes(manifest·audio·chunk-audio·청크 절단·timeline·SRT·raw/연결 WAV)·issues 를 남긴다. 검사 내용: 영수증이 현재 대본의 spoken-text-only 키인지, raw 청크 WAV 해시·형식, 연결 WAV 가 raw PCM+절단과 바이트까지 같은지, timeline cue 가 저장 PCM 으로 다시 만든 cue 와 같은지, `renders/captions.srt` 가 그 cue 로 다시 쓴 SRT 와 같은지. 이것은 구조 검증이며 실제 청취 증거가 아니다(`live_listening: not-evidence`). 게시 판정(publish-set)도 청크 모드에서는 chunk_sync 통과를 요구한다.
+
+청크 모드 audio-review 는 기존 필드(status·mode·input_hash·notes·evidence)에 더해 `chunk_checks` 를 가진다. manifest 의 모든 청크를 순서대로 한 행씩: `{segment_id, chunk_id, transcript_match, no_instruction_speech, natural_join, sync_passed, notes}`. 네 플래그는 모두 `true`(문자열·null 불가), notes 는 비우지 않는다. transcript_match 는 청크 대본대로 읽었는지(누락·추가 발화 없음), no_instruction_speech 는 지침 같은 발화가 없는지, natural_join 은 앞 청크와 이어 붙인 곳이 끊기지 않는지, sync_passed 는 최종 MP4 에서 그 cue 전환이 음성 경계와 맞는지다. 실제로 최종 파일을 들은 경우에만 mode 를 `live-listened` 로 쓴다. 청취 수단이 없으면 기술 검증 결과와 청취 미검증 상태를 함께 전달하고 complete=false/live_audio=unverified 로 두며 publish-set·latest 갱신을 하지 않는다. 합성 PCM 으로 chunk_sync 가 통과해도 live_audio 는 승인되지 않는다. 청크 없는 legacy run 의 audio-review 계약은 그대로다.
