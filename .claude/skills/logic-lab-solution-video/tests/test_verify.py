@@ -99,3 +99,18 @@ class VerifyTests(Sandbox):
         assemble({'problem':{'snapshot':'pencil.pdf','page_index':0}},read(self.run/'layers/layers.json'),read(self.run/'source/manifest.json'),read(self.run/'source/timeline.json'),self.run,S/'assets/runtime/gsap.min.js')
         report=verify_run(self.run,Path('/missing/hyperframes'))
         self.assertEqual(report['checks']['teaching_animation']['status'],'passed')
+
+
+class DenseTeachingScreenTests(Sandbox):
+    def test_dense_teaching_screen_has_budget_for_complete_frame_oracles(self):
+        # 주석이 많으면 teaching 화면 검사가 일반 브라우저 예산 120초를 넘는다. 그 검사만 600초를 준다.
+        import solution_video.verify as verification
+        self.assertTrue(hasattr(verification,'teaching_browser'),'dense teaching runner missing')
+        from unittest.mock import patch
+        import subprocess
+        def run(argv,**kwargs):
+            if kwargs['timeout']<300:raise subprocess.TimeoutExpired(argv,kwargs['timeout'])
+            self.assertIn('--mode',argv);self.assertIn('teaching',argv)
+            return subprocess.CompletedProcess(argv,0,stdout='{"bounds_ok":true,"seek_equal":true}',stderr='')
+        with patch('solution_video.util.subprocess.run',side_effect=run):
+            self.assertEqual(verification.teaching_browser(['--mode','teaching']),{'bounds_ok':True,'seek_equal':True})

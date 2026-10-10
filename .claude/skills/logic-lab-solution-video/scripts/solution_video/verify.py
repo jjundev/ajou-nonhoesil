@@ -1,9 +1,17 @@
 from pathlib import Path
 import json,wave
-from .util import digest,file_hash,read,write,command,local,browser
+from .util import digest,file_hash,read,write,command,local,browser,S,browser_config,checked
 from .media import probe,ffmpeg,source_checks
 from .subtitles import caption_notation_warnings,caption_srt_matches
 from .manifest import validate_manifest
+
+def teaching_browser(args):
+    """Dense ink probes render every glyph state plus backward/GSAP oracles.
+
+    Keep the generic browser budget unchanged; allow ten minutes for this
+    exhaustive screen check, which can exceed 120s with many short labels.
+    """
+    return json.loads(checked(['node',S/'tests/browser_check.mjs',*args,*browser_config()],timeout=600).stdout)
 
 def verification_fingerprint(run):
     run=Path(run)
@@ -70,7 +78,7 @@ def verify_run(run,hyperframes_entry):
         if compiled:load_pencil_asset(run/'composition')
         expected['cameras']=compile_focus_keys(m,l,expected,plan,compiled,camera_keys(m,l,expected))
         path=run/'verification/teaching-expected.json';write(path,dict(timeline=expected,compiled=compiled,lesson=lesson_expectations(lesson,m,expected,plan) if lesson else None))
-        r=browser(['--mode','teaching','--entry',str(run/'composition/index.html'),'--layers',str(run/'layers/layers.json'),'--timeline',str(path),'--dest',str(run/'verification/teaching-frames')])
+        r=teaching_browser(['--mode','teaching','--entry',str(run/'composition/index.html'),'--layers',str(run/'layers/layers.json'),'--timeline',str(path),'--dest',str(run/'verification/teaching-frames')])
         r['input_hash']=h;r['evidence_hashes']={str(Path(p).relative_to(run)):file_hash(p) for p in r['evidence']};evidence.extend(r['evidence_hashes']);write(run/'verification/teaching.json',r)
         return all(r[k] for k in ['timeline_equal','cameras_equal','geometry_equal','seek_equal','gsap_seek_equal','bounds_ok','inactive_hidden']) and not r['final_visible'] and r['tip_error_px']<=1 and all(r[k]==0 for k in ['original_pixel_diff','annotation_pixel_diff','future_leaks'])
     check('teaching_animation',teaching_gate)

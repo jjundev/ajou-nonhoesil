@@ -61,3 +61,11 @@ guided manifest의 모든 segment에 음성 `text`와 표시 `caption_text`를 �
 청크 모드 manifest 이면 verify 에 `chunk_sync` 검사가 붙는다. `verification/chunk-sync.json` 에 status·input_hash·evidence_hashes(manifest·audio·chunk-audio·청크 절단·timeline·SRT·raw/연결 WAV)·issues 를 남긴다. 검사 내용: 영수증이 현재 대본의 spoken-text-only 키인지, raw 청크 WAV 해시·형식, 연결 WAV 가 raw PCM+절단과 바이트까지 같은지, timeline cue 가 저장 PCM 으로 다시 만든 cue 와 같은지, `renders/captions.srt` 가 그 cue 로 다시 쓴 SRT 와 같은지. 이것은 구조 검증이며 실제 청취 증거가 아니다(`live_listening: not-evidence`). 게시 판정(publish-set)도 청크 모드에서는 chunk_sync 통과를 요구한다.
 
 청크 모드 audio-review 는 기존 필드(status·mode·input_hash·notes·evidence)에 더해 `chunk_checks` 를 가진다. manifest 의 모든 청크를 순서대로 한 행씩: `{segment_id, chunk_id, transcript_match, no_instruction_speech, natural_join, sync_passed, notes}`. 네 플래그는 모두 `true`(문자열·null 불가), notes 는 비우지 않는다. transcript_match 는 청크 대본대로 읽었는지(누락·추가 발화 없음), no_instruction_speech 는 지침 같은 발화가 없는지, natural_join 은 앞 청크와 이어 붙인 곳이 끊기지 않는지, sync_passed 는 최종 MP4 에서 그 cue 전환이 음성 경계와 맞는지다. 실제로 최종 파일을 들은 경우에만 mode 를 `live-listened` 로 쓴다. 청취 수단이 없으면 기술 검증 결과와 청취 미검증 상태를 함께 전달하고 complete=false/live_audio=unverified 로 두며 publish-set·latest 갱신을 하지 않는다. 합성 PCM 으로 chunk_sync 가 통과해도 live_audio 는 승인되지 않는다. 청크 없는 legacy run 의 audio-review 계약은 그대로다.
+
+## 회로 필기 검증 (굵기·청크)
+
+teaching_animation 은 주석마다 화면 굵기가 `stroke_width_px`(생략 3)와 1e-3 안에서 같은지, 포커스 구간에서 주석 경계 ± 선 반경이 1920×900 안인지를 `bounds_ok` 에 넣는다. 실패하면 `verification/teaching.json` 의 `bounds_debug`(frame·id·rect·radius 또는 width·expected)를 본다. 카메라는 연필 여백에 가장 굵은 보이는 선의 반경을 더해 잡는다. lesson 검증점은 칠해진 선 반경까지 보므로 수평 밑줄(기하 높이 0)도 근거로 센다.
+
+`chunk_id` 주석이 있으면 lesson_expectations 가 청크마다 검증점(`chunk_id`, 그 청크 마지막 draw 완성 프레임)을 더한다. 그 프레임은 청크 발화 끝 이전, cue 끝 12프레임 전, hide 이전이어야 하며 아니면 그 청크 ID 로 오류가 난다. 각 청크의 작성 중·완성 화면을 원문 회로와 대조해 경로·값·가림을 검토한다.
+
+주석이 많으면 glyph 상태·역방향/GSAP seek·독립 화면 오라클 때문에 teaching 화면 검사가 길어진다. 이 검사만 600초를 주고(`teaching_browser`), 시간을 줄이려고 검증점을 빼지 않는다. 다른 브라우저 검사의 120초 제한은 그대로다. 정적 원본 SVG 게이트(gate 모드)는 `--disable-gpu` 로 띄우고 화면 갱신 뒤 requestAnimationFrame 두 번을 기다려 찍는다. 픽셀 차이 기준은 정확히 0 그대로다.
