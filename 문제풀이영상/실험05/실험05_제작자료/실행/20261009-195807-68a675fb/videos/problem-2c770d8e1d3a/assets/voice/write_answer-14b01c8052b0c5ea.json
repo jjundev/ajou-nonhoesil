@@ -1,0 +1,14 @@
+{
+  "id": "write_answer",
+  "path": "assets/voice/write_answer-14b01c8052b0c5ea.wav",
+  "samples": 862343,
+  "rate": 24000,
+  "key": "14b01c8052b0c5ea5ebd9b6a78f7aa6ef0333252236e3fbffe52c73e403a132f",
+  "sha256": "61f088024b48c458a693b14277e57ad706cad041648781d6a69c6015f2c8679e",
+  "output_sha256": "61f088024b48c458a693b14277e57ad706cad041648781d6a69c6015f2c8679e",
+  "usage": {
+    "promptTokenCount": 129,
+    "candidatesTokenCount": 898,
+    "totalTokenCount": 1027
+  }
+}

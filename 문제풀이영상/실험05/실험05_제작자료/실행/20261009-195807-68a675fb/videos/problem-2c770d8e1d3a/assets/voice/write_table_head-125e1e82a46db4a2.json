@@ -1,0 +1,14 @@
+{
+  "id": "write_table_head",
+  "path": "assets/voice/write_table_head-125e1e82a46db4a2.wav",
+  "samples": 558023,
+  "rate": 24000,
+  "key": "125e1e82a46db4a2de64c527d78c1f9c883a32e6731cbf4735f580b7933171ea",
+  "sha256": "087168e0d994e36af59039239217a1272d4811136b4c9657fc714c53d7bf2b45",
+  "output_sha256": "087168e0d994e36af59039239217a1272d4811136b4c9657fc714c53d7bf2b45",
+  "usage": {
+    "promptTokenCount": 117,
+    "candidatesTokenCount": 581,
+    "totalTokenCount": 698
+  }
+}

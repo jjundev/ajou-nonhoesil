@@ -1,0 +1,14 @@
+{
+  "id": "write_formula",
+  "path": "assets/voice/write_formula-1cec4a6f2838fd81.wav",
+  "samples": 459143,
+  "rate": 24000,
+  "key": "1cec4a6f2838fd81da5dc074b312f9a39fdbb2596679d073b2579d5d7526d2bf",
+  "sha256": "4978f8670326f265303d378d38a652f6b3765526e52266a909c170af3925e070",
+  "output_sha256": "4978f8670326f265303d378d38a652f6b3765526e52266a909c170af3925e070",
+  "usage": {
+    "promptTokenCount": 113,
+    "candidatesTokenCount": 478,
+    "totalTokenCount": 591
+  }
+}

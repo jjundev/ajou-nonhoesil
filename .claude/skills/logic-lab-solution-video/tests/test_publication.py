@@ -1,0 +1,59 @@
+from fixtures import *
+from unittest.mock import patch
+from solution_video.publication import publish_batch
+from solution_video.util import write,file_hash
+class PublicationTests(Sandbox):
+    def setUp(self):
+        super().setUp(); self.root=self.run/'output'; self.batch=self.root/'1002_제작자료/실행/batch'; self.batch.mkdir(parents=True)
+        items=[]
+        for i in range(2):
+            run=self.batch/f'videos/p{i}'; (run/'renders').mkdir(parents=True); f=run/'renders/final.mp4';f.write_bytes(b'final'+bytes([i]));write(run/'verification/report.json',{'complete':True,'final_sha256':file_hash(f),'input_hash':'x'})
+            items.append({'id':str(i),'run':f'videos/p{i}','filename':str(i)+'.mp4'})
+        write(self.batch/'batch.json',{'items':items,'selector':'1002'}); self.latest=self.root/'1002_제작자료/latest.json'; write(self.latest,{'previous':'old'})
+    def test_final_tamper_and_publish_rollback(self):
+        before=self.latest.read_bytes(); (self.batch/'videos/p0/renders/final.mp4').write_bytes(b'tampered')
+        with patch('solution_video.publication.report_current',return_value=True): result=publish_batch(self.batch)
+        self.assertFalse(result['complete']); self.assertEqual(self.latest.read_bytes(),before); self.assertEqual(result['published'],['1.mp4'])
+    def test_move_failure_restores_previous(self):
+        for i in range(2): (self.root/f'{i}.mp4').write_bytes(b'previous'+bytes([i]))
+        before=self.latest.read_bytes(); import os
+        original=os.replace; triggered=[False]
+        def replace(a,b):
+            if Path(b).resolve()==(self.root/'1.mp4').resolve() and '.staging' in str(a) and not triggered[0]: triggered[0]=True; raise OSError('injected move failure')
+            return original(a,b)
+        with patch('solution_video.publication.report_current',return_value=True),patch('solution_video.publication.os.replace',side_effect=replace): result=publish_batch(self.batch)
+        self.assertFalse(result['complete']); self.assertEqual(self.latest.read_bytes(),before)
+        for i in range(2): self.assertEqual((self.root/f'{i}.mp4').read_bytes(),b'previous'+bytes([i]))
+    def test_same_title_collision(self):
+        data=json.loads((self.batch/'batch.json').read_text()); data['items'][1]['filename']=data['items'][0]['filename'];write(self.batch/'batch.json',data)
+        with patch('solution_video.publication.report_current',return_value=True): result=publish_batch(self.batch)
+        self.assertFalse(result['complete']); self.assertEqual(result['published'],[])
+    def test_published_receipt_completes_and_tracks_real_file(self):
+        from solution_video.state import STAGES,finish_stage,recover_run
+        for item in json.loads((self.batch/'batch.json').read_text())['items']:
+            run=self.batch/item['run']
+            for stage in STAGES[:-1]:
+                out=run/(stage+'.txt');out.write_text(stage);finish_stage(run,stage,[out])
+        with patch('solution_video.publication.report_current',return_value=True):result=publish_batch(self.batch)
+        self.assertTrue(result['complete'])
+        run=self.batch/'videos/p0';self.assertIsNone(recover_run(run))
+        (self.root/'0.mp4').write_bytes(b'changed');self.assertEqual(recover_run(run),'publish')
+    def test_authored_title_becomes_sanitized_filename(self):
+        for i in range(2):
+            run=self.batch/f'videos/p{i}';write(run/'source/manifest.json',{'problem_id':str(i),'title':'전압/이득: 확인'})
+        with patch('solution_video.publication.report_current',return_value=True):result=publish_batch(self.batch)
+        self.assertEqual(result['published'],['0 — 전압 이득 확인.mp4','1 — 전압 이득 확인.mp4'])
+    def test_label_prefix_filename(self):
+        from solution_video.publication import output_filename
+        run=self.run/'r'; write(run/'source/manifest.json',{'problem_id':'q-prio-exam','title':'8×3 우선순위 인코더 — 여러 비트가 켜진 입력'})
+        self.assertEqual(output_filename({'id':'q-prio-exam','label':'기출3','filename':'x.mp4'},run),'기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4')
+    def test_pacing_review_does_not_block_publication(self):
+        from solution_video.publication import report_current
+        from solution_video.verify import verification_fingerprint
+        run=self.batch/'videos/p0'
+        for name in ['audio','visual','pacing']: write(run/f'verification/{name}-review.json',{'name':name})
+        checks={k:{'status':'passed'} for k in ['content','original_svg','hyperframes','final_media','captions','audio_meaning','visual_meaning']}
+        reviews={f'verification/{n}-review.json':file_hash(run/f'verification/{n}-review.json') for n in ['audio','visual','pacing']}
+        report={'input_hash':verification_fingerprint(run),'live_audio':'verified','checks':checks,'review_hashes':reviews}
+        self.assertTrue(report_current(run,report))
+        del reviews['verification/audio-review.json']; self.assertFalse(report_current(run,report))

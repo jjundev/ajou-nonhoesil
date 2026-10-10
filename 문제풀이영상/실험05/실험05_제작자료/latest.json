@@ -1,0 +1,19 @@
+{
+  "batch": "실행/20261009-195807-68a675fb",
+  "files": [
+    {
+      "problem_id": "q-prio-exam",
+      "path": "기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4",
+      "size": 12096902,
+      "sha256": "46178e3652a00d1b4fbdc70bd25331e79b0bb8fa40042a7dff2611e102c1a30c",
+      "run": "videos/problem-2c770d8e1d3a"
+    },
+    {
+      "problem_id": "q-demux-from-dec-graded",
+      "path": "기출12 — 디코더로 DMUX 만들기와 두 회로의 차이.mp4",
+      "size": 7405065,
+      "sha256": "30b7a0eb1e6b811d29e3f392b257f9cb1f35758e35d1052f1adca69756f47e3c",
+      "run": "videos/problem-aa5c5271b881"
+    }
+  ]
+}

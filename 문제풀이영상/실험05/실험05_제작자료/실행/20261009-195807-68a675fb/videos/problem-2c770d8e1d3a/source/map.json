@@ -1,0 +1,6408 @@
+{
+  "work_bbox": [
+    300,
+    62,
+    751,
+    573
+  ],
+  "steps": [
+    {
+      "id": "sol",
+      "glyph_ids": [
+        "g00434",
+        "g00435",
+        "g00436",
+        "g00437",
+        "g00438",
+        "g00439",
+        "g00440",
+        "g00441",
+        "g00442",
+        "g00443",
+        "g00444",
+        "g00445",
+        "g00446",
+        "g00447",
+        "g00448",
+        "g00449",
+        "g00450",
+        "g00451",
+        "g00452",
+        "g00453",
+        "g00454",
+        "g00455",
+        "g00456",
+        "g00457",
+        "g00458",
+        "g00459",
+        "g00460",
+        "g00461",
+        "g00462",
+        "g00463",
+        "g00464",
+        "g00465",
+        "g00466",
+        "g00467",
+        "g00468",
+        "g00469",
+        "g00470",
+        "g00471",
+        "g00472",
+        "g00473",
+        "g00474",
+        "g00475",
+        "g00476",
+        "g00477",
+        "g00478",
+        "g00479",
+        "g00480",
+        "g00481",
+        "g00482",
+        "g00483",
+        "g00484",
+        "g00485",
+        "g00486",
+        "g00487",
+        "g00488",
+        "g00489",
+        "g00490",
+        "g00491",
+        "g00492",
+        "g00493",
+        "g00494",
+        "g00495",
+        "g00496",
+        "g00497",
+        "g00498",
+        "g00499",
+        "g00500",
+        "g00501",
+        "g00502",
+        "g00503",
+        "g00504",
+        "g00505",
+        "g00506",
+        "g00507",
+        "g00508",
+        "g00509",
+        "g00510",
+        "g00511",
+        "g00512",
+        "g00513",
+        "g00514",
+        "g00515",
+        "g00516",
+        "g00517",
+        "g00518",
+        "g00519",
+        "g00520",
+        "g00521",
+        "g00522",
+        "g00523",
+        "g00524",
+        "g00525",
+        "g00526",
+        "g00527",
+        "g00528",
+        "g00529",
+        "g00530",
+        "g00531",
+        "g00532",
+        "g00533",
+        "g00534",
+        "g00535",
+        "g00536",
+        "g00537",
+        "g00538",
+        "g00539",
+        "g00540",
+        "g00541",
+        "g00542",
+        "g00543",
+        "g00544",
+        "g00545",
+        "g00546",
+        "g00547",
+        "g00548",
+        "g00549",
+        "g00550",
+        "g00551",
+        "g00552",
+        "g00553",
+        "g00554",
+        "g00555",
+        "g00556",
+        "g00557",
+        "g00558",
+        "g00559",
+        "g00560",
+        "g00561",
+        "g00562",
+        "g00563",
+        "g00564",
+        "g00565",
+        "g00566",
+        "g00567",
+        "g00568",
+        "g00569",
+        "g00570",
+        "g00571",
+        "g00572",
+        "g00573",
+        "g00574",
+        "g00575",
+        "g00576",
+        "g00577",
+        "g00578",
+        "g00579",
+        "g00580",
+        "g00581",
+        "g00582",
+        "g00583",
+        "g00584",
+        "g00585",
+        "g00586",
+        "g00587",
+        "g00588",
+        "g00589",
+        "g00590",
+        "g00591",
+        "g00592",
+        "g00593",
+        "g00594",
+        "g00595",
+        "g00596",
+        "g00597",
+        "g00598",
+        "g00599",
+        "g00600",
+        "g00601",
+        "g00602",
+        "g00603",
+        "g00604",
+        "g00605",
+        "g00606",
+        "g00607",
+        "g00608",
+        "g00609",
+        "g00610"
+      ],
+      "shape_ids": [
+        "s00433"
+      ],
+      "writing_units": [
+        {
+          "id": "u_sol_0_0",
+          "line_id": "line_sol_0",
+          "chunk_id": "c_sol_0",
+          "column_id": "main",
+          "band": [
+            302.24506987340965,
+            319.5372682772538
+          ],
+          "glyph_ids": [
+            "g00434"
+          ],
+          "shape_ids": [
+            "s00433"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_0_1",
+          "line_id": "line_sol_0",
+          "chunk_id": "c_sol_0",
+          "column_id": "main",
+          "band": [
+            319.5372682772538,
+            330.23365320427627
+          ],
+          "glyph_ids": [
+            "g00435"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_0_2",
+          "line_id": "line_sol_0",
+          "chunk_id": "c_sol_0",
+          "column_id": "main",
+          "band": [
+            330.23365320427627,
+            337.0527291714864
+          ],
+          "glyph_ids": [
+            "g00436"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_0",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            323.1332033060779,
+            330.7093225079768
+          ],
+          "glyph_ids": [
+            "g00437"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_1",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            330.7093225079768,
+            339.65714312126363
+          ],
+          "glyph_ids": [
+            "g00438"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_2",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            339.65714312126363,
+            349.6105491744861
+          ],
+          "glyph_ids": [
+            "g00439",
+            "g00440"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_3",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            349.6105491744861,
+            360.7696970020584
+          ],
+          "glyph_ids": [
+            "g00441",
+            "g00442"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_4",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            360.7696970020584,
+            370.35210723763623
+          ],
+          "glyph_ids": [
+            "g00443"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_5",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            370.35210723763623,
+            378.9923931405899
+          ],
+          "glyph_ids": [
+            "g00444"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_6",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            378.9923931405899,
+            388.7017385588879
+          ],
+          "glyph_ids": [
+            "g00445",
+            "g00446"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_7",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            388.7017385588879,
+            398.99685055756845
+          ],
+          "glyph_ids": [
+            "g00447"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_8",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            398.99685055756845,
+            407.5199798953498
+          ],
+          "glyph_ids": [
+            "g00448"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_9",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            407.5199798953498,
+            415.8820343565482
+          ],
+          "glyph_ids": [
+            "g00449"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_10",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            415.8820343565482,
+            424.91772261251674
+          ],
+          "glyph_ids": [
+            "g00450"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_11",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            424.91772261251674,
+            434.8076686943385
+          ],
+          "glyph_ids": [
+            "g00451",
+            "g00452"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_12",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            434.8076686943385,
+            446.01075069706
+          ],
+          "glyph_ids": [
+            "g00453",
+            "g00454"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_13",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            446.01075069706,
+            455.64685756365236
+          ],
+          "glyph_ids": [
+            "g00455"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_14",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            455.64685756365236,
+            464.2383281333548
+          ],
+          "glyph_ids": [
+            "g00456"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_15",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            464.2383281333548,
+            474.0453038084826
+          ],
+          "glyph_ids": [
+            "g00457",
+            "g00458"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_16",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            474.0453038084826,
+            484.3599417616973
+          ],
+          "glyph_ids": [
+            "g00459"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_17",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            484.3599417616973,
+            494.2743109781766
+          ],
+          "glyph_ids": [
+            "g00460",
+            "g00461"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_18",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            494.2743109781766,
+            503.8176843956327
+          ],
+          "glyph_ids": [
+            "g00462"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_19",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            503.8176843956327,
+            512.736201330669
+          ],
+          "glyph_ids": [
+            "g00463"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_20",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            512.736201330669,
+            522.2795750646903
+          ],
+          "glyph_ids": [
+            "g00464",
+            "g00465"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_21",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            522.2795750646903,
+            527.9714074368304
+          ],
+          "glyph_ids": [
+            "g00466"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_22",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            527.9714074368304,
+            537.9540885361473
+          ],
+          "glyph_ids": [
+            "g00467",
+            "g00468"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_23",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            537.9540885361473,
+            549.3914829336647
+          ],
+          "glyph_ids": [
+            "g00469",
+            "g00470"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_24",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            549.3914829336647,
+            559.012915380576
+          ],
+          "glyph_ids": [
+            "g00471"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_25",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            559.012915380576,
+            567.5750813130213
+          ],
+          "glyph_ids": [
+            "g00472"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_26",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            567.5750813130213,
+            577.3283145628925
+          ],
+          "glyph_ids": [
+            "g00473",
+            "g00474"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_27",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            577.3283145628925,
+            587.6917373974534
+          ],
+          "glyph_ids": [
+            "g00475"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_28",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            587.6917373974534,
+            596.2099999511521
+          ],
+          "glyph_ids": [
+            "g00476"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_29",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            596.2099999511521,
+            599.8540239345182
+          ],
+          "glyph_ids": [
+            "g00477",
+            "g00478"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_30",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            599.8540239345182,
+            611.4256013830519
+          ],
+          "glyph_ids": [
+            "g00479",
+            "g00480"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_31",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            611.4256013830519,
+            620.8420106090482
+          ],
+          "glyph_ids": [
+            "g00481"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_32",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            620.8420106090482,
+            629.7556148633414
+          ],
+          "glyph_ids": [
+            "g00482"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_33",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            629.7556148633414,
+            639.8115325735753
+          ],
+          "glyph_ids": [
+            "g00483",
+            "g00484"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_34",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            639.8115325735753,
+            649.2182086969433
+          ],
+          "glyph_ids": [
+            "g00485"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_35",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            649.2182086969433,
+            657.9365529031143
+          ],
+          "glyph_ids": [
+            "g00486"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_36",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            657.9365529031143,
+            666.811135933013
+          ],
+          "glyph_ids": [
+            "g00487"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_37",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            666.811135933013,
+            676.6620299195513
+          ],
+          "glyph_ids": [
+            "g00488",
+            "g00489"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_38",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            676.6620299195513,
+            686.3078699073933
+          ],
+          "glyph_ids": [
+            "g00490"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_39",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            686.3078699073933,
+            695.4068400348332
+          ],
+          "glyph_ids": [
+            "g00491"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_40",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            695.4068400348332,
+            698.9728869329788
+          ],
+          "glyph_ids": [
+            "g00492",
+            "g00493"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_41",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            698.9728869329788,
+            706.243869552377
+          ],
+          "glyph_ids": [
+            "g00494"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_42",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            706.243869552377,
+            712.2041898283356
+          ],
+          "glyph_ids": [
+            "g00495"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_43",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            712.2041898283356,
+            716.2314482863791
+          ],
+          "glyph_ids": [
+            "g00496"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_1_44",
+          "line_id": "line_sol_1",
+          "chunk_id": "c_sol_1",
+          "column_id": "main",
+          "band": [
+            716.2314482863791,
+            719.7461359072516
+          ],
+          "glyph_ids": [
+            "g00497"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_0",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            322.85983863909456,
+            326.3696447294353
+          ],
+          "glyph_ids": [
+            "g00498"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_1",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            326.3696447294353,
+            332.68630203570603
+          ],
+          "glyph_ids": [
+            "g00499"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_2",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            332.68630203570603,
+            336.7086484461372
+          ],
+          "glyph_ids": [
+            "g00500"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_3",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            336.7086484461372,
+            342.9667428494017
+          ],
+          "glyph_ids": [
+            "g00501"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_4",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            342.9667428494017,
+            352.5345087754814
+          ],
+          "glyph_ids": [
+            "g00502",
+            "g00503"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_5",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            352.5345087754814,
+            362.8882140638982
+          ],
+          "glyph_ids": [
+            "g00504"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_6",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            362.8882140638982,
+            372.80256802183726
+          ],
+          "glyph_ids": [
+            "g00505",
+            "g00506"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_7",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            372.80256802183726,
+            382.34592618075317
+          ],
+          "glyph_ids": [
+            "g00507"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_8",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            382.34592618075317,
+            392.57759370865256
+          ],
+          "glyph_ids": [
+            "g00508",
+            "g00509"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_9",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            392.57759370865256,
+            397.6982889824375
+          ],
+          "glyph_ids": [
+            "g00510"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_10",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            397.6982889824375,
+            408.227699452964
+          ],
+          "glyph_ids": [
+            "g00511",
+            "g00512"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_11",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            408.227699452964,
+            416.21872751396177
+          ],
+          "glyph_ids": [
+            "g00513"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_12",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            416.21872751396177,
+            422.1692762269468
+          ],
+          "glyph_ids": [
+            "g00514"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_13",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            422.1692762269468,
+            430.85348179538084
+          ],
+          "glyph_ids": [
+            "g00515"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_14",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            430.85348179538084,
+            440.3480403916766
+          ],
+          "glyph_ids": [
+            "g00516",
+            "g00517"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_15",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            440.3480403916766,
+            445.9178655948656
+          ],
+          "glyph_ids": [
+            "g00518"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_16",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            445.9178655948656,
+            452.23455341821665
+          ],
+          "glyph_ids": [
+            "g00519"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_17",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            452.23455341821665,
+            456.3399159550978
+          ],
+          "glyph_ids": [
+            "g00520"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_18",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            456.3399159550978,
+            464.9167435108742
+          ],
+          "glyph_ids": [
+            "g00521"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_19",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            464.9167435108742,
+            473.6448965164865
+          ],
+          "glyph_ids": [
+            "g00522"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_20",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            473.6448965164865,
+            482.68531903670316
+          ],
+          "glyph_ids": [
+            "g00523"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_21",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            482.68531903670316,
+            486.2514117104692
+          ],
+          "glyph_ids": [
+            "g00524",
+            "g00525"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_22",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            486.2514117104692,
+            493.5273216360199
+          ],
+          "glyph_ids": [
+            "g00526"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_23",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            493.5273216360199,
+            497.5496680464511
+          ],
+          "glyph_ids": [
+            "g00527"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_24",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            497.5496680464511,
+            503.866340611262
+          ],
+          "glyph_ids": [
+            "g00528"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_25",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            503.866340611262,
+            509.1481562420819
+          ],
+          "glyph_ids": [
+            "g00529",
+            "g00530"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_26",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            509.1481562420819,
+            514.7863089032139
+          ],
+          "glyph_ids": [
+            "g00531"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_27",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            514.7863089032139,
+            519.1698738744892
+          ],
+          "glyph_ids": [
+            "g00532"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_28",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            519.1698738744892,
+            523.5485573152325
+          ],
+          "glyph_ids": [
+            "g00533"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_29",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            523.5485573152325,
+            529.7822289004047
+          ],
+          "glyph_ids": [
+            "g00534"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_30",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            529.7822289004047,
+            539.955302340619
+          ],
+          "glyph_ids": [
+            "g00535",
+            "g00536"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_31",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            539.955302340619,
+            547.8828708398888
+          ],
+          "glyph_ids": [
+            "g00537"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_32",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            547.8828708398888,
+            555.5468293448976
+          ],
+          "glyph_ids": [
+            "g00538",
+            "g00539"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_33",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            555.5468293448976,
+            566.7010867638546
+          ],
+          "glyph_ids": [
+            "g00540",
+            "g00541"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_34",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            566.7010867638546,
+            572.1732207263344
+          ],
+          "glyph_ids": [
+            "g00542"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_35",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            572.1732207263344,
+            576.5518736499973
+          ],
+          "glyph_ids": [
+            "g00543"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_36",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            576.5518736499973,
+            582.6317769836896
+          ],
+          "glyph_ids": [
+            "g00544"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_37",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            582.6317769836896,
+            586.2929157891767
+          ],
+          "glyph_ids": [
+            "g00545",
+            "g00546"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_38",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            586.2929157891767,
+            593.6420380651732
+          ],
+          "glyph_ids": [
+            "g00547"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_39",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            593.6420380651732,
+            599.5974768105999
+          ],
+          "glyph_ids": [
+            "g00548"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_40",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            599.5974768105999,
+            605.5577665694782
+          ],
+          "glyph_ids": [
+            "g00549"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_41",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            605.5577665694782,
+            610.8395516832177
+          ],
+          "glyph_ids": [
+            "g00550",
+            "g00551"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_42",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            610.8395516832177,
+            616.4777043443497
+          ],
+          "glyph_ids": [
+            "g00552"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_43",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            616.4777043443497,
+            620.856387785093
+          ],
+          "glyph_ids": [
+            "g00553"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_44",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            620.856387785093,
+            627.1730145742836
+          ],
+          "glyph_ids": [
+            "g00554"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_45",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            627.1730145742836,
+            631.117256794148
+          ],
+          "glyph_ids": [
+            "g00555"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_46",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            631.117256794148,
+            641.6466672646745
+          ],
+          "glyph_ids": [
+            "g00556",
+            "g00557"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_47",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            641.6466672646745,
+            649.5449466924817
+          ],
+          "glyph_ids": [
+            "g00558"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_48",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            649.5449466924817,
+            657.3699777058939
+          ],
+          "glyph_ids": [
+            "g00559",
+            "g00560"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_49",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            657.3699777058939,
+            668.4997802594659
+          ],
+          "glyph_ids": [
+            "g00561",
+            "g00562"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_50",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            668.4997802594659,
+            673.967063208494
+          ],
+          "glyph_ids": [
+            "g00563"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_51",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            673.967063208494,
+            680.2788389842328
+          ],
+          "glyph_ids": [
+            "g00564"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_52",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            680.2788389842328,
+            686.0023747705326
+          ],
+          "glyph_ids": [
+            "g00565"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_53",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            686.0023747705326,
+            689.6635135760198
+          ],
+          "glyph_ids": [
+            "g00566",
+            "g00567"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_54",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            689.6635135760198,
+            697.0175478996284
+          ],
+          "glyph_ids": [
+            "g00568"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_55",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            697.0175478996284,
+            701.0447758405915
+          ],
+          "glyph_ids": [
+            "g00569"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_56",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            701.0447758405915,
+            705.4234287642545
+          ],
+          "glyph_ids": [
+            "g00570"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_57",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            705.4234287642545,
+            712.9897311956895
+          ],
+          "glyph_ids": [
+            "g00571",
+            "g00572"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_58",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            712.9897311956895,
+            720.2046086444245
+          ],
+          "glyph_ids": [
+            "g00573"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_59",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            720.2046086444245,
+            724.2269550548557
+          ],
+          "glyph_ids": [
+            "g00574"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_60",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            724.2269550548557,
+            730.5387308305947
+          ],
+          "glyph_ids": [
+            "g00575"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_61",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            730.5387308305947,
+            736.4160959025351
+          ],
+          "glyph_ids": [
+            "g00576"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_2_62",
+          "line_id": "line_sol_2",
+          "chunk_id": "c_sol_2",
+          "column_id": "main",
+          "band": [
+            736.4160959025351,
+            744.753730313482
+          ],
+          "glyph_ids": [
+            "g00577"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_0",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            323.1234402822571,
+            329.2155697522596
+          ],
+          "glyph_ids": [
+            "g00578"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_1",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            329.2155697522596,
+            336.8795282572685
+          ],
+          "glyph_ids": [
+            "g00579",
+            "g00580"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_2",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            336.8795282572685,
+            348.03378567622553
+          ],
+          "glyph_ids": [
+            "g00581",
+            "g00582"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_3",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            348.03378567622553,
+            353.5059654143257
+          ],
+          "glyph_ids": [
+            "g00583"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_4",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            353.5059654143257,
+            357.88466411360923
+          ],
+          "glyph_ids": [
+            "g00584"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_5",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            357.88466411360923,
+            363.9645827058416
+          ],
+          "glyph_ids": [
+            "g00585"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_6",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            363.9645827058416,
+            367.6305877833205
+          ],
+          "glyph_ids": [
+            "g00586",
+            "g00587"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_7",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            367.6305877833205,
+            373.0514992548533
+          ],
+          "glyph_ids": [
+            "g00588"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_8",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            373.0514992548533,
+            377.4350947432089
+          ],
+          "glyph_ids": [
+            "g00589"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_9",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            377.4350947432089,
+            381.81869023156446
+          ],
+          "glyph_ids": [
+            "g00590"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_10",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            381.81869023156446,
+            387.45682763415624
+          ],
+          "glyph_ids": [
+            "g00591",
+            "g00592"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_11",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            387.45682763415624,
+            393.09494977820793
+          ],
+          "glyph_ids": [
+            "g00593"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_12",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            393.09494977820793,
+            397.4785147494831
+          ],
+          "glyph_ids": [
+            "g00594"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_13",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            397.4785147494831,
+            401.8620797207584
+          ],
+          "glyph_ids": [
+            "g00595"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_14",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            401.8620797207584,
+            406.162658970935
+          ],
+          "glyph_ids": [
+            "g00596"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_15",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            406.162658970935,
+            416.6920694414615
+          ],
+          "glyph_ids": [
+            "g00597",
+            "g00598"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_16",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            416.6920694414615,
+            424.54153373154315
+          ],
+          "glyph_ids": [
+            "g00599"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_17",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            424.54153373154315,
+            431.7026955850654
+          ],
+          "glyph_ids": [
+            "g00600",
+            "g00601"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_18",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            431.7026955850654,
+            442.82278211044496
+          ],
+          "glyph_ids": [
+            "g00602",
+            "g00603"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_19",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            442.82278211044496,
+            448.294946590005
+          ],
+          "glyph_ids": [
+            "g00604"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_20",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            448.294946590005,
+            452.6785115612803
+          ],
+          "glyph_ids": [
+            "g00605"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_21",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            452.6785115612803,
+            457.14018061139325
+          ],
+          "glyph_ids": [
+            "g00606"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_22",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            457.14018061139325,
+            465.71697765008923
+          ],
+          "glyph_ids": [
+            "g00607"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_23",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            465.71697765008923,
+            474.4451306557015
+          ],
+          "glyph_ids": [
+            "g00608"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_24",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            474.4451306557015,
+            483.4855836929985
+          ],
+          "glyph_ids": [
+            "g00609"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_sol_3_25",
+          "line_id": "line_sol_3",
+          "chunk_id": "c_sol_3",
+          "column_id": "main",
+          "band": [
+            483.4855836929985,
+            485.2284279276139
+          ],
+          "glyph_ids": [
+            "g00610"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "table_head",
+      "glyph_ids": [
+        "g00612",
+        "g00613",
+        "g00614",
+        "g00615",
+        "g00616",
+        "g00617",
+        "g00689",
+        "g00690",
+        "g00691",
+        "g00692",
+        "g00693",
+        "g00694",
+        "g00695"
+      ],
+      "shape_ids": [
+        "s00611",
+        "s00618",
+        "s00619",
+        "s00622",
+        "s00623",
+        "s00624",
+        "s00625",
+        "s00631",
+        "s00632",
+        "s00620",
+        "s00626",
+        "s00627",
+        "s00633",
+        "s00621",
+        "s00628",
+        "s00629",
+        "s00634",
+        "s00630"
+      ],
+      "writing_units": [
+        {
+          "id": "u_table_head_0_0",
+          "line_id": "line_table_head_0",
+          "chunk_id": "c_table_head_0",
+          "column_id": "main",
+          "band": [
+            302.24506987340965,
+            319.5284793664977
+          ],
+          "glyph_ids": [
+            "g00612"
+          ],
+          "shape_ids": [
+            "s00611"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_0_1",
+          "line_id": "line_table_head_0",
+          "chunk_id": "c_table_head_0",
+          "column_id": "main",
+          "band": [
+            319.5284793664977,
+            330.1414046645478
+          ],
+          "glyph_ids": [
+            "g00613"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_0_2",
+          "line_id": "line_table_head_0",
+          "chunk_id": "c_table_head_0",
+          "column_id": "main",
+          "band": [
+            330.1414046645478,
+            337.6272441953457
+          ],
+          "glyph_ids": [
+            "g00614"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_0_3",
+          "line_id": "line_table_head_0",
+          "chunk_id": "c_table_head_0",
+          "column_id": "main",
+          "band": [
+            337.6272441953457,
+            346.76770510845176
+          ],
+          "glyph_ids": [
+            "g00615",
+            "g00616"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_0_4",
+          "line_id": "line_table_head_0",
+          "chunk_id": "c_table_head_0",
+          "column_id": "main",
+          "band": [
+            346.76770510845176,
+            355.29849579052586
+          ],
+          "glyph_ids": [
+            "g00617"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_1_0",
+          "line_id": "line_table_head_1",
+          "chunk_id": "c_table_head_1",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00689"
+          ],
+          "shape_ids": [
+            "s00618",
+            "s00619",
+            "s00622",
+            "s00623",
+            "s00624",
+            "s00625",
+            "s00631",
+            "s00632"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_1_1",
+          "line_id": "line_table_head_1",
+          "chunk_id": "c_table_head_1",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00690",
+            "g00691"
+          ],
+          "shape_ids": [
+            "s00619",
+            "s00620",
+            "s00625",
+            "s00626",
+            "s00627",
+            "s00632",
+            "s00633"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_1_2",
+          "line_id": "line_table_head_1",
+          "chunk_id": "c_table_head_1",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00692",
+            "g00693"
+          ],
+          "shape_ids": [
+            "s00620",
+            "s00621",
+            "s00627",
+            "s00628",
+            "s00629",
+            "s00633",
+            "s00634"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_table_head_1_3",
+          "line_id": "line_table_head_1",
+          "chunk_id": "c_table_head_1",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00694",
+            "g00695"
+          ],
+          "shape_ids": [
+            "s00621",
+            "s00629",
+            "s00630",
+            "s00634"
+          ],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "rows_a",
+      "glyph_ids": [
+        "g00696",
+        "g00697",
+        "g00698",
+        "g00699",
+        "g00700",
+        "g00701",
+        "g00702",
+        "g00703",
+        "g00704",
+        "g00705",
+        "g00706",
+        "g00707",
+        "g00708",
+        "g00709",
+        "g00710",
+        "g00711",
+        "g00712",
+        "g00713",
+        "g00714",
+        "g00715",
+        "g00716",
+        "g00717",
+        "g00718",
+        "g00719",
+        "g00720",
+        "g00721",
+        "g00722",
+        "g00723",
+        "g00724",
+        "g00725",
+        "g00726",
+        "g00727",
+        "g00728",
+        "g00729",
+        "g00730",
+        "g00731"
+      ],
+      "shape_ids": [
+        "s00635",
+        "s00636",
+        "s00641",
+        "s00643",
+        "s00637",
+        "s00645",
+        "s00638",
+        "s00647",
+        "s00639",
+        "s00640",
+        "s00642",
+        "s00650",
+        "s00652",
+        "s00644",
+        "s00654",
+        "s00646",
+        "s00656",
+        "s00648",
+        "s00649",
+        "s00651",
+        "s00659",
+        "s00661",
+        "s00653",
+        "s00663",
+        "s00655",
+        "s00665",
+        "s00657"
+      ],
+      "writing_units": [
+        {
+          "id": "u_rows_a_0_0",
+          "line_id": "line_rows_a_0",
+          "chunk_id": "c_rows_a_0",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00696",
+            "g00697",
+            "g00698",
+            "g00699",
+            "g00700",
+            "g00701",
+            "g00702",
+            "g00703",
+            "g00704"
+          ],
+          "shape_ids": [
+            "s00635",
+            "s00636",
+            "s00641",
+            "s00643"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_0_1",
+          "line_id": "line_rows_a_0",
+          "chunk_id": "c_rows_a_0",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00705"
+          ],
+          "shape_ids": [
+            "s00637",
+            "s00643",
+            "s00645"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_0_2",
+          "line_id": "line_rows_a_0",
+          "chunk_id": "c_rows_a_0",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00706"
+          ],
+          "shape_ids": [
+            "s00638",
+            "s00645",
+            "s00647"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_0_3",
+          "line_id": "line_rows_a_0",
+          "chunk_id": "c_rows_a_0",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00707"
+          ],
+          "shape_ids": [
+            "s00639",
+            "s00647"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_1_0",
+          "line_id": "line_rows_a_1",
+          "chunk_id": "c_rows_a_1",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00708",
+            "g00709",
+            "g00710",
+            "g00711",
+            "g00712",
+            "g00713",
+            "g00714",
+            "g00715",
+            "g00716"
+          ],
+          "shape_ids": [
+            "s00640",
+            "s00642",
+            "s00650",
+            "s00652"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_1_1",
+          "line_id": "line_rows_a_1",
+          "chunk_id": "c_rows_a_1",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00717"
+          ],
+          "shape_ids": [
+            "s00644",
+            "s00652",
+            "s00654"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_1_2",
+          "line_id": "line_rows_a_1",
+          "chunk_id": "c_rows_a_1",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00718"
+          ],
+          "shape_ids": [
+            "s00646",
+            "s00654",
+            "s00656"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_1_3",
+          "line_id": "line_rows_a_1",
+          "chunk_id": "c_rows_a_1",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00719"
+          ],
+          "shape_ids": [
+            "s00648",
+            "s00656"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_2_0",
+          "line_id": "line_rows_a_2",
+          "chunk_id": "c_rows_a_2",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00720",
+            "g00721",
+            "g00722",
+            "g00723",
+            "g00724",
+            "g00725",
+            "g00726",
+            "g00727",
+            "g00728"
+          ],
+          "shape_ids": [
+            "s00649",
+            "s00651",
+            "s00659",
+            "s00661"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_2_1",
+          "line_id": "line_rows_a_2",
+          "chunk_id": "c_rows_a_2",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00729"
+          ],
+          "shape_ids": [
+            "s00653",
+            "s00661",
+            "s00663"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_2_2",
+          "line_id": "line_rows_a_2",
+          "chunk_id": "c_rows_a_2",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00730"
+          ],
+          "shape_ids": [
+            "s00655",
+            "s00663",
+            "s00665"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_a_2_3",
+          "line_id": "line_rows_a_2",
+          "chunk_id": "c_rows_a_2",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00731"
+          ],
+          "shape_ids": [
+            "s00657",
+            "s00665"
+          ],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "rows_b",
+      "glyph_ids": [
+        "g00732",
+        "g00733",
+        "g00734",
+        "g00735",
+        "g00736",
+        "g00737",
+        "g00738",
+        "g00739",
+        "g00740",
+        "g00741",
+        "g00742",
+        "g00743",
+        "g00744",
+        "g00745",
+        "g00746",
+        "g00747",
+        "g00748",
+        "g00749",
+        "g00750",
+        "g00751",
+        "g00752",
+        "g00753",
+        "g00754",
+        "g00755",
+        "g00756",
+        "g00757",
+        "g00758",
+        "g00759",
+        "g00760",
+        "g00761",
+        "g00762",
+        "g00763",
+        "g00764",
+        "g00765",
+        "g00766",
+        "g00767"
+      ],
+      "shape_ids": [
+        "s00658",
+        "s00660",
+        "s00668",
+        "s00670",
+        "s00662",
+        "s00672",
+        "s00664",
+        "s00674",
+        "s00666",
+        "s00667",
+        "s00669",
+        "s00677",
+        "s00679",
+        "s00671",
+        "s00681",
+        "s00673",
+        "s00683",
+        "s00675",
+        "s00676",
+        "s00678",
+        "s00685",
+        "s00686",
+        "s00680",
+        "s00687",
+        "s00682",
+        "s00688",
+        "s00684"
+      ],
+      "writing_units": [
+        {
+          "id": "u_rows_b_0_0",
+          "line_id": "line_rows_b_0",
+          "chunk_id": "c_rows_b_0",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00732",
+            "g00733",
+            "g00734",
+            "g00735",
+            "g00736",
+            "g00737",
+            "g00738",
+            "g00739",
+            "g00740"
+          ],
+          "shape_ids": [
+            "s00658",
+            "s00660",
+            "s00668",
+            "s00670"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_0_1",
+          "line_id": "line_rows_b_0",
+          "chunk_id": "c_rows_b_0",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00741"
+          ],
+          "shape_ids": [
+            "s00662",
+            "s00670",
+            "s00672"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_0_2",
+          "line_id": "line_rows_b_0",
+          "chunk_id": "c_rows_b_0",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00742"
+          ],
+          "shape_ids": [
+            "s00664",
+            "s00672",
+            "s00674"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_0_3",
+          "line_id": "line_rows_b_0",
+          "chunk_id": "c_rows_b_0",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00743"
+          ],
+          "shape_ids": [
+            "s00666",
+            "s00674"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_1_0",
+          "line_id": "line_rows_b_1",
+          "chunk_id": "c_rows_b_1",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00744",
+            "g00745",
+            "g00746",
+            "g00747",
+            "g00748",
+            "g00749",
+            "g00750",
+            "g00751",
+            "g00752"
+          ],
+          "shape_ids": [
+            "s00667",
+            "s00669",
+            "s00677",
+            "s00679"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_1_1",
+          "line_id": "line_rows_b_1",
+          "chunk_id": "c_rows_b_1",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00753"
+          ],
+          "shape_ids": [
+            "s00671",
+            "s00679",
+            "s00681"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_1_2",
+          "line_id": "line_rows_b_1",
+          "chunk_id": "c_rows_b_1",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00754"
+          ],
+          "shape_ids": [
+            "s00673",
+            "s00681",
+            "s00683"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_1_3",
+          "line_id": "line_rows_b_1",
+          "chunk_id": "c_rows_b_1",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00755"
+          ],
+          "shape_ids": [
+            "s00675",
+            "s00683"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_2_0",
+          "line_id": "line_rows_b_2",
+          "chunk_id": "c_rows_b_2",
+          "column_id": "main",
+          "band": [
+            322.5,
+            525.0
+          ],
+          "glyph_ids": [
+            "g00756",
+            "g00757",
+            "g00758",
+            "g00759",
+            "g00760",
+            "g00761",
+            "g00762",
+            "g00763",
+            "g00764"
+          ],
+          "shape_ids": [
+            "s00676",
+            "s00678",
+            "s00685",
+            "s00686"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_2_1",
+          "line_id": "line_rows_b_2",
+          "chunk_id": "c_rows_b_2",
+          "column_id": "main",
+          "band": [
+            525.0,
+            600.0
+          ],
+          "glyph_ids": [
+            "g00765"
+          ],
+          "shape_ids": [
+            "s00680",
+            "s00686",
+            "s00687"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_2_2",
+          "line_id": "line_rows_b_2",
+          "chunk_id": "c_rows_b_2",
+          "column_id": "main",
+          "band": [
+            600.0,
+            669.0
+          ],
+          "glyph_ids": [
+            "g00766"
+          ],
+          "shape_ids": [
+            "s00682",
+            "s00687",
+            "s00688"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_rows_b_2_3",
+          "line_id": "line_rows_b_2",
+          "chunk_id": "c_rows_b_2",
+          "column_id": "main",
+          "band": [
+            669.0,
+            745.5
+          ],
+          "glyph_ids": [
+            "g00767"
+          ],
+          "shape_ids": [
+            "s00684",
+            "s00688"
+          ],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "check",
+      "glyph_ids": [
+        "g00769",
+        "g00770",
+        "g00771",
+        "g00772",
+        "g00773",
+        "g00774",
+        "g00775",
+        "g00776",
+        "g00777",
+        "g00778",
+        "g00779",
+        "g00780",
+        "g00781",
+        "g00782",
+        "g00783",
+        "g00784",
+        "g00785",
+        "g00786",
+        "g00787",
+        "g00788",
+        "g00789",
+        "g00790",
+        "g00791",
+        "g00792",
+        "g00793",
+        "g00794",
+        "g00795",
+        "g00796",
+        "g00797",
+        "g00798",
+        "g00799",
+        "g00800",
+        "g00801",
+        "g00802",
+        "g00803",
+        "g00804",
+        "g00805",
+        "g00806",
+        "g00807",
+        "g00808",
+        "g00809",
+        "g00810",
+        "g00811",
+        "g00812",
+        "g00813",
+        "g00814",
+        "g00815",
+        "g00816",
+        "g00817",
+        "g00818",
+        "g00819",
+        "g00820",
+        "g00821",
+        "g00822",
+        "g00823",
+        "g00824",
+        "g00825",
+        "g00826",
+        "g00827",
+        "g00828",
+        "g00829",
+        "g00830",
+        "g00831",
+        "g00832",
+        "g00833",
+        "g00834",
+        "g00835",
+        "g00836",
+        "g00837"
+      ],
+      "shape_ids": [
+        "s00768"
+      ],
+      "writing_units": [
+        {
+          "id": "u_check_0_0",
+          "line_id": "line_check_0",
+          "chunk_id": "c_check_0",
+          "column_id": "main",
+          "band": [
+            302.24506987340965,
+            319.55924057509867
+          ],
+          "glyph_ids": [
+            "g00769"
+          ],
+          "shape_ids": [
+            "s00768"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_0_1",
+          "line_id": "line_check_0",
+          "chunk_id": "c_check_0",
+          "column_id": "main",
+          "band": [
+            319.55924057509867,
+            329.77226952013154
+          ],
+          "glyph_ids": [
+            "g00770"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_0_2",
+          "line_id": "line_check_0",
+          "chunk_id": "c_check_0",
+          "column_id": "main",
+          "band": [
+            329.77226952013154,
+            337.78221047412694
+          ],
+          "glyph_ids": [
+            "g00771"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_0",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            322.6548150643711,
+            330.5970470869405
+          ],
+          "glyph_ids": [
+            "g00772"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_1",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            330.5970470869405,
+            339.85718156013945
+          ],
+          "glyph_ids": [
+            "g00773"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_2",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            339.85718156013945,
+            343.57560222472455
+          ],
+          "glyph_ids": [
+            "g00774",
+            "g00775"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_3",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            343.57560222472455,
+            354.9090720461592
+          ],
+          "glyph_ids": [
+            "g00776",
+            "g00777"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_4",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            354.9090720461592,
+            364.54517891275157
+          ],
+          "glyph_ids": [
+            "g00778"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_5",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            364.54517891275157,
+            373.1366647409942
+          ],
+          "glyph_ids": [
+            "g00779"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_6",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            373.1366647409942,
+            382.91921763527273
+          ],
+          "glyph_ids": [
+            "g00780",
+            "g00781"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_7",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            382.91921763527273,
+            393.1020548227707
+          ],
+          "glyph_ids": [
+            "g00782"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_8",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            393.1020548227707,
+            401.54709500506766
+          ],
+          "glyph_ids": [
+            "g00783"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_9",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            401.54709500506766,
+            411.7201693177167
+          ],
+          "glyph_ids": [
+            "g00784",
+            "g00785"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_10",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            411.7201693177167,
+            421.971346964344
+          ],
+          "glyph_ids": [
+            "g00786"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_11",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            421.971346964344,
+            429.8647760214415
+          ],
+          "glyph_ids": [
+            "g00787"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_12",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            429.8647760214415,
+            439.0859619720852
+          ],
+          "glyph_ids": [
+            "g00788"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_13",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            439.0859619720852,
+            448.92221172083623
+          ],
+          "glyph_ids": [
+            "g00789",
+            "g00790"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_14",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            448.92221172083623,
+            458.42653332233135
+          ],
+          "glyph_ids": [
+            "g00791"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_15",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            458.42653332233135,
+            467.32065795635566
+          ],
+          "glyph_ids": [
+            "g00792"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_16",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            467.32065795635566,
+            477.20084073503415
+          ],
+          "glyph_ids": [
+            "g00793",
+            "g00794"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_17",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            477.20084073503415,
+            487.1103281230377
+          ],
+          "glyph_ids": [
+            "g00795"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_18",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            487.1103281230377,
+            497.0832602239018
+          ],
+          "glyph_ids": [
+            "g00796",
+            "g00797"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_19",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            497.0832602239018,
+            504.29813765124004
+          ],
+          "glyph_ids": [
+            "g00798"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_20",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            504.29813765124004,
+            512.5186281767043
+          ],
+          "glyph_ids": [
+            "g00799"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_21",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            512.5186281767043,
+            521.2467964408568
+          ],
+          "glyph_ids": [
+            "g00800"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_22",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            521.2467964408568,
+            530.2872189610734
+          ],
+          "glyph_ids": [
+            "g00801"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_23",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            530.2872189610734,
+            533.7947182147528
+          ],
+          "glyph_ids": [
+            "g00802",
+            "g00803"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_24",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            533.7947182147528,
+            544.9416601843577
+          ],
+          "glyph_ids": [
+            "g00804",
+            "g00805"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_25",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            544.9416601843577,
+            556.0324363281038
+          ],
+          "glyph_ids": [
+            "g00806",
+            "g00807"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_26",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            556.0324363281038,
+            563.4230180488773
+          ],
+          "glyph_ids": [
+            "g00808"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_27",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            563.4230180488773,
+            569.3784262772238
+          ],
+          "glyph_ids": [
+            "g00809"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_28",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            569.3784262772238,
+            575.3338650226505
+          ],
+          "glyph_ids": [
+            "g00810"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_29",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            575.3338650226505,
+            582.5438304237732
+          ],
+          "glyph_ids": [
+            "g00811",
+            "g00812"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_30",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            582.5438304237732,
+            589.7537958248961
+          ],
+          "glyph_ids": [
+            "g00813"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_31",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            589.7537958248961,
+            595.7092345703228
+          ],
+          "glyph_ids": [
+            "g00814"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_32",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            595.7092345703228,
+            601.6695548462815
+          ],
+          "glyph_ids": [
+            "g00815"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_33",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            601.6695548462815,
+            605.6137970661459
+          ],
+          "glyph_ids": [
+            "g00816"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_34",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            605.6137970661459,
+            616.1432075366724
+          ],
+          "glyph_ids": [
+            "g00817",
+            "g00818"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_35",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            616.1432075366724,
+            624.0512499883007
+          ],
+          "glyph_ids": [
+            "g00819"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_36",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            624.0512499883007,
+            631.5785041828261
+          ],
+          "glyph_ids": [
+            "g00820",
+            "g00821"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_37",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            631.5785041828261,
+            642.708332046618
+          ],
+          "glyph_ids": [
+            "g00822",
+            "g00823"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_38",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            642.708332046618,
+            650.1086768135614
+          ],
+          "glyph_ids": [
+            "g00824"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_39",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            650.1086768135614,
+            656.0641155589881
+          ],
+          "glyph_ids": [
+            "g00825"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_40",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            656.0641155589881,
+            662.1025704308647
+          ],
+          "glyph_ids": [
+            "g00826"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_41",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            662.1025704308647,
+            670.4401867809631
+          ],
+          "glyph_ids": [
+            "g00827"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_42",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            670.4401867809631,
+            679.4124004028783
+          ],
+          "glyph_ids": [
+            "g00828"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_43",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            679.4124004028783,
+            688.7995504506725
+          ],
+          "glyph_ids": [
+            "g00829",
+            "g00830"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_44",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            688.7995504506725,
+            698.8017713250554
+          ],
+          "glyph_ids": [
+            "g00831"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_45",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            698.8017713250554,
+            707.6861176487864
+          ],
+          "glyph_ids": [
+            "g00832"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_1_46",
+          "line_id": "line_check_1",
+          "chunk_id": "c_check_1",
+          "column_id": "main",
+          "band": [
+            707.6861176487864,
+            716.1848115074076
+          ],
+          "glyph_ids": [
+            "g00833"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_2_0",
+          "line_id": "line_check_2",
+          "chunk_id": "c_check_2",
+          "column_id": "main",
+          "band": [
+            322.72315626835996,
+            331.129132811595
+          ],
+          "glyph_ids": [
+            "g00834"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_2_1",
+          "line_id": "line_check_2",
+          "chunk_id": "c_check_2",
+          "column_id": "main",
+          "band": [
+            331.129132811595,
+            339.740129140306
+          ],
+          "glyph_ids": [
+            "g00835"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_2_2",
+          "line_id": "line_check_2",
+          "chunk_id": "c_check_2",
+          "column_id": "main",
+          "band": [
+            339.740129140306,
+            348.4144379320546
+          ],
+          "glyph_ids": [
+            "g00836"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_check_2_3",
+          "line_id": "line_check_2",
+          "chunk_id": "c_check_2",
+          "column_id": "main",
+          "band": [
+            348.4144379320546,
+            350.1572669081299
+          ],
+          "glyph_ids": [
+            "g00837"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "mistake",
+      "glyph_ids": [
+        "g00839",
+        "g00840",
+        "g00841",
+        "g00842",
+        "g00843",
+        "g00844",
+        "g00845",
+        "g00846",
+        "g00847",
+        "g00848",
+        "g00849",
+        "g00850",
+        "g00851",
+        "g00852",
+        "g00853",
+        "g00854",
+        "g00855",
+        "g00856",
+        "g00857",
+        "g00858",
+        "g00859",
+        "g00860",
+        "g00861",
+        "g00862",
+        "g00863",
+        "g00864",
+        "g00865",
+        "g00866",
+        "g00867",
+        "g00868",
+        "g00869",
+        "g00870",
+        "g00871",
+        "g00872",
+        "g00873",
+        "g00874",
+        "g00875",
+        "g00876",
+        "g00877",
+        "g00878",
+        "g00879",
+        "g00880",
+        "g00881",
+        "g00882",
+        "g00883",
+        "g00884",
+        "g00885",
+        "g00886",
+        "g00887",
+        "g00888",
+        "g00889",
+        "g00890",
+        "g00891",
+        "g00892",
+        "g00893",
+        "g00894",
+        "g00895",
+        "g00896",
+        "g00897",
+        "g00898",
+        "g00899",
+        "g00900",
+        "g00901",
+        "g00902",
+        "g00903",
+        "g00904",
+        "g00905",
+        "g00906",
+        "g00907",
+        "g00908",
+        "g00909",
+        "g00910",
+        "g00911",
+        "g00912",
+        "g00913",
+        "g00914",
+        "g00915",
+        "g00916",
+        "g00917",
+        "g00918",
+        "g00919",
+        "g00920",
+        "g00921",
+        "g00922",
+        "g00923",
+        "g00924",
+        "g00925"
+      ],
+      "shape_ids": [
+        "s00838"
+      ],
+      "writing_units": [
+        {
+          "id": "u_mistake_0_0",
+          "line_id": "line_mistake_0",
+          "chunk_id": "c_mistake_0",
+          "column_id": "main",
+          "band": [
+            302.24506987340965,
+            319.5372682772538
+          ],
+          "glyph_ids": [
+            "g00839"
+          ],
+          "shape_ids": [
+            "s00838"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_0_1",
+          "line_id": "line_mistake_0",
+          "chunk_id": "c_mistake_0",
+          "column_id": "main",
+          "band": [
+            319.5372682772538,
+            330.1150378987523
+          ],
+          "glyph_ids": [
+            "g00840"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_0_2",
+          "line_id": "line_mistake_0",
+          "chunk_id": "c_mistake_0",
+          "column_id": "main",
+          "band": [
+            330.1150378987523,
+            338.9742378726885
+          ],
+          "glyph_ids": [
+            "g00841",
+            "g00842"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_0_3",
+          "line_id": "line_mistake_0",
+          "chunk_id": "c_mistake_0",
+          "column_id": "main",
+          "band": [
+            338.9742378726885,
+            347.54781296496606
+          ],
+          "glyph_ids": [
+            "g00843"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_0_4",
+          "line_id": "line_mistake_0",
+          "chunk_id": "c_mistake_0",
+          "column_id": "main",
+          "band": [
+            347.54781296496606,
+            355.2721290331121
+          ],
+          "glyph_ids": [
+            "g00844"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_0",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            322.60599994526694,
+            330.97780560718525
+          ],
+          "glyph_ids": [
+            "g00845"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_1",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            330.97780560718525,
+            340.8238229776915
+          ],
+          "glyph_ids": [
+            "g00846",
+            "g00847"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_2",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            340.8238229776915,
+            350.3525417760768
+          ],
+          "glyph_ids": [
+            "g00848"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_3",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            350.3525417760768,
+            359.36860035581105
+          ],
+          "glyph_ids": [
+            "g00849"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_4",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            359.36860035581105,
+            363.2466461354819
+          ],
+          "glyph_ids": [
+            "g00850",
+            "g00851"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_5",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            363.2466461354819,
+            368.6524882526336
+          ],
+          "glyph_ids": [
+            "g00852"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_6",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            368.6524882526336,
+            378.5082500609011
+          ],
+          "glyph_ids": [
+            "g00853",
+            "g00854"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_7",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            378.5082500609011,
+            388.49582651128156
+          ],
+          "glyph_ids": [
+            "g00855"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_8",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            388.49582651128156,
+            398.2393272730337
+          ],
+          "glyph_ids": [
+            "g00856",
+            "g00857"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_9",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            398.2393272730337,
+            408.3440748395101
+          ],
+          "glyph_ids": [
+            "g00858"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_10",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            408.3440748395101,
+            418.30236206945614
+          ],
+          "glyph_ids": [
+            "g00859",
+            "g00860"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_11",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            418.30236206945614,
+            429.34923540241124
+          ],
+          "glyph_ids": [
+            "g00861",
+            "g00862"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_12",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            429.34923540241124,
+            439.449101792164
+          ],
+          "glyph_ids": [
+            "g00863"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_13",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            439.449101792164,
+            449.25606246945244
+          ],
+          "glyph_ids": [
+            "g00864",
+            "g00865"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_14",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            449.25606246945244,
+            459.5951229055727
+          ],
+          "glyph_ids": [
+            "g00866"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_15",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            459.5951229055727,
+            467.4836551735982
+          ],
+          "glyph_ids": [
+            "g00867"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_16",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            467.4836551735982,
+            477.84710854386094
+          ],
+          "glyph_ids": [
+            "g00868",
+            "g00869"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_17",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            477.84710854386094,
+            486.42392337054196
+          ],
+          "glyph_ids": [
+            "g00870"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_18",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            486.42392337054196,
+            492.43793663517664
+          ],
+          "glyph_ids": [
+            "g00871"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_19",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            492.43793663517664,
+            502.2790528999964
+          ],
+          "glyph_ids": [
+            "g00872",
+            "g00873"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_20",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            502.2790528999964,
+            512.3252080147035
+          ],
+          "glyph_ids": [
+            "g00874"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_21",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            512.3252080147035,
+            520.6140394806804
+          ],
+          "glyph_ids": [
+            "g00875"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_22",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            520.6140394806804,
+            530.5235118894661
+          ],
+          "glyph_ids": [
+            "g00876",
+            "g00877"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_23",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            530.5235118894661,
+            540.5452582900889
+          ],
+          "glyph_ids": [
+            "g00878"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_24",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            540.5452582900889,
+            550.6646363441531
+          ],
+          "glyph_ids": [
+            "g00879",
+            "g00880"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_25",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            550.6646363441531,
+            560.129890256638
+          ],
+          "glyph_ids": [
+            "g00881"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_26",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            560.129890256638,
+            569.2241718395857
+          ],
+          "glyph_ids": [
+            "g00882"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_27",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            569.2241718395857,
+            577.31771324314
+          ],
+          "glyph_ids": [
+            "g00883"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_28",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            577.31771324314,
+            587.2173915151368
+          ],
+          "glyph_ids": [
+            "g00884",
+            "g00885"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_29",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            587.2173915151368,
+            597.1805297585345
+          ],
+          "glyph_ids": [
+            "g00886"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_30",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            597.1805297585345,
+            606.2015276100437
+          ],
+          "glyph_ids": [
+            "g00887"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_31",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            606.2015276100437,
+            616.0231023339154
+          ],
+          "glyph_ids": [
+            "g00888",
+            "g00889"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_32",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            616.0231023339154,
+            625.6006310948258
+          ],
+          "glyph_ids": [
+            "g00890"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_33",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            625.6006310948258,
+            634.6703429565166
+          ],
+          "glyph_ids": [
+            "g00891"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_34",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            634.6703429565166,
+            638.211982257867
+          ],
+          "glyph_ids": [
+            "g00892",
+            "g00893"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_35",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            638.211982257867,
+            647.9383651233502
+          ],
+          "glyph_ids": [
+            "g00894"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_36",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            647.9383651233502,
+            658.087001173152
+          ],
+          "glyph_ids": [
+            "g00895",
+            "g00896"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_37",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            658.087001173152,
+            668.0501394537926
+          ],
+          "glyph_ids": [
+            "g00897"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_38",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            668.0501394537926,
+            677.5837043697511
+          ],
+          "glyph_ids": [
+            "g00898",
+            "g00899"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_39",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            677.5837043697511,
+            685.0865608551535
+          ],
+          "glyph_ids": [
+            "g00900"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_40",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            685.0865608551535,
+            691.0468811311121
+          ],
+          "glyph_ids": [
+            "g00901"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_41",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            691.0468811311121,
+            695.0741395891555
+          ],
+          "glyph_ids": [
+            "g00902"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_42",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            695.0741395891555,
+            700.7122617332071
+          ],
+          "glyph_ids": [
+            "g00903",
+            "g00904"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_43",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            700.7122617332071,
+            706.3455023467268
+          ],
+          "glyph_ids": [
+            "g00905"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_44",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            706.3455023467268,
+            712.662190170078
+          ],
+          "glyph_ids": [
+            "g00906"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_45",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            712.662190170078,
+            716.6845365805092
+          ],
+          "glyph_ids": [
+            "g00907"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_46",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            716.6845365805092,
+            722.9181776486012
+          ],
+          "glyph_ids": [
+            "g00908"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_1_47",
+          "line_id": "line_mistake_1",
+          "chunk_id": "c_mistake_1",
+          "column_id": "main",
+          "band": [
+            722.9181776486012,
+            731.2557815424678
+          ],
+          "glyph_ids": [
+            "g00909"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_0",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            322.8500755780308,
+            329.7427632840711
+          ],
+          "glyph_ids": [
+            "g00910"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_1",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            329.7427632840711,
+            335.732368979843
+          ],
+          "glyph_ids": [
+            "g00911"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_2",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            335.732368979843,
+            344.6508864010357
+          ],
+          "glyph_ids": [
+            "g00912"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_3",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            344.6508864010357,
+            354.14054855275697
+          ],
+          "glyph_ids": [
+            "g00913",
+            "g00914"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_4",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            354.14054855275697,
+            364.2306519000674
+          ],
+          "glyph_ids": [
+            "g00915"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_5",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            364.2306519000674,
+            374.0132047198599
+          ],
+          "glyph_ids": [
+            "g00916",
+            "g00917"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_6",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            374.0132047198599,
+            383.8933875171599
+          ],
+          "glyph_ids": [
+            "g00918"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_7",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            383.8933875171599,
+            392.58250357430006
+          ],
+          "glyph_ids": [
+            "g00919"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_8",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            392.58250357430006,
+            402.71652558682945
+          ],
+          "glyph_ids": [
+            "g00920",
+            "g00921"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_9",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            402.71652558682945,
+            412.3770406367938
+          ],
+          "glyph_ids": [
+            "g00922"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_10",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            412.3770406367938,
+            421.0710382058444
+          ],
+          "glyph_ids": [
+            "g00923"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_11",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            421.0710382058444,
+            429.769769824996
+          ],
+          "glyph_ids": [
+            "g00924"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_mistake_2_12",
+          "line_id": "line_mistake_2",
+          "chunk_id": "c_mistake_2",
+          "column_id": "main",
+          "band": [
+            429.769769824996,
+            431.5125988010712
+          ],
+          "glyph_ids": [
+            "g00925"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        }
+      ]
+    },
+    {
+      "id": "answer",
+      "glyph_ids": [
+        "g00928",
+        "g00929",
+        "g00930",
+        "g00931",
+        "g00932",
+        "g00933",
+        "g00934",
+        "g00935",
+        "g00936",
+        "g00937",
+        "g00938",
+        "g00939",
+        "g00940",
+        "g00941",
+        "g00942",
+        "g00943",
+        "g00944",
+        "g00945",
+        "g00946",
+        "g00947",
+        "g00948",
+        "g00949",
+        "g00950",
+        "g00951",
+        "g00952",
+        "g00953",
+        "g00954",
+        "g00955",
+        "g00956",
+        "g00957",
+        "g00958",
+        "g00959",
+        "g00960",
+        "g00961",
+        "g00962",
+        "g00963",
+        "g00964",
+        "g00965",
+        "g00966",
+        "g00967",
+        "g00968",
+        "g00969",
+        "g00970",
+        "g00971",
+        "g00972",
+        "g00973",
+        "g00974",
+        "g00975",
+        "g00976",
+        "g00977",
+        "g00978",
+        "g00979",
+        "g00980",
+        "g00981",
+        "g00982",
+        "g00983",
+        "g00984",
+        "g00985",
+        "g00986",
+        "g00987",
+        "g00988",
+        "g00989",
+        "g00990",
+        "g00991",
+        "g00992",
+        "g00993",
+        "g00994",
+        "g00995",
+        "g00996",
+        "g00997",
+        "g00998",
+        "g00999",
+        "g01000",
+        "g01001",
+        "g01002",
+        "g01003",
+        "g01004",
+        "g01005",
+        "g01006",
+        "g01007",
+        "g01008",
+        "g01009",
+        "g01010",
+        "g01011",
+        "g01012",
+        "g01013",
+        "g01014"
+      ],
+      "shape_ids": [
+        "s00926",
+        "s00927"
+      ],
+      "writing_units": [
+        {
+          "id": "u_answer_0_0",
+          "line_id": "line_answer_0",
+          "chunk_id": "c_answer_0",
+          "column_id": "main",
+          "band": [
+            302.24506987340965,
+            745.487839836648
+          ],
+          "glyph_ids": [
+            "g00928"
+          ],
+          "shape_ids": [
+            "s00926",
+            "s00927"
+          ],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_0",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            313.77320218175396,
+            319.7399020427455
+          ],
+          "glyph_ids": [
+            "g00929"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_1",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            319.7399020427455,
+            326.22342358535786
+          ],
+          "glyph_ids": [
+            "g00930"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_2",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            326.22342358535786,
+            330.56875032249036
+          ],
+          "glyph_ids": [
+            "g00931"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_3",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            330.56875032249036,
+            336.55365330898536
+          ],
+          "glyph_ids": [
+            "g00932",
+            "g00933"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_4",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            336.55365330898536,
+            342.53342944554066
+          ],
+          "glyph_ids": [
+            "g00934"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_5",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            342.53342944554066,
+            349.3755575317049
+          ],
+          "glyph_ids": [
+            "g00935"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_6",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            349.3755575317049,
+            353.7157726774378
+          ],
+          "glyph_ids": [
+            "g00936"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_7",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            353.7157726774378,
+            360.9013858004836
+          ],
+          "glyph_ids": [
+            "g00937"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_8",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            360.9013858004836,
+            369.959495771599
+          ],
+          "glyph_ids": [
+            "g00938"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_9",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            369.959495771599,
+            374.51592472490256
+          ],
+          "glyph_ids": [
+            "g00939"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_10",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            374.51592472490256,
+            381.3580375525266
+          ],
+          "glyph_ids": [
+            "g00940"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_11",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            381.3580375525266,
+            385.3937379925297
+          ],
+          "glyph_ids": [
+            "g00941"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_12",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            385.3937379925297,
+            389.53991069362746
+          ],
+          "glyph_ids": [
+            "g00942",
+            "g00943"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_13",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            389.53991069362746,
+            397.4002563456454
+          ],
+          "glyph_ids": [
+            "g00944"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_14",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            397.4002563456454,
+            401.74045623283814
+          ],
+          "glyph_ids": [
+            "g00945"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_15",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            401.74045623283814,
+            408.582553801922
+          ],
+          "glyph_ids": [
+            "g00946"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_16",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            408.582553801922,
+            414.20885024486523
+          ],
+          "glyph_ids": [
+            "g00947",
+            "g00948"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_17",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            414.20885024486523,
+            420.19373797282003
+          ],
+          "glyph_ids": [
+            "g00949"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_18",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            420.19373797282003,
+            424.897640736424
+          ],
+          "glyph_ids": [
+            "g00950"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_19",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            424.897640736424,
+            429.59641665008826
+          ],
+          "glyph_ids": [
+            "g00951"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_20",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            429.59641665008826,
+            436.7820145145938
+          ],
+          "glyph_ids": [
+            "g00952"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_21",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            436.7820145145938,
+            445.840109227169
+          ],
+          "glyph_ids": [
+            "g00953"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_22",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            445.840109227169,
+            450.40164977187214
+          ],
+          "glyph_ids": [
+            "g00954"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_23",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            450.40164977187214,
+            455.1004256855364
+          ],
+          "glyph_ids": [
+            "g00955"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_24",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            455.1004256855364,
+            461.7057870038829
+          ],
+          "glyph_ids": [
+            "g00956"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_25",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            461.7057870038829,
+            465.5662584663611
+          ],
+          "glyph_ids": [
+            "g00957",
+            "g00958"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_26",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            465.5662584663611,
+            473.42147726843933
+          ],
+          "glyph_ids": [
+            "g00959"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_27",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            473.42147726843933,
+            479.89987196111207
+          ],
+          "glyph_ids": [
+            "g00960"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_28",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            479.89987196111207,
+            486.3833782451843
+          ],
+          "glyph_ids": [
+            "g00961"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_29",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            486.3833782451843,
+            492.00967468812746
+          ],
+          "glyph_ids": [
+            "g00962",
+            "g00963"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_30",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            492.00967468812746,
+            497.9945624160823
+          ],
+          "glyph_ids": [
+            "g00964"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_31",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            497.9945624160823,
+            502.69333832974655
+          ],
+          "glyph_ids": [
+            "g00965"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_32",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            502.69333832974655,
+            509.53545115737063
+          ],
+          "glyph_ids": [
+            "g00966"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_33",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            509.53545115737063,
+            514.2242781899248
+          ],
+          "glyph_ids": [
+            "g00967"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_34",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            514.2242781899248,
+            523.6409641875116
+          ],
+          "glyph_ids": [
+            "g00968"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_35",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            523.6409641875116,
+            528.1973778822751
+          ],
+          "glyph_ids": [
+            "g00969"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_36",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            528.1973778822751,
+            535.0343638599595
+          ],
+          "glyph_ids": [
+            "g00970"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_37",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            535.0343638599595,
+            541.2805388102277
+          ],
+          "glyph_ids": [
+            "g00971"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_38",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            541.2805388102277,
+            545.1403999310992
+          ],
+          "glyph_ids": [
+            "g00972",
+            "g00973"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_39",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            545.1403999310992,
+            553.0007455831169
+          ],
+          "glyph_ids": [
+            "g00974"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_40",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            553.0007455831169,
+            557.3460723202495
+          ],
+          "glyph_ids": [
+            "g00975"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_41",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            557.3460723202495,
+            562.0448482339139
+          ],
+          "glyph_ids": [
+            "g00976"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_42",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            562.0448482339139,
+            570.1628191759489
+          ],
+          "glyph_ids": [
+            "g00977",
+            "g00978"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_43",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            570.1628191759489,
+            577.9273104243721
+          ],
+          "glyph_ids": [
+            "g00979"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_44",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            577.9273104243721,
+            582.2674797944846
+          ],
+          "glyph_ids": [
+            "g00980"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_45",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            582.2674797944846,
+            589.1044657721689
+          ],
+          "glyph_ids": [
+            "g00981"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_46",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            589.1044657721689,
+            595.9315028687431
+          ],
+          "glyph_ids": [
+            "g00982"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_47",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            595.9315028687431,
+            604.9896128398586
+          ],
+          "glyph_ids": [
+            "g00983"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_48",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            604.9896128398586,
+            609.5511533845616
+          ],
+          "glyph_ids": [
+            "g00984"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_49",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            609.5511533845616,
+            614.2499292982259
+          ],
+          "glyph_ids": [
+            "g00985"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_50",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            614.2499292982259,
+            620.8546802749656
+          ],
+          "glyph_ids": [
+            "g00986"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_51",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            620.8546802749656,
+            624.7196682457768
+          ],
+          "glyph_ids": [
+            "g00987",
+            "g00988"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_52",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            624.7196682457768,
+            630.4418038337744
+          ],
+          "glyph_ids": [
+            "g00989"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_53",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            630.4418038337744,
+            635.1457065973784
+          ],
+          "glyph_ids": [
+            "g00990"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_54",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            635.1457065973784,
+            639.8496093609824
+          ],
+          "glyph_ids": [
+            "g00991"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_55",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            639.8496093609824,
+            645.8344970889373
+          ],
+          "glyph_ids": [
+            "g00992",
+            "g00993"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_56",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            645.8344970889373,
+            651.819384816892
+          ],
+          "glyph_ids": [
+            "g00994"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_57",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            651.819384816892,
+            656.523287580496
+          ],
+          "glyph_ids": [
+            "g00995"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_58",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            656.523287580496,
+            661.2271903441
+          ],
+          "glyph_ids": [
+            "g00996"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_59",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            661.2271903441,
+            666.2745934031257
+          ],
+          "glyph_ids": [
+            "g00997"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_60",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            666.2745934031257,
+            675.6912794007125
+          ],
+          "glyph_ids": [
+            "g00998"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_61",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            675.6912794007125,
+            680.2528199454155
+          ],
+          "glyph_ids": [
+            "g00999"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_62",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            680.2528199454155,
+            684.9567227090195
+          ],
+          "glyph_ids": [
+            "g01000"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_63",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            684.9567227090195,
+            691.1261777779853
+          ],
+          "glyph_ids": [
+            "g01001",
+            "g01002"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_64",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            691.1261777779853,
+            696.5461639099966
+          ],
+          "glyph_ids": [
+            "g01003"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_65",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            696.5461639099966,
+            705.1300994867895
+          ],
+          "glyph_ids": [
+            "g01004"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_66",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            705.1300994867895,
+            714.4788241811486
+          ],
+          "glyph_ids": [
+            "g01005"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_67",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            714.4788241811486,
+            724.9137128771981
+          ],
+          "glyph_ids": [
+            "g01006",
+            "g01007"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_1_68",
+          "line_id": "line_answer_1",
+          "chunk_id": "c_answer_1",
+          "column_id": "main",
+          "band": [
+            724.9137128771981,
+            734.8372567687899
+          ],
+          "glyph_ids": [
+            "g01008"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_2_0",
+          "line_id": "line_answer_2",
+          "chunk_id": "c_answer_2",
+          "column_id": "main",
+          "band": [
+            313.7834558816333,
+            322.1286569060927
+          ],
+          "glyph_ids": [
+            "g01009"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_2_1",
+          "line_id": "line_answer_2",
+          "chunk_id": "c_answer_2",
+          "column_id": "main",
+          "band": [
+            322.1286569060927,
+            332.31231311240475
+          ],
+          "glyph_ids": [
+            "g01010",
+            "g01011"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_2_2",
+          "line_id": "line_answer_2",
+          "chunk_id": "c_answer_2",
+          "column_id": "main",
+          "band": [
+            332.31231311240475,
+            343.0342757485229
+          ],
+          "glyph_ids": [
+            "g01012"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_2_3",
+          "line_id": "line_answer_2",
+          "chunk_id": "c_answer_2",
+          "column_id": "main",
+          "band": [
+            343.0342757485229,
+            351.84466335909343
+          ],
+          "glyph_ids": [
+            "g01013"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        },
+        {
+          "id": "u_answer_2_4",
+          "line_id": "line_answer_2",
+          "chunk_id": "c_answer_2",
+          "column_id": "main",
+          "band": [
+            351.84466335909343,
+            354.9707116461953
+          ],
+          "glyph_ids": [
+            "g01014"
+          ],
+          "shape_ids": [],
+          "camera_break_before": false
+        }
+      ]
+    }
+  ],
+  "answer_step_id": "answer"
+}

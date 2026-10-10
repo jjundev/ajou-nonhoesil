@@ -1,0 +1,14 @@
+{
+  "id": "write_mistake",
+  "path": "assets/voice/write_mistake-ce91ec29c2d19521.wav",
+  "samples": 433223,
+  "rate": 24000,
+  "key": "ce91ec29c2d1952128b4bcbc3369ee07a87650867fe9fb4878de3e693f1debe2",
+  "sha256": "7bfcf1fe77458b022644b4941ad8e29867c8d36e25c691a6ea78b501c2b9833a",
+  "output_sha256": "7bfcf1fe77458b022644b4941ad8e29867c8d36e25c691a6ea78b501c2b9833a",
+  "usage": {
+    "promptTokenCount": 102,
+    "candidatesTokenCount": 451,
+    "totalTokenCount": 553
+  }
+}

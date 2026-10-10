@@ -1,0 +1,8 @@
+Use case: stylized-concept.
+Asset type: reusable transparent PNG pencil sprite for an educational electronics PDF solution video.
+Primary request: Design ONE elegant, slim yellow wooden graphite pencil, isolated on a genuinely transparent background, ready to animate as a writing pointer over white mathematical worksheets.
+Subject and materials: classic hexagonal golden-yellow painted wooden pencil, subtle ochre side facet, pale exposed sharpened wood, crisply defined short dark graphite tip; a restrained silver metal ferrule and small muted dusty-pink eraser at the opposite end. No branding or lettering.
+Style: refined clean 2.5D editorial illustration with subtle volume, crisp silhouette and restrained highlights, readable when scaled to approximately 160-200 pixels long. Grown-up educational design, not a toy, not photorealistic, not an emoji.
+Composition: square canvas. One entire pencil positioned diagonally with its graphite point toward the lower left and eraser toward the upper right, about 45 degrees. Keep the full pencil uncropped with a generous transparent margin on all sides. The pencil must be slender and straight. The graphite point must be unmistakable and the exact endpoint unobstructed.
+Lighting: softly shaded facets on the object only. NO cast shadow, NO glow.
+Constraints: real alpha transparency. ONE pencil only; no hands, no paper, no written marks, no motion lines, no labels, no watermark, no decorative objects, no border, no baked checkerboard. Preserve clean alpha edges for composition over a white PDF.

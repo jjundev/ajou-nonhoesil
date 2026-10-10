@@ -1,0 +1,2 @@
+- q-prio-exam: 기출3 — 8×3 우선순위 인코더 — 여러 비트가 켜진 입력.mp4 (46178e3652a00d1b4fbdc70bd25331e79b0bb8fa40042a7dff2611e102c1a30c)
+- q-demux-from-dec-graded: 기출12 — 디코더로 DMUX 만들기와 두 회로의 차이.mp4 (30b7a0eb1e6b811d29e3f392b257f9cb1f35758e35d1052f1adca69756f47e3c)

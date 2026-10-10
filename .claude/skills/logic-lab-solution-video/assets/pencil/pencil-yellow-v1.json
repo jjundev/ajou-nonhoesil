@@ -1,0 +1,28 @@
+{
+  "file": "pencil-yellow-v1.png",
+  "width": 1254,
+  "height": 1254,
+  "mode": "RGBA",
+  "alpha_extrema": [
+    0,
+    255
+  ],
+  "visible_bounds_px": [
+    21,
+    97,
+    1210,
+    1212
+  ],
+  "sha256": "8f09ff6af2689c9cb50bab4382c4d18a46639312ea8d2edf42ad82c774d20269",
+  "orientation": "graphite tip lower left; eraser upper right",
+  "generation_method": "built-in image_gen",
+  "prompt_file": "pencil-yellow-v1.prompt.txt",
+  "tip_px": [
+    114,
+    1171
+  ],
+  "end_px": [
+    1110,
+    107
+  ]
+}
