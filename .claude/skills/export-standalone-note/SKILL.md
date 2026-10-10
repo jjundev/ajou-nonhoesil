@@ -5,8 +5,8 @@ description: 복습노트 HTML(실험설명·기출문제·기출풀이)을 파�
 
 # export-standalone-note
 
-`복습노트/<실험NN>/` 의 HTML 은 `assets/`(KaTeX·Pretendard·widgets.js)와
-`figures/` 를 상대경로로 부른다. 이 스킬은 그것들을 전부 인라인한 단일 파일을 만든다.
+`복습노트/<실험NN>/` 의 HTML 은 `자료/assets/`(KaTeX·Pretendard·widgets.js)와
+`자료/figures/` 를 상대경로로 부른다. 이 스킬은 그것들을 전부 인라인한 단일 파일을 만든다.
 원본 `복습노트/` 는 건드리지 않는다.
 
 ## 실행

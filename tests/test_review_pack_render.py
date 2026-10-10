@@ -13,7 +13,7 @@ def test_assemble_keeps_solution_and_links(tmp_path):
     assert '실험04_실험설명.html#t-mux' in review
     assert '새 연습' in review
     assert paths['audit'].is_file()
-    assert (tmp_path/'stage/assets/vendor/katex/katex.min.js').is_file()
+    assert (tmp_path/'stage/자료/assets/vendor/katex/katex.min.js').is_file()
 
 def test_biology_navigation_and_templates(tmp_path):
     paths=assemble(fixture(),RUN,tmp_path/'stage',ASSETS)

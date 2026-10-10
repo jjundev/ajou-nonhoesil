@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 from .sources import inventory
-from .manifest import load_manifest
+from .manifest import load_manifest, DATA
 from .render import assemble
 from .html2md import convert_pack
 from .checks import check_pack
@@ -58,7 +58,7 @@ def main(argv=None):
             if errors:raise ValueError(chr(10).join(errors))
             print('OK '+str(args.folder))
         else:
-            stage_data=load_manifest(args.stage/'manifest.json')
+            stage_data=load_manifest(args.stage/DATA/'manifest.json')
             if stage_data['experiment']!=args.experiment:raise ValueError('Experiment mismatch')
             target=args.root/'복습노트'/config.experiment_folder_name(args.experiment)
             backup=publish(args.stage,target,args.root)

@@ -5,7 +5,7 @@ from collections import Counter
 from urllib.parse import unquote,urlsplit
 import re
 from scripts.lab.boolexpr import variables,eval_boolean
-from .manifest import load_manifest,output_names
+from .manifest import load_manifest,output_names,data_dir,DATA
 from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
@@ -18,10 +18,14 @@ def boolean_equivalent(left,right):
 
 def check_pack(folder):
     folder=Path(folder)
-    try:m=load_manifest(folder/'manifest.json')
+    if not (folder/DATA).is_dir():return ['Missing data folder: '+DATA+'/']
+    try:m=load_manifest(folder/DATA/'manifest.json')
     except (ValueError,OSError) as e:return [str(e)]
     workbook=m.get('review_presentation_version')==2
     names=output_names(m['experiment'],review_presentation_version=m.get('review_presentation_version'));errors=[];trees={}
+    # 저장 규칙: 팩의 자료는 자료/ 안에 둔다. 루트에 남은 옛 위치(assets·evidence·figures·JSON)를 막는다.
+    # 사용자가 따로 둔 파일(publish 가 보존한다)은 건드리지 않는다.
+    errors+=['Pack data outside '+DATA+'/: '+n for n in ('assets','evidence','figures','manifest.json','authoring-index.json') if (folder/n).exists()]
     bank_errors=check_bank_import(folder,m)
     errors.extend(bank_errors)
     if not bank_errors:
@@ -70,7 +74,7 @@ def check_pack(folder):
             if len(details)<2:errors.append(row['id']+': missing hint/solution')
             for topic in row['topics']:
                 if not any(n.tag=='a' and unquote(n.attrs.get('href','')).endswith('#'+topic) for n in nodes[0].walk()):errors.append(row['id']+': missing concept link '+topic)
-    for css in (folder/'assets').rglob('*.css'):
+    for css in (folder/DATA/'assets').rglob('*.css'):
         text=css.read_text(encoding='utf-8')
         for url in re.findall(r'url\([\x22\x27]?([^\)\x22\x27]+)',text):
             if url.startswith('data:'):continue

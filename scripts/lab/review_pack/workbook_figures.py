@@ -7,12 +7,13 @@ import re
 import struct
 from .workbook_content import _strict_json, _within
 from .bank_index import build_authoring_index
+from .manifest import data_dir
 
 KEYS={'id','question_id','role','svg','png','svg_sha256','png_sha256','w_mm','h_mm',
       'source_asset_ids','source_refs','derivation','answer_exposure','review_status','review_notes'}
 
 def check_redrawn_figures(folder, manifest, *, require_review=False):
-    errors=[]
+    errors=[];folder=data_dir(folder)
     try:
         obj=_strict_json(_within(folder,manifest['figure_manifest']))
         if not isinstance(obj,dict) or set(obj)!={'schema_version','figures'} or type(obj['schema_version']) is not int or obj['schema_version']!=1 or not isinstance(obj['figures'],list):

@@ -89,3 +89,13 @@ def test_work_table_patch_anchor_loss_is_rejected():
     with pytest.raises(ValueError): apply_local_patches(text.replace(anchor, '// gone'), 'problem.html')
     with pytest.raises(ValueError): apply_local_patches(text + '\n' + anchor, 'problem.html')   # 두 번 나와도 거부
     assert set(TEMPLATE_PATCHES) == {'problem.html'}
+
+def test_local_patch_waits_for_image_load_not_decode(tmp_path):
+    # 프레임을 그리지 않는 문서(헤드리스 인쇄·숨은 탭)에서는 화면 밖 그림의 decode() 가 끝나지 않아
+    # KaTeX·쪽 맞춤 전에 멈췄다(2026-10-09 실험02 해설지). 크기는 load 로 정해지므로 load 만 기다린다.
+    m, run = create_workbook_run(tmp_path)
+    content = load_workbook_content(m, run)
+    for mode in ('problems', 'answers'):
+        text = render_workbook_html(build_workbook_data(m, content, mode), ASSETS)
+        assert 'img.decode()' not in text
+        assert "addEventListener('load'" in text

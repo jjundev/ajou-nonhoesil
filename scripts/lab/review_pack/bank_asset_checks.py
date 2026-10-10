@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 from urllib.parse import unquote,urlsplit
 from .bank_index import build_authoring_index
-from .manifest import output_names
+from .manifest import output_names, data_dir
 from .question_bank import load_question_bank
 from .question_bank_sources import _evidence_path
 from .sources import file_sha256
@@ -17,7 +17,7 @@ def check_bank_problem_assets(folder,manifest):
     folder=Path(folder);errors=[]
     try:
         binding=manifest['bank_import']
-        bank=load_question_bank(_evidence_path(folder,binding['snapshot_path']))
+        bank=load_question_bank(_evidence_path(data_dir(folder),binding['snapshot_path']))
         index=build_authoring_index(bank,binding['sha256'])
         allowed={q['question_id']:set(q['safe_problem_asset_ids']) for q in index['questions']}
         by_hash={}

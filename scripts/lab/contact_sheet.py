@@ -11,6 +11,11 @@
   - 공란  → 거부한다. 시험하지 않은 행의 사진이 있다는 것은 파일명이나 기록 중
             하나가 틀렸다는 뜻이므로 조용히 만들지 않는다.
 
+값을 켜짐·꺼짐으로 옮길 때는 LED 극성을 본다. 결선도 완성본 사이드카에 `0 이면 켜짐`
+으로 적힌 출력(Active Low — 실험05 의 74HC42)은 `0` 이 켜짐이다. 극성은
+`photo_label.led_order` 와 같은 곳에서 읽는다 — 두 곳이 따로 정하면 사진 이름과 캡션이
+서로 반대로 갈린다(2026-10-09 실험05 1-2 시트 캡션이 전부 뒤집혀 나왔다).
+
 노션 무료 플랜의 업로드 상한(5 MB)을 넘지 않도록 저장 후 크기를 검사한다.
 
 사용:
@@ -36,7 +41,8 @@ from . import config, md
 from .photo_names import FILE as _FILE, SIDE as _SIDE, item_token
 
 DEFAULT_TILE_W = 1000    # 타일 폭(px). 타일 높이는 그 항목 사진의 비율에서 정한다
-CAPTION_H = 72
+CAPTION_H = 72          # 한 줄 캡션 띠 높이. 줄이 늘면 _caption_height 가 키운다
+CAPTION_PAD = 20        # 캡션 좌우 여백
 GAP = 0                  # 타일 사이 여백. 2026-09-18 실험03 시트에서 사용자가 없앴다
 MAX_BYTES = 5 * 1024 * 1024
 COLS = 2
@@ -91,6 +97,7 @@ def _slug(title: str) -> str:
     name = re.sub(r"(\d)-input", r"\1입력", name)
     name = re.sub(r"\bgate\b", "", name, flags=re.I)
     name = re.sub(r"([가-힣])\s+([가-힣])", r"\1\2", name)   # 복합 논리회로 → 복합논리회로
+    name = re.sub(r"[()]", "", name)   # 괄호가 남으면 md 그림 링크 `](…)` 가 거기서 끊긴다(실험05 1-2 제목)
     return re.sub(r"\s+", "_", name.strip())
 
 
@@ -132,7 +139,7 @@ def _match_item(token: str, records: list[ItemRecord]) -> ItemRecord | None:
     return hits[0] if len(hits) == 1 else None
 
 
-def _caption(rec: ItemRecord, bits: str) -> str:
+def _caption(rec: ItemRecord, bits: str, active_low: frozenset = frozenset()) -> str:
     if len(bits) != len(rec.inputs):
         raise ContactSheetError(
             f"입력이 {len(rec.inputs)}개인데 파일명 비트가 `{bits}` 다")
@@ -152,8 +159,18 @@ def _caption(rec: ItemRecord, bits: str) -> str:
                 f"`{bits}` 확인 칸 `{check}` 에서 출력 {len(rec.outputs)}개를 읽지 못했다")
         states = vals
     ins = " ".join(f"{n}={b}" for n, b in zip(rec.inputs, bits))
-    outs = " · ".join(f"{n} {'켜짐' if s == '1' else '꺼짐'}" for n, s in zip(rec.outputs, states))
+    on = {n: ("0" if n in active_low else "1") for n in rec.outputs}
+    outs = " · ".join(f"{n} {'켜짐' if s == on[n] else '꺼짐'}" for n, s in zip(rec.outputs, states))
     return f"{ins}  →  {outs}"
+
+
+def _active_low(experiment: int, token: str) -> frozenset:
+    """그 항목에서 `0` 이 켜짐인 출력 이름들. 사이드카가 없으면 전부 Active High 로 본다."""
+    from .photo_label import LabelError, led_order
+    try:
+        return frozenset(l.signal for l in led_order(experiment, token) if l.active_low)
+    except LabelError:
+        return frozenset()
 
 
 def plan(experiment: int, photo_dir: Path | None = None,
@@ -202,13 +219,14 @@ def plan(experiment: int, photo_dir: Path | None = None,
         if rec is None:
             pl.problems.append(f"항목 토큰 `{token}` 에 맞는 기록.md 항목이 없다")
         else:
+            low = _active_low(experiment, rec.token)
             seen = set()
             for bits, p in photos:
                 if bits in seen:
                     pl.problems.append(f"{p.name}: `{bits}` 조합 사진이 둘 이상이다")
                 seen.add(bits)
                 try:
-                    pl.captions.append(_caption(rec, bits))
+                    pl.captions.append(_caption(rec, bits, low))
                 except ContactSheetError as e:
                     pl.problems.append(f"{p.name}: {e}")
                     pl.captions.append(None)
@@ -218,15 +236,33 @@ def plan(experiment: int, photo_dir: Path | None = None,
     return plans, loose, skipped
 
 
-def _tile(path: Path, caption: str, font, tile_w: int, tile_h: int) -> Image.Image:
+def _wrap(caption: str, font, tile_w: int) -> list[str]:
+    """타일 폭에 안 들어가면 ` · ` 자리에서 줄을 바꾼다 — 출력이 열 개인 표(실험05 1-2)는
+    한 줄 캡션이 타일 폭의 두 배라 뒤가 잘렸다(2026-10-09)."""
+    width = tile_w - 2 * CAPTION_PAD
+    lines: list[str] = []
+    for piece in caption.split(" · "):
+        if lines and font.getlength(lines[-1] + " · " + piece) <= width:
+            lines[-1] += " · " + piece
+        else:
+            lines.append(piece)
+    return lines
+
+
+def _caption_height(lines: int, font) -> int:
+    return CAPTION_H + (lines - 1) * round(font.size * 1.35)
+
+
+def _tile(path: Path, caption: str, font, tile_w: int, tile_h: int, cap_h: int) -> Image.Image:
     im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
     im.thumbnail((tile_w, tile_h))
-    tile = Image.new("RGB", (tile_w, tile_h + CAPTION_H), "white")
-    tile.paste(im, ((tile_w - im.width) // 2, CAPTION_H + (tile_h - im.height) // 2))
+    tile = Image.new("RGB", (tile_w, tile_h + cap_h), "white")
+    tile.paste(im, ((tile_w - im.width) // 2, cap_h + (tile_h - im.height) // 2))
     d = ImageDraw.Draw(tile)
-    d.rectangle((0, 0, tile_w, CAPTION_H), fill=(30, 30, 30))
-    tw = d.textlength(caption, font=font)
-    d.text(((tile_w - tw) / 2, 14), caption, fill="white", font=font)
+    d.rectangle((0, 0, tile_w, cap_h), fill=(30, 30, 30))
+    for k, line in enumerate(_wrap(caption, font, tile_w)):
+        tw = d.textlength(line, font=font)
+        d.text(((tile_w - tw) / 2, 14 + k * round(font.size * 1.35)), line, fill="white", font=font)
     return tile
 
 
@@ -278,14 +314,15 @@ def build(plans: list[Plan], tile_w: int = DEFAULT_TILE_W,
     for pl in plans:
         pl.out.parent.mkdir(exist_ok=True)
         tile_h = _tile_height(pl.photos, tile_w)
-        th = tile_h + CAPTION_H
+        cap_h = _caption_height(max(len(_wrap(c, font, tile_w)) for c in pl.captions), font)
+        th = tile_h + cap_h
         for out, photos, captions in _sheet_outputs(pl, per_sheet):
             rows = -(-len(photos) // COLS)
             sheet = Image.new("RGB", (COLS * tile_w + (COLS + 1) * GAP, rows * th + (rows + 1) * GAP), "white")
             for k, ((_, p), cap) in enumerate(zip(photos, captions)):
                 x = GAP + (k % COLS) * (tile_w + GAP)
                 y = GAP + (k // COLS) * (th + GAP)
-                sheet.paste(_tile(p, cap, font, tile_w, tile_h), (x, y))
+                sheet.paste(_tile(p, cap, font, tile_w, tile_h, cap_h), (x, y))
             results.append((out, _save_under_limit(sheet, out)))
     return results
 
