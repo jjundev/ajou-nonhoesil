@@ -33,7 +33,7 @@ def synthetic_pack(repo,name,problems,table=None,answer_table=None):
     """Write a minimal pack discover() accepts: 복습노트/<name>/자료/manifest.json plus the problem and answer PDFs.
     problems: [dict(id,kind,title)] in manifest order. A page per problem carries its label badge (KINDS[kind]+n, n =
     position in the manifest) and title in the header. table goes in the problem page's work area (300,200), answer_table
-    in the answer page's condition panel (34,200); both are a grid of 60x24 cells. Calling again with another order
+    in the answer page's condition panel (34,200); both are a grid of 60x24 cells (a cell text with '\n' is drawn as wrapped lines). Calling again with another order
     rewrites the manifest and both PDFs, so labels are recomputed the way a rebuilt pack would."""
     import fitz
     from solution_video.sources import DATA_DIR,KINDS
@@ -50,6 +50,9 @@ def synthetic_pack(repo,name,problems,table=None,answer_table=None):
                 for c,text in enumerate(row):
                     cell=fitz.Rect(x0+60*c,200+24*r,x0+60*(c+1),200+24*(r+1))
                     page.draw_rect(cell,color=(0,0,0),width=.8)
-                    page.insert_text((cell.x0+4,cell.y0+16),text,fontname='korea',fontsize=10)
+                    lines=text.split('\n')
+                    if len(lines)==1: page.insert_text((cell.x0+4,cell.y0+16),text,fontname='korea',fontsize=10)
+                    else:  # a wrapped cell: extract() reads it back as 'AND\n출력'
+                        for k,line in enumerate(lines): page.insert_text((cell.x0+4,cell.y0+9+10*k),line,fontname='korea',fontsize=8)
         doc.save(pack/(name+'_'+suffix+'.pdf')); doc.close()
     return pack

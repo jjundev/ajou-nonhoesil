@@ -35,39 +35,49 @@ def _pages(pdf,problems):
                     found[pid]=dict(snapshot=str(pdf.resolve()),page_index=idx,width_pt=pg.rect.width,height_pt=pg.rect.height)
     return found
 
+def _panel_clip(page):
+    """The gray condition panel's actual PDF rectangle (it can widen during fitting); the layout's fixed one when none is drawn."""
+    import fitz
+    panels=[draw['rect'] for draw in page.get_drawings() if draw.get('fill') and
+        max(abs(a-b) for a,b in zip(draw['fill'],(246/255,246/255,243/255)))<.002]
+    return max(panels,key=lambda r:r.get_area()) if panels else fitz.Rect(22,60,286,573)
 def _conditions(ref,with_work=False):
     """Condition panel text. The workbook moves the problem's own table from the problem page's work area into the
     answer page's panel (with a '조건' heading), so the problem side also counts its work-area text, Hint column excluded."""
     import fitz
     with fitz.open(ref['snapshot']) as d:
         p=d[ref['page_index']]
-        # The gray condition panel can widen during fitting; use its actual PDF rectangle.
-        panels=[draw['rect'] for draw in p.get_drawings() if draw.get('fill') and
-            max(abs(a-b) for a,b in zip(draw['fill'],(246/255,246/255,243/255)))<.002]
-        clip=max(panels,key=lambda r:r.get_area()) if panels else fitz.Rect(22,60,286,573)
+        clip=_panel_clip(p)
         text=p.get_text(clip=clip)
         if with_work:
             layout=page_layout(p.rect.width,p.rect.height)
             hint=[w[0] for w in p.get_text('words') if w[4]=='Hint' and w[0]>clip.x1]
             text+=p.get_text(clip=fitz.Rect(clip.x1,layout['header_bottom'],min(hint)-2 if hint else p.rect.width,layout['body_bottom']))
     return re.sub(r'\s+','',_norm(text))
-def _tables(ref):
-    """Cell matrices (NFC, whitespace stripped, None -> '') of every table PyMuPDF finds on the page. A page whose tables
-    cannot be read counts as having none: this check must never block an input the character comparison already accepted."""
+def _tables(ref,panel=False):
+    """Cell matrices (NFC, whitespace stripped, None -> '') of the tables PyMuPDF finds on the page; panel=True keeps only
+    those inside the condition panel. A page whose tables cannot be read counts as having none: this check must never
+    block an input the character comparison already accepted."""
     import fitz
     try:
         with fitz.open(ref['snapshot']) as d:
-            return [[[_squash(cell or '') for cell in row] for row in t.extract()] for t in d[ref['page_index']].find_tables().tables]
+            page=d[ref['page_index']]; area=None
+            if panel: c=_panel_clip(page); area=fitz.Rect(c.x0-2,c.y0-2,c.x1+2,c.y1+2)
+            return [[[_squash(cell or '') for cell in row] for row in t.extract()]
+                for t in page.find_tables().tables if area is None or area.contains(fitz.Rect(t.bbox))]
     except Exception: return []
 def _table_mismatch(problem_ref,answer_ref):
     """The character multiset ignores order, so a transposed or row-swapped table slips through it. Each problem table is
-    held against the answer tables of the same shape (same row lengths): one of them must match cell for cell. No table of
-    that shape on the answer page means nothing to compare, so it is skipped. Returns 'table <i> row <r>' (1-based, the
-    first row that differs from the closest candidate) or None."""
-    answers=_tables(answer_ref)
+    held against the tables of the same shape (same row lengths) inside the answer page's condition panel — the only place
+    the problem's table is copied to, so a solution-step table cannot vouch for a damaged copy: one of them must match cell
+    for cell. No table of that shape in the panel means nothing to compare, so it is skipped (a pure transpose of a
+    non-square table has another shape and is not caught here; only changed characters are, by the multiset). Several
+    same-shape panel tables: matching any one passes. Returns 'table <i> row <r>' (1-based, the first row that differs from
+    the closest candidate) or None."""
+    answers=_tables(answer_ref,panel=True)
     for i,table in enumerate(_tables(problem_ref),1):
         shape=[len(row) for row in table]; same=[a for a in answers if [len(row) for row in a]==shape]
-        if not same or not any(cell for row in table for cell in row) or table in same: continue
+        if not same or table in same: continue
         close=min(same,key=lambda a:sum(x!=y for x,y in zip(a,table)))
         return 'table %d row %d'%(i,next(r for r,(x,y) in enumerate(zip(close,table),1) if x!=y))
     return None

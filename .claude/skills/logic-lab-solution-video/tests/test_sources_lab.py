@@ -2,6 +2,22 @@ from fixtures import *
 import json,shutil,unicodedata
 from solution_video.sources import discover,freeze_sources,parse_selector,KINDS,DATA_DIR
 from solution_video.contracts import InputError
+def draw_rows(page,x0,y0,rows,w=60,h=24):
+    """rows of cells; a cell is a text or (columns spanned, text). A spanned cell has no inner line, so extract() reads None."""
+    import fitz
+    for r,row in enumerate(rows):
+        c=0
+        for cell in row:
+            span,text=cell if isinstance(cell,tuple) else (1,cell)
+            rect=fitz.Rect(x0+w*c,y0+h*r,x0+w*(c+span),y0+h*(r+1)); page.draw_rect(rect,color=(0,0,0),width=.8)
+            if text: page.insert_text((rect.x0+4,rect.y0+16),text,fontname='korea',fontsize=10)
+            c+=span
+def redraw(pack,suffix,build):
+    """Run build(page) on every page of the pack's PDF and save it in place."""
+    import fitz
+    pdf=pack/('실험06_'+suffix+'.pdf'); doc=fitz.open(pdf)
+    for page in doc: build(page)
+    doc.save(pack/'tmp.pdf'); doc.close(); (pack/'tmp.pdf').replace(pdf)
 class LabSourceTests(Sandbox):
     def test_kinds_match_review_pack(self):
         sys.path.insert(0,str(REPO))
@@ -120,10 +136,68 @@ class LabSourceTests(Sandbox):
         # 글자는 같지만 모양이 다르면(3x2 대 2x3) 같은 표로 볼 근거가 없어 건너뛴다.
         pairs,failures=self.tables_pack([['A','B'],['0','1'],['1','0']],[['A','B','0'],['1','1','0']])
         self.assertEqual(failures,[]); self.assertEqual([p['problem_id'] for p in pairs],['q-a'])
+    def test_table_check_survives_find_tables_error(self):
+        # 표를 읽다 예외가 나면 그 쪽은 표가 없는 것으로 보고 건너뛴다: 글자 대조를 이미 통과한 입력을 새로 막지 않는다.
+        import fitz
+        from unittest.mock import patch
+        swapped=([['A','B'],['0','1'],['1','0']],[['A','B'],['1','0'],['0','1']])
+        pairs,failures=self.tables_pack(*swapped)
+        self.assertEqual(pairs,[]); self.assertIn('table rows differ',failures[0]['reason'])
+        with patch.object(fitz.Page,'find_tables',side_effect=RuntimeError('boom')):
+            pairs,failures=self.tables_pack(*swapped)
+        self.assertEqual(failures,[]); self.assertEqual([p['problem_id'] for p in pairs],['q-a'])
+    def test_merged_cell_table_row_swap_is_rejected(self):
+        # 병합 칸은 extract() 가 None 으로 준다. None 을 '' 로 바꾸지 않으면 TypeError 가 삼켜져 검사가 조용히 꺼진다.
+        head=[(2,'H'),'C']
+        def tables(problem_body,answer_body):
+            def hook(pack):
+                redraw(pack,'기출문제',lambda pg:draw_rows(pg,300,200,[head]+problem_body))
+                redraw(pack,'기출풀이',lambda pg:draw_rows(pg,34,200,[head]+answer_body))
+            return self.tables_pack(None,None,hook)
+        pairs,failures=tables([['0','1','2'],['3','4','5']],[['3','4','5'],['0','1','2']])
+        self.assertEqual(pairs,[]); self.assertIn('table rows differ: q-a table 1 row 2',failures[0]['reason'])
+        pairs,failures=tables([['0','1','2'],['3','4','5']],[['0','1','2'],['3','4','5']])
+        self.assertEqual(failures,[]); self.assertEqual(len(pairs),1)
+        from solution_video.sources import _tables
+        read=_tables(pairs[0]['problem'])  # 빈 목록이면 읽기가 조용히 실패한 것이다
+        self.assertEqual(read,[[['H','','C'],['0','1','2'],['3','4','5']]])
+    def test_wrapped_header_cell_matches_unwrapped(self):
+        # 해설지 헤더 칸이 두 줄로 접혀 extract() 가 'AND\n출력' 을 주어도 줄 바꿈·공백은 값이 아니다.
+        import fitz
+        pairs,failures=self.tables_pack([['AND출력','B'],['0','1']],[['AND\n출력','B'],['0','1']])
+        self.assertEqual(failures,[]); self.assertEqual(len(pairs),1)
+        with fitz.open(pairs[0]['answer']['snapshot']) as d:
+            self.assertEqual(d[0].find_tables().tables[0].extract()[0][0],'AND\n출력')  # 접힌 칸이 실제로 만들어졌다
+    def test_solution_table_cannot_vouch_for_a_swapped_panel_copy(self):
+        # 후보는 해설지 조건 패널 안의 표뿐이다: 풀이 단계에 문제지와 같은 표가 있어도 패널 복사본이 바뀌면 거부한다.
+        import fitz
+        problem=[['A','B'],['0','1'],['1','0']]; swapped=[['A','B'],['1','0'],['0','1']]
+        def answer_page(panel_rows,step_rows):
+            def hook(pack):
+                def build(pg):
+                    pg.draw_rect((22,59,286,572),fill=(246/255,246/255,243/255),color=None)
+                    draw_rows(pg,34,200,panel_rows); draw_rows(pg,330,200,step_rows)
+                redraw(pack,'기출풀이',build)
+            return self.tables_pack(problem,None,hook)
+        pairs,failures=answer_page(swapped,problem)
+        self.assertEqual(pairs,[]); self.assertIn('table rows differ: q-a table 1 row 2',failures[0]['reason'])
+        # 반대로 풀이 단계 표가 달라도 패널 복사본이 같으면 통과한다.
+        pairs,failures=answer_page(problem,swapped)
+        self.assertEqual(failures,[]); self.assertEqual(len(pairs),1)
     def test_real_packs_have_no_table_false_positive(self):
-        for n in ['실험01','실험02','실험03','실험04','실험05']:
-            failures=[]; discover(REPO,n,None,failures)
+        from solution_video.sources import _tables
+        expected={'실험01':3,'실험02':0,'실험03':5,'실험04':5,'실험05':8}  # 문제지 표 개수
+        for n,count in expected.items():
+            failures=[]; pairs=discover(REPO,n,None,failures)
             self.assertEqual([f['reason'] for f in failures if 'table rows differ' in f['reason']],[],n)
+            # 오탐이 없다는 말은 표가 실제로 비교됐을 때만 뜻이 있다: 문제지 표마다 해설지 패널에 같은 모양이 있고 하나와 일치한다.
+            total=checked=matched=0
+            for p in pairs:
+                panel=_tables(p['answer'],panel=True)
+                for table in _tables(p['problem']):
+                    same=[a for a in panel if [len(r) for r in a]==[len(r) for r in table]]
+                    total+=1; checked+=bool(same); matched+=table in same
+            self.assertEqual((total,checked,matched),(count,count,count),n)
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])

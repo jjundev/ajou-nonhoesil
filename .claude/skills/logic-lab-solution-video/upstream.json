@@ -327,9 +327,9 @@
   "tests/test_writing_flow.py": "GSAP 경로를 내재화한 assets/runtime 에서",
   "tests/test_media.py": "폰트를 내재화한 assets/fonts 에서",
   "tests/test_cli.py": "전자회로2 복습노트/1002 실데이터에 묶인 테스트 3개 삭제(Task 6 이 실험05 로 대체); 실험05·실험02 prepare 테스트(라벨·경로·figure·전부 실패·범위 폴더·writing mode); 다시 렌더한 팩(자료/·두 단 판형·결함 없음)에 맞춤; 일부만 탈락(종료 코드 0)·전부 탈락(failed, 종료 코드 1)·범위 접두(실험04·실험05 항목마다 자기 실험)·실험 단위 실패 라벨 없음 테스트",
-  "scripts/solution_video/sources.py": "논회실 소스 탐색: 복습노트/실험NN manifest 순서 라벨, 배지+제목 쪽 짝짓기, figure_refs. 풀이 쪽이 문제 표를 조건 패널로 옮기므로 조건 대조는 문제 쪽 작업 영역 글자까지 센 글자 multiset 비교; 짝지은 두 쪽에 input_gate 적용; figure_refs 는 원래 PNG 이름을 유지해 동결; 표는 행·열 순서까지 대조(_table_mismatch: find_tables 행렬, 같은 모양의 해설지 표 중 하나와 일치해야 하고 없으면 건너뜀, 읽기 실패도 건너뜀); 범위에서 겹치는 라벨은 실험NN:라벨 로만 받음; manifest.json·figures/ 를 팩의 자료/(scripts/lab/config.PACK_DATA_DIR) 에서 읽음; discover 실패 레코드에 manifest 순서 라벨(label, 실험 단위 실패는 None); display_label 로 범위 접두 규칙 한 곳",
+  "scripts/solution_video/sources.py": "논회실 소스 탐색: 복습노트/실험NN manifest 순서 라벨, 배지+제목 쪽 짝짓기, figure_refs. 풀이 쪽이 문제 표를 조건 패널로 옮기므로 조건 대조는 문제 쪽 작업 영역 글자까지 센 글자 multiset 비교; 짝지은 두 쪽에 input_gate 적용; figure_refs 는 원래 PNG 이름을 유지해 동결; 표는 행·열 순서까지 대조(_table_mismatch: find_tables 행렬, 해설지 조건 패널(_panel_clip, _conditions 와 공유) 안의 같은 모양 표 중 하나와 일치해야 하고 없으면 건너뜀, 읽기 실패도 건너뜀); 범위에서 겹치는 라벨은 실험NN:라벨 로만 받음; manifest.json·figures/ 를 팩의 자료/(scripts/lab/config.PACK_DATA_DIR) 에서 읽음; discover 실패 레코드에 manifest 순서 라벨(label, 실험 단위 실패는 None); display_label 로 범위 접두 규칙 한 곳",
   "scripts/solution_video/contracts.py": "PagePair 에 label·title·experiments·figure_refs",
-  "tests/test_sources_lab.py": "논회실 신규: 실험05 실데이터 소스 탐색·라벨·NFD(폴더·파일 이름)·figure_refs; 동결 figure 이름 유지; 다시 렌더한 팩(자료/·두 단 판형·결함 없음)에 맞춤; 합성 팩으로 다시 만든 팩의 라벨 재계산 성공 경로; PDF 짝 누락은 문항 단위 실패로 라벨 유지; 표 행·열 바뀜 거부·같은 표 통과·해설지 표 없음/다른 모양 건너뜀·실제 팩 오탐 없음",
+  "tests/test_sources_lab.py": "논회실 신규: 실험05 실데이터 소스 탐색·라벨·NFD(폴더·파일 이름)·figure_refs; 동결 figure 이름 유지; 다시 렌더한 팩(자료/·두 단 판형·결함 없음)에 맞춤; 합성 팩으로 다시 만든 팩의 라벨 재계산 성공 경로; PDF 짝 누락은 문항 단위 실패로 라벨 유지; 표 행·열 바뀜 거부·같은 표 통과·해설지 표 없음/다른 모양 건너뜀·find_tables 예외 건너뜀·병합 칸(None)·접힌 헤더 칸·풀이 단계 표가 패널 복사본을 대신하지 못함·실제 팩 표 개수(3/0/5/5/8)가 모두 비교됨",
   "scripts/solution_video/input_gate.py": "논회실 신규: 원문 LaTeX·답 상자 아래로 잘린 풀이 그림 쪽을 유료 호출 전에 문항 단위로 거름",
   "tests/test_input_gate.py": "논회실 신규: 입력 게이트 합성 PDF·실데이터 검사; 다시 렌더한 팩(자료/·두 단 판형·결함 없음)에 맞춤; 찍어 넣은 원문 LaTeX 가 그 문항만 탈락시키고 실패 레코드에 manifest 순서 라벨이 실림",
   "scripts/solution_video/pdf_pages.py": "문항 풀이 PNG 와 디코딩 픽셀이 같은 PDF 이미지를 figure 도형으로 승격(figure_pixel_hash, export_page figure_refs); 비대상 비교에서 채널 차 2 이하 래스터 잡음 무시(NON_TARGET_TOLERANCE, 반복되는 얇은 표 선)",
@@ -344,7 +344,7 @@
   "references/verification.md": "수용 테스트를 LOGIC_LAB_ACCEPTANCE_BATCH·test_lab_acceptance 로",
   "tests/test_publication.py": "라벨 접두어 파일 이름 테스트 추가; pacing-review 가 게시를 막지 않는 테스트",
   "tests/test_lab_acceptance.py": "논회실 신규: 실험05 실측 batch opt-in 검사(LOGIC_LAB_ACCEPTANCE_BATCH)",
-  "tests/fixtures.py": "defective_pack: 실제 팩 사본에 원문 LaTeX 를 찍어 게이트 실패를 재현(2026-10-09 다시 렌더한 팩은 결함이 없다); synthetic_pack: 순서·표를 마음대로 바꿔 쓰는 합성 팩(manifest·문제/풀이 PDF)"
+  "tests/fixtures.py": "defective_pack: 실제 팩 사본에 원문 LaTeX 를 찍어 게이트 실패를 재현(2026-10-09 다시 렌더한 팩은 결함이 없다); synthetic_pack: 순서·표를 마음대로 바꿔 쓰는 합성 팩(manifest·문제/풀이 PDF, 칸 글자의 \\n 은 접힌 칸)"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
