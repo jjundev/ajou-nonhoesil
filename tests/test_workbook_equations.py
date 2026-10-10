@@ -30,16 +30,23 @@ def test_patch_applies_to_both_templates():
 
 
 @pytest.fixture(scope='module')
-def breaker(tmp_path_factory):
+def chrome():
+    """모듈 하나에 playwright 를 한 번만 띄운다(sync API 는 한 스레드에서 중첩해 시작할 수 없다)."""
     pw = pytest.importorskip('playwright.sync_api')
-    path = _synthetic_pack(tmp_path_factory.mktemp('equations'),
-                           [dict(id='q-eq', original='<p>식</p>', ask='<p>구하세요.</p>')], 'answers')
     with pw.sync_playwright() as driver:
         with driver.chromium.launch(channel='chrome') as browser:
-            page = browser.new_page(viewport={'width': 1280, 'height': 900})
-            page.goto(path.resolve().as_uri())
-            page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
-            yield lambda html: page.evaluate('h => breakEquations(h)', html)
+            yield browser
+
+
+@pytest.fixture(scope='module')
+def breaker(chrome, tmp_path_factory):
+    path = _synthetic_pack(tmp_path_factory.mktemp('equations'),
+                           [dict(id='q-eq', original='<p>식</p>', ask='<p>구하세요.</p>')], 'answers')
+    page = chrome.new_page(viewport={'width': 1280, 'height': 900})
+    page.goto(path.resolve().as_uri())
+    page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
+    yield lambda html: page.evaluate('h => breakEquations(h)', html)
+    page.close()
 
 
 def rows_of(out):
@@ -166,3 +173,38 @@ def test_single_chain_keeps_old_rows(breaker):
     rows = rows_of(out)
     assert len(rows) == 2
     assert rows[1].startswith('&amp;= ')
+
+
+# ---------- 게시본 ----------
+
+def _top_level_commas(tex):
+    """중괄호·소괄호·대괄호 깊이 0 에서 쉼표가 몇 개인지 센다. 백슬래시 뒤 한 글자(`\\,` 같은 간격 명령)는 건너뛴다."""
+    depth = commas = 0
+    it = iter(tex)
+    for ch in it:
+        if ch == '\\':
+            next(it, None)
+        elif ch in '{([':
+            depth += 1
+        elif ch in '})]':
+            depth -= 1
+        elif ch == ',' and depth == 0:
+            commas += 1
+    return commas
+
+
+def test_published_experiment05_has_no_top_level_commas_in_display_math(chrome):
+    """게시본 실험05 해설지의 디스플레이 식에 식 목록 쉼표가 남지 않고, 기출4 의 `O_0 &= ` 행이 있다."""
+    html = Path('복습노트/실험05/실험05_기출풀이.html')
+    page = chrome.new_page(viewport={'width': 1280, 'height': 900})
+    try:
+        page.goto(html.resolve().as_uri())
+        page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
+        texs = page.locator('.katex-display annotation[encoding="application/x-tex"]').evaluate_all(
+            'n => n.map(x => x.textContent)')
+    finally:
+        page.close()
+    assert texs, '디스플레이 식이 하나도 없다 — KaTeX 가 안 돌았다'
+    with_commas = [t for t in texs if _top_level_commas(t)]
+    assert with_commas == [], with_commas[:3]
+    assert any(re.search(r'O_0\s*&=', t) for t in texs), '기출4 의 O_0 행이 aligned 로 나뉘지 않았다'
