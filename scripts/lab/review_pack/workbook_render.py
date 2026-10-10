@@ -93,8 +93,80 @@ function equationTex(tex, parts, prefix) {
   return `\\begin{aligned}${lines.join(' \\\\ ')}\\end{aligned}`;
 }'''
 
-# 원본 스냅샷 위에 덧씌우는 네 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
-LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW),(EQUATION_OLD,EQUATION_NEW)]
+# 맞춤이 끝난 뒤에도 남은 잘림·넘침을 data-overflow 로 알리는 훑기(2026-10-10). 기존 맞춤은 사각지대가 셋이었다.
+#  - fitDisplayMath 는 70% 까지만 줄이고, 그 뒤로 넘치는 식은 `.katex-display` 의 overflow-x 가 눈에 안 띄게 잘랐다.
+#  - fitSolution 의 fits() 는 마지막 풀이 단계만 쟀다(앞 단계가 칸 밖이어도 통과).
+#  - 표는 칸 폭을 넘어도 맞춤이 보지 않았다.
+# 표는 wrap 보다 넓다는 이유만으로는 걸지 않는다(2026-10-10 실험05 q-sa-enc8x3: 11열 표가 2단 흐름의 첫 단을 11px 넘어
+# 단 사이 여백으로 나왔을 뿐 전부 보였다). 실제로 잘리거나 옆 글을 침범할 때만 센다 — 가장 가까운 clip 조상의 오른쪽을
+# 넘거나, `.sol-flow` 가 다단이면 다음 단의 왼쪽(현재 단 오른쪽 + column-gap)을, 단일 단이면 flow 오른쪽을 넘을 때.
+# 식은 `.katex` 블록 자체의 rect 로 재면 안 된다: 줄인 블록은 transform 으로 작아져 늘 박스 안에 있다. `.katex-html`
+# 안쪽 내용의 범위(Range)를 재어 display 박스 오른쪽과 비교한다. 훑기는 `.page--problem` 마다 한 번, 맞춤이 모두 끝난
+# 뒤(overflow.join 직전)에만 돌아 맞춤 도중의 일시적 넘침을 보고하지 않는다. 이미 넘침으로 오른 쪽은 건너뛴다.
+CLIP_HELPER_ANCHOR='async function main() {'
+CLIP_HELPER=r'''// 표가 실제로 잘리거나 옆 단 글을 침범하는가. 오른쪽 가장자리(T)만 본다.
+function tableClipped(wrap) {
+  const tables = [...wrap.querySelectorAll('table')];
+  if (!tables.length) return false;
+  const T = Math.max(...tables.map(t => t.getBoundingClientRect().right));
+  // (a) 가장 가까운 clip 조상(overflow-x 가 visible 이 아닌 요소, wrap 자신 포함)의 오른쪽 안쪽 가장자리를 넘는가
+  for (let el = wrap; el && el !== document.documentElement; el = el.parentElement) {
+    const cs = getComputedStyle(el);
+    if (cs.overflowX === 'visible') continue;
+    if (T > el.getBoundingClientRect().right - parseFloat(cs.borderRightWidth) + 1) return true;
+    break;
+  }
+  // (b) 풀이 흐름 안이면: 다단은 다음 단의 왼쪽(단 오른쪽 + column-gap), 단일 단은 flow 의 오른쪽을 넘는가
+  const flow = wrap.closest('.sol-flow');
+  if (!flow) return false;
+  const cs = getComputedStyle(flow), fr = flow.getBoundingClientRect();
+  const left = fr.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft);
+  const right = fr.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+  const n = parseInt(cs.columnCount, 10) || 1;   // 단일 단은 'auto'
+  let limit = right;
+  if (n > 1) {
+    const gap = cs.columnGap === 'normal' ? parseFloat(cs.fontSize) : parseFloat(cs.columnGap);
+    const colW = (right - left - gap * (n - 1)) / n;
+    const col = Math.min(n - 1, Math.max(0, Math.floor((wrap.getBoundingClientRect().left - left + 1) / (colW + gap))));
+    if (col < n - 1) limit = left + (col + 1) * (colW + gap);   // 다음 단의 왼쪽 가장자리
+  }
+  return T > limit + 1;
+}
+
+// 맞춤이 끝난 쪽에 잘린 식·잘리거나 옆 단을 침범한 표·칸 밖으로 나간 풀이 단계가 남았는가
+function hasClippedContent(page) {
+  for (const d of page.querySelectorAll('.katex-display')) {
+    const k = d.firstElementChild;
+    if (!k) continue;
+    const range = document.createRange();
+    range.selectNodeContents(k.querySelector('.katex-html') || k);
+    if (range.getBoundingClientRect().right > d.getBoundingClientRect().right + 1) return true;
+  }
+  for (const w of page.querySelectorAll('.table-wrap')) {
+    if (tableClipped(w)) return true;
+  }
+  for (const flow of page.querySelectorAll('.sol-flow')) {
+    const f = flow.getBoundingClientRect();
+    for (const step of flow.querySelectorAll('.sol-step')) {
+      const s = step.getBoundingClientRect();
+      if (s.bottom > f.bottom + 1 || s.right > f.right + 1) return true;
+    }
+  }
+  return false;
+}
+
+'''
+CLIP_SCAN_ANCHOR="    document.body.dataset.overflow = overflow.join(',');"
+CLIP_SCAN=r'''    for (const page of book.querySelectorAll('.page--problem')) {   // 맞춤이 끝난 뒤 한 번 훑는다
+      if (overflow.includes(page.id) || !hasClippedContent(page)) continue;
+      page.dataset.overflow = '';
+      overflow.push(page.id);
+    }
+'''
+
+# 원본 스냅샷 위에 덧씌우는 여섯 건. 스냅샷이 바뀌어 anchor 가 사라지면 조용히 넘기지 않고 실패한다.
+LOCAL_PATCHES=[(CONDITIONS_OLD,CONDITIONS_NEW),(TABLE_ANCHOR,TABLE_CSS+TABLE_ANCHOR),(IMAGE_WAIT_OLD,IMAGE_WAIT_NEW),(EQUATION_OLD,EQUATION_NEW),
+               (CLIP_HELPER_ANCHOR,CLIP_HELPER+CLIP_HELPER_ANCHOR),(CLIP_SCAN_ANCHOR,CLIP_SCAN+CLIP_SCAN_ANCHOR)]
 
 MOVE_TABLES=("  const moved = [...panel.querySelectorAll('.work-table')];   // 학생이 채울 표는 좌측 패널이 아니라 풀이 칸 맨 위로\n"
              "  if (moved.length) {\n"
