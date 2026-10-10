@@ -115,7 +115,11 @@ def test_authoring_sources_keep_new_intro(tmp_path):
     assert json.loads((copy/'manifest.json').read_text())['topics'][0]['title'] == TITLE
     code = ('import sections; from pathlib import Path; '
             'assert sections.S["t-start"].strip() == Path("sections/t-start.html").read_text().strip(); '
-            f'assert sections.TOPICS[0][1] == {TITLE!r}')
+            f'assert sections.TOPICS[0][1] == {TITLE!r}; '
+            'import json; m=json.loads(Path("manifest.json").read_text()); '
+            'manual=next(s["id"] for s in m["sources"] if s["kind"]=="manual"); '
+            'assert sections.TOPICS[0][3] == [r["pdf_page"] for r in m["topics"][0]["sources"] if r["source_id"]==manual]; '
+            'assert sections.TOPICS[0][4] == m["topics"][0]["md_notes"]')
     subprocess.run([sys.executable, '-c', code], cwd=src/'실험05', check=True)
 
 
