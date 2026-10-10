@@ -110,8 +110,11 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
     if MD_NOTE not in notes:
         manifest['topics'][0]['md_notes'] = (notes+'\n\n'+MD_NOTE).strip()
     manifest['checks'] = {k: 'not_run' for k in manifest['checks']}
+    owned_stage = False
     try:
-        shutil.copytree(pack, stage)
+        stage.mkdir(parents=True)
+        owned_stage = True
+        shutil.copytree(pack, stage, dirs_exist_ok=True)
         (stage/note).write_text(updated, encoding='utf-8')
         md, _ = export_document(stage/note, note_metadata=topic_metadata(manifest))
         (stage/Path(note).with_suffix('.md')).write_text(md, encoding='utf-8')
@@ -120,7 +123,7 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
         if before != _snapshot(pack):
             raise ValueError('Source pack changed while preparing stage')
     except Exception:
-        if stage.exists():
+        if owned_stage and stage.exists():
             shutil.rmtree(stage)
         raise
     return stage

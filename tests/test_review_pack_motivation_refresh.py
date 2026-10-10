@@ -116,3 +116,19 @@ def test_authoring_sources_keep_new_intro(tmp_path):
             'assert sections.S["t-start"].strip() == Path("sections/t-start.html").read_text().strip(); '
             f'assert sections.TOPICS[0][1] == {TITLE!r}')
     subprocess.run([sys.executable, '-c', code], cwd=src/'실험05', check=True)
+
+
+def test_stage_created_during_preflight_is_preserved(source, tmp_path, monkeypatch):
+    pack, fragment = source
+    mod = module()
+    stage = tmp_path/'stage'
+    original = mod._snapshot
+    def snapshot_with_race(folder):
+        data = original(folder)
+        if not stage.exists():
+            stage.mkdir(); (stage/'keep').write_text('concurrent user file')
+        return data
+    monkeypatch.setattr(mod, '_snapshot', snapshot_with_race)
+    with pytest.raises((ValueError, FileExistsError)):
+        mod.prepare_stage(pack, fragment, stage)
+    assert (stage/'keep').read_text() == 'concurrent user file'
