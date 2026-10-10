@@ -52,7 +52,21 @@ class FigureUnitTests(Sandbox):
         self.assertTrue(inside([320,100,620,500],[v[0],v[1],v[0]+v[2],v[1]+v[3]]))
     def test_oversized_figure_rejected(self):
         l=self.layers([0,40,1000,740]); t=self.timeline(l)
-        with self.assertRaisesRegex(InputError,'chunk1'): build_writing_camera_keys(l,t,compile_writing_units(l))
+        with self.assertRaisesRegex(InputError,r'figure chunk cannot fit.*chunk1'): build_writing_camera_keys(l,t,compile_writing_units(l))
+    def test_oversized_figure_only_chunk_gets_figure_message(self):
+        # 글자가 없는 그림 묶음('fig')도 그림 문구를 받는다(다른 줄의 글자 묶음 'txt' 는 들어간다).
+        l=self.layers([0,40,1000,740]); l['glyphs'][0]['bbox']=[0,10,9,19]
+        l['map']['steps'][0]['writing_units']=[unit('u0',[0,9],['t'],[],line='line1',chunk='txt'),unit('u1',[0,1000],[],['f'],line='line2',chunk='fig')]
+        t=self.timeline(l)
+        with self.assertRaisesRegex(InputError,r'figure chunk cannot fit even at the full-page view; crop or split the figure: fig$'): build_writing_camera_keys(l,t,compile_writing_units(l))
+    def test_oversized_text_chunk_beside_a_figure_chunk_keeps_text_message(self):
+        # 그림이 다른 묶음에 있어도 글자만 든 묶음은 글자 문구(작은 묶음으로 나누라)를 받는다.
+        gs=[dict(id='a',text='가',bbox=[0,300,10,310],paint_order=0),dict(id='b',text='나',bbox=[1000,300,1010,310],paint_order=1)]
+        ss=[dict(id='f',bbox=[320,40,620,200],kind='figure',paint_order=2,svg_ids=['x'],figure_source='a.png')]
+        us=[unit('u1',[320,620],[],['f'],line='line1',chunk='fig'),unit('u2',[0,1010],['a','b'],[],line='line2',chunk='wide',camera_break=True)]
+        l=dict(glyphs=gs,shapes=ss,metadata=dict(width_pt=1010,height_pt=568),map=dict(steps=[dict(id='step',glyph_ids=['a','b'],shape_ids=['f'],writing_units=us)]))
+        t=self.timeline(l)
+        with self.assertRaisesRegex(InputError,r'writing chunk cannot fit at 26px; author smaller chunks: wide$'): build_writing_camera_keys(l,t,compile_writing_units(l))
     def test_pixel_hash_ignores_encoding(self):
         import io; from PIL import Image
         im=Image.new('RGB',(3,2),(1,2,3)); a=io.BytesIO(); b=io.BytesIO(); im.save(a,'PNG'); im.save(b,'PNG',compress_level=0)

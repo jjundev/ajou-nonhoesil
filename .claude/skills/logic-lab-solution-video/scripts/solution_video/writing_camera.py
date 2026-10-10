@@ -46,12 +46,16 @@ def build_writing_camera_keys(layers:dict,timeline:dict,units:list)->list[dict]:
             left=max(a[2]-1910,min(a[0]-10,preferred_x));top=max(a[3]-890,min(a[1]-10,preferred_y))
             return [left/scale,top/scale,1920/scale,height/scale]
         candidates=[c for c in (fit(body/base) for body in (28,27,26)) if c][:1]
-        if not candidates and any(p['kind']=='shape' and p['id'] in figures for p in pieces):
+        has_figure=any(p['kind']=='shape' and p['id'] in figures for p in pieces)
+        if not candidates and has_figure:
             # A solution figure may be shown smaller than 26px text, but never smaller than the full-page view.
             scale=26/base
             while not candidates and scale>=floor:
                 candidates=[c for c in [fit(scale)] if c]; scale*=.98
-        if not candidates:raise InputError('writing chunk cannot fit at 26px; author smaller chunks: '+group[0]['chunk_id'])
+        if not candidates:
+            # 그림이 든 묶음은 이미 전체 쪽 배율까지 내려가 봤다: 글자를 더 쪼개라는 안내는 틀리다.
+            if has_figure:raise InputError('figure chunk cannot fit even at the full-page view; crop or split the figure: '+group[0]['chunk_id'])
+            raise InputError('writing chunk cannot fit at 26px; author smaller chunks: '+group[0]['chunk_id'])
         transition=min(s['transition_start_frame'] for s in times if s.get('transition_start_frame') is not None)
         keys.append(dict(at_frame=transition,viewbox=candidates[0],mirror=False,transition_frames=12))
     final=timeline['segments'][-1]['end_sample']//800;keys.append(dict(at_frame=final,viewbox=full))

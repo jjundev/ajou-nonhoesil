@@ -21,7 +21,7 @@ description: 논리회로실험 복습팩의 기출문제·기출풀이 PDF 원�
 
 연필 PNG 한 장을 촉 중심으로 움직이며 원본 윤곽을 왼쪽에서 오른쪽으로 공개한다. 실제 한글·수식 획순을 복원하는 연출은 아니다. 연필 길이는 촉부터 지우개 끝까지 화면상 160px이며 확대와 무관하다. 줄바꿈에서는 들어 옮기고 작성 완료·설명·최종 hold에서는 숨긴다. pencil은 PageMap의 writing_units에 저작한 줄·가로 영역 순서로 공개한다. 원문 glyph_ids 순서는 보존한다. typing은 기존 anchor 공개를 유지한다.
 
-**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 같은 이름의 짝 SVG 는 의미의 근거로 PNG 와 함께 동결되며(`figure_svg_refs`), 없으면 `figure_svg_missing` 경고만 남는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 chunk ID 를 담아 멈춘다. 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
+**풀이 그림.** 답안 쪽 이미지 중 디코딩 픽셀이 그 문항의 `자료/figures/solutions/<id>-solution-NN.png` 와 같은 것은 `kind:'figure'` 도형이 되어 연필이 왼→오로 wipe 한다(조각 하나에 60프레임 = 2초, 음성이 길면 세그먼트가 음성을 따른다). 그림은 글자가 있는 step(예: '완성 회로' 제목)에 같이 둔다. 다른 문항 PNG 와 픽셀이 같아도 대응하지 않는다. 같은 이름의 짝 SVG 는 의미의 근거로 PNG 와 함께 동결되며(`figure_svg_refs`), 없으면 `figure_svg_missing` 경고만 남는다. 26px 기준으로 안 들어오는 그림 묶음은 전체 쪽 보기 배율까지 줄여 맞추고, 그래도 안 되면 `figure chunk cannot fit even at the full-page view; crop or split the figure: <chunk_id>` 로 멈춘다(글자만 든 묶음의 `author smaller chunks` 와 다르다: 그림을 자르거나 나눠 저작한다). 대응 PNG 가 없는 풀이 영역 이미지는 멈춘다.
 
 **입력 게이트(유료 호출 전).** 문제·답안 쪽에 원문 LaTeX(`raw_latex`)가 찍혔거나, 풀이 그림이 '답' 상자 위쪽보다 아래로 내려가 잘렸으면(`clipped_figure`) 그 문항만 failed 로 남기고 나머지를 계속한다. 고치는 곳은 복습팩(`logic-lab-review-pack`)이다.
 
