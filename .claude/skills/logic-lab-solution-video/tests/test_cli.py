@@ -237,6 +237,18 @@ class LabPrepareTests(Sandbox):
         self.assertEqual(items['q-demux-from-dec']['label'],'실험05 출처 미확인11')
         self.assertEqual(items['q-demux-from-dec']['filename'],'실험05 출처 미확인11 — 풀이.mp4')
         self.assertEqual(cli.summarize_batch(batch),{'prepared':1,'failed':1})
+    def test_range_prefix_follows_each_items_own_experiment(self):
+        # 마지막 실험(실험05)만 보면 접두를 experiments[-1] 로 고정한 구현도 통과한다: 실험04 쪽 탈락·성공 항목도 본다.
+        repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)
+        defective_pack(repo,'실험04',[0]); defective_pack(repo,'실험05',[10])  # 기출1 q-mux2 / 출처 미확인11 q-demux-from-dec
+        batch=cli.prepare_batch(repo,'실험04-05',['실험04:q-mux2','실험04:q-mux4','실험05:기출4','실험05:q-demux-from-dec'])
+        items={i['id']:i for i in read(batch/'batch.json')['items']}
+        self.assertEqual({k:(v['status'],v['label']) for k,v in items.items()},{
+            'q-mux2':('failed','실험04 기출1'),'q-mux4':('author-required','실험04 기출2'),
+            'q-dec2x4-design':('author-required','실험05 기출4'),'q-demux-from-dec':('failed','실험05 출처 미확인11')})
+        self.assertEqual(items['q-mux2']['filename'],'실험04 기출1 — 풀이.mp4')
+        self.assertEqual(items['q-mux4']['filename'],'실험04 기출2 — 풀이.mp4')
+        self.assertEqual(cli.summarize_batch(batch),{'prepared':2,'failed':2})
     def test_experiment_level_failure_has_no_label(self):
         repo=self.run/'repo'; (repo/'복습노트').mkdir(parents=True)  # 실험03 pack folder absent
         batch=cli.prepare_batch(repo,'실험03')

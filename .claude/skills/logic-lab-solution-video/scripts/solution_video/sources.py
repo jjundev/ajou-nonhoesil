@@ -78,7 +78,7 @@ def discover(repo,selector,problem_ids=None,failures=None):
     packs={};listed=set();labels={}  # (experiment, id) -> label counted in manifest order; filled as each pack is read
     def fail(pid,experiment,reason):
         if failures is None: raise InputError(reason)
-        # label is None for an experiment-level failure (pack or PDF pair missing before any problem is known).
+        # label is None only when the pack itself is missing (no manifest, so no problem is known); a missing PDF pair fails per problem and keeps its label.
         failures.append({'problem_id':pid,'experiment':experiment,'label':labels.get((experiment,pid)),'reason':reason})
     for name in experiments:
         folder=_child(root,name); data=_child(folder,DATA_DIR) if folder else None; manifest=_child(data,'manifest.json') if data else None

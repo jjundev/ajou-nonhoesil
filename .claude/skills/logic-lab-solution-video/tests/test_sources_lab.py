@@ -77,6 +77,16 @@ class LabSourceTests(Sandbox):
         failures=[]; pairs=discover(repo,'실험06',None,failures)
         self.assertEqual(failures,[]); self.assertEqual([(p['problem_id'],p['label']) for p in pairs],[('q-b','기출1'),('q-a','기출2')])
         self.assertEqual([p['problem_id'] for p in discover(repo,'실험06',['기출1'],[])],['q-b'])
+    def test_missing_pdf_pair_fails_per_problem_with_label(self):
+        # 팩이 없을 때만 label 이 None 이다. PDF 짝이 없으면 manifest 는 읽혔으므로 문항마다 라벨을 단 실패가 된다.
+        repo=self.run/'repo'; table=[['A','B'],['0','1']]
+        problems=[dict(id='q-a',kind='past',title='가산기 설계'),dict(id='q-b',kind='past',title='감산기 설계')]
+        pack=synthetic_pack(repo,'실험06',problems,table,table)
+        (pack/'실험06_기출풀이.pdf').unlink()
+        failures=[]; pairs=discover(repo,'실험06',None,failures)
+        self.assertEqual(pairs,[])
+        self.assertEqual([(f['problem_id'],f['experiment'],f['label'],f['reason']) for f in failures],
+            [('q-a','실험06','기출1','missing or ambiguous PDF pair'),('q-b','실험06','기출2','missing or ambiguous PDF pair')])
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])
