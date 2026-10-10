@@ -87,6 +87,43 @@ class LabSourceTests(Sandbox):
         self.assertEqual(pairs,[])
         self.assertEqual([(f['problem_id'],f['experiment'],f['label'],f['reason']) for f in failures],
             [('q-a','실험06','기출1','missing or ambiguous PDF pair'),('q-b','실험06','기출2','missing or ambiguous PDF pair')])
+    def tables_pack(self,table,answer_table,after_write=None):
+        # 합성 팩 하나(문항 q-a). after_write(pack) 가 있으면 PDF 를 쓴 직후 손볼 수 있다.
+        repo=self.run/'repo'; pack=synthetic_pack(repo,'실험06',[dict(id='q-a',kind='past',title='진리표 작성')],table,answer_table)
+        if after_write: after_write(pack)
+        failures=[]; return discover(repo,'실험06',None,failures),failures
+    def test_table_row_swap_is_rejected(self):
+        # 글자 multiset 은 같으므로 기존 대조는 통과한다. 행 순서가 바뀐 것은 표 대조만 잡는다.
+        pairs,failures=self.tables_pack([['A','B'],['0','1'],['1','0']],[['A','B'],['1','0'],['0','1']])
+        self.assertEqual(pairs,[])
+        self.assertEqual([(f['problem_id'],f['label']) for f in failures],[('q-a','기출1')])
+        self.assertIn('table rows differ: q-a table 1 row 2',failures[0]['reason'])
+    def test_table_column_swap_is_rejected(self):
+        pairs,failures=self.tables_pack([['A','B'],['0','1']],[['B','A'],['1','0']])
+        self.assertEqual(pairs,[]); self.assertIn('table rows differ: q-a table 1 row 1',failures[0]['reason'])
+    def test_identical_tables_pass(self):
+        table=[['A','B'],['0','1'],['1','0']]
+        pairs,failures=self.tables_pack(table,table)
+        self.assertEqual(failures,[]); self.assertEqual([p['problem_id'] for p in pairs],['q-a'])
+    def test_answer_without_table_is_skipped(self):
+        # 해설지에 같은 글자가 표가 아니라 글줄로만 있다(선이 없어 find_tables 가 못 찾는다). 표 때문에 실패하면 안 된다.
+        def flatten(pack):
+            import fitz
+            pdf=pack/'실험06_기출풀이.pdf'; doc=fitz.open(pdf)
+            for page in doc: page.insert_text((34,200),'A B 0 1 1 0',fontname='korea',fontsize=10)
+            doc.save(pack/'tmp.pdf'); doc.close(); (pack/'tmp.pdf').replace(pdf)
+        pairs,failures=self.tables_pack([['A','B'],['0','1'],['1','0']],None,flatten)
+        self.assertEqual(failures,[]); self.assertEqual([p['problem_id'] for p in pairs],['q-a'])
+        from solution_video.sources import _table_mismatch
+        self.assertIsNone(_table_mismatch(pairs[0]['problem'],pairs[0]['answer']))
+    def test_table_of_another_shape_is_skipped(self):
+        # 글자는 같지만 모양이 다르면(3x2 대 2x3) 같은 표로 볼 근거가 없어 건너뛴다.
+        pairs,failures=self.tables_pack([['A','B'],['0','1'],['1','0']],[['A','B','0'],['1','1','0']])
+        self.assertEqual(failures,[]); self.assertEqual([p['problem_id'] for p in pairs],['q-a'])
+    def test_real_packs_have_no_table_false_positive(self):
+        for n in ['실험01','실험02','실험03','실험04','실험05']:
+            failures=[]; discover(REPO,n,None,failures)
+            self.assertEqual([f['reason'] for f in failures if 'table rows differ' in f['reason']],[],n)
     def test_missing_pack_and_freeze(self):
         failures=[]; discover(REPO,'실험09',None,failures)
         self.assertIn('experiment pack missing: 실험09',[f['reason'] for f in failures])

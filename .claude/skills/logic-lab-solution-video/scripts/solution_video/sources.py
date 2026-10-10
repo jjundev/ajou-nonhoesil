@@ -51,6 +51,26 @@ def _conditions(ref,with_work=False):
             hint=[w[0] for w in p.get_text('words') if w[4]=='Hint' and w[0]>clip.x1]
             text+=p.get_text(clip=fitz.Rect(clip.x1,layout['header_bottom'],min(hint)-2 if hint else p.rect.width,layout['body_bottom']))
     return re.sub(r'\s+','',_norm(text))
+def _tables(ref):
+    """Cell matrices (NFC, whitespace stripped, None -> '') of every table PyMuPDF finds on the page. A page whose tables
+    cannot be read counts as having none: this check must never block an input the character comparison already accepted."""
+    import fitz
+    try:
+        with fitz.open(ref['snapshot']) as d:
+            return [[[_squash(cell or '') for cell in row] for row in t.extract()] for t in d[ref['page_index']].find_tables().tables]
+    except Exception: return []
+def _table_mismatch(problem_ref,answer_ref):
+    """The character multiset ignores order, so a transposed or row-swapped table slips through it. Each problem table is
+    held against the answer tables of the same shape (same row lengths): one of them must match cell for cell. No table of
+    that shape on the answer page means nothing to compare, so it is skipped. Returns 'table <i> row <r>' (1-based, the
+    first row that differs from the closest candidate) or None."""
+    answers=_tables(answer_ref)
+    for i,table in enumerate(_tables(problem_ref),1):
+        shape=[len(row) for row in table]; same=[a for a in answers if [len(row) for row in a]==shape]
+        if not same or not any(cell for row in table for cell in row) or table in same: continue
+        close=min(same,key=lambda a:sum(x!=y for x,y in zip(a,table)))
+        return 'table %d row %d'%(i,next(r for r,(x,y) in enumerate(zip(close,table),1) if x!=y))
+    return None
 def _answer_hash(ref):
     import fitz
     with fitz.open(ref['snapshot']) as d:
@@ -65,6 +85,8 @@ def validate_pairs(pairs):
     for p in pairs:
         same=lambda s:sorted(s.replace('조건',''))
         if same(_conditions(p['problem'],True))!=same(_conditions(p['answer'])): raise InputError('problem/answer conditions differ: '+p['problem_id'])
+        mismatch=_table_mismatch(p['problem'],p['answer'])
+        if mismatch: raise InputError('table rows differ: '+p['problem_id']+' '+mismatch)
         key=_answer_hash(p['answer'])
         if p['problem_id'] in seen and seen[p['problem_id']]!=key: raise InputError('different answers for '+p['problem_id'])
         seen[p['problem_id']]=key
