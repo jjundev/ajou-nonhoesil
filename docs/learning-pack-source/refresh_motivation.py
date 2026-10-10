@@ -85,6 +85,10 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
         raise ValueError('First topic must be t-start')
     names = output_names(manifest['experiment'], review_presentation_version=manifest.get('review_presentation_version'))
     note = names['note_html']
+    owned_files = set(manifest['generated_files'])
+    required = {note, str(Path(note).with_suffix('.md')), DATA+'/manifest.json'}
+    if not required <= owned_files or not owned_files <= before.keys():
+        raise ValueError('Invalid generated file ownership')
     original = (pack/note).read_text(encoding='utf-8')
     elements = _Spans(original).elements
     article = _one(elements, 'article', lambda e: e[1].get('id') == 't-start')
@@ -114,7 +118,11 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
     try:
         stage.mkdir(parents=True)
         owned_stage = True
-        shutil.copytree(pack, stage, dirs_exist_ok=True)
+        # User-added PDFs/memos belong to publish's preservation path, not to this stage.
+        for relative in sorted(owned_files):
+            target = stage/relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(pack/relative, target)
         (stage/note).write_text(updated, encoding='utf-8')
         md, _ = export_document(stage/note, note_metadata=topic_metadata(manifest))
         (stage/Path(note).with_suffix('.md')).write_text(md, encoding='utf-8')

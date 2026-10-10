@@ -46,8 +46,9 @@ def test_stage_preserves_everything_except_intro(tmp_path, number):
     after = snapshot(stage)
     note = f'실험{number:02d}_실험설명.html'
     allowed = {note, note.replace('.html', '.md'), '자료/manifest.json'}
-    assert before.keys() == after.keys()
-    assert all(before[k] == after[k] for k in before.keys()-allowed)
+    owned = set(json.loads(before['자료/manifest.json'])['generated_files'])
+    assert after.keys() == owned
+    assert all(before[k] == after[k] for k in owned-allowed)
     old, new = before[note].decode(), after[note].decode()
     old_articles = re.findall(r'<article\b[^>]*id="(?!t-start")([^"]+)".*?</article>', old, re.S)
     assert old_articles == re.findall(r'<article\b[^>]*id="(?!t-start")([^"]+)".*?</article>', new, re.S)
@@ -132,3 +133,16 @@ def test_stage_created_during_preflight_is_preserved(source, tmp_path, monkeypat
     with pytest.raises((ValueError, FileExistsError)):
         mod.prepare_stage(pack, fragment, stage)
     assert (stage/'keep').read_text() == 'concurrent user file'
+
+
+def test_refresh_does_not_claim_user_files(source, tmp_path):
+    pack, fragment = source
+    memo = pack/'사용자메모.md'
+    memo.write_text('사용자가 별도로 저장한 파일')
+    stage = module().prepare_stage(pack, fragment, tmp_path/'stage')
+    owned = json.loads((stage/'자료/manifest.json').read_text())['generated_files']
+    assert '사용자메모.md' not in owned
+    assert not (stage/'사용자메모.md').exists()
+    assert memo.read_text() == '사용자가 별도로 저장한 파일'
+    for pdf in pack.glob('*.pdf'):
+        assert pdf.name not in owned and not (stage/pdf.name).exists()
