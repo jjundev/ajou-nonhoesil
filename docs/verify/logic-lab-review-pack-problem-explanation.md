@@ -78,3 +78,9 @@ publish의 sibling 백업을 기존 테스트가 active pack으로 읽어 두 �
 다섯 팩 check_pack 통과. 기존 발행 HTML/MD/PDF 65개는 HEAD와 바이트 동일하다. 원문 PDF와 문제지의 수식은 변경하지 않았다. 첨부 문항의 dark 1280px 및 light 375px 화면을 `output/validation/problem-explanations/equation-card-*.png`에 보존하고 시각 확인했다. 저작 및 검증 지침에 독립 수식 문단과 카드/스크롤 기준을 추가했다.
 
 최종 전체 실행 `pytest -n4 -q`: 2889 passed, 1206 subtests passed, 9 skipped, 1 failed(60.34s). 유일한 실패는 앞서 독립 재현한 기존 `TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed`이며 수식/간격/브라우저 관련 검사는 모두 통과했다. `git diff --check` 통과.
+
+## main 통합 검증 (2026-10-10)
+
+간격·수식 카드 수정 커밋 `b3fabfd`를 포함하여 main의 도입 설명 개선(403b649)과 통합했다. 다섯 manifest 충돌은 서로 다른 저작 정보는 각각 유지하고, generated_files는 양쪽의 추가와 기존 항목 삭제를 반영하여 해결했다. 현재 main의 기존 학습자료 844개(의도적으로 갱신한 manifest/저장 템플릿/provenance 제외)는 바이트 그대로 보존했다. 통합 상태에서 다섯 팩 check_pack 통과.
+
+통합 전체 테스트: 2903 passed, 1206 subtests passed, 9 skipped, 1 failed(79.23s). 실패는 앞서 공개한 기존 `tests/test_merge_report.py::TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed` 한 건이며, 문제설명·간격·수식 카드·도입 설명 검사는 통과했다. 사용자가 해당 실패가 보고된 상태에서 커밋 및 main 병합을 요청하여, 이를 기록하고 로컬 통합했다. 원격 push는 하지 않는다.
