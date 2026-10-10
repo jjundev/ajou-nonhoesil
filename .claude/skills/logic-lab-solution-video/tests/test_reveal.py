@@ -77,7 +77,7 @@ class SpatialTimingTests(Sandbox):
         # 조각마다 18프레임이 아니라 도형 하나에 예산 18(폭 30, 높이 10, 간격 4)을 폭 10:20 으로 나눈다.
         t=self.timeline();bar=[s for s in t['writing_spans'] if s['id']=='bar' and s['kind']=='draw']
         self.assertEqual([s['end_frame']-s['start_frame'] for s in bar],[6,12])
-    def test_split_box_costs_same_as_whole(self):
+    def test_split_box_budget_never_slower(self):
         from test_writing_units import unit
         from solution_video.writing import default_writing
         def draw_total(n):
@@ -88,7 +88,8 @@ class SpatialTimingTests(Sandbox):
             t=build_timeline(m,l,[make_audio('w',800,self.run)],default_config(),default_writing())
             box=[s for s in t['writing_spans'] if s['id']=='box' and s['kind']=='draw']
             self.assertEqual(len(box),n);return sum(s['end_frame']-s['start_frame'] for s in box)
-        self.assertEqual(draw_total(1),draw_total(24));self.assertEqual(draw_total(1),90)
+        # 한 조각은 기존 18 그대로, 24조각은 432 가 아니라 폭 공식 상한 90, 5조각 이상이면 같은 예산.
+        self.assertEqual(draw_total(1),18);self.assertEqual(draw_total(24),90);self.assertEqual(draw_total(5),90)
     def test_lift_once_per_new_line(self):
         from test_writing_units import spatial_layers,unit
         from solution_video.writing import default_writing

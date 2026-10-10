@@ -1,6 +1,7 @@
 """원본 PDF 도형 하나에 가로 공개 예산 하나를 잡고 clip 조각에 폭 비례로 나눈다.
 
-조각 수가 늘어도 도형 전체 draw 시간은 같다. 풀이 그림(kind=='figure')은 reveal.FIGURE_DRAW_FRAMES 로
+예산은 폭 기반 공식과 기존 조각당 18프레임 합계 중 작은 쪽이다. 그래서 어떤 도형도 예전(조각마다 18)보다
+느려지지 않는다: 한 조각 도형은 18 그대로, 잘게 쪼갠 도형만 폭 공식만큼으로 빨라진다. 풀이 그림(kind=='figure')은 reveal.FIGURE_DRAW_FRAMES 로
 그림 단위 wipe 를 따로 받으므로 여기서 다루지 않는다.
 """
 import math
@@ -10,8 +11,8 @@ MIN_SHAPE_FRAMES=18
 MAX_SHAPE_FRAMES=90
 
 
-def shape_budget(width:float,height:float,interval:int)->int:
-    return min(MAX_SHAPE_FRAMES,max(MIN_SHAPE_FRAMES,math.ceil(width/height*interval)))
+def shape_budget(width:float,height:float,interval:int,pieces:int)->int:
+    return min(MAX_SHAPE_FRAMES,max(MIN_SHAPE_FRAMES,math.ceil(width/height*interval)),MIN_SHAPE_FRAMES*pieces)
 
 
 def allocate_shape_frames(units:list[dict],layers:dict,step_id:str,height:float,interval:int)->dict[tuple[str,int],int]:
@@ -28,7 +29,8 @@ def allocate_shape_frames(units:list[dict],layers:dict,step_id:str,height:float,
         if sid not in shapes:raise InputError('missing shape '+sid)
         width=shapes[sid]['bbox'][2]-shapes[sid]['bbox'][0]
         if not math.isfinite(width) or width<0 or any(not math.isfinite(w) or w<0 for _,w in parts):raise InputError('invalid shape width '+sid)
-        budget=shape_budget(width,height,interval)
+        budget=shape_budget(width,height,interval,len(parts))
+        # 18×조각 수 상한은 조각 수보다 늘 크다. 이 오류는 폭 공식(≤90)보다 조각이 많을 때(19조각 이상)만 난다.
         if len(parts)>budget:raise InputError(f'shape {sid}: {len(parts)} pieces exceed {budget} frames; author fewer clips')
         if width==0:
             if len(parts)!=1:raise InputError('vertical shape must have one piece '+sid)

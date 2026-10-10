@@ -349,9 +349,9 @@
   "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
   "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구; 도형 전용 묶음은 쪽 전체가 화면 안·글자 묶음은 26px 유지, 그림만 든 묶음은 그림 확대 유지",
   "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers; shape_timing 변경은 timing 부터 무효·WAV 보존",
-  "scripts/solution_video/shape_timing.py": "논회실 신규(상류 a017c9d 설계 재구현): 같은 step_id+shape_id 의 전체 폭 W·대표 높이 H 로 B=min(90,max(18,ceil(W/H*interval))) draw 예산을 잡고 clip 폭 비례 배분(조각당 ≥1, 합=B, 최대 나머지·동률 저작 순), 조각 수>B 는 InputError, 폭 0 도형은 18, figure 는 그림 단위 wipe 몫이라 제외",
-  "tests/test_shape_timing.py": "논회실 신규: 도형 예산 분할 불변·폭 비례·동률 저작 순·최소 1프레임·과분할 오류·세로선·상한 90·figure 제외",
-  "tests/test_reveal.py": "상류 a017c9d 설계 재구현: 도형 조각 최소 18 검사를 예산 배분 검사로 바꿈, 24조각 상자=한 조각 상자, 새 줄 lifted 한 번",
+  "scripts/solution_video/shape_timing.py": "논회실 신규(상류 a017c9d 설계 재구현, 예산 상한 변경): 같은 step_id+shape_id 의 전체 폭 W·대표 높이 H·양의 폭 조각 수 n 으로 B=min(min(90,max(18,ceil(W/H*interval))),18*n) — 사용자 결정으로 예전(조각마다 18)보다 느려지지 않게 18*n 상한을 더함(한 조각 도형은 18 유지, 잘게 쪼갠 도형만 빨라짐); clip 폭 비례 배분(조각당 ≥1, 합=B, 최대 나머지·동률 저작 순), 조각 수>B(19조각 이상에서만 가능)는 InputError, 폭 0 도형은 18, figure 는 그림 단위 wipe 몫이라 제외",
+  "tests/test_shape_timing.py": "논회실 신규: 한 조각 긴 선 18 유지·24조각 상자 432 보다 짧음·상한 아래 조각 수 무관 예산·두 조각 18×2 상한·폭 비례·동률 저작 순·최소 1프레임·과분할 오류·세로선·상한 90·figure 제외",
+  "tests/test_reveal.py": "상류 a017c9d 설계 재구현: 도형 조각 최소 18 검사를 예산 배분 검사로 바꿈, 한 조각 상자 18·24조각 상자 90(432 아님)·5조각 이상 같은 예산, 새 줄 lifted 한 번",
   "scripts/solution_video/narration_pacing.py": "상류 a017c9d 설계 재구현: 구간마다 voice_end_frame(PCM 끝 올림)·writing_end_frame·writing_lag_frames·completed_hold_frames; 음성 뒤 필기 지연 >60 이면 review-required, 예외는 현재 input_hash 의 pacing-review writing_lags 행만(gaps 사유로 승인 불가), unreviewed_writing_lags",
   "tests/test_narration_pacing.py": "상류 a017c9d 설계 재구현: 지연 경계 60/61·완성 hold·PCM 끝 올림·gaps 로 지연 승인 불가·writing_lags 로 gap 승인 불가·옛 gaps 만 있는 리뷰 호환",
   "tests/writing_flow_check.mjs": "상류 a017c9d 설계 재구현: 글자 없는 도형 전용 묶음(figure 제외)은 26px 검사 대신 쪽 전체가 화면 안인지 확인"

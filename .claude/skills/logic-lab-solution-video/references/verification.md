@@ -37,7 +37,7 @@ Evidence is in `writing-flow.json`, `flow-frames`, and `narration-pacing.json`.
 Current gap review is hash-bound; changed PCM invalidates it. Audio meaning
 still requires actual listening, independently of all technical checks.
 
-narration-pacing.json 의 구간 행에서 `voice_end_frame`·`writing_end_frame`·`writing_lag_frames`·`completed_hold_frames` 를 확인한다. 음성 뒤 필기 지연 >60프레임은 `unreviewed_writing_lags` 로 review-required 이며, 현재 input_hash 의 `writing_lags` 행(segment_id·voice_end_frame·writing_end_frame·reason)만 예외로 받는다. 옛 `gaps` 승인은 지연을 승인하지 않는다. 도형 예산(shape_timing) 변경은 timing 부터 다시 계산하고 WAV 는 보존한다. 타이밍이 바뀌면 절대 프레임으로 저작한 manifest `cameras` 가 필기 묶음과 겹쳐 assemble 이 `manual camera conflicts with writing chunk` 로 멈출 수 있으니 at_frame 을 새 timeline 에 맞춘다. 글자 없는 도형 전용 묶음은 쪽 전체·도형·연필 경계로 확인하고 글자 묶음의 26px 최소 크기는 그대로다.
+narration-pacing.json 의 구간 행에서 `voice_end_frame`·`writing_end_frame`·`writing_lag_frames`·`completed_hold_frames` 를 확인한다. 음성 뒤 필기 지연 >60프레임은 `unreviewed_writing_lags` 로 review-required 이며, 현재 input_hash 의 `writing_lags` 행(segment_id·voice_end_frame·writing_end_frame·reason)만 예외로 받는다. 옛 `gaps` 승인은 지연을 승인하지 않는다. 도형 예산(shape_timing, B=min(폭 공식, 18×조각 수)) 변경은 timing 부터 다시 계산하고 WAV 는 보존한다. 타이밍이 바뀌면 절대 프레임으로 저작한 manifest `cameras` 가 필기 묶음과 겹쳐 assemble 이 `manual camera conflicts with writing chunk` 로 멈출 수 있으니 at_frame 을 새 timeline 에 맞춘다. 글자 없는 도형 전용 묶음은 쪽 전체·도형·연필 경계로 확인하고 글자 묶음의 26px 최소 크기는 그대로다.
 
 ## 회로 근거와 필기 음성 저작
 
