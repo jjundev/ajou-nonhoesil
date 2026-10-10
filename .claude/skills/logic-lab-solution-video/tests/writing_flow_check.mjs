@@ -36,7 +36,12 @@ export async function writingFlowCheck(page,opt){
     for(const [x,y] of [[lo,b[1]],[hi,b[3]]]){const p=pageToScreen(x,y);fit_ok&&=p[0]>=-.01&&p[0]<=1920.01&&p[1]>=-.01&&p[1]<=900.01;}
     for(const x of [lo,hi])for(const y of !o.text&&lo===hi?[b[1],b[3]]:[b[1]+.8*(b[3]-b[1])]){const tip=pageToScreen(x,y);for(const e of envelope)fit_ok&&=tip[0]+e[0]>=-.01&&tip[0]+e[0]<=1920.01&&tip[1]+e[1]>=-.01&&tip[1]+e[1]<=900.01;}
    }
-   for(const step of new Set(group.map(u=>u.step_id))){
+   // 글자 없는 도형 전용 묶음(풀이 그림 제외)은 26px 확대 대신 쪽 전체가 화면 안에 들어와야 한다.
+   const shapeOnly=!group.some(u=>u.glyph_ids.some(id=>objects.get(id).text.trim()))&&!group.some(u=>u.shape_ids.some(id=>objects.get(id).kind==='figure'));
+   if(shapeOnly){
+    for(const [x,y] of [[0,0],[layers.metadata.width_pt,layers.metadata.height_pt]]){const p=pageToScreen(x,y);fit_ok&&=p[0]>=-.01&&p[0]<=1920.01&&p[1]>=-.01&&p[1]<=900.01;}
+   }
+   for(const step of new Set(shapeOnly?[]:group.map(u=>u.step_id))){
     const heights=layers.map.steps.find(s=>s.id===step).glyph_ids.map(id=>objects.get(id)).filter(g=>g.text.trim()&&g.bbox[3]-g.bbox[1]>=2).map(g=>g.bbox[3]-g.bbox[1]).sort((a,b)=>a-b);
     fit_ok&&=heights[Math.floor((heights.length-1)*.75)]*scale>=25.99;
    }
