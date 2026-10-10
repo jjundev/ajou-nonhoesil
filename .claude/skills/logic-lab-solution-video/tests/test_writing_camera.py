@@ -57,3 +57,25 @@ class WritingCameraTests(Sandbox):
     def test_manual_transition_crossing_chunk_boundary_rejected(self):
         l,t=self.fixture();t['cameras']=[dict(at_frame=29,viewbox=[20,20,100,100],transition_frames=12)]
         with self.assertRaisesRegex(InputError,'conflicts'):self.keys(l,t)
+    def test_shape_only_chunk_keeps_page_context(self):
+        # 글자 없는 답 상자 묶음은 상자 오른쪽으로 확대돼 답안이 사라지지 않게 쪽 전체+연필 여백 구도.
+        l,t=self.fixture(50)
+        l['shapes']=[dict(id='box',bbox=[900,300,980,340])]
+        step=l['map']['steps'][0];step['shape_ids']=['box'];step['writing_units'].append(unit('empty',[900,980],[],['box'],line='shape_line',chunk='shape_chunk',camera_break=True))
+        m=dict(segments=[dict(id='w',kind='write',step_id='step')],shape_anchors={},cameras=[])
+        t=build_timeline(m,l,[make_audio('w',800,self.run)],default_config(),default_writing())
+        keys=self.keys(l,t);view=keys[-2]['viewbox'];scale=1080/view[3]
+        for x,y in ((0,0),(1000,562.5)):
+            self.assertGreaterEqual((x-view[0])*scale,0);self.assertLessEqual((x-view[0])*scale,1920)
+            self.assertGreaterEqual((y-view[1])*scale,0);self.assertLessEqual((y-view[1])*scale,900)
+        # 글자 묶음(첫 키, intro 가 없어 0프레임)은 그대로 26px 이상 확대.
+        self.assertGreaterEqual(10*1080/keys[0]['viewbox'][3],26)
+    def test_figure_only_chunk_keeps_figure_zoom(self):
+        # 풀이 그림만 든 묶음은 도형 전용 구도가 아니라 기존 그림 확대 규칙을 따른다.
+        l,t=self.fixture(50)
+        l['shapes']=[dict(id='fig',bbox=[600,300,700,400],kind='figure')]
+        step=l['map']['steps'][0];step['shape_ids']=['fig'];step['writing_units'].append(unit('fig_u',[600,700],[],['fig'],line='fig_line',chunk='fig_chunk',camera_break=True))
+        m=dict(segments=[dict(id='w',kind='write',step_id='step')],shape_anchors={},cameras=[])
+        t=build_timeline(m,l,[make_audio('w',800,self.run)],default_config(),default_writing())
+        view=self.keys(l,t)[-2]['viewbox']
+        self.assertLess(view[2],1000*0.9)  # 쪽 전체보다 확대돼 있다

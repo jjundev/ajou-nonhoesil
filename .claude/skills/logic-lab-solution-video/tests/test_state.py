@@ -85,6 +85,20 @@ class StateTests(Sandbox):
             finish();p=root/'scripts/solution_video/writing_camera.py';p.write_text(p.read_text()+'\n# camera edit\n')
             self.assertEqual(recover_run(self.run),'composition');self.assertEqual(file_hash(self.run/voice['path']),before)
 
+    def test_shape_timing_invalidates_only_timing(self):
+        import shutil
+        from unittest.mock import patch
+        import solution_video.state as state
+        from solution_video.util import file_hash
+        root=self.run/'tool';shutil.copytree(S,root,ignore=shutil.ignore_patterns('__pycache__'))
+        a=make_audio('w',2400,self.run);before=file_hash(self.run/a['path'])
+        with patch.object(state,'S',root):
+            for stage in STAGES[:5]:
+                out=self.run/(stage+'.txt');out.write_text(stage);finish_stage(self.run,stage,[out])
+            p=root/'scripts/solution_video/shape_timing.py';p.write_text(p.read_text()+'\n# fingerprint change\n')
+            self.assertEqual(recover_run(self.run),'timing')
+            self.assertEqual(file_hash(self.run/a['path']),before)
+
 class FrozenFigureFingerprintTests(Sandbox):
     """source/snapshots/figures/<파일 sha>/<이름> 은 한 단계 아래에 있다: 비재귀 글롭은 동결한 그림 변조를 놓친다."""
     def prepared_run(self):

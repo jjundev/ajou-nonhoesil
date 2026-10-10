@@ -6,7 +6,7 @@ TTS 요청 정책은 `spoken-text-only-v1`이다. 텍스트 입력에는 발음 
 
 문제를 확인하는 발화로 시작한다. 판단 이유(reason), 원문을 쓰는 동안의 설명(write), 계산 확인(check), 답 확인(summary)을 원자료에 연결한다. PDF에 없는 새 계산이나 풀이를 만들지 않는다. 한 발화가 길면 PageMap 단계도 작은 연속 단위로 나눈다. 실패한 문항만 재개하고 성공 WAV는 내용/설정 해시로 재사용한다.
 
-연필 기본은 7.5글자/초이며 인접 글자마다 이동 1프레임 + 작성 3프레임이다. 사용자 요청에 따라 이전 5글자/초(이동 1+작성 5프레임)보다 1.5배 빠르다. 긴 이동·줄바꿈·단계 이동은 최소 8프레임 이동을 사용하고 작성 시간을 줄이지 않는다. write 구간은 max(실제 WAV 길이, 모든 이동·작성 길이)+ceil(0.75×30)=23프레임이다. typing 선택은 기존 ceil(30/7) 프레임 간격을 사용한다. 작성 파일이 없는 legacy 실행은 기존 config의 속도/hold를 그대로 쓴다. 공백은 이동 시간만 사용하며 연필은 숨긴다. typing의 shape는 같은 단계의 anchor glyph 완료 시점에 공개한다. pencil은 writing_units의 shape piece를 최소 18프레임씩 작성하며, 폭 0인 세로 선은 위에서 아래로 공개한다. 전체 타이밍은 800샘플=1프레임이며 실제 PCM은 자르거나 늘이지 않고 남는 구간을 무음으로 채운다. 마지막은 최소 1초 전체 답안 확인이다. 단어별 실제 음성 정렬을 주장하지 않는다.
+연필 기본은 7.5글자/초이며 인접 글자마다 이동 1프레임 + 작성 3프레임이다. 사용자 요청에 따라 이전 5글자/초(이동 1+작성 5프레임)보다 1.5배 빠르다. 긴 이동·줄바꿈·단계 이동은 최소 8프레임 이동을 사용하고 작성 시간을 줄이지 않는다. write 구간은 max(실제 WAV 길이, 모든 이동·작성 길이)+ceil(0.75×30)=23프레임이다. typing 선택은 기존 ceil(30/7) 프레임 간격을 사용한다. 작성 파일이 없는 legacy 실행은 기존 config의 속도/hold를 그대로 쓴다. 공백은 이동 시간만 사용하며 연필은 숨긴다. typing의 shape는 같은 단계의 anchor glyph 완료 시점에 공개한다. pencil은 writing_units의 shape를 원본 도형 단위 예산으로 작성한다: 같은 step_id+shape_id의 전체 폭 W, 대표 글자 높이 H, 양의 폭 조각 수 n으로 B=min(min(90, max(18, ceil(W/H×interval))), 18×n)(interval=ceil(30/chars_per_second))을 잡고 clip 폭에 비례해 나눈다. 18×n 상한 때문에 예전(조각마다 18)보다 느려지지 않는다: 한 조각 도형은 18 그대로, 잘게 쪼갠 도형만 빨라진다. 조각당 최소 1프레임, 합계는 B, 최대 나머지 순·동률은 저작 순으로 정수화하며, 조각 수가 B보다 많으면(폭 공식보다 조각이 많은 19조각 이상) 저작 오류다. 폭 0인 세로 선은 한 조각 18프레임으로 위에서 아래로 공개한다. 풀이 그림(kind=figure)은 이 예산이 아니라 그림 wipe 60프레임이다. 새 줄 들어 옮기기(최소 8프레임)는 새 줄 첫 대상(공백이어도)에만 한 번 적용하고 뒤 대상은 인접 이동이다. 전체 타이밍은 800샘플=1프레임이며 실제 PCM은 자르거나 늘이지 않고 남는 구간을 무음으로 채운다. 마지막은 최소 1초 전체 답안 확인이다. 단어별 실제 음성 정렬을 주장하지 않는다.
 
 writing.json의 키: schema_version=1, mode=pencil|typing, chars_per_second=7.5(typing 기본 7), pencil_length_px=160, adjacent_move_frames=1, lifted_move_frames=8, tilt_degrees=2, read_hold_seconds=0.75, asset_id=pencil-yellow-v1. 명시 설정의 속도는 유한 수 pencil은 0<값<=7.5, typing은 0<값<=7, 길이는 양의 유한 수, 이동은 양의 정수, 기울기는 0~2°, hold는 0 이상의 유한 수다. 잘못된 값·알 수 없는 키/모드/asset은 실패한다.
 
@@ -37,6 +37,8 @@ Any uninterrupted gap >60 frames needs added explanation or an intentional
 containing `segment_id`, `start_frame`, `end_frame`, and a nonempty `reason`.
 Density is guidance; never stretch/cut WAV or repeatedly pay for regeneration
 to satisfy a metric. Fake PCM and pacing PASS cannot approve audio meaning.
+
+필기 지연은 무음과 따로 잰다. 구간마다 `voice_end_frame`(구간 시작+PCM 샘플 수/800 올림, 에너지가 아니라 실제 PCM 끝), `writing_end_frame`(마지막 writing span 끝), `writing_lag_frames`=max(0, 필기 끝−음성 끝), `completed_hold_frames`=구간 끝−max(음성 끝, 필기 끝)을 보고한다. 지연이 60프레임(2초)을 넘으면 review-required(`unreviewed_writing_lags`)다. 정확히 60은 통과다. 필기 중 무음을 완성 화면 읽기(hold)로 기록하지 않는다. 의도한 지연의 예외는 현재 `input_hash`의 `pacing-review.json`에 `writing_lags: [{segment_id, voice_end_frame, writing_end_frame, reason}]`로 경계가 정확히 맞고 reason이 비어 있지 않을 때만 승인된다. 기존 `gaps` 사유(예: "연필이 마저 쓰는 무음")로는 필기 지연을 승인할 수 없고, `writing_lags`로 무음 gap을 승인할 수도 없다. 먼저 대본·분할로 지연을 없애고 예외는 마지막 수단이다. 실제 청취·의미 검토를 대신하지 않는다.
 
 ## 회로 근거와 필기 음성 저작
 

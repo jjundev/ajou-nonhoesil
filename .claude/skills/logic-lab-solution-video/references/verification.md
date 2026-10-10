@@ -37,6 +37,8 @@ Evidence is in `writing-flow.json`, `flow-frames`, and `narration-pacing.json`.
 Current gap review is hash-bound; changed PCM invalidates it. Audio meaning
 still requires actual listening, independently of all technical checks.
 
+narration-pacing.json 의 구간 행에서 `voice_end_frame`·`writing_end_frame`·`writing_lag_frames`·`completed_hold_frames` 를 확인한다. 음성 뒤 필기 지연 >60프레임은 `unreviewed_writing_lags` 로 review-required 이며, 현재 input_hash 의 `writing_lags` 행(segment_id·voice_end_frame·writing_end_frame·reason)만 예외로 받는다. 옛 `gaps` 승인은 지연을 승인하지 않는다. 도형 예산(shape_timing, B=min(폭 공식, 18×조각 수)) 변경은 timing 부터 다시 계산하고 WAV 는 보존한다. 타이밍이 바뀌면 절대 프레임으로 저작한 manifest `cameras` 가 필기 묶음과 겹쳐 assemble 이 `manual camera conflicts with writing chunk` 로 멈출 수 있으니 at_frame 을 새 timeline 에 맞춘다. 글자 없는 도형 전용 묶음은 쪽 전체·도형·연필 경계로 확인하고 글자 묶음의 26px 최소 크기는 그대로다.
+
 ## 회로 근거와 필기 음성 저작
 
 신규 교육 흐름은 `source/lesson.json`(schema_version=1)에 PageMap 순서의 steps를 작성한다. 각 row는 step_id, mode, reason_segment_ids, check_segment_ids, region_ids, annotation_ids, meaning_notes, source_refs를 가진다. circuit 단계는 관련 회로 reason과 표시가 각각 필요하며 식을 쓰기 전에 회로 연결/가정을 설명한다. calculation 단계는 회로 목록을 비우고 exemption_reason에 제목·기존 근거의 후속 정리 등 이유를 명시한다. 단순 제목이나 계산마다 왕복하지 않는다. 기존 lesson 없는 run은 재개 가능하다.
