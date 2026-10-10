@@ -40,7 +40,10 @@ venv/
 
 # 풀이영상 제작자료 중 유료 호출 없이 다시 만들 수 있는 것(렌더·검증 프레임·조립본·자막 원본).
 # 최종 MP4·catalog·source/·layers/*.json·usage.json·WAV 는 추적한다 (logic-lab-solution-video).
+# layers/ 의 svg·png 는 동결 PDF 에서 extract 로 다시 만들 수 있어(비용 0) 무시한다.
 문제풀이영상/**/실행/**/renders/
 문제풀이영상/**/실행/**/verification/
 문제풀이영상/**/실행/**/composition/
 문제풀이영상/**/실행/**/caption-original/
+문제풀이영상/**/실행/**/layers/*.svg
+문제풀이영상/**/실행/**/layers/*.png

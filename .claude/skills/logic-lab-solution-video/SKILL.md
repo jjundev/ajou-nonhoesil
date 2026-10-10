@@ -48,6 +48,8 @@ PDF 흰 화면과 회로·격자·조건·Hint를 보존한다. 복습팩 PDF �
 
 git 에는 최종 MP4·catalog/README·`source/`·`layers/*.json`·`usage.json`·WAV 가 들어가고, 유료 호출 없이 다시 만들 수 있는 `renders/`·`verification/`·`composition/`·`caption-original/` 은 저장소 `.gitignore` 가 뺀다.
 
+`layers/` 의 svg·png(`original`·`candidate`·`animated`·`native`)도 동결 PDF 에서 `extract` 로 다시 만들 수 있어(비용 0, 같은 PDF·PyMuPDF 면 바이트까지 같다) `.gitignore` 가 뺀다. 새 clone 에서 이어 작업하면 `layers/candidates.json`·`layers.json` 이 옛 체크아웃의 절대 경로를 품고 있고 `candidates.json` 이 있으면 `extract` 가 PDF 를 다시 읽지 않으므로, `layers/candidates.json` 을 지운 뒤 `extract` 를 돌린다.
+
 복습노트·문제은행·보고서·전자회로2 의 파일을 수정하지 않는다. TTS/cache/budget 은 스킬 안 `scripts/tts_lib/` 를 이름이 격리된 adapter로 사용한다. 스캔 완전 자동 처리, 손글씨, 실제 키보드 녹화, 음성만 교체하는 별도 기능은 제공하지 않는다. 전달 시 검증한 범위와 실제 음성 미검증 여부를 구분한다.
 
 ## 회로 근거와 필기 음성 저작

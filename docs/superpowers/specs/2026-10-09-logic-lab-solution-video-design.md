@@ -34,7 +34,7 @@ PDF 판형은 A4 가로 그대로(상류 legacy 프로파일: 머리말 하단 5
 |---|---|---|
 | 9 | 상류 스냅샷 | `af86ffbc1004ca1e1f08c0c9125f3dc8272a8409` (2026-10-09 clean 확인) |
 | 10 | 풀이 그림 | 연필 wipe |
-| 11 | git | 최종 MP4·catalog/README·`source/`·`layers/*.json`·`usage.json`·WAV 커밋. `renders/`·`verification/`·`composition/`·`caption-original/` 는 무시 |
+| 11 | git | 최종 MP4·catalog/README·`source/`·`layers/*.json`(svg·png 는 무시)·`usage.json`·WAV 커밋. `renders/`·`verification/`·`composition/`·`caption-original/` 는 무시 |
 | 12 | 첫 실측 | 실험05 |
 
 ## 하지 않는 것
