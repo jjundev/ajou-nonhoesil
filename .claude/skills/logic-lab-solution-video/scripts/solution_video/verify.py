@@ -2,7 +2,7 @@ from pathlib import Path
 import json,wave
 from .util import digest,file_hash,read,write,command,local,browser
 from .media import probe,ffmpeg,source_checks
-from .subtitles import caption_notation_warnings
+from .subtitles import caption_notation_warnings,caption_srt_matches
 from .manifest import validate_manifest
 
 def verification_fingerprint(run):
@@ -120,6 +120,8 @@ def verify_run(run,hyperframes_entry):
         import io
         t=read(run/'source/timeline.json'); srt=run/'renders/captions.srt'
         if not srt.is_file() or not (run/'renders/master.mp4').is_file(): return False
+        # Cue numbers, wrapped text, line breaks and times must equal what write_srt makes from the timeline now.
+        if not caption_srt_matches(t,srt): return False
         # Compare captioned/master at each caption midpoint; lossy compression tolerance.
         import re,subprocess
         ranges=re.findall(r'(\d\d):(\d\d):(\d\d),(\d{3}) --> (\d\d):(\d\d):(\d\d),(\d{3})',srt.read_text())

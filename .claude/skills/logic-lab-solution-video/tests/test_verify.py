@@ -9,6 +9,22 @@ class VerifyTests(Sandbox):
         self.assertEqual(report['warnings'][0]['code'],'numeric_predicate')
         self.assertNotIn('caption_notation',report['checks'])
 
+    def test_captions_gate_rejects_srt_that_differs_from_write_srt(self):
+        # A captioned screen alone is not enough: cue numbers, wrapped lines and times must equal write_srt now.
+        from solution_video.subtitles import write_srt,burn_subtitles
+        from solution_video.media import ffmpeg
+        from solution_video.util import checked
+        text='그래서 반가산기의 합 출력 S는 A′B + AB′이고 XOR와 같아요.'
+        timeline=dict(rate=24000,segments=[dict(id='s',caption_text=text,start_sample=0,end_sample=24000,voice_samples=24000)])
+        write(self.run/'source/timeline.json',timeline);(self.run/'renders').mkdir(exist_ok=True)
+        master=self.run/'renders/master.mp4'
+        checked([ffmpeg(),'-y','-v','error','-f','lavfi','-i','color=c=black:s=1920x1080:r=30:d=1','-c:v','libx264','-pix_fmt','yuv420p',master])
+        srt=write_srt(timeline,self.run/'renders/captions.srt')
+        burn_subtitles(master,srt,self.run/'renders/final.mp4',S/'assets/fonts/Pretendard-Bold.ttf')
+        self.assertEqual(verify_run(self.run,Path('/missing/hyperframes'))['checks']['captions']['status'],'passed')
+        srt.write_text(srt.read_text(encoding='utf-8').replace('S는\nA′B + AB′','S는 A′B +\nAB′'),encoding='utf-8')
+        self.assertEqual(verify_run(self.run,Path('/missing/hyperframes'))['checks']['captions']['status'],'unverified')
+
     def test_final_media_checked_after_burn(self):
         report=verify_run(self.run,Path('/missing/hyperframes'))
         self.assertFalse(report['complete']); self.assertIsNone(report['final_sha256'])
