@@ -46,10 +46,18 @@ def inspect_caption_notation(text:str,segment_id:str)->list[dict]:
     return [issues[span] for span in sorted(issues)]
 
 def caption_notation_warnings(segments:list[dict])->list[dict]:
-    return [issue for segment in segments if isinstance(segment,dict)
-            and isinstance(segment.get('caption_text'),str)
-            for issue in inspect_caption_notation(segment['caption_text'],segment.get('id','unknown'))
-            if issue['severity']=='warning']
+    warnings=[]
+    for segment in segments:
+        if not isinstance(segment,dict):continue
+        # pcm-chunks-v1: 경고는 cue 하나인 청크 자막 기준(span 도 청크 안), 어느 청크인지 chunk_id 로 알린다.
+        chunked=isinstance(segment.get('chunks'),list)
+        for item in segment['chunks'] if chunked else [segment]:
+            if not isinstance(item,dict) or not isinstance(item.get('caption_text'),str):continue
+            for issue in inspect_caption_notation(item['caption_text'],segment.get('id','unknown')):
+                if issue['severity']!='warning':continue
+                if chunked:issue['chunk_id']=item.get('id','unknown')
+                warnings.append(issue)
+    return warnings
 
 def validate_caption_notation(text:str,segment_id:str)->None:
     errors=[i for i in inspect_caption_notation(text,segment_id) if i['severity']=='error']
@@ -126,6 +134,12 @@ def wrap_caption(text:str,max_chars:int=34,max_lines:int=2)->str:
 
 def split_caption(text:str,max_chars:int=34)->list[str]:
     return [wrap_caption(unit,max_chars) for unit in caption_units(text)]
+
+def chunk_caption(text:str)->str:
+    """One authored speech chunk = exactly one cue (same sentence/comma rules as split_caption); a comma-ending clause keeps its comma."""
+    units=_caption_units(text,not text.rstrip().endswith(','))
+    if len(units)!=1:raise InputError('speech chunk must contain exactly one caption cue (split it at the sentence/comma boundary): '+text)
+    return wrap_caption(units[0])
 
 def write_srt(timeline,dest):
     lines=[]; num=0
