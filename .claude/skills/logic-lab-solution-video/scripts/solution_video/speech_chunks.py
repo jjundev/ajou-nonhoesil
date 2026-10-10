@@ -170,3 +170,37 @@ def validate_chunk_audio(segments:list[dict],voices:list[dict],run:Path,config:d
         record=actual[expected['id']]
         if any(record.get(k)!=expected[k] for k in ['samples','rate','key','chunks']) or _pcm(record,run)!=expected['raw']:
             raise InputError('joined PCM/chunk boundaries changed: '+expected['id'])
+
+# --- timeline cues (absolute samples) ------------------------------------------------------------------------------
+def caption_cues_for(segment,voice,start_sample)->list[dict]:
+    """Absolute cue samples = segment start + measured relative chunk boundaries. Hold/padding after the voice gets no cue."""
+    boundaries=voice.get('chunks')
+    if not isinstance(boundaries,list) or [c.get('id') for c in boundaries]!=[c['id'] for c in segment['chunks']]:
+        raise InputError('audio chunk boundaries missing/mismatched: '+segment['id'])
+    cues=[]
+    for chunk,boundary in zip(segment['chunks'],boundaries):
+        lo,hi=boundary.get('start_sample'),boundary.get('end_sample')
+        if type(lo) is not int or type(hi) is not int:raise InputError('invalid sample boundaries: '+segment['id']+'__'+chunk['id'])
+        cues.append(dict(segment_id=segment['id'],chunk_id=chunk['id'],caption_text=chunk['caption_text'],start_sample=start_sample+lo,end_sample=start_sample+hi))
+    return cues
+
+def validate_caption_cues(timeline:dict)->list[dict]:
+    """Cues tile each segment's measured voice exactly, in manifest chunk order, never into the hold."""
+    from .subtitles import caption_text,chunk_caption
+    cues=timeline.get('caption_cues')
+    if timeline.get('caption_timing')!=MODE or not isinstance(cues,list) or not cues:raise InputError('measured caption cues required')
+    index=0
+    for seg in timeline['segments']:
+        chunks=seg.get('chunks');cursor=seg['start_sample']
+        if not isinstance(chunks,list) or not chunks:raise InputError('missing timeline speech chunks: '+str(seg.get('id')))
+        for chunk in chunks:
+            if index>=len(cues):raise InputError('missing caption cue: '+seg['id']+'__'+chunk['id'])
+            cue=cues[index];index+=1;lo,hi=cue.get('start_sample'),cue.get('end_sample')
+            chunk_caption(caption_text(dict(cue,id=seg['id']+'__'+chunk['id'])))
+            if (cue.get('segment_id')!=seg['id'] or cue.get('chunk_id')!=chunk['id'] or cue.get('caption_text')!=chunk['caption_text']
+                or type(lo) is not int or type(hi) is not int or lo!=cursor or hi-lo<24
+                or hi>seg['start_sample']+seg['voice_samples']):raise InputError('invalid measured caption cue: '+seg['id']+'__'+chunk['id'])
+            cursor=hi
+        if cursor!=seg['start_sample']+seg['voice_samples'] or cursor>seg['end_sample']:raise InputError('caption/voice coverage mismatch: '+seg['id'])
+    if index!=len(cues):raise InputError('extra caption cue')
+    return cues

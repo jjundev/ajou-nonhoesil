@@ -143,7 +143,13 @@ def chunk_caption(text:str)->str:
 
 def write_srt(timeline,dest):
     lines=[]; num=0
-    for seg in timeline['segments']:
+    from .speech_chunks import MODE,validate_caption_cues
+    if timeline.get('caption_timing') not in (None,MODE):raise InputError('unsupported caption timing mode')
+    chunk_mode=timeline.get('caption_timing')==MODE
+    # pcm-chunks-v1: cue 시간은 실측 청크 샘플 경계 그대로(글자 수 비례 배분 없음). legacy 는 아래 기존 방식.
+    for num,cue in enumerate(validate_caption_cues(timeline) if chunk_mode else [],1):
+        lines.append(f'{num}\n{_stamp(cue["start_sample"],timeline["rate"])} --> {_stamp(cue["end_sample"],timeline["rate"])}\n{chunk_caption(caption_text(cue))}\n')
+    for seg in [] if chunk_mode else timeline['segments']:
         text=caption_text(seg); chunks=split_caption(text)
         lengths=[len(unit) for unit in _caption_units(text,False)]
         duration=seg.get('voice_samples',seg['end_sample']-seg['start_sample']); weights=sum(lengths); start=seg['start_sample']; offset=0

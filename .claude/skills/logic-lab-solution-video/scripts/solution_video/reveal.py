@@ -5,6 +5,9 @@ from .writing import validate_writing,representative_height
 FIGURE_DRAW_FRAMES=60  # one solution figure wipes in 2 s; longer voice still stretches the segment
 
 def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=None):
+    from .speech_chunks import MODE,validate_speech_chunks,validate_caption_cues,caption_cues_for
+    if manifest.get('caption_timing') not in (None,MODE):raise InputError('unsupported caption timing mode')
+    chunk_mode=manifest.get('caption_timing')==MODE; validate_speech_chunks(manifest['segments'],required=chunk_mode); caption_cues=[]
     validate_config(config); fps,rate=30,24000; per_frame=800
     voices={a['id']:a for a in audio}
     if len(voices)!=len(audio) or set(voices)!={s['id'] for s in manifest['segments']}: raise InputError('audio/segment mismatch')
@@ -65,11 +68,13 @@ def build_timeline(manifest,layers,audio,config,writing=None,*,minimum_frames=No
                 events.extend(dict(id=sid,frame=at,kind='shape') for sid,anchor in manifest['shape_anchors'].items() if anchor==gid)
             n=max(n,offset if pencil else count*interval)+hold
         n=max(n,(minimum_frames or {}).get(seg['id'],0))
+        if chunk_mode:caption_cues+=caption_cues_for(seg,voices[seg['id']],frame*per_frame)  # 실측 청크 경계(segment 끝 hold 에는 자막 없음)
         segs.append(dict(seg,start_sample=frame*per_frame,end_sample=(frame+n)*per_frame,voice_samples=voices[seg['id']]['samples']))
         frame+=n
     # Dedicated finished full-page hold; all glyphs remain visible without swapping SVG.
     frame+=max(hold,30)
     result=dict(fps=fps,rate=rate,total_samples=frame*per_frame,total_frames=frame,segments=segs,events=sorted(events,key=lambda e:e['frame']),cameras=manifest.get('cameras',[]))
+    if chunk_mode:result.update(caption_timing=MODE,caption_cues=caption_cues);validate_caption_cues(result)
     if writing is not None:result['writing']=writing
     if pencil:result['writing_spans']=spans
     if spatial:result['writing_unit_spans']=unit_spans
