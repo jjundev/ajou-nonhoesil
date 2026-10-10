@@ -85,3 +85,32 @@ def test_equation_cards_keep_prose_and_do_not_nest(tmp_path):
     html = paths['explanation_html'].read_text()
     assert prose in html
     assert html.count('class="equation-card"') == 1
+
+
+def test_tables_are_cards_in_problem_and_solution_without_changing_cells(tmp_path):
+    m, root, data = setup(tmp_path)
+    folder = tmp_path / 'stage'; folder.mkdir()
+    table = '<table><tr><th>D</th><th>A2</th></tr><tr><td>0000 0001</td><td>0</td></tr><tr><td>0000 0010</td><td></td></tr></table>'
+    data['problems'][0]['html']['original'] = '<p>표를 완성하세요.</p>' + table + '<p>첫 행은 주어졌어요.</p>'
+    fragment = root / m['problems'][0]['explanation_fragment']
+    fragment.write_text(FRAGMENT.replace('<p>Y=I0예요.</p>', '<div class="table-wrap">'+table+'</div>'))
+    paths = write_explanations(m, data, root, folder, ASSETS)
+    html = paths['explanation_html'].read_text()
+    parser = Parser(); parser.feed(html)
+    cards = [n for n in parser.root.walk() if 'table-card' in n.attrs.get('class', '').split()]
+    assert len(cards) == 2
+    assert all(n.attrs.get('aria-label') == '표' for n in cards)
+    assert html.count(table) == 2
+    assert '<p>첫 행은 주어졌어요.</p>' in html
+    assert '0000 0010' in paths['explanation_md'].read_text()
+
+
+def test_authored_table_card_is_not_nested(tmp_path):
+    m, root, data = setup(tmp_path)
+    folder = tmp_path / 'stage'; folder.mkdir()
+    card = '<div class="table-card" role="group" aria-label="표"><table><tr><td></td></tr></table></div>'
+    data['problems'][0]['html']['original'] = card
+    paths = write_explanations(m, data, root, folder, ASSETS)
+    html = paths['explanation_html'].read_text()
+    assert html.count('class="table-card"') == 1
+    assert card in html

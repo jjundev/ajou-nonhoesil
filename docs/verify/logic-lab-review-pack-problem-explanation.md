@@ -84,3 +84,13 @@ publish의 sibling 백업을 기존 테스트가 active pack으로 읽어 두 �
 간격·수식 카드 수정 커밋 `b3fabfd`를 포함하여 main의 도입 설명 개선(403b649)과 통합했다. 다섯 manifest 충돌은 서로 다른 저작 정보는 각각 유지하고, generated_files는 양쪽의 추가와 기존 항목 삭제를 반영하여 해결했다. 현재 main의 기존 학습자료 844개(의도적으로 갱신한 manifest/저장 템플릿/provenance 제외)는 바이트 그대로 보존했다. 통합 상태에서 다섯 팩 check_pack 통과.
 
 통합 전체 테스트: 2903 passed, 1206 subtests passed, 9 skipped, 1 failed(79.23s). 실패는 앞서 공개한 기존 `tests/test_merge_report.py::TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed` 한 건이며, 문제설명·간격·수식 카드·도입 설명 검사는 통과했다. 사용자가 해당 실패가 보고된 상태에서 커밋 및 main 병합을 요청하여, 이를 기록하고 로컬 통합했다. 원격 push는 하지 않는다.
+
+## 표 카드 수정 (2026-10-10)
+
+문제설명의 일반 표가 본문에 붙어 보이는 요청에 따라 `table-card`를 추가했다. `table_cards.py`는 표 HTML 전체의 위치를 기록하여 바깥에 카드만 추가하며, 머리·주어진 값·빈칸·rowspan/colspan 및 기존 table-wrap/work-table은 변경하지 않는다. 이미 작성한 카드는 중첩하지 않는다. 문제 읽기와 저작 설명 모두 적용되어 다섯 팩의 표 48개(9/0/8/12/19)를 카드로 분리했다. 수식 카드와 같은 배경·테두리·여백 및 내부 가로 스크롤을 사용한다. 표 카드는 터치 문제 넘김에서 제외한다. 저작/검증 스킬 지침에도 기준을 반영했다.
+
+생성본의 문제/풀이 표 카드와 기존 카드 보존 검사를 추가하고 카드 수 0으로 실패하는 것을 확인한 뒤 구현하여 통과했다. 375px/1280px × light/dark에서 넓은 표의 내부 스크롤·빈칸 보존·문서 가로 넘침·터치 문제 넘김 방지 검사를 추가했고 통과했다. 모든 발행 문항에서 표가 카드 안에 있는지와 카드 스타일을 검사한다. 기존 식/간격 검사는 유지한다.
+
+다섯 팩 check_pack 통과. 기존 발행 HTML/MD/PDF 65개는 HEAD와 바이트 동일함을 확인했다. 첨부 문항 `q-prio-onehot`의 dark 1280px 및 light 375px 화면은 `output/validation/problem-explanations/table-card-*.png`로 보존했다.
+
+최종 전체 테스트: 2909 passed, 1206 subtests passed, 9 skipped, 1 failed(85.78s). 실패는 기존 `TestIntegration::test_merge_lab_report_warns_when_body_cannot_be_removed` 한 건이며 표/수식/간격/브라우저 관련 검사는 모두 통과했다. `git diff --check` 통과.

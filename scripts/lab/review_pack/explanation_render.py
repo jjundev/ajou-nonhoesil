@@ -6,6 +6,7 @@ import html
 import shutil
 from .explanation_content import load_explanations, within
 from .equation_cards import separate_equations
+from .table_cards import separate_tables
 from .manifest import output_names, DATA
 from .navigation import render_navigation
 from .html2md import export_document, Parser
@@ -48,7 +49,7 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
         problem+='</div>'
         fragment=row.fragment.replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
         # Fragment paths are document-relative; preserve both authoring and published form.
-        bodies.append(f'<article class="topic" id="{esc(p["id"])}"><h3>문제 {esc(p["number"])} · {esc(p["title"])}</h3>'+separate_equations(problem)+separate_equations(fragment)+'</article>')
+        bodies.append(f'<article class="topic" id="{esc(p["id"])}"><h3>문제 {esc(p["number"])} · {esc(p["title"])}</h3>'+separate_tables(separate_equations(problem))+separate_tables(separate_equations(fragment))+'</article>')
         target=folder/DATA/manifest['problems'][next(i for i,x in enumerate(manifest['problems']) if x['id']==p['id'])]['explanation_fragment']
         target.parent.mkdir(parents=True,exist_ok=True)
         if target.resolve()!=within(author_root,'problem-explanations/'+p['id']+'.html').resolve():

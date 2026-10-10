@@ -109,6 +109,8 @@
     .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
     .equation-card .katex-display { margin: 0; text-align: left; }
     .equation-card .katex-display > .katex { text-align: left; }
+    .table-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .table-card > table { margin: 0; }
     .table-wrap { overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
     th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
@@ -769,7 +771,7 @@
       main.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         sx = t.clientX; sy = t.clientY;
-        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .katex-display, .table-wrap, svg, input, details'));
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .table-card, .katex-display, .table-wrap, svg, input, details'));
       }, { passive: true });
       main.addEventListener('touchend', (e) => {
         if (skip) return;

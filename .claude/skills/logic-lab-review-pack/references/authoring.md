@@ -53,3 +53,5 @@ MD는 위젯 조작부를 제외하고 정적 자료·힌트·풀이를 모두 �
 직계 div.sum[hidden]에 시작 방법·핵심 판단·검산을 담는다. 본문 풀이를 details나 hidden으로 접지 않는다. 조각은 problem-explanations/<id>.html, 새 설명 그림은 problem-explanations/figures/<name>.svg에 저장한다. 그림은 직접 제작하고 viewBox/title, 최소 18px 라벨, 두 테마의 대비를 확인한다. 기존 직접 제작 SVG를 재사용해도 된다. 발행 문서의 그림 경로는 자료/problem-explanations/figures/.. 또는 기존 자료/figures/..이다. 표는 table-wrap 텍스트 표로 쓴다.
 
 독립된 식은 설명 문장과 문단을 분리한다. 문제설명 렌더러는 식만 있는 `<p>`(일반 부울식 또는 `$...$`/`$$...$$`/LaTeX display 문단)를 수식 카드로 자동 감싼다. 원문 식 번호와 내용은 그대로 보존하며, 감지되지 않는 독립 수식은 `<div class="equation-card" role="group" aria-label="수식">` 안에 명시한다. 카드 안에는 식을 넣고 해석·조건·주의 문장은 밖에 둔다.
+
+문제설명의 표도 본문과 분리된 `table-card`로 표시한다. 렌더러가 문제 읽기와 설명 조각의 표를 자동으로 감싸며 기존 `table-wrap`/`work-table`, 표 머리·주어진 값·빈칸·병합 셀은 그대로 유지한다. 명시적으로 저작한 table-card는 중첩하지 않는다. 표에 대한 해석이나 주의 문장은 카드 밖에 둔다.

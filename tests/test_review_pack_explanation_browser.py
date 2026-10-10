@@ -77,8 +77,9 @@ def test_all_published_explanation_articles(browser,number,width,theme):
         page.evaluate('(id)=>location.hash=id',ident)
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
         assert page.locator('#'+ident).is_visible()
+        assert page.locator('#'+ident+' table').evaluate_all('(tables)=>tables.every(el=>el.closest(".table-card"))')
         assert page.locator('#'+ident+' [data-explanation="solve"]').is_visible()
-        assert page.locator('#'+ident+' .equation-card').evaluate_all('''cards => cards.every(el => {
+        assert page.locator('#'+ident+' .equation-card, #'+ident+' .table-card').evaluate_all('''cards => cards.every(el => {
             const style = getComputedStyle(el);
             return parseFloat(style.borderTopWidth) >= 1 && parseFloat(style.paddingTop) >= 16
                 && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.overflowX === 'auto';
@@ -148,4 +149,33 @@ def test_formula_card_scroll_does_not_turn_the_page(browser, theme):
     card.evaluate('el => el.scrollLeft = 60')
     assert card.evaluate('el => el.scrollLeft') > 0
     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    ctx.close()
+
+
+@pytest.mark.parametrize('width', [375, 1280])
+@pytest.mark.parametrize('theme', ['light', 'dark'])
+def test_generated_wide_table_scrolls_inside_card(browser, tmp_path, width, theme):
+    import json
+    m, run, data = setup(tmp_path)
+    workbook = run / m['problems'][0]['workbook_fragment']
+    authored = json.loads(workbook.read_text())
+    table = '<table><tr>' + ''.join(f'<th>Input{i}</th>' for i in range(64)) + '</tr><tr>' + '<td></td>' * 64 + '</tr></table>'
+    authored['original'] = '<p>표를 채우세요.</p><div class="table-wrap work-table">' + table + '</div>'
+    workbook.write_text(json.dumps(authored))
+    paths = assemble(m, run, tmp_path/'stage', Path('.claude/skills/logic-lab-review-pack/assets'))
+    ctx = browser.new_context(viewport=dict(width=width, height=900), color_scheme=theme, has_touch=True)
+    page = ctx.new_page();page.goto(paths['explanation_html'].as_uri()+'#q-mux-001')
+    card = page.locator('#q-mux-001 .table-card')
+    assert card.is_visible()
+    assert card.locator('th').count() == 64
+    assert card.locator('td').evaluate_all('cells=>cells.every(el=>el.textContent==="")')
+    assert card.evaluate('el=>el.scrollWidth>el.clientWidth')
+    card.evaluate('''el => {
+        el.dispatchEvent(new TouchEvent('touchstart', {bubbles:true, touches:[new Touch({identifier:1,target:el,clientX:300,clientY:200})]}));
+        el.dispatchEvent(new TouchEvent('touchend', {bubbles:true, changedTouches:[new Touch({identifier:1,target:el,clientX:100,clientY:200})]}));
+        el.scrollLeft = 60;
+    }''')
+    assert page.evaluate('location.hash') == '#q-mux-001'
+    assert card.evaluate('el=>el.scrollLeft') > 0
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     ctx.close()

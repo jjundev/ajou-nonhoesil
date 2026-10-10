@@ -6,8 +6,8 @@
   },
   "local_adjustments": {
     "note-template.html": {
-      "sha256": "76ce616326cb1e50ec75e27ab5e7e072a0c6b562df55a82ba6276063887db5fd",
-      "reason": "Preserve section spacing and show standalone equations as separate scrollable cards."
+      "sha256": "96c6b1f458cb571fd4be42baa796c3c9c6a919393f6c0e361f34e514aa66310b",
+      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards."
     }
   }
 }

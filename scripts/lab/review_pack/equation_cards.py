@@ -18,7 +18,12 @@ def standalone_equation(source: str) -> bool:
                 and not re.search(r'[가-힣]|[A-Za-z]{4,}', value))
 
 
-class _Paragraphs(HTMLParser):
+class _CardBlocks(HTMLParser):
+    card_class = 'equation-card'
+
+    def should_wrap(self, tag, source):
+        return tag == 'p' and standalone_equation(source)
+
     def __init__(self, source):
         super().__init__(convert_charrefs=True)
         self.source = source
@@ -36,7 +41,7 @@ class _Paragraphs(HTMLParser):
         if tag in {'img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'wbr'}:
             return
         inside = any(row[2] for row in self.stack)
-        card = 'equation-card' in dict(attrs).get('class', '').split()
+        card = self.card_class in dict(attrs).get('class', '').split()
         self.stack.append((tag, self.source_offset(), inside or card))
 
     def handle_startendtag(self, tag, attrs):
@@ -46,16 +51,16 @@ class _Paragraphs(HTMLParser):
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
                 _, start, inside_card = self.stack[i]
-                if tag == 'p' and not inside_card:
+                if not inside_card:
                     end = self.source.index('>', self.source_offset()) + 1
-                    if standalone_equation(self.source[start:end]):
+                    if self.should_wrap(tag, self.source[start:end]):
                         self.ranges.append((start, end))
                 del self.stack[i:]
                 break
 
 
 def separate_equations(source: str) -> str:
-    parser = _Paragraphs(source); parser.feed(source)
+    parser = _CardBlocks(source); parser.feed(source)
     for start, end in reversed(parser.ranges):
         source = (source[:start] + '<div class="equation-card" role="group" aria-label="수식">'
                   + source[start:end] + '</div>' + source[end:])
