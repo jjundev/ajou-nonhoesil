@@ -5,7 +5,7 @@ from .contracts import InputError
 from .writing import timing_settings
 STAGES=['inputs','layers','script','voice','timing','composition','render','captions','verify','publish']
 FACTORS={
- 'inputs':['source/inputs.json','source/pair.json','source/snapshots/*'],
+ 'inputs':['source/inputs.json','source/pair.json','source/snapshots/**/*'],  # 동결한 그림은 snapshots/figures/<sha>/ 아래라 재귀 글롭이어야 한다
  'layers':['source/map.json','layers/candidates.json','layers/original.svg'],
  'script':['source/manifest.json','source/coverage.json','source/circuit-review.json','source/lesson.json','verification/gate.json'],
  'voice':['source/config.json'], 'timing':['source/audio.json','assets/voice/*.wav'],

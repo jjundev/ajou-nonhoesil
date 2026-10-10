@@ -1,6 +1,6 @@
 from fixtures import *
 from solution_video.state import finish_stage,recover_run,STAGES
-from solution_video.util import write
+from solution_video.util import write,read
 class StateTests(Sandbox):
     def test_lesson_edit_invalidates_script(self):
         from solution_video.state import stage_fingerprint
@@ -73,3 +73,22 @@ class StateTests(Sandbox):
             self.assertEqual(recover_run(self.run),'script')
             finish();p=root/'scripts/solution_video/writing_camera.py';p.write_text(p.read_text()+'\n# camera edit\n')
             self.assertEqual(recover_run(self.run),'composition');self.assertEqual(file_hash(self.run/voice['path']),before)
+
+class FrozenFigureFingerprintTests(Sandbox):
+    """source/snapshots/figures/<파일 sha>/<이름> 은 한 단계 아래에 있다: 비재귀 글롭은 동결한 그림 변조를 놓친다."""
+    def prepared_run(self):
+        import importlib.util,shutil
+        spec=importlib.util.spec_from_file_location('solution_cli_state',S/'scripts/video.py');cli=importlib.util.module_from_spec(spec);spec.loader.exec_module(cli)
+        repo=self.run/'repo';(repo/'복습노트').mkdir(parents=True);shutil.copytree(REPO/'복습노트/실험05',repo/'복습노트/실험05')
+        batch=cli.prepare_batch(repo,'실험05',['기출4']);item=read(batch/'batch.json')['items'][0]
+        self.assertEqual(item['status'],'author-required');return batch/item['run']
+    def test_tampered_or_deleted_frozen_figure_restarts_at_inputs(self):
+        run=self.prepared_run()
+        frozen=sorted((run/'source/snapshots/figures').rglob('*.*'));self.assertEqual([p.suffix for p in frozen],['.png','.svg'])
+        self.assertEqual(recover_run(run),'layers')  # 대조: 변조가 없으면 inputs 는 유효하다
+        for path in frozen:
+            original=path.read_bytes()
+            path.write_bytes(original+b'\0');self.assertEqual(recover_run(run),'inputs',path.name+' 변조')
+            path.write_bytes(original);self.assertEqual(recover_run(run),'layers',path.name+' 복원')
+            path.unlink();self.assertEqual(recover_run(run),'inputs',path.name+' 삭제')
+            path.write_bytes(original);self.assertEqual(recover_run(run),'layers')

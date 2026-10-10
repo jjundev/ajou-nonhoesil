@@ -319,7 +319,7 @@
   "scripts/solution_video/review_adapter.py": "TTS 모듈을 형제 스킬 대신 내재화한 scripts/tts_lib 에서, 비공개 모듈 이름 _logic_lab_tts_lib",
   "scripts/solution_video/publication.py": "게시 lock 모듈 이름 _logic_lab_tts_lib; 최종 파일 이름 접두어를 표시 라벨로; 게시 전 검토 파일을 정확히 2개가 아니라 audio·visual 포함으로 확인(pacing-review.json 도 *-review.json 이라 게시가 막혔다)",
   "scripts/solution_video/annotations.py": "폰트를 내재화한 assets/fonts 에서; region 검사에서 \"work_bbox 보다 위\" 규칙을 지우고 \"work_bbox 와 겹침\"만 남김(왼쪽 조건 패널의 표·문장·회로를 확대·주석 대상으로)",
-  "scripts/solution_video/state.py": "폰트를 내재화한 assets/fonts 에서",
+  "scripts/solution_video/state.py": "폰트를 내재화한 assets/fonts 에서; inputs 지문 글롭을 source/snapshots/**/* 로(동결한 그림 snapshots/figures/<sha>/ 의 변조·삭제를 잡는다)",
   "scripts/solution_video/util.py": "환경변수 접두사 EC2_ → LOGIC_LAB_; PyMuPDF 1.28 의 import fitz 경고를 stderr 로 돌려 CLI stdout 을 JSON 으로 유지",
   "scripts/solution_video/media.py": "환경변수 접두사 EC2_ → LOGIC_LAB_",
   "tests/test_composition.py": "GSAP 경로를 내재화한 assets/runtime 에서",
@@ -341,13 +341,14 @@
   "references/narration-and-timing.md": "논리식 음성·자막과 ~해요체 절, 기호 예시를 논리회로로; 바/낫 경고·발음 띄움 갱신",
   "tests/test_caption_notation.py": "논리식 경고·기본값 테스트 추가",
   "references/pdf-and-coverage.md": "figure 도형 규칙, md_text 출처 실험NN_기출풀이.md, 논리회로 검토 근거, circuit 모드 의미; 게이트 비대상 잡음 허용; 탈락 항목 라벨·전부 탈락 시 failed; 조건 대조가 표의 행·열 순서까지 봄; 풀이 그림 짝 SVG 동결; region 은 work_bbox 와 겹치지 않으면 어디든(왼쪽 조건 패널의 표·문장도, 패널 전체는 피함)",
-  "references/verification.md": "수용 테스트를 LOGIC_LAB_ACCEPTANCE_BATCH·test_lab_acceptance 로",
+  "references/verification.md": "수용 테스트를 LOGIC_LAB_ACCEPTANCE_BATCH·test_lab_acceptance 로; 동결 그림 변조는 inputs부터 재개",
   "tests/test_publication.py": "라벨 접두어 파일 이름 테스트 추가; pacing-review 가 게시를 막지 않는 테스트",
   "tests/test_lab_acceptance.py": "논회실 신규: 실험05 실측 batch opt-in 검사(LOGIC_LAB_ACCEPTANCE_BATCH)",
   "tests/fixtures.py": "defective_pack: 실제 팩 사본에 원문 LaTeX 를 찍어 게이트 실패를 재현(2026-10-09 다시 렌더한 팩은 결함이 없다); synthetic_pack: 순서·표를 마음대로 바꿔 쓰는 합성 팩(manifest·문제/풀이 PDF, 칸 글자의 \\n 은 접힌 칸)",
   "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부",
   "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
-  "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구"
+  "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구",
+  "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
