@@ -456,7 +456,8 @@
       "answer_status": "verified",
       "title": "2×1 MUX의 게이트 설계",
       "fragment": "problems/q-mux2.html",
-      "workbook_fragment": "workbook/q-mux2.json"
+      "workbook_fragment": "workbook/q-mux2.json",
+      "explanation_fragment": "problem-explanations/q-mux2.html"
     },
     {
       "id": "q-mux4",
@@ -530,7 +531,8 @@
       "answer_status": "verified",
       "title": "Enable 있는 4×1 MUX 표 완성",
       "fragment": "problems/q-mux4.html",
-      "workbook_fragment": "workbook/q-mux4.json"
+      "workbook_fragment": "workbook/q-mux4.json",
+      "explanation_fragment": "problem-explanations/q-mux4.html"
     },
     {
       "id": "q-active",
@@ -655,7 +657,8 @@
       "answer_status": "verified",
       "title": "보충: 1×2 DMUX의 게이트 설계",
       "fragment": "problems/q-demux2.html",
-      "workbook_fragment": "workbook/q-demux2.json"
+      "workbook_fragment": "workbook/q-demux2.json",
+      "explanation_fragment": "problem-explanations/q-demux2.html"
     },
     {
       "id": "q-design4",
@@ -720,7 +723,8 @@
       "answer_status": "verified",
       "title": "보충: 지정 게이트로 4×1 MUX 설계",
       "fragment": "problems/q-design4.html",
-      "workbook_fragment": "workbook/q-design4.json"
+      "workbook_fragment": "workbook/q-design4.json",
+      "explanation_fragment": "problem-explanations/q-design4.html"
     },
     {
       "id": "q-switch",
@@ -854,7 +858,8 @@
       "answer_status": "verified",
       "title": "디코더와 MUX·DMUX의 관계",
       "fragment": "problems/q-decoder.html",
-      "workbook_fragment": "workbook/q-decoder.json"
+      "workbook_fragment": "workbook/q-decoder.json",
+      "explanation_fragment": "problem-explanations/q-decoder.html"
     },
     {
       "id": "q-tri",
@@ -928,7 +933,8 @@
       "answer_status": "disputed",
       "title": "활성 Low tri-state 버퍼로 MUX 설계",
       "fragment": "problems/q-tri.html",
-      "workbook_fragment": "workbook/q-tri.json"
+      "workbook_fragment": "workbook/q-tri.json",
+      "explanation_fragment": "problem-explanations/q-tri.html"
     },
     {
       "id": "q-muxdef",
@@ -966,7 +972,8 @@
       "answer_status": "verified",
       "title": "MUX를 간단히 서술",
       "fragment": "problems/q-muxdef.html",
-      "workbook_fragment": "workbook/q-muxdef.json"
+      "workbook_fragment": "workbook/q-muxdef.json",
+      "explanation_fragment": "problem-explanations/q-muxdef.html"
     },
     {
       "id": "q-demuxdef",
@@ -995,7 +1002,8 @@
       "answer_status": "verified",
       "title": "DMUX를 간단히 서술 — 기출 여부 미확인",
       "fragment": "problems/q-demuxdef.html",
-      "workbook_fragment": "workbook/q-demuxdef.json"
+      "workbook_fragment": "workbook/q-demuxdef.json",
+      "explanation_fragment": "problem-explanations/q-demuxdef.html"
     },
     {
       "id": "q-difference",
@@ -1025,7 +1033,8 @@
       "answer_status": "verified",
       "title": "MUX와 DMUX의 차이 — 기출 여부 미확인",
       "fragment": "problems/q-difference.html",
-      "workbook_fragment": "workbook/q-difference.json"
+      "workbook_fragment": "workbook/q-difference.json",
+      "explanation_fragment": "problem-explanations/q-difference.html"
     },
     {
       "id": "q-demux4",
@@ -1054,7 +1063,8 @@
       "answer_status": "disputed",
       "title": "1×4 DMUX 출력표 — 기출 여부 미확인",
       "fragment": "problems/q-demux4.html",
-      "workbook_fragment": "workbook/q-demux4.json"
+      "workbook_fragment": "workbook/q-demux4.json",
+      "explanation_fragment": "problem-explanations/q-demux4.html"
     },
     {
       "id": "q-mux2-graded",
@@ -1083,7 +1093,8 @@
       "answer_status": "verified",
       "title": "채점본 2×1 MUX의 지정 네 행",
       "fragment": "problems/q-mux2-graded.html",
-      "workbook_fragment": "workbook/q-mux2-graded.json"
+      "workbook_fragment": "workbook/q-mux2-graded.json",
+      "explanation_fragment": "problem-explanations/q-mux2-graded.html"
     },
     {
       "id": "q-active-general",
@@ -1113,7 +1124,8 @@
       "answer_status": "verified",
       "title": "Active High와 Active Low의 정의",
       "fragment": "problems/q-active-general.html",
-      "workbook_fragment": "workbook/q-active-general.json"
+      "workbook_fragment": "workbook/q-active-general.json",
+      "explanation_fragment": "problem-explanations/q-active-general.html"
     },
     {
       "id": "q-empty-six",
@@ -1168,6 +1180,16 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    "검증결과.md",
+    "실험04_기출문제.html",
+    "실험04_기출문제.md",
+    "실험04_기출풀이.html",
+    "실험04_기출풀이.md",
+    "실험04_문제설명.html",
+    "실험04_문제설명.md",
+    "실험04_실험설명.html",
+    "실험04_실험설명.md",
+    "원문과_저작안내.md",
     "자료/assets/note-template.html",
     "자료/assets/review-interaction.css",
     "자료/assets/review-interaction.js",
@@ -1324,14 +1346,26 @@
     "자료/figures/solutions/q-tri-solution-01.svg",
     "자료/figures/tristate-bus.svg",
     "자료/manifest.json",
-    "검증결과.md",
-    "실험04_기출문제.html",
-    "실험04_기출문제.md",
-    "실험04_기출풀이.html",
-    "실험04_기출풀이.md",
-    "실험04_실험설명.html",
-    "실험04_실험설명.md",
-    "원문과_저작안내.md",
+    "자료/problem-explanations/q-active-general.html",
+    "자료/problem-explanations/q-decoder.html",
+    "자료/problem-explanations/q-demux2.html",
+    "자료/problem-explanations/q-demux4.html",
+    "자료/problem-explanations/q-demuxdef.html",
+    "자료/problem-explanations/q-design4.html",
+    "자료/problem-explanations/q-difference.html",
+    "자료/problem-explanations/q-mux2-graded.html",
+    "자료/problem-explanations/q-mux2.html",
+    "자료/problem-explanations/q-mux4.html",
+    "자료/problem-explanations/q-muxdef.html",
+    "자료/problem-explanations/q-tri.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
-  ]
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
 }
