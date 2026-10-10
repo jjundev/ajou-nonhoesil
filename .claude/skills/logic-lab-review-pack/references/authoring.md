@@ -27,3 +27,16 @@ HTML은 KaTeX용 $...$/$$...$$ 또는 data-tex를 가진 MathML을 지원한다.
 위젯은 이해에 필요한 경우에만 넣고 같은 내용을 static-equivalent에 표·그림·설명으로 남긴다.
 기본 mux2 위젯에는 S select, I0/I1 checkbox, output을 넣고 각 input을 label로 설명한다.
 MD는 위젯 조작부를 제외하고 정적 자료·힌트·풀이를 모두 펼쳐서 제공한다.
+
+## 문제설명 저작
+
+문제설명은 원문/조건/구할 것/주어진 그림을 문제지 payload에서 자동으로 가져온다. 추가 조각은 article/h1 없이 작성한다. 아래 data-explanation 영역을 순서대로 하나씩 포함한다.
+
+- understand(eli5): 무엇을 하는 문제인지, 기호의 뜻과 쉬운 직관.
+- start(formal): 실제 첫 줄 또는 첫 행을 작은 입력 예로 보여주고 {{NOTE_HREF}}#토픽ID로 개념 연결.
+- solve(formal): 모든 소문항의 단계별 판단 이유와 완성 표·식·회로.
+- verify(formal): 최종 답과 독립 계산/검산 방법. 단순히 “검산한다”라고만 쓰지 않는다.
+- pitfall(warn): 해당 문항의 실수와 이유. disputed는 “답안 충돌”, unresolved는 “정답 미확정” 경고와 적용 조건 필수.
+- retry(formal): 설명을 닫고 재현할 순서 1~3개의 li.
+
+직계 div.sum[hidden]에 시작 방법·핵심 판단·검산을 담는다. 본문 풀이를 details나 hidden으로 접지 않는다. 조각은 problem-explanations/<id>.html, 새 설명 그림은 problem-explanations/figures/<name>.svg에 저장한다. 그림은 직접 제작하고 viewBox/title, 최소 18px 라벨, 두 테마의 대비를 확인한다. 기존 직접 제작 SVG를 재사용해도 된다. 발행 문서의 그림 경로는 자료/problem-explanations/figures/.. 또는 기존 자료/figures/..이다. 표는 table-wrap 텍스트 표로 쓴다.

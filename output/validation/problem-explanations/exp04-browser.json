@@ -1,0 +1,246 @@
+{
+  "folder": "/Users/hyunjun_macbook_pro/.codex/worktrees/problem-explanations/논회실/tmp/review-pack/explain-04-final",
+  "checks": [
+    {
+      "id": "q-mux2",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux4",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux2",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-design4",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-decoder",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-tri",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-muxdef",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demuxdef",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-difference",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux4",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux2-graded",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-active-general",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux2",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-mux4",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux2",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-design4",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-decoder",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-tri",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-muxdef",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demuxdef",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-difference",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux4",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-mux2-graded",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-active-general",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-mux2",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux4",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux2",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-design4",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-decoder",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-tri",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-muxdef",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demuxdef",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-difference",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux4",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux2-graded",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-active-general",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-mux2",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-mux4",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux2",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-design4",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-decoder",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-tri",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-muxdef",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demuxdef",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-difference",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux4",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-mux2-graded",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-active-general",
+      "width": 1280,
+      "theme": "dark"
+    }
+  ],
+  "no_js": "pass"
+}

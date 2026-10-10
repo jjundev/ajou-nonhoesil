@@ -29,8 +29,8 @@ def test_explanation_navigation(browser,pages,width,theme):
     page.locator('.toc-list a').click()
     assert page.locator('.toc a[aria-current="true"]').get_attribute('href')=='#q-mux-001'
     if width<1024:assert page.locator('.layout').get_attribute('data-left')=='closed'
-    page.locator('#toggle-right').click()
-    assert page.locator('#panel-right .sum:not([hidden])').count()==1
+    if page.locator('.layout').get_attribute('data-right')!='open':page.locator('#toggle-right').click()
+    assert page.locator('#panel-right .sum:not([hidden])').is_visible()
     assert page.locator('.pack-nav,#progress-n,#progress-total,#progress-bar').count()==0
     assert page.locator('.katex-error').count()==0
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -61,3 +61,34 @@ def test_no_js_and_invalid_hash(browser,pages,hash_value):
     assert page.locator('article.topic').is_visible()
     assert page.locator('[data-explanation="solve"]').is_visible()
     assert page.locator('.toc-list a').is_visible();ctx.close()
+
+@pytest.mark.parametrize('number',range(1,6))
+@pytest.mark.parametrize('width',[375,1280])
+@pytest.mark.parametrize('theme',['light','dark'])
+def test_all_published_explanation_articles(browser,number,width,theme):
+    root=Path(__file__).resolve().parents[1]
+    path=root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_문제설명.html'
+    ctx=browser.new_context(viewport=dict(width=width,height=900),color_scheme=theme)
+    page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+    page.goto(path.as_uri())
+    ids=page.locator('main article.topic').evaluate_all('(a)=>a.map(x=>x.id)')
+    assert len(ids)==[12,14,15,12,19][number-1]
+    for ident in ids:
+        page.evaluate('(id)=>location.hash=id',ident)
+        page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
+        assert page.locator('#'+ident).is_visible()
+        assert page.locator('#'+ident+' [data-explanation="solve"]').is_visible()
+        assert page.locator('.katex-error').count()==0
+        assert page.locator('img').evaluate_all('(a)=>a.every(x=>x.complete&&x.naturalWidth>0)')
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert not errors
+    ctx.close()
+
+@pytest.mark.parametrize('number',range(1,6))
+def test_all_published_explanations_without_js(browser,number):
+    root=Path(__file__).resolve().parents[1]
+    path=root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_문제설명.html'
+    ctx=browser.new_context(java_script_enabled=False);page=ctx.new_page();page.goto(path.as_uri())
+    assert page.locator('article.topic').count()==[12,14,15,12,19][number-1]
+    assert page.locator('[data-explanation="verify"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
+    ctx.close()

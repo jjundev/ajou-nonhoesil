@@ -1,0 +1,386 @@
+{
+  "folder": "/Users/hyunjun_macbook_pro/.codex/worktrees/problem-explanations/논회실/tmp/review-pack/explain-05-final",
+  "checks": [
+    {
+      "id": "q-dec3x8",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 375,
+      "theme": "light"
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 375,
+      "theme": "dark"
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 1280,
+      "theme": "light"
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 1280,
+      "theme": "dark"
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 1280,
+      "theme": "dark"
+    }
+  ],
+  "no_js": "pass"
+}

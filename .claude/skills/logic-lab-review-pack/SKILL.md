@@ -7,7 +7,7 @@ description: 논리회로실험 1~10의 실험 설명, 예습·복습 자료, �
 
 오래전에 논리회로를 배운 학생이 기초부터 회로를 이해하고 기출을 풀 수 있게 한다.
 기존 보고서에 등장하는 용어를 안다고 가정하지 않는다. 완전판 설명+앞부분 요약과 고유 기출 전체가 기본이다.
-실험설명·기출문제·기출풀이 HTML 세 개와 같은 내용의 MD 세 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
+새 워크북 학습팩은 실험설명·기출문제·기출풀이·문제설명 HTML 네 개와 같은 내용의 MD 네 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
 
 REPO는 scripts/lab/config.py가 있는 저장소 루트. SKILL은 이 폴더. RUN은 REPO/tmp/review-pack/<실험NN>-<고유실행ID>.
 셸 작업 디렉터리를 REPO로 두고 Python 모듈을 실행한다. 실제 사용 가능한 Python 실행 파일을 확인한다.
@@ -82,7 +82,7 @@ python -m scripts.lab.review_pack build --root . --run RUN --stage STAGE
 python -m scripts.lab.review_pack check --folder STAGE
 ```
 
-build는 새 표시 버전에서 세 HTML, 세 MD, 출처와_문항목록.md를 실험 폴더 루트에, manifest.json·figures/·assets/를 `자료/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다.
+build는 problem_explanation_version=1인 새 워크북에서 네 HTML, 네 MD, 출처와_문항목록.md를 실험 폴더 루트에, manifest.json·figures/·assets/를 `자료/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다.
 은행 수입 팩에는 원문과_저작안내.md(루트)와 evidence/·authoring-index.json(`자료/`)도 복사한다.
 RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/를 예전처럼 RUN 루트에 둔다. build가 `자료/` 로 옮긴다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
@@ -117,7 +117,7 @@ RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 bui
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
 publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX·답 상자 밑 그림 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML 내용이 바뀌면 PDF를 다시 만든다. 링크 경로만 바뀐 경우(자료/ 이전)는 PDF 내용이 같으므로 다시 만들지 않는다.
-보고: 여섯 학습 파일 링크(legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
+보고: 문제설명 포함 여덟 학습 파일 링크(기존 워크북은 여섯 개, legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
 파일 생성 완료를 학생의 이해 완료라고 표현하지 않는다.
 
 ## 후속 요청과 경계
@@ -127,3 +127,13 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 
 **기존 목차 일괄 갱신.** `python -m scripts.lab.review_pack.navigation_upgrade --all`로 dry-run 목록을 확인하고 `python -m scripts.lab.review_pack.navigation_upgrade --all --apply --backup-dir <새 백업 폴더>`로 적용한다. 한 팩은 `--all` 대신 `--folder 복습노트/실험NN`을 쓴다. 명령은 모든 대상의 구조를 사전 검사하고 전체 팩을 백업한 뒤 탐색 부분과 동봉 note/review 템플릿만 바꾼다. 알 수 없는 HTML은 쓰기 전에 실패하며 본문·IDs·워크북 payload는 보존한다. 재실행의 변경 목록은 0이어야 한다. 적용 후 각 팩의 check와 브라우저 검증을 수행한다. 이미 내보낸 standalone HTML이 있으면 갱신한 원본으로 다시 내보낸다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.
+
+## 문제풀이 입문 설명
+
+새 워크북은 `problem_explanation_version=1`, 각 included 문항에 `explanation_fragment=problem-explanations/<id>.html`을 설정한다. `explanation_checks`는 source_visual/content/independent/browser를 별도로 not_run으로 초기화한다. 기존 팩과 legacy는 선택적 버전이 없어도 계속 읽는다.
+
+이론을 한 번 읽었지만 문제풀이 경험이 없는 학생에게 모든 문항·소문항을 설명한다. 첫 줄·이유·완성 답·검산을 생략하거나 기존 짧은 답안을 복사하는 것으로 끝내지 않는다. 저작 마크업과 검증은 references/authoring.md, format.md, verification.md를 따른다.
+
+`실험NN_문제설명.html/.md`는 실험설명의 같은 note-template, article.topic, eli5/formal/warn, 우측 sum, 목차와 이전/다음을 사용한다. 풀이·정답은 본문에 모두 펼친다. 읽음 RANGE는 `logic-lab-NN-problem-explanation`이며 기존 실험설명과 분리한다. 자료 이동 영역·진행 합계·학습 잠금·자동 채점은 넣지 않는다. 불확실성·성립 조건은 HTML에, 상세 출처는 MD에 둔다.
+
+기존 팩은 저작 RUN을 복원하거나 기존 HTML/MD/PDF를 다시 생성하지 않는다. `python -m scripts.lab.review_pack explain-stage --folder 복습노트/실험NN --author-root docs/learning-pack-source/실험NN/problem-explanations --stage <신규 stage>`로 소유 파일만 복사하고 설명을 추가한다. 사용자 파일은 기존 폴더에서 publish가 보존한다. 새 stage의 원문·내용·브라우저를 확인하여 explanation_checks를 갱신한 뒤 기존 publish로 발행한다. 문제지/해설지의 바이트가 그대로면 PDF도 다시 만들지 않는다. 백업을 남기고 기존 파일 보존 해시를 기록한다.
