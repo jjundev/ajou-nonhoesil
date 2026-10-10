@@ -66,3 +66,12 @@ class LessonTests(Sandbox):
   self.assertFalse(lesson_screen_passed(expected,{'lesson_flow':False}))
   self.assertTrue(lesson_screen_passed(expected,{'lesson_flow':True}))
   self.assertTrue(lesson_screen_passed({'probes':[]},None))
+
+ def test_chunk_evidence_probes(self):
+  d,m,l,p,t=lesson_fixture();p['items'][0]['chunk_id']='c1';p['items'].append(dict(p['items'][0],id='b',chunk_id='c2'));d['steps'][0]['annotation_ids'].append('b')
+  t['caption_cues']=[dict(segment_id='r',chunk_id='c1',start_sample=80000,end_sample=120000),dict(segment_id='r',chunk_id='c2',start_sample=120000,end_sample=150000)]
+  t['teaching']['spans'].append(dict(id='b',kind='draw',start_frame=156,end_frame=174,hide_frame=300))
+  e=lesson_expectations(d,m,t,p);chunk_probes=[v for v in e['probes'] if 'chunk_id' in v]
+  self.assertEqual([(v['chunk_id'],v['frame'],v['annotation_ids']) for v in chunk_probes],[('c1',138,['a']),('c2',174,['b'])])
+  t['caption_cues'][0]['end_sample']=138*800-1
+  with self.assertRaisesRegex(InputError,'c1'):lesson_expectations(d,m,t,p)

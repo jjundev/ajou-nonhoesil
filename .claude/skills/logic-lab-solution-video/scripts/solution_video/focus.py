@@ -27,12 +27,15 @@ def compile_focus_keys(manifest,layers,timeline,plan,compiled,base_keys):
     bounds.append(items[ident]['bbox'])
     if items[ident].get('body_height'):heights.append(items[ident]['body_height'])
   b=[min(x[0] for x in bounds),min(x[1] for x in bounds),max(x[2] for x in bounds),max(x[3] for x in bounds)]
-  # Include the measured sprite at every extreme, preserving default camera framing.
-  scale=min((1920-2*margin_x)/max(.01,b[2]-b[0]),(900-margin_top-margin_bottom)/max(.01,b[3]-b[1]))
+  # Geometric SVG bounds include arrowhead vertices; reserve screen-space stroke
+  # radius outside them, in addition to the measured pencil clearance.
+  radius=max((items[i].get('stroke_width_px',3)/2 for i in visible if i in items and items[i].get('kind')!='label'),default=0)
+  mx,mt,mb=margin_x+radius,margin_top+radius,margin_bottom+radius
+  scale=min((1920-2*mx)/max(.01,b[2]-b[0]),(900-mt-mb)/max(.01,b[3]-b[1]))
   if scale<=0:fail(name,'pencil bounds cannot fit content area')
   if heights and min(heights)*scale<26:fail(name,'label readability conflicts with region and pencil bounds')
   w,h=1920/scale,layout['height']/scale
-  view=[(b[0]+b[2]-w)/2,b[1]-margin_top/scale,w,h]
+  view=[(b[0]+b[2]-w)/2,b[1]-mt/scale,w,h]
   next_write=next((s for s in timeline['segments'] if s['kind']=='write' and s['start_sample']//800>=end),None)
   point=None
   if next_write:

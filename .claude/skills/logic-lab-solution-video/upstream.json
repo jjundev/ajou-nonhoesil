@@ -346,7 +346,7 @@
   "tests/test_lab_acceptance.py": "논회실 신규: 실험05 실측 batch opt-in 검사(LOGIC_LAB_ACCEPTANCE_BATCH)",
   "tests/fixtures.py": "defective_pack: 실제 팩 사본에 원문 LaTeX 를 찍어 게이트 실패를 재현(2026-10-09 다시 렌더한 팩은 결함이 없다); synthetic_pack: 순서·표를 마음대로 바꿔 쓰는 합성 팩(manifest·문제/풀이 PDF, 칸 글자의 \\n 은 접힌 칸)",
   "tests/test_annotations.py": "논회실 신규 테스트: 풀이 칸 옆 region 허용·겹침 거부·한 변만 닿는 경계 허용·쪽 밖 거부, 왼쪽 패널 주석 컴파일과 풀이 칸 침범 거부; 상류 eeec3d5 설계 재구현: stroke_width_px 2..12(생략 3)·label 금지; pcm-chunks-v1 의 chunk_id(청크 시작 기준 오프셋, 같은 segment 혼합 금지); SVG path stroke-width 에 stroke_width_px; label 글리프가 MuPDF 별칭으로 나와도 같은 글리프면 받고 data-text 에 저작 글자 보존(논리식 ′ 테스트, Pretendard 에 없는 ⊕ 거부 테스트)",
-  "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴",
+  "tests/test_focus.py": "논회실 신규 테스트: 왼쪽 패널 region·주석이 검증을 통과해 확대 뷰의 여백 계약을 지킴; 상류 eeec3d5 설계 재구현: 보이는 비-label 주석의 stroke 반경(stroke_width_px/2)을 연필 여백에 더해 확대 뷰 계산",
   "tests/test_writing_camera.py": "논회실 테스트 보강: 글자 묶음 문구('author smaller chunks') 유지, 그림이 아닌 도형이 든 글자 묶음은 글자 문구; 도형 전용 묶음은 쪽 전체가 화면 안·글자 묶음은 26px 유지, 그림만 든 묶음은 그림 확대 유지",
   "tests/test_state.py": "논회실 신규 테스트: prepare 로 만든 런에서 동결 PNG·SVG 변조·삭제가 inputs 로 돌아가고 복원하면 layers; 청크 영수증 변경은 timing, 절단표 변경은 voice 부터; shape_timing 변경은 timing 부터 무효·WAV 보존; chunk_id 변경은 timing 부터, 굵기·색 변경은 composition 부터(voice 지문·WAV 보존)",
   "scripts/tts_lib/vertex_tts.py": "spoken-text-only-v1: make_payload 가 지침(direction)·\"원고:\" 없이 읽을 대본만 보냄(spoken_text); 캐시 키(speech_key)에 정책 버전·실제 전송 대본을 넣어 옛 지침 포함 캐시를 재사용하지 않음; 영수증에 policy·payload_hash, 캐시 재사용에 둘 다 요구; synthesize 의 audio_index=None 이면 source/audio.json 을 쓰지 않음(청크 영수증은 호출자가 source/chunk-audio.json 에)",
@@ -366,7 +366,12 @@
   "assets/annotations.js": "상류 eeec3d5 설계 재구현: 화면 굵기를 항목의 stroke_width_px(생략 3)로",
   "tests/test_teaching_runtime.cjs": "상류 eeec3d5 설계 재구현: 화면 굵기를 항목의 stroke_width_px(생략 3)로",
   "scripts/solution_video/teaching.py": "상류 eeec3d5 설계 재구현: resolve_annotation_windows(청크 항목은 실측 caption_cues 청크 안에서 시작·마감, minimum 덧대기 없음, 겹침·마감 초과·이른 hide 를 '<id> segment <sid> chunk <cid>' 오류로), span 시작 순 정렬; 논회실 변경: teaching_timing_settings 는 chunk_id 를 있을 때만 넣어 legacy timing_hash 보존",
-  "tests/test_teaching.py": "상류 eeec3d5 설계 재구현: resolve_annotation_windows(청크 항목은 실측 caption_cues 청크 안에서 시작·마감, minimum 덧대기 없음, 겹침·마감 초과·이른 hide 를 '<id> segment <sid> chunk <cid>' 오류로), span 시작 순 정렬; 논회실 변경: teaching_timing_settings 는 chunk_id 를 있을 때만 넣어 legacy timing_hash 보존"
+  "tests/test_teaching.py": "상류 eeec3d5 설계 재구현: resolve_annotation_windows(청크 항목은 실측 caption_cues 청크 안에서 시작·마감, minimum 덧대기 없음, 겹침·마감 초과·이른 hide 를 '<id> segment <sid> chunk <cid>' 오류로), span 시작 순 정렬; 논회실 변경: teaching_timing_settings 는 chunk_id 를 있을 때만 넣어 legacy timing_hash 보존",
+  "scripts/solution_video/focus.py": "상류 eeec3d5 설계 재구현: 보이는 비-label 주석의 stroke 반경(stroke_width_px/2)을 연필 여백에 더해 확대 뷰 계산",
+  "scripts/solution_video/lesson.py": "상류 eeec3d5 설계 재구현: chunk_id 주석이 있으면 청크마다 완성 검증점(청크 발화 끝·cue 끝 12f 전·hide 전)",
+  "tests/test_lesson.py": "상류 eeec3d5 설계 재구현: chunk_id 주석이 있으면 청크마다 완성 검증점(청크 발화 끝·cue 끝 12f 전·hide 전)",
+  "tests/teaching_check.mjs": "상류 eeec3d5 설계 재구현: lesson 가시성에 stroke 반경 포함(수평 밑줄 높이 0 허용), 포커스 구간 주석 bbox±반경 화면 안·화면 굵기 일치를 bounds_ok 에 넣고 실패 시 bounds_debug",
+  "tests/test_lesson_runtime.py": "상류 eeec3d5 설계 재구현: lesson 가시성에 stroke 반경 포함(수평 밑줄 높이 0 허용), 포커스 구간 주석 bbox±반경 화면 안·화면 굵기 일치를 bounds_ok 에 넣고 실패 시 bounds_debug"
  },
  "removed": {
   ".agents/skills/ec2-solution-video/tests/test_sources.py": "전자회로2 복습노트 실데이터·실측 배치에 묶여 있음. 논회실 소스 탐색·실측은 test_sources_lab·test_lab_acceptance 가 맡음",
