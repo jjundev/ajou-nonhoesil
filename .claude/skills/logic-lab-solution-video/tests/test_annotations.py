@@ -43,6 +43,25 @@ class AnnotationContractTests(Sandbox):
   a['items'].append(dict(a['items'][0],id='b',offset_frames=20))
   with self.assertRaises(InputError):validate_teaching(f,a,m,l)
 
+class AnnotationRegionPlacementTests(Sandbox):
+ # 논회실 풀이는 조건 패널이 중앙 풀이 칸 왼쪽에 있어, 패널의 표·문장·회로도 확대·주석 대상이 된다.
+ def region(self,bbox):
+  f,a,m,l=teaching_fixture();f['regions'][0]['bbox']=bbox;a['items']=[]
+  return validate_teaching(f,a,m,l)
+ def test_region_beside_work_area_is_accepted(self):
+  self.assertIsNotNone(validate_teaching,'teaching validation is missing')
+  self.assertEqual(self.region([10,40,90,200])['regions'][0]['bbox'],[10,40,90,200])  # 아래 끝 200 > 풀이 칸 위 100 이지만 겹치지 않는다
+ def test_region_overlapping_work_area_is_still_rejected(self):
+  self.assertIsNotNone(validate_teaching,'teaching validation is missing')
+  with self.assertRaisesRegex(InputError,'overlaps work_bbox'):self.region([80,40,150,200])
+ def test_region_touching_work_area_edge_is_accepted(self):
+  # work_bbox=[100,100,300,240]: 한 변만 닿는 것은 겹침이 아니다(overlaps 는 엄격 부등식).
+  for b in ([10,40,100,200],[10,240,90,290],[300,10,390,290],[120,10,280,100]):
+   with self.subTest(bbox=b):self.assertEqual(self.region(b)['regions'][0]['bbox'],b)
+ def test_region_outside_page_is_still_rejected(self):
+  for b in ([-1,40,90,200],[10,40,401,200],[10,40,90,301]):
+   with self.subTest(bbox=b),self.assertRaisesRegex(InputError,'outside page'):self.region(b)
+
 class AnnotationGeometryTests(Sandbox):
  def test_arrow_ellipse_and_label_outlines(self):
   import solution_video.annotations as module
@@ -53,6 +72,18 @@ class AnnotationGeometryTests(Sandbox):
   self.assertEqual(c['items'][1]['start_point'],[60,45]);self.assertEqual(len(c['items'][2]['glyphs']),3)
   self.assertEqual(c['items'][2]['glyphs'][1]['svg_ids'],[]);self.assertEqual(len(c['font_sha256']),64)
   self.assertTrue(Path(c['svg']).is_file());self.assertNotIn('data-reveal',Path(c['svg']).read_text())
+
+class AnnotationLeftPanelGeometryTests(Sandbox):
+ def test_left_panel_annotations_compile_and_work_area_crossing_is_rejected(self):
+  import solution_video.annotations as module
+  f,a,m,l=teaching_fixture();f['regions'][0]['bbox']=[10,40,90,200]  # 풀이 칸 [100,100,300,240] 왼쪽
+  base=a['items'][0]
+  a['items']=[dict(base,id='arrow',geometry={'from':[30,60],'to':[30,150]}),dict(base,id='circle',kind='ellipse',geometry={'bbox':[20,160,80,190]}),
+              dict(base,id='label',kind='label',geometry={'runs':[dict(text='Q',origin=[20,60],font_size_pt=10)]})]
+  c=module.compile_annotations(validate_teaching(f,a,m,l),l,self.run/'left')
+  for i in c['items']:self.assertLessEqual(i['bbox'][2],100,i['id'])  # 모두 풀이 칸 왼쪽에 머문다
+  a['items']=[dict(base,id='cross',geometry={'from':[30,60],'to':[150,150]})]  # 끝이 풀이 칸 안으로 들어간다
+  with self.assertRaisesRegex(InputError,'overlaps work_bbox'):validate_teaching(f,a,m,l)
 
 class AnnotationEarlyHideTests(Sandbox):
  def test_hide_before_completion_rejected_before_voice(self):

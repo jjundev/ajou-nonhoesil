@@ -32,6 +32,18 @@ class FocusTests(Sandbox):
    keys=compile_focus_keys(m,l,t,p,None,[dict(at_frame=0,viewbox=[0,0,width,height])]);v=keys[1]['viewbox'];scale=min(1920/v[2],page_layout(width,height)['height']/v[3])
    self.assertGreaterEqual((b[0]-v[0])*scale,179);self.assertLessEqual((b[2]-v[0])*scale,1741)
    self.assertGreaterEqual((b[1]-v[1])*scale,199);self.assertLessEqual((b[3]-v[1])*scale,871)
+ def test_left_panel_region_view_keeps_margins(self):
+  # 왼쪽 조건 패널의 region(풀이 칸 옆, 아래 끝이 풀이 칸 위보다 아래)과 그 안의 주석이 검증을 통과해 확대 뷰까지 간다.
+  from solution_video.page_layout import page_layout
+  from solution_video.annotations import validate_teaching
+  f,a,m,l=teaching_fixture();b=[10,40,90,200];f['regions'][0]['bbox']=b;a['items'][0]['geometry']={'from':[30,60],'to':[30,150]}
+  p=validate_teaching(f,a,m,l)
+  t=build_teaching_timeline(m,l,[make_audio(s['id'],800,self.run) for s in m['segments']],default_config(),None,p)
+  compiled={'items':[dict(id='a',bbox=[30,60,30,150],body_height=None)],'svg':'','font_sha256':None}
+  keys=compile_focus_keys(m,l,t,p,compiled,[dict(at_frame=0,viewbox=[0,0,400,300])]);v=keys[1]['viewbox'];scale=min(1920/v[2],page_layout(400,300)['height']/v[3])
+  self.assertLessEqual(v[0],b[0]);self.assertGreaterEqual(v[0]+v[2],b[2]);self.assertLessEqual(v[1],b[1]);self.assertGreaterEqual(v[1]+v[3],b[3])
+  self.assertGreaterEqual((b[0]-v[0])*scale,179);self.assertLessEqual((b[2]-v[0])*scale,1741)
+  self.assertGreaterEqual((b[1]-v[1])*scale,199);self.assertLessEqual((b[3]-v[1])*scale,871)
  def test_configured_long_pen_fits_top_edge_annotation(self):
   from solution_video.writing import load_pencil_asset
   import math

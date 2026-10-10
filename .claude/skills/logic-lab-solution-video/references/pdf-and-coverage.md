@@ -20,7 +20,7 @@
 
 ## 회로 포커스와 추가 표시
 
-`source/focus.json`은 선택적인 연출 입력이다. lesson 의 `circuit` 모드는 논회실에서 문제 그림(회로도·진리표·파형)을 근거로 삼는 단계를 뜻한다. schema_version=1, 답안 PDF의 source_sha256, regions와 cues를 작성한다. region은 실제 PDF point의 bbox이며 페이지 안, work_bbox보다 위에 있어야 한다. 그림 이름·칩 번호·입출력 핀·표 머리글을 모두 포함한다. cue의 segment_id는 reason/check, target은 region ID다. manifest.cameras와 혼용하지 않는다. 그림이 없으면 이 파일을 만들지 않는다.
+`source/focus.json`은 선택적인 연출 입력이다. lesson 의 `circuit` 모드는 논회실에서 문제 그림(회로도·진리표·파형)을 근거로 삼는 단계를 뜻한다. schema_version=1, 답안 PDF의 source_sha256, regions와 cues를 작성한다. region은 실제 PDF point의 bbox이며 페이지 안에 있고 work_bbox 와 겹치지 않아야 한다(닿기만 하는 것은 된다). 왼쪽 조건 패널의 표·문장도 대상이 되지만 패널 전체가 아니라 필요한 표·문장 단위로 잡는다(패널 전체를 잡으면 배율이 쪽 전체 아래로 내려가 읽기 어렵다 — 쪽 841.9×595pt 기준 region 높이가 약 440pt 를 넘으면 쪽 전체 배율보다 작아진다). 쪽 가장자리에 붙은 region 은 여백을 우선하므로 확대 뷰가 쪽 밖의 흰 바탕까지 비칠 수 있다. 그림 이름·칩 번호·입출력 핀·표 머리글을 모두 포함한다. cue의 segment_id는 reason/check, target은 region ID다. manifest.cameras와 혼용하지 않는다. 그림이 없으면 이 파일을 만들지 않는다.
 
 `source/annotations.json`은 같은 해시와 items를 가진다. 각 item은 안전한 ASCII id, region_id, segment_id, kind, geometry, source_refs, meaning_notes를 가진다. 해당 segment/region cue가 필수다. arrow/underline은 from/to 좌표, ellipse는 bbox, label은 text/origin baseline/font_size_pt를 가진 runs를 받는다. 첨자는 작은 별도 run으로 표현한다. label은 비공백 최대 24자이며 LaTeX·줄바꿈·없는 글꼴 문자를 거부한다. 원문에 없는 계산을 추가하지 않는다.
 
