@@ -240,6 +240,24 @@ class RebuildField(unittest.TestCase):
                 self._netlist(f"- rebuild: {bad}")
 
 
+class OrderField(unittest.TestCase):
+    """`order` — 기록표 행을 넣는 순서(2026-10-11, 실험06 래치)."""
+
+    def _netlist(self, extra):
+        return ContinuesField._netlist(self, extra)
+
+    def test_order_를_읽는다(self):
+        self.assertEqual(self._netlist("- order: [2, 1]").circuits[1].order, [2, 1])
+
+    def test_없으면_빈_리스트다(self):
+        self.assertEqual(self._netlist("").circuits[1].order, [])
+
+    def test_정수가_아니면_거절한다(self):
+        for bad in ("[a, b]", "[1.5]", "[true]"):
+            with self.subTest(bad=bad), self.assertRaises(NetlistError):
+                self._netlist(f"- order: {bad}")
+
+
 class RefsField(unittest.TestCase):
     def _netlist(self, extra):
         text = ("---\nschema: lab-netlist/v2\nexperiment: 2\n"

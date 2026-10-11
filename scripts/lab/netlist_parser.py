@@ -106,6 +106,7 @@ class NetlistSection:
     rebuild: bool = False              # 앞 회로의 신호선을 전부 뽑고 새로 짓는다
     rebuild_all: bool = False          # `rebuild: all` — LED 사슬·전원선까지 뽑는다(레일 브리지만 남긴다)
     refs: list = field(default_factory=list)   # 이 회로 페이지에 실을 참조표
+    order: list = field(default_factory=list)  # 기록표 행 번호(1부터)를 입력을 넣는 순서대로
     stages: list = field(default_factory=list)   # `## 단계` 표. 관측 노드 하나 = 단계 하나
     nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
 
@@ -291,6 +292,13 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         raise NetlistError(
             f"{path}:{line} 회로 절 {title!r} 의 rebuild 가 {attrs['rebuild']!r} 입니다. "
             "true·all·false 만 쓴다")
+    order = md.parse_value(attrs["order"]) if attrs.get("order") else []
+    if not isinstance(order, list):
+        order = [order]
+    if not all(isinstance(k, int) and not isinstance(k, bool) for k in order):
+        raise NetlistError(
+            f"{path}:{line} 회로 절 {title!r} 의 order 가 {attrs['order']!r} 입니다. "
+            "기록표 행 번호(1부터) 리스트로 쓴다 — 예: [3, 4, 2, 1, 5]")
     stages, body = _split_stages(body, path, line)
     nodes, body = _split_nodes(body, path, line)
     return NetlistSection(
@@ -301,6 +309,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         rebuild=rebuild in ("true", "all"),
         rebuild_all=rebuild == "all",
         refs=[str(r) for r in refs],
+        order=order,
         stages=stages,
         nodes=nodes,
     )

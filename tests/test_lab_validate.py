@@ -1767,6 +1767,34 @@ class RebuildValidation(unittest.TestCase):
         self.assertIn("걷기", hits[0].message)
 
 
+class OrderValidation(unittest.TestCase):
+    """`order` 는 기록표 하나의 행 번호를 한 번씩 담는다 — 빠지면 그 행을 언제 넣는지 사라진다."""
+
+    def _findings(self, extra):
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(encoding="utf-8")
+        text = text.replace("- tables: [T2]", f"- tables: [T2]\n{extra}")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        return [f for f in validate.check_netlist_circuits(parse_netlist(path), spec)
+                if "order" in f.message]
+
+    def _rows(self):
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        return len(spec.table("T2").rows)
+
+    def test_행_번호를_한_번씩_담으면_말이_없다(self):
+        order = list(range(self._rows(), 0, -1))
+        self.assertEqual(self._findings(f"- order: {order}"), [])
+
+    def test_빠지거나_겹치면_error(self):
+        n = self._rows()
+        for order in ([1] * n, list(range(1, n))):
+            with self.subTest(order=order):
+                hits = self._findings(f"- order: {order}")
+                self.assertEqual([f.level for f in hits], ["error"])
+
+
 class RefsValidation(unittest.TestCase):
     def _findings(self, extra):
         text = (ROOT / config.experiment_dir(1) / "결선도/netlist.md").read_text(

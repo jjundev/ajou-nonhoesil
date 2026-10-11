@@ -2332,3 +2332,57 @@ class TestLedTable(unittest.TestCase):
                                 parse_netlist(e3 / "결선도/netlist.md"), TEMPLATE)
         self.assertNotIn('class="stage-table led-table"', html)   # CSS 에도 클래스 이름이 있다
         self.assertNotIn('class="led-order"', html)
+
+
+class TestSequentialRecordLeds(unittest.TestCase):
+    """순차 회로 기록표의 `순서` 열과 `켜지는 LED`·`꺼지는 LED` 두 열 (2026-10-11 사용자, 실험06).
+    래치는 같은 입력도 앞 행에 따라 LED 가 갈려, 교안 표 순서만으로는 실험실에서 무엇을 볼지 몰랐다."""
+
+    E6 = ROOT / config.experiment_dir(6)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.spec = parse_spec(cls.E6 / "체크리스트/명세.md")
+        cls.netlist = parse_netlist(cls.E6 / "결선도/netlist.md")
+        html = render_checklist(cls.spec, cls.netlist, TEMPLATE)
+        cls.pages = html.split('<section class="circuit">')[1:]
+
+    def record(self, k, tid):
+        page = self.pages[k]
+        start = page.index(f"<h3>{tid} · ")
+        return page[start:page.index("</table>", start)]
+
+    def test_C1_순서_열은_교안_행_순서를_두고_넣는_차례를_적는다(self):
+        t = self.record(0, "T1")
+        self.assertRegex(t, r"<th>순서</th>\s*<th>E</th>")
+        ranks = re.findall(r'<td class="order">(.)</td>', t)
+        self.assertEqual(ranks, ["④", "③", "①", "②", "⑤"])
+        self.assertIn("순서 열 번호대로 입력을 넣어요", t)
+
+    def test_C1_Q_와_그_반대_Q프라임_LED_를_켜짐_꺼짐으로_나눈다(self):
+        t = self.record(0, "T1")
+        self.assertIn("①Q' = Q(t)의 반대 ②Q = Q(t) — 모두 1이면 켜짐", t)
+        # Reset 행: Q=0 → Q' 켜짐
+        self.assertIn('<td>0: Reset</td><td class="led on">①Q\'</td><td class="led off">②Q</td>', t)
+        # 금지 입력은 교안 p7 원문대로 둘 다 1
+        self.assertIn('<td>X (부정)</td><td class="led on">①Q\' ②Q</td><td class="led off">없음</td>', t)
+        self.assertIn('<td class="led hold" colspan="2">직전 그대로</td>', t)
+        self.assertNotIn("<small>LED", t)   # 두 열이 배지를 대신한다
+
+    def test_C3_은_order_가_없어_순서_열이_없고_토글은_직전과_반대(self):
+        t = self.record(2, "T3")
+        self.assertNotIn('<td class="order">', t)
+        self.assertIn("①Q = Q(t) ②Q' = Q(t)의 반대", t)
+        self.assertIn('<td class="led hold" colspan="2">직전과 반대</td>', t)
+
+    def test_사진_파일명과_확인_칸_수는_그대로다(self):
+        t = self.record(0, "T1")
+        self.assertEqual(t.count('class="check"'), 5)
+        self.assertIn("1 101.jpg", t)
+
+    def test_조합_회로_표에는_LED_두_열을_달지_않는다(self):
+        spec5 = parse_spec(ROOT / config.experiment_dir(5) / "체크리스트/명세.md")
+        html = render_checklist(spec5, parse_netlist(ROOT / config.experiment_dir(5) / "결선도/netlist.md"),
+                                TEMPLATE)
+        self.assertNotIn('<td class="led hold"', html)
+        self.assertNotIn('<td class="order">', html)
