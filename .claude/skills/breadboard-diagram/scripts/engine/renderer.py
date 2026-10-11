@@ -47,6 +47,8 @@ class BreadboardRenderer(_RuleChecks):
         # R7·R8 정책. 'legacy' 는 R7(2026-09-20) 이전 승인본 실험01~03 빌더만 —
         # `test_breadboard_physical.py` 가 실험 4 이상은 strict 인지 본다. `content()` 밖
         self.density_policy = 'strict'
+        # R7 한도 — 주차 예외(`side_lead_max(board)`, 이유 필수)만 올린다. `content()` 밖(도장)
+        self.side_lead_max = SIDE_LEAD_MAX
         # 홀 점유표 (열 x, 행) -> 무엇. 끝점·부품 다리·칩 핀 전부 — verify() R1·R2 가 본다
         self._leads = {}
         # 배선이 지나가는 홀 — free_rail_row() 가 피하고 R3 가 끝점과 대조한다
@@ -423,11 +425,24 @@ class BreadboardRenderer(_RuleChecks):
         self.draw.rectangle([bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad], fill=bg_col, outline=text_col, width=1)
         self.draw.text((x, y), text, fill=text_col, font=font)
 
-    def _signal_tag_geom(self, name, x, y, align='center', arrow=None):
+    def _signal_tag_font(self, name, arrow, max_w):
+        """배지 글꼴 — 기본 12pt, `max_w`(상자 폭 상한)를 넘으면 8pt 까지 줄인다. 좌 바깥 여백의 입력
+        배지 칸은 28px 남짓이라 `Reset` 이 12pt 로 테두리를 넘었다(2026-10-11 실험06 74HC76)."""
+        if max_w is None:
+            return self.font_en_bold
+        extra = (INPUT_TRI + 1 + 2) if arrow else 4       # 화살촉·간격·좌우 여백(`_signal_tag_geom`)
+        for size in range(12, 7, -1):
+            f = self.font_en_bold if size == 12 else _font('en', size)
+            b = self.draw.textbbox((0, 0), name, font=f)
+            if b[2] - b[0] + extra <= max_w:
+                return f
+        return _font('en', 8)
+
+    def _signal_tag_geom(self, name, x, y, align='center', arrow=None, max_w=None):
         """`signal_tag()` 배지의 (상자, 글자 x, 글자 y, 글자 높이) — 그리지 않는다. 입력 점퍼가 번호 원
         자리를 고르기 전에 제 배지 자리를 잡아 두는 데도 쓴다."""
         assert arrow in (None, 'left', 'right'), f"arrow 는 None·'left'·'right' 다: {arrow!r}"
-        font, pad = self.font_en_bold, 2
+        font, pad = self._signal_tag_font(name, arrow, max_w), 2
         b = self.draw.textbbox((0, 0), name, font=font)
         w, h = b[2] - b[0], b[3] - b[1]
         hpad = 1 if arrow else pad
@@ -442,16 +457,17 @@ class BreadboardRenderer(_RuleChecks):
         return box, tx, ty, h
 
     def signal_tag(self, name, x, y, align='center', col=(20, 20, 20, 255), seg=None,
-                   arrow=None):
+                   arrow=None, max_w=None):
         """보드 안 **신호 이름** 배지 — 입력 A·B·C, 출력 L1·L2·X·Y·Z. 손그림이 판형 위만 따라 그려
         보드 밖 이름이 빠졌다(2026-09 실험01 감점).
 
         `align='center'` 면 (x, y) 가 배지 중심, `'left'` 면 x 가 상자 왼쪽 끝. `seg` 는 가리키는 배선
         번호 — 겹침 검사가 그 선만 봐준다. `arrow='left'|'right'` 는 입력 표지 — `col` 로 채운 상자에
-        흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다.
+        흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다. `max_w` 는 상자 폭 상한 — 넘으면
+        글꼴을 줄인다(`_signal_tag_font`).
         """
-        box, tx, ty, h = self._signal_tag_geom(name, x, y, align, arrow)
-        font, pad = self.font_en_bold, 2
+        box, tx, ty, h = self._signal_tag_geom(name, x, y, align, arrow, max_w)
+        font, pad = self._signal_tag_font(name, arrow, max_w), 2
         hpad, tri = (1, INPUT_TRI) if arrow else (pad, 0)     # `_signal_tag_geom` 과 같은 값
         if arrow:
             self.draw.rectangle(box, fill=col, outline=col, width=1)
@@ -869,11 +885,13 @@ class BreadboardRenderer(_RuleChecks):
             if kept_chip:
                 self.kept.append(f'{name} 칩 그대로')
             elif prev is None:
-                # 빈 자리에 새로 꽂는다 — 뽑을 것이 없으니 "교체"라고 하지 않는다
+                # 빈 자리에 새로 꽂는다 — 뽑을 것이 없으니 "교체"라고 하지 않는다. v2 는 몸통 안 원이
+                # R11 에 걸려 몸통 위 골에서 비킬 자리를 찾는다(2026-10-11 실험06 C2 74HC04)
                 self.swaps.append((prev, name, block, start_row))
+                spot = ({'marker_near': ((x1 + x2) // 2, y_top - 10)} if self.spec.readability
+                        else {'marker_at': ((x1 + x2) // 2, y_top + 12)})
                 self.step_note('sig', '(빈 자리)', f'꽂는다: {name}',
-                               f'{"좌" if block == "left" else "우"} {start_row}행에 새로 꽂는다',
-                               marker_at=((x1 + x2) // 2, y_top + 12))
+                               f'{"좌" if block == "left" else "우"} {start_row}행에 새로 꽂는다', **spot)
             else:
                 # 같은 자리의 칩이 다르다 — 실험실에서 첫 번째로 할 일이다
                 self.swaps.append((prev, name, block, start_row))
@@ -904,10 +922,14 @@ class BreadboardRenderer(_RuleChecks):
     def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
         """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. 점퍼는 핀 홀 옆 d·g 열에서 출발하고,
         어느 레일로 가는지는 블록마다 뒤집힌다. `gnd_marker_at` 은 기본 번호 원 자리에 다른 배선 모서리가
-        올 때만, `gnd_col` 은 d 열 위로 다른 선이 지날 때 준다.
+        올 때만, `gnd_col` 은 d 열 위로 다른 선이 지날 때 준다. 전원핀이 모서리가 아닌 칩(`DIP_POWER`)은
+        `_connect_power_inner` 로 간다.
         """
         c = self.cols[block]
         n = self._pins_at(block, start_row)
+        model = self._model_at(block, start_row)
+        if model in DIP_POWER:
+            return self._connect_power_inner(start_row, block, model, n, gnd_col)
         g = start_row + n // 2 - 1          # GND 핀 행 — DIP-14 pin 7 은 k+6, DIP-16 pin 8 은 k+7
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
@@ -922,6 +944,28 @@ class BreadboardRenderer(_RuleChecks):
         self.step_wire([(c[gnd_col], self.r_y(g)), (x_gnd, self.r_y(r7))],
                        'gnd', f'pin {n // 2} -> GND 레일', marker_at=gnd_marker_at,
                        marker_near=((c['d'] + x_gnd) // 2, self.r_y(g) - 11))
+
+    def _connect_power_inner(self, start_row, block, model, n, a_col):
+        """전원핀이 모서리가 아닌 칩(74HC76 VCC 5·GND 13). 핀마다 자기 쪽 가까운 레일로 간다 — 좌 블록
+        a쪽 핀은 좌 바깥 레일, f쪽 핀은 가운데 레일. a쪽 출발 열은 `a_col`(기본 d), f쪽은 g."""
+        if block != 'left':
+            raise ValueError(f'{model}: 전원핀이 안쪽인 칩은 좌 블록에만 그린다')
+        c = self.cols[block]
+        for pin, kind in zip(dip_power(model, n), ('vcc', 'gnd')):
+            row = _dip_pin_row(start_row, pin, n)
+            a_side = _dip_side(pin, n) == 'a'
+            x_from = c[a_col] if a_side else c['g']
+            x_rail = c[kind] if a_side else c[f'mid_{kind}']
+            r = self.free_rail_row(row, x_rail)
+            what = f'pin {pin} -> +5V 레일' if kind == 'vcc' else f'pin {pin} -> GND 레일'
+            self.step_wire([(x_from, self.r_y(row)), (x_rail, self.r_y(r))], kind, what,
+                           marker_near=((x_from + x_rail) // 2, self.r_y(row)))
+
+    def _model_at(self, block, start_row):
+        for ch in self.chips:
+            if ch['block'] == block and ch['pin1_row'] == start_row:
+                return ch['label']
+        return None
 
     def nearest_gnd_rail(self, x, block='left'):
         """그 자리에서 제일 가까운 GND 레일 — 블록마다 뒤집혀 있어 블록 이름만으로는 못 고른다."""

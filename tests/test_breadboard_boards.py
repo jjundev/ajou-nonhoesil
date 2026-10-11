@@ -287,6 +287,22 @@ class StageBudget(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 self.mod.stage_budget(board)
 
+    def test_R7_주차_예외가_없으면_기본_한도다(self):
+        self.assertEqual(self.mod.side_lead_max(types.ModuleType('board')), self.mod.SIDE_LEAD_MAX)
+
+    def test_R7_주차_예외는_이유와_함께_쓴다(self):
+        """실험06: 74HC00 한 칩 SR 래치는 리드 17 — 게이트를 나눠도 한쪽 8 을 못 지킨다(2026-10-11)."""
+        board = types.ModuleType('board')
+        board.SIDE_LEAD_MAX = 9
+        with self.assertRaises(ValueError):
+            self.mod.side_lead_max(board)
+        board.SIDE_LEAD_MAX_REASON = '리드 17 > 16'
+        self.assertEqual(self.mod.side_lead_max(board), 9)
+        for bad in (7, 9.5, '9', True):
+            board.SIDE_LEAD_MAX = bad
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                self.mod.side_lead_max(board)
+
     def test_전원과_LED_사슬은_예산에_들지_않는다(self):
         """기반 배선이다 — 회로가 바뀌어도 그대로 있고 첫 단계에 한꺼번에 꽂는다."""
         bb = self.mod.BreadboardRenderer()

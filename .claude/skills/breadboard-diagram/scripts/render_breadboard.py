@@ -150,6 +150,10 @@ def check_board(board, bb, label):
     if bb.board != want:
         raise ValueError(f"{label}: 주차 BOARD 는 '{want}' 인데 렌더러는 '{bb.board}' 판형이다 — "
                          "빌더가 BreadboardRenderer(..., board=BOARD) 로 넘겨야 한다")
+    limit = side_lead_max(board)
+    if bb.side_lead_max != limit:
+        raise ValueError(f'{label}: 주차 R7 한도는 {limit} 인데 렌더러는 {bb.side_lead_max} 로 그렸다 — '
+                         '빌더가 bb.side_lead_max = SIDE_LEAD_MAX 로 넘겨야 한다')
 
 
 def check_palette(bb, label):
@@ -183,6 +187,22 @@ def stage_budget(board):
     if not str(getattr(board, 'STAGE_WIRE_BUDGET_REASON', '') or '').strip():
         raise ValueError('주차 STAGE_WIRE_BUDGET 예외에는 STAGE_WIRE_BUDGET_REASON 이 있어야 한다 '
                          '— 왜 셋으로 관측 노드 하나를 세울 수 없는지 적는다')
+    return value
+
+
+def side_lead_max(board):
+    """주차 `board` 의 R7 한도 — 기본 `SIDE_LEAD_MAX`(8), 주차 파일이 두면 그 값. 게이트를 어떻게
+    나눠도 칩 양쪽 합이 16 을 넘는 회로의 예외다(실험06 SR 래치 — 74HC00 한 칩이 리드 17, 2026-10-11).
+    이유(`SIDE_LEAD_MAX_REASON`)가 없으면 거절한다 — `stage_budget` 과 같은 꼴이다.
+    """
+    value = getattr(board, 'SIDE_LEAD_MAX', None)
+    if value is None:
+        return SIDE_LEAD_MAX
+    if isinstance(value, bool) or not isinstance(value, int) or value < SIDE_LEAD_MAX:
+        raise ValueError(f'주차 SIDE_LEAD_MAX 는 {SIDE_LEAD_MAX} 이상의 정수여야 한다: {value!r}')
+    if not str(getattr(board, 'SIDE_LEAD_MAX_REASON', '') or '').strip():
+        raise ValueError('주차 SIDE_LEAD_MAX 예외에는 SIDE_LEAD_MAX_REASON 이 있어야 한다 '
+                         '— 왜 게이트를 나눠도 한쪽 8 을 지킬 수 없는지 적는다')
     return value
 
 

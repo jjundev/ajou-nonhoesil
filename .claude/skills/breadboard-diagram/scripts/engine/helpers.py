@@ -47,8 +47,12 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     # 바깥이면 보드 밖 같은 행, 가운데면 배지 위 18px — 여백이 좁아 나란히 못 놓는다.
     s = bb.spec
     y_mark = y_row
+    max_w = None
     if x_rail == bb.cols['left']['gnd']:
         badge_x, default_marker = (s.board_left + x_rail) / 2, (130, 0)
+        if s.readability:
+            # 테두리와 레일 홀 사이 칸 — 넘는 이름은 글꼴을 줄인다(v2 만, v1 은 그림 불변)
+            max_w = 2 * (badge_x - s.board_left) - 1
     elif x_rail == bb.cols['right']['gnd']:
         badge_x, default_marker = (bb.cols['right']['vcc'] + s.board_right) / 2, (s.board_right + 24, 0)
     else:
@@ -70,7 +74,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     arrow = 'right' if c[col] > x_rail else 'left'
     # v2 는 번호 원 자리를 고르기 전에 제 배지 자리를 잡아 둔다 — 배지를 원 뒤에 그려 `_settle_marker` 가
     # 몰랐고, 가운데 레일에 배지가 한 행씩 쌓이면 원이 곧 그려질 제 배지 위에 앉았다(2026-10-05 실험05 C1 `Bit1`)
-    held = (name, bb._signal_tag_geom(name, badge_x, y_rail, arrow=arrow)[0], None)
+    held = (name, bb._signal_tag_geom(name, badge_x, y_rail, arrow=arrow, max_w=max_w)[0], None)
     if s.readability:
         bb.tag_boxes.append(held)
     bb.step_wire([p0, p1], 'sig',
@@ -86,4 +90,4 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}",
          col=INPUT)
     # 신호 이름은 레일 쪽 끝 옆 — 0/1 을 바꿀 때 옮겨 꽂는 끝이다
-    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, arrow=arrow)
+    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, arrow=arrow, max_w=max_w)

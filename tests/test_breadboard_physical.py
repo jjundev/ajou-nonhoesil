@@ -10,6 +10,7 @@ docstring 과 달리 레일 끝점의 빈 행만 봤다. 그림도 순서표도 
 """
 import importlib.util
 import os
+import types
 import unittest
 
 from tests._boards import load_once, per_builder
@@ -285,6 +286,16 @@ class PhysicalRules(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'R7'):
             bb.verify()
 
+    def test_주차_예외_한도_9_는_9리드를_통과시킨다(self):
+        """실험06 SR·D 래치 — 74HC00 한 칩에 리드 17, 한쪽 8 이면 합 16 이라 담을 배정이 없다."""
+        bb = self._chip_with_side_leads(9, side='f')
+        bb.side_lead_max = 9
+        bb.verify()
+        bb = self._chip_with_side_leads(10, side='f')
+        bb.side_lead_max = 9
+        with self.assertRaisesRegex(AssertionError, r'오른쪽 10리드 > 9'):
+            bb.verify()
+
     def test_legacy_정책은_R7_을_끈다(self):
         bb = self._chip_with_side_leads(11)
         bb.density_policy = 'legacy'
@@ -531,7 +542,10 @@ class AllCircuits(unittest.TestCase):
         self.assertEqual(bb.density_policy, want,
                          f'{name}: 실험{exp:02d} 의 density_policy 는 {want} 여야 한다')
         if want == 'strict':
-            self.assertTrue(all(s['count'] <= self.mod.SIDE_LEAD_MAX for s in bb.side_leads()))
+            # 한도는 주차 예외(`side_lead_max`, 이유 필수)만 올린다 — 실험06 SR·D 래치 9
+            limit = self.mod.side_lead_max(types.SimpleNamespace(**fn.__globals__))
+            self.assertEqual(bb.side_lead_max, limit, f'{name}: 렌더러 R7 한도가 주차 값과 다르다')
+            self.assertTrue(all(s['count'] <= limit for s in bb.side_leads()))
 
     def test_R8_칩_사이_엇갈림이_없다(self):
         """2026-09-20 실측: 실험01~03 완성본 7장 0건, 시험 전용 build_e2_tpd 1건 —
