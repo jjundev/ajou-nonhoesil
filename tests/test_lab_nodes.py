@@ -4,11 +4,13 @@ import unittest
 from pathlib import Path
 
 from scripts.lab import config, nodes
-from scripts.lab.netlist_parser import NetlistSection
+from scripts.lab.netlist_parser import NetlistSection, parse_netlist
 from scripts.lab.spec_parser import LabSpec, SpecTable, parse_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 WEEK2_SPEC = ROOT / config.experiment_dir(1) / "체크리스트/명세.md"
+E5_SPEC = ROOT / config.experiment_dir(5) / "체크리스트/명세.md"
+E5_NETLIST = ROOT / config.experiment_dir(5) / "결선도/netlist.md"
 
 
 def _circuit(tables, node_rows, body="- U1 = 74HC08 (quad 2-input AND)\n  - pin 14 → VCC\n"):
@@ -183,6 +185,37 @@ class TestStageTable(unittest.TestCase):
                         header=[], rows=[], line=1)
         with self.assertRaisesRegex(ValueError, "기록표"):
             nodes.stage_table(_circuit(["T1"], [("Y", "A·B", "U1 pin 3")]), _spec(cap), "Y")
+
+
+class TestStageNodesTable(unittest.TestCase):
+    """여러 노드 × 그 노드들이 쓰는 입력의 합집합 — 단계 LED 점등 표의 계산(2026-10-11)."""
+
+    def setUp(self):
+        self.spec = parse_spec(E5_SPEC)
+        net = parse_netlist(E5_NETLIST)
+        self.c1, self.c2 = net.circuits[0], net.circuits[1]
+
+    def test_입력은_합집합이고_행마다_노드별_비트다(self):
+        t = nodes.stage_nodes_table(self.c1, self.spec, ["Y0", "Y1"])
+        self.assertEqual(t.inputs, ["Bit3", "Bit2", "Bit1", "Bit0"])
+        self.assertEqual(len(t.rows), 10)
+        self.assertEqual(t.rows[0], (["0", "0", "0", "0"], [0, 1]))
+        self.assertEqual(t.rows[1], (["0", "0", "0", "1"], [1, 0]))
+
+    def test_다른_입력을_쓰는_노드를_섞으면_행을_합친다(self):
+        t = nodes.stage_nodes_table(self.c2, self.spec, ["A3", "D0'"])
+        self.assertEqual(t.inputs, ["D5", "D0"])
+        self.assertEqual(sorted((tuple(c), tuple(b)) for c, b in t.rows),
+                         [(("0", "0"), (0, 1)), (("0", "1"), (0, 0)), (("1", "0"), (1, 1))])
+
+    def test_한_노드만_안_정해지면_그_칸만_None(self):
+        # 합성 표: A=X 행에서 A·B 는 B=0 이면 0 으로 정해지고, A 자체는 안 정해진다
+        t = SpecTable(id="T9", title="x", kind="truth-table", encoding="0/1", source=None,
+                      expected=None, role="record", header=["A", "B", "Y"],
+                      rows=[["X", "0", "0"]], line=1)
+        c = _circuit(["T9"], [("A", "A", "p1"), ("AB", "A·B", "p2")])
+        r = nodes.stage_nodes_table(c, _spec(t), ["A", "AB"])
+        self.assertEqual(r.rows, [(["X", "0"], [None, 0])])
 
 
 if __name__ == "__main__":
