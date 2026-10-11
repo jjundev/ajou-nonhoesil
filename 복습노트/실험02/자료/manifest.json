@@ -1340,7 +1340,7 @@
     "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
   ],
-  "problem_explanation_version": 1,
+  "problem_explanation_version": 2,
   "explanation_checks": {
     "source_visual": "pass",
     "content": "self_review",
