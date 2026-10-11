@@ -2194,3 +2194,93 @@ class TestWalkNumberMatchesPicture(unittest.TestCase):
         self.assertIsNotNone(rule)
         self.assertIn("background: var(--pull)", rule.group(0))
         self.assertIn("color: var(--paper)", rule.group(0))
+
+
+class TestLedTable(unittest.TestCase):
+    """v2 단계 진리표의 LED 점등 열 — 누적 급전 LED 를 보드 순서(①②…)로, 켜짐/꺼짐 + 논리값.
+    설계: docs/plans/2026-10-11-체크리스트-LED-점등열-설계.md"""
+
+    E5 = ROOT / config.experiment_dir(5)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.spec = parse_spec(cls.E5 / "체크리스트/명세.md")
+        cls.pages = cls._pages(cls.E5 / "결선도/netlist.md")
+
+    @classmethod
+    def _pages(cls, netlist_path):
+        html = render_checklist(cls.spec, parse_netlist(netlist_path), TEMPLATE)
+        return html.split('<section class="circuit">')[1:]
+
+    @staticmethod
+    def _block_in(pages, k, head):
+        page = pages[k]
+        start = page.index(f"<h3>{head}</h3>")
+        return page[start:page.index("</div>", start)]
+
+    def block(self, k, head):
+        return self._block_in(self.pages, k, head)
+
+    def test_C1_단계2_는_누적_LED_를_보드_순서로(self):
+        b = self.block(0, "단계 2")
+        pos = [b.index(f"LED{c} Y{i}") for c, i in (("①", 0), ("②", 1), ("③", 2), ("④", 3))]
+        self.assertEqual(pos, sorted(pos))
+        self.assertIn("0이면 켜짐", b)
+        self.assertIn('<td class="led on"><b>켜짐</b> <small>0</small></td>', b)
+        self.assertIn('<td class="led off"><b>꺼짐</b> <small>1</small></td>', b)
+
+    def test_C1_마지막_단계에도_LED_표가_있고_Y9_가_Y6_앞이다(self):
+        b = self.block(0, "단계 4")
+        self.assertIn('class="stage-table led-table"', b)
+        self.assertLess(b.index("LED⑦ Y9"), b.index("LED⑧ Y6"))
+
+    def test_C2_임시_급전은_노드를_밝히고_걷기_뒤엔_빠진다(self):
+        self.assertIn("LED② A2 = D0'", self.block(1, "단계 2"))
+        self.assertIn("1이면 켜짐", self.block(1, "단계 2"))
+        self.assertNotIn("A2", self.block(1, "단계 3").split("<tbody>")[0])
+
+    def test_LED_순서_띠와_기록표_배지(self):
+        self.assertIn("LED 순서(위→아래):</b> ①Y0 ②Y1 ③Y2 ④Y3 ⑤Y4 ⑥Y5 ⑦Y9 ⑧Y6 ⑨Y8 ⑩Y7",
+                      self.pages[0])
+        self.assertIn("Y9예상<br><small>LED⑦</small>", self.pages[0])
+
+    def test_급전_표기_없는_단계는_옛_표로_물러선다(self):
+        # 같은 폴더에 사본을 둔다 — 그림 상대경로가 그대로 풀려야 한다. C1 1·2단계 급전(Y0~Y3)을 지운다
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        text = re.sub(r",?\s*U4 pin [1-4]→LED Y[0-3] 급전", "", src)
+        self.assertNotEqual(text, src)
+        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
+        path = Path(name)
+        try:
+            with open(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            pages = self._pages(path)
+        finally:
+            path.unlink()
+        b = self._block_in(pages, 0, "단계 2")
+        self.assertNotIn("led-table", b)
+        self.assertIn('class="stage-table"', b)
+        self.assertIn("led-table", self._block_in(pages, 0, "단계 3"))
+
+    def test_HL_표는_셀_논리값을_HL_로_찍는다(self):
+        from scripts.lab.leds import Led
+        from scripts.lab.spec_parser import LabSpec, SpecTable
+        t = SpecTable(id="T9", title="x", kind="truth-table", encoding="H/L",
+                      source="derived (Y = A')", expected=None, role="record",
+                      header=["A", "Y"], rows=[["L", "H"], ["H", "L"]], line=1)
+        spec = LabSpec(experiment=5, title="합성", source_manual="", power={"VCC": "+5V"},
+                       items=[], tables=[t], path=Path("명세.md"))
+        section = NetlistSection(kind="circuit", title="C1", body="", line=1, id="C1",
+                                 item="E5.P1-1", tables=["T9"],
+                                 nodes=[{"name": "Y", "expr": "A'", "pin": "U1 pin 2"}])
+        html = render._led_table_html(spec, section, [Led("Y", "우 a6", True, 1)], {"Y": "Y"})
+        self.assertIn("<b>켜짐</b> <small>L</small>", html)
+        self.assertIn("<b>꺼짐</b> <small>H</small>", html)
+        self.assertIn("입력 — 점퍼 H=+5V · L=GND", html)
+
+    def test_v1_주차는_LED_표가_없다(self):
+        e3 = ROOT / config.experiment_dir(3)
+        html = render_checklist(parse_spec(e3 / "체크리스트/명세.md"),
+                                parse_netlist(e3 / "결선도/netlist.md"), TEMPLATE)
+        self.assertNotIn("led-table", html)
+        self.assertNotIn("LED 순서(위→아래)", html)

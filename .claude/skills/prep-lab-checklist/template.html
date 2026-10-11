@@ -193,6 +193,12 @@
   .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
   .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
   .stage-table td.box { height: 6mm; }
+  /* LED 점등 표(v2) — 켜짐은 바탕을 채워 꺼짐과 한눈에 갈리게. 논리값은 작게 곁들인다. */
+  .led-table td.led small { color: var(--muted); }
+  .led-table td.led.on { background: var(--tint); }
+  .led-table td.led.on b { text-decoration: underline; }
+  /* 완성본 아래 LED 순서 띠 — 보드 위→아래 번호 */
+  .led-order { margin: 1.5mm 0; font-size: 10pt; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
