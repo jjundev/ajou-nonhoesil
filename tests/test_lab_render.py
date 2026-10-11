@@ -2324,7 +2324,7 @@ class TestLedTable(unittest.TestCase):
         html = render._led_table_html(spec, section, [Led("P", "우 a6", False, 1),
                                                       Led("Q", "우 a9", False, 2)],
                                       {"P": "P", "Q": "Q"})
-        self.assertIn('<td class="led off">②Q ①P 미정</td>', html)
+        self.assertIn('<td class="led off">①P 미정 ②Q</td>', html)
 
     def test_v1_주차는_LED_표가_없다(self):
         e3 = ROOT / config.experiment_dir(3)

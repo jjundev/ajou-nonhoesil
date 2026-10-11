@@ -943,7 +943,7 @@ def _led_table_html(spec, section, leds, feed) -> str:
     극성은 이미 적용했다 — Negative Logic LED(실험05 C1)는 출력 0 에서 켜져 논리값만 보면
     헷갈렸다. 열마다 LED 하나를 두면 LED 열 개(실험05 C1)에서 쪽 폭을 넘어 두 열로 접었다
     (2026-10-11 사용자). 표 위 `보는 LED:` 줄이 번호·급전 핀·극성을 한 번 알린다 — 임시 급전은
-    `②A2 = D0'` 처럼 노드를 밝힌다. 값이 안 정해지는 LED 는 꺼지는 칸 끝에 `미정` 으로 적는다.
+    `②A2 = D0'` 처럼 노드를 밝힌다. 값이 안 정해지는 LED 는 꺼지는 칸에 보드 순서대로 `①P 미정` 으로 적는다.
     확인 칸은 옛 단계 표처럼 `td.box` 다(`.check` 불변식).
     """
     shown = watched(leds, feed, section)
@@ -975,10 +975,10 @@ def _led_table_html(spec, section, leds, feed) -> str:
     for cells, bits in st.rows:
         on = [names[led.tag] for led, bit in zip(shown, bits)
               if bit is not None and lit(bit, led.active_low)]
-        off = [names[led.tag] for led, bit in zip(shown, bits)
-               if bit is not None and not lit(bit, led.active_low)]
-        unsure = [names[led.tag] for led, bit in zip(shown, bits) if bit is None]
-        off_text = " ".join(off + ([" ".join(unsure) + " 미정"] if unsure else [])) or "없음"
+        # 미정 LED 도 꺼지는 칸에 보드 순서 그대로 끼운다 — 칸 안 순서가 `보는 LED:` 줄과 같아야 한다
+        off = [names[led.tag] + (" 미정" if bit is None else "") for led, bit in zip(shown, bits)
+               if bit is None or not lit(bit, led.active_low)]
+        off_text = " ".join(off) or "없음"
         body.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
                     + f'<td class="led on">{" ".join(on) or "없음"}</td>'
                     + f'<td class="led off">{off_text}</td><td class="box"></td></tr>')
