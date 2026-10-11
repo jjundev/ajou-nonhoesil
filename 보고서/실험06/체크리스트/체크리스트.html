@@ -1,0 +1,565 @@
+<style>
+  /* 태블릿으로 보는 PDF 다 — 인쇄하지 않는다(2026-09-28 사용자). 기본 쪽은 폭은 A4 그대로 두고
+     높이만 늘렸다: 완성본 결선도(세로/가로 최대 1.9)가 폭 100% 로 캡션과 한 쪽에 들어가야 한다.
+     단계 블록은 이 쪽을 쓰지 않는다 — `fit_pages` 가 블록마다 제 높이의 쪽을 준다(`.stage` 참고).
+     폭·여백은 fit_pages 가 이 규칙에서 읽으므로 `size: <폭>mm <높이>mm; margin: <세로>mm <가로>mm`
+     꼴을 유지한다. */
+  @page { size: 210mm 420mm; margin: 12mm 10mm; }
+
+  /* 2026-09-28 디자인 — 실험실 조명 아래 태블릿에서 한 손으로 보는 면이다. 무채색 고대비에
+     색은 결선도의 선 색 넷(+ 뽑기 빨강)에만 쓴다: 색이 보이면 그건 그림의 선과 같은 뜻이다.
+     값은 여기서만 정한다. 선 색 RGB 는 breadboard-diagram 렌더러와 같다. */
+  :root {
+    --ink: #111111;          /* 본문·테두리 */
+    --muted: #555555;        /* 보조 글(흰 바탕 7.5:1) */
+    --rule: #333333;         /* 칸 선 */
+    --hair: #bbbbbb;         /* 얇은 구분선 */
+    --tint: #f2f2f2;         /* 줄무늬·머리칸 */
+    --paper: #ffffff;
+    --vcc: rgb(200, 30, 30);
+    --gnd: rgb(30, 60, 200);
+    --sig: rgb(25, 25, 25);
+    --mid: rgb(20, 130, 60);
+    --pull: rgb(160, 30, 30);   /* 빨간 점선 = 뽑을 선 */
+    --probe: #777777;           /* 회색 점선 = 계측기 */
+    --dot: 5.5mm;               /* 번호 원 지름 */
+  }
+
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; font-size: 10pt;
+         line-height: 1.5; color: var(--ink); background: var(--paper); margin: 0 1px 0 0; }
+  /* 오른쪽 1px: 크롬 헤드리스는 쪽 폭을 209.889mm 로 잡아 인쇄 영역을 레이아웃(190mm)보다
+     0.4px 좁게 자른다 — 폭 100% 상자의 오른쪽 테두리가 잘렸다(2026-09-29 실험04 칩 상자). */
+  h1 { font-size: 17pt; font-weight: 800; letter-spacing: -0.01em;
+       margin: 0 0 3mm; padding-bottom: 2mm; border-bottom: 2px solid var(--ink); }
+  h2 { font-size: 13pt; font-weight: 800; margin: 4mm 0 2mm; }
+  h3 { font-size: 12pt; font-weight: 800; margin: 3mm 0 1.5mm; }
+  h4 { font-size: 11pt; font-weight: 700; }
+  p { margin: 1.5mm 0; }
+
+  /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
+     (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
+  .box { display: inline-block; width: 4mm; height: 4mm; flex: none;
+         border: 1.5px solid var(--ink); border-radius: 0.6mm; background: var(--paper);
+         vertical-align: middle; margin-right: 2mm; box-sizing: border-box; }
+  td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; border-radius: 0;
+           border: 1px solid var(--rule); background: var(--tint); }
+
+  /* ── 공통면 ─────────────────────────────────────────────── */
+  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. 실험01 이 이 쪽에 아슬아슬하게
+     들어간다 — 목록 글자(12pt·1.7)는 키우지 않고, 머리글·상자 여백으로 무게를 준다. */
+  .common { break-after: page; }
+  /* 전원 줄은 매번 같은 내용이라 한 단계 낮춘다 — 첫눈은 `꼭 읽을 것` 이 가져간다. */
+  .common .power { font-weight: 700; border: 1px solid var(--rule); background: var(--tint);
+                   padding: 2mm 3mm; margin-bottom: 3mm; border-radius: 1mm; }
+  .common li { font-size: 12pt; line-height: 1.7; }
+
+  /* 꼭 읽을 것 — 공통면에서 가장 무거운 덩어리. 검은 머리띠 + 굵은 테두리. */
+  .common .must-read { border: 2.5px solid var(--ink); border-radius: 1mm;
+                       padding: 0 3.5mm 1.5mm; margin: 0 0 3mm; break-inside: avoid; }
+  .common .must-read h2 { margin: 0 -3.5mm 1.5mm; padding: 1.5mm 3.5mm;
+                          background: var(--ink); color: var(--paper);
+                          font-size: 13pt; letter-spacing: 0.02em; }
+  .common .must-read h2::before { content: "!"; display: inline-block; width: 5mm; height: 5mm;
+                                  margin-right: 2mm; border-radius: 50%; text-align: center;
+                                  line-height: 5mm; font-size: 10pt; vertical-align: 0.3mm;
+                                  background: var(--paper); color: var(--ink); }
+  .common .must-read ul { margin: 0; padding-left: 5mm; }
+  .common .must-read li { font-weight: 600; }
+  .common .must-read li::marker { color: var(--ink); }
+
+  .common .caution { border: 1px solid var(--rule); border-radius: 1mm; padding: 1.5mm 3mm;
+                     margin: 0 0 2mm; font-size: 9.5pt; break-inside: avoid; }
+  .common .caution ul { margin: 0.5mm 0 0; padding-left: 5mm; }
+  .common .caution li { font-size: inherit; line-height: 1.4; }
+
+  /* 선 색 범례 — 그림과 목록 번호 원을 잇는 열쇠라 줄로 따로 세운다. */
+  .wire-legend { font-size: 9pt; margin: 2mm 0 1mm; padding: 1mm 0 1mm 3mm;
+                 border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .wire-legend::before { content: ""; display: inline-block; width: 15mm; height: 2.4mm;
+                         margin-right: 2mm; vertical-align: -0.2mm; border-radius: 0.4mm;
+                         background: linear-gradient(90deg,
+                           var(--vcc) 0 25%, var(--gnd) 25% 50%, var(--sig) 50% 75%, var(--mid) 75%); }
+  .legend { font-size: 9pt; color: var(--muted); margin: 0.8mm 0 0.8mm; }
+  .legend + h2 { margin-top: 3mm; }
+
+  .common th, .common td { padding: 1.2mm 2.5mm; }
+  .common table { margin-bottom: 3mm; }
+  .common .tblock p { font-size: 9pt; color: var(--muted); margin: 0 0 2mm; }
+
+  /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
+  .flow td, .flow th { text-align: left; }
+  .flow td:first-child { font-weight: 700; white-space: nowrap; }
+
+  /* ── 회로 ─────────────────────────────────────────────── */
+  /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
+  .circuit { break-before: page; }
+  .closing { break-before: page; }
+  .circuit > h2 { font-size: 14pt; margin: 0 0 2mm; padding: 0 0 1.5mm;
+                  border-bottom: 2px solid var(--ink); }
+
+  /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
+  .banner { border: 2px solid var(--ink); border-radius: 1mm; background: var(--tint);
+            padding: 2mm 3mm; margin: 2mm 0 3mm; font-weight: 700; font-size: 11pt; }
+
+  /* 원자 단위는 **칩 상자**다. 결선도+배선 전체를 통짜로 묶으면 새 장을 열자마자
+     그 덩어리가 다음 장으로 밀려 제목과 배너만 남은 백지가 생긴다(실측 16쪽 중
+     3장). 그리고 칩 교체 배너가 그것을 실행하며 봐야 할 배선과 다른 장에 놓인다.
+     칩 하나의 배선은 절대 갈리지 않으므로 갈리는 지점은 "이 칩을 다 꽂았다"가 된다. */
+  .wirebox .chip { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm;
+                   margin-bottom: 3mm; break-inside: avoid; }
+  .wirebox img { break-after: avoid; max-height: 370mm; object-fit: contain; }
+  /* `완성본 — 손그림 원도` 캡션만 쪽 끝에 남지 않게 */
+  .wirebox > p.src:first-child { break-after: avoid; font-size: 10.5pt; color: var(--ink);
+                                 margin-top: 3mm; }
+  .wirebox .chip h4 { margin: 0 0 1.5mm; padding-bottom: 1mm; border-bottom: 1px solid var(--hair); }
+  .wirebox .chip ol { margin: 0; padding-left: 6mm; }
+  .wirebox .chip li { font-size: 11pt; line-height: 1.8; }
+  .wirebox .submit { font-size: 9.5pt; color: var(--ink); font-weight: 700; margin: 3mm 0 2mm; }
+
+  /* 단계 블록 — 칩 하나 = 단계 하나. 회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다.
+     블록 하나가 PDF 한 쪽이다: `scripts/lab/fit_pages.py` 가 블록 높이를 실측해 블록마다
+     제 높이의 쪽(`@page fit-<i>`)을 준다 — 2026-09-28 사용자 "쪽 길이를 내용에 맞춰".
+     고정 높이 쪽에서는 그림과 확인 줄·단계 진리표가 쪽 경계에서 갈렸다. 그래서 여기에는
+     쪽 넘김 규칙을 두지 않는다. fit_pages 를 거치지 않은 HTML 은 기본 쪽에서 흐른다.
+     가로 테두리+안쪽 여백은 8mm 안이다(test: 가장 긴 결선도 폭 계산). */
+  .stage { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm; margin: 3mm 0; }
+  .stage h3 { margin: 0 0 2mm; padding-bottom: 1.5mm; border-bottom: 1px solid var(--hair);
+              break-after: avoid; }
+  .stage img { display: block; max-height: 370mm; object-fit: contain; }
+  .stage > p { font-size: 10pt; }
+  /* 걷기 블록 = 뽑기만 있고 새로 꽂는 목록이 없는 단계. render.py 가 따로 표시하지
+     않으므로 내용으로 가려낸다 — 테두리 두께는 같게 둬서 fit_pages 실측과 어긋나지 않는다. */
+  .stage:has(> ul.removals):not(:has(> ol.steps)) { border-style: dashed; border-color: var(--pull); }
+  .stage:has(> ul.removals):not(:has(> ol.steps)) h3 { color: var(--pull); border-bottom-color: var(--pull); }
+
+  figure.board { margin: 0 0 1mm; }
+
+  /* ── 결선도 옆 목록 ─────────────────────────────────────
+     한 줄 = ☐ · 번호 원 · 어느 홀에서 어느 홀로(.route) · 보조 설명(.desc).
+     번호 원은 그림 위 번호 원과 같은 색이다(data-kind, 단계 그림 팔레트 선은 inline background). 경로가 가장 크고 굵다 —
+     학생이 막히는 정보가 그것이다. 설명은 자리가 모자라면 경로 아래로 내려간다. */
+  .list-head { font-weight: 800; font-size: 10.5pt; margin: 3mm 0 1mm; }
+  ol.steps, ol.probes, ul.removals { list-style: none; padding: 0; margin: 1mm 0 2mm; }
+  .step, .probe, .removal { position: relative; display: flex; flex-wrap: wrap; align-items: baseline;
+    column-gap: 3mm; row-gap: 0.5mm; padding: 1.8mm 2mm 1.8mm 15mm; break-inside: avoid;
+    border-bottom: 1px solid var(--tint); }
+  .step:nth-child(even), .probe:nth-child(even) { background: var(--tint); }
+  /* ☐ 와 번호는 줄 왼쪽 자리에 고정한다 — 번호가 없는 줄도 경로가 같은 세로선에서 시작한다. */
+  .step > .box, .probe > .box, .removal > .box { position: absolute; left: 2mm; top: 2.8mm; margin: 0; }
+  .step .n, .probe .n, .removal .n { position: absolute; left: 7.8mm; top: 2mm;
+    width: var(--dot); height: var(--dot); border-radius: 50%; box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8.5pt; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+    background: var(--sig); color: var(--paper); }
+  .step[data-kind="vcc"] .n { background: var(--vcc); }
+  .step[data-kind="gnd"] .n { background: var(--gnd); }
+  .step[data-kind="sig"] .n { background: var(--sig); }
+  .step[data-kind="mid"] .n { background: var(--mid); }
+  .step .route, .probe .route { font-size: 12pt; font-weight: 800; line-height: 1.4;
+    white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .step .desc, .probe .desc { flex: 1 1 45mm; min-width: 0; font-size: 9.5pt; line-height: 1.4;
+    color: var(--muted); }
+
+  /* 계측 — 회색 점선 = 꽂지 않고 무는 계측기. 번호 원도 점선 테두리. */
+  .list-head:has(+ ol.probes) { color: var(--muted); }
+  .probe .n { background: var(--paper); color: var(--ink); border: 1.5px dashed var(--probe); }
+
+  /* 먼저 뽑는다 — 그림의 빨간 점선과 짝. 새로 꽂는 목록(칠이 찬 원)과 모양부터 다르다:
+     점선 상자 안, 번호는 점선 테두리 원. 뽑기 다음에 꽂기가 오면 그 머리에 표지를 단다. */
+  .list-head:has(+ ul.removals) { display: inline-block; color: var(--paper); background: var(--pull);
+    padding: 0.6mm 2.5mm; border-radius: 0.8mm; margin-bottom: 0; }
+  ul.removals { border: 1.5px dashed var(--pull); border-radius: 1mm; margin-top: 0; }
+  .removal { border-bottom: 1px dashed var(--hair); }
+  .removal:last-child { border-bottom: 0; }
+  .removal > .box { border-color: var(--pull); }
+  .removal .n { background: var(--pull); color: var(--paper); border: 1.5px solid var(--pull); }   /* 그림의 걷기 번호 = 빨간 채움·흰 숫자 */
+  .removal .text { flex: 1 1 auto; min-width: 0; font-size: 11pt; font-weight: 700; line-height: 1.4; }
+  ul.removals + ol.steps::before { content: "그다음 꽂아요"; display: block; font-weight: 800;
+    font-size: 10.5pt; margin: 2mm 0 1mm; }
+  ul.removals:not(:has(+ ol.steps))::after { content: "이번엔 뽑기만 해요 — 새로 꽂는 선은 없어요";
+    display: block; padding: 1mm 2mm 1.2mm 15mm; font-size: 9.5pt; font-weight: 700; color: var(--pull);
+    border-top: 1px dashed var(--pull); }
+
+  .kept { font-size: 9pt; color: var(--muted); margin: 1mm 0; }
+  .kept::before { content: ""; display: inline-block; width: 8mm; height: 0.8mm; margin-right: 2mm;
+                  vertical-align: 0.6mm; background: var(--hair); }
+  /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
+  .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+
+  /* 단계 진리표 — 그 단계 노드가 쓰는 입력만. 열 머리 둘째 줄은 노드 핀.
+     행마다 ☐ 는 `td.box` 다 — `.check` 는 기록표 행 수 불변식 전용이다.
+     단계 블록 안이라 기록표보다 조밀하게 찍는다. */
+  .stage-table { margin: 2mm 0 0; }
+  .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
+  .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
+  .stage-table td.box { height: 6mm; }
+  /* LED 점등 표(v2) — 행마다 켜지는 LED·꺼지는 LED 두 칸. 켜지는 칸이 답이라 굵게, 꺼지는 칸은 흐리게.
+     LED 가 열 개여도(실험05 C1) 열 수가 그대로라 쪽 폭을 안 넘는다(2026-10-11 사용자). */
+  .led-table { width: 100%; }
+  .led-table td.led { text-align: left; }
+  .led-table th { white-space: nowrap; }
+  .led-table td.led.on { font-weight: 800; background: var(--tint); white-space: nowrap; }
+  .led-table td.led.off { color: var(--muted); font-size: 9pt; }
+  .led-legend { margin: 2mm 0 0; font-size: 9pt; }
+  /* 완성본 아래 LED 순서 띠 — 보드 위→아래 번호 */
+  .led-order { margin: 1.5mm 0; font-size: 10pt; }
+
+  /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
+  /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
+  .unused { border: 2px solid var(--ink); border-radius: 1mm; padding: 2mm 3mm; margin: 3mm 0;
+            break-inside: avoid; }
+  .unused > b { display: block; font-size: 10.5pt; }
+  /* 칩 구획이 쪽 경계를 타면 머리글 없는 `미사용 출력핀 … 개방` 줄만 다음 쪽
+     꼭대기에 남는다 — 칩 라벨을 되살린 이유가 그대로 무너진다. 3줄짜리라
+     통짜로 묶어도 백지 비용이 없다. */
+  .unused .chipunused { margin-top: 2mm; padding-top: 1.5mm; border-top: 1px solid var(--hair);
+                        break-inside: avoid; }
+  .unused ul { list-style: none; margin: 1mm 0 0; padding: 0; }
+  .unused li { font-size: 10.5pt; line-height: 1.8; }
+
+  /* 표가 쪽 경계에서 쪼개지면 헤더 없는 진리표 조각이 남아 실험실에서 못 읽는다.
+     가능하면 통째로 넘기고, 넘길 수 없을 만큼 크면 헤더를 반복한다.
+     제목만 앞 쪽에 남는 것(위도우)도 막는다. */
+  table { border-collapse: collapse; margin-bottom: 6mm; break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  h2, h3, h4 { break-after: avoid; }
+  .tblock { break-inside: avoid; }   /* 제목·출처·표를 한 덩어리로 */
+  th, td { border: 1px solid var(--rule); padding: 2mm 3mm; text-align: center; }
+  th { background: var(--tint); font-weight: 700; }
+  td.check { width: 10mm; height: 8mm; background: #fafafa; }
+  /* 행마다 찍을 사진 파일명. 인쇄만 하고 채우지 않는다 — `.check` 와 섞지 않는다 */
+  td.photo-name { font-size: 8pt; white-space: nowrap; color: var(--muted); }
+
+  /* 스텝표의 기입 칸. `.check` 와 뜻이 다르다 — `.check` 는 예상값과의 일치
+     여부이고, 이쪽은 읽은 값을 단위와 함께 적는 자리라 더 넓어야 한다. */
+  td.fill { width: 22mm; height: 8mm; background: #fafafa; }
+
+  /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
+  .mismatch td { height: 8mm; background: #fafafa; }
+
+  .src { font-size: 9pt; color: var(--muted); margin: 0 0 1mm; }
+  .photo { font-size: 9pt; color: var(--muted); margin: 0 0 3mm; }
+
+  /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
+     으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
+  .ov { border-top: 1px solid currentColor; display: inline-block;
+        line-height: 1.35; padding-top: 1px; }
+  /* 파형 자리. `capture` 는 셀 표를 갖지 않으므로 미니표가 먹던 지면을
+     스케치가 받는다 — 격자가 좁으면 계단 열 개를 그릴 수 없다. */
+  .sketch { border: 1px solid var(--rule); height: 65mm; }
+  /* 예상 산문이 이 표의 판정 기준 전부다. 눈에 띄게 두른다. */
+  .expected { border: 1px solid var(--rule); border-radius: 1mm; background: var(--tint);
+              padding: 2mm 3mm; margin-bottom: 2mm; font-size: 9.5pt; line-height: 1.5; }
+  /* 명세 `figure` 의 예상 개형 그림. 산문 아래·스케치 위에서 화면과 대조한다. */
+  .expected-fig { display: block; width: 100%; break-inside: avoid; break-after: avoid; }
+  .schematic { display: block; width: 80%; max-height: 70mm; object-fit: contain; margin: 2mm auto 0; break-inside: avoid; }
+  .readout { font-size: 9pt; margin: 1mm 0; }
+  /* 미니표가 없는 자리를 대신한다. 두 줄쯤 쓸 높이. */
+  .differs { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm; height: 16mm;
+             margin-bottom: 6mm; }
+
+  /* 실험실을 나오기 전에 — 펜으로 칠하는 마지막 목록. */
+  .closing h2 { font-size: 14pt; padding-bottom: 1.5mm; border-bottom: 2px solid var(--ink); }
+  .closing ul { list-style: none; padding: 0; margin: 0; }
+  .closing li { font-size: 11pt; line-height: 1.6; padding: 2mm 0; border-bottom: 1px solid var(--tint); }
+</style>
+
+<h1>실험6 Latch &amp; Flip-Flop 체크리스트</h1>
+<section class="common"><div class="power">전원: VCC = +5V · GND = GND · 쓰는 게이트의 입력은 반드시 물려요 (플로팅 금지). 미사용 핀은 회로마다 핀 점검 상자를 봐요</div>
+<div class="must-read"><h2>꼭 읽을 것</h2><ul><li>74HC76 은 pin 5 가 +5V, pin 13 이 GND 예요(16·8 이 아니에요). 교안 p11 도 "GND와 Vcc 위치 유의" 라고 빨간 글씨로 적어요</li><li>래치(C1·C2)는 Set 이나 Reset 행부터 해요 — 표 첫 행(Q(t-1))부터 하지 않아요. 그 뒤 Q(t-1) 행에서 앞 행 값이 그대로 남는지 봐요</li><li>74HC76 의 SET(pin 2)·RESET(pin 3)은 0 일 때 작동해요(Active Low). J·K 행을 볼 때는 둘 다 +5V 에 꽂아요. 1~3행 동안 CLK 는 GND 에 둬요. 하강 에지는 CLK 점퍼를 +5V 에 올렸다가 J·K 를 꽂은 뒤 GND 레일로 옮겨 꽂아 만들어요</li><li>C2 는 C1 에서 R 점퍼 한 가닥만 뽑아요 — S 점퍼가 그대로 D 가 돼요. C3 은 전부 뽑고 새로 지어요 — 칩·전원선·LED 사슬까지 뽑고 레일 브리지만 남겨요</li></ul>
+<table><thead><tr><th>회로</th><th>LED (위 → 아래)</th><th>기록 칸</th></tr></thead><tbody><tr><td>C1·C2 (74HC00)</td><td>Q'(pin 11) · Q(pin 8)</td><td>Q 만</td></tr><tr><td>C3 (74HC76)</td><td>Q(pin 15) · Q'(pin 14)</td><td>Q 만</td></tr></tbody></table></div>
+<div class="caution"><b>손으로 할 때 주의</b><ul><li>선은 클립에 물릴 깊이까지만 꽂아요. 끝까지 밀어 넣으면 접촉이 끊길 수 있어요 (실험03 GND 선)</li><li>칩을 꽂거나 뺄 때는 전원부터 꺼요</li><li>선을 바꿀 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고, 그다음 새 선을 꽂아요. 회로를 바꿀 때도, 회로 안에서도 같아요</li></ul></div>
+<p class="wire-legend">선 색 — 빨강 +5V · 파랑 0V · 검정 신호 · 초록 칩 사이 중간 노드 · 회색 = 앞 단계에서 그대로 둔다 · 빨간 점선 = 뽑는다 · 회색 점선 = 계측기(꽂지 않고 문다)</p>
+<p class="legend">진리표 — 확인 칸에는 맞으면 ✓, 다르면 실제로 본 값을 적어요. 안 본 행은 비워 둬요. 표를 통째로 못 했으면 그 표 아래에 진행하지 않았음 이라고 적어요.</p>
+<p class="legend">스텝표 — 회색 칸에 읽은 값을 단위와 함께 적어요 (예: 3.2 V, 47 Ω). 대조할 예상값이 없는 표라서 확인 칸은 없어요.</p>
+<p class="legend">파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채워요. 조건을 안 적으면 결과보고서에서 화면의 칸을 볼트로 바꿀 수 없어요.</p>
+<h2>오늘의 흐름</h2>
+<table class='flow'><thead><tr><th>순서</th><th>회로</th><th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody><tr><td>1/3</td><td>C1 · 실험 1) SR Latch with Enable (74HC00)</td><td>74HC00</td><td>T1 SR Latch with Enable Truth Table</td></tr><tr><td>2/3</td><td>C2 · 실험 2-1) D Latch with Enable (74HC00 + 74HC04)</td><td>74HC00 · 74HC04</td><td>T2 D Latch with Enable Truth Table</td></tr><tr><td>3/3</td><td>C3 · 실험 3-2) JK F/F – IC(74HC76) 활용 (74HC76)</td><td>74HC76</td><td>T3 JK F/F (74HC76) Truth Table</td></tr></tbody></table>
+<div class="tblock"><h2>참조 핀아웃</h2>
+<table><thead><tr><th>IC</th><th>입력</th><th>출력</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC00 (quad 2-input NAND)</td><td>1·2, 4·5, 9·10, 12·13</td><td>3, 6, 8, 11</td><td>14</td><td>7</td></tr><tr><td>74HC76 (dual JK F/F, 1번만 씀)</td><td>CLK=1, SET=2, RESET=3, J=4, K=16</td><td>Q=15, Q'=14</td><td>5</td><td>13</td></tr></tbody></table>
+<p>74HC04 (hex inverter): 1→2 만 쓴다. VCC 14, GND 7. 74HC76 의 K 는 pin 16 이다 — J(pin 4)와 반대쪽 f쪽 맨 위다. 2번 플립플롭은 CLK=6, SET=7, RESET=8, J=9, K=12, Q=11, Q'=10 이고 쓰지 않는다.</p>
+</div>
+<div class="tblock"><h2>칩 자리표</h2>
+<p>슬롯은 역할에 붙는다: 래치·플립플롭 본체(K1)와 D 를 뒤집는 인버터(K2). C1 → C2 는 K1 의 74HC00 한 패키지와 그 배선을 그대로 두고 K2 만 더한다. C3 은 전부 걷으므로 같은 K1 에 74HC76 을 꽂는다 — 16핀이라 K1 의 74HC00 보다 한 행 길다. v2 판형이라 칩은 전부 좌 블록에 두고(R9) LED 는 우 블록이다. 좌·우 는 브레드보드 왼쪽·오른쪽 블록, 행은 칩 pin 1 이 앉는 행이다. 홀 주소 좌 a7 은 왼쪽 블록 a 열 7행이다 (열 a~e 가 칩 a쪽, f~j 가 f쪽). 행은 배치.py 의 LAYOUT 이고 배치기(python -m scripts.lab.place_search &lt;배치.py&gt;) 결과 배치탐색.md 와 같다. 74HC76 전원핀 pin 5·13 이 앉는 7·6행은 레일 빈 행이 아니다.</p>
+<table><thead><tr><th>슬롯</th><th>자리</th><th>회로별 칩</th></tr></thead><tbody><tr><td>K1</td><td>좌 3행</td><td>C1 74HC00 (U1, SR 래치) · C2 74HC00 (U1, 그대로) · C3 74HC76 (U3, JK F/F)</td></tr><tr><td>K2</td><td>좌 13행</td><td>C1 비움 · C2 74HC04 (U2, D 반전) · C3 비움</td></tr></tbody></table>
+</div></section>
+<section class="circuits"><section class="circuit">
+<div class="fit" data-fit="0">
+<h2>회로 1/3 · C1 · 실험 1) SR Latch with Enable (74HC00) · 기록: T1 · 판독: LED</h2>
+<div class="banner">준비 — 꽂을 칩: 74HC00</div>
+<img class="schematic" src="실험06_1_회로도.png"><p class='src'>강의노트 p7 · 회로 구성</p>
+<p>교안 p7 회로도 그대로. 이 주차 첫 회로라 맨바닥에서 시작한다. 칩이 하나라 단계 표를 두지 않는다 — 칩 전원·레일 브리지·LED 두 사슬·입력 점퍼 셋·칩 안 배선 다섯(E 이어 감 하나와 게이트 사이 넷)을 한 번에 꽂고 T1 을 돌린다. 첫 입력은 교안 원문대로 Set(T1 4행, E=1, S=1, R=0) 또는 Reset(3행, E=1, S=0, R=1)이고, 그 뒤 1·2행(유지), 마지막에 5행(S=R=1) 순서로 본다.</p>
+<p>## 노드 표에는 입력만으로 값이 정해지는 앞단 NAND 두 출력만 싣는다. Q·Q' 는 앞 상태에 따라 값이 갈리는 되먹임 노드라 기록표 입력의 식으로 적을 수 없다. T1 이 맞지 않으면 아래 두 노드부터 찍어 본다.</p>
+</div>
+<div class="fit" data-fit="1">
+<div class="wirebox">
+<figure class="board"><img src="../결선도/실험06_1_결선도_SR래치.png" style="width:100%"></figure><p class="src">결선도: 실험06_1_결선도_SR래치.png</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">전원잭 → 좌 VCC레일3행</span><span class="desc">전원장치 +5V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">전원잭 → 좌 GND레일4행</span><span class="desc">전원장치 0V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 GND레일23행 → 중앙GND레일23행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 VCC레일24행 → 중앙VCC레일24행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">5</span><span class="route">좌 g3 → 중앙VCC레일3행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a9 → 좌 GND레일9행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">7</span><span class="route">좌 GND레일5행 → 좌 a3</span><span class="desc">입력 S -&gt; U1 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">8</span><span class="route">좌 GND레일6행 → 좌 a4</span><span class="desc">입력 E -&gt; U1 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">9</span><span class="route">좌 GND레일7행 → 좌 a7</span><span class="desc">입력 R -&gt; U1 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">10</span><span class="route">우 b5 → 우 c8</span><span class="desc">Q': LED(우 b5→우 b6) + 330Ω(우 c6→우 c8) 직렬 · Q' — 기록 칸 없음 (netlist M4)</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">우 a8 → 중앙GND레일7행</span><span class="desc">Q' 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">12</span><span class="route">우 b10 → 우 c13</span><span class="desc">Q: LED(우 b10→우 b11) + 330Ω(우 c11→우 c13) 직렬 · Q — 진리표의 Q(t) 열</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">13</span><span class="route">우 a13 → 중앙GND레일13행</span><span class="desc">Q 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">14</span><span class="route">좌 b4 → 좌 a6</span><span class="desc">E 이어 감 (U1 pin 2 -&gt; U1 pin 4)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">15</span><span class="route">좌 c5 → 좌 g8</span><span class="desc">앞단 출력 (U1 pin 3) -&gt; U1 pin 9</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">16</span><span class="route">좌 d8 → 좌 g4</span><span class="desc">앞단 출력 (U1 pin 6) -&gt; U1 pin 13</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">17</span><span class="route">좌 j9 → 좌 j5</span><span class="desc">Q 되먹임 (U1 pin 8 -&gt; U1 pin 12)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">18</span><span class="route">좌 j6 → 좌 h7</span><span class="desc">Q' 되먹임 (U1 pin 11 -&gt; U1 pin 10)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">19</span><span class="route">좌 i6 → 우 a5</span><span class="desc">Q' = U1 pin 11 -&gt; LED Q'</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">20</span><span class="route">좌 i9 → 우 a10</span><span class="desc">Q = U1 pin 8 -&gt; LED Q</span></li></ol>
+<p class="led-order"><b>LED 순서(위→아래):</b> ①Q' ②Q</p>
+<p class='src submit'>손그림은 이 그림을 따라 그려요</p>
+<div class="chip"><h4>U1 = 74HC00 (quad 2-input NAND, DIP-14) — K1</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 S</li>
+<li><span class="box"></span>pin 2  ← 입력 E          (E 점퍼, 거기서 pin 4 로 이어 감)</li>
+<li><span class="box"></span>pin 2  → U1.pin4          (E 이어 감)</li>
+<li><span class="box"></span>pin 4  ← U1.pin2          (E)</li>
+<li><span class="box"></span>pin 5  ← 입력 R</li>
+<li><span class="box"></span>pin 3  → U1.pin9          ((S·E)' → 뒷단 NAND)</li>
+<li><span class="box"></span>pin 6  → U1.pin13         ((E·R)' → 뒷단 NAND)</li>
+<li><span class="box"></span>pin 8  → U1.pin12         (Q 되먹임)</li>
+<li><span class="box"></span>pin 11 → U1.pin10         (Q' 되먹임)</li>
+<li><span class="box"></span>pin 8  → 330Ω → LED Q 애노드, LED 캐소드 → GND    ※ Q, T1 의 Q(t) 열</li>
+<li><span class="box"></span>pin 11 → 330Ω → LED Q' 애노드, LED 캐소드 → GND   ※ Q' (기록 칸 없음)</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="fit" data-fit="2">
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>
+<div class="chipunused"><b>U1 = 74HC00 (quad 2-input NAND, DIP-14) — K1</b><ul>
+<li><span class="box"></span>미사용 입력핀: 없음 (게이트 넷을 다 쓴다)</li>
+</ul></div>
+</div>
+<div class="tblock">
+<h3>T1 · SR Latch with Enable Truth Table</h3>
+<p class='src'>출처: manual:p7</p>
+<table>
+<thead>
+<tr>
+<th>E</th>
+<th>S</th>
+<th>R</th>
+<th>Q(t)예상</th>
+<th>확인</th><th>사진 파일명</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">1 100.jpg</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0: Reset</td><td class="check"></td><td class="photo-name">1 101.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1: Set</td><td class="check"></td><td class="photo-name">1 110.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>X (부정)</td><td class="check"></td><td class="photo-name">1 111.jpg</td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
+<h4>T1 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock nodes">
+<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>
+<p class='src'>틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요</p>
+<table>
+<thead>
+<tr>
+<th>E</th>
+<th>S</th>
+<th>R</th>
+<th>(S·E)'<br><small>U1 pin 3</small></th>
+<th>(E·R)'<br><small>U1 pin 6</small></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>X</td><td>—</td><td>—</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="circuit">
+<div class="fit" data-fit="3">
+<h2>회로 2/3 · C2 · 실험 2-1) D Latch with Enable (74HC00 + 74HC04) · 기록: T2 · 판독: LED</h2>
+<div class="banner">앞 회로 배선은 그대로 둬요. 걷을 선은 걷기 그림(빨간 점선), 새 선은 단계 그림(회색·번호)을 따라가요 · 꽂을 칩: 74HC04 · 칩은 그대로 두고 선만 다시 꽂을 칩: 74HC00</div>
+<img class="schematic" src="실험06_2-1_회로도.png"><p class='src'>강의노트 p8 · 회로 구성</p>
+<p>교안 p8 회로도 그대로, C1 위에 짓는다. 1걷기 에서 C1 의 R 입력 점퍼 한 가닥을 뽑고, 1단계에서 74HC04(U2)를 K2 에 꽂아 전원을 잇고 두 가닥을 더한다. C1 의 S 점퍼(U1 pin 1)가 그대로 D 가 되고, E 점퍼·칩 안 배선 다섯·LED 두 사슬은 손대지 않는다. 걷기 주소는 배치.py 가 뽑은 걷기 그림의 주소다.</p>
+<p>1단계의 관측 노드는 D' 다. D' 에는 LED 가 없다 — E=1 에서 D 를 0·1 로 바꿔 LED Q·Q' 가 따라 바뀌는지로 본다(D=0 에서 Q 를 0 으로 내리는 것이 D' 다). 멀티미터·로직프로브가 있으면 U2 pin 2 를 직접 찍는다. 이 관측 방법은 교안 원문이 아니다. 1단계 뒤 T2 전 행을 돌린다.</p>
+</div>
+<div class="stage" data-fit="4"><h3>1단계 전 · 걷기</h3><figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치_1걷기_R입력.png" style="width:100%"></figure><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(R 입력 점퍼 → U1 pin 5, 좌 GND레일7행→좌 a7)을 뽑는다. 그림의 빨간 점선이 그 한 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 GND레일7행 → 좌 a7 · 입력 R -&gt; U1 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li></ul><p class="kept">회색 = 앞 단계에서 그대로 둔 것 20개</p><p><span class="box"></span><b>확인:</b> 뽑은 한 가닥이 손에 있고 좌 GND레일7행·좌 a7 홀이 비어 있다 (LED 검사 없음)</p></div>
+<div class="stage" data-fit="5"><h3>단계 1</h3><figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치_1단계_D반전.png" style="width:100%"></figure><p><b>이 단계에서:</b> 74HC04 를 K2 에 꽂고 전원(14→VCC, 7→GND)을 꽂는다. C1 의 S 점퍼(U1 pin 1)는 그대로 두고 이제 D 라 부른다. 신호선: U1 pin 1→U2 pin 1 (D 이어 감), U2 pin 2→U1 pin 5 (D')</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">(빈 자리) → 꽂는다: 74HC04</span><span class="desc">좌 13행에 새로 꽂는다</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">2</span><span class="route">좌 g13 → 중앙VCC레일12행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a19 → 좌 GND레일19행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">4</span><span class="route">좌 b3 → 좌 b13</span><span class="desc">D 이어 감 (U1 pin 1 -&gt; U2 pin 1)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">5</span><span class="route">좌 a14 → 좌 b7</span><span class="desc">D' (U2 pin 2) -&gt; U1 pin 5</span></li></ol><p class="kept">회색 = 앞 단계에서 그대로 둔 것 20개</p><p><b>확인 노드:</b> D' <small>(U2 pin 2)</small></p><p><span class="box"></span><b>확인:</b> 노드 D' — E=1 로 두고 D 를 0·1 로 바꿔 LED Q·Q' 로 본다 (D=0 에서 Q 꺼짐·Q' 켜짐, D=1 에서 반대). 74HC04 첫 사용</p><table class="stage-table">
+<thead>
+<tr><th colspan="1">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">D'예상<br><small>U2 pin 2</small></th><th rowspan="2">확인</th></tr><tr><th>D</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>1</td><td class="box"></td></tr>
+<tr><td>1</td><td>0</td><td class="box"></td></tr>
+</tbody>
+</table></div>
+<div class="fit" data-fit="6">
+<div class="wirebox">
+<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>
+<figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치.png" style="width:100%"></figure><p class="src">결선도: 실험06_2-1_결선도_D래치.png</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">전원잭 → 좌 VCC레일3행</span><span class="desc">전원장치 +5V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">전원잭 → 좌 GND레일4행</span><span class="desc">전원장치 0V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 GND레일23행 → 중앙GND레일23행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 VCC레일24행 → 중앙VCC레일24행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">5</span><span class="route">좌 g3 → 중앙VCC레일3행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a9 → 좌 GND레일9행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">7</span><span class="route">좌 GND레일5행 → 좌 a3</span><span class="desc">입력 D -&gt; U1 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">8</span><span class="route">좌 GND레일6행 → 좌 a4</span><span class="desc">입력 E -&gt; U1 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">9</span><span class="route">우 b5 → 우 c8</span><span class="desc">Q': LED(우 b5→우 b6) + 330Ω(우 c6→우 c8) 직렬 · Q' — 기록 칸 없음 (netlist M4)</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">우 a8 → 중앙GND레일7행</span><span class="desc">Q' 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">11</span><span class="route">우 b10 → 우 c13</span><span class="desc">Q: LED(우 b10→우 b11) + 330Ω(우 c11→우 c13) 직렬 · Q — 진리표의 Q(t) 열</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">우 a13 → 중앙GND레일13행</span><span class="desc">Q 저항 아래 -&gt; GND</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">13</span><span class="route">좌 g13 → 중앙VCC레일12행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">14</span><span class="route">좌 a19 → 좌 GND레일19행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">15</span><span class="route">좌 b4 → 좌 a6</span><span class="desc">E 이어 감 (U1 pin 2 -&gt; U1 pin 4)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">16</span><span class="route">좌 c5 → 좌 g8</span><span class="desc">앞단 출력 (U1 pin 3) -&gt; U1 pin 9</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">17</span><span class="route">좌 d8 → 좌 g4</span><span class="desc">앞단 출력 (U1 pin 6) -&gt; U1 pin 13</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">18</span><span class="route">좌 j9 → 좌 j5</span><span class="desc">Q 되먹임 (U1 pin 8 -&gt; U1 pin 12)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">19</span><span class="route">좌 j6 → 좌 h7</span><span class="desc">Q' 되먹임 (U1 pin 11 -&gt; U1 pin 10)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">20</span><span class="route">좌 i6 → 우 a5</span><span class="desc">Q' = U1 pin 11 -&gt; LED Q'</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">21</span><span class="route">좌 i9 → 우 a10</span><span class="desc">Q = U1 pin 8 -&gt; LED Q</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">22</span><span class="route">좌 b3 → 좌 b13</span><span class="desc">D 이어 감 (U1 pin 1 -&gt; U2 pin 1)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">23</span><span class="route">좌 a14 → 좌 b7</span><span class="desc">D' (U2 pin 2) -&gt; U1 pin 5</span></li></ol>
+<p class="led-order"><b>LED 순서(위→아래):</b> ①Q' ②Q</p>
+<p class='src submit'>손그림은 이 그림을 따라 그려요</p>
+<div class="chip"><h4>U1 = 74HC00 (quad 2-input NAND, DIP-14) — K1</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 D          (C1 의 S 점퍼 그대로, 거기서 U2 pin 1 로 이어 감)</li>
+<li><span class="box"></span>pin 1  → U2.pin1          (D 이어 감)</li>
+<li><span class="box"></span>pin 2  ← 입력 E          (거기서 pin 4 로 이어 감)</li>
+<li><span class="box"></span>pin 2  → U1.pin4          (E 이어 감)</li>
+<li><span class="box"></span>pin 4  ← U1.pin2          (E)</li>
+<li><span class="box"></span>pin 5  ← U2.pin2          (D' — C1 의 R 점퍼 자리)</li>
+<li><span class="box"></span>pin 3  → U1.pin9          ((D·E)' → 뒷단 NAND)</li>
+<li><span class="box"></span>pin 6  → U1.pin13         ((E·D')' → 뒷단 NAND)</li>
+<li><span class="box"></span>pin 8  → U1.pin12         (Q 되먹임)</li>
+<li><span class="box"></span>pin 11 → U1.pin10         (Q' 되먹임)</li>
+<li><span class="box"></span>pin 8  → 330Ω → LED Q 애노드, LED 캐소드 → GND    ※ Q, T2 의 Q(t) 열</li>
+<li><span class="box"></span>pin 11 → 330Ω → LED Q' 애노드, LED 캐소드 → GND   ※ Q' (기록 칸 없음)</li>
+</ol>
+</div>
+<div class="chip"><h4>U2 = 74HC04 (hex inverter, DIP-14) — K2</h4>
+<ol start="1">
+<li><span class="box"></span>pin 14 → VCC(+5V)</li>
+<li><span class="box"></span>pin 7  → GND</li>
+<li><span class="box"></span>pin 1  ← U1.pin1          (D)</li>
+<li><span class="box"></span>pin 2  → U1.pin5          (D')</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="fit" data-fit="7">
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>
+<div class="chipunused"><b>U1 = 74HC00 (quad 2-input NAND, DIP-14) — K1</b><ul>
+<li><span class="box"></span>미사용 입력핀: 없음</li>
+</ul></div>
+<div class="chipunused"><b>U2 = 74HC04 (hex inverter, DIP-14) — K2</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 3, 5, 9, 11, 13 → 접지하지 않는다</li>
+<li><span class="box"></span>미사용 출력핀: pin 4, 6, 8, 10, 12 → 비워 둔다</li>
+</ul></div>
+</div>
+<div class="tblock">
+<h3>T2 · D Latch with Enable Truth Table</h3>
+<p class='src'>출처: manual:p8</p>
+<table>
+<thead>
+<tr>
+<th>E</th>
+<th>D</th>
+<th>Q(t)예상</th>
+<th>확인</th><th>사진 파일명</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>0</td><td>0: Reset</td><td class="check"></td><td class="photo-name">2-1 10.jpg</td></tr>
+<tr><td>1</td><td>1</td><td>1: Set</td><td class="check"></td><td class="photo-name">2-1 11.jpg</td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
+<h4>T2 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+<div class="tblock nodes">
+<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>
+<p class='src'>틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요</p>
+<table>
+<thead>
+<tr>
+<th>E</th>
+<th>D</th>
+<th>(D·E)'<br><small>U1 pin 3</small></th>
+<th>(E·D')'<br><small>U1 pin 6</small></th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>X</td><td>—</td><td>—</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="circuit">
+<div class="fit" data-fit="8">
+<h2>회로 3/3 · C3 · 실험 3-2) JK F/F – IC(74HC76) 활용 (74HC76) · 기록: T3 · 판독: LED</h2>
+<div class="banner">앞 회로의 선과 LED 사슬까지 전부 뽑아요. 레일 브리지만 그대로 둬요(새 선·부품은 단계 그림을 따라 꽂아요) · 뺄 칩: 74HC00, 74HC04 · 꽂을 칩: 74HC76</div>
+<img class="schematic" src="실험06_3-2_회로도.png"><p class='src'>강의노트 p11 · 회로 구성</p>
+<p>교안 p11 핀 배치 그림대로, C2 를 걷고 새로 짓는다. 전원을 끄고 C2 의 신호선·입력 점퍼를 전부 뽑고, 74HC00·74HC04 와 그 전원선 네 가닥, LED 사슬 두 개(LED·330Ω·GND 선)도 뽑는다. 레일 브리지만 그대로 둔다. 74HC76(U3)을 K1 에 꽂고 전원(pin 5 → VCC, pin 13 → GND), LED 두 사슬, 입력 점퍼 다섯을 꽂는다. 칩이 하나이고 칩 안 배선이 없어 단계 표를 두지 않는다. 플립플롭은 출력이 앞 상태에 따라 갈려 ## 노드 표에 적을 조합 노드가 없다.</p>
+<p>교안 p11 표 순서대로 돌린다(회색 행도 돌린다). 1~3 행 동안 CLK 점퍼는 GND 에 둔다 — +5V 에 두었다가 3 행에서 GND 로 옮기면 그 자체가 하강 에지라 Q 가 그때의 J·K 대로 바뀐다. 1·2 행은 SET·RESET 점퍼 하나만 GND 로 내려 클럭 없이 출력을 정한다. 3 행은 둘 다 +5V 에 두고(교안 "JK에 따른 결과 확인 시 HIGH"), CLK 를 GND 에 둔 채 J·K 를 바꿔도 Q 가 그대로인지 본다. 4~7 행은 CLK 를 +5V 로 올리고 J·K 를 꽂은 뒤 CLK 를 GND 레일로 옮겨 하강 에지 하나를 낸다. 오르는 에지에서는 Q 가 바뀌지 않는다(ST M74HC76 진리표 마지막 행 NO CHANGE). 이 순서는 교안 원문이 아니다.</p>
+</div>
+<div class="fit" data-fit="9">
+<div class="wirebox">
+<figure class="board"><img src="../결선도/실험06_3-2_결선도_JK플립플롭.png" style="width:100%"></figure><p class="src">결선도: 실험06_3-2_결선도_JK플립플롭.png</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">전원잭 → 좌 VCC레일3행</span><span class="desc">전원장치 +5V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">전원잭 → 좌 GND레일4행</span><span class="desc">전원장치 0V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 GND레일23행 → 중앙GND레일23행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 VCC레일24행 → 중앙VCC레일24행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">5</span><span class="route">좌 d7 → 좌 VCC레일7행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 g6 → 중앙GND레일6행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">7</span><span class="route">좌 GND레일5행 → 좌 a3</span><span class="desc">입력 CLK -&gt; U3 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">8</span><span class="route">좌 GND레일6행 → 좌 a4</span><span class="desc">입력 Set -&gt; U3 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">9</span><span class="route">좌 GND레일7행 → 좌 a5</span><span class="desc">입력 Reset -&gt; U3 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">10</span><span class="route">좌 GND레일9행 → 좌 a6</span><span class="desc">입력 J -&gt; U3 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">11</span><span class="route">중앙GND레일3행 → 좌 j3</span><span class="desc">입력 K -&gt; U3 pin 16 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">12</span><span class="route">우 b3 → 우 c6</span><span class="desc">Q: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · Q — 진리표 T3 의 Q(t) 열</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">13</span><span class="route">우 a6 → 중앙GND레일5행</span><span class="desc">Q 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">14</span><span class="route">우 b8 → 우 c11</span><span class="desc">Q': LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · Q' — 기록 칸 없음 (netlist M4)</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">15</span><span class="route">우 a11 → 중앙GND레일11행</span><span class="desc">Q' 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">16</span><span class="route">좌 j4 → 우 a3</span><span class="desc">Q = U3 pin 15 -&gt; LED Q</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">17</span><span class="route">좌 j5 → 우 a8</span><span class="desc">Q' = U3 pin 14 -&gt; LED Q'</span></li></ol>
+<p class="led-order"><b>LED 순서(위→아래):</b> ①Q ②Q'</p>
+<p class='src submit'>손그림은 이 그림을 따라 그려요</p>
+<div class="chip"><h4>U3 = 74HC76 (dual JK flip-flop with set/reset, DIP-16) — K1</h4>
+<ol start="1">
+<li><span class="box"></span>pin 5  → VCC(+5V)</li>
+<li><span class="box"></span>pin 13 → GND</li>
+<li><span class="box"></span>pin 1  ← 입력 CLK        (1번 F/F 의 CLK — 하강 에지에서 동작)</li>
+<li><span class="box"></span>pin 2  ← 입력 Set        (SET, Active Low)</li>
+<li><span class="box"></span>pin 3  ← 입력 Reset      (RESET, Active Low)</li>
+<li><span class="box"></span>pin 4  ← 입력 J</li>
+<li><span class="box"></span>pin 16 ← 입력 K</li>
+<li><span class="box"></span>pin 15 → 330Ω → LED Q 애노드, LED 캐소드 → GND    ※ Q, T3 의 Q(t) 열</li>
+<li><span class="box"></span>pin 14 → 330Ω → LED Q' 애노드, LED 캐소드 → GND   ※ Q(t)' (기록 칸 없음)</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="fit" data-fit="10">
+<div class="unused"><b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>
+<div class="chipunused"><b>U3 = 74HC76 (dual JK flip-flop with set/reset, DIP-16) — K1</b><ul>
+<li><span class="box"></span>미사용 입력핀: pin 6, 7, 8, 9, 12 (2번 F/F) → 접지하지 않는다</li>
+<li><span class="box"></span>미사용 출력핀: pin 10, 11 (2번 F/F) → 비워 둔다</li>
+</ul></div>
+</div>
+<div class="tblock">
+<h3>T3 · JK F/F (74HC76) Truth Table</h3>
+<p class='src'>출처: manual:p11</p>
+<table>
+<thead>
+<tr>
+<th>Set</th>
+<th>Reset</th>
+<th>CLK</th>
+<th>J</th>
+<th>K</th>
+<th>Q(t)예상</th>
+<th>확인</th><th>사진 파일명</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>1</td><td>X</td><td>X</td><td>X</td><td>1: Set</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>0</td><td>X</td><td>X</td><td>X</td><td>0: Reset</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>1</td><td>0: Reset</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>0</td><td>1: Set</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>1</td><td>Q(t-1)'</td><td class="check"></td><td class="photo-name">—</td></tr>
+</tbody>
+</table>
+<p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
+<h4>T3 · 불일치 기록</h4><table class="mismatch"><thead><tr><th>불일치 행</th><th>예상</th><th>실제</th><th>사진 파일</th><th>짐작된 원인</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</div>
+</div>
+</section></section>
+<section class="closing"><div class="fit" data-fit="11"><h2>실험실을 나오기 전에</h2><ul><li><span class="box"></span>표마다 확인 칸이 다 찼나요? 사진만 찍었다면 시험한 행마다 사진이 있나요? (못 한 표에는 진행하지 않았음 이라고 적어요)</li><li><span class="box"></span>표마다 사진을 지시대로 찍었나요? 진리표는 시험한 행마다(불일치 행은 꼭), 스텝표는 스텝마다, 파형은 화면마다예요</li><li><span class="box"></span>사진 파일명이 표에 인쇄된 이름 그대로인가요? (실험 번호 접두어 없이)</li><li><span class="box"></span>공통면의 실험실 확인 목록을 다 처리했나요?</li><li><span class="box"></span>조교에게 물어볼 것을 다 물었나요?</li><li><span class="box"></span>종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었나요? 실험 폴더에 .md 로 둔 자유 메모 파일도 괜찮아요</li><li><span class="box"></span>부품을 반납했나요?</li></ul></div></section>
+<style id="fit-pages">
+@page fit-0 { size: 210mm 155mm; margin: 12mm 10mm; }
+[data-fit="0"] { page: fit-0; }
+@page fit-1 { size: 210mm 595mm; margin: 12mm 10mm; }
+[data-fit="1"] { page: fit-1; }
+@page fit-2 { size: 210mm 273mm; margin: 12mm 10mm; }
+[data-fit="2"] { page: fit-2; }
+@page fit-3 { size: 210mm 167mm; margin: 12mm 10mm; }
+[data-fit="3"] { page: fit-3; }
+@page fit-4 { size: 210mm 339mm; margin: 12mm 10mm; }
+[data-fit="4"] { page: fit-4; }
+@page fit-5 { size: 210mm 398mm; margin: 12mm 10mm; }
+[data-fit="5"] { page: fit-5; }
+@page fit-6 { size: 210mm 682mm; margin: 12mm 10mm; }
+[data-fit="6"] { page: fit-6; }
+@page fit-7 { size: 210mm 259mm; margin: 12mm 10mm; }
+[data-fit="7"] { page: fit-7; }
+@page fit-8 { size: 210mm 182mm; margin: 12mm 10mm; }
+[data-fit="8"] { page: fit-8; }
+@page fit-9 { size: 210mm 537mm; margin: 12mm 10mm; }
+[data-fit="9"] { page: fit-9; }
+@page fit-10 { size: 210mm 214mm; margin: 12mm 10mm; }
+[data-fit="10"] { page: fit-10; }
+@page fit-11 { size: 210mm 126mm; margin: 12mm 10mm; }
+[data-fit="11"] { page: fit-11; }
+</style>
