@@ -193,6 +193,16 @@
   .stage-table th, .stage-table td { padding: 1mm 2.5mm; }
   .stage-table th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
   .stage-table td.box { height: 6mm; }
+  /* LED 점등 표(v2) — 행마다 켜지는 LED·꺼지는 LED 두 칸. 켜지는 칸이 답이라 굵게, 꺼지는 칸은 흐리게.
+     LED 가 열 개여도(실험05 C1) 열 수가 그대로라 쪽 폭을 안 넘는다(2026-10-11 사용자). */
+  .led-table { width: 100%; }
+  .led-table td.led { text-align: left; }
+  .led-table th { white-space: nowrap; }
+  .led-table td.led.on { font-weight: 800; background: var(--tint); white-space: nowrap; }
+  .led-table td.led.off { color: var(--muted); font-size: 9pt; }
+  .led-legend { margin: 2mm 0 0; font-size: 9pt; }
+  /* 완성본 아래 LED 순서 띠 — 보드 위→아래 번호 */
+  .led-order { margin: 1.5mm 0; font-size: 10pt; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */

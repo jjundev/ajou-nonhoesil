@@ -327,5 +327,57 @@
  ],
  "removals": [],
  "probes": [],
- "board": "v2"
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Y0",
+   "at": "우 a6",
+   "active_low": true
+  },
+  {
+   "tag": "Y1",
+   "at": "우 a10",
+   "active_low": true
+  },
+  {
+   "tag": "Y2",
+   "at": "우 a14",
+   "active_low": true
+  },
+  {
+   "tag": "Y3",
+   "at": "우 a18",
+   "active_low": true
+  },
+  {
+   "tag": "Y4",
+   "at": "우 a22",
+   "active_low": true
+  },
+  {
+   "tag": "Y5",
+   "at": "우 a26",
+   "active_low": true
+  },
+  {
+   "tag": "Y9",
+   "at": "우 a30",
+   "active_low": true
+  },
+  {
+   "tag": "Y6",
+   "at": "우 a34",
+   "active_low": true
+  },
+  {
+   "tag": "Y8",
+   "at": "우 a38",
+   "active_low": true
+  },
+  {
+   "tag": "Y7",
+   "at": "우 a42",
+   "active_low": true
+  }
+ ]
 }

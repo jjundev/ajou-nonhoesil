@@ -2194,3 +2194,141 @@ class TestWalkNumberMatchesPicture(unittest.TestCase):
         self.assertIsNotNone(rule)
         self.assertIn("background: var(--pull)", rule.group(0))
         self.assertIn("color: var(--paper)", rule.group(0))
+
+
+class TestLedTable(unittest.TestCase):
+    """v2 단계 진리표의 LED 점등 열 — 누적 급전 LED 를 `켜지는 LED`·`꺼지는 LED` 두 열에 보드 순서
+    (①②…)로 나눠 적는다. 열마다 LED 하나면 LED 열 개에서 쪽 폭을 넘었다(2026-10-11 사용자).
+    설계: docs/plans/2026-10-11-체크리스트-LED-점등열-설계.md"""
+
+    E5 = ROOT / config.experiment_dir(5)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.spec = parse_spec(cls.E5 / "체크리스트/명세.md")
+        cls.pages = cls._pages(cls.E5 / "결선도/netlist.md")
+
+    @classmethod
+    def _pages(cls, netlist_path):
+        html = render_checklist(cls.spec, parse_netlist(netlist_path), TEMPLATE)
+        return html.split('<section class="circuit">')[1:]
+
+    @staticmethod
+    def _block_in(pages, k, head):
+        page = pages[k]
+        start = page.index(f"<h3>{head}</h3>")
+        return page[start:page.index("</div>", start)]
+
+    def block(self, k, head):
+        return self._block_in(self.pages, k, head)
+
+    def test_C1_단계2_는_누적_LED_를_켜짐_꺼짐_두_열로(self):
+        b = self.block(0, "단계 2")
+        self.assertIn('<th rowspan="2">켜지는 LED</th><th rowspan="2">꺼지는 LED</th>', b)
+        self.assertIn("보는 LED:</b> ①Y0(U4 pin 1) ②Y1(U4 pin 2) ③Y2(U4 pin 3) ④Y3(U4 pin 4)"
+                      " — 모두 0이면 켜짐", b)
+        # 0010 행: Y2 만 켜진다
+        self.assertIn('<td>0</td><td>0</td><td>1</td><td>0</td>'
+                      '<td class="led on">③Y2</td><td class="led off">①Y0 ②Y1 ④Y3</td>', b)
+
+    def test_C1_마지막_단계에도_LED_표가_있고_Y9_가_Y6_앞이다(self):
+        b = self.block(0, "단계 4")
+        self.assertIn('class="stage-table led-table"', b)
+        # 1001 행: Y9 만 켜지고, 꺼지는 칸은 보드 순서라 ⑥Y5 다음이 ⑧Y6 이다
+        self.assertIn('<td class="led on">⑦Y9</td>'
+                      '<td class="led off">①Y0 ②Y1 ③Y2 ④Y3 ⑤Y4 ⑥Y5 ⑧Y6 ⑨Y8 ⑩Y7</td>', b)
+
+    def test_C2_임시_급전은_노드를_밝히고_걷기_뒤엔_빠진다(self):
+        self.assertIn("②A2 = D0'(U1 pin 12)", self.block(1, "단계 2"))
+        self.assertIn("모두 1이면 켜짐", self.block(1, "단계 2"))
+        self.assertNotIn("A2", self.block(1, "단계 3").split("</thead>")[0])
+
+    def test_LED_순서_띠와_기록표_배지(self):
+        self.assertIn("LED 순서(위→아래):</b> ①Y0 ②Y1 ③Y2 ④Y3 ⑤Y4 ⑥Y5 ⑦Y9 ⑧Y6 ⑨Y8 ⑩Y7",
+                      self.pages[0])
+        self.assertIn("Y9예상<br><small>LED⑦</small>", self.pages[0])
+
+    def test_급전_표기_없는_단계는_옛_표로_물러선다(self):
+        # 같은 폴더에 사본을 둔다 — 그림 상대경로가 그대로 풀려야 한다. C1 1·2단계 급전(Y0~Y3)을 지운다
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        text = re.sub(r",?\s*U4 pin [1-4]→LED Y[0-3] 급전", "", src)
+        self.assertNotEqual(text, src)
+        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
+        path = Path(name)
+        try:
+            with open(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            pages = self._pages(path)
+        finally:
+            path.unlink()
+        b = self._block_in(pages, 0, "단계 2")
+        self.assertNotIn("led-table", b)
+        self.assertIn('class="stage-table"', b)
+        self.assertIn("led-table", self._block_in(pages, 0, "단계 3"))
+
+    def test_앞에_급전이_있어도_관측_노드가_LED_에_없으면_옛_표(self):
+        # C2 2단계의 임시 급전(U1 pin 12→LED A2)을 지우면 지도엔 A3 만 남고 D0' 는 어느 LED 에도 없다
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        text = src.replace("**임시로** U1 pin 12→LED A2 급전", "")
+        self.assertNotEqual(text, src)
+        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
+        path = Path(name)
+        try:
+            with open(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            pages = self._pages(path)
+        finally:
+            path.unlink()
+        b = self._block_in(pages, 1, "단계 2")
+        self.assertNotIn("led-table", b)
+        self.assertIn("D0'예상", b)
+
+    def test_이어받은_노드가_이_회로에_없으면_그_LED_는_뺀다(self):
+        from scripts.lab.leds import Led
+        c2 = parse_netlist(self.E5 / "결선도/netlist.md").circuits[1]
+        html = render._led_table_html(self.spec, c2, [Led("Y0", "우 a6", True, 1),
+                                                     Led("A3", "우 a7", False, 2)],
+                                      {"Y0": "Y0", "A3": "A3"})
+        self.assertNotIn("계산할 수 없어요", html)
+        self.assertIn("②A3", html)
+        self.assertNotIn("Y0", html)
+
+    def test_HL_표는_셀_논리값을_HL_로_찍는다(self):
+        from scripts.lab.leds import Led
+        from scripts.lab.spec_parser import LabSpec, SpecTable
+        t = SpecTable(id="T9", title="x", kind="truth-table", encoding="H/L",
+                      source="derived (Y = A')", expected=None, role="record",
+                      header=["A", "Y"], rows=[["L", "H"], ["H", "L"]], line=1)
+        spec = LabSpec(experiment=5, title="합성", source_manual="", power={"VCC": "+5V"},
+                       items=[], tables=[t], path=Path("명세.md"))
+        section = NetlistSection(kind="circuit", title="C1", body="", line=1, id="C1",
+                                 item="E5.P1-1", tables=["T9"],
+                                 nodes=[{"name": "Y", "expr": "A'", "pin": "U1 pin 2"}])
+        html = render._led_table_html(spec, section, [Led("Y", "우 a6", True, 1)], {"Y": "Y"})
+        self.assertIn('<td>H</td><td class="led on">①Y</td><td class="led off">없음</td>', html)
+        self.assertIn('<td>L</td><td class="led on">없음</td><td class="led off">①Y</td>', html)
+        self.assertIn("입력 — 점퍼 H=+5V · L=GND", html)
+
+    def test_안_정해진_LED_는_미정으로_적는다(self):
+        from scripts.lab.leds import Led
+        from scripts.lab.spec_parser import LabSpec, SpecTable
+        t = SpecTable(id="T9", title="x", kind="truth-table", encoding="0/1", source=None,
+                      expected=None, role="record", header=["A", "B", "Y"],
+                      rows=[["X", "0", "0"]], line=1)
+        spec = LabSpec(experiment=5, title="합성", source_manual="", power={"VCC": "+5V"},
+                       items=[], tables=[t], path=Path("명세.md"))
+        section = NetlistSection(kind="circuit", title="C1", body="", line=1, id="C1",
+                                 item="E5.P1-1", tables=["T9"],
+                                 nodes=[{"name": "P", "expr": "A", "pin": "U1 pin 1"},
+                                        {"name": "Q", "expr": "A·B", "pin": "U1 pin 3"}])
+        html = render._led_table_html(spec, section, [Led("P", "우 a6", False, 1),
+                                                      Led("Q", "우 a9", False, 2)],
+                                      {"P": "P", "Q": "Q"})
+        self.assertIn('<td class="led off">①P 미정 ②Q</td>', html)
+
+    def test_v1_주차는_LED_표가_없다(self):
+        e3 = ROOT / config.experiment_dir(3)
+        html = render_checklist(parse_spec(e3 / "체크리스트/명세.md"),
+                                parse_netlist(e3 / "결선도/netlist.md"), TEMPLATE)
+        self.assertNotIn('class="stage-table led-table"', html)   # CSS 에도 클래스 이름이 있다
+        self.assertNotIn('class="led-order"', html)

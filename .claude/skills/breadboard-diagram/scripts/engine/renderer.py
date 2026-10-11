@@ -1239,6 +1239,11 @@ class BreadboardRenderer(_RuleChecks):
         if self.board != 'v1':
             # v2 부터만 — 커밋된 v1 사이드카는 바이트로 대조된다(`CommittedPngs`)
             side['board'] = self.board
+            # 체크리스트 LED 점등 열·순서 번호의 출처 — 블록 좌→우, 행 위→아래. 도장(`content()`)엔 안 든다
+            chains = sorted(self.led_chains,
+                            key=lambda r: (0 if r['signal'][0] == 'left' else 1, r['signal'][2]))
+            side['leds'] = [{'tag': r['tag'], 'at': self._sym_addr(('hole', r['signal'])),
+                             'active_low': r.get('active_low', False)} for r in chains]
         return side
 
     def stamp(self):

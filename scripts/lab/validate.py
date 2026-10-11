@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import config, md, nodes
+from .leds import board_leds, feeds_by_stage, unresolved_feeds, watched
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
@@ -981,6 +982,45 @@ def check_netlist_circuits(netlist, spec) -> list:
         out.append(Finding("warn", netlist.path.name,
             f"기록 대상 표 {table_id} 를 가리키는 회로가 없다 — "
             "인쇄본은 회로를 통해서만 표를 싣는다. 그대로 두면 조용히 빠진다"))
+    out += check_stage_leds(netlist)
+    return out
+
+
+def check_stage_leds(netlist) -> list:
+    """단계 `U<n> pin <p>→LED <tag> 급전` 표기 × 완성본 사이드카 `leds` — warn 만 낸다.
+
+    체크리스트 LED 점등 표(v2)는 이 표기로 단계마다 어느 LED 가 어느 노드를 보는지 정한다.
+    못 풀면 렌더는 짐작하지 않고 옛 단계 표로 물러서므로, 그 사실을 여기서 시끄럽게 알린다.
+    사이드카에 `leds` 가 없는 회로(v1·재생성 전)는 보지 않는다. `continues` 회로는 앞 회로의
+    급전을 이어받는다 — `render.circuit_pages` 와 같은 규칙이다.
+    """
+    out, feed_after = [], {}
+    for section in netlist.circuits:
+        start = feed_after if section.continues else None
+        feeds = feeds_by_stage(section, start=start)
+        feed_after = feeds[-1] if feeds else (start or {})
+        png = netlist.path.parent / section.diagram if section.diagram else None
+        leds = board_leds(png) if png is not None and png.exists() else []
+        if not leds:
+            continue
+        where = f"{netlist.path.name}:{section.id}"
+        tags = {led.tag for led in leds}
+        for raw in unresolved_feeds(section):
+            out.append(Finding("warn", where,
+                f"LED 급전 {raw!r} 의 핀이 `## 노드` 표에 없고 태그도 노드 이름이 아니다 — "
+                "그 LED 열은 체크리스트에 안 나온다. 핀을 `## 노드` 표와 같게 쓴다"))
+        for tag in sorted({t for f in feeds for t in f} - tags - set(start or {})):
+            out.append(Finding("warn", where,
+                f"LED 급전 표기의 LED {tag} 가 완성본 결선도에 없다(보드 LED: "
+                f"{', '.join(led.tag for led in leds)}) — 그 열은 체크리스트에 안 나온다"))
+        for stage, feed in zip(section.stages, feeds):
+            if stage.get("walk") or not stage.get("node"):
+                continue
+            if stage["node"] not in {feed[led.tag] for led in watched(leds, feed, section)}:
+                out.append(Finding("warn", where,
+                    f"LED 급전 표기에서 단계 {stage['n']} 의 관측 노드 {stage['node']} 를 보는 LED 를 "
+                    "못 찾았다 — 이 단계는 LED 점등 표 대신 옛 단계 표로 물러선다. 프로브로 보는 "
+                    "단계가 아니면 `이 단계에서` 칸에 `U<n> pin <p>→LED <태그> 급전` 을 쓴다"))
     return out
 
 

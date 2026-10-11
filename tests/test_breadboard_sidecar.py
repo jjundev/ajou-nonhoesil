@@ -11,6 +11,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 FIXTURE = ROOT / "tests/fixtures/board_min/배치.py"
+FIXTURE_E5 = ROOT / "tests/fixtures/board_v2_e5/배치.py"
 
 
 def _load(name="render_breadboard"):
@@ -94,6 +95,44 @@ class Sidecar(unittest.TestCase):
         labels = [p["label"] for p in data["probes"]]
         self.assertIn("함수발생기 + CH1 (가로축)", labels)
         self.assertTrue(all(p["at"] for p in data["probes"]))
+
+
+class SidecarLeds(unittest.TestCase):
+    """v2 사이드카의 `leds` — 체크리스트 LED 점등 열·순서 번호의 출처(2026-10-11)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def _export(self, fixture):
+        name, fn = self.mod.load_board_file(fixture).FINALS[0]
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, name)
+            bb = fn(p, None)
+            data = json.loads(Path(p).with_suffix(".json").read_text(encoding="utf-8"))
+        return bb, data
+
+    def _bb_e5(self):
+        return self._export(FIXTURE_E5)[0]
+
+    def _bb_min(self):
+        return self._export(FIXTURE)[0]
+
+    def _e5(self):
+        return self._export(FIXTURE_E5)[1]
+
+    def test_v2_사이드카는_LED_를_보드_순서로_싣는다(self):
+        leds = self._e5()["leds"]
+        self.assertEqual([l["tag"] for l in leds],
+                         ["Y0", "Y1", "Y2", "Y3", "Y4", "Y5", "Y9", "Y6", "Y8", "Y7"])
+        self.assertTrue(all(l["active_low"] is True for l in leds))
+        self.assertTrue(all(l["at"].startswith("우 a") for l in leds))
+
+    def test_v1_사이드카에는_leds_키가_없다(self):
+        self.assertNotIn("leds", self._bb_min().sidecar())
+
+    def test_leds_는_도장에_들지_않는다(self):
+        self.assertNotIn("leds", self._bb_e5().content())
 
 
 if __name__ == "__main__":

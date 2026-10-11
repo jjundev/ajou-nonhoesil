@@ -2698,5 +2698,48 @@ class TestCheckResultPhotoDiagrams(unittest.TestCase):
                         self.assertTrue((path.parent / src).exists(), src)
 
 
+class TestStageLeds(unittest.TestCase):
+    """LED 급전 표기 검증 — 못 풀면 체크리스트가 옛 단계 표로 물러선다(2026-10-11)."""
+
+    E5 = ROOT / config.experiment_dir(5)
+
+    def _check(self, text=None):
+        spec = parse_spec(self.E5 / "체크리스트/명세.md")
+        if text is None:
+            return validate.check_netlist_circuits(
+                parse_netlist(self.E5 / "결선도/netlist.md"), spec)
+        # 같은 폴더에 사본을 둔다 — 결선도 PNG 상대경로가 그대로 풀려야 한다
+        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
+        path = Path(name)
+        try:
+            with open(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            return validate.check_netlist_circuits(parse_netlist(path), spec)
+        finally:
+            path.unlink()
+
+    def test_실험05_는_LED_급전_경고가_없다(self):
+        f = self._check()
+        self.assertEqual([x for x in f if x.message.startswith("LED 급전")], [])
+
+    def test_보드에_없는_LED_태그는_경고(self):
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        f = self._check(src.replace("→LED Y3 급전", "→LED Y33 급전"))
+        self.assertTrue(any("Y33" in x.message for x in f
+                            if x.level == "warn" and x.message.startswith("LED 급전")))
+
+    def test_관측_노드가_LED_에_없는_단계는_경고(self):
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        f = self._check(src.replace("**임시로** U1 pin 12→LED A2 급전", ""))
+        self.assertTrue(any("단계 2" in x.message and "옛 단계 표" in x.message for x in f
+                            if x.message.startswith("LED 급전")))
+
+    def test_급전_표기_없는_관측_단계는_경고(self):
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        f = self._check(src.replace(", U4 pin 1→LED Y0 급전", ""))
+        self.assertTrue(any("옛 단계 표" in x.message for x in f
+                            if x.message.startswith("LED 급전")))
+
+
 if __name__ == "__main__":
     unittest.main()
