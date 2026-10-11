@@ -108,3 +108,60 @@ def circled(n) -> str:
     if not 1 <= n <= 20:
         raise ValueError(f"원문자 번호는 1~20 이다: {n}")
     return chr(0x2460 + n - 1)
+
+
+# 순차 회로 기록표(래치·플립플롭)의 출력 셀. 교안 표기 그대로다 — `Q(t-1)` 유지, `Q(t-1)'` 반전,
+# `0: Reset`·`1: Set` 처럼 앞에 논리값, `X (부정)` 은 SR 래치 금지 입력이다(실험06 T1).
+_PREV = re.compile(r"^\S+\(t-1\)('?)$")
+_BIT = re.compile(r"^([01])(?:\b|:)")
+_FORBIDDEN = "X (부정)"
+HOLD, TOGGLE = "직전 그대로", "직전과 반대"
+
+
+def is_sequential(table, outputs) -> bool:
+    """출력 셀에 `…(t-1)` 이 하나라도 있으면 순차 회로 표다 — 같은 입력도 앞 행에 따라 값이 갈린다."""
+    return any(_PREV.match(" ".join(str(row[i]).split())) for row in table.rows for i in outputs)
+
+
+def record_leds(leds, header, outputs) -> list:
+    """보드 LED 중 기록표 출력을 보는 것 — [(LED, 출력 자리, 반전)], 보드 순서.
+
+    LED 태그가 출력 이름이거나 `(t)` 를 뗀 이름이면 그 출력이고(`Q(t)` ↔ `Q`), 뒤에 `'` 가
+    붙은 태그면 그 반대다(`Q'`). 교안 표에 `Q'` 열이 없어도(실험06 M4) 보드의 `Q'` LED 가 무엇을
+    보여야 하는지 여기서 나온다.
+    """
+    out = []
+    for led in leds:
+        for i in outputs:
+            base = re.sub(r"\(t\)$", "", header[i])
+            if led.tag in (header[i], base):
+                out.append((led, i, False))
+                break
+            if led.tag in (header[i] + "'", base + "'"):
+                out.append((led, i, True))
+                break
+    return out
+
+
+def record_row_leds(row, seen):
+    """기록표 한 행 → (켜지는 LED 목록, 꺼지는 LED 목록) 또는 유지·반전 문구 한 줄.
+
+    `X (부정)` 은 교안 p7 원문 "Q(t), Q(t)’이 모두 1이 되며" 대로 두 출력을 다 1 로 본다. 값이
+    안 정해지는 셀은 꺼지는 칸에 `미정` 으로 둔다(단계 LED 표와 같은 규약).
+    """
+    on, off = [], []
+    for led, i, inverted in seen:
+        cell = " ".join(str(row[i]).split())
+        prev = _PREV.match(cell)
+        if prev:
+            return TOGGLE if prev.group(1) else HOLD
+        if cell == _FORBIDDEN:
+            bit = 1
+        else:
+            m = _BIT.match(cell)
+            bit = None if m is None else int(m.group(1)) ^ int(inverted)
+        if bit is not None and lit(bit, led.active_low):
+            on.append(led)
+        else:
+            off.append((led, bit is None))
+    return on, off

@@ -810,6 +810,17 @@ def check_netlist_circuits(netlist, spec) -> list:
                     "(예비보고서 이론 절의 재료다)"))
             else:
                 covered.add(table_id)
+        if circuit.order:
+            # 순서 열은 기록표 하나에 붙는다 — 표가 둘이면 어느 표의 행 번호인지 갈린다
+            records = [spec.table(t) for t in circuit.tables
+                       if spec.table(t) is not None and spec.table(t).role != "reference"]
+            if len(records) != 1:
+                out.append(Finding("error", where,
+                    f"order 는 기록표가 하나인 회로에만 쓴다 — 기록표 {len(records)}개"))
+            elif sorted(circuit.order) != list(range(1, len(records[0].rows) + 1)):
+                out.append(Finding("error", where,
+                    f"order {circuit.order} 가 {records[0].id} 의 행 번호 1~"
+                    f"{len(records[0].rows)} 을 한 번씩 담지 않는다"))
         node_names = {n["name"] for n in circuit.nodes}
         for i, st in enumerate(circuit.stages):
             if not st["check"]:

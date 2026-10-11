@@ -17,7 +17,8 @@ from pathlib import Path
 
 from . import md
 from . import nodes as node_calc
-from .leds import board_leds, circled, feeds_by_stage, lit, watched
+from .leds import (board_leds, circled, feeds_by_stage, is_sequential, lit, record_leds,
+                   record_row_leds, watched)
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_indices
@@ -108,7 +109,11 @@ def _plain(text: str) -> str:
     return text.replace("`", "").replace("*", "")
 
 
-def _truth_table_html(table, token=None, badges=None) -> str:
+_ORDER_NOTE = ("순서 열 번호대로 입력을 넣어요. 이 회로는 직전 상태를 기억해서, 같은 입력이라도 "
+               "앞에 넣은 행에 따라 LED 가 달라요")
+
+
+def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다.
 
     `_plain` 으로 마크다운 표기를 먼저 벗기고 나서 `normalize_cell` 로 논리값을
@@ -122,12 +127,25 @@ def _truth_table_html(table, token=None, badges=None) -> str:
 
     `badges`(출력 이름 → `LED⑦`)가 있으면 그 출력 머리 아래에 보드 LED 번호를 단다 — 열 순서는
     명세 그대로 두고, 어느 불을 볼지만 알린다(v2 주차, 2026-10-11).
+
+    순차 회로 표(래치·플립플롭 — 출력 셀에 `Q(t-1)`)는 둘을 더 단다(2026-10-11 사용자, 실험06).
+    `order`(netlist 회로의 `order`, 넣는 순서대로 적은 행 번호)가 있으면 맨 앞에 `순서` 열(①②…)을
+    두고 — 행은 교안 순서 그대로다, 사진 파일명·`기록.md` 와 맞아야 한다 — 보드 `leds` 중 출력을
+    보는 LED(`Q`, 그 반대 `Q'`)가 있으면 출력 뒤에 `켜지는 LED`·`꺼지는 LED` 두 열을 둔다. 유지·반전
+    행은 두 칸을 합쳐 `직전 그대로` 다. 그때 LED 배지는 두 열이 대신하므로 달지 않는다. 조합 회로
+    표(실험05)는 단계 LED 표와 배지가 맡아 두 열을 달지 않는다 — 출력 열이 많아 쪽 폭을 넘는다.
     """
     # 셀은 이름이 아니라 자리로 찾는다 — 입력과 출력이 같은 글자인 표가 있다
     # (실험3 반감산기 `A B D B`). `record._truth_table` 과 같은 규약이다.
     inputs, outputs = split_indices(table)
     badges = badges or {}
-    head = ([_esc(table.header[i]) for i in inputs]
+    rank = {k: n for n, k in enumerate(order, start=1)} if len(order) == len(table.rows) else {}
+    seen = record_leds(leds, table.header, outputs) if is_sequential(table, outputs) else []
+    if seen:
+        badges = {}
+    names = {led.tag: f"{circled(led.index)}{_esc(led.tag)}" for led, _, _ in seen}
+    head = ((["순서"] if rank else [])
+            + [_esc(table.header[i]) for i in inputs]
             + [f"{_esc(table.header[i])}예상"
                + (f"<br><small>{_esc(badges[table.header[i]])}</small>"
                   if table.header[i] in badges else "")
@@ -138,12 +156,37 @@ def _truth_table_html(table, token=None, badges=None) -> str:
 
     # thead/tbody 로 나눈다 — 표가 쪽을 넘어가도 헤더가 따라가야 한다.
     # 헤더 없는 진리표 조각은 실험실에서 읽을 수 없다.
-    out = ["<table>", "<thead>", "<tr>"]
+    out = []
+    if rank:
+        out.append(f"<p class='src order-note'>{_esc(_ORDER_NOTE)}</p>")
+    if seen:
+        legend = " ".join(names[led.tag] + (f" = {_esc(table.header[i])}"
+                                              + ("의 반대" if inv else ""))
+                          for led, i, inv in seen)
+        polarity = {led.active_low for led, _, _ in seen}
+        tail = ("" if len(polarity) > 1
+                else " — 모두 0이면 켜짐" if polarity.pop() else " — 모두 1이면 켜짐")
+        out.append(f'<p class="led-legend"><b>보는 LED:</b> {legend}{tail}</p>')
+    out += ['<table class="led-table">' if seen else "<table>", "<thead>", "<tr>"]
     out += [f"<th>{h}</th>" for h in head]
+    if seen:
+        out.append("<th>켜지는 LED</th><th>꺼지는 LED</th>")
     out.append("<th>확인</th>" + ("<th>사진 파일명</th>" if token else "") + "</tr>")
     out += ["</thead>", "<tbody>"]
-    for row in body:
-        cells = "".join(f"<td>{_esc(c)}</td>" for c in row) + '<td class="check"></td>'
+    for k, (raw, row) in enumerate(zip(table.rows, body), start=1):
+        cells = (f'<td class="order">{circled(rank[k])}</td>' if rank else "")
+        cells += "".join(f"<td>{_esc(c)}</td>" for c in row)
+        if seen:
+            got = record_row_leds([_plain(c) for c in raw], seen)
+            if isinstance(got, str):
+                cells += f'<td class="led hold" colspan="2">{_esc(got)}</td>'
+            else:
+                on, off = got
+                cells += (f'<td class="led on">{" ".join(names[l.tag] for l in on) or "없음"}</td>'
+                          '<td class="led off">'
+                          + (" ".join(names[l.tag] + (" 미정" if unknown else "")
+                                      for l, unknown in off) or "없음") + "</td>")
+        cells += '<td class="check"></td>'
         if token:
             bits = row[:len(inputs)]
             name = (photo_name(token, "".join(bits))
@@ -1072,7 +1115,7 @@ def _mismatch_html(kind: str, table_id: str) -> str:
             f"<tbody>{body}</tbody></table>")
 
 
-def _circuit_tables(spec, section, badges=None) -> str:
+def _circuit_tables(spec, section, badges=None, leds=()) -> str:
     out = []
     circuit_item = next((i for i in spec.items if i.id == section.item), None)
     for table_id in section.tables:
@@ -1095,7 +1138,7 @@ def _circuit_tables(spec, section, badges=None) -> str:
             out.append(_stepped_html(table))
             out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
-            out.append(_truth_table_html(table, token, badges))
+            out.append(_truth_table_html(table, token, badges, section.order, leds))
         photo = (_PHOTO_NO_TOKEN if table.kind == "truth-table" and not token
                  else _PHOTO[table.kind].format(tid=table.id, tok=token or "<항목>"))
         out.append(f"<p class='photo'>{_esc(photo)}</p>")
@@ -1215,7 +1258,7 @@ def circuit_pages(spec, netlist) -> str:
         out += wiring
         outputs = _record_outputs(spec, section)
         badges = {led.tag: f"LED{circled(led.index)}" for led in leds if led.tag in outputs}
-        out.append(_circuit_tables(spec, section, badges))
+        out.append(_circuit_tables(spec, section, badges, leds))
         unstaged = _unstaged_nodes_html(spec, section)
         if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
             out.append(unstaged)
