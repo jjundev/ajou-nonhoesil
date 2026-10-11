@@ -11,5 +11,27 @@
   }
  ],
  "probes": [],
- "board": "v2"
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A3",
+   "at": "우 a7",
+   "active_low": false
+  },
+  {
+   "tag": "A2",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "A1",
+   "at": "우 a32",
+   "active_low": false
+  },
+  {
+   "tag": "A0",
+   "at": "우 a38",
+   "active_low": false
+  }
+ ]
 }
