@@ -11,9 +11,9 @@ from .workbook_render import read_workbook_payload
 from .explanation_content import within
 
 def check_explanations(folder: Path, manifest: dict) -> list[str]:
-    if manifest.get('problem_explanation_version')!=1:return []
+    if manifest.get('problem_explanation_version') not in (1,2):return []
     folder=Path(folder);errors=[]
-    names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
+    names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=manifest['problem_explanation_version'])
     try:
         from .workbook_checks import check_workbook_pack
         errors.extend(check_workbook_pack(folder,manifest))

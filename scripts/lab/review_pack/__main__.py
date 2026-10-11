@@ -26,6 +26,7 @@ def main(argv=None):
             p.add_argument('--run',type=Path,required=True)
         if cmd in {'check','rerender','explain-stage'}:p.add_argument('--folder',type=Path,required=True)
         if cmd=='explain-stage':
+            p.add_argument('--explanation-version',type=int,choices=(1,2),default=2)
             p.add_argument('--author-root',type=Path,required=True)
             p.add_argument('--stage',type=Path,required=True)
     args=parser.parse_args(argv)
@@ -53,7 +54,7 @@ def main(argv=None):
             print(args.stage)
         elif args.command=='explain-stage':
             from .explanation_stage import prepare_explanation_stage
-            print(prepare_explanation_stage(args.folder,args.author_root,args.stage))
+            print(prepare_explanation_stage(args.folder,args.author_root,args.stage,explanation_version=args.explanation_version))
         elif args.command=='check':
             errors=check_pack(args.folder)
             if errors:raise ValueError('\n'.join(errors))

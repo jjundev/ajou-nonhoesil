@@ -137,8 +137,8 @@ def convert_pack(note_path,review_path,manifest=None):
             path=paths[0].parent/names[key]
             if not path.is_file(): raise ValueError('Workbook MD missing: '+str(path))
             outputs.append(path)
-    if manifest and manifest.get('problem_explanation_version')==1:
-        names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
+    if manifest and manifest.get('problem_explanation_version') in (1,2):
+        names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=manifest['problem_explanation_version'])
         path=paths[0].parent/names['explanation_md']
         if not path.is_file():raise ValueError('Explanation MD missing: '+str(path))
         outputs.append(path)

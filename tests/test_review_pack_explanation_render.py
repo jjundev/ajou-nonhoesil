@@ -114,3 +114,37 @@ def test_authored_table_card_is_not_nested(tmp_path):
     html = paths['explanation_html'].read_text()
     assert html.count('class="table-card"') == 1
     assert card in html
+
+
+def test_v2_full_build_and_markdown_include_recall(tmp_path):
+    from tests._explanation_recall_fixture import setup_v2
+    from scripts.lab.review_pack.render import assemble
+    from scripts.lab.review_pack.html2md import convert_pack
+    from scripts.lab.review_pack.checks import check_pack
+    m, run, data = setup_v2(tmp_path)
+    stage = tmp_path/'stage'
+    paths = assemble(m, run, stage, ASSETS)
+    outputs, count = convert_pack(paths['note_html'], paths['review_html'], manifest=m)
+    for label in ('실험설명','기출문제','기출풀이','문제설명'):
+        for ext in ('html','md'):
+            assert (stage/f'실험04_{label}.{ext}').is_file()
+    assert paths['explanation_md'] in outputs
+    assert '선택선이라는 단서' in paths['explanation_md'].read_text(encoding='utf-8')
+    assert '핵심 개념:' in paths['explanation_md'].read_text(encoding='utf-8')
+    assert 'data-summary="recall"' in paths['explanation_html'].read_text(encoding='utf-8')
+    assert check_pack(stage) == []
+
+
+@pytest.mark.parametrize('state,label',[('disputed','답안 충돌'),('unresolved','정답 미확정')])
+def test_v2_answer_warning_and_manifest_preserved(tmp_path,state,label):
+    from tests._explanation_recall_fixture import setup_v2,FRAGMENT_V2
+    m,run,data=setup_v2(tmp_path)
+    m['problems'][0]['answer_status']=state
+    (run/m['problems'][0]['explanation_fragment']).write_text(
+        FRAGMENT_V2.replace('선택선은 데이터가 아니에요.',label+' 조건을 확인해요.'),encoding='utf-8')
+    before=deepcopy(m)
+    folder=tmp_path/'stage'; folder.mkdir()
+    paths=write_explanations(m,data,run,folder,ASSETS)
+    assert label in paths['explanation_html'].read_text(encoding='utf-8')
+    assert label in paths['explanation_md'].read_text(encoding='utf-8')
+    assert m==before

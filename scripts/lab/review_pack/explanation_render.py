@@ -36,7 +36,7 @@ def explanation_metadata(manifest: dict) -> dict[str,str]:
 def write_explanations(manifest: dict, question_data: dict, author_root: Path, folder: Path, assets: Path) -> dict[str,Path]:
     rows=load_explanations(manifest,question_data,author_root)
     author_root,folder,assets=map(Path,(author_root,folder,assets))
-    names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
+    names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=manifest['problem_explanation_version'])
     esc=lambda value:html.escape(str(value),quote=True)
     bodies=[]
     for row in rows:
