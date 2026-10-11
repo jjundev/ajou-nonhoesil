@@ -2282,5 +2282,5 @@ class TestLedTable(unittest.TestCase):
         e3 = ROOT / config.experiment_dir(3)
         html = render_checklist(parse_spec(e3 / "체크리스트/명세.md"),
                                 parse_netlist(e3 / "결선도/netlist.md"), TEMPLATE)
-        self.assertNotIn("led-table", html)
-        self.assertNotIn("LED 순서(위→아래)", html)
+        self.assertNotIn('class="stage-table led-table"', html)   # CSS 에도 클래스 이름이 있다
+        self.assertNotIn('class="led-order"', html)
