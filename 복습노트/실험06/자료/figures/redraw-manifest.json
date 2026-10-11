@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "q-dff-design-solution-01",
+      "question_id": "q-dff-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-dff-design-solution-01.svg",
+      "png": "figures/solutions/q-dff-design-solution-01.png",
+      "svg_sha256": "5c58b62313cdda0a3b9fec4c955e04386acd786213c893006eeb84cdeb88f4f3",
+      "png_sha256": "5ca59374325914ff3660349d0573ae1ca3a482b9abc760ea37089c57d8a34655",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-98abb18838dcedd6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "S=D, R=D′인 Enable SR 래치를 직접 설계해 그렸어요(NOT 1, NAND 4).",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "게이트 모델로 표의 세 행(C=1, D=0/1, C=0 유지)을 계산해 확인했어요."
+    },
+    {
+      "id": "q-dff-table-given-01",
+      "question_id": "q-dff-table",
+      "role": "problem",
+      "svg": "figures/questions/q-dff-table-given-01.svg",
+      "png": "figures/questions/q-dff-table-given-01.png",
+      "svg_sha256": "1d80fff5c940e4bb75b4c959766caa5c64a3be0ac124cea0952c3f00fc394443",
+      "png_sha256": "c4efa56362344d63b698193216448117d09ed678c8b2f8016914b74e676794c8",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [
+        "a-s05-p1-o-s05-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-25e89fae09e4dade",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3 및 회로도; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "예상 v3 3번 그림(74HC04 1→2, 74HC00 4개)을 읽고 새로 그렸어요. 원문처럼 입력 이름을 S·C로 두었어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "S가 1번 핀과 NOT 입력으로 갈라지고 NOT 출력이 5번 핀으로 가는 것을 원문과 대조했어요. 답 표는 그림에 없어요."
+    },
+    {
+      "id": "q-jkff-design-solution-01",
+      "question_id": "q-jkff-design",
+      "role": "solution",
+      "svg": "figures/solutions/q-jkff-design-solution-01.svg",
+      "png": "figures/solutions/q-jkff-design-solution-01.png",
+      "svg_sha256": "c1fa468ec191daf8f46ae58a8fabf869da93501d8e47749d9631ea999dc96f88",
+      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-98abb18838dcedd6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "J·C·Q′, K·C·Q를 받는 3입력 NAND 두 개와 교차 NAND 두 개로 직접 설계해 그렸어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "게이트 모델로 표의 다섯 행을 계산했고, C=1 유지 시 race-around와 짧은 펄스의 단일 Toggle을 확인했어요."
+    },
+    {
+      "id": "q-jkff-short-given-01",
+      "question_id": "q-jkff-short",
+      "role": "problem",
+      "svg": "figures/questions/q-jkff-short-given-01.svg",
+      "png": "figures/questions/q-jkff-short-given-01.png",
+      "svg_sha256": "ab7b46c1d0c1ec7e5bf773ea2046b38bda583e929930bead05c6fa0dc4179faf",
+      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [
+        "a-s02-p2-o-s02-q6"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-1d5b9fb1a3509c42",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6 및 회로도; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "derivation": "기출_단답형 6번 그림(74HC10 1·2·13→12, 3·4·5→6, 74HC00 1·2→3, 4·5→6)을 읽고 새로 그렸어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "1번 핀에 Q′, 5번 핀에 Q가 되먹여지는 루프를 원문과 대조했어요. 답 표는 그림에 없어요."
+    },
+    {
+      "id": "q-rs-latch-given-01",
+      "question_id": "q-rs-latch",
+      "role": "problem",
+      "svg": "figures/questions/q-rs-latch-given-01.svg",
+      "png": "figures/questions/q-rs-latch-given-01.png",
+      "svg_sha256": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
+      "png_sha256": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [
+        "a-s03-p1-o-s03-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-c72797a62aef568a",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2 및 회로도; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "예상문제 2번 그림(74HC00 1·2→3, 4·5→6, 9·10→8, 12·13→11)의 배선을 읽고 새로 그렸어요. 입력 이름은 원문처럼 S·C·R이에요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "10번에 Q′, 12번에 Q가 되먹여지는 것을 원문과 대조했어요. 진리표 답은 그림에 없어요."
+    },
+    {
+      "id": "q-rs-quiz-given-01",
+      "question_id": "q-rs-quiz",
+      "role": "problem",
+      "svg": "figures/questions/q-rs-quiz-given-01.svg",
+      "png": "figures/questions/q-rs-quiz-given-01.png",
+      "svg_sha256": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
+      "png_sha256": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [
+        "a-s08-p1-o-s08-q1"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b59202fea5b522c8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "1. 퀴즈 해설 안의 문제 상자 1)·2)·(1)의 결과 질문; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "퀴즈 해설 1번 문제 상자의 R-S Latch 그림을 읽고 새로 그렸어요. 해설의 노란 피드백 선은 넣지 않았어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "문제 상자 그림과 같은 연결(앞단 NAND 2개, 교차 NAND 2개)인지 대조했어요. 변형 회로(답)는 그림에 없어요."
+    },
+    {
+      "id": "q-rs-quiz-solution-01",
+      "question_id": "q-rs-quiz",
+      "role": "solution",
+      "svg": "figures/solutions/q-rs-quiz-solution-01.svg",
+      "png": "figures/solutions/q-rs-quiz-solution-01.png",
+      "svg_sha256": "af86d3399a33179c481a7c5f9595524b6423df2b71fe6d8b8256d95a48907e8c",
+      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "w_mm": 150.0,
+      "h_mm": 95.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-b59202fea5b522c8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "1. 퀴즈 해설 안의 문제 상자 1)·2)·(1)의 결과 질문; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "derivation": "해설의 “Q′ 값 피드백, Q 값 피드백” 변형을 3입력 NAND 회로로 직접 다시 그렸어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "게이트 지연 모델로 네 J·K 조합과 짧은 C 펄스의 Toggle을 계산해 확인했어요."
+    },
+    {
+      "id": "q-sr-nand-00-given-01",
+      "question_id": "q-sr-nand-00",
+      "role": "problem",
+      "svg": "figures/questions/q-sr-nand-00-given-01.svg",
+      "png": "figures/questions/q-sr-nand-00-given-01.png",
+      "svg_sha256": "54744dbe9977fab9e453d143c8819a49398f84f27da0611e7f79e177c22d7105",
+      "png_sha256": "889d2e776eba714fd592fa9d5a90b5eacda3dccf6f98192a3a872854e196626b",
+      "w_mm": 150.0,
+      "h_mm": 102.632,
+      "source_asset_ids": [
+        "a-s02-p2-o-s02-q8"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-1d5b9fb1a3509c42",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8 및 회로도; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "derivation": "기출_단답형 8번 그림의 NAND 두 개(74HC00 1·2→3, 4·5→6)와 교차 되먹임(2번←Q′, 4번←Q)을 읽고 새로 그렸어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "S가 1번, R이 5번에 들어가고 2번에 Q′, 4번에 Q가 연결된 것을 원문과 대조했어요. 답(Q=Q′=1)은 그림에 없어요."
+    },
+    {
+      "id": "q-tff-solution-01",
+      "question_id": "q-tff",
+      "role": "solution",
+      "svg": "figures/solutions/q-tff-solution-01.svg",
+      "png": "figures/solutions/q-tff-solution-01.png",
+      "svg_sha256": "2f2729ac3245796c169b9b8bb725d8c4729543ea11159a8adf0fd92b2641a0ae",
+      "png_sha256": "2c69d2c2de789374107142214b5d3c8ce6ad806db058fca86aa23a554f7b5b69",
+      "w_mm": 150.0,
+      "h_mm": 71.053,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-98abb18838dcedd6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "derivation": "J와 K를 T로 묶은 블록도를 직접 그렸어요. 클록 원은 74HC76(하강 엣지) 기준이에요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "T=0 유지, T=1 Toggle을 74HC76 동작 모델로 확인했어요."
+    }
+  ]
+}

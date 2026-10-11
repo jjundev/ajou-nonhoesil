@@ -1,0 +1,1627 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp06",
+  "bank_sha256": "92ed75ac826f03e5b41321c53a3e743b34fcbf4bf57a980975851ea137005e0c",
+  "experiment": 6,
+  "questions": [
+    {
+      "question_id": "q-diff",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s02-q3",
+        "o-s03-q1",
+        "o-s04-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s09-q1",
+        "o-s10-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a3",
+          "target_id": "q-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a1",
+          "target_id": "q-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a1",
+          "target_id": "q-diff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q1",
+        "a-s01-p1",
+        "a-s05-p1",
+        "a-s06-p1",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s07-p2",
+        "a-s09-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-dff-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q2",
+      "occurrence_ids": [
+        "o-s01-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-dff-design",
+          "to_id": "q-dlatch-design",
+          "type": "duplicate_candidate",
+          "reason": "주어진 D·C·Q(t) 진리표는 같지만 시험지는 “D F/F”, 예상문제는 “D Latch”로 대상을 달리 적었다. 같은 문제인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 진리표; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-dff-table",
+          "to_id": "q-dff-design",
+          "type": "variant_of",
+          "reason": "회로를 주고 진리표를 쓰는 문제와 진리표를 주고 회로를 설계하는 문제로 방향이 반대다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s03-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 진리표 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s04-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-17a55661d7d416fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 진리표 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s09-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-a5ec4792d99ecb33",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3 답안 회로 그림; OOXML 본문 P12(image4.png); Word 읽기 전용 렌더 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q2",
+        "a-s01-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1-o-s03-a3",
+        "a-s03-p1",
+        "a-s04-p1-o-s04-a3",
+        "a-s04-p1",
+        "a-s09-p1-o-s09-a3",
+        "a-s09-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-jkff-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-jkff-design",
+          "to_id": "q-jklatch-design",
+          "type": "duplicate_candidate",
+          "reason": "주어진 J·K·C·Q(t) 진리표는 같지만 시험지는 “J-K F/F”, 예상문제는 “J-K Latch”로 적었다. 같은 문제인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 및 진리표; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-jkff-table",
+          "to_id": "q-jkff-design",
+          "type": "variant_of",
+          "reason": "회로를 주고 진리표를 쓰는 문제와 진리표를 주고 회로를 설계하는 문제로 방향이 반대다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 5번 문장 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s03-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 제목과 진리표 사이 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s04-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-17a55661d7d416fb",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 제목과 진리표 사이 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s09-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-a5ec4792d99ecb33",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 4 답안 회로 그림; OOXML 본문 P18(image5.png); Word 읽기 전용 렌더 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q3",
+        "a-s01-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p2-o-s03-a4",
+        "a-s03-p2",
+        "a-s04-p2-o-s04-a4",
+        "a-s04-p2",
+        "a-s09-p2-o-s09-a4",
+        "a-s09-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-74hc76",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q4",
+      "occurrence_ids": [
+        "o-s01-q4",
+        "o-s02-q10",
+        "o-s03-q5",
+        "o-s04-q5",
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s09-q5",
+        "o-s10-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a10",
+          "target_id": "q-74hc76",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a5",
+          "target_id": "q-74hc76",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a5",
+          "target_id": "q-74hc76",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a5",
+          "target_id": "q-74hc76",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a5",
+          "target_id": "q-74hc76",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s02-a10",
+          "reason": "제공 답안이 clr과 pr 모두 “0이 입력되면 출력은 … 0이 된다”로 적혀 있다. 다른 자료의 PR=set 설명과 다르며 정답 여부는 검증하지 않음."
+        },
+        {
+          "target_id": "o-s07-a5",
+          "reason": "종합본 제공 답안은 PR을 출력 0(Logic Low), CLR을 출력 1(Logic High)로 설명해 v1·v2·DOCX 답안(CLR=clear, PR=set)과 반대다. 두 답안을 모두 보존하고 정답 여부는 검증하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q4",
+        "a-s01-p1",
+        "a-s02-p2-o-s02-q10",
+        "a-s05-p1",
+        "a-s06-p1",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p2",
+        "a-s04-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-tff",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q5",
+      "occurrence_ids": [
+        "o-s01-q5",
+        "o-s02-q7",
+        "o-s03-q8",
+        "o-s04-q8",
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s09-q8",
+        "o-s10-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a7",
+          "target_id": "q-tff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a8",
+          "target_id": "q-tff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a8",
+          "target_id": "q-tff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a8",
+          "target_id": "q-tff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a8",
+          "target_id": "q-tff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q5",
+        "a-s01-p1",
+        "a-s05-p1",
+        "a-s06-p1",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p2",
+        "a-s04-p2",
+        "a-s07-p3",
+        "a-s09-p2",
+        "a-s02-p2-o-s02-a7",
+        "a-s03-p3",
+        "a-s04-p3",
+        "a-s09-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-rs-latch",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s03-q2",
+      "occurrence_ids": [
+        "o-s03-q2",
+        "o-s04-q2",
+        "o-s06-q2",
+        "o-s09-q2",
+        "o-s10-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-rs-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-rs-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a2",
+          "target_id": "q-rs-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-rs-latch",
+          "to_id": "q-rs-ff",
+          "type": "variant_of",
+          "reason": "같은 R-S 회로를 주지만 대상 명칭(Latch/F/F)과 “회로설계로 대체될 수 있음” 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-197fa30ab23a7bfe",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-o-s03-q2",
+        "a-s04-p1-o-s04-q2",
+        "a-s06-p1-o-s06-q2",
+        "a-s06-p1",
+        "a-s09-p1-o-s09-q2",
+        "a-s10-p1-o-s10-q2",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s09-p1",
+        "a-s03-p1-o-s03-a2",
+        "a-s04-p1-o-s04-a2",
+        "a-s09-p1-o-s09-a2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-dlatch-design",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s03-q3",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s04-q3",
+        "o-s06-q3",
+        "o-s09-q3",
+        "o-s10-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-dlatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-dlatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a3",
+          "target_id": "q-dlatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-dff-design",
+          "to_id": "q-dlatch-design",
+          "type": "duplicate_candidate",
+          "reason": "주어진 D·C·Q(t) 진리표는 같지만 시험지는 “D F/F”, 예상문제는 “D Latch”로 대상을 달리 적었다. 같은 문제인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 진리표; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s03-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 진리표 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s04-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-17a55661d7d416fb",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 진리표 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s09-a3",
+          "to_id": "q-dff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “D Latch” 설계 답안 회로. 시험지 D F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-a5ec4792d99ecb33",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3 답안 회로 그림; OOXML 본문 P12(image4.png); Word 읽기 전용 렌더 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p1-o-s03-q3",
+        "a-s04-p1-o-s04-q3",
+        "a-s06-p1-o-s06-q3",
+        "a-s06-p1",
+        "a-s09-p1-o-s09-q3",
+        "a-s10-p1-o-s10-q3",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s09-p1",
+        "a-s03-p1-o-s03-a3",
+        "a-s04-p1-o-s04-a3",
+        "a-s09-p1-o-s09-a3"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "주어진 D·C·Q(t) 진리표와 요구(표를 만족하는 회로 설계)가 q-dff-design 과 같아요. 대상 이름만 “D Latch”/“D F/F”로 달라요. 표가 레벨 동작이라 설계 답(D 래치)도 같아요. 이름 차이는 q-dff-design 풀이에서 설명해요."
+    },
+    {
+      "question_id": "q-jklatch-design",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s03-q4",
+      "occurrence_ids": [
+        "o-s03-q4",
+        "o-s04-q4",
+        "o-s06-q4",
+        "o-s09-q4",
+        "o-s10-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-jklatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 제목과 주어진 진리표 사이에 배치된 제공 회로. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a4",
+          "target_id": "q-jklatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 제목과 주어진 진리표 사이에 배치된 제공 회로. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a4",
+          "target_id": "q-jklatch-design",
+          "status": "confirmed",
+          "reason": "같은 자료에서 문항 제목과 주어진 진리표 사이에 배치된 제공 회로. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-jkff-design",
+          "to_id": "q-jklatch-design",
+          "type": "duplicate_candidate",
+          "reason": "주어진 J·K·C·Q(t) 진리표는 같지만 시험지는 “J-K F/F”, 예상문제는 “J-K Latch”로 적었다. 같은 문제인지 확정하지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 및 진리표; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s03-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-c72797a62aef568a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 제목과 진리표 사이 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s04-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-17a55661d7d416fb",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 4 제목과 진리표 사이 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s09-a4",
+          "to_id": "q-jkff-design",
+          "type": "answer_candidate",
+          "reason": "예상문제 “J-K Latch” 설계 답안 회로. 시험지 J-K F/F 설계 문항과 같은 진리표를 쓰지만 대상 명칭이 달라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-a5ec4792d99ecb33",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 4 답안 회로 그림; OOXML 본문 P18(image5.png); Word 읽기 전용 렌더 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s03-p2-o-s03-q4",
+        "a-s04-p2-o-s04-q4",
+        "a-s06-p1-o-s06-q4",
+        "a-s06-p1",
+        "a-s09-p2-o-s09-q4",
+        "a-s10-p1-o-s10-q4",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p2",
+        "a-s04-p2",
+        "a-s09-p2",
+        "a-s03-p2-o-s03-a4",
+        "a-s04-p2-o-s04-a4",
+        "a-s09-p2-o-s09-a4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "주어진 J·K·C·Q(t) 진리표와 요구가 q-jkff-design 과 같아요. 대상 이름만 “J-K Latch”/“J-K F/F”로 달라요. 설계 답(JK 래치)도 같아요."
+    },
+    {
+      "question_id": "q-latch",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s03-q6",
+      "occurrence_ids": [
+        "o-s03-q6",
+        "o-s02-q1",
+        "o-s04-q6",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s09-q6",
+        "o-s10-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a1",
+          "target_id": "q-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a6",
+          "target_id": "q-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a6",
+          "target_id": "q-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a6",
+          "target_id": "q-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a6",
+          "target_id": "q-latch",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-latch",
+          "reason": "예상문제 자료에 명시된 문항이지만 시행 근거가 없는 기출_단답형 1번에도 같은 질문이 있다. 실제 출제 여부는 확인하지 못해 predicted를 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1",
+        "a-s06-p1",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p2",
+        "a-s02-p1",
+        "a-s04-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-ff",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s03-q7",
+      "occurrence_ids": [
+        "o-s03-q7",
+        "o-s02-q2",
+        "o-s04-q7",
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s09-q7",
+        "o-s10-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a2",
+          "target_id": "q-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a7",
+          "target_id": "q-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a7",
+          "target_id": "q-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a7",
+          "target_id": "q-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a7",
+          "target_id": "q-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-ff",
+          "reason": "예상문제 자료에 명시된 문항이지만 시행 근거가 없는 기출_단답형 2번에도 같은 질문이 있다. 실제 출제 여부는 확인하지 못해 predicted를 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1",
+        "a-s06-p1",
+        "a-s10-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p2",
+        "a-s02-p1",
+        "a-s04-p2",
+        "a-s07-p3",
+        "a-s09-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-rs-ff",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q2",
+      "occurrence_ids": [
+        "o-s05-q2",
+        "o-s07-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s07-a2",
+          "target_id": "q-rs-ff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-rs-latch",
+          "to_id": "q-rs-ff",
+          "type": "variant_of",
+          "reason": "같은 R-S 회로를 주지만 대상 명칭(Latch/F/F)과 “회로설계로 대체될 수 있음” 조건이 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-197fa30ab23a7bfe",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-rs-ff",
+          "to_id": "q-rs-ff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 R-S 회로와 진리표 작성 요구. 문구(“완성하시오(회로설계로 대체될 수 있음)” / “진리표작성”)가 달라 확정 중복으로 묶지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q2",
+        "a-s05-p1",
+        "a-s07-p2-o-s07-q2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s07-p2",
+        "a-s07-p2-o-s07-a2"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 R-S 회로(S·C·R, 74HC00 4개)를 주고 진리표를 채우는 문항이에요. 이름(R-S F/F)과 “회로설계로 대체될 수 있음” 문구만 달라요. q-rs-latch 로 풀어요."
+    },
+    {
+      "question_id": "q-dff-table",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q3",
+      "occurrence_ids": [
+        "o-s05-q3",
+        "o-s07-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s07-a3",
+          "target_id": "q-dff-table",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-dff-table",
+          "to_id": "q-dff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 D 회로(입력 표기 S·C)와 진리표 작성 요구. 문구가 달라 확정 중복으로 묶지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-dff-table",
+          "to_id": "q-dff-design",
+          "type": "variant_of",
+          "reason": "회로를 주고 진리표를 쓰는 문제와 진리표를 주고 회로를 설계하는 문제로 방향이 반대다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q3",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s07-p2",
+        "a-s07-p2-o-s07-a3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-jkff-table",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s05-q4",
+      "occurrence_ids": [
+        "o-s05-q4",
+        "o-s07-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s07-a4",
+          "target_id": "q-jkff-table",
+          "status": "confirmed",
+          "reason": "종합본에서 4번 다음 쪽 상단에 놓인 J-K 진리표. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-jkff-table",
+          "to_id": "q-jkff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 J-K 회로와 진리표 완성 요구. 기출_단답형에는 “회로설계로 대체될 수 있음” 조건이 없다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 5번 문장 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6 및 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-jkff-table",
+          "to_id": "q-jkff-design",
+          "type": "variant_of",
+          "reason": "회로를 주고 진리표를 쓰는 문제와 진리표를 주고 회로를 설계하는 문제로 방향이 반대다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 5번 문장 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-98abb18838dcedd6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s05-q4",
+          "reason": "v3에서 J-K 회로도가 4번·5번 문장 뒤에 놓여 소속 문항을 배치만으로 확정할 수 없음."
+        },
+        {
+          "target_id": "o-s07-q4",
+          "reason": "종합본 4번 문장 아래에 D 래치 회로도와 J-K 회로도가 함께 놓여 있다. D 회로가 3번의 제시 회로인지 확정하지 않음."
+        },
+        {
+          "target_id": "o-s07-a4",
+          "reason": "제공 J-K 표의 Q' 열에 “1'”, “0’”처럼 의미가 정의되지 않은 아포스트로피가 붙어 있다. 원문 그대로 보존."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-o-s05-q4",
+        "a-s05-p1",
+        "a-s07-p2-o-s07-q4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s07-p2",
+        "a-s07-p3-o-s07-a4",
+        "a-s07-p3"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "대표 등장(예상 v3 4번)과 종합본 등장 모두 부분 판독이에요. v3에서는 J-K 회로가 4·5번 문장 뒤에 있어 어느 문항의 그림인지 확정할 수 없고, 종합본 4번 아래 그림은 D 회로예요. 조건을 추측해 채우지 않았어요. 같은 요구는 회로 소속이 분명한 q-jkff-short 로 다뤄요."
+    },
+    {
+      "question_id": "q-rs-ff-short",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-q4",
+      "occurrence_ids": [
+        "o-s02-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a4",
+          "target_id": "q-rs-ff-short",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-rs-ff",
+          "to_id": "q-rs-ff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 R-S 회로와 진리표 작성 요구. 문구(“완성하시오(회로설계로 대체될 수 있음)” / “진리표작성”)가 달라 확정 중복으로 묶지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-rs-ff-short",
+          "reason": "기출_단답형의 문항·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거(시험지 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s02-p1-o-s02-a4"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 R-S 회로와 진리표 작성 요구예요(기출_단답형 4번, 실제 시행 근거 미확인). q-rs-latch 로 풀어요."
+    },
+    {
+      "question_id": "q-dff-short",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-q5",
+      "occurrence_ids": [
+        "o-s02-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a5",
+          "target_id": "q-dff-short",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-dff-table",
+          "to_id": "q-dff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 D 회로(입력 표기 S·C)와 진리표 작성 요구. 문구가 달라 확정 중복으로 묶지 않음.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5 및 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-dff-short",
+          "reason": "기출_단답형의 문항·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거(시험지 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown 유지."
+        },
+        {
+          "target_id": "o-s02-a5",
+          "reason": "제공 D f/f 진리표 둘째 행이 D=0, C=1, Q(t)=1로 인쇄되어 첫째 행과 입력이 같고, 회로 입력 단자도 D가 아닌 S로 적혀 있다. 교정하지 않고 독립 풀이 단계 검토 대상으로 남김."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q5"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s02-p1-o-s02-a5"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "같은 D 회로(입력 표기 S·C)와 진리표 작성 요구예요(기출_단답형 5번). q-dff-table 로 풀어요. 이 자료 답안 둘째 행 “0 1 1”의 오기는 q-dff-table 노트에 남겼어요."
+    },
+    {
+      "question_id": "q-jkff-short",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-q6",
+      "occurrence_ids": [
+        "o-s02-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a6",
+          "target_id": "q-jkff-short",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-jkff-table",
+          "to_id": "q-jkff-short",
+          "type": "duplicate_candidate",
+          "reason": "같은 J-K 회로와 진리표 완성 요구. 기출_단답형에는 “회로설계로 대체될 수 있음” 조건이 없다.",
+          "evidence": [
+            {
+              "source_id": "s-25e89fae09e4dade",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4 및 5번 문장 아래 회로도; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-1d5b9fb1a3509c42",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6 및 회로도; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-jkff-short",
+          "reason": "기출_단답형의 문항·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거(시험지 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p2-o-s02-q6"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s02-p2-o-s02-a6"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-sr-nand-00",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-q8",
+      "occurrence_ids": [
+        "o-s02-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a8",
+          "target_id": "q-sr-nand-00",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-sr-nand-00",
+          "reason": "기출_단답형의 문항·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거(시험지 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p2-o-s02-q8"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-74hc574",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-q9",
+      "occurrence_ids": [
+        "o-s02-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a9",
+          "target_id": "q-74hc574",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-74hc574",
+          "reason": "기출_단답형의 문항·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거(시험지 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown 유지."
+        },
+        {
+          "target_id": "o-s02-a9",
+          "reason": "제공 답안이 “한clock 발생 지속기간 동안에만”(레벨)과 “low에서 high로 상승할때”(에지)를 함께 적었다. 74HC574 반영 시점에 대한 정답 여부는 독립 풀이 단계에서 검토해야 함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p2-o-s02-q9"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    },
+    {
+      "question_id": "q-rs-quiz",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s08-q1",
+      "occurrence_ids": [
+        "o-s08-q1"
+      ],
+      "subparts": [
+        {
+          "id": "sp-rs-quiz-1",
+          "label": "1)",
+          "occurrence_id": "o-s08-q1",
+          "block_ids": [
+            "b-o-s08-q1-text1",
+            "b-o-s08-q1-bounded"
+          ]
+        },
+        {
+          "id": "sp-rs-quiz-2",
+          "label": "2)",
+          "occurrence_id": "o-s08-q1",
+          "block_ids": [
+            "b-o-s08-q1-text2"
+          ]
+        },
+        {
+          "id": "sp-rs-quiz-3",
+          "label": "(1)의 결과",
+          "occurrence_id": "o-s08-q1",
+          "block_ids": [
+            "b-o-s08-q1-text3"
+          ]
+        }
+      ],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s08-e1",
+          "target_id": "sp-rs-quiz-1",
+          "status": "confirmed",
+          "reason": "같은 문서에서 해당 소문항 바로 아래 “해설” 칸 또는 답 줄. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-e2",
+          "target_id": "sp-rs-quiz-2",
+          "status": "confirmed",
+          "reason": "같은 문서에서 해당 소문항 바로 아래 “해설” 칸 또는 답 줄. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-e3",
+          "target_id": "sp-rs-quiz-3",
+          "status": "confirmed",
+          "reason": "같은 문서에서 해당 소문항 바로 아래 “해설” 칸 또는 답 줄. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-rs-quiz",
+          "reason": "“퀴즈 해설” 문서의 문제 상자만 있고 시행 연도·분반·시험지 근거가 없음. 기출/예상 여부 unknown 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s08-p1-o-s08-q1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s08-p1",
+        "a-s08-p1-o-s08-e1",
+        "a-s08-p1-o-s08-e3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "원문 조건 대조 및 게이트 모델 계산을 마친 저작 완료 문항"
+    }
+  ]
+}

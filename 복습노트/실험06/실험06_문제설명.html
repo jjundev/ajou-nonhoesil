@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>실험 6 · 문제 설명</title>
+  <meta name="description" content="이론을 문제풀이에 연결해요">
+  <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('od-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <link rel="stylesheet" href="자료/assets/vendor/pretendard/pretendard.css">
+  <link rel="stylesheet" href="자료/assets/vendor/katex/katex.min.css">
+  <script defer src="자료/assets/vendor/katex/katex.min.js"></script>
+  <script defer src="자료/assets/vendor/katex/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']})"></script>
+  <style>
+    /* ---------- 토큰 ---------- */
+    :root {
+      color-scheme: light;
+      --bg: #ffffff; --surface: #f7f8fa; --ink: #111111; --ink-2: #6b7280; --line: #d9dee7;
+      --accent: #1677ff; --accent-ink: #1b64da; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #b54708; --prof: #6941c6; --supp: #067647; --danger: #d92d20;
+      --font: 'Pretendard', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --fs-title: clamp(28px, 6vw, 36px); --fs-h3: clamp(26px, 5.4vw, 32px); --fs-layer: 19px; --fs-lead: 22px; --fs-body: 17px; --fs-sub: 15px; --fs-small: 14px; --fs-label: 13px; --fs-fig: 12px;
+      --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+      --radius: 8px; --measure: 680px; --tap: 48px; --btn-min: 160px;
+      --dur: 220ms; --dur-exit: 150ms; --ease-out: cubic-bezier(.2, .8, .2, 1);
+      /* 예전 조각이 참조할 수 있는 이름 */
+      --surface-2: var(--surface); --accent-soft: var(--surface); --warn-soft: var(--surface);
+      --prof-soft: var(--surface); --supp-soft: var(--surface); --eli5: var(--accent-ink); --eli5-soft: var(--surface);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+        --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+        --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+      --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+    }
+
+    /* ---------- 기본 ---------- */
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+      background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--fs-body); line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+    a { color: var(--accent-ink); text-underline-offset: 3px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    [hidden] { display: none !important; }
+
+    /* ---------- 상단 바 ---------- */
+    .topbar { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s2) var(--s4); display: flex; align-items: center; gap: var(--s3); min-height: 56px; }
+    .brand { flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; }
+    .text-btn { flex: none; min-height: 44px; min-width: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--radius);
+      background: transparent; color: var(--ink); font: 600 var(--fs-small)/1 var(--font); cursor: pointer; }
+    .bar { height: 2px; background: var(--line); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+
+    /* ---------- 본문 ---------- */
+    main { flex: 1 0 auto; width: 100%; max-width: var(--measure); margin: 0 auto; padding: var(--s6) var(--s5) var(--s7); }
+    .hero h1 { font-size: var(--fs-title); line-height: 1.3; margin: 0 0 var(--s3); letter-spacing: -0.02em; }
+    .hero p { color: var(--ink-2); margin: 0; }
+    section { margin-top: var(--s7); }
+    section > h2 { font-size: 22px; line-height: 1.4; margin: 0 0 var(--s4); }
+    .topic { padding: var(--s6) 0; border-top: 1px solid var(--line); }
+    .topic h3 { margin: 0 0 var(--s2); font-size: var(--fs-h3); font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; }
+    .tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+    .tag { font-size: var(--fs-label); line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); white-space: nowrap; }
+
+    /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
+    .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
+    .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer > :first-child { margin-top: 0; }
+    .layer > :last-child { margin-bottom: 0; }
+    .layer-title { display: block; font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin-bottom: var(--s3); }
+    .layer.eli5 .layer-title { color: var(--accent-ink); }
+    .layer.eli5 .lead { font-size: var(--fs-lead); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; margin: 0 0 var(--s4); }
+    /* 정확히 말하면: 본문 크기 그대로, 굵은 첫머리만 진하게 */
+    .layer.formal b { font-weight: 700; color: var(--ink); }
+    /* 교수님 말씀 · 주의: 보조 정보는 한 단계 작게 */
+    .layer.prof, .layer.warn, .layer.listen { font-size: var(--fs-sub); line-height: 1.7; }
+    .layer.prof blockquote { font-size: var(--fs-sub); }
+    .layer.prof .layer-title { color: var(--prof); }
+    .layer.warn, .layer.listen { background: var(--surface); border-top: 0; border-radius: var(--radius); padding: var(--s4); }
+    .layer.warn .layer-title { color: var(--warn); font-size: var(--fs-body); }
+    .layer.listen .layer-title { color: var(--accent-ink); font-size: var(--fs-body); }
+    .layer.supp .badge.supp { margin-bottom: var(--s2); }
+    .badge { display: inline-block; font-size: var(--fs-label); font-weight: 600; line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); }
+    .badge.supp { color: var(--supp); }
+    .badge.exam { color: var(--warn); margin-right: var(--s1); }
+    blockquote { margin: var(--s3) 0; padding: 0 0 0 var(--s3); border-left: 2px solid var(--line); color: var(--ink-2); }
+    ol.steps { padding-left: 1.4em; }
+    ol.steps li { margin: var(--s2) 0; }
+
+    /* 그림 · 수식 · 표 */
+    .figure { margin: var(--s4) 0; text-align: center; }
+    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); }
+    .figure img { max-width: 100%; height: auto; }
+    .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
+    .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
+    .equation-card .katex-display { margin: 0; text-align: left; }
+    .equation-card .katex-display > .katex { text-align: left; }
+    .table-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .table-card > table { margin: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
+    th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
+    th { color: var(--ink-2); font-weight: 600; }
+    td:first-child, th:first-child { min-width: 6em; }
+
+    /* 위젯 */
+    .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }
+    .widget h4 { margin: 0 0 var(--s1); font-size: var(--fs-layer); line-height: 1.4; }
+    .widget-help { font-size: var(--fs-small); color: var(--ink-2); margin: 0 0 var(--s3); }
+    .controls { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--s2); font-size: var(--fs-small); }
+    .controls label { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+    .controls input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+    .widget svg { width: 100%; height: auto; background: var(--bg); border-radius: var(--radius); }
+    .readout { font-size: var(--fs-small); margin-top: var(--s2); }
+    .legend { font-size: var(--fs-label); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: var(--s3); }
+    .sw { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: var(--s1); border-radius: 2px; }
+    .sw.truth { background: var(--ink-2); } .sw.fit { background: var(--accent); } .sw.train { background: var(--accent); height: 10px; width: 10px; border-radius: 50%; }
+    .sw.test { background: var(--warn); height: 10px; width: 10px; border-radius: 50%; } .sw.like { background: var(--accent); } .sw.prior { background: var(--prof); } .sw.post { background: var(--supp); }
+    .axis { stroke: var(--line); stroke-width: 1.5; }
+    .tick { fill: var(--ink-2); font-size: 11px; }
+    .plot-truth { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .plot-fit { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+    .pt-train { fill: var(--accent); }
+    .pt-test { fill: var(--warn); }
+    .plot-like { fill: none; stroke: var(--accent); stroke-width: 2; }
+    .plot-prior { fill: none; stroke: var(--prof); stroke-width: 2; stroke-dasharray: 6 4; }
+    .plot-post { fill: none; stroke: var(--supp); stroke-width: 3; }
+    .mark-ml { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .mark-map { stroke: var(--supp); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .fig-ink { stroke: currentColor; fill: none; stroke-width: 2; }
+    .fig-accent { stroke: var(--accent); fill: none; stroke-width: 2.5; }
+    .fig-danger { stroke: var(--danger); fill: none; stroke-width: 2.5; }
+    .fig-dot { fill: var(--accent); }
+    .fig-text { fill: currentColor; font-size: 13px; font-family: inherit; }
+    .fig-muted { fill: var(--ink-2); font-size: var(--fs-fig); font-family: inherit; }
+
+    footer { width: 100%; max-width: var(--measure); margin: 0 auto; padding: 0 var(--s5) var(--s6); color: var(--ink-2); font-size: var(--fs-small); }
+
+    /* ---------- 하단 이동 바 ---------- */
+    .pager { position: sticky; bottom: 0; z-index: 10; background: var(--bg); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+    .pager-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s3) var(--s4); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s3); }
+    .pager-count { font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center; min-width: 4em; }
+    .btn { min-height: var(--tap); min-width: var(--btn-min); padding: 0 var(--s6); border-radius: var(--radius); border: 0; font: 700 var(--fs-body)/1 var(--font); cursor: pointer; white-space: nowrap;
+      transition: background-color 150ms ease-out, opacity 150ms ease-out; }
+    .btn-ghost { justify-self: start; background: var(--surface); color: var(--ink); }
+    .btn-primary { justify-self: end; background: var(--btn-bg); color: var(--on-btn); }
+    .btn:disabled { opacity: .4; cursor: default; }
+    @media (hover: hover) {
+      .text-btn:hover, .btn-ghost:not(:disabled):hover { background: var(--line); }
+      .btn-primary:not(:disabled):hover { box-shadow: inset 0 0 0 100px rgba(0, 0, 0, .14); }
+    }
+
+    /* ---------- 목차 시트 ---------- */
+    .sheet { width: min(100%, var(--measure)); max-width: 100%; max-height: 80dvh; margin: auto auto 0; padding: 0; border: 0;
+      border-radius: 16px 16px 0 0; background: var(--bg); color: var(--ink); }
+    .sheet::backdrop { background: rgba(0, 0, 0, .4); }
+    .sheet-inner { padding: var(--s4) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom)); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
+    .sheet-head h2 { margin: 0; font-size: var(--fs-lead); }
+    .toc { display: flex; flex-direction: column; }
+    .toc > a, .toc-group > a { display: block; padding: var(--s3) 0 var(--s1); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); text-decoration: none; }
+    .toc-list { list-style: none; margin: 0 0 var(--s2); padding: 0; }
+    .toc-list a { display: flex; align-items: center; gap: var(--s3); min-height: var(--tap); padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3));
+      border-radius: var(--radius); color: var(--ink); text-decoration: none; line-height: 1.4; }
+    .toc-list a[aria-current="true"] { background: var(--surface); font-weight: 700; color: var(--accent-ink); }
+    .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
+    @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
+
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
+    /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
+    html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
+    html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
+    html:not(.js) .sheet-close { display: none; }
+    .js main > .hero:not(.is-current), .js main > section:not(.is-on), .js .screen:not(.is-current) { display: none; }
+    .js main > section { margin-top: 0; }
+    .js main > section > h2 { font-size: var(--fs-small); font-weight: 600; color: var(--accent-ink); margin: 0 0 var(--s2); }
+    .js .topic { padding: 0; border-top: 0; }
+    .js .hero { padding-top: 12vh; }
+    .js footer { display: none; }
+    .js body.at-end footer { display: block; }
+    .screen.enter-next { animation: enter-next var(--dur) var(--ease-out); }
+    .screen.enter-prev { animation: enter-prev var(--dur) var(--ease-out); }
+    @keyframes enter-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+    @keyframes enter-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.enter-next, .screen.enter-prev { animation: none; }
+      .bar > span, .btn { transition: none; }
+    }
+    @media (max-width: 480px) {
+      main { padding: var(--s5) var(--s4) var(--s6); }
+      footer { padding: 0 var(--s4) var(--s5); }
+      .btn { min-width: 120px; padding: 0 var(--s5); }
+    }
+    @media print {
+      .topbar, .pager, .sheet { display: none !important; }
+      .js main > .hero, .js main > section, .js .screen, .js footer { display: block !important; }
+    }
+
+    /* ---------- 좌우 패널 (drawer) ---------- */
+    :root { --panel-l: clamp(240px, 18vw, 320px); --panel-r-min: 320px; --panel-r-max: 720px; --scrollbar: 16px; --drawer-l: 304px; --drawer-r: 360px; --fs-panel: 16px; --scrim: rgba(0, 0, 0, .4); }
+    body { height: 100vh; height: 100dvh; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+    .topbar-inner { max-width: none; padding: var(--s2) var(--s3); gap: var(--s2); }
+    .panel-toggle { display: inline-flex; align-items: center; gap: var(--s1); padding: 0 var(--s2); }
+    .panel-toggle svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-toggle .strip { fill: transparent; stroke: none; transition: fill 150ms ease-out; }
+    .panel-toggle[aria-expanded="true"] { color: var(--accent-ink); }
+    .panel-toggle[aria-expanded="true"] .strip { fill: currentColor; }
+    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+    .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .theme-toggle .i-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .i-sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .i-moon { display: none; }
+    }
+
+    .layout { display: grid; grid-template-columns: auto minmax(320px, 1fr) auto; min-height: 0; }
+    .content { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: var(--s4); }
+    .panel { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--bg); color: var(--ink); font-size: var(--fs-panel); line-height: 1.6; }
+    .panel-left { grid-column: 1; border-right: 1px solid var(--line); }
+    .content { grid-column: 2; }
+    .panel-right { grid-column: 3; border-left: 1px solid var(--line); }
+    .panel-inner { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--s4) var(--s4) var(--s6); }
+    .panel-resize { display: none; }
+    .panel-head { display: flex; align-items: center; gap: var(--s2); min-height: 44px; margin-bottom: var(--s2); }
+    .panel-head h2 { flex: 1 1 0; min-width: 0; margin: 0; font-size: var(--fs-lead); line-height: 1.4; }
+    .panel-sub { margin: 0 0 var(--s4); font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; }
+    .panel-empty { margin: 0; color: var(--ink-2); }
+    .panel-label { display: block; margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+
+    /* 진행 상태 */
+    .panel-meta { margin: 0 0 var(--s2); font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .panel-meta b { color: var(--ink); }
+    .progress { height: 4px; margin-bottom: var(--s3); border-radius: 2px; background: var(--line); overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+    .panel .toc-list a { margin: 0 calc(-1 * var(--s2)); padding: var(--s2); font-size: var(--fs-panel); }
+    .toc-mark { flex: none; display: block; width: 20px; height: 20px; color: var(--ink-2); }
+    .toc-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .toc-mark.is-done { color: var(--accent-ink); }
+
+    /* 복습문제: 원문 · 힌트 · 풀이 */
+    .aid details:last-of-type { border-bottom: 1px solid var(--line); }
+    .aid details.original > summary { font-size: var(--fs-panel); }
+    .solved-btn { display: flex; align-items: center; justify-content: center; gap: var(--s2); width: 100%; min-height: var(--tap); margin-top: var(--s5); padding: 0 var(--s4);
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--ink); font: 700 var(--fs-panel)/1.2 var(--font); cursor: pointer; }
+    .solved-btn svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .solved-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); }
+
+    /* 정리노트: 페이지 요약 */
+    .sum-lead { margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.6; }
+    .eq-list { list-style: none; margin: 0; padding: 0; }
+    .eq-list li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .eq-list li:first-child { padding-top: 0; }
+    .eq-name { display: block; font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .eq-list .katex-display { margin: var(--s1) 0 0; text-align: left; }
+    .eq-list .katex-display > .katex { text-align: left; }
+    .terms { margin: 0; }
+    .terms dt { font-size: var(--fs-panel); font-weight: 700; margin-top: var(--s4); }
+    .terms dt:first-child { margin-top: 0; }
+    .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
+    .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
+    .flow li { margin: var(--s2) 0; }
+
+    @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
+
+    /* 넓은 화면: 본문 옆에 붙는 패널 */
+    @media (min-width: 1024px) {
+      .layout { --l: var(--panel-l-user, var(--panel-l)); }
+      .layout[data-left="closed"] { --l: 0px; }
+      .panel-left { width: var(--l); }
+      /* 기본값: 왼쪽 패널과 본문 폭을 뺀 나머지를 오른쪽 패널이 차지 → 본문 옆 빈 여백이 생기지 않는다 */
+      .panel-right { width: var(--panel-r-user, clamp(var(--panel-r-min), calc(100vw - var(--l) - var(--measure) - var(--scrollbar)), var(--panel-r-max))); }
+      .panel-resize { display: block; position: absolute; top: 0; bottom: 0; z-index: 2; width: 12px; padding: 0; border: 0; background: transparent; cursor: col-resize; touch-action: none; }
+      .panel-left .panel-resize { right: 0; }
+      .panel-right .panel-resize { left: 0; }
+      .panel-resize::after { content: ""; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); opacity: 0; transition: opacity 150ms ease-out; }
+      .panel-left .panel-resize::after { right: 0; }
+      .panel-right .panel-resize::after { left: 0; }
+      .panel-resize:focus-visible { outline: none; }
+      .panel-resize:focus-visible::after, .is-resizing .panel-resize:active::after { opacity: 1; }
+      @media (hover: hover) { .panel-resize:hover::after { opacity: 1; } }
+      body.is-resizing { cursor: col-resize; user-select: none; }
+      .layout[data-left="closed"] .panel-left, .layout[data-right="closed"] .panel-right { display: none; }
+      .panel.is-shown { animation: panel-fade var(--dur) var(--ease-out); }
+      .scrim, .panel-close { display: none; }
+    }
+    @keyframes panel-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 좁은 화면: 가장자리에서 밀려 나오는 drawer */
+    @media (max-width: 1023.98px) {
+      .panel { position: fixed; top: 0; bottom: 0; z-index: 40; visibility: hidden;
+        transition: transform var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .panel-left { left: 0; width: min(var(--drawer-l), 88vw); transform: translateX(-100%); }
+      .panel-right { right: 0; width: min(var(--drawer-r), 88vw); transform: translateX(100%); }
+      .panel.is-open { visibility: visible; transform: none; transition: transform var(--dur) var(--ease-out); }
+      .panel-inner { padding-top: calc(var(--s3) + env(safe-area-inset-top)); padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom)); }
+      .scrim { position: fixed; inset: 0; z-index: 35; background: var(--scrim); opacity: 0; visibility: hidden;
+        transition: opacity var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .scrim.is-on { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease-out); }
+      html:not(.js) .panel-left { display: none; }
+    }
+    @media (max-width: 480px) { .panel-toggle { padding: 0 var(--s1); } }
+    html:not(.js) .panel-toggle, html:not(.js) .panel-right, html:not(.js) .scrim { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .panel, .panel.is-open, .scrim, .scrim.is-on, .progress > span, .panel-toggle .strip { transition: none; }
+      .panel.is-shown { animation: none; }
+      .panel-resize::after { transition: none; }
+    }
+    @media print {
+      body { display: block; height: auto; overflow: visible; }
+      .layout { display: block; }
+      .content { overflow: visible; }
+      .panel, .scrim { display: none !important; }
+    }
+  </style>
+</head>
+<body data-screens="article.topic" data-panels="note" data-range="logic-lab-06-problem-explanation">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="text-btn panel-toggle" id="toggle-left" type="button" aria-controls="panel-left" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="3" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span>목차</span></button>
+      <strong class="brand">문제 설명</strong>
+      <button class="text-btn theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드로 전환" title="다크 모드로 전환"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="text-btn panel-toggle" id="toggle-right" type="button" aria-controls="panel-right" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="15" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span>요약</span></button>
+    </div>
+    <div class="bar" aria-hidden="true"><span id="pager-bar"></span></div>
+  </header>
+  <div class="layout" data-left="open" data-right="closed">
+    <aside class="panel panel-left" id="panel-left" aria-labelledby="panel-left-title">
+      <div class="panel-resize" data-side="left" role="separator" aria-orientation="vertical" aria-controls="panel-left" aria-label="왼쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-left-title">목차</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#q-diff"><span class="toc-title">문제 1 · Latch와 Flip-Flop의 차이</span></a></li><li><a href="#q-latch"><span class="toc-title">문제 2 · Latch를 설명</span></a></li><li><a href="#q-ff"><span class="toc-title">문제 3 · Flip-Flop을 설명</span></a></li><li><a href="#q-sr-nand-00"><span class="toc-title">문제 4 · 기본 S-R latch에 S=R=0을 넣으면</span></a></li><li><a href="#q-rs-latch"><span class="toc-title">문제 5 · Enable이 있는 R-S Latch의 진리표</span></a></li><li><a href="#q-rs-quiz"><span class="toc-title">문제 6 · R-S Latch를 Toggle 되게 바꾸기</span></a></li><li><a href="#q-dff-table"><span class="toc-title">문제 7 · 회로가 주어진 D F/F 진리표</span></a></li><li><a href="#q-dff-design"><span class="toc-title">문제 8 · D F/F 진리표를 만족하는 회로 설계</span></a></li><li><a href="#q-jkff-short"><span class="toc-title">문제 9 · 회로가 주어진 J-K F/F 진리표</span></a></li><li><a href="#q-jkff-design"><span class="toc-title">문제 10 · J-K F/F 진리표를 만족하는 회로 설계</span></a></li><li><a href="#q-tff"><span class="toc-title">문제 11 · J-K F/F로 T F/F 만들기</span></a></li><li><a href="#q-74hc76"><span class="toc-title">문제 12 · 74HC76의 CLR·PR 핀 기능</span></a></li><li><a href="#q-74hc574"><span class="toc-title">문제 13 · 74HC574에서 입력이 반영되는 시점</span></a></li><li><a href="#q-p-76-trace"><span class="toc-title">문제 14 · 74HC76 하강 엣지 따라가기</span></a></li></ol></nav>
+      </div>
+    </aside>
+    <div class="content">
+  <main>
+    <div class="hero">
+      <h1>실험 6 · 문제 설명</h1>
+      <p>첫 줄부터 완성 답과 검산까지 함께 풀어요.</p>
+    </div>
+<section id="learning"><h2>문제를 함께 풀어요</h2><article class="topic" id="q-diff"><h3>문제 1 · Latch와 Flip-Flop의 차이</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Latch와 Flip-Flop의 차이점에 대해서 설명하시오.</p><h4>구할 것</h4><p>입력이 출력에 반영되는 때를 기준으로 두 소자를 비교하세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>두 기억소자가 “언제 입력을 받아들이는지”를 비교하는 서술형이에요. 둘 다 1비트를 저장한다는 공통점에서 출발해 차이 하나를 분명하게 쓰면 돼요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Latch와 Flip-Flop은 둘 다 출력을 되먹여 1비트를 저장하는 기억소자예요.”라고 공통점부터 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-edge">래치와 플립플롭: 레벨과 엣지</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>차이는 트리거 방식이에요. 래치는 Enable이 1인 동안 입력이 바뀔 때마다 출력이 바로 따라 바뀌는 레벨 트리거예요. 플립플롭은 클록이 0→1 또는 1→0으로 바뀌는 순간에만 입력을 받아들이는 엣지 트리거예요. 교안은 래치를 비동기, 플립플롭을 동기 기억소자로 불러요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>구분</th><th>Latch</th><th>Flip-Flop</th></tr></thead><tbody><tr><td>트리거</td><td>레벨</td><td>엣지</td></tr><tr><td>입력 반영</td><td>Enable=1인 동안 계속</td><td>클록 엣지 순간에만</td></tr><tr><td>분류</td><td>비동기</td><td>동기</td></tr></tbody></table></div></div><figure class="figure"><img src="자료/figures/level-vs-edge.svg" alt="같은 C와 D에 대해 D 래치는 C가 1인 동안 D를 따라가고 D 플립플롭은 상승 엣지에서만 D를 저장하는 타이밍도"></figure></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>Latch는 Enable이 활성인 동안 입력 변화가 바로 반영되는 레벨 트리거(비동기) 기억소자, Flip-Flop은 클록 엣지 순간에만 입력이 반영되는 엣지 트리거(동기) 기억소자예요.</p><p><strong>검산:</strong> 위 타이밍도처럼 C=1 구간에서 D가 0→1→0으로 바뀌면 래치의 Q는 세 번 모두 따라가고, 플립플롭의 Q는 엣지 순간의 D 하나만 남는지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>“래치는 클록이 없다”만 쓰면 Enable 래치를 설명하지 못해요. 레벨(동안)과 엣지(순간)라는 말을 꼭 넣어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>공통점(1비트 기억소자) 한 문장을 써요.</li><li>레벨 트리거와 엣지 트리거로 차이를 써요.</li><li>같은 입력 파형에서 두 Q가 다르게 나오는 예로 확인해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “Latch와 Flip-Flop은 둘 다 출력을 되먹여 1비트를 저장하는 기억소자예요.”라고 공통점부터 써요.</p><p><strong>판단:</strong> 래치는 Enable이 1인 동안 계속, 플립플롭은 클록 엣지 순간에만 입력을 받아요.</p><p><strong>검산:</strong> 위 타이밍도처럼 C=1 구간에서 D가 0→1→0으로 바뀌면 래치의 Q는 세 번 모두 따라가고, 플립플롭의 Q는 엣지 순간의 D 하나만 남는지 확인해요.</p></div></article><article class="topic" id="q-latch"><h3>문제 2 · Latch를 설명</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Latch에 대해서 설명하시오.</p><h4>구할 것</h4><p>Latch가 무엇을 저장하고 언제 입력을 받아들이는지 설명하세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>래치가 무엇을 저장하고, 어떻게 기억하며, 언제 입력을 받는지를 설명하는 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Latch는 2진 정보 1비트를 저장하는 기억소자예요.”라고 첫 문장을 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-basics">출력을 되먹이는 회로와 NAND를 다시 읽어요</a>, <a href="실험06_실험설명.html#t-sr-enable">실험 1: Enable이 있는 SR 래치</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><ul><li>저장: 1비트. Q와 Q′은 서로 반대인 두 안정 상태 중 하나를 지켜요.</li><li>기억 방법: 출력을 입력 쪽으로 되먹여 입력이 사라져도 마지막 상태를 유지해요.</li><li>입력 반영: Enable이 1인 동안 입력이 바뀌면 출력이 바로 따라 바뀌는 레벨 트리거예요. Enable=0이면 유지해요. 교안은 비동기 기억소자로 분류해요.</li><li>예: SR 래치, D 래치, JK 래치</li></ul></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>Latch는 되먹임으로 1비트를 기억하는 레벨 트리거(비동기) 기억소자예요. Enable이 활성인 동안 입력에 따라 출력이 바로 바뀌고, 비활성이면 마지막 상태를 유지해요.</p><p><strong>검산:</strong> D 래치에서 E=1, D=1이면 Q=1이 되고, 이어서 E=0, D=0으로 바꿔도 Q=1이 남는지 따라가 봐요. 저장과 레벨 반영이 모두 보여요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>“입력이 변할 때마다 출력이 바뀐다”만 쓰면 Enable=0일 때 유지된다는 점을 빠뜨려요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>1비트 저장이라는 정의를 써요.</li><li>되먹임으로 유지한다는 점을 써요.</li><li>Enable 동안 반영되는 레벨 트리거라고 마무리해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “Latch는 2진 정보 1비트를 저장하는 기억소자예요.”라고 첫 문장을 써요.</p><p><strong>판단:</strong> 저장(1비트), 기억 방법(되먹임), 반영 시점(Enable 동안)을 차례로 써요.</p><p><strong>검산:</strong> D 래치에서 E=1, D=1이면 Q=1이 되고, 이어서 E=0, D=0으로 바꿔도 Q=1이 남는지 따라가 봐요. 저장과 레벨 반영이 모두 보여요.</p></div></article><article class="topic" id="q-ff"><h3>문제 3 · Flip-Flop을 설명</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Flip-Flop에 대해서 설명하시오.</p><h4>구할 것</h4><p>Flip-Flop이 무엇을 저장하고 언제 입력을 받아들이는지 설명하세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>플립플롭이 무엇을 저장하고 언제 입력을 받는지를 설명하는 문제예요. 래치와 저장 대상은 같고 반영 시점이 달라요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Flip-Flop은 클록을 입력받아 1비트를 저장하는 동기 기억소자예요.”라고 시작해요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-edge">래치와 플립플롭: 레벨과 엣지</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><ul><li>저장: 1비트, Q와 Q′은 서로 반대인 두 안정 상태 중 하나예요.</li><li>입력 반영: 클록의 상승 엣지 또는 하강 엣지 순간에만 입력이 출력에 반영되고, 클록이 0이나 1로 머무는 동안에는 입력이 바뀌어도 출력이 그대로예요(Edge-triggered).</li><li>예: D F/F 74HC74(상승 엣지), JK F/F 74HC76(하강 엣지)</li></ul></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>Flip-Flop은 1비트를 기억하는 동기 기억소자로, 클록 엣지 순간에만 입력이 반영되고 그 밖에는 상태를 유지해요.</p><p><strong>검산:</strong> 74HC76에서 J=K=1로 두고 클록을 한 번 내리면 Q가 정확히 한 번 뒤집히고, 클록이 0으로 머무는 동안은 바뀌지 않는지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>“클록이 1인 동안 입력을 받는다”라고 쓰면 래치 설명이 돼요. 엣지 “순간”이 핵심이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>1비트 동기 기억소자라고 정의해요.</li><li>엣지 순간에만 반영된다고 써요.</li><li>74HC74·74HC76 예로 엣지 방향을 덧붙여요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “Flip-Flop은 클록을 입력받아 1비트를 저장하는 동기 기억소자예요.”라고 시작해요.</p><p><strong>판단:</strong> 플립플롭은 클록 엣지 순간에만 입력을 받아들여요.</p><p><strong>검산:</strong> 74HC76에서 J=K=1로 두고 클록을 한 번 내리면 Q가 정확히 한 번 뒤집히고, 클록이 0으로 머무는 동안은 바뀌지 않는지 확인해요.</p></div></article><article class="topic" id="q-sr-nand-00"><h3>문제 4 · 기본 S-R latch에 S=R=0을 넣으면</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>아래의 회로는 기본 S-R latch 회로이다. S와 R이 동시에 0이 입력되면 Q와 Q′의 출력은 무엇인가? Q′ = not Q 등식이 성립하는가?</p><h4>주어진 조건</h4><p>NAND(74HC00) 두 개의 출력이 서로의 입력에 연결돼 있어요. S는 Q를 내는 NAND, R은 Q′을 내는 NAND에 들어가요. Enable 입력은 없어요.</p><h4>구할 것</h4><p>S=R=0일 때 Q와 Q′을 구하고, Q′=not Q가 성립하는지 답하세요.</p><figure class="figure"><img src="자료/figures/questions/q-sr-nand-00-given-01.png" alt="기본 S-R latch에 S=R=0을 넣으면 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>Enable이 없는 NAND 두 개짜리 래치에 S=R=0을 넣었을 때 두 출력을 구하고, Q′이 Q의 반대인지 판단해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“S=0이 들어간 위 NAND는 다른 입력과 상관없이 1을 내므로 Q=1이에요.”라고 첫 줄을 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-sr-basic">NAND 두 개로 만든 기본 SR 래치</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>NAND는 입력에 0이 하나라도 있으면 출력이 1이에요. 위 NAND의 입력은 S와 Q′인데 S=0이라 Q=1이에요. 아래 NAND의 입력은 R과 Q인데 R=0이라 Q′=1이에요. 되먹임 값이 무엇이든 결과가 같아요.</p><p>이 기본 래치는 S·R이 0일 때 명령이 되는 Active Low 입력이에요. 그래서 S=R=1이 유지, S=0이 Set, R=0이 Reset, S=R=0이 문제 상태예요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>S</th><th>R</th><th>Q</th><th>Q′</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>Q(t−1)</td><td>Q′(t−1)</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td><td>1</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>Q=1, Q′=1이에요. 두 출력이 같아서 Q′=not Q는 성립하지 않아요.</p><p><strong>검산:</strong> 되먹임 값을 넣어 한 번 더 계산해도 Q=(0·1)′=1, Q′=(0·1)′=1로 그대로예요. 이 상태에서 S·R을 동시에 1로 올리면 어느 쪽으로 남을지 알 수 없어서 쓰지 않아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>Enable이 있는 SR 래치의 “S=R=0은 유지”를 그대로 옮기면 틀려요. 이 회로는 NAND에 S·R이 바로 들어가서 0이 명령이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>각 NAND에 0이 들어가는지 확인해요.</li><li>Q와 Q′을 구해요.</li><li>두 값이 같은지 보고 Q′=not Q 성립 여부를 써요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “S=0이 들어간 위 NAND는 다른 입력과 상관없이 1을 내므로 Q=1이에요.”라고 첫 줄을 써요.</p><p><strong>판단:</strong> NAND에 0이 하나라도 있으면 1이라서 Q와 Q′이 모두 1이에요.</p><p><strong>검산:</strong> 되먹임 값을 넣어 한 번 더 계산해도 Q=(0·1)′=1, Q′=(0·1)′=1로 그대로예요. 이 상태에서 S·R을 동시에 1로 올리면 어느 쪽으로 남을지 알 수 없어서 쓰지 않아요.</p></div></article><article class="topic" id="q-rs-latch"><h3>문제 5 · Enable이 있는 R-S Latch의 진리표</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>R-S Latch의 Truth table을 완성하시오.</p><h4>주어진 조건</h4><p>회로는 아래 그림과 같아요. S·C가 첫 NAND, R·C가 둘째 NAND에 들어가고 그 출력이 서로 되먹임된 NAND 두 개로 가요(74HC00 네 개 게이트). C는 Enable 역할이에요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p><h4>구할 것</h4><p>표의 Q(t)를 채우세요. 부정 행은 회로가 내는 값과 쓰지 않는 이유를 함께 써요.</p><div class="table-wrap work-table"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>S</th><th>R</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr><tr><td>x</td><td>x</td><td>0</td><td></td></tr></tbody></table></div></div><figure class="figure"><img src="자료/figures/questions/q-rs-latch-given-01.png" alt="Enable이 있는 R-S Latch의 진리표 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>주어진 R-S 래치 회로(앞단 NAND 2개 + 교차 NAND 2개)를 읽고 S·R·C 조합마다 Q(t)를 채우는 문제예요. C가 Enable 역할이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“C=0이면 앞단 NAND 두 개가 모두 1을 내서 Q(t)=Q(t−1)이에요.”라고 마지막 행부터 채워요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-sr-enable">실험 1: Enable이 있는 SR 래치</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>C=1이면 앞단 NAND가 S와 R을 뒤집어 전달해요. 한 행씩 볼게요.</p><ul><li>S=0, R=0: 앞단 출력이 모두 1 → 교차 NAND가 서로 붙잡아 Q(t−1) 유지.</li><li>S=0, R=1: 아래 앞단이 (1·1)′=0 → Q′=1 → 위 NAND가 (1·1)′=0 → Q=0, Reset.</li><li>S=1, R=0: 위 앞단이 0 → Q=1 → 아래 NAND (1·1)′=0 → Q′=0, Set.</li><li>S=1, R=1: 앞단 출력이 모두 0 → Q=1, Q′=1. 보수 관계가 깨져서 쓰지 않는 상태예요.</li></ul><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>S</th><th>R</th><th>C</th><th>Q(t)</th><th>Q′(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>Q(t−1)</td><td>Q′(t−1)</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>x</td><td>x</td><td>0</td><td>Q(t−1)</td><td>Q′(t−1)</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>00(C=1)→Q(t−1), 01→0(Reset), 10→1(Set), 11→1(이때 Q′도 1, 사용 금지), C=0→Q(t−1)</p><p><strong>검산:</strong> Set 행에서 Q=1을 되먹여 다시 계산하면 Q′=(1·1)′=0으로 Q′=Q̄가 맞아요. 11 행만 Q=Q′=1이라 금지예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>11 행에 “X”만 쓰면 회로가 실제로 내는 값을 놓쳐요. 자료마다 “1”, “1 (Invalid)”, “−”로 적었는데, 값은 1이고 Q′도 1이라 금지라는 뜻을 함께 써요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>C=0 행을 먼저 채워요.</li><li>C=1에서 앞단 NAND 출력 → Q → Q′ 순서로 네 행을 따라가요.</li><li>11 행에 금지 이유를 덧붙여요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “C=0이면 앞단 NAND 두 개가 모두 1을 내서 Q(t)=Q(t−1)이에요.”라고 마지막 행부터 채워요.</p><p><strong>판단:</strong> C=0이면 유지, C=1이면 S=1→Set, R=1→Reset, 둘 다 0→유지, 둘 다 1→Q=Q′=1 금지예요.</p><p><strong>검산:</strong> Set 행에서 Q=1을 되먹여 다시 계산하면 Q′=(1·1)′=0으로 Q′=Q̄가 맞아요. 11 행만 Q=Q′=1이라 금지예요.</p></div></article><article class="topic" id="q-rs-quiz"><h3>문제 6 · R-S Latch를 Toggle 되게 바꾸기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>1) R-S Latch 회로로부터 (R,S가 1 일때), Q의 값이 Toggle 되게 하려면 회로를 어떻게 변형해야 하는가?</p><p>2) R-S Latch 회로에서 (R,S 가 1일 때) 갖는 문제점이 무엇인가?</p><p>(1)의 결과와 같이 변형된 회로를 무슨 회로라고 부르는가?</p><h4>주어진 조건</h4><p>주어진 회로는 S·C, R·C를 받는 NAND 두 개와 서로 되먹임된 NAND 두 개로 된 R-S Latch예요.</p><h4>구할 것</h4><p>세 소문항, 1) 변형 방법, 2) 문제점, 3) 변형된 회로의 이름(원문의 “(1)의 결과와 같이…” 문장)에 모두 답하세요.</p><figure class="figure"><img src="자료/figures/questions/q-rs-quiz-given-01.png" alt="R-S Latch를 Toggle 되게 바꾸기 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>R-S 래치의 S=R=1 문제를 이해하고, 회로를 바꿔 그 자리를 Toggle로 쓰는 방법과 바뀐 회로의 이름을 묻는 세 소문항이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Toggle은 지금 Q가 0이면 Set, 1이면 Reset이 되는 동작이에요.”라고 목표부터 정해요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-sr-enable">실험 1: Enable이 있는 SR 래치</a>, <a href="실험06_실험설명.html#t-jk-latch">JK 래치는 1, 1을 뒤집기로 바꿔요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>1) 변형: S 쪽 앞단 NAND가 Q가 0일 때만 열리려면 Q′을, R 쪽 앞단 NAND가 Q가 1일 때만 열리려면 Q를 넣어야 해요. 그래서 두 앞단 NAND를 3입력으로 바꾸고 S 쪽에 Q′, R 쪽에 Q를 되먹여요.</p><figure class="figure"><img src="자료/figures/solutions/q-rs-quiz-solution-01.svg" alt="S 쪽 3입력 NAND에 Q′, R 쪽 3입력 NAND에 Q를 되먹인 변형 회로"></figure><p>2) 문제점: C=1, S=R=1이면 앞단 출력이 모두 0이라 Q=1, Q′=1이에요. Q와 Q′이 서로 보수여야 한다는 관계가 깨지고, 이 상태에서 S·R을 동시에 0으로 되돌리면 다음 상태를 예측할 수 없어요. 그래서 사용을 허용하지 않아요(Not Allowed).</p><p>3) 이름: 이렇게 바꾼 회로는 JK Latch예요. S 자리가 J, R 자리가 K예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>1) S 쪽 NAND에 Q′, R 쪽 NAND에 Q를 되먹여 3입력으로 바꿔요. 2) Q=Q′=1로 보수 관계가 깨지고 다음 상태를 예측할 수 없어 금지예요. 3) JK Latch예요.</p><p><strong>검산:</strong> Q=0에서 J=K=C=1이면 J 쪽 NAND=(1·1·1)′=0이라 Q=1, Q=1에서는 K 쪽 NAND=0이라 Q=0이 되어 매번 반대로 바뀌어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>되먹임을 반대로 연결(S 쪽에 Q)하면 이미 1인 Q를 또 Set하려 해서 Toggle이 안 돼요. 또 C=1을 오래 유지하면 Q가 계속 뒤집히는 race-around가 생긴다는 한계도 기억해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>Toggle 조건(Q=0→Set, Q=1→Reset)을 적어요.</li><li>각 앞단 NAND에 넣을 되먹임 선을 정해요.</li><li>S=R=1의 문제와 회로 이름을 써요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “Toggle은 지금 Q가 0이면 Set, 1이면 Reset이 되는 동작이에요.”라고 목표부터 정해요.</p><p><strong>판단:</strong> S 쪽에 Q′, R 쪽에 Q를 넣으면 지금 상태의 반대쪽 문만 열려 Toggle이 돼요.</p><p><strong>검산:</strong> Q=0에서 J=K=C=1이면 J 쪽 NAND=(1·1·1)′=0이라 Q=1, Q=1에서는 K 쪽 NAND=0이라 Q=0이 되어 매번 반대로 바뀌어요.</p></div></article><article class="topic" id="q-dff-table"><h3>문제 7 · 회로가 주어진 D F/F 진리표</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>D F/F의 Truth table을 완성하시오(회로설계로 대체될 수 있음)</p><h4>주어진 조건</h4><p>회로는 아래 그림과 같아요. 원문 그림의 입력 단자 이름은 S와 C예요. S는 첫 NAND로 바로, 또 NOT(74HC04)을 거쳐 둘째 NAND로 들어가요. C는 두 NAND에 함께 들어가요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p><h4>구할 것</h4><p>표의 Q와 Q′을 채우세요.</p><div class="table-wrap work-table"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>S</th><th>C</th><th>Q</th><th>Q′</th></tr></thead><tbody><tr><td>0</td><td>1</td><td></td><td></td></tr><tr><td>1</td><td>1</td><td></td><td></td></tr><tr><td>X</td><td>0</td><td></td><td></td></tr></tbody></table></div></div><figure class="figure"><img src="자료/figures/questions/q-dff-table-given-01.png" alt="회로가 주어진 D F/F 진리표 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>입력 이름이 S·C로 적힌 D 회로를 읽고 Q와 Q′을 채우는 문제예요. NOT 하나 때문에 SR 래치와 달리 입력 조합이 두 가지뿐이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“NOT 때문에 아래 앞단 NAND에는 항상 S의 반대가 들어가요.”라고 회로부터 읽어요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-d-latch">실험 2-1: D 래치는 부정 상태를 막아요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>위 앞단 NAND는 S·C, 아래 앞단 NAND는 S′·C를 받아요. SR 래치의 S 자리에 S, R 자리에 S′이 들어간 D 래치예요.</p><ul><li>C=1, S=0: 아래 앞단만 0 → Q′=1, Q=0 (Reset).</li><li>C=1, S=1: 위 앞단만 0 → Q=1, Q′=0 (Set).</li><li>C=0: 앞단 출력이 모두 1 → 유지.</li></ul><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>S</th><th>C</th><th>Q</th><th>Q′</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>X</td><td>0</td><td>Q(t−1)</td><td>Q′(t−1)</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>S=0, C=1 → Q=0, Q′=1; S=1, C=1 → Q=1, Q′=0; C=0 → Q(t−1), Q′(t−1) 유지</p><p><strong>검산:</strong> C=1에서 Q가 항상 S와 같고 Q′은 그 반대예요. S와 R 자리 값이 늘 반대라 금지 상태가 없어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>입력 이름이 S라서 SR 래치 네 행 표를 쓰면 안 돼요. 기출_단답형 답안의 둘째 행 “0 1 1”은 첫 행과 입력이 같아 오기로 보이고, 회로 계산으로는 S=1일 때 Q=1이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>NOT이 어느 선에 붙었는지 찾아요.</li><li>C=1에서 S=0, S=1 두 경우를 따라가요.</li><li>C=0 유지 행을 채워요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “NOT 때문에 아래 앞단 NAND에는 항상 S의 반대가 들어가요.”라고 회로부터 읽어요.</p><p><strong>판단:</strong> NOT 때문에 S와 R 자리가 늘 반대라서 C=1이면 Q=S예요.</p><p><strong>검산:</strong> C=1에서 Q가 항상 S와 같고 Q′은 그 반대예요. S와 R 자리 값이 늘 반대라 금지 상태가 없어요.</p></div></article><article class="topic" id="q-dff-design"><h3>문제 8 · D F/F 진리표를 만족하는 회로 설계</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>D F/F의 Truth table을 만족하는 회로를 설계하시오.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>D</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>x</td><td>0</td><td>Q(t-1)</td></tr></tbody></table></div></div><h4>주어진 조건</h4><p>표는 원문 그대로이고 이미 채워져 있어요. C는 제어 입력이에요. 원문은 F/F라고 부르지만 표에는 C가 1인 동안의 동작이 적혀 있어요.</p><h4>구할 것</h4><p>이 표를 만족하는 게이트 회로를 그리세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>C=1이면 Q=D, C=0이면 유지인 표를 보고 그 동작을 하는 게이트 회로를 만드는 설계 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Enable SR 래치에서 S=D, R=D′으로 두면 돼요.”라고 설계 방향을 먼저 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-d-latch">실험 2-1: D 래치는 부정 상태를 막아요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>Enable SR 래치는 C=0이면 유지하고 C=1이면 S=1→Q=1, R=1→Q=0이에요. S에 D, R에 D′을 넣으면 C=1에서 Q=D가 되고, S=R=1이 생길 수 없어요. NOT 1개(74HC04)로 D′을 만들고 NAND 4개(74HC00)로 앞단과 교차 래치를 만들어요.</p><figure class="figure"><img src="자료/figures/solutions/q-dff-design-solution-01.svg" alt="D와 D′이 C와 함께 앞단 NAND 두 개로 들어가고 교차 NAND 두 개가 Q와 Q′을 내는 D 래치"></figure><p>표가 C=1인 “동안” Q=D인 레벨 동작이라서, 문제는 F/F라고 불러도 이 D 래치가 표를 만족해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>D와 D′(NOT)을 S·R 자리에 넣은 Enable SR 래치(NOT 1개 + NAND 4개)예요.</p><p><strong>검산:</strong> C=1, D=0: 아래 앞단 (1·1)′=0 → Q′=1, Q=0. C=1, D=1: 위 앞단 0 → Q=1. C=0: 앞단 모두 1 → 유지. 세 행 모두 표와 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>NOT 없이 D를 두 NAND에 그대로 넣으면 D=1, C=1에서 S=R=1 금지 상태가 돼요. 엣지형 D F/F로 답해도 다른 유효한 설계일 수 있어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>표에서 C=1이면 Q=D, C=0이면 유지라고 읽어요.</li><li>S=D, R=D′으로 Enable SR 래치를 그려요.</li><li>세 행을 회로로 계산해 확인해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “Enable SR 래치에서 S=D, R=D′으로 두면 돼요.”라고 설계 방향을 먼저 써요.</p><p><strong>판단:</strong> S=D, R=D′으로 두면 C=1에서 Q=D이고 금지 상태가 없어요.</p><p><strong>검산:</strong> C=1, D=0: 아래 앞단 (1·1)′=0 → Q′=1, Q=0. C=1, D=1: 위 앞단 0 → Q=1. C=0: 앞단 모두 1 → 유지. 세 행 모두 표와 같아요.</p></div></article><article class="topic" id="q-jkff-short"><h3>문제 9 · 회로가 주어진 J-K F/F 진리표</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>J-K F/F의 Truth table을 완성하시오.</p><h4>주어진 조건</h4><p>회로는 아래 그림과 같아요. J·C와 Q′을 받는 3입력 NAND, K·C와 Q를 받는 3입력 NAND(74HC10)가 서로 되먹임된 NAND 두 개(74HC00)로 가요. Toggle 행은 C를 짧게 1로 하는 이상적인 경우로 읽어요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p><h4>구할 것</h4><p>표의 Q(t)를 채우세요.</p><div class="table-wrap work-table"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>J</th><th>K</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr><tr><td>X</td><td>X</td><td>0</td><td></td></tr></tbody></table></div></div><figure class="figure"><img src="자료/figures/questions/q-jkff-short-given-01.png" alt="회로가 주어진 J-K F/F 진리표 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>3입력 NAND 두 개와 교차 NAND 두 개로 된 JK 회로를 읽고 J·K·C마다 Q(t)를 채우는 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“J 쪽 NAND에는 Q′, K 쪽 NAND에는 Q가 되먹여져요.”라고 되먹임 선부터 확인해요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-jk-latch">JK 래치는 1, 1을 뒤집기로 바꿔요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><ul><li>C=0 또는 J=K=0: 앞단 NAND에 0이 있어 출력이 모두 1 → 유지.</li><li>J=0, K=1: Q=1이면 K 쪽이 열려 Q=0, Q=0이면 그대로 0 → Reset.</li><li>J=1, K=0: Q=0이면 J 쪽이 열려 Q=1, Q=1이면 그대로 1 → Set.</li><li>J=K=1: Q=0이면 J 쪽만, Q=1이면 K 쪽만 열려 이전 값의 반대 → Toggle.</li></ul><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>J</th><th>K</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>Q(t−1)</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0 : Reset</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1 : Set</td></tr><tr><td>1</td><td>1</td><td>1</td><td>Q(t−1)′ : Toggle</td></tr><tr><td>X</td><td>X</td><td>0</td><td>Q(t−1)</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>00→Q(t−1), 01→0(Reset), 10→1(Set), 11→Q(t−1)′(Toggle), C=0→Q(t−1)</p><p><strong>검산:</strong> J=1, K=0에서 Q=1이었다면 J 쪽 NAND는 Q′=0 때문에 1, K 쪽은 K=0 때문에 1이라 Q=1이 유지돼 Set 결과와 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>이 회로는 C가 1인 동안 동작하는 래치예요. J=K=1에서 C를 오래 1로 두면 Q가 계속 뒤집혀요(race-around). 표의 Toggle은 C를 Q가 한 번 뒤집힐 만큼은 길고 되먹임이 다시 돌아오기 전에 끝날 만큼 짧게 1로 하는 이상적인 조건의 결과예요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>되먹임 선(J 쪽 Q′, K 쪽 Q)을 표시해요.</li><li>J·K 네 조합을 Q=0, Q=1 두 경우로 따라가요.</li><li>C=0 유지 행을 채워요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “J 쪽 NAND에는 Q′, K 쪽 NAND에는 Q가 되먹여져요.”라고 되먹임 선부터 확인해요.</p><p><strong>판단:</strong> 지금 Q에 따라 한쪽 앞단만 열려서 11은 Toggle이 돼요.</p><p><strong>검산:</strong> J=1, K=0에서 Q=1이었다면 J 쪽 NAND는 Q′=0 때문에 1, K 쪽은 K=0 때문에 1이라 Q=1이 유지돼 Set 결과와 같아요.</p></div></article><article class="topic" id="q-jkff-design"><h3>문제 10 · J-K F/F 진리표를 만족하는 회로 설계</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>J-K F/F의 Truth table을 만족하는 회로를 설계하시오.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>J</th><th>K</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>Q(t-1)</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0 : Reset</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1 : Set</td></tr><tr><td>1</td><td>1</td><td>1</td><td>Q(t-1)′ : Toggle</td></tr><tr><td>x</td><td>x</td><td>0</td><td>Q(t-1)</td></tr></tbody></table></div></div><h4>주어진 조건</h4><p>표는 원문 그대로이고 이미 채워져 있어요. 원문은 F/F라고 부르지만 표에는 C가 1인 동안의 동작이 적혀 있어요. Toggle 행은 C를 짧게 1로 하는 이상적인 경우로 읽어요.</p><h4>구할 것</h4><p>이 표를 만족하는 게이트 회로를 그리세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>JK 진리표(11이 Toggle)를 만족하는 게이트 회로를 설계하는 문제예요. SR 래치에서 출발해 11 행만 바꾸면 돼요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“J=S, K=R로 두고 J 쪽에 Q′, K 쪽에 Q를 더 넣어요.”라고 설계 방향을 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-jk-latch">JK 래치는 1, 1을 뒤집기로 바꿔요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>Enable SR 래치의 앞단 NAND를 3입력으로 바꿔 J 쪽은 J·C·Q′, K 쪽은 K·C·Q를 받게 해요. 지금 Q가 0이면 J 쪽만, 1이면 K 쪽만 열려서 J=K=1이 Toggle이 돼요. 다른 행은 SR 래치와 같은 결과예요. 3입력 NAND 2개(74HC10)와 2입력 NAND 2개(74HC00)로 만들어요.</p><figure class="figure"><img src="자료/figures/solutions/q-jkff-design-solution-01.svg" alt="J, C, Q′이 첫 3입력 NAND, K, C, Q가 둘째 3입력 NAND로 들어가는 JK 래치"></figure><div class="equation-card" role="group" aria-label="수식"><p>$$Q(t)=J\,\overline{Q(t-1)}+\overline{K}\,Q(t-1)$$</p></div><p>C=1일 때의 식이에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>J·C·Q′, K·C·Q를 받는 3입력 NAND 두 개와 교차 NAND 두 개로 된 JK 래치예요.</p><p><strong>검산:</strong> 네 J·K 조합과 Q=0, 1 두 경우를 모두 계산하면 표와 같아요. 예: J=K=1, Q=1 → K 쪽 (1·1·1)′=0 → Q=0.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>Q와 Q′의 되먹임을 바꾸어 연결하면 11 행이 Toggle이 되지 않아요. C=1이 길면 race-around가 생기므로, 정확히 한 번 뒤집으려면 하강 엣지 JK F/F(74HC76)를 쓰는 답도 유효해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>SR 래치를 먼저 그려요.</li><li>앞단 NAND를 3입력으로 바꾸고 J 쪽 Q′, K 쪽 Q를 연결해요.</li><li>11 행을 Q=0, 1로 계산해 Toggle을 확인해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “J=S, K=R로 두고 J 쪽에 Q′, K 쪽에 Q를 더 넣어요.”라고 설계 방향을 써요.</p><p><strong>판단:</strong> 앞단에 Q′·Q를 되먹이면 지금 상태의 반대쪽만 열려 Toggle이 돼요.</p><p><strong>검산:</strong> 네 J·K 조합과 Q=0, 1 두 경우를 모두 계산하면 표와 같아요. 예: J=K=1, Q=1 → K 쪽 (1·1·1)′=0 → Q=0.</p></div></article><article class="topic" id="q-tff"><h3>문제 11 · J-K F/F로 T F/F 만들기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>J-K F/F을 이용해서 T F/F(toggle)을 만드는 방법을 설명하시오.</p><h4>구할 것</h4><p>연결 방법과 T=0, T=1일 때의 동작을 설명하세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>JK 플립플롭의 두 입력을 어떻게 연결하면 T(Toggle) 플립플롭이 되는지 설명하는 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“J와 K를 한 선으로 묶어 입력 T로 써요.”라고 연결부터 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-74hc76">실험 3-2: 74HC76 JK 플립플롭</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>J와 K가 항상 같으면 JK 표에서 00(유지)과 11(Toggle) 두 행만 남아요. 그래서 T=0이면 클록 엣지에서도 Q가 그대로, T=1이면 엣지마다 Q가 반전돼요.</p><figure class="figure"><img src="자료/figures/tff-from-jk.svg" alt="T 입력이 J와 K에 함께 연결되고 CLK가 원이 붙은 클록 단자에 연결된 J-K 플립플롭"></figure><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>T</th><th>J</th><th>K</th><th>클록 엣지 후 Q</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>Q(t−1) 유지</td></tr><tr><td>1</td><td>1</td><td>1</td><td>Q(t−1)′ Toggle</td></tr></tbody></table></div></div><div class="equation-card" role="group" aria-label="수식"><p>$$Q(t)=T\oplus Q(t-1)$$</p></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>J와 K를 묶어 T로 쓰면 T=0일 때 유지, T=1일 때 클록 엣지마다 Q가 반전돼요.</p><p><strong>검산:</strong> Q=0에서 T=1로 두고 74HC76의 클록을 세 번 내리면 Q가 1→0→1로 바뀌어요. T⊕Q 식에 넣어도 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>“J=K=1은 인식하지 못한다”라고 쓰면 틀려요. 금지 상태는 SR의 11이고, JK의 11은 정상 입력인 Toggle이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>J와 K를 묶는 연결을 써요.</li><li>T=0, T=1의 동작을 표로 써요.</li><li>클록 엣지를 몇 번 주며 Q를 따라가 확인해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “J와 K를 한 선으로 묶어 입력 T로 써요.”라고 연결부터 써요.</p><p><strong>판단:</strong> J=K로 묶으면 유지와 Toggle만 남아요.</p><p><strong>검산:</strong> Q=0에서 T=1로 두고 74HC76의 클록을 세 번 내리면 Q가 1→0→1로 바뀌어요. T⊕Q 식에 넣어도 같아요.</p></div></article><article class="topic" id="q-74hc76"><h3>문제 12 · 74HC76의 CLR·PR 핀 기능</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>74HC76은 J-K F/F이다. CLR 핀과 PR핀의 기능에 대해 설명하시오.</p><h4>구할 것</h4><p>CLR와 PR가 어떤 값일 때 Q가 어떻게 되는지, 클록과의 관계를 함께 설명하세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>74HC76의 PR·CLR 핀이 어떤 값일 때 무엇을 하는지, 클록과의 관계까지 설명하는 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“PR은 Preset, CLR은 Clear이고 둘 다 0일 때 동작하는 Active Low 입력이에요.”라고 시작해요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-74hc76">실험 3-2: 74HC76 JK 플립플롭</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><ul><li>PR(교안의 SET)=0: 클록·J·K와 상관없이 즉시 Q=1(Q′=0).</li><li>CLR(교안의 RESET)=0: 클록·J·K와 상관없이 즉시 Q=0(Q′=1).</li><li>클록보다 우선하는 비동기 입력이라 초기 상태를 맞출 때 써요.</li><li>J·K로 동작시킬 때는 PR·CLR을 모두 1(HIGH)로 두고, 둘을 동시에 0으로 넣지 않아요.</li></ul><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>PR</th><th>CLR</th><th>Q</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>1 (Preset)</td></tr><tr><td>1</td><td>0</td><td>0 (Clear)</td></tr><tr><td>1</td><td>1</td><td>클록·J·K에 따라 동작</td></tr><tr><td>0</td><td>0</td><td>사용하지 않음</td></tr></tbody></table></div></div><figure class="figure"><img src="자료/figures/hc76-pinout.svg" alt="74HC76 16핀 배치. 2번 1PR, 3번 1CLR, 5번 VCC, 13번 GND"></figure></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>PR은 0일 때 Q를 1로, CLR은 0일 때 Q를 0으로 만드는 Active Low 비동기 입력이에요. 클록과 상관없이 우선 적용되어 초기화에 쓰이고, 평소 J·K 동작 때는 둘 다 HIGH로 둬요.</p><p><strong>검산:</strong> 교안 p11 표(Set=0, Reset=1 → 1 / Set=1, Reset=0 → 0)와 저장소의 74HC76 데이터시트 그림 표(Set=L → Q=H)가 같은 방향인지 맞춰 봐요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>자료마다 제공 답안이 달라요. 종합본은 PR을 0, CLR을 1로 만든다고 반대로 적었고, 기출_단답형은 둘 다 0으로 만든다고 적었어요. 교안과 데이터시트 기준으로 PR→1, CLR→0이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>PR·CLR의 약자를 풀어 써요.</li><li>0일 때 Q가 어떻게 되는지 각각 써요.</li><li>클록보다 우선하고 평소 HIGH로 둔다는 점을 덧붙여요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “PR은 Preset, CLR은 Clear이고 둘 다 0일 때 동작하는 Active Low 입력이에요.”라고 시작해요.</p><p><strong>판단:</strong> PR=0이면 Q=1, CLR=0이면 Q=0이고 클록보다 먼저 적용돼요.</p><p><strong>검산:</strong> 교안 p11 표(Set=0, Reset=1 → 1 / Set=1, Reset=0 → 0)와 저장소의 74HC76 데이터시트 그림 표(Set=L → Q=H)가 같은 방향인지 맞춰 봐요.</p></div></article><article class="topic" id="q-74hc574"><h3>문제 13 · 74HC574에서 입력이 반영되는 시점</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>74HC574는 D F/F이다. 어느 시점에서 입력이 출력에 반영되는지 설명하시오.</p><h4>구할 것</h4><p>입력 D가 출력 Q에 반영되는 순간을 쓰세요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>74HC574 D 플립플롭에서 입력 D가 출력 Q에 반영되는 순간을 묻는 문제예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“74HC574는 상승 엣지에서 동작하는 D 플립플롭이에요.”라고 소자 종류부터 써요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-edge">래치와 플립플롭: 레벨과 엣지</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>플립플롭은 클록이 바뀌는 순간에만 입력을 받아들여요. 74HC574는 클록이 Low에서 High로 오르는 순간(Rising Edge)의 D를 저장해 Q로 내보내고(출력 enable OE′가 Low일 때 출력 핀에 나타나요), 클록이 High나 Low로 머무는 동안에는 D가 바뀌어도 Q가 그대로예요. 교안의 74HC74(CLK ↑일 때만 Q=D, CLK=0이면 유지)와 같은 원리예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>클록이 Low에서 High로 상승하는 순간(Rising Edge)에 입력 D가 출력에 반영돼요.</p><p><strong>검산:</strong> 클록이 High로 머무는 동안 D를 바꿔도 Q가 바뀌지 않고, 다음 상승 엣지에서야 새 D가 나타나는지로 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>제공 답안은 “한 clock 지속기간 동안”이라는 레벨 표현과 “low에서 high로 상승할 때”를 함께 썼어요. 앞부분은 래치 설명이에요. 엣지 순간만 쓰는 게 맞아요. 이 저장소에 74HC574 데이터시트는 없어서 일반적인 사양 기준이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>소자 종류(상승 엣지 D F/F)를 써요.</li><li>반영되는 순간을 Low→High로 써요.</li><li>엣지 사이에는 유지된다는 점을 덧붙여요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “74HC574는 상승 엣지에서 동작하는 D 플립플롭이에요.”라고 소자 종류부터 써요.</p><p><strong>판단:</strong> 플립플롭이므로 클록 상승 엣지 순간에만 D가 반영돼요.</p><p><strong>검산:</strong> 클록이 High로 머무는 동안 D를 바꿔도 Q가 바뀌지 않고, 다음 상승 엣지에서야 새 D가 나타나는지로 확인해요.</p></div></article><article class="topic" id="q-p-76-trace"><h3>문제 14 · 74HC76 하강 엣지 따라가기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>새 연습: 74HC76 한 개의 플립플롭에 아래 순서로 입력을 넣었어요. 각 단계가 끝난 뒤의 Q를 구하세요.</p><h4>주어진 조건</h4><p>↓는 클록이 1에서 0으로 떨어지는 순간, ↑는 0에서 1로 오르는 순간이에요. “변화 없음”은 그 단계에서 클록 엣지가 없다는 뜻이에요. ↓가 이어지는 단계 사이에는 클록이 다시 1로 오르는 ↑가 있지만, 74HC76은 ↑에 반응하지 않아 표에서 생략했어요. 처음 Q는 정해져 있지 않아요.</p><h4>구할 것</h4><p>표의 Q를 채우세요.</p><div class="table-wrap work-table"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>단계</th><th>PR</th><th>CLR</th><th>CLK</th><th>J</th><th>K</th><th>Q</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>1</td><td>1 (변화 없음)</td><td>0</td><td>0</td><td></td></tr><tr><td>2</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>0</td><td></td></tr><tr><td>3</td><td>1</td><td>1</td><td>↑</td><td>0</td><td>1</td><td></td></tr><tr><td>4</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>1</td><td></td></tr><tr><td>5</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td></td></tr><tr><td>6</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td></td></tr><tr><td>7</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>0</td><td></td></tr><tr><td>8</td><td>1</td><td>0</td><td>0 (변화 없음)</td><td>1</td><td>1</td><td></td></tr></tbody></table></div></div></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>74HC76 하나에 PR·CLR·클록·J·K를 단계별로 넣고, 매 단계 뒤의 Q를 따라가는 새 연습이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“1단계는 PR=0이라 클록과 상관없이 Q=1이에요.”라고 첫 행을 채워요.</p><p>필요한 개념: <a href="실험06_실험설명.html#t-74hc76">실험 3-2: 74HC76 JK 플립플롭</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span><p>매 단계 순서는 같아요. ① PR·CLR 중 0이 있으면 그것을 바로 적용해요. ② 둘 다 1이면 클록이 ↓인지 봐요. ③ ↓일 때만 J·K 표를 적용해요.</p><ul><li>1단계: PR=0 → Q=1(처음 Q는 몰라도 여기서 정해져요).</li><li>2단계: ↓, J=K=0 → 유지 1.</li><li>3단계: ↑ → 74HC76은 반응하지 않아 1.</li><li>4단계: ↓, J=0, K=1 → Reset 0.</li><li>5단계: ↓, J=K=1 → Toggle 1.</li><li>6단계: ↓, J=K=1 → Toggle 0.</li><li>7단계: ↓, J=1, K=0 → Set 1.</li><li>8단계: CLR=0 → 즉시 0(J=K=1이어도 무관).</li></ul><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table><thead><tr><th>단계</th><th>PR</th><th>CLR</th><th>CLK</th><th>J</th><th>K</th><th>Q</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>1</td><td>1 (변화 없음)</td><td>0</td><td>0</td><td>1</td></tr><tr><td>2</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>0</td><td>1</td></tr><tr><td>3</td><td>1</td><td>1</td><td>↑</td><td>0</td><td>1</td><td>1</td></tr><tr><td>4</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>1</td><td>0</td></tr><tr><td>5</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td>1</td></tr><tr><td>6</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td>0</td></tr><tr><td>7</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>0</td><td>1</td></tr><tr><td>8</td><td>1</td><td>0</td><td>0 (변화 없음)</td><td>1</td><td>1</td><td>0</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span><p>Q = 1, 1, 1, 0, 1, 0, 1, 0 (단계 1~8)</p><p><strong>검산:</strong> 하강 엣지는 2·4·5·6·7단계의 다섯 번뿐이에요. Q가 바뀐 곳은 1(Preset)·4·5·6·7·8(Clear)이고, 3단계(↑)는 바뀌지 않았는지 세어 봐요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span><p>3단계의 상승 엣지에서 K=1을 적용하거나, 8단계에서 J=K=1을 보고 Toggle하면 틀려요. 74HC76은 하강 엣지에서만, PR·CLR은 클록보다 먼저예요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol><li>각 단계에서 PR·CLR을 먼저 확인해요.</li><li>클록이 ↓인 단계만 J·K를 적용해요.</li><li>바뀐 단계 수와 하강 엣지 수를 세어 확인해요.</li></ol></div><div class="sum" hidden><p><strong>시작:</strong> “1단계는 PR=0이라 클록과 상관없이 Q=1이에요.”라고 첫 행을 채워요.</p><p><strong>판단:</strong> PR·CLR이 먼저, 그다음 하강 엣지에서만 J·K를 적용해요.</p><p><strong>검산:</strong> 하강 엣지는 2·4·5·6·7단계의 다섯 번뿐이에요. Q가 바뀐 곳은 1(Preset)·4·5·6·7·8(Clear)이고, 3단계(↑)는 바뀌지 않았는지 세어 봐요.</p></div></article></section>
+  </main>
+  <footer></footer>
+    </div>
+    <aside class="panel panel-right" id="panel-right" aria-labelledby="panel-right-title">
+      <div class="panel-resize" data-side="right" role="separator" aria-orientation="vertical" aria-controls="panel-right" aria-label="오른쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-right-title">페이지 요약</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <p class="panel-sub" id="sum-for">전체 흐름</p>
+        <p class="panel-empty" id="sum-empty">페이지를 넘기면 그 페이지의 핵심 식과 용어가 여기에 나옵니다.</p>
+        <div class="sums"></div>
+      </div>
+    </aside>
+  </div>
+  <div class="scrim" id="panel-scrim" aria-hidden="true"></div>
+  <nav class="pager" aria-label="화면 이동">
+    <div class="pager-inner">
+      <button class="btn btn-ghost" id="pager-prev" type="button">이전</button>
+      <span class="pager-count" id="pager-count"></span>
+      <button class="btn btn-primary" id="pager-next" type="button">시작하기</button>
+    </div>
+  </nav>
+  <p class="sr-only" id="pager-status" aria-live="polite"></p>
+<script src="자료/assets/widgets.js"></script>
+  <script id="theme-ui">
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const sysDark = matchMedia('(prefers-color-scheme: dark)');
+      const KEY = 'od-theme';
+      const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : sysDark.matches;
+      function label() {
+        const next = isDark() ? '라이트 모드로 전환' : '다크 모드로 전환';
+        btn.setAttribute('aria-label', next);
+        btn.title = next;
+      }
+      btn.addEventListener('click', () => {
+        const t = isDark() ? 'light' : 'dark';
+        // 시스템 설정과 같아지면 저장을 지워 다시 시스템을 따른다
+        if ((t === 'dark') === sysDark.matches) { delete root.dataset.theme; try { localStorage.removeItem(KEY); } catch (e) {} }
+        else { root.dataset.theme = t; try { localStorage.setItem(KEY, t); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+        label();
+      });
+      sysDark.addEventListener('change', label);
+      window.addEventListener('storage', (e) => {
+        if (e.key !== KEY) return;
+        if (e.newValue === 'light' || e.newValue === 'dark') root.dataset.theme = e.newValue; else delete root.dataset.theme;
+        label();
+      });
+      label();
+    })();
+  </script>
+  <script id="panels-ui">
+    (function () {
+      const body = document.body;
+      const layout = document.querySelector('.layout');
+      const kind = body.dataset.panels;
+      const panels = { left: document.getElementById('panel-left'), right: document.getElementById('panel-right') };
+      const toggles = { left: document.getElementById('toggle-left'), right: document.getElementById('toggle-right') };
+      const scrim = document.getElementById('panel-scrim');
+      const blockers = [document.querySelector('.topbar'), document.querySelector('.content'), document.querySelector('.pager')];
+      const wideMq = matchMedia('(min-width: 1024px)');
+      const roomyMq = matchMedia('(min-width: 1280px)');
+      const store = {
+        get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      // 푼 기록은 탭(세션) 단위로만 유지: 뒤로가기·새로고침엔 남고, 창을 닫고 다시 열면 초기화
+      const tabStore = {
+        get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      const PREF = 'od-panels:' + kind;
+      // 팩마다 문제·토픽 id가 p1, s1-…로 겹치므로 진행 기록은 기간별로 나눈다
+      const RANGE = body.dataset.range || '';
+      const ICON_TODO = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
+      const ICON_DONE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>';
+      let overlay = null;
+
+      // ---------- 열고 닫기 ----------
+      function docked() {
+        const pref = store.get(PREF, {});
+        return { left: pref.left ?? true, right: pref.right ?? roomyMq.matches };
+      }
+      function sync() {
+        const wide = wideMq.matches;
+        const d = docked();
+        ['left', 'right'].forEach((side) => {
+          const open = wide ? d[side] : overlay === side;
+          const p = panels[side];
+          layout.dataset[side] = open ? 'open' : 'closed';
+          p.classList.toggle('is-open', !wide && open);
+          p.inert = !open;
+          if (!wide && open) { p.setAttribute('role', 'dialog'); p.setAttribute('aria-modal', 'true'); }
+          else { p.removeAttribute('role'); p.removeAttribute('aria-modal'); }
+          toggles[side].setAttribute('aria-expanded', String(open));
+        });
+        const drawer = !wide && overlay !== null;
+        scrim.classList.toggle('is-on', drawer);
+        body.classList.toggle('drawer-open', drawer);
+        blockers.forEach((el) => { el.inert = drawer; });
+      }
+      function openDrawer(side) {
+        overlay = side;
+        sync();
+        requestAnimationFrame(() => panels[side].querySelector('[data-panel-close]').focus());
+      }
+      function closeDrawer(refocus) {
+        if (overlay === null) return;
+        const side = overlay;
+        overlay = null;
+        sync();
+        if (refocus) toggles[side].focus();
+      }
+      function toggle(side) {
+        if (wideMq.matches) {
+          const d = docked();
+          d[side] = !d[side];
+          store.set(PREF, d);
+          sync();
+          if (d[side]) { const p = panels[side]; p.classList.remove('is-shown'); void p.offsetWidth; p.classList.add('is-shown'); }
+        } else if (overlay === side) closeDrawer(true);
+        else openDrawer(side);
+      }
+
+      toggles.left.addEventListener('click', () => toggle('left'));
+      toggles.right.addEventListener('click', () => toggle('right'));
+      scrim.addEventListener('click', () => closeDrawer(true));
+      document.querySelectorAll('[data-panel-close]').forEach((b) => b.addEventListener('click', () => closeDrawer(true)));
+      panels.left.addEventListener('click', (e) => { if (e.target.closest('.toc a')) closeDrawer(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay !== null) { e.preventDefault(); closeDrawer(true); } });
+
+      // ---------- 패널 너비: 기본은 화면 폭에 맞춰 자동, 경계를 끌면 직접 조절 ----------
+      const WIDTH = { left: { min: 220, max: 480, prop: '--panel-l-user' }, right: { min: 280, max: 720, prop: '--panel-r-user' } };
+      function applyWidths() {
+        const w = store.get(PREF + ':w', {});
+        ['left', 'right'].forEach((side) => {
+          if (w[side]) layout.style.setProperty(WIDTH[side].prop, w[side] + 'px');
+          else layout.style.removeProperty(WIDTH[side].prop);
+        });
+      }
+      function maxFor(side) {
+        const other = side === 'left' ? panels.right : panels.left;
+        const otherW = layout.dataset[side === 'left' ? 'right' : 'left'] === 'open' ? other.getBoundingClientRect().width : 0;
+        return Math.max(WIDTH[side].min, Math.min(WIDTH[side].max, window.innerWidth - otherW - 400));
+      }
+      function setWidth(side, px, save) {
+        const v = Math.round(Math.min(Math.max(px, WIDTH[side].min), maxFor(side)));
+        layout.style.setProperty(WIDTH[side].prop, v + 'px');
+        panels[side].querySelector('.panel-resize').setAttribute('aria-valuenow', String(v));
+        if (save) { const w = store.get(PREF + ':w', {}); w[side] = v; store.set(PREF + ':w', w); }
+      }
+      function resetWidth(side) {
+        const w = store.get(PREF + ':w', {});
+        delete w[side];
+        store.set(PREF + ':w', w);
+        layout.style.removeProperty(WIDTH[side].prop);
+      }
+      document.querySelectorAll('.panel-resize').forEach((handle) => {
+        const side = handle.dataset.side;
+        const dir = side === 'left' ? 1 : -1;
+        handle.setAttribute('aria-valuemin', String(WIDTH[side].min));
+        handle.setAttribute('aria-valuemax', String(WIDTH[side].max));
+        handle.addEventListener('pointerdown', (e) => {
+          if (!wideMq.matches || e.button !== 0) return;
+          e.preventDefault();
+          const startX = e.clientX;
+          const startW = panels[side].getBoundingClientRect().width;
+          handle.setPointerCapture(e.pointerId);
+          body.classList.add('is-resizing');
+          const move = (ev) => setWidth(side, startW + dir * (ev.clientX - startX), false);
+          const up = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            handle.removeEventListener('pointercancel', up);
+            body.classList.remove('is-resizing');
+            setWidth(side, panels[side].getBoundingClientRect().width, true);
+          };
+          handle.addEventListener('pointermove', move);
+          handle.addEventListener('pointerup', up);
+          handle.addEventListener('pointercancel', up);
+        });
+        handle.addEventListener('dblclick', () => resetWidth(side));
+        handle.addEventListener('keydown', (e) => {
+          const step = e.shiftKey ? 64 : 16;
+          const cur = panels[side].getBoundingClientRect().width;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.stopPropagation();
+            setWidth(side, cur + (e.key === 'ArrowRight' ? step : -step) * dir, true);
+          } else if (e.key === 'Home') { e.preventDefault(); resetWidth(side); }
+        });
+      });
+      applyWidths();
+      const onMq = () => { overlay = null; sync(); };
+      wideMq.addEventListener('change', onMq);
+      roomyMq.addEventListener('change', onMq);
+
+      // ---------- 목차의 진행 표시 ----------
+      function markToc(done, total, doneLabel) {
+        panels.left.querySelectorAll('.toc-list a').forEach((a) => {
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
+          let mark = a.querySelector('.toc-mark');
+          if (!mark) {
+            mark = document.createElement('span');
+            mark.className = 'toc-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            const state = document.createElement('span');
+            state.className = 'sr-only toc-state';
+            a.append(mark, state);
+          }
+          const isDone = done.has(id);
+          mark.classList.toggle('is-done', isDone);
+          mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
+          a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
+        });
+      }
+      function revealCurrent() {
+        const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
+        if (link && layout.dataset.left === 'open') link.scrollIntoView({ block: 'nearest' });
+      }
+
+      // ---------- 복습문제: 오른쪽 = 원문 · 힌트 · 풀이 ----------
+      function setupReview() {
+        const KEY = 'od-review-solved:' + RANGE;
+        const cards = Array.from(document.querySelectorAll('main article.card'));
+        const aids = panels.right.querySelector('.aids');
+        const sub = document.getElementById('aid-for');
+        const empty = panels.right.querySelector('.panel-empty');
+        const btn = document.getElementById('solved-btn');
+        const groups = {};
+        const solved = new Set(tabStore.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
+        cards.forEach((card) => {
+          const g = document.createElement('div');
+          g.className = 'aid';
+          g.hidden = true;
+          card.querySelectorAll(':scope > details').forEach((d) => g.appendChild(d));
+          aids.appendChild(g);
+          groups[card.id] = g;
+        });
+        let curId = null;
+        function paintBtn() {
+          const on = solved.has(curId);
+          btn.setAttribute('aria-pressed', String(on));
+          btn.innerHTML = (on ? ICON_DONE : ICON_TODO) + '<span>' + (on ? '푼 문제 · 표시 해제' : '푼 문제로 표시') + '</span>';
+        }
+        btn.addEventListener('click', () => {
+          if (!curId) return;
+          if (solved.has(curId)) solved.delete(curId); else solved.add(curId);
+          tabStore.set(KEY, Array.from(solved));
+          paintBtn();
+          markToc(solved, cards.length, '푼 문제');
+        });
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          curId = s.matches('article.card') ? s.id : null;
+          Object.keys(groups).forEach((id) => { groups[id].hidden = id !== curId; });
+          empty.hidden = Boolean(curId);
+          btn.hidden = !curId;
+          sub.textContent = curId ? ((s.querySelector('h3') || {}).textContent || '').trim() : '';
+          sub.hidden = !curId;
+          if (curId) paintBtn();
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(solved, cards.length, '푼 문제');
+          revealCurrent();
+        });
+      }
+
+      // ---------- 정리노트: 오른쪽 = 페이지(토픽)별 요약 ----------
+      function setupNote() {
+        const KEY = 'od-note-read:' + RANGE;
+        const topics = Array.from(document.querySelectorAll('main article.topic'));
+        const read = new Set(store.get(KEY, []).filter((id) => topics.some((t) => t.id === id)));
+        // 조각의 <div class="sum" hidden> 을 오른쪽 패널로 옮긴다. 없으면 안내 문구만 보인다.
+        const box = panels.right.querySelector('.sums');
+        const sums = {};
+        topics.forEach((t) => {
+          const el = t.querySelector(':scope > .sum');
+          if (!el) return;
+          el.hidden = true;
+          box.appendChild(el);
+          sums[t.id] = el;
+        });
+        const sub = document.getElementById('sum-for');
+        const empty = document.getElementById('sum-empty');
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          const key = s.matches('article.topic') ? s.id : 'intro';
+          Object.keys(sums).forEach((id) => { sums[id].hidden = id !== key; });
+          empty.hidden = Boolean(sums[key]);
+          sub.textContent = key === 'intro' ? '전체 흐름' : ((s.querySelector('h3') || {}).textContent || '').trim();
+          if (s.matches('article.topic') && !read.has(s.id)) { read.add(s.id); store.set(KEY, Array.from(read)); }
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(read, topics.length, '읽음');
+          revealCurrent();
+        });
+      }
+
+      if (kind === 'review') setupReview();
+      if (kind === 'note') setupNote();
+      sync();
+    })();
+  </script>
+  <script id="pager-ui">
+    (function () {
+      const root = document.documentElement;
+      const main = document.querySelector('main');
+      const hero = main.querySelector('.hero');
+      const screens = [hero].concat(Array.from(main.querySelectorAll(document.body.dataset.screens)));
+      if (screens.length < 2) { root.classList.remove('js'); return; }
+      screens.forEach((s) => s.classList.add('screen'));
+
+      const last = screens.length - 1;
+      const prevBtn = document.getElementById('pager-prev');
+      const nextBtn = document.getElementById('pager-next');
+      const count = document.getElementById('pager-count');
+      const bar = document.getElementById('pager-bar');
+      const status = document.getElementById('pager-status');
+      const toc = document.querySelector('#panel-left .toc');
+      const scroller = document.querySelector('.content');
+      const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
+      let cur = -1;
+
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
+
+      function indexFor(hash) {
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
+        const el = id && document.getElementById(id);
+        if (!el || !main.contains(el)) return { i: 0 };
+        const i = screens.findIndex((s) => s.contains(el) || el.contains(s));
+        return { i: Math.max(i, 0), target: i >= 0 && screens[i].contains(el) && screens[i] !== el ? el : null };
+      }
+
+      function render(i, target) {
+        const dir = cur < 0 ? '' : i > cur ? 'enter-next' : 'enter-prev';
+        if (i !== cur) {
+          if (cur >= 0) screens[cur].classList.remove('is-current', 'enter-next', 'enter-prev');
+          main.querySelectorAll(':scope > section.is-on').forEach((sec) => sec.classList.remove('is-on'));
+          const s = screens[i];
+          const sec = s.closest('section');
+          if (sec) sec.classList.add('is-on');
+          s.classList.add('is-current');
+          if (dir) { s.classList.remove('enter-next', 'enter-prev'); void s.offsetWidth; s.classList.add(dir); }
+          cur = i;
+          document.body.classList.toggle('at-end', i === last);
+          prevBtn.disabled = i === 0;
+          nextBtn.textContent = i === 0 ? '시작하기' : i === last ? '처음으로' : '다음';
+          count.textContent = i === 0 ? '' : i + ' / ' + last;
+          bar.style.transform = 'scaleX(' + (i / last) + ')';
+          status.textContent = i === 0 ? titleOf(s) : i + ' / ' + last + ', ' + titleOf(s);
+          tocLinks.forEach((link, k) => link && link.setAttribute('aria-current', String(k === i)));
+          document.dispatchEvent(new CustomEvent('od:screen', { detail: { index: i, screen: s } }));
+        }
+        if (target) target.scrollIntoView({ block: 'start' });
+        else scroller.scrollTo(0, 0);
+      }
+
+      function go(i) {
+        i = Math.min(Math.max(i, 0), last);
+        if (i === cur) return;
+        const url = i === 0 ? location.pathname + location.search : '#' + screens[i].id;
+        history.pushState(null, '', url);
+        render(i);
+      }
+
+      prevBtn.addEventListener('click', () => go(cur - 1));
+      nextBtn.addEventListener('click', () => go(cur === last ? 0 : cur + 1));
+      const fromUrl = () => { const r = indexFor(location.hash); render(r.i, r.target); };
+      window.addEventListener('hashchange', fromUrl);
+      window.addEventListener('popstate', fromUrl);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || document.body.classList.contains('drawer-open')) return;
+        if (e.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+      });
+
+      // 좌우로 밀어서 넘기기 (가로로 스크롤되는 영역은 제외)
+      let sx = 0, sy = 0, skip = true;
+      main.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY;
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .table-card, .katex-display, .table-wrap, svg, input, details'));
+      }, { passive: true });
+      main.addEventListener('touchend', (e) => {
+        if (skip) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 64 && Math.abs(dx) > 2 * Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      fromUrl();
+    })();
+  </script>
+</body>
+</html>
