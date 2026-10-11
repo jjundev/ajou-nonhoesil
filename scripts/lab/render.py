@@ -936,48 +936,52 @@ def _stage_table_html(spec, section, node_name, led="") -> str:
 
 
 def _led_table_html(spec, section, leds, feed) -> str:
-    """단계 LED 점등 표 — 그 단계까지 급전된 보드 LED 를 보드 순서(①②…)로 열마다.
+    """단계 LED 점등 표 — 그 단계까지 급전된 보드 LED 를 행마다 `켜지는 LED`·`꺼지는 LED` 두 열에
+    보드 순서(①②…)로 나눠 적는다.
 
-    머리 1행은 `LED③ Y2`(태그와 노드가 다르면 `LED② A2 = D0'` — 임시 급전), 2행은
-    `0이면 켜짐 · U4 pin 3` 이다. 셀은 `켜짐`/`꺼짐` 을 굵게, 논리값을 작게 — Negative Logic
-    LED(실험05 C1)는 출력 0 에서 켜져 숫자만 보면 헷갈렸다(2026-10-11 사용자). 값이 안 정해지는
-    칸은 `—`. 확인 칸은 옛 단계 표처럼 `td.box` 다(`.check` 불변식).
+    극성은 이미 적용했다 — Negative Logic LED(실험05 C1)는 출력 0 에서 켜져 논리값만 보면
+    헷갈렸다. 열마다 LED 하나를 두면 LED 열 개(실험05 C1)에서 쪽 폭을 넘어 두 열로 접었다
+    (2026-10-11 사용자). 표 위 `보는 LED:` 줄이 번호·급전 핀·극성을 한 번 알린다 — 임시 급전은
+    `②A2 = D0'` 처럼 노드를 밝힌다. 값이 안 정해지는 LED 는 꺼지는 칸 끝에 `미정` 으로 적는다.
+    확인 칸은 옛 단계 표처럼 `td.box` 다(`.check` 불변식).
     """
     shown = [led for led in leds if led.tag in feed]
     try:
         st = node_calc.stage_nodes_table(section, spec, [feed[led.tag] for led in shown])
     except ValueError as exc:
         return f"<p class='src'>단계 진리표를 계산할 수 없어요: {_esc(exc)}</p>"
-    jumper = _JUMPER.get(st.encoding, "1=+5V · 0=GND")
-    names, subs = [], []
+    names = {led.tag: f"{circled(led.index)}{_esc(led.tag)}" for led in shown}
+    seen = []
     for led, (node, pin) in zip(shown, st.nodes):
-        name = f"LED{circled(led.index)} {_esc(led.tag)}"
-        if node != led.tag:
-            name += f" = {_esc(_plain(node))}"
-        names.append(name)
-        on = "0이면 켜짐" if led.active_low else "1이면 켜짐"
-        subs.append(f"<small>{on} · {_esc(pin)}</small>")
+        name = names[led.tag] + (f" = {_esc(_plain(node))}" if node != led.tag else "")
+        seen.append(f"{name}({_esc(pin)})")
+    polarity = {led.active_low for led in shown}
+    if len(polarity) == 1:
+        tail = " — 모두 0이면 켜짐" if polarity.pop() else " — 모두 1이면 켜짐"
+    else:                         # 섞이면 LED 마다 적는다
+        seen = [f"{s} {'0' if led.active_low else '1'}이면 켜짐" for s, led in zip(seen, shown)]
+        tail = ""
+    legend = f'<p class="led-legend"><b>보는 LED:</b> {" ".join(seen)}{tail}</p>'
+    jumper = _JUMPER.get(st.encoding, "1=+5V · 0=GND")
     if st.inputs:
         head = (f'<tr><th colspan="{len(st.inputs)}">입력 — 점퍼 {_esc(jumper)}</th>'
-                + "".join(f"<th>{n}</th>" for n in names)
-                + '<th rowspan="2">확인</th></tr><tr>'
-                + "".join(f"<th>{_esc(n)}</th>" for n in st.inputs)
-                + "".join(f"<th>{s}</th>" for s in subs) + "</tr>")
+                '<th rowspan="2">켜지는 LED</th><th rowspan="2">꺼지는 LED</th>'
+                '<th rowspan="2">확인</th></tr><tr>'
+                + "".join(f"<th>{_esc(n)}</th>" for n in st.inputs) + "</tr>")
     else:                         # 상수 노드뿐 — 입력 열이 없다
-        head = ("<tr>" + "".join(f"<th>{n}<br>{s}</th>" for n, s in zip(names, subs))
-                + "<th>확인</th></tr>")
+        head = "<tr><th>켜지는 LED</th><th>꺼지는 LED</th><th>확인</th></tr>"
     body = []
     for cells, bits in st.rows:
-        row = "".join(f"<td>{_esc(c)}</td>" for c in cells)
-        for led, bit in zip(shown, bits):
-            if bit is None:
-                row += "<td>—</td>"
-                continue
-            state, word = ("on", "켜짐") if lit(bit, led.active_low) else ("off", "꺼짐")
-            row += (f'<td class="led {state}"><b>{word}</b> '
-                    f"<small>{_esc(node_calc.format_bit(bit, st.encoding))}</small></td>")
-        body.append(f'<tr>{row}<td class="box"></td></tr>')
-    return "\n".join(['<table class="stage-table led-table">', "<thead>", head, "</thead>",
+        on = [names[led.tag] for led, bit in zip(shown, bits)
+              if bit is not None and lit(bit, led.active_low)]
+        off = [names[led.tag] for led, bit in zip(shown, bits)
+               if bit is not None and not lit(bit, led.active_low)]
+        unsure = [names[led.tag] for led, bit in zip(shown, bits) if bit is None]
+        off_text = " ".join(off + ([" ".join(unsure) + " 미정"] if unsure else [])) or "없음"
+        body.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
+                    + f'<td class="led on">{" ".join(on) or "없음"}</td>'
+                    + f'<td class="led off">{off_text}</td><td class="box"></td></tr>')
+    return "\n".join([legend, '<table class="stage-table led-table">', "<thead>", head, "</thead>",
                       "<tbody>", *body, "</tbody>", "</table>"])
 
 
