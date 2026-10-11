@@ -89,6 +89,15 @@ def unresolved_feeds(section) -> list:
     return out
 
 
+def watched(leds, feed, section) -> list:
+    """보드 LED 중 지도에 있고 그 노드가 이 회로 `## 노드` 표에 있는 것 — 보드 순서.
+
+    `continues` 회로는 앞 회로 지도를 이어받는데, 그 노드는 이 회로 표·기록표로 계산할 수 없다.
+    """
+    names = {n["name"] for n in section.nodes}
+    return [led for led in leds if feed.get(led.tag) in names]
+
+
 def lit(bit, active_low) -> bool:
     """논리값 → LED 가 켜지나. Negative Logic 이면 0 에서 켜진다."""
     return bit == 0 if active_low else bit == 1

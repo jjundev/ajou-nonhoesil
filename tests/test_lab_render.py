@@ -2266,6 +2266,33 @@ class TestLedTable(unittest.TestCase):
         self.assertIn('class="stage-table"', b)
         self.assertIn("led-table", self._block_in(pages, 0, "단계 3"))
 
+    def test_앞에_급전이_있어도_관측_노드가_LED_에_없으면_옛_표(self):
+        # C2 2단계의 임시 급전(U1 pin 12→LED A2)을 지우면 지도엔 A3 만 남고 D0' 는 어느 LED 에도 없다
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        text = src.replace("**임시로** U1 pin 12→LED A2 급전", "")
+        self.assertNotEqual(text, src)
+        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
+        path = Path(name)
+        try:
+            with open(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            pages = self._pages(path)
+        finally:
+            path.unlink()
+        b = self._block_in(pages, 1, "단계 2")
+        self.assertNotIn("led-table", b)
+        self.assertIn("D0'예상", b)
+
+    def test_이어받은_노드가_이_회로에_없으면_그_LED_는_뺀다(self):
+        from scripts.lab.leds import Led
+        c2 = parse_netlist(self.E5 / "결선도/netlist.md").circuits[1]
+        html = render._led_table_html(self.spec, c2, [Led("Y0", "우 a6", True, 1),
+                                                     Led("A3", "우 a7", False, 2)],
+                                      {"Y0": "Y0", "A3": "A3"})
+        self.assertNotIn("계산할 수 없어요", html)
+        self.assertIn("②A3", html)
+        self.assertNotIn("Y0", html)
+
     def test_HL_표는_셀_논리값을_HL_로_찍는다(self):
         from scripts.lab.leds import Led
         from scripts.lab.spec_parser import LabSpec, SpecTable

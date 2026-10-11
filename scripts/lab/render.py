@@ -17,7 +17,7 @@ from pathlib import Path
 
 from . import md
 from . import nodes as node_calc
-from .leds import board_leds, circled, feeds_by_stage, lit
+from .leds import board_leds, circled, feeds_by_stage, lit, watched
 from .netlist_parser import IC_DECL
 from .notation import normalize_cell
 from .spec_parser import split_indices
@@ -850,8 +850,9 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     걷기 행(`<k>걷기`)에는 `확인 노드` 줄도 단계 진리표도 없다 — 걷기만 하는 장이라 관측할
     출력이 없고, 파서가 `node` 를 `None` 으로 낸다.
 
-    `leds`(보드 LED, v2 사이드카)와 `feed`(이 단계 뒤 누적 급전 지도)가 있고 그 지도에 보드 LED 가
-    하나라도 있으면 노드 열 대신 LED 점등 표를 싣는다 — `last` 여도 싣는다(2026-10-11 사용자).
+    `leds`(보드 LED, v2 사이드카)와 `feed`(이 단계 뒤 누적 급전 지도)에서 이 단계 관측 노드를 보는
+    LED 가 있으면 노드 열 대신 LED 점등 표를 싣는다 — `last` 여도 싣는다(2026-10-11 사용자). 앞
+    단계 LED 만 있고 관측 노드는 프로브로 보는 단계는 옛 표다 — LED 표에 그 노드가 없다.
     """
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
     if png is not None and png.exists():
@@ -867,8 +868,8 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
         tail = f" <small>({_esc(pin)})</small>" if pin else ""
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
     table = ""
-    if (spec is not None and stage.get("node") and feed
-            and any(led.tag in feed for led in leds)):
+    seen_nodes = {feed[led.tag] for led in watched(leds, feed or {}, section)}
+    if spec is not None and stage.get("node") and stage["node"] in seen_nodes:
         table = _led_table_html(spec, section, leds, feed)
     elif spec is not None and stage.get("node") and not last:
         table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]))
@@ -945,7 +946,7 @@ def _led_table_html(spec, section, leds, feed) -> str:
     `②A2 = D0'` 처럼 노드를 밝힌다. 값이 안 정해지는 LED 는 꺼지는 칸 끝에 `미정` 으로 적는다.
     확인 칸은 옛 단계 표처럼 `td.box` 다(`.check` 불변식).
     """
-    shown = [led for led in leds if led.tag in feed]
+    shown = watched(leds, feed, section)
     try:
         st = node_calc.stage_nodes_table(section, spec, [feed[led.tag] for led in shown])
     except ValueError as exc:

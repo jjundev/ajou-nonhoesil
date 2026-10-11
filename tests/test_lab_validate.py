@@ -2728,6 +2728,12 @@ class TestStageLeds(unittest.TestCase):
         self.assertTrue(any("Y33" in x.message for x in f
                             if x.level == "warn" and x.message.startswith("LED 급전")))
 
+    def test_관측_노드가_LED_에_없는_단계는_경고(self):
+        src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
+        f = self._check(src.replace("**임시로** U1 pin 12→LED A2 급전", ""))
+        self.assertTrue(any("단계 2" in x.message and "옛 단계 표" in x.message for x in f
+                            if x.message.startswith("LED 급전")))
+
     def test_급전_표기_없는_관측_단계는_경고(self):
         src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
         f = self._check(src.replace(", U4 pin 1→LED Y0 급전", ""))

@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import config, md, nodes
-from .leds import board_leds, feeds_by_stage, unresolved_feeds
+from .leds import board_leds, feeds_by_stage, unresolved_feeds, watched
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
@@ -1016,10 +1016,11 @@ def check_stage_leds(netlist) -> list:
         for stage, feed in zip(section.stages, feeds):
             if stage.get("walk") or not stage.get("node"):
                 continue
-            if not tags & set(feed):
+            if stage["node"] not in {feed[led.tag] for led in watched(leds, feed, section)}:
                 out.append(Finding("warn", where,
-                    f"LED 급전 표기를 단계 {stage['n']} 까지 못 찾았다 — 이 단계는 LED 점등 표 대신 "
-                    "옛 단계 표로 물러선다. `이 단계에서` 칸에 `U<n> pin <p>→LED <태그> 급전` 을 쓴다"))
+                    f"LED 급전 표기에서 단계 {stage['n']} 의 관측 노드 {stage['node']} 를 보는 LED 를 "
+                    "못 찾았다 — 이 단계는 LED 점등 표 대신 옛 단계 표로 물러선다. 프로브로 보는 "
+                    "단계가 아니면 `이 단계에서` 칸에 `U<n> pin <p>→LED <태그> 급전` 을 쓴다"))
     return out
 
 
