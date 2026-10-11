@@ -382,11 +382,11 @@ class _RuleChecks:
             raise ValueError(f"density_policy 는 'strict' 또는 'legacy' 다: {self.density_policy!r}")
         if self.density_policy == 'strict':
             for s in self.side_leads():
-                if s['count'] > SIDE_LEAD_MAX:
+                if s['count'] > self.side_lead_max:
                     blk = '좌' if s['block'] == 'left' else '우'
                     side_kr = '왼쪽' if s['side'] == 'a' else '오른쪽'
                     bad.append(f"R7 칩 한쪽 밀집: {s['chip']}({blk} {s['pin1_row']}행) {side_kr} "
-                               f"{s['count']}리드 > {SIDE_LEAD_MAX}: {', '.join(s['addrs'])}")
+                               f"{s['count']}리드 > {self.side_lead_max}: {', '.join(s['addrs'])}")
 
         # R8. 같은 블록 두 칩 사이 엇갈림
         if self.density_policy == 'strict':

@@ -13,8 +13,17 @@
 DIP_PINS = {
     '74HC00': 14, '74HC02': 14, '74HC04': 14, '74HC08': 14, '74HC10': 14, '74HC11': 14,
     '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
-    '74HC42': 16, '74HC138': 16, '74HC148': 16,
+    '74HC42': 16, '74HC76': 16, '74HC138': 16, '74HC148': 16,
 }
+# 전원핀이 모서리(VCC = n, GND = n/2)가 아닌 칩 — (VCC 핀, GND 핀). 74HC76 은 교안 p11 이 "GND와 Vcc
+# 위치 유의" 라고 적는 칩이다(실험06, ST M74HC76 Pin description)
+DIP_POWER = {'74HC76': (5, 13)}
+
+
+def dip_power(model, n=None):
+    """칩 이름 → (VCC 핀, GND 핀). 표에 없으면 모서리 핀."""
+    n = n or dip_pins(model)
+    return DIP_POWER.get(model, (n, n // 2))
 
 
 def dip_pins(model, strict=False):

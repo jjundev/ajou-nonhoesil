@@ -43,10 +43,39 @@ class PinGeometry(unittest.TestCase):
 
     def test_칩_모델_표(self):
         self.assertEqual(self.mod.dip_pins('74HC42'), 16)
+        self.assertEqual(self.mod.dip_pins('74HC76'), 16)
+        self.assertEqual(self.mod.dip_power('74HC76'), (5, 13))
+        self.assertEqual(self.mod.dip_power('74HC42'), (16, 8))
+        self.assertEqual(self.mod.dip_power('74HC00'), (14, 7))
         self.assertEqual(self.mod.dip_pins('74HC08'), 14)
         self.assertEqual(self.mod.dip_pins('74HC9999'), 14)       # 그리기는 v1 호환으로 14
         with self.assertRaisesRegex(ValueError, 'DIP_PINS'):
             self.mod.dip_pins('74HC9999', strict=True)
+
+
+class InnerPower(unittest.TestCase):
+    """전원핀이 모서리가 아닌 칩 — 74HC76 VCC 5(a쪽)·GND 13(f쪽). 교안 p11 "GND와 Vcc 위치 유의"
+    (실험06, 2026-10-11)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.bb = _board(cls.mod)
+        cls.bb.draw_chip('74HC76', 10)
+        cls.bb.connect_power(10)
+        cls.L = cls.bb.cols['left']
+
+    def test_pin_5_는_좌_바깥_VCC_pin_13_은_가운데_GND(self):
+        segs = {d: pts for _k, pts, d in self.bb._segments}
+        vcc, gnd = segs['pin 5 -> +5V 레일'], segs['pin 13 -> GND 레일']
+        self.assertEqual(vcc[0], (self.L['d'], self.bb.r_y(14)))
+        self.assertEqual(vcc[-1][0], self.L['vcc'])
+        self.assertEqual(gnd[0], (self.L['g'], self.bb.r_y(13)))
+        self.assertEqual(gnd[-1][0], self.L['mid_gnd'])
+
+    def test_모서리_핀은_비워_둔다(self):
+        self.assertNotIn((self.L['g'], 10), self.bb._leads)     # pin 16 = K, 전원 아님
+        self.assertNotIn((self.L['d'], 17), self.bb._leads)     # pin 8 = 2CLR
 
 
 class DrawDip16(unittest.TestCase):

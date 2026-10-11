@@ -358,8 +358,8 @@ GND 에 꽂혀 있어도 1 을 줄 때 옮길 자리라, 레일로 세면 입력
 `CIRCUITS` 에 회로 ID 추가 ④ `tests/test_breadboard_nets.py` 의 빌더 수 단언(`len(builders)`)
 ⑤ `.claude/skills/breadboard-diagram/주차별.md` 목록.
 
-새 빌더에 `bb.density_policy = 'legacy'` 를 쓰지 않는다 — `tests/test_breadboard_physical.py` 가
-실험 4 이상은 strict 인지 본다. R7 에 걸리면 게이트를 나눈다(§4a), 정책을 끄지 않는다.
+새 빌더에 `bb.density_policy = 'legacy'` 를 쓰지 않는다 — `test_breadboard_physical.py` 가
+실험 4 이상은 strict 인지 본다. R7 은 게이트를 나눠 푼다(§4a). 합 16 초과만 예외(side_lead_max)
 
 | 하고 싶은 것 | 쓸 함수 | 쓰면 안 되는 것 |
 |---|---|---|
