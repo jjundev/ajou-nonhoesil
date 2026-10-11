@@ -506,3 +506,56 @@ class WiringE4(unittest.TestCase):
         i = next(k for k, (n, _f, _s) in enumerate(self.b4.BOARDS) if '1x4DMUX_1단계' in n)
         self.assertIsNone(chain[i].baseline)
         self.assertEqual(chain[i].removed(), [])
+
+class WiringE6(unittest.TestCase):
+    """실험06 — 그림 이름·걷기 주소가 netlist 와 같은지. 정본은 `보고서/실험06/결선도/netlist.md` 다.
+    자리표 행은 `test_breadboard_place.PlaceLayoutTable` 이 `LAYOUT` 과 맞댄다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.b6 = cls.mod.load_board(6)
+        cls.tmp = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def _netlist(self):
+        from scripts.lab import config
+        from scripts.lab.netlist_parser import parse_netlist
+        return parse_netlist(os.path.join(REPO_ROOT, config.experiment_dir(6), '결선도', 'netlist.md'))
+
+    def _chain(self):
+        out, base = [], None
+        for name, fn, stage in self.b6.BOARDS:
+            bb = fn(os.path.join(self.tmp, name), stage=stage, baseline=base)
+            out.append(bb)
+            base = bb.snapshot()
+        return out
+
+    def test_그림_이름이_netlist_의_diagram_과_단계표를_덮는다(self):
+        wanted = set()
+        for c in self._netlist().circuits:
+            if c.diagram:
+                wanted.add(c.diagram)
+            for st in c.stages:
+                wanted.add(st['diagram'])
+        made = {n for n, _f, _s in self.b6.BOARDS} | {n for n, _f in self.b6.FINALS}
+        self.assertEqual(wanted, made)
+
+    def test_걷기_보드마다_뽑는_주소가_netlist와_같다(self):
+        walks = [st for c in self._netlist().circuits for st in c.stages if st['walk']]
+        rendered = {name: bb for bb, (name, _fn, stage) in zip(self._chain(), self.b6.BOARDS)
+                    if stage is None}
+        self.assertEqual(set(rendered), {row['diagram'] for row in walks})
+        for row in walks:
+            with self.subTest(board=row['diagram']):
+                self.assertEqual([r['addr'] for r in rendered[row['diagram']].removals()],
+                                 row['walk_addresses'])
+
+    def test_C2_는_C1_배선을_R_점퍼_말고_전부_회색으로_둔다(self):
+        """C2 는 C1 위에 짓는다(netlist M9) — 1단계 보드의 새 선은 74HC04 전원 둘과 신호 둘뿐이다."""
+        stage1 = self._chain()[1]
+        self.assertEqual([s['desc'] for s in stage1.steps if s['kind'] == 'sig' and s['frm'] != '(빈 자리)'],
+                         ['D 이어 감 (U1 pin 1 -> U2 pin 1)', "D' (U2 pin 2) -> U1 pin 5"])

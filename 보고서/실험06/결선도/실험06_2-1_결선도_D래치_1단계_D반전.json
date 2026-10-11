@@ -1,0 +1,65 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-1) D Latch with Enable — 1단계",
+ "subtitle": "74HC00 NAND 넷 + 74HC04 NOT 하나 · E=1 에서 Q 가 D 를 따른다",
+ "kept": 20,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 74HC04",
+   "desc": "좌 13행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "vcc",
+   "from": "좌 g13",
+   "to": "중앙VCC레일12행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 a19",
+   "to": "좌 GND레일19행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 b3",
+   "to": "좌 b13",
+   "desc": "D 이어 감 (U1 pin 1 -> U2 pin 1)",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "좌 a14",
+   "to": "좌 b7",
+   "desc": "D' (U2 pin 2) -> U1 pin 5",
+   "count": 1,
+   "color": "#009696"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Q'",
+   "at": "우 a5",
+   "active_low": false
+  },
+  {
+   "tag": "Q",
+   "at": "우 a10",
+   "active_low": false
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2-1: D 래치 — 1단계 걷기 (R 입력 점퍼 1가닥)",
+ "subtitle": "C1 의 R 입력 점퍼를 뽑는다 · S 점퍼는 그대로 두고 D 라 부른다 · 회색은 그대로 둔다",
+ "kept": 20,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 GND레일7행 → 좌 a7 · 입력 R -> U1 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+  }
+ ],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Q'",
+   "at": "우 a5",
+   "active_low": false
+  },
+  {
+   "tag": "Q",
+   "at": "우 a10",
+   "active_low": false
+  }
+ ]
+}
