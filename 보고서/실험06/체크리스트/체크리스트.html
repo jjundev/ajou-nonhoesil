@@ -203,6 +203,8 @@
   .led-legend { margin: 2mm 0 0; font-size: 9pt; }
   /* 완성본 아래 LED 순서 띠 — 보드 위→아래 번호 */
   .led-order { margin: 1.5mm 0; font-size: 10pt; }
+  .led-table td.led.hold { text-align: center; color: var(--muted); }
+  td.order { font-weight: 800; }
 
   /* 플로팅 입력이 이 과목의 대표 실패 원인이다. 목록 끝에 묻지 않는다. */
   /* 칩 두세 개 분량이라 통짜로 넘겨도 빈 쪽이 없다 — 제목만 쪽 끝에 남지 않게. */
@@ -325,21 +327,25 @@
 <div class="tblock">
 <h3>T1 · SR Latch with Enable Truth Table</h3>
 <p class='src'>출처: manual:p7</p>
-<table>
+<p class='src order-note'>순서 열 번호대로 입력을 넣어요. 이 회로는 직전 상태를 기억해서, 같은 입력이라도 앞에 넣은 행에 따라 LED 가 달라요</p>
+<p class="led-legend"><b>보는 LED:</b> ①Q' = Q(t)의 반대 ②Q = Q(t) — 모두 1이면 켜짐</p>
+<table class="led-table">
 <thead>
 <tr>
+<th>순서</th>
 <th>E</th>
 <th>S</th>
 <th>R</th>
 <th>Q(t)예상</th>
+<th>켜지는 LED</th><th>꺼지는 LED</th>
 <th>확인</th><th>사진 파일명</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">1 100.jpg</td></tr>
-<tr><td>1</td><td>0</td><td>1</td><td>0: Reset</td><td class="check"></td><td class="photo-name">1 101.jpg</td></tr>
-<tr><td>1</td><td>1</td><td>0</td><td>1: Set</td><td class="check"></td><td class="photo-name">1 110.jpg</td></tr>
-<tr><td>1</td><td>1</td><td>1</td><td>X (부정)</td><td class="check"></td><td class="photo-name">1 111.jpg</td></tr>
+<tr><td class="order">④</td><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="led hold" colspan="2">직전 그대로</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td class="order">③</td><td>1</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="led hold" colspan="2">직전 그대로</td><td class="check"></td><td class="photo-name">1 100.jpg</td></tr>
+<tr><td class="order">①</td><td>1</td><td>0</td><td>1</td><td>0: Reset</td><td class="led on">①Q'</td><td class="led off">②Q</td><td class="check"></td><td class="photo-name">1 101.jpg</td></tr>
+<tr><td class="order">②</td><td>1</td><td>1</td><td>0</td><td>1: Set</td><td class="led on">②Q</td><td class="led off">①Q'</td><td class="check"></td><td class="photo-name">1 110.jpg</td></tr>
+<tr><td class="order">⑤</td><td>1</td><td>1</td><td>1</td><td>X (부정)</td><td class="led on">①Q' ②Q</td><td class="led off">없음</td><td class="check"></td><td class="photo-name">1 111.jpg</td></tr>
 </tbody>
 </table>
 <p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
@@ -434,18 +440,22 @@
 <div class="tblock">
 <h3>T2 · D Latch with Enable Truth Table</h3>
 <p class='src'>출처: manual:p8</p>
-<table>
+<p class='src order-note'>순서 열 번호대로 입력을 넣어요. 이 회로는 직전 상태를 기억해서, 같은 입력이라도 앞에 넣은 행에 따라 LED 가 달라요</p>
+<p class="led-legend"><b>보는 LED:</b> ①Q' = Q(t)의 반대 ②Q = Q(t) — 모두 1이면 켜짐</p>
+<table class="led-table">
 <thead>
 <tr>
+<th>순서</th>
 <th>E</th>
 <th>D</th>
 <th>Q(t)예상</th>
+<th>켜지는 LED</th><th>꺼지는 LED</th>
 <th>확인</th><th>사진 파일명</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>0</td><td>0: Reset</td><td class="check"></td><td class="photo-name">2-1 10.jpg</td></tr>
-<tr><td>1</td><td>1</td><td>1: Set</td><td class="check"></td><td class="photo-name">2-1 11.jpg</td></tr>
+<tr><td class="order">③</td><td>0</td><td>X</td><td>Q(t-1)</td><td class="led hold" colspan="2">직전 그대로</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td class="order">①</td><td>1</td><td>0</td><td>0: Reset</td><td class="led on">①Q'</td><td class="led off">②Q</td><td class="check"></td><td class="photo-name">2-1 10.jpg</td></tr>
+<tr><td class="order">②</td><td>1</td><td>1</td><td>1: Set</td><td class="led on">②Q</td><td class="led off">①Q'</td><td class="check"></td><td class="photo-name">2-1 11.jpg</td></tr>
 </tbody>
 </table>
 <p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
@@ -510,7 +520,8 @@
 <div class="tblock">
 <h3>T3 · JK F/F (74HC76) Truth Table</h3>
 <p class='src'>출처: manual:p11</p>
-<table>
+<p class="led-legend"><b>보는 LED:</b> ①Q = Q(t) ②Q' = Q(t)의 반대 — 모두 1이면 켜짐</p>
+<table class="led-table">
 <thead>
 <tr>
 <th>Set</th>
@@ -519,16 +530,17 @@
 <th>J</th>
 <th>K</th>
 <th>Q(t)예상</th>
+<th>켜지는 LED</th><th>꺼지는 LED</th>
 <th>확인</th><th>사진 파일명</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>1</td><td>X</td><td>X</td><td>X</td><td>1: Set</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>0</td><td>X</td><td>X</td><td>X</td><td>0: Reset</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>1</td><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>1</td><td>0: Reset</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>0</td><td>1: Set</td><td class="check"></td><td class="photo-name">—</td></tr>
-<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>1</td><td>Q(t-1)'</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>0</td><td>1</td><td>X</td><td>X</td><td>X</td><td>1: Set</td><td class="led on">①Q</td><td class="led off">②Q'</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>0</td><td>X</td><td>X</td><td>X</td><td>0: Reset</td><td class="led on">②Q'</td><td class="led off">①Q</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>X</td><td>X</td><td>Q(t-1)</td><td class="led hold" colspan="2">직전 그대로</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>0</td><td>Q(t-1)</td><td class="led hold" colspan="2">직전 그대로</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>0</td><td>1</td><td>0: Reset</td><td class="led on">②Q'</td><td class="led off">①Q</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>0</td><td>1: Set</td><td class="led on">①Q</td><td class="led off">②Q'</td><td class="check"></td><td class="photo-name">—</td></tr>
+<tr><td>1</td><td>1</td><td>1-&gt;0</td><td>1</td><td>1</td><td>Q(t-1)'</td><td class="led hold" colspan="2">직전과 반대</td><td class="check"></td><td class="photo-name">—</td></tr>
 </tbody>
 </table>
 <p class='photo'>사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — 앞에 실험 번호(예: 실험03)는 붙이지 않아요</p>
@@ -542,7 +554,7 @@
 [data-fit="0"] { page: fit-0; }
 @page fit-1 { size: 210mm 595mm; margin: 12mm 10mm; }
 [data-fit="1"] { page: fit-1; }
-@page fit-2 { size: 210mm 273mm; margin: 12mm 10mm; }
+@page fit-2 { size: 210mm 284mm; margin: 12mm 10mm; }
 [data-fit="2"] { page: fit-2; }
 @page fit-3 { size: 210mm 167mm; margin: 12mm 10mm; }
 [data-fit="3"] { page: fit-3; }
@@ -552,13 +564,13 @@
 [data-fit="5"] { page: fit-5; }
 @page fit-6 { size: 210mm 682mm; margin: 12mm 10mm; }
 [data-fit="6"] { page: fit-6; }
-@page fit-7 { size: 210mm 259mm; margin: 12mm 10mm; }
+@page fit-7 { size: 210mm 270mm; margin: 12mm 10mm; }
 [data-fit="7"] { page: fit-7; }
 @page fit-8 { size: 210mm 182mm; margin: 12mm 10mm; }
 [data-fit="8"] { page: fit-8; }
 @page fit-9 { size: 210mm 537mm; margin: 12mm 10mm; }
 [data-fit="9"] { page: fit-9; }
-@page fit-10 { size: 210mm 214mm; margin: 12mm 10mm; }
+@page fit-10 { size: 210mm 220mm; margin: 12mm 10mm; }
 [data-fit="10"] { page: fit-10; }
 @page fit-11 { size: 210mm 126mm; margin: 12mm 10mm; }
 [data-fit="11"] { page: fit-11; }
