@@ -120,5 +120,27 @@ class HandRender(unittest.TestCase):
             self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)
 
 
+class HandSimScript(unittest.TestCase):
+    def test_시드는_파일이름으로_정해진다(self):
+        from scripts.lab.hand_sim import hand_seed
+        self.assertEqual(hand_seed('a.png'), hand_seed('a.png'))
+        self.assertNotEqual(hand_seed('a.png'), hand_seed('b.png'))
+
+    def test_완성본_한_장을_뽑는다(self):
+        from scripts.lab import hand_sim
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        out = hand_sim.main(['--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png',
+                             '--out', str(tmp)])
+        self.assertEqual(out.name, '실험04_1-1_손그림모사_4x1MUX.png')
+        self.assertEqual([p.name for p in tmp.iterdir()], [out.name])
+
+    def test_없는_완성본은_목록과_함께_멈춘다(self):
+        from scripts.lab import hand_sim
+        with self.assertRaises(SystemExit) as cm:
+            hand_sim.main(['--experiment', '4', '--final', '없음.png'])
+        self.assertIn('실험04_1-1_결선도_4x1MUX.png', str(cm.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
