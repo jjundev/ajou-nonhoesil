@@ -155,7 +155,7 @@
 
 ## Task10 최종 회귀·보존 검사
 
-2026-10-12 최종 관련 범위 실행 `python -m pytest tests -k review_pack -n 0 -q`: **538 passed, 2593 deselected in 310.25s**, exit0. `git diff --check`도 exit0이에요. 기존 v1 fixture를 유지하고 생성본 v2 4조건, 실험01~06의86문항 ×375/1280px ×light/dark, 현재 문항의 실제 요약 내용, JS 비활성 recall 가시성을 검사했어요. 요약 노드를 우측으로 옮기는 실제 템플릿 동작에 맞춰 현재 보이는 `.sum:not([hidden])`만 대조해요. 기존 수식·표·그림·탐색 검사도 통과했어요.
+2026-10-12 Task10 당시 관련 범위 실행 `python -m pytest tests -k review_pack -n 0 -q`: **538 passed, 2593 deselected in 310.25s**, exit0. `git diff --check`도 exit0이에요. 기존 v1 fixture를 유지하고 생성본 v2 4조건, 실험01~06의86문항 ×375/1280px ×light/dark, 현재 문항의 실제 요약 내용, JS 비활성 recall 가시성을 검사했어요. 요약 노드를 우측으로 옮기는 실제 템플릿 동작에 맞춰 현재 보이는 `.sum:not([hidden])`만 대조해요. 기존 수식·표·그림·탐색 검사도 통과했어요.
 
 최종 audit에서 여섯 팩 check_pack, 버전2, 기존 metadata, 설명 밖1058파일의 SHA256, 원문79개 digest 항목, 설명 밖 신규/삭제0을 확인했어요.86개 저작/발행 조각은 바이트가 같고 기존 여섯 구역은 백업과 구조·텍스트가 같아요. baseline과 일치하는 백업은 아래예요.
 
@@ -176,4 +176,11 @@ Windows snapshot 경로를 as_posix로 교정하고, 실제 실험06의 빈 작�
 
 기존 실제 source/browser 이미지와 실험별 내용 검토 기록을 재사용했고 위험 문항의 원문 이미지를 추가 판독했어요. 이번 DOM 회귀를86문항 전체의 새로운 시각적 스크린샷 검토라고 기록하지 않았어요. disputed/unresolved 및74HC143 식별 한계는 유지해요. controller의 task/전체 브랜치 독립 리뷰는 이 gate 뒤에 남아 있어요.
 
-상세 증거: `.superpowers/sdd/2026-10-12-logic-lab-problem-recall/task-10-report.md`(실행 전체 출력·여섯 HTML/MD 링크), `task-10-related-initial.txt`, `task-10-related-tests.txt`, `task-10-audit-output.txt`; 기계 비교: `output/validation/problem-recall/final-audit.json`.
+상세 증거: [Task10 상세 보고서](../../output/validation/problem-recall/execution/task-10-report.md)(실행 전체 출력·여섯 HTML/MD 링크), [초기 테스트 출력](../../output/validation/problem-recall/execution/task-10-related-initial.txt), [과거 538 PASS 출력](../../output/validation/problem-recall/execution/task-10-related-tests.txt), [Task10 audit 출력](../../output/validation/problem-recall/execution/task-10-audit-output.txt); 기계 비교: `output/validation/problem-recall/final-audit.json`.
+
+
+## 최종 리뷰 수정 후 회귀
+
+summary의 hidden/aria-hidden/heading/layer-title 조상 문맥을 보존하고 실험06 정본 갱신 절차를 보완했어요. 새 제외 회귀 5건은 RED에서 실패했고 수정 후 focused 계약 검사는 50 PASS예요. 최종 관련 범위 실행은 **546 passed, 2593 deselected in 442.83s**, exit0이며 538 PASS는 위 Task10 당시 기록이에요. 현재86개 바이트 쌍/1058개 보존 파일/79개 원문 digest audit도 exit0이에요.
+
+[최종 수정 상세 보고서](../../output/validation/problem-recall/execution/final-fix-report.md), [최종 테스트 원출력과 종료 코드](../../output/validation/problem-recall/execution/final-fix-tests.txt), [보존 audit 실행원](../../output/validation/problem-recall/audit.py).

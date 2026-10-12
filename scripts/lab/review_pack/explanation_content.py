@@ -40,14 +40,18 @@ def text(node):
     return ''.join(c if isinstance(c,str) else text(c) for c in node.children)
 
 
-def _body_text(node) -> str:
+def _body_text(node, *, target=None, ignore_hidden=None) -> str:
     if isinstance(node, str):
-        return node
+        return node if target is None else ''
     if (node.tag in {'h1','h2','h3','h4','h5','h6'}
             or 'layer-title' in node.attrs.get('class','').split()
-            or 'hidden' in node.attrs or node.attrs.get('aria-hidden') == 'true'):
+            or ('hidden' in node.attrs and node is not ignore_hidden)
+            or node.attrs.get('aria-hidden') == 'true'):
         return ''
-    return ''.join(_body_text(child) for child in node.children)
+    if node is target:
+        target = None
+    return ''.join(_body_text(child, target=target, ignore_hidden=ignore_hidden)
+                   for child in node.children)
 
 
 def _validate_v2(root, ident: str) -> None:
@@ -65,8 +69,10 @@ def _validate_v2(root, ident: str) -> None:
             if 'formal' not in classes or not _body_text(n).strip():
                 raise ValueError(ident+': recall needs visible concept explanation')
     sums = [n for n in root.children if isinstance(n, Node) and 'sum' in n.attrs.get('class','').split()]
-    summary = [n for s in sums for n in s.walk() if n.attrs.get('data-summary') == 'recall']
-    if len(summary) != 1 or not _body_text(summary[0]).strip():
+    summary = [(s, n) for s in sums for n in s.walk()
+               if n.attrs.get('data-summary') == 'recall']
+    if len(summary) != 1 or not _body_text(
+            summary[0][0], target=summary[0][1], ignore_hidden=summary[0][0]).strip():
         raise ValueError(ident+': summary needs recall body')
 
 

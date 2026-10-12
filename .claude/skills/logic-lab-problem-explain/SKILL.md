@@ -23,6 +23,8 @@ REPO는 scripts/lab/config.py가 있는 저장소 루트예요. PowerShell 작�
 
 [형식 계약](references/format.md)을 읽고 manifest와 문제지 payload의 included ID·번호·순서 및 원문 소문항을 대조해요. [저작 기준](references/authoring.md)을 읽고 모든 included 조각의 실제 설명 내용을 작성해요. 기존 팩은 docs/learning-pack-source/실험NN/problem-explanations/<id>.html에 저작하고, 전체팩은 RUN/problem-explanations/<id>.html에 저작해요. 제목뿐인 빈 recall이나 기존 답 복사로 완료하지 않아요.
 
+실험06의 정본은 docs/learning-pack-source/실험06/explanations.py와 recall.py예요. 보충할 때 HTML만 고치지 말고 해당 Python 원고도 갱신해요. standalone import로 explanations.E를 읽어 problem-explanations/<id>.html 조각만 새 stage 입력용으로 출력하고 각 조각을 version=2로 검증하며 E와 바이트 일치를 확인해요. 설명 갱신 때문에 전체 build_run.py를 실행해 다른 문서를 다시 생성하지 않아요.
+
 원문·문제은행·답안 상태·문항 분류는 보존해요. 기존 원고 보충은 understand/start/solve/verify/pitfall/retry와 경고를 전후 비교하고 핵심 개념 보충 외 변경의 이유를 검토해요. 실제 원문 대조와 계산 증거는 저작 폴더의 검증결과.md에 남겨요.
 
 ## 3. 새 stage와 검토

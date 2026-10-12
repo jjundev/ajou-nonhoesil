@@ -64,11 +64,11 @@ for item in result:
     count=0
     for problem in manifest['problems']:
         if problem['status']!='included': continue
-        ident=problem['id']; current=(folder/f'{ident}.html').read_text(encoding='utf-8')
-        old=sections((backup/f'{ident}.html').read_text(encoding='utf-8')); new=sections(current)
+        ident=problem['id']; current=(folder/f'{ident}.html').read_bytes()
+        old=sections((backup/f'{ident}.html').read_text(encoding='utf-8')); new=sections(current.decode('utf-8'))
         for key in ('understand','start','solve','verify','pitfall','retry'):
             assert old[key]==new[key],(nn,ident,key)
-        assert Path(f'docs/learning-pack-source/실험{nn}/problem-explanations/{ident}.html').read_text(encoding='utf-8')==current,(nn,ident)
+        assert Path(f'docs/learning-pack-source/실험{nn}/problem-explanations/{ident}.html').read_bytes()==current,(nn,ident)
         count+=1
     counts.append(count)
 evidence['six_old_sections_identical']=counts

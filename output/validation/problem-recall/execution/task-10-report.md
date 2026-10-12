@@ -263,3 +263,7 @@ netlist committed/current SHA: 333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b
 86 authored/published fragments exact; original six sections identical: [12, 14, 15, 12, 19, 14]
 Original source04/05 manifest and v2 fragments validate/load: [{'experiment': 4, 'validation': 'pass', 'loaded': 12, 'checks': {'source_visual': 'not_run', 'content': 'not_run', 'independent': 'not_run', 'browser': 'not_run'}}, {'experiment': 5, 'validation': 'pass', 'loaded': 19, 'checks': {'source_visual': 'not_run', 'content': 'not_run', 'independent': 'not_run', 'browser': 'not_run'}}]
 ```
+
+## Review10 minor evidence correction
+
+The authored/published fragment comparison in task-10-audit.py now uses read_bytes on both sides; decoding is used only for the separate old-six-section structural comparison. Earlier read_text equality normalized line endings, so it did not itself prove the report's byte-equality wording. Reviewer independently checked all86 byte pairs; this corrected audit now also proves that exact assertion. Fresh `python .superpowers/sdd/2026-10-12-logic-lab-problem-recall/task-10-audit.py` exited0: six packs/86 exact authored-published byte pairs, old-six-section counts12/14/15/12/19/14, all1058 preserved files, all79 source digests, and original source04/05 v2 load12/19 passed. Generated final-audit.json and calculation-06.json remain unchanged. No broad test rerun, product changes, source cache touches or new commit made for this correction.

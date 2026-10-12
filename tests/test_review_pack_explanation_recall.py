@@ -70,3 +70,26 @@ def test_unknown_versions_rejected(tmp_path, version):
     m, root, data = setup_v2(tmp_path)
     m['problem_explanation_version'] = version
     assert validate_manifest(m)
+
+
+@pytest.mark.parametrize('wrapper', [
+    '<div hidden>{}</div>', '<div aria-hidden="true">{}</div>',
+    '<h4>{}</h4>', '<div class="layer-title">{}</div>',
+    '<div><span hidden>{}</span></div>',
+])
+def test_summary_rejects_excluded_ancestor(wrapper):
+    with pytest.raises(ValueError, match='summary needs recall body'):
+        validate_fragment(FRAGMENT_V2.replace(SUMMARY, wrapper.format(SUMMARY)),
+                          'q', 'verified', version=2)
+
+
+def test_summary_accepts_visible_nested_wrapper_inside_outer_hidden_sum():
+    validate_fragment(FRAGMENT_V2.replace(SUMMARY, '<div><span>' + SUMMARY + '</span></div>'),
+                      'q', 'verified', version=2)
+
+
+@pytest.mark.parametrize('wrapper', ['<div hidden>{}</div>', '<h4>{}</h4>'])
+def test_v1_summary_ancestor_behavior_is_unchanged(wrapper):
+    validate_fragment(FRAGMENT.replace('<p>S를 읽고 입력을 골라요.</p>',
+                                      wrapper.format('<p>S를 읽고 입력을 골라요.</p>')),
+                      'q', 'verified', version=1)
