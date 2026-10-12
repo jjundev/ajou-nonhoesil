@@ -390,7 +390,8 @@ def _dmux_draw(bb, stage):
     bb.note(_INPUT_NOTE)
 
 
-def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, layer=None, hand=None):
+def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, layer=None, hand=None,
+                 hand_guide=False):
     """실험 1-1 · Enable 을 갖는 4x1 MUX (74HC04 + 74HC20 ×3). netlist C1. 8단계.
 
       stage 1~3  U4 인버터 셋 — LED4·3·2 임시 급전으로 E'·S1'·S0'
@@ -401,7 +402,8 @@ def build_e4_mux(output_path, template_path=None, stage=None, baseline=None, lay
     """
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다 — 단계 그림에는 임시 급전선이 있다')
-    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD, hand=hand)
+    bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD, hand=hand,
+                            hand_guide=hand_guide)
     bb.enable_steps()
     _stage_check('mux', stage)
     title = _MUX_TITLE[stage] if stage is not None else "실험 1-1: 4x1 MUX 결선도"

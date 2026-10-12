@@ -76,11 +76,11 @@ class HandRender(unittest.TestCase):
         cls.mod = _load()
         cls.board = cls.mod.load_board(4)
 
-    def _render(self, hand):
+    def _render(self, hand, guide=False):
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
         out = tmp / 'mux.png'
-        bb = self.board.build_e4_mux(str(out), hand=hand)
+        bb = self.board.build_e4_mux(str(out), hand=hand, hand_guide=guide)
         return bb, out, tmp
 
     def test_hand_는_논리_상태를_안_바꾼다(self):
@@ -151,6 +151,41 @@ class HandRender(unittest.TestCase):
         b, _, _ = self._render(42)
         for attr in ('chips', 'leds', 'resistors', 'tag_boxes', 'chip_label_boxes'):
             self.assertEqual(getattr(a, attr), getattr(b, attr), attr)
+
+    def test_안내판은_선이_회색이고_부품은_색이다(self):
+        bb, _, _ = self._render(42, guide=True)
+        for col in self.mod.WIRE.values():
+            self.assertEqual(self._count(bb, col), 0, col)
+        self.assertGreater(self._count(bb, self.mod.KEEP), 0)
+        for rgba in [(30, 33, 36, 255), (220, 20, 20, 240), (225, 195, 145, 255), self.mod.INPUT]:
+            self.assertGreater(self._count(bb, rgba), 0, rgba)
+
+    def test_안내판_회색선은_시험판_선과_같은_자리(self):
+        # 팀원이 시험판과 안내판을 겹쳐 본다 — 흔들림이 같아야 한다
+        blank, _, _ = self._render(42)
+        guide, _, _ = self._render(42, guide=True)
+        wire_cols = set(self.mod.WIRE.values()) | {self.mod.INPUT}
+        a, b = blank.overlay.load(), guide.overlay.load()
+        W, H = blank.overlay.size
+        hits = [(x, y) for y in range(0, H, 2) for x in range(0, W, 2) if a[x, y] in wire_cols]
+        same = sum(1 for x, y in hits if b[x, y] == self.mod.KEEP)
+        self.assertGreater(same / len(hits), 0.99)
+
+    def test_안내판도_배치는_같다(self):
+        a, _, _ = self._render(42)
+        b, _, _ = self._render(42, guide=True)
+        for attr in ('_segments', 'tag_boxes', 'chips', 'leds', 'resistors', 'inputs'):
+            self.assertEqual(getattr(a, attr), getattr(b, attr), attr)
+
+    def test_안내판은_hand_없이_못_준다(self):
+        with self.assertRaises(ValueError):
+            self.mod.BreadboardRenderer(None, board='v1', hand_guide=True)
+
+    def test_안내판_부품_밖_배지는_회색(self):
+        bb = self.mod.BreadboardRenderer(None, board='v1', hand=1, hand_guide=True)
+        bb.signal_tag('P', 300, 300, col=self.mod.PROBE)
+        self.assertEqual(self._count(bb, self.mod.PROBE), 0)
+        self.assertGreater(self._count(bb, self.mod.KEEP), 0)
 
     def test_기준선_이나_층과_못_섞는다(self):
         with self.assertRaises(ValueError):
