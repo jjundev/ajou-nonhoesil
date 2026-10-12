@@ -133,7 +133,7 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 
 새 워크북은 `problem_explanation_version=1`, 각 included 문항에 `explanation_fragment=problem-explanations/<id>.html`을 설정한다. `explanation_checks`는 source_visual/content/independent/browser를 별도로 not_run으로 초기화한다. 기존 팩과 legacy는 선택적 버전이 없어도 계속 읽는다.
 
-이론을 한 번 읽었지만 문제풀이 경험이 없는 학생에게 모든 문항·소문항을 설명한다. 첫 줄·이유·완성 답·검산을 생략하거나 기존 짧은 답안을 복사하는 것으로 끝내지 않는다. 저작 마크업과 검증은 references/authoring.md, format.md, verification.md를 따른다.
+이론을 한 번 읽었지만 문제풀이 경험이 없는 학생에게 모든 문항·소문항을 설명한다. 첫 줄·이유·완성 답·검산을 생략하거나 기존 짧은 답안을 복사하는 것으로 끝내지 않는다. 저작 마크업과 검증은 references/authoring.md, format.md, verification.md를 따른다. 각 문항은 문제 읽기 직후 ‘이 문제를 보면 떠올려요’(recall) 구절로 시작한다(authoring.md).
 
 `실험NN_문제설명.html/.md`는 실험설명의 같은 note-template, article.topic, eli5/formal/warn, 우측 sum, 목차와 이전/다음을 사용한다. 풀이·정답은 본문에 모두 펼친다. 읽음 RANGE는 `logic-lab-NN-problem-explanation`이며 기존 실험설명과 분리한다. 자료 이동 영역·진행 합계·학습 잠금·자동 채점은 넣지 않는다. 불확실성·성립 조건은 HTML에, 상세 출처는 MD에 둔다.
 
