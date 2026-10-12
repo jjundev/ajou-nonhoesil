@@ -1,0 +1,2261 @@
+{
+  "stage": "C:\\Users\\Hyunjun\\.codex\\worktrees\\logic-lab-problem-recall\\논회실\\tmp\\review-pack\\recall-05-08953303dfd0494ead286cf5f5a4c1e3",
+  "cases": [
+    {
+      "id": "q-dec3x8",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3×8”과 000행의 D0=1은 이진 주소를 한 선택선으로 해독하는 활성 High 디코더의 단서예요. minterm은 특정 비트 조합에서만 1인 AND 조건이에요.\n\nk=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.\n\n이 표에는 Enable이 없고 D7…D0 열 순서예요. 각 주소마다 한 출력만 1이라 번호와 실제 열을 함께 확인해요.",
+      "summary": "k=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여덟 입력 행마다 1이 하나인 조건에서 one-hot 인코딩을 떠올려요. one-hot은 한 선만 활성인 상태이며 출력은 문자열의 숫자가 아니라 선 번호예요.\n\nDk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.\n\n이 표는 활성 High 입력과 출력이에요. 무입력과 D0 활성 모두 단순 코드 000이 될 수 있어 유효 표시를 따로 구별해야 하지만 원문에 없는 유효 열을 추가하지 않아요.",
+      "summary": "Dk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 문자열에 여러 1이 있으므로 우선순위로 한 요청을 고르는 인코더를 떠올려요. 영어 decoder 표기와 달리 표는 8입력·3출력이에요.\n\n번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.\n\n선택보다 작은 번호의 입력은 이번 코드에 무관해요. 활성 High 표에 적용하고, 선택 규칙 없는 일반 OR 인코더나 active Low IC 표와 섞지 않아요.",
+      "summary": "번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NOT 2개·AND 4개”에서는 네 주소의 minterm을 떠올려요. minterm은 해당 주소에서만 1인 곱 조건이에요.\n\nI1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.\n\n일반 Enable형은 Ok=E·주소조건이지만 이 원문에는 E가 없어요. 활성 High AND형으로 두 반전선을 공유해야 지정한 게이트 수를 지켜요.",
+      "summary": "I1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 422,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“4×2”와 NAND 지정에서 한 활성 입력의 번호를 두 비트로 바꾸고 드모르간 법칙으로 구현하는 개념을 떠올려요.\n\nA=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.\n\none-hot일 때만 간단한 OR 코드와 같아요. NOT4·4입력 NAND3·2입력 NAND2 조건 때문에 단순 OR 그림으로 끝내지 않고 같은 원리를 지정 게이트로 구현해요.",
+      "summary": "A=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Excess-3의 특징과 사용 이유”에서는 십진 한 자리 d에 3을 더하는 코드와 자기보수 성질을 떠올려요.\n\nX(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.\n\n유효한 십진 한 자리 코드에서 성립해요. 여러 자리 수의 무조건적인 이진 뺄셈 규칙이 아니에요. 유효 코드에 0000이 없다는 특징도 신호 두절 구별의 조건과 연결해요.",
+      "summary": "X(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“SW5…SW0”와 네 지정 행은 스위치 번호를 십진 값으로 읽는 one-hot Excess-3 인코더의 단서예요.\n\nSWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.\n\nSW0·SW2·SW4·SW5의 네 행만 요구돼요. 남는 NAND 입력 VCC=1은 곱을 유지해요. 입력 문자열을 이진수로 읽거나 다중 활성에 +3 규칙을 적용하지 않아요.",
+      "summary": "SWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여섯 행 000001부터 100000까지는 SW0…SW5가 한 번씩 활성인 상태예요. 십진 숫자·입력 one-hot·출력 Excess-3를 구분해요.\n\nSWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.\n\n이 회로가 다루는 여섯 숫자 0…5의 지정 행에서 적용해요. 교안의 BCD 열은 숫자의 이진 표현이며 여섯 선 스위치 상태와 같은 입력 형식이 아니에요.",
+      "summary": "SWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“1-out-of-4”와 D0D1D2D3 머리글에서 한 1의 위치가 숫자를 뜻하는 one-hot 코드를 떠올려요.\n\n입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.\n\n한 입력만 활성인 세 지정 행 1000·0100·0010에 적용해요. 보통 이진수처럼 1000=8로 읽지 않는 것이 먼저 번호를 해석하는 이유예요.",
+      "summary": "입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“특징을 Binary encoder와 비교”에서는 one-hot 전제와 다중 활성 처리 규칙을 비교해요. 일반 인코더는 한 활성 선 번호를 코드로 바꿔요.\n\nOR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.\n\n우선순위는 정해진 규칙이 있을 때만 선택을 결정해요. 모든 활성 요청을 한꺼번에 기록하거나 일반 인코더가 자동으로 큰 번호를 고르는 것은 아니에요.",
+      "summary": "OR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“디코더를 활용하여 DMUX”에서는 주소 선택 minterm에 데이터 조건을 추가해요. 디코더는 경로를 고르고 DMUX는 그 경로로 데이터를 보내요.\n\nCk는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.\n\n각 2입력 AND를 3입력으로 바꿔 D를 연결해요. D=1이면 원 디코더와 같고 D=0이면 모두 0이에요. Low 활성 소자에 이 식을 그대로 적용하지 않아요.",
+      "summary": "Ck는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 506,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로 변경과 기능 차이라는 두 요구에서 주소 해독과 데이터 분배를 각각 떠올려요. 주소 S1S0는 목적지, D는 보낼 값이에요.\n\nC0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.\n\n활성 High AND형에서 D를 네 게이트에 추가하면 선택 출력만 D를 따라가요. D를 Enable처럼 곱하는 관계가 회로 변경과 D=0/1 동작 차이를 함께 설명해요.",
+      "summary": "C0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 506,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원 그림의 74HC148·EI 접지와 L/H 표에서 active Low 우선순위 인코더를 떠올려요. L=0인 입력이 활성이고 IN7 쪽 우선이에요.\n\nEI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.\n\n교안 p10·11은 입력·출력 극성과 EI 비활성을 확인해요. GS·EO 핀은 그림에 보이지만 그 기능표는 해당 교안에 없어요. 이 문항은 A 세 열만 요구하므로 GS·EO 상태를 추정해 표에 추가하지 않아요.",
+      "summary": "EI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 401,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 401,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로의 NOT 버블과 AND 연결을 읽어 실제 minterm을 찾아요. 출력 이름 D1…D4는 일반 주소 번호와 같다고 가정하지 않아요.\n\nD1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.\n\nAND 출력에는 반전 버블이 없어 선택 출력이 1이에요. 표 순서 00·10·01·11에서 각각 D4·D3·D2·D1이 켜지는지 연결로 판정해요.",
+      "summary": "D1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 429,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Decoder에 대해 설명”에서는 이진 주소를 여러 선택선 중 하나로 바꾸는 조합회로의 정의를 떠올려요.\n\nn비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.\n\nEnable이 허용된 유효 주소에서 한 줄을 활성화해요. 활성 High는 1, Low는 0이 선택 표시예요. 모든 출력이 언제나 1개씩 High라는 정의로 일반화하지 않아요.",
+      "summary": "n비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Encoder에 대해 설명”에서는 한 활성 입력의 위치를 더 짧은 코드로 바꾸는 정의를 떠올려요.\n\n2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.\n\n일반 인코더는 one-hot 전제예요. 무입력과 다중 활성은 별도 유효 신호나 우선순위 처리가 필요하므로 정의에 입력 조건을 함께 써요.",
+      "summary": "2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“8×3 진리표”에서는 여덟 one-hot 위치를 3비트 번호로 인코딩해요. 입력 D7…D0의 1 위치를 먼저 읽어요.\n\nA2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.\n\n한 선만 활성인 여덟 행에서 이 OR식은 번호 코드를 내요. D6은 110이고 다중 활성은 이 표가 정의하지 않으므로 우선순위 표로 확장하지 않아요.",
+      "summary": "A2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 373,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 743,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“사용 이유”에서는 동시에 활성인 여러 요청이 일반 코드에 섞이는 모호성을 떠올려요. 우선순위 인코더는 규칙에 따라 한 요청을 선택해요.\n\n일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.\n\n정해진 우선순위와 활성 극성을 먼저 알아야 해요. 선택되지 않은 요청도 있었다는 전체 정보는 코드에 남지 않으므로 요청 개수나 모든 요청 목록을 출력하는 회로라고 설명하지 않아요.",
+      "summary": "일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원문 p2에는 “74HC143”과 A0·A1·A2·GS·EO가 적혀 있어요. 핀을 코드 출력과 상태/연결 출력으로 구분하라는 단서지만 그 페이지에 칩 그림은 없어요.\n\n같은 실험 교안 p10의 칩 그림은 명시적으로 74HC148이고 A0…A2·GS·EO가 보여요. 원문은 A0…A2=Data Output, GS=Priority Flag Output, EO=Enable Output이라고 설명해요.\n\n이 핀 역할 대조는 원문 표현을 설명하는 근거예요. 143을 148로 고쳐 쓰거나 실제 143의 기능을 확인했다고 하지 않아요. 기존 풀이의 EI·GS·EO 상세 상태는 148 해석에 따른 조건부 설명이며 제공 원문의 기능표로 검증된 사실로 확장하지 않아요.",
+      "summary": "원문 74HC143 표기는 유지해요. 교안 그림은 74HC148이며 원문 핀 역할 설명과 대조하되 두 IC가 같다고 확정하지 않아요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3×8”과 000행의 D0=1은 이진 주소를 한 선택선으로 해독하는 활성 High 디코더의 단서예요. minterm은 특정 비트 조합에서만 1인 AND 조건이에요.\n\nk=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.\n\n이 표에는 Enable이 없고 D7…D0 열 순서예요. 각 주소마다 한 출력만 1이라 번호와 실제 열을 함께 확인해요.",
+      "summary": "k=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여덟 입력 행마다 1이 하나인 조건에서 one-hot 인코딩을 떠올려요. one-hot은 한 선만 활성인 상태이며 출력은 문자열의 숫자가 아니라 선 번호예요.\n\nDk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.\n\n이 표는 활성 High 입력과 출력이에요. 무입력과 D0 활성 모두 단순 코드 000이 될 수 있어 유효 표시를 따로 구별해야 하지만 원문에 없는 유효 열을 추가하지 않아요.",
+      "summary": "Dk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 문자열에 여러 1이 있으므로 우선순위로 한 요청을 고르는 인코더를 떠올려요. 영어 decoder 표기와 달리 표는 8입력·3출력이에요.\n\n번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.\n\n선택보다 작은 번호의 입력은 이번 코드에 무관해요. 활성 High 표에 적용하고, 선택 규칙 없는 일반 OR 인코더나 active Low IC 표와 섞지 않아요.",
+      "summary": "번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NOT 2개·AND 4개”에서는 네 주소의 minterm을 떠올려요. minterm은 해당 주소에서만 1인 곱 조건이에요.\n\nI1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.\n\n일반 Enable형은 Ok=E·주소조건이지만 이 원문에는 E가 없어요. 활성 High AND형으로 두 반전선을 공유해야 지정한 게이트 수를 지켜요.",
+      "summary": "I1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 422,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“4×2”와 NAND 지정에서 한 활성 입력의 번호를 두 비트로 바꾸고 드모르간 법칙으로 구현하는 개념을 떠올려요.\n\nA=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.\n\none-hot일 때만 간단한 OR 코드와 같아요. NOT4·4입력 NAND3·2입력 NAND2 조건 때문에 단순 OR 그림으로 끝내지 않고 같은 원리를 지정 게이트로 구현해요.",
+      "summary": "A=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Excess-3의 특징과 사용 이유”에서는 십진 한 자리 d에 3을 더하는 코드와 자기보수 성질을 떠올려요.\n\nX(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.\n\n유효한 십진 한 자리 코드에서 성립해요. 여러 자리 수의 무조건적인 이진 뺄셈 규칙이 아니에요. 유효 코드에 0000이 없다는 특징도 신호 두절 구별의 조건과 연결해요.",
+      "summary": "X(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“SW5…SW0”와 네 지정 행은 스위치 번호를 십진 값으로 읽는 one-hot Excess-3 인코더의 단서예요.\n\nSWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.\n\nSW0·SW2·SW4·SW5의 네 행만 요구돼요. 남는 NAND 입력 VCC=1은 곱을 유지해요. 입력 문자열을 이진수로 읽거나 다중 활성에 +3 규칙을 적용하지 않아요.",
+      "summary": "SWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여섯 행 000001부터 100000까지는 SW0…SW5가 한 번씩 활성인 상태예요. 십진 숫자·입력 one-hot·출력 Excess-3를 구분해요.\n\nSWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.\n\n이 회로가 다루는 여섯 숫자 0…5의 지정 행에서 적용해요. 교안의 BCD 열은 숫자의 이진 표현이며 여섯 선 스위치 상태와 같은 입력 형식이 아니에요.",
+      "summary": "SWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“1-out-of-4”와 D0D1D2D3 머리글에서 한 1의 위치가 숫자를 뜻하는 one-hot 코드를 떠올려요.\n\n입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.\n\n한 입력만 활성인 세 지정 행 1000·0100·0010에 적용해요. 보통 이진수처럼 1000=8로 읽지 않는 것이 먼저 번호를 해석하는 이유예요.",
+      "summary": "입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“특징을 Binary encoder와 비교”에서는 one-hot 전제와 다중 활성 처리 규칙을 비교해요. 일반 인코더는 한 활성 선 번호를 코드로 바꿔요.\n\nOR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.\n\n우선순위는 정해진 규칙이 있을 때만 선택을 결정해요. 모든 활성 요청을 한꺼번에 기록하거나 일반 인코더가 자동으로 큰 번호를 고르는 것은 아니에요.",
+      "summary": "OR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“디코더를 활용하여 DMUX”에서는 주소 선택 minterm에 데이터 조건을 추가해요. 디코더는 경로를 고르고 DMUX는 그 경로로 데이터를 보내요.\n\nCk는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.\n\n각 2입력 AND를 3입력으로 바꿔 D를 연결해요. D=1이면 원 디코더와 같고 D=0이면 모두 0이에요. Low 활성 소자에 이 식을 그대로 적용하지 않아요.",
+      "summary": "Ck는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 506,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로 변경과 기능 차이라는 두 요구에서 주소 해독과 데이터 분배를 각각 떠올려요. 주소 S1S0는 목적지, D는 보낼 값이에요.\n\nC0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.\n\n활성 High AND형에서 D를 네 게이트에 추가하면 선택 출력만 D를 따라가요. D를 Enable처럼 곱하는 관계가 회로 변경과 D=0/1 동작 차이를 함께 설명해요.",
+      "summary": "C0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 506,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원 그림의 74HC148·EI 접지와 L/H 표에서 active Low 우선순위 인코더를 떠올려요. L=0인 입력이 활성이고 IN7 쪽 우선이에요.\n\nEI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.\n\n교안 p10·11은 입력·출력 극성과 EI 비활성을 확인해요. GS·EO 핀은 그림에 보이지만 그 기능표는 해당 교안에 없어요. 이 문항은 A 세 열만 요구하므로 GS·EO 상태를 추정해 표에 추가하지 않아요.",
+      "summary": "EI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 401,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 401,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로의 NOT 버블과 AND 연결을 읽어 실제 minterm을 찾아요. 출력 이름 D1…D4는 일반 주소 번호와 같다고 가정하지 않아요.\n\nD1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.\n\nAND 출력에는 반전 버블이 없어 선택 출력이 1이에요. 표 순서 00·10·01·11에서 각각 D4·D3·D2·D1이 켜지는지 연결로 판정해요.",
+      "summary": "D1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 429,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Decoder에 대해 설명”에서는 이진 주소를 여러 선택선 중 하나로 바꾸는 조합회로의 정의를 떠올려요.\n\nn비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.\n\nEnable이 허용된 유효 주소에서 한 줄을 활성화해요. 활성 High는 1, Low는 0이 선택 표시예요. 모든 출력이 언제나 1개씩 High라는 정의로 일반화하지 않아요.",
+      "summary": "n비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Encoder에 대해 설명”에서는 한 활성 입력의 위치를 더 짧은 코드로 바꾸는 정의를 떠올려요.\n\n2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.\n\n일반 인코더는 one-hot 전제예요. 무입력과 다중 활성은 별도 유효 신호나 우선순위 처리가 필요하므로 정의에 입력 조건을 함께 써요.",
+      "summary": "2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“8×3 진리표”에서는 여덟 one-hot 위치를 3비트 번호로 인코딩해요. 입력 D7…D0의 1 위치를 먼저 읽어요.\n\nA2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.\n\n한 선만 활성인 여덟 행에서 이 OR식은 번호 코드를 내요. D6은 110이고 다중 활성은 이 표가 정의하지 않으므로 우선순위 표로 확장하지 않아요.",
+      "summary": "A2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 373,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 743,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“사용 이유”에서는 동시에 활성인 여러 요청이 일반 코드에 섞이는 모호성을 떠올려요. 우선순위 인코더는 규칙에 따라 한 요청을 선택해요.\n\n일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.\n\n정해진 우선순위와 활성 극성을 먼저 알아야 해요. 선택되지 않은 요청도 있었다는 전체 정보는 코드에 남지 않으므로 요청 개수나 모든 요청 목록을 출력하는 회로라고 설명하지 않아요.",
+      "summary": "일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원문 p2에는 “74HC143”과 A0·A1·A2·GS·EO가 적혀 있어요. 핀을 코드 출력과 상태/연결 출력으로 구분하라는 단서지만 그 페이지에 칩 그림은 없어요.\n\n같은 실험 교안 p10의 칩 그림은 명시적으로 74HC148이고 A0…A2·GS·EO가 보여요. 원문은 A0…A2=Data Output, GS=Priority Flag Output, EO=Enable Output이라고 설명해요.\n\n이 핀 역할 대조는 원문 표현을 설명하는 근거예요. 143을 148로 고쳐 쓰거나 실제 143의 기능을 확인했다고 하지 않아요. 기존 풀이의 EI·GS·EO 상세 상태는 148 해석에 따른 조건부 설명이며 제공 원문의 기능표로 검증된 사실로 확장하지 않아요.",
+      "summary": "원문 74HC143 표기는 유지해요. 교안 그림은 74HC148이며 원문 핀 역할 설명과 대조하되 두 IC가 같다고 확정하지 않아요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3×8”과 000행의 D0=1은 이진 주소를 한 선택선으로 해독하는 활성 High 디코더의 단서예요. minterm은 특정 비트 조합에서만 1인 AND 조건이에요.\n\nk=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.\n\n이 표에는 Enable이 없고 D7…D0 열 순서예요. 각 주소마다 한 출력만 1이라 번호와 실제 열을 함께 확인해요.",
+      "summary": "k=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여덟 입력 행마다 1이 하나인 조건에서 one-hot 인코딩을 떠올려요. one-hot은 한 선만 활성인 상태이며 출력은 문자열의 숫자가 아니라 선 번호예요.\n\nDk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.\n\n이 표는 활성 High 입력과 출력이에요. 무입력과 D0 활성 모두 단순 코드 000이 될 수 있어 유효 표시를 따로 구별해야 하지만 원문에 없는 유효 열을 추가하지 않아요.",
+      "summary": "Dk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 문자열에 여러 1이 있으므로 우선순위로 한 요청을 고르는 인코더를 떠올려요. 영어 decoder 표기와 달리 표는 8입력·3출력이에요.\n\n번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.\n\n선택보다 작은 번호의 입력은 이번 코드에 무관해요. 활성 High 표에 적용하고, 선택 규칙 없는 일반 OR 인코더나 active Low IC 표와 섞지 않아요.",
+      "summary": "번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NOT 2개·AND 4개”에서는 네 주소의 minterm을 떠올려요. minterm은 해당 주소에서만 1인 곱 조건이에요.\n\nI1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.\n\n일반 Enable형은 Ok=E·주소조건이지만 이 원문에는 E가 없어요. 활성 High AND형으로 두 반전선을 공유해야 지정한 게이트 수를 지켜요.",
+      "summary": "I1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“4×2”와 NAND 지정에서 한 활성 입력의 번호를 두 비트로 바꾸고 드모르간 법칙으로 구현하는 개념을 떠올려요.\n\nA=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.\n\none-hot일 때만 간단한 OR 코드와 같아요. NOT4·4입력 NAND3·2입력 NAND2 조건 때문에 단순 OR 그림으로 끝내지 않고 같은 원리를 지정 게이트로 구현해요.",
+      "summary": "A=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Excess-3의 특징과 사용 이유”에서는 십진 한 자리 d에 3을 더하는 코드와 자기보수 성질을 떠올려요.\n\nX(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.\n\n유효한 십진 한 자리 코드에서 성립해요. 여러 자리 수의 무조건적인 이진 뺄셈 규칙이 아니에요. 유효 코드에 0000이 없다는 특징도 신호 두절 구별의 조건과 연결해요.",
+      "summary": "X(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“SW5…SW0”와 네 지정 행은 스위치 번호를 십진 값으로 읽는 one-hot Excess-3 인코더의 단서예요.\n\nSWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.\n\nSW0·SW2·SW4·SW5의 네 행만 요구돼요. 남는 NAND 입력 VCC=1은 곱을 유지해요. 입력 문자열을 이진수로 읽거나 다중 활성에 +3 규칙을 적용하지 않아요.",
+      "summary": "SWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여섯 행 000001부터 100000까지는 SW0…SW5가 한 번씩 활성인 상태예요. 십진 숫자·입력 one-hot·출력 Excess-3를 구분해요.\n\nSWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.\n\n이 회로가 다루는 여섯 숫자 0…5의 지정 행에서 적용해요. 교안의 BCD 열은 숫자의 이진 표현이며 여섯 선 스위치 상태와 같은 입력 형식이 아니에요.",
+      "summary": "SWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“1-out-of-4”와 D0D1D2D3 머리글에서 한 1의 위치가 숫자를 뜻하는 one-hot 코드를 떠올려요.\n\n입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.\n\n한 입력만 활성인 세 지정 행 1000·0100·0010에 적용해요. 보통 이진수처럼 1000=8로 읽지 않는 것이 먼저 번호를 해석하는 이유예요.",
+      "summary": "입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“특징을 Binary encoder와 비교”에서는 one-hot 전제와 다중 활성 처리 규칙을 비교해요. 일반 인코더는 한 활성 선 번호를 코드로 바꿔요.\n\nOR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.\n\n우선순위는 정해진 규칙이 있을 때만 선택을 결정해요. 모든 활성 요청을 한꺼번에 기록하거나 일반 인코더가 자동으로 큰 번호를 고르는 것은 아니에요.",
+      "summary": "OR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“디코더를 활용하여 DMUX”에서는 주소 선택 minterm에 데이터 조건을 추가해요. 디코더는 경로를 고르고 DMUX는 그 경로로 데이터를 보내요.\n\nCk는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.\n\n각 2입력 AND를 3입력으로 바꿔 D를 연결해요. D=1이면 원 디코더와 같고 D=0이면 모두 0이에요. Low 활성 소자에 이 식을 그대로 적용하지 않아요.",
+      "summary": "Ck는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로 변경과 기능 차이라는 두 요구에서 주소 해독과 데이터 분배를 각각 떠올려요. 주소 S1S0는 목적지, D는 보낼 값이에요.\n\nC0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.\n\n활성 High AND형에서 D를 네 게이트에 추가하면 선택 출력만 D를 따라가요. D를 Enable처럼 곱하는 관계가 회로 변경과 D=0/1 동작 차이를 함께 설명해요.",
+      "summary": "C0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원 그림의 74HC148·EI 접지와 L/H 표에서 active Low 우선순위 인코더를 떠올려요. L=0인 입력이 활성이고 IN7 쪽 우선이에요.\n\nEI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.\n\n교안 p10·11은 입력·출력 극성과 EI 비활성을 확인해요. GS·EO 핀은 그림에 보이지만 그 기능표는 해당 교안에 없어요. 이 문항은 A 세 열만 요구하므로 GS·EO 상태를 추정해 표에 추가하지 않아요.",
+      "summary": "EI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로의 NOT 버블과 AND 연결을 읽어 실제 minterm을 찾아요. 출력 이름 D1…D4는 일반 주소 번호와 같다고 가정하지 않아요.\n\nD1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.\n\nAND 출력에는 반전 버블이 없어 선택 출력이 1이에요. 표 순서 00·10·01·11에서 각각 D4·D3·D2·D1이 켜지는지 연결로 판정해요.",
+      "summary": "D1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Decoder에 대해 설명”에서는 이진 주소를 여러 선택선 중 하나로 바꾸는 조합회로의 정의를 떠올려요.\n\nn비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.\n\nEnable이 허용된 유효 주소에서 한 줄을 활성화해요. 활성 High는 1, Low는 0이 선택 표시예요. 모든 출력이 언제나 1개씩 High라는 정의로 일반화하지 않아요.",
+      "summary": "n비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Encoder에 대해 설명”에서는 한 활성 입력의 위치를 더 짧은 코드로 바꾸는 정의를 떠올려요.\n\n2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.\n\n일반 인코더는 one-hot 전제예요. 무입력과 다중 활성은 별도 유효 신호나 우선순위 처리가 필요하므로 정의에 입력 조건을 함께 써요.",
+      "summary": "2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“8×3 진리표”에서는 여덟 one-hot 위치를 3비트 번호로 인코딩해요. 입력 D7…D0의 1 위치를 먼저 읽어요.\n\nA2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.\n\n한 선만 활성인 여덟 행에서 이 OR식은 번호 코드를 내요. D6은 110이고 다중 활성은 이 표가 정의하지 않으므로 우선순위 표로 확장하지 않아요.",
+      "summary": "A2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 743,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“사용 이유”에서는 동시에 활성인 여러 요청이 일반 코드에 섞이는 모호성을 떠올려요. 우선순위 인코더는 규칙에 따라 한 요청을 선택해요.\n\n일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.\n\n정해진 우선순위와 활성 극성을 먼저 알아야 해요. 선택되지 않은 요청도 있었다는 전체 정보는 코드에 남지 않으므로 요청 개수나 모든 요청 목록을 출력하는 회로라고 설명하지 않아요.",
+      "summary": "일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원문 p2에는 “74HC143”과 A0·A1·A2·GS·EO가 적혀 있어요. 핀을 코드 출력과 상태/연결 출력으로 구분하라는 단서지만 그 페이지에 칩 그림은 없어요.\n\n같은 실험 교안 p10의 칩 그림은 명시적으로 74HC148이고 A0…A2·GS·EO가 보여요. 원문은 A0…A2=Data Output, GS=Priority Flag Output, EO=Enable Output이라고 설명해요.\n\n이 핀 역할 대조는 원문 표현을 설명하는 근거예요. 143을 148로 고쳐 쓰거나 실제 143의 기능을 확인했다고 하지 않아요. 기존 풀이의 EI·GS·EO 상세 상태는 148 해석에 따른 조건부 설명이며 제공 원문의 기능표로 검증된 사실로 확장하지 않아요.",
+      "summary": "원문 74HC143 표기는 유지해요. 교안 그림은 74HC148이며 원문 핀 역할 설명과 대조하되 두 IC가 같다고 확정하지 않아요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec3x8",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3×8”과 000행의 D0=1은 이진 주소를 한 선택선으로 해독하는 활성 High 디코더의 단서예요. minterm은 특정 비트 조합에서만 1인 AND 조건이에요.\n\nk=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.\n\n이 표에는 Enable이 없고 D7…D0 열 순서예요. 각 주소마다 한 출력만 1이라 번호와 실제 열을 함께 확인해요.",
+      "summary": "k=4A2+2A1+A0이고 Dk는 주소 k의 minterm이에요. 예를 들어 D5=A2A1′A0예요. ′는 NOT, 곱은 AND예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-onehot",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여덟 입력 행마다 1이 하나인 조건에서 one-hot 인코딩을 떠올려요. one-hot은 한 선만 활성인 상태이며 출력은 문자열의 숫자가 아니라 선 번호예요.\n\nDk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.\n\n이 표는 활성 High 입력과 출력이에요. 무입력과 D0 활성 모두 단순 코드 000이 될 수 있어 유효 표시를 따로 구별해야 하지만 원문에 없는 유효 열을 추가하지 않아요.",
+      "summary": "Dk만 1이면 A2A1A0는 k의 이진수이고 가중치는 4·2·1이에요. D5는 101이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-exam",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 문자열에 여러 1이 있으므로 우선순위로 한 요청을 고르는 인코더를 떠올려요. 영어 decoder 표기와 달리 표는 8입력·3출력이에요.\n\n번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.\n\n선택보다 작은 번호의 입력은 이번 코드에 무관해요. 활성 High 표에 적용하고, 선택 규칙 없는 일반 OR 인코더나 active Low IC 표와 섞지 않아요.",
+      "summary": "번호 큰 쪽 우선이라는 해석에서 k=max{j:Dj=1}, 출력은 k의 3비트 코드예요. D7…D0 순서이므로 왼쪽 첫 1이 선택돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-dec2x4-design",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NOT 2개·AND 4개”에서는 네 주소의 minterm을 떠올려요. minterm은 해당 주소에서만 1인 곱 조건이에요.\n\nI1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.\n\n일반 Enable형은 Ok=E·주소조건이지만 이 원문에는 E가 없어요. 활성 High AND형으로 두 반전선을 공유해야 지정한 게이트 수를 지켜요.",
+      "summary": "I1이 상위, I0가 하위 비트예요. O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0예요. ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-enc4x2-design",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“4×2”와 NAND 지정에서 한 활성 입력의 번호를 두 비트로 바꾸고 드모르간 법칙으로 구현하는 개념을 떠올려요.\n\nA=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.\n\none-hot일 때만 간단한 OR 코드와 같아요. NOT4·4입력 NAND3·2입력 NAND2 조건 때문에 단순 OR 그림으로 끝내지 않고 같은 원리를 지정 게이트로 구현해요.",
+      "summary": "A=D2+D3, B=D1+D3에서 A는 상위, B는 하위 비트이고 +는 OR예요. Mj는 Dj만 1인 네 입력 minterm, Tj=Mj′라 두 번째 NAND는 (T2T3)′=M2+M3예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-why",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Excess-3의 특징과 사용 이유”에서는 십진 한 자리 d에 3을 더하는 코드와 자기보수 성질을 떠올려요.\n\nX(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.\n\n유효한 십진 한 자리 코드에서 성립해요. 여러 자리 수의 무조건적인 이진 뺄셈 규칙이 아니에요. 유효 코드에 0000이 없다는 특징도 신호 두절 구별의 조건과 연결해요.",
+      "summary": "X(d)=bin4(d+3), d=0…9예요. bin4는 8·4·2·1 순서의 네 비트예요. 비트 반전은 15−(d+3)=12−d=(9−d)+3이므로 9의 보수 코드가 돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-exam",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“SW5…SW0”와 네 지정 행은 스위치 번호를 십진 값으로 읽는 one-hot Excess-3 인코더의 단서예요.\n\nSWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.\n\nSW0·SW2·SW4·SW5의 네 행만 요구돼요. 남는 NAND 입력 VCC=1은 곱을 유지해요. 입력 문자열을 이진수로 읽거나 다중 활성에 +3 규칙을 적용하지 않아요.",
+      "summary": "SWk만 1이면 출력은 bin4(k+3)이고 Bit3…Bit0 가중치는 8·4·2·1이에요. 반전 입력 NAND는 드모르간 법칙으로 연결된 SW들의 OR가 돼요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-excess3-enc-6row",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n여섯 행 000001부터 100000까지는 SW0…SW5가 한 번씩 활성인 상태예요. 십진 숫자·입력 one-hot·출력 Excess-3를 구분해요.\n\nSWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.\n\n이 회로가 다루는 여섯 숫자 0…5의 지정 행에서 적용해요. 교안의 BCD 열은 숫자의 이진 표현이며 여섯 선 스위치 상태와 같은 입력 형식이 아니에요.",
+      "summary": "SWk→십진 k→bin4(k+3)이고 출력 Bit3…Bit0는 8·4·2·1 순서예요. NAND의 반전 입력을 OR로 환원해 같은 코드인지 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 1025,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-1of4-excess3",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“1-out-of-4”와 D0D1D2D3 머리글에서 한 1의 위치가 숫자를 뜻하는 one-hot 코드를 떠올려요.\n\n입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.\n\n한 입력만 활성인 세 지정 행 1000·0100·0010에 적용해요. 보통 이진수처럼 1000=8로 읽지 않는 것이 먼저 번호를 해석하는 이유예요.",
+      "summary": "입력 Dk만 1이면 숫자는 k이고 Excess-3는 bin4(k+3)예요. D0가 왼쪽인 1000은 숫자 0이므로 0011이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prio-vs-binary",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“특징을 Binary encoder와 비교”에서는 one-hot 전제와 다중 활성 처리 규칙을 비교해요. 일반 인코더는 한 활성 선 번호를 코드로 바꿔요.\n\nOR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.\n\n우선순위는 정해진 규칙이 있을 때만 선택을 결정해요. 모든 활성 요청을 한꺼번에 기록하거나 일반 인코더가 자동으로 큰 번호를 고르는 것은 아니에요.",
+      "summary": "OR형 일반 인코더에서 D1과 D2가 동시에 1이면 001 OR 010=011이라 어느 요청도 나타내지 못해요. 번호 큰 쪽 우선이면 D2를 골라 010을 내요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“디코더를 활용하여 DMUX”에서는 주소 선택 minterm에 데이터 조건을 추가해요. 디코더는 경로를 고르고 DMUX는 그 경로로 데이터를 보내요.\n\nCk는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.\n\n각 2입력 AND를 3입력으로 바꿔 D를 연결해요. D=1이면 원 디코더와 같고 D=0이면 모두 0이에요. Low 활성 소자에 이 식을 그대로 적용하지 않아요.",
+      "summary": "Ck는 S1S0가 k일 때 1인 조건이고 활성 High AND형은 Yk=D·Ck예요. S1은 상위, S0는 하위, D는 전달 데이터예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demux-from-dec-graded",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로 변경과 기능 차이라는 두 요구에서 주소 해독과 데이터 분배를 각각 떠올려요. 주소 S1S0는 목적지, D는 보낼 값이에요.\n\nC0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.\n\n활성 High AND형에서 D를 네 게이트에 추가하면 선택 출력만 D를 따라가요. D를 Enable처럼 곱하는 관계가 회로 변경과 D=0/1 동작 차이를 함께 설명해요.",
+      "summary": "C0=S1′S0′부터 C3=S1S0까지 네 minterm에 Yk=D·Ck를 적용해요. 곱은 AND이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-74hc148-table",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원 그림의 74HC148·EI 접지와 L/H 표에서 active Low 우선순위 인코더를 떠올려요. L=0인 입력이 활성이고 IN7 쪽 우선이에요.\n\nEI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.\n\n교안 p10·11은 입력·출력 극성과 EI 비활성을 확인해요. GS·EO 핀은 그림에 보이지만 그 기능표는 해당 교안에 없어요. 이 문항은 A 세 열만 요구하므로 GS·EO 상태를 추정해 표에 추가하지 않아요.",
+      "summary": "EI=L일 때 가장 큰 활성 번호 k를 골라 A2A1A0=NOT bin3(k)를 써요. 출력 코드도 Low 활성이라 번호 6은 110을 반전한 LLH예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-quiz-dec2x4-table",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n회로의 NOT 버블과 AND 연결을 읽어 실제 minterm을 찾아요. 출력 이름 D1…D4는 일반 주소 번호와 같다고 가정하지 않아요.\n\nD1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.\n\nAND 출력에는 반전 버블이 없어 선택 출력이 1이에요. 표 순서 00·10·01·11에서 각각 D4·D3·D2·D1이 켜지는지 연결로 판정해요.",
+      "summary": "D1=b0b1, D2=b0′b1, D3=b0b1′, D4=b0′b1′예요. b0·b1은 표의 bit0·bit1이고 ′는 NOT이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-decoder-def",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Decoder에 대해 설명”에서는 이진 주소를 여러 선택선 중 하나로 바꾸는 조합회로의 정의를 떠올려요.\n\nn비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.\n\nEnable이 허용된 유효 주소에서 한 줄을 활성화해요. 활성 High는 1, Low는 0이 선택 표시예요. 모든 출력이 언제나 1개씩 High라는 정의로 일반화하지 않아요.",
+      "summary": "n비트는 최대 2ⁿ개 번호를 구별하므로 n→최대 2ⁿ개의 출력이에요. 주소 10은 번호 2를 선택해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-encoder-def",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Encoder에 대해 설명”에서는 한 활성 입력의 위치를 더 짧은 코드로 바꾸는 정의를 떠올려요.\n\n2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.\n\n일반 인코더는 one-hot 전제예요. 무입력과 다중 활성은 별도 유효 신호나 우선순위 처리가 필요하므로 정의에 입력 조건을 함께 써요.",
+      "summary": "2ⁿ개 위치는 n비트로 식별해요. D5만 활성인 8×3 인코더라면 위치 번호 5를 A2A1A0=101로 표현해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-enc8x3",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“8×3 진리표”에서는 여덟 one-hot 위치를 3비트 번호로 인코딩해요. 입력 D7…D0의 1 위치를 먼저 읽어요.\n\nA2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.\n\n한 선만 활성인 여덟 행에서 이 OR식은 번호 코드를 내요. D6은 110이고 다중 활성은 이 표가 정의하지 않으므로 우선순위 표로 확장하지 않아요.",
+      "summary": "A2=D4+D5+D6+D7, A1=D2+D3+D6+D7, A0=D1+D3+D5+D7예요. +는 OR이고 비트 가중치는 4·2·1이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 743,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-prio-why",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“사용 이유”에서는 동시에 활성인 여러 요청이 일반 코드에 섞이는 모호성을 떠올려요. 우선순위 인코더는 규칙에 따라 한 요청을 선택해요.\n\n일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.\n\n정해진 우선순위와 활성 극성을 먼저 알아야 해요. 선택되지 않은 요청도 있었다는 전체 정보는 코드에 남지 않으므로 요청 개수나 모든 요청 목록을 출력하는 회로라고 설명하지 않아요.",
+      "summary": "일반 OR식에 D1=D2=1을 넣으면 A2A1A0=011이에요. 번호 큰 쪽 우선 규칙을 정하면 D2의 코드 010을 내요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-sa-74hc143",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n원문 p2에는 “74HC143”과 A0·A1·A2·GS·EO가 적혀 있어요. 핀을 코드 출력과 상태/연결 출력으로 구분하라는 단서지만 그 페이지에 칩 그림은 없어요.\n\n같은 실험 교안 p10의 칩 그림은 명시적으로 74HC148이고 A0…A2·GS·EO가 보여요. 원문은 A0…A2=Data Output, GS=Priority Flag Output, EO=Enable Output이라고 설명해요.\n\n이 핀 역할 대조는 원문 표현을 설명하는 근거예요. 143을 148로 고쳐 쓰거나 실제 143의 기능을 확인했다고 하지 않아요. 기존 풀이의 EI·GS·EO 상세 상태는 148 해석에 따른 조건부 설명이며 제공 원문의 기능표로 검증된 사실로 확장하지 않아요.",
+      "summary": "원문 74HC143 표기는 유지해요. 교안 그림은 74HC148이며 원문 핀 역할 설명과 대조하되 두 IC가 같다고 확정하지 않아요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    }
+  ],
+  "no_js": {
+    "articles": 19,
+    "visible_recall_solve_verify": 57
+  }
+}

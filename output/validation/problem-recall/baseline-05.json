@@ -1,0 +1,2050 @@
+{
+  "files": {
+    "검증결과.md": "be14b0a475aa7f18b1871619410fdbcafe52eb863b6ecc0278fe02579f3c6ca8",
+    "실험05_기출문제.html": "10f270e54303d0ec2895085ca90890f7d99a4f89ced68001a2b2eb15109e1a94",
+    "실험05_기출문제.md": "1127650b87b62b7c800c9d53d25fe15ddb0cfaf309e4a6a1fc5ef159b69e3d7c",
+    "실험05_기출문제.pdf": "3461bf18421c721ef2b8edf73b524f53b70ed7e1ba6f0205d134a93b13a447bc",
+    "실험05_기출풀이.html": "519d30833d95c45611a2c3d5a4328e5cdafb0f9abf1ce3fe2ebd77c02eef1908",
+    "실험05_기출풀이.md": "42362d5deac18dc0e76aeab80e3ecbffbf746e24012591b8eb042ab88dc241b1",
+    "실험05_기출풀이.pdf": "a636c3f87742ae34f196f1375adf2abcc86011f630ca32103ec286f7f7980c41",
+    "실험05_실험설명.html": "b5abaa4c0e233ef9dfdc43bacb1af93c6829036023e9fbde10981320fe3420fe",
+    "실험05_실험설명.md": "7e2be46a28db526f436726931bbf3322aaebd581bbdcafdfa6afcbdec3714b6b",
+    "원문과_저작안내.md": "0d976633bcd5c61084fc6df7063b471ef0b50410f0a903cb29ac60bee3fad174",
+    "출처와_문항목록.md": "48bd04b0f3ef614915a34a8d95574918c119a71e0d818686bf0b73892ddb7669",
+    "자료/authoring-index.json": "5cbfdb523b71d7d0e6a2e1e0af39c292e35f6dc9d7d0ff6189d35ba8084ddf9b",
+    "자료/assets/note-template.html": "31c28f3cd8ed5a5fd756b81d181a6e708c8072f8aac7278400d8452ab912602c",
+    "자료/assets/review-interaction.css": "21070a4e49e9fb435d7569fcc9ea863b95f093b5a287966f897af6202732284c",
+    "자료/assets/review-interaction.js": "60671821a8b95a16f46648d94b179d18af7baa1290706854f21c8351b1e55863",
+    "자료/assets/review-template.html": "f2f19f5fd23d3d26c597a650482848dc9f6b891cd149b266545fbdfb9a378ebb",
+    "자료/assets/template-provenance.json": "cefe96c05d515c7f50bb15873450b626f2fa90459de0487069e2a665c83c736b",
+    "자료/assets/widgets.js": "aad54eaa7c039cf15feb3c8017264e758875e2f6f357048cd1e5057dbfe069f9",
+    "자료/evidence/question-bank.json": "3548bad0420ff66c7e4dc2088ce75119bd9ac1ea44fe98a94bf5c6a8a6be1f0c",
+    "자료/figures/bcd-decoder-74hc42.svg": "4854dc88e19e56013a8634c81bf94db308ddd1887079d5594513a3329feeaa24",
+    "자료/figures/dec2x4-gates.svg": "8b45f3d767ea2c022acc65b5f19c2fd85ac974dd798ba39faea97cb3233f5116",
+    "자료/figures/decoder-encoder-pair.svg": "007036bc1db7430fc9b9b5695d6b04d29f0f52a0d37692fb18fd6b662aa8efb0",
+    "자료/figures/demux-from-decoder.svg": "7a62e236e76e681ce312945a9dd8c8b0e9e620a4a9240377289b6bf7af6d10f0",
+    "자료/figures/enc4x2-nand.svg": "d80125997c98fdfb5072ab10be2c461b9d396717ffcfde51d4c3b7aa6aa0dbc6",
+    "자료/figures/excess3-encoder.svg": "87c5ee714255767c2daf51cd87e66e4ee7fcf0b5a51059ecbaa6429ff9831375",
+    "자료/figures/hc148-block.svg": "63fe53df8c020c1706343a5142b14e3e0ce3538e8aea24676b01cfd3289bd422",
+    "자료/figures/redraw-manifest.json": "8e60e00fa1e4d0388ae249e71ffa8298d045d62ed84ab3715867b06069a0eb71",
+    "자료/figures/questions/q-74hc148-table-given-01.png": "5133ba7e8cfbeb45c6f992567778da9a68a303c800a230dbb75640cef8eb75d2",
+    "자료/figures/questions/q-74hc148-table-given-01.svg": "c854832188038f6c84bcd42d32ff1050d73d8aa161f690700088fadc3012a1f2",
+    "자료/figures/questions/q-demux-from-dec-given-01.png": "6b02f42244ea1b957c5688899ee606ebdeb04769f1926c073e6cda1960d74e33",
+    "자료/figures/questions/q-demux-from-dec-given-01.svg": "3f0baaa2284a3f670a51b432f3ae447e0603f5d436f7edf348106e4d81fc90c7",
+    "자료/figures/questions/q-excess3-enc-6row-given-01.png": "700d439b0cb4228385e31c7f6b258133f907b67aaab94bfa748fddcba17619c7",
+    "자료/figures/questions/q-excess3-enc-6row-given-01.svg": "6524ce533cc2d466b91548c29f19d55aab1ef1e36112f309ab49d4c404ea11e8",
+    "자료/figures/questions/q-excess3-enc-exam-given-01.png": "700d439b0cb4228385e31c7f6b258133f907b67aaab94bfa748fddcba17619c7",
+    "자료/figures/questions/q-excess3-enc-exam-given-01.svg": "6524ce533cc2d466b91548c29f19d55aab1ef1e36112f309ab49d4c404ea11e8",
+    "자료/figures/solutions/q-dec2x4-design-solution-01.png": "24f4cbd72eae26f85848df313edd461e69b9c4783bf7277bcc4193bafe6c3d70",
+    "자료/figures/solutions/q-dec2x4-design-solution-01.svg": "e34870b5d1f4074d0f47c7e0aa488720b88470608b9245c251354c6b9c710bdf",
+    "자료/figures/solutions/q-demux-from-dec-graded-solution-01.png": "d1a5c28406598e254fde675abc4f386b21a60c06797d8f82607717b6c2246e85",
+    "자료/figures/solutions/q-demux-from-dec-graded-solution-01.svg": "68bd4da45cf114322bf0d30bdba0994602668d7ffcfe2f2887ad4a5df8a13518",
+    "자료/figures/solutions/q-demux-from-dec-solution-01.png": "d1a5c28406598e254fde675abc4f386b21a60c06797d8f82607717b6c2246e85",
+    "자료/figures/solutions/q-demux-from-dec-solution-01.svg": "68bd4da45cf114322bf0d30bdba0994602668d7ffcfe2f2887ad4a5df8a13518",
+    "자료/figures/solutions/q-enc4x2-design-solution-01.png": "9f8f9d71a93fc42645d45dd8dba23ac6d1f5aa489e891fab642fcca9bfb1c688",
+    "자료/figures/solutions/q-enc4x2-design-solution-01.svg": "679e1207a6ac8d1d0ce88bf62f31c9e37a3a5f26c9c91c633413152485d6b734",
+    "자료/evidence/assets/s01-p1.jpg": "dc96e22d4caa9fb34542b1705f6710352556ec186e81570d883ac30414989e6b",
+    "자료/evidence/assets/s02-p1.png": "19554f16e1e09b2260c71398a8d970b0ad41b77c2bdeaa1eae5a027ee2cd92d5",
+    "자료/evidence/assets/s03-p1-q1.png": "95ca2d6b3735f8f4c20171e3fdba06d30a5d7b4d5961661a059cd53a81a00951",
+    "자료/evidence/assets/s03-p1-q2.png": "a797a8f23c037766f351f96edb4a435b18557a302454dace65a7cc6fdc2a99b9",
+    "자료/evidence/assets/s03-p1-q3.png": "9d4ad54f6fb5c3e96c105d24810c6c7b0b05f5965cff7bfc10e0dccc667636b7",
+    "자료/evidence/assets/s03-p1-q4.png": "47f1ac352f368841a0dcf4bd05a2011cb36c9b18de5a98f9da45ed0b0ec074f4",
+    "자료/evidence/assets/s03-p1-q5.png": "ac1deb9d5cb322b575ac922f82cfc176a14c6c8f3e302d5c4b53a47d0fefdd0c",
+    "자료/evidence/assets/s03-p1.png": "da1d19314fc6fd8c5e80fa6d7f2eed06a7c979973586c21cb4a048c9c6b425cf",
+    "자료/evidence/assets/s04-p1.png": "fe0c422cb6986891681d9d689e7d9763262f58a116feef7c6a5a499e75bdd896",
+    "자료/evidence/assets/s04-p2.png": "8b135e27b756e341cf53bf2a6cec430a4a24e1d573a4846942390b1f401e9d82",
+    "자료/evidence/assets/s05-p1-q1.png": "04ec27870d984df3fe219150b70d1f4e8f006e0941a946d5081171da132093fb",
+    "자료/evidence/assets/s05-p1-q2.png": "5104bcf95ad7951ff3dc3a1a081e82c54c8d45460511e4dcc14d972f76c3422f",
+    "자료/evidence/assets/s05-p1-q3.png": "3b29237813a07cbf1f01310453615b91e0daef7406e90f49d49f32be17a0f925",
+    "자료/evidence/assets/s05-p1-q4.png": "ee9522459602604c5e4b945e94fa49e1055f59b9097e4984bbe9168babff9639",
+    "자료/evidence/assets/s05-p1.png": "1510c25605a22bad38c773781043822c3ca5b1a1e81846a57f61c5f7f651efd7",
+    "자료/evidence/assets/s06-p1.png": "f19effe215d2223016bb9c460a836ee22f5ff51c8645b560d0bda9703ba11e70",
+    "자료/evidence/assets/s07-q1.png": "8acbcdcc0a806c139e93e5e89839b1a3cb4999ee9f0715d02f65b51982cba138",
+    "자료/evidence/assets/s07-q2.png": "04faf0e9ad713ed90e23f3242b16d36854af0869129896e36c3323d5bd5e442b",
+    "자료/evidence/assets/s07-q3.png": "e3636c09c34a77e4b77a7f1a7522be0d9a9c387fbaef3deeb85fadc1fc08da75",
+    "자료/evidence/assets/s08-p1.png": "5be8546b1e1e42127345270cf253a078cafcc63a0aa07e109d9b89cfaffdcd17",
+    "자료/evidence/assets/s09-p1.png": "d3df40e7c5e409541f3866aa983c91efc3d08e5598648d530165bd1f3504895d",
+    "자료/evidence/assets/s10-p1.png": "fa8c089aa3ef9a65a3e08b24757494e4a61658c336d99d8c9d861862d28dd111",
+    "자료/evidence/assets/s10-p2.png": "d2401da0bd903a249a43d19e37846d89a6232169a143601cda51920bda2f0f63",
+    "자료/evidence/assets/s11-p1-q1.png": "ca2478d9b3b6137f30e85add46ad721f5189aec571fc163f21571ae143d9a6a3",
+    "자료/evidence/assets/s11-p1-q2.png": "29c2194c08b1024f42bf3ed52798e929504aba3d9cddbd8829a2789ed8632575",
+    "자료/evidence/assets/s11-p1-q3.png": "8f71dce8eb28ddbb3eabad4ae86c87054e8604e1b8fcf984e99d87b58065c51f",
+    "자료/evidence/assets/s11-p1-q4.png": "d61201f8e585f4f2fb3344e45ebe34c4e624a4bcc23cbcd826577a51e51721df",
+    "자료/evidence/assets/s11-p1-q5.png": "06ffa6c99b506a5bd8ec42a3c5190ebb02543dbc12fd0169f5cd836d8394fa49",
+    "자료/evidence/assets/s11-p1-q6.png": "0e9abb0efb16079a59c5e9a283e31d3503c833310d3c6ac8eeb6f75cfe19f545",
+    "자료/evidence/assets/s11-p1-q7.png": "74ad2ba9a3f4c715015c5c63f5766e0f0453396f44cd127652abaccd7c3222bf",
+    "자료/evidence/assets/s11-p1.png": "040e68a51e7d78c58e9f32b7624a15684c20cc9a35d21ef6ebb7a4de189530c4",
+    "자료/evidence/assets/s12-p1.png": "12aadfc31b53267db9fc79a63d61a1b338f4fa3b9708a34284ea53d1267b9a87",
+    "자료/evidence/assets/s12-p2.png": "97ed2acea6f9d3d4cd2a71537f06f011762bb00b0427a7c919eff377a4c8e53e",
+    "자료/evidence/assets/s13-p1.png": "b6e4986c293e42058c77804bba323d20b2d9def87e919aa1399f2a8c8bd6b511",
+    "자료/evidence/assets/s13-p2.png": "659a94f65e1926863211b0bb6b1fd6e9fa00bae54411ebe0395171498a7b4937",
+    "자료/evidence/assets/s13-p3.png": "628022de3abe3ad23eced1320d69014434871443b95a6250781916dc85aa24b6",
+    "자료/evidence/assets/s13-p4.png": "f19effe215d2223016bb9c460a836ee22f5ff51c8645b560d0bda9703ba11e70",
+    "자료/evidence/assets/s14-p1-sec1.png": "486b66f2d4d7b521358576120ef026aae361e27ee59154f7a068856c5ecc2226",
+    "자료/evidence/assets/s15-r1.png": "1a76daf1e4d47cd22ae22aecff1e7ab124979116aa2138b141880758f2cd904e",
+    "자료/evidence/assets/s15-r2.png": "b7ea407fb79e94d73c8b45d8e5627cc7cd467a21c082060bdb3fa425d817ed57",
+    "자료/evidence/assets/s16-r1.png": "c283f38556f959a84037ff335f84f631dcdd04d6bf53ecd3785148c5abcf17ee",
+    "자료/assets/vendor/provenance.json": "8b7f9bc48a8e9ad7ec0207c133441078b99305ffc08adde2884dada99b52015f",
+    "자료/assets/workbook/answer.html": "8d7d87cc579ee11109f49d77c5beb31b592280bcbcfae97513b8e767e0bc8800",
+    "자료/assets/workbook/problem.html": "77d5e785b3a12ff53deb33d65521d989661b2c7847a51d4df1bc4dfad76da594",
+    "자료/assets/workbook/provenance.json": "4c1bf4e3e34bbbeaaa1e5ea4cef15eec472b13d7c427362c9e2ba725938b8dcd",
+    "자료/assets/vendor/katex/auto-render.min.js": "7b57d427ac6270677daf8d8380ded2cc73336f9149a167b8e1fe0d6ef66604ae",
+    "자료/assets/vendor/katex/katex.min.css": "6c8a78f2a34035c132722da32a55d1af3a0d37529017c7d101652307c5981c29",
+    "자료/assets/vendor/katex/katex.min.js": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+    "자료/assets/vendor/katex/LICENSE": "4313255416487a4a7602f134a7cdd2b33dd9f7e7b41d3af63dc9f785bca425a0",
+    "자료/assets/vendor/pretendard/LICENSE": "8a2aba6114145294edbbce5998eab74320e7e07ce39999cc9f95ae2967d2eb9e",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff": "d8511e03d73b848d3df45d6f3d1166bb9532f7547b68da5f768d7b60df76faaa",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff2": "c5fd0c3568fc1368a3edc0d0fbb36df029935954276e3573451b3bae09e27296",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff": "b02e6d7d8606f13f12682bc4d43575d403a9cbb2d662f6f4f137dba384633267",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff2": "4609c3356e536fafe38f4add0daeceb3d8595d3057bce13c428c33ddbd43d362",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff": "1f43803fe4cb56b82061c7392eae37a9123e839b39cc0aa3c3f5b22edcb170d3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2": "dd7c1e156f508eb962acc7a33a7a1896d1e0b71e11156fad96e731689ceb6dc3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff": "f8c8f64cec9d0c4b2c675a5cac99b2cef9d34f4b485caf9ec47901314ff8c460",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2": "df43dc9165dff4542114674bcd8b79b7daae6dec004004586d5d076fec6fe2aa",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff": "744e50b9780722eada9afc308712c7d1dc5176d8b46c315d010fa42fffb76fe6",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff2": "b7426635cce2ea2b95c9c802e43fba1c620e0dafaf25f737c069b8b4e09fa841",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff": "6231269ba695835ca13b03cf411b4e68379993039b4033c373e4e9940ee5370d",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff2": "d03481330eeba0659ab5b87f25ceb504a35de377dd90a0d0aba2982eb2d05e2c",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff": "3214d4fdb5bd41e10c9f0b5fa8c6ff2f1096b249665cdbf34948434ee7c51934",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff2": "fad853f7f47c6c8b103171e7193fa095708cdcd70850a71d93aa5379e8a61d63",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff": "e476f124e88472078cf472ac09768331f93f76063a52183ff303a192adea800a",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2": "c863f76a7de5c1ddc1ed8b2fa794964530774592c4f31407a84e2a2ae93f17f0",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff": "1c760324692f0d4bdd46f6f2378ce73aaa37056b8673163d1463adaee8b3dee1",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff2": "1539755224a64719d5b18406762c476db74fcc299b9e4641ca1e9812fbc7a09b",
+    "자료/assets/vendor/pretendard/pretendard.css": "8e9774f2f94d64c786cda43592c6034847ee491a7aba443e02d863bc2d03a1c3"
+  },
+  "manifest": {
+    "schema_version": 1,
+    "experiment": 5,
+    "title": "Decoder & Encoder — 코드와 켜진 줄을 서로 바꿔요",
+    "edition_status": "current",
+    "bank_import": {
+      "bank_id": "bank-exp05",
+      "schema_version": 1,
+      "source_path": "문제은행/실험05/question-bank.json",
+      "sha256": "3548bad0420ff66c7e4dc2088ce75119bd9ac1ea44fe98a94bf5c6a8a6be1f0c",
+      "snapshot_path": "evidence/question-bank.json",
+      "index_path": "authoring-index.json"
+    },
+    "sources": [
+      {
+        "id": "s-b2dda58c6e7c3003",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 개념_Mux_Demux_Decoder_동작비교.jpg",
+        "sha256": "dc96e22d4caa9fb34542b1705f6710352556ec186e81570d883ac30414989e6b",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-1fc826040f61266f",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 개념_디코더vs디멀티플렉서_비교.png",
+        "sha256": "19554f16e1e09b2260c71398a8d970b0ad41b77c2bdeaa1eae5a027ee2cd92d5",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-79ca3a1c1d1bc3fb",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출 2016-2.pdf",
+        "sha256": "680747b2ad1cf42983a3202679dc3d6eca57ac1a30a9aaecd5b2fdbf4f1d637f",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-107f6ce47fba6884",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_단답형.pdf",
+        "sha256": "5f6058f9b9179a21fc41420379f8054239a4f936ba2015446aa2a94930784125",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-32f862c9e26368e3",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_문제.pdf",
+        "sha256": "5931be24bb68541ce8d3ee50a062c257e29e0c35ddb11d360b02e34feb3d082a",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-a8cee5d4d1faeece",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_정답.pdf",
+        "sha256": "67682af544aa048e95908ae98909690ac91b017b75db227e265c95dd69ee613d",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-ed4cac1e3951b66e",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_채점본.jpg",
+        "sha256": "ba3ea5a99110041d668d6aab47abb405d787eff0851427f9890dadf02d2ead5f",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-c58bca4476d00ebb",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_풀이.pdf",
+        "sha256": "aaf24d6b39e8efafd0db4a6b74fb773d4d8dc404eb58a7e029ad4b185fc4633a",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-fe795d84f27cd7a7",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v1.pdf",
+        "sha256": "d3bbfca314867f2f4b5b5bdfab6616196b969c0119c7fd4aa64193e23d1ce251",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-4e386aa02de35b29",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v2.pdf",
+        "sha256": "41c29abd2699972c59ee186fcd03a40eb6facdbe0755e831d115b7fdbec6df76",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-e15e546d7f1ab7ea",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v3.pdf",
+        "sha256": "f76866ab07f61d876a88fecaa7247f4f3096f9606dbccb3f5ab321e3965c3424",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-f0e88463a5a0aac2",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v4.pdf",
+        "sha256": "e9c1a863d80715a7b3ff0e7b1773327e630871791fee92e8b2d0cf93966d41fa",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-a198a3f631a7cc71",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 종합_기출문제 (4p).pdf",
+        "sha256": "b44ccdc489c3e9a5f25faf921cebbd044a4e4ca42a72f40383eb388372c404be",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-159f6d57944c1fa6",
+        "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 해설.pdf",
+        "sha256": "f80dfbb75376b5bb7c501695a3b9348771bd8e78c9a0218abe8edf2cd4a35646",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-e4efe30d3499ecb7",
+        "path": "from_the_past/정리/퀴즈/실험5/원본_docx/실험 5.docx",
+        "sha256": "4089fbb181cf71e555c6028f2033712d74bd98e3dc9355871cb8514afdd04d1d",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-3850babef1453f16",
+        "path": "from_the_past/정리/퀴즈/실험5/원본_docx/실험5퀴즈_답.docx",
+        "sha256": "628d3bf03fa9e56bd3368e8019bdb0b494642882c50bd3294e22357b22e93b8a",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-977902e67f269bac",
+        "path": "강의노트/실험5. Decoder & Encoder.pdf",
+        "sha256": "1f37ba56b7e9648c3ad7a6c8d895d236a5593dba74031d3b7d75b07f4c52dbf4",
+        "kind": "manual",
+        "edition": "current"
+      },
+      {
+        "id": "s-130a964ad2ce2dbf",
+        "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+        "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+        "kind": "notice",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-d2c7c0c179bdd665",
+        "path": "from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/74hc42-bcd-todecimal.jpg",
+        "sha256": "3cce6fe75008b81476c6bb66e41251161818734b2710575913ebc95d49b28ab9",
+        "kind": "datasheet",
+        "edition": "unknown"
+      }
+    ],
+    "topics": [
+      {
+        "id": "t-start",
+        "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+        "requires": [],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 1,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 2,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 7,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-130a964ad2ce2dbf",
+            "pdf_page": null,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 3,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 5,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 9,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 11,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-start.html",
+        "md_notes": "판본 기록: 교안 표지는 25-1이에요. 수행 범위는 9월 14일 공지의 실험 1-2·2-2예요. 그림은 교안 p3·p5의 설명을 바탕으로 직접 다시 그렸어요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
+      },
+      {
+        "id": "t-basics",
+        "title": "0·1, 게이트와 이진수를 다시 읽어요",
+        "requires": [
+          "t-start"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 6,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-basics.html"
+      },
+      {
+        "id": "t-decoder",
+        "title": "디코더는 코드에 맞는 한 줄만 켜요",
+        "requires": [
+          "t-basics"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 3,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 8,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-decoder.html",
+        "md_notes": "그림 재제작: 교안 p8 회로(U1 74HC04, U2 74HC08)를 읽어 NOT 2개·AND 4개 구조를 새로 그렸어요. 교안 그림은 D3가 위지만 이 그림은 D0가 위예요. 진리표는 교안 p4와 대조했어요."
+      },
+      {
+        "id": "t-bcd",
+        "title": "BCD to Decimal 디코더(74HC42)를 배워요",
+        "requires": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 9,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-d2c7c0c179bdd665",
+            "pdf_page": null,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-bcd.html",
+        "md_notes": "그림 재제작: 교안 p9의 74HC42 연결을 새로 그렸어요. 핀 이름은 from_the_past 74hc42 핀아웃 그림(A=15, B=14, C=13, D=12)과 대조했어요. 1010~1111에서 모든 출력이 High라는 설명은 일반적인 74HC42 동작 기준이며 측정 기록으로 확인하지 않았어요."
+      },
+      {
+        "id": "t-encoder",
+        "title": "인코더는 켜진 줄의 번호를 코드로 바꿔요",
+        "requires": [
+          "t-basics"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 5,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 6,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-encoder.html",
+        "md_notes": "그림 재제작: 4×2 NAND 인코더는 기출의 게이트 수(NOT 4, 4입력 NAND 3, 2입력 NAND 2)를 만족하도록 직접 설계했고, 모든 입력 조합(한 줄만 켜진 경우)을 코드로 검산했어요."
+      },
+      {
+        "id": "t-priority",
+        "title": "우선순위 인코더와 74HC148을 배워요",
+        "requires": [
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 5,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 10,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 11,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-priority.html",
+        "md_notes": "판본 기록: 퀴즈 해설.pdf의 “IN0가 가장 높은 우선순위”는 같은 해설의 예와 교안 p11 표에 맞지 않아 교안 표를 기준으로 했어요. GS·EO의 구체 동작은 이 저장소에 74HC148 데이터시트가 없어 일반 설명 기준의 보충이에요. 그림은 교안 p10 연결을 새로 그린 블록도예요."
+      },
+      {
+        "id": "t-excess3",
+        "title": "Excess-3 코드와 인코더를 배워요",
+        "requires": [
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 12,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 13,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-excess3.html",
+        "md_notes": "그림 재제작: 교안 p12 회로의 NOT 6개와 74HC20 4개 배선을 확대해 읽고 새로 그렸어요(A3=D5, A2=D1+D2+D3+D4, A1=D0+D3+D4, A0=D0+D2+D4). 모든 스위치 조합 중 한 개만 켠 여섯 경우를 계산으로 검산했어요. 교안 p13의 변환표가 9까지인 점과 회로가 D5까지인 점의 차이를 표시했어요."
+      },
+      {
+        "id": "t-demux",
+        "title": "디코더로 디멀티플렉서를 만들어요",
+        "requires": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 3,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-demux.html",
+        "md_notes": "보충: 실험 4와 이어지는 내용이에요. 기출의 ‘2 to 4 디코더 게이트 회로 활용’ 문항의 회로를 읽어 새로 그렸어요. 문제 그림의 AND 순서는 위에서부터 S1S0=00, 01, 10, 11이에요."
+      },
+      {
+        "id": "t-lab",
+        "title": "실험에서 바꾸고 관찰할 것을 정리해요",
+        "requires": [
+          "t-bcd",
+          "t-priority",
+          "t-excess3"
+        ],
+        "sources": [
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 7,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 8,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 9,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 10,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 12,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-977902e67f269bac",
+            "pdf_page": 13,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-lab.html",
+        "md_notes": "판본 기록: 준비물과 항목은 교안 p7 기준이에요."
+      }
+    ],
+    "problems": [
+      {
+        "id": "q-dec3x8",
+        "bank_question_id": "q-dec3x8",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "A=k이면 Dk만 1 (000→D0, …, 111→D7)",
+        "answer_status": "verified",
+        "title": "3×8 디코더의 진리표",
+        "workbook_fragment": "workbook/q-dec3x8.json",
+        "explanation_fragment": "problem-explanations/q-dec3x8.html"
+      },
+      {
+        "id": "q-prio-onehot",
+        "bank_question_id": "q-prio-onehot",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority"
+        ],
+        "sources": [
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; OOXML 본문 P84; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "Dk→k의 3비트 이진수 (D0→000, …, D7→111)",
+        "answer_status": "verified",
+        "title": "8×3 우선순위 인코더 — 한 줄만 켜진 입력",
+        "workbook_fragment": "workbook/q-prio-onehot.json",
+        "explanation_fragment": "problem-explanations/q-prio-onehot.html"
+      },
+      {
+        "id": "q-prio-exam",
+        "bank_question_id": "q-prio-exam",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority"
+        ],
+        "sources": [
+          {
+            "source_id": "s-79ca3a1c1d1bc3fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "0011 1010→101, 0101 1110→110, 0001 1101→100, 0110 0100→110, 1111 1111→111 (번호가 큰 입력 우선)",
+        "answer_status": "verified",
+        "title": "8×3 우선순위 인코더 — 여러 비트가 켜진 입력",
+        "workbook_fragment": "workbook/q-prio-exam.json",
+        "explanation_fragment": "problem-explanations/q-prio-exam.html"
+      },
+      {
+        "id": "q-prio-behavior",
+        "bank_question_id": "q-prio-behavior",
+        "kind": "predicted",
+        "status": "duplicate",
+        "reason": "묻는 개념(동시 입력에서 우선순위 인코더가 어떤 출력을 내는가)과 모범 답이 q-prio-vs-binary 의 부분집합이에요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; OOXML 본문 P121; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": "q-prio-vs-binary",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-dec2x4-design",
+        "bank_question_id": "q-dec2x4-design",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-79ca3a1c1d1bc3fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; OOXML 본문 P123; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "O0=I1′I0′, O1=I1′I0, O2=I1I0′, O3=I1I0",
+        "answer_status": "verified",
+        "title": "2×4 디코더의 게이트 설계",
+        "workbook_fragment": "workbook/q-dec2x4-design.json",
+        "explanation_fragment": "problem-explanations/q-dec2x4-design.html"
+      },
+      {
+        "id": "q-enc4x2-design",
+        "bank_question_id": "q-enc4x2-design",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-79ca3a1c1d1bc3fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 5; OOXML 본문 P129; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "A=D2+D3, B=D1+D3 (NOT 4, 4입력 NAND 3, 2입력 NAND 2)",
+        "answer_status": "verified",
+        "title": "4×2 인코더의 NAND 설계",
+        "workbook_fragment": "workbook/q-enc4x2-design.json",
+        "explanation_fragment": "problem-explanations/q-enc4x2-design.html"
+      },
+      {
+        "id": "q-excess3-why",
+        "bank_question_id": "q-excess3-why",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-excess3"
+        ],
+        "sources": [
+          {
+            "source_id": "s-79ca3a1c1d1bc3fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 6; OOXML 본문 P131; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "십진 한 자리 BCD+3; 비트 반전=9의 보수; 0000 미사용",
+        "answer_status": "verified",
+        "title": "Excess-3 코드의 특징과 사용 이유",
+        "workbook_fragment": "workbook/q-excess3-why.json",
+        "explanation_fragment": "problem-explanations/q-excess3-why.html"
+      },
+      {
+        "id": "q-excess3-enc-exam",
+        "bank_question_id": "q-excess3-enc-exam",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-excess3"
+        ],
+        "sources": [
+          {
+            "source_id": "s-79ca3a1c1d1bc3fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "000001→0011, 000100→0101, 010000→0111, 100000→1000",
+        "answer_status": "verified",
+        "title": "Excess-3 인코더 회로의 진리표(네 행)",
+        "workbook_fragment": "workbook/q-excess3-enc-exam.json",
+        "explanation_fragment": "problem-explanations/q-excess3-enc-exam.html"
+      },
+      {
+        "id": "q-excess3-enc-6row",
+        "bank_question_id": "q-excess3-enc-6row",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-excess3"
+        ],
+        "sources": [
+          {
+            "source_id": "s-e15e546d7f1ab7ea",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-4e386aa02de35b29",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-f0e88463a5a0aac2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-e4efe30d3499ecb7",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 7; OOXML 본문 P134~P180; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "000001→0011, 000010→0100, 000100→0101, 001000→0110, 010000→0111, 100000→1000",
+        "answer_status": "verified",
+        "title": "Excess-3 인코더 회로의 진리표(여섯 행)",
+        "workbook_fragment": "workbook/q-excess3-enc-6row.json",
+        "explanation_fragment": "problem-explanations/q-excess3-enc-6row.html"
+      },
+      {
+        "id": "q-1of4-excess3",
+        "bank_question_id": "q-1of4-excess3",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-excess3"
+        ],
+        "sources": [
+          {
+            "source_id": "s-32f862c9e26368e3",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-c58bca4476d00ebb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-3850babef1453f16",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; OOXML 본문 P4~P8; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "1000→0011, 0100→0100, 0010→0101",
+        "answer_status": "verified",
+        "title": "1-out-of-4 코드를 Excess-3로 변환",
+        "workbook_fragment": "workbook/q-1of4-excess3.json",
+        "explanation_fragment": "problem-explanations/q-1of4-excess3.html"
+      },
+      {
+        "id": "q-1of4-excess3-graded",
+        "bank_question_id": "q-1of4-excess3-graded",
+        "kind": "past",
+        "status": "held",
+        "reason": "채점본 사진의 문항이 부분 판독이에요. 인쇄된 “1-out-of-4”와 열 머리가 취소선으로 지워지고 BCD가 손글씨로 쓰여 있어 공식 정정인지 응시자 메모인지 알 수 없어요. 세 번째 행이 0001로 인쇄되어 있어 q-1of4-excess3 와 조건이 달라요. 추측해 채우지 않았어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-ed4cac1e3951b66e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1-1; 이미지 영역",
+            "bbox": null,
+            "image_size": null,
+            "question": "1-1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-prio-vs-binary",
+        "bank_question_id": "q-prio-vs-binary",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority",
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-32f862c9e26368e3",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-ed4cac1e3951b66e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1-2; 이미지 영역",
+            "bbox": null,
+            "image_size": null,
+            "question": "1-2"
+          },
+          {
+            "source_id": "s-c58bca4476d00ebb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-3850babef1453f16",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; OOXML 본문 P9~P10; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "동시 입력 시 Binary는 잘못된 코드, Priority는 우선순위가 높은 입력의 코드",
+        "answer_status": "verified",
+        "title": "우선순위 인코더와 Binary 인코더의 비교",
+        "workbook_fragment": "workbook/q-prio-vs-binary.json",
+        "explanation_fragment": "problem-explanations/q-prio-vs-binary.html"
+      },
+      {
+        "id": "q-demux-from-dec",
+        "bank_question_id": "q-demux-from-dec",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-demux"
+        ],
+        "sources": [
+          {
+            "source_id": "s-32f862c9e26368e3",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-c58bca4476d00ebb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-3850babef1453f16",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; OOXML 본문 P11~P13; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "AND를 3입력으로 바꾸고 D 연결: Y0=S1′S0′D, Y1=S1′S0D, Y2=S1S0′D, Y3=S1S0D",
+        "answer_status": "verified",
+        "title": "디코더 회로로 1 to 4 디멀티플렉서 만들기",
+        "workbook_fragment": "workbook/q-demux-from-dec.json",
+        "explanation_fragment": "problem-explanations/q-demux-from-dec.html"
+      },
+      {
+        "id": "q-demux-from-dec-graded",
+        "bank_question_id": "q-demux-from-dec-graded",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-demux"
+        ],
+        "sources": [
+          {
+            "source_id": "s-ed4cac1e3951b66e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; 이미지 영역",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "AND 3입력+D 연결; 차이: 데이터 입력 D의 유무, D=1이면 디코더와 같음",
+        "answer_status": "verified",
+        "title": "디코더로 DMUX 만들기와 두 회로의 차이",
+        "workbook_fragment": "workbook/q-demux-from-dec-graded.json",
+        "explanation_fragment": "problem-explanations/q-demux-from-dec-graded.html"
+      },
+      {
+        "id": "q-74hc148-table",
+        "bank_question_id": "q-74hc148-table",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority"
+        ],
+        "sources": [
+          {
+            "source_id": "s-32f862c9e26368e3",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-c58bca4476d00ebb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-3850babef1453f16",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; OOXML 본문 P14~P19; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "둘째 행 LLH, 셋째 행 LLL",
+        "answer_status": "verified",
+        "title": "74HC148 우선순위 인코더의 진리표",
+        "workbook_fragment": "workbook/q-74hc148-table.json",
+        "explanation_fragment": "problem-explanations/q-74hc148-table.html"
+      },
+      {
+        "id": "q-quiz-dec2x4-table",
+        "bank_question_id": "q-quiz-dec2x4-table",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a8cee5d4d1faeece",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-fe795d84f27cd7a7",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "Quiz 문항 1; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "00→D4, 10→D3, 01→D2, 11→D1만 1",
+        "answer_status": "verified",
+        "title": "2×4 디코더 회로의 진리표",
+        "workbook_fragment": "workbook/q-quiz-dec2x4-table.json",
+        "explanation_fragment": "problem-explanations/q-quiz-dec2x4-table.html"
+      },
+      {
+        "id": "q-quiz-excess3-merit",
+        "bank_question_id": "q-quiz-excess3-merit",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "Excess-3 코드의 장점(9의 보수)을 묻는 문항으로, q-excess3-why 의 답에 포함돼요. 문장은 달라요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-a8cee5d4d1faeece",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-fe795d84f27cd7a7",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "Quiz 문항 2; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": "q-excess3-why",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-quiz-latch-ff",
+        "bank_question_id": "q-quiz-latch-ff",
+        "kind": "unknown",
+        "status": "other_experiment",
+        "reason": "Latch와 Flip-Flop는 실험 5(Decoder & Encoder)의 교안 범위가 아니에요. 순서회로 실험에서 다뤄요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-a8cee5d4d1faeece",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-fe795d84f27cd7a7",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "Quiz 문항 3; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-quiz-rs-ff",
+        "bank_question_id": "q-quiz-rs-ff",
+        "kind": "unknown",
+        "status": "other_experiment",
+        "reason": "R-S Flip-Flop 진리표는 실험 5(Decoder & Encoder)의 교안 범위가 아니에요. 순서회로 실험에서 다뤄요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-a8cee5d4d1faeece",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-fe795d84f27cd7a7",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "Quiz 문항 4; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-quiz-jk-clr-pr",
+        "bank_question_id": "q-quiz-jk-clr-pr",
+        "kind": "unknown",
+        "status": "other_experiment",
+        "reason": "74HC76 J-K Flip-Flop의 CLR/PR은 실험 5의 교안 범위가 아니에요. 플립플롭 실험에서 다뤄요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-a8cee5d4d1faeece",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-fe795d84f27cd7a7",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "Quiz 문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-a198a3f631a7cc71",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "Quiz 문항 5; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-decoder-def",
+        "bank_question_id": "q-sa-decoder-def",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-decoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "n비트 코드를 2ⁿ개 중 한 줄 활성화",
+        "answer_status": "verified",
+        "title": "Decoder를 설명",
+        "workbook_fragment": "workbook/q-sa-decoder-def.json",
+        "explanation_fragment": "problem-explanations/q-sa-decoder-def.html"
+      },
+      {
+        "id": "q-sa-encoder-def",
+        "bank_question_id": "q-sa-encoder-def",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "2ⁿ개 입력 중 활성 입력 위치를 n비트 코드로",
+        "answer_status": "verified",
+        "title": "Encoder를 설명",
+        "workbook_fragment": "workbook/q-sa-encoder-def.json",
+        "explanation_fragment": "problem-explanations/q-sa-encoder-def.html"
+      },
+      {
+        "id": "q-sa-dec3x8",
+        "bank_question_id": "q-sa-dec3x8",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "같은 문장의 3×8 디코더 진리표 문항이고 답 표도 같아요(열 순서만 A 쪽이 앞).",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": "q-dec3x8",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-enc8x3",
+        "bank_question_id": "q-sa-enc8x3",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "Dk→k의 3비트 이진수",
+        "answer_status": "verified",
+        "title": "8×3 인코더 진리표",
+        "workbook_fragment": "workbook/q-sa-enc8x3.json",
+        "explanation_fragment": "problem-explanations/q-sa-enc8x3.html"
+      },
+      {
+        "id": "q-sa-prio-why",
+        "bank_question_id": "q-sa-prio-why",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority",
+          "t-encoder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "동시 입력 충돌 해결: 우선순위가 높은 입력 선택",
+        "answer_status": "verified",
+        "title": "Priority Encoder의 사용 이유",
+        "workbook_fragment": "workbook/q-sa-prio-why.json",
+        "explanation_fragment": "problem-explanations/q-sa-prio-why.html"
+      },
+      {
+        "id": "q-sa-dec2x4-table",
+        "bank_question_id": "q-sa-dec2x4-table",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "같은 문장·같은 답 표지만 이 자료에는 회로 그림이 없어요. 회로가 있는 q-quiz-dec2x4-table 로 풀어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          }
+        ],
+        "duplicate_of": "q-quiz-dec2x4-table",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-excess3",
+        "bank_question_id": "q-sa-excess3",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "“Excess-3 코드 설명(진리표, 사용이유)” 문항이고 제공 답은 사용 이유(9의 보수)뿐이에요. q-excess3-why 와 표(노트)로 다뤄요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          }
+        ],
+        "duplicate_of": "q-excess3-why",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-excess3-enc",
+        "bank_question_id": "q-sa-excess3-enc",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "같은 개념의 Excess-3 인코더 진리표 문항인데 이 자료에는 회로 그림과 표 입력 행이 없고 답 자리가 물음표뿐이에요. q-excess3-enc-6row 로 풀어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          }
+        ],
+        "duplicate_of": "q-excess3-enc-6row",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-enc-from-table",
+        "bank_question_id": "q-sa-enc-from-table",
+        "kind": "unknown",
+        "status": "held",
+        "reason": "표(Normal Count 00~11 → 1000, 0100, 0010, 0001)는 2비트 입력과 one-hot 출력이라 디코더로 보이는데 문장은 “Encoder 회로를 그려라”이고 제공 답이 물음표뿐이에요. 용어와 조건이 충돌해 조건을 정하지 못해 보류했어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 9; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-sa-74hc143",
+        "bank_question_id": "q-sa-74hc143",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 독립 풀이로 대조",
+        "topics": [
+          "t-priority"
+        ],
+        "sources": [
+          {
+            "source_id": "s-107f6ce47fba6884",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 10; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "A0~A2 데이터 출력, GS Priority Flag, EO Enable 출력",
+        "answer_status": "verified",
+        "title": "우선순위 인코더 IC의 출력 핀",
+        "workbook_fragment": "workbook/q-sa-74hc143.json",
+        "explanation_fragment": "problem-explanations/q-sa-74hc143.html"
+      }
+    ],
+    "checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "not_run",
+      "browser": "pass"
+    },
+    "note_presentation_version": 2,
+    "review_presentation_version": 2,
+    "figure_manifest": "figures/redraw-manifest.json",
+    "generated_files": [
+      "검증결과.md",
+      "실험05_기출문제.html",
+      "실험05_기출문제.md",
+      "실험05_기출풀이.html",
+      "실험05_기출풀이.md",
+      "실험05_문제설명.html",
+      "실험05_문제설명.md",
+      "실험05_실험설명.html",
+      "실험05_실험설명.md",
+      "원문과_저작안내.md",
+      "자료/assets/note-template.html",
+      "자료/assets/review-interaction.css",
+      "자료/assets/review-interaction.js",
+      "자료/assets/review-template.html",
+      "자료/assets/template-provenance.json",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+      "자료/assets/vendor/katex/LICENSE",
+      "자료/assets/vendor/katex/auto-render.min.js",
+      "자료/assets/vendor/katex/katex.min.css",
+      "자료/assets/vendor/katex/katex.min.js",
+      "자료/assets/vendor/pretendard/LICENSE",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff2",
+      "자료/assets/vendor/pretendard/pretendard.css",
+      "자료/assets/vendor/provenance.json",
+      "자료/assets/widgets.js",
+      "자료/assets/workbook/answer.html",
+      "자료/assets/workbook/problem.html",
+      "자료/assets/workbook/provenance.json",
+      "자료/authoring-index.json",
+      "자료/evidence/assets/s01-p1.jpg",
+      "자료/evidence/assets/s02-p1.png",
+      "자료/evidence/assets/s03-p1-q1.png",
+      "자료/evidence/assets/s03-p1-q2.png",
+      "자료/evidence/assets/s03-p1-q3.png",
+      "자료/evidence/assets/s03-p1-q4.png",
+      "자료/evidence/assets/s03-p1-q5.png",
+      "자료/evidence/assets/s03-p1.png",
+      "자료/evidence/assets/s04-p1.png",
+      "자료/evidence/assets/s04-p2.png",
+      "자료/evidence/assets/s05-p1-q1.png",
+      "자료/evidence/assets/s05-p1-q2.png",
+      "자료/evidence/assets/s05-p1-q3.png",
+      "자료/evidence/assets/s05-p1-q4.png",
+      "자료/evidence/assets/s05-p1.png",
+      "자료/evidence/assets/s06-p1.png",
+      "자료/evidence/assets/s07-q1.png",
+      "자료/evidence/assets/s07-q2.png",
+      "자료/evidence/assets/s07-q3.png",
+      "자료/evidence/assets/s08-p1.png",
+      "자료/evidence/assets/s09-p1.png",
+      "자료/evidence/assets/s10-p1.png",
+      "자료/evidence/assets/s10-p2.png",
+      "자료/evidence/assets/s11-p1-q1.png",
+      "자료/evidence/assets/s11-p1-q2.png",
+      "자료/evidence/assets/s11-p1-q3.png",
+      "자료/evidence/assets/s11-p1-q4.png",
+      "자료/evidence/assets/s11-p1-q5.png",
+      "자료/evidence/assets/s11-p1-q6.png",
+      "자료/evidence/assets/s11-p1-q7.png",
+      "자료/evidence/assets/s11-p1.png",
+      "자료/evidence/assets/s12-p1.png",
+      "자료/evidence/assets/s12-p2.png",
+      "자료/evidence/assets/s13-p1.png",
+      "자료/evidence/assets/s13-p2.png",
+      "자료/evidence/assets/s13-p3.png",
+      "자료/evidence/assets/s13-p4.png",
+      "자료/evidence/assets/s14-p1-sec1.png",
+      "자료/evidence/assets/s15-r1.png",
+      "자료/evidence/assets/s15-r2.png",
+      "자료/evidence/assets/s16-r1.png",
+      "자료/evidence/question-bank.json",
+      "자료/figures/bcd-decoder-74hc42.svg",
+      "자료/figures/dec2x4-gates.svg",
+      "자료/figures/decoder-encoder-pair.svg",
+      "자료/figures/demux-from-decoder.svg",
+      "자료/figures/enc4x2-nand.svg",
+      "자료/figures/excess3-encoder.svg",
+      "자료/figures/hc148-block.svg",
+      "자료/figures/questions/q-74hc148-table-given-01.png",
+      "자료/figures/questions/q-74hc148-table-given-01.svg",
+      "자료/figures/questions/q-demux-from-dec-given-01.png",
+      "자료/figures/questions/q-demux-from-dec-given-01.svg",
+      "자료/figures/questions/q-excess3-enc-6row-given-01.png",
+      "자료/figures/questions/q-excess3-enc-6row-given-01.svg",
+      "자료/figures/questions/q-excess3-enc-exam-given-01.png",
+      "자료/figures/questions/q-excess3-enc-exam-given-01.svg",
+      "자료/figures/redraw-manifest.json",
+      "자료/figures/solutions/q-dec2x4-design-solution-01.png",
+      "자료/figures/solutions/q-dec2x4-design-solution-01.svg",
+      "자료/figures/solutions/q-demux-from-dec-graded-solution-01.png",
+      "자료/figures/solutions/q-demux-from-dec-graded-solution-01.svg",
+      "자료/figures/solutions/q-demux-from-dec-solution-01.png",
+      "자료/figures/solutions/q-demux-from-dec-solution-01.svg",
+      "자료/figures/solutions/q-enc4x2-design-solution-01.png",
+      "자료/figures/solutions/q-enc4x2-design-solution-01.svg",
+      "자료/manifest.json",
+      "자료/problem-explanations/q-1of4-excess3.html",
+      "자료/problem-explanations/q-74hc148-table.html",
+      "자료/problem-explanations/q-dec2x4-design.html",
+      "자료/problem-explanations/q-dec3x8.html",
+      "자료/problem-explanations/q-demux-from-dec-graded.html",
+      "자료/problem-explanations/q-demux-from-dec.html",
+      "자료/problem-explanations/q-enc4x2-design.html",
+      "자료/problem-explanations/q-excess3-enc-6row.html",
+      "자료/problem-explanations/q-excess3-enc-exam.html",
+      "자료/problem-explanations/q-excess3-why.html",
+      "자료/problem-explanations/q-prio-exam.html",
+      "자료/problem-explanations/q-prio-onehot.html",
+      "자료/problem-explanations/q-prio-vs-binary.html",
+      "자료/problem-explanations/q-quiz-dec2x4-table.html",
+      "자료/problem-explanations/q-sa-74hc143.html",
+      "자료/problem-explanations/q-sa-decoder-def.html",
+      "자료/problem-explanations/q-sa-enc8x3.html",
+      "자료/problem-explanations/q-sa-encoder-def.html",
+      "자료/problem-explanations/q-sa-prio-why.html",
+      "자료/problem-explanations/검증결과.md",
+      "출처와_문항목록.md"
+    ],
+    "problem_explanation_version": 1,
+    "explanation_checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "not_run",
+      "browser": "pass"
+    }
+  }
+}
