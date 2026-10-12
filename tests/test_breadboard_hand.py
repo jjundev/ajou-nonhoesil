@@ -192,6 +192,52 @@ class HandRender(unittest.TestCase):
             self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)
 
 
+class HandRenderE5(unittest.TestCase):
+    """v2 판형(실험05~)에서도 같은 약속 — 2026-10-12 `make-hand-sim`."""
+    BUILDERS = ('build_e5_bcd', 'build_e5_xs3')
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.board = cls.mod.load_board(5)
+
+    def _render(self, name, hand, guide=False):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        return getattr(self.board, name)(str(tmp / 'x.png'), hand=hand, hand_guide=guide)
+
+    def _count(self, bb, rgba):
+        return sum(1 for p in bb.overlay.get_flattened_data() if p == rgba)
+
+    def test_실험05_hand_는_배치를_안_바꾼다(self):
+        for name in self.BUILDERS:
+            a, b = self._render(name, None), self._render(name, 42)
+            for attr in ('steps', '_segments', '_leads', 'tag_boxes', 'chips', 'leds', 'resistors', 'inputs'):
+                self.assertEqual(getattr(a, attr), getattr(b, attr), (name, attr))
+
+    def test_실험05_단계에_hand_는_거절(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        with self.assertRaises(ValueError):
+            self.board.build_e5_bcd(str(tmp / 'x.png'), stage=1, hand=1)
+
+    def test_실험05_부품과_입력_이름은_비운다(self):
+        for name in self.BUILDERS:
+            plain, bb = self._render(name, None), self._render(name, 42)
+            for rgba in [(30, 33, 36, 255), (220, 20, 20, 240), (225, 195, 145, 255)]:
+                self.assertGreater(self._count(plain, rgba), 0, (name, rgba))
+                self.assertEqual(self._count(bb, rgba), 0, (name, rgba))
+            self.assertGreater(self._count(bb, self.mod.INPUT), 0, name)
+
+    def test_실험05_안내판_선은_회색(self):
+        for name in self.BUILDERS:
+            bb = self._render(name, 42, guide=True)
+            for col in self.mod.WIRE.values():
+                self.assertEqual(self._count(bb, col), 0, (name, col))
+            self.assertGreater(self._count(bb, self.mod.KEEP), 0, name)
+            self.assertGreater(self._count(bb, (30, 33, 36, 255)), 0, name)   # 칩은 색
+
+
 class HandSimScript(unittest.TestCase):
     def test_시드는_파일이름으로_정해진다(self):
         from scripts.lab.hand_sim import hand_seed
