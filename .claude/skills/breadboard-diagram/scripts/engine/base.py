@@ -118,6 +118,19 @@ def _sc(v):
     return type(v)(_sc(x) for x in v) if isinstance(v, (tuple, list)) else v
 
 
+class _NullDraw:
+    """긋지 않는 붓 — 글자 치수(`textbbox`)만 진짜 붓에 묻고 나머지는 버린다."""
+
+    def __init__(self, real):
+        self._real = real
+
+    def textbbox(self, *a, **k):
+        return self._real.textbbox(*a, **k)
+
+    def __getattr__(self, name):
+        return lambda *a, **k: None
+
+
 class _ScaledDraw:
     """`ImageDraw` 를 감싼다 — 논리 좌표를 받아 SCALE 배 캔버스에 그린다."""
 

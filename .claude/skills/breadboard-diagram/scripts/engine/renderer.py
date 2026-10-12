@@ -708,7 +708,27 @@ class BreadboardRenderer(_RuleChecks):
                            'desc': desc, 'count': count})
         return n
 
-    def draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
+    def _blank_parts(self, draw_fn, *a, **k):
+        """hand 모드에선 부품(칩·LED·저항)과 입력 이름 배지를 비운다 — 사람이 그 자리에 직접 그린다(2026-10-12).
+        점유·기록·글자 상자는 평소대로 쌓고 픽셀만 버린다. 그래서 배치와 `verify()` 가 같다."""
+        if self.hand is None:
+            return draw_fn(*a, **k)
+        real, self.draw = self.draw, _NullDraw(self.draw)
+        try:
+            return draw_fn(*a, **k)
+        finally:
+            self.draw = real
+
+    def draw_resistor(self, *a, **k):
+        return self._blank_parts(self._draw_resistor, *a, **k)
+
+    def draw_led(self, *a, **k):
+        return self._blank_parts(self._draw_led, *a, **k)
+
+    def draw_chip(self, *a, **k):
+        return self._blank_parts(self._draw_chip, *a, **k)
+
+    def _draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
         self.lead(x, y1, f'{label} 윗다리')
         self.lead(x, y2, f'{label} 아랫다리')
         self.resistors.append({'label': label,
@@ -732,7 +752,7 @@ class BreadboardRenderer(_RuleChecks):
         for col, off in zip(bands, [-7, -2, 3, 8]):
             self.draw.line([(x - 4, ymid + off), (x + 4, ymid + off)], fill=col, width=2)
 
-    def draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
+    def _draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
         self.lead(x, y_anode, f'{label} LED 애노드')
         self.lead(x, y_cathode, f'{label} LED 캐소드')
         self.leds.append({'tag': label,
@@ -826,6 +846,8 @@ class BreadboardRenderer(_RuleChecks):
 
     def _vtext(self, xy, text, fill, font):
         """세로쓰기 — 칩 이름을 몸통 안에 넣는다."""
+        if isinstance(self.draw, _NullDraw):
+            return
         real = font.real if isinstance(font, _ScaledFont) else font
         bbox = real.getbbox(text)
         pad = 2 * SCALE
@@ -849,7 +871,7 @@ class BreadboardRenderer(_RuleChecks):
                 return f
         return _font('en', 6)
 
-    def draw_chip(self, name, start_row, block='left'):
+    def _draw_chip(self, name, start_row, block='left'):
         c = self.cols[block]
         n = dip_pins(name)
         rows = n // 2

@@ -115,6 +115,43 @@ class HandRender(unittest.TestCase):
             cx, cy = int((x0 + x1) / 2 * self.mod.SCALE), int((y0 + y1) / 2 * self.mod.SCALE)
             self.assertNotEqual(px[cx, cy], (255, 255, 255, 245))
 
+    def _count(self, bb, rgba):
+        return sum(1 for p in bb.overlay.get_flattened_data() if p == rgba)
+
+    def test_칩_LED_저항은_비워_둔다(self):
+        # 사람이 그 자리에 직접 그린다 — 몸통 색이 한 픽셀도 없어야 한다
+        plain, _, _ = self._render(None)
+        bb, _, _ = self._render(42)
+        for rgba in [(30, 33, 36, 255),       # 칩 몸통
+                     (220, 20, 20, 240),      # LED 몸통
+                     (225, 195, 145, 255)]:   # 저항 몸통
+            self.assertGreater(self._count(plain, rgba), 0, rgba)
+            self.assertEqual(self._count(bb, rgba), 0, rgba)
+
+    def test_입력은_선만_두고_이름_배지는_비운다(self):
+        plain, _, _ = self._render(None)
+        bb, _, _ = self._render(42)
+        self.assertGreater(self._count(bb, self.mod.INPUT), 0)    # 보라 점퍼선은 남는다
+        segs = {i['seg'] for i in bb.inputs}
+        boxes = [box for _, box, seg in bb.tag_boxes if seg in segs]
+        self.assertTrue(boxes)
+        S = self.mod.SCALE
+        for name, img in (('plain', plain), ('hand', bb)):
+            white = 0
+            for x0, y0, x1, y1 in boxes:
+                crop = img.overlay.crop((int(x0 * S) + 2, int(y0 * S) + 2, int(x1 * S) - 2, int(y1 * S) - 2))
+                white += sum(1 for p in crop.get_flattened_data() if p == (255, 255, 255, 255))
+            if name == 'plain':
+                self.assertGreater(white, 0)       # 흰 글자·화살촉
+            else:
+                self.assertEqual(white, 0)
+
+    def test_비워도_배치는_같다(self):
+        a, _, _ = self._render(None)
+        b, _, _ = self._render(42)
+        for attr in ('chips', 'leds', 'resistors', 'tag_boxes', 'chip_label_boxes'):
+            self.assertEqual(getattr(a, attr), getattr(b, attr), attr)
+
     def test_기준선_이나_층과_못_섞는다(self):
         with self.assertRaises(ValueError):
             self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)

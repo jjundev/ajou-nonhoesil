@@ -90,5 +90,7 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
         bb.input_node(name, c[col], row)
     _tag(bb, 12, y_row - 8, f"입력 {name} → {'우 ' if block == 'right' else ''}{col}{row}",
          col=INPUT)
-    # 신호 이름은 레일 쪽 끝 옆 — 0/1 을 바꿀 때 옮겨 꽂는 끝이다
-    bb.signal_tag(name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1, arrow=arrow, max_w=max_w)
+    # 신호 이름은 레일 쪽 끝 옆 — 0/1 을 바꿀 때 옮겨 꽂는 끝이다. hand 모드에선 선만 두고 이름은
+    # 비운다 — 사람이 직접 적는다(`_blank_parts`)
+    bb._blank_parts(bb.signal_tag, name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1,
+                    arrow=arrow, max_w=max_w)
