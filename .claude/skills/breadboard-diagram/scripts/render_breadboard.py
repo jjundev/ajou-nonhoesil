@@ -8,6 +8,7 @@ import hashlib
 import argparse
 import tempfile
 import copy
+import random
 import bisect
 import itertools
 import math
