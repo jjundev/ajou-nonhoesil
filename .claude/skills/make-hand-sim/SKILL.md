@@ -44,8 +44,10 @@ A4)와 크기·그림 자리가 같고, 부품그리기 쪽은 210×420mm 태블
    (`if hand is not None and stage is not None: raise ValueError('hand 는 완성본(stage=None)에만 준다')`)
    포함. 단계 그림에는 임시 급전선이 있어 팀원이 그릴 그림이 아니다. 빌더가 인자를 안 받으면
    `hand_sim` 이 아무것도 그리기 전에 그 빌더 이름을 모두 대고 멈춘다.
-2. **픽셀 불변.** 빌더를 고쳤으면 `render_breadboard.build_all(load_board(N), <tmp>)` 로 뽑은 전 장의
+2. **픽셀 불변.** 빌더를 고쳤으면 `rb.build_all(rb.load_board(N), <tmp>)` 로 뽑은 전 장의
    `Image.tobytes()` sha256 을 고치기 전·후로 대조한다 — 한 장도 달라지면 안 된다(인자 통과뿐이다).
+   `rb` 는 `from scripts.lab.hand_grid import load_renderer; rb = load_renderer()` 로 얻는다 — 엔진
+   `render_breadboard` 는 스킬 폴더 안에 있어 import 경로에 없다.
    그다음 `.venv/bin/python -m pytest tests/test_breadboard_hand.py -q`.
 3. **뽑기.** 기존 PDF 가 있으면 먼저 스크래치 폴더에 복사해 둔다. 그다음
    `.venv/bin/python -m scripts.lab.hand_sim --experiment N`. 생성기가 임시 폴더에서 만들고 쪽 검사
