@@ -136,8 +136,8 @@ CHK = dict(source_visual='pass', content='self_review', independent='pass', brow
 manifest['checks'] = dict(CHK)
 manifest['note_presentation_version'] = 2
 manifest['review_presentation_version'] = 2
-manifest['problem_explanation_version'] = 1
-manifest['explanation_checks'] = dict(CHK)
+manifest['problem_explanation_version'] = 2
+manifest['explanation_checks'] = dict.fromkeys(CHK, 'not_run')
 if FINAL:
     (RUN / '검증결과.md').write_bytes((Path(__file__).parent / '검증결과.md').read_bytes())
 manifest['figure_manifest'] = 'figures/redraw-manifest.json'

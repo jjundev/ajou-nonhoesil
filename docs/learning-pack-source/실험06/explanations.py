@@ -2,6 +2,7 @@
 from h import p, table, ul
 from sections import TOPICS
 import problems as PR
+from recall import RECALL
 
 TITLE = {t[0]: t[1] for t in TOPICS}
 
@@ -13,14 +14,18 @@ def figure(src, alt):
 def build(pid, understand, start, solve, answer, check, pitfall, retry, judge):
     links = ', '.join(f'<a href="{{{{NOTE_HREF}}}}#{t}">{TITLE[t]}</a>' for t in PR.PROBLEM_TOPICS[pid])
     retry = retry[:3]
+    recall_html, recall_summary = RECALL[pid]
+    recall_section = ('<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span>' + recall_html + '</div>')
+    summary_recall = '<p data-summary="recall">'+recall_summary+'</p>'
     return (f'<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span>{understand}</div>'
+            + recall_section +
             f'<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span>{start}<p>필요한 개념: {links}</p></div>'
             f'<div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span>{solve}</div>'
             f'<div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span>{answer}<p><strong>검산:</strong> {check}</p></div>'
             f'<div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span>{pitfall}</div>'
             f'<div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol>' +
             ''.join(f'<li>{r}</li>' for r in retry) + '</ol></div>'
-            f'<div class="sum" hidden><p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p></div>')
+            f'<div class="sum" hidden>{summary_recall}<p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p></div>')
 
 
 def strip(html):

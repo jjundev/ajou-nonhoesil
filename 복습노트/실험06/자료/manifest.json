@@ -1356,11 +1356,11 @@
   },
   "note_presentation_version": 2,
   "review_presentation_version": 2,
-  "problem_explanation_version": 1,
+  "problem_explanation_version": 2,
   "explanation_checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "pass",
+    "independent": "not_run",
     "browser": "pass"
   },
   "figure_manifest": "figures/redraw-manifest.json",
@@ -1583,6 +1583,7 @@
     "자료/problem-explanations/q-rs-quiz.html",
     "자료/problem-explanations/q-sr-nand-00.html",
     "자료/problem-explanations/q-tff.html",
+    "자료/problem-explanations/검증결과.md",
     "출처와_문항목록.md"
   ]
 }
