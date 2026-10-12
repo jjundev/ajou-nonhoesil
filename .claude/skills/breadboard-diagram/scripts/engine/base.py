@@ -26,16 +26,13 @@ FONT_CANDIDATES = {
     'en': ('/System/Library/Fonts/Helvetica.ttc',
            'C:/Windows/Fonts/arial.ttf',
            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'),
-    # 손그림 모사(`hand`) 전용 — 칩 이름·핀 번호·신호 이름. 못 찾으면 글자만 인쇄체로 그린다
-    'hand': ('/System/Library/Fonts/Supplemental/Bradley Hand Bold.ttf',
-             '/System/Library/Fonts/Supplemental/Chalkboard.ttc'),
 }
 
 # 하드 — 빠진 후보는 버린다. □ 로 나가면 식(⊕)·주소(→)를 못 읽는다.
-REQUIRED_GLYPHS = {'kr': '⊕→·※', 'en': '', 'hand': "0123456789ABCDEHLSYΩ'·"}
+REQUIRED_GLYPHS = {'kr': '⊕→·※', 'en': ''}
 
 # 소프트 — ☐ 체크칸은 □ 로 나가도 뜻이 같다. 없으면 경고만 한다.
-PREFERRED_GLYPHS = {'kr': '☐', 'en': '', 'hand': ''}
+PREFERRED_GLYPHS = {'kr': '☐', 'en': ''}
 
 # 소프트 글리프 경고를 이미 낸 폰트 — 렌더 한 장에 `font_path()` 가 여러 번 불린다.
 _SOFT_WARNED = set()
@@ -104,7 +101,6 @@ class _ScaledFont:
     """논리 크기로 부르고 SCALE 배 크기로 그리는 폰트. 치수는 논리 단위로 돌려준다."""
 
     def __init__(self, path, size):
-        self.path = path
         self.size = size
         self.real = ImageFont.truetype(path, size * SCALE)
 
@@ -125,21 +121,8 @@ def _sc(v):
 class _ScaledDraw:
     """`ImageDraw` 를 감싼다 — 논리 좌표를 받아 SCALE 배 캔버스에 그린다."""
 
-    def __init__(self, image, hand_font_path=None):
+    def __init__(self, image):
         self._d = ImageDraw.Draw(image)
-        # 손그림 모사: en 글꼴 글자만 그리는 순간 손글씨로 바꾼다. 치수(`textbbox`)는 원래 글꼴
-        # 그대로라 R14·배지 자리·번호 원 자리가 안 바뀐다
-        self._hand_path = hand_font_path
-        self._en_path = font_path('en') if hand_font_path else None
-        self._hand_cache = {}
-
-    def hand_real(self, font):
-        """`font` 대신 그릴 손글씨 글꼴(실크기) — en 글꼴이 아니거나 hand 가 아니면 None."""
-        if not (self._hand_path and isinstance(font, _ScaledFont) and font.path == self._en_path):
-            return None
-        if font.size not in self._hand_cache:
-            self._hand_cache[font.size] = ImageFont.truetype(self._hand_path, font.size * SCALE)
-        return self._hand_cache[font.size]
 
     @staticmethod
     def _kw(k):
@@ -166,18 +149,7 @@ class _ScaledDraw:
         return self._d.arc(_sc(xy), start, end, *a, **self._kw(k))
 
     def text(self, xy, text, *a, **k):
-        hand = self.hand_real(k.get('font'))
-        if hand is None:
-            return self._d.text(_sc(xy), text, *a, **self._kw(k))
-        # 원래 글꼴 상자의 중심에 손글씨 글자 상자의 중심을 맞춘다(실픽셀)
-        b = self._d.textbbox(_sc(xy), text, **{n: v for n, v in self._kw(k).items()
-                                               if n in ('font', 'anchor')})
-        k = {n: v for n, v in k.items() if n != 'anchor'}
-        k['font'] = hand
-        hb = hand.getbbox(text)
-        x = (b[0] + b[2]) / 2 - (hb[0] + hb[2]) / 2
-        y = (b[1] + b[3]) / 2 - (hb[1] + hb[3]) / 2
-        return self._d.text((x, y), text, *a, **k)
+        return self._d.text(_sc(xy), text, *a, **self._kw(k))
 
     def textbbox(self, xy, text, *a, **k):
         return tuple(v / SCALE for v in self._d.textbbox(_sc(xy), text, *a, **self._kw(k)))
@@ -223,28 +195,6 @@ def _hand_dot(p, r, rng):
     """끝점 도트 상자 — 축마다 반지름 ±1px."""
     rx, ry = r + rng.uniform(-1, 1), r + rng.uniform(-1, 1)
     return [p[0] - rx, p[1] - ry, p[0] + rx, p[1] + ry]
-
-
-def _hand_loop(points, rng, amp=1.0):
-    """닫힌 윤곽(칩·저항 몸통) — 꼭짓점을 돌아 첫 점으로 되돌아오는 흔들린 점열."""
-    return _hand_polyline(list(points) + [points[0]], rng, amp=amp)
-
-
-def _hand_circle(center, r, rng, amp=1.0, n=24):
-    """손으로 그린 원(LED) — 둘레 점 n+1 개를 흔든다. 첫 점 = 끝 점."""
-    cx, cy = center
-    pts = [(cx + r * math.cos(2 * math.pi * k / n), cy + r * math.sin(2 * math.pi * k / n))
-           for k in range(n + 1)]
-    return _hand_polyline(pts, rng, amp=amp, step=3.0, ramp=6.0)
-
-
-def _hand_arc(box, rng, amp=1.0, n=12):
-    """칩 홈 — `box` 타원의 아래 반원(PIL `arc(box, 0, 180)` 과 같은 쪽)을 흔든다."""
-    x0, y0, x1, y1 = box
-    cx, cy, rx, ry = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2
-    pts = [(cx + rx * math.cos(math.pi * k / n), cy + ry * math.sin(math.pi * k / n))
-           for k in range(n + 1)]
-    return _hand_polyline(pts, rng, amp=amp, step=3.0, ramp=6.0)
 
 
 def _font(kind, size):

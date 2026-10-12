@@ -37,8 +37,7 @@ class Fonts(unittest.TestCase):
         cls.mod = _load()
 
     def test_한글_영문_후보가_있다(self):
-        # 'hand' 는 손그림 모사 전용 손글씨 후보(2026-10-12) — 못 찾아도 렌더러는 산다
-        self.assertEqual(set(self.mod.FONT_CANDIDATES), {'kr', 'en', 'hand'})
+        self.assertEqual(set(self.mod.FONT_CANDIDATES), {'kr', 'en'})
 
     def test_font_path_는_실재하는_파일을_준다(self):
         for kind in ('kr', 'en'):
@@ -67,8 +66,8 @@ class Fonts(unittest.TestCase):
 
     def test_하드_글리프와_소프트_글리프가_갈려_있다(self):
         """☐ 는 소프트다 — 이게 하드면 맑은 고딕뿐인 Windows 에서 렌더러가 통째로 죽는다."""
-        self.assertEqual(self.mod.REQUIRED_GLYPHS, {'kr': '⊕→·※', 'en': '', 'hand': "0123456789ABCDEHLSYΩ'·"})
-        self.assertEqual(self.mod.PREFERRED_GLYPHS, {'kr': '☐', 'en': '', 'hand': ''})
+        self.assertEqual(self.mod.REQUIRED_GLYPHS, {'kr': '⊕→·※', 'en': ''})
+        self.assertEqual(self.mod.PREFERRED_GLYPHS, {'kr': '☐', 'en': ''})
 
     def test_고른_한글_폰트가_하드_글리프를_다_그린다(self):
         """`⊕→·※` — 없으면 □ 로 나가고 줄바꿈까지 어긋난다."""

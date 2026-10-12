@@ -3,7 +3,6 @@
 흔들림은 그리기에만 걸리고 점유표·순서표·`verify()` 는 평소와 같아야 한다.
 """
 import importlib.util
-import math
 import random
 import shutil
 import tempfile
@@ -71,63 +70,6 @@ class HandPolyline(unittest.TestCase):
         self.assertGreater(len({tuple(b) for b in boxes}), 1)
 
 
-class HandShapes(unittest.TestCase):
-    """칩·LED·저항 윤곽용 닫힌 도형과 손글씨 글꼴 갈아끼우기(2단계)."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.mod = _load()
-
-    def _hand_font(self):
-        # 손글씨 글꼴은 macOS 시스템 글꼴뿐이다 — 없는 PC(Windows·Linux)에서는 건너뛴다
-        try:
-            return self.mod.font_path('hand')
-        except FileNotFoundError:
-            self.skipTest('이 머신에 손글씨 글꼴이 없다')
-
-    def test_원은_닫혀_있고_반지름_안에서_떨린다(self):
-        pts = self.mod._hand_circle((50.0, 60.0), 8, random.Random(1), amp=1.0)
-        self.assertEqual(pts[0], pts[-1])
-        for x, y in pts:
-            d = math.hypot(x - 50.0, y - 60.0)
-            self.assertTrue(8 - 2.0 <= d <= 8 + 1.5, d)
-
-    def test_사각형_윤곽은_첫_꼭짓점에서_닫힌다(self):
-        box = [(10.0, 10.0), (40.0, 10.0), (40.0, 90.0), (10.0, 90.0)]
-        pts = self.mod._hand_loop(box, random.Random(2), amp=1.0)
-        self.assertEqual(pts[0], box[0])
-        self.assertEqual(pts[-1], box[0])
-
-    def test_홈은_아래_반원이다(self):
-        pts = self.mod._hand_arc([10, 0, 30, 12], random.Random(3), amp=1.0)
-        for got, want in ((pts[0], (30, 6)), (pts[-1], (10, 6))):    # sin(π) 잔차 — 근사로 본다
-            self.assertAlmostEqual(got[0], want[0])
-            self.assertAlmostEqual(got[1], want[1])
-        self.assertTrue(max(y for _, y in pts) > 10)
-
-    def test_손글씨_글꼴은_Bradley_Hand_다(self):
-        self.assertTrue(self._hand_font().endswith('Bradley Hand Bold.ttf'))
-
-    def test_hand_real_은_en_글꼴만_바꾼다(self):
-        d = self.mod._ScaledDraw(Image.new('RGBA', (100, 100)), hand_font_path=self._hand_font())
-        self.assertIsNotNone(d.hand_real(self.mod._font('en', 10)))
-        self.assertIsNone(d.hand_real(self.mod._font('kr', 10)))
-        self.assertIsNone(self.mod._ScaledDraw(Image.new('RGBA', (100, 100))).hand_real(self.mod._font('en', 10)))
-
-    def test_text_는_원래_상자_중심에_그린다(self):
-        for kw in ({}, {'anchor': 'mm'}):
-            im = Image.new('RGBA', (400, 200), (0, 0, 0, 0))
-            d = self.mod._ScaledDraw(im, hand_font_path=self._hand_font())
-            f = self.mod._font('en', 12)
-            b = d.textbbox((50, 40), '74HC20', font=f, **kw)
-            d.text((50, 40), '74HC20', fill=(0, 0, 0, 255), font=f, **kw)
-            ink = im.getbbox()                                   # 실픽셀
-            cx = (ink[0] + ink[2]) / 2 / self.mod.SCALE
-            cy = (ink[1] + ink[3]) / 2 / self.mod.SCALE
-            self.assertAlmostEqual(cx, (b[0] + b[2]) / 2, delta=2)
-            self.assertAlmostEqual(cy, (b[1] + b[3]) / 2, delta=2)
-
-
 class HandRender(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -172,49 +114,6 @@ class HandRender(unittest.TestCase):
         for x0, y0, x1, y1 in bb.marker_boxes:
             cx, cy = int((x0 + x1) / 2 * self.mod.SCALE), int((y0 + y1) / 2 * self.mod.SCALE)
             self.assertNotEqual(px[cx, cy], (255, 255, 255, 245))
-
-    def _count(self, bb, rgba, box=None):
-        im = bb.overlay if box is None else bb.overlay.crop(tuple(int(v * self.mod.SCALE) for v in box))
-        return sum(1 for p in im.get_flattened_data() if p == rgba)
-
-    def _chip_box(self, bb, i=0):
-        ch = bb.chips[i]
-        c = bb.cols[ch['block']]
-        return (c['chip_x1'], bb.r_y(ch['pin1_row']) - 8, c['chip_x2'], bb.r_y(ch['pin1_row'] + 6) + 8)
-
-    def test_칩_몸통을_칠하지_않는다(self):
-        a, _, _ = self._render(None)
-        b, _, _ = self._render(42)
-        fill = (30, 33, 36, 255)
-        self.assertGreater(self._count(a, fill, self._chip_box(a)), 1000)
-        self.assertEqual(self._count(b, fill, self._chip_box(b)), 0)
-
-    def test_LED_와_저항_몸통을_칠하지_않는다(self):
-        a, _, _ = self._render(None)
-        b, _, _ = self._render(42)
-        for rgba in ((220, 20, 20, 240), (225, 195, 145, 255)):
-            self.assertGreater(self._count(a, rgba), 0, rgba)
-            self.assertEqual(self._count(b, rgba), 0, rgba)
-
-    def test_칩_윤곽을_손그림_잉크로_긋는다(self):
-        b, _, _ = self._render(42)
-        self.assertGreater(self._count(b, self.mod.HAND_INK, self._chip_box(b)), 100)
-
-    def test_글꼴을_바꿔도_배치는_같다(self):
-        a, _, _ = self._render(None)
-        b, _, _ = self._render(42)
-        self.assertEqual(a.tag_boxes, b.tag_boxes)
-        self.assertEqual(a.chip_label_boxes, b.chip_label_boxes)
-        self.assertEqual(a.margin_tag_boxes, b.margin_tag_boxes)
-        self.assertEqual(a.settled_markers, b.settled_markers)
-
-    def test_손글씨_글꼴이_없어도_그린다(self):
-        saved = self.mod.FONT_CANDIDATES['hand']
-        self.mod.FONT_CANDIDATES['hand'] = ()
-        self.addCleanup(self.mod.FONT_CANDIDATES.__setitem__, 'hand', saved)
-        b, out, _ = self._render(42)
-        self.assertTrue(out.exists())
-        self.assertIsNone(b.draw.hand_real(b.font_chip))
 
     def test_기준선_이나_층과_못_섞는다(self):
         with self.assertRaises(ValueError):
