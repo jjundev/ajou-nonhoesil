@@ -70,6 +70,7 @@ EXPECTED = {
 
 # 발행된 팩에서 표지가 달린 문항. 실험01·03 은 작성 JSON 이 저장소에 없어 발행 payload 로만 확인한다.
 PUBLISHED = {**EXPECTED,
+    '실험06': {'q-dff-table','q-jkff-short','q-p-76-trace','q-rs-latch'},
     '실험01': {'q-tt3-4row', 'q-tt3-8row', 'q-xor2-tt'},
     '실험03': {'q-ha-table', 'q-fa-table', 'q-fs-table'},
 }
@@ -107,8 +108,10 @@ def test_content_loader_rejects_a_blank_table_left_in_the_panel(tmp_path):
 
 def test_published_payloads_obey_the_rule_and_match_the_source():
     from scripts.lab.review_pack.workbook_render import read_workbook_payload
-    packs = sorted(Path('복습노트').glob('실험*/실험*_기출문제.html')) + sorted(Path('복습노트').glob('실험*/실험*_기출풀이.html'))
-    assert packs
+    # Publish backups preserve earlier packs but are not current published folders.
+    packs = [Path('복습노트')/f'실험{n:02d}'/f'실험{n:02d}_{kind}.html'
+             for n in range(1,7) for kind in ('기출문제','기출풀이')]
+    assert all(path.is_file() for path in packs)
     for path in packs:
         data = read_workbook_payload(path)
         marked = set()

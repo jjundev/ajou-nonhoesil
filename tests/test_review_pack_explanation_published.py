@@ -27,7 +27,7 @@ def test_experiment_coverage(number,expected):
     assert result['numbers'][0]==result['numbers'][1]==result['numbers'][2]
     assert result['subparts_complete']
     for article in result['articles']:
-        for key in ('understand','start','solve','verify','pitfall','retry'):
+        for key in ('understand','recall','start','solve','verify','pitfall','retry'):
             assert sum(n.attrs.get('data-explanation')==key for n in article.walk())==1
 
 @pytest.mark.parametrize('number,states',[(1,{'q-deq':'disputed'}),(2,{'q-region':'disputed','q-delay-transition':'unresolved','q-transition':'unresolved','q-speed':'unresolved'}),(3,{'q-fa-design':'disputed','q-fs-roles':'disputed','q-cs-roles-sub':'unresolved'}),(4,{'q-tri':'disputed','q-demux4':'disputed'})])

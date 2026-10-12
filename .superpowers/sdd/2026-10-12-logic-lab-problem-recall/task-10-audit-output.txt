@@ -1,0 +1,5 @@
+6 packs, 86 explanations, all non-explanation files preserved
+[('01', 170, 11, ['복습노트/실험01.backup-a390ed552fcf']), ('02', 184, 12, ['복습노트/실험02.backup-34107408ed7b']), ('03', 162, 10, ['복습노트/실험03.backup-88dfe79d5eb4']), ('04', 166, 13, ['복습노트/실험04.backup-6d0f6ed1cc30']), ('05', 172, 19, ['복습노트/실험05.backup-f026b24748e2']), ('06', 204, 14, ['복습노트/실험06.backup-d015c7a4243a'])]
+netlist committed/current SHA: 333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b1f50f61b2ca857f
+86 authored/published fragments exact; original six sections identical: [12, 14, 15, 12, 19, 14]
+Original source04/05 manifest and v2 fragments validate/load: [{'experiment': 4, 'validation': 'pass', 'loaded': 12, 'checks': {'source_visual': 'not_run', 'content': 'not_run', 'independent': 'not_run', 'browser': 'not_run'}}, {'experiment': 5, 'validation': 'pass', 'loaded': 19, 'checks': {'source_visual': 'not_run', 'content': 'not_run', 'independent': 'not_run', 'browser': 'not_run'}}]

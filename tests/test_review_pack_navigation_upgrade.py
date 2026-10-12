@@ -92,7 +92,9 @@ def test_apply_creates_backup_and_preserves_workbooks(tmp_path):
 def test_all_published_notes_have_separate_navigation():
     from scripts.lab.review_pack.html2md import Parser
     from scripts.lab.review_pack.navigation import check_navigation
-    for folder in sorted(PACKS.glob('실험*')):
+    for number in range(1,7):
+        folder = PACKS/f'실험{number:02d}'
         path = folder/(folder.name+'_실험설명.html')
+        assert path.is_file()
         parser = Parser(); parser.feed(path.read_text())
         assert check_navigation(parser.root, path.name) == []

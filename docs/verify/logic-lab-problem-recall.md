@@ -151,3 +151,29 @@
 상세 증거: docs/learning-pack-source/실험06/problem-explanations/검증결과.md. 실제 source_visual=pass, content=self_review, browser=pass, independent=not_run.
 
 실험06: RED(v1 FAIL)→GREEN(1 passed), stage/published check OK. 설명 밖 204파일 SHA256/metadata 동일, mutable 밖 신규 0. 백업: C:\Users\Hyunjun\.codex\worktrees\logic-lab-problem-recall\논회실\복습노트\실험06.backup-d015c7a4243a
+
+
+## Task10 최종 회귀·보존 검사
+
+2026-10-12 최종 관련 범위 실행 `python -m pytest tests -k review_pack -n 0 -q`: **538 passed, 2593 deselected in 310.25s**, exit0. `git diff --check`도 exit0이에요. 기존 v1 fixture를 유지하고 생성본 v2 4조건, 실험01~06의86문항 ×375/1280px ×light/dark, 현재 문항의 실제 요약 내용, JS 비활성 recall 가시성을 검사했어요. 요약 노드를 우측으로 옮기는 실제 템플릿 동작에 맞춰 현재 보이는 `.sum:not([hidden])`만 대조해요. 기존 수식·표·그림·탐색 검사도 통과했어요.
+
+최종 audit에서 여섯 팩 check_pack, 버전2, 기존 metadata, 설명 밖1058파일의 SHA256, 원문79개 digest 항목, 설명 밖 신규/삭제0을 확인했어요.86개 저작/발행 조각은 바이트가 같고 기존 여섯 구역은 백업과 구조·텍스트가 같아요. baseline과 일치하는 백업은 아래예요.
+
+| 실험 | 수록 | 보존 파일 | 백업 |
+|---|---:|---:|---|
+| 01 | 12 | 170 | 복습노트/실험01.backup-a390ed552fcf |
+| 02 | 14 | 184 | 복습노트/실험02.backup-34107408ed7b |
+| 03 | 15 | 162 | 복습노트/실험03.backup-88dfe79d5eb4 |
+| 04 | 12 | 166 | 복습노트/실험04.backup-6d0f6ed1cc30 |
+| 05 | 19 | 172 | 복습노트/실험05.backup-f026b24748e2 |
+| 06 | 14 | 204 | 복습노트/실험06.backup-d015c7a4243a |
+
+Windows snapshot 경로를 as_posix로 교정하고, 실제 실험06의 빈 작업표 네 ID를 기대 목록에 넣었어요. 발행 백업을 현재 팩으로 잘못 읽던 두 테스트는 여섯 현재 폴더를 직접 검사하게 했어요. 실험04/05 저작 manifest의 v2 계약을 완료해 기존 조각 경로와 all not_run 검토 상태를 추가했어요. 다른 저작 metadata와 발행 문서는 유지했어요. 원래 source04/05 경로에서 v2 manifest·조각을 직접12/19개 읽었고, 실험05의 전체 빌드는 기존 import-bank 준비 단계처럼 임시 run에 정확한 발행 evidence/guide를 넣어 네 HTML·네 MD와 check를 검증했어요. 저작 archive 자체에 빠진 import 자료를 제품 원고에 임의 추가하지 않았어요.
+
+첫 전체 실행은4 failed,533 passed였어요: 백업 폴더 탐색 두 건과 불완전한 source04 v2 manifest로 브라우저 실행 전에 거부된 두 viewport였어요. 이를 교정한 최종 실행은 위538 PASS예요. 기존 baseline의17개 실패와 원래 workbook-browser 재확인4 PASS도 task 보고서에 분리 기록했어요. timeout·assertion을 완화하지 않았어요.
+
+해시된 exp02 netlist에는 정확한 경로의 -text 속성만 추가했어요. committed/current SHA256은333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b1f50f61b2ca857f로 같고 source diff는 없어요. 실험05 기존 browser JSON의 실제 수는76조건/19문항이에요; 과거 콘솔48/12 표기는 잘못된 것으로 남기고 harness의 향후 출력만 실제 데이터에서 계산하게 고쳤어요. 실험06 작은 계산 증거에는 실제 JK8개·T4개 tuple과 원문 expected/current digest를 추가했어요.
+
+기존 실제 source/browser 이미지와 실험별 내용 검토 기록을 재사용했고 위험 문항의 원문 이미지를 추가 판독했어요. 이번 DOM 회귀를86문항 전체의 새로운 시각적 스크린샷 검토라고 기록하지 않았어요. disputed/unresolved 및74HC143 식별 한계는 유지해요. controller의 task/전체 브랜치 독립 리뷰는 이 gate 뒤에 남아 있어요.
+
+상세 증거: `.superpowers/sdd/2026-10-12-logic-lab-problem-recall/task-10-report.md`(실행 전체 출력·여섯 HTML/MD 링크), `task-10-related-initial.txt`, `task-10-related-tests.txt`, `task-10-audit-output.txt`; 기계 비교: `output/validation/problem-recall/final-audit.json`.

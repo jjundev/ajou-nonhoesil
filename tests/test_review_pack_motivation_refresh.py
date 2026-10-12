@@ -22,7 +22,7 @@ def module():
 
 
 def snapshot(folder):
-    return {str(p.relative_to(folder)): p.read_bytes() for p in folder.rglob('*') if p.is_file()}
+    return {p.relative_to(folder).as_posix(): p.read_bytes() for p in folder.rglob('*') if p.is_file()}
 
 
 @pytest.fixture

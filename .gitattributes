@@ -11,3 +11,4 @@ docs/learning-pack-source/**/figures/**/*.svg -text
 docs/learning-pack-source/**/evidence/question-bank.json -text
 복습노트/**/evidence/question-bank.json -text
 강의노트/공지사항/*.md -text
+보고서/실험02/결선도/netlist.md -text

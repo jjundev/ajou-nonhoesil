@@ -62,7 +62,7 @@ def test_no_js_and_invalid_hash(browser,pages,hash_value):
     assert page.locator('[data-explanation="solve"]').is_visible()
     assert page.locator('.toc-list a').is_visible();ctx.close()
 
-@pytest.mark.parametrize('number',range(1,6))
+@pytest.mark.parametrize('number',range(1,7))
 @pytest.mark.parametrize('width',[375,1280])
 @pytest.mark.parametrize('theme',['light','dark'])
 def test_all_published_explanation_articles(browser,number,width,theme):
@@ -72,7 +72,7 @@ def test_all_published_explanation_articles(browser,number,width,theme):
     page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(path.as_uri())
     ids=page.locator('main article.topic').evaluate_all('(a)=>a.map(x=>x.id)')
-    assert len(ids)==[12,14,15,12,19][number-1]
+    assert len(ids)==[12,14,15,12,19,14][number-1]
     for ident in ids:
         page.evaluate('(id)=>location.hash=id',ident)
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
@@ -91,13 +91,15 @@ def test_all_published_explanation_articles(browser,number,width,theme):
     assert not errors
     ctx.close()
 
-@pytest.mark.parametrize('number',range(1,6))
+@pytest.mark.parametrize('number',range(1,7))
 def test_all_published_explanations_without_js(browser,number):
     root=Path(__file__).resolve().parents[1]
     path=root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_문제설명.html'
     ctx=browser.new_context(java_script_enabled=False);page=ctx.new_page();page.goto(path.as_uri())
-    assert page.locator('article.topic').count()==[12,14,15,12,19][number-1]
+    assert page.locator('article.topic').count()==[12,14,15,12,19,14][number-1]
     assert page.locator('[data-explanation="verify"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
+    assert page.locator('[data-explanation="recall"]').count()==[12,14,15,12,19,14][number-1]
+    assert page.locator('[data-explanation="recall"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
     ctx.close()
 
 
@@ -178,4 +180,62 @@ def test_generated_wide_table_scrolls_inside_card(browser, tmp_path, width, them
     assert page.evaluate('location.hash') == '#q-mux-001'
     assert card.evaluate('el=>el.scrollLeft') > 0
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    ctx.close()
+
+
+@pytest.mark.parametrize('width', [375,1280])
+@pytest.mark.parametrize('theme', ['light','dark'])
+def test_generated_v2_recall_and_summary(browser,tmp_path,width,theme):
+    from tests._explanation_recall_fixture import setup_v2
+    m,run,data=setup_v2(tmp_path)
+    paths=assemble(m,run,tmp_path/'stage',Path('.claude/skills/logic-lab-review-pack/assets'))
+    convert_pack(paths['note_html'],paths['review_html'],manifest=m)
+    ctx=browser.new_context(viewport=dict(width=width,height=900),color_scheme=theme)
+    page=ctx.new_page(); errors=[]
+    page.on('pageerror',lambda e: errors.append(str(e)))
+    page.goto(paths['explanation_html'].as_uri()+'#q-mux-001')
+    recall=page.locator('main article.topic [data-explanation="recall"]')
+    assert recall.is_visible() and '선택선이라는 단서' in recall.inner_text()
+    if page.locator('.layout').get_attribute('data-right')!='open':
+        page.locator('#toggle-right').click()
+    summary=page.locator('#panel-right .sum:not([hidden]) [data-summary="recall"]')
+    assert summary.count()==1 and summary.is_visible()
+    assert '입력 하나' in summary.inner_text()
+    assert page.locator('.katex-error').count()==0
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert not errors
+    ctx.close()
+
+
+@pytest.mark.parametrize('number',range(1,7))
+@pytest.mark.parametrize('width',[375,1280])
+@pytest.mark.parametrize('theme',['light','dark'])
+def test_published_recall_and_summary(browser,number,width,theme):
+    import json
+    root=Path(__file__).resolve().parents[1]
+    folder=root/'복습노트'/f'실험{number:02d}'
+    manifest=json.loads((folder/'자료/manifest.json').read_text(encoding='utf-8'))
+    ids=[p['id'] for p in manifest['problems'] if p['status']=='included']
+    # Read each authored summary before JS moves all .sum nodes into the panel.
+    from scripts.lab.review_pack.html2md import Parser
+    from scripts.lab.review_pack.explanation_content import text
+    parser=Parser(); parser.feed((folder/f'실험{number:02d}_문제설명.html').read_text(encoding='utf-8'))
+    expected={n.attrs['id']:text(next(x for x in n.walk() if x.attrs.get('data-summary')=='recall')).strip()
+              for n in parser.root.walk() if n.tag=='article' and 'topic' in n.attrs.get('class','').split()}
+    ctx=browser.new_context(viewport=dict(width=width,height=900),color_scheme=theme)
+    page=ctx.new_page(); errors=[]
+    page.on('pageerror',lambda e: errors.append(str(e)))
+    page.goto((folder/f'실험{number:02d}_문제설명.html').as_uri())
+    if page.locator('.layout').get_attribute('data-right')!='open':
+        page.locator('#toggle-right').click()
+    for ident in ids:
+        page.evaluate('(id)=>location.hash=id',ident)
+        page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
+        assert page.locator('#'+ident+' [data-explanation="recall"]').is_visible()
+        summary=page.locator('#panel-right .sum:not([hidden]) [data-summary="recall"]')
+        assert summary.count()==1 and summary.is_visible()
+        assert ' '.join(summary.inner_text().split())==' '.join(expected[ident].split())
+        assert page.locator('.katex-error').count()==0
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert not errors
     ctx.close()
