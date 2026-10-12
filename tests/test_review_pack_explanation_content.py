@@ -103,3 +103,14 @@ def test_recall_cue_length_counts_decoded_text(tmp_path):
     write(root,m,FRAGMENT.replace('선택선 값 = 고를 입력 번호',cue))
     load_explanations(m,data,root)
     assert recall_cue(FRAGMENT)=='선택선 값 = 고를 입력 번호'
+
+def test_cue_outside_recall_rejected(tmp_path):
+    m,root,data=setup(tmp_path)
+    moved=FRAGMENT.replace(CUE,'<p>단서</p>',1).replace('<p>선택선이 고른 입력을 찾아요.</p>','<p>선택선이 고른 입력을 찾아요.</p>'+CUE)
+    write(root,m,moved)
+    with pytest.raises(ValueError,match='one cue'):load_explanations(m,data,root)
+
+def test_summary_cue_must_match(tmp_path):
+    m,root,data=setup(tmp_path)
+    write(root,m,FRAGMENT.replace('<strong>떠올릴 것:</strong> 선택선 값 = 고를 입력 번호','<strong>떠올릴 것:</strong> 다른 구절'))
+    with pytest.raises(ValueError,match='떠올릴 것'):load_explanations(m,data,root)
