@@ -3,6 +3,7 @@
 흔들림은 그리기에만 걸리고 점유표·순서표·`verify()` 는 평소와 같아야 한다.
 """
 import importlib.util
+import math
 import random
 import shutil
 import tempfile
@@ -68,6 +69,56 @@ class HandPolyline(unittest.TestCase):
             self.assertAlmostEqual((y0 + y1) / 2, 60.0)
             self.assertTrue(2 <= (x1 - x0) / 2 <= 4 and 2 <= (y1 - y0) / 2 <= 4)
         self.assertGreater(len({tuple(b) for b in boxes}), 1)
+
+
+class HandShapes(unittest.TestCase):
+    """칩·LED·저항 윤곽용 닫힌 도형과 손글씨 글꼴 갈아끼우기(2단계)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+
+    def test_원은_닫혀_있고_반지름_안에서_떨린다(self):
+        pts = self.mod._hand_circle((50.0, 60.0), 8, random.Random(1), amp=1.0)
+        self.assertEqual(pts[0], pts[-1])
+        for x, y in pts:
+            d = math.hypot(x - 50.0, y - 60.0)
+            self.assertTrue(8 - 2.0 <= d <= 8 + 1.5, d)
+
+    def test_사각형_윤곽은_첫_꼭짓점에서_닫힌다(self):
+        box = [(10.0, 10.0), (40.0, 10.0), (40.0, 90.0), (10.0, 90.0)]
+        pts = self.mod._hand_loop(box, random.Random(2), amp=1.0)
+        self.assertEqual(pts[0], box[0])
+        self.assertEqual(pts[-1], box[0])
+
+    def test_홈은_아래_반원이다(self):
+        pts = self.mod._hand_arc([10, 0, 30, 12], random.Random(3), amp=1.0)
+        for got, want in ((pts[0], (30, 6)), (pts[-1], (10, 6))):    # sin(π) 잔차 — 근사로 본다
+            self.assertAlmostEqual(got[0], want[0])
+            self.assertAlmostEqual(got[1], want[1])
+        self.assertTrue(max(y for _, y in pts) > 10)
+
+    def test_손글씨_글꼴은_Bradley_Hand_다(self):
+        self.assertTrue(self.mod.font_path('hand').endswith('Bradley Hand Bold.ttf'))
+
+    def test_hand_real_은_en_글꼴만_바꾼다(self):
+        d = self.mod._ScaledDraw(Image.new('RGBA', (100, 100)), hand_font_path=self.mod.font_path('hand'))
+        self.assertIsNotNone(d.hand_real(self.mod._font('en', 10)))
+        self.assertIsNone(d.hand_real(self.mod._font('kr', 10)))
+        self.assertIsNone(self.mod._ScaledDraw(Image.new('RGBA', (100, 100))).hand_real(self.mod._font('en', 10)))
+
+    def test_text_는_원래_상자_중심에_그린다(self):
+        for kw in ({}, {'anchor': 'mm'}):
+            im = Image.new('RGBA', (400, 200), (0, 0, 0, 0))
+            d = self.mod._ScaledDraw(im, hand_font_path=self.mod.font_path('hand'))
+            f = self.mod._font('en', 12)
+            b = d.textbbox((50, 40), '74HC20', font=f, **kw)
+            d.text((50, 40), '74HC20', fill=(0, 0, 0, 255), font=f, **kw)
+            ink = im.getbbox()                                   # 실픽셀
+            cx = (ink[0] + ink[2]) / 2 / self.mod.SCALE
+            cy = (ink[1] + ink[3]) / 2 / self.mod.SCALE
+            self.assertAlmostEqual(cx, (b[0] + b[2]) / 2, delta=2)
+            self.assertAlmostEqual(cy, (b[1] + b[3]) / 2, delta=2)
 
 
 class HandRender(unittest.TestCase):
