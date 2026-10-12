@@ -23,7 +23,8 @@ from pypdf import PdfReader
 from scripts.lab.hand_grid import REPO_ROOT, load_renderer
 from scripts.lab.html2pdf import html_to_pdf
 
-LEGEND = '회색 선은 이미 그려져 있어요 · 색으로 된 칩·LED·저항·입력 이름만 그리세요'
+LEGEND = ('회색 선은 이미 그려져 있어요 · 색으로 된 칩·LED·저항·입력 이름만 그리세요 '
+          '(칩 핀·LED·저항의 회색 다리도 부품과 함께 그려요)')
 
 CSS = """
 @page { size: A4; margin: 10mm; }

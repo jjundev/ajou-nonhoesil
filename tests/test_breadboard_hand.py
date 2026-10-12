@@ -254,6 +254,7 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([len(p.images) for p in pages], [1])
         text = pages[0].extract_text()
         self.assertIn('회색 선은 이미 그려져 있어요', text)
+        self.assertIn('다리', text)    # 부품 다리도 회색이다 — 빠뜨리지 않게
         self.assertIn('74HC04', text)
 
     def test_넘친_PDF_는_거절한다(self):
