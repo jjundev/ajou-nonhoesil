@@ -27,7 +27,7 @@ def test_experiment_coverage(number,expected):
     assert result['numbers'][0]==result['numbers'][1]==result['numbers'][2]
     assert result['subparts_complete']
     for article in result['articles']:
-        for key in ('understand','start','solve','verify','pitfall','retry'):
+        for key in ('recall','understand','start','solve','verify','pitfall','retry'):
             assert sum(n.attrs.get('data-explanation')==key for n in article.walk())==1
 
 @pytest.mark.parametrize('number,states',[(1,{'q-deq':'disputed'}),(2,{'q-region':'disputed','q-delay-transition':'unresolved','q-transition':'unresolved','q-speed':'unresolved'}),(3,{'q-fa-design':'disputed','q-fs-roles':'disputed','q-cs-roles-sub':'unresolved'}),(4,{'q-tri':'disputed','q-demux4':'disputed'})])
@@ -36,3 +36,14 @@ def test_experiment_answer_states(number,states):
     for ident,state in states.items():
         assert result['answer_status'][ident]==state
         assert ('답안 충돌' if state=='disputed' else '정답 미확정') in text(next(n for n in result['articles'] if n.attrs['id']==ident))
+
+@pytest.mark.parametrize('number',range(1,7))
+def test_published_recall(number):
+    folder=ROOT/'복습노트'/f'실험{number:02d}'
+    tree=Parser();tree.feed((folder/f'실험{number:02d}_문제설명.html').read_text())
+    articles=[n for n in tree.root.walk() if n.tag=='article' and 'topic' in n.attrs.get('class','').split()]
+    assert articles
+    for article in articles:
+        regions=[n.attrs['data-explanation'] for n in article.walk() if n.attrs.get('data-explanation')]
+        assert regions[0]=='recall'
+        assert '이 문제를 보면 떠올려요' in text(article)
