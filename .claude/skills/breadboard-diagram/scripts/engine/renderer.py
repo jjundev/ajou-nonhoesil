@@ -2,6 +2,10 @@
 # 단독으로 import 하지 않는다. `../render_breadboard.py` 가 조각들을 `_PARTS` 순서대로 자기
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
+# 손그림 모사 잉크 — 칩 윤곽·칩 글자. 채움 없는 몸통 위에서 흰 글씨는 안 보인다
+HAND_INK = (40, 40, 40, 255)
+
+
 class BreadboardRenderer(_RuleChecks):
     def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False,
                  hand=None):
@@ -39,7 +43,13 @@ class BreadboardRenderer(_RuleChecks):
         # 양식은 확대해 깐다. NEAREST — LANCZOS 는 JPEG 잡티까지 늘려 PNG 가 두 배로 컸다(2026-09-28)
         self.im = self.base_im.resize((w * SCALE, h * SCALE), Image.NEAREST)
         self.overlay = Image.new('RGBA', self.im.size, (0, 0, 0, 0))
-        self.draw = _ScaledDraw(self.overlay)
+        hand_font = None
+        if hand is not None:
+            try:
+                hand_font = font_path('hand')
+            except FileNotFoundError:
+                print('[hand] 손글씨 글꼴이 없어 글자는 인쇄체로 그린다', file=sys.stderr)
+        self.draw = _ScaledDraw(self.overlay, hand_font_path=hand_font)
         # 이미 그린 레일 브리지 키(kind, x, x) — 같은 레일쌍을 한 번만 잇는다
         self._bridged = set()
         # 실제로 꽂힌 브리지(행 포함) — `wiring()` 이 낸다. 행이 없으면 손그림 검토가 H1 을 헛낸다
@@ -721,14 +731,27 @@ class BreadboardRenderer(_RuleChecks):
         if self._pull_parts:
             wire_col, body_col, bands = REMOVE, (240, 200, 200, 255), [REMOVE] * 4
         ymid = (y1 + y2) // 2
-        self.draw.line([(x, y1), (x, ymid - 12)], fill=wire_col, width=2)
-        self.draw.line([(x, ymid + 12), (x, y2)], fill=wire_col, width=2)
-        self.draw.rectangle([x - 5, ymid - 12, x + 5, ymid + 12], fill=body_col, outline=(90, 70, 40, 255), width=1)
         if bands is None:
             if "1k" in label:
                 bands = [(139, 69, 19, 255), (30, 30, 30, 255), (200, 20, 20, 255), (218, 165, 32, 255)]
             else:
                 bands = [(204, 85, 0, 255), (204, 85, 0, 255), (139, 69, 19, 255), (218, 165, 32, 255)]
+        if self.hand is not None:
+            # 손그림: 다리·빈 몸통 윤곽·색띠를 각각 흔든다
+            rng = self._hand_rng
+            for leg in ([(x, y1), (x, ymid - 12)], [(x, ymid + 12), (x, y2)]):
+                self.draw.line(_hand_polyline(leg, rng), fill=wire_col, width=_hand_width(2, rng),
+                               joint='curve')
+            body = [(x - 5, ymid - 12), (x + 5, ymid - 12), (x + 5, ymid + 12), (x - 5, ymid + 12)]
+            self.draw.line(_hand_loop(body, rng), fill=(90, 70, 40, 255), width=_hand_width(1, rng),
+                           joint='curve')
+            for col, off in zip(bands, [-7, -2, 3, 8]):
+                self.draw.line(_hand_polyline([(x - 4, ymid + off), (x + 4, ymid + off)], rng,
+                                              amp=1.0, ramp=2.0), fill=col, width=2)
+            return
+        self.draw.line([(x, y1), (x, ymid - 12)], fill=wire_col, width=2)
+        self.draw.line([(x, ymid + 12), (x, y2)], fill=wire_col, width=2)
+        self.draw.rectangle([x - 5, ymid - 12, x + 5, ymid + 12], fill=body_col, outline=(90, 70, 40, 255), width=1)
         for col, off in zip(bands, [-7, -2, 3, 8]):
             self.draw.line([(x - 4, ymid + off), (x + 4, ymid + off)], fill=col, width=2)
 
@@ -744,9 +767,18 @@ class BreadboardRenderer(_RuleChecks):
         if self._pull_parts:
             color_rgb, lead_col = REMOVE[:3], REMOVE
         ymid = (y_anode + y_cathode) // 2
-        self.draw.line([(x, y_anode), (x, ymid - 8)], fill=lead_col, width=2)
-        self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=lead_col, width=2)
-        self.draw.ellipse([x - 8, ymid - 8, x + 8, ymid + 8], fill=(*color_rgb, 240), outline=(255, 255, 255, 255), width=2)
+        if self.hand is not None:
+            # 손그림: 다리 둘과 채움 없는 흔들린 원
+            rng = self._hand_rng
+            for leg in ([(x, y_anode), (x, ymid - 8)], [(x, ymid + 8), (x, y_cathode)]):
+                self.draw.line(_hand_polyline(leg, rng), fill=lead_col, width=_hand_width(2, rng),
+                               joint='curve')
+            self.draw.line(_hand_circle((x, ymid), 8, rng), fill=(*color_rgb, 255),
+                           width=_hand_width(2, rng), joint='curve')
+        else:
+            self.draw.line([(x, y_anode), (x, ymid - 8)], fill=lead_col, width=2)
+            self.draw.line([(x, ymid + 8), (x, y_cathode)], fill=lead_col, width=2)
+            self.draw.ellipse([x - 8, ymid - 8, x + 8, ymid + 8], fill=(*color_rgb, 240), outline=(255, 255, 255, 255), width=2)
         if label:
             self.signal_tag(label, x + 10, ymid, align='left', col=color_rgb)
 
@@ -826,7 +858,7 @@ class BreadboardRenderer(_RuleChecks):
 
     def _vtext(self, xy, text, fill, font):
         """세로쓰기 — 칩 이름을 몸통 안에 넣는다."""
-        real = font.real if isinstance(font, _ScaledFont) else font
+        real = self.draw.hand_real(font) or (font.real if isinstance(font, _ScaledFont) else font)
         bbox = real.getbbox(text)
         pad = 2 * SCALE
         w, h = bbox[2] - bbox[0] + 2 * pad, bbox[3] - bbox[1] + 2 * pad
@@ -865,10 +897,18 @@ class BreadboardRenderer(_RuleChecks):
         body_outline = KEEP if kept_chip else (130, 140, 150, 255)
         text_fill = (55, 55, 55, 255) if kept_chip else (255, 255, 255, 255)
         num_fill = (90, 90, 90, 255) if kept_chip else (215, 215, 215, 255)
-
-        self.draw.rectangle([x1, y_top, x2, y_bot], fill=body_fill, outline=body_outline, width=2)
+        rng = self._hand_rng
         notch_w = (x2 - x1) // 3
-        self.draw.arc([x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6], 0, 180, fill=(200, 200, 200, 255), width=2)
+        notch = [x1 + notch_w, y_top - 6, x2 - notch_w, y_top + 6]
+        if self.hand is not None:
+            # 손그림: 채움 없는 흔들린 몸통·홈. 판형이 비치므로 글자는 잉크색
+            text_fill = num_fill = HAND_INK
+            body = [(x1, y_top), (x2, y_top), (x2, y_bot), (x1, y_bot)]
+            self.draw.line(_hand_loop(body, rng), fill=HAND_INK, width=_hand_width(2, rng), joint='curve')
+            self.draw.line(_hand_arc(notch, rng), fill=HAND_INK, width=_hand_width(2, rng), joint='curve')
+        else:
+            self.draw.rectangle([x1, y_top, x2, y_bot], fill=body_fill, outline=body_outline, width=2)
+            self.draw.arc(notch, 0, 180, fill=(200, 200, 200, 255), width=2)
         label_at = ((x1 + x2) / 2, (y_top + y_bot) / 2)
         font = self._chip_font(name, rows)
         self._vtext(label_at, name, text_fill, font)
@@ -881,8 +921,12 @@ class BreadboardRenderer(_RuleChecks):
         # 핀 번호는 몸통 안쪽 — 밖이면 배선을 꽂는 d·g 열 홀을 가린다
         for i in range(rows):
             y = self.r_y(start_row + i)
-            self.draw.line([(c['e'], y), (x1, y)], fill=(170, 170, 170, 255), width=3)
-            self.draw.line([(x2, y), (c['f'], y)], fill=(170, 170, 170, 255), width=3)
+            for pin in ([(c['e'], y), (x1, y)], [(x2, y), (c['f'], y)]):
+                if self.hand is not None:
+                    self.draw.line(_hand_polyline(pin, rng), fill=(170, 170, 170, 255),
+                                   width=_hand_width(3, rng), joint='curve')
+                else:
+                    self.draw.line(pin, fill=(170, 170, 170, 255), width=3)
             self.draw.text((x1 + 3, y - 6), str(i + 1), fill=num_fill, font=self.font_num)
             rt = str(n - i)
             w = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]

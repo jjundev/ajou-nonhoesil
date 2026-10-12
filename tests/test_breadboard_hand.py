@@ -166,6 +166,49 @@ class HandRender(unittest.TestCase):
             cx, cy = int((x0 + x1) / 2 * self.mod.SCALE), int((y0 + y1) / 2 * self.mod.SCALE)
             self.assertNotEqual(px[cx, cy], (255, 255, 255, 245))
 
+    def _count(self, bb, rgba, box=None):
+        im = bb.overlay if box is None else bb.overlay.crop(tuple(int(v * self.mod.SCALE) for v in box))
+        return sum(1 for p in im.get_flattened_data() if p == rgba)
+
+    def _chip_box(self, bb, i=0):
+        ch = bb.chips[i]
+        c = bb.cols[ch['block']]
+        return (c['chip_x1'], bb.r_y(ch['pin1_row']) - 8, c['chip_x2'], bb.r_y(ch['pin1_row'] + 6) + 8)
+
+    def test_칩_몸통을_칠하지_않는다(self):
+        a, _, _ = self._render(None)
+        b, _, _ = self._render(42)
+        fill = (30, 33, 36, 255)
+        self.assertGreater(self._count(a, fill, self._chip_box(a)), 1000)
+        self.assertEqual(self._count(b, fill, self._chip_box(b)), 0)
+
+    def test_LED_와_저항_몸통을_칠하지_않는다(self):
+        a, _, _ = self._render(None)
+        b, _, _ = self._render(42)
+        for rgba in ((220, 20, 20, 240), (225, 195, 145, 255)):
+            self.assertGreater(self._count(a, rgba), 0, rgba)
+            self.assertEqual(self._count(b, rgba), 0, rgba)
+
+    def test_칩_윤곽을_손그림_잉크로_긋는다(self):
+        b, _, _ = self._render(42)
+        self.assertGreater(self._count(b, self.mod.HAND_INK, self._chip_box(b)), 100)
+
+    def test_글꼴을_바꿔도_배치는_같다(self):
+        a, _, _ = self._render(None)
+        b, _, _ = self._render(42)
+        self.assertEqual(a.tag_boxes, b.tag_boxes)
+        self.assertEqual(a.chip_label_boxes, b.chip_label_boxes)
+        self.assertEqual(a.margin_tag_boxes, b.margin_tag_boxes)
+        self.assertEqual(a.settled_markers, b.settled_markers)
+
+    def test_손글씨_글꼴이_없어도_그린다(self):
+        saved = self.mod.FONT_CANDIDATES['hand']
+        self.mod.FONT_CANDIDATES['hand'] = ()
+        self.addCleanup(self.mod.FONT_CANDIDATES.__setitem__, 'hand', saved)
+        b, out, _ = self._render(42)
+        self.assertTrue(out.exists())
+        self.assertIsNone(b.draw.hand_real(b.font_chip))
+
     def test_기준선_이나_층과_못_섞는다(self):
         with self.assertRaises(ValueError):
             self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)
