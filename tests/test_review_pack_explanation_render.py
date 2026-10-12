@@ -114,3 +114,11 @@ def test_authored_table_card_is_not_nested(tmp_path):
     html = paths['explanation_html'].read_text()
     assert html.count('class="table-card"') == 1
     assert card in html
+
+
+def test_recall_exported_to_md(tmp_path):
+    m,root,data=setup(tmp_path);folder=tmp_path/'stage';folder.mkdir()
+    paths=write_explanations(m,data,root,folder,ASSETS)
+    html=paths['explanation_html'].read_text();md=paths['explanation_md'].read_text()
+    assert html.index('data-explanation="recall"')<html.index('data-explanation="understand"')
+    assert '이 문제를 보면 떠올려요' in md and '선택선 값 = 고를 입력 번호' in md and '떠올릴 것:' in md

@@ -62,7 +62,7 @@ def test_no_js_and_invalid_hash(browser,pages,hash_value):
     assert page.locator('[data-explanation="solve"]').is_visible()
     assert page.locator('.toc-list a').is_visible();ctx.close()
 
-@pytest.mark.parametrize('number',range(1,6))
+@pytest.mark.parametrize('number',range(1,7))
 @pytest.mark.parametrize('width',[375,1280])
 @pytest.mark.parametrize('theme',['light','dark'])
 def test_all_published_explanation_articles(browser,number,width,theme):
@@ -72,7 +72,7 @@ def test_all_published_explanation_articles(browser,number,width,theme):
     page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(path.as_uri())
     ids=page.locator('main article.topic').evaluate_all('(a)=>a.map(x=>x.id)')
-    assert len(ids)==[12,14,15,12,19][number-1]
+    assert len(ids)==[12,14,15,12,19,14][number-1]
     for ident in ids:
         page.evaluate('(id)=>location.hash=id',ident)
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
@@ -84,6 +84,7 @@ def test_all_published_explanation_articles(browser,number,width,theme):
             return parseFloat(style.borderTopWidth) >= 1 && parseFloat(style.paddingTop) >= 16
                 && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.overflowX === 'auto';
         })''')
+        assert_explanation_section_gap(page, '#'+ident+' [data-explanation="recall"]')
         assert_explanation_section_gap(page, '#'+ident+' [data-explanation="understand"]')
         assert page.locator('.katex-error').count()==0
         assert page.locator('img').evaluate_all('(a)=>a.every(x=>x.complete&&x.naturalWidth>0)')
@@ -91,12 +92,12 @@ def test_all_published_explanation_articles(browser,number,width,theme):
     assert not errors
     ctx.close()
 
-@pytest.mark.parametrize('number',range(1,6))
+@pytest.mark.parametrize('number',range(1,7))
 def test_all_published_explanations_without_js(browser,number):
     root=Path(__file__).resolve().parents[1]
     path=root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_문제설명.html'
     ctx=browser.new_context(java_script_enabled=False);page=ctx.new_page();page.goto(path.as_uri())
-    assert page.locator('article.topic').count()==[12,14,15,12,19][number-1]
+    assert page.locator('article.topic').count()==[12,14,15,12,19,14][number-1]
     assert page.locator('[data-explanation="verify"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
     ctx.close()
 

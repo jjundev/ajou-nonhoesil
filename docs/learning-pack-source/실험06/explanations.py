@@ -10,17 +10,18 @@ def figure(src, alt):
     return f'<figure class="figure"><img src="자료/figures/{src}" alt="{alt}"></figure>'
 
 
-def build(pid, understand, start, solve, answer, check, pitfall, retry, judge):
+def build(pid, cue, why, understand, start, solve, answer, check, pitfall, retry, judge):
     links = ', '.join(f'<a href="{{{{NOTE_HREF}}}}#{t}">{TITLE[t]}</a>' for t in PR.PROBLEM_TOPICS[pid])
     retry = retry[:3]
-    return (f'<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span>{understand}</div>'
+    return (f'<div class="layer eli5" data-explanation="recall"><span class="layer-title">이 문제를 보면 떠올려요</span><p class="lead cue">{cue}</p>{why}</div>'
+            f'<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span>{understand}</div>'
             f'<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span>{start}<p>필요한 개념: {links}</p></div>'
             f'<div class="layer formal" data-explanation="solve"><span class="layer-title">왜 이렇게 푸는지 함께 따라가요</span>{solve}</div>'
             f'<div class="layer formal" data-explanation="verify"><span class="layer-title">완성 답과 검산</span>{answer}<p><strong>검산:</strong> {check}</p></div>'
             f'<div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span>{pitfall}</div>'
             f'<div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol>' +
             ''.join(f'<li>{r}</li>' for r in retry) + '</ol></div>'
-            f'<div class="sum" hidden><p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p></div>')
+            f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p><p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p></div>')
 
 
 def strip(html):
@@ -35,6 +36,8 @@ JK_A = table(['J', 'K', 'C', 'Q(t)'], [['0', '0', '1', 'Q(t−1)'], ['0', '1', '
 E = {}
 
 E['q-diff'] = build('q-diff',
+    '레벨 트리거(동안) 대 엣지 트리거(순간)',
+    p('문제에 “Latch와 Flip-Flop의 차이”가 보이면 입력을 받아들이는 시점을 떠올려요. 둘 다 1비트를 저장하는 기억소자라서 차이는 트리거 방식이기 때문이에요.'),
     p('두 기억소자가 “언제 입력을 받아들이는지”를 비교하는 서술형이에요. 둘 다 1비트를 저장한다는 공통점에서 출발해 차이 하나를 분명하게 쓰면 돼요.'),
     p('“Latch와 Flip-Flop은 둘 다 출력을 되먹여 1비트를 저장하는 기억소자예요.”라고 공통점부터 써요.'),
     p('차이는 트리거 방식이에요. 래치는 Enable이 1인 동안 입력이 바뀔 때마다 출력이 바로 따라 바뀌는 레벨 트리거예요. 플립플롭은 클록이 0→1 또는 1→0으로 바뀌는 순간에만 입력을 받아들이는 엣지 트리거예요. 교안은 래치를 비동기, 플립플롭을 동기 기억소자로 불러요.') +
@@ -47,6 +50,8 @@ E['q-diff'] = build('q-diff',
     '래치는 Enable이 1인 동안 계속, 플립플롭은 클록 엣지 순간에만 입력을 받아요.')
 
 E['q-latch'] = build('q-latch',
+    '되먹임으로 1비트 기억, Enable 동안 입력 반영',
+    p('문제에 “Latch”가 보이면 무엇을·어떻게·언제 세 가지를 떠올려요. 저장 대상(1비트), 기억 방법(되먹임), 반영 시점(Enable 동안)이 설명의 뼈대이기 때문이에요.'),
     p('래치가 무엇을 저장하고, 어떻게 기억하며, 언제 입력을 받는지를 설명하는 문제예요.'),
     p('“Latch는 2진 정보 1비트를 저장하는 기억소자예요.”라고 첫 문장을 써요.'),
     ul(['저장: 1비트. Q와 Q′은 서로 반대인 두 안정 상태 중 하나를 지켜요.',
@@ -60,6 +65,8 @@ E['q-latch'] = build('q-latch',
     '저장(1비트), 기억 방법(되먹임), 반영 시점(Enable 동안)을 차례로 써요.')
 
 E['q-ff'] = build('q-ff',
+    '클록 엣지 순간에만 입력 반영',
+    p('문제에 “Flip-Flop”이 보이면 엣지 “순간”을 먼저 떠올려요. 래치와 저장 대상은 같고 입력을 받아들이는 시점만 다르기 때문이에요.'),
     p('플립플롭이 무엇을 저장하고 언제 입력을 받는지를 설명하는 문제예요. 래치와 저장 대상은 같고 반영 시점이 달라요.'),
     p('“Flip-Flop은 클록을 입력받아 1비트를 저장하는 동기 기억소자예요.”라고 시작해요.'),
     ul(['저장: 1비트, Q와 Q′은 서로 반대인 두 안정 상태 중 하나예요.',
@@ -72,6 +79,8 @@ E['q-ff'] = build('q-ff',
     '플립플롭은 클록 엣지 순간에만 입력을 받아들여요.')
 
 E['q-sr-nand-00'] = build('q-sr-nand-00',
+    'NAND 래치는 0이 활성, S=R=0은 금지 입력',
+    p('문제에 Enable 없는 NAND 두 개와 S=R=0이 보이면 NAND는 입력에 0이 하나라도 있으면 1을 낸다는 점을 떠올려요. 그래서 이 래치는 0이 명령이고, S=R=0이면 두 출력이 모두 1이 되기 때문이에요.'),
     p('Enable이 없는 NAND 두 개짜리 래치에 S=R=0을 넣었을 때 두 출력을 구하고, Q′이 Q의 반대인지 판단해요.'),
     p('“S=0이 들어간 위 NAND는 다른 입력과 상관없이 1을 내므로 Q=1이에요.”라고 첫 줄을 써요.'),
     p('NAND는 입력에 0이 하나라도 있으면 출력이 1이에요. 위 NAND의 입력은 S와 Q′인데 S=0이라 Q=1이에요. 아래 NAND의 입력은 R과 Q인데 R=0이라 Q′=1이에요. 되먹임 값이 무엇이든 결과가 같아요.') +
@@ -84,6 +93,8 @@ E['q-sr-nand-00'] = build('q-sr-nand-00',
     'NAND에 0이 하나라도 있으면 1이라서 Q와 Q′이 모두 1이에요.')
 
 E['q-rs-latch'] = build('q-rs-latch',
+    'C=0이면 유지, C=1이면 SR 래치 표',
+    p('문제 회로에서 C가 앞단 NAND 두 개에 함께 들어가면 C를 Enable로 떠올려요. C=0이면 앞단이 모두 1을 내서 유지되고, C=1일 때만 S·R이 교차 NAND로 전달되기 때문이에요.'),
     p('주어진 R-S 래치 회로(앞단 NAND 2개 + 교차 NAND 2개)를 읽고 S·R·C 조합마다 Q(t)를 채우는 문제예요. C가 Enable 역할이에요.'),
     p('“C=0이면 앞단 NAND 두 개가 모두 1을 내서 Q(t)=Q(t−1)이에요.”라고 마지막 행부터 채워요.'),
     p('C=1이면 앞단 NAND가 S와 R을 뒤집어 전달해요. 한 행씩 볼게요.') +
@@ -98,6 +109,8 @@ E['q-rs-latch'] = build('q-rs-latch',
     'C=0이면 유지, C=1이면 S=1→Set, R=1→Reset, 둘 다 0→유지, 둘 다 1→Q=Q′=1 금지예요.')
 
 E['q-rs-quiz'] = build('q-rs-quiz',
+    'Toggle은 Q=0이면 Set, Q=1이면 Reset',
+    p('문제에 S=R=1 자리를 Toggle로 쓰라는 말이 보이면 지금 Q의 반대쪽 앞단만 열어야 한다는 점을 떠올려요. 그래서 S 쪽에 Q′, R 쪽에 Q를 되먹이게 되기 때문이에요.'),
     p('R-S 래치의 S=R=1 문제를 이해하고, 회로를 바꿔 그 자리를 Toggle로 쓰는 방법과 바뀐 회로의 이름을 묻는 세 소문항이에요.'),
     p('“Toggle은 지금 Q가 0이면 Set, 1이면 Reset이 되는 동작이에요.”라고 목표부터 정해요.'),
     p('1) 변형: S 쪽 앞단 NAND가 Q가 0일 때만 열리려면 Q′을, R 쪽 앞단 NAND가 Q가 1일 때만 열리려면 Q를 넣어야 해요. 그래서 두 앞단 NAND를 3입력으로 바꾸고 S 쪽에 Q′, R 쪽에 Q를 되먹여요.') +
@@ -111,6 +124,8 @@ E['q-rs-quiz'] = build('q-rs-quiz',
     'S 쪽에 Q′, R 쪽에 Q를 넣으면 지금 상태의 반대쪽 문만 열려 Toggle이 돼요.')
 
 E['q-dff-table'] = build('q-dff-table',
+    'NOT 하나로 R 자리가 S′, 그래서 C=1이면 Q=S',
+    p('문제 회로에서 한 입력선에만 NOT이 붙어 있으면 래치의 두 입력이 늘 반대라는 걸 떠올려요. S·R 자리가 동시에 1이 될 수 없어서 C=1일 때 Set·Reset 두 행만 남기 때문이에요.'),
     p('입력 이름이 S·C로 적힌 D 회로를 읽고 Q와 Q′을 채우는 문제예요. NOT 하나 때문에 SR 래치와 달리 입력 조합이 두 가지뿐이에요.'),
     p('“NOT 때문에 아래 앞단 NAND에는 항상 S의 반대가 들어가요.”라고 회로부터 읽어요.'),
     p('위 앞단 NAND는 S·C, 아래 앞단 NAND는 S′·C를 받아요. SR 래치의 S 자리에 S, R 자리에 S′이 들어간 D 래치예요.') +
@@ -123,6 +138,8 @@ E['q-dff-table'] = build('q-dff-table',
     'NOT 때문에 S와 R 자리가 늘 반대라서 C=1이면 Q=S예요.')
 
 E['q-dff-design'] = build('q-dff-design',
+    'S=D, R=D′인 Enable SR 래치',
+    p('문제 표에 “C=1이면 Q=D, C=0이면 유지”가 보이면 Enable SR 래치에 D와 D′을 넣는 설계를 떠올려요. R 자리에 D′을 넣으면 C=1에서 Q=D가 되고 금지 상태가 생기지 않기 때문이에요.'),
     p('C=1이면 Q=D, C=0이면 유지인 표를 보고 그 동작을 하는 게이트 회로를 만드는 설계 문제예요.'),
     p('“Enable SR 래치에서 S=D, R=D′으로 두면 돼요.”라고 설계 방향을 먼저 써요.'),
     p('Enable SR 래치는 C=0이면 유지하고 C=1이면 S=1→Q=1, R=1→Q=0이에요. S에 D, R에 D′을 넣으면 C=1에서 Q=D가 되고, S=R=1이 생길 수 없어요. NOT 1개(74HC04)로 D′을 만들고 NAND 4개(74HC00)로 앞단과 교차 래치를 만들어요.') +
@@ -135,6 +152,8 @@ E['q-dff-design'] = build('q-dff-design',
     'S=D, R=D′으로 두면 C=1에서 Q=D이고 금지 상태가 없어요.')
 
 E['q-jkff-short'] = build('q-jkff-short',
+    '3입력 NAND의 되먹임: J 쪽 Q′, K 쪽 Q',
+    p('문제 회로에서 앞단이 3입력 NAND이면 세 번째 입력으로 되먹여진 선을 먼저 떠올려요. 지금 Q에 따라 한쪽 앞단만 열려서 J=K=1 행이 Toggle이 되기 때문이에요.'),
     p('3입력 NAND 두 개와 교차 NAND 두 개로 된 JK 회로를 읽고 J·K·C마다 Q(t)를 채우는 문제예요.'),
     p('“J 쪽 NAND에는 Q′, K 쪽 NAND에는 Q가 되먹여져요.”라고 되먹임 선부터 확인해요.'),
     ul(['C=0 또는 J=K=0: 앞단 NAND에 0이 있어 출력이 모두 1 → 유지.',
@@ -148,6 +167,8 @@ E['q-jkff-short'] = build('q-jkff-short',
     '지금 Q에 따라 한쪽 앞단만 열려서 11은 Toggle이 돼요.')
 
 E['q-jkff-design'] = build('q-jkff-design',
+    'SR 래치에 Q′·Q 되먹임을 더하면 JK, 11은 Toggle',
+    p('문제 표의 11 행에 Toggle이 보이면 SR 래치에서 출발해 앞단에 Q′·Q를 되먹이는 설계를 떠올려요. 나머지 행은 SR 래치와 결과가 같고 11 행만 바꾸면 되기 때문이에요.'),
     p('JK 진리표(11이 Toggle)를 만족하는 게이트 회로를 설계하는 문제예요. SR 래치에서 출발해 11 행만 바꾸면 돼요.'),
     p('“J=S, K=R로 두고 J 쪽에 Q′, K 쪽에 Q를 더 넣어요.”라고 설계 방향을 써요.'),
     p('Enable SR 래치의 앞단 NAND를 3입력으로 바꿔 J 쪽은 J·C·Q′, K 쪽은 K·C·Q를 받게 해요. 지금 Q가 0이면 J 쪽만, 1이면 K 쪽만 열려서 J=K=1이 Toggle이 돼요. 다른 행은 SR 래치와 같은 결과예요. 3입력 NAND 2개(74HC10)와 2입력 NAND 2개(74HC00)로 만들어요.') +
@@ -160,6 +181,8 @@ E['q-jkff-design'] = build('q-jkff-design',
     '앞단에 Q′·Q를 되먹이면 지금 상태의 반대쪽만 열려 Toggle이 돼요.')
 
 E['q-tff'] = build('q-tff',
+    'J=K로 묶으면 유지(T=0)와 Toggle(T=1)만 남음',
+    p('문제에 JK 플립플롭으로 T 플립플롭을 만들라는 말이 보이면 J와 K를 묶었을 때 남는 행을 떠올려요. J=K이면 JK 표에서 00(유지)과 11(Toggle) 두 행만 남기 때문이에요.'),
     p('JK 플립플롭의 두 입력을 어떻게 연결하면 T(Toggle) 플립플롭이 되는지 설명하는 문제예요.'),
     p('“J와 K를 한 선으로 묶어 입력 T로 써요.”라고 연결부터 써요.'),
     p('J와 K가 항상 같으면 JK 표에서 00(유지)과 11(Toggle) 두 행만 남아요. 그래서 T=0이면 클록 엣지에서도 Q가 그대로, T=1이면 엣지마다 Q가 반전돼요.') +
@@ -173,6 +196,8 @@ E['q-tff'] = build('q-tff',
     'J=K로 묶으면 유지와 Toggle만 남아요.')
 
 E['q-74hc76'] = build('q-74hc76',
+    'PR·CLR은 Low 활성 비동기 입력, 클록보다 우선',
+    p('문제에 74HC76의 PR·CLR이 보이면 이름 위 막대(Low 활성)와 비동기라는 점을 떠올려요. 두 핀은 0일 때 클록·J·K와 상관없이 바로 Q를 정하기 때문이에요.'),
     p('74HC76의 PR·CLR 핀이 어떤 값일 때 무엇을 하는지, 클록과의 관계까지 설명하는 문제예요.'),
     p('“PR은 Preset, CLR은 Clear이고 둘 다 0일 때 동작하는 Active Low 입력이에요.”라고 시작해요.'),
     ul(['PR(교안의 SET)=0: 클록·J·K와 상관없이 즉시 Q=1(Q′=0).',
@@ -188,6 +213,8 @@ E['q-74hc76'] = build('q-74hc76',
     'PR=0이면 Q=1, CLR=0이면 Q=0이고 클록보다 먼저 적용돼요.')
 
 E['q-74hc574'] = build('q-74hc574',
+    '플립플롭이므로 클록 상승 엣지 순간',
+    p('문제에 74HC574와 “언제 반영되는지”가 보이면 이 칩이 상승 엣지 D 플립플롭이라는 점을 떠올려요. 플립플롭은 엣지 순간에만 입력을 받아서 답이 “동안”이 아니라 “순간”이 되기 때문이에요.'),
     p('74HC574 D 플립플롭에서 입력 D가 출력 Q에 반영되는 순간을 묻는 문제예요.'),
     p('“74HC574는 상승 엣지에서 동작하는 D 플립플롭이에요.”라고 소자 종류부터 써요.'),
     p('플립플롭은 클록이 바뀌는 순간에만 입력을 받아들여요. 74HC574는 클록이 Low에서 High로 오르는 순간(Rising Edge)의 D를 저장해 Q로 내보내고(출력 enable OE′가 Low일 때 출력 핀에 나타나요), 클록이 High나 Low로 머무는 동안에는 D가 바뀌어도 Q가 그대로예요. 교안의 74HC74(CLK ↑일 때만 Q=D, CLK=0이면 유지)와 같은 원리예요.'),
@@ -199,6 +226,8 @@ E['q-74hc574'] = build('q-74hc574',
 
 TR = PR.TRACE
 E['q-p-76-trace'] = build('q-p-76-trace',
+    'PR·CLR 먼저, 그다음 하강 엣지에서만 J·K',
+    p('문제에 단계별 PR·CLR·클록·J·K 표가 보이면 매 단계 적용 순서를 떠올려요. 비동기 PR·CLR이 클록보다 우선하고, 74HC76은 하강 엣지에서만 J·K를 보기 때문이에요.'),
     p('74HC76 하나에 PR·CLR·클록·J·K를 단계별로 넣고, 매 단계 뒤의 Q를 따라가는 새 연습이에요.'),
     p('“1단계는 PR=0이라 클록과 상관없이 Q=1이에요.”라고 첫 행을 채워요.'),
     p('매 단계 순서는 같아요. ① PR·CLR 중 0이 있으면 그것을 바로 적용해요. ② 둘 다 1이면 클록이 ↓인지 봐요. ③ ↓일 때만 J·K 표를 적용해요.') +

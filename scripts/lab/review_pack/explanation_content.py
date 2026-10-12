@@ -5,8 +5,9 @@ from urllib.parse import urlsplit, unquote
 from .html2md import Parser, Node
 from .manifest import safe_relative
 
-SECTIONS = ('understand','start','solve','verify','pitfall','retry')
+SECTIONS = ('recall','understand','start','solve','verify','pitfall','retry')
 CHECK_KEYS = ('source_visual','content','independent','browser')
+RECALL_CUE_MAX = 60
 
 @dataclass(frozen=True)
 class Explanation:
@@ -25,6 +26,15 @@ def within(root: Path, relative: str) -> Path:
 
 def text(node):
     return ''.join(c if isinstance(c,str) else text(c) for c in node.children)
+
+def cues(nodes):
+    return [n for n in nodes if n.tag=='p' and 'cue' in n.attrs.get('class','').split()]
+
+def recall_cue(fragment: str) -> str:
+    parser=Parser();parser.feed(fragment)
+    found=cues(parser.root.walk())
+    if not found: raise ValueError('missing recall cue')
+    return text(found[0]).strip()
 
 def validate_fragment(fragment: str, ident: str, state: str) -> None:
     parser=Parser();parser.feed(fragment);nodes=list(parser.root.walk())
@@ -45,6 +55,15 @@ def validate_fragment(fragment: str, ident: str, state: str) -> None:
         if not any(cls in n.attrs.get('class','').split() for n in nodes): raise ValueError(ident+': missing layer '+cls)
     sums=[n for n in parser.root.children if isinstance(n,Node) and 'sum' in n.attrs.get('class','').split()]
     if len(sums)!=1 or 'hidden' not in sums[0].attrs or not text(sums[0]).strip(): raise ValueError(ident+': missing direct summary')
+    if next(n for n in nodes if n.attrs.get('data-explanation')).attrs['data-explanation']!='recall': raise ValueError(ident+': recall must be first')
+    recall=next(n for n in nodes if n.attrs.get('data-explanation')=='recall')
+    found=cues(nodes)
+    if len(found)!=1 or found[0] not in list(recall.walk()): raise ValueError(ident+': recall requires one cue')
+    cue=text(found[0]).strip()
+    if not all(isinstance(c,str) for c in found[0].children) or not 1<=len(cue)<=RECALL_CUE_MAX or '$$' in cue: raise ValueError(ident+': cue must be 1-60 plain characters')
+    if not any(n.tag=='p' and n is not found[0] and text(n).strip() for n in recall.walk()): raise ValueError(ident+': recall requires a reason paragraph')
+    first=next((c for c in sums[0].children if isinstance(c,Node) and c.tag=='p'),None)
+    if first is None or not text(first).strip().startswith('떠올릴 것:') or cue not in text(first): raise ValueError(ident+': summary must start with 떠올릴 것')
     retry=next(n for n in nodes if n.attrs.get('data-explanation')=='retry')
     if not 1<=sum(n.tag=='li' for n in retry.walk())<=3: raise ValueError(ident+': retry requires 1-3 items')
     if state!='verified':

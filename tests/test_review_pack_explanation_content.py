@@ -3,15 +3,16 @@ from copy import deepcopy
 import pytest
 from tests._workbook_fixture import create_workbook_run
 from scripts.lab.review_pack.manifest import output_names, validate_manifest
-from scripts.lab.review_pack.explanation_content import load_explanations
+from scripts.lab.review_pack.explanation_content import load_explanations, recall_cue
 
-FRAGMENT = '''<div class="layer eli5" data-explanation="understand"><span class="layer-title">무엇을 할까요</span><p>선택선이 고른 입력을 찾아요.</p></div>
+FRAGMENT = '''<div class="layer eli5" data-explanation="recall"><span class="layer-title">이 문제를 보면 떠올려요</span><p class="lead cue">선택선 값 = 고를 입력 번호</p><p>문제에 선택선 S가 보이면 S의 값이 곧 출력으로 나갈 입력 번호라는 걸 떠올려요.</p></div>
+<div class="layer eli5" data-explanation="understand"><span class="layer-title">무엇을 할까요</span><p>선택선이 고른 입력을 찾아요.</p></div>
 <div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄</span><p>S=0이면 I0를 골라요.</p></div>
 <div class="layer formal" data-explanation="solve"><span class="layer-title">함께 풀어요</span><p>Y=I0예요.</p></div>
 <div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산</span><p>선택선 0과 입력 번호 0이 같아요.</p></div>
 <div class="layer warn" data-explanation="pitfall"><span class="layer-title">주의</span><p>선택선은 데이터가 아니에요.</p></div>
 <div class="layer formal" data-explanation="retry"><span class="layer-title">다시 풀어요</span><ol><li>선택 입력을 찾아요.</li></ol></div>
-<div class="sum" hidden><p>S를 읽고 입력을 골라요.</p></div>'''
+<div class="sum" hidden><p><strong>떠올릴 것:</strong> 선택선 값 = 고를 입력 번호</p><p>S를 읽고 입력을 골라요.</p></div>'''
 
 def setup(tmp_path):
     m, root = create_workbook_run(tmp_path)
@@ -62,8 +63,54 @@ def test_symlink_rejected(tmp_path):
     original=path.read_text();path.unlink();other=tmp_path/'outside.html';other.write_text(original);path.symlink_to(other)
     with pytest.raises(ValueError):load_explanations(m,data,root)
 
-@pytest.mark.parametrize('key',['understand','start','solve','verify','pitfall','retry','sum'])
+@pytest.mark.parametrize('key',['recall','understand','start','solve','verify','pitfall','retry','sum'])
 def test_required_learning_sections(tmp_path,key):
     m,root,data=setup(tmp_path)
     (root/m['problems'][0]['explanation_fragment']).write_text(FRAGMENT.replace(key,'removed'))
     with pytest.raises(ValueError):load_explanations(m,data,root)
+
+CUE='<p class="lead cue">선택선 값 = 고를 입력 번호</p>'
+
+def write(root,m,body):(root/m['problems'][0]['explanation_fragment']).write_text(body)
+
+def test_recall_must_be_first(tmp_path):
+    m,root,data=setup(tmp_path)
+    recall,rest=FRAGMENT.split('\n',1)
+    write(root,m,rest.replace('<div class="sum"',recall+'\n<div class="sum"'))
+    with pytest.raises(ValueError,match='recall must be first'):load_explanations(m,data,root)
+
+@pytest.mark.parametrize('cue',['','x'*61,'$$A$$','<strong>A</strong>'])
+def test_bad_cue_rejected(tmp_path,cue):
+    m,root,data=setup(tmp_path)
+    write(root,m,FRAGMENT.replace('선택선 값 = 고를 입력 번호',cue))
+    with pytest.raises(ValueError,match='cue must be 1-60 plain characters'):load_explanations(m,data,root)
+
+def test_two_cues_rejected(tmp_path):
+    m,root,data=setup(tmp_path);write(root,m,FRAGMENT.replace(CUE,CUE+CUE,1))
+    with pytest.raises(ValueError,match='one cue'):load_explanations(m,data,root)
+
+def test_recall_needs_reason(tmp_path):
+    m,root,data=setup(tmp_path)
+    write(root,m,FRAGMENT.replace('<p>문제에 선택선 S가 보이면 S의 값이 곧 출력으로 나갈 입력 번호라는 걸 떠올려요.</p>',''))
+    with pytest.raises(ValueError,match='reason paragraph'):load_explanations(m,data,root)
+
+def test_summary_must_lead_with_cue(tmp_path):
+    m,root,data=setup(tmp_path);write(root,m,FRAGMENT.replace('<p><strong>떠올릴 것:</strong> 선택선 값 = 고를 입력 번호</p>',''))
+    with pytest.raises(ValueError,match='떠올릴 것'):load_explanations(m,data,root)
+
+def test_recall_cue_length_counts_decoded_text(tmp_path):
+    m,root,data=setup(tmp_path);cue='Q&prime;'+'x'*58
+    write(root,m,FRAGMENT.replace('선택선 값 = 고를 입력 번호',cue))
+    load_explanations(m,data,root)
+    assert recall_cue(FRAGMENT)=='선택선 값 = 고를 입력 번호'
+
+def test_cue_outside_recall_rejected(tmp_path):
+    m,root,data=setup(tmp_path)
+    moved=FRAGMENT.replace(CUE,'<p>단서</p>',1).replace('<p>선택선이 고른 입력을 찾아요.</p>','<p>선택선이 고른 입력을 찾아요.</p>'+CUE)
+    write(root,m,moved)
+    with pytest.raises(ValueError,match='one cue'):load_explanations(m,data,root)
+
+def test_summary_cue_must_match(tmp_path):
+    m,root,data=setup(tmp_path)
+    write(root,m,FRAGMENT.replace('<strong>떠올릴 것:</strong> 선택선 값 = 고를 입력 번호','<strong>떠올릴 것:</strong> 다른 구절'))
+    with pytest.raises(ValueError,match='떠올릴 것'):load_explanations(m,data,root)
