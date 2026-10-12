@@ -78,6 +78,13 @@ class HandShapes(unittest.TestCase):
     def setUpClass(cls):
         cls.mod = _load()
 
+    def _hand_font(self):
+        # 손글씨 글꼴은 macOS 시스템 글꼴뿐이다 — 없는 PC(Windows·Linux)에서는 건너뛴다
+        try:
+            return self.mod.font_path('hand')
+        except FileNotFoundError:
+            self.skipTest('이 머신에 손글씨 글꼴이 없다')
+
     def test_원은_닫혀_있고_반지름_안에서_떨린다(self):
         pts = self.mod._hand_circle((50.0, 60.0), 8, random.Random(1), amp=1.0)
         self.assertEqual(pts[0], pts[-1])
@@ -99,10 +106,10 @@ class HandShapes(unittest.TestCase):
         self.assertTrue(max(y for _, y in pts) > 10)
 
     def test_손글씨_글꼴은_Bradley_Hand_다(self):
-        self.assertTrue(self.mod.font_path('hand').endswith('Bradley Hand Bold.ttf'))
+        self.assertTrue(self._hand_font().endswith('Bradley Hand Bold.ttf'))
 
     def test_hand_real_은_en_글꼴만_바꾼다(self):
-        d = self.mod._ScaledDraw(Image.new('RGBA', (100, 100)), hand_font_path=self.mod.font_path('hand'))
+        d = self.mod._ScaledDraw(Image.new('RGBA', (100, 100)), hand_font_path=self._hand_font())
         self.assertIsNotNone(d.hand_real(self.mod._font('en', 10)))
         self.assertIsNone(d.hand_real(self.mod._font('kr', 10)))
         self.assertIsNone(self.mod._ScaledDraw(Image.new('RGBA', (100, 100))).hand_real(self.mod._font('en', 10)))
@@ -110,7 +117,7 @@ class HandShapes(unittest.TestCase):
     def test_text_는_원래_상자_중심에_그린다(self):
         for kw in ({}, {'anchor': 'mm'}):
             im = Image.new('RGBA', (400, 200), (0, 0, 0, 0))
-            d = self.mod._ScaledDraw(im, hand_font_path=self.mod.font_path('hand'))
+            d = self.mod._ScaledDraw(im, hand_font_path=self._hand_font())
             f = self.mod._font('en', 12)
             b = d.textbbox((50, 40), '74HC20', font=f, **kw)
             d.text((50, 40), '74HC20', fill=(0, 0, 0, 255), font=f, **kw)
