@@ -244,14 +244,49 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual(hand_seed('a.png'), hand_seed('a.png'))
         self.assertNotEqual(hand_seed('a.png'), hand_seed('b.png'))
 
-    def test_완성본_한_장을_뽑는다(self):
+    def _run(self, *args):
         from scripts.lab import hand_sim
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
-        out = hand_sim.main(['--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png',
-                             '--out', str(tmp)])
-        self.assertEqual(out.name, '실험04_1-1_손그림모사_4x1MUX.png')
-        self.assertEqual([p.name for p in tmp.iterdir()], [out.name])
+        self._last_tmp = tmp
+        return hand_sim.main([*args, '--out-dir', str(tmp)]), tmp
+
+    def test_기본_출력은_팀원전달용(self):
+        # 기본 경로를 계산만 한다 — 시험이 커밋된 PDF 를 덮으면 안 된다(036f6a3 같은 사고)
+        from scripts.lab import hand_sim
+        base = ROOT / '보고서/실험05/결선도/팀원전달용'
+        self.assertEqual(hand_sim.output_paths(5),
+                         (base / '실험05_손그림모사.pdf', base / '실험05_부품그리기.pdf'))
+
+    def test_실험04_MUX_한_장(self):
+        from pypdf import PdfReader
+        (sim, guide), tmp = self._run('--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png')
+        self.assertEqual(sorted(p.name for p in tmp.iterdir()),
+                         ['실험04_부품그리기.pdf', '실험04_손그림모사.pdf'])
+        self.assertEqual([len(p.images) for p in PdfReader(str(sim)).pages], [1])
+        pages = PdfReader(str(guide)).pages
+        self.assertEqual([len(p.images) for p in pages], [1])
+        text = pages[0].extract_text()
+        for s in ('회색 선은 이미 그려져 있어요', '다리', '74HC04'):   # 부품 다리도 회색이다 — 빠뜨리지 않게
+            self.assertIn(s, text)
+
+    def test_실험05_PDF_둘은_완성본마다_한_쪽(self):
+        from pypdf import PdfReader
+        (sim, guide), _ = self._run('--experiment', '5')
+        self.assertEqual([len(p.images) for p in PdfReader(str(sim)).pages], [1, 1])
+        pages = PdfReader(str(guide)).pages
+        self.assertEqual([len(p.images) for p in pages], [1, 1])
+        self.assertIn('74HC42', pages[0].extract_text())
+        self.assertIn('74HC20', pages[1].extract_text())
+
+    def test_PDF_검사가_실패하면_아무것도_안_쓴다(self):
+        from unittest import mock
+        from scripts.lab import hand_sim
+        with mock.patch.object(hand_sim, 'check_pdf', side_effect=ValueError('넘침')):
+            with self.assertRaises(SystemExit) as cm:
+                self._run('--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png')
+        self.assertIn('넘침', str(cm.exception))
+        self.assertEqual(list(self._last_tmp.iterdir()), [])
 
     def test_없는_완성본은_목록과_함께_멈춘다(self):
         from scripts.lab import hand_sim
@@ -286,23 +321,6 @@ class HandSimScript(unittest.TestCase):
         self.assertIn(rail_end, row[2])
         self.assertNotIn(bb._sym_addr(('hole', first['at'])), row[2])
 
-    def test_안내_PDF_는_한_쪽에_그림_하나(self):
-        from pypdf import PdfReader
-        from scripts.lab import hand_sim
-        tmp = Path(tempfile.mkdtemp())
-        self.addCleanup(shutil.rmtree, tmp)
-        sim, guide_png, pdf = hand_sim.main(['--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png',
-                                             '--out', str(tmp), '--guide'])
-        self.assertEqual(sim.name, '실험04_1-1_손그림모사_4x1MUX.png')
-        self.assertEqual(guide_png.name, '실험04_1-1_부품그리기_4x1MUX.png')
-        self.assertEqual(pdf.name, '실험04_1-1_부품그리기_4x1MUX.pdf')
-        pages = PdfReader(str(pdf)).pages
-        self.assertEqual([len(p.images) for p in pages], [1])
-        text = pages[0].extract_text()
-        self.assertIn('회색 선은 이미 그려져 있어요', text)
-        self.assertIn('다리', text)    # 부품 다리도 회색이다 — 빠뜨리지 않게
-        self.assertIn('74HC04', text)
-
     def test_넘친_PDF_는_거절한다(self):
         from pypdf import PdfWriter
         from scripts.lab import hand_sim
@@ -313,13 +331,15 @@ class HandSimScript(unittest.TestCase):
         w.add_blank_page(595, 842)
         w.write(str(tmp / 'two.pdf'))
         with self.assertRaises(ValueError):
-            hand_sim.check_guide_pdf(tmp / 'two.pdf')
+            hand_sim.check_pdf(tmp / 'two.pdf', 1)
 
-    def test_안내판을_못_받는_빌더는_이름과_함께_멈춘다(self):
-        from scripts.lab import hand_sim
+    def test_hand_를_못_받는_빌더는_이름을_다_대고_멈춘다(self):
+        # 그리기 전에 전부 본다 — 앞 완성본만 뽑고 터지지 않는다
         with self.assertRaises(SystemExit) as cm:
-            hand_sim.main(['--experiment', '4', '--final', '실험04_2-1_결선도_1x4DMUX.png', '--guide'])
-        self.assertIn('hand_guide', str(cm.exception))
+            self._run('--experiment', '4')          # FINALS 중 DMUX 가 hand 를 안 받는다
+        self.assertIn('build_e4_dmux', str(cm.exception))
+        self.assertIn('make-hand-sim', str(cm.exception))
+        self.assertEqual(list(self._last_tmp.iterdir()), [])
 
 
 if __name__ == "__main__":
