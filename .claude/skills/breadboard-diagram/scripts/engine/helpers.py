@@ -17,7 +17,8 @@ def _tag(bb, x, y, text, col=(60, 60, 60, 255)):
 
     while hits(box(y)):
         y += 1
-    bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=font, pad=pad)
+    if bb.hand is None:
+        bb.draw_badge(x, y, text, (255, 255, 255, 235), col, font=font, pad=pad)
     bb.margin_tag_boxes.append((text, box(y)))
 
 

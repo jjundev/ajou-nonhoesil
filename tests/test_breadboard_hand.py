@@ -70,5 +70,55 @@ class HandPolyline(unittest.TestCase):
         self.assertGreater(len({tuple(b) for b in boxes}), 1)
 
 
+class HandRender(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _load()
+        cls.board = cls.mod.load_board(4)
+
+    def _render(self, hand):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        out = tmp / 'mux.png'
+        bb = self.board.build_e4_mux(str(out), hand=hand)
+        return bb, out, tmp
+
+    def test_hand_는_논리_상태를_안_바꾼다(self):
+        a, _, _ = self._render(None)
+        b, _, _ = self._render(42)
+        self.assertEqual(a.steps, b.steps)
+        self.assertEqual(a._segments, b._segments)
+        self.assertEqual(a._leads, b._leads)
+
+    def test_hand_export_는_PNG_만_쓴다(self):
+        _, out, tmp = self._render(42)
+        self.assertEqual(sorted(p.name for p in tmp.iterdir()), ['mux.png'])
+        self.assertNotIn(self.mod.STAMP_KEY, Image.open(out).info)
+
+    def test_같은_시드는_같은_PNG(self):
+        _, a, _ = self._render(42)
+        _, b, _ = self._render(42)
+        self.assertEqual(a.read_bytes(), b.read_bytes())
+
+    def test_hand_없으면_도장이_정본과_같다(self):
+        # 정본 PNG 와 새 렌더는 픽셀이 원래 다르다(글꼴·Pillow 판) — 저장소 계약인 도장으로 본다
+        _, out, _ = self._render(None)
+        ref = ROOT / '보고서/실험04/결선도/실험04_1-1_결선도_4x1MUX.png'
+        key = self.mod.STAMP_KEY
+        self.assertEqual(Image.open(out).info[key], Image.open(ref).info[key])
+
+    def test_번호_원을_안_그린다(self):
+        bb, _, _ = self._render(42)
+        self.assertTrue(bb.marker_boxes)
+        px = bb.overlay.load()
+        for x0, y0, x1, y1 in bb.marker_boxes:
+            cx, cy = int((x0 + x1) / 2 * self.mod.SCALE), int((y0 + y1) / 2 * self.mod.SCALE)
+            self.assertNotEqual(px[cx, cy], (255, 255, 255, 245))
+
+    def test_기준선_이나_층과_못_섞는다(self):
+        with self.assertRaises(ValueError):
+            self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)
+
+
 if __name__ == "__main__":
     unittest.main()

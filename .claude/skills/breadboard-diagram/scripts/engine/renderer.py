@@ -3,7 +3,14 @@
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 class BreadboardRenderer(_RuleChecks):
-    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False):
+    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False,
+                 hand=None):
+        # 손그림 모사 시드. 배선만 흔들어 그리고 번호 원·보드 밖 꼬리표·사이드카·도장은 안 낸다 —
+        # 점유표·순서표는 그대로라 verify() 는 같다. 완성본 전용
+        if hand is not None and (baseline is not None or layer is not None):
+            raise ValueError('hand 는 완성본에만 준다 — baseline·layer 와 함께 못 준다')
+        self.hand = hand
+        self._hand_rng = random.Random(hand) if hand is not None else None
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
         self.board = board
         self.spec = board_spec(board)
@@ -541,6 +548,8 @@ class BreadboardRenderer(_RuleChecks):
     def _marker(self, x, y, n, color):
         """배선 번호. 결선 순서표의 몇 번인지 가리킨다."""
         self.marker_boxes.append((x - 8, y - 8, x + 8, y + 8))
+        if self.hand is not None:
+            return
         self.draw.ellipse([x-8, y-8, x+8, y+8], fill=(255, 255, 255, 245), outline=color, width=2)
         t = str(n)
         bbox = self.draw.textbbox((0, 0), t, font=self.font_num)
@@ -621,9 +630,16 @@ class BreadboardRenderer(_RuleChecks):
             dot = 5
         else:
             color = color or WIRE[kind]
-        draw.line(points, fill=color, width=width, joint='curve')
-        for p in (points[0], points[-1]):
-            draw.ellipse([p[0]-dot, p[1]-dot, p[0]+dot, p[1]+dot], fill=color)
+        if self.hand is not None:
+            rng = self._hand_rng
+            draw.line(_hand_polyline(points, rng), fill=color, width=_hand_width(width, rng),
+                      joint='curve')
+            for p in (points[0], points[-1]):
+                draw.ellipse(_hand_dot(p, dot, rng), fill=color)
+        else:
+            draw.line(points, fill=color, width=width, joint='curve')
+            for p in (points[0], points[-1]):
+                draw.ellipse([p[0]-dot, p[1]-dot, p[0]+dot, p[1]+dot], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
             self.touch_rail(kind, p[0])
@@ -1325,6 +1341,11 @@ class BreadboardRenderer(_RuleChecks):
         board_h = self.r_y(max_row) + 20
         out = final_im.crop((0, 0, self.spec.size[0] * SCALE, board_h * SCALE)).convert('RGB')
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        if self.hand is not None:
+            # 보고서 첨부용 그림일 뿐 — 사이드카·도장이 있으면 검사 도구가 정본으로 읽는다
+            out.save(output_path)
+            print(f"[SUCCESS] Exported (손그림 모사): {output_path} ({out.size[0]}x{out.size[1]})")
+            return
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
         out.save(output_path, pnginfo=info)
