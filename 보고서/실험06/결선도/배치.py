@@ -52,11 +52,13 @@ def _inputs(bb, chips, inputs, pins=14):
                       side=side, col='a' if side == 'a' else 'j')
 
 
-def _renderer(template_path, baseline, layer, stage):
+def _renderer(template_path, baseline, layer, stage, hand=None, hand_guide=False):
     if layer is not None and stage is not None:
         raise ValueError('layer 는 완성본(stage=None)에만 준다')
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     bb = BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD,
-                            palette=stage is not None)   # 단계 그림만 선마다 색(체크리스트)
+                            palette=stage is not None, hand=hand, hand_guide=hand_guide)   # 단계 그림만 선마다 색(체크리스트)
     bb.side_lead_max = SIDE_LEAD_MAX
     bb.enable_steps()
     return bb
@@ -111,9 +113,10 @@ def _latch_draw(bb, stage):
     bb.note(_INPUT_NOTE)
 
 
-def build_e6_sr(output_path, template_path=None, stage=None, baseline=None, layer=None):
+def build_e6_sr(output_path, template_path=None, stage=None, baseline=None, layer=None,
+               hand=None, hand_guide=False):
     """C1 SR 래치(74HC00). 단계가 없다 — 완성본 하나이고 C2 1걷기의 앞 보드다."""
-    bb = _renderer(template_path, baseline, layer, stage)
+    bb = _renderer(template_path, baseline, layer, stage, hand, hand_guide)
     bb.set_header('실험 1) SR Latch with Enable',
                   '74HC00 NAND 넷 · E=1 에서 S=1 은 Set, R=1 은 Reset · 첫 입력은 Set 또는 Reset',
                   submit=baseline is None)
@@ -122,9 +125,10 @@ def build_e6_sr(output_path, template_path=None, stage=None, baseline=None, laye
     return bb
 
 
-def build_e6_d(output_path, template_path=None, stage=None, baseline=None, layer=None):
+def build_e6_d(output_path, template_path=None, stage=None, baseline=None, layer=None,
+               hand=None, hand_guide=False):
     """C2 D 래치(74HC00 + 74HC04). `stage` 1 또는 None(완성) — 1단계가 곧 완성이다."""
-    bb = _renderer(template_path, baseline, layer, stage)
+    bb = _renderer(template_path, baseline, layer, stage, hand, hand_guide)
     title = '실험 2-1) D Latch with Enable' + (f' — {stage}단계' if stage else '')
     bb.set_header(title, '74HC00 NAND 넷 + 74HC04 NOT 하나 · E=1 에서 Q 가 D 를 따른다',
                   submit=baseline is None and stage is None)
@@ -159,9 +163,10 @@ def _jk_fixed(bb, stage, superset=False, layout=None):
     bb.mark_unused_outputs((10, 11), k['U3'], chip='74HC76 (U3)')
 
 
-def build_e6_jk(output_path, template_path=None, stage=None, baseline=None, layer=None):
+def build_e6_jk(output_path, template_path=None, stage=None, baseline=None, layer=None,
+               hand=None, hand_guide=False):
     """C3 JK 플립플롭(74HC76 1번). 단계가 없다 — C2 를 전부 걷고 새로 짓는다(`rebuild: all`)."""
-    bb = _renderer(template_path, baseline, layer, stage)
+    bb = _renderer(template_path, baseline, layer, stage, hand, hand_guide)
     bb.set_header('실험 3-2) JK F/F – IC(74HC76) 활용',
                   '74HC76 1번 플립플롭 · CLK 하강 에지에서 J·K 대로 · Set·Reset 은 0 에서 작동',
                   submit=baseline is None)
