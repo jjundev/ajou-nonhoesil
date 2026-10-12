@@ -333,6 +333,14 @@ class HandSimScript(unittest.TestCase):
         with self.assertRaises(ValueError):
             hand_sim.check_pdf(tmp / 'two.pdf', 1)
 
+    def test_결선도_없는_완성본_이름은_거절(self):
+        # 두 PNG 이름이 같아져 안내판이 손그림모사를 덮는다 — 쪽 검사로는 못 잡는다
+        from scripts.lab import hand_sim
+        calls = []
+        with self.assertRaises(ValueError):
+            hand_sim.render_final(lambda *a, **k: calls.append(a), 'x.png', Path('/nonexistent'))
+        self.assertEqual(calls, [])
+
     def test_hand_를_못_받는_빌더는_이름을_다_대고_멈춘다(self):
         # 그리기 전에 전부 본다 — 앞 완성본만 뽑고 터지지 않는다
         with self.assertRaises(SystemExit) as cm:

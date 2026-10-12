@@ -74,6 +74,9 @@ def guide_rows(bb):
 
 def render_final(fn, final_name, work_dir):
     """완성본 하나 → (안내판 bb, 손그림모사 PNG, 부품그리기 PNG). 둘은 같은 시드다."""
+    if '결선도' not in final_name:
+        # 두 PNG 이름이 같아져 안내판이 손그림모사를 덮는다 — 쪽 검사로는 못 잡는다
+        raise ValueError(f'완성본 이름에 "결선도" 가 없다: {final_name} — 손그림모사·부품그리기 이름을 못 가른다')
     handout = Path(work_dir) / final_name.replace('결선도', '손그림모사')
     guide = Path(work_dir) / final_name.replace('결선도', '부품그리기')
     seed = hand_seed(handout.name)
