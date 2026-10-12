@@ -258,6 +258,20 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual(hand_sim.output_paths(5),
                          (base / '실험05_손그림모사.pdf', base / '실험05_부품그리기.pdf'))
 
+    def test_hand_sim_은_trace_guide_를_안_불러온다(self):
+        import subprocess, sys
+        out = subprocess.run(
+            [sys.executable, '-c',
+             "import sys, scripts.lab.hand_sim; print('scripts.lab.trace_guide' in sys.modules)"],
+            cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        self.assertEqual(out, 'False')
+
+    def test_출력_폴더는_따라그리기와_같다(self):
+        # 두 스킬의 PDF 가 같은 폴더로 간다 — 이름이 두 곳에 적혀 있어 시험만 둘을 함께 안다
+        from scripts.lab import hand_sim, trace_guide
+        self.assertEqual(hand_sim.OUT_DIR, '팀원전달용')
+        self.assertEqual(hand_sim.OUT_DIR, trace_guide.OUT_DIR)
+
     def test_실험04_MUX_한_장(self):
         from pypdf import PdfReader
         (sim, guide), tmp = self._run('--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png')
