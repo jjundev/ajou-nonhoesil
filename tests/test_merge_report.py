@@ -10,6 +10,7 @@ TDD tests for scripts/lab/merge_report.py:
 
 import contextlib
 import io
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -148,14 +149,29 @@ class TestEnsureCover(unittest.TestCase):
 
 
 class TestIntegration(unittest.TestCase):
+    """실험01 의 명세와 표지만 임시 폴더로 복사해 그 폴더에 병합한다.
+    실험 번호로 부르면 진짜 제출본이 "표지 + 빈 쪽" 으로 덮어써진다
+    (e9dffb6 이 그렇게 커밋됐다)."""
+
+    def setUp(self):
+        root = config.find_project_root(Path("."))
+        src = root / config.experiment_dir(1)
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.exp_dir = Path(tmp.name) / src.name
+        (self.exp_dir / "체크리스트").mkdir(parents=True)
+        (self.exp_dir / "output").mkdir()
+        shutil.copy2(src / "체크리스트/명세.md", self.exp_dir / "체크리스트/명세.md")
+        cover = "실험1 Basic Gates 예비보고서 표지.pdf"
+        shutil.copy2(src / "output" / cover, self.exp_dir / "output" / cover)
+
     def test_merge_lab_report_with_explicit_body_cleans_by_default(self):
         from scripts.lab.merge_report import merge_lab_report
-        root = config.find_project_root(Path("."))
-        exp_dir = root / config.experiment_dir(1)
         tmp_path = _blank_pdf("_notion_export_예비보고서.pdf", pages=3)
         self.addCleanup(tmp_path.unlink, missing_ok=True)
-        out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
+        out = merge_lab_report(self.exp_dir, kind="예비보고서", body_path=tmp_path)
         self.assertTrue(out.is_file())
+        self.assertEqual(out.parent, self.exp_dir.resolve())
         self.assertEqual(out.name, "실험1_Basic_Gates_예비보고서.pdf")
         reader = pypdf.PdfReader(str(out))
         self.assertEqual(len(reader.pages), 4)  # 1 cover + 3 body
@@ -164,11 +180,9 @@ class TestIntegration(unittest.TestCase):
 
     def test_merge_lab_report_clean_body_false_keeps_file(self):
         from scripts.lab.merge_report import merge_lab_report
-        root = config.find_project_root(Path("."))
-        exp_dir = root / config.experiment_dir(1)
         tmp_path = _blank_pdf("_notion_export_keep_예비보고서.pdf", pages=2)
         self.addCleanup(tmp_path.unlink, missing_ok=True)
-        out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path, clean_body=False)
+        out = merge_lab_report(self.exp_dir, kind="예비보고서", body_path=tmp_path, clean_body=False)
         self.assertTrue(out.is_file())
         self.assertTrue(tmp_path.is_file())
 
@@ -176,7 +190,9 @@ class TestIntegration(unittest.TestCase):
         """원본을 못 지워도 제출본은 이미 만들어졌으니 성공이다. 다만 조용히
         넘기면 원본이 남은 줄 모른다 — stderr 에 경고를 남긴다."""
         from scripts.lab.merge_report import merge_lab_report
-        tmp_path = _blank_pdf("_notion_export_locked_예비보고서.pdf", pages=1)
+        # macOS 임시 폴더는 /var → /private/var 링크라 resolve 한 경로로 비교해야
+        # merge_lab_report 가 지우려는 경로와 맞는다.
+        tmp_path = _blank_pdf("_notion_export_locked_예비보고서.pdf", pages=1).resolve()
         self.addCleanup(tmp_path.unlink, missing_ok=True)
         real_unlink = Path.unlink
 
@@ -187,7 +203,7 @@ class TestIntegration(unittest.TestCase):
 
         err = io.StringIO()
         with mock.patch.object(Path, "unlink", locked), contextlib.redirect_stderr(err):
-            out = merge_lab_report(1, kind="예비보고서", body_path=tmp_path)
+            out = merge_lab_report(self.exp_dir, kind="예비보고서", body_path=tmp_path)
         self.assertTrue(out.is_file())
         self.assertTrue(tmp_path.is_file())
         self.assertIn("지우지 못했습니다", err.getvalue())
