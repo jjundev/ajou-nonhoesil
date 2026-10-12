@@ -279,6 +279,21 @@ class HandSimScript(unittest.TestCase):
         self.assertIn('74HC42', pages[0].extract_text())
         self.assertIn('74HC20', pages[1].extract_text())
 
+    def test_실험05_손그림모사는_브레드보드_PDF_판에_글자_없이(self):
+        # 작성자가 실험 이름을 손으로 적는다 — 쪽 크기·그림 자리가 빈 판형 PDF 와 같아야 홀이 겹친다
+        import pymupdf
+        (sim, _), _ = self._run('--experiment', '5')
+        ref = pymupdf.open(str(ROOT / '.claude/assets/breadboard_v2/Breadboard_v2.pdf'))[0]
+        ref_rect = ref.get_image_rects(ref.get_images()[0][0])[0]
+        doc = pymupdf.open(str(sim))
+        self.assertEqual(len(doc), 2)
+        for page in doc:
+            self.assertEqual(page.rect, ref.rect)
+            self.assertEqual(page.get_text().strip(), '')
+            rect = page.get_image_rects(page.get_images()[0][0])[0]
+            for got, want in ((rect.x0, ref_rect.x0), (rect.y0, ref_rect.y0), (rect.x1, ref_rect.x1)):
+                self.assertAlmostEqual(got, want, places=2)
+
     def test_PDF_검사가_실패하면_아무것도_안_쓴다(self):
         from unittest import mock
         from scripts.lab import hand_sim
