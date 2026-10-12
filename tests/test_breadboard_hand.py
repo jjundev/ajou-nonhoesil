@@ -213,6 +213,67 @@ class HandSimScript(unittest.TestCase):
             hand_sim.main(['--experiment', '4', '--final', '없음.png'])
         self.assertIn('실험04_1-1_결선도_4x1MUX.png', str(cm.exception))
 
+    def _guide_board(self):
+        mod = _load()
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        return mod.load_board(4).build_e4_mux(str(tmp / 'g.png'), hand=1, hand_guide=True)
+
+    def test_부품표에_칩_LED_저항_입력이_다_있다(self):
+        from scripts.lab import hand_sim
+        bb = self._guide_board()
+        rows = hand_sim.guide_rows(bb)
+        kinds = [k for k, _, _ in rows]
+        self.assertEqual(kinds, sorted(kinds, key=['칩', 'LED', '저항', '입력'].index))
+        self.assertEqual(kinds.count('칩'), len(bb.chips))
+        self.assertEqual(kinds.count('LED'), len(bb.led_chains))
+        self.assertEqual(kinds.count('저항'), len(bb.resistors))
+        self.assertEqual([n for k, n, _ in rows if k == '입력'], [i['name'] for i in bb.inputs])
+
+    def test_부품표_입력은_레일_쪽_끝(self):
+        # 팀원이 이름을 적는 자리는 0/1 을 바꿀 때 옮겨 꽂는 레일 쪽 끝이다
+        from scripts.lab import hand_sim
+        bb = self._guide_board()
+        first = bb.inputs[0]
+        rail_end = bb.addr(*bb._segments[first['seg']][1][0])
+        row = next(r for r in hand_sim.guide_rows(bb) if r[0] == '입력')
+        self.assertIn(rail_end, row[2])
+        self.assertNotIn(bb._sym_addr(('hole', first['at'])), row[2])
+
+    def test_안내_PDF_는_한_쪽에_그림_하나(self):
+        from pypdf import PdfReader
+        from scripts.lab import hand_sim
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        sim, guide_png, pdf = hand_sim.main(['--experiment', '4', '--final', '실험04_1-1_결선도_4x1MUX.png',
+                                             '--out', str(tmp), '--guide'])
+        self.assertEqual(sim.name, '실험04_1-1_손그림모사_4x1MUX.png')
+        self.assertEqual(guide_png.name, '실험04_1-1_부품그리기_4x1MUX.png')
+        self.assertEqual(pdf.name, '실험04_1-1_부품그리기_4x1MUX.pdf')
+        pages = PdfReader(str(pdf)).pages
+        self.assertEqual([len(p.images) for p in pages], [1])
+        text = pages[0].extract_text()
+        self.assertIn('회색 선은 이미 그려져 있어요', text)
+        self.assertIn('74HC04', text)
+
+    def test_넘친_PDF_는_거절한다(self):
+        from pypdf import PdfWriter
+        from scripts.lab import hand_sim
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        w = PdfWriter()
+        w.add_blank_page(595, 842)
+        w.add_blank_page(595, 842)
+        w.write(str(tmp / 'two.pdf'))
+        with self.assertRaises(ValueError):
+            hand_sim.check_guide_pdf(tmp / 'two.pdf')
+
+    def test_안내판을_못_받는_빌더는_이름과_함께_멈춘다(self):
+        from scripts.lab import hand_sim
+        with self.assertRaises(SystemExit) as cm:
+            hand_sim.main(['--experiment', '4', '--final', '실험04_2-1_결선도_1x4DMUX.png', '--guide'])
+        self.assertIn('hand_guide', str(cm.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
