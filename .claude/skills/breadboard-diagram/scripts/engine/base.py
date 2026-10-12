@@ -118,6 +118,19 @@ def _sc(v):
     return type(v)(_sc(x) for x in v) if isinstance(v, (tuple, list)) else v
 
 
+class _NullDraw:
+    """긋지 않는 붓 — 글자 치수(`textbbox`)만 진짜 붓에 묻고 나머지는 버린다."""
+
+    def __init__(self, real):
+        self._real = real
+
+    def textbbox(self, *a, **k):
+        return self._real.textbbox(*a, **k)
+
+    def __getattr__(self, name):
+        return lambda *a, **k: None
+
+
 class _ScaledDraw:
     """`ImageDraw` 를 감싼다 — 논리 좌표를 받아 SCALE 배 캔버스에 그린다."""
 
@@ -156,6 +169,45 @@ class _ScaledDraw:
 
     def textlength(self, text, *a, **k):
         return self._d.textlength(text, *a, **self._kw(k)) / SCALE
+
+
+def _hand_noise(rng):
+    """누적 길이 s -> [-1, 1] 매끈한 떨림 — 사인 셋을 가중치 합으로 나눈다."""
+    waves = [(rng.uniform(40, 160), rng.uniform(0, 2 * math.pi), rng.uniform(0.5, 1))
+             for _ in range(3)]
+    total = sum(w for _, _, w in waves)
+    return lambda s: sum(w * math.sin(2 * math.pi * s / lam + ph) for lam, ph, w in waves) / total
+
+
+def _hand_polyline(points, rng, amp=2.0, step=6.0, ramp=12.0):
+    """손그림 모사 배선 — 축마다 따로 ±amp 떨린 촘촘한 점열. 양 끝점은 입력 그대로(홀 위)고
+    끝에서 `ramp` 동안 진폭을 0 에서 올린다."""
+    pts = [tuple(map(float, p)) for p in points]
+    nx, ny = _hand_noise(rng), _hand_noise(rng)
+    total = sum(math.dist(a, b) for a, b in zip(pts, pts[1:]))
+    out, s0 = [pts[0]], 0.0
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        seg = math.dist((x0, y0), (x1, y1))
+        n = max(1, math.ceil(seg / step))
+        for i in range(1, n + 1):
+            t = i / n
+            s = s0 + seg * t
+            k = amp * min(1.0, s / ramp, (total - s) / ramp)
+            out.append((x0 + (x1 - x0) * t + k * nx(s), y0 + (y1 - y0) * t + k * ny(s)))
+        s0 += seg
+    out[-1] = pts[-1]
+    return out
+
+
+def _hand_width(width, rng):
+    """마커 한 가닥의 굵기 — 기본의 0.7~1.3 배, 가닥 안에서는 일정."""
+    return max(1, round(width * rng.uniform(0.7, 1.3)))
+
+
+def _hand_dot(p, r, rng):
+    """끝점 도트 상자 — 축마다 반지름 ±1px."""
+    rx, ry = r + rng.uniform(-1, 1), r + rng.uniform(-1, 1)
+    return [p[0] - rx, p[1] - ry, p[0] + rx, p[1] + ry]
 
 
 def _font(kind, size):

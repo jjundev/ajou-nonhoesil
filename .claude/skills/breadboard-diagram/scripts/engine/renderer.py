@@ -3,7 +3,19 @@
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 class BreadboardRenderer(_RuleChecks):
-    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False):
+    def __init__(self, template_path=None, baseline=None, layer=None, board=DEFAULT_BOARD, palette=False,
+                 hand=None, hand_guide=False):
+        # 손그림 모사 시드. 배선만 흔들어 그리고 번호 원·보드 밖 꼬리표·사이드카·도장은 안 낸다 —
+        # 점유표·순서표는 그대로라 verify() 는 같다. 완성본 전용
+        if hand is not None and (baseline is not None or layer is not None):
+            raise ValueError('hand 는 완성본에만 준다 — baseline·layer 와 함께 못 준다')
+        # 부품 그리기 안내판 — 같은 흔들림의 선을 회색으로, 비워 둘 부품을 색으로 그린다(2026-10-12)
+        if hand_guide and hand is None:
+            raise ValueError('hand_guide 는 hand 와 함께 준다')
+        self.hand = hand
+        self.hand_guide = hand_guide
+        self._in_parts = False    # `_blank_parts` 안 — 안내판에서 부품 배지는 제 색
+        self._hand_rng = random.Random(hand) if hand is not None else None
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
         self.board = board
         self.spec = board_spec(board)
@@ -466,6 +478,8 @@ class BreadboardRenderer(_RuleChecks):
         흰 화살촉(선이 뻗는 쪽)과 흰 글자. 상자는 화살촉까지 덮는다. `max_w` 는 상자 폭 상한 — 넘으면
         글꼴을 줄인다(`_signal_tag_font`).
         """
+        if self.hand_guide and not self._in_parts:
+            col = KEEP            # 시험판에 이미 있는 배지 — 안내판에선 회색
         box, tx, ty, h = self._signal_tag_geom(name, x, y, align, arrow, max_w)
         font, pad = self._signal_tag_font(name, arrow, max_w), 2
         hpad, tri = (1, INPUT_TRI) if arrow else (pad, 0)     # `_signal_tag_geom` 과 같은 값
@@ -541,6 +555,8 @@ class BreadboardRenderer(_RuleChecks):
     def _marker(self, x, y, n, color):
         """배선 번호. 결선 순서표의 몇 번인지 가리킨다."""
         self.marker_boxes.append((x - 8, y - 8, x + 8, y + 8))
+        if self.hand is not None:
+            return
         self.draw.ellipse([x-8, y-8, x+8, y+8], fill=(255, 255, 255, 245), outline=color, width=2)
         t = str(n)
         bbox = self.draw.textbbox((0, 0), t, font=self.font_num)
@@ -611,7 +627,7 @@ class BreadboardRenderer(_RuleChecks):
         view = self._layer_view(len(self.steps) + 1) if self.numbered and not kept else 'shown'
         draw = self._hidden_draw if view == 'hidden' else self.draw
         dot = 3
-        if kept or view == 'faded':
+        if kept or view == 'faded' or self.hand_guide:
             color = KEEP
         elif (color is None and self.palette and self.numbered and view == 'shown'
               and kind in ('sig', 'mid')):
@@ -621,9 +637,16 @@ class BreadboardRenderer(_RuleChecks):
             dot = 5
         else:
             color = color or WIRE[kind]
-        draw.line(points, fill=color, width=width, joint='curve')
-        for p in (points[0], points[-1]):
-            draw.ellipse([p[0]-dot, p[1]-dot, p[0]+dot, p[1]+dot], fill=color)
+        if self.hand is not None:
+            rng = self._hand_rng
+            draw.line(_hand_polyline(points, rng), fill=color, width=_hand_width(width, rng),
+                      joint='curve')
+            for p in (points[0], points[-1]):
+                draw.ellipse(_hand_dot(p, dot, rng), fill=color)
+        else:
+            draw.line(points, fill=color, width=width, joint='curve')
+            for p in (points[0], points[-1]):
+                draw.ellipse([p[0]-dot, p[1]-dot, p[0]+dot, p[1]+dot], fill=color)
         for p in (points[0], points[-1]):
             self.lead(p[0], p[1], f'{KIND_KR[kind]} 배선 · {desc}')
             self.touch_rail(kind, p[0])
@@ -692,7 +715,34 @@ class BreadboardRenderer(_RuleChecks):
                            'desc': desc, 'count': count})
         return n
 
-    def draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
+    def _blank_parts(self, draw_fn, *a, **k):
+        """hand 모드에선 부품(칩·LED·저항)과 입력 이름 배지를 비운다 — 사람이 그 자리에 직접 그린다(2026-10-12).
+        점유·기록·글자 상자는 평소대로 쌓고 픽셀만 버린다. 그래서 배치와 `verify()` 가 같다.
+        안내판(`hand_guide`)에선 거꾸로 이것만 제 색으로 그린다."""
+        if self.hand is None:
+            return draw_fn(*a, **k)
+        if self.hand_guide:
+            self._in_parts = True
+            try:
+                return draw_fn(*a, **k)
+            finally:
+                self._in_parts = False
+        real, self.draw = self.draw, _NullDraw(self.draw)
+        try:
+            return draw_fn(*a, **k)
+        finally:
+            self.draw = real
+
+    def draw_resistor(self, *a, **k):
+        return self._blank_parts(self._draw_resistor, *a, **k)
+
+    def draw_led(self, *a, **k):
+        return self._blank_parts(self._draw_led, *a, **k)
+
+    def draw_chip(self, *a, **k):
+        return self._blank_parts(self._draw_chip, *a, **k)
+
+    def _draw_resistor(self, x, y1, y2, label="330Ω", bands=None):
         self.lead(x, y1, f'{label} 윗다리')
         self.lead(x, y2, f'{label} 아랫다리')
         self.resistors.append({'label': label,
@@ -716,7 +766,7 @@ class BreadboardRenderer(_RuleChecks):
         for col, off in zip(bands, [-7, -2, 3, 8]):
             self.draw.line([(x - 4, ymid + off), (x + 4, ymid + off)], fill=col, width=2)
 
-    def draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
+    def _draw_led(self, x, y_anode, y_cathode, color_rgb=(230, 30, 30), label="LED"):
         self.lead(x, y_anode, f'{label} LED 애노드')
         self.lead(x, y_cathode, f'{label} LED 캐소드')
         self.leds.append({'tag': label,
@@ -810,6 +860,8 @@ class BreadboardRenderer(_RuleChecks):
 
     def _vtext(self, xy, text, fill, font):
         """세로쓰기 — 칩 이름을 몸통 안에 넣는다."""
+        if isinstance(self.draw, _NullDraw):
+            return
         real = font.real if isinstance(font, _ScaledFont) else font
         bbox = real.getbbox(text)
         pad = 2 * SCALE
@@ -833,7 +885,7 @@ class BreadboardRenderer(_RuleChecks):
                 return f
         return _font('en', 6)
 
-    def draw_chip(self, name, start_row, block='left'):
+    def _draw_chip(self, name, start_row, block='left'):
         c = self.cols[block]
         n = dip_pins(name)
         rows = n // 2
@@ -1018,7 +1070,7 @@ class BreadboardRenderer(_RuleChecks):
                    self._endpoint((x_rail, self.r_y(r_rail))))
             kept = self.baseline is not None and key in self.baseline['wires']
             kept_lines += kept
-            col = KEEP if kept or view == 'faded' else WIRE[rail]
+            col = KEEP if kept or view == 'faded' or self.hand_guide else WIRE[rail]
             draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
                                    f'{chip} pin {p} 미사용 입력'))
@@ -1325,6 +1377,11 @@ class BreadboardRenderer(_RuleChecks):
         board_h = self.r_y(max_row) + 20
         out = final_im.crop((0, 0, self.spec.size[0] * SCALE, board_h * SCALE)).convert('RGB')
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        if self.hand is not None:
+            # 보고서 첨부용 그림일 뿐 — 사이드카·도장이 있으면 검사 도구가 정본으로 읽는다
+            out.save(output_path)
+            print(f"[SUCCESS] Exported (손그림 모사): {output_path} ({out.size[0]}x{out.size[1]})")
+            return
         info = PngInfo()
         info.add_text(STAMP_KEY, self.stamp())
         out.save(output_path, pnginfo=info)
