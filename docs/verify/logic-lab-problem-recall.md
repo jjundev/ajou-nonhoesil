@@ -184,3 +184,14 @@ Windows snapshot 경로를 as_posix로 교정하고, 실제 실험06의 빈 작�
 summary의 hidden/aria-hidden/heading/layer-title 조상 문맥을 보존하고 실험06 정본 갱신 절차를 보완했어요. 새 제외 회귀 5건은 RED에서 실패했고 수정 후 focused 계약 검사는 50 PASS예요. 최종 관련 범위 실행은 **546 passed, 2593 deselected in 442.83s**, exit0이며 538 PASS는 위 Task10 당시 기록이에요. 현재86개 바이트 쌍/1058개 보존 파일/79개 원문 digest audit도 exit0이에요.
 
 [최종 수정 상세 보고서](../../output/validation/problem-recall/execution/final-fix-report.md), [최종 테스트 원출력과 종료 코드](../../output/validation/problem-recall/execution/final-fix-tests.txt), [보존 audit 실행원](../../output/validation/problem-recall/audit.py).
+
+## 최종 리뷰와 인계
+
+최종 코드 보완 후 관련 전체 테스트는 **546 passed, 2593 deselected, exit 0**이다. 원고/발행본 86쌍·설명 밖 파일 1,058개·원문 해시 79개 대조가 모두 통과했다. 요약 상위 요소의 숨김/제목 검사와 실험06 Python 저작 절차를 보완했고, 재검토 결과는 **Ready to merge: Yes**이며 남은 Critical/Important/Minor는 없다. 발행 문서의 기존 답안 상태·경고는 그대로다.
+
+- [전체 변경 리뷰](../../output/validation/problem-recall/execution/final-review-report.md)
+- [수정 후 재검토](../../output/validation/problem-recall/execution/final-rereview-report.md)
+- [최종 테스트 원본](../../output/validation/problem-recall/execution/final-fix-tests.txt)
+- [실행 진행 기록](../../output/validation/problem-recall/execution/controller-progress.md)
+
+변경은 `codex/logic-lab-problem-recall`에 커밋했다. 원래 `main` 체크아웃에는 아직 병합하지 않았다. 백업과 실제 원문/브라우저 PNG는 이 작업 공간에 보존하며 큰 일회성 PNG는 Git에 추가하지 않았다.
