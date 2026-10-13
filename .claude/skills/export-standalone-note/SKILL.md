@@ -15,16 +15,19 @@ description: 복습노트 HTML(실험설명·문제설명·기출문제·기출�
 
 REPO 루트(scripts/lab/config.py 가 있는 곳)에서:
 
-```powershell
-python -m scripts.lab.standalone_note 실험05                 # 실험설명 1종
-python -m scripts.lab.standalone_note 실험05 --kind all      # 4종(실험설명·기출문제·기출풀이·문제설명)
-python -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종
-python -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
-python -m scripts.lab.standalone_note all --kind all         # 실험 폴더 전부 → zip
-python -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Downloads
+```bash
+python3 -m scripts.lab.standalone_note 실험05                # 실험설명 1종
+python3 -m scripts.lab.standalone_note 실험05 --kind all      # 4종(실험설명·기출문제·기출풀이·문제설명)
+python3 -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종
+python3 -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
+python3 -m scripts.lab.standalone_note 실험01~05 --kind all  # 범위도 된다(실험01~실험05 도 같다)
+python3 -m scripts.lab.standalone_note all --kind all         # 실험 폴더 전부 → zip
+python3 -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Downloads
 ```
 
 - 주차로 말하면 실험 번호로 옮긴다. 종류를 말하지 않으면 실험설명, "전부·기출까지"면 `--kind all`.
+  "테스트"·"다 확인"처럼 새 기능을 훑어보려는 말도 `--kind all` 로 읽고, 그렇게 했다고 보고한다.
+- `python` 은 맥에 없을 수 있다. `python3` 를 쓴다(표준 라이브러리만 쓴다).
 - 실험 1개: `<출력폴더>/실험NN_<종류>_standalone.html`. 같은 이름은 덮어쓴다.
 - 실험 2개 이상(또는 `all`): `<출력폴더>/복습노트_standalone.zip`, 안은 `실험NN/실험NN_<종류>_standalone.html`. `--zip 이름.zip` 으로 이름을 바꾼다.
 - `--kind all` 은 없는 종류를 건너뛰고 이름을 출력한다. 종류를 하나 지정했는데 파일이 없으면 오류다.
@@ -34,9 +37,16 @@ python -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Down
 ## 확인과 보고
 
 1. 출력 줄에 `남은 참조` 가 붙었거나 종료 코드가 1 이면 실패다. 목록을 그대로 보고하고 성공이라 하지 않는다.
-2. 렌더는 브라우저로 열어 수식·그림·글꼴을 본다. 브라우저 pane 이 file:// 을 거부하면
-   **"렌더 미확인"** 이라고 쓰고, 사용자에게 더블클릭 확인을 부탁한다.
-3. 보고는 경로·크기·남은 참조 수·렌더 확인 여부 한 줄씩.
+2. zip 이면 마지막의 `zip 검사 통과 (파일 N개, 형제 링크 M개)` 줄을 확인한다.
+   `zip 검사 실패` 가 나오면 목록(끊긴 링크·NFC·UTF-8 플래그·금지 문자)을 그대로 보고한다.
+3. 렌더는 브라우저로 열어 수식·그림·글꼴을 본다. 한 편이면 충분하다(문제설명이 링크가 많아 좋다).
+   - 브라우저 pane 이 `file://` 을 거부하면 zip 을 **scratchpad 에 풀어** 로컬 http 로 연다:
+     `cd <풀린 폴더> && python3 -m http.server 8765 --bind 127.0.0.1` 후
+     `http://127.0.0.1:8765/<퍼센트 인코딩한 경로>` 로 이동한다.
+   - 열면 `.katex` 개수·`.katex-error` 0·깨진 `img` 0·`document.fonts.check('16px Pretendard')`·
+     형제 링크 `fetch` 가 200 인지 본다. 끝나면 서버를 내리고 풀어 둔 폴더를 지운다.
+   - http 확인은 `file://` 더블클릭과 Windows 실기를 **대신하지 못한다.** 보고에 "더블클릭·Windows 미확인" 이라고 쓰고 사용자에게 부탁한다.
+4. 보고는 경로·크기·남은 참조 수·zip 검사·렌더 확인 여부(어느 방법으로, 몇 편) 한 줄씩.
 
 ## 알아둘 것
 

@@ -176,3 +176,37 @@ def test_all_skips_missing_kind_and_names_it(two_notes, tmp_path, capsys):
 def test_named_missing_kind_is_error(two_notes, tmp_path):
     with pytest.raises(SystemExit):
         sn.main(["실험99", "--kind", "기출풀이", "--out", str(tmp_path / "o")])
+
+
+# --- 범위 인자 · zip 자체 검사 ------------------------------------------------
+
+def test_range_argument_expands(two_notes, tmp_path):
+    out = tmp_path / "out"
+    assert sn.main(["실험98~99", "--out", str(out)]) == 0
+    with zipfile.ZipFile(out / "복습노트_standalone.zip") as z:
+        assert z.namelist() == ["실험98/실험98_실험설명_standalone.html",
+                                "실험99/실험99_실험설명_standalone.html"]
+
+
+def test_expand_forms():
+    assert sn._expand(["실험01~05"]) == ["실험01", "실험02", "실험03", "실험04", "실험05"]
+    assert sn._expand(["실험01~실험03", "실험06"]) == ["실험01", "실험02", "실험03", "실험06"]
+    assert sn._expand(["all"]) == ["all"]
+    assert sn._expand(["실험5~3"]) == ["실험5~3"]  # 거꾸로는 그대로 두어 '없는 폴더' 로 걸린다
+
+
+def test_main_prints_zip_check_line(two_notes, tmp_path, capsys):
+    assert sn.main(["실험99", "실험98", "--kind", "all", "--out", str(tmp_path / "o")]) == 0
+    assert "zip 검사 통과" in capsys.readouterr().out
+
+
+def test_check_zip_catches_broken_link_and_bad_name(tmp_path):
+    zp = tmp_path / "x.zip"
+    with zipfile.ZipFile(zp, "w") as z:
+        z.writestr("실험01/실험01_문제설명_standalone.html",
+                   '<meta charset="utf-8"><a href="실험01_실험설명_standalone.html#t">x</a>'.encode())
+        z.writestr(unicodedata.normalize("NFD", "실험01/나쁜:이름.html"), b"<meta charset=utf-8>")
+    problems = sn.check_zip(zp)[1]
+    joined = "\n".join(problems)
+    assert "실험01_실험설명_standalone.html" in joined   # 끊긴 링크
+    assert "NFC" in joined and "금지 문자" in joined

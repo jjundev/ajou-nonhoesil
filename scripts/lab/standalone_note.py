@@ -2,6 +2,7 @@
 
     python -m scripts.lab.standalone_note 실험05 [--kind 실험설명|기출문제|기출풀이|문제설명|all] [--out DIR]
     python -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
+    python -m scripts.lab.standalone_note 실험01~05                   # 범위도 된다
     python -m scripts.lab.standalone_note all                        # 실험 폴더 전부 → zip
 
 실험이 하나면 `실험NN_<종류>_standalone.html` 을 낸다. 둘 이상이면 `실험NN/` 폴더별로 정리한
@@ -131,6 +132,49 @@ def leftovers(html):
     return left
 
 
+def _expand(names):
+    """`실험01~05`·`실험01~실험05` 를 풀어 나열한다. 거꾸로거나 해석 못 하면 그대로 둔다."""
+    out = []
+    for n in names:
+        m = re.fullmatch(r"(실험)(\d+)~(?:실험)?(\d+)", n)
+        if m and int(m.group(2)) <= int(m.group(3)):
+            width = len(m.group(2))
+            out += [f"실험{i:0{width}d}" for i in range(int(m.group(2)), int(m.group(3)) + 1)]
+        else:
+            out.append(n)
+    return out
+
+
+def check_zip(path):
+    """(파일 수·형제 링크 수, 문제 목록). Windows 에서 풀고 열 수 있는 구조인지 본다."""
+    problems, links, count = [], 0, 0
+    with zipfile.ZipFile(path) as z:
+        if z.testzip() is not None:
+            problems.append(f"zip 손상: {z.testzip()}")
+        names = set(z.namelist())
+        for info in z.infolist():
+            name, count = info.filename, count + 1
+            if not unicodedata.is_normalized("NFC", name):
+                problems.append(f"NFC 아님: {name}")
+            if not info.flag_bits & 0x800:
+                problems.append(f"UTF-8 플래그 없음: {name}")
+            if re.search(r'[<>:"|?*\\]', name):
+                problems.append(f"Windows 금지 문자: {name}")
+            if len(name) > 200:
+                problems.append(f"경로가 너무 김: {name}")
+            if name.endswith(".html"):
+                html = z.read(name).decode("utf-8")
+                if "charset" not in html[:2048].lower():
+                    problems.append(f"charset 선언 없음: {name}")
+                folder = name.rsplit("/", 1)[0] if "/" in name else ""
+                for href in re.findall(r'href="([^"#]+_standalone\.html)(?:#[^"]*)?"', html):
+                    links += 1
+                    target = "/".join(x for x in (folder, urllib.parse.unquote(href)) if x)
+                    if target not in names:
+                        problems.append(f"끊긴 형제 링크: {name} → {target}")
+    return f"파일 {count}개, 형제 링크 {links}개", problems
+
+
 def _targets(names, kinds, strict):
     """(실험들, [(실험, 종류)], 건너뛴 목록). strict 이면 지정한 파일이 없을 때 종료한다."""
     if names == ["all"]:
@@ -156,12 +200,12 @@ def _targets(names, kinds, strict):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("exp", nargs="+", help="실험05 …  또는 all(실험 폴더 전부)")
+    ap.add_argument("exp", nargs="+", help="실험05 …, 실험01~05(범위), 또는 all(실험 폴더 전부)")
     ap.add_argument("--kind", default="실험설명", choices=KINDS + ("all",))
     ap.add_argument("--out", default=str(Path.home() / "Downloads"))
     ap.add_argument("--zip", default=ZIP_NAME, help="실험이 둘 이상일 때의 zip 이름")
     a = ap.parse_args(argv)
-    names = [unicodedata.normalize("NFC", n) for n in a.exp]  # 맥 입력은 NFD 일 수 있다
+    names = _expand([unicodedata.normalize("NFC", n) for n in a.exp])  # 맥 입력은 NFD 일 수 있다
     kinds = KINDS if a.kind == "all" else (a.kind,)
     exps, pairs, skipped = _targets(names, kinds, a.kind != "all")
     out_dir = Path(a.out)
@@ -186,7 +230,14 @@ def main(argv=None):
         if zf:
             zf.close()
     if use_zip:
-        print(f"{out_dir / a.zip} ({(out_dir / a.zip).stat().st_size // 1024} KB, {len(pairs)}개)")
+        zp = out_dir / a.zip
+        print(f"{zp} ({zp.stat().st_size // 1024} KB, {len(pairs)}개)")
+        summary, problems = check_zip(zp)
+        if problems:
+            print("zip 검사 실패:\n  " + "\n  ".join(problems))
+            bad += 1
+        else:
+            print(f"zip 검사 통과 ({summary})")
     if skipped:
         print("건너뜀(파일 없음): " + ", ".join(skipped))
     return 1 if bad else 0
