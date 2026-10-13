@@ -16,17 +16,16 @@ description: 복습노트 HTML(실험설명·문제설명·기출문제·기출�
 REPO 루트(scripts/lab/config.py 가 있는 곳)에서:
 
 ```bash
-python3 -m scripts.lab.standalone_note 실험05                # 실험설명 1종
-python3 -m scripts.lab.standalone_note 실험05 --kind all      # 4종(실험설명·기출문제·기출풀이·문제설명)
-python3 -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종
-python3 -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
-python3 -m scripts.lab.standalone_note 실험01~05 --kind all  # 범위도 된다(실험01~실험05 도 같다)
-python3 -m scripts.lab.standalone_note all --kind all         # 실험 폴더 전부 → zip
+python3 -m scripts.lab.standalone_note 실험05                # 기본 = 4종(실험설명·기출문제·기출풀이·문제설명) → zip
+python3 -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종(낱개 HTML)
+python3 -m scripts.lab.standalone_note 실험01 실험05          # 실험 여러 개 → 한 zip
+python3 -m scripts.lab.standalone_note 실험01~05             # 범위도 된다(실험01~실험05 도 같다)
+python3 -m scripts.lab.standalone_note all                    # 실험 폴더 전부 → zip
 python3 -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Downloads
 ```
 
-- 주차로 말하면 실험 번호로 옮긴다. 종류를 말하지 않으면 실험설명, "전부·기출까지"면 `--kind all`.
-  "테스트"·"다 확인"처럼 새 기능을 훑어보려는 말도 `--kind all` 로 읽고, 그렇게 했다고 보고한다.
+- 주차로 말하면 실험 번호로 옮긴다. 종류를 말하지 않으면 전부(`--kind all`, 기본값)다.
+  "실험설명만"·"문제설명만" 처럼 하나를 말했을 때만 `--kind <종류>` 로 좁힌다.
 - `python` 은 맥에 없을 수 있다. `python3` 를 쓴다(표준 라이브러리만 쓴다).
 - 파일이 1개(실험 1개·종류 1개): `<출력폴더>/실험NN_<종류>.html`. 접미사는 없고 원본 노트와 이름이 같다. 같은 이름은 덮어쓴다.
 - 파일이 2개 이상(실험 여러 개, 또는 한 실험의 `--kind all`): `<출력폴더>/논회실_복습노트_실험01~05.zip`,
@@ -35,7 +34,7 @@ python3 -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Dow
 - 출력 폴더에 같은 이름의 낱개 HTML 이 이미 있으면 도구가 경고만 하고 지우지 않는다.
   남은 낱개는 사용자에게 알리고, 지우겠다고 하면 `rm` 대신 휴지통(`~/.Trash`)으로 옮긴다.
   옛 이름(`*_standalone.html`, `복습노트_standalone.zip`)도 같다.
-- `--kind all` 은 없는 종류를 건너뛰고 이름을 출력한다. 종류를 하나 지정했는데 파일이 없으면 오류다.
+- 기본(`all`)은 없는 종류를 건너뛰고 이름을 출력한다. 종류를 하나 지정했는데 파일이 없으면 오류다.
 - Windows 에서는 **압축을 푼 뒤** 연다. zip 미리보기에서 하나만 열면 형제 링크가 끊긴다.
 - 같은 묶음에 있는 형제(예: 문제설명 → 실험설명#토픽)는 같은 폴더의 `실험NN_<종류>.html#토픽` 으로 이어진다. 묶음에 없으면 `<span>`.
 

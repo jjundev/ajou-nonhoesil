@@ -60,7 +60,7 @@ def test_real_note_smoke(tmp_path):
     d = sn.NOTES / "실험05"
     if not (d / "실험05_실험설명.html").exists():
         pytest.skip("실험05 없음")
-    assert sn.main(["실험05", "--out", str(tmp_path)]) == 0
+    assert sn.main(["실험05", "--kind", "실험설명", "--out", str(tmp_path)]) == 0
     assert (tmp_path / "실험05_실험설명.html").exists()
 
 
@@ -159,14 +159,14 @@ def test_single_experiment_all_kinds_is_zip_named_by_experiment(two_notes, tmp_p
 
 def test_single_file_stays_loose_without_suffix(two_notes, tmp_path):
     out = tmp_path / "out"
-    assert sn.main(["실험99", "--out", str(out)]) == 0
+    assert sn.main(["실험99", "--kind", "실험설명", "--out", str(out)]) == 0
     assert [p.name for p in out.iterdir()] == ["실험99_실험설명.html"]
 
 
 def test_nfd_argument_is_normalized(two_notes, tmp_path):
     out = tmp_path / "out"
     nfd = unicodedata.normalize("NFD", "실험99")
-    assert sn.main([nfd, "--out", str(out)]) == 0
+    assert sn.main([nfd, "--kind", "실험설명", "--out", str(out)]) == 0
     assert [p.name for p in out.iterdir()] == ["실험99_실험설명.html"]
 
 
@@ -189,7 +189,7 @@ def test_named_missing_kind_is_error(two_notes, tmp_path):
 
 def test_range_argument_expands(two_notes, tmp_path):
     out = tmp_path / "out"
-    assert sn.main(["실험98~99", "--out", str(out)]) == 0
+    assert sn.main(["실험98~99", "--kind", "실험설명", "--out", str(out)]) == 0
     with zipfile.ZipFile(out / "논회실_복습노트_실험98~99.zip") as z:
         assert z.namelist() == ["실험98/실험98_실험설명.html",
                                 "실험99/실험99_실험설명.html"]
@@ -245,3 +245,10 @@ def test_missed_sibling_link_is_still_a_leftover(note):
     _problem_page(note)
     html = sn.build(note, "문제설명", linked={"실험설명"})
     assert sn.leftovers(html, {"실험99_문제설명.html"})  # 묶음에 실험설명이 없으면 남은 참조
+
+
+def test_default_kind_is_all(two_notes, tmp_path):
+    out = tmp_path / "out"
+    assert sn.main(["실험99", "--out", str(out)]) == 0
+    with zipfile.ZipFile(out / "논회실_복습노트_실험99.zip") as z:
+        assert sorted(z.namelist()) == ["실험99/실험99_문제설명.html", "실험99/실험99_실험설명.html"]

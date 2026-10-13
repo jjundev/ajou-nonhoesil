@@ -1,6 +1,6 @@
 """복습노트 HTML 을 파일 하나로 합친다 (CSS·JS·글꼴·그림을 모두 인라인).
 
-    python -m scripts.lab.standalone_note 실험05 [--kind 실험설명|기출문제|기출풀이|문제설명|all] [--out DIR]
+    python -m scripts.lab.standalone_note 실험05 [--kind all(기본)|실험설명|기출문제|기출풀이|문제설명] [--out DIR]
     python -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
     python -m scripts.lab.standalone_note 실험01~05                   # 범위도 된다
     python -m scripts.lab.standalone_note all                        # 실험 폴더 전부 → zip
@@ -214,7 +214,7 @@ def _targets(names, kinds, strict):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("exp", nargs="+", help="실험05 …, 실험01~05(범위), 또는 all(실험 폴더 전부)")
-    ap.add_argument("--kind", default="실험설명", choices=KINDS + ("all",))
+    ap.add_argument("--kind", default="all", choices=KINDS + ("all",), help="기본 all(없는 종류는 건너뜀)")
     ap.add_argument("--out", default=str(Path.home() / "Downloads"))
     ap.add_argument("--zip", default=None, help="파일이 둘 이상일 때의 zip 이름(기본: 논회실_복습노트_실험01~05.zip)")
     a = ap.parse_args(argv)
