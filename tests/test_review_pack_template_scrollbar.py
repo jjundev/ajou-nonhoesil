@@ -32,3 +32,19 @@ def test_다크_두_블록_모두_토큰(name):
     forced = text[text.index(':root[data-theme="dark"] {'):]
     forced = forced[:forced.index('}')]
     assert DARK in media and DARK in forced
+
+
+PACKS = sorted(Path('복습노트').glob('실험0[1-6]'))
+CARD_RULE = '    .table-card { margin: var(--s4) 0;'
+
+
+@pytest.mark.parametrize('page', [p for f in PACKS for p in (f / f'{f.name}_실험설명.html', f / f'{f.name}_문제설명.html')], ids=str)
+def test_발행물_스크롤바(page):
+    text = page.read_text(encoding='utf-8')
+    check_scrollbar(text, cards=CARD_RULE in text)
+
+
+@pytest.mark.parametrize('folder', PACKS, ids=str)
+def test_팩_템플릿_사본은_스킬과_같다(folder):
+    for name in ('note-template.html', 'review-template.html', 'template-provenance.json'):
+        assert (folder / '자료/assets' / name).read_bytes() == (ASSETS / name).read_bytes()

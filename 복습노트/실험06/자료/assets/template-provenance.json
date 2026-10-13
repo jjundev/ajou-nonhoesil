@@ -6,8 +6,12 @@
   },
   "local_adjustments": {
     "note-template.html": {
-      "sha256": "96c6b1f458cb571fd4be42baa796c3c9c6a919393f6c0e361f34e514aa66310b",
-      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards."
+      "sha256": "ed8e91cbae84d71d3b228ccf92d3cb156eb91a837b02219d56ee9596d0d38157",
+      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards. Themed scrollbar for panels, content and cards."
+    },
+    "review-template.html": {
+      "sha256": "376fd6d87bec9e3bd5e51ca1f1bff97d402b45da085d28a9640f6fad5a25f96e",
+      "reason": "Themed scrollbar for panels and content."
     }
   }
 }
