@@ -1,0 +1,1391 @@
+{
+  "schema_version": 1,
+  "experiment": 4,
+  "title": "Multiplexer & Demultiplexer — 경로를 고르는 회로를 배워요",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp04",
+    "schema_version": 1,
+    "source_path": "문제은행/실험04/question-bank.json",
+    "sha256": "7e9c5d6c2cb39b046fc4ee4a54a0aba63218007e927b49340fae681b98988ed5",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-27f6ba34223ad22f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 개념_Mux_Demux_Decoder_동작비교.jpg",
+      "sha256": "dc96e22d4caa9fb34542b1705f6710352556ec186e81570d883ac30414989e6b",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-27d934ca08d1d323",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 개념_디코더vs디멀티플렉서_비교.png",
+      "sha256": "19554f16e1e09b2260c71398a8d970b0ad41b77c2bdeaa1eae5a027ee2cd92d5",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-c6b90e2bf528e3f8",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출 2016-1.pdf",
+      "sha256": "7dc6cf0541e6256bfe6402ba3bd2536ed3103cd6bfe6b3447c3b7d10cb65549a",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-38c4935d41954dba",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출_정답.pdf",
+      "sha256": "29c6eaaab11d3b3c996bbbae49ea249b51de9a199981b1e11b4c73a31ab24adc",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-629c5360df5e914f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 기출_채점본.jpg",
+      "sha256": "c4ac7f7c9c1f371a0afd872c9c4920793881932a3da3b386550cfa9c51063aad",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-0e23b69092f2c27f",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v2.pdf",
+      "sha256": "4af91d6b5e63f850a6cc875cbb4123f736da0b2ebade08220ba28a95852f2e14",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-945854091c3730e0",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v3.pdf",
+      "sha256": "02614a195a5b551db20a4f23023c13a1716e5fd531a12d9eb89f9c32c259b846",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-4ba2974bd67ee53e",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 예상문제_v4.pdf",
+      "sha256": "91d8e6bc904776ac41b645fbe68bd83c3001b795fd61c6111aa4c98f4b84ba34",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-c58df44e4ea74e19",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 종합_기출문제 (5p).pdf",
+      "sha256": "5df9854b0aec37ba6ee5acbc908b710538a82b4d733dd7dc30e6816be0c187fd",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-647d8c4265478aad",
+      "path": "from_the_past/정리/퀴즈/실험4/실험4 퀴즈 해설.pdf",
+      "sha256": "9641789cea8548c89300359a2e50ecd602adacb37f3453a71dde33b801feb89f",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-2e9fe8e9e027f953",
+      "path": "from_the_past/정리/퀴즈/실험4/원본_docx/실험 4.docx",
+      "sha256": "8040c2dcb3f2cee968d128cbcd96129be701b4f639e51a9423ca87eb0795b827",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-aaf5ade5f3c66d7e",
+      "path": "강의노트/실험4. Multiplexer & Demultiplexer.pdf",
+      "sha256": "5e6e32549c8e3e6f39e0361140e7a760dbaea5d48caa92d436d83fe52917985f",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-130a964ad2ce2dbf",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 1,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-130a964ad2ce2dbf",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": "판본 기록: 2026-2 배포 교안의 표지에는 25-1로 적혀 있어요. 수행 범위는 9월 14일 공지의 1-1·2-1이에요. 기출 파일명 2016-1의 시험지 헤더는 2017-1이에요. 빈 예상문제 6번은 보류했어요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
+    },
+    {
+      "id": "t-basics",
+      "title": "0·1, 게이트와 진리표를 다시 읽어요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-basics.html"
+    },
+    {
+      "id": "t-mux2",
+      "title": "2×1 MUX의 경로를 골라 봐요",
+      "requires": [
+        "t-basics"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-mux2.html",
+      "md_notes": "그림 재제작: 정의와 교안 PDF p3–4를 바탕으로 NOT 1개, AND 2개, OR 1개를 새로 그렸어요. 8가지 입력 조합을 식과 대조했어요."
+    },
+    {
+      "id": "t-mux4",
+      "title": "4×1 MUX와 활성 Low enable을 배워요",
+      "requires": [
+        "t-mux2"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 9,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-mux4.html",
+      "md_notes": "그림 재제작: 교안 PDF p8의 NAND 회로를 신호 이름으로 다시 그렸어요. S1·S0·E의 NOT 보수 신호는 아래 줄에 정의했어요. p9의 E=1 출력 X와 달리 이 회로의 이상 출력은 0이에요. 원문 스캔은 설명 화면에 첨부하지 않아요."
+    },
+    {
+      "id": "t-demux",
+      "title": "DMUX로 데이터를 나눠 보내요",
+      "requires": [
+        "t-basics",
+        "t-mux4"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 12,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-demux.html",
+      "md_notes": "그림 재제작: 교안 PDF p11의 NOT 2개·AND 4개 회로를 새로 그렸어요. p12 원문 및 제공 퀴즈의 D=0 출력 X는 유지된 증거에서 확인할 수 있어요. 새 표는 AND 회로의 도출값 0000이에요."
+    },
+    {
+      "id": "t-decoder",
+      "title": "디코더와 MUX·DMUX를 연결해 봐요",
+      "requires": [
+        "t-mux4",
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-decoder.html",
+      "md_notes": "그림 재제작: 주소 10의 one-hot 선택과 Ck·Ik 합산/Ck·D 분배 관계를 직접 블록도로 그렸어요. 활성 High 출력에 한정한 이상 모델이에요."
+    },
+    {
+      "id": "t-tristate",
+      "title": "Tri-state로 출력선을 함께 써요",
+      "requires": [
+        "t-mux2",
+        "t-mux4"
+      ],
+      "sources": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "fragment": "sections/t-tristate.html",
+      "md_notes": "그림 재제작: 기출의 74HC125 제공 조건 nOE=0 활성에 맞춰 nOE0=S, nOE1=S′로 새로 그렸어요. 예상문제의 active high enables 답안 그림과 극성이 달라요. 기존 답안 충돌 상태를 유지했어요."
+    },
+    {
+      "id": "t-lab",
+      "title": "실험에서 바꾸고 관찰할 것을 정리해요",
+      "requires": [
+        "t-mux4",
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 12,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 13,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-aaf5ade5f3c66d7e",
+          "pdf_page": 14,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-lab.html",
+      "md_notes": "그림 재제작: 교안 PDF p8·p11의 회로는 앞 개념 토픽의 SVG로 대체하고 p9·p12 스캔 표는 텍스트 표 및 불일치 설명으로 대체했어요. 실험 조작은 별도 흐름도로 새로 그렸어요. 그림은 핀 배치도가 아니에요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-mux2",
+      "bank_question_id": "q-mux2",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux2"
+      ],
+      "sources": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "S′I0+SI1",
+      "answer_status": "verified",
+      "title": "2×1 MUX의 게이트 설계",
+      "fragment": "problems/q-mux2.html",
+      "workbook_fragment": "workbook/q-mux2.json",
+      "explanation_fragment": "problem-explanations/q-mux2.html"
+    },
+    {
+      "id": "q-mux4",
+      "bank_question_id": "q-mux4",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux4"
+      ],
+      "sources": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5〜P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "0,1,0,0",
+      "answer_status": "verified",
+      "title": "Enable 있는 4×1 MUX 표 완성",
+      "fragment": "problems/q-mux4.html",
+      "workbook_fragment": "workbook/q-mux4.json",
+      "explanation_fragment": "problem-explanations/q-mux4.html"
+    },
+    {
+      "id": "q-active",
+      "bank_question_id": "q-active",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "실제 기출의 활성 신호 정의와 노트의 E 예제로 MUX·DMUX 적용을 다룬다. 새로운 개념 공백을 보충하지 않아 미선별했다.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-demux2",
+      "bank_question_id": "q-demux2",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "설계 개념 공백을 보충하기 위해 선별",
+      "topics": [
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Y0=DS′, Y1=DS",
+      "answer_status": "verified",
+      "title": "보충: 1×2 DMUX의 게이트 설계",
+      "fragment": "problems/q-demux2.html",
+      "workbook_fragment": "workbook/q-demux2.json",
+      "explanation_fragment": "problem-explanations/q-demux2.html"
+    },
+    {
+      "id": "q-design4",
+      "bank_question_id": "q-design4",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "설계 개념 공백을 보충하기 위해 선별",
+      "topics": [
+        "t-mux4"
+      ],
+      "sources": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P17〜P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "S1′S0′I0+S1′S0I1+S1S0′I2+S1S0I3",
+      "answer_status": "verified",
+      "title": "보충: 지정 게이트로 4×1 MUX 설계",
+      "fragment": "problems/q-design4.html",
+      "workbook_fragment": "workbook/q-design4.json",
+      "explanation_fragment": "problem-explanations/q-design4.html"
+    },
+    {
+      "id": "q-switch",
+      "bank_question_id": "q-switch",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "MUX·DMUX의 경로 설명은 실제 정의 기출과 비교 문제로 다룬다. 스위치 비유만으로 새로운 개념 공백을 보충하지 않아 미선별했다.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P22〜P23; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-decoder",
+      "bank_question_id": "q-decoder",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-decoder"
+      ],
+      "sources": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P26〜P27; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "디코더 선택 신호로 MUX의 항을 합산하거나 DMUX 출력을 분배",
+      "answer_status": "verified",
+      "title": "디코더와 MUX·DMUX의 관계",
+      "fragment": "problems/q-decoder.html",
+      "workbook_fragment": "workbook/q-decoder.json",
+      "explanation_fragment": "problem-explanations/q-decoder.html"
+    },
+    {
+      "id": "q-tri",
+      "bank_question_id": "q-tri",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-tristate"
+      ],
+      "sources": [
+        {
+          "source_id": "s-c6b90e2bf528e3f8",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-945854091c3730e0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4ba2974bd67ee53e",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P31〜P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": "nOE0=S, nOE1=S′, 출력 공통 연결",
+      "answer_status": "disputed",
+      "title": "활성 Low tri-state 버퍼로 MUX 설계",
+      "fragment": "problems/q-tri.html",
+      "workbook_fragment": "workbook/q-tri.json",
+      "explanation_fragment": "problem-explanations/q-tri.html"
+    },
+    {
+      "id": "q-muxdef",
+      "bank_question_id": "q-muxdef",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux2"
+      ],
+      "sources": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "여러 데이터 중 선택한 하나를 한 출력으로 전달",
+      "answer_status": "verified",
+      "title": "MUX를 간단히 서술",
+      "fragment": "problems/q-muxdef.html",
+      "workbook_fragment": "workbook/q-muxdef.json",
+      "explanation_fragment": "problem-explanations/q-muxdef.html"
+    },
+    {
+      "id": "q-demuxdef",
+      "bank_question_id": "q-demuxdef",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "하나의 데이터를 선택한 출력으로 분배",
+      "answer_status": "verified",
+      "title": "DMUX를 간단히 서술 — 기출 여부 미확인",
+      "fragment": "problems/q-demuxdef.html",
+      "workbook_fragment": "workbook/q-demuxdef.json",
+      "explanation_fragment": "problem-explanations/q-demuxdef.html"
+    },
+    {
+      "id": "q-difference",
+      "bank_question_id": "q-difference",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux2",
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "MUX N→1, DMUX 1→N (데이터 경로)",
+      "answer_status": "verified",
+      "title": "MUX와 DMUX의 차이 — 기출 여부 미확인",
+      "fragment": "problems/q-difference.html",
+      "workbook_fragment": "workbook/q-difference.json",
+      "explanation_fragment": "problem-explanations/q-difference.html"
+    },
+    {
+      "id": "q-demux4",
+      "bank_question_id": "q-demux4",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-demux"
+      ],
+      "sources": [
+        {
+          "source_id": "s-38c4935d41954dba",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Y3Y2Y1Y0: D=0→0000; D=1→0001,0010,0100,1000",
+      "answer_status": "disputed",
+      "title": "1×4 DMUX 출력표 — 기출 여부 미확인",
+      "fragment": "problems/q-demux4.html",
+      "workbook_fragment": "workbook/q-demux4.json",
+      "explanation_fragment": "problem-explanations/q-demux4.html"
+    },
+    {
+      "id": "q-mux2-graded",
+      "bank_question_id": "q-mux2-graded",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux2"
+      ],
+      "sources": [
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Y=X0·Sel′+X1·Sel; 0,1,1,1",
+      "answer_status": "verified",
+      "title": "채점본 2×1 MUX의 지정 네 행",
+      "fragment": "problems/q-mux2-graded.html",
+      "workbook_fragment": "workbook/q-mux2-graded.json",
+      "explanation_fragment": "problem-explanations/q-mux2-graded.html"
+    },
+    {
+      "id": "q-active-general",
+      "bank_question_id": "q-active-general",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록",
+      "topics": [
+        "t-mux4",
+        "t-tristate"
+      ],
+      "sources": [
+        {
+          "source_id": "s-629c5360df5e914f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "기능이 1에서 유효하면 High 활성, 0에서 유효하면 Low 활성",
+      "answer_status": "verified",
+      "title": "Active High와 Active Low의 정의",
+      "fragment": "problems/q-active-general.html",
+      "workbook_fragment": "workbook/q-active-general.json",
+      "explanation_fragment": "problem-explanations/q-active-general.html"
+    },
+    {
+      "id": "q-empty-six",
+      "bank_question_id": "q-empty-six",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "원문에 번호 6만 있고 문항 조건과 본문이 없다. 추측하여 채우지 않고 판독 보류한다.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-0e23b69092f2c27f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-c58df44e4ea74e19",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-2e9fe8e9e027f953",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P21 (빈 번호 목록 문단); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "review_presentation_version": 2,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "generated_files": [
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+    ".pack/assets/vendor/katex/LICENSE",
+    ".pack/assets/vendor/katex/auto-render.min.js",
+    ".pack/assets/vendor/katex/katex.min.css",
+    ".pack/assets/vendor/katex/katex.min.js",
+    ".pack/assets/vendor/pretendard/LICENSE",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff2",
+    ".pack/assets/vendor/pretendard/pretendard.css",
+    ".pack/assets/vendor/provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s01-p1.jpg",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s03-p1-o-s03-q1.png",
+    ".pack/evidence/assets/s03-p1-o-s03-q2.png",
+    ".pack/evidence/assets/s03-p1-o-s03-q3.png",
+    ".pack/evidence/assets/s03-p1-o-s03-q4.png",
+    ".pack/evidence/assets/s03-p1.png",
+    ".pack/evidence/assets/s04-p1.png",
+    ".pack/evidence/assets/s05-p1-q1.png",
+    ".pack/evidence/assets/s05-p1-q2.png",
+    ".pack/evidence/assets/s05-p1-q3.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s06-p2.png",
+    ".pack/evidence/assets/s06-p3.png",
+    ".pack/evidence/assets/s06-p4.png",
+    ".pack/evidence/assets/s07-p1-o-s07-q3.png",
+    ".pack/evidence/assets/s07-p1-o-s07-q4.png",
+    ".pack/evidence/assets/s07-p1-o-s07-q5.png",
+    ".pack/evidence/assets/s07-p1.png",
+    ".pack/evidence/assets/s07-p2-o-s07-q6.png",
+    ".pack/evidence/assets/s07-p2.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s08-p3.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/assets/s09-p2.png",
+    ".pack/evidence/assets/s09-p3.png",
+    ".pack/evidence/assets/s09-p4.png",
+    ".pack/evidence/assets/s09-p5.png",
+    ".pack/evidence/assets/s10-p1.png",
+    ".pack/evidence/assets/s11-p1.png",
+    ".pack/evidence/assets/s11-p2.png",
+    ".pack/evidence/assets/s11-p3.png",
+    ".pack/evidence/assets/s11-p4.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/decoder-routing.svg",
+    ".pack/figures/demux4-gates.svg",
+    ".pack/figures/lab-signal-flow.svg",
+    ".pack/figures/mux2-gates.svg",
+    ".pack/figures/mux4-enable.svg",
+    ".pack/figures/questions/q-design4-given-01.png",
+    ".pack/figures/questions/q-design4-given-01.svg",
+    ".pack/figures/questions/q-mux4-given-01.png",
+    ".pack/figures/questions/q-mux4-given-01.svg",
+    ".pack/figures/questions/q-tri-given-01.png",
+    ".pack/figures/questions/q-tri-given-01.svg",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/solutions/q-decoder-solution-01.png",
+    ".pack/figures/solutions/q-decoder-solution-01.svg",
+    ".pack/figures/solutions/q-demux2-solution-01.png",
+    ".pack/figures/solutions/q-demux2-solution-01.svg",
+    ".pack/figures/solutions/q-design4-solution-01.png",
+    ".pack/figures/solutions/q-design4-solution-01.svg",
+    ".pack/figures/solutions/q-mux2-graded-solution-01.png",
+    ".pack/figures/solutions/q-mux2-graded-solution-01.svg",
+    ".pack/figures/solutions/q-mux2-solution-01.png",
+    ".pack/figures/solutions/q-mux2-solution-01.svg",
+    ".pack/figures/solutions/q-tri-solution-01.png",
+    ".pack/figures/solutions/q-tri-solution-01.svg",
+    ".pack/figures/tristate-bus.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/q-active-general.html",
+    ".pack/problem-explanations/q-decoder.html",
+    ".pack/problem-explanations/q-demux2.html",
+    ".pack/problem-explanations/q-demux4.html",
+    ".pack/problem-explanations/q-demuxdef.html",
+    ".pack/problem-explanations/q-design4.html",
+    ".pack/problem-explanations/q-difference.html",
+    ".pack/problem-explanations/q-mux2-graded.html",
+    ".pack/problem-explanations/q-mux2.html",
+    ".pack/problem-explanations/q-mux4.html",
+    ".pack/problem-explanations/q-muxdef.html",
+    ".pack/problem-explanations/q-tri.html",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/검증결과.md",
+    ".pack/실험04_기출문제.md",
+    ".pack/실험04_기출풀이.md",
+    ".pack/실험04_문제설명.md",
+    ".pack/실험04_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험04_기출문제.html",
+    "실험04_기출풀이.html",
+    "실험04_문제설명.html",
+    "실험04_실험설명.html"
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
+}
