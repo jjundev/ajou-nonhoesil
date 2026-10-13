@@ -7,7 +7,7 @@ TITLE = {t[0]: t[1] for t in TOPICS}
 
 
 def figure(src, alt):
-    return f'<figure class="figure"><img src="자료/figures/{src}" alt="{alt}"></figure>'
+    return f'<figure class="figure"><img src=".pack/figures/{src}" alt="{alt}"></figure>'
 
 
 def build(pid, cue, why, understand, start, solve, answer, check, pitfall, retry, judge):

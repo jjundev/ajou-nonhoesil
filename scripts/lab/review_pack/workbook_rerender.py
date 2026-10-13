@@ -21,5 +21,5 @@ def rerender_workbook(folder):
             if 'solution' in p:
                 p['solution']['steps']=[s for s in p['solution']['steps'] if not s['label'].startswith(RETIRED_STEP_PREFIX)]
         path.write_text(render_workbook_html(data,folder/DATA/'assets'),encoding='utf-8')
-        write_workbook_md(data,manifest,folder/names[key+'_md'])
+        write_workbook_md(data,manifest,folder/DATA/names[key+'_md'])
     return check_workbook_pack(folder,manifest)

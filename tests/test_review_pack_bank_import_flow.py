@@ -32,14 +32,14 @@ def prepared(tmp_path,*,asset=False):
 def test_build_check_preserve_evidence(tmp_path):
     path,run=prepared(tmp_path);stage=tmp_path/'stage'
     assert main(['build','--root',str(tmp_path),'--run',str(run),'--stage',str(stage)])==0
-    assert (stage/'자료/evidence/question-bank.json').read_bytes()==path.read_bytes()
-    assert (stage/'자료/authoring-index.json').is_file()
+    assert (stage/'.pack/evidence/question-bank.json').read_bytes()==path.read_bytes()
+    assert (stage/'.pack/authoring-index.json').is_file()
     assert main(['check','--folder',str(stage)])==0
-    m=load_manifest(stage/'자료/manifest.json')
-    assert {'자료/evidence/question-bank.json','자료/authoring-index.json','원문과_저작안내.md'}<=set(m['generated_files'])
+    m=load_manifest(stage/'.pack/manifest.json')
+    assert {'.pack/evidence/question-bank.json','.pack/authoring-index.json','.pack/원문과_저작안내.md'}<=set(m['generated_files'])
     text=(stage/'실험04_기출풀이.html').read_text(encoding='utf-8')
     assert 'fixture answer' not in text.split('<div class="problem">')[0].split('<article class="card"')[1]
-    assert '원문과_저작안내.md#q1' in text
+    assert '.pack/원문과_저작안내.md#q1' in text
 
 def test_bank_changed_blocks_build_before_stage(tmp_path):
     path,run=prepared(tmp_path);path.write_bytes(path.read_bytes()+b'\n');stage=tmp_path/'stage'
@@ -50,8 +50,8 @@ def test_bank_changed_blocks_build_before_stage(tmp_path):
 def test_change_blocks_publish_preserving_destination(tmp_path,changed,capsys):
     path,run=prepared(tmp_path,asset=True);stage=tmp_path/'stage'
     assert main(['build','--root',str(tmp_path),'--run',str(run),'--stage',str(stage)])==0
-    m=load_manifest(stage/'자료/manifest.json');m['checks'].update(source_visual='pass',content='self_review',browser='pass')
-    (stage/'자료/manifest.json').write_text(json.dumps(m),encoding='utf-8')
+    m=load_manifest(stage/'.pack/manifest.json');m['checks'].update(source_visual='pass',content='self_review',browser='pass')
+    (stage/'.pack/manifest.json').write_text(json.dumps(m),encoding='utf-8')
     dest=tmp_path/'복습노트/실험04';dest.mkdir(parents=True);(dest/'memo').write_text('keep')
     target={'bank':path,'source':tmp_path/'quiz.txt','asset':path.parent/'assets/asset.png'}[changed]
     target.write_bytes(target.read_bytes()+b'changed')
@@ -69,12 +69,14 @@ def test_not_reviewed_pack_not_published(tmp_path):
 def test_fixture_publish_retains_evidence_and_memo(tmp_path):
     path,run=prepared(tmp_path);stage=tmp_path/'stage'
     assert main(['build','--root',str(tmp_path),'--run',str(run),'--stage',str(stage)])==0
-    m=load_manifest(stage/'자료/manifest.json');m['checks'].update(source_visual='pass',content='self_review',browser='pass')
-    (stage/'자료/manifest.json').write_text(json.dumps(m),encoding='utf-8')
+    m=load_manifest(stage/'.pack/manifest.json');m['checks'].update(source_visual='pass',content='self_review',browser='pass')
+    (stage/'.pack/manifest.json').write_text(json.dumps(m),encoding='utf-8')
     dest=tmp_path/'복습노트/실험04';dest.mkdir(parents=True);(dest/'memo').write_text('keep')
     assert main(['publish','--root',str(tmp_path),'--stage',str(stage),'--experiment','4'])==0
     assert (dest/'memo').read_text()=='keep'
-    assert (dest/'자료/evidence/question-bank.json').read_bytes()==path.read_bytes()
+    assert (dest/'.pack/evidence/question-bank.json').read_bytes()==path.read_bytes()
+    assert main(['check','--folder',str(dest)])==1                     # 루트에는 .html·.pdf 만 — 메모는 .pack/ 로
+    (dest/'memo').rename(dest/'.pack/memo')
     assert main(['check','--folder',str(dest)])==0
     assert list(dest.parent.glob('실험04.backup-*'))
 

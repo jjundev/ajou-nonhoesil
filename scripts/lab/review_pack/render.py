@@ -10,6 +10,7 @@ from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata
 from .navigation import render_navigation
+from .pack_md import write_pack_md
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -59,7 +60,7 @@ def assemble(manifest,run,out,assets):
         body=read_fragment(run,p['fragment'],names)
         guide=''
         if 'bank_question_id' in p:
-            guide=f'<p><a href="원문과_저작안내.md#{p["id"]}">원문·제공 답안 연결·보류 기록</a></p>'
+            guide=f'<p><a href="{DATA}/원문과_저작안내.md#{p["id"]}">원문·제공 답안 연결·보류 기록</a></p>'
             if conflict:
                 body+='<details class="original"><summary>답안 대조 기록</summary>'+conflict+'</details>'
                 conflict=''
@@ -103,7 +104,7 @@ def assemble(manifest,run,out,assets):
             path=out/names[key+'_html']
             path.write_text(render_workbook_html(data,assets),encoding='utf-8')
             paths[key+'_html']=path
-            paths[key+'_md']=write_workbook_md(data,manifest,out/names[key+'_md'])
+            paths[key+'_md']=write_workbook_md(data,manifest,out/DATA/names[key+'_md'])
     if manifest.get('problem_explanation_version')==1:
         from .explanation_render import write_explanations
         from .workbook_render import read_workbook_payload
@@ -114,6 +115,6 @@ def assemble(manifest,run,out,assets):
         for ref in p['sources']:
             audit.append(f'- 출처: {sources[ref["source_id"]]["path"]} / PDF {ref.get("pdf_page")} / 인쇄 {ref.get("printed_page")} / 문항 {ref.get("question","미표기")}')
         audit.append('')
-    paths['audit']=out/'출처와_문항목록.md';paths['audit'].write_text('\n'.join(audit),encoding='utf-8')
+    paths['audit']=write_pack_md(out,'출처와_문항목록.md','\n'.join(audit))
     paths['manifest']=data_out/'manifest.json';paths['manifest'].write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
     return paths

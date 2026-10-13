@@ -111,12 +111,12 @@ def copy_import_material(run,out,manifest):
     bank=load_question_bank(snapshot)
     paths=[binding['snapshot_path'],binding['index_path']]
     paths += ['evidence/'+a['path'] for a in bank['assets']]
-    # 안내문은 .md 라서 루트에 두고, 나머지 증거는 자료/ 로 간다. 안내문 속 evidence/ 링크는 자료/ 를 단다.
-    def destination(relative):return out/GUIDE_NAME if relative==GUIDE_NAME else _evidence_path(out/DATA,relative)
+    # 안내문도 다른 증거와 함께 자료 폴더로 간다. 안내문 속 evidence/ 링크는 거기서 그대로 맞다.
+    def destination(relative):return _evidence_path(out/DATA,relative)
     for relative in paths+[GUIDE_NAME]:
         if destination(relative).exists():raise ValueError('Stage evidence collision: '+relative)
     for relative in paths:
         source=_evidence_path(run,relative);target=destination(relative)
         target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
     guide=_evidence_path(run,GUIDE_NAME).read_text(encoding='utf-8')
-    destination(GUIDE_NAME).write_text(guide.replace('](evidence/','](%s/evidence/'%DATA),encoding='utf-8')
+    destination(GUIDE_NAME).write_text(guide,encoding='utf-8')

@@ -5,7 +5,7 @@ from .util import file_hash,digest,write
 from .page_layout import page_layout
 from .input_gate import input_defects
 
-DATA_DIR='자료'  # scripts/lab/config.PACK_DATA_DIR: manifest.json·figures/ live here since 2026-10-09
+DATA_DIR='.pack'  # scripts/lab/config.PACK_DATA_DIR: md·manifest.json·figures/ live here since 2026-10-13
 KINDS={'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
 def parse_selector(selector):
     m=re.fullmatch(r'(?:실험)?(\d{1,2})(?:-(?:실험)?(\d{1,2}))?',_norm(selector or '').strip())
@@ -131,7 +131,7 @@ def discover(repo,selector,problem_ids=None,failures=None):
         if len(ps)!=1 or len(ans)!=1:
             for pid,_,_ in problems: fail(pid,name,'missing or ambiguous PDF pair')
             continue
-        md=_child(folder,name+'_기출풀이.md'); figures=_child(_child(folder,DATA_DIR),'figures'); solutions=_child(figures,'solutions') if figures else None
+        data=_child(folder,DATA_DIR); md=_child(data,name+'_기출풀이.md') if data else None; figures=_child(data,'figures') if data else None; solutions=_child(figures,'solutions') if figures else None
         # Match each selected ID independently; unrelated damaged pages cannot stop it.
         for pid,label,title in problems:
             try:

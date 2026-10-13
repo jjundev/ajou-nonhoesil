@@ -10,11 +10,11 @@ from tests.test_review_pack_checks import make_pack
 def ready(tmp_path):
     stage=make_pack(tmp_path);source=tmp_path/'강의노트/실험4.pdf'
     source.parent.mkdir();source.write_bytes(b'source')
-    m=json.loads((stage/'자료/manifest.json').read_text(encoding='utf-8'))
+    m=json.loads((stage/'.pack/manifest.json').read_text(encoding='utf-8'))
     m['sources'][0]['sha256']=file_sha256(source)
     m['checks'].update(content='self_review',browser='pass',source_visual='pass')
     m['generated_files']=[p.relative_to(stage).as_posix() for p in stage.rglob('*') if p.is_file()]
-    (stage/'자료/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+    (stage/'.pack/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
     dest=tmp_path/'복습노트/실험04';dest.mkdir(parents=True)
     (dest/'사용자메모.md').write_text('보존',encoding='utf-8')
     return stage,dest,source
@@ -50,7 +50,7 @@ def test_rename_failure_rolls_back(tmp_path):
     assert (dest/'사용자메모.md').read_text(encoding='utf-8')=='보존'
 
 def test_browser_unchecked_refused(tmp_path):
-    stage,dest,_=ready(tmp_path);p=stage/'자료/manifest.json'
+    stage,dest,_=ready(tmp_path);p=stage/'.pack/manifest.json'
     m=json.loads(p.read_text(encoding='utf-8'));m['checks']['browser']='not_run'
     p.write_text(json.dumps(m),encoding='utf-8')
     with pytest.raises(ValueError):publish(stage,dest,tmp_path)

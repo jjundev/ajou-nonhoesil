@@ -6,6 +6,7 @@ import html
 import re
 from .html2md import Parser,Node,export_document
 from .manifest import output_names
+from .pack_md import to_data_frame, rebase_link
 
 def _fragment_md(text):
     with TemporaryDirectory(prefix='logic-workbook-md-') as directory:
@@ -55,7 +56,8 @@ def write_workbook_md(data, manifest, path):
         held=[p for p in manifest['problems'] if p['status']!='included']
         if held: parts += ['## 중복·보류·다른 실험 문항','']
         for p in held: parts += [f'<a id="{p["id"]}"></a>',f'- {p["id"]} · {p["status"]}: {p["reason"]}']
-    path=Path(path);path.write_text('\n'.join(parts).rstrip()+'\n',encoding='utf-8')
+    # 본문은 루트 기준으로 만들고, md 가 사는 자료 폴더 기준으로 한 번 바꿔 쓴다.
+    path=Path(path);path.write_text(to_data_frame('\n'.join(parts).rstrip()+'\n'),encoding='utf-8')
     return path
 
 def check_workbook_md(data, manifest, path):
@@ -72,10 +74,10 @@ def check_workbook_md(data, manifest, path):
                 for child in n.children:
                     if isinstance(child,str) and norm(child) and norm(child) not in normalized:
                         errors.append(p['id']+': missing MD text '+child.strip()[:60])
-                if n.tag=='img' and quote(unquote(n.attrs.get('src','')),safe='/#:.?=&%_-') not in text:
+                if n.tag=='img' and rebase_link(quote(unquote(n.attrs.get('src','')),safe='/#:.?=&%_-')) not in text:
                     errors.append(p['id']+': missing MD solution diagram')
         for f in p['figures']:
-            if quote(f['src'],safe='/') not in text: errors.append(p['id']+': missing MD question diagram')
+            if rebase_link(quote(f['src'],safe='/')) not in text: errors.append(p['id']+': missing MD question diagram')
     for target in re.findall(r'!?\[[^\]]*\]\(([^)]+)\)',text):
         parts=urlsplit(target)
         if parts.scheme or parts.netloc: continue

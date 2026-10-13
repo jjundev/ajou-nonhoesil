@@ -52,7 +52,7 @@ def test_future_workbook_build_includes_explanations(tmp_path):
     paths=assemble(m,root,tmp_path/'stage',ASSETS)
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
     for label in ('실험설명','기출문제','기출풀이','문제설명'):
-        for ext in ('html','md'):assert (tmp_path/'stage'/f'실험04_{label}.{ext}').is_file()
+        assert (tmp_path/'stage'/f'실험04_{label}.html').is_file() and (tmp_path/'stage/.pack'/f'실험04_{label}.md').is_file()
 
 
 @pytest.mark.parametrize('equation', [

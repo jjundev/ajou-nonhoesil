@@ -214,7 +214,7 @@ class LabPrepareTests(Sandbox):
         self.assertEqual([s['figure_source'] for s in read(run/'layers/candidates.json')['shapes'] if s['kind']=='figure'],['q-dec2x4-design-solution-01.png'])
     def test_prepare_reports_missing_pair_svg_as_warning(self):
         import io,contextlib,json
-        repo=self.sandbox_repo(); (repo/'복습노트/실험05/자료/figures/solutions/q-dec2x4-design-solution-01.svg').unlink()  # 팩 사본이라 원본은 그대로다
+        repo=self.sandbox_repo(); (repo/'복습노트/실험05/.pack/figures/solutions/q-dec2x4-design-solution-01.svg').unlink()  # 팩 사본이라 원본은 그대로다
         out=io.StringIO()
         with contextlib.redirect_stdout(out): code=cli.main(['prepare','실험05','--repo',str(repo),'--problems','기출4,q-demux-from-dec'])
         result=json.loads(out.getvalue()); self.assertEqual(code,0)

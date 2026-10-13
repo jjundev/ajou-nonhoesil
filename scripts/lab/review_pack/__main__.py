@@ -45,7 +45,9 @@ def main(argv=None):
             paths=assemble(data,args.run,args.stage,assets)
             convert_pack(paths['note_html'],paths['review_html'],manifest=data)
             evidence=args.run/'검증결과.md'
-            if evidence.exists():(args.stage/'검증결과.md').write_bytes(evidence.read_bytes())
+            if evidence.exists():
+                from .pack_md import write_pack_md
+                write_pack_md(args.stage,'검증결과.md',evidence.read_text(encoding='utf-8'))
             data['generated_files']=sorted(p.relative_to(args.stage).as_posix() for p in args.stage.rglob('*') if p.is_file())
             paths['manifest'].write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
             errors=check_pack(args.stage)

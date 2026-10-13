@@ -24,9 +24,10 @@ def check_pack(folder):
     except (ValueError,OSError) as e:return [str(e)]
     workbook=m.get('review_presentation_version')==2
     names=output_names(m['experiment'],review_presentation_version=m.get('review_presentation_version'));errors=[];trees={}
-    # 저장 규칙: 팩의 자료는 자료/ 안에 둔다. 루트에 남은 옛 위치(assets·evidence·figures·JSON)를 막는다.
-    # 사용자가 따로 둔 파일(publish 가 보존한다)은 건드리지 않는다.
-    errors+=['Pack data outside '+DATA+'/: '+n for n in ('assets','evidence','figures','manifest.json','authoring-index.json') if (folder/n).exists()]
+    # 저장 규칙: 루트에는 학생이 여는 .html·.pdf 와 자료 폴더만 둔다. md·JSON·그림·옛 `자료/` 를 모두 막는다.
+    # 점으로 시작하는 다른 항목(.DS_Store)은 운영체제 몫이라 보지 않는다.
+    errors+=['Pack file outside '+DATA+'/: '+p.name for p in sorted(folder.iterdir())
+             if p.name!=DATA and not p.name.startswith('.') and not (p.is_file() and p.suffix in {'.html','.pdf'})]
     bank_errors=check_bank_import(folder,m)
     errors.extend(bank_errors)
     if not bank_errors:
@@ -40,11 +41,11 @@ def check_pack(folder):
         errors.extend(check_navigation(parser.root,names[key]))
         ids=[n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id')]
         errors += ['duplicate ID: '+i for i,n in Counter(ids).items() if n>1]
-        try:errors+=check_md(path,path.with_suffix('.md'))
+        try:errors+=check_md(path,folder/DATA/path.with_suffix('.md').name)
         except (ValueError,OSError) as e:errors.append(str(e))
     for key,tree in trees.items():
-        if key=='note_html' and (folder/names['note_md']).is_file():
-            errors+=check_note_metadata(m,(folder/names[key]).read_text(encoding='utf-8'),(folder/names['note_md']).read_text(encoding='utf-8'))
+        if key=='note_html' and (folder/DATA/names['note_md']).is_file():
+            errors+=check_note_metadata(m,(folder/names[key]).read_text(encoding='utf-8'),(folder/DATA/names['note_md']).read_text(encoding='utf-8'))
         for node in tree.walk():
             attr='src' if node.tag in {'img','script','source'} else 'href' if node.tag in {'a','link'} else None
             value=node.attrs.get(attr) if attr else None

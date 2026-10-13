@@ -59,7 +59,7 @@ def check_authored_html(text, folder, question_id, figures, *, problem=False):
             if parts.scheme or parts.netloc or attr not in {'src','href'}:
                 raise ValueError(question_id+': unsupported resource '+value)
             if attr=='src':
-                path=strip_data(unquote(parts.path))   # 발행본은 문서 기준 `자료/..`, 저작 RUN 은 `figures/..`
+                path=strip_data(unquote(parts.path))   # 발행본은 문서 기준 `.pack/..`, 저작 RUN 은 `figures/..`
                 _within(folder,path)
                 matching=[f for f in figures.values() if path in (f['svg'],f['png'])]
                 if not matching or not any(f['question_id']==question_id for f in matching):

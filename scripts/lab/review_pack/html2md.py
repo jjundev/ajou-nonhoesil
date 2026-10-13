@@ -128,18 +128,19 @@ def convert_pack(note_path,review_path,manifest=None):
     if workbook:
         paths=paths[:1]
     for path in paths:
-        text,n=export_document(path,note_metadata=metadata if path==paths[0] else None);out=path.with_suffix('.md')
-        out.write_text(text,encoding='utf-8');outputs.append(out);count+=n
+        text,n=export_document(path,note_metadata=metadata if path==paths[0] else None)
+        from .pack_md import write_pack_md
+        outputs.append(write_pack_md(path.parent,path.with_suffix('.md').name,text));count+=n
     if workbook:
         from .manifest import output_names
         names=output_names(manifest['experiment'],review_presentation_version=2)
         for key in ('question_md','review_md'):
-            path=paths[0].parent/names[key]
+            path=paths[0].parent/DATA/names[key]
             if not path.is_file(): raise ValueError('Workbook MD missing: '+str(path))
             outputs.append(path)
     if manifest and manifest.get('problem_explanation_version')==1:
         names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
-        path=paths[0].parent/names['explanation_md']
+        path=paths[0].parent/DATA/names['explanation_md']
         if not path.is_file():raise ValueError('Explanation MD missing: '+str(path))
         outputs.append(path)
     return outputs,count
@@ -172,8 +173,9 @@ def check_md(html_path,md_path):
         if part.startswith('../../'):continue
         if not dest.is_file():errors.append('Missing link/image: '+target)
         elif frag and dest.suffix=='.md' and f'<a id="{frag}"></a>' not in dest.read_text(encoding='utf-8'):errors.append('Missing target anchor: '+target)
+    from .pack_md import to_data_frame
     expected,_=export_document(html_path,export=False)
-    expected_imgs=re.findall(r'!\[[^\]]*\]\(([^)]+)\)',expected)
+    expected_imgs=re.findall(r'!\[[^\]]*\]\(([^)]+)\)',to_data_frame(expected))
     for image in expected_imgs:
         if image not in text:errors.append('Missing figure: '+image)
     return errors

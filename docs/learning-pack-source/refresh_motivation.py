@@ -17,6 +17,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from scripts.lab.review_pack.html2md import export_document
 from scripts.lab.review_pack.manifest import DATA, output_names
+from scripts.lab.review_pack.pack_md import write_pack_md
 from scripts.lab.review_pack.note_metadata import topic_metadata
 
 TITLE = '왜 이 회로를 쓰는지 먼저 알아봐요'
@@ -86,7 +87,7 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
     names = output_names(manifest['experiment'], review_presentation_version=manifest.get('review_presentation_version'))
     note = names['note_html']
     owned_files = set(manifest['generated_files'])
-    required = {note, str(Path(note).with_suffix('.md')), DATA+'/manifest.json'}
+    required = {note, DATA+'/'+Path(note).with_suffix('.md').name, DATA+'/manifest.json'}
     if not required <= owned_files or not owned_files <= before.keys():
         raise ValueError('Invalid generated file ownership')
     original = (pack/note).read_text(encoding='utf-8')
@@ -125,7 +126,7 @@ def prepare_stage(pack: Path, fragment: Path, stage: Path) -> Path:
             shutil.copy2(pack/relative, target)
         (stage/note).write_text(updated, encoding='utf-8')
         md, _ = export_document(stage/note, note_metadata=topic_metadata(manifest))
-        (stage/Path(note).with_suffix('.md')).write_text(md, encoding='utf-8')
+        write_pack_md(stage, Path(note).with_suffix('.md').name, md)
         manifest['generated_files'] = sorted(p.relative_to(stage).as_posix() for p in stage.rglob('*') if p.is_file())
         (stage/DATA/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
         if before != _snapshot(pack):

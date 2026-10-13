@@ -55,9 +55,9 @@ class LabSourceTests(Sandbox):
         self.assertTrue(all(Path(f).is_absolute() for f in p['figure_refs']))
     def test_labels_follow_current_manifest_order(self):
         repo=self.run/'repo'; pack=repo/'복습노트/실험05'; shutil.copytree(REPO/'복습노트/실험05',pack)
-        m=json.loads((pack/'자료/manifest.json').read_text(encoding='utf-8')); inc=[p for p in m['problems'] if p['status']=='included']
+        m=json.loads((pack/'.pack/manifest.json').read_text(encoding='utf-8')); inc=[p for p in m['problems'] if p['status']=='included']
         a,b=m['problems'].index(inc[0]),m['problems'].index(inc[1]); m['problems'][a],m['problems'][b]=m['problems'][b],m['problems'][a]
-        (pack/'자료/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+        (pack/'.pack/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
         failures=[]; discover(repo,'실험05',None,failures)
         self.assertIn('header/list mismatch',' '.join(f['reason'] for f in failures))
     def test_nfd_folder_names(self):
@@ -219,7 +219,7 @@ class LabSourceTests(Sandbox):
         self.assertEqual(Path(rel).parent.parent,Path(frozen[0]['figure_refs'][0]).parent.parent)
     def solutions_copy(self):
         repo=self.run/'repo'; shutil.copytree(REPO/'복습노트/실험05',repo/'복습노트/실험05')
-        return repo,repo/'복습노트/실험05/자료/figures/solutions'
+        return repo,repo/'복습노트/실험05/.pack/figures/solutions'
     def test_missing_svg_warns_without_failing(self):
         repo,solutions=self.solutions_copy(); (solutions/'q-dec2x4-design-solution-01.svg').unlink()
         failures=[]; pairs={p['problem_id']:p for p in discover(repo,'실험05',['q-dec2x4-design'],failures)}

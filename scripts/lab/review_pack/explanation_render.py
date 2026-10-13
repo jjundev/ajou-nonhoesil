@@ -76,5 +76,6 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     if duplicates:raise ValueError('duplicate ID: '+', '.join(duplicates))
     path=folder/names['explanation_html'];path.write_text(document,encoding='utf-8')
     md,_=export_document(path,note_metadata=explanation_metadata(manifest))
-    mdpath=folder/names['explanation_md'];mdpath.write_text(md,encoding='utf-8')
+    from .pack_md import write_pack_md
+    mdpath=write_pack_md(folder,names['explanation_md'],md)
     return dict(explanation_html=path,explanation_md=mdpath)

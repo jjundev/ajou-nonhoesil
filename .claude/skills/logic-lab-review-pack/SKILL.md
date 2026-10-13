@@ -83,9 +83,9 @@ python -m scripts.lab.review_pack build --root . --run RUN --stage STAGE
 python -m scripts.lab.review_pack check --folder STAGE
 ```
 
-build는 problem_explanation_version=1인 새 워크북에서 네 HTML, 네 MD, 출처와_문항목록.md를 실험 폴더 루트에, manifest.json·figures/·assets/를 `자료/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다.
-은행 수입 팩에는 원문과_저작안내.md(루트)와 evidence/·authoring-index.json(`자료/`)도 복사한다.
-RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/를 예전처럼 RUN 루트에 둔다. build가 `자료/` 로 옮긴다.
+build는 problem_explanation_version=1인 새 워크북에서 네 HTML을 실험 폴더 루트에, 네 MD·출처와_문항목록.md·검증결과.md·manifest.json·figures/·assets/를 숨김 폴더 `.pack/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다(MD는 역시 `.pack/`).
+은행 수입 팩에는 원문과_저작안내.md와 evidence/·authoring-index.json도 `.pack/`에 복사한다.
+RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/·검증결과.md를 예전처럼 RUN 루트에 둔다. build가 `.pack/` 로 옮긴다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
 생명과학 저장소의 원본 템플릿은 그대로 보존하고, 논회실 로컬 템플릿으로 생성한 결과에서 CDN URL을 번들된 로컬 자원으로 바꾼다.
 MD에는 힌트·풀이·정적 위젯 설명을 모두 남긴다. 오류가 나면 fragment를 수정하고 새 stage로 다시 build한다.
@@ -106,18 +106,19 @@ RUN/검증결과.md에 확인한 대상·결과·미해결을 남기고 manifest
 python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 ```
 
-**저장 규칙.** `복습노트/실험NN/` 루트에는 문서(.md·.html·.pdf)와 `자료/` 폴더만 둔다.
-문서 외 모든 파일은 `자료/` 안에 둔다: manifest.json, authoring-index.json, assets/, evidence/, figures/.
-HTML·MD가 이 파일을 부를 때는 문서 기준 상대경로 `자료/figures/..`, `자료/assets/vendor/..` 로 쓴다. 폴더 이름은 `scripts/lab/config.py` 의 `PACK_DATA_DIR` 한 곳에서 정한다.
-manifest 안의 경로(figure_manifest, snapshot_path, workbook_fragment)는 `자료/` 기준 상대경로 그대로 둔다(`figures/redraw-manifest.json`). generated_files 만 실험 폴더 루트 기준이라 `자료/figures/..` 로 적힌다.
-RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 build 가 `자료/figures/..` 로 바꾼다.
-`check` 는 루트에 남은 assets·evidence·figures·manifest.json·authoring-index.json 을 오류로 본다. 새 종류의 파일을 만들면 루트가 아니라 `자료/` 에 둔다.
-옛 구조(자료/ 없는 팩)는 읽지 않는다. 남아 있으면 `python -m scripts.lab.migrate_pack_layout`(dry-run)으로 보고 `--apply` 로 옮긴다.
+**저장 규칙.** `복습노트/실험NN/` 루트에는 학생이 여는 `.html`·`.pdf` 와 숨김 폴더 `.pack/` 만 둔다.
+나머지는 모두 `.pack/` 안에 둔다: MD 문서(실험설명·기출문제·기출풀이·문제설명·출처와_문항목록·원문과_저작안내·검증결과), manifest.json, authoring-index.json, assets/, evidence/, figures/, problem-explanations/.
+HTML이 이 파일을 부를 때는 루트 기준 상대경로 `.pack/figures/..`, `.pack/assets/vendor/..` 로 쓴다. MD는 `.pack/` 안에 있으므로 `figures/..`, 형제 MD는 이름 그대로, 저장소 원문은 `../../../강의노트/..` 로 부른다.
+MD 작성기는 루트 기준으로 본문을 만들고 `scripts/lab/review_pack/pack_md.py` 의 `write_pack_md` 로 쓴다(쓰는 순간 `.pack/` 기준으로 바뀐다). 새 MD도 이 함수로 쓴다. 폴더 이름은 `scripts/lab/config.py` 의 `PACK_DATA_DIR` 한 곳에서 정한다.
+manifest 안의 경로(figure_manifest, snapshot_path, workbook_fragment)는 `.pack/` 기준 상대경로 그대로 둔다(`figures/redraw-manifest.json`). generated_files 만 실험 폴더 루트 기준이라 `.pack/figures/..`, `.pack/실험NN_실험설명.md` 로 적힌다.
+RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 build 가 `.pack/figures/..` 로 바꾼다. 문제설명 조각(problem-explanations/*.html)은 루트 기준 `.pack/figures/..` 로 직접 쓴다.
+`check` 는 루트에 `.html`·`.pdf`·`.pack/` 밖의 항목(MD·JSON·사용자 메모·옛 `자료/`)이 있으면 오류로 본다. 점으로 시작하는 다른 항목(.DS_Store)만 무시한다. 사용자 메모도 `.pack/` 에 둔다.
+옛 구조(`자료/` 와 루트 MD 를 쓰던 팩, 2026-10-13 이전)는 읽지 않는다. 남아 있으면 `python -m scripts.lab.migrate_pack_layout`(dry-run)으로 보고 `--apply` 로 옮긴다.
 
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
-publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX·답 상자 밑 그림 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML 내용이 바뀌면 PDF를 다시 만든다. 링크 경로만 바뀐 경우(자료/ 이전)는 PDF 내용이 같으므로 다시 만들지 않는다.
+publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX·답 상자 밑 그림 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML 내용이 바뀌면 PDF를 다시 만든다. 링크 경로만 바뀐 경우(`.pack/` 이전)는 PDF 내용이 같으므로 다시 만들지 않는다.
 보고: 문제설명 포함 여덟 학습 파일 링크(기존 워크북은 여섯 개, legacy는 네 개), 판본, 포함·중복·보류 수, 답안 충돌, 검토 종류, 미해결, 백업 경로.
 파일 생성 완료를 학생의 이해 완료라고 표현하지 않는다.
 
