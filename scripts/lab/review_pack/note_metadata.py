@@ -54,6 +54,8 @@ def check_note_metadata(manifest, html_text, md_text):
         marker = f'<a id="{ident}"></a>'
         section = md_text.partition(marker)[2]
         section = re.split(r'\n<a id="[^"\n]+"></a>\n### ', section, maxsplit=1)[0]
-        if metadata not in section:
+        # md 는 자료 폴더 안에 있으므로 루트 기준으로 만든 기대값도 같은 기준으로 옮겨 비교한다.
+        from .pack_md import to_data_frame
+        if to_data_frame(metadata) not in section:
             errors.append(ident + ': missing Markdown note metadata')
     return errors

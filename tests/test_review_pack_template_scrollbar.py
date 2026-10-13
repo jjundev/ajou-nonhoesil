@@ -47,4 +47,4 @@ def test_발행물_스크롤바(page):
 @pytest.mark.parametrize('folder', PACKS, ids=str)
 def test_팩_템플릿_사본은_스킬과_같다(folder):
     for name in ('note-template.html', 'review-template.html', 'template-provenance.json'):
-        assert (folder / '자료/assets' / name).read_bytes() == (ASSETS / name).read_bytes()
+        assert (folder / '.pack/assets' / name).read_bytes() == (ASSETS / name).read_bytes()

@@ -28,7 +28,7 @@ def test_svg_and_spaced_image(tmp_path):
     a,b=pages(tmp_path,'<img src="한%20글%20%281%29.png" alt="그림"><svg viewBox="0 0 10 10"><title>상태</title><circle cx="5" cy="5" r="2"/></svg>')
     outputs,n=convert_pack(a,b)
     assert n==1 and check_md(a,outputs[0])==[]
-    assert list((tmp_path/'자료/figures').glob('md-*.svg'))
+    assert list((tmp_path/'.pack/figures').glob('md-*.svg'))
 
 def test_missing_math_fails(tmp_path):
     a,b=pages(tmp_path,'<math><mi>A</mi></math>')

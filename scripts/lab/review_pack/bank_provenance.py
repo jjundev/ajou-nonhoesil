@@ -66,7 +66,7 @@ def check_bank_import(folder,manifest,*,root=None):
         expected=build_authoring_index(bank,binding['sha256'])
         index=strict_json(_evidence_path(data,binding['index_path']))
         errors.extend(_index_errors(index,expected))
-        guide=_evidence_path(folder,'원문과_저작안내.md')
+        guide=_evidence_path(data,'원문과_저작안내.md')   # RUN 은 루트, 발행본은 자료 폴더
         if not guide.is_file():errors.append('Missing authoring guide')
         initial=initial_manifest(bank,binding['source_path'],binding['sha256'])
         originals={p['id']:p for p in initial['problems']}

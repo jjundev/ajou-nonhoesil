@@ -1,0 +1,1350 @@
+{
+  "schema_version": 1,
+  "experiment": 2,
+  "title": "CMOS 회로의 전기적 특성 — High/Low 판정과 속도를 기초부터 배워요",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp02",
+    "schema_version": 1,
+    "source_path": "문제은행/실험02/question-bank.json",
+    "sha256": "3af0ce09854078f724956c9225d2e48bfd21f4bfb6807a6ecfb3e0082496d569",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-9c940f4bcff5718b",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출 2016-1.pdf",
+      "sha256": "5927960a62b7bbe4f1f21b3a69baf0c507de890a7810625f31c94af554e094b0",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-886f91d7155f4ccd",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출 2017-1.pdf",
+      "sha256": "cf280a899a8b398d947d1647e9bcb54206a52699987bb8ae574ce9b87a51c090",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-6d16b68ac54a1ce3",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출_단답형 (1p).pdf",
+      "sha256": "fecba3589029a508a8bd629aec570035c3892171e7c5dcdaae197349508eea3a",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-a5c6c19f4df2edef",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 기출_채점본.jpg",
+      "sha256": "f80adb73da8753399707f078658588cf9bb4c6ff107c396fcbb15171c20da265",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-227672800905ee78",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 예상문제_v3.pdf",
+      "sha256": "2b6b7b6793977b380bdc7a212ba1de103ec8255d1608bc35095b67df6cf19034",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-cd8d9005a4b82c18",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 예상문제_v4.pdf",
+      "sha256": "687e088e395de991d775d7658b67c92b3865a6733423b6023b3ba0e1b819e0ad",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-689ef38376d1d0a4",
+      "path": "from_the_past/정리/퀴즈/실험2/실험2 퀴즈 종합_기출문제 (3p).pdf",
+      "sha256": "7de8062a27a55cf314d36e672663c0d2ad5d1e0a7213e180e614a8e2f89f7f35",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-d7200ab4ba3c6199",
+      "path": "from_the_past/정리/퀴즈/실험2/원본_docx/실험 2.docx",
+      "sha256": "91a4deb395249fcc826f868719440d27f7b1a0e4f92c586b3ec8fe675db0acb3",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-53e40adacbc0eaea",
+      "path": "from_the_past/정리/퀴즈/실험2/원본_docx/퀴즈2_2017-1.docx",
+      "sha256": "6a85033f3ca87d96be64ae233584d295c848f5069d33b8bef6500c02425f8e09",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-669c09aefd1036c0",
+      "path": "강의노트/실험2. CMOS 회로의 전기적 특성.pdf",
+      "sha256": "315214435ade90862cbaeb1bac8357fe6229416ab8e20616895922a8f7a2114f",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-130a964ad2ce2dbf",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-406ef36195bcd5e2",
+      "path": "보고서/실험02/결선도/netlist.md",
+      "sha256": "333048b95d08190aafbc871d2bd0cdc3c98c8ed6edf58566b1f50f61b2ca857f",
+      "kind": "record",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 1,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-130a964ad2ce2dbf",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": "판본 기록: 배포 교안(12쪽) 표지는 25-1이에요. 이번 학기 수행 범위는 2026-09-14 공지의 실험 1-1·1-2이고 교안 실험 2(12쪽)는 하지 않아요. 기출 파일명 2016-1의 시험지 머리글은 “2016-2학기 … 실험 3”이라 학기·번호가 서로 달라요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
+    },
+    {
+      "id": "t-levels",
+      "title": "논리 레벨의 기준 전압 네 개를 읽어요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 3,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-levels.html",
+      "md_notes": "그림 재제작: 교안 3쪽 그림을 보고 VCC~GND 전압 사다리와 입출력 괄호를 다시 그렸어요. 순서(GND<VOLmax<VILmax<VIHmin<VOHmin<VCC)와 각 기호의 교안 문구를 대조했어요. 잡음 여유 식은 일반 정의(보충)예요."
+    },
+    {
+      "id": "t-schmitt",
+      "title": "Schmitt-trigger의 히스테리시스를 배워요",
+      "requires": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-406ef36195bcd5e2",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-schmitt.html",
+      "md_notes": "그림 재제작: 교안 4쪽 우측 곡선을 바탕으로 두 곡선(일반·Schmitt)을 다시 그렸어요. 완성 예제의 두 출력은 문턱 값으로 직접 따라가서 확인했어요. 74HC14 데이터시트 값은 결선도 기록(netlist.md)에 적힌 Nexperia Rev.10 값이에요."
+    },
+    {
+      "id": "t-rprn",
+      "title": "Rp와 Rn은 전류가 흐르는 길을 정해요",
+      "requires": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-rprn.html",
+      "md_notes": "그림 재제작: 교안 6쪽 (a)(b) 그림의 연결, 전류 방향, 1 MΩ 표기와 식을 대조해 다시 그렸어요. 기출 채점 메모(그림상 Vcc가 맞음)는 채점 기준본 사진 기록이에요."
+    },
+    {
+      "id": "t-delay",
+      "title": "전달 지연과 천이 시간을 구분해요",
+      "requires": [
+        "t-rprn"
+      ],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-delay.html",
+      "md_notes": "그림 재제작: 교안 7쪽 파형을 보고 입력 50%, 출력 10·50·90% 지점과 지연·천이 구간을 다시 그렸어요. 0.69RC, 2.2RC는 일반 RC 이론이라 보충이에요."
+    },
+    {
+      "id": "t-lab",
+      "title": "실험 항목을 따라가며 확인해요",
+      "requires": [
+        "t-schmitt",
+        "t-delay"
+      ],
+      "sources": [
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-669c09aefd1036c0",
+          "pdf_page": 12,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-lab.html",
+      "md_notes": "그림 재제작: 교안 12쪽 회로도의 연결(3Y→6A, 6Y→5A, 5Y→4A, 4Y→U2 1A, CH1=4번 핀, CH2=8번 핀)을 확대해서 읽고 블록도로 다시 그렸어요. 핀 배치는 명세·결선도 기록의 74HC04/74HC14 핀아웃과 같아요. 실제 측정값은 넣지 않았어요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-region",
+      "bank_question_id": "q-region",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. 제공 답안은 전압 구역(입력 기준) 표기라 출력 기준 풀이와 라벨이 달라 disputed로 둠",
+      "topics": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "t₁ 이전 입력 Low(출력 High), t₁~t₂ Abnormal, t₂ 이후 입력 High(출력 Low); 경계는 입력이 1.5 V, 3.5 V를 지나는 시각",
+      "answer_status": "disputed",
+      "title": "입력 전압 구간 표시하기",
+      "workbook_fragment": "workbook/q-region.json",
+      "explanation_fragment": "problem-explanations/q-region.html"
+    },
+    {
+      "id": "q-params-4",
+      "bank_question_id": "q-params-4",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문제(2016·2017 기출 변형을 합친 형태). 기출 두 개와 함께 수록",
+      "topics": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P45~P52; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "V_{OHmin} / V_{IHmin} / V_{ILmax} / V_{OLmax} 의 교안 정의",
+      "answer_status": "verified",
+      "title": "CMOS 주요 파라미터 네 가지",
+      "workbook_fragment": "workbook/q-params-4.json",
+      "explanation_fragment": "problem-explanations/q-params-4.html"
+    },
+    {
+      "id": "q-params-2017",
+      "bank_question_id": "q-params-2017",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출(2017-1)",
+      "topics": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P25~P29; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "V_{OHmin} / V_{ILmax} 의 교안 정의",
+      "answer_status": "verified",
+      "title": "CMOS 주요 파라미터 (VOHmin, VILmax)",
+      "workbook_fragment": "workbook/q-params-2017.json",
+      "explanation_fragment": "problem-explanations/q-params-2017.html"
+    },
+    {
+      "id": "q-params-2016",
+      "bank_question_id": "q-params-2016",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출(2016 헤더본)",
+      "topics": [
+        "t-levels"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "V_{IHmin} / V_{OLmax} 의 교안 정의",
+      "answer_status": "verified",
+      "title": "CMOS 주요 파라미터 (VIHmin, VOLmax)",
+      "workbook_fragment": "workbook/q-params-2016.json",
+      "explanation_fragment": "problem-explanations/q-params-2016.html"
+    },
+    {
+      "id": "q-schmitt-noise",
+      "bank_question_id": "q-schmitt-noise",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출 문항, 제공 답안과 독립 도출이 같은 뜻",
+      "topics": [
+        "t-schmitt"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5~P10; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "문턱이 V_T+와 V_T−로 둘이고 그 사이에서는 출력이 직전 값을 유지해서 잡음에 덜 민감함",
+      "answer_status": "verified",
+      "title": "Schmitt-trigger가 잡음에 덜 민감한 이유",
+      "workbook_fragment": "workbook/q-schmitt-noise.json",
+      "explanation_fragment": "problem-explanations/q-schmitt-noise.html"
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "bank_question_id": "q-schmitt-waveform",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. 꼭짓점을 읽어 독립 계산",
+      "topics": [
+        "t-schmitt"
+      ],
+      "sources": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P39~P40; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "인버터: V_T=2.5 지날 때마다 뒤집혀 12번; Schmitt: High 시작, 첫 V_T+ 돌파에서 Low, 마지막 V_T− 하향 돌파에서 High (2번)",
+      "answer_status": "verified",
+      "title": "같은 입력에 대한 인버터와 Schmitt 출력",
+      "workbook_fragment": "workbook/q-schmitt-waveform.json",
+      "explanation_fragment": "problem-explanations/q-schmitt-waveform.html"
+    },
+    {
+      "id": "q-rprn-effect",
+      "bank_question_id": "q-rprn-effect",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출 문항",
+      "topics": [
+        "t-rprn"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P12~P17; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "켜진 저항에서 전압이 떨어져 V_OH = V_DD − |I_OH|·Rp, V_OL = I_OL·Rn; 저항이 작을수록 출력 레벨이 좋음",
+      "answer_status": "verified",
+      "title": "Rp와 Rn이 출력에 미치는 영향",
+      "workbook_fragment": "workbook/q-rprn-effect.json",
+      "explanation_fragment": "problem-explanations/q-rprn-effect.html"
+    },
+    {
+      "id": "q-rp-derive",
+      "bank_question_id": "q-rp-derive",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. 제공 답안이 같은 식(교안 6쪽)",
+      "topics": [
+        "t-rprn"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9c940f4bcff5718b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "R_p(on) = (V_DD − V_OHmin) / |I_OHmax|",
+      "answer_status": "verified",
+      "title": "Rp 값 유도",
+      "workbook_fragment": "workbook/q-rp-derive.json",
+      "explanation_fragment": "problem-explanations/q-rp-derive.html"
+    },
+    {
+      "id": "q-rp-derive-current",
+      "bank_question_id": "q-rp-derive-current",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. 제공 답안과 독립 도출이 같음",
+      "topics": [
+        "t-rprn"
+      ],
+      "sources": [
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P19; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "입력 Low: VCC→Rp→부하 sourcing, R_p(on) = (V_DD − V_OHmin)/|I_OHmax|",
+      "answer_status": "verified",
+      "title": "Rp 유도: 입력 level별 전류 흐름",
+      "workbook_fragment": "workbook/q-rp-derive-current.json",
+      "explanation_fragment": "problem-explanations/q-rp-derive-current.html"
+    },
+    {
+      "id": "q-rn-derive",
+      "bank_question_id": "q-rn-derive",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문제. Rp 유도 기출과 짝이 되는 개념 공백을 보충",
+      "topics": [
+        "t-rprn"
+      ],
+      "sources": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P24; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "입력 High: 부하→Rn→GND sinking, R_n(on) = V_OLmax / I_OLmax",
+      "answer_status": "verified",
+      "title": "Rn 유도: 입력 level별 전류 흐름",
+      "workbook_fragment": "workbook/q-rn-derive.json",
+      "explanation_fragment": "problem-explanations/q-rn-derive.html"
+    },
+    {
+      "id": "q-prop-delay",
+      "bank_question_id": "q-prop-delay",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. 제공 답안과 같은 뜻",
+      "topics": [
+        "t-delay"
+      ],
+      "sources": [
+        {
+          "source_id": "s-6d16b68ac54a1ce3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P27; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "capacitive load와 저항(RC)으로 충·방전에 시간이 걸려서",
+      "answer_status": "verified",
+      "title": "전달 지연이 나타나는 이유",
+      "workbook_fragment": "workbook/q-prop-delay.json",
+      "explanation_fragment": "problem-explanations/q-prop-delay.html"
+    },
+    {
+      "id": "q-delay-transition",
+      "bank_question_id": "q-delay-transition",
+      "kind": "past",
+      "status": "included",
+      "reason": "읽을 수 있는 고유 기출. (1)은 제공 답안과 일치하나 (2)는 제공 답안이 없어 도출 해석만 있음",
+      "topics": [
+        "t-delay"
+      ],
+      "sources": [
+        {
+          "source_id": "s-886f91d7155f4ccd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-53e40adacbc0eaea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P16~P21; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved",
+      "title": "전달 지연과 천이 시간 (묶음)",
+      "workbook_fragment": "workbook/q-delay-transition.json",
+      "explanation_fragment": "problem-explanations/q-delay-transition.html"
+    },
+    {
+      "id": "q-transition",
+      "bank_question_id": "q-transition",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문제. 천이 시간 개념 공백 보충. 제공 답안이 없어 정답 미확정",
+      "topics": [
+        "t-delay"
+      ],
+      "sources": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P32; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved",
+      "title": "천이 시간이 H→L과 L→H에서 다른 이유",
+      "workbook_fragment": "workbook/q-transition.json",
+      "explanation_fragment": "problem-explanations/q-transition.html"
+    },
+    {
+      "id": "q-speed",
+      "bank_question_id": "q-speed",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문제. 동작속도 개념 공백 보충. 제공 답안이 없어 정답 미확정",
+      "topics": [
+        "t-delay"
+      ],
+      "sources": [
+        {
+          "source_id": "s-227672800905ee78",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-cd8d9005a4b82c18",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-689ef38376d1d0a4",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-d7200ab4ba3c6199",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P55; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved",
+      "title": "동작속도를 정하는 두 요소",
+      "workbook_fragment": "workbook/q-speed.json",
+      "explanation_fragment": "problem-explanations/q-speed.html"
+    },
+    {
+      "id": "q-region-graded",
+      "bank_question_id": "q-region-graded",
+      "kind": "past",
+      "status": "held",
+      "reason": "채점본 사진의 같은 문장이에요. 인쇄 입력 그래프를 판독하지 못했고(생략본인지 필기에 가려졌는지 미확정) q-region과 같은 그래프라고 확정하지 못해 수록하지 않았어요. 학생 답안·채점 흔적은 원문과_저작안내.md에 보존했어요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-schmitt-waveform-graded",
+      "bank_question_id": "q-schmitt-waveform-graded",
+      "kind": "past",
+      "status": "held",
+      "reason": "채점본 사진의 같은 문장이에요. 입력이 곡선형이고 기준선 수치를 판독하지 못해 q-schmitt-waveform의 꺾은선 그림과 같은 조건인지 확정하지 못했어요. 수록하지 않았어요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-a5c6c19f4df2edef",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 원본 이미지 문항 영역(성명·학번 줄 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "review_presentation_version": 2,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "generated_files": [
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+    ".pack/assets/vendor/katex/LICENSE",
+    ".pack/assets/vendor/katex/auto-render.min.js",
+    ".pack/assets/vendor/katex/katex.min.css",
+    ".pack/assets/vendor/katex/katex.min.js",
+    ".pack/assets/vendor/pretendard/LICENSE",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff2",
+    ".pack/assets/vendor/pretendard/pretendard.css",
+    ".pack/assets/vendor/provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s01-p1-o-s01-q1.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q2.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q3.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q4.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q5.png",
+    ".pack/evidence/assets/s01-p1.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q1.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q2.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q3.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q4.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q5.png",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s03-p1.png",
+    ".pack/evidence/assets/s04-head.png",
+    ".pack/evidence/assets/s04-q1.png",
+    ".pack/evidence/assets/s04-q2.png",
+    ".pack/evidence/assets/s04-q3.png",
+    ".pack/evidence/assets/s05-p1.png",
+    ".pack/evidence/assets/s05-p2.png",
+    ".pack/evidence/assets/s05-p3.png",
+    ".pack/evidence/assets/s06-p1-o-s06-q4.png",
+    ".pack/evidence/assets/s06-p1-o-s06-q5.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s06-p2-o-s06-q10.png",
+    ".pack/evidence/assets/s06-p2-o-s06-q6.png",
+    ".pack/evidence/assets/s06-p2-o-s06-q7.png",
+    ".pack/evidence/assets/s06-p2-o-s06-q8.png",
+    ".pack/evidence/assets/s06-p2-o-s06-q9.png",
+    ".pack/evidence/assets/s06-p2.png",
+    ".pack/evidence/assets/s07-p2.png",
+    ".pack/evidence/assets/s07-p3.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s08-p3.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/chain.svg",
+    ".pack/figures/hysteresis.svg",
+    ".pack/figures/levels.svg",
+    ".pack/figures/questions/q-region-given-01.png",
+    ".pack/figures/questions/q-region-given-01.svg",
+    ".pack/figures/questions/q-rp-derive-given-01.png",
+    ".pack/figures/questions/q-rp-derive-given-01.svg",
+    ".pack/figures/questions/q-rprn-effect-given-01.png",
+    ".pack/figures/questions/q-rprn-effect-given-01.svg",
+    ".pack/figures/questions/q-schmitt-waveform-given-01.png",
+    ".pack/figures/questions/q-schmitt-waveform-given-01.svg",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/rprn.svg",
+    ".pack/figures/solutions/q-delay-transition-solution-01.png",
+    ".pack/figures/solutions/q-delay-transition-solution-01.svg",
+    ".pack/figures/solutions/q-params-2016-solution-01.png",
+    ".pack/figures/solutions/q-params-2016-solution-01.svg",
+    ".pack/figures/solutions/q-params-2017-solution-01.png",
+    ".pack/figures/solutions/q-params-2017-solution-01.svg",
+    ".pack/figures/solutions/q-params-4-solution-01.png",
+    ".pack/figures/solutions/q-params-4-solution-01.svg",
+    ".pack/figures/solutions/q-prop-delay-solution-01.png",
+    ".pack/figures/solutions/q-prop-delay-solution-01.svg",
+    ".pack/figures/solutions/q-region-solution-01.png",
+    ".pack/figures/solutions/q-region-solution-01.svg",
+    ".pack/figures/solutions/q-rn-derive-solution-01.png",
+    ".pack/figures/solutions/q-rn-derive-solution-01.svg",
+    ".pack/figures/solutions/q-rp-derive-current-solution-01.png",
+    ".pack/figures/solutions/q-rp-derive-current-solution-01.svg",
+    ".pack/figures/solutions/q-rp-derive-solution-01.png",
+    ".pack/figures/solutions/q-rp-derive-solution-01.svg",
+    ".pack/figures/solutions/q-rprn-effect-solution-01.png",
+    ".pack/figures/solutions/q-rprn-effect-solution-01.svg",
+    ".pack/figures/solutions/q-schmitt-noise-solution-01.png",
+    ".pack/figures/solutions/q-schmitt-noise-solution-01.svg",
+    ".pack/figures/solutions/q-schmitt-waveform-solution-01.png",
+    ".pack/figures/solutions/q-schmitt-waveform-solution-01.svg",
+    ".pack/figures/solutions/q-speed-solution-01.png",
+    ".pack/figures/solutions/q-speed-solution-01.svg",
+    ".pack/figures/solutions/q-transition-solution-01.png",
+    ".pack/figures/solutions/q-transition-solution-01.svg",
+    ".pack/figures/timing.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/q-delay-transition.html",
+    ".pack/problem-explanations/q-params-2016.html",
+    ".pack/problem-explanations/q-params-2017.html",
+    ".pack/problem-explanations/q-params-4.html",
+    ".pack/problem-explanations/q-prop-delay.html",
+    ".pack/problem-explanations/q-region.html",
+    ".pack/problem-explanations/q-rn-derive.html",
+    ".pack/problem-explanations/q-rp-derive-current.html",
+    ".pack/problem-explanations/q-rp-derive.html",
+    ".pack/problem-explanations/q-rprn-effect.html",
+    ".pack/problem-explanations/q-schmitt-noise.html",
+    ".pack/problem-explanations/q-schmitt-waveform.html",
+    ".pack/problem-explanations/q-speed.html",
+    ".pack/problem-explanations/q-transition.html",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/검증결과.md",
+    ".pack/실험02_기출문제.md",
+    ".pack/실험02_기출풀이.md",
+    ".pack/실험02_문제설명.md",
+    ".pack/실험02_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험02_기출문제.html",
+    "실험02_기출풀이.html",
+    "실험02_문제설명.html",
+    "실험02_실험설명.html"
+  ],
+  "problem_explanation_version": 1,
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  }
+}

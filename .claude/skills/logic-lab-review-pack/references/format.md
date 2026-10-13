@@ -1,7 +1,7 @@
 # 저작 계약 v1
 
 기계 계약 정본은 scripts/lab/review_pack/manifest.py다. 최소 예는 tests/fixtures/review_pack/manifest.json.
-run/manifest.json(발행본은 `자료/manifest.json`), run/sections/<topic-id>.html, run/problems/<problem-id>.html, run/figures/를 저작한다.
+run/manifest.json(발행본은 `.pack/manifest.json`), run/sections/<topic-id>.html, run/problems/<problem-id>.html, run/figures/를 저작한다.
 ID는 영어 문자로 시작하며 영문·숫자·하이픈·밑줄만 쓴다. source/topic/problem 전체에서 유일해야 한다.
 재생성은 이전 manifest를 읽고 자료·문항 ID를 재사용한다. 순서 변경은 ID 변경 사유가 아니다. 조건이 바뀐 문제는 새 ID.
 
@@ -37,7 +37,7 @@ authoring-index 고정 필드는 은행과 검사로 대조한다. authoring_sta
 not_selected/held에는 selection_reason이 필요하다. manifest에서도 미수록·보류 이유를 기록한다.
 문제 fragment에는 div.problem이 정확히 하나 있어야 한다. 답 노출 원문은 details.original/solution 안에만 두고 hint에 넣지 않는다.
 답 노출 그림은 details의 summary에 넣지 않고 open 속성 없이 시작한다. srcset 후보와 스타일 URL도 답 노출 검사 대상이다.
-evidence/와 인덱스·안내는 build의 generated_files에 포함한다(발행본에서는 `자료/evidence/`, `자료/authoring-index.json`, 루트의 원문과_저작안내.md). 템플릿을 수정해 출처 검사를 우회하지 않는다.
+evidence/와 인덱스·안내는 build의 generated_files에 포함한다(발행본에서는 `.pack/evidence/`, `.pack/authoring-index.json`, `.pack/원문과_저작안내.md`). 템플릿을 수정해 출처 검사를 우회하지 않는다.
 
 ## 문제설명 표시 계약 v1
 

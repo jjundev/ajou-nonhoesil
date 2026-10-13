@@ -30,7 +30,7 @@ def defective_pack(repo,name,pages):
     doc.save(dest/'tmp.pdf'); doc.close(); (dest/'tmp.pdf').replace(pdf); return dest
 
 def synthetic_pack(repo,name,problems,table=None,answer_table=None):
-    """Write a minimal pack discover() accepts: 복습노트/<name>/자료/manifest.json plus the problem and answer PDFs.
+    """Write a minimal pack discover() accepts: 복습노트/<name>/.pack/manifest.json plus the problem and answer PDFs.
     problems: [dict(id,kind,title)] in manifest order. A page per problem carries its label badge (KINDS[kind]+n, n =
     position in the manifest) and title in the header. table goes in the problem page's work area (300,200), answer_table
     in the answer page's condition panel (34,200); both are a grid of 60x24 cells (a cell text with '\n' is drawn as wrapped lines). Calling again with another order

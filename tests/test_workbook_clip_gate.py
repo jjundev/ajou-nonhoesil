@@ -5,7 +5,7 @@ overflow-x 가 잘라도 눈에 띄지 않았고, fitSolution 은 마지막 풀�
 표는 칸을 넘어도 맞춤이 보지 않았다.
 
 주의: 템플릿의 renderMath 는 KaTeX 가 안 불러와졌으면 조용히 돌아온다(그러면 훑기가 항상 거짓을
-돌려줘 테스트가 의미를 잃는다). 그래서 KaTeX 가 `자료/assets/vendor` 에서 실제로 불러와졌는지를
+돌려줘 테스트가 의미를 잃는다). 그래서 KaTeX 가 `.pack/assets/vendor` 에서 실제로 불러와졌는지를
 모든 쪽 열기에서 먼저 확인한다. `_synthetic_pack` 은 vendor 를 `assets/vendor` 에 둬 로드되지 않는다.
 """
 import shutil
@@ -26,7 +26,7 @@ def terms(n):
 
 
 def write_pack(tmp, problems, mode):
-    """합성 문항으로 문제지·해설지를 렌더한다. KaTeX 가 로드되도록 vendor 를 `<자료>/assets/vendor` 에 둔다."""
+    """합성 문항으로 문제지·해설지를 렌더한다. KaTeX 가 로드되도록 vendor 를 `<.pack>/assets/vendor` 에 둔다."""
     shutil.copytree(ASSETS/'vendor', tmp/DATA/'assets'/'vendor', dirs_exist_ok=True)
     entries = []
     for i, p in enumerate(problems, 1):

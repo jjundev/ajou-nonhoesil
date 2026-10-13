@@ -43,7 +43,7 @@ review_presentation_version=2에서는 전자회로2 원본 스냅샷 해시, �
 
 떠올릴 구절은 문항마다 그 풀이의 실제 첫 판단과 맞는지, 원문에 없는 조건을 끌어오지 않는지, disputed·unresolved 문항에서 다툼이 있는 답을 단정하지 않는지 확인한다. 저작에 참여하지 않은 리뷰어의 판정을 검증결과.md의 표로 남긴다.
 
-추가 검증 기록은 자료/problem-explanations/검증결과.md에 보존한다. source_visual/content/browser 결과는 실제 검사 뒤에만 기록하고 독립 검토 미실시를 숨기지 않는다. 기존 checks를 새 설명의 검증으로 재사용하지 않는다. 기존 HTML/MD/PDF·사용자 파일을 전후 해시로 비교하고 원문이 바뀌었다면 내용을 재검토한 뒤 새 checksum을 기록한다. 파일 해시 검사를 끄지 않는다.
+추가 검증 기록은 .pack/problem-explanations/검증결과.md에 보존한다. source_visual/content/browser 결과는 실제 검사 뒤에만 기록하고 독립 검토 미실시를 숨기지 않는다. 기존 checks를 새 설명의 검증으로 재사용하지 않는다. 기존 HTML/MD/PDF·사용자 파일을 전후 해시로 비교하고 원문이 바뀌었다면 내용을 재검토한 뒤 새 checksum을 기록한다. 파일 해시 검사를 끄지 않는다.
 
 문제설명의 `문제 읽기` 다음 `이 문제를 보면 떠올려요`(recall)와 그다음 `이 문제에서 할 일`은 각각 별도 단락으로 구분하며, 간격 검사는 문제 읽기→recall 경계에도 적용한다. 375px/1280px × light/dark에서 모든 문항의 앞 레이어 하단부터 제목 상단까지 실제 간격을 측정한다. 공통 토큰 기준 margin-top 24px + padding-top 24px + 구분선 1px를 유지한다. `.eli5`의 첫 단락용 간격 제거 규칙이 중간 단락에 적용되지 않아야 하며, 실험설명의 첫 `.eli5` 단락은 기존 간격을 유지한다. `tests/test_review_pack_explanation_browser.py`의 생성본/발행본 회귀 검사를 함께 실행한다.
 

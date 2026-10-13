@@ -21,12 +21,12 @@ def check_explanations(folder: Path, manifest: dict) -> list[str]:
         with TemporaryDirectory(prefix='explanation-check-') as scratch:
             paths=write_explanations(manifest,question,folder/DATA,Path(scratch),folder/DATA/'assets')
             for key,path in paths.items():
-                if (folder/names[key]).read_bytes()!=path.read_bytes():errors.append(key+': explanation differs from authored content')
+                if (folder/path.relative_to(scratch)).read_bytes()!=path.read_bytes():errors.append(key+': explanation differs from authored content')
         source=folder/names['explanation_html'];parser=Parser();parser.feed(source.read_text(encoding='utf-8'))
         ids=[n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id')]
         errors.extend('duplicate ID: '+ident for ident,count in Counter(ids).items() if count>1)
         errors.extend(check_navigation(parser.root,names['explanation_html']))
-        errors.extend(check_md(source,folder/names['explanation_md']))
+        errors.extend(check_md(source,folder/DATA/names['explanation_md']))
         for n in parser.root.walk():
             attr='src' if n.tag in {'img','script'} else 'href' if n.tag in {'a','link'} else None
             value=n.attrs.get(attr,'') if attr else ''

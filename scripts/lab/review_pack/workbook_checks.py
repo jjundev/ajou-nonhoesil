@@ -64,7 +64,7 @@ def check_workbook_pack(folder,manifest):
                                 tree=Parser();tree.feed(target.read_text(encoding='utf-8'))
                                 valid=any(n.attrs.get('id')==unquote(parts.fragment) for n in tree.root.walk())
                             if not valid: errors.append(p['id']+': missing workbook resource anchor '+url)
-            errors.extend(check_workbook_md(data,manifest,folder/names[key+'_md']))
+            errors.extend(check_workbook_md(data,manifest,folder/DATA/names[key+'_md']))
         for q,a in zip(sheets['question']['problems'],sheets['review']['problems']):
             for field in ENTRY_KEYS:
                 if q[field]!=a[field]: errors.append(q['id']+': question/answer '+field+' mismatch')

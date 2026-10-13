@@ -15,7 +15,7 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path) -> P
     for relative in owned:
         if not within(folder,relative).is_file():raise ValueError('Missing owned file: '+relative)
     names=output_names(m['experiment'],review_presentation_version=2,problem_explanation_version=1)
-    new_paths=[names['explanation_html'],names['explanation_md']]
+    new_paths=[names['explanation_html'],DATA+'/'+names['explanation_md']]
     for p in m['problems']:
         if p['status']=='included':
             p['explanation_fragment']=f'problem-explanations/{p["id"]}.html'

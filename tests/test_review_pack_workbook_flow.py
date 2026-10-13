@@ -14,7 +14,7 @@ def test_modern_build_checks_dynamic_ids_and_three_md(tmp_path):
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
     assert paths['question_html'].is_file()
     for label in ('실험설명','기출문제','기출풀이'):
-        assert (stage/f'실험04_{label}.md').is_file()
+        assert (stage/'.pack'/f'실험04_{label}.md').is_file()
     a = read_workbook_payload(paths['review_html'])
     q = read_workbook_payload(paths['question_html'])
     assert [p['id'] for p in a['problems']] == [p['id'] for p in q['problems']]
@@ -82,13 +82,13 @@ def test_build_puts_data_under_data_folder_and_links_follow(tmp_path):
     fragment.write_text(json.dumps(authored, ensure_ascii=False), encoding='utf-8')
     stage = tmp_path/'stage'; paths = assemble(m,run,stage,ASSETS)
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
-    assert {p.name for p in stage.iterdir() if p.is_dir()} == {'자료'}
+    assert {p.name for p in stage.iterdir() if p.is_dir()} == {'.pack'}
     assert not {'assets','figures','evidence','manifest.json'} & {p.name for p in stage.iterdir()}
     for name in ('manifest.json','assets','figures/questions/diagram.png'):
-        assert (stage/'자료'/name).exists()
+        assert (stage/'.pack'/name).exists()
     payload = read_workbook_payload(paths['question_html'])
-    assert payload['problems'][0]['figures'][0]['src'] == '자료/figures/questions/diagram.png'
-    assert '자료/figures/questions/diagram.png' in paths['question_md'].read_text(encoding='utf-8') or \
-        '%EC%9E%90%EB%A3%8C/figures/questions/diagram.png' in paths['question_md'].read_text(encoding='utf-8')
-    assert 'href="자료/assets/vendor/' in paths['question_html'].read_text(encoding='utf-8')
+    assert payload['problems'][0]['figures'][0]['src'] == '.pack/figures/questions/diagram.png'
+    assert paths['question_md'].parent.name == '.pack'                       # md 도 자료 폴더 안이다
+    assert '](figures/questions/diagram.png)' in paths['question_md'].read_text(encoding='utf-8')
+    assert 'href=".pack/assets/vendor/' in paths['question_html'].read_text(encoding='utf-8')
     assert check_pack(stage) == []

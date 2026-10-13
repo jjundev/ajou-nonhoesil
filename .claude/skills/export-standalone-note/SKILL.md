@@ -7,8 +7,8 @@ description: 복습노트 HTML(실험설명·기출문제·기출풀이)을 파�
 
 실험설명의 탐색 구조를 수정한 경우 먼저 원본 팩과 동봉 템플릿을 갱신·검사한 뒤 이 스킬로 기존 standalone을 다시 내보낸다. `aria-current` 등 속성이 붙은 sibling HTML 링크도 비링크 표시로 변환하고 내부 토픽 hash 링크는 보존한다. 남은 상대경로 참조(leftovers)는 0이어야 한다. 최신 실험설명 패널은 내부 목차만 표시하며, 자료 이동 영역을 내보내기 과정에서 다시 추가하지 않는다.
 
-`복습노트/<실험NN>/` 의 HTML 은 `자료/assets/`(KaTeX·Pretendard·widgets.js)와
-`자료/figures/` 를 상대경로로 부른다. 이 스킬은 그것들을 전부 인라인한 단일 파일을 만든다.
+`복습노트/<실험NN>/` 의 HTML 은 숨김 폴더 `.pack/assets/`(KaTeX·Pretendard·widgets.js)와
+`.pack/figures/` 를 상대경로로 부른다. 이 스킬은 그것들을 전부 인라인한 단일 파일을 만든다.
 원본 `복습노트/` 는 건드리지 않는다.
 
 ## 실행

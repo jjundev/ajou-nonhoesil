@@ -12,7 +12,7 @@ def safe_relative(value):
 DATA=config.PACK_DATA_DIR
 
 def data_dir(folder):
-    """발행 폴더의 자료 폴더. 저작 RUN 에는 자료/ 가 없으므로 RUN 그대로 돌려준다."""
+    """발행 폴더의 자료 폴더(`.pack/`). 저작 RUN 에는 자료 폴더가 없으므로 RUN 그대로 돌려준다."""
     folder=Path(folder)
     return folder/DATA if (folder/DATA).is_dir() else folder
 
@@ -21,13 +21,13 @@ def data_url(relative):
     return DATA+'/'+relative
 
 def strip_data(path):
-    """문서 기준 링크의 자료/ 접두를 떼어 낸다. 접두가 없으면 그대로."""
+    """문서 기준 링크의 자료 폴더 접두를 떼어 낸다. 접두가 없으면 그대로."""
     return path[len(DATA)+1:] if path.startswith(DATA+'/') else path
 
 _AUTHORED_RESOURCE=re.compile(r"(\b(?:src|href)=[\"'])(figures|assets|evidence)/")
 
 def link_data(text):
-    """저작 조각 속 `figures/..` 링크를 문서 기준 `자료/figures/..` 로."""
+    """저작 조각 속 `figures/..` 링크를 문서 기준 `.pack/figures/..` 로."""
     return _AUTHORED_RESOURCE.sub(lambda m:m.group(1)+DATA+'/'+m.group(2)+'/',text)
 
 def output_names(experiment, *, review_presentation_version=None, problem_explanation_version=None):

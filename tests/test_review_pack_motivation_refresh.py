@@ -45,8 +45,8 @@ def test_stage_preserves_everything_except_intro(tmp_path, number):
     stage = module().prepare_stage(pack, fragment, tmp_path/'stage')
     after = snapshot(stage)
     note = f'실험{number:02d}_실험설명.html'
-    allowed = {note, note.replace('.html', '.md'), '자료/manifest.json'}
-    owned = set(json.loads(before['자료/manifest.json'])['generated_files'])
+    allowed = {note, '.pack/'+note.replace('.html', '.md'), '.pack/manifest.json'}
+    owned = set(json.loads(before['.pack/manifest.json'])['generated_files'])
     assert after.keys() == owned
     assert all(before[k] == after[k] for k in owned-allowed)
     old, new = before[note].decode(), after[note].decode()
@@ -55,8 +55,8 @@ def test_stage_preserves_everything_except_intro(tmp_path, number):
     for article in re.findall(r'<article\b[^>]*id="(?!t-start")[^"]+".*?</article>', old, re.S):
         assert article in new
     assert re.findall(r'const KEY\s*=.*?;', old) == re.findall(r'const KEY\s*=.*?;', new)
-    old_md = before[note.replace('.html', '.md')].decode()
-    new_md = after[note.replace('.html', '.md')].decode()
+    old_md = before['.pack/'+note.replace('.html', '.md')].decode()
+    new_md = after['.pack/'+note.replace('.html', '.md')].decode()
     next_anchor = re.search(r'<a id="(?!learning|t-start)[^"]+"></a>', old_md).group()
     assert old_md[old_md.index(next_anchor):] == new_md[new_md.index(next_anchor):]
 
@@ -81,7 +81,7 @@ def test_unsupported_intro_aborts(source, tmp_path, case):
     elif case == 'existing':
         stage.mkdir(); (stage/'keep').write_text('user')
     else:
-        path = pack/'자료/manifest.json'
+        path = pack/'.pack/manifest.json'
         m = json.loads(path.read_text()); m['topics'][0]['id'] = 'other'; path.write_text(json.dumps(m))
     before = snapshot(pack)
     with pytest.raises(ValueError):
@@ -97,8 +97,8 @@ def test_html_md_title_and_id_agree(source, tmp_path):
     pack, fragment = source
     stage = module().prepare_stage(pack, fragment, tmp_path/'stage')
     h = (stage/'실험03_실험설명.html').read_text()
-    d = (stage/'실험03_실험설명.md').read_text()
-    m = json.loads((stage/'자료/manifest.json').read_text())
+    d = (stage/'.pack/실험03_실험설명.md').read_text()
+    m = json.loads((stage/'.pack/manifest.json').read_text())
     assert TITLE in h and TITLE in d and m['topics'][0]['title'] == TITLE
     assert '새로운 동기 설명이에요.' in h and '새로운 동기 설명이에요.' in d
     assert h.count('id="t-start"') == d.count('id="t-start"') == 1
@@ -144,7 +144,7 @@ def test_refresh_does_not_claim_user_files(source, tmp_path):
     memo = pack/'사용자메모.md'
     memo.write_text('사용자가 별도로 저장한 파일')
     stage = module().prepare_stage(pack, fragment, tmp_path/'stage')
-    owned = json.loads((stage/'자료/manifest.json').read_text())['generated_files']
+    owned = json.loads((stage/'.pack/manifest.json').read_text())['generated_files']
     assert '사용자메모.md' not in owned
     assert not (stage/'사용자메모.md').exists()
     assert memo.read_text() == '사용자가 별도로 저장한 파일'

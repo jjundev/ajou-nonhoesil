@@ -29,10 +29,11 @@ IDENTITY_FIELDS = ("team", "student_ids", "student_names")
 # 실험은 1~10 뿐이다. FPGA(13~15주차)는 실험 번호가 없어 `프로젝트/` 로 간다.
 EXPERIMENT_COUNT = 10
 
-# 복습노트 실험 폴더 안에서 읽는 문서(.md·.html·.pdf)를 뺀 모든 파일이 사는 하위 폴더.
-# manifest.json·authoring-index.json·assets/·evidence/·figures/ 가 여기로 간다. 문서 안
-# 링크는 `자료/figures/..` 처럼 이 이름을 접두로 단다. 이름을 바꿀 땐 **여기 한 줄만** 고친다.
-PACK_DATA_DIR = "자료"
+# 복습노트 실험 폴더 안에서 학생이 여는 .html·.pdf 를 뺀 모든 파일이 사는 숨김 하위 폴더.
+# md 문서 7종·manifest.json·authoring-index.json·assets/·evidence/·figures/ 가 여기로 간다.
+# HTML 안 링크는 `.pack/figures/..` 처럼 이 이름을 접두로 단다. md 는 이 폴더 안에 있으므로
+# `figures/..` 로 부른다(review_pack/pack_md.py). 이름을 바꿀 땐 여기와 발행본 이전 도구를 함께 본다.
+PACK_DATA_DIR = ".pack"
 
 # 주차 산출물이 사는 **위치**. 실험 폴더는 저장소 루트가 아니라 이 아래에 있다
 # (`보고서/실험01/...`). 이름 규칙(`실험NN`)과는 **다른 규칙**이라 상수를 따로

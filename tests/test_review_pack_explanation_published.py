@@ -8,12 +8,12 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def audit_experiment(number):
     folder=ROOT/'복습노트'/f'실험{number:02d}'
-    m=json.loads((folder/'자료/manifest.json').read_text())
+    m=json.loads((folder/'.pack/manifest.json').read_text())
     selected=[p for p in m['problems'] if p['status']=='included']
     q=read_workbook_payload(folder/f'실험{number:02d}_기출문제.html')['problems']
     tree=Parser();tree.feed((folder/f'실험{number:02d}_문제설명.html').read_text())
     articles=[n for n in tree.root.walk() if n.tag=='article' and 'topic' in n.attrs.get('class','').split()]
-    report=(folder/'자료/problem-explanations/검증결과.md').read_text()
+    report=(folder/'.pack/problem-explanations/검증결과.md').read_text()
     return dict(counts=(len(selected),len(q),len(articles)),
         ids=([p['id'] for p in selected],[p['id'] for p in q],[n.attrs['id'] for n in articles]),
         numbers=([str(i) for i in range(1,len(selected)+1)],[p['number'] for p in q],[re.search(r'문제 (\d+)',text(n)).group(1) for n in articles]),
