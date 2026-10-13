@@ -5,8 +5,8 @@
     python -m scripts.lab.standalone_note 실험01~05                   # 범위도 된다
     python -m scripts.lab.standalone_note all                        # 실험 폴더 전부 → zip
 
-실험이 하나면 `실험NN_<종류>_standalone.html` 을 낸다. 둘 이상이면 `실험NN/` 폴더별로 정리한
-`복습노트_standalone.zip` 하나를 낸다(Windows 에서도 풀리도록 이름은 NFC·UTF-8 플래그).
+파일이 하나면 `실험NN_<종류>.html` 을 낸다. 둘 이상이면 `실험NN/` 폴더별로 정리한
+`논회실_복습노트_실험01~05.zip` 하나를 낸다(Windows 에서도 풀리도록 이름은 NFC·UTF-8 플래그).
 """
 import argparse
 import base64
@@ -21,7 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 NOTES = ROOT / "복습노트"
 KINDS = ("실험설명", "기출문제", "기출풀이", "문제설명")
-ZIP_NAME = "복습노트_standalone.zip"
+ZIP_PREFIX = "논회실_복습노트_"
 KEEP_WEIGHTS = {"400", "500", "600", "700", "800"}
 MIME = {".svg": "image/svg+xml", ".woff2": "font/woff2", ".png": "image/png",
         ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
@@ -66,11 +66,22 @@ def _inline_css(css, base):
 
 
 def out_name(exp, kind):
-    return f"{exp}_{kind}_standalone.html"
+    return f"{exp}_{kind}.html"
+
+
+def zip_name(exps):
+    """연속이면 `논회실_복습노트_실험01~05.zip`, 하나면 `…_실험05.zip`, 아니면 `_` 로 잇는다."""
+    exps = sorted(dict.fromkeys(exps))
+    nums = [re.fullmatch(r"실험(\d+)", e) for e in exps]
+    if len(exps) > 1 and all(nums):
+        n = [int(m.group(1)) for m in nums]
+        if n == list(range(n[0], n[0] + len(n))):
+            return f"{ZIP_PREFIX}{exps[0]}~{nums[-1].group(1)}.zip"
+    return ZIP_PREFIX + "_".join(exps) + ".zip"
 
 
 def build(note_dir, kind, linked=frozenset()):
-    """linked: 같은 묶음으로 함께 내보내는 종류. 그쪽으로 가는 형제 링크는 standalone 파일로 잇는다."""
+    """linked: 같은 묶음으로 함께 내보내는 종류. 그쪽으로 가는 형제 링크는 묶음 안의 파일로 잇는다."""
     src = note_dir / f"{note_dir.name}_{kind}.html"
     html = src.read_text(encoding="utf-8")
     late = []  # defer 스크립트는 본문 뒤로 옮겨 순서를 지킨다
@@ -122,12 +133,14 @@ def build(note_dir, kind, linked=frozenset()):
     return html.replace("</body>", "".join(late) + "</body>", 1)
 
 
-def leftovers(html):
-    """남은 상대경로 참조. 비어 있어야 standalone 이다."""
+def leftovers(html, bundle=frozenset()):
+    """남은 상대경로 참조. 비어 있어야 standalone 이다.
+
+    bundle: 이번에 함께 내보내는 파일 이름. 이 이름을 가리키는 형제 링크만 면제한다.
+    """
     html = re.sub(r"<script(?=[\s>])[^>]*>.*?</script>", "<script></script>", html, flags=re.S)  # JS 문자열 속 src= 는 참조가 아니다
     left = re.findall(r'<(?:img|script|link|source|a)\b[^>]*?(?:src|href)="(?!data:|#|https?:|mailto:)([^"]+)"', html)
-    own = re.compile(r"실험\d+_(?:" + "|".join(KINDS) + r")_standalone\.html(?:#.*)?")
-    left = [h for h in left if not own.fullmatch(urllib.parse.unquote(h))]  # 같은 묶음의 standalone 형제
+    left = [h for h in left if urllib.parse.unquote(h).split("#")[0] not in bundle]  # 같은 묶음의 형제
     left += re.findall(r"url\(\s*['\"]?(?!data:|https?:|#)([^)'\"]+)", html)
     return left
 
@@ -167,7 +180,7 @@ def check_zip(path):
                 if "charset" not in html[:2048].lower():
                     problems.append(f"charset 선언 없음: {name}")
                 folder = name.rsplit("/", 1)[0] if "/" in name else ""
-                for href in re.findall(r'href="([^"#]+_standalone\.html)(?:#[^"]*)?"', html):
+                for href in re.findall(r'href="(?!https?:)([^"#]+\.html)(?:#[^"]*)?"', html):
                     links += 1
                     target = "/".join(x for x in (folder, urllib.parse.unquote(href)) if x)
                     if target not in names:
@@ -203,21 +216,22 @@ def main(argv=None):
     ap.add_argument("exp", nargs="+", help="실험05 …, 실험01~05(범위), 또는 all(실험 폴더 전부)")
     ap.add_argument("--kind", default="실험설명", choices=KINDS + ("all",))
     ap.add_argument("--out", default=str(Path.home() / "Downloads"))
-    ap.add_argument("--zip", default=ZIP_NAME, help="실험이 둘 이상일 때의 zip 이름")
+    ap.add_argument("--zip", default=None, help="파일이 둘 이상일 때의 zip 이름(기본: 논회실_복습노트_실험01~05.zip)")
     a = ap.parse_args(argv)
     names = _expand([unicodedata.normalize("NFC", n) for n in a.exp])  # 맥 입력은 NFD 일 수 있다
     kinds = KINDS if a.kind == "all" else (a.kind,)
     exps, pairs, skipped = _targets(names, kinds, a.kind != "all")
     out_dir = Path(a.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    use_zip = len(exps) >= 2
-    zf = zipfile.ZipFile(out_dir / a.zip, "w", zipfile.ZIP_DEFLATED) if use_zip else None
+    use_zip = len(pairs) >= 2
+    zip_file = a.zip or zip_name([e for e, _ in pairs])
+    zf = zipfile.ZipFile(out_dir / zip_file, "w", zipfile.ZIP_DEFLATED) if use_zip else None
     bad = 0
     try:
         for exp, kind in pairs:
             linked = {k for e, k in pairs if e == exp}
             html = build(NOTES / exp, kind, linked)
-            left = leftovers(html)
+            left = leftovers(html, {out_name(exp, k) for k in linked})
             if use_zip:
                 label = f"{exp}/{out_name(exp, kind)}"
                 zf.writestr(unicodedata.normalize("NFC", label), html.encode("utf-8"))
@@ -230,7 +244,7 @@ def main(argv=None):
         if zf:
             zf.close()
     if use_zip:
-        zp = out_dir / a.zip
+        zp = out_dir / zip_file
         print(f"{zp} ({zp.stat().st_size // 1024} KB, {len(pairs)}개)")
         summary, problems = check_zip(zp)
         if problems:
@@ -238,6 +252,9 @@ def main(argv=None):
             bad += 1
         else:
             print(f"zip 검사 통과 ({summary})")
+        stray = [n for n in dict.fromkeys(out_name(e, k) for e, k in pairs) if (out_dir / n).is_file()]
+        if stray:
+            print(f"출력 폴더에 같은 이름의 낱개 파일이 있다(지우지 않았다): {', '.join(stray)}")
     if skipped:
         print("건너뜀(파일 없음): " + ", ".join(skipped))
     return 1 if bad else 0
