@@ -1,6 +1,6 @@
 ---
 name: export-standalone-note
-description: 복습노트 HTML(실험설명·기출문제·기출풀이)을 파일 하나로 합쳐 다운로드 폴더에 내보낸다. 사용자가 "standalone", "한 파일로", "HTML만 복사해도 열리게", "다른 PC·태블릿에서 열 수 있게", "다운로드 폴더에 만들어줘" 등을 요청하거나 /export-standalone-note 를 호출할 때 사용한다.
+description: 복습노트 HTML(실험설명·문제설명·기출문제·기출풀이)을 파일 하나로 합쳐 다운로드 폴더에 내보낸다. 실험이 여럿이면 실험별 폴더가 든 zip 하나로 낸다. 사용자가 "standalone", "한 파일로", "HTML만 복사해도 열리게", "다른 PC·태블릿에서 열 수 있게", "다운로드 폴더에 만들어줘" 등을 요청하거나 /export-standalone-note 를 호출할 때 사용한다.
 ---
 
 # export-standalone-note
@@ -17,12 +17,19 @@ REPO 루트(scripts/lab/config.py 가 있는 곳)에서:
 
 ```powershell
 python -m scripts.lab.standalone_note 실험05                 # 실험설명 1종
-python -m scripts.lab.standalone_note 실험05 --kind all      # 3종
+python -m scripts.lab.standalone_note 실험05 --kind all      # 4종(실험설명·기출문제·기출풀이·문제설명)
+python -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종
+python -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
+python -m scripts.lab.standalone_note all --kind all         # 실험 폴더 전부 → zip
 python -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Downloads
 ```
 
 - 주차로 말하면 실험 번호로 옮긴다. 종류를 말하지 않으면 실험설명, "전부·기출까지"면 `--kind all`.
-- 출력: `<출력폴더>/실험NN_<종류>_standalone.html`. 같은 이름은 덮어쓴다.
+- 실험 1개: `<출력폴더>/실험NN_<종류>_standalone.html`. 같은 이름은 덮어쓴다.
+- 실험 2개 이상(또는 `all`): `<출력폴더>/복습노트_standalone.zip`, 안은 `실험NN/실험NN_<종류>_standalone.html`. `--zip 이름.zip` 으로 이름을 바꾼다.
+- `--kind all` 은 없는 종류를 건너뛰고 이름을 출력한다. 종류를 하나 지정했는데 파일이 없으면 오류다.
+- Windows 에서는 **압축을 푼 뒤** 연다. zip 미리보기에서 하나만 열면 형제 링크가 끊긴다.
+- 같은 묶음에 있는 형제(예: 문제설명 → 실험설명#토픽)는 `_standalone.html#토픽` 으로 이어진다. 묶음에 없으면 `<span>`.
 
 ## 확인과 보고
 
@@ -33,6 +40,7 @@ python -m scripts.lab.standalone_note 실험05 --out <폴더>    # 기본 ~/Down
 
 ## 알아둘 것
 
-- 형제 노트로 가던 상단 링크는 `<span>` 이 된다(단일 파일에서는 열 수 없다).
+- 같은 묶음에 없는 형제 노트로 가던 링크는 `<span>` 이 된다(단일 파일에서는 열 수 없다).
+- zip 이름은 NFC·UTF-8 플래그로 쓴다(맥 NFD 이름이 Windows 에서 깨지는 것을 막는다). Windows 실기 확인은 못 했다 — 구조 검사로 대신한다.
 - `defer` 스크립트(KaTeX)는 `</body>` 앞으로 옮겨 순서를 지킨다. 헤더에 그대로 인라인하면 수식이 렌더되지 않는다.
 - 글꼴은 Pretendard 400~800 의 woff2 만 넣는다. 결과는 약 6MB.

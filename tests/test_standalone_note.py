@@ -1,8 +1,10 @@
+import shutil
+import urllib.parse
 import pytest
 
 from scripts.lab import standalone_note as sn
 
-PAGE = """<html><head>
+PAGE = """<html><head><meta charset="utf-8">
 <link rel="stylesheet" href="assets/a.css">
 <script defer src="assets/k.js"></script>
 <script defer src="assets/r.js"
@@ -75,3 +77,102 @@ def test_standalone_keeps_topic_hash_links(note):
     src = note/'실험99_실험설명.html'
     src.write_text(src.read_text().replace('</body>', '<a href="#t-start">토픽</a></body>'))
     assert '<a href="#t-start">토픽</a>' in sn.build(note, '실험설명')
+
+
+# --- 문제설명 · 다실험 zip · Windows 호환 -------------------------------------
+
+import re
+import unicodedata
+import zipfile
+
+
+def _problem_page(note):
+    (note / "실험99_문제설명.html").write_text(
+        '<html><head><meta charset="utf-8"></head><body>'
+        '<a class="topic" href="실험99_실험설명.html#t-decoder">디코더</a>'
+        '<a href="#local">로컬</a></body></html>', encoding="utf-8")
+
+
+def test_problem_kind_sibling_fragment_link_becomes_span(note):
+    _problem_page(note)
+    html = sn.build(note, "문제설명")
+    assert sn.leftovers(html) == []
+    assert '<span class="topic">디코더</span>' in html
+    assert '<a href="#local">로컬</a>' in html
+
+
+def test_linked_sibling_is_rewired_to_standalone_file(note):
+    _problem_page(note)
+    html = sn.build(note, "문제설명", linked={"실험설명"})
+    assert sn.leftovers(html) == []
+    name = "%EC%8B%A4%ED%97%9899_%EC%8B%A4%ED%97%98%EC%84%A4%EB%AA%85_standalone.html"
+    assert f'href="{name}#t-decoder"' in html
+    assert "<span" not in html
+
+
+@pytest.fixture
+def two_notes(note, tmp_path, monkeypatch):
+    _problem_page(note)
+    d = tmp_path / "실험98"
+    shutil.copytree(note, d)
+    for p in d.glob("실험99_*"):
+        p.rename(d / p.name.replace("실험99", "실험98"))
+    for p in d.glob("실험98_*.html"):
+        p.write_text(p.read_text(encoding="utf-8").replace("실험99", "실험98"), encoding="utf-8")
+    monkeypatch.setattr(sn, "NOTES", tmp_path)
+    return tmp_path
+
+
+def test_multi_experiment_makes_windows_safe_zip(two_notes, tmp_path):
+    out = tmp_path / "out"
+    rc = sn.main(["실험99", "실험98", "--kind", "all", "--out", str(out)])
+    assert rc == 0
+    assert not list(out.glob("*.html"))
+    zp = out / "복습노트_standalone.zip"
+    with zipfile.ZipFile(zp) as z:
+        assert z.testzip() is None
+        names = z.namelist()
+        assert sorted(names) == [
+            "실험98/실험98_문제설명_standalone.html", "실험98/실험98_실험설명_standalone.html",
+            "실험99/실험99_문제설명_standalone.html", "실험99/실험99_실험설명_standalone.html"]
+        for info in z.infolist():
+            assert unicodedata.is_normalized("NFC", info.filename)
+            assert info.flag_bits & 0x800          # UTF-8 이름 플래그
+            assert not re.search(r'[<>:"|?*\\]', info.filename)
+            assert len(info.filename) <= 200
+        assert not any("__MACOSX" in n or ".DS_Store" in n for n in names)
+        for n in names:
+            html = z.read(n).decode("utf-8")
+            assert "charset" in html[:2048].lower()
+            assert sn.leftovers(html) == []
+        prob = z.read("실험99/실험99_문제설명_standalone.html").decode("utf-8")
+        target = urllib.parse.unquote(re.search(r'href="([^"#]+_standalone\.html)#t-decoder"', prob).group(1))
+        assert f"실험99/{target}" in names
+
+
+def test_single_experiment_stays_loose_files(two_notes, tmp_path):
+    out = tmp_path / "out"
+    assert sn.main(["실험99", "--kind", "all", "--out", str(out)]) == 0
+    assert sorted(p.name for p in out.iterdir()) == [
+        "실험99_문제설명_standalone.html", "실험99_실험설명_standalone.html"]
+
+
+def test_nfd_argument_is_normalized(two_notes, tmp_path):
+    out = tmp_path / "out"
+    nfd = unicodedata.normalize("NFD", "실험99")
+    assert sn.main([nfd, "--out", str(out)]) == 0
+    assert [p.name for p in out.iterdir()] == ["실험99_실험설명_standalone.html"]
+
+
+def test_all_skips_missing_kind_and_names_it(two_notes, tmp_path, capsys):
+    (two_notes / "실험98" / "실험98_문제설명.html").unlink()
+    out = tmp_path / "out"
+    assert sn.main(["all", "--kind", "문제설명", "--out", str(out)]) == 0
+    assert "실험98" in capsys.readouterr().out
+    with zipfile.ZipFile(out / "복습노트_standalone.zip") as z:
+        assert z.namelist() == ["실험99/실험99_문제설명_standalone.html"]
+
+
+def test_named_missing_kind_is_error(two_notes, tmp_path):
+    with pytest.raises(SystemExit):
+        sn.main(["실험99", "--kind", "기출풀이", "--out", str(tmp_path / "o")])
