@@ -7,12 +7,85 @@
   만들어 나눠 쓰는 것이 없고, 한 클래스가 한 워커를 1분 넘게 잡던 자리다.
 - 나머지는 파일::클래스 단위로 묶는다. 마크 없는 테스트를 loadgroup 은 낱개로 흩는데,
   그러면 `setUpClass` 준비를 테스트마다 다시 한다.
+
+`--affected[=기준]` 은 `tests/_affected.py` 가 고른 테스트 파일만 남긴다 — 기준 커밋 뒤 바뀐
+파일을 읽는 테스트만 돌고, 고른 게 없으면 "돌릴 것 없음" 으로 종료 코드 0 이다. 옵션이 없으면
+아무것도 하지 않는다. 워커는 컨트롤러가 정한 목록을 `workerinput` 으로 받는다(워커마다 git 을
+다시 부르지 않는다).
 """
 import pytest
 
+from tests import _affected
+
+AFFECTED = pytest.StashKey[tuple]()      # (Selection, 요약 줄) — 컨트롤러에서만 채워진다
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        '--affected', nargs='?', const='auto', default=None, metavar='BASE',
+        help='기준 커밋 이후 바뀐 파일을 읽는 테스트 파일만 돈다(tests/_affected.py)')
+
+
+def pytest_configure(config):
+    opt = config.getoption('--affected')
+    if opt is not None and not hasattr(config, 'workerinput'):
+        config.stash[AFFECTED] = _affected.plan(None if opt == 'auto' else opt)
+
+
+def pytest_report_header(config):
+    return config.stash[AFFECTED][1] if AFFECTED in config.stash else []
+
+
+@pytest.hookimpl(optionalhook=True)
+def pytest_configure_node(node):
+    """xdist 컨트롤러가 워커를 띄울 때 — 고른 목록(전체면 None)을 실어 보낸다."""
+    if AFFECTED not in node.config.stash:       # --affected 를 안 줬다
+        return
+    sel = node.config.stash[AFFECTED][0]
+    node.workerinput['affected'] = None if sel.files is None else sorted(sel.files)
+
+
+def _chosen(config):
+    """고른 테스트 파일 목록. `--affected` 가 없거나 전체 실행이면 `None`."""
+    if config.getoption('--affected') is None:
+        return None
+    if hasattr(config, 'workerinput'):
+        return config.workerinput.get('affected')
+    sel = config.stash[AFFECTED][0]
+    return None if sel.files is None else sorted(sel.files)
+
+
+def _deselect(config, items):
+    chosen = _chosen(config)
+    if chosen is None:
+        return
+    keep = set(chosen)
+    kept, gone = [], []
+    for it in items:
+        try:
+            rel = _affected.norm(it.path.relative_to(_affected.ROOT).as_posix())
+        except ValueError:          # 저장소 밖에서 모인 항목은 라우터가 판단할 수 없다 — 남긴다
+            rel = None
+        (kept if rel is None or rel in keep else gone).append(it)
+    if gone:
+        config.hook.pytest_deselected(items=gone)
+        items[:] = kept
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """고른 게 0개라 xdist 가 "수집된 테스트 없음"(5)으로 끝내도 이건 정상이다."""
+    chosen = _chosen(session.config)
+    if chosen is not None and not chosen and exitstatus == pytest.ExitCode.NO_TESTS_COLLECTED:
+        session.exitstatus = pytest.ExitCode.OK
+
 
 @pytest.hookimpl(tryfirst=True)   # xdist 가 마크를 읽어 nodeid 에 `@그룹` 을 붙이기 전에
-def pytest_collection_modifyitems(items):
+def pytest_collection_modifyitems(config, items):
+    _group(items)
+    _deselect(config, items)
+
+
+def _group(items):
     for item in items:
         if item.get_closest_marker("xdist_group"):
             continue
