@@ -275,22 +275,31 @@ def test_files(root: Path = ROOT) -> list[str]:
 # --- 맵 만들기 ----------------------------------------------------------------
 
 def _run_group(cmd: list[str], *, cwd: Path, env: dict, timeout: int) -> int | None:
-    """`cmd` 를 새 프로세스 그룹으로 돌려 종료 코드를 준다. 시간이 넘으면 그룹째 죽이고 `None`."""
+    """`cmd` 를 새 프로세스 그룹으로 돌려 종료 코드를 준다. 시간이 넘으면 그룹째 죽이고 `None`.
+
+    정상으로 끝나도 그룹을 죽인다 — 테스트가 띄운 손자가 남아 다음 파일의 CPU 를 먹지 않게."""
     posix = os.name == 'posix'
     proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=posix)
     try:
-        return proc.wait(timeout=timeout)
+        code = proc.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
-        if posix:
-            try:
-                os.killpg(proc.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-        else:
-            proc.kill()
+        _kill_group(proc, posix)
         proc.wait()
         return None
+    if posix:       # 정상 종료 뒤에도 남은 손자 프로세스가 계속 돌지 않게 그룹을 정리한다
+        _kill_group(proc, posix)
+    return code
+
+
+def _kill_group(proc: subprocess.Popen, posix: bool) -> None:
+    if posix:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    else:
+        proc.kill()
 
 
 def trace_file(test: str, root: Path = ROOT, timeout: int = 900) -> dict | None:
@@ -331,11 +340,19 @@ def trace_file(test: str, root: Path = ROOT, timeout: int = 900) -> dict | None:
             'outcome': {0: 'passed', 1: 'failed'}.get(code, 'error')}
 
 
+def _trace_or_none(test: str, root: Path, timeout: int) -> dict | None:
+    """한 파일의 추적이 예외로 끝나도 전체 rebuild 를 멈추지 않는다 — 그 파일은 시간 초과처럼 빠진다."""
+    try:
+        return trace_file(test, root, timeout)
+    except Exception:       # noqa: BLE001
+        return None
+
+
 def rebuild(jobs: int | None = None, root: Path = ROOT, timeout: int = 900) -> dict:
     """테스트 파일마다 `trace_file` 을 돌려 맵을 저장하고 돌려준다. 끝에 보고를 찍는다.
 
     직전 맵에서 오래 걸린 파일부터 시작해(처음 보는 파일은 맨 앞) 병렬 꼬리를 줄인다.
-    시간 초과·기록 없음(`None`)은 맵에서 뺀다 — 맵에 없는 테스트는 `select` 가 늘 고른다.
+    시간 초과·기록 없음·추적 중 예외(`None`)는 맵에서 뺀다 — 맵에 없는 테스트는 `select` 가 늘 고른다.
     """
     path = map_path(root)
     head = _git_text(root, 'rev-parse', 'HEAD')
@@ -345,7 +362,7 @@ def rebuild(jobs: int | None = None, root: Path = ROOT, timeout: int = 900) -> d
     tests = sorted(test_files(root), key=lambda t: -previous.get(t, {}).get('seconds', float('inf')))
     started = time.monotonic()
     with ThreadPoolExecutor(max_workers=max(1, jobs or os.cpu_count() or 1)) as pool:
-        entries = list(pool.map(lambda t: trace_file(t, root, timeout), tests))
+        entries = list(pool.map(lambda t: _trace_or_none(t, root, timeout), tests))
     data = {
         'version': MAP_VERSION, 'commit': head, 'built': datetime.now().isoformat(timespec='seconds'),
         'python': platform.python_version(), 'platform': sys.platform,
@@ -408,16 +425,31 @@ def _resolve(root: Path, ref: str) -> str | None:
 
 
 def plan(base: str | None = None, root: Path = ROOT) -> tuple[Selection, list[str]]:
-    """기준 → 변경 집합 → 맵 → 고르기, 그리고 요약 줄. git 이 실패하면 전체 실행으로 돌린다."""
-    tests = test_files(root)
+    """기준 → 변경 집합 → 맵 → 고르기, 그리고 요약 줄. 무엇이 틀려도 예외 대신 전체 실행으로 돌린다.
+
+    `pytest --affected` 가 라우터 때문에 시작도 못 하면 안 된다 — git 실패·디코딩 오류·구조가 깨진
+    맵 모두 `Selection(None, …)` 이 되고 사유에 오류 이름이 남는다.
+    """
     try:
-        base = base or default_base(root)
-        changed = changed_files(base, root)
-        path = map_path(root)
+        return _plan(base, root)
     except RuntimeError as exc:
-        sel = Selection(None, {}, f'git 실패 — {str(exc).splitlines()[0]}', ())
-        return sel, header_lines(sel, base or '', 0, len(tests), None, None)
-    depmap = load_map(path)
+        reason = f'git 실패 — {str(exc).splitlines()[0] if str(exc) else "원인 불명"}'
+    except Exception as exc:       # noqa: BLE001 — 어떤 오류든 전체 실행으로 안전하게 물러선다
+        msg = str(exc).splitlines()[0] if str(exc) else ''
+        reason = f'라우터 오류 — {type(exc).__name__}' + (f': {msg}' if msg else '')
+    sel = Selection(None, {}, reason, ())
+    try:
+        total = len(test_files(root))
+    except Exception:              # noqa: BLE001
+        total = 0
+    return sel, header_lines(sel, base or '', 0, total, None, None)
+
+
+def _plan(base: str | None, root: Path) -> tuple[Selection, list[str]]:
+    tests = test_files(root)
+    base = base or default_base(root)
+    changed = changed_files(base, root)
+    depmap = load_map(map_path(root))
     sel = select(changed, depmap, tests)
     map_commit = built = None
     stale = False

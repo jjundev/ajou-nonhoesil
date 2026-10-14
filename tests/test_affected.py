@@ -5,11 +5,13 @@ import os
 import re
 import subprocess
 import sys
+import time
 import unicodedata
 from pathlib import Path
 
 import pytest
 
+import tests._affected as affected
 from tests._affected import (
     EXTRA_DEPS, ROOT, Selection, changed_files, default_base, explain, header_lines, load_map,
     main, map_path, plan, rebuild, save_map, select, trace_file,
@@ -300,6 +302,26 @@ def test_x():
     assert trace_file('test_x.py', root=proj, timeout=120)['opaque'] is True
 
 
+def test_정상_종료_뒤에도_남은_손자_프로세스는_죽인다(tmp_path):
+    proj = _trace_proj(tmp_path, '''
+import subprocess, sys
+from pathlib import Path
+def test_x():
+    child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])
+    Path('grandchild.pid').write_text(str(child.pid))
+''')
+    assert trace_file('test_x.py', root=proj, timeout=120)['outcome'] == 'passed'
+    pid = int((proj / 'grandchild.pid').read_text())
+    for _ in range(50):             # 신호가 닿고 init 이 거둘 때까지 잠깐 기다린다
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return
+        time.sleep(0.1)
+    os.kill(pid, 9)                 # 실패해도 남기지 않는다
+    pytest.fail('테스트가 끝난 뒤에도 손자 프로세스가 살아 있다')
+
+
 # --- rebuild ------------------------------------------------------------------
 
 def _git_proj(tmp_path: Path, tests: dict[str, str]) -> Path:
@@ -425,6 +447,40 @@ def test_plan_은_git_실패를_전체_실행으로_바꾼다(tmp_path):
     _git(proj, 'update-ref', 'refs/remotes/origin/main', other)
     sel, _ = plan(None, proj)
     assert sel.files is None and 'git' in sel.full_reason
+
+
+def test_plan_은_구조가_깨진_맵에도_예외_없이_전체_실행(tmp_path):
+    proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
+    save_map(map_path(proj), {'version': 1, 'commit': 'x', 'built': 'y', 'tests': ['사전이 아니다']})
+    (proj / 'x.txt').write_text('1\n', encoding='utf-8')
+    sel, lines = plan('HEAD', proj)
+    assert sel.files is None and sel.full_reason.startswith('라우터 오류 — ')
+    assert lines[0] == f'라우터: 전체 실행 — {sel.full_reason}'
+
+
+def test_plan_은_디코딩_오류도_전체_실행으로_바꾼다(tmp_path, monkeypatch):
+    proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
+
+    def boom(base, root=ROOT):
+        raise UnicodeDecodeError('utf-8', b'\xff', 0, 1, 'invalid start byte')
+    monkeypatch.setattr(affected, 'changed_files', boom)
+    sel, lines = plan('HEAD', proj)
+    assert sel.files is None and sel.full_reason.startswith('라우터 오류 — UnicodeDecodeError')
+    assert lines[0].startswith('라우터: 전체 실행 — 라우터 오류')
+
+
+def test_rebuild_는_한_파일의_추적_예외로_멈추지_않는다(tmp_path, monkeypatch, capsys):
+    proj = _git_proj(tmp_path, {'test_ok.py': OK_BODY, 'test_boom.py': OK_BODY})
+    real = affected.trace_file
+
+    def flaky(test, root=ROOT, timeout=900):
+        if test.endswith('test_boom.py'):
+            raise OSError('추적기를 못 띄움')
+        return real(test, root, timeout)
+    monkeypatch.setattr(affected, 'trace_file', flaky)
+    rebuild(jobs=2, root=proj, timeout=60)
+    assert set(load_map(map_path(proj))['tests']) == {'tests/test_ok.py'}
+    assert 'tests/test_boom.py' in capsys.readouterr().out
 
 
 def test_main_explain_은_종료_코드_0(capsys):
