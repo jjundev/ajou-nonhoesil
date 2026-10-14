@@ -36,6 +36,18 @@ def pytest_report_header(config):
     return config.stash[AFFECTED][1] if AFFECTED in config.stash else []
 
 
+@pytest.hookimpl(trylast=True)
+def pytest_sessionstart(session):
+    """`-q` 는 보고서 머리를 감춘다 — 그래도 요약 줄은 보여야 "왜 이것만 도는지" 를 알 수 있다."""
+    config = session.config
+    if AFFECTED not in config.stash:
+        return
+    reporter = config.pluginmanager.get_plugin('terminalreporter')
+    if reporter is not None and reporter.verbosity < 0:
+        for line in config.stash[AFFECTED][1]:
+            reporter.write_line(line)
+
+
 @pytest.hookimpl(optionalhook=True)
 def pytest_configure_node(node):
     """xdist 컨트롤러가 워커를 띄울 때 — 고른 목록(전체면 None)을 실어 보낸다."""
