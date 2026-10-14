@@ -9,8 +9,11 @@
 
 - files   읽기로 연 파일(저장소 상대 NFC posix 경로) + `sys.modules` 의 소스 파일
 - dirs    `os.scandir`·`os.listdir` 로 훑은 디렉터리(저장소 루트 자신은 뺀다)
-- spawned `subprocess.Popen` 으로 띄운 자식의 argv
+- spawned `subprocess.Popen`·`os.posix_spawn`·`os.exec*`·`os.spawn*` 으로 띄운 자식의 argv
 - opaque  추적이 끊긴 자식을 띄웠다 — 이 테스트가 무엇을 읽는지 다 알 수 없다
+
+`os.exec*` 는 프로세스를 갈아 끼워 atexit 이 안 돈다 — 그 직전에 `<pid>-exec.json` 을 따로 남긴다
+(POSIX 의 `os.spawnv` 는 fork 한 자식이 exec 하므로 그 자식이 남긴다).
 
 추적이 켜진 자식 파이썬은 `tests/_trace_site/sitecustomize.py` 가 이 파일을 불러 같은 기록을 남긴다.
 """
@@ -33,7 +36,8 @@ SKIP_PREFIXES = ('.git/', '.venv/', '.pytest_cache/', 'tmp/', '.claude/worktrees
 # `sys` 에 걸어야 두 사본이 같은 기록기를 본다.
 _SLOT = '_affected_trace_recorder'
 
-_HANDLED = frozenset({'open', 'os.scandir', 'os.listdir', 'os.system', 'subprocess.Popen'})
+_HANDLED = frozenset({'open', 'os.scandir', 'os.listdir', 'os.system', 'subprocess.Popen',
+                      'os.exec', 'os.posix_spawn', 'os.spawn', '_posixsubprocess.fork_exec'})
 # 이 파이썬 플래그는 PYTHONPATH·사이트를 무시해 sitecustomize 가 안 실린다.
 _UNTRACED_FLAGS = 'IES'
 _STOP_FLAGS = 'cm'       # 뒤따르는 것이 코드·모듈 — 여기서 플래그 읽기를 멈춘다
@@ -88,6 +92,15 @@ def is_read(mode, flags) -> bool:
     if isinstance(mode, str):
         return not any(c in mode for c in 'wax+')
     return (flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT)) == 0
+
+
+def _uri_path(arg: str) -> str:
+    """`file://` URI 인자(Chrome 에 넘기는 `Path.as_uri()` 등)는 경로로 푼다. 나머지는 그대로."""
+    if not arg.startswith('file:'):
+        return arg
+    from urllib.parse import urlparse        # 무거운 urllib.request 는 URI 가 올 때만 싣는다
+    from urllib.request import url2pathname
+    return url2pathname(urlparse(arg).path)
 
 
 def _is_pathlike(x) -> bool:
@@ -152,14 +165,18 @@ def _traces_child(argv: list, executable, env) -> bool:
 class Recorder:
     """감사 이벤트를 받아 읽은 파일·훑은 디렉터리·띄운 자식을 모은다."""
 
-    def __init__(self, root: str):
+    def __init__(self, root: str, out_dir: str | None = None):
         self.root = root
+        self.out_dir = out_dir       # `os.exec` 직전에 기록을 쓸 곳(없으면 안 쓴다)
         self.files: set[str] = set()
         self.dirs: set[str] = set()
         self.spawned: set[tuple] = set()
         self.opaque = False
         self._done = False
         self._busy = threading.local()   # 훅이 하는 파일 일로 다시 훅이 불리지 않게
+        # `subprocess.Popen` 이벤트 뒤 같은 스레드에서 subprocess 가 스스로 내는 `os.posix_spawn`
+        # (close_fds=False 등)은 이미 다룬 자식이다 — 두 번 판정하지 않게 그 argv 를 적어 둔다.
+        self._in_popen = threading.local()
 
     def hook(self, event: str, args: tuple) -> None:
         # 감사 훅이 예외를 내면 추적되는 프로그램이 깨진다 — 무엇이 와도 삼킨다.
@@ -174,10 +191,19 @@ class Recorder:
                 if not sys._getframe(1).f_code.co_filename.startswith('<frozen importlib'):
                     self._listing(args[0] if args else None)
             elif event == 'subprocess.Popen':
-                try:
-                    self._popen(*args[:4])
-                except Exception:
-                    self.opaque = True   # 무엇을 띄웠는지 못 읽으면 보수적으로
+                self._in_popen.argv = None
+                self._spawn_safely(*args[:4])
+                self._in_popen.argv = tuple(_split_args(args[1]))
+            elif event == '_posixsubprocess.fork_exec':
+                self._in_popen.argv = None              # subprocess 가 fork 로 띄웠다 — 표시만 지운다
+            elif event == 'os.posix_spawn' and self._from_popen(args):
+                self._in_popen.argv = None              # 방금 다룬 subprocess.Popen 의 속 구현
+            elif event in ('os.posix_spawn', 'os.exec', 'os.spawn'):
+                # 인자는 (path, argv, env) — 윈도의 os.spawn 만 앞에 mode 가 하나 더 붙는다.
+                path, argv, env = (list(args[1:] if event == 'os.spawn' else args) + [None] * 3)[:3]
+                self._spawn_safely(path, argv, None, env)
+                if event == 'os.exec' and self.out_dir:  # 프로세스가 바뀌어 atexit 이 안 돈다 — 지금 쓴다
+                    self._write(self.out_dir, f'{os.getpid()}-exec.json')
             elif event == 'os.system':
                 self.opaque = True
         except Exception:
@@ -201,7 +227,18 @@ class Recorder:
         if r:
             self.dirs.add(r)
 
-    def _popen(self, executable, args, cwd, env) -> None:
+    def _from_popen(self, args) -> bool:
+        """이 `os.posix_spawn` 이 같은 스레드에서 방금 다룬 `subprocess.Popen` 과 같은 argv 인가."""
+        pending = getattr(self._in_popen, 'argv', None)
+        return pending is not None and len(args) > 1 and tuple(_split_args(args[1])) == pending
+
+    def _spawn_safely(self, executable, args, cwd, env) -> None:
+        try:
+            self._spawned(executable, args, cwd, env)
+        except Exception:
+            self.opaque = True   # 무엇을 띄웠는지 못 읽으면 보수적으로
+
+    def _spawned(self, executable, args, cwd, env) -> None:
         argv = _split_args(args)
         self.spawned.add(tuple(argv))
         if not _traces_child(argv, executable, env):
@@ -209,6 +246,7 @@ class Recorder:
         here = os.getcwd()
         base = os.path.join(here, os.fsdecode(cwd)) if cwd is not None else here
         for arg in argv:
+            arg = _uri_path(arg)
             r = rel(arg, self.root, base)
             if not r:
                 continue
@@ -231,6 +269,10 @@ class Recorder:
     def finish(self, out_dir: str) -> None:
         """`<out_dir>/<pid>.json` 을 쓴다. 쓰는 동안 훅이 자기 일을 적지 않게 먼저 멈춘다."""
         self._done = True
+        self._write(out_dir, f'{os.getpid()}.json')
+
+    def _write(self, out_dir: str, name: str) -> None:
+        """지금까지의 기록을 `<out_dir>/<name>` 에 쓴다(임시 파일 → 바꿔 끼우기)."""
         files = set(self._snapshot(self.files))
         for mod in list(sys.modules.values()):
             f = getattr(mod, '__file__', None)
@@ -244,7 +286,7 @@ class Recorder:
         data = {'files': sorted(files), 'dirs': sorted(self._snapshot(self.dirs)),
                 'spawned': sorted(list(a) for a in self._snapshot(self.spawned)), 'opaque': self.opaque}
         os.makedirs(out_dir, exist_ok=True)
-        final = os.path.join(out_dir, f'{os.getpid()}.json')
+        final = os.path.join(out_dir, name)
         tmp = final + '.tmp'
         with open(tmp, 'w', encoding='utf-8') as fh:
             json.dump(data, fh, ensure_ascii=False)
@@ -260,7 +302,7 @@ def install() -> 'Recorder | None':
     if existing is not None:
         return existing
     root = os.environ.get(ENV_ROOT) or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    rec = Recorder(root)
+    rec = Recorder(root, out_dir)
     setattr(sys, _SLOT, rec)
     sys.addaudithook(rec.hook)
     atexit.register(rec.finish, out_dir)

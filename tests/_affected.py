@@ -3,6 +3,8 @@
 흐름(한 파일에 다 둔다)::
 
     변경 집합   changed_files(base)  git 기준 커밋과 지금 작업 트리의 차이 → {경로: 'A'|'D'|'M'}
+                                     맵을 만든 커밋과의 차이도 합친다 — 맵이 다른 트리에서 만들어졌어도
+                                     그 사이 바뀐 파일을 놓치지 않게(`plan`)
     의존 맵     <git 공용 폴더>/pytest-affected/map.json   테스트 파일마다 읽은 파일·훑은 디렉터리 기록(`tests/_trace.py` 가 남긴 것)
     고르기      select(...)          변경 집합 × 맵 → Selection(돌릴 파일, 이유, 전체 사유, 안 읽힌 경로)
 
@@ -75,8 +77,11 @@ EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     # Chrome 은 파이썬이 tmp 에 쓴 HTML 만 연다 — 그 재료는 파이썬 쪽에 기록된다.
     'tests/test_lab_html2pdf.py': (), 'tests/test_lab_fit_pages.py': (),
     'tests/test_lab_figure_export.py': (), 'tests/test_trace_guide.py': (), 'tests/test_lab_config.py': (),
-    # git 을 임시 저장소나 인자로 준 경로에만 쓴다.
-    'tests/test_lab_isolate.py': (), 'tests/test_lab_schematic.py': (),
+    # git 을 부른다 — 감사 훅에는 argv 만 남고 git 이 읽는 파일은 안 남지만, 결과가 파일 내용에 기대지 않는다.
+    #   test_lab_isolate   임시 git 저장소에만 쓴다.
+    #   test_lab_schematic 실제 저장소 `보고서/` 의 `git status` 를 실행 앞뒤로 견줘 산출물이 새지 않았는지만 본다.
+    #   test_affected      임시 git 저장소에만 쓴다(가드 정규식의 `sync_playwright`·`chromium` 은 정규식 자신의 글자다).
+    'tests/test_lab_isolate.py': (), 'tests/test_lab_schematic.py': (), 'tests/test_affected.py': (),
     # Chrome 은 파이썬이 tmp 에 쓴 안내 HTML 과 그 옆으로 복사한 그림만 연다 — 원본은 파이썬이 읽어 기록된다.
     'tests/test_breadboard_hand.py': (), 'tests/test_breadboard_v2.py': (),
     # `pdftotext` 는 인자로 준 PDF 한 개만 읽는다 — 그 경로는 띄운 자식의 인자로 기록된다.
@@ -85,8 +90,6 @@ EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     'tests/test_affected_trace.py': (),
     # 실제 복습노트 HTML 을 Chrome·playwright 가 직접 연다.
     'tests/test_workbook_pdf.py': _PACK,
-    # 가드 정규식 자신의 글자(`sync_playwright`·`chromium`)와 tmp 저장소용 git 호출에 걸린 것일 뿐이다.
-    'tests/test_affected.py': (),
     # 가드 정규식이 `stages[0]["node"]` 같은 사전 키를 node 실행으로 오인한 것이다 — 파서는 외부 도구를 안 부른다.
     'tests/test_lab_netlist_parser.py': (),
 }
@@ -120,13 +123,13 @@ def changed_files(base: str, root: Path = ROOT) -> dict[str, str]:
     이름 바꾸기는 합치지 않아(`--no-renames`) 옛 경로는 'D', 새 경로는 'A' 로 둘 다 나온다.
     """
     out: dict[str, str] = {}
-    diff = _git(root, 'diff', '--name-status', '-z', '--no-renames', base)
+    diff = _git(root, 'diff', '--name-status', '-z', '--no-renames', base, '--')   # `--` — 기준을 pathspec 으로 읽지 않게
     if diff.returncode != 0:
         raise RuntimeError(f'git diff 실패: {diff.stderr.decode("utf-8", "replace").strip()}')
     parts = diff.stdout.decode('utf-8').split('\0')
     for status, path in zip(parts[0::2], parts[1::2]):
         if status:
-            out[norm(path)] = status[0] if status[0] in 'AD' else 'M'
+            out[norm(path)] = status[0] if status[0] in ('A', 'D') else 'M'
     others = _git(root, 'ls-files', '--others', '--exclude-standard', '-z')
     if others.returncode != 0:
         raise RuntimeError(f'git ls-files 실패: {others.stderr.decode("utf-8", "replace").strip()}')
@@ -192,7 +195,8 @@ def select(changed: dict[str, str], depmap: dict | None, test_files: Iterable[st
     3. 맵이 없거나 버전이 다르면 전체.
     4. 테스트마다 — 맵에 없으면 늘 고른다. 있으면 자기 자신·읽은 파일이 바뀌었거나,
        훑은 디렉터리 아래 파일이 새로 생기거나 지워졌거나(수정은 파일로만 본다),
-       `extra` glob 에 걸리면 고른다.
+       `extra` glob 에 걸리면 고른다. 추적이 끊긴 자식을 띄웠는데(`opaque`) `extra` 에 행이
+       없는 테스트는 무엇을 읽는지 다 모르므로 늘 고른다(`'추적 끊김'`).
     5. 어느 테스트도 고르지 않은 경로 — 지운 테스트 파일은 버리고, 코드 확장자면 전체,
        나머지는 `unread` 로 보고만 한다.
     """
@@ -223,12 +227,14 @@ def select(changed: dict[str, str], depmap: dict | None, test_files: Iterable[st
         hits = []
         for p, status in norm_changed.items():
             if (p == t or p in files
-                    or (status in 'AD' and any(a in dirs for a in _ancestors(p)))
+                    or (status in ('A', 'D') and any(a in dirs for a in _ancestors(p)))
                     or _match_any(p, globs)):
                 hits.append(p)
         if hits:
             reasons[t] = tuple(sorted(hits))
             claimed.update(hits)
+        elif rec.get('opaque') and t not in extra:
+            reasons[t] = ('추적 끊김',)
 
     unread = []
     full_reason = None
@@ -361,11 +367,19 @@ def rebuild(jobs: int | None = None, root: Path = ROOT, timeout: int = 900) -> d
 
     직전 맵에서 오래 걸린 파일부터 시작해(처음 보는 파일은 맨 앞) 병렬 꼬리를 줄인다.
     시간 초과·기록 없음·추적 중 예외(`None`)는 맵에서 뺀다 — 맵에 없는 테스트는 `select` 가 늘 고른다.
+
+    추적된 파일이 고쳐진 채면 `RuntimeError` — 맵은 HEAD 커밋만 적으므로, 고친 내용으로 잰 기록이
+    HEAD 의 것으로 둔갑한다.
     """
     path = map_path(root)
     head = _git_text(root, 'rev-parse', 'HEAD')
     if head is None:
         raise RuntimeError('git rev-parse HEAD 실패 — 커밋이 없는 저장소')
+    dirty = _git_text(root, 'status', '--porcelain', '--untracked-files=no')
+    if dirty is None:
+        raise RuntimeError('git status 실패 — 작업 트리 상태를 알 수 없다')
+    if dirty:
+        raise RuntimeError('추적된 파일이 고쳐져 있다 — 맵은 HEAD 커밋만 적으니 커밋하거나 되돌린 뒤 rebuild 한다')
     previous = (load_map(path) or {}).get('tests', {})
     tests = sorted(test_files(root), key=lambda t: -previous.get(t, {}).get('seconds', float('inf')))
     started = time.monotonic()
@@ -428,8 +442,19 @@ def header_lines(sel: Selection, base: str, changed: int, total: int,
     return lines
 
 
-def _resolve(root: Path, ref: str) -> str | None:
+def resolve(ref: str, root: Path = ROOT) -> str | None:
+    """`ref` 가 가리키는 커밋 해시. 커밋이 아니거나(경로 등) git 이 실패하면 `None`."""
     return _git_text(root, 'rev-parse', '--verify', '-q', f'{ref}^{{commit}}')
+
+
+def merge_changes(*sets: dict[str, str]) -> dict[str, str]:
+    """변경 집합들의 합. 한 경로에 상태가 갈리면 'A'·'D' 가 'M' 을 이긴다."""
+    out: dict[str, str] = {}
+    for one in sets:
+        for p, status in one.items():
+            if out.get(p) in (None, 'M'):
+                out[p] = status
+    return out
 
 
 def plan(base: str | None = None, root: Path = ROOT) -> tuple[Selection, list[str]]:
@@ -454,19 +479,31 @@ def plan(base: str | None = None, root: Path = ROOT) -> tuple[Selection, list[st
 
 
 def _plan(base: str | None, root: Path) -> tuple[Selection, list[str]]:
+    """변경 집합은 기준과 맵 커밋 두 곳에서 잰 것의 합이다.
+
+    맵은 git 공용 폴더에 하나라 다른 worktree·더 나중의 main 에서 만들어졌을 수 있다. 기준→지금만
+    재면 맵 커밋과 지금 트리 사이의 차이(기준 밖)가 안 보여, 그 사이 새로 생긴 읽기를 놓친다.
+    """
     tests = test_files(root)
     base = base or default_base(root)
     changed = changed_files(base, root)
     depmap = load_map(map_path(root))
-    sel = select(changed, depmap, tests)
     map_commit = built = None
     stale = False
-    resolved = _resolve(root, base)
+    resolved = resolve(base, root)
     base = resolved or base       # 요약 줄에는 ref 이름이 아니라 커밋 해시를 보인다
     if depmap is not None:
         map_commit, built = depmap.get('commit'), depmap.get('built')
-        if map_commit and resolved and map_commit != resolved:
-            stale = _git(root, 'merge-base', '--is-ancestor', map_commit, resolved).returncode == 0
+        if depmap.get('version') == MAP_VERSION:
+            at = resolve(map_commit, root) if isinstance(map_commit, str) and map_commit else None
+            if at is None:
+                sel = Selection(None, {}, '맵 커밋을 찾을 수 없다 — python -m tests._affected rebuild', ())
+                return sel, header_lines(sel, base, len(changed), len(tests), map_commit, built)
+            if at != resolved:
+                changed = merge_changes(changed, changed_files(at, root))
+                stale = resolved is not None and _git(
+                    root, 'merge-base', '--is-ancestor', at, resolved).returncode == 0
+    sel = select(changed, depmap, tests)
     return sel, header_lines(sel, base, len(changed), len(tests), map_commit, built, stale)
 
 
@@ -489,7 +526,11 @@ def main(argv: list[str] | None = None) -> int:
     ex.add_argument('--base', default=None, help='기준 커밋(기본: origin/main 과의 merge-base)')
     args = ap.parse_args(argv)
     if args.cmd == 'rebuild':
-        rebuild(jobs=args.jobs, timeout=args.timeout)
+        try:
+            rebuild(jobs=args.jobs, timeout=args.timeout)
+        except RuntimeError as exc:
+            print(f'rebuild 거절: {exc}', file=sys.stderr)
+            return 1
     else:
         print('\n'.join(explain(args.base)))
     return 0

@@ -10,25 +10,33 @@ import sys
 import unicodedata
 from pathlib import Path
 
+import pytest
+
 from tests._trace import Recorder, install, is_read, rel
 
 REPO = Path(__file__).resolve().parents[1]
+# 가짜 저장소 루트 — POSIX 는 `/r`, 윈도는 `C:\r`(3.13 부터 `/r` 은 윈도에서 절대 경로가 아니다).
+R = os.path.abspath(os.sep + 'r')
+
+
+def _p(*parts: str) -> str:
+    return os.path.join(R, *parts)
 
 
 def test_pyc_는_원본_py_로_적는다():
-    assert rel('/r/scripts/lab/__pycache__/md.cpython-314.pyc', '/r') == 'scripts/lab/md.py'
+    assert rel(_p('scripts', 'lab', '__pycache__', 'md.cpython-314.pyc'), R) == 'scripts/lab/md.py'
 
 
 def test_저장소_밖과_건너뛸_곳은_버린다():
-    assert rel('/elsewhere/x.md', '/r') is None
-    assert rel('/r/.git/HEAD', '/r') is None
-    assert rel('/r/tmp/a.md', '/r') is None
-    assert rel('/r/scripts/__pycache__', '/r') is None
+    assert rel(os.path.abspath(os.sep + 'elsewhere') + os.sep + 'x.md', R) is None
+    assert rel(_p('.git', 'HEAD'), R) is None
+    assert rel(_p('tmp', 'a.md'), R) is None
+    assert rel(_p('scripts', '__pycache__'), R) is None
 
 
 def test_NFD_를_NFC_로():
-    nfd = unicodedata.normalize('NFD', '/r/보고서/실험05/명세.md')
-    assert rel(nfd, '/r') == unicodedata.normalize('NFC', '보고서/실험05/명세.md')
+    nfd = unicodedata.normalize('NFD', _p('보고서', '실험05', '명세.md'))
+    assert rel(nfd, R) == unicodedata.normalize('NFC', '보고서/실험05/명세.md')
 
 
 def test_읽기만_센다():
@@ -102,6 +110,7 @@ def test_x():
     assert got['opaque'] is True
 
 
+@pytest.mark.skipif(os.name != 'posix', reason='`cat` 은 POSIX 에만 있다')
 def test_비파이썬_자식은_opaque_이고_인자_경로를_적는다(tmp_path):
     got = _trace_run(tmp_path, '''
 import subprocess
@@ -157,12 +166,15 @@ def test_install_을_두_번_불러도_기록기와_JSON_은_하나(tmp_path):
 
 
 def test_훅은_엉뚱한_인자에도_예외를_내지_않는다():
-    rec = Recorder('/r')
+    rec = Recorder(R)
     rec.hook('open', (None, None, None))
     rec.hook('open', (12, 'r', 0))
     rec.hook('os.listdir', (object(),))
     rec.hook('subprocess.Popen', (None, None, None, None))
-    rec.hook('open', ('/r/ok.txt', 'r', 0))
+    rec.hook('os.exec', ())
+    rec.hook('os.posix_spawn', (None,))
+    rec.hook('os.spawn', (0,))
+    rec.hook('open', (_p('ok.txt'), 'r', 0))
     assert rec.files == {'ok.txt'}
 
 
@@ -229,3 +241,65 @@ def test_종료_중_다른_스레드가_기록을_바꿔도_JSON_을_쓴다(tmp_
         stop.set()
         t.join()
     assert list(tmp_path.glob('*.json'))
+
+
+def test_file_URI_인자는_경로로_풀어_적는다(tmp_path):
+    # Chrome 에는 `Path.as_uri()` 를 넘긴다(html2pdf·figure_export) — 쿼리가 붙거나 한글·공백이 % 로 와도 같은 파일이다.
+    page = tmp_path / '복습 노트' / 'a.html'
+    page.parent.mkdir()
+    page.write_text('x', encoding='utf-8')
+    rec = Recorder(str(tmp_path))
+    rec.hook('subprocess.Popen', ('chrome', ['chrome', '--headless', f'{page.as_uri()}?fig=1'], None, None))
+    assert rec.files == {'복습 노트/a.html'} and rec.opaque is True
+
+
+def test_os_spawn_으로_추적_변수_없이_띄운_자식은_opaque(tmp_path):
+    # POSIX 의 os.spawnve 는 fork 한 자식이 exec 한다 — 그 자식이 exec 직전에 남긴 기록에 opaque 가 실린다.
+    got = _trace_run(tmp_path, '''
+import os, sys
+def test_x():
+    assert os.spawnve(os.P_WAIT, sys.executable, [sys.executable, '-c', 'pass'], {}) == 0
+''')
+    assert got['opaque'] is True
+
+
+def test_os_spawn_으로_추적_변수를_넘긴_파이썬_자식은_opaque_아님(tmp_path):
+    got = _trace_run(tmp_path, '''
+import os, sys
+def test_x():
+    code = "open('child.txt').read()"
+    assert os.spawnve(os.P_WAIT, sys.executable, [sys.executable, '-c', code], dict(os.environ)) == 0
+''')
+    assert got['opaque'] is False and 'child.txt' in got['files']
+
+
+@pytest.mark.skipif(not hasattr(os, 'posix_spawn'), reason='os.posix_spawn 이 없는 플랫폼')
+def test_os_posix_spawn_으로_추적_변수_없이_띄운_자식은_opaque(tmp_path):
+    got = _trace_run(tmp_path, '''
+import os, sys
+def test_x():
+    pid = os.posix_spawn(sys.executable, [sys.executable, '-c', 'pass'], {})
+    assert os.waitstatus_to_exitcode(os.waitpid(pid, 0)[1]) == 0
+''')
+    assert got['opaque'] is True
+
+
+def test_subprocess_가_속으로_쓰는_posix_spawn_은_다시_판정하지_않는다(tmp_path):
+    # close_fds=False 면 subprocess 가 os.posix_spawn 을 쓴다(macOS) — 추적이 이어지는 자식이 opaque 로 바뀌면 안 된다.
+    got = _trace_run(tmp_path, '''
+import os, subprocess, sys
+def test_x():
+    subprocess.run([sys.executable, '-c', "open('child.txt').read()"], close_fds=False, check=True)
+''')
+    assert got['opaque'] is False and 'child.txt' in got['files']
+
+
+def test_Popen_이_다룬_자식의_posix_spawn_은_한_번만_판정한다():
+    # subprocess 의 속 os.posix_spawn 은 Popen 과 argv 가 같다 — 그 env 가 달라 보여도 다시 판정하지 않는다.
+    argv = ['python', '-c', 'pass']
+    rec = Recorder(R)
+    rec.hook('subprocess.Popen', ('python', argv, None, None))
+    rec.hook('os.posix_spawn', ('/usr/bin/python', argv, {}))
+    assert rec.opaque is False
+    rec.hook('os.posix_spawn', ('/usr/bin/python', argv, {}))   # 짝이 없는 두 번째는 따로 띄운 자식이다
+    assert rec.opaque is True

@@ -1,20 +1,20 @@
 """변경 기반 테스트 라우터(`tests/_affected.py`)의 고르기 검사 — 변경 집합과 `select`."""
 
-import json
 import os
 import re
 import subprocess
-import sys
 import time
 import unicodedata
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 import tests._affected as affected
+import tests.conftest as hooks
 from tests._affected import (
     EXTRA_DEPS, ROOT, Selection, changed_files, default_base, explain, header_lines, load_map,
-    main, map_path, plan, rebuild, save_map, select, trace_file,
+    main, map_path, merge_changes, plan, rebuild, save_map, select, trace_file,
 )
 from tests._affected import test_files as list_test_files  # `test_` 로 시작해 pytest 가 줍지 않게 이름을 바꾼다
 
@@ -102,6 +102,18 @@ def test_EXTRA_glob_으로_고른다():
     assert s.files == {'tests/test_b.py'}
 
 
+def test_추적이_끊긴_테스트는_EXTRA_DEPS_행이_없으면_늘_고른다():
+    m = {'version': 1, 'tests': {**M['tests'], 'tests/test_c.py': {
+        'files': ['tests/test_c.py'], 'dirs': [], 'opaque': True}}}
+    s = select({'보고서/x.md': 'M'}, m, T + ['tests/test_c.py'], extra={})
+    assert s.files == {'tests/test_c.py'} and s.reasons['tests/test_c.py'] == ('추적 끊김',)
+    # EXTRA_DEPS 에 행이 있으면 그 glob 이 대신 답한다
+    s = select({'보고서/x.md': 'M'}, m, T + ['tests/test_c.py'], extra={'tests/test_c.py': ()})
+    assert s.files == frozenset()
+    # 바뀐 게 없으면 여전히 빈 선택이다
+    assert select({}, m, T + ['tests/test_c.py'], extra={}).files == frozenset()
+
+
 def test_바뀐_것이_없으면_빈_선택():
     s = select({}, M, T)
     assert s.files == frozenset() and s.full_reason is None
@@ -158,6 +170,16 @@ def test_이름_바꾸면_두_경로가_다_나온다(tmp_path):
     base = _commit_all(repo, 'base')
     _git(repo, 'mv', 'old.txt', 'new.txt')
     assert changed_files(base, repo) == {'old.txt': 'D', 'new.txt': 'A'}
+
+
+def test_기준_자리에_온_경로를_pathspec_으로_읽지_않는다(tmp_path):
+    # `pytest --affected 경로` 가 경로를 기준으로 삼킨 경우 — 빈 변경 집합이 아니라 실패여야 한다.
+    repo = _repo(tmp_path)
+    (repo / 'a.txt').write_text('0\n', encoding='utf-8')
+    _commit_all(repo, 'base')
+    (repo / 'a.txt').write_text('1\n', encoding='utf-8')
+    with pytest.raises(RuntimeError, match='git diff'):
+        changed_files('a.txt', repo)
 
 
 def test_한글_경로는_NFC_로_나온다(tmp_path):
@@ -302,6 +324,7 @@ def test_x():
     assert trace_file('test_x.py', root=proj, timeout=120)['opaque'] is True
 
 
+@pytest.mark.skipif(os.name != 'posix', reason='프로세스 그룹 정리는 POSIX 에서만 한다(_run_group)')
 def test_정상_종료_뒤에도_남은_손자_프로세스는_죽인다(tmp_path):
     proj = _trace_proj(tmp_path, '''
 import subprocess, sys
@@ -340,7 +363,7 @@ HANG_BODY = 'import time\ndef test_hang():\n    time.sleep(30)\n'
 
 def test_rebuild_는_맵에_빠진_파일을_적지_않는다(tmp_path, capsys):
     proj = _git_proj(tmp_path, {'test_ok.py': OK_BODY, 'test_hang.py': HANG_BODY})
-    rebuild(jobs=2, root=proj, timeout=5)
+    rebuild(jobs=2, root=proj, timeout=15)
     m = load_map(map_path(proj))
     assert set(m['tests']) == {'tests/test_ok.py'} and m['version'] == 1 and m['commit']
     assert m['commit'] == _git(proj, 'rev-parse', 'HEAD')
@@ -357,6 +380,23 @@ def test_rebuild_는_실제_저장소_맵을_건드리지_않는다(tmp_path):
     proj = _git_proj(tmp_path, {'test_ok.py': OK_BODY})
     rebuild(jobs=1, root=proj, timeout=60)
     assert (real.stat().st_mtime_ns if real.exists() else None) == before
+
+
+def test_rebuild_는_추적된_파일이_고쳐져_있으면_거절한다(tmp_path):
+    proj = _git_proj(tmp_path, {'test_ok.py': OK_BODY})
+    (proj / 'data.txt').write_text('고침', encoding='utf-8')
+    (proj / 'new.txt').write_text('untracked 는 상관없다', encoding='utf-8')
+    with pytest.raises(RuntimeError, match='고쳐져'):
+        rebuild(jobs=1, root=proj, timeout=60)
+    assert not map_path(proj).exists()
+
+
+def test_main_rebuild_거절은_0_이_아닌_종료(monkeypatch, capsys):
+    def refuse(**kw):
+        raise RuntimeError('추적된 파일이 고쳐져 있다')
+    monkeypatch.setattr(affected, 'rebuild', refuse)
+    assert main(['rebuild']) == 1
+    assert '고쳐져' in capsys.readouterr().err
 
 
 def test_rebuild_보고는_읽히지_않은_코드_파일을_센다(tmp_path, capsys):
@@ -428,6 +468,37 @@ def test_맵이_기준의_조상이면_오래됐다고_알린다(tmp_path):
     assert lines[-1].startswith('라우터: 맵이 기준보다 오래됐다')
 
 
+def test_변경_합치기는_A_D_가_M_을_이긴다():
+    assert merge_changes({'a': 'M', 'b': 'A', 'c': 'M'}, {'a': 'D', 'c': 'M', 'd': 'M'}) == {
+        'a': 'D', 'b': 'A', 'c': 'M', 'd': 'M'}
+    assert merge_changes({'a': 'A'}, {'a': 'M'}) == {'a': 'A'}
+
+
+def test_맵이_다른_트리에서_만들어졌으면_그_차이도_변경으로_본다(tmp_path):
+    # 맵은 git 공용 폴더에 하나다 — 다른 브랜치(worktree)에서 만든 맵이면 그 커밋과 지금 트리 사이의
+    # 차이가 기준→지금 밖에 있어도 변경이다.
+    proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
+    (proj / 'notes.md').write_text('1\n', encoding='utf-8')
+    head = _commit_all(proj, 'notes')
+    _git(proj, 'switch', '-q', '-c', 'other')
+    (proj / 'notes.md').write_text('2\n', encoding='utf-8')
+    other = _commit_all(proj, '다른 쪽')
+    _git(proj, 'switch', '-q', 'main')
+    save_map(map_path(proj), {'version': 1, 'commit': other, 'built': '2026-10-14T10:00:00', 'tests': {
+        'tests/test_a.py': {'files': ['tests/test_a.py', 'notes.md'], 'dirs': [], 'opaque': False}}})
+    sel, lines = plan('HEAD', proj)
+    assert sel.files == {'tests/test_a.py'} and sel.reasons['tests/test_a.py'] == ('notes.md',)
+    assert lines == [f'라우터: 기준 {head[:7]} · 바뀐 파일 1 · 선택 1/1 · 맵 2026-10-14({other[:7]})']
+
+
+def test_맵_커밋을_찾을_수_없으면_전체(tmp_path):
+    proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
+    _map_for(proj, 'f' * 40)
+    sel, lines = plan('HEAD', proj)
+    assert sel.files is None and sel.full_reason == '맵 커밋을 찾을 수 없다 — python -m tests._affected rebuild'
+    assert lines[0] == f'라우터: 전체 실행 — {sel.full_reason}'
+
+
 def test_plan_은_맵이_없으면_전체(tmp_path):
     proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
     (proj / 'x.txt').write_text('1\n', encoding='utf-8')
@@ -451,7 +522,8 @@ def test_plan_은_git_실패를_전체_실행으로_바꾼다(tmp_path):
 
 def test_plan_은_구조가_깨진_맵에도_예외_없이_전체_실행(tmp_path):
     proj = _git_proj(tmp_path, {'test_a.py': 'def test_a():\n    pass\n'})
-    save_map(map_path(proj), {'version': 1, 'commit': 'x', 'built': 'y', 'tests': ['사전이 아니다']})
+    head = _git(proj, 'rev-parse', 'HEAD')
+    save_map(map_path(proj), {'version': 1, 'commit': head, 'built': 'y', 'tests': ['사전이 아니다']})
     (proj / 'x.txt').write_text('1\n', encoding='utf-8')
     sel, lines = plan('HEAD', proj)
     assert sel.files is None and sel.full_reason.startswith('라우터 오류 — ')
@@ -486,3 +558,114 @@ def test_rebuild_는_한_파일의_추적_예외로_멈추지_않는다(tmp_path
 def test_main_explain_은_종료_코드_0(capsys):
     assert main(['explain', '--base', 'HEAD']) == 0
     assert capsys.readouterr().out.startswith('라우터:')
+
+
+# --- conftest 훅 --------------------------------------------------------------
+
+class _Hook:
+    def __init__(self):
+        self.deselected = []
+
+    def pytest_deselected(self, items):
+        self.deselected.extend(items)
+
+
+_CONTROLLER = object()
+
+
+def _config(opt, *, chosen=None, worker=_CONTROLLER):
+    """`--affected` 값 `opt` 를 가진 가짜 config. 컨트롤러면 stash 에 `chosen` 을, 워커면 `workerinput` 을 싣는다."""
+    cfg = SimpleNamespace(getoption=lambda name: opt, stash=pytest.Stash(), hook=_Hook())
+    if worker is not _CONTROLLER:
+        cfg.workerinput = {'affected': worker}
+    elif opt is not None:
+        files = None if chosen is None else frozenset(chosen)
+        cfg.stash[hooks.AFFECTED] = (Selection(files, {}, None, ()), [])
+    return cfg
+
+
+def _items(*paths):
+    return [SimpleNamespace(path=Path(p)) for p in paths]
+
+
+ITEMS = (
+    ROOT / 'tests' / 'test_a.py', ROOT / 'tests' / 'test_b.py',
+    ROOT / '.claude' / 'skills' / 'logic-lab-solution-video' / 'tests' / 'test_v.py',   # 라우터가 안 고르는 곳
+    ROOT / 'tests' / 'sub' / 'test_s.py',
+    Path(os.path.abspath(os.sep + 'elsewhere')) / 'test_out.py',                        # 저장소 밖
+)
+
+
+@pytest.mark.parametrize('cfg', [
+    pytest.param(lambda: _config(None), id='옵션_없음'),
+    pytest.param(lambda: _config('auto', chosen=None), id='전체_실행'),
+    pytest.param(lambda: _config('auto', worker=None), id='워커_전체_실행'),
+])
+def test_deselect_는_고른_목록이_None_이면_건드리지_않는다(cfg):
+    cfg = cfg()
+    items = _items(*ITEMS)
+    hooks._deselect(cfg, items)
+    assert [i.path for i in items] == list(ITEMS) and cfg.hook.deselected == []
+
+
+@pytest.mark.parametrize('make', [
+    pytest.param(lambda: _config('auto', chosen=['tests/test_a.py']), id='컨트롤러_stash'),
+    pytest.param(lambda: _config('auto', chosen=['tests/test_b.py'], worker=['tests/test_a.py']), id='워커_목록'),
+])
+def test_deselect_는_tests_test_py_만_거르고_나머지는_남긴다(make):
+    cfg = make()
+    items = _items(*ITEMS)
+    hooks._deselect(cfg, items)
+    assert [i.path for i in items] == [p for p in ITEMS if p.name != 'test_b.py']
+    assert [i.path.name for i in cfg.hook.deselected] == ['test_b.py']
+
+
+def test_deselect_는_저장소_경로가_NFD_로_와도_맞춘다():
+    # 저장소 경로(`논회실`)까지 NFD 면 그대로는 저장소 밖으로 보여 걸러지지 않는다.
+    nfd = Path(unicodedata.normalize('NFD', str(ROOT / 'tests' / 'test_가.py')))
+    keep = Path(unicodedata.normalize('NFD', str(ROOT / 'tests' / 'test_나.py')))
+    cfg = _config('auto', chosen=['tests/test_나.py'])
+    items = _items(nfd, keep)
+    hooks._deselect(cfg, items)
+    assert [i.path for i in items] == [keep] and [i.path for i in cfg.hook.deselected] == [nfd]
+
+
+@pytest.mark.parametrize('chosen, status, want', [
+    ([], pytest.ExitCode.NO_TESTS_COLLECTED, pytest.ExitCode.OK),
+    (['tests/test_a.py'], pytest.ExitCode.NO_TESTS_COLLECTED, pytest.ExitCode.NO_TESTS_COLLECTED),
+    (None, pytest.ExitCode.NO_TESTS_COLLECTED, pytest.ExitCode.NO_TESTS_COLLECTED),
+    ([], pytest.ExitCode.TESTS_FAILED, pytest.ExitCode.TESTS_FAILED),
+])
+def test_고른_게_0개일_때만_수집_없음을_0_으로(chosen, status, want):
+    session = SimpleNamespace(config=_config('auto', chosen=chosen), exitstatus=status)
+    hooks.pytest_sessionfinish(session, status)
+    assert session.exitstatus == want
+
+
+def test_옵션_없는_실행은_종료_코드를_건드리지_않는다():
+    session = SimpleNamespace(config=_config(None), exitstatus=pytest.ExitCode.NO_TESTS_COLLECTED)
+    hooks.pytest_sessionfinish(session, session.exitstatus)
+    assert session.exitstatus == pytest.ExitCode.NO_TESTS_COLLECTED
+
+
+def test_기준_검사는_커밋이_아닌_값만_막는다():
+    assert hooks._base_error(None) is None and hooks._base_error('auto') is None
+    assert hooks._base_error('HEAD') is None
+    msg = hooks._base_error('tests/test_affected.py')
+    assert msg is not None and '--affected=BASE' in msg and 'tests/test_affected.py' in msg
+
+
+def test_configure_는_커밋이_아닌_기준에_사용법_오류(monkeypatch):
+    called = []
+    monkeypatch.setattr(affected, 'plan', lambda base: called.append(base) or (None, []))
+    cfg = SimpleNamespace(getoption=lambda name: 'tests/test_affected.py', stash=pytest.Stash())
+    with pytest.raises(pytest.UsageError, match='--affected=BASE'):
+        hooks.pytest_configure(cfg)
+    assert called == [] and hooks.AFFECTED not in cfg.stash
+    cfg = SimpleNamespace(getoption=lambda name: 'HEAD', stash=pytest.Stash())
+    hooks.pytest_configure(cfg)
+    assert called == ['HEAD'] and hooks.AFFECTED in cfg.stash
+    # 워커는 검사도 계획도 하지 않는다 — 컨트롤러가 정한 목록을 받는다
+    cfg = SimpleNamespace(getoption=lambda name: 'tests/x.py', stash=pytest.Stash(), workerinput={})
+    hooks.pytest_configure(cfg)
+    assert called == ['HEAD']

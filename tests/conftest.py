@@ -11,8 +11,11 @@
 `--affected[=기준]` 은 `tests/_affected.py` 가 고른 테스트 파일만 남긴다 — 기준 커밋 뒤 바뀐
 파일을 읽는 테스트만 돌고, 고른 게 없으면 "돌릴 것 없음" 으로 종료 코드 0 이다. 옵션이 없으면
 아무것도 하지 않는다. 워커는 컨트롤러가 정한 목록을 `workerinput` 으로 받는다(워커마다 git 을
-다시 부르지 않는다).
+다시 부르지 않는다). 기준은 `--affected=BASE` 로 붙여 쓴다 — `--affected 경로` 는 경로를 기준으로
+삼켜 버리므로 기준이 커밋이 아니면 사용법 오류로 멈춘다.
 """
+import re
+
 import pytest
 
 from tests import _affected
@@ -26,9 +29,24 @@ def pytest_addoption(parser):
         help='기준 커밋 이후 바뀐 파일을 읽는 테스트 파일만 돈다(tests/_affected.py)')
 
 
+def _base_error(opt, root=_affected.ROOT):
+    """`--affected` 값이 기준으로 쓸 수 없으면 사용법 오류 문구, 쓸 수 있으면 `None`.
+
+    `nargs='?'` 라 `pytest --affected tests/x.py` 는 경로를 기준으로 삼킨다 — 그대로 두면 git 이
+    경로를 pathspec 으로 읽어 "바뀐 파일 없음" 으로 아무것도 안 돌고 0 으로 끝난다.
+    """
+    if opt is None or opt == 'auto' or _affected.resolve(opt, root) is not None:
+        return None
+    return (f"--affected 의 기준 '{opt}' 은(는) 커밋이 아니다 — 기준은 --affected=BASE 로 붙여 쓴다. "
+            '맨 --affected 바로 뒤에 경로를 두면 기준으로 읽힌다(경로를 앞에 두거나 --affected=BASE 로 쓴다)')
+
+
 def pytest_configure(config):
     opt = config.getoption('--affected')
     if opt is not None and not hasattr(config, 'workerinput'):
+        msg = _base_error(opt)
+        if msg is not None:
+            raise pytest.UsageError(msg)
         config.stash[AFFECTED] = _affected.plan(None if opt == 'auto' else opt)
 
 
@@ -67,6 +85,22 @@ def _chosen(config):
     return None if sel.files is None else sorted(sel.files)
 
 
+_ROUTED = re.compile(r'tests/test_[^/]*\.py')     # 라우터가 고르는 파일 — 그 밖에서 모인 항목은 늘 남긴다
+
+
+def _routed_rel(path, root=_affected.ROOT):
+    """`path` 가 라우터가 고르는 `tests/test_*.py` 면 그 저장소 상대 경로, 아니면 `None`.
+
+    양쪽을 `norm` 으로 맞춘 뒤 자른다 — 저장소 경로 앞부분이 NFD 로 와도 같은 문자열이 된다.
+    """
+    base = _affected.norm(str(root)).rstrip('/') + '/'
+    full = _affected.norm(str(path))
+    if not full.startswith(base):
+        return None             # 저장소 밖 — 라우터가 판단할 수 없다
+    rel = full[len(base):]
+    return rel if _ROUTED.fullmatch(rel) else None
+
+
 def _deselect(config, items):
     chosen = _chosen(config)
     if chosen is None:
@@ -74,10 +108,7 @@ def _deselect(config, items):
     keep = set(chosen)
     kept, gone = [], []
     for it in items:
-        try:
-            rel = _affected.norm(it.path.relative_to(_affected.ROOT).as_posix())
-        except ValueError:          # 저장소 밖에서 모인 항목은 라우터가 판단할 수 없다 — 남긴다
-            rel = None
+        rel = _routed_rel(it.path)
         (kept if rel is None or rel in keep else gone).append(it)
     if gone:
         config.hook.pytest_deselected(items=gone)
