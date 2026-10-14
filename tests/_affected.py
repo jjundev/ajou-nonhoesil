@@ -3,7 +3,7 @@
 흐름(한 파일에 다 둔다)::
 
     변경 집합   changed_files(base)  git 기준 커밋과 지금 작업 트리의 차이 → {경로: 'A'|'D'|'M'}
-    의존 맵     tests/.depmap.json   테스트 파일마다 읽은 파일·훑은 디렉터리 기록(`tests/_trace.py` 가 남긴 것)
+    의존 맵     <git 공용 폴더>/pytest-affected/map.json   테스트 파일마다 읽은 파일·훑은 디렉터리 기록(`tests/_trace.py` 가 남긴 것)
     고르기      select(...)          변경 집합 × 맵 → Selection(돌릴 파일, 이유, 전체 사유, 안 읽힌 경로)
 
 맵 형식(version 1)::
@@ -14,8 +14,10 @@
 경로는 모두 저장소 상대·NFC·posix 문자열이다. macOS 도구가 NFD 로 주거나 Windows 가 역슬래시로
 줘도 `norm` 이 같은 문자열로 맞춘다.
 
-이 파일에는 고르기(변경 집합·`select`)가 있다. 맵을 만들고 읽고 계획을 세우는 쪽(`map_path`·
-`load_map`·`rebuild`·`plan`·`header_lines`·`main`)은 같은 파일에 이어 붙는다.
+명령줄::
+
+    python -m tests._affected rebuild [-j N] [--timeout S]   테스트 파일마다 격리해 돌려 맵을 만든다
+    python -m tests._affected explain [--base REF]           지금 변경으로 무엇을 왜 고르는지 보인다
 
 판정은 보수적이다 — 확실히 상관없다고 말할 수 있을 때만 건너뛴다. 아무 테스트도 안 읽는 코드가
 바뀌면 전체를 돌리고, 맵이 없거나 라우터 자신이 바뀌어도 전체를 돌린다.
@@ -23,11 +25,23 @@
 
 from __future__ import annotations
 
+import argparse
+import json
+import os
+import platform
+import signal
 import subprocess
+import sys
+import tempfile
+import time
 import unicodedata
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path, PurePosixPath
+
+from tests._trace import ENV_DIR, ENV_ROOT
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -65,6 +79,8 @@ EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     'tests/test_lab_isolate.py': (), 'tests/test_lab_schematic.py': (),
     # 가드 정규식 자신의 글자(`sync_playwright`·`chromium`)와 tmp 저장소용 git 호출에 걸린 것일 뿐이다.
     'tests/test_affected.py': (),
+    # 가드 정규식이 `stages[0]["node"]` 같은 사전 키를 node 실행으로 오인한 것이다 — 파서는 외부 도구를 안 부른다.
+    'tests/test_lab_netlist_parser.py': (),
 }
 
 
@@ -113,13 +129,18 @@ def changed_files(base: str, root: Path = ROOT) -> dict[str, str]:
 
 
 def default_base(root: Path = ROOT) -> str:
-    """기준 커밋 — `origin/main` 과의 merge-base, 없으면 `main` 과의 merge-base, 그것도 없으면 HEAD."""
+    """기준 커밋 — `origin/main` 과의 merge-base, 없으면 `main` 과의 merge-base, 그것도 없으면 HEAD.
+
+    ref 가 있는데 merge-base 가 실패하면(공통 조상이 없는 역사 등) 다음 후보로 넘어가지 않고
+    `RuntimeError` — 넘어가면 이 브랜치의 커밋이 변경 집합에서 빠진다.
+    """
     for ref in ('refs/remotes/origin/main', 'refs/heads/main'):
         if _git_text(root, 'rev-parse', '--verify', '-q', ref) is None:
             continue
         base = _git_text(root, 'merge-base', 'HEAD', ref)
-        if base:
-            return base
+        if not base:
+            raise RuntimeError(f'git merge-base HEAD {ref} 실패 — 기준 커밋을 정할 수 없다')
+        return base
     head = _git_text(root, 'rev-parse', 'HEAD')
     if head is None:
         raise RuntimeError('git rev-parse HEAD 실패 — 커밋이 없는 저장소')
@@ -185,6 +206,8 @@ def select(changed: dict[str, str], depmap: dict | None, test_files: Iterable[st
         rec = maps.get(t)
         if rec is None:
             reasons[t] = ('맵에 없음',)
+            if t in norm_changed:       # 새 테스트 파일 자신의 변경도 이 테스트가 받는다(전체 실행 사유가 아니다)
+                claimed.add(t)
             continue
         files = set(rec.get('files', ()))
         dirs = set(rec.get('dirs', ()))
@@ -210,3 +233,227 @@ def select(changed: dict[str, str], depmap: dict | None, test_files: Iterable[st
         else:
             unread.append(p)
     return Selection(None if full_reason else frozenset(reasons), reasons, full_reason, tuple(unread))
+
+
+# --- 맵 입출력 ----------------------------------------------------------------
+
+def map_path(root: Path = ROOT) -> Path:
+    """맵 파일 — git 공용 폴더 아래라 worktree 들이 한 맵을 나눠 쓰고 커밋에는 안 섞인다."""
+    common = _git_text(root, 'rev-parse', '--path-format=absolute', '--git-common-dir')
+    if not common:
+        raise RuntimeError('git rev-parse --git-common-dir 실패 — git 저장소가 아니다')
+    return Path(common) / 'pytest-affected' / 'map.json'
+
+
+def load_map(path: Path) -> dict | None:
+    """맵을 읽는다. 없거나 JSON 이 깨졌으면 `None`(→ 전체 실행)."""
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def save_map(path: Path, data: dict) -> None:
+    """부모 폴더를 만들고, 같은 폴더의 임시 파일에 쓴 뒤 `os.replace` 로 바꿔 끼운다."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix='.map-', suffix='.tmp')
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=1, sort_keys=True)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def test_files(root: Path = ROOT) -> list[str]:
+    """`tests/test_*.py` 를 정렬해 저장소 상대 경로로."""
+    return sorted(norm(p.relative_to(root).as_posix()) for p in (root / 'tests').glob('test_*.py'))
+
+
+# --- 맵 만들기 ----------------------------------------------------------------
+
+def _run_group(cmd: list[str], *, cwd: Path, env: dict, timeout: int) -> int | None:
+    """`cmd` 를 새 프로세스 그룹으로 돌려 종료 코드를 준다. 시간이 넘으면 그룹째 죽이고 `None`."""
+    posix = os.name == 'posix'
+    proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=posix)
+    try:
+        return proc.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        if posix:
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        else:
+            proc.kill()
+        proc.wait()
+        return None
+
+
+def trace_file(test: str, root: Path = ROOT, timeout: int = 900) -> dict | None:
+    """테스트 파일 하나를 추적기(`tests._trace`)를 켜고 따로 돌려 맵 항목을 만든다.
+
+    `{'files', 'dirs', 'opaque', 'seconds', 'outcome'}` — outcome 은 종료 코드 0 → passed,
+    1 → failed, 그 밖 → error. 실패한 테스트도 읽은 기록은 남는다. 시간이 넘거나 기록이
+    하나도 안 남으면 `None`.
+    """
+    with tempfile.TemporaryDirectory(prefix='affected-trace-') as out:
+        pypath = os.pathsep.join(
+            [str(ROOT / 'tests' / '_trace_site'), str(ROOT)]
+            + ([os.environ['PYTHONPATH']] if os.environ.get('PYTHONPATH') else []))
+        env = {**os.environ, ENV_DIR: out, ENV_ROOT: str(root), 'PYTHONPATH': pypath}
+        start = time.monotonic()
+        code = _run_group(
+            [sys.executable, '-m', 'pytest', '-n0', '-p', 'tests._trace', '-p', 'no:cacheprovider', '-q', test],
+            cwd=root, env=env, timeout=timeout)
+        seconds = round(time.monotonic() - start, 2)
+        if code is None:
+            return None
+        files: set[str] = set()
+        dirs: set[str] = set()
+        opaque = False
+        found = False
+        for jf in sorted(Path(out).glob('*.json')):
+            try:
+                one = json.loads(jf.read_text(encoding='utf-8'))
+            except (OSError, ValueError):
+                continue
+            found = True
+            files.update(one.get('files', ()))
+            dirs.update(one.get('dirs', ()))
+            opaque = opaque or bool(one.get('opaque'))
+    if not found:
+        return None
+    return {'files': sorted(files), 'dirs': sorted(dirs), 'opaque': opaque, 'seconds': seconds,
+            'outcome': {0: 'passed', 1: 'failed'}.get(code, 'error')}
+
+
+def rebuild(jobs: int | None = None, root: Path = ROOT, timeout: int = 900) -> dict:
+    """테스트 파일마다 `trace_file` 을 돌려 맵을 저장하고 돌려준다. 끝에 보고를 찍는다.
+
+    직전 맵에서 오래 걸린 파일부터 시작해(처음 보는 파일은 맨 앞) 병렬 꼬리를 줄인다.
+    시간 초과·기록 없음(`None`)은 맵에서 뺀다 — 맵에 없는 테스트는 `select` 가 늘 고른다.
+    """
+    path = map_path(root)
+    head = _git_text(root, 'rev-parse', 'HEAD')
+    if head is None:
+        raise RuntimeError('git rev-parse HEAD 실패 — 커밋이 없는 저장소')
+    previous = (load_map(path) or {}).get('tests', {})
+    tests = sorted(test_files(root), key=lambda t: -previous.get(t, {}).get('seconds', float('inf')))
+    started = time.monotonic()
+    with ThreadPoolExecutor(max_workers=max(1, jobs or os.cpu_count() or 1)) as pool:
+        entries = list(pool.map(lambda t: trace_file(t, root, timeout), tests))
+    data = {
+        'version': MAP_VERSION, 'commit': head, 'built': datetime.now().isoformat(timespec='seconds'),
+        'python': platform.python_version(), 'platform': sys.platform,
+        'tests': {t: e for t, e in zip(tests, entries) if e is not None},
+    }
+    save_map(path, data)
+    _report(data, [t for t, e in zip(tests, entries) if e is None], time.monotonic() - started, root)
+    return data
+
+
+def _report(data: dict, dropped: list[str], seconds: float, root: Path) -> None:
+    """rebuild 가 끝난 뒤 맵의 빈틈을 찍는다."""
+    entries = data['tests']
+    failed = sorted(t for t, e in entries.items() if e['outcome'] != 'passed')
+    opaque = sorted(t for t, e in entries.items() if e['opaque'] and t not in EXTRA_DEPS)
+    read: set[str] = set()
+    for e in entries.values():
+        read.update(e['files'])
+    listed = _git(root, 'ls-files', '-z')
+    unread = []
+    if listed.returncode == 0:
+        for p in (norm(x) for x in listed.stdout.decode('utf-8').split('\0') if x):
+            if (PurePosixPath(p).suffix in CODE_SUFFIXES and not _match_any(p, IGNORE)
+                    and p not in FULL_TRIGGERS and not p.startswith(_TRIGGER_DIR)
+                    and p not in read and (root / p).is_file()):
+                unread.append(p)
+    print(f'라우터 맵: 테스트 파일 {len(entries)}개 기록 · {seconds:.0f}초 · {data["commit"][:7]}')
+    if failed:
+        print(f'  실패·오류로 끝난 파일 {len(failed)}개(읽은 기록은 남김): ' + ', '.join(failed))
+    if dropped:
+        print(f'  시간 초과·기록 없음으로 맵에서 뺀 파일 {len(dropped)}개(늘 고름): ' + ', '.join(dropped))
+    if opaque:
+        print(f'  추적이 끊긴 자식을 띄우는데 EXTRA_DEPS 에 없는 파일 {len(opaque)}개: ' + ', '.join(opaque))
+    if unread:
+        print(f'  어느 테스트도 읽지 않은 코드 파일 {len(unread)}개(앞 20개):')
+        for p in unread[:20]:
+            print(f'    {p}')
+
+
+# --- 계획 ---------------------------------------------------------------------
+
+def header_lines(sel: Selection, base: str, changed: int, total: int,
+                 map_commit: str | None, built: str | None, stale: bool = False) -> list[str]:
+    """요약 줄 — 고름·전체·빈 선택 셋 중 하나, 맵이 오래됐으면 한 줄 더."""
+    if sel.full_reason is not None or sel.files is None:
+        lines = [f'라우터: 전체 실행 — {sel.full_reason}']
+    elif not sel.files:
+        lines = ['라우터: 바뀐 파일 없음 — 돌릴 것 없음' if changed == 0
+                 else f'라우터: 바뀐 파일 {changed} 개를 읽는 테스트 없음 — 돌릴 것 없음']
+    else:
+        lines = [f'라우터: 기준 {base[:7]} · 바뀐 파일 {changed} · 선택 {len(sel.files)}/{total}'
+                 f' · 맵 {(built or "")[:10]}({(map_commit or "")[:7]})']
+    if stale:
+        lines.append('라우터: 맵이 기준보다 오래됐다 — python -m tests._affected rebuild')
+    return lines
+
+
+def _resolve(root: Path, ref: str) -> str | None:
+    return _git_text(root, 'rev-parse', '--verify', '-q', f'{ref}^{{commit}}')
+
+
+def plan(base: str | None = None, root: Path = ROOT) -> tuple[Selection, list[str]]:
+    """기준 → 변경 집합 → 맵 → 고르기, 그리고 요약 줄. git 이 실패하면 전체 실행으로 돌린다."""
+    tests = test_files(root)
+    try:
+        base = base or default_base(root)
+        changed = changed_files(base, root)
+        path = map_path(root)
+    except RuntimeError as exc:
+        sel = Selection(None, {}, f'git 실패 — {str(exc).splitlines()[0]}', ())
+        return sel, header_lines(sel, base or '', 0, len(tests), None, None)
+    depmap = load_map(path)
+    sel = select(changed, depmap, tests)
+    map_commit = built = None
+    stale = False
+    resolved = _resolve(root, base)
+    base = resolved or base       # 요약 줄에는 ref 이름이 아니라 커밋 해시를 보인다
+    if depmap is not None:
+        map_commit, built = depmap.get('commit'), depmap.get('built')
+        if map_commit and resolved and map_commit != resolved:
+            stale = _git(root, 'merge-base', '--is-ancestor', map_commit, resolved).returncode == 0
+    return sel, header_lines(sel, base, len(changed), len(tests), map_commit, built, stale)
+
+
+def explain(base: str | None = None, root: Path = ROOT) -> list[str]:
+    """`plan` 의 요약 줄 + 고른 테스트마다 걸린 경로 + 아무도 안 읽는 경로."""
+    sel, lines = plan(base, root)
+    for t in sorted(sel.files or ()):
+        lines.append(f'  {t} ← {", ".join(sel.reasons.get(t, ()))}')
+    lines.extend(f'  (읽는 테스트 없음) {p}' for p in sel.unread)
+    return lines
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(prog='python -m tests._affected', description=__doc__.splitlines()[0])
+    sub = ap.add_subparsers(dest='cmd', required=True)
+    rb = sub.add_parser('rebuild', help='테스트 파일마다 격리해 돌려 의존 맵을 만든다')
+    rb.add_argument('-j', '--jobs', type=int, default=None, help='동시에 돌릴 수(기본: CPU 수)')
+    rb.add_argument('--timeout', type=int, default=900, help='파일마다 제한 시간(초)')
+    ex = sub.add_parser('explain', help='지금 변경에서 무엇을 왜 고르는지 보인다')
+    ex.add_argument('--base', default=None, help='기준 커밋(기본: origin/main 과의 merge-base)')
+    args = ap.parse_args(argv)
+    if args.cmd == 'rebuild':
+        rebuild(jobs=args.jobs, timeout=args.timeout)
+    else:
+        print('\n'.join(explain(args.base)))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
