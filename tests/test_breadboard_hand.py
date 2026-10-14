@@ -152,6 +152,10 @@ class HandRender(unittest.TestCase):
     def _count(self, bb, rgba):
         return sum(1 for p in bb.overlay.get_flattened_data() if p == rgba)
 
+    def _ink(self, bb, rgba):
+        """획 레이어에서 그 색으로 꽉 찬 픽셀 수 — 가장자리(반투명)는 안 센다."""
+        return sum(1 for p in bb.hand_layer.get_flattened_data() if p == rgba)
+
     def test_칩_LED_저항은_비워_둔다(self):
         # 사람이 그 자리에 직접 그린다 — 몸통 색이 한 픽셀도 없어야 한다
         plain, _, _ = self._render(None)
@@ -165,7 +169,7 @@ class HandRender(unittest.TestCase):
     def test_입력은_선만_두고_이름_배지는_비운다(self):
         plain, _, _ = self._render(None)
         bb, _, _ = self._render(42)
-        self.assertGreater(self._count(bb, self.mod.INPUT), 0)    # 보라 점퍼선은 남는다
+        self.assertGreater(self._ink(bb, self.mod.INPUT), 0)    # 보라 점퍼선은 남는다(획 레이어)
         segs = {i['seg'] for i in bb.inputs}
         boxes = [box for _, box, seg in bb.tag_boxes if seg in segs]
         self.assertTrue(boxes)
@@ -190,20 +194,19 @@ class HandRender(unittest.TestCase):
         bb, _, _ = self._render(42, guide=True)
         for col in self.mod.WIRE.values():
             self.assertEqual(self._count(bb, col), 0, col)
-        self.assertGreater(self._count(bb, self.mod.KEEP), 0)
+            self.assertEqual(self._ink(bb, col), 0, col)
+        self.assertGreater(self._ink(bb, self.mod.KEEP), 0)
         for rgba in [(30, 33, 36, 255), (220, 20, 20, 240), (225, 195, 145, 255), self.mod.INPUT]:
             self.assertGreater(self._count(bb, rgba), 0, rgba)
 
     def test_안내판_회색선은_시험판_선과_같은_자리(self):
-        # 팀원이 시험판과 안내판을 겹쳐 본다 — 흔들림이 같아야 한다
+        # 팀원이 시험판과 안내판을 겹쳐 본다 — 같은 시드면 획 좌표가 같아야 한다
         blank, _, _ = self._render(42)
         guide, _, _ = self._render(42, guide=True)
-        wire_cols = set(self.mod.WIRE.values()) | {self.mod.INPUT}
-        a, b = blank.overlay.load(), guide.overlay.load()
-        W, H = blank.overlay.size
-        hits = [(x, y) for y in range(0, H, 2) for x in range(0, W, 2) if a[x, y] in wire_cols]
-        same = sum(1 for x, y in hits if b[x, y] == self.mod.KEEP)
-        self.assertGreater(same / len(hits), 0.99)
+        self.assertTrue(blank.hand_strokes)
+        self.assertEqual([(s['points'], s['dots']) for s in blank.hand_strokes],
+                         [(s['points'], s['dots']) for s in guide.hand_strokes])
+        self.assertEqual({s['color'] for s in guide.hand_strokes}, {self.mod.KEEP})
 
     def test_안내판도_배치는_같다(self):
         a, _, _ = self._render(42)
@@ -224,6 +227,42 @@ class HandRender(unittest.TestCase):
     def test_기준선_이나_층과_못_섞는다(self):
         with self.assertRaises(ValueError):
             self.mod.BreadboardRenderer(None, layer=(1, 2), board='v1', hand=1)
+
+    def test_손그림_overlay_는_비어_있다(self):
+        # 배선은 획 레이어로 갔다 — 부품·배지·번호 원은 비웠으니 overlay 에 아무것도 없어야 한다
+        bb, _, _ = self._render(42)
+        self.assertIsNone(bb.overlay.getbbox())
+
+    def test_모든_배선이_획이다(self):
+        bb, _, _ = self._render(42)
+        self.assertEqual(len(bb.hand_strokes), len(bb._segments))
+        self.assertEqual({s['width'] for s in bb.hand_strokes}, {self.mod.HAND_WIDTH})
+
+    def test_획_끝점은_구간_끝점(self):
+        bb, _, _ = self._render(42)
+        for s, (_, pts, _) in zip(bb.hand_strokes, bb._segments):
+            self.assertEqual(s['points'][0], tuple(map(float, pts[0])))
+            self.assertEqual(s['points'][-1], tuple(map(float, pts[-1])))
+
+    def test_hand_없으면_획도_레이어도_없다(self):
+        bb, _, _ = self._render(None)
+        self.assertEqual(bb.hand_strokes, [])
+        self.assertIsNone(bb.hand_layer)
+
+    def test_획_레이어는_안티앨리어싱(self):
+        bb, _, _ = self._render(42)
+        self.assertEqual(bb.hand_layer.size, bb.im.size)
+        alphas = {p[3] for p in bb.hand_layer.get_flattened_data()}
+        self.assertGreater(len(alphas), 20)       # 0·255 말고도 중간 알파가 많다
+
+    def test_가장자리_색은_획_색(self):
+        # MuPDF 알파 표본은 premultiplied — 그대로 읽으면 가장자리가 검게 번진다
+        bb, _, _ = self._render(42)
+        cols = {s['color'][:3] for s in bb.hand_strokes}
+        edge = [p for p in bb.hand_layer.get_flattened_data() if 64 <= p[3] < 255]
+        self.assertTrue(edge)
+        near = sum(1 for p in edge if min(max(abs(p[i] - c[i]) for i in range(3)) for c in cols) <= 30)
+        self.assertGreater(near / len(edge), 0.9)
 
 
 class HandRenderE5(unittest.TestCase):
@@ -261,15 +300,20 @@ class HandRenderE5(unittest.TestCase):
             for rgba in [(30, 33, 36, 255), (220, 20, 20, 240), (225, 195, 145, 255)]:
                 self.assertGreater(self._count(plain, rgba), 0, (name, rgba))
                 self.assertEqual(self._count(bb, rgba), 0, (name, rgba))
-            self.assertGreater(self._count(bb, self.mod.INPUT), 0, name)
+            self.assertGreater(sum(1 for p in bb.hand_layer.get_flattened_data()
+                                   if p == self.mod.INPUT), 0, name)
 
     def test_실험05_안내판_선은_회색(self):
         for name in self.BUILDERS:
             bb = self._render(name, 42, guide=True)
             for col in self.mod.WIRE.values():
                 self.assertEqual(self._count(bb, col), 0, (name, col))
-            self.assertGreater(self._count(bb, self.mod.KEEP), 0, name)
+            self.assertEqual({s['color'] for s in bb.hand_strokes}, {self.mod.KEEP}, name)
             self.assertGreater(self._count(bb, (30, 33, 36, 255)), 0, name)   # 칩은 색
+
+    def test_실험05_손그림_overlay_는_비어_있다(self):
+        for name in self.BUILDERS:
+            self.assertIsNone(self._render(name, 42).overlay.getbbox(), name)
 
 
 class HandSimScript(unittest.TestCase):

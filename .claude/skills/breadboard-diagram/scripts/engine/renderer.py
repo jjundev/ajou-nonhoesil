@@ -16,6 +16,9 @@ class BreadboardRenderer(_RuleChecks):
         self.hand_guide = hand_guide
         self._in_parts = False    # `_blank_parts` 안 — 안내판에서 부품 배지는 제 색
         self._hand_rng = random.Random(hand) if hand is not None else None
+        # 손그림 획 — 긋지 않고 기록한다. export 가 `strokes_layer` 로, hand_sim 이 PDF 벡터로 긋는다
+        self.hand_strokes = []
+        self.hand_layer = None
         # 판형 버전. 주차 `배치.py` 의 `BOARD` 를 빌더가 그대로 넘긴다 — `build_all` 이 대조한다
         self.board = board
         self.spec = board_spec(board)
@@ -604,6 +607,17 @@ class BreadboardRenderer(_RuleChecks):
                 break
         self._marker_removed(int(x), int(y), n)
 
+    def _hand_stroke(self, points, color):
+        """손그림 모드 배선 한 가닥 — 획으로 기록만 한다(2026-10-15). 시드 rng 를 쓰는 순서가 같아
+        손그림모사와 안내판의 획 좌표가 같다."""
+        rng = self._hand_rng
+        self.hand_strokes.append({
+            'points': _hand_polyline(points, rng),
+            'color': tuple(color),
+            'width': HAND_WIDTH,
+            'dots': [_hand_dot(p, rng) for p in (points[0], points[-1])],
+        })
+
     def step_wire(self, points, kind, desc, width=3, marker_at=None, count=1,
                   frm=None, to=None, marker_near=None, color=None):
         """배선 하나 + 결선 순서표 한 줄. `desc` 는 짧은 뜻풀이 — 주소는 좌표에서 뽑는다.
@@ -638,10 +652,7 @@ class BreadboardRenderer(_RuleChecks):
         else:
             color = color or WIRE[kind]
         if self.hand is not None:
-            rng = self._hand_rng
-            draw.line(_hand_polyline(points, rng), fill=color, width=HAND_WIDTH, joint='curve')
-            for p in (points[0], points[-1]):
-                draw.ellipse(_hand_dot(p, rng), fill=color)
+            self._hand_stroke(points, color)
         else:
             draw.line(points, fill=color, width=width, joint='curve')
             for p in (points[0], points[-1]):
@@ -1070,12 +1081,16 @@ class BreadboardRenderer(_RuleChecks):
             kept = self.baseline is not None and key in self.baseline['wires']
             kept_lines += kept
             col = KEEP if kept or view == 'faded' or self.hand_guide else WIRE[rail]
-            draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
+            if self.hand is not None:
+                self._hand_stroke([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], col)
+            else:
+                draw.line([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))], fill=col, width=2)
             self._segments.append((rail, [(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))],
                                    f'{chip} pin {p} 미사용 입력'))
             self._register_pass([(x_pin, self.r_y(row)), (x_rail, self.r_y(r_rail))])
-            draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
-            draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
+            if self.hand is None:
+                draw.ellipse([x_pin-3, self.r_y(row)-3, x_pin+3, self.r_y(row)+3], fill=col)
+                draw.ellipse([x_rail-3, self.r_y(r_rail)-3, x_rail+3, self.r_y(r_rail)+3], fill=col)
             self.lead(x_pin, self.r_y(row), f'{chip} pin {p} 미사용 입력 접지선')
             self.lead(x_rail, self.r_y(r_rail), f'{chip} pin {p} 미사용 입력 접지선')
             self.touch_rail(rail, x_rail)
@@ -1371,8 +1386,12 @@ class BreadboardRenderer(_RuleChecks):
                 f'걷기 대상 LED 사슬을 앞 빌더가 그리지 않았다: {undrawn} — '
                 'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
         # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
-        final_im = Image.alpha_composite(Image.alpha_composite(self.im, self.ghost_layer),
-                                         self.overlay)
+        base = Image.alpha_composite(self.im, self.ghost_layer)
+        if self.hand is not None:
+            # 손그림 획은 overlay 아래 — 안내판의 색 부품이 회색 선 위에 온다(2026-10-15)
+            self.hand_layer = strokes_layer(self.hand_strokes, self.spec.size, SCALE)
+            base = Image.alpha_composite(base, self.hand_layer)
+        final_im = Image.alpha_composite(base, self.overlay)
         board_h = self.r_y(max_row) + 20
         out = final_im.crop((0, 0, self.spec.size[0] * SCALE, board_h * SCALE)).convert('RGB')
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

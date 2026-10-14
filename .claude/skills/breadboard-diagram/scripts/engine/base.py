@@ -231,6 +231,36 @@ def _hand_dot(p, rng):
     return [p[0] - rx, p[1] - ry, p[0] + rx, p[1] + ry]
 
 
+def draw_strokes(page, strokes, to_pt, k):
+    """손그림 획을 pymupdf 쪽에 벡터로 긋는다 — 둥근 끝·둥근 이음, 끝점은 채운 타원.
+    `to_pt(x, y)` 는 논리 좌표 -> 쪽 pt, `k` 는 굵기 배율(pt / 논리 px)."""
+    import pymupdf
+    for s in strokes:
+        rgb = tuple(c / 255 for c in s['color'][:3])
+        shape = page.new_shape()
+        shape.draw_polyline([pymupdf.Point(*to_pt(x, y)) for x, y in s['points']])
+        shape.finish(color=rgb, width=s['width'] * k, lineCap=1, lineJoin=1, closePath=False)
+        for x0, y0, x1, y1 in s['dots']:
+            shape.draw_oval(pymupdf.Rect(*to_pt(x0, y0), *to_pt(x1, y1)))
+            shape.finish(color=None, fill=rgb, width=0)
+        shape.commit()
+
+
+def strokes_layer(strokes, size, scale):
+    """획을 MuPDF 로 안티앨리어싱한 RGBA 레이어 — 논리 크기 빈 쪽에 그려 `scale` 배로 래스터화한다.
+    PNG·안내판이 손그림모사 PDF 와 같은 코드로 같은 선을 얻는다."""
+    import pymupdf
+    w, h = size
+    doc = pymupdf.open()
+    page = doc.new_page(width=w, height=h)
+    draw_strokes(page, strokes, lambda x, y: (x, y), 1.0)
+    pix = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), alpha=True)
+    if (pix.width, pix.height) != (w * scale, h * scale):
+        raise ValueError(f'획 레이어 크기 {pix.width}x{pix.height} 가 캔버스 {w * scale}x{h * scale} 와 다르다')
+    # MuPDF 알파 표본은 premultiplied — 'RGBa' 로 읽어 풀어야 가장자리가 검게 번지지 않는다
+    return Image.frombytes('RGBa', (pix.width, pix.height), pix.samples).convert('RGBA')
+
+
 def _font(kind, size):
     return _ScaledFont(font_path(kind), size)
 
