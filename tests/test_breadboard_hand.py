@@ -3,6 +3,7 @@
 흔들림은 그리기에만 걸리고 점유표·순서표·`verify()` 는 평소와 같아야 한다.
 """
 import importlib.util
+import math
 import random
 import shutil
 import tempfile
@@ -22,51 +23,84 @@ def _load(name="render_breadboard"):
     return mod
 
 
+def _seg_dist(p, a, b):
+    """점 p 에서 선분 ab 까지 거리."""
+    (px, py), (ax, ay), (bx, by) = p, a, b
+    dx, dy = bx - ax, by - ay
+    L2 = dx * dx + dy * dy
+    t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / L2))
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+
+
 class HandPolyline(unittest.TestCase):
+    """손그림 획 모델 — 구간마다 활 하나 + 미세 떨림, 수직 방향만(2026-10-15)."""
+
     @classmethod
     def setUpClass(cls):
         cls.mod = _load()
 
-    def _pts(self, seed=7):
-        pts = [(100.0, 50.0), (100.0, 300.0), (400.0, 300.0)]
-        return pts, self.mod._hand_polyline(pts, random.Random(seed))
+    PATH = [(100.0, 50.0), (100.0, 300.0), (400.0, 300.0)]
+
+    def _out(self, seed=7, pts=None):
+        return self.mod._hand_polyline(pts or self.PATH, random.Random(seed))
 
     def test_끝점은_그대로다(self):
-        pts, out = self._pts()
-        self.assertEqual(out[0], pts[0])
-        self.assertEqual(out[-1], pts[-1])
+        out = self._out()
+        self.assertEqual(out[0], self.PATH[0])
+        self.assertEqual(out[-1], self.PATH[-1])
 
-    def test_진폭은_2px_를_안_넘는다(self):
-        # 원 경로(두 축 정렬 구간) 위 가장 가까운 점까지 축별 거리
-        _, out = self._pts()
-        for x, y in out:
-            d = min(max(abs(x - 100), max(0, 50 - y, y - 300)),
-                    max(abs(y - 300), max(0, 100 - x, x - 400)))
-            self.assertLessEqual(d, 2.0 + 1e-9)
+    def test_모서리는_그대로다(self):
+        # 모서리점이 결과에 정확히 들어 있다 — L 자 경로의 꺾임이 홀·경로점에 남는다
+        for s in range(20):
+            self.assertIn(self.PATH[1], self._out(s))
 
-    def test_실제로_흔들린다(self):
-        _, out = self._pts()
-        self.assertTrue(any(abs(x - 100) > 0.5 for x, y in out if 80 < y < 280))
+    def test_오프셋은_활_더하기_떨림을_안_넘는다(self):
+        bound = self.mod.HAND_BOW_MAX + self.mod.HAND_TREMOR + 1e-9
+        for s in range(50):
+            for p in self._out(s):
+                d = min(_seg_dist(p, self.PATH[0], self.PATH[1]), _seg_dist(p, self.PATH[1], self.PATH[2]))
+                self.assertLessEqual(d, bound)
+
+    def test_긴_직선은_가운데가_한쪽으로만_휜다(self):
+        # 출렁이지 않는다 — 옛 모델(사인 셋)은 2~8칸마다 부호가 바뀌었다
+        a, b = (0.0, 100.0), (400.0, 100.0)
+        for s in range(50):
+            mid = [y - 100.0 for x, y in self._out(s, [a, b]) if 80 <= x <= 320]
+            self.assertTrue(all(v > 0 for v in mid) or all(v < 0 for v in mid), s)
+            self.assertGreater(max(abs(v) for v in mid), 0.7, s)   # 활 ≥ 1.0 − 떨림 0.25
+
+    def test_수직_방향으로만_움직인다(self):
+        # 가로선 위 점들의 x 는 단조 증가 — 축별로 따로 흔들던 옛 모델과 다르다
+        xs = [x for x, _ in self._out(3, [(0.0, 10.0), (200.0, 10.0)])]
+        self.assertEqual(xs, sorted(xs))
 
     def test_같은_시드는_같은_점(self):
-        self.assertEqual(self._pts(3)[1], self._pts(3)[1])
-        self.assertNotEqual(self._pts(3)[1], self._pts(4)[1])
+        self.assertEqual(self._out(3), self._out(3))
+        self.assertNotEqual(self._out(3), self._out(4))
 
-    def test_짧은_선도_된다(self):
-        out = self.mod._hand_polyline([(10.0, 10.0), (13.0, 10.0)], random.Random(1))
-        self.assertEqual((out[0], out[-1]), ((10.0, 10.0), (13.0, 10.0)))
+    def test_짧은_선은_휘지_않는다(self):
+        out = self.mod._hand_polyline([(10.0, 10.0), (20.0, 10.0)], random.Random(1))
+        self.assertEqual((out[0], out[-1]), ((10.0, 10.0), (20.0, 10.0)))
+        self.assertTrue(all(abs(y - 10.0) <= self.mod.HAND_TREMOR + 1e-9 for _, y in out))
 
-    def test_굵기는_0_7_에서_1_3_배(self):
-        ws = {self.mod._hand_width(3, random.Random(s)) for s in range(200)}
-        self.assertTrue(ws <= {2, 3, 4} and len(ws) > 1)
-        self.assertGreaterEqual(self.mod._hand_width(1, random.Random(0)), 1)
+    def test_길이_0_구간도_된다(self):
+        # 같은 점이 연달아 와도 0 나누기 없이 끝점이 그대로다
+        pts = [(10.0, 10.0), (10.0, 10.0), (60.0, 10.0)]
+        out = self.mod._hand_polyline(pts, random.Random(2))
+        self.assertEqual((out[0], out[-1]), (pts[0], pts[-1]))
 
-    def test_도트는_반지름_1px_안에서_찌그러진다(self):
-        boxes = [self.mod._hand_dot((50.0, 60.0), 3, random.Random(s)) for s in range(50)]
+    def test_굵기는_상수다(self):
+        self.assertEqual(self.mod.HAND_WIDTH, 2.0)
+        self.assertFalse(hasattr(self.mod, '_hand_width'))
+
+    def test_도트는_반지름_10퍼센트_안에서_찌그러진다(self):
+        r = self.mod.HAND_DOT_R
+        boxes = [self.mod._hand_dot((50.0, 60.0), random.Random(s)) for s in range(50)]
         for x0, y0, x1, y1 in boxes:
             self.assertAlmostEqual((x0 + x1) / 2, 50.0)
             self.assertAlmostEqual((y0 + y1) / 2, 60.0)
-            self.assertTrue(2 <= (x1 - x0) / 2 <= 4 and 2 <= (y1 - y0) / 2 <= 4)
+            self.assertTrue(0.9 * r - 1e-9 <= (x1 - x0) / 2 <= 1.1 * r + 1e-9)
+            self.assertTrue(0.9 * r - 1e-9 <= (y1 - y0) / 2 <= 1.1 * r + 1e-9)
         self.assertGreater(len({tuple(b) for b in boxes}), 1)
 
 

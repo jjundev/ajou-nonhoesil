@@ -639,10 +639,9 @@ class BreadboardRenderer(_RuleChecks):
             color = color or WIRE[kind]
         if self.hand is not None:
             rng = self._hand_rng
-            draw.line(_hand_polyline(points, rng), fill=color, width=_hand_width(width, rng),
-                      joint='curve')
+            draw.line(_hand_polyline(points, rng), fill=color, width=HAND_WIDTH, joint='curve')
             for p in (points[0], points[-1]):
-                draw.ellipse(_hand_dot(p, dot, rng), fill=color)
+                draw.ellipse(_hand_dot(p, rng), fill=color)
         else:
             draw.line(points, fill=color, width=width, joint='curve')
             for p in (points[0], points[-1]):
