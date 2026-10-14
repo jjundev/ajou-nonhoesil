@@ -9,6 +9,7 @@ from unittest import mock
 from scripts.lab import config, validate
 from scripts.lab.netlist_parser import parse_netlist
 from scripts.lab.spec_parser import parse_spec
+from tests._netlist_copy import netlist_copy
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures"
@@ -2736,15 +2737,9 @@ class TestStageLeds(unittest.TestCase):
         if text is None:
             return validate.check_netlist_circuits(
                 parse_netlist(self.E5 / "결선도/netlist.md"), spec)
-        # 같은 폴더에 사본을 둔다 — 결선도 PNG 상대경로가 그대로 풀려야 한다
-        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
-        path = Path(name)
-        try:
-            with open(fd, "w", encoding="utf-8") as f:
-                f.write(text)
+        # 원본 결선도 폴더를 비춘 임시 폴더에 사본을 둔다 — PNG 상대경로가 그대로 풀려야 한다
+        with netlist_copy(self.E5 / "결선도", text) as path:
             return validate.check_netlist_circuits(parse_netlist(path), spec)
-        finally:
-            path.unlink()
 
     def test_실험05_는_LED_급전_경고가_없다(self):
         f = self._check()
