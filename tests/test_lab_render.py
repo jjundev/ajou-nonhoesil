@@ -17,6 +17,7 @@ from scripts.lab.render import (CLOSING, _blocks, _capture_html, _chip_boxes,
                                 _truth_table_html, circuit_pages, closing_page,
                                 common_page, crop_rows, render_checklist)
 from scripts.lab.spec_parser import parse_spec
+from tests._netlist_copy import netlist_copy
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = (ROOT / ".claude/skills/prep-lab-checklist/template.html").read_text(
@@ -2249,18 +2250,12 @@ class TestLedTable(unittest.TestCase):
         self.assertIn("Y9예상<br><small>LED⑦</small>", self.pages[0])
 
     def test_급전_표기_없는_단계는_옛_표로_물러선다(self):
-        # 같은 폴더에 사본을 둔다 — 그림 상대경로가 그대로 풀려야 한다. C1 1·2단계 급전(Y0~Y3)을 지운다
+        # 원본 결선도 폴더를 비춘 임시 폴더에 사본을 둔다 — 그림 상대경로가 그대로 풀려야 한다. C1 1·2단계 급전(Y0~Y3)을 지운다
         src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
         text = re.sub(r",?\s*U4 pin [1-4]→LED Y[0-3] 급전", "", src)
         self.assertNotEqual(text, src)
-        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
-        path = Path(name)
-        try:
-            with open(fd, "w", encoding="utf-8") as f:
-                f.write(text)
+        with netlist_copy(self.E5 / "결선도", text) as path:
             pages = self._pages(path)
-        finally:
-            path.unlink()
         b = self._block_in(pages, 0, "단계 2")
         self.assertNotIn("led-table", b)
         self.assertIn('class="stage-table"', b)
@@ -2271,14 +2266,8 @@ class TestLedTable(unittest.TestCase):
         src = (self.E5 / "결선도/netlist.md").read_text(encoding="utf-8")
         text = src.replace("**임시로** U1 pin 12→LED A2 급전", "")
         self.assertNotEqual(text, src)
-        fd, name = tempfile.mkstemp(suffix=".md", prefix="netlist_led_", dir=self.E5 / "결선도")
-        path = Path(name)
-        try:
-            with open(fd, "w", encoding="utf-8") as f:
-                f.write(text)
+        with netlist_copy(self.E5 / "결선도", text) as path:
             pages = self._pages(path)
-        finally:
-            path.unlink()
         b = self._block_in(pages, 1, "단계 2")
         self.assertNotIn("led-table", b)
         self.assertIn("D0'예상", b)
