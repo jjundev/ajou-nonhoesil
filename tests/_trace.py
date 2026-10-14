@@ -19,6 +19,7 @@ import atexit
 import functools
 import json
 import os
+import shlex
 import sys
 import threading
 import unicodedata
@@ -35,7 +36,9 @@ _SLOT = '_affected_trace_recorder'
 _HANDLED = frozenset({'open', 'os.scandir', 'os.listdir', 'os.system', 'subprocess.Popen'})
 # 이 파이썬 플래그는 PYTHONPATH·사이트를 무시해 sitecustomize 가 안 실린다.
 _UNTRACED_FLAGS = 'IES'
-_VALUE_FLAGS = 'cmWXQ'   # 뒤에 값이 붙는 플래그 — 여기서 플래그 읽기를 멈춘다
+_STOP_FLAGS = 'cm'       # 뒤따르는 것이 코드·모듈 — 여기서 플래그 읽기를 멈춘다
+_VALUE_FLAGS = 'WXQ'     # 값을 받는 플래그 — 값(붙었으면 같은 덩어리, 아니면 다음 인자)만 건너뛴다
+_SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_trace_site')
 
 
 @functools.lru_cache(maxsize=None)
@@ -91,23 +94,58 @@ def _is_pathlike(x) -> bool:
     return isinstance(x, (str, bytes, os.PathLike))
 
 
+def _split_args(args) -> list:
+    """Popen 감사 이벤트의 args 를 argv 목록으로. 윈도의 CPython 은 `list2cmdline` 문자열을 준다."""
+    if isinstance(args, (str, bytes)):
+        text = os.fsdecode(args)
+        try:
+            tokens = shlex.split(text, posix=False)   # 역슬래시 경로를 보존한다
+        except ValueError:
+            tokens = text.split()
+        return [t[1:-1] if len(t) >= 2 and t[0] == t[-1] and t[0] in '"\'' else t for t in tokens]
+    return [os.fsdecode(a) for a in args]
+
+
+def _env_has(env, name: str):
+    """Popen `env`(str 또는 bytes 키)의 `name` 값. 없으면 `None`."""
+    for k, v in env.items():
+        if os.fsdecode(k) == name:
+            return os.fsdecode(v)
+    return None
+
+
+def _site_on_path(pythonpath: str | None) -> bool:
+    entries = [e for e in (pythonpath or '').split(os.pathsep) if e]
+    targets = {os.path.normcase(os.path.normpath(_SITE_DIR)),
+               os.path.normcase(os.path.realpath(_SITE_DIR))}
+    return any(os.path.normcase(os.path.normpath(e)) in targets for e in entries)
+
+
 def _traces_child(argv: list, executable, env) -> bool:
     """이 Popen 이 추적이 이어지는 파이썬 자식인가."""
-    name = os.fsdecode(executable) if executable else (os.fsdecode(argv[0]) if argv else '')
-    is_python = os.path.basename(name).startswith('python') or name == sys.executable
-    if not is_python:
+    name = os.fsdecode(executable) if executable else (argv[0] if argv else '')
+    base = name.replace('\\', '/').rsplit('/', 1)[-1].lower()   # 윈도 경로도 이름만 뽑는다
+    if not (base.startswith('python') or name == sys.executable):
         return False
-    if env is not None and ENV_DIR not in env and os.fsencode(ENV_DIR) not in env:
-        return False
-    for arg in argv[1:]:
-        arg = os.fsdecode(arg)
+    if env is not None:
+        # 자식이 sitecustomize 를 실으려면 추적 변수와 `_trace_site` 경로가 둘 다 있어야 한다.
+        if _env_has(env, ENV_DIR) is None or not _site_on_path(_env_has(env, 'PYTHONPATH')):
+            return False
+    i = 1
+    while i < len(argv):
+        arg = argv[i]
         if not arg.startswith('-') or arg.startswith('--'):
             break
-        for c in arg[1:]:
+        skip = 1
+        for j, c in enumerate(arg[1:], 1):
             if c in _UNTRACED_FLAGS:
                 return False
-            if c in _VALUE_FLAGS:
+            if c in _STOP_FLAGS:
                 return True
+            if c in _VALUE_FLAGS:
+                skip = 2 if j == len(arg) - 1 else 1
+                break
+        i += skip
     return True
 
 
@@ -132,7 +170,9 @@ class Recorder:
             if event == 'open':
                 self._open(*args[:3])
             elif event in ('os.scandir', 'os.listdir'):
-                self._listing(args[0] if args else None)
+                # 가져오기 기계(FileFinder 가 패키지 디렉터리를 listdir)가 낸 것은 테스트가 훑은 게 아니다.
+                if not sys._getframe(1).f_code.co_filename.startswith('<frozen importlib'):
+                    self._listing(args[0] if args else None)
             elif event == 'subprocess.Popen':
                 try:
                     self._popen(*args[:4])
@@ -162,7 +202,7 @@ class Recorder:
             self.dirs.add(r)
 
     def _popen(self, executable, args, cwd, env) -> None:
-        argv = [os.fsdecode(a) for a in list(args)]
+        argv = _split_args(args)
         self.spawned.add(tuple(argv))
         if not _traces_child(argv, executable, env):
             self.opaque = True
@@ -178,10 +218,20 @@ class Recorder:
             elif os.path.isdir(full):
                 self.dirs.add(r)
 
+    def _snapshot(self, items: set) -> list:
+        """다른 스레드가 훅에서 집합을 바꾸는 중에도 복사한다(`RuntimeError` 면 다시). 끝내 못 하면 opaque."""
+        for _ in range(100):
+            try:
+                return list(items)
+            except RuntimeError:
+                continue
+        self.opaque = True
+        return []
+
     def finish(self, out_dir: str) -> None:
         """`<out_dir>/<pid>.json` 을 쓴다. 쓰는 동안 훅이 자기 일을 적지 않게 먼저 멈춘다."""
         self._done = True
-        files = set(self.files)
+        files = set(self._snapshot(self.files))
         for mod in list(sys.modules.values()):
             f = getattr(mod, '__file__', None)
             if isinstance(f, str):
@@ -191,8 +241,8 @@ class Recorder:
                     continue
                 if r:
                     files.add(r)
-        data = {'files': sorted(files), 'dirs': sorted(self.dirs),
-                'spawned': sorted(list(a) for a in self.spawned), 'opaque': self.opaque}
+        data = {'files': sorted(files), 'dirs': sorted(self._snapshot(self.dirs)),
+                'spawned': sorted(list(a) for a in self._snapshot(self.spawned)), 'opaque': self.opaque}
         os.makedirs(out_dir, exist_ok=True)
         final = os.path.join(out_dir, f'{os.getpid()}.json')
         tmp = final + '.tmp'

@@ -37,13 +37,16 @@ def test_읽기만_센다():
     assert is_read(None, os.O_RDONLY) and not is_read(None, os.O_WRONLY | os.O_CREAT)
 
 
-def _trace_run(tmp_path, body: str, *, extra_env=None) -> dict:
+def _trace_run(tmp_path, body: str, *, extra_env=None, extra_files=None) -> dict:
     """임시 프로젝트에서 `body` 를 pytest 로 돌리고 `<pid>.json` 들을 합쳐 돌려준다."""
     proj = tmp_path / 'proj'
     (proj / 'sub').mkdir(parents=True)
     (proj / 'data.txt').write_text('d', encoding='utf-8')
     (proj / 'sub' / 'a.txt').write_text('a', encoding='utf-8')
     (proj / 'child.txt').write_text('c', encoding='utf-8')
+    for name, text in (extra_files or {}).items():
+        (proj / name).parent.mkdir(parents=True, exist_ok=True)
+        (proj / name).write_text(text, encoding='utf-8')
     (proj / 'test_x.py').write_text(body, encoding='utf-8')
     out = tmp_path / 'out'
     out.mkdir()
@@ -161,3 +164,68 @@ def test_훅은_엉뚱한_인자에도_예외를_내지_않는다():
     rec.hook('subprocess.Popen', (None, None, None, None))
     rec.hook('open', ('/r/ok.txt', 'r', 0))
     assert rec.files == {'ok.txt'}
+
+
+def test_윈도_형_문자열_인자도_토큰으로_쪼개_파이썬_자식으로_본다():
+    # 윈도의 CPython 은 감사 이벤트 전에 args 를 list2cmdline 문자열로 바꾼다.
+    rec = Recorder('/r')
+    rec.hook('subprocess.Popen', (None, 'C:\\py\\python.exe -c "print(1)"', None, None))
+    assert rec.spawned == {('C:\\py\\python.exe', '-c', 'print(1)')}
+    assert rec.opaque is False
+    rec.hook('subprocess.Popen', ('C:\\py\\python.exe', 'C:\\py\\python.exe -c pass', None, None))
+    assert rec.opaque is False
+    rec.hook('subprocess.Popen', (None, 'cat.exe data.txt', None, None))
+    assert rec.opaque is True and ('cat.exe', 'data.txt') in rec.spawned
+
+
+def test_가져오기_기계가_훑은_디렉터리는_적지_않는다(tmp_path):
+    got = _trace_run(tmp_path, '''
+from pathlib import Path
+import pkg.mod
+def test_x():
+    assert pkg.mod.V == 1
+    list(Path('sub').glob('*.txt'))
+''', extra_files={'pkg/__init__.py': '', 'pkg/mod.py': 'V = 1\n'})
+    assert 'pkg/mod.py' in got['files']
+    assert 'pkg' not in got['dirs']
+    assert 'sub' in got['dirs']
+
+
+def test_추적_변수는_있어도_site_경로가_없으면_자식은_opaque(tmp_path):
+    got = _trace_run(tmp_path, '''
+import os, subprocess, sys
+def test_x():
+    env = dict(os.environ); env['PYTHONPATH'] = ''
+    subprocess.run([sys.executable, '-c', 'pass'], env=env, check=True)
+''')
+    assert got['opaque'] is True
+
+
+def test_값을_받는_플래그_뒤의_I_도_본다():
+    for argv in (['python', '-W', 'ignore', '-I', '-c', 'pass'], ['python', '-Wignore', '-I', '-c', 'pass'],
+                 ['python', '-X', 'utf8', '-c', 'pass']):
+        rec = Recorder('/r')
+        rec.hook('subprocess.Popen', (argv[0], argv, None, None))
+        assert rec.opaque is ('-I' in argv), argv
+
+
+def test_종료_중_다른_스레드가_기록을_바꿔도_JSON_을_쓴다(tmp_path):
+    import threading
+    rec = Recorder('/r')
+    stop = threading.Event()
+
+    def churn():
+        i = 0
+        while not stop.is_set():
+            rec.hook('open', (f'/r/f{i}.txt', 'r', 0))
+            i += 1
+    t = threading.Thread(target=churn)
+    t.start()
+    try:
+        for _ in range(20):
+            rec.finish(str(tmp_path))
+            rec._done = False   # 다음 반복에서도 훅이 돌게(시험용)
+    finally:
+        stop.set()
+        t.join()
+    assert list(tmp_path.glob('*.json'))
