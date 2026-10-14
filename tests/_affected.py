@@ -77,6 +77,14 @@ EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     'tests/test_lab_figure_export.py': (), 'tests/test_trace_guide.py': (), 'tests/test_lab_config.py': (),
     # git 을 임시 저장소나 인자로 준 경로에만 쓴다.
     'tests/test_lab_isolate.py': (), 'tests/test_lab_schematic.py': (),
+    # Chrome 은 파이썬이 tmp 에 쓴 안내 HTML 과 그 옆으로 복사한 그림만 연다 — 원본은 파이썬이 읽어 기록된다.
+    'tests/test_breadboard_hand.py': (), 'tests/test_breadboard_v2.py': (),
+    # `pdftotext` 는 인자로 준 PDF 한 개만 읽는다 — 그 경로는 띄운 자식의 인자로 기록된다.
+    'tests/test_lab_validate.py': (),
+    # 추적이 끊긴 자식을 일부러 띄워 보는 시험이고, 자식은 모두 tmp 프로젝트만 만진다.
+    'tests/test_affected_trace.py': (),
+    # 실제 복습노트 HTML 을 Chrome·playwright 가 직접 연다.
+    'tests/test_workbook_pdf.py': _PACK,
     # 가드 정규식 자신의 글자(`sync_playwright`·`chromium`)와 tmp 저장소용 git 호출에 걸린 것일 뿐이다.
     'tests/test_affected.py': (),
     # 가드 정규식이 `stages[0]["node"]` 같은 사전 키를 node 실행으로 오인한 것이다 — 파서는 외부 도구를 안 부른다.
