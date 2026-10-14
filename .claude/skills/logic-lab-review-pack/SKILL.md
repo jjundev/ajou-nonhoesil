@@ -113,7 +113,7 @@ MD 작성기는 루트 기준으로 본문을 만들고 `scripts/lab/review_pack
 manifest 안의 경로(figure_manifest, snapshot_path, workbook_fragment)는 `.pack/` 기준 상대경로 그대로 둔다(`figures/redraw-manifest.json`). generated_files 만 실험 폴더 루트 기준이라 `.pack/figures/..`, `.pack/실험NN_실험설명.md` 로 적힌다.
 RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 build 가 `.pack/figures/..` 로 바꾼다. 문제설명 조각(problem-explanations/*.html)은 루트 기준 `.pack/figures/..` 로 직접 쓴다.
 `check` 는 루트에 `.html`·`.pdf`·`.pack/` 밖의 항목(MD·JSON·사용자 메모·옛 `자료/`)이 있으면 오류로 본다. 점으로 시작하는 다른 항목(.DS_Store)만 무시한다. 사용자 메모도 `.pack/` 에 둔다.
-옛 구조(`자료/` 와 루트 MD 를 쓰던 팩, 2026-10-13 이전)는 읽지 않는다. 남아 있으면 `python -m scripts.lab.migrate_pack_layout`(dry-run)으로 보고 `--apply` 로 옮긴다.
+옛 구조(`자료/` 와 루트 MD 를 쓰던 팩, 2026-10-13 이전)는 읽지 않는다. 옮기는 1회성 도구 `migrate_pack_layout` 는 적용을 마치고 지웠다(필요하면 git `8553b66` 에서 꺼낸다).
 
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.

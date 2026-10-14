@@ -40,7 +40,7 @@ GROUP = 'board_v2_e4'
 SHARED = {
     'test_breadboard_v2_e4_trial': ('DmuxFinal', 'MuxFinal', 'Readability', 'StageTruth', 'Chain'),
     'test_breadboard_route': ('LambdaZero', 'ChosenWeight'),
-    'test_breadboard_place': ('TrialMarkers', 'PlacedTrial'),
+    'test_breadboard_place': ('PlacedTrial',),
 }
 
 

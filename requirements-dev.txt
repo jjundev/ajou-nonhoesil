@@ -19,6 +19,9 @@
 #     .venv/bin/pip install -r requirements-dev.txt
 #     .venv/bin/python -m pytest tests/ -q
 #
+# 바뀐 곳만 볼 때는 `pytest --affected`(기준: origin/main 과의 merge-base). 맵은
+# `.venv/bin/python -m tests._affected rebuild`(약 3분)로 만들고, 병합·push 전에는 전체를 돈다.
+#
 # 런타임 의존성은 따로 없다 — `scripts/lab/` 은 표준 라이브러리만 쓰고
 # PDF 변환은 `과목정보.md` 의 `chrome` 목록(macOS·Windows) 중 이 머신에
 # 있는 경로로 헤드리스 Chrome 을 부른다.

@@ -1,7 +1,7 @@
 """v2 배치기 — 칩 슬롯 행·LED 윗행·브리지 행 고르기.
 
 설계: `docs/plans/2026-10-05-v2-배치기-설계.md`. 단위 시험은 작은 장난감 회로로, 시험판 시험은
-`tests/fixtures/board_v2_e4/배치.py` 로 잰다.
+`tests/fixtures/board_v2_e4/배치.py` 로, 번호 원 고정은 `tests/fixtures/board_v2_marker_trap/배치.py` 로 잰다.
 """
 import importlib.util
 import os
@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / '.claude/skills/breadboard-diagram/scripts/render_breadboard.py'
 TRIAL = ROOT / 'tests/fixtures/board_v2_e4/배치.py'
 TRIAL_E5 = ROOT / 'tests/fixtures/board_v2_e5/배치.py'
+TRAP = ROOT / 'tests/fixtures/board_v2_marker_trap/배치.py'
 
 
 def _load():
@@ -585,24 +586,33 @@ class InputRows(unittest.TestCase):
         self.assertIsNotNone(self.mod.place_proxy([c], {'K1': 3, 'K2': 18}))
 
 
-class TrialMarkers(unittest.TestCase):
-    """시험판의 엔진 고정 부품(전원선·LED 사슬·입력 점퍼) 번호 원은 단계 그림·완성본 어디서나 같은 자리다
-    — `place_marker_hints`(superset 판에서 비킨 자리)를 빌더가 준다(2026-10-05 최종 검토)."""
-    render_group = 'board_v2_e4'
+class MarkerTrap(unittest.TestCase):
+    """엔진 고정 부품(전원선·LED 사슬·입력 점퍼) 번호 원은 단계 그림·완성본 어디서나 같은 자리다 —
+    `place_marker_hints`(superset 판에서 비킨 자리)를 빌더가 준다(2026-10-05 최종 검토). 예전에는
+    실험04 v2 시험판 14장(63초)으로 쟀다. 합성 함정 보드로 옮기면서, 함정이 아직 서는지(힌트를 끄면
+    움직이는지)를 같이 본다 — 서지 않으면 아래 시험은 아무것도 재지 않는다."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = _renders.engine()
+        cls.board = cls.mod.load_board_file(TRAP, 'board_v2_marker_trap')
+
+    def _moved(self, hints):
+        seen = {}
+        for st in self.board.STAGES:
+            bb = self.mod.BreadboardRenderer(None, board='v2')
+            bb.enable_steps()
+            self.board._draw(bb, st, hints=hints)
+            for key, at in bb.settled_markers.items():
+                seen.setdefault(key, set()).add(tuple(at))
+        return {k: v for k, v in seen.items() if len(v) > 1}
+
+    def test_힌트를_끄면_번호_원이_움직인다(self):
+        self.assertNotEqual(self._moved(hints=False), {}, '함정이 서지 않는다 — 픽스처 자리를 다시 고른다')
 
     def test_고정_부품_원은_그림마다_같은_자리(self):
-        mod = _renders.engine()
-        b = mod.load_board_file(TRIAL, 'board_v2_e4')
-        for draw, stages in ((b._mux_draw, [1, 2, 3, 4, 5, 6, 7, 8, None]), (b._dmux_draw, [1, 2, 3, 4, None])):
-            seen = {}
-            for st in stages:
-                bb = mod.BreadboardRenderer(None, board='v2')
-                bb.enable_steps()
-                draw(bb, st)
-                for key, at in bb.settled_markers.items():
-                    seen.setdefault(key, set()).add(tuple(at))
-            moved = {k: v for k, v in seen.items() if len(v) > 1}
-            self.assertEqual(moved, {}, draw.__name__)
+        self.assertEqual(self._moved(hints=True), {})
+
 
 class PlaceEnforced(unittest.TestCase):
     """v2 주차(와 시험판)는 `배치탐색.md` 가 있고, 지문이 지금 배선표와 같고, `LAYOUT` 이 보고서가 고른
