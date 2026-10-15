@@ -1,0 +1,637 @@
+[
+  {
+    "id": "hc00",
+    "num": "74HC00",
+    "name": "NAND · 2입력 4개",
+    "kind": "NAND",
+    "pins": [
+      "1A",
+      "1B",
+      "1Y",
+      "2A",
+      "2B",
+      "2Y",
+      "GND",
+      "3Y",
+      "3A",
+      "3B",
+      "4Y",
+      "4A",
+      "4B",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2
+        ],
+        3
+      ],
+      [
+        [
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10
+        ],
+        8
+      ],
+      [
+        [
+          12,
+          13
+        ],
+        11
+      ]
+    ],
+    "experiments": "01",
+    "use": "두 입력이 모두 1일 때만 출력이 0이에요. NAND만으로도 다른 논리를 구성할 수 있어요.",
+    "trap": "00은 AND가 아니라 AND의 결과를 뒤집는 NAND예요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT00.pdf"
+  },
+  {
+    "id": "hc02",
+    "num": "74HC02",
+    "name": "NOR · 2입력 4개",
+    "kind": "NOR",
+    "pins": [
+      "1Y",
+      "1A",
+      "1B",
+      "2Y",
+      "2A",
+      "2B",
+      "GND",
+      "3A",
+      "3B",
+      "3Y",
+      "4A",
+      "4B",
+      "4Y",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          2,
+          3
+        ],
+        1
+      ],
+      [
+        [
+          5,
+          6
+        ],
+        4
+      ],
+      [
+        [
+          8,
+          9
+        ],
+        10
+      ],
+      [
+        [
+          11,
+          12
+        ],
+        13
+      ]
+    ],
+    "experiments": "01",
+    "use": "두 입력이 모두 0일 때만 출력이 1이에요. 실험01에서는 OR 다음 NOR를 연결하는 회로에도 쓰여요.",
+    "trap": "첫 게이트는 2·3번 입력 → 1번 출력이에요. 00·08·32와 같은 배선으로 바꾸면 안 돼요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT02.pdf"
+  },
+  {
+    "id": "hc04",
+    "num": "74HC04",
+    "name": "NOT · 인버터 6개",
+    "kind": "NOT",
+    "pins": [
+      "1A",
+      "1Y",
+      "2A",
+      "2Y",
+      "3A",
+      "3Y",
+      "GND",
+      "4Y",
+      "4A",
+      "5Y",
+      "5A",
+      "6Y",
+      "6A",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1
+        ],
+        2
+      ],
+      [
+        [
+          3
+        ],
+        4
+      ],
+      [
+        [
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9
+        ],
+        8
+      ],
+      [
+        [
+          11
+        ],
+        10
+      ],
+      [
+        [
+          13
+        ],
+        12
+      ]
+    ],
+    "experiments": "01·02·03·04·05",
+    "use": "입력 한 개를 반전해요. 실험02에서는 입력 전압과 출력 전압의 관계를 측정하고, 다른 실험에서는 보수 신호를 만들어요.",
+    "trap": "1번 입력 → 2번 출력이에요. 2입력 게이트처럼 1·2번을 두 입력으로 쓰지 않아요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT04.pdf"
+  },
+  {
+    "id": "hc08",
+    "num": "74HC08",
+    "name": "AND · 2입력 4개",
+    "kind": "AND",
+    "pins": [
+      "1A",
+      "1B",
+      "1Y",
+      "2A",
+      "2B",
+      "2Y",
+      "GND",
+      "3Y",
+      "3A",
+      "3B",
+      "4Y",
+      "4A",
+      "4B",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2
+        ],
+        3
+      ],
+      [
+        [
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10
+        ],
+        8
+      ],
+      [
+        [
+          12,
+          13
+        ],
+        11
+      ]
+    ],
+    "experiments": "01·03·05 교안",
+    "use": "입력이 모두 1이어야 출력이 1이에요. 실험01의 3입력 AND는 2입력 AND 두 개를 이어 만들어요. 실험03에서는 carry와 borrow의 곱 항을 만들어요.",
+    "trap": "08 자체가 3입력 AND 칩은 아니에요. 칩 수와 사용 게이트 수를 구별해요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT08.pdf"
+  },
+  {
+    "id": "hc32",
+    "num": "74HC32",
+    "name": "OR · 2입력 4개",
+    "kind": "OR",
+    "pins": [
+      "1A",
+      "1B",
+      "1Y",
+      "2A",
+      "2B",
+      "2Y",
+      "GND",
+      "3Y",
+      "3A",
+      "3B",
+      "4Y",
+      "4A",
+      "4B",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2
+        ],
+        3
+      ],
+      [
+        [
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10
+        ],
+        8
+      ],
+      [
+        [
+          12,
+          13
+        ],
+        11
+      ]
+    ],
+    "experiments": "01·03",
+    "use": "입력 중 하나라도 1이면 출력이 1이에요. 전가산기와 전감산기에서 두 조건을 합쳐 최종 carry·borrow를 만들어요.",
+    "trap": "32는 OR, 86은 XOR예요. 두 입력이 모두 1일 때 결과가 달라요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT32.pdf"
+  },
+  {
+    "id": "hc86",
+    "num": "74HC86",
+    "name": "XOR · 2입력 4개",
+    "kind": "XOR",
+    "pins": [
+      "1A",
+      "1B",
+      "1Y",
+      "2A",
+      "2B",
+      "2Y",
+      "GND",
+      "3Y",
+      "3A",
+      "3B",
+      "4Y",
+      "4A",
+      "4B",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2
+        ],
+        3
+      ],
+      [
+        [
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10
+        ],
+        8
+      ],
+      [
+        [
+          12,
+          13
+        ],
+        11
+      ]
+    ],
+    "experiments": "03 · 01 준비물",
+    "use": "두 입력이 다르면 1이에요. 전가산기의 합과 전감산기의 차를 계산하는 데 쓰여요.",
+    "trap": "두 입력이 모두 1이면 XOR는 0이에요. 외형이나 핀 배치가 같아도 OR와 기능은 달라요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT86.pdf"
+  },
+  {
+    "id": "hc14",
+    "num": "74HC14",
+    "name": "Schmitt NOT · 6개",
+    "kind": "SCHMITT",
+    "pins": [
+      "1A",
+      "1Y",
+      "2A",
+      "2Y",
+      "3A",
+      "3Y",
+      "GND",
+      "4Y",
+      "4A",
+      "5Y",
+      "5A",
+      "6Y",
+      "6A",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1
+        ],
+        2
+      ],
+      [
+        [
+          3
+        ],
+        4
+      ],
+      [
+        [
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9
+        ],
+        8
+      ],
+      [
+        [
+          11
+        ],
+        10
+      ],
+      [
+        [
+          13
+        ],
+        12
+      ]
+    ],
+    "experiments": "02",
+    "use": "반전 기능에 히스테리시스가 더해져요. 입력이 올라갈 때와 내려갈 때 전환되는 문턱이 달라, 느리거나 잡음이 있는 입력을 정리할 수 있어요.",
+    "trap": "04와 핀 배치는 같지만 아날로그 입출력 특성이 같지는 않아요. 문턱 사이 출력은 이전 상태에 따라 달라요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT14.pdf"
+  },
+  {
+    "id": "hc11",
+    "num": "74HC11",
+    "name": "AND · 3입력 3개",
+    "kind": "AND3",
+    "pins": [
+      "1A",
+      "1B",
+      "2A",
+      "2B",
+      "2C",
+      "2Y",
+      "GND",
+      "3Y",
+      "3A",
+      "3B",
+      "3C",
+      "1Y",
+      "1C",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2,
+          13
+        ],
+        12
+      ],
+      [
+        [
+          3,
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10,
+          11
+        ],
+        8
+      ]
+    ],
+    "experiments": "04",
+    "use": "1×4 DMUX의 데이터와 선택 조건을 곱하는 3입력 AND로 쓰여요. 한 출력 경로의 세 조건이 모두 1일 때만 1이에요.",
+    "trap": "첫 게이트의 세 번째 입력은 13번이고 출력은 12번이에요. 1·2·3번이 한 게이트의 입력이 아니에요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT11.pdf"
+  },
+  {
+    "id": "hc20",
+    "num": "74HC20",
+    "name": "NAND · 4입력 2개",
+    "kind": "NAND4",
+    "pins": [
+      "1A",
+      "1B",
+      "NC",
+      "1C",
+      "1D",
+      "1Y",
+      "GND",
+      "2Y",
+      "2A",
+      "2B",
+      "NC",
+      "2C",
+      "2D",
+      "VCC"
+    ],
+    "gates": [
+      [
+        [
+          1,
+          2,
+          4,
+          5
+        ],
+        6
+      ],
+      [
+        [
+          9,
+          10,
+          12,
+          13
+        ],
+        8
+      ]
+    ],
+    "experiments": "04·05",
+    "use": "실험04에서는 선택 조건과 데이터를 NAND로 묶고 마지막 NAND에서 합쳐요. 실험05의 Excess-3 인코더도 NOT와 NAND의 조합으로 구현해요.",
+    "trap": "3·11번은 NC예요. 연결되지 않은 핀을 입력으로 세거나, 4입력 NAND의 입력 하나를 띄워 두면 안 돼요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC20.pdf"
+  },
+  {
+    "id": "hc42",
+    "num": "74HC42",
+    "name": "BCD → Decimal · 1-of-10",
+    "kind": "BCD",
+    "pins": [
+      "/Y0",
+      "/Y1",
+      "/Y2",
+      "/Y3",
+      "/Y4",
+      "/Y5",
+      "/Y6",
+      "GND",
+      "/Y7",
+      "/Y8",
+      "/Y9",
+      "D",
+      "C",
+      "B",
+      "A",
+      "VCC"
+    ],
+    "gates": [],
+    "experiments": "05",
+    "use": "4비트 BCD를 받아 해당 십진 출력 하나만 0으로 내려요. A가 1의 자리 비트, D가 8의 자리 비트예요. 교안의 LED 연결은 출력이 0일 때 켜지는 방식이에요.",
+    "trap": "16핀으로 VCC=16, GND=8이에요. 출력 10개이며 4→16 전체 디코더가 아니에요. BCD 10~15에서는 모든 출력이 1이에요.",
+    "extra": false,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC42.pdf"
+  },
+  {
+    "id": "hc139",
+    "num": "74HC139",
+    "name": "Dual 2→4 Decoder / DMUX",
+    "kind": "DECODER",
+    "pins": [
+      "/1E",
+      "1A0",
+      "1A1",
+      "/1Y0",
+      "/1Y1",
+      "/1Y2",
+      "/1Y3",
+      "GND",
+      "/2Y3",
+      "/2Y2",
+      "/2Y1",
+      "/2Y0",
+      "2A1",
+      "2A0",
+      "/2E",
+      "VCC"
+    ],
+    "gates": [],
+    "experiments": "04 교안 보충",
+    "use": "각 절반에 선택 입력 두 개와 Active Low enable이 있어요. 활성 상태에서 선택된 출력 하나만 0이에요.",
+    "trap": "이번 수행 항목은 게이트 구현이에요. 전용 칩의 활성 극성을 게이트 회로에 그대로 옮기지 않아요.",
+    "extra": true,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT139.pdf"
+  },
+  {
+    "id": "hc153",
+    "num": "74HC153",
+    "name": "Dual 4→1 MUX",
+    "kind": "MUX",
+    "pins": [
+      "/1E",
+      "S1",
+      "1I3",
+      "1I2",
+      "1I1",
+      "1I0",
+      "1Y",
+      "GND",
+      "2Y",
+      "2I0",
+      "2I1",
+      "2I2",
+      "2I3",
+      "S0",
+      "/2E",
+      "VCC"
+    ],
+    "gates": [],
+    "experiments": "04 교안 보충",
+    "use": "두 개의 4→1 MUX가 선택선 S1·S0를 공유해요. 각 enable이 0일 때 해당 데이터가 출력되고 1이면 출력은 0이에요.",
+    "trap": "153은 입력 여러 개 중 하나를 출력으로 골라요. 139와 데이터 흐름이 달라요.",
+    "extra": true,
+    "url": "https://assets.nexperia.com/documents/data-sheet/74HC_HCT153.pdf"
+  },
+  {
+    "id": "hc148",
+    "num": "74HC148",
+    "name": "8→3 Priority Encoder",
+    "kind": "ENCODER",
+    "pins": [
+      "/I4",
+      "/I5",
+      "/I6",
+      "/I7",
+      "/EI",
+      "/A2",
+      "/A1",
+      "GND",
+      "/A0",
+      "/I0",
+      "/I1",
+      "/I2",
+      "/I3",
+      "/GS",
+      "/EO",
+      "VCC"
+    ],
+    "gates": [],
+    "experiments": "05 교안 보충",
+    "use": "입력과 코드 출력이 Active Low예요. enable이 활성일 때 여러 입력이 동시에 활성이라면 번호가 높은 입력을 우선해요.",
+    "trap": "이번 Excess-3 인코더의 실제 사용 칩은 04·20이에요. 148 자체를 Excess-3 변환 칩으로 외우지 않아요.",
+    "extra": true,
+    "url": "https://www.ti.com/lit/ds/symlink/sn74hc148.pdf"
+  }
+]
