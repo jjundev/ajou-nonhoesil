@@ -370,6 +370,9 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([len(p.images) for p in pages], [1, 1])
         self.assertIn('74HC42', pages[0].extract_text())
         self.assertIn('74HC20', pages[1].extract_text())
+        # Windows 글꼴에서 25행 표의 마지막 입력만 다음 쪽으로 밀리던 회귀.
+        self.assertIn('Bit3', pages[0].extract_text())
+        self.assertIn('레일 쪽 끝 중앙GND레일7행 옆', pages[0].extract_text())
 
     def test_실험05_손그림모사는_브레드보드_PDF_판에_글자_없이(self):
         # 작성자가 실험 이름을 손으로 적는다 — 쪽 크기·그림 자리가 빈 판형 PDF 와 같아야 홀이 겹친다
@@ -447,6 +450,60 @@ class HandSimScript(unittest.TestCase):
         with self.assertRaises(ValueError):
             hand_sim.render_final(lambda *a, **k: calls.append(a), 'x.png', Path('/nonexistent'))
         self.assertEqual(calls, [])
+
+    def _handout(self, experiment, builder, final_name, tamper=None):
+        """실제 빌더로 임시 손그림모사 PDF 와 해당 획 모델을 만든다."""
+        from scripts.lab import hand_sim
+        board = _load().load_board(experiment)
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        _, sim_bb, _ = hand_sim.render_final(getattr(board, builder), final_name, tmp)
+        if tamper:
+            tamper(sim_bb)
+        return hand_sim.make_handout_pdf(sim_bb.spec, [sim_bb], tmp / 'sim.pdf'), sim_bb
+
+    def test_손그림모사_쪽은_빈_판형_그대로다(self):
+        from scripts.lab import hand_grid
+        pdf, _ = self._handout(5, 'build_e5_bcd', '실험05_1-2_결선도_BCD디코더.png')
+        tpl = hand_grid.board_image(ROOT / '.claude/assets/breadboard_v2/Breadboard_v2.pdf', 0)
+        self.assertEqual(hand_grid.board_image(pdf, 0).md5, tpl.md5)
+
+    def test_손그림모사는_격자_보정이_된다(self):
+        from scripts.lab import hand_grid
+        pdf, _ = self._handout(5, 'build_e5_bcd', '실험05_1-2_결선도_BCD디코더.png')
+        cal = hand_grid.calibrate(hand_grid.board_image(pdf, 0), 'v2')
+        self.assertLessEqual(max(cal.res_x, cal.res_y), 0.5)
+
+    def test_배선은_벡터_획이다(self):
+        import pymupdf
+        pdf, bb = self._handout(5, 'build_e5_bcd', '실험05_1-2_결선도_BCD디코더.png')
+        with pymupdf.open(pdf) as doc:
+            lines = [d for d in doc[0].get_drawings() if d['type'] == 's']
+        self.assertEqual(len(lines), len(bb.hand_strokes))
+        # 빈 판형 이미지 자리와 논리 판 크기에서 독립적으로 기대 좌표를 계산한다.
+        with pymupdf.open(ROOT / '.claude/assets/breadboard_v2/Breadboard_v2.pdf') as tpl:
+            slot = tpl[0].get_image_rects(tpl[0].get_images()[0][0])[0]
+        sx, sy = slot.width / bb.spec.size[0], slot.height / bb.spec.size[1]
+        for d, s in zip(lines, bb.hand_strokes):
+            for got, point in ((d['items'][0][1], s['points'][0]),
+                               (d['items'][-1][2], s['points'][-1])):
+                self.assertAlmostEqual(got.x, slot.x0 + point[0] * sx, delta=0.05)
+                self.assertAlmostEqual(got.y, slot.y0 + point[1] * sy, delta=0.05)
+            self.assertAlmostEqual(d['width'], s['width'] * sx, delta=0.01)
+
+    def test_실험04_v1_도_벡터_획(self):
+        import pymupdf
+        pdf, bb = self._handout(4, 'build_e4_mux', '실험04_1-1_결선도_4x1MUX.png')
+        with pymupdf.open(pdf) as doc:
+            page = doc[0]
+            self.assertEqual(len(page.get_images()), 1)
+            self.assertEqual(len([d for d in page.get_drawings() if d['type'] == 's']), len(bb.hand_strokes))
+
+    def test_overlay_에_남은_그림은_거절(self):
+        def tamper(bb):
+            bb.overlay.putpixel((10, 10), (255, 0, 0, 255))
+        with self.assertRaisesRegex(ValueError, 'overlay'):
+            self._handout(4, 'build_e4_mux', '실험04_1-1_결선도_4x1MUX.png', tamper=tamper)
 
     def test_hand_를_못_받는_빌더는_이름을_다_대고_멈춘다(self):
         # 그리기 전에 전부 본다 — 앞 완성본만 뽑고 터지지 않는다

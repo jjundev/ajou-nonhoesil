@@ -1,8 +1,8 @@
 """손그림 모사 키트 — 실험 하나의 완성본 결선도로 팀원 전달용 PDF 두 개를 낸다(`make-hand-sim`).
 
-- `실험NN_손그림모사.pdf` — 배선만 마커로 그은 것처럼 흔들어 그리고 칩·LED·저항·입력 이름은 비운
-  그림. 팀원이 이 위에 부품을 그려 넣는다. 쪽 크기·그림 자리는 빈 판형 PDF(v2 `Breadboard_v2.pdf`)와
-  같고 제목은 없다 — 실험 이름은 작성자가 손으로 적는다.
+- `실험NN_손그림모사.pdf` — 빈 판형 PDF 쪽 그대로에 배선만 벡터 펜 선(한 굵기, 은은한 휨)으로 얹은
+  것. 칩·LED·저항·입력 이름은 비운다 — 팀원이 이 위에 부품을 그려 넣는다. 제목은 없다 — 실험 이름은
+  작성자가 손으로 적는다. 판형 이미지가 원본 그대로라 `review-hand-diagram` 격자 보정이 그대로 된다.
 - `실험NN_부품그리기.pdf` — 같은 흔들림의 선을 회색으로, 비워 둔 부품만 색으로 그린 안내판 + 부품표.
 
 완성본 하나가 각 PDF 의 한 쪽이다. 주차 결선 파일(`배치.py`)의 `FINALS` 빌더를 `hand=<시드>` 로
@@ -12,6 +12,7 @@
     .venv/bin/python -m scripts.lab.hand_sim --experiment 5
 """
 import argparse
+from contextlib import ExitStack
 import hashlib
 import html
 import inspect
@@ -42,7 +43,8 @@ body { font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; }
 h1 { font-size: 13pt; margin: 0 0 2mm; }
 p.legend { font-size: 9.5pt; margin: 0 0 2mm; }
 img { display: block; max-width: 100%; margin: 0 auto 2mm; }
-img.guide { max-height: 230mm; }
+/* Windows 글꼴에서도 BCD 부품표 25행과 범례가 396mm 인쇄 영역에 들어간다. */
+img.guide { max-height: 220mm; }
 table { border-collapse: collapse; width: 100%; font-size: 9pt; }
 th, td { border: 1px solid #999; padding: 0.6mm 1.5mm; text-align: left; }
 th { background: #eee; }
@@ -76,16 +78,16 @@ def guide_rows(bb):
 
 
 def render_final(fn, final_name, work_dir):
-    """완성본 하나 → (안내판 bb, 손그림모사 PNG, 부품그리기 PNG). 둘은 같은 시드다."""
+    """완성본 하나 → (안내판 bb, 손그림모사 bb, 부품그리기 PNG). 둘은 같은 시드다."""
     if '결선도' not in final_name:
         # 두 PNG 이름이 같아져 안내판이 손그림모사를 덮는다 — 쪽 검사로는 못 잡는다
         raise ValueError(f'완성본 이름에 "결선도" 가 없다: {final_name} — 손그림모사·부품그리기 이름을 못 가른다')
     handout = Path(work_dir) / final_name.replace('결선도', '손그림모사')
     guide = Path(work_dir) / final_name.replace('결선도', '부품그리기')
     seed = hand_seed(handout.name)
-    fn(str(handout), hand=seed)
+    sim_bb = fn(str(handout), hand=seed)
     bb = fn(str(guide), hand=seed, hand_guide=True)
-    return bb, handout, guide
+    return bb, sim_bb, guide
 
 
 def _doc(title, body):
@@ -93,33 +95,58 @@ def _doc(title, body):
             f'<title>{html.escape(title)}</title><style>{CSS}</style></head><body>{body}</body></html>\n')
 
 
+def template_pdf(spec):
+    """빈 판형 PDF 경로 — 판형 PNG 옆 같은 이름의 .pdf. 없는 판형(v1)이면 None."""
+    png = Path(spec.template[0])
+    pdf = (png if png.is_absolute() else REPO_ROOT / png).with_suffix('.pdf')
+    return pdf if pdf.exists() else None
+
+
 def board_page(spec):
     """빈 판형 PDF 의 (쪽 크기 pt, 판형 그림 자리 Rect). 손그림모사 쪽을 이 판에 같은 자리로 놓아야
     팀원이 쓰던 빈 판형과 홀이 겹친다. 판형 PDF 가 없는 판형(v1)은 A4 너비에 판형 그림을 꽉 채운다."""
-    png = Path(spec.template[0])
-    pdf = (png if png.is_absolute() else REPO_ROOT / png).with_suffix('.pdf')
-    if pdf.exists():
-        page = pymupdf.open(str(pdf))[0]
-        rects = [r for im in page.get_images() for r in page.get_image_rects(im[0])]
-        if len(rects) != 1:
-            raise ValueError(f'{pdf.name} 에 판형 그림이 {len(rects)}개다 — 하나여야 자리를 안다')
-        return page.rect, rects[0]
+    pdf = template_pdf(spec)
+    if pdf is not None:
+        with pymupdf.open(pdf) as doc:
+            page = doc[0]
+            rects = [r for im in page.get_images() for r in page.get_image_rects(im[0])]
+            if len(rects) != 1:
+                raise ValueError(f'{pdf.name} 에 판형 그림이 {len(rects)}개다 — 하나여야 자리를 안다')
+            return page.rect, rects[0]
     w, h = spec.size
     rect = pymupdf.Rect(0, 0, 595, 595 * h / w)
     return rect, rect
 
 
-def make_handout_pdf(spec, pngs, out):
-    """손그림모사 — 완성본마다 빈 판형 PDF 와 같은 쪽에 그림만, 판형 그림 자리에 위쪽을 맞춰 놓는다.
-    제목·실험 이름은 싣지 않는다 — 작성자가 손으로 적는다(2026-10-12 사용자)."""
+def handout_transform(spec):
+    """논리 좌표 -> 손그림모사 쪽 pt 변환과 굵기 배율(pt / 논리 px)."""
+    _, slot = board_page(spec)
+    w, h = spec.size
+    sx, sy = slot.width / w, slot.height / h
+    return (lambda x, y: (slot.x0 + x * sx, slot.y0 + y * sy)), sx
+
+
+def make_handout_pdf(spec, bbs, out):
+    """빈 판형 쪽 그대로 + 배선 벡터 획. 제목·실험 이름은 작성자가 손으로 적는다."""
+    rb = load_renderer()
     size, slot = board_page(spec)
-    doc = pymupdf.open()
-    for png in pngs:
-        pix = pymupdf.Pixmap(str(png))    # 판 아래를 잘라 낸 그림 — 너비로 배율을 정한다
-        page = doc.new_page(width=size.width, height=size.height)
-        page.insert_image(pymupdf.Rect(slot.x0, slot.y0, slot.x1, slot.y0 + slot.width * pix.height / pix.width),
-                          filename=str(png))
-    doc.save(str(out))
+    to_pt, k = handout_transform(spec)
+    tpl = template_pdf(spec)
+    with ExitStack() as stack:
+        doc = stack.enter_context(pymupdf.open())
+        tpl_doc = stack.enter_context(pymupdf.open(tpl)) if tpl is not None else None
+        for bb in bbs:
+            if bb.overlay.getbbox() is not None:
+                raise ValueError(f'{bb.title}: 손그림 모드 overlay 에 배선 밖 그림이 남았다 — 벡터 쪽에 못 옮긴다 '
+                                 '(instrument 프로브 등). make-hand-sim §넓힐 때 손볼 곳')
+            if tpl_doc is not None:
+                doc.insert_pdf(tpl_doc, from_page=0, to_page=0)
+                page = doc[-1]
+            else:
+                page = doc.new_page(width=size.width, height=size.height)
+                page.insert_image(slot, filename=str(rb._default_template(spec)))
+            rb.draw_strokes(page, bb.hand_strokes, to_pt, k)
+        doc.save(str(out))
     return out
 
 
@@ -149,12 +176,12 @@ def make_pdfs(finals, handout_out, guide_out, title):
     """임시 폴더에서 두 PDF 를 만들고 둘 다 `check_pdf` 를 통과한 뒤에만 `out` 으로 옮긴다."""
     with tempfile.TemporaryDirectory() as d:
         d = Path(d)
-        sim_pngs, guide_pages = [], []
+        sim_bbs, guide_pages = [], []
         for name, fn in finals:
-            bb, handout, guide = render_final(fn, name, d)
-            sim_pngs.append(handout)
+            bb, sim_bb, guide = render_final(fn, name, d)
+            sim_bbs.append(sim_bb)
             guide_pages.append((f'{bb.title} — 부품 그리기', guide.name, guide_rows(bb)))
-        sim_pdf = make_handout_pdf(bb.spec, sim_pngs, d / 'sim.pdf')
+        sim_pdf = make_handout_pdf(bb.spec, sim_bbs, d / 'sim.pdf')
         check_pdf(sim_pdf, len(finals))
         page = d / 'guide.html'
         page.write_text(render_guide_html(f'{title} 부품 그리기', guide_pages), encoding='utf-8')
