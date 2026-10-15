@@ -1,6 +1,7 @@
 """Regenerate the three chip study documents; original experiment packs are untouched."""
 from pathlib import Path
 import html, json, re, shutil
+from mcq import merge_mcq, render_choices
 
 PACK=Path(__file__).resolve().parent
 OUT=PACK.parent
@@ -97,6 +98,7 @@ def core_note(c):
     return b
 
 def build():
+    questions=merge_mcq(Q,json.loads((PACK/'mcq.json').read_text(encoding='utf-8')))
     PACK.mkdir(parents=True,exist_ok=True)
     vendor=PACK/'assets/vendor/pretendard'
     if not vendor.exists():shutil.copytree(ASSETS/'vendor/pretendard',vendor)
@@ -109,13 +111,13 @@ def build():
     notes.append(('lab-map','실험별로 다시 연결해요',table(['실험','이번 수행에서의 칩·역할'],[('01','00·02·04·08·32: 기본 게이트 조합 (86은 준비물에도 등장)'),('02','04 전달 특성·저항·지연 / 14 Schmitt 비교'),('03','86 합·차 / 08 곱 항 / 32 합 항 / 04 보수'),('04','MUX: 04·20 / DMUX: 04·11'),('05','BCD 디코더: 42 / Excess-3 인코더: 04·20')])+'<p>139·153·148은 교안 준비물·수행 제외 항목의 보충이에요. 실제 배선은 이번 학기 수행 항목으로 구분해 공부해요.</p>'))
     filenames=['정리노트.html','문제풀이.html','문제설명.html']
     pages=[notes,[],[]]
-    for x in Q:
+    for x in questions:
         c=next((c for c in CHIPS if c['id']==x['topic']),None)
         visual=svg(c,blank=True) if c and x['draw'] else ''
         prompt=f'<p>{x["prompt"]}</p>'+visual
         links=f'<p class="study-links"><a href="정리노트.html#{x["topic"]}">관련 정리</a> · <a href="문제설명.html#{x["id"]}">자세한 설명</a></p>'
-        short=prompt+'<div class="work-space">먼저 답을 생각하거나 종이에 적어 보세요.</div>'+f'<details class="practice-hint"><summary>힌트 보기</summary><p>{x["hint"]}</p></details><details class="practice-answer"><summary>정답과 짧은 풀이 보기</summary><p><b>{x["answer"]}</b></p><p>{x["steps"][-1]}</p></details>'+links
-        long=prompt+f'<h4>정답</h4><p><b>{x["answer"]}</b></p><h4>이렇게 판단해요</h4><ol>'+''.join('<li>'+s+'</li>' for s in x['steps'])+'</ol>'+f'<div class="warn"><b>오답을 피하려면</b><p>{x["wrong"]}</p></div><p><a href="정리노트.html#{x["topic"]}">관련 정리</a> · <a href="문제풀이.html#{x["id"]}">문제로 돌아가기</a></p><div class="sum">{x["answer"]}</div>'
+        short=prompt+'<p class="mcq-guidance">보기 하나를 고르면 바로 채점해요. 채점 후 보기를 누르면 이유를 확인할 수 있어요.</p>'+render_choices(x)+f'<details class="practice-hint"><summary>힌트 보기</summary><p>{x["hint"]}</p></details>'+links
+        long=prompt+render_choices(x,explain=True)+f'<h4>정답</h4><p><b>{x["answer"]}</b></p><h4>이렇게 판단해요</h4><ol>'+''.join('<li>'+s+'</li>' for s in x['steps'])+'</ol>'+f'<div class="warn"><b>오답을 피하려면</b><p>{x["wrong"]}</p></div><p><a href="정리노트.html#{x["topic"]}">관련 정리</a> · <a href="문제풀이.html#{x["id"]}">문제로 돌아가기</a></p><div class="sum">{x["answer"]}</div>'
         pages[1].append((x['id'],x['id'][1:]+'. '+x['title'],short))
         pages[2].append((x['id'],x['id'][1:]+'. '+x['title'],long))
     css='''<style>.pinmap{display:block;width:100%;max-width:520px;margin:24px auto;color:var(--ink);font:16px system-ui,sans-serif}.caption{font-size:.88em;color:var(--ink-2)}.table-wrap{max-width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border:1px solid var(--line);text-align:left}th{background:var(--surface)}.pack-links{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0 28px}.pack-links a{font-weight:650;text-underline-offset:4px}.work-space{min-height:95px;padding:18px;border:1px dashed var(--line);margin:24px 0;color:var(--ink-2)}.practice-hint,.practice-answer{border:1px solid var(--line);padding:14px;margin:14px 0}.practice-answer summary,.practice-hint summary{cursor:pointer;font-weight:650}.study-links{margin-top:26px}h4{margin-top:30px}li{margin-block:9px}:focus-visible{outline:2px solid var(--accent);outline-offset:4px}@media(max-width:500px){th,td{padding:8px 6px;font-size:.9em}.pinmap{font-size:17px}}@media print{.pack-links,.work-space{display:none}.practice-answer>*,.practice-hint>*{display:block!important}.pinmap{max-width:400px;break-inside:avoid}table{font-size:10pt}tr{break-inside:avoid}.topic{break-before:page}.topic:first-child{break-before:auto}}</style>'''
@@ -134,10 +136,13 @@ def build():
         for key,value in values.items():t=t.replace('{{'+key+'}}',value)
         fixes='<style>.pinmap text{fill:currentColor}.btn-ghost{background:var(--surface);color:var(--ink)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}@media(max-width:500px){.pinmap text{font-size:22px}}</style>'
         t=t.replace('</head>',css+fixes+'</head>')
+        if i>0:
+            t=t.replace('</head>','<style>'+ (PACK/'mcq.css').read_text(encoding='utf-8')+'</style></head>')
+            t=t.replace('</body>','<script>'+(PACK/'mcq.js').read_text(encoding='utf-8')+'</script></body>')
         assert '{{' not in t
         (OUT/filenames[i]).write_text(t,encoding='utf-8')
     (PACK/'chips.json').write_text(json.dumps(CHIPS,ensure_ascii=False,indent=2),encoding='utf-8')
-    (PACK/'questions.json').write_text(json.dumps(Q,ensure_ascii=False,indent=2),encoding='utf-8')
+    (PACK/'questions.json').write_text(json.dumps(questions,ensure_ascii=False,indent=2),encoding='utf-8')
     sources=dict(date='2026-10-15',scope=[1,2,3,4,5],manuals=[str(p.relative_to(ROOT)) for p in (ROOT/'강의노트').glob('실험[1-5]*.pdf')],scope_evidence=[f'보고서/실험{i:02}/체크리스트/명세.md' for i in range(1,6)],datasheets=[dict(chip=c['num'],url=c['url'],sections='Pinning information / Pin description / Functional description') for c in CHIPS],limitations=['실물 제조사·패키지 접미사는 미확인. 교안의 두 줄 핀 번호와 제조사 표준 핀 설명을 대조한 학습 그림.','직접 PDF 다운로드는 403이므로 웹 문서 열람으로 확인. 제조사 PDF를 로컬에 보관했다고 주장하지 않음.','과거 실험01 체크리스트의 미사용 입력 방치 문구는 채택하지 않음. 실험02 교안 p9의 입력 고정을 따름.','04·05 교안 표지는 과거 학기 표기이나 현재 배포 경로의 파일을 기준으로 함.'])
     (PACK/'sources.json').write_text(json.dumps(sources,ensure_ascii=False,indent=2),encoding='utf-8')
     print(f'Built 3 HTML documents, {len(CHIPS)} chips, {len(Q)} questions')

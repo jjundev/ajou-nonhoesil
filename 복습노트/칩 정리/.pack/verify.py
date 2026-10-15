@@ -45,7 +45,6 @@ for c in chips:
         assert all(c['pins'][i-1] not in ['NC','VCC','GND'] and 'Y' not in c['pins'][i-1] for i in inputs)
 for x in questions:
     assert x['id'] in docs['문제풀이.html'].ids and x['id'] in docs['문제설명.html'].ids
-    assert x['answer'] in (O/'문제풀이.html').read_text(encoding='utf-8')
     assert x['answer'] in (O/'문제설명.html').read_text(encoding='utf-8')
 # Exercise composite circuit answers independently over all Boolean input rows.
 for a in [0,1]:
@@ -70,8 +69,8 @@ with sync_playwright() as p:
                 assert page.locator('#'+ident).is_visible(),(width,name,ident)
                 assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),(width,name,ident,'overflow')
             if name=='문제풀이.html':
-                page.goto((O/name).as_uri()+'#q14');page.locator('#q14 .practice-answer summary').click()
-                assert page.locator('#q14 .practice-answer').get_attribute('open') is not None
+                page.goto((O/name).as_uri()+'#q14');page.locator('#q14 .practice-hint summary').click()
+                assert page.locator('#q14 .practice-hint').get_attribute('open') is not None
                 page.evaluate("dispatchEvent(new Event('beforeprint'))")
                 assert page.locator('details:not([open])').count()==0
                 page.evaluate("dispatchEvent(new Event('afterprint'))")
@@ -89,7 +88,8 @@ with sync_playwright() as p:
     page.emulate_media(media='print');page.evaluate("dispatchEvent(new Event('beforeprint'))")
     assert page.locator('article.topic').count()==30
     assert page.locator('article.topic:visible').count()==30
-    assert page.locator('.practice-answer:visible').count()==30
+    assert page.locator('.mcq-choice:visible').count()==150
+    assert page.locator('.mcq-reason:visible').count()==0
     browser.close()
 (P/'browser-results.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
 print('Chromium desktop/mobile, navigation, theme, answers and print: PASS')
