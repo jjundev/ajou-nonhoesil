@@ -1,0 +1,988 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-dec3x8/original/0",
+      "expected_headers": [
+        "A",
+        "D7",
+        "D6",
+        "D5",
+        "D4",
+        "D3",
+        "D2",
+        "D1",
+        "D0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-dec3x8-question-answer"
+    },
+    {
+      "key": "q-dec3x8/explanation/0",
+      "expected_headers": [
+        "A",
+        "D7",
+        "D6",
+        "D5",
+        "D4",
+        "D3",
+        "D2",
+        "D1",
+        "D0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-dec3x8-question-answer"
+    },
+    {
+      "key": "q-prio-onehot/original/0",
+      "expected_headers": [
+        "D",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-prio-onehot-question-answer"
+    },
+    {
+      "key": "q-prio-onehot/explanation/0",
+      "expected_headers": [
+        "D",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-prio-onehot-question-answer"
+    },
+    {
+      "key": "q-prio-exam/original/0",
+      "expected_headers": [
+        "D",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-prio-exam-question-answer"
+    },
+    {
+      "key": "q-prio-exam/explanation/0",
+      "expected_headers": [
+        "D",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-prio-exam-question-answer"
+    },
+    {
+      "key": "q-dec2x4-design/explanation/0",
+      "expected_headers": [
+        "I1",
+        "I0",
+        "O3",
+        "O2",
+        "O1",
+        "O0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-enc4x2-design/explanation/0",
+      "expected_headers": [
+        "D3",
+        "D2",
+        "D1",
+        "D0",
+        "A",
+        "B"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-excess3-enc-exam/original/0",
+      "expected_headers": [
+        "SW",
+        "Bit3",
+        "Bit2",
+        "Bit1",
+        "Bit0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-excess3-enc-exam-question-answer"
+    },
+    {
+      "key": "q-excess3-enc-exam/explanation/0",
+      "expected_headers": [
+        "SW",
+        "Bit3",
+        "Bit2",
+        "Bit1",
+        "Bit0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-excess3-enc-exam-question-answer"
+    },
+    {
+      "key": "q-excess3-enc-6row/original/0",
+      "expected_headers": [
+        "SW",
+        "Bit3",
+        "Bit2",
+        "Bit1",
+        "Bit0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-excess3-enc-6row-question-answer"
+    },
+    {
+      "key": "q-excess3-enc-6row/explanation/0",
+      "expected_headers": [
+        "SW",
+        "Bit3",
+        "Bit2",
+        "Bit1",
+        "Bit0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-excess3-enc-6row-question-answer"
+    },
+    {
+      "key": "q-1of4-excess3/original/0",
+      "expected_headers": [
+        "D0D1D2D3",
+        "",
+        "Excess-3"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "description",
+          "kind": "connector",
+          "group": "변환"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-1of4-excess3-question-answer"
+    },
+    {
+      "key": "q-1of4-excess3/explanation/0",
+      "expected_headers": [
+        "D0D1D2D3",
+        "",
+        "Excess-3"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "description",
+          "kind": "connector",
+          "group": "변환"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-1of4-excess3-question-answer"
+    },
+    {
+      "key": "q-74hc148-table/original/0",
+      "expected_headers": [
+        "E1",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 8,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-74hc148-table-question-answer"
+    },
+    {
+      "key": "q-74hc148-table/explanation/0",
+      "expected_headers": [
+        "E1",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 8,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-74hc148-table-question-answer"
+    },
+    {
+      "key": "q-quiz-dec2x4-table/conditions/0",
+      "expected_headers": [
+        "게이트",
+        "입력 1",
+        "입력 2",
+        "출력"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "text",
+          "group": "게이트"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-quiz-dec2x4-table/explanation/0",
+      "expected_headers": [
+        "bit0",
+        "bit1",
+        "D1",
+        "D2",
+        "D3",
+        "D4"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-sa-enc8x3/explanation/0",
+      "expected_headers": [
+        "D7",
+        "D6",
+        "D5",
+        "D4",
+        "D3",
+        "D2",
+        "D1",
+        "D0",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 7,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

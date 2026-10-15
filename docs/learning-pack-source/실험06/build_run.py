@@ -126,6 +126,8 @@ for pid, obj in PR.P.items():
     (RUN / 'workbook' / f'{pid}.json').write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding='utf-8')
 for pid, html in E.items():
     (RUN / 'problem-explanations' / f'{pid}.html').write_text(html, encoding='utf-8')
+(RUN / 'problem-explanations/table-layout.json').write_bytes(
+    (Path(__file__).parent / 'problem-explanations/table-layout.json').read_bytes())
 
 # ------------------------------------------------------------------ manifest
 manifest['title'] = 'Latch & Flip-Flop — 1비트를 기억하는 회로'

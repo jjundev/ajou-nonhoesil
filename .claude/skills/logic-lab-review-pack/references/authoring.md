@@ -56,3 +56,12 @@ MD는 위젯 조작부를 제외하고 정적 자료·힌트·풀이를 모두 �
 독립된 식은 설명 문장과 문단을 분리한다. 문제설명 렌더러는 식만 있는 `<p>`(일반 부울식 또는 `$...$`/`$$...$$`/LaTeX display 문단)를 수식 카드로 자동 감싼다. 원문 식 번호와 내용은 그대로 보존하며, 감지되지 않는 독립 수식은 `<div class="equation-card" role="group" aria-label="수식">` 안에 명시한다. 카드 안에는 식을 넣고 해석·조건·주의 문장은 밖에 둔다.
 
 문제설명의 표도 본문과 분리된 `table-card`로 표시한다. 렌더러가 문제 읽기와 설명 조각의 표를 자동으로 감싸며 기존 `table-wrap`/`work-table`, 표 머리·주어진 값·빈칸·병합 셀은 그대로 유지한다. 명시적으로 저작한 table-card는 중첩하지 않는다. 표에 대한 해석이나 주의 문장은 카드 밖에 둔다.
+
+
+### 문제설명 표 배치
+
+`problem-explanations/table-layout.json`(version=1)에 모든 표를 `<문항ID>/<original|conditions|ask|explanation>/<0부터 순번>` key로 기록한다. expected_headers는 원래 최하위 열 머리글, columns는 role(index/control/input/intermediate/output/description), kind(signal/bus/expression/text/connector/index), 한국어 group 및 선택적 min_rem이다. 이름으로 역할을 추측하지 않는다. boundaries는 left(왼쪽 열의 0부터 번호)와 kind(major/minor)로 명시한다.
+
+signal은 같은 표에서 같은 폭(하한 3rem), bus/수식은 내용 기반으로 줄바꿈 없이, text는 가용 폭을 공유한다. 경계 여백은 major 양쪽 0.5rem씩, minor 양쪽 0.25rem씩 기본 여백에 더한다. 짧은 표는 필요한 폭만 쓴다. 같은 열 구성의 빈 표·완성 표는 같은 pair를 지정하여 너비를 공유한다. 열 구성이 다르면 pair를 지정하지 않는다. 겹치는 병합 셀·머리글 불일치는 빌드 오류다. 그룹 머리글은 생성기가 추가하고 MD에는 원래 행만 내보낸다.
+
+기존 팩은 explain-stage의 `--sync-explanation-template`으로 표시된 문제설명 CSS 블록만 동기화한다. 관리 대상 표의 첫 열 최소 폭은 해제하며 모바일 가로 스크롤은 table-card 한 곳만 사용한다. 글자 축소·열 숨김·간격용 빈 열은 금지한다. JSON 없는 legacy 입력은 종전 표를 보존한다.

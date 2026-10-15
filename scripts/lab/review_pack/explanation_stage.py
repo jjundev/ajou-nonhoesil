@@ -1,12 +1,12 @@
 """Prepare a new owned-file stage without changing existing learning materials."""
 from pathlib import Path
-import json,shutil
+import json,shutil,re
 from .manifest import load_manifest,output_names,DATA
 from .explanation_content import within,CHECK_KEYS
 from .explanation_render import write_explanations
 from .workbook_render import read_workbook_payload
 
-def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path) -> Path:
+def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, sync_explanation_template: bool = False) -> Path:
     folder,author_root,stage=map(lambda p:Path(p).resolve(),(folder,author_root,stage))
     if stage.exists() or stage.is_relative_to(folder) or folder.is_relative_to(stage):raise ValueError('Existing/overlapping explanation stage')
     m=load_manifest(folder/DATA/'manifest.json')
@@ -35,6 +35,19 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path) -> P
         stage.mkdir(parents=True)
         for relative in owned:
             target=stage/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(folder/relative,target)
+        if sync_explanation_template:
+            template=stage/DATA/'assets/note-template.html'
+            common=Path(__file__).resolve().parents[3]/'.agents/skills/logic-lab-review-pack/assets/note-template.html'
+            pattern=r'    /\* explanation-table-layout:start \*/.*?/\* explanation-table-layout:end \*/\n'
+            block=re.search(pattern,common.read_text(encoding='utf-8'),re.S)
+            if not block:raise ValueError('Missing explanation CSS block')
+            source=template.read_text(encoding='utf-8')
+            if re.search(pattern,source,re.S):source=re.sub(pattern,lambda _:block.group(),source,flags=re.S)
+            else:
+                marker='    /* 위젯 */'
+                if marker not in source:raise ValueError('Missing explanation CSS insertion marker')
+                source=source.replace(marker,block.group()+'\n'+marker,1)
+            template.write_text(source,encoding='utf-8')
         write_explanations(m,question,Path(temp),stage,stage/DATA/'assets')
         report=author_root/'검증결과.md'
         if report.is_file():shutil.copy2(report,stage/DATA/'problem-explanations/검증결과.md')

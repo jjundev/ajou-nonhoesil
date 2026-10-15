@@ -1,0 +1,559 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-mux2/explanation/0",
+      "expected_headers": [
+        "S",
+        "I0",
+        "I1",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-mux4/conditions/0",
+      "expected_headers": [
+        "E",
+        "S1",
+        "S0",
+        "D3",
+        "D2",
+        "D1",
+        "D0",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "minor"
+        },
+        {
+          "left": 6,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-mux4/explanation/0",
+      "expected_headers": [
+        "E",
+        "S1S0",
+        "선택",
+        "선택 데이터",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "bus",
+          "group": "제어 입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "선택"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "선택"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-demux2/explanation/0",
+      "expected_headers": [
+        "D",
+        "S",
+        "Y0",
+        "Y1"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-design4/conditions/0",
+      "expected_headers": [
+        "S1",
+        "S0",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-design4/explanation/0",
+      "expected_headers": [
+        "AND",
+        "3입력"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "signal",
+          "group": "게이트"
+        },
+        {
+          "role": "input",
+          "kind": "expression",
+          "group": "입력 조합"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "q-tri/conditions/0",
+      "expected_headers": [
+        "A",
+        "nOE",
+        "B"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-tri/explanation/0",
+      "expected_headers": [
+        "S",
+        "nOE0",
+        "nOE1",
+        "버퍼0",
+        "버퍼1",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "버퍼 제어"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "버퍼 제어"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-demux4/conditions/0",
+      "expected_headers": [
+        "D",
+        "S1",
+        "S0",
+        "Y3",
+        "Y2",
+        "Y1",
+        "Y0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-demux4-question-answer"
+    },
+    {
+      "key": "q-demux4/explanation/0",
+      "expected_headers": [
+        "D",
+        "S1",
+        "S0",
+        "Y3",
+        "Y2",
+        "Y1",
+        "Y0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-demux4-question-answer"
+    },
+    {
+      "key": "q-mux2-graded/conditions/0",
+      "expected_headers": [
+        "Sel",
+        "X0",
+        "X1",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-mux2-graded/explanation/0",
+      "expected_headers": [
+        "Sel",
+        "X0",
+        "X1",
+        "선택",
+        "Y"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

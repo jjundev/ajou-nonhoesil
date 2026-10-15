@@ -79,3 +79,16 @@ def test_workbook_question_and_review_anchors_are_valid(tmp_path):
     stage=prepare_explanation_stage(folder,author,tmp_path/'stage')
     m=json.loads((stage/'.pack/manifest.json').read_text())
     assert check_explanations(stage,m)==[]
+
+def test_stage_copies_layout_and_syncs_explanation_css(tmp_path):
+    folder,author=pack(tmp_path)
+    (author/'table-layout.json').write_text(json.dumps(dict(version=1,tables=[])))
+    template=folder/'.pack/assets/note-template.html'
+    original=template.read_text();template.write_text(original.replace('/* explanation-table-layout:start */','/* explanation-table-layout:start */\n/* stale */'))
+    stage=prepare_explanation_stage(folder,author,tmp_path/'stage',sync_explanation_template=True)
+    m=json.loads((stage/'.pack/manifest.json').read_text())
+    assert '.pack/problem-explanations/table-layout.json' in m['generated_files']
+    assert '/* stale */' not in (stage/'.pack/assets/note-template.html').read_text()
+    assert check_explanations(stage,m)==[]
+    (stage/'.pack/problem-explanations/table-layout.json').write_text(json.dumps(dict(version=99,tables=[])))
+    assert check_explanations(stage,m)
