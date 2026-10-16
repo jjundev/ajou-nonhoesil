@@ -1,0 +1,4 @@
+interface:
+  display_name: "실험영상 근거 추출"
+  short_description: "실험영상의 보고서 사진 추출과 근거를 보존하는 영상 편집"
+  default_prompt: "$extract-lab-video-evidence로 실험영상에서 보고서용 사진을 추출하고 요청한 구간을 편집해줘. 원본을 보존하고 미확인 사항을 정리해줘."
