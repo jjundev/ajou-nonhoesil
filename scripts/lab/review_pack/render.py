@@ -105,7 +105,7 @@ def assemble(manifest,run,out,assets):
             path.write_text(render_workbook_html(data,assets),encoding='utf-8')
             paths[key+'_html']=path
             paths[key+'_md']=write_workbook_md(data,manifest,out/DATA/names[key+'_md'])
-    if manifest.get('problem_explanation_version')==1:
+    if manifest.get('problem_explanation_version') in (1,2):
         from .explanation_render import write_explanations
         from .workbook_render import read_workbook_payload
         paths.update(write_explanations(manifest,read_workbook_payload(paths['question_html']),run,out,assets))

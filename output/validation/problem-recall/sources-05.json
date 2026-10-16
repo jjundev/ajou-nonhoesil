@@ -1,0 +1,140 @@
+[
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출 2016-2.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\00-1.png",
+    "text": "2016-2학기 논리회로실험 실험 5\n반 :\n조 :\n        이름 :\n   \n \n학번 :\n1.\n8X3 Priority Encoder의 Truth table을 완성하시오\nFill in the blanks of the 3x8 priority decoder.\nD\nA2\nA1\nA0\n0000 0001\n0\n0\n0\n0011 1010\n0101 1110\n0001 1101\n0110 0100\n1111 1111\n2.\n2x4 Decoder의 회로를 설계하시오.(Not gate 2개, 2-input And gate 4개)\nDesign a circuit diagram of 2x4 decoder. (2 NOT gates, 4 2-input AND gates)\n3.\n4x2 Encoder의 회로를 설계하시오.(Not gate 4개, 4-input nand gate 3개, 2-input nand gate 2개)\nDesign a circuit diagram of 2x4 Encoder. (4 NOT gates, 3 4-input NAND gates, 2 2-input NAND gates)\n4.\nExcess-3 코드의 특징과 사용이유\n \n \n에대해서설명하시오.\nDescribe the characteristics of Excess-3 code. And explain the reason why the Excess-3 code is used.\n5.\n10진 Excess 3\n \n코드Encoder\n \n \n \n의회로를보고Truth table\n \n을완성하시오.()\nReferring to the circuit diagram below (decimal excess-3 code encoder), fill in the blanks of the truth table.\nSW\nBit3\nBit2\nBit1\nBit0\n000001\n000100\n010000\n100000\nBit0\nBit1\nBit2\nBit3\nSW5 (Decimal 5)\nSW0 (Decimal 0)\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_단답형.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\01-1.png",
+    "text": "1.Decoder에 대해서 설명하시오.\nDecoder란 n비트의 2진코드를 2n개의 서로 다른 정보로 바꾸어 주는 조합 논리회로. \n2. Encoder에 대해서 설명하시오.\nEncoder는 10진수나 8진수를 입력으로 받아들여 2진수나 BCD와 같은 코드로 변환 해주는 \n조합 논리회로. \n3. 3X8 Decoder의 진리표작성\n4. 8X3 Encoder 진리표작성\n5.Priority Encoder에 대해서 설명하시오(사용이유)\n우선순위가 가장 높은 것을 먼저 실행하기 위해서.\n6. 2X4 Decoder의 회로를 보고 진리표를 완성하시오\n7. Excess-3 코드에 대해서 설명하시오 (진리표, 사용이유)\n+++++++++++++++++++++++++++++++++++++\n9의 보수를 쉽게 구할 수 있어서 감가산을 빨리할 수 있다.\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_단답형.pdf",
+    "page": 2,
+    "image": "output\\validation\\problem-recall\\source-05\\02-2.png",
+    "text": "8. 10진 Excess 3 코드 Encoder의 회로를 보고 진리표를 완성하시오\n?????\n9. 다음표의 input과 output을 보고 Encoder 회로를 그려라\n???????\n10. 74HC143은 Priority Encoder이다. 각 Output port A0, A1, A2, GS, EO에 대해서 설\n명하시오.\nA0~A2 : Data Output\nGS : Priority Flag Output\nEO : Enable Output\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_문제.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\03-1.png",
+    "text": "퀴  즈 \n(실험 5. Encoder & Decoder)\n교수:\n 학번:\n \n 이름:\n \n1. 다음 1-out-of-4 코드를 Excess-3 코드로 변환 하시오.\n              D\n  0  D\n  1  D\n  2  D\n  3                          Excess-3\n                1000               -> \n                0  1  00\n                 -> \n                0010               -> \n2. Priority encoder의 특징을 Binary encoder와 비교하여 설명하시오.\n3. 아래의 2 to 4 Decoder의 Gate 회로를 활용하여 1 to 4 Demultiplexer의 Gate회로를 작성하시오. \n  \n<2 to 4 Decoder의 Gate 회로도>\n4. 아래 회로는 74HC148을 활용하여 설계한 8x3 Priority Encoder 이다. 아래의 Table을 완성하시오.\n<8x3 Priority Encoder> \n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_정답.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\04-1.png",
+    "text": "bit0\nbit1\nD1\nD2\nD3\nD4\n0\n0\n0\n0\n0\n1\n1\n0\n0\n0\n1\n0\n0\n1\n0\n1\n0\n0\n1\n1\n1\n0\n0\n0\n실험5. Quiz\n                                                  이름 :                 학번 :\n1. 2X4 Decoder의 회로를 보고 Truth table을 완성하시오.\n2. Excess-3 코드의 장점에 대해서 설명하시오.\n-> 9의 보수를 쉽게 구할 수 있는 장점이 있다.\n3. Latch와 Flip-Flop의 차이점에 대해서 설명하시오.\n-> 출력이 변하는 시점과 관계되어 맞게 설명하면 1점\n4. R-S F/F의 Truth table을 완성하시오.\n5. 74HC76은 J-K F/F이다. CLR 핀과 PR핀의 기능에 대해 설명하시오.\n-> CLR은 출력을 0으로, PR은 1로 만든다는 내용이 포함되면 1점\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 기출_풀이.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\05-1.png",
+    "text": "퀴  즈 \n(실험 5. Encoder & Decoder)\n교수:\n 학번:\n \n 이름:\n \n1. 다음 1-out-of-4 코드를 Excess-3 코드로 변환 하시오.\n              D\n  0  D\n  1  D\n  2  D\n  3                         Excess-3\n                1000               ->           0011\n                0  1  00\n                 ->           0100\n                0010               ->           0101\n2. Priority encoder의 특징을 Binary encoder와 비교하여 설명하시오.\n다수의 H가 동시에 입력되었을 때, Binary encoder는 undesirable 한 결과를 얻는 반면, Priority \nencoder는 우선순위에 따라 출력이 정해짐.\n3. 아래의 2 to 4 Decoder의 Gate 회로를 활용하여 1 to 4 Demultiplexer의 Gate회로를 작성하시오. \n           \n<2 to 4 Decoder의 Gate 회로도>     <2 to 4 Demultiplexer의 Gate 회로도>\n4. 아래 회로는 74HC148을 활용하여 설계한 8x3 Priority Encoder 이다. 아래의 Table을 완성 하시오.\n<8x3 Priority Encoder> \n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v1.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\06-1.png",
+    "text": "bit0\nbit1\nD1\nD2\nD3\nD4\n0\n0\n0\n0\n0\n1\n1\n0\n0\n0\n1\n0\n0\n1\n0\n1\n0\n0\n1\n1\n1\n0\n0\n0\n실험5. Quiz\n                                                  이름 :                 학번 :\n1. 2X4 Decoder의 회로를 보고 Truth table을 완성하시오.\n2. Excess-3 코드의 장점에 대해서 설명하시오.\n-> 9의 보수를 쉽게 구할 수 있는 장점이 있다.\n3. Latch와 Flip-Flop의 차이점에 대해서 설명하시오.\n-> 출력이 변하는 시점과 관계되어 맞게 설명하면 1점\n4. R-S F/F의 Truth table을 완성하시오.\n5. 74HC76은 J-K F/F이다. CLR 핀과 PR핀의 기능에 대해 설명하시오.\n-> CLR은 출력을 0으로, PR은 1로 만든다는 내용이 포함되면 1점\n디코딩:\n-n비트의 2진 코드를 2^n개의 서로 다른 정보로 바꿔주는 조합 논리회로\n-입력 n개, 출력 m개인 디코더를 nXm 디코더라고 하면, n개의 입력 변수로된 최소항을 2^n개 이하의 출력으로 바꿔 줌\n인코딩: \n-10진수나 8진수를 입력으로 받아들여 2진수나 BCD와 같은 코드로 변환해주는 조합 논리회로\n-2^n개의 입력과 n개의 출력을 갖고 있으며, 출력은 입력값에 대응하는 2진 코드를 생성\nbit0\n1\n미\n0\n!\n0\n0\nO\n0\nbit1\n0\n0\n1\n109\n0\nDal\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v2.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\07-1.png",
+    "text": "실험5 퀴즈 예상문제 \n1.\n3X8 Decoder의 Truth table을 완성하시오.\nA\nD7\nD6\nD5\nD4\nD3\nD2\nD1\nD0\n000\n0\n0\n0\n0\n0\n0\n0\n1\n001\n0\n0\n0\n0\n0\n0\n1\n0\n010\n0\n0\n0\n0\n0\n1\n0\n0\n011\n0\n0\n0\n0\n1\n0\n0\n0\n100\n0\n0\n0\n1\n0\n0\n0\n0\n101\n0\n0\n1\n0\n0\n0\n0\n0\n110\n0\n1\n0\n0\n0\n0\n0\n0\n111\n1\n0\n0\n0\n0\n0\n0\n0\n2.\n8X3 Priority Encoder의 Truth table을 완성하시오\nD\nA2\nA1\nA0\n0000 0001\n0\n0\n0\n0000 0010\n0\n0\n1\n0000 0100\n0\n1\n0\n0000 1000\n0\n1\n1\n0001 0000\n1\n0\n0\n0010 0000\n1\n0\n1\n0100 0000\n1\n1\n0\n1000 0000\n1\n1\n1\n3.\nPriority Encoder의 동작 특징\n \n \n에대해서설명하시오.(어떤 input에 대하여 어떤 output이 나오는가)\n우선 순위 인코더의 경우 두개의 high가 입력되어도 우선순위가 높은 것을 출력한다. 인코더와 달리 동시에 입력이 들어가도 출력에는 \n영향을 끼치지 않아 정확한 출력을 보일 수 있다. 즉 인코더에 각기 다른 입력이 동시에 들어가게 되어도 우선순위를 부여아혀 처리하는 것을 \n말한다. \n4.\n2x4 Decoder의 회로를 설계하시오.(Not gate 2개, And gate 4개)\n5.\n4x2 Encoder의 회로를 설계하시오.(Not gate 4개, 4input nand gate 3개, nand gate 2개)\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v2.pdf",
+    "page": 2,
+    "image": "output\\validation\\problem-recall\\source-05\\08-2.png",
+    "text": "6.\nExcess-3 코드의 특징과 사용이유\n \n \n에대해서설명하시오.\nExcess-3 cord란 십진수의 각 자리를 2진수로 나타내고 거기에 3을 더해서 이진수로 표기하는 것을 말한다.\n그에 대한이유로는 감산에 유리하고, 모든 비트가 동시에 0이되는 일이 없으므로 신호두절을 구별할 때 이용할수 있다. 반올림에도 유용하다. \n또한 비트를 반전하는 것만으로도 9의 보수를 얻을 수 있으므로 감산에 유리하다. \n7.\n10진 Excess 3\n \n코드Encoder\n \n \n \n의회로를보고Truth table\n \n을완성하시오.()\nSW\nBit3\nBit2\nBit1\nBit0\n000001\n000010\n000100\n001000\n010000\n100000\nSW0 (Decimal 0)\nSW5 (Decimal 5)\nBit3\nBit2\nBit1\nBit0\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v3.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\09-1.png",
+    "text": "실험5 \n \n퀴즈예상문제\n1.\n3X8 Decoder의 Truth table을 완성하시오.\nA\nD7\nD6\nD5\nD4\nD3\nD2\nD1\nD0\n000\n0\n0\n0\n0\n0\n0\n0\n1\n001\n010\n011\n100\n101\n110\n111\n2.\n8X3 Priority Encoder\n \n의Truth table\n \n을완성하시오\nD\nA2\nA1\nA0\n0000 0001\n0\n0\n0\n0000 0010\n0000 0100\n0000 1000\n0001 0000\n0010 0000\n0100 0000\n1000 0000\n3.\nPriority Encoder\n \n \n의동작특징\n \n \n에대해서설명하시오.(\n \n어떤input\n \n \n \n에대하여어떤output\n \n이나오는가)\n4.\n2x4 Decoder\n \n \n의회로를설계하시오.(Not gate 2개, And gate 4개)\n5.\n4x2 Encoder\n \n \n의회로를설계하시오.(Not gate 4개, 4input nand gate 3개, nand gate 2개)\n6.\nExcess-3 코드\n \n \n의특징과사용이유\n \n \n에대해서설명하시오.\n7.\n10\n \n진Excess 3\n \n코드Encoder\n \n \n \n의회로를보고Truth table\n \n을완성하시오.()\nSW\nBit3\nBit2\nBit1\nBit0\n000001\n000010\n000100\n001000\n010000\n100000\nSW0 (Decimal 0)\nSW5 (Decimal 5)\nBit3\nBit2\nBit1\nBit0\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 예상문제_v4.pdf",
+    "page": 1,
+    "image": "output\\validation\\problem-recall\\source-05\\10-1.png",
+    "text": "실험5 퀴즈 예상문제\n1.\n3X8 Decoder의 Truth table을 완성하시오.\nFill in the blanks of the 3x8 decoder.\nA\nD7\nD6\nD5\nD4\nD3\nD2\nD1\nD0\n000\n0\n0\n0\n0\n0\n0\n0\n1\n001\n010\n011\n100\n101\n110\n111\n2.\n8X3 Priority Encoder의 Truth table을 완성하시오\nFill in the blanks of the 3x8 priority decoder.\nD\nA2\nA1\nA0\n0000 0001\n0\n0\n0\n0000 0010\n0000 0100\n0000 1000\n0001 0000\n0010 0000\n0100 0000\n1000 0000\n3.\nPriority Encoder의 동작 특징에 대해서 설명하시오. (어떤 input에 대하여 어떤 output이 나오는가)\nDescribe the performance characteristic of a Priority Encoder. (How outputs are derived from some inputs) \n4.\n2x4 Decoder의 회로를 설계하시오.(Not gate 2개, 2-input And gate 4개)\nDesign a circuit diagram of 2x4 decoder. (2 NOT gates, 4 2-input AND gates)\n5.\n4x2 Encoder의 회로를 설계하시오.(Not gate 4개, 4-input nand gate 3개, 2-input nand gate 2개)\nDesign a circuit diagram of 2x4 Encoder. (4 NOT gates, 3 4-input NAND gates, 2 NAND gates)\n6.\nExcess-3 코드의 특징과 사용이유\n \n \n에대해서설명하시오.\nDescribe the characteristics of Excess-3 code. And explain the main objectives of using the Excess-3 code.\n7.\n10진 Excess 3\n \n코드Encoder\n \n \n \n의회로를보고Truth table\n \n을완성하시오.()\nReferring to the circuit diagram below (decimal excess-3 code encoder), fill in the blanks of the truth table.\n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 종합_기출문제 (4p).pdf",
+    "page": 2,
+    "image": "output\\validation\\problem-recall\\source-05\\11-2.png",
+    "text": "실험5 퀴즈 예상문제  \n1. 3X8 Decoder 의 Truth table 을 완성하시오. \nA \nD7 \nD6 \nD5 \nD4 \nD3 \nD2 \nD1 \nD0 \n000 \n0 \n0 \n0 \n0 \n0 \n0 \n0 \n1 \n001 \n0 \n0 \n0 \n0 \n0 \n0 \n1 \n0 \n010 \n0 \n0 \n0 \n0 \n0 \n1 \n0 \n0 \n011 \n0 \n0 \n0 \n0 \n1 \n0 \n0 \n0 \n100 \n0 \n0 \n0 \n1 \n0 \n0 \n0 \n0 \n101 \n0 \n0 \n1 \n0 \n0 \n0 \n0 \n0 \n110 \n0 \n1 \n0 \n0 \n0 \n0 \n0 \n0 \n111 \n1 \n0 \n0 \n0 \n0 \n0 \n0 \n0 \n2. 8X3 Priority Encoder 의 Truth table 을 완성하시오 \nD \nA2 \nA1 \nA0 \n0000 0001 \n0 \n0 \n0 \n0000 0010 \n0 \n0 \n1 \n0000 0100 \n0 \n1 \n0 \n0000 1000 \n0 \n1 \n1 \n0001 0000 \n1 \n0 \n0 \n0010 0000 \n1 \n0 \n1 \n0100 0000 \n1 \n1 \n0 \n1000 0000 \n1 \n1 \n1 \n3. Priority Encoder 의 동작 특징에 대해서 설명하시오.(어떤 input 에 대하여 어떤 output 이 나오는가) \n우선 순위 인코더의 경우 두개의 high 가 입력되어도 우선순위가 높은 것을 출력한다. 인코더와 달리 동시에 \n입력이 들어가도 출력에는 영향을 끼치지 않아 정확한 출력을 보일 수 있다. 즉 인코더에 각기 다른 입력이 \n동시에 들어가게 되어도 우선순위를 부여아혀 처리하는 것을 말한다.  \n4. 2x4 Decoder 의 회로를 설계하시오.(Not gate 2 개, And gate 4 개) \n \n \n \n \n \n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 종합_기출문제 (4p).pdf",
+    "page": 3,
+    "image": "output\\validation\\problem-recall\\source-05\\12-3.png",
+    "text": "5. 4x2 Encoder 의 회로를 설계하시오.(Not gate 4 개, 4input nand gate 3 개, nand gate 2 개) \n \n6. Excess-3 코드의 특징과 사용이유에 대해서 설명하시오. \nExcess-3 cord 란 십진수의 각 자리를 2 진수로 나타내고 거기에 3 을 더해서 이진수로 표기하는 것을 말한다. \n그에 대한이유로는 감산에 유리하고, 모든 비트가 동시에 0 이되는 일이 없으므로 신호두절을 구별할 때 이용할수 \n있다. 반올림에도 유용하다. 또한 비트를 반전하는 것만으로도 9 의 보수를 얻을 수 있으므로 감산에 유리하다.  \n7. 10 진 Excess 3코드 Encoder의 회로를 보고 Truth table을 완성하시오.() \nSW \nBit3 \nBit2 \nBit1 \nBit0 \n000001 \n \n \n \n \n000010 \n \n \n \n \n000100 \n \n \n \n \n001000 \n \n \n \n \n010000 \n \n \n \n \n100000 \n \n \n \n \n \n \nSW0 (Decimal 0) \n \nSW5 (Decimal 5) \n \nBit3 \n \nBit2 \n \nBit1 \n \nBit0 \n"
+  },
+  {
+    "path": "from_the_past/정리/퀴즈/실험5/실험5 퀴즈 종합_기출문제 (4p).pdf",
+    "page": 4,
+    "image": "output\\validation\\problem-recall\\source-05\\13-4.png",
+    "text": "bit0\nbit1\nD1\nD2\nD3\nD4\n0\n0\n0\n0\n0\n1\n1\n0\n0\n0\n1\n0\n0\n1\n0\n1\n0\n0\n1\n1\n1\n0\n0\n0\n실험5. Quiz\n                                                  이름 :                 학번 :\n1. 2X4 Decoder의 회로를 보고 Truth table을 완성하시오.\n2. Excess-3 코드의 장점에 대해서 설명하시오.\n-> 9의 보수를 쉽게 구할 수 있는 장점이 있다.\n3. Latch와 Flip-Flop의 차이점에 대해서 설명하시오.\n-> 출력이 변하는 시점과 관계되어 맞게 설명하면 1점\n4. R-S F/F의 Truth table을 완성하시오.\n5. 74HC76은 J-K F/F이다. CLR 핀과 PR핀의 기능에 대해 설명하시오.\n-> CLR은 출력을 0으로, PR은 1로 만든다는 내용이 포함되면 1점\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 3,
+    "image": "output\\validation\\problem-recall\\source-05\\14-3.png",
+    "text": "• 디코더(Decoder)\n- n bit의 이진 코드를 2n개의 서로 다른 정보로 바꾸어 주는 \n조합 논리회로\n- 입력 n개, 출력 m개인 디코더를 “nXm 디코더”로명칭 함\n- 입력된 이진 정보로부터 한 가지 출력을 활성화 해야 하는 \n상황에 활용됨\n• 특정 메모리 공간에 접근하거나, IO 장치를 택할 때, 명령어의 이진 \n코드를 해석할 때 등등..\n2. 실험 이론\n* Wikipedia contributors. \"Binary decoder.\" Wikipedia, The Free Encyclopedia. Wikipedia, The \nFree Encyclopedia, 25 Feb. 2025. Web. 31 Mar. 2025.\nKeyboard\nMouse\nPrinter\nDisplay\nREAD KEYBOARD \n0\n0\nDecoder 활용 예\nI/O \nController\n(2x4 Decoder)\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 4,
+    "image": "output\\validation\\problem-recall\\source-05\\15-4.png",
+    "text": "• 디코더(Decoder)\n- E.g., 8x3 Decoder\n2. 실험 이론\n입력\n출력\nA2\nA1\nA0\nD7\nD6\nD5\nD4\nD3\nD2\nD1\nD0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n1\n0\n0\n1\n0\n0\n0\n0\n0\n0\n1\n0\n0\n1\n0\n0\n0\n0\n0\n0\n1\n0\n0\n0\n1\n1\n0\n0\n0\n0\n1\n0\n0\n0\n1\n0\n0\n0\n0\n0\n1\n0\n0\n0\n0\n1\n0\n1\n0\n0\n1\n0\n0\n0\n0\n0\n1\n1\n0\n0\n1\n0\n0\n0\n0\n0\n0\n1\n1\n1\n1\n0\n0\n0\n0\n0\n0\n0\nTruth Table\nLogic gate Circuit \n&  Boolean Algebra\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 5,
+    "image": "output\\validation\\problem-recall\\source-05\\16-5.png",
+    "text": "• 인코더(Encoder)\n- 2n개의 입력중 하나가 활성화 되었을 때, 그 위치 정보를 \nn bit의 이진 코드로 변환해주는 조합 논리회로\n- 입력 m개, 출력 n개인 인코더를 “mXn 인코더”로명칭 함\n- 정보를요약하거나 식별해야 하는 상황에 활용됨\n• 키보드 입력 처리(입력 키 위치 ->이진 코드),  CPU 내Interrupt \n식별, 디지털 통신 등등\n2. 실험 이론\n* Wikipedia contributors. \"Encoder (digital).\" Wikipedia, The Free Encyclopedia. Wikipedia, The \nFree Encyclopedia, 21 Dec. 2024. Web. 31 Mar. 2025.\nKeyboard\nA\n1\n0\nEncoder 활용 예\n…\n…\n…\nI/O \nIdentifier\n(mxn Encoder)\n※ mxn Encoder는 여러 입력이 동시에 HIGH일 때 문제 발생\n=> 우선순위 설정이 요구됨\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 6,
+    "image": "output\\validation\\problem-recall\\source-05\\17-6.png",
+    "text": "• 인코더(Encoder)\n- E.g., 8x3 Encoder\n2. 실험 이론\n입력\n출력\nD7\nD6\nD5\nD4\nD3\nD2\nD1\nD0\nA2\nA1\nA0\n0\n0\n0\n0\n0\n0\n0\n1\n0\n0\n0\n0\n0\n0\n0\n0\n0\n1\n0\n0\n0\n1\n0\n0\n0\n0\n0\n1\n0\n0\n0\n1\n0\n0\n0\n0\n0\n1\n0\n0\n0\n0\n1\n1\n0\n0\n0\n1\n0\n0\n0\n0\n1\n0\n0\n0\n0\n1\n0\n0\n0\n0\n0\n1\n0\n1\n0\n1\n0\n0\n0\n0\n0\n0\n1\n1\n0\n1\n0\n0\n0\n0\n0\n0\n0\n1\n1\n1\nTruth Table\nLogic gate Circuit \n&  Boolean Algebra\n※ mxn Encoder는 여러 입력이 동시에 HIGH일 때 문제 발생\n=> 우선순위 설정이 요구됨\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 8,
+    "image": "output\\validation\\problem-recall\\source-05\\18-8.png",
+    "text": "• 실험 1-1) 2X4  Decoder\n- 주어진 회로를 구성하고, 입력신호의 변화에 따른출력의 변화를 관찰한다.\n3. 실험 방법\nD0\nD1\nD2\nD3\nA0\nA1\n※ A0-A1:  Input, D0-D3: Output\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 10,
+    "image": "output\\validation\\problem-recall\\source-05\\19-10.png",
+    "text": "3. 실험 방법\n※ IN0-7:  Input, A0-A2: Output\n※ Active Low:  신호가 0(LOW)일 때 활성화되는 로직\n• 실험 2-1) 8x3 Priority Encoder\n- 주어진 회로를 구성하고, IN0-7의변화에 따른출력의 변화를 관찰한다.\n• 이때, IC는 Active Low 회로이므로 Low 입력으로부터 Low를 출력. 해석의 용이성을 \n위해 Output을 Negative Logic으로 구축한다. \n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 11,
+    "image": "output\\validation\\problem-recall\\source-05\\20-11.png",
+    "text": "3. 실험 방법\n※ IN0-7:  Input, A0-A2: Output\n※ Active Low:  신호가 0(LOW)일 때 활성화되는 로직\n• 실험 2-1) 8x3 Priority Encoder\n- 주어진 회로를 구성하고, IN0-7의변화에 따른출력의 변화를 관찰한다.\n• 이때, IC는 Active Low 회로이므로 Low 입력으로부터 Low를 출력. 해석의 용이성을 \n위해 Output을 Negative Logic으로 구축한다. \n1112\n= 7\n1012\n= 5\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 12,
+    "image": "output\\validation\\problem-recall\\source-05\\21-12.png",
+    "text": "3. 실험 방법\n※ D0-5:  Input, A0-A2: Output\n• 실험 2-2) Decimal to Excess-3 Code Encoder\n- 주어진 회로를 구성하고, IN0-7의변화에 따른출력의 변화를 관찰한다.\nD0\nD1\nD2\nD3\nD4\nD5\nA0\nA1\nA2\nA3\n"
+  },
+  {
+    "path": "강의노트/실험5. Decoder & Encoder.pdf",
+    "page": 13,
+    "image": "output\\validation\\problem-recall\\source-05\\22-13.png",
+    "text": "3. 실험 방법\n※ D0-5:  Input, A0-A2: Output\n• 실험 2-2) Decimal to Excess-3 Code Encoder\n- 주어진 회로를 구성하고, IN0-7의변화에 따른출력의 변화를 관찰한다.\n- BCD코드에 3(0011)을 더한 값, Excess-3 코드가 제대로 출력되는지 \n확인한다.\nINPUT (decimal)\nBCD\nOUTPUT (Excess-3)\n0\n0000\n0011\n1\n0001\n0100\n2\n0010\n0101\n…\n…\n…\n7\n0111\n1010\n8\n1000\n1011\n9\n1001\n1100\n"
+  }
+]

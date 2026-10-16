@@ -43,6 +43,6 @@ style="max-width:100%;height:auto" alt="2×1 MUX 완성 회로"></p>
 
 검증: 1280×900/375×812, 로컬 글꼴·KaTeX·이미지, data-ready=true, data-overflow='', 깨진 이미지·콘솔·수식 오류 0. 넓은 표·해설 그림·최종 답이 페이지 밖으로 나가지 않아야 한다. A4 가로 인쇄를 페이지별로 렌더링해 확인한다. 오류가 남은 stage는 publish하지 않는다. 그림을 바꾸면 hash와 시각 검토를 갱신하고 관련 checks도 다시 수행한다.
 
-## 입문용 문제설명 문서
+## 문제설명 연결
 
-워크북 문제 projection은 그대로 유지한다. 별도 문제설명은 문제지 payload의 original/conditions/ask/figures와 문항 번호를 재사용하며 정답 projection을 문제지에 섞지 않는다. 설명에는 같은 조건에 대한 완성 풀이를 모두 펼쳐 제공한다. 신규 build에서 problem_explanation_version=1을 활성화하고 저작 조각을 작성한다. 기존 팩은 explain-stage로 보존 갱신한다. 설명만 추가한 경우 기존 워크북 HTML/MD/PDF를 rerender하지 않는다.
+문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.

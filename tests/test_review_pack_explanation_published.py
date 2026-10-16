@@ -19,7 +19,7 @@ def audit_experiment(number):
         numbers=([str(i) for i in range(1,len(selected)+1)],[p['number'] for p in q],[re.search(r'문제 (\d+)',text(n)).group(1) for n in articles]),
         subparts_complete=all('| '+p['id']+' |' in report for p in selected),answer_status={p['id']:p['answer_status'] for p in selected},articles=articles)
 
-@pytest.mark.parametrize('number,expected',[(1,12),(2,14),(3,15),(4,12),(5,19)])
+@pytest.mark.parametrize('number,expected',[(1,12),(2,14),(3,15),(4,12),(5,19),(6,14)])
 def test_experiment_coverage(number,expected):
     result=audit_experiment(number)
     assert result['counts']==(expected,expected,expected)
@@ -27,7 +27,7 @@ def test_experiment_coverage(number,expected):
     assert result['numbers'][0]==result['numbers'][1]==result['numbers'][2]
     assert result['subparts_complete']
     for article in result['articles']:
-        for key in ('recall','understand','start','solve','verify','pitfall','retry'):
+        for key in ('understand','recall','start','solve','verify','pitfall','retry'):
             assert sum(n.attrs.get('data-explanation')==key for n in article.walk())==1
 
 @pytest.mark.parametrize('number,states',[(1,{'q-deq':'disputed'}),(2,{'q-region':'disputed','q-delay-transition':'unresolved','q-transition':'unresolved','q-speed':'unresolved'}),(3,{'q-fa-design':'disputed','q-fs-roles':'disputed','q-cs-roles-sub':'unresolved'}),(4,{'q-tri':'disputed','q-demux4':'disputed'})])
@@ -37,6 +37,25 @@ def test_experiment_answer_states(number,states):
         assert result['answer_status'][ident]==state
         assert ('답안 충돌' if state=='disputed' else '정답 미확정') in text(next(n for n in result['articles'] if n.attrs['id']==ident))
 
+@pytest.mark.parametrize('number,expected', [(1,12),(2,14),(3,15),(4,12),(5,19),(6,14)])
+def test_recall_published(number, expected):
+    from scripts.lab.review_pack.explanation_content import _body_text
+    folder = ROOT/'복습노트'/f'실험{number:02d}'
+    m = json.loads((folder/'.pack/manifest.json').read_text(encoding='utf-8'))
+    assert m['problem_explanation_version'] == 2
+    result = audit_experiment(number)
+    assert result['counts'] == (expected,expected,expected)
+    assert result['ids'][0] == result['ids'][1] == result['ids'][2]
+    for article in result['articles']:
+        sections = [n.attrs['data-explanation'] for n in article.children
+                    if hasattr(n,'attrs') and 'data-explanation' in n.attrs]
+        assert sections == ['understand','recall','start','solve','verify','pitfall','retry']
+        recall = next(n for n in article.walk() if n.attrs.get('data-explanation') == 'recall')
+        assert _body_text(recall).strip()
+        summary = [n for n in article.walk() if n.attrs.get('data-summary') == 'recall']
+        assert len(summary) == 1 and _body_text(summary[0]).strip()
+    assert result['subparts_complete']
+
 @pytest.mark.parametrize('number',range(1,7))
 def test_published_recall(number):
     folder=ROOT/'복습노트'/f'실험{number:02d}'
@@ -45,5 +64,5 @@ def test_published_recall(number):
     assert articles
     for article in articles:
         regions=[n.attrs['data-explanation'] for n in article.walk() if n.attrs.get('data-explanation')]
-        assert regions[0]=='recall'
-        assert '이 문제를 보면 떠올려요' in text(article)
+        assert regions[:2]==['understand','recall']
+        assert any(n.tag=='p' and 'cue' in n.attrs.get('class','').split() for n in article.walk())

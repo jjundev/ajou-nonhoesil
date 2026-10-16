@@ -1,0 +1,1649 @@
+{
+  "stage": "C:\\Users\\Hyunjun\\.codex\\worktrees\\logic-lab-problem-recall\\논회실\\tmp\\review-pack\\recall-01-c6e9685228ca4eb8bad4c34537371029",
+  "cases": [
+    {
+      "id": "q-tt3-4row",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3 Input Logic Gate”와 A·B·C가 적힌 네 행은 진리표를 채우라는 단서예요. 진리표는 각 입력 조합에 대한 출력을 나란히 기록한 표이고, 여기서는 0=low, 1=high예요. A·B·C는 입력 세 개이며 AND·OR·NOR·XOR 열은 같은 입력을 받은 서로 다른 게이트의 출력이에요.\n\nAND의 곱 ABC는 모두 1일 때만 1, OR의 합 A+B+C는 하나라도 1이면 1이에요. NOR는 (A+B+C)′로 OR 출력을 뒤집어요. ′는 0과 1을 바꾸는 보수이고 +는 산술 덧셈이 아니라 OR예요. 3입력 XOR A⊕B⊕C는 순서대로 XOR하여 1의 개수가 홀수일 때 1이에요.\n\n이 규칙은 0/1 논리값을 계산하는 조건에서 써요. 원문에 주어진 ABC=000·001·101·111만 읽고 다른 행을 추가하지 않아요. 특히 101처럼 1이 두 개인 행을 XOR=0으로 구별하려고 홀짝 규칙을 떠올려요.",
+      "summary": "핵심 개념: ABC를 입력 순서로 읽어요. AND는 모두 1, OR는 하나라도 1, NOR는 OR의 보수, 3입력 XOR는 1이 홀수 개일 때 1이에요. 지정된 네 행만 채워요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nA·B·C와 000부터 111까지 빈 출력 칸이 보이면 모든 입력 조합의 진리표를 떠올려요. 입력마다 0과 1 두 선택이 있으므로 세 입력은 2³=8가지예요. ABC 순서에서 A를 왼쪽, C를 오른쪽에 두고 원문 행 순서를 유지해요.\n\n곱 ABC는 AND, 합 A+B+C는 OR, (A+B+C)′는 NOR예요. 곱은 모두 1일 때, 합은 하나라도 1일 때 1이고 ′는 결과를 뒤집어요. A⊕B⊕C는 1의 개수가 홀수일 때 1인 XOR예요. 각 출력 열은 앞 열의 결과가 아니라 같은 A·B·C를 받아요.\n\n논리값 0/1로 계산하며 여덟 조합을 빠짐없이 한 번씩 다룰 때 이 표가 완성돼요. 3입력 XOR에는 두 입력의 “서로 다름”만 적용하지 말고 홀짝을 세어요. 이 기준으로 네 열을 각 행마다 독립적으로 채워요.",
+      "summary": "핵심 개념: ABC 순서를 유지한 2³=8행이에요. AND는 모두 1, OR는 하나라도 1, NOR는 OR 반전, XOR는 1의 개수가 홀수일 때 1이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input XOR” 기호와 L/H 입력 표가 단서예요. XOR는 두 입력이 서로 다를 때만 출력이 1인 배타적 OR예요. A·B는 입력이고 C는 출력이며 L=0, H=1로 읽어요.\n\nC=A⊕B=A′B+AB′예요. ′는 보수, 붙여 쓴 곱은 AND, +는 OR예요. A′B는 01, AB′는 10인 상황을 골라내므로 두 항 중 하나가 1일 때 출력이 1이에요.\n\n이 “서로 다름” 기준은 여기처럼 두 입력의 XOR일 때 적용해요. 입력 00·01·10·11 네 조합을 확인한 뒤 원문이 요구하는 L/H로 되돌려요. 11을 1로 쓰는 OR와 구별하려고 이 기준을 써요.",
+      "summary": "핵심 개념: 두 입력 XOR는 다를 때만 1이에요. L=0·H=1로 읽으면 C=A′B+AB′이고, LL·LH·HL·HH 출력은 L·H·H·L이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n1-1의 “Logic symbol·Truth Table”과 1-2의 “Logic function”은 같은 XOR를 그림·표·식으로 표현하라는 단서예요. 입력 A·B와 출력 F를 표시하고, OR 기호 앞의 추가 곡선으로 XOR를 구별해요.\n\n두 입력 XOR는 서로 다를 때 1이라 표의 01과 10을 선택해요. F=A⊕B=A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. A′B는 A=0·B=1, AB′는 A=1·B=0을 뜻해요.\n\n두 입력이 0/1인 조건에서 이 식과 네 행 표가 같아요. 기호만 그리거나 식만 쓰면 소문항이 빠지므로 1-1의 기호·표와 1-2의 식을 따로 완성하고 같은 출력인지 연결해요.",
+      "summary": "핵심 개념: 1-1은 XOR 추가 곡선과 네 행 표, 1-2는 F=A′B+AB′를 써요. 두 입력이 다를 때만 1이며 ′는 보수, 곱은 AND, +는 OR예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-switching",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Switching Algebra로 간단히”와 두 항에 반복된 (V′+X)가 단서예요. 부울대수는 0/1 논리값을 다루며 +는 OR, ·는 AND, ′는 보수예요. 보수의 윗줄이 어디까지 덮는지 먼저 읽어요.\n\n항등 X·1=X, 멱등 X+X=X·X=X, 흡수 X+XY=X는 같은 항의 구조에 맞춰 써요. 이 문항은 P=V′+X와 Q=W(Y′+Z)를 놓으면 PQ+PQ′여서 공통 P를 분배법칙으로 묶는 결합 규칙이 맞아요.\n\nQ 전체에 보수가 걸려야 Q+Q′=1이에요. 그러면 P(Q+Q′)=P·1=P가 돼요. 어떤 부울값 Q든 0 또는 1이므로 성립해요. 여기서는 멱등이나 흡수를 무작정 적용하기보다 같은 덩어리 Q와 Q′를 찾으면 긴 내부 식을 전개하지 않아도 돼요.",
+      "summary": "핵심 개념: +는 OR·곱은 AND·′는 보수예요. 공통 P와 서로 보수인 Q·Q′를 찾아 PQ+PQ′=P(Q+Q′)=P로 줄여요. 보수 범위는 Q 전체예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 498,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 360,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demorgan",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“De Morgan으로 전개”와 여러 겹의 윗줄이 단서예요. 보수는 논리값을 뒤집는 연산이고, 드모르간은 묶음의 보수를 각 항의 보수로 옮길 때 AND와 OR를 교환하는 법칙이에요.\n\n(XY)′=X′+Y′, (X+Y)′=X′Y′이고 (X′)′=X예요. +는 OR, 곱은 AND, ′는 보수예요. 원문은 P=A′+B′+C′와 R=D′E′의 곱 전체에 보수가 걸려 있으므로 바깥 (PR)′부터 읽어요.\n\n이 법칙은 보수가 괄호 전체에 걸릴 때 적용해요. 바깥 곱을 합으로 바꾼 뒤 P′ 안의 합은 곱으로, R′ 안의 곱은 합으로 바꾸어요. 변수마다 이미 있는 보수까지 다시 뒤집어야 해서 윗줄 범위와 이중 보수를 함께 확인해요.",
+      "summary": "핵심 개념: 보수가 묶음 전체에 걸리면 곱↔합을 바꾸고 각 항을 보수해요. (XY)′=X′+Y′, (X+Y)′=X′Y′, 이중 보수는 원래 값이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-deq",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n그림에서 D·E·Q의 식을 각각 묻는 것이 단서예요. 회로의 중간 출력은 다음 게이트의 입력이므로 입력→중간 노드→최종 출력 순서로 부울식을 세워요. +는 OR, 곱은 AND, ′는 보수예요.\n\n게이트 출력의 작은 원은 그 출력 전체를 뒤집는 버블이에요. D는 A·B를 받는 OR의 버블 때문에 (A+B)′, E는 B의 검은 접속점에서 갈라진 선과 C를 받는 AND라 BC예요. 마지막 버블 없는 OR는 D+E예요.\n\n이 읽기는 원문 그림의 버블·접속점·연결선을 확인한 조건에 따른 것이에요. 단순히 선이 교차한다고 연결로 보지 않아요. D·E를 따로 이름 붙이면 보수 범위와 입력선을 섞지 않고 Q를 만들 수 있어요. 기존 답안 충돌 상태는 유지하고 제공 답안을 그대로 확정하지 않아요.",
+      "summary": "핵심 개념: 출력 버블은 그 게이트 결과의 보수예요. 원문 접속점에 따라 D=(A+B)′와 E=BC를 따로 읽고 Q=D+E로 연결해요. 답안 충돌은 유지해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“변형 없이 Logic Diagram”과 두 괄호의 곱이 단서예요. 부울식의 각 연산을 게이트 하나의 기능으로 옮기며, 식을 단순화하지 않고 괄호별 중간 출력을 이어요.\n\n+는 OR, ·는 AND, ′와 윗줄은 보수예요. 보수·괄호 안 연산을 먼저 만들고 두 덩어리를 연결해요. P=(A+B′)′에는 B의 NOT와 합 전체의 반전, R=C+D′에는 D의 NOT가 있어요. 가장 바깥 F=P·R은 AND예요.\n\n원문 윗줄은 첫 괄호에만 걸리고 최종 곱 전체에는 걸리지 않아요. 그래서 첫 덩어리는 NOR, 둘째는 OR, 마지막은 AND를 골라요. “변형 없이” 조건 때문에 드모르간으로 다른 모양의 동치식을 그리는 대신 이 연산 구조를 보존해요.",
+      "summary": "핵심 개념: 변형 없이 괄호별 중간 노드를 그려요. P=(A+B′)′와 R=C+D′를 만들고 마지막은 F=P·R인 AND예요. 윗줄은 첫 괄호에만 걸려요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NAND gate만”과 “XOR 구성”은 사용할 부품과 목표 기능을 함께 제한하는 단서예요. NAND는 AND 결과를 뒤집어 (XY)′를 내고, 두 입력 XOR는 서로 다를 때 1을 내요.\n\nXOR의 A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. NAND는 입력 둘을 모두 1로 받았을 때만 0이므로 중간 신호도 각각 0/1로 따라가요. 공유 신호 N1=(AB)′를 두 갈래로 보내면 NAND만으로 필요한 두 경우를 만들 수 있어요.\n\n여기서는 별도 AND·OR·NOT 기호를 쓰지 않고 모든 게이트를 NAND로 구성해야 해요. 중간 출력의 보수를 빠뜨리지 않으려고 N1·N2·N3를 이름 붙이고 마지막 NAND까지 계산해요. 네 입력 조합의 최종 출력이 0·1·1·0이면 XOR 조건을 만족해요.",
+      "summary": "핵심 개념: NAND는 (XY)′, XOR는 입력이 다를 때 1이에요. NAND만 써야 하므로 공유 N1=(AB)′를 두 분기로 보내고 네 입력 조합을 검산해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 406,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand3",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input NAND와 AND로 3-input NAND”는 게이트의 종류와 입력 수를 지정하는 단서예요. 3입력 NAND는 세 입력의 AND를 한 번 뒤집는 기능이고 F=(ABC)′예요.\n\n곱은 AND, ′는 그 곱 전체의 보수예요. A·B·C가 모두 1인 111에서만 F=0이고 나머지는 1이에요. 곱의 결합법칙 ABC=(AB)C 때문에 먼저 두 입력 AND로 AB를 묶을 수 있어요.\n\n첫 단계가 반전 없는 AND일 때 그 결과와 C를 마지막 NAND에 넣으면 전체 곱만 한 번 반전돼요. 첫 단계도 NAND로 바꾸면 내부 보수가 추가되어 목표와 달라져요. 지정된 두 종류를 잇는 순서를 정하려고 “마지막에 전체 반전”을 떠올려요.",
+      "summary": "핵심 개념: 3입력 NAND F=(ABC)′는 111에서만 0이에요. 먼저 AND로 AB를 만들고 마지막 NAND에서 C와 묶어 전체 곱을 한 번 반전해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“OR Gate와 Inverter로 3 input NOR”는 사용할 게이트와 목표가 단서예요. NOR는 OR 결과를 반전해 F=(A+B+C)′를 내는 기능이에요. 인버터는 0과 1을 바꾸는 NOT예요.\n\n+는 산술 합이 아니라 OR, ′는 합 전체의 보수예요. OR는 하나라도 1이면 1이므로 NOR는 000에서만 1이고 나머지 일곱 조합은 0이에요. OR의 결합법칙으로 (A+B)+C=A+B+C가 돼요.\n\n원문처럼 OR와 인버터로 구성할 때 먼저 세 입력의 합을 만들고 마지막 출력에 인버터를 붙여요. 입력마다 반전하는 A′+B′+C′와는 달라요. 최종 합 전체를 뒤집는 위치를 정하려고 이 조건을 떠올려요.",
+      "summary": "핵심 개념: NOR는 (A+B+C)′라 000에서만 1이에요. OR로 세 입력의 합을 만든 뒤 마지막에 인버터를 붙여 전체 합을 반전해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“CMOS 3-input NAND를 그리시오”는 논리 기호 대신 PMOS·NMOS 전원 경로를 구성하라는 단서예요. CMOS는 출력과 VDD 사이의 pull-up, 출력과 GND 사이의 pull-down을 상보적으로 연결해요.\n\n이상적인 정적 CMOS 논리에서는 입력 0일 때 PMOS가 켜지고 입력 1일 때 NMOS가 켜져요. 직렬은 모두 켜져야 길이 이어지고 병렬은 하나만 켜져도 이어져요. NAND F=(ABC)′는 모두 1일 때만 0이에요.\n\n그래서 GND로 내리는 NMOS 세 개는 직렬, 하나라도 0이면 VDD로 올리는 PMOS 세 개는 병렬이에요. A·B·C를 위아래 각 쌍의 게이트에 연결해요. 입력이 0/1로 안정된 이상적 동작을 판단하는 조건에서 두 경로가 상보적이므로 NAND의 출력 조건을 전원 연결로 설명할 수 있어요.",
+      "summary": "핵심 개념: 정적 CMOS에서 PMOS는 입력 0·NMOS는 1에 켜져요. NAND의 모두 1 조건은 NMOS 직렬, 하나라도 0 조건은 PMOS 병렬로 구현해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3 Input Logic Gate”와 A·B·C가 적힌 네 행은 진리표를 채우라는 단서예요. 진리표는 각 입력 조합에 대한 출력을 나란히 기록한 표이고, 여기서는 0=low, 1=high예요. A·B·C는 입력 세 개이며 AND·OR·NOR·XOR 열은 같은 입력을 받은 서로 다른 게이트의 출력이에요.\n\nAND의 곱 ABC는 모두 1일 때만 1, OR의 합 A+B+C는 하나라도 1이면 1이에요. NOR는 (A+B+C)′로 OR 출력을 뒤집어요. ′는 0과 1을 바꾸는 보수이고 +는 산술 덧셈이 아니라 OR예요. 3입력 XOR A⊕B⊕C는 순서대로 XOR하여 1의 개수가 홀수일 때 1이에요.\n\n이 규칙은 0/1 논리값을 계산하는 조건에서 써요. 원문에 주어진 ABC=000·001·101·111만 읽고 다른 행을 추가하지 않아요. 특히 101처럼 1이 두 개인 행을 XOR=0으로 구별하려고 홀짝 규칙을 떠올려요.",
+      "summary": "핵심 개념: ABC를 입력 순서로 읽어요. AND는 모두 1, OR는 하나라도 1, NOR는 OR의 보수, 3입력 XOR는 1이 홀수 개일 때 1이에요. 지정된 네 행만 채워요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nA·B·C와 000부터 111까지 빈 출력 칸이 보이면 모든 입력 조합의 진리표를 떠올려요. 입력마다 0과 1 두 선택이 있으므로 세 입력은 2³=8가지예요. ABC 순서에서 A를 왼쪽, C를 오른쪽에 두고 원문 행 순서를 유지해요.\n\n곱 ABC는 AND, 합 A+B+C는 OR, (A+B+C)′는 NOR예요. 곱은 모두 1일 때, 합은 하나라도 1일 때 1이고 ′는 결과를 뒤집어요. A⊕B⊕C는 1의 개수가 홀수일 때 1인 XOR예요. 각 출력 열은 앞 열의 결과가 아니라 같은 A·B·C를 받아요.\n\n논리값 0/1로 계산하며 여덟 조합을 빠짐없이 한 번씩 다룰 때 이 표가 완성돼요. 3입력 XOR에는 두 입력의 “서로 다름”만 적용하지 말고 홀짝을 세어요. 이 기준으로 네 열을 각 행마다 독립적으로 채워요.",
+      "summary": "핵심 개념: ABC 순서를 유지한 2³=8행이에요. AND는 모두 1, OR는 하나라도 1, NOR는 OR 반전, XOR는 1의 개수가 홀수일 때 1이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input XOR” 기호와 L/H 입력 표가 단서예요. XOR는 두 입력이 서로 다를 때만 출력이 1인 배타적 OR예요. A·B는 입력이고 C는 출력이며 L=0, H=1로 읽어요.\n\nC=A⊕B=A′B+AB′예요. ′는 보수, 붙여 쓴 곱은 AND, +는 OR예요. A′B는 01, AB′는 10인 상황을 골라내므로 두 항 중 하나가 1일 때 출력이 1이에요.\n\n이 “서로 다름” 기준은 여기처럼 두 입력의 XOR일 때 적용해요. 입력 00·01·10·11 네 조합을 확인한 뒤 원문이 요구하는 L/H로 되돌려요. 11을 1로 쓰는 OR와 구별하려고 이 기준을 써요.",
+      "summary": "핵심 개념: 두 입력 XOR는 다를 때만 1이에요. L=0·H=1로 읽으면 C=A′B+AB′이고, LL·LH·HL·HH 출력은 L·H·H·L이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n1-1의 “Logic symbol·Truth Table”과 1-2의 “Logic function”은 같은 XOR를 그림·표·식으로 표현하라는 단서예요. 입력 A·B와 출력 F를 표시하고, OR 기호 앞의 추가 곡선으로 XOR를 구별해요.\n\n두 입력 XOR는 서로 다를 때 1이라 표의 01과 10을 선택해요. F=A⊕B=A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. A′B는 A=0·B=1, AB′는 A=1·B=0을 뜻해요.\n\n두 입력이 0/1인 조건에서 이 식과 네 행 표가 같아요. 기호만 그리거나 식만 쓰면 소문항이 빠지므로 1-1의 기호·표와 1-2의 식을 따로 완성하고 같은 출력인지 연결해요.",
+      "summary": "핵심 개념: 1-1은 XOR 추가 곡선과 네 행 표, 1-2는 F=A′B+AB′를 써요. 두 입력이 다를 때만 1이며 ′는 보수, 곱은 AND, +는 OR예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-switching",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Switching Algebra로 간단히”와 두 항에 반복된 (V′+X)가 단서예요. 부울대수는 0/1 논리값을 다루며 +는 OR, ·는 AND, ′는 보수예요. 보수의 윗줄이 어디까지 덮는지 먼저 읽어요.\n\n항등 X·1=X, 멱등 X+X=X·X=X, 흡수 X+XY=X는 같은 항의 구조에 맞춰 써요. 이 문항은 P=V′+X와 Q=W(Y′+Z)를 놓으면 PQ+PQ′여서 공통 P를 분배법칙으로 묶는 결합 규칙이 맞아요.\n\nQ 전체에 보수가 걸려야 Q+Q′=1이에요. 그러면 P(Q+Q′)=P·1=P가 돼요. 어떤 부울값 Q든 0 또는 1이므로 성립해요. 여기서는 멱등이나 흡수를 무작정 적용하기보다 같은 덩어리 Q와 Q′를 찾으면 긴 내부 식을 전개하지 않아도 돼요.",
+      "summary": "핵심 개념: +는 OR·곱은 AND·′는 보수예요. 공통 P와 서로 보수인 Q·Q′를 찾아 PQ+PQ′=P(Q+Q′)=P로 줄여요. 보수 범위는 Q 전체예요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 498,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 360,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demorgan",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“De Morgan으로 전개”와 여러 겹의 윗줄이 단서예요. 보수는 논리값을 뒤집는 연산이고, 드모르간은 묶음의 보수를 각 항의 보수로 옮길 때 AND와 OR를 교환하는 법칙이에요.\n\n(XY)′=X′+Y′, (X+Y)′=X′Y′이고 (X′)′=X예요. +는 OR, 곱은 AND, ′는 보수예요. 원문은 P=A′+B′+C′와 R=D′E′의 곱 전체에 보수가 걸려 있으므로 바깥 (PR)′부터 읽어요.\n\n이 법칙은 보수가 괄호 전체에 걸릴 때 적용해요. 바깥 곱을 합으로 바꾼 뒤 P′ 안의 합은 곱으로, R′ 안의 곱은 합으로 바꾸어요. 변수마다 이미 있는 보수까지 다시 뒤집어야 해서 윗줄 범위와 이중 보수를 함께 확인해요.",
+      "summary": "핵심 개념: 보수가 묶음 전체에 걸리면 곱↔합을 바꾸고 각 항을 보수해요. (XY)′=X′+Y′, (X+Y)′=X′Y′, 이중 보수는 원래 값이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-deq",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n그림에서 D·E·Q의 식을 각각 묻는 것이 단서예요. 회로의 중간 출력은 다음 게이트의 입력이므로 입력→중간 노드→최종 출력 순서로 부울식을 세워요. +는 OR, 곱은 AND, ′는 보수예요.\n\n게이트 출력의 작은 원은 그 출력 전체를 뒤집는 버블이에요. D는 A·B를 받는 OR의 버블 때문에 (A+B)′, E는 B의 검은 접속점에서 갈라진 선과 C를 받는 AND라 BC예요. 마지막 버블 없는 OR는 D+E예요.\n\n이 읽기는 원문 그림의 버블·접속점·연결선을 확인한 조건에 따른 것이에요. 단순히 선이 교차한다고 연결로 보지 않아요. D·E를 따로 이름 붙이면 보수 범위와 입력선을 섞지 않고 Q를 만들 수 있어요. 기존 답안 충돌 상태는 유지하고 제공 답안을 그대로 확정하지 않아요.",
+      "summary": "핵심 개념: 출력 버블은 그 게이트 결과의 보수예요. 원문 접속점에 따라 D=(A+B)′와 E=BC를 따로 읽고 Q=D+E로 연결해요. 답안 충돌은 유지해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“변형 없이 Logic Diagram”과 두 괄호의 곱이 단서예요. 부울식의 각 연산을 게이트 하나의 기능으로 옮기며, 식을 단순화하지 않고 괄호별 중간 출력을 이어요.\n\n+는 OR, ·는 AND, ′와 윗줄은 보수예요. 보수·괄호 안 연산을 먼저 만들고 두 덩어리를 연결해요. P=(A+B′)′에는 B의 NOT와 합 전체의 반전, R=C+D′에는 D의 NOT가 있어요. 가장 바깥 F=P·R은 AND예요.\n\n원문 윗줄은 첫 괄호에만 걸리고 최종 곱 전체에는 걸리지 않아요. 그래서 첫 덩어리는 NOR, 둘째는 OR, 마지막은 AND를 골라요. “변형 없이” 조건 때문에 드모르간으로 다른 모양의 동치식을 그리는 대신 이 연산 구조를 보존해요.",
+      "summary": "핵심 개념: 변형 없이 괄호별 중간 노드를 그려요. P=(A+B′)′와 R=C+D′를 만들고 마지막은 F=P·R인 AND예요. 윗줄은 첫 괄호에만 걸려요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NAND gate만”과 “XOR 구성”은 사용할 부품과 목표 기능을 함께 제한하는 단서예요. NAND는 AND 결과를 뒤집어 (XY)′를 내고, 두 입력 XOR는 서로 다를 때 1을 내요.\n\nXOR의 A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. NAND는 입력 둘을 모두 1로 받았을 때만 0이므로 중간 신호도 각각 0/1로 따라가요. 공유 신호 N1=(AB)′를 두 갈래로 보내면 NAND만으로 필요한 두 경우를 만들 수 있어요.\n\n여기서는 별도 AND·OR·NOT 기호를 쓰지 않고 모든 게이트를 NAND로 구성해야 해요. 중간 출력의 보수를 빠뜨리지 않으려고 N1·N2·N3를 이름 붙이고 마지막 NAND까지 계산해요. 네 입력 조합의 최종 출력이 0·1·1·0이면 XOR 조건을 만족해요.",
+      "summary": "핵심 개념: NAND는 (XY)′, XOR는 입력이 다를 때 1이에요. NAND만 써야 하므로 공유 N1=(AB)′를 두 분기로 보내고 네 입력 조합을 검산해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 406,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand3",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input NAND와 AND로 3-input NAND”는 게이트의 종류와 입력 수를 지정하는 단서예요. 3입력 NAND는 세 입력의 AND를 한 번 뒤집는 기능이고 F=(ABC)′예요.\n\n곱은 AND, ′는 그 곱 전체의 보수예요. A·B·C가 모두 1인 111에서만 F=0이고 나머지는 1이에요. 곱의 결합법칙 ABC=(AB)C 때문에 먼저 두 입력 AND로 AB를 묶을 수 있어요.\n\n첫 단계가 반전 없는 AND일 때 그 결과와 C를 마지막 NAND에 넣으면 전체 곱만 한 번 반전돼요. 첫 단계도 NAND로 바꾸면 내부 보수가 추가되어 목표와 달라져요. 지정된 두 종류를 잇는 순서를 정하려고 “마지막에 전체 반전”을 떠올려요.",
+      "summary": "핵심 개념: 3입력 NAND F=(ABC)′는 111에서만 0이에요. 먼저 AND로 AB를 만들고 마지막 NAND에서 C와 묶어 전체 곱을 한 번 반전해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“OR Gate와 Inverter로 3 input NOR”는 사용할 게이트와 목표가 단서예요. NOR는 OR 결과를 반전해 F=(A+B+C)′를 내는 기능이에요. 인버터는 0과 1을 바꾸는 NOT예요.\n\n+는 산술 합이 아니라 OR, ′는 합 전체의 보수예요. OR는 하나라도 1이면 1이므로 NOR는 000에서만 1이고 나머지 일곱 조합은 0이에요. OR의 결합법칙으로 (A+B)+C=A+B+C가 돼요.\n\n원문처럼 OR와 인버터로 구성할 때 먼저 세 입력의 합을 만들고 마지막 출력에 인버터를 붙여요. 입력마다 반전하는 A′+B′+C′와는 달라요. 최종 합 전체를 뒤집는 위치를 정하려고 이 조건을 떠올려요.",
+      "summary": "핵심 개념: NOR는 (A+B+C)′라 000에서만 1이에요. OR로 세 입력의 합을 만든 뒤 마지막에 인버터를 붙여 전체 합을 반전해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“CMOS 3-input NAND를 그리시오”는 논리 기호 대신 PMOS·NMOS 전원 경로를 구성하라는 단서예요. CMOS는 출력과 VDD 사이의 pull-up, 출력과 GND 사이의 pull-down을 상보적으로 연결해요.\n\n이상적인 정적 CMOS 논리에서는 입력 0일 때 PMOS가 켜지고 입력 1일 때 NMOS가 켜져요. 직렬은 모두 켜져야 길이 이어지고 병렬은 하나만 켜져도 이어져요. NAND F=(ABC)′는 모두 1일 때만 0이에요.\n\n그래서 GND로 내리는 NMOS 세 개는 직렬, 하나라도 0이면 VDD로 올리는 PMOS 세 개는 병렬이에요. A·B·C를 위아래 각 쌍의 게이트에 연결해요. 입력이 0/1로 안정된 이상적 동작을 판단하는 조건에서 두 경로가 상보적이므로 NAND의 출력 조건을 전원 연결로 설명할 수 있어요.",
+      "summary": "핵심 개념: 정적 CMOS에서 PMOS는 입력 0·NMOS는 1에 켜져요. NAND의 모두 1 조건은 NMOS 직렬, 하나라도 0 조건은 PMOS 병렬로 구현해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3 Input Logic Gate”와 A·B·C가 적힌 네 행은 진리표를 채우라는 단서예요. 진리표는 각 입력 조합에 대한 출력을 나란히 기록한 표이고, 여기서는 0=low, 1=high예요. A·B·C는 입력 세 개이며 AND·OR·NOR·XOR 열은 같은 입력을 받은 서로 다른 게이트의 출력이에요.\n\nAND의 곱 ABC는 모두 1일 때만 1, OR의 합 A+B+C는 하나라도 1이면 1이에요. NOR는 (A+B+C)′로 OR 출력을 뒤집어요. ′는 0과 1을 바꾸는 보수이고 +는 산술 덧셈이 아니라 OR예요. 3입력 XOR A⊕B⊕C는 순서대로 XOR하여 1의 개수가 홀수일 때 1이에요.\n\n이 규칙은 0/1 논리값을 계산하는 조건에서 써요. 원문에 주어진 ABC=000·001·101·111만 읽고 다른 행을 추가하지 않아요. 특히 101처럼 1이 두 개인 행을 XOR=0으로 구별하려고 홀짝 규칙을 떠올려요.",
+      "summary": "핵심 개념: ABC를 입력 순서로 읽어요. AND는 모두 1, OR는 하나라도 1, NOR는 OR의 보수, 3입력 XOR는 1이 홀수 개일 때 1이에요. 지정된 네 행만 채워요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nA·B·C와 000부터 111까지 빈 출력 칸이 보이면 모든 입력 조합의 진리표를 떠올려요. 입력마다 0과 1 두 선택이 있으므로 세 입력은 2³=8가지예요. ABC 순서에서 A를 왼쪽, C를 오른쪽에 두고 원문 행 순서를 유지해요.\n\n곱 ABC는 AND, 합 A+B+C는 OR, (A+B+C)′는 NOR예요. 곱은 모두 1일 때, 합은 하나라도 1일 때 1이고 ′는 결과를 뒤집어요. A⊕B⊕C는 1의 개수가 홀수일 때 1인 XOR예요. 각 출력 열은 앞 열의 결과가 아니라 같은 A·B·C를 받아요.\n\n논리값 0/1로 계산하며 여덟 조합을 빠짐없이 한 번씩 다룰 때 이 표가 완성돼요. 3입력 XOR에는 두 입력의 “서로 다름”만 적용하지 말고 홀짝을 세어요. 이 기준으로 네 열을 각 행마다 독립적으로 채워요.",
+      "summary": "핵심 개념: ABC 순서를 유지한 2³=8행이에요. AND는 모두 1, OR는 하나라도 1, NOR는 OR 반전, XOR는 1의 개수가 홀수일 때 1이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input XOR” 기호와 L/H 입력 표가 단서예요. XOR는 두 입력이 서로 다를 때만 출력이 1인 배타적 OR예요. A·B는 입력이고 C는 출력이며 L=0, H=1로 읽어요.\n\nC=A⊕B=A′B+AB′예요. ′는 보수, 붙여 쓴 곱은 AND, +는 OR예요. A′B는 01, AB′는 10인 상황을 골라내므로 두 항 중 하나가 1일 때 출력이 1이에요.\n\n이 “서로 다름” 기준은 여기처럼 두 입력의 XOR일 때 적용해요. 입력 00·01·10·11 네 조합을 확인한 뒤 원문이 요구하는 L/H로 되돌려요. 11을 1로 쓰는 OR와 구별하려고 이 기준을 써요.",
+      "summary": "핵심 개념: 두 입력 XOR는 다를 때만 1이에요. L=0·H=1로 읽으면 C=A′B+AB′이고, LL·LH·HL·HH 출력은 L·H·H·L이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n1-1의 “Logic symbol·Truth Table”과 1-2의 “Logic function”은 같은 XOR를 그림·표·식으로 표현하라는 단서예요. 입력 A·B와 출력 F를 표시하고, OR 기호 앞의 추가 곡선으로 XOR를 구별해요.\n\n두 입력 XOR는 서로 다를 때 1이라 표의 01과 10을 선택해요. F=A⊕B=A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. A′B는 A=0·B=1, AB′는 A=1·B=0을 뜻해요.\n\n두 입력이 0/1인 조건에서 이 식과 네 행 표가 같아요. 기호만 그리거나 식만 쓰면 소문항이 빠지므로 1-1의 기호·표와 1-2의 식을 따로 완성하고 같은 출력인지 연결해요.",
+      "summary": "핵심 개념: 1-1은 XOR 추가 곡선과 네 행 표, 1-2는 F=A′B+AB′를 써요. 두 입력이 다를 때만 1이며 ′는 보수, 곱은 AND, +는 OR예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-switching",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Switching Algebra로 간단히”와 두 항에 반복된 (V′+X)가 단서예요. 부울대수는 0/1 논리값을 다루며 +는 OR, ·는 AND, ′는 보수예요. 보수의 윗줄이 어디까지 덮는지 먼저 읽어요.\n\n항등 X·1=X, 멱등 X+X=X·X=X, 흡수 X+XY=X는 같은 항의 구조에 맞춰 써요. 이 문항은 P=V′+X와 Q=W(Y′+Z)를 놓으면 PQ+PQ′여서 공통 P를 분배법칙으로 묶는 결합 규칙이 맞아요.\n\nQ 전체에 보수가 걸려야 Q+Q′=1이에요. 그러면 P(Q+Q′)=P·1=P가 돼요. 어떤 부울값 Q든 0 또는 1이므로 성립해요. 여기서는 멱등이나 흡수를 무작정 적용하기보다 같은 덩어리 Q와 Q′를 찾으면 긴 내부 식을 전개하지 않아도 돼요.",
+      "summary": "핵심 개념: +는 OR·곱은 AND·′는 보수예요. 공통 P와 서로 보수인 Q·Q′를 찾아 PQ+PQ′=P(Q+Q′)=P로 줄여요. 보수 범위는 Q 전체예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demorgan",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“De Morgan으로 전개”와 여러 겹의 윗줄이 단서예요. 보수는 논리값을 뒤집는 연산이고, 드모르간은 묶음의 보수를 각 항의 보수로 옮길 때 AND와 OR를 교환하는 법칙이에요.\n\n(XY)′=X′+Y′, (X+Y)′=X′Y′이고 (X′)′=X예요. +는 OR, 곱은 AND, ′는 보수예요. 원문은 P=A′+B′+C′와 R=D′E′의 곱 전체에 보수가 걸려 있으므로 바깥 (PR)′부터 읽어요.\n\n이 법칙은 보수가 괄호 전체에 걸릴 때 적용해요. 바깥 곱을 합으로 바꾼 뒤 P′ 안의 합은 곱으로, R′ 안의 곱은 합으로 바꾸어요. 변수마다 이미 있는 보수까지 다시 뒤집어야 해서 윗줄 범위와 이중 보수를 함께 확인해요.",
+      "summary": "핵심 개념: 보수가 묶음 전체에 걸리면 곱↔합을 바꾸고 각 항을 보수해요. (XY)′=X′+Y′, (X+Y)′=X′Y′, 이중 보수는 원래 값이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-deq",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n그림에서 D·E·Q의 식을 각각 묻는 것이 단서예요. 회로의 중간 출력은 다음 게이트의 입력이므로 입력→중간 노드→최종 출력 순서로 부울식을 세워요. +는 OR, 곱은 AND, ′는 보수예요.\n\n게이트 출력의 작은 원은 그 출력 전체를 뒤집는 버블이에요. D는 A·B를 받는 OR의 버블 때문에 (A+B)′, E는 B의 검은 접속점에서 갈라진 선과 C를 받는 AND라 BC예요. 마지막 버블 없는 OR는 D+E예요.\n\n이 읽기는 원문 그림의 버블·접속점·연결선을 확인한 조건에 따른 것이에요. 단순히 선이 교차한다고 연결로 보지 않아요. D·E를 따로 이름 붙이면 보수 범위와 입력선을 섞지 않고 Q를 만들 수 있어요. 기존 답안 충돌 상태는 유지하고 제공 답안을 그대로 확정하지 않아요.",
+      "summary": "핵심 개념: 출력 버블은 그 게이트 결과의 보수예요. 원문 접속점에 따라 D=(A+B)′와 E=BC를 따로 읽고 Q=D+E로 연결해요. 답안 충돌은 유지해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“변형 없이 Logic Diagram”과 두 괄호의 곱이 단서예요. 부울식의 각 연산을 게이트 하나의 기능으로 옮기며, 식을 단순화하지 않고 괄호별 중간 출력을 이어요.\n\n+는 OR, ·는 AND, ′와 윗줄은 보수예요. 보수·괄호 안 연산을 먼저 만들고 두 덩어리를 연결해요. P=(A+B′)′에는 B의 NOT와 합 전체의 반전, R=C+D′에는 D의 NOT가 있어요. 가장 바깥 F=P·R은 AND예요.\n\n원문 윗줄은 첫 괄호에만 걸리고 최종 곱 전체에는 걸리지 않아요. 그래서 첫 덩어리는 NOR, 둘째는 OR, 마지막은 AND를 골라요. “변형 없이” 조건 때문에 드모르간으로 다른 모양의 동치식을 그리는 대신 이 연산 구조를 보존해요.",
+      "summary": "핵심 개념: 변형 없이 괄호별 중간 노드를 그려요. P=(A+B′)′와 R=C+D′를 만들고 마지막은 F=P·R인 AND예요. 윗줄은 첫 괄호에만 걸려요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NAND gate만”과 “XOR 구성”은 사용할 부품과 목표 기능을 함께 제한하는 단서예요. NAND는 AND 결과를 뒤집어 (XY)′를 내고, 두 입력 XOR는 서로 다를 때 1을 내요.\n\nXOR의 A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. NAND는 입력 둘을 모두 1로 받았을 때만 0이므로 중간 신호도 각각 0/1로 따라가요. 공유 신호 N1=(AB)′를 두 갈래로 보내면 NAND만으로 필요한 두 경우를 만들 수 있어요.\n\n여기서는 별도 AND·OR·NOT 기호를 쓰지 않고 모든 게이트를 NAND로 구성해야 해요. 중간 출력의 보수를 빠뜨리지 않으려고 N1·N2·N3를 이름 붙이고 마지막 NAND까지 계산해요. 네 입력 조합의 최종 출력이 0·1·1·0이면 XOR 조건을 만족해요.",
+      "summary": "핵심 개념: NAND는 (XY)′, XOR는 입력이 다를 때 1이에요. NAND만 써야 하므로 공유 N1=(AB)′를 두 분기로 보내고 네 입력 조합을 검산해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand3",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input NAND와 AND로 3-input NAND”는 게이트의 종류와 입력 수를 지정하는 단서예요. 3입력 NAND는 세 입력의 AND를 한 번 뒤집는 기능이고 F=(ABC)′예요.\n\n곱은 AND, ′는 그 곱 전체의 보수예요. A·B·C가 모두 1인 111에서만 F=0이고 나머지는 1이에요. 곱의 결합법칙 ABC=(AB)C 때문에 먼저 두 입력 AND로 AB를 묶을 수 있어요.\n\n첫 단계가 반전 없는 AND일 때 그 결과와 C를 마지막 NAND에 넣으면 전체 곱만 한 번 반전돼요. 첫 단계도 NAND로 바꾸면 내부 보수가 추가되어 목표와 달라져요. 지정된 두 종류를 잇는 순서를 정하려고 “마지막에 전체 반전”을 떠올려요.",
+      "summary": "핵심 개념: 3입력 NAND F=(ABC)′는 111에서만 0이에요. 먼저 AND로 AB를 만들고 마지막 NAND에서 C와 묶어 전체 곱을 한 번 반전해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“OR Gate와 Inverter로 3 input NOR”는 사용할 게이트와 목표가 단서예요. NOR는 OR 결과를 반전해 F=(A+B+C)′를 내는 기능이에요. 인버터는 0과 1을 바꾸는 NOT예요.\n\n+는 산술 합이 아니라 OR, ′는 합 전체의 보수예요. OR는 하나라도 1이면 1이므로 NOR는 000에서만 1이고 나머지 일곱 조합은 0이에요. OR의 결합법칙으로 (A+B)+C=A+B+C가 돼요.\n\n원문처럼 OR와 인버터로 구성할 때 먼저 세 입력의 합을 만들고 마지막 출력에 인버터를 붙여요. 입력마다 반전하는 A′+B′+C′와는 달라요. 최종 합 전체를 뒤집는 위치를 정하려고 이 조건을 떠올려요.",
+      "summary": "핵심 개념: NOR는 (A+B+C)′라 000에서만 1이에요. OR로 세 입력의 합을 만든 뒤 마지막에 인버터를 붙여 전체 합을 반전해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“CMOS 3-input NAND를 그리시오”는 논리 기호 대신 PMOS·NMOS 전원 경로를 구성하라는 단서예요. CMOS는 출력과 VDD 사이의 pull-up, 출력과 GND 사이의 pull-down을 상보적으로 연결해요.\n\n이상적인 정적 CMOS 논리에서는 입력 0일 때 PMOS가 켜지고 입력 1일 때 NMOS가 켜져요. 직렬은 모두 켜져야 길이 이어지고 병렬은 하나만 켜져도 이어져요. NAND F=(ABC)′는 모두 1일 때만 0이에요.\n\n그래서 GND로 내리는 NMOS 세 개는 직렬, 하나라도 0이면 VDD로 올리는 PMOS 세 개는 병렬이에요. A·B·C를 위아래 각 쌍의 게이트에 연결해요. 입력이 0/1로 안정된 이상적 동작을 판단하는 조건에서 두 경로가 상보적이므로 NAND의 출력 조건을 전원 연결로 설명할 수 있어요.",
+      "summary": "핵심 개념: 정적 CMOS에서 PMOS는 입력 0·NMOS는 1에 켜져요. NAND의 모두 1 조건은 NMOS 직렬, 하나라도 0 조건은 PMOS 병렬로 구현해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-4row",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“3 Input Logic Gate”와 A·B·C가 적힌 네 행은 진리표를 채우라는 단서예요. 진리표는 각 입력 조합에 대한 출력을 나란히 기록한 표이고, 여기서는 0=low, 1=high예요. A·B·C는 입력 세 개이며 AND·OR·NOR·XOR 열은 같은 입력을 받은 서로 다른 게이트의 출력이에요.\n\nAND의 곱 ABC는 모두 1일 때만 1, OR의 합 A+B+C는 하나라도 1이면 1이에요. NOR는 (A+B+C)′로 OR 출력을 뒤집어요. ′는 0과 1을 바꾸는 보수이고 +는 산술 덧셈이 아니라 OR예요. 3입력 XOR A⊕B⊕C는 순서대로 XOR하여 1의 개수가 홀수일 때 1이에요.\n\n이 규칙은 0/1 논리값을 계산하는 조건에서 써요. 원문에 주어진 ABC=000·001·101·111만 읽고 다른 행을 추가하지 않아요. 특히 101처럼 1이 두 개인 행을 XOR=0으로 구별하려고 홀짝 규칙을 떠올려요.",
+      "summary": "핵심 개념: ABC를 입력 순서로 읽어요. AND는 모두 1, OR는 하나라도 1, NOR는 OR의 보수, 3입력 XOR는 1이 홀수 개일 때 1이에요. 지정된 네 행만 채워요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-tt3-8row",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nA·B·C와 000부터 111까지 빈 출력 칸이 보이면 모든 입력 조합의 진리표를 떠올려요. 입력마다 0과 1 두 선택이 있으므로 세 입력은 2³=8가지예요. ABC 순서에서 A를 왼쪽, C를 오른쪽에 두고 원문 행 순서를 유지해요.\n\n곱 ABC는 AND, 합 A+B+C는 OR, (A+B+C)′는 NOR예요. 곱은 모두 1일 때, 합은 하나라도 1일 때 1이고 ′는 결과를 뒤집어요. A⊕B⊕C는 1의 개수가 홀수일 때 1인 XOR예요. 각 출력 열은 앞 열의 결과가 아니라 같은 A·B·C를 받아요.\n\n논리값 0/1로 계산하며 여덟 조합을 빠짐없이 한 번씩 다룰 때 이 표가 완성돼요. 3입력 XOR에는 두 입력의 “서로 다름”만 적용하지 말고 홀짝을 세어요. 이 기준으로 네 열을 각 행마다 독립적으로 채워요.",
+      "summary": "핵심 개념: ABC 순서를 유지한 2³=8행이에요. AND는 모두 1, OR는 하나라도 1, NOR는 OR 반전, XOR는 1의 개수가 홀수일 때 1이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor2-tt",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input XOR” 기호와 L/H 입력 표가 단서예요. XOR는 두 입력이 서로 다를 때만 출력이 1인 배타적 OR예요. A·B는 입력이고 C는 출력이며 L=0, H=1로 읽어요.\n\nC=A⊕B=A′B+AB′예요. ′는 보수, 붙여 쓴 곱은 AND, +는 OR예요. A′B는 01, AB′는 10인 상황을 골라내므로 두 항 중 하나가 1일 때 출력이 1이에요.\n\n이 “서로 다름” 기준은 여기처럼 두 입력의 XOR일 때 적용해요. 입력 00·01·10·11 네 조합을 확인한 뒤 원문이 요구하는 L/H로 되돌려요. 11을 1로 쓰는 OR와 구별하려고 이 기준을 써요.",
+      "summary": "핵심 개념: 두 입력 XOR는 다를 때만 1이에요. L=0·H=1로 읽으면 C=A′B+AB′이고, LL·LH·HL·HH 출력은 L·H·H·L이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-xor-graded",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n1-1의 “Logic symbol·Truth Table”과 1-2의 “Logic function”은 같은 XOR를 그림·표·식으로 표현하라는 단서예요. 입력 A·B와 출력 F를 표시하고, OR 기호 앞의 추가 곡선으로 XOR를 구별해요.\n\n두 입력 XOR는 서로 다를 때 1이라 표의 01과 10을 선택해요. F=A⊕B=A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. A′B는 A=0·B=1, AB′는 A=1·B=0을 뜻해요.\n\n두 입력이 0/1인 조건에서 이 식과 네 행 표가 같아요. 기호만 그리거나 식만 쓰면 소문항이 빠지므로 1-1의 기호·표와 1-2의 식을 따로 완성하고 같은 출력인지 연결해요.",
+      "summary": "핵심 개념: 1-1은 XOR 추가 곡선과 네 행 표, 1-2는 F=A′B+AB′를 써요. 두 입력이 다를 때만 1이며 ′는 보수, 곱은 AND, +는 OR예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-switching",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“Switching Algebra로 간단히”와 두 항에 반복된 (V′+X)가 단서예요. 부울대수는 0/1 논리값을 다루며 +는 OR, ·는 AND, ′는 보수예요. 보수의 윗줄이 어디까지 덮는지 먼저 읽어요.\n\n항등 X·1=X, 멱등 X+X=X·X=X, 흡수 X+XY=X는 같은 항의 구조에 맞춰 써요. 이 문항은 P=V′+X와 Q=W(Y′+Z)를 놓으면 PQ+PQ′여서 공통 P를 분배법칙으로 묶는 결합 규칙이 맞아요.\n\nQ 전체에 보수가 걸려야 Q+Q′=1이에요. 그러면 P(Q+Q′)=P·1=P가 돼요. 어떤 부울값 Q든 0 또는 1이므로 성립해요. 여기서는 멱등이나 흡수를 무작정 적용하기보다 같은 덩어리 Q와 Q′를 찾으면 긴 내부 식을 전개하지 않아도 돼요.",
+      "summary": "핵심 개념: +는 OR·곱은 AND·′는 보수예요. 공통 P와 서로 보수인 Q·Q′를 찾아 PQ+PQ′=P(Q+Q′)=P로 줄여요. 보수 범위는 Q 전체예요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-demorgan",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“De Morgan으로 전개”와 여러 겹의 윗줄이 단서예요. 보수는 논리값을 뒤집는 연산이고, 드모르간은 묶음의 보수를 각 항의 보수로 옮길 때 AND와 OR를 교환하는 법칙이에요.\n\n(XY)′=X′+Y′, (X+Y)′=X′Y′이고 (X′)′=X예요. +는 OR, 곱은 AND, ′는 보수예요. 원문은 P=A′+B′+C′와 R=D′E′의 곱 전체에 보수가 걸려 있으므로 바깥 (PR)′부터 읽어요.\n\n이 법칙은 보수가 괄호 전체에 걸릴 때 적용해요. 바깥 곱을 합으로 바꾼 뒤 P′ 안의 합은 곱으로, R′ 안의 곱은 합으로 바꾸어요. 변수마다 이미 있는 보수까지 다시 뒤집어야 해서 윗줄 범위와 이중 보수를 함께 확인해요.",
+      "summary": "핵심 개념: 보수가 묶음 전체에 걸리면 곱↔합을 바꾸고 각 항을 보수해요. (XY)′=X′+Y′, (X+Y)′=X′Y′, 이중 보수는 원래 값이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-deq",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n그림에서 D·E·Q의 식을 각각 묻는 것이 단서예요. 회로의 중간 출력은 다음 게이트의 입력이므로 입력→중간 노드→최종 출력 순서로 부울식을 세워요. +는 OR, 곱은 AND, ′는 보수예요.\n\n게이트 출력의 작은 원은 그 출력 전체를 뒤집는 버블이에요. D는 A·B를 받는 OR의 버블 때문에 (A+B)′, E는 B의 검은 접속점에서 갈라진 선과 C를 받는 AND라 BC예요. 마지막 버블 없는 OR는 D+E예요.\n\n이 읽기는 원문 그림의 버블·접속점·연결선을 확인한 조건에 따른 것이에요. 단순히 선이 교차한다고 연결로 보지 않아요. D·E를 따로 이름 붙이면 보수 범위와 입력선을 섞지 않고 Q를 만들 수 있어요. 기존 답안 충돌 상태는 유지하고 제공 답안을 그대로 확정하지 않아요.",
+      "summary": "핵심 개념: 출력 버블은 그 게이트 결과의 보수예요. 원문 접속점에 따라 D=(A+B)′와 E=BC를 따로 읽고 Q=D+E로 연결해요. 답안 충돌은 유지해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-logicdiagram",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“변형 없이 Logic Diagram”과 두 괄호의 곱이 단서예요. 부울식의 각 연산을 게이트 하나의 기능으로 옮기며, 식을 단순화하지 않고 괄호별 중간 출력을 이어요.\n\n+는 OR, ·는 AND, ′와 윗줄은 보수예요. 보수·괄호 안 연산을 먼저 만들고 두 덩어리를 연결해요. P=(A+B′)′에는 B의 NOT와 합 전체의 반전, R=C+D′에는 D의 NOT가 있어요. 가장 바깥 F=P·R은 AND예요.\n\n원문 윗줄은 첫 괄호에만 걸리고 최종 곱 전체에는 걸리지 않아요. 그래서 첫 덩어리는 NOR, 둘째는 OR, 마지막은 AND를 골라요. “변형 없이” 조건 때문에 드모르간으로 다른 모양의 동치식을 그리는 대신 이 연산 구조를 보존해요.",
+      "summary": "핵심 개념: 변형 없이 괄호별 중간 노드를 그려요. P=(A+B′)′와 R=C+D′를 만들고 마지막은 F=P·R인 AND예요. 윗줄은 첫 괄호에만 걸려요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand-xor",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“NAND gate만”과 “XOR 구성”은 사용할 부품과 목표 기능을 함께 제한하는 단서예요. NAND는 AND 결과를 뒤집어 (XY)′를 내고, 두 입력 XOR는 서로 다를 때 1을 내요.\n\nXOR의 A′B+AB′에서 ′는 보수, 곱은 AND, +는 OR예요. NAND는 입력 둘을 모두 1로 받았을 때만 0이므로 중간 신호도 각각 0/1로 따라가요. 공유 신호 N1=(AB)′를 두 갈래로 보내면 NAND만으로 필요한 두 경우를 만들 수 있어요.\n\n여기서는 별도 AND·OR·NOT 기호를 쓰지 않고 모든 게이트를 NAND로 구성해야 해요. 중간 출력의 보수를 빠뜨리지 않으려고 N1·N2·N3를 이름 붙이고 마지막 NAND까지 계산해요. 네 입력 조합의 최종 출력이 0·1·1·0이면 XOR 조건을 만족해요.",
+      "summary": "핵심 개념: NAND는 (XY)′, XOR는 입력이 다를 때 1이에요. NAND만 써야 하므로 공유 N1=(AB)′를 두 분기로 보내고 네 입력 조합을 검산해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nand3",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“2-input NAND와 AND로 3-input NAND”는 게이트의 종류와 입력 수를 지정하는 단서예요. 3입력 NAND는 세 입력의 AND를 한 번 뒤집는 기능이고 F=(ABC)′예요.\n\n곱은 AND, ′는 그 곱 전체의 보수예요. A·B·C가 모두 1인 111에서만 F=0이고 나머지는 1이에요. 곱의 결합법칙 ABC=(AB)C 때문에 먼저 두 입력 AND로 AB를 묶을 수 있어요.\n\n첫 단계가 반전 없는 AND일 때 그 결과와 C를 마지막 NAND에 넣으면 전체 곱만 한 번 반전돼요. 첫 단계도 NAND로 바꾸면 내부 보수가 추가되어 목표와 달라져요. 지정된 두 종류를 잇는 순서를 정하려고 “마지막에 전체 반전”을 떠올려요.",
+      "summary": "핵심 개념: 3입력 NAND F=(ABC)′는 111에서만 0이에요. 먼저 AND로 AB를 만들고 마지막 NAND에서 C와 묶어 전체 곱을 한 번 반전해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-nor3-or-inv",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“OR Gate와 Inverter로 3 input NOR”는 사용할 게이트와 목표가 단서예요. NOR는 OR 결과를 반전해 F=(A+B+C)′를 내는 기능이에요. 인버터는 0과 1을 바꾸는 NOT예요.\n\n+는 산술 합이 아니라 OR, ′는 합 전체의 보수예요. OR는 하나라도 1이면 1이므로 NOR는 000에서만 1이고 나머지 일곱 조합은 0이에요. OR의 결합법칙으로 (A+B)+C=A+B+C가 돼요.\n\n원문처럼 OR와 인버터로 구성할 때 먼저 세 입력의 합을 만들고 마지막 출력에 인버터를 붙여요. 입력마다 반전하는 A′+B′+C′와는 달라요. 최종 합 전체를 뒤집는 위치를 정하려고 이 조건을 떠올려요.",
+      "summary": "핵심 개념: NOR는 (A+B+C)′라 000에서만 1이에요. OR로 세 입력의 합을 만든 뒤 마지막에 인버터를 붙여 전체 합을 반전해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          },
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-cmos-nand3",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n“CMOS 3-input NAND를 그리시오”는 논리 기호 대신 PMOS·NMOS 전원 경로를 구성하라는 단서예요. CMOS는 출력과 VDD 사이의 pull-up, 출력과 GND 사이의 pull-down을 상보적으로 연결해요.\n\n이상적인 정적 CMOS 논리에서는 입력 0일 때 PMOS가 켜지고 입력 1일 때 NMOS가 켜져요. 직렬은 모두 켜져야 길이 이어지고 병렬은 하나만 켜져도 이어져요. NAND F=(ABC)′는 모두 1일 때만 0이에요.\n\n그래서 GND로 내리는 NMOS 세 개는 직렬, 하나라도 0이면 VDD로 올리는 PMOS 세 개는 병렬이에요. A·B·C를 위아래 각 쌍의 게이트에 연결해요. 입력이 0/1로 안정된 이상적 동작을 판단하는 조건에서 두 경로가 상보적이므로 NAND의 출력 조건을 전원 연결로 설명할 수 있어요.",
+      "summary": "핵심 개념: 정적 CMOS에서 PMOS는 입력 0·NMOS는 1에 켜져요. NAND의 모두 1 조건은 NMOS 직렬, 하나라도 0 조건은 PMOS 병렬로 구현해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    }
+  ],
+  "no_js": {
+    "articles": 12,
+    "visible_recall_solve_verify": 36
+  }
+}

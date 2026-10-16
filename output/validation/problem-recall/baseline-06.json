@@ -1,0 +1,1796 @@
+{
+  "files": {
+    "검증결과.md": "222880e002e119bbba6d24f4daae991accb48d06ce1218ff0fbe1f5d7c558a92",
+    "실험06_기출문제.html": "8bcca1478c1e460cc2d8ed78f70a8dd394e32a2a4e7ad6c44cde595f7573038a",
+    "실험06_기출문제.md": "1a34b9a326833284cc503407a947d93c59956aa4cf9daa53e878ce4e2167d669",
+    "실험06_기출문제.pdf": "e561501f86a04090150ee1b3bd90edc29da874c39ebae05c856924e009f12368",
+    "실험06_기출풀이.html": "a1fca6899ab7c1f3e270f1c6a28746852d3d1eed6435f9ebd2fe09edecf55f6a",
+    "실험06_기출풀이.md": "082a248fd4bf161e4b29ae0ce517186bad9ad2331fb1c8392289de7656d7b355",
+    "실험06_기출풀이.pdf": "ac4ee0132ef2869a1eb42ca757afeae1e0439118b75180e2c96e481420166958",
+    "실험06_실험설명.html": "6545b15b173ccb0aeb4c51e075b2356422db456d9ad3518e27ea19212b9ab92a",
+    "실험06_실험설명.md": "86ecd44cd5d25a751b61c5a5d0cdf2fe3a8f9ac7e9ea182f61bcb6e4b8d638ba",
+    "원문과_저작안내.md": "9ef00e0e6cc655ed3a3abfdcb3a74046a403a3ecf715464d91e24735bcbf5bab",
+    "출처와_문항목록.md": "bd383dbd34580984c4ed7dd38785e3f6840437c2496b6c33daf30d0cfeedb4ba",
+    "자료/authoring-index.json": "e5ae88fe3ac78cdb27867828519e31d47a21fcb488aa4cac303b158675dd43fe",
+    "자료/assets/note-template.html": "31c28f3cd8ed5a5fd756b81d181a6e708c8072f8aac7278400d8452ab912602c",
+    "자료/assets/review-interaction.css": "21070a4e49e9fb435d7569fcc9ea863b95f093b5a287966f897af6202732284c",
+    "자료/assets/review-interaction.js": "60671821a8b95a16f46648d94b179d18af7baa1290706854f21c8351b1e55863",
+    "자료/assets/review-template.html": "f2f19f5fd23d3d26c597a650482848dc9f6b891cd149b266545fbdfb9a378ebb",
+    "자료/assets/template-provenance.json": "cefe96c05d515c7f50bb15873450b626f2fa90459de0487069e2a665c83c736b",
+    "자료/assets/widgets.js": "aad54eaa7c039cf15feb3c8017264e758875e2f6f357048cd1e5057dbfe069f9",
+    "자료/evidence/question-bank.json": "92ed75ac826f03e5b41321c53a3e743b34fcbf4bf57a980975851ea137005e0c",
+    "자료/figures/d-latch.svg": "3551988672cca55c3c4312ad7fedc523aca955b50610b08ce9a06c93fc274949",
+    "자료/figures/hc76-pinout.svg": "2a8ad8acfdfc3333a5003ac4cc2e109cf4c6703157ec4be931d805bad2118d97",
+    "자료/figures/jk-latch.svg": "5895ebee56257399ba6d80c38ccd7c3b5e1c08d6bcf622b29e2ccdb76fe4c110",
+    "자료/figures/level-vs-edge.svg": "5d95e5a558bec89ac09ddf782ae94b35c235b8b0548d6d17e84a85b8602407b4",
+    "자료/figures/memory-sr-timing.svg": "a6ee2ef51c32e1bd122bea816e676bbc939878ee0fb80d99dca4a4d2f4487b8e",
+    "자료/figures/redraw-manifest.json": "00c3827820f4ffccac999c848b700b9fb58cf93a286a40bd60edfb8a7c940bdc",
+    "자료/figures/sr-basic-nand.svg": "84a923ed866030b27cd37f9d4536e546d259fd42f0fa890b96cfdb499d028e7f",
+    "자료/figures/sr-latch-enable.svg": "2d062eec3d98e40b362d3543cbe97b76ba867e65897572400ce346155bb94227",
+    "자료/figures/tff-from-jk.svg": "beb11bb306384f507e65a513bd06ab574c7ce6939717423b5746a75c9301a3ff",
+    "자료/figures/questions/q-dff-table-given-01.png": "c4efa56362344d63b698193216448117d09ed678c8b2f8016914b74e676794c8",
+    "자료/figures/questions/q-dff-table-given-01.svg": "1d80fff5c940e4bb75b4c959766caa5c64a3be0ac124cea0952c3f00fc394443",
+    "자료/figures/questions/q-jkff-short-given-01.png": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+    "자료/figures/questions/q-jkff-short-given-01.svg": "ab7b46c1d0c1ec7e5bf773ea2046b38bda583e929930bead05c6fa0dc4179faf",
+    "자료/figures/questions/q-rs-latch-given-01.png": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+    "자료/figures/questions/q-rs-latch-given-01.svg": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
+    "자료/figures/questions/q-rs-quiz-given-01.png": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+    "자료/figures/questions/q-rs-quiz-given-01.svg": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
+    "자료/figures/questions/q-sr-nand-00-given-01.png": "889d2e776eba714fd592fa9d5a90b5eacda3dccf6f98192a3a872854e196626b",
+    "자료/figures/questions/q-sr-nand-00-given-01.svg": "54744dbe9977fab9e453d143c8819a49398f84f27da0611e7f79e177c22d7105",
+    "자료/figures/solutions/q-dff-design-solution-01.png": "5ca59374325914ff3660349d0573ae1ca3a482b9abc760ea37089c57d8a34655",
+    "자료/figures/solutions/q-dff-design-solution-01.svg": "5c58b62313cdda0a3b9fec4c955e04386acd786213c893006eeb84cdeb88f4f3",
+    "자료/figures/solutions/q-jkff-design-solution-01.png": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+    "자료/figures/solutions/q-jkff-design-solution-01.svg": "c1fa468ec191daf8f46ae58a8fabf869da93501d8e47749d9631ea999dc96f88",
+    "자료/figures/solutions/q-rs-quiz-solution-01.png": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+    "자료/figures/solutions/q-rs-quiz-solution-01.svg": "af86d3399a33179c481a7c5f9595524b6423df2b71fe6d8b8256d95a48907e8c",
+    "자료/figures/solutions/q-tff-solution-01.png": "2c69d2c2de789374107142214b5d3c8ce6ad806db058fca86aa23a554f7b5b69",
+    "자료/figures/solutions/q-tff-solution-01.svg": "2f2729ac3245796c169b9b8bb725d8c4729543ea11159a8adf0fd92b2641a0ae",
+    "자료/evidence/assets/s01-p1-o-s01-q1.png": "9b14cd91f873ac5fb5f7456ab51499cd2c0ca95fc2ccfcf640e897b98b9f90ec",
+    "자료/evidence/assets/s01-p1-o-s01-q2.png": "8f875a521f92411cbb5ba33e26c8da4610913455135a2d9f7b97ab6ef2bea648",
+    "자료/evidence/assets/s01-p1-o-s01-q3.png": "12a3d11ca728dc1cd1fc34bc979dee721716d408ad81b6280d574dd6519a1b16",
+    "자료/evidence/assets/s01-p1-o-s01-q4.png": "d1559a2951405745e9f93c44115979758145af1268892041edd8908b2429649e",
+    "자료/evidence/assets/s01-p1-o-s01-q5.png": "b4f5b2254533f7a456fc7afb29cb8014b8256966a4df837d4f045f525bdda7dc",
+    "자료/evidence/assets/s01-p1.png": "806591836c7955de0594d3ed7810593e77b41263aaeb3d842f9ed56a04522441",
+    "자료/evidence/assets/s02-p1-o-s02-a4.png": "f41382bbad0268f2445a31d6b5abfc41522a5b161f8613dc9e28d61f11bc7909",
+    "자료/evidence/assets/s02-p1-o-s02-a5.png": "5682e8a52e486d8c6e626e0be069152aaccd14da055aa1e796e52e50994aa3af",
+    "자료/evidence/assets/s02-p1-o-s02-q4.png": "4e434beb236a8785020f00fcd2bfe90cdddf6fe81ee07204d273daaaa2330baa",
+    "자료/evidence/assets/s02-p1-o-s02-q5.png": "fac47db2a49414750467264edda53deea94550d96820d74dc88e776583ccae4b",
+    "자료/evidence/assets/s02-p1.png": "db633f7cdd308cfda7327209109664acf7d1f8c38b3badcebc73f502ccd3e720",
+    "자료/evidence/assets/s02-p2-o-s02-a6.png": "9db8d45c5260222b201d5c6c8d862982a6e7d2015395bcdabc14236285bbfe95",
+    "자료/evidence/assets/s02-p2-o-s02-a7.png": "77702c0ae6729d5ca1b2606fcbc9bd916cd63325bd9980fb5da8b03c3959b36c",
+    "자료/evidence/assets/s02-p2-o-s02-q10.png": "f3be24253f8b8932bc0d4a9f88a86ef2a0e55805876537c0ac931e75017eae58",
+    "자료/evidence/assets/s02-p2-o-s02-q6.png": "d0b3c1cbb8c0d791a0a1ace5f6e5356a02cdeecb7cf214bbcaa560b28d92fe33",
+    "자료/evidence/assets/s02-p2-o-s02-q8.png": "79662b8e8f362a1a2b0d130aecae743d1df4e72f1cc90ee16631510bd5ba076a",
+    "자료/evidence/assets/s02-p2-o-s02-q9.png": "d2e983fdad3bbe460b820b5471d8692f3a5e884df237b1d711a3245867c1782b",
+    "자료/evidence/assets/s02-p2.png": "17fcd7a643c4eb7bc53a1143af1dc314dfcbe7e7d76e34966af9ef9af980a901",
+    "자료/evidence/assets/s03-p1-o-s03-a2.png": "a1f9dfd3bf6c5350a6cfa0b928ecb9761b301d1b2ae98d0488cb8e592e2d971d",
+    "자료/evidence/assets/s03-p1-o-s03-a3.png": "b2461986d36fca200f0753c250694e3c6db2438be0d8f3d08b8d3a0e50123e4d",
+    "자료/evidence/assets/s03-p1-o-s03-q2.png": "ea607cce37a3a86e0a659a9dec68f6fd88b57685fc2010f8f9ff72bfc27e8a1f",
+    "자료/evidence/assets/s03-p1-o-s03-q3.png": "c122b6b6e7fd95dd3d2796f4ac09ba3710e7ce4357f685ec3328cef7a021a042",
+    "자료/evidence/assets/s03-p1.png": "4e46f4563f2d65bb4fc466c42ea5863d3c91e6fe3c3d3634e5fe063af3484295",
+    "자료/evidence/assets/s03-p2-o-s03-a4.png": "6ab61b4112eeb49925d51a091972e00ae23e04282263b50167a045571a58bff5",
+    "자료/evidence/assets/s03-p2-o-s03-q4.png": "52e0ec9764476d8cd0ca17a62120033cbc1e679fb79ef91fb1ec43e207050e14",
+    "자료/evidence/assets/s03-p2.png": "1cbd753c491f29d880b68c677e79f03ed740a9fecd91e8ecf0e560756f895e01",
+    "자료/evidence/assets/s03-p3.png": "83a292c17df3ade6c725f7a8611e9712591317675af68359b7df467482e96be0",
+    "자료/evidence/assets/s04-p1-o-s04-a2.png": "a805c72a6f98bd44658b57400881929413baed1deda339704e4d17f28c6534b3",
+    "자료/evidence/assets/s04-p1-o-s04-a3.png": "55d59d6cfcbc70107beec929535452667d7333fd1fafaea9aa26779d2276c2d8",
+    "자료/evidence/assets/s04-p1-o-s04-q2.png": "a74a7ea2cdfffb528159b5db34efcda85817c58831880f661bac3e4d63cf954f",
+    "자료/evidence/assets/s04-p1-o-s04-q3.png": "3a3ba71249a48b745cc87f72634158382ce8f0d0abe4e3644f87c629e0aacd0f",
+    "자료/evidence/assets/s04-p1.png": "ddb20dd64bbd95b53a47ab04eeff9c0630a75ce190fd274e8191b7e9cd840698",
+    "자료/evidence/assets/s04-p2-o-s04-a4.png": "6cb3b5793669713839857407d8ac12ab1e554ad0e8efc510585f80f0042f34e0",
+    "자료/evidence/assets/s04-p2-o-s04-q4.png": "0e62d6b408117e57ffca5901262565851fd740d452282ef2e3932124d10801f0",
+    "자료/evidence/assets/s04-p2.png": "5f0403c8e3c6429320ee57bcb689d65834da1b0b9984db500573e9544f78a6ad",
+    "자료/evidence/assets/s04-p3.png": "32e4e69db417cb024d83cfdc40b7d7015aababb150e691c257af1c0c37ebcc19",
+    "자료/evidence/assets/s05-p1-o-s05-q2.png": "20616c388a4259ec6ec509ff3621631cfb442db2484128398a9822c29112b201",
+    "자료/evidence/assets/s05-p1-o-s05-q3.png": "1dc73cf49738f9ddb0a437f137e756e0dcaae30f31197e3d44a3bfb662c2fe3b",
+    "자료/evidence/assets/s05-p1-o-s05-q4.png": "b99bf9077e55622503a6301bc573ef1f80834b0f3c86b5e9b399c6b64347f6d2",
+    "자료/evidence/assets/s05-p1.png": "2a4875556f857177261869ff6dc8aa933ed79c15a3a04ddb8d95c520c7bbe5cd",
+    "자료/evidence/assets/s06-p1-o-s06-q2.png": "52baa8b2ea9c9d795589176781f92de846d066a93680a6a452b8cbbf2c7cbf96",
+    "자료/evidence/assets/s06-p1-o-s06-q3.png": "2f06e5c77c2b2113bbbc4ea573b894b37002142854fa2c61f94e7ca3d16cb97c",
+    "자료/evidence/assets/s06-p1-o-s06-q4.png": "5678fa4d629cdaa44f3583a2b0d2b5b320a11410253743585511384e818ae450",
+    "자료/evidence/assets/s06-p1.png": "12814ad66601e9fa52c0f1d26423226bd25583524a3106ec20b6079ed2597e55",
+    "자료/evidence/assets/s07-p1.png": "0778089a3310e2e034402187d721e969df72f13b587760c2b2b554c2a4197670",
+    "자료/evidence/assets/s07-p2-o-s07-a2.png": "3151b181679a0fcf22b58f7c3a4ba80e85a9c0f7405784d033bfdfddd0fe9978",
+    "자료/evidence/assets/s07-p2-o-s07-a3.png": "dcf54c1801727c2d5b237b2861814a50da6ea287877d5cefe6786cc5bfb1667e",
+    "자료/evidence/assets/s07-p2-o-s07-q2.png": "3b58e84aeaee20f50dbfd5ecba1bb9318581357da5974d0bac8648f66e275f07",
+    "자료/evidence/assets/s07-p2-o-s07-q4.png": "021f09fb494198644ff6d35e2a9a5ad2bdbe2d12082a77168ccbd564bd6e51f2",
+    "자료/evidence/assets/s07-p2.png": "ebb8a077adcdcb6e0ed70818305e93c80064e4cd71129ca951f334772eef73fe",
+    "자료/evidence/assets/s07-p3-o-s07-a4.png": "c5ee1b73649781d4fe01b07eef4cc3fe3dbe703a80cc7fcffae3e700737c450e",
+    "자료/evidence/assets/s07-p3.png": "6926a2b5b2c671a79fb2b4332a88e8aec0921a5676583577d88b7e0d8a53a578",
+    "자료/evidence/assets/s07-p4.png": "7f440cfeb19c0408f30107e8e7d11b728d5384df592a0d6e8ac3d0be2aaac630",
+    "자료/evidence/assets/s08-p1-o-s08-e1.png": "343dc66c503ad4b211ac8b999d94e557ba06a7175ee245faa4d5de8f62e6e49e",
+    "자료/evidence/assets/s08-p1-o-s08-e3.png": "e708d01d5ec3be28b27b6411777a1f7074a734d4568bcf94a257deb154965b7b",
+    "자료/evidence/assets/s08-p1-o-s08-q1.png": "d3704b0d696bd5b14c391d8e85ef221334e642990cb82f8779d8044f698538f7",
+    "자료/evidence/assets/s08-p1.png": "1e1ac42567433be07cc4f2186352b9779b705cb23908eadd2efc290123908639",
+    "자료/evidence/assets/s09-p1-o-s09-a2.png": "95ebc5119fb2307ee8418a0507b86161d7be431ee04771f5703dfb8f958a553f",
+    "자료/evidence/assets/s09-p1-o-s09-a3.png": "a4c768932190619e1a95039b2c6d729f60e4db0406791a08ea55f37474ee5406",
+    "자료/evidence/assets/s09-p1-o-s09-q2.png": "ea607cce37a3a86e0a659a9dec68f6fd88b57685fc2010f8f9ff72bfc27e8a1f",
+    "자료/evidence/assets/s09-p1-o-s09-q3.png": "999ec2eefb45a6dad84b5015b133dc1dbe9cf9d803ffbbd0a6ac2955a699aa7a",
+    "자료/evidence/assets/s09-p1.png": "4ab13ff8e12a81b32c168e8973015cf3d52d572540a93da3e64c6379ec3f27dc",
+    "자료/evidence/assets/s09-p2-o-s09-a4.png": "4abf0d29bdce2f4a6ab269da98136d7162c9f43d23e1de4e814776f72e59f41f",
+    "자료/evidence/assets/s09-p2-o-s09-q4.png": "c780048570eef094ea5ad84ccf47da6b79b5bef9cf644884e9e2c4a78f0e6e31",
+    "자료/evidence/assets/s09-p2.png": "2bceb456515b9fe4fe28cd6279780255f8ef35a86b08a7bada7e00aae0320183",
+    "자료/evidence/assets/s09-p3.png": "9356296af1b88376834f6ee17640fd4f019c034b2215a9b83596db0670960ff6",
+    "자료/evidence/assets/s10-p1-o-s10-q2.png": "fd7360e585a56c8433ecada8cae6df3b263bde5ee20fde6d0f7009b0f0c61edf",
+    "자료/evidence/assets/s10-p1-o-s10-q3.png": "feeb3304391677e42a5a8641eef122c49d17f11893a10d80ab46f1f8ffbbae12",
+    "자료/evidence/assets/s10-p1-o-s10-q4.png": "ab78559aa4bd43c53c064548c3ba4fc84f6bb1bb51123778886ad530dec505bc",
+    "자료/evidence/assets/s10-p1.png": "cb2a38f166ef7052f848b21e24571cbb6de43f2b8b7d929298c081234d071231",
+    "자료/assets/vendor/provenance.json": "8b7f9bc48a8e9ad7ec0207c133441078b99305ffc08adde2884dada99b52015f",
+    "자료/assets/workbook/answer.html": "8d7d87cc579ee11109f49d77c5beb31b592280bcbcfae97513b8e767e0bc8800",
+    "자료/assets/workbook/problem.html": "77d5e785b3a12ff53deb33d65521d989661b2c7847a51d4df1bc4dfad76da594",
+    "자료/assets/workbook/provenance.json": "4c1bf4e3e34bbbeaaa1e5ea4cef15eec472b13d7c427362c9e2ba725938b8dcd",
+    "자료/assets/vendor/katex/auto-render.min.js": "7b57d427ac6270677daf8d8380ded2cc73336f9149a167b8e1fe0d6ef66604ae",
+    "자료/assets/vendor/katex/katex.min.css": "6c8a78f2a34035c132722da32a55d1af3a0d37529017c7d101652307c5981c29",
+    "자료/assets/vendor/katex/katex.min.js": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+    "자료/assets/vendor/katex/LICENSE": "4313255416487a4a7602f134a7cdd2b33dd9f7e7b41d3af63dc9f785bca425a0",
+    "자료/assets/vendor/pretendard/LICENSE": "8a2aba6114145294edbbce5998eab74320e7e07ce39999cc9f95ae2967d2eb9e",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff": "d8511e03d73b848d3df45d6f3d1166bb9532f7547b68da5f768d7b60df76faaa",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff2": "c5fd0c3568fc1368a3edc0d0fbb36df029935954276e3573451b3bae09e27296",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff": "b02e6d7d8606f13f12682bc4d43575d403a9cbb2d662f6f4f137dba384633267",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff2": "4609c3356e536fafe38f4add0daeceb3d8595d3057bce13c428c33ddbd43d362",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff": "1f43803fe4cb56b82061c7392eae37a9123e839b39cc0aa3c3f5b22edcb170d3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2": "dd7c1e156f508eb962acc7a33a7a1896d1e0b71e11156fad96e731689ceb6dc3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff": "f8c8f64cec9d0c4b2c675a5cac99b2cef9d34f4b485caf9ec47901314ff8c460",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2": "df43dc9165dff4542114674bcd8b79b7daae6dec004004586d5d076fec6fe2aa",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff": "744e50b9780722eada9afc308712c7d1dc5176d8b46c315d010fa42fffb76fe6",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff2": "b7426635cce2ea2b95c9c802e43fba1c620e0dafaf25f737c069b8b4e09fa841",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff": "6231269ba695835ca13b03cf411b4e68379993039b4033c373e4e9940ee5370d",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff2": "d03481330eeba0659ab5b87f25ceb504a35de377dd90a0d0aba2982eb2d05e2c",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff": "3214d4fdb5bd41e10c9f0b5fa8c6ff2f1096b249665cdbf34948434ee7c51934",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff2": "fad853f7f47c6c8b103171e7193fa095708cdcd70850a71d93aa5379e8a61d63",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff": "e476f124e88472078cf472ac09768331f93f76063a52183ff303a192adea800a",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2": "c863f76a7de5c1ddc1ed8b2fa794964530774592c4f31407a84e2a2ae93f17f0",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff": "1c760324692f0d4bdd46f6f2378ce73aaa37056b8673163d1463adaee8b3dee1",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff2": "1539755224a64719d5b18406762c476db74fcc299b9e4641ca1e9812fbc7a09b",
+    "자료/assets/vendor/pretendard/pretendard.css": "8e9774f2f94d64c786cda43592c6034847ee491a7aba443e02d863bc2d03a1c3"
+  },
+  "manifest": {
+    "schema_version": 1,
+    "experiment": 6,
+    "title": "Latch & Flip-Flop — 1비트를 기억하는 회로",
+    "edition_status": "current",
+    "bank_import": {
+      "bank_id": "bank-exp06",
+      "schema_version": 1,
+      "source_path": "문제은행/실험06/question-bank.json",
+      "sha256": "92ed75ac826f03e5b41321c53a3e743b34fcbf4bf57a980975851ea137005e0c",
+      "snapshot_path": "evidence/question-bank.json",
+      "index_path": "authoring-index.json"
+    },
+    "sources": [
+      {
+        "id": "s-98abb18838dcedd6",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 기출 2017-1.pdf",
+        "sha256": "4737ba3bb761c162b28b4ca62b1613ea04496d4dce5b6833ba195469a5b94fce",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-1d5b9fb1a3509c42",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 기출_단답형.pdf",
+        "sha256": "064c41ce78682543d099c39c7cdec27c870566da119d4a6d504517b8d2384bdc",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-c72797a62aef568a",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 예상문제_v1.pdf",
+        "sha256": "d75a1593c772a9c7460675948a16026817e78ba7bd3c983eceab20af9c8015dd",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-17a55661d7d416fb",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 예상문제_v2.pdf",
+        "sha256": "3142c235b1da0b2ca94ada7cb9887270ab2b8874d5c74fa3d4111539cfde48ff",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-25e89fae09e4dade",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 예상문제_v3.pdf",
+        "sha256": "df9d13341adb74b0b405eb20b21ffebdedf3bce2a0acc5a079c0fc01719d8e73",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-197fa30ab23a7bfe",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 예상문제_v4.pdf",
+        "sha256": "88162266894fa7ee59b9c55d166b3a67541a2a2c14592ed43f714af3e39ec27a",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-e87cf7b1615744aa",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 종합_기출문제 (4p).pdf",
+        "sha256": "166acf2e7adfc9d4ffed087cc3045decf1c62d45edbf7200c997d868083f6175",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-b59202fea5b522c8",
+        "path": "from_the_past/정리/퀴즈/실험6/실험6 퀴즈 해설.pdf",
+        "sha256": "78f398398011cf54e92f04d2cb95880493b8a252d5b37f1b0eafb80decb0bcdf",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-a5ec4792d99ecb33",
+        "path": "from_the_past/정리/퀴즈/실험6/원본_docx/실험6.docx",
+        "sha256": "c7ade01fa522249bb0c267b1e64c89c8a4f528d5a0574e15024764b0966e6a0d",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-1d03d3924e823f9f",
+        "path": "from_the_past/정리/퀴즈/실험6/원본_docx/실험6_예상.docx",
+        "sha256": "fa3192db35c7f9dcdc1c4f9c0820ec6c0b8dd87d7a476ed73395f782f3502943",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-a9792f60486135b0",
+        "path": "강의노트/실험6. Latch & Flip-Flop.pdf",
+        "sha256": "dbacbefa5f6ef60738f2749aabd7ccbaeaa55d9c87416dee368d5d231e52de37",
+        "kind": "manual",
+        "edition": "current"
+      },
+      {
+        "id": "s-130a964ad2ce2dbf",
+        "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+        "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+        "kind": "notice",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-9ab67da34de194d4",
+        "path": "from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/74-76-diagram.jpg",
+        "sha256": "c9ee65eab8aa988e1d1719bcc57f1095dcd1fe1e1bd592a8cb1d52f566f5d1fb",
+        "kind": "datasheet",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-597ad821dc922e60",
+        "path": "from_the_past/정리/소자_데이터시트_및_미디어/1_데이터시트_및_핀아웃/92110-74HC76-J-K-Flip-Flop-Pic002-700x700.jpg",
+        "sha256": "2f43076301a1de5fc03e3912522d423854b0f8a8d3d15cac1019ec76f8c8d2da",
+        "kind": "datasheet",
+        "edition": "unknown"
+      }
+    ],
+    "topics": [
+      {
+        "id": "t-start",
+        "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+        "requires": [],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 1,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 2,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 3,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 7,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-130a964ad2ce2dbf",
+            "pdf_page": null,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-start.html",
+        "md_notes": "판본 기록: 교안 표지는 25-1 논리회로실험이에요(2026-10-11 저장소에 추가된 판). 수행 범위는 9월 14일 공지의 실험 1·2-1·3-2예요.\n\n도입의 버튼·불 장치는 이해를 위한 예시이고 측정값이 아니에요. 타이밍도는 교안 p4·p7의 SR 래치 진리표를 바탕으로 직접 그렸어요."
+      },
+      {
+        "id": "t-basics",
+        "title": "출력을 되먹이는 회로와 NAND를 다시 읽어요",
+        "requires": [
+          "t-start"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 3,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 4,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-basics.html",
+        "md_notes": "특성식(D·JK·T)은 교안 표를 식으로 옮긴 보충이에요. 각 식은 표의 모든 행과 대조했어요."
+      },
+      {
+        "id": "t-sr-basic",
+        "title": "NAND 두 개로 만든 기본 SR 래치",
+        "requires": [
+          "t-basics"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 4,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-sr-basic.html",
+        "md_notes": "보충: 교안 p4는 Enable 없는 래치를 다루지 않는다고 적었어요. 그림은 기출_단답형 8번 회로(74HC00, 1·2→3, 4·5→6)의 연결을 읽어 직접 다시 그렸어요. 진리표는 NAND 모델을 코드로 계산해 확인했어요."
+      },
+      {
+        "id": "t-sr-enable",
+        "title": "실험 1: Enable이 있는 SR 래치",
+        "requires": [
+          "t-sr-basic"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 7,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-sr-enable.html",
+        "md_notes": "그림 재제작: 교안 p7 회로(74HC00, 1·2→3, 4·5→6, 9·10→8, 12·13→11)를 확대해 읽고 새로 그렸어요. 10번에는 Q′, 12번에는 Q가 되먹여져요. 표는 교안 p4·p7과 같고, Q′ 열은 NAND 모델 계산으로 덧붙였어요."
+      },
+      {
+        "id": "t-d-latch",
+        "title": "실험 2-1: D 래치는 부정 상태를 막아요",
+        "requires": [
+          "t-sr-enable"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 8,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-d-latch.html",
+        "md_notes": "그림 재제작: 교안 p8 회로(74HC04 1→2, 74HC00 4개)를 읽고 새로 그렸어요. 기출 자료의 같은 회로는 입력 이름이 S·C로 적혀 있어요."
+      },
+      {
+        "id": "t-jk-latch",
+        "title": "JK 래치는 1, 1을 뒤집기로 바꿔요",
+        "requires": [
+          "t-sr-enable"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 10,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-jk-latch.html",
+        "md_notes": "그림 재제작: 교안 p10 회로(74HC10 1·2·13→12, 3·4·5→6, 74HC00 1·2→3, 4·5→6)를 읽고 새로 그렸어요. 1번 핀은 Q′, 5번 핀은 Q 되먹임이에요. race-around 설명은 게이트 지연 모델로 계산한 보충이에요(J=K=E=1을 유지하면 상태가 반복). 실험 3-1은 이번 수행 범위가 아니에요."
+      },
+      {
+        "id": "t-edge",
+        "title": "래치와 플립플롭: 레벨과 엣지",
+        "requires": [
+          "t-d-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 3,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 5,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 9,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-edge.html",
+        "md_notes": "74HC574 문단은 저장소에 데이터시트가 없어 일반적인 사양 기준의 보충이에요. 교안 p5 SR F/F 회로는 CLK와 NOT(CLK)를 NAND에 넣어요. NAND(CLK, CLK′)는 지연 순간을 빼면 늘 1이라 그림 그대로는 엣지 펄스로 동작하지 않아요. 원리 설명은 AND 펄스 기준의 보충으로 적었어요. 74HC74 표는 교안 p9 그대로예요. 타이밍도는 직접 만든 입력으로 그렸어요."
+      },
+      {
+        "id": "t-74hc76",
+        "title": "실험 3-2: 74HC76 JK 플립플롭",
+        "requires": [
+          "t-jk-latch",
+          "t-edge"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 11,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-9ab67da34de194d4",
+            "pdf_page": null,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-597ad821dc922e60",
+            "pdf_page": null,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-74hc76.html",
+        "md_notes": "핀 배치는 교안 p11과 from_the_past 7476 핀아웃 그림(92110-74HC76-J-K-Flip-Flop-Pic002-700x700.jpg), 74-76-diagram.jpg의 표와 대조했어요(5번 VCC, 13번 GND, 2번 1PR, 3번 1CLR, 하강 엣지). PR=CLR=0 동시 입력에서 출력 L은 74-76-diagram.jpg 표 각주 기준이고, 다른 계열 표가 H로 적는 경우가 있어 둘 다 적었어요(독립 검토 지적). 스위치 bounce는 일반 원리 보충이에요."
+      },
+      {
+        "id": "t-lab",
+        "title": "실험에서 바꾸고 관찰할 것을 정리해요",
+        "requires": [
+          "t-sr-enable",
+          "t-d-latch",
+          "t-74hc76"
+        ],
+        "sources": [
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 6,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 7,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 8,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-a9792f60486135b0",
+            "pdf_page": 11,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-lab.html",
+        "md_notes": "판본 기록: 준비물과 항목은 교안 p6~p11 기준이에요. LED·저항의 연결 방향은 교안에 없어 적지 않았어요."
+      }
+    ],
+    "problems": [
+      {
+        "id": "q-diff",
+        "bank_question_id": "q-diff",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-edge"
+        ],
+        "sources": [
+          {
+            "source_id": "s-98abb18838dcedd6",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "Latch=레벨 트리거(Enable 동안 반영, 비동기), F/F=엣지 트리거(클록 엣지 순간 반영, 동기)",
+        "answer_status": "verified",
+        "title": "Latch와 Flip-Flop의 차이",
+        "workbook_fragment": "workbook/q-diff.json",
+        "explanation_fragment": "problem-explanations/q-diff.html"
+      },
+      {
+        "id": "q-latch",
+        "bank_question_id": "q-latch",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-basics",
+          "t-sr-enable"
+        ],
+        "sources": [
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 6; OOXML 본문 P24; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 6; OOXML 본문 P15; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "1비트 레벨 트리거 기억소자: Enable 동안 입력 반영, 아니면 유지",
+        "answer_status": "verified",
+        "title": "Latch를 설명",
+        "workbook_fragment": "workbook/q-latch.json",
+        "explanation_fragment": "problem-explanations/q-latch.html"
+      },
+      {
+        "id": "q-ff",
+        "bank_question_id": "q-ff",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-edge"
+        ],
+        "sources": [
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 7; OOXML 본문 P32; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 7; OOXML 본문 P18; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "1비트 엣지 트리거 동기 기억소자: 클록 엣지 순간에만 반영",
+        "answer_status": "verified",
+        "title": "Flip-Flop을 설명",
+        "workbook_fragment": "workbook/q-ff.json",
+        "explanation_fragment": "problem-explanations/q-ff.html"
+      },
+      {
+        "id": "q-sr-nand-00",
+        "bank_question_id": "q-sr-nand-00",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-sr-basic"
+        ],
+        "sources": [
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8 및 회로도; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "Q=1, Q′=1, Q′=not Q 성립 안 함",
+        "answer_status": "verified",
+        "title": "기본 S-R latch에 S=R=0을 넣으면",
+        "workbook_fragment": "workbook/q-sr-nand-00.json",
+        "explanation_fragment": "problem-explanations/q-sr-nand-00.html"
+      },
+      {
+        "id": "q-rs-latch",
+        "bank_question_id": "q-rs-latch",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-sr-enable"
+        ],
+        "sources": [
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; OOXML 본문 P7(문장+회로 그림 image1.png); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; OOXML 본문 P7(문장+회로 그림 image1.png); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "00→Q(t−1), 01→0, 10→1, 11→1(Q′=1, 금지), C=0→Q(t−1)",
+        "answer_status": "verified",
+        "title": "Enable이 있는 R-S Latch의 진리표",
+        "workbook_fragment": "workbook/q-rs-latch.json",
+        "explanation_fragment": "problem-explanations/q-rs-latch.html"
+      },
+      {
+        "id": "q-rs-quiz",
+        "bank_question_id": "q-rs-quiz",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-sr-enable",
+          "t-jk-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-b59202fea5b522c8",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "1. 퀴즈 해설 안의 문제 상자 1)·2)·(1)의 결과 질문; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "S쪽 NAND에 Q′, R쪽 NAND에 Q 되먹임(3입력); Q=Q′=1·다음 상태 예측 불가로 금지; JK Latch",
+        "answer_status": "verified",
+        "title": "R-S Latch를 Toggle 되게 바꾸기",
+        "workbook_fragment": "workbook/q-rs-quiz.json",
+        "explanation_fragment": "problem-explanations/q-rs-quiz.html"
+      },
+      {
+        "id": "q-dff-table",
+        "bank_question_id": "q-dff-table",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-d-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=0,C=1→Q=0,Q′=1; S=1,C=1→Q=1,Q′=0; C=0→유지",
+        "answer_status": "verified",
+        "title": "회로가 주어진 D F/F 진리표",
+        "workbook_fragment": "workbook/q-dff-table.json",
+        "explanation_fragment": "problem-explanations/q-dff-table.html"
+      },
+      {
+        "id": "q-dff-design",
+        "bank_question_id": "q-dff-design",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-d-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-98abb18838dcedd6",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=D, R=D′인 Enable SR 래치(NOT 1 + NAND 4)",
+        "answer_status": "verified",
+        "title": "D F/F 진리표를 만족하는 회로 설계",
+        "workbook_fragment": "workbook/q-dff-design.json",
+        "explanation_fragment": "problem-explanations/q-dff-design.html"
+      },
+      {
+        "id": "q-jkff-short",
+        "bank_question_id": "q-jkff-short",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-jk-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6 및 회로도; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "00→Q(t−1), 01→0, 10→1, 11→Q(t−1)′, C=0→Q(t−1)",
+        "answer_status": "verified",
+        "title": "회로가 주어진 J-K F/F 진리표",
+        "workbook_fragment": "workbook/q-jkff-short.json",
+        "explanation_fragment": "problem-explanations/q-jkff-short.html"
+      },
+      {
+        "id": "q-jkff-design",
+        "bank_question_id": "q-jkff-design",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-jk-latch"
+        ],
+        "sources": [
+          {
+            "source_id": "s-98abb18838dcedd6",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "J·C·Q′, K·C·Q 3입력 NAND 2 + 교차 NAND 2 (JK 래치)",
+        "answer_status": "verified",
+        "title": "J-K F/F 진리표를 만족하는 회로 설계",
+        "workbook_fragment": "workbook/q-jkff-design.json",
+        "explanation_fragment": "problem-explanations/q-jkff-design.html"
+      },
+      {
+        "id": "q-tff",
+        "bank_question_id": "q-tff",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-74hc76"
+        ],
+        "sources": [
+          {
+            "source_id": "s-98abb18838dcedd6",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 8; OOXML 본문 P39; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 8; OOXML 본문 P21; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "J와 K를 묶어 T: T=0 유지, T=1 Toggle",
+        "answer_status": "verified",
+        "title": "J-K F/F로 T F/F 만들기",
+        "workbook_fragment": "workbook/q-tff.json",
+        "explanation_fragment": "problem-explanations/q-tff.html"
+      },
+      {
+        "id": "q-74hc76",
+        "bank_question_id": "q-74hc76",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-74hc76"
+        ],
+        "sources": [
+          {
+            "source_id": "s-98abb18838dcedd6",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 10; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          },
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 5; OOXML 본문 P20; Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 5; OOXML 본문 P12; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "PR=0→Q=1, CLR=0→Q=0, Active Low 비동기 우선, 평소 HIGH",
+        "answer_status": "verified",
+        "title": "74HC76의 CLR·PR 핀 기능",
+        "workbook_fragment": "workbook/q-74hc76.json",
+        "explanation_fragment": "problem-explanations/q-74hc76.html"
+      },
+      {
+        "id": "q-74hc574",
+        "bank_question_id": "q-74hc574",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-edge"
+        ],
+        "sources": [
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 9; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "supplement",
+        "given_answer": null,
+        "derived_answer": "클록 상승 엣지(Low→High) 순간",
+        "answer_status": "verified",
+        "title": "74HC574에서 입력이 반영되는 시점",
+        "workbook_fragment": "workbook/q-74hc574.json",
+        "explanation_fragment": "problem-explanations/q-74hc574.html"
+      },
+      {
+        "id": "q-p-76-trace",
+        "kind": "practice",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 수록하고 게이트 모델 계산으로 대조",
+        "topics": [
+          "t-74hc76"
+        ],
+        "sources": [],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "Q=1,1,1,0,1,0,1,0",
+        "answer_status": "verified",
+        "title": "74HC76 하강 엣지 따라가기",
+        "workbook_fragment": "workbook/q-p-76-trace.json",
+        "explanation_fragment": "problem-explanations/q-p-76-trace.html"
+      },
+      {
+        "id": "q-dlatch-design",
+        "bank_question_id": "q-dlatch-design",
+        "kind": "predicted",
+        "status": "duplicate",
+        "reason": "주어진 D·C·Q(t) 진리표와 요구(표를 만족하는 회로 설계)가 q-dff-design 과 같아요. 대상 이름만 “D Latch”/“D F/F”로 달라요. 표가 레벨 동작이라 설계 답(D 래치)도 같아요. 이름 차이는 q-dff-design 풀이에서 설명해요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3 및 진리표; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3 및 진리표; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3 및 진리표; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; OOXML 본문 P9 및 진리표 그림 P11(image3.png); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; OOXML 본문 P8 및 진리표 그림 P9(image2.png); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": "q-dff-design",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-jklatch-design",
+        "bank_question_id": "q-jklatch-design",
+        "kind": "predicted",
+        "status": "duplicate",
+        "reason": "주어진 J·K·C·Q(t) 진리표와 요구가 q-jkff-design 과 같아요. 대상 이름만 “J-K Latch”/“J-K F/F”로 달라요. 설계 답(JK 래치)도 같아요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-c72797a62aef568a",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 4 및 진리표; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-17a55661d7d416fb",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 4 및 진리표; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-197fa30ab23a7bfe",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4 및 진리표; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-a5ec4792d99ecb33",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; OOXML 본문 P17 및 진리표 그림 P19(image6.png); Word 읽기 전용 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-1d03d3924e823f9f",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; OOXML 본문 P10 및 진리표 그림 P11(image3.png); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": "q-jkff-design",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-rs-ff",
+        "bank_question_id": "q-rs-ff",
+        "kind": "predicted",
+        "status": "duplicate",
+        "reason": "같은 R-S 회로(S·C·R, 74HC00 4개)를 주고 진리표를 채우는 문항이에요. 이름(R-S F/F)과 “회로설계로 대체될 수 있음” 문구만 달라요. q-rs-latch 로 풀어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 2 및 회로도; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": "q-rs-latch",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-jkff-table",
+        "bank_question_id": "q-jkff-table",
+        "kind": "predicted",
+        "status": "held",
+        "reason": "대표 등장(예상 v3 4번)과 종합본 등장 모두 부분 판독이에요. v3에서는 J-K 회로가 4·5번 문장 뒤에 있어 어느 문항의 그림인지 확정할 수 없고, 종합본 4번 아래 그림은 D 회로예요. 조건을 추측해 채우지 않았어요. 같은 요구는 회로 소속이 분명한 q-jkff-short 로 다뤄요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-25e89fae09e4dade",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4 및 5번 문장 아래 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-e87cf7b1615744aa",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 4 및 아래 회로도 2개; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-rs-ff-short",
+        "bank_question_id": "q-rs-ff-short",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "같은 R-S 회로와 진리표 작성 요구예요(기출_단답형 4번, 실제 시행 근거 미확인). q-rs-latch 로 풀어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": "q-rs-latch",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      },
+      {
+        "id": "q-dff-short",
+        "bank_question_id": "q-dff-short",
+        "kind": "unknown",
+        "status": "duplicate",
+        "reason": "같은 D 회로(입력 표기 S·C)와 진리표 작성 요구예요(기출_단답형 5번). q-dff-table 로 풀어요. 이 자료 답안 둘째 행 “0 1 1”의 오기는 q-dff-table 노트에 남겼어요.",
+        "topics": [],
+        "sources": [
+          {
+            "source_id": "s-1d5b9fb1a3509c42",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5 및 회로도; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": "q-dff-table",
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": null,
+        "answer_status": "unresolved"
+      }
+    ],
+    "checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "pass",
+      "browser": "pass"
+    },
+    "note_presentation_version": 2,
+    "review_presentation_version": 2,
+    "problem_explanation_version": 1,
+    "explanation_checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "pass",
+      "browser": "pass"
+    },
+    "figure_manifest": "figures/redraw-manifest.json",
+    "generated_files": [
+      "검증결과.md",
+      "실험06_기출문제.html",
+      "실험06_기출문제.md",
+      "실험06_기출풀이.html",
+      "실험06_기출풀이.md",
+      "실험06_문제설명.html",
+      "실험06_문제설명.md",
+      "실험06_실험설명.html",
+      "실험06_실험설명.md",
+      "원문과_저작안내.md",
+      "자료/assets/note-template.html",
+      "자료/assets/review-interaction.css",
+      "자료/assets/review-interaction.js",
+      "자료/assets/review-template.html",
+      "자료/assets/template-provenance.json",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+      "자료/assets/vendor/katex/LICENSE",
+      "자료/assets/vendor/katex/auto-render.min.js",
+      "자료/assets/vendor/katex/katex.min.css",
+      "자료/assets/vendor/katex/katex.min.js",
+      "자료/assets/vendor/pretendard/LICENSE",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff2",
+      "자료/assets/vendor/pretendard/pretendard.css",
+      "자료/assets/vendor/provenance.json",
+      "자료/assets/widgets.js",
+      "자료/assets/workbook/answer.html",
+      "자료/assets/workbook/problem.html",
+      "자료/assets/workbook/provenance.json",
+      "자료/authoring-index.json",
+      "자료/evidence/assets/s01-p1-o-s01-q1.png",
+      "자료/evidence/assets/s01-p1-o-s01-q2.png",
+      "자료/evidence/assets/s01-p1-o-s01-q3.png",
+      "자료/evidence/assets/s01-p1-o-s01-q4.png",
+      "자료/evidence/assets/s01-p1-o-s01-q5.png",
+      "자료/evidence/assets/s01-p1.png",
+      "자료/evidence/assets/s02-p1-o-s02-a4.png",
+      "자료/evidence/assets/s02-p1-o-s02-a5.png",
+      "자료/evidence/assets/s02-p1-o-s02-q4.png",
+      "자료/evidence/assets/s02-p1-o-s02-q5.png",
+      "자료/evidence/assets/s02-p1.png",
+      "자료/evidence/assets/s02-p2-o-s02-a6.png",
+      "자료/evidence/assets/s02-p2-o-s02-a7.png",
+      "자료/evidence/assets/s02-p2-o-s02-q10.png",
+      "자료/evidence/assets/s02-p2-o-s02-q6.png",
+      "자료/evidence/assets/s02-p2-o-s02-q8.png",
+      "자료/evidence/assets/s02-p2-o-s02-q9.png",
+      "자료/evidence/assets/s02-p2.png",
+      "자료/evidence/assets/s03-p1-o-s03-a2.png",
+      "자료/evidence/assets/s03-p1-o-s03-a3.png",
+      "자료/evidence/assets/s03-p1-o-s03-q2.png",
+      "자료/evidence/assets/s03-p1-o-s03-q3.png",
+      "자료/evidence/assets/s03-p1.png",
+      "자료/evidence/assets/s03-p2-o-s03-a4.png",
+      "자료/evidence/assets/s03-p2-o-s03-q4.png",
+      "자료/evidence/assets/s03-p2.png",
+      "자료/evidence/assets/s03-p3.png",
+      "자료/evidence/assets/s04-p1-o-s04-a2.png",
+      "자료/evidence/assets/s04-p1-o-s04-a3.png",
+      "자료/evidence/assets/s04-p1-o-s04-q2.png",
+      "자료/evidence/assets/s04-p1-o-s04-q3.png",
+      "자료/evidence/assets/s04-p1.png",
+      "자료/evidence/assets/s04-p2-o-s04-a4.png",
+      "자료/evidence/assets/s04-p2-o-s04-q4.png",
+      "자료/evidence/assets/s04-p2.png",
+      "자료/evidence/assets/s04-p3.png",
+      "자료/evidence/assets/s05-p1-o-s05-q2.png",
+      "자료/evidence/assets/s05-p1-o-s05-q3.png",
+      "자료/evidence/assets/s05-p1-o-s05-q4.png",
+      "자료/evidence/assets/s05-p1.png",
+      "자료/evidence/assets/s06-p1-o-s06-q2.png",
+      "자료/evidence/assets/s06-p1-o-s06-q3.png",
+      "자료/evidence/assets/s06-p1-o-s06-q4.png",
+      "자료/evidence/assets/s06-p1.png",
+      "자료/evidence/assets/s07-p1.png",
+      "자료/evidence/assets/s07-p2-o-s07-a2.png",
+      "자료/evidence/assets/s07-p2-o-s07-a3.png",
+      "자료/evidence/assets/s07-p2-o-s07-q2.png",
+      "자료/evidence/assets/s07-p2-o-s07-q4.png",
+      "자료/evidence/assets/s07-p2.png",
+      "자료/evidence/assets/s07-p3-o-s07-a4.png",
+      "자료/evidence/assets/s07-p3.png",
+      "자료/evidence/assets/s07-p4.png",
+      "자료/evidence/assets/s08-p1-o-s08-e1.png",
+      "자료/evidence/assets/s08-p1-o-s08-e3.png",
+      "자료/evidence/assets/s08-p1-o-s08-q1.png",
+      "자료/evidence/assets/s08-p1.png",
+      "자료/evidence/assets/s09-p1-o-s09-a2.png",
+      "자료/evidence/assets/s09-p1-o-s09-a3.png",
+      "자료/evidence/assets/s09-p1-o-s09-q2.png",
+      "자료/evidence/assets/s09-p1-o-s09-q3.png",
+      "자료/evidence/assets/s09-p1.png",
+      "자료/evidence/assets/s09-p2-o-s09-a4.png",
+      "자료/evidence/assets/s09-p2-o-s09-q4.png",
+      "자료/evidence/assets/s09-p2.png",
+      "자료/evidence/assets/s09-p3.png",
+      "자료/evidence/assets/s10-p1-o-s10-q2.png",
+      "자료/evidence/assets/s10-p1-o-s10-q3.png",
+      "자료/evidence/assets/s10-p1-o-s10-q4.png",
+      "자료/evidence/assets/s10-p1.png",
+      "자료/evidence/question-bank.json",
+      "자료/figures/d-latch.svg",
+      "자료/figures/hc76-pinout.svg",
+      "자료/figures/jk-latch.svg",
+      "자료/figures/level-vs-edge.svg",
+      "자료/figures/memory-sr-timing.svg",
+      "자료/figures/questions/q-dff-table-given-01.png",
+      "자료/figures/questions/q-dff-table-given-01.svg",
+      "자료/figures/questions/q-jkff-short-given-01.png",
+      "자료/figures/questions/q-jkff-short-given-01.svg",
+      "자료/figures/questions/q-rs-latch-given-01.png",
+      "자료/figures/questions/q-rs-latch-given-01.svg",
+      "자료/figures/questions/q-rs-quiz-given-01.png",
+      "자료/figures/questions/q-rs-quiz-given-01.svg",
+      "자료/figures/questions/q-sr-nand-00-given-01.png",
+      "자료/figures/questions/q-sr-nand-00-given-01.svg",
+      "자료/figures/redraw-manifest.json",
+      "자료/figures/solutions/q-dff-design-solution-01.png",
+      "자료/figures/solutions/q-dff-design-solution-01.svg",
+      "자료/figures/solutions/q-jkff-design-solution-01.png",
+      "자료/figures/solutions/q-jkff-design-solution-01.svg",
+      "자료/figures/solutions/q-rs-quiz-solution-01.png",
+      "자료/figures/solutions/q-rs-quiz-solution-01.svg",
+      "자료/figures/solutions/q-tff-solution-01.png",
+      "자료/figures/solutions/q-tff-solution-01.svg",
+      "자료/figures/sr-basic-nand.svg",
+      "자료/figures/sr-latch-enable.svg",
+      "자료/figures/tff-from-jk.svg",
+      "자료/manifest.json",
+      "자료/problem-explanations/q-74hc574.html",
+      "자료/problem-explanations/q-74hc76.html",
+      "자료/problem-explanations/q-dff-design.html",
+      "자료/problem-explanations/q-dff-table.html",
+      "자료/problem-explanations/q-diff.html",
+      "자료/problem-explanations/q-ff.html",
+      "자료/problem-explanations/q-jkff-design.html",
+      "자료/problem-explanations/q-jkff-short.html",
+      "자료/problem-explanations/q-latch.html",
+      "자료/problem-explanations/q-p-76-trace.html",
+      "자료/problem-explanations/q-rs-latch.html",
+      "자료/problem-explanations/q-rs-quiz.html",
+      "자료/problem-explanations/q-sr-nand-00.html",
+      "자료/problem-explanations/q-tff.html",
+      "출처와_문항목록.md"
+    ]
+  }
+}

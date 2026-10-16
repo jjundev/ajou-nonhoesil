@@ -1202,7 +1202,7 @@
     "실험01_문제설명.html",
     "실험01_실험설명.html"
   ],
-  "problem_explanation_version": 1,
+  "problem_explanation_version": 2,
   "explanation_checks": {
     "source_visual": "pass",
     "content": "self_review",

@@ -52,7 +52,7 @@ def test_future_workbook_build_includes_explanations(tmp_path):
     paths=assemble(m,root,tmp_path/'stage',ASSETS)
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
     for label in ('실험설명','기출문제','기출풀이','문제설명'):
-        assert (tmp_path/'stage'/f'실험04_{label}.html').is_file() and (tmp_path/'stage/.pack'/f'실험04_{label}.md').is_file()
+        for ext in ('html','md'):assert (tmp_path/'stage'/('.pack' if ext=='md' else '')/f'실험04_{label}.{ext}').is_file()
 
 
 @pytest.mark.parametrize('equation', [
@@ -115,6 +115,83 @@ def test_authored_table_card_is_not_nested(tmp_path):
     assert html.count('class="table-card"') == 1
     assert card in html
 
+
+def test_v2_full_build_and_markdown_include_recall(tmp_path):
+    from tests._explanation_recall_fixture import setup_v2
+    from scripts.lab.review_pack.render import assemble
+    from scripts.lab.review_pack.html2md import convert_pack
+    from scripts.lab.review_pack.checks import check_pack
+    m, run, data = setup_v2(tmp_path)
+    stage = tmp_path/'stage'
+    paths = assemble(m, run, stage, ASSETS)
+    outputs, count = convert_pack(paths['note_html'], paths['review_html'], manifest=m)
+    for label in ('실험설명','기출문제','기출풀이','문제설명'):
+        for ext in ('html','md'):
+            assert (stage/('.pack' if ext=='md' else '')/f'실험04_{label}.{ext}').is_file()
+    assert paths['explanation_md'] in outputs
+    assert '선택선이라는 단서' in paths['explanation_md'].read_text(encoding='utf-8')
+    assert '핵심 개념:' in paths['explanation_md'].read_text(encoding='utf-8')
+    assert 'data-summary="recall"' in paths['explanation_html'].read_text(encoding='utf-8')
+    assert check_pack(stage) == []
+
+
+@pytest.mark.parametrize('state,label',[('disputed','답안 충돌'),('unresolved','정답 미확정')])
+def test_v2_answer_warning_and_manifest_preserved(tmp_path,state,label):
+    from tests._explanation_recall_fixture import setup_v2,FRAGMENT_V2
+    m,run,data=setup_v2(tmp_path)
+    m['problems'][0]['answer_status']=state
+    (run/m['problems'][0]['explanation_fragment']).write_text(
+        FRAGMENT_V2.replace('선택선은 데이터가 아니에요.',label+' 조건을 확인해요.'),encoding='utf-8')
+    before=deepcopy(m)
+    folder=tmp_path/'stage'; folder.mkdir()
+    paths=write_explanations(m,data,run,folder,ASSETS)
+    assert label in paths['explanation_html'].read_text(encoding='utf-8')
+    assert label in paths['explanation_md'].read_text(encoding='utf-8')
+    assert m==before
+
+
+
+def test_recall_equation_and_table_survive_render_and_md(tmp_path):
+    from tests._explanation_recall_fixture import setup_v2,FRAGMENT_V2,RECALL
+    m,run,data=setup_v2(tmp_path)
+    extra='<p>$$Y=\\overline{S}I_0+SI_1$$</p><table><tr><th>S</th><th>선택</th></tr><tr><td>0</td><td>I0</td></tr></table>'
+    fragment=FRAGMENT_V2.replace(RECALL,RECALL.replace('</div>',extra+'</div>'))
+    (run/m['problems'][0]['explanation_fragment']).write_text(fragment,encoding='utf-8')
+    folder=tmp_path/'stage'; folder.mkdir()
+    paths=write_explanations(m,data,run,folder,ASSETS)
+    parser=Parser(); parser.feed(paths['explanation_html'].read_text(encoding='utf-8'))
+    recall=next(n for n in parser.root.walk() if n.attrs.get('data-explanation')=='recall')
+    classes=[n.attrs.get('class','').split() for n in recall.walk()]
+    assert any('equation-card' in c for c in classes)
+    assert any('table-card' in c for c in classes)
+    md=paths['explanation_md'].read_text(encoding='utf-8')
+    assert '\\overline{S}' in md and 'I0' in md and '선택' in md
+
+
+
+def test_real_source05_v2_full_build(tmp_path):
+    import json,shutil
+    from scripts.lab.review_pack.render import assemble
+    from scripts.lab.review_pack.html2md import convert_pack
+    from scripts.lab.review_pack.checks import check_pack
+    from scripts.lab.review_pack.manifest import validate_manifest
+    # Stored author tree omits imported evidence; materialize the exact published
+    # snapshot in an isolated run and keep its original checksum guard enabled.
+    source=Path('docs/learning-pack-source/실험05')
+    run=tmp_path/'run';shutil.copytree(source,run)
+    shutil.copytree(Path('복습노트/실험05/.pack/evidence'),run/'evidence')
+    shutil.copy2(Path('복습노트/실험05/.pack/원문과_저작안내.md'),run/'원문과_저작안내.md')
+    manifest=json.loads((run/'manifest.json').read_text(encoding='utf-8'))
+    assert validate_manifest(manifest)==[]
+    assert set(manifest['explanation_checks'].values())=={'not_run'}
+    paths=assemble(manifest,run,tmp_path/'stage',ASSETS)
+    convert_pack(paths['note_html'],paths['review_html'],manifest=manifest)
+    for label in ('실험설명','기출문제','기출풀이','문제설명'):
+        for ext in ('html','md'):
+            assert (tmp_path/'stage'/('.pack' if ext=='md' else '')/f'실험05_{label}.{ext}').is_file()
+    parser=Parser();parser.feed(paths['explanation_html'].read_text(encoding='utf-8'))
+    assert sum(n.attrs.get('data-explanation')=='recall' for n in parser.root.walk())==19
+    assert check_pack(tmp_path/'stage')==[]
 
 def test_recall_exported_to_md(tmp_path):
     m,root,data=setup(tmp_path);folder=tmp_path/'stage';folder.mkdir()

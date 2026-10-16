@@ -60,3 +60,53 @@ def test_user_collision_not_overwritten(tmp_path):
     (dest/'실험04_기출풀이.html').write_text('user authored')
     with pytest.raises(ValueError):publish(stage,dest,tmp_path)
     assert (dest/'실험04_기출풀이.html').read_text()=='user authored'
+
+
+def ready_v2(tmp_path):
+    from tests._explanation_recall_fixture import setup_v2
+    from scripts.lab.review_pack.render import assemble
+    from scripts.lab.review_pack.html2md import convert_pack
+    m, run, data = setup_v2(tmp_path)
+    for s in m['sources']:
+        path = tmp_path/s['path']
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b'fixture source')
+        s['sha256'] = file_sha256(path)
+    m['checks'].update(source_visual='pass',content='self_review',browser='pass')
+    m['explanation_checks'].update(source_visual='pass',content='self_review',browser='pass')
+    stage = tmp_path/'stage'
+    paths = assemble(m,run,stage,Path('.claude/skills/logic-lab-review-pack/assets'))
+    convert_pack(paths['note_html'],paths['review_html'],manifest=m)
+    m['generated_files'] = sorted(p.relative_to(stage).as_posix() for p in stage.rglob('*') if p.is_file())
+    (stage/'.pack/manifest.json').write_text(json.dumps(m,ensure_ascii=False),encoding='utf-8')
+    dest = tmp_path/'복습노트/실험04'; dest.mkdir(parents=True)
+    (dest/'사용자메모.md').write_text('보존',encoding='utf-8')
+    return stage,dest
+
+def test_v2_user_explanation_collision_refused(tmp_path):
+    stage,dest = ready_v2(tmp_path)
+    path = dest/'실험04_문제설명.html'
+    path.write_bytes(b'user original')
+    with pytest.raises(ValueError,match='User file collision'):
+        publish(stage,dest,tmp_path)
+    assert path.read_bytes() == b'user original'
+    assert (dest/'사용자메모.md').read_text(encoding='utf-8') == '보존'
+
+def test_v2_rename_failure_restores_original(tmp_path):
+    stage,dest = ready_v2(tmp_path)
+    original = os.replace; calls = []
+    def fail_second(a,b):
+        calls.append((a,b))
+        if len(calls) == 2: raise OSError('test failure')
+        return original(a,b)
+    with patch('scripts.lab.review_pack.publish.os.replace',side_effect=fail_second):
+        with pytest.raises(OSError): publish(stage,dest,tmp_path)
+    assert (dest/'사용자메모.md').read_text(encoding='utf-8') == '보존'
+    assert not (dest/'실험04_문제설명.html').exists()
+
+def test_v2_user_file_survives_success(tmp_path):
+    stage,dest = ready_v2(tmp_path)
+    backup = publish(stage,dest,tmp_path)
+    assert (backup/'사용자메모.md').read_text(encoding='utf-8') == '보존'
+    assert (dest/'사용자메모.md').read_text(encoding='utf-8') == '보존'
+    assert (dest/'실험04_문제설명.html').is_file()

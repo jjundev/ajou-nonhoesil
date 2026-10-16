@@ -1,0 +1,34 @@
+{
+  "author": "Task5 author self recomputation; independent reviewer not run",
+  "six_sections_unchanged": 14,
+  "region": {
+    "Vin0": "input Low/output High",
+    "Vin5": "input High/output Low",
+    "input_guarantees": "≤1.5 V Low; ≥3.5 V High; between not guaranteed",
+    "conflict": "provided marking treats voltage regions as input; retained disputed"
+  },
+  "waveform": {
+    "VT": 2.5,
+    "VTplus": 2.9,
+    "VTminus": 2.1,
+    "unit": "V",
+    "ordinary_crossings_visual_count": 12,
+    "schmitt_visual_count": 2,
+    "start_end_output": "High"
+  },
+  "ohm": {
+    "Rp": "ΔV=VDD−VOH=|IOH|Rp",
+    "Rn": "ΔV=VOL=IOLRn",
+    "unit": "V/A=Ω",
+    "zero_load": "VOH=VDD; VOL=0",
+    "current_sign": "High sourcing uses magnitude"
+  },
+  "RC": {
+    "unit": "Ω·F=s",
+    "half": 0.6931471805599453,
+    "transition": 2.1972245773362196,
+    "double_R_or_C": "times double only same constant R C model",
+    "same_Rp_Rn": "same transition times only same CL model"
+  },
+  "status": "unresolved q-delay-transition/q-transition/q-speed unchanged; no source values invented"
+}

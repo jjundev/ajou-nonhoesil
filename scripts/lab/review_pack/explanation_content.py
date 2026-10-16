@@ -1,13 +1,26 @@
-"""Authored teaching fragments matched to the existing question projection."""
+"""Authored teaching fragments matched to the existing question projection.
+
+Structural checks do not replace a review of the explanation's meaning.
+"""
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from .html2md import Parser, Node
 from .manifest import safe_relative
 
-SECTIONS = ('recall','understand','start','solve','verify','pitfall','retry')
-CHECK_KEYS = ('source_visual','content','independent','browser')
+SECTIONS_BY_VERSION = {
+    1: ('understand','start','solve','verify','pitfall','retry'),
+    2: ('understand','recall','start','solve','verify','pitfall','retry'),
+}
+SECTIONS = SECTIONS_BY_VERSION[1]
 RECALL_CUE_MAX = 60
+CHECK_KEYS = ('source_visual','content','independent','browser')
+
+
+def explanation_sections(version: int) -> tuple[str, ...]:
+    if type(version) is not int or version not in SECTIONS_BY_VERSION:
+        raise ValueError('Unsupported explanation version')
+    return SECTIONS_BY_VERSION[version]
 
 @dataclass(frozen=True)
 class Explanation:
@@ -27,6 +40,7 @@ def within(root: Path, relative: str) -> Path:
 def text(node):
     return ''.join(c if isinstance(c,str) else text(c) for c in node.children)
 
+
 def cues(nodes):
     return [n for n in nodes if n.tag=='p' and 'cue' in n.attrs.get('class','').split()]
 
@@ -36,7 +50,44 @@ def recall_cue(fragment: str) -> str:
     if not found: raise ValueError('missing recall cue')
     return text(found[0]).strip()
 
-def validate_fragment(fragment: str, ident: str, state: str) -> None:
+def _body_text(node, *, target=None, ignore_hidden=None) -> str:
+    if isinstance(node, str):
+        return node if target is None else ''
+    if (node.tag in {'h1','h2','h3','h4','h5','h6'}
+            or 'layer-title' in node.attrs.get('class','').split()
+            or ('hidden' in node.attrs and node is not ignore_hidden)
+            or node.attrs.get('aria-hidden') == 'true'):
+        return ''
+    if node is target:
+        target = None
+    return ''.join(_body_text(child, target=target, ignore_hidden=ignore_hidden)
+                   for child in node.children)
+
+
+def _validate_v2(root, ident: str) -> None:
+    all_sections = [n for n in root.walk() if 'data-explanation' in n.attrs]
+    direct = [n for n in root.children if isinstance(n, Node) and 'data-explanation' in n.attrs]
+    if len(all_sections) != len(direct):
+        raise ValueError(ident+': nested explanation section')
+    if tuple(n.attrs['data-explanation'] for n in direct) != SECTIONS_BY_VERSION[2]:
+        raise ValueError(ident+': explanation section order/coverage')
+    for n in direct:
+        classes = n.attrs.get('class','').split()
+        if 'layer' not in classes:
+            raise ValueError(ident+': explanation requires layer')
+        if n.attrs['data-explanation'] == 'recall':
+            if 'formal' not in classes or not _body_text(n).strip():
+                raise ValueError(ident+': recall needs visible concept explanation')
+    sums = [n for n in root.children if isinstance(n, Node) and 'sum' in n.attrs.get('class','').split()]
+    summary = [(s, n) for s in sums for n in s.walk()
+               if n.attrs.get('data-summary') == 'recall']
+    if len(summary) != 1 or not _body_text(
+            summary[0][0], target=summary[0][1], ignore_hidden=summary[0][0]).strip():
+        raise ValueError(ident+': summary needs recall body')
+
+
+def validate_fragment(fragment: str, ident: str, state: str, *, version: int = 1) -> None:
+    required = explanation_sections(version)
     parser=Parser();parser.feed(fragment);nodes=list(parser.root.walk())
     for n in nodes:
         if n.tag in {'script','style','iframe','object','embed','base','link','meta','article','h1','details','input','button','select'}:
@@ -48,22 +99,28 @@ def validate_fragment(fragment: str, ident: str, state: str) -> None:
                 parts=urlsplit(unquote(value or ''))
                 if parts.scheme or parts.netloc or (parts.path and not safe_relative(parts.path)):
                     raise ValueError(ident+': unsafe explanation resource '+str(value))
-    for key in SECTIONS:
+    has_recall = any(n.attrs.get('data-explanation')=='recall' for n in nodes)
+    if version == 1 and (has_recall or cues(nodes)):
+        required = ('recall',) + required
+    for key in required:
         found=[n for n in nodes if n.attrs.get('data-explanation')==key]
         if len(found)!=1 or not text(found[0]).strip(): raise ValueError(ident+': missing/empty explanation '+key)
+    if version == 2:
+        _validate_v2(parser.root, ident)
     for cls in ('eli5','formal','warn'):
         if not any(cls in n.attrs.get('class','').split() for n in nodes): raise ValueError(ident+': missing layer '+cls)
     sums=[n for n in parser.root.children if isinstance(n,Node) and 'sum' in n.attrs.get('class','').split()]
     if len(sums)!=1 or 'hidden' not in sums[0].attrs or not text(sums[0]).strip(): raise ValueError(ident+': missing direct summary')
-    if next(n for n in nodes if n.attrs.get('data-explanation')).attrs['data-explanation']!='recall': raise ValueError(ident+': recall must be first')
-    recall=next(n for n in nodes if n.attrs.get('data-explanation')=='recall')
-    found=cues(nodes)
-    if len(found)!=1 or found[0] not in list(recall.walk()): raise ValueError(ident+': recall requires one cue')
-    cue=text(found[0]).strip()
-    if not all(isinstance(c,str) for c in found[0].children) or not 1<=len(cue)<=RECALL_CUE_MAX or '$$' in cue: raise ValueError(ident+': cue must be 1-60 plain characters')
-    if not any(n.tag=='p' and n is not found[0] and text(n).strip() for n in recall.walk()): raise ValueError(ident+': recall requires a reason paragraph')
-    first=next((c for c in sums[0].children if isinstance(c,Node) and c.tag=='p'),None)
-    if first is None or not text(first).strip().startswith('떠올릴 것:') or cue not in text(first): raise ValueError(ident+': summary must start with 떠올릴 것')
+    if (version == 1 and has_recall) or cues(nodes):
+        if version == 1 and next(n for n in nodes if n.attrs.get('data-explanation')).attrs['data-explanation']!='recall': raise ValueError(ident+': recall must be first')
+        recall=next(n for n in nodes if n.attrs.get('data-explanation')=='recall')
+        found=cues(nodes)
+        if len(found)!=1 or found[0] not in list(recall.walk()): raise ValueError(ident+': recall requires one cue')
+        cue=text(found[0]).strip()
+        if not all(isinstance(c,str) for c in found[0].children) or not 1<=len(cue)<=RECALL_CUE_MAX or '$$' in cue: raise ValueError(ident+': cue must be 1-60 plain characters')
+        if not any(n.tag=='p' and n is not found[0] and text(n).strip() for n in recall.walk()): raise ValueError(ident+': recall requires a reason paragraph')
+        first=next((c for c in sums[0].children if isinstance(c,Node) and c.tag=='p'),None)
+        if first is None or not text(first).strip().startswith('떠올릴 것:') or cue not in text(first): raise ValueError(ident+': summary must start with 떠올릴 것')
     retry=next(n for n in nodes if n.attrs.get('data-explanation')=='retry')
     if not 1<=sum(n.tag=='li' for n in retry.walk())<=3: raise ValueError(ident+': retry requires 1-3 items')
     if state!='verified':
@@ -80,6 +137,6 @@ def load_explanations(manifest: dict, question_data: dict, author_root: Path) ->
         path=within(author_root,p.get('explanation_fragment'))
         try:fragment=path.read_text(encoding='utf-8')
         except OSError as exc:raise ValueError(p['id']+': missing explanation fragment') from exc
-        validate_fragment(fragment,p['id'],p['answer_status'])
+        validate_fragment(fragment,p['id'],p['answer_status'],version=manifest.get('problem_explanation_version',1))
         result.append(Explanation(row,fragment))
     return result

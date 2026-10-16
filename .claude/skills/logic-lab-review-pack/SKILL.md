@@ -65,7 +65,7 @@ RUN/manifest.json에 자료·판본·토픽·문항·출처·답안 상태를 �
 원문 자산의 present/unknown 답 노출 상태를 안전으로 바꾸거나 정답을 지워 원문 증거라고 표시하지 않는다.
 문제용은 role=problem/answer_exposure=none 자산만 사용한다. 답 노출 증거는 details.original/solution에 둔다.
 
-RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. 새 문제지·해설지는 manifest.review_presentation_version=2로 지정하고 [문제지·해설지 계약](references/workbook.md)을 따른다. 기존 표시 버전 없는 팩은 RUN/problems/<id>.html을 쓰는 legacy 형식으로 계속 읽을 수 있다.
+RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. 문제설명 원고는 [전용 스킬](../logic-lab-problem-explain/SKILL.md)을 읽고 같은 실행에서 RUN/problem-explanations/<id>.html에 저작한다. 새 manifest.problem_explanation_version=2와 별도 explanation_checks를 지정한다. 전용 스킬의 전체팩 진입 지침을 따라 대상·출처·문항 선택은 이 흐름을 유지한다. 새 문제지·해설지는 manifest.review_presentation_version=2로 지정하고 [문제지·해설지 계약](references/workbook.md)을 따른다. 기존 표시 버전 없는 팩은 RUN/problems/<id>.html을 쓰는 legacy 형식으로 계속 읽을 수 있다.
 새 실험설명에는 manifest.note_presentation_version=2를 지정한다. 본문·요약·힌트·그림 설명을 생명과학 정리노트처럼 짧고 다정한 ‘~해요’체로 쓴다. 정의·성립 조건·인과는 줄이지 않는다.
 첫 토픽은 `t-start`, 제목은 ‘왜 이 회로를 쓰는지 먼저 알아봐요’로 둔다. 해결할 문제 → 회로가 필요한 이유 → 작은 입력·출력 예 → 이번 실험과 연결 순서로 약 2~4개 짧은 문단을 쓴다. 기존 수행 범위·주의 사항은 이어서 보존한다. 정의나 ‘시험에 나와요’만으로 동기를 대신하지 않는다. 상황 예시는 ‘이해를 위한 예시’, 교안 밖 설명은 ‘보충’으로 표시하고 실제 실험 조건과 구분한다. 자세한 기준은 authoring.md를 따른다.
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
@@ -83,7 +83,7 @@ python -m scripts.lab.review_pack build --root . --run RUN --stage STAGE
 python -m scripts.lab.review_pack check --folder STAGE
 ```
 
-build는 problem_explanation_version=1인 새 워크북에서 네 HTML을 실험 폴더 루트에, 네 MD·출처와_문항목록.md·검증결과.md·manifest.json·figures/·assets/를 숨김 폴더 `.pack/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다(MD는 역시 `.pack/`).
+build는 problem_explanation_version=2인 새 워크북에서 네 HTML을 실험 폴더 루트에, 네 MD·출처와_문항목록.md·검증결과.md·manifest.json·figures/·assets/를 숨김 폴더 `.pack/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다(MD는 역시 `.pack/`).
 은행 수입 팩에는 원문과_저작안내.md와 evidence/·authoring-index.json도 `.pack/`에 복사한다.
 RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/·검증결과.md를 예전처럼 RUN 루트에 둔다. build가 `.pack/` 로 옮긴다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
@@ -130,12 +130,6 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 **기존 목차 일괄 갱신.** `python -m scripts.lab.review_pack.navigation_upgrade --all`로 dry-run 목록을 확인하고 `python -m scripts.lab.review_pack.navigation_upgrade --all --apply --backup-dir <새 백업 폴더>`로 적용한다. 한 팩은 `--all` 대신 `--folder 복습노트/실험NN`을 쓴다. 명령은 모든 대상의 구조를 사전 검사하고 전체 팩을 백업한 뒤 탐색 부분과 동봉 note/review 템플릿만 바꾼다. 알 수 없는 HTML은 쓰기 전에 실패하며 본문·IDs·워크북 payload는 보존한다. 재실행의 변경 목록은 0이어야 한다. 적용 후 각 팩의 check와 브라우저 검증을 수행한다. 이미 내보낸 standalone HTML이 있으면 갱신한 원본으로 다시 내보낸다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.
 
-## 문제풀이 입문 설명
+## 문제풀이 입문 설명 연결
 
-새 워크북은 `problem_explanation_version=1`, 각 included 문항에 `explanation_fragment=problem-explanations/<id>.html`을 설정한다. `explanation_checks`는 source_visual/content/independent/browser를 별도로 not_run으로 초기화한다. 기존 팩과 legacy는 선택적 버전이 없어도 계속 읽는다.
-
-이론을 한 번 읽었지만 문제풀이 경험이 없는 학생에게 모든 문항·소문항을 설명한다. 첫 줄·이유·완성 답·검산을 생략하거나 기존 짧은 답안을 복사하는 것으로 끝내지 않는다. 저작 마크업과 검증은 references/authoring.md, format.md, verification.md를 따른다. 각 문항은 문제 읽기 직후 ‘이 문제를 보면 떠올려요’(recall) 구절로 시작한다(authoring.md).
-
-`실험NN_문제설명.html/.md`는 실험설명의 같은 note-template, article.topic, eli5/formal/warn, 우측 sum, 목차와 이전/다음을 사용한다. 풀이·정답은 본문에 모두 펼친다. 읽음 RANGE는 `logic-lab-NN-problem-explanation`이며 기존 실험설명과 분리한다. 자료 이동 영역·진행 합계·학습 잠금·자동 채점은 넣지 않는다. 불확실성·성립 조건은 HTML에, 상세 출처는 MD에 둔다.
-
-기존 팩은 저작 RUN을 복원하거나 기존 HTML/MD/PDF를 다시 생성하지 않는다. `python -m scripts.lab.review_pack explain-stage --folder 복습노트/실험NN --author-root docs/learning-pack-source/실험NN/problem-explanations --stage <신규 stage>`로 소유 파일만 복사하고 설명을 추가한다. 사용자 파일은 기존 폴더에서 publish가 보존한다. 새 stage의 원문·내용·브라우저를 확인하여 explanation_checks를 갱신한 뒤 기존 publish로 발행한다. 문제지/해설지의 바이트가 그대로면 PDF도 다시 만들지 않는다. 백업을 남기고 기존 파일 보존 해시를 기록한다.
+문제설명만·핵심 개념 보충 요청은 [logic-lab-problem-explain](../logic-lab-problem-explain/SKILL.md)으로 진행한다. 전체 학습팩도 같은 실행에서 이 스킬로 모든 included explanations를 저작한 뒤 위 build/check/publish로 돌아온다. 새 manifest는 v2이며 기존 v1 읽기와 저장·검토 계약은 [전용 형식](../logic-lab-problem-explain/references/format.md)을 따른다. 기존 팩의 설명만 갱신할 때는 전용 스킬의 보존 stage 절차를 사용하고 워크북 HTML/MD/PDF를 재생성하지 않는다. 전체팩의 네 HTML·네 MD 및 여덟 링크 보고 규칙을 유지한다.

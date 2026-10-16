@@ -45,12 +45,12 @@ def _cli_options():
             and isinstance(c.args[0], ast.Constant)]
 
 
-def _finals(path):
-    """`배치.py` 의 `FINALS = [(파일명, 빌더), …]` → [(파일명, 빌더 이름)]."""
+def _final_builders(path):
+    """FINALS의 빌더 이름만 읽는다. 파일명은 상수·f-string 모두 가능하다."""
     for node in ast.parse(path.read_text(encoding="utf-8")).body:
         if isinstance(node, ast.Assign) and any(
                 isinstance(t, ast.Name) and t.id == "FINALS" for t in node.targets):
-            return [(e.elts[0].value, e.elts[1].id) for e in node.value.elts]
+            return [e.elts[1].id for e in node.value.elts]
     raise AssertionError(f"{path}: FINALS 가 없다")
 
 
@@ -128,7 +128,7 @@ class BreadboardCli(unittest.TestCase):
         self.assertTrue(files, "주차 결선 파일이 하나도 없다")
         for p in files:
             with self.subTest(p.parent.parent.name):
-                names = [b for _f, b in _finals(p)]
+                names = _final_builders(p)
                 self.assertEqual(len(names), len(set(names)), names)
 
     def test_지원하지_않는_회로를_SKILL_문서가_광고하지_않는다(self):

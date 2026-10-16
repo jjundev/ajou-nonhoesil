@@ -1,0 +1,1089 @@
+{
+  "stage": "C:\\Users\\Hyunjun\\.codex\\worktrees\\logic-lab-problem-recall\\논회실\\tmp\\review-pack\\recall-02-1736a9d73906463493dce2972d08dd35",
+  "cases": [
+    {
+      "id": "q-region",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 전압이 올라가는 그림과 High·Low·Abnormal 구간이라는 말에서 입력 판정 경계를 떠올려요. VILmax는 Low 입력의 최대 전압, VIHmin은 High 입력의 최소 전압이에요.\n\nVin≤VILmax이면 입력 Low, Vin≥VIHmin이면 입력 High로 보장돼요. 그 사이는 논리값이 보장되지 않는 구간이에요. 인버터의 출력은 보장된 입력과 반대이므로 낮은 입력 구간에서는 High, 높은 입력 구간에서는 Low예요.\n\nVOLmax와 VOHmin은 각각 출력 Low의 최대값과 출력 High의 최소값이에요. 입력 문턱과 역할이 달라요. 원문의 5 V 전원·1.5/3.5 V 입력 경계를 적용하되, 기존 답안 충돌을 이 구분만으로 확정하지 않아요.",
+      "summary": "입력 경계 VILmax/VIHmin으로 구간을 나누고 인버터 출력을 반대로 읽어요. 출력 보증값과 답안 충돌은 별도로 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-4",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n네 parameters의 뜻을 묻는 단서에서는 숫자를 계산하기보다 기호의 I/O와 H/L을 먼저 구분해요. V는 전압(V), I는 입력, O는 출력이에요.\n\nVOHmin은 출력 High 최소값, VIHmin은 입력 High 최소값, VILmax는 입력 Low 최대값, VOLmax는 출력 Low 최대값이에요. min은 그 이상, max는 그 이하가 보장되는 경계예요.\n\n출력 보증은 정해진 전원·부하 조건에서 적용해요. 입력 기준은 다음 소자가 받아들이는 범위예요. 따라서 네 정의 모두에 입력/출력과 최소/최대를 넣어야 서로 바뀌지 않아요.",
+      "summary": "I/O로 입력·출력을 구분하고 H/L과 min/max를 붙여 네 전압 보증 경계를 읽어요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2017",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVOHmin과 VILmax 두 기호를 설명하라는 말에서 출력 보증과 입력 판정의 차이를 떠올려요. V의 단위는 볼트(V)예요.\n\nVOHmin의 O·H·min은 High 출력의 최소 보증 전압이에요. 지정된 부하 조건에서 VOH≥VOHmin이어야 해요. VILmax의 I·L·max는 Low 입력의 최대 허용 전압으로 Vin≤VILmax일 때 Low로 판정돼요.\n\n같은 전압 기호라도 한쪽은 보내는 출력, 다른 쪽은 받는 입력이에요. 수치가 주어지지 않은 정의 문항이므로 임의의 전압값을 넣지 않고 두 역할과 부등호를 설명해요.",
+      "summary": "VOHmin은 출력 High 최소(V), VILmax는 입력 Low 최대(V)예요. 각각 이상·이하 조건을 붙여요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2016",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVIHmin과 VOLmax를 묻는 단서에서 I는 입력, O는 출력이라는 기호 구분을 떠올려요. 둘 모두 전압이며 단위는 V예요.\n\nVIHmin은 High로 받아들이는 최소 입력 전압으로 Vin≥VIHmin이에요. VOLmax는 Low 출력의 최대 허용 전압으로 지정 부하에서 VOL≤VOLmax예요.\n\n입력의 인식 조건과 출력의 보증 조건은 달라요. 이 정의 문제에서는 전원·부하가 정해진 출력 규격이라는 조건을 지키며 기호별 역할을 설명하므로 임의의 수치 계산은 필요 없어요.",
+      "summary": "VIHmin은 입력 High 최소, VOLmax는 출력 Low 최대예요. 입력은 이상, 출력은 이하를 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 잡음에 영향을 덜 받는 이유와 입출력 특성이라는 말에서 히스테리시스를 떠올려요. 같은 입력 전압이어도 이전 출력 상태에 따라 결과가 달라지는 특성이에요.\n\n상승 입력의 문턱 VT+와 하강 입력의 문턱 VT−가 다르고 VT+>VT−예요. 폭 VH=VT+−VT−의 단위는 V예요. 인버터는 상승 문턱 돌파에서 Low, 하강 문턱 아래에서 High로 바뀌어요.\n\n두 문턱 사이에서는 이전 상태를 유지하므로 한 문턱 주위의 작은 흔들림에 반복 반전되지 않아요. 다만 잡음이 해당 반전 문턱을 넘으면 바뀔 수 있어요. 모든 잡음을 제거한다고 쓰지 않고 상태 기억으로 이유를 설명해요.",
+      "summary": "두 문턱 VT+/VT− 사이에서 이전 출력 상태를 유지하는 히스테리시스가 반복 반전을 줄여요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n같은 입력으로 인버터와 Schmitt 출력 두 개를 그리는 단서에서는 문턱 판정 규칙을 따로 적용해요. 그림의 일반 문턱은 2.5 V, 상승 문턱은 2.9 V, 하강 문턱은 2.1 V예요.\n\n일반 인버터는 2.5 V를 지날 때마다 반전돼요. Schmitt 인버터는 출력 High일 때 2.9 V 상향 돌파, 출력 Low일 때 2.1 V 하향 돌파만 찾아요. 두 문턱 사이에서는 직전 출력을 기억해요.\n\n그림의 시작 입력이 낮아 출력 High로 시작할 수 있어요. 다른 파형에서 초기 상태가 주어지지 않으면 임의로 정하지 않아요. 이 문항에서는 시간순으로 상태를 갱신해야 작은 흔들림과 실제 반전 시각을 구분할 수 있어요.",
+      "summary": "일반형은 2.5 V 교차, Schmitt형은 현재 상태에 따라 2.9 V 상승/2.1 V 하강 돌파를 찾아요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 저항이 출력에 미치는 영향이라는 단서에서 켜진 트랜지스터의 등가 on 저항과 옴의 법칙을 떠올려요. Rp는 PMOS 경로, Rn은 NMOS 경로의 저항(Ω)이에요.\n\n입력 Low이면 Rp로 전류를 공급해 VOH=VDD−|IOH|Rp, 입력 High이면 Rn으로 전류를 흡수해 VOL=IOLRn이에요. I는 A, IR은 V이므로 부하 전류가 흐를 때 출력이 전원 레일에서 벗어나요.\n\n정상 상태의 저항성 부하 등가 모델에 적용해요. 꺼진 경로의 전류를 무시하고 두 저항을 동시에 on으로 놓지 않아요. 두 출력 상태를 따로 설명해야 출력 High의 감소와 출력 Low의 증가를 함께 설명할 수 있어요.",
+      "summary": "켜진 Rp/Rn의 IR 전압강하 때문에 VOH는 VDD보다 낮고 VOL은 GND보다 높아져요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 회로도로 Rp를 유도하라는 말에서 High 출력의 PMOS 도통 경로를 떠올려요. 입력 Low일 때 전원에서 Rp를 지나 부하로 전류가 나가요.\n\nRp 양단 전압은 VDD−VOH이고 흐르는 전류의 크기는 |IOH|예요. 옴의 법칙 ΔV=|I|R에서 Rp=(VDD−VOH)/|IOH|를 얻어요. 전류 부호 규약과 저항의 양의 크기를 구분해요.\n\n교안의 정격 경계 VOHmin·|IOHmax|를 대입하는 등가 on 저항이에요. 단위는 V/A=Ω이며 전류가 0인 조건에서는 이 나눗셈으로 저항을 정할 수 없어요. 숫자 없이 전압 차와 경로를 유도하는 문항이라 식과 조건을 제시해요.",
+      "summary": "입력 Low의 PMOS 경로에서 Rp=(VDD−VOHmin)/|IOHmax|예요. 전류는 크기로, 단위는 Ω로 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rp를 유도하라는 단서에서는 입력 Low와 출력 High를 먼저 연결해요. 이때 켜진 PMOS가 전원에서 출력 부하로 전류를 공급해요.\n\nRp의 위쪽은 VDD, 아래쪽은 VOH예요. 따라서 양단 전압 VDD−VOH를 출력 전류 크기 |IOH|로 나누어 Rp를 구해요. 출력에서 밖으로 흐르는 IOH가 음수로 표기돼도 저항은 양수예요.\n\n정격 High 출력의 VOHmin과 |IOHmax| 조건에서 Rp(on)=(VDD−VOHmin)/|IOHmax|예요. V/A=Ω를 확인하고 꺼진 Rn으로 전류를 흘리지 않아요. 이 조건을 밝혀야 입력 level·전류 방향·식 유도를 모두 설명할 수 있어요.",
+      "summary": "입력 Low→PMOS on→전류 공급을 표시하고 Rp 양단 전압 VDD−VOH를 |IOH|로 나눠요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rn을 유도하라는 단서에서는 입력 High의 NMOS 도통을 떠올려요. 출력 Low일 때 부하 전류가 출력에서 Rn을 거쳐 GND로 흘러요.\n\nRn 위쪽은 VOL, 아래쪽은 0 V이므로 전압 차는 VOL이에요. 전류 IOL을 흡수하는 경로에 옴의 법칙을 적용하면 Rn=VOL/IOL이에요.\n\n교안의 Low 출력 정격 경계에서는 Rn(on)=VOLmax/IOLmax예요. IOL이 0이 아닌 조건과 V/A=Ω를 확인해요. 출력 Low의 전압 차는 VOL 자체이므로 Rp의 VDD−VOH 식을 옮겨 쓰지 않아요.",
+      "summary": "입력 High의 NMOS 흡수 경로에서 Rn(on)=VOLmax/IOLmax예요. GND 기준 전압과 Ω 단위를 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n전달 지연이 나타나는 이유라는 단서에서 출력 부하 용량 CL의 충·방전을 떠올려요. 용량의 전압을 바꾸려면 전하가 이동해야 하고 실제 경로의 전류는 유한해요.\n\ntPLH는 출력 Low→High, tPHL은 출력 High→Low 방향의 전달 지연이에요. 교안에서는 대응하는 입력 50%와 출력 50% 시각 사이를 재요. 두 글자의 방향은 입력이 아니라 출력이에요.\n\n켜진 저항 R과 같은 부하 CL의 단순 모델에서 시간 상수 τ=RCL이며 Ω·F=s예요. 실제 지연은 입력 에지와 부하에도 의존해요. 출력이 서서히 변하는 이유와 입력 뒤에 늦게 응답하는 이유를 이 경로로 연결해요.",
+      "summary": "CL의 유한한 충·방전 때문에 지연이 생겨요. tPLH/tPHL은 입력·출력 50% 시각 차이를 재요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n(1) 전달 지연의 이유와 (2) H→L·L→H 천이 시간 차이라는 두 단서를 각각 읽어요. 지연은 입력과 출력 사이, 천이는 출력 자체의 변화 구간이라는 차이를 떠올려요.\n\ntPLH/tPHL은 입력 50%에서 출력 50%까지예요. tr은 출력 10→90%, tf는 출력 90→10%까지예요. 출력 상승은 Rp로 충전, 하강은 Rn으로 방전해요.\n\n같은 CL와 일정 R의 모델에서는 τp=RpCL, τn=RnCL이 달라 천이 시간도 달라져요. (1)에는 유한한 충·방전, (2)에는 두 경로의 차이를 적용해요. 수치가 없는 정성 설명이며 기존 정답 미확정을 유지해요.",
+      "summary": "(1)은 50% 전달 지연, (2)는 10–90% 천이와 Rp/Rn 경로 차이를 구분해요. 정답 미확정은 유지해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-transition",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nH→L과 L→H의 timing 차이라는 말에서 서로 다른 출력 충·방전 경로를 떠올려요. 하강은 Rn, 상승은 Rp가 주된 경로예요.\n\ntf는 출력 90→10%, tr은 10→90% 사이 시간이에요. 같은 CL와 일정 저항의 단순 모델에서 τn=RnCL, τp=RpCL이며 천이는 약 2.2τ에 비례해요.\n\n두 경로의 등가 저항이 다르면 시간이 다르지만 모든 실제 소자에서 같은 비율이 된다는 뜻은 아니에요. 입력 에지·부하 조건도 맞춰야 해요. 이 비교로 방향 차이를 설명하며 채점 답의 미확정 상태는 그대로 두어요.",
+      "summary": "하강 Rn·상승 Rp의 충·방전 경로와 같은 CL 조건을 비교해요. 천이는 출력 10–90% 기준이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-speed",
+      "width": 375,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n동작속도를 정하는 두 요소와 timing diagram이라는 단서에서는 켜진 경로의 저항 R과 부하 용량 CL을 떠올려요. R은 전하 이동을 제한하고 CL은 바꿔야 하는 전하량과 관련돼요.\n\n단순 RC 모델의 τ=RCL에서 R은 Ω, CL은 F, τ는 s예요. 큰 τ이면 출력 50% 도달이 늦고 10–90% 변화도 길어져요. 전달 지연과 천이 시간은 측정 구간이 서로 달라요.\n\n같은 입력 에지·같은 모델로 비교할 때 R이나 CL 증가가 두 시간을 늘려요. 특정 절대 시간이 없는 원문에서는 상대 곡선과 조건을 설명해요. 교안의 CMOS 동작속도·전달 지연·천이 용어를 연결하되 기존 정답 미확정은 유지해요.",
+      "summary": "같은 RC 모델에서 R 또는 CL이 크면 τ=RCL이 커져 지연·천이가 길어져요. 두 측정 기준을 구분해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-region",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 전압이 올라가는 그림과 High·Low·Abnormal 구간이라는 말에서 입력 판정 경계를 떠올려요. VILmax는 Low 입력의 최대 전압, VIHmin은 High 입력의 최소 전압이에요.\n\nVin≤VILmax이면 입력 Low, Vin≥VIHmin이면 입력 High로 보장돼요. 그 사이는 논리값이 보장되지 않는 구간이에요. 인버터의 출력은 보장된 입력과 반대이므로 낮은 입력 구간에서는 High, 높은 입력 구간에서는 Low예요.\n\nVOLmax와 VOHmin은 각각 출력 Low의 최대값과 출력 High의 최소값이에요. 입력 문턱과 역할이 달라요. 원문의 5 V 전원·1.5/3.5 V 입력 경계를 적용하되, 기존 답안 충돌을 이 구분만으로 확정하지 않아요.",
+      "summary": "입력 경계 VILmax/VIHmin으로 구간을 나누고 인버터 출력을 반대로 읽어요. 출력 보증값과 답안 충돌은 별도로 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-4",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n네 parameters의 뜻을 묻는 단서에서는 숫자를 계산하기보다 기호의 I/O와 H/L을 먼저 구분해요. V는 전압(V), I는 입력, O는 출력이에요.\n\nVOHmin은 출력 High 최소값, VIHmin은 입력 High 최소값, VILmax는 입력 Low 최대값, VOLmax는 출력 Low 최대값이에요. min은 그 이상, max는 그 이하가 보장되는 경계예요.\n\n출력 보증은 정해진 전원·부하 조건에서 적용해요. 입력 기준은 다음 소자가 받아들이는 범위예요. 따라서 네 정의 모두에 입력/출력과 최소/최대를 넣어야 서로 바뀌지 않아요.",
+      "summary": "I/O로 입력·출력을 구분하고 H/L과 min/max를 붙여 네 전압 보증 경계를 읽어요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2017",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVOHmin과 VILmax 두 기호를 설명하라는 말에서 출력 보증과 입력 판정의 차이를 떠올려요. V의 단위는 볼트(V)예요.\n\nVOHmin의 O·H·min은 High 출력의 최소 보증 전압이에요. 지정된 부하 조건에서 VOH≥VOHmin이어야 해요. VILmax의 I·L·max는 Low 입력의 최대 허용 전압으로 Vin≤VILmax일 때 Low로 판정돼요.\n\n같은 전압 기호라도 한쪽은 보내는 출력, 다른 쪽은 받는 입력이에요. 수치가 주어지지 않은 정의 문항이므로 임의의 전압값을 넣지 않고 두 역할과 부등호를 설명해요.",
+      "summary": "VOHmin은 출력 High 최소(V), VILmax는 입력 Low 최대(V)예요. 각각 이상·이하 조건을 붙여요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2016",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVIHmin과 VOLmax를 묻는 단서에서 I는 입력, O는 출력이라는 기호 구분을 떠올려요. 둘 모두 전압이며 단위는 V예요.\n\nVIHmin은 High로 받아들이는 최소 입력 전압으로 Vin≥VIHmin이에요. VOLmax는 Low 출력의 최대 허용 전압으로 지정 부하에서 VOL≤VOLmax예요.\n\n입력의 인식 조건과 출력의 보증 조건은 달라요. 이 정의 문제에서는 전원·부하가 정해진 출력 규격이라는 조건을 지키며 기호별 역할을 설명하므로 임의의 수치 계산은 필요 없어요.",
+      "summary": "VIHmin은 입력 High 최소, VOLmax는 출력 Low 최대예요. 입력은 이상, 출력은 이하를 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 잡음에 영향을 덜 받는 이유와 입출력 특성이라는 말에서 히스테리시스를 떠올려요. 같은 입력 전압이어도 이전 출력 상태에 따라 결과가 달라지는 특성이에요.\n\n상승 입력의 문턱 VT+와 하강 입력의 문턱 VT−가 다르고 VT+>VT−예요. 폭 VH=VT+−VT−의 단위는 V예요. 인버터는 상승 문턱 돌파에서 Low, 하강 문턱 아래에서 High로 바뀌어요.\n\n두 문턱 사이에서는 이전 상태를 유지하므로 한 문턱 주위의 작은 흔들림에 반복 반전되지 않아요. 다만 잡음이 해당 반전 문턱을 넘으면 바뀔 수 있어요. 모든 잡음을 제거한다고 쓰지 않고 상태 기억으로 이유를 설명해요.",
+      "summary": "두 문턱 VT+/VT− 사이에서 이전 출력 상태를 유지하는 히스테리시스가 반복 반전을 줄여요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n같은 입력으로 인버터와 Schmitt 출력 두 개를 그리는 단서에서는 문턱 판정 규칙을 따로 적용해요. 그림의 일반 문턱은 2.5 V, 상승 문턱은 2.9 V, 하강 문턱은 2.1 V예요.\n\n일반 인버터는 2.5 V를 지날 때마다 반전돼요. Schmitt 인버터는 출력 High일 때 2.9 V 상향 돌파, 출력 Low일 때 2.1 V 하향 돌파만 찾아요. 두 문턱 사이에서는 직전 출력을 기억해요.\n\n그림의 시작 입력이 낮아 출력 High로 시작할 수 있어요. 다른 파형에서 초기 상태가 주어지지 않으면 임의로 정하지 않아요. 이 문항에서는 시간순으로 상태를 갱신해야 작은 흔들림과 실제 반전 시각을 구분할 수 있어요.",
+      "summary": "일반형은 2.5 V 교차, Schmitt형은 현재 상태에 따라 2.9 V 상승/2.1 V 하강 돌파를 찾아요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 저항이 출력에 미치는 영향이라는 단서에서 켜진 트랜지스터의 등가 on 저항과 옴의 법칙을 떠올려요. Rp는 PMOS 경로, Rn은 NMOS 경로의 저항(Ω)이에요.\n\n입력 Low이면 Rp로 전류를 공급해 VOH=VDD−|IOH|Rp, 입력 High이면 Rn으로 전류를 흡수해 VOL=IOLRn이에요. I는 A, IR은 V이므로 부하 전류가 흐를 때 출력이 전원 레일에서 벗어나요.\n\n정상 상태의 저항성 부하 등가 모델에 적용해요. 꺼진 경로의 전류를 무시하고 두 저항을 동시에 on으로 놓지 않아요. 두 출력 상태를 따로 설명해야 출력 High의 감소와 출력 Low의 증가를 함께 설명할 수 있어요.",
+      "summary": "켜진 Rp/Rn의 IR 전압강하 때문에 VOH는 VDD보다 낮고 VOL은 GND보다 높아져요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 회로도로 Rp를 유도하라는 말에서 High 출력의 PMOS 도통 경로를 떠올려요. 입력 Low일 때 전원에서 Rp를 지나 부하로 전류가 나가요.\n\nRp 양단 전압은 VDD−VOH이고 흐르는 전류의 크기는 |IOH|예요. 옴의 법칙 ΔV=|I|R에서 Rp=(VDD−VOH)/|IOH|를 얻어요. 전류 부호 규약과 저항의 양의 크기를 구분해요.\n\n교안의 정격 경계 VOHmin·|IOHmax|를 대입하는 등가 on 저항이에요. 단위는 V/A=Ω이며 전류가 0인 조건에서는 이 나눗셈으로 저항을 정할 수 없어요. 숫자 없이 전압 차와 경로를 유도하는 문항이라 식과 조건을 제시해요.",
+      "summary": "입력 Low의 PMOS 경로에서 Rp=(VDD−VOHmin)/|IOHmax|예요. 전류는 크기로, 단위는 Ω로 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rp를 유도하라는 단서에서는 입력 Low와 출력 High를 먼저 연결해요. 이때 켜진 PMOS가 전원에서 출력 부하로 전류를 공급해요.\n\nRp의 위쪽은 VDD, 아래쪽은 VOH예요. 따라서 양단 전압 VDD−VOH를 출력 전류 크기 |IOH|로 나누어 Rp를 구해요. 출력에서 밖으로 흐르는 IOH가 음수로 표기돼도 저항은 양수예요.\n\n정격 High 출력의 VOHmin과 |IOHmax| 조건에서 Rp(on)=(VDD−VOHmin)/|IOHmax|예요. V/A=Ω를 확인하고 꺼진 Rn으로 전류를 흘리지 않아요. 이 조건을 밝혀야 입력 level·전류 방향·식 유도를 모두 설명할 수 있어요.",
+      "summary": "입력 Low→PMOS on→전류 공급을 표시하고 Rp 양단 전압 VDD−VOH를 |IOH|로 나눠요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rn을 유도하라는 단서에서는 입력 High의 NMOS 도통을 떠올려요. 출력 Low일 때 부하 전류가 출력에서 Rn을 거쳐 GND로 흘러요.\n\nRn 위쪽은 VOL, 아래쪽은 0 V이므로 전압 차는 VOL이에요. 전류 IOL을 흡수하는 경로에 옴의 법칙을 적용하면 Rn=VOL/IOL이에요.\n\n교안의 Low 출력 정격 경계에서는 Rn(on)=VOLmax/IOLmax예요. IOL이 0이 아닌 조건과 V/A=Ω를 확인해요. 출력 Low의 전압 차는 VOL 자체이므로 Rp의 VDD−VOH 식을 옮겨 쓰지 않아요.",
+      "summary": "입력 High의 NMOS 흡수 경로에서 Rn(on)=VOLmax/IOLmax예요. GND 기준 전압과 Ω 단위를 확인해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 341,
+            "scroll": 341,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n전달 지연이 나타나는 이유라는 단서에서 출력 부하 용량 CL의 충·방전을 떠올려요. 용량의 전압을 바꾸려면 전하가 이동해야 하고 실제 경로의 전류는 유한해요.\n\ntPLH는 출력 Low→High, tPHL은 출력 High→Low 방향의 전달 지연이에요. 교안에서는 대응하는 입력 50%와 출력 50% 시각 사이를 재요. 두 글자의 방향은 입력이 아니라 출력이에요.\n\n켜진 저항 R과 같은 부하 CL의 단순 모델에서 시간 상수 τ=RCL이며 Ω·F=s예요. 실제 지연은 입력 에지와 부하에도 의존해요. 출력이 서서히 변하는 이유와 입력 뒤에 늦게 응답하는 이유를 이 경로로 연결해요.",
+      "summary": "CL의 유한한 충·방전 때문에 지연이 생겨요. tPLH/tPHL은 입력·출력 50% 시각 차이를 재요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n(1) 전달 지연의 이유와 (2) H→L·L→H 천이 시간 차이라는 두 단서를 각각 읽어요. 지연은 입력과 출력 사이, 천이는 출력 자체의 변화 구간이라는 차이를 떠올려요.\n\ntPLH/tPHL은 입력 50%에서 출력 50%까지예요. tr은 출력 10→90%, tf는 출력 90→10%까지예요. 출력 상승은 Rp로 충전, 하강은 Rn으로 방전해요.\n\n같은 CL와 일정 R의 모델에서는 τp=RpCL, τn=RnCL이 달라 천이 시간도 달라져요. (1)에는 유한한 충·방전, (2)에는 두 경로의 차이를 적용해요. 수치가 없는 정성 설명이며 기존 정답 미확정을 유지해요.",
+      "summary": "(1)은 50% 전달 지연, (2)는 10–90% 천이와 Rp/Rn 경로 차이를 구분해요. 정답 미확정은 유지해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-transition",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nH→L과 L→H의 timing 차이라는 말에서 서로 다른 출력 충·방전 경로를 떠올려요. 하강은 Rn, 상승은 Rp가 주된 경로예요.\n\ntf는 출력 90→10%, tr은 10→90% 사이 시간이에요. 같은 CL와 일정 저항의 단순 모델에서 τn=RnCL, τp=RpCL이며 천이는 약 2.2τ에 비례해요.\n\n두 경로의 등가 저항이 다르면 시간이 다르지만 모든 실제 소자에서 같은 비율이 된다는 뜻은 아니에요. 입력 에지·부하 조건도 맞춰야 해요. 이 비교로 방향 차이를 설명하며 채점 답의 미확정 상태는 그대로 두어요.",
+      "summary": "하강 Rn·상승 Rp의 충·방전 경로와 같은 CL 조건을 비교해요. 천이는 출력 10–90% 기준이에요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-speed",
+      "width": 375,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n동작속도를 정하는 두 요소와 timing diagram이라는 단서에서는 켜진 경로의 저항 R과 부하 용량 CL을 떠올려요. R은 전하 이동을 제한하고 CL은 바꿔야 하는 전하량과 관련돼요.\n\n단순 RC 모델의 τ=RCL에서 R은 Ω, CL은 F, τ는 s예요. 큰 τ이면 출력 50% 도달이 늦고 10–90% 변화도 길어져요. 전달 지연과 천이 시간은 측정 구간이 서로 달라요.\n\n같은 입력 에지·같은 모델로 비교할 때 R이나 CL 증가가 두 시간을 늘려요. 특정 절대 시간이 없는 원문에서는 상대 곡선과 조건을 설명해요. 교안의 CMOS 동작속도·전달 지연·천이 용어를 연결하되 기존 정답 미확정은 유지해요.",
+      "summary": "같은 RC 모델에서 R 또는 CL이 크면 τ=RCL이 커져 지연·천이가 길어져요. 두 측정 기준을 구분해요.",
+      "metrics": {
+        "documentWidth": 375,
+        "viewport": 375,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-region",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 전압이 올라가는 그림과 High·Low·Abnormal 구간이라는 말에서 입력 판정 경계를 떠올려요. VILmax는 Low 입력의 최대 전압, VIHmin은 High 입력의 최소 전압이에요.\n\nVin≤VILmax이면 입력 Low, Vin≥VIHmin이면 입력 High로 보장돼요. 그 사이는 논리값이 보장되지 않는 구간이에요. 인버터의 출력은 보장된 입력과 반대이므로 낮은 입력 구간에서는 High, 높은 입력 구간에서는 Low예요.\n\nVOLmax와 VOHmin은 각각 출력 Low의 최대값과 출력 High의 최소값이에요. 입력 문턱과 역할이 달라요. 원문의 5 V 전원·1.5/3.5 V 입력 경계를 적용하되, 기존 답안 충돌을 이 구분만으로 확정하지 않아요.",
+      "summary": "입력 경계 VILmax/VIHmin으로 구간을 나누고 인버터 출력을 반대로 읽어요. 출력 보증값과 답안 충돌은 별도로 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-4",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n네 parameters의 뜻을 묻는 단서에서는 숫자를 계산하기보다 기호의 I/O와 H/L을 먼저 구분해요. V는 전압(V), I는 입력, O는 출력이에요.\n\nVOHmin은 출력 High 최소값, VIHmin은 입력 High 최소값, VILmax는 입력 Low 최대값, VOLmax는 출력 Low 최대값이에요. min은 그 이상, max는 그 이하가 보장되는 경계예요.\n\n출력 보증은 정해진 전원·부하 조건에서 적용해요. 입력 기준은 다음 소자가 받아들이는 범위예요. 따라서 네 정의 모두에 입력/출력과 최소/최대를 넣어야 서로 바뀌지 않아요.",
+      "summary": "I/O로 입력·출력을 구분하고 H/L과 min/max를 붙여 네 전압 보증 경계를 읽어요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2017",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVOHmin과 VILmax 두 기호를 설명하라는 말에서 출력 보증과 입력 판정의 차이를 떠올려요. V의 단위는 볼트(V)예요.\n\nVOHmin의 O·H·min은 High 출력의 최소 보증 전압이에요. 지정된 부하 조건에서 VOH≥VOHmin이어야 해요. VILmax의 I·L·max는 Low 입력의 최대 허용 전압으로 Vin≤VILmax일 때 Low로 판정돼요.\n\n같은 전압 기호라도 한쪽은 보내는 출력, 다른 쪽은 받는 입력이에요. 수치가 주어지지 않은 정의 문항이므로 임의의 전압값을 넣지 않고 두 역할과 부등호를 설명해요.",
+      "summary": "VOHmin은 출력 High 최소(V), VILmax는 입력 Low 최대(V)예요. 각각 이상·이하 조건을 붙여요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2016",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVIHmin과 VOLmax를 묻는 단서에서 I는 입력, O는 출력이라는 기호 구분을 떠올려요. 둘 모두 전압이며 단위는 V예요.\n\nVIHmin은 High로 받아들이는 최소 입력 전압으로 Vin≥VIHmin이에요. VOLmax는 Low 출력의 최대 허용 전압으로 지정 부하에서 VOL≤VOLmax예요.\n\n입력의 인식 조건과 출력의 보증 조건은 달라요. 이 정의 문제에서는 전원·부하가 정해진 출력 규격이라는 조건을 지키며 기호별 역할을 설명하므로 임의의 수치 계산은 필요 없어요.",
+      "summary": "VIHmin은 입력 High 최소, VOLmax는 출력 Low 최대예요. 입력은 이상, 출력은 이하를 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 잡음에 영향을 덜 받는 이유와 입출력 특성이라는 말에서 히스테리시스를 떠올려요. 같은 입력 전압이어도 이전 출력 상태에 따라 결과가 달라지는 특성이에요.\n\n상승 입력의 문턱 VT+와 하강 입력의 문턱 VT−가 다르고 VT+>VT−예요. 폭 VH=VT+−VT−의 단위는 V예요. 인버터는 상승 문턱 돌파에서 Low, 하강 문턱 아래에서 High로 바뀌어요.\n\n두 문턱 사이에서는 이전 상태를 유지하므로 한 문턱 주위의 작은 흔들림에 반복 반전되지 않아요. 다만 잡음이 해당 반전 문턱을 넘으면 바뀔 수 있어요. 모든 잡음을 제거한다고 쓰지 않고 상태 기억으로 이유를 설명해요.",
+      "summary": "두 문턱 VT+/VT− 사이에서 이전 출력 상태를 유지하는 히스테리시스가 반복 반전을 줄여요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n같은 입력으로 인버터와 Schmitt 출력 두 개를 그리는 단서에서는 문턱 판정 규칙을 따로 적용해요. 그림의 일반 문턱은 2.5 V, 상승 문턱은 2.9 V, 하강 문턱은 2.1 V예요.\n\n일반 인버터는 2.5 V를 지날 때마다 반전돼요. Schmitt 인버터는 출력 High일 때 2.9 V 상향 돌파, 출력 Low일 때 2.1 V 하향 돌파만 찾아요. 두 문턱 사이에서는 직전 출력을 기억해요.\n\n그림의 시작 입력이 낮아 출력 High로 시작할 수 있어요. 다른 파형에서 초기 상태가 주어지지 않으면 임의로 정하지 않아요. 이 문항에서는 시간순으로 상태를 갱신해야 작은 흔들림과 실제 반전 시각을 구분할 수 있어요.",
+      "summary": "일반형은 2.5 V 교차, Schmitt형은 현재 상태에 따라 2.9 V 상승/2.1 V 하강 돌파를 찾아요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 저항이 출력에 미치는 영향이라는 단서에서 켜진 트랜지스터의 등가 on 저항과 옴의 법칙을 떠올려요. Rp는 PMOS 경로, Rn은 NMOS 경로의 저항(Ω)이에요.\n\n입력 Low이면 Rp로 전류를 공급해 VOH=VDD−|IOH|Rp, 입력 High이면 Rn으로 전류를 흡수해 VOL=IOLRn이에요. I는 A, IR은 V이므로 부하 전류가 흐를 때 출력이 전원 레일에서 벗어나요.\n\n정상 상태의 저항성 부하 등가 모델에 적용해요. 꺼진 경로의 전류를 무시하고 두 저항을 동시에 on으로 놓지 않아요. 두 출력 상태를 따로 설명해야 출력 High의 감소와 출력 Low의 증가를 함께 설명할 수 있어요.",
+      "summary": "켜진 Rp/Rn의 IR 전압강하 때문에 VOH는 VDD보다 낮고 VOL은 GND보다 높아져요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 회로도로 Rp를 유도하라는 말에서 High 출력의 PMOS 도통 경로를 떠올려요. 입력 Low일 때 전원에서 Rp를 지나 부하로 전류가 나가요.\n\nRp 양단 전압은 VDD−VOH이고 흐르는 전류의 크기는 |IOH|예요. 옴의 법칙 ΔV=|I|R에서 Rp=(VDD−VOH)/|IOH|를 얻어요. 전류 부호 규약과 저항의 양의 크기를 구분해요.\n\n교안의 정격 경계 VOHmin·|IOHmax|를 대입하는 등가 on 저항이에요. 단위는 V/A=Ω이며 전류가 0인 조건에서는 이 나눗셈으로 저항을 정할 수 없어요. 숫자 없이 전압 차와 경로를 유도하는 문항이라 식과 조건을 제시해요.",
+      "summary": "입력 Low의 PMOS 경로에서 Rp=(VDD−VOHmin)/|IOHmax|예요. 전류는 크기로, 단위는 Ω로 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rp를 유도하라는 단서에서는 입력 Low와 출력 High를 먼저 연결해요. 이때 켜진 PMOS가 전원에서 출력 부하로 전류를 공급해요.\n\nRp의 위쪽은 VDD, 아래쪽은 VOH예요. 따라서 양단 전압 VDD−VOH를 출력 전류 크기 |IOH|로 나누어 Rp를 구해요. 출력에서 밖으로 흐르는 IOH가 음수로 표기돼도 저항은 양수예요.\n\n정격 High 출력의 VOHmin과 |IOHmax| 조건에서 Rp(on)=(VDD−VOHmin)/|IOHmax|예요. V/A=Ω를 확인하고 꺼진 Rn으로 전류를 흘리지 않아요. 이 조건을 밝혀야 입력 level·전류 방향·식 유도를 모두 설명할 수 있어요.",
+      "summary": "입력 Low→PMOS on→전류 공급을 표시하고 Rp 양단 전압 VDD−VOH를 |IOH|로 나눠요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rn을 유도하라는 단서에서는 입력 High의 NMOS 도통을 떠올려요. 출력 Low일 때 부하 전류가 출력에서 Rn을 거쳐 GND로 흘러요.\n\nRn 위쪽은 VOL, 아래쪽은 0 V이므로 전압 차는 VOL이에요. 전류 IOL을 흡수하는 경로에 옴의 법칙을 적용하면 Rn=VOL/IOL이에요.\n\n교안의 Low 출력 정격 경계에서는 Rn(on)=VOLmax/IOLmax예요. IOL이 0이 아닌 조건과 V/A=Ω를 확인해요. 출력 Low의 전압 차는 VOL 자체이므로 Rp의 VDD−VOH 식을 옮겨 쓰지 않아요.",
+      "summary": "입력 High의 NMOS 흡수 경로에서 Rn(on)=VOLmax/IOLmax예요. GND 기준 전압과 Ω 단위를 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(247, 248, 250)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n전달 지연이 나타나는 이유라는 단서에서 출력 부하 용량 CL의 충·방전을 떠올려요. 용량의 전압을 바꾸려면 전하가 이동해야 하고 실제 경로의 전류는 유한해요.\n\ntPLH는 출력 Low→High, tPHL은 출력 High→Low 방향의 전달 지연이에요. 교안에서는 대응하는 입력 50%와 출력 50% 시각 사이를 재요. 두 글자의 방향은 입력이 아니라 출력이에요.\n\n켜진 저항 R과 같은 부하 CL의 단순 모델에서 시간 상수 τ=RCL이며 Ω·F=s예요. 실제 지연은 입력 에지와 부하에도 의존해요. 출력이 서서히 변하는 이유와 입력 뒤에 늦게 응답하는 이유를 이 경로로 연결해요.",
+      "summary": "CL의 유한한 충·방전 때문에 지연이 생겨요. tPLH/tPHL은 입력·출력 50% 시각 차이를 재요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n(1) 전달 지연의 이유와 (2) H→L·L→H 천이 시간 차이라는 두 단서를 각각 읽어요. 지연은 입력과 출력 사이, 천이는 출력 자체의 변화 구간이라는 차이를 떠올려요.\n\ntPLH/tPHL은 입력 50%에서 출력 50%까지예요. tr은 출력 10→90%, tf는 출력 90→10%까지예요. 출력 상승은 Rp로 충전, 하강은 Rn으로 방전해요.\n\n같은 CL와 일정 R의 모델에서는 τp=RpCL, τn=RnCL이 달라 천이 시간도 달라져요. (1)에는 유한한 충·방전, (2)에는 두 경로의 차이를 적용해요. 수치가 없는 정성 설명이며 기존 정답 미확정을 유지해요.",
+      "summary": "(1)은 50% 전달 지연, (2)는 10–90% 천이와 Rp/Rn 경로 차이를 구분해요. 정답 미확정은 유지해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-transition",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nH→L과 L→H의 timing 차이라는 말에서 서로 다른 출력 충·방전 경로를 떠올려요. 하강은 Rn, 상승은 Rp가 주된 경로예요.\n\ntf는 출력 90→10%, tr은 10→90% 사이 시간이에요. 같은 CL와 일정 저항의 단순 모델에서 τn=RnCL, τp=RpCL이며 천이는 약 2.2τ에 비례해요.\n\n두 경로의 등가 저항이 다르면 시간이 다르지만 모든 실제 소자에서 같은 비율이 된다는 뜻은 아니에요. 입력 에지·부하 조건도 맞춰야 해요. 이 비교로 방향 차이를 설명하며 채점 답의 미확정 상태는 그대로 두어요.",
+      "summary": "하강 Rn·상승 Rp의 충·방전 경로와 같은 CL 조건을 비교해요. 천이는 출력 10–90% 기준이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-speed",
+      "width": 1280,
+      "theme": "light",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n동작속도를 정하는 두 요소와 timing diagram이라는 단서에서는 켜진 경로의 저항 R과 부하 용량 CL을 떠올려요. R은 전하 이동을 제한하고 CL은 바꿔야 하는 전하량과 관련돼요.\n\n단순 RC 모델의 τ=RCL에서 R은 Ω, CL은 F, τ는 s예요. 큰 τ이면 출력 50% 도달이 늦고 10–90% 변화도 길어져요. 전달 지연과 천이 시간은 측정 구간이 서로 달라요.\n\n같은 입력 에지·같은 모델로 비교할 때 R이나 CL 증가가 두 시간을 늘려요. 특정 절대 시간이 없는 원문에서는 상대 곡선과 조건을 설명해요. 교안의 CMOS 동작속도·전달 지연·천이 용어를 연결하되 기존 정답 미확정은 유지해요.",
+      "summary": "같은 RC 모델에서 R 또는 CL이 크면 τ=RCL이 커져 지연·천이가 길어져요. 두 측정 기준을 구분해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-region",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 전압이 올라가는 그림과 High·Low·Abnormal 구간이라는 말에서 입력 판정 경계를 떠올려요. VILmax는 Low 입력의 최대 전압, VIHmin은 High 입력의 최소 전압이에요.\n\nVin≤VILmax이면 입력 Low, Vin≥VIHmin이면 입력 High로 보장돼요. 그 사이는 논리값이 보장되지 않는 구간이에요. 인버터의 출력은 보장된 입력과 반대이므로 낮은 입력 구간에서는 High, 높은 입력 구간에서는 Low예요.\n\nVOLmax와 VOHmin은 각각 출력 Low의 최대값과 출력 High의 최소값이에요. 입력 문턱과 역할이 달라요. 원문의 5 V 전원·1.5/3.5 V 입력 경계를 적용하되, 기존 답안 충돌을 이 구분만으로 확정하지 않아요.",
+      "summary": "입력 경계 VILmax/VIHmin으로 구간을 나누고 인버터 출력을 반대로 읽어요. 출력 보증값과 답안 충돌은 별도로 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-4",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n네 parameters의 뜻을 묻는 단서에서는 숫자를 계산하기보다 기호의 I/O와 H/L을 먼저 구분해요. V는 전압(V), I는 입력, O는 출력이에요.\n\nVOHmin은 출력 High 최소값, VIHmin은 입력 High 최소값, VILmax는 입력 Low 최대값, VOLmax는 출력 Low 최대값이에요. min은 그 이상, max는 그 이하가 보장되는 경계예요.\n\n출력 보증은 정해진 전원·부하 조건에서 적용해요. 입력 기준은 다음 소자가 받아들이는 범위예요. 따라서 네 정의 모두에 입력/출력과 최소/최대를 넣어야 서로 바뀌지 않아요.",
+      "summary": "I/O로 입력·출력을 구분하고 H/L과 min/max를 붙여 네 전압 보증 경계를 읽어요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2017",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVOHmin과 VILmax 두 기호를 설명하라는 말에서 출력 보증과 입력 판정의 차이를 떠올려요. V의 단위는 볼트(V)예요.\n\nVOHmin의 O·H·min은 High 출력의 최소 보증 전압이에요. 지정된 부하 조건에서 VOH≥VOHmin이어야 해요. VILmax의 I·L·max는 Low 입력의 최대 허용 전압으로 Vin≤VILmax일 때 Low로 판정돼요.\n\n같은 전압 기호라도 한쪽은 보내는 출력, 다른 쪽은 받는 입력이에요. 수치가 주어지지 않은 정의 문항이므로 임의의 전압값을 넣지 않고 두 역할과 부등호를 설명해요.",
+      "summary": "VOHmin은 출력 High 최소(V), VILmax는 입력 Low 최대(V)예요. 각각 이상·이하 조건을 붙여요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-params-2016",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nVIHmin과 VOLmax를 묻는 단서에서 I는 입력, O는 출력이라는 기호 구분을 떠올려요. 둘 모두 전압이며 단위는 V예요.\n\nVIHmin은 High로 받아들이는 최소 입력 전압으로 Vin≥VIHmin이에요. VOLmax는 Low 출력의 최대 허용 전압으로 지정 부하에서 VOL≤VOLmax예요.\n\n입력의 인식 조건과 출력의 보증 조건은 달라요. 이 정의 문제에서는 전원·부하가 정해진 출력 규격이라는 조건을 지키며 기호별 역할을 설명하므로 임의의 수치 계산은 필요 없어요.",
+      "summary": "VIHmin은 입력 High 최소, VOLmax는 출력 Low 최대예요. 입력은 이상, 출력은 이하를 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-noise",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 잡음에 영향을 덜 받는 이유와 입출력 특성이라는 말에서 히스테리시스를 떠올려요. 같은 입력 전압이어도 이전 출력 상태에 따라 결과가 달라지는 특성이에요.\n\n상승 입력의 문턱 VT+와 하강 입력의 문턱 VT−가 다르고 VT+>VT−예요. 폭 VH=VT+−VT−의 단위는 V예요. 인버터는 상승 문턱 돌파에서 Low, 하강 문턱 아래에서 High로 바뀌어요.\n\n두 문턱 사이에서는 이전 상태를 유지하므로 한 문턱 주위의 작은 흔들림에 반복 반전되지 않아요. 다만 잡음이 해당 반전 문턱을 넘으면 바뀔 수 있어요. 모든 잡음을 제거한다고 쓰지 않고 상태 기억으로 이유를 설명해요.",
+      "summary": "두 문턱 VT+/VT− 사이에서 이전 출력 상태를 유지하는 히스테리시스가 반복 반전을 줄여요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-schmitt-waveform",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n같은 입력으로 인버터와 Schmitt 출력 두 개를 그리는 단서에서는 문턱 판정 규칙을 따로 적용해요. 그림의 일반 문턱은 2.5 V, 상승 문턱은 2.9 V, 하강 문턱은 2.1 V예요.\n\n일반 인버터는 2.5 V를 지날 때마다 반전돼요. Schmitt 인버터는 출력 High일 때 2.9 V 상향 돌파, 출력 Low일 때 2.1 V 하향 돌파만 찾아요. 두 문턱 사이에서는 직전 출력을 기억해요.\n\n그림의 시작 입력이 낮아 출력 High로 시작할 수 있어요. 다른 파형에서 초기 상태가 주어지지 않으면 임의로 정하지 않아요. 이 문항에서는 시간순으로 상태를 갱신해야 작은 흔들림과 실제 반전 시각을 구분할 수 있어요.",
+      "summary": "일반형은 2.5 V 교차, Schmitt형은 현재 상태에 따라 2.9 V 상승/2.1 V 하강 돌파를 찾아요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rprn-effect",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 저항이 출력에 미치는 영향이라는 단서에서 켜진 트랜지스터의 등가 on 저항과 옴의 법칙을 떠올려요. Rp는 PMOS 경로, Rn은 NMOS 경로의 저항(Ω)이에요.\n\n입력 Low이면 Rp로 전류를 공급해 VOH=VDD−|IOH|Rp, 입력 High이면 Rn으로 전류를 흡수해 VOL=IOLRn이에요. I는 A, IR은 V이므로 부하 전류가 흐를 때 출력이 전원 레일에서 벗어나요.\n\n정상 상태의 저항성 부하 등가 모델에 적용해요. 꺼진 경로의 전류를 무시하고 두 저항을 동시에 on으로 놓지 않아요. 두 출력 상태를 따로 설명해야 출력 High의 감소와 출력 Low의 증가를 함께 설명할 수 있어요.",
+      "summary": "켜진 Rp/Rn의 IR 전압강하 때문에 VOH는 VDD보다 낮고 VOL은 GND보다 높아져요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n내부 회로도로 Rp를 유도하라는 말에서 High 출력의 PMOS 도통 경로를 떠올려요. 입력 Low일 때 전원에서 Rp를 지나 부하로 전류가 나가요.\n\nRp 양단 전압은 VDD−VOH이고 흐르는 전류의 크기는 |IOH|예요. 옴의 법칙 ΔV=|I|R에서 Rp=(VDD−VOH)/|IOH|를 얻어요. 전류 부호 규약과 저항의 양의 크기를 구분해요.\n\n교안의 정격 경계 VOHmin·|IOHmax|를 대입하는 등가 on 저항이에요. 단위는 V/A=Ω이며 전류가 0인 조건에서는 이 나눗셈으로 저항을 정할 수 없어요. 숫자 없이 전압 차와 경로를 유도하는 문항이라 식과 조건을 제시해요.",
+      "summary": "입력 Low의 PMOS 경로에서 Rp=(VDD−VOHmin)/|IOHmax|예요. 전류는 크기로, 단위는 Ω로 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rp-derive-current",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rp를 유도하라는 단서에서는 입력 Low와 출력 High를 먼저 연결해요. 이때 켜진 PMOS가 전원에서 출력 부하로 전류를 공급해요.\n\nRp의 위쪽은 VDD, 아래쪽은 VOH예요. 따라서 양단 전압 VDD−VOH를 출력 전류 크기 |IOH|로 나누어 Rp를 구해요. 출력에서 밖으로 흐르는 IOH가 음수로 표기돼도 저항은 양수예요.\n\n정격 High 출력의 VOHmin과 |IOHmax| 조건에서 Rp(on)=(VDD−VOHmin)/|IOHmax|예요. V/A=Ω를 확인하고 꺼진 Rn으로 전류를 흘리지 않아요. 이 조건을 밝혀야 입력 level·전류 방향·식 유도를 모두 설명할 수 있어요.",
+      "summary": "입력 Low→PMOS on→전류 공급을 표시하고 Rp 양단 전압 VDD−VOH를 |IOH|로 나눠요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-rn-derive",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n입력 level에 따른 전류 흐름으로 Rn을 유도하라는 단서에서는 입력 High의 NMOS 도통을 떠올려요. 출력 Low일 때 부하 전류가 출력에서 Rn을 거쳐 GND로 흘러요.\n\nRn 위쪽은 VOL, 아래쪽은 0 V이므로 전압 차는 VOL이에요. 전류 IOL을 흡수하는 경로에 옴의 법칙을 적용하면 Rn=VOL/IOL이에요.\n\n교안의 Low 출력 정격 경계에서는 Rn(on)=VOLmax/IOLmax예요. IOL이 0이 아닌 조건과 V/A=Ω를 확인해요. 출력 Low의 전압 차는 VOL 자체이므로 Rp의 VDD−VOH 식을 옮겨 쓰지 않아요.",
+      "summary": "입력 High의 NMOS 흡수 경로에서 Rn(on)=VOLmax/IOLmax예요. GND 기준 전압과 Ω 단위를 확인해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": [
+          {
+            "width": 630,
+            "scroll": 630,
+            "overflow": "auto",
+            "padding": "16px",
+            "border": "1px",
+            "background": "rgb(33, 33, 40)"
+          }
+        ]
+      },
+      "errors": []
+    },
+    {
+      "id": "q-prop-delay",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n전달 지연이 나타나는 이유라는 단서에서 출력 부하 용량 CL의 충·방전을 떠올려요. 용량의 전압을 바꾸려면 전하가 이동해야 하고 실제 경로의 전류는 유한해요.\n\ntPLH는 출력 Low→High, tPHL은 출력 High→Low 방향의 전달 지연이에요. 교안에서는 대응하는 입력 50%와 출력 50% 시각 사이를 재요. 두 글자의 방향은 입력이 아니라 출력이에요.\n\n켜진 저항 R과 같은 부하 CL의 단순 모델에서 시간 상수 τ=RCL이며 Ω·F=s예요. 실제 지연은 입력 에지와 부하에도 의존해요. 출력이 서서히 변하는 이유와 입력 뒤에 늦게 응답하는 이유를 이 경로로 연결해요.",
+      "summary": "CL의 유한한 충·방전 때문에 지연이 생겨요. tPLH/tPHL은 입력·출력 50% 시각 차이를 재요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-delay-transition",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n(1) 전달 지연의 이유와 (2) H→L·L→H 천이 시간 차이라는 두 단서를 각각 읽어요. 지연은 입력과 출력 사이, 천이는 출력 자체의 변화 구간이라는 차이를 떠올려요.\n\ntPLH/tPHL은 입력 50%에서 출력 50%까지예요. tr은 출력 10→90%, tf는 출력 90→10%까지예요. 출력 상승은 Rp로 충전, 하강은 Rn으로 방전해요.\n\n같은 CL와 일정 R의 모델에서는 τp=RpCL, τn=RnCL이 달라 천이 시간도 달라져요. (1)에는 유한한 충·방전, (2)에는 두 경로의 차이를 적용해요. 수치가 없는 정성 설명이며 기존 정답 미확정을 유지해요.",
+      "summary": "(1)은 50% 전달 지연, (2)는 10–90% 천이와 Rp/Rn 경로 차이를 구분해요. 정답 미확정은 유지해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-transition",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\nH→L과 L→H의 timing 차이라는 말에서 서로 다른 출력 충·방전 경로를 떠올려요. 하강은 Rn, 상승은 Rp가 주된 경로예요.\n\ntf는 출력 90→10%, tr은 10→90% 사이 시간이에요. 같은 CL와 일정 저항의 단순 모델에서 τn=RnCL, τp=RpCL이며 천이는 약 2.2τ에 비례해요.\n\n두 경로의 등가 저항이 다르면 시간이 다르지만 모든 실제 소자에서 같은 비율이 된다는 뜻은 아니에요. 입력 에지·부하 조건도 맞춰야 해요. 이 비교로 방향 차이를 설명하며 채점 답의 미확정 상태는 그대로 두어요.",
+      "summary": "하강 Rn·상승 Rp의 충·방전 경로와 같은 CL 조건을 비교해요. 천이는 출력 10–90% 기준이에요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    },
+    {
+      "id": "q-speed",
+      "width": 1280,
+      "theme": "dark",
+      "recall": "이 문제를 봤을 때 떠올릴 개념과 공식\n\n동작속도를 정하는 두 요소와 timing diagram이라는 단서에서는 켜진 경로의 저항 R과 부하 용량 CL을 떠올려요. R은 전하 이동을 제한하고 CL은 바꿔야 하는 전하량과 관련돼요.\n\n단순 RC 모델의 τ=RCL에서 R은 Ω, CL은 F, τ는 s예요. 큰 τ이면 출력 50% 도달이 늦고 10–90% 변화도 길어져요. 전달 지연과 천이 시간은 측정 구간이 서로 달라요.\n\n같은 입력 에지·같은 모델로 비교할 때 R이나 CL 증가가 두 시간을 늘려요. 특정 절대 시간이 없는 원문에서는 상대 곡선과 조건을 설명해요. 교안의 CMOS 동작속도·전달 지연·천이 용어를 연결하되 기존 정답 미확정은 유지해요.",
+      "summary": "같은 RC 모델에서 R 또는 CL이 크면 τ=RCL이 커져 지연·천이가 길어져요. 두 측정 기준을 구분해요.",
+      "metrics": {
+        "documentWidth": 1280,
+        "viewport": 1280,
+        "gap": {
+          "margin": "24px",
+          "padding": "24px",
+          "border": "1px"
+        },
+        "cards": []
+      },
+      "errors": []
+    }
+  ],
+  "no_js": {
+    "articles": 14,
+    "visible_recall_solve_verify": 42
+  }
+}

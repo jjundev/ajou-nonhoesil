@@ -1,0 +1,23 @@
+{
+  "experiment": 3,
+  "non_explanation_files_preserved": 162,
+  "metadata_preserved": [
+    "experiment",
+    "sources",
+    "topics",
+    "problems",
+    "checks",
+    "review_presentation_version",
+    "note_presentation_version"
+  ],
+  "old_sections_and_summary_preserved": 15,
+  "outside_mutable_new_files": 0,
+  "backup": "C:\\Users\\Hyunjun\\.codex\\worktrees\\logic-lab-problem-recall\\논회실\\복습노트\\실험03.backup-88dfe79d5eb4",
+  "source_hashes": "all match",
+  "review_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "browser": "pass",
+    "independent": "not_run"
+  }
+}

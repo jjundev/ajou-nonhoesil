@@ -1,0 +1,1531 @@
+{
+  "files": {
+    "검증결과.md": "65afc161d942e79fb70f74cd96aefa4956e27d1881586ed8dcb4dd9c739c5bec",
+    "실험03_기출문제.html": "7337b0738605c4e01827bb571f0f3b77e00e92d04e85f22fd76b7bc2e3f8a283",
+    "실험03_기출문제.md": "242688a21336f5757d6a06e4a1f0a2cc6ec371e79a3d8926f5a9de71a08b7c41",
+    "실험03_기출문제.pdf": "29ff84b2d6fc45892eb60a08b8f78064fae7272684371904e3179f9abe476622",
+    "실험03_기출풀이.html": "9f98b4899b57b667075da0cb811336c59dc4a67432d75371d78bab8e84cb9b51",
+    "실험03_기출풀이.md": "a6d821d947abf77a382029eb03701c7cdcda7a7d219a196d5dae672029dd1310",
+    "실험03_기출풀이.pdf": "694d6acdc0d0635cae951ada52fc4117e91147d7f45119a0b17d91ace5a77b0c",
+    "실험03_실험설명.html": "430da1988624a6361d62ed9044a7db10e882c987b73514e16cc0bf339527bcb6",
+    "실험03_실험설명.md": "21f5d42031ae14e6a073774a43c28e9dd3c6488dacb7f47fcc61fc67323cac2b",
+    "원문과_저작안내.md": "9ae17708274de60b70cf0928b91adc7844b0da533be8b88de6bdcf61330b90f8",
+    "출처와_문항목록.md": "a7b4835d1b7272f40cd67e091d289e9d89241a996857fbf0d93a9c3557b6dc07",
+    "자료/authoring-index.json": "ea64c96ff195ef01b947dca86f17cdaf301e85aa05be502d445c0114ade3baa4",
+    "자료/assets/note-template.html": "31c28f3cd8ed5a5fd756b81d181a6e708c8072f8aac7278400d8452ab912602c",
+    "자료/assets/review-interaction.css": "21070a4e49e9fb435d7569fcc9ea863b95f093b5a287966f897af6202732284c",
+    "자료/assets/review-interaction.js": "60671821a8b95a16f46648d94b179d18af7baa1290706854f21c8351b1e55863",
+    "자료/assets/review-template.html": "f2f19f5fd23d3d26c597a650482848dc9f6b891cd149b266545fbdfb9a378ebb",
+    "자료/assets/template-provenance.json": "cefe96c05d515c7f50bb15873450b626f2fa90459de0487069e2a665c83c736b",
+    "자료/assets/widgets.js": "aad54eaa7c039cf15feb3c8017264e758875e2f6f357048cd1e5057dbfe069f9",
+    "자료/evidence/question-bank.json": "feb0f8e4b8a7afaea1f1073a7c6fcf170f201e42acb0d3e1d7ad58cf704cea6c",
+    "자료/figures/adder-chain.svg": "cc570fb886f690f9db1f81b424f5f43dd0b1122438e88c5a318dc42c8ce3aa3b",
+    "자료/figures/full-adder.svg": "310d325c31233d2661bcf5d310aef8e0c42b93d3be5876e25204b05c363f8251",
+    "자료/figures/full-subtractor.svg": "2d503ed6eb8430cd79dd28325d76984e1c129e63663c069d332718526f213ad9",
+    "자료/figures/gates-used.svg": "8ea3e9a890c85210226fb8cad85d394da14a28e4c7d72ab42c479d9b8814fcba",
+    "자료/figures/half-adder.svg": "2d79746f4fca7db9b8ff6c32830251b3b03e895ad5fbd9b964bd1c0376524a19",
+    "자료/figures/half-subtractor.svg": "10ef8af230d49bbd9c52c97850f94f81c5034a0cf41c26f3f1f19830dc30012a",
+    "자료/figures/lab-led.svg": "d7f2ea7344999bab15b3ea5b3344bfc9aad639215b2d1301b5b4696261c4ca67",
+    "자료/figures/redraw-manifest.json": "11880cfcceb27ceb5b8e939a147ed761a1ffc1728547a6a9c3cb3e504c31a7a9",
+    "자료/figures/questions/q-fs-equation-given-01.png": "449123c0942076047d0a62cc58b6ef5c0d3b20e48e57daa23c9ee582bbc920eb",
+    "자료/figures/questions/q-fs-equation-given-01.svg": "a81db5fd668e97442e328efc7902eb036e684715b46b87ec989072c98dfa41dd",
+    "자료/figures/questions/q-fs-table-given-01.png": "e99210510251ab26e960b8ed2eba429c72bc2567844f0a6eedf76244a7200989",
+    "자료/figures/questions/q-fs-table-given-01.svg": "90fabb2667779a8216e49b8ff5aa8080c03a88ebb686395dab3ae7ed774fd8f1",
+    "자료/figures/solutions/q-fa-design-solution-01.png": "5e18d94c23f4eafe953e208a0e9c59485fe383e92d47173ebe1059bec9b350c7",
+    "자료/figures/solutions/q-fa-design-solution-01.svg": "193998361bfbdf150f1c278a6ae8477d05dab58d2dc0b7b4fd18dd4a3c66368a",
+    "자료/figures/solutions/q-fa-design-solution-02.png": "884d847163535a6f8363e7c7c14882d41a46c2984162d969be7132ac49cfa66b",
+    "자료/figures/solutions/q-fa-design-solution-02.svg": "90baf0b4745a0b198164fd8fc9fd561017f320e1bd6c0fa2ea77dd427f1c872a",
+    "자료/figures/solutions/q-fs-equation-solution-01.png": "e508a095beeed15a39234f4c4121f7cf85ca2b2373d8854cf231be041d448a74",
+    "자료/figures/solutions/q-fs-equation-solution-01.svg": "0ef5eb9fdf4cef8b536552cec9eddaec6dae3dc0876fcf14f0b265f92b5d78cb",
+    "자료/figures/solutions/q-fs-table-solution-01.png": "dd0a3d0a7e5cc51b0de70eb7c14982edbf2cebf042c4466478a742b8f9a65805",
+    "자료/figures/solutions/q-fs-table-solution-01.svg": "be66cb31ae6c366bb5c52bd5ed06bcda0985fdff82e938067ee283e9630e00fc",
+    "자료/figures/solutions/q-ha-design-eq-solution-01.png": "bb689671dd06a8eaca9e057f836b1c31dcb608480cf68382a29cc8f3bcf3e378",
+    "자료/figures/solutions/q-ha-design-eq-solution-01.svg": "f54032dadc3995ef2606c0f21e1d8500f9a77683802475cc0b692bf2629aa2c0",
+    "자료/figures/solutions/q-ha-design-ic-solution-01.png": "8c946e711ae8d407d4e1dbe69d16b7365d4e5595233213f4953fc1d250961b37",
+    "자료/figures/solutions/q-ha-design-ic-solution-01.svg": "40655bac3d9b3498e1fccec2b8d1e458744c2e30b86aaf763ac4bc53c6b0ee2f",
+    "자료/figures/solutions/q-hs-circuit-solution-01.png": "c096121f31e480c56b661ab15cf28018912580e222dbba0a990fd15289824a47",
+    "자료/figures/solutions/q-hs-circuit-solution-01.svg": "18d862269431a5936b51814001e219f760deccb2ea30cda2e6b658a794b24ea2",
+    "자료/evidence/assets/s01-p1-q1.png": "8343801c89a628445c60d7eda2eb3489ab70715e062382ab7e1fb37a53b42368",
+    "자료/evidence/assets/s01-p1-q4.png": "be27d997369cd7f090d7c1c8fc1270aa504ae9c7819389e8a1f981d0ffdd32eb",
+    "자료/evidence/assets/s01-p1.png": "58bf602ebbcf7be706983de2fb601771d679fcb6ca2fd03cccc2a3189efceed3",
+    "자료/evidence/assets/s01-p2-q4.png": "6598ceb3d978cf6c9da9a61118d02c285ca205b10302c3660994e4370de1a9de",
+    "자료/evidence/assets/s01-p2.png": "759fe7f6da9609f0372045a4c124dde5b244f0a516c6af14b1c20826c06930e5",
+    "자료/evidence/assets/s02-p1-q2.png": "76dcf55d62e8a00b471b0af90327b592df3056012e3439b4a36ae10a0e7fa3f7",
+    "자료/evidence/assets/s02-p1-q4.png": "de29afae9e65d3d35924835556a1a2f85126bb3d1d2177ec3da9443f4f45ff2f",
+    "자료/evidence/assets/s02-p1.png": "867960fd38a8565d6d22e984c8d800b1f7568c490bb7dd47906d76c6169025ae",
+    "자료/evidence/assets/s03-p1.png": "95610af99b937ef207e1d5b34e4a6f508e6444c10a7d1e1fb537dc13603bc745",
+    "자료/evidence/assets/s04-q1-1.png": "98a54d97e39e373bb25494e9f95df5c2501c3dfc3bf69b63a2b02fba9c69da28",
+    "자료/evidence/assets/s04-q1-2.png": "5ea87931153f08de313e88172e3e2d1326b7a5eeb014a591f873a6f89f73527f",
+    "자료/evidence/assets/s04-q2.png": "aa9c6f142d397d8d1a5aa898cedeb322d602391bf609c28baa7b0706edecd888",
+    "자료/evidence/assets/s05-p1-a2.png": "9657576a56a99165b07bdad9bf0b6bb9ebee839404b031cdb50398b4dccd6da7",
+    "자료/evidence/assets/s05-p1.png": "17e31070a05f2a04cd2d62cb8ce473796ba7660ed7cfb8aa21f36fd470f2658b",
+    "자료/evidence/assets/s05-p2-a5.png": "de2042962dd6d761b1da750c87730330e158d173444e9f9fd2b7822ea926fa1a",
+    "자료/evidence/assets/s05-p2.png": "08459e6bfdc06e218bcecbf17b1b1413c77fd13022378ebf96522f5d779e265d",
+    "자료/evidence/assets/s05-p3.png": "47c04e4dd1294cefe6e6c41ceb9a1eb5409e2e00ff944f92877892cc660eac2d",
+    "자료/evidence/assets/s06-p1.png": "39bfbb3f1f2559e47e4796460afae2fc85678419bf39e96bcdbe5e9d821c6a84",
+    "자료/evidence/assets/s06-p2.png": "f73f06f7fb8b24b77e323974eef5127c1322455e31c95aa729070c9846439f36",
+    "자료/evidence/assets/s06-p3.png": "3bb1d7509091b00633ae84f2d6ca063eaaaaa8fd18182fb73044cd35620ea15a",
+    "자료/evidence/assets/s07-p1.png": "18940ab1fbb953b393fb9a0250d30b8ca0bc4e0038a328029c347a05785041e5",
+    "자료/evidence/assets/s07-p2.png": "f6bb45a34a44fd9337d1a43a64ef32721bb68bb9827840d1f848b6b4ac034cb2",
+    "자료/evidence/assets/s07-p3.png": "7869cccd05a7f17ec7b6c206aeef2fbdf2400383c4c1c666c2a63f6a2ce0dd67",
+    "자료/evidence/assets/s07-p4.png": "c3009f2225b12949394416fcfbcf28a3caf14004197380a38bce19bb6562039b",
+    "자료/evidence/assets/s07-p5.png": "375ea27ebca677b96736ea414af9f1bb9bc59b3870b7d8285595c3dc8f2d14fa",
+    "자료/evidence/assets/s08-p1.png": "2d49a4fbd78e00f7f60a264fb23391a6e3173b86294a6045d65065cfb23e1a0f",
+    "자료/evidence/assets/s08-p2.png": "26fb177b2d818639fa38123c83742aee2bb3bf82f827f3dbcab08d77a5d1e7f7",
+    "자료/evidence/assets/s08-p3.png": "9ce74408facd30599f4039ca7ded8ef5827aa6e0514d9f6ade7b5d6bbee459ca",
+    "자료/evidence/assets/s09-p1.png": "8ea2c852e547e80ff33c47818ec40394f83b5ba4dae3c249093970bd4702d9b3",
+    "자료/assets/vendor/provenance.json": "8b7f9bc48a8e9ad7ec0207c133441078b99305ffc08adde2884dada99b52015f",
+    "자료/assets/workbook/answer.html": "8d7d87cc579ee11109f49d77c5beb31b592280bcbcfae97513b8e767e0bc8800",
+    "자료/assets/workbook/problem.html": "77d5e785b3a12ff53deb33d65521d989661b2c7847a51d4df1bc4dfad76da594",
+    "자료/assets/workbook/provenance.json": "4c1bf4e3e34bbbeaaa1e5ea4cef15eec472b13d7c427362c9e2ba725938b8dcd",
+    "자료/assets/vendor/katex/auto-render.min.js": "7b57d427ac6270677daf8d8380ded2cc73336f9149a167b8e1fe0d6ef66604ae",
+    "자료/assets/vendor/katex/katex.min.css": "6c8a78f2a34035c132722da32a55d1af3a0d37529017c7d101652307c5981c29",
+    "자료/assets/vendor/katex/katex.min.js": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+    "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+    "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+    "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+    "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+    "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+    "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+    "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+    "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+    "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+    "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+    "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+    "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+    "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+    "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+    "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+    "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+    "자료/assets/vendor/katex/LICENSE": "4313255416487a4a7602f134a7cdd2b33dd9f7e7b41d3af63dc9f785bca425a0",
+    "자료/assets/vendor/pretendard/LICENSE": "8a2aba6114145294edbbce5998eab74320e7e07ce39999cc9f95ae2967d2eb9e",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff": "d8511e03d73b848d3df45d6f3d1166bb9532f7547b68da5f768d7b60df76faaa",
+    "자료/assets/vendor/pretendard/Pretendard-Black.woff2": "c5fd0c3568fc1368a3edc0d0fbb36df029935954276e3573451b3bae09e27296",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff": "b02e6d7d8606f13f12682bc4d43575d403a9cbb2d662f6f4f137dba384633267",
+    "자료/assets/vendor/pretendard/Pretendard-Bold.woff2": "4609c3356e536fafe38f4add0daeceb3d8595d3057bce13c428c33ddbd43d362",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff": "1f43803fe4cb56b82061c7392eae37a9123e839b39cc0aa3c3f5b22edcb170d3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2": "dd7c1e156f508eb962acc7a33a7a1896d1e0b71e11156fad96e731689ceb6dc3",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff": "f8c8f64cec9d0c4b2c675a5cac99b2cef9d34f4b485caf9ec47901314ff8c460",
+    "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2": "df43dc9165dff4542114674bcd8b79b7daae6dec004004586d5d076fec6fe2aa",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff": "744e50b9780722eada9afc308712c7d1dc5176d8b46c315d010fa42fffb76fe6",
+    "자료/assets/vendor/pretendard/Pretendard-Light.woff2": "b7426635cce2ea2b95c9c802e43fba1c620e0dafaf25f737c069b8b4e09fa841",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff": "6231269ba695835ca13b03cf411b4e68379993039b4033c373e4e9940ee5370d",
+    "자료/assets/vendor/pretendard/Pretendard-Medium.woff2": "d03481330eeba0659ab5b87f25ceb504a35de377dd90a0d0aba2982eb2d05e2c",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff": "3214d4fdb5bd41e10c9f0b5fa8c6ff2f1096b249665cdbf34948434ee7c51934",
+    "자료/assets/vendor/pretendard/Pretendard-Regular.woff2": "fad853f7f47c6c8b103171e7193fa095708cdcd70850a71d93aa5379e8a61d63",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff": "e476f124e88472078cf472ac09768331f93f76063a52183ff303a192adea800a",
+    "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2": "c863f76a7de5c1ddc1ed8b2fa794964530774592c4f31407a84e2a2ae93f17f0",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff": "1c760324692f0d4bdd46f6f2378ce73aaa37056b8673163d1463adaee8b3dee1",
+    "자료/assets/vendor/pretendard/Pretendard-Thin.woff2": "1539755224a64719d5b18406762c476db74fcc299b9e4641ca1e9812fbc7a09b",
+    "자료/assets/vendor/pretendard/pretendard.css": "8e9774f2f94d64c786cda43592c6034847ee491a7aba443e02d863bc2d03a1c3"
+  },
+  "manifest": {
+    "schema_version": 1,
+    "experiment": 3,
+    "title": "가산기 & 감산기 — 반가산기부터 전감산기까지 처음부터 배워요",
+    "edition_status": "current",
+    "bank_import": {
+      "bank_id": "bank-exp03",
+      "schema_version": 1,
+      "source_path": "문제은행/실험03/question-bank.json",
+      "sha256": "feb0f8e4b8a7afaea1f1073a7c6fcf170f201e42acb0d3e1d7ad58cf704cea6c",
+      "snapshot_path": "evidence/question-bank.json",
+      "index_path": "authoring-index.json"
+    },
+    "sources": [
+      {
+        "id": "s-df7465f9bb70ceb2",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 기출 2016-1.pdf",
+        "sha256": "e3749fd582f9c44abbf93876aa6301eb2a9bdd4d84b9a7d80afab9e1ae8b4baa",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-8a9389399acc3a17",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 기출_문제.pdf",
+        "sha256": "598ace50af195f2f30895614481df7e012938c35aaed33c417dd3319495ca0f3",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-0150079ac1cce345",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 기출_정답.pdf",
+        "sha256": "4d52d3a50b4f3e0041960d32552ec46aa33222fc8453e07213eb7564412b51dc",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-e81d2c88f7288b6e",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 기출_채점본.jpg",
+        "sha256": "f844cf68e7d7e88d83108ce0014a335afcd63de40ba5f79778b6ca87dd846de2",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-1b0720165b76716e",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 예상문제_v1.pdf",
+        "sha256": "62e0294797c4a83385a6112d991e290f42125cf170ebe13003688b7336fb399b",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-d97cf23ff2bcf4f4",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 예상문제_v4.pdf",
+        "sha256": "2eac9b5f3321d824cce774150a28d51096179ea1075118dd0508a62d0dd3a656",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-bda8a046c15efa89",
+        "path": "from_the_past/정리/퀴즈/실험3/실험3 퀴즈 종합_기출문제 (5p).pdf",
+        "sha256": "036d8baf81f5952146d64092f0e80f0c86a10a101b055fd1305bee7d200c6ae1",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-703219b7f179248b",
+        "path": "from_the_past/정리/퀴즈/실험3/원본_docx/실험 3.hwp",
+        "sha256": "694fe6dafcf8eeae13bdcab4915d33eb7dd546d8f30794ac228374bbb671dddd",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-2e25eba813e35b57",
+        "path": "from_the_past/정리/퀴즈/실험3/원본_docx/실험3퀴즈_문제.docx",
+        "sha256": "357bff0aee7b23f391a595dedd56e5e84966bd38b7e2d0a3cfd7c85508c0f3da",
+        "kind": "quiz",
+        "edition": "unknown"
+      },
+      {
+        "id": "s-5db76e10510b9579",
+        "path": "강의노트/실험3. 가산기 & 감산기 (25.03.25 수정).pdf",
+        "sha256": "070f996d4f1e842bbf669bd73f93235e05fca990ddcdd20a3e53a05f25e6dee6",
+        "kind": "manual",
+        "edition": "current"
+      }
+    ],
+    "topics": [
+      {
+        "id": "t-start",
+        "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+        "requires": [],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 1,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 2,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 3,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-start.html",
+        "md_notes": "판본 기록: 교안 표지에는 25-1로 적혀 있고 파일 이름은 “(25.03.25 수정)”이라 현재 판으로 봤어요. 교안 1~3쪽, 8쪽, 9쪽을 이미지로 읽고 대조했어요. 이진수 덧셈·뺄셈 예시와 표는 일반 이론이에요.\n\n도입의 상황은 이해를 위한 예시이며 측정값이 아니에요. 회로를 쓰는 이유와 입력·출력 예를 설명하고 이번 수행 항목에 연결했어요."
+      },
+      {
+        "id": "t-gates",
+        "title": "게이트 네 개를 먼저 익혀요",
+        "requires": [
+          "t-start"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 5,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 6,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 7,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 8,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-gates.html",
+        "md_notes": "판본 기록: IC 이름(NOT 74HC04, AND 74HC08, OR 74HC32, XOR 74HC86)은 교안 4~7쪽 회로 그림의 라벨과 8쪽 준비물에서 확인했어요. 진리표는 일반 이론이에요. 재제작: 게이트 기호 그림은 직접 SVG로 새로 그렸어요."
+      },
+      {
+        "id": "t-half-adder",
+        "title": "반가산기로 두 비트를 더해요",
+        "requires": [
+          "t-gates"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 4,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-half-adder.html",
+        "md_notes": "판본 기록: 교안 4쪽의 회로와 진리표를 이미지로 읽어 대조했어요. 교안 그림에서 A, B 선은 갈라져서 XOR(74HC86)와 AND(74HC08)로 가요. 재제작: 회로를 직접 SVG로 새로 그렸어요. S = A′B + AB′ 표현은 기출 식(1)과 연결하려는 보충이에요."
+      },
+      {
+        "id": "t-full-adder",
+        "title": "전가산기는 올림까지 받아요",
+        "requires": [
+          "t-half-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 5,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-full-adder.html",
+        "md_notes": "판본 기록: 교안 5쪽의 회로(반가산기 2개 + OR)와 8행 진리표를 대조했고 중간 열(x, A·B, x·Ci)을 새로 계산해 맞췄어요. 재제작: 회로를 직접 SVG로 새로 그렸어요. 식(1)의 S, C와 반가산기 구성이 같은 값이라는 설명은 직접 도출한 보충이에요."
+      },
+      {
+        "id": "t-chain",
+        "title": "여러 자리 덧셈은 이렇게 이어져요",
+        "requires": [
+          "t-full-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 4,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 5,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-chain.html",
+        "md_notes": "판본 기록: 교안 4쪽의 “가장 낮은 비트 덧셈에 사용” 문장과 5쪽의 전가산기 구성을 근거로 했어요. 4자리 연결 블록도와 3+1 예제, 뺄셈 연결은 교안에 없는 일반 이론(보충)이에요. 실험에서 수행하지 않는 내용이에요."
+      },
+      {
+        "id": "t-half-sub",
+        "title": "반감산기로 두 비트를 빼요",
+        "requires": [
+          "t-gates"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 6,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-half-sub.html",
+        "md_notes": "판본 기록: 교안 6쪽의 회로(XOR, NOT, AND)와 진리표를 이미지로 읽어 대조했어요. 교안은 출력 내림도 B로 적고, 이 노트는 입력 B와 구분하려고 Bo라고 불러요. NOT은 A 쪽에 붙어 있어요. 재제작: 회로를 직접 SVG로 새로 그렸어요."
+      },
+      {
+        "id": "t-full-sub",
+        "title": "전감산기는 내림까지 받아요",
+        "requires": [
+          "t-half-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 7,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-full-sub.html",
+        "md_notes": "판본 기록: 교안 7쪽의 회로(반감산기 2개 + OR)와 8행 진리표를 대조했고 중간 열(x, b1, b2)을 새로 계산해 맞췄어요. 둘째 NOT은 첫 반감산기의 차 x에 붙어 있어요. 재제작: 회로를 직접 SVG로 새로 그렸어요. Bo = A′B + A′Bi + B·Bi는 직접 도출한 보충이에요."
+      },
+      {
+        "id": "t-lab",
+        "title": "실험은 이렇게 확인해요",
+        "requires": [
+          "t-full-adder",
+          "t-full-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 8,
+            "printed_page": null
+          },
+          {
+            "source_id": "s-5db76e10510b9579",
+            "pdf_page": 9,
+            "printed_page": null
+          }
+        ],
+        "fragment": "sections/t-lab.html",
+        "md_notes": "판본 기록: 준비물과 방법은 교안 8~9쪽에서 가져왔어요. 네 실험 모두 방법이 같다는 문장은 9쪽에 있어요. IC 개수는 4~7쪽 그림의 게이트 수를 센 값이에요. 칩 하나당 게이트 수와 LED 극성, 핀 배치는 교안에 없고 데이터시트를 대조하지 않았어요. 측정값은 기록 없이 만들지 않았어요."
+      }
+    ],
+    "problems": [
+      {
+        "id": "q-ha-table",
+        "bank_question_id": "q-ha-table",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 기출 여부 미확인(시행 근거 없음)",
+        "topics": [
+          "t-half-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-0150079ac1cce345",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; 한컴오피스 2020 로컬 COM 읽기 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "(0,0)→c0 s0, (0,1)→c0 s1, (1,0)→c0 s1, (1,1)→c1 s0",
+        "answer_status": "verified",
+        "title": "반가산기 진리표 채우기",
+        "workbook_fragment": "workbook/q-ha-table.json",
+        "explanation_fragment": "problem-explanations/q-ha-table.html"
+      },
+      {
+        "id": "q-ha-design-eq",
+        "bank_question_id": "q-ha-design-eq",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 예상문제: 개념 공백 보충용이며 실제 기출이 아님",
+        "topics": [
+          "t-half-adder",
+          "t-gates"
+        ],
+        "sources": [
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; 한컴오피스 2020 로컬 COM 읽기 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=x⊕y (XOR 1), C=xy (AND 1)",
+        "answer_status": "verified",
+        "title": "식(1)로 반가산기 설계",
+        "workbook_fragment": "workbook/q-ha-design-eq.json",
+        "explanation_fragment": "problem-explanations/q-ha-design-eq.html"
+      },
+      {
+        "id": "q-ha-design-ic",
+        "bank_question_id": "q-ha-design-ic",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-half-adder",
+          "t-gates",
+          "t-lab"
+        ],
+        "sources": [
+          {
+            "source_id": "s-e81d2c88f7288b6e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1-1; 원본 이미지 영역(이름·학번 헤더 제외)",
+            "bbox": [
+              0,
+              0.28125,
+              1,
+              0.4166666666666667
+            ],
+            "image_size": [
+              540,
+              960
+            ],
+            "question": "1-1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=A⊕B (7486), Co=A·B (7408)",
+        "answer_status": "verified",
+        "title": "7486·7408로 반가산기 설계",
+        "workbook_fragment": "workbook/q-ha-design-ic.json",
+        "explanation_fragment": "problem-explanations/q-ha-design-ic.html"
+      },
+      {
+        "id": "q-cs-roles",
+        "bank_question_id": "q-cs-roles",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-half-adder",
+          "t-full-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-df7465f9bb70ceb2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-8a9389399acc3a17",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-2e25eba813e35b57",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; OOXML 본문 P6; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=합의 한 자리 값, C=윗자리로 넘기는 올림",
+        "answer_status": "verified",
+        "title": "반가산기·전가산기의 C, S 역할",
+        "workbook_fragment": "workbook/q-cs-roles.json",
+        "explanation_fragment": "problem-explanations/q-cs-roles.html"
+      },
+      {
+        "id": "q-ha-lsb",
+        "bank_question_id": "q-ha-lsb",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-half-adder",
+          "t-chain"
+        ],
+        "sources": [
+          {
+            "source_id": "s-8a9389399acc3a17",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-2e25eba813e35b57",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 3; OOXML 본문 P13; Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-e81d2c88f7288b6e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1-2; 원본 이미지 영역(이름·학번 헤더 제외)",
+            "bbox": [
+              0,
+              0.4114583333333333,
+              1,
+              0.6354166666666666
+            ],
+            "image_size": [
+              540,
+              960
+            ],
+            "question": "1-2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "LSB에는 아래 자리 올림이 없어 올림 입력 없는 반가산기로 충분",
+        "answer_status": "verified",
+        "title": "반가산기를 LSB에만 쓰는 이유",
+        "workbook_fragment": "workbook/q-ha-lsb.json",
+        "explanation_fragment": "problem-explanations/q-ha-lsb.html"
+      },
+      {
+        "id": "q-adder-diff",
+        "bank_question_id": "q-adder-diff",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 기출 여부 미확인(시행 근거 없음)",
+        "topics": [
+          "t-full-adder",
+          "t-half-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-0150079ac1cce345",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 1; 한컴오피스 2020 로컬 COM 읽기 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "전가산기는 올림 입력 Ci를 받고 반가산기는 받지 않음",
+        "answer_status": "verified",
+        "title": "전가산기와 반가산기의 차이",
+        "workbook_fragment": "workbook/q-adder-diff.json",
+        "explanation_fragment": "problem-explanations/q-adder-diff.html"
+      },
+      {
+        "id": "q-fa-table",
+        "bank_question_id": "q-fa-table",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 기출 여부 미확인(시행 근거 없음)",
+        "topics": [
+          "t-full-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-0150079ac1cce345",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 6; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 6; 한컴오피스 2020 로컬 COM 읽기 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "6"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "011→C1 S0, 100→C0 S1, 101→C1 S0",
+        "answer_status": "verified",
+        "title": "전가산기 진리표 일부 채우기",
+        "workbook_fragment": "workbook/q-fa-table.json",
+        "explanation_fragment": "problem-explanations/q-fa-table.html"
+      },
+      {
+        "id": "q-fa-design",
+        "bank_question_id": "q-fa-design",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 제공 답안의 AND 개수가 문제 조건과 달라 답안 충돌로 표시",
+        "topics": [
+          "t-full-adder",
+          "t-gates"
+        ],
+        "sources": [
+          {
+            "source_id": "s-df7465f9bb70ceb2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 1; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "1"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 5; 한컴오피스 2020 로컬 COM 읽기 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "S=(x⊕y)⊕z, C=xy+yz+zx (AND 3, 3입력 OR 1, XOR 2). 제공 답안은 AND 2개 구성",
+        "answer_status": "disputed",
+        "title": "식(1)로 전가산기 설계",
+        "workbook_fragment": "workbook/q-fa-design.json",
+        "explanation_fragment": "problem-explanations/q-fa-design.html"
+      },
+      {
+        "id": "q-hs-bool",
+        "bank_question_id": "q-hs-bool",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 기출 여부 미확인(시행 근거 없음)",
+        "topics": [
+          "t-half-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-0150079ac1cce345",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 5; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "5"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "문항 8; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 8; 한컴오피스 2020 로컬 COM 읽기 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "8"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "B=x′y, D=x′y+xy′(=x⊕y)",
+        "answer_status": "verified",
+        "title": "반감산기의 단순화 부울 함수",
+        "workbook_fragment": "workbook/q-hs-bool.json",
+        "explanation_fragment": "problem-explanations/q-hs-bool.html"
+      },
+      {
+        "id": "q-hs-circuit",
+        "bank_question_id": "q-hs-circuit",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-half-sub",
+          "t-gates"
+        ],
+        "sources": [
+          {
+            "source_id": "s-8a9389399acc3a17",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-2e25eba813e35b57",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; OOXML 본문 P8~P9(인라인 그림 1); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 9; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 9; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "문항 9; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 9; 한컴오피스 2020 로컬 COM 읽기 렌더 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "9"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "D=x⊕y(XOR), B=x′y(NOT x, AND)",
+        "answer_status": "verified",
+        "title": "반감산기 회로 설계",
+        "workbook_fragment": "workbook/q-hs-circuit.json",
+        "explanation_fragment": "problem-explanations/q-hs-circuit.html"
+      },
+      {
+        "id": "q-sub-diff",
+        "bank_question_id": "q-sub-diff",
+        "kind": "predicted",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 예상문제: 개념 공백 보충용이며 실제 기출이 아님",
+        "topics": [
+          "t-half-sub",
+          "t-full-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 7; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 7; 한컴오피스 2020 로컬 COM 읽기 렌더 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "7"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "전감산기는 내림 입력 Bi를 받고 반감산기는 받지 않음",
+        "answer_status": "verified",
+        "title": "반감산기와 전감산기의 차이",
+        "workbook_fragment": "workbook/q-sub-diff.json",
+        "explanation_fragment": "problem-explanations/q-sub-diff.html"
+      },
+      {
+        "id": "q-fs-table",
+        "bank_question_id": "q-fs-table",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-full-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-df7465f9bb70ceb2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1~2 (표 1행은 page 1, 나머지 3행은 page 2)",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 11; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "11"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 11; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "11"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 5,
+            "printed_page": null,
+            "locator": "문항 11; 원문 page 5",
+            "bbox": null,
+            "image_size": null,
+            "question": "11"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 11; 한컴오피스 2020 로컬 COM 읽기 렌더 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "11"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "011→B1 D0, 100→B0 D1, 101→B0 D0, 110→B0 D0 (x=A,y=B,z=Bi 가정)",
+        "answer_status": "verified",
+        "title": "전감산기 간략 회로도로 진리표 채우기",
+        "workbook_fragment": "workbook/q-fs-table.json",
+        "explanation_fragment": "problem-explanations/q-fs-table.html"
+      },
+      {
+        "id": "q-fs-equation",
+        "bank_question_id": "q-fs-equation",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항의 원문 조건을 모두 수록. 확인된 기출",
+        "topics": [
+          "t-full-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-8a9389399acc3a17",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-2e25eba813e35b57",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; OOXML 본문 P16~P17(인라인 그림 2); Word 읽기 전용 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-e81d2c88f7288b6e",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 2; 원본 이미지 영역(이름·학번 헤더 제외)",
+            "bbox": [
+              0,
+              0.6354166666666666,
+              1,
+              0.9375
+            ],
+            "image_size": [
+              540,
+              960
+            ],
+            "question": "2"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "D=A⊕B⊕Bi, Bo=A′B+(A⊕B)′Bi",
+        "answer_status": "verified",
+        "title": "전감산기 회로의 D, Bo 식",
+        "workbook_fragment": "workbook/q-fs-equation.json",
+        "explanation_fragment": "problem-explanations/q-fs-equation.html"
+      },
+      {
+        "id": "q-fs-roles",
+        "bank_question_id": "q-fs-roles",
+        "kind": "past",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항을 수록. 국문(전감산기)과 영문(half-adder and full-subtractor)이 달라 해석을 밝히고, 제공 답안이 다른 내용이라 답안 충돌로 표시",
+        "topics": [
+          "t-full-sub"
+        ],
+        "sources": [
+          {
+            "source_id": "s-df7465f9bb70ceb2",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 2; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "2"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 3,
+            "printed_page": null,
+            "locator": "문항 10; 원문 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 10; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 4,
+            "printed_page": null,
+            "locator": "문항 10; 원문 page 4",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 10; 한컴오피스 2020 로컬 COM 읽기 렌더 page 3",
+            "bbox": null,
+            "image_size": null,
+            "question": "10"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "D=세 입력을 뺀 차, B=윗자리에서 빌려 와야 한다는 내림 (국문 해석)",
+        "answer_status": "disputed",
+        "title": "전감산기 D, B 출력의 역할",
+        "workbook_fragment": "workbook/q-fs-roles.json",
+        "explanation_fragment": "problem-explanations/q-fs-roles.html"
+      },
+      {
+        "id": "q-cs-roles-sub",
+        "bank_question_id": "q-cs-roles-sub",
+        "kind": "unknown",
+        "status": "included",
+        "reason": "읽을 수 있는 고유 문항을 원문 표기대로 수록. 국문(반감산기·전감산기)과 영문·제공 답안(가산기)이 달라 정답 미확정으로 표시",
+        "topics": [
+          "t-half-sub",
+          "t-full-sub",
+          "t-half-adder"
+        ],
+        "sources": [
+          {
+            "source_id": "s-0150079ac1cce345",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 3; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "3"
+          },
+          {
+            "source_id": "s-1b0720165b76716e",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-d97cf23ff2bcf4f4",
+            "pdf_page": 1,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-bda8a046c15efa89",
+            "pdf_page": 2,
+            "printed_page": null,
+            "locator": "문항 4; 원문 page 2",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          },
+          {
+            "source_id": "s-703219b7f179248b",
+            "pdf_page": null,
+            "printed_page": null,
+            "locator": "문항 4; 한컴오피스 2020 로컬 COM 읽기 렌더 page 1",
+            "bbox": null,
+            "image_size": null,
+            "question": "4"
+          }
+        ],
+        "duplicate_of": null,
+        "scope": "current",
+        "given_answer": null,
+        "derived_answer": "가산기 해석: S=합, C=올림 / 감산기 해석: D=차, B=내림 (원문 표기 불일치)",
+        "answer_status": "unresolved",
+        "title": "“반감산기·전감산기”의 C, S 역할(표기 불일치)",
+        "workbook_fragment": "workbook/q-cs-roles-sub.json",
+        "explanation_fragment": "problem-explanations/q-cs-roles-sub.html"
+      }
+    ],
+    "checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "not_run",
+      "browser": "pass"
+    },
+    "note_presentation_version": 2,
+    "review_presentation_version": 2,
+    "figure_manifest": "figures/redraw-manifest.json",
+    "generated_files": [
+      "검증결과.md",
+      "실험03_기출문제.html",
+      "실험03_기출문제.md",
+      "실험03_기출풀이.html",
+      "실험03_기출풀이.md",
+      "실험03_문제설명.html",
+      "실험03_문제설명.md",
+      "실험03_실험설명.html",
+      "실험03_실험설명.md",
+      "원문과_저작안내.md",
+      "자료/assets/note-template.html",
+      "자료/assets/review-interaction.css",
+      "자료/assets/review-interaction.js",
+      "자료/assets/review-template.html",
+      "자료/assets/template-provenance.json",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+      "자료/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+      "자료/assets/vendor/katex/LICENSE",
+      "자료/assets/vendor/katex/auto-render.min.js",
+      "자료/assets/vendor/katex/katex.min.css",
+      "자료/assets/vendor/katex/katex.min.js",
+      "자료/assets/vendor/pretendard/LICENSE",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Black.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Bold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+      "자료/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Light.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Medium.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Regular.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+      "자료/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff",
+      "자료/assets/vendor/pretendard/Pretendard-Thin.woff2",
+      "자료/assets/vendor/pretendard/pretendard.css",
+      "자료/assets/vendor/provenance.json",
+      "자료/assets/widgets.js",
+      "자료/assets/workbook/answer.html",
+      "자료/assets/workbook/problem.html",
+      "자료/assets/workbook/provenance.json",
+      "자료/authoring-index.json",
+      "자료/evidence/assets/s01-p1-q1.png",
+      "자료/evidence/assets/s01-p1-q4.png",
+      "자료/evidence/assets/s01-p1.png",
+      "자료/evidence/assets/s01-p2-q4.png",
+      "자료/evidence/assets/s01-p2.png",
+      "자료/evidence/assets/s02-p1-q2.png",
+      "자료/evidence/assets/s02-p1-q4.png",
+      "자료/evidence/assets/s02-p1.png",
+      "자료/evidence/assets/s03-p1.png",
+      "자료/evidence/assets/s04-q1-1.png",
+      "자료/evidence/assets/s04-q1-2.png",
+      "자료/evidence/assets/s04-q2.png",
+      "자료/evidence/assets/s05-p1-a2.png",
+      "자료/evidence/assets/s05-p1.png",
+      "자료/evidence/assets/s05-p2-a5.png",
+      "자료/evidence/assets/s05-p2.png",
+      "자료/evidence/assets/s05-p3.png",
+      "자료/evidence/assets/s06-p1.png",
+      "자료/evidence/assets/s06-p2.png",
+      "자료/evidence/assets/s06-p3.png",
+      "자료/evidence/assets/s07-p1.png",
+      "자료/evidence/assets/s07-p2.png",
+      "자료/evidence/assets/s07-p3.png",
+      "자료/evidence/assets/s07-p4.png",
+      "자료/evidence/assets/s07-p5.png",
+      "자료/evidence/assets/s08-p1.png",
+      "자료/evidence/assets/s08-p2.png",
+      "자료/evidence/assets/s08-p3.png",
+      "자료/evidence/assets/s09-p1.png",
+      "자료/evidence/question-bank.json",
+      "자료/figures/adder-chain.svg",
+      "자료/figures/full-adder.svg",
+      "자료/figures/full-subtractor.svg",
+      "자료/figures/gates-used.svg",
+      "자료/figures/half-adder.svg",
+      "자료/figures/half-subtractor.svg",
+      "자료/figures/lab-led.svg",
+      "자료/figures/questions/q-fs-equation-given-01.png",
+      "자료/figures/questions/q-fs-equation-given-01.svg",
+      "자료/figures/questions/q-fs-table-given-01.png",
+      "자료/figures/questions/q-fs-table-given-01.svg",
+      "자료/figures/redraw-manifest.json",
+      "자료/figures/solutions/q-fa-design-solution-01.png",
+      "자료/figures/solutions/q-fa-design-solution-01.svg",
+      "자료/figures/solutions/q-fa-design-solution-02.png",
+      "자료/figures/solutions/q-fa-design-solution-02.svg",
+      "자료/figures/solutions/q-fs-equation-solution-01.png",
+      "자료/figures/solutions/q-fs-equation-solution-01.svg",
+      "자료/figures/solutions/q-fs-table-solution-01.png",
+      "자료/figures/solutions/q-fs-table-solution-01.svg",
+      "자료/figures/solutions/q-ha-design-eq-solution-01.png",
+      "자료/figures/solutions/q-ha-design-eq-solution-01.svg",
+      "자료/figures/solutions/q-ha-design-ic-solution-01.png",
+      "자료/figures/solutions/q-ha-design-ic-solution-01.svg",
+      "자료/figures/solutions/q-hs-circuit-solution-01.png",
+      "자료/figures/solutions/q-hs-circuit-solution-01.svg",
+      "자료/manifest.json",
+      "자료/problem-explanations/q-adder-diff.html",
+      "자료/problem-explanations/q-cs-roles-sub.html",
+      "자료/problem-explanations/q-cs-roles.html",
+      "자료/problem-explanations/q-fa-design.html",
+      "자료/problem-explanations/q-fa-table.html",
+      "자료/problem-explanations/q-fs-equation.html",
+      "자료/problem-explanations/q-fs-roles.html",
+      "자료/problem-explanations/q-fs-table.html",
+      "자료/problem-explanations/q-ha-design-eq.html",
+      "자료/problem-explanations/q-ha-design-ic.html",
+      "자료/problem-explanations/q-ha-lsb.html",
+      "자료/problem-explanations/q-ha-table.html",
+      "자료/problem-explanations/q-hs-bool.html",
+      "자료/problem-explanations/q-hs-circuit.html",
+      "자료/problem-explanations/q-sub-diff.html",
+      "자료/problem-explanations/검증결과.md",
+      "출처와_문항목록.md"
+    ],
+    "problem_explanation_version": 1,
+    "explanation_checks": {
+      "source_visual": "pass",
+      "content": "self_review",
+      "independent": "not_run",
+      "browser": "pass"
+    }
+  }
+}

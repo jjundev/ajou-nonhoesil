@@ -1,0 +1,161 @@
+{
+  "three_input_rows": {
+    "000": {
+      "AND": 0,
+      "OR": 0,
+      "NOR": 1,
+      "XOR": 0,
+      "D": 1,
+      "E": 0,
+      "Q": 1,
+      "NAND-XOR": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "001": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 1,
+      "D": 1,
+      "E": 0,
+      "Q": 1,
+      "NAND-XOR": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "010": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 1,
+      "D": 0,
+      "E": 0,
+      "Q": 0,
+      "NAND-XOR": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "011": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 0,
+      "D": 0,
+      "E": 1,
+      "Q": 1,
+      "NAND-XOR": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "100": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 1,
+      "D": 0,
+      "E": 0,
+      "Q": 0,
+      "NAND-XOR": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "101": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 0,
+      "D": 0,
+      "E": 0,
+      "Q": 0,
+      "NAND-XOR": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "110": {
+      "AND": 0,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 0,
+      "D": 0,
+      "E": 0,
+      "Q": 0,
+      "NAND-XOR": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "CMOS": [
+        true,
+        false
+      ]
+    },
+    "111": {
+      "AND": 1,
+      "OR": 1,
+      "NOR": 0,
+      "XOR": 1,
+      "D": 0,
+      "E": 1,
+      "Q": 1,
+      "NAND-XOR": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "CMOS": [
+        false,
+        true
+      ]
+    }
+  },
+  "demorgan_rows": 32,
+  "switching_rows": 32,
+  "logicdiagram_rows": 16,
+  "existing_fragment_sections_exact": 12,
+  "reviewer": "author self-review; independent reviewer not run"
+}

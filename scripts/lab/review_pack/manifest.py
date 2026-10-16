@@ -35,7 +35,7 @@ def output_names(experiment, *, review_presentation_version=None, problem_explan
     names={f'{kind}_{ext}':f'{base}_{label}.{ext}' for kind,label in [('note','실험설명'),('review','기출풀이')] for ext in ('html','md')}
     if review_presentation_version == 2:
         names.update({f'question_{ext}':f'{base}_기출문제.{ext}' for ext in ('html','md')})
-    if problem_explanation_version == 1:
+    if problem_explanation_version in (1,2):
         names.update({f'explanation_{ext}':f'{base}_문제설명.{ext}' for ext in ('html','md')})
     return names
 
@@ -52,8 +52,8 @@ def validate_manifest(data):
         errors.append('review_presentation_version must be 2 or absent')
     explanation='problem_explanation_version' in data
     if explanation:
-        if type(data['problem_explanation_version']) is not int or data['problem_explanation_version']!=1 or not modern:
-            errors.append('problem_explanation_version requires version 1 and workbook version 2')
+        if type(data['problem_explanation_version']) is not int or data['problem_explanation_version'] not in (1,2) or not modern:
+            errors.append('problem_explanation_version requires version 1 or 2 and workbook version 2')
         checks=data.get('explanation_checks',{})
         for key in ('source_visual','content','independent','browser'):
             if not isinstance(checks,dict) or checks.get(key) not in {'pass','fail','not_run','self_review'}:
