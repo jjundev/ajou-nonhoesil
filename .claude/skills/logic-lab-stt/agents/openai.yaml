@@ -1,0 +1,4 @@
+interface:
+  display_name: "실험영상 음성 전사"
+  short_description: "Gemini API로 실험영상의 발언과 근사 시간 정보를 전사"
+  default_prompt: "$logic-lab-stt로 실험영상의 음성을 원문 전사해줘. 원본을 보존하고 전사 MD와 출처 JSON을 만들어줘."

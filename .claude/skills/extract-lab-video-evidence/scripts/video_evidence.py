@@ -1,12 +1,13 @@
 """Local, source-preserving mechanics for agent-selected laboratory video evidence.
 
-No speech recognition or circuit inference. Selection lives in manifest.json.
+Optional project-local Gemini transcription; no circuit inference. Selection lives in manifest.json.
 Requires ffmpeg/ffprobe on PATH and Pillow for images/Korean captions.
 """
 import argparse
 from bisect import bisect_left
 from fractions import Fraction
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -167,6 +168,69 @@ def inspect_run(experiment_dir, label, sources, transcripts, mode, deliver_dir):
 def inputs_unchanged(m):
     return all(Path(s["path"]).is_file() and sha256(s["path"]) == s["sha256_before"]
                for s in m["sources"].values())
+
+
+def load_transcriber():
+    script = Path(__file__).resolve().parents[2] / "logic-lab-stt" / "scripts" / "transcribe.py"
+    spec = importlib.util.spec_from_file_location("logic_lab_stt", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.transcribe
+
+
+def transcribe_run(manifest, env_file=None, transcriber=None):
+    """Fill missing transcripts; failures remain explicit without preventing frame analysis."""
+    m = load(manifest)
+    if not inputs_unchanged(m):
+        raise ValueError("전사 전 원본 또는 등록 전사본의 해시가 변경됐습니다.")
+    records = m.setdefault("transcription", {})
+    default_env = Path(__file__).resolve().parents[4] / ".env"
+    env_file = env_file or (default_env if default_env.is_file() else None)
+    videos = [(sid, source) for sid, source in m["sources"].items() if source["kind"] == "video"]
+    for sid, source in videos:
+        unknown = f"자동 전사 미확인 ({sid}): 실패 상태를 확인하고 transcribe 명령으로 재개하세요."
+        if f"transcript_{sid}" in m["sources"]:
+            records.setdefault(sid, {"status": "provided"})
+            continue
+        if not any(s["codec_type"] == "audio" for s in source["probe"]["streams"]):
+            records[sid] = {"status": "no_audio"}
+            continue
+        try:
+            if transcriber is None:
+                transcriber = load_transcriber()
+            result = transcriber(source["path"], Path(m["run_dir"]) / "transcripts" / sid,
+                                 timestamps=True, env_file=env_file)
+            if result.get("status") != "complete":
+                raise ValueError("전사 완료 응답이 없습니다.")
+            if sha256(source["path"]) != source["sha256_before"]:
+                raise ValueError("전사 중 원본이 변경됐습니다.")
+            if result["source_sha256"] != source["sha256_before"]:
+                raise ValueError("전사 결과의 원본 해시가 다릅니다.")
+            additions = {}
+            for field, refid, kind in (("md", f"transcript_{sid}", "transcript"),
+                                       ("json", f"transcript_metadata_{sid}", "transcript_metadata")):
+                path = actual_path(result[field])
+                if not path.is_relative_to(Path(m["run_dir"]) / "transcripts" / sid):
+                    raise ValueError("전사 결과 경로가 실행 폴더 밖입니다.")
+                if sha256(path) != result[field + "_sha256"]:
+                    raise ValueError("전사 결과 해시가 다릅니다.")
+                additions[refid] = {"kind": kind, "video_id": sid, "path": str(path),
+                    "sha256_before": result[field + "_sha256"], "size": path.stat().st_size,
+                    "origin": "gemini_api", "model": result["model"]}
+            m["sources"].update(additions)
+            records[sid] = {"status": "complete", "model": result["model"],
+                            "metadata_source_id": f"transcript_metadata_{sid}"}
+            m["unknowns"] = [x for x in m["unknowns"] if x != unknown]
+        except Exception:
+            # Raw provider/transport exceptions may include credentials. Keep only a safe status.
+            records[sid] = {"status": "failed", "error": "transcription_failed",
+                            "state_dir": str(Path(m["run_dir"]) / "transcripts" / sid)}
+            if unknown not in m["unknowns"]:
+                m["unknowns"].append(unknown)
+        save(manifest, m)
+    save(manifest, m)
+    return {"manifest": str(manifest), "sources": records,
+            "failed": sum(r.get("status") == "failed" for r in records.values())}
 
 
 def catalog(m, sid):
@@ -660,6 +724,11 @@ def main():
     inspect.add_argument("--transcript", action="append", default=[], metavar="p1=PATH")
     inspect.add_argument("--mode", choices=["photos", "video", "both"], default="photos")
     inspect.add_argument("--deliver-dir", type=Path, default=Path.home() / "Downloads")
+    inspect.add_argument("--env-file", type=Path)
+    inspect.add_argument("--no-transcribe", action="store_true", help="자동 전사 생략 (압축만 요청할 때 사용)")
+    stt = commands.add_parser("transcribe", help="누락/실패한 전사본 자동 생성 또는 재개")
+    stt.add_argument("manifest", type=Path)
+    stt.add_argument("--env-file", type=Path)
     preview = commands.add_parser("preview", help="시각을 표시한 전체/상세 프레임 미리보기")
     preview.add_argument("manifest", type=Path)
     preview.add_argument("--source-id", required=True)
@@ -685,6 +754,12 @@ def main():
                     raise ValueError("같은 원본의 전사본 중복 지정")
                 transcripts[sid] = path
             result = str(inspect_run(folder, args.label, args.source, transcripts, args.mode, args.deliver_dir))
+            if not args.no_transcribe:
+                transcription = transcribe_run(Path(result), env_file=args.env_file)
+                if transcription["failed"]:
+                    print("자동 전사 일부 실패: manifest의 transcription/unknowns를 확인하세요.", file=sys.stderr)
+        elif args.command == "transcribe":
+            result = transcribe_run(args.manifest, env_file=args.env_file)
         elif args.command == "preview":
             result = preview_run(args.manifest, args.source_id, args.start, args.end, args.step)
         elif args.command == "build":
@@ -692,7 +767,8 @@ def main():
         else:
             result = verify_run(args.manifest)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        return int(args.command == "verify" and not result["complete"])
+        return int((args.command == "verify" and not result["complete"])
+                   or (args.command == "transcribe" and result["failed"] > 0))
     except (ValueError, RuntimeError, FileExistsError, KeyError, OSError) as error:
         print(f"오류: {error}", file=sys.stderr)
         return 2

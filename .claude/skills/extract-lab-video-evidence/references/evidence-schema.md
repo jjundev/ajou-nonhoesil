@@ -7,7 +7,7 @@
 | 필드 | 작성 주체 | 내용 |
 |---|---|---|
 | `schema_version`, `run_dir`, `run_label`, `mode`, `outputs` | inspect | 실행 식별·모드·예약한 저장 위치 |
-| `sources` | inspect/verify | `p1`, `p2` 영상 및 `transcript_p1` 전사본. 원본 경로·해시·길이·미디어 정보 |
+| `sources` | inspect/transcribe/verify | `p1`, `p2` 영상 및 `transcript_p1` 전사본. 원본 경로·해시·길이·미디어 정보 |
 | `scenes` | 모델 | 원본 구간, 교안 항목(`item_id`, 미확정 null), 화면 관찰, 발언, 미확인 사항 |
 | `captures` | 모델 → build | 사진 선택 시각·장면 id. 생성 시 실제 프레임 번호·PTS·경로 추가 |
 | `pairs` | 모델 → build | 두 사진 id·제목·근거 주석·연속성. 같은 사진을 여러 비교에 재사용 가능 |
@@ -91,9 +91,9 @@
 ## 실행과 복구
 
 - `inspect --experiment N`은 저장소의 `scripts.lab.config.experiment_dir`를 사용한다. 경로 정규화는 실제 디렉터리 이름으로 해결한다.
-- `--source`를 지정한 순서로 `p1`, `p2`…가 된다. `--transcript p1=경로`는 생략 가능하다. 전사본이 없으면 `speech`를 비운다.
+- `--source`를 지정한 순서로 `p1`, `p2`…가 된다. `--transcript p1=경로`는 생략 가능하다. CLI `inspect`는 제공 전사본이 없는 원본을 `logic-lab-stt`로 자동 전사한다. `--no-transcribe`이면 생략하고 `speech`를 비운다. 직접 Python `inspect_run`은 기존처럼 조사만 수행한다.
 - 모드는 `photos`(기본), `video`, `both`다. 선택 자료는 이번 요청에 필요한 것만 채운다.
-- 압축만 요청하면 `video` 모드로 전체 구간을 `cuts`에 지정한다. `scenes`·`captures`·`pairs`는 비워도 된다. 새 영상은 원본에서 직접 압축하며 기본 fps는 첫 영상 평균 fps와 30 중 작은 값이다. 짧은 전이를 출력에 보존할 필요가 있으면 `render.fps`를 명시하고 원본과 대조한다.
+- 압축만 요청하면 `video` 모드와 `--no-transcribe`로 전체 구간을 `cuts`에 지정한다. `scenes`·`captures`·`pairs`는 비워도 된다. 새 영상은 원본에서 직접 압축하며 기본 fps는 첫 영상 평균 fps와 30 중 작은 값이다. 짧은 전이를 출력에 보존할 필요가 있으면 `render.fps`를 명시하고 원본과 대조한다.
 - `preview`는 기본 1초 간격, 조작 부근은 `--step 0.1` 등으로 좁힌다. 같은 미리보기 이름은 덮어쓰지 않는다. 필요하면 기존 미리보기를 다시 연다.
 - 프레임 목록은 원본별 한 번 조사해 `frames/`에 캐시한다. 여러 사진 추출은 원본별 한 번의 디코딩으로 묶는다.
 - `build`는 이미 존재하는 사진 폴더·영상·ZIP을 덮어쓰지 않는다. 중간 실패 시 `재현명령.txt`와 오류를 확인하고, 잘못된 선택을 고쳐 새 `inspect` 실행에 옮긴다. 생성물을 지우는 대신 공통 `_v2` 버전을 사용한다.
@@ -109,3 +109,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
 ```
 
 합성 미디어는 임시 폴더에서만 만든다. 실제 촬영본으로 재검증할 때에도 기존 결과 폴더를 재사용하지 않고 별도의 임시 실험 폴더·전달 폴더를 지정한다.
+
+## 자동 전사 근거
+
+`transcription`은 원본 id별 provided/complete/no_audio/failed 상태다. 자동 완료 시 `sources.transcript_p1`의 kind는 transcript, origin은 gemini_api이며 모델을 기록한다. `transcript_metadata_p1`은 kind=transcript_metadata로 전사 JSON을 가리킨다. MD와 JSON 모두 원본과 함께 해시 무결성을 검사한다. 수동 전사는 그대로 우선 사용한다.
+
+누락/실패한 원본은 `transcribe MANIFEST [--env-file ENV]`로 재개한다. 실패 상태와 unknowns를 남기되 프레임 분석은 가능하다. 성공 뒤 해당 실패 안내를 제거한다. transcribe 종료 코드는 모두 처리됨 0, 일부 실패 1, 잘못된 입력/원본 변조 2다. inspect는 일부 전사 실패를 stderr로 알리며 manifest 경로를 정상 반환한다.
+
+전사 결과는 실행 폴더 transcripts 안에 보관하며 자동 전사는 review.audio를 변경하지 않는다. 타임스탬프는 실제 프레임 선택 시각을 덮어쓰지 않는다.
