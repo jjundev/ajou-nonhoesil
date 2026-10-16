@@ -1,0 +1,92 @@
+[
+  {
+    "id": "set",
+    "source_id": "p1",
+    "start_s": 11,
+    "end_s": 16,
+    "t3_row": 1,
+    "transcript_evidence": "00:11 Reset=1 및 위 Q 점등 설명",
+    "visible_observation": "위 LED 점등",
+    "uncertainties": "Set=0·핀 전압은 독립 확인 안 됨"
+  },
+  {
+    "id": "reset",
+    "source_id": "p1",
+    "start_s": 16,
+    "end_s": 28,
+    "t3_row": 2,
+    "transcript_evidence": "00:16 Set/Reset 반대 조작; 00:23 Set=1 Reset=0",
+    "visible_observation": "약 21.0~21.1초 사이 위 점등에서 아래 점등 상태로 바뀜",
+    "uncertainties": "정확한 입력 전압·조작 순간 일부 손 가림"
+  },
+  {
+    "id": "clk0",
+    "source_id": "p1",
+    "start_s": 28,
+    "end_s": 42,
+    "t3_row": 3,
+    "transcript_evidence": "00:28 CLK=0, Reset=1; 00:36 유지",
+    "visible_observation": "아래 LED 점등 지속",
+    "uncertainties": "J/K를 바꾸어도 유지되는지 확인 불가"
+  },
+  {
+    "id": "hold",
+    "source_id": "p1",
+    "start_s": 42,
+    "end_s": 61,
+    "t3_row": 4,
+    "transcript_evidence": "00:42 CLK=1; 00:47 JK 유지; 00:55 CLK=0",
+    "visible_observation": "전후 아래 LED 점등",
+    "uncertainties": "J=K=0 명시 없음; 에지 방향 독립 확인 불가"
+  },
+  {
+    "id": "k1",
+    "source_id": "p1",
+    "start_s": 61,
+    "end_s": 95,
+    "t3_row": 5,
+    "transcript_evidence": "01:01 Set=Reset=1, 다섯째 행; 01:11 K=1; 01:24 Q′ 점등",
+    "visible_observation": "조작 전후 아래 LED 점등",
+    "uncertainties": "J=0 독립 확인 불가; 출력이 이미 0이어서 새 Reset 전이를 입증하지 않음"
+  },
+  {
+    "id": "j1k0",
+    "source_id": "p1",
+    "start_s": 95,
+    "end_s": 117,
+    "t3_row": 6,
+    "transcript_evidence": "01:35 K=0 J=1; 01:44 CLK=1 설명; 01:52 CLK=0 후 유지",
+    "visible_observation": "약 109.7~109.8초 사이 아래 점등에서 위 점등으로 바뀜",
+    "uncertainties": "전사와 동작 시각 차이; 하강 에지 여부 확인 불가"
+  },
+  {
+    "id": "failed_toggle",
+    "source_id": "p1",
+    "start_s": 117,
+    "end_s": 134.242433,
+    "t3_row": 7,
+    "transcript_evidence": "01:57 J=K=1; 02:04 클럭 조작; 02:10 반대 상태가 나와야 하는데 발언",
+    "visible_observation": "손 가림 후에도 위 LED 점등; 마지막 시도 성공 확인 못함",
+    "uncertainties": "선이 깊게 꽂힌 문제 및 조정 해결은 사용자 설명; 해당 시도 편집본 제외"
+  },
+  {
+    "id": "repaired",
+    "source_id": "p2",
+    "start_s": 0,
+    "end_s": 7.010644,
+    "t3_row": null,
+    "transcript_evidence": "수정 후 촬영 재개는 사용자 설명; 2편 발언은 맞고/끝",
+    "visible_observation": "아래 LED 점등 상태 지속, 확인한 0.1초 간격 표본에 반전 없음",
+    "uncertainties": "입력 상태 재진술·연속적인 토글 조작/에지 없음"
+  },
+  {
+    "id": "power_off",
+    "source_id": "p2",
+    "start_s": 7.010644,
+    "end_s": 8.935189,
+    "t3_row": null,
+    "transcript_evidence": "00:06 끝 발언, 전원 차단 소리는 전사 주석",
+    "visible_observation": "7초 이후 손이 전원 쪽으로 접근, 약8.1~8.3초 LED 소등",
+    "uncertainties": "전사 타임스탬프는 근사값; 편집본에서 제거"
+  }
+]

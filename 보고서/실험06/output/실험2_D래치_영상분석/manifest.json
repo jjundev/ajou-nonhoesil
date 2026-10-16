@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "run_dir": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험2_D래치_영상분석",
+  "run_label": "실험2_D래치",
+  "mode": "photos",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험2.mp4",
+      "sha256_before": "76b8cd0adf93d02f964d6e23c5c1c1025459e6238fb9e31d7cf755713b2f846f",
+      "size": 47274604,
+      "duration_s": 25.597556,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1920,
+            "height": 1080,
+            "coded_width": 1920,
+            "coded_height": 1088,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "120/1",
+            "avg_frame_rate": "3456000/115189",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2303780,
+            "duration": "25.597556",
+            "bit_rate": "14514492",
+            "nb_frames": "768",
+            "extradata_size": 110,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:24:22.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle"
+            },
+            "side_data_list": [
+              {
+                "side_data_type": "Display Matrix",
+                "displaymatrix": "\n00000000:            0       65536           0\n00000001:       -65536           0           0\n00000002:            0           0  1073741824\n",
+                "rotation": -90
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.2",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 1227757,
+            "duration": "25.578271",
+            "bit_rate": "256028",
+            "nb_frames": "1199",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:24:22.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/Users/hyunjun_macbook_pro/Downloads/실험2.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "25.597556",
+          "size": "47274604",
+          "bit_rate": "14774724",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-16T09:24:22.000000Z",
+            "location": "+37.2830+127.0434/",
+            "location-eng": "+37.2830+127.0434/",
+            "com.android.version": "16",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "76b8cd0adf93d02f964d6e23c5c1c1025459e6238fb9e31d7cf755713b2f846f"
+    },
+    "transcript_p1": {
+      "kind": "transcript",
+      "video_id": "p1",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험2 전사본.md",
+      "sha256_before": "b9f083d5655fc0979c4cbb118f307baead0f6b2962db8f844340456b2e2c6524",
+      "size": 636,
+      "sha256_after": "b9f083d5655fc0979c4cbb118f307baead0f6b2962db8f844340456b2e2c6524"
+    }
+  },
+  "scenes": [
+    {
+      "id": "reset",
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 9.5,
+      "item_id": "E6.P2-1/T2/2",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 0,
+          "text": "지금 상태가 E가 1이고"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 4,
+          "text": "D가 지금 0인 상태에서 맨 위에 있는 Q 프라임(Q')이 켜지고 있다."
+        }
+      ],
+      "observation": "위 LED 점등·아래 LED 소등. 선택 사진은 손 가림 없이 보드와 두 LED가 보임. E=1,D=0과 Q' 대응은 전사 기준.",
+      "unknowns": [
+        "입력 E·D 값은 제공 전사본 기준이며 실제 전압·레일 접속을 독립 측정하지 않음.",
+        "위 LED=Q', 아래 LED=Q 대응은 전사 4초·14초 발언과 영상의 LED 위치 대조 기준이며 실물 출력 핀까지 배선을 추적하지 않음."
+      ]
+    },
+    {
+      "id": "data_change",
+      "source_id": "p1",
+      "start_s": 9.5,
+      "end_s": 18,
+      "item_id": "E6.P2-1/T2/3",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 11,
+          "text": "위에 있는 D도 입력을 1로 바꾸게 된다면"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 14,
+          "text": "그럼 이번엔 Q가 켜지고"
+        }
+      ],
+      "observation": "11.500878초 미리보기에서는 위 LED 점등, 11.600856초 미리보기에서는 위 LED 소등·아래 LED 점등. 이는 0.1초 간격 표본이며 정확한 전환 시각은 확정하지 않음. 이후 아래 LED 점등 상태. E=1은 앞 설명의 연속 맥락, D=1은 11초 전사 기준.",
+      "unknowns": [
+        "입력 E·D 값은 제공 전사본 기준이며 실제 전압·레일 접속을 독립 측정하지 않음.",
+        "위 LED=Q', 아래 LED=Q 대응은 전사 4초·14초 발언과 영상의 LED 위치 대조 기준이며 실물 출력 핀까지 배선을 추적하지 않음.",
+        "조작 중 손이 입력 레일 일부를 가려 실제 D 전압 전환 시각은 확인하지 못함."
+      ]
+    },
+    {
+      "id": "disable_hold",
+      "source_id": "p1",
+      "start_s": 18,
+      "end_s": 25.597556,
+      "item_id": "E6.P2-1/T2/1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 18,
+          "text": "그럼 E를 다시 0으로 만들게 된다면"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 21,
+          "text": "이전 상태를 유지하게 된다."
+        }
+      ],
+      "observation": "E를 0으로 바꾼다는 설명 전후에 위 LED 소등·아래 LED 점등 상태가 이어짐. 후반 손이 물러난 24초 사진에서도 같은 상태. 새 출력 전이는 관찰하지 않음.",
+      "unknowns": [
+        "입력 E·D 값은 제공 전사본 기준이며 실제 전압·레일 접속을 독립 측정하지 않음.",
+        "위 LED=Q', 아래 LED=Q 대응은 전사 4초·14초 발언과 영상의 LED 위치 대조 기준이며 실물 출력 핀까지 배선을 추적하지 않음.",
+        "E=0에서 D를 반대 값으로 다시 바꾸는 장면은 확인되지 않음. 이 영상만으로 D 변화와 무관한 유지 동작 전체를 검증할 수 없음.",
+        "E 조작 중 손이 입력 접속을 가려 E=0 완료 시각은 발언만으로 특정하지 않음."
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "reset_photo",
+      "source_id": "p1",
+      "at_s": 5,
+      "scene_id": "reset",
+      "title": "Reset_E1_D0_전사기준",
+      "observation": "E=1,D=0은 전사 기준. 위 LED(Q', 전사 대응) 점등·아래 LED(Q) 소등.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출/01_Reset_E1_D0_전사기준_p1_00005.002.png",
+      "sha256": "86b836b5612f5c571e6c15dcfe05d569f6ba842b1f3032bed9e6a438b716a1ce",
+      "frame_index": 150,
+      "frame_pts_s": 5.0024,
+      "source_time_s": 5.0024
+    },
+    {
+      "id": "set_photo",
+      "source_id": "p1",
+      "at_s": 14,
+      "scene_id": "data_change",
+      "title": "Set_E1_D1_전사기준",
+      "observation": "E=1,D=1은 전사 기준. 위 LED(Q') 소등·아래 LED(Q, 전사 대응) 점등. 손가락은 보드 하단에 있으나 LED와 출력 배선을 가리지 않음.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출/02_Set_E1_D1_전사기준_p1_00014.025.png",
+      "sha256": "a2369a04e6a6a7d663dc2f780b5b1c7b90f3d0e1333395a39c1378cae7be1d79",
+      "frame_index": 421,
+      "frame_pts_s": 14.025278,
+      "source_time_s": 14.025278
+    },
+    {
+      "id": "hold_photo",
+      "source_id": "p1",
+      "at_s": 24,
+      "scene_id": "disable_hold",
+      "title": "E0설명후_출력유지",
+      "observation": "E=0 설명 후 위 LED(Q') 소등·아래 LED(Q) 점등이 지속. 손 가림 없음. E=0에서 추가 D 변경은 미확인.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출/03_E0설명후_출력유지_p1_00024.023.png",
+      "sha256": "5dc0bf46d36236a8fd8063a06d708277394a24bbb98e3564d7690e64d1f22256",
+      "frame_index": 721,
+      "frame_pts_s": 24.022933,
+      "source_time_s": 24.022933
+    }
+  ],
+  "pairs": [
+    {
+      "id": "data_pair",
+      "title": "D 변경 전후 LED 상태",
+      "capture_ids": [
+        "reset_photo",
+        "set_photo"
+      ],
+      "continuity": "same_recording",
+      "note": "조건은 전사 기준: E=1, D=0 → D=1. 왼쪽 위 LED(Q') 점등 → 오른쪽 아래 LED(Q) 점등. LED 이름은 전사와 화면 위치 대조 기준이며 전압·핀 대응은 독립 확인하지 않음.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출/비교/01_D_변경_전후_LED_상태.png"
+    },
+    {
+      "id": "hold_pair",
+      "title": "E를 0으로 바꾼다는 설명 전후",
+      "capture_ids": [
+        "set_photo",
+        "hold_photo"
+      ],
+      "continuity": "same_recording",
+      "note": "조건은 전사 기준: E=1 → E=0. 두 사진 모두 아래 LED(Q) 점등·위 LED(Q') 소등. 새 출력 전이 없음. E=0에서 D를 다시 바꾸는 검증 장면은 확인되지 않음.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출/비교/02_E를_0으로_바꾼다는_설명_전후.png"
+    }
+  ],
+  "cuts": [],
+  "unknowns": [
+    "입력 E·D 값은 제공 전사본 기준이며 실제 전압·레일 접속을 독립 측정하지 않음.",
+    "위 LED=Q', 아래 LED=Q 대응은 전사 4초·14초 발언과 영상의 LED 위치 대조 기준이며 실물 출력 핀까지 배선을 추적하지 않음.",
+    "전사본의 시각은 근사값. 사진 이름·시각은 원본 실제 프레임 시각을 사용함.",
+    "E=0에서 D를 다시 바꾸는 장면은 확인되지 않아 진리표의 모든 D 조건에 대한 유지 검증으로 일반화하지 않음.",
+    "네이티브 직접 청취 수단이 없어 오디오는 직접 확인하지 않았으며 제공 전사본을 사용함."
+  ],
+  "render": {},
+  "review": {
+    "photos": "verified",
+    "boundaries": "pending",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험2_D래치_영상추출",
+    "video": "/Users/hyunjun_macbook_pro/Downloads/실험06_실험2_D래치_편집본.mp4",
+    "zip": "/Users/hyunjun_macbook_pro/Downloads/실험06_실험2_D래치_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "pending",
+      "audio": "unavailable"
+    }
+  },
+  "context": {
+    "manual": "강의노트/실험6. Latch & Flip-Flop.pdf p8, 직접 렌더해 회로와 T2 대조",
+    "spec": "보고서/실험06/체크리스트/명세.md E6.P2-1 T2",
+    "netlist": "보고서/실험06/결선도/netlist.md C2",
+    "scope": "두번째 촬영본 실험2.mp4를 전사 및 두 IC·출력 관찰로 D Latch 항목에 연결. 표 전체 검증 판정이 아님."
+  },
+  "review_notes": {
+    "photos": "全3 PNG and 全2 comparison sheets opened for visual review; LED visibility, orientation, legible captions and source timestamps checked. Set photo has a hand at board bottom but LEDs and output wiring are visible.",
+    "boundaries": "not applicable: photos-only mode",
+    "audio": "unavailable: provided transcript used without direct listening"
+  }
+}

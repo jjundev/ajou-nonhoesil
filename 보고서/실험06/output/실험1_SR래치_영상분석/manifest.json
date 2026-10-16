@@ -1,0 +1,716 @@
+{
+  "schema_version": 1,
+  "run_dir": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석",
+  "run_label": "실험1_SR래치",
+  "mode": "both",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4",
+      "sha256_before": "4f772fc8829887b92de6cf7b04877d198d30d2c572838592c0265a789c1c6cd2",
+      "size": 155923841,
+      "duration_s": 84.345489,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1920,
+            "height": 1080,
+            "coded_width": 1920,
+            "coded_height": 1088,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "113895000/3795547",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 7591094,
+            "duration": "84.345489",
+            "bit_rate": "14529043",
+            "nb_frames": "2531",
+            "extradata_size": 110,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:14:03.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle"
+            },
+            "side_data_list": [
+              {
+                "side_data_type": "Display Matrix",
+                "displaymatrix": "\n00000000:            0       65536           0\n00000001:       -65536           0           0\n00000002:            0           0  1073741824\n",
+                "rotation": -90
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.2",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 4047809,
+            "duration": "84.329354",
+            "bit_rate": "256011",
+            "nb_frames": "3953",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:14:03.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "84.345489",
+          "size": "155923841",
+          "bit_rate": "14789062",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-16T09:14:03.000000Z",
+            "location": "+37.2830+127.0434/",
+            "location-eng": "+37.2830+127.0434/",
+            "com.android.version": "16",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "4f772fc8829887b92de6cf7b04877d198d30d2c572838592c0265a789c1c6cd2"
+    },
+    "p2": {
+      "kind": "video",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4",
+      "sha256_before": "a393dae324fbaa2077397c2f2a6e862d1a5f9d9ec6acffc0188f8a65db90bb79",
+      "size": 22541025,
+      "duration_s": 12.248744,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1920,
+            "height": 1080,
+            "coded_width": 1920,
+            "coded_height": 1088,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "120/1",
+            "avg_frame_rate": "33030000/1102387",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 1102387,
+            "duration": "12.248744",
+            "bit_rate": "14462128",
+            "nb_frames": "367",
+            "extradata_size": 110,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:19:14.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle"
+            },
+            "side_data_list": [
+              {
+                "side_data_type": "Display Matrix",
+                "displaymatrix": "\n00000000:            0       65536           0\n00000001:       -65536           0           0\n00000002:            0           0  1073741824\n",
+                "rotation": -90
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.2",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 585719,
+            "duration": "12.202479",
+            "bit_rate": "256064",
+            "nb_frames": "572",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-16T09:19:14.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "12.248744",
+          "size": "22541025",
+          "bit_rate": "14722178",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-16T09:19:14.000000Z",
+            "location": "+37.2830+127.0434/",
+            "location-eng": "+37.2830+127.0434/",
+            "com.android.version": "16",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "a393dae324fbaa2077397c2f2a6e862d1a5f9d9ec6acffc0188f8a65db90bb79"
+    },
+    "transcript_p1": {
+      "kind": "transcript",
+      "video_id": "p1",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편 전사본.md",
+      "sha256_before": "728a812b285c0504b13316ecee9cfbcd69f9f67babca221ddb46580f9964bb81",
+      "size": 1351,
+      "sha256_after": "728a812b285c0504b13316ecee9cfbcd69f9f67babca221ddb46580f9964bb81"
+    },
+    "transcript_p2": {
+      "kind": "transcript",
+      "video_id": "p2",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편 전사본.md",
+      "sha256_before": "2a2b0d86977ea0ec901affa0cd4948ed9b2806511330014630520c17d2b5ee20",
+      "size": 374,
+      "sha256_after": "2a2b0d86977ea0ec901affa0cd4948ed9b2806511330014630520c17d2b5ee20"
+    }
+  },
+  "scenes": [
+    {
+      "id": "reset",
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 9,
+      "item_id": "E6.P1/T1/3",
+      "observation": "위 LED 점등, 아래 LED 소등. 두 LED가 가려지지 않은 초기 안정 상태.",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 1,
+          "text": "E=1, S=0, R=1이며 위쪽 Q 프라임이 켜졌다는 설명"
+        }
+      ],
+      "unknowns": [
+        "입력값과 위 LED=Q' 대응은 전사본 기준. 실물 LED부터 IC 핀까지 전 구간을 독립 추적하지 못함."
+      ]
+    },
+    {
+      "id": "set",
+      "source_id": "p1",
+      "start_s": 26.9,
+      "end_s": 31,
+      "item_id": "E6.P1/T1/4",
+      "observation": "입력 조작 뒤 위 LED 소등, 아래 LED 점등. 손가락은 아래 LED 근처에 있지만 발광부는 보임.",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 21,
+          "text": "R을 0으로 만든다는 설명"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 24,
+          "text": "아래쪽이 켜진다는 설명"
+        }
+      ],
+      "unknowns": [
+        "E=1, S=1, R=0은 전사 설명의 연속 문맥 기준. 조작 순간은 손에 가려짐."
+      ]
+    },
+    {
+      "id": "hold_enabled",
+      "source_id": "p1",
+      "start_s": 38,
+      "end_s": 44,
+      "item_id": "E6.P1/T1/2",
+      "observation": "S 조작 뒤 위 LED 소등, 아래 LED 점등 상태가 지속됨.",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 31,
+          "text": "E=1이고 나머지 S와 R은 0, S를 다시 0으로 바꾼다는 설명"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 39,
+          "text": "직전 상태를 유지한다는 설명"
+        }
+      ],
+      "unknowns": [
+        "S=0 입력은 전사본 기준. 정지 사진 두 장만으로 전체 구간의 연속 유지가 증명되지는 않으며 미리보기와 함께 판단."
+      ]
+    },
+    {
+      "id": "hold_disabled",
+      "source_id": "p1",
+      "start_s": 50,
+      "end_s": 58,
+      "item_id": "E6.P1/T1/1",
+      "observation": "E 조작 이후에도 위 LED 소등, 아래 LED 점등 상태가 지속됨.",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 44,
+          "text": "E도 0으로 바꾼다는 설명"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 48,
+          "text": "직전 상태를 유지한다는 설명"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 52,
+          "text": "S와 R은 don't care라 바꾸지 않겠다는 설명"
+        }
+      ],
+      "unknowns": [
+        "E=0은 전사본 기준. S와 R의 네 조합을 각각 조작한 영상은 없음. 직전 S=R=0 조건을 유지한 사례만 관찰."
+      ]
+    },
+    {
+      "id": "failed_final_attempt",
+      "source_id": "p1",
+      "start_s": 69,
+      "end_s": 84.345489,
+      "item_id": "E6.P1/T1/5",
+      "observation": "최종 입력 설명 뒤 위 LED만 밝게 점등. 아래 LED는 재촬영본과 달리 밝은 발광이 보이지 않음.",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 69,
+          "text": "세 입력이 모두 1이라는 설명"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 81,
+          "text": "이게 안 켜진다는 발언"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 83,
+          "text": "켜져야 된다는 발언"
+        }
+      ],
+      "unknowns": [
+        "실패 원인 미확인. 접촉 불량 또는 배선 수정으로 단정하지 않음."
+      ]
+    },
+    {
+      "id": "final_retaken",
+      "source_id": "p2",
+      "start_s": 0,
+      "end_s": 12.248744,
+      "item_id": "E6.P1/T1/5",
+      "observation": "재촬영 시작부터 위 LED와 아래 LED가 함께 점등. 7초와 11~12초에는 손 가림 없이 두 발광부가 보임.",
+      "speech": [
+        {
+          "source_id": "transcript_p2",
+          "at_s": 6,
+          "text": "E, S, R이 전부 1인 경우라는 설명"
+        },
+        {
+          "source_id": "transcript_p2",
+          "at_s": 8,
+          "text": "아래쪽과 위쪽 모두 들어온다는 설명"
+        },
+        {
+          "source_id": "transcript_p2",
+          "at_s": 11,
+          "text": "두 개 다 들어왔다는 설명"
+        }
+      ],
+      "unknowns": [
+        "두 촬영 사이의 조치·원인은 영상과 전사에 없음. 연속 전이 성공이 아닌 재촬영 최종 상태의 근거."
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "reset",
+      "source_id": "p1",
+      "at_s": 3,
+      "scene_id": "reset",
+      "title": "Reset_ESR101_전사기준",
+      "observation": "입력 E,S,R=1,0,1은 전사 기준. 위 LED(Q'·전사 기준) 켜짐, 아래 LED(Q·전사와 명세 기준) 꺼짐.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/01_Reset_ESR101_전사기준_p1_00003.006.png",
+      "sha256": "8c5c0d34aea7a5aec3d004be1909c74f3d9f17c4f3a1cbb1c2094e3fe1d12453",
+      "frame_index": 90,
+      "frame_pts_s": 3.006289,
+      "source_time_s": 3.006289
+    },
+    {
+      "id": "set",
+      "source_id": "p1",
+      "at_s": 27.5,
+      "scene_id": "set",
+      "title": "Set_ESR110_전사기준",
+      "observation": "입력 E,S,R=1,1,0은 전사 기준. 위 LED 꺼짐, 아래 LED 켜짐.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/02_Set_ESR110_전사기준_p1_00027.526.png",
+      "sha256": "8b061426d9c5248b748efa798655ab766e614dad4c0f38859ae57f4c2b6a91b5",
+      "frame_index": 826,
+      "frame_pts_s": 27.525522,
+      "source_time_s": 27.525522
+    },
+    {
+      "id": "hold_on",
+      "source_id": "p1",
+      "at_s": 39,
+      "scene_id": "hold_enabled",
+      "title": "유지_ESR100_전사기준",
+      "observation": "S를 0으로 바꿨다는 설명 뒤 위 LED 꺼짐, 아래 LED 켜짐을 유지.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/03_유지_ESR100_전사기준_p1_00039.023.png",
+      "sha256": "2f15a9c6bb29a0303497c4abab25e4ff18a33239b385157d8db504bf6f30c800",
+      "frame_index": 1171,
+      "frame_pts_s": 39.022811,
+      "source_time_s": 39.022811
+    },
+    {
+      "id": "hold_off",
+      "source_id": "p1",
+      "at_s": 51,
+      "scene_id": "hold_disabled",
+      "title": "유지_E0_SR00_전사기준",
+      "observation": "E를 0으로 바꿨다는 설명 뒤 위 LED 꺼짐, 아래 LED 켜짐을 유지. S·R은 바꾸지 않은 사례.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/04_유지_E0_SR00_전사기준_p1_00051.020.png",
+      "sha256": "9a0dd084591a433fec16ad00d5a97d70ef94d2bb3b9fccad5d438df075618a32",
+      "frame_index": 1531,
+      "frame_pts_s": 51.02,
+      "source_time_s": 51.02
+    },
+    {
+      "id": "failed",
+      "source_id": "p1",
+      "at_s": 72,
+      "scene_id": "failed_final_attempt",
+      "title": "최종입력_실패시도_원인미확인",
+      "observation": "세 입력이 1이라는 설명 구간에서 위 LED만 점등. 실패 시도 근거용이며 편집본에서는 제외.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/05_최종입력_실패시도_원인미확인_p1_00072.015.png",
+      "sha256": "17ce4180326ea63246306e8f260d58a0609e7f39efcdaa255973d5baf7452964",
+      "frame_index": 2161,
+      "frame_pts_s": 72.015056,
+      "source_time_s": 72.015056
+    },
+    {
+      "id": "both_on",
+      "source_id": "p2",
+      "at_s": 11.5,
+      "scene_id": "final_retaken",
+      "title": "재촬영_ESR111_두LED점등",
+      "observation": "입력 E,S,R=1,1,1은 전사 기준. 위·아래 LED가 함께 켜진 최종 상태. 촬영 중단 후 재확인.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/06_재촬영_ESR111_두LED점등_p2_00011.516.png",
+      "sha256": "8ad79520242a4bef92b18b79bb4f056432b901b6e4deb151077aa1821afbbf42",
+      "frame_index": 345,
+      "frame_pts_s": 11.515589,
+      "source_time_s": 11.515589
+    }
+  ],
+  "pairs": [
+    {
+      "id": "reset_set",
+      "title": "Reset에서 Set으로 출력 변화",
+      "capture_ids": [
+        "reset",
+        "set"
+      ],
+      "continuity": "same_recording",
+      "note": "입력은 전사 기준: E,S,R=1,0,1 → 1,1,0. 위 LED=Q', 아래 LED=Q 대응은 전사와 명세 기준. 조작 중 손 가림 있음.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/비교/01_Reset에서_Set으로_출력_변화.png"
+    },
+    {
+      "id": "hold_on_pair",
+      "title": "E가 1일 때 S를 0으로 바꾼 뒤 유지",
+      "capture_ids": [
+        "set",
+        "hold_on"
+      ],
+      "continuity": "same_recording",
+      "note": "입력은 전사 기준: E,S,R=1,1,0 → 1,0,0. 두 사진 모두 아래 LED 점등. 새 출력 전이가 아니라 직전 상태 유지의 전후 비교.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/비교/02_E가_1일_때_S를_0으로_바꾼_뒤_유지.png"
+    },
+    {
+      "id": "hold_off_pair",
+      "title": "E를 0으로 바꾼 뒤 유지",
+      "capture_ids": [
+        "hold_on",
+        "hold_off"
+      ],
+      "continuity": "same_recording",
+      "note": "입력은 전사 기준: E,S,R=1,0,0 → 0,0,0. 아래 LED 점등 유지. E=0에서 S·R 전체 조합을 시험한 것은 아님.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/비교/03_E를_0으로_바꾼_뒤_유지.png"
+    },
+    {
+      "id": "retake_pair",
+      "title": "최종 입력 실패 시도와 재촬영 상태",
+      "capture_ids": [
+        "failed",
+        "both_on"
+      ],
+      "continuity": "interrupted",
+      "note": "두 구간 모두 E=S=R=1이라는 전사 설명. 1편은 위 LED만, 2편은 두 LED 점등. 촬영 사이 조치와 실패 원인 미확인.",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출/비교/04_최종_입력_실패_시도와_재촬영_상태.png"
+    }
+  ],
+  "cuts": [
+    {
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 57.8,
+      "reason": "Reset·Set·두 유지 조건 설명을 보존. 57.8초 이후 마지막 입력 설정·실패 시도·종료 구간은 제외. 음성 직접 청취가 없어 전사 근사 시각보다 보수적으로 경계를 선택."
+    },
+    {
+      "source_id": "p2",
+      "start_s": 0,
+      "end_s": 12.248744,
+      "reason": "E=S=R=1 설명과 두 LED가 함께 켜진 최종 상태 확인을 원본 끝까지 보존.",
+      "break_before": {
+        "text": "촬영 중단 후 재촬영\nE=S=R=1 최종 상태 재확인",
+        "duration_s": 2
+      }
+    }
+  ],
+  "unknowns": [
+    "입력 조건은 제공된 편별 전사본 기준이다. 원본 음성을 직접 청취하지 못해 전사 정확도와 편집 연결부의 청감은 미확인이다.",
+    "위 LED=Q', 아래 LED=Q는 1편 1초의 Q' 발언과 명세·결선도 C1의 배치에 근거한다. 영상만으로 LED부터 IC 출력 핀까지 모든 결선을 추적하지 못했다.",
+    "전압 측정 자료가 없어 LED 발광을 관찰로 적고 입력·출력 전압 실측값으로 확정하지 않는다.",
+    "E=0에서는 S·R을 바꾸지 않았다. 해당 조건의 유지 사례는 있으나 모든 S·R 조합 시험은 확인하지 못했다.",
+    "1편과 2편 사이에 무엇을 바꿨는지 확인되지 않는다. 배선 수정이나 접촉 불량을 원인으로 단정하지 않는다.",
+    "편집본은 1편 0~57.8초와 2편 전체를 연결한다. 실패 시도는 사진·중단 비교 시트에 별도로 보존했다.",
+    "2초 중단 안내에는 무음이 들어가며, 원본 영상 구간은 각 영상의 같은 시간대 음성 트랙을 사용한다."
+  ],
+  "render": {},
+  "review": {
+    "photos": "verified",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/실험사진/실험1_SR래치_영상추출",
+    "video": "/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_편집본.mp4",
+    "zip": "/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true,
+      "video_exists": true,
+      "video_format": true,
+      "fps": true,
+      "audio_format": true,
+      "duration": true,
+      "av_end_difference": true,
+      "full_decode": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "verified",
+      "audio": "unavailable"
+    },
+    "video_duration_s": 72.1,
+    "av_end_difference_s": 0.0,
+    "decode_error": null
+  },
+  "rendered": {
+    "timeline": [
+      {
+        "kind": "source",
+        "source_id": "p1",
+        "source_start_s": 0.0,
+        "source_end_s": 57.8184,
+        "output_start_s": 0.0,
+        "output_end_s": 57.833333333333336,
+        "padding_s": 0.014933333333338794,
+        "has_original_audio": true
+      },
+      {
+        "kind": "break",
+        "text": "촬영 중단 후 재촬영\nE=S=R=1 최종 상태 재확인",
+        "output_start_s": 57.833333333333336,
+        "output_end_s": 59.833333333333336
+      },
+      {
+        "kind": "source",
+        "source_id": "p2",
+        "source_start_s": 0.0,
+        "source_end_s": 12.248744,
+        "output_start_s": 59.833333333333336,
+        "output_end_s": 72.10000000000001,
+        "padding_s": 0.017922666666667197,
+        "has_original_audio": true
+      }
+    ],
+    "duration_s": 72.10000000000001,
+    "fps": "30",
+    "size": [
+      1080,
+      1920
+    ]
+  },
+  "review_details": {
+    "photos": "전체 프레임 PNG 6장과 비교 PNG 4장을 직접 열어 LED 발광·가림·초점·캡션 시각을 대조했다.",
+    "boundaries": "최종 MP4에서 추출한 0.000, 57.767, 57.833, 58.800, 59.800, 59.833, 60.100, 71.500, 72.067초 프레임을 직접 열어 시작·안내 진입/종료·재촬영 진입·끝을 확인했다.",
+    "audio": "사용 가능한 직접 청취 도구가 없어 청감 미확인. 제공 전사본 사용. A/V 종료차는 기술 검사 기준 0초."
+  }
+}

@@ -1,0 +1,28 @@
+/opt/homebrew/bin/ffmpeg -v error -i '/Users/hyunjun_macbook_pro/Downloads/실험1 -1편.mp4' -vf 'select='"'"'eq(n,375)+eq(n,795)+eq(n,855)+eq(n,1216)+eq(n,1291)+eq(n,1801)+eq(n,2056)+eq(n,2791)+eq(n,3106)+eq(n,3475)'"'"'' -fps_mode passthrough /tmp/lab06_photo_p1/%02d.png
+
+/opt/homebrew/bin/ffmpeg -v error -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -vf 'select='"'"'eq(n,75)'"'"'' -fps_mode passthrough /tmp/lab06_photo_p2/%02d.png
+
+/opt/homebrew/bin/ffmpeg -hide_banner -loglevel error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 -1편.mp4' -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -loop 1 -framerate 30 -i '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_JK영상분석/재촬영안내.png' -f lavfi -i anullsrc=r=48000:cl=stereo -filter_complex_threads 2 -filter_complex '[0:v]trim=start=10.004978:end=116.913178,setpts=PTS-STARTPTS,fps=30,setsar=1,format=yuv420p,settb=AVTB[v0];[0:a]atrim=start=10.004978:end=116.913178,asetpts=PTS-STARTPTS,aresample=48000[a0];[2:v]trim=duration=2,setpts=PTS-STARTPTS,fps=30,setsar=1,format=yuv420p,settb=AVTB[vc];[3:a]atrim=duration=2,asetpts=PTS-STARTPTS[ac];[1:v]trim=start=0:end=7.010644,setpts=PTS-STARTPTS,fps=30,setsar=1,format=yuv420p,settb=AVTB[v1];[1:a]atrim=start=0:end=7.010644,asetpts=PTS-STARTPTS,aresample=48000[a1];[v0][a0][vc][ac][v1][a1]concat=n=3:v=1:a=1[v][a]' -map '[v]' -map '[a]' -c:v libx264 -preset medium -crf 18 -threads 4 -pix_fmt yuv420p -r 30 -c:a aac -b:a 192k -ar 48000 -ac 2 -metadata:s:v:0 rotate=0 -movflags +faststart -progress '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_JK영상분석/인코딩진행.txt' '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -i '/Users/hyunjun_macbook_pro/Downloads/실험1 -1편.mp4' -vf 'select='"'"'eq(n,2746)+eq(n,3256)+eq(n,3502)'"'"'' -fps_mode passthrough /tmp/lab06_refined/%02d.png
+
+
+/opt/homebrew/bin/ffprobe -v error -show_streams -show_format -of json '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -f null -
+
+/opt/homebrew/bin/ffmpeg -v error -ss 0 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 0.5 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 106.80820000000001 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 107.0082 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 107.90820000000001 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 108.80820000000001 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 109.0082 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1
+
+/opt/homebrew/bin/ffmpeg -v error -ss 115.818854 -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4' -frames:v 1 -vf scale=324:576 -f image2pipe -c:v png pipe:1

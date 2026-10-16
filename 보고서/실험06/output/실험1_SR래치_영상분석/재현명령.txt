@@ -1,0 +1,31 @@
+/opt/homebrew/bin/ffprobe -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,0)+eq(n,90)+eq(n,180)+eq(n,271)+eq(n,361)+eq(n,451)+eq(n,541)+eq(n,631)+eq(n,721)+eq(n,811)+eq(n,901)+eq(n,991)+eq(n,1081)+eq(n,1171)+eq(n,1261)+eq(n,1351)+eq(n,1441)+eq(n,1531)+eq(n,1621)+eq(n,1711)+eq(n,1801)+eq(n,1891)+eq(n,1981)+eq(n,2071)+eq(n,2161)+eq(n,2251)+eq(n,2341)+eq(n,2431)+eq(n,2521)'"'"',scale=240:-2' -frames:v 29 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpqgtf9q0c/%06d.png'
+
+/opt/homebrew/bin/ffprobe -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -vf 'select='"'"'eq(n,0)+eq(n,30)+eq(n,60)+eq(n,90)+eq(n,120)+eq(n,150)+eq(n,180)+eq(n,210)+eq(n,240)+eq(n,270)+eq(n,300)+eq(n,330)+eq(n,360)'"'"',scale=240:-2' -frames:v 13 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpwrcnbvdz/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,661)+eq(n,676)+eq(n,691)+eq(n,706)+eq(n,721)+eq(n,736)+eq(n,751)+eq(n,766)+eq(n,781)+eq(n,796)+eq(n,811)+eq(n,826)'"'"',scale=240:-2' -frames:v 12 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmp51ftwyt7/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,1021)+eq(n,1051)+eq(n,1081)+eq(n,1111)+eq(n,1141)+eq(n,1171)'"'"',scale=240:-2' -frames:v 6 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmp8pfuvy0x/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,1321)+eq(n,1351)+eq(n,1381)+eq(n,1411)+eq(n,1441)+eq(n,1471)'"'"',scale=240:-2' -frames:v 6 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpxlddx4e5/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,1681)+eq(n,1696)+eq(n,1711)+eq(n,1726)+eq(n,1741)+eq(n,1756)'"'"',scale=240:-2' -frames:v 6 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpwsdco5ha/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -vf 'select='"'"'eq(n,315)+eq(n,323)+eq(n,330)+eq(n,338)+eq(n,345)+eq(n,353)+eq(n,360)'"'"',scale=240:-2' -frames:v 7 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmp4eed22ys/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -vf 'select='"'"'eq(n,345)'"'"'' -frames:v 1 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpblmka87o/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -vf 'select='"'"'eq(n,90)+eq(n,826)+eq(n,1171)+eq(n,1531)+eq(n,2161)'"'"'' -frames:v 5 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpfaejyqyj/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -copyts -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 1편.mp4' -loop 1 -framerate 30 -i '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpdrdhw068/card1.png' -i '/Users/hyunjun_macbook_pro/Downloads/실험1 - 2편.mp4' -filter_complex_threads 2 -filter_complex '[0:v]trim=start=0.0:end=57.8184,setpts=PTS-(0.0)/TB,fps=30,scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.03333333333333333,trim=duration=57.833333333333336,settb=AVTB[v0];[0:a:0]atrim=start=0.0:end=57.8184,asetpts=PTS-(0.0)/TB,aresample=48000:async=1:first_pts=0,aformat=sample_fmts=fltp:channel_layouts=stereo,apad,atrim=duration=57.833333333333336[a0];[1:v]trim=duration=2.0,setpts=PTS-STARTPTS,fps=30,setsar=1,format=yuv420p,settb=AVTB[v1];anullsrc=r=48000:cl=stereo,atrim=duration=2.0,asetpts=PTS-STARTPTS[a1];[2:v]trim=start=0.0:end=12.248744,setpts=PTS-(0.0)/TB,fps=30,scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.03333333333333333,trim=duration=12.266666666666667,settb=AVTB[v2];[2:a:0]atrim=start=0.0:end=12.248744,asetpts=PTS-(0.0)/TB,aresample=48000:async=1:first_pts=0,aformat=sample_fmts=fltp:channel_layouts=stereo,apad,atrim=duration=12.266666666666667[a2];[v0][a0][v1][a1][v2][a2]concat=n=3:v=1:a=1[v][a]' -map '[v]' -map '[a]' -map_metadata -1 -c:v libx264 -preset medium -crf 18 -threads 4 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 -ac 2 -movflags +faststart '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험06/output/실험1_SR래치_영상분석/tmpdrdhw068/render.mp4'
+
+/opt/homebrew/bin/ffprobe -v error -show_streams -show_format -of json '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_편집본.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -xerror -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_편집본.mp4' -f null -
+
+/opt/homebrew/bin/ffprobe -v error -show_streams -show_format -of json '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_편집본.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -xerror -i '/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_SR래치_편집본.mp4' -f null -

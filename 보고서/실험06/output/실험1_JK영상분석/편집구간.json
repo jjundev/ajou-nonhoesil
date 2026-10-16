@@ -1,0 +1,27 @@
+{
+  "segments": [
+    {
+      "source_id": "p1",
+      "source_start_s": 10.004978,
+      "source_end_s": 116.913178,
+      "output_start_s": 0,
+      "output_end_s": 106.90820000000001
+    },
+    {
+      "source_id": "p2",
+      "source_start_s": 0,
+      "source_end_s": 7.010644,
+      "output_start_s": 108.90820000000001,
+      "output_end_s": 115.918844
+    }
+  ],
+  "break_card": {
+    "text": "배선 조정 후 재촬영 / 촬영 중단 뒤 이어진 영상입니다 / 수정 후 최종 상태",
+    "duration_s": 2,
+    "output_start_s": 106.90820000000001,
+    "output_end_s": 108.90820000000001
+  },
+  "output_path": "/Users/hyunjun_macbook_pro/Downloads/실험06_실험1_JK플립플롭_편집본.mp4",
+  "expected_duration_s": 115.918844,
+  "cut_reason": "전원 미인가 도입부 제외, 마지막 정상 항목 이후 실패 시도 전체 제외, 2편 전원 조작 전 종료. 직접 청취 미확인."
+}
