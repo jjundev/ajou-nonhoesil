@@ -7,6 +7,7 @@ import shutil
 from .explanation_content import load_explanations, within
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
+from .table_layout import load_layouts, layout_problem_tables, TableLayoutError
 from .manifest import output_names, DATA
 from .navigation import render_navigation
 from .html2md import export_document, Parser
@@ -38,22 +39,33 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     author_root,folder,assets=map(Path,(author_root,folder,assets))
     names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=1)
     esc=lambda value:html.escape(str(value),quote=True)
+    layouts=load_layouts(author_root)
+    if layouts:
+        ids={r.problem["id"] for r in rows}
+        for e in layouts["tables"]:
+            if e["key"].split("/")[0] not in ids:raise TableLayoutError(e["key"]+": unknown problem")
     bodies=[]
     for row in rows:
         p=row.problem
+        parts=layout_problem_tables(p['id'],dict(p['html'],explanation=row.fragment),layouts)
         problem='<div class="layer formal"><span class="layer-title">문제 읽기</span>'
         for key,label in [('original','문제'),('conditions','주어진 조건'),('ask','구할 것')]:
-            if p['html'][key].strip():problem+=f'<h4>{label}</h4>'+p['html'][key]
+            if parts[key].strip():problem+=f'<h4>{label}</h4>'+parts[key]
         for f in p['figures']:
             problem+=f'<figure class="figure"><img src="{esc(f["src"])}" alt="{esc(p["title"])} · 주어진 그림"></figure>'
         problem+='</div>'
-        fragment=row.fragment.replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
+        fragment=parts['explanation'].replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
         # Fragment paths are document-relative; preserve both authoring and published form.
         bodies.append(f'<article class="topic" id="{esc(p["id"])}"><h3>문제 {esc(p["number"])} · {esc(p["title"])}</h3>'+separate_tables(separate_equations(problem))+separate_tables(separate_equations(fragment))+'</article>')
         target=folder/DATA/manifest['problems'][next(i for i,x in enumerate(manifest['problems']) if x['id']==p['id'])]['explanation_fragment']
         target.parent.mkdir(parents=True,exist_ok=True)
         if target.resolve()!=within(author_root,'problem-explanations/'+p['id']+'.html').resolve():
             target.write_text(row.fragment,encoding='utf-8')
+    layout_path=author_root/'problem-explanations/table-layout.json'
+    if layout_path.is_file():
+        target=folder/DATA/'problem-explanations/table-layout.json'
+        target.parent.mkdir(parents=True,exist_ok=True)
+        if target.resolve()!=layout_path.resolve():shutil.copy2(layout_path,target)
     extra=author_root/'problem-explanations/figures'
     if extra.is_dir():
         for f in extra.rglob('*'):
@@ -67,6 +79,7 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     toc=render_navigation(names,'note',[dict(id=r.problem['id'],title=f"문제 {r.problem['number']} · {r.problem['title']}") for r in rows])
     values=dict(PAGE_TITLE=title,DESCRIPTION='이론을 문제풀이에 연결해요',BRAND='문제 설명',TITLE=title,SUBTITLE='첫 줄부터 완성 답과 검산까지 함께 풀어요.',INTRO='문제지와 같은 번호로 읽어요. 설명을 읽은 뒤 문제지에서 다시 풀어 보세요.',SECTIONS=content,PARTS=content,FOOTER='',SCRIPTS=f'<script src="{DATA}/assets/widgets.js"></script>',RANGE=f"logic-lab-{manifest['experiment']:02d}-problem-explanation",NOTE_HREF=names['note_html'],**toc)
     document=(assets/'note-template.html').read_text(encoding='utf-8')
+    document=document.replace('<body', '<body data-problem-explanation="true"',1)
     for key,value in values.items():document=document.replace('{{'+key+'}}',value)
     for url,local in VENDOR.items():document=document.replace(url,DATA+'/assets/vendor/'+local)
     if '{{' in document:raise ValueError('Unreplaced explanation placeholder')

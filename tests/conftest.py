@@ -24,6 +24,7 @@ AFFECTED = pytest.StashKey[tuple]()      # (Selection, 요약 줄) — 컨트롤
 
 
 def pytest_addoption(parser):
+    parser.addoption("--explanation-pack-root", default="복습노트", help="Root of six staged explanation packs")
     parser.addoption(
         '--affected', nargs='?', const='auto', default=None, metavar='BASE',
         help='기준 커밋 이후 바뀐 파일을 읽는 테스트 파일만 돈다(tests/_affected.py)')

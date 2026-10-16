@@ -1360,7 +1360,7 @@
   "explanation_checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "pass",
+    "independent": "not_run",
     "browser": "pass"
   },
   "figure_manifest": "figures/redraw-manifest.json",
@@ -1573,6 +1573,7 @@
     ".pack/problem-explanations/q-rs-quiz.html",
     ".pack/problem-explanations/q-sr-nand-00.html",
     ".pack/problem-explanations/q-tff.html",
+    ".pack/problem-explanations/table-layout.json",
     ".pack/problem-explanations/검증결과.md",
     ".pack/검증결과.md",
     ".pack/실험06_기출문제.md",

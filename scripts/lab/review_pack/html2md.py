@@ -29,7 +29,7 @@ class Parser(HTMLParser):
         self.root=Node('root');self.stack=[self.root]
     def handle_starttag(self,tag,attrs):
         node=Node(tag,dict(attrs));self.stack[-1].children.append(node)
-        if tag not in {'img','br','hr','input','meta','link','source','wbr'}:self.stack.append(node)
+        if tag not in {'img','br','hr','input','meta','link','source','wbr','col'}:self.stack.append(node)
     def handle_startendtag(self,tag,attrs):
         self.handle_starttag(tag,attrs)
         if self.stack[-1].tag==tag:self.stack.pop()
@@ -44,7 +44,7 @@ def parse(path):
     return next((n for n in parser.root.walk() if n.tag=='main'),parser.root)
 
 def omitted(node):
-    return node.tag in {'script','style','nav','button','input','select','output'} or 'controls' in node.attrs.get('class','').split()
+    return 'data-layout-group-row' in node.attrs or 'data-layout-cols' in node.attrs or node.tag in {'script','style','nav','button','input','select','output'} or 'controls' in node.attrs.get('class','').split()
 
 def serialize(node):
     if isinstance(node,str):return html.escape(node)
@@ -98,12 +98,12 @@ def export_document(path, export=True, note_metadata=None):
         if tag=='table':
             rows=[]
             for tr in n.walk():
-                if tr.tag=='tr':
+                if tr.tag=='tr' and not omitted(tr):
                     cells=[render(c).strip().replace('\n','<br>') for c in tr.children if isinstance(c,Node) and c.tag in {'td','th'}]
                     rows.append('| '+' | '.join(cells)+' |')
             if rows:
                 cols=len([c for tr in n.walk() if tr.tag=='tr' for c in tr.children if isinstance(c,Node) and c.tag in {'td','th'}])
-                first=next(x for x in n.walk() if x.tag=='tr')
+                first=next(x for x in n.walk() if x.tag=='tr' and not omitted(x))
                 count=sum(isinstance(c,Node) and c.tag in {'td','th'} for c in first.children)
                 rows.insert(1,'| '+' | '.join(['---']*count)+' |')
             return '\n'+anchor+'\n'.join(rows)+'\n\n'

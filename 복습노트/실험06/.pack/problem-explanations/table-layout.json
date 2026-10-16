@@ -1,0 +1,608 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-diff/explanation/0",
+      "expected_headers": [
+        "구분",
+        "Latch",
+        "Flip-Flop"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "비교"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "비교"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "비교"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "q-sr-nand-00/explanation/0",
+      "expected_headers": [
+        "S",
+        "R",
+        "Q",
+        "Q′"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-rs-latch/ask/0",
+      "expected_headers": [
+        "S",
+        "R",
+        "C",
+        "Q(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-rs-latch/explanation/0",
+      "expected_headers": [
+        "S",
+        "R",
+        "C",
+        "Q(t)",
+        "Q′(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-dff-table/ask/0",
+      "expected_headers": [
+        "S",
+        "C",
+        "Q",
+        "Q′"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-dff-table-question-answer"
+    },
+    {
+      "key": "q-dff-table/explanation/0",
+      "expected_headers": [
+        "S",
+        "C",
+        "Q",
+        "Q′"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-dff-table-question-answer"
+    },
+    {
+      "key": "q-dff-design/original/0",
+      "expected_headers": [
+        "D",
+        "C",
+        "Q(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-jkff-short/ask/0",
+      "expected_headers": [
+        "J",
+        "K",
+        "C",
+        "Q(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-jkff-short-question-answer"
+    },
+    {
+      "key": "q-jkff-short/explanation/0",
+      "expected_headers": [
+        "J",
+        "K",
+        "C",
+        "Q(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-jkff-short-question-answer"
+    },
+    {
+      "key": "q-jkff-design/original/0",
+      "expected_headers": [
+        "J",
+        "K",
+        "C",
+        "Q(t)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-tff/explanation/0",
+      "expected_headers": [
+        "T",
+        "J",
+        "K",
+        "클록 엣지 후 Q"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "expression",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-74hc76/explanation/0",
+      "expected_headers": [
+        "PR",
+        "CLR",
+        "Q"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-p-76-trace/ask/0",
+      "expected_headers": [
+        "단계",
+        "PR",
+        "CLR",
+        "CLK",
+        "J",
+        "K",
+        "Q"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "signal",
+          "group": "단계"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "expression",
+          "group": "클록"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        },
+        {
+          "left": 5,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-p-76-trace-question-answer"
+    },
+    {
+      "key": "q-p-76-trace/explanation/0",
+      "expected_headers": [
+        "단계",
+        "PR",
+        "CLR",
+        "CLK",
+        "J",
+        "K",
+        "Q"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "signal",
+          "group": "단계"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "control",
+          "kind": "expression",
+          "group": "클록"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        },
+        {
+          "left": 5,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-p-76-trace-question-answer"
+    }
+  ]
+}

@@ -1,0 +1,424 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "q-tt3-4row/conditions/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "AND 출력",
+        "OR 출력",
+        "NOR 출력",
+        "XOR 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-tt3-4row-question-answer"
+    },
+    {
+      "key": "q-tt3-4row/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "AND 출력",
+        "OR 출력",
+        "NOR 출력",
+        "XOR 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-tt3-4row-question-answer"
+    },
+    {
+      "key": "q-tt3-8row/conditions/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "AND 출력",
+        "OR 출력",
+        "NOR 출력",
+        "XOR 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-tt3-8row-question-answer"
+    },
+    {
+      "key": "q-tt3-8row/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "AND 출력",
+        "OR 출력",
+        "NOR 출력",
+        "XOR 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-tt3-8row-question-answer"
+    },
+    {
+      "key": "q-xor2-tt/conditions/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-xor2-tt-question-answer"
+    },
+    {
+      "key": "q-xor2-tt/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ],
+      "pair": "q-xor2-tt-question-answer"
+    },
+    {
+      "key": "q-xor-graded/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "F"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-nand-xor/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "N1",
+        "N2",
+        "N3",
+        "C"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "q-nor3-or-inv/explanation/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "A+B+C",
+        "출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "expression",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}
