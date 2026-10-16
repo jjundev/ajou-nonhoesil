@@ -12,10 +12,16 @@
 | `captures` | 모델 → build | 사진 선택 시각·장면 id. 생성 시 실제 프레임 번호·PTS·경로 추가 |
 | `pairs` | 모델 → build | 두 사진 id·제목·근거 주석·연속성. 같은 사진을 여러 비교에 재사용 가능 |
 | `cuts` | 모델 | 원본 보존 구간·이유·앞에 넣을 중단 안내 |
-| `render` | 선택 지정 | `fps`, `size: [가로, 세로]`. 생략하면 첫 보존 영상의 실제 평균 fps와 표시 크기 |
+| `render` | inspect/선택 지정 | 새 실행 기본 `crf: 26`, `preset: slow`, `audio_bitrate: 128k`, `max_fps: 30`. `fps`를 명시하면 상한보다 우선. `size: [가로, 세로]` 생략 시 첫 보존 영상의 표시 크기 |
 | `unknowns` | 모델 | 전반적인 미확인 사항 문자열 목록 |
 | `review` | 직접 확인한 모델 | `photos`, `boundaries`, `audio`: 기본 pending, 확인 후 verified, 청취 불가 시 audio만 unavailable |
 | `rendered`, `checks` | build/verify | 실제 편집 시간선·패딩 길이·기술 검사·완료 여부 |
+
+새 실행의 `outputs.video_local`은 `outputs.photos` 폴더 안의 MP4 보관 경로다. 영상만 요청해도 생성한다. 다운로드용 `outputs.video`와 같은 이름·내용으로 보관하고 `checks.checks.video_copy_integrity`로 두 파일의 해시를 생성 시 기록과 대조한다. 사진 ZIP은 MP4 복사 전에 만들어 사진·시트·안내 문서만 포함한다. 기존 파일·보관 경로가 있으면 덮어쓰지 않는다.
+
+`rendered.encoding`은 실제 CRF·preset·오디오 비트레이트, `video_sha256`은 최종 영상 해시다. `source_bytes`는 보존 구간에 사용한 원본들의 전체 바이트 합(같은 원본 중복 제외), `output_bytes`는 출력 크기, `reduction_percent`는 `100 * (1 - output_bytes / source_bytes)`다. 구간 삭제·연결 안내도 결과 크기에 영향을 주므로 순수 인코딩 효과라고 단정하지 않는다. 출력이 더 크면 음수 절감률을 그대로 보고한다.
+
+새 압축 필드가 없는 기존 manifest는 `CRF 18 / medium / AAC 192k`, 첫 영상 평균 fps를 유지한다. `outputs.video_local`이 없는 기존 실행에는 복사본을 소급 생성하거나 요구하지 않는다. 새 기본값을 적용하려면 새 `inspect` 실행을 만든다.
 
 모든 `start_s`·`end_s`·`at_s`는 **해당 영상의 첫 표시 프레임을 0초로 한 경과 시각**이다. `frame_pts_s`는 원본 컨테이너의 절대 PTS라 시작값이 0이 아닐 수 있다. `source_time_s`는 선택된 실제 프레임의 경과 시각이다. 전사 시각은 근사값이며 사진 시각을 덮어쓰지 않는다.
 
@@ -87,6 +93,7 @@
 - `inspect --experiment N`은 저장소의 `scripts.lab.config.experiment_dir`를 사용한다. 경로 정규화는 실제 디렉터리 이름으로 해결한다.
 - `--source`를 지정한 순서로 `p1`, `p2`…가 된다. `--transcript p1=경로`는 생략 가능하다. 전사본이 없으면 `speech`를 비운다.
 - 모드는 `photos`(기본), `video`, `both`다. 선택 자료는 이번 요청에 필요한 것만 채운다.
+- 압축만 요청하면 `video` 모드로 전체 구간을 `cuts`에 지정한다. `scenes`·`captures`·`pairs`는 비워도 된다. 새 영상은 원본에서 직접 압축하며 기본 fps는 첫 영상 평균 fps와 30 중 작은 값이다. 짧은 전이를 출력에 보존할 필요가 있으면 `render.fps`를 명시하고 원본과 대조한다.
 - `preview`는 기본 1초 간격, 조작 부근은 `--step 0.1` 등으로 좁힌다. 같은 미리보기 이름은 덮어쓰지 않는다. 필요하면 기존 미리보기를 다시 연다.
 - 프레임 목록은 원본별 한 번 조사해 `frames/`에 캐시한다. 여러 사진 추출은 원본별 한 번의 디코딩으로 묶는다.
 - `build`는 이미 존재하는 사진 폴더·영상·ZIP을 덮어쓰지 않는다. 중간 실패 시 `재현명령.txt`와 오류를 확인하고, 잘못된 선택을 고쳐 새 `inspect` 실행에 옮긴다. 생성물을 지우는 대신 공통 `_v2` 버전을 사용한다.

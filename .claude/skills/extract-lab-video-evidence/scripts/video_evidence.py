@@ -155,9 +155,10 @@ def inspect_run(experiment_dir, label, sources, transcripts, mode, deliver_dir):
         break
     m = {"schema_version": 1, "run_dir": str(run_dir), "run_label": run_label, "mode": mode,
          "sources": inputs, "scenes": [], "captures": [], "pairs": [], "cuts": [],
-         "unknowns": [], "render": {},
+         "unknowns": [], "render": {"crf": 26, "preset": "slow", "audio_bitrate": "128k", "max_fps": 30},
          "review": {"photos": "pending", "boundaries": "pending", "audio": "pending"},
-         "outputs": {"photos": str(photos), "video": str(video), "zip": str(archive)}, "checks": {}}
+         "outputs": {"photos": str(photos), "video": str(video),
+                     "video_local": str(photos / video.name), "zip": str(archive)}, "checks": {}}
     manifest = run_dir / "manifest.json"
     save(manifest, m)
     return manifest
@@ -413,7 +414,23 @@ def choose_fps(stream):
 def build_video(m):
     cuts = m["cuts"]
     first = video_stream(m["sources"][cuts[0]["source_id"]]["probe"])
-    fps_text = str(m["render"].get("fps", choose_fps(first)))
+    render = m["render"]
+    # Old manifests without the new fields retain their original encoding behavior.
+    encoding = {"crf": render.get("crf", 18), "preset": render.get("preset", "medium"),
+                "audio_bitrate": render.get("audio_bitrate", "192k")}
+    if not number(encoding["crf"]) or not 0 <= encoding["crf"] <= 51:
+        raise ValueError("render.crf는 0~51이어야 합니다.")
+    if encoding["preset"] not in ("ultrafast", "superfast", "veryfast", "faster", "fast",
+                                   "medium", "slow", "slower", "veryslow"):
+        raise ValueError("지원하지 않는 H.264 preset입니다.")
+    if not re.fullmatch(r"[1-9][0-9]*k", str(encoding["audio_bitrate"])):
+        raise ValueError("audio_bitrate는 128k 같은 형식이어야 합니다.")
+    fps_text = str(render["fps"] if "fps" in render else choose_fps(first))
+    if "fps" not in render and "max_fps" in render:
+        cap = render["max_fps"]
+        if not number(cap) or cap <= 0:
+            raise ValueError("render.max_fps는 양수여야 합니다.")
+        fps_text = str(min(Fraction(fps_text), Fraction(str(cap))))
     fps = float(Fraction(fps_text))
     if fps <= 0 or not math.isfinite(fps):
         raise ValueError("출력 fps는 양수여야 합니다.")
@@ -480,12 +497,17 @@ def build_video(m):
         staged = work / "render.mp4"
         args += ["-filter_complex_threads", "2", "-filter_complex", ";".join(filters),
                  "-map", "[v]", "-map", "[a]", "-map_metadata", "-1", "-c:v", "libx264",
-                 "-preset", "medium", "-crf", "18", "-threads", "4", "-pix_fmt", "yuv420p",
-                 "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
+                 "-preset", encoding["preset"], "-crf", str(encoding["crf"]), "-threads", "4", "-pix_fmt", "yuv420p",
+                 "-c:a", "aac", "-b:a", encoding["audio_bitrate"], "-ar", "48000", "-ac", "2",
                  "-movflags", "+faststart", str(staged)]
         execute(args, m["run_dir"])
         publish(staged, m["outputs"]["video"])
-    m["rendered"] = {"timeline": timeline, "duration_s": clock, "fps": fps_text, "size": [w, h]}
+    output = Path(m["outputs"]["video"])
+    source_bytes = sum(m["sources"][sid]["size"] for sid in {x["source_id"] for x in cuts})
+    m["rendered"] = {"timeline": timeline, "duration_s": clock, "fps": fps_text, "size": [w, h],
+                     "encoding": encoding, "source_bytes": source_bytes, "output_bytes": output.stat().st_size,
+                     "reduction_percent": 100 * (1 - output.stat().st_size / source_bytes),
+                     "video_sha256": sha256(output)}
 
 
 def markdown_documents(m):
@@ -528,6 +550,8 @@ def build_run(manifest):
     validate_selection(m)
     requested = (["photos", "zip"] if m["mode"] in ("photos", "both") else [])
     requested += ["video"] if m["mode"] in ("video", "both") else []
+    if m["mode"] in ("video", "both") and "video_local" in m["outputs"]:
+        requested.append("video_local")
     for key in requested:
         path = Path(m["outputs"][key])
         if path.exists() or path.is_symlink():
@@ -543,6 +567,12 @@ def build_run(manifest):
             for path in sorted(folder.rglob("*")):
                 if path.is_file():
                     archive.write(path, Path(folder.name) / path.relative_to(folder))
+    # Copy after making the photo ZIP so the archive remains photos and notes only.
+    if m["mode"] in ("video", "both") and "video_local" in m["outputs"]:
+        source = Path(m["outputs"]["video"])
+        local = Path(m["outputs"]["video_local"])
+        if source.resolve() != local.resolve():
+            publish(source, local)
     m["checks"] = {}
     save(manifest, m)
     return m["outputs"]
@@ -574,6 +604,11 @@ def verify_run(manifest):
     if m["mode"] in ("video", "both"):
         path = Path(m["outputs"]["video"])
         checks["video_exists"] = path.is_file()
+        if "video_local" in m["outputs"]:
+            local = Path(m["outputs"]["video_local"])
+            expected = m.get("rendered", {}).get("video_sha256")
+            checks["video_copy_integrity"] = bool(expected and path.is_file() and local.is_file()
+                and sha256(path) == expected and sha256(local) == expected)
         if path.is_file():
             info = probe(path, m["run_dir"])
             v = video_stream(info)
