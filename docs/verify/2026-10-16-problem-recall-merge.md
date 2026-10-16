@@ -49,6 +49,8 @@
 
 ## 최종 결과와 남은 환경 한계
 
+후속 처리: 아래는 병합 당시 결과다. Windows 네이티브 오류의 원인과 이후 수정·재검증은 [별도 기록](2026-10-16-windows-native-spawn.md)을 따른다.
+
 - Python 3.14, `python -m pytest tests/ -q --ignore=tests/test_affected_trace.py`: **3373 passed, 5 skipped, 1250 subtests passed**, 실패 0. JUnit: `full-suite-verified.xml`.
 - 원래 `tests/test_affected_trace.py` 전체를 Python 3.11 임시 venv에서 검증: **20 passed, 2 skipped, 2 failed**. 두 실패는 동일한 Windows `os.spawnve` 접근 위반이다. JUnit: `trace-py311-tests.xml`.
 - 따라서 **전체 스위트 통과라고 보고하지 않는다**. 병합 관련 학습팩·생성기·브라우저·기존 보고서·결선도 검사는 통과했지만 이 호스트의 네이티브 프로세스 테스트 두 건은 미해결이다. 저장소와 감사 훅을 제외한 최소 실행에서도 같은 오류가 났고 Python 버전을 바꿔도 재현됐다. 해당 테스트/추적기 세 파일은 main과 동일하며 회상 브랜치에는 원래 없다.

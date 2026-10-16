@@ -60,6 +60,13 @@ def _trace_run(tmp_path, body: str, *, extra_env=None, extra_files=None) -> dict
     out.mkdir()
     env = {**os.environ, 'AFFECTED_TRACE_DIR': str(out), 'AFFECTED_ROOT': str(proj),
            'PYTHONPATH': f'{REPO}/tests/_trace_site{os.pathsep}{REPO}', **(extra_env or {})}
+    if os.name == 'nt':
+        # UCRT의 spawnve는 부모 환경에 숨은 드라이브 경로가 전혀 없으면 충돌한다
+        # (cpython#137934). cmd.exe가 보통 넣는 항목을 테스트 부모에만 보충한다.
+        # 아래 body가 spawnve에 넘기는 빈 환경/추적 환경과 네이티브 호출은 그대로다.
+        drive = os.path.splitdrive(str(proj))[0]
+        if len(drive) == 2 and drive[1] == ':':
+            env.setdefault(f'={drive}', str(proj))
     done = subprocess.run(
         [sys.executable, '-m', 'pytest', '-n0', '-p', 'tests._trace', '-p', 'no:cacheprovider',
          '-q', 'test_x.py'],
@@ -271,6 +278,7 @@ def test_x():
     assert os.spawnve(os.P_WAIT, sys.executable, [sys.executable, '-c', code], dict(os.environ)) == 0
 ''')
     assert got['opaque'] is False and 'child.txt' in got['files']
+    assert got['count'] >= 2   # 실제 네이티브 자식도 sitecustomize로 기록을 남겼다.
 
 
 @pytest.mark.skipif(not hasattr(os, 'posix_spawn'), reason='os.posix_spawn 이 없는 플랫폼')
