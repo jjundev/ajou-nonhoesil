@@ -1,0 +1,38 @@
+[
+  {
+    "width": 1280,
+    "document": "문제설명.html",
+    "overflow": false,
+    "script_errors": []
+  },
+  {
+    "width": 1280,
+    "document": "문제풀이.html",
+    "overflow": false,
+    "script_errors": []
+  },
+  {
+    "width": 1280,
+    "document": "정리노트.html",
+    "overflow": false,
+    "script_errors": []
+  },
+  {
+    "width": 375,
+    "document": "문제설명.html",
+    "overflow": false,
+    "script_errors": []
+  },
+  {
+    "width": 375,
+    "document": "문제풀이.html",
+    "overflow": false,
+    "script_errors": []
+  },
+  {
+    "width": 375,
+    "document": "정리노트.html",
+    "overflow": false,
+    "script_errors": []
+  }
+]

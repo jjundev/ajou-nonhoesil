@@ -1,0 +1,147 @@
+{
+ "page": 3,
+ "circuit": "e6_jk",
+ "title": "3-2 JK 플립플롭",
+ "chips": [
+  {
+   "label": "74HC76",
+   "block": "좌",
+   "pin1_row": 3,
+   "pin1_col": "e"
+  }
+ ],
+ "wires": [
+  {
+   "color": "빨강",
+   "from": "전원잭(빨강)",
+   "to": "좌 VCC레일3행"
+  },
+  {
+   "color": "파랑",
+   "from": "전원잭(회색)",
+   "to": "좌 GND레일4행"
+  },
+  {
+   "color": "빨강",
+   "from": "좌 d7",
+   "to": "좌 VCC레일7행"
+  },
+  {
+   "color": "파랑",
+   "from": "좌 g6",
+   "to": "중앙GND레일6행"
+  },
+  {
+   "color": "검정",
+   "from": "좌 GND레일5행",
+   "to": "좌 a3"
+  },
+  {
+   "color": "검정",
+   "from": "좌 GND레일6행",
+   "to": "좌 a4"
+  },
+  {
+   "color": "검정",
+   "from": "좌 GND레일7행",
+   "to": "좌 a5"
+  },
+  {
+   "color": "검정",
+   "from": "좌 GND레일9행",
+   "to": "좌 a6"
+  },
+  {
+   "color": "검정",
+   "from": "중앙GND레일3행",
+   "to": "좌 j3"
+  },
+  {
+   "color": "파랑",
+   "from": "우 a6",
+   "to": "중앙GND레일5행"
+  },
+  {
+   "color": "파랑",
+   "from": "우 a11",
+   "to": "중앙GND레일11행"
+  },
+  {
+   "color": "검정",
+   "from": "좌 j4",
+   "to": "우 a3"
+  },
+  {
+   "color": "검정",
+   "from": "좌 j5",
+   "to": "우 a8"
+  }
+ ],
+ "leds": [
+  {
+   "tag": "Q",
+   "anode": "우 b3",
+   "cathode": "우 b4"
+  },
+  {
+   "tag": "Q'",
+   "anode": "우 b8",
+   "cathode": "우 b9"
+  }
+ ],
+ "resistors": [
+  {
+   "tag": "Q",
+   "top": "우 c4",
+   "bottom": "우 c6"
+  },
+  {
+   "tag": "Q'",
+   "top": "우 c9",
+   "bottom": "우 c11"
+  }
+ ],
+ "bridges": [
+  {
+   "kind": "gnd",
+   "from": "좌 GND레일23행",
+   "to": "중앙GND레일23행"
+  },
+  {
+   "kind": "vcc",
+   "from": "좌 VCC레일24행",
+   "to": "중앙VCC레일24행"
+  }
+ ],
+ "labels": [
+  {
+   "name": "CLK",
+   "at": "좌 GND레일5행"
+  },
+  {
+   "name": "Set",
+   "at": "좌 GND레일6행"
+  },
+  {
+   "name": "Reset",
+   "at": "좌 GND레일7행"
+  },
+  {
+   "name": "J",
+   "at": "좌 GND레일9행"
+  },
+  {
+   "name": "K",
+   "at": "중앙GND레일3행"
+  },
+  {
+   "name": "Q",
+   "at": "우 b3"
+  },
+  {
+   "name": "Q'",
+   "at": "우 b8"
+  }
+ ],
+ "uncertain": []
+}

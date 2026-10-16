@@ -171,43 +171,94 @@ class _ScaledDraw:
         return self._d.textlength(text, *a, **self._kw(k)) / SCALE
 
 
-def _hand_noise(rng):
-    """누적 길이 s -> [-1, 1] 매끈한 떨림 — 사인 셋을 가중치 합으로 나눈다."""
-    waves = [(rng.uniform(40, 160), rng.uniform(0, 2 * math.pi), rng.uniform(0.5, 1))
-             for _ in range(3)]
-    total = sum(w for _, _, w in waves)
-    return lambda s: sum(w * math.sin(2 * math.pi * s / lam + ph) for lam, ph, w in waves) / total
+# 손그림 모사 획(2026-10-15). 옛 모델 — 축별 사인 셋(파장 40~160, 행 간격 19)·가닥마다 굵기 ×0.7~1.3 —
+# 을 팀원이 "계단현상·노이즈" 로 보고 전부 덧칠했다. 사람이 긋는 점퍼선은 전체가 한 번 살짝 휘고
+# 손떨림만 있다 — 그래서 구간마다 활 하나 + 미세 떨림, 수직 방향만, 쪽 전체 한 굵기다.
+HAND_WIDTH = 2.0          # 논리 px — 손그림모사 PDF 에서 ≈ 0.93pt (사용자 결정 #10)
+HAND_DOT_R = 2.4          # 끝점 도트 반지름
+HAND_BOW_MAX = 2.5        # 활 진폭 상한 ≈ 홀 간격의 13% (사용자 결정 #11)
+HAND_BOW_PER_LEN = 0.012  # 짧은 구간은 길이에 비례해 덜 휜다
+HAND_MIN_BOW_LEN = 15.0   # 이보다 짧은 구간은 휘지 않는다
+HAND_TREMOR = 0.25        # 떨림 진폭
+HAND_TREMOR_STEP = 8.0    # 떨림 무작위 값 간격
+HAND_SAMPLE = 3.0         # 표본 간격
+HAND_RAMP = 6.0           # 양 끝에서 떨림을 0 에서 올리는 길이
 
 
-def _hand_polyline(points, rng, amp=2.0, step=6.0, ramp=12.0):
-    """손그림 모사 배선 — 축마다 따로 ±amp 떨린 촘촘한 점열. 양 끝점은 입력 그대로(홀 위)고
-    끝에서 `ramp` 동안 진폭을 0 에서 올린다."""
+def _hand_tremor(rng, length):
+    """길이 s -> [-1, 1] 미세 떨림 — `HAND_TREMOR_STEP` 마다 무작위 값, 사이는 코사인 보간."""
+    knots = [rng.uniform(-1, 1) for _ in range(int(length // HAND_TREMOR_STEP) + 2)]
+
+    def f(s):
+        i = min(int(s // HAND_TREMOR_STEP), len(knots) - 2)
+        t = s / HAND_TREMOR_STEP - i
+        w = (1 - math.cos(math.pi * t)) / 2
+        return knots[i] * (1 - w) + knots[i + 1] * w
+    return f
+
+
+def _hand_polyline(points, rng):
+    """손그림 모사 배선 — 구간마다 수직 방향으로 활 하나 + 미세 떨림을 준 촘촘한 점열.
+    첫 점과 각 구간 끝점(모서리·마지막 점)은 입력 그대로다(홀·경로점 위)."""
     pts = [tuple(map(float, p)) for p in points]
-    nx, ny = _hand_noise(rng), _hand_noise(rng)
-    total = sum(math.dist(a, b) for a, b in zip(pts, pts[1:]))
-    out, s0 = [pts[0]], 0.0
+    out = [pts[0]]
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
-        seg = math.dist((x0, y0), (x1, y1))
-        n = max(1, math.ceil(seg / step))
-        for i in range(1, n + 1):
+        L = math.dist((x0, y0), (x1, y1))
+        if L == 0:
+            continue
+        nx, ny = -(y1 - y0) / L, (x1 - x0) / L
+        bow, k = 0.0, 1.0
+        if L >= HAND_MIN_BOW_LEN:
+            bow = (rng.choice((-1, 1)) * rng.uniform(0.4, 1.0)
+                   * min(HAND_BOW_PER_LEN * L, HAND_BOW_MAX))
+            k = rng.uniform(0.75, 1.35)
+        trem = _hand_tremor(rng, L)
+        n = max(1, math.ceil(L / HAND_SAMPLE))
+        for i in range(1, n):
             t = i / n
-            s = s0 + seg * t
-            k = amp * min(1.0, s / ramp, (total - s) / ramp)
-            out.append((x0 + (x1 - x0) * t + k * nx(s), y0 + (y1 - y0) * t + k * ny(s)))
-        s0 += seg
-    out[-1] = pts[-1]
+            s = L * t
+            ramp = min(1.0, s / HAND_RAMP, (L - s) / HAND_RAMP)
+            off = bow * math.sin(math.pi * t ** k) + HAND_TREMOR * ramp * trem(s)
+            out.append((x0 + (x1 - x0) * t + off * nx, y0 + (y1 - y0) * t + off * ny))
+        out.append((x1, y1))
     return out
 
 
-def _hand_width(width, rng):
-    """마커 한 가닥의 굵기 — 기본의 0.7~1.3 배, 가닥 안에서는 일정."""
-    return max(1, round(width * rng.uniform(0.7, 1.3)))
-
-
-def _hand_dot(p, r, rng):
-    """끝점 도트 상자 — 축마다 반지름 ±1px."""
-    rx, ry = r + rng.uniform(-1, 1), r + rng.uniform(-1, 1)
+def _hand_dot(p, rng):
+    """끝점 도트 상자 — 반지름 `HAND_DOT_R` 를 축마다 ±10%, 중심은 그대로."""
+    rx = HAND_DOT_R * rng.uniform(0.9, 1.1)
+    ry = HAND_DOT_R * rng.uniform(0.9, 1.1)
     return [p[0] - rx, p[1] - ry, p[0] + rx, p[1] + ry]
+
+
+def draw_strokes(page, strokes, to_pt, k):
+    """손그림 획을 pymupdf 쪽에 벡터로 긋는다 — 둥근 끝·둥근 이음, 끝점은 채운 타원.
+    `to_pt(x, y)` 는 논리 좌표 -> 쪽 pt, `k` 는 굵기 배율(pt / 논리 px)."""
+    import pymupdf
+    for s in strokes:
+        rgb = tuple(c / 255 for c in s['color'][:3])
+        shape = page.new_shape()
+        shape.draw_polyline([pymupdf.Point(*to_pt(x, y)) for x, y in s['points']])
+        shape.finish(color=rgb, width=s['width'] * k, lineCap=1, lineJoin=1, closePath=False)
+        for x0, y0, x1, y1 in s['dots']:
+            shape.draw_oval(pymupdf.Rect(*to_pt(x0, y0), *to_pt(x1, y1)))
+            shape.finish(color=None, fill=rgb, width=0)
+        shape.commit()
+
+
+def strokes_layer(strokes, size, scale):
+    """획을 MuPDF 로 안티앨리어싱한 RGBA 레이어 — 논리 크기 빈 쪽에 그려 `scale` 배로 래스터화한다.
+    PNG·안내판이 손그림모사 PDF 와 같은 코드로 같은 선을 얻는다."""
+    import pymupdf
+    w, h = size
+    doc = pymupdf.open()
+    page = doc.new_page(width=w, height=h)
+    draw_strokes(page, strokes, lambda x, y: (x, y), 1.0)
+    pix = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), alpha=True)
+    if (pix.width, pix.height) != (w * scale, h * scale):
+        raise ValueError(f'획 레이어 크기 {pix.width}x{pix.height} 가 캔버스 {w * scale}x{h * scale} 와 다르다')
+    # MuPDF 알파 표본은 premultiplied — 'RGBa' 로 읽어 풀어야 가장자리가 검게 번지지 않는다
+    return Image.frombytes('RGBa', (pix.width, pix.height), pix.samples).convert('RGBA')
 
 
 def _font(kind, size):
