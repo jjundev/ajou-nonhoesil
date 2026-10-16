@@ -36,6 +36,27 @@
   h4 { font-size: 11pt; font-weight: 700; }
   p { margin: 1.5mm 0; }
 
+  /* 표 열 순서와 별개로, 손이 가는 점퍼·LED의 실제 순서를 보여 준다. */
+  .io-locations { border: 1px solid var(--hair); background: var(--paper);
+                  padding: 3mm 4mm; margin: 3mm 0 2mm;
+                  break-inside: avoid; break-after: avoid; }
+  .io-title { margin: 0 0 2mm; font-size: 10pt; }
+  .io-groups { display: flex; gap: 5mm; flex-wrap: wrap; align-items: flex-start; }
+  .io-group { flex: 1 1 40mm; min-width: 0; }
+  .io-group + .io-group { border-left: 1px solid var(--hair); padding-left: 3mm; }
+  .io-group > b { display: block; font-size: 11pt; }
+  .io-direction { display: block; font-size: 9pt; color: var(--muted); margin: 0.5mm 0; }
+  .io-group ol { list-style: none; padding: 0; margin: 0; }
+  .io-group li { display: flex; align-items: baseline; flex-wrap: wrap;
+                 gap: 1.5mm; padding: 0.5mm 0; line-height: 1.5; }
+  .io-group strong { font-size: 13pt; }
+  .io-group small { display: block; flex-basis: 100%; font-size: 9pt; color: var(--muted); }
+  .io-rank { min-width: 9mm; font-size: 10pt; }
+  .io-symbol { font-size: 12pt; }
+  .io-muted { opacity: 0.55; }
+  .io-foot { font-size: 9pt; color: var(--muted); margin: 2mm 0 0; }
+  .io-warning { font-size: 10pt; font-weight: bold; }
+
   /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
      (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
   .box { display: inline-block; width: 4mm; height: 4mm; flex: none;
@@ -327,6 +348,7 @@
 <div class="tblock">
 <h3>T1 · SR Latch with Enable Truth Table</h3>
 <p class='src'>출처: manual:p7</p>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>S</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>E</strong></li><li class="io-input" title="좌 GND레일7행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>R</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q&#x27;</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>Q</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요.</p></aside>
 <p class='src order-note'>순서 열 번호대로 입력을 넣어요. 이 회로는 직전 상태를 기억해서, 같은 입력이라도 앞에 넣은 행에 따라 LED 가 달라요</p>
 <p class="led-legend"><b>보는 LED:</b> ①Q' = Q(t)의 반대 ②Q = Q(t) — 모두 1이면 켜짐</p>
 <table class="led-table">
@@ -354,6 +376,7 @@
 <div class="tblock nodes">
 <h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>
 <p class='src'>틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요</p>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>S</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>E</strong></li><li class="io-input" title="좌 GND레일7행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>R</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>Q&#x27;</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>Q</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요. 흐린 LED는 이 표에서 보지 않아요.</p></aside>
 <table>
 <thead>
 <tr>
@@ -384,7 +407,8 @@
 <p>1단계의 관측 노드는 D' 다. D' 에는 LED 가 없다 — E=1 에서 D 를 0·1 로 바꿔 LED Q·Q' 가 따라 바뀌는지로 본다(D=0 에서 Q 를 0 으로 내리는 것이 D' 다). 멀티미터·로직프로브가 있으면 U2 pin 2 를 직접 찍는다. 이 관측 방법은 교안 원문이 아니다. 1단계 뒤 T2 전 행을 돌린다.</p>
 </div>
 <div class="stage" data-fit="4"><h3>1단계 전 · 걷기</h3><figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치_1걷기_R입력.png" style="width:100%"></figure><p><b>이 단계에서:</b> 전원을 끄고 걷기 ①(R 입력 점퍼 → U1 pin 5, 좌 GND레일7행→좌 a7)을 뽑는다. 그림의 빨간 점선이 그 한 가닥이다. 회색 선은 손대지 않는다. 새로 꽂는 것은 없다</p><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 GND레일7행 → 좌 a7 · 입력 R -&gt; U1 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li></ul><p class="kept">회색 = 앞 단계에서 그대로 둔 것 20개</p><p><span class="box"></span><b>확인:</b> 뽑은 한 가닥이 손에 있고 좌 GND레일7행·좌 a7 홀이 비어 있다 (LED 검사 없음)</p></div>
-<div class="stage" data-fit="5"><h3>단계 1</h3><figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치_1단계_D반전.png" style="width:100%"></figure><p><b>이 단계에서:</b> 74HC04 를 K2 에 꽂고 전원(14→VCC, 7→GND)을 꽂는다. C1 의 S 점퍼(U1 pin 1)는 그대로 두고 이제 D 라 부른다. 신호선: U1 pin 1→U2 pin 1 (D 이어 감), U2 pin 2→U1 pin 5 (D')</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">(빈 자리) → 꽂는다: 74HC04</span><span class="desc">좌 13행에 새로 꽂는다</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">2</span><span class="route">좌 g13 → 중앙VCC레일12행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a19 → 좌 GND레일19행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">4</span><span class="route">좌 b3 → 좌 b13</span><span class="desc">D 이어 감 (U1 pin 1 -&gt; U2 pin 1)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">5</span><span class="route">좌 a14 → 좌 b7</span><span class="desc">D' (U2 pin 2) -&gt; U1 pin 5</span></li></ol><p class="kept">회색 = 앞 단계에서 그대로 둔 것 20개</p><p><b>확인 노드:</b> D' <small>(U2 pin 2)</small></p><p><span class="box"></span><b>확인:</b> 노드 D' — E=1 로 두고 D 를 0·1 로 바꿔 LED Q·Q' 로 본다 (D=0 에서 Q 꺼짐·Q' 켜짐, D=1 에서 반대). 74HC04 첫 사용</p><table class="stage-table">
+<div class="stage" data-fit="5"><h3>단계 1</h3><figure class="board"><img src="../결선도/실험06_2-1_결선도_D래치_1단계_D반전.png" style="width:100%"></figure><p><b>이 단계에서:</b> 74HC04 를 K2 에 꽂고 전원(14→VCC, 7→GND)을 꽂는다. C1 의 S 점퍼(U1 pin 1)는 그대로 두고 이제 D 라 부른다. 신호선: U1 pin 1→U2 pin 1 (D 이어 감), U2 pin 2→U1 pin 5 (D')</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">(빈 자리) → 꽂는다: 74HC04</span><span class="desc">좌 13행에 새로 꽂는다</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">2</span><span class="route">좌 g13 → 중앙VCC레일12행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a19 → 좌 GND레일19행</span><span class="desc">pin 7 -&gt; GND 레일</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">4</span><span class="route">좌 b3 → 좌 b13</span><span class="desc">D 이어 감 (U1 pin 1 -&gt; U2 pin 1)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">5</span><span class="route">좌 a14 → 좌 b7</span><span class="desc">D' (U2 pin 2) -&gt; U1 pin 5</span></li></ol><p class="kept">회색 = 앞 단계에서 그대로 둔 것 20개</p><p><b>확인 노드:</b> D' <small>(U2 pin 2)</small></p><p><span class="box"></span><b>확인:</b> 노드 D' — E=1 로 두고 D 를 0·1 로 바꿔 LED Q·Q' 로 본다 (D=0 에서 Q 꺼짐·Q' 켜짐, D=1 에서 반대). 74HC04 첫 사용</p><aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li><li class="io-input io-muted" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>E</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>Q&#x27;</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>Q</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요. 흐린 LED는 이 표에서 보지 않아요.</p></aside>
+<table class="stage-table">
 <thead>
 <tr><th colspan="1">입력 — 점퍼 1=+5V · 0=GND</th><th rowspan="2">D'예상<br><small>U2 pin 2</small></th><th rowspan="2">확인</th></tr><tr><th>D</th></tr>
 </thead>
@@ -440,6 +464,7 @@
 <div class="tblock">
 <h3>T2 · D Latch with Enable Truth Table</h3>
 <p class='src'>출처: manual:p8</p>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>E</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q&#x27;</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>Q</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요.</p></aside>
 <p class='src order-note'>순서 열 번호대로 입력을 넣어요. 이 회로는 직전 상태를 기억해서, 같은 입력이라도 앞에 넣은 행에 따라 LED 가 달라요</p>
 <p class="led-legend"><b>보는 LED:</b> ①Q' = Q(t)의 반대 ②Q = Q(t) — 모두 1이면 켜짐</p>
 <table class="led-table">
@@ -464,6 +489,7 @@
 <div class="tblock nodes">
 <h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>
 <p class='src'>틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요</p>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>E</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>Q&#x27;</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>Q</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요. 흐린 LED는 이 표에서 보지 않아요.</p></aside>
 <table>
 <thead>
 <tr>
@@ -520,6 +546,7 @@
 <div class="tblock">
 <h3>T3 · JK F/F (74HC76) Truth Table</h3>
 <p class='src'>출처: manual:p11</p>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>Set</strong></li><li class="io-input" title="좌 GND레일7행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>Reset</strong></li><li class="io-input" title="좌 GND레일9행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>J</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일3행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>K</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>Q&#x27;</strong></li></ol></section></section><p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요. 흐린 입력은 이 표에서 바꾸지 않아요.</p></aside>
 <p class="led-legend"><b>보는 LED:</b> ①Q = Q(t) ②Q' = Q(t)의 반대 — 모두 1이면 켜짐</p>
 <table class="led-table">
 <thead>
@@ -554,24 +581,24 @@
 [data-fit="0"] { page: fit-0; }
 @page fit-1 { size: 210mm 595mm; margin: 12mm 10mm; }
 [data-fit="1"] { page: fit-1; }
-@page fit-2 { size: 210mm 284mm; margin: 12mm 10mm; }
+@page fit-2 { size: 210mm 421mm; margin: 12mm 10mm; }
 [data-fit="2"] { page: fit-2; }
 @page fit-3 { size: 210mm 167mm; margin: 12mm 10mm; }
 [data-fit="3"] { page: fit-3; }
 @page fit-4 { size: 210mm 339mm; margin: 12mm 10mm; }
 [data-fit="4"] { page: fit-4; }
-@page fit-5 { size: 210mm 398mm; margin: 12mm 10mm; }
+@page fit-5 { size: 210mm 460mm; margin: 12mm 10mm; }
 [data-fit="5"] { page: fit-5; }
 @page fit-6 { size: 210mm 682mm; margin: 12mm 10mm; }
 [data-fit="6"] { page: fit-6; }
-@page fit-7 { size: 210mm 270mm; margin: 12mm 10mm; }
+@page fit-7 { size: 210mm 387mm; margin: 12mm 10mm; }
 [data-fit="7"] { page: fit-7; }
 @page fit-8 { size: 210mm 182mm; margin: 12mm 10mm; }
 [data-fit="8"] { page: fit-8; }
 @page fit-9 { size: 210mm 537mm; margin: 12mm 10mm; }
 [data-fit="9"] { page: fit-9; }
-@page fit-10 { size: 210mm 220mm; margin: 12mm 10mm; }
+@page fit-10 { size: 210mm 298mm; margin: 12mm 10mm; }
 [data-fit="10"] { page: fit-10; }
-@page fit-11 { size: 210mm 126mm; margin: 12mm 10mm; }
+@page fit-11 { size: 210mm 132mm; margin: 12mm 10mm; }
 [data-fit="11"] { page: fit-11; }
 </style>

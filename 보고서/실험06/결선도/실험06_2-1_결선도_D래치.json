@@ -203,5 +203,21 @@
    "at": "우 a10",
    "active_low": false
   }
+ ],
+ "inputs": [
+  {
+   "name": "D",
+   "at": "좌 a3",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  },
+  {
+   "name": "E",
+   "at": "좌 a4",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  }
  ]
 }

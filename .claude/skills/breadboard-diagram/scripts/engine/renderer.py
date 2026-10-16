@@ -1354,6 +1354,17 @@ class BreadboardRenderer(_RuleChecks):
                             key=lambda r: (0 if r['signal'][0] == 'left' else 1, r['signal'][2]))
             side['leds'] = [{'tag': r['tag'], 'at': self._sym_addr(('hole', r['signal'])),
                              'active_low': r.get('active_low', False)} for r in chains]
+            # 입력 조작 위치는 레일 쪽 끝이다. 핀 행과 다를 수 있다(free_rail_row).
+            # 그림·전기 연결은 그대로라 content()/도장에는 넣지 않는다.
+            side['inputs'] = []
+            for inp in self.inputs:
+                points = self._segments[inp['seg']][1]
+                x, y = points[0]
+                side['inputs'].append({
+                    'name': inp['name'], 'at': self._sym_addr(('hole', inp['at'])),
+                    'rail': self._sym_addr(self._endpoint(points[0])),
+                    'x': x, 'row': self._row_of(y),
+                })
         return side
 
     def stamp(self):

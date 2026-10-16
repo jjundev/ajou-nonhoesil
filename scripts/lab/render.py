@@ -25,6 +25,7 @@ from .spec_parser import split_indices
 from .photo_names import item_token, photo_name
 from . import config
 from .fit_pages import FIT_PLAIN
+from .io_locations import locations_html
 
 MAX_BREADBOARD_ROWS = 30
 # Breadboard.jpg(998×1345px) 상단에 아주대학교 로고 + 범례 원 3개가 있다.
@@ -913,9 +914,9 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     table = ""
     seen_nodes = {feed[led.tag] for led in watched(leds, feed or {}, section)}
     if spec is not None and stage.get("node") and stage["node"] in seen_nodes:
-        table = _led_table_html(spec, section, leds, feed)
+        table = _led_table_html(spec, section, leds, feed, png=png)
     elif spec is not None and stage.get("node") and not last:
-        table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]))
+        table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]), png=png)
     # 걷기 행은 `단계 2걷기` 가 아니라 `2단계 전 · 걷기` 로 찍는다 — 인쇄본에서
     # "2단계 앞에 하는 정리" 로 읽혀야 한다. `단계 2 · 걷기` 는 바로 뒤 `단계 2`
     # 와 번호가 겹쳐 같은 단계를 두 번 하는 것처럼 보였다(2026-09-29 실험04).
@@ -943,7 +944,7 @@ def _stage_led(todo) -> str:
 _JUMPER = {"H/L": "H=+5V · L=GND"}
 
 
-def _stage_table_html(spec, section, node_name, led="") -> str:
+def _stage_table_html(spec, section, node_name, led="", png=None) -> str:
     """단계 진리표 — 입력은 그 노드 식에 나오는 것만, 열 머리 둘째 줄은 노드 핀.
 
     머리는 두 줄이다. 입력 열 위에 `입력 — 점퍼 1=+5V · 0=GND` 묶음 머리를 단다 — 입력
@@ -975,11 +976,12 @@ def _stage_table_html(spec, section, node_name, led="") -> str:
             + f"<td>{_esc(node_calc.format_bit(bit, st.encoding))}</td>"
             + '<td class="box"></td></tr>'
             for cells, bit in st.rows]
-    return "\n".join(['<table class="stage-table">', "<thead>", head, "</thead>",
+    return "\n".join(([locations_html(png, st.inputs, feed={})] if png is not None else [])
+                     + ['<table class="stage-table">', "<thead>", head, "</thead>",
                       "<tbody>", *body, "</tbody>", "</table>"])
 
 
-def _led_table_html(spec, section, leds, feed) -> str:
+def _led_table_html(spec, section, leds, feed, png=None) -> str:
     """단계 LED 점등 표 — 그 단계까지 급전된 보드 LED 를 행마다 `켜지는 LED`·`꺼지는 LED` 두 열에
     보드 순서(①②…)로 나눠 적는다.
 
@@ -1025,7 +1027,8 @@ def _led_table_html(spec, section, leds, feed) -> str:
         body.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
                     + f'<td class="led on">{" ".join(on) or "없음"}</td>'
                     + f'<td class="led off">{off_text}</td><td class="box"></td></tr>')
-    return "\n".join([legend, '<table class="stage-table led-table">', "<thead>", head, "</thead>",
+    return "\n".join(([locations_html(png, st.inputs, feed=feed)] if png is not None else [])
+                     + [legend, '<table class="stage-table led-table">', "<thead>", head, "</thead>",
                       "<tbody>", *body, "</tbody>", "</table>"])
 
 
@@ -1061,7 +1064,7 @@ def _record_outputs(spec, section) -> set:
     return {table.header[i] for i in split_indices(table)[1]}
 
 
-def _unstaged_nodes_html(spec, section) -> str:
+def _unstaged_nodes_html(spec, section, png=None) -> str:
     """단계에서 안 본 노드 — 어느 단계도 가리키지 않는 노드의 핀과 기대값. 기록표 뒤에 온다.
 
     2026-09-28 최종 리뷰: 옛 중간 노드 표를 통째로 없애면 한 단계 안에서 함께 세운 노드
@@ -1079,6 +1082,7 @@ def _unstaged_nodes_html(spec, section) -> str:
     out = ['<div class="tblock nodes">',
            "<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>",
            f"<p class='src'>{_esc(_NODE_HINT)}</p>",
+           locations_html(png, nt.inputs, feed={}) if png is not None else "",
            "<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(name)}</th>" for name in nt.inputs]
     out += [f"<th>{_esc(_plain(nt.nodes[k][0]))}<br><small>{_esc(nt.nodes[k][1])}</small></th>"
@@ -1115,7 +1119,7 @@ def _mismatch_html(kind: str, table_id: str) -> str:
             f"<tbody>{body}</tbody></table>")
 
 
-def _circuit_tables(spec, section, badges=None, leds=()) -> str:
+def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
     out = []
     circuit_item = next((i for i in spec.items if i.id == section.item), None)
     for table_id in section.tables:
@@ -1138,6 +1142,10 @@ def _circuit_tables(spec, section, badges=None, leds=()) -> str:
             out.append(_stepped_html(table))
             out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
+            if netlist is not None:
+                png = netlist.path.parent / section.diagram if section.diagram else None
+                inputs = [_plain(table.header[i]) for i in split_indices(table)[0]]
+                out.append(locations_html(png, inputs))
             out.append(_truth_table_html(table, token, badges, section.order, leds))
         photo = (_PHOTO_NO_TOKEN if table.kind == "truth-table" and not token
                  else _PHOTO[table.kind].format(tid=table.id, tok=token or "<항목>"))
@@ -1258,8 +1266,8 @@ def circuit_pages(spec, netlist) -> str:
         out += wiring
         outputs = _record_outputs(spec, section)
         badges = {led.tag: f"LED{circled(led.index)}" for led in leds if led.tag in outputs}
-        out.append(_circuit_tables(spec, section, badges, leds))
-        unstaged = _unstaged_nodes_html(spec, section)
+        out.append(_circuit_tables(spec, section, badges, leds, netlist=netlist))
+        unstaged = _unstaged_nodes_html(spec, section, png=png)
         if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
             out.append(unstaged)
         out.append("</div>")      # B 쪽 끝

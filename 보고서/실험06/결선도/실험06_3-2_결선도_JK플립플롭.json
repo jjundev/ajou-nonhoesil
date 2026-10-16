@@ -155,5 +155,42 @@
    "at": "우 a8",
    "active_low": false
   }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 a3",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  },
+  {
+   "name": "Set",
+   "at": "좌 a4",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "Reset",
+   "at": "좌 a5",
+   "rail": "좌 GND레일7행",
+   "x": 176,
+   "row": 7
+  },
+  {
+   "name": "J",
+   "at": "좌 a6",
+   "rail": "좌 GND레일9행",
+   "x": 176,
+   "row": 9
+  },
+  {
+   "name": "K",
+   "at": "좌 j3",
+   "rail": "중앙GND레일3행",
+   "x": 588,
+   "row": 3
+  }
  ]
 }

@@ -2242,7 +2242,11 @@ class TestLedTable(unittest.TestCase):
     def test_C2_임시_급전은_노드를_밝히고_걷기_뒤엔_빠진다(self):
         self.assertIn("②A2 = D0'(U1 pin 12)", self.block(1, "단계 2"))
         self.assertIn("모두 1이면 켜짐", self.block(1, "단계 2"))
-        self.assertNotIn("A2", self.block(1, "단계 3").split("</thead>")[0])
+        # 위치도에는 미급전 LED 자리도 흐리게 남는다. 관측 목록에서 빠지는지 검사한다.
+        block = self.block(1, "단계 3")
+        legend = re.search(r'<p class="led-legend">(.*?)</p>', block).group(1)
+        self.assertNotIn("A2", legend)
+        self.assertIn('class="io-led io-muted"', block)
 
     def test_LED_순서_띠와_기록표_배지(self):
         self.assertIn("LED 순서(위→아래):</b> ①Y0 ②Y1 ③Y2 ④Y3 ⑤Y4 ⑥Y5 ⑦Y9 ⑧Y6 ⑨Y8 ⑩Y7",

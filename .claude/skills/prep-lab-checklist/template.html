@@ -36,6 +36,27 @@
   h4 { font-size: 11pt; font-weight: 700; }
   p { margin: 1.5mm 0; }
 
+  /* 표 열 순서와 별개로, 손이 가는 점퍼·LED의 실제 순서를 보여 준다. */
+  .io-locations { border: 1px solid var(--hair); background: var(--paper);
+                  padding: 3mm 4mm; margin: 3mm 0 2mm;
+                  break-inside: avoid; break-after: avoid; }
+  .io-title { margin: 0 0 2mm; font-size: 10pt; }
+  .io-groups { display: flex; gap: 5mm; flex-wrap: wrap; align-items: flex-start; }
+  .io-group { flex: 1 1 40mm; min-width: 0; }
+  .io-group + .io-group { border-left: 1px solid var(--hair); padding-left: 3mm; }
+  .io-group > b { display: block; font-size: 11pt; }
+  .io-direction { display: block; font-size: 9pt; color: var(--muted); margin: 0.5mm 0; }
+  .io-group ol { list-style: none; padding: 0; margin: 0; }
+  .io-group li { display: flex; align-items: baseline; flex-wrap: wrap;
+                 gap: 1.5mm; padding: 0.5mm 0; line-height: 1.5; }
+  .io-group strong { font-size: 13pt; }
+  .io-group small { display: block; flex-basis: 100%; font-size: 9pt; color: var(--muted); }
+  .io-rank { min-width: 9mm; font-size: 10pt; }
+  .io-symbol { font-size: 12pt; }
+  .io-muted { opacity: 0.55; }
+  .io-foot { font-size: 9pt; color: var(--muted); margin: 2mm 0 0; }
+  .io-warning { font-size: 10pt; font-weight: bold; }
+
   /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
      (개수를 테스트가 명세에서 세어 대조한다), 그 외 체크박스는 `.box` 다. */
   .box { display: inline-block; width: 4mm; height: 4mm; flex: none;

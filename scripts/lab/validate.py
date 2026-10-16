@@ -15,6 +15,7 @@ from .leds import board_leds, feeds_by_stage, unresolved_feeds, watched
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
+from .io_locations import location_issues
 from .netlist_parser import IC_DECL
 from .spec_parser import (ENCODINGS, ROLES, column_label, derived_parts,
                           split_columns, split_indices)
@@ -994,6 +995,41 @@ def check_netlist_circuits(netlist, spec) -> list:
             f"기록 대상 표 {table_id} 를 가리키는 회로가 없다 — "
             "인쇄본은 회로를 통해서만 표를 싣는다. 그대로 두면 조용히 빠진다"))
     out += check_stage_leds(netlist)
+    out += check_io_locations(netlist, spec)
+    return out
+
+
+def check_io_locations(netlist, spec) -> list:
+    """기록표·단계표의 입력 위치가 결선 JSON에 있는지 경고한다."""
+    out, feed_after = [], {}
+    for section in netlist.circuits:
+        tables = [spec.table(t) for t in section.tables]
+        inputs = list(dict.fromkeys(
+            table.header[i].replace('`', '').replace('*', '')
+            for table in tables if table and table.kind == 'truth-table'
+            and table.role != 'reference' for i in split_indices(table)[0]))
+        png = netlist.path.parent / section.diagram if section.diagram else None
+        checks = [(section.id, png, inputs)] if inputs else []
+        leds = board_leds(png) if png is not None and png.exists() else []
+        start = feed_after if section.continues else None
+        feeds = feeds_by_stage(section, start=start)
+        feed_after = feeds[-1] if feeds else (start or {})
+        for stage, feed in zip(section.stages, feeds):
+            if stage.get('walk') or not stage.get('node'):
+                continue
+            try:
+                observed = [feed[led.tag] for led in watched(leds, feed, section)]
+                # LED 표는 현재 노드뿐 아니라 앞 단계에서 연결한 LED도 함께 본다.
+                names = observed if stage['node'] in observed else [stage['node']]
+                stage_inputs = nodes.stage_nodes_table(section, spec, names).inputs
+            except ValueError:
+                continue  # 노드 계산 오류는 기존 검증이 보고한다.
+            checks.append((f"{section.id} 단계{stage['n']}",
+                           netlist.path.parent / stage['diagram'] if stage['diagram'] else None,
+                           stage_inputs))
+        for label, diagram, names in checks:
+            out.extend(Finding('warn', f'{netlist.path.name}:{label}', message)
+                       for message in location_issues(diagram, names))
     return out
 
 
