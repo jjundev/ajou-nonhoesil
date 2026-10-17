@@ -3,7 +3,7 @@
 CSS='''/* 퀴즈 작도: 고정된 인쇄 크기, 넘치면 검사 실패 */
 #book .work-board-block { flex: none; }
 #book .work-board img { display: block; width: 100mm; min-width: 90mm; height: auto; margin: 0 auto; }
-.page-center > .work-board-block ~ .work { min-height: 0; }
+.page-center > .work-board-block ~ .work { min-height: 25mm; }
 '''
 MOVE='''  const boards = [...panel.querySelectorAll('.work-board')];
   if (boards.length) {
@@ -37,10 +37,19 @@ SCAN='''    for (const page of book.querySelectorAll('.page--problem')) {
 
 def apply_quiz_patches(text: str, template_name: str) -> str:
     if template_name not in ('problem.html','answer.html'):raise ValueError('Unknown quiz template')
-    anchor="  center.append(el('div', 'work'));" if template_name=='problem.html' else "  const center = el('div', 'page-center');"
-    placement=MOVE+anchor if template_name=='problem.html' else REMOVE+anchor
-    for old,new in [('/* 수식 */',CSS+'/* 수식 */'),(anchor,placement),
-                    ("    document.body.dataset.overflow = overflow.join(',');",SCAN+"    document.body.dataset.overflow = overflow.join(',');")]:
+    center="  const center = el('div', 'page-center');"
+    start="  const quizBoardPage = !!panel.querySelector('.work-board');\n"
+    start+=(REMOVE if template_name=='answer.html' else '')+center
+    patches=[('/* 수식 */',CSS+'/* 수식 */'),(center,start)]
+    if template_name=='problem.html':
+        anchor="  center.append(el('div', 'work'));"
+        patches.append((anchor,MOVE+anchor))
+    row='  row.append(panel, center);'
+    patches.append((row,"  if (quizBoardPage) {\n    const schematic = center.querySelector('.fig-band');\n    if (schematic) panel.insertBefore(schematic, panel.querySelector('.conditions')?.closest('.block') || null);\n  }\n"+row))
+    patches.append(
+                    ("    document.body.dataset.overflow = overflow.join(',');",SCAN+"    document.body.dataset.overflow = overflow.join(',');")
+    )
+    for old,new in patches:
         if text.count(old)!=1:raise ValueError('Quiz patch anchor not unique in '+template_name+': '+old[:30])
         text=text.replace(old,new)
     return text

@@ -22,6 +22,8 @@ def test_quiz_board_print_geometry(tmp_path,viewport):
                 assert page.locator('.page--problem').evaluate_all('xs=>xs.map(x=>x.id)')==[p['id'] for p in m['problems']]
                 assert page.locator('.katex-error').count()==0
                 assert page.locator('img').evaluate_all('xs=>xs.every(x=>x.complete && x.naturalWidth>0)')
+                assert page.locator('#q-qp-e04-board-01 .panel .fig-band').count()==1
+                assert page.locator('#q-qp-e04-board-01 .page-center .fig-band').count()==0
                 if key=='question_html':
                     assert page.locator('.page-center .work-board').count()==1
                     assert page.locator('.panel .work-board').count()==0
