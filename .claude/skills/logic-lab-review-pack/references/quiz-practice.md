@@ -50,9 +50,13 @@ conditions 안에 다음 구조를 쓴다. 실제 소자의 사용 핀과 전원
 <div class="work-board"><img src="figures/questions/q-blank.png" alt="작도용 빈 브레드보드"></div>
 ```
 
-빈 보드는 문제지 중앙에 100mm 너비·종횡비 유지로 배치된다(권장 100×133.33mm, 최소 너비 90mm). 보드 자체가 작도 공간이다. 칩 명세는 패널에 남고 해설 DOM에서는 빈 보드만 제거된다. 전체 보드가 작아 읽기 어렵다면 실제 geometry의 사용 구역을 명시한다. 넘침을 숨기려고 보드를 축소하지 않는다.
+빈 보드는 문제지 중앙에 100mm 너비·PDF 원본 종횡비 유지로 배치된다(최소 너비 90mm). 보드 자체가 작도 공간이다. 칩 명세는 패널에 남고 해설 DOM에서는 빈 보드만 제거된다. 원본 페이지의 여백·잭·홀·레일·글자를 포함한 양식 전체를 유지하고 자르거나 다시 그리지 않는다. 넘침을 숨기려고 보드를 축소하지 않는다.
 
-[breadboard-diagram](../../breadboard-diagram/SKILL.md)을 읽고 `.claude/assets/breadboard_v2/geometry.json`의 홀·레일을 사용한다. 기존 엔진의 verify()/nets()로 IC·홀 좌표·연결 넷을 검토한다. 같은 좌표에서 SVG와 300dpi PNG를 작성한다. SVG에 래스터를 끼워 넣지 않는다. 회로도·빈 보드는 problem/none, 완성 보드는 solution/present다. source_refs, derivation, review_notes 및 두 파일 hash를 registry에 기록하고 시각 확인 전에 review_status=pass를 쓰지 않는다.
+**사용자 지정 양식(2026-10-17): 모든 퀴즈 작도 문항은 실험 번호와 관계없이 [v1 배포 PDF](../../../../강의노트/공지사항/Breadboard.pdf)를 그대로 사용한다.** v2 판형이나 `.claude/assets/Breadboard.jpg`로 대체하지 않는다. PDF 원본은 수정하지 않는다. 기존 보고서·결선도의 주차별 판형 정책은 그대로 유지한다.
+
+`scripts.lab.review_pack.breadboard_template.template_png()`로 PDF 1쪽 전체를 300dpi PNG로 렌더링한다(반환값: png_bytes, width, height). 빈 보드는 이 PNG를 그대로 쓴다. registry의 SVG는 `viewBox="0 0 {width} {height}"`와 title을 두고, 직계 자식 `<image x="0" y="0" width="{width}" height="{height}" href="data:image/png;base64,..."/>`에 반환 PNG를 삽입한다. 이것은 양식을 보존하기 위한 명시적 예외이며 검사기는 이 원본 렌더링과 바이트가 같은 이미지 하나만 허용한다. 임의 스캔이나 다른 래스터 그림에는 예외를 적용하지 않는다. 완성 보드도 같은 PDF 배경 위에 부품·배선 벡터만 얹고, 그 합성 결과를 PNG로 출력한다. 회로도는 종전대로 벡터 SVG로 저작한다.
+
+[breadboard-diagram](../../breadboard-diagram/SKILL.md)과 [v1 좌표 주의](../../breadboard-diagram/v1.md)를 읽는다. **배포 PDF와 기존 v1 JPG는 가로 홀 위치가 다르므로 JPG 좌표를 그대로 얹지 않는다.** 배포 PDF에서 홀·레일·잭 좌표를 측정하고 양식 좌표와 엔진 검증 좌표 사이의 대응을 기록한다. v2 geometry는 사용하지 않는다. 기존 엔진의 verify()/nets()로 IC·연결 넷을 검토한 뒤, PDF 위의 배선 끝점도 실제 홀과 일치하는지 따로 확대 확인한다. 회로도·빈 보드는 problem/none, 완성 보드는 solution/present다. 양식 PDF도 manifest.sources에 등록하고 source_refs에 1쪽을 기록한다. derivation에는 원본 경로·SHA256·300dpi 변환·좌표 대응을 기록하고, review_notes 및 SVG/PNG hash를 registry에 기록한다. 시각 확인 전에 review_status=pass를 쓰지 않는다.
 
 완성 그림은 `완성 결선도` 단계 안의 등록 img로 넣고 읽을 수 있는 width를 지정한다. 연결 기준에는 모범 넷과 핀 연결표를 함께 둔다. 회로·명세·그림의 핀 번호/극성, 레일 분리, 전원·GND·미사용 입력, LED 방향·저항을 대조한다. 동등 넷은 인정하지만 학생 답안 자동 채점기는 추가하지 않는다.
 

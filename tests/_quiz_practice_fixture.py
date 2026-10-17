@@ -44,11 +44,21 @@ def create_quiz_run(tmp_path):
                 width,height=round(w*6),round(h*6)
                 svg=f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}"><title>{name}</title><rect x="1" y="1" width="{width-2}" height="{height-2}" fill="white" stroke="black"/></svg>'
                 (run/(stem+'.svg')).write_text(svg,encoding='utf-8')
+                if name=='blank':
+                    import base64
+                    from scripts.lab.review_pack.breadboard_template import template_png
+                    png_bytes,width,height=template_png()
+                    h=w*height/width
+                    svg=(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}"><title>v1 PDF</title>'
+                         f'<image x="0" y="0" width="{width}" height="{height}" href="data:image/png;base64,{base64.b64encode(png_bytes).decode()}"/></svg>')
+                    (run/(stem+'.svg')).write_text(svg,encoding='utf-8')
                 img=Image.new('RGB',(width,height),'white');draw=ImageDraw.Draw(img);draw.rectangle((1,1,width-2,height-2),outline='black',width=2)
                 for y in range(20,height-15,15):
                     for x in range(20,width-15,15):draw.ellipse((x-2,y-2,x+2,y+2),fill='gray')
                 if name=='complete':draw.line((30,40,width-30,height-40),fill='blue',width=4)
                 img.save(run/(stem+'.png'))
+                if name=='blank':
+                    (run/(stem+'.png')).write_bytes(png_bytes)
                 registry.append(dict(id=ident,question_id=p['id'],role=role,answer_exposure=exposure,
                     svg=stem+'.svg',png=stem+'.png',svg_sha256=hashlib.sha256((run/(stem+'.svg')).read_bytes()).hexdigest(),
                     png_sha256=hashlib.sha256((run/(stem+'.png')).read_bytes()).hexdigest(),w_mm=w,h_mm=h,

@@ -41,6 +41,8 @@ MD는 위젯 조작부를 제외하고 정적 자료·힌트·풀이를 모두 �
 
 ## 문제설명 연결
 
+퀴즈 작도 양식에는 [quiz-practice.md](quiz-practice.md)의 사용자 지정 v1 PDF 보존 규칙을 우선 적용한다. 해당 원본 양식 배경만 SVG의 래스터 삽입 금지에서 제외하며, 설명용 회로도에는 이 예외를 적용하지 않는다.
+
 문제설명 전용 기준은 [전용 authoring 문서](../../logic-lab-problem-explain/references/authoring.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
 
 ## 퀴즈 유형 연습 저작

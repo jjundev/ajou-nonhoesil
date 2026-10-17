@@ -1,5 +1,7 @@
 # Quiz Type Practice Implementation Plan
 
+> 2026-10-17 사용자 후속 지정으로 아래 일반 보드 생성 계획을 변경한다. 퀴즈 작도는 모든 실험에서 `강의노트/공지사항/Breadboard.pdf` v1 양식을 페이지 전체·원본 종횡비로 보존한다. v1 JPG 및 v2 geometry로 대체하지 않는다. 원본 PDF 300dpi 배경만 SVG 래스터 금지의 예외로 허용하고, 완성 배선은 PDF에서 확인한 홀 위치에 얹는다. 기존 팩과 보고서 결선도는 소급 변경하지 않는다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 복습팩을 새로 생성하거나 전체 갱신할 때 해당 실험에 근거한 T/F 4·빈칸 3·작도 1·서술형 2의 자체 출제 연습을 추가한다.

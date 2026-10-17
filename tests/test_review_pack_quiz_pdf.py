@@ -14,8 +14,10 @@ def test_quiz_pdf_counts_and_content(tmp_path):
         assert 'QUIZ_SOLUTION_ONLY_SENTINEL' not in text
         for p in list(doc)[1:]:assert '자체 출제' in p.get_text()
         board=doc[8]
-        # One 3:4 blank board, apart from the separate schematic.
-        boards=[i for i in board.get_image_info() if abs((i['bbox'][2]-i['bbox'][0])/(i['bbox'][3]-i['bbox'][1])-.75)<.02]
+        # One complete v1 PDF page, preserving its original aspect ratio.
+        from scripts.lab.review_pack.breadboard_template import template_png
+        _,width,height=template_png()
+        boards=[i for i in board.get_image_info() if abs((i['bbox'][2]-i['bbox'][0])/(i['bbox'][3]-i['bbox'][1])-width/height)<.002]
         assert len(boards)==1
     with pymupdf.open(answer) as doc:
         assert 'QUIZ_SOLUTION_ONLY_SENTINEL' in ''.join(p.get_text() for p in doc)

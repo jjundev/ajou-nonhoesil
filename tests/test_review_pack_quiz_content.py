@@ -50,7 +50,7 @@ def test_board_asset_mutations_rejected(tmp_path,change):
     if change=='empty_answer':o['solution']['answer']='<p> </p>'
     if change=='empty_step':o['solution']['steps'][0]['html']='<p> </p>'
     path.write_text(json.dumps(o),encoding='utf-8')
-    with pytest.raises(ValueError,match=p['id']):load_workbook_content(m,run)
+    with pytest.raises(ValueError,match='f-blank' if change=='foreign' else p['id']):load_workbook_content(m,run)
 
 
 def test_published_check_uses_same_contract(tmp_path):
@@ -95,7 +95,9 @@ def test_published_blank_board_alias_cannot_replace_schematic(tmp_path):
     for key in ('question','review'):
         d=read_workbook_payload(paths[key+'_html']);p=next(p for p in d['problems'] if p['id']=='q-qp-e04-board-01')
         p['html']['conditions']=p['html']['conditions'].replace('blank.png','blank.svg')
-        p['figures']=[dict(src='.pack/figures/questions/blank.png',w_mm=100,h_mm=133.33)]
+        registry=json.loads((run/m['figure_manifest']).read_text(encoding='utf-8'))
+        blank=next(f for f in registry['figures'] if f['id']=='f-blank')
+        p['figures']=[dict(src='.pack/figures/questions/blank.png',w_mm=blank['w_mm'],h_mm=blank['h_mm'])]
         paths[key+'_html'].write_text(render_workbook_html(d,assets),encoding='utf-8')
         write_workbook_md(d,m,paths[key+'_md'])
     assert any('blank board duplicated' in e for e in check_pack(stage))

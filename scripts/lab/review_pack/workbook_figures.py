@@ -56,9 +56,13 @@ def check_redrawn_figures(folder, manifest, *, require_review=False):
             if not any(n.tag=='{http://www.w3.org/2000/svg}title' and (n.text or '').strip() for n in svg.iter()): raise ValueError(ident+': missing SVG title')
             for n in svg.iter():
                 tag=n.tag.rsplit('}',1)[-1]
-                if tag in {'script','image','foreignObject'} or any(k.lower().startswith('on') for k in n.attrib):
+                template_image=False
+                if tag=='image' and type(manifest.get('quiz_practice_version')) is int and manifest['quiz_practice_version']==1 and p.get('question_type')=='breadboard':
+                    from .breadboard_template import is_template_image
+                    template_image=is_template_image(n,svg)
+                if tag in {'script','foreignObject'} or (tag=='image' and not template_image) or any(k.lower().startswith('on') for k in n.attrib):
                     raise ValueError(ident+': active or raster SVG')
-                if any(k.rsplit('}',1)[-1]=='href' and not v.startswith('#') for k,v in n.attrib.items()): raise ValueError(ident+': external SVG resource')
+                if not template_image and any(k.rsplit('}',1)[-1]=='href' and not v.startswith('#') for k,v in n.attrib.items()): raise ValueError(ident+': external SVG resource')
                 if re.search(r'url\s*\(|@import', ' '.join(n.attrib.values())+' '+(n.text or ''),re.I): raise ValueError(ident+': CSS SVG resource')
             blob=blobs['png']
             if len(blob)<24 or not blob.startswith(b'\x89PNG\r\n\x1a\n'): raise ValueError(ident+': invalid PNG')
