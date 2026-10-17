@@ -22,10 +22,13 @@ def check_quiz_question(problem: dict, html: dict[str,str], problem_figures: lis
     if kind is None:return []
     errors=[];ident=problem['id']
     def error(message): errors.append(ident+': '+message)
-    def match(src,role,exposure):
+    def resolve(src):
         path=strip_data(unquote(urlsplit(src).path))
         found=[f for f in registry.values() if path in (f['svg'],f['png'])]
-        return len(found)==1 and found[0]['question_id']==ident and found[0]['role']==role and found[0]['answer_exposure']==exposure
+        return found[0] if len(found)==1 else None
+    def match(src,role,exposure):
+        found=resolve(src)
+        return found is not None and found['question_id']==ident and found['role']==role and found['answer_exposure']==exposure
     if solution is not None:
         steps=solution['steps']; required={'true_false':{'판정 근거','문장 확인'},'fill_blank':{'빈칸별 근거'},
             'short_answer':{'채점 핵심','허용 표현'},'breadboard':{'연결 기준','완성 결선도'}}.get(kind,set())
@@ -44,7 +47,9 @@ def check_quiz_question(problem: dict, html: dict[str,str], problem_figures: lis
     else:
         src=imgs[0].attrs.get('src','')
         if not match(src,'problem','none'):error('unsafe/unregistered blank board')
-        if any(strip_data(unquote(urlsplit(f['src']).path))==strip_data(unquote(urlsplit(src).path)) for f in problem_figures):error('blank board duplicated as schematic')
+        board=resolve(src)
+        if board and any((figure:=resolve(f['src'])) is not None and figure['id']==board['id'] for f in problem_figures):
+            error('blank board duplicated as schematic')
     tables=[n for n in cond.walk() if n.tag=='table' and _has(n,'chip-spec')]
     if len(tables)!=1:error('one chip-spec table required')
     else:

@@ -70,3 +70,32 @@ def test_published_check_uses_same_contract(tmp_path):
         paths[key+'_html'].write_text(render_workbook_html(data,assets),encoding='utf-8')
         write_workbook_md(data,m,paths[key+'_md'])
     assert any('q-qp-e04-board-01' in e for e in check_pack(tmp_path/'stage'))
+
+
+def test_blank_board_svg_alias_cannot_be_the_schematic(tmp_path):
+    m,run=create_quiz_run(tmp_path)
+    p=next(p for p in m['problems'] if p.get('question_type')=='breadboard')
+    path=run/p['workbook_fragment'];o=json.loads(path.read_text(encoding='utf-8'))
+    o['conditions']=o['conditions'].replace('blank.png','blank.svg')
+    o['problem_figures']=['f-blank']
+    path.write_text(json.dumps(o),encoding='utf-8')
+    with pytest.raises(ValueError,match=p['id']+'.*blank board duplicated'):
+        load_workbook_content(m,run)
+
+
+def test_published_blank_board_alias_cannot_replace_schematic(tmp_path):
+    from pathlib import Path
+    from scripts.lab.review_pack.render import assemble
+    from scripts.lab.review_pack.html2md import convert_pack
+    from scripts.lab.review_pack.workbook_render import read_workbook_payload,render_workbook_html
+    from scripts.lab.review_pack.workbook_md import write_workbook_md
+    from scripts.lab.review_pack.checks import check_pack
+    m,run=create_quiz_run(tmp_path);stage=tmp_path/'stage';assets=Path('.claude/skills/logic-lab-review-pack/assets')
+    paths=assemble(m,run,stage,assets);convert_pack(paths['note_html'],paths['review_html'],manifest=m)
+    for key in ('question','review'):
+        d=read_workbook_payload(paths[key+'_html']);p=next(p for p in d['problems'] if p['id']=='q-qp-e04-board-01')
+        p['html']['conditions']=p['html']['conditions'].replace('blank.png','blank.svg')
+        p['figures']=[dict(src='.pack/figures/questions/blank.png',w_mm=100,h_mm=133.33)]
+        paths[key+'_html'].write_text(render_workbook_html(d,assets),encoding='utf-8')
+        write_workbook_md(d,m,paths[key+'_md'])
+    assert any('blank board duplicated' in e for e in check_pack(stage))
