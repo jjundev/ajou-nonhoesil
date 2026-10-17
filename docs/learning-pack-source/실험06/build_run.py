@@ -133,7 +133,7 @@ for pid, html in E.items():
 manifest['title'] = 'Latch & Flip-Flop — 1비트를 기억하는 회로'
 manifest['edition_status'] = 'current'
 FINAL = '--final' in sys.argv  # only after source/content/independent/browser checks are recorded in 검증결과.md
-CHK = dict(source_visual='pass', content='self_review', independent='pass', browser='pass') if FINAL else \
+CHK = dict(source_visual='pass', content='self_review', independent='not_run', browser='pass') if FINAL else \
     dict(source_visual='not_run', content='not_run', independent='not_run', browser='not_run')
 manifest['checks'] = dict(CHK)
 manifest['note_presentation_version'] = 2
@@ -176,6 +176,8 @@ for pid in PR.ORDER:
                  workbook_fragment=f'workbook/{pid}.json', explanation_fragment=f'problem-explanations/{pid}.html')
     ordered.append(p)
 for pid, p in problems.items():
+    if p.get('question_type'):
+        continue
     if pid in PR.P:
         continue
     status, reason, dup, _ = DECISIONS[pid]
@@ -183,6 +185,8 @@ for pid, p in problems.items():
              derived_answer=None, given_answer=None, answer_status='unresolved')
     ordered.append(p)
 manifest['problems'] = ordered
+from quiz import apply as apply_quiz
+apply_quiz(RUN, manifest)
 
 for q in index['questions']:
     pid = q['question_id']
@@ -196,4 +200,6 @@ for q in index['questions']:
 
 (RUN / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
 (RUN / 'authoring-index.json').write_text(json.dumps(index, ensure_ascii=False, indent=2), encoding='utf-8')
-print('ok', len(registry), 'figures;', len(PR.P), 'included;', len(DECISIONS), 'not included')
+print('ok', len(json.loads((F / 'redraw-manifest.json').read_text(encoding='utf-8'))['figures']),
+      'figures;', sum(p['status'] == 'included' for p in manifest['problems']),
+      'included;', len(DECISIONS), 'not included')

@@ -8,7 +8,7 @@
       "svg": "figures/solutions/q-dff-design-solution-01.svg",
       "png": "figures/solutions/q-dff-design-solution-01.png",
       "svg_sha256": "5c58b62313cdda0a3b9fec4c955e04386acd786213c893006eeb84cdeb88f4f3",
-      "png_sha256": "5ca59374325914ff3660349d0573ae1ca3a482b9abc760ea37089c57d8a34655",
+      "png_sha256": "aa748a6064235cc6a791fe915b660f10907d636d581abcde8e33c34a814721a9",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [],
@@ -35,7 +35,7 @@
       "svg": "figures/questions/q-dff-table-given-01.svg",
       "png": "figures/questions/q-dff-table-given-01.png",
       "svg_sha256": "1d80fff5c940e4bb75b4c959766caa5c64a3be0ac124cea0952c3f00fc394443",
-      "png_sha256": "c4efa56362344d63b698193216448117d09ed678c8b2f8016914b74e676794c8",
+      "png_sha256": "2daecf6fe58b2ee1df4e7787fd6007cbdfcf0bbf96dc3990d5076d8f87d8226a",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [
@@ -64,7 +64,7 @@
       "svg": "figures/solutions/q-jkff-design-solution-01.svg",
       "png": "figures/solutions/q-jkff-design-solution-01.png",
       "svg_sha256": "c1fa468ec191daf8f46ae58a8fabf869da93501d8e47749d9631ea999dc96f88",
-      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "png_sha256": "0a3c6c236ec8e064140760e5c38cda80acd56e311fa4481e386c1e6dbe0ec4a3",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [],
@@ -91,7 +91,7 @@
       "svg": "figures/questions/q-jkff-short-given-01.svg",
       "png": "figures/questions/q-jkff-short-given-01.png",
       "svg_sha256": "ab7b46c1d0c1ec7e5bf773ea2046b38bda583e929930bead05c6fa0dc4179faf",
-      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "png_sha256": "0a3c6c236ec8e064140760e5c38cda80acd56e311fa4481e386c1e6dbe0ec4a3",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [
@@ -120,7 +120,7 @@
       "svg": "figures/questions/q-rs-latch-given-01.svg",
       "png": "figures/questions/q-rs-latch-given-01.png",
       "svg_sha256": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
-      "png_sha256": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+      "png_sha256": "73518562d0496beff34236a32feb7541fda85bdf3873fe089b4c6fa714bdef69",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [
@@ -149,7 +149,7 @@
       "svg": "figures/questions/q-rs-quiz-given-01.svg",
       "png": "figures/questions/q-rs-quiz-given-01.png",
       "svg_sha256": "ee6413222dc4eb2f0d2af92726a93681bd9d42f2d42d64c0b19df39b102137ba",
-      "png_sha256": "61a49366af0d70c67fd03d20cc3edc556cb1cc6260e42f31406abfd8fac6fd31",
+      "png_sha256": "73518562d0496beff34236a32feb7541fda85bdf3873fe089b4c6fa714bdef69",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [
@@ -178,7 +178,7 @@
       "svg": "figures/solutions/q-rs-quiz-solution-01.svg",
       "png": "figures/solutions/q-rs-quiz-solution-01.png",
       "svg_sha256": "af86d3399a33179c481a7c5f9595524b6423df2b71fe6d8b8256d95a48907e8c",
-      "png_sha256": "7f0165cfa9c8642fdc35b226b6997c422afedf083e1a667695ba8326cea90ba3",
+      "png_sha256": "0a3c6c236ec8e064140760e5c38cda80acd56e311fa4481e386c1e6dbe0ec4a3",
       "w_mm": 150.0,
       "h_mm": 95.0,
       "source_asset_ids": [],
@@ -205,7 +205,7 @@
       "svg": "figures/questions/q-sr-nand-00-given-01.svg",
       "png": "figures/questions/q-sr-nand-00-given-01.png",
       "svg_sha256": "54744dbe9977fab9e453d143c8819a49398f84f27da0611e7f79e177c22d7105",
-      "png_sha256": "889d2e776eba714fd592fa9d5a90b5eacda3dccf6f98192a3a872854e196626b",
+      "png_sha256": "5e5d9e66b1d701d5611325efbb0639dbaedb581875bf68092c26a8d5bf788c38",
       "w_mm": 150.0,
       "h_mm": 102.632,
       "source_asset_ids": [
@@ -234,7 +234,7 @@
       "svg": "figures/solutions/q-tff-solution-01.svg",
       "png": "figures/solutions/q-tff-solution-01.png",
       "svg_sha256": "2f2729ac3245796c169b9b8bb725d8c4729543ea11159a8adf0fd92b2641a0ae",
-      "png_sha256": "2c69d2c2de789374107142214b5d3c8ce6ad806db058fca86aa23a554f7b5b69",
+      "png_sha256": "b5fafd6cefc78d9eb0d2f5de7da45458fa0a8e63ae3e820f2cc544ca23dd9f28",
       "w_mm": 150.0,
       "h_mm": 71.053,
       "source_asset_ids": [],
@@ -253,6 +253,90 @@
       "answer_exposure": "present",
       "review_status": "pass",
       "review_notes": "T=0 유지, T=1 Toggle을 74HC76 동작 모델로 확인했어요."
+    },
+    {
+      "id": "q-qp-e06-board-01-blank",
+      "question_id": "q-qp-e06-board-01",
+      "role": "problem",
+      "svg": "figures/questions/q-qp-e06-board-01-blank.svg",
+      "png": "figures/questions/q-qp-e06-board-01-blank.png",
+      "svg_sha256": "1404241b3c907e67b08f493ff7af24b8a42c2134f6a901670a6b3e55bd021490",
+      "png_sha256": "afd6320bd2a49808fca62018d851635a9cae0f7a3d4903775da3c8f8d30de022",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-df4e3850c9b9d3a3",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "교안 PDF p7의 NAND 넷으로 자체 저작. v1 원본=강의노트/공지사항/Breadboard.pdf, sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4, 300dpi 전체 페이지. PDF 좌표와 엔진 좌표 대응: figures/quiz-board-mapping.json. 원본 JPG는 검증 엔진 좌표계로만 사용.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "원본 PDF 전체 보존·홀 좌표 확대 확인, 회로 NAND 극성·핀 연결표·완성 넷 대조. engine verify/nets 통과. 2026-10-17 self review."
+    },
+    {
+      "id": "q-qp-e06-board-01-complete",
+      "question_id": "q-qp-e06-board-01",
+      "role": "solution",
+      "svg": "figures/solutions/q-qp-e06-board-01-complete.svg",
+      "png": "figures/solutions/q-qp-e06-board-01-complete.png",
+      "svg_sha256": "a16b7c28ce240cf24b00181ba734d3957174aa7058fd6c2206486901b71aee10",
+      "png_sha256": "23898c26996218348323ae8b1f949a8a809765a61e80a3095866084d05fe8d70",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-df4e3850c9b9d3a3",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "교안 PDF p7의 NAND 넷으로 자체 저작. v1 원본=강의노트/공지사항/Breadboard.pdf, sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4, 300dpi 전체 페이지. PDF 좌표와 엔진 좌표 대응: figures/quiz-board-mapping.json. 원본 JPG는 검증 엔진 좌표계로만 사용.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "원본 PDF 전체 보존·홀 좌표 확대 확인, 회로 NAND 극성·핀 연결표·완성 넷 대조. engine verify/nets 통과. 2026-10-17 self review."
+    },
+    {
+      "id": "q-qp-e06-board-01-circuit",
+      "question_id": "q-qp-e06-board-01",
+      "role": "problem",
+      "svg": "figures/questions/q-qp-e06-board-01-circuit.svg",
+      "png": "figures/questions/q-qp-e06-board-01-circuit.png",
+      "svg_sha256": "95bf4ebe30efa8f8650f71a3ed0d2017f0a7b870d17ed51ae4b73359a2b2521c",
+      "png_sha256": "519ebcf07bee43dbfd8a744ca3744bf124171259f72f6a845a9fd81a4283109a",
+      "w_mm": 55,
+      "h_mm": 31.842105263157894,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-df4e3850c9b9d3a3",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "교안 PDF p7의 NAND 넷으로 자체 저작. v1 원본=강의노트/공지사항/Breadboard.pdf, sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4, 300dpi 전체 페이지. PDF 좌표와 엔진 좌표 대응: figures/quiz-board-mapping.json. 원본 JPG는 검증 엔진 좌표계로만 사용.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "원본 PDF 전체 보존·홀 좌표 확대 확인, 회로 NAND 극성·핀 연결표·완성 넷 대조. engine verify/nets 통과. 2026-10-17 self review."
     }
   ]
 }

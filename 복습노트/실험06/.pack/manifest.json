@@ -109,6 +109,13 @@
       "sha256": "2f43076301a1de5fc03e3912522d423854b0f8a8d3d15cac1019ec76f8c8d2da",
       "kind": "datasheet",
       "edition": "unknown"
+    },
+    {
+      "id": "s-df4e3850c9b9d3a3",
+      "path": "강의노트/공지사항/Breadboard.pdf",
+      "sha256": "045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4",
+      "kind": "notice",
+      "edition": "current"
     }
   ],
   "topics": [
@@ -1346,12 +1353,267 @@
       "given_answer": null,
       "derived_answer": null,
       "answer_status": "unresolved"
+    },
+    {
+      "id": "q-qp-e06-tf-01",
+      "title": "Enable이 꺼진 SR 래치",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-sr-enable"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-tf-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-tf-01.html"
+    },
+    {
+      "id": "q-qp-e06-tf-02",
+      "title": "D 래치의 투명 구간",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-d-latch"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-tf-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-tf-02.html"
+    },
+    {
+      "id": "q-qp-e06-tf-03",
+      "title": "74HC76의 동작 엣지",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-74hc76"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-tf-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-tf-03.html"
+    },
+    {
+      "id": "q-qp-e06-tf-04",
+      "title": "SR 부정 상태의 두 출력",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-sr-enable"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-tf-04.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-tf-04.html"
+    },
+    {
+      "id": "q-qp-e06-blank-01",
+      "title": "SR 래치의 세 명령",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-sr-enable"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① Set, ② Reset, ③ 유지",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-blank-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-blank-01.html"
+    },
+    {
+      "id": "q-qp-e06-blank-02",
+      "title": "D 래치의 입력과 기억",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-d-latch"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① D′, ② D, ③ Q이전",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-blank-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-blank-02.html"
+    },
+    {
+      "id": "q-qp-e06-blank-03",
+      "title": "74HC76의 비동기 우선순위",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-74hc76"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① High, ② 0, ③ 보수",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-blank-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-blank-03.html"
+    },
+    {
+      "id": "q-qp-e06-board-01",
+      "title": "Enable SR 래치 작도",
+      "kind": "practice",
+      "question_type": "breadboard",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-sr-enable"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-df4e3850c9b9d3a3",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "14→+5V, 7→GND; S→1, E→2·4, R→5; 3→9, 6→13, 8→12, 11→10; Q=8, Q′=11",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-board-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-board-01.html"
+    },
+    {
+      "id": "q-qp-e06-short-01",
+      "title": "SR 래치는 어떻게 기억할까요",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-sr-enable"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Set으로 Q=1이 돼요. S=R=0으로 돌아와도 교차 되먹임이 Q=1,Q′=0을 유지해요. E=0이면 S·R의 변화가 저장부에 전달되지 않아 직전 상태를 지켜요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-short-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-short-01.html"
+    },
+    {
+      "id": "q-qp-e06-short-02",
+      "title": "74HC76에서 비동기 제어를 High로 두는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "새 퀴즈 유형 연습: 교안 조건에서 자체 출제하고 안정 상태·전이로 검산",
+      "topics": [
+        "t-74hc76"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9792f60486135b0",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "SET·RESET은 Active Low 비동기 제어이므로 둘 다 High로 두어 비활성화해요. SET만 Low이면 Q=1, RESET만 Low이면 Q=0이며 클록보다 우선해요. 둘 다 High일 때 교안의 74HC76은 하강 엣지에서 J·K에 따라 Q를 갱신해요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e06-short-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e06-short-02.html"
     }
   ],
   "checks": {
     "source_visual": "pass",
     "content": "self_review",
-    "independent": "pass",
+    "independent": "not_run",
     "browser": "pass"
   },
   "note_presentation_version": 2,
@@ -1364,6 +1626,7 @@
     "browser": "pass"
   },
   "figure_manifest": "figures/redraw-manifest.json",
+  "quiz_practice_version": 1,
   "generated_files": [
     ".pack/assets/note-template.html",
     ".pack/assets/review-interaction.css",
@@ -1540,17 +1803,24 @@
     ".pack/figures/questions/q-dff-table-given-01.svg",
     ".pack/figures/questions/q-jkff-short-given-01.png",
     ".pack/figures/questions/q-jkff-short-given-01.svg",
+    ".pack/figures/questions/q-qp-e06-board-01-blank.png",
+    ".pack/figures/questions/q-qp-e06-board-01-blank.svg",
+    ".pack/figures/questions/q-qp-e06-board-01-circuit.png",
+    ".pack/figures/questions/q-qp-e06-board-01-circuit.svg",
     ".pack/figures/questions/q-rs-latch-given-01.png",
     ".pack/figures/questions/q-rs-latch-given-01.svg",
     ".pack/figures/questions/q-rs-quiz-given-01.png",
     ".pack/figures/questions/q-rs-quiz-given-01.svg",
     ".pack/figures/questions/q-sr-nand-00-given-01.png",
     ".pack/figures/questions/q-sr-nand-00-given-01.svg",
+    ".pack/figures/quiz-board-mapping.json",
     ".pack/figures/redraw-manifest.json",
     ".pack/figures/solutions/q-dff-design-solution-01.png",
     ".pack/figures/solutions/q-dff-design-solution-01.svg",
     ".pack/figures/solutions/q-jkff-design-solution-01.png",
     ".pack/figures/solutions/q-jkff-design-solution-01.svg",
+    ".pack/figures/solutions/q-qp-e06-board-01-complete.png",
+    ".pack/figures/solutions/q-qp-e06-board-01-complete.svg",
     ".pack/figures/solutions/q-rs-quiz-solution-01.png",
     ".pack/figures/solutions/q-rs-quiz-solution-01.svg",
     ".pack/figures/solutions/q-tff-solution-01.png",
@@ -1569,6 +1839,16 @@
     ".pack/problem-explanations/q-jkff-short.html",
     ".pack/problem-explanations/q-latch.html",
     ".pack/problem-explanations/q-p-76-trace.html",
+    ".pack/problem-explanations/q-qp-e06-blank-01.html",
+    ".pack/problem-explanations/q-qp-e06-blank-02.html",
+    ".pack/problem-explanations/q-qp-e06-blank-03.html",
+    ".pack/problem-explanations/q-qp-e06-board-01.html",
+    ".pack/problem-explanations/q-qp-e06-short-01.html",
+    ".pack/problem-explanations/q-qp-e06-short-02.html",
+    ".pack/problem-explanations/q-qp-e06-tf-01.html",
+    ".pack/problem-explanations/q-qp-e06-tf-02.html",
+    ".pack/problem-explanations/q-qp-e06-tf-03.html",
+    ".pack/problem-explanations/q-qp-e06-tf-04.html",
     ".pack/problem-explanations/q-rs-latch.html",
     ".pack/problem-explanations/q-rs-quiz.html",
     ".pack/problem-explanations/q-sr-nand-00.html",

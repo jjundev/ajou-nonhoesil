@@ -247,3 +247,7 @@ E['q-p-76-trace'] = build('q-p-76-trace',
     'PR·CLR이 먼저, 그다음 하강 엣지에서만 J·K를 적용해요.')
 
 assert set(E) == set(PR.P)
+
+# 전체 갱신의 자체 출제 문항도 같은 정본 E에서 내보내요.
+from quiz import E as QUIZ_E
+E.update(QUIZ_E)

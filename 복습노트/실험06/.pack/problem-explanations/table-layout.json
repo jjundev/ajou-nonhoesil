@@ -603,6 +603,52 @@
         }
       ],
       "pair": "q-p-76-trace-question-answer"
+    },
+    {
+      "key": "q-qp-e06-board-01/conditions/0",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "역할"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "핀 명세"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "q-qp-e06-board-01/explanation/0",
+      "expected_headers": [
+        "넷",
+        "연결"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "모범 넷"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "모범 넷"
+        }
+      ],
+      "boundaries": []
     }
   ]
 }

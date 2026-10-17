@@ -72,7 +72,7 @@ def test_all_published_explanation_articles(browser,number,width,theme):
     page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(path.as_uri())
     ids=page.locator('main article.topic').evaluate_all('(a)=>a.map(x=>x.id)')
-    assert len(ids)==[12,14,15,12,19,14][number-1]
+    assert len(ids)==[12,14,15,12,19,24][number-1]
     for ident in ids:
         page.evaluate('(id)=>location.hash=id',ident)
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
@@ -97,9 +97,9 @@ def test_all_published_explanations_without_js(browser,number):
     root=Path(__file__).resolve().parents[1]
     path=root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_문제설명.html'
     ctx=browser.new_context(java_script_enabled=False);page=ctx.new_page();page.goto(path.as_uri())
-    assert page.locator('article.topic').count()==[12,14,15,12,19,14][number-1]
+    assert page.locator('article.topic').count()==[12,14,15,12,19,24][number-1]
     assert page.locator('[data-explanation="verify"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
-    assert page.locator('[data-explanation="recall"]').count()==[12,14,15,12,19,14][number-1]
+    assert page.locator('[data-explanation="recall"]').count()==[12,14,15,12,19,24][number-1]
     assert page.locator('[data-explanation="recall"]').evaluate_all('(a)=>a.every(x=>getComputedStyle(x).display!=="none")')
     ctx.close()
 
