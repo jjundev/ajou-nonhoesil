@@ -69,6 +69,8 @@ EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     'tests/test_review_pack_explanation_browser.py': _PACK,
     'tests/test_review_pack_navigation_browser.py': _PACK,
     'tests/test_review_pack_workbook_browser.py': _PACK,
+    'tests/test_review_pack_quiz_browser.py': _PACK,
+    'tests/test_review_pack_quiz_pdf.py': _PACK,
     'tests/test_workbook_equations.py': _PACK,
     'tests/test_workbook_clip_gate.py': _PACK,
     'tests/test_review_pack_print.py': _PACK,
