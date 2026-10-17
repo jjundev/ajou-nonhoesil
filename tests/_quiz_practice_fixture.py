@@ -55,7 +55,7 @@ def create_quiz_run(tmp_path):
                     source_asset_ids=[],source_refs=p['sources'],derivation='합성 레이아웃 테스트',review_status='not_run',review_notes='테스트용, 실제 내용 검토 아님'))
             obj['problem_figures']=['f-circuit']
             obj['conditions']='<div class="table-wrap"><table class="chip-spec"><thead><tr><th>핀</th><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>1</td><td>A</td><td>입력</td></tr></tbody></table></div><div class="work-board"><img src="figures/questions/blank.png" alt="작도용 빈 브레드보드"></div>'
-            obj['solution']['steps'][-1]['html']+='<img src="figures/solutions/complete.png" alt="완성 결선도">'
+            obj['solution']['steps'][-1]['html']+='<img src="figures/solutions/complete.png" width="260" style="max-width:100%;height:auto" alt="완성 결선도">'
         (run/p['workbook_fragment']).write_text(json.dumps(obj,ensure_ascii=False),encoding='utf-8')
         explanation=FRAGMENT_V2.replace('Y=I0예요.',f'{answer}입니다.').replace('선택선이 고른 입력을 찾아요.',p['title']+'의 조건을 읽어요.')
         (run/p['explanation_fragment']).write_text(explanation,encoding='utf-8')

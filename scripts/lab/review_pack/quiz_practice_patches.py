@@ -1,0 +1,46 @@
+"""Opt-in layout patches. Keep unversioned workbook bytes unchanged."""
+
+CSS='''/* 퀴즈 작도: 고정된 인쇄 크기, 넘치면 검사 실패 */
+#book .work-board-block { flex: none; }
+#book .work-board img { display: block; width: 100mm; min-width: 90mm; height: auto; margin: 0 auto; }
+.page-center > .work-board-block ~ .work { min-height: 0; }
+'''
+MOVE='''  const boards = [...panel.querySelectorAll('.work-board')];
+  if (boards.length) {
+    const area = el('div', 'work-board-block');
+    for (const board of boards) {
+      const owner = board.closest('.block');
+      area.append(board);
+      if (owner && !owner.querySelector('.prose').textContent.trim() && !owner.querySelector('img, table, .katex')) owner.remove();
+    }
+    center.append(area);
+  }
+'''
+REMOVE='''  for (const board of panel.querySelectorAll('.work-board')) {
+    const owner = board.closest('.block');
+    board.remove();
+    if (owner && !owner.querySelector('.prose').textContent.trim() && !owner.querySelector('img, table, .katex')) owner.remove();
+  }
+'''
+SCAN='''    for (const page of book.querySelectorAll('.page--problem')) {
+      const center = page.querySelector('.page-center');
+      const bad = [...page.querySelectorAll('.work-board img')].some(img => {
+        const r=img.getBoundingClientRect(), c=center.getBoundingClientRect();
+        return img.offsetWidth < 90*96/25.4-1 || r.left<c.left-1 || r.right>c.right+1 || r.bottom>c.bottom+1;
+      });
+      if ((bad || (center.querySelector('.work-board-block') && (center.scrollHeight>center.clientHeight+1 || center.scrollWidth>center.clientWidth+1))) && !overflow.includes(page.id)) {
+        page.dataset.overflow=''; overflow.push(page.id);
+      }
+    }
+'''
+
+
+def apply_quiz_patches(text: str, template_name: str) -> str:
+    if template_name not in ('problem.html','answer.html'):raise ValueError('Unknown quiz template')
+    anchor="  center.append(el('div', 'work'));" if template_name=='problem.html' else "  const center = el('div', 'page-center');"
+    placement=MOVE+anchor if template_name=='problem.html' else REMOVE+anchor
+    for old,new in [('/* 수식 */',CSS+'/* 수식 */'),(anchor,placement),
+                    ("    document.body.dataset.overflow = overflow.join(',');",SCAN+"    document.body.dataset.overflow = overflow.join(',');")]:
+        if text.count(old)!=1:raise ValueError('Quiz patch anchor not unique in '+template_name+': '+old[:30])
+        text=text.replace(old,new)
+    return text

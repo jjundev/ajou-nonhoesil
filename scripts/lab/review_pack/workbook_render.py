@@ -200,13 +200,20 @@ TEMPLATE_PATCHES={
     'problem.html':[(PROBLEM_CENTER,MOVE_TABLES+PROBLEM_CENTER),(FIT_OLD,FIT_NEW)],
 }
 
-def apply_local_patches(text, name):
+def apply_local_patches(text, name, *, quiz_practice=False):
     for old,new in LOCAL_PATCHES+TEMPLATE_PATCHES.get(name,[]):
         if text.count(old)!=1: raise ValueError('Local patch anchor not unique in '+name+': '+old[:30])
         text=text.replace(old,new)
+    if quiz_practice:
+        from .quiz_practice_patches import apply_quiz_patches
+        text=apply_quiz_patches(text,name)
     return text
 
 def render_workbook_html(data, assets):
+    meta=data.get('meta',{})
+    quiz='quiz_practice_version' in meta
+    if quiz and (type(meta['quiz_practice_version']) is not int or meta['quiz_practice_version']!=1):
+        raise ValueError('Unsupported quiz_practice_version')
     mode=data.get('meta',{}).get('mode')
     if mode not in {'problems','answers'}: raise ValueError('Invalid workbook mode')
     folder=Path(assets)/'workbook'
@@ -214,7 +221,7 @@ def render_workbook_html(data, assets):
     provenance=_strict_json(folder/'provenance.json')
     blob=(folder/name).read_bytes()
     if hashlib.sha256(blob).hexdigest()!=provenance['sha256'][name]: raise ValueError('Template snapshot changed: '+name)
-    template=apply_local_patches(blob.decode('utf-8').replace('\r\n','\n'),name)  # 데이터 슬롯을 채우기 전에 덧씌운다
+    template=apply_local_patches(blob.decode('utf-8').replace('\r\n','\n'),name,quiz_practice=quiz)  # 데이터 슬롯을 채우기 전에 덧씌운다
     if template.count(TOKEN)!=1: raise ValueError('Expected one workbook data slot')
     text=template.replace(TOKEN,json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c'))
     for remote,local in URL_MAP.items(): text=text.replace(remote,local)
