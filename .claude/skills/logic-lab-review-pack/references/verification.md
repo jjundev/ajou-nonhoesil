@@ -38,3 +38,7 @@ review_presentation_version=2에서는 전자회로2 원본 스냅샷 해시, �
 ## 문제설명 연결
 
 문제설명 전용 기준은 [전용 verification 문서](../../logic-lab-problem-explain/references/verification.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
+
+## 퀴즈 유형 연습 검토
+
+새 전체팩은 [quiz-practice.md](quiz-practice.md)의 4/3/1/2와 모든 included ID·순서를 검사한다. T/F 진위·반례·2:2 기본값, 빈칸 답 순서·동의어, 서술형 채점 핵심·허용 표현, 작도 회로·핀 명세·전원·미사용 핀·완성 넷을 내용 검토한다. 수량 또는 근거가 부족하면 held 사유와 부족 유형을 보고하고 발행하지 않는다. 실제 독립 검토와 그림 확인 전 pass 금지. 보드 인쇄 너비 90mm 이상·100mm 기본, 홀/핀 가독성·문제 정답 비노출·해설 잘림을 PDF에서 확인한다. 부분 갱신은 새 policy/문항 없이 보존한다.

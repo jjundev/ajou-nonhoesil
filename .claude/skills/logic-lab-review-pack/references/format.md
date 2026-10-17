@@ -42,3 +42,7 @@ evidence/와 인덱스·안내는 build의 generated_files에 포함한다(발�
 ## 문제설명 연결
 
 문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
+
+## 퀴즈 유형 정책
+
+새 생성·전체 갱신은 [quiz-practice.md](quiz-practice.md)를 따른다. quiz_practice_version=1에서 새 question_type은 true_false/fill_blank/breadboard/short_answer이며 포함 수량은 4/3/1/2다. 자체 문항은 practice/current, 출처·토픽·verified 정답을 요구한다. 위의 출처 없는 practice 허용은 이 정책의 새 유형 문항에는 적용하지 않는다. 기존 정책 없는 문항과 부분 갱신은 유지한다.

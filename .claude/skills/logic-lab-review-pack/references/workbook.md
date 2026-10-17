@@ -1,6 +1,6 @@
 # 전자회로2 템플릿의 문제지·해설지
 
-원본 HTML은 assets/workbook/의 problem.html과 answer.html이다. 원본 바이트·해시를 유지하고 생성 시 JSON, 로컬 자원 URL, workbook_render.LOCAL_PATCHES(표 테두리 CSS·빈 조건 블록 생략·그림 load 대기·쉼표 식 목록 줄바꿈·맞춤 뒤 잘림 훑기, 모든 템플릿 공통)와 TEMPLATE_PATCHES(문제지의 채울 표를 풀이 칸으로 옮기기·넘침 검사, problem.html에만)만 바꾼다. 패치 anchor가 사라지면 렌더가 실패한다. 생명과학 note-template은 실험설명에 계속 사용한다.
+원본 HTML은 assets/workbook/의 problem.html과 answer.html이다. 원본 바이트·해시를 유지하고 생성 시 JSON, 로컬 자원 URL, workbook_render.LOCAL_PATCHES(표 테두리 CSS·빈 조건 블록 생략·그림 load 대기·쉼표 식 목록 줄바꿈·맞춤 뒤 잘림 훑기, 모든 템플릿 공통)와 TEMPLATE_PATCHES(문제지의 채울 표를 풀이 칸으로 옮기기·넘침 검사, problem.html에만)를 적용한다. 정책 v1에서는 아래 퀴즈 전용 패치도 적용한다. 패치 anchor가 사라지면 렌더가 실패한다. 생명과학 note-template은 실험설명에 계속 사용한다.
 
 manifest.schema_version=1, review_presentation_version=2, figure_manifest='figures/redraw-manifest.json'을 지정한다(발행본에서는 `.pack/` 기준이다). 문제지·해설지 HTML 속 그림 링크는 build가 `.pack/figures/..` 로 쓴다. included 문항에는 workbook_fragment='workbook/<id>.json'을 지정한다. 은행 고정 필드와 원문 이미지는 수정하지 않는다.
 
@@ -46,3 +46,7 @@ style="max-width:100%;height:auto" alt="2×1 MUX 완성 회로"></p>
 ## 문제설명 연결
 
 문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
+
+## 정책이 있는 퀴즈 유형 연습
+
+[quiz-practice.md](quiz-practice.md)의 조건·chip-spec·work-board·필수 해설 label 계약을 따른다. quiz_practice_version=1인 payload에만 quiz_practice_patches가 추가된다. 원본 스냅샷과 정책 없는 렌더 바이트는 보존한다. 빈 보드는 중앙의 작도 공간이며 해설 DOM에서만 제거한다. payload의 문제 조건은 양쪽에서 같다.
