@@ -9,10 +9,28 @@ from .bank_index import canonical_relative
 from .manifest import strip_data, link_data, data_url
 from .html2md import Parser
 from .work_table import check_work_tables
+from .quiz_practice import QUIZ_LABELS
+from .quiz_practice_content import check_quiz_question
 
 AUTHOR_KEYS = {'original','conditions','ask','problem_figures','hints','solution','notes'}
 KINDS = {'past':'기출','predicted':'예상문제','unknown':'출처 미확인','practice':'연습문제'}
 STATES = {'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
+
+
+def workbook_section(manifest: dict, problem: dict) -> str:
+    section=f"실험 {manifest['experiment']} · {STATES[problem['answer_status']]}"
+    if manifest.get('quiz_practice_version')==1 and 'question_type' in problem:
+        section+=' · 퀴즈 유형 연습 — 자체 출제 · '+QUIZ_LABELS[problem['question_type']]
+    return section
+
+
+def workbook_meta(manifest: dict, mode: str, total: int) -> dict:
+    label='기출 문제' if mode=='problems' else '기출 풀이'
+    meta=dict(mode=mode,title=f"실험 {manifest['experiment']} · {label}",chapter=0,total=total)
+    if manifest.get('quiz_practice_version')==1:
+        label='기출문제' if mode=='problems' else '기출풀이'
+        meta.update(title=f"실험 {manifest['experiment']} · {label}와 퀴즈 유형 연습",quiz_practice_version=1)
+    return meta
 
 def _strict_json(path):
     def bad(value):
@@ -115,9 +133,11 @@ def load_workbook_content(manifest, run):
             raise ValueError(p['id']+': missing solution')
         if not isinstance(obj['notes'],list) or any(not isinstance(n,str) for n in obj['notes']):
             raise ValueError(p['id']+': notes must be text list')
+        errors=check_quiz_question(p,{k:obj[k] for k in ('original','conditions','ask')},projected,obj['solution'],figures)
+        if errors: raise ValueError('\n'.join(errors))
         row=deepcopy(obj)
         row.update(id=p['id'],title=p.get('title',p['id']),number=str(len(result)+1),
-            kind=KINDS[p['kind']],section=f"실험 {manifest['experiment']} · {STATES[p['answer_status']]}",
+            kind=KINDS[p['kind']],section=workbook_section(manifest,p),
             figures=projected,topics=deepcopy(p['topics']),sources=deepcopy(p['sources']),
             answer_status=p['answer_status'],given_answer=p.get('given_answer'),derived_answer=p.get('derived_answer'))
         result.append(row)
@@ -137,5 +157,4 @@ def build_workbook_data(manifest, content, mode):
                           answer=link_data(row['solution']['answer']))
             entry['solution']=solution
         entries.append(entry)
-    label='기출 문제' if mode=='problems' else '기출 풀이'
-    return dict(meta=dict(mode=mode,title=f"실험 {manifest['experiment']} · {label}",chapter=0,total=len(entries)),problems=entries)
+    return dict(meta=workbook_meta(manifest,mode,len(entries)),problems=entries)

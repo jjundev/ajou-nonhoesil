@@ -2,7 +2,8 @@
 from pathlib import Path
 from urllib.parse import unquote,urlsplit
 from .manifest import output_names,data_dir,strip_data,DATA
-from .workbook_content import KINDS,STATES,_strict_json,_within,check_authored_html
+from .workbook_content import KINDS,STATES,_strict_json,_within,check_authored_html,workbook_meta,workbook_section
+from .quiz_practice_content import check_quiz_question
 from .workbook_figures import check_redrawn_figures
 from .workbook_render import read_workbook_payload,render_workbook_html
 from .workbook_md import check_workbook_md,_html_fields
@@ -22,7 +23,7 @@ def check_workbook_pack(folder,manifest):
             path=folder/names[key+'_html'];data=read_workbook_payload(path);sheets[key]=data
             if not isinstance(data,dict) or set(data)!={'meta','problems'}: raise ValueError('Invalid workbook payload fields')
             meta=data['meta']
-            if not isinstance(meta,dict) or set(meta)!={'mode','title','chapter','total'} or meta['mode']!=mode or type(meta['total']) is not int or meta['total']!=len(expected):
+            if not isinstance(meta,dict) or meta!=workbook_meta(manifest,mode,len(expected)) or type(meta.get('total')) is not int:
                 raise ValueError(key+': invalid workbook metadata')
             if not isinstance(data['problems'],list) or [p['id'] for p in data['problems']]!=expected:
                 raise ValueError(key+': workbook question order/identity mismatch')
@@ -31,7 +32,7 @@ def check_workbook_pack(folder,manifest):
             for n,(p,original) in enumerate(zip(data['problems'],selected),1):
                 if set(p)!=(ENTRY_KEYS|({'solution'} if mode=='answers' else set())):
                     raise ValueError(p['id']+': unexpected workbook entry fields')
-                if p['number']!=str(n) or p['kind']!=KINDS[original['kind']] or p['title']!=original.get('title',original['id']) or STATES[original['answer_status']] not in p['section']:
+                if p['number']!=str(n) or p['kind']!=KINDS[original['kind']] or p['title']!=original.get('title',original['id']) or p['section']!=workbook_section(manifest,original):
                     raise ValueError(p['id']+': classification/number/status mismatch')
                 if not isinstance(p['html'],dict) or set(p['html'])!={'original','conditions','ask'}:
                     raise ValueError(p['id']+': invalid question HTML fields')
@@ -50,6 +51,7 @@ def check_workbook_pack(folder,manifest):
                         if not isinstance(step,dict) or set(step)!={'label','html'}: raise ValueError(p['id']+': invalid solution step')
                         for field in ('label','html'): check_authored_html(step[field],data_folder,p['id'],figures)
                     check_authored_html(sol['answer'],data_folder,p['id'],figures)
+                errors.extend(check_quiz_question(original,p['html'],p['figures'],p.get('solution'),figures))
                 for fragment in _html_fields(p):
                     parser=Parser();parser.feed(fragment)
                     for node in parser.root.walk():
