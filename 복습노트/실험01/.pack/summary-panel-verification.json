@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "pages": [
+    {
+      "schema_version": 1,
+      "html": "복습노트/실험01/실험01_실험설명.html",
+      "html_sha256": "8b4e5f228091a1d44557943cbdf42390f977e81ea84b0eca0e07a820b919d4ef",
+      "audit_path": "복습노트/실험01/.pack/summary-audit.md",
+      "audit_sha256": "51e3bb1c59c602e82bce3e44ad8b5f4d20b521b5d406e7b1e46b442dfbe5a798",
+      "semantic_status": "pass",
+      "browser_status": "pending",
+      "evidence": [
+        {
+          "kind": "manual-body-summary-comparison",
+          "path": ".agents/sdd/.task8-run/manual-exp01.json",
+          "sha256": "ac7f52a21b09b98f22eb623e2e3c5ade48168f21e2f52dc3befe8a7fcf2daa8b"
+        },
+        {
+          "kind": "current-md-check",
+          "path": "복습노트/실험01/.pack/실험01_실험설명.md",
+          "sha256": "277974f30dd0f6e9e61cbb525b6a257a54e84780e4244ca70d06378091ef69a5",
+          "errors": []
+        },
+        {
+          "kind": "before-main-except-summary-byte-preservation",
+          "passed": true
+        },
+        {
+          "kind": "current-experiment-pack-check",
+          "path": ".agents/sdd/.task8-run/pack-checks-exp01-03.json",
+          "sha256": "73d28af9f0fafa79938917cc5248c3d9d2500dc7252c6d851887c8bef8588730",
+          "experiment": 1,
+          "returncode": 0
+        },
+        {
+          "kind": "current-protected-byte-and-source-parity-check",
+          "path": ".agents/sdd/.task8-run/partial-preservation.json",
+          "sha256": "e8c98e21753665d328b02ea9c7871ccde240100b459707a4e78999ec661c7b47"
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "schema_version": 1,
+      "html": "복습노트/실험01/실험01_문제설명.html",
+      "html_sha256": "5aeda07fc24e5ef9ed6fcceb73e3cd39b8ec1185baa0549401df448556aee362",
+      "audit_path": "복습노트/실험01/.pack/summary-audit.md",
+      "audit_sha256": "51e3bb1c59c602e82bce3e44ad8b5f4d20b521b5d406e7b1e46b442dfbe5a798",
+      "semantic_status": "pass",
+      "browser_status": "pending",
+      "evidence": [
+        {
+          "kind": "manual-body-summary-comparison",
+          "path": ".agents/sdd/.task8-run/manual-exp01.json",
+          "sha256": "ac7f52a21b09b98f22eb623e2e3c5ade48168f21e2f52dc3befe8a7fcf2daa8b"
+        },
+        {
+          "kind": "current-md-check",
+          "path": "복습노트/실험01/.pack/실험01_문제설명.md",
+          "sha256": "1e1e1a53eefef2a3e3114105ab997cac7e6e5b7889b7a06106df0bf667bc57e3",
+          "errors": []
+        },
+        {
+          "kind": "before-main-except-summary-byte-preservation",
+          "passed": true
+        },
+        {
+          "kind": "current-experiment-pack-check",
+          "path": ".agents/sdd/.task8-run/pack-checks-exp01-03.json",
+          "sha256": "73d28af9f0fafa79938917cc5248c3d9d2500dc7252c6d851887c8bef8588730",
+          "experiment": 1,
+          "returncode": 0
+        },
+        {
+          "kind": "current-protected-byte-and-source-parity-check",
+          "path": ".agents/sdd/.task8-run/partial-preservation.json",
+          "sha256": "e8c98e21753665d328b02ea9c7871ccde240100b459707a4e78999ec661c7b47"
+        }
+      ],
+      "unresolved": []
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "pages": [
+    {
+      "schema_version": 1,
+      "html": "복습노트/실험06/실험06_실험설명.html",
+      "html_sha256": "0a3cdd87c40305c5ef13836d8492e309d7041dfa5cb57c5403852fe973f8c6d0",
+      "audit_path": "복습노트/실험06/.pack/summary-audit.md",
+      "audit_sha256": "eabade88121be8d3828beb2781228ab8594de9b3968e2f60c67a881fb658d6bf",
+      "semantic_status": "pass",
+      "browser_status": "pending",
+      "evidence": [
+        {
+          "kind": "manual-body-summary-comparison-and-final-reread",
+          "path": ".agents/sdd/.task8b-run-20261020/manual-exp06.json",
+          "sha256": "d4a79a4c418c37476d3ddf2121577ca073334bf2cc3fb41f504a42ae877d0c38",
+          "topics": 9,
+          "claim_rows": 26
+        },
+        {
+          "kind": "current-md-check",
+          "path": "복습노트/실험06/.pack/실험06_실험설명.md",
+          "sha256": "6e76a20005dfde750254931341df939b0bc6eacd0a8f50b40ca004a41ace6a1e",
+          "errors": []
+        },
+        {
+          "kind": "actual-bounded-producer-summary-sync",
+          "path": ".agents/sdd/.task8b-run-20261020/source-checks-bound.json",
+          "sha256": "fc60f2242dbcfec64f14f661a60410360d74593baac3d125dec2f72c27d2a1c2"
+        },
+        {
+          "kind": "actual-pack-check-cli",
+          "path": ".agents/sdd/.task8b-run-20261020/pack-checks-exp04-06.json",
+          "sha256": "7659c1f1a47ec8a74217b62982ba87779d03360aa74b4bd40cff55488fa6bf08",
+          "experiment": 6,
+          "exit_code": 0
+        },
+        {
+          "kind": "original-byte-preservation-and-task8a-freeze",
+          "path": ".agents/sdd/.task8b-run-20261020/preservation.json",
+          "sha256": "35fb65b9aeb0b659a829d2aa9ab35ab83ada593f935dcc668fc4a66362a6f20e"
+        },
+        {
+          "kind": "browser-pending-task8c",
+          "note": "No current-content browser pass claimed. Prior Task7/검증결과.md evidence is historical."
+        }
+      ],
+      "unresolved": []
+    },
+    {
+      "schema_version": 1,
+      "html": "복습노트/실험06/실험06_문제설명.html",
+      "html_sha256": "a341883546f99bec814937a67dc0d0e9f11baf7ac4c7d7161f89ee0068cb2053",
+      "audit_path": "복습노트/실험06/.pack/summary-audit.md",
+      "audit_sha256": "eabade88121be8d3828beb2781228ab8594de9b3968e2f60c67a881fb658d6bf",
+      "semantic_status": "pass",
+      "browser_status": "pending",
+      "evidence": [
+        {
+          "kind": "manual-body-summary-comparison-and-final-reread",
+          "path": ".agents/sdd/.task8b-run-20261020/manual-exp06.json",
+          "sha256": "d4a79a4c418c37476d3ddf2121577ca073334bf2cc3fb41f504a42ae877d0c38",
+          "topics": 24,
+          "claim_rows": 49
+        },
+        {
+          "kind": "current-md-check",
+          "path": "복습노트/실험06/.pack/실험06_문제설명.md",
+          "sha256": "0e2ee1f7f4f1ba1e73239eda4d43cf4ca97830b958074fb45cb7da64532e1d72",
+          "errors": []
+        },
+        {
+          "kind": "actual-bounded-producer-summary-sync",
+          "path": ".agents/sdd/.task8b-run-20261020/source-checks-bound.json",
+          "sha256": "fc60f2242dbcfec64f14f661a60410360d74593baac3d125dec2f72c27d2a1c2"
+        },
+        {
+          "kind": "actual-pack-check-cli",
+          "path": ".agents/sdd/.task8b-run-20261020/pack-checks-exp04-06.json",
+          "sha256": "7659c1f1a47ec8a74217b62982ba87779d03360aa74b4bd40cff55488fa6bf08",
+          "experiment": 6,
+          "exit_code": 0
+        },
+        {
+          "kind": "original-byte-preservation-and-task8a-freeze",
+          "path": ".agents/sdd/.task8b-run-20261020/preservation.json",
+          "sha256": "35fb65b9aeb0b659a829d2aa9ab35ab83ada593f935dcc668fc4a66362a6f20e"
+        },
+        {
+          "kind": "browser-pending-task8c",
+          "note": "No current-content browser pass claimed. Prior Task7/검증결과.md evidence is historical."
+        }
+      ],
+      "unresolved": []
+    }
+  ]
+}

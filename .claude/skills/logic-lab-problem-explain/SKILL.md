@@ -27,6 +27,8 @@ REPO는 scripts/lab/config.py가 있는 저장소 루트예요. PowerShell 작�
 
 원문·문제은행·답안 상태·문항 분류는 보존해요. 기존 원고 보충은 understand/start/solve/verify/pitfall/retry와 경고를 전후 비교하고 핵심 개념 보충 외 변경의 이유를 검토해요. 실제 원문 대조와 계산 증거는 저작 폴더의 검증결과.md에 남겨요.
 
+요약은 풀이 본문의 판단 조건·결론·단서를 압축하고 항목 수의 고정 상한을 두지 않아요. 풀이에 없는 사실을 요약에만 추가하지 않고 보충의 범위·출처·불확실성을 보존해요. 중앙 문항 제목과 고정 패널 제목을 유지하며 우측에 문항 제목을 반복하지 않아요. 부모 note-template의 .sums 컨테이너에 유일한 sum-for ID를 두고 제목 복사 JavaScript를 추가하지 않아요. 원고와 기존 동반 MD를 함께 맞추고 [본문–요약 감사와 패널 검증](references/verification.md#본문요약-감사와-패널-검증)을 따라요.
+
 ## 3. 새 stage와 검토
 
 기존 팩은 원고를 완성한 뒤 실행해요. explain-stage 기본값은 v2예요.

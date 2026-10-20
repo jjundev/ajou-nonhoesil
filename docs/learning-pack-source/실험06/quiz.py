@@ -100,6 +100,19 @@ def workbook(item):
         obj['problem_figures']=['q-qp-e06-board-01-circuit']
     return obj
 
+# Summary-only conditions; question, recall body and workbook data stay independent.
+SUMMARY_NOTES = {'q-qp-e06-tf-01': '정상 상태로 초기화된 이상 래치의 E=0·전파 지연 뒤 안정 상태 조건이에요. 유지는 Q=0을 뜻하지 않아요.',
+ 'q-qp-e06-tf-02': '이상적인 D 래치에서 전파 지연 뒤의 안정 출력을 보는 조건이며, 엣지형 D 플립플롭과 구분해요.',
+ 'q-qp-e06-tf-03': 'SET·RESET 둘 다 High로 비동기 제어를 해제하고 입력 setup/hold 조건을 만족할 때의 판단이에요.',
+ 'q-qp-e06-tf-04': 'E=S=R=1을 유지한 전파 지연 뒤 조건이에요. 부정 X는 입력 don’t-care나 Q=0이 아니며 동시 해제 뒤 상태도 보장 못 해요.',
+ 'q-qp-e06-blank-01': '정상 초기화·E=1인 Enable SR의 High 활성 명령 조건이에요. Enable 없는 기본 NAND의 Low 활성 표와 섞지 않아요.',
+ 'q-qp-e06-blank-03': '안정 입력의 교안 74HC76 조건이고 SET·RESET을 동시에 0으로 넣지 않아요.',
+ 'q-qp-e06-board-01': '전원을 끄고 결선하고 입력은 0V/+5V에 고정해 띄우지 않아요. 출력은 고입력 임피던스 계측기로 관찰하며 LED·저항은 추가하지 않아요. 중앙 홈 '
+                      '양쪽은 분리되고 교차선은 접속점 없으면 연결되지 않아요. 출력끼리 결합·전원 레일 단락을 피해요.',
+ 'q-qp-e06-short-01': '먼저 E=1·S=1·R=0으로 Set한 뒤 S=R=0인 안정 상태를 설명해요. 전원이 차단되어도 영구 보존된다는 뜻은 아니에요.',
+ 'q-qp-e06-short-02': 'High는 Set 명령이 아니라 비동기 제어 비활성이며 두 제어의 동시 Low는 정상 사용에서 제외해요.'}
+
+
 def explanation(item):
     typ,suffix,title,topic,page,condition,ask,answer,reason,check,pitfall=item
     cue={'true_false':'활성 조건과 상태 변화를 나누어 판단해요','fill_blank':'활성 극성과 직전 상태를 먼저 표시해요','breadboard':'논리 회로의 넷을 실제 핀과 홀로 옮겨요','short_answer':'기능·원리·성립 조건을 연결해 설명해요'}[typ]
@@ -109,12 +122,14 @@ def explanation(item):
     solve=''.join(p(s['label'])+s['html'].replace('src="figures/','src=".pack/figures/').replace(' style="max-width:100%;height:auto"','') for s in obj['solution']['steps'])
     if typ=='breadboard':solve=solve.replace('<img ','<figure class="figure"><img ').replace('alt="v1 PDF 위 Enable SR 래치 완성 결선도">','alt="v1 PDF 위 Enable SR 래치 완성 결선도"></figure>')
     def layer(key,cls,label,html):return f'<div class="layer {cls}" data-explanation="{key}"><span class="layer-title">{label}</span>{html}</div>'
+    pid = 'q-qp-e06-' + suffix
+    summary_note = p(SUMMARY_NOTES[pid]) if pid in SUMMARY_NOTES else ''
     return (layer('understand','eli5','이 문제에서 할 일',p(ask)+p('입력의 이름만 외우지 않고 활성 조건에서 출력이 왜 그렇게 되는지 확인해요.'))+
       layer('recall','formal','이 문제를 봤을 때 떠올릴 개념과 공식',f'<p class="lead cue">{cue}</p>'+recall)+
       layer('start','formal','첫 줄을 이렇게 시작해요',start)+layer('solve','formal','이유를 따라 완성해요',solve)+
       layer('verify','formal','완성 답과 검산',p(answer)+p(check))+layer('pitfall','warn','이 실수를 피하세요',p(pitfall))+
       layer('retry','formal','설명을 닫고 다시 풀어요','<ol><li>문제의 활성 조건을 표시해요.</li><li>첫 판단에서 정답까지 이유를 써요.</li><li>반대 상태나 경계 조건으로 검산해요.</li></ol>')+
-      f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p><p data-summary="recall">{reason}</p><p>답: {answer}</p><p>검산: {check}</p></div>')
+      f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p><p data-summary="recall">{reason}</p><p>답: {answer}</p><p>검산: {check}</p>{summary_note}</div>')
 
 E={'q-qp-e06-'+i[1]:explanation(i) for i in ITEMS}
 

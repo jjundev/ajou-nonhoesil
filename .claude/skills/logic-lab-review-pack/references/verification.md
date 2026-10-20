@@ -42,3 +42,13 @@ review_presentation_version=2에서는 전자회로2 원본 스냅샷 해시, �
 ## 퀴즈 유형 연습 검토
 
 새 전체팩은 [quiz-practice.md](quiz-practice.md)의 4/3/1/2와 모든 included ID·순서를 검사한다. T/F 진위·반례·2:2 기본값, 빈칸 답 순서·동의어, 서술형 채점 핵심·허용 표현, 작도 회로·핀 명세·전원·미사용 핀·완성 넷을 내용 검토한다. 수량 또는 근거가 부족하면 held 사유와 부족 유형을 보고하고 발행하지 않는다. 실제 독립 검토와 그림 확인 전 pass 금지. 보드 인쇄 너비 90mm 이상·100mm 기본, 홀/핀 가독성·문제 정답 비노출·해설 잘림을 PDF에서 확인한다. 부분 갱신은 새 policy/문항 없이 보존한다.
+
+## 본문–요약 감사와 패널 검증
+
+모든 학습 토픽을 읽고 `자료·토픽`을 키로 본문 주장·대응 요약 문장·판정/생략 이유를 감사표에 기록한다. 일반·강조·주의·보충의 서로 다른 핵심은 별도 행에 둔다. 이미 충분한 요약은 수정 없이 반영으로 기록한다. 원리·조건·구분이 빠진 행은 보완 전 unresolved로 두고, 보완 후 실제 요약을 다시 읽어 pass 또는 unresolved로 판정한다. 항목 수에 고정 상한을 두지 않고 본문에 없는 사실을 추가하지 않는다. 기존 동반 MD 및 실제 생성 원고를 대조하고, 동반 MD가 없으면 새 형식을 만들지 않는다.
+
+검증 JSON에는 `{schema_version:1, html, html_sha256, audit_path, audit_sha256, semantic_status, browser_status, evidence, unresolved}`를 기록한다. semantic_status와 browser_status는 실제 검사를 수행한 뒤에만 갱신한다. 산출물 또는 감사표 해시가 바뀌면 기존 기록은 갱신 전까지 오래된 근거다. UI 구조 검사 성공을 의미 검토 pass로 대신하지 않는다.
+
+HTTP 임시 stage에서 1280×900과 375×812 각각 light/dark로 우측 패널을 실제로 연다. 중앙 h3와 고정 패널 제목이 보이고 우측 중복 토픽·문항 제목은 없어야 한다. 현재 요약 하나와 예상 전문을 대조하며, 토픽 이동 뒤 이전 요약 숨김·요약 없는 표지 안내·유일한 `.sums#sum-for`·읽음 저장 키 유지를 확인한다. legacy 문제 카드는 힌트·풀이·푼 문제 토글과 저장 키를 확인한다. 문제설명은 문제와 원문으로 가는 기존 탭/링크·이전/다음·수식 오류 0을 확인하고, 원래 없는 탭을 새로 만들지 않는다. pageerror는 0이며 missing-sum 검사가 계속 누락을 잡아야 한다. 문제·보기·정답·해설 본문·원문·앵커·저장 키와 워크북 payload는 전후 비교한다.
+
+칩 빌더는 `복습노트/칩 정리/.pack/build.py`의 OUT·PACK을 별도 임시 stage로 지정하고 읽기용 mcq.json·mcq.css·mcq.js를 복사한 뒤 실행한다. 세 HTML의 패널과 문제 payload를 비교한다. 원본 폴더에서 build()를 실행해 questions.json·sources.json을 덮어쓰지 않는다. 실제 `.pack/assets` 소비 경로를 확인해 동봉 템플릿만 맞추며 과거 export·source·영상 사본은 바꾸지 않는다. provenance.sha256의 원래 upstream 값을 보존하고 local_adjustments에 실제 최종 템플릿 해시와 이유를 기록한다.

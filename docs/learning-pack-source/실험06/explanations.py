@@ -11,12 +11,30 @@ def figure(src, alt):
     return f'<figure class="figure"><img src=".pack/figures/{src}" alt="{alt}"></figure>'
 
 
+# Summary-only conditions; question, recall body and workbook data stay independent.
+SUMMARY_NOTES = {'q-diff': '비교는 비동기 강제 입력이 없는 정상 동작이며 엣지 방향은 소자마다 지정돼요.',
+ 'q-latch': '초기 Q는 Set/Reset으로 정하기 전 0으로 가정하지 않으며, SR 금지 입력에서는 정상 보수 관계를 적용하지 않아요.',
+ 'q-ff': '입력은 지정 엣지 주변 setup/hold 시간 동안 안정되어야 하며 74HC74는 ↑·74HC76은 ↓예요.',
+ 'q-rs-quiz': '한 번의 Toggle은 짧은 C 펄스 조건이에요. 원래 SR의 금지 상태에서 S·R을 동시에 해제한 뒤 값도 예측하지 못해요.',
+ 'q-dff-table': '제목은 F/F지만 엣지 검출 없는 D 래치로 읽어요. 기출 답안 둘째 행의 “0 1 1”은 오기로 보이며 회로 계산은 S=1일 때 Q=1이에요.',
+ 'q-dff-design': '원문 F/F 명칭보다 레벨 표를 기준으로 NOT 1개·NAND 4개를 설계해요. Q(t−1)은 0으로 정해진 값이 아닌 이전 저장값이에요.',
+ 'q-jkff-short': 'C=0은 유지이며 11의 단일 Toggle은 한 번 바뀔 만큼 길고 되먹임이 돌아오기 전 끝날 만큼 짧은 C 펄스의 이상 조건이에요.',
+ 'q-jkff-design': '정상 보수 상태에서 C=1일 때의 갱신이며 C=0은 유지해요. 3입력 NAND 2개·교차 NAND 2개를 쓰고, 긴 C=1의 race-around와 엣지형 '
+                  '74HC76을 구분해요.',
+ 'q-tff': 'T는 setup/hold 조건을 만족해야 하며 초기 Q가 없으면 기호 Q로 시작해요. 이 74HC76은 ↓를 쓰고 레벨 JK의 긴 활성 구간과 구분해요.',
+ 'q-74hc76': '교안·데이터시트의 PR→1·CLR→0을 기준으로 반대로 적힌 제공 답안과 구별해요. 동시 0 해제 뒤의 상태도 보장하지 않아요.',
+ 'q-74hc574': '입력의 setup/hold 조건이 필요해요. 저장소에 74HC574 데이터시트가 없어 일반 사양 기준이며, 제공 답안의 “한 clock 지속기간” 레벨 표현과 '
+              '구분해요.',
+ 'q-p-76-trace': '단계 1–8의 Q는 1·1·1·0·1·0·1·0이에요. 처음 Q는 미정이며 반복 ↓ 사이의 ↑는 동작하지 않아 표에서 생략된 것이에요.'}
+
+
 def build(pid, cue, why, understand, start, solve, answer, check, pitfall, retry, judge):
     links = ', '.join(f'<a href="{{{{NOTE_HREF}}}}#{t}">{TITLE[t]}</a>' for t in PR.PROBLEM_TOPICS[pid])
     retry = retry[:3]
     recall_html, recall_summary = RECALL[pid]
     recall_section = ('<div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span>' + f'<p class="lead cue">{cue}</p>' + why + recall_html + '</div>')
     summary_recall = '<p data-summary="recall">'+recall_summary+'</p>'
+    summary_note = p(SUMMARY_NOTES[pid]) if pid in SUMMARY_NOTES else ''
     return (f'<div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span>{understand}</div>'
             + recall_section +
             f'<div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span>{start}<p>필요한 개념: {links}</p></div>'
@@ -25,7 +43,7 @@ def build(pid, cue, why, understand, start, solve, answer, check, pitfall, retry
             f'<div class="layer warn" data-explanation="pitfall"><span class="layer-title">여기서 헷갈리기 쉬워요</span>{pitfall}</div>'
             f'<div class="layer formal" data-explanation="retry"><span class="layer-title">이제 설명을 닫고 다시 풀어요</span><ol>' +
             ''.join(f'<li>{r}</li>' for r in retry) + '</ol></div>'
-            f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p>{summary_recall}<p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p></div>')
+            f'<div class="sum" hidden><p><strong>떠올릴 것:</strong> {cue}</p>{summary_recall}<p><strong>시작:</strong> {strip(start)}</p><p><strong>판단:</strong> {judge}</p><p><strong>검산:</strong> {check}</p>{summary_note}</div>')
 
 
 def strip(html):

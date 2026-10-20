@@ -67,6 +67,7 @@ _PACK = ('복습노트/**', '.claude/skills/logic-lab-review-pack/**')
 EXTRA_DEPS: dict[str, tuple[str, ...]] = {
     # playwright·Chrome·node 가 팩 HTML 과 그것이 부르는 자산을 직접 연다 — 파이썬 쪽 기록에 안 남는다.
     'tests/test_review_pack_explanation_browser.py': _PACK,
+    'tests/test_review_pack_panel_titles_browser.py': _PACK,
     'tests/test_review_pack_navigation_browser.py': _PACK,
     'tests/test_review_pack_workbook_browser.py': _PACK,
     'tests/test_review_pack_quiz_browser.py': _PACK,
