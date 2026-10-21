@@ -274,6 +274,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V1 · 직렬 입력 반전 확인
 
 - source: manual:p8
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: Q는 아직 보지 않는다. 프로브를 U1 pin11에 댄다.
@@ -291,6 +292,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V2 · CLK 분배 확인
 
 - source: manual:p8
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.
@@ -308,6 +310,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V3 · CLK 분배 확인
 
 - source: manual:p8
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.
@@ -325,6 +328,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V4 · CLR 분배 확인
 
 - source: manual:p8
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.
@@ -342,6 +346,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V5 · CLR 분배 확인
 
 - source: manual:p8
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.
@@ -359,6 +364,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V6 · 독립 프리셋 핀 확인
 
 - source: manual:p11
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK=0, CLR=1로 정지한다. Q는 아직 보지 않는다. PR1·PR2 핀 레벨을 프로브로 확인한다.
@@ -378,6 +384,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V7 · BIT1~BIT1 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT1까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.
@@ -401,6 +408,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V8 · BIT1~BIT2 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT2까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.
@@ -427,6 +435,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V9 · BIT1~BIT3 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT3까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.
@@ -451,6 +460,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V10 · BIT1~BIT4 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT4까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.
@@ -477,6 +487,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V11 · BIT1~BIT5 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT5까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.
@@ -505,6 +516,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 ## 확인 절차 V12 · BIT1~BIT6 초기화·시프트 확인
 
 - source: manual:p10
+- layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
 - setup: CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT6까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.

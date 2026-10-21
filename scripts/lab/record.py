@@ -24,6 +24,7 @@ from pathlib import Path
 
 from .spec_parser import split_indices
 from . import config, md
+from .comparison import comparison_rows, GUIDE
 
 PROMPTS = ("막혔던 것", "예상과 달랐던 것", "뭘 바꿔서 해결했나", "새로 안 것")
 
@@ -33,6 +34,7 @@ INTRO = (
     "진리표 — 확인 칸: `✓` 일치 / 값 = 불일치 시 실제 관찰값 / 공란 = 미확인.",
     "스텝표 — 빈 칸에 읽은 값을 **단위와 함께** 적는다. 확인 칸이 없다.",
     "파형 — 스케치에 그리고 판독 조건 줄을 채운다.",
+    GUIDE,
     "표를 통째로 진행하지 않았으면 그 표 아래에 `- 실험을 진행하지 않았음.` 을 적는다.",
 )
 
@@ -78,7 +80,7 @@ def _truth_table(table) -> str:
     return _grid(header, rows)
 
 
-def _stepped(table) -> str:
+def _stepped(table, leds=()) -> str:
     """명세에서 비어 있는 열이 실험실에서 채울 칸이다.
 
     `예상` 도 `확인` 도 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
@@ -87,6 +89,9 @@ def _stepped(table) -> str:
 
     빈 열이 하나도 없는 표에만 `기록` 열을 만든다.
     """
+    if getattr(table, 'comparison', None):
+        header, rows = comparison_rows(table, leds)
+        return _grid(header, rows)
     header = list(table.header)
     rows = [list(row) for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
@@ -108,12 +113,22 @@ _RENDER = {"truth-table": _truth_table, "stepped": _stepped, "capture": _capture
 
 
 def derive_record(spec) -> str:
+    comparison_leds = ()
+    if any(getattr(t, 'comparison', None) for t in spec.tables):
+        from .netlist_parser import parse_netlist
+        from .leds import board_leds
+        path = spec.path.parent.parent / '결선도' / 'netlist.md'
+        if path.exists():
+            netlist = parse_netlist(path)
+            comparison_leds = {c.item: board_leds(path.parent / c.diagram)
+                               for c in netlist.circuits if c.diagram}
     out = [
         "---", "schema: lab-record/v2",
         f"experiment: {spec.experiment}", "spec: 명세.md",
         "filled_by: ~          # hand | vision | 미기입", "---", "",
         f"# {config.document_title(spec.experiment, spec.title, '기록')}", "",
-        *INTRO, "",
+        *[line for line in INTRO if (line != GUIDE or any(getattr(t, "comparison", None) for t in spec.tables))
+          and not (line.startswith("스텝표 —") and all(getattr(t, "comparison", None) for t in spec.tables))], "",
     ]
     for item in spec.items:
         out += [f"## {item.id} · {item.title}",
@@ -122,8 +137,11 @@ def derive_record(spec) -> str:
             table = spec.table(table_id)
             if table.role == "reference":
                 continue          # 교안 참조표다. 실험실에서 채우지 않는다
+            if getattr(table, 'comparison', None) and table.outputs == [f'BIT{i}' for i in range(1,7)]:
+                out += ["> 실제 여섯 비트는 BIT1→BIT6 이름 순서로 적는다. 1=켜짐, 0=소등. 예: 001101.", ""]
             out += [f"### {table.id} · {table.title}", "",
-                    _RENDER[table.kind](table), "", "- 메모:", ""]
+                    (_stepped(table, comparison_leds.get(item.id, ()) if comparison_leds else ())
+                     if getattr(table, "comparison", None) else _RENDER[table.kind](table)), "", "- 메모:", ""]
     out += ["# 실험 종료 메모", ""] + [f"- {p}:" for p in PROMPTS] + [""]
     return "\n".join(out)
 
@@ -197,11 +215,21 @@ def record_marks(text: str, template: str = None) -> list:
     checks = cells = 0
     for tid, table in _tables_by_id(body).items():
         check_cols = {i for i, h in enumerate(table.header)
-                      if h.strip() == CHECK_HEADER}
+                      if h.strip() in (CHECK_HEADER, "실제 결과")}
         checks += _filled_cells(table, lambda r, c: c in check_cols)
         tmpl = tmpl_tables.get(tid)
+        if template and (tmpl is None or tmpl.header != table.header):
+            marks.append(f"{tid}: 기존 기록과 템플릿의 표 머리가 달라 기록 보존이 필요하다")
         if tmpl is None or tmpl.header != table.header:
             continue      # 명세가 바뀌어 짝이 안 맞는다. 확인 열까지만 본다
+        if len(table.rows) != len(tmpl.rows) or any(
+                len(row) != len(tmpl.rows[r]) for r, row in enumerate(table.rows)
+                if r < len(tmpl.rows)):
+            marks.append(f"{tid}: 기존 기록의 행·셀 구조가 템플릿과 달라 기록 보존이 필요하다")
+        elif any(cell.strip() != tmpl.rows[r][c].strip()
+                 for r, row in enumerate(table.rows) for c, cell in enumerate(row)
+                 if tmpl.rows[r][c].strip() and c not in check_cols):
+            marks.append(f"{tid}: 기존 기록의 고정 입력·조작·예상값이 달라 기록 보존이 필요하다")
         cells += _filled_cells(
             table,
             lambda r, c: (c not in check_cols and r < len(tmpl.rows)
@@ -268,7 +296,7 @@ def backup_path(path, now=None) -> Path:
     return candidate
 
 
-def write_record(path, text: str, *, force: bool = False, now=None) -> dict:
+def write_record(path, text: str, *, force: bool = False, now=None, previous_template=None) -> dict:
     """`기록.md` 를 쓴다. **이미 채워진 기록은 덮지 않는다.**
 
     - 파일이 없으면 그냥 만든다 (`created`). 첫 체크리스트는 지금까지와 같다.
@@ -279,6 +307,9 @@ def write_record(path, text: str, *, force: bool = False, now=None) -> dict:
     - `force=True` 면 옮겨 적을 수 없는 판단이 섰다는 뜻이다. 그때도 지우지
       않고 `기록.md.bak-<시각>` 백업을 먼저 남긴 뒤 덮는다 (`overwritten`).
 
+    `previous_template` 은 변경 전 명세에서 파생한 신뢰할 수 있는 이전 템플릿이다.
+    형식 이행에서 기존 빈 기록을 확인할 때만 전달한다. 기존 파일 자체를 전달하지 않는다.
+
     `force` 는 **사용자가 그렇게 하라고 한 뒤에만** 준다. 스킬이 스스로 켜면
     이 가드는 없는 것과 같다.
     """
@@ -288,7 +319,7 @@ def write_record(path, text: str, *, force: bool = False, now=None) -> dict:
         return {"status": "created", "backup": None, "marks": []}
 
     old = path.read_text(encoding="utf-8")
-    marks = record_marks(old, text)
+    marks = record_marks(old, previous_template if previous_template is not None else text)
     if not marks:
         path.write_text(text, encoding="utf-8")
         return {"status": "regenerated", "backup": None, "marks": []}

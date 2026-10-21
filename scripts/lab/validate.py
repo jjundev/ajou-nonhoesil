@@ -98,6 +98,10 @@ def check_metadata(spec) -> list:
                     f"outputs {t.outputs} 가 derived 대입 대상 {targets} 와 "
                     "다르다. derived 표는 식이 출력을 정하므로 outputs 를 "
                     "지우거나 식에 맞춘다"))
+        from .comparison import comparison_error
+        comparison_issue = comparison_error(t)
+        if comparison_issue:
+            out.append(Finding("error", where, comparison_issue))
         if t.role not in ROLES:
             out.append(Finding("error", where,
                 f"role 이 {t.role!r} 이다. `record` 또는 `reference` 여야 한다"))

@@ -16,6 +16,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from . import md, observations
+from .comparison import comparison_rows, GUIDE, BIT_GUIDE
 from . import nodes as node_calc
 from .leds import (board_leds, circled, feeds_by_stage, feeds_by_circuit, is_sequential, lit, record_leds,
                    record_row_leds, watched)
@@ -198,7 +199,26 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     return "\n".join(out)
 
 
-def _stepped_html(table, *, wide=False) -> str:
+def _comparison_table_html(header, rows):
+    out = ['<p class="comparison-guide">' + _esc(GUIDE) + '</p>',
+           '<table class="comparison-table"><colgroup>' + ''.join(
+               f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
+                   6:[7,23,20,18,18,14]}.get(len(header),[100/len(header)]*len(header))))
+               + '</colgroup><thead><tr>',
+           *[f'<th>{_esc(h)}</th>' for h in header], '</tr></thead><tbody>']
+    for row in rows:
+        out.append('<tr>')
+        for i, value in enumerate(row):
+            if i == len(row)-1:
+                out.append('<td class="actual"></td>')
+            else:
+                out.append('<td>' + _esc(value).replace('; ', '<br>') + '</td>')
+        out.append('</tr>')
+    out.append('</tbody></table>')
+    return '\n'.join(out)
+
+
+def _stepped_html(table, *, wide=False, leds=()) -> str:
     """스텝표 — **명세가 저작해 둔 빈 셀**이 실험실에서 채울 칸이다.
 
     `확인` 열을 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
@@ -215,6 +235,9 @@ def _stepped_html(table, *, wide=False) -> str:
     스텝·조작·측정 지시가 드는 자리다. 씌우면 실험02 T4 의 `-` 나 `x` 가 논리
     don't-care `X` 로 둔갑한다. 마크다운 표기만 `_plain` 으로 벗긴다.
     """
+    if getattr(table, 'comparison', None):
+        header, rows = comparison_rows(table, leds)
+        return _comparison_table_html(header, rows)
     header = list(table.header)
     rows = [[_plain(c) for c in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
@@ -468,7 +491,8 @@ def common_page(spec, netlist) -> str:
                + "".join(f"<li>{_esc(line)}</li>" for line in lines)
                + "</ul></div>")
     out.append(f'<p class="wire-legend">{_esc(WIRE_LEGEND)}</p>')
-    out += [f'<p class="legend">{_esc(line)}</p>' for line in LEGEND]
+    out += [f'<p class="legend">{_esc(GUIDE if i == 1 and any(getattr(t, "comparison", None) for t in spec.tables) else line)}</p>'
+            for i, line in enumerate(LEGEND)]
     out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
 
     for section in netlist.of_kind("lookup"):
@@ -976,6 +1000,52 @@ def _stage_led(todo) -> str:
 _JUMPER = {"H/L": "H=+5V · L=GND"}
 
 
+def _inline_observation_html(table, leds, feed):
+    lamps = [l for l in leds if l.tag in feed]
+    rows = []
+    has_other = any(dict(zip((n for n,_ in table.points), r.expected)).get(feed[l.tag], '관측 안 함')
+                    not in ('0','1','H','L') for r in table.rows for l in lamps)
+    probe_points = [(n,p) for n,p in table.points if n not in {feed[l.tag] for l in lamps}]
+    for row in table.rows:
+        values = dict(zip((n for n, _ in table.points), row.expected))
+        inputs = row.action + '; ' + '; '.join(f'{n} = {c}' for n, c in zip(table.inputs, row.inputs))
+        if lamps:
+            on, off, other = [], [], []
+            for led in lamps:
+                token = values.get(feed[led.tag], '관측 안 함')
+                label = f'{circled(led.index)}{led.tag}'
+                bit = bit_of(token, table.encoding) if token in ('0', '1', 'H', 'L') else None
+                if bit is None:
+                    other.append(label + ': ' + {'유지':'직전 그대로', '반전':'직전과 반대',
+                        '미정':'미정', '관측 안 함':'이번 절차 관측 안 함'}[token])
+                else:
+                    (on if lit(bit, led.active_low) else off).append(label)
+            rows.append([str(row.order), inputs, ' · '.join(on) or '없음',
+                         ' · '.join(off) or '없음', *(['; '.join(other) or '없음'] if has_other else []),
+                         *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
+        else:
+            expected = '; '.join(f'{n} ({pin}): {v}' for (n,pin),v in zip(table.points,row.expected))
+            rows.append([str(row.order), inputs, expected, ''])
+    if lamps:
+        header = ['순서','입력·조작','예상 켜지는 LED','예상 꺼지는 LED']
+        if has_other:
+            header.append('유지·반전·미정')
+        if probe_points:
+            header.append('측정 핀·예상값')
+        header.append('실제 결과')
+        pins = ' · '.join(f'{circled(l.index)}{l.tag} = {feed[l.tag]}' for l in lamps)
+        detail = '<p>보는 LED: ' + _esc(pins) + '</p>'
+    else:
+        header = ['순서','입력·조작','측정 핀·예상 논리값','실제 결과']
+        detail = ''
+    h = _comparison_table_html(header, rows)
+    # One timeline, one stable authored order per row.
+    for row in table.rows:
+        h = h.replace('<tr><td>' + str(row.order) + '</td>',
+                      f'<tr data-observation-order="{row.order}"><td>{row.order}</td>', 1)
+    return detail + h
+
+
 def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     """Two matched timelines, with per-LED status. Never writes measured cells."""
     feed = feed or {}
@@ -990,6 +1060,8 @@ def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     if png is not None:
         out.append(locations_html(png, table.inputs,
                                   feed={tag: name for tag, name in feed.items() if name is not None}))
+    if table.layout == 'inline':
+        return '\n'.join(out) + _inline_observation_html(table, leds, feed) + '</section>'
     out.append('<p><b>조작·입력 순서</b> — 아래 관측 표의 같은 순서 행에서 확인한다.</p>')
     out.append('<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정</th></tr></thead><tbody>')
     for row in table.rows:
@@ -1219,8 +1291,22 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
         if table.kind == "capture":
             out.append(_capture_html(table, spec.path.parent))
         elif table.kind == "stepped":
-            out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3"))
-            out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
+            if getattr(table, 'comparison', None):
+                if netlist is not None and section.diagram:
+                    out.append(locations_html(netlist.path.parent / section.diagram,
+                               ['D' if n == 'SERIAL DATA' else n for n in table.header
+                                if n not in [*(table.outputs or []), '스텝', '조작']]))
+                if table.outputs == [f'BIT{i}' for i in range(1,7)]:
+                    out.append('<p>' + _esc(BIT_GUIDE) + '</p>')
+                    out.append('<p>CLK=0일 때 데이터를 설정해요. 클럭을 0→1→0으로 한 번 왕복하고 하강 직후 읽어요.</p>')
+                if table.id == 'T1':
+                    data_column = next((i for i,n in enumerate(table.header) if n == 'SERIAL DATA'), None)
+                    if data_column is not None:
+                        pattern = ' → '.join(r[data_column] for r in table.rows if r[0].startswith('S'))
+                        out.append('<p><b>넣는 데이터의 시간순:</b> ' + _esc(pattern) + '</p>')
+            out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3", leds=leds))
+            if not getattr(table, 'comparison', None):
+                out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
             if netlist is not None:
                 png = netlist.path.parent / section.diagram if section.diagram else None

@@ -46,6 +46,8 @@ def procedure_issues(section, procedure) -> list[tuple[int, str]]:
         known = points(section)
     except ObservationError as exc:
         issue(str(exc)); known = {n['name']: n for n in section.nodes}
+    if p.layout not in ("split", "inline"):
+        issue("layout 은 split 또는 inline 이어야 한다")
     if p.provenance not in ('manual', 'derived'):
         issue('provenance 는 manual 또는 derived 여야 한다')
     if p.provenance == 'derived' and not p.rationale.strip():
@@ -116,6 +118,7 @@ class ObservationTable:
     source: str
     setup: str
     rationale: str
+    layout: str = "split"
 
 
 def stage_observations(section, spec, stage: dict, node_names: list[str]) -> ObservationTable:
@@ -133,7 +136,7 @@ def stage_observations(section, spec, stage: dict, node_names: list[str]) -> Obs
                     [r.expected[columns[n]] if n in columns else '관측 안 함' for n in node_names])
                 for r in p.steps]
         return ObservationTable(list(p.inputs), [(n, known[n]['pin']) for n in node_names],
-                                rows, p.encoding, p.provenance, p.source, p.setup, p.rationale)
+                                rows, p.encoding, p.provenance, p.source, p.setup, p.rationale, p.layout)
     for name in node_names:
         if point_kind(known[name]) == 'observed':
             raise ObservationError(f'observed 노드 {name} 에 확인 절차가 필요하다')

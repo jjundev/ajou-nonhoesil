@@ -144,3 +144,11 @@ spec: spec_observation_stepped.md
 `assembly.check_registry`로 ASSEMBLY_BOARDS와 부모·파일명·순서를 맞추고,
 `assembly.check_assets`로 PNG와 JSON을 읽은 뒤에만 정식 HTML/PDF를 만든다.
 준비 자산 오류는 error이며 기존 그림 누락 정책을 바꾸지 않는다.
+
+## 관측표 표시 방식 `layout`
+
+확인 절차의 선택 속성 `- layout: inline`은 입력·조작과 예상값·실제 결과를
+같은 행에 표시한다. 생략은 기존 `split`이며 그 외 값은 오류다.
+LED가 있는 관측은 예상 켜짐·소등으로, 프로브 관측은 핀·예상 논리값으로 표시한다.
+유지·반전·미정·관측 안 함은 소등과 구별하며 행 순서와 중복을 유지한다.
+실제 결과 칸은 미확인 공란으로 인쇄한다. 이 칸은 T표의 실측 기록을 자동 채우지 않는다.

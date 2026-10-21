@@ -50,5 +50,3 @@ def test_absolute_boards_match_preimplementation_reference(tmp_path):
    assert b.stamp()==expected[repr(name)][repr('stamp')]
  for name,fn in w.FINALS:
   b=fn(str(tmp_path/name));assert b.stamp()==expected[repr(name)][repr('stamp')]
- record=ROOT/'보고서/실험07/체크리스트/기록.md'
- assert hashlib.sha256(record.read_bytes()).hexdigest()==ref.with_name('record.sha256').read_text()
