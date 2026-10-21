@@ -168,3 +168,17 @@ def test_authored_purpose_reaches_stage_before_setup(tmp_path, layout):
     assert h.count(escaped) == 1
     assert purpose not in h  # authored text must be HTML escaped
     assert h.index(escaped) < h.index('준비·초기화:')
+
+@pytest.mark.parametrize('with_led', [False, True])
+def test_inline_action_is_separate_column_before_input_settings(with_led):
+    t = sample(['1'])
+    t.layout = 'inline'
+    t.rows[0].action = '먼저 입력을 설정'
+    ls = [Led('L', '좌 a3', False, 1)] if with_led else []
+    h = render._observation_procedure_html(t, ls, {'L': 'Q0'} if with_led else {})
+    assert '<th>조작</th>\n<th>입력 설정</th>' in h
+    row = re.search(r'<tbody>\s*<tr[^>]*>(.*?)</tr>', h, re.S)[1]
+    cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S)
+    assert cells[1] == '먼저 입력을 설정'
+    assert cells[2] == 'SERIAL_DATA = 1'
+    assert h.count('class="actual"') == 1

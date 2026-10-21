@@ -73,8 +73,9 @@ def test_inline_observation_keeps_input_expected_and_actual_together():
         '0/1','derived','manual:p1','준비','이유',layout='inline')
     h=render._observation_procedure_html(t)
     r=rows(h)
-    assert len(r)==1 and len(r[0])==4
-    assert 'D = 1' in r[0][1] and 'U1 pin 3' in r[0][2] and ': 0' in r[0][2]
+    assert len(r)==1 and len(r[0])==5
+    assert r[0][1]=='D 입력' and 'D = 1' in r[0][2]
+    assert 'U1 pin 3' in r[0][3] and ': 0' in r[0][3]
     assert r[0][-1]=='' and 'class="actual"' in h
 
 
@@ -145,7 +146,7 @@ def test_inline_led_unknown_is_not_reported_as_off():
         '0/1','derived','manual:p1','준비','이유',layout='inline')
     h=render._observation_procedure_html(t,[Led('L','a1',False,1)],{'L':'Q'})
     r=rows(h)[0]
-    assert r[2]=='없음' and r[3]=='없음' and '미정' in r[4]
+    assert r[3]=='없음' and r[4]=='없음' and '미정' in r[5]
 
 
 @pytest.mark.parametrize('change',['extra_row','short_row','reordered_rows'])

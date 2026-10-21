@@ -961,7 +961,7 @@ def _inline_observation_html(table, leds, feed):
     probe_points = [(n,p) for n,p in table.points if n not in {feed[l.tag] for l in lamps}]
     for row in table.rows:
         values = dict(zip((n for n, _ in table.points), row.expected))
-        inputs = row.action + '; ' + '; '.join(f'{n} = {c}' for n, c in zip(table.inputs, row.inputs))
+        inputs = '; '.join(f'{n} = {c}' for n, c in zip(table.inputs, row.inputs))
         if lamps:
             on, off, other = [], [], []
             for led in lamps:
@@ -973,14 +973,14 @@ def _inline_observation_html(table, leds, feed):
                         '미정':'미정', '관측 안 함':'이번 절차 관측 안 함'}[token])
                 else:
                     (on if lit(bit, led.active_low) else off).append(label)
-            rows.append([str(row.order), inputs, ' · '.join(on) or '없음',
+            rows.append([str(row.order), row.action, inputs, ' · '.join(on) or '없음',
                          ' · '.join(off) or '없음', *(['; '.join(other) or '없음'] if has_other else []),
                          *(['; '.join(f'{n} ({p}): {values[n]}' for n,p in probe_points)] if probe_points else []), ''])
         else:
             expected = '; '.join(f'{n} ({pin}): {v}' for (n,pin),v in zip(table.points,row.expected))
-            rows.append([str(row.order), inputs, expected, ''])
+            rows.append([str(row.order), row.action, inputs, expected, ''])
     if lamps:
-        header = ['순서','입력·조작','예상 켜지는 LED','예상 꺼지는 LED']
+        header = ['순서','조작','입력 설정','예상 켜지는 LED','예상 꺼지는 LED']
         if has_other:
             header.append('유지·반전·미정')
         if probe_points:
@@ -990,12 +990,10 @@ def _inline_observation_html(table, leds, feed):
                           for l in lamps if l.tag != feed[l.tag])
         detail = '<p>보는 LED: ' + _esc(pins) + '</p>' if pins else ''
     else:
-        header = ['순서','입력·조작','측정 핀·예상 논리값','실제 결과']
+        header = ['순서','조작','입력 설정','측정 핀·예상 논리값','실제 결과']
         detail = ''
     settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows])
-    input_cells = [_esc(row.action).replace('; ', '<br>') + '<br>' + setting
-                   for row, setting in zip(table.rows, settings)]
-    h = _comparison_table_html(header, rows, input_settings=input_cells)
+    h = _comparison_table_html(header, rows, input_settings=settings, input_column=2)
     # One timeline, one stable authored order per row.
     for row in table.rows:
         h = h.replace('<tr><td>' + str(row.order) + '</td>',
