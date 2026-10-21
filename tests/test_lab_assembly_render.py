@@ -38,3 +38,16 @@ def test_no_assembly_preserves_stage_output(data):
  n,s=data; n.circuits[0].assembly_steps=[]
  h=render.render_checklist(s,n,'{{CIRCUITS}}')
  assert h.count('class="stage"')==1 and '완료 확인' not in h
+
+def test_documented_publication_gate_allows_legacy_without_board(data):
+ # Run the actual documented pre-render gate with a legacy, unrendered netlist.
+ import textwrap
+ n,s=data; n.circuits[0].assembly_steps=[]
+ skill=Path('.claude/skills/prep-lab-checklist/SKILL.md').read_text()
+ code=skill[skill.index('   from scripts.lab.assembly import'):skill.index('   tmpl = Path(')]
+ exec(textwrap.dedent(code),{'netlist':n})
+
+def test_legacy_validation_does_not_require_pillow():
+ import subprocess,sys
+ p=subprocess.run([sys.executable,'-c',"import sys;sys.modules['PIL']=None;from scripts.lab.assembly import check_assets;from types import SimpleNamespace;assert check_assets(SimpleNamespace(circuits=[]))==[]"],capture_output=True,text=True)
+ assert p.returncode==0,p.stderr

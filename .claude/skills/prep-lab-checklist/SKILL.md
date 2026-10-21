@@ -135,11 +135,12 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
    netlist = parse_netlist('<실험NN>/결선도/netlist.md')
    from scripts.lab.assembly import check_structure, check_registry, check_assets
-   from scripts.lab.place_search import load
-   _, board = load(netlist.path.parent / '배치.py')
-   gates = (check_structure(netlist)
-            + check_registry(netlist, getattr(board, 'ASSEMBLY_BOARDS', {}))
-            + check_assets(netlist))
+   gates = check_structure(netlist)
+   if any(section.assembly_steps for section in netlist.circuits):
+       from scripts.lab.place_search import load
+       _, board = load(netlist.path.parent / '배치.py')
+       gates += (check_registry(netlist, getattr(board, 'ASSEMBLY_BOARDS', {}))
+                 + check_assets(netlist))
    if any(f.level == 'error' for f in gates):
        raise ValueError('\\n'.join(str(f) for f in gates))
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')

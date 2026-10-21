@@ -3,7 +3,6 @@ import json
 from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING
-from PIL import Image
 if TYPE_CHECKING:
     from .netlist_parser import AssemblyStep, LabNetlist, NetlistSection
     from .validate import Finding
@@ -45,20 +44,23 @@ def check_structure(netlist: 'LabNetlist') -> list['Finding']:
 
 def check_assets(netlist: 'LabNetlist') -> list['Finding']:
     from .validate import Finding
+    steps = [step for section in netlist.circuits for step in section.assembly_steps]
+    if not steps:
+        return []
+    from PIL import Image
     out = []
-    for section in netlist.circuits:
-        for step in section.assembly_steps:
-            png = netlist.path.parent / step.diagram
-            try:
-                with Image.open(png) as im:
-                    if im.format != 'PNG':
-                        raise ValueError('PNG 형식이 아니다')
-                    im.verify()
-                data = json.loads(png.with_suffix('.json').read_text(encoding='utf-8'))
-                if not isinstance(data, dict) or data.get('schema') != 'breadboard-sidecar/v1':
-                    raise ValueError('사이드카 스키마가 다르다')
-            except (OSError, ValueError) as exc:
-                out.append(Finding('error', str(png), f'준비 그림/JSON을 읽을 수 없다: {exc}'))
+    for step in steps:
+        png = netlist.path.parent / step.diagram
+        try:
+            with Image.open(png) as im:
+                if im.format != 'PNG':
+                    raise ValueError('PNG 형식이 아니다')
+                im.verify()
+            data = json.loads(png.with_suffix('.json').read_text(encoding='utf-8'))
+            if not isinstance(data, dict) or data.get('schema') != 'breadboard-sidecar/v1':
+                raise ValueError('사이드카 스키마가 다르다')
+        except (OSError, ValueError) as exc:
+            out.append(Finding('error', str(png), f'준비 그림/JSON을 읽을 수 없다: {exc}'))
     return out
 
 
