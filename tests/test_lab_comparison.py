@@ -122,7 +122,7 @@ def test_e07_t1_pattern_and_all_three_timelines_are_consistent():
         assert [''.join(r[i] for i in ix) for r in t.rows]==expected
         assert all(len(r)==len(t.header) for r in t.rows)
     t=s.tables[0]
-    assert [r[t.header.index('SERIAL DATA')] for r in t.rows[2:]]==list('101100')
+    assert [r[t.header.index('D')] for r in t.rows[2:]]==list('101100')
 
 
 def test_e07_all_v_procedures_are_one_comparison_timeline():

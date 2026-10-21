@@ -1102,7 +1102,7 @@
 <tr>
 <td>R0</td>
 <td>CLK 정지, 공통 초기화(p9)</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
+<td>D=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1110,7 +1110,7 @@
 <tr>
 <td>R1</td>
 <td>CLR 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br>PR2=1</td>
+<td>D=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1118,7 +1118,7 @@
 <tr>
 <td>S1</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td><span class="input-change">SERIAL DATA=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">D=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1126,7 +1126,7 @@
 <tr>
 <td>S2</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td><span class="input-change">SERIAL DATA=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">D=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1134,7 +1134,7 @@
 <tr>
 <td>S3</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td><span class="input-change">SERIAL DATA=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">D=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1 · ③BIT3</td>
 <td>②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1142,7 +1142,7 @@
 <tr>
 <td>S4</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=1<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=1<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td>③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1150,7 +1150,7 @@
 <tr>
 <td>S5</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td><span class="input-change">SERIAL DATA=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">D=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td>①BIT1 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1158,7 +1158,7 @@
 <tr>
 <td>S6</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1180,7 +1180,7 @@
 <tr>
 <td>R0</td>
 <td>CLK 정지, 재초기화</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
+<td>D=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1188,7 +1188,7 @@
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR1=0. CLK=0 유지</td>
-<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br><span class="input-change">PR1=0</span><br>PR2=1</td>
+<td>D=0<br>CLK=0<br><span class="input-change">CLR=1</span><br><span class="input-change">PR1=0</span><br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1196,7 +1196,7 @@
 <tr>
 <td>P2</td>
 <td>PR1을 1로 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br><span class="input-change">PR1=1</span><br>PR2=1</td>
+<td>D=0<br>CLK=0<br>CLR=1<br><span class="input-change">PR1=1</span><br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1204,7 +1204,7 @@
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1212,7 +1212,7 @@
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1220,7 +1220,7 @@
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1228,7 +1228,7 @@
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1236,7 +1236,7 @@
 <tr>
 <td>S5</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1244,7 +1244,7 @@
 <tr>
 <td>S6</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1266,7 +1266,7 @@
 <tr>
 <td>R0</td>
 <td>CLK 정지, 재초기화</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
+<td>D=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1274,7 +1274,7 @@
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR2=0. CLK=0 유지</td>
-<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br><span class="input-change">PR2=0</span></td>
+<td>D=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br><span class="input-change">PR2=0</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1282,7 +1282,7 @@
 <tr>
 <td>P2</td>
 <td>PR2를 1로 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br><span class="input-change">PR2=1</span></td>
+<td>D=0<br>CLK=0<br>CLR=1<br>PR1=1<br><span class="input-change">PR2=1</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1290,7 +1290,7 @@
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1298,7 +1298,7 @@
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1306,7 +1306,7 @@
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1314,7 +1314,7 @@
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1322,7 +1322,7 @@
 <tr>
 <td>S5</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>D=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
