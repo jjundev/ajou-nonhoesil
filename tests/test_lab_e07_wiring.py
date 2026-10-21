@@ -27,7 +27,7 @@ def test_six_bits_follow_previous_q_and_complement(board):
             ('U3', 9, 12, 11, 10), ('U3', 4, 16, 15, 14),
             ('U4', 9, 12, 11, 10), ('U4', 4, 16, 15, 14)]
     assert pin(week, 'U2', 9) in net(bb, '입력 D')['labels']
-    assert pin(week, 'U2', 12) in net(bb, pin(week, 'U1', 11))['labels']
+    assert pin(week, 'U2', 12) in net(bb, pin(week, 'U1', 8))['labels']
     for prev, curr in zip(bits, bits[1:]):
         assert pin(week, curr[0], curr[1]) in net(bb, pin(week, prev[0], prev[3]))['labels']
         assert pin(week, curr[0], curr[2]) in net(bb, pin(week, prev[0], prev[4]))['labels']
@@ -69,5 +69,15 @@ def test_every_powered_ff_input_has_a_driver_in_each_stage(tmp_path):
                 # A rail, an external input, or an actual FF/NAND output drives the net.
                 driven = bool(net(bb, pin(week, u, p))['rails']) or any(x.startswith('입력 ') for x in labels)
                 driven |= any(pin(week, v, q) in labels for v in ('U2', 'U3', 'U4') for q in (10, 11, 14, 15))
-                driven |= pin(week, 'U1', 11) in labels
+                driven |= pin(week, 'U1', 8) in labels
                 assert driven, (st, u, p, labels)
+
+
+def test_approved_numeric_order_and_final_routing(board):
+    mod, week, bb = board
+    assert [v['tag'] for v in sorted(bb.leds, key=lambda v: v['anode'][2])] == [f'BIT{i}' for i in range(1, 7)]
+    assert {pin(week, 'U1', p) for p in (9, 10)} <= net(bb, '입력 D')['labels']
+    metrics = mod.wire_metrics(bb)
+    assert metrics['length'] == pytest.approx(305.3157894736842)
+    assert metrics['bends'] == 69
+    assert metrics['density'] == pytest.approx(3.4736842105263164)

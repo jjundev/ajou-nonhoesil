@@ -23,47 +23,47 @@
   {
    "n": 3,
    "kind": "gnd",
-   "from": "좌 GND레일51행",
-   "to": "중앙GND레일51행",
+   "from": "좌 GND레일48행",
+   "to": "중앙GND레일48행",
    "desc": "레일 브리지",
    "count": 1
   },
   {
    "n": 4,
    "kind": "vcc",
-   "from": "좌 VCC레일52행",
-   "to": "중앙VCC레일52행",
+   "from": "좌 VCC레일49행",
+   "to": "중앙VCC레일49행",
    "desc": "레일 브리지",
    "count": 1
   },
   {
    "n": 5,
    "kind": "vcc",
-   "from": "좌 g7",
-   "to": "중앙VCC레일7행",
+   "from": "좌 g6",
+   "to": "중앙VCC레일6행",
    "desc": "pin 14 -> +5V 레일",
    "count": 1
   },
   {
    "n": 6,
    "kind": "gnd",
-   "from": "좌 a13",
-   "to": "좌 GND레일13행",
+   "from": "좌 a12",
+   "to": "좌 GND레일12행",
    "desc": "pin 7 -> GND 레일",
    "count": 1
   },
   {
    "n": 7,
    "kind": "vcc",
-   "from": "좌 a21",
-   "to": "좌 VCC레일21행",
+   "from": "좌 a20",
+   "to": "좌 VCC레일19행",
    "desc": "pin 5 -> +5V 레일",
    "count": 1
   },
   {
    "n": 8,
    "kind": "gnd",
-   "from": "좌 g20",
+   "from": "좌 g19",
    "to": "중앙GND레일19행",
    "desc": "pin 13 -> GND 레일",
    "count": 1
@@ -71,7 +71,7 @@
   {
    "n": 9,
    "kind": "vcc",
-   "from": "좌 a32",
+   "from": "좌 a31",
    "to": "좌 VCC레일31행",
    "desc": "pin 5 -> +5V 레일",
    "count": 1
@@ -79,109 +79,125 @@
   {
    "n": 10,
    "kind": "gnd",
-   "from": "좌 g31",
-   "to": "중앙GND레일31행",
+   "from": "좌 g30",
+   "to": "중앙GND레일30행",
    "desc": "pin 13 -> GND 레일",
    "count": 1
   },
   {
    "n": 11,
    "kind": "vcc",
-   "from": "좌 a43",
-   "to": "좌 VCC레일43행",
+   "from": "좌 a42",
+   "to": "좌 VCC레일42행",
    "desc": "pin 5 -> +5V 레일",
    "count": 1
   },
   {
    "n": 12,
    "kind": "gnd",
-   "from": "좌 g42",
-   "to": "중앙GND레일42행",
+   "from": "좌 g41",
+   "to": "중앙GND레일41행",
    "desc": "pin 13 -> GND 레일",
    "count": 1
   },
   {
    "n": 13,
    "kind": "vcc",
-   "from": "좌 a29",
-   "to": "좌 VCC레일29행",
+   "from": "좌 a28",
+   "to": "좌 VCC레일28행",
    "desc": "U3 pin 2 PR 비활성 -> +5V 레일",
    "count": 1
   },
   {
    "n": 14,
    "kind": "vcc",
-   "from": "좌 a34",
-   "to": "좌 VCC레일34행",
+   "from": "좌 a33",
+   "to": "좌 VCC레일33행",
    "desc": "U3 pin 7 PR 비활성 -> +5V 레일",
    "count": 1
   },
   {
    "n": 15,
    "kind": "vcc",
-   "from": "좌 a40",
-   "to": "좌 VCC레일40행",
+   "from": "좌 a39",
+   "to": "좌 VCC레일39행",
    "desc": "U4 pin 2 PR 비활성 -> +5V 레일",
    "count": 1
   },
   {
    "n": 16,
    "kind": "vcc",
-   "from": "좌 a45",
-   "to": "좌 VCC레일45행",
+   "from": "좌 a44",
+   "to": "좌 VCC레일43행",
    "desc": "U4 pin 7 PR 비활성 -> +5V 레일",
    "count": 1
   },
   {
    "n": 17,
    "kind": "sig",
-   "from": "중앙GND레일9행",
-   "to": "좌 j9",
-   "desc": "입력 D -> U1 pin 12 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "from": "중앙GND레일11행",
+   "to": "좌 j11",
+   "desc": "입력 D -> U1 pin 9 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {
    "n": 18,
    "kind": "sig",
-   "from": "좌 GND레일17행",
-   "to": "좌 a17",
+   "from": "좌 GND레일16행",
+   "to": "좌 a16",
    "desc": "입력 CLK -> U2 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {
    "n": 19,
    "kind": "sig",
-   "from": "좌 GND레일19행",
-   "to": "좌 a19",
+   "from": "좌 GND레일18행",
+   "to": "좌 a18",
    "desc": "입력 CLR -> U2 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {
    "n": 20,
    "kind": "sig",
-   "from": "좌 GND레일23행",
-   "to": "좌 a23",
+   "from": "좌 GND레일22행",
+   "to": "좌 a22",
    "desc": "입력 PR1 -> U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {
    "n": 21,
    "kind": "sig",
-   "from": "좌 GND레일18행",
-   "to": "좌 a18",
+   "from": "좌 GND레일17행",
+   "to": "좌 a17",
    "desc": "입력 PR2 -> U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
    "count": 1
   },
   {
    "n": 22,
    "kind": "sig",
-   "from": "우 b18",
-   "to": "우 c21",
-   "desc": "BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b14",
+   "to": "우 c17",
+   "desc": "BIT1: LED(우 b14→우 b15) + 330Ω(우 c15→우 c17) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 23,
+   "kind": "gnd",
+   "from": "우 a17",
+   "to": "중앙GND레일17행",
+   "desc": "BIT1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 25,
    "kind": "gnd",
    "from": "우 a21",
    "to": "중앙GND레일21행",
@@ -189,63 +205,63 @@
    "count": 1
   },
   {
-   "n": 24,
-   "kind": "sig",
-   "from": "우 b22",
-   "to": "우 c25",
-   "desc": "BIT1: LED(우 b22→우 b23) + 330Ω(우 c23→우 c25) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
-   "count": 1
-  },
-  {
-   "n": 25,
-   "kind": "gnd",
-   "from": "우 a25",
-   "to": "중앙GND레일25행",
-   "desc": "BIT1 저항 아래 -> GND",
-   "count": 1
-  },
-  {
    "n": 26,
    "kind": "sig",
-   "from": "우 b28",
-   "to": "우 c31",
-   "desc": "BIT4: LED(우 b28→우 b29) + 330Ω(우 c29→우 c31) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b26",
+   "to": "우 c29",
+   "desc": "BIT3: LED(우 b26→우 b27) + 330Ω(우 c27→우 c29) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 27,
    "kind": "gnd",
-   "from": "우 a31",
-   "to": "중앙GND레일30행",
-   "desc": "BIT4 저항 아래 -> GND",
+   "from": "우 a29",
+   "to": "중앙GND레일29행",
+   "desc": "BIT3 저항 아래 -> GND",
    "count": 1
   },
   {
    "n": 28,
    "kind": "sig",
-   "from": "우 b33",
-   "to": "우 c36",
-   "desc": "BIT3: LED(우 b33→우 b34) + 330Ω(우 c34→우 c36) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b30",
+   "to": "우 c33",
+   "desc": "BIT4: LED(우 b30→우 b31) + 330Ω(우 c31→우 c33) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 29,
    "kind": "gnd",
-   "from": "우 a36",
-   "to": "중앙GND레일36행",
-   "desc": "BIT3 저항 아래 -> GND",
+   "from": "우 a33",
+   "to": "중앙GND레일33행",
+   "desc": "BIT4 저항 아래 -> GND",
    "count": 1
   },
   {
    "n": 30,
    "kind": "sig",
-   "from": "우 b40",
-   "to": "우 c43",
-   "desc": "BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b36",
+   "to": "우 c39",
+   "desc": "BIT5: LED(우 b36→우 b37) + 330Ω(우 c37→우 c39) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 31,
+   "kind": "gnd",
+   "from": "우 a39",
+   "to": "중앙GND레일39행",
+   "desc": "BIT5 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 32,
+   "kind": "sig",
+   "from": "우 b40",
+   "to": "우 c43",
+   "desc": "BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 33,
    "kind": "gnd",
    "from": "우 a43",
    "to": "중앙GND레일43행",
@@ -253,153 +269,137 @@
    "count": 1
   },
   {
-   "n": 32,
-   "kind": "sig",
-   "from": "우 b44",
-   "to": "우 c47",
-   "desc": "BIT5: LED(우 b44→우 b45) + 330Ω(우 c45→우 c47) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
-   "count": 1
-  },
-  {
-   "n": 33,
-   "kind": "gnd",
-   "from": "우 a47",
-   "to": "중앙GND레일47행",
-   "desc": "BIT5 저항 아래 -> GND",
-   "count": 1
-  },
-  {
    "n": 34,
    "kind": "sig",
-   "from": "좌 g9",
-   "to": "좌 i8",
-   "desc": "D 두 입력 묶음: U1 pin 12 -> U1 pin 13",
+   "from": "좌 g11",
+   "to": "좌 i10",
+   "desc": "D 두 입력 묶음: U1 pin 9 -> U1 pin 10",
    "count": 1
   },
   {
    "n": 35,
    "kind": "sig",
-   "from": "좌 b17",
-   "to": "좌 b22",
+   "from": "좌 b16",
+   "to": "좌 b21",
    "desc": "CLK: U2 pin 1 -> U2 pin 6",
    "count": 1
   },
   {
    "n": 36,
    "kind": "sig",
-   "from": "좌 c22",
-   "to": "좌 b28",
+   "from": "좌 a21",
+   "to": "좌 b27",
    "desc": "CLK: U2 pin 6 -> U3 pin 1",
    "count": 1
   },
   {
    "n": 37,
    "kind": "sig",
-   "from": "좌 c28",
-   "to": "좌 c33",
+   "from": "좌 a27",
+   "to": "좌 a32",
    "desc": "CLK: U3 pin 1 -> U3 pin 6",
    "count": 1
   },
   {
    "n": 38,
    "kind": "sig",
-   "from": "좌 b33",
-   "to": "좌 b39",
+   "from": "좌 b32",
+   "to": "좌 b38",
    "desc": "CLK: U3 pin 6 -> U4 pin 1",
    "count": 1
   },
   {
    "n": 39,
    "kind": "sig",
-   "from": "좌 c39",
-   "to": "좌 b44",
+   "from": "좌 a38",
+   "to": "좌 a43",
    "desc": "CLK: U4 pin 1 -> U4 pin 6",
    "count": 1
   },
   {
    "n": 40,
    "kind": "sig",
-   "from": "좌 c19",
-   "to": "좌 c24",
+   "from": "좌 b18",
+   "to": "좌 b23",
    "desc": "CLR: U2 pin 3 -> U2 pin 8",
    "count": 1
   },
   {
    "n": 41,
    "kind": "sig",
-   "from": "좌 b24",
-   "to": "좌 b30",
+   "from": "좌 c23",
+   "to": "좌 b29",
    "desc": "CLR: U2 pin 8 -> U3 pin 3",
    "count": 1
   },
   {
    "n": 42,
    "kind": "sig",
-   "from": "좌 c30",
-   "to": "좌 b35",
+   "from": "좌 c29",
+   "to": "좌 c34",
    "desc": "CLR: U3 pin 3 -> U3 pin 8",
    "count": 1
   },
   {
    "n": 43,
    "kind": "sig",
-   "from": "좌 c35",
-   "to": "좌 c41",
+   "from": "좌 b34",
+   "to": "좌 b40",
    "desc": "CLR: U3 pin 8 -> U4 pin 3",
    "count": 1
   },
   {
    "n": 44,
    "kind": "sig",
-   "from": "좌 b41",
-   "to": "좌 b46",
+   "from": "좌 a40",
+   "to": "좌 a45",
    "desc": "CLR: U4 pin 3 -> U4 pin 8",
    "count": 1
   },
   {
    "n": 45,
    "kind": "sig",
-   "from": "좌 h9",
-   "to": "좌 g24",
-   "desc": "D: U1 pin 12 -> U2 pin 9 (BIT1 J)",
+   "from": "좌 h11",
+   "to": "좌 h23",
+   "desc": "D: U1 pin 9 -> U2 pin 9 (BIT1 J)",
    "count": 1
   },
   {
    "n": 46,
    "kind": "sig",
-   "from": "좌 j10",
-   "to": "좌 j21",
-   "desc": "D' (U1 pin 11) -> U2 pin 12 (BIT1 K)",
+   "from": "좌 j12",
+   "to": "좌 j20",
+   "desc": "D' (U1 pin 8) -> U2 pin 12 (BIT1 K)",
    "count": 1
   },
   {
    "n": 47,
    "kind": "sig",
-   "from": "좌 j22",
-   "to": "우 a22",
+   "from": "좌 j21",
+   "to": "우 a14",
    "desc": "BIT1 = U2 pin 11 -> LED BIT1",
    "count": 1
   },
   {
    "n": 48,
    "kind": "mid",
-   "from": "좌 h22",
-   "to": "좌 d20",
+   "from": "좌 g21",
+   "to": "좌 c19",
    "desc": "BIT1: U2 pin 11 -> U2 pin 4 (BIT2 J)",
    "count": 1
   },
   {
    "n": 49,
    "kind": "mid",
-   "from": "좌 j23",
-   "to": "좌 j17",
+   "from": "좌 g22",
+   "to": "좌 g16",
    "desc": "BIT1 보수: U2 pin 10 -> U2 pin 16 (BIT2 K)",
    "count": 1
   },
   {
    "n": 50,
    "kind": "sig",
-   "from": "좌 j18",
+   "from": "좌 i17",
    "to": "우 a18",
    "desc": "BIT2 = U2 pin 15 -> LED BIT2",
    "count": 1
@@ -407,95 +407,95 @@
   {
    "n": 51,
    "kind": "mid",
-   "from": "좌 i18",
-   "to": "좌 j35",
+   "from": "좌 j17",
+   "to": "좌 j34",
    "desc": "BIT2: U2 pin 15 -> U3 pin 9 (BIT3 J)",
    "count": 1
   },
   {
    "n": 52,
    "kind": "mid",
-   "from": "좌 j19",
-   "to": "좌 j32",
+   "from": "좌 j18",
+   "to": "좌 j31",
    "desc": "BIT2 보수: U2 pin 14 -> U3 pin 12 (BIT3 K)",
    "count": 1
   },
   {
    "n": 53,
    "kind": "sig",
-   "from": "좌 j33",
-   "to": "우 a33",
+   "from": "좌 j32",
+   "to": "우 a26",
    "desc": "BIT3 = U3 pin 11 -> LED BIT3",
    "count": 1
   },
   {
    "n": 54,
    "kind": "mid",
-   "from": "좌 g33",
-   "to": "좌 d31",
+   "from": "좌 g32",
+   "to": "좌 b30",
    "desc": "BIT3: U3 pin 11 -> U3 pin 4 (BIT4 J)",
    "count": 1
   },
   {
    "n": 55,
    "kind": "mid",
-   "from": "좌 j34",
-   "to": "좌 j28",
+   "from": "좌 h33",
+   "to": "좌 h27",
    "desc": "BIT3 보수: U3 pin 10 -> U3 pin 16 (BIT4 K)",
    "count": 1
   },
   {
    "n": 56,
    "kind": "sig",
-   "from": "좌 j29",
-   "to": "우 a28",
+   "from": "좌 j28",
+   "to": "우 a30",
    "desc": "BIT4 = U3 pin 15 -> LED BIT4",
    "count": 1
   },
   {
    "n": 57,
    "kind": "mid",
-   "from": "좌 h29",
-   "to": "좌 h46",
+   "from": "좌 g28",
+   "to": "좌 g45",
    "desc": "BIT4: U3 pin 15 -> U4 pin 9 (BIT5 J)",
    "count": 1
   },
   {
    "n": 58,
    "kind": "mid",
-   "from": "좌 i30",
-   "to": "좌 j43",
+   "from": "좌 j29",
+   "to": "좌 j42",
    "desc": "BIT4 보수: U3 pin 14 -> U4 pin 12 (BIT5 K)",
    "count": 1
   },
   {
    "n": 59,
    "kind": "sig",
-   "from": "좌 j44",
-   "to": "우 a44",
+   "from": "좌 j43",
+   "to": "우 a36",
    "desc": "BIT5 = U4 pin 11 -> LED BIT5",
    "count": 1
   },
   {
    "n": 60,
    "kind": "mid",
-   "from": "좌 g44",
-   "to": "좌 c42",
+   "from": "좌 g43",
+   "to": "좌 c41",
    "desc": "BIT5: U4 pin 11 -> U4 pin 4 (BIT6 J)",
    "count": 1
   },
   {
    "n": 61,
    "kind": "mid",
-   "from": "좌 j45",
-   "to": "좌 j39",
+   "from": "좌 h44",
+   "to": "좌 h38",
    "desc": "BIT5 보수: U4 pin 10 -> U4 pin 16 (BIT6 K)",
    "count": 1
   },
   {
    "n": 62,
    "kind": "sig",
-   "from": "좌 j40",
+   "from": "좌 j39",
    "to": "우 a40",
    "desc": "BIT6 = U4 pin 15 -> LED BIT6",
    "count": 1
@@ -506,71 +506,71 @@
  "board": "v2",
  "leds": [
   {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
    "tag": "BIT2",
    "at": "우 a18",
    "active_low": false
   },
   {
-   "tag": "BIT1",
-   "at": "우 a22",
+   "tag": "BIT3",
+   "at": "우 a26",
    "active_low": false
   },
   {
    "tag": "BIT4",
-   "at": "우 a28",
+   "at": "우 a30",
    "active_low": false
   },
   {
-   "tag": "BIT3",
-   "at": "우 a33",
+   "tag": "BIT5",
+   "at": "우 a36",
    "active_low": false
   },
   {
    "tag": "BIT6",
    "at": "우 a40",
    "active_low": false
-  },
-  {
-   "tag": "BIT5",
-   "at": "우 a44",
-   "active_low": false
   }
  ],
  "inputs": [
   {
    "name": "D",
-   "at": "좌 j9",
-   "rail": "중앙GND레일9행",
+   "at": "좌 j11",
+   "rail": "중앙GND레일11행",
    "x": 588,
-   "row": 9
+   "row": 11
   },
   {
    "name": "CLK",
-   "at": "좌 a17",
-   "rail": "좌 GND레일17행",
+   "at": "좌 a16",
+   "rail": "좌 GND레일16행",
    "x": 176,
-   "row": 17
+   "row": 16
   },
   {
    "name": "CLR",
-   "at": "좌 a19",
-   "rail": "좌 GND레일19행",
-   "x": 176,
-   "row": 19
-  },
-  {
-   "name": "PR1",
-   "at": "좌 a23",
-   "rail": "좌 GND레일23행",
-   "x": 176,
-   "row": 23
-  },
-  {
-   "name": "PR2",
    "at": "좌 a18",
    "rail": "좌 GND레일18행",
    "x": 176,
    "row": 18
+  },
+  {
+   "name": "PR1",
+   "at": "좌 a22",
+   "rail": "좌 GND레일22행",
+   "x": 176,
+   "row": 22
+  },
+  {
+   "name": "PR2",
+   "at": "좌 a17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
   }
  ]
 }

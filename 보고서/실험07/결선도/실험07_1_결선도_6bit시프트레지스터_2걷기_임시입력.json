@@ -7,58 +7,58 @@
  "removals": [
   {
    "n": 1,
-   "text": "좌 a17 → 좌 GND레일16행 · 임시 U2 pin 1 -> GND · 2걷기에서 뽑아요"
+   "text": "좌 b16 → 좌 GND레일15행 · 임시 U2 pin 1 -> GND · 2걷기에서 뽑아요"
   },
   {
    "n": 2,
-   "text": "좌 a22 → 좌 GND레일22행 · 임시 U2 pin 6 -> GND · 2걷기에서 뽑아요"
+   "text": "좌 a21 → 좌 GND레일21행 · 임시 U2 pin 6 -> GND · 2걷기에서 뽑아요"
   },
   {
    "n": 3,
-   "text": "좌 a28 → 좌 GND레일28행 · 임시 U3 pin 1 -> GND · 2걷기에서 뽑아요"
+   "text": "좌 a27 → 좌 GND레일27행 · 임시 U3 pin 1 -> GND · 2걷기에서 뽑아요"
   }
  ],
  "probes": [],
  "board": "v2",
  "leds": [
   {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
    "tag": "BIT2",
    "at": "우 a18",
    "active_low": false
   },
   {
-   "tag": "BIT1",
-   "at": "우 a22",
+   "tag": "BIT3",
+   "at": "우 a26",
    "active_low": false
   },
   {
    "tag": "BIT4",
-   "at": "우 a28",
+   "at": "우 a30",
    "active_low": false
   },
   {
-   "tag": "BIT3",
-   "at": "우 a33",
+   "tag": "BIT5",
+   "at": "우 a36",
    "active_low": false
   },
   {
    "tag": "BIT6",
    "at": "우 a40",
    "active_low": false
-  },
-  {
-   "tag": "BIT5",
-   "at": "우 a44",
-   "active_low": false
   }
  ],
  "inputs": [
   {
    "name": "D",
-   "at": "좌 j9",
-   "rail": "중앙GND레일9행",
+   "at": "좌 j11",
+   "rail": "중앙GND레일11행",
    "x": 588,
-   "row": 9
+   "row": 11
   }
  ]
 }

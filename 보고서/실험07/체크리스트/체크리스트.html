@@ -249,16 +249,16 @@
 </style>
 
 <section class="circuits"><section class="circuit">
-<div class="fit" data-fit="0"><h1>실험7 Shift Register 체크리스트</h1><div class="tblock"><h2>참조 핀아웃</h2><table><thead><tr><th>IC</th><th>기능</th><th>입력핀</th><th>출력핀</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC00</td><td>NAND 1</td><td>1, 2</td><td>3</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 2</td><td>4, 5</td><td>6</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 3</td><td>9, 10</td><td>8</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 4 (이번에 사용)</td><td>12, 13</td><td>11</td><td>14</td><td>7</td></tr><tr><td>74HC76</td><td>첫 F/F</td><td>J4, K16, CLK1, PR2, CLR3</td><td>Q15, Q'14</td><td>5</td><td>13</td></tr><tr><td>74HC76</td><td>둘째 F/F</td><td>J9, K12, CLK6, PR7, CLR8</td><td>Q11, Q'10</td><td>5</td><td>13</td></tr></tbody></table></div><h2>회로 1/1 · C1 · 실험 1) 6bit Shift Right Register · 기록: T1, T2, T3</h2><div class="banner">준비 — 꽂을 칩: 74HC00, 74HC76</div><img class="schematic" src="실험07_1_회로도.png"></div>
-<div class="stage" data-fit="1"><h3>단계 1 준비 ① · 보드·U1 전원 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_1.png" style="width:100%"></figure><p class="operation">U1~U4 칩 위치와 노치를 맞춰요 · 전원 잭·레일 브리지·U1 전원을 연결해요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">전원잭 → 좌 VCC레일3행</span><span class="desc">전원장치 +5V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">전원잭 → 좌 GND레일4행</span><span class="desc">전원장치 0V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 GND레일51행 → 중앙GND레일51행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 VCC레일52행 → 중앙VCC레일52행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">5</span><span class="route">좌 g7 → 중앙VCC레일7행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a13 → 좌 GND레일13행</span><span class="desc">pin 7 -&gt; GND 레일</span></li></ol><p><span class="box"></span><b>완료 확인:</b> 칩 네 개의 위치·노치와 U1 전원핀·레일 극성을 대조했나요?</p></div>
-<div class="stage" data-fit="2"><h3>단계 1 준비 ② · U2 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_2.png" style="width:100%"></figure><p class="operation">U2 전원을 연결해요 · CLK/CLR·PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a21 → 좌 VCC레일21행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g20 → 중앙GND레일19행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 a17 → 좌 GND레일16행</span><span class="desc">임시 U2 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">좌 a22 → 좌 GND레일22행</span><span class="desc">임시 U2 pin 6 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 a19 → 좌 GND레일21행</span><span class="desc">임시 U2 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a24 → 좌 GND레일24행</span><span class="desc">임시 U2 pin 8 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">7</span><span class="route">좌 a23 → 좌 VCC레일22행</span><span class="desc">임시 U2 pin 7 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">8</span><span class="route">좌 a18 → 좌 VCC레일16행</span><span class="desc">임시 U2 pin 2 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j24 → 중앙GND레일24행</span><span class="desc">임시 U2 pin 9 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j21 → 중앙GND레일22행</span><span class="desc">임시 U2 pin 12 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a20 → 좌 GND레일15행</span><span class="desc">임시 U2 pin 4 -&gt; GND · 8걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 j17 → 중앙GND레일17행</span><span class="desc">임시 U2 pin 16 -&gt; GND · 8걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7 ④ J pin4/9·K pin12/16의 고정선을 대조했나요?</p></div>
-<div class="stage" data-fit="3"><h3>단계 1 준비 ③ · U3 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_3.png" style="width:100%"></figure><p class="operation">U3 전원을 연결해요 · CLK/CLR·고정 PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a32 → 좌 VCC레일31행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g31 → 중앙GND레일31행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">3</span><span class="route">좌 a29 → 좌 VCC레일29행</span><span class="desc">U3 pin 2 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 a34 → 좌 VCC레일34행</span><span class="desc">U3 pin 7 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 a28 → 좌 GND레일28행</span><span class="desc">임시 U3 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a33 → 좌 GND레일33행</span><span class="desc">임시 U3 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">7</span><span class="route">좌 a30 → 좌 GND레일30행</span><span class="desc">임시 U3 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">8</span><span class="route">좌 a35 → 좌 GND레일35행</span><span class="desc">임시 U3 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j35 → 중앙GND레일35행</span><span class="desc">임시 U3 pin 9 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j32 → 중앙GND레일33행</span><span class="desc">임시 U3 pin 12 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a31 → 좌 GND레일31행</span><span class="desc">임시 U3 pin 4 -&gt; GND · 10걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 j28 → 중앙GND레일28행</span><span class="desc">임시 U3 pin 16 -&gt; GND · 10걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7=+5V ④ J pin4/9·K pin12/16=GND를 대조했나요?</p></div>
-<div class="stage" data-fit="4"><h3>단계 1 준비 ④ · U4 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_4.png" style="width:100%"></figure><p class="operation">U4 전원을 연결해요 · CLK/CLR·고정 PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a43 → 좌 VCC레일43행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g42 → 중앙GND레일42행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">3</span><span class="route">좌 a40 → 좌 VCC레일40행</span><span class="desc">U4 pin 2 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 a45 → 좌 VCC레일45행</span><span class="desc">U4 pin 7 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 a39 → 좌 GND레일39행</span><span class="desc">임시 U4 pin 1 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a44 → 좌 GND레일43행</span><span class="desc">임시 U4 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">7</span><span class="route">좌 a41 → 좌 GND레일41행</span><span class="desc">임시 U4 pin 3 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">8</span><span class="route">좌 a46 → 좌 GND레일46행</span><span class="desc">임시 U4 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j46 → 중앙GND레일46행</span><span class="desc">임시 U4 pin 9 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j43 → 중앙GND레일41행</span><span class="desc">임시 U4 pin 12 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a42 → 좌 GND레일42행</span><span class="desc">임시 U4 pin 4 -&gt; GND · 12걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 j39 → 중앙GND레일39행</span><span class="desc">임시 U4 pin 16 -&gt; GND · 12걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7=+5V ④ J pin4/9·K pin12/16=GND를 대조했나요?</p></div>
-<div class="stage" data-fit="5"><h3>단계 1 준비 ⑤ · 위쪽 LED 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_5.png" style="width:100%"></figure><p class="operation">위쪽 BIT2·BIT1·BIT4의 LED·330Ω·GND 사슬을 연결해요 · 출력 급전은 기능 단계에서 연결해요</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">우 b18 → 우 c21</span><span class="desc">BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">우 a21 → 중앙GND레일21행</span><span class="desc">BIT2 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">우 b22 → 우 c25</span><span class="desc">BIT1: LED(우 b22→우 b23) + 330Ω(우 c23→우 c25) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">우 a25 → 중앙GND레일25행</span><span class="desc">BIT1 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">우 b28 → 우 c31</span><span class="desc">BIT4: LED(우 b28→우 b29) + 330Ω(우 c29→우 c31) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">우 a31 → 중앙GND레일30행</span><span class="desc">BIT4 저항 아래 -&gt; GND</span></li></ol><p><span class="box"></span><b>완료 확인:</b> BIT2·BIT1·BIT4 순서와 LED 극성·330Ω·GND를 대조했나요? 출력 급전선 자리는 비어 있나요?</p></div>
-<div class="stage" data-fit="6"><h3>단계 1 준비 ⑥ · 아래쪽 LED 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_6.png" style="width:100%"></figure><p class="operation">아래쪽 BIT3·BIT6·BIT5의 LED·330Ω·GND 사슬을 연결해요 · 출력 급전은 기능 단계에서 연결해요</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">우 b33 → 우 c36</span><span class="desc">BIT3: LED(우 b33→우 b34) + 330Ω(우 c34→우 c36) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">우 a36 → 중앙GND레일36행</span><span class="desc">BIT3 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">우 b40 → 우 c43</span><span class="desc">BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">우 a43 → 중앙GND레일43행</span><span class="desc">BIT6 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">우 b44 → 우 c47</span><span class="desc">BIT5: LED(우 b44→우 b45) + 330Ω(우 c45→우 c47) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">우 a47 → 중앙GND레일47행</span><span class="desc">BIT5 저항 아래 -&gt; GND</span></li></ol><p><span class="box"></span><b>완료 확인:</b> BIT3·BIT6·BIT5 순서와 LED 극성·330Ω·GND를 대조했나요? 출력 급전선 자리는 비어 있나요?</p></div>
-<div class="stage" data-fit="7"><h3>단계 1</h3><p class="operation">준비 ⑥까지 마친 뒤 입력 D를 U1 pin12에 꽂아요 · U1 pin12와 pin13을 묶어요 · 전원 투입 전에 전체 전원·극성·임시 입력 고정을 대조해요</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1단계_입력반전.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">중앙GND레일9행 → 좌 j9</span><span class="desc">입력 D -&gt; U1 pin 12 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 g9 → 좌 i8</span><span class="desc">D 두 입력 묶음: U1 pin 12 -&gt; U1 pin 13</span></li></ol><h4>V1 · 직렬 입력 반전 확인</h4><section class="observation-procedure">
+<div class="fit" data-fit="0"><h1>실험7 Shift Register 체크리스트</h1><div class="tblock"><h2>참조 핀아웃</h2><table><thead><tr><th>IC</th><th>기능</th><th>입력핀</th><th>출력핀</th><th>VCC</th><th>GND</th></tr></thead><tbody><tr><td>74HC00</td><td>NAND 1</td><td>1, 2</td><td>3</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 2</td><td>4, 5</td><td>6</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 3 (이번에 사용)</td><td>9, 10</td><td>8</td><td>14</td><td>7</td></tr><tr><td>74HC00</td><td>NAND 4</td><td>12, 13</td><td>11</td><td>14</td><td>7</td></tr><tr><td>74HC76</td><td>첫 F/F</td><td>J4, K16, CLK1, PR2, CLR3</td><td>Q15, Q'14</td><td>5</td><td>13</td></tr><tr><td>74HC76</td><td>둘째 F/F</td><td>J9, K12, CLK6, PR7, CLR8</td><td>Q11, Q'10</td><td>5</td><td>13</td></tr></tbody></table></div><h2>회로 1/1 · C1 · 실험 1) 6bit Shift Right Register · 기록: T1, T2, T3</h2><div class="banner">준비 — 꽂을 칩: 74HC00, 74HC76</div><img class="schematic" src="실험07_1_회로도.png"></div>
+<div class="stage" data-fit="1"><h3>단계 1 준비 ① · 보드·U1 전원 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_1.png" style="width:100%"></figure><p class="operation">U1~U4 칩 위치와 노치를 맞춰요 · 전원 잭·레일 브리지·U1 전원을 연결해요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">전원잭 → 좌 VCC레일3행</span><span class="desc">전원장치 +5V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">전원잭 → 좌 GND레일4행</span><span class="desc">전원장치 0V 잭</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 GND레일48행 → 중앙GND레일48행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 VCC레일49행 → 중앙VCC레일49행</span><span class="desc">레일 브리지</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">5</span><span class="route">좌 g6 → 중앙VCC레일6행</span><span class="desc">pin 14 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a12 → 좌 GND레일12행</span><span class="desc">pin 7 -&gt; GND 레일</span></li></ol><p><span class="box"></span><b>완료 확인:</b> 칩 네 개의 위치·노치와 U1 전원핀·레일 극성을 대조했나요?</p></div>
+<div class="stage" data-fit="2"><h3>단계 1 준비 ② · U2 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_2.png" style="width:100%"></figure><p class="operation">U2 전원을 연결해요 · CLK/CLR·PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a20 → 좌 VCC레일19행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g19 → 중앙GND레일19행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">3</span><span class="route">좌 b16 → 좌 GND레일15행</span><span class="desc">임시 U2 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">좌 a21 → 좌 GND레일21행</span><span class="desc">임시 U2 pin 6 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 b18 → 좌 GND레일19행</span><span class="desc">임시 U2 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a23 → 좌 GND레일23행</span><span class="desc">임시 U2 pin 8 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">7</span><span class="route">좌 b22 → 좌 VCC레일24행</span><span class="desc">임시 U2 pin 7 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">8</span><span class="route">좌 b17 → 좌 VCC레일15행</span><span class="desc">임시 U2 pin 2 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j23 → 중앙GND레일23행</span><span class="desc">임시 U2 pin 9 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j20 → 중앙GND레일18행</span><span class="desc">임시 U2 pin 12 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a19 → 좌 GND레일24행</span><span class="desc">임시 U2 pin 4 -&gt; GND · 8걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 i16 → 중앙GND레일16행</span><span class="desc">임시 U2 pin 16 -&gt; GND · 8걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7 ④ J pin4/9·K pin12/16의 고정선을 대조했나요?</p></div>
+<div class="stage" data-fit="3"><h3>단계 1 준비 ③ · U3 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_3.png" style="width:100%"></figure><p class="operation">U3 전원을 연결해요 · CLK/CLR·고정 PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a31 → 좌 VCC레일31행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g30 → 중앙GND레일30행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">3</span><span class="route">좌 a28 → 좌 VCC레일28행</span><span class="desc">U3 pin 2 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 a33 → 좌 VCC레일33행</span><span class="desc">U3 pin 7 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 a27 → 좌 GND레일27행</span><span class="desc">임시 U3 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a32 → 좌 GND레일31행</span><span class="desc">임시 U3 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">7</span><span class="route">좌 a29 → 좌 GND레일29행</span><span class="desc">임시 U3 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">8</span><span class="route">좌 a34 → 좌 GND레일34행</span><span class="desc">임시 U3 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j34 → 중앙GND레일34행</span><span class="desc">임시 U3 pin 9 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j31 → 중앙GND레일31행</span><span class="desc">임시 U3 pin 12 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a30 → 좌 GND레일30행</span><span class="desc">임시 U3 pin 4 -&gt; GND · 10걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 j27 → 중앙GND레일27행</span><span class="desc">임시 U3 pin 16 -&gt; GND · 10걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7=+5V ④ J pin4/9·K pin12/16=GND를 대조했나요?</p></div>
+<div class="stage" data-fit="4"><h3>단계 1 준비 ④ · U4 입력 고정</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_4.png" style="width:100%"></figure><p class="operation">U4 전원을 연결해요 · CLK/CLR·고정 PR·J/K 임시 고정선을 핀별로 꽂아요</p><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 a42 → 좌 VCC레일42행</span><span class="desc">pin 5 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">좌 g41 → 중앙GND레일41행</span><span class="desc">pin 13 -&gt; GND 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">3</span><span class="route">좌 a39 → 좌 VCC레일39행</span><span class="desc">U4 pin 2 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="vcc"><span class="box"></span><span class="n">4</span><span class="route">좌 a44 → 좌 VCC레일43행</span><span class="desc">U4 pin 7 PR 비활성 -&gt; +5V 레일</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">5</span><span class="route">좌 a38 → 좌 GND레일37행</span><span class="desc">임시 U4 pin 1 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">좌 a43 → 좌 GND레일43행</span><span class="desc">임시 U4 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">7</span><span class="route">좌 a40 → 좌 GND레일40행</span><span class="desc">임시 U4 pin 3 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">8</span><span class="route">좌 a45 → 좌 GND레일45행</span><span class="desc">임시 U4 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">9</span><span class="route">좌 j45 → 중앙GND레일45행</span><span class="desc">임시 U4 pin 9 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">10</span><span class="route">좌 j42 → 중앙GND레일42행</span><span class="desc">임시 U4 pin 12 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">11</span><span class="route">좌 a41 → 좌 GND레일41행</span><span class="desc">임시 U4 pin 4 -&gt; GND · 12걷기에서 뽑아요</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">12</span><span class="route">좌 j38 → 중앙GND레일37행</span><span class="desc">임시 U4 pin 16 -&gt; GND · 12걷기에서 뽑아요</span></li></ol><p><span class="box"></span><b>완료 확인:</b> ① 전원 pin5/13 ② CLK pin1/6·CLR pin3/8 ③ PR pin2/7=+5V ④ J pin4/9·K pin12/16=GND를 대조했나요?</p></div>
+<div class="stage" data-fit="5"><h3>단계 1 준비 ⑤ · 위쪽 LED 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_5.png" style="width:100%"></figure><p class="operation">위쪽 BIT1·BIT2·BIT3의 LED·330Ω·GND 사슬을 연결해요 · 출력 급전은 기능 단계에서 연결해요</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">우 b14 → 우 c17</span><span class="desc">BIT1: LED(우 b14→우 b15) + 330Ω(우 c15→우 c17) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">우 a17 → 중앙GND레일17행</span><span class="desc">BIT1 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">우 b18 → 우 c21</span><span class="desc">BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">우 a21 → 중앙GND레일21행</span><span class="desc">BIT2 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">우 b26 → 우 c29</span><span class="desc">BIT3: LED(우 b26→우 b27) + 330Ω(우 c27→우 c29) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">우 a29 → 중앙GND레일29행</span><span class="desc">BIT3 저항 아래 -&gt; GND</span></li></ol><p><span class="box"></span><b>완료 확인:</b> BIT1·BIT2·BIT3 순서와 LED 극성·330Ω·GND를 대조했나요? 출력 급전선 자리는 비어 있나요?</p></div>
+<div class="stage" data-fit="6"><h3>단계 1 준비 ⑥ · 아래쪽 LED 준비</h3><p class="banner">전원·신호발생기 OFF</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1준비_6.png" style="width:100%"></figure><p class="operation">아래쪽 BIT4·BIT5·BIT6의 LED·330Ω·GND 사슬을 연결해요 · 출력 급전은 기능 단계에서 연결해요</p><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">우 b30 → 우 c33</span><span class="desc">BIT4: LED(우 b30→우 b31) + 330Ω(우 c31→우 c33) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">2</span><span class="route">우 a33 → 중앙GND레일33행</span><span class="desc">BIT4 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">우 b36 → 우 c39</span><span class="desc">BIT5: LED(우 b36→우 b37) + 330Ω(우 c37→우 c39) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">4</span><span class="route">우 a39 → 중앙GND레일39행</span><span class="desc">BIT5 저항 아래 -&gt; GND</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">우 b40 → 우 c43</span><span class="desc">BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서</span></li><li class="step" data-kind="gnd"><span class="box"></span><span class="n">6</span><span class="route">우 a43 → 중앙GND레일43행</span><span class="desc">BIT6 저항 아래 -&gt; GND</span></li></ol><p><span class="box"></span><b>완료 확인:</b> BIT4·BIT5·BIT6 순서와 LED 극성·330Ω·GND를 대조했나요? 출력 급전선 자리는 비어 있나요?</p></div>
+<div class="stage" data-fit="7"><h3>단계 1</h3><p class="operation">준비 ⑥까지 마친 뒤 입력 D를 U1 pin9에 꽂아요 · U1 pin9와 pin10을 묶어요 · 전원 투입 전에 전체 전원·극성·임시 입력 고정을 대조해요</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_1단계_입력반전.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">중앙GND레일11행 → 좌 j11</span><span class="desc">입력 D -&gt; U1 pin 9 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 g11 → 좌 i10</span><span class="desc">D 두 입력 묶음: U1 pin 9 -&gt; U1 pin 10</span></li></ol><h4>V1 · 직렬 입력 반전 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> 모든 단계 투입 전 D=CLK=CLR=0·PR1=PR2=1. 프로브 GND=회로 GND. 다음 배선 전 CLK 정지·전원 OFF·발생기 정지·분리.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -267,26 +267,26 @@
 <tr>
 <td>1</td>
 <td>D=0<br>D = 0</td>
-<td>D_BAR (U1 pin 11): 1</td>
+<td>D_BAR (U1 pin 8): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>D=1<br>D = 1</td>
-<td>D_BAR (U1 pin 11): 0</td>
+<td>D_BAR (U1 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D를 0으로 복귀<br>D = 0</td>
-<td>D_BAR (U1 pin 11): 1</td>
+<td>D_BAR (U1 pin 8): 1</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="8"><h3>2단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_2걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a17 → 좌 GND레일16행 · 임시 U2 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a22 → 좌 GND레일22행 · 임시 U2 pin 6 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a28 → 좌 GND레일28행 · 임시 U3 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="9"><h3>단계 2</h3><p class="operation">입력 CLK을 U2 pin1에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_2단계_앞클럭.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일17행 → 좌 a17</span><span class="desc">입력 CLK -&gt; U2 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 b17 → 좌 b22</span><span class="desc">CLK: U2 pin 1 -&gt; U2 pin 6</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">3</span><span class="route">좌 c22 → 좌 b28</span><span class="desc">CLK: U2 pin 6 -&gt; U3 pin 1</span></li></ol><h4>V2 · CLK 분배 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="8"><h3>2단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_2걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 b16 → 좌 GND레일15행 · 임시 U2 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a21 → 좌 GND레일21행 · 임시 U2 pin 6 -&gt; GND · 2걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a27 → 좌 GND레일27행 · 임시 U3 pin 1 -&gt; GND · 2걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="9"><h3>단계 2</h3><p class="operation">입력 CLK을 U2 pin1에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_2단계_앞클럭.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일16행 → 좌 a16</span><span class="desc">입력 CLK -&gt; U2 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 b16 → 좌 b21</span><span class="desc">CLK: U2 pin 1 -&gt; U2 pin 6</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">3</span><span class="route">좌 a21 → 좌 b27</span><span class="desc">CLK: U2 pin 6 -&gt; U3 pin 1</span></li></ol><h4>V2 · CLK 분배 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK=0. 자동 클럭 사용 시 0~+5V·주기≥5s·GND 공통. CLK 점퍼 대신 발생기 출력을 연결한다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -311,10 +311,10 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="10"><h3>3단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_3걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a33 → 좌 GND레일33행 · 임시 U3 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a39 → 좌 GND레일39행 · 임시 U4 pin 1 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a44 → 좌 GND레일43행 · 임시 U4 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="11"><h3>단계 3</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_3단계_전체클럭.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 c28 → 좌 c33</span><span class="desc">CLK: U3 pin 1 -&gt; U3 pin 6</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 b33 → 좌 b39</span><span class="desc">CLK: U3 pin 6 -&gt; U4 pin 1</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 c39 → 좌 b44</span><span class="desc">CLK: U4 pin 1 -&gt; U4 pin 6</span></li></ol><h4>V3 · CLK 분배 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="10"><h3>3단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_3걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a32 → 좌 GND레일31행 · 임시 U3 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a38 → 좌 GND레일37행 · 임시 U4 pin 1 -&gt; GND · 3걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a43 → 좌 GND레일43행 · 임시 U4 pin 6 -&gt; GND · 3걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="11"><h3>단계 3</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_3단계_전체클럭.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 a27 → 좌 a32</span><span class="desc">CLK: U3 pin 1 -&gt; U3 pin 6</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 b32 → 좌 b38</span><span class="desc">CLK: U3 pin 6 -&gt; U4 pin 1</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 a38 → 좌 a43</span><span class="desc">CLK: U4 pin 1 -&gt; U4 pin 6</span></li></ol><h4>V3 · CLK 분배 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -339,10 +339,10 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="12"><h3>4단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_4걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a19 → 좌 GND레일21행 · 임시 U2 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a24 → 좌 GND레일24행 · 임시 U2 pin 8 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a30 → 좌 GND레일30행 · 임시 U3 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="13"><h3>단계 4</h3><p class="operation">입력 CLR을 U2 pin3에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_4단계_앞초기화.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일19행 → 좌 a19</span><span class="desc">입력 CLR -&gt; U2 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 c19 → 좌 c24</span><span class="desc">CLR: U2 pin 3 -&gt; U2 pin 8</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">3</span><span class="route">좌 b24 → 좌 b30</span><span class="desc">CLR: U2 pin 8 -&gt; U3 pin 3</span></li></ol><h4>V4 · CLR 분배 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="12"><h3>4단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_4걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 b18 → 좌 GND레일19행 · 임시 U2 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a23 → 좌 GND레일23행 · 임시 U2 pin 8 -&gt; GND · 4걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a29 → 좌 GND레일29행 · 임시 U3 pin 3 -&gt; GND · 4걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="13"><h3>단계 4</h3><p class="operation">입력 CLR을 U2 pin3에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_4단계_앞초기화.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일18행 → 좌 a18</span><span class="desc">입력 CLR -&gt; U2 pin 3 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 b18 → 좌 b23</span><span class="desc">CLR: U2 pin 3 -&gt; U2 pin 8</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">3</span><span class="route">좌 c23 → 좌 b29</span><span class="desc">CLR: U2 pin 8 -&gt; U3 pin 3</span></li></ol><h4>V4 · CLR 분배 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>CLR</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>CLR</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -367,10 +367,10 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="14"><h3>5단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_5걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a35 → 좌 GND레일35행 · 임시 U3 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a41 → 좌 GND레일41행 · 임시 U4 pin 3 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a46 → 좌 GND레일46행 · 임시 U4 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="15"><h3>단계 5</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_5단계_전체초기화.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 c30 → 좌 b35</span><span class="desc">CLR: U3 pin 3 -&gt; U3 pin 8</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 c35 → 좌 c41</span><span class="desc">CLR: U3 pin 8 -&gt; U4 pin 3</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 b41 → 좌 b46</span><span class="desc">CLR: U4 pin 3 -&gt; U4 pin 8</span></li></ol><h4>V5 · CLR 분배 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="14"><h3>5단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_5걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a34 → 좌 GND레일34행 · 임시 U3 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a40 → 좌 GND레일40행 · 임시 U4 pin 3 -&gt; GND · 5걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">3</span><span class="text">좌 a45 → 좌 GND레일45행 · 임시 U4 pin 8 -&gt; GND · 5걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="15"><h3>단계 5</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_5단계_전체초기화.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 c29 → 좌 c34</span><span class="desc">CLR: U3 pin 3 -&gt; U3 pin 8</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 b34 → 좌 b40</span><span class="desc">CLR: U3 pin 8 -&gt; U4 pin 3</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 a40 → 좌 a45</span><span class="desc">CLR: U4 pin 3 -&gt; U4 pin 8</span></li></ol><h4>V5 · CLR 분배 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>CLR</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>CLR</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -395,10 +395,10 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="16"><h3>6단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_6걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a23 → 좌 VCC레일22행 · 임시 U2 pin 7 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 a18 → 좌 VCC레일16행 · 임시 U2 pin 2 -&gt; +5V · 6걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="17"><h3>단계 6</h3><p class="operation">입력 PR1을 U2 pin7, PR2를 U2 pin2에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_6단계_프리셋.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일23행 → 좌 a23</span><span class="desc">입력 PR1 -&gt; U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">2</span><span class="route">좌 GND레일18행 → 좌 a18</span><span class="desc">입력 PR2 -&gt; U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li></ol><h4>V6 · 독립 프리셋 핀 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="16"><h3>6단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_6걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 b22 → 좌 VCC레일24행 · 임시 U2 pin 7 -&gt; +5V · 6걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 b17 → 좌 VCC레일15행 · 임시 U2 pin 2 -&gt; +5V · 6걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="17"><h3>단계 6</h3><p class="operation">입력 PR1을 U2 pin7, PR2를 U2 pin2에 꽂는다</p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_6단계_프리셋.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">좌 GND레일22행 → 좌 a22</span><span class="desc">입력 PR1 -&gt; U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">2</span><span class="route">좌 GND레일17행 → 좌 a17</span><span class="desc">입력 PR2 -&gt; U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li></ol><h4>V6 · 독립 프리셋 핀 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK=0, CLR=1로 정지한다. Q는 아직 보지 않는다. PR1·PR2 핀 레벨을 프로브로 확인한다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input io-muted" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input io-muted" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input io-muted" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:43%;"><col style="width:32%;"><col style="width:18%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>측정 핀·예상 논리값</th>
@@ -435,10 +435,10 @@
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="18"><h3>7단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_7걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j24 → 중앙GND레일24행 · 임시 U2 pin 9 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j21 → 중앙GND레일22행 · 임시 U2 pin 12 -&gt; GND · 7걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="19"><h3>단계 7</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_7단계_BIT1.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 h9 → 좌 g24</span><span class="desc">D: U1 pin 12 -&gt; U2 pin 9 (BIT1 J)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j10 → 좌 j21</span><span class="desc">D' (U1 pin 11) -&gt; U2 pin 12 (BIT1 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j22 → 우 a22</span><span class="desc">BIT1 = U2 pin 11 -&gt; LED BIT1</span></li></ol><h4>V7 · BIT1~BIT1 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="18"><h3>7단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_7걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j23 → 중앙GND레일23행 · 임시 U2 pin 9 -&gt; GND · 7걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j20 → 중앙GND레일18행 · 임시 U2 pin 12 -&gt; GND · 7걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="19"><h3>단계 7</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_7단계_BIT1.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 h11 → 좌 h23</span><span class="desc">D: U1 pin 9 -&gt; U2 pin 9 (BIT1 J)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j12 → 좌 j20</span><span class="desc">D' (U1 pin 8) -&gt; U2 pin 12 (BIT1 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j21 → 우 a14</span><span class="desc">BIT1 = U2 pin 11 -&gt; LED BIT1</span></li></ol><h4>V7 · BIT1~BIT1 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT1까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led io-muted"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ②BIT1 = BIT1</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -449,34 +449,34 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
 </tr>
@@ -484,35 +484,35 @@
 <td>6</td>
 <td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 0<br>PR2 = 1</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
+<td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="20"><h3>8단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_8걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a20 → 좌 GND레일15행 · 임시 U2 pin 4 -&gt; GND · 8걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j17 → 중앙GND레일17행 · 임시 U2 pin 16 -&gt; GND · 8걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="21"><h3>단계 8</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_8단계_BIT2.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 h22 → 좌 d20</span><span class="desc">BIT1: U2 pin 11 -&gt; U2 pin 4 (BIT2 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j23 → 좌 j17</span><span class="desc">BIT1 보수: U2 pin 10 -&gt; U2 pin 16 (BIT2 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j18 → 우 a18</span><span class="desc">BIT2 = U2 pin 15 -&gt; LED BIT2</span></li></ol><h4>V8 · BIT1~BIT2 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="20"><h3>8단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_8걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a19 → 좌 GND레일24행 · 임시 U2 pin 4 -&gt; GND · 8걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 i16 → 중앙GND레일16행 · 임시 U2 pin 16 -&gt; GND · 8걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="21"><h3>단계 8</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_8단계_BIT2.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g21 → 좌 c19</span><span class="desc">BIT1: U2 pin 11 -&gt; U2 pin 4 (BIT2 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 g22 → 좌 g16</span><span class="desc">BIT1 보수: U2 pin 10 -&gt; U2 pin 16 (BIT2 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 i17 → 우 a18</span><span class="desc">BIT2 = U2 pin 15 -&gt; LED BIT2</span></li></ol><h4>V8 · BIT1~BIT2 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT2까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ①BIT2 = BIT2 · ②BIT1 = BIT1</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1 · ②BIT2 = BIT2</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -523,91 +523,91 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2</td>
+<td>①BIT1</td>
+<td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
 <td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2</td>
+<td>①BIT1</td>
+<td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2</td>
+<td>①BIT1</td>
+<td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1</td>
+<td>②BIT2</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
 <td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 0</td>
-<td>①BIT2</td>
-<td>②BIT1</td>
+<td>②BIT2</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
 <td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1</td>
+<td>②BIT2</td>
+<td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="22"><h3>9단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_9걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j35 → 중앙GND레일35행 · 임시 U3 pin 9 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j32 → 중앙GND레일33행 · 임시 U3 pin 12 -&gt; GND · 9걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="23"><h3>단계 9</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_9단계_BIT3.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 i18 → 좌 j35</span><span class="desc">BIT2: U2 pin 15 -&gt; U3 pin 9 (BIT3 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j19 → 좌 j32</span><span class="desc">BIT2 보수: U2 pin 14 -&gt; U3 pin 12 (BIT3 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j33 → 우 a33</span><span class="desc">BIT3 = U3 pin 11 -&gt; LED BIT3</span></li></ol><h4>V9 · BIT1~BIT3 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="22"><h3>9단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_9걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j34 → 중앙GND레일34행 · 임시 U3 pin 9 -&gt; GND · 9걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j31 → 중앙GND레일31행 · 임시 U3 pin 12 -&gt; GND · 9걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="23"><h3>단계 9</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_9단계_BIT3.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 j17 → 좌 j34</span><span class="desc">BIT2: U2 pin 15 -&gt; U3 pin 9 (BIT3 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j18 → 좌 j31</span><span class="desc">BIT2 보수: U2 pin 14 -&gt; U3 pin 12 (BIT3 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j32 → 우 a26</span><span class="desc">BIT3 = U3 pin 11 -&gt; LED BIT3</span></li></ol><h4>V9 · BIT1~BIT3 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT3까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ①BIT2 = BIT2 · ②BIT1 = BIT1 · ④BIT3 = BIT3</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1 · ②BIT2 = BIT2 · ③BIT3 = BIT3</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -618,77 +618,77 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
 <td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
 <td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="24"><h3>10단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_10걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a31 → 좌 GND레일31행 · 임시 U3 pin 4 -&gt; GND · 10걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j28 → 중앙GND레일28행 · 임시 U3 pin 16 -&gt; GND · 10걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="25"><h3>단계 10</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_10단계_BIT4.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g33 → 좌 d31</span><span class="desc">BIT3: U3 pin 11 -&gt; U3 pin 4 (BIT4 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j34 → 좌 j28</span><span class="desc">BIT3 보수: U3 pin 10 -&gt; U3 pin 16 (BIT4 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j29 → 우 a28</span><span class="desc">BIT4 = U3 pin 15 -&gt; LED BIT4</span></li></ol><h4>V10 · BIT1~BIT4 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="24"><h3>10단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_10걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a30 → 좌 GND레일30행 · 임시 U3 pin 4 -&gt; GND · 10걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j27 → 중앙GND레일27행 · 임시 U3 pin 16 -&gt; GND · 10걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="25"><h3>단계 10</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_10단계_BIT4.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g32 → 좌 b30</span><span class="desc">BIT3: U3 pin 11 -&gt; U3 pin 4 (BIT4 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 h33 → 좌 h27</span><span class="desc">BIT3 보수: U3 pin 10 -&gt; U3 pin 16 (BIT4 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j28 → 우 a30</span><span class="desc">BIT4 = U3 pin 15 -&gt; LED BIT4</span></li></ol><h4>V10 · BIT1~BIT4 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT4까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ①BIT2 = BIT2 · ②BIT1 = BIT1 · ③BIT4 = BIT4 · ④BIT3 = BIT3</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1 · ②BIT2 = BIT2 · ③BIT3 = BIT3 · ④BIT4 = BIT4</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -699,91 +699,91 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
 <td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
 <td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
 <td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
 <td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>③BIT4</td>
-<td>①BIT2 · ②BIT1 · ④BIT3</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="26"><h3>11단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_11걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j46 → 중앙GND레일46행 · 임시 U4 pin 9 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j43 → 중앙GND레일41행 · 임시 U4 pin 12 -&gt; GND · 11걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="27"><h3>단계 11</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_11단계_BIT5.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 h29 → 좌 h46</span><span class="desc">BIT4: U3 pin 15 -&gt; U4 pin 9 (BIT5 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 i30 → 좌 j43</span><span class="desc">BIT4 보수: U3 pin 14 -&gt; U4 pin 12 (BIT5 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j44 → 우 a44</span><span class="desc">BIT5 = U4 pin 11 -&gt; LED BIT5</span></li></ol><h4>V11 · BIT1~BIT5 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="26"><h3>11단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_11걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 j45 → 중앙GND레일45행 · 임시 U4 pin 9 -&gt; GND · 11걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j42 → 중앙GND레일42행 · 임시 U4 pin 12 -&gt; GND · 11걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="27"><h3>단계 11</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_11단계_BIT5.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g28 → 좌 g45</span><span class="desc">BIT4: U3 pin 15 -&gt; U4 pin 9 (BIT5 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j29 → 좌 j42</span><span class="desc">BIT4 보수: U3 pin 14 -&gt; U4 pin 12 (BIT5 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j43 → 우 a36</span><span class="desc">BIT5 = U4 pin 11 -&gt; LED BIT5</span></li></ol><h4>V11 · BIT1~BIT5 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT5까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ①BIT2 = BIT2 · ②BIT1 = BIT1 · ③BIT4 = BIT4 · ④BIT3 = BIT3 · ⑥BIT5 = BIT5</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1 · ②BIT2 = BIT2 · ③BIT3 = BIT3 · ④BIT4 = BIT4 · ⑤BIT5 = BIT5</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -794,105 +794,105 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
 <td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
 <td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ⑥BIT5</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
 <td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ⑥BIT5</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
 <td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>③BIT4</td>
-<td>①BIT2 · ②BIT1 · ④BIT3 · ⑥BIT5</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>13</td>
 <td>클럭 상승 5<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>③BIT4</td>
-<td>①BIT2 · ②BIT1 · ④BIT3 · ⑥BIT5</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>14</td>
 <td>클럭 하강 5<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>⑥BIT5</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3</td>
+<td>⑤BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
-<div class="stage" data-fit="28"><h3>12단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_12걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a42 → 좌 GND레일42행 · 임시 U4 pin 4 -&gt; GND · 12걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j39 → 중앙GND레일39행 · 임시 U4 pin 16 -&gt; GND · 12걷기에서 뽑아요</span></li></ul></div>
-<div class="stage" data-fit="29"><h3>단계 12</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_12단계_BIT6.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g44 → 좌 c42</span><span class="desc">BIT5: U4 pin 11 -&gt; U4 pin 4 (BIT6 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 j45 → 좌 j39</span><span class="desc">BIT5 보수: U4 pin 10 -&gt; U4 pin 16 (BIT6 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j40 → 우 a40</span><span class="desc">BIT6 = U4 pin 15 -&gt; LED BIT6</span></li></ol><h4>V12 · BIT1~BIT6 초기화·시프트 확인</h4><section class="observation-procedure">
+<div class="stage" data-fit="28"><h3>12단계 전 · 걷기</h3><p class="operation"><b>전원 OFF</b></p><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_12걷기_임시입력.png" style="width:100%"></figure><p class="list-head">먼저 뽑아요</p><ul class="removals"><li class="removal"><span class="box"></span><span class="n">1</span><span class="text">좌 a41 → 좌 GND레일41행 · 임시 U4 pin 4 -&gt; GND · 12걷기에서 뽑아요</span></li><li class="removal"><span class="box"></span><span class="n">2</span><span class="text">좌 j38 → 중앙GND레일37행 · 임시 U4 pin 16 -&gt; GND · 12걷기에서 뽑아요</span></li></ul></div>
+<div class="stage" data-fit="29"><h3>단계 12</h3><figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터_12단계_BIT6.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#e67800">1</span><span class="route">좌 g43 → 좌 c41</span><span class="desc">BIT5: U4 pin 11 -&gt; U4 pin 4 (BIT6 J)</span></li><li class="step" data-kind="mid"><span class="box"></span><span class="n" style="background:#009696">2</span><span class="route">좌 h44 → 좌 h38</span><span class="desc">BIT5 보수: U4 pin 10 -&gt; U4 pin 16 (BIT6 K)</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">3</span><span class="route">좌 j39 → 우 a40</span><span class="desc">BIT6 = U4 pin 15 -&gt; LED BIT6</span></li></ol><h4>V12 · BIT1~BIT6 초기화·시프트 확인</h4><section class="observation-procedure">
 <p><b>준비·초기화:</b> CLK을 0에 정지하고 PR1=PR2=1로 둔다. BIT6까지 배선한 뒤 첫 행부터 실행한다. 뒤의 미배선 BIT는 관측하지 않는다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside><p>보는 LED: ①BIT2 = BIT2 · ②BIT1 = BIT1 · ③BIT4 = BIT4 · ④BIT3 = BIT3 · ⑤BIT6 = BIT6 · ⑥BIT5 = BIT5</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside><p>보는 LED: ①BIT1 = BIT1 · ②BIT2 = BIT2 · ③BIT3 = BIT3 · ④BIT4 = BIT4 · ⑤BIT5 = BIT5 · ⑥BIT6 = BIT6</p><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:35%;"><col style="width:22%;"><col style="width:22%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>입력·조작</th>
 <th>예상 켜지는 LED</th>
@@ -903,168 +903,168 @@
 <td>1</td>
 <td>공통 초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>2</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
 <td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
 <td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
 <td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
 <td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
 <td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
 <td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
 <td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
 <td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ⑤BIT6 · ⑥BIT5</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
 <td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>④BIT3</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ⑤BIT6 · ⑥BIT5</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
 <td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>③BIT4</td>
-<td>①BIT2 · ②BIT1 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>13</td>
 <td>클럭 상승 5<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>③BIT4</td>
-<td>①BIT2 · ②BIT1 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>14</td>
 <td>클럭 하강 5<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>⑥BIT5</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6</td>
+<td>⑤BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>15</td>
 <td>클럭 상승 6<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>⑥BIT5</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6</td>
+<td>⑤BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>16</td>
 <td>클럭 하강 6<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>⑤BIT6</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑥BIT5</td>
+<td>⑥BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>17</td>
 <td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>18</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>19</td>
 <td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 0</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>20</td>
 <td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>21</td>
 <td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>22</td>
 <td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
-<td>①BIT2 · ②BIT1 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>23</td>
 <td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 0<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>24</td>
 <td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ③BIT4 · ④BIT3 · ⑤BIT6 · ⑥BIT5</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 </tbody></table></section></div>
@@ -1073,10 +1073,10 @@
 <figure class="board"><img src="../결선도/실험07_1_결선도_6bit시프트레지스터.png" style="width:100%"></figure>
 </div></div>
 <div class="fit" data-fit="31">
-<div class="unused"><b>미사용 핀</b><div class="chipunused"><b>U1 = 74HC00</b><ul><li><span class="box"></span>미사용 입력 1, 2, 4, 5, 9, 10 · 접지 생략</li><li><span class="box"></span>미사용 출력 3, 6, 8 · 연결하지 않음 · 개방</li></ul></div><div class="chipunused"><b>U4 = 74HC76</b><ul><li><span class="box"></span>14 · 연결하지 않음 · BIT6 보수 — 미사용 출력</li></ul></div></div>
+<div class="unused"><b>미사용 핀</b><div class="chipunused"><b>U1 = 74HC00</b><ul><li><span class="box"></span>미사용 입력 1, 2, 4, 5, 12, 13 · 접지 생략</li><li><span class="box"></span>미사용 출력 3, 6, 11 · 연결하지 않음 · 개방</li></ul></div><div class="chipunused"><b>U4 = 74HC76</b><ul><li><span class="box"></span>14 · 연결하지 않음 · BIT6 보수 — 미사용 출력</li></ul></div></div>
 <div class="tblock">
 <h3>T1 · 6bit Shift Right Register 초기화 및 직렬 입력 기록</h3>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside>
 <table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>스텝</th>
 <th>조작</th>
@@ -1090,7 +1090,7 @@
 <td>CLK 정지, 공통 초기화(p9)</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
@@ -1098,62 +1098,62 @@
 <td>CLR 해제, 에지 없이 관찰</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S1</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S2</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S3</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>②BIT1 · ④BIT3</td>
-<td>①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ③BIT3</td>
+<td>②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S4</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>②BIT1 · ①BIT2 · ③BIT4</td>
-<td>④BIT3 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ④BIT4</td>
+<td>③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S5</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>①BIT2 · ④BIT3 · ⑥BIT5</td>
-<td>②BIT1 · ③BIT4 · ⑤BIT6</td>
+<td>②BIT2 · ③BIT3 · ⑤BIT5</td>
+<td>①BIT1 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S6</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>④BIT3 · ③BIT4 · ⑤BIT6</td>
-<td>②BIT1 · ①BIT2 · ⑥BIT5</td>
+<td>③BIT3 · ④BIT4 · ⑥BIT6</td>
+<td>①BIT1 · ②BIT2 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 </tbody></table>
 </div>
 <div class="tblock">
 <h3>T2 · PR1 강제 SET 및 이동 기록</h3>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside>
 <table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>스텝</th>
 <th>조작</th>
@@ -1167,63 +1167,63 @@
 <td>CLK 정지, 재초기화</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR1=0. CLK=0 유지</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=0<br>PR2=1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>P2</td>
 <td>PR1을 1로 해제, 에지 없이 관찰</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>②BIT1</td>
-<td>①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1</td>
+<td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>④BIT3</td>
-<td>②BIT1 · ①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>③BIT4</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ⑥BIT5 · ⑤BIT6</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>⑥BIT5</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑤BIT6</td>
+<td>⑤BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S5</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>⑤BIT6</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5</td>
+<td>⑥BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
@@ -1231,14 +1231,14 @@
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 </tbody></table>
 </div>
 <div class="tblock">
 <h3>T3 · PR2 강제 SET 및 이동 기록</h3>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일17행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일19행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일23행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT6</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT5</strong></li></ol></section></section></aside>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일16행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>CLK</strong></li><li class="io-input" title="좌 GND레일17행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>PR2</strong></li><li class="io-input" title="좌 GND레일18행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>CLR</strong></li><li class="io-input" title="좌 GND레일22행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>PR1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>BIT1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>BIT2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>BIT3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>BIT4</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑤</span><strong>BIT5</strong></li><li class="io-led"><span class="io-symbol">○</span><span>⑥</span><strong>BIT6</strong></li></ol></section></section></aside>
 <table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>스텝</th>
 <th>조작</th>
@@ -1252,55 +1252,55 @@
 <td>CLK 정지, 재초기화</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=0<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR2=0. CLK=0 유지</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=0</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>P2</td>
 <td>PR2를 1로 해제, 에지 없이 관찰</td>
 <td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>①BIT2</td>
-<td>②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>②BIT2</td>
+<td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>④BIT3</td>
-<td>②BIT1 · ①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>③BIT3</td>
+<td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>③BIT4</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ⑥BIT5 · ⑤BIT6</td>
+<td>④BIT4</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>⑥BIT5</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑤BIT6</td>
+<td>⑤BIT5</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
-<td>⑤BIT6</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5</td>
+<td>⑥BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
@@ -1308,7 +1308,7 @@
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
 <td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
-<td>②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6</td>
+<td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 </tbody></table>

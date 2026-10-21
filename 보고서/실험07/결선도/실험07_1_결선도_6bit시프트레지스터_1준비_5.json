@@ -7,13 +7,29 @@
   {
    "n": 1,
    "kind": "sig",
-   "from": "우 b18",
-   "to": "우 c21",
-   "desc": "BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b14",
+   "to": "우 c17",
+   "desc": "BIT1: LED(우 b14→우 b15) + 330Ω(우 c15→우 c17) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 2,
+   "kind": "gnd",
+   "from": "우 a17",
+   "to": "중앙GND레일17행",
+   "desc": "BIT1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 4,
    "kind": "gnd",
    "from": "우 a21",
    "to": "중앙GND레일21행",
@@ -21,35 +37,19 @@
    "count": 1
   },
   {
-   "n": 3,
-   "kind": "sig",
-   "from": "우 b22",
-   "to": "우 c25",
-   "desc": "BIT1: LED(우 b22→우 b23) + 330Ω(우 c23→우 c25) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
-   "count": 1
-  },
-  {
-   "n": 4,
-   "kind": "gnd",
-   "from": "우 a25",
-   "to": "중앙GND레일25행",
-   "desc": "BIT1 저항 아래 -> GND",
-   "count": 1
-  },
-  {
    "n": 5,
    "kind": "sig",
-   "from": "우 b28",
-   "to": "우 c31",
-   "desc": "BIT4: LED(우 b28→우 b29) + 330Ω(우 c29→우 c31) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "from": "우 b26",
+   "to": "우 c29",
+   "desc": "BIT3: LED(우 b26→우 b27) + 330Ω(우 c27→우 c29) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
    "count": 1
   },
   {
    "n": 6,
    "kind": "gnd",
-   "from": "우 a31",
-   "to": "중앙GND레일30행",
-   "desc": "BIT4 저항 아래 -> GND",
+   "from": "우 a29",
+   "to": "중앙GND레일29행",
+   "desc": "BIT3 저항 아래 -> GND",
    "count": 1
   }
  ],
@@ -58,18 +58,18 @@
  "board": "v2",
  "leds": [
   {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
    "tag": "BIT2",
    "at": "우 a18",
    "active_low": false
   },
   {
-   "tag": "BIT1",
-   "at": "우 a22",
-   "active_low": false
-  },
-  {
-   "tag": "BIT4",
-   "at": "우 a28",
+   "tag": "BIT3",
+   "at": "우 a26",
    "active_low": false
   }
  ],

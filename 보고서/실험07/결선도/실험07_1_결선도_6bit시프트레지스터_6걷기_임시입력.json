@@ -7,68 +7,68 @@
  "removals": [
   {
    "n": 1,
-   "text": "좌 a23 → 좌 VCC레일22행 · 임시 U2 pin 7 -> +5V · 6걷기에서 뽑아요"
+   "text": "좌 b22 → 좌 VCC레일24행 · 임시 U2 pin 7 -> +5V · 6걷기에서 뽑아요"
   },
   {
    "n": 2,
-   "text": "좌 a18 → 좌 VCC레일16행 · 임시 U2 pin 2 -> +5V · 6걷기에서 뽑아요"
+   "text": "좌 b17 → 좌 VCC레일15행 · 임시 U2 pin 2 -> +5V · 6걷기에서 뽑아요"
   }
  ],
  "probes": [],
  "board": "v2",
  "leds": [
   {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
    "tag": "BIT2",
    "at": "우 a18",
    "active_low": false
   },
   {
-   "tag": "BIT1",
-   "at": "우 a22",
+   "tag": "BIT3",
+   "at": "우 a26",
    "active_low": false
   },
   {
    "tag": "BIT4",
-   "at": "우 a28",
+   "at": "우 a30",
    "active_low": false
   },
   {
-   "tag": "BIT3",
-   "at": "우 a33",
+   "tag": "BIT5",
+   "at": "우 a36",
    "active_low": false
   },
   {
    "tag": "BIT6",
    "at": "우 a40",
    "active_low": false
-  },
-  {
-   "tag": "BIT5",
-   "at": "우 a44",
-   "active_low": false
   }
  ],
  "inputs": [
   {
    "name": "D",
-   "at": "좌 j9",
-   "rail": "중앙GND레일9행",
+   "at": "좌 j11",
+   "rail": "중앙GND레일11행",
    "x": 588,
-   "row": 9
+   "row": 11
   },
   {
    "name": "CLK",
-   "at": "좌 a17",
-   "rail": "좌 GND레일17행",
+   "at": "좌 a16",
+   "rail": "좌 GND레일16행",
    "x": 176,
-   "row": 17
+   "row": 16
   },
   {
    "name": "CLR",
-   "at": "좌 a19",
-   "rail": "좌 GND레일19행",
+   "at": "좌 a18",
+   "rail": "좌 GND레일18행",
    "x": 176,
-   "row": 19
+   "row": 18
   }
  ]
 }

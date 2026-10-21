@@ -7,8 +7,8 @@
   {
    "n": 1,
    "kind": "sig",
-   "from": "좌 c28",
-   "to": "좌 c33",
+   "from": "좌 a27",
+   "to": "좌 a32",
    "desc": "CLK: U3 pin 1 -> U3 pin 6",
    "count": 1,
    "color": "#e67800"
@@ -16,8 +16,8 @@
   {
    "n": 2,
    "kind": "sig",
-   "from": "좌 b33",
-   "to": "좌 b39",
+   "from": "좌 b32",
+   "to": "좌 b38",
    "desc": "CLK: U3 pin 6 -> U4 pin 1",
    "count": 1,
    "color": "#009696"
@@ -25,8 +25,8 @@
   {
    "n": 3,
    "kind": "sig",
-   "from": "좌 c39",
-   "to": "좌 b44",
+   "from": "좌 a38",
+   "to": "좌 a43",
    "desc": "CLK: U4 pin 1 -> U4 pin 6",
    "count": 1,
    "color": "#c81e96"
@@ -37,50 +37,50 @@
  "board": "v2",
  "leds": [
   {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
    "tag": "BIT2",
    "at": "우 a18",
    "active_low": false
   },
   {
-   "tag": "BIT1",
-   "at": "우 a22",
+   "tag": "BIT3",
+   "at": "우 a26",
    "active_low": false
   },
   {
    "tag": "BIT4",
-   "at": "우 a28",
+   "at": "우 a30",
    "active_low": false
   },
   {
-   "tag": "BIT3",
-   "at": "우 a33",
+   "tag": "BIT5",
+   "at": "우 a36",
    "active_low": false
   },
   {
    "tag": "BIT6",
    "at": "우 a40",
    "active_low": false
-  },
-  {
-   "tag": "BIT5",
-   "at": "우 a44",
-   "active_low": false
   }
  ],
  "inputs": [
   {
    "name": "D",
-   "at": "좌 j9",
-   "rail": "중앙GND레일9행",
+   "at": "좌 j11",
+   "rail": "중앙GND레일11행",
    "x": 588,
-   "row": 9
+   "row": 11
   },
   {
    "name": "CLK",
-   "at": "좌 a17",
-   "rail": "좌 GND레일17행",
+   "at": "좌 a16",
+   "rail": "좌 GND레일16행",
    "x": 176,
-   "row": 17
+   "row": 16
   }
  ]
 }

@@ -1,6 +1,4 @@
-import hashlib,json
 from pathlib import Path
-import pytest
 from scripts.lab.place_search import load
 from scripts.lab.netlist_parser import parse_netlist
 from scripts.lab import assembly
@@ -35,18 +33,14 @@ def test_preparations_add_only_foundation_and_keep_paths(tmp_path):
  assert len(base['wires'])==48  # old foundation 49 wires minus D input
 
 
-def test_absolute_boards_match_preimplementation_reference(tmp_path):
- ref=Path('/tmp/e07-assembly-baseline/states.json')
- if not ref.exists(): pytest.skip('execution-local preimplementation reference unavailable')
- expected=json.loads(ref.read_text());e,w=load(FOLDER/'배치.py');base=None
+def test_procedure_finishes_at_the_same_physical_wiring_as_final(tmp_path):
+ # A permanent invariant replaces the old execution-local, pre-layout-change snapshot.
+ e,w=load(FOLDER/'배치.py');base=None
  for name,fn,stage,prep in e.iter_procedure_boards(w):
-  b=fn(str(tmp_path/name),baseline=base,**({} if prep else {'stage':stage}));base=b.snapshot()
-  if prep: continue
-  assert norm(base)==expected[repr(name)][repr('snapshot')]
-  assert norm(b._segments)==expected[repr(name)][repr('paths')]
-  assert norm(b.nets())==expected[repr(name)][repr('nets')]
-  # Only stage-one numbering/highlighting changes.
-  if stage!=1:
-   assert b.stamp()==expected[repr(name)][repr('stamp')]
- for name,fn in w.FINALS:
-  b=fn(str(tmp_path/name));assert b.stamp()==expected[repr(name)][repr('stamp')]
+  last=fn(str(tmp_path/name),baseline=base,**({} if prep else {'stage':stage}))
+  base=last.snapshot()
+ final=w.FINALS[0][1](str(tmp_path/'final.png'))
+ assert norm(last._segments)==norm(final._segments)
+ assert norm(last.nets())==norm(final.nets())
+ assert norm(last.chips)==norm(final.chips)
+ assert norm(last.led_chains)==norm(final.led_chains)
