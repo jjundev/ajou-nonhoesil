@@ -157,7 +157,7 @@ def slot_candidates(e, board):
     """
     heights = {s: max(v) for s, v in e.slot_rows(board.PLACE, board.SLOTS).items()}
     for order in itertools.permutations(board.SLOTS):
-        for start in e.PLACE_STARTS:
+        for start in getattr(board, 'START_ROWS', e.PLACE_STARTS):
             for gaps in itertools.product(range(getattr(board, 'GMIN', e.PLACE_GMIN), e.PLACE_GMAX + 1),
                                           repeat=len(order) - 1):
                 rows = [start]
