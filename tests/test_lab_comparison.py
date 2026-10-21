@@ -174,3 +174,26 @@ def test_six_bit_record_explains_actual_bit_order():
     text=record.derive_record(parse_spec('보고서/실험07/체크리스트/명세.md'))
     assert 'BIT1→BIT6' in text and '1=켜짐' in text and '0=소등' in text
     assert record.record_marks(text,text)==[]
+
+
+@pytest.mark.parametrize('purpose', ['직렬 입력의 이동을 확인한다.', '초기화를 확인한다.\n다음 클럭의 출력을 확인한다.'])
+def test_generated_purpose_allows_empty_record_regeneration(tmp_path, purpose):
+    spec=comparison(tmp_path)
+    spec.tables[0].purpose=purpose
+    template=record.derive_record(spec)
+    path=tmp_path/'record.md'
+    record.write_record(path, template)
+    assert record.write_record(path, template)['status']=='regenerated'
+    assert path.read_text()==template
+
+
+def test_generated_purpose_does_not_hide_added_student_prose(tmp_path):
+    spec=comparison(tmp_path)
+    spec.tables[0].purpose='직렬 입력의 이동을 확인한다.'
+    template=record.derive_record(spec)
+    filled=template+'\n클럭 접점이 흔들려 두 번 이동했다.\n'
+    path=tmp_path/'record.md'
+    path.write_text(filled)
+    with pytest.raises(record.RecordExistsError, match='덧쓴 산문 1줄'):
+        record.write_record(path, template)
+    assert path.read_text()==filled

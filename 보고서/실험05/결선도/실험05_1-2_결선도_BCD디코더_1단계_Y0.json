@@ -308,5 +308,35 @@
    "at": "우 a42",
    "active_low": true
   }
+ ],
+ "inputs": [
+  {
+   "name": "Bit0",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  },
+  {
+   "name": "Bit1",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  },
+  {
+   "name": "Bit2",
+   "at": "좌 j6",
+   "rail": "중앙GND레일6행",
+   "x": 588,
+   "row": 6
+  },
+  {
+   "name": "Bit3",
+   "at": "좌 j7",
+   "rail": "중앙GND레일7행",
+   "x": 588,
+   "row": 7
+  }
  ]
 }

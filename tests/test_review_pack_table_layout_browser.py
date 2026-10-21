@@ -1,8 +1,19 @@
 from pathlib import Path
+import json
 import pytest
 from tests.test_review_pack_explanation_browser import browser
 from tests.test_review_pack_table_layout import table,schema
 from scripts.lab.review_pack.table_layout import layout_problem_tables
+
+
+def assert_managed_tables_match_metadata(page, metadata):
+    expected=[entry['key'] for entry in metadata['tables']]
+    actual=page.locator('[data-layout-table]').evaluate_all(
+        'tables=>tables.map(t=>t.dataset.layoutTable)')
+    assert len(expected)==len(set(expected)), '메타데이터에 표 ID가 중복됐다'
+    assert len(actual)==len(set(actual)), 'HTML에 표 ID가 중복됐다'
+    assert set(actual)==set(expected), {'missing':set(expected)-set(actual),
+                                       'unexpected':set(actual)-set(expected)}
 
 @pytest.mark.parametrize('width',[375,768,1280])
 @pytest.mark.parametrize('theme',['light','dark'])
@@ -36,14 +47,13 @@ def test_compact_widths_gaps_and_text(browser,width,theme,javascript):
 @pytest.mark.parametrize('width',[375,768,1280])
 @pytest.mark.parametrize('theme',['light','dark'])
 def test_all_managed_tables(browser,request,number,width,theme):
-    import json
     root=Path(request.config.getoption('--explanation-pack-root')).resolve()
     folder=root/f'실험{number:02d}'
     metadata=json.loads((folder/'.pack/problem-explanations/table-layout.json').read_text())
     context=browser.new_context(viewport=dict(width=width,height=900),color_scheme=theme,has_touch=True)
     page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto((folder/f'실험{number:02d}_문제설명.html').as_uri())
-    assert page.locator('[data-layout-table]').count()==[9,0,8,12,19,14][number-1]
+    assert_managed_tables_match_metadata(page,metadata)
     profiles={}
     for ident in page.locator('main article.topic').evaluate_all('els=>els.map(e=>e.id)'):
         page.evaluate('id=>location.hash=id',ident)
@@ -95,9 +105,10 @@ def test_all_managed_tables(browser,request,number,width,theme):
 @pytest.mark.parametrize('number',range(1,7))
 def test_published_managed_without_javascript(browser,request,number):
     root=Path(request.config.getoption('--explanation-pack-root')).resolve()
+    metadata=json.loads((root/f'실험{number:02d}/.pack/problem-explanations/table-layout.json').read_text())
     context=browser.new_context(java_script_enabled=False,viewport=dict(width=375,height=900))
     page=context.new_page();page.goto((root/f'실험{number:02d}/실험{number:02d}_문제설명.html').as_uri())
-    assert page.locator('[data-layout-table]').count()==[9,0,8,12,19,14][number-1]
+    assert_managed_tables_match_metadata(page,metadata)
     assert page.locator('article.topic').evaluate_all('els=>els.every(e=>getComputedStyle(e).display!=="none")')
     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     context.close()

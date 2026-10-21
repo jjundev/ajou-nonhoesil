@@ -141,7 +141,7 @@ def derive_record(spec) -> str:
                 out += ["> 실제 여섯 비트는 BIT1→BIT6 이름 순서로 적는다. 1=켜짐, 0=소등. 예: 001101.", ""]
             out += [f"### {table.id} · {table.title}", ""]
             if getattr(table, "purpose", None):
-                out += [table.purpose, ""]
+                out += ["\n".join("> " + line for line in table.purpose.splitlines()), ""]
             out += [(_stepped(table, comparison_leds.get(item.id, ()) if comparison_leds else ())
                      if getattr(table, "comparison", None) else _RENDER[table.kind](table)), "", "- 메모:", ""]
     out += ["# 실험 종료 메모", ""] + [f"- {p}:" for p in PROMPTS] + [""]

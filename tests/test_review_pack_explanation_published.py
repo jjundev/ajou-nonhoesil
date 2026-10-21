@@ -19,7 +19,7 @@ def audit_experiment(number):
         numbers=([str(i) for i in range(1,len(selected)+1)],[p['number'] for p in q],[re.search(r'문제 (\d+)',text(n)).group(1) for n in articles]),
         subparts_complete=all('| '+p['id']+' |' in report for p in selected),answer_status={p['id']:p['answer_status'] for p in selected},articles=articles)
 
-@pytest.mark.parametrize('number,expected',[(1,12),(2,14),(3,15),(4,12),(5,19),(6,14)])
+@pytest.mark.parametrize('number,expected',[(1,12),(2,14),(3,15),(4,12),(5,19),(6,24)])
 def test_experiment_coverage(number,expected):
     result=audit_experiment(number)
     assert result['counts']==(expected,expected,expected)
@@ -37,7 +37,7 @@ def test_experiment_answer_states(number,states):
         assert result['answer_status'][ident]==state
         assert ('답안 충돌' if state=='disputed' else '정답 미확정') in text(next(n for n in result['articles'] if n.attrs['id']==ident))
 
-@pytest.mark.parametrize('number,expected', [(1,12),(2,14),(3,15),(4,12),(5,19),(6,14)])
+@pytest.mark.parametrize('number,expected', [(1,12),(2,14),(3,15),(4,12),(5,19),(6,24)])
 def test_recall_published(number, expected):
     from scripts.lab.review_pack.explanation_content import _body_text
     folder = ROOT/'복습노트'/f'실험{number:02d}'

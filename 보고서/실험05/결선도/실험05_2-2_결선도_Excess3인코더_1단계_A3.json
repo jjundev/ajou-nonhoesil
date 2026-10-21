@@ -239,5 +239,14 @@
    "at": "우 a38",
    "active_low": false
   }
+ ],
+ "inputs": [
+  {
+   "name": "D5",
+   "at": "좌 a17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
+  }
  ]
 }

@@ -60,7 +60,14 @@ def test_record_tables_keep_all_steps_clock_actions_and_actual_blanks(checklist)
     assert '먼저 CLR=1, 그다음 PR1=0' in html
     assert '먼저 CLR=1, 그다음 PR2=0' in html
     assert 'class="io-locations"' in html and 'class="steps"' in html
-    assert 'class="removals"' in html and re.search(r'U1\s+pin\s*11', html)
+    assert 'class="removals"' in html
+    from scripts.lab.review_pack.html2md import Parser
+    from scripts.lab.review_pack.explanation_content import text
+    tree=Parser(); tree.feed(html)
+    pinout_rows=[[text(cell).strip() for cell in row.children
+                  if hasattr(cell, 'tag') and cell.tag in {'td','th'}]
+                 for row in tree.root.walk() if row.tag=='tr']
+    assert ['74HC00','NAND 3 (이번에 사용)','9, 10','8','14','7'] in pinout_rows
 
 
 def test_sidecar_does_not_hide_non_wiring_operations():
