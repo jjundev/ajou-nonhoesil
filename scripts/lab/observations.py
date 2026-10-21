@@ -119,6 +119,7 @@ class ObservationTable:
     setup: str
     rationale: str
     layout: str = "split"
+    purpose: str = ""
 
 
 def stage_observations(section, spec, stage: dict, node_names: list[str]) -> ObservationTable:
@@ -136,7 +137,7 @@ def stage_observations(section, spec, stage: dict, node_names: list[str]) -> Obs
                     [r.expected[columns[n]] if n in columns else '관측 안 함' for n in node_names])
                 for r in p.steps]
         return ObservationTable(list(p.inputs), [(n, known[n]['pin']) for n in node_names],
-                                rows, p.encoding, p.provenance, p.source, p.setup, p.rationale, p.layout)
+                                rows, p.encoding, p.provenance, p.source, p.setup, p.rationale, p.layout, p.purpose)
     for name in node_names:
         if point_kind(known[name]) == 'observed':
             raise ObservationError(f'observed 노드 {name} 에 확인 절차가 필요하다')

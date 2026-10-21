@@ -127,6 +127,7 @@ class ObservationProcedure:
     steps: list[ObservationStep]
     line: int
     layout: str = "split"
+    purpose: str = ""
 
 
 @dataclass
@@ -355,7 +356,8 @@ def _split_procedures(body, path, line, schema):
                          [c.strip() for c in row[2:cut]], [c.strip() for c in row[cut:]], line+row_line+k))
         procedures.append(ObservationProcedure(ident, title, attrs["source"], attrs["provenance"],
                            attrs.get("rationale", ""), attrs["setup"], attrs["encoding"],
-                           lists["inputs"], lists["clocks"], lists["observe"], steps, line+i, attrs.get("layout", "split")))
+                           lists["inputs"], lists["clocks"], lists["observe"], steps, line+i, attrs.get("layout", "split"),
+                           purpose=attrs.get("purpose", "")))
         remove.update(range(i,end))
     return procedures, "\n".join(ln for i, ln in enumerate(lines) if i not in remove)
 

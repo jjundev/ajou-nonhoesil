@@ -143,3 +143,18 @@ def test_wide_v3_record_reserves_action_width_without_changing_measurements():
     assert wide.count('class="fill"')==7
     assert 'class="check"' not in wide
     assert '<col ' not in legacy
+
+@pytest.mark.parametrize('layout', ['inline', 'split'])
+def test_authored_purpose_reaches_stage_before_setup(tmp_path, layout):
+    from tests.test_lab_observation_parser import TEXT
+    purpose = '입력 <D>가 하강 에지에서 BIT1에 저장되는지 확인한다.'
+    text = TEXT.replace('- setup:', f'- purpose: {purpose}\n- layout: {layout}\n- setup:', 1)
+    n = parsed(tmp_path, text)
+    s = parse_spec(FIX / 'spec_observation_stepped.md')
+    c = n.circuits[0]
+    assert c.procedures[0].purpose == purpose
+    h = stage_html((n, s, c))
+    escaped = render._esc(purpose)
+    assert h.count(escaped) == 1
+    assert purpose not in h  # authored text must be HTML escaped
+    assert h.index(escaped) < h.index('준비·초기화:')

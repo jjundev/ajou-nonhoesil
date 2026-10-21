@@ -48,6 +48,7 @@ v3 정규형은 `{name: str, kind: 'expression'|'observed', expr: str|None, pin:
 
 이 예시는 **계약 설명용**이다. 실제 부분 배선의 입력·노드·조작은 교안과 배선 상태를 근거로 별도 저작한다.
 
+- 선택 속성 `purpose`는 확인 목적 한 문장이다. 현장판에는 절차 제목 아래, 준비·초기화 앞에 출력한다. 기존 문서는 생략할 수 있으며 새로 저작하거나 갱신하는 절차에는 입력과 확인할 전달·동작을 짧게 적는다.
 - 필수 속성은 source/provenance/setup/encoding/inputs/observe다. provenance는 manual 또는 derived. derived이면 rationale도 필수다. clocks는 생략 시 빈 목록이다.
 - source는 v1 범위에서 `manual:p<양의 정수>` 한 곳을 대표 근거로 명시하며 나머지 쪽과 유도 이유는 rationale에 적는다. 인용 쪽이 실제 `spec.source_manual`의 범위 안인지 확인한다. 출처 확인은 내용 전사의 증명이 아니다.
 - encoding은 0/1 또는 H/L. 입력·기대 비트는 그 표기를 보존한다. 에지 토큰은 기존 규약처럼 `0->1`, `1->0`이며 clocks로 선언한 입력에만 허용한다.

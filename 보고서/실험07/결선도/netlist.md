@@ -273,6 +273,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V1 · 직렬 입력 반전 확인
 
+- purpose: D를 바꾸면 U1의 8번 핀에서 반대 논리값이 나오는지 확인한다.
 - source: manual:p8
 - layout: inline
 - provenance: derived
@@ -291,6 +292,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V2 · CLK 분배 확인
 
+- purpose: CLK을 바꾸면 U3의 1번 핀까지 같은 논리값이 전달되는지 확인한다.
 - source: manual:p8
 - layout: inline
 - provenance: derived
@@ -309,6 +311,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V3 · CLK 분배 확인
 
+- purpose: CLK을 바꾸면 U4의 6번 핀까지 같은 논리값이 전달되는지 확인한다.
 - source: manual:p8
 - layout: inline
 - provenance: derived
@@ -327,6 +330,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V4 · CLR 분배 확인
 
+- purpose: CLR을 바꾸면 U3의 3번 핀까지 같은 논리값이 전달되는지 확인한다.
 - source: manual:p8
 - layout: inline
 - provenance: derived
@@ -345,6 +349,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V5 · CLR 분배 확인
 
+- purpose: CLR을 바꾸면 U4의 8번 핀까지 같은 논리값이 전달되는지 확인한다.
 - source: manual:p8
 - layout: inline
 - provenance: derived
@@ -363,6 +368,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V6 · 독립 프리셋 핀 확인
 
+- purpose: PR1과 PR2를 각각 바꾸면 U2의 7번·2번 핀에 서로 독립적으로 전달되는지 확인한다.
 - source: manual:p11
 - layout: inline
 - provenance: derived
@@ -383,6 +389,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V7 · BIT1~BIT1 초기화·시프트 확인
 
+- purpose: BIT1이 CLR로 초기화되고 하강 에지에서 D를 저장하며 PR1으로 강제 1이 되는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived
@@ -407,6 +414,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V8 · BIT1~BIT2 초기화·시프트 확인
 
+- purpose: BIT1·BIT2가 초기화되고 하강 에지마다 값이 BIT2로 이동하며 PR2로 BIT2가 강제 1이 되는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived
@@ -434,6 +442,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V9 · BIT1~BIT3 초기화·시프트 확인
 
+- purpose: BIT1~BIT3가 초기화되고 상승 에지에서는 유지되며 하강 에지마다 1이 BIT3까지 이동하는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived
@@ -459,6 +468,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V10 · BIT1~BIT4 초기화·시프트 확인
 
+- purpose: BIT1~BIT4가 초기화되고 상승 에지에서는 유지되며 하강 에지마다 1이 BIT4까지 이동하는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived
@@ -486,6 +496,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V11 · BIT1~BIT5 초기화·시프트 확인
 
+- purpose: BIT1~BIT5가 초기화되고 상승 에지에서는 유지되며 하강 에지마다 1이 BIT5까지 이동하는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived
@@ -515,6 +526,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 
 ## 확인 절차 V12 · BIT1~BIT6 초기화·시프트 확인
 
+- purpose: 전체 비트가 초기화되고 하강 에지마다 1이 BIT6까지 이동하며 PR1·PR2가 해당 비트를 강제 1로 만드는지 확인한다.
 - source: manual:p10
 - layout: inline
 - provenance: derived

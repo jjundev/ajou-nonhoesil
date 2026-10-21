@@ -968,8 +968,10 @@ def _inline_observation_html(table, leds, feed):
 def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     """Two matched timelines, with per-LED status. Never writes measured cells."""
     feed = feed or {}
-    out = ['<section class="observation-procedure">',
-           f'<p><b>준비·초기화:</b> {_esc(table.setup)}</p>']
+    out = ['<section class="observation-procedure">']
+    if getattr(table, 'purpose', ''):
+        out.append(f'<p class="observation-purpose">{_esc(table.purpose)}</p>')
+    out.append(f'<p><b>준비·초기화:</b> {_esc(table.setup)}</p>')
     if png is not None:
         out.append(locations_html(png, table.inputs,
                                   feed={tag: name for tag, name in feed.items() if name is not None}))
