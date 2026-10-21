@@ -16,7 +16,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from . import md, observations
-from .comparison import comparison_rows, GUIDE, BIT_GUIDE
+from .comparison import comparison_rows
 from . import nodes as node_calc
 from .leds import (board_leds, circled, feeds_by_stage, feeds_by_circuit, is_sequential, lit, record_leds,
                    record_row_leds, watched)
@@ -200,8 +200,7 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
 
 
 def _comparison_table_html(header, rows):
-    out = ['<p class="comparison-guide">' + _esc(GUIDE) + '</p>',
-           '<table class="comparison-table"><colgroup>' + ''.join(
+    out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
                    6:[7,23,20,18,18,14]}.get(len(header),[100/len(header)]*len(header))))
                + '</colgroup><thead><tr>',
@@ -280,7 +279,7 @@ def _capture_html(table, spec_dir=None) -> str:
     볼트로 환산할 수 없고, X-Y 인지 Y-T 인지 모르면 실험02 T1·T2 의 곡선이
     무엇을 뜻하는지 알 수 없다 — 두 표는 같은 배선에서 모드만 다르다.
 
-    미니표는 붙이지 않는다(`_mismatch_html` 이 `capture` 에 `""` 를 준다).
+    파형에는 행별 불일치 표를 붙이지 않는다.
     파형에는 "불일치 행"도 "이상 스텝"도 없다 — `예상과 다른 점` 상자가 맡는다.
 
     `figure` 가 있으면 예상 개형 그림을 산문과 스케치 사이에 싣는다. 경로는
@@ -295,8 +294,7 @@ def _capture_html(table, spec_dir=None) -> str:
     if table.figure:
         name = Path(table.figure).name
         if spec_dir is not None and (Path(spec_dir) / table.figure).exists():
-            out.append(f'<img class="expected-fig" src="{_esc(table.figure)}">'
-                       f"<p class='src'>예상 그림: {_esc(name)}</p>")
+            out.append(f'<img class="expected-fig" src="{_esc(table.figure)}">')
         else:
             out.append(f"<p class='src'>예상 그림이 아직 없어요: {_esc(name)}</p>")
     out.append('<div class="sketch"></div>')
@@ -399,55 +397,6 @@ def _md_table_html(table, lead_checkbox: bool = False) -> str:
     return "".join(out)
 
 
-LEGEND = (
-    "진리표 — 확인 칸에는 맞으면 ✓, 다르면 실제로 본 값을 적어요. 안 본 행은 비워 둬요. "
-    "표를 통째로 못 했으면 그 표 아래에 진행하지 않았음 이라고 적어요.",
-    "스텝표 — 회색 칸에 읽은 값을 단위와 함께 적어요 (예: 3.2 V, 47 Ω). "
-    "대조할 예상값이 없는 표라서 확인 칸은 없어요.",
-    "파형 — 격자에 직접 그리고 판독 조건 줄(V/div·time/div·프로브·모드)을 채워요. "
-    "조건을 안 적으면 결과보고서에서 화면의 칸을 볼트로 바꿀 수 없어요.",
-)
-
-
-# 공통면 물리 주의. 셋째 줄만 주차에 따라 갈린다 — 배너 원칙("모든 주차에서 참인
-# 것만")대로 걷기 보드가 없는 주차에서 걷기 그림을 가리키지 않는다.
-_CAUTION = (
-    "선은 클립에 물릴 깊이까지만 꽂아요. 끝까지 밀어 넣으면 접촉이 끊길 수 있어요 (실험03 GND 선)",
-    "칩을 꽂거나 뺄 때는 전원부터 꺼요",
-)
-_CAUTION_SWAP = {
-    True: "선을 바꿀 때는 걷기 그림(빨간 점선)의 선부터 먼저 뽑고, 그다음 새 선을 꽂아요. "
-          "회로를 바꿀 때도, 회로 안에서도 같아요",
-    False: "회로를 바꿀 때는 걷을 선부터 먼저 뽑고, 그다음 새 선을 꽂아요",
-}
-
-# 선 색 — 결선도 PNG 아래 범례가 사라져(2026-09-28) 공통면에 한 번 싣는다. 색은
-# 렌더러의 `WIRE`·`KEEP`·`REMOVE`·`PROBE` 와 같다(렌더러를 import 하지 않는다)
-WIRE_LEGEND = ("선 색 — 빨강 +5V · 파랑 0V · 검정 신호 · 초록 칩 사이 중간 노드 · "
-               "회색 = 앞 단계에서 그대로 둔다 · 빨간 점선 = 뽑는다 · "
-               "회색 점선 = 계측기(꽂지 않고 문다)")
-
-
-def _flow_table(spec, netlist) -> str:
-    """오늘의 흐름. 도착 직후 오늘 뭘 몇 개 하는지 한눈에 본다.
-
-    쪽번호는 렌더 시점에 알 수 없다(Chrome 이 조판한다). 회로 번호로 대신한다 —
-    회로마다 강제 개쪽이므로 회로 번호가 곧 순서다.
-    """
-    total = len(netlist.circuits)
-    rows = ["<table class='flow'><thead><tr><th>순서</th><th>회로</th>"
-            "<th>쓰는 IC</th><th>기록할 표</th></tr></thead><tbody>"]
-    for n, circuit in enumerate(netlist.circuits, start=1):
-        tables = ", ".join(
-            f"{t} {spec.table(t).title}" if spec.table(t) else t
-            for t in circuit.tables)
-        rows.append(
-            f"<tr><td>{n}/{total}</td><td>{_esc(_plain(circuit.title))}</td>"
-            f"<td>{_esc(' · '.join(circuit.ics))}</td><td>{_esc(tables)}</td></tr>")
-    rows.append("</tbody></table>")
-    return "".join(rows)
-
-
 # 미확정 표(`M1`~) 참조. 표를 인쇄하지 않으므로(2026-09-28) 산문의 참조는 가리킬 곳이
 # 없다 — netlist 원문은 저작·검토용이라 그대로 두고 인쇄할 때만 벗긴다. 순서가 중요하다:
 # 괄호 전체가 참조인 것 → 괄호 안 끝 항목 → 괄호 안 첫 항목 → 문장 속 "— … M8" 꼬리.
@@ -467,47 +416,11 @@ def _drop_issue_refs(text: str) -> str:
 
 
 def common_page(spec, netlist) -> str:
-    """회로 페이지들 앞에 한 번만 오는 면.
-
-    `kind` 가 목적지를 정한다. **`common`·`open-issues` 는 싣지 않는다**(2026-09-28) —
-    공통 규칙과 미확정 표가 실험04 공통면 4쪽을 차지했는데 실험실에서 읽히지 않았다.
-    둘 다 netlist 에 저작·검토용으로 남는다. 실험실에서 손으로 해야 하는 것은
-    저작자가 `must-read` 절(불릿 다섯)로 올리고 그것만 전원 박스 바로 아래 싣는다.
-    `sources`(핀아웃 출처)는 ③ 예비보고서의 참고문헌 재료라 여기 없다.
-    """
-    power = " · ".join(f"{k} = {v}" for k, v in spec.power.items())
-    # 배너는 **모든 주차에서 참인 것**만 말한다. 옛 문구 "미사용 입력핀은 전부 GND" 는
-    # 주차의 절반에서 거짓이었다(실험02 는 VCC 로도 올린다). 칩별 미사용 핀 지시는 회로
-    # 쪽 핀 점검 상자에 있다.
-    out = [f'<div class="power">전원: {_esc(power)} · '
-           "쓰는 게이트의 입력은 반드시 물려요 (플로팅 금지). "
-           "미사용 핀은 회로마다 핀 점검 상자를 봐요</div>"]
-    for section in netlist.of_kind("must-read"):
-        out.append(f'<div class="must-read"><h2>{_esc(_plain(section.title))}</h2>'
-                   f"{_blocks(section.body)}</div>")
-    walk = any(_has_walk(c) for c in netlist.circuits)
-    lines = _CAUTION + (_CAUTION_SWAP[walk],)
-    out.append('<div class="caution"><b>손으로 할 때 주의</b><ul>'
-               + "".join(f"<li>{_esc(line)}</li>" for line in lines)
-               + "</ul></div>")
-    out.append(f'<p class="wire-legend">{_esc(WIRE_LEGEND)}</p>')
-    out += [f'<p class="legend">{_esc(GUIDE if i == 1 and any(getattr(t, "comparison", None) for t in spec.tables) else line)}</p>'
-            for i, line in enumerate(LEGEND)]
-    out += ["<h2>오늘의 흐름</h2>", _flow_table(spec, netlist)]
-
-    for section in netlist.of_kind("lookup"):
-        # `_blocks` 가 본문의 표를 제자리에 싣는다 — 여기서 또 렌더하면 두 번 찍힌다
-        out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
-        out.append(_blocks(section.body))
-        out.append("</div>")
-
-    for section in netlist.of_kind("layout"):
-        # 칩 자리표. 다섯 회로가 같은 자리를 쓴다는 선언이라 한 번만 보면 된다
-        out.append(f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>')
-        out.append(_blocks(section.body))
-        out.append("</div>")
-
-    return _drop_issue_refs("\n".join(out))
+    """첫 장에 칩별 포트 역할 표만 싣는다."""
+    return "\n".join(
+        f'<div class="tblock"><h2>{_esc(_plain(section.title))}</h2>'
+        + _blocks(section.body) + '</div>'
+        for section in netlist.of_kind("lookup"))
 
 
 _CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
@@ -516,19 +429,6 @@ _CHIP_LINE = re.compile(r"^-[ \t]+(U\d+[ \t]*=[ \t]*.+)$")
 # 배선 80줄이 통째로 사라졌다.
 _CHIP_HEAD = re.compile(r"^#{2,}[ \t]+(U\d+[ \t]*=[ \t]*.+?)[ \t]*$")
 _ANY_HEAD = re.compile(r"^#{1,}[ \t]+\S")
-
-# 사진 파일명은 `photo_names` 규칙이다. 실험02 는 `실험02 1-1 …` 처럼 접두어를 붙여
-# 시트 엔진이 전부 규칙 밖으로 거절했다 — 그래서 접두어 금지를 줄마다 적는다.
-_NO_PREFIX = "앞에 실험 번호(예: 실험03)는 붙이지 않아요"
-_PHOTO = {
-    "truth-table": "사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명은 표의 '사진 파일명' 열 그대로예요 — " + _NO_PREFIX,
-    "stepped": "사진: 스텝마다 1장씩 찍어요. 파일명 '{tok} {tid} s<스텝>.jpg' — " + _NO_PREFIX,
-    "capture": "사진: 파형 사진이 곧 결과물이에요. 파일명 '{tok} {tid} <설명>.jpg' — " + _NO_PREFIX,
-}
-# 항목 제목에 `실험 N)` 이 없으면 파일명 열이 없다 — 가리킬 열이 없으니 규칙을 적는다.
-_PHOTO_NO_TOKEN = ("사진: 시험한 행마다 1장씩 찍어요(불일치 행은 꼭). 파일명 '<항목> <입력비트>.jpg' — "
-                   + _NO_PREFIX)
-
 
 def _new_chip(head: str) -> dict:
     """칩 상자 하나.
@@ -797,22 +697,16 @@ def _schematic_html(item, spec_dir) -> str:
     에 놓인다(`_capture_html` 의 `figure` 와 같은 논리). 파일이 없으면 `<img>` 를
     내지 않는다 — 깨진 그림이 PDF 로 굳는다. 필드가 없으면 빈 문자열이다.
 
-    캡션은 `pages` 의 첫 쪽만 적는다 — `schematic.py` 는 `--page` 가 없으면
-    `pages[0]` 을 자른다. 캡션은 `<img>` 를 하나라도 냈을 때만 붙인다 — 그림이
-    없는데 캡션만 남으면 없는 그림을 가리킨다(파일이 없으면 안내 한 줄뿐이다).
+    파일명·출처 캡션은 생략한다. 그림이 없으면 안내 한 줄을 낸다.
     """
     if item is None or not item.schematic:
         return ""
-    caption = (f"강의노트 p{item.pages[0]} · 회로 구성" if item.pages
-               else "강의노트 · 회로 구성")
     out = []
     for rel in item.schematic:
         if (Path(spec_dir) / rel).exists():
             out.append(f'<img class="schematic" src="{_esc(rel)}">')
         else:
             out.append(f"<p class='src'>회로도가 아직 없어요: {_esc(rel)}</p>")
-    if any(o.startswith("<img") for o in out):
-        out.append(f"<p class='src'>{_esc(caption)}</p>")
     return "".join(out)
 
 
@@ -877,9 +771,26 @@ def _board_text_html(data) -> str:
             f'<span class="desc">{_esc(p["desc"])}</span></li>'
             for p in data["probes"])
         out.append(f'<p class="list-head">계측 — 꽂지 않고 물어요</p><ol class="probes">{items}</ol>')
-    if data["kept"]:
-        out.append(f'<p class="kept">회색 = 앞 단계에서 그대로 둔 것 {data["kept"]}개</p>')
     return "".join(out)
+
+
+def _task_note(todo, data) -> str:
+    """목록의 연결 설명과 정확히 겹치는 절만 덜고 나머지 조작은 보존한다."""
+    def normalise(text):
+        return re.sub(r'\s+', '', _plain(text).replace('->', '→')).rstrip('.。')
+
+    descriptions = [normalise(row['desc']) for row in data.get('steps', [])]
+    kept = []
+    for part in re.split(r';\s*|(?<=[요다])\.\s*', _plain(todo)):
+        part = part.strip()
+        if not part:
+            continue
+        route = normalise(part).removeprefix('신호선:').removesuffix('급전')
+        duplicate = '→' in route and any(
+            route == desc or desc.endswith('=' + route) for desc in descriptions)
+        if not duplicate:
+            kept.append(part)
+    return f'<p class="operation">{_esc(" · ".join(kept))}</p>' if kept else ''
 
 
 def _diagram_html(section, netlist) -> str:
@@ -895,9 +806,9 @@ def _diagram_html(section, netlist) -> str:
         png = netlist.path.parent / section.diagram
         if png.exists():
             src = f"../{netlist.path.parent.name}/{section.diagram}"
+            data = _sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))
             return (f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
-                    f'<p class="src">결선도: {_esc(section.diagram)}</p>'
-                    + _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))))
+                    + ("" if getattr(section, "stages", ()) else _board_text_html(data)))
     rows = crop_rows(section.body)
     # 빈 판형은 그 주차 판형이다 — v2 주차에 v1 격자를 깔면 열이 둘 더 있는 판에 그리게 된다
     asset, header_mm = BLANK_BOARDS[board_version_of(netlist.path.parent / "배치.py", netlist.experiment)]
@@ -915,9 +826,9 @@ def _assembly_html(step, netlist) -> str:
     data = _sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))
     src = f"../{netlist.path.parent.name}/{step.diagram}"
     return (f'<div class="stage"><h3>단계 {step.stage_no} 준비 {circled(step.order)} · {_esc(step.title)}</h3>'
-            '<p class="banner">전원과 신호발생기 출력을 꺼요.</p>'
+            '<p class="banner">전원·신호발생기 OFF</p>'
             f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
-            f'<p><b>이번 작업:</b> {_esc(_plain(step.todo))}</p>'
+            + _task_note(step.todo, data)
             + _board_text_html(data)
             + f'<p><span class="box"></span><b>완료 확인:</b> {_esc(_plain(step.check))}</p></div>')
 
@@ -944,10 +855,12 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     단계 LED 만 있고 관측 노드는 프로브로 보는 단계는 옛 표다 — LED 표에 그 노드가 없다.
     """
     png = netlist.path.parent / stage["diagram"] if stage["diagram"] else None
+    data = {}
     if png is not None and png.exists():
         src = f"../{netlist.path.parent.name}/{stage['diagram']}"
         img = f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
-        text = _board_text_html(_sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment)))
+        data = _sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))
+        text = _board_text_html(data)
     else:
         img = f"<p class='src'>단계 그림이 아직 없어요: {_esc(stage['diagram'] or '(없음)')}</p>"
         text = ""
@@ -980,9 +893,15 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     head = (f"{_esc(str(stage['walk_of']))}단계 전 · 걷기" if stage.get("walk")
             else f"단계 {_esc(stage['n'])}")
     # 블록 하나가 PDF 한 쪽이다 — 쪽 높이는 `fit_pages` 가 블록 실측값으로 준다.
-    return (f'<div class="stage"><h3>{head}</h3>{img}'
-            f"<p><b>이 단계에서:</b> {_esc(_plain(stage['todo']))}</p>{text}{node}"
-            f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>'
+    operation = ('<p class="operation"><b>전원 OFF</b></p>' if stage.get('walk')
+                 else _task_note(stage['todo'], data))
+    # 명시 관측표와 걷기 목록이 확인 대상·핀·결과를 이미 담는다.
+    check = ('' if stage.get('procedure') or stage.get('walk') else
+             f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>')
+    if table:
+        node = ''
+    return (f'<div class="stage"><h3>{head}</h3>{operation}{img}{text}{node}'
+            f'{check}'
             f"{table}</div>")
 
 
@@ -1050,26 +969,20 @@ def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     """Two matched timelines, with per-LED status. Never writes measured cells."""
     feed = feed or {}
     out = ['<section class="observation-procedure">',
-           f'<p><b>준비·초기화:</b> {_esc(table.setup)}</p>',
-           f'<p class="src">출처: {_esc(table.source)}</p>']
-    if table.provenance == 'derived':
-        out.append('<p class="provenance"><b>교안 원문이 아니다 — 교안에서 유도한 확인 절차</b></p>')
-        out.append(f'<p class="src">유도 이유: {_esc(table.rationale)}</p>')
-    else:
-        out.append('<p class="provenance">교안 전사 확인 절차</p>')
+           f'<p><b>준비·초기화:</b> {_esc(table.setup)}</p>']
     if png is not None:
         out.append(locations_html(png, table.inputs,
                                   feed={tag: name for tag, name in feed.items() if name is not None}))
     if table.layout == 'inline':
         return '\n'.join(out) + _inline_observation_html(table, leds, feed) + '</section>'
-    out.append('<p><b>조작·입력 순서</b> — 아래 관측 표의 같은 순서 행에서 확인한다.</p>')
+    out.append('<p><b>조작·입력</b></p>')
     out.append('<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정</th></tr></thead><tbody>')
     for row in table.rows:
         inputs = '<br>'.join(f'{_esc(n)} = {_esc(c)}' for n, c in zip(table.inputs, row.inputs))
         out.append(f'<tr data-observation-order="{row.order}"><td>{row.order}</td>'
                    f'<td>{_esc(row.action)}</td><td>{inputs}</td></tr>')
     out.append('</tbody></table>')
-    out.append('<p><b>관측 예상</b> — 논리값과 LED 점등을 구분해 본다.</p>')
+    out.append('<p><b>관측 예상</b></p>')
     out.append('<table><thead><tr><th>순서</th><th>관측점 · 핀 · 예상</th><th>LED 상태</th><th>확인</th></tr></thead><tbody>')
     for row in table.rows:
         by_name = {n: token for (n, _), token in zip(table.points, row.expected)}
@@ -1183,25 +1096,7 @@ def _led_table_html(spec, section, leds, feed, png=None) -> str:
                       "<tbody>", *body, "</tbody>", "</table>"])
 
 
-def _led_order_html(leds) -> str:
-    """완성본 아래 LED 순서 띠 — 보드 위→아래 번호. 번호순으로 놓이지 않은 보드(실험05 C1)를 읽게."""
-    order = " ".join(f"{circled(led.index)}{_esc(led.tag)}" for led in leds)
-    return f'<p class="led-order"><b>LED 순서(위→아래):</b> {order}</p>'
-
-
-_MISMATCH = {
-    "truth-table": ("불일치 행", "예상", "실제", "사진 파일", "짐작된 원인"),
-    "stepped": ("이상 스텝", "관찰한 것", "짐작된 원인"),
-}
-
 _INSTRUMENT = "계측기 설정 — 모드·레인지·단위: ________________________________"
-
-
-_MISMATCH_TITLE = {"truth-table": "불일치 기록", "stepped": "이상 스텝 기록"}
-
-
-_NODE_HINT = ("틀린 행이 나오면 입력 쪽 노드부터 프로브로 찍어 봐요. 기대값과 처음 갈라지는 "
-              "노드가 고장 자리예요 — 그 게이트의 입력 핀이 틀리면 선, 맞으면 게이트 문제예요")
 
 
 def _record_outputs(spec, section) -> set:
@@ -1233,7 +1128,6 @@ def _unstaged_nodes_html(spec, section, png=None) -> str:
         return f"<p class='src'>노드 표를 계산할 수 없어요: {_esc(exc)}</p>"
     out = ['<div class="tblock nodes">',
            "<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>",
-           f"<p class='src'>{_esc(_NODE_HINT)}</p>",
            locations_html(png, nt.inputs, feed={}) if png is not None else "",
            "<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(name)}</th>" for name in nt.inputs]
@@ -1247,28 +1141,6 @@ def _unstaged_nodes_html(spec, section, png=None) -> str:
                    + "".join(f"<td>{_esc(v)}</td>" for v in vals) + "</tr>")
     out += ["</tbody>", "</table>", "</div>"]
     return "\n".join(out)
-
-
-def _mismatch_html(kind: str, table_id: str) -> str:
-    """결과보고서의 `예상과의 비교`가 여기서 나온다. 확인 칸 하나로는 좁다.
-
-    kind 마다 열이 다르다. 스텝표에는 예상값이 없으므로 `예상`·`불일치 행` 열이
-    설 자리가 없고, `capture` 는 아예 미니표를 갖지 않는다 — 파형에는 행도
-    스텝도 없다. 그 자리는 `_capture_html` 의 `예상과 다른 점` 상자가 맡는다.
-
-    표 앞에 `<h4>표ID · 종류</h4>` 를 붙여 자기 제목을 준다 — 표 제목은 앞
-    쪽에 있어 쪽을 넘어가면(실험10 PDF 17쪽) `이상 스텝 | 관찰한 것 |
-    짐작된 원인` 만 홀로 남는, 문맥 없는 3열 표가 된다.
-    """
-    head = _MISMATCH.get(kind)
-    if head is None:
-        return ""
-    title = _MISMATCH_TITLE[kind]
-    cells = "".join(f"<th>{_esc(h)}</th>" for h in head)
-    body = "".join("<tr>" + "<td></td>" * len(head) + "</tr>" for _ in range(3))
-    return (f"<h4>{_esc(table_id)} · {title}</h4>"
-            f'<table class="mismatch"><thead><tr>{cells}</tr></thead>'
-            f"<tbody>{body}</tbody></table>")
 
 
 def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
@@ -1287,7 +1159,6 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
         # `_plain` 을 씌운다 — 옛 `_tables()` 는 안 씌웠다. 지금 어느 명세의
         # `source` 에도 마크다운이 없지만, 들어오는 순간 백틱이 인쇄본에 찍히고
         # 그것을 잡는 검사는 본문만 본다.
-        out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
         if table.kind == "capture":
             out.append(_capture_html(table, spec.path.parent))
         elif table.kind == "stepped":
@@ -1296,14 +1167,6 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
                     out.append(locations_html(netlist.path.parent / section.diagram,
                                ['D' if n == 'SERIAL DATA' else n for n in table.header
                                 if n not in [*(table.outputs or []), '스텝', '조작']]))
-                if table.outputs == [f'BIT{i}' for i in range(1,7)]:
-                    out.append('<p>' + _esc(BIT_GUIDE) + '</p>')
-                    out.append('<p>CLK=0일 때 데이터를 설정해요. 클럭을 0→1→0으로 한 번 왕복하고 하강 직후 읽어요.</p>')
-                if table.id == 'T1':
-                    data_column = next((i for i,n in enumerate(table.header) if n == 'SERIAL DATA'), None)
-                    if data_column is not None:
-                        pattern = ' → '.join(r[data_column] for r in table.rows if r[0].startswith('S'))
-                        out.append('<p><b>넣는 데이터의 시간순:</b> ' + _esc(pattern) + '</p>')
             out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3", leds=leds))
             if not getattr(table, 'comparison', None):
                 out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
@@ -1313,10 +1176,6 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
                 inputs = [_plain(table.header[i]) for i in split_indices(table)[0]]
                 out.append(locations_html(png, inputs))
             out.append(_truth_table_html(table, token, badges, section.order, leds))
-        photo = (_PHOTO_NO_TOKEN if table.kind == "truth-table" and not token
-                 else _PHOTO[table.kind].format(tid=table.id, tok=token or "<항목>"))
-        out.append(f"<p class='photo'>{_esc(photo)}</p>")
-        out.append(_mismatch_html(table.kind, table.id))
         out.append("</div>")
     for table_id in section.refs:
         table = spec.table(table_id)
@@ -1324,7 +1183,6 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
             continue                  # validate 가 error 로 잡는다
         out.append('<div class="tblock">')
         out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)} — 참조</h3>")
-        out.append(f"<p class='src'>출처: {_esc(_plain(table.source or ''))}</p>")
         # 기록 칸·미니표·사진 지시를 붙이지 않는다. 교안·데이터시트에서 옮긴
         # 이론표라 실험실에서 채우는 물건이 아니다 — 옆 표(실험02 T7)가 대조할
         # 기준값일 뿐이다.
@@ -1333,139 +1191,98 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
     return "\n".join(out)
 
 
-def circuit_pages(spec, netlist) -> str:
-    """회로마다 한 면. 강제 개쪽이라 회로 둘이 한 쪽을 나눠 쓰지 않는다.
-    강의노트 회로도는 한 항목을 가리키는 회로가 여럿이어도 첫 회로에만 싣는다.
+def _unused_html(chips) -> str:
+    """할 일이 있는 미사용 핀 지시만 칩별로 한 번 표시한다."""
+    out = []
+    for chip in chips:
+        instructions = [re.sub(r'\s*·\s*공통 운영(?:,\s*M\d+)?', '', u)
+                        for u in chip["unused"] if not re.search(r"(?:[:：]|핀)\s*없음", u)]
+        if instructions:
+            out.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
+            out.extend(f'<li><span class="box"></span>{_esc(u)}</li>' for u in instructions)
+            out.append('</ul></div>')
+    return '<div class="unused"><b>미사용 핀</b>' + ''.join(out) + '</div>' if out else ''
 
-    면 안의 순서는 작업 순서다 — 칩 교체 → 강의노트 회로도 → 유의사항 → 결선도
-    → 배선 → 미사용핀 → 측정표. 단계가 있는 회로는 유의사항 → 단계(단계 진리표) →
-    결선도 → 배선 → 미사용핀 → 측정표다. 유의사항(예: `74HC02 는 핀 순서에 주의`)을
-    배선 앞으로 옮겼다 — 그것을 실행하며 봐야 할 배선 뒤에 두면 이미 다 꽂은 뒤에야 읽게 된다.
-    단계는 완성본·배선 **앞**이다(2026-09-29 사용자, 09-28 의 반대) — 단계를 다 밟은 뒤
-    완성본으로 전체를 대조하고 핀을 점검한다. 측정표는 그 뒤라, 마지막 관측 단계는 자기
-    단계 진리표 대신 (완성본 대조를 거친) 기록표를 본다 — LED 점등 표는 예외로 마지막 단계에도
-    싣는다(v2 사이드카 `leds`, 2026-10-11).
-    미사용핀 상자는 칩별로 낸다 — 회로 단위로 합치면 C4 처럼 같은 핀 번호가
-    칩마다 정반대 지시를 받을 때 어느 칩 것인지 사라진다.
-    """
+
+def circuit_pages(spec, netlist) -> str:
+    """작업 그림·조작표·기록표. 원본의 저작 설명과 중복 핀 배선표는 싣지 않는다."""
     out, previous = [], None
-    feed_after = {}               # 앞 회로 마지막 단계 뒤 급전 지도 — `continues` 회로가 이어받는다
-    shown = set()                 # 강의노트 회로도를 이미 실은 항목
+    feed_after = {}
+    shown = set()
     total = len(netlist.circuits)
     v3_feeds = feeds_by_circuit(netlist) if netlist.schema == "lab-netlist/v3" else None
     for n, section in enumerate(netlist.circuits, start=1):
         nodes, prose_before, prose_after = _circuit_body(section)
         chips = _chip_boxes(nodes)
-        tables = ", ".join(section.tables)
         item = next((i for i in spec.items if i.id == section.item), None)
-        device = f" · 판독: {', '.join(item.device)}" if item else ""
-        out.append('<section class="circuit">')
-        out.append(FIT_PLAIN)         # 머리글 쪽 — `fit_pages` 가 제 높이의 쪽을 준다
-        out.append(f"<h2>회로 {n}/{total} · {_esc(_plain(section.title))} "
-                   f"· 기록: {_esc(tables)}{_esc(device)}</h2>")
-        banner = _chip_swap(previous, section)
-        out.append(f'<div class="banner">{_esc(banner)}</div>')
+        header = (f'<h2>회로 {n}/{total} · {_esc(_plain(section.title))}'
+                  f' · 기록: {_esc(", ".join(section.tables))}</h2>')
+        header += f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>'
         if item is not None and item.id not in shown:
             shown.add(item.id)
-            schematic = _schematic_html(item, spec.path.parent)
-            if schematic:         # 빈 문자열을 넣으면 필드 없는 주차의 HTML 에 빈 줄이 는다
-                out.append(schematic)
-        if prose_before.strip():
-            out.append(_blocks(prose_before))
-        out.append("</div>")
-        wiring = []           # 완성본·배선 상자·핀 점검·배선 뒤 검산 — 단계 뒤에 붙인다
-        wiring.append(FIT_PLAIN)      # A 쪽: 완성본 그림·배선 목록
-        wiring.append('<div class="wirebox">')
-        if section.stages:
-            wiring.append("<p class='src'><b>완성본 — 손그림 원도</b> (회색 없음)</p>")
-        wiring.append(_diagram_html(section, netlist))
+            header += _schematic_html(item, spec.path.parent)
+        out.append('<section class="circuit">')
         png = netlist.path.parent / section.diagram if section.diagram else None
         leds = board_leds(png) if png is not None and png.exists() else []
-        if leds:
-            wiring.append(_led_order_html(leds))
-        # 옛 PNG 머리에 있던 제출 안내 — 그림에 글자를 굽지 않게 되어(2026-09-28) 여기로 온다.
-        # 단계 유무와 상관없이 회로마다 한 번: 손그림은 완성본마다 한 장이다
-        wiring.append("<p class='src submit'>손그림은 이 그림을 따라 그려요</p>")
-        for node in nodes:
-            if node["type"] == "prose":
-                wiring.append(_blocks(node["text"]))
-                continue
-            wiring.append(f'<div class="chip"><h4>{_esc(node["head"])}</h4>')
-            if node["wires"]:
-                wiring.append('<ol start="1">')
-                wiring += [f'<li><span class="box"></span>{_esc(w)}</li>'
-                           for w in node["wires"]]
-                wiring.append("</ol>")
-            # 상자 안은 원문 순서다. 고정 순서로 찍으면 표 앞에 있어야 할 경고가
-            # 표 아래로 밀린다 (실험02 U1) — 주차마다 표와 산문의 순서가 다르다.
-            for kind, payload in node["blocks"]:
-                wiring.append(_md_table_html(payload, lead_checkbox=True)
-                              if kind == "table" else _blocks(payload))
-            wiring.append("</div>")
-        wiring.append("</div>")
-        wiring.append("</div>")       # A 쪽 끝
-        wiring.append(FIT_PLAIN)      # B 쪽: 핀 점검·기록표·안 본 노드
-        unused_chips = [c for c in chips if c["unused"]]
-        if unused_chips:
-            wiring.append('<div class="unused">'
-                          "<b>핀 점검 — 사용 핀은 다 물렸나요? 미사용 핀은 지시대로인가요? (칩마다 따로)</b>")
-            for chip in unused_chips:
-                wiring.append(f'<div class="chipunused"><b>{_esc(chip["head"])}</b><ul>')
-                wiring += [f'<li><span class="box"></span>{_esc(u)}</li>'
-                           for u in chip["unused"]]
-                wiring.append("</ul></div>")
-            wiring.append("</div>")
-        if prose_after.strip():
-            # 배선을 마친 뒤 하는 검산이다. 앞으로 올리면 preamble 로 읽힌다.
-            wiring.append(_blocks(prose_after))
-        # 마지막 관측 단계는 단계 진리표를 싣지 않는다 — 완성본 대조 뒤 기록표가 그 표다. 단 그 노드가
-        # 기록표 출력 열일 때만이다 — 중간 노드면 기록표에 그 값이 없다.
         observed = [s for s in section.stages if s.get("node")]
         last = observed[-1] if observed else None
         if last is not None and last["node"] not in _record_outputs(spec, section):
             last = None
         feeds = (v3_feeds[section.id] if v3_feeds is not None else
                  feeds_by_stage(section, start=feed_after if section.continues else None))
+        stages = []
         for stage, feed in zip(section.stages, feeds):
             if not stage.get('walk'):
                 from .assembly import steps_for_stage
-                out.extend(_assembly_html(step, netlist)
-                           for step in steps_for_stage(section, stage.get('stage_no')))
-            out.append(_stage_html(stage, netlist, section, spec, last=stage is last,
-                                   leds=leds, feed=feed))
+                stages.extend(_assembly_html(step, netlist)
+                              for step in steps_for_stage(section, stage.get('stage_no')))
+            stages.append(_stage_html(stage, netlist, section, spec, last=stage is last,
+                                      leds=leds, feed=feed))
+        if stages:
+            # 회로 개요와 실제 작업을 분리한다. 준비 1은 다음 쪽에서 시작한다.
+            out.append(FIT_PLAIN + header + '</div>')
+            out.extend(stages)
         feed_after = feeds[-1] if feeds else (feed_after if section.continues else {})
-        # 단계가 있으면 단계를 다 밟은 뒤 완성본으로 대조한다(2026-09-29). 없으면 루프가 비어 제자리다
-        out += wiring
+        out.append(FIT_PLAIN)
+        if not stages:
+            out.append(header)
+            # 단계 없는 계측 회로의 유일한 장비 설정·저항망 표는 보존한다.
+            if prose_before.strip():
+                out.append(_blocks(prose_before))
+        out.append('<div class="wirebox"><h3>완성본</h3>')
+        out.append(_diagram_html(section, netlist))
+        if not stages:
+            for node in nodes:
+                if node['type'] == 'prose':
+                    out.append(_blocks(node['text']))
+                elif png is None or not png.exists():
+                    # 그림도 단계도 없는 회로에는 유일한 연결 정보를 남긴다.
+                    out.append(f'<div class="chip"><h4>{_esc(node["head"])}</h4>')
+                    out.extend(f'<p>{_esc(w)}</p>' for w in node['wires'])
+                    out.extend(_md_table_html(p, lead_checkbox=True) if k == 'table' else _blocks(p)
+                               for k, p in node['blocks'])
+                    out.append('</div>')
+        out.append('</div></div>')
+        out.append(FIT_PLAIN)
+        out.append(_unused_html(chips))
+        if not stages and prose_after.strip():
+            out.append(_blocks(prose_after))
         outputs = _record_outputs(spec, section)
         badges = {led.tag: f"LED{circled(led.index)}" for led in leds if led.tag in outputs}
         out.append(_circuit_tables(spec, section, badges, leds, netlist=netlist))
-        unstaged = _unstaged_nodes_html(spec, section, png=png)
-        if unstaged:              # 빈 문자열을 넣으면 노드 없는 주차의 HTML 에 빈 줄이 는다
-            out.append(unstaged)
-        out.append("</div>")      # B 쪽 끝
-        out.append("</section>")
+        out.append(_unstaged_nodes_html(spec, section, png=png))
+        out.append('<div class="circuit-notes"><b>메모</b></div>')
+        out.append('</div></section>')
         previous = section
     return _drop_issue_refs("\n".join(out))
 
 
-CLOSING = (
-    "표마다 확인 칸이 다 찼나요? 사진만 찍었다면 시험한 행마다 사진이 있나요? "
-    "(못 한 표에는 진행하지 않았음 이라고 적어요)",
-    "표마다 사진을 지시대로 찍었나요? 진리표는 시험한 행마다(불일치 행은 꼭), "
-    "스텝표는 스텝마다, 파형은 화면마다예요",
-    "사진 파일명이 표에 인쇄된 이름 그대로인가요? (실험 번호 접두어 없이)",
-    "공통면의 실험실 확인 목록을 다 처리했나요?",
-    "조교에게 물어볼 것을 다 물었나요?",
-    "종료 메모 거리(막힌 것·예상과 다른 것·해결·새로 안 것)를 적어 두었나요? 실험 폴더에 .md 로 둔 자유 메모 파일도 괜찮아요",
-    "부품을 반납했나요?",
-)
+CLOSING = ()
 
 
 def closing_page() -> str:
-    """실험실을 나오기 전 30초. 여기서 빠뜨린 것은 결과보고서에서 못 채운다."""
-    items = "".join(f'<li><span class="box"></span>{_esc(c)}</li>'
-                    for c in CLOSING)
-    return f"{FIT_PLAIN}<h2>실험실을 나오기 전에</h2><ul>{items}</ul></div>"
+    """반복 종료 안내는 현장판에서 제외한다."""
+    return ""
 
 
 def render_checklist(spec, netlist, template) -> str:
@@ -1480,11 +1297,15 @@ def render_checklist(spec, netlist, template) -> str:
     if errors:
         raise ValueError("\n".join(str(f) for f in errors))
     title = config.document_title(spec.experiment, spec.title, "체크리스트")
+    circuits = circuit_pages(spec, netlist)
+    circuits = re.sub(r'<div class="(?:stage|fit)">',
+                      lambda m: m[0] + f'<h1>{_esc(title)}</h1>' + common_page(spec, netlist),
+                      circuits, count=1)
     if netlist.schema != "lab-netlist/v3":
         template = re.sub(r'<!-- OBSERVATION_STYLE_BEGIN -->.*?<!-- OBSERVATION_STYLE_END -->\n',
                           '', template, flags=re.S)
     return (template
             .replace("{{TITLE}}", _esc(title))
-            .replace("{{COMMON}}", common_page(spec, netlist))
-            .replace("{{CIRCUITS}}", circuit_pages(spec, netlist))
-            .replace("{{CLOSING}}", closing_page()))
+            .replace("{{COMMON}}", "")
+            .replace("{{CIRCUITS}}", circuits)
+            .replace("{{CLOSING}}", ""))

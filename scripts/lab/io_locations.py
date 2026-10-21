@@ -53,7 +53,7 @@ def locations_html(png, inputs, *, feed=None):
     raw = data.get('inputs', [])
     rows = [r for r in raw if _valid_input(r)] if isinstance(raw, list) else []
     out = ['<aside class="io-locations" aria-label="입력과 LED 위치">',
-           '<p class="io-title"><b>입력·LED 위치</b> · 결선도와 같은 방향으로 봐요</p>']
+           '<p class="io-title"><b>입력·LED 위치</b></p>']
     missing = location_issues(png, inputs)
     if missing:
         names = ', '.join(name for name in inputs if name not in {r['name'] for r in rows})
@@ -90,7 +90,5 @@ def locations_html(png, inputs, *, feed=None):
             out.append(f'<li class="io-led{muted}"><span class="io-symbol">○</span>'
                        f'<span>{circled(index)}</span><strong>{esc(tag)}</strong>{note}</li>')
         out.append('</ol></section>')
-    led_hint = ' 흐린 LED는 이 표에서 보지 않아요.' if feed is not None else ''
-    out += ['</section>', '<p class="io-foot">위아래 순서를 나타내요. 간격은 줄였어요.'
-            f' 흐린 입력은 이 표에서 바꾸지 않아요.{led_hint}</p>', '</aside>']
+    out += ['</section>', '</aside>']
     return ''.join(out)

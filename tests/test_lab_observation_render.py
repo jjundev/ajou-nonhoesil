@@ -29,11 +29,11 @@ def test_probe_stage_prints_procedure_without_led(data):
     assert '관측 예상' in h
     assert '계산할 수 없어요' not in h
 
-def test_derived_procedure_is_labeled_at_point_of_use(data):
+def test_provenance_stays_in_source_while_setup_is_printed(data):
     h=stage_html(data)
-    assert '교안 원문이 아니다 — 교안에서 유도한 확인 절차' in h
-    assert 'manual:p9' in h
+    assert '교안 원문이 아니다' not in h and 'manual:p9' not in h
     assert 'CLK을 0에 정지' in h
+    assert data[2].procedures[0].source == 'manual:p9'
     data[2].procedures[0].provenance='manual'
     assert '교안 원문이 아니다' not in stage_html(data)
 

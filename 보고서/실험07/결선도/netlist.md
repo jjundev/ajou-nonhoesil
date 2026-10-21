@@ -277,7 +277,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 - layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
-- setup: Q는 아직 보지 않는다. 프로브를 U1 pin11에 댄다.
+- setup: 모든 단계 투입 전 D=CLK=CLR=0·PR1=PR2=1. 프로브 GND=회로 GND. 다음 배선 전 CLK 정지·전원 OFF·발생기 정지·분리.
 - encoding: 0/1
 - inputs: [D]
 - clocks: []
@@ -295,7 +295,7 @@ CLK 입력 그림은 점퍼의 0 자리다. 자동 클럭을 쓸 때는 그 점�
 - layout: inline
 - provenance: derived
 - rationale: p8의 연결, p9의 초기화, p10의 하강 에지, p11의 PR 기능을 이 단계 확인 순서로 구체화했다. 교안 원문이 아니다.
-- setup: Q는 아직 보지 않는다. 해당 노드 핀을 프로브로 확인하고 끝나면 입력을 0에 정지한다.
+- setup: CLK=0. 자동 클럭 사용 시 0~+5V·주기≥5s·GND 공통. CLK 점퍼 대신 발생기 출력을 연결한다.
 - encoding: 0/1
 - inputs: [CLK]
 - clocks: [CLK]

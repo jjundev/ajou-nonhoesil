@@ -17,8 +17,6 @@
   .comparison-table tr { break-inside:avoid; }
   .comparison-table td.actual { background:#f2f2f2; min-height:9mm; border:1px solid #777; }
   .comparison-table td:first-child { white-space:nowrap; }
-  .comparison-guide { font-size:9pt; }
-  .observation-procedure .provenance { border-left:3px solid #111; padding-left:2mm; }
 </style>
 <!-- OBSERVATION_STYLE_END -->
 <style>
@@ -77,7 +75,6 @@
   .io-rank { min-width: 9mm; font-size: 10pt; }
   .io-symbol { font-size: 12pt; }
   .io-muted { opacity: 0.55; }
-  .io-foot { font-size: 9pt; color: var(--muted); margin: 2mm 0 0; }
   .io-warning { font-size: 10pt; font-weight: bold; }
 
   /* 펜으로 칠하는 칸. `.check` 는 명세의 기록 대상 표 행 전용이고
@@ -88,57 +85,10 @@
   td.box { display: table-cell; width: 8mm; height: 8mm; margin: 0; border-radius: 0;
            border: 1px solid var(--rule); background: var(--tint); }
 
-  /* ── 공통면 ─────────────────────────────────────────────── */
-  /* 공통면은 한 장으로 끝나고 회로가 새 쪽에서 시작한다. 실험01 이 이 쪽에 아슬아슬하게
-     들어간다 — 목록 글자(12pt·1.7)는 키우지 않고, 머리글·상자 여백으로 무게를 준다. */
-  .common { break-after: page; }
-  /* 전원 줄은 매번 같은 내용이라 한 단계 낮춘다 — 첫눈은 `꼭 읽을 것` 이 가져간다. */
-  .common .power { font-weight: 700; border: 1px solid var(--rule); background: var(--tint);
-                   padding: 2mm 3mm; margin-bottom: 3mm; border-radius: 1mm; }
-  .common li { font-size: 12pt; line-height: 1.7; }
-
-  /* 꼭 읽을 것 — 공통면에서 가장 무거운 덩어리. 검은 머리띠 + 굵은 테두리. */
-  .common .must-read { border: 2.5px solid var(--ink); border-radius: 1mm;
-                       padding: 0 3.5mm 1.5mm; margin: 0 0 3mm; break-inside: avoid; }
-  .common .must-read h2 { margin: 0 -3.5mm 1.5mm; padding: 1.5mm 3.5mm;
-                          background: var(--ink); color: var(--paper);
-                          font-size: 13pt; letter-spacing: 0.02em; }
-  .common .must-read h2::before { content: "!"; display: inline-block; width: 5mm; height: 5mm;
-                                  margin-right: 2mm; border-radius: 50%; text-align: center;
-                                  line-height: 5mm; font-size: 10pt; vertical-align: 0.3mm;
-                                  background: var(--paper); color: var(--ink); }
-  .common .must-read ul { margin: 0; padding-left: 5mm; }
-  .common .must-read li { font-weight: 600; }
-  .common .must-read li::marker { color: var(--ink); }
-
-  .common .caution { border: 1px solid var(--rule); border-radius: 1mm; padding: 1.5mm 3mm;
-                     margin: 0 0 2mm; font-size: 9.5pt; break-inside: avoid; }
-  .common .caution ul { margin: 0.5mm 0 0; padding-left: 5mm; }
-  .common .caution li { font-size: inherit; line-height: 1.4; }
-
-  /* 선 색 범례 — 그림과 목록 번호 원을 잇는 열쇠라 줄로 따로 세운다. */
-  .wire-legend { font-size: 9pt; margin: 2mm 0 1mm; padding: 1mm 0 1mm 3mm;
-                 border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
-  .wire-legend::before { content: ""; display: inline-block; width: 15mm; height: 2.4mm;
-                         margin-right: 2mm; vertical-align: -0.2mm; border-radius: 0.4mm;
-                         background: linear-gradient(90deg,
-                           var(--vcc) 0 25%, var(--gnd) 25% 50%, var(--sig) 50% 75%, var(--mid) 75%); }
-  .legend { font-size: 9pt; color: var(--muted); margin: 0.8mm 0 0.8mm; }
-  .legend + h2 { margin-top: 3mm; }
-
-  .common th, .common td { padding: 1.2mm 2.5mm; }
-  .common table { margin-bottom: 3mm; }
-  .common .tblock p { font-size: 9pt; color: var(--muted); margin: 0 0 2mm; }
-
-  /* 오늘의 흐름 — 도착 직후 오늘 뭘 몇 개 하는지 한눈에. */
-  .flow td, .flow th { text-align: left; }
-  .flow td:first-child { font-weight: 700; white-space: nowrap; }
-
   /* ── 회로 ─────────────────────────────────────────────── */
   /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
   .circuit { break-before: page; }
-  .closing { break-before: page; }
-  .circuit > h2 { font-size: 14pt; margin: 0 0 2mm; padding: 0 0 1.5mm;
+  .circuit h2 { font-size: 14pt; margin: 0 0 2mm; padding: 0 0 1.5mm;
                   border-bottom: 2px solid var(--ink); }
 
   /* 칩 교체 배너. 준비물이 종류당 하나라 순차 배선이 강제된다. */
@@ -158,7 +108,6 @@
   .wirebox .chip h4 { margin: 0 0 1.5mm; padding-bottom: 1mm; border-bottom: 1px solid var(--hair); }
   .wirebox .chip ol { margin: 0; padding-left: 6mm; }
   .wirebox .chip li { font-size: 11pt; line-height: 1.8; }
-  .wirebox .submit { font-size: 9.5pt; color: var(--ink); font-weight: 700; margin: 3mm 0 2mm; }
 
   /* 단계 블록 — 칩 하나 = 단계 하나. 회색은 앞 단계에서 그대로 둔 선이고 번호만 이번에 한다.
      블록 하나가 PDF 한 쪽이다: `scripts/lab/fit_pages.py` 가 블록 높이를 실측해 블록마다
@@ -220,13 +169,6 @@
   .removal .text { flex: 1 1 auto; min-width: 0; font-size: 11pt; font-weight: 700; line-height: 1.4; }
   ul.removals + ol.steps::before { content: "그다음 꽂아요"; display: block; font-weight: 800;
     font-size: 10.5pt; margin: 2mm 0 1mm; }
-  ul.removals:not(:has(+ ol.steps))::after { content: "이번엔 뽑기만 해요 — 새로 꽂는 선은 없어요";
-    display: block; padding: 1mm 2mm 1.2mm 15mm; font-size: 9.5pt; font-weight: 700; color: var(--pull);
-    border-top: 1px dashed var(--pull); }
-
-  .kept { font-size: 9pt; color: var(--muted); margin: 1mm 0; }
-  .kept::before { content: ""; display: inline-block; width: 8mm; height: 0.8mm; margin-right: 2mm;
-                  vertical-align: 0.6mm; background: var(--hair); }
   /* 단계에서 안 본 노드 표 — 열 머리 둘째 줄은 프로브를 댈 핀. 읽는 표라 .check 가 없다. */
   .nodes th small { font-weight: 400; font-size: 8pt; white-space: nowrap; }
 
@@ -245,8 +187,6 @@
   .led-table td.led.on { font-weight: 800; background: var(--tint); white-space: nowrap; }
   .led-table td.led.off { color: var(--muted); font-size: 9pt; }
   .led-legend { margin: 2mm 0 0; font-size: 9pt; }
-  /* 완성본 아래 LED 순서 띠 — 보드 위→아래 번호 */
-  .led-order { margin: 1.5mm 0; font-size: 10pt; }
   .led-table td.led.hold { text-align: center; color: var(--muted); }
   td.order { font-weight: 800; }
 
@@ -282,10 +222,8 @@
   td.fill { width: 22mm; height: 8mm; background: #fafafa; }
 
   /* 결과보고서의 "예상과의 비교"가 여기서 나온다. 확인 칸 하나로는 좁다. */
-  .mismatch td { height: 8mm; background: #fafafa; }
 
   .src { font-size: 9pt; color: var(--muted); margin: 0 0 1mm; }
-  .photo { font-size: 9pt; color: var(--muted); margin: 0 0 3mm; }
 
   /* 중첩 오버바((A'·B)' 처럼)가 같은 높이에 겹쳐 그려지지 않도록 inline-block
      으로 자기 높이를 갖게 한다. border-top 만으로는 두 겹이 한 줄로 뭉개진다. */
@@ -305,13 +243,9 @@
   .differs { border: 1px solid var(--rule); border-radius: 1mm; padding: 2mm 3mm; height: 16mm;
              margin-bottom: 6mm; }
 
-  /* 실험실을 나오기 전에 — 펜으로 칠하는 마지막 목록. */
-  .closing h2 { font-size: 14pt; padding-bottom: 1.5mm; border-bottom: 2px solid var(--ink); }
-  .closing ul { list-style: none; padding: 0; margin: 0; }
-  .closing li { font-size: 11pt; line-height: 1.6; padding: 2mm 0; border-bottom: 1px solid var(--tint); }
+  .wirebox > h3 { break-after: avoid; }
+  .circuit-notes { min-height: 18mm; border: 1px solid var(--hair); padding: 2mm 3mm; margin-top: 3mm; }
+  .operation { font-size: 10pt; margin: 1mm 0; }
 </style>
 
-<h1>{{TITLE}}</h1>
-<section class="common">{{COMMON}}</section>
 <section class="circuits">{{CIRCUITS}}</section>
-<section class="closing">{{CLOSING}}</section>

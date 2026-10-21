@@ -24,7 +24,7 @@ def test_six_preparation_blocks_before_stage_one(data):
 
 def test_preparation_off_and_no_observation(data):
  n,s=data; h=render._assembly_html(n.circuits[0].assembly_steps[0],n)
- assert '전원과 신호발생기 출력을 꺼요.' in h and '완료 확인' in h
+ assert '전원·신호발생기 OFF' in h and '완료 확인' in h
  assert not any(x in h for x in ['observation-procedure','td.check','확인 노드:'])
  assert tag(h).startswith('<div class="stage" data-fit="0">')
  assert 'prep1.png' in h and '레일 연결' in h and '극성 대조' in h
