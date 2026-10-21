@@ -885,6 +885,19 @@ def _diagram_html(section, netlist) -> str:
             'object-position:top">')
 
 
+def _assembly_html(step, netlist) -> str:
+    """A power-off assembly page, without an observation or measurement table."""
+    png = netlist.path.parent / step.diagram
+    data = _sidecar(png, board_version_of(netlist.path.parent / "배치.py", netlist.experiment))
+    src = f"../{netlist.path.parent.name}/{step.diagram}"
+    return (f'<div class="stage"><h3>단계 {step.stage_no} 준비 {circled(step.order)} · {_esc(step.title)}</h3>'
+            '<p class="banner">전원과 신호발생기 출력을 꺼요.</p>'
+            f'<figure class="board"><img src="{_esc(src)}" style="width:100%"></figure>'
+            f'<p><b>이번 작업:</b> {_esc(_plain(step.todo))}</p>'
+            + _board_text_html(data)
+            + f'<p><span class="box"></span><b>완료 확인:</b> {_esc(_plain(step.check))}</p></div>')
+
+
 def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=None) -> str:
     """단계 블록 하나 — 그림, 이 단계에서 할 것, 확인 노드, 확인 칸, 단계 진리표.
 
@@ -1328,6 +1341,10 @@ def circuit_pages(spec, netlist) -> str:
         feeds = (v3_feeds[section.id] if v3_feeds is not None else
                  feeds_by_stage(section, start=feed_after if section.continues else None))
         for stage, feed in zip(section.stages, feeds):
+            if not stage.get('walk'):
+                from .assembly import steps_for_stage
+                out.extend(_assembly_html(step, netlist)
+                           for step in steps_for_stage(section, stage.get('stage_no')))
             out.append(_stage_html(stage, netlist, section, spec, last=stage is last,
                                    leds=leds, feed=feed))
         feed_after = feeds[-1] if feeds else (feed_after if section.continues else {})
@@ -1372,6 +1389,10 @@ def render_checklist(spec, netlist, template) -> str:
     관용을 두지 않는다 — 렌더러가 두 벌이 되고 어느 주차가 어느 레이아웃인지
     조용히 갈린다. 파서가 백필 방법을 담아 거절한다.
     """
+    from .assembly import check_structure, check_assets
+    errors = check_structure(netlist) + check_assets(netlist)
+    if errors:
+        raise ValueError("\n".join(str(f) for f in errors))
     title = config.document_title(spec.experiment, spec.title, "체크리스트")
     if netlist.schema != "lab-netlist/v3":
         template = re.sub(r'<!-- OBSERVATION_STYLE_BEGIN -->.*?<!-- OBSERVATION_STYLE_END -->\n',
