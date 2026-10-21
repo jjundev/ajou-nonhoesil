@@ -23,6 +23,7 @@ class SearchSpec:
     fixed_leds: dict
     budget: int = 256
     slack: float = 1.10
+    lower_bridges: bool = False
 
     def __post_init__(self):
         if type(self.budget) is not int or self.budget < 1 or not math.isfinite(self.slack) or self.slack < 1:
@@ -73,6 +74,22 @@ def select(rows, slack=1.10):
     valid = [r for r in rows if r.get('valid')]
     if not valid:
         raise ValueError('No fully validated candidate; approved diagrams unchanged')
+    # Once a placement has a safe lower pair, do not push that same placement
+    # further down just to win a secondary signal-routing score.
+    def bridge_family(r):
+        candidate = r.get('candidate', {})
+        lay = candidate.get('layout', {})
+        if lay.get('bridge_policy') == 'lower-clearance-v1':
+            return key(dict(slots=lay['slots'], leds=lay['leds'], variant=candidate['variant']))
+        return None
+    nearest = {}
+    for r in valid:
+        identity = bridge_family(r)
+        if identity is not None:
+            lay = r['candidate']['layout']
+            nearest[identity] = min(nearest.get(identity, math.inf), lay['bridge'][0])
+    valid = [r for r in valid if bridge_family(r) is None or
+             r['candidate']['layout']['bridge'][0] == nearest[bridge_family(r)]]
     shortest = min(valid, key=lambda r: (r['metrics']['length'], r['key']))
     band = shortest['metrics']['length'] * slack
     inside = [r for r in valid if r['metrics']['length'] <= band + 1e-9]
@@ -205,6 +222,19 @@ def candidates(e, board, spec):
                 if candidate['key'] not in seen:
                     seen.add(candidate['key'])
                     result.append(candidate)
+    if spec.lower_bridges:
+        # New diagrams only: visit the nearest lower pairs of each placement.
+        # Keep generation bounded by the route budget, rather than multiplying
+        # the complete placement/assignment domain by every rail row pair.
+        lower = []
+        for candidate in result:
+            for lay in e.lower_bridge_candidates(board.PLACE, candidate['layout']):
+                c = dict(layout=lay, variant=copy.deepcopy(candidate['variant']))
+                c['key'] = key(c)
+                lower.append(c)
+                if len(lower) >= spec.budget:
+                    return lower
+        return lower
     return result
 
 
@@ -225,6 +255,7 @@ def _signal_plan(e, board, candidate, weight, policy):
     circuit = board.search_circuit(candidate['variant'])
     lay = candidate['layout']
     def fixed(bb, stage, superset=False):
+        bb.bridge_policy = lay.get('bridge_policy')
         bb.led_order_policy = 'fixed'
         bb.route_avoid_bodies = True
         bb.side_lead_max = getattr(board, 'SIDE_LEAD_MAX', e.SIDE_LEAD_MAX)
@@ -326,9 +357,11 @@ def validate_plan(e, board, candidate, plans, temps, output=None):
                 for prep_name, prep_fn in getattr(board, 'ASSEMBLY_BOARDS', {}).get(name, []):
                     prep = prep_fn(dest / prep_name)
                     prep.verify()
+                    e.check_lower_bridges(prep, candidate['layout'])
                     board.search_assert_equivalent(prep, prep_name)
                 bb = fn(dest / name, stage=st, baseline=base)
                 bb.verify()
+                e.check_lower_bridges(bb, candidate['layout'])
                 base = bb.snapshot()
                 stages.append(metrics(e, bb))
                 board.search_assert_drivers(bb, st)
@@ -336,6 +369,7 @@ def validate_plan(e, board, candidate, plans, temps, output=None):
             for name, fn in board.FINALS:
                 final = fn(dest / name)
                 final.verify()
+                e.check_lower_bridges(final, candidate['layout'])
                 board.search_assert_equivalent(final, name)
             if bb._segments != final._segments or bb.nets() != final.nets():
                 raise AssertionError('Procedure final differs from final diagram')
@@ -458,7 +492,7 @@ def run(e, board, path, spec, jobs=1, progress=None):
         # it does not consume a new route-generation attempt.
         baseline = board.search_baseline()
         base_eval = validate_plan(e, board, baseline['candidate'], baseline['plans'], baseline['temporaries'])
-        baseline.update(base_eval, valid=True, key='approved-baseline', baseline=True)
+        baseline.update(base_eval, valid=not spec.lower_bridges, key='approved-baseline', baseline=True)
         half = max(1, spec.budget // 2)
         batch([task(c) for c in cs], half)
         archive = pareto(rows + [baseline])
@@ -467,7 +501,15 @@ def run(e, board, path, spec, jobs=1, progress=None):
         batch(variants, max(1, spec.budget // 4))
         archive = pareto(rows + [baseline])
         seeds = sorted(archive, key=lambda r: (r['metrics']['density'], r['metrics']['length'], r['key']))
-        batch(neighbors(e, board, seeds[:8], spec), spec.budget - len(rows))
+        nearby = neighbors(e, board, seeds[:8], spec)
+        if spec.lower_bridges:
+            # Neighbors must pass the same lower-corridor contract; never fall
+            # back to a legacy bridge when all lower candidates are blocked.
+            for task_ in nearby:
+                task_['candidate']['layout']['bridge_policy'] = 'lower-clearance-v1'
+                task_['candidate'].pop('key', None)
+                task_['candidate']['key'] = key(task_['candidate'])
+        batch(nearby, spec.budget - len(rows))
         # If refinement ran out of unseen neighbors, spend remaining attempts on
         # diverse global candidates instead of silently ending early.
         batch((task(c, w, policy) for w, policy in itertools.product(WEIGHTS, ORDERS) for c in cs),
@@ -511,4 +553,9 @@ def report(result):
               f"지문: `{result['fingerprint']}`", '',
               '실패는 해당 경로 탐색/검증의 실패이며 배치의 불가능성 증명이 아니다.',
               '승인 배치·결선도·측정 기록은 자동으로 교체하지 않는다.', '']
+    if result['spec'].get('lower_bridges'):
+        pair = result['selected']['candidate']['layout']['bridge']
+        lines += [f'긴 전원 브리지: GND {pair[0]}행 · +5V {pair[1]}행 (`lower-clearance-v1`).',
+                  '같은 칩·LED·등가 할당에서는 여유를 만족하는 가장 가까운 아래쪽 행 쌍을 먼저 고른다.',
+                  '기존 기준은 비교용이며 새 브리지 검증 없이 fallback으로 채택하지 않는다.', '']
     return '\n'.join(lines)

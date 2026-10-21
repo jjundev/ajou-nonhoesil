@@ -68,14 +68,19 @@ def main(argv=None):
     ap.add_argument('--length-slack', type=float, default=1.10,
                     help='fixed mode length band relative to shortest validated candidate')
     ap.add_argument('--out', help='fixed mode output directory; approved diagrams are never replaced')
+    ap.add_argument('--lower-bridges', action='store_true',
+                    help='new diagrams: reserve a clear lower corridor for the two long rail bridges')
     a = ap.parse_args(argv)
+    if a.lower_bridges and a.mode != 'fixed':
+        ap.error('--lower-bridges requires --mode fixed; LED-less circuits use place_lower_bridges()')
     t = time.perf_counter()
     mod, board = load(a.board)
     if a.mode == 'fixed':
         if not a.out:
             ap.error('--mode fixed requires --out (separate search artifacts)')
         from scripts.lab import fixed_search as fixed
-        spec = fixed.SearchSpec(board.LAYOUT['leds'], a.budget, a.length_slack)
+        spec = fixed.SearchSpec(board.LAYOUT['leds'], a.budget, a.length_slack,
+                                lower_bridges=a.lower_bridges)
         out = Path(a.out).resolve()
         if out == Path(a.board).resolve().parent:
             ap.error('fixed search output must differ from approved diagram directory')

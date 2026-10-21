@@ -145,6 +145,72 @@ def bridge_rows(slots, rows=None):
     return None
 
 
+def lower_bridge_candidates(circuits, layout):
+    """칩 아래의 합법적인 연속 레일 행 쌍. 위에서 아래로, LED·칩 좌표는 보존한다."""
+    slots = layout['slots']
+    heights = slot_rows(circuits, slots)
+    first = bridge_rows(slots, heights)
+    if first is None:
+        return
+    for row in range(first[0], PLACE_ROW_LAST):
+        if row in RAIL_GAP_ROWS or row + 1 in RAIL_GAP_ROWS:
+            continue
+        candidate = copy.deepcopy(layout)
+        candidate.update(bridge=[row, row + 1], bridge_policy='lower-clearance-v1')
+        yield candidate
+
+
+def check_lower_bridges(bb, layout):
+    """구형 빌더를 탐색할 때도 평가한 레일 홀 그대로인지 확인한다."""
+    if not isinstance(layout, dict) or layout.get('bridge_policy') != 'lower-clearance-v1':
+        return
+    L = bb.cols['left']
+    indices = set()
+    for kind, row in zip(('gnd', 'vcc'), layout['bridge']):
+        a, b = L[kind], L['mid_' + kind]
+        expected = (kind, bb.sym(a, row), bb.sym(b, row))
+        if expected not in bb.bridges:
+            raise AssertionError(f'브리지 {kind} 확정 행 {row}이 렌더링에서 바뀌었다')
+        for i, (k, pts, _) in enumerate(bb._segments):
+            if k == kind and pts == [(a, bb.r_y(row)), (b, bb.r_y(row))]:
+                indices.add(i)
+    if len(indices) != 2:
+        raise AssertionError('브리지 두 가닥의 실제 경로를 찾을 수 없다')
+    bb._lower_bridge_segments.update(indices)
+    bad = bb.bridge_clearance_problems()
+    if bad:
+        raise AssertionError('브리지 주변 여유가 없다:\n  ' + '\n  '.join(bad))
+
+
+def place_lower_bridges(circuits, layout, verify=None, attempts=None):
+    """모든 단계의 고정물·신호선으로 후보를 비교하고 가장 가까운 안전한 아래쪽 쌍을 고른다.
+
+    verify(layout)는 실제 준비·걷기·단계·완성본 검증의 오류 문자열 또는 None을 반환한다.
+    기존 LAYOUT·칩·LED 좌표·기존 도장에는 손대지 않는다.
+    """
+    circuits = list(circuits)
+    failures = attempts if attempts is not None else []
+    for candidate in lower_bridge_candidates(circuits, layout):
+        try:
+            for circuit in circuits:
+                plans = place_paths(circuit, candidate)
+                bb = BreadboardRenderer(board='v2')
+                bb.enable_steps()
+                circuit.fixed(bb, None, True, candidate)
+                for wire, (path, marker) in zip(place_wires(circuit, candidate), plans):
+                    bb.step_wire(path, wire[2], wire[5], marker_at=marker)
+                check_lower_bridges(bb, candidate)
+            if verify is not None:
+                why = verify(candidate)
+                if why is not None:
+                    raise AssertionError(why)
+        except (AssertionError, ValueError) as exc:
+            failures.append({'bridge': candidate['bridge'], 'failure': str(exc)})
+            continue
+        return candidate
+    raise AssertionError('아래쪽 브리지에 여유 있는 레일 행 쌍이 없다 — 칩·신호선 배치를 조정해야 한다')
+
+
 def led_rows(circuit, slots, bridge):
     """회로의 LED 윗행 {태그: 행} — DP. 태그 순서대로 위→아래(R10, N3), 사슬끼리 `LED_SPAN` 행 이상,
     윗행+3(레일 점퍼 행)이 레일 빈 행·가운데 레일 사용 행이 아니다. 그 LED 로 가는 모든 단계 선의 근사
@@ -310,10 +376,12 @@ def place_verify(module, layout, out_dir):
             if name in getattr(module, 'RESTART', ()):
                 base = None
             bb = fn(os.path.join(out_dir, name), None, stage=stage, baseline=base)
+            check_lower_bridges(bb, layout)
             base = bb.snapshot()
         for name, fn in module.FINALS:
-            fn(os.path.join(out_dir, name))
-    except AssertionError as e:
+            bb = fn(os.path.join(out_dir, name))
+            check_lower_bridges(bb, layout)
+    except (AssertionError, ValueError) as e:
         lines = [x.strip() for x in str(e).splitlines() if x.strip()]
         return f'{name}: ' + ' '.join(lines[:2])
     finally:

@@ -52,6 +52,8 @@ class BreadboardRenderer(_RuleChecks):
         self._bridged = set()
         # 실제로 꽂힌 브리지(행 포함) — `wiring()` 이 낸다. 행이 없으면 손그림 검토가 H1 을 헛낸다
         self.bridges = []
+        self._lower_bridge_segments = set()
+        self.bridge_policy = None
         # 레일 스트립마다 닿은 전원 — 레일쌍은 별개 스트립이라 verify() 레일 연결성이 본다
         self._touched = {'vcc': set(), 'gnd': set()}
         self._rail_uf = {}
@@ -962,7 +964,50 @@ class BreadboardRenderer(_RuleChecks):
                                f'{"좌" if block == "left" else "우"} {start_row}행 칩 교체',
                                marker_at=((x1 + x2) // 2, y_top + 12))
 
-    def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None):
+    def connect_rail_bridges(self, layout):
+        """새 v2 결선도의 레일쌍. lower-clearance-v1 은 확정 홀에서만 그린다."""
+        policy = layout.get('bridge_policy')
+        if policy not in (None, 'lower-clearance-v1'):
+            raise ValueError(f'모르는 브리지 정책: {policy}')
+        exact = policy is not None
+        if exact and self.board != 'v2':
+            raise ValueError('아래쪽 브리지 정책은 v2 전용이다')
+        rows = layout['bridge']
+        L = self.cols['left']
+        pairs = [('gnd', L['gnd'], L['mid_gnd']), ('vcc', L['vcc'], L['mid_vcc'])]
+        if len(rows) != 2 or (exact and any(type(r) is not int for r in rows)):
+            raise ValueError('브리지 행은 [GND 행, VCC 행] 정수 쌍이어야 한다')
+        if exact and rows[1] != rows[0] + 1:
+            raise ValueError('브리지 두 가닥은 서로 다른 연속 행에 둔다')
+        # 두 가닥 모두 먼저 검사한다. 두 번째 홀 실패로 반쪽만 남기지 않는다.
+        if exact:
+            for row, (kind, a, b) in zip(rows, pairs):
+                if (kind, min(a, b), max(a, b)) not in self._bridged:
+                    self._require_bridge_holes(row, a, b)
+        for row, (kind, a, b) in zip(rows, pairs):
+            self.bridge_rails(a, b, row, kind=kind, exact=exact)
+
+    def _require_bridge_holes(self, row, *xs):
+        if not self.is_rail_row(row) or any(
+                (x, row) in self._leads or (x, row) in self._passed for x in xs):
+            raise ValueError(f'브리지 {row}행의 확정 레일 홀이 비어 있지 않다')
+
+    def bridge_clearance_problems(self):
+        """긴 레일 브리지와 다른 배선 사이 한 홀 간격. 두 브리지끼리는 제외한다."""
+        bad = []
+        for i in sorted(self._lower_bridge_segments):
+            _, bridge, _ = self._segments[i]
+            for j, (_, pts, desc) in enumerate(self._segments):
+                if j in self._lower_bridge_segments:
+                    continue
+                gap = min(_segment_distance(a, b, c, d)
+                          for a, b in zip(bridge, bridge[1:]) for c, d in zip(pts, pts[1:]))
+                # r_y 는 정수 픽셀로 반올림한다. 정확히 한 행 간격의 1px 오차는 허용한다.
+                if gap < self.spec.row_pitch - 1:
+                    bad.append(f'브리지 {i + 1} ↔ {desc}: 간격 {gap:.1f}px')
+        return bad
+
+    def bridge_rails(self, x_a, x_b, row, kind='gnd', label=None, *, exact=False):
         """물리적으로 분리된 전원 레일 둘을 잇는 점퍼 — 레일쌍은 별개 스트립이라 안 이으면 전원이 안
         간다. 같은 열을 이으면 오류다(v2 가운데 레일은 두 블록이 같이 부르는 한 열).
         """
@@ -972,11 +1017,17 @@ class BreadboardRenderer(_RuleChecks):
         key = (kind, min(x_a, x_b), max(x_a, x_b))
         if key in self._bridged:
             return
+        exact = exact or self.bridge_policy == 'lower-clearance-v1'
+        if exact:
+            self._require_bridge_holes(row, x_a, x_b)
+        else:
+            row = self.free_rail_row(row, x_a, x_b)
         self._bridged.add(key)
-        row = self.free_rail_row(row, x_a, x_b)
         self._uf_union(x_a, x_b)
         self.bridges.append((kind, self.sym(x_a, row), self.sym(x_b, row)))
         y = self.r_y(row)
+        if exact:
+            self._lower_bridge_segments.add(len(self._segments))
         self.step_wire([(x_a, y), (x_b, y)], kind,
                        '레일 브리지',
                        marker_at=((x_a + x_b) // 2, y - 12))

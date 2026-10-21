@@ -489,5 +489,6 @@ class _RuleChecks:
             rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
             rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
             rd += [f'R14 배선이 칩 이름을 가린다: {p}' for p in self.wires_over_chip_labels()]
+            rd += self.bridge_clearance_problems()
             if rd:
                 raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))

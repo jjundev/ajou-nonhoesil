@@ -455,6 +455,26 @@ def draw_routed(bb, wires, plans, stage):
             continue
         bb.step_wire(p, kind, desc, marker_at=m)
 
+def _segment_distance(a, b, c, d):
+    """두 닫힌 선분의 거리 — 직교 교차·포개짐·사선까지 포함한다."""
+    ux, uy = b[0] - a[0], b[1] - a[1]
+    vx, vy = d[0] - c[0], d[1] - c[1]
+    den = ux * vy - uy * vx
+    if abs(den) > 1e-9:
+        wx, wy = c[0] - a[0], c[1] - a[1]
+        t, u = (wx * vy - wy * vx) / den, (wx * uy - wy * ux) / den
+        if 0 <= t <= 1 and 0 <= u <= 1:
+            return 0.0
+
+    def point_distance(p, q, r):
+        dx, dy = r[0] - q[0], r[1] - q[1]
+        length2 = dx * dx + dy * dy
+        t = max(0, min(1, ((p[0] - q[0]) * dx + (p[1] - q[1]) * dy) / length2)) if length2 else 0
+        return math.dist(p, (q[0] + t * dx, q[1] + t * dy))
+    return min(point_distance(a, c, d), point_distance(b, c, d),
+               point_distance(c, a, b), point_distance(d, a, b))
+
+
 def _axis_segs(pts):
     """축 정렬 구간만 [(축, 고정 좌표, lo, hi)] 로. 사선 구간은 밀도에서 뺀다."""
     out = []

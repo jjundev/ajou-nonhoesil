@@ -43,9 +43,10 @@ v1(§2)은 실험01~04 전용으로 남는다 — 승인·손그림 검토·도�
 - **가운데 레일은 한 넷이다.** `cols['left']['mid_gnd']` 와 `cols['right']['mid_gnd']` 가 같은 x 라 좌 칩
   pin 14(가운데 VCC)와 우 LED 사슬 GND(가운데 GND)가 브리지 없이 한 레일이다. 주소는 접두어 없이
   `중앙GND레일9행` 꼴이다. 가운데끼리 `bridge_rails` 를 부르면 오류다.
-- **전원 표준**: `connect_jacks()` 로 잭 → **좌 바깥 레일**, 거기서 `bridge_rails(L['gnd'], L['mid_gnd'], …)`·
-  `bridge_rails(L['vcc'], L['mid_vcc'], …)` 두 가닥으로 가운데 레일에 넘긴다. **우 바깥 레일은 기본 배선에서
-  쓰지 않는다**(그림에는 있다).
+- **전원 표준**: 잭 → 좌 바깥 → 가운데 레일. 새 결선도는 `connect_jacks()` + `connect_rail_bridges(layout)`를
+  쓰고 `.claude/skills/breadboard-diagram/lower-bridges.md`를 따른다. 긴 5V·GND 두 가닥만 아래쪽 여유 공간에 둔다.
+  우 바깥 레일은 쓰지 않는다.
+  기존 승인본에는 소급하지 않는다.
 - 사이드카 JSON 에는 `"board": "v2"` 가 든다(키가 없으면 v1).
 - `leds`(v2 만) — `[{tag, at, active_low}]`, 보드 위→아래. 체크리스트 LED 점등 열 출처. 도장 밖.
 - `inputs`(v2 만) — `[{name, at, rail, x, row}]`. `at`은 고정 홀, `rail`·`x`·`row`는 조작하는 레일 쪽 끝의 주소·가로 좌표·행이다. 엔진의 입력 점퍼에서 파생하며, 핀 행 대신 실제 레일 착지 행으로 체크리스트 위치도를 정렬한다. 도장 밖 메타데이터다. 빠진 옛 JSON은 해당 실험 결선도를 다시 생성한다.
@@ -367,7 +368,7 @@ GND 에 꽂혀 있어도 1 을 줄 때 옮길 자리라, 레일로 세면 입력
 | 프로브·함수발생기·DMM | `instrument()` / `instrument_note()`. 교안 회로도가 그 접점에 이름(`VIN`·`CH1`)을 붙였으면 `name=` 으로 넘겨 보드 안 배지를 찍는다 | `step_wire()` — 배선이 아니다 |
 | 미사용 입력 접지·풀업 | `connect_unused_inputs(rail=...)` | — |
 | 미사용 입력 개방(기본) | `mark_unused_inputs()` | `connect_unused_inputs()` — 교안이 지시한 주차만 |
-| 전원 | `connect_jacks()` + `bridge_rails()` + `connect_power()` | — |
+| 전원 | `connect_jacks()` + `connect_rail_bridges(layout)` + `connect_power()` | — |
 
 빌더 첫 줄에 **`bb.enable_steps()`** 를 부른다. 안 부르면 번호도 순서표도 안 나온다.
 
