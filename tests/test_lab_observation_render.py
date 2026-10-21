@@ -1,0 +1,145 @@
+from dataclasses import replace
+from pathlib import Path
+import re
+import pytest
+from scripts.lab import render, observations
+from scripts.lab.leds import Led
+from scripts.lab.spec_parser import parse_spec
+from tests.test_lab_observation_parser import parsed, FIX
+
+@pytest.fixture
+def data(tmp_path):
+    n=parsed(tmp_path); s=parse_spec(FIX/'spec_observation_stepped.md')
+    return n,s,n.circuits[0]
+
+def stage_html(data, **kw):
+    n,s,c=data
+    return render._stage_html(c.stages[0],n,c,spec=s,last=True,**kw)
+
+def test_last_stage_prints_explicit_procedure(data):
+    h=stage_html(data)
+    assert 'BIT1 초기화 및 입력 확인' in h
+    assert 'U2 pin 15' in h
+    assert all(action in h for action in ['초기화','CLR 해제','데이터 설정','클럭 상승','클럭 하강'])
+    assert h.count('data-observation-order=') == 10 # same five rows in both areas
+
+def test_probe_stage_prints_procedure_without_led(data):
+    h=stage_html(data)
+    assert '클럭 하강' in h
+    assert '관측 예상' in h
+    assert '계산할 수 없어요' not in h
+
+def test_derived_procedure_is_labeled_at_point_of_use(data):
+    h=stage_html(data)
+    assert '교안 원문이 아니다 — 교안에서 유도한 확인 절차' in h
+    assert 'manual:p9' in h
+    assert 'CLK을 0에 정지' in h
+    data[2].procedures[0].provenance='manual'
+    assert '교안 원문이 아니다' not in stage_html(data)
+
+def sample(tokens, encoding='0/1'):
+    return observations.ObservationTable(['SERIAL_DATA'],[(f'Q{i}',f'U{i+1} pin 3') for i in range(len(tokens))],
+        [observations.ObservationRow(1,'입력 <script>', ['1'],tokens)],encoding,'derived','manual:p1','준비','유도')
+
+def test_active_low_and_active_high_known_bits():
+    t=sample(['0','1']); ls=[Led('A','좌 a3',True,1),Led('B','좌 a6',False,2)]
+    h=render._observation_procedure_html(t,ls,{'A':'Q0','B':'Q1'})
+    assert '①A: 켜짐' in h and '②B: 켜짐' in h
+    h=render._observation_procedure_html(sample(['1','0']),ls,{'A':'Q0','B':'Q1'})
+    assert '①A: 소등' in h and '②B: 소등' in h
+    h=render._observation_procedure_html(sample(['L','H'],'H/L'),ls,{'A':'Q0','B':'Q1'})
+    assert '①A: 켜짐' in h and '②B: 켜짐' in h
+
+def test_mixed_hold_toggle_unknown_and_bits_are_per_led():
+    tokens=['1','유지','반전','미정','관측 안 함']
+    ls=[Led(f'L{i}','좌 a3',False,i+1) for i in range(5)]
+    h=render._observation_procedure_html(sample(tokens),ls,{f'L{i}':f'Q{i}' for i in range(5)})
+    for text in ['①L0: 켜짐','②L1: 직전 그대로','③L2: 직전과 반대','④L3: 미정','⑤L4: 이번 절차 관측 안 함']:
+        assert text in h
+    assert '④L3: 소등' not in h
+
+def test_inherited_led_missing_in_procedure_is_unobserved():
+    h=render._observation_procedure_html(sample(['1']),[Led('OLD','좌 a3',False,1)],{'OLD':'PREVIOUS'})
+    assert '①OLD: 이번 절차 관측 안 함' in h
+
+def test_scenario_checkboxes_do_not_add_record_cells(data):
+    n,s,c=data
+    template=Path('.claude/skills/prep-lab-checklist/template.html').read_text()
+    authored=render.render_checklist(s,n,template)
+    c.stages=[]; c.nodes=[]
+    without=render.render_checklist(s,n,template)
+    assert authored.count('class="check"') == without.count('class="check"')
+    assert authored.count('class="fill"') == without.count('class="fill"')
+    assert 'class="box"' in authored
+
+def test_v2_render_html_is_unchanged():
+    from scripts.lab import config
+    n=parse_spec # real approved corpus, comparing optional CSS inclusion path
+    from scripts.lab.netlist_parser import parse_netlist
+    s=parse_spec(Path(config.experiment_dir(1))/'체크리스트/명세.md')
+    n=parse_netlist(Path(config.experiment_dir(1))/'결선도/netlist.md')
+    template=Path('.claude/skills/prep-lab-checklist/template.html').read_text()
+    baseline=re.sub(r'<!-- OBSERVATION_STYLE_BEGIN -->.*?<!-- OBSERVATION_STYLE_END -->\n','',template,flags=re.S)
+    assert render.render_checklist(s,n,template) == render.render_checklist(s,n,baseline)
+
+def test_all_procedure_text_is_escaped():
+    h=render._observation_procedure_html(sample(['미정']))
+    assert '<script>' not in h
+    assert '&lt;script&gt;' in h
+
+def test_unstaged_observed_nodes_are_not_computed(data):
+    n,s,c=data; c.stages=[]
+    c.nodes=[c.nodes[-1]]
+    assert '계산할 수 없어요' not in render._unstaged_nodes_html(s,c)
+
+def test_inherited_same_name_different_pin_is_unobserved(tmp_path):
+    import copy,json,base64
+    from scripts.lab.netlist_parser import parse_netlist
+    n=parse_netlist(FIX/'netlist_observation_jk_v3.md')
+    n.path=tmp_path/'netlist.md'
+    s=parse_spec(FIX/'spec_observation_jk.md')
+    first=n.circuits[0]
+    first.stages[0]['todo']='U1 pin 15→LED OLD 급전'
+    second=copy.deepcopy(first)
+    second.id='C2'; second.continues='C1'; second.title='새 물리 출력 Q'
+    second.body=second.body.replace('U1','U2')
+    for point in second.nodes: point['pin']=point['pin'].replace('U1','U2')
+    second.stages[0]['todo']='U2 pin 15→LED NEW 급전'
+    n.sections.append(second)
+    pixel=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=')
+    board=render.board_version_of(tmp_path/'배치.py',n.experiment)
+    for c,tags in [(first,['OLD']),(second,['OLD','NEW'])]:
+        c.diagram=f'{c.id}.png'; c.stages[0]["diagram"]=c.diagram
+        png=tmp_path/c.diagram; png.write_bytes(pixel)
+        png.with_suffix('.json').write_text(json.dumps({'schema':render.SIDECAR_SCHEMA,'board':board,
+            'removals':[],'steps':[],'probes':[],'kept':0,
+            'leds':[{'tag':tag,'at':f'좌 a{3+i*3}','active_low':False} for i,tag in enumerate(tags)]}))
+    h=render.circuit_pages(s,n).split('새 물리 출력 Q',1)[1]
+    assert '①OLD: 이번 절차 관측 안 함' in h
+    assert '①OLD: 소등' not in h and '①OLD: 직전과 반대' not in h
+    assert '②NEW: 소등' in h and '②NEW: 직전과 반대' in h
+    # Reuse of a physical pin under a new local name can still be observed.
+    second.body += '\n- U1 = 74HC76\n'
+    second.nodes[0].update(name='CURRENT',pin='U1 pin 15')
+    second.procedures[0].observe[0]='CURRENT'
+    second.stages[0].update(node='CURRENT',todo='U1 pin 15→LED NEW 급전')
+    h=render.circuit_pages(s,n).split('새 물리 출력 Q',1)[1]
+    assert '①OLD: 소등' in h and '①OLD: 직전과 반대' in h
+
+
+def test_wide_v3_record_reserves_action_width_without_changing_measurements():
+    from types import SimpleNamespace
+    table=SimpleNamespace(header=['스텝','조작','SERIAL DATA','CLK','CLR','PR1','PR2',
+                                  'BIT1','BIT2','BIT3','BIT4','BIT5','BIT6'],
+                          rows=[['S1','다음 데이터 비트를 에지 전에 설정','','1->0','1','1','1',
+                                 '','','','','','']])
+    legacy=render._stepped_html(table)
+    wide=render._stepped_html(table, wide=True)
+    widths=[float(w) for w in re.findall(r'<col style="width:([\d.]+)%;">',wide)]
+    assert len(widths)==13
+    assert widths[1] >= 4*widths[0]
+    assert sum(widths)==pytest.approx(100,abs=.01)
+    assert re.findall(r'<(?:th|td)[^>]*>(.*?)</(?:th|td)>',wide)==re.findall(r'<(?:th|td)[^>]*>(.*?)</(?:th|td)>',legacy)
+    assert wide.count('class="fill"')==7
+    assert 'class="check"' not in wide
+    assert '<col ' not in legacy

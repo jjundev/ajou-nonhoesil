@@ -304,8 +304,8 @@ class R5(unittest.TestCase):
         # e4_dmux_s1~_s4) = 14 가 늘어 42 다.
         # 2026-10-05 실험05(v2): 회로 2(e5_bcd·e5_xs3)가 늘어 44 다. v2 주차는 단계를 빌더의
         # `stage` 인자로만 받아 절차 래퍼를 두지 않는다(시험판 `tests/fixtures/board_v2_e5` 와 같다).
-        # 2026-10-11 실험06(v2): 회로 3(e6_sr·e6_d·e6_jk)이 늘어 47 이다.
-        self.assertEqual(len(builders), 47)
+        # 실험06의 세 회로에 실험07 shift 하나가 늘어 48이다.
+        self.assertEqual(len(builders), 48)
         # 넷 검사 자체는 회로마다 `AllCircuitNets_<빌더>` 가 한다. 그 클래스 이름은
         # ast 로 읽은 이름(`builder_names`)에서 나오니 엔진이 보는 집합과 같아야 한다.
         self.assertEqual(sorted(builders), builder_names())

@@ -82,6 +82,7 @@ def compute(circuit, spec) -> NodeTable:
             f"{circuit.id} 에 truth-table 기록표가 없다 — 노드 표는 입력 행이 있는 회로에만 둔다")
     inputs, _ = split_indices(table)
     names = [table.header[i] for i in inputs]
+    expressions = [n for n in circuit.nodes if n.get("kind", "expression") == "expression"]
     rows = []
     for row in table.rows:
         if len(row) != len(table.header):
@@ -98,14 +99,14 @@ def compute(circuit, spec) -> NodeTable:
             rows.append((cells, None))
             continue
         bits = []
-        for node in circuit.nodes:
+        for node in expressions:
             try:
                 bits.append(eval_boolean(node["expr"], env))
             except ValueError as exc:
                 raise ValueError(f"노드 {node['name']} 의 식 {node['expr']!r}: {exc}") from exc
         rows.append((cells, bits))
     return NodeTable(inputs=names,
-                     nodes=[(n["name"], n["pin"]) for n in circuit.nodes],
+                     nodes=[(n["name"], n["pin"]) for n in expressions],
                      rows=rows, encoding=table.encoding or "0/1")
 
 
@@ -128,6 +129,9 @@ def stage_nodes_table(circuit, spec, node_names) -> StageNodesTable:
     입력 열은 이름이 아니라 `split_indices` 의 **자리**로 고른다 — 입력과 출력이 같은
     글자인 표가 있다(실험3 반감산기 `A B D B`).
     """
+    for name in node_names:
+        if any(n["name"] == name and n.get("kind") == "observed" for n in circuit.nodes):
+            raise ValueError(f"observed 노드 {name} 는 부울식 계산 대신 확인 절차가 필요하다")
     table = record_table(circuit, spec)
     if table is None:
         raise ValueError(

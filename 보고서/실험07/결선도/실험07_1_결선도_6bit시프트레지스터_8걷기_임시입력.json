@@ -1,0 +1,88 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 8단계 전 임시 입력 걷기",
+ "subtitle": "전원부터 꺼요. 빨간 임시 고정선만 뽑고 다음 단계의 신호선을 꽂아요.",
+ "kept": 59,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 a20 → 좌 GND레일15행 · 임시 U2 pin 4 -> GND · 8걷기에서 뽑아요"
+  },
+  {
+   "n": 2,
+   "text": "좌 j17 → 중앙GND레일17행 · 임시 U2 pin 16 -> GND · 8걷기에서 뽑아요"
+  }
+ ],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "BIT2",
+   "at": "우 a18",
+   "active_low": false
+  },
+  {
+   "tag": "BIT1",
+   "at": "우 a22",
+   "active_low": false
+  },
+  {
+   "tag": "BIT4",
+   "at": "우 a28",
+   "active_low": false
+  },
+  {
+   "tag": "BIT3",
+   "at": "우 a33",
+   "active_low": false
+  },
+  {
+   "tag": "BIT6",
+   "at": "우 a40",
+   "active_low": false
+  },
+  {
+   "tag": "BIT5",
+   "at": "우 a44",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "D",
+   "at": "좌 j9",
+   "rail": "중앙GND레일9행",
+   "x": 588,
+   "row": 9
+  },
+  {
+   "name": "CLK",
+   "at": "좌 a17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
+  },
+  {
+   "name": "CLR",
+   "at": "좌 a19",
+   "rail": "좌 GND레일19행",
+   "x": 176,
+   "row": 19
+  },
+  {
+   "name": "PR1",
+   "at": "좌 a23",
+   "rail": "좌 GND레일23행",
+   "x": 176,
+   "row": 23
+  },
+  {
+   "name": "PR2",
+   "at": "좌 a18",
+   "rail": "좌 GND레일18행",
+   "x": 176,
+   "row": 18
+  }
+ ]
+}

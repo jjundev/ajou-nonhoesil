@@ -15,12 +15,12 @@ import re
 from dataclasses import replace
 from pathlib import Path
 
-from . import md
+from . import md, observations
 from . import nodes as node_calc
-from .leds import (board_leds, circled, feeds_by_stage, is_sequential, lit, record_leds,
+from .leds import (board_leds, circled, feeds_by_stage, feeds_by_circuit, is_sequential, lit, record_leds,
                    record_row_leds, watched)
 from .netlist_parser import IC_DECL
-from .notation import normalize_cell
+from .notation import normalize_cell, bit_of
 from .spec_parser import split_indices
 from .photo_names import item_token, photo_name
 from . import config
@@ -198,7 +198,7 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     return "\n".join(out)
 
 
-def _stepped_html(table) -> str:
+def _stepped_html(table, *, wide=False) -> str:
     """스텝표 — **명세가 저작해 둔 빈 셀**이 실험실에서 채울 칸이다.
 
     `확인` 열을 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
@@ -221,13 +221,21 @@ def _stepped_html(table) -> str:
         header.append("기록")
         rows = [row + [""] for row in rows]
 
-    out = ["<table>", "<thead>", "<tr>"]
+    # v3의 넓은 스텝표는 조작 문장을 읽을 폭을 확보한다. 값·열 순서·기록 칸은 그대로다.
+    wide = wide and len(header) >= 10 and "조작" in header
+    if wide:
+        weights = [9 if h == "조작" else 3 if len(h) > 6 else 2 for h in header]
+        cols = "".join(f'<col style="width:{w / sum(weights) * 100:.4f}%;">' for w in weights)
+        out = ['<table class="record-stepped-wide">', f'<colgroup>{cols}</colgroup>', "<thead>", "<tr>"]
+    else:
+        out = ["<table>", "<thead>", "<tr>"]
     out += [f"<th>{_esc(h)}</th>" for h in header]
     out += ["</tr>", "</thead>", "<tbody>"]
     for row in rows:
         out.append("<tr>" + "".join(
-            '<td class="fill"></td>' if not c.strip() else f"<td>{_esc(c)}</td>"
-            for c in row) + "</tr>")
+            '<td class="fill"></td>' if not c.strip() else
+            f'<td class="record-action">{_esc(c)}</td>' if wide and header[i] == "조작" else f"<td>{_esc(c)}</td>"
+            for i, c in enumerate(row)) + "</tr>")
     out += ["</tbody>", "</table>"]
     return "\n".join(out)
 
@@ -913,7 +921,18 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
     table = ""
     seen_nodes = {feed[led.tag] for led in watched(leds, feed or {}, section)}
-    if spec is not None and stage.get("node") and stage["node"] in seen_nodes:
+    if stage.get("procedure"):
+        try:
+            procedure = observations.procedure_for_stage(section, stage)
+            names = list(dict.fromkeys([*procedure.observe, *[feed[led.tag] for led in leds
+                                                            if led.tag in (feed or {})
+                                                            and feed[led.tag] in {n['name'] for n in section.nodes}]]))
+            authored = observations.stage_observations(section, spec, stage, names)
+            table = (f'<h4>{_esc(procedure.id)} · {_esc(procedure.title)}</h4>'
+                     + _observation_procedure_html(authored, leds, feed, png=png))
+        except ValueError as exc:
+            table = f"<p class='src'>확인 절차를 인쇄할 수 없어요: {_esc(exc)}</p>"
+    elif spec is not None and stage.get("node") and stage["node"] in seen_nodes:
         table = _led_table_html(spec, section, leds, feed, png=png)
     elif spec is not None and stage.get("node") and not last:
         table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]), png=png)
@@ -942,6 +961,52 @@ def _stage_led(todo) -> str:
 
 
 _JUMPER = {"H/L": "H=+5V · L=GND"}
+
+
+def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
+    """Two matched timelines, with per-LED status. Never writes measured cells."""
+    feed = feed or {}
+    out = ['<section class="observation-procedure">',
+           f'<p><b>준비·초기화:</b> {_esc(table.setup)}</p>',
+           f'<p class="src">출처: {_esc(table.source)}</p>']
+    if table.provenance == 'derived':
+        out.append('<p class="provenance"><b>교안 원문이 아니다 — 교안에서 유도한 확인 절차</b></p>')
+        out.append(f'<p class="src">유도 이유: {_esc(table.rationale)}</p>')
+    else:
+        out.append('<p class="provenance">교안 전사 확인 절차</p>')
+    if png is not None:
+        out.append(locations_html(png, table.inputs,
+                                  feed={tag: name for tag, name in feed.items() if name is not None}))
+    out.append('<p><b>조작·입력 순서</b> — 아래 관측 표의 같은 순서 행에서 확인한다.</p>')
+    out.append('<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정</th></tr></thead><tbody>')
+    for row in table.rows:
+        inputs = '<br>'.join(f'{_esc(n)} = {_esc(c)}' for n, c in zip(table.inputs, row.inputs))
+        out.append(f'<tr data-observation-order="{row.order}"><td>{row.order}</td>'
+                   f'<td>{_esc(row.action)}</td><td>{inputs}</td></tr>')
+    out.append('</tbody></table>')
+    out.append('<p><b>관측 예상</b> — 논리값과 LED 점등을 구분해 본다.</p>')
+    out.append('<table><thead><tr><th>순서</th><th>관측점 · 핀 · 예상</th><th>LED 상태</th><th>확인</th></tr></thead><tbody>')
+    for row in table.rows:
+        by_name = {n: token for (n, _), token in zip(table.points, row.expected)}
+        expected = '<br>'.join(f'{_esc(n)} ({_esc(pin)}): {_esc(token)}'
+                              for (n, pin), token in zip(table.points, row.expected))
+        statuses = []
+        for led in leds:
+            if led.tag not in feed:
+                continue
+            token = by_name.get(feed[led.tag], '관측 안 함')
+            bit = bit_of(token, table.encoding) if token in ('0','1','H','L') else None
+            if bit is not None:
+                status = '켜짐' if lit(bit, led.active_low) else '소등'
+            else:
+                status = {'유지':'직전 그대로', '반전':'직전과 반대',
+                          '미정':'미정', '관측 안 함':'이번 절차 관측 안 함'}[token]
+            polarity = '0이면 켜짐' if led.active_low else '1이면 켜짐'
+            statuses.append(f'{circled(led.index)}{_esc(led.tag)}: {status} <small>({polarity})</small>')
+        out.append(f'<tr data-observation-order="{row.order}"><td>{row.order}</td><td>{expected}</td>'
+                   f'<td>{"<br>".join(statuses) if statuses else "프로브 관측"}</td><td class="box"></td></tr>')
+    out.append('</tbody></table></section>')
+    return '\n'.join(out)
 
 
 def _stage_table_html(spec, section, node_name, led="", png=None) -> str:
@@ -1027,7 +1092,8 @@ def _led_table_html(spec, section, leds, feed, png=None) -> str:
         body.append("<tr>" + "".join(f"<td>{_esc(c)}</td>" for c in cells)
                     + f'<td class="led on">{" ".join(on) or "없음"}</td>'
                     + f'<td class="led off">{off_text}</td><td class="box"></td></tr>')
-    return "\n".join(([locations_html(png, st.inputs, feed=feed)] if png is not None else [])
+    return "\n".join(([locations_html(png, st.inputs,
+                                     feed={tag: name for tag, name in feed.items() if name is not None})] if png is not None else [])
                      + [legend, '<table class="stage-table led-table">', "<thead>", head, "</thead>",
                       "<tbody>", *body, "</tbody>", "</table>"])
 
@@ -1072,7 +1138,8 @@ def _unstaged_nodes_html(spec, section, png=None) -> str:
     겹치는 열은 찍지 않는다 — N1(겹치는 표 제거)의 취지는 그대로다. 읽는 표라 `.check` 가 없다.
     """
     staged = {s["node"] for s in section.stages if s.get("node")}
-    keep = [k for k, n in enumerate(section.nodes) if n["name"] not in staged]
+    expressions = [n for n in section.nodes if observations.point_kind(n) == "expression"]
+    keep = [k for k, n in enumerate(expressions) if n["name"] not in staged]
     if not keep:
         return ""
     try:
@@ -1139,7 +1206,7 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
         if table.kind == "capture":
             out.append(_capture_html(table, spec.path.parent))
         elif table.kind == "stepped":
-            out.append(_stepped_html(table))
+            out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3"))
             out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
             if netlist is not None:
@@ -1186,6 +1253,7 @@ def circuit_pages(spec, netlist) -> str:
     feed_after = {}               # 앞 회로 마지막 단계 뒤 급전 지도 — `continues` 회로가 이어받는다
     shown = set()                 # 강의노트 회로도를 이미 실은 항목
     total = len(netlist.circuits)
+    v3_feeds = feeds_by_circuit(netlist) if netlist.schema == "lab-netlist/v3" else None
     for n, section in enumerate(netlist.circuits, start=1):
         nodes, prose_before, prose_after = _circuit_body(section)
         chips = _chip_boxes(nodes)
@@ -1257,7 +1325,8 @@ def circuit_pages(spec, netlist) -> str:
         last = observed[-1] if observed else None
         if last is not None and last["node"] not in _record_outputs(spec, section):
             last = None
-        feeds = feeds_by_stage(section, start=feed_after if section.continues else None)
+        feeds = (v3_feeds[section.id] if v3_feeds is not None else
+                 feeds_by_stage(section, start=feed_after if section.continues else None))
         for stage, feed in zip(section.stages, feeds):
             out.append(_stage_html(stage, netlist, section, spec, last=stage is last,
                                    leds=leds, feed=feed))
@@ -1304,6 +1373,9 @@ def render_checklist(spec, netlist, template) -> str:
     조용히 갈린다. 파서가 백필 방법을 담아 거절한다.
     """
     title = config.document_title(spec.experiment, spec.title, "체크리스트")
+    if netlist.schema != "lab-netlist/v3":
+        template = re.sub(r'<!-- OBSERVATION_STYLE_BEGIN -->.*?<!-- OBSERVATION_STYLE_END -->\n',
+                          '', template, flags=re.S)
     return (template
             .replace("{{TITLE}}", _esc(title))
             .replace("{{COMMON}}", common_page(spec, netlist))

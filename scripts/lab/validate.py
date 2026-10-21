@@ -10,8 +10,8 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import config, md, nodes
-from .leds import board_leds, feeds_by_stage, unresolved_feeds, watched
+from . import config, md, nodes, observations
+from .leds import board_leds, feeds_by_stage, feeds_by_circuit, unresolved_feeds, watched
 from .boolexpr import eval_boolean
 from .notation import DONT_CARE, bit_of, normalize_cell
 from .render import _chip_boxes, _chip_tables, _circuit_body
@@ -695,7 +695,7 @@ def check_netlist(netlist_path, spec) -> list:
 _NODE_PIN = re.compile(r"^U\d+ pin \d+$")
 
 
-def _check_nodes(circuit, spec, where, experiment) -> list:
+def _check_nodes(circuit, spec, where, experiment, schema="lab-netlist/v2") -> list:
     """`## 노드` 표 — 식·핀·출력 노드. 실험01·02만 단계 세분화 이전 승인본이다.
 
     용의자를 '선'이 아니라 '노드'로 좁히는 표다.
@@ -715,14 +715,6 @@ def _check_nodes(circuit, spec, where, experiment) -> list:
                 "단계는 있는데 `## 노드` 표가 없다 — 단계 끝을 프로브로 찍을 핀과 "
                 "기대값이 없다. 게이트 출력 핀마다 `| 노드 | 식 | 핀 |` 한 행을 적는다"))
         return out
-    try:
-        table = nodes.record_table(circuit, spec)
-    except ValueError as exc:
-        return [Finding("error", where, str(exc))]
-    if table is None:
-        return [Finding("error", where,
-            "`## 노드` 표는 truth-table 기록표를 가진 회로에만 둔다 — "
-            "입력 행이 있어야 기대값이 있다")]
     declared = {u for u, _ in IC_DECL.findall(circuit.body)}
     seen = set()
     for node in circuit.nodes:
@@ -736,6 +728,18 @@ def _check_nodes(circuit, spec, where, experiment) -> list:
             out.append(Finding("error", where,
                 f"노드 {node['name']} 의 칩 {node['pin'].split()[0]} 이 이 회로에 "
                 f"선언돼 있지 않다. 선언된 칩: {sorted(declared)}"))
+    try:
+        table = nodes.record_table(circuit, spec)
+    except ValueError as exc:
+        return out + [Finding("error", where, str(exc))]
+    if table is None:
+        needs_table = schema == "lab-netlist/v2" or any(
+            not st.get("walk") and not st.get("procedure")
+            and any(n["name"] == st.get("node") and observations.point_kind(n) == "expression"
+                    for n in circuit.nodes) for st in circuit.stages)
+        if needs_table:
+            out.append(Finding("error", where, "expression 계산에 truth-table 기록표가 필요하다"))
+        return out
     try:
         computed = nodes.compute(circuit, spec)
     except ValueError as exc:
@@ -765,6 +769,75 @@ def _check_nodes(circuit, spec, where, experiment) -> list:
                     f"{shown} 일 때 노드 {target} = {bits[k]} 인데 명세 식 {expr} 은 "
                     f"{want} 다 — 결선도와 명세가 표류했다"))
                 break
+    return out
+
+
+def check_observation_procedures(netlist, spec) -> list[Finding]:
+    """v3 authored protocols: structure is parsed, state values remain author claims."""
+    if netlist.schema != "lab-netlist/v3":
+        return []
+    out = []
+    pages = None
+    if any(c.procedures for c in netlist.circuits):
+        manual = Path(spec.source_manual)
+        if not manual.is_absolute():
+            manual = Path(__file__).resolve().parents[2] / manual
+        try:
+            from pypdf import PdfReader
+        except ImportError as exc:
+            out.append(Finding('warn', netlist.path.name,
+                       f'확인 절차 source_manual 쪽 범위를 확인하지 못했다: {exc}'))
+        else:
+            from pypdf.errors import PyPdfError
+            try:
+                pages = len(PdfReader(str(manual)).pages)
+            except (OSError, ValueError, PyPdfError) as exc:
+                out.append(Finding('warn', netlist.path.name,
+                           f'확인 절차 source_manual 쪽 범위를 확인하지 못했다: {exc}'))
+        # Source availability is a warning; semantic checks below must still run.
+    for c in netlist.circuits:
+        where = f'{netlist.path.name}:{c.id}'
+        try:
+            known = observations.points(c)
+        except observations.ObservationError as exc:
+            out.append(Finding('error', where, str(exc)))
+            known = {n['name']: n for n in c.nodes}
+        for n in c.nodes:
+            if observations.point_kind(n) == 'expression':
+                try:
+                    variables = nodes.variables(n['expr'])
+                    eval_boolean(n['expr'], {name: 0 for name in variables})
+                except ValueError as exc:
+                    out.append(Finding('error', where, f"노드 {n['name']} 식: {exc}"))
+        referenced = {st.get('procedure') for st in c.stages}
+        for p in c.procedures:
+            out.extend(Finding('error', f'{where}:{line}', msg)
+                       for line, msg in observations.procedure_issues(c, p))
+            page = re.fullmatch(r'manual:p([1-9][0-9]*)', p.source)
+            if pages is not None and page and int(page.group(1)) > pages:
+                out.append(Finding('error', where,
+                           f'{p.id} source {p.source}: 교안 쪽 범위 1~{pages} 밖이다'))
+            if p.id not in referenced:
+                out.append(Finding('warn', where, f'{p.id} 확인 절차를 참조하는 단계가 없다'))
+        for st in c.stages:
+            if st.get('walk') and st.get('procedure'):
+                out.append(Finding('error', where, f"걷기 행 {st['n']} 에는 확인 절차를 붙이지 않는다"))
+            try:
+                p = observations.procedure_for_stage(c, st)
+            except observations.ObservationError as exc:
+                out.append(Finding('error', where, str(exc)))
+                continue
+            name = st.get('node')
+            if p is None:
+                if name in known and observations.point_kind(known[name]) == 'observed' and not st.get('walk'):
+                    out.append(Finding('error', where, f'observed 노드 {name} 에 확인 절차가 없다'))
+            elif name not in p.observe:
+                out.append(Finding('error', where, f'{p.id} observe 에 단계 주 관측 노드 {name} 가 없다'))
+            else:
+                i = p.observe.index(name)
+                tokens = ('H','L','유지','반전') if p.encoding == 'H/L' else ('0','1','유지','반전')
+                if not any(i < len(r.expected) and r.expected[i] in tokens for r in p.steps):
+                    out.append(Finding('error', where, f'{p.id} 노드 {name}: 확인 가능한 기대 행이 없다'))
     return out
 
 
@@ -895,7 +968,7 @@ def check_netlist_circuits(netlist, spec) -> list:
                 f"완성본(diagram = {circuit.diagram})과 마지막 단계 그림이 같은 파일이다. "
                 "단계 그림은 회색 기준선을 담아 손그림 원도로 쓸 수 없다 — "
                 "완성본은 기준선 없이 따로 낸다 (주차 배치.py 의 FINALS)"))
-        out += _check_nodes(circuit, spec, where, netlist.experiment)
+        out += _check_nodes(circuit, spec, where, netlist.experiment, netlist.schema)
         if circuit.rebuild:
             # 앞 회로의 신호선을 전부 뽑는 경계(2026-09-27, 실험04 C2). 전부 뽑으면 놓칠 선이
             # 없어 걷기 보드의 주소 목록이 필요 없다 — 그래서 아래 셋과 겹치면 모순이다.
@@ -994,6 +1067,7 @@ def check_netlist_circuits(netlist, spec) -> list:
         out.append(Finding("warn", netlist.path.name,
             f"기록 대상 표 {table_id} 를 가리키는 회로가 없다 — "
             "인쇄본은 회로를 통해서만 표를 싣는다. 그대로 두면 조용히 빠진다"))
+    out += check_observation_procedures(netlist, spec)
     out += check_stage_leds(netlist)
     out += check_io_locations(netlist, spec)
     return out
@@ -1002,6 +1076,8 @@ def check_netlist_circuits(netlist, spec) -> list:
 def check_io_locations(netlist, spec) -> list:
     """기록표·단계표의 입력 위치가 결선 JSON에 있는지 경고한다."""
     out, feed_after = [], {}
+    v3_feeds = (feeds_by_circuit(netlist)
+                if getattr(netlist, "schema", "lab-netlist/v2") == "lab-netlist/v3" else None)
     for section in netlist.circuits:
         tables = [spec.table(t) for t in section.tables]
         inputs = list(dict.fromkeys(
@@ -1012,7 +1088,7 @@ def check_io_locations(netlist, spec) -> list:
         checks = [(section.id, png, inputs)] if inputs else []
         leds = board_leds(png) if png is not None and png.exists() else []
         start = feed_after if section.continues else None
-        feeds = feeds_by_stage(section, start=start)
+        feeds = v3_feeds[section.id] if v3_feeds is not None else feeds_by_stage(section, start=start)
         feed_after = feeds[-1] if feeds else (start or {})
         for stage, feed in zip(section.stages, feeds):
             if stage.get('walk') or not stage.get('node'):
@@ -1021,7 +1097,9 @@ def check_io_locations(netlist, spec) -> list:
                 observed = [feed[led.tag] for led in watched(leds, feed, section)]
                 # LED 표는 현재 노드뿐 아니라 앞 단계에서 연결한 LED도 함께 본다.
                 names = observed if stage['node'] in observed else [stage['node']]
-                stage_inputs = nodes.stage_nodes_table(section, spec, names).inputs
+                stage_inputs = (observations.stage_observations(section, spec, stage, names).inputs
+                                if stage.get('procedure') else
+                                nodes.stage_nodes_table(section, spec, names).inputs)
             except ValueError:
                 continue  # 노드 계산 오류는 기존 검증이 보고한다.
             checks.append((f"{section.id} 단계{stage['n']}",
@@ -1042,9 +1120,11 @@ def check_stage_leds(netlist) -> list:
     급전을 이어받는다 — `render.circuit_pages` 와 같은 규칙이다.
     """
     out, feed_after = [], {}
+    v3_feeds = (feeds_by_circuit(netlist)
+                if getattr(netlist, "schema", "lab-netlist/v2") == "lab-netlist/v3" else None)
     for section in netlist.circuits:
         start = feed_after if section.continues else None
-        feeds = feeds_by_stage(section, start=start)
+        feeds = v3_feeds[section.id] if v3_feeds is not None else feeds_by_stage(section, start=start)
         feed_after = feeds[-1] if feeds else (start or {})
         png = netlist.path.parent / section.diagram if section.diagram else None
         leds = board_leds(png) if png is not None and png.exists() else []

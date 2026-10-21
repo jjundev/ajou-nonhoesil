@@ -93,6 +93,31 @@ class NetlistError(ValueError):
 
 
 @dataclass
+class ObservationStep:
+    order: int
+    action: str
+    inputs: list[str]
+    expected: list[str]
+    line: int
+
+
+@dataclass
+class ObservationProcedure:
+    id: str
+    title: str
+    source: str
+    provenance: str
+    rationale: str
+    setup: str
+    encoding: str
+    inputs: list[str]
+    clocks: list[str]
+    observe: list[str]
+    steps: list[ObservationStep]
+    line: int
+
+
+@dataclass
 class NetlistSection:
     kind: str
     title: str
@@ -109,6 +134,8 @@ class NetlistSection:
     order: list = field(default_factory=list)  # 기록표 행 번호(1부터)를 입력을 넣는 순서대로
     stages: list = field(default_factory=list)   # `## 단계` 표. 관측 노드 하나 = 단계 하나
     nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
+
+    procedures: list[ObservationProcedure] = field(default_factory=list)
 
     @property
     def ics(self) -> list:
@@ -133,6 +160,7 @@ class LabNetlist:
     sections: list
     path: Path
     text: str
+    schema: str = "lab-netlist/v2"
 
     @property
     def circuits(self) -> list:
@@ -142,7 +170,7 @@ class LabNetlist:
         return [s for s in self.sections if s.kind == kind]
 
 
-def _split_subtable(body, head_re, columns, keys, label, path, line):
+def _split_subtable(body, head_re, columns, keys, label, path, line, preserve=()):
     """회로 본문에서 `## <label>` 헤딩과 그 표를 떼어 `(행 dict 목록, 나머지 본문)` 으로.
 
     떼어내는 이유: 남겨 두면 `render._circuit_body` 가 "칩이 아닌 헤딩 아래의
@@ -174,15 +202,15 @@ def _split_subtable(body, head_re, columns, keys, label, path, line):
                 raise NetlistError(
                     f"{path}:{line + i} 근처 `## {label}` 표의 행 {k} 의 셀이 "
                     f"{len(row)}개다. {len(columns)}개({', '.join(columns)})여야 한다")
-        rows = [dict(zip(keys, (c.strip().strip("`") for c in row)))
-                for row in table.rows]
+        rows = [{key: cell.strip() if key in preserve else cell.strip().strip("`")
+                 for key, cell in zip(keys, row)} for row in table.rows]
         if not rows:
             raise NetlistError(f"{path}:{line + i} 근처 `## {label}` 표에 행이 없다")
         return rows, "\n".join(lines[:i] + lines[nxt:])
     return [], body
 
 
-def _split_stages(body, path, line):
+def _split_stages(body, path, line, schema="lab-netlist/v2"):
     """`## 단계` 표. 실험01 실험실 기록(2026-09-11): 복합회로를 전부 꽂고 불이 안
     들어오자 어디가 틀렸는지 알 수 없었다. 단계마다 LED 로 확인하는 자리가 데이터여야
     체크리스트에 확인 칸이 생긴다.
@@ -201,10 +229,19 @@ def _split_stages(body, path, line):
     각자 문자열을 다시 재면 같은 개념에 기계가 셋이 된다.
     """
     rows, rest = _split_subtable(body, _STAGE_HEAD, STAGE_COLUMNS,
-                                 ("n", "diagram", "todo", "check"), "단계", path, line)
+                                 ("n", "diagram", "todo", "check"), "단계", path, line,
+                                 preserve=("check",) if schema == "lab-netlist/v3" else ())
     for row in rows:
         m = _STAGE_NODE.match(row["check"])
         row["node"] = m.group(1) if m else None
+        if "절차" in row["check"]:
+            ref = re.match(r"^노드\s+`([^`]+)`\s*·\s*절차\s+`(V[1-9][0-9]*)`(?:\s*—.*)?$", row["check"])
+            if schema != "lab-netlist/v3" or ref is None:
+                raise NetlistError(f"{path}:{line} 잘못된 v3 확인 절차 참조: {row['check']}")
+        else:
+            ref = None
+        if schema == "lab-netlist/v3":
+            row["procedure"] = ref.group(2) if ref else None
         number = _STAGE_NUMBER.match(row["n"])
         walk = _STAGE_WALK.match(row["n"])
         row["stage_no"] = int(number.group(0)) if number and not walk else None
@@ -215,11 +252,69 @@ def _split_stages(body, path, line):
     return rows, rest
 
 
-def _split_nodes(body, path, line):
-    """`## 노드` 표. 단계 끝에서 LED 만 보면 중간단은 관측점이 없다 — 프로브로 찍을
-    핀과 그 기대값 식을 데이터로 둬야 실패한 행에서 고장 노드를 좁힐 수 있다."""
-    return _split_subtable(body, _NODE_HEAD, NODE_COLUMNS,
-                           ("name", "expr", "pin"), "노드", path, line)
+def _split_nodes(body, path, line, schema="lab-netlist/v2"):
+    if schema == "lab-netlist/v2":
+        return _split_subtable(body, _NODE_HEAD, NODE_COLUMNS,
+                               ("name", "expr", "pin"), "노드", path, line)
+    rows, rest = _split_subtable(body, _NODE_HEAD, ("노드", "유형", "식", "핀"),
+                                ("name", "kind", "expr", "pin"), "노드", path, line)
+    for row in rows:
+        if row["kind"] not in ("expression", "observed"):
+            raise NetlistError(f"{path}:{line} 노드 유형은 expression 또는 observed: {row}")
+        if row["kind"] == "observed":
+            if row["expr"] != "-":
+                raise NetlistError(f"{path}:{line} observed 식은 - 여야 한다")
+            row["expr"] = None
+        elif not row["expr"] or row["expr"] == "-":
+            raise NetlistError(f"{path}:{line} expression 노드에 식이 없다")
+    return rows, rest
+
+
+def _split_procedures(body, path, line, schema):
+    lines = body.split("\n")
+    heads = [i for i, ln in enumerate(lines) if re.match(r"^##\s+확인 절차", ln)]
+    procedures, remove, seen = [], set(), set()
+    for i in heads:
+        head = re.fullmatch(r"##\s+확인 절차 (V[1-9][0-9]*) · (.+)", lines[i].strip())
+        if schema != "lab-netlist/v3" or not head:
+            raise NetlistError(f"{path}:{line+i} v3 확인 절차 헤더가 잘못됐다: {lines[i]}")
+        ident, title = head.groups()
+        if ident in seen:
+            raise NetlistError(f"{path}:{line+i} 확인 절차 {ident} 중복")
+        seen.add(ident)
+        end = next((j for j in range(i+1, len(lines)) if lines[j].startswith("## ")), len(lines))
+        attrs, rest = _leading_attrs("\n".join(lines[i+1:end]))
+        for key in ("source", "provenance", "setup", "encoding", "inputs", "observe"):
+            if not attrs.get(key):
+                raise NetlistError(f"{path}:{line+i} {ident} 필수 속성 {key} 누락")
+        lists = {}
+        for key in ("inputs", "clocks", "observe"):
+            value = md.parse_value(attrs.get(key, "[]"))
+            if not isinstance(value, list) or not all(isinstance(v, str) and v for v in value):
+                raise NetlistError(f"{path}:{line+i} {ident} {key} 는 이름 목록이어야 한다")
+            lists[key] = value
+        content = rest.split("\n")
+        j = next((j for j, ln in enumerate(content) if ln.strip()), len(content))
+        table, nxt = md.parse_table_at(content, j) if j < len(content) else (None, j)
+        columns = ["순서", "조작", *lists["inputs"], *lists["observe"]]
+        if table is None or table.header != columns or not table.rows:
+            raise NetlistError(f"{path}:{line+i} {ident} 표 머리는 {columns} 이어야 한다")
+        if any(ln.strip() for ln in content[nxt:]):
+            raise NetlistError(f"{path}:{line+i} {ident} 표 뒤의 내용은 다음 절로 옮긴다")
+        # Locate original rows before removing any block, preserving useful diagnostics.
+        row_line = i + 1 + next(k for k, ln in enumerate(lines[i+1:end]) if ln.lstrip().startswith("|")) + 2
+        steps = []
+        for k, row in enumerate(table.rows):
+            if len(row) != len(columns) or not re.fullmatch(r"[0-9]+", row[0].strip()):
+                raise NetlistError(f"{path}:{line+row_line+k} {ident} 행 길이 또는 순서 오류")
+            cut = 2 + len(lists["inputs"])
+            steps.append(ObservationStep(int(row[0]), row[1].strip(),
+                         [c.strip() for c in row[2:cut]], [c.strip() for c in row[cut:]], line+row_line+k))
+        procedures.append(ObservationProcedure(ident, title, attrs["source"], attrs["provenance"],
+                           attrs.get("rationale", ""), attrs["setup"], attrs["encoding"],
+                           lists["inputs"], lists["clocks"], lists["observe"], steps, line+i))
+        remove.update(range(i,end))
+    return procedures, "\n".join(ln for i, ln in enumerate(lines) if i not in remove)
 
 
 def _leading_attrs(block: str):
@@ -263,7 +358,7 @@ def _check_must_read(title, body, line, path) -> None:
         raise NetlistError(f"{path}:{line} 절 {title!r}(must-read) 이 비어 있습니다")
 
 
-def _parse_section(title, block, line, path) -> NetlistSection:
+def _parse_section(title, block, line, path, schema) -> NetlistSection:
     attrs, body = _leading_attrs(block)
     kind = attrs.get("kind")
     if kind not in KINDS:
@@ -299,8 +394,9 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         raise NetlistError(
             f"{path}:{line} 회로 절 {title!r} 의 order 가 {attrs['order']!r} 입니다. "
             "기록표 행 번호(1부터) 리스트로 쓴다 — 예: [3, 4, 2, 1, 5]")
-    stages, body = _split_stages(body, path, line)
-    nodes, body = _split_nodes(body, path, line)
+    procedures, body = _split_procedures(body, path, line, schema)
+    stages, body = _split_stages(body, path, line, schema)
+    nodes, body = _split_nodes(body, path, line, schema)
     return NetlistSection(
         kind=kind, title=title, body=body, line=line,
         id=attrs["id"], item=attrs["item"], tables=[str(t) for t in tables],
@@ -312,6 +408,7 @@ def _parse_section(title, block, line, path) -> NetlistSection:
         order=order,
         stages=stages,
         nodes=nodes,
+        procedures=procedures,
     )
 
 
@@ -319,9 +416,10 @@ def parse_netlist(path) -> LabNetlist:
     path = Path(path)
     text = path.read_text(encoding="utf-8")
     front, body = md.split_frontmatter(text)
-    if front.get("schema") != "lab-netlist/v2":
+    schema = front.get("schema")
+    if schema not in ("lab-netlist/v2", "lab-netlist/v3"):
         raise NetlistError(
-            f"{path}: schema 가 lab-netlist/v2 가 아닙니다 ({front.get('schema')!r}). "
+            f"{path}: schema 가 지원 버전 lab-netlist/v2 또는 lab-netlist/v3 가 아닙니다 ({front.get('schema')!r}). "
             "v1 은 `week:` 를 요구했다 — 일정은 이제 config.EXPERIMENT_DATES 한 곳에만 산다"
         )
     for required in ("experiment", "spec"):
@@ -341,7 +439,7 @@ def parse_netlist(path) -> LabNetlist:
     for n, m in enumerate(heads):
         end = heads[n + 1].start() if n + 1 < len(heads) else len(body)
         line = offset + body[: m.start()].count("\n") + 1
-        sections.append(_parse_section(m.group(1), body[m.end():end], line, path))
+        sections.append(_parse_section(m.group(1), body[m.end():end], line, path, schema))
 
     must = [s for s in sections if s.kind == "must-read"]
     if len(must) > 1:
@@ -364,4 +462,4 @@ def parse_netlist(path) -> LabNetlist:
         )
 
     return LabNetlist(experiment=front["experiment"],
-                      spec=front["spec"], sections=sections, path=path, text=text)
+                      spec=front["spec"], sections=sections, path=path, text=text, schema=schema)

@@ -1,0 +1,96 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 6bit Shift Right Register — 6단계",
+ "subtitle": "74HC00 ×1 + 74HC76 ×3 · D = SERIAL DATA · BIT 역할을 패키지 안에서 교환",
+ "kept": 58,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 GND레일23행",
+   "to": "좌 a23",
+   "desc": "입력 PR1 -> U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 GND레일18행",
+   "to": "좌 a18",
+   "desc": "입력 PR2 -> U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "BIT2",
+   "at": "우 a18",
+   "active_low": false
+  },
+  {
+   "tag": "BIT1",
+   "at": "우 a22",
+   "active_low": false
+  },
+  {
+   "tag": "BIT4",
+   "at": "우 a28",
+   "active_low": false
+  },
+  {
+   "tag": "BIT3",
+   "at": "우 a33",
+   "active_low": false
+  },
+  {
+   "tag": "BIT6",
+   "at": "우 a40",
+   "active_low": false
+  },
+  {
+   "tag": "BIT5",
+   "at": "우 a44",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "D",
+   "at": "좌 j9",
+   "rail": "중앙GND레일9행",
+   "x": 588,
+   "row": 9
+  },
+  {
+   "name": "CLK",
+   "at": "좌 a17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
+  },
+  {
+   "name": "CLR",
+   "at": "좌 a19",
+   "rail": "좌 GND레일19행",
+   "x": 176,
+   "row": 19
+  },
+  {
+   "name": "PR1",
+   "at": "좌 a23",
+   "rail": "좌 GND레일23행",
+   "x": 176,
+   "row": 23
+  },
+  {
+   "name": "PR2",
+   "at": "좌 a18",
+   "rail": "좌 GND레일18행",
+   "x": 176,
+   "row": 18
+  }
+ ]
+}

@@ -55,7 +55,7 @@ def _resolve(section, chip, pin, tag):
     return None
 
 
-def feeds_by_stage(section, start=None) -> list:
+def feeds_by_stage(section, start=None, *, physical=False) -> list:
     """`section.stages` 와 같은 길이. 원소마다 그 단계 **뒤** 누적 {LED 태그: 노드 이름}.
 
     `start` 는 앞 회로에서 이어받는 지도다(`continues`). 못 푼 급전은 지도에 넣지 않는다 —
@@ -70,11 +70,32 @@ def feeds_by_stage(section, start=None) -> list:
                 current.pop(tag, None)
         else:
             for chip, pin, tag in FEED.findall(text):
-                node = _resolve(section, chip, pin, tag)
+                node = f"{chip} pin {pin}" if physical else _resolve(section, chip, pin, tag)
                 if node is not None:
                     current[tag] = node
         out.append(dict(current))
     return out
+
+
+def feeds_by_circuit(netlist) -> dict:
+    """v3 LED identity follows the physical feed pin across circuit-local names.
+
+    The raw map retains pins even when an intermediate circuit does not declare
+    that observation point. A missing current name maps to None, never to an
+    unrelated current node with the same local name. v2 keeps its old name map.
+    """
+    physical = getattr(netlist, "schema", "lab-netlist/v2") == "lab-netlist/v3"
+    after, result = {}, {}
+    for section in netlist.circuits:
+        start = after if section.continues else None
+        raw = feeds_by_stage(section, start=start, physical=physical)
+        after = raw[-1] if raw else (start or {})
+        if physical:
+            by_pin = _pin_nodes(section)
+            result[section.id] = [{tag: by_pin.get(pin) for tag, pin in feed.items()} for feed in raw]
+        else:
+            result[section.id] = raw
+    return result
 
 
 def unresolved_feeds(section) -> list:

@@ -1,0 +1,501 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 6bit Shift Right Register — 1단계",
+ "subtitle": "74HC00 ×1 + 74HC76 ×3 · D = SERIAL DATA · BIT 역할을 패키지 안에서 교환",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일51행",
+   "to": "중앙GND레일51행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일52행",
+   "to": "중앙VCC레일52행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 g7",
+   "to": "중앙VCC레일7행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 a13",
+   "to": "좌 GND레일13행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 a21",
+   "to": "좌 VCC레일21행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 g20",
+   "to": "중앙GND레일19행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "vcc",
+   "from": "좌 a32",
+   "to": "좌 VCC레일31행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "gnd",
+   "from": "좌 g31",
+   "to": "중앙GND레일31행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "vcc",
+   "from": "좌 a43",
+   "to": "좌 VCC레일43행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "gnd",
+   "from": "좌 g42",
+   "to": "중앙GND레일42행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "vcc",
+   "from": "좌 a29",
+   "to": "좌 VCC레일29행",
+   "desc": "U3 pin 2 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "vcc",
+   "from": "좌 a34",
+   "to": "좌 VCC레일34행",
+   "desc": "U3 pin 7 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "vcc",
+   "from": "좌 a40",
+   "to": "좌 VCC레일40행",
+   "desc": "U4 pin 2 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "vcc",
+   "from": "좌 a45",
+   "to": "좌 VCC레일45행",
+   "desc": "U4 pin 7 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "sig",
+   "from": "중앙GND레일9행",
+   "to": "좌 j9",
+   "desc": "입력 D -> U1 pin 12 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "BIT2: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · BIT2: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "gnd",
+   "from": "우 a21",
+   "to": "중앙GND레일21행",
+   "desc": "BIT2 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "sig",
+   "from": "우 b22",
+   "to": "우 c25",
+   "desc": "BIT1: LED(우 b22→우 b23) + 330Ω(우 c23→우 c25) 직렬 · BIT1: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "gnd",
+   "from": "우 a25",
+   "to": "중앙GND레일25행",
+   "desc": "BIT1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "우 b28",
+   "to": "우 c31",
+   "desc": "BIT4: LED(우 b28→우 b29) + 330Ω(우 c29→우 c31) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "gnd",
+   "from": "우 a31",
+   "to": "중앙GND레일30행",
+   "desc": "BIT4 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "우 b33",
+   "to": "우 c36",
+   "desc": "BIT3: LED(우 b33→우 b34) + 330Ω(우 c34→우 c36) 직렬 · BIT3: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 25,
+   "kind": "gnd",
+   "from": "우 a36",
+   "to": "중앙GND레일36행",
+   "desc": "BIT3 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 26,
+   "kind": "sig",
+   "from": "우 b40",
+   "to": "우 c43",
+   "desc": "BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 27,
+   "kind": "gnd",
+   "from": "우 a43",
+   "to": "중앙GND레일43행",
+   "desc": "BIT6 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 28,
+   "kind": "sig",
+   "from": "우 b44",
+   "to": "우 c47",
+   "desc": "BIT5: LED(우 b44→우 b45) + 330Ω(우 c45→우 c47) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름",
+   "count": 1
+  },
+  {
+   "n": 29,
+   "kind": "gnd",
+   "from": "우 a47",
+   "to": "중앙GND레일47행",
+   "desc": "BIT5 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 30,
+   "kind": "gnd",
+   "from": "좌 a17",
+   "to": "좌 GND레일16행",
+   "desc": "임시 U2 pin 1 -> GND · 2걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 31,
+   "kind": "gnd",
+   "from": "좌 a22",
+   "to": "좌 GND레일22행",
+   "desc": "임시 U2 pin 6 -> GND · 2걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 32,
+   "kind": "gnd",
+   "from": "좌 a28",
+   "to": "좌 GND레일28행",
+   "desc": "임시 U3 pin 1 -> GND · 2걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 33,
+   "kind": "gnd",
+   "from": "좌 a33",
+   "to": "좌 GND레일33행",
+   "desc": "임시 U3 pin 6 -> GND · 3걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 34,
+   "kind": "gnd",
+   "from": "좌 a39",
+   "to": "좌 GND레일39행",
+   "desc": "임시 U4 pin 1 -> GND · 3걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 35,
+   "kind": "gnd",
+   "from": "좌 a44",
+   "to": "좌 GND레일43행",
+   "desc": "임시 U4 pin 6 -> GND · 3걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 36,
+   "kind": "gnd",
+   "from": "좌 a19",
+   "to": "좌 GND레일21행",
+   "desc": "임시 U2 pin 3 -> GND · 4걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 37,
+   "kind": "gnd",
+   "from": "좌 a24",
+   "to": "좌 GND레일24행",
+   "desc": "임시 U2 pin 8 -> GND · 4걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 38,
+   "kind": "gnd",
+   "from": "좌 a30",
+   "to": "좌 GND레일30행",
+   "desc": "임시 U3 pin 3 -> GND · 4걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 39,
+   "kind": "gnd",
+   "from": "좌 a35",
+   "to": "좌 GND레일35행",
+   "desc": "임시 U3 pin 8 -> GND · 5걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 40,
+   "kind": "gnd",
+   "from": "좌 a41",
+   "to": "좌 GND레일41행",
+   "desc": "임시 U4 pin 3 -> GND · 5걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 41,
+   "kind": "gnd",
+   "from": "좌 a46",
+   "to": "좌 GND레일46행",
+   "desc": "임시 U4 pin 8 -> GND · 5걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 42,
+   "kind": "vcc",
+   "from": "좌 a23",
+   "to": "좌 VCC레일22행",
+   "desc": "임시 U2 pin 7 -> +5V · 6걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 43,
+   "kind": "vcc",
+   "from": "좌 a18",
+   "to": "좌 VCC레일16행",
+   "desc": "임시 U2 pin 2 -> +5V · 6걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 44,
+   "kind": "gnd",
+   "from": "좌 j24",
+   "to": "중앙GND레일24행",
+   "desc": "임시 U2 pin 9 -> GND · 7걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 45,
+   "kind": "gnd",
+   "from": "좌 j21",
+   "to": "중앙GND레일22행",
+   "desc": "임시 U2 pin 12 -> GND · 7걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 46,
+   "kind": "gnd",
+   "from": "좌 a20",
+   "to": "좌 GND레일15행",
+   "desc": "임시 U2 pin 4 -> GND · 8걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 47,
+   "kind": "gnd",
+   "from": "좌 j17",
+   "to": "중앙GND레일17행",
+   "desc": "임시 U2 pin 16 -> GND · 8걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 48,
+   "kind": "gnd",
+   "from": "좌 j35",
+   "to": "중앙GND레일35행",
+   "desc": "임시 U3 pin 9 -> GND · 9걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 49,
+   "kind": "gnd",
+   "from": "좌 j32",
+   "to": "중앙GND레일33행",
+   "desc": "임시 U3 pin 12 -> GND · 9걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 50,
+   "kind": "gnd",
+   "from": "좌 a31",
+   "to": "좌 GND레일31행",
+   "desc": "임시 U3 pin 4 -> GND · 10걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 51,
+   "kind": "gnd",
+   "from": "좌 j28",
+   "to": "중앙GND레일28행",
+   "desc": "임시 U3 pin 16 -> GND · 10걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 52,
+   "kind": "gnd",
+   "from": "좌 j46",
+   "to": "중앙GND레일46행",
+   "desc": "임시 U4 pin 9 -> GND · 11걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 53,
+   "kind": "gnd",
+   "from": "좌 j43",
+   "to": "중앙GND레일41행",
+   "desc": "임시 U4 pin 12 -> GND · 11걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 54,
+   "kind": "gnd",
+   "from": "좌 a42",
+   "to": "좌 GND레일42행",
+   "desc": "임시 U4 pin 4 -> GND · 12걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 55,
+   "kind": "gnd",
+   "from": "좌 j39",
+   "to": "중앙GND레일39행",
+   "desc": "임시 U4 pin 16 -> GND · 12걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 56,
+   "kind": "sig",
+   "from": "좌 g9",
+   "to": "좌 i8",
+   "desc": "D 두 입력 묶음: U1 pin 12 -> U1 pin 13",
+   "count": 1,
+   "color": "#e67800"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "BIT2",
+   "at": "우 a18",
+   "active_low": false
+  },
+  {
+   "tag": "BIT1",
+   "at": "우 a22",
+   "active_low": false
+  },
+  {
+   "tag": "BIT4",
+   "at": "우 a28",
+   "active_low": false
+  },
+  {
+   "tag": "BIT3",
+   "at": "우 a33",
+   "active_low": false
+  },
+  {
+   "tag": "BIT6",
+   "at": "우 a40",
+   "active_low": false
+  },
+  {
+   "tag": "BIT5",
+   "at": "우 a44",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "D",
+   "at": "좌 j9",
+   "rail": "중앙GND레일9행",
+   "x": 588,
+   "row": 9
+  }
+ ]
+}
