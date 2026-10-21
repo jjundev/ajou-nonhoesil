@@ -194,6 +194,8 @@ class _RuleChecks:
                            "블록을 건너는 선은 칩 핀 스트립에서 LED 사슬 스트립으로만 간다")
             else:
                 ok.append((led_end[2], chip_end[2], w))
+        if getattr(self, 'led_order_policy', 'pin') == 'fixed':
+            return bad
         ok.sort(key=lambda t: t[0])
         for (_l1, c1, w1), (_l2, c2, w2) in zip(ok, ok[1:]):
             if c1 > c2:

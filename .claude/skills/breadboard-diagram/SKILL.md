@@ -277,8 +277,10 @@ DIP-16), 사슬은 **우 a 열**에서 받아 GND 를 가운데 레일로 내린
   `LAYOUT` 을 맞댄다. 후보는 칩 사이 빈 행 3~6(`PLACE_GMIN`)이고 칩·LED·입력 핀 행은 레일 빈 행을 피한다. 고르는
   것은 기준 `LAYOUT` 보다 짧고 밀도가 기준 이하이며 단계 사슬 `verify()` 를 통과한 후보 중 최단 길이의
   ×`PLACE_LENGTH_SLACK`(1.02) 안에서 밀도가 가장 낮은 것이다(세부는 엔진 `place_plan` docstring). 이 ε 를 바꾸면
-  지문이 바뀌어 모든 v2 주차를 다시 돌린다. `--jobs`(기본 min(8, 코어 수))로 병렬로 돌고 `--jobs 1` 과 답이 같다.
+  지문이 바뀌어 모든 v2 주차를 다시 돌린다. `--jobs`로 병렬 실행해도 답이 같다.
   칩은 `DIP_PINS` 표에 있는 것만 받는다(16핀 포함 — §2b).
+
+고정 LED 탐색: `.claude/skills/breadboard-diagram/fixed-led-search.md`.
 
 ## 5. 물리 실현성 규칙 — verify() 가 집행한다
 

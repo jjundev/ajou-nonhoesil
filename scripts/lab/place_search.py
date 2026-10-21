@@ -62,9 +62,34 @@ def main(argv=None):
     ap.add_argument('board', help='주차 배치.py 경로')
     ap.add_argument('--top', type=int, default=None, help='라운드마다 실측할 근사 순위 앞 개수')
     ap.add_argument('--jobs', type=int, default=None, help='작업 프로세스 수 (기본 min(top, 코어 수), 1 = 차례대로)')
+    ap.add_argument('--mode', choices=('legacy', 'fixed'), default='legacy',
+                    help='fixed: keep current LED coordinates immutable')
+    ap.add_argument('--budget', type=int, default=256, help='fixed mode route-generation attempts')
+    ap.add_argument('--length-slack', type=float, default=1.10,
+                    help='fixed mode length band relative to shortest validated candidate')
+    ap.add_argument('--out', help='fixed mode output directory; approved diagrams are never replaced')
     a = ap.parse_args(argv)
     t = time.perf_counter()
     mod, board = load(a.board)
+    if a.mode == 'fixed':
+        if not a.out:
+            ap.error('--mode fixed requires --out (separate search artifacts)')
+        from scripts.lab import fixed_search as fixed
+        spec = fixed.SearchSpec(board.LAYOUT['leds'], a.budget, a.length_slack)
+        out = Path(a.out).resolve()
+        if out == Path(a.board).resolve().parent:
+            ap.error('fixed search output must differ from approved diagram directory')
+        out.mkdir(parents=True, exist_ok=True)
+        result = fixed.run(mod, board, Path(a.board).resolve(), spec,
+                           jobs=a.jobs or min(4, os.cpu_count() or 1),
+                           progress=lambda n, valid: print(f'경로 계산 {n}/{spec.budget} · 검증 통과 {valid}', flush=True))
+        chosen = result['selected']
+        fixed.validate_plan(mod, board, chosen['candidate'], chosen['plans'], chosen['temporaries'],
+                            out / 'selected')
+        (out / 'result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        (out / 'report.md').write_text(fixed.report(result), encoding='utf-8')
+        print(fixed.report(result))
+        return 0
     top = a.top or mod.PLACE_TOP
     result = run(mod, board, a.board, top, a.jobs or min(top, os.cpu_count() or 1))
     chosen = next(r for r in result['rows'] if r['status'] == '✔ 고름')

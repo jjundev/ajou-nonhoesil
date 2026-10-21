@@ -173,7 +173,7 @@ def _seg_boxes(segs):
     return out
 
 
-def _valid(bb, path, others_pts, segs, seg_boxes=None):
+def _valid(bb, path, others_pts, segs, seg_boxes=None, *, allow_diagonal=False):
     if seg_boxes is None:          # `_routes` 는 생성기마다 한 번 구해 넘긴다
         seg_boxes = _seg_boxes(segs)
     # R6 — 두 점이 다 같은 스트립의 홀이면 그 구간은 전기적으로 없는 것과 같다
@@ -182,8 +182,14 @@ def _valid(bb, path, others_pts, segs, seg_boxes=None):
         sb = bb._strip(bb.sym(b[0], bb._row_of(b[1]))) if bb.hole_at(*b) else None
         if sa is not None and sa == sb:
             return False
-        if _axis(a, b) is None:
+        if not allow_diagonal and _axis(a, b) is None:
             return False
+    # Fixed-LED search also prunes R13 failures before greedy route selection.
+    if getattr(bb, 'route_avoid_bodies', False):
+        for box, cx, _ch in bb._chip_bodies():
+            if ((path[0][0] < cx) == (path[-1][0] < cx)
+                    and any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:]))):
+                return False
     # 칩 이름 글자 위를 지나지 않는다(엔진 R14) — 이어 가기는 이름 위아래 반 행으로 건넌다
     for box, _ch in bb.chip_label_boxes:
         if any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:])):
@@ -364,7 +370,7 @@ def _marker_spot(bb, path):
 _REPAIR_BACK, _REPAIR_ALTS = 4, 8   # 막히면 직전 몇 가닥을, 가닥마다 몇 후보까지 바꿔 보는가
 
 
-def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
+def route_plan(build_fixed, chips, wires, board='v2', density_weight=None, *, renderer_factory=None):
     """superset 판(모든 단계의 고정물 + 앞 선)에서 `wires` 순서대로 선마다 경로와 번호 원 자리를 정한다 —
     단계 그림마다 같은 자리다. v2 판형만.
 
@@ -375,7 +381,7 @@ def route_plan(build_fixed, chips, wires, board='v2', density_weight=None):
     w = DENSITY_WEIGHT if density_weight is None else density_weight
 
     def board_(upto):
-        bb = BreadboardRenderer(None, board=board)
+        bb = (renderer_factory or BreadboardRenderer)(None, board=board)
         bb.enable_steps()
         build_fixed(bb, None, superset=True)
         for (_s, _e, kind, _f, _t, desc), (p, m) in zip(wires, upto):

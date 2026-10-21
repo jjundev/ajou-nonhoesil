@@ -1396,6 +1396,8 @@ class BreadboardRenderer(_RuleChecks):
             assert not undrawn, (
                 f'걷기 대상 LED 사슬을 앞 빌더가 그리지 않았다: {undrawn} — '
                 'removal_board 의 prev 빌더·stage 가 기준선을 만든 것과 같아야 한다')
+        if getattr(self, 'validation_only', False):
+            return
         # 유령선은 템플릿과 overlay 사이 — 회색 선·칩·새 선이 유령선을 덮는다
         base = Image.alpha_composite(self.im, self.ghost_layer)
         if self.hand is not None:
