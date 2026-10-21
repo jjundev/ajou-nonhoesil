@@ -1,0 +1,1118 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp07",
+  "bank_sha256": "13f771be4edfbf40a309ed59f949bd9357d582abc99a513bae3fbc17f945385e",
+  "experiment": 7,
+  "questions": [
+    {
+      "question_id": "q-sr",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q1",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s06-q1",
+        "o-s12-p2-q1",
+        "o-s04-q1",
+        "o-s14-q1",
+        "o-s08-q1",
+        "o-s09-q1",
+        "o-s10-q1",
+        "o-s11-q1",
+        "o-s12-p1-q1",
+        "o-s16-q1",
+        "o-s17-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-p2-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a1",
+          "target_id": "q-sr",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s12-p2",
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-ring",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q2",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s04-q6",
+        "o-s14-q6",
+        "o-s08-q6",
+        "o-s09-q6",
+        "o-s10-q6",
+        "o-s11-q6",
+        "o-s12-p1-q6",
+        "o-s16-q6",
+        "o-s17-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a6",
+          "target_id": "q-ring",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a6",
+          "target_id": "q-ring",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a6",
+          "target_id": "q-ring",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a6",
+          "target_id": "q-ring",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a6",
+          "target_id": "q-ring",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-johnson-nand",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s04-q9",
+        "o-s14-q9",
+        "o-s08-q9",
+        "o-s09-q9",
+        "o-s10-q9",
+        "o-s11-q9",
+        "o-s12-p1-q9",
+        "o-s16-q9",
+        "o-s17-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a9",
+          "target_id": "q-johnson-nand",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a9",
+          "target_id": "q-johnson-nand",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a9",
+          "target_id": "q-johnson-nand",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a9",
+          "target_id": "q-johnson-nand",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a9",
+          "target_id": "q-johnson-nand",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-johnson-nand",
+          "reason": "문항은 2입력 NAND gate의 역할을 묻지만 단답형(PDF/HWP) 답안은 디코딩용 2n개의 2입력 AND 게이트를 설명하고, v1·v4·DOCX 답안은 “맨 마지막의 출력을 반전”이라고 한다. 단답형 답안의 “서로다른 2 개의타이밍신호”는 2n 표기가 줄바꿈으로 깨졌을 가능성이 있으나 원문 그대로 둠. 어느 답도 정답으로 채택하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p2",
+        "a-s11-p2",
+        "a-s16-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-7496-block",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s04-q10",
+        "o-s14-q10",
+        "o-s08-q10",
+        "o-s09-q10",
+        "o-s10-q10",
+        "o-s11-q10",
+        "o-s12-p1-q10",
+        "o-s16-q10",
+        "o-s17-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a10",
+          "target_id": "q-7496-block",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a10",
+          "target_id": "q-7496-block",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-q4",
+        "a-s02-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-p2",
+        "a-s14-p2",
+        "a-s08-p2",
+        "a-s11-p2",
+        "a-s16-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-convert",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q1",
+      "occurrence_ids": [
+        "o-s05-q1",
+        "o-s03-q1",
+        "o-s07-q1",
+        "o-s15-q1",
+        "o-s04-q4",
+        "o-s14-q4",
+        "o-s08-q4",
+        "o-s09-q4",
+        "o-s10-q4",
+        "o-s11-q4",
+        "o-s12-p1-q4",
+        "o-s16-q4",
+        "o-s17-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a1",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a1",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a4",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a4",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a4",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a4",
+          "target_id": "q-convert",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-convert",
+          "to_id": "q-p2s",
+          "type": "variant_of",
+          "reason": "직렬-병렬과 병렬-직렬 두 변환기를 모두 묻는 문항과 병렬-직렬 변환기만 묻는 문항은 요구 범위가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s07-a1",
+          "reason": "채점본의 직렬-병렬/병렬-직렬 수기 답안 중 오른쪽 연필 메모 일부를 판독하지 못했다. 원문 크롭으로 대조해야 한다."
+        },
+        {
+          "target_id": "q-convert",
+          "reason": "v1·v4·DOCX의 4번 제공 답안은 직렬-병렬 변환기 설명만 있고 다음 줄에 마침표만 있다. v1에만 병렬-직렬 설명이 작은 붙여넣은 이미지로 덧붙어 있다. 불완전한 답안으로 보존."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s07-q1",
+        "a-s15-p1",
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-ff-design",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q2",
+      "occurrence_ids": [
+        "o-s05-q2",
+        "o-s03-q2",
+        "o-s07-q2",
+        "o-s15-q2"
+      ],
+      "subparts": [
+        {
+          "id": "q-ff-design-p1",
+          "label": "1)",
+          "occurrence_id": "o-s05-q2",
+          "block_ids": [
+            "b-o-s05-q2-p1"
+          ]
+        },
+        {
+          "id": "q-ff-design-p2",
+          "label": "2)",
+          "occurrence_id": "o-s05-q2",
+          "block_ids": [
+            "b-o-s05-q2-p2",
+            "b-o-s05-q2-dff"
+          ]
+        }
+      ],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2-1",
+          "target_id": "q-ff-design-p1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a2-1",
+          "target_id": "q-ff-design-p1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a2-1",
+          "target_id": "q-ff-design-p1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a2-2",
+          "target_id": "q-ff-design-p2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a2-2",
+          "target_id": "q-ff-design-p2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a2-2",
+          "target_id": "q-ff-design-p2",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-e1",
+          "target_id": "q-ff-design-p1",
+          "status": "confirmed",
+          "reason": "해설 자료가 “Flip Flop을 활용한 Shift Register 설계” 1) 문구를 그대로 인용하고 풀이를 붙임. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-e2",
+          "target_id": "q-ff-design-p2",
+          "status": "confirmed",
+          "reason": "해설 자료가 “Flip Flop을 활용한 Shift Register 설계” 2) 문구를 그대로 인용하고 회로를 붙임. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ff-design",
+          "to_id": "q-6bit-jk",
+          "type": "variant_of",
+          "reason": "4 bit 레지스터의 7476 칩 수·J-K F/F 수(소문항 1)와 6bit shift right register의 JK F/F 수는 비트 수와 요구가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 (소문항 1·2); 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1-q2",
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1-q2",
+        "a-s03-p1",
+        "a-s07-q2",
+        "a-s15-p1",
+        "a-s13-p1-e1",
+        "a-s13-p1-e2a",
+        "a-s13-p1-e2b"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-7496-circular",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q3",
+      "occurrence_ids": [
+        "o-s05-q3",
+        "o-s03-q3",
+        "o-s07-q3",
+        "o-s15-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-7496-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a3",
+          "target_id": "q-7496-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a3",
+          "target_id": "q-7496-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-7496-circular",
+          "to_id": "q-circular",
+          "type": "variant_of",
+          "reason": "7496으로 구현한 5bit 레지스터라는 조건이 있는 문항과 일반 시프트 레지스터의 순환 변환 문항은 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s05-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s07-q3",
+        "a-s15-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-jkff",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s10-q2",
+      "occurrence_ids": [
+        "o-s04-q2",
+        "o-s14-q2",
+        "o-s08-q2",
+        "o-s09-q2",
+        "o-s10-q2",
+        "o-s11-q2",
+        "o-s12-p1-q2",
+        "o-s16-q2",
+        "o-s17-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-jkff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a2",
+          "target_id": "q-jkff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-jkff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a2",
+          "target_id": "q-jkff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a2",
+          "target_id": "q-jkff",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a2",
+          "reason": "제공 답안이 “RS F/F을 보완하기 위한 플립플롭으로 ...”에서 끊겨 있다. 원문 그대로 보존했으며 완결된 답안이 아니다."
+        },
+        {
+          "target_id": "o-s14-a2",
+          "reason": "제공 답안이 “RS F/F을 보완하기 위한 플립플롭으로 ...”에서 끊겨 있다(HWP 원본도 동일). 완결된 답안이 아니다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-7496-role",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s10-q5",
+      "occurrence_ids": [
+        "o-s04-q5",
+        "o-s14-q5",
+        "o-s08-q5",
+        "o-s09-q5",
+        "o-s10-q5",
+        "o-s11-q5",
+        "o-s12-p1-q5",
+        "o-s16-q5",
+        "o-s17-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s04-a5",
+          "target_id": "q-7496-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a5",
+          "target_id": "q-7496-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-7496-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a5",
+          "target_id": "q-7496-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a5",
+          "target_id": "q-7496-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "예상문항의 7496 역할은 q-7496-block 기출에서 이미 다뤄 개념 공백이 없어요. 기출 중심 선별 원칙으로 비수록하며 원문·출처는 보존해요."
+    },
+    {
+      "question_id": "q-6bit-jk",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q2",
+      "occurrence_ids": [
+        "o-s06-q2",
+        "o-s12-p2-q2",
+        "o-s04-q3",
+        "o-s14-q3",
+        "o-s08-q3",
+        "o-s09-q3",
+        "o-s10-q3",
+        "o-s11-q3",
+        "o-s12-p1-q3",
+        "o-s16-q3",
+        "o-s17-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-6bit-jk",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-p2-a2",
+          "target_id": "q-6bit-jk",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-6bit-jk",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a3",
+          "target_id": "q-6bit-jk",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a3",
+          "target_id": "q-6bit-jk",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ff-design",
+          "to_id": "q-6bit-jk",
+          "type": "variant_of",
+          "reason": "4 bit 레지스터의 7476 칩 수·J-K F/F 수(소문항 1)와 6bit shift right register의 JK F/F 수는 비트 수와 요구가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2 (소문항 1·2); 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-6bit-jk",
+          "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s12-p2",
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-p2s",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q3",
+      "occurrence_ids": [
+        "o-s06-q3",
+        "o-s12-p2-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-p2s",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-p2-a3",
+          "target_id": "q-p2s",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-convert",
+          "to_id": "q-p2s",
+          "type": "variant_of",
+          "reason": "직렬-병렬과 병렬-직렬 두 변환기를 모두 묻는 문항과 병렬-직렬 변환기만 묻는 문항은 요구 범위가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-p2s",
+          "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s12-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-johnson",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q4",
+      "occurrence_ids": [
+        "o-s06-q4",
+        "o-s12-p2-q4",
+        "o-s04-q7",
+        "o-s14-q7",
+        "o-s08-q7",
+        "o-s09-q7",
+        "o-s10-q7",
+        "o-s11-q7",
+        "o-s12-p1-q7",
+        "o-s16-q7",
+        "o-s17-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-p2-a4",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a7",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a7",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a7",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a7",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a7",
+          "target_id": "q-johnson",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-johnson",
+          "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s12-p2",
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s16-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    },
+    {
+      "question_id": "q-circular",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-q5",
+      "occurrence_ids": [
+        "o-s06-q5",
+        "o-s12-p2-q5",
+        "o-s04-q8",
+        "o-s14-q8",
+        "o-s08-q8",
+        "o-s09-q8",
+        "o-s10-q8",
+        "o-s11-q8",
+        "o-s12-p1-q8",
+        "o-s16-q8",
+        "o-s17-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-p2-a5",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a8",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a8",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a8",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a8",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a8",
+          "target_id": "q-circular",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-7496-circular",
+          "to_id": "q-circular",
+          "type": "variant_of",
+          "reason": "7496으로 구현한 5bit 레지스터라는 조건이 있는 문항과 일반 시프트 레지스터의 순환 변환 문항은 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-9b5da551db6d74da",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-a9c5e69046af5d81",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "“실험7. Quiz” 문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-circular",
+          "reason": "Quiz 형식·제공 답안은 있으나 이 고유 문항의 실제 시험 시행 근거는 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s12-p1",
+        "a-s17-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s12-p2",
+        "a-s04-p1",
+        "a-s14-p1",
+        "a-s08-p2",
+        "a-s11-p1",
+        "a-s16-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충"
+    }
+  ]
+}

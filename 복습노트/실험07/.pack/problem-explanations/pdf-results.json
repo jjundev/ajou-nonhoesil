@@ -1,0 +1,18 @@
+[
+  {
+    "file": "실험07_기출문제.pdf",
+    "pages": 22,
+    "a4_landscape": true,
+    "raw_latex_errors": 0,
+    "answer_image_overlap_errors": 0,
+    "sha256": "2aea822ac3a13ab975b4a6b29c3ce42b9b0a4119a683730e48008959a8cd2aa2"
+  },
+  {
+    "file": "실험07_기출풀이.pdf",
+    "pages": 24,
+    "a4_landscape": true,
+    "raw_latex_errors": 0,
+    "answer_image_overlap_errors": 0,
+    "sha256": "d25d7c5ad3384e9d66e7aa291d6d43bc7381156cd8185d516e867a4491bbb831"
+  }
+]

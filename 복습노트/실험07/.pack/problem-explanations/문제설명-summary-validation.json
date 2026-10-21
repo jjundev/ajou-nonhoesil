@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "html": "실험07_문제설명.html",
+  "html_sha256": "a970429fecc9887ce50f956c7e5bd8d64d513996e0837031e51d88ac4c6c3500",
+  "audit_path": "problem-explanations/summary-audit.md",
+  "audit_sha256": "992230b677fc5b0532383c4463678fd064f4364254dfaee171d5c6473bbdf891",
+  "semantic_status": "pass",
+  "browser_status": "pass",
+  "evidence": [
+    "problem-explanations/browser-results.json",
+    "problem-explanations/panel-results.json",
+    "problem-explanations/calculation-results.json"
+  ],
+  "unresolved": [
+    "존슨NAND 배선 부재·제공답충돌",
+    "7496 CLR극성·엣지충돌"
+  ],
+  "review_type": "self_review; independent not_run"
+}

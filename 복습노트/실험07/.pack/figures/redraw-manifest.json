@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "dff-given",
+      "question_id": "q-ff-design",
+      "role": "problem",
+      "svg": "figures/questions/dff-given.svg",
+      "png": "figures/questions/dff-given.png",
+      "svg_sha256": "bdbd316cf69e920d68bf74f4e56a502a4b42245f55a3c724b6a8595d497c8f08",
+      "png_sha256": "fcfbbc90c27fde9ab97471176705a74c3d4c079d1e82fc63fbd62b18c848fb09",
+      "w_mm": 45,
+      "h_mm": 30.0,
+      "source_asset_ids": [
+        "a-s05-p1-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-9b5da551db6d74da",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2 (소문항 1·2); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문 핀·신호·공통 클록·단계 간 Q/보수 경로를 읽어 직접 재제작한 벡터 그림. 문제와 완성 해설을 분리했어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    },
+    {
+      "id": "shift-complete",
+      "question_id": "q-ff-design",
+      "role": "solution",
+      "svg": "figures/solutions/shift-complete.svg",
+      "png": "figures/solutions/shift-complete.png",
+      "svg_sha256": "c63833d71a760735ce7e041bb5023fa0c11e4649e554b7eaa90e5df8fe2fc72b",
+      "png_sha256": "8a7e88d989249041dc6b3a0dce589f99e067d09cd5daa7ffa42e54969620ba22",
+      "w_mm": 150,
+      "h_mm": 43.5,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-9b5da551db6d74da",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2 (소문항 1·2); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문 핀·신호·공통 클록·단계 간 Q/보수 경로를 읽어 직접 재제작한 벡터 그림. 문제와 완성 해설을 분리했어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    },
+    {
+      "id": "ic7496-given",
+      "question_id": "q-7496-block",
+      "role": "problem",
+      "svg": "figures/questions/ic7496-given.svg",
+      "png": "figures/questions/ic7496-given.png",
+      "svg_sha256": "ba49a4fe407b38461d45a3b1d6d90d798a13f683e9c9827ed5bf175dac018eb9",
+      "png_sha256": "312956cdc31b3c60cc3a6727e96ecda4d9ecfce6f117eb3b76c877a385451fb9",
+      "w_mm": 155,
+      "h_mm": 60.708333333333336,
+      "source_asset_ids": [
+        "a-s02-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-a86f355000b43594",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문 핀·신호·공통 클록·단계 간 Q/보수 경로를 읽어 직접 재제작한 벡터 그림. 문제와 완성 해설을 분리했어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    },
+    {
+      "id": "inverter-given",
+      "question_id": "q-qp-e07-board-01",
+      "role": "problem",
+      "svg": "figures/questions/inverter-given.svg",
+      "png": "figures/questions/inverter-given.png",
+      "svg_sha256": "f327db8e836aa82a40ee9959d1b3b03a588ec4e2d81eefdda61069ded7c1426b",
+      "png_sha256": "aff649bc8502dd50abde2f904f459156996523be771cc5758f2cb6be5d40f5ae",
+      "w_mm": 75,
+      "h_mm": 25.403225806451612,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "derivation": "원문 핀·신호·공통 클록·단계 간 Q/보수 경로를 읽어 직접 재제작한 벡터 그림. 문제와 완성 해설을 분리했어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    },
+    {
+      "id": "inverter-blank",
+      "question_id": "q-qp-e07-board-01",
+      "role": "problem",
+      "svg": "figures/questions/inverter-blank.svg",
+      "png": "figures/questions/inverter-blank.png",
+      "svg_sha256": "cb0ac2f2e7d31ed7413351b833e44e44b151d43086f0f7f3a2bfb1ffe5adec4c",
+      "png_sha256": "afd6320bd2a49808fca62018d851635a9cae0f7a3d4903775da3c8f8d30de022",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352. 엔진 JPG 좌표를 개별 선형 대응. verify와 핀1·2 동일 넷 대조.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    },
+    {
+      "id": "inverter-complete",
+      "question_id": "q-qp-e07-board-01",
+      "role": "solution",
+      "svg": "figures/solutions/inverter-complete.svg",
+      "png": "figures/solutions/inverter-complete.png",
+      "svg_sha256": "85507c341d1c53678c520778c0ce4601df4b8087c95226884e4d878bfde9f25e",
+      "png_sha256": "c1c9672efb1ba0dbfb0bc91dbbd357d068f5793ea15c8a39df2174ef30f57b25",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352. 엔진 JPG 좌표를 개별 선형 대응. verify와 핀1·2 동일 넷 대조.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-10-21 직접 시각 대조: D기호·7496 5단 S/R 보수 경로·preset NAND·CP/CLEAR 반전과 공통선·핀 번호 확인. 보드는 전체 v1 양식·홀 정렬·D점퍼·1/2공통·3측정점·14/7전원·NC를 engine verify/nets와 대조. 초기D=0 스냅샷."
+    }
+  ]
+}

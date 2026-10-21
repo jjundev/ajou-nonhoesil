@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>실험 7 · 문제 설명</title>
+  <meta name="description" content="이론을 문제풀이에 연결해요">
+  <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('od-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <link rel="stylesheet" href=".pack/assets/vendor/pretendard/pretendard.css">
+  <link rel="stylesheet" href=".pack/assets/vendor/katex/katex.min.css">
+  <script defer src=".pack/assets/vendor/katex/katex.min.js"></script>
+  <script defer src=".pack/assets/vendor/katex/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']})"></script>
+  <style>
+    /* ---------- 토큰 ---------- */
+    :root {
+      color-scheme: light;
+      --bg: #ffffff; --surface: #f7f8fa; --ink: #111111; --ink-2: #6b7280; --line: #d9dee7;
+      --accent: #1677ff; --accent-ink: #1b64da; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #b54708; --prof: #6941c6; --supp: #067647; --danger: #d92d20;
+      --scroll: #c9d0db; --scroll-hover: #9aa3b2;
+      --font: 'Pretendard', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --fs-title: clamp(28px, 6vw, 36px); --fs-h3: clamp(26px, 5.4vw, 32px); --fs-layer: 19px; --fs-lead: 22px; --fs-body: 17px; --fs-sub: 15px; --fs-small: 14px; --fs-label: 13px; --fs-fig: 12px;
+      --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+      --radius: 8px; --measure: 680px; --tap: 48px; --btn-min: 160px;
+      --dur: 220ms; --dur-exit: 150ms; --ease-out: cubic-bezier(.2, .8, .2, 1);
+      /* 예전 조각이 참조할 수 있는 이름 */
+      --surface-2: var(--surface); --accent-soft: var(--surface); --warn-soft: var(--surface);
+      --prof-soft: var(--surface); --supp-soft: var(--surface); --eli5: var(--accent-ink); --eli5-soft: var(--surface);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+        --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+        --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+        --scroll: #3f414b; --scroll-hover: #5b5e6a;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+      --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+      --scroll: #3f414b; --scroll-hover: #5b5e6a;
+    }
+
+    /* ---------- 기본 ---------- */
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+      background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--fs-body); line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+    a { color: var(--accent-ink); text-underline-offset: 3px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    [hidden] { display: none !important; }
+
+    /* ---------- 상단 바 ---------- */
+    .topbar { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s2) var(--s4); display: flex; align-items: center; gap: var(--s3); min-height: 56px; }
+    .brand { flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; }
+    .text-btn { flex: none; min-height: 44px; min-width: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--radius);
+      background: transparent; color: var(--ink); font: 600 var(--fs-small)/1 var(--font); cursor: pointer; }
+    .bar { height: 2px; background: var(--line); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+
+    /* ---------- 본문 ---------- */
+    main { flex: 1 0 auto; width: 100%; max-width: var(--measure); margin: 0 auto; padding: var(--s6) var(--s5) var(--s7); }
+    .hero h1 { font-size: var(--fs-title); line-height: 1.3; margin: 0 0 var(--s3); letter-spacing: -0.02em; }
+    .hero p { color: var(--ink-2); margin: 0; }
+    section { margin-top: var(--s7); }
+    section > h2 { font-size: 22px; line-height: 1.4; margin: 0 0 var(--s4); }
+    .topic { padding: var(--s6) 0; border-top: 1px solid var(--line); }
+    .topic h3 { margin: 0 0 var(--s2); font-size: var(--fs-h3); font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; }
+    .tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+    .tag { font-size: var(--fs-label); line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); white-space: nowrap; }
+
+    /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
+    .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
+    .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer > :first-child { margin-top: 0; }
+    .layer > :last-child { margin-bottom: 0; }
+    .layer-title { display: block; font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin-bottom: var(--s3); }
+    .layer.eli5 .layer-title { color: var(--accent-ink); }
+    .layer.eli5 .lead { font-size: var(--fs-lead); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; margin: 0 0 var(--s4); }
+    /* 정확히 말하면: 본문 크기 그대로, 굵은 첫머리만 진하게 */
+    .layer.formal b { font-weight: 700; color: var(--ink); }
+    /* 교수님 말씀 · 주의: 보조 정보는 한 단계 작게 */
+    .layer.prof, .layer.warn, .layer.listen { font-size: var(--fs-sub); line-height: 1.7; }
+    .layer.prof blockquote { font-size: var(--fs-sub); }
+    .layer.prof .layer-title { color: var(--prof); }
+    .layer.warn, .layer.listen { background: var(--surface); border-top: 0; border-radius: var(--radius); padding: var(--s4); }
+    .layer.warn .layer-title { color: var(--warn); font-size: var(--fs-body); }
+    .layer.listen .layer-title { color: var(--accent-ink); font-size: var(--fs-body); }
+    .layer.supp .badge.supp { margin-bottom: var(--s2); }
+    .badge { display: inline-block; font-size: var(--fs-label); font-weight: 600; line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); }
+    .badge.supp { color: var(--supp); }
+    .badge.exam { color: var(--warn); margin-right: var(--s1); }
+    blockquote { margin: var(--s3) 0; padding: 0 0 0 var(--s3); border-left: 2px solid var(--line); color: var(--ink-2); }
+    ol.steps { padding-left: 1.4em; }
+    ol.steps li { margin: var(--s2) 0; }
+
+    /* 그림 · 수식 · 표 */
+    .figure { margin: var(--s4) 0; text-align: center; }
+    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); }
+    .figure img { max-width: 100%; height: auto; }
+    .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
+    .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
+    .equation-card .katex-display { margin: 0; text-align: left; }
+    .equation-card .katex-display > .katex { text-align: left; }
+    .table-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card::-webkit-scrollbar, .table-card::-webkit-scrollbar { height: 8px; }
+    .equation-card::-webkit-scrollbar-track, .table-card::-webkit-scrollbar-track { background: transparent; }
+    .equation-card::-webkit-scrollbar-thumb, .table-card::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--surface); }
+    .equation-card::-webkit-scrollbar-thumb:hover, .table-card::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .equation-card, .table-card { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .table-card > table { margin: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
+    th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
+    th { color: var(--ink-2); font-weight: 600; }
+    td:first-child, th:first-child { min-width: 6em; }
+
+    /* explanation-table-layout:start */
+    [data-problem-explanation] .table-card { container-type: inline-size; }
+    [data-problem-explanation] .table-card .table-wrap { overflow: visible; }
+    [data-problem-explanation] table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
+    [data-problem-explanation] table[data-layout-mode="text"] { width: 100%; }
+    [data-problem-explanation] [data-layout-table] th,
+    [data-problem-explanation] [data-layout-table] td { min-width: 0; padding: 0.5rem; }
+    [data-problem-explanation] [data-layout-table] td { white-space: nowrap; }
+    [data-problem-explanation] [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
+    [data-problem-explanation] [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
+    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
+    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
+    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
+    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
+    [data-problem-explanation] [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    /* explanation-table-layout:end */
+
+    /* 위젯 */
+    .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }
+    .widget h4 { margin: 0 0 var(--s1); font-size: var(--fs-layer); line-height: 1.4; }
+    .widget-help { font-size: var(--fs-small); color: var(--ink-2); margin: 0 0 var(--s3); }
+    .controls { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--s2); font-size: var(--fs-small); }
+    .controls label { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+    .controls input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+    .widget svg { width: 100%; height: auto; background: var(--bg); border-radius: var(--radius); }
+    .readout { font-size: var(--fs-small); margin-top: var(--s2); }
+    .legend { font-size: var(--fs-label); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: var(--s3); }
+    .sw { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: var(--s1); border-radius: 2px; }
+    .sw.truth { background: var(--ink-2); } .sw.fit { background: var(--accent); } .sw.train { background: var(--accent); height: 10px; width: 10px; border-radius: 50%; }
+    .sw.test { background: var(--warn); height: 10px; width: 10px; border-radius: 50%; } .sw.like { background: var(--accent); } .sw.prior { background: var(--prof); } .sw.post { background: var(--supp); }
+    .axis { stroke: var(--line); stroke-width: 1.5; }
+    .tick { fill: var(--ink-2); font-size: 11px; }
+    .plot-truth { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .plot-fit { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+    .pt-train { fill: var(--accent); }
+    .pt-test { fill: var(--warn); }
+    .plot-like { fill: none; stroke: var(--accent); stroke-width: 2; }
+    .plot-prior { fill: none; stroke: var(--prof); stroke-width: 2; stroke-dasharray: 6 4; }
+    .plot-post { fill: none; stroke: var(--supp); stroke-width: 3; }
+    .mark-ml { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .mark-map { stroke: var(--supp); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .fig-ink { stroke: currentColor; fill: none; stroke-width: 2; }
+    .fig-accent { stroke: var(--accent); fill: none; stroke-width: 2.5; }
+    .fig-danger { stroke: var(--danger); fill: none; stroke-width: 2.5; }
+    .fig-dot { fill: var(--accent); }
+    .fig-text { fill: currentColor; font-size: 13px; font-family: inherit; }
+    .fig-muted { fill: var(--ink-2); font-size: var(--fs-fig); font-family: inherit; }
+
+    footer { width: 100%; max-width: var(--measure); margin: 0 auto; padding: 0 var(--s5) var(--s6); color: var(--ink-2); font-size: var(--fs-small); }
+
+    /* ---------- 하단 이동 바 ---------- */
+    .pager { position: sticky; bottom: 0; z-index: 10; background: var(--bg); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+    .pager-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s3) var(--s4); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s3); }
+    .pager-count { font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center; min-width: 4em; }
+    .btn { min-height: var(--tap); min-width: var(--btn-min); padding: 0 var(--s6); border-radius: var(--radius); border: 0; font: 700 var(--fs-body)/1 var(--font); cursor: pointer; white-space: nowrap;
+      transition: background-color 150ms ease-out, opacity 150ms ease-out; }
+    .btn-ghost { justify-self: start; background: var(--surface); color: var(--ink); }
+    .btn-primary { justify-self: end; background: var(--btn-bg); color: var(--on-btn); }
+    .btn:disabled { opacity: .4; cursor: default; }
+    @media (hover: hover) {
+      .text-btn:hover, .btn-ghost:not(:disabled):hover { background: var(--line); }
+      .btn-primary:not(:disabled):hover { box-shadow: inset 0 0 0 100px rgba(0, 0, 0, .14); }
+    }
+
+    /* ---------- 목차 시트 ---------- */
+    .sheet { width: min(100%, var(--measure)); max-width: 100%; max-height: 80dvh; margin: auto auto 0; padding: 0; border: 0;
+      border-radius: 16px 16px 0 0; background: var(--bg); color: var(--ink); }
+    .sheet::backdrop { background: rgba(0, 0, 0, .4); }
+    .sheet-inner { padding: var(--s4) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom)); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
+    .sheet-head h2 { margin: 0; font-size: var(--fs-lead); }
+    .toc { display: flex; flex-direction: column; }
+    .toc > a, .toc-group > a { display: block; padding: var(--s3) 0 var(--s1); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); text-decoration: none; }
+    .toc-list { list-style: none; margin: 0 0 var(--s2); padding: 0; }
+    .toc-list a { display: flex; align-items: center; gap: var(--s3); min-height: var(--tap); padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3));
+      border-radius: var(--radius); color: var(--ink); text-decoration: none; line-height: 1.4; }
+    .toc-list a[aria-current="true"] { background: var(--surface); font-weight: 700; color: var(--accent-ink); }
+    .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
+    @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
+
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
+    /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
+    html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
+    html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
+    html:not(.js) .sheet-close { display: none; }
+    .js main > .hero:not(.is-current), .js main > section:not(.is-on), .js .screen:not(.is-current) { display: none; }
+    .js main > section { margin-top: 0; }
+    .js main > section > h2 { font-size: var(--fs-small); font-weight: 600; color: var(--accent-ink); margin: 0 0 var(--s2); }
+    .js .topic { padding: 0; border-top: 0; }
+    .js .hero { padding-top: 12vh; }
+    .js footer { display: none; }
+    .js body.at-end footer { display: block; }
+    .screen.enter-next { animation: enter-next var(--dur) var(--ease-out); }
+    .screen.enter-prev { animation: enter-prev var(--dur) var(--ease-out); }
+    @keyframes enter-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+    @keyframes enter-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.enter-next, .screen.enter-prev { animation: none; }
+      .bar > span, .btn { transition: none; }
+    }
+    @media (max-width: 480px) {
+      main { padding: var(--s5) var(--s4) var(--s6); }
+      footer { padding: 0 var(--s4) var(--s5); }
+      .btn { min-width: 120px; padding: 0 var(--s5); }
+    }
+    @media print {
+      .topbar, .pager, .sheet { display: none !important; }
+      .js main > .hero, .js main > section, .js .screen, .js footer { display: block !important; }
+    }
+
+    /* ---------- 좌우 패널 (drawer) ---------- */
+    :root { --panel-l: clamp(240px, 18vw, 320px); --panel-r-min: 320px; --panel-r-max: 720px; --scrollbar: 16px; --drawer-l: 304px; --drawer-r: 360px; --fs-panel: 16px; --scrim: rgba(0, 0, 0, .4); }
+    body { height: 100vh; height: 100dvh; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+    .topbar-inner { max-width: none; padding: var(--s2) var(--s3); gap: var(--s2); }
+    .panel-toggle { display: inline-flex; align-items: center; gap: var(--s1); padding: 0 var(--s2); }
+    .panel-toggle svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-toggle .strip { fill: transparent; stroke: none; transition: fill 150ms ease-out; }
+    .panel-toggle[aria-expanded="true"] { color: var(--accent-ink); }
+    .panel-toggle[aria-expanded="true"] .strip { fill: currentColor; }
+    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+    .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .theme-toggle .i-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .i-sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .i-moon { display: none; }
+    }
+
+    .layout { display: grid; grid-template-columns: auto minmax(320px, 1fr) auto; min-height: 0; }
+    .content { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: var(--s4); }
+    .panel { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--bg); color: var(--ink); font-size: var(--fs-panel); line-height: 1.6; }
+    .panel-left { grid-column: 1; border-right: 1px solid var(--line); }
+    .content { grid-column: 2; }
+    .panel-right { grid-column: 3; border-left: 1px solid var(--line); }
+    .panel-inner { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--s4) var(--s4) var(--s6); }
+    .content::-webkit-scrollbar, .panel-inner::-webkit-scrollbar { width: 8px; }
+    .content::-webkit-scrollbar-track, .panel-inner::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb, .panel-inner::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--bg); }
+    .content::-webkit-scrollbar-thumb:hover, .panel-inner::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .content, .panel-inner { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .panel-resize { display: none; }
+    .panel-head { display: flex; align-items: center; gap: var(--s2); min-height: 44px; margin-bottom: var(--s2); }
+    .panel-head h2 { flex: 1 1 0; min-width: 0; margin: 0; font-size: var(--fs-lead); line-height: 1.4; }
+    .panel-sub { margin: 0 0 var(--s4); font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; }
+    .panel-empty { margin: 0; color: var(--ink-2); }
+    .panel-label { display: block; margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+
+    /* 진행 상태 */
+    .panel-meta { margin: 0 0 var(--s2); font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .panel-meta b { color: var(--ink); }
+    .progress { height: 4px; margin-bottom: var(--s3); border-radius: 2px; background: var(--line); overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+    .panel .toc-list a { margin: 0 calc(-1 * var(--s2)); padding: var(--s2); font-size: var(--fs-panel); }
+    .toc-mark { flex: none; display: block; width: 20px; height: 20px; color: var(--ink-2); }
+    .toc-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .toc-mark.is-done { color: var(--accent-ink); }
+
+    /* 복습문제: 원문 · 힌트 · 풀이 */
+    .aid details:last-of-type { border-bottom: 1px solid var(--line); }
+    .aid details.original > summary { font-size: var(--fs-panel); }
+    .solved-btn { display: flex; align-items: center; justify-content: center; gap: var(--s2); width: 100%; min-height: var(--tap); margin-top: var(--s5); padding: 0 var(--s4);
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--ink); font: 700 var(--fs-panel)/1.2 var(--font); cursor: pointer; }
+    .solved-btn svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .solved-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); }
+
+    /* 정리노트: 페이지 요약 */
+    .sum-lead { margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.6; }
+    .eq-list { list-style: none; margin: 0; padding: 0; }
+    .eq-list li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .eq-list li:first-child { padding-top: 0; }
+    .eq-name { display: block; font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .eq-list .katex-display { margin: var(--s1) 0 0; text-align: left; }
+    .eq-list .katex-display > .katex { text-align: left; }
+    .terms { margin: 0; }
+    .terms dt { font-size: var(--fs-panel); font-weight: 700; margin-top: var(--s4); }
+    .terms dt:first-child { margin-top: 0; }
+    .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
+    .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
+    .flow li { margin: var(--s2) 0; }
+
+    @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
+
+    /* 넓은 화면: 본문 옆에 붙는 패널 */
+    @media (min-width: 1024px) {
+      .layout { --l: var(--panel-l-user, var(--panel-l)); }
+      .layout[data-left="closed"] { --l: 0px; }
+      .panel-left { width: var(--l); }
+      /* 기본값: 왼쪽 패널과 본문 폭을 뺀 나머지를 오른쪽 패널이 차지 → 본문 옆 빈 여백이 생기지 않는다 */
+      .panel-right { width: var(--panel-r-user, clamp(var(--panel-r-min), calc(100vw - var(--l) - var(--measure) - var(--scrollbar)), var(--panel-r-max))); }
+      .panel-resize { display: block; position: absolute; top: 0; bottom: 0; z-index: 2; width: 12px; padding: 0; border: 0; background: transparent; cursor: col-resize; touch-action: none; }
+      .panel-left .panel-resize { right: 0; }
+      .panel-right .panel-resize { left: 0; }
+      .panel-resize::after { content: ""; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); opacity: 0; transition: opacity 150ms ease-out; }
+      .panel-left .panel-resize::after { right: 0; }
+      .panel-right .panel-resize::after { left: 0; }
+      .panel-resize:focus-visible { outline: none; }
+      .panel-resize:focus-visible::after, .is-resizing .panel-resize:active::after { opacity: 1; }
+      @media (hover: hover) { .panel-resize:hover::after { opacity: 1; } }
+      body.is-resizing { cursor: col-resize; user-select: none; }
+      .layout[data-left="closed"] .panel-left, .layout[data-right="closed"] .panel-right { display: none; }
+      .panel.is-shown { animation: panel-fade var(--dur) var(--ease-out); }
+      .scrim, .panel-close { display: none; }
+    }
+    @keyframes panel-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 좁은 화면: 가장자리에서 밀려 나오는 drawer */
+    @media (max-width: 1023.98px) {
+      .panel { position: fixed; top: 0; bottom: 0; z-index: 40; visibility: hidden;
+        transition: transform var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .panel-left { left: 0; width: min(var(--drawer-l), 88vw); transform: translateX(-100%); }
+      .panel-right { right: 0; width: min(var(--drawer-r), 88vw); transform: translateX(100%); }
+      .panel.is-open { visibility: visible; transform: none; transition: transform var(--dur) var(--ease-out); }
+      .panel-inner { padding-top: calc(var(--s3) + env(safe-area-inset-top)); padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom)); }
+      .scrim { position: fixed; inset: 0; z-index: 35; background: var(--scrim); opacity: 0; visibility: hidden;
+        transition: opacity var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .scrim.is-on { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease-out); }
+      html:not(.js) .panel-left { display: none; }
+    }
+    @media (max-width: 480px) { .panel-toggle { padding: 0 var(--s1); } }
+    html:not(.js) .panel-toggle, html:not(.js) .panel-right, html:not(.js) .scrim { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .panel, .panel.is-open, .scrim, .scrim.is-on, .progress > span, .panel-toggle .strip { transition: none; }
+      .panel.is-shown { animation: none; }
+      .panel-resize::after { transition: none; }
+    }
+    @media print {
+      body { display: block; height: auto; overflow: visible; }
+      .layout { display: block; }
+      .content { overflow: visible; }
+      .panel, .scrim { display: none !important; }
+    }
+  </style>
+</head>
+<body data-problem-explanation="true" data-screens="article.topic" data-panels="note" data-range="logic-lab-07-problem-explanation">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="text-btn panel-toggle" id="toggle-left" type="button" aria-controls="panel-left" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="3" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span>목차</span></button>
+      <strong class="brand">문제 설명</strong>
+      <button class="text-btn theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드로 전환" title="다크 모드로 전환"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="text-btn panel-toggle" id="toggle-right" type="button" aria-controls="panel-right" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="15" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span>요약</span></button>
+    </div>
+    <div class="bar" aria-hidden="true"><span id="pager-bar"></span></div>
+  </header>
+  <div class="layout" data-left="open" data-right="closed">
+    <aside class="panel panel-left" id="panel-left" aria-labelledby="panel-left-title">
+      <div class="panel-resize" data-side="left" role="separator" aria-orientation="vertical" aria-controls="panel-left" aria-label="왼쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-left-title">목차</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#q-sr"><span class="toc-title">문제 1 · 시프트 레지스터의 기능</span></a></li><li><a href="#q-ring"><span class="toc-title">문제 2 · 링 카운터와 초기화</span></a></li><li><a href="#q-johnson-nand"><span class="toc-title">문제 3 · 존슨 카운터의 NAND 역할</span></a></li><li><a href="#q-7496-block"><span class="toc-title">문제 4 · 7496 내부 블록을 읽어요</span></a></li><li><a href="#q-convert"><span class="toc-title">문제 5 · 직렬·병렬 변환의 두 방향</span></a></li><li><a href="#q-ff-design"><span class="toc-title">문제 6 · 4비트 회로와 7476 개수</span></a></li><li><a href="#q-7496-circular"><span class="toc-title">문제 7 · 7496을 순환 회로로 바꿔요</span></a></li><li><a href="#q-jkff"><span class="toc-title">문제 8 · 시프트용 JK 입력을 정해요</span></a></li><li><a href="#q-6bit-jk"><span class="toc-title">문제 9 · 6비트에 필요한 JK 개수</span></a></li><li><a href="#q-p2s"><span class="toc-title">문제 10 · 병렬에서 직렬로 꺼내요</span></a></li><li><a href="#q-johnson"><span class="toc-title">문제 11 · 존슨 카운터의 상태 순환</span></a></li><li><a href="#q-circular"><span class="toc-title">문제 12 · 순환 시프트의 연결</span></a></li><li><a href="#q-qp-e07-tf-01"><span class="toc-title">문제 13 · 여섯 칸의 저장 용량</span></a></li><li><a href="#q-qp-e07-tf-02"><span class="toc-title">문제 14 · 같은 엣지의 이전 값</span></a></li><li><a href="#q-qp-e07-tf-03"><span class="toc-title">문제 15 · Negative Logic LED</span></a></li><li><a href="#q-qp-e07-tf-04"><span class="toc-title">문제 16 · JK의 복사 조건</span></a></li><li><a href="#q-qp-e07-blank-01"><span class="toc-title">문제 17 · 칩과 저장 칸</span></a></li><li><a href="#q-qp-e07-blank-02"><span class="toc-title">문제 18 · 한 칸 이동을 계산해요</span></a></li><li><a href="#q-qp-e07-blank-03"><span class="toc-title">문제 19 · 순환 연결의 두 핀</span></a></li><li><a href="#q-qp-e07-board-01"><span class="toc-title">문제 20 · 첫 JK 입력용 보수 신호를 작도해요</span></a></li><li><a href="#q-qp-e07-short-01"><span class="toc-title">문제 21 · SIPO가 정보를 모으는 이유</span></a></li><li><a href="#q-qp-e07-short-02"><span class="toc-title">문제 22 · 7496의 LED와 상태를 구분해요</span></a></li></ol></nav>
+      </div>
+    </aside>
+    <div class="content">
+  <main>
+    <div class="hero">
+      <h1>실험 7 · 문제 설명</h1>
+      <p>첫 줄부터 완성 답과 검산까지 함께 풀어요.</p>
+    </div>
+<section id="learning"><h2>문제를 함께 풀어요</h2><article class="topic" id="q-sr"><h3>문제 1 · 시프트 레지스터의 기능</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>시프트 레지스터(Shift Register)에 대해서 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>시프트 레지스터의 기능를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">저장과 이동을 함께 설명해요</p><p>Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 플립플롭을 공통 클록으로 연결하고 유효 엣지마다 각 칸이 앞 칸의 이전 값을 저장해요. 데이터를 한 칸씩 옮기면서 보존하므로 직렬·병렬 변환과 지연에 쓸 수 있어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>Q0다음=S, Q1다음=Q0이전부터 적어요.</p><p><a href="실험07_실험설명.html#t-shift">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>플립플롭을 공통 클록으로 연결하고 유효 엣지마다 각 칸이 앞 칸의 이전 값을 저장해요. 데이터를 한 칸씩 옮기면서 보존하므로 직렬·병렬 변환과 지연에 쓸 수 있어요.</p><p>검산:</p><p>0000에 1,0을 넣어 1000→0100인지 확인해요.</p><p>주의:</p><p>단순 저장 장치라는 설명만 쓰면 이동 기능이 빠져요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>클록마다 데이터를 한 칸씩 이동하며 저장하는 레지스터예요.</p><p>0000에 1,0을 넣어 1000→0100인지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>단순 저장 장치라는 설명만 쓰면 이동 기능이 빠져요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>Q0다음=S, Q1다음=Q0이전부터 적어요.</li><li>0000에 1,0을 넣어 1000→0100인지 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 저장과 이동을 함께 설명해요</p><p data-summary="recall">Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>첫 실행: Q0다음=S, Q1다음=Q0이전부터 적어요.</p><p>결론: 클록마다 데이터를 한 칸씩 이동하며 저장하는 레지스터예요.</p><p>검산: 0000에 1,0을 넣어 1000→0100인지 확인해요.</p><p>주의: 단순 저장 장치라는 설명만 쓰면 이동 기능이 빠져요.</p></div></article><article class="topic" id="q-ring"><h3>문제 2 · 링 카운터와 초기화</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>링 카운터에 대해서 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>링 카운터와 초기화를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 Q를 그대로 되먹여요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 마지막 Q를 첫 입력으로 연결한 순환 레지스터예요. one-hot 링 카운터라면 1000→0100→0010→0001→1000으로 1이 순환하여 단계별 신호를 만들어요. n단이면 정상 one-hot 주기에 n상태가 있어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>4비트 one-hot 초기값을 1000으로 적어요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>마지막 Q를 첫 입력으로 연결한 순환 레지스터예요. one-hot 링 카운터라면 1000→0100→0010→0001→1000으로 1이 순환하여 단계별 신호를 만들어요. n단이면 정상 one-hot 주기에 n상태가 있어요.</p><p>검산:</p><p>0000도 대입해 계속 0000임을 확인해요.</p><p>주의:</p><p>n상태는 one-hot 초기화 조건이 필요해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>마지막 Q를 첫 입력으로 되먹이는 순환 회로이며 one-hot 초기화하면 n단에서 n상태를 순환해요.</p><p>0000도 대입해 계속 0000임을 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>n상태는 one-hot 초기화 조건이 필요해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>4비트 one-hot 초기값을 1000으로 적어요.</li><li>0000도 대입해 계속 0000임을 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 Q를 그대로 되먹여요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: 4비트 one-hot 초기값을 1000으로 적어요.</p><p>결론: 마지막 Q를 첫 입력으로 되먹이는 순환 회로이며 one-hot 초기화하면 n단에서 n상태를 순환해요.</p><p>검산: 0000도 대입해 계속 0000임을 확인해요.</p><p>주의: n상태는 one-hot 초기화 조건이 필요해요.</p></div></article><article class="topic" id="q-johnson-nand"><h3>문제 3 · 존슨 카운터의 NAND 역할</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>존슨 카운터에서 사용되는 2입력 NAND gate의 역할을 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>존슨 카운터의 NAND 역할를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">NAND의 배선을 먼저 구분해요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 답안 충돌: 일부 제공 답은 마지막 출력을 반전한다고 쓰고, 다른 답은 2n개의 AND 디코딩 게이트라고 써요. 두 입력을 마지막 Q에 묶은 NAND라면 반전 되먹임을 만들어 존슨 동작을 구현해요. 서로 다른 상태 신호에 연결했다면 상태 검출용 active-low 디코더일 수 있어요. 원문에 배선이 없어 단일 역할은 확정할 수 없어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>NAND(Q,Q)=NOT Q부터 적어요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>답안 충돌: 일부 제공 답은 마지막 출력을 반전한다고 쓰고, 다른 답은 2n개의 AND 디코딩 게이트라고 써요. 두 입력을 마지막 Q에 묶은 NAND라면 반전 되먹임을 만들어 존슨 동작을 구현해요. 서로 다른 상태 신호에 연결했다면 상태 검출용 active-low 디코더일 수 있어요. 원문에 배선이 없어 단일 역할은 확정할 수 없어요.</p><p>검산:</p><p>Q=0이면 NAND=1, Q=1이면 NAND=0을 확인해요. 디코딩 답은 실제 입력 배선 없이는 대조할 수 없어요.</p><p>주의:</p><p>답안 충돌을 숨기지 않아요. “항상 2n개의 AND가 필요”는 모든 목적의 회로에 대한 일반 법칙이 아니에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>배선 미제시로 미확정: 입력을 묶으면 반전 되먹임, 상태 신호를 받으면 디코딩이에요.</p><p>Q=0이면 NAND=1, Q=1이면 NAND=0을 확인해요. 디코딩 답은 실제 입력 배선 없이는 대조할 수 없어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌을 숨기지 않아요. “항상 2n개의 AND가 필요”는 모든 목적의 회로에 대한 일반 법칙이 아니에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>NAND(Q,Q)=NOT Q부터 적어요.</li><li>Q=0이면 NAND=1, Q=1이면 NAND=0을 확인해요. 디코딩 답은 실제 입력 배선 없이는 대조할 수 없어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> NAND의 배선을 먼저 구분해요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: NAND(Q,Q)=NOT Q부터 적어요.</p><p>결론: 배선 미제시로 미확정: 입력을 묶으면 반전 되먹임, 상태 신호를 받으면 디코딩이에요.</p><p>검산: Q=0이면 NAND=1, Q=1이면 NAND=0을 확인해요. 디코딩 답은 실제 입력 배선 없이는 대조할 수 없어요.</p><p>주의: 답안 충돌을 숨기지 않아요. “항상 2n개의 AND가 필요”는 모든 목적의 회로에 대한 일반 법칙이 아니에요.</p></div></article><article class="topic" id="q-7496-block"><h3>문제 4 · 7496 내부 블록을 읽어요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>7496 내부 블록다이어그램을 보고, 동작 원리를 간단하게 설명하시오.</p><figure class="figure"><img src=".pack/figures/questions/ic7496-given.png" alt="7496 내부 블록을 읽어요 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>7496 내부 블록을 읽어요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">이동 경로와 비동기 제어를 나눠요</p><p>QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 다섯 S-R 저장 단계가 공통 클록을 받아 앞 단계의 이전 Q를 다음 단계로 넘겨요. PE와 각 preset 입력이 들어가는 NAND의 출력은 해당 비동기 preset으로 가요. PE=1이고 preset=1이면 NAND=0이 되어 해당 Q를 1로 강제해요. 공통 CLEAR는 모든 단계를 초기화해요. 교안 13쪽은 CLR 1→0→1, 부록 18~20쪽은 MR 0→1→0으로 서로 달라요. 25쪽은 하강 엣지, 과거 제공 답은 상승 엣지를 적어요. 칩의 정확한 제조사·품번 데이터시트와 실물 파형을 확인하기 전 7496의 초기화 극성·유효 엣지는 미확정이에요. 아래 상태 이동은 “유효 엣지 1회” 기준이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>SER→첫 단계→다음 단계의 경로를 먼저 표시해요.</p><p><a href="실험07_실험설명.html#t-7496">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>다섯 S-R 저장 단계가 공통 클록을 받아 앞 단계의 이전 Q를 다음 단계로 넘겨요. PE와 각 preset 입력이 들어가는 NAND의 출력은 해당 비동기 preset으로 가요. PE=1이고 preset=1이면 NAND=0이 되어 해당 Q를 1로 강제해요. 공통 CLEAR는 모든 단계를 초기화해요. 교안 13쪽은 CLR 1→0→1, 부록 18~20쪽은 MR 0→1→0으로 서로 달라요. 25쪽은 하강 엣지, 과거 제공 답은 상승 엣지를 적어요. 칩의 정확한 제조사·품번 데이터시트와 실물 파형을 확인하기 전 7496의 초기화 극성·유효 엣지는 미확정이에요. 아래 상태 이동은 “유효 엣지 1회” 기준이에요.</p><p>검산:</p><p>PE=0이면 preset NAND가 1, PE=A=1이면 0인지 계산해요. clear 후 정상 이동 벡터 11000→01100도 확인해요.</p><p>주의:</p><p>정답 미확정: 교안 내 CLR 극성과 과거 답의 엣지 표기가 충돌해요. 초기화의 강제 동작과 정상 이동은 구분해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>5단 저장·공통 클록 이동·PE와 개별 preset의 AND 조건·공통 clear가 핵심이에요. CLR 극성·엣지는 미확정이에요.</p><p>PE=0이면 preset NAND가 1, PE=A=1이면 0인지 계산해요. clear 후 정상 이동 벡터 11000→01100도 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>정답 미확정: 교안 내 CLR 극성과 과거 답의 엣지 표기가 충돌해요. 초기화의 강제 동작과 정상 이동은 구분해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>SER→첫 단계→다음 단계의 경로를 먼저 표시해요.</li><li>PE=0이면 preset NAND가 1, PE=A=1이면 0인지 계산해요. clear 후 정상 이동 벡터 11000→01100도 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 이동 경로와 비동기 제어를 나눠요</p><p data-summary="recall">QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>첫 실행: SER→첫 단계→다음 단계의 경로를 먼저 표시해요.</p><p>결론: 5단 저장·공통 클록 이동·PE와 개별 preset의 AND 조건·공통 clear가 핵심이에요. CLR 극성·엣지는 미확정이에요.</p><p>검산: PE=0이면 preset NAND가 1, PE=A=1이면 0인지 계산해요. clear 후 정상 이동 벡터 11000→01100도 확인해요.</p><p>주의: 정답 미확정: 교안 내 CLR 극성과 과거 답의 엣지 표기가 충돌해요. 초기화의 강제 동작과 정상 이동은 구분해요.</p></div></article><article class="topic" id="q-convert"><h3>문제 5 · 직렬·병렬 변환의 두 방향</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>시프트레지스터(Shift Register)에서 직렬-병렬 변환기와 병렬-직렬 변환기에 대해서 간단히 설명하시오. (3점)</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>직렬·병렬 변환의 두 방향를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">입출력 양쪽에서 동시에 몇 비트를 다루는지 봐요</p><p>직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>이 문항에서 이 기준을 쓰는 이유: SIPO는 직렬 데이터를 엣지마다 한 비트씩 저장하고 각 단계 Q를 병렬로 동시에 읽어요. PISO는 여러 비트를 동시에 적재하고 이동할 때 마지막 Q에서 한 비트씩 직렬로 읽어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>SIPO의 입력은 한 비트, 출력은 여러 Q라고 적어요.</p><p><a href="실험07_실험설명.html#t-convert">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>SIPO는 직렬 데이터를 엣지마다 한 비트씩 저장하고 각 단계 Q를 병렬로 동시에 읽어요. PISO는 여러 비트를 동시에 적재하고 이동할 때 마지막 Q에서 한 비트씩 직렬로 읽어요.</p><p>검산:</p><p>SIPO 0000에 1,0,1,1 입력→1101. PISO 1011 적재 후 마지막 Q를 이동 직전에 읽으면 1,1,0,1이에요.</p><p>주의:</p><p>직렬·병렬은 시간/선의 수예요. 비트의 시간 순서와 칸 순서를 혼동하지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요.</p><p>SIPO 0000에 1,0,1,1 입력→1101. PISO 1011 적재 후 마지막 Q를 이동 직전에 읽으면 1,1,0,1이에요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>직렬·병렬은 시간/선의 수예요. 비트의 시간 순서와 칸 순서를 혼동하지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>SIPO의 입력은 한 비트, 출력은 여러 Q라고 적어요.</li><li>SIPO 0000에 1,0,1,1 입력→1101. PISO 1011 적재 후 마지막 Q를 이동 직전에 읽으면 1,1,0,1이에요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 입출력 양쪽에서 동시에 몇 비트를 다루는지 봐요</p><p data-summary="recall">직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>첫 실행: SIPO의 입력은 한 비트, 출력은 여러 Q라고 적어요.</p><p>결론: SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요.</p><p>검산: SIPO 0000에 1,0,1,1 입력→1101. PISO 1011 적재 후 마지막 Q를 이동 직전에 읽으면 1,1,0,1이에요.</p><p>주의: 직렬·병렬은 시간/선의 수예요. 비트의 시간 순서와 칸 순서를 혼동하지 않아요.</p></div></article><article class="topic" id="q-ff-design"><h3>문제 6 · 4비트 회로와 7476 개수</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Flip Flop을 활용한 Shift Register 설계 (총 4 점)</p><p>1) 4 bit Shift Register을 구현하기 위해 필요한 7476칩의 개수와 J-K F/F의 개수는 각각 몇 개인가? (2점)</p><p>2) 아래의 “D F/F”을 활용하여 4 bit Serial in, parallel out Shift Register를 설계 하시오. (2점)</p><h4>주어진 조건</h4><p>원문에 주어진 D F/F는 상승 엣지 기호예요. 첫 칸을 Q0로 정해요.</p><figure class="figure"><img src=".pack/figures/questions/dff-given.png" alt="4비트 회로와 7476 개수 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>4비트 회로와 7476 개수를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">칩 수와 저장 칸 수를 따로 세어요</p><p>J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 1) 7476 한 칩에는 JK가 두 개이므로 JK 4개·칩 2개가 필요해요. 2) D F/F 네 개를 두고 S→D0, Q0→D1, Q1→D2, Q2→D3로 연결해요. 네 CLK는 같은 클록, Q0~Q3는 병렬 출력이에요. 주어진 D 기호처럼 상승 엣지로 동작하고 초기화는 문제에 없으므로 초기 상태를 임의로 정하지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>1) 4비트=JK 4개, 4÷2=7476 2개로 시작해요.</p><p><a href="실험07_실험설명.html#t-jk">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>1) 7476 한 칩에는 JK가 두 개이므로 JK 4개·칩 2개가 필요해요. 2) D F/F 네 개를 두고 S→D0, Q0→D1, Q1→D2, Q2→D3로 연결해요. 네 CLK는 같은 클록, Q0~Q3는 병렬 출력이에요. 주어진 D 기호처럼 상승 엣지로 동작하고 초기화는 문제에 없으므로 초기 상태를 임의로 정하지 않아요.</p><figure class="figure"><img src=".pack/figures/solutions/shift-complete.png" width="500" alt="4단 SIPO 완성 회로"></figure><p>검산:</p><p>이해를 위한 초기값 0000을 별도로 둔 예에서 입력 1 후 1000, 입력 0 후 0100이에요. 공통 클록 연결과 세 Q→D 연결을 각각 세어요.</p><p>주의:</p><p>2번 소문항은 D 회로예요. 7476을 반드시 그 회로의 D 기호로 그리라는 조건이 아니에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>1) 7476 2개·JK 4개. 2) D F/F 4개 직렬 Q→D, 공통 CLK, 각 Q 병렬 출력이에요.</p><p>이해를 위한 초기값 0000을 별도로 둔 예에서 입력 1 후 1000, 입력 0 후 0100이에요. 공통 클록 연결과 세 Q→D 연결을 각각 세어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>2번 소문항은 D 회로예요. 7476을 반드시 그 회로의 D 기호로 그리라는 조건이 아니에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>1) 4비트=JK 4개, 4÷2=7476 2개로 시작해요.</li><li>이해를 위한 초기값 0000을 별도로 둔 예에서 입력 1 후 1000, 입력 0 후 0100이에요. 공통 클록 연결과 세 Q→D 연결을 각각 세어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 칩 수와 저장 칸 수를 따로 세어요</p><p data-summary="recall">J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>첫 실행: 1) 4비트=JK 4개, 4÷2=7476 2개로 시작해요.</p><p>결론: 1) 7476 2개·JK 4개. 2) D F/F 4개 직렬 Q→D, 공통 CLK, 각 Q 병렬 출력이에요.</p><p>검산: 이해를 위한 초기값 0000을 별도로 둔 예에서 입력 1 후 1000, 입력 0 후 0100이에요. 공통 클록 연결과 세 Q→D 연결을 각각 세어요.</p><p>주의: 2번 소문항은 D 회로예요. 7476을 반드시 그 회로의 D 기호로 그리라는 조건이 아니에요.</p></div></article><article class="topic" id="q-7496-circular"><h3>문제 7 · 7496을 순환 회로로 바꿔요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>7496으로 구현한 5bit Shift Register를 Circular Shift Register로 변환하는 방법을 간단히 설명하시오. (3점)</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>7496을 순환 회로로 바꿔요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 데이터를 버리지 않고 되돌려요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: QE(10번)를 SER(9번)에 연결하고 정상 이동 동안 clear와 preset을 비활성으로 유지해요. 그러면 마지막 비트가 첫 칸으로 돌아와 정보가 회전해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>QE=10번, SER=9번을 적어요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>QE(10번)를 SER(9번)에 연결하고 정상 이동 동안 clear와 preset을 비활성으로 유지해요. 그러면 마지막 비트가 첫 칸으로 돌아와 정보가 회전해요.</p><p>검산:</p><p>11000→01100→00110→00011→10001→11000으로 다섯 이동을 계산해요.</p><p>주의:</p><p>반전해서 되먹이면 존슨 회로예요. 이 문항은 Q를 그대로 연결해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>QE(10번)를 SER(9번)에 연결해요.</p><p>11000→01100→00110→00011→10001→11000으로 다섯 이동을 계산해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>반전해서 되먹이면 존슨 회로예요. 이 문항은 Q를 그대로 연결해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>QE=10번, SER=9번을 적어요.</li><li>11000→01100→00110→00011→10001→11000으로 다섯 이동을 계산해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 데이터를 버리지 않고 되돌려요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: QE=10번, SER=9번을 적어요.</p><p>결론: QE(10번)를 SER(9번)에 연결해요.</p><p>검산: 11000→01100→00110→00011→10001→11000으로 다섯 이동을 계산해요.</p><p>주의: 반전해서 되먹이면 존슨 회로예요. 이 문항은 Q를 그대로 연결해요.</p></div></article><article class="topic" id="q-jkff"><h3>문제 8 · 시프트용 JK 입력을 정해요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>시프트레지스터에 사용할 JK Flip-Flop에 대해서 설명하시오. Explain about a JK Flip-Flop used in the Shift Register.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>시프트용 JK 입력을 정해요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">JK 표에서 복사 조건을 찾아요</p><p>J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 보충 예상문항: 시프트 레지스터의 한 단계는 앞 단계의 비트를 그대로 복사해야 해요. J=D,K=NOT D로 연결하면 유효 엣지에서 Q다음=D가 돼요. 첫 칸 D는 SER, 이후 D는 앞 단계 Q이며 K에는 앞 단계 Q의 보수를 넣어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>D=0이면 JK=01, D=1이면 JK=10으로 적어요.</p><p><a href="실험07_실험설명.html#t-jk">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>보충 예상문항: 시프트 레지스터의 한 단계는 앞 단계의 비트를 그대로 복사해야 해요. J=D,K=NOT D로 연결하면 유효 엣지에서 Q다음=D가 돼요. 첫 칸 D는 SER, 이후 D는 앞 단계 Q이며 K에는 앞 단계 Q의 보수를 넣어요.</p><p>검산:</p><p>D=0/1과 이전 Q=0/1의 네 조합에서 Q다음=D인지 검사해요.</p><p>주의:</p><p>J=K=1은 복사가 아니라 반전이에요. 비동기 SET·RESET은 비활성 조건이에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>J=D,K=NOT D로 데이터 복사 단계를 만들어요.</p><p>D=0/1과 이전 Q=0/1의 네 조합에서 Q다음=D인지 검사해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>J=K=1은 복사가 아니라 반전이에요. 비동기 SET·RESET은 비활성 조건이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>D=0이면 JK=01, D=1이면 JK=10으로 적어요.</li><li>D=0/1과 이전 Q=0/1의 네 조합에서 Q다음=D인지 검사해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> JK 표에서 복사 조건을 찾아요</p><p data-summary="recall">J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>첫 실행: D=0이면 JK=01, D=1이면 JK=10으로 적어요.</p><p>결론: J=D,K=NOT D로 데이터 복사 단계를 만들어요.</p><p>검산: D=0/1과 이전 Q=0/1의 네 조합에서 Q다음=D인지 검사해요.</p><p>주의: J=K=1은 복사가 아니라 반전이에요. 비동기 SET·RESET은 비활성 조건이에요.</p></div></article><article class="topic" id="q-6bit-jk"><h3>문제 9 · 6비트에 필요한 JK 개수</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>6bit shift right register를 구현하기 위해 필요한 JK Flip-Flop의 개수는 몇 개인가?</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>6비트에 필요한 JK 개수를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">저장 비트 수를 세어요</p><p>비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>이 문항에서 이 기준을 쓰는 이유: 6개의 독립 비트를 저장하려면 JK F/F 6개가 필요해요. 7476처럼 두 개가 한 칩에 있으면 칩 수는 3개예요. 문제는 JK의 개수를 물으므로 6개가 답이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>1비트당 F/F 1개라고 적어요.</p><p><a href="실험07_실험설명.html#t-memory">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>6개의 독립 비트를 저장하려면 JK F/F 6개가 필요해요. 7476처럼 두 개가 한 칩에 있으면 칩 수는 3개예요. 문제는 JK의 개수를 물으므로 6개가 답이에요.</p><p>검산:</p><p>칩 3개×칩당 JK 2개=6개로 역산해요.</p><p>주의:</p><p>칩 수 3을 F/F 개수 답으로 쓰지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>JK 플립플롭 6개예요.</p><p>칩 3개×칩당 JK 2개=6개로 역산해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>칩 수 3을 F/F 개수 답으로 쓰지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>1비트당 F/F 1개라고 적어요.</li><li>칩 3개×칩당 JK 2개=6개로 역산해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 저장 비트 수를 세어요</p><p data-summary="recall">비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>첫 실행: 1비트당 F/F 1개라고 적어요.</p><p>결론: JK 플립플롭 6개예요.</p><p>검산: 칩 3개×칩당 JK 2개=6개로 역산해요.</p><p>주의: 칩 수 3을 F/F 개수 답으로 쓰지 않아요.</p></div></article><article class="topic" id="q-p2s"><h3>문제 10 · 병렬에서 직렬로 꺼내요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>병렬-직렬 변환기에 대해서 간단히 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>병렬에서 직렬로 꺼내요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">동시 적재 후 한 비트씩 읽어요</p><p>직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 병렬 데이터는 여러 입력 선을 통해 여러 저장 칸에 함께 들어가요. 적재 후 이동 모드로 바꾸어 마지막 단계의 Q를 순서대로 읽으면 한 선으로 직렬 데이터가 나와요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>네 비트 1011을 동시에 적재했다고 두어요.</p><p><a href="실험07_실험설명.html#t-convert">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>병렬 데이터는 여러 입력 선을 통해 여러 저장 칸에 함께 들어가요. 적재 후 이동 모드로 바꾸어 마지막 단계의 Q를 순서대로 읽으면 한 선으로 직렬 데이터가 나와요.</p><p>검산:</p><p>Q0Q1Q2Q3=1011을 이동 직전에 Q3에서 읽으면 1,1,0,1이에요.</p><p>주의:</p><p>SIPO와 방향을 바꾸어 말하지 않아요. 적재 기능이 있는 회로라는 조건이 필요해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>여러 비트를 동시에 적재한 뒤 시프트하며 마지막 Q에서 한 비트씩 출력해요.</p><p>Q0Q1Q2Q3=1011을 이동 직전에 Q3에서 읽으면 1,1,0,1이에요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>SIPO와 방향을 바꾸어 말하지 않아요. 적재 기능이 있는 회로라는 조건이 필요해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>네 비트 1011을 동시에 적재했다고 두어요.</li><li>Q0Q1Q2Q3=1011을 이동 직전에 Q3에서 읽으면 1,1,0,1이에요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 동시 적재 후 한 비트씩 읽어요</p><p data-summary="recall">직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>첫 실행: 네 비트 1011을 동시에 적재했다고 두어요.</p><p>결론: 여러 비트를 동시에 적재한 뒤 시프트하며 마지막 Q에서 한 비트씩 출력해요.</p><p>검산: Q0Q1Q2Q3=1011을 이동 직전에 Q3에서 읽으면 1,1,0,1이에요.</p><p>주의: SIPO와 방향을 바꾸어 말하지 않아요. 적재 기능이 있는 회로라는 조건이 필요해요.</p></div></article><article class="topic" id="q-johnson"><h3>문제 11 · 존슨 카운터의 상태 순환</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>존슨카운터에 대해 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>존슨 카운터의 상태 순환를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 Q의 보수를 되먹여요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 마지막 Q의 보수를 첫 입력으로 돌려주는 꼬리바꿈 링 카운터예요. 네 칸을 0000으로 초기화하면 0000→1000→1100→1110→1111→0111→0011→0001→0000으로 8상태를 순환해요. 일반적으로 정상 주기는 2n상태예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>4비트 0000에서 첫 입력은 NOT Q3=1이에요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>마지막 Q의 보수를 첫 입력으로 돌려주는 꼬리바꿈 링 카운터예요. 네 칸을 0000으로 초기화하면 0000→1000→1100→1110→1111→0111→0011→0001→0000으로 8상태를 순환해요. 일반적으로 정상 주기는 2n상태예요.</p><p>검산:</p><p>각 단계에서 NOT(맨 끝)을 앞에 붙여 여덟 번 뒤 원상복귀하는지 확인해요.</p><p>주의:</p><p>2n은 2의 n제곱이 아니에요. 초기 상태가 정상 주기 밖이면 이 주기라는 보장이 없어요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>마지막 Q를 반전해 되먹이며 정상 초기화한 n단에서 2n상태를 순환해요.</p><p>각 단계에서 NOT(맨 끝)을 앞에 붙여 여덟 번 뒤 원상복귀하는지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>2n은 2의 n제곱이 아니에요. 초기 상태가 정상 주기 밖이면 이 주기라는 보장이 없어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>4비트 0000에서 첫 입력은 NOT Q3=1이에요.</li><li>각 단계에서 NOT(맨 끝)을 앞에 붙여 여덟 번 뒤 원상복귀하는지 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 Q의 보수를 되먹여요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: 4비트 0000에서 첫 입력은 NOT Q3=1이에요.</p><p>결론: 마지막 Q를 반전해 되먹이며 정상 초기화한 n단에서 2n상태를 순환해요.</p><p>검산: 각 단계에서 NOT(맨 끝)을 앞에 붙여 여덟 번 뒤 원상복귀하는지 확인해요.</p><p>주의: 2n은 2의 n제곱이 아니에요. 초기 상태가 정상 주기 밖이면 이 주기라는 보장이 없어요.</p></div></article><article class="topic" id="q-circular"><h3>문제 12 · 순환 시프트의 연결</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Shift Register를 순환 Shift Register로 변환하는 방법을 간단히 설명하시오.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>순환 시프트의 연결를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">마지막 Q를 직렬 입력으로 돌려요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 직렬 입력을 외부 데이터 대신 마지막 출력 Q에 연결해요. 공통 유효 엣지마다 마지막 값이 첫 칸으로 돌아오고 나머지는 한 칸씩 이동해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>S다음=Q마지막이라고 적어요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>풀이:</p><p>직렬 입력을 외부 데이터 대신 마지막 출력 Q에 연결해요. 공통 유효 엣지마다 마지막 값이 첫 칸으로 돌아오고 나머지는 한 칸씩 이동해요.</p><p>검산:</p><p>4비트 1001→1100→0110→0011→1001을 확인해요.</p><p>주의:</p><p>초기 패턴에 따라 반복 주기는 달라요. 1111은 한 번 이동해도 같아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>마지막 출력을 첫 단계 직렬 입력으로 되먹여요.</p><p>4비트 1001→1100→0110→0011→1001을 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>초기 패턴에 따라 반복 주기는 달라요. 1111은 한 번 이동해도 같아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>S다음=Q마지막이라고 적어요.</li><li>4비트 1001→1100→0110→0011→1001을 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 마지막 Q를 직렬 입력으로 돌려요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: S다음=Q마지막이라고 적어요.</p><p>결론: 마지막 출력을 첫 단계 직렬 입력으로 되먹여요.</p><p>검산: 4비트 1001→1100→0110→0011→1001을 확인해요.</p><p>주의: 초기 패턴에 따라 반복 주기는 달라요. 1111은 한 번 이동해도 같아요.</p></div></article><article class="topic" id="q-qp-e07-tf-01"><h3>문제 13 · 여섯 칸의 저장 용량</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>6비트 시프트 레지스터에는 JK F/F 6개가 필요하다. T/F</p><h4>주어진 조건</h4><p>7476 계열 한 칩에 JK 두 개가 들어 있어요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>여섯 칸의 저장 용량를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">조건과 반례로 참·거짓을 판단해요</p><p>비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>이 문항에서 이 기준을 쓰는 이유: 플립플롭 한 개는 1비트를 저장하므로 독립 비트 여섯 개에는 여섯 저장 칸이 필요해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>1비트당 저장 칸 한 개라고 적어요.</p><p><a href="실험07_실험설명.html#t-memory">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>판정 근거:</p><p>플립플롭 한 개는 1비트를 저장하므로 독립 비트 여섯 개에는 여섯 저장 칸이 필요해요.</p><p>문장 확인:</p><p>칩 수 3개와 F/F 수 6개를 구분해요.</p><p>7476 칩 3개×JK 2개=6개로 확인해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>T</p><p>7476 칩 3개×JK 2개=6개로 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>칩 수 3개와 F/F 수 6개를 구분해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>1비트당 저장 칸 한 개라고 적어요.</li><li>7476 칩 3개×JK 2개=6개로 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 조건과 반례로 참·거짓을 판단해요</p><p data-summary="recall">비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>첫 실행: 1비트당 저장 칸 한 개라고 적어요.</p><p>결론: T</p><p>검산: 7476 칩 3개×JK 2개=6개로 확인해요.</p><p>주의: 칩 수 3개와 F/F 수 6개를 구분해요.</p></div></article><article class="topic" id="q-qp-e07-tf-02"><h3>문제 14 · 같은 엣지의 이전 값</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>한 유효 엣지에서 Q1은 엣지 직전 Q0를 저장한다. T/F</p><h4>주어진 조건</h4><p>공통 클록을 쓰며 입력은 setup/hold를 만족해요. Q0가 첫 칸이에요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>같은 엣지의 이전 값를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">조건과 반례로 참·거짓을 판단해요</p><p>Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 각 칸은 같은 엣지 직전의 입력을 받아요. 다음 칸에 첫 칸의 갓 바뀐 값이 즉시 전달되는 모델이 아니에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>이전 Q0=1,Q1=0을 구분해 적어요.</p><p><a href="실험07_실험설명.html#t-shift">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>판정 근거:</p><p>각 칸은 같은 엣지 직전의 입력을 받아요. 다음 칸에 첫 칸의 갓 바뀐 값이 즉시 전달되는 모델이 아니에요.</p><p>문장 확인:</p><p>클록을 각 Q에서 따오는 비동기 카운터와 구분해요.</p><p>이전 상태 1000, S=0이면 0100이 돼요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>T</p><p>이전 상태 1000, S=0이면 0100이 돼요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>클록을 각 Q에서 따오는 비동기 카운터와 구분해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>이전 Q0=1,Q1=0을 구분해 적어요.</li><li>이전 상태 1000, S=0이면 0100이 돼요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 조건과 반례로 참·거짓을 판단해요</p><p data-summary="recall">Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>첫 실행: 이전 Q0=1,Q1=0을 구분해 적어요.</p><p>결론: T</p><p>검산: 이전 상태 1000, S=0이면 0100이 돼요.</p><p>주의: 클록을 각 Q에서 따오는 비동기 카운터와 구분해요.</p></div></article><article class="topic" id="q-qp-e07-tf-03"><h3>문제 15 · Negative Logic LED</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>Q=1이면 해당 LED가 켜진다. T/F</p><h4>주어진 조건</h4><p>7496 출력 LED는 +5V→330Ω→애노드→캐소드→Q 순서로 연결돼요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>Negative Logic LED를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">조건과 반례로 참·거짓을 판단해요</p><p>QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>이 문항에서 이 기준을 쓰는 이유: Q=0이면 전류를 흘려 켜지고 Q=1이면 꺼져요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>출력 0과 LED 전류 경로를 먼저 표시해요.</p><p><a href="실험07_실험설명.html#t-7496">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>판정 근거:</p><p>Q=0이면 전류를 흘려 켜지고 Q=1이면 꺼져요.</p><p>문장 확인:</p><p>LED 켜짐과 논리 1을 동일시하지 않아요.</p><p>QA…QE=11000이면 LED는 꺼짐·꺼짐·켜짐·켜짐·켜짐이에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>F</p><p>QA…QE=11000이면 LED는 꺼짐·꺼짐·켜짐·켜짐·켜짐이에요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>LED 켜짐과 논리 1을 동일시하지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>출력 0과 LED 전류 경로를 먼저 표시해요.</li><li>QA…QE=11000이면 LED는 꺼짐·꺼짐·켜짐·켜짐·켜짐이에요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 조건과 반례로 참·거짓을 판단해요</p><p data-summary="recall">QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>첫 실행: 출력 0과 LED 전류 경로를 먼저 표시해요.</p><p>결론: F</p><p>검산: QA…QE=11000이면 LED는 꺼짐·꺼짐·켜짐·켜짐·켜짐이에요.</p><p>주의: LED 켜짐과 논리 1을 동일시하지 않아요.</p></div></article><article class="topic" id="q-qp-e07-tf-04"><h3>문제 16 · JK의 복사 조건</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>J=K=D로 묶으면 모든 이전 Q에서 Q다음=D가 된다. T/F</p><h4>주어진 조건</h4><p>교안 74HC76의 SET·RESET이 비활성이며 하강 엣지 입력 시간 조건을 만족해요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>JK의 복사 조건를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">조건과 반례로 참·거짓을 판단해요</p><p>J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>이 문항에서 이 기준을 쓰는 이유: D=1이면 JK=11이라 반전돼요. 복사하려면 J=D,K=NOT D가 필요해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>D=1,Q이전=1을 첫 반례로 잡아요.</p><p><a href="실험07_실험설명.html#t-jk">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>판정 근거:</p><p>D=1이면 JK=11이라 반전돼요. 복사하려면 J=D,K=NOT D가 필요해요.</p><p>문장 확인:</p><p>JK=11은 Set이 아니라 Toggle이에요.</p><p>D=1,Q이전=1이면 JK=11은 Q다음=0이라 반례예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>F</p><p>D=1,Q이전=1이면 JK=11은 Q다음=0이라 반례예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>JK=11은 Set이 아니라 Toggle이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>D=1,Q이전=1을 첫 반례로 잡아요.</li><li>D=1,Q이전=1이면 JK=11은 Q다음=0이라 반례예요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 조건과 반례로 참·거짓을 판단해요</p><p data-summary="recall">J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>첫 실행: D=1,Q이전=1을 첫 반례로 잡아요.</p><p>결론: F</p><p>검산: D=1,Q이전=1이면 JK=11은 Q다음=0이라 반례예요.</p><p>주의: JK=11은 Set이 아니라 Toggle이에요.</p></div></article><article class="topic" id="q-qp-e07-blank-01"><h3>문제 17 · 칩과 저장 칸</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>4비트 저장에는 JK ① ( )개와 7476 칩 ② ( )개가 필요해요.</p><h4>주어진 조건</h4><p>7476 한 칩에는 JK F/F 두 개가 들어 있어요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>칩과 저장 칸를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">비트 순서와 신호 역할을 먼저 정해요</p><p>비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>이 문항에서 이 기준을 쓰는 이유: 4개의 비트를 위해 JK 4개, 두 개씩 묶어 칩은 2개예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>4비트=JK 4개부터 적어요.</p><p><a href="실험07_실험설명.html#t-memory">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>빈칸별 근거:</p><p>4개의 비트를 위해 JK 4개, 두 개씩 묶어 칩은 2개예요.</p><p>2칩×2=4로 검산해요.</p><p>①과 ②의 순서를 바꾸지 않아요. 숫자 한글 표현도 인정해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>① 4, ② 2</p><p>2칩×2=4로 검산해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>①과 ②의 순서를 바꾸지 않아요. 숫자 한글 표현도 인정해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>4비트=JK 4개부터 적어요.</li><li>2칩×2=4로 검산해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 비트 순서와 신호 역할을 먼저 정해요</p><p data-summary="recall">비트는 저장 정보 한 자리이고 F/F 하나가 한 비트를 기억해요. 칩 개수는 한 칩에 든 F/F 수로 나눠요.</p><p>첫 실행: 4비트=JK 4개부터 적어요.</p><p>결론: ① 4, ② 2</p><p>검산: 2칩×2=4로 검산해요.</p><p>주의: ①과 ②의 순서를 바꾸지 않아요. 숫자 한글 표현도 인정해요.</p></div></article><article class="topic" id="q-qp-e07-blank-02"><h3>문제 18 · 한 칸 이동을 계산해요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>유효 엣지 한 번 후 Q0…Q5=① ( )이에요.</p><h4>주어진 조건</h4><p>Q0…Q5=101100이며 정상 이동 모드에서 S=0을 넣어요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>한 칸 이동을 계산해요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">비트 순서와 신호 역할을 먼저 정해요</p><p>Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 새 0을 앞에 붙이고 이전 상태 맨 끝 0을 버려요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>새 S=0을 맨 앞 칸에 적어요.</p><p><a href="실험07_실험설명.html#t-shift">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>빈칸별 근거:</p><p>새 0을 앞에 붙이고 이전 상태 맨 끝 0을 버려요.</p><p>Q1=이전 Q0=1,Q2=이전 Q1=0인지 각각 확인해요.</p><p>정수 나눗셈처럼 반대쪽에 0을 붙이지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>① 010110</p><p>Q1=이전 Q0=1,Q2=이전 Q1=0인지 각각 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>정수 나눗셈처럼 반대쪽에 0을 붙이지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>새 S=0을 맨 앞 칸에 적어요.</li><li>Q1=이전 Q0=1,Q2=이전 Q1=0인지 각각 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 비트 순서와 신호 역할을 먼저 정해요</p><p data-summary="recall">Q0가 첫 칸이고 S는 새 직렬 입력이에요. Q0다음=S, Qi다음=Q(i−1)이전은 공통 클록의 정상 이동 모드와 입력 시간 조건에서 성립해요.</p><p>첫 실행: 새 S=0을 맨 앞 칸에 적어요.</p><p>결론: ① 010110</p><p>검산: Q1=이전 Q0=1,Q2=이전 Q1=0인지 각각 확인해요.</p><p>주의: 정수 나눗셈처럼 반대쪽에 0을 붙이지 않아요.</p></div></article><article class="topic" id="q-qp-e07-blank-03"><h3>문제 19 · 순환 연결의 두 핀</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>마지막 출력 ① (신호/핀)을 첫 입력 ② (신호/핀)에 연결해요.</p><h4>주어진 조건</h4><p>교안 7496을 일반 순환 시프트 레지스터로 바꿔요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>순환 연결의 두 핀를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">비트 순서와 신호 역할을 먼저 정해요</p><p>순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 마지막 값 QE를 새 직렬 입력 SER로 되돌려요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>QA부터 QE까지의 마지막 칸을 찾고 핀 표를 읽어요.</p><p><a href="실험07_실험설명.html#t-counters">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>빈칸별 근거:</p><p>마지막 값 QE를 새 직렬 입력 SER로 되돌려요.</p><p>초기 00001에서 한 이동 뒤 10000인지 확인해요.</p><p>Q의 보수가 아닌 Q를 연결해요. S와 SERIAL INPUT은 SER의 동의어로 인정해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>① QE/10번, ② SER/9번</p><p>초기 00001에서 한 이동 뒤 10000인지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>Q의 보수가 아닌 Q를 연결해요. S와 SERIAL INPUT은 SER의 동의어로 인정해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>QA부터 QE까지의 마지막 칸을 찾고 핀 표를 읽어요.</li><li>초기 00001에서 한 이동 뒤 10000인지 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 비트 순서와 신호 역할을 먼저 정해요</p><p data-summary="recall">순환은 S=마지막 Q, 존슨은 S=NOT(마지막 Q)인 되먹임이에요. one-hot 링의 n상태와 정상 초기화한 존슨의 2n상태는 초기 조건을 포함해 말해요. NAND 역할은 입력을 묶었는지 상태를 디코딩하는지 배선으로 판단해요.</p><p>첫 실행: QA부터 QE까지의 마지막 칸을 찾고 핀 표를 읽어요.</p><p>결론: ① QE/10번, ② SER/9번</p><p>검산: 초기 00001에서 한 이동 뒤 10000인지 확인해요.</p><p>주의: Q의 보수가 아닌 Q를 연결해요. S와 SERIAL INPUT은 SER의 동의어로 인정해요.</p></div></article><article class="topic" id="q-qp-e07-board-01"><h3>문제 20 · 첫 JK 입력용 보수 신호를 작도해요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>주어진 NAND 회로와 핀 명세를 빈 보드에 옮겨 전원·입력·출력과 미사용 핀을 표시하세요.</p><h4>주어진 조건</h4><p>74HC00 한 게이트로 D의 보수 K를 만들어요. LED는 사용하지 않고 3번 출력을 측정점 K로 둬요. 입력 D는 0V 또는 5V 외부 신호예요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table class="chip-spec" data-layout-table="q-qp-e07-board-01/conditions/0" data-layout-mode="text" style="--layout-min:26.700rem"><colgroup data-layout-cols=""><col style="width:10.100rem"><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr><th data-layout-kind="bus" data-layout-role="index" scope="col">핀</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right" scope="col">이름</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">역할</th></tr></thead><tbody><tr><td data-layout-kind="bus" data-layout-role="index">1,2</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">A1,B1</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">D 입력을 두 입력에 공통 연결</td></tr><tr><td data-layout-kind="bus" data-layout-role="index">3</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">Y1</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">K 측정 출력</td></tr><tr><td data-layout-kind="bus" data-layout-role="index">14</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">VCC</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">+5V</td></tr><tr><td data-layout-kind="bus" data-layout-role="index">7</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">GND</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">0V</td></tr><tr><td data-layout-kind="bus" data-layout-role="index">4,5,9,10,12,13</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">미사용 입력</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">수업 작도 명세: NC(개방), 실사용 일반 권장과 구분</td></tr><tr><td data-layout-kind="bus" data-layout-role="index">6,8,11</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">미사용 출력</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">NC, 접지 금지</td></tr></tbody></table></div></div><div class="work-board"><img src=".pack/figures/questions/inverter-blank.png" alt="v1 배포 PDF 작도용 빈 보드"></div><figure class="figure"><img src=".pack/figures/questions/inverter-given.png" alt="첫 JK 입력용 보수 신호를 작도해요 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>첫 JK 입력용 보수 신호를 작도해요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">같은 넷을 같은 도통 홀에 옮겨요</p><p>J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>이 문항에서 이 기준을 쓰는 이유: NAND(D,D)=NOT D이므로 J=D와 함께 쓰면 JK가 입력을 복사해요. 이 문항은 보수 생성부만 작도하며 JK 칩은 그리지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>14번과 7번의 전원 넷부터 표시해요.</p><p><a href="실험07_실험설명.html#t-jk">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>연결 기준:</p><p>14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-qp-e07-board-01/explanation/0" data-layout-mode="text" style="--layout-min:22.450rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 1)"><col style="width:14.650rem"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">넷</th><th data-layout-kind="bus" data-layout-role="index" scope="col">핀</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">+5V</td><td data-layout-kind="bus" data-layout-role="index">14</td></tr><tr><td data-layout-kind="text" data-layout-role="description">GND</td><td data-layout-kind="bus" data-layout-role="index">7</td></tr><tr><td data-layout-kind="text" data-layout-role="description">D</td><td data-layout-kind="bus" data-layout-role="index">1,2</td></tr><tr><td data-layout-kind="text" data-layout-role="description">K</td><td data-layout-kind="bus" data-layout-role="index">3</td></tr><tr><td data-layout-kind="text" data-layout-role="description">NC</td><td data-layout-kind="bus" data-layout-role="index">4,5,6,8,9,10,11,12,13</td></tr></tbody></table></div></div><p>외부 D는 신호원이고 K는 측정점이에요. IC 위치·홀 좌표가 달라도 같은 넷이면 인정해요.</p><p>완성 결선도:</p><p>그림은 D=0인 예예요. D 점퍼의 레일 쪽을 +5V로 옮기면 D=1이에요.</p><figure class="figure"><img src=".pack/figures/solutions/inverter-complete.png" width="270" alt="완성 결선도: NAND 보수 생성부"></figure><p>논리 검산:</p><p>NAND(D,D)=NOT D이므로 J=D와 함께 쓰면 JK가 입력을 복사해요. 이 문항은 보수 생성부만 작도하며 JK 칩은 그리지 않아요.</p><p>D=0이면 K=1,D=1이면 K=0인지 논리식과 핀 넷을 확인해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.</p><p>D=0이면 K=1,D=1이면 K=0인지 논리식과 핀 넷을 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>서로 다른 입력 홀에 꽂아도 1·2가 D와 같은 넷이어야 해요. 미사용 출력은 접지하지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>14번과 7번의 전원 넷부터 표시해요.</li><li>D=0이면 K=1,D=1이면 K=0인지 논리식과 핀 넷을 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 같은 넷을 같은 도통 홀에 옮겨요</p><p data-summary="recall">J,K는 다음 상태 명령이에요. 비동기 제어가 비활성일 때 00 유지·01 Reset·10 Set·11 반전이에요. J=D,K=NOT D면 이전 Q와 무관하게 D를 복사해요.</p><p>첫 실행: 14번과 7번의 전원 넷부터 표시해요.</p><p>결론: 14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.</p><p>검산: D=0이면 K=1,D=1이면 K=0인지 논리식과 핀 넷을 확인해요.</p><p>주의: 서로 다른 입력 홀에 꽂아도 1·2가 D와 같은 넷이어야 해요. 미사용 출력은 접지하지 않아요.</p></div></article><article class="topic" id="q-qp-e07-short-01"><h3>문제 21 · SIPO가 정보를 모으는 이유</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>SIPO의 기능과 마지막 병렬 출력이 만들어지는 과정을 두세 문장으로 설명하세요.</p><h4>주어진 조건</h4><p>이상적 4단 SIPO를 0000으로 초기화하고 입력 1,0,1,1을 순서대로 넣어요. Q0가 첫 칸이에요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>SIPO가 정보를 모으는 이유를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">기능·이동 과정·조건을 연결해 설명해요</p><p>직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 직렬은 시간별 한 비트이고 병렬은 네 출력 선을 동시에 읽는 방식이에요. 각 입력은 다음 칸으로 이동하며 사라지지 않고 저장돼요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>초기 0000에서 첫 입력 1 후 1000을 적어요.</p><p><a href="실험07_실험설명.html#t-convert">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>모범 답:</p><p>한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.</p><p>직렬은 시간별 한 비트이고 병렬은 네 출력 선을 동시에 읽는 방식이에요. 각 입력은 다음 칸으로 이동하며 사라지지 않고 저장돼요.</p><p>채점 핵심:</p><p>마지막 상태 Q0=마지막 입력 1, Q3=첫 입력 1인지 확인해요.</p><p>허용 표현:</p><p>같은 인과와 비트 순서를 밝힌 동치 표현을 인정해요. </p><p>최종 벡터의 위치 순서를 먼저 밝혀요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.</p><p>마지막 상태 Q0=마지막 입력 1, Q3=첫 입력 1인지 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>최종 벡터의 위치 순서를 먼저 밝혀요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>초기 0000에서 첫 입력 1 후 1000을 적어요.</li><li>마지막 상태 Q0=마지막 입력 1, Q3=첫 입력 1인지 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 기능·이동 과정·조건을 연결해 설명해요</p><p data-summary="recall">직렬은 한 비트씩 시간 순서로, 병렬은 여러 선의 값을 함께 다루는 방식이에요. SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요. 입력과 출력의 칸 순서를 정해야 해요.</p><p>첫 실행: 초기 0000에서 첫 입력 1 후 1000을 적어요.</p><p>결론: 한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.</p><p>검산: 마지막 상태 Q0=마지막 입력 1, Q3=첫 입력 1인지 확인해요.</p><p>주의: 최종 벡터의 위치 순서를 먼저 밝혀요.</p></div></article><article class="topic" id="q-qp-e07-short-02"><h3>문제 22 · 7496의 LED와 상태를 구분해요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>유효 엣지 한 번 뒤의 출력 벡터와 LED 상태를 이유와 함께 설명하세요.</p><h4>주어진 조건</h4><p>clear 후 preset으로 QA…QE=11000을 만든 뒤 preset을 해제했어요. SER=0, LED는 Negative Logic이에요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>7496의 LED와 상태를 구분해요를 조건에 맞게 설명해요. </p><p>무엇이 저장되고 어느 순간 다음 칸으로 가는지 구분해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">기능·이동 과정·조건을 연결해 설명해요</p><p>QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>이 문항에서 이 기준을 쓰는 이유: 새 0이 QA로 들어가고 이전 QA,QB의 1이 QB,QC로 이동해요. Negative Logic LED는 출력 0일 때 켜져요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 써 봐요</span><p>이전 상태 11000에서 새 S=0을 앞에 붙여요.</p><p><a href="실험07_실험설명.html#t-7496">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p>모범 답:</p><p>QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.</p><p>새 0이 QA로 들어가고 이전 QA,QB의 1이 QB,QC로 이동해요. Negative Logic LED는 출력 0일 때 켜져요.</p><p>채점 핵심:</p><p>각 Q를 0이면 켜짐,1이면 꺼짐으로 바꿔요.</p><p>허용 표현:</p><p>같은 인과와 비트 순서를 밝힌 동치 표현을 인정해요. </p><p>교안의 CLR·엣지 충돌을 피해 유효 엣지로 조건을 정했어요. 실제 극성은 미확정이에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.</p><p>각 Q를 0이면 켜짐,1이면 꺼짐으로 바꿔요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>교안의 CLR·엣지 충돌을 피해 유효 엣지로 조건을 정했어요. 실제 극성은 미확정이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>입출력 순서와 제어 조건을 적어요.</li><li>이전 상태 11000에서 새 S=0을 앞에 붙여요.</li><li>각 Q를 0이면 켜짐,1이면 꺼짐으로 바꿔요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 기능·이동 과정·조건을 연결해 설명해요</p><p data-summary="recall">QA~QE는 다섯 저장 칸 출력이고 SER는 첫 칸 입력이에요. 정상 이동 모드에서 QA다음=SER, QB다음=QA이전처럼 이동해요. PE와 해당 preset이 모두 1이면 1을 강제해요. clear/preset이 해제된 조건에서 이동을 계산해요.</p><p>첫 실행: 이전 상태 11000에서 새 S=0을 앞에 붙여요.</p><p>결론: QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.</p><p>검산: 각 Q를 0이면 켜짐,1이면 꺼짐으로 바꿔요.</p><p>주의: 교안의 CLR·엣지 충돌을 피해 유효 엣지로 조건을 정했어요. 실제 극성은 미확정이에요.</p></div></article></section>
+  </main>
+  <footer></footer>
+    </div>
+    <aside class="panel panel-right" id="panel-right" aria-labelledby="panel-right-title">
+      <div class="panel-resize" data-side="right" role="separator" aria-orientation="vertical" aria-controls="panel-right" aria-label="오른쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-right-title">페이지 요약</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <p class="panel-empty" id="sum-empty">페이지를 넘기면 그 페이지의 핵심 식과 용어가 여기에 나옵니다.</p>
+        <div class="sums" id="sum-for"></div>
+      </div>
+    </aside>
+  </div>
+  <div class="scrim" id="panel-scrim" aria-hidden="true"></div>
+  <nav class="pager" aria-label="화면 이동">
+    <div class="pager-inner">
+      <button class="btn btn-ghost" id="pager-prev" type="button">이전</button>
+      <span class="pager-count" id="pager-count"></span>
+      <button class="btn btn-primary" id="pager-next" type="button">시작하기</button>
+    </div>
+  </nav>
+  <p class="sr-only" id="pager-status" aria-live="polite"></p>
+<script src=".pack/assets/widgets.js"></script>
+  <script id="theme-ui">
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const sysDark = matchMedia('(prefers-color-scheme: dark)');
+      const KEY = 'od-theme';
+      const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : sysDark.matches;
+      function label() {
+        const next = isDark() ? '라이트 모드로 전환' : '다크 모드로 전환';
+        btn.setAttribute('aria-label', next);
+        btn.title = next;
+      }
+      btn.addEventListener('click', () => {
+        const t = isDark() ? 'light' : 'dark';
+        // 시스템 설정과 같아지면 저장을 지워 다시 시스템을 따른다
+        if ((t === 'dark') === sysDark.matches) { delete root.dataset.theme; try { localStorage.removeItem(KEY); } catch (e) {} }
+        else { root.dataset.theme = t; try { localStorage.setItem(KEY, t); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+        label();
+      });
+      sysDark.addEventListener('change', label);
+      window.addEventListener('storage', (e) => {
+        if (e.key !== KEY) return;
+        if (e.newValue === 'light' || e.newValue === 'dark') root.dataset.theme = e.newValue; else delete root.dataset.theme;
+        label();
+      });
+      label();
+    })();
+  </script>
+  <script id="panels-ui">
+    (function () {
+      const body = document.body;
+      const layout = document.querySelector('.layout');
+      const kind = body.dataset.panels;
+      const panels = { left: document.getElementById('panel-left'), right: document.getElementById('panel-right') };
+      const toggles = { left: document.getElementById('toggle-left'), right: document.getElementById('toggle-right') };
+      const scrim = document.getElementById('panel-scrim');
+      const blockers = [document.querySelector('.topbar'), document.querySelector('.content'), document.querySelector('.pager')];
+      const wideMq = matchMedia('(min-width: 1024px)');
+      const roomyMq = matchMedia('(min-width: 1280px)');
+      const store = {
+        get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      // 푼 기록은 탭(세션) 단위로만 유지: 뒤로가기·새로고침엔 남고, 창을 닫고 다시 열면 초기화
+      const tabStore = {
+        get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      const PREF = 'od-panels:' + kind;
+      // 팩마다 문제·토픽 id가 p1, s1-…로 겹치므로 진행 기록은 기간별로 나눈다
+      const RANGE = body.dataset.range || '';
+      const ICON_TODO = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
+      const ICON_DONE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>';
+      let overlay = null;
+
+      // ---------- 열고 닫기 ----------
+      function docked() {
+        const pref = store.get(PREF, {});
+        return { left: pref.left ?? true, right: pref.right ?? roomyMq.matches };
+      }
+      function sync() {
+        const wide = wideMq.matches;
+        const d = docked();
+        ['left', 'right'].forEach((side) => {
+          const open = wide ? d[side] : overlay === side;
+          const p = panels[side];
+          layout.dataset[side] = open ? 'open' : 'closed';
+          p.classList.toggle('is-open', !wide && open);
+          p.inert = !open;
+          if (!wide && open) { p.setAttribute('role', 'dialog'); p.setAttribute('aria-modal', 'true'); }
+          else { p.removeAttribute('role'); p.removeAttribute('aria-modal'); }
+          toggles[side].setAttribute('aria-expanded', String(open));
+        });
+        const drawer = !wide && overlay !== null;
+        scrim.classList.toggle('is-on', drawer);
+        body.classList.toggle('drawer-open', drawer);
+        blockers.forEach((el) => { el.inert = drawer; });
+      }
+      function openDrawer(side) {
+        overlay = side;
+        sync();
+        requestAnimationFrame(() => panels[side].querySelector('[data-panel-close]').focus());
+      }
+      function closeDrawer(refocus) {
+        if (overlay === null) return;
+        const side = overlay;
+        overlay = null;
+        sync();
+        if (refocus) toggles[side].focus();
+      }
+      function toggle(side) {
+        if (wideMq.matches) {
+          const d = docked();
+          d[side] = !d[side];
+          store.set(PREF, d);
+          sync();
+          if (d[side]) { const p = panels[side]; p.classList.remove('is-shown'); void p.offsetWidth; p.classList.add('is-shown'); }
+        } else if (overlay === side) closeDrawer(true);
+        else openDrawer(side);
+      }
+
+      toggles.left.addEventListener('click', () => toggle('left'));
+      toggles.right.addEventListener('click', () => toggle('right'));
+      scrim.addEventListener('click', () => closeDrawer(true));
+      document.querySelectorAll('[data-panel-close]').forEach((b) => b.addEventListener('click', () => closeDrawer(true)));
+      panels.left.addEventListener('click', (e) => { if (e.target.closest('.toc a')) closeDrawer(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay !== null) { e.preventDefault(); closeDrawer(true); } });
+
+      // ---------- 패널 너비: 기본은 화면 폭에 맞춰 자동, 경계를 끌면 직접 조절 ----------
+      const WIDTH = { left: { min: 220, max: 480, prop: '--panel-l-user' }, right: { min: 280, max: 720, prop: '--panel-r-user' } };
+      function applyWidths() {
+        const w = store.get(PREF + ':w', {});
+        ['left', 'right'].forEach((side) => {
+          if (w[side]) layout.style.setProperty(WIDTH[side].prop, w[side] + 'px');
+          else layout.style.removeProperty(WIDTH[side].prop);
+        });
+      }
+      function maxFor(side) {
+        const other = side === 'left' ? panels.right : panels.left;
+        const otherW = layout.dataset[side === 'left' ? 'right' : 'left'] === 'open' ? other.getBoundingClientRect().width : 0;
+        return Math.max(WIDTH[side].min, Math.min(WIDTH[side].max, window.innerWidth - otherW - 400));
+      }
+      function setWidth(side, px, save) {
+        const v = Math.round(Math.min(Math.max(px, WIDTH[side].min), maxFor(side)));
+        layout.style.setProperty(WIDTH[side].prop, v + 'px');
+        panels[side].querySelector('.panel-resize').setAttribute('aria-valuenow', String(v));
+        if (save) { const w = store.get(PREF + ':w', {}); w[side] = v; store.set(PREF + ':w', w); }
+      }
+      function resetWidth(side) {
+        const w = store.get(PREF + ':w', {});
+        delete w[side];
+        store.set(PREF + ':w', w);
+        layout.style.removeProperty(WIDTH[side].prop);
+      }
+      document.querySelectorAll('.panel-resize').forEach((handle) => {
+        const side = handle.dataset.side;
+        const dir = side === 'left' ? 1 : -1;
+        handle.setAttribute('aria-valuemin', String(WIDTH[side].min));
+        handle.setAttribute('aria-valuemax', String(WIDTH[side].max));
+        handle.addEventListener('pointerdown', (e) => {
+          if (!wideMq.matches || e.button !== 0) return;
+          e.preventDefault();
+          const startX = e.clientX;
+          const startW = panels[side].getBoundingClientRect().width;
+          handle.setPointerCapture(e.pointerId);
+          body.classList.add('is-resizing');
+          const move = (ev) => setWidth(side, startW + dir * (ev.clientX - startX), false);
+          const up = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            handle.removeEventListener('pointercancel', up);
+            body.classList.remove('is-resizing');
+            setWidth(side, panels[side].getBoundingClientRect().width, true);
+          };
+          handle.addEventListener('pointermove', move);
+          handle.addEventListener('pointerup', up);
+          handle.addEventListener('pointercancel', up);
+        });
+        handle.addEventListener('dblclick', () => resetWidth(side));
+        handle.addEventListener('keydown', (e) => {
+          const step = e.shiftKey ? 64 : 16;
+          const cur = panels[side].getBoundingClientRect().width;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.stopPropagation();
+            setWidth(side, cur + (e.key === 'ArrowRight' ? step : -step) * dir, true);
+          } else if (e.key === 'Home') { e.preventDefault(); resetWidth(side); }
+        });
+      });
+      applyWidths();
+      const onMq = () => { overlay = null; sync(); };
+      wideMq.addEventListener('change', onMq);
+      roomyMq.addEventListener('change', onMq);
+
+      // ---------- 목차의 진행 표시 ----------
+      function markToc(done, total, doneLabel) {
+        panels.left.querySelectorAll('.toc-list a').forEach((a) => {
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
+          let mark = a.querySelector('.toc-mark');
+          if (!mark) {
+            mark = document.createElement('span');
+            mark.className = 'toc-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            const state = document.createElement('span');
+            state.className = 'sr-only toc-state';
+            a.append(mark, state);
+          }
+          const isDone = done.has(id);
+          mark.classList.toggle('is-done', isDone);
+          mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
+          a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
+        });
+      }
+      function revealCurrent() {
+        const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
+        if (link && layout.dataset.left === 'open') link.scrollIntoView({ block: 'nearest' });
+      }
+
+      // ---------- 복습문제: 오른쪽 = 원문 · 힌트 · 풀이 ----------
+      function setupReview() {
+        const KEY = 'od-review-solved:' + RANGE;
+        const cards = Array.from(document.querySelectorAll('main article.card'));
+        const aids = panels.right.querySelector('.aids');
+        const empty = panels.right.querySelector('.panel-empty');
+        const btn = document.getElementById('solved-btn');
+        const groups = {};
+        const solved = new Set(tabStore.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
+        cards.forEach((card) => {
+          const g = document.createElement('div');
+          g.className = 'aid';
+          g.hidden = true;
+          card.querySelectorAll(':scope > details').forEach((d) => g.appendChild(d));
+          aids.appendChild(g);
+          groups[card.id] = g;
+        });
+        let curId = null;
+        function paintBtn() {
+          const on = solved.has(curId);
+          btn.setAttribute('aria-pressed', String(on));
+          btn.innerHTML = (on ? ICON_DONE : ICON_TODO) + '<span>' + (on ? '푼 문제 · 표시 해제' : '푼 문제로 표시') + '</span>';
+        }
+        btn.addEventListener('click', () => {
+          if (!curId) return;
+          if (solved.has(curId)) solved.delete(curId); else solved.add(curId);
+          tabStore.set(KEY, Array.from(solved));
+          paintBtn();
+          markToc(solved, cards.length, '푼 문제');
+        });
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          curId = s.matches('article.card') ? s.id : null;
+          Object.keys(groups).forEach((id) => { groups[id].hidden = id !== curId; });
+          empty.hidden = Boolean(curId);
+          btn.hidden = !curId;
+          if (curId) paintBtn();
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(solved, cards.length, '푼 문제');
+          revealCurrent();
+        });
+      }
+
+      // ---------- 정리노트: 오른쪽 = 페이지(토픽)별 요약 ----------
+      function setupNote() {
+        const KEY = 'od-note-read:' + RANGE;
+        const topics = Array.from(document.querySelectorAll('main article.topic'));
+        const read = new Set(store.get(KEY, []).filter((id) => topics.some((t) => t.id === id)));
+        // 조각의 <div class="sum" hidden> 을 오른쪽 패널로 옮긴다. 없으면 안내 문구만 보인다.
+        const box = panels.right.querySelector('.sums');
+        const sums = {};
+        topics.forEach((t) => {
+          const el = t.querySelector(':scope > .sum');
+          if (!el) return;
+          el.hidden = true;
+          box.appendChild(el);
+          sums[t.id] = el;
+        });
+        const empty = document.getElementById('sum-empty');
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          const key = s.matches('article.topic') ? s.id : 'intro';
+          Object.keys(sums).forEach((id) => { sums[id].hidden = id !== key; });
+          empty.hidden = Boolean(sums[key]);
+          if (s.matches('article.topic') && !read.has(s.id)) { read.add(s.id); store.set(KEY, Array.from(read)); }
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(read, topics.length, '읽음');
+          revealCurrent();
+        });
+      }
+
+      if (kind === 'review') setupReview();
+      if (kind === 'note') setupNote();
+      sync();
+    })();
+  </script>
+  <script id="pager-ui">
+    (function () {
+      const root = document.documentElement;
+      const main = document.querySelector('main');
+      const hero = main.querySelector('.hero');
+      const screens = [hero].concat(Array.from(main.querySelectorAll(document.body.dataset.screens)));
+      if (screens.length < 2) { root.classList.remove('js'); return; }
+      screens.forEach((s) => s.classList.add('screen'));
+
+      const last = screens.length - 1;
+      const prevBtn = document.getElementById('pager-prev');
+      const nextBtn = document.getElementById('pager-next');
+      const count = document.getElementById('pager-count');
+      const bar = document.getElementById('pager-bar');
+      const status = document.getElementById('pager-status');
+      const toc = document.querySelector('#panel-left .toc');
+      const scroller = document.querySelector('.content');
+      const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
+      let cur = -1;
+
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
+
+      function indexFor(hash) {
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
+        const el = id && document.getElementById(id);
+        if (!el || !main.contains(el)) return { i: 0 };
+        const i = screens.findIndex((s) => s.contains(el) || el.contains(s));
+        return { i: Math.max(i, 0), target: i >= 0 && screens[i].contains(el) && screens[i] !== el ? el : null };
+      }
+
+      function render(i, target) {
+        const dir = cur < 0 ? '' : i > cur ? 'enter-next' : 'enter-prev';
+        if (i !== cur) {
+          if (cur >= 0) screens[cur].classList.remove('is-current', 'enter-next', 'enter-prev');
+          main.querySelectorAll(':scope > section.is-on').forEach((sec) => sec.classList.remove('is-on'));
+          const s = screens[i];
+          const sec = s.closest('section');
+          if (sec) sec.classList.add('is-on');
+          s.classList.add('is-current');
+          if (dir) { s.classList.remove('enter-next', 'enter-prev'); void s.offsetWidth; s.classList.add(dir); }
+          cur = i;
+          document.body.classList.toggle('at-end', i === last);
+          prevBtn.disabled = i === 0;
+          nextBtn.textContent = i === 0 ? '시작하기' : i === last ? '처음으로' : '다음';
+          count.textContent = i === 0 ? '' : i + ' / ' + last;
+          bar.style.transform = 'scaleX(' + (i / last) + ')';
+          status.textContent = i === 0 ? titleOf(s) : i + ' / ' + last + ', ' + titleOf(s);
+          tocLinks.forEach((link, k) => link && link.setAttribute('aria-current', String(k === i)));
+          document.dispatchEvent(new CustomEvent('od:screen', { detail: { index: i, screen: s } }));
+        }
+        if (target) target.scrollIntoView({ block: 'start' });
+        else scroller.scrollTo(0, 0);
+      }
+
+      function go(i) {
+        i = Math.min(Math.max(i, 0), last);
+        if (i === cur) return;
+        const url = i === 0 ? location.pathname + location.search : '#' + screens[i].id;
+        history.pushState(null, '', url);
+        render(i);
+      }
+
+      prevBtn.addEventListener('click', () => go(cur - 1));
+      nextBtn.addEventListener('click', () => go(cur === last ? 0 : cur + 1));
+      const fromUrl = () => { const r = indexFor(location.hash); render(r.i, r.target); };
+      window.addEventListener('hashchange', fromUrl);
+      window.addEventListener('popstate', fromUrl);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || document.body.classList.contains('drawer-open')) return;
+        if (e.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+      });
+
+      // 좌우로 밀어서 넘기기 (가로로 스크롤되는 영역은 제외)
+      let sx = 0, sy = 0, skip = true;
+      main.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY;
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .table-card, .katex-display, .table-wrap, svg, input, details'));
+      }, { passive: true });
+      main.addEventListener('touchend', (e) => {
+        if (skip) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 64 && Math.abs(dx) > 2 * Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      fromUrl();
+    })();
+  </script>
+</body>
+</html>

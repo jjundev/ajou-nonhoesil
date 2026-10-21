@@ -1,0 +1,2183 @@
+{
+  "schema_version": 1,
+  "experiment": 7,
+  "title": "Shift Register — 저장한 비트를 한 칸씩 옮겨요",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp07",
+    "schema_version": 1,
+    "source_path": "문제은행/실험07/question-bank.json",
+    "sha256": "13f771be4edfbf40a309ed59f949bd9357d582abc99a513bae3fbc17f945385e",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-e44bcc9b82ada584",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 강의자료 2016-2 (20p).pdf",
+      "sha256": "c848dfc7a80b74fb720e1089f809b88aa29a2db769c7e4fbc4dddef082518c87",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-a86f355000b43594",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출 2016-1.pdf",
+      "sha256": "784dbc6133079b593289e8bfbd9b47251daa23ab37d0c46a78212f6559eed607",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-c9976489fef9b3cc",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출_금요반_정답.pdf",
+      "sha256": "12034dd67bc60a80d4176d0281ed9eed116f712ac4950e0ed5a44cd3dfae7d79",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-cacab0cb200708ed",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출_단답형.pdf",
+      "sha256": "f2c4d8168b4302a1f8dd4e85ebe0f0687dc4500acaa09547be7b49dc92ff7096",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-9b5da551db6d74da",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출_월요반_문제.pdf",
+      "sha256": "7ad22f0918a13f675b92e65d67d5dd4d09458c0c7cb8f057a864f1e669e28885",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-a9c5e69046af5d81",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출_정답.pdf",
+      "sha256": "38b6f0bd6e1e525c9e99a581a7b9c6e47b19f8a5613b885f98dbc3d3f0b560ae",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-59bee48797ab81ea",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 기출_채점본.jpg",
+      "sha256": "d0bb7dece3f61259c0d26e7d1f64ff1bf044cdc086ac1abc2d7f57bacad60b99",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-a9e9dfe13ad5c6a9",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 예상문제_v1.pdf",
+      "sha256": "8e8aa43a9f17a1b3a851427a7496ad323f33f19f0dc5eeab35297e73d0c694a0",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-2d14c0cc69bb32b3",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 예상문제_v2.pdf",
+      "sha256": "52c6f9a937d35d5b7a381a4a10d7f16c6bcc7b981af2667971c99fc628796a08",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-7fd0cb5d74bb0944",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 예상문제_v3.pdf",
+      "sha256": "feeb4631693689fca4c3bbef6769737557bbb1913cf01816eb91861627f1b4f1",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-0abd9bb46a9eac43",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 예상문제_v4.pdf",
+      "sha256": "1c0cbeb71a1a10f48acbd29d15b9cb19ce4608f2231edbfd594cdafc5d120aad",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-34b360c33e58c389",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 종합_기출문제 (2p).pdf",
+      "sha256": "9a165ba8800697464fab9968fcd9a77ba33e573570c6447f06f0e696137631fa",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-297f9a161b3edffa",
+      "path": "from_the_past/정리/퀴즈/실험7/실험7 퀴즈 해설.pdf",
+      "sha256": "24b43786f3ccb573c4934ab2b823bf408b5864a443702ca718ae990982615c17",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-71c1993b2849a03f",
+      "path": "from_the_past/정리/퀴즈/실험7/원본_docx/quiz_07.hwp",
+      "sha256": "b73a65357bd2b0f6f6aa2f5885b9a0aadf918e942d0b43f1034635893e38b574",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-260f17c53dcbc5af",
+      "path": "from_the_past/정리/퀴즈/실험7/원본_docx/실험7_답.docx",
+      "sha256": "9c92e07279e2d0562db6d6a75430c409a3955578b711ce17970b18677b37c958",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-4357dded97e595c1",
+      "path": "from_the_past/정리/퀴즈/실험7/원본_docx/실험7_예상 !!!.docx",
+      "sha256": "fa955f03026fb2ec15772c76758e4cc3b9458ce30cd2f1d53927740f0b7c68f0",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-4ec3c5e872ffb38e",
+      "path": "from_the_past/정리/퀴즈/실험7/원본_docx/실험7_예상.docx",
+      "sha256": "8217c6c58414c078c52b6bfd86f2672f17f6eec79f3d72885a97f228ea6fcb1c",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-manual07",
+      "path": "강의노트/실험7. Shift Register.pdf",
+      "sha256": "8cab59f8991311e4f4697a4b43273ac412167d331204582aa3a230453e254fc8",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-scope",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-board",
+      "path": "강의노트/공지사항/Breadboard.pdf",
+      "sha256": "045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-basic",
+      "path": "강의노트/실험1. Basic Gates.pdf",
+      "sha256": "87cf0c4ab9d3c9048789066e50d655ffe2bbf998099824112c55567e44534b26",
+      "kind": "manual",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-scope",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-memory",
+      "title": "비트·플립플롭·클록을 연결해 알아봐요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 10,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-memory.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-shift",
+      "title": "한 엣지에 한 칸만 옮겨요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 10,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-shift.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-convert",
+      "title": "직렬과 병렬은 읽고 넣는 방법이에요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-convert.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-jk",
+      "title": "JK를 새 입력을 복사하는 칸으로 써요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-jk.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-7496",
+      "title": "7496의 다섯 칸과 제어 신호를 읽어요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 12,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 13,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 14,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 15,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 17,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 18,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 19,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 20,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 21,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 22,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 23,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 24,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 25,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-7496.html",
+      "md_notes": "현재 배포 파일 표지는 25-1. 7496 제어 극성·엣지는 교안 본문/부록/과거 제공 답 사이 충돌을 유지해요."
+    },
+    {
+      "id": "t-counters",
+      "title": "되먹임으로 순환·링·존슨을 구분해요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 16,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-counters.html",
+      "md_notes": "링·존슨은 현재 교안의 수행 항목과 구분한 기출 대비 보충이에요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-sr",
+      "bank_question_id": "q-sr",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-shift"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a86f355000b43594",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-a9c5e69046af5d81",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2~P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "클록마다 데이터를 한 칸씩 이동하며 저장하는 레지스터예요.",
+      "answer_status": "verified",
+      "title": "시프트 레지스터의 기능",
+      "workbook_fragment": "workbook/q-sr.json",
+      "explanation_fragment": "problem-explanations/q-sr.html"
+    },
+    {
+      "id": "q-ring",
+      "bank_question_id": "q-ring",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a86f355000b43594",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P18~P19; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P10; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": "마지막 Q를 첫 입력으로 되먹이는 순환 회로이며 one-hot 초기화하면 n단에서 n상태를 순환해요.",
+      "answer_status": "verified",
+      "title": "링 카운터와 초기화",
+      "workbook_fragment": "workbook/q-ring.json",
+      "explanation_fragment": "problem-explanations/q-ring.html"
+    },
+    {
+      "id": "q-johnson-nand",
+      "bank_question_id": "q-johnson-nand",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a86f355000b43594",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P25~P27; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P14~P15; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": "배선 미제시로 미확정: 입력을 묶으면 반전 되먹임, 상태 신호를 받으면 디코딩이에요.",
+      "answer_status": "disputed",
+      "title": "존슨 카운터의 NAND 역할",
+      "workbook_fragment": "workbook/q-johnson-nand.json",
+      "explanation_fragment": "problem-explanations/q-johnson-nand.html"
+    },
+    {
+      "id": "q-7496-block",
+      "bank_question_id": "q-7496-block",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-7496"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a86f355000b43594",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; 한컴오피스 로컬 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P28~P30; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P16~P18; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "5단 저장·공통 클록 이동·PE와 개별 preset의 AND 조건·공통 clear가 핵심이에요. CLR 극성·엣지는 미확정이에요.",
+      "answer_status": "unresolved",
+      "title": "7496 내부 블록을 읽어요",
+      "workbook_fragment": "workbook/q-7496-block.json",
+      "explanation_fragment": "problem-explanations/q-7496-block.html"
+    },
+    {
+      "id": "q-convert",
+      "bank_question_id": "q-convert",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-convert"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9b5da551db6d74da",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-c9976489fef9b3cc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-59bee48797ab81ea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역 (개인 식별 헤더 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-260f17c53dcbc5af",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P6~P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P10~P13; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P7~P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요.",
+      "answer_status": "verified",
+      "title": "직렬·병렬 변환의 두 방향",
+      "workbook_fragment": "workbook/q-convert.json",
+      "explanation_fragment": "problem-explanations/q-convert.html"
+    },
+    {
+      "id": "q-ff-design",
+      "bank_question_id": "q-ff-design",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-jk"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9b5da551db6d74da",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2 (소문항 1·2); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-c9976489fef9b3cc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-59bee48797ab81ea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역 (개인 식별 헤더 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-260f17c53dcbc5af",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P9~P14; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "1) 7476 2개·JK 4개. 2) D F/F 4개 직렬 Q→D, 공통 CLK, 각 Q 병렬 출력이에요.",
+      "answer_status": "verified",
+      "title": "4비트 회로와 7476 개수",
+      "workbook_fragment": "workbook/q-ff-design.json",
+      "explanation_fragment": "problem-explanations/q-ff-design.html"
+    },
+    {
+      "id": "q-7496-circular",
+      "bank_question_id": "q-7496-circular",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9b5da551db6d74da",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-c9976489fef9b3cc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-59bee48797ab81ea",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역 (개인 식별 헤더 제외)",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-260f17c53dcbc5af",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P16~P17; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "QE(10번)를 SER(9번)에 연결해요.",
+      "answer_status": "verified",
+      "title": "7496을 순환 회로로 바꿔요",
+      "workbook_fragment": "workbook/q-7496-circular.json",
+      "explanation_fragment": "problem-explanations/q-7496-circular.html"
+    },
+    {
+      "id": "q-jkff",
+      "bank_question_id": "q-jkff",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-jk"
+      ],
+      "sources": [
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P4~P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P3~P4; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "J=D,K=NOT D로 데이터 복사 단계를 만들어요.",
+      "answer_status": "verified",
+      "title": "시프트용 JK 입력을 정해요",
+      "workbook_fragment": "workbook/q-jkff.json",
+      "explanation_fragment": "problem-explanations/q-jkff.html"
+    },
+    {
+      "id": "q-7496-role",
+      "bank_question_id": "q-7496-role",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "예상문항의 7496 역할은 q-7496-block 기출에서 이미 다뤄 개념 공백이 없어요. 기출 중심 선별 원칙으로 비수록하며 원문·출처는 보존해요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P14~P15; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-6bit-jk",
+      "bank_question_id": "q-6bit-jk",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-memory"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9c5e69046af5d81",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P7~P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P5~P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "JK 플립플롭 6개예요.",
+      "answer_status": "verified",
+      "title": "6비트에 필요한 JK 개수",
+      "workbook_fragment": "workbook/q-6bit-jk.json",
+      "explanation_fragment": "problem-explanations/q-6bit-jk.html"
+    },
+    {
+      "id": "q-p2s",
+      "bank_question_id": "q-p2s",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-convert"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9c5e69046af5d81",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "여러 비트를 동시에 적재한 뒤 시프트하며 마지막 Q에서 한 비트씩 출력해요.",
+      "answer_status": "verified",
+      "title": "병렬에서 직렬로 꺼내요",
+      "workbook_fragment": "workbook/q-p2s.json",
+      "explanation_fragment": "problem-explanations/q-p2s.html"
+    },
+    {
+      "id": "q-johnson",
+      "bank_question_id": "q-johnson",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9c5e69046af5d81",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P20~P21; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": "마지막 Q를 반전해 되먹이며 정상 초기화한 n단에서 2n상태를 순환해요.",
+      "answer_status": "verified",
+      "title": "존슨 카운터의 상태 순환",
+      "workbook_fragment": "workbook/q-johnson.json",
+      "explanation_fragment": "problem-explanations/q-johnson.html"
+    },
+    {
+      "id": "q-circular",
+      "bank_question_id": "q-circular",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록; 예상 JK 문항은 복사 입력 설계의 개념 공백을 보충",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-a9c5e69046af5d81",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "“실험7. Quiz” 문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-cacab0cb200708ed",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-71c1993b2849a03f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; 한컴오피스 로컬 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-a9e9dfe13ad5c6a9",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-2d14c0cc69bb32b3",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-7fd0cb5d74bb0944",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-0abd9bb46a9eac43",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-34b360c33e58c389",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4357dded97e595c1",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P22~P24; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-4ec3c5e872ffb38e",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P12~P13; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "마지막 출력을 첫 단계 직렬 입력으로 되먹여요.",
+      "answer_status": "verified",
+      "title": "순환 시프트의 연결",
+      "workbook_fragment": "workbook/q-circular.json",
+      "explanation_fragment": "problem-explanations/q-circular.html"
+    },
+    {
+      "id": "q-qp-e07-tf-01",
+      "title": "여섯 칸의 저장 용량",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-memory"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 3,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-tf-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-tf-01.html"
+    },
+    {
+      "id": "q-qp-e07-tf-02",
+      "title": "같은 엣지의 이전 값",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-shift"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-tf-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-tf-02.html"
+    },
+    {
+      "id": "q-qp-e07-tf-03",
+      "title": "Negative Logic LED",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7496"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 13,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-tf-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-tf-03.html"
+    },
+    {
+      "id": "q-qp-e07-tf-04",
+      "title": "JK의 복사 조건",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-jk"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-tf-04.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-tf-04.html"
+    },
+    {
+      "id": "q-qp-e07-blank-01",
+      "title": "칩과 저장 칸",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-memory"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 3,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 4, ② 2",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-blank-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-blank-01.html"
+    },
+    {
+      "id": "q-qp-e07-blank-02",
+      "title": "한 칸 이동을 계산해요",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-shift"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 010110",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-blank-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-blank-02.html"
+    },
+    {
+      "id": "q-qp-e07-blank-03",
+      "title": "순환 연결의 두 핀",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-counters"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 16,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① QE/10번, ② SER/9번",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-blank-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-blank-03.html"
+    },
+    {
+      "id": "q-qp-e07-board-01",
+      "title": "첫 JK 입력용 보수 신호를 작도해요",
+      "kind": "practice",
+      "question_type": "breadboard",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-jk"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-basic",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-board-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-board-01.html"
+    },
+    {
+      "id": "q-qp-e07-short-01",
+      "title": "SIPO가 정보를 모으는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-convert"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-short-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-short-01.html"
+    },
+    {
+      "id": "q-qp-e07-short-02",
+      "title": "7496의 LED와 상태를 구분해요",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7496"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual07",
+          "pdf_page": 15,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e07-short-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e07-short-02.html"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "review_presentation_version": 2,
+  "problem_explanation_version": 2,
+  "quiz_practice_version": 1,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "generated_files": [
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+    ".pack/assets/vendor/katex/LICENSE",
+    ".pack/assets/vendor/katex/auto-render.min.js",
+    ".pack/assets/vendor/katex/katex.min.css",
+    ".pack/assets/vendor/katex/katex.min.js",
+    ".pack/assets/vendor/pretendard/LICENSE",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff2",
+    ".pack/assets/vendor/pretendard/pretendard.css",
+    ".pack/assets/vendor/provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s02-p1-q4.png",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s03-p1-q2.png",
+    ".pack/evidence/assets/s03-p1.png",
+    ".pack/evidence/assets/s04-p1.png",
+    ".pack/evidence/assets/s04-p2.png",
+    ".pack/evidence/assets/s05-p1-q2.png",
+    ".pack/evidence/assets/s05-p1.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s07-q1.png",
+    ".pack/evidence/assets/s07-q2.png",
+    ".pack/evidence/assets/s07-q3.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/assets/s10-p1.png",
+    ".pack/evidence/assets/s11-p1.png",
+    ".pack/evidence/assets/s11-p2.png",
+    ".pack/evidence/assets/s12-p1.png",
+    ".pack/evidence/assets/s12-p2.png",
+    ".pack/evidence/assets/s13-p1-e1.png",
+    ".pack/evidence/assets/s13-p1-e2a.png",
+    ".pack/evidence/assets/s13-p1-e2b.png",
+    ".pack/evidence/assets/s14-p1.png",
+    ".pack/evidence/assets/s14-p2.png",
+    ".pack/evidence/assets/s15-p1.png",
+    ".pack/evidence/assets/s16-p1.png",
+    ".pack/evidence/assets/s16-p2.png",
+    ".pack/evidence/assets/s17-p1.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/internal.svg",
+    ".pack/figures/questions/7496-given.png",
+    ".pack/figures/questions/7496-given.svg",
+    ".pack/figures/questions/dff-given.png",
+    ".pack/figures/questions/dff-given.svg",
+    ".pack/figures/questions/ic7496-given.png",
+    ".pack/figures/questions/ic7496-given.svg",
+    ".pack/figures/questions/inverter-blank.png",
+    ".pack/figures/questions/inverter-blank.svg",
+    ".pack/figures/questions/inverter-given.png",
+    ".pack/figures/questions/inverter-given.svg",
+    ".pack/figures/quiz-board-mapping.json",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/shift.svg",
+    ".pack/figures/solutions/inverter-complete.png",
+    ".pack/figures/solutions/inverter-complete.svg",
+    ".pack/figures/solutions/shift-complete.png",
+    ".pack/figures/solutions/shift-complete.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/browser-results.json",
+    ".pack/problem-explanations/calculation-results.json",
+    ".pack/problem-explanations/panel-results.json",
+    ".pack/problem-explanations/pdf-results.json",
+    ".pack/problem-explanations/q-6bit-jk.html",
+    ".pack/problem-explanations/q-7496-block.html",
+    ".pack/problem-explanations/q-7496-circular.html",
+    ".pack/problem-explanations/q-circular.html",
+    ".pack/problem-explanations/q-convert.html",
+    ".pack/problem-explanations/q-ff-design.html",
+    ".pack/problem-explanations/q-jkff.html",
+    ".pack/problem-explanations/q-johnson-nand.html",
+    ".pack/problem-explanations/q-johnson.html",
+    ".pack/problem-explanations/q-p2s.html",
+    ".pack/problem-explanations/q-qp-e07-blank-01.html",
+    ".pack/problem-explanations/q-qp-e07-blank-02.html",
+    ".pack/problem-explanations/q-qp-e07-blank-03.html",
+    ".pack/problem-explanations/q-qp-e07-board-01.html",
+    ".pack/problem-explanations/q-qp-e07-short-01.html",
+    ".pack/problem-explanations/q-qp-e07-short-02.html",
+    ".pack/problem-explanations/q-qp-e07-tf-01.html",
+    ".pack/problem-explanations/q-qp-e07-tf-02.html",
+    ".pack/problem-explanations/q-qp-e07-tf-03.html",
+    ".pack/problem-explanations/q-qp-e07-tf-04.html",
+    ".pack/problem-explanations/q-ring.html",
+    ".pack/problem-explanations/q-sr.html",
+    ".pack/problem-explanations/summary-audit.md",
+    ".pack/problem-explanations/table-layout.json",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/problem-explanations/문제설명-summary-validation.json",
+    ".pack/problem-explanations/실험설명-summary-validation.json",
+    ".pack/검증결과.md",
+    ".pack/실험07_기출문제.md",
+    ".pack/실험07_기출풀이.md",
+    ".pack/실험07_문제설명.md",
+    ".pack/실험07_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험07_기출문제.html",
+    "실험07_기출문제.pdf",
+    "실험07_기출풀이.html",
+    "실험07_기출풀이.pdf",
+    "실험07_문제설명.html",
+    "실험07_실험설명.html"
+  ]
+}
