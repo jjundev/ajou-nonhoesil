@@ -134,6 +134,14 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    info = config.load_course_info(root)
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
    netlist = parse_netlist('<실험NN>/결선도/netlist.md')
+   from scripts.lab.assembly import check_structure, check_registry, check_assets
+   from scripts.lab.place_search import load
+   _, board = load(netlist.path.parent / '배치.py')
+   gates = (check_structure(netlist)
+            + check_registry(netlist, getattr(board, 'ASSEMBLY_BOARDS', {}))
+            + check_assets(netlist))
+   if any(f.level == 'error' for f in gates):
+       raise ValueError('\\n'.join(str(f) for f in gates))
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
    out = Path('<실험NN>/체크리스트/체크리스트.html')
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
@@ -377,3 +385,18 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
   `scripts/lab/schematic.py` 로 만든다 — 없으면 인쇄는 되지만 그 자리에 안내 한 줄만 남는다.
 - 캐시 신선도 로직(mtime 비교·SOURCES 블록)을 만들지 않는다.
   소스가 고정이므로 그냥 다시 만드는 게 싸고 안전하다.
+
+
+## 조립 준비 출력
+
+`docs/schema/lab-netlist-v3.md`의 선택 `## 조립 순서`는 부모 일반 단계 직전에
+`단계 1 준비 ① · 제목` 형식의 독립 페이지로 인쇄한다. 그림·사이드카의 핀/홀 작업 목록·
+이번 작업·육안 완료 확인을 함께 두고 기존 fit wrapper로 한 묶음을 한 쪽에 유지한다.
+고정 문구는 `전원과 신호발생기 출력을 꺼요.`다. 준비에는 관측 노드·V표·실측 칸을 붙이지 않는다.
+기능 단계와 걷기 참조·LED 급전 계산은 기존 stages만 따른다. 준비 수는 작업량이며
+실험07은 준비6+기능12, 걷기11 포함29블록·PDF6쪽 추가임을 그대로 보고한다.
+
+저작→구조 검사→별도 그림 생성→registry·자산 검사→HTML→fit_pages→PDF→화면 확인
+순서를 따른다. 준비 PNG/JSON 누락·읽기 실패는 error로 인쇄를 막는다. 기존 표 없는
+실험의 그림 누락 정책은 유지한다. 재인쇄만 요청받으면 기존 기록.md를 재파생하지 않고
+해시를 보존한 채 4~6단계를 실행한다. 준비 완료는 정상 동작이나 통전 확인의 증거가 아니다.

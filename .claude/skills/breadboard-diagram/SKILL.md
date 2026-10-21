@@ -175,8 +175,7 @@ netlist 단계 표의 `<k>걷기` 행이 그 번호를 인용한다(`**걷기 �
 **단계.** 단계 하나는 **관측 노드 하나를 세운다**(그 단계 끝의 확인은 netlist `## 노드` 표의 노드 하나다). 그 단계에서
 **새로 꽂는 신호선은 셋 이하**다(`STAGE_WIRE_BUDGET` — 주차 예외는 `stage_budget(board)`: 배치.py 의
 `STAGE_WIRE_BUDGET` + `STAGE_WIRE_BUDGET_REASON`, 값은 게이트 입력 수 + 1. 실험04 = 5). 신호선은 `sig`·`mid` 배선이고,
-전원·GND·레일 브리지·잭·LED 사슬 부품·칩 꽂기는 기반이라 세지 않는다 — 기반은 그 회로가 쓰는 슬롯 전부를 1단계에
-꽂는다. `export()` 가 보드마다 `새 신호선 n · 걷는 선 m` 을 찍고 예산을 넘으면 `[WARN]` 을 낸다. 승인을 막는 것은
+전원·GND·레일 브리지·잭·LED 사슬 부품·칩 꽂기는 기반이라 세지 않는다 — 기반도 실제 작업량에 포함해 v3 조립 순서로 나눌 수 있다. `export()` 가 보드마다 `새 신호선 n · 걷는 선 m` 을 찍고 예산을 넘으면 `[WARN]` 을 낸다. 승인을 막는 것은
 `tests/test_breadboard_boards.py` 의 `StageBudget` 이다(실험01·02 는 옛 규약 승인본이라 `LEGACY_BOARDS` 로 면제).
 
 **관측은 비어 있는 LED 를 프로브로 쓴다.** 완성본에서 그 LED 가 맡는 출력이 아직 안 세워진 단계에는 급전선을
@@ -400,3 +399,22 @@ v2 는 좌 바깥 레일과 가운데 레일 두 쌍만 쓴다 — 브리지도 
 - v1 판형(실험01~04)에만 해당하는 것 → `.claude/skills/breadboard-diagram/v1.md`
 - 엔진 내부 동작(함수·순위·좌표 계산) → 그 함수의 docstring. 본문에는 빌더가 부를 이름과 규칙만 둔다.
 - 본문 규칙에는 근거를 괄호 하나(실물 파일 하나 또는 연혁 항목 이름)로만 단다.
+
+
+## 선택 조립 그림 사슬
+
+계약 정본은 `docs/schema/lab-netlist-v3.md`다. 주차 `배치.py`의 선택
+`ASSEMBLY_BOARDS = {부모_일반단계_PNG: [(준비_PNG, builder), ...]}`는 조립 표와
+부모·파일명·순서가 정확히 같아야 한다. builder는 `(output_path, template_path=None,
+baseline=None)`을 받고 렌더러를 반환한다. BOARDS·FINALS 계약을 바꾸지 않는다.
+
+`iter_procedure_boards(board)`가 준비→부모 순서로 snapshot을 전달한다. 준비도 물리 충돌·
+레일·제거 검사를 받는다. 전원이 꺼져 미완성이라는 이유로 이 검사를 면제하지 않는다.
+준비는 전원·임시 고정·수동 LED 사슬 추가만 허용한다. sig/mid·출력 급전은 기능 단계,
+제거는 걷기에 둔다. 준비 중 모든 F/F가 통전 구동된다는 전제는 적용하지 않는다.
+기존 전체 배치의 레일 예약과 경로를 재사용해 나중 준비에서 기존 홀을 옮기지 않는다.
+완성본에는 준비 기준선을 주지 않는다. 실험07의 준비6개는 사례이며 공통 고정 개수가 아니다.
+
+생성 전 `assembly.check_structure(netlist)`, 생성 후
+`assembly.check_registry(netlist, board.ASSEMBLY_BOARDS)`와 `assembly.check_assets(netlist)`를
+실행해 error 0을 확인한다. 표 없는 주차는 빈 registry로 기존 사슬을 그대로 따른다.
