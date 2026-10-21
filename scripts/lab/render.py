@@ -199,17 +199,46 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     return "\n".join(out)
 
 
-def _comparison_table_html(header, rows):
+def _input_settings_html(names, rows, *, spaced=True):
+    """Highlight physical input work; each call starts an independent timeline.
+
+    Explicit edges are events even when repeated. Static levels compare against
+    the preceding ending level, not the preceding token. Unknown tokens remain
+    visible but do not establish an inferred physical level.
+    """
+    levels = {}
+    result = []
+    bits = {'0': '0', '1': '1', 'L': '0', 'H': '1'}
+    equal = ' = ' if spaced else '='
+    for index, cells in enumerate(rows):
+        settings = []
+        for name, cell in zip(names, cells):
+            parts = re.split(r'\s*(?:->|→)\s*', cell.strip())
+            edge = len(parts) > 1 and all(p in bits for p in parts)
+            end = bits.get(parts[-1]) if edge else bits.get(cell.strip())
+            changed = index > 0 and (edge or (
+                end is not None and levels.get(name) is not None and end != levels[name]))
+            text = f'{_esc(name)}{equal}{_esc(cell)}'
+            settings.append(f'<span class="input-change">{text}</span>' if changed else text)
+            levels[name] = end
+        result.append('<br>'.join(settings))
+    return result
+
+
+def _comparison_table_html(header, rows, *, input_settings=None, input_column=1):
     out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
                    6:[7,23,20,18,18,14]}.get(len(header),[100/len(header)]*len(header))))
                + '</colgroup><thead><tr>',
            *[f'<th>{_esc(h)}</th>' for h in header], '</tr></thead><tbody>']
-    for row in rows:
+    for row_index, row in enumerate(rows):
         out.append('<tr>')
         for i, value in enumerate(row):
             if i == len(row)-1:
                 out.append('<td class="actual"></td>')
+            elif input_settings is not None and i == input_column:
+                # Only renderer-built input markup, with source text already escaped.
+                out.append('<td>' + input_settings[row_index] + '</td>')
             else:
                 out.append('<td>' + _esc(value).replace('; ', '<br>') + '</td>')
         out.append('</tr>')
@@ -236,7 +265,12 @@ def _stepped_html(table, *, wide=False, leds=()) -> str:
     """
     if getattr(table, 'comparison', None):
         header, rows = comparison_rows(table, leds)
-        return _comparison_table_html(header, rows)
+        indices = [i for i, name in enumerate(table.header)
+                   if name not in (*table.outputs, '스텝', '조작')]
+        settings = _input_settings_html([table.header[i] for i in indices],
+                                       [[row[i] for i in indices] for row in table.rows],
+                                       spaced=False)
+        return _comparison_table_html(header, rows, input_settings=settings, input_column=2)
     header = list(table.header)
     rows = [[_plain(c) for c in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
@@ -958,7 +992,10 @@ def _inline_observation_html(table, leds, feed):
     else:
         header = ['순서','입력·조작','측정 핀·예상 논리값','실제 결과']
         detail = ''
-    h = _comparison_table_html(header, rows)
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows])
+    input_cells = [_esc(row.action).replace('; ', '<br>') + '<br>' + setting
+                   for row, setting in zip(table.rows, settings)]
+    h = _comparison_table_html(header, rows, input_settings=input_cells)
     # One timeline, one stable authored order per row.
     for row in table.rows:
         h = h.replace('<tr><td>' + str(row.order) + '</td>',
@@ -980,8 +1017,8 @@ def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
         return '\n'.join(out) + _inline_observation_html(table, leds, feed) + '</section>'
     out.append('<p><b>조작·입력</b></p>')
     out.append('<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정</th></tr></thead><tbody>')
-    for row in table.rows:
-        inputs = '<br>'.join(f'{_esc(n)} = {_esc(c)}' for n, c in zip(table.inputs, row.inputs))
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows])
+    for row, inputs in zip(table.rows, settings):
         out.append(f'<tr data-observation-order="{row.order}"><td>{row.order}</td>'
                    f'<td>{_esc(row.action)}</td><td>{inputs}</td></tr>')
     out.append('</tbody></table>')

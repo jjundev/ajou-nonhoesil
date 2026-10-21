@@ -1,5 +1,6 @@
 <!-- OBSERVATION_STYLE_BEGIN -->
 <style>
+  .input-change { color:#b91c1c; font-weight:700; }
   .observation-procedure table { width:100%; table-layout:fixed; }
   .observation-procedure th, .observation-procedure td { overflow-wrap:anywhere; vertical-align:top; }
   .observation-procedure th:first-child { width:9mm; }
@@ -273,13 +274,13 @@
 </tr>
 <tr>
 <td>2</td>
-<td>D=1<br>D = 1</td>
+<td>D=1<br><span class="input-change">D = 1</span></td>
 <td>D_BAR (U1 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D를 0으로 복귀<br>D = 0</td>
+<td>D를 0으로 복귀<br><span class="input-change">D = 0</span></td>
 <td>D_BAR (U1 pin 8): 1</td>
 <td class="actual"></td>
 </tr>
@@ -302,13 +303,13 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLK 0-&gt;1<br>CLK = 0-&gt;1</td>
+<td>CLK 0-&gt;1<br><span class="input-change">CLK = 0-&gt;1</span></td>
 <td>CLK_U3A (U3 pin 1): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>CLK 1-&gt;0<br>CLK = 1-&gt;0</td>
+<td>CLK 1-&gt;0<br><span class="input-change">CLK = 1-&gt;0</span></td>
 <td>CLK_U3A (U3 pin 1): 0</td>
 <td class="actual"></td>
 </tr>
@@ -331,13 +332,13 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLK 0-&gt;1<br>CLK = 0-&gt;1</td>
+<td>CLK 0-&gt;1<br><span class="input-change">CLK = 0-&gt;1</span></td>
 <td>CLK_U4B (U4 pin 6): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>CLK 1-&gt;0<br>CLK = 1-&gt;0</td>
+<td>CLK 1-&gt;0<br><span class="input-change">CLK = 1-&gt;0</span></td>
 <td>CLK_U4B (U4 pin 6): 0</td>
 <td class="actual"></td>
 </tr>
@@ -360,13 +361,13 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 1<br>CLR = 1</td>
+<td>CLR 1<br><span class="input-change">CLR = 1</span></td>
 <td>CLR_U3A (U3 pin 3): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>CLR 0<br>CLR = 0</td>
+<td>CLR 0<br><span class="input-change">CLR = 0</span></td>
 <td>CLR_U3A (U3 pin 3): 0</td>
 <td class="actual"></td>
 </tr>
@@ -389,13 +390,13 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 1<br>CLR = 1</td>
+<td>CLR 1<br><span class="input-change">CLR = 1</span></td>
 <td>CLR_U4B (U4 pin 8): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>CLR 0<br>CLR = 0</td>
+<td>CLR 0<br><span class="input-change">CLR = 0</span></td>
 <td>CLR_U4B (U4 pin 8): 0</td>
 <td class="actual"></td>
 </tr>
@@ -418,25 +419,25 @@
 </tr>
 <tr>
 <td>2</td>
-<td>PR1만 활성<br>PR1 = 0<br>PR2 = 1</td>
+<td>PR1만 활성<br><span class="input-change">PR1 = 0</span><br>PR2 = 1</td>
 <td>PR1_PIN (U2 pin 7): 0<br>PR2_PIN (U2 pin 2): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>PR1 복귀<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR1 복귀<br><span class="input-change">PR1 = 1</span><br>PR2 = 1</td>
 <td>PR1_PIN (U2 pin 7): 1<br>PR2_PIN (U2 pin 2): 1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>PR2만 활성<br>PR1 = 1<br>PR2 = 0</td>
+<td>PR2만 활성<br>PR1 = 1<br><span class="input-change">PR2 = 0</span></td>
 <td>PR1_PIN (U2 pin 7): 1<br>PR2_PIN (U2 pin 2): 0</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>PR2 복귀<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR2 복귀<br>PR1 = 1<br><span class="input-change">PR2 = 1</span></td>
 <td>PR1_PIN (U2 pin 7): 1<br>PR2_PIN (U2 pin 2): 1</td>
 <td class="actual"></td>
 </tr>
@@ -461,56 +462,56 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
+<td>재초기화<br><span class="input-change">D = 0</span><br>CLK = 0<br><span class="input-change">CLR = 0</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 0<br>PR2 = 1</td>
+<td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br><span class="input-change">PR1 = 0</span><br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br><span class="input-change">PR1 = 1</span><br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>없음</td>
 <td class="actual"></td>
@@ -536,77 +537,77 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=0 준비<br><span class="input-change">D = 0</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 2<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 2<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
+<td>재초기화<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 0</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
-<td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 0</td>
+<td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br><span class="input-change">PR2 = 0</span></td>
 <td>②BIT2</td>
 <td>①BIT1</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
-<td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br><span class="input-change">PR2 = 1</span></td>
 <td>②BIT2</td>
 <td>①BIT1</td>
 <td class="actual"></td>
@@ -632,63 +633,63 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=0 준비<br><span class="input-change">D = 0</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 2<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 2<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 3<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
-<td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 3<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2</td>
 <td class="actual"></td>
@@ -714,77 +715,77 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=0 준비<br><span class="input-change">D = 0</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 2<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 2<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 3<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
-<td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 3<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
-<td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 4<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
-<td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 4<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3</td>
 <td class="actual"></td>
@@ -810,91 +811,91 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=0 준비<br><span class="input-change">D = 0</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 2<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 2<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 3<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
-<td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 3<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
-<td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 4<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
-<td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 4<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>13</td>
-<td>클럭 상승 5<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 5<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>14</td>
-<td>클럭 하강 5<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 5<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4</td>
 <td class="actual"></td>
@@ -920,161 +921,161 @@
 </tr>
 <tr>
 <td>2</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>3</td>
-<td>D=1 준비<br>D = 1<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=1 준비<br><span class="input-change">D = 1</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>4</td>
-<td>클럭 상승 1<br>D = 1<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 1<br>D = 1<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>5</td>
-<td>클럭 하강 1<br>D = 1<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 1<br>D = 1<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>6</td>
-<td>D=0 준비<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>D=0 준비<br><span class="input-change">D = 0</span><br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>7</td>
-<td>클럭 상승 2<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 2<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>8</td>
-<td>클럭 하강 2<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 2<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>9</td>
-<td>클럭 상승 3<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 3<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>10</td>
-<td>클럭 하강 3<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 3<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>11</td>
-<td>클럭 상승 4<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 4<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>12</td>
-<td>클럭 하강 4<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 4<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>13</td>
-<td>클럭 상승 5<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 5<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>14</td>
-<td>클럭 하강 5<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 5<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>15</td>
-<td>클럭 상승 6<br>D = 0<br>CLK = 0-&gt;1<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 상승 6<br>D = 0<br><span class="input-change">CLK = 0-&gt;1</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>16</td>
-<td>클럭 하강 6<br>D = 0<br>CLK = 1-&gt;0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>클럭 하강 6<br>D = 0<br><span class="input-change">CLK = 1-&gt;0</span><br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
 <td>⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>17</td>
-<td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
+<td>재초기화<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 0</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>18</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>19</td>
-<td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 0</td>
+<td>PR2 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br><span class="input-change">PR2 = 0</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>20</td>
-<td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR2 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br><span class="input-change">PR2 = 1</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>21</td>
-<td>재초기화<br>D = 0<br>CLK = 0<br>CLR = 0<br>PR1 = 1<br>PR2 = 1</td>
+<td>재초기화<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 0</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>22</td>
-<td>CLR 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>CLR 해제<br>D = 0<br>CLK = 0<br><span class="input-change">CLR = 1</span><br>PR1 = 1<br>PR2 = 1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>23</td>
-<td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 0<br>PR2 = 1</td>
+<td>PR1 강제 SET<br>D = 0<br>CLK = 0<br>CLR = 1<br><span class="input-change">PR1 = 0</span><br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
 </tr>
 <tr>
 <td>24</td>
-<td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br>PR1 = 1<br>PR2 = 1</td>
+<td>PR1 해제<br>D = 0<br>CLK = 0<br>CLR = 1<br><span class="input-change">PR1 = 1</span><br>PR2 = 1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1109,7 +1110,7 @@
 <tr>
 <td>R1</td>
 <td>CLR 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1117,7 +1118,7 @@
 <tr>
 <td>S1</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">SERIAL DATA=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1125,7 +1126,7 @@
 <tr>
 <td>S2</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">SERIAL DATA=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1133,7 +1134,7 @@
 <tr>
 <td>S3</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">SERIAL DATA=1</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1 · ③BIT3</td>
 <td>②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1141,7 +1142,7 @@
 <tr>
 <td>S4</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=1<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=1<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>①BIT1 · ②BIT2 · ④BIT4</td>
 <td>③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1149,7 +1150,7 @@
 <tr>
 <td>S5</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td><span class="input-change">SERIAL DATA=0</span><br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2 · ③BIT3 · ⑤BIT5</td>
 <td>①BIT1 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1157,7 +1158,7 @@
 <tr>
 <td>S6</td>
 <td>D를 설정하고 CLK 0→1→0 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1187,7 +1188,7 @@
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR1=0. CLK=0 유지</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=0<br>PR2=1</td>
+<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br><span class="input-change">PR1=0</span><br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1195,7 +1196,7 @@
 <tr>
 <td>P2</td>
 <td>PR1을 1로 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br><span class="input-change">PR1=1</span><br>PR2=1</td>
 <td>①BIT1</td>
 <td>②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1203,7 +1204,7 @@
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1211,7 +1212,7 @@
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1219,7 +1220,7 @@
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1227,7 +1228,7 @@
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1235,7 +1236,7 @@
 <tr>
 <td>S5</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1243,7 +1244,7 @@
 <tr>
 <td>S6</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1273,7 +1274,7 @@
 <tr>
 <td>P1</td>
 <td>먼저 CLR=1, 그다음 PR2=0. CLK=0 유지</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=0</td>
+<td>SERIAL DATA=0<br>CLK=0<br><span class="input-change">CLR=1</span><br>PR1=1<br><span class="input-change">PR2=0</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1281,7 +1282,7 @@
 <tr>
 <td>P2</td>
 <td>PR2를 1로 해제, 에지 없이 관찰</td>
-<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br>CLK=0<br>CLR=1<br>PR1=1<br><span class="input-change">PR2=1</span></td>
 <td>②BIT2</td>
 <td>①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1289,7 +1290,7 @@
 <tr>
 <td>S1</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>③BIT3</td>
 <td>①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1297,7 +1298,7 @@
 <tr>
 <td>S2</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>④BIT4</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1305,7 +1306,7 @@
 <tr>
 <td>S3</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑤BIT5</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6</td>
 <td class="actual"></td>
@@ -1313,7 +1314,7 @@
 <tr>
 <td>S4</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>⑥BIT6</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5</td>
 <td class="actual"></td>
@@ -1321,7 +1322,7 @@
 <tr>
 <td>S5</td>
 <td>CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측</td>
-<td>SERIAL DATA=0<br>CLK=1-&gt;0<br>CLR=1<br>PR1=1<br>PR2=1</td>
+<td>SERIAL DATA=0<br><span class="input-change">CLK=1-&gt;0</span><br>CLR=1<br>PR1=1<br>PR2=1</td>
 <td>없음</td>
 <td>①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6</td>
 <td class="actual"></td>
