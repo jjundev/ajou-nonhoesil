@@ -952,8 +952,9 @@ def _inline_observation_html(table, leds, feed):
         if probe_points:
             header.append('측정 핀·예상값')
         header.append('실제 결과')
-        pins = ' · '.join(f'{circled(l.index)}{l.tag} = {feed[l.tag]}' for l in lamps)
-        detail = '<p>보는 LED: ' + _esc(pins) + '</p>'
+        pins = ' · '.join(f'{circled(l.index)}{l.tag} = {feed[l.tag]}'
+                          for l in lamps if l.tag != feed[l.tag])
+        detail = '<p>보는 LED: ' + _esc(pins) + '</p>' if pins else ''
     else:
         header = ['순서','입력·조작','측정 핀·예상 논리값','실제 결과']
         detail = ''

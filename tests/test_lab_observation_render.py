@@ -50,6 +50,16 @@ def test_active_low_and_active_high_known_bits():
     h=render._observation_procedure_html(sample(['L','H'],'H/L'),ls,{'A':'Q0','B':'Q1'})
     assert '①A: 켜짐' in h and '②B: 켜짐' in h
 
+def test_inline_legend_only_explains_different_signals():
+    leds = [Led('Q0', '좌 a3', True, 1), Led('B', '좌 a6', False, 2)]
+    h = render._inline_observation_html(sample(['0', '1']), leds, {'Q0': 'Q0', 'B': 'Q1'})
+    assert '①Q0 = Q0' not in h
+    assert '②B = Q1' in h
+    assert '<td>①Q0 · ②B</td>' in h  # polarity-aware expected results remain
+    h = render._inline_observation_html(sample(['0']), leds[:1], {'Q0': 'Q0'})
+    assert '보는 LED:' not in h
+    assert '<td>①Q0</td>' in h
+
 def test_mixed_hold_toggle_unknown_and_bits_are_per_led():
     tokens=['1','유지','반전','미정','관측 안 함']
     ls=[Led(f'L{i}','좌 a3',False,i+1) for i in range(5)]
