@@ -353,8 +353,8 @@ class StageBoards(unittest.TestCase):
         budget = self.mod.stage_budget(board)
         with tempfile.TemporaryDirectory() as d:
             base = None
-            for name, fn, stage in board.BOARDS:
-                bb = fn(os.path.join(d, name), stage=stage, baseline=base)
+            for name, fn, stage, prep in self.mod.iter_procedure_boards(board):
+                bb = fn(os.path.join(d, name), baseline=base, **({} if prep else {'stage': stage}))
                 with self.subTest(board=name):
                     self.assertLessEqual(
                         len(bb.new_signal), budget,
@@ -371,9 +371,9 @@ class StageBoards(unittest.TestCase):
         거절한다). 실험01·02 는 옛 규약 승인본이라 면제다."""
         with tempfile.TemporaryDirectory() as d:
             base = None
-            for name, fn, stage in self.board.BOARDS:
-                bb = fn(os.path.join(d, name), stage=stage, baseline=base)
-                if stage is not None:
+            for name, fn, stage, prep in self.mod.iter_procedure_boards(self.board):
+                bb = fn(os.path.join(d, name), baseline=base, **({} if prep else {'stage': stage}))
+                if stage is not None or prep:
                     with self.subTest(board=name):
                         self.assertEqual(
                             [r['addr'] for r in bb.removals()], [],

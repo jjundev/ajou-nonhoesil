@@ -244,20 +244,43 @@ def removal_board(prev, nxt, title, subtitle):
     return build
 
 
+def iter_procedure_boards(board):
+    """Yield optional assembly immediately before its functional parent."""
+    registry = getattr(board, 'ASSEMBLY_BOARDS', {})
+    parents = {name for name, _, stage in board.BOARDS if stage is not None}
+    if any(parent not in parents for parent in registry):
+        raise ValueError('ASSEMBLY_BOARDS 부모는 BOARDS의 일반 단계여야 한다')
+    names = [name for name, _, _ in board.BOARDS] + [name for name, _ in board.FINALS]
+    names += [name for entries in registry.values() for name, _ in entries]
+    if len(names) != len(set(names)):
+        raise ValueError('결선도 파일명이 중복된다')
+    for filename, fn, stage in board.BOARDS:
+        for prep_name, prep_fn in registry.get(filename, []):
+            yield prep_name, prep_fn, None, True
+        yield filename, fn, stage, False
+
+
 def build_all(board, output_dir, template_path=None):
     """주차 결선 파일 `board` 의 결선도를 전부 뽑는다 — 절차 사슬 `BOARDS` 는 앞 보드를
     기준선으로 이어 그리고(회색·걷기 표), 완성본 `FINALS` 는 기준선 없이 그린다.
     `{파일명: 도장}` 을 돌려준다(사슬 순서, 그다음 완성본)."""
     os.makedirs(output_dir, exist_ok=True)
     made, base = {}, None
-    for filename, fn, stage in board.BOARDS:
-        bb = fn(os.path.join(output_dir, filename), template_path, stage=stage, baseline=base)
+    for filename, fn, stage, is_assembly in iter_procedure_boards(board):
+        kwargs = {'baseline': base}
+        if not is_assembly:
+            kwargs['stage'] = stage
+        bb = fn(os.path.join(output_dir, filename), template_path, **kwargs)
         if bb is None:
             raise TypeError(
                 f"{filename}: 빌더 {fn.__name__} 가 렌더러를 돌려주지 않는다 — "
                 "빌더 끝에 `return bb` 가 있어야 한다")
         check_board(board, bb, filename)
         check_palette(bb, filename)
+        if is_assembly:
+            if bb.removed() or bb.new_signal:
+                raise ValueError(f'{filename}: 준비에는 제거·sig/mid·출력 급전을 넣을 수 없다')
+            bb.verify()
         base = bb.snapshot()
         made[filename] = bb.stamp()
     for filename, fn in board.FINALS:

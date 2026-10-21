@@ -60,3 +60,18 @@ def check_assets(netlist: 'LabNetlist') -> list['Finding']:
             except (OSError, ValueError) as exc:
                 out.append(Finding('error', str(png), f'준비 그림/JSON을 읽을 수 없다: {exc}'))
     return out
+
+
+def check_registry(netlist: 'LabNetlist', registry: dict) -> list['Finding']:
+    from .validate import Finding
+    expected = {}
+    for section in netlist.circuits:
+        for step in section.assembly_steps:
+            parents = [s for s in section.stages if not s.get('walk') and s['stage_no'] == step.stage_no]
+            if len(parents) != 1:
+                return check_structure(netlist)
+            expected.setdefault(parents[0]['diagram'], []).append(step.diagram)
+    actual = {parent: [name for name, _ in entries] for parent, entries in registry.items()}
+    if actual != expected:
+        return [Finding('error', netlist.path.name, f'조립 표와 ASSEMBLY_BOARDS의 부모·파일명·순서가 다르다: {actual!r} != {expected!r}')]
+    return check_structure(netlist)
