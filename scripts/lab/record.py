@@ -139,8 +139,10 @@ def derive_record(spec) -> str:
                 continue          # 교안 참조표다. 실험실에서 채우지 않는다
             if getattr(table, 'comparison', None) and table.outputs == [f'BIT{i}' for i in range(1,7)]:
                 out += ["> 실제 여섯 비트는 BIT1→BIT6 이름 순서로 적는다. 1=켜짐, 0=소등. 예: 001101.", ""]
-            out += [f"### {table.id} · {table.title}", "",
-                    (_stepped(table, comparison_leds.get(item.id, ()) if comparison_leds else ())
+            out += [f"### {table.id} · {table.title}", ""]
+            if getattr(table, "purpose", None):
+                out += [table.purpose, ""]
+            out += [(_stepped(table, comparison_leds.get(item.id, ()) if comparison_leds else ())
                      if getattr(table, "comparison", None) else _RENDER[table.kind](table)), "", "- 메모:", ""]
     out += ["# 실험 종료 메모", ""] + [f"- {p}:" for p in PROMPTS] + [""]
     return "\n".join(out)

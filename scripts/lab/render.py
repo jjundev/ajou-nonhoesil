@@ -1156,6 +1156,8 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
         token = item_token(item.title) if item else None
         out.append('<div class="tblock">')
         out.append(f"<h3>{_esc(table.id)} · {_esc(table.title)}</h3>")
+        if getattr(table, "purpose", None):
+            out.append(f'<p class="table-purpose">{_esc(table.purpose)}</p>')
         # `_plain` 을 씌운다 — 옛 `_tables()` 는 안 씌웠다. 지금 어느 명세의
         # `source` 에도 마크다운이 없지만, 들어오는 순간 백틱이 인쇄본에 찍히고
         # 그것을 잡는 검사는 본문만 본다.
