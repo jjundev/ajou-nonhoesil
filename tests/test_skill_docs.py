@@ -1262,13 +1262,21 @@ class BreadboardV2Docs(unittest.TestCase):
 
 
     def test_렌더러_문서가_v2_배치기를_적는다(self):
-        """칩 행·LED 행을 손으로 정하면 배선이 다시 길어진다(2026-10-05 배치기 — 시험판 −23%).
-        도구·강제·순위·병렬이 문서에 없으면 다음 주차가 손 배치로 돌아간다."""
+        """새 작성의 기본은 LED 고정 탐색이며 legacy 규칙이 이를 덮어쓰지 않는다."""
         text = BREADBOARD_SKILL.read_text(encoding="utf-8")
-        for s in ("place_search", "PLACE", "배치탐색.md", "PlaceEnforced", "PLACE_LENGTH_SLACK", "--jobs",
-                  "marker_near", "place_marker_hints"):
-            self.assertIn(s, text)
-        self.assertIn("place_search", DRAFT.read_text(encoding="utf-8"))
+        guide = (BREADBOARD_SKILL.parent / "fixed-led-search.md").read_text(encoding="utf-8")
+        for value in ("PLACE", "LAYOUT['leds']", "숫자 순서", "256회", "+10%", "밀도 우선"):
+            self.assertIn(value, text)
+        for value in ("--mode fixed --budget 256 --length-slack 1.10", "--jobs", "search_baseline()",
+                      "어댑터당 회로 하나", "search_assert_equivalent", "숫자 값으로", "Y10", "LED 없는 회로"):
+            self.assertIn(value, guide)
+        for obsolete in ("핀 행 순서가 이긴다", "PLACE_LENGTH_SLACK", "LED 윗행·브리지 행도 손으로 정하지 않는다"):
+            self.assertNotIn(obsolete, text)
+        draft = DRAFT.read_text(encoding="utf-8")
+        self.assertIn("place_search", draft)
+        self.assertIn("--mode fixed", draft)
+        self.assertNotIn("LED 번호는 그래도 핀 행 순서다", draft)
+        self.assertNotIn("LED 번호는 그것을 구동하는 핀의 행 순서대로 붙인다", draft)
 
     def test_손그림_검토가_승인_판형으로_보정하고_읽는다(self):
         text = HAND.read_text(encoding="utf-8")
@@ -1296,7 +1304,7 @@ class BreadboardV2Docs(unittest.TestCase):
         빌더가 14핀·GND 사슬 습관으로 돌아가거나, a쪽 출력을 위에서부터 적어 배선기가 막힌다."""
         text = BREADBOARD_SKILL.read_text(encoding="utf-8")
         for s in ("DIP_PINS", "active_low=True", "Negative Logic", "pin 4, 3, 2, 1, 5, 6, 7",
-                  "tests/fixtures/board_v2_e5/배치.py", "Y0, Y1, Y2, Y3, Y4, Y5, Y9, Y6, Y8, Y7"):
+                  "tests/fixtures/board_v2_e5/배치.py", "Y0→Y9"):
             self.assertIn(s, text)
         draft = DRAFT.read_text(encoding="utf-8")
         for s in ("Negative Logic", "+5V → LED → 330Ω → 출력", "MSI"):
@@ -1354,7 +1362,7 @@ class BreadboardSkillSize(unittest.TestCase):
         # draft-lab-spec SKILL·lab-netlist-v2 가 이 이름으로 본문 문단을 가리킨다. 레일 빈 행은 v1 절에서
         # 왔지만 v2 도 같아서 본문에 남는다.
         for s in ("## 4a. 슬롯 · 기준선 · 단계", "**게이트 좌우 배정.**", "**파일명 규칙.**",
-                  "배치기가 고른다", "**레일에는 홀이 없는 행이 있다**"):
+                  "LED 숫자 순서·좌표를 먼저 고정", "**레일에는 홀이 없는 행이 있다**"):
             with self.subTest(s):
                 self.assertIn(s, self.text)
 
