@@ -1,0 +1,109 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 단계 1 준비 3 · U3 입력 고정",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 22,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "좌 a32",
+   "to": "좌 VCC레일31행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "좌 g31",
+   "to": "중앙GND레일31행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "vcc",
+   "from": "좌 a29",
+   "to": "좌 VCC레일29행",
+   "desc": "U3 pin 2 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 a34",
+   "to": "좌 VCC레일34행",
+   "desc": "U3 pin 7 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "gnd",
+   "from": "좌 a28",
+   "to": "좌 GND레일28행",
+   "desc": "임시 U3 pin 1 -> GND · 2걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 a33",
+   "to": "좌 GND레일33행",
+   "desc": "임시 U3 pin 6 -> GND · 3걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "gnd",
+   "from": "좌 a30",
+   "to": "좌 GND레일30행",
+   "desc": "임시 U3 pin 3 -> GND · 4걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 a35",
+   "to": "좌 GND레일35행",
+   "desc": "임시 U3 pin 8 -> GND · 5걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "gnd",
+   "from": "좌 j35",
+   "to": "중앙GND레일35행",
+   "desc": "임시 U3 pin 9 -> GND · 9걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "gnd",
+   "from": "좌 j32",
+   "to": "중앙GND레일33행",
+   "desc": "임시 U3 pin 12 -> GND · 9걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "gnd",
+   "from": "좌 a31",
+   "to": "좌 GND레일31행",
+   "desc": "임시 U3 pin 4 -> GND · 10걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "gnd",
+   "from": "좌 j28",
+   "to": "중앙GND레일28행",
+   "desc": "임시 U3 pin 16 -> GND · 10걷기에서 뽑아요",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [],
+ "inputs": []
+}

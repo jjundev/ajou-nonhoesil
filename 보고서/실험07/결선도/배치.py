@@ -4,6 +4,8 @@ BIT1/3/5 = 각 HC76 둘째 F/F(J9 K12 Q11 Q'10), BIT2/4/6 = 첫째 F/F.
 패키지 경계는 Q15→J9, Q'14→K12로 모두 f쪽이다(R8 유지).
 LED 실제 순서는 BIT2, BIT1, BIT4, BIT3, BIT6, BIT5다(R10).
 """
+from functools import partial
+
 from render_breadboard import (BreadboardRenderer, _input_jumper, PlaceCircuit,
     place_chips, place_paths, place_marker_hints, draw_routed, removal_board,
     _dip_pin_row as _pin_row, _dip_side as _side)
@@ -51,35 +53,43 @@ _INPUTS = [(1, 'D', 'U1', 12), (2, 'CLK', 'U2', 1), (4, 'CLR', 'U2', 3),
 _LED_ORDER = ('BIT2', 'BIT1', 'BIT4', 'BIT3', 'BIT6', 'BIT5')
 
 
-def _fixed(bb, stage, superset=False, layout=None, _with_temps=True):
+def _fixed(bb, stage, superset=False, layout=None, _with_temps=True, _apply=None):
+    # Normal rendering calls each operation directly. Preparation uses the same
+    # full reservation pass, replaying selected operations at its exact rail holes.
+    def put(group, method, *args, **kwargs):
+        if _apply is not None:
+            return _apply(group, method, args, kwargs)
+        if method == 'input':
+            return _input_jumper(bb, *args, **kwargs)
+        return getattr(bb, method)(*args, **kwargs)
     lay = layout or LAYOUT
     L, R, k = bb.cols['left'], bb.cols['right'], place_chips(SHIFT, lay)
     for u in ('U1', 'U2', 'U3', 'U4'):
-        bb.draw_chip(SHIFT.models[u], k[u])
-    bb.connect_jacks()
-    bb.bridge_rails(L['gnd'], L['mid_gnd'], lay['bridge'][0], kind='gnd')
-    bb.bridge_rails(L['vcc'], L['mid_vcc'], lay['bridge'][1], kind='vcc')
+        put(1, 'draw_chip', SHIFT.models[u], k[u])
+    put(1, 'connect_jacks')
+    put(1, 'bridge_rails', L['gnd'], L['mid_gnd'], lay['bridge'][0], kind='gnd')
+    put(1, 'bridge_rails', L['vcc'], L['mid_vcc'], lay['bridge'][1], kind='vcc')
     for u in ('U1', 'U2', 'U3', 'U4'):
-        bb.connect_power(k[u], gnd_col='a')
+        put(int(u[1:]), 'connect_power', k[u], gnd_col='a')
     # 사용하는 PR을 1로 고정한다. 미사용 입력으로 등록하지 않는다.
     for u in ('U3', 'U4'):
         for p in (2, 7):
             row = _pin_row(k[u], p, 16)
             rail_row = bb.free_rail_row(row, L['vcc'])
-            bb.step_wire([(L['a'], bb.r_y(row)), (L['vcc'], bb.r_y(rail_row))], 'vcc',
+            put(int(u[1:]), 'step_wire', [(L['a'], bb.r_y(row)), (L['vcc'], bb.r_y(rail_row))], 'vcc',
                          f'{u} pin {p} PR 비활성 -> +5V 레일')
     for first, name, u, p in _INPUTS:
         if superset or stage is None or first <= stage:
             n = 14 if u == 'U1' else 16
             side = _side(p, n)
-            _input_jumper(bb, L, _pin_row(k[u], p, n), name, f'{u} pin {p}',
+            put(7, 'input', L, _pin_row(k[u], p, n), name, f'{u} pin {p}',
                           side=side, col='a' if side == 'a' else 'j')
     for tag in _LED_ORDER:
-        bb.led_chain(R['a'], lay['leds']['shift'][tag], tag,
+        put(5 if tag in _LED_ORDER[:3] else 6, 'led_chain', R['a'], lay['leds']['shift'][tag], tag,
                      f'{tag}: 출력 1이면 켜짐 · 명세 기록 순서와 보드 번호가 다름', block='right')
-    bb.mark_unused_inputs((1, 2, 4, 5, 9, 10), k['U1'], chip='74HC00 (U1)')
-    bb.mark_unused_outputs((3, 6, 8), k['U1'], chip='74HC00 (U1)')
-    bb.mark_unused_outputs((14,), k['U4'], chip='74HC76 (U4)')
+    put(1, 'mark_unused_inputs',(1, 2, 4, 5, 9, 10), k['U1'], chip='74HC00 (U1)')
+    put(1, 'mark_unused_outputs',(3, 6, 8), k['U1'], chip='74HC00 (U1)')
+    put(1, 'mark_unused_outputs',(14,), k['U4'], chip='74HC76 (U4)')
 
     # a쪽 임시선은 CLK·CLR 분배선과 함께 남는다. f쪽 J/K 임시선은 해당
     # 데이터선 연결 전에 걷는다. 둘을 동시에 superset에 강제하면 존재하지 않는
@@ -87,7 +97,7 @@ def _fixed(bb, stage, superset=False, layout=None, _with_temps=True):
     if _with_temps and (superset or stage is not None):
         for active_from, u, pin, kind, path in _temporary_plan(lay):
             if (superset and _side(pin, 16) == 'a') or (not superset and stage < active_from):
-                bb.step_wire(path, kind, f'임시 {u} pin {pin} -> {"+5V" if kind == "vcc" else "GND"} · {active_from}걷기에서 뽑아요',
+                put(int(u[1:]), 'step_wire', path, kind, f'임시 {u} pin {pin} -> {"+5V" if kind == "vcc" else "GND"} · {active_from}걷기에서 뽑아요',
                              marker_at=(80 if _side(pin, 16) == 'a' else 1160, path[0][1]))
 
 
@@ -125,6 +135,57 @@ def _temporary_plan(lay):
             plan.append((active_from, u, pin, kind, path))
         _TEMP_PLANS[key] = plan
     return _TEMP_PLANS[key]
+
+
+_ASSEMBLY_TITLES = ('보드·U1 전원 준비', 'U2 입력 고정', 'U3 입력 고정',
+                    'U4 입력 고정', '위쪽 LED 준비', '아래쪽 LED 준비')
+
+
+def _build_assembly(output_path, template_path=None, baseline=None, *, assembly_order):
+    if assembly_order not in range(1, 7):
+        raise ValueError('준비 순서는 1~6이다')
+    bb = BreadboardRenderer(template_path, baseline=baseline, palette=True, board=BOARD)
+    bb.side_lead_max = SIDE_LEAD_MAX
+    bb.partial = True
+    bb.enable_steps()
+    bb.set_header(f'실험 1) 단계 1 준비 {assembly_order} · {_ASSEMBLY_TITLES[assembly_order-1]}',
+                  '전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.')
+    bb.marker_hints = place_marker_hints(SHIFT, LAYOUT)
+    reservation = BreadboardRenderer(board=BOARD)
+    reservation.side_lead_max = SIDE_LEAD_MAX
+    reservation.enable_steps()
+
+    def apply(group, method, args, kwargs):
+        # Execute ALL foundation work on a reservation board. Rail allocation
+        # includes not-yet-assembled parts, so no hole moves between pages.
+        choices = []
+        free = reservation.free_rail_row
+        def remember(*a):
+            row = free(*a)
+            choices.append(row)
+            return row
+        reservation.free_rail_row = remember
+        try:
+            if method == 'input':
+                _input_jumper(reservation, *args, **kwargs)
+            else:
+                getattr(reservation, method)(*args, **kwargs)
+        finally:
+            reservation.free_rail_row = free
+        if group > assembly_order:
+            return
+        rows = iter(choices)
+        real_free = bb.free_rail_row
+        bb.free_rail_row = lambda *a: next(rows)
+        try:
+            getattr(bb, method)(*args, **kwargs)
+        finally:
+            bb.free_rail_row = real_free
+
+    _fixed(reservation, 1, _apply=apply)
+    bb.note('전원은 꺼 둬요. 이번 그림은 정상 동작을 확인한 결과가 아니에요.')
+    bb.export(output_path, max_row=63)
+    return bb
 
 
 def build_e7_shift(output_path, template_path=None, stage=None, baseline=None, layer=None,
@@ -165,6 +226,10 @@ for _i, _name in enumerate(_STAGE_NAMES, 1):
                            f'실험 1) {_i}단계 전 임시 입력 걷기',
                            '전원부터 꺼요. 빨간 임시 고정선만 뽑고 다음 단계의 신호선을 꽂아요.'), None))
     BOARDS.append((f'{_NAME}_{_i}단계_{_name}.png', build_e7_shift, _i))
+ASSEMBLY_BOARDS = {BOARDS[0][0]: [
+    (f'{_NAME}_1준비_{i}.png', partial(_build_assembly, assembly_order=i))
+    for i in range(1, 7)
+]}
 FINALS = [(f'{_NAME}.png', build_e7_shift)]
 
 # 완성본 번호를 빠짐없이 나눈 손그림 안내용 층.
