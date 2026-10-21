@@ -93,6 +93,17 @@ class NetlistError(ValueError):
 
 
 @dataclass
+class AssemblyStep:
+    stage_no: int
+    order: int
+    title: str
+    diagram: str
+    todo: str
+    check: str
+    line: int
+
+
+@dataclass
 class ObservationStep:
     order: int
     action: str
@@ -136,6 +147,7 @@ class NetlistSection:
     nodes: list = field(default_factory=list)    # `## 노드` 표. 행 = {"name", "expr", "pin"}
 
     procedures: list[ObservationProcedure] = field(default_factory=list)
+    assembly_steps: list[AssemblyStep] = field(default_factory=list)
 
     @property
     def ics(self) -> list:
@@ -208,6 +220,36 @@ def _split_subtable(body, head_re, columns, keys, label, path, line, preserve=()
             raise NetlistError(f"{path}:{line + i} 근처 `## {label}` 표에 행이 없다")
         return rows, "\n".join(lines[:i] + lines[nxt:])
     return [], body
+
+
+_ASSEMBLY_HEAD = re.compile(r"^##[ \t]+조립 순서[ \t]*$", re.M)
+ASSEMBLY_COLUMNS = ("소속 단계", "순서", "제목", "그림", "이번 작업", "완료 확인")
+
+
+def _split_assembly_steps(body, path, line, schema):
+    heads = list(_ASSEMBLY_HEAD.finditer(body))
+    if not heads:
+        return [], body
+    if schema != "lab-netlist/v3" or len(heads) != 1:
+        raise NetlistError(f"{path}:{line} 조립 순서는 v3 회로에 표 하나만 둔다")
+    first_line = line + body[:heads[0].start()].count("\n")
+    rows, rest = _split_subtable(body, _ASSEMBLY_HEAD, ASSEMBLY_COLUMNS,
+                                ("stage_no", "order", "title", "diagram", "todo", "check"),
+                                "조립 순서", path, line)
+    result, seen = [], set()
+    for i, row in enumerate(rows):
+        if not all(row.values()):
+            raise NetlistError(f"{path}:{first_line} 조립 순서의 빈 셀은 허용하지 않는다")
+        for key in ("stage_no", "order"):
+            if not re.fullmatch(r"[0-9]+", row[key]) or int(row[key]) < 1:
+                raise NetlistError(f"{path}:{first_line} 조립 {key}는 양의 정수다")
+            row[key] = int(row[key])
+        key = row['stage_no'], row['order']
+        if key in seen:
+            raise NetlistError(f"{path}:{first_line} 중복 조립 키: {key}")
+        seen.add(key)
+        result.append(AssemblyStep(**row, line=first_line + 3 + i))
+    return result, rest
 
 
 def _split_stages(body, path, line, schema="lab-netlist/v2"):
@@ -394,6 +436,7 @@ def _parse_section(title, block, line, path, schema) -> NetlistSection:
         raise NetlistError(
             f"{path}:{line} 회로 절 {title!r} 의 order 가 {attrs['order']!r} 입니다. "
             "기록표 행 번호(1부터) 리스트로 쓴다 — 예: [3, 4, 2, 1, 5]")
+    assembly_steps, body = _split_assembly_steps(body, path, line, schema)
     procedures, body = _split_procedures(body, path, line, schema)
     stages, body = _split_stages(body, path, line, schema)
     nodes, body = _split_nodes(body, path, line, schema)
@@ -409,6 +452,7 @@ def _parse_section(title, block, line, path, schema) -> NetlistSection:
         stages=stages,
         nodes=nodes,
         procedures=procedures,
+        assembly_steps=assembly_steps,
     )
 
 

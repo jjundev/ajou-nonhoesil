@@ -853,7 +853,8 @@ def check_netlist_circuits(netlist, spec) -> list:
     브레드보드로 실험은 된다. 다만 조용히 빈칸으로 나가면 인쇄 후에야 눈으로
     발견하므로 시끄럽게 알린다.
     """
-    out = []
+    from .assembly import check_structure
+    out = check_structure(netlist)
     layouts = netlist.of_kind("layout")
     if len(layouts) > 1:
         out.append(Finding("error", netlist.path.name,
