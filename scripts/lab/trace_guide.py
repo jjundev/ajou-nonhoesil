@@ -186,9 +186,8 @@ def check_pdf(out, pages):
 
 
 def output_path(experiment):
-    folder = config.experiment_folder_name(experiment)
-    return (REPO_ROOT / config.experiment_dir(experiment) / '결선도' / OUT_DIR
-            / f'{folder}_따라그리기.pdf')
+    exp_dir = REPO_ROOT / config.experiment_dir(experiment)
+    return config.artifact_path(exp_dir, '따라그리기')
 
 
 def make_guide(experiment, out=None):
@@ -200,7 +199,7 @@ def make_guide(experiment, out=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description='완성본 결선도를 층으로 나눈 따라 그리기 PDF')
     parser.add_argument('experiment', type=int, help='실험 번호 (배치.py 에 LAYERS 가 있어야 한다)')
-    parser.add_argument('--out', default=None, help='PDF 경로 (기본: 결선도/팀원전달용/실험NN_따라그리기.pdf)')
+    parser.add_argument('--out', default=None, help='PDF 경로 (기본: config.artifact_path의 팀원전달용 PDF 경로 (실험07부터 제목 포함))')
     args = parser.parse_args(argv)
     try:
         out, n = make_guide(args.experiment, args.out)

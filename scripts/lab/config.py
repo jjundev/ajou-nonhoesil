@@ -5,6 +5,7 @@
 """
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -361,6 +362,60 @@ def item_in_scope(experiment: int, item_id: str) -> bool:
 # 산출물 제목의 유일한 형식. 예전에는 네 곳이 제각각 만들었고, 경로용 일괄
 # 치환이 그중 하나(프리뷰)를 조용히 덮어쓴 적이 있다.
 DOCUMENT_KINDS = ("체크리스트", "기록", "예비보고서", "결과보고서", "프리뷰")
+
+# 실험01~06의 파일 계약은 유지하고 실험07부터 배포용 파일명만 통일한다.
+ARTIFACT_NAMING_FROM = 7
+
+
+def artifact_filename(experiment: int, title: str, kind: str, suffix: str = ".pdf") -> str:
+    """파일명 전용. 문서 안의 제목(document_title)과 내부 그림 이름은 바꾸지 않는다."""
+    folder = experiment_folder_name(experiment)
+    if not re.fullmatch(r"\.[A-Za-z0-9]+", suffix):
+        raise ValueError(f"잘못된 확장자: {suffix!r}")
+    kind = unicodedata.normalize("NFC", kind)
+    if not kind or re.search(r'[\\/:*?"<>|\x00-\x1f]', kind):
+        raise ValueError(f"잘못된 산출물 종류: {kind!r}")
+    if experiment < ARTIFACT_NAMING_FROM:
+        if kind in ("체크리스트", "기록"):
+            return f"{kind}{suffix}"
+        if kind.endswith("보고서표지"):
+            return f"{document_title(experiment, title, kind[:-2])} 표지{suffix}"
+        if kind in ("예비보고서", "결과보고서") and suffix == ".pdf":
+            clean_title = re.sub(r"\s+", "_", unicodedata.normalize("NFC", title.strip()))
+            return f"실험{experiment}_{clean_title}_{kind}{suffix}"
+        return f"{folder}_{kind}{suffix}"
+    if not isinstance(title, str) or not title.strip() or re.search(r'[\\/:*?"<>|\x00-\x1f]', title):
+        raise ValueError(f"잘못된 실험 제목: {title!r}")
+    clean_title = re.sub(r"\s+", "_", unicodedata.normalize("NFC", title.strip()))
+    return f"{folder}_{clean_title}_{kind}{suffix}"
+
+
+def artifact_path(exp_dir, kind: str, suffix: str = ".pdf", *, title: str | None = None) -> Path:
+    """명세의 제목으로 배포용 생성/조회 경로를 함께 결정한다. 옛 파일로 fallback하지 않는다."""
+    exp_dir = Path(exp_dir)
+    kind = unicodedata.normalize("NFC", kind)
+    match = re.fullmatch(r"실험(\d+)", unicodedata.normalize("NFC", exp_dir.name))
+    if not match:
+        raise ValueError(f"실험 폴더가 아닙니다: {exp_dir}")
+    experiment = int(match[1])
+    experiment_folder_name(experiment)
+    needs_title = (experiment >= ARTIFACT_NAMING_FROM or kind.endswith("보고서표지")
+                   or (kind in ("예비보고서", "결과보고서") and suffix == ".pdf"))
+    if title is None and needs_title:
+        meta, _ = md.split_frontmatter((exp_dir / "체크리스트/명세.md").read_text(encoding="utf-8"))
+        if meta.get("experiment") != experiment:
+            raise ValueError(f"폴더와 명세의 실험 번호가 다릅니다: {exp_dir}")
+        title = meta.get("title")
+    filename = artifact_filename(experiment, title or "", kind, suffix)
+    if kind in ("체크리스트", "기록"):
+        parent = exp_dir / "체크리스트"
+    elif kind in ("손그림모사", "부품그리기", "따라그리기"):
+        parent = exp_dir / "결선도/팀원전달용"
+    elif kind in ("예비보고서", "결과보고서") and suffix == ".pdf":
+        parent = exp_dir
+    else:
+        parent = exp_dir / "output"
+    return parent / filename
 
 
 def document_title(experiment: int, title: str, kind: str) -> str:

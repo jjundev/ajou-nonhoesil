@@ -5,6 +5,17 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 
 # verify-write-result-report
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 `verify-draft-lab-spec` 의 결과보고서 판이다. ④ `write-result-report` 문서는
 컴파일도 실행도 되지 않으므로 결함은 규칙만 주고 격리 에이전트에게 실행시켜야
 나온다. 이 스킬은 그 실행을 `/` 한 번으로 만들고, 재생성물을 승인본과 여섯
@@ -16,7 +27,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 `<실험N>`
 
 - 번호 토큰이 없으면 한 줄로 되묻고 중단한다.
-- 통제군 조건: `<실험NN>/output/<실험NN>_결과보고서.md` 가 있고, 같은 폴더
+- 통제군 조건: `config.artifact_path('<실험NN>', '결과보고서', '.md')` 가 있고, 같은 폴더
   `notion.json` 에 `결과보고서` 레코드가 있으며, 그 최신 판본의
   `_notion_baseline_v<N>.md` 와 원본이 `report_compare` 로 산문 밖 0건이어야
   한다(0단계가 잰다). 하나라도 아니면 "통제군이 없다" 로 거절한다.
@@ -65,7 +76,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
    recs = [r for r in notion.load_records(d / 'output') if r['kind'] == '결과보고서']
    print('O' if ap.exists() else 'X', ap)
    print('O' if recs else 'X', '노션 결과보고서 레코드', len(recs), '건')
-   base = d / 'output' / f\"{ap.stem}_notion_baseline_v{recs[-1]['version']}.md\" if recs else None
+   base = notion.history_path(d / 'output', recs[-1]) if recs else None
    print('O' if base and base.exists() else 'X', base)
    if ap.exists() and base and base.exists():
        diff = compare_reports(ap.read_text(encoding='utf-8'), base.read_text(encoding='utf-8'))
@@ -108,7 +119,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
    dest = Path(tempfile.gettempdir()) / f'iso-{name}'
    build_isolated_tree(Path('.'), dest, <실험번호>, KEYS,
                        clear_subdirs=('output',),
-                       keep=[f'{exp}/output/{name}_예비보고서.md',
+                       keep=[str(config.artifact_path(exp, '예비보고서', '.md')),
                              f'{exp}/output/*예상결과*.png'])
    print(dest)
    "
@@ -134,7 +145,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
 
    **정상으로 보는 것**: ④ `write-result-report/` 의 `.md` 전부(규칙 예시 사례,
    §절대 규칙 2)·
-   `보고서/<실험NN>/체크리스트/기록.md`(종료 메모의 사실), 그리고 설계상 공유되는
+   `config.artifact_path(config.experiment_dir(<실험번호>), '기록', '.md')`(종료 메모의 사실), 그리고 설계상 공유되는
    입력 — 참고문헌 인용 줄(③ `write-pre-report/SKILL.md`·`.claude/데이터시트_출처.md`·
    예비보고서 md; ④ §절대 규칙 10 이 기본 목록을 예비보고서와 같게 한다), 예비보고서의
    헤딩 조각(`<empty-block/> ## 실험 N-N)`), `scripts/lab/validate.py` 의 규칙 예시
@@ -177,7 +188,7 @@ description: write-result-report 와 review-lab-report 를 답안 없는 격리 
    report = (art / '격리보고.md').read_text(encoding='utf-8') if (art / '격리보고.md').exists() else ''
    leaks = <2단계 출력 줄 목록>
    out = art / '판정.md'
-   out.write_text(judgment_markdown(<실험번호>, art / 'output' / f'{name}_결과보고서.md',
+   out.write_text(judgment_markdown(<실험번호>, art / 'output' / config.artifact_path(config.experiment_dir(<실험번호>), '결과보고서', '.md').name,
                                     leak_hits=leaks, agent_report=report), encoding='utf-8')
    print(out.read_text(encoding='utf-8'))
    "

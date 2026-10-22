@@ -345,8 +345,7 @@ _ROOT = Path(__file__).resolve().parents[2]   # scripts/lab/report_compare.py �
 
 def approved_report_path(experiment: int) -> Path:
     """승인본 경로. 저장소 루트 기준 절대경로라 어느 CWD 에서 불러도 같다."""
-    return (_ROOT / config.experiment_dir(experiment) / "output"
-            / f"{config.experiment_folder_name(experiment)}_결과보고서.md")
+    return config.artifact_path(_ROOT / config.experiment_dir(experiment), "결과보고서", ".md")
 
 
 def judgment_markdown(experiment: int, regen_md, leak_hits=(), agent_report: str = "") -> str:

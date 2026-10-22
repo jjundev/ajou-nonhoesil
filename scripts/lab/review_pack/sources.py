@@ -62,6 +62,6 @@ def inventory(root, experiment):
                 continue
             if 'review_round' in p.name or '손그림검토' in p.parts:
                 continue
-            actual = 'stt' if 'STT' in p.parts else 'record' if p.name in {'명세.md','기록.md','netlist.md'} else kind
+            actual = 'stt' if 'STT' in p.parts else 'record' if (p.name in {'명세.md','기록.md','netlist.md'} or unicodedata.normalize('NFC', p.name).endswith('_기록.md')) else kind
             add(p,actual)
     return dict(experiment=experiment,manual=manual,sources=list(rows.values()),scope_tokens=config.scope_tokens(experiment))

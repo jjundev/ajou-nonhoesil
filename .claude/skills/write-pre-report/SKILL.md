@@ -5,6 +5,17 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 
 # write-pre-report
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 ## 절대 규칙
 
 서식 규칙 열 가지(6~8·10~15·21)는 번호와 굵은 첫 문장만 여기 있고 본문은
@@ -268,7 +279,8 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
 
     ```bash
     python3 -c "
-    t=open('<실험NN>/output/<실험NN>_예비보고서.md',encoding='utf-8').read()
+    from scripts.lab import config
+    t=open(config.artifact_path('<실험NN>', '예비보고서', '.md'),encoding='utf-8').read()
     p=sum(len(l)+1 for l in t.split('\n') if not l.lstrip().startswith('|'))
     print(f'산문 {p:,}자')"
     ```
@@ -495,7 +507,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
    `to_overbar_html` 자체는 지우지 않는다 — ②`prep-lab-checklist` 와
    과거 ①`explain-lab-preview` 산출물의 호환 경로에서 사용한다. 새 학습팩은 HTML·MD를 생성한다.
 
-6. **md 저장.** `<실험NN>/output/<실험NN>_예비보고서.md` 에 쓴다. **이 md 가
+6. **md 저장.** `config.artifact_path('<실험NN>', '예비보고서', '.md')` 에 쓴다. **이 md 가
    유일한 산출물이다** — HTML 로 옮기지 않는다 (8단계).
 
    **첫 헤딩(`# …`)은 손으로 짓지 않는다.**
@@ -566,7 +578,7 @@ description: 논리회로실험 예비보고서를 `.claude/보고서양식.md` 
     root = config.find_project_root(Path('.'))
     fmt = config.load_report_format(root)
     spec = parse_spec('<실험NN>/체크리스트/명세.md')
-    rpt = '<실험NN>/output/<실험NN>_예비보고서.md'
+    rpt = config.artifact_path('<실험NN>', '예비보고서', '.md')
     for f in validate.check_report_sections(rpt, fmt.pre, item_count=len(spec.items)):
         print(f)
     for f in validate.check_report_references(rpt, spec, root=root):

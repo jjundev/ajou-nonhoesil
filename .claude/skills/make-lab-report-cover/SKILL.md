@@ -5,6 +5,17 @@ description: 논리회로실험 보고서 표지를 한글 IEEE 윤리 강령과
 
 # make-lab-report-cover
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 보고서 첫 장에 들어가는 **표지 한 장**을 만든다. 한 장 안에 제목·과목 헤더,
 한글 IEEE 윤리 강령 10개 항목, 서약문과 조·학번·성명 표가 다 들어간다.
 
@@ -112,7 +123,7 @@ print(info)
 2. **출력 폴더 결정.** 0단계에서 확인한 `<실험NN>/` 가 있으면 그 아래 `output/`.
    폴더가 없으면 **거절하고** `init-lab-experiment` 를 안내한다.
 
-3. **충돌 확인.** `<폴더>/<제목> 표지.pdf` 가 이미 있으면 덮어쓸지 한 줄로 확인.
+3. **충돌 확인.** `config.artifact_path('<실험NN>', '<예비보고서표지|결과보고서표지>')` 가 이미 있으면 덮어쓸지 한 줄로 확인.
 
 4. **제출일.** 사용자가 명시하지 않으면 오늘 날짜. **형식도 `과목정보.md` 에서 읽는다.**
 
@@ -140,7 +151,7 @@ print(info)
    from scripts.lab import config
    from scripts.lab.html2pdf import DEFAULT_CHROME, html_to_pdf
    info = config.load_course_info(config.find_project_root(Path('.')))
-   html_to_pdf('<폴더>/<제목> 표지.html', '<폴더>/<제목> 표지.pdf',
+   html_to_pdf(config.artifact_path('<실험NN>', '<예비보고서표지|결과보고서표지>', '.html'), config.artifact_path('<실험NN>', '<예비보고서표지|결과보고서표지>'),
                chrome=info.get('chrome') or DEFAULT_CHROME)
    "
    ```
@@ -164,8 +175,9 @@ print(info)
 
    ```bash
    python3 -c "
+   from scripts.lab import config
    from pypdf import PdfReader
-   pages = PdfReader('<폴더>/<제목> 표지.pdf').pages
+   pages = PdfReader(config.artifact_path('<실험NN>', '<예비보고서표지|결과보고서표지>')).pages
    print('쪽수:', len(pages))
    for p in pages:
        print(round(float(p.mediabox.width)/72*25.4,1),

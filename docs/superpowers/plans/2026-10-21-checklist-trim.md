@@ -29,7 +29,7 @@
 - [x] 이전 출력에만 해당하는 검사는 새 계약에 맞게 갱신하고 관련 검사 실행.
 
 ### Task 2: 생성 규칙과 실험07 산출물
-**Files:** .claude/skills/prep-lab-checklist/{SKILL.md,template.html}, 보고서/실험07/체크리스트/체크리스트.{html,pdf}.
+**Files:** .claude/skills/prep-lab-checklist/{SKILL.md,template.html}, 보고서/실험07/체크리스트/실험07_Shift_Register_체크리스트.{html,pdf}.
 - [x] 생성 스킬·CSS를 새 출력 계약에 맞게 정리.
 - [x] 명세/netlist 검증 후 기록 파생 단계를 건너뛰고 실험07 HTML → fit_pages → PDF 실행.
 - [x] 전체 검사, HTML·그림 검사, PDF 렌더 시각 검사, 보호 파일 해시 및 diff 범위 검증.

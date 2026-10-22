@@ -5,6 +5,19 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
 
 # sync-report-to-notion
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+이름 변경 전 노션 이력이 있으면 레코드의 `history_source`에 이전 원본 파일명을 보존한다.
+`source`는 현재 보고서명, baseline·되읽기 경로는 `notion.history_path`로 조회하며 기존 이력을 다시 만들지 않는다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 ## 절대 규칙
 
 1. **페이지를 절대 덮어쓰지 않는다.** 업로드는 항상 새 페이지다. 사용자가
@@ -43,7 +56,7 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    있다) 어느 쪽인지 되묻고 중단한다. 하나면 그 번호로 위
    `config.experiment_dir()` 을 부른다.
 
-1. **올릴 파일을 정한다.** `<실험NN>/output/<실험NN>_예비보고서.md` 또는
+1. **올릴 파일을 정한다.** `config.artifact_path('<실험NN>', '예비보고서', '.md')` 또는
    `..._결과보고서.md`. 없으면 ③ `write-pre-report` / ④ `write-result-report`
    를 먼저 돌리도록 안내하고 멈춘다.
 
@@ -104,7 +117,7 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
                                title=page_title)
    rec = notion.append_record(OUT, KIND, page['page_id'], page['url'], NAME,
                               datetime.now().strftime('%Y-%m-%d %H:%M'))
-   base = OUT / f"{NAME[:-3]}_notion_baseline_v{rec['version']}.md"
+   base = notion.history_path(OUT, rec)
    base.write_text(notion.pull_markdown(page['page_id'], token), encoding='utf-8')
    print('제목', page_title)
    print('v', rec['version'], page['url'])
@@ -142,8 +155,7 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
     OUT = Path('<실험NN>/output')
     token = notion.load_token()
     for rec in notion.load_records(OUT):
-        stem = rec['source'][:-3]  # '<파일명>.md' 에서 .md 를 뗀 접미사
-        base = OUT / f"{stem}_notion_baseline_v{rec['version']}.md"
+        base = notion.history_path(OUT, rec)
         if base.exists():
             continue
         print('복구:', base)
@@ -170,9 +182,11 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    ```bash
    python3 -c "
    from pathlib import Path
-   from scripts.lab import validate
-   src = Path('<실험NN>/output/<파일명>.md').read_text(encoding='utf-8')
-   got = Path('<실험NN>/output/<파일명 접미사>_notion_baseline_v<N>.md').read_text(encoding='utf-8')
+   from scripts.lab import validate, notion
+   OUT, KIND, V = Path('<실험NN>/output'), '<예비보고서|결과보고서>', <N>
+   rec = next(r for r in notion.load_records(OUT) if r['kind'] == KIND and r['version'] == V)
+   src = (OUT / rec['source']).read_text(encoding='utf-8')
+   got = notion.history_path(OUT, rec).read_text(encoding='utf-8')
    for f in validate.check_notion_roundtrip(src, got):
        print(f)
    "
@@ -209,23 +223,27 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    python3 - <<'PY'
    from pathlib import Path
    from scripts.lab import notion
-   OUT, PAGE, STEM, V = Path('<실험NN>/output'), '<page_id>', '<파일명 접미사>', <N>
+   OUT, PAGE = Path('<실험NN>/output'), '<page_id>'
+   rec = next(r for r in notion.load_records(OUT) if r['page_id'] == PAGE)
    text = notion.pull_markdown(PAGE, notion.load_token())
-   (OUT / f'{STEM}_notion_v{V}.md').write_text(text, encoding='utf-8')
-   print('저장:', OUT / f'{STEM}_notion_v{V}.md', len(text), '자')
+   out = notion.history_path(OUT, rec, baseline=False)
+   out.write_text(text, encoding='utf-8')
+   print('저장:', out, len(text), '자')
    PY
    ```
 
 8b. **안 끼운 그림이 없는지 본다.**
 
     ```bash
-    zsh -c 'PYTHONPATH=. python3 -c "
+    python3 - <<'PY'
     from pathlib import Path
-    from scripts.lab import validate
-    p = Path(\"<실험NN>/output/<접미사>_notion_v<N>.md\")
-    f = validate.check_pulled_images(p.read_text(encoding=\"utf-8\"))
-    print(\"\n\".join(str(x) for x in f) or \"빈 그림 없음\")
-    "'
+    from scripts.lab import validate, notion
+    OUT, PAGE = Path('<실험NN>/output'), '<page_id>'
+    rec = next(r for r in notion.load_records(OUT) if r['page_id'] == PAGE)
+    p = notion.history_path(OUT, rec, baseline=False)
+    f = validate.check_pulled_images(p.read_text(encoding='utf-8'))
+    print('\n'.join(str(x) for x in f) or '빈 그림 없음')
+    PY
     ```
 
     `✗` 가 나오면 **거기서 멈추고 사용자에게 알린다.** 상대경로 그림은
@@ -238,8 +256,15 @@ description: 논리회로실험 예비·결과보고서 md 를 노션에 올리�
    사용자가 고친 것이다.
 
    ```bash
-   diff -u '<실험NN>/output/<접미사>_notion_baseline_v<N>.md' \
-           '<실험NN>/output/<접미사>_notion_v<N>.md'
+   python3 - <<'PY'
+   from pathlib import Path
+   import subprocess
+   from scripts.lab import notion
+   OUT, PAGE = Path('<실험NN>/output'), '<page_id>'
+   rec = next(r for r in notion.load_records(OUT) if r['page_id'] == PAGE)
+   subprocess.run(['diff', '-u', str(notion.history_path(OUT, rec)),
+                   str(notion.history_path(OUT, rec, baseline=False))], check=False)
+   PY
    ```
 
 10. **분류 표를 낸다.** diff 의 각 덩어리를 한 행으로.

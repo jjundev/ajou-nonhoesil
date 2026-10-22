@@ -152,7 +152,7 @@ def read_captions(experiment) -> list:
     """그림 HTML 의 캡션을 capture 표 순서대로 돌려준다. 수가 다르면 멈춘다."""
     exp, spec, chrome = _experiment(experiment)
     pairs = figure.capture_tables(spec)
-    captions = parse_captions(dump_dom(exp / "output" / f"{exp.name}_예상결과.html", chrome))
+    captions = parse_captions(dump_dom(config.artifact_path(exp, "예상결과", ".html", title=spec.title), chrome))
     if len(captions) != len(pairs):
         raise FigureError(f"그림 HTML 의 캡션이 {len(captions)}개인데 capture 표는 "
                           f"{len(pairs)}개다 — FIGURES 가 표마다 하나인지 본다")
@@ -174,8 +174,8 @@ def main(argv=None) -> int:
     names = [figure.figure_png_name(exp, item) for item, _ in pairs]
     if len(set(names)) != len(names):
         raise FigureError(f"그림 이름이 겹친다 — 한 항목에 capture 표가 둘 이상이다: {names}")
-    html_path = exp / "output" / f"{exp.name}_예상결과.html"
-    md_path = exp / "output" / f"{exp.name}_예비보고서.md"
+    html_path = config.artifact_path(exp, "예상결과", ".html", title=spec.title)
+    md_path = config.artifact_path(exp, "예비보고서", ".md", title=spec.title)
 
     dom = dump_dom(html_path, chrome)
     heights = parse_heights(dom)

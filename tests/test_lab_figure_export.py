@@ -121,7 +121,7 @@ class Captions(unittest.TestCase):
                  mock.patch.object(fx, "dump_dom", return_value=dom) as dump:
                 self.assertEqual(fx.read_captions(7), ["가", "나"])
             self.assertEqual(Path(dump.call_args.args[0]),
-                             root / "보고서/실험07/output/실험07_예상결과.html")
+                             root / "보고서/실험07/output/실험07_테스트_예상결과.html")
 
 
 class Export(unittest.TestCase):
@@ -250,8 +250,8 @@ def _two_capture_tree(root) -> Path:
     (exp / "체크리스트").mkdir(parents=True)
     (exp / "output").mkdir(parents=True)
     (exp / "체크리스트/명세.md").write_text(_SPEC_TWO_CAPTURES, encoding="utf-8")
-    (exp / "output/실험07_예상결과.html").write_text("<title>t</title>", encoding="utf-8")
-    (exp / "output/실험07_예비보고서.md").write_text("본문.", encoding="utf-8")
+    (exp / "output/실험07_테스트_예상결과.html").write_text("<title>t</title>", encoding="utf-8")
+    (exp / "output/실험07_테스트_예비보고서.md").write_text("본문.", encoding="utf-8")
     return root
 
 

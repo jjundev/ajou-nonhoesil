@@ -109,16 +109,16 @@ class Uploaded(unittest.TestCase):
         self.out = Path(tmp.name)
 
     def test_기록이_없으면_안_올린_것이다(self):
-        self.assertFalse(figure.is_uploaded(self.out, "실험07_예비보고서.md"))
+        self.assertFalse(figure.is_uploaded(self.out, "실험07_Shift_Register_예비보고서.md"))
 
     def test_그_md_를_올린_예비보고서_기록이_있으면_올린_것이다(self):
         (self.out / notion.RECORD_NAME).write_text(json.dumps({
             "schema": "notion-uploads/v1",
             "uploads": [
-                {"kind": "결과보고서", "source": "실험07_예비보고서.md"},
-                {"kind": "예비보고서", "source": "실험07_예비보고서.md"},
+                {"kind": "결과보고서", "source": "실험07_Shift_Register_예비보고서.md"},
+                {"kind": "예비보고서", "source": "실험07_Shift_Register_예비보고서.md"},
             ]}), encoding="utf-8")
-        self.assertTrue(figure.is_uploaded(self.out, "실험07_예비보고서.md"))
+        self.assertTrue(figure.is_uploaded(self.out, "실험07_Shift_Register_예비보고서.md"))
         self.assertFalse(figure.is_uploaded(self.out, "실험08_예비보고서.md"))
 
 

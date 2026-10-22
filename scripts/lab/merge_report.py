@@ -2,7 +2,7 @@
 
 논리회로실험 보고서 본문 PDF와 표지 PDF를 무손실 병합하여 최종 제출용 PDF를 생성한다.
 표지가 없거나 날짜가 달라졌으면 make-lab-report-cover 파이프라인으로 자동 생성한다.
-산출물은 언더스코어 표준 파일명 (`실험N_<제목>_<종류>.pdf`)으로 저장된다.
+산출물은 언더스코어 표준 파일명 (`실험NN_<제목>_<종류>.pdf`, 실험07부터)으로 저장된다.
 """
 
 from __future__ import annotations
@@ -23,11 +23,8 @@ from scripts.lab.spec_parser import parse_spec
 import unicodedata
 
 def output_filename(experiment_num: int, title: str, kind: str) -> str:
-    """언더스코어 표준 파일명을 생성한다 (예: '실험1_Basic_Gates_예비보고서.pdf')."""
-    clean_title = re.sub(r"\s+", "_", title.strip())
-    clean_title = unicodedata.normalize("NFC", clean_title)
-    kind_norm = unicodedata.normalize("NFC", kind)
-    return f"실험{experiment_num}_{clean_title}_{kind_norm}.pdf"
+    """공통 이름 규칙. 실험01~06의 기존 이름은 유지한다."""
+    return config.artifact_filename(experiment_num, title, kind)
 
 
 def find_body_pdf(exp_dir: Path, kind: str | None = None) -> Path:
@@ -129,8 +126,8 @@ def generate_cover_pdf(
 
     out_dir = exp_dir / "output"
     out_dir.mkdir(parents=True, exist_ok=True)
-    html_path = out_dir / f"{title} 표지.html"
-    pdf_path = out_dir / f"{title} 표지.pdf"
+    html_path = config.artifact_path(exp_dir, kind + "표지", ".html", title=spec.title)
+    pdf_path = config.artifact_path(exp_dir, kind + "표지", title=spec.title)
 
     html_path.write_text(html_content, encoding="utf-8")
     chrome_bin = chrome or info.get("chrome") or DEFAULT_CHROME
@@ -153,8 +150,7 @@ def ensure_cover_pdf(
 ) -> Path:
     """표지 PDF의 존재 여부를 확인하고, 없으면 생성하여 반환한다."""
     exp_dir = Path(exp_dir).resolve()
-    title = config.document_title(spec.experiment, spec.title, kind)
-    cover_pdf = exp_dir / "output" / f"{title} 표지.pdf"
+    cover_pdf = config.artifact_path(exp_dir, kind + "표지", title=spec.title)
 
     if cover_pdf.is_file():
         if submit_date:

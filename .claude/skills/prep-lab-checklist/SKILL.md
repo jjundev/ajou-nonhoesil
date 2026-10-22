@@ -5,6 +5,17 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
 # prep-lab-checklist
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 `<실험NN>/체크리스트/명세.md` 하나에서 실험실용 산출물 전부를 파생한다.
 
 **PDF 와 md 를 항상 쌍으로 만든다.** 태블릿에 PDF 를 띄워 펜으로 채우고,
@@ -101,10 +112,11 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
    ```bash
    python3 -c "
+   from scripts.lab import config
    from scripts.lab.record import derive_record, write_record
    from scripts.lab.spec_parser import parse_spec
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
-   print(write_record('<실험NN>/체크리스트/기록.md', derive_record(spec)))
+   print(write_record(config.artifact_path('<실험NN>', '기록', '.md'), derive_record(spec)))
    "
    ```
 
@@ -148,7 +160,7 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
    if any(f.level == 'error' for f in gates):
        raise ValueError('\\n'.join(str(f) for f in gates))
    tmpl = Path('.claude/skills/prep-lab-checklist/template.html').read_text(encoding='utf-8')
-   out = Path('<실험NN>/체크리스트/체크리스트.html')
+   out = Path(config.artifact_path('<실험NN>', '체크리스트', '.html'))
    out.write_text(render_checklist(spec, netlist, tmpl), encoding='utf-8')
    from scripts.lab.fit_pages import fit_pages
    fit_pages(out, chrome=info.get('chrome') or DEFAULT_CHROME)
@@ -171,9 +183,10 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
    ```bash
    python3 -c "
+   from scripts.lab import config
    from pathlib import Path
    from scripts.lab import validate
-   html = Path('<실험NN>/체크리스트/체크리스트.html')
+   html = Path(config.artifact_path('<실험NN>', '체크리스트', '.html'))
    for f in validate.check_rendered_html(html) + validate.check_embedded_images(html):
        print(f)
    "
@@ -198,8 +211,9 @@ description: 논리회로실험 주차 명세에서 실험실에 들고 갈 체�
 
    ```bash
    python3 -c "
+   from scripts.lab import config
    from pypdf import PdfReader
-   for p in PdfReader('<실험NN>/체크리스트/체크리스트.pdf').pages:
+   for p in PdfReader(config.artifact_path('<실험NN>', '체크리스트')).pages:
        print(round(float(p.mediabox.width)/72*25.4,1),
              round(float(p.mediabox.height)/72*25.4,1))
    "

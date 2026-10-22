@@ -143,7 +143,7 @@
 - Modify: `.claude/skills/draft-lab-spec/SKILL.md`, `.claude/skills/breadboard-diagram/SKILL.md`, `.claude/skills/prep-lab-checklist/SKILL.md`
 - Modify: `docs/schema/lab-netlist-v2.md` (기반 일괄 설치 문구의 후속 확장 안내만)
 - Create/Test: `tests/test_lab_assembly_contract_docs.py`
-- Regenerate: `보고서/실험07/체크리스트/체크리스트.html`, `체크리스트.pdf`
+- Regenerate: `보고서/실험07/체크리스트/실험07_Shift_Register_체크리스트.html`, `체크리스트.pdf`
 - Create: `docs/verification/2026-10-21-e07-assembly-steps.md`
 
 **Interfaces:**

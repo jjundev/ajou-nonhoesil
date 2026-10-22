@@ -5,6 +5,17 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
 
 # draw-expected-figure
 
+## 산출물 이름 (실험07부터)
+
+파일 경로는 `scripts.lab.config.artifact_path(실험폴더, 종류, 확장자)`로 정한다.
+실험07 이상은 `실험NN_실험_제목_산출물종류.확장자`이고, 실험01~06은 기존 이름 그대로다.
+실험 제목은 명세의 `title`에서 읽는다. 문서 안의 제목·내부 그림 이름은 바꾸지 않는다.
+이 문서의 `기록.md`·`체크리스트.pdf` 같은 짧은 이름은 종류를 뜻하는 별칭이며,
+실제 생성·존재 확인·전사·검증·결과 링크에는 반드시 공통 함수가 반환한 경로를 쓴다.
+종류는 `체크리스트`, `기록`, `예비보고서`, `결과보고서`, `예비보고서표지`,
+`결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
+저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
+
 ## 절대 규칙
 
 1. **명세에 `capture` 표가 없으면 그리지 않는다.** `truth-table`·`stepped` 표는
@@ -89,7 +100,7 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
    `capture 표가 없어` 를 담은 줄이 나오면 그 줄을 사용자에게 그대로 전하고
    **여기서 끝낸다.** 파일을 하나도 만들지 않는다.
 
-2. **예비보고서 존재를 먼저 보고 재료를 읽는다.** `<실험NN>/output/<실험NN>_예비보고서.md`
+2. **예비보고서 존재를 먼저 보고 재료를 읽는다.** `config.artifact_path('<실험NN>', '예비보고서', '.md')`
    가 없으면 `write-pre-report` 를 먼저 돌리라고 알리고 멈춘다 — 그림 속 숫자를
    맞댈 본문이 없다. 있으면 다음을 읽는다.
    - 명세의 그 표 `expected` 산문.
@@ -117,7 +128,7 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
    구성이 달라지거나, 옮겨 온 패널의 근거 칸을 채울 수 없을 때만 사용자에게 묻는다.
 
 4. **그림 HTML 을 쓴다.** `.claude/skills/draw-expected-figure/template.html` 을
-   `<실험NN>/output/<실험NN>_예상결과.html` 로 복사하고, `<title>`·`.eyebrow`·`h1` 세
+   `config.artifact_path('<실험NN>', '예상결과', '.html')` 로 복사하고, `<title>`·`.eyebrow`·`h1` 세
    곳의 `실험NN` 만 폴더 이름으로 바꾼다(맨 위 주석은 그대로 둔다). 3단계
    표를 `table.evidence` 의 `tbody` 에 옮기고, `FIGURES` 에 1단계가 출력한 순서대로
    그림을 하나씩 넣는다 — `title` 은 항목 제목, `file` 은 1단계의 PNG 이름,
@@ -147,7 +158,7 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
    다시 돈다. 두 번째로 보지 않는다.
 
 8. **아티팩트로 게시한다.** `artifact-design` 스킬을 읽은 뒤 Artifact 도구로
-   `<실험NN>/output/<실험NN>_예상결과.html` 을 게시한다. 맨 위 주석 `artifact:` 줄에
+   `config.artifact_path('<실험NN>', '예상결과', '.html')` 을 게시한다. 맨 위 주석 `artifact:` 줄에
    URL 이 있으면 그 URL 을 `url` 로 넘겨 같은 주소를 갱신하고, `(게시 전)` 이면 새로
    게시한 뒤 그 줄에 URL 을 적는다.
 
@@ -181,7 +192,7 @@ description: 논리회로실험 예비보고서의 "실험 과정 및 예상 결
     from scripts.lab import config, figure, figure_export, validate
     from scripts.lab.spec_parser import parse_spec
     exp = Path(config.experiment_dir(<실험번호>))
-    md = exp / 'output' / (exp.name + '_예비보고서.md')
+    md = config.artifact_path(exp, '예비보고서', '.md')
     pairs = figure.capture_tables(parse_spec(exp / '체크리스트/명세.md'))
     captions = figure_export.read_captions(<실험번호>)
     if figure.is_uploaded(md.parent, md.name):

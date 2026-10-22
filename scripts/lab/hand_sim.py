@@ -1,9 +1,9 @@
 """손그림 모사 키트 — 실험 하나의 완성본 결선도로 팀원 전달용 PDF 두 개를 낸다(`make-hand-sim`).
 
-- `실험NN_손그림모사.pdf` — 빈 판형 PDF 쪽 그대로에 배선만 벡터 펜 선(한 굵기, 은은한 휨)으로 얹은
+- `실험NN_<실험_제목>_손그림모사.pdf` — 빈 판형 PDF 쪽 그대로에 배선만 벡터 펜 선(한 굵기, 은은한 휨)으로 얹은
   것. 칩·LED·저항·입력 이름은 비운다 — 팀원이 이 위에 부품을 그려 넣는다. 제목은 없다 — 실험 이름은
   작성자가 손으로 적는다. 판형 이미지가 원본 그대로라 `review-hand-diagram` 격자 보정이 그대로 된다.
-- `실험NN_부품그리기.pdf` — 같은 흔들림의 선을 회색으로, 비워 둔 부품만 색으로 그린 안내판 + 부품표.
+- `실험NN_<실험_제목>_부품그리기.pdf` — 같은 흔들림의 선을 회색으로, 비워 둔 부품만 색으로 그린 안내판 + 부품표.
 
 완성본 하나가 각 PDF 의 한 쪽이다. 주차 결선 파일(`배치.py`)의 `FINALS` 빌더를 `hand=<시드>` 로
 부른다. 시드는 손그림모사 PNG 이름에서 나오므로 다시 뽑아도 같은 그림이다. PNG 는 임시 폴더에서만
@@ -57,9 +57,9 @@ def hand_seed(filename):
 
 def output_paths(experiment):
     """(손그림모사 PDF, 부품그리기 PDF) — `결선도/팀원전달용/`."""
-    folder = config.experiment_folder_name(experiment)
-    base = REPO_ROOT / config.experiment_dir(experiment) / '결선도' / OUT_DIR
-    return base / f'{folder}_손그림모사.pdf', base / f'{folder}_부품그리기.pdf'
+    exp_dir = REPO_ROOT / config.experiment_dir(experiment)
+    return (config.artifact_path(exp_dir, '손그림모사'),
+            config.artifact_path(exp_dir, '부품그리기'))
 
 
 def guide_rows(bb):

@@ -146,6 +146,13 @@ def next_version(output_dir, kind) -> int:
     return sum(1 for r in load_records(output_dir) if r.get("kind") == kind) + 1
 
 
+def history_path(output_dir, record, *, baseline=True) -> Path:
+    """보고서 이름을 바꿔도 기존 노션 이력 파일은 history_source로 찾아간다."""
+    stem = Path(record.get("history_source", record["source"])).stem
+    tag = "notion_baseline" if baseline else "notion"
+    return Path(output_dir) / f"{stem}_{tag}_v{record['version']}.md"
+
+
 def append_record(output_dir, kind, page_id, url, source, when) -> dict:
     """업로드 한 건을 `<실험NN>/output/notion.json` 에 덧붙인다.
 

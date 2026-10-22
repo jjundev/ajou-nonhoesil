@@ -182,7 +182,7 @@ def plan(experiment: int, photo_dir: Path | None = None,
     """
     exp_dir = Path(config.experiment_dir(experiment))
     photo_dir = photo_dir or exp_dir / "실험사진"
-    record = exp_dir / "체크리스트" / "기록.md"
+    record = config.artifact_path(exp_dir, "기록", ".md")
     if not record.exists():
         raise ContactSheetError(f"{record} 가 없다")
     if not photo_dir.is_dir():

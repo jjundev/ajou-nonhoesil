@@ -138,7 +138,7 @@ class 인쇄본_코퍼스(unittest.TestCase):
         self.assertTrue(specs, "명세를 하나도 못 찾았다")
         for spec_path in specs:
             folder = spec_path.parent.parent
-            path = folder / "체크리스트/체크리스트.html"
+            path = config.artifact_path(folder, "체크리스트", ".html")
             with self.subTest(folder.name):
                 self.assertTrue(path.exists(), f"{path} 가 없다")
                 errors = [f for f in validate.check_rendered_html(path)
