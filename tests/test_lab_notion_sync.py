@@ -198,3 +198,22 @@ def test_body_loss_prevents_baseline_and_record(setup):
             start(setup)
     assert not notion.load_records(setup[2])
     assert not list(setup[2].glob("*baseline*"))
+
+
+def test_append_response_includes_other_siblings(setup):
+    setup[0].append_returns_all = True
+    assert_complete(setup, start(setup))
+    assert setup[0].events.count("insert") == 3
+
+
+def test_remote_marker_edit_is_not_deleted_on_resume(setup):
+    setup[0].fail_after = "send"
+    with pytest.raises(notion.NotionError):
+        start(setup)
+    journal = json.loads((setup[3] / "journal.json").read_text())
+    marker = setup[0].blocks[journal["placements"][0]["marker_id"]]
+    marker["paragraph"]["rich_text"] = [{"plain_text": "사용자가 새로 쓴 문장"}]
+    with pytest.raises(notion.NotionError):
+        resume(setup)
+    assert not marker.get("archived")
+    assert not notion.load_records(setup[2])

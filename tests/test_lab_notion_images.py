@@ -192,3 +192,19 @@ def test_missing_pillow_does_not_pass(tmp_path, monkeypatch):
         return real_import(name, *a, **k)
     monkeypatch.setattr(builtins, "__import__", without_pillow)
     assert not ni.verify_image_content(tmp_path / "한 글 (1).png", "https://files.example/x")["ok"]
+
+
+def test_preflight_adjacent_images_with_parentheses_are_not_wrapped_prose(tmp_path):
+    from scripts.lab import validate
+    source = make_source(tmp_path, "![](한 글 (1).png)\n![](한 글 (1).png)")
+    assert not [f for f in validate.check_notion_markdown(source) if f.level == "error"]
+
+
+@pytest.mark.parametrize("text", [
+    "문장 ![remote](https://example.com/a.png) 끝",
+    "- ![remote](https://example.com/a.png)",
+    "| ![remote](https://example.com/a.png) |",
+])
+def test_external_https_placement_is_preserved(tmp_path, text):
+    result = plan(make_source(tmp_path, text))
+    assert not result.images and result.markdown == text

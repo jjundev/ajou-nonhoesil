@@ -44,3 +44,6 @@ venv/
 문제풀이영상/**/실행/**/caption-original/
 문제풀이영상/**/실행/**/layers/*.svg
 문제풀이영상/**/실행/**/layers/*.png
+
+# Notion 업로드 잠금·재개 journal은 로컬 운영 상태다.
+**/output/.notion-sync/

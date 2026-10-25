@@ -90,6 +90,12 @@ def _fingerprint(tree, excluded):
 
 
 def _check_body(j, tree):
+    blocks = {b["id"]: b for b in ni.walk(tree)}
+    for image, placement in zip(j["images"], j["placements"]):
+        marker = blocks.get(placement["marker_id"])
+        if marker is not None and (marker["type"] != "paragraph" or
+                                   ni.block_text(marker) != image["marker"]):
+            raise notion.NotionError("작업 표식에 사용자 편집이 있습니다; 삭제하지 않습니다")
     excluded = {p["marker_id"] for p in j["placements"]}
     excluded.update(p["block_id"] for p in j["placements"] if p["block_id"])
     if _fingerprint(tree, excluded) != j["body_fingerprint"]:
@@ -258,15 +264,17 @@ def _run(j, token):
                 uid = _upload(j, image.index, image, token)
                 j["images"][image.index]["insert_intended"] = True
                 _intent(j, f"insert:{image.index}")
-                inserted = notion.append_after(p["parent_id"], p["marker_id"], [{
+                notion.append_after(p["parent_id"], p["marker_id"], [{
                     "object": "block", "type": "image", "image": {"type": "file_upload",
                         "file_upload": {"id": uid}, "caption": notion.rich_text(image.caption)}
                 }], token)
-                if len(inserted) != 1:
-                    raise notion.NotionError("삽입 응답에 이미지가 정확히 하나가 아닙니다")
-                p["block_id"] = inserted[0]["id"]
-                save(j)
+                # The response can contain siblings as well as the new block.
+                # Identify the write using the same remote boundary/content proof
+                # used after a lost response, never by response-list cardinality.
                 tree = notion.read_block_tree(j["page_id"], token)
+                _reconcile_insert(j, image.index, image, tree, token)
+                if not p["block_id"]:
+                    raise notion.NotionError("삽입 후 원격 이미지가 없습니다")
                 blocks = {b["id"]: b for b in ni.walk(tree)}
             block = blocks.get(p["block_id"])
             if not block or block["type"] != "image":

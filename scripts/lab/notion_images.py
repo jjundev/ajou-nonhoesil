@@ -66,6 +66,18 @@ def _balanced(text, start, opening, closing):
     raise notion.NotionError("이미지 Markdown 괄호가 닫히지 않았습니다")
 
 
+def _only_external_images(line):
+    for match in re.finditer(r"!\[", line):
+        _, pos = _balanced(line, match.end(), "[", "]")
+        if line[pos:pos + 1] != "(":
+            return False
+        target, _ = _balanced(line, pos + 1, "(", ")")
+        parts = urlsplit(target)
+        if parts.scheme != "https" or not parts.netloc:
+            return False
+    return True
+
+
 def plan_images(source: Path, *, operation_id: str, body: str | None = None) -> ImagePlan:
     source = Path(source).resolve()
     raw = source.read_bytes()
@@ -91,7 +103,10 @@ def plan_images(source: Path, *, operation_id: str, body: str | None = None) -> 
         if "![" not in line:
             lines.append(line)
             continue
-        # Only standalone, unindented images are supported, including HTTPS images.
+        if _only_external_images(line):
+            lines.append(line)
+            continue
+        # Local uploads require a standalone, unindented image.
         if not line.startswith("!["):
             raise notion.NotionError(f"{source.name}:{line_no}: 최상위 독립 이미지 줄만 지원합니다")
         caption, pos = _balanced(line, 2, "[", "]")

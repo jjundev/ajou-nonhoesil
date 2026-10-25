@@ -9,6 +9,7 @@ class FakeNotion:
     def __init__(self):
         self.pages, self.uploads, self.blocks = {}, {}, {}
         self.serial = 0
+        self.append_returns_all = False
         self.fail_after = None
         self.fail_before = None
         self.events = []
@@ -90,7 +91,7 @@ class FakeNotion:
                 self.blocks[b["id"]] = b
                 added.append(b)
             blocks[where:where] = added
-            result = {"results": added}
+            result = {"results": blocks if self.append_returns_all else added}
         elif method == "DELETE":
             bid = path.split("/")[2]
             b = self.blocks[bid]

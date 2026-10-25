@@ -1563,12 +1563,13 @@ def check_notion_markdown(md_path) -> list:
                 out.append(Finding("error", f"{path.name}:{t.line}",
                     f"표 {i}행의 셀이 {len(row)}개인데 헤더는 {width}개다 — "
                     "노션에서 표가 통째로 뭉개진다"))
-    out.extend(check_report_wrapping(body))
+
     out.extend(check_heading_backticks(body))
     out.extend(check_table_width(body))
     from . import notion, notion_images
     try:
         plan = notion_images.plan_images(path, operation_id="preflight")
+        out.extend(check_report_wrapping(plan.markdown))
         if plan.images:
             out.append(Finding("info", path.name,
                 f"자동 첨부할 그림 {len(plan.images)}장: " +
