@@ -134,14 +134,15 @@ def test_caption_rich_text_join_exact(tmp_path):
     assert ni.verify_placements(result, positions, remote)
 
 
-@pytest.mark.parametrize("mode", ["missing", "duplicate", "merged", "nested"])
+@pytest.mark.parametrize("mode", ["missing", "duplicate", "merged", "nested", "children"])
 def test_marker_missing_duplicate_or_merged_fails(tmp_path, mode):
     from scripts.lab import notion_images as ni
     result = plan(make_source(tmp_path, "![](한 글 (1).png)"))
     marker = result.images[0].marker
     tree = {"missing": [], "duplicate": [para("m1", marker), para("m2", marker)],
             "merged": [para("m", marker + " more")],
-            "nested": [{"id": "x", "type": "toggle", "_children": [para("m", marker)]}]}[mode]
+            "nested": [{"id": "x", "type": "toggle", "_children": [para("m", marker)]}],
+            "children": [para("m", marker) | {"has_children": True, "_children": [para("child", "user")]}]}[mode]
     with pytest.raises(notion.NotionError):
         ni.locate_markers(result, tree)
 

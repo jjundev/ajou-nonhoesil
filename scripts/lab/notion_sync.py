@@ -89,12 +89,76 @@ def _fingerprint(tree, excluded):
                          ensure_ascii=False).encode()).hexdigest()
 
 
+def _pristine_marker(block, text):
+    if (block["type"] != "paragraph" or ni.block_text(block) != text
+            or block.get("has_children") or block.get("_children")):
+        return False
+    paragraph = block["paragraph"]
+    if paragraph.get("color", "default") != "default":
+        return False
+    for part in paragraph.get("rich_text", []):
+        if (part.get("type", "text") != "text" or part.get("href")
+                or part.get("text", {}).get("link")):
+            return False
+        if any(value not in (False, "default", None)
+               for value in part.get("annotations", {}).values()):
+            return False
+    return True
+
+
+def _archive_marker(block_id, text, token):
+    # Re-read immediately before destruction; a nested user paragraph must
+    # never disappear merely because its parent was once an operation marker.
+    block = notion._request("GET", f"/blocks/{block_id}", token)
+    if not _pristine_marker(block, text):
+        raise notion.NotionError("표식에 사용자 내용/서식/하위 블록이 있습니다; 삭제하지 않습니다")
+    notion.archive_block(block_id, token)
+
+
+def _normalized_transport(text):
+    # Deliberately conservative: only empty-line differences and line endings.
+    # A transformation we cannot prove equivalent is a conflict, not success.
+    return "\n".join(line for line in text.replace("\r\n", "\n").splitlines()
+                     if line.strip())
+
+
+def _protect_initial_snapshot(j, plan, tree, token, *, fresh_create):
+    if "placements" in j:
+        return
+    if "initial_body_fingerprint" not in j:
+        witnesses = [b for b in tree if ni.block_text(b) == j["witness"]]
+        if len(witnesses) != 1 or not _pristine_marker(witnesses[0], j["witness"]):
+            raise notion.NotionError("최초 소유권 표식의 내용/구조를 확인하지 못했습니다")
+        # No trusted snapshot survived an interrupted creation. Do not adopt
+        # user edits or moved markers as the new canonical import.
+        if not fresh_create:
+            expected = plan.markdown + "\n\n" + j["witness"]
+            actual = notion.pull_markdown(j["page_id"], token)
+            if _normalized_transport(expected) != _normalized_transport(actual):
+                raise notion.NotionError(
+                    "최초 본문 snapshot 이전 변경/변환을 확증할 수 없습니다; 자동 재개를 중단합니다")
+        ni.locate_markers(plan, tree)
+        for image in plan.images:
+            marker = next(b for b in tree if ni.block_text(b) == image.marker)
+            if not _pristine_marker(marker, image.marker):
+                raise notion.NotionError("초기 이미지 표식에 예상하지 않은 내용/하위 블록이 있습니다")
+        j["witness_id"] = witnesses[0]["id"]
+        j["initial_body_fingerprint"] = _fingerprint(tree, {j["witness_id"]})
+        save(j)  # Persist before deleting even the witness.
+    witness = next((b for b in tree if b["id"] == j["witness_id"]), None)
+    if witness is not None and not _pristine_marker(witness, j["witness"]):
+        raise notion.NotionError("소유권 표식에 사용자 편집이 있습니다")
+    if witness is None and j.get("intent") != "archive_witness":
+        raise notion.NotionError("최초 소유권 표식이 예상 없이 사라졌습니다")
+    if _fingerprint(tree, {j["witness_id"]}) != j["initial_body_fingerprint"]:
+        raise notion.NotionError("최초 snapshot 이후 원격 본문이 변경되었습니다")
+
+
 def _check_body(j, tree):
     blocks = {b["id"]: b for b in ni.walk(tree)}
     for image, placement in zip(j["images"], j["placements"]):
         marker = blocks.get(placement["marker_id"])
-        if marker is not None and (marker["type"] != "paragraph" or
-                                   ni.block_text(marker) != image["marker"]):
+        if marker is not None and not _pristine_marker(marker, image["marker"]):
             raise notion.NotionError("작업 표식에 사용자 편집이 있습니다; 삭제하지 않습니다")
     excluded = {p["marker_id"] for p in j["placements"]}
     excluded.update(p["block_id"] for p in j["placements"] if p["block_id"])
@@ -211,6 +275,7 @@ def _run(j, token):
     if j["status"] == "complete":
         return _result(j)
     try:
+        fresh_create = False
         source = Path(j["source"])
         plan = ni.plan_images(source, operation_id=j["operation_id"], body=_body(source, j["title"]))
         if (plan.source_sha256 != j["source_sha256"] or
@@ -224,10 +289,12 @@ def _run(j, token):
                 page = notion.push_markdown(
                     plan.markdown + "\n\n" + j["witness"], j["parent_id"], token,
                     title=_page_title(j, temporary=True))
+                fresh_create = True
             j.update(page)
             j["status"] = "page_created"
             save(j)
         tree = notion.read_block_tree(j["page_id"], token)
+        _protect_initial_snapshot(j, plan, tree, token, fresh_create=fresh_create)
         # The operation witness is needed for uncertain page creation, then removed
         # before recording boundaries, including document-first/document-last images.
         witnesses = [b for b in tree if ni.block_text(b) == j["witness"]]
@@ -235,7 +302,7 @@ def _run(j, token):
             if len(witnesses) != 1 or witnesses[0]["type"] != "paragraph":
                 raise notion.NotionError("소유권 표식이 잘못되었습니다")
             _intent(j, "archive_witness")
-            notion.archive_block(witnesses[0]["id"], token)
+            _archive_marker(witnesses[0]["id"], j["witness"], token)
             tree = notion.read_block_tree(j["page_id"], token)
         if "placements" not in j:
             positions = ni.locate_markers(plan, tree)
@@ -289,7 +356,7 @@ def _run(j, token):
                 if ids[marker_pos + 1:marker_pos + 2] != [p["block_id"]]:
                     raise notion.NotionError("표식 바로 뒤에 이미지가 없습니다")
                 _intent(j, f"archive_marker:{image.index}")
-                notion.archive_block(p["marker_id"], token)
+                _archive_marker(p["marker_id"], image.marker, token)
             save(j)
         tree = notion.read_block_tree(j["page_id"], token)
         _verify(j, plan, tree, token)

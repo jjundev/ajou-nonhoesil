@@ -166,7 +166,8 @@ def locate_markers(plan: ImagePlan, tree: list[dict]) -> list[ImagePlacement]:
     for image in plan.images:
         found = [b for b in walk(tree) if image.marker in block_text(b)]
         if (len(found) != 1 or found[0]["type"] != "paragraph"
-                or block_text(found[0]) != image.marker or found[0] not in tree):
+                or block_text(found[0]) != image.marker or found[0] not in tree
+                or found[0].get("has_children") or found[0].get("_children")):
             raise notion.NotionError(f"이미지 {image.index}: 고유한 최상위 독립 표식이 없습니다")
         block = found[0]
         i = tree.index(block)

@@ -217,3 +217,69 @@ def test_remote_marker_edit_is_not_deleted_on_resume(setup):
         resume(setup)
     assert not marker.get("archived")
     assert not notion.load_records(setup[2])
+
+
+@pytest.mark.parametrize("owner", ["marker", "witness"])
+def test_remote_owned_paragraph_children_stop_resume_without_deletion(setup, owner):
+    setup[0].fail_after = "send" if owner == "marker" else "page"
+    with pytest.raises(notion.NotionError):
+        start(setup)
+    fake = setup[0]
+    blocks = next(iter(fake.pages.values()))["blocks"]
+    target = next(b for b in blocks if b["type"] == "paragraph" and
+                  b["paragraph"]["rich_text"][0]["plain_text"].startswith(
+                      "NOTIONIMAGE-" if owner == "marker" else "NOTIONSYNC-"))
+    target["_children"] = [{"id": "user-child", "type": "paragraph", "has_children": False,
+                           "paragraph": {"rich_text": [{"plain_text": "사용자가 추가한 하위 내용"}]}}]
+    target["has_children"] = True
+    # list_children must actually return the complete nested structure.
+    real = fake.__call__
+    def with_children(req, timeout=120):
+        import io
+        if hasattr(req, "full_url") and f"/blocks/{target['id']}/children?" in req.full_url:
+            return io.BytesIO(json.dumps({"results": target["_children"], "has_more": False}).encode())
+        return real(req, timeout)
+    with patch("urllib.request.urlopen", side_effect=with_children):
+        with pytest.raises(notion.NotionError):
+            resume(setup)
+    assert not target.get("archived")
+    assert not notion.load_records(setup[2])
+
+
+@pytest.mark.parametrize("change", ["prose", "marker_order", "delete_prose", "witness_text"])
+def test_edit_before_initial_snapshot_is_not_adopted(setup, change):
+    setup[0].fail_after = "page"
+    with pytest.raises(notion.NotionError):
+        start(setup)
+    fake = setup[0]
+    blocks = next(iter(fake.pages.values()))["blocks"]
+    if change == "marker_order":
+        marker = next(b for b in reversed(blocks) if b["type"] == "paragraph" and
+                      b["paragraph"]["rich_text"][0]["plain_text"].startswith("NOTIONIMAGE-"))
+        blocks.remove(marker)
+        blocks.insert(0, marker)
+    elif change == "witness_text":
+        next(b for b in blocks if b["type"] == "paragraph" and
+             b["paragraph"]["rich_text"][0]["plain_text"].startswith("NOTIONSYNC-"))["paragraph"]["rich_text"] = [{"plain_text": "사용자 문장"}]
+    else:
+        prose = next(b for b in blocks if b["type"] == "paragraph" and
+                     b["paragraph"]["rich_text"][0]["plain_text"] == "본문")
+        if change == "delete_prose":
+            blocks.remove(prose)
+        else:
+            prose["paragraph"]["rich_text"] = [{"plain_text": "변경한 본문"}]
+    before_writes = list(fake.events)
+    with pytest.raises(notion.NotionError):
+        resume(setup)
+    assert fake.events == before_writes  # No witness deletion, insertion or title write.
+    assert not notion.load_records(setup[2])
+
+
+def test_early_resume_with_unprovable_markdown_conversion_stops(setup):
+    setup[0].fail_after = "page"
+    with pytest.raises(notion.NotionError):
+        start(setup)
+    with patch.object(notion, "pull_markdown", return_value="<converted>unknown</converted>"):
+        with pytest.raises(notion.NotionError):
+            resume(setup)
+    assert not notion.load_records(setup[2])
