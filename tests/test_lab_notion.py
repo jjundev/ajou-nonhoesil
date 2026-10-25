@@ -297,3 +297,66 @@ class TestStripAssetSignatures(unittest.TestCase):
             text = notion.pull_markdown("PAGE", "ntn_abc")
         self.assertNotIn("X-Amz-Signature", text)
         self.assertIn(BARE, text)
+
+
+class TestImageAPI(unittest.TestCase):
+    def test_upload_multipart_file_field(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "한 글.png"
+            data = b"\x89PNG\r\n\x1a\nreal-bytes"
+            path.write_bytes(data)
+            with mock.patch("scripts.lab.notion.urllib.request.urlopen",
+                            return_value=fake_response({"status": "uploaded"})) as opener:
+                notion.send_file_upload("UPLOAD", path, "secret")
+            req = opener.call_args[0][0]
+            self.assertIn(b'name="file"', req.data)
+            self.assertIn(b"Content-Type: image/png", req.data)
+            self.assertIn(data, req.data)
+            self.assertEqual(req.get_header("Notion-version"), "2026-03-11")
+
+    def test_append_uses_position_after_block(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen",
+                        return_value=fake_response({"results": [{"id": "IMAGE"}]})) as opener:
+            result = notion.append_after("PAGE", "MARKER", [{"type": "image"}], "token")
+        payload = json.loads(opener.call_args[0][0].data)
+        self.assertEqual(payload["position"], {
+            "type": "after_block", "after_block": {"id": "MARKER"}})
+        self.assertEqual(result[0]["id"], "IMAGE")
+
+    def test_list_children_all_pages(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen", side_effect=[
+            fake_response({"results": [{"id": "a"}], "has_more": True, "next_cursor": "CURSOR"}),
+            fake_response({"results": [{"id": "b"}], "has_more": False}),
+        ]) as opener:
+            self.assertEqual([b["id"] for b in notion.list_children("P", "t")], ["a", "b"])
+        self.assertIn("start_cursor=CURSOR", opener.call_args[0][0].full_url)
+
+    def test_list_children_repeated_cursor_rejected(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen", return_value=fake_response(
+                {"results": [], "has_more": True, "next_cursor": "again"})):
+            with self.assertRaises(notion.NotionError):
+                notion.list_children("P", "t")
+
+    def test_non_uploaded_status_rejected(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "image.png"
+            p.write_bytes(b"\x89PNG\r\n\x1a\n")
+            with mock.patch("scripts.lab.notion.urllib.request.urlopen",
+                            return_value=fake_response({"status": "pending"})):
+                with self.assertRaises(notion.NotionError):
+                    notion.send_file_upload("U", p, "t")
+
+    def test_expired_upload_is_reported(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen",
+                        return_value=fake_response({"id": "U", "status": "expired"})):
+            self.assertEqual(notion.retrieve_file_upload("U", "t")["status"], "expired")
+
+    def test_error_redacts_token_and_signed_url(self):
+        with mock.patch("scripts.lab.notion.urllib.request.urlopen", side_effect=http_error(
+                400, {"message": "secret https://file/x?X-Amz-Signature=hidden"})):
+            with self.assertRaises(notion.NotionError) as ctx:
+                notion._request("GET", "/blocks/B", "secret")
+        self.assertNotIn("secret", str(ctx.exception))
+        self.assertNotIn("hidden", str(ctx.exception))

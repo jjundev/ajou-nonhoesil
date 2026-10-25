@@ -11,6 +11,8 @@ diff 를 해석하는 판단은 ⑦ `sync-report-to-notion` 스킬의 몫이다.
 """
 
 import json
+import uuid
+from urllib.parse import urlencode
 import os
 import re
 import urllib.error
@@ -61,18 +63,97 @@ def _request(method, path, token, payload=None, timeout=120) -> dict:
             "Content-Type": "application/json",
         },
     )
+    return _open_request(req, token, timeout)
+
+
+def _open_request(req, token, timeout=120):
+    """One request only; ambiguous writes are reconciled by the sync journal."""
+    def clean(text):
+        return strip_asset_signatures(str(text)).replace(token, "[redacted]")
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         raw = e.read().decode("utf-8", "replace")
+        e.close()
         try:
             detail = json.loads(raw).get("message", raw)
         except json.JSONDecodeError:
             detail = raw
-        raise NotionError(f"{method} {path} 실패 (HTTP {e.code}): {detail}") from None
-    except urllib.error.URLError as e:
-        raise NotionError(f"{method} {path} 연결 실패: {e.reason}") from None
+        raise NotionError(f"{req.method} API 실패 (HTTP {e.code}): {clean(detail)}") from None
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise NotionError(f"{req.method} API 연결 실패: {clean(getattr(e, 'reason', e))}") from None
+
+
+def rich_text(text):
+    return [{"type": "text", "text": {"content": text[i:i + 1900]}}
+            for i in range(0, len(text), 1900)]
+
+
+def create_file_upload(path, token):
+    from .notion_images import image_type
+    path = Path(path)
+    return _request("POST", "/file_uploads", token, {
+        "mode": "single_part", "filename": path.name, "content_type": image_type(path)})
+
+
+def send_file_upload(upload_id, path, token):
+    from .notion_images import image_type
+    path = Path(path)
+    content_type = image_type(path)
+    boundary = "NotionImage" + uuid.uuid4().hex
+    # A fixed ASCII transport filename prevents multipart header injection;
+    # the original Unicode filename was set on the upload object.
+    filename = "image.png" if content_type == "image/png" else "image.jpg"
+    data = (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; '
+            f'filename="{filename}"\r\nContent-Type: {content_type}\r\n\r\n').encode()
+    data += path.read_bytes() + f"\r\n--{boundary}--\r\n".encode()
+    req = urllib.request.Request(f"{API}/file_uploads/{upload_id}/send",
+        data=data, method="POST", headers={
+            "Authorization": f"Bearer {token}", "Notion-Version": VERSION,
+            "Content-Type": f"multipart/form-data; boundary={boundary}"})
+    result = _open_request(req, token)
+    if result.get("status") != "uploaded":
+        raise NotionError("이미지 전송 결과가 uploaded 상태가 아닙니다")
+    return result
+
+
+def retrieve_file_upload(upload_id, token):
+    return _request("GET", f"/file_uploads/{upload_id}", token)
+
+
+def list_children(block_id, token):
+    results, seen, cursor = [], set(), None
+    while True:
+        query = {"page_size": 100}
+        if cursor:
+            query["start_cursor"] = cursor
+        data = _request("GET", f"/blocks/{block_id}/children?{urlencode(query)}", token)
+        results.extend(data["results"])
+        if not data.get("has_more"):
+            return results
+        cursor = data.get("next_cursor")
+        if not cursor or cursor in seen:
+            raise NotionError("children 페이지네이션 cursor가 비었거나 반복됩니다")
+        seen.add(cursor)
+
+
+def append_after(parent_id, after_id, blocks, token):
+    return _request("PATCH", f"/blocks/{parent_id}/children", token, {
+        "children": blocks,
+        "position": {"type": "after_block", "after_block": {"id": after_id}}})["results"]
+
+
+def archive_block(block_id, token):
+    _request("DELETE", f"/blocks/{block_id}", token)
+
+
+def read_block_tree(page_id, token):
+    blocks = list_children(page_id, token)
+    for block in blocks:
+        if block.get("has_children"):
+            block["_children"] = read_block_tree(block["id"], token)
+    return blocks
 
 
 RECORD_NAME = "notion.json"
