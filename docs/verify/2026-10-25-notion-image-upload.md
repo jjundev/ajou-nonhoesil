@@ -13,8 +13,8 @@ NOTION_IMAGE_LIVE=1 NOTION_IMAGE_LIVE_WORKDIR=/tmp/notion-image-acceptance-20261
 ```
 
 - 장애 주입 인수 실행: 2 passed / 131.11s.
-- 최종 코드로 실제 6개 페이지 재검증 및 구체적 오류 원인 확인 후 변조 재시험: 2 passed / 37.40s.
-- 관련 단위 회귀: 379 passed, 1 live skipped, 39 subtests (마지막 독립 리뷰 후 최종 전체 결과는 아래 추가).
+- 독립 리뷰 전 기능 코드로 실제 6개 페이지 재검증 및 구체적 오류 원인 확인 후 변조 재시험: 2 passed / 37.40s.
+- 관련 단위 회귀: 379 passed, 1 live skipped, 39 subtests (독립 리뷰 전).
 - 중간 전체 저장소 회귀: 3712 passed, 10 skipped, 1224 subtests; 기존 Pillow 등의 경고 52건.
 - 기본 테스트에서는 라이브 테스트가 skip된다. 실제 Notion에 쓰는 테스트는 두 환경변수를 모두 지정한 경우만 실행한다.
 
@@ -30,7 +30,7 @@ NOTION_IMAGE_LIVE=1 NOTION_IMAGE_LIVE_WORKDIR=/tmp/notion-image-acceptance-20261
 | page_create_response_lost | [시험 페이지](https://www.notion.so/404b06d263bc81b1a50fcc025ed3a9f5) | 3 | 1 | planned | pass |
 
 모든 페이지는 보존했다. 페이지 제목은 검증 완료이며 URL의 예전 sync 슬러그는 제목 갱신 뒤에도 유지될 수 있다.
-정상 페이지는 110개 최상위 블록과 표의 하위 행을 포함한다. 첫 이미지·끝 이미지·연속 이미지·동일 파일/캡션 반복·PNG/JPEG·2,400자 한글 캡션·표·수식을 시험했다.
+정상 페이지는 113개 최상위 블록과 표의 하위 행을 포함한다. 첫 이미지·끝 이미지·연속 이미지·동일 파일/캡션 반복·PNG/JPEG·2,400자 한글 캡션·표·수식을 시험했다.
 
 ## 검증과 실패 복구 증거
 
@@ -210,4 +210,86 @@ NOTION_IMAGE_LIVE=1 NOTION_IMAGE_LIVE_WORKDIR=/tmp/notion-image-acceptance-20261
 
 ## 독립 리뷰와 최종 회귀
 
-독립 리뷰 후 이 절에 판정·수정·최종 전체 회귀 결과를 추가한다.
+독립 리뷰어(gpt-6-astra, 새 문맥, 읽기 전용)가 전체 변경을 검토했다.
+최초 판정은 With fixes: Critical 0, Important 2, Minor 0, Declined to judge 없음.
+스킬의 신규 push·실패 resume·사용자 편집 후 옛 페이지 pull 적용 시나리오도 독립 확인했다.
+
+- **Important 1 수정:** 표식/witness의 하위 사용자 문단이 fingerprint에서 제외되어 삭제될 수 있었다. 하위 블록·예상 외 rich_text/서식을 검사하고 삭제 직전 원격 블록을 다시 읽도록 했다. 하위 문단이 있으면 원격 쓰기·완료 확정 없이 중단한다.
+- **Important 2 수정:** 첫 fingerprint가 없는 재개에서 현재 본문·표식 순서를 새 기준으로 채택할 수 있었다. 스냅샷 없는 초기 재개는 전송한 표식 Markdown과 원격 Markdown을 보수적으로 대조하고, 신뢰할 수 있는 최초 fingerprint를 witness 삭제 전에 저장한다.
+- 두 결함을 재현하는 테스트의 실패를 확인한 뒤 수정하여 통과시켰다. 표식 하위 내용, witness 하위 내용, 일반 본문 수정/삭제, 표식 이동, 확증할 수 없는 변환을 포함했다.
+- 수정 후 관련 회귀: **513 passed, 1 skipped, 442 subtests**.
+- 수정 후 전체 회귀: **3725 passed, 10 skipped, 52 warnings, 1224 subtests**, 246.27초.
+- 수정은 저자가 회귀로 검증했다. 추가 독립 재리뷰를 수행한 것으로 표시하지 않는다. 미룬 Minor 지적은 없다.
+
+**안전한 초기 재개 제한:** 최초 snapshot이 없는 경우에는 빈 줄과 줄 끝 차이만 자동 허용한다. 표→HTML 같은 변환을 동등하다고 확증할 수 없으면 새 기준을 만들거나 새 페이지를 생성하지 않고 중단한다. 이 경우 원격 확인이 필요하다. 정상 최초 업로드와 이미 최초 snapshot이 남은 재개는 이 제한으로 표를 거절하지 않는다.
+
+리뷰 수정 코드 커밋: `0d97144679027c84e243b964bbeab9705c83730b`. 최종 검증 정리 시각: 2026-10-25T18:47:50.626640+09:00.
+
+
+### 리뷰 수정 후 추가 실제 Notion 검증
+
+`/tmp/notion-image-review-fixes-20261025-01`에 결과와 작업 journal을 보존했다.
+초기 생성 응답 유실 복구를 새 페이지에서 다시 실행했고, 별도 시험 페이지에서 다음 충돌을 확인했다.
+
+| 추가 시나리오 | 실제 결과 | 시험 페이지 |
+|---|---|---|
+| 초기 생성 응답 유실 | 전송 본문과 원격 본문 대조 후 같은 페이지로 복구, 이미지 3개·baseline 1개·레코드 1개 | [페이지](https://www.notion.so/404b06d263bc81e8bba6c679c696b1f7) |
+| 최초 snapshot 전 본문 수정 + witness 하위 문단 | 변경을 거절하고 문단·하위 내용 보존, 완료 이력 없음 확인. 시험으로 넣은 변경만 제거한 뒤 같은 페이지에서 정상 재개 | [페이지](https://www.notion.so/404b06d263bc81a18228e7ff9d6fcce9) |
+| 이미지 표식 아래 하위 문단 | 변경을 거절하고 문단·하위 내용 보존, 완료 이력 없음 확인. 시험으로 넣은 변경만 제거한 뒤 같은 페이지에서 정상 재개 | [페이지](https://app.notion.com/p/review_guard-marker_child-v1-sync-d7779f69306b4dd6910835a4863d150f-404b06d263bc8191bd87d8678f85cc5f) |
+
+
+시험 중단 후 사용자 하위 내용이 실제로 남아 있는 것을 원격에서 다시 확인했다.
+실제 기존 보고서의 편집을 제거한 것이 아니라, 이 시험이 추가한 문장과 하위 블록만 복구했다.
+
+### 실행 중 판단과 비용
+
+- 별도 관리 worktree와 `codex/notion-image-upload`에서 구현했다. 원본 main 보호가 목적이며 실제 적용을 위해 이후 통합이 필요하다.
+- 스킬 문구 grep 테스트 대신 실제 CLI push→응답 유실→resume과 문서 검토를 사용했다. 실행 동작은 검사하지만 문구 자체는 독립 적용 검토로 확인했다.
+- 동시 실행 잠금은 flock을 사용했다. 종료된 프로세스의 잠금이 자동 해제되며 Unix 환경에 한정된다.
+- 이미지 없는 보고서의 생성 응답 유실도 확인할 수 있도록 소유권 witness를 추가했다. 생성·삭제 API 호출이 추가된다.
+- 왕복 검사 양쪽에 명시적 페이지 제목을 보완해 첫 본문 절 누락이 기존 제목 흡수 예외에 가려지지 않게 했다. 기존 공개 검사 함수의 동작은 유지했다.
+- 기존 수동 첨부 규칙은 관찰된 비호환 기준으로 삼았고, 수정 스킬을 실제 CLI 시험과 마지막 독립 적용 검토로 확인했다. 별도의 단계별 에이전트 실험은 수행하지 않았다.
+- 괄호 경로의 연속 이미지를 산문 줄바꿈으로 잘못 판단하지 않도록 이미지 치환 본문에서 줄바꿈을 검사했다. 이 검사의 행 위치는 전송 본문 기준이다.
+- 삽입 응답 목록 길이에 의존하지 않고 원격 표식 구간과 내용으로 성공을 식별한다. 이미지별 읽기·내용 비교 호출이 추가된다.
+- 시험용 위치 변조를 복구할 때 첫 이미지를 재생성하고 최종 block ID를 기록했다. 시험 블록 ID는 바뀔 수 있으며 운영 sync는 사용자 편집을 자동 복원하지 않는다.
+- 초기 snapshot 없는 재개는 전송 원문과 동등함을 보수적으로 확증한다. 확증 불가능한 NFM 변환은 자동 재개가 중단될 수 있다.
+
+### 실행 원장
+
+```text
+# SDD ledger — plan: docs/superpowers/plans/2026-10-25-notion-image-upload.md
+Base: 88ce52c56957588a40412a9d686844efbb8d7cbc
+Spec: approved design embedded in plan.
+Pre-flight: Tasks 1→3→4 share immutable occurrence indices and full source hash; compatible.
+Pre-flight: Tasks 2→4→6 share positioned block API and journal-aware HTTP boundary; compatible.
+Pre-flight: Tasks 4→5 share push/resume CLI and legacy history schema; compatible.
+Ruling: Use managed isolated worktree and codex/notion-image-upload branch under existing authorization to implement the accepted plan — protects original main checkout — changes must later be integrated.
+Ruling: Skill text assertions in Task 5 are replaced by actual CLI behavior and a documentation audit — TDD writing-good-tests forbids prose grep tests — agent discovery wording remains manually reviewed.
+Baseline: targeted legacy suites 311 passed, 39 subtests.
+Task 1: complete (commits 88ce52c..f14cd3d, tests: .venv/bin/python -m pytest -n0 tests/test_lab_notion_images.py tests/test_lab_validate.py -q → 305 passed, 39 subtests passed in 0.32s)
+Task 2: complete (commits f14cd3d..53eeccf, tests: .venv/bin/python -m pytest -n0 tests/test_lab_notion.py -q → 35 passed in 0.03s)
+Task 3: complete (commits 53eeccf..f290830, tests: .venv/bin/python -m pytest -n0 tests/test_lab_notion_images.py -q → 32 passed in 0.18s)
+Task 4: Ruling: Use flock for exclusive normalized-output/kind ownership — kernel releases dead owners, explicit resume still required for active unfinished journals — portability limited to Unix.
+Task 4: Ruling: Add and remove a unique page witness before locating image boundaries — enables uncertain page-create recovery even for image-free reports — one extra operation-owned paragraph/request pair.
+Task 4: Ruling: Pass explicit page title on both sides of roundtrip checks — legacy first-heading absorption exemption otherwise hides a missing first body section — legacy helper semantics remain unchanged.
+Task 2 live gate: /tmp/notion-image-probe-20261025-01/probe.json, all 7 checks pass.
+Task 4: complete (commits f290830..6fa0fe0, tests: .venv/bin/python -m pytest -n0 tests/test_lab_notion.py tests/test_lab_notion_images.py tests/test_lab_notion_sync.py tests/test_lab_validate.py -q → 370 passed, 39 subtests passed in 0.47s)
+Task 5: Ruling: Existing manual-attachment text is the observed incompatible baseline; validate the revised reference procedure with actual CLI push→injected loss→resume and final independent agent application review — avoids extra per-task implementer/reviewer delegation — documentation wording is not automatically proven by runtime tests.
+Task 5: Documentation audit removed automatic-upload prohibition, manual attachment list, old append/baseline scripts; pull baseline diff/legacy missing-link check retained.
+Task 5: complete (commits 6fa0fe0..93f92a9, tests: .venv/bin/python -m pytest -n0 tests/test_notion_image_skill.py tests/test_skill_docs.py tests/test_lab_notion.py tests/test_lab_notion_sync.py -q → 183 passed, 403 subtests passed in 0.58s)
+Task 6: Ruling: Evaluate wrapping on the image-replaced transport Markdown — old regex mistook adjacent image paths containing parentheses for wrapped prose — source line locations for wrapping refer to transport text.
+Task 6: Ruling: Resolve a successful append by remote marker interval/content instead of assuming exactly one response result — live >100-block page returned a non-singleton response while inserting exactly one image — one additional remote read/content comparison per occurrence.
+Task 6: Live fixture uses single-line display math to comply with the existing report-wrapping validator; multiline math validation is outside this change.
+Task 6: Ruling: Test-only corruption repair recreates the first image at API position:start and records its new owned block ID — live unarchive restored at the document end — trial evidence reports final IDs; production never repairs user edits automatically.
+Task 6: Preserved remote marker edits on resume: user-added text in a formerly owned marker must stop before deletion; test observed RED→GREEN.
+Task 6: complete (commits 93f92a9..a7d89c4, tests: .venv/bin/python -m pytest -n0 tests/test_lab_notion.py tests/test_lab_notion_images.py tests/test_lab_notion_sync.py tests/test_lab_validate.py tests/test_notion_image_skill.py tests/test_notion_image_live.py -q → 379 passed, 1 skipped, 39 subtests passed in 0.67s)
+Final review: independent gpt-6-astra reviewer, read-only, Critical 0 / Important 2 / Minor 0 / Declined to judge none. Skill push/resume/legacy pull application scenarios approved.
+Final: Ruling: If no initial snapshot survived interrupted creation, compare submitted marker Markdown and remote Markdown allowing only empty-line/line-ending differences; stop on unprovable transformations — prevents adopting user edits or moved markers as the new baseline — early resume of transformed tables may require manual remote review.
+Final: fixed P1 marker/witness user children deletion — test_remote_owned_paragraph_children_stop_resume_without_deletion RED→GREEN; pure locate_markers children case RED→GREEN; immediate remote re-read and pristine structure check before archive.
+Final: fixed P1 early snapshot adoption of user prose/deletion/marker reorder — test_edit_before_initial_snapshot_is_not_adopted and test_early_resume_with_unprovable_markdown_conversion_stops RED→GREEN; trusted snapshot stored before witness deletion.
+Final: targeted review-fix regression 513 passed / 1 skipped / 442 subtests.
+Final: actual early-create response-loss recovery and live prose/witness-child/marker-child conflict probes passed; deliberately injected content preserved before cleanup, same page/version resumed afterward.
+Final: entire repository suite 3725 passed / 10 skipped / 52 warnings / 1224 subtests in 246.27s.
+Final: no deferred minors; no declined findings; no second review dispatched per inline execution review gate.
+
+```
