@@ -256,10 +256,9 @@ def append_record(output_dir, kind, page_id, url, source, when) -> dict:
     records.append(record)
     path = _record_file(output_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps({"schema": RECORD_SCHEMA, "uploads": records},
-                   ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8")
+    from .notion_sync import atomic_text
+    atomic_text(path, json.dumps({"schema": RECORD_SCHEMA, "uploads": records},
+                                ensure_ascii=False, indent=2) + "\n")
     return record
 
 
