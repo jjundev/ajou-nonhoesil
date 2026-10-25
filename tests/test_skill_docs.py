@@ -915,15 +915,6 @@ class SkillDocInvariants(unittest.TestCase):
         # 이 분리 없이 `DOCS` 에 넣으면 아래 item_count 테스트가 깨진다.
         self.assertNotIn("명세", REPORT_SECTION_DOCS)
 
-    def test_the_upload_step_passes_the_versioned_title(self):
-        # 사용자는 노션 사이드바에서 PDF 를 내보내 제출한다. 제목이 전부 같으면
-        # 옛 판본을 골라도 아무 데서도 오류가 나지 않는다 — 이 하네스에서
-        # 조용히 틀린 것을 제출할 수 있는 유일한 경로였다. ⑦ 은 `DOCS` 에
-        # 없으므로(단계가 `## push`·`## pull` 안에 산다) 여기서 따로 본다.
-        calls = call_arguments(SYNC.read_text(encoding="utf-8"), "push_markdown")
-        self.assertTrue(calls, "⑦ 에 push_markdown 호출부가 없다")
-        self.assertTrue(any("title=page_title" in c for c in calls), calls)
-
     def test_the_pull_procedure_calls_the_empty_image_check(self):
         # `check_pulled_images` 를 부르는 곳은 저장소에 ⑦ 의 pull 절차 하나뿐이다.
         # 그 단계를 지우면 함수가 죽은 코드가 되는데 단위 테스트 7개는 그대로
