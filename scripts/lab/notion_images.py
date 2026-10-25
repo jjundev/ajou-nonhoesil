@@ -119,3 +119,118 @@ def plan_images(source: Path, *, operation_id: str, body: str | None = None) -> 
         lines.append("\n" + marker + "\n\n")
     return ImagePlan(operation_id, source, hashlib.sha256(raw).hexdigest(),
                      "".join(lines), tuple(images))
+
+
+@dataclass(frozen=True)
+class ImagePlacement:
+    index: int
+    marker_id: str
+    parent_id: str
+    before_id: str | None
+    after_id: str | None
+    block_id: str | None = None
+
+
+def plain_text(parts):
+    return "".join(p.get("plain_text", p.get("text", {}).get("content", "")) for p in parts)
+
+
+def block_text(block):
+    return plain_text(block.get(block["type"], {}).get("rich_text", []))
+
+
+def walk(tree):
+    for block in tree:
+        yield block
+        yield from walk(block.get("_children", []))
+
+
+def locate_markers(plan: ImagePlan, tree: list[dict]) -> list[ImagePlacement]:
+    markers = {image.marker for image in plan.images}
+    positions = []
+    for image in plan.images:
+        found = [b for b in walk(tree) if image.marker in block_text(b)]
+        if (len(found) != 1 or found[0]["type"] != "paragraph"
+                or block_text(found[0]) != image.marker or found[0] not in tree):
+            raise notion.NotionError(f"이미지 {image.index}: 고유한 최상위 독립 표식이 없습니다")
+        block = found[0]
+        i = tree.index(block)
+        left = next((b["id"] for b in reversed(tree[:i]) if block_text(b) not in markers), None)
+        right = next((b["id"] for b in tree[i + 1:] if block_text(b) not in markers), None)
+        parent = block.get("parent", {})
+        parent_id = parent.get("page_id", parent.get("block_id", ""))
+        positions.append(ImagePlacement(image.index, block["id"], parent_id, left, right))
+    return positions
+
+
+def verify_placements(plan, placements, tree, *, markers_allowed=False):
+    from .validate import Finding
+    errors = []
+    def error(message):
+        errors.append(Finding("error", plan.source.name, message))
+    if len(placements) != len(plan.images):
+        error("이미지 등장 수와 위치 기록 수가 다릅니다")
+        return errors
+    all_blocks = list(walk(tree))
+    ids = [b["id"] for b in tree]
+    marker_ids = {p.marker_id for p in placements}
+    marker_texts = {im.marker for im in plan.images}
+    if not markers_allowed and any(b["id"] in marker_ids or block_text(b) in marker_texts for b in all_blocks):
+        error("표식이 본문에 남아 있습니다")
+    groups = {}
+    for image, p in zip(plan.images, placements):
+        found = [b for b in all_blocks if b["id"] == p.block_id]
+        if len(found) != 1 or found[0]["type"] != "image":
+            error(f"이미지 {image.index}: 누락/중복/타입 오류")
+            continue
+        b = found[0]
+        parent = b.get("parent", {})
+        if parent.get("page_id", parent.get("block_id", "")) != p.parent_id or b not in tree:
+            error(f"이미지 {image.index}: 부모 위치 불일치")
+        if plain_text(b["image"].get("caption", [])) != image.caption:
+            error(f"이미지 {image.index}: 캡션 불일치")
+        groups.setdefault((p.before_id, p.after_id), []).append(p.block_id)
+    for (before, after), expected in groups.items():
+        if (before is not None and before not in ids) or (after is not None and after not in ids):
+            error("이미지 본문 경계가 사라졌습니다")
+            continue
+        start = ids.index(before) + 1 if before else 0
+        end = ids.index(after) if after else len(ids)
+        actual = ids[start:end]
+        if markers_allowed:
+            actual = [id for id in actual if id not in marker_ids]
+        if start > end or actual != expected:
+            error("이미지의 정확한 본문 경계/순서가 다릅니다")
+    return errors
+
+
+def verify_image_content(local_path, url):
+    import io
+    import urllib.request
+    from urllib.parse import urlsplit
+    if urlsplit(url).scheme != "https":
+        raise notion.NotionError("이미지 다운로드는 HTTPS만 지원합니다")
+    try:
+        req = urllib.request.Request(url, headers={"Accept": "image/*"})
+        with urllib.request.urlopen(req, timeout=120) as response:
+            remote = response.read(40 * 1024 * 1024 + 1)
+        if len(remote) > 40 * 1024 * 1024:
+            raise ValueError("remote image too large")
+    except Exception:
+        # Do not include an exception message: many HTTP clients echo the signed URL.
+        raise notion.NotionError("원격 이미지 다운로드 실패; 새 URL 재조회가 필요합니다") from None
+    local = Path(local_path).read_bytes()
+    source_hash, remote_hash = hashlib.sha256(local).hexdigest(), hashlib.sha256(remote).hexdigest()
+    result = {"ok": source_hash == remote_hash, "comparison": "sha256",
+              "source_sha256": source_hash, "remote_sha256": remote_hash}
+    if not result["ok"]:
+        result["comparison"] = "pixels"
+        try:
+            from PIL import Image, ImageOps
+            with Image.open(io.BytesIO(local)) as a, Image.open(io.BytesIO(remote)) as b:
+                left = ImageOps.exif_transpose(a).convert("RGBA")
+                right = ImageOps.exif_transpose(b).convert("RGBA")
+                result["ok"] = left.size == right.size and left.tobytes() == right.tobytes()
+        except (ImportError, OSError, ValueError):
+            result["ok"] = False
+    return result
