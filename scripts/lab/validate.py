@@ -1544,11 +1544,7 @@ def check_notion_markdown(md_path) -> list:
     호출되지 않는다. 이 함수가 그 자리를 대신한다 — 대상이 렌더된 HTML 에서 md 로
     바뀌었을 뿐, "조용히 망가지고 눈으로는 안 보이는 결함"을 잡는 목적은 같다.
 
-    **상대경로 이미지는 error 가 아니라 info 다.** 노션 API 의 마크다운은 URL 만
-    받으므로 상대경로는 반드시 깨지는데, 그건 결함이 아니라 설계다 — 사진은
-    사용자가 노션에서 직접 끼워 넣기로 했다(자동 첨부는 파일 업로드 후 1시간 내
-    블록 삽입 + 위치 수술이 필요해 v1 의 복잡도가 아니다). 그래서 "고쳐라"가 아니라
-    "무엇을 몇 장 넣어야 하는지"를 알린다.
+    로컬 이미지는 자동 첨부 계획으로 사전 검사한다. 파일/문법 오류는 error다.
     """
     path = Path(md_path)
     if not path.exists():
@@ -1570,11 +1566,15 @@ def check_notion_markdown(md_path) -> list:
     out.extend(check_report_wrapping(body))
     out.extend(check_heading_backticks(body))
     out.extend(check_table_width(body))
-    local = [s for s in _IMAGE.findall(body)
-             if not s.startswith(("http://", "https://", "data:"))]
-    if local:
-        out.append(Finding("info", path.name,
-            f"노션에서 직접 넣어야 할 그림 {len(local)}장: " + ", ".join(local)))
+    from . import notion, notion_images
+    try:
+        plan = notion_images.plan_images(path, operation_id="preflight")
+        if plan.images:
+            out.append(Finding("info", path.name,
+                f"자동 첨부할 그림 {len(plan.images)}장: " +
+                ", ".join(image.path.name for image in plan.images)))
+    except (notion.NotionError, OSError, ValueError) as e:
+        out.append(Finding("error", path.name, str(e)))
     return out
 
 

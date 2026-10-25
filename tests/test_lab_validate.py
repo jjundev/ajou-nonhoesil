@@ -1209,15 +1209,11 @@ class TestCheckNotionMarkdown(unittest.TestCase):
         self.assertTrue(any(f.level == "error" and "헤더는 2개" in f.message
                             for f in findings), findings)
 
-    def test_상대경로_이미지는_error_가_아니라_info_다(self):
-        """상대경로 이미지가 노션에서 깨지는 것은 결함이 아니라 설계다 — 사진은
-        사용자가 노션에서 직접 끼워 넣는다. 그래서 '고쳐라'가 아니라 '무엇을 몇 장
-        넣어야 하는지'를 알린다."""
+    def test_없는_상대경로_이미지는_업로드_전에_거절한다(self):
         findings = validate.check_notion_markdown(md_file(
-            "# 제목\n\n![브레드보드](../../.claude/assets/Breadboard.jpg)\n"))
-        self.assertEqual([f.level for f in findings], ["info"])
-        self.assertIn("Breadboard.jpg", findings[0].message)
-        self.assertIn("1장", findings[0].message)
+            "# 제목\n\n![브레드보드](missing-image.png)\n"))
+        self.assertTrue(any(f.level == "error" and "이미지 파일" in f.message
+                            for f in findings), findings)
 
     def test_NFM_자체_블록_태그는_원시_HTML_로_잡지_않는다(self):
         """목차·여백 블록은 노션이 입력으로 받는 문법이다 (실측 확인). 이걸
