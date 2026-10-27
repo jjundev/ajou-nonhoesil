@@ -248,12 +248,12 @@
         },
         {
           "role": "output",
-          "kind": "bus",
+          "kind": "text",
           "group": "출력"
         },
         {
           "role": "output",
-          "kind": "bus",
+          "kind": "text",
           "group": "출력"
         }
       ],
@@ -483,7 +483,7 @@
         },
         {
           "role": "description",
-          "kind": "text",
+          "kind": "index",
           "group": "내용"
         },
         {

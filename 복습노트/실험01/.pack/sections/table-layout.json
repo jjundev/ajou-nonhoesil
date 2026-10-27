@@ -42,12 +42,12 @@
       "columns": [
         {
           "role": "input",
-          "kind": "signal",
+          "kind": "index",
           "group": "입력"
         },
         {
           "role": "input",
-          "kind": "signal",
+          "kind": "index",
           "group": "입력"
         },
         {

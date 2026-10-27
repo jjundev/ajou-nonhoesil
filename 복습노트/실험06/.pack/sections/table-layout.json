@@ -420,12 +420,12 @@
       "columns": [
         {
           "role": "control",
-          "kind": "signal",
+          "kind": "text",
           "group": "비동기 입력"
         },
         {
           "role": "control",
-          "kind": "signal",
+          "kind": "text",
           "group": "비동기 입력"
         },
         {
