@@ -132,3 +132,7 @@ def test_check_topic_ids_names_the_id():
         check_topic_ids({'t-a': {}}, ['t-a', 't-b'])
     with pytest.raises(ValueError, match='t-z: unknown topic'):
         check_topic_ids({'t-a': {}, 't-z': {}}, ['t-a'])
+
+def test_lost_tokens_does_not_glue_adjacent_items():
+    old = '<div class="sum" hidden>NAND·NOR는 반대예요.</div>'
+    assert lost_tokens(old, render_summary(dict(rules=[['OR', '1'], ['NAND·NOR', '반대']]))) == []

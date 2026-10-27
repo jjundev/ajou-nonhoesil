@@ -47,7 +47,7 @@ def replace_summary(topic_id,fragment,parts):
 
 def summary_text(fragment):
     found=SUM.findall(fragment)
-    return html.unescape(re.sub(r'<[^>]+>','',found[0])) if found else ''
+    return html.unescape(re.sub(r'<[^>]+>',' ',found[0])) if found else ''
 
 def lost_tokens(old_html,new_html):
     kept=set(TOKEN.findall(summary_text(new_html)))
