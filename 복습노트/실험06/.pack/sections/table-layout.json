@@ -180,6 +180,108 @@
     {
       "key": "t-sr-enable/0",
       "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-sr-enable/1",
+      "expected_headers": [
+        "순서",
+        "E",
+        "S",
+        "R",
+        "A",
+        "B",
+        "뒤 래치",
+        "Q"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "앞단 출력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "앞단 출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "뒤 래치"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        },
+        {
+          "left": 5,
+          "kind": "minor"
+        },
+        {
+          "left": 6,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-sr-enable/2",
+      "expected_headers": [
         "E",
         "S",
         "R",
