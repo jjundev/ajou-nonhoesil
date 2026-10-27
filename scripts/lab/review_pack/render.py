@@ -8,7 +8,7 @@ from urllib.parse import quote
 from .manifest import validate_manifest, output_names, DATA, link_data
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
-from .note_metadata import forbidden_note_metadata
+from .note_metadata import forbidden_note_metadata, summary_structure_errors
 from .navigation import render_navigation
 from .pack_md import write_pack_md
 from .equation_cards import separate_equations
@@ -59,6 +59,8 @@ def assemble(manifest,run,out,assets):
         modern=manifest.get('note_presentation_version')==2
         if modern and forbidden_note_metadata(fragment):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
+        if manifest.get('note_summary_version')==2 and (errors:=summary_structure_errors(t['id'],fragment)):
+            raise ValueError(errors[0])
         fragment=layout_note_tables(t['id'],fragment,layouts)
         note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+separate_tables(separate_equations(fragment))+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
