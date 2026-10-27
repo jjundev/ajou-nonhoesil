@@ -1,10 +1,33 @@
 from pathlib import Path
+import shutil
 import pytest
 from tests.test_review_pack_manifest import fixture
 from scripts.lab.review_pack.render import assemble
 
 ASSETS=Path('.claude/skills/logic-lab-review-pack/assets')
 RUN=Path('tests/fixtures/review_pack')
+CARD_SNIPPET='<div class="table-wrap"><table><thead><tr><th>S</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>I0</td></tr></tbody></table></div><p>$$Y=\\overline{S}I_0+SI_1$$</p><p>선택선 $S$가 0이면 $Y=I_0$예요.</p>'
+
+def run_with_cards(tmp_path):
+    run=tmp_path/'run'
+    shutil.copytree(RUN,run)
+    for name in ('sections/t-mux.html','problems/q-mux-001.html'):
+        path=run/name
+        path.write_text(path.read_text(encoding='utf-8')+CARD_SNIPPET,encoding='utf-8')
+    return run
+
+def test_note_wraps_tables_and_equations(tmp_path):
+    paths=assemble(fixture(),run_with_cards(tmp_path),tmp_path/'stage',ASSETS)
+    note=paths['note_html'].read_text(encoding='utf-8')
+    assert '<div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table>' in note
+    assert '<div class="equation-card" role="group" aria-label="수식"><p>$$Y=\\overline{S}I_0+SI_1$$</p></div>' in note
+    assert 'aria-label="표"' not in paths['review_html'].read_text(encoding='utf-8')
+
+def test_note_cards_skip_prose_with_inline_math(tmp_path):
+    paths=assemble(fixture(),run_with_cards(tmp_path),tmp_path/'stage',ASSETS)
+    note=paths['note_html'].read_text(encoding='utf-8')
+    assert '<p>선택선 $S$가 0이면 $Y=I_0$예요.</p>' in note
+    assert note.count('aria-label="수식"')==1
 
 def test_assemble_keeps_solution_and_links(tmp_path):
     paths=assemble(fixture(),RUN,tmp_path/'stage',ASSETS)

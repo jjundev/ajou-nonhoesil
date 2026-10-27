@@ -11,6 +11,8 @@ from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata
 from .navigation import render_navigation
 from .pack_md import write_pack_md
+from .equation_cards import separate_equations
+from .table_cards import separate_tables
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -51,7 +53,7 @@ def assemble(manifest,run,out,assets):
         modern=manifest.get('note_presentation_version')==2
         if modern and forbidden_note_metadata(fragment):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
-        note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+fragment+('' if modern else refs(t))+'</article>')
+        note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+separate_tables(separate_equations(fragment))+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
         if workbook: break
         if p['status']!='included': continue
