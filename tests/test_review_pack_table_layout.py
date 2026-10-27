@@ -97,3 +97,34 @@ def test_semantic_group_headers_have_matching_column_groups():
     groups=nodes(result,'colgroup')
     assert len(groups)==2
     assert [len([n for n in g.children if getattr(n,'tag',None)=='col']) for g in groups]==[1,1]
+
+def note_schema():
+    s=schema();s['tables'][0]['key']='t-mux/0'
+    return s
+
+def test_note_tables_use_topic_keys():
+    out=layout.layout_note_tables('t-mux',table(),note_schema())
+    assert nodes(out,'table')[0].attrs['data-layout-table']=='t-mux/0'
+    assert [n.children for n in nodes(out,'th')[:2]]==[['입력'],['출력']]
+
+def test_note_layout_is_idempotent():
+    once=layout.layout_note_tables('t-mux',table(),note_schema())
+    assert layout.layout_note_tables('t-mux',once,note_schema())==once
+
+def test_note_layout_none_keeps_fragment():
+    assert layout.layout_note_tables('t-mux',table(),None)==table()
+
+@pytest.mark.parametrize('change',['missing','extra','header'])
+def test_note_layout_rejects_drift(change):
+    s=note_schema();source=table()
+    if change=='missing':source+=table()
+    if change=='extra':s['tables'].append(dict(s['tables'][0],key='t-mux/1'))
+    if change=='header':s['tables'][0]['expected_headers'][0]='X'
+    with pytest.raises(layout.TableLayoutError,match='t-mux/'):
+        layout.layout_note_tables('t-mux',source,s)
+
+def test_note_and_problem_keys_are_not_interchangeable():
+    with pytest.raises(layout.TableLayoutError,match='invalid key'):
+        layout.layout_note_tables('t-mux',table(),schema())
+    with pytest.raises(layout.TableLayoutError,match='invalid key'):
+        layout.layout_problem_tables('q',dict(original=table()),note_schema())

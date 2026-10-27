@@ -1,4 +1,4 @@
-"""Explicit, build-time column sizing for problem explanations only.
+"""Explicit, build-time column sizing for problem explanations and note topics.
 
 The workbook and authored fragments remain the source of educational content.
 Metadata identifies roles; header spelling never determines an input/output role.
@@ -16,6 +16,8 @@ class TableLayoutError(ValueError):
 ROLES={'index','control','input','intermediate','output','description'}
 KINDS={'signal','bus','expression','text','connector','index'}
 TABLE=re.compile(r'<table\b[^>]*>.*?</table\s*>',re.S|re.I)
+PROBLEM_KEY=r'[^/]+/(original|conditions|ask|explanation)/\d+'
+NOTE_KEY=r't-[a-z0-9-]+/\d+'
 
 def text(node):
     return ''.join(text(c) if isinstance(c,Node) else c for c in node.children)
@@ -30,7 +32,7 @@ def markup(node):
     if node.tag in {'br','img','hr','wbr','col','input','meta','link','source'}:return start
     return start+''.join(markup(c) for c in node.children)+'</'+node.tag+'>'
 
-def validate(layouts):
+def validate(layouts,pattern=PROBLEM_KEY):
     if layouts.get('version')!=1 or not isinstance(layouts.get('tables'),list):
         raise TableLayoutError('table-layout: expected version 1 and tables list')
     seen=set()
@@ -39,7 +41,7 @@ def validate(layouts):
         key=entry.get('key','table-layout')
         if key in seen:raise TableLayoutError(key+': duplicate entry')
         seen.add(key)
-        if not re.fullmatch(r'[^/]+/(original|conditions|ask|explanation)/\d+',key):raise TableLayoutError(key+': invalid key')
+        if not re.fullmatch(pattern,key):raise TableLayoutError(key+': invalid key')
         columns=entry.get('columns',[])
         if not columns or len(columns)!=len(entry.get('expected_headers',[])):raise TableLayoutError(key+': column/header count')
         for col in columns:
@@ -95,13 +97,26 @@ def units(value):
     return sum(2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in value)
 
 def layout_problem_tables(problem_id,parts,layouts):
+    return _layout_parts(problem_id,parts,layouts,PROBLEM_KEY,lambda part,ordinal:f'{problem_id}/{part}/{ordinal}')
+
+def load_note_layouts(run:Path):
+    path=Path(run)/'sections/table-layout.json'
+    if not path.is_file():return None
+    try:return validate(json.loads(path.read_text(encoding='utf-8')),NOTE_KEY)
+    except (TypeError,KeyError,json.JSONDecodeError) as exc:raise TableLayoutError(str(path)+': '+str(exc)) from exc
+
+def layout_note_tables(topic_id:str,fragment:str,layouts:dict|None)->str:
+    # Note keys are <topic-id>/<ordinal>; the whole topic fragment is one part.
+    return _layout_parts(topic_id,dict(body=fragment),layouts,NOTE_KEY,lambda part,ordinal:f'{topic_id}/{ordinal}')['body']
+
+def _layout_parts(owner,parts,layouts,pattern,keyof):
     if layouts is None:return parts.copy()
-    validate(layouts)
-    entries={e['key']:e for e in layouts['tables'] if e['key'].split('/')[0]==problem_id}
+    validate(layouts,pattern)
+    entries={e['key']:e for e in layouts['tables'] if e['key'].split('/')[0]==owner}
     found={};parsed={}
     for part,source in parts.items():
         for ordinal,match in enumerate(TABLE.finditer(source)):
-            key=f'{problem_id}/{part}/{ordinal}'
+            key=keyof(part,ordinal)
             if key not in entries:raise TableLayoutError(key+': missing metadata')
             parser=Parser();parser.feed(match.group());tables=[n for n in parser.root.walk() if n.tag=='table']
             if len(tables)!=1:raise TableLayoutError(key+': nested tables unsupported')
@@ -195,5 +210,5 @@ def layout_problem_tables(problem_id,parts,layouts):
     output={}
     for part,source in parts.items():
         ordinal=iter(range(1000000))
-        output[part]=TABLE.sub(lambda m:markup(parsed[f'{problem_id}/{part}/{next(ordinal)}'][0]),source)
+        output[part]=TABLE.sub(lambda m:markup(parsed[keyof(part,next(ordinal))][0]),source)
     return output
