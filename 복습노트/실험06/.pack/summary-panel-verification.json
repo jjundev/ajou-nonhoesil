@@ -4,9 +4,9 @@
     {
       "schema_version": 1,
       "html": "복습노트/실험06/실험06_실험설명.html",
-      "html_sha256": "416ae1bd8e919896bdb540348718ad88e0ca87a1e20e42705502a0aff730b175",
+      "html_sha256": "23686c50105b6aef477a1fbcfd9036bbe1ea2484aa41e0fdaddc92ab6c0c6a1b",
       "audit_path": "복습노트/실험06/.pack/summary-audit.md",
-      "audit_sha256": "5dca1a5a5f6843d4d52117b05d7f5e958521b9a1155309313cf79700897c1847",
+      "audit_sha256": "06f0b7b5ecd953b9cba46f97b0cfbaa0c5c2778e6df859c575c409a6ca0b6fe4",
       "semantic_status": "pass",
       "browser_status": "pending",
       "evidence": [
@@ -20,7 +20,7 @@
         {
           "kind": "current-md-check",
           "path": "복습노트/실험06/.pack/실험06_실험설명.md",
-          "sha256": "7c281994b12df5fa5f7724d861c83b6f7fd95f079bc8b8693f034ef1f79a979f",
+          "sha256": "2145d0414b593c0d2399725bafded7a056f96088cbc67dc459a27e7b23a83146",
           "errors": []
         },
         {
@@ -53,6 +53,11 @@
           "kind": "2026-10-27-t-sr-enable-update",
           "path": "tmp/review-pack/실험06-20261027-srenable/검증결과.md",
           "note": "t-sr-enable 본문·요약 재독, 1280 dark·375 light 브라우저에서 이 토픽만 확인. 다른 토픽 패널 재검사 안 함."
+        },
+        {
+          "kind": "2026-10-27-t-d-latch-jk-latch-edge-update",
+          "path": "복습노트/실험06/.pack/검증결과.md",
+          "note": "t-d-latch·t-jk-latch·t-edge 본문·요약 재독, 1280 dark·375 light 브라우저에서 이 세 토픽만 확인. 다른 토픽 패널 재검사 안 함."
         }
       ],
       "unresolved": []
