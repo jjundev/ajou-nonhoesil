@@ -128,3 +128,11 @@ def test_note_and_problem_keys_are_not_interchangeable():
         layout.layout_note_tables('t-mux',table(),schema())
     with pytest.raises(layout.TableLayoutError,match='invalid key'):
         layout.layout_problem_tables('q',dict(original=table()),note_schema())
+
+def test_template_layout_rules_apply_to_note_pages():
+    from pathlib import Path
+    text=Path('.claude/skills/logic-lab-review-pack/assets/note-template.html').read_text(encoding='utf-8')
+    block=text[text.index('/* explanation-table-layout:start */'):text.index('/* explanation-table-layout:end */')]
+    assert '    .table-card:has(> table[data-layout-table]) { container-type: inline-size; }' in block
+    assert '    [data-layout-table] td { white-space: nowrap; }' in block
+    assert [l.strip() for l in block.splitlines() if '[data-problem-explanation]' in l]==['[data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }']
