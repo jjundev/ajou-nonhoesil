@@ -2,7 +2,133 @@
   "version": 1,
   "tables": [
     {
+      "key": "t-memory/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-memory/1",
+      "expected_headers": [
+        "엣지",
+        "S",
+        "엣지 직전 Q0Q1Q2",
+        "엣지 뒤 Q0Q1Q2"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "엣지"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "직전 상태"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
       "key": "t-shift/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-shift/1",
+      "expected_headers": [
+        "칸",
+        "D 자리에 들어가는 것",
+        "D 플립플롭 규칙으로 본 결과"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "text",
+          "group": "칸"
+        },
+        {
+          "role": "intermediate",
+          "kind": "text",
+          "group": "D 자리"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-shift/2",
       "expected_headers": [
         "엣지",
         "S",
@@ -40,33 +166,171 @@
       "key": "t-convert/0",
       "expected_headers": [
         "종류",
-        "입력",
-        "출력"
+        "넣는 방법 → 읽는 방법"
       ],
       "columns": [
         {
-          "role": "description",
+          "role": "input",
           "kind": "text",
-          "group": "내용"
+          "group": "조건"
         },
         {
-          "role": "description",
+          "role": "output",
           "kind": "text",
-          "group": "내용"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "내용"
+          "group": "결과"
         }
       ],
-      "boundaries": []
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-convert/1",
+      "expected_headers": [
+        "엣지",
+        "S",
+        "Q0Q1Q2Q3"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "엣지"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-convert/2",
+      "expected_headers": [
+        "단계",
+        "이동 직전 Q0Q1Q2Q3",
+        "읽은 Q3"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "text",
+          "group": "단계"
+        },
+        {
+          "role": "intermediate",
+          "kind": "bus",
+          "group": "저장 상태"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "직렬 출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
     },
     {
       "key": "t-jk/0",
       "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-jk/1",
+      "expected_headers": [
+        "D",
         "J",
         "K",
+        "JK 규칙으로 보면"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "JK 자리"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "JK 자리"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "JK 규칙으로 보면"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-jk/2",
+      "expected_headers": [
+        "D",
+        "Q이전",
+        "J",
+        "K",
+        "JK 규칙",
         "Q다음"
       ],
       "columns": [
@@ -78,15 +342,228 @@
         {
           "role": "input",
           "kind": "signal",
-          "group": "입력"
+          "group": "직전 상태"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "JK 자리"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "JK 자리"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "JK 규칙"
         },
         {
           "role": "output",
-          "kind": "text",
+          "kind": "signal",
           "group": "출력"
         }
       ],
       "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        },
+        {
+          "left": 4,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-7496/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-7496/1",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "하는 일"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "bus",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "핀 명세"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "용도"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-7496/2",
+      "expected_headers": [
+        "단계",
+        "조작",
+        "QA QB QC QD QE"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "단계"
+        },
+        {
+          "role": "control",
+          "kind": "text",
+          "group": "조작"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-counters/0",
+      "expected_headers": [
+        "S 자리에 넣는 것",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-counters/1",
+      "expected_headers": [
+        "엣지",
+        "SER=이전 QE",
+        "QA QB QC QD QE"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "엣지"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-counters/2",
+      "expected_headers": [
+        "엣지",
+        "링 Q0Q1Q2Q3",
+        "존슨 Q0Q1Q2Q3"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "엣지"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "링"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "존슨"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
         {
           "left": 1,
           "kind": "major"

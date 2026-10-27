@@ -20,7 +20,8 @@ M['topics']=[]
 for tid,title,pages,body,summ in TOPICS:
  M['topics'].append(dict(id=tid,title=title,requires=[] if tid=='t-start' else ['t-start'],sources=[ref(pg) for pg in pages]+([dict(source_id='s-scope',pdf_page=None,printed_page=None)] if tid=='t-start' else []),fragment=f'sections/{tid}.html',md_notes='현재 배포 파일 표지는 25-1. 7496 제어 극성·엣지는 교안 본문/부록/과거 제공 답 사이 충돌을 유지해요.' if tid=='t-7496' else '링·존슨은 현재 교안의 수행 항목과 구분한 기출 대비 보충이에요.' if tid=='t-counters' else ''))
  (R/'sections').mkdir(exist_ok=True);first,sep,rest=body.partition('</p>')
- note_body=layer('eli5','작은 상태부터 살펴봐요',first+sep)+layer('supp' if tid=='t-counters' else 'formal','보충 원리를 비교해요' if tid=='t-counters' else '조건과 작동 원리를 확인해요',rest)
+ # 층을 직접 쓴 토픽(규칙 먼저 순서)은 그대로, 문단만 쓴 토픽은 첫 문단을 eli5로 나눠요.
+ note_body=body if body.startswith('<div class="layer') else layer('eli5','작은 상태부터 살펴봐요',first+sep)+layer('formal','조건과 작동 원리를 확인해요',rest)
  (R/'sections'/f'{tid}.html').write_text(note_body+sumd(p(summ)),encoding='utf8')
 P={x['id']:x for x in M['problems']};rows=[]
 for q in Q:
