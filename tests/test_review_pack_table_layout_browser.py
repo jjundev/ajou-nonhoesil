@@ -129,20 +129,18 @@ def test_text_minima_and_equal_remaining_space(browser):
 
 
 @pytest.mark.parametrize('number', range(1, 8))
-def test_published_note_topics_never_overflow_page_at_375(number):
-    from playwright.sync_api import sync_playwright
+def test_published_note_topics_never_overflow_page_at_375(browser, number):
     root = Path(__file__).resolve().parents[1]
     path = root/'복습노트'/f'실험{number:02d}'/f'실험{number:02d}_실험설명.html'
-    with sync_playwright() as driver, driver.chromium.launch(channel='chrome') as browser:
-        page = browser.new_page(viewport={'width': 375, 'height': 900})
-        page.goto(path.as_uri())
-        page.wait_for_function('document.querySelectorAll(".toc-list a").length > 0')
-        overflow = []
-        for topic in page.locator('article.topic').evaluate_all('(ns)=>ns.map(n=>n.id)'):
-            # 주소로 바로 연 토픽에서 KaTeX가 그려진 뒤에 잰다.
-            page.goto(path.as_uri()+'#'+topic)
-            page.wait_for_load_state('load')
-            page.wait_for_timeout(400)
-            if not page.evaluate('document.documentElement.scrollWidth <= innerWidth'):
-                overflow.append(topic)
-        assert overflow == []
+    page = browser.new_page(viewport={'width': 375, 'height': 900})
+    page.goto(path.as_uri())
+    page.wait_for_function('document.querySelectorAll(".toc-list a").length > 0')
+    overflow = []
+    for topic in page.locator('article.topic').evaluate_all('(ns)=>ns.map(n=>n.id)'):
+        # 주소로 바로 연 토픽에서 KaTeX가 그려진 뒤에 잰다.
+        page.goto(path.as_uri()+'#'+topic)
+        page.wait_for_load_state('load')
+        page.wait_for_timeout(400)
+        if not page.evaluate('document.documentElement.scrollWidth <= innerWidth'):
+            overflow.append(topic)
+    assert overflow == []
