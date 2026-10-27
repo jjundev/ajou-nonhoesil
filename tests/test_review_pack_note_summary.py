@@ -40,17 +40,42 @@ def test_rejected(inner, why):
 def test_two_sums_rejected():
     assert summary_structure_errors('t', sum_(RULES) + '<div class="sum" hidden>' + RULES + '</div>')
 
-def test_build_enforces_only_when_opted_in(tmp_path):
+def _opt_in_run(tmp_path, inner='<p>외울 규칙은 S=0이면 I0예요.</p>'):
     run = tmp_path / 'run'; shutil.copytree(RUN, run)
-    (run / 'sections/t-mux.html').write_text(sum_('<p>외울 규칙은 S=0이면 I0예요.</p>'), encoding='utf-8')
-    m = fixture(); m['note_presentation_version'] = 2
-    assemble(m, run, tmp_path / 'old', ASSETS)
+    (run / 'sections/t-mux.html').write_text(sum_(inner), encoding='utf-8')
+    m = fixture(); m['note_presentation_version'] = 2; m['note_summary_version'] = 2
+    return run, m
+
+def write_summaries(run, topics):
+    (run / SUMMARY_FILE).write_text(json.dumps({'schema_version': 1, 'topics': topics}, ensure_ascii=False), encoding='utf-8')
+
+def build_stage(run, m, stage):
+    return assemble(m, run, stage, ASSETS)
+
+def test_build_enforces_only_when_opted_in(tmp_path):
+    run, m = _opt_in_run(tmp_path)
+    del m['note_summary_version']
+    build_stage(run, m, tmp_path / 'old')
     m['note_summary_version'] = 2
     with pytest.raises(ValueError, match='t-mux'):
-        assemble(m, run, tmp_path / 'new', ASSETS)
+        build_stage(run, m, tmp_path / 'new')
     (run / 'sections/t-mux.html').write_text(sum_(RULES + WHY), encoding='utf-8')
-    note = assemble(m, run, tmp_path / 'ok', ASSETS)['note_html'].read_text(encoding='utf-8')
+    note = build_stage(run, m, tmp_path / 'ok')['note_html'].read_text(encoding='utf-8')
     assert 'class="sum-rules"' in note
+
+def test_build_applies_run_summaries(tmp_path):
+    run, m = _opt_in_run(tmp_path)
+    write_summaries(run, {t['id']: {'rules': [['A', 'B']]} for t in m['topics']})
+    paths = build_stage(run, m, tmp_path / 'stage')
+    html = paths['note_html'].read_text(encoding='utf-8')
+    assert html.count('<p class="sum-label">외울 규칙</p>') == len(m['topics'])
+    assert (tmp_path / 'stage/.pack/sections/note-summaries.json').read_bytes() == (run / SUMMARY_FILE).read_bytes()
+
+def test_build_rejects_summary_topic_mismatch(tmp_path):
+    run, m = _opt_in_run(tmp_path)
+    write_summaries(run, {t['id']: {'rules': [['A', 'B']]} for t in m['topics'][1:]})
+    with pytest.raises(ValueError, match=m['topics'][0]['id'] + ': missing summary'):
+        build_stage(run, m, tmp_path / 'stage')
 
 @pytest.mark.parametrize('value', [True, 1, 3, '2'])
 def test_invalid_summary_version(value):
