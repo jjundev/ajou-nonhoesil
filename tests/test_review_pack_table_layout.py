@@ -133,6 +133,12 @@ def test_template_layout_rules_apply_to_note_pages():
     from pathlib import Path
     text=Path('.claude/skills/logic-lab-review-pack/assets/note-template.html').read_text(encoding='utf-8')
     block=text[text.index('/* explanation-table-layout:start */'):text.index('/* explanation-table-layout:end */')]
-    assert '    .table-card:has(> table[data-layout-table]) { container-type: inline-size; }' in block
+    assert '    .table-card:has(> table[data-layout-table]) { container-type: inline-size; position: relative; }' in block
     assert '    [data-layout-table] td { white-space: nowrap; }' in block
     assert [l.strip() for l in block.splitlines() if '[data-problem-explanation]' in l]==['[data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }']
+
+def test_relayout_with_changed_metadata_matches_fresh_layout():
+    old=note_schema()
+    new=note_schema();new['tables'][0]['boundaries']=[];new['tables'][0]['columns'][1].update(role='input',group='입력')
+    once=layout.layout_note_tables('t-mux',table(),old)
+    assert layout.layout_note_tables('t-mux',once,new)==layout.layout_note_tables('t-mux',table(),new)

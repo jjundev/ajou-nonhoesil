@@ -3,6 +3,7 @@
 python -m scripts.lab.review_pack.table_layout_upgrade (--all | --folder DIR) [--apply --backup-dir DIR]
 """
 import argparse
+import json
 from pathlib import Path
 import re
 import shutil
@@ -20,6 +21,7 @@ BODY_END = '</main>'
 CSS_START = '/* explanation-table-layout:start */'
 CSS_END = '/* explanation-table-layout:end */'
 CSS_ANCHOR = '    td:first-child, th:first-child { min-width: 6em; }'
+LAYOUT_FILE = 'sections/table-layout.json'
 TOPIC = re.compile(r'(<article class="topic" id="([^"]+)">)(.*?)(</article>)', re.S)
 
 
@@ -85,6 +87,22 @@ def _rerender_explanation(folder, manifest):
     return changes
 
 
+def _own_layout_file(folder):
+    # publish는 generated_files에 없는 파일을 사용자 파일로 본다. 열 배치 파일도 생성물로 등록한다.
+    path = folder / DATA / 'manifest.json'
+    original = path.read_bytes()
+    raw = original.decode('utf-8')
+    newline = '\r\n' if '\r\n' in raw else '\n'
+    data = json.loads(raw)
+    if json.dumps(data, ensure_ascii=False, indent=2) != raw.replace('\r\n', '\n'):
+        raise ValueError(f'{path}: unsupported manifest formatting')
+    owned = f'{DATA}/{LAYOUT_FILE}'
+    if owned in data.get('generated_files', []):
+        return {}
+    data['generated_files'] = sorted([*data.get('generated_files', []), owned])
+    return {path: (original, json.dumps(data, ensure_ascii=False, indent=2).replace('\n', newline).encode('utf-8'))}
+
+
 def upgrade_packs(folders: list[Path], *, apply: bool = False,
                   backup_root: Path | None = None) -> list[Path]:
     folders = [Path(p).resolve() for p in folders]
@@ -111,6 +129,7 @@ def upgrade_packs(folders: list[Path], *, apply: bool = False,
             raise ValueError(f'{path}: {exc}') from None
         if original != upgraded:
             changes[path] = (original, upgraded)
+        changes.update(_own_layout_file(folder))
         if copy.read_bytes() != template:
             changes[copy] = (copy.read_bytes(), template)
             changes.update(_rerender_explanation(folder, manifest))

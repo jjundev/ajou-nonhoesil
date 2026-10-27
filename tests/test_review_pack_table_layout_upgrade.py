@@ -56,6 +56,9 @@ def pack_with_layout(tmp_path, name='실험04'):
     stale = target / '.pack/assets/note-template.html'
     stale.write_bytes(stale.read_bytes() + b'<!-- stale -->')
     (target / '.pack/sections').mkdir(exist_ok=True)
+    manifest = json.loads((target / '.pack/manifest.json').read_text(encoding='utf-8'))
+    manifest['generated_files'] = [f for f in manifest['generated_files'] if f != '.pack/sections/table-layout.json']
+    (target / '.pack/manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
     (target / '.pack/sections/table-layout.json').write_text(json.dumps({'version': 1, 'tables': tables}, ensure_ascii=False), encoding='utf-8')
     return target
 
@@ -114,7 +117,10 @@ def test_apply_changes_only_note_and_template_copy(tmp_path):
     after = snapshot(folder)
     changed = {k for k in before if before[k] != after[k]}
     explanation = Path(f'{folder.name}_문제설명.html')
-    assert changed <= {note_path(folder).relative_to(folder), Path('.pack/assets/note-template.html'), explanation}
+    assert changed <= {note_path(folder).relative_to(folder), Path('.pack/assets/note-template.html'), explanation, Path('.pack/manifest.json')}
+    manifest = json.loads((folder / '.pack/manifest.json').read_text(encoding='utf-8'))
+    assert '.pack/sections/table-layout.json' in manifest['generated_files']
+    assert manifest['generated_files'] == sorted(manifest['generated_files'])
     assert note_path(folder).relative_to(folder) in changed
     # 문제설명은 템플릿 사본이 바뀐 만큼, 즉 열 배치 CSS 블록만 달라진다.
     if explanation in changed:

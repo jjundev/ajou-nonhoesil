@@ -195,7 +195,9 @@ def _layout_parts(owner,parts,layouts,pattern,keyof):
             for cell,start,span in positions:
                 cell.attrs.update({'data-layout-kind':cols[start]['kind'],'data-layout-role':cols[start]['role']})
                 boundary=labels[start] if span==1 else [v for v in labels[start] if v.endswith('left')]+[v for v in labels[start+span-1] if v.endswith('right')]
+                # A re-layout must not keep boundaries the metadata no longer has.
                 if boundary:cell.attrs['data-layout-boundary']=' '.join(boundary)
+                else:cell.attrs.pop('data-layout-boundary',None)
                 if cell.tag=='th':cell.attrs.setdefault('scope','colgroup' if span>1 else 'col')
         existing=any([normalized(cell) for cell,_,_ in positions]==[g[0] for g in groups] for _,_,positions in rows)
         if len(groups)>1 and any(c['role'] in {'input','output','control','intermediate'} for c in cols) and not existing:
