@@ -138,6 +138,7 @@ CHK = dict(source_visual='pass', content='self_review', independent='not_run', b
     dict(source_visual='not_run', content='not_run', independent='not_run', browser='not_run')
 manifest['checks'] = dict(CHK)
 manifest['note_presentation_version'] = 2
+manifest['note_summary_version'] = 2
 manifest['review_presentation_version'] = 2
 manifest['problem_explanation_version'] = 2
 manifest['explanation_checks'] = dict.fromkeys(CHK, 'not_run')
