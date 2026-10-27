@@ -130,7 +130,7 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 ## 후속 요청과 경계
 
 특정 부분에 대한 질문은 기존 팩을 읽고 설명한다. 질문만으로 파일을 수정하지 않는다.
-'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. **워크북** 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(워크북 payload에서 HTML·MD 재생성 후 검사)을 쓴다. 이 명령은 실험설명을 재생성하지 않는다.
+'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. **워크북** 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(워크북 payload에서 HTML·MD 재생성 후 검사)을 쓴다. 이 명령은 실험설명을 재생성하지 않는다. 카드 서식(표·수식) 도입 전에 발행한 실험설명은 `python -m scripts.lab.review_pack.card_upgrade --all`로 점검하고 `--apply --backup-dir <팩 밖 새 폴더>`로 제자리 업그레이드한다. 다시 실행하면 변경이 0건이어야 한다.
 
 **기존 목차 일괄 갱신.** `python -m scripts.lab.review_pack.navigation_upgrade --all`로 dry-run 목록을 확인하고 `python -m scripts.lab.review_pack.navigation_upgrade --all --apply --backup-dir <새 백업 폴더>`로 적용한다. 한 팩은 `--all` 대신 `--folder 복습노트/실험NN`을 쓴다. 명령은 모든 대상의 구조를 사전 검사하고 전체 팩을 백업한 뒤 탐색 부분과 동봉 note/review 템플릿만 바꾼다. 알 수 없는 HTML은 쓰기 전에 실패하며 본문·IDs·워크북 payload는 보존한다. 재실행의 변경 목록은 0이어야 한다. 적용 후 각 팩의 check와 브라우저 검증을 수행한다. 이미 내보낸 standalone HTML이 있으면 갱신한 원본으로 다시 내보낸다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.
