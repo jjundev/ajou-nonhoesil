@@ -4,9 +4,9 @@
     {
       "schema_version": 1,
       "html": "복습노트/실험06/실험06_실험설명.html",
-      "html_sha256": "23686c50105b6aef477a1fbcfd9036bbe1ea2484aa41e0fdaddc92ab6c0c6a1b",
+      "html_sha256": "34cf625fbb39c6acb6e27156692cc0dc3a0f2b3c7c34992a776ec6506bd306e3",
       "audit_path": "복습노트/실험06/.pack/summary-audit.md",
-      "audit_sha256": "06f0b7b5ecd953b9cba46f97b0cfbaa0c5c2778e6df859c575c409a6ca0b6fe4",
+      "audit_sha256": "4ded26cca78bd93cc5a9bb54437a8188c2a7c2fe0c5a52c56630d52637e5f45e",
       "semantic_status": "pass",
       "browser_status": "pending",
       "evidence": [
@@ -20,7 +20,7 @@
         {
           "kind": "current-md-check",
           "path": "복습노트/실험06/.pack/실험06_실험설명.md",
-          "sha256": "2145d0414b593c0d2399725bafded7a056f96088cbc67dc459a27e7b23a83146",
+          "sha256": "cd27500a7555893ebf906b54450ac460a89de8634275657f08a87286fd5590ad",
           "errors": []
         },
         {
@@ -58,6 +58,11 @@
           "kind": "2026-10-27-t-d-latch-jk-latch-edge-update",
           "path": "복습노트/실험06/.pack/검증결과.md",
           "note": "t-d-latch·t-jk-latch·t-edge 본문·요약 재독, 1280 dark·375 light 브라우저에서 이 세 토픽만 확인. 다른 토픽 패널 재검사 안 함."
+        },
+        {
+          "kind": "2026-10-27-t-edge-p5-t-74hc76-update",
+          "path": "복습노트/실험06/.pack/검증결과.md",
+          "note": "t-edge(p5 경고)·t-74hc76 본문·요약 재독, 1280 dark·375 light 브라우저에서 이 두 토픽만 확인. 다른 토픽 패널 재검사 안 함."
         }
       ],
       "unresolved": []

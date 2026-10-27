@@ -751,6 +751,51 @@
     {
       "key": "t-edge/4",
       "expected_headers": [
+        "때",
+        "CLK·CLK′",
+        "AND 출력",
+        "NAND 출력(그림)"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "text",
+          "group": "때"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-edge/5",
+      "expected_headers": [
         "Set",
         "Reset",
         "CLK",
@@ -801,6 +846,92 @@
     },
     {
       "key": "t-74hc76/0",
+      "expected_headers": [
+        "종류",
+        "핀",
+        "역할"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-74hc76/1",
+      "expected_headers": [
+        "PR",
+        "CLR",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "비동기 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "비동기 입력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-74hc76/2",
+      "expected_headers": [
+        "하강 엣지에서",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-74hc76/3",
       "expected_headers": [
         "SET(PR)",
         "RESET(CLR)",
@@ -853,6 +984,41 @@
         {
           "left": 4,
           "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-74hc76/4",
+      "expected_headers": [
+        "클록 동작",
+        "Q",
+        "이유"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "text",
+          "group": "클록"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "minor"
         }
       ]
     },
