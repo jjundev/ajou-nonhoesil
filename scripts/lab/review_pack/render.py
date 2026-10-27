@@ -13,6 +13,7 @@ from .navigation import render_navigation
 from .pack_md import write_pack_md
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
+from .table_layout import load_note_layouts, layout_note_tables, TableLayoutError
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -48,11 +49,17 @@ def assemble(manifest,run,out,assets):
             links.append(f'<a href="{esc(url)}">{esc(label)}</a>')
         return '<p class="sources">출처: '+(' · '.join(links) or '새로 구성한 설명·연습')+'</p>'
     note=[];review=[]
+    layouts=load_note_layouts(run)
+    if layouts:
+        ids={t['id'] for t in manifest['topics']}
+        for e in layouts['tables']:
+            if e['key'].split('/')[0] not in ids:raise TableLayoutError(e['key']+': unknown topic')
     for t in manifest['topics']:
         fragment=read_fragment(run,t['fragment'],names)
         modern=manifest.get('note_presentation_version')==2
         if modern and forbidden_note_metadata(fragment):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
+        fragment=layout_note_tables(t['id'],fragment,layouts)
         note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+separate_tables(separate_equations(fragment))+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
         if workbook: break
@@ -80,6 +87,9 @@ def assemble(manifest,run,out,assets):
             if p.is_symlink(): raise ValueError('No symlink figures')
         shutil.copytree(run/'figures',data_out/'figures')
     else: (data_out/'figures').mkdir()
+    if layouts:
+        (data_out/'sections').mkdir()
+        shutil.copy2(run/'sections/table-layout.json',data_out/'sections/table-layout.json')
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
     for kind,body in ([('note',note)] if workbook else [('note',note),('review',review)]):

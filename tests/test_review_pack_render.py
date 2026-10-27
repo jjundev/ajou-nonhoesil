@@ -74,3 +74,32 @@ def test_toc_supplies_flat_article_links(tmp_path):
         hashes = [n.attrs['href'] for n in nav.walk() if n.tag == 'a']
         ids = [n.attrs['id'] for n in parser.root.walk() if n.tag == 'article' and n.attrs.get('class') in ('topic','card')]
         assert hashes == ['#'+id for id in ids]
+
+NOTE_LAYOUT={'version':1,'tables':[{'key':'t-mux/0','expected_headers':['S','Y'],
+    'columns':[{'role':'input','kind':'signal','group':'입력'},{'role':'output','kind':'signal','group':'출력'}],
+    'boundaries':[{'left':0,'kind':'major'}]}]}
+
+def run_with_layout(tmp_path,layout=NOTE_LAYOUT):
+    import json
+    run=run_with_cards(tmp_path)
+    (run/'sections/table-layout.json').write_text(json.dumps(layout,ensure_ascii=False),encoding='utf-8')
+    return run
+
+def test_note_tables_follow_layout_inside_cards(tmp_path):
+    paths=assemble(fixture(),run_with_layout(tmp_path),tmp_path/'stage',ASSETS)
+    note=paths['note_html'].read_text(encoding='utf-8')
+    assert '<div class="table-card" role="group" aria-label="표"><table data-layout-table="t-mux/0"' in note
+    assert '<tr data-layout-group-row=""><th scope="colgroup" colspan="1">입력</th>' in note
+    assert (tmp_path/'stage/.pack/sections/table-layout.json').is_file()
+    assert 'data-layout-table="' not in paths['review_html'].read_text(encoding='utf-8')
+
+def test_note_layout_rejects_unknown_topic(tmp_path):
+    import copy
+    layout=copy.deepcopy(NOTE_LAYOUT);layout['tables'].append(dict(layout['tables'][0],key='t-gone/0'))
+    with pytest.raises(ValueError,match='t-gone/0'):
+        assemble(fixture(),run_with_layout(tmp_path,layout),tmp_path/'stage',ASSETS)
+
+def test_note_without_layout_has_no_layout_marks(tmp_path):
+    paths=assemble(fixture(),run_with_cards(tmp_path),tmp_path/'stage',ASSETS)
+    assert 'data-layout-table="' not in paths['note_html'].read_text(encoding='utf-8')
+    assert not (tmp_path/'stage/.pack/sections').exists()
