@@ -52,6 +52,9 @@ def pack_with_layout(tmp_path, name='실험04'):
             _, headers = grid(next(n for n in parser.root.walk() if n.tag == 'table'), 'x')
             tables.append({'key': f'{match.group(1)}/{ordinal}', 'expected_headers': headers,
                            'columns': [{'role': 'description', 'kind': 'text', 'group': '내용'} for _ in headers]})
+    # 발행본 상태와 무관하게 템플릿 사본 동기화·문제설명 재렌더 경로를 타도록 사본을 낡게 만든다.
+    stale = target / '.pack/assets/note-template.html'
+    stale.write_bytes(stale.read_bytes() + b'<!-- stale -->')
     (target / '.pack/sections').mkdir(exist_ok=True)
     (target / '.pack/sections/table-layout.json').write_text(json.dumps({'version': 1, 'tables': tables}, ensure_ascii=False), encoding='utf-8')
     return target
@@ -97,6 +100,7 @@ def test_missing_layout_file_aborts_batch_before_writes(tmp_path):
     good = pack_with_layout(tmp_path, '실험04')
     bad = tmp_path / '실험05'
     shutil.copytree(PACKS / '실험05', bad)
+    (bad / '.pack/sections/table-layout.json').unlink(missing_ok=True)
     before = snapshot(good)
     with pytest.raises(ValueError, match='실험05'):
         upgrade_packs([good, bad], apply=True, backup_root=tmp_path / 'backup')
