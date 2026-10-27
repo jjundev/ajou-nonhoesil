@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "html": "실험07_실험설명.html",
-  "html_sha256": "2c36ca97c16eb00f8763043ca81a9ee2480e37549d5d5e6402fb834b8e297f52",
+  "html_sha256": "eef48e656205882cf1b504bc09a2a689b890fe135b7a2c7f363647d01a5fbb20",
   "audit_path": "problem-explanations/summary-audit.md",
-  "audit_sha256": "8d14280837ae9d0702ee45617ad065fdaf066cc6f5cb0ecffd2a30e06aa7059c",
+  "audit_sha256": "0382f8b101c0b8f4f15d944b6017fe32a80307eef51e0bd1b49b5f2a67b6ffe7",
   "semantic_status": "pass",
   "browser_status": "pass",
   "evidence": [
