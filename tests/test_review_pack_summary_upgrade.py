@@ -22,6 +22,12 @@ def passing_topics(pack):
 def pack(tmp_path):
     folder = tmp_path / '실험01'
     shutil.copytree(ROOT / '복습노트/실험01', folder)
+    # 발행본이 이미 이주했어도 이주 전 manifest 에서 시작한다.
+    path = folder / '.pack/manifest.json'
+    m = json.loads(path.read_text(encoding='utf-8'))
+    m.pop('note_summary_version', None)
+    m['generated_files'] = [f for f in m['generated_files'] if f != '.pack/' + SUMMARY_FILE]
+    path.write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding='utf-8')
     write_json(folder, passing_topics(folder))
     return folder
 
