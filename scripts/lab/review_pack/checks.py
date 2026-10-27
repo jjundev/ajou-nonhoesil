@@ -10,6 +10,7 @@ from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
 from .note_metadata import check_note_metadata
+from .note_summary import check_published_summaries
 from .navigation import check_navigation
 
 def boolean_equivalent(left,right):
@@ -46,6 +47,8 @@ def check_pack(folder):
     for key,tree in trees.items():
         if key=='note_html' and (folder/DATA/names['note_md']).is_file():
             errors+=check_note_metadata(m,(folder/names[key]).read_text(encoding='utf-8'),(folder/DATA/names['note_md']).read_text(encoding='utf-8'))
+        if key=='note_html':
+            errors+=check_published_summaries(folder/DATA,m,(folder/names[key]).read_text(encoding='utf-8'))
         for node in tree.walk():
             attr='src' if node.tag in {'img','script','source'} else 'href' if node.tag in {'a','link'} else None
             value=node.attrs.get(attr) if attr else None

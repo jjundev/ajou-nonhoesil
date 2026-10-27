@@ -9,7 +9,9 @@ import re
 
 SUMMARY_FILE='sections/note-summaries.json'
 SUM=re.compile(r'<div class="sum" hidden>(.*?)</div>',re.S)
-TOKEN=re.compile(r"[A-Za-z0-9][A-Za-z0-9′'̄⊕]*")
+# 사실 토큰: 영숫자 덩어리(단위·위첨자·프라임 포함)와 방향·부등호·식 기호 한 글자씩. 집합 비교라 ↑↔↓ 맞바꿈은 못 잡는다.
+TOKEN=re.compile(r"[A-Za-z0-9][A-Za-z0-9′'̄⊕’ⁿΩ°]*|[↑↓≠≤≥−+=]")
+TOPIC=re.compile(r'<article class="topic" id="([^"]+)">(.*?)</article>',re.S)
 
 def _text(value):
     return isinstance(value,str) and bool(value.strip())
@@ -58,3 +60,18 @@ def check_topic_ids(summaries,topic_ids):
         if topic_id not in summaries:raise ValueError(topic_id+': missing summary')
     for topic_id in summaries:
         if topic_id not in topic_ids:raise ValueError(topic_id+': unknown topic')
+
+def check_published_summaries(data_root,manifest,html_text):
+    """발행본 실험설명의 요약이 세 칸 구조이고, 정본 JSON 이 있으면 그것을 그린 결과와 같은지 본다."""
+    if manifest.get('note_summary_version')!=2:return []
+    from .note_metadata import summary_structure_errors
+    try:
+        summaries=load_note_summaries(data_root)
+        if summaries is not None:check_topic_ids(summaries,[t['id'] for t in manifest['topics']])
+    except ValueError as exc:return [str(exc)]
+    errors=[]
+    for topic_id,fragment in TOPIC.findall(html_text):
+        errors+=summary_structure_errors(topic_id,fragment)
+        if summaries is not None and topic_id in summaries and render_summary(summaries[topic_id]) not in fragment:
+            errors.append(f'{topic_id}: summary differs from {SUMMARY_FILE}')
+    return errors

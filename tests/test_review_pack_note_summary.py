@@ -136,3 +136,25 @@ def test_check_topic_ids_names_the_id():
 def test_lost_tokens_does_not_glue_adjacent_items():
     old = '<div class="sum" hidden>NAND·NOR는 반대예요.</div>'
     assert lost_tokens(old, render_summary(dict(rules=[['OR', '1'], ['NAND·NOR', '반대']]))) == []
+
+@pytest.mark.parametrize('old,new,lost', [
+    ('74HC74는 ↑에서 저장해요.', '74HC74는 엣지에서 저장해요.', ['↑']),
+    ('LED마다 330Ω 저항이에요.', 'LED마다 330 저항이에요.', ['330Ω']),
+    ('Q(t−1)은 직전 값이에요.', 'Q(t+1)은 직전 값이에요.', ['−']),
+    ('E=1·SR≠11 조건이에요.', 'E=1·SR=11 조건이에요.', ['≠']),
+    ('최대 2ⁿ개예요.', '최대 2개예요.', ['2ⁿ']),
+    ('입력 X(don’t-care)예요.', '입력 X(don-care)예요.', ['don’t']),
+])
+def test_lost_tokens_sees_symbols(old, new, lost):
+    wrap = lambda t: '<div class="sum" hidden>' + t + '</div>'
+    assert lost_tokens(wrap(old), wrap(new)) == lost
+
+def test_check_pack_flags_summary_drift(tmp_path):
+    from scripts.lab.review_pack.checks import check_pack
+    from scripts.lab.review_pack.navigation_upgrade import ROOT
+    pack = tmp_path / '실험01'; shutil.copytree(ROOT / '복습노트/실험01', pack)
+    assert check_pack(pack) == []
+    page = pack / '실험01_실험설명.html'
+    text = page.read_text(encoding='utf-8')
+    page.write_text(text.replace('<li><b>NOT</b> → 0과 1을 뒤집어요</li>', '<li><b>NOT</b> → 손으로 고친 문장</li>', 1), encoding='utf-8')
+    assert any('t-gates: summary differs from sections/note-summaries.json' in e for e in check_pack(pack))
