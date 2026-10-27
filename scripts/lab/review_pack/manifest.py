@@ -48,6 +48,8 @@ def validate_manifest(data):
         errors.append('schema_version must be 1')
     if 'note_presentation_version' in data and (type(data['note_presentation_version']) is not int or data['note_presentation_version'] != 2):
         errors.append('note_presentation_version must be 2 or absent')
+    if 'note_summary_version' in data and (type(data['note_summary_version']) is not int or data['note_summary_version'] != 2 or data.get('note_presentation_version') != 2):
+        errors.append('note_summary_version must be 2 with note_presentation_version 2, or absent')
     modern=data.get('review_presentation_version') == 2
     if 'review_presentation_version' in data and (type(data['review_presentation_version']) is not int or not modern):
         errors.append('review_presentation_version must be 2 or absent')

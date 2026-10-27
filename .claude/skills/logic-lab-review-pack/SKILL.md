@@ -67,7 +67,7 @@ RUN/manifest.json에 자료·판본·토픽·문항·출처·답안 상태를 �
 문제용은 role=problem/answer_exposure=none 자산만 사용한다. 답 노출 증거는 details.original/solution에 둔다.
 
 RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. 실험설명에 표가 있으면 RUN/sections/table-layout.json에 모든 표의 열 배치(key `<토픽ID>/<순번>`, [형식](references/format.md))를 함께 쓴다. 발행한 팩은 이 파일이 있어야 `table_layout_upgrade --all`이 통과한다. 문제설명 원고는 [전용 스킬](../logic-lab-problem-explain/SKILL.md)을 읽고 같은 실행에서 RUN/problem-explanations/<id>.html에 저작한다. 새 manifest.problem_explanation_version=2와 별도 explanation_checks를 지정한다. 전용 스킬의 전체팩 진입 지침을 따라 대상·출처·문항 선택은 이 흐름을 유지한다. 새 문제지·해설지는 manifest.review_presentation_version=2로 지정하고 [문제지·해설지 계약](references/workbook.md)을 따른다. 기존 표시 버전 없는 팩은 RUN/problems/<id>.html을 쓰는 legacy 형식으로 계속 읽을 수 있다.
-새 실험설명에는 manifest.note_presentation_version=2를 지정한다. 본문·요약·힌트·그림 설명을 생명과학 정리노트처럼 짧고 다정한 ‘~해요’체로 쓴다. 정의·성립 조건·인과는 줄이지 않는다.
+새 실험설명에는 manifest.note_presentation_version=2와 note_summary_version=2를 지정한다. 본문·요약·힌트·그림 설명을 생명과학 정리노트처럼 짧고 다정한 ‘~해요’체로 쓴다. 정의·성립 조건·인과는 줄이지 않는다.
 개념 토픽은 새 용어 소개 → 「한눈에 보기」 규칙표(앞 회로와의 차이 한 줄 포함) → 식·추적표 순서로 쓴다. 기준은 authoring.md의 ‘개념 토픽 안의 순서’ 절이다. 이 순서는 새 팩과 전체 갱신에만 적용하고, 기존 팩의 부분 수정에는 소급하지 않는다.
 첫 토픽은 `t-start`, 제목은 ‘왜 이 회로를 쓰는지 먼저 알아봐요’로 둔다. 해결할 문제 → 회로가 필요한 이유 → 작은 입력·출력 예 → 이번 실험과 연결 순서로 약 2~4개 짧은 문단을 쓴다. 기존 수행 범위·주의 사항은 이어서 보존한다. 정의나 ‘시험에 나와요’만으로 동기를 대신하지 않는다. 상황 예시는 ‘이해를 위한 예시’, 교안 밖 설명은 ‘보충’으로 표시하고 실제 실험 조건과 구분한다. 자세한 기준은 authoring.md를 따른다.
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
@@ -76,7 +76,7 @@ RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. �
 실험설명은 생명과학 note-template.html에서 가져온 논회실 로컬 템플릿을 사용한다. upstream 원본은 보존하고 논회실의 탐색 개선은 로컬 템플릿·생성기·검사기에 함께 반영한다. 문제지·해설지는 전자회로2 workbook/templates의 problem.html·answer.html 스냅샷(해시 고정)을 쓰고, 생성 시 workbook_render의 LOCAL_PATCHES와 TEMPLATE_PATCHES(문제지의 work-table을 중앙 풀이 칸으로 이동)를 덧씌운다. quiz_practice_version=1인 payload에만 quiz_practice_patches를 추가해 빈 보드를 중앙에 배치하고 해설에서 빈 보드를 숨긴다. 워크북 템플릿 디자인을 재작성하지 않는다. 기출의 회로·블록도는 문제용과 풀이용을 구분하여 별도 SVG와 300dpi PNG로 직접 재작성하고, 원문 증거는 evidence/에 보존한다.
 
 **탐색 계약.** 실험설명과 legacy 기출풀이의 왼쪽 패널에는 현재 문서 목차만 둔다. `자료 이동` 제목·문서 링크·pack-nav·구분선을 추가하지 않는다. 패널의 `목차` 제목 바로 아래에 토픽/문항 목록만 둔다. `실험 이해` 등 섹션 링크를 목차에 넣지 않는다. `이 페이지 목차` 소제목, 읽은 토픽/푼 문제 합계와 진행 막대를 표시하지 않는다. `<nav class="toc" aria-label="이 페이지 목차">` 안에 `<ol class="toc-list">`와 토픽/문항 hash 링크를 정적으로 생성한다. 들여쓰기는 0이며 JS는 기존 링크를 화면·읽음 체크와 연결한다. JS 비활성에서도 전체 토픽 링크를 제공한다. 문서 링크를 TOC에 혼합하거나 모든 링크를 section으로 해석하지 않는다. 잘못된 hash 인코딩은 예외를 처리한다. 개별 토픽/문항의 읽음·풂 체크는 유지하되 진행 합계는 표시하지 않는다. 현재 토픽의 기존 `aria-current="true"`와 읽음/풂 저장 키·IDs를 유지한다. 모바일에서는 목차 선택 후 drawer를 닫는다. 별도 A4 워크북은 이 패널 계약의 대상이 아니다.
-우측 요약은 div.sum, 도움말은 details.hint/solution을 사용한다. 자세한 마크업은 authoring.md.
+우측 요약은 div.sum(외울 규칙·이유·헷갈리지 마요 세 칸), 도움말은 details.hint/solution을 사용한다. 실험01~06의 요약 정본은 `.pack/sections/note-summaries.json`이고, 발행본 요약은 `python -m scripts.lab.review_pack.summary_upgrade`로 고친다. 자세한 마크업은 authoring.md.
 
 ## 4. 조립과 MD 생성
 
@@ -126,7 +126,7 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 
 ## 요약과 패널 계약
 
-요약은 본문의 핵심 개념·작동 원리·성립 조건·혼동 구분을 항목 수 상한 없이 압축한다. 본문에 없는 사실을 요약에만 추가하지 않고 보충의 범위·출처·불확실성을 보존한다. 중앙 제목과 고정 패널 제목을 유지하며 우측 중복 토픽·문항 제목은 만들지 않는다. sum-for는 .sums 컨테이너의 유일한 ID로 보존한다. 기존 동반 MD와 실제 생성 원고를 동기화하고 [본문–요약 감사와 패널 검증](references/verification.md#본문요약-감사와-패널-검증)을 수행한다.
+요약은 본문의 핵심 개념·작동 원리·성립 조건·혼동 구분을 항목 수 상한 없이 압축하되, 한 문단으로 잇지 않고 외울 규칙 목록·이유·헷갈리지 마요 목록으로 나눈다. 본문에 없는 사실을 요약에만 추가하지 않고 보충의 범위·출처·불확실성을 보존한다. 중앙 제목과 고정 패널 제목을 유지하며 우측 중복 토픽·문항 제목은 만들지 않는다. sum-for는 .sums 컨테이너의 유일한 ID로 보존한다. 기존 동반 MD와 실제 생성 원고를 동기화하고 [본문–요약 감사와 패널 검증](references/verification.md#본문요약-감사와-패널-검증)을 수행한다.
 
 ## 후속 요청과 경계
 

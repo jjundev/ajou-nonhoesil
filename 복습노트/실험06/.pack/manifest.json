@@ -1617,6 +1617,7 @@
     "browser": "pass"
   },
   "note_presentation_version": 2,
+  "note_summary_version": 2,
   "review_presentation_version": 2,
   "problem_explanation_version": 2,
   "explanation_checks": {
@@ -1856,6 +1857,7 @@
     ".pack/problem-explanations/q-tff.html",
     ".pack/problem-explanations/table-layout.json",
     ".pack/problem-explanations/검증결과.md",
+    ".pack/sections/note-summaries.json",
     ".pack/sections/table-layout.json",
     ".pack/검증결과.md",
     ".pack/실험06_기출문제.md",

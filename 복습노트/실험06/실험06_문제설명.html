@@ -317,6 +317,17 @@
     .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
     .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
     .flow li { margin: var(--s2) 0; }
+    /* 요약 세 칸: 외울 규칙 · 이유 · 헷갈리지 마요 */
+    .sum-label { margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .sum > .sum-label:first-child { margin-top: 0; }
+    .sum-label-warn { color: var(--warn); }
+    .sum-rules { list-style: none; margin: 0; padding: 0; font-size: var(--fs-panel); line-height: 1.6; }
+    .sum-rules li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .sum-rules li:first-child { padding-top: 0; }
+    .sum-rules b { font-weight: 700; color: var(--ink); }
+    .sum-why { margin: 0; font-size: var(--fs-sub); line-height: 1.7; color: var(--ink-2); }
+    .sum-traps { margin: 0; padding: 0 0 0 var(--s3); list-style: none; border-left: 3px solid var(--warn); font-size: var(--fs-sub); line-height: 1.6; }
+    .sum-traps li + li { margin-top: var(--s2); }
 
     @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
 

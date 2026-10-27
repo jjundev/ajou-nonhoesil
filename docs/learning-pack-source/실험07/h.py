@@ -42,3 +42,13 @@ def ul(items):
 
 def sumd(t):
     return f'<div class="sum" hidden>{t}</div>'
+
+
+def sumparts(rules, why=None, traps=()):
+    """요약 세 칸: rules 는 (조건, 결과) 목록, why 는 1~2문장, traps 는 주의 목록."""
+    out = '<p class="sum-label">외울 규칙</p><ul class="sum-rules">' + ''.join(f'<li><b>{c}</b> → {r}</li>' for c, r in rules) + '</ul>'
+    if why:
+        out += f'<p class="sum-label">이유</p><p class="sum-why">{why}</p>'
+    if traps:
+        out += '<p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps">' + ''.join(f'<li>{t}</li>' for t in traps) + '</ul>'
+    return f'<div class="sum" hidden>{out}</div>'

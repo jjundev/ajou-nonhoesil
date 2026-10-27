@@ -1197,6 +1197,7 @@
     "browser": "pass"
   },
   "note_presentation_version": 2,
+  "note_summary_version": 2,
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
@@ -1370,6 +1371,7 @@
     ".pack/problem-explanations/q-tri.html",
     ".pack/problem-explanations/table-layout.json",
     ".pack/problem-explanations/검증결과.md",
+    ".pack/sections/note-summaries.json",
     ".pack/sections/table-layout.json",
     ".pack/검증결과.md",
     ".pack/실험04_기출문제.md",

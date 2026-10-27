@@ -8,12 +8,13 @@ from urllib.parse import quote
 from .manifest import validate_manifest, output_names, DATA, link_data
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
-from .note_metadata import forbidden_note_metadata
+from .note_metadata import forbidden_note_metadata, summary_structure_errors
 from .navigation import render_navigation
 from .pack_md import write_pack_md
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
 from .table_layout import load_note_layouts, layout_note_tables, TableLayoutError
+from .note_summary import SUMMARY_FILE, load_note_summaries, check_topic_ids, replace_summary
 
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
@@ -54,11 +55,16 @@ def assemble(manifest,run,out,assets):
         ids={t['id'] for t in manifest['topics']}
         for e in layouts['tables']:
             if e['key'].split('/')[0] not in ids:raise TableLayoutError(e['key']+': unknown topic')
+    summaries=load_note_summaries(run)
+    if summaries is not None:check_topic_ids(summaries,[t['id'] for t in manifest['topics']])
     for t in manifest['topics']:
         fragment=read_fragment(run,t['fragment'],names)
         modern=manifest.get('note_presentation_version')==2
         if modern and forbidden_note_metadata(fragment):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
+        if summaries is not None:fragment=replace_summary(t['id'],fragment,summaries[t['id']])
+        if manifest.get('note_summary_version')==2 and (errors:=summary_structure_errors(t['id'],fragment)):
+            raise ValueError(errors[0])
         fragment=layout_note_tables(t['id'],fragment,layouts)
         note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+separate_tables(separate_equations(fragment))+('' if modern else refs(t))+'</article>')
     for p in manifest['problems']:
@@ -87,9 +93,10 @@ def assemble(manifest,run,out,assets):
             if p.is_symlink(): raise ValueError('No symlink figures')
         shutil.copytree(run/'figures',data_out/'figures')
     else: (data_out/'figures').mkdir()
-    if layouts:
-        (data_out/'sections').mkdir()
-        shutil.copy2(run/'sections/table-layout.json',data_out/'sections/table-layout.json')
+    for name in ('sections/table-layout.json',SUMMARY_FILE):
+        if (run/name).exists():
+            (data_out/'sections').mkdir(exist_ok=True)
+            shutil.copy2(run/name,data_out/name)
     status={'current':'이번 학기 교안 기준','archive':'과거 교안 기준 · 이번 학기 미확인','unknown':'판본 미확인','general':'교안 없음 · 일반 이론'}[manifest['edition_status']]
     paths={}
     for kind,body in ([('note',note)] if workbook else [('note',note),('review',review)]):

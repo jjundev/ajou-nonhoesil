@@ -4,9 +4,9 @@
     {
       "schema_version": 1,
       "html": "복습노트/실험04/실험04_실험설명.html",
-      "html_sha256": "e136aa02da97a622d39eee542634c7eba01f6f042a9ccb429aeb857348b2ed69",
+      "html_sha256": "31f6e95c024b9dac36eaf95bbe8d304b9d93ce8641ba8d94e1d958fc75afeb3a",
       "audit_path": "복습노트/실험04/.pack/summary-audit.md",
-      "audit_sha256": "25cc3fa34a49a9b846ef6e70733ad2ed8bb03c3f7e66d393bdb0da3ab8d9c6be",
+      "audit_sha256": "b340999e9c097e3e0013216cc11669d0c8e45e049c0de15cf28ccdd854f7a328",
       "semantic_status": "pass",
       "browser_status": "pending",
       "evidence": [
