@@ -68,6 +68,7 @@ RUN/manifest.json에 자료·판본·토픽·문항·출처·답안 상태를 �
 
 RUN/sections/<id>.html, RUN/workbook/<id>.json, RUN/figures/를 작성한다. 실험설명에 표가 있으면 RUN/sections/table-layout.json에 모든 표의 열 배치(key `<토픽ID>/<순번>`, [형식](references/format.md))를 함께 쓴다. 발행한 팩은 이 파일이 있어야 `table_layout_upgrade --all`이 통과한다. 문제설명 원고는 [전용 스킬](../logic-lab-problem-explain/SKILL.md)을 읽고 같은 실행에서 RUN/problem-explanations/<id>.html에 저작한다. 새 manifest.problem_explanation_version=2와 별도 explanation_checks를 지정한다. 전용 스킬의 전체팩 진입 지침을 따라 대상·출처·문항 선택은 이 흐름을 유지한다. 새 문제지·해설지는 manifest.review_presentation_version=2로 지정하고 [문제지·해설지 계약](references/workbook.md)을 따른다. 기존 표시 버전 없는 팩은 RUN/problems/<id>.html을 쓰는 legacy 형식으로 계속 읽을 수 있다.
 새 실험설명에는 manifest.note_presentation_version=2를 지정한다. 본문·요약·힌트·그림 설명을 생명과학 정리노트처럼 짧고 다정한 ‘~해요’체로 쓴다. 정의·성립 조건·인과는 줄이지 않는다.
+개념 토픽은 새 용어 소개 → 「한눈에 보기」 규칙표(앞 회로와의 차이 한 줄 포함) → 식·추적표 순서로 쓴다. 기준은 authoring.md의 ‘개념 토픽 안의 순서’ 절이다. 이 순서는 새 팩과 전체 갱신에만 적용하고, 기존 팩의 부분 수정에는 소급하지 않는다.
 첫 토픽은 `t-start`, 제목은 ‘왜 이 회로를 쓰는지 먼저 알아봐요’로 둔다. 해결할 문제 → 회로가 필요한 이유 → 작은 입력·출력 예 → 이번 실험과 연결 순서로 약 2~4개 짧은 문단을 쓴다. 기존 수행 범위·주의 사항은 이어서 보존한다. 정의나 ‘시험에 나와요’만으로 동기를 대신하지 않는다. 상황 예시는 ‘이해를 위한 예시’, 교안 밖 설명은 ‘보충’으로 표시하고 실제 실험 조건과 구분한다. 자세한 기준은 authoring.md를 따른다.
 실험설명 HTML에는 출처와 ‘이 개념으로 풀 문제’를 넣지 않는다. 출처는 topics[].sources, 연결 문제는 included 문항의 topics에서 MD에 자동으로 붙인다. 추가 판본·재제작 근거는 topics[].md_notes에 Markdown으로 기록한다.
 실험설명의 모든 설명 그림은 원문을 읽어 직접 SVG로 다시 제작하고 진리표는 텍스트 표로 쓴다. 스캔/스크린샷을 설명 그림으로 첨부하지 않는다. 원문·문제은행 증거와 기출풀이 원본 이미지는 보존한다.
