@@ -1,4 +1,5 @@
 """Note summaries are rules / why / traps parts, not one paragraph."""
+import json
 import shutil
 from pathlib import Path
 import pytest
@@ -6,6 +7,7 @@ from tests.test_review_pack_manifest import fixture
 from scripts.lab.review_pack.render import assemble
 from scripts.lab.review_pack.manifest import validate_manifest
 from scripts.lab.review_pack.note_metadata import summary_structure_errors
+from scripts.lab.review_pack.note_summary import SUMMARY_FILE, check_topic_ids, load_note_summaries, lost_tokens, render_summary, replace_summary
 
 RUN = Path('tests/fixtures/review_pack')
 ASSETS = Path('.claude/skills/logic-lab-review-pack/assets')
@@ -58,3 +60,50 @@ def test_invalid_summary_version(value):
 def test_summary_version_needs_presentation_v2():
     m = fixture(); m['note_summary_version'] = 2
     assert validate_manifest(m)
+
+def test_render_summary_passes_structure_check():
+    html = render_summary(dict(rules=[['S=1', 'Q=1']], why='되먹임 때문이에요.', traps=['00은 금지예요.']))
+    assert summary_structure_errors('t-x', html) == []
+    assert '<li><b>S=1</b> → Q=1</li>' in html
+
+def test_render_summary_omits_empty_parts():
+    html = render_summary(dict(rules=[['A', 'B']]))
+    assert '이유' not in html and '헷갈리지 마요' not in html
+    assert summary_structure_errors('t-x', html) == []
+
+def test_render_summary_keeps_inline_markup():
+    html = render_summary(dict(rules=[['Q<sub>n</sub>', '유지']]))
+    assert '<b>Q<sub>n</sub></b>' in html and summary_structure_errors('t-x', html) == []
+
+def test_replace_summary_requires_exactly_one():
+    with pytest.raises(ValueError, match='t-x'):
+        replace_summary('t-x', '<p>본문</p>', dict(rules=[['A', 'B']]))
+    two = '<div class="sum" hidden>a</div><div class="sum" hidden>b</div>'
+    with pytest.raises(ValueError, match='t-x'):
+        replace_summary('t-x', two, dict(rules=[['A', 'B']]))
+
+def test_replace_summary_keeps_body_bytes():
+    out = replace_summary('t-x', '<p>본문</p><div class="sum" hidden><p>옛 요약</p></div>', dict(rules=[['A', 'B']]))
+    assert out.startswith('<p>본문</p><div class="sum" hidden><p class="sum-label">외울 규칙</p>')
+
+def test_lost_tokens_names_missing_facts():
+    old = '<div class="sum" hidden><p>74HC76은 J=K=1에서 토글해요.</p></div>'
+    assert lost_tokens(old, render_summary(dict(rules=[['J=K=1', '토글']]))) == ['74HC76']
+    assert lost_tokens(old, render_summary(dict(rules=[['74HC76 J=K=1', '토글']]))) == []
+
+def test_load_note_summaries_rejects_bad_shape(tmp_path):
+    (tmp_path / 'sections').mkdir()
+    p = tmp_path / SUMMARY_FILE
+    assert load_note_summaries(tmp_path) is None
+    p.write_text(json.dumps({'schema_version': 1, 'topics': {'t-a': {'rules': []}}}), encoding='utf-8')
+    with pytest.raises(ValueError, match='t-a'):
+        load_note_summaries(tmp_path)
+    p.write_text(json.dumps({'schema_version': 1, 'topics': {'t-a': {'rules': [['A', 'B']], 'note': 'x'}}}), encoding='utf-8')
+    with pytest.raises(ValueError, match='t-a'):
+        load_note_summaries(tmp_path)
+
+def test_check_topic_ids_names_the_id():
+    with pytest.raises(ValueError, match='t-b: missing summary'):
+        check_topic_ids({'t-a': {}}, ['t-a', 't-b'])
+    with pytest.raises(ValueError, match='t-z: unknown topic'):
+        check_topic_ids({'t-a': {}, 't-z': {}}, ['t-a'])
