@@ -1,0 +1,488 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-start/0",
+      "expected_headers": [
+        "실험",
+        "만드는 것",
+        "쓰는 IC"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-gates/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "NOT A",
+        "A·B",
+        "A+B",
+        "A⊕B",
+        "(A·B)′",
+        "(A+B)′"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-gates/1",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "AND",
+        "OR",
+        "NOR",
+        "XOR"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-algebra/0",
+      "expected_headers": [
+        "이름",
+        "합(OR) 꼴",
+        "곱(AND) 꼴"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "expression",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "expression",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-circuit/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "Z = A+B′",
+        "X = A+Z",
+        "Y = A+B"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-cmos/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "켜진 PMOS",
+        "NMOS 경로",
+        "Z"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "text",
+          "group": "트랜지스터 상태"
+        },
+        {
+          "role": "intermediate",
+          "kind": "text",
+          "group": "트랜지스터 상태"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "L1",
+        "L2"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/1",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "L1",
+        "L2"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/2",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "L1",
+        "L2"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/3",
+      "expected_headers": [
+        "A",
+        "B",
+        "C",
+        "L1",
+        "L2"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/4",
+      "expected_headers": [
+        "A",
+        "B",
+        "X",
+        "Y",
+        "Z"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

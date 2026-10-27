@@ -1,0 +1,434 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-start/0",
+      "expected_headers": [
+        "계산",
+        "결과",
+        "한 자리로 쓴 값",
+        "넘어가는 값"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "expression",
+          "group": "계산"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "결과"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-start/1",
+      "expected_headers": [
+        "회로",
+        "입력",
+        "출력",
+        "무엇으로 만드나요 (교안)"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-gates/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "NOT A",
+        "A·B",
+        "A+B",
+        "A⊕B"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-half-adder/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "S (합)",
+        "C (올림)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-full-adder/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "Ci",
+        "x = A⊕B",
+        "S = x⊕Ci",
+        "A·B",
+        "x·Ci",
+        "Co"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        },
+        {
+          "left": 4,
+          "kind": "minor"
+        },
+        {
+          "left": 6,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-chain/0",
+      "expected_headers": [
+        "자리",
+        "A",
+        "B",
+        "들어온 올림",
+        "합 S",
+        "내보낸 올림"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "text",
+          "group": "자리"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-half-sub/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "D (차)",
+        "Bo (내림)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-full-sub/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "Bi",
+        "x = A⊕B",
+        "D = x⊕Bi",
+        "b1 = A′B",
+        "b2 = x′Bi",
+        "Bo = b1+b2"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        },
+        {
+          "left": 4,
+          "kind": "minor"
+        },
+        {
+          "left": 6,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/0",
+      "expected_headers": [
+        "실험",
+        "회로",
+        "입력",
+        "LED로 보는 출력",
+        "회로 그림에 적힌 IC"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    }
+  ]
+}

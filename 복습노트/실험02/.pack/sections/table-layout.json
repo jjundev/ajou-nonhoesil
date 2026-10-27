@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-start/0",
+      "expected_headers": [
+        "항목",
+        "쓰는 칩",
+        "무엇을 해요",
+        "이번 학기"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-levels/0",
+      "expected_headers": [
+        "기호",
+        "뜻 (교안 표현)",
+        "읽는 법"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-levels/1",
+      "expected_headers": [
+        "입력 전압 $V_{in}$",
+        "입력 판정",
+        "인버터 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "text",
+          "group": "판정"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-schmitt/0",
+      "expected_headers": [
+        "지금 출력",
+        "입력이 어떻게 움직여요",
+        "다음 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "지금 상태"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력 변화"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "다음 상태"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-schmitt/1",
+      "expected_headers": [
+        "순서",
+        "입력 (V)",
+        "일반 인버터 출력",
+        "Schmitt 출력",
+        "Schmitt 이유"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "이유"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-delay/0",
+      "expected_headers": [
+        "이름",
+        "정의 (교안)",
+        "기준",
+        "그림 기호"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-lab/0",
+      "expected_headers": [
+        "",
+        "실험 1-1 (74HC04)",
+        "실험 1-2 (74HC14)"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    }
+  ]
+}

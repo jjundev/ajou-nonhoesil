@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-shift/0",
+      "expected_headers": [
+        "엣지",
+        "S",
+        "Q0Q1Q2Q3Q4Q5"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "엣지"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-convert/0",
+      "expected_headers": [
+        "종류",
+        "입력",
+        "출력"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-jk/0",
+      "expected_headers": [
+        "J",
+        "K",
+        "Q다음"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

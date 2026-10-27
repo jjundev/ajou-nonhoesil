@@ -1,0 +1,508 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-basics/0",
+      "expected_headers": [
+        "A",
+        "B",
+        "A·B (AND)",
+        "A+B (OR)",
+        "(A·B)′ (NAND)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-basics/1",
+      "expected_headers": [
+        "A2",
+        "A1",
+        "A0",
+        "십진수"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "index",
+          "group": "십진수"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-decoder/0",
+      "expected_headers": [
+        "A1",
+        "A0",
+        "D3",
+        "D2",
+        "D1",
+        "D0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-decoder/1",
+      "expected_headers": [
+        "A2A1A0",
+        "D7 D6 D5 D4 D3 D2 D1 D0 (왼쪽이 D7)"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-bcd/0",
+      "expected_headers": [
+        "Bit3 Bit2 Bit1 Bit0",
+        "십진수",
+        "Low가 되는 출력"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "description",
+          "kind": "index",
+          "group": "십진수"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-encoder/0",
+      "expected_headers": [
+        "D7…D0 (왼쪽이 D7)",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-priority/0",
+      "expected_headers": [
+        "EI",
+        "가장 큰 Low 입력",
+        "A2 A1 A0 (칩 출력)",
+        "LED2 LED1 LED0 (교안)"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어 입력"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-excess3/0",
+      "expected_headers": [
+        "십진수",
+        "BCD",
+        "Excess-3"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "십진수"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-excess3/1",
+      "expected_headers": [
+        "십진수 d",
+        "Excess-3",
+        "비트 반전",
+        "반전한 코드를 Excess-3로 읽은 수",
+        "9−d"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "십진수"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "bus",
+          "group": "중간 계산"
+        },
+        {
+          "role": "output",
+          "kind": "index",
+          "group": "결과"
+        },
+        {
+          "role": "output",
+          "kind": "index",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "minor"
+        }
+      ]
+    },
+    {
+      "key": "t-excess3/2",
+      "expected_headers": [
+        "켜진 입력",
+        "숫자",
+        "A3",
+        "A2",
+        "A1",
+        "A0"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "description",
+          "kind": "index",
+          "group": "숫자"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "minor"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-demux/0",
+      "expected_headers": [
+        "S1",
+        "S0",
+        "D",
+        "Y3",
+        "Y2",
+        "Y1",
+        "Y0"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "선택 입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "선택 입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "데이터 입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 1,
+          "kind": "minor"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-lab/0",
+      "expected_headers": [
+        "항목",
+        "이번 수행",
+        "바꾸는 것",
+        "볼 것 (예상)",
+        "이유"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "내용"
+        }
+      ],
+      "boundaries": []
+    }
+  ]
+}

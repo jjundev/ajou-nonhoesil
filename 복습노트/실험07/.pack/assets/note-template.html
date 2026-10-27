@@ -126,20 +126,21 @@
     td:first-child, th:first-child { min-width: 6em; }
 
     /* explanation-table-layout:start */
-    [data-problem-explanation] .table-card { container-type: inline-size; }
-    [data-problem-explanation] .table-card .table-wrap { overflow: visible; }
-    [data-problem-explanation] table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
-    [data-problem-explanation] table[data-layout-mode="text"] { width: 100%; }
-    [data-problem-explanation] [data-layout-table] th,
-    [data-problem-explanation] [data-layout-table] td { min-width: 0; padding: 0.5rem; }
-    [data-problem-explanation] [data-layout-table] td { white-space: nowrap; }
-    [data-problem-explanation] [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
-    [data-problem-explanation] [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
-    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
-    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
-    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
-    [data-problem-explanation] [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
-    [data-problem-explanation] [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    [data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }
+    .table-card:has(> table[data-layout-table]) { container-type: inline-size; }
+    .table-card .table-wrap { overflow: visible; }
+    table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
+    table[data-layout-mode="text"] { width: 100%; }
+    [data-layout-table] th,
+    [data-layout-table] td { min-width: 0; padding: 0.5rem; }
+    [data-layout-table] td { white-space: nowrap; }
+    [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
+    [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
+    [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
+    [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
+    [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
+    [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
+    [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
     /* explanation-table-layout:end */
 
     /* 위젯 */
