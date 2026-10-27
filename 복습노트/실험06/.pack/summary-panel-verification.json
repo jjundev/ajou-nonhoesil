@@ -4,9 +4,9 @@
     {
       "schema_version": 1,
       "html": "복습노트/실험06/실험06_실험설명.html",
-      "html_sha256": "0a3cdd87c40305c5ef13836d8492e309d7041dfa5cb57c5403852fe973f8c6d0",
+      "html_sha256": "99c67067fd85627f3a95ac5767b9697a40883c20abad9602e5083dc25331ebc0",
       "audit_path": "복습노트/실험06/.pack/summary-audit.md",
-      "audit_sha256": "eabade88121be8d3828beb2781228ab8594de9b3968e2f60c67a881fb658d6bf",
+      "audit_sha256": "507cadbad2a550af68641577a9263ef699958769b7e5ce51ee97b065d3e6ba68",
       "semantic_status": "pass",
       "browser_status": "pending",
       "evidence": [
@@ -20,7 +20,7 @@
         {
           "kind": "current-md-check",
           "path": "복습노트/실험06/.pack/실험06_실험설명.md",
-          "sha256": "6e76a20005dfde750254931341df939b0bc6eacd0a8f50b40ca004a41ace6a1e",
+          "sha256": "fa050e4466b872b4a6873d73825a331fabe6e36d36ac8e9ef2da5dfa9aa0b999",
           "errors": []
         },
         {
@@ -43,6 +43,11 @@
         {
           "kind": "browser-pending-task8c",
           "note": "No current-content browser pass claimed. Prior Task7/검증결과.md evidence is historical."
+        },
+        {
+          "kind": "2026-10-27-t-sr-basic-update",
+          "path": "tmp/review-pack/실험06-20261027-srbasic/검증결과.md",
+          "note": "t-sr-basic 본문·요약 재독, 1280 dark·375 light 브라우저에서 이 토픽만 확인. 다른 토픽 패널 재검사 안 함."
         }
       ],
       "unresolved": []
@@ -52,7 +57,7 @@
       "html": "복습노트/실험06/실험06_문제설명.html",
       "html_sha256": "a341883546f99bec814937a67dc0d0e9f11baf7ac4c7d7161f89ee0068cb2053",
       "audit_path": "복습노트/실험06/.pack/summary-audit.md",
-      "audit_sha256": "eabade88121be8d3828beb2781228ab8594de9b3968e2f60c67a881fb658d6bf",
+      "audit_sha256": "507cadbad2a550af68641577a9263ef699958769b7e5ce51ee97b065d3e6ba68",
       "semantic_status": "pass",
       "browser_status": "pending",
       "evidence": [

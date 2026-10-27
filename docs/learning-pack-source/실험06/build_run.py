@@ -41,6 +41,7 @@ for sub in ('questions', 'solutions'):
 
 note_figs = {
     'memory-sr-timing': figs.memory_fig('Enable이 1인 SR 래치가 S·R 펄스 뒤에도 값을 기억하는 타이밍도'),
+    'not-loop': figs.not_loop('NOT 두 개로 만든 고리'),
     'sr-basic-nand': figs.latch('NAND 두 개로 만든 기본 S-R 래치', 'basic', w=760),
     'sr-latch-enable': figs.latch('Enable이 있는 SR 래치 (실험 1)', 'sr'),
     'd-latch': figs.latch('Enable이 있는 D 래치 (실험 2-1)', 'd'),

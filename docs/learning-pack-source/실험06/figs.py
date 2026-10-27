@@ -138,6 +138,33 @@ def latch(title, kind='sr', names=None, pins=True, chips=True, desc='', w=900, c
     return f
 
 
+def not_loop(title):
+    """Two NOT gates in a ring: the memory idea before NAND handles are added."""
+    f = Fig(760, 380, title, 'NOT1의 출력 Q가 NOT2로, NOT2의 출력 Q′이 NOT1로 돌아가는 고리')
+    n1 = f.not_(330, 72, H=56)
+    n2 = f.not_(330, 232, H=56)
+    (ax, ay), = n1['ins']
+    (bx, by), = n2['ins']
+    qx, qy = n1['out']
+    nx, ny = n2['out']
+    f.line([(qx, qy), (640, qy)])
+    f.line([(nx, ny), (640, ny)])
+    f.text(652, qy + 8, 'Q', weight='bold')
+    f.text(652, ny + 8, 'Q′', weight='bold')
+    # Q → NOT2 input, Q′ → NOT1 input
+    f.dot(500, qy)
+    f.line([(500, qy), (500, 200), (260, 200), (260, by), (bx, by)])
+    f.dot(540, ny)
+    f.line([(540, ny), (540, 165), (220, 165), (220, ay), (ax, ay)])
+    f.text(353, 60, 'NOT1', size=18, anchor='middle', fill=GREY)
+    f.text(353, 312, 'NOT2', size=18, anchor='middle', fill=GREY)
+    f.text(580, qy - 12, '1', size=22, anchor='middle', fill=BLUE, weight='bold')
+    f.text(580, ny - 12, '0', size=22, anchor='middle', fill=BLUE, weight='bold')
+    f.text(20, 345, 'Q=1이면 NOT2가 0을, NOT1이 다시 1을 내서 그대로예요.', size=18, fill=BLUE)
+    f.text(20, 372, CAPTION, size=18, fill=GREY)
+    return f
+
+
 def jk_latch(title, names=('J', 'E', 'K'), pins=True, desc=''):
     return latch(title, 'jk', names, pins=pins, desc=desc)
 

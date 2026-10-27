@@ -188,7 +188,7 @@
         }
       ],
       "fragment": "sections/t-sr-basic.html",
-      "md_notes": "보충: 교안 p4는 Enable 없는 래치를 다루지 않는다고 적었어요. 그림은 기출_단답형 8번 회로(74HC00, 1·2→3, 4·5→6)의 연결을 읽어 직접 다시 그렸어요. 진리표는 NAND 모델을 코드로 계산해 확인했어요."
+      "md_notes": "보충: 교안 p4는 Enable 없는 래치를 다루지 않는다고 적었어요. 그림은 기출_단답형 8번 회로(74HC00, 1·2→3, 4·5→6)의 연결을 읽어 직접 다시 그렸어요. 진리표는 NAND 모델을 코드로 계산해 확인했어요.\n\nNOT 고리 빌드업·NAND1·NAND2 식·대입표·①~⑤ 추적표는 교안 밖 보충이에요. NOT 고리 그림은 직접 그렸고, 표의 값은 NAND 모델로 계산해 확인했어요."
     },
     {
       "id": "t-sr-enable",
@@ -1799,6 +1799,7 @@
     ".pack/figures/jk-latch.svg",
     ".pack/figures/level-vs-edge.svg",
     ".pack/figures/memory-sr-timing.svg",
+    ".pack/figures/not-loop.svg",
     ".pack/figures/questions/q-dff-table-given-01.png",
     ".pack/figures/questions/q-dff-table-given-01.svg",
     ".pack/figures/questions/q-jkff-short-given-01.png",
