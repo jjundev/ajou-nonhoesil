@@ -4,7 +4,7 @@
     {
       "schema_version": 1,
       "html": "복습노트/실험02/실험02_실험설명.html",
-      "html_sha256": "a894531c4d9e6b27b90c0cca4da957699b9147033390ecd925e7d048e93fd72a",
+      "html_sha256": "14f3a3a1e39e79c41278dfc996ce80705b74b5a8b5e33451ec0dc5ef6a0f6497",
       "audit_path": "복습노트/실험02/.pack/summary-audit.md",
       "audit_sha256": "0ca896e43fdf43f159a9c077b270967d9cea3d5400270c3b87bbcbd92cabad07",
       "semantic_status": "pass",

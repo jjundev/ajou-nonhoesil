@@ -46,9 +46,9 @@
     "t-rprn": {
       "rules": [
         ["입력 High", "$R_n$ on·$R_p$ off, sinking 전류, 출력 Low"],
-        ["$R_{n(on)}$", "$V_{OLmax}/I_{OLmax}$"],
+        ["켜진 $R_n$", "$R_{n(on)}=V_{OLmax}/I_{OLmax}$"],
         ["입력 Low", "$R_p$ on·$R_n$ off, sourcing 전류, 출력 High"],
-        ["$R_{p(on)}$", "$(V_{DD}-V_{OHmin})/|I_{OHmax}|$"]
+        ["켜진 $R_p$", "$R_{p(on)}=(V_{DD}-V_{OHmin})/|I_{OHmax}|$"]
       ],
       "why": "켜진 저항의 전압강하 때문에 부하 전류가 클수록 High는 전원보다 낮고 Low는 GND보다 높아져요.",
       "traps": [
