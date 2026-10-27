@@ -18,7 +18,7 @@ ID는 영어 문자로 시작하며 영문·숫자·하이픈·밑줄만 쓴다.
 다른 페이지 링크는 {{NOTE_HREF}}#토픽ID, {{REVIEW_HREF}}#문항ID.
 힌트·풀이는 각각 details/summary. 풀이에는 단계, 최종 답, 검산, 흔한 실수를 쓴다.
 수식은 MathML math[data-tex]를 사용한다. data-tex에는 동일한 LaTeX를 넣는다. SVG는 접근 가능한 제목·대체 설명을 제공한다.
-표는 .table-wrap으로 감싼다. 실험설명의 표와 식만 있는 문단은 렌더러가 table-card·equation-card로 감싸므로 해석·주의 문장은 표·식 밖 문단에 쓴다. 위젯은 .controls와 .static-equivalent를 분리하며 정적 자료만으로도 이해되어야 한다.
+표는 .table-wrap으로 감싼다. 실험설명의 표와 식만 있는 문단은 렌더러가 table-card·equation-card로 감싸므로 해석·주의 문장은 표·식 밖 문단에 쓴다. 표 열 배치는 선택 사항인 `sections/table-layout.json`(version 1, key `<토픽ID>/<토픽 안 표 순번>`)에 문제설명과 같은 규칙(role·kind·group·boundaries를 이름으로 추측하지 않고 명시)으로 적는다. 이 파일이 있으면 모든 토픽의 모든 표에 항목이 있어야 한다. 위젯은 .controls와 .static-equivalent를 분리하며 정적 자료만으로도 이해되어야 한다.
 inline script, 외부 CSS/JS/폰트/이미지는 금지. 공통 widgets.js만 동작 코드를 가진다.
 
 ## 은행 수입 manifest
