@@ -1,9 +1,10 @@
 from pathlib import Path
+import re
 import shutil
 
 import pytest
 
-from scripts.lab.review_pack.card_upgrade import upgrade_card_html, upgrade_packs
+from scripts.lab.review_pack.card_upgrade import CSS_END, CSS_START, GUARD_NEW, GUARD_OLD, upgrade_card_html, upgrade_packs
 from scripts.lab.review_pack.checks import check_pack
 
 PACKS = Path('복습노트')
@@ -20,9 +21,20 @@ def old_html():
     <script>if (e.target.closest('.widget, .katex-display, .table-wrap, svg, input, details')) return;</script></body></html>'''
 
 
+def downgrade(text):
+    # 발행본은 이미 업그레이드됐으므로 카드·CSS·선택자를 벗겨 업그레이드 전 형태로 되돌린다.
+    text = re.sub(r'<div class="table-card" role="group" aria-label="표">(<table\b.*?</table>)</div>', r'\1', text, flags=re.S)
+    text = re.sub(r'<div class="equation-card" role="group" aria-label="수식">(<p\b.*?</p>)</div>', r'\1', text, flags=re.S)
+    start, end = text.index(CSS_START), text.index(CSS_END)
+    start, end = text.rindex('\n', 0, start) + 1, text.index('\n', end) + 1
+    return (text[:start] + text[end:]).replace(GUARD_NEW, GUARD_OLD)
+
+
 def pack_copy(tmp_path, name='실험05'):
     target = tmp_path / name
     shutil.copytree(PACKS / name, target)
+    note = note_path(target)
+    note.write_bytes(downgrade(note.read_bytes().decode('utf-8')).encode('utf-8'))
     return target
 
 
