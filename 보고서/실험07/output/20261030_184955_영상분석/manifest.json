@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "run_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\output\\20261030_184955_영상분석",
+  "run_label": "20261030_184955",
+  "mode": "photos",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+      "sha256_before": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e",
+      "size": 48401994,
+      "duration_s": 31.017511,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main 10",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1088,
+            "coded_height": 1920,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p10le",
+            "level": 123,
+            "color_range": "tv",
+            "color_space": "bt2020nc",
+            "color_transfer": "arib-std-b67",
+            "color_primaries": "bt2020",
+            "chroma_location": "left",
+            "refs": 1,
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "10462500/348947",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2791576,
+            "duration": "31.017511",
+            "bit_rate": "12223661",
+            "nb_frames": "930",
+            "extradata_size": 108,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 1487849,
+            "duration": "30.996854",
+            "bit_rate": "256014",
+            "nb_frames": "1453",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "31.017511",
+          "size": "48401994",
+          "bit_rate": "12483785",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-30T09:50:28.000000Z",
+            "location": "+37.2833+127.0436/",
+            "location-eng": "+37.2833+127.0436/",
+            "com.android.version": "17",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e"
+    }
+  },
+  "scenes": [
+    {
+      "id": "lights",
+      "source_id": "p1",
+      "start_s": 15,
+      "end_s": 21.5,
+      "item_id": "E7.P1",
+      "speech": [],
+      "observation": "세로로 배열된 LED의 점등 위치가 시간에 따라 변한다.",
+      "unknowns": [
+        "입력 상태와 클럭 파형, LED와 각 BIT의 실물 대응 미확인"
+      ]
+    },
+    {
+      "id": "after_adjust",
+      "source_id": "p1",
+      "start_s": 25,
+      "end_s": 31.017,
+      "item_id": "E7.P1",
+      "speech": [],
+      "observation": "손으로 조작한 뒤 LED 점등 위치가 변한다.",
+      "unknowns": [
+        "조작한 신호와 입력값, 클럭 에지 미확인"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "photo01",
+      "source_id": "p1",
+      "at_s": 16,
+      "scene_id": "lights",
+      "title": "LED관찰_16초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\01_LED관찰_16초_p1_00016.016.png",
+      "sha256": "959c5f2e6f8864bd6b8becf3d95ae0615268e1bf2ef432694760e7233e8735f4",
+      "frame_index": 480,
+      "frame_pts_s": 16.015633,
+      "source_time_s": 16.015633
+    },
+    {
+      "id": "photo02",
+      "source_id": "p1",
+      "at_s": 17,
+      "scene_id": "lights",
+      "title": "LED관찰_17초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\02_LED관찰_17초_p1_00017.016.png",
+      "sha256": "982c40df53e6ff7aaf445ba41c851c032bd50611c3efaaccd32f9e668533e84b",
+      "frame_index": 510,
+      "frame_pts_s": 17.015689,
+      "source_time_s": 17.015689
+    },
+    {
+      "id": "photo03",
+      "source_id": "p1",
+      "at_s": 18,
+      "scene_id": "lights",
+      "title": "LED관찰_18초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\03_LED관찰_18초_p1_00018.016.png",
+      "sha256": "3e11052c4315b1a7b6e444f7a83cb568793903cbb72733f4b0f926ff806d7044",
+      "frame_index": 540,
+      "frame_pts_s": 18.015744,
+      "source_time_s": 18.015744
+    },
+    {
+      "id": "photo04",
+      "source_id": "p1",
+      "at_s": 19,
+      "scene_id": "lights",
+      "title": "LED관찰_19초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\04_LED관찰_19초_p1_00019.016.png",
+      "sha256": "4b7736d68cf0954589e6054615f81a0cb159ad561e9286aed79d981343201cc1",
+      "frame_index": 570,
+      "frame_pts_s": 19.015811,
+      "source_time_s": 19.015811
+    },
+    {
+      "id": "photo05",
+      "source_id": "p1",
+      "at_s": 20,
+      "scene_id": "lights",
+      "title": "LED관찰_20초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\05_LED관찰_20초_p1_00020.016.png",
+      "sha256": "2396528a3f6e5100ef400d74800d0cab20e0308222d9359fbc6b17ce8671994c",
+      "frame_index": 600,
+      "frame_pts_s": 20.015867,
+      "source_time_s": 20.015867
+    },
+    {
+      "id": "photo06",
+      "source_id": "p1",
+      "at_s": 25,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_25초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\06_LED관찰_25초_p1_00025.016.png",
+      "sha256": "93e3580cf91ce5dd57c0f80afbb030a69db210f02828291105f6765fbbb7d734",
+      "frame_index": 750,
+      "frame_pts_s": 25.016144,
+      "source_time_s": 25.016144
+    },
+    {
+      "id": "photo07",
+      "source_id": "p1",
+      "at_s": 26,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_26초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\07_LED관찰_26초_p1_00026.016.png",
+      "sha256": "e554b3bcecb73fdfff648a26c68f7ce05fb09f09640f22dc2c2b095fb104e3d9",
+      "frame_index": 780,
+      "frame_pts_s": 26.0162,
+      "source_time_s": 26.0162
+    },
+    {
+      "id": "photo08",
+      "source_id": "p1",
+      "at_s": 27,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_27초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\08_LED관찰_27초_p1_00027.016.png",
+      "sha256": "07a4039928cf79de314af0682e033d7e08fce289ff068b218ae2dfeb9f385732",
+      "frame_index": 810,
+      "frame_pts_s": 27.016267,
+      "source_time_s": 27.016267
+    },
+    {
+      "id": "photo09",
+      "source_id": "p1",
+      "at_s": 28,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_28초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\09_LED관찰_28초_p1_00028.016.png",
+      "sha256": "bd334d460ef653eb7f6ceac02c6d93bf4719d90b86388b9784e49a42ec95eb13",
+      "frame_index": 840,
+      "frame_pts_s": 28.016322,
+      "source_time_s": 28.016322
+    },
+    {
+      "id": "photo10",
+      "source_id": "p1",
+      "at_s": 29,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_29초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\10_LED관찰_29초_p1_00029.016.png",
+      "sha256": "76e3d667a2c3a3bec1ab9078f78ef4890a96a4ed090f56d571adc47860b8133b",
+      "frame_index": 870,
+      "frame_pts_s": 29.016378,
+      "source_time_s": 29.016378
+    },
+    {
+      "id": "photo11",
+      "source_id": "p1",
+      "at_s": 30,
+      "scene_id": "after_adjust",
+      "title": "LED관찰_30초",
+      "observation": "LED 점등 상태. 입력 및 클럭 조건 미확인.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\11_LED관찰_30초_p1_00030.016.png",
+      "sha256": "3d862efd85dbf5b99558cbfcf33467ea13e1f3268005a54b9fd94952f6463be8",
+      "frame_index": 900,
+      "frame_pts_s": 30.016433,
+      "source_time_s": 30.016433
+    }
+  ],
+  "pairs": [
+    {
+      "id": "change1",
+      "title": "LED 상태 변화 16초와 20초",
+      "capture_ids": [
+        "photo01",
+        "photo05"
+      ],
+      "continuity": "same_recording",
+      "note": "원본 화면 관찰. 입력과 클럭 에지는 확인되지 않음.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\비교\\01_LED_상태_변화_16초와_20초.png"
+    },
+    {
+      "id": "change2",
+      "title": "조작 후 LED 상태 변화 25초와 29초",
+      "capture_ids": [
+        "photo06",
+        "photo10"
+      ],
+      "continuity": "same_recording",
+      "note": "원본 화면 관찰. 입력과 클럭 에지는 확인되지 않음.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\비교\\02_조작_후_LED_상태_변화_25초와_29초.png"
+    }
+  ],
+  "cuts": [],
+  "unknowns": [
+    "자동 전사 미확인 (p1): 실패 상태를 확인하고 transcribe 명령으로 재개하세요.",
+    "API 키 부재로 발언 전사 실패. 입력 조건과 클럭 에지 및 실제 LED와 BIT 대응을 확정할 수 없음."
+  ],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "pending",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출",
+    "video": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_편집본.mp4",
+    "video_local": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_영상추출\\실험07_20261030_184955_편집본.mp4",
+    "zip": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "pending",
+      "audio": "unavailable"
+    }
+  },
+  "transcription": {
+    "p1": {
+      "status": "failed",
+      "error": "transcription_failed",
+      "state_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\output\\20261030_184955_영상분석\\transcripts\\p1"
+    }
+  }
+}

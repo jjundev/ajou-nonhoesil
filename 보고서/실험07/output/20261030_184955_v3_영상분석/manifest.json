@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "run_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\output\\20261030_184955_v3_영상분석",
+  "run_label": "20261030_184955_v3",
+  "mode": "photos",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+      "sha256_before": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e",
+      "size": 48401994,
+      "duration_s": 31.017511,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main 10",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1088,
+            "coded_height": 1920,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p10le",
+            "level": 123,
+            "color_range": "tv",
+            "color_space": "bt2020nc",
+            "color_transfer": "arib-std-b67",
+            "color_primaries": "bt2020",
+            "chroma_location": "left",
+            "refs": 1,
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "10462500/348947",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2791576,
+            "duration": "31.017511",
+            "bit_rate": "12223661",
+            "nb_frames": "930",
+            "extradata_size": 108,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 1487849,
+            "duration": "30.996854",
+            "bit_rate": "256014",
+            "nb_frames": "1453",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "31.017511",
+          "size": "48401994",
+          "bit_rate": "12483785",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-30T09:50:28.000000Z",
+            "location": "+37.2833+127.0436/",
+            "location-eng": "+37.2833+127.0436/",
+            "com.android.version": "17",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e"
+    },
+    "transcript_p1": {
+      "kind": "transcript",
+      "video_id": "p1",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.md",
+      "sha256_before": "8410dd25a5979bf4868ebd7887d4383592f99e09a8a0cd4ee94f94ded7cbd0f7",
+      "size": 269,
+      "sha256_after": "8410dd25a5979bf4868ebd7887d4383592f99e09a8a0cd4ee94f94ded7cbd0f7"
+    }
+  },
+  "scenes": [
+    {
+      "id": "fill",
+      "source_id": "p1",
+      "start_s": 15,
+      "end_s": 21.5,
+      "item_id": "E7.P1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 1,
+          "text": "클리어 1로 바꾸고, 그 다음 D도 1로 바꾸고"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 10,
+          "text": "그 상태로 클럭을 줍니다."
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 15,
+          "text": "여덟 개 다 다시 켜지는 거. 3, 4, 5, 6."
+        }
+      ],
+      "observation": "여섯 LED의 점등 수가 순차적으로 늘어나는 모습.",
+      "unknowns": [
+        "입력 전압과 에지 방향은 화면에서 독립 확인하지 못함",
+        "전사의 여덟 개와 명세의 LED 6개가 일치하지 않아 발언 원문 청취 확인 필요"
+      ]
+    },
+    {
+      "id": "clear",
+      "source_id": "p1",
+      "start_s": 24.5,
+      "end_s": 30.9,
+      "item_id": "E7.P1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 22,
+          "text": "그 상태에서 여기 D를 다시 0으로 바꾸면 하나씩 꺼집니다."
+        }
+      ],
+      "observation": "입력 조작 후 LED 점등 수가 줄어들고 마지막에 모두 소등된 모습.",
+      "unknowns": [
+        "D=0은 제공 전사본에 근거하며 실제 전압 및 클럭 에지는 독립 확인하지 못함"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "photo01",
+      "source_id": "p1",
+      "at_s": 15.5,
+      "scene_id": "fill",
+      "title": "D1_점등진행1",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\01_D1_점등진행1_p1_00015.516.png",
+      "sha256": "88524364fa68e59ba6259143850de50a0256a844ecf189f83601e086a5cd503f",
+      "frame_index": 465,
+      "frame_pts_s": 15.5156,
+      "source_time_s": 15.5156
+    },
+    {
+      "id": "photo02",
+      "source_id": "p1",
+      "at_s": 16.5,
+      "scene_id": "fill",
+      "title": "D1_점등진행2",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\02_D1_점등진행2_p1_00016.516.png",
+      "sha256": "6412611f8bc18a1a9adca0e731e30cd6ff7cb983bd4ce08079e9539bd6deef7c",
+      "frame_index": 495,
+      "frame_pts_s": 16.515656,
+      "source_time_s": 16.515656
+    },
+    {
+      "id": "photo03",
+      "source_id": "p1",
+      "at_s": 17.5,
+      "scene_id": "fill",
+      "title": "D1_점등진행3",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\03_D1_점등진행3_p1_00017.516.png",
+      "sha256": "39ecef3508f5419d6d5ea307aa70b58eb17a9c696e10412ceb4c00bb5f51953a",
+      "frame_index": 525,
+      "frame_pts_s": 17.515722,
+      "source_time_s": 17.515722
+    },
+    {
+      "id": "photo04",
+      "source_id": "p1",
+      "at_s": 18.5,
+      "scene_id": "fill",
+      "title": "D1_점등진행4",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\04_D1_점등진행4_p1_00018.516.png",
+      "sha256": "c5998f5432aad97016c6f7744285c104bf2aa9f0e2b0e46db61154440ef692be",
+      "frame_index": 555,
+      "frame_pts_s": 18.515778,
+      "source_time_s": 18.515778
+    },
+    {
+      "id": "photo05",
+      "source_id": "p1",
+      "at_s": 19.5,
+      "scene_id": "fill",
+      "title": "D1_점등진행5",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\05_D1_점등진행5_p1_00019.516.png",
+      "sha256": "ce15ce24d1de8bf29a806328fa8ba5bffa3d2e1d256307a21305caae4165fee0",
+      "frame_index": 585,
+      "frame_pts_s": 19.515833,
+      "source_time_s": 19.515833
+    },
+    {
+      "id": "photo06",
+      "source_id": "p1",
+      "at_s": 20.5,
+      "scene_id": "fill",
+      "title": "D1_전체점등",
+      "observation": "제공 전사: D=1 설정 후 클럭 인가. 화면: LED 점등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\06_D1_전체점등_p1_00020.516.png",
+      "sha256": "bd9bc94d788d957ce37a1f00fc0d7a1def6da999e49c73d5d99b46252a9c56ce",
+      "frame_index": 615,
+      "frame_pts_s": 20.515889,
+      "source_time_s": 20.515889
+    },
+    {
+      "id": "photo07",
+      "source_id": "p1",
+      "at_s": 25.5,
+      "scene_id": "clear",
+      "title": "D0_소등진행1",
+      "observation": "제공 전사: D=0으로 변경. 화면: LED 소등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\07_D0_소등진행1_p1_00025.516.png",
+      "sha256": "89c59dda931363459d3860c04e252163ea3595a99cae32bafad33c2f9a02d59c",
+      "frame_index": 765,
+      "frame_pts_s": 25.516178,
+      "source_time_s": 25.516178
+    },
+    {
+      "id": "photo08",
+      "source_id": "p1",
+      "at_s": 26.5,
+      "scene_id": "clear",
+      "title": "D0_소등진행2",
+      "observation": "제공 전사: D=0으로 변경. 화면: LED 소등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\08_D0_소등진행2_p1_00026.516.png",
+      "sha256": "c14014383547fd11a83f9d595271f49fa1cb89aa74cf53cdc86be791a38b6c87",
+      "frame_index": 795,
+      "frame_pts_s": 26.516233,
+      "source_time_s": 26.516233
+    },
+    {
+      "id": "photo09",
+      "source_id": "p1",
+      "at_s": 27.5,
+      "scene_id": "clear",
+      "title": "D0_소등진행3",
+      "observation": "제공 전사: D=0으로 변경. 화면: LED 소등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\09_D0_소등진행3_p1_00027.516.png",
+      "sha256": "c731ff7416a649da67b3698fe20edd5ed444bbab4a602002f580e2406f4ae639",
+      "frame_index": 825,
+      "frame_pts_s": 27.516289,
+      "source_time_s": 27.516289
+    },
+    {
+      "id": "photo10",
+      "source_id": "p1",
+      "at_s": 28.5,
+      "scene_id": "clear",
+      "title": "D0_소등진행4",
+      "observation": "제공 전사: D=0으로 변경. 화면: LED 소등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\10_D0_소등진행4_p1_00028.516.png",
+      "sha256": "7304414e7d95ba28256c72bdc44f29fa321f5f55583f37ca1954878bd9eb2883",
+      "frame_index": 855,
+      "frame_pts_s": 28.516356,
+      "source_time_s": 28.516356
+    },
+    {
+      "id": "photo11",
+      "source_id": "p1",
+      "at_s": 29.5,
+      "scene_id": "clear",
+      "title": "D0_전체소등",
+      "observation": "제공 전사: D=0으로 변경. 화면: LED 소등 진행.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\11_D0_전체소등_p1_00029.516.png",
+      "sha256": "ae44e2b1ae345f99ba215a32ba5327b743b3a93b901fc7fc583e8a8d8f04cf74",
+      "frame_index": 885,
+      "frame_pts_s": 29.516411,
+      "source_time_s": 29.516411
+    }
+  ],
+  "pairs": [
+    {
+      "id": "fill_compare",
+      "title": "D1 설명 후 LED 점등 진행",
+      "capture_ids": [
+        "photo01",
+        "photo06"
+      ],
+      "continuity": "same_recording",
+      "note": "D=1 및 클럭 인가는 제공 전사 기준; 화면은 LED 점등 상태.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\비교\\01_D1_설명_후_LED_점등_진행.png"
+    },
+    {
+      "id": "clear_compare",
+      "title": "D0 변경 전후 LED 상태",
+      "capture_ids": [
+        "photo06",
+        "photo11"
+      ],
+      "continuity": "same_recording",
+      "note": "중간에 D를 0으로 바꾼다는 설명과 손 조작이 있음. 입력은 제공 전사 기준.",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\비교\\02_D0_변경_전후_LED_상태.png"
+    }
+  ],
+  "cuts": [],
+  "unknowns": [
+    "제공 전사본을 사용했으며 발언 원음 직접 청취는 미실시. 전사 시각은 근사값.",
+    "전사본의 여덟 개 표현은 명세의 LED 6개와 다르며 원음 확인 필요.",
+    "D, CLR, CLK의 실제 전압과 클럭 에지 방향 및 LED-BIT 배선은 화면만으로 독립 확인하지 못함."
+  ],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "pending",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출",
+    "video": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_v3_편집본.mp4",
+    "video_local": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v3_영상추출\\실험07_20261030_184955_v3_편집본.mp4",
+    "zip": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_v3_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "pending",
+      "audio": "unavailable"
+    }
+  },
+  "transcription": {
+    "p1": {
+      "status": "provided"
+    }
+  }
+}

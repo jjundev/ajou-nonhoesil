@@ -1,0 +1,10 @@
+'E:\ffmpeg-7.1-essentials_build\bin\ffprobe.EXE' -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json 'C:\Users\Hyunjun\Downloads\20261030_184955.mp4'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffprobe.EXE' -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json 'C:\Users\Hyunjun\Downloads\20261030_184955.mp4'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\20261030_184955.mp4' -vf 'select='"'"'eq(n,420)+eq(n,435)+eq(n,450)+eq(n,465)+eq(n,480)+eq(n,495)+eq(n,510)+eq(n,525)+eq(n,540)+eq(n,555)+eq(n,570)+eq(n,585)+eq(n,600)+eq(n,615)'"'"',scale=240:-2' -frames:v 14 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험07\output\20261030_184955_v3_영상분석\tmpo6faj6xa\%06d.png'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\20261030_184955.mp4' -vf 'select='"'"'eq(n,735)+eq(n,750)+eq(n,765)+eq(n,780)+eq(n,795)+eq(n,810)+eq(n,825)+eq(n,840)+eq(n,855)+eq(n,870)+eq(n,885)+eq(n,900)'"'"',scale=240:-2' -frames:v 12 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험07\output\20261030_184955_v3_영상분석\tmpil41kgo9\%06d.png'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\20261030_184955.mp4' -vf 'select='"'"'eq(n,465)+eq(n,495)+eq(n,525)+eq(n,555)+eq(n,585)+eq(n,615)+eq(n,765)+eq(n,795)+eq(n,825)+eq(n,855)+eq(n,885)'"'"'' -frames:v 11 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험07\output\20261030_184955_v3_영상분석\tmp7gb7b6f_\%06d.png'
+

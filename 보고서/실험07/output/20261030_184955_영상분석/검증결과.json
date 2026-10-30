@@ -1,0 +1,15 @@
+{
+  "technical_pass": true,
+  "complete": true,
+  "checks": {
+    "originals_unchanged": true,
+    "photo_dimensions_and_provenance": true,
+    "comparison_files": true,
+    "zip_integrity": true
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "pending",
+    "audio": "unavailable"
+  }
+}

@@ -7,7 +7,11 @@ import argparse
 from contextlib import contextmanager
 from dataclasses import asdict, replace
 from datetime import datetime
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    import msvcrt
+    fcntl = None
 import hashlib
 import json
 import os
@@ -53,13 +57,21 @@ def kind_lock(output_dir, kind):
     name = hashlib.sha256(kind.encode()).hexdigest()[:16]
     with (folder / f"{name}.lock").open("a+") as f:
         try:
-            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
+            if fcntl is not None:
+                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            else:
+                f.seek(0)
+                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+        except (BlockingIOError, OSError):
             raise notion.NotionError("같은 output/종류의 업로드가 이미 실행 중입니다") from None
         try:
             yield folder / f"{name}.active.json"
         finally:
-            fcntl.flock(f, fcntl.LOCK_UN)
+            if fcntl is not None:
+                fcntl.flock(f, fcntl.LOCK_UN)
+            else:
+                f.seek(0)
+                msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 def _body(source, title):

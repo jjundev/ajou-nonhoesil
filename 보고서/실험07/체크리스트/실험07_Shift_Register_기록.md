@@ -2,7 +2,7 @@
 schema: lab-record/v2
 experiment: 7
 spec: 명세.md
-filled_by: ~          # hand | vision | 미기입
+filled_by: hand          # hand | vision | 미기입
 ---
 
 # 실험7 Shift Register 기록
@@ -21,14 +21,14 @@ IC: 74HC00, 74HC76 · 판독: LED, oscilloscope
 
 | 스텝 | 조작                                  | 입력 설정                                    | 예상 켜지는 LED       | 예상 꺼지는 LED                               | 실제 결과 |
 |------|---------------------------------------|----------------------------------------------|-----------------------|-----------------------------------------------|-----------|
-| R0   | CLK 정지, 공통 초기화(p9)             | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음                  | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
-| R1   | CLR 해제, 에지 없이 관찰              | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | 없음                  | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
-| S1   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT1                 | ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S2   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT2                 | ②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S3   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT1 · ④BIT3         | ①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6                 |           |
-| S4   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT1 · ①BIT2 · ③BIT4 | ④BIT3 · ⑥BIT5 · ⑤BIT6                         |           |
-| S5   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT2 · ④BIT3 · ⑥BIT5 | ②BIT1 · ③BIT4 · ⑤BIT6                         |           |
-| S6   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ④BIT3 · ③BIT4 · ⑤BIT6 | ②BIT1 · ①BIT2 · ⑥BIT5                         |           |
+| R0   | CLK 정지, 공통 초기화(p9)             | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음                  | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
+| R1   | CLR 해제, 에지 없이 관찰              | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | 없음                  | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
+| S1   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT1                 | ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S2   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT2                 | ①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S3   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT1 · ③BIT3         | ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6                 | ✓ |
+| S4   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=1; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT1 · ②BIT2 · ④BIT4 | ③BIT3 · ⑤BIT5 · ⑥BIT6                         | ✓ |
+| S5   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT2 · ③BIT3 · ⑤BIT5 | ①BIT1 · ④BIT4 · ⑥BIT6                         | ✓ |
+| S6   | D를 설정하고 CLK 0→1→0 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ③BIT3 · ④BIT4 · ⑥BIT6 | ①BIT1 · ②BIT2 · ⑤BIT5                         | ✓ |
 
 - 메모:
 
@@ -38,17 +38,17 @@ IC: 74HC00, 74HC76 · 판독: LED, oscilloscope
 
 | 스텝 | 조작                                       | 입력 설정                                    | 예상 켜지는 LED | 예상 꺼지는 LED                               | 실제 결과 |
 |------|--------------------------------------------|----------------------------------------------|-----------------|-----------------------------------------------|-----------|
-| R0   | CLK 정지, 재초기화                         | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음            | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
-| P1   | 먼저 CLR=1, 그다음 PR1=0. CLK=0 유지       | D=0; CLK=0; CLR=1; PR1=0; PR2=1    | ②BIT1           | ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| P2   | PR1을 1로 해제, 에지 없이 관찰             | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | ②BIT1           | ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S1   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ①BIT2           | ②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S2   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ④BIT3           | ②BIT1 · ①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S3   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ③BIT4           | ②BIT1 · ①BIT2 · ④BIT3 · ⑥BIT5 · ⑤BIT6         |           |
-| S4   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑥BIT5           | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑤BIT6         |           |
-| S5   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑤BIT6           | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5         |           |
-| S6   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | 없음            | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
+| R0   | CLK 정지, 재초기화                         | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음            | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
+| P1   | 먼저 CLR=1, 그다음 PR1=0. CLK=0 유지       | D=0; CLK=0; CLR=1; PR1=0; PR2=1    | ①BIT1           | ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| P2   | PR1을 1로 해제, 에지 없이 관찰             | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | ①BIT1           | ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S1   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ②BIT2           | ①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S2   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ③BIT3           | ①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S3   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ④BIT4           | ①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S4   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑤BIT5           | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6         | ✓ |
+| S5   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑥BIT6           | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5         | ✓ |
+| S6   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | 없음            | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
 
-- 메모:
+- 메모: 결선 7단계에서 첫 시도와 PR1 강제 주입 시 LED가 켜지지 않았다. LED를 따로 검사했을 때는 문제가 없었고, 칩 교체를 고려하던 중 U2가 제대로 꽂혀 있지 않은 것을 발견했다. 다시 꽂은 뒤 PR1 강제 주입과 직렬 입력·클록 두 방법 모두에서 LED가 켜졌다.
 
 > 실제 여섯 비트는 BIT1→BIT6 이름 순서로 적는다. 1=켜짐, 0=소등. 예: 001101.
 
@@ -56,20 +56,20 @@ IC: 74HC00, 74HC76 · 판독: LED, oscilloscope
 
 | 스텝 | 조작                                       | 입력 설정                                    | 예상 켜지는 LED | 예상 꺼지는 LED                               | 실제 결과 |
 |------|--------------------------------------------|----------------------------------------------|-----------------|-----------------------------------------------|-----------|
-| R0   | CLK 정지, 재초기화                         | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음            | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
-| P1   | 먼저 CLR=1, 그다음 PR2=0. CLK=0 유지       | D=0; CLK=0; CLR=1; PR1=1; PR2=0    | ①BIT2           | ②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| P2   | PR2를 1로 해제, 에지 없이 관찰             | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | ①BIT2           | ②BIT1 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S1   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ④BIT3           | ②BIT1 · ①BIT2 · ③BIT4 · ⑥BIT5 · ⑤BIT6         |           |
-| S2   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ③BIT4           | ②BIT1 · ①BIT2 · ④BIT3 · ⑥BIT5 · ⑤BIT6         |           |
-| S3   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑥BIT5           | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑤BIT6         |           |
-| S4   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑤BIT6           | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5         |           |
-| S5   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | 없음            | ②BIT1 · ①BIT2 · ④BIT3 · ③BIT4 · ⑥BIT5 · ⑤BIT6 |           |
+| R0   | CLK 정지, 재초기화                         | D=0; CLK=0; CLR=0; PR1=1; PR2=1    | 없음            | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
+| P1   | 먼저 CLR=1, 그다음 PR2=0. CLK=0 유지       | D=0; CLK=0; CLR=1; PR1=1; PR2=0    | ②BIT2           | ①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| P2   | PR2를 1로 해제, 에지 없이 관찰             | D=0; CLK=0; CLR=1; PR1=1; PR2=1    | ②BIT2           | ①BIT1 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S1   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ③BIT3           | ①BIT1 · ②BIT2 · ④BIT4 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S2   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ④BIT4           | ①BIT1 · ②BIT2 · ③BIT3 · ⑤BIT5 · ⑥BIT6         | ✓ |
+| S3   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑤BIT5           | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑥BIT6         | ✓ |
+| S4   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | ⑥BIT6           | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5         | ✓ |
+| S5   | CLK을 0→1→0으로 한 번 왕복, 하강 직후 관측 | D=0; CLK=1->0; CLR=1; PR1=1; PR2=1 | 없음            | ①BIT1 · ②BIT2 · ③BIT3 · ④BIT4 · ⑤BIT5 · ⑥BIT6 | ✓ |
 
 - 메모:
 
 # 실험 종료 메모
 
-- 막혔던 것:
-- 예상과 달랐던 것:
-- 뭘 바꿔서 해결했나:
+- 막혔던 것: (1) 결선 7단계에서 첫 시도와 PR1 강제 주입 시 LED가 켜지지 않았다.
+- 예상과 달랐던 것: (1) PR1 강제 주입을 시도했지만 LED가 켜지지 않았고, LED를 따로 검사했을 때는 문제가 없었다.
+- 뭘 바꿔서 해결했나: (1) 제대로 꽂혀 있지 않은 U2를 다시 꽂은 뒤 PR1 강제 주입과 직렬 입력·클록 두 방법 모두에서 LED가 켜졌다.
 - 새로 안 것:

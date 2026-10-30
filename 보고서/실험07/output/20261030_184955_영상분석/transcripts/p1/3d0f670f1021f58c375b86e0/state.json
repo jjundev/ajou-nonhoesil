@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "source_path": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+    "source_sha256": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e",
+    "policy": "lab-verbatim-pcm16-v2",
+    "model": "gemini-3.5-transcribe",
+    "endpoint": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-3.5-transcribe:generateContent",
+    "config": {
+      "mode": "VERBATIM",
+      "languageCodes": [
+        "ko-KR"
+      ],
+      "wordTimestamp": true
+    },
+    "chunk_frames": 7200000,
+    "audio_offset_s": 0.0
+  },
+  "status": "failed",
+  "error": "missing_api_key"
+}

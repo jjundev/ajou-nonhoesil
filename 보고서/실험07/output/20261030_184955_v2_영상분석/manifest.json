@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "run_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\output\\20261030_184955_v2_영상분석",
+  "run_label": "20261030_184955_v2",
+  "mode": "video",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+      "sha256_before": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e",
+      "size": 48401994,
+      "duration_s": 31.017511,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main 10",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1088,
+            "coded_height": 1920,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p10le",
+            "level": 123,
+            "color_range": "tv",
+            "color_space": "bt2020nc",
+            "color_transfer": "arib-std-b67",
+            "color_primaries": "bt2020",
+            "chroma_location": "left",
+            "refs": 1,
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "10462500/348947",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 2791576,
+            "duration": "31.017511",
+            "bit_rate": "12223661",
+            "nb_frames": "930",
+            "extradata_size": 108,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 1487849,
+            "duration": "30.996854",
+            "bit_rate": "256014",
+            "nb_frames": "1453",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-10-30T10:43:25.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "C:\\Users\\Hyunjun\\Downloads\\20261030_184955.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "31.017511",
+          "size": "48401994",
+          "bit_rate": "12483785",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-10-30T09:50:28.000000Z",
+            "location": "+37.2833+127.0436/",
+            "location-eng": "+37.2833+127.0436/",
+            "com.android.version": "17",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "3d49172477544e862e938ecdd1f2a4d69c5f656bd6ffe1aabb5e7390cb3d447e"
+    }
+  },
+  "scenes": [],
+  "captures": [],
+  "pairs": [],
+  "cuts": [
+    {
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 31.017511,
+      "reason": "원본 전체 구간 압축"
+    }
+  ],
+  "unknowns": [],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "pending",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v2_영상추출",
+    "video": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_v2_편집본.mp4",
+    "video_local": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험07\\실험사진\\20261030_184955_v2_영상추출\\실험07_20261030_184955_v2_편집본.mp4",
+    "zip": "C:\\Users\\Hyunjun\\Downloads\\실험07_20261030_184955_v2_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "video_exists": true,
+      "video_copy_integrity": true,
+      "video_format": true,
+      "fps": true,
+      "audio_format": true,
+      "duration": true,
+      "av_end_difference": true,
+      "full_decode": true
+    },
+    "review": {
+      "photos": "pending",
+      "boundaries": "verified",
+      "audio": "unavailable"
+    },
+    "video_duration_s": 31.064367,
+    "av_end_difference_s": 0.03336700000000192,
+    "decode_error": null
+  },
+  "rendered": {
+    "timeline": [
+      {
+        "kind": "source",
+        "source_id": "p1",
+        "source_start_s": 0.0,
+        "source_end_s": 31.017511,
+        "output_start_s": 0.0,
+        "output_end_s": 31.031,
+        "padding_s": 0.013488999999999862,
+        "has_original_audio": true
+      }
+    ],
+    "duration_s": 31.031,
+    "fps": "30000/1001",
+    "size": [
+      1080,
+      1920
+    ],
+    "encoding": {
+      "crf": 26,
+      "preset": "slow",
+      "audio_bitrate": "128k"
+    },
+    "source_bytes": 48401994,
+    "output_bytes": 9952806,
+    "reduction_percent": 79.43719839310752,
+    "video_sha256": "2953102c20d14451c7aad78f4978a7c69a9d9c2a5ec6dfcb9c6578c81587949d"
+  }
+}
