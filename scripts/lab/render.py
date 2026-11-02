@@ -687,10 +687,10 @@ def _chip_swap(previous, current) -> str:
         # 741 한 패키지에 op-amp 는 하나뿐이고 결선도가 "비교기를 하나 더
         # 붙인다"라고 적는다. `not in previous.ics` 로 거르면 이 기능의 존재
         # 이유인 그 지시가 배너에서 사라진다.
-        # `continues` 는 언제나 직전 회로다(validate 가 강제한다). 인쇄본에
-        # 없는 내부 ID(`C1`) 대신 학생이 앞 쪽에서 실제로 읽은 제목을 말한다.
+        # `continues` 는 언제나 직전 회로다(validate 가 강제한다). 회로 번호는
+        # 머리글과 길잡이 줄에 찍혀 있어 제목 전체를 되풀이하지 않는다.
         tail = " · 더 꽂을 칩: " + ", ".join(current.ics) if current.ics else ""
-        return (f"앞 회로({_plain(previous.title)})를 그대로 두고 이어 붙여요. "
+        return (f"앞 회로({previous.id})를 그대로 두고 이어 붙여요. "
                 f"점퍼선은 뽑지 않아요{tail}")
     remove = [c for c in previous.ics if c not in current.ics]
     add = [c for c in current.ics if c not in previous.ics]
@@ -1253,21 +1253,50 @@ def _unused_html(chips) -> str:
     return '<div class="unused"><b>미사용 핀</b>' + ''.join(out) + '</div>' if out else ''
 
 
+def _item_label(item) -> str:
+    """`실험 3) BCD 카운터` → `실험 3`. 번호가 없는 제목은 항목 ID 로 대신한다."""
+    token = item_token(item.title)
+    return f"실험 {token}" if token else item.id
+
+
+def _circuit_trail(spec, netlist, current) -> str:
+    """실험별 회로 길잡이 줄. 회로를 통틀어 `회로 2/5` 로 세면 실험이 다섯으로 읽힌다."""
+    groups = {}
+    for section in netlist.circuits:
+        groups.setdefault(section.item, []).append(section)
+    parts = []
+    for item_id, sections in groups.items():
+        item = next((i for i in spec.items if i.id == item_id), None)
+        ids = ' › '.join(f'<b>{_esc(s.id)}</b>' if s is current else _esc(s.id)
+                         for s in sections)
+        parts.append(f'{_esc(_item_label(item))}: {ids}' if item is not None else ids)
+    return '<div class="trail">' + ' <span class="sep">|</span> '.join(parts) + '</div>'
+
+
+def _circuit_heading(section, item, first: bool) -> str:
+    """긴 실험 제목은 그 실험의 첫 회로에만 적고, 뒤 회로는 실험 번호로 줄인다."""
+    title = _plain(section.title)
+    if item is not None and not first:
+        title = title.replace(item.title, _item_label(item), 1)
+    return title
+
+
 def circuit_pages(spec, netlist) -> str:
     """작업 그림·조작표·기록표. 원본의 저작 설명과 중복 핀 배선표는 싣지 않는다."""
     out, previous = [], None
     feed_after = {}
     shown = set()
-    total = len(netlist.circuits)
     v3_feeds = feeds_by_circuit(netlist) if netlist.schema == "lab-netlist/v3" else None
-    for n, section in enumerate(netlist.circuits, start=1):
+    for section in netlist.circuits:
         nodes, prose_before, prose_after = _circuit_body(section)
         chips = _chip_boxes(nodes)
         item = next((i for i in spec.items if i.id == section.item), None)
-        header = (f'<h2>회로 {n}/{total} · {_esc(_plain(section.title))}'
-                  f' · 기록: {_esc(", ".join(section.tables))}</h2>')
+        first = item is not None and item.id not in shown
+        header = _circuit_trail(spec, netlist, section)
+        header += (f'<h2>{_esc(_circuit_heading(section, item, first))}'
+                   f' · 기록: {_esc(", ".join(section.tables))}</h2>')
         header += f'<div class="banner">{_esc(_chip_swap(previous, section))}</div>'
-        if item is not None and item.id not in shown:
+        if first:
             shown.add(item.id)
             header += _schematic_html(item, spec.path.parent)
         out.append('<section class="circuit">')

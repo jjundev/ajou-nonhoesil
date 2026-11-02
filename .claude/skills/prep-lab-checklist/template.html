@@ -89,6 +89,10 @@
   /* ── 회로 ─────────────────────────────────────────────── */
   /* 회로 경계 = 칩을 뽑고 다시 꽂는 경계다 (netlist M10). 항상 새 쪽. */
   .circuit { break-before: page; }
+  /* 실험별 회로 길잡이 줄. 현재 회로만 굵게 적는다. */
+  .trail { font-size: 10pt; color: var(--muted); margin: 0 0 1mm; }
+  .trail b { color: var(--ink); }
+  .trail .sep { margin: 0 1.5mm; }
   .circuit h2 { font-size: 14pt; margin: 0 0 2mm; padding: 0 0 1.5mm;
                   border-bottom: 2px solid var(--ink); }
 

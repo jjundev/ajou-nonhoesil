@@ -385,8 +385,9 @@ class TestCircuitPages(unittest.TestCase):
                          len(self.netlist.circuits))
 
     def test_진행_표시가_붙는다(self):
-        self.assertIn("1/5", self.html)
-        self.assertIn("5/5", self.html)
+        self.assertEqual(self.html.count('<div class="trail">'), 5)
+        self.assertIn("<b>C1</b>", self.html)
+        self.assertIn("<b>C5</b>", self.html)
 
     def test_칩_교체_배너가_뺄_칩과_꽂을_칩을_말한다(self):
         """C1(74HC08) → C2(74HC32) 는 칩을 갈아끼워야 한다."""
@@ -1158,6 +1159,43 @@ class TestSteppedCells(unittest.TestCase):
         self.assertIn("<th>확인</th>", html)
         self.assertNotIn('class="mismatch"', html)
         self.assertNotIn('class="fill"', html)
+
+
+class TestCircuitTrail(unittest.TestCase):
+    """실험08 은 실험 둘에 회로 다섯이다. `회로 N/5` 로 세면 실험이 다섯으로 읽힌다."""
+
+    @classmethod
+    def setUpClass(cls):
+        spec = parse_spec(ROOT / config.experiment_dir(8) / "체크리스트/명세.md")
+        netlist = parse_netlist(ROOT / config.experiment_dir(8) / "결선도/netlist.md")
+        cls.html = circuit_pages(spec, netlist)
+        cls.pages = cls.html.split('<section class="circuit">')[1:]
+        cls.long_title = spec.items[1].title
+
+    def test_회로_총수로_세지_않는다(self):
+        self.assertNotIn("회로 1/5", self.html)
+
+    def test_길잡이_줄은_현재_회로만_굵게_적는다(self):
+        trail = '실험 1: {} <span class="sep">|</span> 실험 3: {} › {} › {} › {}'
+        ids = ["C1", "C2", "C3", "C4", "C5"]
+        for page, current in zip(self.pages, ids):
+            cells = [f"<b>{i}</b>" if i == current else i for i in ids]
+            self.assertIn(f'<div class="trail">{trail.format(*cells)}</div>', page)
+
+    def test_긴_실험_제목은_그_실험의_첫_회로에만_나온다(self):
+        headings = re.findall(r"<h2>(.*?)</h2>", self.html)
+        self.assertEqual(sum(self.long_title in h for h in headings), 1)
+        self.assertIn(f"C2 · {self.long_title} — 1. BCD Counter", self.pages[1])
+
+    def test_뒤따르는_회로는_실험_번호로_줄여_적는다(self):
+        self.assertIn("<h2>C3 · 실험 3 — FND Common Anode 테스트", self.pages[2])
+        self.assertIn("<h2>C5 · 실험 3 — 3. 최종 BCD 카운터", self.pages[4])
+
+    def test_한_회로뿐인_실험은_제목이_그대로다(self):
+        self.assertIn("<h2>C1 · 실험 1) 2단 2진 카운터", self.pages[0])
+
+    def test_이어_붙이는_배너는_회로_번호만_적는다(self):
+        self.assertIn("앞 회로(C3)를 그대로 두고", self.pages[3])
 
 
 class TestContinuesBanner(unittest.TestCase):

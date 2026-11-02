@@ -104,7 +104,7 @@ def test_chip_port_roles_precede_separate_first_preparation_page(checklist):
         assert render._blocks(section.body) in opening
     assert 'J4, K16, CLK1, PR2, CLR3' in opening
     assert 'Q15, Q' in opening and 'NAND 1' in opening
-    assert '회로 1/1' in opening
+    assert '<div class="trail">실험 1: <b>C1</b></div>' in opening
     stage = html.split('<div class="stage">', 1)[1]
     assert '단계 1 준비 ①' in stage
     assert '<h1>' not in stage
