@@ -215,10 +215,11 @@ def _input_settings_html(names, rows, *, spaced=True):
         for name, cell in zip(names, cells):
             parts = re.split(r'\s*(?:->|→)\s*', cell.strip())
             edge = len(parts) > 1 and all(p in bits for p in parts)
-            end = bits.get(parts[-1]) if edge else bits.get(cell.strip())
+            end = bits.get(parts[-1]) if edge else ('RUN' if cell.strip() == 'RUN' else bits.get(cell.strip()))
             changed = index > 0 and (edge or (
                 end is not None and levels.get(name) is not None and end != levels[name]))
-            text = f'{_esc(name)}{equal}{_esc(cell)}'
+            label = '반복 클록' if cell == 'RUN' else cell
+            text = f'{_esc(name)}{equal}{_esc(label)}'
             settings.append(f'<span class="input-change">{text}</span>' if changed else text)
             levels[name] = end
         result.append('<br>'.join(settings))
@@ -272,7 +273,7 @@ def _stepped_html(table, *, wide=False, leds=()) -> str:
                                        spaced=False)
         return _comparison_table_html(header, rows, input_settings=settings, input_column=2)
     header = list(table.header)
-    rows = [[_plain(c) for c in row] for row in table.rows]
+    rows = [[_plain('반복 클록' if c == 'RUN' else c) for c in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
         header.append("기록")
         rows = [row + [""] for row in rows]

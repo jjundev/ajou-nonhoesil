@@ -63,6 +63,20 @@ def test_clock_trace_rejects_mismatched_edge_and_hidden_transition(circuit,row,c
     p=circuit.procedures[0]; p.steps[row].inputs[col]=value
     assert obs.procedure_issues(circuit,p)
 
+def test_running_clock_allows_input_changes_and_explicit_stop(circuit):
+    p = circuit.procedures[0]
+    base = p.steps[0]
+    p.steps = [replace(base, order=i, inputs=[data, clk, '1', '1'], expected=['0'])
+               for i, (data, clk) in enumerate([('0','0'), ('1','RUN'), ('0','RUN'), ('0','1'), ('0','1->0')], 1)]
+    assert obs.procedure_issues(circuit, p) == []
+
+@pytest.mark.parametrize('values', [ [('0','RUN')], [('RUN','0')], [('0','0'),('0','RUN'),('0','1->0')] ])
+def test_running_clock_rejects_ambiguous_transitions(circuit, values):
+    p = circuit.procedures[0]
+    base = p.steps[0]
+    p.steps = [replace(base, order=i, inputs=[*pair, '1', '1'], expected=['0']) for i, pair in enumerate(values, 1)]
+    assert obs.procedure_issues(circuit, p)
+
 def test_rejects_bad_order_and_empty_action(circuit):
     p=circuit.procedures[0]
     p.steps[1].order=7; p.steps[0].action=''

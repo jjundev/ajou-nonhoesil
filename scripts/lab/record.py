@@ -93,7 +93,7 @@ def _stepped(table, leds=()) -> str:
         header, rows = comparison_rows(table, leds)
         return _grid(header, rows)
     header = list(table.header)
-    rows = [list(row) for row in table.rows]
+    rows = [['반복 클록' if cell == 'RUN' else cell for cell in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
         header.append("기록")
         rows = [row + [""] for row in rows]

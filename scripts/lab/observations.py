@@ -78,7 +78,12 @@ def procedure_issues(section, procedure) -> list[tuple[int, str]]:
         if len(row.inputs) != len(p.inputs) or len(row.expected) != len(p.observe):
             issue('입력/기대 열 수 불일치', row.line)
         for name, cell in zip(p.inputs, row.inputs):
-            if cell in ('0->1', '1->0'):
+            if cell == 'RUN':
+                if name not in p.clocks or name not in levels:
+                    issue(f'{name} RUN: 선언된 clock의 초기 레벨이 필요하다', row.line)
+                else:
+                    levels[name] = 'RUN'
+            elif cell in ('0->1', '1->0'):
                 start, end = cell.split('->')
                 if name not in p.clocks or levels.get(name) != start:
                     issue(f'{name} 에지 {cell}: 선언한 clock 의 직전 레벨과 불일치', row.line)
@@ -87,7 +92,7 @@ def procedure_issues(section, procedure) -> list[tuple[int, str]]:
                 issue(f'{name} 입력 {cell!r}: 명시적 비트 또는 clock 에지가 필요하다', row.line)
             elif name in p.clocks:
                 level = '1' if cell in ('1', 'H') else '0'
-                if name in levels and levels[name] != level:
+                if name in levels and levels[name] not in (level, 'RUN'):
                     issue(f'{name}: 레벨 변경은 에지로 명시한다', row.line)
                 levels[name] = level
         for name, cell in zip(p.observe, row.expected):

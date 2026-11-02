@@ -41,7 +41,7 @@ def comparison_rows(table, leds=()):
             label = f'{circled(led.index)}{n}' if led else n
             (on if lit(bit, led.active_low if led else False) else off).append(label)
         # Keep every authored input, including clock edges and initialization controls.
-        inputs = '; '.join(f'{table.header[i]}={row[i]}' for i in ins if table.header[i] not in ('스텝', '조작'))
+        inputs = '; '.join(f'{table.header[i]}={"반복 클록" if row[i] == "RUN" else row[i]}' for i in ins if table.header[i] not in ('스텝', '조작'))
         step = row[table.header.index('스텝')] if '스텝' in table.header else str(len(result)+1)
         action = row[table.header.index('조작')] if '조작' in table.header else ''
         result.append([step, action, inputs, ' · '.join(on) or '없음', ' · '.join(off) or '없음', ''])

@@ -23,6 +23,43 @@ def test_last_stage_prints_explicit_procedure(data):
     assert all(action in h for action in ['초기화','CLR 해제','데이터 설정','클럭 상승','클럭 하강'])
     assert h.count('data-observation-order=') == 10 # same five rows in both areas
 
+def test_running_clock_is_readable_in_both_layouts(data):
+    n, s, c = data
+    p = c.procedures[0]
+    p.steps[1].inputs[1] = 'RUN'
+    p.steps[2].inputs[1] = 'RUN'
+    p.steps[3].inputs[1] = '0'
+    p.steps[4].inputs[1] = '0->1'
+    p.steps[4].action = '클럭 상승'
+    p.setup = '1 Hz, 0~5 V 사각파'
+    for layout in ('split', 'inline'):
+        p.layout = layout
+        h = stage_html(data)
+        assert '1 Hz, 0~5 V 사각파' in h
+        assert 'CLK = 반복 클록' in h
+        assert 'CLK = RUN' not in h
+        assert '클럭 상승' in h
+
+def test_running_clock_start_and_stop_are_highlighted():
+    rows = render._input_settings_html(['CLK'], [['0'], ['RUN'], ['RUN'], ['0']])
+    assert 'input-change' in rows[1]
+    assert 'input-change' not in rows[2]
+    assert 'input-change' in rows[3]
+
+def test_running_clock_appears_in_stepped_and_record():
+    from scripts.lab.spec_parser import SpecTable
+    from scripts.lab.record import _stepped
+    t = SpecTable(id='T1', title='x', kind='stepped', encoding='0/1', source='manual:p1', expected=None, role='record', header=['스텝','CLK','기록'], rows=[['1','RUN','']], line=1)
+    for output in (render._stepped_html(t), _stepped(t)):
+        assert '반복 클록' in output
+        assert 'RUN' not in output
+
+def test_running_clock_in_comparison_record():
+    from scripts.lab.spec_parser import SpecTable
+    from scripts.lab.record import _stepped
+    t = SpecTable(id='T1', title='x', kind='stepped', encoding='0/1', source='manual:p1', expected=None, role='record', header=['스텝','CLK','Q'], rows=[['1','RUN','1']], line=1, comparison='led', outputs=['Q'])
+    assert 'CLK=반복 클록' in _stepped(t)
+
 def test_probe_stage_prints_procedure_without_led(data):
     h=stage_html(data)
     assert '클럭 하강' in h

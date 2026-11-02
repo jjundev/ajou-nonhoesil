@@ -14,3 +14,9 @@ def test_v3_document_examples_are_executable(tmp_path):
         assert c.procedures
         assert procedure_issues(c,c.procedures[0])==[]
         assert c.stages[0]['procedure']==c.procedures[0].id
+
+def test_clock_authoring_rules_cover_continuous_and_single_pulses():
+    for skill in ('draft-lab-spec', 'prep-lab-checklist'):
+        text = Path(f'.claude/skills/{skill}/SKILL.md').read_text(encoding='utf-8')
+        for phrase in ('반복 클록', 'RUN', '단일 펄스', '교안 우선', 'Vpp', '기록 보존'):
+            assert phrase in text, (skill, phrase)
