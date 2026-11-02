@@ -421,6 +421,24 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual(kinds.count('저항'), len(bb.resistors))
         self.assertEqual([n for k, n, _ in rows if k == '입력'], [i['name'] for i in bb.inputs])
 
+    def test_부품표에_표시기가_칩_다음에_있다(self):
+        # FND 도 팀원이 그리는 부품이다 — 안내판에 색으로 나오는데 표에 없으면 자리를 못 찾는다
+        from scripts.lab import hand_sim
+        bb = _load().BreadboardRenderer(board='v2', hand=1, hand_guide=True)
+        bb.enable_steps()
+        bb.display_chain('FND 507', 28)
+        rows = hand_sim.guide_rows(bb)
+        self.assertEqual(rows[0], ('표시기', 'FND 507', '우 블록 · pin 1 = 28행'))
+        self.assertEqual([k for k, _, _ in rows], ['표시기'] + ['저항'] * 7)
+
+    def test_범례는_표시기가_있는_판에만_표시기를_말한다(self):
+        # 표시기 없는 실험의 범례가 바뀌면 커밋된 PDF 가 까닭 없이 달라진다
+        from scripts.lab import hand_sim
+        self.assertEqual(hand_sim.legend_for([('칩', '7490', '좌 블록 · pin 1 = 5행')]), hand_sim.LEGEND)
+        legend = hand_sim.legend_for([('표시기', 'FND 507', '우 블록 · pin 1 = 29행')])
+        self.assertIn('칩·표시기·LED·저항·입력 이름', legend)
+        self.assertIn('칩·표시기 핀·LED·저항의 회색 다리', legend)
+
     def test_부품표_입력은_레일_쪽_끝(self):
         # 팀원이 이름을 적는 자리는 0/1 을 바꿀 때 옮겨 꽂는 레일 쪽 끝이다
         from scripts.lab import hand_sim

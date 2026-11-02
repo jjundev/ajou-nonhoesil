@@ -33,6 +33,7 @@ OUT_DIR = '팀원전달용'
 
 LEGEND = ('회색 선은 이미 그려져 있어요 · 색으로 된 칩·LED·저항·입력 이름만 그리세요 '
           '(칩 핀·LED·저항의 회색 다리도 부품과 함께 그려요)')
+LEGEND_DISPLAY = LEGEND.replace('칩·LED', '칩·표시기·LED').replace('칩 핀·LED', '칩·표시기 핀·LED')
 
 # 부품그리기 안내판 — 태블릿 판. 손그림모사는 `board_page` 판
 CSS = """
@@ -63,11 +64,13 @@ def output_paths(experiment):
 
 
 def guide_rows(bb):
-    """안내판 부품표 — (종류, 이름, 자리). 칩 → LED → 저항 → 입력, 각각 엔진 기록 순서."""
+    """안내판 부품표 — (종류, 이름, 자리). 칩 → 표시기 → LED → 저항 → 입력, 각각 엔진 기록 순서."""
     def hole(sym):
         return bb._sym_addr(('hole', sym))
-    rows = [('칩', c['label'], f'{"좌" if c["block"] == "left" else "우"} 블록 · pin 1 = {c["pin1_row"]}행')
-            for c in bb.chips]
+    def dip(kind, part):
+        return (kind, part['label'], f'{"좌" if part["block"] == "left" else "우"} 블록 · pin 1 = {part["pin1_row"]}행')
+    rows = [dip('칩', c) for c in bb.chips]
+    rows += [dip('표시기', d) for d in bb.displays]
     rows += [('LED', ch['tag'], f'애노드 {hole(ch["anode"])} · 캐소드 {hole(ch["cathode"])}')
              for ch in bb.led_chains]
     rows += [('저항', r['label'], f'{hole(r["top"])} → {hole(r["bottom"])}')
@@ -75,6 +78,11 @@ def guide_rows(bb):
     rows += [('입력', i['name'], f'레일 쪽 끝 {bb.addr(*bb._segments[i["seg"]][1][0])} 옆')
              for i in bb.inputs]
     return rows
+
+
+def legend_for(rows):
+    """표시기가 있는 쪽만 범례가 표시기를 말한다 — 표시기 없는 실험의 PDF 는 그대로다."""
+    return LEGEND_DISPLAY if any(k == '표시기' for k, _, _ in rows) else LEGEND
 
 
 def render_final(fn, final_name, work_dir):
@@ -158,7 +166,7 @@ def render_guide_html(title, pages):
         return ('<table><thead><tr><th>종류</th><th>이름</th><th>자리</th></tr></thead>'
                 f'<tbody>{body}</tbody></table>')
     return _doc(title, ''.join(
-        f'<section class="page"><h1>{html.escape(t)}</h1><p class="legend">{html.escape(LEGEND)}</p>'
+        f'<section class="page"><h1>{html.escape(t)}</h1><p class="legend">{html.escape(legend_for(rows))}</p>'
         f'<img class="guide" src="{quote(img)}" alt="{html.escape(t)}">{table(rows)}</section>'
         for t, img, rows in pages))
 
