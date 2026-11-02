@@ -186,8 +186,9 @@ BCD = PlaceCircuit('bcd', {'U1': 'S1', 'U2': 'S2'}, {'U1': '7490', 'U2': '7447'}
 PLACE = [COUNTER, BCD]
 
 
-def _board(path, template, circuit, g, baseline, title, sub, *, palette=False, partial_=None, submit=False):
-    bb = BreadboardRenderer(template, baseline=baseline, board=BOARD, palette=palette)
+def _board(path, template, circuit, g, baseline, title, sub, *, palette=False, partial_=None, submit=False,
+           hand=None, hand_guide=False):
+    bb = BreadboardRenderer(template, baseline=baseline, board=BOARD, palette=palette, hand=hand, hand_guide=hand_guide)
     bb.side_lead_max = SIDE_LEAD_MAX
     bb.led_order_policy = 'fixed'
     bb.enable_steps()
@@ -204,11 +205,13 @@ _E1 = '실험 1) 2단 2진 카운터 (비동기)'
 _E3 = '실험 3) BCD 카운터'
 
 
-def build_e8_counter(output_path, template_path=None, stage=None, baseline=None):
+def build_e8_counter(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     g = 8 if stage is None else 3 + stage
     bb = _board(output_path, template_path, COUNTER, g, baseline,
                 _E1 + (f' — {stage}단계' if stage else ''), '74HC76 ×1 + 74HC08 ×1 · CLK 1Hz',
-                palette=stage is not None, partial_=g < 8, submit=stage is None)
+                palette=stage is not None, partial_=g < 8, submit=stage is None, hand=hand, hand_guide=hand_guide)
     bb.note('74HC76 전원은 pin 5(+5V), pin 13(GND)다. J·K·PR·CL 은 전부 +5V 다.')
     bb.export(output_path, max_row=63)
     return bb
@@ -222,11 +225,13 @@ def _prep_counter(output_path, template_path=None, baseline=None, *, order):
     return bb
 
 
-def build_e8_bcd(output_path, template_path=None, stage=None, baseline=None):
+def build_e8_bcd(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     g = 5 if stage is None else 2 + stage
     bb = _board(output_path, template_path, BCD, g, baseline,
                 f'{_E3} — 1. BCD Counter' + (f' {stage}단계' if stage else ''), '7490 ×1 · CLK 1Hz · R0 점퍼',
-                palette=stage is not None, partial_=g < 5, submit=stage is None)
+                palette=stage is not None, partial_=g < 5, submit=stage is None, hand=hand, hand_guide=hand_guide)
     bb.note('7490 전원은 pin 5(+5V), pin 10(GND)다. pin 6·7(R9)은 GND 다.')
     bb.export(output_path, max_row=63)
     return bb
@@ -241,9 +246,12 @@ def _prep_bcd(output_path, template_path=None, baseline=None, *, order):
     return bb
 
 
-def build_e8_fnd(output_path, template_path=None, stage=None, baseline=None):
+def build_e8_fnd(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     bb = _board(output_path, template_path, BCD, 6, baseline, f'{_E3} — FND Common Anode 테스트',
-                'C2 위에 FND 507 + 330Ω ×7 · 7447 은 아직 꽂지 않는다', partial_=True, submit=True)
+                'C2 위에 FND 507 + 330Ω ×7 · 7447 은 아직 꽂지 않는다', partial_=True, submit=True,
+                hand=hand, hand_guide=hand_guide)
     bb.note('저항 빈 끝은 비어 있다. 시험선은 손에 들고 대며 그림에 없다.')
     bb.export(output_path, max_row=63)
     return bb
@@ -262,22 +270,26 @@ def _prep_driver(output_path, template_path=None, baseline=None, *, order):
     return bb
 
 
-def build_e8_driver(output_path, template_path=None, stage=None, baseline=None):
+def build_e8_driver(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     g = 11 if stage is None else 8 + stage
     bb = _board(output_path, template_path, BCD, g, baseline,
                 f'{_E3} — 2. BCD to 7-Segment' + (f' {stage}단계' if stage else ''),
                 '7447 ×1 + FND 507 · 입력 A~D 는 점퍼', palette=stage is not None, partial_=g < 11,
-                submit=stage is None)
+                submit=stage is None, hand=hand, hand_guide=hand_guide)
     bb.note('7447 전원은 pin 16(+5V), pin 8(GND)다. /LT·/BI·/RBI 는 +5V 다.')
     bb.export(output_path, max_row=63)
     return bb
 
 
-def build_e8_final(output_path, template_path=None, stage=None, baseline=None):
+def build_e8_final(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
+    if hand is not None and stage is not None:
+        raise ValueError('hand 는 완성본(stage=None)에만 준다')
     g = 13 if stage is None else 11 + stage
     bb = _board(output_path, template_path, BCD, g, baseline,
                 f'{_E3} — 3. 최종' + (f' {stage}단계' if stage else ''), '7490 + 7447 + FND 507',
-                palette=stage is not None, partial_=g < 13, submit=stage is None)
+                palette=stage is not None, partial_=g < 13, submit=stage is None, hand=hand, hand_guide=hand_guide)
     bb.note('7490 출력은 LED 사슬 신호 스트립을 거쳐 7447 입력으로 간다.')
     bb.export(output_path, max_row=63)
     return bb
