@@ -31,7 +31,9 @@ SRC = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 # 보드 안쪽 x 범위. 이 밖에 앉는 배지는 여백이라 홀을 가리지 않는다
 
 # 그림 한 장의 보드 위 배지 상한. 신호 이름(입력 A·B·C, 출력 L1·L2·X·Y·Z)만 남긴
-# 결과가 한 장에 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다
+# 결과가 한 장에 0~5 개다. 문구를 다시 얹기 시작하면 여기서 걸린다. 이 상한은 보드가 글자로 덮이는
+# 것을 막으려는 것이지 개수를 맞추려는 것이 아니다 — 걸리면 안 세는 그리기 경로를 새로 만들지 말고
+# 줄이거나 아래 예외표에 근거를 적는다(2026-11-02 세그먼트 글자가 저항 색띠를 가렸다)
 MAX_ON_BOARD_LABELS = 8
 # 신호 이름만으로 상한을 넘는 회로. 이름은 `test_신호_이름이_보드_안에_있다` 가 요구하므로
 # 뺄 수 없다 — 문구 배지가 아니라 이름 개수가 넘는 경우만 여기 적는다.
@@ -39,7 +41,9 @@ MAX_ON_BOARD_LABELS = 8
 #    (Y·L2·L3·L4) = 11 (2026-09-28). 키는 빌더 이름의 앞머리다
 #  · `build_e5_bcd`: 입력 4(Bit0~Bit3) + LED 10(Y0~Y9) = 14 (2026-10-05)
 #  · `build_e5_xs3`: 입력 6(D0~D5) + LED 4(A3~A0) = 10 (2026-10-05)
-LABEL_EXCEPTIONS = {'build_e4_mux': 11, 'build_e5_bcd': 14, 'build_e5_xs3': 10}
+#  · `build_e8_fnd`·`build_e8_driver`·`build_e8_final`: LED 4(A~D) + 세그먼트 저항 7(a~g) = 11 (2026-11-02)
+LABEL_EXCEPTIONS = {'build_e4_mux': 11, 'build_e5_bcd': 14, 'build_e5_xs3': 10,
+                    'build_e8_fnd': 11, 'build_e8_driver': 11, 'build_e8_final': 11}
 
 
 def _label_cap(name):

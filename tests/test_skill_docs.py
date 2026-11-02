@@ -1308,6 +1308,7 @@ BREADBOARD_DIR = BREADBOARD_SKILL.parent
 BREADBOARD_SKILL_MAX = 40000
 # 형제 문서마다 그 문서에만 있는 구절. SKILL.md 로 되돌아오면 다시 매번 실린다.
 BREADBOARD_SIBLINGS = {
+    "display.md": "display_chain",
     "lower-bridges.md": "bridge_policy: 'lower-clearance-v1'",
     "fixed-led-search.md": "--mode fixed --budget 256",
     "v1.md": "y = 272.0 + (r-1) * 16.345",

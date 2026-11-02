@@ -139,6 +139,25 @@ class _RuleChecks:
                     out.append(f"{desc} — 칩 {ch['label']}({ch['pin1_row']}행)")
         return out
 
+    def assembly_signals(self):
+        """준비 그림에 있으면 안 되는 새 신호선. 입력 점퍼의 0 자리는 임시 고정이라 뺀다(`references/assembly.md`)."""
+        held = {('sig', self._endpoint(self._segments[i['seg']][1][0]), self._endpoint(self._segments[i['seg']][1][-1]))
+                for i in self.inputs}
+        return [k for k in self.new_signal if k not in held]
+
+    def _display_boxes(self):
+        """표시기 몸통과 그 저항 몸통 상자 — 표시기가 없으면 빈 목록이다."""
+        return [b for d in self.displays for b in d['boxes']]
+
+    def wires_over_display(self):
+        """R15 — 표시기·표시기 저항 몸통 위를 지나는 배선. 숫자를 가리거나 다리가 안 보인다."""
+        out = []
+        for _kind, pts, desc in self._segments:
+            if any(self._seg_in_box(a, b, box) for box in self._display_boxes()
+                   for a, b in zip(pts, pts[1:])):
+                out.append(desc)
+        return out
+
     def wires_over_chip_labels(self):
         """R14 — 칩 이름 글자 위를 지나는 배선(전원선 포함). R13 이 허용한 칩 안 이어 가기도 이름
         위아래 반 행으로 건넌다 — 한복판을 건너면 어느 칩인지 안 읽힌다(2026-10-04)."""
@@ -183,6 +202,7 @@ class _RuleChecks:
                        if ch['block'] in self.spec.chip_blocks for sym in ch['pins'].values()}
         led_strips = {self._strip(ch['signal']) for ch in self.led_chains
                       if ch['signal'] is not None and ch['signal'][0] in led_blocks}
+        led_strips |= {self._strip(sym) for d in self.displays for sym in d['seg_strips'].values()}
         bad, ok = [], []
         for w in self.block_crossings():
             led_end = next((s for z, s in w['ends'].items() if z in led_blocks), None)
@@ -211,7 +231,7 @@ class _RuleChecks:
         wires = [{'kind': kind, 'desc': desc,
                   'frm': self._endpoint(pts[0]), 'to': self._endpoint(pts[-1])}
                  for kind, pts, desc in self._segments]
-        return {
+        out = {
             'chips': list(self.chips),
             'wires': wires,
             'inputs': [dict(i) for i in self.inputs],
@@ -226,6 +246,9 @@ class _RuleChecks:
             'bridges': list(self.bridges),
             'overlaps': list(self.overlap_warnings),
         }
+        if self.displays:
+            out['displays'] = list(self.displays)    # 표시기 없는 주차는 키가 없다 — 옛 도장이 그대로다
+        return out
 
     def input_node(self, name, x, row):
         """**방금 그린 배선**을 입력 점퍼로 적어 둔다(`_input_jumper` 가 부른다). 넷 검사는 그 레일 끝을
@@ -274,6 +297,8 @@ class _RuleChecks:
         for i, r in enumerate(self.resistors, 1):
             out.append((f"저항{i}({r['label']}) 윗다리", r['top']))
             out.append((f"저항{i}({r['label']}) 아랫다리", r['bottom']))
+        for d in self.displays:
+            out += [(f"{d['label']} pin {p}", sym) for p, sym in d['pins'].items()]
         return out
 
     def nets(self, substitute_inputs=True):
@@ -489,6 +514,7 @@ class _RuleChecks:
             rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
             rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
             rd += [f'R14 배선이 칩 이름을 가린다: {p}' for p in self.wires_over_chip_labels()]
+            rd += [f'R15 배선이 표시기를 가린다: {p}' for p in self.wires_over_display()]
             rd += self.bridge_clearance_problems()
             if rd:
                 raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))

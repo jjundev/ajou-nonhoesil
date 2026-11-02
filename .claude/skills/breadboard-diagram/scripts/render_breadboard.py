@@ -278,7 +278,7 @@ def build_all(board, output_dir, template_path=None):
         check_board(board, bb, filename)
         check_palette(bb, filename)
         if is_assembly:
-            if bb.removed() or bb.new_signal:
+            if bb.removed() or bb.assembly_signals():
                 raise ValueError(f'{filename}: 준비에는 제거·sig/mid·출력 급전을 넣을 수 없다')
             bb.verify()
         base = bb.snapshot()

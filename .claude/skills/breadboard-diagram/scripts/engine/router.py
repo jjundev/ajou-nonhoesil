@@ -8,16 +8,32 @@
 # 설계: `docs/plans/2026-10-04-v2-배선기-밀도-설계.md`.
 
 
+# 7-Segment 표시기 표 — 칩이 아니다(R9 를 안 타고 우 블록에 선다). 핀 번호는 DIP 처럼 왼쪽 위 pin 1, 아래로
+# 내려가 오른쪽 아래에서 위로 돈다(FND 507 은 교안 실험8 p16 핀 그림이 그 순서다).
+# 다리 간격은 교안에 없다 — 지난 학기 실물 사진(`from_the_past/정리/결과보고서/실험8/`, 영상 8주차 1.mp4)에서
+# 몸통이 c~h 를 덮고 a·b·i·j 만 남는다. `legs` d·h 는 숨은 다리의 가정이고, 배선은 a·b·i·j 와 몸통 밖 행에만
+# 꽂으므로 다리가 c~e·f~h 어디에 앉아도 스트립이 같아 결선은 그대로다.
+# `segments`: 세그먼트 → (핀, 저항 열, 저항 빈 끝 행 − 윗행). `ties`: 레일로 바로 묶는 핀.
+# `tie_lane`: f쪽 묶음선이 표시기 밑을 돌아가는 반 행(윗행 + 값 + ½).
+DISPLAYS = {
+    'FND 507': {
+        'pins': 10, 'legs': ('d', 'h'), 'cover': ('c', 'h'), 'ties': (3, 5, 8), 'tie_lane': 7,
+        'segments': {'a': (7, 'i', 5), 'b': (6, 'j', 6), 'c': (4, 'b', 5), 'd': (2, 'b', -1),
+                     'e': (1, 'a', -2), 'f': (9, 'i', -1), 'g': (10, 'j', -2)},
+    },
+}
+
 # 칩 모델 표 — 이름 → DIP 핀 수(VCC 는 마지막 핀, GND 는 n/2). 배치기는 없는 칩을 거절하고
 # 그리기는 14핀으로 본다(v1 빌더 호환).
 DIP_PINS = {
     '74HC00': 14, '74HC02': 14, '74HC04': 14, '74HC08': 14, '74HC10': 14, '74HC11': 14,
     '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
     '74HC42': 16, '74HC76': 16, '74HC138': 16, '74HC148': 16,
+    '7447': 16, '7490': 14,
 }
 # 전원핀이 모서리(VCC = n, GND = n/2)가 아닌 칩 — (VCC 핀, GND 핀). 74HC76 은 교안 p11 이 "GND와 Vcc
 # 위치 유의" 라고 적는 칩이다(실험06, ST M74HC76 Pin description)
-DIP_POWER = {'74HC76': (5, 13)}
+DIP_POWER = {'74HC76': (5, 13), '7490': (5, 10)}
 
 
 def dip_power(model, n=None):
@@ -65,6 +81,12 @@ def _end_holes(bb, chips, end):
     L, R = bb.cols['left'], bb.cols['right']
     if end[0] == 'LED':
         return [(R['a'], bb.r_y(end[1]))]
+    if end[0] == 'TAP':     # LED 사슬 신호 스트립의 빈 홀 — 칩 쪽을 못 바꾸는 선의 중계(실험08 C5)
+        return [(R[c], bb.r_y(end[1])) for c in 'cde'
+                if (R[c], end[1]) not in bb._leads and (R[c], end[1]) not in bb._passed]
+    if end[0] == 'SEG':     # 표시기 저항의 빈 끝 스트립
+        return [(x, bb.r_y(r)) for x, r in bb.seg_ends[end[1]]
+                if (x, r) not in bb._leads and (x, r) not in bb._passed]
     k, pin = chips[end[0]], end[1]
     n = _chip_pins(bb).get(k, 14)
     row = _dip_pin_row(k, pin, n)
@@ -225,6 +247,10 @@ def _valid(bb, path, others_pts, segs, seg_boxes=None, *, allow_diagonal=False):
             if (min(a[0], b[0]) < x1 and max(a[0], b[0]) > x0
                     and min(a[1], b[1]) < y1 and max(a[1], b[1]) > y0):
                 return False
+    # 표시기 몸통·저항 몸통 위를 지나지 않는다(엔진 R15)
+    for box in bb._display_boxes():
+        if any(bb._seg_in_box(a, b, box) for a, b in zip(path, path[1:])):
+            return False
     # 신호 이름 배지 위를 지나지 않는다 — 배지가 선을 가리고 선이 이름을 가른다(2026-10-05 실험05 C1
     # `Y0` 급전이 가운데 레일 입력 배지 `Bit0`~`Bit2` 위로 내려갔다). 고정물이 먼저 그린 배지만 보인다
     for _n, box, _seg in bb.tag_boxes:
@@ -273,7 +299,9 @@ def _route(bb, chips, frm, to):
 def _routes(bb, chips, frm, to, density_weight=0.0):
     """`frm`→`to` 의 합법 경로를 싼 순으로 낸다. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B]
     꼴이다 — y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`."""
-    led = to[0] == 'LED'
+    led = to[0] in ('LED', 'TAP', 'SEG')
+    gap = _GAP_LANES if to[0] == 'SEG' else ()
+    side = led and getattr(bb, 'route_side_lanes', False)
     srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
     others = []
     segs = [(k, pts) for k, pts, _d in bb._segments]
@@ -285,7 +313,7 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
             others.append((x, bb.r_y(r)))
     chip_rows = tuple((ch['pin1_row'], len(ch['pins'])) for ch in bb.chips)
     placed = _placed_signal_segs(bb) if density_weight else []
-    order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led), placed,
+    order = _rerank(_ordered(bb, chip_rows, tuple(srcs), tuple(dsts), led, gap, side), placed,
                     bb.spec.row_pitch, density_weight)
     for p in order:
         if _valid(bb, p, others, segs, boxes):
@@ -296,12 +324,15 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
 
 
 _ORDERED = {}
+_GAP_LANES = (784, 796, 808, 820)   # 우 블록 골 — 표시기 저항 스트립에 e·f 쪽에서 가로로 들어가는 세로 차선
 
 
-def _ordered(bb, chip_rows, srcs, dsts, led):
+def _ordered(bb, chip_rows, srcs, dsts, led, gap=(), side=False):
     """후보 경로를 싼 순으로 — 덮는 홀이 있는 것은 뺀다. 칩 자리와 끝 홀에만 달려 사본마다 캐시한다
-    (`_ORDERED`) — 수리가 같은 선을 다시 깔 때 그대로 쓴다."""
-    key = (bb.spec.name, chip_rows, srcs, dsts, led)
+    (`_ORDERED`) — 수리가 같은 선을 다시 깔 때 그대로 쓴다. `gap` 이 있으면(표시기 끝) 그 x 로 내려가
+    끝 행을 가로로 들어가는 후보를 더한다 — 끝 위 행의 홀을 덮지 않고 e·f 열에 닿는다. `side` 는 빌더가 켠다
+    (`bb.route_side_lanes`, 후보가 늘면 옛 주차 경로가 바뀐다)."""
+    key = (bb.spec.name, chip_rows, srcs, dsts, led, gap, side)
     if key in _ORDERED:
         return _ORDERED[key]
     half = bb.spec.row_pitch / 2
@@ -320,6 +351,12 @@ def _ordered(bb, chip_rows, srcs, dsts, led):
                     for X in lanes + [A[0], B[0]]:
                         p = _clean([A, (A[0], y1), (X, y1), (X, y2), (B[0], y2), B])
                         cands.append(p)
+                        for Z in gap:
+                            cands.append(_clean([A, (A[0], y1), (X, y1), (X, y2), (Z, y2), (Z, B[1]), B]))
+                        # a쪽 핀에서 우 블록으로 — 칩 이름에 막힌 행은 옆 열 사이 차선으로 건널 반 행까지 간다
+                        if side and A[0] < bb.cols['left']['e']:
+                            for W in (A[0] - 12, A[0] + 12):
+                                cands.append(_clean([A, (W, A[1]), (W, y1), (X, y1), (X, y2), (B[0], y2), B]))
     cost = _coster(bb)
     scored = [(cost(p), p) for p in set(map(tuple, cands))]
     out = [(c, p) for (_over, c), p in sorted((s for s in scored if s[0][0] == 0),

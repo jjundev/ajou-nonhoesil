@@ -51,7 +51,8 @@ def place_check(circuit):
 
 def place_chips(circuit, layout):
     """칩 → pin 1 행."""
-    return {chip: layout['slots'][slot] for chip, slot in circuit.chips.items()}
+    out = {chip: layout['slots'][slot] for chip, slot in circuit.chips.items()}
+    return out | ({'FND': layout['fnd']} if 'fnd' in layout else {})
 
 
 def place_wires(circuit, layout):
@@ -59,7 +60,7 @@ def place_wires(circuit, layout):
     rows = layout['leds'].get(circuit.name, {})
 
     def end(e):
-        return ('LED', rows[e[1]]) if e[0] == 'LED' else e
+        return (e[0], rows[e[1]]) if e[0] in ('LED', 'TAP') else e
     return [(s, e, kind, end(f), end(t), desc) for s, e, kind, f, t, desc in circuit.wires]
 
 
@@ -102,8 +103,10 @@ def place_wire_cost(chips, wire, pins=None):
     pins = pins or {}
 
     def holes(end):
-        if end[0] == 'LED':
+        if end[0] in ('LED', 'TAP'):
             return [(R['a'], end[1])], None
+        if end[0] == 'SEG':
+            return [(R['e'], chips.get('FND', 30))], None
         n = pins.get(end[0], 14)
         row = _dip_pin_row(chips[end[0]], end[1], n)
         side = _dip_side(end[1], n)
@@ -112,7 +115,7 @@ def place_wire_cost(chips, wire, pins=None):
     ha, sa = holes(frm)
     hb, sb = holes(to)
     dist = min(abs(xa - xb) + abs(ra - rb) * pitch for xa, ra in ha for xb, rb in hb)
-    led = 'LED' in (frm[0], to[0])
+    led = bool({'LED', 'TAP', 'SEG'} & {frm[0], to[0]})
     bends = 2 if led or ha[0][1] != hb[0][1] else 0
     if led:
         body = 1 if 'a' in (sa, sb) else 0

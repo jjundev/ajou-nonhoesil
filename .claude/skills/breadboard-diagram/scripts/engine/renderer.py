@@ -154,6 +154,9 @@ class BreadboardRenderer(_RuleChecks):
         self.chips = []
         # 칩마다 이름 글자 상자(논리 좌표) — R14. 글꼴 따라 달라지는 픽셀이라 `chips`(도장에 든다)와 따로 둔다
         self.chip_label_boxes = []
+        # 7-Segment 표시기 — 칩이 아니라 R9 를 안 탄다. `seg_ends` 는 세그먼트 → 저항 빈 끝 스트립의 빈 홀 후보
+        self.displays = []
+        self.seg_ends = {}
         self.leds = []
         self.resistors = []
         self.led_chains = []
@@ -1074,6 +1077,92 @@ class BreadboardRenderer(_RuleChecks):
             self.step_wire([(x_from, self.r_y(row)), (x_rail, self.r_y(r))], kind, what,
                            marker_near=((x_from + x_rail) // 2, self.r_y(row)))
 
+    def _draw_display_body(self, part, label, k, x0, x1, y0, y1, kept):
+        """표시기 몸통 — c~h 열을 덮어 다리가 숨는다. 숫자는 실물처럼 보드 위에서 옆으로 누워 있다."""
+        body = (200, 200, 200, 255) if kept else (30, 33, 36, 255)
+        lit = (150, 150, 150, 255) if kept else (130, 45, 45, 255)
+        text = (55, 55, 55, 255) if kept else (235, 235, 235, 255)
+        self.draw.rectangle([x0, y0, x1, y1], fill=body, outline=KEEP if kept else (130, 140, 150, 255), width=2)
+        cx, cy = (x0 + x1) // 2, (y0 + y1) // 2 + 6
+        w, h = 44, 24
+        for (ax, ay), (bx, by) in (((-w, -h), (-w, h)), ((0, -h), (0, h)), ((w, -h), (w, h)),
+                                   ((-w, -h), (w, -h)), ((-w, h), (w, h))):
+            self.draw.line([(cx + ax, cy + ay), (cx + bx, cy + by)], fill=lit, width=5)
+        for i in range(part['pins'] // 2):
+            y = self.r_y(k + i)
+            self.draw.text((x0 + 3, y - 6), str(i + 1), fill=text, font=self.font_num)
+            rt = str(part['pins'] - i)
+            tw = self.draw.textbbox((0, 0), rt, font=self.font_num)[2]
+            self.draw.text((x1 - 3 - tw, y - 6), rt, fill=text, font=self.font_num)
+        nw = self.draw.textbbox((0, 0), label, font=self.font_chip)[2]
+        self.draw.text((cx - nw / 2, y0 + 2), label, fill=text, font=self.font_chip)
+
+    def display_chain(self, model, top_row, block='right'):
+        """7-Segment 표시기 한 벌 — 표시기, 공통 애노드·소수점 묶음 전원선, 세그먼트마다 330Ω 한 개. 저항의 빈
+        끝이 `seg_ends` 가 되고 `route_plan` 끝점 `('SEG', 'a')` 로 잇는다. 칩 쪽 신호선은 이 호출이 그리지
+        않는다. 표시기는 칩이 아니라 `chips` 에 안 든다(R9). 다리 열은 `DISPLAYS` 주석의 가정이다.
+        """
+        part = DISPLAYS[model]
+        c = self.cols[block]
+        k, n = top_row, part['pins']
+        half, rows = self.spec.row_pitch / 2, n // 2
+        x0, x1 = c[part['cover'][0]] - 12, c[part['cover'][1]] + 12
+        y0, y1 = self.r_y(k) - 11, self.r_y(k + rows - 1) + 11
+        kept = self.baseline is not None and (block, k) in self.baseline.get('displays', {})
+        self._keep_parts = kept
+        try:
+            pins = {}
+            for i in range(rows):
+                y = self.r_y(k + i)
+                pins[i + 1] = self.sym(c[part['legs'][0]], k + i)
+                pins[n - i] = self.sym(c[part['legs'][1]], k + i)
+                self.lead(c[part['legs'][0]], y, f'{model} pin {i + 1} 다리')
+                self.lead(c[part['legs'][1]], y, f'{model} pin {n - i} 다리')
+            boxes = [(x0, y0, x1, y1)]
+            seg_strips = {}
+            self._blank_parts(self._draw_display_body, part, model, k, x0, x1, y0, y1, kept)
+            self.step_note('sig', '(빈 자리)', f'꽂는다: {model}',
+                           f'{model}: pin 1 이 {"좌" if block == "left" else "우"} {k}행 왼쪽 위 · 골을 걸쳐 꽂는다',
+                           marker_near=((x0 + x1) // 2, y0 - 16))
+            for seg, (pin, col, far) in part['segments'].items():
+                row = _dip_pin_row(k, pin, n)
+                x, y_pin, y_far = c[col], self.r_y(row), self.r_y(k + far)
+                self.draw_resistor(x, y_pin, y_far, label='330Ω')
+                ymid = (y_pin + y_far) // 2
+                boxes.append((x - 6, ymid - 13, x + 6, ymid + 13))
+                seg_strips[seg] = self.sym(x, k + far)
+                # 빈 끝 스트립의 다른 홀 — 다른 저항 몸통 아래 깔린 홀은 뺀다
+                spans = [(part['segments'][s][1], sorted((_dip_pin_row(k, part['segments'][s][0], n),
+                                                          k + part['segments'][s][2])))
+                         for s in part['segments']]
+                self.seg_ends[seg] = [(c[e], k + far) for e in ('abcde' if col in 'ab' else 'fghij')
+                                      if e != col and not any(sc == e and lo <= k + far <= hi
+                                                              for sc, (lo, hi) in spans)]
+                self.step_note('sig', self.addr(x, y_pin), self.addr(x, y_far),
+                               f'{seg}: 330Ω({self.addr(x, y_pin)}→{self.addr(x, y_far)}) · '
+                               f'{model} pin {pin} 세그먼트 {seg}')
+                # 세그먼트 이름은 몸통 옆 배지다 — 몸통 위에 얹으면 색띠가 가려 다른 소자로 보인다(2026-11-02)
+                self._blank_parts(self.signal_tag, seg, x + (-13 if col == 'b' else 13), ymid)
+            self.displays.append({'label': model, 'block': block, 'pin1_row': k, 'pins': pins,
+                                  'seg_strips': seg_strips, 'boxes': boxes})
+        finally:
+            self._keep_parts = False
+        x_vcc = c['mid_vcc']
+        for pin in part['ties']:
+            row = _dip_pin_row(k, pin, n)
+            y = self.r_y(row)
+            if _dip_side(pin, n) == 'a':
+                r = self.free_rail_row(row, x_vcc)
+                self.step_wire([(c['a'], y), (x_vcc, self.r_y(r))], 'vcc', f'{model} pin {pin} -> +5V 레일',
+                               marker_near=((c['a'] + x_vcc) // 2, y + 11))
+            else:
+                # f쪽 공통 애노드 — 표시기를 넘지 않고 아래로 돌아 가운데 레일로 간다
+                lane_y = self.r_y(k + part['tie_lane']) + half
+                r = self.free_rail_row(k + part['tie_lane'] + 1, x_vcc)
+                self.step_wire([(c['j'], y), (c['j'] + 24, y), (c['j'] + 24, lane_y), (x_vcc + 24, lane_y),
+                                (x_vcc + 24, self.r_y(r)), (x_vcc, self.r_y(r))], 'vcc',
+                               f'{model} pin {pin} -> +5V 레일')
+
     def _model_at(self, block, start_row):
         for ch in self.chips:
             if ch['block'] == block and ch['pin1_row'] == start_row:
@@ -1214,12 +1303,15 @@ class BreadboardRenderer(_RuleChecks):
         다시 돌려 꼭짓점을 얻는다.
         """
         w = self.wiring()
-        return {
+        out = {
             'wires': {(x['kind'], x['frm'], x['to']): x['desc'] for x in w['wires']},
             'chains': {(ch['anode'], ch['cathode'], ch['res_top'], ch['res_bottom']): ch['tag']
                        for ch in w['chains']},
             'chips': {(ch['block'], ch['pin1_row']): ch['label'] for ch in w['chips']},
         }
+        if self.displays:
+            out['displays'] = {(d['block'], d['pin1_row']): d['label'] for d in self.displays}
+        return out
 
     def removals(self):
         """기준선에 있었는데 이번 보드에 없는 **배선** — 앞 보드 그리기 순서로 걷기 번호를 매긴다(netlist
@@ -1271,6 +1363,8 @@ class BreadboardRenderer(_RuleChecks):
         # 신호 이름 배지 — `_marker_fits` 는 보는데 이쪽은 안 봐 경로 번호 원이 배지를 덮었다(2026-10-05 실험05)
         if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
             return False
+        if any(_boxes_touch(box, b) for b in self._display_boxes()):
+            return False
         return not any(i != own and self._seg_in_box(a, b, box)
                        for i, (_k, pts, _d) in enumerate(self._segments)
                        for a, b in zip(pts, pts[1:]))
@@ -1313,6 +1407,8 @@ class BreadboardRenderer(_RuleChecks):
                for b, _cx, _ch in self._chip_bodies()):
             return False
         if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
+            return False
+        if any(_boxes_touch(box, b) for b in self._display_boxes()):
             return False
         under = sum(1 for _k, pts, _d in self._segments
                     if any(self._seg_in_box(a, b, box) for a, b in zip(pts, pts[1:])))
