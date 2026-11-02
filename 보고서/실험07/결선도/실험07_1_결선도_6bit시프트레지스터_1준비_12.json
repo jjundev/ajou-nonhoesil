@@ -1,0 +1,92 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 단계 1 준비 12 · 아래쪽 LED 준비",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 52,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b30",
+   "to": "우 c33",
+   "desc": "BIT4: LED(우 b30→우 b31) + 330Ω(우 c31→우 c33) 직렬 · BIT4: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "우 a33",
+   "to": "중앙GND레일33행",
+   "desc": "BIT4 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 b36",
+   "to": "우 c39",
+   "desc": "BIT5: LED(우 b36→우 b37) + 330Ω(우 c37→우 c39) 직렬 · BIT5: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "우 a39",
+   "to": "중앙GND레일39행",
+   "desc": "BIT5 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "우 b40",
+   "to": "우 c43",
+   "desc": "BIT6: LED(우 b40→우 b41) + 330Ω(우 c41→우 c43) 직렬 · BIT6: 출력 1이면 켜짐 · 명세 기록 순서와 같은 숫자 순서",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 a43",
+   "to": "중앙GND레일43행",
+   "desc": "BIT6 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "BIT1",
+   "at": "우 a14",
+   "active_low": false
+  },
+  {
+   "tag": "BIT2",
+   "at": "우 a18",
+   "active_low": false
+  },
+  {
+   "tag": "BIT3",
+   "at": "우 a26",
+   "active_low": false
+  },
+  {
+   "tag": "BIT4",
+   "at": "우 a30",
+   "active_low": false
+  },
+  {
+   "tag": "BIT5",
+   "at": "우 a36",
+   "active_low": false
+  },
+  {
+   "tag": "BIT6",
+   "at": "우 a40",
+   "active_low": false
+  }
+ ],
+ "inputs": []
+}

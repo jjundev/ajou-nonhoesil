@@ -35,7 +35,7 @@ def test_no_explanatory_pages_or_duplicate_pin_wiring(checklist):
 def test_every_stage_image_and_observation_row_survives(checklist):
     html, _, netlist = checklist
     circuit = netlist.circuits[0]
-    assert html.count('class="stage"') == 29  # 6 preparation + 11 walks + 12 measurements
+    assert html.count('class="stage"') == 35  # 12 preparation + 11 walks + 12 measurements
     for stage in circuit.stages:
         assert f'src="../결선도/{stage["diagram"]}"' in html
     for procedure in circuit.procedures:

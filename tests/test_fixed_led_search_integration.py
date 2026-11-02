@@ -8,12 +8,12 @@ from scripts.lab import fixed_search as s
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_approved_baseline_validates_all_thirty_boards_without_writing(tmp_path):
+def test_approved_baseline_validates_all_thirty_six_boards_without_writing(tmp_path):
     e, b = load(ROOT / '보고서/실험07/결선도/배치.py')
     original = copy.deepcopy(b.LAYOUT)
     row = b.search_baseline()
     result = s.validate_plan(e, b, row['candidate'], row['plans'], row['temporaries'])
-    assert result['board_count'] == 30
+    assert result['board_count'] == 36
     assert result['metrics']['crossings'] == 18
     assert result['metrics']['density'] == pytest.approx(3.4736842105263164)
     assert b.LAYOUT == original

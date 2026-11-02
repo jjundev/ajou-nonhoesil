@@ -1,6 +1,6 @@
 {
  "schema": "breadboard-sidecar/v1",
- "title": "실험 1) 단계 1 준비 2 · U2 입력 고정",
+ "title": "실험 1) 단계 1 준비 2 · U2 입력 고정 1/3",
  "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
  "kept": 10,
  "steps": [
@@ -34,70 +34,6 @@
    "from": "좌 a21",
    "to": "좌 GND레일21행",
    "desc": "임시 U2 pin 6 -> GND · 2걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 5,
-   "kind": "gnd",
-   "from": "좌 b18",
-   "to": "좌 GND레일19행",
-   "desc": "임시 U2 pin 3 -> GND · 4걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 6,
-   "kind": "gnd",
-   "from": "좌 a23",
-   "to": "좌 GND레일23행",
-   "desc": "임시 U2 pin 8 -> GND · 4걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 7,
-   "kind": "vcc",
-   "from": "좌 b22",
-   "to": "좌 VCC레일24행",
-   "desc": "임시 U2 pin 7 -> +5V · 6걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 8,
-   "kind": "vcc",
-   "from": "좌 b17",
-   "to": "좌 VCC레일15행",
-   "desc": "임시 U2 pin 2 -> +5V · 6걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 9,
-   "kind": "gnd",
-   "from": "좌 j23",
-   "to": "중앙GND레일23행",
-   "desc": "임시 U2 pin 9 -> GND · 7걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 10,
-   "kind": "gnd",
-   "from": "좌 j20",
-   "to": "중앙GND레일18행",
-   "desc": "임시 U2 pin 12 -> GND · 7걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 11,
-   "kind": "gnd",
-   "from": "좌 a19",
-   "to": "좌 GND레일24행",
-   "desc": "임시 U2 pin 4 -> GND · 8걷기에서 뽑아요",
-   "count": 1
-  },
-  {
-   "n": 12,
-   "kind": "gnd",
-   "from": "좌 i16",
-   "to": "중앙GND레일16행",
-   "desc": "임시 U2 pin 16 -> GND · 8걷기에서 뽑아요",
    "count": 1
   }
  ],

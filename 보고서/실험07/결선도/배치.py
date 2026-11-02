@@ -156,13 +156,16 @@ def _marker_hints():
     return _MARKER_HINTS
 
 
-_ASSEMBLY_TITLES = ('보드·U1 전원 준비', 'U2 입력 고정', 'U3 입력 고정',
-                    'U4 입력 고정', '위쪽 LED 준비', '아래쪽 LED 준비')
+_ASSEMBLY_TITLES = ('보드·U1 전원 준비', *[f'U{u} 입력 고정 {part}/3' for u in (2, 3, 4) for part in (1, 2, 3)], '위쪽 LED 준비', '아래쪽 LED 준비')
 
 
 def _build_assembly(output_path, template_path=None, baseline=None, *, assembly_order):
-    if assembly_order not in range(1, 7):
-        raise ValueError('준비 순서는 1~6이다')
+    if assembly_order not in range(1, 13):
+        raise ValueError('준비 순서는 1~12이다')
+    # U2~U4는 기존 순서를 유지하며 네 항목씩 누적한다. 전원 연결은 두 항목이다.
+    target_group = 1 if assembly_order == 1 else ((assembly_order - 2) // 3 + 2 if assembly_order <= 10 else assembly_order - 6)
+    target_count = ((assembly_order - 2) % 3 + 1) * 4 if 2 <= assembly_order <= 10 else None
+    group_counts = {2: 0, 3: 0, 4: 0}
     bb = ShiftRenderer(template_path, baseline=baseline, palette=True, board=BOARD)
     bb.side_lead_max = SIDE_LEAD_MAX
     bb.partial = True
@@ -191,13 +194,24 @@ def _build_assembly(output_path, template_path=None, baseline=None, *, assembly_
                 getattr(reservation, method)(*args, **kwargs)
         finally:
             reservation.free_rail_row = free
-        if group > assembly_order:
+        if group in group_counts:
+            group_counts[group] += 2 if method == 'connect_power' else 1
+        if group > target_group or (group == target_group and target_count is not None and group_counts[group] > target_count):
             return
+        # 두 경로는 원을 선 위에 얹으면 다른 선/끝점을 가린다. 승인된 v2 경로에
+        # 한해 가까운 여백과 지시선을 사용하고, 나머지는 엔진 자동 배치로 둔다.
+        if group == target_group and target_count is not None and method == 'step_wire' and str(args[2]).startswith('임시 '):
+            kwargs = dict(kwargs, marker_at=((610, 697) if 'U2 pin 12 ' in args[2] else (125, 1124) if 'U4 pin 6 ' in args[2] else None))
         rows = iter(choices)
         real_free = bb.free_rail_row
         bb.free_rail_row = lambda *a: next(rows)
         try:
-            getattr(bb, method)(*args, **kwargs)
+            result = getattr(bb, method)(*args, **kwargs)
+            if result is not None and method == 'step_wire' and kwargs.get('marker_at') in ((610, 697), (125, 1124)):
+                marker = kwargs['marker_at']
+                target = (553, 684) if marker[0] == 610 else (195, 1124)
+                start = (marker[0] - 9, marker[1]) if marker[0] == 610 else (marker[0] + 9, marker[1])
+                bb.draw.line([start, target], fill=(50, 70, 190), width=2)
         finally:
             bb.free_rail_row = real_free
 
@@ -247,7 +261,7 @@ for _i, _name in enumerate(_STAGE_NAMES, 1):
     BOARDS.append((f'{_NAME}_{_i}단계_{_name}.png', build_e7_shift, _i))
 ASSEMBLY_BOARDS = {BOARDS[0][0]: [
     (f'{_NAME}_1준비_{i}.png', partial(_build_assembly, assembly_order=i))
-    for i in range(1, 7)
+    for i in range(1, 13)
 ]}
 FINALS = [(f'{_NAME}.png', build_e7_shift)]
 

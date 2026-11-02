@@ -161,7 +161,7 @@ def test_real_fixed_adapter_checks_lower_policy_on_all_preparation_and_stage_boa
     baseline = board.search_baseline()
     baseline['candidate']['layout']['bridge_policy'] = 'lower-clearance-v1'
     result = fs.validate_plan(e, board, baseline['candidate'], baseline['plans'], baseline['temporaries'])
-    assert result['board_count'] == 30
+    assert result['board_count'] == 36
     assert board.LAYOUT == original
 
 

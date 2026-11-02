@@ -1,0 +1,45 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 단계 1 준비 8 · U4 입력 고정 1/3",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 34,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "좌 a42",
+   "to": "좌 VCC레일42행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "좌 g41",
+   "to": "중앙GND레일41행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "vcc",
+   "from": "좌 a39",
+   "to": "좌 VCC레일39행",
+   "desc": "U4 pin 2 PR 비활성 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 a44",
+   "to": "좌 VCC레일43행",
+   "desc": "U4 pin 7 PR 비활성 -> +5V 레일",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [],
+ "inputs": []
+}

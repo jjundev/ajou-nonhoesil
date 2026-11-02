@@ -1,0 +1,45 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 단계 1 준비 10 · U4 입력 고정 3/3",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 42,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "gnd",
+   "from": "좌 j45",
+   "to": "중앙GND레일45행",
+   "desc": "임시 U4 pin 9 -> GND · 11걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "좌 j42",
+   "to": "중앙GND레일42행",
+   "desc": "임시 U4 pin 12 -> GND · 11걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 a41",
+   "to": "좌 GND레일41행",
+   "desc": "임시 U4 pin 4 -> GND · 12걷기에서 뽑아요",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "좌 j38",
+   "to": "중앙GND레일37행",
+   "desc": "임시 U4 pin 16 -> GND · 12걷기에서 뽑아요",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [],
+ "inputs": []
+}
