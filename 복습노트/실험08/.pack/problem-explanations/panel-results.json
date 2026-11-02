@@ -1,0 +1,68 @@
+{
+ "note|1280|light": {
+  "n": 8,
+  "links": 8,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "note|1280|dark": {
+  "n": 8,
+  "links": 8,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "note|375|light": {
+  "n": 8,
+  "links": 8,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "note|375|dark": {
+  "n": 8,
+  "links": 8,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "note|storage": [],
+ "note|nojs": {
+  "art": 8,
+  "links": 8
+ },
+ "exp|1280|light": {
+  "n": 24,
+  "links": 24,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "exp|1280|dark": {
+  "n": 24,
+  "links": 24,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "exp|375|light": {
+  "n": 24,
+  "links": 24,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "exp|375|dark": {
+  "n": 24,
+  "links": 24,
+  "bad": [],
+  "nbad": 0,
+  "errs": []
+ },
+ "exp|storage": [],
+ "exp|nojs": {
+  "art": 24,
+  "links": 24
+ }
+}

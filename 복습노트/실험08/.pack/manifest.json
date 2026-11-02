@@ -1,0 +1,2821 @@
+{
+  "schema_version": 1,
+  "experiment": 8,
+  "title": "Counter — 클럭을 세어 숫자로 보여 줘요",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp08",
+    "schema_version": 1,
+    "source_path": "문제은행/실험08/question-bank.json",
+    "sha256": "0cb098d8bb80d254e89bd5bc1acdf4b2b3593851b45ffe621230fc29a37300ec",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-50947133d49bd612",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 기출 2015-2_영문.pdf",
+      "sha256": "8a7cc2f899239bfd4f8b19a89f9f15bb1a7435832f6ac1a55fa1cbf5d0b8641b",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-b4d97ab8183cd9ff",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 기출 2017-1.pdf",
+      "sha256": "c8f0b5e5bba3d817a504df2fd99aa0064ce72600a95a9ee10903fab9d5f90973",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-9116682d36250bcc",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 기출_단답형 (1p).pdf",
+      "sha256": "e172fa34de2a6c6c5a953f1caccbae0f1d6483179ccea456e8957dcaddc95867",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-74aec78586f818b5",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 기출_정답.pdf",
+      "sha256": "5aebb91c90af8d475ca5f50f2dbcaf2c141930579d5b21e615af6bf8d897faa5",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-8aed96409f108624",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 기출_채점본.jpg",
+      "sha256": "79e31067d5d6cd9c4e135c7b330f14b07a13c4312c0e669dee01a3b51e5587a1",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-b7381c0ee527df55",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_v1.pdf",
+      "sha256": "69fa3edc88655b0162af4f78b61196ca6606000a10b6f31d7ebf88b3479ad1c6",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-9c6ca141f8475d1f",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_v2.pdf",
+      "sha256": "64c7f491a8cae6a2c8724f0bde54c539a2befc5aa751c8861c141f7668166f4e",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-fa7ab4dd2bc28a6d",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_v3.pdf",
+      "sha256": "e2bed3098737757c094aa9353bfe2fc3e9b208c144af99f30a77b0728132e1a7",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-718c4a6ba72b4038",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_v4.pdf",
+      "sha256": "beec41aa0990149bc2835fa477108c9bef34d9a9e55fe62cb48008b8d6fa6ca0",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-7d63a5c62f57cac4",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_답안단순화_v1.pdf",
+      "sha256": "665a35cb5c0621a661a11b981d922a7a07abeb5ff71d91141bef01469ea8d7c6",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-fbbf0ea12478970d",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_답안단순화_v2.pdf",
+      "sha256": "7fde0479a9859d04532e03583aa4cb4ddb7d60a12cd2304574d0c80b7e48c005",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-b3c2de5d0bb8f61d",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_정리본_v1.pdf",
+      "sha256": "6da0fe6d6289e6b5b25657a7c374b29240009fdb91bb16515fc9519468f199ba",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-bbbe28e7c471eccf",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_정리본_v2.pdf",
+      "sha256": "95268bdff706a0e69376fb1841245bb76a27179642b2d9e728f741b4acce357b",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-726021656009d2bd",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 예상문제_카운터심화.pdf",
+      "sha256": "a254ca6a419a9c455d5ab6a63c842098c6824c2dc2a22fa84c03f4aff7c4e807",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-5af593bff3e6dc58",
+      "path": "from_the_past/정리/퀴즈/실험8/실험8 퀴즈 종합_기출문제 (8p).pdf",
+      "sha256": "09425e0515e1f5a01cf08d06f56c78b7c0cd577c5d10053519a177e70dbf2cd6",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-250e0df7dc05e2ce",
+      "path": "from_the_past/정리/퀴즈/실험8/원본_docx/실험8 정리중!!!!!!.docx",
+      "sha256": "1fee043485af5f7a61b8d51bc1da90c6d820a543fcecbbb2da4bbfe5d56715b8",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-2aecdfde78ab15bd",
+      "path": "from_the_past/정리/퀴즈/실험8/원본_docx/실험8 정리중-수정.docx",
+      "sha256": "df5def635978f766fb9c42c2e1ed0f7e60fc72ed18a5ececd4524f2042b46070",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-e6babbe279107a23",
+      "path": "from_the_past/정리/퀴즈/실험8/원본_docx/실험8 최종 - 답안 단순화!.docx",
+      "sha256": "97e50d9be83b982411462bd1b4a279b8796b99dda44b816336eb3761d455115f",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-249174edd17568f0",
+      "path": "from_the_past/정리/퀴즈/실험8/원본_docx/실험8 최종 - 답안 단순화.docx",
+      "sha256": "86fd2920503ad7807aac55a05fcc3d999c3dffad0ecd3fce66568fd2647c6659",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-3017b82a31543770",
+      "path": "from_the_past/정리/퀴즈/실험8/원본_docx/실험8.docx",
+      "sha256": "1200d45cbbbac6e008259fcc11a2504cf8a56256076dff6b9627d7789ab527df",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-manual08",
+      "path": "보고서/실험08/강의노트/실험8.pdf",
+      "sha256": "1884eadb16bc9fa67beb6a53ad0f79a5ca8dc766ec8998021d00155a72f938b4",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-scope",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-board",
+      "path": "강의노트/공지사항/Breadboard.pdf",
+      "sha256": "045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-spec08",
+      "path": "보고서/실험08/체크리스트/명세.md",
+      "sha256": "3263543f9db6b1bea09adf09ba31bfd4f3fa5f13f1b8ea651929187b81005332",
+      "kind": "record",
+      "edition": "current"
+    },
+    {
+      "id": "s-netlist08",
+      "path": "보고서/실험08/결선도/netlist.md",
+      "sha256": "663accd42cb41d422a7ff1dbd81efe126907a01c8b383199b5506f05a272b0fb",
+      "kind": "record",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-scope",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": "교안 표지는 25-1이에요. 보고서 범위(실험 1, 3)는 공지에서 확인했어요."
+    },
+    {
+      "id": "t-toggle",
+      "title": "레지스터에서 카운터로: Toggle과 진수",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-toggle.html",
+      "md_notes": ""
+    },
+    {
+      "id": "t-async",
+      "title": "비동기 카운터: 앞 단 출력이 다음 단의 클럭이에요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist08",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-async.html",
+      "md_notes": "교안 본문은 조합을 00, 01, 10, 11로 적고 파형은 00, 10, 01, 11이에요. 파형과 p9 출력 순서를 따랐어요(netlist M10). 글리치·리플 용어는 교안 밖 보충이에요."
+    },
+    {
+      "id": "t-decode",
+      "title": "상태를 AND로 하나씩 읽어요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec08",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-decode.html",
+      "md_notes": "Y0~Y3은 교안 이름이 아니라 명세의 이름이에요. 출력 번호 0~3은 p5 그림을 따랐어요."
+    },
+    {
+      "id": "t-sync",
+      "title": "동기 카운터: 같은 클럭을 함께 받아요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 10,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-sync.html",
+      "md_notes": "실험 2는 보고서 범위 밖이에요. J1=B′, K1=1, J2=A, K2=1은 p10 회로를 직접 읽었고 2017-1 기출 회로와 같아요."
+    },
+    {
+      "id": "t-7490",
+      "title": "7490: 0부터 9까지 세는 BCD 카운터",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist08",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-7490.html",
+      "md_notes": "p6 핀맵의 6·7번 No Connect와 p7·p11의 R9 충돌은 netlist M4, 스위치 D0는 M7, IC 표기 차이는 M5예요. 2진·5진 나눔은 p6 내부 회로의 클럭 경로로 확인했고 실제 측정은 없어요."
+    },
+    {
+      "id": "t-7447",
+      "title": "7447: 숫자를 세그먼트 신호로 번역해요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 12,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 14,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 15,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist08",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-7447.html",
+      "md_notes": "머리글 DBCA와 값 순서 D, C, B, A는 netlist M9, 숫자 9의 d 세그먼트 차이는 M8(TI SDLS111 p3)이에요. 오픈 컬렉터 설명은 netlist 37행이 인용한 TI SDLS111 p1이에요."
+    },
+    {
+      "id": "t-fnd",
+      "title": "FND까지 이어서 숫자를 보여 줘요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 12,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 13,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 16,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist08",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-fnd.html",
+      "md_notes": "p12 그림과 p16 핀표의 FND 핀 충돌은 netlist M2, 표시기 이름은 M3, 330Ω 수량은 M6이에요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-jk-toggle",
+      "bank_question_id": "q-jk-toggle",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-toggle"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P1; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P1; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "PR=1, CLR=1, J=1, K=1 (네 핀 모두 High)",
+      "answer_status": "verified",
+      "title": "JK F/F를 Toggle로 쓰는 네 핀 값",
+      "workbook_fragment": "workbook/q-jk-toggle.json",
+      "explanation_fragment": "problem-explanations/q-jk-toggle.html"
+    },
+    {
+      "id": "q-jk-toggle-3pin",
+      "bank_question_id": "q-jk-toggle-3pin",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-toggle"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9116682d36250bcc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-74aec78586f818b5",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 7,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 3; 원문 page 7",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "J=1, K=1, CLR=1 (PR도 1이어야 해요)",
+      "answer_status": "verified",
+      "title": "J, K, CLR로 Toggle 만들기",
+      "workbook_fragment": "workbook/q-jk-toggle-3pin.json",
+      "explanation_fragment": "problem-explanations/q-jk-toggle-3pin.html"
+    },
+    {
+      "id": "q-async-char",
+      "bank_question_id": "q-async-char",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-async"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-50947133d49bd612",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-9116682d36250bcc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-74aec78586f818b5",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 7,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 1; 원문 page 7",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P6; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P5; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "첫 F/F만 외부 클럭을 받고 다음 F/F는 앞 F/F의 출력을 클럭으로 받아요. 그래서 F/F가 동시에 바뀌지 않고 차례로 바뀌며 전달 지연이 단마다 쌓여요.",
+      "answer_status": "verified",
+      "title": "비동기식 카운터의 특징",
+      "workbook_fragment": "workbook/q-async-char.json",
+      "explanation_fragment": "problem-explanations/q-async-char.html"
+    },
+    {
+      "id": "q-xbit-ymod",
+      "bank_question_id": "q-xbit-ymod",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-toggle"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-50947133d49bd612",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P18; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P20; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P14; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "3단 2진 비동기 카운터예요. 상태는 8개(0~7)이고, Reset 뒤 CBA가 000→001→…→111→000으로 반복해요. A, B, C가 차례로 바뀌어요. (교안처럼 하강 엣지 기준)",
+      "answer_status": "verified",
+      "title": "T F/F 3단 블록도의 동작",
+      "workbook_fragment": "workbook/q-xbit-ymod.json",
+      "explanation_fragment": "problem-explanations/q-xbit-ymod.html"
+    },
+    {
+      "id": "q-ripple-wave",
+      "bank_question_id": "q-ripple-wave",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-async"
+      ],
+      "sources": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-9116682d36250bcc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-74aec78586f818b5",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 7,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 4; 원문 page 7",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P37; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P33; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P15; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P15; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P21; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "A는 Clock 하강마다 반전(주기 2배), B는 A 하강마다 반전(주기 4배). 시작 AB=00 가정에서 하강마다 10→01→11→00→10→01이에요.",
+      "answer_status": "verified",
+      "title": "74HC76 비동기 회로의 A·B 파형",
+      "workbook_fragment": "workbook/q-ripple-wave.json",
+      "explanation_fragment": "problem-explanations/q-ripple-wave.html"
+    },
+    {
+      "id": "q-ripple-mod",
+      "bank_question_id": "q-ripple-mod",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-toggle"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9116682d36250bcc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-74aec78586f818b5",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 7,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 5; 원문 page 7",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "상태가 네 개(AB=00, 10, 01, 11)라서 4진(0~3)이에요. 교안 이름으로는 2단 2진 카운터예요. 제공 답 ‘2진 카운터’는 이 이름을 줄인 표현으로 보여요.",
+      "answer_status": "disputed",
+      "title": "비동기 회로는 몇 진 카운터인가요",
+      "workbook_fragment": "workbook/q-ripple-mod.json",
+      "explanation_fragment": "problem-explanations/q-ripple-mod.html"
+    },
+    {
+      "id": "q-and-gates",
+      "bank_question_id": "q-and-gates",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-decode"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P21; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P23; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P12; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P12; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P17; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "16개예요. 4단 2진은 상태가 2⁴=16개이고, 상태마다 4입력 AND 하나로 그 상태에서만 1을 내요.",
+      "answer_status": "verified",
+      "title": "4단 2진 카운터를 AND로 확인하기",
+      "workbook_fragment": "workbook/q-and-gates.json",
+      "explanation_fragment": "problem-explanations/q-and-gates.html"
+    },
+    {
+      "id": "q-mod5-pins-graded",
+      "bank_question_id": "q-mod5-pins-graded",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-decode"
+      ],
+      "sources": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "3개예요. 상태 5개를 구분하려면 2ᵏ≥5인 최소 k=3비트가 필요해요. 예: 000, 001, 010, 011, 100.",
+      "answer_status": "verified",
+      "title": "5진 카운터의 최소 출력핀",
+      "workbook_fragment": "workbook/q-mod5-pins-graded.json",
+      "explanation_fragment": "problem-explanations/q-mod5-pins-graded.html"
+    },
+    {
+      "id": "q-mod5-pins",
+      "bank_question_id": "q-mod5-pins",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-decode"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P15; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P14; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P7; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P7; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P11; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "무엇을 세는지에 따라 달라요. 이진 Q 출력으로 읽으면 3개, 상태마다 불을 하나씩 켜는 디코딩 출력이면 5개예요. 문구 “출력을 확인하기 위한”을 후자로 읽으면 제공 답 5개와 같아요.",
+      "answer_status": "disputed",
+      "title": "5진 카운터 출력핀 (확인용 단서)",
+      "workbook_fragment": "workbook/q-mod5-pins.json",
+      "explanation_fragment": "problem-explanations/q-mod5-pins.html"
+    },
+    {
+      "id": "q-sync-improve",
+      "bank_question_id": "q-sync-improve",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-sync"
+      ],
+      "sources": [
+        {
+          "source_id": "s-9116682d36250bcc",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-74aec78586f818b5",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 7,
+          "printed_page": null,
+          "locator": "실험8. Quiz 문항 2; 원문 page 7",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P10; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P10; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P5; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P5; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "모든 F/F에 같은 클럭을 넣어 동시에 바뀌게 해요. 그래서 비동기식에서 단마다 쌓이던 전달(전파) 지연을 없애요.",
+      "answer_status": "verified",
+      "title": "동기식이 보완한 점",
+      "workbook_fragment": "workbook/q-sync-improve.json",
+      "explanation_fragment": "problem-explanations/q-sync-improve.html"
+    },
+    {
+      "id": "q-async-sync-compare",
+      "bank_question_id": "q-async-sync-compare",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-sync"
+      ],
+      "sources": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "비동기식: 앞 F/F의 출력이 다음 F/F의 클럭이라 차례로 바뀌고 전달 지연이 쌓여요. 동기식: 모든 F/F가 같은 클럭으로 동시에 바뀌어요. 동기식은 쌓이는 전달 지연 문제를 보완했어요.",
+      "answer_status": "verified",
+      "title": "비동기식과 동기식 설명·보완점",
+      "workbook_fragment": "workbook/q-async-sync-compare.json",
+      "explanation_fragment": "problem-explanations/q-async-sync-compare.html"
+    },
+    {
+      "id": "q-sync-wave",
+      "bank_question_id": "q-sync-wave",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-sync"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-50947133d49bd612",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2-3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 4-5",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P457; Word 읽기 전용 렌더 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P477; Word 읽기 전용 렌더 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P18; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P18; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P25; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "시작 AB=00 가정에서 Clock 하강마다 10→01→00을 반복해요. A는 1번·4번 하강 뒤 한 주기 동안 1, B는 2번·5번 하강 뒤 한 주기 동안 1이에요.",
+      "answer_status": "verified",
+      "title": "74HC76 동기 회로의 A·B 파형",
+      "workbook_fragment": "workbook/q-sync-wave.json",
+      "explanation_fragment": "problem-explanations/q-sync-wave.html"
+    },
+    {
+      "id": "q-mod-and-double",
+      "bank_question_id": "q-mod-and-double",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-sync"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-50947133d49bd612",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1-2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4-5",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4-5",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 5,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P767; Word 읽기 전용 렌더 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P787; Word 읽기 전용 렌더 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P21; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P21; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P29; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "3진 동기 카운터예요. 2배인 6진은 F/F 2개로 만들 수 없어요(2²=4<6). 기존 회로를 그대로 두고 T F/F 하나를 뒤에 붙여 3×2=6상태로 만들어요. (제공 답안이 갈려 출제 의도는 미확정)",
+      "answer_status": "disputed",
+      "title": "몇 진인지와 2배 진수로 바꾸는 법",
+      "workbook_fragment": "workbook/q-mod-and-double.json",
+      "explanation_fragment": "problem-explanations/q-mod-and-double.html"
+    },
+    {
+      "id": "q-7447",
+      "bank_question_id": "q-7447",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-7447"
+      ],
+      "sources": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-9c6ca141f8475d1f",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-fa7ab4dd2bc28a6d",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-718c4a6ba72b4038",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-7d63a5c62f57cac4",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-fbbf0ea12478970d",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-b3c2de5d0bb8f61d",
+          "pdf_page": 5,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-bbbe28e7c471eccf",
+          "pdf_page": 5,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-726021656009d2bd",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3-4",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-5af593bff3e6dc58",
+          "pdf_page": 5,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 5-6",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-250e0df7dc05e2ce",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P775; Word 읽기 전용 렌더 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-2aecdfde78ab15bd",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P794; Word 읽기 전용 렌더 page 5",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-e6babbe279107a23",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P25; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-249174edd17568f0",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P25; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-3017b82a31543770",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; OOXML 본문 P33; Word 읽기 전용 렌더 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "7447 기준 13:L, 12:H, 11:L, 10:L, 9:H, 14:L, 15:L이에요(숫자 5, a·c·d·f·g 켜짐).",
+      "answer_status": "disputed",
+      "title": "7447 입력 0101의 핀 출력",
+      "workbook_fragment": "workbook/q-7447.json",
+      "explanation_fragment": "problem-explanations/q-7447.html"
+    },
+    {
+      "id": "q-qp-e08-tf-01",
+      "title": "둘째 단이 바뀌는 순간",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-async"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-tf-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-tf-01.html"
+    },
+    {
+      "id": "q-qp-e08-tf-02",
+      "title": "단 수와 상태 수",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-toggle"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-tf-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-tf-02.html"
+    },
+    {
+      "id": "q-qp-e08-tf-03",
+      "title": "R0로 0에 고정",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7490"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-tf-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-tf-03.html"
+    },
+    {
+      "id": "q-qp-e08-tf-04",
+      "title": "LT 입력의 동작",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7447"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 14,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-tf-04.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-tf-04.html"
+    },
+    {
+      "id": "q-qp-e08-blank-01",
+      "title": "켜지는 출력 찾기",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-decode"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① A′·B, ② 2",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-blank-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-blank-01.html"
+    },
+    {
+      "id": "q-qp-e08-blank-02",
+      "title": "7490의 두 연결",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7490"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 11,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 14, ② 12, ③ 1",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-blank-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-blank-02.html"
+    },
+    {
+      "id": "q-qp-e08-blank-03",
+      "title": "입력 0011의 표시",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7447"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 15,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 3, ② abcdg",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-blank-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-blank-03.html"
+    },
+    {
+      "id": "q-qp-e08-board-01",
+      "title": "출력 3의 AND를 작도해요",
+      "kind": "practice",
+      "question_type": "breadboard",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-decode"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "14→+5V, 7→GND, 1→A, 2→B, 3→Y. 미사용 입력·출력은 명세대로 NC.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-board-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-board-01.html"
+    },
+    {
+      "id": "q-qp-e08-short-01",
+      "title": "가짜 상태가 생기는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-async"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "최종은 00이고 잠깐 01을 지나요. A가 먼저 0이 되고, 그 하강을 받은 B가 전달 지연 뒤에 0이 되기 때문이에요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-short-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-short-01.html"
+    },
+    {
+      "id": "q-qp-e08-short-02",
+      "title": "L일 때 켜지는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-fnd"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 16,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "+5V에서 공통 애노드, LED, 330Ω을 지나 L인 출력으로 전류가 흘러 켜져요. H면 양쪽 전압 차가 없어 꺼져요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e08-short-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e08-short-02.html"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "note_summary_version": 2,
+  "review_presentation_version": 2,
+  "problem_explanation_version": 2,
+  "quiz_practice_version": 1,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "generated_files": [
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+    ".pack/assets/vendor/katex/LICENSE",
+    ".pack/assets/vendor/katex/auto-render.min.js",
+    ".pack/assets/vendor/katex/katex.min.css",
+    ".pack/assets/vendor/katex/katex.min.js",
+    ".pack/assets/vendor/pretendard/LICENSE",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff2",
+    ".pack/assets/vendor/pretendard/pretendard.css",
+    ".pack/assets/vendor/provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s01-p1-o-s01-q1.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q2.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q3.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q4.png",
+    ".pack/evidence/assets/s01-p1.png",
+    ".pack/evidence/assets/s01-p2-o-s01-q4.png",
+    ".pack/evidence/assets/s01-p2.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q1.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q2.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q3.png",
+    ".pack/evidence/assets/s02-p1-o-s02-q4.png",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s03-p1.png",
+    ".pack/evidence/assets/s04-p1.png",
+    ".pack/evidence/assets/s05-q1.png",
+    ".pack/evidence/assets/s05-q2.png",
+    ".pack/evidence/assets/s05-q3.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s06-p2.png",
+    ".pack/evidence/assets/s07-p1-o-s07-q5.png",
+    ".pack/evidence/assets/s07-p1.png",
+    ".pack/evidence/assets/s07-p2-o-s07-q7.png",
+    ".pack/evidence/assets/s07-p2.png",
+    ".pack/evidence/assets/s07-p3-o-s07-q8.png",
+    ".pack/evidence/assets/s07-p3.png",
+    ".pack/evidence/assets/s07-p4-o-s07-q10.png",
+    ".pack/evidence/assets/s07-p4.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s08-p3.png",
+    ".pack/evidence/assets/s08-p4.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/assets/s09-p2.png",
+    ".pack/evidence/assets/s09-p3.png",
+    ".pack/evidence/assets/s09-p4.png",
+    ".pack/evidence/assets/s10-p1.png",
+    ".pack/evidence/assets/s10-p2.png",
+    ".pack/evidence/assets/s11-p1.png",
+    ".pack/evidence/assets/s11-p2.png",
+    ".pack/evidence/assets/s12-p1.png",
+    ".pack/evidence/assets/s12-p2.png",
+    ".pack/evidence/assets/s12-p3.png",
+    ".pack/evidence/assets/s12-p4.png",
+    ".pack/evidence/assets/s12-p5.png",
+    ".pack/evidence/assets/s13-p1.png",
+    ".pack/evidence/assets/s13-p2.png",
+    ".pack/evidence/assets/s13-p3.png",
+    ".pack/evidence/assets/s13-p4.png",
+    ".pack/evidence/assets/s13-p5.png",
+    ".pack/evidence/assets/s14-p1.png",
+    ".pack/evidence/assets/s14-p2.png",
+    ".pack/evidence/assets/s14-p3.png",
+    ".pack/evidence/assets/s14-p4.png",
+    ".pack/evidence/assets/s15-p1.png",
+    ".pack/evidence/assets/s15-p2.png",
+    ".pack/evidence/assets/s15-p3.png",
+    ".pack/evidence/assets/s15-p4.png",
+    ".pack/evidence/assets/s15-p5.png",
+    ".pack/evidence/assets/s15-p6.png",
+    ".pack/evidence/assets/s15-p7.png",
+    ".pack/evidence/assets/s15-p8.png",
+    ".pack/evidence/assets/s16-p1.png",
+    ".pack/evidence/assets/s16-p2.png",
+    ".pack/evidence/assets/s16-p3.png",
+    ".pack/evidence/assets/s16-p4.png",
+    ".pack/evidence/assets/s16-p5.png",
+    ".pack/evidence/assets/s17-p1.png",
+    ".pack/evidence/assets/s17-p2.png",
+    ".pack/evidence/assets/s17-p3.png",
+    ".pack/evidence/assets/s17-p4.png",
+    ".pack/evidence/assets/s17-p5.png",
+    ".pack/evidence/assets/s18-p1.png",
+    ".pack/evidence/assets/s18-p2.png",
+    ".pack/evidence/assets/s19-p1.png",
+    ".pack/evidence/assets/s19-p2.png",
+    ".pack/evidence/assets/s20-p1.png",
+    ".pack/evidence/assets/s20-p2.png",
+    ".pack/evidence/assets/s20-p3.png",
+    ".pack/evidence/assets/s20-p4.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/7490-block.svg",
+    ".pack/figures/decoder-and.svg",
+    ".pack/figures/full-chain.svg",
+    ".pack/figures/questions/and-blank.png",
+    ".pack/figures/questions/and-blank.svg",
+    ".pack/figures/questions/and-given.png",
+    ".pack/figures/questions/and-given.svg",
+    ".pack/figures/questions/pin7447-given.png",
+    ".pack/figures/questions/pin7447-given.svg",
+    ".pack/figures/questions/ripple-blank.png",
+    ".pack/figures/questions/ripple-blank.svg",
+    ".pack/figures/questions/ripple-given-2.png",
+    ".pack/figures/questions/ripple-given-2.svg",
+    ".pack/figures/questions/ripple-given.png",
+    ".pack/figures/questions/ripple-given.svg",
+    ".pack/figures/questions/sync-blank.png",
+    ".pack/figures/questions/sync-blank.svg",
+    ".pack/figures/questions/sync-given-2.png",
+    ".pack/figures/questions/sync-given-2.svg",
+    ".pack/figures/questions/sync-given.png",
+    ".pack/figures/questions/sync-given.svg",
+    ".pack/figures/questions/xbit-given.png",
+    ".pack/figures/questions/xbit-given.svg",
+    ".pack/figures/quiz-board-mapping.json",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/ripple-block.svg",
+    ".pack/figures/ripple-delay.svg",
+    ".pack/figures/ripple-wave.svg",
+    ".pack/figures/seven-seg-5.svg",
+    ".pack/figures/solutions/and-complete.png",
+    ".pack/figures/solutions/and-complete.svg",
+    ".pack/figures/solutions/mod6.png",
+    ".pack/figures/solutions/mod6.svg",
+    ".pack/figures/solutions/ripple-solution.png",
+    ".pack/figures/solutions/ripple-solution.svg",
+    ".pack/figures/solutions/seven5-solution.png",
+    ".pack/figures/solutions/seven5-solution.svg",
+    ".pack/figures/solutions/sync-wave.png",
+    ".pack/figures/solutions/sync-wave.svg",
+    ".pack/figures/sync-block.svg",
+    ".pack/figures/sync-states.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/browser-results.json",
+    ".pack/problem-explanations/calculation-results.json",
+    ".pack/problem-explanations/panel-results.json",
+    ".pack/problem-explanations/q-7447.html",
+    ".pack/problem-explanations/q-and-gates.html",
+    ".pack/problem-explanations/q-async-char.html",
+    ".pack/problem-explanations/q-async-sync-compare.html",
+    ".pack/problem-explanations/q-jk-toggle-3pin.html",
+    ".pack/problem-explanations/q-jk-toggle.html",
+    ".pack/problem-explanations/q-mod-and-double.html",
+    ".pack/problem-explanations/q-mod5-pins-graded.html",
+    ".pack/problem-explanations/q-mod5-pins.html",
+    ".pack/problem-explanations/q-qp-e08-blank-01.html",
+    ".pack/problem-explanations/q-qp-e08-blank-02.html",
+    ".pack/problem-explanations/q-qp-e08-blank-03.html",
+    ".pack/problem-explanations/q-qp-e08-board-01.html",
+    ".pack/problem-explanations/q-qp-e08-short-01.html",
+    ".pack/problem-explanations/q-qp-e08-short-02.html",
+    ".pack/problem-explanations/q-qp-e08-tf-01.html",
+    ".pack/problem-explanations/q-qp-e08-tf-02.html",
+    ".pack/problem-explanations/q-qp-e08-tf-03.html",
+    ".pack/problem-explanations/q-qp-e08-tf-04.html",
+    ".pack/problem-explanations/q-ripple-mod.html",
+    ".pack/problem-explanations/q-ripple-wave.html",
+    ".pack/problem-explanations/q-sync-improve.html",
+    ".pack/problem-explanations/q-sync-wave.html",
+    ".pack/problem-explanations/q-xbit-ymod.html",
+    ".pack/problem-explanations/summary-audit.md",
+    ".pack/problem-explanations/table-layout.json",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/problem-explanations/문제설명-summary-validation.json",
+    ".pack/problem-explanations/실험설명-summary-validation.json",
+    ".pack/sections/table-layout.json",
+    ".pack/검증결과.md",
+    ".pack/실험08_기출문제.md",
+    ".pack/실험08_기출풀이.md",
+    ".pack/실험08_문제설명.md",
+    ".pack/실험08_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험08_기출문제.html",
+    "실험08_기출풀이.html",
+    "실험08_문제설명.html",
+    "실험08_실험설명.html"
+  ]
+}

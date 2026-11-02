@@ -1,0 +1,1790 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp08",
+  "bank_sha256": "0cb098d8bb80d254e89bd5bc1acdf4b2b3593851b45ffe621230fc29a37300ec",
+  "experiment": 8,
+  "questions": [
+    {
+      "question_id": "q-async-char",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q1",
+      "occurrence_ids": [
+        "o-s02-q1",
+        "o-s01-q1",
+        "o-s03-q1",
+        "o-s04-q1",
+        "o-s15-zq1",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2",
+        "o-s09-q2",
+        "o-s10-q2",
+        "o-s11-q2",
+        "o-s12-q2",
+        "o-s13-q2",
+        "o-s14-q2",
+        "o-s15-q2",
+        "o-s16-q2",
+        "o-s17-q2",
+        "o-s18-q2",
+        "o-s19-q2",
+        "o-s20-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a1",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-za1",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a2",
+          "target_id": "q-async-char",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-async-sync-compare",
+          "to_id": "q-async-char",
+          "type": "variant_of",
+          "reason": "채점본 1번은 비동기 카운터 특징에 더해 동기 카운터 설명과 보완점을 함께 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q1",
+        "a-s02-p1",
+        "a-s01-p1-o-s01-q1",
+        "a-s01-p1",
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s20-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s15-p7",
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p1",
+        "a-s13-p1",
+        "a-s14-p1",
+        "a-s15-p2",
+        "a-s16-p1",
+        "a-s17-p1",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-xbit-ymod",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q2",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s01-q2",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5",
+        "o-s09-q5",
+        "o-s10-q5",
+        "o-s11-q5",
+        "o-s12-q5",
+        "o-s13-q5",
+        "o-s14-q5",
+        "o-s15-q5",
+        "o-s16-q5",
+        "o-s17-q5",
+        "o-s18-q5",
+        "o-s19-q5",
+        "o-s20-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a5",
+          "target_id": "q-xbit-ymod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q2",
+        "a-s02-p1",
+        "a-s01-p1-o-s01-q2",
+        "a-s01-p1",
+        "a-s07-p1-o-s07-q5",
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s09-p2",
+        "a-s15-p3",
+        "a-s20-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p1",
+        "a-s13-p1",
+        "a-s13-p2",
+        "a-s14-p1",
+        "a-s16-p1",
+        "a-s16-p2",
+        "a-s17-p2",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-sync-wave",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s01-q3",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s08-q8",
+        "o-s09-q8",
+        "o-s10-q8",
+        "o-s11-q8",
+        "o-s12-q8",
+        "o-s13-q8",
+        "o-s14-q8",
+        "o-s15-q8",
+        "o-s16-q8",
+        "o-s17-q8",
+        "o-s18-q8",
+        "o-s19-q8",
+        "o-s20-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a8",
+          "target_id": "q-sync-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ripple-wave",
+          "to_id": "q-sync-wave",
+          "type": "variant_of",
+          "reason": "같은 74HC76 2단 파형 그리기지만 회로 배선이 다르다(비동기: 둘째 단 CLK←A, J·K=VCC / 동기: 공통 CLK, J1←B', J2←A).",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s06-a8",
+          "reason": "원 표시한 번호 8 위의 짧은 손글씨를 ‘암기’로 읽을 수 있으나 확정하지 않았다."
+        },
+        {
+          "target_id": "o-s12-a8",
+          "reason": "제공 파형의 다섯 번째 행에 신호 이름이 없다. 어떤 신호인지 원문으로 확정할 수 없다."
+        },
+        {
+          "target_id": "o-s13-a8",
+          "reason": "제공 파형의 다섯 번째 행에 신호 이름이 없다. 어떤 신호인지 원문으로 확정할 수 없다."
+        },
+        {
+          "target_id": "o-s16-a8",
+          "reason": "제공 파형의 다섯 번째 행에 신호 이름이 없다. 어떤 신호인지 원문으로 확정할 수 없다."
+        },
+        {
+          "target_id": "o-s17-a8",
+          "reason": "제공 파형의 다섯 번째 행에 신호 이름이 없다. 어떤 신호인지 원문으로 확정할 수 없다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q3",
+        "a-s02-p1",
+        "a-s01-p1-o-s01-q3",
+        "a-s01-p1",
+        "a-s07-p3-o-s07-q8",
+        "a-s07-p2",
+        "a-s07-p3",
+        "a-s08-p2",
+        "a-s08-p3",
+        "a-s09-p3",
+        "a-s14-p2",
+        "a-s15-p4",
+        "a-s15-p5",
+        "a-s20-p3"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p2",
+        "a-s10-p1",
+        "a-s10-p2",
+        "a-s11-p1",
+        "a-s11-p2",
+        "a-s12-p3",
+        "a-s12-p4",
+        "a-s13-p3",
+        "a-s13-p4",
+        "a-s14-p3",
+        "a-s16-p4",
+        "a-s17-p4",
+        "a-s18-p2",
+        "a-s19-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-mod-and-double",
+      "kind": "past",
+      "representative_occurrence_id": "o-s02-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s01-q4",
+        "o-s06-q9",
+        "o-s07-q9",
+        "o-s08-q9",
+        "o-s09-q9",
+        "o-s10-q9",
+        "o-s11-q9",
+        "o-s12-q9",
+        "o-s13-q9",
+        "o-s14-q9",
+        "o-s15-q9",
+        "o-s16-q9",
+        "o-s17-q9",
+        "o-s18-q9",
+        "o-s19-q9",
+        "o-s20-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a9",
+          "target_id": "q-mod-and-double",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ripple-mod",
+          "to_id": "q-mod-and-double",
+          "type": "variant_of",
+          "reason": "몇 진 카운터인지 묻는 점은 같지만 대상 회로가 비동기 회로(둘째 단 CLK←A)와 동기 회로로 다르고 2배 진수 변환 요구 유무도 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-mod-and-double",
+          "reason": "9번 제공 답안이 4종으로 갈린다: ‘3진 동기식 카운터 / 출력단자를 입력단자에 엇갈려 결합’, ‘3진카운터 / 6개의 and게이트 사용’(정리본_v1·DOCX 정리중!!!!!!), ‘링카운터를 존슨 카운터로’(정리본_v2·DOCX 정리중-수정), ‘4진 카운터 플립플롭을 하나 더 단다’(카운터심화). 정답 검증은 하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s02-p1-o-s02-q4",
+        "a-s02-p1",
+        "a-s01-p1-o-s01-q4",
+        "a-s01-p2-o-s01-q4",
+        "a-s01-p1",
+        "a-s01-p2",
+        "a-s07-p3",
+        "a-s08-p3",
+        "a-s09-p4",
+        "a-s15-p5",
+        "a-s20-p3"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p2",
+        "a-s10-p2",
+        "a-s11-p2",
+        "a-s12-p4",
+        "a-s12-p5",
+        "a-s13-p4",
+        "a-s13-p5",
+        "a-s14-p3",
+        "a-s16-p5",
+        "a-s17-p5",
+        "a-s18-p2",
+        "a-s19-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-ripple-wave",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q3",
+      "occurrence_ids": [
+        "o-s05-q3",
+        "o-s03-q4",
+        "o-s04-q4",
+        "o-s15-zq4",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s08-q7",
+        "o-s09-q7",
+        "o-s10-q7",
+        "o-s11-q7",
+        "o-s12-q7",
+        "o-s13-q7",
+        "o-s14-q7",
+        "o-s15-q7",
+        "o-s16-q7",
+        "o-s17-q7",
+        "o-s18-q7",
+        "o-s19-q7",
+        "o-s20-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a3",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "채점본에서 해당 문항 답란에 직접 쓴 손글씨 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a4",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-za4",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a7",
+          "target_id": "q-ripple-wave",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ripple-wave",
+          "to_id": "q-sync-wave",
+          "type": "variant_of",
+          "reason": "같은 74HC76 2단 파형 그리기지만 회로 배선이 다르다(비동기: 둘째 단 CLK←A, J·K=VCC / 동기: 공통 CLK, J1←B', J2←A).",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s13-a7",
+          "reason": "A'B 행 가운데를 가로지르는 수평선이 겹쳐 있어 이 행의 파형 값을 원문만으로 확정하지 않았다."
+        },
+        {
+          "target_id": "o-s17-a7",
+          "reason": "A'B 행 가운데를 가로지르는 수평선이 겹쳐 있어 이 행의 파형 값을 원문만으로 확정하지 않았다."
+        },
+        {
+          "target_id": "o-s05-a3",
+          "reason": "손으로 그린 파형의 끝부분(오른쪽 끝 A·B 막대 부근)이 겹쳐 있어 마지막 구간 값을 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p2-o-s07-q7",
+        "a-s07-p2",
+        "a-s08-p2",
+        "a-s09-p2",
+        "a-s09-p3",
+        "a-s14-p2",
+        "a-s15-p3",
+        "a-s15-p4",
+        "a-s20-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s05-q3",
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s15-p7",
+        "a-s06-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p2",
+        "a-s12-p3",
+        "a-s13-p2",
+        "a-s13-p3",
+        "a-s16-p3",
+        "a-s17-p3",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-async-sync-compare",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q1",
+      "occurrence_ids": [
+        "o-s05-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-async-sync-compare",
+          "status": "confirmed",
+          "reason": "채점본 해당 문항 답란의 손글씨 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-async-sync-compare",
+          "to_id": "q-async-char",
+          "type": "variant_of",
+          "reason": "채점본 1번은 비동기 카운터 특징에 더해 동기 카운터 설명과 보완점을 함께 묻는다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-async-sync-compare",
+          "to_id": "q-sync-improve",
+          "type": "variant_of",
+          "reason": "보완점 질문을 포함하지만 비동기·동기 각각의 설명까지 요구해 범위가 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s05-a1",
+          "reason": "연필 손글씨가 흐리고 일부 단어(괄호 안 메모, 동기식 줄의 중간 단어)를 읽을 수 없다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s05-q1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-mod5-pins-graded",
+      "kind": "past",
+      "representative_occurrence_id": "o-s05-q2",
+      "occurrence_ids": [
+        "o-s05-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-mod5-pins-graded",
+          "status": "confirmed",
+          "reason": "채점본 해당 문항 답란의 손글씨 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-mod5-pins-graded",
+          "to_id": "q-mod5-pins",
+          "type": "duplicate_candidate",
+          "reason": "같은 5진 카운터 최소 출력핀 질문이지만 예상 세트에는 “(출력을 확인하기 위한 최소한의 핀의 개수)” 단서가 덧붙어 요구 해석이 달라질 수 있다. 제공 답안도 3개(채점본 손글씨)와 5개(예상 세트)로 갈린다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c6ca141f8475d1f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s05-a2",
+          "reason": "연필 손글씨가 흐리고 첫 줄과 마지막 줄 끝부분을 확정할 수 없다. 핀 개수 숫자도 손글씨 판독이다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s05-q2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-jk-toggle",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s07-q1",
+      "occurrence_ids": [
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1",
+        "o-s09-q1",
+        "o-s10-q1",
+        "o-s11-q1",
+        "o-s12-q1",
+        "o-s13-q1",
+        "o-s14-q1",
+        "o-s15-q1",
+        "o-s16-q1",
+        "o-s17-q1",
+        "o-s18-q1",
+        "o-s19-q1",
+        "o-s20-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a1",
+          "target_id": "q-jk-toggle",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-jk-toggle-3pin",
+          "to_id": "q-jk-toggle",
+          "type": "variant_of",
+          "reason": "Quiz는 J, K, CLR 세 핀만 묻고 클록 에지 조건이 없으며, 예상 세트는 PR까지 네 핀과 Falling Edge 조건을 준다.",
+          "evidence": [
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c6ca141f8475d1f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-jk-toggle",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s20-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p1",
+        "a-s13-p1",
+        "a-s14-p1",
+        "a-s15-p2",
+        "a-s16-p1",
+        "a-s17-p1",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-sync-improve",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s07-q3",
+      "occurrence_ids": [
+        "o-s03-q2",
+        "o-s04-q2",
+        "o-s15-zq2",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3",
+        "o-s09-q3",
+        "o-s10-q3",
+        "o-s11-q3",
+        "o-s12-q3",
+        "o-s13-q3",
+        "o-s14-q3",
+        "o-s15-q3",
+        "o-s16-q3",
+        "o-s17-q3",
+        "o-s18-q3",
+        "o-s19-q3",
+        "o-s20-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a2",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-za2",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a3",
+          "target_id": "q-sync-improve",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-async-sync-compare",
+          "to_id": "q-sync-improve",
+          "type": "variant_of",
+          "reason": "보완점 질문을 포함하지만 비동기·동기 각각의 설명까지 요구해 범위가 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-sync-improve",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s20-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s15-p7",
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p1",
+        "a-s13-p1",
+        "a-s14-p1",
+        "a-s15-p2",
+        "a-s16-p1",
+        "a-s17-p1",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-mod5-pins",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s07-q4",
+      "occurrence_ids": [
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4",
+        "o-s09-q4",
+        "o-s10-q4",
+        "o-s11-q4",
+        "o-s12-q4",
+        "o-s13-q4",
+        "o-s14-q4",
+        "o-s15-q4",
+        "o-s16-q4",
+        "o-s17-q4",
+        "o-s18-q4",
+        "o-s19-q4",
+        "o-s20-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a4",
+          "target_id": "q-mod5-pins",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-mod5-pins-graded",
+          "to_id": "q-mod5-pins",
+          "type": "duplicate_candidate",
+          "reason": "같은 5진 카운터 최소 출력핀 질문이지만 예상 세트에는 “(출력을 확인하기 위한 최소한의 핀의 개수)” 단서가 덧붙어 요구 해석이 달라질 수 있다. 제공 답안도 3개(채점본 손글씨)와 5개(예상 세트)로 갈린다.",
+          "evidence": [
+            {
+              "source_id": "s-8aed96409f108624",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 2; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c6ca141f8475d1f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-mod5-pins",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s20-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s09-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p1",
+        "a-s13-p1",
+        "a-s14-p1",
+        "a-s15-p2",
+        "a-s16-p1",
+        "a-s17-p1",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-and-gates",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s07-q6",
+      "occurrence_ids": [
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6",
+        "o-s09-q6",
+        "o-s10-q6",
+        "o-s11-q6",
+        "o-s12-q6",
+        "o-s13-q6",
+        "o-s14-q6",
+        "o-s15-q6",
+        "o-s16-q6",
+        "o-s17-q6",
+        "o-s18-q6",
+        "o-s19-q6",
+        "o-s20-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a6",
+          "target_id": "q-and-gates",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-and-gates",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s08-p1",
+        "a-s08-p2",
+        "a-s09-p2",
+        "a-s15-p3",
+        "a-s20-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p1",
+        "a-s10-p1",
+        "a-s11-p1",
+        "a-s12-p2",
+        "a-s13-p2",
+        "a-s14-p1",
+        "a-s16-p2",
+        "a-s17-p2",
+        "a-s18-p1",
+        "a-s19-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-7447",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s07-q10",
+      "occurrence_ids": [
+        "o-s06-q10",
+        "o-s07-q10",
+        "o-s08-q10",
+        "o-s09-q10",
+        "o-s10-q10",
+        "o-s11-q10",
+        "o-s12-q10",
+        "o-s13-q10",
+        "o-s14-q10",
+        "o-s15-q10",
+        "o-s16-q10",
+        "o-s17-q10",
+        "o-s18-q10",
+        "o-s19-q10",
+        "o-s20-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s06-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s14-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s16-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s17-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s18-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s19-a10",
+          "target_id": "q-7447",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-7447",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        },
+        {
+          "target_id": "o-s06-a10",
+          "reason": "인쇄 답안 전체에 취소선, 12·9번 값에 원 표시, 옆에 ‘답이 틀린거 같음’으로 읽히는 손글씨가 있다. 문항 조건 아래의 손글씨 두 줄과 핀 옆 H/L 손글씨, 세그먼트 덧그림은 일부만 읽힌다."
+        },
+        {
+          "target_id": "o-s10-a10",
+          "reason": "같은 10번에 대해 답안단순화_v1·DOCX ‘최종 - 답안 단순화’는 13:H 12:L 11:H 10:H 9:L 14:H 15:H, 나머지 답안 자료는 13:L 12:H 11:L 10:L 9:H 14:L 15:L로 H/L이 정반대다. 어느 쪽도 정답으로 채택하지 않았다."
+        },
+        {
+          "target_id": "o-s19-a10",
+          "reason": "답안단순화_v1과 같은 H 계열 답(13:H 12:L 11:H 10:H 9:L 14:H 15:H)으로, 다른 자료의 L 계열 답과 반대다. 독립 풀이 단계에서 검토."
+        },
+        {
+          "target_id": "o-s14-a10",
+          "reason": "카운터심화 자료의 10번 답은 핀별 출력 대신 숫자 ‘5’만 적혀 있다. 핀 출력 답안과 형식이 달라 원문 그대로 보존."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p4-o-s07-q10",
+        "a-s07-p3",
+        "a-s07-p4",
+        "a-s08-p3",
+        "a-s08-p4",
+        "a-s09-p4",
+        "a-s15-p5",
+        "a-s15-p6",
+        "a-s20-p4"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s06-p2",
+        "a-s10-p2",
+        "a-s11-p2",
+        "a-s12-p5",
+        "a-s13-p5",
+        "a-s14-p3",
+        "a-s14-p4",
+        "a-s16-p5",
+        "a-s17-p5",
+        "a-s18-p2",
+        "a-s19-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-jk-toggle-3pin",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q3",
+      "occurrence_ids": [
+        "o-s03-q3",
+        "o-s04-q3",
+        "o-s15-zq3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-jk-toggle-3pin",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a3",
+          "target_id": "q-jk-toggle-3pin",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-za3",
+          "target_id": "q-jk-toggle-3pin",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-jk-toggle-3pin",
+          "to_id": "q-jk-toggle",
+          "type": "variant_of",
+          "reason": "Quiz는 J, K, CLR 세 핀만 묻고 클록 에지 조건이 없으며, 예상 세트는 PR까지 네 핀과 Falling Edge 조건을 준다.",
+          "evidence": [
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-9c6ca141f8475d1f",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-jk-toggle-3pin",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s15-p7"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-ripple-mod",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s03-q5",
+      "occurrence_ids": [
+        "o-s03-q5",
+        "o-s04-q5",
+        "o-s15-zq5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a5",
+          "target_id": "q-ripple-mod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a5",
+          "target_id": "q-ripple-mod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s15-za5",
+          "target_id": "q-ripple-mod",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ripple-mod",
+          "to_id": "q-mod-and-double",
+          "type": "variant_of",
+          "reason": "몇 진 카운터인지 묻는 점은 같지만 대상 회로가 비동기 회로(둘째 단 CLK←A)와 동기 회로로 다르고 2배 진수 변환 요구 유무도 다르다.",
+          "evidence": [
+            {
+              "source_id": "s-9116682d36250bcc",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "실험8. Quiz 문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-b4d97ab8183cd9ff",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "q-ripple-mod",
+          "reason": "이 고유 문항의 실제 시험 시행 근거(학기 헤더·응시자 칸·채점본)를 확보하지 못함. 기출/예상 여부 unknown을 유지한다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s03-p1",
+        "a-s04-p1",
+        "a-s15-p7"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항을 원문 조건 그대로 수록해요"
+    }
+  ]
+}

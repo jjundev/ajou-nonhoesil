@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "html": "실험08_문제설명.html",
+  "html_sha256": "d3ad5ad82cd492e19286e4a3ba4ceaaf6ceb3b472089bbccb3511b6f91345a2d",
+  "audit_path": "problem-explanations/summary-audit.md",
+  "audit_sha256": "d2914eb8358cee145cd6c1e0812b0992006c2c72743bf19f585a86819d0d5b86",
+  "semantic_status": "pass",
+  "browser_status": "pass",
+  "evidence": [
+    "problem-explanations/browser-results.json",
+    "problem-explanations/panel-results.json",
+    "problem-explanations/calculation-results.json"
+  ],
+  "unresolved": [
+    "q-mod-and-double 2배 방법 제공 답 네 갈래, 출제 의도 미확정",
+    "q-mod5-pins 3개·5개 해석 충돌",
+    "q-ripple-mod 2진 표현과 상태 수 4",
+    "q-7447 L·H 계열 충돌(7447 기준 L)"
+  ],
+  "review_type": "self_review; independent not_run"
+}

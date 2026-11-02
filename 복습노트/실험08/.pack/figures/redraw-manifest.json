@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "xbit-given",
+      "question_id": "q-xbit-ymod",
+      "role": "problem",
+      "svg": "figures/questions/xbit-given.svg",
+      "png": "figures/questions/xbit-given.png",
+      "svg_sha256": "e2e6b7221eb8ab3fdf8db834841ea384eca42b0d9211bf1b8d7118974de4502f",
+      "png_sha256": "bbf014e486d7c20cdc4626482b2fd39fdf59bb2c86cdf27a585341a6d14e6ec0",
+      "w_mm": 120,
+      "h_mm": 47.44186046511628,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "sync-given",
+      "question_id": "q-sync-wave",
+      "role": "problem",
+      "svg": "figures/questions/sync-given.svg",
+      "png": "figures/questions/sync-given.png",
+      "svg_sha256": "553024a40fac4d702318c7dc01a3413acd37aa28dafb2627a9fda89f27e20a45",
+      "png_sha256": "d2edb1c7e409ff9b3473a8d86e266e3000aef1e115b968bc2e64e8a58e89944b",
+      "w_mm": 150,
+      "h_mm": 75.0,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "sync-blank",
+      "question_id": "q-sync-wave",
+      "role": "problem",
+      "svg": "figures/questions/sync-blank.svg",
+      "png": "figures/questions/sync-blank.png",
+      "svg_sha256": "9b96ddf8146f2735e573cdf264a7b8da3725908f4f3abaf748de4f610eca24a1",
+      "png_sha256": "c2bd1698bde63a814e92befa7b55d7a09fc7332d08faaedbc11520f9254df6fd",
+      "w_mm": 150,
+      "h_mm": 49.559471365638764,
+      "source_asset_ids": [
+        "a-s02-p1-o-s02-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "sync-wave",
+      "question_id": "q-sync-wave",
+      "role": "solution",
+      "svg": "figures/solutions/sync-wave.svg",
+      "png": "figures/solutions/sync-wave.png",
+      "svg_sha256": "af8fddeb5813b5998d0f00f5d933568d3b9402ffd262a323fb47918e2aac2110",
+      "png_sha256": "92918ea768a4032f8d13e33a4a50e94aba19619ce75dc97bc36e57a6f1882e0f",
+      "w_mm": 150,
+      "h_mm": 81.52173913043478,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "sync-given-2",
+      "question_id": "q-mod-and-double",
+      "role": "problem",
+      "svg": "figures/questions/sync-given-2.svg",
+      "png": "figures/questions/sync-given-2.png",
+      "svg_sha256": "553024a40fac4d702318c7dc01a3413acd37aa28dafb2627a9fda89f27e20a45",
+      "png_sha256": "d2edb1c7e409ff9b3473a8d86e266e3000aef1e115b968bc2e64e8a58e89944b",
+      "w_mm": 150,
+      "h_mm": 75.0,
+      "source_asset_ids": [
+        "a-s02-p1"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "mod6",
+      "question_id": "q-mod-and-double",
+      "role": "solution",
+      "svg": "figures/solutions/mod6.svg",
+      "png": "figures/solutions/mod6.png",
+      "svg_sha256": "b847a92508bfb2249bfb9f428f6a9f421cde05fc29c426e494491621cc1904a5",
+      "png_sha256": "0239e5b3ff14183e727c9c2af5af8a7ebd8e6099a533eedd444ddb325419f73b",
+      "w_mm": 130,
+      "h_mm": 42.325581395348834,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-b4d97ab8183cd9ff",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ripple-given",
+      "question_id": "q-ripple-wave",
+      "role": "problem",
+      "svg": "figures/questions/ripple-given.svg",
+      "png": "figures/questions/ripple-given.png",
+      "svg_sha256": "3977628871bf2563af4075b72b9306e2e4c0fa8ce700d910a03ed589ac8347d6",
+      "png_sha256": "e23ddcdd22a2c4c6a71675ecf19635fd5c102b221eed04aadb8230c5762c07a7",
+      "w_mm": 150,
+      "h_mm": 75.0,
+      "source_asset_ids": [
+        "a-s07-p2-o-s07-q7"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ripple-blank",
+      "question_id": "q-ripple-wave",
+      "role": "problem",
+      "svg": "figures/questions/ripple-blank.svg",
+      "png": "figures/questions/ripple-blank.png",
+      "svg_sha256": "00d87a9b1c90b32d3fadb70384e191ee590b8825849e7df4610df8b119f80a32",
+      "png_sha256": "c2bd1698bde63a814e92befa7b55d7a09fc7332d08faaedbc11520f9254df6fd",
+      "w_mm": 150,
+      "h_mm": 49.559471365638764,
+      "source_asset_ids": [
+        "a-s07-p2-o-s07-q7"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ripple-solution",
+      "question_id": "q-ripple-wave",
+      "role": "solution",
+      "svg": "figures/solutions/ripple-solution.svg",
+      "png": "figures/solutions/ripple-solution.png",
+      "svg_sha256": "fdf16652bdba6426b386afc146d9c17ddedd87003f01259c677a0a2d742d70d7",
+      "png_sha256": "45288aab24ccc49826d455373bc76c1b65252bf307ecace63731f642a23c2c31",
+      "w_mm": 150,
+      "h_mm": 81.52173913043478,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-8aed96409f108624",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "pin7447-given",
+      "question_id": "q-7447",
+      "role": "problem",
+      "svg": "figures/questions/pin7447-given.svg",
+      "png": "figures/questions/pin7447-given.png",
+      "svg_sha256": "7e2931a0780a6bbbcbfd3be5b06137a13543f041498825bae4864cdd09bab3d8",
+      "png_sha256": "9f0aae9941ce11dd7480ec8336f83a7f6dfd6415fb092f4163f0401694e29d9a",
+      "w_mm": 120,
+      "h_mm": 65.5813953488372,
+      "source_asset_ids": [
+        "a-s07-p4-o-s07-q10"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "seven5-solution",
+      "question_id": "q-7447",
+      "role": "solution",
+      "svg": "figures/solutions/seven5-solution.svg",
+      "png": "figures/solutions/seven5-solution.png",
+      "svg_sha256": "d4864b6d988eb8bcbcdc79199f120af4cb25eb41939fdb08324476a636458fba",
+      "png_sha256": "cbc208ed358cdbe85d9218e7c4990376cb3b583af49339f04de6bdfc408f12ca",
+      "w_mm": 45,
+      "h_mm": 54.0,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-b7381c0ee527df55",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "and-given",
+      "question_id": "q-qp-e08-board-01",
+      "role": "problem",
+      "svg": "figures/questions/and-given.svg",
+      "png": "figures/questions/and-given.png",
+      "svg_sha256": "03866f3971eec2d36cfc680155df916955ae21ea4cb2e9b214e3d70d3c1e8d7f",
+      "png_sha256": "d4b5d9aed47b6710d91bc12f2a7ddcca8d72a8e0053ba10e42853c6a19a54327",
+      "w_mm": 75,
+      "h_mm": 26.612903225806452,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-manual08",
+          "pdf_page": 9,
+          "printed_page": null
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 PNG·A4 PDF를 원문·교안 회로와 대조했어요. 핀, 공통 클럭, 되먹임, 하강 엣지 위치, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "and-blank",
+      "question_id": "q-qp-e08-board-01",
+      "role": "problem",
+      "svg": "figures/questions/and-blank.svg",
+      "png": "figures/questions/and-blank.png",
+      "svg_sha256": "54d5336c62bfc67c7ad5561031223e37bd247f5739e3c33ad5e5a6a898709249",
+      "png_sha256": "afd6320bd2a49808fca62018d851635a9cae0f7a3d4903775da3c8f8d30de022",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352. 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 확대 렌더로 배선 끝점이 홀에 놓이고 14번 +5V, 7번 GND, 1·2번 입력, 3번 측정점인지 확인했어요."
+    },
+    {
+      "id": "and-complete",
+      "question_id": "q-qp-e08-board-01",
+      "role": "solution",
+      "svg": "figures/solutions/and-complete.svg",
+      "png": "figures/solutions/and-complete.png",
+      "svg_sha256": "03fb40270e45687de372f3a821f72c05e4066cd5bed1922d7cdcef9f3074fc1c",
+      "png_sha256": "ef351f53d850ed48b0986c4443fddcb70dc936d38bbb47e41c1d16752de9b7b5",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352. 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-02 확대 렌더로 배선 끝점이 홀에 놓이고 14번 +5V, 7번 GND, 1·2번 입력, 3번 측정점인지 확인했어요."
+    }
+  ]
+}

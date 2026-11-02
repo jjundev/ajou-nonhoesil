@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>실험 8 · 문제 설명</title>
+  <meta name="description" content="이론을 문제풀이에 연결해요">
+  <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('od-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <link rel="stylesheet" href=".pack/assets/vendor/pretendard/pretendard.css">
+  <link rel="stylesheet" href=".pack/assets/vendor/katex/katex.min.css">
+  <script defer src=".pack/assets/vendor/katex/katex.min.js"></script>
+  <script defer src=".pack/assets/vendor/katex/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']})"></script>
+  <style>
+    /* ---------- 토큰 ---------- */
+    :root {
+      color-scheme: light;
+      --bg: #ffffff; --surface: #f7f8fa; --ink: #111111; --ink-2: #6b7280; --line: #d9dee7;
+      --accent: #1677ff; --accent-ink: #1b64da; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #b54708; --prof: #6941c6; --supp: #067647; --danger: #d92d20;
+      --scroll: #c9d0db; --scroll-hover: #9aa3b2;
+      --font: 'Pretendard', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --fs-title: clamp(28px, 6vw, 36px); --fs-h3: clamp(26px, 5.4vw, 32px); --fs-layer: 19px; --fs-lead: 22px; --fs-body: 17px; --fs-sub: 15px; --fs-small: 14px; --fs-label: 13px; --fs-fig: 12px;
+      --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+      --radius: 8px; --measure: 680px; --tap: 48px; --btn-min: 160px;
+      --dur: 220ms; --dur-exit: 150ms; --ease-out: cubic-bezier(.2, .8, .2, 1);
+      /* 예전 조각이 참조할 수 있는 이름 */
+      --surface-2: var(--surface); --accent-soft: var(--surface); --warn-soft: var(--surface);
+      --prof-soft: var(--surface); --supp-soft: var(--surface); --eli5: var(--accent-ink); --eli5-soft: var(--surface);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+        --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+        --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+        --scroll: #3f414b; --scroll-hover: #5b5e6a;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+      --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+      --scroll: #3f414b; --scroll-hover: #5b5e6a;
+    }
+
+    /* ---------- 기본 ---------- */
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+      background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--fs-body); line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+    a { color: var(--accent-ink); text-underline-offset: 3px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    [hidden] { display: none !important; }
+
+    /* ---------- 상단 바 ---------- */
+    .topbar { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s2) var(--s4); display: flex; align-items: center; gap: var(--s3); min-height: 56px; }
+    .brand { flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; }
+    .text-btn { flex: none; min-height: 44px; min-width: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--radius);
+      background: transparent; color: var(--ink); font: 600 var(--fs-small)/1 var(--font); cursor: pointer; }
+    .bar { height: 2px; background: var(--line); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+
+    /* ---------- 본문 ---------- */
+    main { flex: 1 0 auto; width: 100%; max-width: var(--measure); margin: 0 auto; padding: var(--s6) var(--s5) var(--s7); }
+    .hero h1 { font-size: var(--fs-title); line-height: 1.3; margin: 0 0 var(--s3); letter-spacing: -0.02em; }
+    .hero p { color: var(--ink-2); margin: 0; }
+    section { margin-top: var(--s7); }
+    section > h2 { font-size: 22px; line-height: 1.4; margin: 0 0 var(--s4); }
+    .topic { padding: var(--s6) 0; border-top: 1px solid var(--line); }
+    .topic h3 { margin: 0 0 var(--s2); font-size: var(--fs-h3); font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; }
+    .tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+    .tag { font-size: var(--fs-label); line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); white-space: nowrap; }
+
+    /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
+    .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
+    .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer > :first-child { margin-top: 0; }
+    .layer > :last-child { margin-bottom: 0; }
+    .layer-title { display: block; font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin-bottom: var(--s3); }
+    .layer.eli5 .layer-title { color: var(--accent-ink); }
+    .layer.eli5 .lead { font-size: var(--fs-lead); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; margin: 0 0 var(--s4); }
+    /* 정확히 말하면: 본문 크기 그대로, 굵은 첫머리만 진하게 */
+    .layer.formal b { font-weight: 700; color: var(--ink); }
+    /* 교수님 말씀 · 주의: 보조 정보는 한 단계 작게 */
+    .layer.prof, .layer.warn, .layer.listen { font-size: var(--fs-sub); line-height: 1.7; }
+    .layer.prof blockquote { font-size: var(--fs-sub); }
+    .layer.prof .layer-title { color: var(--prof); }
+    .layer.warn, .layer.listen { background: var(--surface); border-top: 0; border-radius: var(--radius); padding: var(--s4); }
+    .layer.warn .layer-title { color: var(--warn); font-size: var(--fs-body); }
+    .layer.listen .layer-title { color: var(--accent-ink); font-size: var(--fs-body); }
+    .layer.supp .badge.supp { margin-bottom: var(--s2); }
+    .badge { display: inline-block; font-size: var(--fs-label); font-weight: 600; line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); }
+    .badge.supp { color: var(--supp); }
+    .badge.exam { color: var(--warn); margin-right: var(--s1); }
+    blockquote { margin: var(--s3) 0; padding: 0 0 0 var(--s3); border-left: 2px solid var(--line); color: var(--ink-2); }
+    ol.steps { padding-left: 1.4em; }
+    ol.steps li { margin: var(--s2) 0; }
+
+    /* 그림 · 수식 · 표 */
+    .figure { margin: var(--s4) 0; text-align: center; }
+    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); }
+    .figure img { max-width: 100%; height: auto; }
+    .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
+    .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
+    .equation-card .katex-display { margin: 0; text-align: left; }
+    .equation-card .katex-display > .katex { text-align: left; }
+    .table-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card::-webkit-scrollbar, .table-card::-webkit-scrollbar { height: 8px; }
+    .equation-card::-webkit-scrollbar-track, .table-card::-webkit-scrollbar-track { background: transparent; }
+    .equation-card::-webkit-scrollbar-thumb, .table-card::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--surface); }
+    .equation-card::-webkit-scrollbar-thumb:hover, .table-card::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .equation-card, .table-card { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .table-card > table { margin: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
+    th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
+    th { color: var(--ink-2); font-weight: 600; }
+    td:first-child, th:first-child { min-width: 6em; }
+
+    /* explanation-table-layout:start */
+    [data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }
+    .table-card:has(> table[data-layout-table]) { container-type: inline-size; position: relative; }
+    .table-card .table-wrap { overflow: visible; }
+    table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
+    table[data-layout-mode="text"] { width: 100%; }
+    [data-layout-table] th,
+    [data-layout-table] td { min-width: 0; padding: 0.5rem; }
+    [data-layout-table] td { white-space: nowrap; }
+    [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
+    [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
+    [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
+    [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
+    [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
+    [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
+    [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    /* explanation-table-layout:end */
+
+    /* 위젯 */
+    .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }
+    .widget h4 { margin: 0 0 var(--s1); font-size: var(--fs-layer); line-height: 1.4; }
+    .widget-help { font-size: var(--fs-small); color: var(--ink-2); margin: 0 0 var(--s3); }
+    .controls { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--s2); font-size: var(--fs-small); }
+    .controls label { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+    .controls input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+    .widget svg { width: 100%; height: auto; background: var(--bg); border-radius: var(--radius); }
+    .readout { font-size: var(--fs-small); margin-top: var(--s2); }
+    .legend { font-size: var(--fs-label); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: var(--s3); }
+    .sw { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: var(--s1); border-radius: 2px; }
+    .sw.truth { background: var(--ink-2); } .sw.fit { background: var(--accent); } .sw.train { background: var(--accent); height: 10px; width: 10px; border-radius: 50%; }
+    .sw.test { background: var(--warn); height: 10px; width: 10px; border-radius: 50%; } .sw.like { background: var(--accent); } .sw.prior { background: var(--prof); } .sw.post { background: var(--supp); }
+    .axis { stroke: var(--line); stroke-width: 1.5; }
+    .tick { fill: var(--ink-2); font-size: 11px; }
+    .plot-truth { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .plot-fit { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+    .pt-train { fill: var(--accent); }
+    .pt-test { fill: var(--warn); }
+    .plot-like { fill: none; stroke: var(--accent); stroke-width: 2; }
+    .plot-prior { fill: none; stroke: var(--prof); stroke-width: 2; stroke-dasharray: 6 4; }
+    .plot-post { fill: none; stroke: var(--supp); stroke-width: 3; }
+    .mark-ml { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .mark-map { stroke: var(--supp); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .fig-ink { stroke: currentColor; fill: none; stroke-width: 2; }
+    .fig-accent { stroke: var(--accent); fill: none; stroke-width: 2.5; }
+    .fig-danger { stroke: var(--danger); fill: none; stroke-width: 2.5; }
+    .fig-dot { fill: var(--accent); }
+    .fig-text { fill: currentColor; font-size: 13px; font-family: inherit; }
+    .fig-muted { fill: var(--ink-2); font-size: var(--fs-fig); font-family: inherit; }
+
+    footer { width: 100%; max-width: var(--measure); margin: 0 auto; padding: 0 var(--s5) var(--s6); color: var(--ink-2); font-size: var(--fs-small); }
+
+    /* ---------- 하단 이동 바 ---------- */
+    .pager { position: sticky; bottom: 0; z-index: 10; background: var(--bg); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+    .pager-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s3) var(--s4); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s3); }
+    .pager-count { font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center; min-width: 4em; }
+    .btn { min-height: var(--tap); min-width: var(--btn-min); padding: 0 var(--s6); border-radius: var(--radius); border: 0; font: 700 var(--fs-body)/1 var(--font); cursor: pointer; white-space: nowrap;
+      transition: background-color 150ms ease-out, opacity 150ms ease-out; }
+    .btn-ghost { justify-self: start; background: var(--surface); color: var(--ink); }
+    .btn-primary { justify-self: end; background: var(--btn-bg); color: var(--on-btn); }
+    .btn:disabled { opacity: .4; cursor: default; }
+    @media (hover: hover) {
+      .text-btn:hover, .btn-ghost:not(:disabled):hover { background: var(--line); }
+      .btn-primary:not(:disabled):hover { box-shadow: inset 0 0 0 100px rgba(0, 0, 0, .14); }
+    }
+
+    /* ---------- 목차 시트 ---------- */
+    .sheet { width: min(100%, var(--measure)); max-width: 100%; max-height: 80dvh; margin: auto auto 0; padding: 0; border: 0;
+      border-radius: 16px 16px 0 0; background: var(--bg); color: var(--ink); }
+    .sheet::backdrop { background: rgba(0, 0, 0, .4); }
+    .sheet-inner { padding: var(--s4) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom)); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
+    .sheet-head h2 { margin: 0; font-size: var(--fs-lead); }
+    .toc { display: flex; flex-direction: column; }
+    .toc > a, .toc-group > a { display: block; padding: var(--s3) 0 var(--s1); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); text-decoration: none; }
+    .toc-list { list-style: none; margin: 0 0 var(--s2); padding: 0; }
+    .toc-list a { display: flex; align-items: center; gap: var(--s3); min-height: var(--tap); padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3));
+      border-radius: var(--radius); color: var(--ink); text-decoration: none; line-height: 1.4; }
+    .toc-list a[aria-current="true"] { background: var(--surface); font-weight: 700; color: var(--accent-ink); }
+    .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
+    @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
+
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
+    /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
+    html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
+    html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
+    html:not(.js) .sheet-close { display: none; }
+    .js main > .hero:not(.is-current), .js main > section:not(.is-on), .js .screen:not(.is-current) { display: none; }
+    .js main > section { margin-top: 0; }
+    .js main > section > h2 { font-size: var(--fs-small); font-weight: 600; color: var(--accent-ink); margin: 0 0 var(--s2); }
+    .js .topic { padding: 0; border-top: 0; }
+    .js .hero { padding-top: 12vh; }
+    .js footer { display: none; }
+    .js body.at-end footer { display: block; }
+    .screen.enter-next { animation: enter-next var(--dur) var(--ease-out); }
+    .screen.enter-prev { animation: enter-prev var(--dur) var(--ease-out); }
+    @keyframes enter-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+    @keyframes enter-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.enter-next, .screen.enter-prev { animation: none; }
+      .bar > span, .btn { transition: none; }
+    }
+    @media (max-width: 480px) {
+      main { padding: var(--s5) var(--s4) var(--s6); }
+      footer { padding: 0 var(--s4) var(--s5); }
+      .btn { min-width: 120px; padding: 0 var(--s5); }
+    }
+    @media print {
+      .topbar, .pager, .sheet { display: none !important; }
+      .js main > .hero, .js main > section, .js .screen, .js footer { display: block !important; }
+    }
+
+    /* ---------- 좌우 패널 (drawer) ---------- */
+    :root { --panel-l: clamp(240px, 18vw, 320px); --panel-r-min: 320px; --panel-r-max: 720px; --scrollbar: 16px; --drawer-l: 304px; --drawer-r: 360px; --fs-panel: 16px; --scrim: rgba(0, 0, 0, .4); }
+    body { height: 100vh; height: 100dvh; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+    .topbar-inner { max-width: none; padding: var(--s2) var(--s3); gap: var(--s2); }
+    .panel-toggle { display: inline-flex; align-items: center; gap: var(--s1); padding: 0 var(--s2); }
+    .panel-toggle svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-toggle .strip { fill: transparent; stroke: none; transition: fill 150ms ease-out; }
+    .panel-toggle[aria-expanded="true"] { color: var(--accent-ink); }
+    .panel-toggle[aria-expanded="true"] .strip { fill: currentColor; }
+    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+    .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .theme-toggle .i-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .i-sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .i-moon { display: none; }
+    }
+
+    .layout { display: grid; grid-template-columns: auto minmax(320px, 1fr) auto; min-height: 0; }
+    .content { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: var(--s4); }
+    .panel { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--bg); color: var(--ink); font-size: var(--fs-panel); line-height: 1.6; }
+    .panel-left { grid-column: 1; border-right: 1px solid var(--line); }
+    .content { grid-column: 2; }
+    .panel-right { grid-column: 3; border-left: 1px solid var(--line); }
+    .panel-inner { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--s4) var(--s4) var(--s6); }
+    .content::-webkit-scrollbar, .panel-inner::-webkit-scrollbar { width: 8px; }
+    .content::-webkit-scrollbar-track, .panel-inner::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb, .panel-inner::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--bg); }
+    .content::-webkit-scrollbar-thumb:hover, .panel-inner::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .content, .panel-inner { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .panel-resize { display: none; }
+    .panel-head { display: flex; align-items: center; gap: var(--s2); min-height: 44px; margin-bottom: var(--s2); }
+    .panel-head h2 { flex: 1 1 0; min-width: 0; margin: 0; font-size: var(--fs-lead); line-height: 1.4; }
+    .panel-sub { margin: 0 0 var(--s4); font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; }
+    .panel-empty { margin: 0; color: var(--ink-2); }
+    .panel-label { display: block; margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+
+    /* 진행 상태 */
+    .panel-meta { margin: 0 0 var(--s2); font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .panel-meta b { color: var(--ink); }
+    .progress { height: 4px; margin-bottom: var(--s3); border-radius: 2px; background: var(--line); overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+    .panel .toc-list a { margin: 0 calc(-1 * var(--s2)); padding: var(--s2); font-size: var(--fs-panel); }
+    .toc-mark { flex: none; display: block; width: 20px; height: 20px; color: var(--ink-2); }
+    .toc-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .toc-mark.is-done { color: var(--accent-ink); }
+
+    /* 복습문제: 원문 · 힌트 · 풀이 */
+    .aid details:last-of-type { border-bottom: 1px solid var(--line); }
+    .aid details.original > summary { font-size: var(--fs-panel); }
+    .solved-btn { display: flex; align-items: center; justify-content: center; gap: var(--s2); width: 100%; min-height: var(--tap); margin-top: var(--s5); padding: 0 var(--s4);
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--ink); font: 700 var(--fs-panel)/1.2 var(--font); cursor: pointer; }
+    .solved-btn svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .solved-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); }
+
+    /* 정리노트: 페이지 요약 */
+    .sum-lead { margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.6; }
+    .eq-list { list-style: none; margin: 0; padding: 0; }
+    .eq-list li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .eq-list li:first-child { padding-top: 0; }
+    .eq-name { display: block; font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .eq-list .katex-display { margin: var(--s1) 0 0; text-align: left; }
+    .eq-list .katex-display > .katex { text-align: left; }
+    .terms { margin: 0; }
+    .terms dt { font-size: var(--fs-panel); font-weight: 700; margin-top: var(--s4); }
+    .terms dt:first-child { margin-top: 0; }
+    .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
+    .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
+    .flow li { margin: var(--s2) 0; }
+    /* 요약 세 칸: 외울 규칙 · 이유 · 헷갈리지 마요 */
+    .sum-label { margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .sum > .sum-label:first-child { margin-top: 0; }
+    .sum-label-warn { color: var(--warn); }
+    .sum-rules { list-style: none; margin: 0; padding: 0; font-size: var(--fs-panel); line-height: 1.6; }
+    .sum-rules li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .sum-rules li:first-child { padding-top: 0; }
+    .sum-rules b { font-weight: 700; color: var(--ink); }
+    .sum-why { margin: 0; font-size: var(--fs-sub); line-height: 1.7; color: var(--ink-2); }
+    .sum-traps { margin: 0; padding: 0 0 0 var(--s3); list-style: none; border-left: 3px solid var(--warn); font-size: var(--fs-sub); line-height: 1.6; }
+    .sum-traps li + li { margin-top: var(--s2); }
+
+    @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
+
+    /* 넓은 화면: 본문 옆에 붙는 패널 */
+    @media (min-width: 1024px) {
+      .layout { --l: var(--panel-l-user, var(--panel-l)); }
+      .layout[data-left="closed"] { --l: 0px; }
+      .panel-left { width: var(--l); }
+      /* 기본값: 왼쪽 패널과 본문 폭을 뺀 나머지를 오른쪽 패널이 차지 → 본문 옆 빈 여백이 생기지 않는다 */
+      .panel-right { width: var(--panel-r-user, clamp(var(--panel-r-min), calc(100vw - var(--l) - var(--measure) - var(--scrollbar)), var(--panel-r-max))); }
+      .panel-resize { display: block; position: absolute; top: 0; bottom: 0; z-index: 2; width: 12px; padding: 0; border: 0; background: transparent; cursor: col-resize; touch-action: none; }
+      .panel-left .panel-resize { right: 0; }
+      .panel-right .panel-resize { left: 0; }
+      .panel-resize::after { content: ""; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); opacity: 0; transition: opacity 150ms ease-out; }
+      .panel-left .panel-resize::after { right: 0; }
+      .panel-right .panel-resize::after { left: 0; }
+      .panel-resize:focus-visible { outline: none; }
+      .panel-resize:focus-visible::after, .is-resizing .panel-resize:active::after { opacity: 1; }
+      @media (hover: hover) { .panel-resize:hover::after { opacity: 1; } }
+      body.is-resizing { cursor: col-resize; user-select: none; }
+      .layout[data-left="closed"] .panel-left, .layout[data-right="closed"] .panel-right { display: none; }
+      .panel.is-shown { animation: panel-fade var(--dur) var(--ease-out); }
+      .scrim, .panel-close { display: none; }
+    }
+    @keyframes panel-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 좁은 화면: 가장자리에서 밀려 나오는 drawer */
+    @media (max-width: 1023.98px) {
+      .panel { position: fixed; top: 0; bottom: 0; z-index: 40; visibility: hidden;
+        transition: transform var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .panel-left { left: 0; width: min(var(--drawer-l), 88vw); transform: translateX(-100%); }
+      .panel-right { right: 0; width: min(var(--drawer-r), 88vw); transform: translateX(100%); }
+      .panel.is-open { visibility: visible; transform: none; transition: transform var(--dur) var(--ease-out); }
+      .panel-inner { padding-top: calc(var(--s3) + env(safe-area-inset-top)); padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom)); }
+      .scrim { position: fixed; inset: 0; z-index: 35; background: var(--scrim); opacity: 0; visibility: hidden;
+        transition: opacity var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .scrim.is-on { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease-out); }
+      html:not(.js) .panel-left { display: none; }
+    }
+    @media (max-width: 480px) { .panel-toggle { padding: 0 var(--s1); } }
+    html:not(.js) .panel-toggle, html:not(.js) .panel-right, html:not(.js) .scrim { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .panel, .panel.is-open, .scrim, .scrim.is-on, .progress > span, .panel-toggle .strip { transition: none; }
+      .panel.is-shown { animation: none; }
+      .panel-resize::after { transition: none; }
+    }
+    @media print {
+      body { display: block; height: auto; overflow: visible; }
+      .layout { display: block; }
+      .content { overflow: visible; }
+      .panel, .scrim { display: none !important; }
+    }
+  </style>
+</head>
+<body data-problem-explanation="true" data-screens="article.topic" data-panels="note" data-range="logic-lab-08-problem-explanation">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="text-btn panel-toggle" id="toggle-left" type="button" aria-controls="panel-left" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="3" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span>목차</span></button>
+      <strong class="brand">문제 설명</strong>
+      <button class="text-btn theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드로 전환" title="다크 모드로 전환"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="text-btn panel-toggle" id="toggle-right" type="button" aria-controls="panel-right" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="15" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span>요약</span></button>
+    </div>
+    <div class="bar" aria-hidden="true"><span id="pager-bar"></span></div>
+  </header>
+  <div class="layout" data-left="open" data-right="closed">
+    <aside class="panel panel-left" id="panel-left" aria-labelledby="panel-left-title">
+      <div class="panel-resize" data-side="left" role="separator" aria-orientation="vertical" aria-controls="panel-left" aria-label="왼쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-left-title">목차</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#q-jk-toggle"><span class="toc-title">문제 1 · JK F/F를 Toggle로 쓰는 네 핀 값</span></a></li><li><a href="#q-jk-toggle-3pin"><span class="toc-title">문제 2 · J, K, CLR로 Toggle 만들기</span></a></li><li><a href="#q-async-char"><span class="toc-title">문제 3 · 비동기식 카운터의 특징</span></a></li><li><a href="#q-xbit-ymod"><span class="toc-title">문제 4 · T F/F 3단 블록도의 동작</span></a></li><li><a href="#q-ripple-wave"><span class="toc-title">문제 5 · 74HC76 비동기 회로의 A·B 파형</span></a></li><li><a href="#q-ripple-mod"><span class="toc-title">문제 6 · 비동기 회로는 몇 진 카운터인가요</span></a></li><li><a href="#q-and-gates"><span class="toc-title">문제 7 · 4단 2진 카운터를 AND로 확인하기</span></a></li><li><a href="#q-mod5-pins-graded"><span class="toc-title">문제 8 · 5진 카운터의 최소 출력핀</span></a></li><li><a href="#q-mod5-pins"><span class="toc-title">문제 9 · 5진 카운터 출력핀 (확인용 단서)</span></a></li><li><a href="#q-sync-improve"><span class="toc-title">문제 10 · 동기식이 보완한 점</span></a></li><li><a href="#q-async-sync-compare"><span class="toc-title">문제 11 · 비동기식과 동기식 설명·보완점</span></a></li><li><a href="#q-sync-wave"><span class="toc-title">문제 12 · 74HC76 동기 회로의 A·B 파형</span></a></li><li><a href="#q-mod-and-double"><span class="toc-title">문제 13 · 몇 진인지와 2배 진수로 바꾸는 법</span></a></li><li><a href="#q-7447"><span class="toc-title">문제 14 · 7447 입력 0101의 핀 출력</span></a></li><li><a href="#q-qp-e08-tf-01"><span class="toc-title">문제 15 · 둘째 단이 바뀌는 순간</span></a></li><li><a href="#q-qp-e08-tf-02"><span class="toc-title">문제 16 · 단 수와 상태 수</span></a></li><li><a href="#q-qp-e08-tf-03"><span class="toc-title">문제 17 · R0로 0에 고정</span></a></li><li><a href="#q-qp-e08-tf-04"><span class="toc-title">문제 18 · LT 입력의 동작</span></a></li><li><a href="#q-qp-e08-blank-01"><span class="toc-title">문제 19 · 켜지는 출력 찾기</span></a></li><li><a href="#q-qp-e08-blank-02"><span class="toc-title">문제 20 · 7490의 두 연결</span></a></li><li><a href="#q-qp-e08-blank-03"><span class="toc-title">문제 21 · 입력 0011의 표시</span></a></li><li><a href="#q-qp-e08-board-01"><span class="toc-title">문제 22 · 출력 3의 AND를 작도해요</span></a></li><li><a href="#q-qp-e08-short-01"><span class="toc-title">문제 23 · 가짜 상태가 생기는 이유</span></a></li><li><a href="#q-qp-e08-short-02"><span class="toc-title">문제 24 · L일 때 켜지는 이유</span></a></li></ol></nav>
+      </div>
+    </aside>
+    <div class="content">
+  <main>
+    <div class="hero">
+      <h1>실험 8 · 문제 설명</h1>
+      <p>첫 줄부터 완성 답과 검산까지 함께 풀어요.</p>
+    </div>
+<section id="learning"><h2>문제를 함께 풀어요</h2><article class="topic" id="q-jk-toggle"><h3>문제 1 · JK F/F를 Toggle로 쓰는 네 핀 값</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>JK F/F의 Clock이 Falling Edge일 때 출력(Q)이 Toggle로 동작하기 위한 PR, CLR, J, K핀의 입력값을 적으시오.</p><h4>구할 것</h4><p>PR, CLR, J, K 네 핀의 값</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>JK 플립플롭의 네 입력을 어떻게 두면 하강 엣지마다 Q가 뒤집히는지 묻는 문제예요. 전등 스위치처럼 누를 때마다 바뀌게 만드는 값을 찾아요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">Toggle은 J=K=1, 강제 핀은 쉬게</p><p>“Toggle”이라는 말이 단서예요. Toggle은 유효 엣지마다 이전 Q를 뒤집는 동작이에요. 이 말을 보면 JK 표의 J=K=1 줄을 떠올려요.</p><p>PR은 Q를 1로, CLR은 Q를 0으로 만드는 비동기 입력이에요. 74HC76에서는 L일 때 눌려요. 이름 위 줄이나 핀의 동그라미가 그 표시예요.</p><p>J=K=1 규칙은 PR=CLR=1이고 입력이 엣지 주변에서 안정될 때만 성립해요. 그래서 이 문제는 J, K만이 아니라 PR, CLR까지 함께 답해야 해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>먼저 “PR=1, CLR=1이면 강제 버튼이 쉬어요”라고 적어요.</p><p><a href="실험08_실험설명.html#t-toggle">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>강제 버튼:</strong></p><p>PR=0이면 Q가 1로, CLR=0이면 Q가 0으로 고정돼요. 그러면 클럭이 와도 뒤집히지 않아요. 그래서 둘 다 1로 둬요.</p><p><strong>JK 줄 고르기:</strong></p><p>J=K=0은 유지, J만 1은 Set, K만 1은 Reset이에요. 반전은 J=K=1 한 줄뿐이에요.</p><p><strong>정리:</strong></p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-jk-toggle/explanation/0" data-layout-mode="text" style="--layout-min:15.800rem"><colgroup data-layout-cols=""><col style="width:3.500rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">조건</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">핀</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">값</th><th data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left" scope="col">이유</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">PR</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left">강제 Set 쉼</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">CLR</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left">강제 Reset 쉼</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">J</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left">J=K=1이어야 반전</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">K</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left">J=K=1이어야 반전</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: PR=1, CLR=1, J=1, K=1 (네 핀 모두 High)</p><p>검산: Q이전=0이면 J·Q′+K′·Q = 1·1+0·0 = 1, Q이전=1이면 1·0+0·1 = 0이에요. 두 경우 모두 반전이에요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>J, K만 적고 PR, CLR을 빠뜨리면 조건이 모자라요. 또 74HC76의 PR·CLR은 L일 때 눌리므로 “쉬는 값”이 0이라고 적으면 틀려요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>강제 핀이 쉬는 값을 적어요.</li><li>JK 표에서 반전 줄을 찾아요.</li><li>식 Q다음=J·Q′+K′·Q로 두 경우를 검산해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> Toggle은 J=K=1, 강제 핀은 쉬게</p><p data-summary="recall">“Toggle”이라는 말이 단서예요. Toggle은 유효 엣지마다 이전 Q를 뒤집는 동작이에요. 이 말을 보면 JK 표의 J=K=1 줄을 떠올려요.</p><p>첫 실행: 먼저 “PR=1, CLR=1이면 강제 버튼이 쉬어요”라고 적어요.</p><p>핵심: 강제 핀은 1로 쉬게 하고 J=K=1을 줘요.</p><p>결론: PR=1, CLR=1, J=1, K=1 (네 핀 모두 High)</p><p>검산: Q이전=0이면 J·Q′+K′·Q = 1·1+0·0 = 1, Q이전=1이면 1·0+0·1 = 0이에요. 두 경우 모두 반전이에요.</p><p>주의: J, K만 적고 PR, CLR을 빠뜨리면 조건이 모자라요. 또 74HC76의 PR·CLR은 L일 때 눌리므로 “쉬는 값”이 0이라고 적으면 틀려요.</p></div></article><article class="topic" id="q-jk-toggle-3pin"><h3>문제 2 · J, K, CLR로 Toggle 만들기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>JK F/F의 출력 Q가 Toggle로 동작하기 위한 J, K, CLR핀의 입력값을 적으시오.</p><h4>구할 것</h4><p>J, K, CLR 세 핀의 값</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>앞 문제와 같은 Toggle 조건을 세 핀만 골라 묻는 문제예요. 답은 세 값이지만, 묻지 않은 PR도 쉬고 있어야 해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">J=K=1, CLR=1, PR도 쉬는 상태</p><p>“Toggle”과 “J, K, CLR”이 단서예요. JK 표의 반전 줄과 CLR의 쉬는 값을 떠올려요.</p><p>CLR은 74HC76에서 L일 때 Q를 0으로 만드는 입력이에요. 1을 주면 쉬어요.</p><p>문제가 PR을 묻지 않았어도 PR=1이어야 성립해요. PR=0이면 Q가 1에 묶여서 뒤집히지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“J=1, K=1, CLR=1”이라고 적고, 옆에 “PR=1 전제”를 덧붙여요.</p><p><a href="실험08_실험설명.html#t-toggle">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>값 고르기:</strong></p><p>J=K=1이 반전 줄이고, CLR은 쉬게 1로 둬요. 물어본 순서대로 적으면 1, 1, 1이에요.</p><p><strong>전제 밝히기:</strong></p><p>클럭이 하강 엣지로 들어오고 PR=1일 때 성립해요. 원문은 엣지 방향과 PR을 적지 않았어요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: J=1, K=1, CLR=1 (PR도 1이어야 해요)</p><p>검산: CLR=0이면 Q=0으로 고정이라 반전이 안 돼요. 그래서 CLR=1이 꼭 필요해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>세 값을 1, 1, 1로 적고 끝내도 답은 맞아요. 다만 PR=0이면 성립하지 않는다는 점을 알아 두어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>JK 표에서 반전 줄을 찾아요.</li><li>CLR의 쉬는 값을 적어요.</li><li>묻지 않은 PR의 전제를 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> J=K=1, CLR=1, PR도 쉬는 상태</p><p data-summary="recall">“Toggle”과 “J, K, CLR”이 단서예요. JK 표의 반전 줄과 CLR의 쉬는 값을 떠올려요.</p><p>첫 실행: “J=1, K=1, CLR=1”이라고 적고, 옆에 “PR=1 전제”를 덧붙여요.</p><p>핵심: 물어보지 않은 PR도 1이어야 해요.</p><p>결론: J=1, K=1, CLR=1 (PR도 1이어야 해요)</p><p>검산: CLR=0이면 Q=0으로 고정이라 반전이 안 돼요. 그래서 CLR=1이 꼭 필요해요.</p><p>주의: 세 값을 1, 1, 1로 적고 끝내도 답은 맞아요. 다만 PR=0이면 성립하지 않는다는 점을 알아 두어요.</p></div></article><article class="topic" id="q-async-char"><h3>문제 3 · 비동기식 카운터의 특징</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>비동기식 카운터의 특징을 간략하게 적으시오.</p><h4>구할 것</h4><p>비동기식의 특징</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>비동기식이라는 이름이 왜 붙었는지 짧게 쓰는 문제예요. 클럭 연결과 그 결과를 함께 써요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">클럭 연결 → 차례로 변함 → 지연</p><p>“비동기식”이 단서예요. 동기는 같은 시각에 맞춘다는 뜻이니, 비동기는 F/F들이 같은 시각에 바뀌지 않는다는 뜻이에요.</p><p>교안 정의는 “이전 F/F의 출력이 다음 F/F의 클럭으로 전달되어 순차적으로 동작하며, 전송 지연이 발생하는 구조”예요.</p><p>전달 지연은 입력이 바뀐 뒤 출력이 바뀌기까지 걸리는 시간이에요. 앞 단이 바뀐 뒤 다음 단이 움직이니 단마다 쌓여요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“첫 F/F에만 외부 클럭이 들어가요”로 시작해요.</p><p><a href="실험08_실험설명.html#t-async">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>연결:</strong></p><p>외부 클럭은 첫 F/F에만 들어가요. 둘째 F/F부터는 앞 F/F의 출력을 클럭으로 받아요.</p><p><strong>결과:</strong></p><p>그래서 F/F들이 동시에 바뀌지 않고 앞에서부터 차례로 바뀌어요. 지연이 단마다 쌓여서 뒤 단일수록 늦어요.</p><p><strong>보충:</strong></p><p>회로가 단순한 대신 11→00처럼 여러 비트가 바뀔 때 01 같은 가짜 상태를 잠깐 지나요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 첫 F/F만 외부 클럭을 받고 다음 F/F는 앞 F/F의 출력을 클럭으로 받아요. 그래서 F/F가 동시에 바뀌지 않고 차례로 바뀌며 전달 지연이 단마다 쌓여요.</p><p>검산: 2단 2진에서 11→00을 따라가 봐요. A가 먼저 0이 되어 01이 되고, 그 뒤 B가 0이 되어 00이 돼요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>“앞의 결과에 영향을 받는다”만 쓰면 동기 카운터의 되먹임도 해당돼요. 클럭이 앞 단 출력에서 온다는 점을 꼭 써요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>클럭이 어디로 들어가는지 적어요.</li><li>바뀌는 순서를 적어요.</li><li>지연이 쌓이는 이유를 한 문장으로 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 클럭 연결 → 차례로 변함 → 지연</p><p data-summary="recall">“비동기식”이 단서예요. 동기는 같은 시각에 맞춘다는 뜻이니, 비동기는 F/F들이 같은 시각에 바뀌지 않는다는 뜻이에요.</p><p>첫 실행: “첫 F/F에만 외부 클럭이 들어가요”로 시작해요.</p><p>핵심: 클럭 연결과 차례로 바뀐다는 결과를 함께 써요.</p><p>결론: 첫 F/F만 외부 클럭을 받고 다음 F/F는 앞 F/F의 출력을 클럭으로 받아요. 그래서 F/F가 동시에 바뀌지 않고 차례로 바뀌며 전달 지연이 단마다 쌓여요.</p><p>검산: 2단 2진에서 11→00을 따라가 봐요. A가 먼저 0이 되어 01이 되고, 그 뒤 B가 0이 되어 00이 돼요.</p><p>주의: “앞의 결과에 영향을 받는다”만 쓰면 동기 카운터의 되먹임도 해당돼요. 클럭이 앞 단 출력에서 온다는 점을 꼭 써요.</p></div></article><article class="topic" id="q-xbit-ymod"><h3>문제 4 · T F/F 3단 블록도의 동작</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>아래의 카운터가 어떻게 동작하는지 간략하게 적으시오. (X단 Y진 카운터, 출력값의 변화순서와 범위)</p><h4>주어진 조건</h4><p>원문에는 블록 C 안의 출력 라벨도 B, B′로 인쇄돼 있어요. 위로 뽑힌 선의 이름은 C예요.</p><h4>구할 것</h4><p>X, Y, 출력값의 변화 순서와 범위</p><figure class="figure"><img src=".pack/figures/questions/xbit-given.png" alt="T F/F 3단 블록도의 동작 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>블록도를 보고 몇 단 몇 진인지, 값이 어떤 순서로 어디까지 가는지 쓰는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">단 수 세고 상태 수 2ⁿ, 앞 출력이 클럭</p><p>T 블록이 줄지어 있고 앞 출력이 다음 T로 들어가는 것이 단서예요. 비동기 카운터를 떠올려요.</p><p>X단은 F/F 개수이고, 2진 F/F를 n단 이으면 상태는 2ⁿ개예요. 교안의 “2단 2진 = 0-3 Counter”와 같은 이름 방식이에요.</p><p>블록도에 엣지 방향이 없어요. 교안 p5처럼 하강 엣지로 보면 A가 낮은 자리인 올라가는 카운터가 돼요. 상승 엣지면 내려가는 순서가 되므로 조건을 적어요.</p><p>Reset 선이 세 블록에 공통이라서 시작을 000으로 맞출 수 있어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“T 블록 3개 → 3단, 2³=8상태”라고 적어요.</p><p><a href="실험08_실험설명.html#t-toggle">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>이름:</strong></p><p>T 블록이 3개이니 3단이고, 각 단이 2진이에요. 그래서 3단 2진 카운터, 전체 상태는 8개예요.</p><p><strong>변화 순서:</strong></p><p>Reset 뒤 CBA=000이에요. 하강 엣지 기준이면 A는 CLK마다, B는 A가 떨어질 때, C는 B가 떨어질 때 뒤집혀요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-xbit-ymod/explanation/0" data-layout-mode="compact" style="--layout-min:11.850rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.750rem"><col style="width:3.000rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="2">출력</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">CLK 하강</th><th data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left" scope="col">C B A</th><th data-layout-kind="signal" data-layout-role="output" scope="col">값</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">시작</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">000</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">001</td><td data-layout-kind="signal" data-layout-role="output">1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">010</td><td data-layout-kind="signal" data-layout-role="output">2</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">011</td><td data-layout-kind="signal" data-layout-role="output">3</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">100</td><td data-layout-kind="signal" data-layout-role="output">4</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">101</td><td data-layout-kind="signal" data-layout-role="output">5</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">110</td><td data-layout-kind="signal" data-layout-role="output">6</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">111</td><td data-layout-kind="signal" data-layout-role="output">7</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">000</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr></tbody></table></div></div><p><strong>비동기:</strong></p><p>CLK에 의해 A가 먼저 바뀌고, 그 결과로 B, 다시 C가 바뀌어요. 그래서 비동기식이에요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 3단 2진 비동기 카운터예요. 상태는 8개(0~7)이고, Reset 뒤 CBA가 000→001→…→111→000으로 반복해요. A, B, C가 차례로 바뀌어요. (교안처럼 하강 엣지 기준)</p><p>검산: A는 CLK 1번마다, B는 2번마다, C는 4번마다 바뀌어 전체가 8번에 돌아와요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>“3단 3진”이나 “2진”으로만 쓰지 않아요. 단 수와 상태 수를 함께 써요. 원문 블록 C의 B, B′ 라벨은 인쇄 그대로이고 C 출력으로 읽어요. 상승 엣지로 동작하면 순서가 000→111→110…로 바뀌어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>T 블록 수를 세요.</li><li>2ⁿ으로 상태 수를 구해요.</li><li>하강 엣지 조건을 밝히고 순서를 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 단 수 세고 상태 수 2ⁿ, 앞 출력이 클럭</p><p data-summary="recall">T 블록이 줄지어 있고 앞 출력이 다음 T로 들어가는 것이 단서예요. 비동기 카운터를 떠올려요.</p><p>첫 실행: “T 블록 3개 → 3단, 2³=8상태”라고 적어요.</p><p>핵심: 3단 2진, 8상태, 0~7, 비동기 순서를 함께 써요.</p><p>결론: 3단 2진 비동기 카운터예요. 상태는 8개(0~7)이고, Reset 뒤 CBA가 000→001→…→111→000으로 반복해요. A, B, C가 차례로 바뀌어요. (교안처럼 하강 엣지 기준)</p><p>검산: A는 CLK 1번마다, B는 2번마다, C는 4번마다 바뀌어 전체가 8번에 돌아와요.</p><p>주의: “3단 3진”이나 “2진”으로만 쓰지 않아요. 단 수와 상태 수를 함께 써요. 원문 블록 C의 B, B′ 라벨은 인쇄 그대로이고 C 출력으로 읽어요. 상승 엣지로 동작하면 순서가 000→111→110…로 바뀌어요.</p></div></article><article class="topic" id="q-ripple-wave"><h3>문제 5 · 74HC76 비동기 회로의 A·B 파형</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>아래의 카운터 회로를 보고 A,B핀의 출력파형을 Clock에 맞추어 그리시오 (4점)</p><h4>주어진 조건</h4><p>회로는 원문 사진을 다시 그린 그림이에요. 사진에서 일부 핀 번호가 흐려도 배선은 교안 실험 1 회로와 같아요.</p><div class="work-board"><img src=".pack/figures/questions/ripple-blank.png" alt="A, B 파형 답란과 6주기 Clock"></div><h4>구할 것</h4><p>Clock에 맞춘 A, B 파형</p><figure class="figure"><img src=".pack/figures/questions/ripple-given.png" alt="74HC76 비동기 회로의 A·B 파형 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>회로를 보고 A와 B의 파형을 Clock 아래에 그리는 문제예요. 어느 순간에 무엇이 뒤집히는지 찾으면 돼요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">하강 엣지에 세로선, A 먼저 B는 A 하강</p><p>둘째 단 CLK(6번)가 A(15번)에 연결된 것이 단서예요. 비동기 카운터를 떠올려요.</p><p>네 J·K와 PR·CL이 모두 VCC라서 두 F/F는 Toggle만 해요. PR·CL이 쉬고 J=K=1일 때의 규칙이에요.</p><p>74HC76 CLK의 동그라미는 하강 엣지를 뜻해요. 그래서 A는 Clock이 1→0일 때, B는 A가 1→0일 때 뒤집혀요.</p><p>원문에 시작값이 없어요. 초기화 입력도 없어서 시작은 AB=00이라고 가정을 밝혀요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>Clock의 하강 엣지마다 세로 점선을 긋고, 시작 AB=00 가정을 적어요.</p><p><a href="실험08_실험설명.html#t-async">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>A 그리기:</strong></p><p>세로선마다 A를 뒤집어요. 첫 하강에서 0→1이에요.</p><p><strong>B 그리기:</strong></p><p>A가 1→0으로 떨어지는 세로선에서만 B를 뒤집어요. 2번, 4번, 6번 하강이에요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-ripple-wave/explanation/0" data-layout-mode="compact" style="--layout-min:22.000rem"><colgroup data-layout-cols=""><col style="width:8.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:3.500rem"><col style="width:3.000rem"><col style="width:7.500rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="3">출력</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">CLK 하강</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left" scope="col">A</th><th data-layout-kind="signal" data-layout-role="output" scope="col">B</th><th data-layout-kind="bus" data-layout-role="output" scope="col">AB (A부터)</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">시작(가정)</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">00</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">10</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">1</td><td data-layout-kind="bus" data-layout-role="output">01</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="output">1</td><td data-layout-kind="bus" data-layout-role="output">11</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">00</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">10</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">1</td><td data-layout-kind="bus" data-layout-role="output">01</td></tr></tbody></table></div></div><p><strong>완성 파형:</strong></p><figure class="figure"><img src=".pack/figures/solutions/ripple-solution.png" width="500" alt="Clock, A, B 완성 파형"></figure></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: A는 Clock 하강마다 반전(주기 2배), B는 A 하강마다 반전(주기 4배). 시작 AB=00 가정에서 하강마다 10→01→11→00→10→01이에요.</p><p>검산: A의 주기가 Clock의 2배, B의 주기가 Clock의 4배인지 봐요. 6번째 하강 뒤 AB=01로, 원문 답란 끝에서 B가 1인 것도 맞아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>B를 Clock에 맞춰 뒤집으면 틀려요. 상승 엣지에서 바꿔도 틀려요. 원문 답란의 끝 막대는 눈금일 뿐이라 끝값으로 읽지 않아요. 시작값은 가정이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>하강 엣지마다 세로선을 그어요.</li><li>A를 뒤집어요.</li><li>A가 떨어지는 곳에서만 B를 뒤집어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 하강 엣지에 세로선, A 먼저 B는 A 하강</p><p data-summary="recall">둘째 단 CLK(6번)가 A(15번)에 연결된 것이 단서예요. 비동기 카운터를 떠올려요.</p><p>첫 실행: Clock의 하강 엣지마다 세로 점선을 긋고, 시작 AB=00 가정을 적어요.</p><p>핵심: A는 Clock 하강, B는 A 하강이에요.</p><p>결론: A는 Clock 하강마다 반전(주기 2배), B는 A 하강마다 반전(주기 4배). 시작 AB=00 가정에서 하강마다 10→01→11→00→10→01이에요.</p><p>검산: A의 주기가 Clock의 2배, B의 주기가 Clock의 4배인지 봐요. 6번째 하강 뒤 AB=01로, 원문 답란 끝에서 B가 1인 것도 맞아요.</p><p>주의: B를 Clock에 맞춰 뒤집으면 틀려요. 상승 엣지에서 바꿔도 틀려요. 원문 답란의 끝 막대는 눈금일 뿐이라 끝값으로 읽지 않아요. 시작값은 가정이에요.</p></div></article><article class="topic" id="q-ripple-mod"><h3>문제 6 · 비동기 회로는 몇 진 카운터인가요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>위 문제의 회로는 몇진 카운터인지 적으시오.</p><h4>주어진 조건</h4><p>‘위 문제의 회로’는 Quiz 4번의 74HC76 회로예요. 이 문제지 5번 문항의 비동기 회로와 같아요. 첫 단 J(4)·K(16)·PR(2)·CL(3)과 둘째 단 J(9)·K(12)·PR(7)·CL(8)은 VCC, 첫 단 CLK(1)는 Clock Generator(+5V, 1Hz), 둘째 단 CLK(6)는 첫 단 Q(15, A)에 연결돼요.</p><h4>구할 것</h4><p>몇 진 카운터인지</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>회로가 몇 개의 상태를 돌고 나서 처음으로 돌아오는지 세는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">상태를 세요: 2ⁿ, 이름은 2단 2진</p><p>“몇진”이 단서예요. 한 사이클의 서로 다른 상태 수 N을 세면 N진이에요.</p><p>이 회로는 앞 파형 문제와 같은 비동기 2단이에요. 되먹임이 없어서 2²=4상태를 모두 돌아요.</p><p>교안은 같은 회로를 “2단 2진 Counter … 0-3 Counter”라고 불러요. “2진”은 한 단을 뜻해서 전체 상태 수와 달라요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>AB를 00, 10, 01, 11로 적고 개수를 세요.</p><p><a href="실험08_실험설명.html#t-toggle">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>상태 세기:</strong></p><p>앞 문제 추적표처럼 00→10→01→11→00으로 돌아요. 상태는 4개예요.</p><p><strong>이름 맞추기:</strong></p><p>상태 수로 말하면 4진(mod-4)이에요. 교안 이름으로는 2단 2진 카운터예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 상태가 네 개(AB=00, 10, 01, 11)라서 4진(0~3)이에요. 교안 이름으로는 2단 2진 카운터예요. 제공 답 ‘2진 카운터’는 이 이름을 줄인 표현으로 보여요.</p><p>검산: B의 주기가 Clock의 4배라서 네 번째 하강에서 처음으로 돌아와요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌: 원문 제공 답은 ‘2진 카운터’이고, 상태 수는 4개예요. 답안에는 “4상태(0~3), 2단 2진”을 함께 적어 어느 표현을 원해도 뜻이 통하게 해요. 출제자가 어느 표현을 정답으로 봤는지는 확인하지 못했어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>되먹임이 있는지 봐요.</li><li>상태를 세요.</li><li>상태 수와 교안 이름을 함께 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 상태를 세요: 2ⁿ, 이름은 2단 2진</p><p data-summary="recall">“몇진”이 단서예요. 한 사이클의 서로 다른 상태 수 N을 세면 N진이에요.</p><p>첫 실행: AB를 00, 10, 01, 11로 적고 개수를 세요.</p><p>핵심: 상태 수 4와 이름 2단 2진을 함께 적어요.</p><p>결론: 상태가 네 개(AB=00, 10, 01, 11)라서 4진(0~3)이에요. 교안 이름으로는 2단 2진 카운터예요. 제공 답 ‘2진 카운터’는 이 이름을 줄인 표현으로 보여요.</p><p>검산: B의 주기가 Clock의 4배라서 네 번째 하강에서 처음으로 돌아와요.</p><p>주의: 답안 충돌: 원문 제공 답은 ‘2진 카운터’이고, 상태 수는 4개예요. 답안에는 “4상태(0~3), 2단 2진”을 함께 적어 어느 표현을 원해도 뜻이 통하게 해요. 출제자가 어느 표현을 정답으로 봤는지는 확인하지 못했어요.</p></div></article><article class="topic" id="q-and-gates"><h3>문제 7 · 4단 2진 카운터를 AND로 확인하기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>4단 2진 카운터의 결과를 AND 게이트로만 확인하려면 몇 개의 AND 게이트가 필요한지 이유와 답을 적으시오.</p><h4>구할 것</h4><p>필요한 AND 개수와 이유</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>각 상태가 왔는지 불빛으로 확인하려면 AND가 몇 개 필요한지 세는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">상태 하나에 AND 하나, 2ⁿ개</p><p>“AND 게이트로만 확인”이 단서예요. 교안 실험 1의 디코더를 떠올려요. 2단 2진 4상태에 AND 4개를 썼어요.</p><p>AND는 입력이 모두 1일 때만 1이에요. Q와 Q′ 중 알맞은 쪽을 네 입력에 넣으면 한 상태에서만 1이 돼요.</p><p>여기서는 입력이 4개인 AND 하나로 한 상태를 찾는다고 봐요. 두 입력 AND만 쓴다면 개수가 달라져요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“4단 2진 → 2⁴=16상태”라고 적어요.</p><p><a href="실험08_실험설명.html#t-decode">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>상태 수:</strong></p><p>4단 2진 카운터의 상태는 2⁴=16개예요.</p><p><strong>AND 수:</strong></p><p>상태마다 출력 하나가 켜지려면 AND가 상태 수만큼 필요해요. 그래서 16개예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 16개예요. 4단 2진은 상태가 2⁴=16개이고, 상태마다 4입력 AND 하나로 그 상태에서만 1을 내요.</p><p>검산: 실험 1에 대입해 봐요. 2단이면 2²=4개로 교안의 네 AND와 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>단 수 4를 그대로 답으로 쓰지 않아요. “4입력 AND 기준”이라는 조건을 함께 적어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>상태 수를 구해요.</li><li>상태 하나에 AND 하나를 대응해요.</li><li>2단에 대입해 검산해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 상태 하나에 AND 하나, 2ⁿ개</p><p data-summary="recall">“AND 게이트로만 확인”이 단서예요. 교안 실험 1의 디코더를 떠올려요. 2단 2진 4상태에 AND 4개를 썼어요.</p><p>첫 실행: “4단 2진 → 2⁴=16상태”라고 적어요.</p><p>핵심: 상태 수만큼 AND가 필요해요.</p><p>결론: 16개예요. 4단 2진은 상태가 2⁴=16개이고, 상태마다 4입력 AND 하나로 그 상태에서만 1을 내요.</p><p>검산: 실험 1에 대입해 봐요. 2단이면 2²=4개로 교안의 네 AND와 같아요.</p><p>주의: 단 수 4를 그대로 답으로 쓰지 않아요. “4입력 AND 기준”이라는 조건을 함께 적어요.</p></div></article><article class="topic" id="q-mod5-pins-graded"><h3>문제 8 · 5진 카운터의 최소 출력핀</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>5진카운터를 만들기 위한 최소한의 출력핀의 개수와 이유를 적으시오 (3점)</p><h4>구할 것</h4><p>최소 출력핀 개수와 이유</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>다섯 상태를 서로 다르게 나타내려면 출력 선이 최소 몇 개 있어야 하는지 묻는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">2ᵏ ≥ 상태 수인 최소 k</p><p>“최소한의 출력핀”이 단서예요. 핀 하나는 0·1 두 값이니 k개면 2ᵏ가지를 구분해요.</p><p>상태 N개를 구분하려면 2ᵏ≥N인 가장 작은 k가 필요해요. 5상태면 2²=4는 모자라고 2³=8은 충분해요.</p><p>이 식은 이진수로 상태를 적을 때의 값이에요. 쓰고 남는 코드 101, 110, 111은 사용하지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“2²=4<5, 2³=8≥5”라고 적어요.</p><p><a href="실험08_실험설명.html#t-decode">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>k 구하기:</strong></p><p>2²=4는 5보다 작고 2³=8은 5 이상이에요. 그래서 k=3이에요.</p><p><strong>예시:</strong></p><p>다섯 상태를 000, 001, 010, 011, 100으로 적을 수 있어요. 출력핀 3개면 충분해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 3개예요. 상태 5개를 구분하려면 2ᵏ≥5인 최소 k=3비트가 필요해요. 예: 000, 001, 010, 011, 100.</p><p>검산: 핀 2개로는 00, 01, 10, 11 네 가지뿐이라 다섯째 상태를 적을 수 없어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>채점본 손글씨 답(부분 판독)은 3개이고 다른 자료의 비슷한 문제 답은 5개예요. 다음 문항에서 왜 갈리는지 봐요. 이 문항은 단서가 없어서 3개로 풀었어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>상태 수를 적어요.</li><li>2ᵏ을 키워 가며 최소 k를 찾아요.</li><li>코드 예를 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 2ᵏ ≥ 상태 수인 최소 k</p><p data-summary="recall">“최소한의 출력핀”이 단서예요. 핀 하나는 0·1 두 값이니 k개면 2ᵏ가지를 구분해요.</p><p>첫 실행: “2²=4<5, 2³=8≥5”라고 적어요.</p><p>핵심: 5상태는 2³=8≥5라서 3비트예요.</p><p>결론: 3개예요. 상태 5개를 구분하려면 2ᵏ≥5인 최소 k=3비트가 필요해요. 예: 000, 001, 010, 011, 100.</p><p>검산: 핀 2개로는 00, 01, 10, 11 네 가지뿐이라 다섯째 상태를 적을 수 없어요.</p><p>주의: 채점본 손글씨 답(부분 판독)은 3개이고 다른 자료의 비슷한 문제 답은 5개예요. 다음 문항에서 왜 갈리는지 봐요. 이 문항은 단서가 없어서 3개로 풀었어요.</p></div></article><article class="topic" id="q-mod5-pins"><h3>문제 9 · 5진 카운터 출력핀 (확인용 단서)</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>5진 카운터를 만들기 위한 최소한의 출력핀의 개수와 이유를 적으시오. (출력을 확인하기 위한 최소한의 핀의 개수)</p><h4>구할 것</h4><p>최소 출력핀 개수와 이유</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>앞 문항과 거의 같은데 괄호 단서가 붙었어요. 단서를 어떻게 읽느냐에 따라 세는 대상이 달라져요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">이진 Q면 3개, 상태별 출력이면 5개</p><p>괄호의 “출력을 확인하기 위한”이 단서예요. 실험 1처럼 상태마다 출력 하나가 켜지게 확인하는 그림을 떠올릴 수 있어요.</p><p>이진 Q 출력 수는 2ᵏ≥N에서 나와요. 상태별 출력 선 수는 상태 수 N 그대로예요.</p><p>둘 다 맞는 계산이지만 세는 대상이 달라요. 그래서 답안에 어떤 출력을 세는지 밝혀야 해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“Q 출력이면 3개, 상태별 출력이면 5개”로 두 경우를 나눠 적어요.</p><p><a href="실험08_실험설명.html#t-decode">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>경우 1: Q 출력:</strong></p><p>이진수로 상태를 읽는다면 앞 문항처럼 3개면 돼요.</p><p><strong>경우 2: 상태별 출력:</strong></p><p>실험 1처럼 AND로 상태마다 불을 켜서 확인한다면 다섯 상태에 출력 다섯 개가 필요해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 무엇을 세는지에 따라 달라요. 이진 Q 출력으로 읽으면 3개, 상태마다 불을 하나씩 켜는 디코딩 출력이면 5개예요. 문구 “출력을 확인하기 위한”을 후자로 읽으면 제공 답 5개와 같아요.</p><p>검산: 2단 2진에 대입해 봐요. Q 출력은 2개, 교안의 디코더 출력은 4개예요. 같은 방식으로 5상태는 3개와 5개예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌: 예상 세트의 제공 답은 5개이고, 채점본 손글씨 답은 3개예요. 괄호 단서를 어떻게 읽었는지가 다른 것으로 보이며, 출제자의 의도는 확인하지 못했어요. 두 경우를 나눠 써요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>세는 대상을 먼저 정해요.</li><li>Q 출력은 2ᵏ≥N으로 구해요.</li><li>상태별 출력은 N개로 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 이진 Q면 3개, 상태별 출력이면 5개</p><p data-summary="recall">괄호의 “출력을 확인하기 위한”이 단서예요. 실험 1처럼 상태마다 출력 하나가 켜지게 확인하는 그림을 떠올릴 수 있어요.</p><p>첫 실행: “Q 출력이면 3개, 상태별 출력이면 5개”로 두 경우를 나눠 적어요.</p><p>핵심: 세는 대상을 밝히고 3개와 5개를 구분해요.</p><p>결론: 무엇을 세는지에 따라 달라요. 이진 Q 출력으로 읽으면 3개, 상태마다 불을 하나씩 켜는 디코딩 출력이면 5개예요. 문구 “출력을 확인하기 위한”을 후자로 읽으면 제공 답 5개와 같아요.</p><p>검산: 2단 2진에 대입해 봐요. Q 출력은 2개, 교안의 디코더 출력은 4개예요. 같은 방식으로 5상태는 3개와 5개예요.</p><p>주의: 답안 충돌: 예상 세트의 제공 답은 5개이고, 채점본 손글씨 답은 3개예요. 괄호 단서를 어떻게 읽었는지가 다른 것으로 보이며, 출제자의 의도는 확인하지 못했어요. 두 경우를 나눠 써요.</p></div></article><article class="topic" id="q-sync-improve"><h3>문제 10 · 동기식이 보완한 점</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>동기식 카운터가 비동기식 카운터의 어떤 점을 보완한 것인지 적으시오.</p><h4>구할 것</h4><p>동기식이 보완한 점</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>비동기식의 어떤 문제를 동기식이 고쳤는지 쓰는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">공통 클럭 → 지연 누적 제거</p><p>“보완”이 단서예요. 비동기식의 약점인 전달 지연을 먼저 떠올려요.</p><p>교안 정의: 동기식은 “모든 F/F에 동일한 클럭 펄스가 동시에 입력되는 구조”예요.</p><p>같은 클럭을 받으면 앞 단을 기다리지 않아요. F/F 하나의 지연은 남지만 단마다 쌓이지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“비동기식은 지연이 단마다 쌓여요”로 시작해요.</p><p><a href="실험08_실험설명.html#t-sync">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>문제:</strong></p><p>비동기식은 앞 단이 바뀐 뒤 다음 단이 움직여서 지연이 쌓이고, 가짜 상태를 잠깐 지나요.</p><p><strong>해결:</strong></p><p>동기식은 모든 F/F가 같은 클럭 엣지에서 함께 바뀌어요. 지연이 쌓이지 않아 더 빠른 클럭에 쓰기 좋아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 모든 F/F에 같은 클럭을 넣어 동시에 바뀌게 해요. 그래서 비동기식에서 단마다 쌓이던 전달(전파) 지연을 없애요.</p><p>검산: AB가 11에서 00으로 갈 때를 비교해요. 비동기는 01을 지나고, 공통 클럭이면 두 F/F가 같은 엣지에서 바뀌어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>“지연이 0”이라고 쓰지 않아요. F/F마다의 지연은 있어요. 없어지는 것은 단마다 쌓이는 지연이에요. 제공 답의 “없다”도 이 뜻으로 읽어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>비동기식의 약점을 적어요.</li><li>공통 클럭을 적어요.</li><li>쌓이는 지연이 없어진다고 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 공통 클럭 → 지연 누적 제거</p><p data-summary="recall">“보완”이 단서예요. 비동기식의 약점인 전달 지연을 먼저 떠올려요.</p><p>첫 실행: “비동기식은 지연이 단마다 쌓여요”로 시작해요.</p><p>핵심: 공통 클럭으로 지연 누적을 없애요.</p><p>결론: 모든 F/F에 같은 클럭을 넣어 동시에 바뀌게 해요. 그래서 비동기식에서 단마다 쌓이던 전달(전파) 지연을 없애요.</p><p>검산: AB가 11에서 00으로 갈 때를 비교해요. 비동기는 01을 지나고, 공통 클럭이면 두 F/F가 같은 엣지에서 바뀌어요.</p><p>주의: “지연이 0”이라고 쓰지 않아요. F/F마다의 지연은 있어요. 없어지는 것은 단마다 쌓이는 지연이에요. 제공 답의 “없다”도 이 뜻으로 읽어요.</p></div></article><article class="topic" id="q-async-sync-compare"><h3>문제 11 · 비동기식과 동기식 설명·보완점</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>비동기식 카운터와 동기식 카운터에 대해서 설명하고 동기식 카운터가 비동기식 카운터의 어떤점을 보완한 것인지 적으시오 (3점)</p><h4>구할 것</h4><p>두 방식의 설명과 보완점</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>두 방식을 각각 설명하고 차이에서 보완점을 끌어내는 문제예요. 세 문장이면 돼요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">클럭 연결 두 문장 + 보완점 한 문장</p><p>“대해서 설명하고 … 보완”이 단서예요. 두 정의와 하나의 결론을 모두 써야 해요.</p><p>비동기: 이전 F/F 출력이 다음 F/F 클럭. 동기: 모든 F/F에 동일한 클럭. 교안 p4의 두 정의예요.</p><p>두 정의의 차이는 클럭이 어디서 오는지예요. 그 차이가 지연이 쌓이는지를 정해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>“비동기식은 앞 F/F의 출력이 다음 F/F의 클럭이에요”로 시작해요.</p><p><a href="실험08_실험설명.html#t-sync">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>비동기식:</strong></p><p>첫 F/F만 외부 클럭을 받고 나머지는 앞 F/F의 출력을 클럭으로 받아요. 차례로 바뀌며 지연이 쌓여요.</p><p><strong>동기식:</strong></p><p>모든 F/F의 CLK가 같은 클럭에 묶여 동시에 바뀌어요.</p><p><strong>보완점:</strong></p><p>비동기식의 쌓이는 전달 지연 문제를 없앴어요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 비동기식: 앞 F/F의 출력이 다음 F/F의 클럭이라 차례로 바뀌고 전달 지연이 쌓여요. 동기식: 모든 F/F가 같은 클럭으로 동시에 바뀌어요. 동기식은 쌓이는 전달 지연 문제를 보완했어요.</p><p>검산: 세 요소(비동기 설명, 동기 설명, 보완점)가 다 있는지 세어 봐요. 채점본 손글씨 답도 같은 세 줄 구성이에요(부분 판독).</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>보완점만 쓰면 3점짜리 문제의 앞 두 요소가 빠져요. 동기식의 장단점을 길게 나열할 필요는 없어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>비동기식을 클럭 연결로 적어요.</li><li>동기식을 클럭 연결로 적어요.</li><li>보완점을 한 문장으로 적어요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 클럭 연결 두 문장 + 보완점 한 문장</p><p data-summary="recall">“대해서 설명하고 … 보완”이 단서예요. 두 정의와 하나의 결론을 모두 써야 해요.</p><p>첫 실행: “비동기식은 앞 F/F의 출력이 다음 F/F의 클럭이에요”로 시작해요.</p><p>핵심: 정의 두 개와 보완점 하나를 모두 써요.</p><p>결론: 비동기식: 앞 F/F의 출력이 다음 F/F의 클럭이라 차례로 바뀌고 전달 지연이 쌓여요. 동기식: 모든 F/F가 같은 클럭으로 동시에 바뀌어요. 동기식은 쌓이는 전달 지연 문제를 보완했어요.</p><p>검산: 세 요소(비동기 설명, 동기 설명, 보완점)가 다 있는지 세어 봐요. 채점본 손글씨 답도 같은 세 줄 구성이에요(부분 판독).</p><p>주의: 보완점만 쓰면 3점짜리 문제의 앞 두 요소가 빠져요. 동기식의 장단점을 길게 나열할 필요는 없어요.</p></div></article><article class="topic" id="q-sync-wave"><h3>문제 12 · 74HC76 동기 회로의 A·B 파형</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>아래의 카운터 회로를 보고 A, B핀의 출력파형을 Clock에 맞추어 그리시오.</p><h4>주어진 조건</h4><div class="work-board"><img src=".pack/figures/questions/sync-blank.png" alt="A, B 파형 답란과 6주기 Clock"></div><h4>구할 것</h4><p>Clock에 맞춘 A, B 파형</p><figure class="figure"><img src=".pack/figures/questions/sync-given.png" alt="74HC76 동기 회로의 A·B 파형 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>동기 회로의 A, B 파형을 그리는 문제예요. 지금 상태로 J, K를 구하고 다음 상태를 계산해요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">공통 CLK: J·K 먼저, 다음 상태표로</p><p>두 CLK가 같은 Clock Generator에 연결된 것이 단서예요. 동기 회로이니 다음 상태표를 떠올려요.</p><p>회로에서 J1(4번)은 B′(10번), J2(9번)는 A(15번), K1·K2와 PR·CL은 VCC예요. K가 1이니 J=1이면 반전, J=0이면 0이 돼요.</p><p>모든 값은 엣지 직전 상태로 계산하고 하강 엣지에서 함께 바뀌어요. 74HC76 CLK의 동그라미가 하강 엣지 표시예요.</p><p>시작값이 없고 초기화 입력도 없어서 AB=00을 가정으로 밝혀요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>AB=00에서 J1=B′=1, J2=A=0을 적어요.</p><p><a href="실험08_실험설명.html#t-sync">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>다음 상태 계산:</strong></p><p>AB=00이면 J1=1이라 A 반전, J2=0이라 B=0이에요. 다음은 10이에요. 이어서 10→01, 01→00이에요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-sync-wave/explanation/0" data-layout-mode="compact" style="--layout-min:34.000rem"><colgroup data-layout-cols=""><col style="width:8.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.750rem"><col style="width:4.750rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.750rem"><col style="width:4.250rem"><col style="width:7.500rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="2">중간</th><th scope="colgroup" colspan="3">출력</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">CLK 하강</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left" scope="col">J1=B′</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right" scope="col">J2=A</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left" scope="col">다음 A</th><th data-layout-kind="signal" data-layout-role="output" scope="col">다음 B</th><th data-layout-kind="bus" data-layout-role="output" scope="col">AB (A부터)</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">시작(가정)</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">—</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">—</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">00</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">10</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">1</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">1</td><td data-layout-kind="bus" data-layout-role="output">01</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">00</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">10</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">1</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">1</td><td data-layout-kind="bus" data-layout-role="output">01</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="output">0</td><td data-layout-kind="bus" data-layout-role="output">00</td></tr></tbody></table></div></div><p><strong>완성 파형:</strong></p><figure class="figure"><img src=".pack/figures/solutions/sync-wave.png" width="500" alt="Clock, A, B 완성 파형"></figure></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 시작 AB=00 가정에서 Clock 하강마다 10→01→00을 반복해요. A는 1번·4번 하강 뒤 한 주기 동안 1, B는 2번·5번 하강 뒤 한 주기 동안 1이에요.</p><p>검산: 세 번째 하강마다 00으로 돌아와 주기가 Clock의 3배예요. AB=11이 한 번도 나오지 않아요. 11에서 시작해도 다음은 00이에요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>B를 A의 하강에 맞춰 그리면 비동기 회로로 착각한 거예요. 공통 클럭이라 두 출력은 같은 엣지에서 바뀌어요. 시작값은 가정이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>공통 CLK인지 확인해요.</li><li>J1, J2를 지금 상태로 구해요.</li><li>다음 상태를 표로 이어 가요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 공통 CLK: J·K 먼저, 다음 상태표로</p><p data-summary="recall">두 CLK가 같은 Clock Generator에 연결된 것이 단서예요. 동기 회로이니 다음 상태표를 떠올려요.</p><p>첫 실행: AB=00에서 J1=B′=1, J2=A=0을 적어요.</p><p>핵심: 00→10→01 세 상태를 공통 하강 엣지에서 돌아요.</p><p>결론: 시작 AB=00 가정에서 Clock 하강마다 10→01→00을 반복해요. A는 1번·4번 하강 뒤 한 주기 동안 1, B는 2번·5번 하강 뒤 한 주기 동안 1이에요.</p><p>검산: 세 번째 하강마다 00으로 돌아와 주기가 Clock의 3배예요. AB=11이 한 번도 나오지 않아요. 11에서 시작해도 다음은 00이에요.</p><p>주의: B를 A의 하강에 맞춰 그리면 비동기 회로로 착각한 거예요. 공통 클럭이라 두 출력은 같은 엣지에서 바뀌어요. 시작값은 가정이에요.</p></div></article><article class="topic" id="q-mod-and-double"><h3>문제 13 · 몇 진인지와 2배 진수로 바꾸는 법</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>위 3번 문제에 주어진 회로는 몇진 카운터인지 적으시오. 만약에 ‘X’진 카운터라면 회로의 수정 없이 ‘2*X’(2배)진 카운터로 바꾸고 싶으면 어떻게 하면 되는지 적으시오.</p><h4>주어진 조건</h4><p>원문의 ‘위 3번 문제에 주어진 회로’는 앞의 74HC76 동기 회로예요. 아래 그림이 그 회로예요.</p><h4>구할 것</h4><p>몇 진인지와 2배로 바꾸는 방법</p><figure class="figure"><img src=".pack/figures/questions/sync-given-2.png" alt="몇 진인지와 2배 진수로 바꾸는 법 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>앞 회로가 몇 진인지 세고, 회로를 고치지 않고 두 배로 늘리는 방법을 찾는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">상태 수 세고 2ⁿ 한계부터 확인</p><p>“몇진”이 단서예요. 다음 상태표로 고리에 든 상태를 세요.</p><p>“2*X진”이 둘째 단서예요. n개의 F/F는 상태를 최대 2ⁿ개 가져요. 6상태에는 2²=4는 모자라고 F/F가 3개 필요해요.</p><p>카운터를 이으면 상태 수가 곱해져요. 앞 카운터가 한 바퀴 돌 때 뒤 F/F가 한 번 뒤집히면 3×2=6이에요. 7490의 2×5=10과 같은 원리예요.</p><p>“회로의 수정 없이”는 기존 배선을 바꾸지 않는다는 뜻으로 읽었어요. F/F를 하나도 더하지 않는다는 뜻이면 불가능해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>다음 상태표를 써서 00→10→01→00, 세 상태를 찾아요.</p><p><a href="실험08_실험설명.html#t-sync">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>몇 진:</strong></p><p>앞 문제 추적처럼 00→10→01→00이에요. 상태 3개라서 3진이고, 공통 클럭이라 동기식이에요.</p><p><strong>6진의 조건:</strong></p><p>F/F 2개의 상태는 최대 4개예요. 그래서 기존 두 F/F의 배선만 바꿔서는 6진이 될 수 없어요.</p><p><strong>방법:</strong></p><p>기존 3진 회로는 그대로 두고 J=K=1인 T F/F를 하나 더해요. 새 F/F의 클럭에 B를 넣으면 B가 떨어질 때(세 번째 하강마다) 뒤집혀요.</p><figure class="figure"><img src=".pack/figures/solutions/mod6.png" width="320" alt="3진 회로 뒤에 T F/F를 붙인 블록도"></figure><p><strong>6상태 확인:</strong></p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-mod-and-double/explanation/0" data-layout-mode="compact" style="--layout-min:11.600rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.500rem"><col style="width:3.000rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="2">출력</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">CLK 하강</th><th data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left" scope="col">A B</th><th data-layout-kind="signal" data-layout-role="output" scope="col">C</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">시작</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">00</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">10</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">01</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">00</td><td data-layout-kind="signal" data-layout-role="output">1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">10</td><td data-layout-kind="signal" data-layout-role="output">1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">01</td><td data-layout-kind="signal" data-layout-role="output">1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">00</td><td data-layout-kind="signal" data-layout-role="output">0</td></tr></tbody></table></div></div></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 3진 동기 카운터예요. 2배인 6진은 F/F 2개로 만들 수 없어요(2²=4<6). 기존 회로를 그대로 두고 T F/F 하나를 뒤에 붙여 3×2=6상태로 만들어요. (제공 답안이 갈려 출제 의도는 미확정)</p><p>검산: ABC가 000, 100, 010, 001, 101, 011 여섯 상태를 돌고 6번째 하강에서 000으로 돌아와요. 파이썬 상태 전이로도 같은 결과를 확인했어요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌: 3진이라는 점은 대부분 같지만(한 자료는 답 머리에 ‘3진’, 뒤에 ‘4진’을 함께 적었어요) 2배 방법은 ‘출력단자를 입력단자에 엇갈려 결합’, ‘AND 6개 사용’, ‘링을 존슨으로’, ‘플립플롭을 하나 더 단다’로 갈려요. 앞의 세 답은 F/F 2개 그대로라 2²=4를 넘을 수 없고, AND는 상태를 읽을 뿐 늘리지 않아요. ‘하나 더 단다’가 계산과 맞지만 출제자의 정답은 확인하지 못했어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>다음 상태표로 상태를 세요.</li><li>2ⁿ 한계로 F/F 수를 정해요.</li><li>카운터를 이어 상태 수를 곱해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 상태 수 세고 2ⁿ 한계부터 확인</p><p data-summary="recall">“몇진”이 단서예요. 다음 상태표로 고리에 든 상태를 세요.</p><p>첫 실행: 다음 상태표를 써서 00→10→01→00, 세 상태를 찾아요.</p><p>핵심: F/F 2개로는 6상태가 안 되니 F/F를 하나 이어요.</p><p>결론: 3진 동기 카운터예요. 2배인 6진은 F/F 2개로 만들 수 없어요(2²=4<6). 기존 회로를 그대로 두고 T F/F 하나를 뒤에 붙여 3×2=6상태로 만들어요. (제공 답안이 갈려 출제 의도는 미확정)</p><p>검산: ABC가 000, 100, 010, 001, 101, 011 여섯 상태를 돌고 6번째 하강에서 000으로 돌아와요. 파이썬 상태 전이로도 같은 결과를 확인했어요.</p><p>주의: 답안 충돌: 3진이라는 점은 대부분 같지만(한 자료는 답 머리에 ‘3진’, 뒤에 ‘4진’을 함께 적었어요) 2배 방법은 ‘출력단자를 입력단자에 엇갈려 결합’, ‘AND 6개 사용’, ‘링을 존슨으로’, ‘플립플롭을 하나 더 단다’로 갈려요. 앞의 세 답은 F/F 2개 그대로라 2²=4를 넘을 수 없고, AND는 상태를 읽을 뿐 늘리지 않아요. ‘하나 더 단다’가 계산과 맞지만 출제자의 정답은 확인하지 못했어요.</p></div></article><article class="topic" id="q-7447"><h3>문제 14 · 7447 입력 0101의 핀 출력</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>아래의 왼쪽은 BCD-TO-SEVEN-SEGMENT DECODERS/DRIVERS 이고 오른쪽은 7-Segment이다. ‘ A = H, B = L, C= H, D = L, 3~5번핀은 H ’로 입력되었을 때 9~15번 핀으로 나오는 출력을 적으시오.</p><h4>주어진 조건</h4><p>원문 그림의 핀 배치를 옮긴 표예요. 16번 라벨은 원문에서 잘려 인쇄됐어요. 원문은 칩 번호 없이 “BCD-TO-SEVEN-SEGMENT DECODERS/DRIVERS”라고만 적어요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-7447/conditions/0" data-layout-mode="text" style="--layout-min:24.600rem"><colgroup data-layout-cols=""><col style="width:3.500rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.800rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><colgroup data-layout-cols=""><col style="width:4.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">핀</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right" scope="col">이름</th><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right" scope="col">핀</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">이름</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">B</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">16</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">VCC</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">C</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">15</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">f</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">LT(윗줄)</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">14</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">g</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">BI/RBO(윗줄)</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">13</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">a</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">RBI(윗줄)</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">12</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">b</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">D</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">11</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">c</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">A</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">10</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">d</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">GND</td><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-left major-right">9</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">e</td></tr></tbody></table></div></div><h4>구할 것</h4><p>핀 9~15의 출력</p><figure class="figure"><img src=".pack/figures/questions/pin7447-given.png" alt="7447 입력 0101의 핀 출력 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>입력 네 비트가 어떤 숫자인지 찾고, 그 숫자의 세그먼트마다 핀 출력을 적는 문제예요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">DCBA로 숫자, 켜짐은 L, 핀 표로 옮기기</p><p>“BCD-TO-SEVEN-SEGMENT”와 핀 배치가 단서예요. 교안 7447을 떠올려요.</p><p>입력은 D가 높은 자리이고 A가 낮은 자리예요. A=H, B=L, C=H, D=L은 D C B A=0101, 숫자 5예요.</p><p>3~5번 핀 위 줄은 L일 때 눌린다는 뜻이에요. 교안 표는 “0: On, 1: Off”예요. H이니 세 제어 기능은 쉬고 정상 표시를 해요.</p><p>7447 출력은 켤 때 L이에요. 교안 p12처럼 Common Anode 표시기의 전류를 끌어당겨 켜기 때문이에요.</p><p>이 판단은 칩이 7447일 때 성립해요. 원문에 칩 번호가 없어서 교안 실험의 7447로 풀었어요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>D C B A=0101, 숫자 5라고 적어요.</p><p><a href="실험08_실험설명.html#t-7447">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>숫자와 세그먼트:</strong></p><p>0101은 5이고 교안 p15에서 acdfg가 켜져요. b, e는 꺼져요.</p><p><strong>핀으로 옮기기:</strong></p><p>켜지는 세그먼트는 L, 꺼지는 세그먼트는 H로 적어요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-7447/explanation/0" data-layout-mode="text" style="--layout-min:26.200rem"><colgroup data-layout-cols=""><col style="width:3.500rem"></colgroup><colgroup data-layout-cols=""><col style="width:7.200rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.800rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><colgroup data-layout-cols=""><col style="width:6.700rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">설명</th><th scope="colgroup" colspan="1">출력</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">핀</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">세그먼트</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right" scope="col">숫자 5</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left" scope="col">출력</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">13</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">a</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">켜짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">L</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">12</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">b</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">꺼짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">H</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">11</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">c</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">켜짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">L</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">10</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">d</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">켜짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">L</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">9</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">e</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">꺼짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">H</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">15</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">f</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">켜짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">L</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">14</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">g</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left major-right">켜짐</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">L</td></tr></tbody></table></div></div><figure class="figure"><img src=".pack/figures/solutions/seven5-solution.png" width="200" alt="숫자 5에서 켜지는 세그먼트"></figure></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 7447 기준 13:L, 12:H, 11:L, 10:L, 9:H, 14:L, 15:L이에요(숫자 5, a·c·d·f·g 켜짐).</p><p>검산: L인 핀이 다섯 개이고 켜지는 세그먼트 수 5와 같아요. b와 e 두 핀만 H예요. a~g 일곱 칸을 모두 적었는지도 세어 봐요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>답안 충돌: 자료마다 H·L이 정반대예요. L 계열(13:L 12:H …)과 H 계열(13:H 12:L …)이 있고, 한 자료는 ‘답이 틀린거 같음’이라고 손글씨를 달았으며 다른 자료는 숫자 5만 적었어요. 교안 7447·Common Anode 회로에서는 L 계열이 맞아요. H 계열은 켤 때 H를 내는 칩의 극성이에요. 원문에 칩 번호가 없어 이 조건을 답에 함께 적어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>DCBA 순서로 숫자를 찾아요.</li><li>켜지는 세그먼트를 적어요.</li><li>켜짐 L, 꺼짐 H로 핀에 옮겨요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> DCBA로 숫자, 켜짐은 L, 핀 표로 옮기기</p><p data-summary="recall">“BCD-TO-SEVEN-SEGMENT”와 핀 배치가 단서예요. 교안 7447을 떠올려요.</p><p>첫 실행: D C B A=0101, 숫자 5라고 적어요.</p><p>핵심: 숫자 5, 켜지는 a·c·d·f·g는 L이에요.</p><p>결론: 7447 기준 13:L, 12:H, 11:L, 10:L, 9:H, 14:L, 15:L이에요(숫자 5, a·c·d·f·g 켜짐).</p><p>검산: L인 핀이 다섯 개이고 켜지는 세그먼트 수 5와 같아요. b와 e 두 핀만 H예요. a~g 일곱 칸을 모두 적었는지도 세어 봐요.</p><p>주의: 답안 충돌: 자료마다 H·L이 정반대예요. L 계열(13:L 12:H …)과 H 계열(13:H 12:L …)이 있고, 한 자료는 ‘답이 틀린거 같음’이라고 손글씨를 달았으며 다른 자료는 숫자 5만 적었어요. 교안 7447·Common Anode 회로에서는 L 계열이 맞아요. H 계열은 켤 때 H를 내는 칩의 극성이에요. 원문에 칩 번호가 없어 이 조건을 답에 함께 적어요.</p></div></article><article class="topic" id="q-qp-e08-tf-01"><h3>문제 15 · 둘째 단이 바뀌는 순간</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>A가 0에서 1로 올라갈 때 B가 뒤집힌다. T/F</p><h4>주어진 조건</h4><p>교안 실험 1의 74HC76 비동기 2단 카운터예요. J=K=1, PR=CL=1이에요.</p><h4>구할 것</h4><p>참(T)·거짓(F) 판정</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>둘째 단이 바뀌는 순간: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">교안의 Falling Edge 조건을 대입해요</p><p>“둘째 단이 바뀌는 순간”에 쓰인 조건이 단서예요. FFB는 A의 하강 엣지에 Trigger돼요. A가 1에서 0으로 떨어질 때 B가 뒤집혀요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>A의 변화 방향을 먼저 적어요.</p><p><a href="실험08_실험설명.html#t-async">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>판정 근거:</strong></p><p>FFB는 A의 하강 엣지에 Trigger돼요. A가 1에서 0으로 떨어질 때 B가 뒤집혀요.</p><p><strong>문장 확인:</strong></p><p>“A가 바뀔 때마다”가 아니라 “A가 떨어질 때”예요.</p><p>AB=00에서 CLK 하강 1번이면 A만 올라가 10이고, B는 그대로예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: F</p><p>검산: AB=00에서 CLK 하강 1번이면 A만 올라가 10이고, B는 그대로예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>“A가 바뀔 때마다”가 아니라 “A가 떨어질 때”예요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>A의 변화 방향을 먼저 적어요.</li><li>AB=00에서 CLK 하강 1번이면 A만 올라가 10이고, B는 그대로예요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 교안의 Falling Edge 조건을 대입해요</p><p data-summary="recall">“둘째 단이 바뀌는 순간”에 쓰인 조건이 단서예요. FFB는 A의 하강 엣지에 Trigger돼요. A가 1에서 0으로 떨어질 때 B가 뒤집혀요.</p><p>첫 실행: A의 변화 방향을 먼저 적어요.</p><p>핵심: 교안의 Falling Edge 조건을 대입해요</p><p>결론: F</p><p>검산: AB=00에서 CLK 하강 1번이면 A만 올라가 10이고, B는 그대로예요.</p><p>주의: “A가 바뀔 때마다”가 아니라 “A가 떨어질 때”예요.</p></div></article><article class="topic" id="q-qp-e08-tf-02"><h3>문제 16 · 단 수와 상태 수</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>n단 2진 카운터의 상태 수는 2ⁿ개이다. T/F</p><h4>주어진 조건</h4><p>되먹임 없이 T F/F를 n단 이은 카운터예요.</p><h4>구할 것</h4><p>참(T)·거짓(F) 판정</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>단 수와 상태 수: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">작은 n을 넣어 조건을 확인해요</p><p>“단 수와 상태 수”에 쓰인 조건이 단서예요. 단을 하나 이을 때마다 상태 수가 2배가 돼요. 교안의 2단 2진도 4상태(0-3 Counter)예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>n=2를 넣어 4상태를 확인해요.</p><p><a href="실험08_실험설명.html#t-toggle">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>판정 근거:</strong></p><p>단을 하나 이을 때마다 상태 수가 2배가 돼요. 교안의 2단 2진도 4상태(0-3 Counter)예요.</p><p><strong>문장 확인:</strong></p><p>되먹임이 있으면 성립하지 않아요. p10의 3진 회로는 F/F 2개로 3상태예요.</p><p>n=2면 4, n=3이면 8로 앞 문제와 같아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: T</p><p>검산: n=2면 4, n=3이면 8로 앞 문제와 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>되먹임이 있으면 성립하지 않아요. p10의 3진 회로는 F/F 2개로 3상태예요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>n=2를 넣어 4상태를 확인해요.</li><li>n=2면 4, n=3이면 8로 앞 문제와 같아요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 작은 n을 넣어 조건을 확인해요</p><p data-summary="recall">“단 수와 상태 수”에 쓰인 조건이 단서예요. 단을 하나 이을 때마다 상태 수가 2배가 돼요. 교안의 2단 2진도 4상태(0-3 Counter)예요.</p><p>첫 실행: n=2를 넣어 4상태를 확인해요.</p><p>핵심: 작은 n을 넣어 조건을 확인해요</p><p>결론: T</p><p>검산: n=2면 4, n=3이면 8로 앞 문제와 같아요.</p><p>주의: 되먹임이 있으면 성립하지 않아요. p10의 3진 회로는 F/F 2개로 3상태예요.</p></div></article><article class="topic" id="q-qp-e08-tf-03"><h3>문제 17 · R0로 0에 고정</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>이때 클럭이 들어와도 출력은 QD QC QB QA = L L L L을 유지한다. T/F</p><h4>주어진 조건</h4><p>7490에서 R0(1)=R0(2)=H, R9(1)=R9(2)=L이에요.</p><h4>구할 것</h4><p>참(T)·거짓(F) 판정</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>R0로 0에 고정: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">Reset 표에서 같은 줄을 찾아요</p><p>“R0로 0에 고정”에 쓰인 조건이 단서예요. 교안 Reset 표 첫째 줄이에요. R0 두 핀이 H이고 R9 중 L이 있으면 출력은 L L L L이에요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>R0, R9 값을 표 줄과 맞춰요.</p><p><a href="실험08_실험설명.html#t-7490">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>판정 근거:</strong></p><p>교안 Reset 표 첫째 줄이에요. R0 두 핀이 H이고 R9 중 L이 있으면 출력은 L L L L이에요.</p><p><strong>문장 확인:</strong></p><p>R0 하나만 H이면 COUNT 줄이에요. 두 핀 모두 H여야 해요.</p><p>표의 COUNT 줄은 R0 중 L이 있을 때만 나와요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: T</p><p>검산: 표의 COUNT 줄은 R0 중 L이 있을 때만 나와요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>R0 하나만 H이면 COUNT 줄이에요. 두 핀 모두 H여야 해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>R0, R9 값을 표 줄과 맞춰요.</li><li>표의 COUNT 줄은 R0 중 L이 있을 때만 나와요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> Reset 표에서 같은 줄을 찾아요</p><p data-summary="recall">“R0로 0에 고정”에 쓰인 조건이 단서예요. 교안 Reset 표 첫째 줄이에요. R0 두 핀이 H이고 R9 중 L이 있으면 출력은 L L L L이에요.</p><p>첫 실행: R0, R9 값을 표 줄과 맞춰요.</p><p>핵심: Reset 표에서 같은 줄을 찾아요</p><p>결론: T</p><p>검산: 표의 COUNT 줄은 R0 중 L이 있을 때만 나와요.</p><p>주의: R0 하나만 H이면 COUNT 줄이에요. 두 핀 모두 H여야 해요.</p></div></article><article class="topic" id="q-qp-e08-tf-04"><h3>문제 18 · LT 입력의 동작</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>LT에 L을 주면 모든 세그먼트가 꺼진다. T/F</p><h4>주어진 조건</h4><p>교안 7447 Control Pins 표는 “0: On, 1: Off”예요.</p><h4>구할 것</h4><p>참(T)·거짓(F) 판정</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>LT 입력의 동작: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">LT와 BI의 동작을 구분해요</p><p>“LT 입력의 동작”에 쓰인 조건이 단서예요. LT는 Lamp-Test로, 켜면(L) 모든 세그먼트가 ON이에요. 모두 끄는 것은 BI예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>LT=L이면 버튼이 눌린다고 적어요.</p><p><a href="실험08_실험설명.html#t-7447">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>판정 근거:</strong></p><p>LT는 Lamp-Test로, 켜면(L) 모든 세그먼트가 ON이에요. 모두 끄는 것은 BI예요.</p><p><strong>문장 확인:</strong></p><p>L을 준다는 말이 “끈다”는 뜻이 아니에요. 버튼이 눌린다는 뜻이에요.</p><p>표의 LT 줄은 ON, BI 줄은 OFF예요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: F</p><p>검산: 표의 LT 줄은 ON, BI 줄은 OFF예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>L을 준다는 말이 “끈다”는 뜻이 아니에요. 버튼이 눌린다는 뜻이에요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>LT=L이면 버튼이 눌린다고 적어요.</li><li>표의 LT 줄은 ON, BI 줄은 OFF예요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> LT와 BI의 동작을 구분해요</p><p data-summary="recall">“LT 입력의 동작”에 쓰인 조건이 단서예요. LT는 Lamp-Test로, 켜면(L) 모든 세그먼트가 ON이에요. 모두 끄는 것은 BI예요.</p><p>첫 실행: LT=L이면 버튼이 눌린다고 적어요.</p><p>핵심: LT와 BI의 동작을 구분해요</p><p>결론: F</p><p>검산: 표의 LT 줄은 ON, BI 줄은 OFF예요.</p><p>주의: L을 준다는 말이 “끈다”는 뜻이 아니에요. 버튼이 눌린다는 뜻이에요.</p></div></article><article class="topic" id="q-qp-e08-blank-01"><h3>문제 19 · 켜지는 출력 찾기</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>이때 입력이 모두 1인 AND는 ① ( )이고, 켜지는 출력 번호는 ② ( )예요.</p><h4>주어진 조건</h4><p>교안 실험 1 디코더예요. A를 앞에 적어 AB=01이에요. 즉 A=0, B=1이에요.</p><h4>구할 것</h4><p>빈칸의 값</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>켜지는 출력 찾기: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">A가 낮은 자리임을 먼저 정해요</p><p>“켜지는 출력 찾기”에 쓰인 조건이 단서예요. A=0이니 A′=1, B=1이니 A′·B가 1이에요. 교안의 세 번째 AND, 출력 2예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>A=0이면 A′=1이라고 적어요.</p><p><a href="실험08_실험설명.html#t-decode">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>빈칸별 근거:</strong></p><p>A=0이니 A′=1, B=1이니 A′·B가 1이에요. 교안의 세 번째 AND, 출력 2예요.</p><p>값으로 보면 A가 낮은 자리라 AB=01은 1×2+0=2예요.</p><p>AB=01을 값 1로 읽지 않아요. A′B, BA′처럼 순서가 다른 표현도 인정해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: ① A′·B, ② 2</p><p>검산: 값으로 보면 A가 낮은 자리라 AB=01은 1×2+0=2예요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>AB=01을 값 1로 읽지 않아요. A′B, BA′처럼 순서가 다른 표현도 인정해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>A=0이면 A′=1이라고 적어요.</li><li>값으로 보면 A가 낮은 자리라 AB=01은 1×2+0=2예요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> A가 낮은 자리임을 먼저 정해요</p><p data-summary="recall">“켜지는 출력 찾기”에 쓰인 조건이 단서예요. A=0이니 A′=1, B=1이니 A′·B가 1이에요. 교안의 세 번째 AND, 출력 2예요.</p><p>첫 실행: A=0이면 A′=1이라고 적어요.</p><p>핵심: A가 낮은 자리임을 먼저 정해요</p><p>결론: ① A′·B, ② 2</p><p>검산: 값으로 보면 A가 낮은 자리라 AB=01은 1×2+0=2예요.</p><p>주의: AB=01을 값 1로 읽지 않아요. A′B, BA′처럼 순서가 다른 표현도 인정해요.</p></div></article><article class="topic" id="q-qp-e08-blank-02"><h3>문제 20 · 7490의 두 연결</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>클럭은 ① ( )번 핀(INPUT A)에 넣고, QA인 ② ( )번 핀을 ③ ( )번 핀(INPUT B)에 연결해요.</p><h4>주어진 조건</h4><p>교안 p11처럼 7490을 0~9 카운터로 써요.</p><h4>구할 것</h4><p>빈칸의 값</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>7490의 두 연결: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">2진 단 → 5진 단 순서로 따라가요</p><p>“7490의 두 연결”에 쓰인 조건이 단서예요. INPUT A가 2진 단의 입력이고 QA 12번이 5진 단의 입력 INPUT B 1번으로 들어가요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>클럭이 들어가는 14번부터 적어요.</p><p><a href="실험08_실험설명.html#t-7490">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>빈칸별 근거:</strong></p><p>INPUT A가 2진 단의 입력이고 QA 12번이 5진 단의 입력 INPUT B 1번으로 들어가요.</p><p>p6 핀맵과 p11 회로의 번호가 같아요.</p><p>번호 순서를 바꾸지 않아요. 핀 이름만 쓴 답은 번호로 바꿔 적어요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: ① 14, ② 12, ③ 1</p><p>검산: p6 핀맵과 p11 회로의 번호가 같아요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>번호 순서를 바꾸지 않아요. 핀 이름만 쓴 답은 번호로 바꿔 적어요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>클럭이 들어가는 14번부터 적어요.</li><li>p6 핀맵과 p11 회로의 번호가 같아요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 2진 단 → 5진 단 순서로 따라가요</p><p data-summary="recall">“7490의 두 연결”에 쓰인 조건이 단서예요. INPUT A가 2진 단의 입력이고 QA 12번이 5진 단의 입력 INPUT B 1번으로 들어가요.</p><p>첫 실행: 클럭이 들어가는 14번부터 적어요.</p><p>핵심: 2진 단 → 5진 단 순서로 따라가요</p><p>결론: ① 14, ② 12, ③ 1</p><p>검산: p6 핀맵과 p11 회로의 번호가 같아요.</p><p>주의: 번호 순서를 바꾸지 않아요. 핀 이름만 쓴 답은 번호로 바꿔 적어요.</p></div></article><article class="topic" id="q-qp-e08-blank-03"><h3>문제 21 · 입력 0011의 표시</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>표시되는 숫자는 ① ( )이고, 켜지는 세그먼트는 ② ( )예요.</p><h4>주어진 조건</h4><p>7447 제어 핀은 모두 H이고 입력 D C B A=0011이에요.</p><h4>구할 것</h4><p>빈칸의 값</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>입력 0011의 표시: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">D C B A 순서로 값을 읽어요</p><p>“입력 0011의 표시”에 쓰인 조건이 단서예요. 0011은 2+1=3이고 교안 p15 표에서 abcdg예요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>0011=3이라고 적어요.</p><p><a href="실험08_실험설명.html#t-7447">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>빈칸별 근거:</strong></p><p>0011은 2+1=3이고 교안 p15 표에서 abcdg예요.</p><p>e, f만 꺼져 있어요. 7개 중 5개가 켜져요.</p><p>세그먼트 순서가 달라도 같은 집합이면 인정해요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: ① 3, ② abcdg</p><p>검산: e, f만 꺼져 있어요. 7개 중 5개가 켜져요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>세그먼트 순서가 달라도 같은 집합이면 인정해요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>0011=3이라고 적어요.</li><li>e, f만 꺼져 있어요. 7개 중 5개가 켜져요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> D C B A 순서로 값을 읽어요</p><p data-summary="recall">“입력 0011의 표시”에 쓰인 조건이 단서예요. 0011은 2+1=3이고 교안 p15 표에서 abcdg예요.</p><p>첫 실행: 0011=3이라고 적어요.</p><p>핵심: D C B A 순서로 값을 읽어요</p><p>결론: ① 3, ② abcdg</p><p>검산: e, f만 꺼져 있어요. 7개 중 5개가 켜져요.</p><p>주의: 세그먼트 순서가 달라도 같은 집합이면 인정해요.</p></div></article><article class="topic" id="q-qp-e08-board-01"><h3>문제 22 · 출력 3의 AND를 작도해요</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>주어진 AND 회로와 핀 명세를 빈 보드에 옮겨 전원·입력·출력과 미사용 핀을 표시하세요.</p><h4>주어진 조건</h4><p>74HC08 한 게이트로 실험 1의 출력 3(A·B)을 만들어요. A는 1번, B는 2번에 넣고 3번 출력을 측정점 Y로 둬요. 입력 A, B는 0V 또는 5V 외부 신호예요. LED는 쓰지 않아요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table class="chip-spec" data-layout-table="q-qp-e08-board-01/conditions/0" data-layout-mode="text" style="--layout-min:26.700rem"><colgroup data-layout-cols=""><col style="width:10.600rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">핀</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">이름</th><th data-layout-kind="text" data-layout-role="description" scope="col">역할</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">A</td><td data-layout-kind="text" data-layout-role="description">입력 A</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">B</td><td data-layout-kind="text" data-layout-role="description">입력 B</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">Y</td><td data-layout-kind="text" data-layout-role="description">출력(측정점)</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">14</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">VCC</td><td data-layout-kind="text" data-layout-role="description">+5V</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">GND</td><td data-layout-kind="text" data-layout-role="description">0V</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4,5,9,10,12,13</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">미사용 입력</td><td data-layout-kind="text" data-layout-role="description">수업 작도 명세: NC(개방), 실사용 일반 권장과 구분</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6,8,11</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">미사용 출력</td><td data-layout-kind="text" data-layout-role="description">NC, 접지 금지</td></tr></tbody></table></div></div><div class="work-board"><img src=".pack/figures/questions/and-blank.png" alt="v1 배포 PDF 작도용 빈 보드"></div><h4>구할 것</h4><p>완성한 작도</p><figure class="figure"><img src=".pack/figures/questions/and-given.png" alt="출력 3의 AND를 작도해요 · 주어진 그림"></figure></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>출력 3의 AND를 작도해요: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">같은 넷을 같은 도통 홀에 옮겨요</p><p>“출력 3의 AND를 작도해요”에 쓰인 조건이 단서예요. A·B는 A=B=1일 때만 1이에요. 실험 1에서 AB=11인 상태를 찾는 게이트예요. 이 문항은 AND 한 개만 작도해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>14번과 7번의 전원 넷부터 표시해요.</p><p><a href="실험08_실험설명.html#t-decode">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>연결 기준:</strong></p><p>14→+5V, 7→GND, 1→A, 2→B, 3→Y. 미사용 입력·출력은 명세대로 NC.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="q-qp-e08-board-01/explanation/0" data-layout-mode="text" style="--layout-min:23.450rem"><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><colgroup data-layout-cols=""><col style="width:15.150rem"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">설명</th><th scope="colgroup" colspan="1">출력</th></tr><tr><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right" scope="col">넷</th><th data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left" scope="col">핀</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">+5V</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">14</td></tr><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">GND</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">7</td></tr><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">A</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">1</td></tr><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">B</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">2</td></tr><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">Y</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">3</td></tr><tr><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-right">NC</td><td data-layout-kind="bus" data-layout-role="output" data-layout-boundary="major-left">4,5,6,8,9,10,11,12,13</td></tr></tbody></table></div></div><p>외부 A, B는 신호원이고 Y는 측정점이에요. IC 위치·홀 좌표가 달라도 같은 넷이면 인정해요.</p><p><strong>완성 결선도:</strong></p><p>그림은 A=B=0인 예예요. 입력 점퍼의 레일 쪽을 +5V로 옮기면 입력이 1이에요.</p><figure class="figure"><img src=".pack/figures/solutions/and-complete.png" width="270" alt="완성 결선도: 74HC08 AND 한 개"></figure><p><strong>논리 검산:</strong></p><p>A·B는 A=B=1일 때만 1이에요. 실험 1에서 AB=11인 상태를 찾는 게이트예요. 이 문항은 AND 한 개만 작도해요.</p><p>A=B=1이면 Y=1, 그 밖에는 Y=0인지 진리표와 핀 넷을 확인해요.</p><p>서로 다른 입력 신호이니 1번과 2번을 묶지 않아요. 미사용 출력은 접지하지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 14→+5V, 7→GND, 1→A, 2→B, 3→Y. 미사용 입력·출력은 명세대로 NC.</p><p>검산: A=B=1이면 Y=1, 그 밖에는 Y=0인지 진리표와 핀 넷을 확인해요.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>서로 다른 입력 신호이니 1번과 2번을 묶지 않아요. 미사용 출력은 접지하지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>14번과 7번의 전원 넷부터 표시해요.</li><li>A=B=1이면 Y=1, 그 밖에는 Y=0인지 진리표와 핀 넷을 확인해요.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 같은 넷을 같은 도통 홀에 옮겨요</p><p data-summary="recall">“출력 3의 AND를 작도해요”에 쓰인 조건이 단서예요. A·B는 A=B=1일 때만 1이에요. 실험 1에서 AB=11인 상태를 찾는 게이트예요. 이 문항은 AND 한 개만 작도해요.</p><p>첫 실행: 14번과 7번의 전원 넷부터 표시해요.</p><p>핵심: 같은 넷을 같은 도통 홀에 옮겨요</p><p>결론: 14→+5V, 7→GND, 1→A, 2→B, 3→Y. 미사용 입력·출력은 명세대로 NC.</p><p>검산: A=B=1이면 Y=1, 그 밖에는 Y=0인지 진리표와 핀 넷을 확인해요.</p><p>주의: 서로 다른 입력 신호이니 1번과 2번을 묶지 않아요. 미사용 출력은 접지하지 않아요.</p></div></article><article class="topic" id="q-qp-e08-short-01"><h3>문제 23 · 가짜 상태가 생기는 이유</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>최종 AB와, 그 사이에 잠깐 나타나는 값을 이유와 함께 두세 문장으로 설명하세요.</p><h4>주어진 조건</h4><p>교안 실험 1의 비동기 2단 카운터예요. AB=11에서 CLK가 떨어져요. A를 앞에 적어요.</p><h4>구할 것</h4><p>이유를 담은 설명</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>가짜 상태가 생기는 이유: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">클럭 경로로 인과를 설명해요</p><p>“가짜 상태가 생기는 이유”에 쓰인 조건이 단서예요. FFB의 클럭은 A예요. A가 바뀐 뒤에야 B가 움직이니 두 값이 같은 순간에 바뀌지 않아요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>A가 먼저 1→0이라고 적어요.</p><p><a href="실험08_실험설명.html#t-async">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>모범 답:</strong></p><p>최종은 00이고 잠깐 01을 지나요. A가 먼저 0이 되고, 그 하강을 받은 B가 전달 지연 뒤에 0이 되기 때문이에요.</p><p>FFB의 클럭은 A예요. A가 바뀐 뒤에야 B가 움직이니 두 값이 같은 순간에 바뀌지 않아요.</p><p><strong>채점 핵심:</strong></p><p>채점 요소: 최종 00, 중간 01, A가 B의 클럭이라는 원인, 전달 지연이라는 표현.</p><p><strong>허용 표현:</strong></p><p>같은 인과와 순서를 밝힌 동치 표현을 인정해요. </p><p>값의 순서(A를 앞에)를 먼저 밝혀요. 01을 값 1로 읽지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: 최종은 00이고 잠깐 01을 지나요. A가 먼저 0이 되고, 그 하강을 받은 B가 전달 지연 뒤에 0이 되기 때문이에요.</p><p>검산: 채점 요소: 최종 00, 중간 01, A가 B의 클럭이라는 원인, 전달 지연이라는 표현.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>값의 순서(A를 앞에)를 먼저 밝혀요. 01을 값 1로 읽지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>A가 먼저 1→0이라고 적어요.</li><li>채점 요소: 최종 00, 중간 01, A가 B의 클럭이라는 원인, 전달 지연이라는 표현.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 클럭 경로로 인과를 설명해요</p><p data-summary="recall">“가짜 상태가 생기는 이유”에 쓰인 조건이 단서예요. FFB의 클럭은 A예요. A가 바뀐 뒤에야 B가 움직이니 두 값이 같은 순간에 바뀌지 않아요.</p><p>첫 실행: A가 먼저 1→0이라고 적어요.</p><p>핵심: 클럭 경로로 인과를 설명해요</p><p>결론: 최종은 00이고 잠깐 01을 지나요. A가 먼저 0이 되고, 그 하강을 받은 B가 전달 지연 뒤에 0이 되기 때문이에요.</p><p>검산: 채점 요소: 최종 00, 중간 01, A가 B의 클럭이라는 원인, 전달 지연이라는 표현.</p><p>주의: 값의 순서(A를 앞에)를 먼저 밝혀요. 01을 값 1로 읽지 않아요.</p></div></article><article class="topic" id="q-qp-e08-short-02"><h3>문제 24 · L일 때 켜지는 이유</h3><div class="layer formal"><span class="layer-title">문제 읽기</span><h4>문제</h4><p>7447 출력이 L일 때 세그먼트가 켜지는 이유를 전류가 흐르는 길로 설명하세요.</p><h4>주어진 조건</h4><p>FND는 Common Anode이고 3·8번이 +5V예요. 각 세그먼트는 330Ω을 거쳐 7447 출력에 연결돼요.</p><h4>구할 것</h4><p>이유를 담은 설명</p></div><div class="layer eli5" data-explanation="understand"><span class="layer-title">이 문제에서 할 일</span><p>L일 때 켜지는 이유: 조건을 읽고 판단 근거를 말로 설명하는 연습이에요.</p></div><div class="layer formal" data-explanation="recall"><span class="layer-title">이 문제를 봤을 때 떠올릴 개념과 공식</span><p class="lead cue">전류의 시작과 끝을 먼저 적어요</p><p>“L일 때 켜지는 이유”에 쓰인 조건이 단서예요. LED는 애노드에서 캐소드로 전류가 흐를 때 켜져요. Common Anode는 애노드가 +5V로 묶여 있어 반대쪽을 낮춰야 해요.</p></div><div class="layer formal" data-explanation="start"><span class="layer-title">첫 줄을 이렇게 시작해요</span><p>+5V에서 출발해 L인 출력까지 따라가요.</p><p><a href="실험08_실험설명.html#t-fnd">필요한 개념으로 돌아가요</a></p></div><div class="layer formal" data-explanation="solve"><span class="layer-title">이유를 따라 완성해요</span><p><strong>모범 답:</strong></p><p>+5V에서 공통 애노드, LED, 330Ω을 지나 L인 출력으로 전류가 흘러 켜져요. H면 양쪽 전압 차가 없어 꺼져요.</p><p>LED는 애노드에서 캐소드로 전류가 흐를 때 켜져요. Common Anode는 애노드가 +5V로 묶여 있어 반대쪽을 낮춰야 해요.</p><p><strong>채점 핵심:</strong></p><p>채점 요소: +5V 공통 애노드, 전류 경로, L일 때 전압 차, H일 때 꺼짐.</p><p><strong>허용 표현:</strong></p><p>같은 인과와 순서를 밝힌 동치 표현을 인정해요. </p><p>Common Cathode와 극성이 반대예요. 이 실험에서는 Common Cathode가 동작하지 않아요.</p></div><div class="layer formal" data-explanation="verify"><span class="layer-title">답과 검산을 확인해요</span><p>최종 답: +5V에서 공통 애노드, LED, 330Ω을 지나 L인 출력으로 전류가 흘러 켜져요. H면 양쪽 전압 차가 없어 꺼져요.</p><p>검산: 채점 요소: +5V 공통 애노드, 전류 경로, L일 때 전압 차, H일 때 꺼짐.</p></div><div class="layer warn" data-explanation="pitfall"><span class="layer-title">헷갈리기 쉬운 조건을 확인해요</span><p>Common Cathode와 극성이 반대예요. 이 실험에서는 Common Cathode가 동작하지 않아요.</p></div><div class="layer formal" data-explanation="retry"><span class="layer-title">설명을 닫고 다시 해 봐요</span><ol><li>조건을 다시 적어요.</li><li>+5V에서 출발해 L인 출력까지 따라가요.</li><li>채점 요소: +5V 공통 애노드, 전류 경로, L일 때 전압 차, H일 때 꺼짐.</li></ol></div><div class="sum" hidden><p><strong>떠올릴 것:</strong> 전류의 시작과 끝을 먼저 적어요</p><p data-summary="recall">“L일 때 켜지는 이유”에 쓰인 조건이 단서예요. LED는 애노드에서 캐소드로 전류가 흐를 때 켜져요. Common Anode는 애노드가 +5V로 묶여 있어 반대쪽을 낮춰야 해요.</p><p>첫 실행: +5V에서 출발해 L인 출력까지 따라가요.</p><p>핵심: 전류의 시작과 끝을 먼저 적어요</p><p>결론: +5V에서 공통 애노드, LED, 330Ω을 지나 L인 출력으로 전류가 흘러 켜져요. H면 양쪽 전압 차가 없어 꺼져요.</p><p>검산: 채점 요소: +5V 공통 애노드, 전류 경로, L일 때 전압 차, H일 때 꺼짐.</p><p>주의: Common Cathode와 극성이 반대예요. 이 실험에서는 Common Cathode가 동작하지 않아요.</p></div></article></section>
+  </main>
+  <footer></footer>
+    </div>
+    <aside class="panel panel-right" id="panel-right" aria-labelledby="panel-right-title">
+      <div class="panel-resize" data-side="right" role="separator" aria-orientation="vertical" aria-controls="panel-right" aria-label="오른쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-right-title">페이지 요약</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <p class="panel-empty" id="sum-empty">페이지를 넘기면 그 페이지의 핵심 식과 용어가 여기에 나옵니다.</p>
+        <div class="sums" id="sum-for"></div>
+      </div>
+    </aside>
+  </div>
+  <div class="scrim" id="panel-scrim" aria-hidden="true"></div>
+  <nav class="pager" aria-label="화면 이동">
+    <div class="pager-inner">
+      <button class="btn btn-ghost" id="pager-prev" type="button">이전</button>
+      <span class="pager-count" id="pager-count"></span>
+      <button class="btn btn-primary" id="pager-next" type="button">시작하기</button>
+    </div>
+  </nav>
+  <p class="sr-only" id="pager-status" aria-live="polite"></p>
+<script src=".pack/assets/widgets.js"></script>
+  <script id="theme-ui">
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const sysDark = matchMedia('(prefers-color-scheme: dark)');
+      const KEY = 'od-theme';
+      const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : sysDark.matches;
+      function label() {
+        const next = isDark() ? '라이트 모드로 전환' : '다크 모드로 전환';
+        btn.setAttribute('aria-label', next);
+        btn.title = next;
+      }
+      btn.addEventListener('click', () => {
+        const t = isDark() ? 'light' : 'dark';
+        // 시스템 설정과 같아지면 저장을 지워 다시 시스템을 따른다
+        if ((t === 'dark') === sysDark.matches) { delete root.dataset.theme; try { localStorage.removeItem(KEY); } catch (e) {} }
+        else { root.dataset.theme = t; try { localStorage.setItem(KEY, t); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+        label();
+      });
+      sysDark.addEventListener('change', label);
+      window.addEventListener('storage', (e) => {
+        if (e.key !== KEY) return;
+        if (e.newValue === 'light' || e.newValue === 'dark') root.dataset.theme = e.newValue; else delete root.dataset.theme;
+        label();
+      });
+      label();
+    })();
+  </script>
+  <script id="panels-ui">
+    (function () {
+      const body = document.body;
+      const layout = document.querySelector('.layout');
+      const kind = body.dataset.panels;
+      const panels = { left: document.getElementById('panel-left'), right: document.getElementById('panel-right') };
+      const toggles = { left: document.getElementById('toggle-left'), right: document.getElementById('toggle-right') };
+      const scrim = document.getElementById('panel-scrim');
+      const blockers = [document.querySelector('.topbar'), document.querySelector('.content'), document.querySelector('.pager')];
+      const wideMq = matchMedia('(min-width: 1024px)');
+      const roomyMq = matchMedia('(min-width: 1280px)');
+      const store = {
+        get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      // 푼 기록은 탭(세션) 단위로만 유지: 뒤로가기·새로고침엔 남고, 창을 닫고 다시 열면 초기화
+      const tabStore = {
+        get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      const PREF = 'od-panels:' + kind;
+      // 팩마다 문제·토픽 id가 p1, s1-…로 겹치므로 진행 기록은 기간별로 나눈다
+      const RANGE = body.dataset.range || '';
+      const ICON_TODO = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
+      const ICON_DONE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>';
+      let overlay = null;
+
+      // ---------- 열고 닫기 ----------
+      function docked() {
+        const pref = store.get(PREF, {});
+        return { left: pref.left ?? true, right: pref.right ?? roomyMq.matches };
+      }
+      function sync() {
+        const wide = wideMq.matches;
+        const d = docked();
+        ['left', 'right'].forEach((side) => {
+          const open = wide ? d[side] : overlay === side;
+          const p = panels[side];
+          layout.dataset[side] = open ? 'open' : 'closed';
+          p.classList.toggle('is-open', !wide && open);
+          p.inert = !open;
+          if (!wide && open) { p.setAttribute('role', 'dialog'); p.setAttribute('aria-modal', 'true'); }
+          else { p.removeAttribute('role'); p.removeAttribute('aria-modal'); }
+          toggles[side].setAttribute('aria-expanded', String(open));
+        });
+        const drawer = !wide && overlay !== null;
+        scrim.classList.toggle('is-on', drawer);
+        body.classList.toggle('drawer-open', drawer);
+        blockers.forEach((el) => { el.inert = drawer; });
+      }
+      function openDrawer(side) {
+        overlay = side;
+        sync();
+        requestAnimationFrame(() => panels[side].querySelector('[data-panel-close]').focus());
+      }
+      function closeDrawer(refocus) {
+        if (overlay === null) return;
+        const side = overlay;
+        overlay = null;
+        sync();
+        if (refocus) toggles[side].focus();
+      }
+      function toggle(side) {
+        if (wideMq.matches) {
+          const d = docked();
+          d[side] = !d[side];
+          store.set(PREF, d);
+          sync();
+          if (d[side]) { const p = panels[side]; p.classList.remove('is-shown'); void p.offsetWidth; p.classList.add('is-shown'); }
+        } else if (overlay === side) closeDrawer(true);
+        else openDrawer(side);
+      }
+
+      toggles.left.addEventListener('click', () => toggle('left'));
+      toggles.right.addEventListener('click', () => toggle('right'));
+      scrim.addEventListener('click', () => closeDrawer(true));
+      document.querySelectorAll('[data-panel-close]').forEach((b) => b.addEventListener('click', () => closeDrawer(true)));
+      panels.left.addEventListener('click', (e) => { if (e.target.closest('.toc a')) closeDrawer(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay !== null) { e.preventDefault(); closeDrawer(true); } });
+
+      // ---------- 패널 너비: 기본은 화면 폭에 맞춰 자동, 경계를 끌면 직접 조절 ----------
+      const WIDTH = { left: { min: 220, max: 480, prop: '--panel-l-user' }, right: { min: 280, max: 720, prop: '--panel-r-user' } };
+      function applyWidths() {
+        const w = store.get(PREF + ':w', {});
+        ['left', 'right'].forEach((side) => {
+          if (w[side]) layout.style.setProperty(WIDTH[side].prop, w[side] + 'px');
+          else layout.style.removeProperty(WIDTH[side].prop);
+        });
+      }
+      function maxFor(side) {
+        const other = side === 'left' ? panels.right : panels.left;
+        const otherW = layout.dataset[side === 'left' ? 'right' : 'left'] === 'open' ? other.getBoundingClientRect().width : 0;
+        return Math.max(WIDTH[side].min, Math.min(WIDTH[side].max, window.innerWidth - otherW - 400));
+      }
+      function setWidth(side, px, save) {
+        const v = Math.round(Math.min(Math.max(px, WIDTH[side].min), maxFor(side)));
+        layout.style.setProperty(WIDTH[side].prop, v + 'px');
+        panels[side].querySelector('.panel-resize').setAttribute('aria-valuenow', String(v));
+        if (save) { const w = store.get(PREF + ':w', {}); w[side] = v; store.set(PREF + ':w', w); }
+      }
+      function resetWidth(side) {
+        const w = store.get(PREF + ':w', {});
+        delete w[side];
+        store.set(PREF + ':w', w);
+        layout.style.removeProperty(WIDTH[side].prop);
+      }
+      document.querySelectorAll('.panel-resize').forEach((handle) => {
+        const side = handle.dataset.side;
+        const dir = side === 'left' ? 1 : -1;
+        handle.setAttribute('aria-valuemin', String(WIDTH[side].min));
+        handle.setAttribute('aria-valuemax', String(WIDTH[side].max));
+        handle.addEventListener('pointerdown', (e) => {
+          if (!wideMq.matches || e.button !== 0) return;
+          e.preventDefault();
+          const startX = e.clientX;
+          const startW = panels[side].getBoundingClientRect().width;
+          handle.setPointerCapture(e.pointerId);
+          body.classList.add('is-resizing');
+          const move = (ev) => setWidth(side, startW + dir * (ev.clientX - startX), false);
+          const up = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            handle.removeEventListener('pointercancel', up);
+            body.classList.remove('is-resizing');
+            setWidth(side, panels[side].getBoundingClientRect().width, true);
+          };
+          handle.addEventListener('pointermove', move);
+          handle.addEventListener('pointerup', up);
+          handle.addEventListener('pointercancel', up);
+        });
+        handle.addEventListener('dblclick', () => resetWidth(side));
+        handle.addEventListener('keydown', (e) => {
+          const step = e.shiftKey ? 64 : 16;
+          const cur = panels[side].getBoundingClientRect().width;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.stopPropagation();
+            setWidth(side, cur + (e.key === 'ArrowRight' ? step : -step) * dir, true);
+          } else if (e.key === 'Home') { e.preventDefault(); resetWidth(side); }
+        });
+      });
+      applyWidths();
+      const onMq = () => { overlay = null; sync(); };
+      wideMq.addEventListener('change', onMq);
+      roomyMq.addEventListener('change', onMq);
+
+      // ---------- 목차의 진행 표시 ----------
+      function markToc(done, total, doneLabel) {
+        panels.left.querySelectorAll('.toc-list a').forEach((a) => {
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
+          let mark = a.querySelector('.toc-mark');
+          if (!mark) {
+            mark = document.createElement('span');
+            mark.className = 'toc-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            const state = document.createElement('span');
+            state.className = 'sr-only toc-state';
+            a.append(mark, state);
+          }
+          const isDone = done.has(id);
+          mark.classList.toggle('is-done', isDone);
+          mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
+          a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
+        });
+      }
+      function revealCurrent() {
+        const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
+        if (link && layout.dataset.left === 'open') link.scrollIntoView({ block: 'nearest' });
+      }
+
+      // ---------- 복습문제: 오른쪽 = 원문 · 힌트 · 풀이 ----------
+      function setupReview() {
+        const KEY = 'od-review-solved:' + RANGE;
+        const cards = Array.from(document.querySelectorAll('main article.card'));
+        const aids = panels.right.querySelector('.aids');
+        const empty = panels.right.querySelector('.panel-empty');
+        const btn = document.getElementById('solved-btn');
+        const groups = {};
+        const solved = new Set(tabStore.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
+        cards.forEach((card) => {
+          const g = document.createElement('div');
+          g.className = 'aid';
+          g.hidden = true;
+          card.querySelectorAll(':scope > details').forEach((d) => g.appendChild(d));
+          aids.appendChild(g);
+          groups[card.id] = g;
+        });
+        let curId = null;
+        function paintBtn() {
+          const on = solved.has(curId);
+          btn.setAttribute('aria-pressed', String(on));
+          btn.innerHTML = (on ? ICON_DONE : ICON_TODO) + '<span>' + (on ? '푼 문제 · 표시 해제' : '푼 문제로 표시') + '</span>';
+        }
+        btn.addEventListener('click', () => {
+          if (!curId) return;
+          if (solved.has(curId)) solved.delete(curId); else solved.add(curId);
+          tabStore.set(KEY, Array.from(solved));
+          paintBtn();
+          markToc(solved, cards.length, '푼 문제');
+        });
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          curId = s.matches('article.card') ? s.id : null;
+          Object.keys(groups).forEach((id) => { groups[id].hidden = id !== curId; });
+          empty.hidden = Boolean(curId);
+          btn.hidden = !curId;
+          if (curId) paintBtn();
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(solved, cards.length, '푼 문제');
+          revealCurrent();
+        });
+      }
+
+      // ---------- 정리노트: 오른쪽 = 페이지(토픽)별 요약 ----------
+      function setupNote() {
+        const KEY = 'od-note-read:' + RANGE;
+        const topics = Array.from(document.querySelectorAll('main article.topic'));
+        const read = new Set(store.get(KEY, []).filter((id) => topics.some((t) => t.id === id)));
+        // 조각의 <div class="sum" hidden> 을 오른쪽 패널로 옮긴다. 없으면 안내 문구만 보인다.
+        const box = panels.right.querySelector('.sums');
+        const sums = {};
+        topics.forEach((t) => {
+          const el = t.querySelector(':scope > .sum');
+          if (!el) return;
+          el.hidden = true;
+          box.appendChild(el);
+          sums[t.id] = el;
+        });
+        const empty = document.getElementById('sum-empty');
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          const key = s.matches('article.topic') ? s.id : 'intro';
+          Object.keys(sums).forEach((id) => { sums[id].hidden = id !== key; });
+          empty.hidden = Boolean(sums[key]);
+          if (s.matches('article.topic') && !read.has(s.id)) { read.add(s.id); store.set(KEY, Array.from(read)); }
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(read, topics.length, '읽음');
+          revealCurrent();
+        });
+      }
+
+      if (kind === 'review') setupReview();
+      if (kind === 'note') setupNote();
+      sync();
+    })();
+  </script>
+  <script id="pager-ui">
+    (function () {
+      const root = document.documentElement;
+      const main = document.querySelector('main');
+      const hero = main.querySelector('.hero');
+      const screens = [hero].concat(Array.from(main.querySelectorAll(document.body.dataset.screens)));
+      if (screens.length < 2) { root.classList.remove('js'); return; }
+      screens.forEach((s) => s.classList.add('screen'));
+
+      const last = screens.length - 1;
+      const prevBtn = document.getElementById('pager-prev');
+      const nextBtn = document.getElementById('pager-next');
+      const count = document.getElementById('pager-count');
+      const bar = document.getElementById('pager-bar');
+      const status = document.getElementById('pager-status');
+      const toc = document.querySelector('#panel-left .toc');
+      const scroller = document.querySelector('.content');
+      const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
+      let cur = -1;
+
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
+
+      function indexFor(hash) {
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
+        const el = id && document.getElementById(id);
+        if (!el || !main.contains(el)) return { i: 0 };
+        const i = screens.findIndex((s) => s.contains(el) || el.contains(s));
+        return { i: Math.max(i, 0), target: i >= 0 && screens[i].contains(el) && screens[i] !== el ? el : null };
+      }
+
+      function render(i, target) {
+        const dir = cur < 0 ? '' : i > cur ? 'enter-next' : 'enter-prev';
+        if (i !== cur) {
+          if (cur >= 0) screens[cur].classList.remove('is-current', 'enter-next', 'enter-prev');
+          main.querySelectorAll(':scope > section.is-on').forEach((sec) => sec.classList.remove('is-on'));
+          const s = screens[i];
+          const sec = s.closest('section');
+          if (sec) sec.classList.add('is-on');
+          s.classList.add('is-current');
+          if (dir) { s.classList.remove('enter-next', 'enter-prev'); void s.offsetWidth; s.classList.add(dir); }
+          cur = i;
+          document.body.classList.toggle('at-end', i === last);
+          prevBtn.disabled = i === 0;
+          nextBtn.textContent = i === 0 ? '시작하기' : i === last ? '처음으로' : '다음';
+          count.textContent = i === 0 ? '' : i + ' / ' + last;
+          bar.style.transform = 'scaleX(' + (i / last) + ')';
+          status.textContent = i === 0 ? titleOf(s) : i + ' / ' + last + ', ' + titleOf(s);
+          tocLinks.forEach((link, k) => link && link.setAttribute('aria-current', String(k === i)));
+          document.dispatchEvent(new CustomEvent('od:screen', { detail: { index: i, screen: s } }));
+        }
+        if (target) target.scrollIntoView({ block: 'start' });
+        else scroller.scrollTo(0, 0);
+      }
+
+      function go(i) {
+        i = Math.min(Math.max(i, 0), last);
+        if (i === cur) return;
+        const url = i === 0 ? location.pathname + location.search : '#' + screens[i].id;
+        history.pushState(null, '', url);
+        render(i);
+      }
+
+      prevBtn.addEventListener('click', () => go(cur - 1));
+      nextBtn.addEventListener('click', () => go(cur === last ? 0 : cur + 1));
+      const fromUrl = () => { const r = indexFor(location.hash); render(r.i, r.target); };
+      window.addEventListener('hashchange', fromUrl);
+      window.addEventListener('popstate', fromUrl);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || document.body.classList.contains('drawer-open')) return;
+        if (e.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+      });
+
+      // 좌우로 밀어서 넘기기 (가로로 스크롤되는 영역은 제외)
+      let sx = 0, sy = 0, skip = true;
+      main.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY;
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .table-card, .katex-display, .table-wrap, svg, input, details'));
+      }, { passive: true });
+      main.addEventListener('touchend', (e) => {
+        if (skip) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 64 && Math.abs(dx) > 2 * Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      fromUrl();
+    })();
+  </script>
+</body>
+</html>
