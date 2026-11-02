@@ -1,0 +1,83 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 — 3. 최종 1단계",
+ "subtitle": "7490 + 7447 + FND 507",
+ "kept": 50,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 d22",
+   "to": "우 c3",
+   "desc": "A: U1 pin 12 (LED A 스트립) -> U2 pin 7",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 d16",
+   "to": "우 c8",
+   "desc": "B: U1 pin 9 (LED B 스트립) -> U2 pin 1",
+   "count": 1,
+   "color": "#009696"
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 c17",
+   "to": "우 c13",
+   "desc": "C: U1 pin 8 (LED C 스트립) -> U2 pin 2",
+   "count": 1,
+   "color": "#c81e96"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  },
+  {
+   "name": "D",
+   "at": "좌 b21",
+   "rail": "좌 GND레일21행",
+   "x": 176,
+   "row": 21
+  }
+ ]
+}

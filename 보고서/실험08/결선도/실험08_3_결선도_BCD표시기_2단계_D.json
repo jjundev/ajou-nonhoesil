@@ -1,0 +1,58 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 — 3. 최종 2단계",
+ "subtitle": "7490 + 7447 + FND 507",
+ "kept": 52,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 c21",
+   "to": "우 c18",
+   "desc": "D: U1 pin 11 (LED D 스트립) -> U2 pin 6",
+   "count": 1,
+   "color": "#e67800"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 준비 2 · 입력 고정",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 42,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 GND레일22행",
+   "to": "좌 b22",
+   "desc": "입력 A -> U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 GND레일16행",
+   "to": "좌 b16",
+   "desc": "입력 B -> U2 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 GND레일17행",
+   "to": "좌 b17",
+   "desc": "입력 C -> U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 GND레일21행",
+   "to": "좌 b21",
+   "desc": "입력 D -> U2 pin 6 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  },
+  {
+   "name": "A",
+   "at": "좌 b22",
+   "rail": "좌 GND레일22행",
+   "x": 176,
+   "row": 22
+  },
+  {
+   "name": "B",
+   "at": "좌 b16",
+   "rail": "좌 GND레일16행",
+   "x": 176,
+   "row": 16
+  },
+  {
+   "name": "C",
+   "at": "좌 b17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
+  },
+  {
+   "name": "D",
+   "at": "좌 b21",
+   "rail": "좌 GND레일21행",
+   "x": 176,
+   "row": 21
+  }
+ ]
+}

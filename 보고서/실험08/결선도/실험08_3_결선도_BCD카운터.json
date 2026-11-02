@@ -1,0 +1,241 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 — 1. BCD Counter",
+ "subtitle": "7490 ×1 · CLK 1Hz · R0 점퍼",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일39행",
+   "to": "중앙GND레일39행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일40행",
+   "to": "중앙VCC레일40행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a9",
+   "to": "좌 VCC레일9행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 g9",
+   "to": "중앙GND레일9행",
+   "desc": "pin 10 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "gnd",
+   "from": "좌 a10",
+   "to": "좌 GND레일10행",
+   "desc": "U1 pin 6 R9 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 a11",
+   "to": "좌 GND레일11행",
+   "desc": "U1 pin 7 R9 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "sig",
+   "from": "좌 GND레일6행",
+   "to": "좌 b6",
+   "desc": "입력 R0 -> U1 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "sig",
+   "from": "중앙GND레일5행",
+   "to": "좌 j5",
+   "desc": "입력 CLK -> U1 pin 14 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "sig",
+   "from": "우 b3",
+   "to": "우 c6",
+   "desc": "A: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · A: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "gnd",
+   "from": "우 a6",
+   "to": "중앙GND레일6행",
+   "desc": "A 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "sig",
+   "from": "우 b8",
+   "to": "우 c11",
+   "desc": "B: LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · B: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "gnd",
+   "from": "우 a11",
+   "to": "중앙GND레일11행",
+   "desc": "B 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "sig",
+   "from": "우 b13",
+   "to": "우 c16",
+   "desc": "C: LED(우 b13→우 b14) + 330Ω(우 c14→우 c16) 직렬 · C: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "gnd",
+   "from": "우 a16",
+   "to": "중앙GND레일16행",
+   "desc": "C 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "D: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · D: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "gnd",
+   "from": "우 a21",
+   "to": "중앙GND레일21행",
+   "desc": "D 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "sig",
+   "from": "좌 d6",
+   "to": "좌 b7",
+   "desc": "R0: U1 pin 2 -> U1 pin 3",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "sig",
+   "from": "좌 h7",
+   "to": "좌 d5",
+   "desc": "QA: U1 pin 12 -> U1 pin 1",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "sig",
+   "from": "좌 j7",
+   "to": "우 a3",
+   "desc": "A = U1 pin 12 -> LED A",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "좌 j10",
+   "to": "우 a8",
+   "desc": "B = U1 pin 9 -> LED B",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "sig",
+   "from": "좌 j11",
+   "to": "우 a13",
+   "desc": "C = U1 pin 8 -> LED C",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "좌 j8",
+   "to": "우 a18",
+   "desc": "D = U1 pin 11 -> LED D",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  }
+ ]
+}

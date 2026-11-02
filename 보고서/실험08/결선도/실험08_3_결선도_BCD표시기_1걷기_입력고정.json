@@ -1,0 +1,68 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) 3. 최종 — 입력 고정선 A·B·C 걷기",
+ "subtitle": "전원을 꺼요. 빨간 선만 뽑아요. D 고정선은 남겨요.",
+ "kept": 50,
+ "steps": [],
+ "removals": [
+  {
+   "n": 1,
+   "text": "좌 GND레일22행 → 좌 b22 · 입력 A -> U2 pin 7 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+  },
+  {
+   "n": 2,
+   "text": "좌 GND레일16행 → 좌 b16 · 입력 B -> U2 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+  },
+  {
+   "n": 3,
+   "text": "좌 GND레일17행 → 좌 b17 · 입력 C -> U2 pin 2 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요"
+  }
+ ],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  },
+  {
+   "name": "D",
+   "at": "좌 b21",
+   "rail": "좌 GND레일21행",
+   "x": 176,
+   "row": 21
+  }
+ ]
+}

@@ -1,0 +1,97 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 준비 1 · 7447·전원·제어핀 준비",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 36,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: 7447",
+   "desc": "좌 16행에 새로 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "vcc",
+   "from": "좌 g16",
+   "to": "중앙VCC레일15행",
+   "desc": "pin 16 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 a23",
+   "to": "좌 GND레일23행",
+   "desc": "pin 8 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 a18",
+   "to": "좌 VCC레일18행",
+   "desc": "U2 pin 3 /LT -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a19",
+   "to": "좌 VCC레일19행",
+   "desc": "U2 pin 4 /BI·/RBO -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "vcc",
+   "from": "좌 d19",
+   "to": "좌 d20",
+   "desc": "U2 pin 5 /RBI -> pin 4 스트립(+5V)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  }
+ ]
+}

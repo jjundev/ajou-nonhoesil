@@ -1,0 +1,77 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2단 2진 카운터 (비동기) 준비 1 · 보드·칩·전원 준비",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일39행",
+   "to": "중앙GND레일39행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일40행",
+   "to": "중앙VCC레일40행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a9",
+   "to": "좌 VCC레일9행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 g8",
+   "to": "중앙GND레일7행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 g16",
+   "to": "중앙VCC레일16행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 a22",
+   "to": "좌 GND레일22행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [],
+ "inputs": []
+}

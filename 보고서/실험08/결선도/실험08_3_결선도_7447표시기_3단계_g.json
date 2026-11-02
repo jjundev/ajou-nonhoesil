@@ -1,0 +1,86 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 — 2. BCD to 7-Segment 3단계",
+ "subtitle": "7447 ×1 + FND 507 · 입력 A~D 는 점퍼",
+ "kept": 52,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 j18",
+   "to": "우 f27",
+   "desc": "g: U2 pin 14 -> 330Ω (U3 pin 10)",
+   "count": 1,
+   "color": "#e67800"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  },
+  {
+   "name": "A",
+   "at": "좌 b22",
+   "rail": "좌 GND레일22행",
+   "x": 176,
+   "row": 22
+  },
+  {
+   "name": "B",
+   "at": "좌 b16",
+   "rail": "좌 GND레일16행",
+   "x": 176,
+   "row": 16
+  },
+  {
+   "name": "C",
+   "at": "좌 b17",
+   "rail": "좌 GND레일17행",
+   "x": 176,
+   "row": 17
+  },
+  {
+   "name": "D",
+   "at": "좌 b21",
+   "rail": "좌 GND레일21행",
+   "x": 176,
+   "row": 21
+  }
+ ]
+}

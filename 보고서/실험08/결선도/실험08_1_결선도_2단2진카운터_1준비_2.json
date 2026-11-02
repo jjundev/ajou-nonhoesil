@@ -1,0 +1,77 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2단 2진 카운터 (비동기) 준비 2 · U1 입력 고정",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 10,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "좌 a6",
+   "to": "좌 VCC레일6행",
+   "desc": "U1 pin 2 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "vcc",
+   "from": "좌 a7",
+   "to": "좌 VCC레일7행",
+   "desc": "U1 pin 3 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "vcc",
+   "from": "좌 j5",
+   "to": "중앙VCC레일5행",
+   "desc": "U1 pin 16 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 a11",
+   "to": "좌 VCC레일11행",
+   "desc": "U1 pin 7 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a12",
+   "to": "좌 VCC레일12행",
+   "desc": "U1 pin 8 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "vcc",
+   "from": "좌 j12",
+   "to": "중앙VCC레일12행",
+   "desc": "U1 pin 9 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 j9",
+   "to": "중앙VCC레일9행",
+   "desc": "U1 pin 12 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "vcc",
+   "from": "좌 d7",
+   "to": "좌 d8",
+   "desc": "U1 pin 4 J 고정 -> pin 3 스트립(+5V)",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [],
+ "inputs": []
+}

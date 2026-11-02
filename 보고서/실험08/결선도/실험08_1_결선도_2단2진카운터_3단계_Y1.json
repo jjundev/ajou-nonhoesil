@@ -1,0 +1,78 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2단 2진 카운터 (비동기) — 3단계",
+ "subtitle": "74HC76 ×1 + 74HC08 ×1 · CLK 1Hz",
+ "kept": 31,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 g21",
+   "to": "좌 c16",
+   "desc": "A: U2 pin 9 -> U2 pin 1",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 g18",
+   "to": "좌 c17",
+   "desc": "B': U2 pin 12 -> U2 pin 2",
+   "count": 1,
+   "color": "#009696"
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 j6",
+   "to": "좌 j21",
+   "desc": "A: U1 pin 15 -> U2 pin 9",
+   "count": 1,
+   "color": "#c81e96"
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 a18",
+   "to": "우 a8",
+   "desc": "Y1 = U2 pin 3 -> LED Y1",
+   "count": 1,
+   "color": "#788c00"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Y0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "Y1",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "Y2",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "Y3",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 b5",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  }
+ ]
+}

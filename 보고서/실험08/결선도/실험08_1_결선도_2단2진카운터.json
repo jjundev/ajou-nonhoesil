@@ -1,0 +1,346 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2단 2진 카운터 (비동기)",
+ "subtitle": "74HC76 ×1 + 74HC08 ×1 · CLK 1Hz",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일39행",
+   "to": "중앙GND레일39행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일40행",
+   "to": "중앙VCC레일40행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a9",
+   "to": "좌 VCC레일9행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 g8",
+   "to": "중앙GND레일7행",
+   "desc": "pin 13 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "vcc",
+   "from": "좌 g16",
+   "to": "중앙VCC레일16행",
+   "desc": "pin 14 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 a22",
+   "to": "좌 GND레일22행",
+   "desc": "pin 7 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "vcc",
+   "from": "좌 a6",
+   "to": "좌 VCC레일6행",
+   "desc": "U1 pin 2 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "vcc",
+   "from": "좌 a7",
+   "to": "좌 VCC레일7행",
+   "desc": "U1 pin 3 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "vcc",
+   "from": "좌 j5",
+   "to": "중앙VCC레일5행",
+   "desc": "U1 pin 16 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "vcc",
+   "from": "좌 a11",
+   "to": "좌 VCC레일11행",
+   "desc": "U1 pin 7 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "vcc",
+   "from": "좌 a12",
+   "to": "좌 VCC레일12행",
+   "desc": "U1 pin 8 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "vcc",
+   "from": "좌 j12",
+   "to": "중앙VCC레일12행",
+   "desc": "U1 pin 9 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "vcc",
+   "from": "좌 j9",
+   "to": "중앙VCC레일9행",
+   "desc": "U1 pin 12 J·K·PR·CL 고정 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "vcc",
+   "from": "좌 d7",
+   "to": "좌 d8",
+   "desc": "U1 pin 4 J 고정 -> pin 3 스트립(+5V)",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "sig",
+   "from": "좌 GND레일5행",
+   "to": "좌 b5",
+   "desc": "입력 CLK -> U1 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "sig",
+   "from": "우 b3",
+   "to": "우 c6",
+   "desc": "Y0: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · Y0: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "gnd",
+   "from": "우 a6",
+   "to": "중앙GND레일6행",
+   "desc": "Y0 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "sig",
+   "from": "우 b8",
+   "to": "우 c11",
+   "desc": "Y1: LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · Y1: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "gnd",
+   "from": "우 a11",
+   "to": "중앙GND레일11행",
+   "desc": "Y1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "우 b13",
+   "to": "우 c16",
+   "desc": "Y2: LED(우 b13→우 b14) + 330Ω(우 c14→우 c16) 직렬 · Y2: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "gnd",
+   "from": "우 a16",
+   "to": "중앙GND레일15행",
+   "desc": "Y2 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "Y3: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · Y3: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 25,
+   "kind": "gnd",
+   "from": "우 a21",
+   "to": "중앙GND레일21행",
+   "desc": "Y3 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 26,
+   "kind": "sig",
+   "from": "좌 g21",
+   "to": "좌 c16",
+   "desc": "A: U2 pin 9 -> U2 pin 1",
+   "count": 1
+  },
+  {
+   "n": 27,
+   "kind": "sig",
+   "from": "좌 g18",
+   "to": "좌 c17",
+   "desc": "B': U2 pin 12 -> U2 pin 2",
+   "count": 1
+  },
+  {
+   "n": 28,
+   "kind": "sig",
+   "from": "좌 g17",
+   "to": "좌 b19",
+   "desc": "A': U2 pin 13 -> U2 pin 4",
+   "count": 1
+  },
+  {
+   "n": 29,
+   "kind": "sig",
+   "from": "좌 g20",
+   "to": "좌 c20",
+   "desc": "B: U2 pin 10 -> U2 pin 5",
+   "count": 1
+  },
+  {
+   "n": 30,
+   "kind": "sig",
+   "from": "좌 g6",
+   "to": "좌 c10",
+   "desc": "A: U1 pin 15 -> U1 pin 6",
+   "count": 1
+  },
+  {
+   "n": 31,
+   "kind": "sig",
+   "from": "좌 h7",
+   "to": "좌 h17",
+   "desc": "A': U1 pin 14 -> U2 pin 13",
+   "count": 1
+  },
+  {
+   "n": 32,
+   "kind": "sig",
+   "from": "좌 i11",
+   "to": "좌 i18",
+   "desc": "B': U1 pin 10 -> U2 pin 12",
+   "count": 1
+  },
+  {
+   "n": 33,
+   "kind": "sig",
+   "from": "좌 j19",
+   "to": "우 a3",
+   "desc": "Y0 = U2 pin 11 -> LED Y0",
+   "count": 1
+  },
+  {
+   "n": 34,
+   "kind": "sig",
+   "from": "좌 j6",
+   "to": "좌 j21",
+   "desc": "A: U1 pin 15 -> U2 pin 9",
+   "count": 1
+  },
+  {
+   "n": 35,
+   "kind": "sig",
+   "from": "좌 a18",
+   "to": "우 a8",
+   "desc": "Y1 = U2 pin 3 -> LED Y1",
+   "count": 1
+  },
+  {
+   "n": 36,
+   "kind": "sig",
+   "from": "좌 j10",
+   "to": "좌 j20",
+   "desc": "B: U1 pin 11 -> U2 pin 10",
+   "count": 1
+  },
+  {
+   "n": 37,
+   "kind": "sig",
+   "from": "좌 b21",
+   "to": "우 a13",
+   "desc": "Y2 = U2 pin 6 -> LED Y2",
+   "count": 1
+  },
+  {
+   "n": 38,
+   "kind": "sig",
+   "from": "좌 j22",
+   "to": "우 a18",
+   "desc": "Y3 = U2 pin 8 -> LED Y3",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Y0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "Y1",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "Y2",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "Y3",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 b5",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2단 2진 카운터 (비동기) — 2단계",
+ "subtitle": "74HC76 ×1 + 74HC08 ×1 · CLK 1Hz",
+ "kept": 28,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 h7",
+   "to": "좌 h17",
+   "desc": "A': U1 pin 14 -> U2 pin 13",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 i11",
+   "to": "좌 i18",
+   "desc": "B': U1 pin 10 -> U2 pin 12",
+   "count": 1,
+   "color": "#009696"
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 j19",
+   "to": "우 a3",
+   "desc": "Y0 = U2 pin 11 -> LED Y0",
+   "count": 1,
+   "color": "#c81e96"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Y0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "Y1",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "Y2",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "Y3",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 b5",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  }
+ ]
+}
