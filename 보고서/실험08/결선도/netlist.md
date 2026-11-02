@@ -474,6 +474,24 @@ pin 5는 Decimal Point다. p12는 이 핀을 VCC에 묶고, 이 연결은 p16 �
 | 9 | 330Ω | Segment F |
 | 10 | 330Ω | Segment G |
 
+## 노드
+
+| 노드 | 유형 | 식 | 핀 |
+|---|---|---|---|
+| a | observed | - | U3 pin 7 |
+| b | observed | - | U3 pin 6 |
+| c | observed | - | U3 pin 4 |
+| d | observed | - | U3 pin 2 |
+| e | observed | - | U3 pin 1 |
+| f | observed | - | U3 pin 9 |
+| g | observed | - | U3 pin 10 |
+
+## 단계
+
+| 단계 | 그림 | 이 단계에서 | 확인 |
+|---|---|---|---|
+| 1 | 실험08_3_결선도_FND테스트_1단계_FND.png | 전원과 신호발생기 출력을 끈 상태로 FND 507, 330Ω 일곱 개, pin 3·5·8 전원선을 꽂아요. 7447은 아직 꽂지 않아요. 전원을 켜고, GND에 물린 시험선 한 가닥을 저항의 빈 끝에 차례로 대어 T5를 채워요. 끝나면 시험선을 뽑고 전원을 꺼요. | FND pin 1 자리와 330Ω 일곱 개, +5V 선 세 개를 그림과 대조했나요? |
+
 # C4 · 실험 3) 7-Segment 표시기를 갖는 BCD 카운터 — 2. BCD to 7-Segment 표시기 (7447 + FND 507)
 
 - kind: circuit

@@ -1,0 +1,137 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 3) BCD 카운터 — FND Common Anode 테스트 1단계",
+ "subtitle": "C2 위에 FND 507 + 330Ω ×7 · 7447 은 아직 꽂지 않는다",
+ "kept": 25,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "(빈 자리)",
+   "to": "꽂는다: FND 507",
+   "desc": "FND 507: pin 1 이 우 29행 왼쪽 위 · 골을 걸쳐 꽂는다",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 i32",
+   "to": "우 i34",
+   "desc": "a: 330Ω(우 i32→우 i34) · FND 507 pin 7 세그먼트 a",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 j33",
+   "to": "우 j35",
+   "desc": "b: 330Ω(우 j33→우 j35) · FND 507 pin 6 세그먼트 b",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "우 b32",
+   "to": "우 b34",
+   "desc": "c: 330Ω(우 b32→우 b34) · FND 507 pin 4 세그먼트 c",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "우 b30",
+   "to": "우 b28",
+   "desc": "d: 330Ω(우 b30→우 b28) · FND 507 pin 2 세그먼트 d",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "sig",
+   "from": "우 a29",
+   "to": "우 a27",
+   "desc": "e: 330Ω(우 a29→우 a27) · FND 507 pin 1 세그먼트 e",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "우 i30",
+   "to": "우 i28",
+   "desc": "f: 330Ω(우 i30→우 i28) · FND 507 pin 9 세그먼트 f",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "sig",
+   "from": "우 j29",
+   "to": "우 j27",
+   "desc": "g: 330Ω(우 j29→우 j27) · FND 507 pin 10 세그먼트 g",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "vcc",
+   "from": "우 a31",
+   "to": "중앙VCC레일31행",
+   "desc": "FND 507 pin 3 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "vcc",
+   "from": "우 a33",
+   "to": "중앙VCC레일33행",
+   "desc": "FND 507 pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "vcc",
+   "from": "우 j31",
+   "to": "중앙VCC레일37행",
+   "desc": "FND 507 pin 8 -> +5V 레일",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "A",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "B",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "C",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "D",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "R0",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "CLK",
+   "at": "좌 j5",
+   "rail": "중앙GND레일5행",
+   "x": 588,
+   "row": 5
+  }
+ ]
+}

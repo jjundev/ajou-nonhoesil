@@ -1197,6 +1197,14 @@ class TestCircuitTrail(unittest.TestCase):
     def test_이어_붙이는_배너는_회로_번호만_적는다(self):
         self.assertIn("앞 회로(C3)를 그대로 두고", self.pages[3])
 
+    def test_C3_는_완성본_앞에_새_부품만_적은_단계가_온다(self):
+        page = self.pages[2]
+        self.assertLess(page.index('<div class="stage">'), page.index("<h3>완성본</h3>"))
+        stage = page.split('<div class="stage">')[1]
+        self.assertEqual(stage.count('class="step"'), 11)
+        self.assertIn("전원과 신호발생기 출력을 끈 상태로", stage)
+        self.assertIn("저항의 빈 끝에 차례로 대어 T5를 채워요", stage)
+
 
 class TestContinuesBanner(unittest.TestCase):
     """`앞 회로의 점퍼선을 모두 뽑아요` 는 실험10 C2 에서 틀린 지시다 —

@@ -249,9 +249,10 @@ def _prep_bcd(output_path, template_path=None, baseline=None, *, order):
 def build_e8_fnd(output_path, template_path=None, stage=None, baseline=None, hand=None, hand_guide=False):
     if hand is not None and stage is not None:
         raise ValueError('hand 는 완성본(stage=None)에만 준다')
-    bb = _board(output_path, template_path, BCD, 6, baseline, f'{_E3} — FND Common Anode 테스트',
-                'C2 위에 FND 507 + 330Ω ×7 · 7447 은 아직 꽂지 않는다', partial_=True, submit=True,
-                hand=hand, hand_guide=hand_guide)
+    bb = _board(output_path, template_path, BCD, 6, baseline,
+                f'{_E3} — FND Common Anode 테스트' + (f' {stage}단계' if stage else ''),
+                'C2 위에 FND 507 + 330Ω ×7 · 7447 은 아직 꽂지 않는다', palette=stage is not None, partial_=True,
+                submit=stage is None, hand=hand, hand_guide=hand_guide)
     bb.note('저항 빈 끝은 비어 있다. 시험선은 손에 들고 대며 그림에 없다.')
     bb.export(output_path, max_row=63)
     return bb
@@ -259,11 +260,6 @@ def build_e8_fnd(output_path, template_path=None, stage=None, baseline=None, han
 
 def _prep_driver(output_path, template_path=None, baseline=None, *, order):
     titles = ('7447·전원·제어핀 준비', '입력 고정')
-    if order == 1:      # C3 은 사슬 밖 완성본이다 — FND 부품은 C3 에서 꽂았으니 기준선을 C3 으로 잇는다
-        import tempfile
-        from pathlib import Path
-        with tempfile.TemporaryDirectory() as d:
-            baseline = build_e8_fnd(str(Path(d) / 'c3.png'), template_path).snapshot()
     bb = _board(output_path, template_path, BCD, 6 + order, baseline, f'{_E3} 준비 {order} · {titles[order - 1]}',
                 _POWER_OFF, palette=True, partial_=True)
     bb.export(output_path, max_row=63)
@@ -297,6 +293,7 @@ def build_e8_final(output_path, template_path=None, stage=None, baseline=None, h
 
 _N1 = '실험08_1_결선도_2단2진카운터'
 _N2 = '실험08_3_결선도_BCD카운터'
+_N3 = '실험08_3_결선도_FND테스트'
 _N4 = '실험08_3_결선도_7447표시기'
 _N5 = '실험08_3_결선도_BCD표시기'
 BOARDS = [
@@ -305,6 +302,7 @@ BOARDS = [
     (f'{_N1}_5단계_Y3.png', build_e8_counter, 5),
     (f'{_N2}_1단계_입력.png', build_e8_bcd, 1), (f'{_N2}_2단계_AB.png', build_e8_bcd, 2),
     (f'{_N2}_3단계_CD.png', build_e8_bcd, 3),
+    (f'{_N3}_1단계_FND.png', build_e8_fnd, 1),
     (f'{_N4}_1단계_abc.png', build_e8_driver, 1), (f'{_N4}_2단계_def.png', build_e8_driver, 2),
     (f'{_N4}_3단계_g.png', build_e8_driver, 3),
     (f'{_N5}_1걷기_입력고정.png', removal_board((build_e8_driver, 3), (build_e8_final, 1),
@@ -320,5 +318,5 @@ ASSEMBLY_BOARDS = {
     f'{_N2}_1단계_입력.png': [(f'{_N2}_1준비_{i}.png', partial(_prep_bcd, order=i)) for i in (1, 2)],
     f'{_N4}_1단계_abc.png': [(f'{_N4}_1준비_{i}.png', partial(_prep_driver, order=i)) for i in (1, 2)],
 }
-FINALS = [(f'{_N1}.png', build_e8_counter), (f'{_N2}.png', build_e8_bcd), ('실험08_3_결선도_FND테스트.png', build_e8_fnd),
+FINALS = [(f'{_N1}.png', build_e8_counter), (f'{_N2}.png', build_e8_bcd), (f'{_N3}.png', build_e8_fnd),
           (f'{_N4}.png', build_e8_driver), (f'{_N5}.png', build_e8_final)]
