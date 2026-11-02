@@ -5,8 +5,8 @@
   작성자가 손으로 적는다. 판형 이미지가 원본 그대로라 `review-hand-diagram` 격자 보정이 그대로 된다.
 - `실험NN_<실험_제목>_부품그리기.pdf` — 같은 흔들림의 선을 회색으로, 비워 둔 부품만 색으로 그린 안내판 + 부품표.
 
-완성본 하나가 각 PDF 의 한 쪽이다. 주차 결선 파일(`배치.py`)의 `FINALS` 빌더를 `hand=<시드>` 로
-부른다. 시드는 손그림모사 PNG 이름에서 나오므로 다시 뽑아도 같은 그림이다. PNG 는 임시 폴더에서만
+완성본 하나가 각 PDF 의 한 쪽이고, 회로를 고르지 않으면 명세 항목마다 최종본 하나만 싣는다.
+주차 결선 파일(`배치.py`)의 `FINALS` 빌더를 `hand=<시드>` 로 부른다. 시드는 손그림모사 PNG 이름에서 나오므로 다시 뽑아도 같은 그림이다. PNG 는 임시 폴더에서만
 만든다 — 도장·사이드카 없는 PNG 가 `결선도/` 에 있으면 검사 도구가 정본으로 읽는다.
 
     .venv/bin/python -m scripts.lab.hand_sim --experiment 5
@@ -27,6 +27,7 @@ from pypdf import PdfReader
 from scripts.lab import config
 from scripts.lab.hand_grid import REPO_ROOT, load_renderer
 from scripts.lab.html2pdf import html_to_pdf
+from scripts.lab.netlist_parser import final_per_item, parse_netlist
 
 # 팀원 전달용 PDF 폴더 — 결선도/ 아래
 OUT_DIR = '팀원전달용'
@@ -206,16 +207,22 @@ def make_pdfs(finals, handout_out, guide_out, title):
 def main(argv=None):
     parser = argparse.ArgumentParser(description='완성본 결선도로 손그림모사·부품그리기 PDF 를 낸다')
     parser.add_argument('--experiment', type=int, required=True)
-    parser.add_argument('--final', action='append', help='배치.py FINALS 의 완성본 PNG 이름 (생략하면 전부)')
+    parser.add_argument('--final', action='append', help='배치.py FINALS 의 완성본 PNG 이름 (생략하면 항목별 최종본)')
     parser.add_argument('--out-dir', default=None, help='출력 폴더 (기본: 결선도/팀원전달용/)')
     args = parser.parse_args(argv)
 
     all_finals = dict(load_renderer().load_board(args.experiment).FINALS)
-    names = args.final or list(all_finals)
-    missing = [n for n in names if n not in all_finals]
-    if missing:
-        raise SystemExit(f'FINALS 에 없는 완성본: {", ".join(missing)} — 가능한 이름: {", ".join(all_finals)}')
-    finals = [(n, all_finals[n]) for n in names]
+    if args.final:
+        missing = [n for n in args.final if n not in all_finals]
+        if missing:
+            raise SystemExit(f'FINALS 에 없는 완성본: {", ".join(missing)} — 가능한 이름: {", ".join(all_finals)}')
+        finals = [(n, all_finals[n]) for n in args.final]
+    else:
+        netlist = REPO_ROOT / config.experiment_dir(args.experiment) / '결선도/netlist.md'
+        try:
+            finals = final_per_item(parse_netlist(netlist), list(all_finals.items()))
+        except ValueError as e:
+            raise SystemExit(str(e)) from None
     # 그리기 전에 전부 본다 — 앞 완성본만 뽑고 터지지 않게
     lacking = [fn.__name__ for _, fn in finals if 'hand_guide' not in inspect.signature(fn).parameters]
     if lacking:

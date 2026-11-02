@@ -517,3 +517,17 @@ def parse_netlist(path) -> LabNetlist:
 
     return LabNetlist(experiment=front["experiment"],
                       spec=front["spec"], sections=sections, path=path, text=text, schema=schema)
+
+
+def final_per_item(netlist, finals):
+    """`배치.py` 의 `FINALS` 에서 명세 항목마다 최종본 하나를 고른다 — 팀원 전달용 PDF 는 실험 항목당 한 장이다.
+
+    항목의 회로는 netlist 에 조립 순서로 적혀 있으므로 `FINALS` 에 있는 마지막 회로가 그 항목의 최종본이다.
+    """
+    by_name = dict(finals)
+    orphans = sorted(set(by_name) - {c.diagram for c in netlist.circuits})
+    if orphans:
+        raise NetlistError(f"netlist 의 어떤 회로도 가리키지 않는 완성본: {', '.join(orphans)}. "
+                           "회로의 `diagram` 을 고치거나 `FINALS` 에서 뺀다")
+    last = {c.item: c.diagram for c in netlist.circuits if c.diagram in by_name}
+    return [(name, by_name[name]) for name in last.values()]

@@ -398,6 +398,13 @@ class HandSimScript(unittest.TestCase):
         self.assertIn('넘침', str(cm.exception))
         self.assertEqual(list(self._last_tmp.iterdir()), [])
 
+    def test_회로_이름이_없으면_항목별_최종본만_싣는다(self):
+        # 실험08 FINALS 는 다섯이지만 항목은 둘이다 — 팀원은 실험당 최종본 하나만 그린다
+        from pypdf import PdfReader
+        (sim, guide), _ = self._run('--experiment', '8')
+        self.assertEqual(len(PdfReader(str(sim)).pages), 2)
+        self.assertEqual(len(PdfReader(str(guide)).pages), 2)
+
     def test_없는_완성본은_목록과_함께_멈춘다(self):
         from scripts.lab import hand_sim
         with self.assertRaises(SystemExit) as cm:

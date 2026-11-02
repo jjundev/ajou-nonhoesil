@@ -235,6 +235,15 @@ class Overflow(unittest.TestCase):
             self.assertEqual(out.read_bytes(), b'old')
 
 
+class Finals(unittest.TestCase):
+    def test_항목별_최종본만_싣는다(self):
+        with mock.patch.object(trace_guide, 'make_pdf', return_value=0) as made:
+            trace_guide.make_guide(8, 'x.pdf')
+        board = made.call_args.args[0]
+        self.assertEqual([name for name, _ in board.FINALS],
+                         ['실험08_1_결선도_2단2진카운터.png', '실험08_3_결선도_BCD표시기.png'])
+
+
 class Main(unittest.TestCase):
     def test_시간초과는_종료코드_1(self):
         with mock.patch.object(trace_guide, 'make_guide',

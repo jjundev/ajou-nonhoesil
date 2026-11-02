@@ -6,11 +6,13 @@
 """
 
 import tempfile
+import types
 import unittest
 from pathlib import Path
 
 from scripts.lab import config
-from scripts.lab.netlist_parser import NetlistError, parse_netlist
+from scripts.lab.hand_grid import load_renderer
+from scripts.lab.netlist_parser import NetlistError, final_per_item, parse_netlist
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -630,6 +632,41 @@ class V2MidRailAddress(unittest.TestCase):
         from scripts.lab.netlist_parser import _holes
         self.assertEqual(_holes("우 중앙GND레일49행·좌 VCC레일5행"),
                          ["우 중앙GND레일49행", "좌 VCC레일5행"])
+
+
+class FinalPerItem(unittest.TestCase):
+    """팀원 전달용 PDF 는 실험 항목 하나에 최종본 하나다(2026-11-02 사용자 결정)."""
+
+    @staticmethod
+    def _net(*rows):
+        return types.SimpleNamespace(circuits=[types.SimpleNamespace(item=i, diagram=d) for i, d in rows])
+
+    def test_항목마다_마지막_회로를_고른다(self):
+        finals = [('a.png', 1), ('b.png', 2), ('c.png', 3)]
+        net = self._net(('P1', 'a.png'), ('P3', 'b.png'), ('P3', 'c.png'))
+        self.assertEqual(final_per_item(net, finals), [('a.png', 1), ('c.png', 3)])
+
+    def test_FINALS_에_없는_회로는_고르지_않는다(self):
+        # 실험01 AND 처럼 netlist 에만 있는 회로
+        net = self._net(('P1', 'a.png'), ('P1', '단계.png'), ('P2', '단계2.png'))
+        self.assertEqual(final_per_item(net, [('a.png', 1)]), [('a.png', 1)])
+
+    def test_netlist_에_없는_완성본은_이름을_대고_멈춘다(self):
+        # 조용히 빼면 PDF 에서 회로가 사라진다
+        with self.assertRaisesRegex(NetlistError, '고아.png'):
+            final_per_item(self._net(('P1', 'a.png')), [('a.png', 1), ('고아.png', 2)])
+
+    def test_실제_실험은_실험08만_줄어든다(self):
+        rb = load_renderer()
+        for n in range(1, 9):
+            with self.subTest(실험=n):
+                finals = rb.load_board(n).FINALS
+                picked = final_per_item(parse_netlist(Path(config.experiment_dir(n)) / '결선도/netlist.md'), finals)
+                if n == 8:
+                    self.assertEqual([name for name, _ in picked],
+                                     ['실험08_1_결선도_2단2진카운터.png', '실험08_3_결선도_BCD표시기.png'])
+                else:
+                    self.assertEqual(picked, list(finals))
 
 
 if __name__ == "__main__":

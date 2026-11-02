@@ -1,6 +1,6 @@
 """따라 그리기 PDF — 완성본 결선도를 층으로 나눠 팀원이 한 쪽씩 옮겨 그리게 한다.
 
-주차 결선 파일(`배치.py`)의 `FINALS` 와 `LAYERS` 를 읽는다. 완성본 한 장마다 0쪽(완성본
+주차 결선 파일(`배치.py`)의 `FINALS` 와 `LAYERS` 를 읽어 명세 항목마다 최종본 하나만 싣는다. 완성본 한 장마다 0쪽(완성본
 전체 + notes)과 층마다 한 쪽을 낸다. 층 그림은 엔진 `layer=(lo, hi)` 로 그린다 — 앞 층
 회색, 이번 층 색·완성본 번호, 뒤 층은 안 보인다. 표는 완성본 사이드카 `steps` 에서 그 층
 번호만 고른다. 조립 절차(`BOARDS`)는 쓰지 않는다 — 임시 급전선이 손그림에 섞인다.
@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import types
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import quote
@@ -27,6 +28,7 @@ from pypdf import PdfReader
 from scripts.lab import config
 from scripts.lab.hand_grid import load_renderer
 from scripts.lab.html2pdf import PdfError, html_to_pdf
+from scripts.lab.netlist_parser import NetlistError, final_per_item, parse_netlist
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = '팀원전달용'
@@ -192,8 +194,11 @@ def output_path(experiment):
 
 def make_guide(experiment, out=None):
     board = load_renderer().load_board(experiment)
+    netlist = REPO_ROOT / config.experiment_dir(experiment) / '결선도/netlist.md'
+    picked = types.SimpleNamespace(FINALS=final_per_item(parse_netlist(netlist), board.FINALS),
+                                   LAYERS=getattr(board, 'LAYERS', None))
     out = Path(out) if out else output_path(experiment)
-    return out, make_pdf(board, out)
+    return out, make_pdf(picked, out)
 
 
 def main(argv=None):
@@ -203,7 +208,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         out, n = make_guide(args.experiment, args.out)
-    except (LayerError, PdfError, FileNotFoundError, subprocess.TimeoutExpired) as e:
+    except (LayerError, NetlistError, PdfError, FileNotFoundError, subprocess.TimeoutExpired) as e:
         print(f'[ERROR] {e}', file=sys.stderr)
         return 1
     print(f'[SUCCESS] {out} ({n}쪽)')

@@ -16,11 +16,11 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
 `결과보고서표지`, `손그림모사`, `부품그리기`, `따라그리기`, `예상결과`다.
 저장 위치·예외·이력 보존 규칙은 `docs/schema/lab-artifact-naming.md`를 따른다.
 
-완성본 결선도(`배치.py` 의 `FINALS`)를 **번호 구간 층**으로 나눠, 한 쪽에 한 층씩
+명세 항목마다 최종본 하나(`배치.py` 의 `FINALS` 중 `netlist.md` 항목별 마지막 회로)를 **번호 구간 층**으로 나눠, 한 쪽에 한 층씩
 싣는 PDF 를 `<실험NN>/결선도/팀원전달용/실험NN_<실험_제목>_따라그리기.pdf` 에 낸다. 그림·표·쪽 검사는
 전부 코드(`scripts/lab/trace_guide.py`, 엔진 `layer=(lo, hi)`)가 한다. 이 스킬이 판단하는
 것은 **층을 어디서 끊고 뭐라고 부르나** 하나다. 쪽 순서는 완성본마다 `완성본 쪽 → 그 층들`
-이고, 쪽 수 = 완성본 수 + 층 수다.
+이고, 쪽 수 = 싣는 완성본 수 + 층 수다.
 
 ## 인자 — 실험 하나로 정한다
 
@@ -30,11 +30,11 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
   결과가 **정확히 하나**이고, 사용자가 회로 이름을 말했다면 그 이름이 그 실험 `FINALS` 에 있을
   때만 진행한다. 비었거나, 둘 이상이거나, 회로 이름이 안 맞으면 후보를 들어 한 줄로 되묻고
   멈춘다 — 같은 번호의 실험 폴더(`실험0N`)가 있으면 첫 후보로 든다.
-- 회로 이름을 말하지 않았으면 그 실험 `FINALS` 전부를 싣는다.
+- 회로 이름을 말하지 않았으면 명세 항목마다 최종본 하나만 싣는다(2026-11-02 사용자 결정). 생성기가 고른다.
 
 ## 고치는 파일 — 이 둘뿐이다
 
-1. 그 주차 `보고서/실험NN/결선도/배치.py` — `FINALS` 빌더의 `layer` 인자, `LAYERS` 표
+1. 그 주차 `보고서/실험NN/결선도/배치.py` — 싣는 완성본 빌더의 `layer` 인자, `LAYERS` 표
 2. 그 주차 `결선도/팀원전달용/실험NN_<실험_제목>_따라그리기.pdf`
 
 엔진·생성기·공용 테스트가 실패하면 그 파일을 고치지 않는다. 실패한 명령과 출력 끝부분을
@@ -46,13 +46,13 @@ description: 논리회로실험 완성본 결선도를 팀원이 손으로 똑�
 
 1. **전제.** `.venv/bin/python -m pytest tests/test_breadboard_boards.py -q` 가 초록이어야
    한다. 빨강이면 완성본 PNG 가 낡은 것이다 — `breadboard-diagram` 으로 넘기고 멈춘다.
-2. **빌더.** `FINALS` 의 빌더마다 시그니처에 `layer=None` 이 있고
+2. **빌더.** 싣는 완성본의 빌더마다 시그니처에 `layer=None` 이 있고
    `BreadboardRenderer(template_path, baseline=baseline, layer=layer)` 로 넘기는지 본다.
    v2 주차(`BOARD = 'v2'`)는 `board=BOARD` 도 넘긴다 —
    `BreadboardRenderer(template_path, baseline=baseline, layer=layer, board=BOARD)`.
    없으면 `보고서/실험04/결선도/배치.py` 의 `build_e4_mux` 처럼 더한다 — `stage` 와 함께
    주면 `ValueError` 로 거절하는 두 줄 포함. `FINALS` 에 없는 회로는 손대지 않는다.
-3. **층.** `LAYERS` 가 `FINALS` 의 완성본 전부를 덮고 있으면 건너뛴다. 빠진 완성본이 있으면
+3. **층.** `LAYERS` 가 싣는 완성본 전부를 덮고 있으면 건너뛴다. 빠진 완성본이 있으면
    그 몫만 쓴다. 없으면 `결선도/<완성본>.json` 의 `steps`
    (번호·kind·from·to·desc)를 읽고 아래 **층 규칙**대로 `FINALS` 바로 뒤에 쓴다.
 4. **재기.** `.venv/bin/python -m pytest tests/test_trace_guide_layers.py tests/test_breadboard_boards.py -q`
