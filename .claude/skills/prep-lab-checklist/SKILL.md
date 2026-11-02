@@ -175,6 +175,9 @@ v2 단계는 `확인` 셀 끝에 `[진단용]`을 단다. 숨겨지는 칸의 �
    spec = parse_spec('<실험NN>/체크리스트/명세.md')
    netlist = parse_netlist('<실험NN>/결선도/netlist.md')
    from scripts.lab.assembly import check_structure, check_registry, check_assets
+   bare = [c.id for c in netlist.circuits if c.continues and not c.stages]
+   if bare:
+       raise ValueError(f'앞 회로에 잇는데 단계가 없다: {bare} — netlist 에 단계 표를 쓴다')
    gates = check_structure(netlist)
    if any(section.assembly_steps for section in netlist.circuits):
        from scripts.lab.place_search import load
@@ -257,7 +260,7 @@ v2 단계는 `확인` 셀 끝에 `[진단용]`을 단다. 숨겨지는 칸의 �
 
 ### 회로별 순서
 
-1. 개요 쪽의 문서·회로 제목, 첫 장의 칩 포트 역할 표, 필요한 칩 교체 지시, 강의노트 회로 그림. 준비 1은 다음 쪽에서 시작한다.
+1. 개요 쪽의 문서·회로 제목, 실험별 회로 길잡이 줄, 첫 장의 칩 포트 역할 표, 필요한 칩 교체 지시, 강의노트 회로 그림. 준비 1은 다음 쪽에서 시작한다.
 2. 준비·걷기·결선 단계마다 그림과 번호별 연결/분리 목록, 필요한 조작·관측표.
 3. 완성본 그림. 단계에서 이미 나온 배선 목록과 U1·U2 등의 핀별 배선표는 반복하지 않는다.
 4. 필요한 미사용 핀 지시, 기록표·파형 기록 공간·아직 관측하지 않은 노드 표.
@@ -338,6 +341,7 @@ LED 관측표의 `보는 LED` 대응 안내는 LED 이름과 관측 신호가 �
 
 유일한 조작 조건이 삭제 대상 산문에만 있으면 기존 단계나 `setup`·조작 셀에 짧게 보완한다.
 새 설명 페이지를 추가하지 않는다. 단계가 없는 계측 회로의 유일한 설정·저항망 표는 보존한다.
+앞 회로에 부품을 잇는 회로(`continues`)는 계측 회로가 아니다 — 단계 없이 인쇄하지 않는다.
 그림도 단계도 없는 회로는 유일한 배선 정보를 남긴다.
 
 `source`·`provenance`·`rationale`·배선 원본은 삭제하지 않는다. PDF와 record.py가 공유하는
