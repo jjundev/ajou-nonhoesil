@@ -128,6 +128,7 @@ class ObservationProcedure:
     line: int
     layout: str = "split"
     purpose: str = ""
+    checklist: str = "required"
 
 
 @dataclass
@@ -276,6 +277,8 @@ def _split_stages(body, path, line, schema="lab-netlist/v2"):
                                  ("n", "diagram", "todo", "check"), "단계", path, line,
                                  preserve=("check",) if schema == "lab-netlist/v3" else ())
     for row in rows:
+        if row['check'].rstrip().endswith('[진단용]'):
+            row['diagnostic'] = True
         m = _STAGE_NODE.match(row["check"])
         row["node"] = m.group(1) if m else None
         if "절차" in row["check"]:
@@ -288,6 +291,8 @@ def _split_stages(body, path, line, schema="lab-netlist/v2"):
             row["procedure"] = ref.group(2) if ref else None
         number = _STAGE_NUMBER.match(row["n"])
         walk = _STAGE_WALK.match(row["n"])
+        if walk and row.get('diagnostic'):
+            raise NetlistError(f"{path}:{line} 걷기 행에 [진단용]을 지정할 수 없다")
         row["stage_no"] = int(number.group(0)) if number and not walk else None
         row["walk"] = walk is not None
         row["walk_of"] = int(walk.group(1)) if walk else None
@@ -328,6 +333,8 @@ def _split_procedures(body, path, line, schema):
         seen.add(ident)
         end = next((j for j in range(i+1, len(lines)) if lines[j].startswith("## ")), len(lines))
         attrs, rest = _leading_attrs("\n".join(lines[i+1:end]))
+        if attrs.get("checklist", "required") not in ("required", "diagnostic"):
+            raise NetlistError(f"{path}:{line+i} {ident} checklist 는 required 또는 diagnostic 이어야 한다")
         for key in ("source", "provenance", "setup", "encoding", "inputs", "observe"):
             if not attrs.get(key):
                 raise NetlistError(f"{path}:{line+i} {ident} 필수 속성 {key} 누락")
@@ -357,7 +364,7 @@ def _split_procedures(body, path, line, schema):
         procedures.append(ObservationProcedure(ident, title, attrs["source"], attrs["provenance"],
                            attrs.get("rationale", ""), attrs["setup"], attrs["encoding"],
                            lists["inputs"], lists["clocks"], lists["observe"], steps, line+i, attrs.get("layout", "split"),
-                           purpose=attrs.get("purpose", "")))
+                           purpose=attrs.get("purpose", ""), checklist=attrs.get("checklist", "required")))
         remove.update(range(i,end))
     return procedures, "\n".join(ln for i, ln in enumerate(lines) if i not in remove)
 

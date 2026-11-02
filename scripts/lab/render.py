@@ -899,14 +899,22 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     else:
         img = f"<p class='src'>단계 그림이 아직 없어요: {_esc(stage['diagram'] or '(없음)')}</p>"
         text = ""
+    try:
+        procedure = observations.procedure_for_stage(section, stage) if stage.get("procedure") else None
+    except ValueError:
+        procedure = None  # 아래의 기존 오류 표시 경로에서 처리한다.
+    diagnostic = bool(stage.get("diagnostic")) or (procedure is not None and procedure.checklist == "diagnostic")
+    if diagnostic and data.get("probes"):
+        data = {**data, "probes": []}
+        text = _board_text_html(data)
     node = ""
-    if stage.get("node"):
+    if stage.get("node") and not diagnostic:
         pin = next((n["pin"] for n in section.nodes if n["name"] == stage["node"]), "")
         tail = f" <small>({_esc(pin)})</small>" if pin else ""
         node = f"<p><b>확인 노드:</b> {_esc(_plain(stage['node']))}{tail}</p>"
     table = ""
     seen_nodes = {feed[led.tag] for led in watched(leds, feed or {}, section)}
-    if stage.get("procedure"):
+    if stage.get("procedure") and not diagnostic:
         try:
             procedure = observations.procedure_for_stage(section, stage)
             names = list(dict.fromkeys([*procedure.observe, *[feed[led.tag] for led in leds
@@ -917,9 +925,9 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
                      + _observation_procedure_html(authored, leds, feed, png=png))
         except ValueError as exc:
             table = f"<p class='src'>확인 절차를 인쇄할 수 없어요: {_esc(exc)}</p>"
-    elif spec is not None and stage.get("node") and stage["node"] in seen_nodes:
+    elif not diagnostic and spec is not None and stage.get("node") and stage["node"] in seen_nodes:
         table = _led_table_html(spec, section, leds, feed, png=png)
-    elif spec is not None and stage.get("node") and not last:
+    elif not diagnostic and spec is not None and stage.get("node") and not last:
         table = _stage_table_html(spec, section, stage["node"], _stage_led(stage["todo"]), png=png)
     # 걷기 행은 `단계 2걷기` 가 아니라 `2단계 전 · 걷기` 로 찍는다 — 인쇄본에서
     # "2단계 앞에 하는 정리" 로 읽혀야 한다. `단계 2 · 걷기` 는 바로 뒤 `단계 2`
@@ -931,7 +939,7 @@ def _stage_html(stage, netlist, section, spec=None, last=False, leds=(), feed=No
     operation = ('<p class="operation"><b>전원 OFF</b></p>' if stage.get('walk')
                  else _task_note(stage['todo'], data))
     # 명시 관측표와 걷기 목록이 확인 대상·핀·결과를 이미 담는다.
-    check = ('' if stage.get('procedure') or stage.get('walk') else
+    check = ('' if diagnostic or stage.get('procedure') or stage.get('walk') else
              f'<p><span class="box"></span><b>확인:</b> {_esc(_plain(stage["check"]))}</p>')
     if table:
         node = ''

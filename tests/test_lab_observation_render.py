@@ -23,6 +23,43 @@ def test_last_stage_prints_explicit_procedure(data):
     assert all(action in h for action in ['초기화','CLR 해제','데이터 설정','클럭 상승','클럭 하강'])
     assert h.count('data-observation-order=') == 10 # same five rows in both areas
 
+def test_diagnostic_procedure_is_preserved_but_not_a_required_stage_check(tmp_path):
+    from tests.test_lab_observation_parser import TEXT
+    n = parsed(tmp_path, TEXT.replace('- setup:', '- checklist: diagnostic\n- setup:', 1))
+    s = parse_spec(FIX / 'spec_observation_stepped.md')
+    c = n.circuits[0]
+    assert c.procedures[0].checklist == 'diagnostic'
+    h = stage_html((n, s, c))
+    assert 'BIT1 초기화 및 입력 확인' not in h
+    assert '확인 노드:' not in h
+    assert 'observation-procedure' not in h
+    assert len(c.procedures[0].steps) == 5
+
+def test_invalid_checklist_policy_is_rejected(tmp_path):
+    from tests.test_lab_observation_parser import TEXT
+    from scripts.lab.netlist_parser import NetlistError
+    with pytest.raises(NetlistError, match='checklist'):
+        parsed(tmp_path, TEXT.replace('- setup:', '- checklist: typo\n- setup:', 1))
+
+def test_v2_diagnostic_stage_keeps_wiring_without_a_measurement_table(tmp_path):
+    from scripts.lab import config
+    from scripts.lab.netlist_parser import parse_netlist
+    source = Path(config.experiment_dir(3)) / '결선도/netlist.md'
+    content = source.read_text(encoding='utf-8')
+    content = content.replace('LED1 을 A·B 네 조합으로 본다 (01·10 만 켜짐). 74HC86 첫 사용',
+                              'LED1 을 A·B 네 조합으로 본다 (01·10 만 켜짐). 74HC86 첫 사용 [진단용]', 1)
+    path = tmp_path / 'netlist.md'
+    path.write_text(content, encoding='utf-8')
+    net = parse_netlist(path)
+    circuit = net.circuits[0]
+    stage = circuit.stages[0]
+    assert stage['diagnostic'] is True
+    html = render._stage_html(stage, net, circuit, spec=parse_spec(Path(config.experiment_dir(3)) / '체크리스트/명세.md'))
+    assert '확인 노드:' not in html
+    assert '<b>확인:</b>' not in html
+    assert '01·10 만 켜짐' not in html
+    assert '단계 1' in html
+
 def test_running_clock_is_readable_in_both_layouts(data):
     n, s, c = data
     p = c.procedures[0]
