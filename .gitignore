@@ -47,3 +47,6 @@ venv/
 
 # Notion 업로드 잠금·재개 journal은 로컬 운영 상태다.
 **/output/.notion-sync/
+
+# API 키 등 로컬 비밀값 (logic-lab-stt 가 Gemini 키를 여기서 읽는다).
+.env
