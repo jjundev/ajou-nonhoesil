@@ -125,11 +125,14 @@ def power_pins(diagram):
 
     핀 수는 칩 레코드 `pins` 에서 읽는다 — 14핀이면 (14, 7), 16핀(74HC42)이면 (16, 8).
     (14, 7) 을 박아 두면 DIP-16 에서 전원을 못 보고, 신호 핀 7·14 를 H6 이 건너뛴다.
+    전원핀이 모서리가 아닌 칩(74HC76 VCC 5·GND 13, 7490 VCC 5·GND 10)은 렌더러
+    `dip_power` 표를 따른다 — 모서리 규칙만 쓰던 2026-11-07 전에는 실험06·08 참조끼리
+    대조해도 H3 치명이 났다.
     """
+    dip_power = load_renderer().dip_power
     out = {}
     for key, ch in zip(chip_keys(diagram), diagram.chips):
-        n = len(ch['pins'])
-        out[key] = (n, n // 2)
+        out[key] = tuple(dip_power(ch['label'], len(ch['pins'])))
     return out
 
 

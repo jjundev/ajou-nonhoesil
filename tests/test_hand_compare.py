@@ -842,6 +842,22 @@ class NewWeeks(unittest.TestCase):
                 hand = hc.reference_diagram(cid)
                 self.assertEqual([str(f) for f in hc.compare(ref, hand)], [])
 
+    def test_전원핀이_모서리가_아닌_칩도_자기_대조에서_조용하다(self):
+        """74HC76(VCC 5·GND 13)·7490(VCC 5·GND 10) 은 DIP 모서리 규칙이 안 맞는다.
+
+        2026-11-07 전에는 `power_pins` 가 (n, n/2) 를 박아 실험08 참조끼리 대조해도
+        `74HC76 pin 8 — 전원 단락` 치명 2건이 났다. 렌더러 `dip_power` 표를 따른다.
+        """
+        for cid in ('e6_jk', 'e8_counter', 'e8_bcd'):
+            with self.subTest(cid=cid):
+                ref = hc.reference_diagram(cid)
+                hand = hc.reference_diagram(cid)
+                self.assertEqual([str(f) for f in hc.compare(ref, hand)], [])
+
+    def test_74HC76_전원핀은_5와_13이다(self):
+        ref = hc.reference_diagram('e8_counter')
+        self.assertEqual(hc.power_pins(ref)['74HC76'], (5, 13))
+
 
 class Verdict(unittest.TestCase):
     def test_치명이_있으면_수정_필요(self):
