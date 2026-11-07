@@ -79,14 +79,6 @@
   {
    "n": 10,
    "kind": "vcc",
-   "from": "우 a33",
-   "to": "중앙VCC레일33행",
-   "desc": "FND 507 pin 5 -> +5V 레일",
-   "count": 1
-  },
-  {
-   "n": 11,
-   "kind": "vcc",
    "from": "우 j31",
    "to": "중앙VCC레일37행",
    "desc": "FND 507 pin 8 -> +5V 레일",

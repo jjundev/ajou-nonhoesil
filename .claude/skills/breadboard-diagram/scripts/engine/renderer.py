@@ -1144,6 +1144,7 @@ class BreadboardRenderer(_RuleChecks):
                 # 세그먼트 이름은 몸통 옆 배지다 — 몸통 위에 얹으면 색띠가 가려 다른 소자로 보인다(2026-11-02)
                 self._blank_parts(self.signal_tag, seg, x + (-13 if col == 'b' else 13), ymid)
             self.displays.append({'label': model, 'block': block, 'pin1_row': k, 'pins': pins,
+                                  'open': tuple(part.get('open', ())),
                                   'seg_strips': seg_strips, 'boxes': boxes})
         finally:
             self._keep_parts = False

@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 3) BCD 카운터 — 3. 최종 2단계",
  "subtitle": "7490 + 7447 + FND 507",
- "kept": 52,
+ "kept": 51,
  "steps": [
   {
    "n": 1,

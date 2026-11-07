@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 3) BCD 카운터 준비 2 · 입력 고정",
  "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
- "kept": 42,
+ "kept": 41,
  "steps": [
   {
    "n": 1,

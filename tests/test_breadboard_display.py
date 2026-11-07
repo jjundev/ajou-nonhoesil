@@ -108,11 +108,14 @@ class E8Nets(Fixture, unittest.TestCase):
             self.assertTrue(_resistor_bridges(bb, f'7447#{s2} pin {out}', f'FND 507 pin {fnd}'), (out, fnd))
             self.assertFalse(_net_of(bb, f'7447#{s2} pin {out}') & {f'FND 507 pin {fnd}'}, '330Ω 없이 이어졌다')
 
-    def test_FND_공통_애노드와_소수점은_VCC다(self):
+    def test_FND_공통_애노드는_VCC고_소수점은_비운다(self):
+        # 2026-11-06 조교 공지 `_356971_1`: VCC → 3·8번(Common Anode), 5번(DP)은 사용하지 않는다
         bb = self.render(self.board.build_e8_fnd)
-        for pin in (3, 5, 8):
+        for pin in (3, 8):
             net = next(n for n in bb.nets() if f'FND 507 pin {pin}' in n['labels'])
             self.assertEqual(net['rails'], {'vcc'}, pin)
+        dp = [n for n in bb.nets() if 'FND 507 pin 5' in n['labels']]
+        self.assertFalse(any(n['rails'] for n in dp), 'DP(pin 5)가 레일에 묶였다')
 
     def test_C5_는_7490_출력이_7447_입력에_닿는다(self):
         bb = self.render(self.board.build_e8_final)

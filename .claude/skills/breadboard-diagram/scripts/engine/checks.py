@@ -298,7 +298,8 @@ class _RuleChecks:
             out.append((f"저항{i}({r['label']}) 윗다리", r['top']))
             out.append((f"저항{i}({r['label']}) 아랫다리", r['bottom']))
         for d in self.displays:
-            out += [(f"{d['label']} pin {p}", sym) for p, sym in d['pins'].items()]
+            out += [(f"{d['label']} pin {p}", sym) for p, sym in d['pins'].items()
+                    if p not in d.get('open', ())]  # 일부러 비운 핀(FND 507 DP)은 뜬 다리가 아니다
         return out
 
     def nets(self, substitute_inputs=True):

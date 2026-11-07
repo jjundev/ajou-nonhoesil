@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 3) 3. 최종 — 입력 고정선 A·B·C 걷기",
  "subtitle": "전원을 꺼요. 빨간 선만 뽑아요. D 고정선은 남겨요.",
- "kept": 50,
+ "kept": 49,
  "steps": [],
  "removals": [
   {

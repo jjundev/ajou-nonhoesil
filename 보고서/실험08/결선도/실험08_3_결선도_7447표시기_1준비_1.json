@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 3) BCD 카운터 준비 1 · 7447·전원·제어핀 준비",
  "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
- "kept": 36,
+ "kept": 35,
  "steps": [
   {
    "n": 1,

@@ -2,7 +2,7 @@
  "schema": "breadboard-sidecar/v1",
  "title": "실험 3) BCD 카운터 — 2. BCD to 7-Segment 2단계",
  "subtitle": "7447 ×1 + FND 507 · 입력 A~D 는 점퍼",
- "kept": 49,
+ "kept": 48,
  "steps": [
   {
    "n": 1,
