@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "run_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험3_BCD카운터_영상분석",
+  "run_label": "실험3_BCD카운터",
+  "mode": "both",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\실험3.mp4",
+      "sha256_before": "256f650fb873c7d2587b385cef5e9f808a8cbdd19e8134842f1033d8b8622b1b",
+      "size": 4559769,
+      "duration_s": 13.291667,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1920,
+            "height": 1080,
+            "coded_width": 1920,
+            "coded_height": 1088,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "refs": 1,
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "24/1",
+            "avg_frame_rate": "24/1",
+            "time_base": "1/19200",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 255200,
+            "duration": "13.291667",
+            "bit_rate": "2611432",
+            "nb_frames": "319",
+            "extradata_size": 110,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "Core Media Video",
+              "vendor_id": "[0][0][0][0]"
+            },
+            "side_data_list": [
+              {
+                "side_data_type": "Display Matrix",
+                "displaymatrix": "\n00000000:            0       65536           0\n00000001:       -65536           0           0\n00000002:    141557760           0  1073741824\n",
+                "rotation": -90
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "44100",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/44100",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 586177,
+            "duration": "13.291995",
+            "bit_rate": "127028",
+            "nb_frames": "575",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "Core Media Audio",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "C:\\Users\\Hyunjun\\Downloads\\실험3.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "13.291995",
+          "size": "4559769",
+          "bit_rate": "2744369",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2mp41",
+            "encoder": "Lavf58.45.100"
+          }
+        }
+      },
+      "sha256_after": "256f650fb873c7d2587b385cef5e9f808a8cbdd19e8134842f1033d8b8622b1b"
+    }
+  },
+  "scenes": [
+    {
+      "id": "count",
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 13.29,
+      "item_id": "E8.P3/T7",
+      "speech": [],
+      "observation": "FND 표시가 7→8→9→0→1→2→3→4→5→6→7→8→9→0 순서로 약 1초마다 바뀜(전이는 각 초의 0.6~0.75s 부근). 9 다음 0으로 돌아오는 전이를 2.25→3.25s, 12.25→13.1s 에서 관찰. 6은 a 포함, 9는 d 없음 모양",
+      "unknowns": [
+        "FND는 보드 위에 90° 누워 있고 주황 점퍼선이 가운데(g) 부근을 가림. 숫자는 확대·회전한 원본 프레임에서 판독",
+        "보드 위쪽 LED(A~D 추정)의 켜짐 상태와 BCD 값 대응은 판독·확인하지 않음",
+        "CLK 파형·주기, R0/R9 핀 상태는 화면에 보이지 않음. 약 1초 간격 전이는 프레임 관찰값",
+        "자동 전사(Gemini) 2회 시도 모두 invalid_response 로 실패. 발언 내용 미확인"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "fnd0",
+      "source_id": "p1",
+      "at_s": 3.25,
+      "scene_id": "count",
+      "title": "FND_0_표시",
+      "observation": "FND 숫자 0 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\01_FND_0_표시_p1_00003.250.png",
+      "sha256": "3761f7cc91233abf67ad5124cc334e35a78fa733ca16066089c97ea35f9f1c75",
+      "frame_index": 78,
+      "frame_pts_s": 3.25,
+      "source_time_s": 3.25
+    },
+    {
+      "id": "fnd1",
+      "source_id": "p1",
+      "at_s": 4.25,
+      "scene_id": "count",
+      "title": "FND_1_표시",
+      "observation": "FND 숫자 1 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\02_FND_1_표시_p1_00004.250.png",
+      "sha256": "76a8f1ff466aa1e541419e20d3c72f487915ef5db9a2ccafb219d0796330da6e",
+      "frame_index": 102,
+      "frame_pts_s": 4.25,
+      "source_time_s": 4.25
+    },
+    {
+      "id": "fnd2",
+      "source_id": "p1",
+      "at_s": 5.25,
+      "scene_id": "count",
+      "title": "FND_2_표시",
+      "observation": "FND 숫자 2 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\03_FND_2_표시_p1_00005.250.png",
+      "sha256": "f31b4ebb54b7da262af6bc23c0616b45fe1cfcdf2d28de9ec73628208aa7c5c1",
+      "frame_index": 126,
+      "frame_pts_s": 5.25,
+      "source_time_s": 5.25
+    },
+    {
+      "id": "fnd3",
+      "source_id": "p1",
+      "at_s": 6.25,
+      "scene_id": "count",
+      "title": "FND_3_표시",
+      "observation": "FND 숫자 3 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\04_FND_3_표시_p1_00006.250.png",
+      "sha256": "aa5333a8b22345581b009c8854f046ca46c8a0f6bf0e4f574f9c919dd60b51dd",
+      "frame_index": 150,
+      "frame_pts_s": 6.25,
+      "source_time_s": 6.25
+    },
+    {
+      "id": "fnd4",
+      "source_id": "p1",
+      "at_s": 7.25,
+      "scene_id": "count",
+      "title": "FND_4_표시",
+      "observation": "FND 숫자 4 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\05_FND_4_표시_p1_00007.250.png",
+      "sha256": "baf00afab667a8c91b1bfb0514c224a7b40878bbc01ee762d712bc1ffc053507",
+      "frame_index": 174,
+      "frame_pts_s": 7.25,
+      "source_time_s": 7.25
+    },
+    {
+      "id": "fnd5",
+      "source_id": "p1",
+      "at_s": 8.25,
+      "scene_id": "count",
+      "title": "FND_5_표시",
+      "observation": "FND 숫자 5 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\06_FND_5_표시_p1_00008.250.png",
+      "sha256": "f79170334319bbd02ff4b094860425a82ea91ba5d509511ae32479e191358b67",
+      "frame_index": 198,
+      "frame_pts_s": 8.25,
+      "source_time_s": 8.25
+    },
+    {
+      "id": "fnd6",
+      "source_id": "p1",
+      "at_s": 9.25,
+      "scene_id": "count",
+      "title": "FND_6_표시",
+      "observation": "FND 숫자 6 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\07_FND_6_표시_p1_00009.250.png",
+      "sha256": "b9cbf1cf1e1d276e2a8e2d24a687ef6af338588c02b933e9bd8a2ea0f67e2d8a",
+      "frame_index": 222,
+      "frame_pts_s": 9.25,
+      "source_time_s": 9.25
+    },
+    {
+      "id": "fnd7",
+      "source_id": "p1",
+      "at_s": 10.25,
+      "scene_id": "count",
+      "title": "FND_7_표시",
+      "observation": "FND 숫자 7 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\08_FND_7_표시_p1_00010.250.png",
+      "sha256": "295cc10cdf25111e544fcc7002e7d28c87e67bf4cff6aa72b331be94adfdfd81",
+      "frame_index": 246,
+      "frame_pts_s": 10.25,
+      "source_time_s": 10.25
+    },
+    {
+      "id": "fnd8",
+      "source_id": "p1",
+      "at_s": 11.25,
+      "scene_id": "count",
+      "title": "FND_8_표시",
+      "observation": "FND 숫자 8 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\09_FND_8_표시_p1_00011.250.png",
+      "sha256": "6150f5fb7ef90c1a6ef119ac29a3d7507126d75739640f3b3da4efaae823e204",
+      "frame_index": 270,
+      "frame_pts_s": 11.25,
+      "source_time_s": 11.25
+    },
+    {
+      "id": "fnd9",
+      "source_id": "p1",
+      "at_s": 12.25,
+      "scene_id": "count",
+      "title": "FND_9_표시",
+      "observation": "FND 숫자 9 표시(회전 확대 판독)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\10_FND_9_표시_p1_00012.250.png",
+      "sha256": "d7a55ae0d0380b9783da265b00e7acb3d23efb086574c45ba6f2658cf234001a",
+      "frame_index": 294,
+      "frame_pts_s": 12.25,
+      "source_time_s": 12.25
+    },
+    {
+      "id": "fnd9_first",
+      "source_id": "p1",
+      "at_s": 2.25,
+      "scene_id": "count",
+      "title": "FND_9_표시_첫바퀴",
+      "observation": "FND 숫자 9 표시(d 없음)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\11_FND_9_표시_첫바퀴_p1_00002.250.png",
+      "sha256": "adbcb5e7854652b4cddcdbe78986b4186b730b46b2f378b9cb7a3673a0512ebb",
+      "frame_index": 54,
+      "frame_pts_s": 2.25,
+      "source_time_s": 2.25
+    }
+  ],
+  "pairs": [
+    {
+      "id": "wrap",
+      "title": "9 → 0 복귀",
+      "capture_ids": [
+        "fnd9_first",
+        "fnd0"
+      ],
+      "continuity": "same_recording",
+      "note": "한 촬영 안 연속 구간. 숫자는 직접 관찰(FND 90° 회전·선 가림), BCD 값·CLK 에지는 미확인",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\비교\\01_9_0_복귀.png"
+    }
+  ],
+  "cuts": [
+    {
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 13.29,
+      "reason": "실패·설정 구간 없음. 전체 구간을 압축만 함"
+    }
+  ],
+  "unknowns": [
+    "FND는 보드 위에 90° 누워 있고 주황 점퍼선이 가운데(g) 부근을 가림. 숫자는 확대·회전한 원본 프레임에서 판독",
+    "보드 위쪽 LED(A~D 추정)의 켜짐 상태와 BCD 값 대응은 판독·확인하지 않음",
+    "CLK 파형·주기, R0/R9 핀 상태는 화면에 보이지 않음. 약 1초 간격 전이는 프레임 관찰값",
+    "자동 전사(Gemini) 2회 시도 모두 invalid_response 로 실패. 발언 내용 미확인"
+  ],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출",
+    "video": "C:\\Users\\Hyunjun\\Downloads\\실험08_실험3_BCD카운터_편집본.mp4",
+    "video_local": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험3_BCD카운터_영상추출\\실험08_실험3_BCD카운터_편집본.mp4",
+    "zip": "C:\\Users\\Hyunjun\\Downloads\\실험08_실험3_BCD카운터_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true,
+      "video_exists": true,
+      "video_copy_integrity": true,
+      "video_format": true,
+      "fps": true,
+      "audio_format": true,
+      "duration": true,
+      "av_end_difference": true,
+      "full_decode": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "verified",
+      "audio": "unavailable"
+    },
+    "video_duration_s": 13.333333,
+    "av_end_difference_s": 0.0003329999999994726,
+    "decode_error": null
+  },
+  "transcription": {
+    "p1": {
+      "status": "failed",
+      "error": "transcription_failed",
+      "state_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험3_BCD카운터_영상분석\\transcripts\\p1"
+    }
+  },
+  "rendered": {
+    "timeline": [
+      {
+        "kind": "source",
+        "source_id": "p1",
+        "source_start_s": 0.0,
+        "source_end_s": 13.291667,
+        "output_start_s": 0.0,
+        "output_end_s": 13.333333333333334,
+        "padding_s": 0.04166633333333358,
+        "has_original_audio": true
+      }
+    ],
+    "duration_s": 13.333333333333334,
+    "fps": "24",
+    "size": [
+      1080,
+      1920
+    ],
+    "encoding": {
+      "crf": 26,
+      "preset": "slow",
+      "audio_bitrate": "128k"
+    },
+    "source_bytes": 4559769,
+    "output_bytes": 3919477,
+    "reduction_percent": 14.04220257649017,
+    "video_sha256": "9227d857cd68bfbdcdfd57471a864083b2da82a6593bf64b3c31abdbabe5d6ea"
+  }
+}

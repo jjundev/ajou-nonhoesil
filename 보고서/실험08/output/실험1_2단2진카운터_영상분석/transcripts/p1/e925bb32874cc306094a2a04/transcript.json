@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "source_path": "C:\\Users\\Hyunjun\\Downloads\\실험1.mp4",
+  "source_sha256": "34e7e7589c2e876f174830b1ec4e4181cb51f45329f9dad8bc16240c18bbafa4",
+  "policy": "lab-verbatim-pcm16-v2",
+  "model": "gemini-3.5-transcribe",
+  "endpoint": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-3.5-transcribe:generateContent",
+  "config": {
+    "mode": "VERBATIM",
+    "languageCodes": [
+      "ko-KR"
+    ],
+    "wordTimestamp": true
+  },
+  "chunk_frames": 7200000,
+  "audio_offset_s": 0.0,
+  "time_basis": "first_display_frame",
+  "timing_accuracy": "approximate",
+  "audio_review": "not_listened",
+  "duration_s": 9.7509375,
+  "chunks": [
+    {
+      "index": 0,
+      "start_s": 0.0,
+      "end_s": 9.7509375,
+      "text": "예.",
+      "words": [
+        {
+          "word": "예.",
+          "start_s": 2.7,
+          "end_s": 2.7
+        }
+      ],
+      "usage": {
+        "promptTokenCount": 254,
+        "candidatesTokenCount": 2,
+        "totalTokenCount": 256,
+        "trafficType": "ON_DEMAND",
+        "promptTokensDetails": [
+          {
+            "modality": "AUDIO",
+            "tokenCount": 244
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 10
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2
+          }
+        ]
+      }
+    }
+  ],
+  "text": "예.",
+  "words": [
+    {
+      "word": "예.",
+      "start_s": 2.7,
+      "end_s": 2.7
+    }
+  ]
+}

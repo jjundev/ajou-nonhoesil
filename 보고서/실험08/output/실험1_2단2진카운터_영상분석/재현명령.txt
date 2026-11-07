@@ -1,0 +1,14 @@
+'E:\ffmpeg-7.1-essentials_build\bin\ffprobe.EXE' -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json 'C:\Users\Hyunjun\Downloads\실험1.mp4'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\실험1.mp4' -vf 'select='"'"'eq(n,0)+eq(n,6)+eq(n,12)+eq(n,18)+eq(n,24)+eq(n,30)+eq(n,36)+eq(n,42)+eq(n,48)+eq(n,54)+eq(n,60)+eq(n,66)+eq(n,72)+eq(n,78)+eq(n,84)+eq(n,90)+eq(n,96)+eq(n,102)+eq(n,108)+eq(n,114)+eq(n,120)+eq(n,126)+eq(n,132)+eq(n,138)+eq(n,144)+eq(n,150)+eq(n,156)+eq(n,162)+eq(n,168)+eq(n,174)+eq(n,180)+eq(n,186)+eq(n,192)+eq(n,198)+eq(n,204)+eq(n,210)+eq(n,216)+eq(n,222)+eq(n,228)'"'"',scale=240:-2' -frames:v 39 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험08\output\실험1_2단2진카운터_영상분석\tmp90ojudon\%06d.png'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\실험1.mp4' -vf 'select='"'"'eq(n,0)+eq(n,6)+eq(n,12)+eq(n,18)+eq(n,24)+eq(n,30)+eq(n,36)+eq(n,42)+eq(n,48)+eq(n,54)+eq(n,60)+eq(n,66)+eq(n,72)+eq(n,78)+eq(n,84)+eq(n,90)+eq(n,96)+eq(n,102)+eq(n,108)+eq(n,114)+eq(n,120)+eq(n,126)+eq(n,132)+eq(n,138)+eq(n,144)+eq(n,150)+eq(n,156)+eq(n,162)+eq(n,168)+eq(n,174)+eq(n,180)+eq(n,186)+eq(n,192)+eq(n,198)+eq(n,204)+eq(n,210)+eq(n,216)+eq(n,222)+eq(n,228)'"'"',scale=240:-2' -frames:v 39 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험08\output\실험1_2단2진카운터_영상분석\tmpoldi87o_\%06d.png'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -i 'C:\Users\Hyunjun\Downloads\실험1.mp4' -vf 'select='"'"'eq(n,15)+eq(n,39)+eq(n,63)+eq(n,87)+eq(n,111)'"'"'' -frames:v 5 -fps_mode passthrough -threads 2 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험08\output\실험1_2단2진카운터_영상분석\tmpa12cb9ke\%06d.png'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -n -copyts -i 'C:\Users\Hyunjun\Downloads\실험1.mp4' -filter_complex_threads 2 -filter_complex '[0:v]trim=start=0.0:end=9.75,setpts=PTS-(0.0)/TB,fps=24,scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.041666666666666664,trim=duration=9.75,settb=AVTB[v0];[0:a:0]atrim=start=0.0:end=9.75,asetpts=PTS-(0.0)/TB,aresample=48000:async=1:first_pts=0,aformat=sample_fmts=fltp:channel_layouts=stereo,apad,atrim=duration=9.75[a0];[v0][a0]concat=n=1:v=1:a=1[v][a]' -map '[v]' -map '[a]' -map_metadata -1 -c:v libx264 -preset slow -crf 26 -threads 4 -pix_fmt yuv420p -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart 'C:\Users\Hyunjun\Desktop\현준대학\26-2\논회실\보고서\실험08\output\실험1_2단2진카운터_영상분석\tmpfdan58ki\render.mp4'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffprobe.EXE' -v error -show_streams -show_format -of json 'C:\Users\Hyunjun\Downloads\실험08_실험1_2단2진카운터_편집본.mp4'
+
+'E:\ffmpeg-7.1-essentials_build\bin\ffmpeg.EXE' -v error -xerror -i 'C:\Users\Hyunjun\Downloads\실험08_실험1_2단2진카운터_편집본.mp4' -f null -
+

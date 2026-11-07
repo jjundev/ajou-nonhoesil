@@ -1,0 +1,41 @@
+{
+  "identity": {
+    "run_key": "e925bb32874cc306094a2a04d515fbb223f253974e20357bc0ca8aadc58de5ee",
+    "index": 0,
+    "start_sample": 0,
+    "sample_count": 156015
+  },
+  "data": {
+    "text": "예.",
+    "words": [
+      {
+        "word": "예.",
+        "start_s": 2.7,
+        "end_s": 2.7
+      }
+    ],
+    "usage": {
+      "promptTokenCount": 254,
+      "candidatesTokenCount": 2,
+      "totalTokenCount": 256,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "AUDIO",
+          "tokenCount": 244
+        },
+        {
+          "modality": "TEXT",
+          "tokenCount": 10
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2
+        }
+      ]
+    }
+  },
+  "sha256": "f9f6e74a1686e7d7fc4e170e038c1f454859dd55173efd7d5b20f6bbae1ff55a"
+}

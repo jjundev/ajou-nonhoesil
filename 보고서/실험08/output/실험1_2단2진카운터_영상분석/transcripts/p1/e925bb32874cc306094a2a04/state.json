@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "source_path": "C:\\Users\\Hyunjun\\Downloads\\실험1.mp4",
+    "source_sha256": "34e7e7589c2e876f174830b1ec4e4181cb51f45329f9dad8bc16240c18bbafa4",
+    "policy": "lab-verbatim-pcm16-v2",
+    "model": "gemini-3.5-transcribe",
+    "endpoint": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-3.5-transcribe:generateContent",
+    "config": {
+      "mode": "VERBATIM",
+      "languageCodes": [
+        "ko-KR"
+      ],
+      "wordTimestamp": true
+    },
+    "chunk_frames": 7200000,
+    "audio_offset_s": 0.0
+  },
+  "status": "complete",
+  "result": {
+    "status": "complete",
+    "md": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험1_2단2진카운터_영상분석\\transcripts\\p1\\e925bb32874cc306094a2a04\\transcript.md",
+    "json": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험1_2단2진카운터_영상분석\\transcripts\\p1\\e925bb32874cc306094a2a04\\transcript.json",
+    "md_sha256": "99b913c4b4472da121cf16f8b0ec9544f794d3add8d710a8787f06ac50c7f864",
+    "json_sha256": "1724616dd9e256d7aaee400f0622c12188b60f1afe9df322903821cb7324975c",
+    "source_sha256": "34e7e7589c2e876f174830b1ec4e4181cb51f45329f9dad8bc16240c18bbafa4",
+    "model": "gemini-3.5-transcribe"
+  }
+}

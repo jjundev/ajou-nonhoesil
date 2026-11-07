@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "run_dir": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험1_2단2진카운터_영상분석",
+  "run_label": "실험1_2단2진카운터",
+  "mode": "both",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "C:\\Users\\Hyunjun\\Downloads\\실험1.mp4",
+      "sha256_before": "34e7e7589c2e876f174830b1ec4e4181cb51f45329f9dad8bc16240c18bbafa4",
+      "size": 3334573,
+      "duration_s": 9.75,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1920,
+            "height": 1080,
+            "coded_width": 1920,
+            "coded_height": 1088,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "refs": 1,
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "24/1",
+            "avg_frame_rate": "24/1",
+            "time_base": "1/19200",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 187200,
+            "duration": "9.750000",
+            "bit_rate": "2604215",
+            "nb_frames": "234",
+            "extradata_size": 110,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "Core Media Video",
+              "vendor_id": "[0][0][0][0]"
+            },
+            "side_data_list": [
+              {
+                "side_data_type": "Display Matrix",
+                "displaymatrix": "\n00000000:            0       65536           0\n00000001:       -65536           0           0\n00000002:    141557760           0  1073741824\n",
+                "rotation": -90
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "44100",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/44100",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 429931,
+            "duration": "9.749002",
+            "bit_rate": "125416",
+            "nb_frames": "422",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "Core Media Audio",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "C:\\Users\\Hyunjun\\Downloads\\실험1.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "9.750000",
+          "size": "3334573",
+          "bit_rate": "2736059",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2mp41",
+            "encoder": "Lavf58.45.100"
+          }
+        }
+      },
+      "sha256_after": "34e7e7589c2e876f174830b1ec4e4181cb51f45329f9dad8bc16240c18bbafa4"
+    },
+    "transcript_p1": {
+      "kind": "transcript",
+      "video_id": "p1",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험1_2단2진카운터_영상분석\\transcripts\\p1\\e925bb32874cc306094a2a04\\transcript.md",
+      "sha256_before": "99b913c4b4472da121cf16f8b0ec9544f794d3add8d710a8787f06ac50c7f864",
+      "size": 17,
+      "origin": "gemini_api",
+      "model": "gemini-3.5-transcribe",
+      "sha256_after": "99b913c4b4472da121cf16f8b0ec9544f794d3add8d710a8787f06ac50c7f864"
+    },
+    "transcript_metadata_p1": {
+      "kind": "transcript_metadata",
+      "video_id": "p1",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\output\\실험1_2단2진카운터_영상분석\\transcripts\\p1\\e925bb32874cc306094a2a04\\transcript.json",
+      "sha256_before": "1724616dd9e256d7aaee400f0622c12188b60f1afe9df322903821cb7324975c",
+      "size": 1618,
+      "origin": "gemini_api",
+      "model": "gemini-3.5-transcribe",
+      "sha256_after": "1724616dd9e256d7aaee400f0622c12188b60f1afe9df322903821cb7324975c"
+    }
+  },
+  "scenes": [
+    {
+      "id": "cycle",
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 9.75,
+      "item_id": "E8.P1/T1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 2.7,
+          "text": "예."
+        }
+      ],
+      "observation": "LED 4개 중 하나씩만 켜짐. 화면 위에서부터 1→2→3→4→1 순서로 약 1초마다 바뀜(0.25s 미리보기: 전이는 각 정수초 직후 1.0~1.25s 사이 등). 0~0.1s 부근 4번째, 이후 1번째부터 두 바퀴 넘게 반복",
+      "unknowns": [
+        "LED 보드 번호(①~④)와 화면상 위→아래 순서의 대응은 영상에서 배선을 따라가 독립 확인하지 못함. 위에서 1번째=Y0 은 결선도 배치 기준 추정",
+        "CLK 파형·주기·AB 값은 화면에 보이지 않음. 약 1초 간격 전이는 프레임 관찰값",
+        "자동 전사(Gemini)는 2.7s 부근 '예.' 한 마디만 반환. 직접 청취 아님, 실험 내용 설명 발언 없음"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "led1",
+      "source_id": "p1",
+      "at_s": 0.6,
+      "scene_id": "cycle",
+      "title": "위1번째LED_점등",
+      "observation": "위에서 1번째 LED만 점등",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\01_위1번째LED_점등_p1_00000.625.png",
+      "sha256": "4bb3b5d4c4b7a35dfee9b2a511ecf984808b7fb0362f828a93111a99b523f852",
+      "frame_index": 15,
+      "frame_pts_s": 0.625,
+      "source_time_s": 0.625
+    },
+    {
+      "id": "led2",
+      "source_id": "p1",
+      "at_s": 1.6,
+      "scene_id": "cycle",
+      "title": "위2번째LED_점등",
+      "observation": "위에서 2번째 LED만 점등",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\02_위2번째LED_점등_p1_00001.625.png",
+      "sha256": "bb290dab3f6dac33d8dc27973158d58c6e9769131a4e7dd543960901ab1e387a",
+      "frame_index": 39,
+      "frame_pts_s": 1.625,
+      "source_time_s": 1.625
+    },
+    {
+      "id": "led3",
+      "source_id": "p1",
+      "at_s": 2.6,
+      "scene_id": "cycle",
+      "title": "위3번째LED_점등",
+      "observation": "위에서 3번째 LED만 점등",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\03_위3번째LED_점등_p1_00002.625.png",
+      "sha256": "b42c9de38604dcd6fe6094ab1ab8125b6d502fe8192b00f18e12e584c32e2106",
+      "frame_index": 63,
+      "frame_pts_s": 2.625,
+      "source_time_s": 2.625
+    },
+    {
+      "id": "led4",
+      "source_id": "p1",
+      "at_s": 3.6,
+      "scene_id": "cycle",
+      "title": "위4번째LED_점등",
+      "observation": "위에서 4번째 LED만 점등",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\04_위4번째LED_점등_p1_00003.625.png",
+      "sha256": "6ae08ecd89ba8652c3fc7d3b80b8518b23200e9dfb37c0824c1522fef10a3a34",
+      "frame_index": 87,
+      "frame_pts_s": 3.625,
+      "source_time_s": 3.625
+    },
+    {
+      "id": "led1_again",
+      "source_id": "p1",
+      "at_s": 4.6,
+      "scene_id": "cycle",
+      "title": "위1번째LED_재점등",
+      "observation": "4번째 다음 다시 1번째 LED만 점등",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\05_위1번째LED_재점등_p1_00004.625.png",
+      "sha256": "29d9ec07ad11e1a9e24601322191edcddb81648604ce649497c9b4991f90c554",
+      "frame_index": 111,
+      "frame_pts_s": 4.625,
+      "source_time_s": 4.625
+    }
+  ],
+  "pairs": [
+    {
+      "id": "wrap",
+      "title": "4번째 → 1번째 복귀",
+      "capture_ids": [
+        "led4",
+        "led1_again"
+      ],
+      "continuity": "same_recording",
+      "note": "한 촬영 안 연속 구간. LED 순서는 직접 관찰, Y0~Y3·AB 대응은 결선도 배치 기준 추정(미확인)",
+      "path": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\비교\\01_4번째_1번째_복귀.png"
+    }
+  ],
+  "cuts": [
+    {
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 9.75,
+      "reason": "실패·설정 구간 없음. 전체 구간을 압축만 함"
+    }
+  ],
+  "unknowns": [
+    "LED 보드 번호(①~④)와 화면상 위→아래 순서의 대응은 영상에서 배선을 따라가 독립 확인하지 못함. 위에서 1번째=Y0 은 결선도 배치 기준 추정",
+    "CLK 파형·주기·AB 값은 화면에 보이지 않음. 약 1초 간격 전이는 프레임 관찰값",
+    "자동 전사(Gemini)는 2.7s 부근 '예.' 한 마디만 반환. 직접 청취 아님, 실험 내용 설명 발언 없음"
+  ],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출",
+    "video": "C:\\Users\\Hyunjun\\Downloads\\실험08_실험1_2단2진카운터_편집본.mp4",
+    "video_local": "C:\\Users\\Hyunjun\\Desktop\\현준대학\\26-2\\논회실\\보고서\\실험08\\실험사진\\실험1_2단2진카운터_영상추출\\실험08_실험1_2단2진카운터_편집본.mp4",
+    "zip": "C:\\Users\\Hyunjun\\Downloads\\실험08_실험1_2단2진카운터_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true,
+      "video_exists": true,
+      "video_copy_integrity": true,
+      "video_format": true,
+      "fps": true,
+      "audio_format": true,
+      "duration": true,
+      "av_end_difference": true,
+      "full_decode": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "verified",
+      "audio": "unavailable"
+    },
+    "video_duration_s": 9.791667,
+    "av_end_difference_s": 0.04166700000000034,
+    "decode_error": null
+  },
+  "transcription": {
+    "p1": {
+      "status": "complete",
+      "model": "gemini-3.5-transcribe",
+      "metadata_source_id": "transcript_metadata_p1"
+    }
+  },
+  "rendered": {
+    "timeline": [
+      {
+        "kind": "source",
+        "source_id": "p1",
+        "source_start_s": 0.0,
+        "source_end_s": 9.75,
+        "output_start_s": 0.0,
+        "output_end_s": 9.75,
+        "padding_s": 0.0,
+        "has_original_audio": true
+      }
+    ],
+    "duration_s": 9.75,
+    "fps": "24",
+    "size": [
+      1080,
+      1920
+    ],
+    "encoding": {
+      "crf": 26,
+      "preset": "slow",
+      "audio_bitrate": "128k"
+    },
+    "source_bytes": 3334573,
+    "output_bytes": 2526268,
+    "reduction_percent": 24.24013509375863,
+    "video_sha256": "a7eda1480bb2c3ef9f16a6cd57d464707bdca53e975e2e8123ecc796966efc8a"
+  }
+}
