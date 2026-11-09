@@ -1,0 +1,56 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2bit RAM 준비 2 · LED 준비",
+ "subtitle": "전원을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 13,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b3",
+   "to": "우 c6",
+   "desc": "OUT0: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · OUT0: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "우 a6",
+   "to": "중앙GND레일6행",
+   "desc": "OUT0 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 b8",
+   "to": "우 c11",
+   "desc": "OUT1: LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · OUT1: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "우 a11",
+   "to": "중앙GND레일11행",
+   "desc": "OUT1 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "OUT0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "OUT1",
+   "at": "우 a8",
+   "active_low": false
+  }
+ ],
+ "inputs": []
+}

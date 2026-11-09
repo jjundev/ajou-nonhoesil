@@ -1,0 +1,98 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2) 16bit RAM (IC 74670) 준비 2 · LED 준비",
+ "subtitle": "전원을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 7,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b16",
+   "to": "우 c19",
+   "desc": "Q1: LED(우 b16→우 b17) + 330Ω(우 c17→우 c19) 직렬 · Q1: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "우 a19",
+   "to": "중앙GND레일19행",
+   "desc": "Q1 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 b21",
+   "to": "우 c24",
+   "desc": "Q2: LED(우 b21→우 b22) + 330Ω(우 c22→우 c24) 직렬 · Q2: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "우 a24",
+   "to": "중앙GND레일24행",
+   "desc": "Q2 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "우 b26",
+   "to": "우 c29",
+   "desc": "Q3: LED(우 b26→우 b27) + 330Ω(우 c27→우 c29) 직렬 · Q3: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 a29",
+   "to": "중앙GND레일29행",
+   "desc": "Q3 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "우 b31",
+   "to": "우 c34",
+   "desc": "Q4: LED(우 b31→우 b32) + 330Ω(우 c32→우 c34) 직렬 · Q4: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "우 a34",
+   "to": "중앙GND레일33행",
+   "desc": "Q4 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Q1",
+   "at": "우 a16",
+   "active_low": false
+  },
+  {
+   "tag": "Q2",
+   "at": "우 a21",
+   "active_low": false
+  },
+  {
+   "tag": "Q3",
+   "at": "우 a26",
+   "active_low": false
+  },
+  {
+   "tag": "Q4",
+   "at": "우 a31",
+   "active_low": false
+  }
+ ],
+ "inputs": []
+}

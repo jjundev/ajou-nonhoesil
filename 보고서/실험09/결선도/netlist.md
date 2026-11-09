@@ -53,7 +53,7 @@ Write Function Table). 그래서 확인 절차에 `RUN`이나 에지 조작을 �
 |---|---|---|
 | C1 | OE0 | U3 pin 1 |
 | C1 | IN0 | U1 pin 1 |
-| C1 | WR0 | U1 pin 5 |
+| C1 | WR0 | U1 pin 12 |
 | C1 | OE1 | U3 pin 4 |
 | C1 | IN1 | U2 pin 1 |
 | C1 | WR1 | U1 pin 2 |
@@ -100,9 +100,10 @@ TI 문서 URL: `https://www.ti.com/lit/ds/symlink/sn74ls670.pdf`. 수령한 실�
 - refs: [T2, T3]
 - diagram: 실험09_1_결선도_2bitRAM.png
 
-p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 출력단이다. 게이트와 핀 번호는 p6 회로도
-그대로다(M13). p6의 스위치 여섯 개는 입력 점퍼로 대신한다. 점퍼 끝을 +5V 레일에 꽂으면 1, GND 레일에 꽂으면
-0이다(M4). **WR1은 U1 pin 2와 U2 pin 2에, WR0은 U1 pin 5와 U2 pin 5에 함께 들어간다**(p6, M2).
+p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 출력단이다. U3의 게이트와 핀 번호는
+p6 회로도 그대로다. **U1·U2는 두 게이트의 자리를 맞바꿨다** — 래치 출력 Q는 pin 6, 리셋 쪽 입력 게이트는
+pin 12·13→11이다(M13). p6의 스위치 여섯 개는 입력 점퍼로 대신한다. 점퍼 끝을 +5V 레일에 꽂으면 1, GND 레일에 꽂으면
+0이다(M4). **WR1은 U1 pin 2와 U2 pin 2에, WR0은 U1 pin 12와 U2 pin 12에 함께 들어간다**(p6, M2, M13).
 `74HC03` 출력 네 개에는 10kΩ 풀업을 단다(p6). A부터 다 짓고 OUT0을 확인한 뒤 B를 짓는다.
 **이 순서와 단계 절차는 교안 원문이 아니다.** 단계마다 전원을 끄고 추가한다.
 
@@ -121,18 +122,18 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 |---|---|---|
 | 14 | VCC(+5V) | 전원 |
 | 7 | GND | 접지 |
-| 1 | IN:IN0, U1.pin4 | A 세트 쪽 NAND 입력 (IN0) |
+| 1 | IN:IN0, U1.pin13 | A 세트 쪽 NAND 입력 (IN0) |
 | 2 | IN:WR1, U2.pin2 | A 세트 쪽 NAND 입력 (WR1) |
-| 3 | U1.pin12 | A-S' |
-| 4 | U1.pin1 | A 리셋 쪽 NAND 입력 (IN0) |
-| 5 | IN:WR0, U2.pin5 | A 리셋 쪽 NAND 입력 (WR0) |
-| 6 | U1.pin10 | A-R' |
-| 12 | U1.pin3 | 래치 NAND 입력 |
-| 13 | U1.pin8 | 래치 되먹임 |
-| 11 | U1.pin9, U3.pin2 | A-Q |
-| 9 | U1.pin11 | 래치 되먹임 |
-| 10 | U1.pin6 | 래치 NAND 입력 |
-| 8 | U1.pin13 | A-Q' |
+| 3 | U1.pin4 | A-S' |
+| 4 | U1.pin3 | 래치 NAND 입력 |
+| 5 | U1.pin8 | 래치 되먹임 |
+| 6 | U1.pin9, U3.pin2 | A-Q |
+| 13 | U1.pin1 | A 리셋 쪽 NAND 입력 (IN0) |
+| 12 | IN:WR0, U2.pin12 | A 리셋 쪽 NAND 입력 (WR0) |
+| 11 | U1.pin10 | A-R' |
+| 9 | U1.pin6 | 래치 되먹임 |
+| 10 | U1.pin11 | 래치 NAND 입력 |
+| 8 | U1.pin5 | A-Q' |
 | 미사용 | 없음 | 네 게이트를 다 쓴다 |
 
 ## U2 = 74HC00
@@ -141,18 +142,18 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 |---|---|---|
 | 14 | VCC(+5V) | 전원 |
 | 7 | GND | 접지 |
-| 1 | IN:IN1, U2.pin4 | B 세트 쪽 NAND 입력 (IN1) |
+| 1 | IN:IN1, U2.pin13 | B 세트 쪽 NAND 입력 (IN1) |
 | 2 | U1.pin2 | B 세트 쪽 NAND 입력 (WR1) |
-| 3 | U2.pin12 | B-S' |
-| 4 | U2.pin1 | B 리셋 쪽 NAND 입력 (IN1) |
-| 5 | U1.pin5 | B 리셋 쪽 NAND 입력 (WR0) |
-| 6 | U2.pin10 | B-R' |
-| 12 | U2.pin3 | 래치 NAND 입력 |
-| 13 | U2.pin8 | 래치 되먹임 |
-| 11 | U2.pin9, U3.pin5 | B-Q |
-| 9 | U2.pin11 | 래치 되먹임 |
-| 10 | U2.pin6 | 래치 NAND 입력 |
-| 8 | U2.pin13 | B-Q' |
+| 3 | U2.pin4 | B-S' |
+| 4 | U2.pin3 | 래치 NAND 입력 |
+| 5 | U2.pin8 | 래치 되먹임 |
+| 6 | U2.pin9, U3.pin5 | B-Q |
+| 13 | U2.pin1 | B 리셋 쪽 NAND 입력 (IN1) |
+| 12 | U1.pin12 | B 리셋 쪽 NAND 입력 (WR0) |
+| 11 | U2.pin10 | B-R' |
+| 9 | U2.pin6 | 래치 되먹임 |
+| 10 | U2.pin11 | 래치 NAND 입력 |
+| 8 | U2.pin5 | B-Q' |
 | 미사용 | 없음 | 네 게이트를 다 쓴다 |
 
 ## U3 = 74HC03
@@ -162,13 +163,13 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 | 14 | VCC(+5V) | 전원 |
 | 7 | GND | 접지 |
 | 1 | IN:OE0 | A 읽기 NAND 입력 (OE0) |
-| 2 | U1.pin11 | A 읽기 NAND 입력 (A-Q) |
+| 2 | U1.pin6 | A 읽기 NAND 입력 (A-Q) |
 | 3 | U3.pin12, 10kΩ → VCC | A-RD' (열린 드레인) |
 | 12 | U3.pin3, U3.pin13 | A 출력 NAND 입력 (12·13 묶음) |
 | 13 | U3.pin12 | A 출력 NAND 입력 |
 | 11 | 10kΩ → VCC, LED OUT0 급전 | OUT0 (열린 드레인) |
 | 4 | IN:OE1 | B 읽기 NAND 입력 (OE1) |
-| 5 | U2.pin11 | B 읽기 NAND 입력 (B-Q) |
+| 5 | U2.pin6 | B 읽기 NAND 입력 (B-Q) |
 | 6 | U3.pin9, 10kΩ → VCC | B-RD' (열린 드레인) |
 | 9 | U3.pin6, U3.pin10 | B 출력 NAND 입력 (9·10 묶음) |
 | 10 | U3.pin9 | B 출력 NAND 입력 |
@@ -180,13 +181,13 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 | 노드 | 유형 | 식 | 핀 |
 |---|---|---|---|
 | A-S' | observed | - | U1 pin 3 |
-| A-R' | observed | - | U1 pin 6 |
-| A-Q | observed | - | U1 pin 11 |
+| A-R' | observed | - | U1 pin 11 |
+| A-Q | observed | - | U1 pin 6 |
 | A-RD' | observed | - | U3 pin 3 |
 | OUT0 | observed | - | U3 pin 11 |
 | B-S' | observed | - | U2 pin 3 |
-| B-R' | observed | - | U2 pin 6 |
-| B-Q | observed | - | U2 pin 11 |
+| B-R' | observed | - | U2 pin 11 |
+| B-Q | observed | - | U2 pin 6 |
 | B-RD' | observed | - | U3 pin 6 |
 | OUT1 | observed | - | U3 pin 8 |
 
@@ -201,15 +202,15 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 
 | 단계 | 그림 | 이 단계에서 | 확인 |
 |---|---|---|---|
-| 1 | 실험09_1_결선도_2bitRAM_1단계_A세트.png | 전원을 끈 상태로 준비 ②까지 마쳐요. 입력 IN0을 U1 pin1에, 입력 WR1을 U1 pin2에 꽂아요. 신호선: IN0: U1 pin 1 -> U1 pin 4 | 노드 `A-S'` · 절차 `V1` — 오실로스코프로 봐요. |
-| 2 | 실험09_1_결선도_2bitRAM_2단계_A리셋.png | 입력 WR0을 U1 pin5에 꽂아요. 신호선: A-S': U1 pin 3 -> U1 pin 12; A-R': U1 pin 6 -> U1 pin 10 | 노드 `A-R'` · 절차 `V2` — 오실로스코프로 봐요. |
-| 3 | 실험09_1_결선도_2bitRAM_3단계_A래치.png | 신호선: A-Q: U1 pin 11 -> U1 pin 9; A-Q': U1 pin 8 -> U1 pin 13 | 노드 `A-Q` · 절차 `V3` — 오실로스코프로 봐요. |
-| 4 | 실험09_1_결선도_2bitRAM_4단계_A읽기.png | 입력 OE0을 U3 pin1에 꽂아요. 10kΩ을 U3 pin 3과 +5V 레일 사이에 꽂아요. 신호선: A-Q: U1 pin 11 -> U3 pin 2 | 노드 `A-RD'` · 절차 `V4` — 오실로스코프로 봐요. |
+| 1 | 실험09_1_결선도_2bitRAM_1단계_A세트.png | 전원을 끈 상태로 준비 ②까지 마쳐요. 입력 IN0을 U1 pin1에, 입력 WR1을 U1 pin2에 꽂아요. 신호선: A-S': U1 pin 3 -> U1 pin 4 | 노드 `A-S'` · 절차 `V1` — 오실로스코프로 봐요. |
+| 2 | 실험09_1_결선도_2bitRAM_2단계_A리셋.png | 입력 WR0을 U1 pin12에 꽂아요. 신호선: IN0: U1 pin 1 -> U1 pin 13; A-R': U1 pin 11 -> U1 pin 10 | 노드 `A-R'` · 절차 `V2` — 오실로스코프로 봐요. |
+| 3 | 실험09_1_결선도_2bitRAM_3단계_A래치.png | 신호선: A-Q: U1 pin 6 -> U1 pin 9; A-Q': U1 pin 8 -> U1 pin 5 | 노드 `A-Q` · 절차 `V3` — 오실로스코프로 봐요. |
+| 4 | 실험09_1_결선도_2bitRAM_4단계_A읽기.png | 입력 OE0을 U3 pin1에 꽂아요. 10kΩ을 U3 pin 3과 +5V 레일 사이에 꽂아요. 신호선: A-Q: U1 pin 6 -> U3 pin 2 | 노드 `A-RD'` · 절차 `V4` — 오실로스코프로 봐요. |
 | 5 | 실험09_1_결선도_2bitRAM_5단계_OUT0.png | 10kΩ을 U3 pin 11과 +5V 레일 사이에 꽂아요. 신호선: A-RD': U3 pin 3 -> U3 pin 12; U3 pin 12 -> U3 pin 13; U3 pin 11→LED OUT0 급전 | 노드 `OUT0` · 절차 `V5` — LED OUT0을 봐요. |
-| 6 | 실험09_1_결선도_2bitRAM_6단계_B세트.png | 입력 IN1을 U2 pin1에 꽂아요. 신호선: IN1: U2 pin 1 -> U2 pin 4; WR1: U1 pin 2 -> U2 pin 2 | 노드 `B-S'` · 절차 `V6` — 오실로스코프로 봐요. |
-| 7 | 실험09_1_결선도_2bitRAM_7단계_B리셋.png | 신호선: WR0: U1 pin 5 -> U2 pin 5; B-S': U2 pin 3 -> U2 pin 12; B-R': U2 pin 6 -> U2 pin 10 | 노드 `B-R'` · 절차 `V7` — 오실로스코프로 봐요. |
-| 8 | 실험09_1_결선도_2bitRAM_8단계_B래치.png | 신호선: B-Q: U2 pin 11 -> U2 pin 9; B-Q': U2 pin 8 -> U2 pin 13 | 노드 `B-Q` · 절차 `V8` — 오실로스코프로 봐요. |
-| 9 | 실험09_1_결선도_2bitRAM_9단계_B읽기.png | 입력 OE1을 U3 pin4에 꽂아요. 10kΩ을 U3 pin 6과 +5V 레일 사이에 꽂아요. 신호선: B-Q: U2 pin 11 -> U3 pin 5 | 노드 `B-RD'` · 절차 `V9` — 오실로스코프로 봐요. |
+| 6 | 실험09_1_결선도_2bitRAM_6단계_B세트.png | 입력 IN1을 U2 pin1에 꽂아요. 신호선: B-S': U2 pin 3 -> U2 pin 4; WR1: U1 pin 2 -> U2 pin 2 | 노드 `B-S'` · 절차 `V6` — 오실로스코프로 봐요. |
+| 7 | 실험09_1_결선도_2bitRAM_7단계_B리셋.png | 신호선: WR0: U1 pin 12 -> U2 pin 12; IN1: U2 pin 1 -> U2 pin 13; B-R': U2 pin 11 -> U2 pin 10 | 노드 `B-R'` · 절차 `V7` — 오실로스코프로 봐요. |
+| 8 | 실험09_1_결선도_2bitRAM_8단계_B래치.png | 신호선: B-Q: U2 pin 6 -> U2 pin 9; B-Q': U2 pin 8 -> U2 pin 5 | 노드 `B-Q` · 절차 `V8` — 오실로스코프로 봐요. |
+| 9 | 실험09_1_결선도_2bitRAM_9단계_B읽기.png | 입력 OE1을 U3 pin4에 꽂아요. 10kΩ을 U3 pin 6과 +5V 레일 사이에 꽂아요. 신호선: B-Q: U2 pin 6 -> U3 pin 5 | 노드 `B-RD'` · 절차 `V9` — 오실로스코프로 봐요. |
 | 10 | 실험09_1_결선도_2bitRAM_10단계_OUT1.png | 10kΩ을 U3 pin 8과 +5V 레일 사이에 꽂아요. 신호선: B-RD': U3 pin 6 -> U3 pin 9; U3 pin 9 -> U3 pin 10; U3 pin 8→LED OUT1 급전 | 노드 `OUT1` · 절차 `V10` — LED OUT0·OUT1을 봐요. |
 
 ## 확인 절차 V1 · A 세트 쪽 NAND 확인
@@ -235,12 +236,12 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 ## 확인 절차 V2 · A 리셋 쪽 NAND 확인
 
 - checklist: diagnostic
-- purpose: U1 pin 6이 IN0과 WR0이 둘 다 1일 때만 0이 되는지 확인한다.
+- purpose: U1 pin 11이 IN0과 WR0이 둘 다 1일 때만 0이 되는지 확인한다.
 - source: manual:p6
 - layout: inline
 - provenance: derived
-- rationale: p6 회로도에서 U1 pin 4·5가 IN0·WR0을 받는 NAND임을 읽고 부분 배선 확인으로 구체화했다. WR0·WR1은 p7 주의 2대로 반대로 둔다. 교안 원문이 아니다.
-- setup: 전원을 끈 채 IN0·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U1 pin 6을 본다. U1 pin 9·13은 아직 비어 있고 pin 8·11은 관측하지 않는다. 끝나면 전원을 끈다.
+- rationale: p6 회로도에서 IN0·WR0을 받는 리셋 쪽 NAND를 읽고 부분 배선 확인으로 구체화했다. 이 문서는 그 게이트를 U1 pin 12·13→11에 둔다(M13). WR0·WR1은 p7 주의 2대로 반대로 둔다. 교안 원문이 아니다.
+- setup: 전원을 끈 채 IN0·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U1 pin 11을 본다. U1 pin 5·9는 아직 비어 있고 pin 6·8은 관측하지 않는다. 끝나면 전원을 끈다.
 - encoding: 0/1
 - inputs: [IN0, WR0, WR1]
 - observe: [A-R']
@@ -255,12 +256,12 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 ## 확인 절차 V3 · A 래치 쓰기·유지 확인
 
 - checklist: diagnostic
-- purpose: IN0이 1인 동안 WR1의 값이 U1 pin 11에 써지고, IN0을 0으로 내린 뒤에는 WR이 바뀌어도 유지되는지 확인한다.
+- purpose: IN0이 1인 동안 WR1의 값이 U1 pin 6에 써지고, IN0을 0으로 내린 뒤에는 WR이 바뀌어도 유지되는지 확인한다.
 - source: manual:p7
 - layout: inline
 - provenance: derived
 - rationale: p7 주의사항 1~3과 p6 회로도의 WR 배선(M2)에서 쓰기·저장 순서를 유도했다. 저장값이 WR1과 같다는 것은 회로도를 따라 셈한 결과다. 교안 원문이 아니다.
-- setup: 전원을 끈 채 IN0·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U1 pin 11을 본다. 전원 직후의 래치 값은 정해지지 않는다. 끝나면 전원을 끈다.
+- setup: 전원을 끈 채 IN0·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U1 pin 6을 본다. 전원 직후의 래치 값은 정해지지 않는다. 끝나면 전원을 끈다.
 - encoding: 0/1
 - inputs: [IN0, WR0, WR1]
 - observe: [A-Q]
@@ -341,12 +342,12 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 ## 확인 절차 V7 · B 리셋 쪽 NAND 확인
 
 - checklist: diagnostic
-- purpose: U2 pin 6이 IN1과 WR0이 둘 다 1일 때만 0이 되는지 확인한다.
+- purpose: U2 pin 11이 IN1과 WR0이 둘 다 1일 때만 0이 되는지 확인한다.
 - source: manual:p6
 - layout: inline
 - provenance: derived
-- rationale: p6 회로도에서 U2 pin 4·5가 IN1과 공유 WR0을 받는 NAND임을 읽고 부분 배선 확인으로 구체화했다. 교안 원문이 아니다.
-- setup: 전원을 끈 채 OE0·IN0·IN1·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U2 pin 6을 본다. U2 pin 9·13은 아직 비어 있고 pin 8·11은 관측하지 않는다. 끝나면 전원을 끈다.
+- rationale: p6 회로도에서 IN1과 공유 WR0을 받는 리셋 쪽 NAND를 읽고 부분 배선 확인으로 구체화했다. 이 문서는 그 게이트를 U2 pin 12·13→11에 둔다(M13). 교안 원문이 아니다.
+- setup: 전원을 끈 채 OE0·IN0·IN1·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U2 pin 11을 본다. U2 pin 5·9는 아직 비어 있고 pin 6·8은 관측하지 않는다. 끝나면 전원을 끈다.
 - encoding: 0/1
 - inputs: [IN1, WR0, WR1]
 - observe: [B-R']
@@ -361,12 +362,12 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 ## 확인 절차 V8 · B 래치 쓰기·유지 확인
 
 - checklist: diagnostic
-- purpose: IN1이 1인 동안 WR1의 값이 U2 pin 11에 써지고, IN1을 0으로 내린 뒤에는 WR이 바뀌어도 유지되는지 확인한다.
+- purpose: IN1이 1인 동안 WR1의 값이 U2 pin 6에 써지고, IN1을 0으로 내린 뒤에는 WR이 바뀌어도 유지되는지 확인한다.
 - source: manual:p7
 - layout: inline
 - provenance: derived
 - rationale: V3과 같은 유도를 B에 적용했다. 교안 원문이 아니다.
-- setup: 전원을 끈 채 OE0·IN0·IN1·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U2 pin 11을 본다. 전원 직후의 래치 값은 정해지지 않는다. 끝나면 전원을 끈다.
+- setup: 전원을 끈 채 OE0·IN0·IN1·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. 오실로스코프로 U2 pin 6을 본다. 전원 직후의 래치 값은 정해지지 않는다. 끝나면 전원을 끈다.
 - encoding: 0/1
 - inputs: [IN1, WR0, WR1]
 - observe: [B-Q]
@@ -443,7 +444,7 @@ p6 회로를 짓는다. U1은 A의 NAND SR Latch, U2는 B의 래치, U3은 두 �
 - diagram: 실험09_2_결선도_16bitRAM.png
 
 p8을 따라 74670 하나로 짓는다. 전원을 끄고 C1의 선과 LED 사슬을 전부 뽑은 뒤 74HC00 두 개와 74HC03을 뺀다.
-74670을 S1 자리에 꽂고 **전원은 pin 16·8**로 다시 꽂는다(M14). 입력 열 개는 C1처럼 점퍼로 준다(M4).
+74670을 S4 자리에 꽂고 **전원은 pin 16·8**로 다시 꽂는다(M14). 입력 열 개는 C1처럼 점퍼로 준다(M4).
 p8은 "Data sheet를 참고하여, Output에 LED를 연결한다"라고만 적는다. Q1~Q4에 LED를 하나씩 단다.
 첫 비트(D1→Q1)를 세우려면 제어·주소 입력 여섯과 D1이 다 있어야 해서 1단계 신호선이 셋을 넘는다(M11).
 **이 단계 절차는 교안 원문이 아니다.**
@@ -494,14 +495,14 @@ p8은 "Data sheet를 참고하여, Output에 LED를 연결한다"라고만 적�
 
 | 소속 단계 | 순서 | 제목 | 그림 | 이번 작업 | 완료 확인 |
 |---|---|---|---|---|---|
-| 1 | 1 | 칩·전원 준비 | 실험09_2_결선도_16bitRAM_1준비_1.png | 74670을 S1 자리에 놓고 pin 16을 VCC, pin 8을 GND에 연결해요. | 노치 방향과 전원핀 16·8, 레일 극성을 대조했나요? |
+| 1 | 1 | 칩·전원 준비 | 실험09_2_결선도_16bitRAM_1준비_1.png | 74670을 S4 자리에 놓고 pin 16을 VCC, pin 8을 GND에 연결해요. | 노치 방향과 전원핀 16·8, 레일 극성을 대조했나요? |
 | 1 | 2 | LED 준비 | 실험09_2_결선도_16bitRAM_1준비_2.png | Q1·Q2·Q3·Q4의 LED·330Ω·GND 사슬을 연결해요. 출력 급전은 기능 단계에서 연결해요. | LED 순서와 극성·330Ω·GND를 대조했나요? 출력 급전선 자리는 비어 있나요? |
 
 ## 단계
 
 | 단계 | 그림 | 이 단계에서 | 확인 |
 |---|---|---|---|
-| 1 | 실험09_2_결선도_16bitRAM_1단계_Q1.png | 전원을 끈 상태로 준비 ②까지 마쳐요. 입력 WE를 U1 pin12, RE를 U1 pin11, WA를 U1 pin14, WB를 U1 pin13, RA를 U1 pin5, RB를 U1 pin4, D1을 U1 pin15에 꽂아요. 신호선: U1 pin 10→LED Q1 급전 | 노드 `Q1` · 절차 `V1` — LED Q1을 봐요. |
+| 1 | 실험09_2_결선도_16bitRAM_1단계_Q1.png | 전원을 끈 상태로 준비 ②까지 마쳐요. 입력 D1을 U1 pin15, WA를 U1 pin14, WB를 U1 pin13, WE를 U1 pin12, RE를 U1 pin11, RB를 U1 pin4, RA를 U1 pin5에 꽂아요. 신호선: U1 pin 10→LED Q1 급전 | 노드 `Q1` · 절차 `V1` — LED Q1을 봐요. |
 | 2 | 실험09_2_결선도_16bitRAM_2단계_Q2.png | 입력 D2를 U1 pin1에 꽂아요. 신호선: U1 pin 9→LED Q2 급전 | 노드 `Q2` · 절차 `V2` — LED Q2를 봐요. |
 | 3 | 실험09_2_결선도_16bitRAM_3단계_Q3.png | 입력 D3을 U1 pin2에 꽂아요. 신호선: U1 pin 7→LED Q3 급전 | 노드 `Q3` · 절차 `V3` — LED Q3을 봐요. |
 | 4 | 실험09_2_결선도_16bitRAM_4단계_Q4.png | 입력 D4를 U1 pin3에 꽂아요. 신호선: U1 pin 6→LED Q4 급전 | 노드 `Q4` · 절차 `V4` — LED Q4를 봐요. |
@@ -607,14 +608,16 @@ RE가 1이면 출력이 고임피던스라 LED가 꺼진다(TI SDLS193 p1). T5�
 
 - kind: layout
 
-교안 원문이 아니다. 슬롯은 역할에 붙는다. S1은 A 래치(C1)와 74670(C2), S2는 B 래치, S3은 출력단이다.
-행은 결선도 단계에서 LED 좌표를 먼저 고정한 뒤 `place_search`로 정해 이 표에 반영한다.
+교안 원문이 아니다. 슬롯은 역할에 붙는다. S1은 A 래치, S2는 B 래치, S3은 출력단(C1), S4는 74670(C2)이다.
+C2는 C1을 전부 뽑고 지으므로(`rebuild: all`) S4는 S1~S3과 겹쳐도 된다. LED 윗행은 C1이 3·8행(OUT0·OUT1),
+C2가 16·21·26·31행(Q1~Q4, 위→아래)이다. 레일 브리지는 34·35행이다. 행 비교는 `배치탐색.md`에 있다.
 
 | 슬롯 | 자리 | 회로별 칩 |
 |---|---|---|
-| S1 | 좌 (행은 결선도 단계에서 정함) | C1: U1 = 74HC00 · C2: U1 = 74670 |
-| S2 | 좌 (행은 결선도 단계에서 정함) | C1: U2 = 74HC00 |
-| S3 | 좌 (행은 결선도 단계에서 정함) | C1: U3 = 74HC03 |
+| S1 | 좌 5행 | C1: U1 = 74HC00 |
+| S2 | 좌 15행 | C1: U2 = 74HC00 |
+| S3 | 좌 25행 | C1: U3 = 74HC03 |
+| S4 | 좌 8행 | C2: U1 = 74670 |
 
 # 미확정 사항
 
@@ -634,6 +637,6 @@ RE가 1이면 출력이 고임피던스라 LED가 꺼진다(TI SDLS193 p1). T5�
 | M10 (구조 결정) | T1의 쓰기 값과 순서(A←1, B←0, B←1, A←0), T4의 주소별 값(00←0001, 01←0010, 10←0100, 11←1000)은 교안에 없다. A·B 각각에 0과 1을 쓰고 한쪽을 쓰는 동안 다른 쪽이 유지되는지, 주소마다 다른 LED가 켜지는지 보도록 골랐다 | 해당 없음 |
 | M11 | **C2 1단계는 새 신호선이 셋을 넘는다.** Q1 하나를 세우려면 WE·RE·WA·WB·RA·RB·D1 입력 일곱이 다 있어야 상류에 뜬 입력이 없다. 주차 예외 `STAGE_WIRE_BUDGET = 8`(입력 7 + 관측선 1)과 이유를 `배치.py`에 둔다. C1 단계는 셋 이하로 짰다 | `tests/test_breadboard_boards.py`의 `StageBudget`로 잰다 |
 | M12 | p5 준비물에 오실로스코프가 있지만 p6~p8 절차는 오실로스코프 측정을 지시하지 않는다. 그래서 capture 표를 만들지 않았다. 이 문서는 진단 절차의 중간 노드 관측에만 쓴다. 신호발생기는 교안에 없고 이 실험에는 클록 입력이 없다 | 파형 제출 요구 여부를 조교에게 확인 |
-| M13 | 게이트와 핀 번호는 p6 회로도 그대로 두었다. LED를 구동하는 U3 pin 11·8은 LED 쪽 줄(pin 8~14)에 있다. 렌더러 R7(칩 한쪽 리드 수)·R8(칩 사이 선이 쪽을 바꿈)에 걸리면 게이트를 다시 배정하고 이 항목·칩 표·단계를 함께 고친다. 칩 자리표의 행도 아직 정하지 않았다 | 결선도 단계에서 렌더러 검증 |
+| M13 | **U1·U2의 게이트 배정이 p6 회로도와 다르다.** p6대로면 래치 출력 Q가 pin 11(LED 쪽 줄)이고, 그것을 받는 U3 읽기 게이트 입력은 pin 2·5(반대쪽 줄)라 칩 사이 선이 줄을 바꾼다. 렌더러 R8이 이를 막는다. 그래서 U1·U2에서 Q를 내는 게이트(p6 pin 12·13→11)와 리셋 쪽 입력 게이트(p6 pin 4·5→6)의 자리를 맞바꿨다. 이 문서의 배정은 세트 쪽 입력 1·2→3(IN·WR1, p6과 같음), 래치 Q 4·5→6(S'·Q' 입력), 래치 Q' 9·10→8(Q·R' 입력, p6과 같음), 리셋 쪽 입력 13·12→11(IN·WR0)이다. 같은 NAND 네 개를 같은 넷으로 잇는 것이라 동작은 p6과 같다. U3은 p6 그대로이고 LED를 구동하는 U3 pin 11·8은 LED 쪽 줄(pin 8~14)에 있다. U1·U3은 칩 한쪽 리드가 8을 넘어 `배치.py`에 주차 예외 `SIDE_LEAD_MAX = 11`과 이유를 둔다. 이 배정은 교안 원문이 아니다 | 결과보고서에 회로도 핀 번호를 적을 때 이 표를 따른다. 실물 배선이 p6 핀 번호와 다르다는 것을 보고서에 밝힌다 |
 | M14 | C1→C2는 `rebuild: all`이다. 칩 전부가 바뀌고 74HC00·74HC03 전원(14·7)과 74670 전원(16·8)의 행이 달라 전원선을 남길 수 없다. LED도 2개에서 4개로 늘어 사슬을 다시 꽂는다 | 결선도 단계에서 슬롯별로 재검토 |
 | M15 | **p4 이론 안에서 부울식과 그림·표가 어긋난다.** p4 식은 `S = (Selection Input)·(Read or Write)'·(Input)'`, `R = (Selection Input)·(Read or Write)'·(Input)`이다(300dpi vision. 텍스트 추출은 바를 잃는다). 같은 쪽 회로도는 Input을 인버터를 거쳐 R 쪽 AND에, 그대로 S 쪽 AND에 넣고, 1 bit RAM 표는 Input=1을 쓰면 Q=1이다. 표·회로도와 맞추려면 식의 S·R이 서로 바뀌어야 한다. 또 표 첫 행은 Selection Input=0일 때 Q=0이라 적었는데, 같은 쪽 SR 표로는 S=R=0이면 Q(t-1)이다. T2·T3 셀은 규칙대로 교안 글리프를 그대로 옮겼다 | 해당 없음. 참조표이며 실험 1)·2) 회로와 무관하다 |

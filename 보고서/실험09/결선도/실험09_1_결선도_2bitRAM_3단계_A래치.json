@@ -1,0 +1,64 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2bit RAM — 3단계",
+ "subtitle": "74HC00 ×2 + 74HC03 ×1 · 10kΩ 풀업 ×4 · 입력은 점퍼",
+ "kept": 23,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 d10",
+   "to": "좌 h10",
+   "desc": "A-Q: U1 pin 6 -> U1 pin 9",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 g11",
+   "to": "좌 c9",
+   "desc": "A-Q': U1 pin 8 -> U1 pin 5",
+   "count": 1,
+   "color": "#009696"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "OUT0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "OUT1",
+   "at": "우 a8",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "IN0",
+   "at": "좌 b5",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  },
+  {
+   "name": "WR1",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "WR0",
+   "at": "좌 j7",
+   "rail": "중앙GND레일7행",
+   "x": 588,
+   "row": 7
+  }
+ ]
+}

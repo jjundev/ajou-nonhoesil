@@ -1,0 +1,108 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 2) 16bit RAM (IC 74670) — 2단계",
+ "subtitle": "74670 ×1 · 입력 열 개는 점퍼",
+ "kept": 23,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "좌 GND레일7행",
+   "to": "좌 b8",
+   "desc": "입력 D2 -> U1 pin 1 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 j15",
+   "to": "우 a21",
+   "desc": "Q2 = U1 pin 9 -> LED Q2",
+   "count": 1,
+   "color": "#e67800"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "Q1",
+   "at": "우 a16",
+   "active_low": false
+  },
+  {
+   "tag": "Q2",
+   "at": "우 a21",
+   "active_low": false
+  },
+  {
+   "tag": "Q3",
+   "at": "우 a26",
+   "active_low": false
+  },
+  {
+   "tag": "Q4",
+   "at": "우 a31",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "D1",
+   "at": "좌 j9",
+   "rail": "중앙GND레일9행",
+   "x": 588,
+   "row": 9
+  },
+  {
+   "name": "WA",
+   "at": "좌 j10",
+   "rail": "중앙GND레일10행",
+   "x": 588,
+   "row": 10
+  },
+  {
+   "name": "WB",
+   "at": "좌 j11",
+   "rail": "중앙GND레일11행",
+   "x": 588,
+   "row": 11
+  },
+  {
+   "name": "WE",
+   "at": "좌 j12",
+   "rail": "중앙GND레일12행",
+   "x": 588,
+   "row": 12
+  },
+  {
+   "name": "RE",
+   "at": "좌 j13",
+   "rail": "중앙GND레일13행",
+   "x": 588,
+   "row": 13
+  },
+  {
+   "name": "RB",
+   "at": "좌 b11",
+   "rail": "좌 GND레일11행",
+   "x": 176,
+   "row": 11
+  },
+  {
+   "name": "RA",
+   "at": "좌 b12",
+   "rail": "좌 GND레일12행",
+   "x": 176,
+   "row": 12
+  },
+  {
+   "name": "D2",
+   "at": "좌 b8",
+   "rail": "좌 GND레일7행",
+   "x": 176,
+   "row": 7
+  }
+ ]
+}

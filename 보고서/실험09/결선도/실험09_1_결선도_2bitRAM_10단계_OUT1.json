@@ -1,0 +1,102 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) 2bit RAM — 10단계",
+ "subtitle": "74HC00 ×2 + 74HC03 ×1 · 10kΩ 풀업 ×4 · 입력은 점퍼",
+ "kept": 43,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "좌 j31",
+   "to": "중앙VCC레일31행",
+   "desc": "10kΩ 풀업(좌 j31→중앙VCC레일31행) · U3 pin 8 열린 드레인 출력",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 i31",
+   "to": "우 a8",
+   "desc": "OUT1 = U3 pin 8 -> LED OUT1",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 c30",
+   "to": "좌 g30",
+   "desc": "B-RD': U3 pin 6 -> U3 pin 9",
+   "count": 1,
+   "color": "#009696"
+  },
+  {
+   "n": 4,
+   "kind": "sig",
+   "from": "좌 h30",
+   "to": "좌 j29",
+   "desc": "B-RD': U3 pin 9 -> U3 pin 10",
+   "count": 1,
+   "color": "#c81e96"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "OUT0",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "OUT1",
+   "at": "우 a8",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "IN0",
+   "at": "좌 b5",
+   "rail": "좌 GND레일5행",
+   "x": 176,
+   "row": 5
+  },
+  {
+   "name": "WR1",
+   "at": "좌 b6",
+   "rail": "좌 GND레일6행",
+   "x": 176,
+   "row": 6
+  },
+  {
+   "name": "WR0",
+   "at": "좌 j7",
+   "rail": "중앙GND레일7행",
+   "x": 588,
+   "row": 7
+  },
+  {
+   "name": "OE0",
+   "at": "좌 b25",
+   "rail": "좌 GND레일25행",
+   "x": 176,
+   "row": 25
+  },
+  {
+   "name": "IN1",
+   "at": "좌 b15",
+   "rail": "좌 GND레일15행",
+   "x": 176,
+   "row": 15
+  },
+  {
+   "name": "OE1",
+   "at": "좌 b28",
+   "rail": "좌 GND레일28행",
+   "x": 176,
+   "row": 28
+  }
+ ]
+}
