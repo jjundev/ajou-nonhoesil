@@ -334,11 +334,18 @@ _PLACE_HINTS = {}
 
 def place_marker_hints(circuit, layout):
     """superset 판에서 엔진 고정 부품 번호 원이 비킨 자리 {열쇠: (x, y)}. 빌더가 `bb.marker_hints` 로 주면
-    단계 그림·완성본이 같은 자리를 쓴다(2026-10-05)."""
+    단계 그림·완성본이 같은 자리를 쓴다(2026-10-05).
+
+    superset 을 두 번 그린다 — 첫 판의 신호 이름 배지 자리를 둘째 판에 예약해(`reserve_badges`) 번호 원이
+    아직 안 그린 입력의 배지도 비킨다. 그래서 빌더가 입력을 어떤 순서로 그려도 된다(2026-11-09 실험09)."""
     key = (circuit.name, place_hash([circuit], ()), layout_key(layout))
     if key not in _PLACE_HINTS:
+        first = BreadboardRenderer(None, board='v2')
+        first.enable_steps()
+        circuit.fixed(first, None, True, layout)
         bb = BreadboardRenderer(None, board='v2')
         bb.enable_steps()
+        bb.reserve_badges(first)
         circuit.fixed(bb, None, True, layout)
         _PLACE_HINTS[key] = dict(bb.settled_markers)
     return _PLACE_HINTS[key]

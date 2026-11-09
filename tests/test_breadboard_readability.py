@@ -55,22 +55,9 @@ def _inter(a, b):
 
 
 def _badge_hits(bb, box, seg):
-    """신호 이름 배지 상자가 가리는 것 — 번호 원, 꽂힌 홀, 자기 것이 아닌 배선, 다른 배지."""
-    hits = [f'번호 원 {m}' for m in bb.marker_boxes if _inter(box, m)]
-    for (hx, hr), what in bb._leads.items():
-        if box[0] <= hx <= box[2] and box[1] <= bb.r_y(hr) <= box[3]:
-            hits.append(f'홀 {what}')
-    for j, (_kind, pts, desc) in enumerate(bb._segments):
-        if j == seg:
-            continue
-        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
-            n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
-            if any(box[0] < ax + (bx - ax) * k / n < box[2]
-                   and box[1] < ay + (by - ay) * k / n < box[3] for k in range(n + 1)):
-                hits.append(f'배선 {desc}')
-                break
-    hits += [f'배지 {n}' for n, b, _s in bb.tag_boxes if b is not box and _inter(box, b)]
-    return hits
+    """신호 이름 배지 상자가 가리는 것 — 번호 원, 꽂힌 홀, 자기 것이 아닌 배선, 다른 배지. 엔진의 R17 과
+    같은 검사다(`badge_hits`, 2026-11-09 엔진으로 올림). 여기서는 v1 승인본까지 본다."""
+    return bb.badge_hits(box, seg)
 
 
 # 이미 맞닿아 있던 번호 원 — 새 겹침만 막고 이건 그대로 둔다. 빌더의 `marker_at` 을

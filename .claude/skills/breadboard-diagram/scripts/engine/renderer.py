@@ -95,6 +95,9 @@ class BreadboardRenderer(_RuleChecks):
         # 번호 원의 자리 — 그리지 않은 것까지(층 그림의 흐린·숨긴 번호). `_auto_marker` 가 피한다 —
         # 그린 원만 피하면 층 그림만 R11 로 멈춘다(2026-10-04). `readability` 만
         self._marker_slots = []
+        # 신호 이름 배지의 **예약** 자리 — 같은 결선을 먼저 다 그린 판에서 얻는다(`reserve_badges`). 번호 원이
+        # 아직 안 그린 이웃 입력의 배지도 비킨다. 비어 있으면 그림 불변(2026-11-09 실험09 C2)
+        self.badge_slots = []
         # 보드 밖 입력 꼬리표(`_tag`) 상자 — `_tag` 가 보고 비킨다
         self.margin_tag_boxes = []
         # 일부러 덜 그린 그림 — R5 '아무 데도 안 물렸다' 만 건너뛴다. 걷기 보드는 setter 가 True 로
@@ -1423,6 +1426,12 @@ class BreadboardRenderer(_RuleChecks):
                 out.append(f'{label} 풀업 ({self._sym_addr(("hole", key[0]))}→{self._sym_addr(("hole", key[1]))}) 뽑는다')
         return out
 
+    def reserve_badges(self, other):
+        """`other` — 같은 결선을 **먼저 다 그린** 판(전 단계·superset) — 의 신호 이름 배지 자리를 예약한다.
+        번호 원(`_marker_fits`·`_marker_clear`)이 이미 그린 배지만 비키면 빌더가 입력을 핀 행 순서로 그려야만
+        겹치지 않았다(2026-11-09 실험09 `_RAM16_INPUTS`). 예약하면 순서와 무관하다. 겹침 자체는 R17 이 잡는다."""
+        self.badge_slots = [box for _n, box, _s in other.tag_boxes]
+
     def _marker_clear(self, x, y, own=None, pad=2):
         """(x, y) 에 번호 원을 찍으면 아무것도 안 가리는가 — 꽂힌 홀, 다른 번호 원, 칩 몸통, 신호 이름 배지,
         `own` 번째가 아닌 배선."""
@@ -1438,6 +1447,9 @@ class BreadboardRenderer(_RuleChecks):
             return False
         # 신호 이름 배지 — `_marker_fits` 는 보는데 이쪽은 안 봐 경로 번호 원이 배지를 덮었다(2026-10-05 실험05)
         if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
+            return False
+        # 아직 안 그린 배지 자리(`reserve_badges`) — 그리는 순서와 무관하게 비킨다(2026-11-09 실험09)
+        if any(_boxes_touch(box, b) for b in self.badge_slots):
             return False
         if any(_boxes_touch(box, b) for b in self._display_boxes()):
             return False
@@ -1483,6 +1495,9 @@ class BreadboardRenderer(_RuleChecks):
                for b, _cx, _ch in self._chip_bodies()):
             return False
         if any(_boxes_touch(box, b) for _n, b, _seg in self.tag_boxes):
+            return False
+        # 아직 안 그린 배지 자리(`reserve_badges`) — 그리는 순서와 무관하게 비킨다(2026-11-09 실험09)
+        if any(_boxes_touch(box, b) for b in self.badge_slots):
             return False
         if any(_boxes_touch(box, b) for b in self._display_boxes()):
             return False

@@ -57,7 +57,8 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     elif x_rail == bb.cols['right']['gnd']:
         badge_x, default_marker = (bb.cols['right']['vcc'] + s.board_right) / 2, (s.board_right + 24, 0)
     else:
-        # 가운데 레일들이 이 자리를 같이 쓴다 — 같은 행 입력 둘은 겹친다(가독성 시험이 잡는다)
+        # 가운데 레일들이 이 자리를 같이 쓴다 — 같은 행 입력 둘은 겹친다(R17 이 잡는다). 아직 안 그린 이웃
+        # 배지는 `reserve_badges` 로 예약해야 원이 비킨다 — 안 하면 핀 행 순서로 그려야 한다(2026-11-09)
         badge_x = s.mid_badge_x
         default_marker = (badge_x, -18)
         if s.readability:

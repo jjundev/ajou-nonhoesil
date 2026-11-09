@@ -1,9 +1,9 @@
-# 결선도 엔진 조각 — 검사(R5~R14·넷 모형·verify).
+# 결선도 엔진 조각 — 검사(R5~R17·넷 모형·verify).
 # 단독으로 import 하지 않는다. `../render_breadboard.py` 가 조각들을 `_PARTS` 순서대로 자기
 # 이름공간에서 실행한다 — 앞 조각의 이름(import·상수·함수)을 import 없이 그대로 쓴다.
 
 class _RuleChecks:
-    """`BreadboardRenderer` 의 검사 쪽 — R5~R14 와 넷 모형. `export()` 직전에 `verify()` 가 돈다.
+    """`BreadboardRenderer` 의 검사 쪽 — R5~R17 와 넷 모형. `export()` 직전에 `verify()` 가 돈다.
     그리기 상태(`_leads`·`_segments`·`chips` …)는 `BreadboardRenderer.__init__` 이 만든다."""
 
     def side_leads(self):
@@ -157,6 +157,53 @@ class _RuleChecks:
                    for a, b in zip(pts, pts[1:])):
                 out.append(desc)
         return out
+
+    @staticmethod
+    def _segs_cross(p, q, r, s):
+        """구간 pq 와 rs 가 **서로의 안쪽에서** 엇갈리는가 — 끝점 맞닿음·한 직선 위 포개짐은 아니다
+        (포개짐은 R4 몫이다). 방향 부호가 양쪽 다 엄격히 갈려야 참이다."""
+        def turn(a, b, c):
+            v = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+            return (v > 1e-9) - (v < -1e-9)
+        return (turn(p, q, r) * turn(p, q, s) < 0) and (turn(r, s, p) * turn(r, s, q) < 0)
+
+    def input_crossings(self):
+        """R16 — 입력 점퍼끼리 X자로 엇갈림. 레일 빈 행 때문에 `free_rail_row` 가 레일 끝을 다른 행으로
+        밀면 점퍼가 사선이 되고, 이웃 입력과 엇갈리면 어느 끝이 어느 입력인지 안 읽힌다(2026-11-09 실험09 C2)."""
+        segs = [(inp['name'], self._segments[inp['seg']][1]) for inp in self.inputs]
+        out = []
+        for i, (n1, p) in enumerate(segs):
+            for n2, q in segs[i + 1:]:
+                if any(self._segs_cross(a, b, c, d) for a, b in zip(p, p[1:]) for c, d in zip(q, q[1:])):
+                    out.append(f'{n1}({self.addr(*p[0])} → {self.addr(*p[-1])}) 과 '
+                               f'{n2}({self.addr(*q[0])} → {self.addr(*q[-1])}) 이 엇갈린다')
+        return out
+
+    def badge_hits(self, box, seg):
+        """신호 이름 배지 상자 하나가 가리는 것 — 번호 원, 꽂힌 홀, 자기 것(`seg`)이 아닌 배선, 다른 배지."""
+        def inter(a, b):
+            return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+        hits = [f'번호 원 {m}' for m in self.marker_boxes if inter(box, m)]
+        for (hx, hr), what in self._leads.items():
+            if box[0] <= hx <= box[2] and box[1] <= self.r_y(hr) <= box[3]:
+                hits.append(f'홀 {what}')
+        for j, (_kind, pts, desc) in enumerate(self._segments):
+            if j == seg:
+                continue
+            for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+                n = int(max(abs(bx - ax), abs(by - ay)) / 2) + 1
+                if any(box[0] < ax + (bx - ax) * k / n < box[2]
+                       and box[1] < ay + (by - ay) * k / n < box[3] for k in range(n + 1)):
+                    hits.append(f'배선 {desc}')
+                    break
+        hits += [f'배지 {n}' for n, b, _s in self.tag_boxes if b is not box and inter(box, b)]
+        return hits
+
+    def badge_problems(self):
+        """R17 — 신호 이름 배지가 가리는 것. 그리는 순서와 무관하게 다 그린 뒤에 본다 — 번호 원은 이미 그린
+        배지만 비켜 가서, 아직 안 그린 이웃 입력의 배지 위에 앉을 수 있었다(2026-11-09 실험09 C2)."""
+        return [f"{name}: {', '.join(hits)}" for name, box, seg in self.tag_boxes
+                for hits in [self.badge_hits(box, seg)] if hits]
 
     def wires_over_chip_labels(self):
         """R14 — 칩 이름 글자 위를 지나는 배선(전원선 포함). R13 이 허용한 칩 안 이어 가기도 이름
@@ -387,7 +434,7 @@ class _RuleChecks:
         R6  자기 스트립 안을 달리는 구간 없음
         R7  칩 한쪽 리드 ≤ SIDE_LEAD_MAX     R8  같은 블록 두 칩 사이 쪽 안 바꿈 (둘 다 `density_policy`)
         R9  칩은 `spec.chip_blocks` 에만     R10 LED 전용 블록으로는 칩 핀 → LED 사슬만, 순서대로
-        R11~R14 읽기 규칙 — 번호 원 가림·홀 위 신호선·몸통 건너기·칩 이름 가림(`spec.readability`)
+        R11~R17 읽기 규칙 — 번호 원·홀 위 신호선·몸통 건너기·칩 이름·표시기·입력 점퍼 엇갈림·배지(`spec.readability`)
         그리고 레일 연결성(브리지).
         """
         bad = [f'홀이 아니다: {s}' for s in self._not_holes]
@@ -509,13 +556,15 @@ class _RuleChecks:
                     f'{KIND_KR[kind]} 레일이 끊겨 있다 — 브리지가 없다: {desc}\n'
                     '  레일쌍 넷은 별개 스트립이다. bridge_rails() 로 이어라.')
 
-        # R11~R14. 읽기 규칙 — 기하·넷·레일이 맞은 뒤에 본다. v2(`spec.readability`)만
+        # R11~R17. 읽기 규칙 — 기하·넷·레일이 맞은 뒤에 본다. v2(`spec.readability`)만
         if self.spec.readability:
             rd = [f'R11 번호 원 가림: {p}' for p in self.marker_problems()]
             rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
             rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
             rd += [f'R14 배선이 칩 이름을 가린다: {p}' for p in self.wires_over_chip_labels()]
             rd += [f'R15 배선이 표시기·풀업 저항을 가린다: {p}' for p in self.wires_over_display()]
+            rd += [f'R16 입력 점퍼끼리 엇갈린다: {p}' for p in self.input_crossings()]
+            rd += [f'R17 신호 이름 배지가 가린다: {p}' for p in self.badge_problems()]
             rd += self.bridge_clearance_problems()
             if rd:
                 raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))
