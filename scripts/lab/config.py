@@ -122,6 +122,24 @@ def root_relative_prefix(subfolder_depth: int = 1) -> str:
     return "../" * (EXPERIMENT_DIR_DEPTH + subfolder_depth)
 
 
+# 손그림 결선도는 `결선도/손그림/` 아래, 작도 PNG 이름의 `_결선도_` 를 `_손그림_` 으로
+# 바꾼 이름으로 산다(`export_hand_diagrams.resolve_circuit_filenames` 가 짓는 규칙).
+HAND_DIAGRAM_DIR = "손그림"
+_STAGE_DIAGRAM = re.compile(r"_\d+단계")
+
+
+def hand_diagram_name(diagram: str) -> str | None:
+    """netlist `diagram` 작도 PNG 이름에 대응하는 손그림 PNG 이름.
+
+    단계 그림(`…_1단계_…`)은 손그림이 없으므로 `None` 이다 — 손그림은 회로의
+    완성본만 그린다. `_결선도_` 토막이 없는 이름도 `None` 이다.
+    """
+    name = Path(diagram).name
+    if "_결선도_" not in name or _STAGE_DIAGRAM.search(name):
+        return None
+    return name.replace("_결선도_", "_손그림_", 1)
+
+
 # 과거 학기 교안 원본이 사는 곳. 이름이 `실험N.pdf` 로 정규화돼 있다.
 MANUAL_ARCHIVE = "from_the_past/정리/강의노트"
 

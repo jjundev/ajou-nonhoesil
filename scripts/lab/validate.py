@@ -1537,6 +1537,35 @@ def check_result_photo_diagrams(md_text) -> list:
     return out
 
 
+def check_hand_diagram_available(md_path, body=None) -> list:
+    """작도 PNG 를 가리키는 그림 줄인데 손그림 PNG 가 이미 있으면 warn.
+
+    예보·결보 모두 손그림이 정본이고 작도 PNG 는 폴백이다(③ 규칙 20, ④ §사진
+    배치). 예보는 손그림보다 먼저 쓰는 일이 많아(실험03·05·06·07 은 며칠 뒤에
+    손그림이 생겼다) 쓸 때 고른 작도 PNG 가 그대로 노션에 올라가기 쉽다 — push
+    직전에 여기서 짚는다. warn 인 까닭: 작도 PNG 로 일부러 올릴 수도 있다.
+    """
+    path = Path(md_path)
+    if body is None:
+        _, body = md.split_frontmatter(path.read_text(encoding="utf-8"))
+    out = []
+    for line in body.splitlines():
+        if not _IMAGE_ONLY.match(line.strip()):
+            continue
+        src = _IMAGE_ANY.search(line).group(2).strip()
+        if "://" in src or "결선도/" not in src or f"/{config.HAND_DIAGRAM_DIR}/" in src:
+            continue
+        hand = config.hand_diagram_name(src)
+        if hand is None:
+            continue
+        rel = f"{src.rsplit('/', 1)[0]}/{config.HAND_DIAGRAM_DIR}/{hand}"
+        if (path.parent / rel).is_file():
+            out.append(Finding("warn", path.name,
+                f"`{src}` 의 손그림이 있다 — `{rel}` 로 바꿔 넣는다 "
+                "(손그림이 정본, 작도 PNG 는 폴백)"))
+    return out
+
+
 def check_notion_markdown(md_path) -> list:
     """노션에 올리기 전에 md 자체를 본다.
 
@@ -1566,6 +1595,7 @@ def check_notion_markdown(md_path) -> list:
 
     out.extend(check_heading_backticks(body))
     out.extend(check_table_width(body))
+    out.extend(check_hand_diagram_available(path, body))
     from . import notion, notion_images
     try:
         plan = notion_images.plan_images(path, operation_id="preflight")

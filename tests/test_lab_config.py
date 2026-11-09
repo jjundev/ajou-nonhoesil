@@ -423,6 +423,33 @@ class ExperimentBaseTest(unittest.TestCase):
         self.assertEqual(config.root_relative_prefix(0), "../../")
         self.assertEqual(config.root_relative_prefix(2), "../../../../")
 
+    def test_손그림_이름은_작도_이름에서_나온다(self):
+        self.assertEqual(config.hand_diagram_name("실험09_1_결선도_2bitRAM.png"),
+                         "실험09_1_손그림_2bitRAM.png")
+        self.assertEqual(config.hand_diagram_name("../결선도/실험01_3_결선도_복합논리회로.png"),
+                         "실험01_3_손그림_복합논리회로.png")
+        self.assertIsNone(config.hand_diagram_name("실험01_3_결선도_복합논리회로_1단계_인버터.png"))
+        self.assertIsNone(config.hand_diagram_name("Breadboard_v2.png"))
+
+    def test_실제_손그림은_모두_netlist_diagram_에서_이름이_나온다(self):
+        """손그림 파일 이름 규칙(`export_hand_diagrams`)과 이 헬퍼가 갈라지면
+        ③ 이 손그림을 못 찾고 작도 PNG 를 조용히 싣는다."""
+        from scripts.lab import netlist_parser
+        seen = 0
+        for exp in sorted((ROOT / "보고서").glob("실험[0-9][0-9]")):
+            hand_dir = exp / "결선도" / "손그림"
+            netlist = exp / "결선도" / "netlist.md"
+            if not hand_dir.is_dir() or not netlist.is_file():
+                continue
+            names = {config.hand_diagram_name(s.diagram)
+                     for s in netlist_parser.parse_netlist(str(netlist)).sections
+                     if s.kind == "circuit" and s.diagram}
+            for png in hand_dir.glob("*.png"):
+                seen += 1
+                with self.subTest(png=png.name):
+                    self.assertIn(png.name, names)
+        self.assertTrue(seen, "손그림이 하나도 없다")
+
     def test_사슬이_실제로_루트에_닿는다(self):
         """`../` 개수를 리터럴로만 고정하면 두 리터럴이 함께 틀릴 수 있다.
         실물 경로로 되짚어 `.claude/assets/` 가 정말 열리는지 본다."""

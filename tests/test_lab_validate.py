@@ -1241,6 +1241,58 @@ class TestCheckNotionMarkdown(unittest.TestCase):
         self.assertEqual(findings[0].level, "error")
 
 
+class TestCheckHandDiagramAvailable(unittest.TestCase):
+    """작도 PNG 를 가리키는데 손그림이 있으면 push 전에 짚는다(③ 규칙 20)."""
+
+    DRAWN = "실험09_1_결선도_2bitRAM.png"
+    HAND = "실험09_1_손그림_2bitRAM.png"
+
+    def _exp(self, *, hand=True):
+        exp = Path(tempfile.mkdtemp())
+        (exp / "output").mkdir()
+        (exp / "결선도" / "손그림").mkdir(parents=True)
+        (exp / "결선도" / self.DRAWN).write_bytes(b"png")
+        if hand:
+            (exp / "결선도" / "손그림" / self.HAND).write_bytes(b"png")
+        return exp
+
+    def _report(self, exp, src):
+        p = exp / "output" / "보고서.md"
+        p.write_text(f"# 제목\n\n![실험 1) 2bit RAM 브레드보드 작도]({src})\n",
+                     encoding="utf-8")
+        return p
+
+    def test_손그림이_있으면_warn_과_바꿀_경로를_준다(self):
+        exp = self._exp()
+        f = validate.check_hand_diagram_available(
+            self._report(exp, f"../결선도/{self.DRAWN}"))
+        self.assertEqual([x.level for x in f], ["warn"])
+        self.assertIn(f"../결선도/손그림/{self.HAND}", f[0].message)
+
+    def test_notion_검사에도_실린다(self):
+        exp = self._exp()
+        f = validate.check_notion_markdown(
+            self._report(exp, f"../결선도/{self.DRAWN}"))
+        self.assertTrue(any(x.level == "warn" and self.HAND in x.message for x in f), f)
+
+    def test_손그림이_없으면_조용하다(self):
+        exp = self._exp(hand=False)
+        self.assertEqual(validate.check_hand_diagram_available(
+            self._report(exp, f"../결선도/{self.DRAWN}")), [])
+
+    def test_이미_손그림을_가리키면_조용하다(self):
+        exp = self._exp()
+        self.assertEqual(validate.check_hand_diagram_available(
+            self._report(exp, f"../결선도/손그림/{self.HAND}")), [])
+
+    def test_단계_그림은_대상이_아니다(self):
+        exp = self._exp()
+        stage = "실험09_1_결선도_2bitRAM_1단계_A세트.png"
+        (exp / "결선도" / stage).write_bytes(b"png")
+        self.assertEqual(validate.check_hand_diagram_available(
+            self._report(exp, f"../결선도/{stage}")), [])
+
+
 SRC = """# 실험1 Basic Gates 예비보고서
 
 ## 1. 실험 목적
