@@ -38,7 +38,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
    이 스킬 자신이다. 목록을 줄이지 않는다 — 2026-08-31 회차에서 에이전트
    둘이 `docs/verify/` 를 읽고 자기 합격 조건을 따랐다. 그 합격은 아무것도
    증명하지 않는다.
-2. **못 빼는 누출은 적는다.** `draft-lab-spec/SKILL.md` 와
+2. **못 빼는 누출은 적는다.** `draft-lab-spec/` 의 `SKILL.md`·`결선도.md` 와
    `docs/schema/lab-spec-v2.md` 는 실험01 을 예시로 든다(항목 제목·T5
    파생식·`74HC02` 출력핀). 계약서라 못 뺀다. 누출 grep 결과를 판정.md
    에 "구조적 누출" 로 적고, **그 자리의 일치는 합격 근거로 세지 않는다.**
@@ -127,7 +127,7 @@ description: draft-lab-spec 스킬을 답안 없는 격리 트리에서 다시 �
    "
    ```
 
-   남는 자리가 `draft-lab-spec/SKILL.md`·`docs/schema/` 뿐이면 정상이다
+   남는 자리가 `draft-lab-spec/`(`SKILL.md`·`결선도.md`)·`docs/schema/` 뿐이면 정상이다
    (§절대 규칙 2). 다른 파일이 나오면 §답안지 목록에 더하고 1단계부터
    다시 한다 — 목록이 낡은 것이다.
 

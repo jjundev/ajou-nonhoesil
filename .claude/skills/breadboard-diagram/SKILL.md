@@ -202,7 +202,7 @@ netlist 단계 표의 `<k>걷기` 행이 그 번호를 인용한다(`**걷기 �
 가린다), **두 칩 사이에서는 건너지 않는다.** f~j 쪽 게이트의 입력은 `_input_jumper(..., side='f')` 로 그쪽
 GND 레일에서 i 열로 넣는다. 결과는 `verify()` 가 잰다 — R7(칩 한쪽 리드 ≤ `SIDE_LEAD_MAX` 8)과 R8(같은 블록
 두 칩 사이 배선은 쪽을 안 바꾼다). netlist 를 저작할 때 게이트 번호를 이렇게 적는 것이 먼저다
-(`draft-lab-spec` SKILL 의 「결선도 절에 회로 메타를 단다」 절). v2 는 여기에 아래 R9·R10 규약이 더해진다.
+(`draft-lab-spec` 결선도.md 「결선도 절에 회로 메타를 단다」). v2 는 여기에 아래 R9·R10 규약이 더해진다.
 
 **주차 빌더를 쓸 때:** 파일은 `보고서/실험NN/결선도/배치.py` 하나다. 머리에서
 `from render_breadboard import BreadboardRenderer, _input_jumper` 로 엔진을 가져온다(엔진이 그 파일을 불러 주므로

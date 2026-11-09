@@ -22,6 +22,8 @@ PRE = ROOT / ".claude/skills/write-pre-report/SKILL.md"
 RESULT = ROOT / ".claude/skills/write-result-report/SKILL.md"
 REVIEW = ROOT / ".claude/skills/review-lab-report/SKILL.md"
 DRAFT = ROOT / ".claude/skills/draft-lab-spec/SKILL.md"
+# 결선도를 쓸 때만 읽는 본문(2026-11-09 분할). 6단계가 가리킨다.
+DRAFT_NETLIST = ROOT / ".claude/skills/draft-lab-spec/결선도.md"
 SYNC = ROOT / ".claude/skills/sync-report-to-notion/SKILL.md"
 VERIFY = ROOT / ".claude/skills/verify-draft-lab-spec/SKILL.md"
 VERIFY_RESULT = ROOT / ".claude/skills/verify-write-result-report/SKILL.md"
@@ -119,6 +121,7 @@ SHARED_MARKERS = {
 SIBLING_POINTER = re.compile(r"`\.claude/skills/([\w-]+)/([^/`\s]+\.md)`")
 SIBLINGS = {
     "결과": ("필기전사.md", "퀴즈해설.md", "항목반복.md"),
+    "명세": ("결선도.md",),
 }
 # 파일마다 본문에만 있는 구절 하나. 형제 파일에 있고 SKILL.md 에는 없어야 한다 —
 # SKILL.md 로 본문이 되돌아오면 보통 실행이 다시 그것을 싣는다.
@@ -126,6 +129,7 @@ SIBLING_MARKERS = {
     "필기전사.md": "체크 표시(`✓`)와 숫자·문자를 혼동하기 쉽다",
     "퀴즈해설.md": "월요반과 금요반 문제지가 다르다",
     "항목반복.md": "임의로 쪼개 배정하지 않는다",
+    "결선도.md": "f쪽(pin 8~14)",
 }
 
 
@@ -1241,7 +1245,7 @@ class BreadboardV2Docs(unittest.TestCase):
         """netlist 칩 자리표는 결선도보다 먼저 쓴다. v2 규약(칩 좌 블록만·LED 우 a 열·LED 구동
         게이트 f쪽)이 없으면 실험04 v1 처럼 칩을 두 블록에 나눠 적고, 결선도 단계에서 R9 에
         막혀 netlist 로 되돌아온다(2026-10-04)."""
-        text = DRAFT.read_text(encoding="utf-8")
+        text = DRAFT_NETLIST.read_text(encoding="utf-8")
         for s in ("BOARD_V2_FROM", "좌 블록", "R9", "우 a 열", "R10", "f쪽(pin 8~14)"):
             self.assertIn(s, text)
 
@@ -1266,11 +1270,12 @@ class BreadboardV2Docs(unittest.TestCase):
             self.assertIn(value, guide)
         for obsolete in ("핀 행 순서가 이긴다", "PLACE_LENGTH_SLACK", "LED 윗행·브리지 행도 손으로 정하지 않는다"):
             self.assertNotIn(obsolete, text)
-        draft = DRAFT.read_text(encoding="utf-8")
+        draft = DRAFT_NETLIST.read_text(encoding="utf-8")
         self.assertIn("place_search", draft)
         self.assertIn("--mode fixed", draft)
-        self.assertNotIn("LED 번호는 그래도 핀 행 순서다", draft)
-        self.assertNotIn("LED 번호는 그것을 구동하는 핀의 행 순서대로 붙인다", draft)
+        both = DRAFT.read_text(encoding="utf-8") + "\n" + draft
+        self.assertNotIn("LED 번호는 그래도 핀 행 순서다", both)
+        self.assertNotIn("LED 번호는 그것을 구동하는 핀의 행 순서대로 붙인다", both)
 
     def test_손그림_검토가_승인_판형으로_보정하고_읽는다(self):
         text = HAND.read_text(encoding="utf-8")
@@ -1300,7 +1305,7 @@ class BreadboardV2Docs(unittest.TestCase):
         for s in ("DIP_PINS", "active_low=True", "Negative Logic", "pin 4, 3, 2, 1, 5, 6, 7",
                   "tests/fixtures/board_v2_e5/배치.py", "Y0→Y9"):
             self.assertIn(s, text)
-        draft = DRAFT.read_text(encoding="utf-8")
+        draft = DRAFT_NETLIST.read_text(encoding="utf-8")
         for s in ("Negative Logic", "+5V → LED → 330Ω → 출력", "MSI"):
             self.assertIn(s, draft)
 
@@ -1318,6 +1323,20 @@ BREADBOARD_SIBLINGS = {
     "주차별.md": "`e3_fa_s4`",
     "연혁.md": "검사를 통과시키려는 최소",
 }
+
+
+# ② 본문도 부를 때마다 통째로 실린다. 2026-11-09 62KB 에서 결선도 저작 본문을
+# `결선도.md` 로 빼 41KB 가 됐다. 넘기면 상한을 올리지 말고 조건부 본문을 형제 파일로 뺀다.
+DRAFT_SKILL_MAX = 45000
+
+
+class DraftSkillSize(unittest.TestCase):
+    def test_본문이_상한_안이다(self):
+        size = len(DRAFT.read_bytes())
+        self.assertLessEqual(
+            size, DRAFT_SKILL_MAX,
+            f"draft-lab-spec SKILL.md {size}B > {DRAFT_SKILL_MAX}B — 조건이 참일 때만 필요한 "
+            "본문을 형제 파일로 옮기고 SIBLINGS 에 등록한다")
 
 
 class BreadboardSkillSize(unittest.TestCase):
@@ -1462,11 +1481,15 @@ class SkillFolderSiblings(unittest.TestCase):
         self.assertGreaterEqual(checked, 5, "포인터를 못 찾으면 이 테스트는 공허하다")
 
     def test_siblings_do_not_point_onward(self):
-        # 깊이 1단. 형제가 형제를 가리키면 한쪽만 읽혀 규칙이 빠진다.
+        # 깊이 1단. 형제가 형제를 가리키면 한쪽만 읽혀 규칙이 빠진다. 다른 스킬의
+        # 파일을 가리키는 것은 형제가 아니다 — ② `결선도.md` 가 breadboard-diagram 의
+        # `fixed-led-search.md` 를 가리킨다.
         for key in SIBLINGS:
+            own = DOCS[key][0].parent.name
             for name, text in sibling_texts(key).items():
                 with self.subTest(name):
-                    onward = [n for _, n in SIBLING_POINTER.findall(text) if n != "SKILL.md"]
+                    onward = [n for f, n in SIBLING_POINTER.findall(text)
+                              if f == own and n != "SKILL.md"]
                     self.assertEqual(onward, [])
 
     def test_sibling_references_resolve_in_the_skill(self):
@@ -1507,6 +1530,17 @@ class SkillFolderSiblings(unittest.TestCase):
                 self.assertIn(condition, flat)
                 # 판정문이 포인터보다 앞이다. 뒤로 가면 조건을 따지기 전에 파일부터 연다.
                 self.assertLess(flat.index(condition), flat.index(pointer))
+
+    def test_draft_step6_says_when_to_read(self):
+        # ② 도 같다 — `명세만` 판정이 포인터보다 앞이어야 명세만 쓰는 실행이 결선도
+        # 본문을 열지 않는다.
+        steps = rule_blocks(sections(DRAFT.read_text(encoding="utf-8"))["실행 절차"])
+        flat = _flat(steps[6])
+        condition = "`명세만` 이면 건너뛴다"
+        pointer = "`.claude/skills/draft-lab-spec/결선도.md` 를 지금 읽고"
+        self.assertIn(condition, flat)
+        self.assertIn(pointer, flat)
+        self.assertLess(flat.index(condition), flat.index(pointer))
 
     def test_step3_says_where_to_go_when_nothing_to_transcribe_before_the_pointer(self):
         # "없으면 4단계로" 가 포인터·안전 문장 뒤에 오면 '없으면' 의 주어가 두 문장

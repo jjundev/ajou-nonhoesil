@@ -555,7 +555,9 @@ class ParseNodes(unittest.TestCase):
         self.assertIn("양 끝 홀", doc)
         self.assertIn("연달아", doc)
         for skill in ("prep-lab-checklist", "draft-lab-spec"):
-            text = (ROOT / f".claude/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
+            # 스킬 폴더 전체를 본다 — draft-lab-spec 은 결선도 본문을 `결선도.md` 에 둔다.
+            text = "\n".join(p.read_text(encoding="utf-8")
+                             for p in sorted((ROOT / f".claude/skills/{skill}").glob("*.md")))
             with self.subTest(skill=skill):
                 self.assertIn("## 노드", text)
 
