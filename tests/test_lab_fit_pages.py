@@ -70,11 +70,11 @@ class TestChromeFit(unittest.TestCase):
             "<p>기록표</p>", encoding="utf-8")
 
     def test_단계는_제_높이의_쪽_하나에_들고_나머지는_기본_쪽이다(self):
-        from pypdf import PdfReader
+        import pymupdf   # pypdf 6.17 은 Chrome PDF 의 띄어쓰기를 '\x01' 로 뽑는다
         heights = fit_pages(self.html)
         self.assertEqual([round(h) for h in heights], [150, 300])
         pdf = html_to_pdf(self.html, Path(self.tmp.name) / "out.pdf")
-        pages = [(round(float(p.mediabox.height) / 72 * 25.4), p.extract_text().strip())
-                 for p in PdfReader(str(pdf)).pages]
+        pages = [(round(p.mediabox.height / 72 * 25.4), p.get_text().strip())
+                 for p in pymupdf.open(str(pdf))]
         self.assertEqual(pages, [(420, "공통면"), (178, "짧은 단계"),
                                  (328, "긴 단계"), (420, "기록표")])

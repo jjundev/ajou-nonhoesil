@@ -16,6 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / ".claude/skills/breadboard-diagram/scripts/render_breadboard.py"
 
 
+def _page_texts(path):
+    """쪽별 글자. pypdf 6.17 은 Chrome PDF 의 띄어쓰기를 '\\x01' 로 뽑아 pymupdf 로 읽는다."""
+    import pymupdf
+    return [page.get_text() for page in pymupdf.open(str(path))]
+
+
 def _load(name="render_breadboard"):
     spec = importlib.util.spec_from_file_location(name, SCRIPT)
     mod = importlib.util.module_from_spec(spec)
@@ -358,7 +364,7 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([len(p.images) for p in PdfReader(str(sim)).pages], [1])
         pages = PdfReader(str(guide)).pages
         self.assertEqual([len(p.images) for p in pages], [1])
-        text = pages[0].extract_text()
+        text = _page_texts(guide)[0]
         for s in ('회색 선은 이미 그려져 있어요', '다리', '74HC04'):   # 부품 다리도 회색이다 — 빠뜨리지 않게
             self.assertIn(s, text)
 
@@ -368,11 +374,12 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([len(p.images) for p in PdfReader(str(sim)).pages], [1, 1])
         pages = PdfReader(str(guide)).pages
         self.assertEqual([len(p.images) for p in pages], [1, 1])
-        self.assertIn('74HC42', pages[0].extract_text())
-        self.assertIn('74HC20', pages[1].extract_text())
+        texts = _page_texts(guide)
+        self.assertIn('74HC42', texts[0])
+        self.assertIn('74HC20', texts[1])
         # Windows 글꼴에서 25행 표의 마지막 입력만 다음 쪽으로 밀리던 회귀.
-        self.assertIn('Bit3', pages[0].extract_text())
-        self.assertIn('레일 쪽 끝 중앙GND레일7행 옆', pages[0].extract_text())
+        self.assertIn('Bit3', texts[0])
+        self.assertIn('레일 쪽 끝 중앙GND레일7행 옆', texts[0])
 
     def test_실험05_손그림모사는_브레드보드_PDF_판에_글자_없이(self):
         # 작성자가 실험 이름을 손으로 적는다 — 쪽 크기·그림 자리가 빈 판형 PDF 와 같아야 홀이 겹친다
