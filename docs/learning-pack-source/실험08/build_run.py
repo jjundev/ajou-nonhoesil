@@ -27,7 +27,7 @@ def addsrc(sid, path, kind='manual', edition='current'):
     M['sources'].append(dict(id=sid, path=path, sha256=hashlib.sha256((REPO / path).read_bytes()).hexdigest(), kind=kind, edition=edition))
 
 
-addsrc(MAN, '보고서/실험08/강의노트/실험8_Counter_회로정정본.pdf')
+addsrc(MAN, '강의노트/실험8_Counter_회로정정본.pdf')
 addsrc('s-scope', '강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md', 'notice')
 addsrc('s-board', '강의노트/공지사항/Breadboard.pdf', 'notice')
 addsrc('s-spec08', '보고서/실험08/체크리스트/명세.md', 'record')
