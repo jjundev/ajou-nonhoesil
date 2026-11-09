@@ -146,8 +146,8 @@ class _RuleChecks:
         return [k for k in self.new_signal if k not in held]
 
     def _display_boxes(self):
-        """표시기 몸통과 그 저항 몸통 상자 — 표시기가 없으면 빈 목록이다."""
-        return [b for d in self.displays for b in d['boxes']]
+        """표시기 몸통과 그 저항 몸통 상자, 눕힌 풀업 저항(`pull_up`)의 다리~다리 상자 — 없으면 빈 목록이다."""
+        return [b for d in self.displays for b in d['boxes']] + list(getattr(self, 'part_boxes', ()))
 
     def wires_over_display(self):
         """R15 — 표시기·표시기 저항 몸통 위를 지나는 배선. 숫자를 가리거나 다리가 안 보인다."""
@@ -515,7 +515,7 @@ class _RuleChecks:
             rd += [f'R12 신호선이 홀 위를 지난다: {p}' for p in self.wires_over_holes()]
             rd += [f'R13 칩 몸통을 쓸데없이 건넌다: {p}' for p in self.needless_body_crossings()]
             rd += [f'R14 배선이 칩 이름을 가린다: {p}' for p in self.wires_over_chip_labels()]
-            rd += [f'R15 배선이 표시기를 가린다: {p}' for p in self.wires_over_display()]
+            rd += [f'R15 배선이 표시기·풀업 저항을 가린다: {p}' for p in self.wires_over_display()]
             rd += self.bridge_clearance_problems()
             if rd:
                 raise AssertionError('따라 그릴 수 없다:\n  ' + '\n  '.join(rd))

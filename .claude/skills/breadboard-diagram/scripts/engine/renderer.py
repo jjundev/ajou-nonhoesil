@@ -159,6 +159,9 @@ class BreadboardRenderer(_RuleChecks):
         self.seg_ends = {}
         self.leds = []
         self.resistors = []
+        # 눕혀 꽂은 풀업 저항(`pull_up`) — 끝점 기호·라벨. `part_boxes` 는 그 몸통·다리 상자(배선기·R15 가 피한다)
+        self.pullups = []
+        self.part_boxes = []
         self.led_chains = []
         self.unused_inputs = []
         self.unused_outputs = []
@@ -871,6 +874,72 @@ class BreadboardRenderer(_RuleChecks):
             self._keep_parts = False
             self._pull_parts = False
 
+    def pull_up(self, x, row, desc, label='10kΩ', block='left', marker_near=None):
+        """풀업 저항 한 개 — 핀 스트립의 홀 `(x, row)` 에서 가장 가까운 +5V 레일 홀로 **눕혀** 꽂는다
+        (실험09 `74HC03` 열린 드레인 출력). 레일 착지 행은 `free_rail_row` 가 고른다 — 보통 같은 행이라
+        가로로 눕는다. 두 홀 사이에 다른 홀이 있으면(f쪽 → 가운데 VCC 는 가운데 GND 열을 건넌다) 몸통을
+        그 홀 위에 얹어 다리가 그 홀을 지나가지 않게 하고, 그 홀은 지나간 홀(`_passed`)로 적는다.
+
+        두 홀 사이 상자는 `part_boxes` 에 남는다 — 배선기와 R15 가 그 위를 지나는 선을 막는다.
+        기준선(`snapshot()['pullups']`)에 같은 두 홀이 있으면 회색·번호 없이 그린다. 걷기 보드의 빨간
+        표시는 없다 — 뽑을 풀업은 `removed()` 글줄로만 나온다.
+        """
+        x_rail = self.nearest_vcc_rail(x, block)
+        r = self.free_rail_row(row, x_rail)
+        p0, p1 = (x, self.r_y(row)), (x_rail, self.r_y(r))
+        key = (self.sym(x, row), self.sym(x_rail, r))
+        self._keep_parts = self.baseline is not None and key in self.baseline.get('pullups', {})
+        try:
+            lo, hi = sorted((x, x_rail))
+            inner = sorted(v for v in self._addr_map if lo < v < hi and self.hole_at(v, p1[1]) is not None)
+            dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+            t = (inner[len(inner) // 2] - p0[0]) / dx if inner else .5
+            length = (dx * dx + dy * dy) ** .5
+            center = (p0[0] + dx * t, p0[1] + dy * t)
+            self.lead(*p0, f'{label} 풀업 핀쪽 다리')
+            self.lead(*p1, f'{label} 풀업 레일쪽 다리')
+            self._register_pass([p0, p1])
+            rec = {'label': label, 'top': key[0], 'bottom': key[1]}
+            self.resistors.append(rec)
+            self.pullups.append(dict(rec))
+            pad = 5
+            self.part_boxes.append((lo + pad, min(p0[1], p1[1]) - 6, hi - pad, max(p0[1], p1[1]) + 6))
+            self._blank_parts(self._draw_resistor_between, p0, p1, center, label)
+            # 번호 원은 핀쪽 다리 한가운데 — 몸통 위아래 반 행은 이웃 레일 홀·배선이 지나간다
+            tm = t - 12 / length            # 몸통 핀쪽 끝의 매개변수
+            mx, my = marker_near or (p0[0] + dx * tm / 2, p0[1] + dy * tm / 2)
+            self.step_note('vcc', self.addr(*p0), self.addr(*p1),
+                           f'{label} 풀업({self.addr(*p0)}→{self.addr(*p1)}) · {desc}', marker_near=(mx, my))
+        finally:
+            self._keep_parts = False
+
+    def _draw_resistor_between(self, p0, p1, center, label):
+        """두 홀 사이에 눕힌 저항 — 다리 둘, 몸통은 `center` 에 선 방향으로 놓는다."""
+        dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+        length = (dx * dx + dy * dy) ** .5
+        ux, uy = dx / length, dy / length
+        nx, ny = -uy, ux
+        wire_col = KEEP if self._keep_parts else (100, 100, 100, 255)
+        body_col = (215, 215, 215, 255) if self._keep_parts else (225, 195, 145, 255)
+        if self._keep_parts:
+            bands = [KEEP] * 4
+        elif '10k' in label:
+            bands = [(139, 69, 19, 255), (30, 30, 30, 255), (230, 120, 0, 255), (218, 165, 32, 255)]
+        else:
+            bands = [(204, 85, 0, 255), (204, 85, 0, 255), (139, 69, 19, 255), (218, 165, 32, 255)]
+        cx, cy = center
+        a = (cx - ux * 12, cy - uy * 12)
+        b = (cx + ux * 12, cy + uy * 12)
+        near0, near1 = (a, b) if abs(a[0] - p0[0]) + abs(a[1] - p0[1]) < abs(b[0] - p0[0]) + abs(b[1] - p0[1]) else (b, a)
+        self.draw.line([p0, near0], fill=wire_col, width=2)
+        self.draw.line([near1, p1], fill=wire_col, width=2)
+        corners = [(cx + ux * s * 12 + nx * w * 5, cy + uy * s * 12 + ny * w * 5)
+                   for s, w in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        self.draw.polygon(corners, fill=body_col, outline=(90, 70, 40, 255))
+        for col, off in zip(bands, [-7, -2, 3, 8]):
+            bx, by = cx + ux * off, cy + uy * off
+            self.draw.line([(bx - nx * 4, by - ny * 4), (bx + nx * 4, by + ny * 4)], fill=col, width=2)
+
     # ---------------- 칩 ----------------
 
     def _vtext(self, xy, text, fill, font):
@@ -1312,6 +1381,8 @@ class BreadboardRenderer(_RuleChecks):
         }
         if self.displays:
             out['displays'] = {(d['block'], d['pin1_row']): d['label'] for d in self.displays}
+        if self.pullups:
+            out['pullups'] = {(p['top'], p['bottom']): p['label'] for p in self.pullups}
         return out
 
     def removals(self):
@@ -1346,6 +1417,10 @@ class BreadboardRenderer(_RuleChecks):
         for key, tag in self.baseline['chains'].items():
             if key not in chains:
                 out.append(f'LED {tag} 사슬 ({self._chain_span(key)}) 뽑는다')
+        here_pu = {(p['top'], p['bottom']) for p in self.pullups}
+        for key, label in self.baseline.get('pullups', {}).items():
+            if key not in here_pu:
+                out.append(f'{label} 풀업 ({self._sym_addr(("hole", key[0]))}→{self._sym_addr(("hole", key[1]))}) 뽑는다')
         return out
 
     def _marker_clear(self, x, y, own=None, pad=2):
