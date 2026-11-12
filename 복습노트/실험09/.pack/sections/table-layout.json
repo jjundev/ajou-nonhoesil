@@ -1,0 +1,741 @@
+{
+  "version": 1,
+  "tables": [
+    {
+      "key": "t-ram/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-ram/1",
+      "expected_headers": [
+        "순서",
+        "동작",
+        "주소",
+        "값",
+        "칸 00 01 10 11",
+        "꺼낸 값"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-latch/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-latch/1",
+      "expected_headers": [
+        "순서",
+        "S′",
+        "R′",
+        "Q",
+        "Q′",
+        "동작"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-1bit/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-1bit/1",
+      "expected_headers": [
+        "Input (Sel=1, R/W=0)",
+        "S, R 자리",
+        "RS 표로 본 결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-1bit/2",
+      "expected_headers": [
+        "순서",
+        "Sel",
+        "R/W",
+        "Input",
+        "S",
+        "R",
+        "Q",
+        "Output",
+        "동작"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        },
+        {
+          "left": 5,
+          "kind": "major"
+        },
+        {
+          "left": 7,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-2bit/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-2bit/1",
+      "expected_headers": [
+        "쓰기 입력",
+        "래치 입력 자리",
+        "NAND 래치 규칙으로 본 결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-2bit/2",
+      "expected_headers": [
+        "스텝",
+        "OE0",
+        "IN0",
+        "WR0",
+        "OE1",
+        "IN1",
+        "WR1",
+        "OUT0",
+        "OUT1",
+        "동작"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        },
+        {
+          "left": 6,
+          "kind": "major"
+        },
+        {
+          "left": 8,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-rules/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-rules/1",
+      "expected_headers": [
+        "순서",
+        "조작",
+        "래치 입력",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-opendrain/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-opendrain/1",
+      "expected_headers": [
+        "OE0",
+        "A의 Q",
+        "3번 (OE0·Q)′",
+        "OUT0 (11번)"
+      ],
+      "columns": [
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-74670/0",
+      "expected_headers": [
+        "조건",
+        "결과"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "text",
+          "group": "조건"
+        },
+        {
+          "role": "output",
+          "kind": "text",
+          "group": "결과"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-74670/1",
+      "expected_headers": [
+        "2bit RAM",
+        "74670",
+        "다른 점"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-74670/2",
+      "expected_headers": [
+        "순서",
+        "WB WA",
+        "WE",
+        "D4~D1",
+        "RB RA",
+        "RE",
+        "Q4~Q1",
+        "동작"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "bus",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        },
+        {
+          "left": 5,
+          "kind": "major"
+        },
+        {
+          "left": 6,
+          "kind": "major"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+ "note-1280-light": {
+  "n": 8,
+  "nbad": [],
+  "errs": [],
+  "drawer": null
+ },
+ "note-1280-dark": {
+  "n": 8,
+  "nbad": [],
+  "errs": [],
+  "drawer": null
+ },
+ "note-375-light": {
+  "n": 8,
+  "nbad": [],
+  "errs": [],
+  "drawer": {
+   "left": "closed",
+   "hash": "#t-ram"
+  }
+ },
+ "note-375-dark": {
+  "n": 8,
+  "nbad": [],
+  "errs": [],
+  "drawer": {
+   "left": "closed",
+   "hash": "#t-ram"
+  }
+ },
+ "expl-1280-light": {
+  "n": 19,
+  "nbad": [],
+  "errs": [],
+  "drawer": null
+ },
+ "expl-1280-dark": {
+  "n": 19,
+  "nbad": [],
+  "errs": [],
+  "drawer": null
+ },
+ "expl-375-light": {
+  "n": 19,
+  "nbad": [],
+  "errs": [],
+  "drawer": {
+   "left": "closed",
+   "hash": "#q-sram-def"
+  }
+ },
+ "expl-375-dark": {
+  "n": 19,
+  "nbad": [],
+  "errs": [],
+  "drawer": {
+   "left": "closed",
+   "hash": "#q-sram-def"
+  }
+ },
+ "note-nojs": {
+  "links": 8,
+  "articles": 8,
+  "expected": 8
+ },
+ "expl-nojs": {
+  "links": 19,
+  "articles": 19,
+  "expected": 19
+ }
+}

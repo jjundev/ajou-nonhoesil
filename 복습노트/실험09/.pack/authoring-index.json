@@ -1,0 +1,1144 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp09",
+  "bank_sha256": "e885d46937e9a143804fcdb81b3e14a4885fcc2b5ab123102dac98199623fdc7",
+  "experiment": 9,
+  "questions": [
+    {
+      "question_id": "q-ram-role",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s02-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1",
+        "o-s09-q1",
+        "o-s11-q1",
+        "o-s13-q1",
+        "o-s10-q1",
+        "o-s12-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a1",
+          "target_id": "q-ram-role",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ram-role",
+          "to_id": "q-sram-def",
+          "type": "variant_of",
+          "reason": "RAM 일반의 역할 서술과 Static RAM 정의 서술은 요구 범위가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cac9e6e4d2e01e8f",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s10-a1",
+          "reason": "붉은 원 테두리와 겹쳐 앞 글자를 확정할 수 없음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q1",
+        "a-s01-p1",
+        "a-s07-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s06-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s13-p1",
+        "a-s10-p1",
+        "a-s12-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-sram-cell",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s07-q2",
+      "occurrence_ids": [
+        "o-s02-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2",
+        "o-s09-q2",
+        "o-s11-q2",
+        "o-s13-q2",
+        "o-s10-q2",
+        "o-s12-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a2",
+          "target_id": "q-sram-cell",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s06-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s13-p1",
+        "a-s10-p1",
+        "a-s12-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(한 비트를 붙잡는 저장 회로)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-write-op-rw",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s10-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s10-q3",
+        "o-s12-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a3",
+          "target_id": "q-write-op-rw",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a3",
+          "target_id": "q-write-op-rw",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a3",
+          "target_id": "q-write-op-rw",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s02-a3",
+          "reason": "제공 답안이 “Read = 1, Write =0/1” 형태로 적혀 있어 Read/Write 입력의 값을 뜻하는지, 읽기·쓰기 극성 규약을 뜻하는지 원문만으로 확정할 수 없다. 원문 그대로 보존하고 정답으로 검증하지 않음."
+        },
+        {
+          "target_id": "o-s12-a3",
+          "reason": "제공 답안이 “Read = 1, Write =0/1” 형태로 적혀 있어 Read/Write 입력의 값을 뜻하는지, 읽기·쓰기 극성 규약을 뜻하는지 원문만으로 확정할 수 없다. 원문 그대로 보존하고 정답으로 검증하지 않음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s10-p1",
+        "a-s12-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "예상문항이에요. Write 때 Read/Write=0은 기출 q-write1(1 쓰기 입력값)과 q-write0에서 이미 답해요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요."
+    },
+    {
+      "question_id": "q-read-op-rw",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s10-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s10-q4",
+        "o-s12-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a4",
+          "target_id": "q-read-op-rw",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a4",
+          "target_id": "q-read-op-rw",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a4",
+          "target_id": "q-read-op-rw",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s02-a4",
+          "reason": "제공 답안이 “Read = 1, Write =0/1” 형태로 적혀 있어 Read/Write 입력의 값을 뜻하는지, 읽기·쓰기 극성 규약을 뜻하는지 원문만으로 확정할 수 없다. 원문 그대로 보존하고 정답으로 검증하지 않음."
+        },
+        {
+          "target_id": "o-s12-a4",
+          "reason": "제공 답안이 “Read = 1, Write =0/1” 형태로 적혀 있어 Read/Write 입력의 값을 뜻하는지, 읽기·쓰기 극성 규약을 뜻하는지 원문만으로 확정할 수 없다. 원문 그대로 보존하고 정답으로 검증하지 않음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s10-p1",
+        "a-s12-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(읽기 때 Read/Write 값)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-write1",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q2",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s03-q2",
+        "o-s02-q5",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3",
+        "o-s09-q3",
+        "o-s11-q3",
+        "o-s13-q3",
+        "o-s10-q5",
+        "o-s12-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "채점본에서 해당 문항 답란에 적힌 응시자 수기 답안(채점 표시 포함). 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s02-a5",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a3",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a3",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a3",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a5",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a5",
+          "target_id": "q-write1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-write1",
+          "to_id": "q-write0",
+          "type": "variant_of",
+          "reason": "같은 1bit RAM 회로에서 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-554c06632f9c7f26",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s06-a3",
+          "reason": "필기체 한 구절이 흘려 쓰여 글자를 확정할 수 없음."
+        },
+        {
+          "target_id": "o-s10-a5",
+          "reason": "굵게 덧칠한 글자라 값을 확정할 수 없음. / 1을 쓰는 문항인데 수기 답안 input 값이 0으로 읽혀 다른 제공 답안(Input = 1)과 다르다. 원문 그대로 보존하고 정답을 판정하지 않음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q2",
+        "a-s01-p1",
+        "a-s07-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s03-q2",
+        "a-s02-p1",
+        "a-s06-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s13-p1",
+        "a-s10-p1",
+        "a-s12-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-write0",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s07-q4",
+      "occurrence_ids": [
+        "o-s02-q6",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4",
+        "o-s09-q4",
+        "o-s11-q4",
+        "o-s13-q4",
+        "o-s10-q6",
+        "o-s12-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a6",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a4",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a4",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a4",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a6",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a6",
+          "target_id": "q-write0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-write1",
+          "to_id": "q-write0",
+          "type": "variant_of",
+          "reason": "같은 1bit RAM 회로에서 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-554c06632f9c7f26",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 4; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s10-a6",
+          "reason": "0과 1을 덧쓴 모양(Φ 모양)이라 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p1",
+        "a-s09-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s06-p1",
+        "a-s08-p1",
+        "a-s11-p1",
+        "a-s13-p1",
+        "a-s10-p1",
+        "a-s12-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(1 bit RAM의 Reset 쪽 경로)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-apart1",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s07-q5",
+      "occurrence_ids": [
+        "o-s02-q7",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5",
+        "o-s09-q5",
+        "o-s11-q5",
+        "o-s13-q5",
+        "o-s10-q7",
+        "o-s12-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a7",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a5",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a5",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a5",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a7",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a7",
+          "target_id": "q-apart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-table",
+          "target_id": "q-apart1",
+          "status": "candidate",
+          "reason": "같은 자료 2쪽 하단의 예상 결과 표. 표의 한 행이 이 문항 조건에 대응할 수 있으나 표 자체는 특정 문항의 답으로 제시되지 않아 후보 연결."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-apart1",
+          "to_id": "q-apart0",
+          "type": "variant_of",
+          "reason": "같은 A part/B part RAM 회로에서 A part에 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-554c06632f9c7f26",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-6959be05f91a99fe",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 8; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s10-a7",
+          "reason": "0과 1을 덧쓴 모양(Φ 모양)이라 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s07-p2",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s06-p2",
+        "a-s08-p2",
+        "a-s11-p2",
+        "a-s13-p2",
+        "a-s10-p1",
+        "a-s12-p2",
+        "a-s06-p2-table"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(2bit RAM의 A part 선택과 1 쓰기)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-apart0",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s10-q8",
+      "occurrence_ids": [
+        "o-s02-q8",
+        "o-s10-q8",
+        "o-s12-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a8",
+          "target_id": "q-apart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a8",
+          "target_id": "q-apart0",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a8",
+          "target_id": "q-apart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-apart1",
+          "to_id": "q-apart0",
+          "type": "variant_of",
+          "reason": "같은 A part/B part RAM 회로에서 A part에 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-554c06632f9c7f26",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-6959be05f91a99fe",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 8; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s10-a8",
+          "reason": "덧칠한 글자라 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "s-6959be05f91a99fe",
+          "reason": "사진 왼쪽 가장자리에 다른 퀴즈 채점지(문항 “1. 비동…”, “2. …진 카운…”, “3. 아래의 카운…”, Clock Gener… 상자) 일부가 겹쳐 찍혀 있다. 본문이 잘려 판독 불가이며 카운터 주제로 실험9 RAM 문항이 아니어서 occurrence로 만들지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s10-p1",
+        "a-s12-p2"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "예상문항이에요. A part 선택(IN0)은 q-apart1, 0 쓰기(WR0=1, WR1=0)는 기출 q-bpart0에서 다뤄요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요."
+    },
+    {
+      "question_id": "q-bpart1",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s05-q9",
+      "occurrence_ids": [
+        "o-s02-q9",
+        "o-s04-q9",
+        "o-s05-q9",
+        "o-s12-q9"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a9",
+          "target_id": "q-bpart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a9",
+          "target_id": "q-bpart1",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a9",
+          "target_id": "q-bpart1",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a9",
+          "target_id": "q-bpart1",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-bpart1",
+          "to_id": "q-bpart0",
+          "type": "variant_of",
+          "reason": "같은 A part/B part RAM 회로에서 B part에 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-f94b2a40e7e4f593",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 9; 이미지 영역(정방향 촬영)",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a9",
+          "reason": "여러 번 덧쓴 글자라 최종 값을 확정할 수 없음. / 검게 덧칠한 글자라 최종 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "o-s05-a9",
+          "reason": "여러 번 덧쓴 글자라 최종 값을 확정할 수 없음. / 검게 덧칠한 글자라 최종 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "q-bpart1",
+          "reason": "기출/예상 판정 근거 부족: 등장 페이지에 시험지 헤더·응시자 칸·점수가 없고 “Quiz 예상문제” 헤더도 보이지 않음. kind=unknown 유지."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s02-p3",
+        "a-s04-p1",
+        "a-s05-p1",
+        "a-s12-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-bpart0",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s02-q10",
+        "o-s04-q10",
+        "o-s05-q10",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6",
+        "o-s09-q6",
+        "o-s11-q6",
+        "o-s13-q6",
+        "o-s12-q10"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a10",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s04-a10",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a10",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 이미지에서 해당 문항 옆에 적힌 수기 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-a6",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a6",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s11-a6",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s13-a6",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s12-a10",
+          "target_id": "q-bpart0",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s06-table",
+          "target_id": "q-bpart0",
+          "status": "candidate",
+          "reason": "같은 자료 2쪽 하단의 예상 결과 표. 표의 한 행이 이 문항 조건에 대응할 수 있으나 표 자체는 특정 문항의 답으로 제시되지 않아 후보 연결."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-bpart1",
+          "to_id": "q-bpart0",
+          "type": "variant_of",
+          "reason": "같은 A part/B part RAM 회로에서 B part에 쓰려는 데이터 값(1/0)만 다름.",
+          "evidence": [
+            {
+              "source_id": "s-f94b2a40e7e4f593",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 9; 이미지 영역(정방향 촬영)",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 3; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s04-a10",
+          "reason": "0과 1을 덧쓴 모양(Φ 모양)이라 최종 값을 확정할 수 없음. / 여러 번 덧쓴 글자라 최종 값을 확정할 수 없음."
+        },
+        {
+          "target_id": "o-s05-a10",
+          "reason": "0과 1을 덧쓴 모양(Φ 모양)이라 최종 값을 확정할 수 없음. / 여러 번 덧쓴 글자라 최종 값을 확정할 수 없음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-o-s01-q3",
+        "a-s01-p1",
+        "a-s07-p2",
+        "a-s09-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p3",
+        "a-s04-p1",
+        "a-s05-p1",
+        "a-s06-p2",
+        "a-s08-p2",
+        "a-s11-p2",
+        "a-s13-p2",
+        "a-s12-p3",
+        "a-s06-p2-table"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-sram-def",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q1",
+      "occurrence_ids": [
+        "o-s03-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-sram-def",
+          "status": "confirmed",
+          "reason": "채점본에서 해당 문항 답란에 적힌 응시자 수기 답안(채점 표시 포함). 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-ram-role",
+          "to_id": "q-sram-def",
+          "type": "variant_of",
+          "reason": "RAM 일반의 역할 서술과 Static RAM 정의 서술은 요구 범위가 다름.",
+          "evidence": [
+            {
+              "source_id": "s-75683b5fd6cec122",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 1; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-cac9e6e4d2e01e8f",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 1; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s03-a1",
+          "reason": "연필 필기가 흐리고 일부 단어가 덧쓰기·지움 처리되어 판독 불가. 생략 부분을 추측해 채우지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s03-q1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-74670",
+      "kind": "past",
+      "representative_occurrence_id": "o-s03-q3",
+      "occurrence_ids": [
+        "o-s03-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-74670",
+          "status": "confirmed",
+          "reason": "채점본에서 해당 문항 답란에 적힌 응시자 수기 답안(채점 표시 포함). 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-74670",
+          "to_id": "q-online-74670",
+          "type": "variant_of",
+          "reason": "같은 74670 16bit IC RAM을 다루지만 채점 퀴즈는 동작 서술, 온라인 과제는 단자 의미와 읽기 과정 서술을 요구.",
+          "evidence": [
+            {
+              "source_id": "s-cac9e6e4d2e01e8f",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-59e34204cb2606d0",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "PDF page 1 우상단 삽입 슬라이드 축소 이미지",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s03-q3",
+          "reason": "그림 위에 수기 답안과 원·화살표가 겹쳐 일부 라벨(Data Output 단자 이름 등)이 가려짐. 가린 부분을 추측해 채우지 않았다."
+        },
+        {
+          "target_id": "o-s03-a3",
+          "reason": "연필 필기가 흐리고 일부 단어가 덧쓰기되어 문장 전체를 확정할 수 없음."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s03-q3"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "대표 등장(채점본_1 3번)이 부분 판독이에요. 74670 그림 위에 수기 답안이 겹쳐 Data Output 단자 이름 등 일부 라벨이 가려졌어요. 문제 조건을 추측해 채우지 않고 은행에서 판독을 해결한 뒤 다시 가져와요. 74670의 주소·입력·출력·레지스터 수는 실험설명 t-74670과 자체 연습(빈칸 2, 서술 2)에서 다뤄요."
+    },
+    {
+      "question_id": "q-online-74670",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s06-online",
+      "occurrence_ids": [
+        "o-s06-online"
+      ],
+      "subparts": [],
+      "provided_answers": [],
+      "relations": [
+        {
+          "from_id": "q-74670",
+          "to_id": "q-online-74670",
+          "type": "variant_of",
+          "reason": "같은 74670 16bit IC RAM을 다루지만 채점 퀴즈는 동작 서술, 온라인 과제는 단자 의미와 읽기 과정 서술을 요구.",
+          "evidence": [
+            {
+              "source_id": "s-cac9e6e4d2e01e8f",
+              "pdf_page": null,
+              "printed_page": null,
+              "locator": "문항 3; 이미지 영역",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-59e34204cb2606d0",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "PDF page 1 우상단 삽입 슬라이드 축소 이미지",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s06-online",
+          "reason": "축소 삽입 이미지의 필기가 작고 형광 표시가 겹쳐 문장 전체를 판독할 수 없음."
+        },
+        {
+          "target_id": "q-online-74670",
+          "reason": "온라인 개별과제 슬라이드로 퀴즈 시행 여부를 확인할 근거가 없음. kind=unknown 유지."
+        }
+      ],
+      "representative_reading": "partial",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s06-p1-online"
+      ],
+      "authoring_status": "reading_hold",
+      "selection_reason": "온라인 개별과제 슬라이드의 축소 이미지라 수기 서술 일부를 판독하지 못했어요(부분 판독). 퀴즈 시행 근거도 없어요. 단자 의미(GWN·GRN·D·Q·W·R)는 실험설명 t-74670에서 다뤄요."
+    }
+  ]
+}

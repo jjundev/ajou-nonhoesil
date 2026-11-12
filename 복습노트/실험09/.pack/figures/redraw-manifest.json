@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "ram1-given",
+      "question_id": "q-write1",
+      "role": "problem",
+      "svg": "figures/questions/ram1-given.svg",
+      "png": "figures/questions/ram1-given.png",
+      "svg_sha256": "2786dfac52c3e80a82341e7f8f2aa802bb37a66ef647361cc1cdc1c2cae131e7",
+      "png_sha256": "e52637d47825b116b1ed50ef0195852ed6f02efff408c642d6a6f1e3bd4c6e98",
+      "w_mm": 150,
+      "h_mm": 64.12213740458016,
+      "source_asset_ids": [
+        "a-s01-p1-o-s01-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram1-write1",
+      "question_id": "q-write1",
+      "role": "solution",
+      "svg": "figures/solutions/ram1-write1.svg",
+      "png": "figures/solutions/ram1-write1.png",
+      "svg_sha256": "63f80f5c9895d424ab92ff11eb29a310759e25b23a10751c31c9bc974f21f501",
+      "png_sha256": "0db3c2aa5df70fa6f600ee695ff20c6b9163532598d44a22e43d8aaf631bed88",
+      "w_mm": 150,
+      "h_mm": 64.12213740458016,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram1-given-2",
+      "question_id": "q-write0",
+      "role": "problem",
+      "svg": "figures/questions/ram1-given-2.svg",
+      "png": "figures/questions/ram1-given-2.png",
+      "svg_sha256": "2786dfac52c3e80a82341e7f8f2aa802bb37a66ef647361cc1cdc1c2cae131e7",
+      "png_sha256": "e52637d47825b116b1ed50ef0195852ed6f02efff408c642d6a6f1e3bd4c6e98",
+      "w_mm": 150,
+      "h_mm": 64.12213740458016,
+      "source_asset_ids": [
+        "a-s07-p1"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram1-write0",
+      "question_id": "q-write0",
+      "role": "solution",
+      "svg": "figures/solutions/ram1-write0.svg",
+      "png": "figures/solutions/ram1-write0.png",
+      "svg_sha256": "263832274e682888a6e75e1d70e9678637d97480d43bb436c67fccaeaef9fd88",
+      "png_sha256": "fa3aa99303e890979be2ff1cdda028e1e72400239525437dd9c6166d59b96f02",
+      "w_mm": 150,
+      "h_mm": 64.12213740458016,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram1-read",
+      "question_id": "q-read-op-rw",
+      "role": "solution",
+      "svg": "figures/solutions/ram1-read.svg",
+      "png": "figures/solutions/ram1-read.png",
+      "svg_sha256": "a4433479d97136ed3b1fdd5b1afacbd9ad2b4e6621844a1f64e4b84ce8734935",
+      "png_sha256": "a7c05e00346290276d5bf4224fe26d3cd4196eff351951115c5bd34fbcb3a98e",
+      "w_mm": 150,
+      "h_mm": 64.12213740458016,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram2-given",
+      "question_id": "q-apart1",
+      "role": "problem",
+      "svg": "figures/questions/ram2-given.svg",
+      "png": "figures/questions/ram2-given.png",
+      "svg_sha256": "9643fe5a1bbf75538ff6e0e48b338fa779cbb71f5e3491f8a9c1ca21047367d0",
+      "png_sha256": "f7affca68923fec6bfb325ef3c06c706a49fbae32163fc4428c26bd23c2977a6",
+      "w_mm": 165,
+      "h_mm": 105.1875,
+      "source_asset_ids": [
+        "a-s07-p2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram2-apart1",
+      "question_id": "q-apart1",
+      "role": "solution",
+      "svg": "figures/solutions/ram2-apart1.svg",
+      "png": "figures/solutions/ram2-apart1.png",
+      "svg_sha256": "0d88d860a6961e6fba7cd31e2fcc4977402a4e8ec73f437961c464fcac20b70a",
+      "png_sha256": "081876b94213abaaf6318a08eab6a41ab612367cec9e31735bff310b4f504e31",
+      "w_mm": 165,
+      "h_mm": 105.1875,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram2-bpart1",
+      "question_id": "q-bpart1",
+      "role": "solution",
+      "svg": "figures/solutions/ram2-bpart1.svg",
+      "png": "figures/solutions/ram2-bpart1.png",
+      "svg_sha256": "dc6091a5b9fce78dd330e2cf1b73f439df9a5163b61be8b18652debcebda5a32",
+      "png_sha256": "34a5c1fa9cf82bc1102114cc2f6f7d720e70ee659906f2ffcb3cb6700c7d0834",
+      "w_mm": 165,
+      "h_mm": 105.1875,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram2-given-3",
+      "question_id": "q-bpart0",
+      "role": "problem",
+      "svg": "figures/questions/ram2-given-3.svg",
+      "png": "figures/questions/ram2-given-3.png",
+      "svg_sha256": "9643fe5a1bbf75538ff6e0e48b338fa779cbb71f5e3491f8a9c1ca21047367d0",
+      "png_sha256": "f7affca68923fec6bfb325ef3c06c706a49fbae32163fc4428c26bd23c2977a6",
+      "w_mm": 165,
+      "h_mm": 105.1875,
+      "source_asset_ids": [
+        "a-s01-p1-o-s01-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "ram2-bpart0",
+      "question_id": "q-bpart0",
+      "role": "solution",
+      "svg": "figures/solutions/ram2-bpart0.svg",
+      "png": "figures/solutions/ram2-bpart0.png",
+      "svg_sha256": "cb3287f790c775a9a06e59655e85b65ea33edfeef9c7b3ee51a1f21c7fa12249",
+      "png_sha256": "9bea60a8e7a299b103e70e96f787a45ccbc9000d4a3512361653bd93c4d96fd7",
+      "w_mm": 165,
+      "h_mm": 105.1875,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "latch-given",
+      "question_id": "q-qp-e09-board-01",
+      "role": "problem",
+      "svg": "figures/questions/latch-given.svg",
+      "png": "figures/questions/latch-given.png",
+      "svg_sha256": "7dd7b161b301626213a75ed0e2bb3b0224751c2b2f38ea0f0ab81036d2ae2677",
+      "png_sha256": "5b3af790ac0e654953706725cfefe0aac482003140353c9a2a870b57885a96ef",
+      "w_mm": 70,
+      "h_mm": 33.1578947368421,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 2,
+          "printed_page": null
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 PNG를 원문·교안 회로와 대조했어요. 입력 단자, 인버터 위치, WR0·WR1 공통 배선, 교차 되먹임, 핀 번호, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "latch-blank",
+      "question_id": "q-qp-e09-board-01",
+      "role": "problem",
+      "svg": "figures/questions/latch-blank.svg",
+      "png": "figures/questions/latch-blank.png",
+      "svg_sha256": "82ae988867a4177965c66cac6a7c0ed3c476f8fdddf6acf0ed988a11c576945a",
+      "png_sha256": "afd6320bd2a49808fca62018d851635a9cae0f7a3d4903775da3c8f8d30de022",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352(실험08 팩에서 잰 값). 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 확대 렌더로 배선 끝점이 홀에 놓이고 14번 +5V, 7번 GND, 1번 S′, 5번 R′, 3→4, 6→2 되먹임인지 확인했어요."
+    },
+    {
+      "id": "latch-complete",
+      "question_id": "q-qp-e09-board-01",
+      "role": "solution",
+      "svg": "figures/solutions/latch-complete.svg",
+      "png": "figures/solutions/latch-complete.png",
+      "svg_sha256": "0b18857247a4679e6bd9441b8c01ff1616985aa8667f056ccfc89486442cf5bf",
+      "png_sha256": "541a4a4ef8267c7c37977d29e1204e61458e309caa2e24764d488755193d213f",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352(실험08 팩에서 잰 값). 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-12 확대 렌더로 배선 끝점이 홀에 놓이고 14번 +5V, 7번 GND, 1번 S′, 5번 R′, 3→4, 6→2 되먹임인지 확인했어요."
+    }
+  ]
+}

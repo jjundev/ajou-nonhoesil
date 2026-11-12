@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "html": "실험09_문제설명.html",
+  "html_sha256": "db12310cce1e7f9e09a5ed4bd5fb115147d7574a558b65f1e68a5de02dac1758",
+  "audit_path": "problem-explanations/summary-audit.md",
+  "audit_sha256": "1da4262659c8b5d055a3c967d53e9149eaf858a3123e1becf463cfb8c9081b2f",
+  "semantic_status": "pass",
+  "browser_status": "pass",
+  "evidence": [
+    "problem-explanations/browser-results.json",
+    "problem-explanations/panel-results.json",
+    "problem-explanations/calculation-results.json"
+  ],
+  "unresolved": [
+    "q-74670·q-online-74670 원문 부분 판독으로 보류(은행에서 해결 후 다시 가져와야 해요)",
+    "q-write1 수기 답안 한 장(o-s10-a5)의 input 값이 0으로 읽히지만 덧칠로 판독 보류",
+    "Read/Write 문항 제공 답안의 “Read = 1, Write = 0/1” 표기 모호",
+    "74HC03 열린 드레인·전원 핀은 1차 데이터시트 본문 미확인(netlist M6)",
+    "74670 TI 문서를 이번 세션에서 다시 열지 못함(기존 확인 기록 사용)",
+    "교안 p7 IN0 = IN1′ 괄호의 해석(동시에 1 금지)"
+  ],
+  "review_type": "self_review; independent not_run"
+}

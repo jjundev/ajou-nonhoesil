@@ -1,0 +1,1733 @@
+{
+  "schema_version": 1,
+  "experiment": 9,
+  "title": "RAM — 값을 쓰고 붙잡았다가 읽어요",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp09",
+    "schema_version": 1,
+    "source_path": "문제은행/실험09/question-bank.json",
+    "sha256": "e885d46937e9a143804fcdb81b3e14a4885fcc2b5ab123102dac98199623fdc7",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-75683b5fd6cec122",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 기출 2016-2.pdf",
+      "sha256": "965147dd9a9b4de8fd4ffc1bce82a8c3d995ab40ad34552b45de6461e3795612",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-59b5938d8954313c",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 기출_단답형.pdf",
+      "sha256": "db20ed66b7fc85a52d4381fcb69705f729ebffe6cf9f9ad1852fffee2890188c",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-cac9e6e4d2e01e8f",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 기출_채점본_1.jpg",
+      "sha256": "57fd3633dafebc48c7556b2b626b5bee6be6144310c32000572d1365e5d331a3",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-f05a00f696cede53",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 기출_채점본_2.jpg",
+      "sha256": "013b5481a40ec29b68680b39e6c44b02fe57dadb08675927b8db173d20413a94",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-f94b2a40e7e4f593",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 기출_채점본_3.jpg",
+      "sha256": "eafe7328ed2f49e2fe39eb389fc4afbafd595b1dd71d76f5cbf7a0bf261f2ded",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-59e34204cb2606d0",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 예상문제_v1.pdf",
+      "sha256": "d4b3ab10385d6c49f05d5ee86fab8f87c6f69bda3cebd73abc3cdbd643932f21",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-554c06632f9c7f26",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 예상문제_v2.pdf",
+      "sha256": "8972f798117204d0496e670e58d5dc7b079f19278dd2bb6b92a4832e3acc530f",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-c18f7402a3e03cb2",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 예상문제_v3.pdf",
+      "sha256": "a6dacaa9c216540aa62650e0ecf04beb32e42cd0ffa1052740fd6e696b98825a",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-956801d8febb67d7",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 예상문제_v4.pdf",
+      "sha256": "4a810a733a661425e71df9a606d311ac7a5f24c1bc123dcc066fe9e0c24a12a8",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-6959be05f91a99fe",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 예상문제_수기메모.jpg",
+      "sha256": "e4dcc1a25846861b04ab9780d7ca4f229cc29add34e6f6cd4be33108a5302a3d",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-9c687851851e43ce",
+      "path": "from_the_past/정리/퀴즈/실험9/실험9 퀴즈 종합_기출문제 (2p).pdf",
+      "sha256": "382d6c872e9fa22481a2eeff1a39ee091dab39b442b251373f7db1a196336267",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-2c66ca7f1120815b",
+      "path": "from_the_past/정리/퀴즈/실험9/원본_docx/quiz_09.hwp",
+      "sha256": "e33900cbedfcdf1aca5b1d0875d74293b5807f51a8038955e26504242913bcc4",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-29bce8c51d61b071",
+      "path": "from_the_past/정리/퀴즈/실험9/원본_docx/실험9_예상.doc",
+      "sha256": "58461c1acaaeb8cc345ae871214dd732adfef2b6ee106f0709d7e02bcc890ef9",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-manual09",
+      "path": "강의노트/실험9. RAM.pdf",
+      "sha256": "e145a80ddd5a2ac030866ce03a3f2c15c2c32dcc833110fae61e9db79cf663bb",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-scope",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-board",
+      "path": "강의노트/공지사항/Breadboard.pdf",
+      "sha256": "045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-spec09",
+      "path": "보고서/실험09/체크리스트/명세.md",
+      "sha256": "76aa89950e1333b7f329c2aad0a07615580d550c4848726811a1bf5ed26937c4",
+      "kind": "record",
+      "edition": "current"
+    },
+    {
+      "id": "s-netlist09",
+      "path": "보고서/실험09/결선도/netlist.md",
+      "sha256": "49dc0477f874a90500c9d8e85d32f5a9a1a5b0363ee5aa8aa72d276f70dfb432",
+      "kind": "record",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-scope",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": "교안 표지는 25-1이에요. 보고서 범위(실험 1, 2)는 2026-09-14 공지(_350547_1)와 config.EXPERIMENT_SCOPE[9]에서 확인했어요."
+    },
+    {
+      "id": "t-ram",
+      "title": "RAM: 주소로 칸을 골라 쓰고 읽어요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-ram.html",
+      "md_notes": "p3 정의·쓰임 문장을 옮겼어요. SRAM·DRAM 비교와 휘발성의 원리 설명은 교안 밖 보충이에요. 전원을 다시 켠 뒤의 값은 교안에 없어요(netlist M9). 네 칸 추적표는 이해를 위한 예시예요."
+    },
+    {
+      "id": "t-latch",
+      "title": "NAND SR 래치: RAM 한 칸이 값을 붙잡는 법",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-latch.html",
+      "md_notes": "p2 목표의 “NAND SR Latch 기반”, p7 주의의 00 금지를 따랐어요. NAND 래치 규칙은 실험06 노트와 같고 check_values.py 가 네 입력 조합을 다시 계산했어요."
+    },
+    {
+      "id": "t-1bit",
+      "title": "1 bit RAM: 래치 앞에 쓰기·읽기 문을 달아요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist09",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-1bit.html",
+      "md_notes": "p4의 부울식은 S·R이 그림·표와 바뀌어 있어요(300dpi 판독, netlist M15). 회로도·표를 따랐어요. 표 첫 행(Selection=0이면 Q=0)도 회로의 유지와 달라요(M15). 회로 그림은 p4를 직접 다시 그렸고 Input 인버터가 R 쪽 AND로 가는 것을 400dpi 크롭으로 확인했어요."
+    },
+    {
+      "id": "t-2bit",
+      "title": "2bit RAM: OE·IN·WR로 칸 A, B를 다뤄요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist09",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec09",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-2bit.html",
+      "md_notes": "p6 범례는 WR0을 A, WR1을 B 값으로 적지만 회로도는 WR1을 두 래치의 세트 쪽(2번), WR0을 리셋 쪽(5번)에 공통으로 잇는다(netlist M2, p6 400dpi 크롭 직접 판독). 추적표는 명세 T1 값이며 check_values.py 가 네 초기 상태 모두에서 다시 계산했어요. 실제 결선도는 U1·U2 게이트 자리를 바꿨어요(M13). 이 노트의 핀 번호는 교안 회로도 기준이에요."
+    },
+    {
+      "id": "t-rules",
+      "title": "주의사항 세 가지: 왜 그렇게 조작하나요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist09",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-rules.html",
+      "md_notes": "p7 주의 1의 괄호 IN0 = IN1′(300dpi 판독, 텍스트 추출은 바를 잃어요)의 해석은 netlist M3을 따랐어요. WR을 IN이 둘 다 0일 때만 바꾸는 규칙은 결선도 운영 규칙이에요(netlist 공통 규칙). ①~⑤의 결과는 check_values.py rules_checks 로 다시 계산했어요."
+    },
+    {
+      "id": "t-opendrain",
+      "title": "74HC03 출력단: 열린 드레인과 풀업",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 6,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist09",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-opendrain.html",
+      "md_notes": "74HC03이 열린 드레인이라는 것은 .claude/데이터시트_출처.md 의 Nexperia 74HC_HCT03 서지 제목(“Quad 2-input NAND gate (open drain)”)과 p6의 10K 풀업에 근거해요. 데이터시트 본문과 전원 핀은 1차 자료로 확인하지 못했어요(netlist M6). LED 전류가 작다는 말은 M5의 계산(순방향 2V 가정, 약 0.29mA)에 근거한 예상이에요."
+    },
+    {
+      "id": "t-74670",
+      "title": "74670: 4주소 × 4비트 16bit RAM",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist09",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec09",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-74670.html",
+      "md_notes": "p8 핀맵과 범례를 따랐어요. 핀은 TI SDLS193(SN74LS670) p1과 같고, RE=1일 때 고임피던스·Write/Read Function Table은 .claude/데이터시트_출처.md 와 netlist 의 2026-11-09 확인 기록이에요(이번에는 PDF를 다시 열지 못했어요, 네트워크 403). 주소 비트 순서 WB WA는 TI 표 기준이에요(M8). 수령 칩 계열은 확인 전이에요(M7). 쓰기·읽기 예시 값은 명세 T4의 저작 값이에요(M10). 쓰기·읽기 동시 가능은 핀 구성에서 읽은 보충이에요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-ram-role",
+      "bank_question_id": "q-ram-role",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-ram"
+      ],
+      "sources": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 1(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 1(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 1(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 1; OOXML 본문 P2; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 한컴오피스 2020 로컬 COM 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "기억된 정보를 읽거나 새로운 정보를 기억시킬 수 있는 메모리예요. 위치에 관계없이 거의 같은 시간에 원하는 위치에 접근해 데이터를 읽고 써요(Random Access). 기억장치, 응용 프로그램의 일시적 로딩, 데이터의 일시적 저장에 쓰여요.",
+      "answer_status": "verified",
+      "title": "RAM의 역할",
+      "workbook_fragment": "workbook/q-ram-role.json",
+      "explanation_fragment": "problem-explanations/q-ram-role.html"
+    },
+    {
+      "id": "q-sram-def",
+      "bank_question_id": "q-sram-def",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-ram"
+      ],
+      "sources": [
+        {
+          "source_id": "s-cac9e6e4d2e01e8f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "supplement",
+      "given_answer": null,
+      "derived_answer": "SRAM은 플립플롭(래치)으로 한 비트씩 저장하는 RAM이에요. 전원이 있는 동안에는 다시 써 주지(리프레시) 않아도 값이 유지되고, 주소로 어느 위치든 거의 같은 시간에 읽고 써요. 전원을 끄면 값이 사라지는 휘발성 메모리예요.",
+      "answer_status": "verified",
+      "title": "Static RAM(SRAM)이란",
+      "workbook_fragment": "workbook/q-sram-def.json",
+      "explanation_fragment": "problem-explanations/q-sram-def.html"
+    },
+    {
+      "id": "q-sram-cell",
+      "bank_question_id": "q-sram-cell",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(한 비트를 붙잡는 저장 회로)을 보충해서 수록해요",
+      "topics": [
+        "t-latch"
+      ],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 2(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 2(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 2(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 2; OOXML 본문 P5; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 한컴오피스 2020 로컬 COM 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "플립플롭(래치)이에요. 이번 실험에서는 NAND 게이트 두 개로 만든 NAND SR 래치가 한 비트를 저장해요.",
+      "answer_status": "verified",
+      "title": "SRAM의 저장 회로",
+      "workbook_fragment": "workbook/q-sram-cell.json",
+      "explanation_fragment": "problem-explanations/q-sram-cell.html"
+    },
+    {
+      "id": "q-read-op-rw",
+      "bank_question_id": "q-read-op-rw",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(읽기 때 Read/Write 값)을 보충해서 수록해요",
+      "topics": [
+        "t-1bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; 한컴오피스 2020 로컬 COM 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "1",
+      "answer_status": "verified",
+      "title": "읽기 때 Read/Write 값",
+      "workbook_fragment": "workbook/q-read-op-rw.json",
+      "explanation_fragment": "problem-explanations/q-read-op-rw.html"
+    },
+    {
+      "id": "q-write1",
+      "bank_question_id": "q-write1",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-1bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-cac9e6e4d2e01e8f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 3(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 3(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 3(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 3; OOXML 본문 P8; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; 한컴오피스 2020 로컬 COM 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Selection input=1, Input=1, Read/Write=0",
+      "answer_status": "verified",
+      "title": "1 bit RAM에 1 쓰기",
+      "workbook_fragment": "workbook/q-write1.json",
+      "explanation_fragment": "problem-explanations/q-write1.html"
+    },
+    {
+      "id": "q-write0",
+      "bank_question_id": "q-write0",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(1 bit RAM의 Reset 쪽 경로)을 보충해서 수록해요",
+      "topics": [
+        "t-1bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 4(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 4(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 순서 4(번호 없음); 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 4; OOXML 본문 P13; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; 한컴오피스 2020 로컬 COM 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Selection input=1, Input=0, Read/Write=0",
+      "answer_status": "verified",
+      "title": "1 bit RAM에 0 쓰기",
+      "workbook_fragment": "workbook/q-write0.json",
+      "explanation_fragment": "problem-explanations/q-write0.html"
+    },
+    {
+      "id": "q-apart1",
+      "bank_question_id": "q-apart1",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(2bit RAM의 A part 선택과 1 쓰기)을 보충해서 수록해요",
+      "topics": [
+        "t-2bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 5(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 5(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 5(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 5; OOXML 본문 P24; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; 한컴오피스 2020 로컬 COM 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "OE0=1, OE1=0, IN0=1, IN1=0, WR0=0, WR1=1 (쓰기에 필요한 것은 IN0=1, IN1=0, WR1=1, WR0=0이고 OE는 저장에 영향을 주지 않아요)",
+      "answer_status": "verified",
+      "title": "2bit RAM의 A에 1 쓰기",
+      "workbook_fragment": "workbook/q-apart1.json",
+      "explanation_fragment": "problem-explanations/q-apart1.html"
+    },
+    {
+      "id": "q-bpart1",
+      "bank_question_id": "q-bpart1",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-2bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-f05a00f696cede53",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; 이미지 영역(원본은 90° 회전 촬영)",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-f94b2a40e7e4f593",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; 이미지 영역(정방향 촬영)",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; 한컴오피스 2020 로컬 COM 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "OE0=0, OE1=1, IN0=0, IN1=1, WR0=0, WR1=1",
+      "answer_status": "verified",
+      "title": "2bit RAM의 B에 1 쓰기",
+      "workbook_fragment": "workbook/q-bpart1.json",
+      "explanation_fragment": "problem-explanations/q-bpart1.html"
+    },
+    {
+      "id": "q-bpart0",
+      "bank_question_id": "q-bpart0",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-2bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-75683b5fd6cec122",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 10; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-f05a00f696cede53",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; 이미지 영역(원본은 90° 회전 촬영)",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-f94b2a40e7e4f593",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; 이미지 영역(정방향 촬영)",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        },
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 6(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-554c06632f9c7f26",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-c18f7402a3e03cb2",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 6(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-956801d8febb67d7",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-9c687851851e43ce",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 순서 6(번호 없음); 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-29bce8c51d61b071",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 순서 6; OOXML 본문 P29; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 10; 한컴오피스 2020 로컬 COM 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "10"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "OE0=0, OE1=1, IN0=0, IN1=1, WR0=1, WR1=0",
+      "answer_status": "verified",
+      "title": "2bit RAM의 B에 0 쓰기",
+      "workbook_fragment": "workbook/q-bpart0.json",
+      "explanation_fragment": "problem-explanations/q-bpart0.html"
+    },
+    {
+      "id": "q-qp-e09-tf-01",
+      "title": "WE에 1을 주면",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-74670"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-tf-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-tf-01.html"
+    },
+    {
+      "id": "q-qp-e09-tf-02",
+      "title": "IN0=0이면 A는 그대로",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-2bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-tf-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-tf-02.html"
+    },
+    {
+      "id": "q-qp-e09-tf-03",
+      "title": "전원을 껐다 켜면",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-ram"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-tf-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-tf-03.html"
+    },
+    {
+      "id": "q-qp-e09-tf-04",
+      "title": "읽기 때의 Output",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-1bit"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-tf-04.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-tf-04.html"
+    },
+    {
+      "id": "q-qp-e09-blank-01",
+      "title": "NAND 래치의 금지 입력",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-latch"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 00, ② 1",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-blank-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-blank-01.html"
+    },
+    {
+      "id": "q-qp-e09-blank-02",
+      "title": "74670의 칸과 주소",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-74670"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 4, ② 4, ③ 2",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-blank-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-blank-02.html"
+    },
+    {
+      "id": "q-qp-e09-blank-03",
+      "title": "74HC03 출력과 저항",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-opendrain"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 열린 드레인(오픈 드레인), ② 풀업(10kΩ)",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-blank-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-blank-03.html"
+    },
+    {
+      "id": "q-qp-e09-board-01",
+      "title": "RAM 한 칸(NAND SR 래치)을 작도해요",
+      "kind": "practice",
+      "question_type": "breadboard",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-latch"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "14→+5V, 7→GND, 1→S′, 5→R′, 3→4(Q, 측정점), 6→2(Q′). 미사용 입력 9·10·12·13과 출력 8·11은 명세대로 NC.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-board-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-board-01.html"
+    },
+    {
+      "id": "q-qp-e09-short-01",
+      "title": "쓴 뒤 IN을 접지하는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-rules"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 7,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "IN을 0으로 내리면 앞단 NAND 두 출력(S′, R′)이 모두 1이 되어 래치가 쓴 값을 유지해요. 그 상태에서 OE를 켜면 OUT은 저장된 Q를 보여 줘요. IN과 OE를 함께 켜 두면 래치가 WR 값을 계속 받아 출력이 WR을 바로 따라가므로, 이미 저장돼 있던 값을 읽을 수 없어요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-short-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-short-01.html"
+    },
+    {
+      "id": "q-qp-e09-short-02",
+      "title": "주소 입력이 하는 일",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-74670"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual09",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "주소 두 비트는 네 칸(00, 01, 10, 11) 중 쓰거나 읽을 칸 하나를 골라요. 쓰기 주소(WA, WB)와 읽기 주소(RA, RB)가 따로라서, 한 칸에 쓰는 동안 다른 칸을 읽을 수 있어요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e09-short-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e09-short-02.html"
+    },
+    {
+      "id": "q-write-op-rw",
+      "bank_question_id": "q-write-op-rw",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "예상문항이에요. Write 때 Read/Write=0은 기출 q-write1(1 쓰기 입력값)과 q-write0에서 이미 답해요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 한컴오피스 2020 로컬 COM 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-apart0",
+      "bank_question_id": "q-apart0",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "예상문항이에요. A part 선택(IN0)은 q-apart1, 0 쓰기(WR0=1, WR1=0)는 기출 q-bpart0에서 다뤄요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-59b5938d8954313c",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-6959be05f91a99fe",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-2c66ca7f1120815b",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; 한컴오피스 2020 로컬 COM 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-74670",
+      "bank_question_id": "q-74670",
+      "kind": "past",
+      "status": "held",
+      "reason": "대표 등장(채점본_1 3번)이 부분 판독이에요. 74670 그림 위에 수기 답안이 겹쳐 Data Output 단자 이름 등 일부 라벨이 가려졌어요. 문제 조건을 추측해 채우지 않고 은행에서 판독을 해결한 뒤 다시 가져와요. 74670의 주소·입력·출력·레지스터 수는 실험설명 t-74670과 자체 연습(빈칸 2, 서술 2)에서 다뤄요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-cac9e6e4d2e01e8f",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; 이미지 영역",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    },
+    {
+      "id": "q-online-74670",
+      "bank_question_id": "q-online-74670",
+      "kind": "unknown",
+      "status": "held",
+      "reason": "온라인 개별과제 슬라이드의 축소 이미지라 수기 서술 일부를 판독하지 못했어요(부분 판독). 퀴즈 시행 근거도 없어요. 단자 의미(GWN·GRN·D·Q·W·R)는 실험설명 t-74670에서 다뤄요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-59e34204cb2606d0",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "PDF page 1 우상단 삽입 슬라이드 축소 이미지",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "note_summary_version": 2,
+  "review_presentation_version": 2,
+  "problem_explanation_version": 2,
+  "quiz_practice_version": 1,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "generated_files": [
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_AMS-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Caligraphic-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Fraktur-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Main-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-BoldItalic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_Math-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Bold.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Italic.woff2",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_SansSerif-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Script-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size1-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size2-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size3-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Size4-Regular.woff2",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.ttf",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff",
+    ".pack/assets/vendor/katex/KaTeX_Typewriter-Regular.woff2",
+    ".pack/assets/vendor/katex/LICENSE",
+    ".pack/assets/vendor/katex/auto-render.min.js",
+    ".pack/assets/vendor/katex/katex.min.css",
+    ".pack/assets/vendor/katex/katex.min.js",
+    ".pack/assets/vendor/pretendard/LICENSE",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Black.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Bold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-ExtraLight.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Light.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Medium.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Regular.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-SemiBold.woff2",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff",
+    ".pack/assets/vendor/pretendard/Pretendard-Thin.woff2",
+    ".pack/assets/vendor/pretendard/pretendard.css",
+    ".pack/assets/vendor/provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s01-p1-o-s01-q1.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q2.png",
+    ".pack/evidence/assets/s01-p1-o-s01-q3.png",
+    ".pack/evidence/assets/s01-p1.png",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s02-p2.png",
+    ".pack/evidence/assets/s02-p3.png",
+    ".pack/evidence/assets/s03-q1.png",
+    ".pack/evidence/assets/s03-q2.png",
+    ".pack/evidence/assets/s03-q3.png",
+    ".pack/evidence/assets/s04-p1.jpg",
+    ".pack/evidence/assets/s05-p1.jpg",
+    ".pack/evidence/assets/s06-p1-online.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s06-p2-table.png",
+    ".pack/evidence/assets/s06-p2.png",
+    ".pack/evidence/assets/s07-p1.png",
+    ".pack/evidence/assets/s07-p2.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/assets/s09-p2.png",
+    ".pack/evidence/assets/s10-p1.jpg",
+    ".pack/evidence/assets/s11-p1.png",
+    ".pack/evidence/assets/s11-p2.png",
+    ".pack/evidence/assets/s12-p1.png",
+    ".pack/evidence/assets/s12-p2.png",
+    ".pack/evidence/assets/s12-p3.png",
+    ".pack/evidence/assets/s13-p1.png",
+    ".pack/evidence/assets/s13-p2.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/block670.svg",
+    ".pack/figures/memory-idea.svg",
+    ".pack/figures/nand-latch.svg",
+    ".pack/figures/opendrain.svg",
+    ".pack/figures/pin670.svg",
+    ".pack/figures/questions/latch-blank.png",
+    ".pack/figures/questions/latch-blank.svg",
+    ".pack/figures/questions/latch-given.png",
+    ".pack/figures/questions/latch-given.svg",
+    ".pack/figures/questions/ram1-given-2.png",
+    ".pack/figures/questions/ram1-given-2.svg",
+    ".pack/figures/questions/ram1-given.png",
+    ".pack/figures/questions/ram1-given.svg",
+    ".pack/figures/questions/ram2-given-3.png",
+    ".pack/figures/questions/ram2-given-3.svg",
+    ".pack/figures/questions/ram2-given.png",
+    ".pack/figures/questions/ram2-given.svg",
+    ".pack/figures/quiz-board-mapping.json",
+    ".pack/figures/ram1bit.svg",
+    ".pack/figures/ram2bit.svg",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/solutions/latch-complete.png",
+    ".pack/figures/solutions/latch-complete.svg",
+    ".pack/figures/solutions/ram1-read.png",
+    ".pack/figures/solutions/ram1-read.svg",
+    ".pack/figures/solutions/ram1-write0.png",
+    ".pack/figures/solutions/ram1-write0.svg",
+    ".pack/figures/solutions/ram1-write1.png",
+    ".pack/figures/solutions/ram1-write1.svg",
+    ".pack/figures/solutions/ram2-apart1.png",
+    ".pack/figures/solutions/ram2-apart1.svg",
+    ".pack/figures/solutions/ram2-bpart0.png",
+    ".pack/figures/solutions/ram2-bpart0.svg",
+    ".pack/figures/solutions/ram2-bpart1.png",
+    ".pack/figures/solutions/ram2-bpart1.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/browser-results.json",
+    ".pack/problem-explanations/calculation-results.json",
+    ".pack/problem-explanations/panel-results.json",
+    ".pack/problem-explanations/q-apart1.html",
+    ".pack/problem-explanations/q-bpart0.html",
+    ".pack/problem-explanations/q-bpart1.html",
+    ".pack/problem-explanations/q-qp-e09-blank-01.html",
+    ".pack/problem-explanations/q-qp-e09-blank-02.html",
+    ".pack/problem-explanations/q-qp-e09-blank-03.html",
+    ".pack/problem-explanations/q-qp-e09-board-01.html",
+    ".pack/problem-explanations/q-qp-e09-short-01.html",
+    ".pack/problem-explanations/q-qp-e09-short-02.html",
+    ".pack/problem-explanations/q-qp-e09-tf-01.html",
+    ".pack/problem-explanations/q-qp-e09-tf-02.html",
+    ".pack/problem-explanations/q-qp-e09-tf-03.html",
+    ".pack/problem-explanations/q-qp-e09-tf-04.html",
+    ".pack/problem-explanations/q-ram-role.html",
+    ".pack/problem-explanations/q-read-op-rw.html",
+    ".pack/problem-explanations/q-sram-cell.html",
+    ".pack/problem-explanations/q-sram-def.html",
+    ".pack/problem-explanations/q-write0.html",
+    ".pack/problem-explanations/q-write1.html",
+    ".pack/problem-explanations/summary-audit.md",
+    ".pack/problem-explanations/table-layout.json",
+    ".pack/problem-explanations/검증결과.md",
+    ".pack/problem-explanations/문제설명-summary-validation.json",
+    ".pack/problem-explanations/실험설명-summary-validation.json",
+    ".pack/sections/table-layout.json",
+    ".pack/검증결과.md",
+    ".pack/실험09_기출문제.md",
+    ".pack/실험09_기출풀이.md",
+    ".pack/실험09_문제설명.md",
+    ".pack/실험09_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험09_기출문제.html",
+    "실험09_기출풀이.html",
+    "실험09_문제설명.html",
+    "실험09_실험설명.html"
+  ]
+}
