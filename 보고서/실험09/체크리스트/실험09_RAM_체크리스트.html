@@ -18,6 +18,14 @@
   .comparison-table tr { break-inside:avoid; }
   .comparison-table td.actual { background:#f2f2f2; min-height:9mm; border:1px solid #777; }
   .comparison-table td:first-child { white-space:nowrap; }
+  /* 위치 미러 칸 — '입력 설정' 을 표 위 위치도의 묶음·위→아래 순서로 쌓는다(2026-11-14). */
+  .mirror, .mirror-head { display:grid; grid-template-columns:repeat(var(--g),1fr); }
+  .mirror > .col { display:flex; flex-direction:column; gap:.6mm; padding:0 1.2mm; }
+  .mirror > .col + .col { border-left:1px solid #9aa3ad; }
+  .mirror .slot { white-space:nowrap; }
+  .mirror-head { margin-top:2.2mm; font-size:9pt; font-weight:600; color:#555; }
+  .mirror-head > span { padding:.4mm 1.2mm; text-align:center; }
+  .mirror-head > span + span { border-left:1px solid #9aa3ad; }
 </style>
 <!-- OBSERVATION_STYLE_END -->
 <style>
@@ -264,10 +272,10 @@
 <div class="stage" data-fit="7"><h3>단계 5</h3><p class="operation">10kΩ을 U3 pin 11과 +5V 레일 사이에 꽂아요 · U3 pin 12 -&gt; U3 pin 13</p><figure class="board"><img src="../결선도/실험09_1_결선도_2bitRAM_5단계_OUT0.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="vcc"><span class="box"></span><span class="n">1</span><span class="route">좌 j28 → 중앙VCC레일28행</span><span class="desc">10kΩ 풀업(좌 j28→중앙VCC레일28행) · U3 pin 11 열린 드레인 출력</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">2</span><span class="route">좌 i28 → 우 a3</span><span class="desc">OUT0 = U3 pin 11 -&gt; LED OUT0</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#009696">3</span><span class="route">좌 d27 → 좌 h27</span><span class="desc">A-RD': U3 pin 3 -&gt; U3 pin 12</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#c81e96">4</span><span class="route">좌 i27 → 좌 h26</span><span class="desc">A-RD': U3 pin 12 -&gt; U3 pin 13</span></li></ol><h4>V5 · A 한 비트 쓰기·읽기 확인</h4><section class="observation-procedure">
 <p class="observation-purpose">A에 1과 0을 차례로 쓰고 IN0을 접지한 뒤 OE0으로 읽어, LED OUT0이 쓴 값대로 켜지고 IN0=0인 동안 WR을 바꿔도 유지되는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원을 끈 채 OE0·IN0·WR0을 GND, WR1을 +5V 레일에 꽂고 전원을 켠다. U3 pin 3·11의 10kΩ 풀업과 OUT0 LED 사슬이 꽂혀 있어야 한다. U2는 꽂혀 있지만 아직 배선하지 않았다. 끝나면 전원을 끈다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>IN0</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WR1</strong></li><li class="io-input" title="좌 GND레일25행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>OE0</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일7행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>WR0</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>OUT0</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>OUT1</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>IN0</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WR1</strong></li><li class="io-input" title="좌 GND레일25행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>OE0</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일7행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>WR0</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>OUT0</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>OUT1</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:19%;"><col style="width:24%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>조작</th>
-<th>입력 설정</th>
+<th>입력 설정<div class="mirror-head" style="--g:2"><span>왼쪽</span><span>가운데</span></div></th>
 <th>예상 켜지는 LED</th>
 <th>예상 꺼지는 LED</th>
 <th>실제 결과</th>
@@ -275,7 +283,7 @@
 <tr>
 <td>1</td>
 <td>전원 직후, OE0=0</td>
-<td>OE0 = 0<br>IN0 = 0<br>WR0 = 0<br>WR1 = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0 = 0</span><span class="slot">WR1 = 1</span><span class="slot">OE0 = 0</span></div><div class="col"><span class="slot">WR0 = 0</span></div></div></td>
 <td>없음</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -283,7 +291,7 @@
 <tr>
 <td>2</td>
 <td>IN0을 올려 A에 1을 쓴다</td>
-<td>OE0 = 0<br><span class="input-change">IN0 = 1</span><br>WR0 = 0<br>WR1 = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0 = 1</span></span><span class="slot">WR1 = 1</span><span class="slot">OE0 = 0</span></div><div class="col"><span class="slot">WR0 = 0</span></div></div></td>
 <td>없음</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -291,7 +299,7 @@
 <tr>
 <td>3</td>
 <td>IN0을 내린 뒤 OE0을 올려 읽는다</td>
-<td><span class="input-change">OE0 = 1</span><br><span class="input-change">IN0 = 0</span><br>WR0 = 0<br>WR1 = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0 = 0</span></span><span class="slot">WR1 = 1</span><span class="slot"><span class="input-change">OE0 = 1</span></span></div><div class="col"><span class="slot">WR0 = 0</span></div></div></td>
 <td>①OUT0</td>
 <td>없음</td>
 <td class="actual"></td>
@@ -299,7 +307,7 @@
 <tr>
 <td>4</td>
 <td>OE0을 올린 채 WR0을 +5V, WR1을 GND로 바꾼다</td>
-<td>OE0 = 1<br>IN0 = 0<br><span class="input-change">WR0 = 1</span><br><span class="input-change">WR1 = 0</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0 = 0</span><span class="slot"><span class="input-change">WR1 = 0</span></span><span class="slot">OE0 = 1</span></div><div class="col"><span class="slot"><span class="input-change">WR0 = 1</span></span></div></div></td>
 <td>①OUT0</td>
 <td>없음</td>
 <td class="actual"></td>
@@ -307,7 +315,7 @@
 <tr>
 <td>5</td>
 <td>OE0을 내린 뒤 IN0을 올려 0을 쓴다</td>
-<td><span class="input-change">OE0 = 0</span><br><span class="input-change">IN0 = 1</span><br>WR0 = 1<br>WR1 = 0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0 = 1</span></span><span class="slot">WR1 = 0</span><span class="slot"><span class="input-change">OE0 = 0</span></span></div><div class="col"><span class="slot">WR0 = 1</span></div></div></td>
 <td>없음</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -315,7 +323,7 @@
 <tr>
 <td>6</td>
 <td>IN0을 내린 뒤 OE0을 올려 읽는다</td>
-<td><span class="input-change">OE0 = 1</span><br><span class="input-change">IN0 = 0</span><br>WR0 = 1<br>WR1 = 0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0 = 0</span></span><span class="slot">WR1 = 0</span><span class="slot"><span class="input-change">OE0 = 1</span></span></div><div class="col"><span class="slot">WR0 = 1</span></div></div></td>
 <td>없음</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -323,7 +331,7 @@
 <tr>
 <td>7</td>
 <td>OE0을 올린 채 WR0을 GND, WR1을 +5V로 되돌린다</td>
-<td>OE0 = 1<br>IN0 = 0<br><span class="input-change">WR0 = 0</span><br><span class="input-change">WR1 = 1</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0 = 0</span><span class="slot"><span class="input-change">WR1 = 1</span></span><span class="slot">OE0 = 1</span></div><div class="col"><span class="slot"><span class="input-change">WR0 = 0</span></span></div></div></td>
 <td>없음</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -344,10 +352,10 @@
 <h3>T1 · 2bit RAM 쓰기·읽기 기록</h3>
 <p class="table-purpose">A·B에 0과 1을 따로 쓰고 IN을 접지한 뒤 OE로 읽어, 쓴 값이 LED에 나오고 다른 쪽 값은 유지되는지 확인한다.</p>
 <aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일5행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>IN0</strong></li><li class="io-input" title="좌 GND레일6행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WR1</strong></li><li class="io-input" title="좌 GND레일15행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>IN1</strong></li><li class="io-input" title="좌 GND레일25행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>OE0</strong></li><li class="io-input" title="좌 GND레일28행"><span class="io-rank">다섯째</span><span class="io-symbol">●</span><strong>OE1</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일7행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>WR0</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>OUT0</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>OUT1</strong></li></ol></section></section></aside>
-<table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
+<table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:19%;"><col style="width:24%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>스텝</th>
 <th>조작</th>
-<th>입력 설정</th>
+<th>입력 설정<div class="mirror-head" style="--g:2"><span>왼쪽</span><span>가운데</span></div></th>
 <th>예상 켜지는 LED</th>
 <th>예상 꺼지는 LED</th>
 <th>실제 결과</th>
@@ -355,7 +363,7 @@
 <tr>
 <td>S1</td>
 <td>모든 입력을 GND에 두고 WR1만 +5V에 둔 채 전원을 켠다</td>
-<td>OE0=0<br>IN0=0<br>WR0=0<br>OE1=0<br>IN1=0<br>WR1=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0=0</span><span class="slot">WR1=1</span><span class="slot">IN1=0</span><span class="slot">OE0=0</span><span class="slot">OE1=0</span></div><div class="col"><span class="slot">WR0=0</span></div></div></td>
 <td>없음</td>
 <td>①OUT0 · ②OUT1</td>
 <td class="actual"></td>
@@ -363,7 +371,7 @@
 <tr>
 <td>W1</td>
 <td>A에 1 쓰기: IN0을 +5V로 올린다</td>
-<td>OE0=0<br><span class="input-change">IN0=1</span><br>WR0=0<br>OE1=0<br>IN1=0<br>WR1=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0=1</span></span><span class="slot">WR1=1</span><span class="slot">IN1=0</span><span class="slot">OE0=0</span><span class="slot">OE1=0</span></div><div class="col"><span class="slot">WR0=0</span></div></div></td>
 <td>없음</td>
 <td>①OUT0 · ②OUT1</td>
 <td class="actual"></td>
@@ -371,7 +379,7 @@
 <tr>
 <td>R1</td>
 <td>IN0을 GND로 내려 저장한 뒤 OE0을 +5V로 올려 A를 읽는다</td>
-<td><span class="input-change">OE0=1</span><br><span class="input-change">IN0=0</span><br>WR0=0<br>OE1=0<br>IN1=0<br>WR1=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0=0</span></span><span class="slot">WR1=1</span><span class="slot">IN1=0</span><span class="slot"><span class="input-change">OE0=1</span></span><span class="slot">OE1=0</span></div><div class="col"><span class="slot">WR0=0</span></div></div></td>
 <td>①OUT0</td>
 <td>②OUT1</td>
 <td class="actual"></td>
@@ -379,7 +387,7 @@
 <tr>
 <td>W2</td>
 <td>B에 0 쓰기: OE0을 내리고 WR0을 +5V, WR1을 GND로 바꾼 뒤 IN1을 올린다</td>
-<td><span class="input-change">OE0=0</span><br>IN0=0<br><span class="input-change">WR0=1</span><br>OE1=0<br><span class="input-change">IN1=1</span><br><span class="input-change">WR1=0</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0=0</span><span class="slot"><span class="input-change">WR1=0</span></span><span class="slot"><span class="input-change">IN1=1</span></span><span class="slot"><span class="input-change">OE0=0</span></span><span class="slot">OE1=0</span></div><div class="col"><span class="slot"><span class="input-change">WR0=1</span></span></div></div></td>
 <td>없음</td>
 <td>①OUT0 · ②OUT1</td>
 <td class="actual"></td>
@@ -387,7 +395,7 @@
 <tr>
 <td>R2</td>
 <td>IN1을 내려 저장한 뒤 OE0·OE1을 올려 A·B를 읽는다</td>
-<td><span class="input-change">OE0=1</span><br>IN0=0<br>WR0=1<br><span class="input-change">OE1=1</span><br><span class="input-change">IN1=0</span><br>WR1=0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0=0</span><span class="slot">WR1=0</span><span class="slot"><span class="input-change">IN1=0</span></span><span class="slot"><span class="input-change">OE0=1</span></span><span class="slot"><span class="input-change">OE1=1</span></span></div><div class="col"><span class="slot">WR0=1</span></div></div></td>
 <td>①OUT0</td>
 <td>②OUT1</td>
 <td class="actual"></td>
@@ -395,7 +403,7 @@
 <tr>
 <td>W3</td>
 <td>B에 1 쓰기: OE0·OE1을 내리고 WR0을 GND, WR1을 +5V로 바꾼 뒤 IN1을 올린다</td>
-<td><span class="input-change">OE0=0</span><br>IN0=0<br><span class="input-change">WR0=0</span><br><span class="input-change">OE1=0</span><br><span class="input-change">IN1=1</span><br><span class="input-change">WR1=1</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0=0</span><span class="slot"><span class="input-change">WR1=1</span></span><span class="slot"><span class="input-change">IN1=1</span></span><span class="slot"><span class="input-change">OE0=0</span></span><span class="slot"><span class="input-change">OE1=0</span></span></div><div class="col"><span class="slot"><span class="input-change">WR0=0</span></span></div></div></td>
 <td>없음</td>
 <td>①OUT0 · ②OUT1</td>
 <td class="actual"></td>
@@ -403,7 +411,7 @@
 <tr>
 <td>R3</td>
 <td>IN1을 내려 저장한 뒤 OE0·OE1을 올려 A·B를 읽는다</td>
-<td><span class="input-change">OE0=1</span><br>IN0=0<br>WR0=0<br><span class="input-change">OE1=1</span><br><span class="input-change">IN1=0</span><br>WR1=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">IN0=0</span><span class="slot">WR1=1</span><span class="slot"><span class="input-change">IN1=0</span></span><span class="slot"><span class="input-change">OE0=1</span></span><span class="slot"><span class="input-change">OE1=1</span></span></div><div class="col"><span class="slot">WR0=0</span></div></div></td>
 <td>①OUT0 · ②OUT1</td>
 <td>없음</td>
 <td class="actual"></td>
@@ -411,7 +419,7 @@
 <tr>
 <td>W4</td>
 <td>A에 0 쓰기: OE0·OE1을 내리고 WR0을 +5V, WR1을 GND로 바꾼 뒤 IN0을 올린다</td>
-<td><span class="input-change">OE0=0</span><br><span class="input-change">IN0=1</span><br><span class="input-change">WR0=1</span><br><span class="input-change">OE1=0</span><br>IN1=0<br><span class="input-change">WR1=0</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0=1</span></span><span class="slot"><span class="input-change">WR1=0</span></span><span class="slot">IN1=0</span><span class="slot"><span class="input-change">OE0=0</span></span><span class="slot"><span class="input-change">OE1=0</span></span></div><div class="col"><span class="slot"><span class="input-change">WR0=1</span></span></div></div></td>
 <td>없음</td>
 <td>①OUT0 · ②OUT1</td>
 <td class="actual"></td>
@@ -419,7 +427,7 @@
 <tr>
 <td>R4</td>
 <td>IN0을 내려 저장한 뒤 OE0·OE1을 올려 A·B를 읽는다</td>
-<td><span class="input-change">OE0=1</span><br><span class="input-change">IN0=0</span><br>WR0=1<br><span class="input-change">OE1=1</span><br>IN1=0<br>WR1=0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">IN0=0</span></span><span class="slot">WR1=0</span><span class="slot">IN1=0</span><span class="slot"><span class="input-change">OE0=1</span></span><span class="slot"><span class="input-change">OE1=1</span></span></div><div class="col"><span class="slot">WR0=1</span></div></div></td>
 <td>②OUT1</td>
 <td>①OUT0</td>
 <td class="actual"></td>
@@ -444,10 +452,10 @@
 <div class="stage" data-fit="18"><h3>단계 1</h3><p class="operation">전원을 끈 상태로 준비 ②까지 마쳐요 · 입력 D1을 U1 pin15, WA를 U1 pin14, WB를 U1 pin13, WE를 U1 pin12, RE를 U1 pin11, RB를 U1 pin4, RA를 U1 pin5에 꽂아요</p><figure class="board"><img src="../결선도/실험09_2_결선도_16bitRAM_1단계_Q1.png" style="width:100%"></figure><ol class="steps"><li class="step" data-kind="sig"><span class="box"></span><span class="n">1</span><span class="route">중앙GND레일9행 → 좌 j9</span><span class="desc">입력 D1 -&gt; U1 pin 15 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">2</span><span class="route">중앙GND레일10행 → 좌 j10</span><span class="desc">입력 WA -&gt; U1 pin 14 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">3</span><span class="route">중앙GND레일11행 → 좌 j11</span><span class="desc">입력 WB -&gt; U1 pin 13 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">4</span><span class="route">중앙GND레일12행 → 좌 j12</span><span class="desc">입력 WE -&gt; U1 pin 12 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">5</span><span class="route">중앙GND레일13행 → 좌 j13</span><span class="desc">입력 RE -&gt; U1 pin 11 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">6</span><span class="route">좌 GND레일11행 → 좌 b11</span><span class="desc">입력 RB -&gt; U1 pin 4 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n">7</span><span class="route">좌 GND레일12행 → 좌 b12</span><span class="desc">입력 RA -&gt; U1 pin 5 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요</span></li><li class="step" data-kind="sig"><span class="box"></span><span class="n" style="background:#e67800">8</span><span class="route">좌 j14 → 우 a16</span><span class="desc">Q1 = U1 pin 10 -&gt; LED Q1</span></li></ol><h4>V1 · 첫 데이터 비트 쓰기·읽기 확인</h4><section class="observation-procedure">
 <p class="observation-purpose">주소 00에 D1=1, 주소 01에 D1=0을 쓴 뒤 두 주소를 읽어, LED Q1이 주소마다 쓴 값대로 켜지는지 확인한다.</p>
 <p><b>준비·초기화:</b> 전원을 끈 채 WE·RE·D1을 +5V, WA·WB·RA·RB를 GND 레일에 꽂고 전원을 켠다. RE=1인 행은 출력이 고임피던스라 LED가 꺼지므로 관측하지 않는다. 끝나면 전원을 끈다.</p>
-<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>RB</strong></li><li class="io-input" title="좌 GND레일12행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>RA</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D1</strong></li><li class="io-input" title="중앙GND레일10행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WA</strong></li><li class="io-input" title="중앙GND레일11행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>WB</strong></li><li class="io-input" title="중앙GND레일12행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>WE</strong></li><li class="io-input" title="중앙GND레일13행"><span class="io-rank">다섯째</span><span class="io-symbol">●</span><strong>RE</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>Q2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>Q3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>Q4</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"><col style="width:14.285714285714286%;"></colgroup><thead><tr>
+<aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일11행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>RB</strong></li><li class="io-input" title="좌 GND레일12행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>RA</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D1</strong></li><li class="io-input" title="중앙GND레일10행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WA</strong></li><li class="io-input" title="중앙GND레일11행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>WB</strong></li><li class="io-input" title="중앙GND레일12행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>WE</strong></li><li class="io-input" title="중앙GND레일13행"><span class="io-rank">다섯째</span><span class="io-symbol">●</span><strong>RE</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q1</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>②</span><strong>Q2</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>③</span><strong>Q3</strong></li><li class="io-led io-muted"><span class="io-symbol">○</span><span>④</span><strong>Q4</strong></li></ol></section></section></aside><table class="comparison-table"><colgroup><col style="width:6%;"><col style="width:17%;"><col style="width:27%;"><col style="width:13%;"><col style="width:13%;"><col style="width:13%;"><col style="width:11%;"></colgroup><thead><tr>
 <th>순서</th>
 <th>조작</th>
-<th>입력 설정</th>
+<th>입력 설정<div class="mirror-head" style="--g:2"><span>왼쪽</span><span>가운데</span></div></th>
 <th>예상 켜지는 LED</th>
 <th>예상 꺼지는 LED</th>
 <th>유지·반전·미정</th>
@@ -456,7 +464,7 @@
 <tr>
 <td>1</td>
 <td>전원 직후, 주소 00·D1=1</td>
-<td>WB = 0<br>WA = 0<br>WE = 1<br>D1 = 1<br>RB = 0<br>RA = 0<br>RE = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot">D1 = 1</span><span class="slot">WA = 0</span><span class="slot">WB = 0</span><span class="slot">WE = 1</span><span class="slot">RE = 1</span></div></div></td>
 <td>없음</td>
 <td>없음</td>
 <td>①Q1: 이번 절차 관측 안 함</td>
@@ -465,7 +473,7 @@
 <tr>
 <td>2</td>
 <td>WE를 GND로 내려 주소 00에 쓴다</td>
-<td>WB = 0<br>WA = 0<br><span class="input-change">WE = 0</span><br>D1 = 1<br>RB = 0<br>RA = 0<br>RE = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot">D1 = 1</span><span class="slot">WA = 0</span><span class="slot">WB = 0</span><span class="slot"><span class="input-change">WE = 0</span></span><span class="slot">RE = 1</span></div></div></td>
 <td>없음</td>
 <td>없음</td>
 <td>①Q1: 이번 절차 관측 안 함</td>
@@ -474,7 +482,7 @@
 <tr>
 <td>3</td>
 <td>WE를 먼저 올린 뒤 WA를 +5V, D1을 GND로 옮긴다</td>
-<td>WB = 0<br><span class="input-change">WA = 1</span><br><span class="input-change">WE = 1</span><br><span class="input-change">D1 = 0</span><br>RB = 0<br>RA = 0<br>RE = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot"><span class="input-change">D1 = 0</span></span><span class="slot"><span class="input-change">WA = 1</span></span><span class="slot">WB = 0</span><span class="slot"><span class="input-change">WE = 1</span></span><span class="slot">RE = 1</span></div></div></td>
 <td>없음</td>
 <td>없음</td>
 <td>①Q1: 이번 절차 관측 안 함</td>
@@ -483,7 +491,7 @@
 <tr>
 <td>4</td>
 <td>WE를 GND로 내려 주소 01에 쓴다</td>
-<td>WB = 0<br>WA = 1<br><span class="input-change">WE = 0</span><br>D1 = 0<br>RB = 0<br>RA = 0<br>RE = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot">D1 = 0</span><span class="slot">WA = 1</span><span class="slot">WB = 0</span><span class="slot"><span class="input-change">WE = 0</span></span><span class="slot">RE = 1</span></div></div></td>
 <td>없음</td>
 <td>없음</td>
 <td>①Q1: 이번 절차 관측 안 함</td>
@@ -492,7 +500,7 @@
 <tr>
 <td>5</td>
 <td>WE를 +5V로 올린다</td>
-<td>WB = 0<br>WA = 1<br><span class="input-change">WE = 1</span><br>D1 = 0<br>RB = 0<br>RA = 0<br>RE = 1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot">D1 = 0</span><span class="slot">WA = 1</span><span class="slot">WB = 0</span><span class="slot"><span class="input-change">WE = 1</span></span><span class="slot">RE = 1</span></div></div></td>
 <td>없음</td>
 <td>없음</td>
 <td>①Q1: 이번 절차 관측 안 함</td>
@@ -501,7 +509,7 @@
 <tr>
 <td>6</td>
 <td>RE를 GND로 내려 주소 00을 읽는다</td>
-<td>WB = 0<br>WA = 1<br>WE = 1<br>D1 = 0<br>RB = 0<br>RA = 0<br><span class="input-change">RE = 0</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot">RA = 0</span></div><div class="col"><span class="slot">D1 = 0</span><span class="slot">WA = 1</span><span class="slot">WB = 0</span><span class="slot">WE = 1</span><span class="slot"><span class="input-change">RE = 0</span></span></div></div></td>
 <td>①Q1</td>
 <td>없음</td>
 <td>없음</td>
@@ -510,7 +518,7 @@
 <tr>
 <td>7</td>
 <td>RA를 +5V로 옮겨 주소 01을 읽는다</td>
-<td>WB = 0<br>WA = 1<br>WE = 1<br>D1 = 0<br>RB = 0<br><span class="input-change">RA = 1</span><br>RE = 0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">RB = 0</span><span class="slot"><span class="input-change">RA = 1</span></span></div><div class="col"><span class="slot">D1 = 0</span><span class="slot">WA = 1</span><span class="slot">WB = 0</span><span class="slot">WE = 1</span><span class="slot">RE = 0</span></div></div></td>
 <td>없음</td>
 <td>①Q1</td>
 <td>없음</td>
@@ -530,10 +538,10 @@
 <h3>T4 · 16bit RAM 쓰기·읽기 기록</h3>
 <p class="table-purpose">네 주소에 서로 다른 4bit 값을 쓴 뒤 주소마다 읽어, 그 주소에 쓴 값이 LED에 나오는지 확인한다.</p>
 <aside class="io-locations" aria-label="입력과 LED 위치"><p class="io-title"><b>입력·LED 위치</b></p><section class="io-groups"><section class="io-group"><b>왼쪽 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="좌 GND레일7행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D2</strong></li><li class="io-input" title="좌 GND레일9행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>D3</strong></li><li class="io-input" title="좌 GND레일10행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>D4</strong></li><li class="io-input" title="좌 GND레일11행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>RB</strong></li><li class="io-input" title="좌 GND레일12행"><span class="io-rank">다섯째</span><span class="io-symbol">●</span><strong>RA</strong></li></ol></section><section class="io-group"><b>가운데 입력 점퍼</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-input" title="중앙GND레일9행"><span class="io-rank">첫째</span><span class="io-symbol">●</span><strong>D1</strong></li><li class="io-input" title="중앙GND레일10행"><span class="io-rank">둘째</span><span class="io-symbol">●</span><strong>WA</strong></li><li class="io-input" title="중앙GND레일11행"><span class="io-rank">셋째</span><span class="io-symbol">●</span><strong>WB</strong></li><li class="io-input" title="중앙GND레일12행"><span class="io-rank">넷째</span><span class="io-symbol">●</span><strong>WE</strong></li><li class="io-input" title="중앙GND레일13행"><span class="io-rank">다섯째</span><span class="io-symbol">●</span><strong>RE</strong></li></ol></section><section class="io-group io-led-group"><b>오른쪽 LED</b><span class="io-direction">위 ↓ 아래</span><ol><li class="io-led"><span class="io-symbol">○</span><span>①</span><strong>Q1</strong></li><li class="io-led"><span class="io-symbol">○</span><span>②</span><strong>Q2</strong></li><li class="io-led"><span class="io-symbol">○</span><span>③</span><strong>Q3</strong></li><li class="io-led"><span class="io-symbol">○</span><span>④</span><strong>Q4</strong></li></ol></section></section></aside>
-<table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:23%;"><col style="width:20%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
+<table class="comparison-table"><colgroup><col style="width:7%;"><col style="width:19%;"><col style="width:24%;"><col style="width:18%;"><col style="width:18%;"><col style="width:14%;"></colgroup><thead><tr>
 <th>스텝</th>
 <th>조작</th>
-<th>입력 설정</th>
+<th>입력 설정<div class="mirror-head" style="--g:2"><span>왼쪽</span><span>가운데</span></div></th>
 <th>예상 켜지는 LED</th>
 <th>예상 꺼지는 LED</th>
 <th>실제 결과</th>
@@ -541,7 +549,7 @@
 <tr>
 <td>S1</td>
 <td>WE·RE를 +5V, 나머지를 GND에 둔 뒤 D1만 +5V로 옮기고 전원을 켠다(주소 00, 데이터 0001)</td>
-<td>WB=0<br>WA=0<br>WE=1<br>D4=0<br>D3=0<br>D2=0<br>D1=1<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=1</span><span class="slot">WA=0</span><span class="slot">WB=0</span><span class="slot">WE=1</span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -549,7 +557,7 @@
 <tr>
 <td>W1</td>
 <td>WE를 GND로 내려 주소 00에 0001을 쓴다</td>
-<td>WB=0<br>WA=0<br><span class="input-change">WE=0</span><br>D4=0<br>D3=0<br>D2=0<br>D1=1<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=1</span><span class="slot">WA=0</span><span class="slot">WB=0</span><span class="slot"><span class="input-change">WE=0</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -557,7 +565,7 @@
 <tr>
 <td>A2</td>
 <td>WE를 먼저 +5V로 올린 뒤 주소 01, 데이터 0010으로 바꾼다</td>
-<td>WB=0<br><span class="input-change">WA=1</span><br><span class="input-change">WE=1</span><br>D4=0<br>D3=0<br><span class="input-change">D2=1</span><br><span class="input-change">D1=0</span><br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">D2=1</span></span><span class="slot">D3=0</span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot"><span class="input-change">D1=0</span></span><span class="slot"><span class="input-change">WA=1</span></span><span class="slot">WB=0</span><span class="slot"><span class="input-change">WE=1</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -565,7 +573,7 @@
 <tr>
 <td>W2</td>
 <td>WE를 GND로 내려 주소 01에 쓴다</td>
-<td>WB=0<br>WA=1<br><span class="input-change">WE=0</span><br>D4=0<br>D3=0<br>D2=1<br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=1</span><span class="slot">D3=0</span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=0</span><span class="slot"><span class="input-change">WE=0</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -573,7 +581,7 @@
 <tr>
 <td>A3</td>
 <td>WE를 먼저 올린 뒤 주소 10, 데이터 0100으로 바꾼다</td>
-<td><span class="input-change">WB=1</span><br><span class="input-change">WA=0</span><br><span class="input-change">WE=1</span><br>D4=0<br><span class="input-change">D3=1</span><br><span class="input-change">D2=0</span><br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot"><span class="input-change">D2=0</span></span><span class="slot"><span class="input-change">D3=1</span></span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot"><span class="input-change">WA=0</span></span><span class="slot"><span class="input-change">WB=1</span></span><span class="slot"><span class="input-change">WE=1</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -581,7 +589,7 @@
 <tr>
 <td>W3</td>
 <td>WE를 GND로 내려 주소 10에 쓴다</td>
-<td>WB=1<br>WA=0<br><span class="input-change">WE=0</span><br>D4=0<br>D3=1<br>D2=0<br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=1</span><span class="slot">D4=0</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=0</span><span class="slot">WB=1</span><span class="slot"><span class="input-change">WE=0</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -589,7 +597,7 @@
 <tr>
 <td>A4</td>
 <td>WE를 먼저 올린 뒤 주소 11, 데이터 1000으로 바꾼다</td>
-<td>WB=1<br><span class="input-change">WA=1</span><br><span class="input-change">WE=1</span><br><span class="input-change">D4=1</span><br><span class="input-change">D3=0</span><br>D2=0<br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot"><span class="input-change">D3=0</span></span><span class="slot"><span class="input-change">D4=1</span></span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot"><span class="input-change">WA=1</span></span><span class="slot">WB=1</span><span class="slot"><span class="input-change">WE=1</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -597,7 +605,7 @@
 <tr>
 <td>W4</td>
 <td>WE를 GND로 내려 주소 11에 쓴다</td>
-<td>WB=1<br>WA=1<br><span class="input-change">WE=0</span><br>D4=1<br>D3=0<br>D2=0<br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot"><span class="input-change">WE=0</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -605,7 +613,7 @@
 <tr>
 <td>H1</td>
 <td>WE를 +5V로 올려 쓰기를 끝낸다</td>
-<td>WB=1<br>WA=1<br><span class="input-change">WE=1</span><br>D4=1<br>D3=0<br>D2=0<br>D1=0<br>RB=0<br>RA=0<br>RE=1</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot"><span class="input-change">WE=1</span></span><span class="slot">RE=1</span></div></div></td>
 <td>없음</td>
 <td>④Q4 · ③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -613,7 +621,7 @@
 <tr>
 <td>R1</td>
 <td>RE를 GND로 내려 주소 00을 읽는다</td>
-<td>WB=1<br>WA=1<br>WE=1<br>D4=1<br>D3=0<br>D2=0<br>D1=0<br>RB=0<br>RA=0<br><span class="input-change">RE=0</span></td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot">RB=0</span><span class="slot">RA=0</span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot">WE=1</span><span class="slot"><span class="input-change">RE=0</span></span></div></div></td>
 <td>①Q1</td>
 <td>④Q4 · ③Q3 · ②Q2</td>
 <td class="actual"></td>
@@ -621,7 +629,7 @@
 <tr>
 <td>R2</td>
 <td>RA를 +5V로 옮겨 주소 01을 읽는다</td>
-<td>WB=1<br>WA=1<br>WE=1<br>D4=1<br>D3=0<br>D2=0<br>D1=0<br>RB=0<br><span class="input-change">RA=1</span><br>RE=0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot">RB=0</span><span class="slot"><span class="input-change">RA=1</span></span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot">WE=1</span><span class="slot">RE=0</span></div></div></td>
 <td>②Q2</td>
 <td>④Q4 · ③Q3 · ①Q1</td>
 <td class="actual"></td>
@@ -629,7 +637,7 @@
 <tr>
 <td>R3</td>
 <td>RB를 +5V, RA를 GND로 옮겨 주소 10을 읽는다</td>
-<td>WB=1<br>WA=1<br>WE=1<br>D4=1<br>D3=0<br>D2=0<br>D1=0<br><span class="input-change">RB=1</span><br><span class="input-change">RA=0</span><br>RE=0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot"><span class="input-change">RB=1</span></span><span class="slot"><span class="input-change">RA=0</span></span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot">WE=1</span><span class="slot">RE=0</span></div></div></td>
 <td>③Q3</td>
 <td>④Q4 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -637,7 +645,7 @@
 <tr>
 <td>R4</td>
 <td>RA를 +5V로 옮겨 주소 11을 읽는다</td>
-<td>WB=1<br>WA=1<br>WE=1<br>D4=1<br>D3=0<br>D2=0<br>D1=0<br>RB=1<br><span class="input-change">RA=1</span><br>RE=0</td>
+<td><div class="mirror" style="--g:2"><div class="col"><span class="slot">D2=0</span><span class="slot">D3=0</span><span class="slot">D4=1</span><span class="slot">RB=1</span><span class="slot"><span class="input-change">RA=1</span></span></div><div class="col"><span class="slot">D1=0</span><span class="slot">WA=1</span><span class="slot">WB=1</span><span class="slot">WE=1</span><span class="slot">RE=0</span></div></div></td>
 <td>④Q4</td>
 <td>③Q3 · ②Q2 · ①Q1</td>
 <td class="actual"></td>
@@ -674,52 +682,52 @@
 <div class="circuit-notes"><b>메모</b></div>
 </div></section></section>
 <style id="fit-pages">
-@page fit-0 { size: 210mm 215mm; margin: 12mm 10mm; }
+@page fit-0 { size: 210mm 209mm; margin: 12mm 10mm; }
 [data-fit="0"] { page: fit-0; }
-@page fit-1 { size: 210mm 557mm; margin: 12mm 10mm; }
+@page fit-1 { size: 210mm 411mm; margin: 12mm 10mm; }
 [data-fit="1"] { page: fit-1; }
-@page fit-2 { size: 210mm 501mm; margin: 12mm 10mm; }
+@page fit-2 { size: 210mm 352mm; margin: 12mm 10mm; }
 [data-fit="2"] { page: fit-2; }
-@page fit-3 { size: 210mm 472mm; margin: 12mm 10mm; }
+@page fit-3 { size: 210mm 322mm; margin: 12mm 10mm; }
 [data-fit="3"] { page: fit-3; }
-@page fit-4 { size: 210mm 462mm; margin: 12mm 10mm; }
+@page fit-4 { size: 210mm 322mm; margin: 12mm 10mm; }
 [data-fit="4"] { page: fit-4; }
-@page fit-5 { size: 210mm 442mm; margin: 12mm 10mm; }
+@page fit-5 { size: 210mm 306mm; margin: 12mm 10mm; }
 [data-fit="5"] { page: fit-5; }
-@page fit-6 { size: 210mm 466mm; margin: 12mm 10mm; }
+@page fit-6 { size: 210mm 322mm; margin: 12mm 10mm; }
 [data-fit="6"] { page: fit-6; }
-@page fit-7 { size: 210mm 762mm; margin: 12mm 10mm; }
+@page fit-7 { size: 210mm 589mm; margin: 12mm 10mm; }
 [data-fit="7"] { page: fit-7; }
-@page fit-8 { size: 210mm 462mm; margin: 12mm 10mm; }
+@page fit-8 { size: 210mm 322mm; margin: 12mm 10mm; }
 [data-fit="8"] { page: fit-8; }
-@page fit-9 { size: 210mm 451mm; margin: 12mm 10mm; }
+@page fit-9 { size: 210mm 316mm; margin: 12mm 10mm; }
 [data-fit="9"] { page: fit-9; }
-@page fit-10 { size: 210mm 442mm; margin: 12mm 10mm; }
+@page fit-10 { size: 210mm 306mm; margin: 12mm 10mm; }
 [data-fit="10"] { page: fit-10; }
-@page fit-11 { size: 210mm 466mm; margin: 12mm 10mm; }
+@page fit-11 { size: 210mm 322mm; margin: 12mm 10mm; }
 [data-fit="11"] { page: fit-11; }
-@page fit-12 { size: 210mm 472mm; margin: 12mm 10mm; }
+@page fit-12 { size: 210mm 332mm; margin: 12mm 10mm; }
 [data-fit="12"] { page: fit-12; }
-@page fit-13 { size: 210mm 406mm; margin: 12mm 10mm; }
+@page fit-13 { size: 210mm 279mm; margin: 12mm 10mm; }
 [data-fit="13"] { page: fit-13; }
-@page fit-14 { size: 210mm 663mm; margin: 12mm 10mm; }
+@page fit-14 { size: 210mm 627mm; margin: 12mm 10mm; }
 [data-fit="14"] { page: fit-14; }
-@page fit-15 { size: 210mm 142mm; margin: 12mm 10mm; }
+@page fit-15 { size: 210mm 136mm; margin: 12mm 10mm; }
 [data-fit="15"] { page: fit-15; }
-@page fit-16 { size: 210mm 507mm; margin: 12mm 10mm; }
+@page fit-16 { size: 210mm 371mm; margin: 12mm 10mm; }
 [data-fit="16"] { page: fit-16; }
-@page fit-17 { size: 210mm 554mm; margin: 12mm 10mm; }
+@page fit-17 { size: 210mm 391mm; margin: 12mm 10mm; }
 [data-fit="17"] { page: fit-17; }
-@page fit-18 { size: 210mm 956mm; margin: 12mm 10mm; }
+@page fit-18 { size: 210mm 722mm; margin: 12mm 10mm; }
 [data-fit="18"] { page: fit-18; }
-@page fit-19 { size: 210mm 452mm; margin: 12mm 10mm; }
+@page fit-19 { size: 210mm 312mm; margin: 12mm 10mm; }
 [data-fit="19"] { page: fit-19; }
-@page fit-20 { size: 210mm 452mm; margin: 12mm 10mm; }
+@page fit-20 { size: 210mm 312mm; margin: 12mm 10mm; }
 [data-fit="20"] { page: fit-20; }
-@page fit-21 { size: 210mm 452mm; margin: 12mm 10mm; }
+@page fit-21 { size: 210mm 312mm; margin: 12mm 10mm; }
 [data-fit="21"] { page: fit-21; }
-@page fit-22 { size: 210mm 406mm; margin: 12mm 10mm; }
+@page fit-22 { size: 210mm 279mm; margin: 12mm 10mm; }
 [data-fit="22"] { page: fit-22; }
-@page fit-23 { size: 210mm 1122mm; margin: 12mm 10mm; }
+@page fit-23 { size: 210mm 740mm; margin: 12mm 10mm; }
 [data-fit="23"] { page: fit-23; }
 </style>
