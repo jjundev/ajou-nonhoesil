@@ -26,7 +26,7 @@ from .spec_parser import split_indices
 from .photo_names import item_token, photo_name
 from . import config
 from .fit_pages import FIT_PLAIN
-from .io_locations import locations_html
+from .io_locations import input_columns, location_name, locations_html
 
 MAX_BREADBOARD_ROWS = 30
 # Breadboard.jpg(998×1345px) 상단에 아주대학교 로고 + 범례 원 3개가 있다.
@@ -199,12 +199,15 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     return "\n".join(out)
 
 
-def _input_settings_html(names, rows, *, spaced=True):
+def _input_settings_html(names, rows, *, spaced=True, columns=None):
     """Highlight physical input work; each call starts an independent timeline.
 
     Explicit edges are events even when repeated. Static levels compare against
     the preceding ending level, not the preceding token. Unknown tokens remain
     visible but do not establish an inferred physical level.
+
+    `columns` 는 `io_locations.input_columns` 의 결과다. 주어지면 칸을 표 위 위치도와
+    같은 묶음·위→아래 순서로 쌓는다(위치 미러 칸). None 이면 명세 순서의 한 줄 목록.
     """
     levels = {}
     result = []
@@ -222,16 +225,39 @@ def _input_settings_html(names, rows, *, spaced=True):
             text = f'{_esc(name)}{equal}{_esc(label)}'
             settings.append(f'<span class="input-change">{text}</span>' if changed else text)
             levels[name] = end
-        result.append('<br>'.join(settings))
+        if columns is None:
+            result.append('<br>'.join(settings))
+            continue
+        by_name = dict(zip(names, settings))
+        cols = ''.join('<div class="col">' + ''.join(
+                           f'<span class="slot">{by_name[n]}</span>' for n in picked) + '</div>'
+                       for _, picked in columns)
+        result.append(f'<div class="mirror" style="--g:{len(columns)}">{cols}</div>')
     return result
 
 
-def _comparison_table_html(header, rows, *, input_settings=None, input_column=1):
+def _mirror_head(columns):
+    """'입력 설정' 머리 밑의 묶음 이름 줄 — 칸 안 열과 같은 격자라 세로선이 맞는다."""
+    if not columns:
+        return ''
+    return (f'<div class="mirror-head" style="--g:{len(columns)}">'
+            + ''.join(f'<span>{_esc(side)}</span>' for side, _ in columns) + '</div>')
+
+
+def _mirror(png, names):
+    columns = input_columns(png, list(names))
+    return columns, _mirror_head(columns)
+
+
+def _comparison_table_html(header, rows, *, input_settings=None, input_column=1, input_head=''):
+    # 6·7열은 입력 칸이 위치 미러로 두세 열을 품는다 — 조작·LED 칸에서 폭을 가져온다.
     out = ['<table class="comparison-table"><colgroup>' + ''.join(
                f'<col style="width:{w}%;">' for w in ({4:[7,43,32,18],5:[7,35,22,22,14],
-                   6:[7,23,20,18,18,14]}.get(len(header),[100/len(header)]*len(header))))
+                   6:[7,19,24,18,18,14], 7:[6,17,27,13,13,13,11]}
+                   .get(len(header),[100/len(header)]*len(header))))
                + '</colgroup><thead><tr>',
-           *[f'<th>{_esc(h)}</th>' for h in header], '</tr></thead><tbody>']
+           *[f'<th>{_esc(h)}{input_head if i == input_column and input_settings is not None else ""}</th>'
+             for i, h in enumerate(header)], '</tr></thead><tbody>']
     for row_index, row in enumerate(rows):
         out.append('<tr>')
         for i, value in enumerate(row):
@@ -247,7 +273,7 @@ def _comparison_table_html(header, rows, *, input_settings=None, input_column=1)
     return '\n'.join(out)
 
 
-def _stepped_html(table, *, wide=False, leds=()) -> str:
+def _stepped_html(table, *, wide=False, leds=(), png=None) -> str:
     """스텝표 — **명세가 저작해 둔 빈 셀**이 실험실에서 채울 칸이다.
 
     `확인` 열을 붙이지 않는다. `확인` 은 "✓ 일치 / 값 = 불일치" 규약이라
@@ -268,10 +294,12 @@ def _stepped_html(table, *, wide=False, leds=()) -> str:
         header, rows = comparison_rows(table, leds)
         indices = [i for i, name in enumerate(table.header)
                    if name not in (*table.outputs, '스텝', '조작')]
-        settings = _input_settings_html([table.header[i] for i in indices],
-                                       [[row[i] for i in indices] for row in table.rows],
-                                       spaced=False)
-        return _comparison_table_html(header, rows, input_settings=settings, input_column=2)
+        names = [table.header[i] for i in indices]
+        columns, head = _mirror(png, names)
+        settings = _input_settings_html(names, [[row[i] for i in indices] for row in table.rows],
+                                       spaced=False, columns=columns)
+        return _comparison_table_html(header, rows, input_settings=settings, input_column=2,
+                                      input_head=head)
     header = list(table.header)
     rows = [[_plain('반복 클록' if c == 'RUN' else c) for c in row] for row in table.rows]
     if not any(not c.strip() for row in rows for c in row):
@@ -962,7 +990,7 @@ def _stage_led(todo) -> str:
 _JUMPER = {"H/L": "H=+5V · L=GND"}
 
 
-def _inline_observation_html(table, leds, feed):
+def _inline_observation_html(table, leds, feed, png=None):
     lamps = [l for l in leds if l.tag in feed]
     rows = []
     has_other = any(dict(zip((n for n,_ in table.points), r.expected)).get(feed[l.tag], '관측 안 함')
@@ -1001,8 +1029,9 @@ def _inline_observation_html(table, leds, feed):
     else:
         header = ['순서','조작','입력 설정','측정 핀·예상 논리값','실제 결과']
         detail = ''
-    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows])
-    h = _comparison_table_html(header, rows, input_settings=settings, input_column=2)
+    columns, head = _mirror(png, table.inputs)
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns)
+    h = _comparison_table_html(header, rows, input_settings=settings, input_column=2, input_head=head)
     # One timeline, one stable authored order per row.
     for row in table.rows:
         h = h.replace('<tr><td>' + str(row.order) + '</td>',
@@ -1021,10 +1050,11 @@ def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
         out.append(locations_html(png, table.inputs,
                                   feed={tag: name for tag, name in feed.items() if name is not None}))
     if table.layout == 'inline':
-        return '\n'.join(out) + _inline_observation_html(table, leds, feed) + '</section>'
+        return '\n'.join(out) + _inline_observation_html(table, leds, feed, png) + '</section>'
+    columns, head = _mirror(png, table.inputs)
     out.append('<p><b>조작·입력</b></p>')
-    out.append('<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정</th></tr></thead><tbody>')
-    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows])
+    out.append(f'<table><thead><tr><th>순서</th><th>조작</th><th>입력 설정{head}</th></tr></thead><tbody>')
+    settings = _input_settings_html(table.inputs, [row.inputs for row in table.rows], columns=columns)
     for row, inputs in zip(table.rows, settings):
         out.append(f'<tr data-observation-order="{row.order}"><td>{row.order}</td>'
                    f'<td>{_esc(row.action)}</td><td>{inputs}</td></tr>')
@@ -1214,9 +1244,12 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
             if getattr(table, 'comparison', None):
                 if netlist is not None and section.diagram:
                     out.append(locations_html(netlist.path.parent / section.diagram,
-                               ['D' if n == 'SERIAL DATA' else n for n in table.header
+                               [location_name(n) for n in table.header
                                 if n not in [*(table.outputs or []), '스텝', '조작']]))
-            out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3", leds=leds))
+            png = (netlist.path.parent / section.diagram
+                   if netlist is not None and section.diagram and getattr(table, 'comparison', None) else None)
+            out.append(_stepped_html(table, wide=netlist is not None and netlist.schema == "lab-netlist/v3",
+                                     leds=leds, png=png))
             if not getattr(table, 'comparison', None):
                 out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:

@@ -18,6 +18,14 @@
   .comparison-table tr { break-inside:avoid; }
   .comparison-table td.actual { background:#f2f2f2; min-height:9mm; border:1px solid #777; }
   .comparison-table td:first-child { white-space:nowrap; }
+  /* 위치 미러 칸 — '입력 설정' 을 표 위 위치도의 묶음·위→아래 순서로 쌓는다(2026-11-14). */
+  .mirror, .mirror-head { display:grid; grid-template-columns:repeat(var(--g),1fr); }
+  .mirror > .col { display:flex; flex-direction:column; gap:.6mm; padding:0 1.2mm; }
+  .mirror > .col + .col { border-left:1px solid #9aa3ad; }
+  .mirror .slot { white-space:nowrap; }
+  .mirror-head { margin-top:2.2mm; font-size:9pt; font-weight:600; color:#555; }
+  .mirror-head > span { padding:.4mm 1.2mm; text-align:center; }
+  .mirror-head > span + span { border-left:1px solid #9aa3ad; }
 </style>
 <!-- OBSERVATION_STYLE_END -->
 <style>

@@ -32,9 +32,7 @@ def _valid_input(row):
 def location_issues(png, inputs):
     """누락은 조용히 숨기지 않고 렌더러·검사기가 같은 기준으로 알린다."""
     data = _read(png)
-    raw = data.get('inputs', [])
-    rows = [r for r in raw if _valid_input(r)] if isinstance(raw, list) else []
-    names = {r['name'] for r in rows}
+    names = {r['name'] for r in _input_rows(data)}
     return [f'입력 위치 없음: {name} — 결선도 생성기의 입력 위치 JSON을 확인한다'
             for name in inputs if name not in names]
 
@@ -45,13 +43,59 @@ def _side(rail):
     return '왼쪽' if rail.startswith('좌') else '오른쪽'
 
 
+# 표 머리 이름 → 결선도 JSON 의 입력 이름. 실험07 스텝표가 `SERIAL DATA` 로 쓰는 입력을
+# 결선도는 `D` 로 꽂는다. 위치도와 '입력 설정' 칸이 같은 표로 이름을 맞춘다.
+ALIASES = {'SERIAL DATA': 'D'}
+
+
+def location_name(name):
+    return ALIASES.get(name, name)
+
+
+def _input_rows(data):
+    raw = data.get('inputs', [])
+    return [r for r in raw if _valid_input(r)] if isinstance(raw, list) else []
+
+
+def _groups(rows):
+    """점퍼 열(x)마다 한 묶음, 묶음 안은 위→아래(행). 위치도와 입력 칸의 유일한 순서 출처."""
+    groups = {}
+    for row in rows:
+        groups.setdefault(row['x'], []).append(row)
+    out = []
+    for _, group in sorted(groups.items()):
+        group.sort(key=lambda r: (r['row'], r['name']))
+        out.append((_side(group[0]['rail']), group))
+    return out
+
+
+def input_columns(png, names):
+    """'입력 설정' 칸을 위치도 모양으로 쌓을 열 — [(묶음 이름, [표 이름…]), …].
+
+    표 이름은 그대로 돌려주고 정렬만 결선도 JSON 으로 한다. 이 표에 없는 점퍼와 빈 묶음은
+    뺀다. 위치를 못 찾는 입력이 하나라도 있으면 None — 일부만 옮겨 쌓으면 순서가 두 출처로
+    갈리므로, 렌더러는 명세 순서의 한 줄 목록으로 돌아간다(위치도는 경고를 따로 띄운다).
+    """
+    if png is None or not names:
+        return None
+    by_location = {location_name(n): n for n in names}
+    rows = _input_rows(_read(png))
+    if set(by_location) - {r['name'] for r in rows}:
+        return None
+    columns = []
+    for side, group in _groups(rows):
+        picked = [by_location[r['name']] for r in group if r['name'] in by_location]
+        if picked:
+            columns.append((side, picked))
+    return columns
+
+
 def locations_html(png, inputs, *, feed=None):
     """위→아래 순서를 단순화한 위치도. feed=None은 완성본, dict는 단계 급전."""
     esc = html.escape
     data = _read(png)
     wanted = set(inputs)
-    raw = data.get('inputs', [])
-    rows = [r for r in raw if _valid_input(r)] if isinstance(raw, list) else []
+    rows = _input_rows(data)
     out = ['<aside class="io-locations" aria-label="입력과 LED 위치">',
            '<p class="io-title"><b>입력·LED 위치</b></p>']
     missing = location_issues(png, inputs)
@@ -60,12 +104,7 @@ def locations_html(png, inputs, *, feed=None):
         out.append('<p class="io-warning">입력 위치를 확인할 수 없어요. 결선도를 봐요.'
                    f' ({esc(names)})</p>')
     out.append('<section class="io-groups">')
-    groups = {}
-    for row in rows:
-        groups.setdefault(row['x'], []).append(row)
-    for _, group in sorted(groups.items()):
-        group.sort(key=lambda r: (r['row'], r['name']))
-        side = _side(group[0]['rail'])
+    for side, group in _groups(rows):
         out.append(f'<section class="io-group"><b>{side} 입력 점퍼</b>'
                    '<span class="io-direction">위 ↓ 아래</span><ol>')
         for i, row in enumerate(group):
