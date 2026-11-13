@@ -46,7 +46,7 @@ def nref(sid):
     return dict(source_id=sid, pdf_page=None, printed_page=None)
 
 
-M.update(title='RAM — 값을 쓰고 붙잡았다가 읽어요', edition_status='current', note_presentation_version=2, note_summary_version=2, review_presentation_version=2, problem_explanation_version=2, quiz_practice_version=1, figure_manifest='figures/redraw-manifest.json', checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'), explanation_checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'))
+M.update(title='RAM — 값을 쓰고 붙잡았다가 읽어요', edition_status='current', note_presentation_version=2, note_summary_version=2, note_reading_version=1, review_presentation_version=2, problem_explanation_version=2, quiz_practice_version=1, figure_manifest='figures/redraw-manifest.json', checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'), explanation_checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'))
 NOTES = {
  't-start': '교안 표지는 25-1이에요. 보고서 범위(실험 1, 2)는 2026-09-14 공지(_350547_1)와 config.EXPERIMENT_SCOPE[9]에서 확인했어요.',
  't-ram': 'p3 정의·쓰임 문장을 옮겼어요. SRAM·DRAM 비교와 휘발성의 원리 설명은 교안 밖 보충이에요. 전원을 다시 켠 뒤의 값은 교안에 없어요(netlist M9). 네 칸 추적표는 이해를 위한 예시예요.',

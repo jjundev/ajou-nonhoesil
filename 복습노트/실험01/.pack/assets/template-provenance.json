@@ -6,8 +6,8 @@
   },
   "local_adjustments": {
     "note-template.html": {
-      "sha256": "e712d1c4efc7481816ba90a961aced913f736b66de86ff8ebc0f88c8c03b43e2",
-      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards. Themed scrollbar for panels, content and cards. Remove duplicated current-topic/question heading and its JavaScript references; preserve panel title, summary container ID, navigation, aids and stored read/solved state. Summary panel styles for the rules/why/traps parts (sum-label, sum-rules, sum-why, sum-traps)."
+      "sha256": "0baf87c61461c557ec0002745761e47dc92d72e05cfb7708bec1b57e12edb0ac",
+      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards. Themed scrollbar for panels, content and cards. Remove duplicated current-topic/question heading and its JavaScript references; preserve panel title, summary container ID, navigation, aids and stored read/solved state. Summary panel styles for the rules/why/traps parts (sum-label, sum-rules, sum-why, sum-traps). Note reading v1 styles (gist sentence, compare/avoid table rows) in the note-reading block."
     },
     "review-template.html": {
       "sha256": "b084c0fc4d9a53c9e3a9098ac0bfa56d9db97dc4932b28e5ec9467f610fc53d9",

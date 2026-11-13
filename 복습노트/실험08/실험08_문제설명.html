@@ -142,6 +142,11 @@
     [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
     [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
     /* explanation-table-layout:end */
+    /* note-reading:start */
+    .gist { font-size: 1.08em; line-height: 1.7; }
+    tr[data-row="compare"] > td { background: color-mix(in srgb, var(--accent) 14%, transparent); font-weight: 700; }
+    tr[data-row="avoid"] > td { color: var(--warn); }
+    /* note-reading:end */
 
     /* 위젯 */
     .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }

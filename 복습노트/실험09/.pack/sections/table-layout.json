@@ -2,39 +2,122 @@
   "version": 1,
   "tables": [
     {
-      "key": "t-ram/0",
+      "key": "t-start/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "순서",
+        "쓰기",
+        "값 선",
+        "읽기",
+        "A",
+        "출력",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
           "role": "input",
-          "kind": "text",
-          "group": "조건"
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "control",
+          "kind": "signal",
+          "group": "제어"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
         },
         {
           "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
           "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        },
+        {
+          "left": 4,
+          "kind": "major"
+        },
+        {
+          "left": 5,
+          "kind": "major"
         }
       ]
     },
     {
-      "key": "t-ram/1",
+      "key": "t-start/1",
+      "expected_headers": [
+        "실험",
+        "칩",
+        "크기",
+        "확인할 것"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-ram/0",
       "expected_headers": [
         "순서",
         "동작",
         "주소",
         "값",
         "칸 00 01 10 11",
-        "꺼낸 값"
+        "꺼낸 값",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -66,6 +149,11 @@
           "role": "output",
           "kind": "signal",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -84,43 +172,55 @@
         {
           "left": 3,
           "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-latch/0",
-      "expected_headers": [
-        "조건",
-        "결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
         },
         {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
+          "left": 5,
           "kind": "major"
         }
       ]
     },
     {
-      "key": "t-latch/1",
+      "key": "t-ram/1",
+      "expected_headers": [
+        "종류",
+        "기억하는 방법",
+        "다시 써 주기(리프레시)",
+        "전원을 끄면"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-latch/0",
       "expected_headers": [
         "순서",
         "S′",
         "R′",
         "Q",
         "Q′",
-        "동작"
+        "동작",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -152,6 +252,11 @@
           "role": "description",
           "kind": "text",
           "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -172,65 +277,25 @@
     {
       "key": "t-1bit/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "입력·출력",
+        "하는 일"
       ],
       "columns": [
         {
-          "role": "input",
+          "role": "description",
           "kind": "text",
-          "group": "조건"
+          "group": "설명"
         },
         {
-          "role": "output",
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
         }
       ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
+      "boundaries": []
     },
     {
       "key": "t-1bit/1",
-      "expected_headers": [
-        "Input (Sel=1, R/W=0)",
-        "S, R 자리",
-        "RS 표로 본 결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "signal",
-          "group": "입력"
-        },
-        {
-          "role": "intermediate",
-          "kind": "signal",
-          "group": "중간"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        },
-        {
-          "left": 1,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-1bit/2",
       "expected_headers": [
         "순서",
         "Sel",
@@ -240,7 +305,7 @@
         "R",
         "Q",
         "Output",
-        "동작"
+        "동작 · 이유"
       ],
       "columns": [
         {
@@ -315,34 +380,35 @@
     {
       "key": "t-2bit/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "신호",
+        "들어가는 곳",
+        "하는 일"
       ],
       "columns": [
         {
-          "role": "input",
+          "role": "description",
           "kind": "text",
-          "group": "조건"
+          "group": "설명"
         },
         {
-          "role": "output",
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
+      "boundaries": []
     },
     {
       "key": "t-2bit/1",
       "expected_headers": [
         "쓰기 입력",
-        "래치 입력 자리",
-        "NAND 래치 규칙으로 본 결과"
+        "래치 입력",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -384,7 +450,7 @@
         "WR1",
         "OUT0",
         "OUT1",
-        "동작"
+        "동작 · 이유"
       ],
       "columns": [
         {
@@ -468,27 +534,28 @@
     {
       "key": "t-rules/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "약속",
+        "지키는 방법",
+        "어기면"
       ],
       "columns": [
         {
-          "role": "input",
+          "role": "description",
           "kind": "text",
-          "group": "조건"
+          "group": "설명"
         },
         {
-          "role": "output",
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
+      "boundaries": []
     },
     {
       "key": "t-rules/1",
@@ -496,7 +563,7 @@
         "순서",
         "조작",
         "래치 입력",
-        "결과"
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -538,35 +605,11 @@
     {
       "key": "t-opendrain/0",
       "expected_headers": [
-        "조건",
-        "결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-opendrain/1",
-      "expected_headers": [
         "OE0",
         "A의 Q",
         "3번 (OE0·Q)′",
-        "OUT0 (11번)"
+        "OUT0 (11번)",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -588,6 +631,11 @@
           "role": "output",
           "kind": "signal",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -602,16 +650,21 @@
         {
           "left": 2,
           "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
         }
       ]
     },
     {
-      "key": "t-opendrain/2",
+      "key": "t-opendrain/1",
       "expected_headers": [
         "OE0",
         "OE1",
         "묶은 선",
-        "OUT"
+        "OUT",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
@@ -633,6 +686,11 @@
           "role": "output",
           "kind": "signal",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -643,14 +701,19 @@
         {
           "left": 2,
           "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
         }
       ]
     },
     {
-      "key": "t-opendrain/3",
+      "key": "t-opendrain/2",
       "expected_headers": [
         "상황",
-        "결과"
+        "결과",
+        "왜 그런가요"
       ],
       "columns": [
         {
@@ -662,11 +725,20 @@
           "role": "output",
           "kind": "text",
           "group": "결과"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
           "kind": "major"
         }
       ]
@@ -674,27 +746,34 @@
     {
       "key": "t-74670/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "쪽",
+        "켜기",
+        "주소",
+        "데이터"
       ],
       "columns": [
         {
-          "role": "input",
+          "role": "description",
           "kind": "text",
-          "group": "조건"
+          "group": "설명"
         },
         {
-          "role": "output",
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
+      "boundaries": []
     },
     {
       "key": "t-74670/1",
@@ -732,7 +811,7 @@
         "RB RA",
         "RE",
         "Q4~Q1",
-        "동작"
+        "동작 · 이유"
       ],
       "columns": [
         {

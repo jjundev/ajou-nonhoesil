@@ -31,16 +31,26 @@ def p(t):
     return f'<p>{t}</p>'
 
 
+def gist(t):
+    """토픽 첫 레이어 제목 바로 다음의 결론 문단이에요. 첫 문장은 <strong> 으로 감싸요."""
+    return f'<p class="gist">{t}</p>'
+
+
 def tex(t):
     return f'<p>$${t}$$</p>'
 
 
-def table(headers, rows, cols, cls='table-wrap'):
-    """cols 는 열마다 COLS 코드 한 글자예요. build_run 이 data-l 을 읽어 표 배치로 옮기고 지워요."""
+def table(headers, rows, cols, cls='table-wrap', marks=None):
+    """cols 는 열마다 COLS 코드 한 글자예요. build_run 이 data-l 을 읽어 표 배치로 옮기고 지워요.
+    marks 는 {행 번호(0부터): 'compare'|'avoid'} 예요. 비교할 행·피할 행을 템플릿이 칠해요."""
     if len(cols) != len(headers):
         raise ValueError(f'cols {cols} for {headers}')
+    marks = marks or {}
+    if any(k >= len(rows) or v not in ('compare', 'avoid') for k, v in marks.items()):
+        raise ValueError(f'marks {marks} for {len(rows)} rows')
     head = '<thead><tr>' + ''.join(f'<th>{c}</th>' for c in headers) + '</tr></thead>'
-    body = '<tbody>' + ''.join('<tr>' + ''.join(f'<td>{c}</td>' for c in r) + '</tr>' for r in rows) + '</tbody>'
+    row = lambda i: f'<tr data-row="{marks[i]}">' if i in marks else '<tr>'
+    body = '<tbody>' + ''.join(row(i) + ''.join(f'<td>{c}</td>' for c in r) + '</tr>' for i, r in enumerate(rows)) + '</tbody>'
     return f'<div class="{cls}"><table data-l="{cols}">{head}{body}</table></div>'
 
 
