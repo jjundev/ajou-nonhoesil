@@ -1,0 +1,12 @@
+/opt/homebrew/bin/ffprobe -v error -select_streams v:0 -show_frames -show_entries frame=best_effort_timestamp_time -of json /Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4
+
+/opt/homebrew/bin/ffmpeg -v error -n -i /Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4 -vf 'select='"'"'eq(n,0)+eq(n,120)+eq(n,240)+eq(n,360)+eq(n,480)+eq(n,600)+eq(n,720)+eq(n,840)+eq(n,960)+eq(n,1080)+eq(n,1200)+eq(n,1320)+eq(n,1440)+eq(n,1560)+eq(n,1680)+eq(n,1800)+eq(n,1920)+eq(n,2040)+eq(n,2160)+eq(n,2280)+eq(n,2400)+eq(n,2520)+eq(n,2640)+eq(n,2760)+eq(n,2880)+eq(n,3000)+eq(n,3120)+eq(n,3240)+eq(n,3360)+eq(n,3480)+eq(n,3600)+eq(n,3720)+eq(n,3840)+eq(n,3960)+eq(n,4080)+eq(n,4200)+eq(n,4320)+eq(n,4440)+eq(n,4560)+eq(n,4680)+eq(n,4800)+eq(n,4920)+eq(n,5040)+eq(n,5160)+eq(n,5280)+eq(n,5400)+eq(n,5520)+eq(n,5640)+eq(n,5760)+eq(n,5880)+eq(n,6000)+eq(n,6120)'"'"',scale=240:-2' -frames:v 52 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석/tmpnapd5cwi/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -i /Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4 -vf 'select='"'"'eq(n,2700)+eq(n,4980)+eq(n,5340)+eq(n,5640)+eq(n,5880)+eq(n,6090)'"'"'' -frames:v 6 -fps_mode passthrough -threads 2 '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석/tmp01e2up90/%06d.png'
+
+/opt/homebrew/bin/ffmpeg -v error -n -copyts -i /Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4 -filter_complex_threads 2 -filter_complex '[0:v]trim=start=0.0:end=205.483067,setpts=PTS-(0.0)/TB,fps=30,scale=1080:1920:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.03333333333333333,trim=duration=205.5,settb=AVTB[v0];[0:a:0]atrim=start=0.0:end=205.483067,asetpts=PTS-(0.0)/TB,aresample=48000:async=1:first_pts=0,aformat=sample_fmts=fltp:channel_layouts=stereo,apad,atrim=duration=205.5[a0];[v0][a0]concat=n=1:v=1:a=1[v][a]' -map '[v]' -map '[a]' -map_metadata -1 -c:v libx264 -preset slow -crf 26 -threads 4 -pix_fmt yuv420p -c:a aac -b:a 128k -ar 48000 -ac 2 -movflags +faststart '/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석/tmpamrty1yf/render.mp4'
+
+/opt/homebrew/bin/ffprobe -v error -show_streams -show_format -of json '/Users/hyunjun_macbook_pro/Downloads/실험09_실험2_16bitRAM_편집본.mp4'
+
+/opt/homebrew/bin/ffmpeg -v error -xerror -i '/Users/hyunjun_macbook_pro/Downloads/실험09_실험2_16bitRAM_편집본.mp4' -f null -
+

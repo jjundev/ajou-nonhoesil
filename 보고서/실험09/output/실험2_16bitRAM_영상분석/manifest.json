@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "run_dir": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석",
+  "run_label": "실험2_16bitRAM",
+  "mode": "both",
+  "sources": {
+    "p1": {
+      "kind": "video",
+      "path": "/Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4",
+      "sha256_before": "50165d5591d3bcff923539edf98e846fdb22a6e843706971d74d9f9dcd83d9e4",
+      "size": 268537477,
+      "duration_s": 205.483067,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "hevc",
+            "codec_long_name": "H.265 / HEVC (High Efficiency Video Coding)",
+            "profile": "Main",
+            "codec_type": "video",
+            "codec_tag_string": "hvc1",
+            "codec_tag": "0x31637668",
+            "width": 1080,
+            "height": 1920,
+            "coded_width": 1088,
+            "coded_height": 1920,
+            "has_b_frames": 0,
+            "pix_fmt": "yuv420p",
+            "level": 120,
+            "color_range": "tv",
+            "color_space": "bt709",
+            "color_transfer": "bt709",
+            "color_primaries": "bt709",
+            "chroma_location": "left",
+            "view_ids_available": "",
+            "view_pos_available": "",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "46230000/1541123",
+            "time_base": "1/90000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 18493476,
+            "duration": "205.483067",
+            "bit_rate": "10195331",
+            "nb_frames": "6164",
+            "extradata_size": 108,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-11-13T13:48:58.000000Z",
+              "language": "eng",
+              "handler_name": "VideoHandle"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "mime_codec_string": "mp4a.40.2",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 9863014,
+            "duration": "205.479458",
+            "bit_rate": "256012",
+            "nb_frames": "9632",
+            "extradata_size": 2,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0,
+              "multilayer": 0
+            },
+            "tags": {
+              "creation_time": "2026-11-13T13:48:58.000000Z",
+              "language": "eng",
+              "handler_name": "SoundHandle"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/Users/hyunjun_macbook_pro/Downloads/20261113_170104.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "nb_stream_groups": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "205.483067",
+          "size": "268537477",
+          "bit_rate": "10454875",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "mp42",
+            "minor_version": "0",
+            "compatible_brands": "isommp42",
+            "creation_time": "2026-11-13T08:04:31.000000Z",
+            "location": "+37.2830+127.0434/",
+            "location-eng": "+37.2830+127.0434/",
+            "com.android.version": "17",
+            "com.android.capture.fps": "30.000000",
+            "com.samsung.android.utc_offset": "+0900"
+          }
+        }
+      },
+      "sha256_after": "50165d5591d3bcff923539edf98e846fdb22a6e843706971d74d9f9dcd83d9e4"
+    },
+    "transcript_p1": {
+      "kind": "transcript",
+      "video_id": "p1",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석/transcripts/p1/efb1bd46d8daef2d1b037a9a/transcript.md",
+      "sha256_before": "6bf0b397be60c6bbe619f742acf48c927c05dad5c604aaa0af30ce69e15e4902",
+      "size": 1494,
+      "origin": "gemini_api",
+      "model": "gemini-3.5-transcribe",
+      "sha256_after": "6bf0b397be60c6bbe619f742acf48c927c05dad5c604aaa0af30ce69e15e4902"
+    },
+    "transcript_metadata_p1": {
+      "kind": "transcript_metadata",
+      "video_id": "p1",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험2_16bitRAM_영상분석/transcripts/p1/efb1bd46d8daef2d1b037a9a/transcript.json",
+      "sha256_before": "5c54012a2fa72ab14a08f8fa0181ae5d9f167144e6dedcd76428fea40e523dc6",
+      "size": 34771,
+      "origin": "gemini_api",
+      "model": "gemini-3.5-transcribe",
+      "sha256_after": "5c54012a2fa72ab14a08f8fa0181ae5d9f167144e6dedcd76428fea40e523dc6"
+    }
+  },
+  "scenes": [
+    {
+      "id": "writes",
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 150,
+      "item_id": "E9.P2/T4/W1-H1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 0.7,
+          "text": "쓴 상태."
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 39.1,
+          "text": "그럼 주소 01에 다가 쓰는 과정을 진행"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 54.4,
+          "text": "주소를 10으로 바꾼다"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 101.0,
+          "text": "다시 쓰기 모드로 해서 11로 바꾼다"
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 143.8,
+          "text": "다시 올리면 쓰기 끝."
+        }
+      ],
+      "observation": "쓰기 동안 LED 네 개 모두 소등. 손이 회로를 자주 가림",
+      "unknowns": [
+        "주소 00 쓰기(W1)는 촬영 시작 전에 끝났다는 발언뿐",
+        "WB·WA·D·WE 스위치 값은 화면으로 확인 못함"
+      ]
+    },
+    {
+      "id": "read00",
+      "source_id": "p1",
+      "start_s": 150,
+      "end_s": 172,
+      "item_id": "E9.P2/T4/R1",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 148.4,
+          "text": "지금부터 읽어 보겠습니다."
+        },
+        {
+          "source_id": "transcript_p1",
+          "at_s": 155.5,
+          "text": "q1이 켜지고"
+        }
+      ],
+      "observation": "156~170초 맨 위(1번째) LED만 점등",
+      "unknowns": [
+        "LED 위치와 Q1~Q4 핀 대응은 배선 추적으로 확인 못함"
+      ]
+    },
+    {
+      "id": "read01",
+      "source_id": "p1",
+      "start_s": 172,
+      "end_s": 185,
+      "item_id": "E9.P2/T4/R2",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 167.3,
+          "text": "두 번째 거 q2만 켜지게"
+        }
+      ],
+      "observation": "174~184초 위에서 2번째 LED만 점등",
+      "unknowns": []
+    },
+    {
+      "id": "addr_transition",
+      "source_id": "p1",
+      "start_s": 185,
+      "end_s": 192,
+      "item_id": null,
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 188.0,
+          "text": "옮겨서 지금 주소 10 그러니까 세 번째 거"
+        }
+      ],
+      "observation": "185~191초 맨 아래(4번째) LED만 점등한 뒤 193초부터 3번째로 바뀜",
+      "unknowns": [
+        "RB·RA 를 바꾸는 순서 사이의 중간 상태(주소 11)로 보이나 스위치 조작을 화면으로 확인하지 못함"
+      ]
+    },
+    {
+      "id": "read10_11",
+      "source_id": "p1",
+      "start_s": 192,
+      "end_s": 205.48,
+      "item_id": "E9.P2/T4/R3-R4",
+      "speech": [
+        {
+          "source_id": "transcript_p1",
+          "at_s": 188.0,
+          "text": "r a를 5볼트로 옮기면 주소 11 그러니까 마지막 오케이."
+        }
+      ],
+      "observation": "193~199초 3번째 LED만 점등, 200~205초 4번째 LED만 점등",
+      "unknowns": []
+    }
+  ],
+  "captures": [
+    {
+      "id": "e2_write",
+      "source_id": "p1",
+      "at_s": 90,
+      "scene_id": "writes",
+      "title": "쓰기중_RE1_LED모두소등",
+      "observation": "LED 네 개 소등 (RE=1 은 발언·명세 기준)",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/01_쓰기중_RE1_LED모두소등_p1_00090.012.png",
+      "sha256": "9e349d028618ae7f928720d690e08c0b3382829004db51247db695296c8ffefe",
+      "frame_index": 2700,
+      "frame_pts_s": 90.011633,
+      "source_time_s": 90.011633
+    },
+    {
+      "id": "e2_r1",
+      "source_id": "p1",
+      "at_s": 166,
+      "scene_id": "read00",
+      "title": "R1_주소00읽기_1번째LED",
+      "observation": "맨 위 LED만 점등",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/02_R1_주소00읽기_1번째LED_p1_00166.016.png",
+      "sha256": "6162e657ba1e477fd812ad8ef8352e6470a05a59457a0d66c8a9a80ea45eb1e0",
+      "frame_index": 4980,
+      "frame_pts_s": 166.016,
+      "source_time_s": 166.016
+    },
+    {
+      "id": "e2_r2",
+      "source_id": "p1",
+      "at_s": 178,
+      "scene_id": "read01",
+      "title": "R2_주소01읽기_2번째LED",
+      "observation": "2번째 LED만 점등",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/03_R2_주소01읽기_2번째LED_p1_00178.017.png",
+      "sha256": "7228692ddf2f0a691ca415c7b9d6244e10fa864b87c9447c743aae5b01150723",
+      "frame_index": 5340,
+      "frame_pts_s": 178.016689,
+      "source_time_s": 178.016689
+    },
+    {
+      "id": "e2_trans",
+      "source_id": "p1",
+      "at_s": 188,
+      "scene_id": "addr_transition",
+      "title": "주소전환중간_4번째LED",
+      "observation": "4번째 LED만 점등 (중간 상태 추정)",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/04_주소전환중간_4번째LED_p1_00188.017.png",
+      "sha256": "cac3f4cb581203ce6b6530d4276fef6388ec360246103866bd48816881c3456e",
+      "frame_index": 5640,
+      "frame_pts_s": 188.017267,
+      "source_time_s": 188.017267
+    },
+    {
+      "id": "e2_r3",
+      "source_id": "p1",
+      "at_s": 196,
+      "scene_id": "read10_11",
+      "title": "R3_주소10읽기_3번째LED",
+      "observation": "3번째 LED만 점등",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/05_R3_주소10읽기_3번째LED_p1_00196.018.png",
+      "sha256": "ba0bd1ea7d47235fe76269a0154c45a953d55569e0d8202a31f2cec858353f31",
+      "frame_index": 5880,
+      "frame_pts_s": 196.017733,
+      "source_time_s": 196.017733
+    },
+    {
+      "id": "e2_r4",
+      "source_id": "p1",
+      "at_s": 203,
+      "scene_id": "read10_11",
+      "title": "R4_주소11읽기_4번째LED",
+      "observation": "4번째 LED만 점등",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/06_R4_주소11읽기_4번째LED_p1_00203.018.png",
+      "sha256": "8128c3db17be401335df5d5011e588a0f0765de0c9ee6eed143d21c9fb9e020b",
+      "frame_index": 6090,
+      "frame_pts_s": 203.018133,
+      "source_time_s": 203.018133
+    }
+  ],
+  "pairs": [
+    {
+      "id": "pair_00_01",
+      "title": "주소 00 → 01 읽기",
+      "capture_ids": [
+        "e2_r1",
+        "e2_r2"
+      ],
+      "continuity": "same_recording",
+      "note": "켜지는 LED가 1번째에서 2번째로 이동",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/비교/01_주소_00_01_읽기.png"
+    },
+    {
+      "id": "pair_10_11",
+      "title": "주소 10 → 11 읽기",
+      "capture_ids": [
+        "e2_r3",
+        "e2_r4"
+      ],
+      "continuity": "same_recording",
+      "note": "켜지는 LED가 3번째에서 4번째로 이동",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/비교/02_주소_10_11_읽기.png"
+    },
+    {
+      "id": "pair_trans_10",
+      "title": "주소 바꾸는 중간 → 주소 10",
+      "capture_ids": [
+        "e2_trans",
+        "e2_r3"
+      ],
+      "continuity": "same_recording",
+      "note": "중간 상태의 원인(RB·RA 조작 순서)은 미확인",
+      "path": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/비교/03_주소_바꾸는_중간_주소_10.png"
+    }
+  ],
+  "cuts": [
+    {
+      "source_id": "p1",
+      "start_s": 0,
+      "end_s": 205.483,
+      "reason": "삭제 요청 구간 없음. 전체 보존"
+    }
+  ],
+  "unknowns": [
+    "촬영이 주소 00 쓰기 뒤('쓴 상태')에서 시작해 S1·W1 은 영상에 없음",
+    "T5 휘발성 실험(전원 끊었다 다시 켜고 읽기)은 이 영상에 없음",
+    "LED 위치와 Q1~Q4 핀 대응, 각 스위치 값은 화면으로 확인하지 못함",
+    "185~191초 4번째 LED 점등의 원인 미확인"
+  ],
+  "render": {
+    "crf": 26,
+    "preset": "slow",
+    "audio_bitrate": "128k",
+    "max_fps": 30
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "outputs": {
+    "photos": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출",
+    "video": "/Users/hyunjun_macbook_pro/Downloads/실험09_실험2_16bitRAM_편집본.mp4",
+    "video_local": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/실험사진/실험2_16bitRAM_영상추출/실험09_실험2_16bitRAM_편집본.mp4",
+    "zip": "/Users/hyunjun_macbook_pro/Downloads/실험09_실험2_16bitRAM_실험사진.zip"
+  },
+  "checks": {
+    "technical_pass": true,
+    "complete": true,
+    "checks": {
+      "originals_unchanged": true,
+      "photo_dimensions_and_provenance": true,
+      "comparison_files": true,
+      "zip_integrity": true,
+      "video_exists": true,
+      "video_copy_integrity": true,
+      "video_format": true,
+      "fps": true,
+      "audio_format": true,
+      "duration": true,
+      "av_end_difference": true,
+      "full_decode": true
+    },
+    "review": {
+      "photos": "verified",
+      "boundaries": "verified",
+      "audio": "unavailable"
+    },
+    "video_duration_s": 205.5,
+    "av_end_difference_s": 0.0,
+    "decode_error": null
+  },
+  "transcription": {
+    "p1": {
+      "status": "complete",
+      "model": "gemini-3.5-transcribe",
+      "metadata_source_id": "transcript_metadata_p1"
+    }
+  },
+  "rendered": {
+    "timeline": [
+      {
+        "kind": "source",
+        "source_id": "p1",
+        "source_start_s": 0.0,
+        "source_end_s": 205.483067,
+        "output_start_s": 0.0,
+        "output_end_s": 205.5,
+        "padding_s": 0.016932999999994536,
+        "has_original_audio": true
+      }
+    ],
+    "duration_s": 205.5,
+    "fps": "30",
+    "size": [
+      1080,
+      1920
+    ],
+    "encoding": {
+      "crf": 26,
+      "preset": "slow",
+      "audio_bitrate": "128k"
+    },
+    "source_bytes": 268537477,
+    "output_bytes": 58708556,
+    "reduction_percent": 78.13766754053476,
+    "video_sha256": "a0f52b6ae51299dcf83f4d913972ede96ad2141217e8c64f076522ff5987bfeb"
+  }
+}
