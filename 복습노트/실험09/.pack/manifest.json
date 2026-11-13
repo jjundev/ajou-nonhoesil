@@ -308,7 +308,7 @@
         }
       ],
       "fragment": "sections/t-opendrain.html",
-      "md_notes": "74HC03이 열린 드레인이라는 것은 .claude/데이터시트_출처.md 의 Nexperia 74HC_HCT03 서지 제목(“Quad 2-input NAND gate (open drain)”)과 p6의 10K 풀업에 근거해요. 데이터시트 본문과 전원 핀은 1차 자료로 확인하지 못했어요(netlist M6). LED 전류가 작다는 말은 M5의 계산(순방향 2V 가정, 약 0.29mA)에 근거한 예상이에요."
+      "md_notes": "74HC03이 열린 드레인이라는 것은 .claude/데이터시트_출처.md 의 Nexperia 74HC_HCT03 서지 제목(“Quad 2-input NAND gate (open drain)”)과 p6의 10K 풀업에 근거해요. 데이터시트 본문과 전원 핀은 1차 자료로 확인하지 못했어요(netlist M6). LED 전류가 작다는 말은 M5의 계산(순방향 2V 가정, 약 0.29mA)에 근거한 예상이에요. 74HC03을 쓴 이유(읽기 버스·wired-AND)와 74HC00으로 바꿨을 때의 결과는 교안에 없는 추론·보충이에요. wired-AND 식과 74HC00 대체 시 OUT 값은 check_values.py가 다시 계산했고, 단락 전류·±25mA는 일반적인 74HC 기준 어림값이라 이번 칩 데이터시트로 확인하지 않았어요."
     },
     {
       "id": "t-74670",

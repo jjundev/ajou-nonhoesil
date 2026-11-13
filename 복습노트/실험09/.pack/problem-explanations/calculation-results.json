@@ -465,5 +465,87 @@
   "01": "0010",
   "10": "0100",
   "11": "1000"
+ },
+ "bus": {
+  "0000": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0001": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0010": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0011": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0100": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0101": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "0110": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "0111": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "1000": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "1001": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "1010": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "1011": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "1100": {
+   "line": 1,
+   "out": 0,
+   "totem_clash": false
+  },
+  "1101": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "1110": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": true
+  },
+  "1111": {
+   "line": 0,
+   "out": 1,
+   "totem_clash": false
+  }
  }
 }

@@ -187,6 +187,28 @@ def run_t4():
     return reads
 
 
+def bus_checks():
+    """t-opendrain 추론 절: 3번·6번을 묶은 wired-AND 읽기 버스와 74HC00 대체 시 출력."""
+    rows = {}
+    for oe0, oe1, qa, qb in itertools.product((0, 1), repeat=4):
+        line = nand(oe0, qa) & nand(oe1, qb)          # 열린 드레인 묶음 = AND
+        out = nand(line, line)                         # 입력 묶은 NAND = 인버터
+        assert out == ((oe0 & qa) | (oe1 & qb))
+        if (oe0, oe1) == (1, 0):
+            assert out == qa
+        if (oe0, oe1) == (0, 1):
+            assert out == qb
+        # 74HC00(푸시풀)이면 두 출력이 반대로 구동할 때 부딪쳐요
+        clash = nand(oe0, qa) != nand(oe1, qb)
+        rows[f'{oe0}{oe1}{qa}{qb}'] = dict(line=line, out=out, totem_clash=clash)
+    assert rows['1010']['totem_clash']                 # A 읽기(Q_A=1), OE1=0 → 단락
+    # 교안 회로 그대로(묶지 않음)는 74HC00이어도 OUT0 = OE0·Q
+    for oe, q in itertools.product((0, 1), repeat=2):
+        a = nand(oe, q)
+        assert nand(a, a) == (oe & q)
+    return rows
+
+
 def main():
     lr = latch_rules()
     assert lr[(0, 1)] == {(1, 0)} and lr[(1, 0)] == {(0, 1)}
@@ -206,7 +228,8 @@ def main():
     ans = bank_answers()
     rc = rules_checks()
     t4 = run_t4()
-    res = dict(latch={f'{k[0]}{k[1]}': sorted(v) for k, v in lr.items()}, ram1=one, t1=t1, bank=ans, rules=rc, t4=t4)
+    bus = bus_checks()
+    res = dict(latch={f'{k[0]}{k[1]}': sorted(v) for k, v in lr.items()}, ram1=one, t1=t1, bank=ans, rules=rc, t4=t4, bus=bus)
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if out:
         out.write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str), encoding='utf-8')

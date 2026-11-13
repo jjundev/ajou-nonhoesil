@@ -3,7 +3,7 @@
   "html": "실험09_문제설명.html",
   "html_sha256": "db12310cce1e7f9e09a5ed4bd5fb115147d7574a558b65f1e68a5de02dac1758",
   "audit_path": "problem-explanations/summary-audit.md",
-  "audit_sha256": "1da4262659c8b5d055a3c967d53e9149eaf858a3123e1becf463cfb8c9081b2f",
+  "audit_sha256": "d8af7e21c018877801a36140bffee1e4144d899148378b405de1b5f85c49e51f",
   "semantic_status": "pass",
   "browser_status": "pass",
   "evidence": [
