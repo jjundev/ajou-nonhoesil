@@ -9,6 +9,7 @@ from .manifest import validate_manifest, output_names, DATA, link_data, VENDOR_D
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata, summary_structure_errors
+from .note_reading import reading_structure_errors
 from .navigation import render_navigation
 from .pack_md import write_pack_md
 from .equation_cards import separate_equations
@@ -64,6 +65,8 @@ def assemble(manifest,run,out,assets):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
         if summaries is not None:fragment=replace_summary(t['id'],fragment,summaries[t['id']])
         if manifest.get('note_summary_version')==2 and (errors:=summary_structure_errors(t['id'],fragment)):
+            raise ValueError(errors[0])
+        if manifest.get('note_reading_version')==1 and (errors:=reading_structure_errors(t['id'],fragment)):
             raise ValueError(errors[0])
         fragment=layout_note_tables(t['id'],fragment,layouts)
         note.append(f'<article class="topic" id="{t["id"]}"><h3>{esc(t["title"])}</h3>'+separate_tables(separate_equations(fragment))+('' if modern else refs(t))+'</article>')

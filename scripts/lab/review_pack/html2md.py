@@ -100,6 +100,9 @@ def export_document(path, export=True, note_metadata=None):
             for tr in n.walk():
                 if tr.tag=='tr' and not omitted(tr):
                     cells=[render(c).strip().replace('\n','<br>') for c in tr.children if isinstance(c,Node) and c.tag in {'td','th'}]
+                    if tr.attrs.get('data-row')=='compare':
+                        # HTML 은 비교 행을 색칠한다. MD 는 같은 정보를 굵은 글씨로 준다.
+                        cells=[c if not c or c.startswith('**') else '**'+c+'**' for c in cells]
                     rows.append('| '+' | '.join(cells)+' |')
             if rows:
                 cols=len([c for tr in n.walk() if tr.tag=='tr' for c in tr.children if isinstance(c,Node) and c.tag in {'td','th'}])

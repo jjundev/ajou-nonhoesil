@@ -111,6 +111,9 @@ def validate_manifest(data):
         errors.append('note_presentation_version must be 2 or absent')
     if 'note_summary_version' in data and (type(data['note_summary_version']) is not int or data['note_summary_version'] != 2 or data.get('note_presentation_version') != 2):
         errors.append('note_summary_version must be 2 with note_presentation_version 2, or absent')
+    # 읽기 방식 v1: 결론 소제목·핵심 문장·비교 행. 요약 세 칸이 있는 v2 노트 위에만 얹는다.
+    if 'note_reading_version' in data and (type(data['note_reading_version']) is not int or data['note_reading_version'] != 1 or data.get('note_summary_version') != 2):
+        errors.append('note_reading_version must be 1 with note_summary_version 2, or absent')
     modern=data.get('review_presentation_version') == 2
     if 'review_presentation_version' in data and (type(data['review_presentation_version']) is not int or not modern):
         errors.append('review_presentation_version must be 2 or absent')
