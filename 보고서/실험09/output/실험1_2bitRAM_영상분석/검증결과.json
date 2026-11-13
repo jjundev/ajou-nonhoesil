@@ -1,0 +1,26 @@
+{
+  "technical_pass": true,
+  "complete": true,
+  "checks": {
+    "originals_unchanged": true,
+    "photo_dimensions_and_provenance": true,
+    "comparison_files": true,
+    "zip_integrity": true,
+    "video_exists": true,
+    "video_copy_integrity": true,
+    "video_format": true,
+    "fps": true,
+    "audio_format": true,
+    "duration": true,
+    "av_end_difference": true,
+    "full_decode": true
+  },
+  "review": {
+    "photos": "verified",
+    "boundaries": "verified",
+    "audio": "unavailable"
+  },
+  "video_duration_s": 272.733333,
+  "av_end_difference_s": 0.0,
+  "decode_error": null
+}

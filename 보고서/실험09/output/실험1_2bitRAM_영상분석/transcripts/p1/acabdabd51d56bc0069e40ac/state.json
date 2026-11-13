@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "source_path": "/Users/hyunjun_macbook_pro/Downloads/20261113_190646.mp4",
+    "source_sha256": "bc2a04b7836b0337c212bf576bebaaa76255dc978d53756951f460b726c29c0f",
+    "policy": "lab-verbatim-pcm16-v2",
+    "model": "gemini-3.5-transcribe",
+    "endpoint": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-3.5-transcribe:generateContent",
+    "config": {
+      "mode": "VERBATIM",
+      "languageCodes": [
+        "ko-KR"
+      ],
+      "wordTimestamp": true
+    },
+    "chunk_frames": 7200000,
+    "audio_offset_s": 0.001208
+  },
+  "status": "complete",
+  "result": {
+    "status": "complete",
+    "md": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험1_2bitRAM_영상분석/transcripts/p1/acabdabd51d56bc0069e40ac/transcript.md",
+    "json": "/Users/hyunjun_macbook_pro/Documents/Univ/논회실/보고서/실험09/output/실험1_2bitRAM_영상분석/transcripts/p1/acabdabd51d56bc0069e40ac/transcript.json",
+    "md_sha256": "988a3eac877ca94d5ade3d3591527ea8726a8298d1fb5b0abc5165c86c9294a3",
+    "json_sha256": "9140bef9c90a8e934df5e1263292b05315524f7ae9ec9c86604bca9779744dea",
+    "source_sha256": "bc2a04b7836b0337c212bf576bebaaa76255dc978d53756951f460b726c29c0f",
+    "model": "gemini-3.5-transcribe"
+  }
+}
