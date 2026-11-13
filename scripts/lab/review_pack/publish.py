@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import uuid
 from .checks import check_pack
-from .manifest import load_manifest,DATA
+from .manifest import load_manifest,DATA,VENDOR_DIR,sync_shared_vendor
 from .sources import file_sha256
 from scripts.lab import config
 from .bank_provenance import check_bank_import
@@ -45,6 +45,9 @@ def publish(stage,destination,root):
     user_files=[p for p in dest.rglob('*') if p.is_file() and p.relative_to(dest).as_posix() not in old_owned] if dest.exists() else []
     if any(p.relative_to(dest).as_posix() in new_owned for p in user_files):raise ValueError('User file collision')
     dest.parent.mkdir(parents=True,exist_ok=True)
+    repo_vendor=root/'.claude/skills/logic-lab-review-pack/assets/vendor'
+    src_vendor=repo_vendor if repo_vendor.is_dir() else stage.parent/VENDOR_DIR
+    sync_shared_vendor(src_vendor,dest.parent/VENDOR_DIR)
     prepared=Path(tempfile.mkdtemp(prefix='.review-pack-',dir=dest.parent))
     shutil.copytree(stage,prepared,dirs_exist_ok=True)
     for p in user_files:

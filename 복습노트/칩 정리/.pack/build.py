@@ -100,8 +100,9 @@ def core_note(c):
 def build():
     questions=merge_mcq(Q,json.loads((PACK/'mcq.json').read_text(encoding='utf-8')))
     PACK.mkdir(parents=True,exist_ok=True)
-    vendor=PACK/'assets/vendor/pretendard'
-    if not vendor.exists():shutil.copytree(ASSETS/'vendor/pretendard',vendor)
+    shared_vendor=OUT.parent/'.vendor'
+    if not (shared_vendor/'pretendard').is_dir():
+        shutil.copytree(ASSETS/'vendor',shared_vendor,dirs_exist_ok=True)
     notes=[('start','칩 공부를 시작해요',COMMON)]
     common='''<h4>노치부터 확인해요</h4><p>칩을 위에서 보고 노치를 위로 놓아요. 왼쪽 위가 1번이고 왼쪽을 따라 아래로 센 다음, 오른쪽 아래에서 위로 올라가요. 14핀은 왼쪽 아래 7·오른쪽 아래 8·오른쪽 위 14번이에요. 16핀은 각각 8·9·16번이에요.</p><h4>글자의 역할을 구분해요</h4><p>74HC08에서 HC는 논리 계열, 08은 기능을 구별하는 번호예요. 제조사 접두사나 끝의 패키지 표기는 따로 확인해요. HC·HCT·LS를 전기적으로 같은 칩이라고 가정하지 않아요.</p><h4>입력, 출력, NC는 서로 달라요</h4><p>사용하지 않는 CMOS 입력은 VCC 또는 GND 등 회로에 맞는 확정값으로 고정해요. 사용 중인 게이트의 남는 입력은 원하는 논리를 보존하도록 고정해요. 미사용 출력과 NC는 연결하지 않아요. 여러 출력끼리 직접 묶지 않아요.</p><p>전원은 이 실험 교안의 +5V를 기준으로 해요. 신호원·측정기와 회로는 기준 접지를 공유해야 해요. LED는 극성과 직렬 저항을 확인해요. “LED 켜짐=논리 1”은 연결 방식에 따라 달라요.</p><div class="sum">노치 기준 위에서 보기. /는 Active Low. 실제 입력 고정·출력 미연결·NC 미연결을 구분해요.</div>'''
     notes.append(('common','방향·전원·입출력을 읽어요',common))
@@ -126,7 +127,7 @@ def build():
     # Existing notebook visual authority; static math uses Unicode, so KaTeX is unnecessary.
     template=re.sub(r'\s*<link[^>]+href="https://cdn.jsdelivr.net/npm/katex[^>]+>','',template)
     template=re.sub(r'\s*<script defer src="https://cdn.jsdelivr.net/npm/katex.*?</script>','',template,flags=re.S)
-    template=template.replace('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css','.pack/assets/vendor/pretendard/pretendard.css')
+    template=template.replace('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css','../.vendor/pretendard/pretendard.css')
     for i,items in enumerate(pages):
         nav='<nav class="pack-links" aria-label="학습 자료">'+''.join(f'<a href="{f}"'+(' aria-current="page"' if j==i else '')+'>'+f[:-5]+'</a>' for j,f in enumerate(filenames))+'</nav>'
         sections=nav+'<section id="learning"><h2 class="sr-only">학습 내용</h2>'+''.join(article(*a) for a in items)+'</section>'

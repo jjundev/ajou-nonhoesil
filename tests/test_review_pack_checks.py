@@ -32,3 +32,11 @@ def test_external_resource(tmp_path):
     p=make_pack(tmp_path);f=p/'실험04_실험설명.html'
     f.write_text(f.read_text(encoding='utf-8').replace('</main>','<img src="https://example.com/x.png"></main>'),encoding='utf-8')
     assert any('remote' in e for e in check_pack(p))
+
+def test_shared_vendor_checked_and_parent_escape_rejected(tmp_path):
+    p=make_pack(tmp_path);f=p/'실험04_실험설명.html'
+    f.write_text(f.read_text(encoding='utf-8').replace('</head>','<link rel="stylesheet" href="../outside.css"></head>'),encoding='utf-8')
+    assert any('Unsafe' in e for e in check_pack(p))
+    p2=make_pack(tmp_path/'missing_vendor')
+    (tmp_path/'missing_vendor/.vendor/katex/katex.min.css').unlink()
+    assert any('Missing resource' in e for e in check_pack(p2))

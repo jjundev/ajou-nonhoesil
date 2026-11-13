@@ -40,11 +40,12 @@ def served(folder):
     class QuietHandler(SimpleHTTPRequestHandler):
         def log_message(self, *_args):
             pass
-    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(folder.resolve())))
+    root = folder.resolve().parent
+    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(root)))
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
-        yield f'http://127.0.0.1:{server.server_port}/'
+        yield f'http://127.0.0.1:{server.server_port}/{quote(folder.name)}/'
     finally:
         server.shutdown()
         server.server_close()

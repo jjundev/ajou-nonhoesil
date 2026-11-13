@@ -3,7 +3,7 @@ from pathlib import Path
 from collections import Counter
 from tempfile import TemporaryDirectory
 from urllib.parse import unquote,urlsplit
-from .manifest import output_names,DATA
+from .manifest import output_names,DATA,resolve_shared_vendor
 from .explanation_render import write_explanations
 from .html2md import Parser,check_md
 from .navigation import check_navigation
@@ -33,6 +33,10 @@ def check_explanations(folder: Path, manifest: dict) -> list[str]:
             if not value:continue
             parts=urlsplit(unquote(value))
             if parts.scheme or parts.netloc:errors.append('Remote explanation resource: '+value);continue
+            vendor_dest=resolve_shared_vendor(folder,parts.path) if n.tag in {'link','script'} else None
+            if vendor_dest is not None:
+                if not vendor_dest.is_file():errors.append('Missing explanation resource: '+value)
+                continue
             dest=within(folder,parts.path) if parts.path else source
             if not dest.is_file():errors.append('Missing explanation resource: '+value);continue
             if parts.fragment and dest.suffix=='.html':

@@ -1,7 +1,7 @@
 """Prepare a new owned-file stage without changing existing learning materials."""
 from pathlib import Path
 import json,shutil,re
-from .manifest import load_manifest,output_names,DATA
+from .manifest import load_manifest,output_names,DATA,VENDOR_DIR,sync_shared_vendor
 from .explanation_content import within,CHECK_KEYS,explanation_sections
 from .explanation_render import write_explanations
 from .workbook_render import read_workbook_payload
@@ -35,6 +35,8 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, s
         wrapped=Path(temp)/'problem-explanations';shutil.copytree(author_root,wrapped)
         load_explanations(m,question,Path(temp))
         stage.mkdir(parents=True)
+        if (folder.parent/VENDOR_DIR).is_dir():
+            sync_shared_vendor(folder.parent/VENDOR_DIR,stage.parent/VENDOR_DIR)
         for relative in owned:
             target=stage/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(folder/relative,target)
         if sync_explanation_template:

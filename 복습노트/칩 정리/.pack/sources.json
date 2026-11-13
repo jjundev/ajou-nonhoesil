@@ -8,11 +8,11 @@
     5
   ],
   "manuals": [
-    "강의노트\\실험1. Basic Gates.pdf",
-    "강의노트\\실험2. CMOS 회로의 전기적 특성.pdf",
-    "강의노트\\실험3. 가산기 & 감산기 (25.03.25 수정).pdf",
-    "강의노트\\실험4. Multiplexer & Demultiplexer.pdf",
-    "강의노트\\실험5. Decoder & Encoder.pdf"
+    "강의노트/실험4. Multiplexer & Demultiplexer.pdf",
+    "강의노트/실험2. CMOS 회로의 전기적 특성.pdf",
+    "강의노트/실험3. 가산기 & 감산기 (25.03.25 수정).pdf",
+    "강의노트/실험5. Decoder & Encoder.pdf",
+    "강의노트/실험1. Basic Gates.pdf"
   ],
   "scope_evidence": [
     "보고서/실험01/체크리스트/명세.md",

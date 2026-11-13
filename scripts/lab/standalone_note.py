@@ -91,7 +91,7 @@ def build(note_dir, kind, linked=frozenset()):
         ref = re.search(r'src="([^"]+)"', attrs)
         if not ref:
             return m.group(0)
-        code = _safe_js((note_dir / ref.group(1)).read_text(encoding="utf-8"))
+        code = _safe_js((note_dir / ref.group(1)).resolve().read_text(encoding="utf-8"))
         onload = re.search(r'onload="([^"]*)"', attrs)
         parts = f"<script>{code}</script>"
         if onload:
@@ -105,7 +105,7 @@ def build(note_dir, kind, linked=frozenset()):
 
     def link(m):
         href = re.search(r'href="([^"]+)"', m.group(0)).group(1)
-        path = note_dir / href
+        path = (note_dir / href).resolve()
         return f"<style>{_inline_css(path.read_text(encoding='utf-8'), path.parent)}</style>"
 
     html = re.sub(r'<link[^>]*rel="stylesheet"[^>]*href="(?!https?:)[^"]+"[^>]*>', link, html)

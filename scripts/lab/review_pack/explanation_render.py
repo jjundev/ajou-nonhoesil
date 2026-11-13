@@ -8,16 +8,9 @@ from .explanation_content import load_explanations, within
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
 from .table_layout import load_layouts, layout_problem_tables, TableLayoutError
-from .manifest import output_names, DATA
+from .manifest import output_names, DATA, replace_vendor_urls
 from .navigation import render_navigation
 from .html2md import export_document, Parser
-
-VENDOR = {
- 'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css': 'pretendard/pretendard.css',
- 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css': 'katex/katex.min.css',
- 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js': 'katex/katex.min.js',
- 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js': 'katex/auto-render.min.js',
-}
 
 def explanation_metadata(manifest: dict) -> dict[str,str]:
     sources={s['id']:s for s in manifest['sources']};metadata={}
@@ -81,7 +74,7 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     document=(assets/'note-template.html').read_text(encoding='utf-8')
     document=document.replace('<body', '<body data-problem-explanation="true"',1)
     for key,value in values.items():document=document.replace('{{'+key+'}}',value)
-    for url,local in VENDOR.items():document=document.replace(url,DATA+'/assets/vendor/'+local)
+    document=replace_vendor_urls(document)
     if '{{' in document:raise ValueError('Unreplaced explanation placeholder')
     parser=Parser();parser.feed(document)
     counts=Counter(n.attrs['id'] for n in parser.root.walk() if n.attrs.get('id'))

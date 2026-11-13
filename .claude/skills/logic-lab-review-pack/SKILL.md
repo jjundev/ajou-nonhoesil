@@ -110,7 +110,7 @@ python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 
 **저장 규칙.** `복습노트/실험NN/` 루트에는 학생이 여는 `.html`·`.pdf` 와 숨김 폴더 `.pack/` 만 둔다.
 나머지는 모두 `.pack/` 안에 둔다: MD 문서(실험설명·기출문제·기출풀이·문제설명·출처와_문항목록·원문과_저작안내·검증결과), manifest.json, authoring-index.json, assets/, evidence/, figures/, problem-explanations/.
-HTML이 이 파일을 부를 때는 루트 기준 상대경로 `.pack/figures/..`, `.pack/assets/vendor/..` 로 쓴다. MD는 `.pack/` 안에 있으므로 `figures/..`, 형제 MD는 이름 그대로, 저장소 원문은 `../../../강의노트/..` 로 부른다.
+HTML이 이 파일을 부를 때는 루트 기준 상대경로 `.pack/figures/..`, 공유 벤더는 `../.vendor/..` (`복습노트/.vendor/`) 로 쓴다. MD는 `.pack/` 안에 있으므로 `figures/..`, 형제 MD는 이름 그대로, 저장소 원문은 `../../../강의노트/..` 로 부른다.
 MD 작성기는 루트 기준으로 본문을 만들고 `scripts/lab/review_pack/pack_md.py` 의 `write_pack_md` 로 쓴다(쓰는 순간 `.pack/` 기준으로 바뀐다). 새 MD도 이 함수로 쓴다. 폴더 이름은 `scripts/lab/config.py` 의 `PACK_DATA_DIR` 한 곳에서 정한다.
 manifest 안의 경로(figure_manifest, snapshot_path, workbook_fragment)는 `.pack/` 기준 상대경로 그대로 둔다(`figures/redraw-manifest.json`). generated_files 만 실험 폴더 루트 기준이라 `.pack/figures/..`, `.pack/실험NN_실험설명.md` 로 적힌다.
 RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 build 가 `.pack/figures/..` 로 바꾼다. 문제설명 조각(problem-explanations/*.html)은 루트 기준 `.pack/figures/..` 로 직접 쓴다.

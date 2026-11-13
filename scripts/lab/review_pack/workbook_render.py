@@ -3,17 +3,11 @@ from pathlib import Path
 import hashlib
 import json
 from .html2md import Parser
-from .manifest import DATA
+from .manifest import DATA, VENDOR_URL, replace_vendor_urls
 from .workbook_content import _strict_json
 from .question_bank import _unique_json_object
 
 TOKEN='__WORKBOOK_DATA__'
-URL_MAP={
-    'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css':DATA+'/assets/vendor/pretendard/pretendard.css',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':DATA+'/assets/vendor/katex/katex.min.css',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':DATA+'/assets/vendor/katex/katex.min.js',
-    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':DATA+'/assets/vendor/katex/auto-render.min.js',
-}
 
 CONDITIONS_OLD="  panel.append(block('조건', p.html.conditions, 'conditions'), block('구할 것', p.html.ask, 'ask-box'));"
 CONDITIONS_NEW=("  if (p.html.conditions && p.html.conditions.trim()) panel.append(block('조건', p.html.conditions, 'conditions'));   // 조건이 없으면 라벨도 없다\n"
@@ -223,13 +217,12 @@ def render_workbook_html(data, assets):
     if hashlib.sha256(blob).hexdigest()!=provenance['sha256'][name]: raise ValueError('Template snapshot changed: '+name)
     template=apply_local_patches(blob.decode('utf-8').replace('\r\n','\n'),name,quiz_practice=quiz)  # 데이터 슬롯을 채우기 전에 덧씌운다
     if template.count(TOKEN)!=1: raise ValueError('Expected one workbook data slot')
-    text=template.replace(TOKEN,json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c'))
-    for remote,local in URL_MAP.items(): text=text.replace(remote,local)
+    text=replace_vendor_urls(template.replace(TOKEN,json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c')))
     parser=Parser();parser.feed(text)
     for n in parser.root.walk():
         if n.tag in {'link','script'}:
             url=n.attrs.get('href' if n.tag=='link' else 'src','')
-            if url and not url.startswith(DATA+'/assets/vendor/'): raise ValueError('Unmapped template resource: '+url)
+            if url and not url.startswith(VENDOR_URL+'/'): raise ValueError('Unmapped template resource: '+url)
     return text
 
 def read_workbook_payload(path):

@@ -5,7 +5,7 @@ import json
 import re
 import shutil
 from urllib.parse import quote
-from .manifest import validate_manifest, output_names, DATA, link_data
+from .manifest import validate_manifest, output_names, DATA, link_data, VENDOR_DIR, replace_vendor_urls, sync_shared_vendor
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata, summary_structure_errors
@@ -87,7 +87,9 @@ def assemble(manifest,run,out,assets):
     out.mkdir(parents=True)
     copy_import_material(run,out,manifest)
     data_out=out/DATA
-    shutil.copytree(assets,data_out/'assets')
+    shutil.copytree(assets,data_out/'assets',ignore=shutil.ignore_patterns('vendor'))
+    if (assets/'vendor').is_dir():
+        sync_shared_vendor(assets/'vendor',out.parent/VENDOR_DIR)
     if (run/'figures').exists():
         for p in (run/'figures').rglob('*'):
             if p.is_symlink(): raise ValueError('No symlink figures')
@@ -109,12 +111,7 @@ def assemble(manifest,run,out,assets):
             values['FOOTER']=''
         for key,val in values.items():
             text=text.replace('{{'+key+'}}',val)
-        for url,local in {
-            'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css':DATA+'/assets/vendor/pretendard/pretendard.css',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':DATA+'/assets/vendor/katex/katex.min.css',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':DATA+'/assets/vendor/katex/katex.min.js',
-            'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':DATA+'/assets/vendor/katex/auto-render.min.js',
-        }.items(): text=text.replace(url,local)
+        text=replace_vendor_urls(text)
         if '{{' in text: raise ValueError('Unreplaced placeholder')
         path=out/names[kind+'_html'];path.write_text(text,encoding='utf-8');paths[kind+'_html']=path
     if workbook:

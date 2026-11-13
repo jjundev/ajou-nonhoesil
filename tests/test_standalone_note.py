@@ -78,6 +78,25 @@ def test_standalone_keeps_topic_hash_links(note):
     src.write_text(src.read_text().replace('</body>', '<a href="#t-start">토픽</a></body>'))
     assert '<a href="#t-start">토픽</a>' in sn.build(note, '실험설명')
 
+def test_shared_parent_vendor_inlined(tmp_path):
+    vendor = tmp_path / '.vendor/katex'
+    vendor.mkdir(parents=True)
+    (vendor / 'K.woff2').write_bytes(b'w2')
+    (vendor / 'k.css').write_text("@font-face{src:url(K.woff2) format('woff2');}", encoding='utf-8')
+    (vendor / 'k.js').write_text("var K=42;", encoding='utf-8')
+    d = tmp_path / '실험99'
+    d.mkdir()
+    (d / '실험99_실험설명.html').write_text(
+        '<html><head><meta charset="utf-8">'
+        '<link rel="stylesheet" href="../.vendor/katex/k.css">'
+        '<script defer src="../.vendor/katex/k.js"></script>'
+        '</head><body><p>ok</p></body></html>',
+        encoding='utf-8',
+    )
+    html = sn.build(d, '실험설명')
+    assert sn.leftovers(html) == []
+    assert 'var K=42;' in html and 'data:font/woff2;base64,' in html
+
 
 # --- 문제설명 · 다실험 zip · Windows 호환 -------------------------------------
 

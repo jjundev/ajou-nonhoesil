@@ -82,7 +82,8 @@ def _synthetic_pack(tmp_path, problems, mode):
     import shutil
     from scripts.lab.review_pack.workbook_render import render_workbook_html
     assets = Path('.claude/skills/logic-lab-review-pack/assets')
-    shutil.copytree(assets/'vendor', tmp_path/'assets'/'vendor', dirs_exist_ok=True)
+    shutil.copytree(assets/'vendor', tmp_path/'.vendor', dirs_exist_ok=True)
+    pack = tmp_path/'pack'; pack.mkdir(exist_ok=True)
     entries = []
     for i, p in enumerate(problems, 1):
         e = dict(id=p['id'], kind='기출', number=str(i), title=p['id'], section='실험 9 · 테스트', book_page=None,
@@ -91,7 +92,7 @@ def _synthetic_pack(tmp_path, problems, mode):
         if mode == 'answers': e['solution'] = dict(steps=[dict(label='식', html='<p>풀이</p>')], answer='<p>답</p>')
         entries.append(e)
     data = dict(meta=dict(mode=mode, title='합성', chapter=0, total=len(entries)), problems=entries)
-    out = tmp_path/f'{mode}.html'
+    out = pack/f'{mode}.html'
     out.write_text(render_workbook_html(data, assets), encoding='utf-8')
     return out
 

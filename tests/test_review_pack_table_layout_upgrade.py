@@ -38,6 +38,9 @@ def snapshot(folder):
 
 
 def pack_with_layout(tmp_path, name='실험04'):
+    vendor = tmp_path / '.vendor'
+    if not vendor.exists():
+        vendor.symlink_to((PACKS / '.vendor').resolve(), target_is_directory=True)
     target = tmp_path / name
     shutil.copytree(PACKS / name, target)
     text = note_path(target).read_text(encoding='utf-8')

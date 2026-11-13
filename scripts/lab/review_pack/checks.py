@@ -1,11 +1,11 @@
 """Mechanical checks do not establish scientific correctness."""
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from itertools import product
 from collections import Counter
 from urllib.parse import unquote,urlsplit
 import re
 from scripts.lab.boolexpr import variables,eval_boolean
-from .manifest import load_manifest,output_names,data_dir,DATA
+from .manifest import load_manifest,output_names,data_dir,DATA,VENDOR_DIR,resolve_shared_vendor
 from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
@@ -59,7 +59,10 @@ def check_pack(folder):
                 continue
             part,_,frag=unquote(value).partition('#')
             if part.startswith('../../') and node.tag=='a':continue
-            dest=folder/part if part else folder/names[key]
+            vendor_dest=resolve_shared_vendor(folder,part) if node.tag in {'link','script'} else None
+            if vendor_dest is None and part and '..' in PurePosixPath(part).parts:
+                errors.append('Unsafe resource path: '+value);continue
+            dest=vendor_dest if vendor_dest is not None else (folder/part if part else folder/names[key])
             if not dest.is_file():errors.append('Missing resource: '+value);continue
             if frag and dest.suffix=='.html':
                 if workbook and dest.name in (names['review_html'],names['question_html']):
@@ -80,13 +83,17 @@ def check_pack(folder):
             if len(details)<2:errors.append(row['id']+': missing hint/solution')
             for topic in row['topics']:
                 if not any(n.tag=='a' and unquote(n.attrs.get('href','')).endswith('#'+topic) for n in nodes[0].walk()):errors.append(row['id']+': missing concept link '+topic)
-    for css in (folder/DATA/'assets').rglob('*.css'):
-        text=css.read_text(encoding='utf-8')
-        for url in re.findall(r'url\([\x22\x27]?([^\)\x22\x27]+)',text):
-            if url.startswith('data:'):continue
-            if urlsplit(url).scheme or url.startswith('//'):errors.append('remote CSS resource: '+url)
-            elif not (css.parent/unquote(url)).is_file():errors.append('Missing CSS resource: '+url)
-        if re.search(r'@import\s+[\x22\x27]https?:',text):errors.append('remote CSS import: '+str(css))
+    css_roots=[folder/DATA/'assets']
+    if (folder.parent/VENDOR_DIR).is_dir():
+        css_roots.append(folder.parent/VENDOR_DIR)
+    for css_root in css_roots:
+        for css in css_root.rglob('*.css'):
+            text=css.read_text(encoding='utf-8')
+            for url in re.findall(r'url\([\x22\x27]?([^\)\x22\x27]+)',text):
+                if url.startswith('data:'):continue
+                if urlsplit(url).scheme or url.startswith('//'):errors.append('remote CSS resource: '+url)
+                elif not (css.parent/unquote(url)).is_file():errors.append('Missing CSS resource: '+url)
+            if re.search(r'@import\s+[\x22\x27]https?:',text):errors.append('remote CSS import: '+str(css))
     from .explanation_checks import check_explanations
     errors.extend(check_explanations(folder,m))
     return errors

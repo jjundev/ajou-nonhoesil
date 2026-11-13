@@ -20,6 +20,7 @@ def passing_topics(pack):
 
 @pytest.fixture
 def pack(tmp_path):
+    (tmp_path / '.vendor').symlink_to((ROOT / '복습노트/.vendor').resolve(), target_is_directory=True)
     folder = tmp_path / '실험01'
     shutil.copytree(ROOT / '복습노트/실험01', folder)
     # 발행본이 이미 이주했어도 이주 전 manifest 에서 시작한다.

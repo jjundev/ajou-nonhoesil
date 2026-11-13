@@ -152,6 +152,7 @@ def test_lost_tokens_sees_symbols(old, new, lost):
 def test_check_pack_flags_summary_drift(tmp_path):
     from scripts.lab.review_pack.checks import check_pack
     from scripts.lab.review_pack.navigation_upgrade import ROOT
+    (tmp_path / '.vendor').symlink_to((ROOT / '복습노트/.vendor').resolve(), target_is_directory=True)
     pack = tmp_path / '실험01'; shutil.copytree(ROOT / '복습노트/실험01', pack)
     assert check_pack(pack) == []
     page = pack / '실험01_실험설명.html'

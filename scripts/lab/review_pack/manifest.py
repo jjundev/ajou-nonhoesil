@@ -1,6 +1,9 @@
 """Versioned learning-content contract. Validation never changes authored data."""
 import json
+import os
 import re
+import shutil
+import tempfile
 from pathlib import Path, PurePosixPath
 from scripts.lab import config
 from .bank_index import validate_bank_import_fields
@@ -11,6 +14,64 @@ def safe_relative(value):
     return isinstance(value,str) and bool(value) and not PurePosixPath(value).is_absolute() and not any(x in value for x in ('\\',':')) and '..' not in PurePosixPath(value).parts
 
 DATA=config.PACK_DATA_DIR
+VENDOR_DIR='.vendor'
+VENDOR_URL='../'+VENDOR_DIR
+VENDOR_RESOURCES={
+    'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css':VENDOR_URL+'/pretendard/pretendard.css',
+    'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css':VENDOR_URL+'/pretendard/pretendard.css',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css':VENDOR_URL+'/katex/katex.min.css',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js':VENDOR_URL+'/katex/katex.min.js',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js':VENDOR_URL+'/katex/auto-render.min.js',
+}
+
+def replace_vendor_urls(text):
+    for url,local in VENDOR_RESOURCES.items():
+        text=text.replace(url,local)
+    return text
+
+def resolve_shared_vendor(folder,path):
+    """Resolve `../.vendor/...` strictly inside `<folder>/../.vendor/`."""
+    prefix=VENDOR_URL+'/'
+    if not isinstance(path,str) or not path.startswith(prefix):
+        return None
+    rel=path[len(prefix):]
+    if not safe_relative(rel):
+        return None
+    vendor_root=(Path(folder).parent/VENDOR_DIR).resolve()
+    candidate=(vendor_root/rel).resolve()
+    return candidate if candidate.is_relative_to(vendor_root) else None
+
+def _tree_matches(src,dest):
+    if not dest.is_dir():
+        return False
+    src_files={p.relative_to(src).as_posix():p for p in src.rglob('*') if p.is_file()}
+    dest_files={p.relative_to(dest).as_posix():p for p in dest.rglob('*') if p.is_file()}
+    if src_files.keys()!=dest_files.keys():
+        return False
+    return all(src_files[k].stat().st_size==dest_files[k].stat().st_size and src_files[k].read_bytes()==dest_files[k].read_bytes() for k in src_files)
+
+def sync_shared_vendor(src_vendor,dest_vendor):
+    """Ensure `<dest_vendor>` holds an up-to-date copy of `<src_vendor>` without touching callers' files."""
+    src_vendor,dest_vendor=Path(src_vendor),Path(dest_vendor)
+    if not src_vendor.is_dir() or src_vendor.resolve()==dest_vendor.resolve() or _tree_matches(src_vendor,dest_vendor):
+        return
+    dest_vendor.parent.mkdir(parents=True,exist_ok=True)
+    staged=Path(tempfile.mkdtemp(prefix='.vendor-stage-',dir=dest_vendor.parent))
+    backup=None
+    try:
+        shutil.copytree(src_vendor,staged,dirs_exist_ok=True)
+        if dest_vendor.exists():
+            backup=Path(tempfile.mkdtemp(prefix='.vendor-old-',dir=dest_vendor.parent))
+            shutil.rmtree(backup)
+            os.replace(dest_vendor,backup)
+        os.replace(staged,dest_vendor)
+        if backup is not None:
+            shutil.rmtree(backup,ignore_errors=True)
+    except OSError:
+        if backup is not None and backup.exists() and not dest_vendor.exists():
+            os.replace(backup,dest_vendor)
+        shutil.rmtree(staged,ignore_errors=True)
+        raise
 
 def data_dir(folder):
     """발행 폴더의 자료 폴더(`.pack/`). 저작 RUN 에는 자료 폴더가 없으므로 RUN 그대로 돌려준다."""

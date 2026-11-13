@@ -56,6 +56,7 @@ def test_published_pack_passes_checks(pack):
 
 @pytest.mark.parametrize('stray', ['실험05_실험설명.md', '메모.txt', '자료/'])
 def test_check_rejects_anything_but_html_pdf_at_root(tmp_path, stray):
+    (tmp_path / '.vendor').symlink_to((NOTES / '.vendor').resolve(), target_is_directory=True)
     pack = tmp_path / '실험05'
     shutil.copytree(NOTES / '실험05', pack)
     (pack / '.DS_Store').write_bytes(b'')                      # 점파일은 운영체제 몫이라 보지 않는다

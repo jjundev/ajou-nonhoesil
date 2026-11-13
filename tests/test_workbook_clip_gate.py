@@ -26,8 +26,9 @@ def terms(n):
 
 
 def write_pack(tmp, problems, mode):
-    """합성 문항으로 문제지·해설지를 렌더한다. KaTeX 가 로드되도록 vendor 를 `<.pack>/assets/vendor` 에 둔다."""
-    shutil.copytree(ASSETS/'vendor', tmp/DATA/'assets'/'vendor', dirs_exist_ok=True)
+    """합성 문항으로 문제지·해설지를 렌더한다. KaTeX 가 로드되도록 vendor 를 `<tmp>/.vendor` 에 둔다."""
+    shutil.copytree(ASSETS/'vendor', tmp/'.vendor', dirs_exist_ok=True)
+    pack = tmp/'pack'; pack.mkdir(exist_ok=True)
     entries = []
     for i, p in enumerate(problems, 1):
         e = dict(id=p['id'], kind='기출', number=str(i), title=p['id'], section='실험 9 · 테스트', book_page=None,
@@ -37,7 +38,7 @@ def write_pack(tmp, problems, mode):
             e['solution'] = dict(steps=[dict(label='식', html=h) for h in p.get('steps', ['<p>풀이</p>'])], answer=p.get('answer', '<p>답</p>'))
         entries.append(e)
     data = dict(meta=dict(mode=mode, title='합성', chapter=0, total=len(entries)), problems=entries)
-    out = tmp/f'{mode}.html'
+    out = pack/f'{mode}.html'
     out.write_text(render_workbook_html(data, ASSETS), encoding='utf-8')
     return out
 
@@ -340,11 +341,13 @@ def test_published_packs_report_no_clipped_content(browser, tmp_path, pack):
     names = [f'{pack}_기출문제.html', f'{pack}_기출풀이.html']
     if not all((folder/n).exists() for n in names):
         pytest.fail(f'{pack} 게시본이 없다')
-    # 게시본이 쓰는 자료(vendor·그림)를 그대로 쓴다
-    (tmp_path/DATA).symlink_to((folder/DATA).resolve(), target_is_directory=True)
+    # 게시본이 쓰는 자료(공유 vendor·그림)를 그대로 쓴다
+    stage_pack = tmp_path/'pack'; stage_pack.mkdir()
+    (stage_pack/DATA).symlink_to((folder/DATA).resolve(), target_is_directory=True)
+    (tmp_path/'.vendor').symlink_to((NOTES/'.vendor').resolve(), target_is_directory=True)
     for name in names:
         data = read_workbook_payload(folder/name)
-        out = tmp_path/name
+        out = stage_pack/name
         out.write_text(render_workbook_html(data, folder/DATA/'assets'), encoding='utf-8')
         page = open_page(browser, out, display='$$' in str(data))
         try:

@@ -37,6 +37,8 @@ def test_preserve_user_file_and_backup(tmp_path):
     assert (backup/'사용자메모.md').exists()
     assert (dest/'사용자메모.md').read_text(encoding='utf-8')=='보존'
     assert (dest/'실험04_기출풀이.html').exists()
+    assert not (dest/'.pack/assets/vendor').exists()
+    assert (dest.parent/'.vendor/katex/katex.min.js').is_file()
 
 def test_rename_failure_rolls_back(tmp_path):
     stage,dest,_=ready(tmp_path)

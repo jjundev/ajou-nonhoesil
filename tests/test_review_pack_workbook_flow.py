@@ -90,5 +90,6 @@ def test_build_puts_data_under_data_folder_and_links_follow(tmp_path):
     assert payload['problems'][0]['figures'][0]['src'] == '.pack/figures/questions/diagram.png'
     assert paths['question_md'].parent.name == '.pack'                       # md 도 자료 폴더 안이다
     assert '](figures/questions/diagram.png)' in paths['question_md'].read_text(encoding='utf-8')
-    assert 'href=".pack/assets/vendor/' in paths['question_html'].read_text(encoding='utf-8')
+    assert 'href="../.vendor/' in paths['question_html'].read_text(encoding='utf-8')
+    assert not (stage/'.pack/assets/vendor').exists()
     assert check_pack(stage) == []

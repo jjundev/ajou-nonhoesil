@@ -31,6 +31,9 @@ def downgrade(text):
 
 
 def pack_copy(tmp_path, name='실험05'):
+    vendor = tmp_path / '.vendor'
+    if not vendor.exists():
+        vendor.symlink_to((PACKS / '.vendor').resolve(), target_is_directory=True)
     target = tmp_path / name
     shutil.copytree(PACKS / name, target)
     note = note_path(target)

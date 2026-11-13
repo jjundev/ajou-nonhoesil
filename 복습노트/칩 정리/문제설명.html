@@ -6,7 +6,7 @@
   <title>칩 정리 · 문제설명</title>
   <meta name="description" content="실험01~05 칩 학습">
   <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('od-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
-  <link rel="stylesheet" href=".pack/assets/vendor/pretendard/pretendard.css">
+  <link rel="stylesheet" href="../.vendor/pretendard/pretendard.css">
   <style>
     /* ---------- 토큰 ---------- */
     :root {
@@ -120,6 +120,24 @@
     th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
     th { color: var(--ink-2); font-weight: 600; }
     td:first-child, th:first-child { min-width: 6em; }
+
+    /* explanation-table-layout:start */
+    [data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }
+    .table-card:has(> table[data-layout-table]) { container-type: inline-size; position: relative; }
+    .table-card .table-wrap { overflow: visible; }
+    table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
+    table[data-layout-mode="text"] { width: 100%; }
+    [data-layout-table] th,
+    [data-layout-table] td { min-width: 0; padding: 0.5rem; }
+    [data-layout-table] td { white-space: nowrap; }
+    [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
+    [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
+    [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
+    [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
+    [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
+    [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
+    [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    /* explanation-table-layout:end */
 
     /* 위젯 */
     .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }
@@ -295,6 +313,17 @@
     .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
     .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
     .flow li { margin: var(--s2) 0; }
+    /* 요약 세 칸: 외울 규칙 · 이유 · 헷갈리지 마요 */
+    .sum-label { margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .sum > .sum-label:first-child { margin-top: 0; }
+    .sum-label-warn { color: var(--warn); }
+    .sum-rules { list-style: none; margin: 0; padding: 0; font-size: var(--fs-panel); line-height: 1.6; }
+    .sum-rules li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .sum-rules li:first-child { padding-top: 0; }
+    .sum-rules b { font-weight: 700; color: var(--ink); }
+    .sum-why { margin: 0; font-size: var(--fs-sub); line-height: 1.7; color: var(--ink-2); }
+    .sum-traps { margin: 0; padding: 0 0 0 var(--s3); list-style: none; border-left: 3px solid var(--warn); font-size: var(--fs-sub); line-height: 1.6; }
+    .sum-traps li + li { margin-top: var(--s2); }
 
     @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
 
