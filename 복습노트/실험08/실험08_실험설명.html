@@ -78,6 +78,8 @@
     /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
     .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
     .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* .tags 가 없는 토픽에서도 h3 바로 아래 첫 eli5 소제목 위에 상단 여백을 둔다. */
+    .topic h3 + .layer.eli5 { margin-top: var(--s5); }
     /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
     .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
     .layer > :first-child { margin-top: 0; }
@@ -104,9 +106,10 @@
 
     /* 그림 · 수식 · 표 */
     .figure { margin: var(--s4) 0; text-align: center; }
-    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); }
-    .figure img { max-width: 100%; height: auto; }
+    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); border-radius: var(--radius); }
+    .figure img { max-width: 100%; height: auto; border-radius: var(--radius); }
     .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
+    .work-board img { border-radius: var(--radius); }
     .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
     .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
     .equation-card > p { margin: 0; width: max-content; min-width: 100%; }

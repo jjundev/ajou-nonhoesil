@@ -48,3 +48,16 @@ def test_발행물_스크롤바(page):
 def test_팩_템플릿_사본은_스킬과_같다(folder):
     for name in ('note-template.html', 'review-template.html', 'template-provenance.json'):
         assert (folder / '.pack/assets' / name).read_bytes() == (ASSETS / name).read_bytes()
+
+
+def test_노트_상단여백과_그림_둥근모서리():
+    targets = [ASSETS / 'note-template.html'] + [
+        Path('복습노트') / f'실험{n:02d}' / f'실험{n:02d}_실험설명.html'
+        for n in range(6, 10)
+    ]
+    for path in targets:
+        text = path.read_text(encoding='utf-8')
+        assert '.topic h3 + .layer.eli5 { margin-top: var(--s5); }' in text, path
+        assert '.figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); border-radius: var(--radius); }' in text, path
+        assert '.figure img { max-width: 100%; height: auto; border-radius: var(--radius); }' in text, path
+        assert '.work-board img { border-radius: var(--radius); }' in text, path

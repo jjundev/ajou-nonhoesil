@@ -6,8 +6,8 @@
   },
   "local_adjustments": {
     "note-template.html": {
-      "sha256": "0baf87c61461c557ec0002745761e47dc92d72e05cfb7708bec1b57e12edb0ac",
-      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards. Themed scrollbar for panels, content and cards. Remove duplicated current-topic/question heading and its JavaScript references; preserve panel title, summary container ID, navigation, aids and stored read/solved state. Summary panel styles for the rules/why/traps parts (sum-label, sum-rules, sum-why, sum-traps). Note reading v1 styles (gist sentence, compare/avoid table rows) in the note-reading block."
+      "sha256": "d0633955e2b334fa36fc27ae33398438e72c89c04442bccba368b75e504f6d60",
+      "reason": "Preserve section spacing and show equations and tables as separate scrollable cards. Themed scrollbar for panels, content and cards. Remove duplicated current-topic/question heading and its JavaScript references; preserve panel title, summary container ID, navigation, aids and stored read/solved state. Summary panel styles for the rules/why/traps parts (sum-label, sum-rules, sum-why, sum-traps). Note reading v1 styles (gist sentence, compare/avoid table rows) in the note-reading block. Add top margin to the first eli5 layer right after h3 when .tags is absent, and round corners on figure/work-board images with var(--radius)."
     },
     "review-template.html": {
       "sha256": "b084c0fc4d9a53c9e3a9098ac0bfa56d9db97dc4932b28e5ec9467f610fc53d9",
