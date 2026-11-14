@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys,json,hashlib,html
 REPO=Path(__file__).resolve().parents[3];sys.path.insert(0,str(REPO));sys.path.insert(0,str(Path(__file__).parent))
-from h import p,table,layer,sumd,sumparts,fig
+from h import p,table,layer,sumd,sumparts,fig,pull_layouts
 from content import TOPICS,Q,WARN
 from quiz_content import ITEMS
 from scripts.lab.review_pack.work_table import mark_work_tables
@@ -15,14 +15,19 @@ def addsrc(sid,path,kind='manual'):
  M['sources'].append(dict(id=sid,path=path,sha256=hashlib.sha256((REPO/path).read_bytes()).hexdigest(),kind=kind,edition='current'))
 addsrc(MAN,'강의노트/실험7. Shift Register.pdf');addsrc('s-scope','강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md','notice');addsrc('s-board','강의노트/공지사항/Breadboard.pdf','notice');addsrc('s-basic','강의노트/실험1. Basic Gates.pdf')
 ref=lambda page:dict(source_id=MAN,pdf_page=page,printed_page=None)
-M.update(title='Shift Register — 저장한 비트를 한 칸씩 옮겨요',edition_status='current',note_presentation_version=2,note_summary_version=2,review_presentation_version=2,problem_explanation_version=2,quiz_practice_version=1,figure_manifest='figures/redraw-manifest.json',checks=dict.fromkeys(['source_visual','content','independent','browser'],'not_run'),explanation_checks=dict.fromkeys(['source_visual','content','independent','browser'],'not_run'))
+M.update(title='Shift Register — 저장한 비트를 한 칸씩 옮겨요',edition_status='current',note_presentation_version=2,note_summary_version=2,note_reading_version=1,review_presentation_version=2,problem_explanation_version=2,quiz_practice_version=1,figure_manifest='figures/redraw-manifest.json',checks=dict.fromkeys(['source_visual','content','independent','browser'],'not_run'),explanation_checks=dict.fromkeys(['source_visual','content','independent','browser'],'not_run'))
 M['topics']=[]
+note_layout=[]
 for tid,title,pages,body,summ in TOPICS:
  M['topics'].append(dict(id=tid,title=title,requires=[] if tid=='t-start' else ['t-start'],sources=[ref(pg) for pg in pages]+([dict(source_id='s-scope',pdf_page=None,printed_page=None)] if tid=='t-start' else []),fragment=f'sections/{tid}.html',md_notes='현재 배포 파일 표지는 25-1. 7496 제어 극성·엣지는 교안 본문/부록/과거 제공 답 사이 충돌을 유지해요.' if tid=='t-7496' else '링·존슨은 현재 교안의 수행 항목과 구분한 기출 대비 보충이에요.' if tid=='t-counters' else ''))
- (R/'sections').mkdir(exist_ok=True);first,sep,rest=body.partition('</p>')
- # 층을 직접 쓴 토픽(규칙 먼저 순서)은 그대로, 문단만 쓴 토픽은 첫 문단을 eli5로 나눠요.
- note_body=body if body.startswith('<div class="layer') else layer('eli5','작은 상태부터 살펴봐요',first+sep)+layer('formal','조건과 작동 원리를 확인해요',rest)
- (R/'sections'/f'{tid}.html').write_text(note_body+sumparts(**summ),encoding='utf8')
+ (R/'sections').mkdir(exist_ok=True)
+ if not body.startswith('<div class="layer'):
+  raise ValueError(f'topic {tid} must start with explicit <div class="layer')
+ note_body=body+sumparts(**summ)
+ fragment,entries=pull_layouts(note_body,lambda n,t=tid:f'{t}/{n}')
+ note_layout+=entries
+ (R/'sections'/f'{tid}.html').write_text(fragment,encoding='utf8')
+(R/'sections/table-layout.json').write_text(json.dumps(dict(version=1,tables=note_layout),ensure_ascii=False,indent=2),encoding='utf8')
 P={x['id']:x for x in M['problems']};rows=[]
 for q in Q:
  pid,title,topic,cue,start,reason,verify,pitfall,answer=q

@@ -2,43 +2,18 @@
   "version": 1,
   "tables": [
     {
-      "key": "t-memory/0",
+      "key": "t-start/0",
       "expected_headers": [
-        "조건",
-        "결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-memory/1",
-      "expected_headers": [
-        "엣지",
+        "순서",
         "S",
-        "엣지 직전 Q0Q1Q2",
-        "엣지 뒤 Q0Q1Q2"
+        "Q0Q1Q2Q3",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "엣지"
+          "group": "순서"
         },
         {
           "role": "input",
@@ -46,20 +21,24 @@
           "group": "입력"
         },
         {
-          "role": "input",
-          "kind": "bus",
-          "group": "직전 상태"
-        },
-        {
           "role": "output",
           "kind": "bus",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
         },
         {
           "left": 2,
@@ -68,32 +47,90 @@
       ]
     },
     {
-      "key": "t-shift/0",
+      "key": "t-start/1",
       "expected_headers": [
-        "조건",
-        "결과"
+        "실험",
+        "소자",
+        "구성",
+        "확인할 것"
       ],
       "columns": [
         {
-          "role": "input",
+          "role": "description",
           "kind": "text",
-          "group": "조건"
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": []
+    },
+    {
+      "key": "t-memory/0",
+      "expected_headers": [
+        "엣지",
+        "S",
+        "엣지 직전 Q0Q1Q2",
+        "엣지 뒤 Q0Q1Q2",
+        "왜 이 값인가요"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
         },
         {
           "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
           "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
         }
       ]
     },
     {
-      "key": "t-shift/1",
+      "key": "t-shift/0",
       "expected_headers": [
         "칸",
         "D 자리에 들어가는 것",
@@ -102,16 +139,16 @@
       "columns": [
         {
           "role": "index",
-          "kind": "text",
-          "group": "칸"
+          "kind": "index",
+          "group": "순서"
         },
         {
-          "role": "intermediate",
-          "kind": "text",
-          "group": "D 자리"
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
         },
         {
-          "role": "description",
+          "role": "output",
           "kind": "text",
           "group": "결과"
         }
@@ -119,7 +156,7 @@
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
         },
         {
           "left": 1,
@@ -128,17 +165,18 @@
       ]
     },
     {
-      "key": "t-shift/2",
+      "key": "t-shift/1",
       "expected_headers": [
         "엣지",
         "S",
-        "Q0Q1Q2Q3Q4Q5"
+        "Q0Q1Q2Q3Q4Q5",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "엣지"
+          "group": "순서"
         },
         {
           "role": "input",
@@ -149,15 +187,24 @@
           "role": "output",
           "kind": "bus",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
         },
         {
           "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
           "kind": "major"
         }
       ]
@@ -165,40 +212,16 @@
     {
       "key": "t-convert/0",
       "expected_headers": [
-        "종류",
-        "넣는 방법 → 읽는 방법"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-convert/1",
-      "expected_headers": [
         "엣지",
         "S",
-        "Q0Q1Q2Q3"
+        "Q0Q1Q2Q3",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "엣지"
+          "group": "순서"
         },
         {
           "role": "input",
@@ -209,107 +232,56 @@
           "role": "output",
           "kind": "bus",
           "group": "출력"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "minor"
-        },
-        {
-          "left": 1,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-convert/2",
-      "expected_headers": [
-        "단계",
-        "이동 직전 Q0Q1Q2Q3",
-        "읽은 Q3"
-      ],
-      "columns": [
-        {
-          "role": "index",
-          "kind": "text",
-          "group": "단계"
-        },
-        {
-          "role": "intermediate",
-          "kind": "bus",
-          "group": "저장 상태"
-        },
-        {
-          "role": "output",
-          "kind": "signal",
-          "group": "직렬 출력"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "minor"
-        },
-        {
-          "left": 1,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-jk/0",
-      "expected_headers": [
-        "조건",
-        "결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-jk/1",
-      "expected_headers": [
-        "D",
-        "J",
-        "K",
-        "JK 규칙으로 보면"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "signal",
-          "group": "입력"
-        },
-        {
-          "role": "intermediate",
-          "kind": "signal",
-          "group": "JK 자리"
-        },
-        {
-          "role": "intermediate",
-          "kind": "signal",
-          "group": "JK 자리"
         },
         {
           "role": "description",
           "kind": "text",
-          "group": "JK 규칙으로 보면"
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-convert/1",
+      "expected_headers": [
+        "단계",
+        "이동 직전 Q0Q1Q2Q3",
+        "읽은 Q3",
+        "왜 이 값인가요"
+      ],
+      "columns": [
+        {
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -319,19 +291,18 @@
         },
         {
           "left": 2,
-          "kind": "minor"
+          "kind": "major"
         }
       ]
     },
     {
-      "key": "t-jk/2",
+      "key": "t-jk/0",
       "expected_headers": [
         "D",
-        "Q이전",
         "J",
         "K",
-        "JK 규칙",
-        "Q다음"
+        "JK 동작",
+        "결과 Q다음"
       ],
       "columns": [
         {
@@ -342,33 +313,87 @@
         {
           "role": "input",
           "kind": "signal",
-          "group": "직전 상태"
+          "group": "입력"
         },
         {
-          "role": "intermediate",
+          "role": "input",
           "kind": "signal",
-          "group": "JK 자리"
-        },
-        {
-          "role": "intermediate",
-          "kind": "signal",
-          "group": "JK 자리"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "JK 규칙"
+          "group": "입력"
         },
         {
           "role": "output",
           "kind": "signal",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 2,
+          "kind": "major"
+        },
+        {
+          "left": 3,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-jk/1",
+      "expected_headers": [
+        "D",
+        "Q이전",
+        "J",
+        "K",
+        "JK 규칙",
+        "Q다음",
+        "왜 이 값인가요"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "output",
+          "kind": "signal",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
         },
         {
           "left": 1,
@@ -376,30 +401,36 @@
         },
         {
           "left": 3,
-          "kind": "minor"
+          "kind": "major"
         },
         {
-          "left": 4,
-          "kind": "minor"
+          "left": 5,
+          "kind": "major"
         }
       ]
     },
     {
       "key": "t-7496/0",
       "expected_headers": [
-        "조건",
-        "결과"
+        "핀",
+        "이름",
+        "하는 일"
       ],
       "columns": [
         {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
+          "role": "index",
+          "kind": "index",
+          "group": "순서"
         },
         {
-          "role": "output",
+          "role": "description",
           "kind": "text",
-          "group": "결과"
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -412,65 +443,44 @@
     {
       "key": "t-7496/1",
       "expected_headers": [
-        "핀",
-        "이름",
-        "하는 일"
-      ],
-      "columns": [
-        {
-          "role": "index",
-          "kind": "bus",
-          "group": "핀 명세"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "핀 명세"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "용도"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 1,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-7496/2",
-      "expected_headers": [
         "단계",
         "조작",
-        "QA QB QC QD QE"
+        "QA QB QC QD QE",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "단계"
+          "group": "순서"
         },
         {
-          "role": "control",
+          "role": "description",
           "kind": "text",
-          "group": "조작"
+          "group": "설명"
         },
         {
           "role": "output",
           "kind": "bus",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
         },
         {
           "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
           "kind": "major"
         }
       ]
@@ -478,40 +488,16 @@
     {
       "key": "t-counters/0",
       "expected_headers": [
-        "S 자리에 넣는 것",
-        "결과"
-      ],
-      "columns": [
-        {
-          "role": "input",
-          "kind": "text",
-          "group": "조건"
-        },
-        {
-          "role": "output",
-          "kind": "text",
-          "group": "결과"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-counters/1",
-      "expected_headers": [
         "엣지",
         "SER=이전 QE",
-        "QA QB QC QD QE"
+        "QA QB QC QD QE",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "엣지"
+          "group": "순서"
         },
         {
           "role": "input",
@@ -522,41 +508,56 @@
           "role": "output",
           "kind": "bus",
           "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
         {
           "left": 0,
-          "kind": "minor"
+          "kind": "major"
         },
         {
           "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
           "kind": "major"
         }
       ]
     },
     {
-      "key": "t-counters/2",
+      "key": "t-counters/1",
       "expected_headers": [
         "엣지",
         "링 Q0Q1Q2Q3",
-        "존슨 Q0Q1Q2Q3"
+        "존슨 Q0Q1Q2Q3",
+        "왜 이 값인가요"
       ],
       "columns": [
         {
           "role": "index",
           "kind": "index",
-          "group": "엣지"
+          "group": "순서"
         },
         {
           "role": "output",
           "kind": "bus",
-          "group": "링"
+          "group": "출력"
         },
         {
           "role": "output",
           "kind": "bus",
-          "group": "존슨"
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
         }
       ],
       "boundaries": [
@@ -565,7 +566,7 @@
           "kind": "major"
         },
         {
-          "left": 1,
+          "left": 2,
           "kind": "major"
         }
       ]
