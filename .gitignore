@@ -53,3 +53,4 @@ venv/
 
 # API 키 등 로컬 비밀값 (logic-lab-stt 가 Gemini 키를 여기서 읽는다).
 .env
+.worktrees/
