@@ -1,0 +1,58 @@
+{
+  "q1": {
+    "answer": "A",
+    "hash": "4e694ce864003c9aff9fca98299486cb532b039b6d1691b8d84e2243931d9fc3",
+    "objection": "",
+    "rationale": "RAM은 읽기 주소로 원하는 칸을 직접 선택하므로 주소 15를 주면 돼요.",
+    "round": 1
+  },
+  "q2": {
+    "answer": "10",
+    "hash": "fefa508a4dbcc8701fa08605e4b70ec4349268ae9577d62e4ae8c12cf7866e54",
+    "objection": "",
+    "rationale": "Selection=1과 R/W=0에서 두 쓰기 경로가 열려요. 교안 회로도에서 S 쪽에는 Input=1, R 쪽에는 반전된 Input=0이 들어가므로 S=1, R=0이에요.",
+    "round": 1
+  },
+  "q3": {
+    "answer": "01",
+    "hash": "958213ae58d9bf948746ea9fcbb1e9ddc5fc63b989d2bfe1d88dee95e0c32869",
+    "objection": "",
+    "rationale": "쓰기 동안 IN0=0이라 A는 0을 유지해요. IN1=1인 B에서는 WR1=1, WR0=0이 래치에 S′=0, R′=1을 만들어 1을 써요. 두 IN을 0으로 내리면 각 칸은 그 값을 유지해요.",
+    "round": 1
+  },
+  "q4": {
+    "answer": "B",
+    "hash": "1e7c9c91459b037619fe63a6a171dc48a3f6874ee101f2c547765490ffe7b949",
+    "objection": "",
+    "rationale": "IN0=0이면 A의 쓰기 경로가 닫혀 WR을 바꿔도 저장값 1이 유지돼요. OE0=1이면 OUT0에 A의 저장값이 나와요.",
+    "round": 1
+  },
+  "q5": {
+    "answer": "C",
+    "hash": "4cd3b4eb5734a3f214e941ffdb9299bcfaff4f5bd55149ce47c92493b4c6f3ea",
+    "objection": "",
+    "rationale": "두 입력이 0이면 NAND의 논리 결과는 1이라 열린 드레인 출력이 핀을 놓아요. 풀업 저항과 다른 구동 회로가 없어서 핀이 떠요.",
+    "round": 1
+  },
+  "q6": {
+    "answer": "1011",
+    "hash": "aea8c7ef3766fee1dcdb8cf61d25484472aff28befec170084c3871915165906",
+    "objection": "",
+    "rationale": "WE=0에서 00번 칸에 0011을 써요. RE=0에서는 읽기 주소 10번 칸의 저장값 1011이 Q4~Q1에 나와요.",
+    "round": 1
+  },
+  "q7": {
+    "answer": "0101",
+    "hash": "43f70fa8224e692d67de3a7e099887490edfe5c2e388df879447d199ac5decd8",
+    "objection": "",
+    "rationale": "WE=1이 계속 유지되어 쓰기 주소와 데이터를 바꿔도 01번 칸은 0101을 보존해요. RE=0과 읽기 주소 01에서 그 값이 나와요.",
+    "round": 1
+  },
+  "q8": {
+    "answer": "D",
+    "hash": "75479dda162042b8c99dd03dad07e8815ab0bdc58f84c3a7ee88c3681c3a5bff",
+    "objection": "",
+    "rationale": "전원을 끊으면 래치의 되먹임이 끊겨 다시 켠 뒤의 값은 정해져 있지 않아요. 1001이 다시 나오는 관측만으로는 이전 값의 보존을 입증할 수 없어요.",
+    "round": 1
+  }
+}

@@ -12,3 +12,8 @@ docs/learning-pack-source/**/evidence/question-bank.json -text
 복습노트/**/evidence/question-bank.json -text
 강의노트/공지사항/*.md -text
 보고서/실험02/결선도/netlist.md -text
+# The 자구알 concept-check assets are byte-identical snapshots.
+.claude/skills/logic-lab-concept-check/assets/review-template.html -text
+.claude/skills/logic-lab-concept-check/assets/review-interaction.css -text
+.claude/skills/logic-lab-concept-check/assets/review-interaction.js -text
+.claude/skills/logic-lab-concept-check/assets/review-prompt.js -text

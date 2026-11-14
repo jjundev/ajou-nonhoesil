@@ -1,0 +1,85 @@
+{
+  "experiment": 9,
+  "objectives": [
+    {
+      "id": "o1",
+      "topic_id": "t-ram",
+      "kind": "정의·구별",
+      "concept": "순차 이동 없이 주소로 접근하는 RAM",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 3
+      }
+    },
+    {
+      "id": "o2",
+      "topic_id": "t-1bit",
+      "kind": "원리",
+      "concept": "1비트 RAM의 입력과 쓰기 모드가 Set·Reset에 가는 경로",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 4
+      }
+    },
+    {
+      "id": "o3",
+      "topic_id": "t-2bit",
+      "kind": "상태 추적",
+      "concept": "공용 WR 값이 쓰기 선택된 칸에만 반영됨",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 6
+      }
+    },
+    {
+      "id": "o4",
+      "topic_id": "t-rules",
+      "kind": "신호 해석",
+      "concept": "읽기 시 쓰기 선택을 끄는 조작",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o5",
+      "topic_id": "t-opendrain",
+      "kind": "원리",
+      "concept": "열린 드레인 출력에서 풀업 누락의 영향",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 6
+      }
+    },
+    {
+      "id": "o6",
+      "topic_id": "t-74670",
+      "kind": "규칙 적용",
+      "concept": "독립된 쓰기 주소와 읽기 주소",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o7",
+      "topic_id": "t-74670",
+      "kind": "상태 추적",
+      "concept": "쓰기 비활성 조건에서 주소와 데이터를 바꿔도 저장값 유지",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o8",
+      "topic_id": "t-ram",
+      "kind": "정의·구별",
+      "concept": "전원 차단 후 휘발성 RAM의 값은 정해지지 않음",
+      "source": {
+        "source_id": "s-manual09",
+        "pdf_page": 8
+      }
+    }
+  ]
+}

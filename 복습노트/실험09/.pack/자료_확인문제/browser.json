@@ -1,0 +1,57 @@
+{
+  "html": "복습노트/실험09/실험09_확인문제.html",
+  "sha256": "eea9565fdd029c036fd527ec6fcbd3b2742acace797573809d01e2c66b99848f",
+  "viewports": [
+    "1280x900",
+    "375x812"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "runs": [
+    {
+      "label": "1280x900 light",
+      "detail": {
+        "items_checked": 8,
+        "items": 8,
+        "hints_checked": 8
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "1280x900 dark",
+      "detail": {
+        "items_checked": 8,
+        "items": 8,
+        "hints_checked": 8
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "375x812 light",
+      "detail": {
+        "items_checked": 8,
+        "items": 8,
+        "hints_checked": 8
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "375x812 dark",
+      "detail": {
+        "items_checked": 8,
+        "items": 8,
+        "hints_checked": 8
+      },
+      "failures": [],
+      "external_blocked": []
+    }
+  ],
+  "failures": [],
+  "transport": "file://, offline=True",
+  "status": "pass"
+}
