@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from scripts.lab.review_pack.work_table import mark_work_tables, FIELDS
 from figlib import render_png, sha
 import figs
+from h import pull_layouts
 from sections import S, TOPICS
 import problems as PR
 from explanations import E
@@ -120,8 +121,13 @@ registry.sort(key=lambda r: r['id'])
 (RUN / 'sections').mkdir(exist_ok=True)
 (RUN / 'workbook').mkdir(exist_ok=True)
 (RUN / 'problem-explanations').mkdir(exist_ok=True)
+note_layout = []
 for tid, html in S.items():
-    (RUN / 'sections' / f'{tid}.html').write_text(html, encoding='utf-8')
+    fragment, entries = pull_layouts(html, lambda n, t=tid: f'{t}/{n}')
+    note_layout += entries
+    (RUN / 'sections' / f'{tid}.html').write_text(fragment, encoding='utf-8')
+(RUN / 'sections/table-layout.json').write_text(
+    json.dumps(dict(version=1, tables=note_layout), ensure_ascii=False, indent=2), encoding='utf-8')
 for pid, obj in PR.P.items():
     obj = {**obj, **{k: mark_work_tables(obj[k]) for k in FIELDS}}     # 채울 표는 풀이 칸으로
     (RUN / 'workbook' / f'{pid}.json').write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -139,6 +145,7 @@ CHK = dict(source_visual='pass', content='self_review', independent='not_run', b
 manifest['checks'] = dict(CHK)
 manifest['note_presentation_version'] = 2
 manifest['note_summary_version'] = 2
+manifest['note_reading_version'] = 1
 manifest['review_presentation_version'] = 2
 manifest['problem_explanation_version'] = 2
 manifest['explanation_checks'] = dict.fromkeys(CHK, 'not_run')
