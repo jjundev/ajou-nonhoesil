@@ -90,6 +90,27 @@ def input_columns(png, names):
     return columns
 
 
+def location_order(png, names):
+    """입력 **열** 자리 순서 — `names` 의 색인을 위치도와 같은 묶음·위→아래로 늘어놓는다.
+
+    진리표·단계 표의 열을 다시 세울 때 쓴다. 한 신호를 두 점퍼로 꽂은 보드는 처음 나온 자리를
+    쓴다(열은 하나다). 위치를 못 찾거나 이름이 겹치면(입력·출력이 같은 글자인 표는 입력만
+    넘기지만, 방어한다) 명세 순서 그대로 — `input_columns` 와 같은 물러섬이다.
+    """
+    names = list(names)
+    identity = list(range(len(names)))
+    columns = input_columns(png, names) if len(set(names)) == len(names) else None
+    if columns is None:
+        return identity
+    order = []
+    for _, picked in columns:
+        for name in picked:
+            k = names.index(name)
+            if k not in order:
+                order.append(k)
+    return order if sorted(order) == identity else identity
+
+
 def locations_html(png, inputs, *, feed=None):
     """위→아래 순서를 단순화한 위치도. feed=None은 완성본, dict는 단계 급전."""
     esc = html.escape

@@ -26,7 +26,7 @@ from .spec_parser import split_indices
 from .photo_names import item_token, photo_name
 from . import config
 from .fit_pages import FIT_PLAIN
-from .io_locations import input_columns, location_name, locations_html
+from .io_locations import input_columns, location_name, location_order, locations_html
 
 MAX_BREADBOARD_ROWS = 30
 # Breadboard.jpg(998×1345px) 상단에 아주대학교 로고 + 범례 원 3개가 있다.
@@ -115,7 +115,7 @@ _ORDER_NOTE = ("순서 열 번호대로 입력을 넣어요. 이 회로는 직�
                "앞에 넣은 행에 따라 LED 가 달라요")
 
 
-def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
+def _truth_table_html(table, token=None, badges=None, order=(), leds=(), png=None) -> str:
     """진리표 — 입력은 주어지고, 출력에 `예상` 을 병기한 뒤 확인 칸을 붙인다.
 
     `_plain` 으로 마크다운 표기를 먼저 벗기고 나서 `normalize_cell` 로 논리값을
@@ -127,8 +127,12 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     순서다. 입력 셀이 0/1 이 아니면(don't-care 등) 한 장으로 찍을 조합이 아니라 `—`.
     `.check` 가 아니라 `.photo-name` 이다 — `.check` 개수는 행 수 불변식이다.
 
-    `badges`(출력 이름 → `LED⑦`)가 있으면 그 출력 머리 아래에 보드 LED 번호를 단다 — 열 순서는
-    명세 그대로 두고, 어느 불을 볼지만 알린다(v2 주차, 2026-10-11).
+    `badges`(출력 이름 → `LED⑦`)가 있으면 그 출력 머리 아래에 보드 LED 번호를 단다 — 출력 열
+    순서는 명세 그대로 두고, 어느 불을 볼지만 알린다(v2 주차, 2026-10-11).
+
+    `png`(결선도)가 있으면 **입력 열**만 표 위 위치도와 같은 묶음·위→아래 순서로 다시 세운다
+    (2026-11-14 사용자). 행 순서·사진 파일명 비트는 명세 자리 그대로다 — `기록.md`·
+    `contact_sheet` 가 그 순서로 읽는다.
 
     순차 회로 표(래치·플립플롭 — 출력 셀에 `Q(t-1)`)는 둘을 더 단다(2026-10-11 사용자, 실험06).
     `order`(netlist 회로의 `order`, 넣는 순서대로 적은 행 번호)가 있으면 맨 앞에 `순서` 열(①②…)을
@@ -139,7 +143,9 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
     """
     # 셀은 이름이 아니라 자리로 찾는다 — 입력과 출력이 같은 글자인 표가 있다
     # (실험3 반감산기 `A B D B`). `record._truth_table` 과 같은 규약이다.
-    inputs, outputs = split_indices(table)
+    spec_inputs, outputs = split_indices(table)
+    inputs = [spec_inputs[k] for k in
+              location_order(png, [_plain(table.header[i]) for i in spec_inputs])]
     badges = badges or {}
     rank = {k: n for n, k in enumerate(order, start=1)} if len(order) == len(table.rows) else {}
     seen = record_leds(leds, table.header, outputs) if is_sequential(table, outputs) else []
@@ -190,7 +196,7 @@ def _truth_table_html(table, token=None, badges=None, order=(), leds=()) -> str:
                                       for l, unknown in off) or "없음") + "</td>")
         cells += '<td class="check"></td>'
         if token:
-            bits = row[:len(inputs)]
+            bits = [normalize_cell(_plain(raw[i])) for i in spec_inputs]
             name = (photo_name(token, "".join(bits))
                     if all(b in ("0", "1") for b in bits) else "—")
             cells += f'<td class="photo-name">{_esc(name)}</td>'
@@ -1084,6 +1090,15 @@ def _observation_procedure_html(table, leds=(), feed=None, png=None) -> str:
     return '\n'.join(out)
 
 
+def _reorder_inputs(table, png):
+    """계산된 표(단계·LED·노드 표)의 입력 열을 위치도 순서로 — 행 순서는 기록표 그대로다."""
+    order = location_order(png, table.inputs)
+    if order == list(range(len(table.inputs))):
+        return table
+    return replace(table, inputs=[table.inputs[k] for k in order],
+                   rows=[([cells[k] for k in order], rest) for cells, rest in table.rows])
+
+
 def _stage_table_html(spec, section, node_name, led="", png=None) -> str:
     """단계 진리표 — 입력은 그 노드 식에 나오는 것만, 열 머리 둘째 줄은 노드 핀.
 
@@ -1101,6 +1116,7 @@ def _stage_table_html(spec, section, node_name, led="", png=None) -> str:
         st = node_calc.stage_table(section, spec, node_name)
     except ValueError as exc:
         return f"<p class='src'>단계 진리표를 계산할 수 없어요: {_esc(exc)}</p>"
+    st = _reorder_inputs(st, png)
     name, pin = st.node
     label = (f"{_esc(led)} = {_esc(_plain(name))}<br><small>예상 · {_esc(pin)}</small>" if led
              else f"{_esc(_plain(name))}예상<br><small>{_esc(pin)}</small>")
@@ -1136,6 +1152,7 @@ def _led_table_html(spec, section, leds, feed, png=None) -> str:
         st = node_calc.stage_nodes_table(section, spec, [feed[led.tag] for led in shown])
     except ValueError as exc:
         return f"<p class='src'>단계 진리표를 계산할 수 없어요: {_esc(exc)}</p>"
+    st = _reorder_inputs(st, png)
     names = {led.tag: f"{circled(led.index)}{_esc(led.tag)}" for led in shown}
     seen = []
     for led, (node, pin) in zip(shown, st.nodes):
@@ -1203,6 +1220,7 @@ def _unstaged_nodes_html(spec, section, png=None) -> str:
         nt = node_calc.compute(section, spec)
     except ValueError as exc:
         return f"<p class='src'>노드 표를 계산할 수 없어요: {_esc(exc)}</p>"
+    nt = _reorder_inputs(nt, png)
     out = ['<div class="tblock nodes">',
            "<h3>단계에서 안 본 노드 — 프로브로 찍을 핀</h3>",
            locations_html(png, nt.inputs, feed={}) if png is not None else "",
@@ -1253,11 +1271,12 @@ def _circuit_tables(spec, section, badges=None, leds=(), netlist=None) -> str:
             if not getattr(table, 'comparison', None):
                 out.append(f"<p class='readout'>{_esc(_INSTRUMENT)}</p>")
         else:
+            png = None            # 위 스텝표 갈래의 png 가 다음 표로 새지 않게
             if netlist is not None:
                 png = netlist.path.parent / section.diagram if section.diagram else None
                 inputs = [_plain(table.header[i]) for i in split_indices(table)[0]]
                 out.append(locations_html(png, inputs))
-            out.append(_truth_table_html(table, token, badges, section.order, leds))
+            out.append(_truth_table_html(table, token, badges, section.order, leds, png=png))
         out.append("</div>")
     for table_id in section.refs:
         table = spec.table(table_id)
