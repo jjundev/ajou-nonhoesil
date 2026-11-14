@@ -1,0 +1,125 @@
+{
+  "experiment": 8,
+  "objectives": [
+    {
+      "id": "o1",
+      "topic_id": "t-toggle",
+      "kind": "원리",
+      "concept": "한 단계의 출력 반전과 분주 비율",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 4
+      }
+    },
+    {
+      "id": "o2",
+      "topic_id": "t-async",
+      "kind": "상태 추적",
+      "concept": "앞 단 출력의 하강 엣지를 추적한 안정 상태",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 5
+      }
+    },
+    {
+      "id": "o3",
+      "topic_id": "t-async",
+      "kind": "신호 해석",
+      "concept": "비동기 전파지연 동안 관측되는 중간 상태",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 9
+      }
+    },
+    {
+      "id": "o4",
+      "topic_id": "t-decode",
+      "kind": "규칙 적용",
+      "concept": "반전 출력을 포함한 개별 디코더 출력 계산",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 9
+      }
+    },
+    {
+      "id": "o5",
+      "topic_id": "t-sync",
+      "kind": "원리",
+      "concept": "공통 엣지에서 다음 상태를 결정하는 엣지 직전 입력",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 10
+      }
+    },
+    {
+      "id": "o6",
+      "topic_id": "t-sync",
+      "kind": "상태 추적",
+      "concept": "동기 3진 카운터의 미사용 상태에서 정상 순환으로 복귀",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 10
+      }
+    },
+    {
+      "id": "o7",
+      "topic_id": "t-7490",
+      "kind": "원리",
+      "concept": "7490에서 두 카운터 단을 잇는 연결의 역할",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 11
+      }
+    },
+    {
+      "id": "o8",
+      "topic_id": "t-7490",
+      "kind": "신호 해석",
+      "concept": "7490에서 R0 요청과 R9 요청이 겹칠 때의 우선순위",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o9",
+      "topic_id": "t-7490",
+      "kind": "상태 추적",
+      "concept": "정상 BCD 카운트에서 9를 지나 0으로 복귀",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o10",
+      "topic_id": "t-7447",
+      "kind": "신호 해석",
+      "concept": "세그먼트 점등 표를 7447의 활성 Low 출력 레벨로 해석",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 15
+      }
+    },
+    {
+      "id": "o11",
+      "topic_id": "t-7447",
+      "kind": "규칙 적용",
+      "concept": "7447의 Blanking Input이 정상 숫자 표시를 덮어쓰는 조건",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 14
+      }
+    },
+    {
+      "id": "o12",
+      "topic_id": "t-fnd",
+      "kind": "신호 해석",
+      "concept": "7447의 d·e 신호가 FND의 실제 막대에 도착하는 경로",
+      "source": {
+        "source_id": "s-manual08",
+        "pdf_page": 13
+      }
+    }
+  ]
+}
