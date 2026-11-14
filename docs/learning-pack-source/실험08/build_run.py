@@ -42,7 +42,7 @@ def nref(sid):
     return dict(source_id=sid, pdf_page=None, printed_page=None)
 
 
-M.update(title='Counter — 클럭을 세어 숫자로 보여 줘요', edition_status='current', note_presentation_version=2, note_summary_version=2, review_presentation_version=2, problem_explanation_version=2, quiz_practice_version=1, figure_manifest='figures/redraw-manifest.json', checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'), explanation_checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'))
+M.update(title='Counter — 클럭을 세어 숫자로 보여 줘요', edition_status='current', note_presentation_version=2, note_summary_version=2, note_reading_version=1, review_presentation_version=2, problem_explanation_version=2, quiz_practice_version=1, figure_manifest='figures/redraw-manifest.json', checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'), explanation_checks=dict.fromkeys(['source_visual', 'content', 'independent', 'browser'], 'not_run'))
 NOTES = {
  't-start': '교안 표지는 25-1이에요. 보고서 범위(실험 1, 3)는 공지에서 확인했어요.',
  't-async': '교안 본문은 조합을 00, 01, 10, 11로 적고 파형은 00, 10, 01, 11이에요. 파형과 p9 출력 순서를 따랐어요(netlist M10). 글리치·리플 용어는 교안 밖 보충이에요.',
@@ -64,9 +64,7 @@ note_layout = []
 for tid, title, pages, body, summ in TOPICS:
     M['topics'].append(dict(id=tid, title=title, requires=[] if tid == 't-start' else ['t-start'], sources=[ref(pg) for pg in pages] + EXTRA.get(tid, []), fragment=f'sections/{tid}.html', md_notes=NOTES.get(tid, '')))
     if not body.startswith('<div class="layer'):
-        first, sep, rest = body.partition('</p>')
-        from h import layer
-        body = layer('eli5', '작은 예부터 살펴봐요', first + sep) + layer('formal', '조건과 작동 원리를 확인해요', rest)
+        raise ValueError(f'topic {tid} must start with explicit <div class="layer')
     fragment, entries = pull_layouts(body, lambda n, t=tid: f'{t}/{n}')
     note_layout += entries
     (R / 'sections' / f'{tid}.html').write_text(fragment + sumparts(**summ), encoding='utf8')
