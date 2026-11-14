@@ -1,0 +1,58 @@
+{
+  "q1": {
+    "answer": "A",
+    "hash": "6e45150a9f473936cc2a2f434cea7b417ed3757c3a83eaf34ceaeb85be8e5df5",
+    "objection": "",
+    "rationale": "실험 1에서 E=1, S=0, R=1이면 앞단 S·R 쪽 NAND 출력이 각각 1, 0이다. R 쪽 0이 Q′=1을 강제해 Q=0으로 Reset한다.",
+    "round": 1
+  },
+  "q2": {
+    "answer": "11",
+    "hash": "fe10822b75438ea8333ab60117339da94385858faafd85a59fe277f4235bef76",
+    "objection": "",
+    "rationale": "공통 입력 E=0이므로 S 쪽은 NAND(1,0)=1, R 쪽은 NAND(0,0)=1이다.",
+    "round": 1
+  },
+  "q3": {
+    "answer": "11",
+    "hash": "407746ba767821f90072eac164c25864d8da9f42ceee81af8a36eba9092f4b36",
+    "objection": "",
+    "rationale": "① S=1, R=0이면 앞단은 01이라 Set되어 Q=1이다. ② S=R=0이면 앞단은 11이라 직전에 안정된 Q=1을 유지한다.",
+    "round": 1
+  },
+  "q4": {
+    "answer": "B",
+    "hash": "f798d000119777279006aa7a9c8e45303c418dd6f2215df260d7128f75f3634b",
+    "objection": "",
+    "rationale": "직결한 뒤에는 S=R=D이고, 교차 NAND에 들어가는 두 앞단 출력은 각각 (D·E)′이에요. E=1에서 D=0이면 앞단 출력이 모두 1이어서 초기 Q를 유지해요. D=1이면 앞단 출력이 모두 0이어서 Q=Q′=1인 부정 상태가 돼요.",
+    "round": 2
+  },
+  "q5": {
+    "answer": "01",
+    "hash": "fb586c7be04cadaece4ea853142283218d9e336440834fd36f43af53e75aab90",
+    "objection": "",
+    "rationale": "① E=0인 동안 Q=0이 유지된다. ② E를 1로 올리면 D 래치가 열려 D=1이 Q로 전달된다.",
+    "round": 1
+  },
+  "q6": {
+    "answer": "C",
+    "hash": "76a19a49ae5c0c8fb3db028001510f019792b36210a2b7d4b613d70b88015db2",
+    "objection": "",
+    "rationale": "C가 오를 때 74HC74는 D=1을 저장한다. 이후 C=1인 동안 D가 0이 되면 열린 D 래치는 Q=0이고, 다음 상승 엣지를 기다리는 74HC74는 Q=1이다.",
+    "round": 1
+  },
+  "q7": {
+    "answer": "D",
+    "hash": "9aef65303140c1299ab4d1e6b0f4b16b49a37f6472078a198ff1d37d03eb61f6",
+    "objection": "",
+    "rationale": "PR=CLR=1이라 J·K로 판단한다. 하강 엣지 직전 Q=0인 측정에서 Q의 다음 값은 J=1이고, 직전 Q=1인 측정에서 다음 값은 K의 반전인 0이므로 K=1이다.",
+    "round": 1
+  },
+  "q8": {
+    "answer": "10",
+    "hash": "f28391270a61d4eaf7af4da0f9618d05a795ee9e7847463d4630735db3cda388",
+    "objection": "",
+    "rationale": "① PR=0이 CLR=1 조건에서 비동기 Preset을 걸어 Q=1이다. ② PR=CLR=1로 풀린 뒤 상승 엣지에서는 유지하고 하강 엣지에서 J=0, K=1로 Reset되어 Q=0이다.",
+    "round": 1
+  }
+}

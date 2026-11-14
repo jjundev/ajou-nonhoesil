@@ -1,0 +1,85 @@
+{
+  "experiment": 6,
+  "objectives": [
+    {
+      "id": "o1",
+      "topic_id": "t-sr-enable",
+      "kind": "규칙 적용",
+      "concept": "전원 직후 SR 래치의 기준 상태 설정",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o2",
+      "topic_id": "t-sr-enable",
+      "kind": "신호 해석",
+      "concept": "Enable을 끄면 앞단 NAND가 교차 래치에 전달하는 신호",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o3",
+      "topic_id": "t-sr-enable",
+      "kind": "상태 추적",
+      "concept": "NAND SR 래치의 부정 입력을 순차적으로 풀 때의 상태",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 7
+      }
+    },
+    {
+      "id": "o4",
+      "topic_id": "t-d-latch",
+      "kind": "원리",
+      "concept": "D와 D′의 상보 연결이 두 명령의 동시 활성을 막는 원리",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o5",
+      "topic_id": "t-d-latch",
+      "kind": "상태 추적",
+      "concept": "D가 고정된 상태에서 Enable을 다시 열 때의 출력",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o6",
+      "topic_id": "t-edge",
+      "kind": "정의·구별",
+      "concept": "공통 제어 신호로 구동한 D 래치와 74HC74의 입력 반영 시점",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 9
+      }
+    },
+    {
+      "id": "o7",
+      "topic_id": "t-74hc76",
+      "kind": "규칙 적용",
+      "concept": "두 초기 상태에서 관찰한 결과로 JK 명령 구별",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 11
+      }
+    },
+    {
+      "id": "o8",
+      "topic_id": "t-74hc76",
+      "kind": "상태 추적",
+      "concept": "비동기 PR이 JK 명령과 충돌할 때의 우선순위 및 정상 동작 복귀",
+      "source": {
+        "source_id": "s-a9792f60486135b0",
+        "pdf_page": 11
+      }
+    }
+  ]
+}
