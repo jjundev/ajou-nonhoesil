@@ -1,0 +1,105 @@
+{
+  "experiment": 7,
+  "objectives": [
+    {
+      "id": "o1",
+      "topic_id": "t-shift",
+      "kind": "신호 해석",
+      "concept": "6비트 회로에서 직렬 입력과 클록의 변화 구분",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 10
+      }
+    },
+    {
+      "id": "o2",
+      "topic_id": "t-shift",
+      "kind": "상태 추적",
+      "concept": "현재 병렬 상태에서 최근 직렬 입력 순서 역추적",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 6
+      }
+    },
+    {
+      "id": "o3",
+      "topic_id": "t-convert",
+      "kind": "정의·구별",
+      "concept": "SIPO에서 수신과 병렬 읽기의 역할 구분",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 5
+      }
+    },
+    {
+      "id": "o4",
+      "topic_id": "t-convert",
+      "kind": "상태 추적",
+      "concept": "PISO에서 첫 이동 후 마지막 단계의 직렬 출력",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 5
+      }
+    },
+    {
+      "id": "o5",
+      "topic_id": "t-jk",
+      "kind": "규칙 적용",
+      "concept": "다음 JK 단계에서 K를 앞 단계 Q에 잘못 연결했을 때의 결과",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o6",
+      "topic_id": "t-jk",
+      "kind": "신호 해석",
+      "concept": "6비트 회로의 CLR 유지와 해제 사이의 직렬 입력 처리",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 9
+      }
+    },
+    {
+      "id": "o7",
+      "topic_id": "t-7496",
+      "kind": "원리",
+      "concept": "7496 preset에서 선택되지 않은 칸의 상태 보존",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 14
+      }
+    },
+    {
+      "id": "o8",
+      "topic_id": "t-7496",
+      "kind": "신호 해석",
+      "concept": "Negative Logic 표시에서 출력 핀의 논리값 해석",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 12
+      }
+    },
+    {
+      "id": "o9",
+      "topic_id": "t-counters",
+      "kind": "상태 추적",
+      "concept": "일반 이동과 순환 이동에서 상태가 처음 달라지는 시점",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 16
+      }
+    },
+    {
+      "id": "o10",
+      "topic_id": "t-jk",
+      "kind": "신호 해석",
+      "concept": "6비트 회로에서 비동기 PR의 직접 관측과 다음 엣지의 이동 구분",
+      "source": {
+        "source_id": "s-manual07",
+        "pdf_page": 11
+      }
+    }
+  ]
+}

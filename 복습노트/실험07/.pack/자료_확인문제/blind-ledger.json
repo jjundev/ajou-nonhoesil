@@ -1,0 +1,72 @@
+{
+  "q1": {
+    "answer": "B",
+    "hash": "1eb525ff5fe75bc1934370f89dc24404974986ad7fc9d2b2c72c6d8a53907cc4",
+    "objection": "",
+    "rationale": "실험 1의 유효 엣지는 CLK 1→0이다. CLR과 PR이 해제되어 있으므로 CLK가 1인 구간에는 기존 상태를 유지하고, 끝의 하강 엣지 1회에 첫 칸이 안정된 S=1을 저장한다. 초기 벡터는 이동 횟수와 첫 칸의 새 값에 영향을 주지 않는다.",
+    "round": 1
+  },
+  "q10": {
+    "answer": "D",
+    "hash": "06e76c8bb33fdd80e7a7b8e64eee08521f42131312c2e0054167bb0de43d13c8",
+    "objection": "",
+    "rationale": "모두 0에서 CLR을 해제한 채 BIT2의 PR만 0으로 내리면 해당 Q가 비동기적으로 1이 된다. PR을 1로 돌려 해제한 뒤 첫 하강 엣지에서 BIT2는 직전 BIT1=0, BIT3은 직전 BIT2=1을 받아 각각 0과 1이 된다.",
+    "round": 1
+  },
+  "q2": {
+    "answer": "10",
+    "hash": "0117c9c2a8c153f521241fec07c216027414f079c634131898df0b39b2001c46",
+    "objection": "",
+    "rationale": "첫 입력을 a, 둘째 입력을 b로 두면 Q0Q1Q2Q3가 1101→a110→ba11이다. 두 번째 엣지 직후 0111이므로 Q0=b=0, Q1=a=1이다. 따라서 수신 시간순은 10이다.",
+    "round": 1
+  },
+  "q3": {
+    "answer": "D",
+    "hash": "3f95db30e79f50edd039818a31afc56936d9d5225a7a61627ed3e621a2e39ea8",
+    "objection": "",
+    "rationale": "한 선으로 비트를 차례대로 받는 직렬 입력과 다섯 선으로 동시에 전달하는 병렬 출력이 필요하다. SIPO에 해당한다.",
+    "round": 1
+  },
+  "q4": {
+    "answer": "01",
+    "hash": "e89a701cd92bb28c796408ce12490a283c4a0c963544edffab8bada9b322ed0e",
+    "objection": "",
+    "rationale": "적재 직후 Q0Q1Q2Q3Q4=11010이므로 이동 전 Q4=0이다. 적재를 해제하고 S=0으로 유효 엣지를 주면 01101이 된다. Q4는 이동 직전의 Q3=1을 받아 시간순으로 01이다.",
+    "round": 1
+  },
+  "q5": {
+    "answer": "A",
+    "hash": "b6e090ff0d7a515e655a532c61b5c996a3c0e4201074ca93103bd778da552837",
+    "objection": "",
+    "rationale": "CLR과 PR을 해제했고 하강 엣지 직전 첫 칸 Q=0이므로 잘못 묶인 두 번째 칸의 J와 K는 모두 0이다. JK=00은 유지 동작이라 두 번째 칸은 기존 Q=1을 유지한다.",
+    "round": 1
+  },
+  "q6": {
+    "answer": "C",
+    "hash": "6b48e63f54d84eaa3322f58224dfc230581ca99931871df9729ee021edf24c2c",
+    "objection": "",
+    "rationale": "모든 PR을 해제한 상태에서 CLR=0은 첫 칸 Q를 비동기적으로 0으로 강제한다. CLR이 활성인 동안 지나간 하강 엣지에서는 S=1이 저장되지 않는다. CLR=1로 해제한 직후에는 다음 하강 엣지가 오기 전이므로 Q=0을 유지한다.",
+    "round": 1
+  },
+  "q7": {
+    "answer": "01101",
+    "hash": "fc98b93dbb941ec0457ba142c97e7450c4f531a6fd5404a2a87d2a2660826d67",
+    "objection": "",
+    "rationale": "CLR은 해제되어 있고 유효 엣지가 없다. PE=1인 동안 preset C=1이 QC만 1로 강제하며, preset=0인 칸들은 이전 값을 유지한다. PE를 다시 0으로 돌린 뒤에도 QA…QE=01101이 유지된다.",
+    "round": 1
+  },
+  "q8": {
+    "answer": "B",
+    "hash": "3b41fca0e9b9eea2ea02b2f385706a1de74d24026c4f9a8905d133688812ed99",
+    "objection": "",
+    "rationale": "정상인 Negative Logic LED는 출력 Q가 Low일 때 전류가 흘러 켜진다. LED D가 꺼져 있으므로 관측 순간 출력 핀 QD는 High(1)이다.",
+    "round": 1
+  },
+  "q9": {
+    "answer": "3",
+    "hash": "a3a48582e705285572d76c984d9815baeafbff69dfa6d959f8f2f5cb0cec8d60",
+    "objection": "",
+    "rationale": "초기 QA…QE=00100에서 두 회로는 모두 첫 엣지 직후 00010, 둘째 직후 00001이다. 셋째 엣지 직전 QE=1이므로 SER=0 회로는 00000, QE 되먹임 회로는 10000이 된다. 유효 엣지의 방향이나 CLR의 구체적 극성을 가정할 필요가 없다.",
+    "round": 1
+  }
+}
