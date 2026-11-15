@@ -9,6 +9,7 @@ from .html2md import convert_pack
 from .checks import check_pack
 from .publish import publish
 from scripts.lab import config
+from scripts.lab.html2pdf import PdfError
 from .bank_import import import_bank
 from .bank_provenance import check_bank_import
 
@@ -44,8 +45,13 @@ def main(argv=None):
             errors=check_bank_import(args.run,data,root=args.root)
             if errors:raise ValueError('\n'.join(errors))
             assets=args.root/'.claude/skills/logic-lab-review-pack/assets'
+            if data.get('review_presentation_version') == 2:
+                data['workbook_delivery'] = 'pdf'
             paths=assemble(data,args.run,args.stage,assets)
-            convert_pack(paths['note_html'],paths['review_html'],manifest=data)
+            convert_pack(paths['note_html'],paths.get('review_html'),manifest=data)
+            if data.get('workbook_delivery') == 'pdf':
+                from scripts.lab.workbook_pdf import export_pair
+                export_pair(args.stage, args.stage)
             evidence=args.run/'검증결과.md'
             if evidence.exists():
                 from .pack_md import write_pack_md
@@ -74,7 +80,7 @@ def main(argv=None):
             backup=publish(args.stage,target,args.root)
             print(json.dumps({'output':str(target),'backup':str(backup) if backup else None},ensure_ascii=False))
         return 0
-    except (ValueError,OSError) as exc:
+    except (ValueError,OSError,PdfError) as exc:
         print('FAIL: '+str(exc));return 1
 
 if __name__=='__main__':

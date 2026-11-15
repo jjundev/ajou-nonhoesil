@@ -332,23 +332,12 @@ def test_display_formula_wider_than_its_box_is_reported(scratch):
 # ---------- 게시본 ----------
 
 @pytest.mark.parametrize('pack', PACKS)
-def test_published_packs_report_no_clipped_content(browser, tmp_path, pack):
-    """게시본 문제·해설 payload 를 지금 템플릿으로 다시 렌더해 훑기가 아무 쪽도 걸지 않는지 본다.
-
-    걸리면 임계값을 풀지 말고 어느 쪽·어느 검사인지부터 본다(plan Task 2 Step 4).
-    """
-    folder = NOTES/pack
-    names = [f'{pack}_기출문제.html', f'{pack}_기출풀이.html']
-    if not all((folder/n).exists() for n in names):
-        pytest.fail(f'{pack} 게시본이 없다')
-    # 게시본이 쓰는 자료(공유 vendor·그림)를 그대로 쓴다
-    stage_pack = tmp_path/'pack'; stage_pack.mkdir()
-    (stage_pack/DATA).symlink_to((folder/DATA).resolve(), target_is_directory=True)
-    (tmp_path/'.vendor').symlink_to((NOTES/'.vendor').resolve(), target_is_directory=True)
-    for name in names:
-        data = read_workbook_payload(folder/name)
-        out = stage_pack/name
-        out.write_text(render_workbook_html(data, folder/DATA/'assets'), encoding='utf-8')
+def test_published_packs_report_no_clipped_content(browser, published_workbook_preview, pack):
+    """Check the same workbook source used by the PDF renderer for clipped content."""
+    for key in ('question', 'review'):
+        out = published_workbook_preview(pack, key)
+        name = out.name
+        data = read_workbook_payload(out)
         page = open_page(browser, out, display='$$' in str(data))
         try:
             assert page.evaluate('typeof hasClippedContent') == 'function', f'{name}: 훑기가 템플릿에 없다'

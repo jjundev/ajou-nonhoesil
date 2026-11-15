@@ -15,7 +15,7 @@ ID는 영어 문자로 시작하며 영문·숫자·하이픈·밑줄만 쓴다.
 - generated_files는 build가 기록하며 사용자 메모를 이 목록에 임의로 넣지 않는다.
 
 본문 fragment는 article/h1 없이 작성한다. 조립기가 article ID·제목을 붙인다.
-다른 페이지 링크는 {{NOTE_HREF}}#토픽ID, {{REVIEW_HREF}}#문항ID.
+정리노트의 토픽 링크는 `{{NOTE_HREF}}#토픽ID`를 쓴다. 워크북은 `{{QUESTION_HREF}}#문항ID`(문제지 한 문항당 한 쪽) 또는 `{{REVIEW_HREF}}`(해설지 PDF 처음)로 연결한다.
 힌트·풀이는 각각 details/summary. 풀이에는 단계, 최종 답, 검산, 흔한 실수를 쓴다.
 수식은 MathML math[data-tex]를 사용한다. data-tex에는 동일한 LaTeX를 넣는다. SVG는 접근 가능한 제목·대체 설명을 제공한다.
 표는 .table-wrap으로 감싼다. 실험설명의 표와 식만 있는 문단은 렌더러가 table-card·equation-card로 감싸므로 해석·주의 문장은 표·식 밖 문단에 쓴다. 표 열 배치는 `sections/table-layout.json`(version 1, key `<토픽ID>/<토픽 안 표 순번>`)에 문제설명과 같은 규칙(role·kind·group·boundaries를 이름으로 추측하지 않고 명시)으로 적는다. 이 파일이 있으면 모든 토픽의 모든 표에 항목이 있어야 한다. 위젯은 .controls와 .static-equivalent를 분리하며 정적 자료만으로도 이해되어야 한다.
@@ -41,7 +41,7 @@ evidence/와 인덱스·안내는 build의 generated_files에 포함한다(발�
 
 ## 문제설명 연결
 
-문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
+문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 실험설명·문제설명 HTML, 문제지·해설지 PDF, MD 네 개 출력은 유지한다.
 
 ## 퀴즈 유형 정책
 

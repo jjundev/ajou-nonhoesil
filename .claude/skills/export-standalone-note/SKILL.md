@@ -1,9 +1,11 @@
 ---
 name: export-standalone-note
-description: 복습노트 HTML(실험설명·문제설명·기출문제·기출풀이)을 파일 하나로 합쳐 다운로드 폴더에 내보낸다. 실험이 여럿이면 실험별 폴더가 든 zip 하나로 낸다. 사용자가 "standalone", "한 파일로", "HTML만 복사해도 열리게", "다른 PC·태블릿에서 열 수 있게", "다운로드 폴더에 만들어줘" 등을 요청하거나 /export-standalone-note 를 호출할 때 사용한다.
+description: 복습노트 HTML(실험설명·문제설명)을 파일 하나로 합쳐 다운로드 폴더에 내보낸다. 실험이 여럿이면 실험별 폴더가 든 zip 하나로 낸다. 사용자가 "standalone", "한 파일로", "HTML만 복사해도 열리게", "다른 PC·태블릿에서 열 수 있게", "다운로드 폴더에 만들어줘" 등을 요청하거나 /export-standalone-note 를 호출할 때 사용한다.
 ---
 
 # export-standalone-note
+
+기출문제와 기출풀이는 각 실험 폴더의 PDF를 사용한다.
 
 실험설명의 탐색 구조를 수정한 경우 먼저 원본 팩과 동봉 템플릿을 갱신·검사한 뒤 이 스킬로 기존 standalone을 다시 내보낸다. `aria-current` 등 속성이 붙은 sibling HTML 링크도 비링크 표시로 변환하고 내부 토픽 hash 링크는 보존한다. 남은 상대경로 참조(leftovers)는 0이어야 한다. 최신 실험설명 패널은 내부 목차만 표시하며, 자료 이동 영역을 내보내기 과정에서 다시 추가하지 않는다.
 
@@ -16,7 +18,7 @@ description: 복습노트 HTML(실험설명·문제설명·기출문제·기출�
 REPO 루트(scripts/lab/config.py 가 있는 곳)에서:
 
 ```bash
-python3 -m scripts.lab.standalone_note 실험05                # 기본 = 4종(실험설명·기출문제·기출풀이·문제설명) → zip
+python3 -m scripts.lab.standalone_note 실험05                # 기본 = 실험설명·문제설명 → zip
 python3 -m scripts.lab.standalone_note 실험05 --kind 문제설명 # 문제설명 1종(낱개 HTML)
 python3 -m scripts.lab.standalone_note 실험01 실험05          # 실험 여러 개 → 한 zip
 python3 -m scripts.lab.standalone_note 실험01~05             # 범위도 된다(실험01~실험05 도 같다)

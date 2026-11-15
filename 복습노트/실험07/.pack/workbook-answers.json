@@ -1,0 +1,891 @@
+{
+  "meta": {
+    "mode": "answers",
+    "title": "실험 7 · 기출풀이와 퀴즈 유형 연습",
+    "chapter": 0,
+    "total": 22,
+    "quiz_practice_version": 1
+  },
+  "problems": [
+    {
+      "id": "q-sr",
+      "kind": "기출",
+      "number": "1",
+      "title": "시프트 레지스터의 기능",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트 레지스터(Shift Register)에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>저장과 이동을 함께 설명해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>플립플롭을 공통 클록으로 연결하고 유효 엣지마다 각 칸이 앞 칸의 이전 값을 저장해요. 데이터를 한 칸씩 옮기면서 보존하므로 직렬·병렬 변환과 지연에 쓸 수 있어요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>0000에 1,0을 넣어 1000→0100인지 확인해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>단순 저장 장치라는 설명만 쓰면 이동 기능이 빠져요.</p>"
+          }
+        ],
+        "answer": "<p>클록마다 데이터를 한 칸씩 이동하며 저장하는 레지스터예요.</p>"
+      }
+    },
+    {
+      "id": "q-ring",
+      "kind": "기출",
+      "number": "2",
+      "title": "링 카운터와 초기화",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>링 카운터에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q를 그대로 되먹여요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>마지막 Q를 첫 입력으로 연결한 순환 레지스터예요. one-hot 링 카운터라면 1000→0100→0010→0001→1000으로 1이 순환하여 단계별 신호를 만들어요. n단이면 정상 one-hot 주기에 n상태가 있어요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>0000도 대입해 계속 0000임을 확인해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>n상태는 one-hot 초기화 조건이 필요해요.</p>"
+          }
+        ],
+        "answer": "<p>마지막 Q를 첫 입력으로 되먹이는 순환 회로이며 one-hot 초기화하면 n단에서 n상태를 순환해요.</p>"
+      }
+    },
+    {
+      "id": "q-johnson-nand",
+      "kind": "기출",
+      "number": "3",
+      "title": "존슨 카운터의 NAND 역할",
+      "section": "실험 7 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>존슨 카운터에서 사용되는 2입력 NAND gate의 역할을 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>NAND의 배선을 먼저 구분해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>답안 충돌: 일부 제공 답은 마지막 출력을 반전한다고 쓰고, 다른 답은 2n개의 AND 디코딩 게이트라고 써요. 두 입력을 마지막 Q에 묶은 NAND라면 반전 되먹임을 만들어 존슨 동작을 구현해요. 서로 다른 상태 신호에 연결했다면 상태 검출용 active-low 디코더일 수 있어요. 원문에 배선이 없어 단일 역할은 확정할 수 없어요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>Q=0이면 NAND=1, Q=1이면 NAND=0을 확인해요. 디코딩 답은 실제 입력 배선 없이는 대조할 수 없어요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>답안 충돌을 숨기지 않아요. “항상 2n개의 AND가 필요”는 모든 목적의 회로에 대한 일반 법칙이 아니에요.</p>"
+          }
+        ],
+        "answer": "<p>배선 미제시로 미확정: 입력을 묶으면 반전 되먹임, 상태 신호를 받으면 디코딩이에요.</p>"
+      }
+    },
+    {
+      "id": "q-7496-block",
+      "kind": "기출",
+      "number": "4",
+      "title": "7496 내부 블록을 읽어요",
+      "section": "실험 7 · 정답 미확정",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>7496 내부 블록다이어그램을 보고, 동작 원리를 간단하게 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/ic7496-given.png",
+          "w_mm": 155,
+          "h_mm": 60.708333333333336
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>이동 경로와 비동기 제어를 나눠요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>다섯 S-R 저장 단계가 공통 클록을 받아 앞 단계의 이전 Q를 다음 단계로 넘겨요. PE와 각 preset 입력이 들어가는 NAND의 출력은 해당 비동기 preset으로 가요. PE=1이고 preset=1이면 NAND=0이 되어 해당 Q를 1로 강제해요. 공통 CLEAR는 모든 단계를 초기화해요. 교안 13쪽은 CLR 1→0→1, 부록 18~20쪽은 MR 0→1→0으로 서로 달라요. 25쪽은 하강 엣지, 과거 제공 답은 상승 엣지를 적어요. 칩의 정확한 제조사·품번 데이터시트와 실물 파형을 확인하기 전 7496의 초기화 극성·유효 엣지는 미확정이에요. 아래 상태 이동은 “유효 엣지 1회” 기준이에요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>PE=0이면 preset NAND가 1, PE=A=1이면 0인지 계산해요. clear 후 정상 이동 벡터 11000→01100도 확인해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>정답 미확정: 교안 내 CLR 극성과 과거 답의 엣지 표기가 충돌해요. 초기화의 강제 동작과 정상 이동은 구분해요.</p>"
+          }
+        ],
+        "answer": "<p>5단 저장·공통 클록 이동·PE와 개별 preset의 AND 조건·공통 clear가 핵심이에요. CLR 극성·엣지는 미확정이에요.</p>"
+      }
+    },
+    {
+      "id": "q-convert",
+      "kind": "기출",
+      "number": "5",
+      "title": "직렬·병렬 변환의 두 방향",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트레지스터(Shift Register)에서 직렬-병렬 변환기와 병렬-직렬 변환기에 대해서 간단히 설명하시오. (3점)</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>입출력 양쪽에서 동시에 몇 비트를 다루는지 봐요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>SIPO는 직렬 데이터를 엣지마다 한 비트씩 저장하고 각 단계 Q를 병렬로 동시에 읽어요. PISO는 여러 비트를 동시에 적재하고 이동할 때 마지막 Q에서 한 비트씩 직렬로 읽어요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>SIPO 0000에 1,0,1,1 입력→1101. PISO 1011 적재 후 마지막 Q를 이동 직전에 읽으면 1,1,0,1이에요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>직렬·병렬은 시간/선의 수예요. 비트의 시간 순서와 칸 순서를 혼동하지 않아요.</p>"
+          }
+        ],
+        "answer": "<p>SIPO는 직렬 입력·병렬 출력, PISO는 병렬 적재·직렬 출력이에요.</p>"
+      }
+    },
+    {
+      "id": "q-ff-design",
+      "kind": "기출",
+      "number": "6",
+      "title": "4비트 회로와 7476 개수",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Flip Flop을 활용한 Shift Register 설계 (총 4 점)</p><p>1) 4 bit Shift Register을 구현하기 위해 필요한 7476칩의 개수와 J-K F/F의 개수는 각각 몇 개인가? (2점)</p><p>2) 아래의 “D F/F”을 활용하여 4 bit Serial in, parallel out Shift Register를 설계 하시오. (2점)</p>",
+        "conditions": "<p>원문에 주어진 D F/F는 상승 엣지 기호예요. 첫 칸을 Q0로 정해요.</p>",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/dff-given.png",
+          "w_mm": 45,
+          "h_mm": 30.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>칩 수와 저장 칸 수를 따로 세어요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>1) 7476 한 칩에는 JK가 두 개이므로 JK 4개·칩 2개가 필요해요. 2) D F/F 네 개를 두고 S→D0, Q0→D1, Q1→D2, Q2→D3로 연결해요. 네 CLK는 같은 클록, Q0~Q3는 병렬 출력이에요. 주어진 D 기호처럼 상승 엣지로 동작하고 초기화는 문제에 없으므로 초기 상태를 임의로 정하지 않아요.</p><img src=\".pack/figures/solutions/shift-complete.png\" width=\"500\" style=\"max-width:100%;height:auto\" alt=\"4단 SIPO 완성 회로\">"
+          },
+          {
+            "label": "검산",
+            "html": "<p>이해를 위한 초기값 0000을 별도로 둔 예에서 입력 1 후 1000, 입력 0 후 0100이에요. 공통 클록 연결과 세 Q→D 연결을 각각 세어요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>2번 소문항은 D 회로예요. 7476을 반드시 그 회로의 D 기호로 그리라는 조건이 아니에요.</p>"
+          }
+        ],
+        "answer": "<p>1) 7476 2개·JK 4개. 2) D F/F 4개 직렬 Q→D, 공통 CLK, 각 Q 병렬 출력이에요.</p>"
+      }
+    },
+    {
+      "id": "q-7496-circular",
+      "kind": "기출",
+      "number": "7",
+      "title": "7496을 순환 회로로 바꿔요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>7496으로 구현한 5bit Shift Register를 Circular Shift Register로 변환하는 방법을 간단히 설명하시오. (3점)</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 데이터를 버리지 않고 되돌려요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>QE(10번)를 SER(9번)에 연결하고 정상 이동 동안 clear와 preset을 비활성으로 유지해요. 그러면 마지막 비트가 첫 칸으로 돌아와 정보가 회전해요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>11000→01100→00110→00011→10001→11000으로 다섯 이동을 계산해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>반전해서 되먹이면 존슨 회로예요. 이 문항은 Q를 그대로 연결해요.</p>"
+          }
+        ],
+        "answer": "<p>QE(10번)를 SER(9번)에 연결해요.</p>"
+      }
+    },
+    {
+      "id": "q-jkff",
+      "kind": "예상문제",
+      "number": "8",
+      "title": "시프트용 JK 입력을 정해요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트레지스터에 사용할 JK Flip-Flop에 대해서 설명하시오. Explain about a JK Flip-Flop used in the Shift Register.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>JK 표에서 복사 조건을 찾아요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>보충 예상문항: 시프트 레지스터의 한 단계는 앞 단계의 비트를 그대로 복사해야 해요. J=D,K=NOT D로 연결하면 유효 엣지에서 Q다음=D가 돼요. 첫 칸 D는 SER, 이후 D는 앞 단계 Q이며 K에는 앞 단계 Q의 보수를 넣어요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>D=0/1과 이전 Q=0/1의 네 조합에서 Q다음=D인지 검사해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>J=K=1은 복사가 아니라 반전이에요. 비동기 SET·RESET은 비활성 조건이에요.</p>"
+          }
+        ],
+        "answer": "<p>J=D,K=NOT D로 데이터 복사 단계를 만들어요.</p>"
+      }
+    },
+    {
+      "id": "q-6bit-jk",
+      "kind": "출처 미확인",
+      "number": "9",
+      "title": "6비트에 필요한 JK 개수",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>6bit shift right register를 구현하기 위해 필요한 JK Flip-Flop의 개수는 몇 개인가?</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>저장 비트 수를 세어요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>6개의 독립 비트를 저장하려면 JK F/F 6개가 필요해요. 7476처럼 두 개가 한 칩에 있으면 칩 수는 3개예요. 문제는 JK의 개수를 물으므로 6개가 답이에요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>칩 3개×칩당 JK 2개=6개로 역산해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>칩 수 3을 F/F 개수 답으로 쓰지 않아요.</p>"
+          }
+        ],
+        "answer": "<p>JK 플립플롭 6개예요.</p>"
+      }
+    },
+    {
+      "id": "q-p2s",
+      "kind": "출처 미확인",
+      "number": "10",
+      "title": "병렬에서 직렬로 꺼내요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>병렬-직렬 변환기에 대해서 간단히 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>동시 적재 후 한 비트씩 읽어요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>병렬 데이터는 여러 입력 선을 통해 여러 저장 칸에 함께 들어가요. 적재 후 이동 모드로 바꾸어 마지막 단계의 Q를 순서대로 읽으면 한 선으로 직렬 데이터가 나와요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>Q0Q1Q2Q3=1011을 이동 직전에 Q3에서 읽으면 1,1,0,1이에요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>SIPO와 방향을 바꾸어 말하지 않아요. 적재 기능이 있는 회로라는 조건이 필요해요.</p>"
+          }
+        ],
+        "answer": "<p>여러 비트를 동시에 적재한 뒤 시프트하며 마지막 Q에서 한 비트씩 출력해요.</p>"
+      }
+    },
+    {
+      "id": "q-johnson",
+      "kind": "출처 미확인",
+      "number": "11",
+      "title": "존슨 카운터의 상태 순환",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>존슨카운터에 대해 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q의 보수를 되먹여요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>마지막 Q의 보수를 첫 입력으로 돌려주는 꼬리바꿈 링 카운터예요. 네 칸을 0000으로 초기화하면 0000→1000→1100→1110→1111→0111→0011→0001→0000으로 8상태를 순환해요. 일반적으로 정상 주기는 2n상태예요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>각 단계에서 NOT(맨 끝)을 앞에 붙여 여덟 번 뒤 원상복귀하는지 확인해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>2n은 2의 n제곱이 아니에요. 초기 상태가 정상 주기 밖이면 이 주기라는 보장이 없어요.</p>"
+          }
+        ],
+        "answer": "<p>마지막 Q를 반전해 되먹이며 정상 초기화한 n단에서 2n상태를 순환해요.</p>"
+      }
+    },
+    {
+      "id": "q-circular",
+      "kind": "출처 미확인",
+      "number": "12",
+      "title": "순환 시프트의 연결",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Shift Register를 순환 Shift Register로 변환하는 방법을 간단히 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q를 직렬 입력으로 돌려요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "풀이",
+            "html": "<p>직렬 입력을 외부 데이터 대신 마지막 출력 Q에 연결해요. 공통 유효 엣지마다 마지막 값이 첫 칸으로 돌아오고 나머지는 한 칸씩 이동해요.</p>"
+          },
+          {
+            "label": "검산",
+            "html": "<p>4비트 1001→1100→0110→0011→1001을 확인해요.</p>"
+          },
+          {
+            "label": "주의",
+            "html": "<p>초기 패턴에 따라 반복 주기는 달라요. 1111은 한 번 이동해도 같아요.</p>"
+          }
+        ],
+        "answer": "<p>마지막 출력을 첫 단계 직렬 입력으로 되먹여요.</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-tf-01",
+      "kind": "연습문제",
+      "number": "13",
+      "title": "여섯 칸의 저장 용량",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>6비트 시프트 레지스터에는 JK F/F 6개가 필요하다. T/F</p>",
+        "conditions": "<p>7476 계열 한 칩에 JK 두 개가 들어 있어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "판정 근거",
+            "html": "<p>플립플롭 한 개는 1비트를 저장하므로 독립 비트 여섯 개에는 여섯 저장 칸이 필요해요.</p>"
+          },
+          {
+            "label": "문장 확인",
+            "html": "<p>칩 수 3개와 F/F 수 6개를 구분해요.</p><p>7476 칩 3개×JK 2개=6개로 확인해요.</p>"
+          }
+        ],
+        "answer": "<p>T</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-tf-02",
+      "kind": "연습문제",
+      "number": "14",
+      "title": "같은 엣지의 이전 값",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>한 유효 엣지에서 Q1은 엣지 직전 Q0를 저장한다. T/F</p>",
+        "conditions": "<p>공통 클록을 쓰며 입력은 setup/hold를 만족해요. Q0가 첫 칸이에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "판정 근거",
+            "html": "<p>각 칸은 같은 엣지 직전의 입력을 받아요. 다음 칸에 첫 칸의 갓 바뀐 값이 즉시 전달되는 모델이 아니에요.</p>"
+          },
+          {
+            "label": "문장 확인",
+            "html": "<p>클록을 각 Q에서 따오는 비동기 카운터와 구분해요.</p><p>이전 상태 1000, S=0이면 0100이 돼요.</p>"
+          }
+        ],
+        "answer": "<p>T</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-tf-03",
+      "kind": "연습문제",
+      "number": "15",
+      "title": "Negative Logic LED",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Q=1이면 해당 LED가 켜진다. T/F</p>",
+        "conditions": "<p>7496 출력 LED는 +5V→330Ω→애노드→캐소드→Q 순서로 연결돼요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "판정 근거",
+            "html": "<p>Q=0이면 전류를 흘려 켜지고 Q=1이면 꺼져요.</p>"
+          },
+          {
+            "label": "문장 확인",
+            "html": "<p>LED 켜짐과 논리 1을 동일시하지 않아요.</p><p>QA…QE=11000이면 LED는 꺼짐·꺼짐·켜짐·켜짐·켜짐이에요.</p>"
+          }
+        ],
+        "answer": "<p>F</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-tf-04",
+      "kind": "연습문제",
+      "number": "16",
+      "title": "JK의 복사 조건",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>J=K=D로 묶으면 모든 이전 Q에서 Q다음=D가 된다. T/F</p>",
+        "conditions": "<p>교안 74HC76의 SET·RESET이 비활성이며 하강 엣지 입력 시간 조건을 만족해요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "판정 근거",
+            "html": "<p>D=1이면 JK=11이라 반전돼요. 복사하려면 J=D,K=NOT D가 필요해요.</p>"
+          },
+          {
+            "label": "문장 확인",
+            "html": "<p>JK=11은 Set이 아니라 Toggle이에요.</p><p>D=1,Q이전=1이면 JK=11은 Q다음=0이라 반례예요.</p>"
+          }
+        ],
+        "answer": "<p>F</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-blank-01",
+      "kind": "연습문제",
+      "number": "17",
+      "title": "칩과 저장 칸",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>4비트 저장에는 JK ① ( )개와 7476 칩 ② ( )개가 필요해요.</p>",
+        "conditions": "<p>7476 한 칩에는 JK F/F 두 개가 들어 있어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "빈칸별 근거",
+            "html": "<p>4개의 비트를 위해 JK 4개, 두 개씩 묶어 칩은 2개예요.</p><p>2칩×2=4로 검산해요.</p><p>①과 ②의 순서를 바꾸지 않아요. 숫자 한글 표현도 인정해요.</p>"
+          }
+        ],
+        "answer": "<p>① 4, ② 2</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-blank-02",
+      "kind": "연습문제",
+      "number": "18",
+      "title": "한 칸 이동을 계산해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>유효 엣지 한 번 후 Q0…Q5=① ( )이에요.</p>",
+        "conditions": "<p>Q0…Q5=101100이며 정상 이동 모드에서 S=0을 넣어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "빈칸별 근거",
+            "html": "<p>새 0을 앞에 붙이고 이전 상태 맨 끝 0을 버려요.</p><p>Q1=이전 Q0=1,Q2=이전 Q1=0인지 각각 확인해요.</p><p>정수 나눗셈처럼 반대쪽에 0을 붙이지 않아요.</p>"
+          }
+        ],
+        "answer": "<p>① 010110</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-blank-03",
+      "kind": "연습문제",
+      "number": "19",
+      "title": "순환 연결의 두 핀",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>마지막 출력 ① (신호/핀)을 첫 입력 ② (신호/핀)에 연결해요.</p>",
+        "conditions": "<p>교안 7496을 일반 순환 시프트 레지스터로 바꿔요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "빈칸별 근거",
+            "html": "<p>마지막 값 QE를 새 직렬 입력 SER로 되돌려요.</p><p>초기 00001에서 한 이동 뒤 10000인지 확인해요.</p><p>Q의 보수가 아닌 Q를 연결해요. S와 SERIAL INPUT은 SER의 동의어로 인정해요.</p>"
+          }
+        ],
+        "answer": "<p>① QE/10번, ② SER/9번</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-board-01",
+      "kind": "연습문제",
+      "number": "20",
+      "title": "첫 JK 입력용 보수 신호를 작도해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 브레드보드 작도",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>주어진 NAND 회로와 핀 명세를 빈 보드에 옮겨 전원·입력·출력과 미사용 핀을 표시하세요.</p>",
+        "conditions": "<p>74HC00 한 게이트로 D의 보수 K를 만들어요. LED는 사용하지 않고 3번 출력을 측정점 K로 둬요. 입력 D는 0V 또는 5V 외부 신호예요.</p><div class=\"table-wrap\"><table class=\"chip-spec\"><thead><tr><th>핀</th><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>1,2</td><td>A1,B1</td><td>D 입력을 두 입력에 공통 연결</td></tr><tr><td>3</td><td>Y1</td><td>K 측정 출력</td></tr><tr><td>14</td><td>VCC</td><td>+5V</td></tr><tr><td>7</td><td>GND</td><td>0V</td></tr><tr><td>4,5,9,10,12,13</td><td>미사용 입력</td><td>수업 작도 명세: NC(개방), 실사용 일반 권장과 구분</td></tr><tr><td>6,8,11</td><td>미사용 출력</td><td>NC, 접지 금지</td></tr></tbody></table></div><div class=\"work-board\"><img src=\".pack/figures/questions/inverter-blank.png\" alt=\"v1 배포 PDF 작도용 빈 보드\"></div>",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/inverter-given.png",
+          "w_mm": 75,
+          "h_mm": 25.403225806451612
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>같은 넷을 같은 도통 홀에 옮겨요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "연결 기준",
+            "html": "<p>14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.</p><div class=\"table-wrap\"><table><thead><tr><th>넷</th><th>핀</th></tr></thead><tbody><tr><td>+5V</td><td>14</td></tr><tr><td>GND</td><td>7</td></tr><tr><td>D</td><td>1,2</td></tr><tr><td>K</td><td>3</td></tr><tr><td>NC</td><td>4,5,6,8,9,10,11,12,13</td></tr></tbody></table></div><p>외부 D는 신호원이고 K는 측정점이에요. IC 위치·홀 좌표가 달라도 같은 넷이면 인정해요.</p>"
+          },
+          {
+            "label": "완성 결선도",
+            "html": "<p>그림은 D=0인 예예요. D 점퍼의 레일 쪽을 +5V로 옮기면 D=1이에요.</p><img src=\".pack/figures/solutions/inverter-complete.png\" width=\"270\" style=\"max-width:100%;height:auto\" alt=\"완성 결선도: NAND 보수 생성부\">"
+          },
+          {
+            "label": "논리 검산",
+            "html": "<p>NAND(D,D)=NOT D이므로 J=D와 함께 쓰면 JK가 입력을 복사해요. 이 문항은 보수 생성부만 작도하며 JK 칩은 그리지 않아요.</p><p>D=0이면 K=1,D=1이면 K=0인지 논리식과 핀 넷을 확인해요.</p>"
+          }
+        ],
+        "answer": "<p>14→+5V,7→GND,1·2→D,3→K. 미사용 입력·출력은 명세대로 NC.</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-short-01",
+      "kind": "연습문제",
+      "number": "21",
+      "title": "SIPO가 정보를 모으는 이유",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>SIPO의 기능과 마지막 병렬 출력이 만들어지는 과정을 두세 문장으로 설명하세요.</p>",
+        "conditions": "<p>이상적 4단 SIPO를 0000으로 초기화하고 입력 1,0,1,1을 순서대로 넣어요. Q0가 첫 칸이에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>기능·이동 과정·조건을 연결해 설명해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "모범 답",
+            "html": "<p>한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.</p><p>직렬은 시간별 한 비트이고 병렬은 네 출력 선을 동시에 읽는 방식이에요. 각 입력은 다음 칸으로 이동하며 사라지지 않고 저장돼요.</p>"
+          },
+          {
+            "label": "채점 핵심",
+            "html": "<p>마지막 상태 Q0=마지막 입력 1, Q3=첫 입력 1인지 확인해요.</p>"
+          },
+          {
+            "label": "허용 표현",
+            "html": "<p>같은 인과와 비트 순서를 밝힌 동치 표현을 인정해요. </p><p>최종 벡터의 위치 순서를 먼저 밝혀요.</p>"
+          }
+        ],
+        "answer": "<p>한 비트씩 받아 저장·이동하고 여러 Q를 동시에 읽어요. 상태는 1000→0100→1010→1101이에요.</p>"
+      }
+    },
+    {
+      "id": "q-qp-e07-short-02",
+      "kind": "연습문제",
+      "number": "22",
+      "title": "7496의 LED와 상태를 구분해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>유효 엣지 한 번 뒤의 출력 벡터와 LED 상태를 이유와 함께 설명하세요.</p>",
+        "conditions": "<p>clear 후 preset으로 QA…QE=11000을 만든 뒤 preset을 해제했어요. SER=0, LED는 Negative Logic이에요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>기능·이동 과정·조건을 연결해 설명해요</p>"
+        }
+      ],
+      "solution": {
+        "steps": [
+          {
+            "label": "모범 답",
+            "html": "<p>QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.</p><p>새 0이 QA로 들어가고 이전 QA,QB의 1이 QB,QC로 이동해요. Negative Logic LED는 출력 0일 때 켜져요.</p>"
+          },
+          {
+            "label": "채점 핵심",
+            "html": "<p>각 Q를 0이면 켜짐,1이면 꺼짐으로 바꿔요.</p>"
+          },
+          {
+            "label": "허용 표현",
+            "html": "<p>같은 인과와 비트 순서를 밝힌 동치 표현을 인정해요. </p><p>교안의 CLR·엣지 충돌을 피해 유효 엣지로 조건을 정했어요. 실제 극성은 미확정이에요.</p>"
+          }
+        ],
+        "answer": "<p>QA…QE=01100, LED A·D·E 켜짐, B·C 꺼짐이에요.</p>"
+      }
+    }
+  ]
+}

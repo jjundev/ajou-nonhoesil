@@ -139,3 +139,20 @@ def _group(items):
         else:
             group = getattr(cls, "render_group", None) or f"{item.path.name}::{cls.__name__ if cls else ''}"
         item.add_marker(pytest.mark.xdist_group(group))
+
+
+@pytest.fixture
+def published_workbook_preview(tmp_path):
+    """Render the published payload into an isolated browser-test workspace."""
+    from pathlib import Path
+    from scripts.lab.review_pack.manifest import DATA, load_manifest
+    from scripts.lab.workbook_pdf import _temporary_html
+
+    root = Path('복습노트')
+    def preview(experiment, key):
+        folder = root / experiment
+        manifest = load_manifest(folder / DATA / 'manifest.json')
+        scratch = tmp_path / experiment
+        scratch.mkdir(exist_ok=True)
+        return _temporary_html(folder, manifest, key, scratch)
+    return preview

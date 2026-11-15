@@ -1,6 +1,6 @@
 """복습노트 HTML 을 파일 하나로 합친다 (CSS·JS·글꼴·그림을 모두 인라인).
 
-    python -m scripts.lab.standalone_note 실험05 [--kind all(기본)|실험설명|기출문제|기출풀이|문제설명] [--out DIR]
+    python -m scripts.lab.standalone_note 실험05 [--kind all(기본)|실험설명|문제설명] [--out DIR]
     python -m scripts.lab.standalone_note 실험01 실험05 --kind all   # 실험 2개 이상 → zip
     python -m scripts.lab.standalone_note 실험01~05                   # 범위도 된다
     python -m scripts.lab.standalone_note all                        # 실험 폴더 전부 → zip
@@ -111,16 +111,16 @@ def build(note_dir, kind, linked=frozenset()):
     html = re.sub(r'<link[^>]*rel="stylesheet"[^>]*href="(?!https?:)[^"]+"[^>]*>', link, html)
     html = re.sub(r'(<img[^>]*?)src="(?!data:|https?:)([^"]+)"',
                   lambda m: f'{m.group(1)}src="{_uri(note_dir / m.group(2))}"', html)
-    sib = re.compile(re.escape(note_dir.name) + r'_(' + "|".join(KINDS) + r')\.html(#[^"]*)?')
+    sib = re.compile(re.escape(note_dir.name) + r'_(' + "|".join(KINDS) + r')\.(html|pdf)(#[^"]*)?')
 
     def sibling(m):
         attrs, content = m.group(1), m.group(2)
         href = re.search(r'\bhref="([^"]*)"', attrs)
-        hit = sib.fullmatch(href.group(1)) if href else None
+        hit = sib.fullmatch(urllib.parse.unquote(href.group(1))) if href else None
         if not hit:
             return m.group(0)
-        if hit.group(1) in linked:
-            new = urllib.parse.quote(out_name(note_dir.name, hit.group(1))) + (hit.group(2) or "")
+        if hit.group(2) == 'html' and hit.group(1) in linked:
+            new = urllib.parse.quote(out_name(note_dir.name, hit.group(1))) + (hit.group(3) or "")
             return f'<a{attrs[:href.start()]}href="{new}"{attrs[href.end():]}>{content}</a>'
         attrs = attrs[:href.start()] + attrs[href.end():]
         attrs = attrs.rstrip()
@@ -202,6 +202,9 @@ def _targets(names, kinds, strict):
         for kind in kinds:
             if (NOTES / exp / f"{exp}_{kind}.html").is_file():
                 pairs.append((exp, kind))
+            elif kind in {'기출문제', '기출풀이'} and (pdf := NOTES / exp / f'{exp}_{kind}.pdf').is_file():
+                if strict:
+                    sys.exit(f"PDF 자료를 이용하세요: {pdf}")
             elif strict:
                 sys.exit(f"없는 파일: {NOTES / exp / f'{exp}_{kind}.html'}")
             else:

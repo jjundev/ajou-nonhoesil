@@ -5,7 +5,7 @@ from .manifest import output_names,data_dir,strip_data,DATA
 from .workbook_content import KINDS,STATES,_strict_json,_within,check_authored_html,workbook_meta,workbook_section
 from .quiz_practice_content import check_quiz_question
 from .workbook_figures import check_redrawn_figures
-from .workbook_render import read_workbook_payload,render_workbook_html
+from .workbook_render import read_workbook_payload,render_workbook_html,workbook_source_path
 from .workbook_md import check_workbook_md,_html_fields
 from .html2md import Parser
 
@@ -20,14 +20,14 @@ def check_workbook_pack(folder,manifest):
         selected=[p for p in manifest['problems'] if p['status']=='included']
         expected=[p['id'] for p in selected];sheets={}
         for key,mode in [('question','problems'),('review','answers')]:
-            path=folder/names[key+'_html'];data=read_workbook_payload(path);sheets[key]=data
+            path=workbook_source_path(folder,manifest,key);data=read_workbook_payload(path);sheets[key]=data
             if not isinstance(data,dict) or set(data)!={'meta','problems'}: raise ValueError('Invalid workbook payload fields')
             meta=data['meta']
             if not isinstance(meta,dict) or meta!=workbook_meta(manifest,mode,len(expected)) or type(meta.get('total')) is not int:
                 raise ValueError(key+': invalid workbook metadata')
             if not isinstance(data['problems'],list) or [p['id'] for p in data['problems']]!=expected:
                 raise ValueError(key+': workbook question order/identity mismatch')
-            if path.read_text(encoding='utf-8')!=render_workbook_html(data,data_folder/'assets'):
+            if path.suffix=='.html' and path.read_text(encoding='utf-8')!=render_workbook_html(data,data_folder/'assets'):
                 raise ValueError(key+': content outside original template/data slot')
             for n,(p,original) in enumerate(zip(data['problems'],selected),1):
                 if set(p)!=(ENTRY_KEYS|({'solution'} if mode=='answers' else set())):
@@ -59,8 +59,10 @@ def check_workbook_pack(folder,manifest):
                         url=node.attrs.get('src' if node.tag=='img' else 'href','');parts=urlsplit(url)
                         target=_within(folder,unquote(parts.path)) if parts.path else path
                         if not target.is_file(): errors.append(p['id']+': missing workbook resource '+url)
-                        elif parts.fragment and target.suffix in {'.md','.html'}:
-                            if target.suffix=='.md':
+                        elif parts.fragment and (not parts.path or target.suffix in {'.md','.html'}):
+                            if not parts.path:
+                                valid=unquote(parts.fragment) in expected
+                            elif target.suffix=='.md':
                                 valid='<a id="'+unquote(parts.fragment)+'"></a>' in target.read_text(encoding='utf-8')
                             else:
                                 tree=Parser();tree.feed(target.read_text(encoding='utf-8'))

@@ -107,19 +107,21 @@ def test_content_loader_rejects_a_blank_table_left_in_the_panel(tmp_path):
     load_workbook_content(m, run)             # 표지가 있으면 통과
 
 def test_published_payloads_obey_the_rule_and_match_the_source():
-    from scripts.lab.review_pack.workbook_render import read_workbook_payload
+    from scripts.lab.review_pack.workbook_render import read_workbook_payload, workbook_source_path
+    from scripts.lab.review_pack.manifest import DATA, load_manifest
     # Publish backups preserve earlier packs but are not current published folders.
-    packs = [Path('복습노트')/f'실험{n:02d}'/f'실험{n:02d}_{kind}.html'
-             for n in range(1,7) for kind in ('기출문제','기출풀이')]
-    assert all(path.is_file() for path in packs)
-    for path in packs:
-        data = read_workbook_payload(path)
-        marked = set()
-        for p in data['problems']:
-            for key in FIELDS:
-                check_work_tables(p['html'][key], p['id'])
-                if 'work-table' in p['html'][key]: marked.add(p['id'])
-        assert marked == PUBLISHED.get(path.parent.name, set()), f'{path}: 표지 달린 문항이 기대와 다르다'
+    packs = [Path('복습노트') / f'실험{n:02d}' for n in range(1, 7)]
+    for folder in packs:
+        manifest = load_manifest(folder / DATA / 'manifest.json')
+        for kind in ('question', 'review'):
+            path = workbook_source_path(folder, manifest, kind)
+            data = read_workbook_payload(path)
+            marked = set()
+            for p in data['problems']:
+                for key in FIELDS:
+                    check_work_tables(p['html'][key], p['id'])
+                    if 'work-table' in p['html'][key]: marked.add(p['id'])
+            assert marked == PUBLISHED.get(folder.name, set()), f'{path}: 표지 달린 문항이 기대와 다르다'
 
 def test_docs_state_the_work_table_rule():
     skill = Path('.claude/skills/logic-lab-review-pack/SKILL.md').read_text(encoding='utf-8')

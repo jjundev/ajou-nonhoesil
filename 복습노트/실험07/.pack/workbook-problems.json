@@ -1,0 +1,557 @@
+{
+  "meta": {
+    "mode": "problems",
+    "title": "실험 7 · 기출문제와 퀴즈 유형 연습",
+    "chapter": 0,
+    "total": 22,
+    "quiz_practice_version": 1
+  },
+  "problems": [
+    {
+      "id": "q-sr",
+      "kind": "기출",
+      "number": "1",
+      "title": "시프트 레지스터의 기능",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트 레지스터(Shift Register)에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>저장과 이동을 함께 설명해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-ring",
+      "kind": "기출",
+      "number": "2",
+      "title": "링 카운터와 초기화",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>링 카운터에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q를 그대로 되먹여요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-johnson-nand",
+      "kind": "기출",
+      "number": "3",
+      "title": "존슨 카운터의 NAND 역할",
+      "section": "실험 7 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>존슨 카운터에서 사용되는 2입력 NAND gate의 역할을 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>NAND의 배선을 먼저 구분해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-7496-block",
+      "kind": "기출",
+      "number": "4",
+      "title": "7496 내부 블록을 읽어요",
+      "section": "실험 7 · 정답 미확정",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>7496 내부 블록다이어그램을 보고, 동작 원리를 간단하게 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/ic7496-given.png",
+          "w_mm": 155,
+          "h_mm": 60.708333333333336
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>이동 경로와 비동기 제어를 나눠요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-convert",
+      "kind": "기출",
+      "number": "5",
+      "title": "직렬·병렬 변환의 두 방향",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트레지스터(Shift Register)에서 직렬-병렬 변환기와 병렬-직렬 변환기에 대해서 간단히 설명하시오. (3점)</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>입출력 양쪽에서 동시에 몇 비트를 다루는지 봐요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-ff-design",
+      "kind": "기출",
+      "number": "6",
+      "title": "4비트 회로와 7476 개수",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Flip Flop을 활용한 Shift Register 설계 (총 4 점)</p><p>1) 4 bit Shift Register을 구현하기 위해 필요한 7476칩의 개수와 J-K F/F의 개수는 각각 몇 개인가? (2점)</p><p>2) 아래의 “D F/F”을 활용하여 4 bit Serial in, parallel out Shift Register를 설계 하시오. (2점)</p>",
+        "conditions": "<p>원문에 주어진 D F/F는 상승 엣지 기호예요. 첫 칸을 Q0로 정해요.</p>",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/dff-given.png",
+          "w_mm": 45,
+          "h_mm": 30.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>칩 수와 저장 칸 수를 따로 세어요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-7496-circular",
+      "kind": "기출",
+      "number": "7",
+      "title": "7496을 순환 회로로 바꿔요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>7496으로 구현한 5bit Shift Register를 Circular Shift Register로 변환하는 방법을 간단히 설명하시오. (3점)</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 데이터를 버리지 않고 되돌려요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-jkff",
+      "kind": "예상문제",
+      "number": "8",
+      "title": "시프트용 JK 입력을 정해요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>시프트레지스터에 사용할 JK Flip-Flop에 대해서 설명하시오. Explain about a JK Flip-Flop used in the Shift Register.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>JK 표에서 복사 조건을 찾아요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-6bit-jk",
+      "kind": "출처 미확인",
+      "number": "9",
+      "title": "6비트에 필요한 JK 개수",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>6bit shift right register를 구현하기 위해 필요한 JK Flip-Flop의 개수는 몇 개인가?</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>저장 비트 수를 세어요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-p2s",
+      "kind": "출처 미확인",
+      "number": "10",
+      "title": "병렬에서 직렬로 꺼내요",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>병렬-직렬 변환기에 대해서 간단히 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>동시 적재 후 한 비트씩 읽어요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-johnson",
+      "kind": "출처 미확인",
+      "number": "11",
+      "title": "존슨 카운터의 상태 순환",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>존슨카운터에 대해 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q의 보수를 되먹여요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-circular",
+      "kind": "출처 미확인",
+      "number": "12",
+      "title": "순환 시프트의 연결",
+      "section": "실험 7 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Shift Register를 순환 Shift Register로 변환하는 방법을 간단히 설명하시오.</p>",
+        "conditions": "",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>마지막 Q를 직렬 입력으로 돌려요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-tf-01",
+      "kind": "연습문제",
+      "number": "13",
+      "title": "여섯 칸의 저장 용량",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>6비트 시프트 레지스터에는 JK F/F 6개가 필요하다. T/F</p>",
+        "conditions": "<p>7476 계열 한 칩에 JK 두 개가 들어 있어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-tf-02",
+      "kind": "연습문제",
+      "number": "14",
+      "title": "같은 엣지의 이전 값",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>한 유효 엣지에서 Q1은 엣지 직전 Q0를 저장한다. T/F</p>",
+        "conditions": "<p>공통 클록을 쓰며 입력은 setup/hold를 만족해요. Q0가 첫 칸이에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-tf-03",
+      "kind": "연습문제",
+      "number": "15",
+      "title": "Negative Logic LED",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Q=1이면 해당 LED가 켜진다. T/F</p>",
+        "conditions": "<p>7496 출력 LED는 +5V→330Ω→애노드→캐소드→Q 순서로 연결돼요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-tf-04",
+      "kind": "연습문제",
+      "number": "16",
+      "title": "JK의 복사 조건",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>J=K=D로 묶으면 모든 이전 Q에서 Q다음=D가 된다. T/F</p>",
+        "conditions": "<p>교안 74HC76의 SET·RESET이 비활성이며 하강 엣지 입력 시간 조건을 만족해요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>조건과 반례로 참·거짓을 판단해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-blank-01",
+      "kind": "연습문제",
+      "number": "17",
+      "title": "칩과 저장 칸",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>4비트 저장에는 JK ① ( )개와 7476 칩 ② ( )개가 필요해요.</p>",
+        "conditions": "<p>7476 한 칩에는 JK F/F 두 개가 들어 있어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-blank-02",
+      "kind": "연습문제",
+      "number": "18",
+      "title": "한 칸 이동을 계산해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>유효 엣지 한 번 후 Q0…Q5=① ( )이에요.</p>",
+        "conditions": "<p>Q0…Q5=101100이며 정상 이동 모드에서 S=0을 넣어요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-blank-03",
+      "kind": "연습문제",
+      "number": "19",
+      "title": "순환 연결의 두 핀",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>마지막 출력 ① (신호/핀)을 첫 입력 ② (신호/핀)에 연결해요.</p>",
+        "conditions": "<p>교안 7496을 일반 순환 시프트 레지스터로 바꿔요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>비트 순서와 신호 역할을 먼저 정해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-board-01",
+      "kind": "연습문제",
+      "number": "20",
+      "title": "첫 JK 입력용 보수 신호를 작도해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 브레드보드 작도",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>주어진 NAND 회로와 핀 명세를 빈 보드에 옮겨 전원·입력·출력과 미사용 핀을 표시하세요.</p>",
+        "conditions": "<p>74HC00 한 게이트로 D의 보수 K를 만들어요. LED는 사용하지 않고 3번 출력을 측정점 K로 둬요. 입력 D는 0V 또는 5V 외부 신호예요.</p><div class=\"table-wrap\"><table class=\"chip-spec\"><thead><tr><th>핀</th><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>1,2</td><td>A1,B1</td><td>D 입력을 두 입력에 공통 연결</td></tr><tr><td>3</td><td>Y1</td><td>K 측정 출력</td></tr><tr><td>14</td><td>VCC</td><td>+5V</td></tr><tr><td>7</td><td>GND</td><td>0V</td></tr><tr><td>4,5,9,10,12,13</td><td>미사용 입력</td><td>수업 작도 명세: NC(개방), 실사용 일반 권장과 구분</td></tr><tr><td>6,8,11</td><td>미사용 출력</td><td>NC, 접지 금지</td></tr></tbody></table></div><div class=\"work-board\"><img src=\".pack/figures/questions/inverter-blank.png\" alt=\"v1 배포 PDF 작도용 빈 보드\"></div>",
+        "ask": ""
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/inverter-given.png",
+          "w_mm": 75,
+          "h_mm": 25.403225806451612
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>같은 넷을 같은 도통 홀에 옮겨요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-short-01",
+      "kind": "연습문제",
+      "number": "21",
+      "title": "SIPO가 정보를 모으는 이유",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>SIPO의 기능과 마지막 병렬 출력이 만들어지는 과정을 두세 문장으로 설명하세요.</p>",
+        "conditions": "<p>이상적 4단 SIPO를 0000으로 초기화하고 입력 1,0,1,1을 순서대로 넣어요. Q0가 첫 칸이에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>기능·이동 과정·조건을 연결해 설명해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e07-short-02",
+      "kind": "연습문제",
+      "number": "22",
+      "title": "7496의 LED와 상태를 구분해요",
+      "section": "실험 7 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>유효 엣지 한 번 뒤의 출력 벡터와 LED 상태를 이유와 함께 설명하세요.</p>",
+        "conditions": "<p>clear 후 preset으로 QA…QE=11000을 만든 뒤 preset을 해제했어요. SER=0, LED는 Negative Logic이에요.</p><p>보고서 지정 항목 밖의 교안 보충 내용을 연습해요. 시험 제외라는 뜻은 아니에요.</p>",
+        "ask": ""
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>기능·이동 과정·조건을 연결해 설명해요</p>"
+        }
+      ]
+    }
+  ]
+}

@@ -49,4 +49,4 @@ python -m scripts.lab.review_pack check --folder STAGE
 python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment N
 ```
 
-실패한 팩은 교체하지 않아요. 기존 HTML/MD/PDF·그림·원문·사용자 파일의 해시와 백업·충돌 보호를 유지하고 최종 경로의 링크를 확인해요. 설명만 갱신했을 때 워크북을 rerender하거나 PDF를 다시 만들지 않아요. 문제설명 HTML/MD 두 링크, 대상·문항 수·검토 종류·미해결·백업 경로를 보고해요. 전체팩 흐름은 부모의 네 HTML·네 MD 여덟 링크 보고를 유지해요.
+실패한 팩은 교체하지 않아요. 기존 HTML/MD/PDF·그림·원문·사용자 파일의 해시와 백업·충돌 보호를 유지하고 최종 경로의 링크를 확인해요. 설명만 갱신했을 때 워크북을 rerender하거나 PDF를 다시 만들지 않아요. 문제설명 HTML/MD 두 링크, 대상·문항 수·검토 종류·미해결·백업 경로를 보고해요. 전체팩 흐름은 부모의 HTML 두 개·PDF 두 개·MD 네 개 링크 보고를 유지해요.

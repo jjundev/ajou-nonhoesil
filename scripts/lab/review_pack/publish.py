@@ -9,8 +9,15 @@ from .manifest import load_manifest,DATA,VENDOR_DIR,sync_shared_vendor
 from .sources import file_sha256
 from scripts.lab import config
 from .bank_provenance import check_bank_import
+from .workbook_storage import pack_write_lock
 
-def publish(stage,destination,root):
+
+def publish(stage, destination, root):
+    with pack_write_lock(destination):
+        return _publish_locked(stage, destination, root)
+
+
+def _publish_locked(stage,destination,root):
     root=Path(root).resolve();stage=Path(stage).resolve();dest=Path(destination).resolve()
     errors=check_pack(stage)
     if errors:raise ValueError('\n'.join(errors))
@@ -41,7 +48,10 @@ def publish(stage,destination,root):
     if new_owned!=actual:raise ValueError('generated_files must match stage')
     old_owned=set()
     if (dest/DATA/'manifest.json').exists():
-        old_owned=set(load_manifest(dest/DATA/'manifest.json').get('generated_files',[]))
+        previous=load_manifest(dest/DATA/'manifest.json')
+        if previous.get('workbook_delivery')=='pdf' and data.get('workbook_delivery')!='pdf':
+            raise ValueError('PDF 학습팩의 stage를 다시 build하세요')
+        old_owned=set(previous.get('generated_files',[]))
     user_files=[p for p in dest.rglob('*') if p.is_file() and p.relative_to(dest).as_posix() not in old_owned] if dest.exists() else []
     if any(p.relative_to(dest).as_posix() in new_owned for p in user_files):raise ValueError('User file collision')
     dest.parent.mkdir(parents=True,exist_ok=True)

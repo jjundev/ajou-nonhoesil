@@ -1108,6 +1108,8 @@
     ".pack/problem-explanations/검증결과.md",
     ".pack/sections/note-summaries.json",
     ".pack/sections/table-layout.json",
+    ".pack/workbook-answers.json",
+    ".pack/workbook-problems.json",
     ".pack/검증결과.md",
     ".pack/실험01_기출문제.md",
     ".pack/실험01_기출풀이.md",
@@ -1115,8 +1117,8 @@
     ".pack/실험01_실험설명.md",
     ".pack/원문과_저작안내.md",
     ".pack/출처와_문항목록.md",
-    "실험01_기출문제.html",
-    "실험01_기출풀이.html",
+    "실험01_기출문제.pdf",
+    "실험01_기출풀이.pdf",
     "실험01_문제설명.html",
     "실험01_실험설명.html"
   ],
@@ -1126,5 +1128,6 @@
     "content": "self_review",
     "independent": "not_run",
     "browser": "pass"
-  }
+  },
+  "workbook_delivery": "pdf"
 }

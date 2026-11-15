@@ -101,6 +101,30 @@ def output_names(experiment, *, review_presentation_version=None, problem_explan
         names.update({f'explanation_{ext}':f'{base}_문제설명.{ext}' for ext in ('html','md')})
     return names
 
+def workbook_pdf_names(experiment):
+    names = output_names(experiment, review_presentation_version=2)
+    return {key: names[f'{key}_html'].removesuffix('.html') + '.pdf'
+            for key in ('question', 'review')}
+
+
+def workbook_links(text, manifest):
+    """Resolve the workbook reference tokens for the chosen delivery."""
+    if manifest.get('workbook_delivery') != 'pdf':
+        names = output_names(manifest['experiment'], review_presentation_version=2)
+        return text.replace('{{REVIEW_HREF}}', names['review_html']).replace(
+            '{{QUESTION_HREF}}', names['question_html'])
+    pdfs = workbook_pdf_names(manifest['experiment'])
+    # Answer PDFs can have continuation pages. Drop the HTML fragment rather
+    # than assuming a problem's position is the first page of its answer.
+    text = re.sub(r'\{\{REVIEW_HREF\}\}(?:#[\w.-]+)?', pdfs['review'], text)
+    pages = {item['id']: index for index, item in enumerate(
+        (row for row in manifest['problems'] if row['status'] == 'included'), 1)}
+    def question_target(match):
+        page = pages.get(match[1])
+        return pdfs['question'] + (f'#page={page}' if page else '')
+    return re.sub(r'\{\{QUESTION_HREF\}\}(?:#([\w.-]+))?', question_target, text)
+
+
 def validate_manifest(data):
     errors=[]
     if not isinstance(data,dict):
@@ -117,6 +141,8 @@ def validate_manifest(data):
     modern=data.get('review_presentation_version') == 2
     if 'review_presentation_version' in data and (type(data['review_presentation_version']) is not int or not modern):
         errors.append('review_presentation_version must be 2 or absent')
+    if 'workbook_delivery' in data and (not modern or data['workbook_delivery'] != 'pdf'):
+        errors.append('workbook_delivery must be pdf with workbook version 2, or absent')
     explanation='problem_explanation_version' in data
     if explanation:
         if type(data['problem_explanation_version']) is not int or data['problem_explanation_version'] not in (1,2) or not modern:

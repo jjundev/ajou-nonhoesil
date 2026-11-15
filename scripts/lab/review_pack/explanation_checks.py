@@ -7,7 +7,7 @@ from .manifest import output_names,DATA,resolve_shared_vendor
 from .explanation_render import write_explanations
 from .html2md import Parser,check_md
 from .navigation import check_navigation
-from .workbook_render import read_workbook_payload
+from .workbook_render import read_workbook_payload, workbook_source_path
 from .explanation_content import within
 
 def check_explanations(folder: Path, manifest: dict) -> list[str]:
@@ -15,9 +15,7 @@ def check_explanations(folder: Path, manifest: dict) -> list[str]:
     folder=Path(folder);errors=[]
     names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=manifest['problem_explanation_version'])
     try:
-        from .workbook_checks import check_workbook_pack
-        errors.extend(check_workbook_pack(folder,manifest))
-        question=read_workbook_payload(folder/names['question_html'])
+        question=read_workbook_payload(workbook_source_path(folder,manifest,'question'))
         with TemporaryDirectory(prefix='explanation-check-') as scratch:
             paths=write_explanations(manifest,question,folder/DATA,Path(scratch),folder/DATA/'assets')
             for key,path in paths.items():

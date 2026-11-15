@@ -12,7 +12,7 @@ import tempfile
 from .html2md import Parser
 from .manifest import DATA, load_manifest, output_names
 from .navigation import check_navigation, render_navigation, navigation_items
-from .workbook_render import read_workbook_payload
+from .workbook_render import read_workbook_payload, workbook_source_path
 
 ROOT = Path(__file__).resolve().parents[3]
 ASSETS = ROOT / '.claude/skills/logic-lab-review-pack/assets'
@@ -139,13 +139,13 @@ def upgrade_packs(folders: list[Path], *, apply: bool = False,
         for key in ('note', 'review', 'question'):
             if key + '_html' not in names:
                 continue
+            if key != 'note' and workbook:
+                read_workbook_payload(workbook_source_path(folder, manifest, key))
+                continue
             path = folder / names[key + '_html']
             if path.is_symlink():
                 raise ValueError('Symlink page: ' + str(path))
             original = path.read_bytes()
-            if key != 'note' and workbook:
-                read_workbook_payload(path)  # Recognize the separate workbook format.
-                continue
             upgraded = upgrade_navigation_html(original.decode('utf-8'), names=names, kind=key).encode('utf-8')
             if original != upgraded:
                 changes[path] = (original, upgraded)

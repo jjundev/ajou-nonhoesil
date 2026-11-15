@@ -58,15 +58,13 @@ def assert_offline_reload(page):
         page.context.set_offline(False)
 
 
-def test_published_pack_table_borders_and_no_empty_condition_label():
+def test_published_pack_table_borders_and_no_empty_condition_label(published_workbook_preview):
     pw = pytest.importorskip('playwright.sync_api')
-    pack = Path('복습노트/실험05')
-    if not (pack/'실험05_기출문제.html').exists(): pytest.skip('실험05 없음')
     with pw.sync_playwright() as driver:
         with driver.chromium.launch(channel='chrome') as browser:
             page = browser.new_page(viewport={'width':1280,'height':900})
-            for name in ('실험05_기출문제.html','실험05_기출풀이.html'):
-                page.goto((pack/name).resolve().as_uri())
+            for key in ('question', 'review'):
+                page.goto(published_workbook_preview('실험05', key).as_uri())
                 page.wait_for_function('document.documentElement.dataset.ready',timeout=60000)
                 assert page.locator('body').get_attribute('data-overflow') == ''
                 assert page.locator('#book table').first.evaluate('t=>getComputedStyle(t.querySelector("td")).borderTopWidth') != '0px'
@@ -155,16 +153,14 @@ def test_answer_sheet_keeps_the_blank_table_in_the_panel(tmp_path):
     ('실험04', ['q-demux4', 'q-mux2-graded', 'q-mux4']),
     ('실험05', ['q-1of4-excess3', 'q-74hc148-table', 'q-dec3x8', 'q-excess3-enc-6row', 'q-excess3-enc-exam', 'q-prio-exam', 'q-prio-onehot']),
 ])
-def test_published_packs_keep_fill_in_tables_out_of_the_question_panel(exp, ids):
+def test_published_packs_keep_fill_in_tables_out_of_the_question_panel(exp, ids, published_workbook_preview):
     pw = pytest.importorskip('playwright.sync_api')
-    pack = Path('복습노트')/exp
-    if not (pack/f'{exp}_기출문제.html').exists(): pytest.skip(exp+' 없음')
     with pw.sync_playwright() as driver:
         with driver.chromium.launch(channel='chrome') as browser:
             page = browser.new_page(viewport={'width': 1280, 'height': 900})
-            for name in (f'{exp}_기출문제.html', f'{exp}_기출풀이.html'):
-                question = name.endswith('기출문제.html')
-                page.goto((pack/name).resolve().as_uri())
+            for key in ('question', 'review'):
+                question = key == 'question'
+                page.goto(published_workbook_preview(exp, key).as_uri())
                 page.wait_for_function('document.documentElement.dataset.ready', timeout=60000)
                 assert page.locator('body').get_attribute('data-overflow') == ''
                 for qid in ids:

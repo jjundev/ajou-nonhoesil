@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 
 from .checks import check_pack
 from .explanation_render import write_explanations
-from .workbook_render import read_workbook_payload
+from .workbook_render import read_workbook_payload, workbook_source_path
 from .manifest import DATA, load_manifest, output_names
 from .navigation_upgrade import ASSETS, ROOT, _atomic_write
 from .table_layout import TableLayoutError, layout_note_tables, load_note_layouts
@@ -71,9 +71,7 @@ def _rerender_explanation(folder, manifest):
     # 템플릿 사본을 바꾸면 문제설명도 새 템플릿으로 다시 그려야 일치한다.
     if manifest.get('problem_explanation_version') not in (1, 2):
         return {}
-    names = output_names(manifest['experiment'], review_presentation_version=2,
-                         problem_explanation_version=manifest['problem_explanation_version'])
-    question = read_workbook_payload(folder / names['question_html'])
+    question = read_workbook_payload(workbook_source_path(folder, manifest, 'question'))
     changes = {}
     with TemporaryDirectory(prefix='layout-upgrade-') as scratch:
         paths = write_explanations(manifest, question, folder / DATA, Path(scratch), ASSETS)

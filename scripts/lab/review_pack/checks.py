@@ -5,7 +5,7 @@ from collections import Counter
 from urllib.parse import unquote,urlsplit
 import re
 from scripts.lab.boolexpr import variables,eval_boolean
-from .manifest import load_manifest,output_names,data_dir,DATA,VENDOR_DIR,resolve_shared_vendor
+from .manifest import load_manifest,output_names,data_dir,DATA,VENDOR_DIR,resolve_shared_vendor,workbook_pdf_names
 from .html2md import Parser,check_md
 from .bank_provenance import check_bank_import
 from .bank_asset_checks import check_bank_problem_assets
@@ -29,6 +29,13 @@ def check_pack(folder):
     # 점으로 시작하는 다른 항목(.DS_Store)은 운영체제 몫이라 보지 않는다.
     errors+=['Pack file outside '+DATA+'/: '+p.name for p in sorted(folder.iterdir())
              if p.name!=DATA and not p.name.startswith('.') and not (p.is_file() and p.suffix in {'.html','.pdf'})]
+    if m.get('workbook_delivery') == 'pdf':
+        pdfs = workbook_pdf_names(m['experiment'])
+        for key in ('question', 'review'):
+            if (folder / names[key + '_html']).exists():
+                errors.append('Unexpected workbook HTML: ' + names[key + '_html'])
+            if not (folder / pdfs[key]).is_file():
+                errors.append('Missing workbook PDF: ' + pdfs[key])
     bank_errors=check_bank_import(folder,m)
     errors.extend(bank_errors)
     if not bank_errors:

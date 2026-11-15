@@ -1,0 +1,623 @@
+{
+  "meta": {
+    "mode": "problems",
+    "title": "실험 8 · 기출문제와 퀴즈 유형 연습",
+    "chapter": 0,
+    "total": 24,
+    "quiz_practice_version": 1
+  },
+  "problems": [
+    {
+      "id": "q-jk-toggle",
+      "kind": "출처 미확인",
+      "number": "1",
+      "title": "JK F/F를 Toggle로 쓰는 네 핀 값",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>JK F/F의 Clock이 Falling Edge일 때 출력(Q)이 Toggle로 동작하기 위한 PR, CLR, J, K핀의 입력값을 적으시오.</p>",
+        "conditions": "",
+        "ask": "<p>PR, CLR, J, K 네 핀의 값</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>강제 버튼이 쉬는 값부터 정하고, JK 표에서 반전 줄을 찾아요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-jk-toggle-3pin",
+      "kind": "출처 미확인",
+      "number": "2",
+      "title": "J, K, CLR로 Toggle 만들기",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>JK F/F의 출력 Q가 Toggle로 동작하기 위한 J, K, CLR핀의 입력값을 적으시오.</p>",
+        "conditions": "",
+        "ask": "<p>J, K, CLR 세 핀의 값</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>앞 문제와 같은 질문이에요. 물어보지 않은 핀도 조건으로 살펴요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-async-char",
+      "kind": "기출",
+      "number": "3",
+      "title": "비동기식 카운터의 특징",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>비동기식 카운터의 특징을 간략하게 적으시오.</p>",
+        "conditions": "",
+        "ask": "<p>비동기식의 특징</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>클럭이 어디로 들어가는지, 그 결과 언제 바뀌는지 두 가지를 써요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-xbit-ymod",
+      "kind": "기출",
+      "number": "4",
+      "title": "T F/F 3단 블록도의 동작",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>아래의 카운터가 어떻게 동작하는지 간략하게 적으시오. (X단 Y진 카운터, 출력값의 변화순서와 범위)</p>",
+        "conditions": "<p>원문에는 블록 C 안의 출력 라벨도 B, B′로 인쇄돼 있어요. 위로 뽑힌 선의 이름은 C예요.</p>",
+        "ask": "<p>X, Y, 출력값의 변화 순서와 범위</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/xbit-given.png",
+          "w_mm": 120,
+          "h_mm": 47.44186046511628
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>CLK가 어느 블록에만 들어가는지 보고 단 수를 세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-ripple-wave",
+      "kind": "기출",
+      "number": "5",
+      "title": "74HC76 비동기 회로의 A·B 파형",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>아래의 카운터 회로를 보고 A,B핀의 출력파형을 Clock에 맞추어 그리시오 (4점)</p>",
+        "conditions": "<p>회로는 원문 사진을 다시 그린 그림이에요. 사진에서 일부 핀 번호가 흐려도 배선은 교안 실험 1 회로와 같아요.</p><div class=\"work-board\"><img src=\".pack/figures/questions/ripple-blank.png\" alt=\"A, B 파형 답란과 6주기 Clock\"></div>",
+        "ask": "<p>Clock에 맞춘 A, B 파형</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/ripple-given.png",
+          "w_mm": 150,
+          "h_mm": 75.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>CLK 입력 앞의 동그라미를 보고, 둘째 단 CLK가 어디서 오는지 찾아요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-ripple-mod",
+      "kind": "출처 미확인",
+      "number": "6",
+      "title": "비동기 회로는 몇 진 카운터인가요",
+      "section": "실험 8 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>위 문제의 회로는 몇진 카운터인지 적으시오.</p>",
+        "conditions": "<p>‘위 문제의 회로’는 Quiz 4번의 74HC76 회로예요. 이 문제지 5번 문항의 비동기 회로와 같아요. 첫 단 J(4)·K(16)·PR(2)·CL(3)과 둘째 단 J(9)·K(12)·PR(7)·CL(8)은 VCC, 첫 단 CLK(1)는 Clock Generator(+5V, 1Hz), 둘째 단 CLK(6)는 첫 단 Q(15, A)에 연결돼요.</p>",
+        "ask": "<p>몇 진 카운터인지</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>한 사이클에 서로 다른 AB가 몇 개 나오는지 세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-and-gates",
+      "kind": "출처 미확인",
+      "number": "7",
+      "title": "4단 2진 카운터를 AND로 확인하기",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>4단 2진 카운터의 결과를 AND 게이트로만 확인하려면 몇 개의 AND 게이트가 필요한지 이유와 답을 적으시오.</p>",
+        "conditions": "",
+        "ask": "<p>필요한 AND 개수와 이유</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>실험 1에서 상태 수와 AND 수의 관계를 떠올려요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-mod5-pins-graded",
+      "kind": "기출",
+      "number": "8",
+      "title": "5진 카운터의 최소 출력핀",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>5진카운터를 만들기 위한 최소한의 출력핀의 개수와 이유를 적으시오 (3점)</p>",
+        "conditions": "",
+        "ask": "<p>최소 출력핀 개수와 이유</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>핀 k개로 구분할 수 있는 값의 개수를 떠올려요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-mod5-pins",
+      "kind": "출처 미확인",
+      "number": "9",
+      "title": "5진 카운터 출력핀 (확인용 단서)",
+      "section": "실험 8 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>5진 카운터를 만들기 위한 최소한의 출력핀의 개수와 이유를 적으시오. (출력을 확인하기 위한 최소한의 핀의 개수)</p>",
+        "conditions": "",
+        "ask": "<p>최소 출력핀 개수와 이유</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>앞 문항의 답과 단서 문구의 차이를 비교해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-sync-improve",
+      "kind": "출처 미확인",
+      "number": "10",
+      "title": "동기식이 보완한 점",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>동기식 카운터가 비동기식 카운터의 어떤 점을 보완한 것인지 적으시오.</p>",
+        "conditions": "",
+        "ask": "<p>동기식이 보완한 점</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>비동기식의 약점을 먼저 떠올리고 클럭 연결로 답해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-async-sync-compare",
+      "kind": "기출",
+      "number": "11",
+      "title": "비동기식과 동기식 설명·보완점",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>비동기식 카운터와 동기식 카운터에 대해서 설명하고 동기식 카운터가 비동기식 카운터의 어떤점을 보완한 것인지 적으시오 (3점)</p>",
+        "conditions": "",
+        "ask": "<p>두 방식의 설명과 보완점</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>두 방식을 클럭 연결로 한 문장씩 쓰고 마지막에 보완점을 써요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-sync-wave",
+      "kind": "기출",
+      "number": "12",
+      "title": "74HC76 동기 회로의 A·B 파형",
+      "section": "실험 8 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>아래의 카운터 회로를 보고 A, B핀의 출력파형을 Clock에 맞추어 그리시오.</p>",
+        "conditions": "<div class=\"work-board\"><img src=\".pack/figures/questions/sync-blank.png\" alt=\"A, B 파형 답란과 6주기 Clock\"></div>",
+        "ask": "<p>Clock에 맞춘 A, B 파형</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/sync-given.png",
+          "w_mm": 150,
+          "h_mm": 75.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>두 CLK가 같은 선인지 먼저 보고, J에 무엇이 들어가는지 찾아요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-mod-and-double",
+      "kind": "기출",
+      "number": "13",
+      "title": "몇 진인지와 2배 진수로 바꾸는 법",
+      "section": "실험 8 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>위 3번 문제에 주어진 회로는 몇진 카운터인지 적으시오. 만약에 ‘X’진 카운터라면 회로의 수정 없이 ‘2*X’(2배)진 카운터로 바꾸고 싶으면 어떻게 하면 되는지 적으시오.</p>",
+        "conditions": "<p>원문의 ‘위 3번 문제에 주어진 회로’는 앞의 74HC76 동기 회로예요. 아래 그림이 그 회로예요.</p>",
+        "ask": "<p>몇 진인지와 2배로 바꾸는 방법</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/sync-given-2.png",
+          "w_mm": 150,
+          "h_mm": 75.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>F/F 두 개로 구분할 수 있는 상태가 최대 몇 개인지 먼저 세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-7447",
+      "kind": "출처 미확인",
+      "number": "14",
+      "title": "7447 입력 0101의 핀 출력",
+      "section": "실험 8 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>아래의 왼쪽은 BCD-TO-SEVEN-SEGMENT DECODERS/DRIVERS 이고 오른쪽은 7-Segment이다. ‘ A = H, B = L, C= H, D = L, 3~5번핀은 H ’로 입력되었을 때 9~15번 핀으로 나오는 출력을 적으시오.</p>",
+        "conditions": "<p>원문 그림의 핀 배치를 옮긴 표예요. 16번 라벨은 원문에서 잘려 인쇄됐어요. 원문은 칩 번호 없이 “BCD-TO-SEVEN-SEGMENT DECODERS/DRIVERS”라고만 적어요.</p><div class=\"table-wrap\"><table><thead><tr><th>핀</th><th>이름</th><th>핀</th><th>이름</th></tr></thead><tbody><tr><td>1</td><td>B</td><td>16</td><td>VCC</td></tr><tr><td>2</td><td>C</td><td>15</td><td>f</td></tr><tr><td>3</td><td>LT(윗줄)</td><td>14</td><td>g</td></tr><tr><td>4</td><td>BI/RBO(윗줄)</td><td>13</td><td>a</td></tr><tr><td>5</td><td>RBI(윗줄)</td><td>12</td><td>b</td></tr><tr><td>6</td><td>D</td><td>11</td><td>c</td></tr><tr><td>7</td><td>A</td><td>10</td><td>d</td></tr><tr><td>8</td><td>GND</td><td>9</td><td>e</td></tr></tbody></table></div>",
+        "ask": "<p>핀 9~15의 출력</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/pin7447-given.png",
+          "w_mm": 120,
+          "h_mm": 65.5813953488372
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>먼저 DCBA를 숫자로 바꾸고, 세그먼트를 켜는 출력이 H인지 L인지 정해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-tf-01",
+      "kind": "연습문제",
+      "number": "15",
+      "title": "둘째 단이 바뀌는 순간",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>A가 0에서 1로 올라갈 때 B가 뒤집힌다. T/F</p>",
+        "conditions": "<p>교안 실험 1의 74HC76 비동기 2단 카운터예요. J=K=1, PR=CL=1이에요.</p>",
+        "ask": "<p>참(T)·거짓(F) 판정</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>교안의 Falling Edge 조건을 대입해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-tf-02",
+      "kind": "연습문제",
+      "number": "16",
+      "title": "단 수와 상태 수",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>n단 2진 카운터의 상태 수는 2ⁿ개이다. T/F</p>",
+        "conditions": "<p>되먹임 없이 T F/F를 n단 이은 카운터예요.</p>",
+        "ask": "<p>참(T)·거짓(F) 판정</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>작은 n을 넣어 조건을 확인해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-tf-03",
+      "kind": "연습문제",
+      "number": "17",
+      "title": "R0로 0에 고정",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>이때 클럭이 들어와도 출력은 QD QC QB QA = L L L L을 유지한다. T/F</p>",
+        "conditions": "<p>7490에서 R0(1)=R0(2)=H, R9(1)=R9(2)=L이에요.</p>",
+        "ask": "<p>참(T)·거짓(F) 판정</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>Reset 표에서 같은 줄을 찾아요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-tf-04",
+      "kind": "연습문제",
+      "number": "18",
+      "title": "LT 입력의 동작",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>LT에 L을 주면 모든 세그먼트가 꺼진다. T/F</p>",
+        "conditions": "<p>교안 7447 Control Pins 표는 “0: On, 1: Off”예요.</p>",
+        "ask": "<p>참(T)·거짓(F) 판정</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>LT와 BI의 동작을 구분해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-blank-01",
+      "kind": "연습문제",
+      "number": "19",
+      "title": "켜지는 출력 찾기",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>이때 입력이 모두 1인 AND는 ① ( )이고, 켜지는 출력 번호는 ② ( )예요.</p>",
+        "conditions": "<p>교안 실험 1 디코더예요. A를 앞에 적어 AB=01이에요. 즉 A=0, B=1이에요.</p>",
+        "ask": "<p>빈칸의 값</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>A가 낮은 자리임을 먼저 정해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-blank-02",
+      "kind": "연습문제",
+      "number": "20",
+      "title": "7490의 두 연결",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>클럭은 ① ( )번 핀(INPUT A)에 넣고, QA인 ② ( )번 핀을 ③ ( )번 핀(INPUT B)에 연결해요.</p>",
+        "conditions": "<p>교안 p11처럼 7490을 0~9 카운터로 써요.</p>",
+        "ask": "<p>빈칸의 값</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>2진 단 → 5진 단 순서로 따라가요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-blank-03",
+      "kind": "연습문제",
+      "number": "21",
+      "title": "입력 0011의 표시",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>표시되는 숫자는 ① ( )이고, 켜지는 세그먼트는 ② ( )예요.</p>",
+        "conditions": "<p>7447 제어 핀은 모두 H이고 입력 D C B A=0011이에요.</p>",
+        "ask": "<p>빈칸의 값</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>D C B A 순서로 값을 읽어요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-board-01",
+      "kind": "연습문제",
+      "number": "22",
+      "title": "출력 3의 AND를 작도해요",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 브레드보드 작도",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>주어진 AND 회로와 핀 명세를 빈 보드에 옮겨 전원·입력·출력과 미사용 핀을 표시하세요.</p>",
+        "conditions": "<p>74HC08 한 게이트로 실험 1의 출력 3(A·B)을 만들어요. A는 1번, B는 2번에 넣고 3번 출력을 측정점 Y로 둬요. 입력 A, B는 0V 또는 5V 외부 신호예요. LED는 쓰지 않아요.</p><div class=\"table-wrap\"><table class=\"chip-spec\"><thead><tr><th>핀</th><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>1</td><td>A</td><td>입력 A</td></tr><tr><td>2</td><td>B</td><td>입력 B</td></tr><tr><td>3</td><td>Y</td><td>출력(측정점)</td></tr><tr><td>14</td><td>VCC</td><td>+5V</td></tr><tr><td>7</td><td>GND</td><td>0V</td></tr><tr><td>4,5,9,10,12,13</td><td>미사용 입력</td><td>수업 작도 명세: NC(개방), 실사용 일반 권장과 구분</td></tr><tr><td>6,8,11</td><td>미사용 출력</td><td>NC, 접지 금지</td></tr></tbody></table></div><div class=\"work-board\"><img src=\".pack/figures/questions/and-blank.png\" alt=\"v1 배포 PDF 작도용 빈 보드\"></div>",
+        "ask": "<p>완성한 작도</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/and-given.png",
+          "w_mm": 75,
+          "h_mm": 26.612903225806452
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>같은 넷을 같은 도통 홀에 옮겨요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-short-01",
+      "kind": "연습문제",
+      "number": "23",
+      "title": "가짜 상태가 생기는 이유",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>최종 AB와, 그 사이에 잠깐 나타나는 값을 이유와 함께 두세 문장으로 설명하세요.</p>",
+        "conditions": "<p>교안 실험 1의 비동기 2단 카운터예요. AB=11에서 CLK가 떨어져요. A를 앞에 적어요.</p>",
+        "ask": "<p>이유를 담은 설명</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>클럭 경로로 인과를 설명해요</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e08-short-02",
+      "kind": "연습문제",
+      "number": "24",
+      "title": "L일 때 켜지는 이유",
+      "section": "실험 8 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>7447 출력이 L일 때 세그먼트가 켜지는 이유를 전류가 흐르는 길로 설명하세요.</p>",
+        "conditions": "<p>FND는 Common Anode이고 3·8번이 +5V예요. 각 세그먼트는 330Ω을 거쳐 7447 출력에 연결돼요.</p>",
+        "ask": "<p>이유를 담은 설명</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 단서",
+          "html": "<p>전류의 시작과 끝을 먼저 적어요</p>"
+        }
+      ]
+    }
+  ]
+}

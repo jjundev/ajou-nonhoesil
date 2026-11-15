@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,re
 import pytest
-from scripts.lab.review_pack.workbook_render import read_workbook_payload
+from scripts.lab.review_pack.workbook_render import read_workbook_payload, workbook_source_path
 from scripts.lab.review_pack.html2md import Parser
 from scripts.lab.review_pack.explanation_content import text
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,7 +10,7 @@ def audit_experiment(number):
     folder=ROOT/'복습노트'/f'실험{number:02d}'
     m=json.loads((folder/'.pack/manifest.json').read_text())
     selected=[p for p in m['problems'] if p['status']=='included']
-    q=read_workbook_payload(folder/f'실험{number:02d}_기출문제.html')['problems']
+    q=read_workbook_payload(workbook_source_path(folder,m,'question'))['problems']
     tree=Parser();tree.feed((folder/f'실험{number:02d}_문제설명.html').read_text())
     articles=[n for n in tree.root.walk() if n.tag=='article' and 'topic' in n.attrs.get('class','').split()]
     report=(folder/'.pack/problem-explanations/검증결과.md').read_text()

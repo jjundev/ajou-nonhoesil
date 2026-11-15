@@ -1,0 +1,316 @@
+{
+  "meta": {
+    "mode": "problems",
+    "title": "실험 4 · 기출 문제",
+    "chapter": 0,
+    "total": 12
+  },
+  "problems": [
+    {
+      "id": "q-mux2",
+      "kind": "기출",
+      "number": "1",
+      "title": "2×1 MUX의 게이트 설계",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.</p>",
+        "conditions": "",
+        "ask": "<p>회로, 논리식, 진리표를 작성하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "선택선별 경로",
+          "html": "<p>S가 0일 때와 1일 때 전달할 입력을 따로 정한 뒤 두 경로를 합쳐 보세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-mux4",
+      "kind": "기출",
+      "number": "2",
+      "title": "Enable 있는 4×1 MUX 표 완성",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>다음과 같이 Enable을 갖는 4x1 멀티플렉서를 참고하여, 아래 진리표의 알맞은 출력값을 기록하라. (E가 enable 입력이고 S0, S1은 선택입력, 그리고 D0~D3이 4개의 데이터 입력이다.)</p>",
+        "conditions": "<div class=\"table-wrap work-table\"><table><thead><tr><th>E</th><th>S1</th><th>S0</th><th>D3</th><th>D2</th><th>D1</th><th>D0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+        "ask": "<p>표의 빈 출력 Y 네 칸을 채우세요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-mux4-given-01.png",
+          "w_mm": 140.0,
+          "h_mm": 84.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "주소·열 순서",
+          "html": "<p>주소는 S1S0예요. 데이터 열은 D3부터 D0까지 역순이며 E가 활성인 조건도 확인하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-demux2",
+      "kind": "예상문제",
+      "number": "3",
+      "title": "보충: 1×2 DMUX의 게이트 설계",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>And gate 2개, Not gate 1개를 가지고 1x2 디멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 나타내어라.</p>",
+        "conditions": "",
+        "ask": "<p>회로, 각 출력의 논리식, 진리표를 작성하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "선택된 출력",
+          "html": "<p>데이터를 두 AND 경로에 나누고 선택선과 그 보수로 한 경로씩 열어 보세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-design4",
+      "kind": "예상문제",
+      "number": "4",
+      "title": "보충: 지정 게이트로 4×1 MUX 설계",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>다음과 같이 함수표와 블록도를 가지도록 블록도 내부의 회로를 설계하시오. (2개의 NOT, 4개의 3input AND, 1개의 4input OR)</p>",
+        "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>S1</th><th>S0</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>I0</td></tr><tr><td>0</td><td>1</td><td>I1</td></tr><tr><td>1</td><td>0</td><td>I2</td></tr><tr><td>1</td><td>1</td><td>I3</td></tr></tbody></table></div>",
+        "ask": "<p>지정한 게이트 수로 블록 내부 회로를 설계하세요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-design4-given-01.png",
+          "w_mm": 140.0,
+          "h_mm": 84.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "주소별 AND",
+          "html": "<p>기능표의 주소마다 데이터 하나를 통과시킬 AND 경로가 필요해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-decoder",
+      "kind": "기출",
+      "number": "5",
+      "title": "디코더와 MUX·DMUX의 관계",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>디코더와 연관지어 멀티플렉서와 디멀티플렉서의 특징을 설명하시오. (디코더(decoder)란 n비트의 2진 코드(code) 값을 입력으로 받아들여 최대 2ⁿ개의 서로 다른 정보로 바꿔 주는 조합 회로를 말한다.)</p>",
+        "conditions": "",
+        "ask": "<p>디코더와 연관 지어 MUX와 DMUX의 특징을 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "선택 신호·데이터",
+          "html": "<p>주소를 출력 선택 신호로 바꾼 다음, 데이터를 어디서 곱하고 어디서 합치는지 비교하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-tri",
+      "kind": "기출",
+      "number": "6",
+      "title": "활성 Low tri-state 버퍼로 MUX 설계",
+      "section": "실험 4 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>다음 회로도의 Tri-state buffer와 inverter를 결선하여 2x1 Mux를 설계해 보시오. (Buffer는 High or Low의 2-State(2상태) 출력을 갖는다. 그에 비해 Tri-state buffer는 기존의 2-State와 함께 High-Z(impedance) 상태 출력을 갖는다. 동작은 enable 핀이 Enable일 때 “출력=입력”이 되고 Disable일 때 “출력=HIGH-Z”가 된다. Tri-state buffer가 일종의 1채널 switch 역할을 함으로 Mux를 구성할 수 있다.)</p>",
+        "conditions": "<div class=\"table-wrap\"><table><thead><tr><th>A</th><th>nOE</th><th>B</th></tr></thead><tbody><tr><td>X</td><td>High</td><td>HIGH-Z</td></tr><tr><td>High</td><td>Low</td><td>High</td></tr><tr><td>Low</td><td>Low</td><td>Low</td></tr></tbody></table></div>",
+        "ask": "<p>Tri-state 버퍼와 인버터를 결선하여 2×1 MUX를 설계하세요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-tri-given-01.png",
+          "w_mm": 140.0,
+          "h_mm": 84.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "nOE·Z·공통선",
+          "html": "<p>nOE=0에서 버퍼가 구동해요. 두 출력이 공통선에서 동시에 구동하지 않도록 제어하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-muxdef",
+      "kind": "기출",
+      "number": "7",
+      "title": "MUX를 간단히 서술",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>멀티플렉서에 대해서 간단하게 서술하시오. (인쇄 배점 2점, 수기 배점 3)</p>",
+        "conditions": "",
+        "ask": "<p>멀티플렉서를 간단히 서술하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "데이터·선택·출력",
+          "html": "<p>데이터 입력 수, 선택 신호, 데이터 출력 수를 나누어 설명하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-demuxdef",
+      "kind": "출처 미확인",
+      "number": "8",
+      "title": "DMUX를 간단히 서술 — 기출 여부 미확인",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>디멀티플렉서에 대해서 간단하게 서술하시오.</p>",
+        "conditions": "",
+        "ask": "<p>디멀티플렉서를 간단히 서술하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "입력·분배 경로",
+          "html": "<p>데이터가 들어오는 곳과 선택 신호가 지정하는 출력 경로를 구분하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-difference",
+      "kind": "출처 미확인",
+      "number": "9",
+      "title": "MUX와 DMUX의 차이 — 기출 여부 미확인",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>멀티플렉서와 디멀티플렉서의 차이를 알기 쉽게 서술하시오.</p>",
+        "conditions": "",
+        "ask": "<p>MUX와 DMUX의 차이를 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "데이터 흐름 방향",
+          "html": "<p>데이터 경로가 모이는지 흩어지는지, 선택되지 않은 데이터가 남는지 비교하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-demux4",
+      "kind": "출처 미확인",
+      "number": "10",
+      "title": "1×4 DMUX 출력표 — 기출 여부 미확인",
+      "section": "실험 4 · 답안 충돌",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>다음과 다음과 같이 Enable을 갖는 1x4 디멀티플렉서를 참고하여, 아래 진리표의 맞은 출력값을 기록하라. (데이터 입력 D는 enable 입력의 역할도 동시에 함을 주목하라)</p>",
+        "conditions": "<p>아래는 원자료의 입력 조건을 옮기고 학습용 출력란만 비운 전사 표다. 원자료는 이미 답이 채워진 표이다.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>D</th><th>S1</th><th>S0</th><th>Y3</th><th>Y2</th><th>Y1</th><th>Y0</th></tr></thead><tbody><tr><td>0</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>0</td><td>0</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>0</td><td>+5</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>+5</td><td>0</td><td></td><td></td><td></td><td></td></tr><tr><td>+5</td><td>+5</td><td>+5</td><td></td><td></td><td></td><td></td></tr></tbody></table></div>",
+        "ask": "<p>주어진 입력 조건의 출력란을 채우세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "논리값·출력 순서",
+          "html": "<p>High/Low를 먼저 읽고 주소마다 선택되는 출력 하나를 찾으세요. 원문 X와 계산값은 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-mux2-graded",
+      "kind": "기출",
+      "number": "11",
+      "title": "채점본 2×1 MUX의 지정 네 행",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>And gate 2개, Or gate 1개 그리고 Not gate 1개를 가지고 2x1 멀티플렉서의 회로를 설계하고, 그에 맞는 논리식과 진리표를 작성하시오. (3점)</p>",
+        "conditions": "<div class=\"table-wrap work-table\"><table><thead><tr><th>Sel</th><th>X0</th><th>X1</th><th>Y</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>0</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>",
+        "ask": "<p>회로와 논리식을 쓰고 지정된 네 행의 출력을 구하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "지정된 네 행",
+          "html": "<p>일반 8행 표를 다시 쓰기보다 인쇄된 네 행의 Sel 값을 먼저 확인하세요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-active-general",
+      "kind": "기출",
+      "number": "12",
+      "title": "Active High와 Active Low의 정의",
+      "section": "실험 4 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>논리회로에서 다루는 신호는 크게 active high와 active low로 구분된다. Active high와 active low에 대해서 서술하시오. (인쇄 배점 2점, 수기 배점 4)</p>",
+        "conditions": "",
+        "ask": "<p>Active High와 Active Low를 각각 서술하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "전압·기능 구분",
+          "html": "<p>전압이 높은 것과 기능이 유효한 것은 같지 않아요. enable을 예로 생각해 보세요.</p>"
+        }
+      ]
+    }
+  ]
+}

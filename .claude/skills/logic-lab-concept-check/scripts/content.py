@@ -10,7 +10,7 @@ from scripts.lab import config
 from scripts.lab.boolexpr import eval_boolean, variables
 from scripts.lab.review_pack.html2md import Parser
 from scripts.lab.review_pack.manifest import load_manifest, output_names
-from scripts.lab.review_pack.workbook_render import read_workbook_payload
+from scripts.lab.review_pack.workbook_render import read_workbook_payload, workbook_source_path
 
 SRC_NAME = "자료_확인문제"
 DATA = config.PACK_DATA_DIR
@@ -81,7 +81,9 @@ def read_pack(folder):
         names = output_names(experiment, review_presentation_version=manifest.get("review_presentation_version"))
         note = folder / names["note_html"]
         note_md = folder / DATA / names["note_md"]
-        questions = folder / names.get("question_html", names["review_html"])
+        questions = (workbook_source_path(folder, manifest, "question")
+                     if manifest.get("review_presentation_version") == 2
+                     else folder / names["review_html"])
         for path in (note, note_md, questions):
             if not path.is_file():
                 raise ContentError(f"학습팩 근거 파일이 없어요: {path}")

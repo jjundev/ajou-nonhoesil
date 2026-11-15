@@ -81,7 +81,8 @@ def test_apply_creates_backup_and_preserves_workbooks(tmp_path):
     from scripts.lab.review_pack.navigation_upgrade import upgrade_packs
     folder = pack_copy(tmp_path)
     source = (folder/'실험03_실험설명.html').read_bytes()
-    workbooks = {p: p.read_bytes() for p in folder.glob('*_기출*.html')}
+    workbooks = {p: p.read_bytes() for p in [*folder.glob('*_기출*.pdf'), *folder.glob('.pack/workbook-*.json')]}
+    assert len(workbooks) == 4
     changed = upgrade_packs([folder], apply=True, backup_root=tmp_path/'backup')
     assert folder/'실험03_실험설명.html' in changed
     assert (tmp_path/'backup/실험03/실험03_실험설명.html').read_bytes() == source

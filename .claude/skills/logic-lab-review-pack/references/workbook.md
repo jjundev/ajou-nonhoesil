@@ -45,7 +45,7 @@ style="max-width:100%;height:auto" alt="2×1 MUX 완성 회로"></p>
 
 ## 문제설명 연결
 
-문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 네 HTML·네 MD 출력은 유지한다.
+문제설명 전용 기준은 [전용 format 문서](../../logic-lab-problem-explain/references/format.md)를 읽는다. 전체팩은 같은 실행에서 새 설명 v2를 저작하며 기존 워크북 projection·문항 정보와 실험설명·문제설명 HTML, 문제지·해설지 PDF, MD 네 개 출력은 유지한다.
 
 ## 정책이 있는 퀴즈 유형 연습
 

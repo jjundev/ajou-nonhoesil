@@ -8,7 +8,7 @@ from .explanation_content import load_explanations, within
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
 from .table_layout import load_layouts, layout_problem_tables, TableLayoutError
-from .manifest import output_names, DATA, replace_vendor_urls
+from .manifest import workbook_links, output_names, DATA, replace_vendor_urls
 from .navigation import render_navigation
 from .html2md import export_document, Parser
 
@@ -47,7 +47,7 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
         for f in p['figures']:
             problem+=f'<figure class="figure"><img src="{esc(f["src"])}" alt="{esc(p["title"])} · 주어진 그림"></figure>'
         problem+='</div>'
-        fragment=parts['explanation'].replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
+        fragment=workbook_links(parts['explanation'].replace('{{NOTE_HREF}}',names['note_html']),manifest)
         # Fragment paths are document-relative; preserve both authoring and published form.
         bodies.append(f'<article class="topic" id="{esc(p["id"])}"><h3>문제 {esc(p["number"])} · {esc(p["title"])}</h3>'+separate_tables(separate_equations(problem))+separate_tables(separate_equations(fragment))+'</article>')
         target=folder/DATA/manifest['problems'][next(i for i,x in enumerate(manifest['problems']) if x['id']==p['id'])]['explanation_fragment']

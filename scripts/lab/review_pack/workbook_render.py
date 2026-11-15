@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 from .html2md import Parser
-from .manifest import DATA, VENDOR_URL, replace_vendor_urls
+from .manifest import DATA, output_names, VENDOR_URL, replace_vendor_urls
 from .workbook_content import _strict_json
 from .question_bank import _unique_json_object
 
@@ -225,8 +225,28 @@ def render_workbook_html(data, assets):
             if url and not url.startswith(VENDOR_URL+'/'): raise ValueError('Unmapped template resource: '+url)
     return text
 
+def workbook_source_path(folder, manifest, key):
+    """Locate the workbook source in a PDF pack or an older HTML pack."""
+    folder = Path(folder)
+    if manifest.get('workbook_delivery') == 'pdf':
+        mode = {'question': 'problems', 'review': 'answers'}[key]
+        return folder / DATA / f'workbook-{mode}.json'
+    names = output_names(manifest['experiment'], review_presentation_version=2)
+    return folder / names[key + '_html']
+
+
+def write_workbook_payload(path, data):
+    path = Path(path)
+    path.write_text(json.dumps(data, ensure_ascii=False, allow_nan=False, indent=2) + '\n',
+                    encoding='utf-8')
+    return path
+
+
 def read_workbook_payload(path):
-    parser=Parser();parser.feed(Path(path).read_text(encoding='utf-8'))
+    path = Path(path)
+    if path.suffix == '.json':
+        return _strict_json(path)
+    parser=Parser();parser.feed(path.read_text(encoding='utf-8'))
     nodes=[n for n in parser.root.walk() if n.attrs.get('id')=='workbook-data']
     if len(nodes)!=1 or nodes[0].tag!='script' or nodes[0].attrs.get('type')!='application/json':
         raise ValueError('Missing/duplicate workbook JSON script')

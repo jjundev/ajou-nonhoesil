@@ -1,0 +1,623 @@
+{
+  "meta": {
+    "mode": "problems",
+    "title": "실험 6 · 기출문제와 퀴즈 유형 연습",
+    "chapter": 0,
+    "total": 24,
+    "quiz_practice_version": 1
+  },
+  "problems": [
+    {
+      "id": "q-diff",
+      "kind": "기출",
+      "number": "1",
+      "title": "Latch와 Flip-Flop의 차이",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Latch와 Flip-Flop의 차이점에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>입력이 출력에 반영되는 때를 기준으로 두 소자를 비교하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "비교 기준",
+          "html": "<p>제어 입력이 1인 “동안”과 제어 입력이 바뀌는 “순간” 중 무엇에 반응하는지 생각해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-latch",
+      "kind": "예상문제",
+      "number": "2",
+      "title": "Latch를 설명",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Latch에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>Latch가 무엇을 저장하고 언제 입력을 받아들이는지 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "세 가지",
+          "html": "<p>무엇을 저장하나, 어떻게 기억하나(되먹임), 언제 입력이 반영되나를 차례로 써요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-ff",
+      "kind": "예상문제",
+      "number": "3",
+      "title": "Flip-Flop을 설명",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>Flip-Flop에 대해서 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>Flip-Flop이 무엇을 저장하고 언제 입력을 받아들이는지 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "래치와 비교",
+          "html": "<p>저장하는 것은 래치와 같아요. 입력이 반영되는 순간이 달라요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-sr-nand-00",
+      "kind": "출처 미확인",
+      "number": "4",
+      "title": "기본 S-R latch에 S=R=0을 넣으면",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>아래의 회로는 기본 S-R latch 회로이다. S와 R이 동시에 0이 입력되면 Q와 Q′의 출력은 무엇인가? Q′ = not Q 등식이 성립하는가?</p>",
+        "conditions": "<p>NAND(74HC00) 두 개의 출력이 서로의 입력에 연결돼 있어요. S는 Q를 내는 NAND, R은 Q′을 내는 NAND에 들어가요. Enable 입력은 없어요.</p>",
+        "ask": "<p>S=R=0일 때 Q와 Q′을 구하고, Q′=not Q가 성립하는지 답하세요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-sr-nand-00-given-01.png",
+          "w_mm": 150.0,
+          "h_mm": 102.632
+        }
+      ],
+      "hints": [
+        {
+          "label": "NAND 성질",
+          "html": "<p>NAND는 입력에 0이 하나라도 있으면 출력이 1이에요. 각 NAND에 0이 들어가는지만 보면 돼요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-rs-latch",
+      "kind": "예상문제",
+      "number": "5",
+      "title": "Enable이 있는 R-S Latch의 진리표",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>R-S Latch의 Truth table을 완성하시오.</p>",
+        "conditions": "<p>회로는 아래 그림과 같아요. S·C가 첫 NAND, R·C가 둘째 NAND에 들어가고 그 출력이 서로 되먹임된 NAND 두 개로 가요(74HC00 네 개 게이트). C는 Enable 역할이에요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p>",
+        "ask": "<p>표의 Q(t)를 채우세요. 부정 행은 회로가 내는 값과 쓰지 않는 이유를 함께 써요.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>S</th><th>R</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr><tr><td>x</td><td>x</td><td>0</td><td></td></tr></tbody></table></div>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-rs-latch-given-01.png",
+          "w_mm": 150.0,
+          "h_mm": 95.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "C부터",
+          "html": "<p>C=0이면 앞단 NAND 두 개의 출력이 어떻게 되는지 먼저 봐요. 그다음 C=1에서 S·R마다 앞단 출력 → Q 순서로 따라가요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-rs-quiz",
+      "kind": "출처 미확인",
+      "number": "6",
+      "title": "R-S Latch를 Toggle 되게 바꾸기",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>1) R-S Latch 회로로부터 (R,S가 1 일때), Q의 값이 Toggle 되게 하려면 회로를 어떻게 변형해야 하는가?</p><p>2) R-S Latch 회로에서 (R,S 가 1일 때) 갖는 문제점이 무엇인가?</p><p>(1)의 결과와 같이 변형된 회로를 무슨 회로라고 부르는가?</p>",
+        "conditions": "<p>주어진 회로는 S·C, R·C를 받는 NAND 두 개와 서로 되먹임된 NAND 두 개로 된 R-S Latch예요.</p>",
+        "ask": "<p>세 소문항, 1) 변형 방법, 2) 문제점, 3) 변형된 회로의 이름(원문의 “(1)의 결과와 같이…” 문장)에 모두 답하세요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-rs-quiz-given-01.png",
+          "w_mm": 150.0,
+          "h_mm": 95.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "Toggle 조건",
+          "html": "<p>Toggle은 “지금 Q가 0이면 Set, 1이면 Reset”이에요. S 쪽 NAND가 Q가 0일 때만, R 쪽 NAND가 Q가 1일 때만 열리게 하려면 각 NAND에 무엇을 하나 더 넣으면 될지 생각해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-dff-table",
+      "kind": "예상문제",
+      "number": "7",
+      "title": "회로가 주어진 D F/F 진리표",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>D F/F의 Truth table을 완성하시오(회로설계로 대체될 수 있음)</p>",
+        "conditions": "<p>회로는 아래 그림과 같아요. 원문 그림의 입력 단자 이름은 S와 C예요. S는 첫 NAND로 바로, 또 NOT(74HC04)을 거쳐 둘째 NAND로 들어가요. C는 두 NAND에 함께 들어가요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p>",
+        "ask": "<p>표의 Q와 Q′을 채우세요.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>S</th><th>C</th><th>Q</th><th>Q′</th></tr></thead><tbody><tr><td>0</td><td>1</td><td></td><td></td></tr><tr><td>1</td><td>1</td><td></td><td></td></tr><tr><td>X</td><td>0</td><td></td><td></td></tr></tbody></table></div>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-dff-table-given-01.png",
+          "w_mm": 150.0,
+          "h_mm": 95.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "SR로 바꿔 읽기",
+          "html": "<p>NOT 때문에 아래 NAND로 가는 값은 항상 S의 반대예요. 그러면 위 NAND와 아래 NAND 중 어느 쪽에 1이 들어가는지 C=1에서 따져요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-dff-design",
+      "kind": "기출",
+      "number": "8",
+      "title": "D F/F 진리표를 만족하는 회로 설계",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>D F/F의 Truth table을 만족하는 회로를 설계하시오.</p><div class=\"table-wrap\"><table><thead><tr><th>D</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>x</td><td>0</td><td>Q(t-1)</td></tr></tbody></table></div>",
+        "conditions": "<p>표는 원문 그대로이고 이미 채워져 있어요. C는 제어 입력이에요. 원문은 F/F라고 부르지만 표에는 C가 1인 동안의 동작이 적혀 있어요.</p>",
+        "ask": "<p>이 표를 만족하는 게이트 회로를 그리세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "출발점",
+          "html": "<p>C=1이면 Q=D, C=0이면 유지예요. Enable이 있는 SR 래치에서 S와 R을 무엇으로 정하면 이 표가 되는지 생각해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-jkff-short",
+      "kind": "출처 미확인",
+      "number": "9",
+      "title": "회로가 주어진 J-K F/F 진리표",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>J-K F/F의 Truth table을 완성하시오.</p>",
+        "conditions": "<p>회로는 아래 그림과 같아요. J·C와 Q′을 받는 3입력 NAND, K·C와 Q를 받는 3입력 NAND(74HC10)가 서로 되먹임된 NAND 두 개(74HC00)로 가요. Toggle 행은 C를 짧게 1로 하는 이상적인 경우로 읽어요. 원문에는 빈 표가 없어요. 풀이하기 쉽게 입력 행만 정리했어요.</p>",
+        "ask": "<p>표의 Q(t)를 채우세요.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>J</th><th>K</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td></td></tr><tr><td>0</td><td>1</td><td>1</td><td></td></tr><tr><td>1</td><td>0</td><td>1</td><td></td></tr><tr><td>1</td><td>1</td><td>1</td><td></td></tr><tr><td>X</td><td>X</td><td>0</td><td></td></tr></tbody></table></div>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-jkff-short-given-01.png",
+          "w_mm": 150.0,
+          "h_mm": 95.0
+        }
+      ],
+      "hints": [
+        {
+          "label": "되먹임 선",
+          "html": "<p>J 쪽 NAND에는 Q′, K 쪽 NAND에는 Q가 들어가요. J=K=1일 때 Q=0인 경우와 Q=1인 경우를 따로 계산해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-jkff-design",
+      "kind": "기출",
+      "number": "10",
+      "title": "J-K F/F 진리표를 만족하는 회로 설계",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>J-K F/F의 Truth table을 만족하는 회로를 설계하시오.</p><div class=\"table-wrap\"><table><thead><tr><th>J</th><th>K</th><th>C</th><th>Q(t)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>Q(t-1)</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0 : Reset</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1 : Set</td></tr><tr><td>1</td><td>1</td><td>1</td><td>Q(t-1)′ : Toggle</td></tr><tr><td>x</td><td>x</td><td>0</td><td>Q(t-1)</td></tr></tbody></table></div>",
+        "conditions": "<p>표는 원문 그대로이고 이미 채워져 있어요. 원문은 F/F라고 부르지만 표에는 C가 1인 동안의 동작이 적혀 있어요. Toggle 행은 C를 짧게 1로 하는 이상적인 경우로 읽어요.</p>",
+        "ask": "<p>이 표를 만족하는 게이트 회로를 그리세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "SR에서 출발",
+          "html": "<p>J=S, K=R로 두면 1·1 행만 다르게 만들면 돼요. 그 행에서 지금 Q에 따라 S 쪽과 R 쪽 중 한쪽만 열리게 하려면 무엇을 되먹일지 생각해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-tff",
+      "kind": "기출",
+      "number": "11",
+      "title": "J-K F/F로 T F/F 만들기",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>J-K F/F을 이용해서 T F/F(toggle)을 만드는 방법을 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>연결 방법과 T=0, T=1일 때의 동작을 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "JK 표에서",
+          "html": "<p>JK 표의 네 행 중 “유지”와 “Toggle”만 남기려면 J와 K가 항상 같아야 해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-74hc76",
+      "kind": "기출",
+      "number": "12",
+      "title": "74HC76의 CLR·PR 핀 기능",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>74HC76은 J-K F/F이다. CLR 핀과 PR핀의 기능에 대해 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>CLR와 PR가 어떤 값일 때 Q가 어떻게 되는지, 클록과의 관계를 함께 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "이름 풀기",
+          "html": "<p>PR은 Preset, CLR은 Clear의 줄임말이에요. 기호의 원(bubble)이 무엇을 뜻하는지도 떠올려요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-74hc574",
+      "kind": "출처 미확인",
+      "number": "13",
+      "title": "74HC574에서 입력이 반영되는 시점",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>74HC574는 D F/F이다. 어느 시점에서 입력이 출력에 반영되는지 설명하시오.</p>",
+        "conditions": "",
+        "ask": "<p>입력 D가 출력 Q에 반영되는 순간을 쓰세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "F/F이면",
+          "html": "<p>플립플롭은 클록의 “순간”에 동작해요. 클록 단자 기호에 원이 있는지 없는지로 엣지 방향을 떠올려요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-p-76-trace",
+      "kind": "연습문제",
+      "number": "14",
+      "title": "74HC76 하강 엣지 따라가기",
+      "section": "실험 6 · 풀이 검토됨",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>새 연습: 74HC76 한 개의 플립플롭에 아래 순서로 입력을 넣었어요. 각 단계가 끝난 뒤의 Q를 구하세요.</p>",
+        "conditions": "<p>↓는 클록이 1에서 0으로 떨어지는 순간, ↑는 0에서 1로 오르는 순간이에요. “변화 없음”은 그 단계에서 클록 엣지가 없다는 뜻이에요. ↓가 이어지는 단계 사이에는 클록이 다시 1로 오르는 ↑가 있지만, 74HC76은 ↑에 반응하지 않아 표에서 생략했어요. 처음 Q는 정해져 있지 않아요.</p>",
+        "ask": "<p>표의 Q를 채우세요.</p><div class=\"table-wrap work-table\"><table><thead><tr><th>단계</th><th>PR</th><th>CLR</th><th>CLK</th><th>J</th><th>K</th><th>Q</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>1</td><td>1 (변화 없음)</td><td>0</td><td>0</td><td></td></tr><tr><td>2</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>0</td><td></td></tr><tr><td>3</td><td>1</td><td>1</td><td>↑</td><td>0</td><td>1</td><td></td></tr><tr><td>4</td><td>1</td><td>1</td><td>↓</td><td>0</td><td>1</td><td></td></tr><tr><td>5</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td></td></tr><tr><td>6</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>1</td><td></td></tr><tr><td>7</td><td>1</td><td>1</td><td>↓</td><td>1</td><td>0</td><td></td></tr><tr><td>8</td><td>1</td><td>0</td><td>0 (변화 없음)</td><td>1</td><td>1</td><td></td></tr></tbody></table></div>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "순서",
+          "html": "<p>각 단계에서 PR·CLR을 먼저 보고, 둘 다 1일 때만 클록이 ↓인지 확인한 뒤 J·K를 적용해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-tf-01",
+      "kind": "연습문제",
+      "number": "15",
+      "title": "Enable이 꺼진 SR 래치",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · Enable이 꺼진 SR 래치</p>",
+        "conditions": "<p>이상적인 Enable SR 래치가 정상 상태로 초기화되어 있어요. E=0을 유지해요.</p>",
+        "ask": "<p>S와 R이 바뀌어도 Q는 직전 값을 유지한다. T/F를 고르세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-tf-02",
+      "kind": "연습문제",
+      "number": "16",
+      "title": "D 래치의 투명 구간",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · D 래치의 투명 구간</p>",
+        "conditions": "<p>이상적인 D 래치에서 E=1이고 전파 지연 뒤의 안정 출력만 봐요.</p>",
+        "ask": "<p>D가 0에서 1로 바뀌면 클록 엣지가 없어도 Q는 1로 바뀐다. T/F를 고르세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-tf-03",
+      "kind": "연습문제",
+      "number": "17",
+      "title": "74HC76의 동작 엣지",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · 74HC76의 동작 엣지</p>",
+        "conditions": "<p>교안의 74HC76에서 비동기 SET·RESET은 모두 비활성(High)이고 J=K=1이에요. 입력의 setup/hold 조건을 만족해요.</p>",
+        "ask": "<p>CLK가 0에서 1로 올라가는 순간에 Q가 반전된다. T/F를 고르세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-tf-04",
+      "kind": "연습문제",
+      "number": "18",
+      "title": "SR 부정 상태의 두 출력",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · T/F",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · SR 부정 상태의 두 출력</p>",
+        "conditions": "<p>교안의 NAND 4개로 만든 Enable SR 래치에서 E=S=R=1을 유지하고 전파 지연이 지난 상태예요.</p>",
+        "ask": "<p>이때도 Q′은 반드시 Q의 보수이다. T/F를 고르세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-blank-01",
+      "kind": "연습문제",
+      "number": "19",
+      "title": "SR 래치의 세 명령",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · SR 래치의 세 명령</p>",
+        "conditions": "<p>정상 초기화된 Enable SR 래치에서 E=1이에요. S·R은 Active High 명령이에요.</p>",
+        "ask": "<p>(S,R)=(1,0)이면 ① (Set/Reset), (0,1)이면 ② (Set/Reset), (0,0)이면 직전 값을 ③ (유지/반전)해요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-blank-02",
+      "kind": "연습문제",
+      "number": "20",
+      "title": "D 래치의 입력과 기억",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · D 래치의 입력과 기억</p>",
+        "conditions": "<p>이상적인 D 래치에 안정된 입력을 넣어요. Q이전은 E를 0으로 바꾸기 직전의 출력이에요.</p>",
+        "ask": "<p>SR 래치의 S=D, R=① (D/D′)로 묶어요. E=1이면 Q=② (D/Q이전), E=0이면 Q=③ (D/Q이전)이에요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-blank-03",
+      "kind": "연습문제",
+      "number": "21",
+      "title": "74HC76의 비동기 우선순위",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 빈칸",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · 74HC76의 비동기 우선순위</p>",
+        "conditions": "<p>교안의 74HC76이고 입력은 안정되어 있어요. SET·RESET은 Active Low예요. 두 제어를 동시에 0으로 넣지 않아요.</p>",
+        "ask": "<p>J·K의 클록 동작을 보려면 SET=RESET=① (Low/High)로 둬요. SET=1, RESET=0이면 CLK·J·K와 무관하게 Q=② (0/1)이에요. 둘 다 1이고 J=K=1이면 유효 하강 엣지에서 Q는 직전 값의 ③ (보수/동일값)가 돼요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-board-01",
+      "kind": "연습문제",
+      "number": "22",
+      "title": "Enable SR 래치 작도",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 브레드보드 작도",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · Enable SR 래치 작도</p>",
+        "conditions": "<p>74HC00(DIP-14) 한 개, +5V/GND와 S·E·R 입력을 사용해요. 출력은 고입력 임피던스 계측기로 Q·Q′을 관찰해요(LED·저항 추가 없음). 전원을 끄고 배선해요. 입력은 항상 0V 또는 +5V에 연결하며 띄우지 않아요. 모든 게이트를 사용하므로 미사용 핀은 없어요. 빨강 잭=+5V, 회색 잭=GND, 노랑 잭은 사용하지 않아요.</p><div class=\"table-wrap\"><table class=\"chip-spec\"><thead><tr><th>핀</th><th>이름</th><th>역할</th></tr></thead><tbody><tr><td>1·2→3</td><td>1A·1B→1Y</td><td>NAND 입력→출력</td></tr><tr><td>4·5→6</td><td>2A·2B→2Y</td><td>NAND 입력→출력</td></tr><tr><td>9·10→8</td><td>3A·3B→3Y</td><td>NAND 입력→출력</td></tr><tr><td>12·13→11</td><td>4A·4B→4Y</td><td>NAND 입력→출력</td></tr><tr><td>7</td><td>GND</td><td>0V</td></tr><tr><td>14</td><td>VCC</td><td>+5V</td></tr></tbody></table></div><div class=\"work-board\"><img src=\".pack/figures/questions/q-qp-e06-board-01-blank.png\" alt=\"v1 PDF 원본 전체 작도 양식\"></div>",
+        "ask": "<p>주어진 논리 회로와 핀 명세를 보고 v1 양식에 칩 방향, 전원, S·E·R, 게이트 사이 배선과 Q·Q′ 관측점을 작도하세요. 칩 위치는 자유예요.</p>"
+      },
+      "figures": [
+        {
+          "src": ".pack/figures/questions/q-qp-e06-board-01-circuit.png",
+          "w_mm": 55,
+          "h_mm": 31.842105263157894
+        }
+      ],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>전원 핀과 NAND 게이트 묶음을 먼저 찾고, 회로도의 연결점을 넷 단위로 따라가요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-short-01",
+      "kind": "연습문제",
+      "number": "23",
+      "title": "SR 래치는 어떻게 기억할까요",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · SR 래치는 어떻게 기억할까요</p>",
+        "conditions": "<p>교안의 Enable SR 래치예요. 먼저 E=1,S=1,R=0으로 Set한 다음 S=R=0으로 바꿔요. 전파 지연 뒤의 안정 상태를 설명해요.</p>",
+        "ask": "<p>출력 Q의 변화, 입력 명령이 사라진 뒤 값을 유지하는 원리와 E=0의 역할을 3~4문장으로 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    },
+    {
+      "id": "q-qp-e06-short-02",
+      "kind": "연습문제",
+      "number": "24",
+      "title": "74HC76에서 비동기 제어를 High로 두는 이유",
+      "section": "실험 6 · 풀이 검토됨 · 퀴즈 유형 연습 — 자체 출제 · 짧은 서술형",
+      "book_page": null,
+      "difficulty": null,
+      "sol": null,
+      "original_lang": "ko",
+      "depends_on": [],
+      "html": {
+        "original": "<p>자체 출제 · 74HC76에서 비동기 제어를 High로 두는 이유</p>",
+        "conditions": "<p>교안의 74HC76 JK 플립플롭에서 J·K에 따른 정상 클록 동작을 관찰하려고 해요.</p>",
+        "ask": "<p>SET·RESET을 High로 두는 이유, 둘 중 하나만 Low일 때의 Q, 정상 모드에서 출력이 갱신되는 클록 순간을 3~4문장으로 설명하세요.</p>"
+      },
+      "figures": [],
+      "hints": [
+        {
+          "label": "접근 순서",
+          "html": "<p>활성 조건을 먼저 표시하고 현재 입력과 직전 상태를 구분해요.</p>"
+        }
+      ]
+    }
+  ]
+}

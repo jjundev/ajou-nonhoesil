@@ -1,8 +1,8 @@
-"""복습노트 문제지·해설지 HTML 을 태블릿용 PDF 로 낸다 (A4 가로, 문항당 한 쪽).
+"""복습노트 워크북 원고를 태블릿용 PDF 로 낸다 (A4 가로, 문항당 한 쪽).
 
     python -m scripts.lab.workbook_pdf 실험05 [--kind 기출문제|기출풀이|all] [--out DIR]
 
-기본 출력은 `복습노트/<실험NN>/` — HTML 바로 옆이다. 변환 전 DOM 으로 쪽 맞춤이
+기본 출력은 `복습노트/<실험NN>/`이다. 인쇄용 HTML은 작업 폴더에서만 만든다. 변환 전 DOM 으로 쪽 맞춤이
 끝났는지(`data-ready`)와 넘친 쪽이 없는지(`data-overflow`)를 확인하고, 변환 뒤에는
 쪽 수·용지 크기를 payload 와 대조한다. 하나라도 어긋나면 실패다.
 
@@ -14,15 +14,21 @@ DOM 검사는 인쇄와 다른 Chrome 에서 돈다. 인쇄한 Chrome 이 맞춤
 """
 import argparse
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pymupdf
 from pypdf import PdfReader
 
 from scripts.lab.html2pdf import DEFAULT_CHROME, PdfError, html_to_pdf, resolve_chrome
-from scripts.lab.review_pack.workbook_render import read_workbook_payload
+from scripts.lab.review_pack.manifest import DATA, VENDOR_DIR, load_manifest, workbook_pdf_names
+from scripts.lab.review_pack.workbook_storage import pack_write_lock, replace_workbook_files
+from scripts.lab.review_pack.workbook_render import (
+    read_workbook_payload, render_workbook_html, workbook_source_path,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 NOTES = ROOT / "복습노트"
@@ -106,17 +112,28 @@ def check_pdf_content(pdf_path):
     return problems
 
 
-def export(note_dir, kind, out_dir):
-    src = note_dir / f"{note_dir.name}_{kind}.html"
-    if not src.exists():
-        raise PdfError(f"없는 파일: {src}")
+def _temporary_html(note_dir, manifest, key, scratch):
+    """Keep the legacy relative resource paths intact in the print workspace."""
+    contents = scratch / 'pack'
+    if not contents.exists():
+        contents.mkdir()
+        shutil.copytree(note_dir / DATA, contents / DATA)
+        shutil.copytree(note_dir.parent / VENDOR_DIR, scratch / VENDOR_DIR)
+    source = workbook_source_path(contents, manifest, key)
+    pdf_name = workbook_pdf_names(manifest['experiment'])[key]
+    path = contents / Path(pdf_name).with_suffix('.html')
+    path.write_text(render_workbook_html(read_workbook_payload(source), contents / DATA / 'assets'),
+                    encoding='utf-8')
+    return path
+
+
+def _render_pdf(src, out, kind):
     ready, overflow = dom_state(src)
     if ready == "error" or overflow or (ready is not None and ready != "true"):
         raise PdfError(f"{src.name}: 쪽 맞춤 미완료 (data-ready={ready!r}, 넘친 쪽={overflow!r})")
     if ready is None:
         print(f"주의: {src.name} 쪽 맞춤 완료를 확인하지 못했습니다(헤드리스 DOM). 인쇄 결과의 쪽 수·크기·내용만 검사합니다.")
     total = read_workbook_payload(src)["meta"]["total"]
-    out = Path(out_dir) / f"{note_dir.name}_{kind}.pdf"
     html_to_pdf(src, out, virtual_time_budget=BUDGET_MS)   # 쪽 맞춤 스크립트가 끝난 뒤 인쇄
     problems = check_pdf(out, total, exact=(kind == "기출문제")) + check_pdf_content(out)
     if problems:
@@ -124,24 +141,68 @@ def export(note_dir, kind, out_dir):
     return out, total
 
 
+def _export(note_dir, kinds, out_dir):
+    note_dir, out_dir = Path(note_dir), Path(out_dir)
+    with pack_write_lock(note_dir):
+        return _export_locked(note_dir, kinds, out_dir)
+
+
+def _export_locked(note_dir, kinds, out_dir):
+    manifest_path = note_dir / DATA / 'manifest.json'
+    manifest = load_manifest(manifest_path) if manifest_path.is_file() else {}
+    pdf_mode = manifest.get('workbook_delivery') == 'pdf'
+    outputs = {}
+    files = {}
+    with TemporaryDirectory(prefix='logic-workbook-print-') as scratch:
+        scratch = Path(scratch)
+        for kind in kinds:
+            if pdf_mode:
+                key = {'기출문제': 'question', '기출풀이': 'review'}[kind]
+                src = _temporary_html(note_dir, manifest, key, scratch)
+            else:
+                src = note_dir / f'{note_dir.name}_{kind}.html'
+                if not src.is_file():
+                    raise PdfError(f'없는 파일: {src}')
+            name = src.with_suffix('.pdf').name
+            pdf, count = _render_pdf(src, scratch / name, kind)
+            outputs[kind] = (out_dir / name, count)
+            files[out_dir / name] = pdf
+        if out_dir.resolve() == note_dir.resolve():
+            replace_workbook_files(files, out_dir)
+        else:
+            with pack_write_lock(out_dir):
+                replace_workbook_files(files, out_dir)
+    return outputs
+
+
+def export(note_dir, kind, out_dir):
+    return _export(note_dir, (kind,), out_dir)[kind]
+
+
+def export_pair(note_dir, out_dir):
+    return _export(note_dir, KINDS, out_dir)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("exp", help="실험05 처럼")
+    source = ap.add_mutually_exclusive_group(required=True)
+    source.add_argument("exp", nargs="?", help="실험05 처럼")
+    source.add_argument("--folder", type=Path, help="저작 중인 stage나 실험 폴더")
     ap.add_argument("--kind", default="all", choices=KINDS + ("all",))
-    ap.add_argument("--out", default=None, help="기본: 복습노트/<실험NN>/")
+    ap.add_argument("--out", type=Path, help="PDF 출력을 저장할 폴더")
     a = ap.parse_args(argv)
-    note_dir = NOTES / a.exp
+    note_dir = a.folder or NOTES / a.exp
     if not note_dir.is_dir():
         sys.exit(f"없는 폴더: {note_dir}")
-    bad = 0
-    for kind in (KINDS if a.kind == "all" else (a.kind,)):
-        try:
-            out, total = export(note_dir, kind, a.out or note_dir)
-            print(f"{out} ({out.stat().st_size // 1024} KB, {total}쪽)")
-        except PdfError as exc:
-            print(f"실패: {exc}")
-            bad += 1
-    return 1 if bad else 0
+    try:
+        outputs = (export_pair(note_dir, a.out or note_dir) if a.kind == "all"
+                   else {a.kind: export(note_dir, a.kind, a.out or note_dir)})
+        for out, total in outputs.values():
+            print(f"{out} ({out.stat().st_size // 1024} KB, {total}문항)")
+    except (PdfError, OSError, ValueError) as exc:
+        print(f"실패: {exc}")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

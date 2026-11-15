@@ -16,7 +16,7 @@ def browser():
 @pytest.mark.parametrize('width', [375, 1280])
 @pytest.mark.parametrize('theme', ['light', 'dark'])
 @pytest.mark.parametrize('number', range(1, 6))
-def test_published_navigation(browser, width, theme, number):
+def test_published_navigation(browser, width, theme, number, published_workbook_preview):
     context = browser.new_context(viewport={'width': width, 'height': 900}, color_scheme=theme)
     page = context.new_page()
     errors = []; page.on('pageerror', lambda e: errors.append(str(e)))
@@ -64,7 +64,7 @@ def test_published_navigation(browser, width, theme, number):
         output = ROOT/'output/validation/navigation'
         output.mkdir(parents=True, exist_ok=True)
         page.screenshot(path=str(output/f'experiment03-{width}-dark.png'))
-    page.goto((folder/f'실험{number:02d}_기출풀이.html').as_uri())
+    page.goto(published_workbook_preview(f'실험{number:02d}', 'review').as_uri())
     page.wait_for_function('document.documentElement.dataset.ready === "true"', timeout=60000)
     assert page.locator('.page').count() > 0
     page.go_back()

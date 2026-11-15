@@ -5,7 +5,7 @@ import json
 import re
 import shutil
 from urllib.parse import quote
-from .manifest import validate_manifest, output_names, DATA, link_data, VENDOR_DIR, replace_vendor_urls, sync_shared_vendor
+from .manifest import validate_manifest, output_names, DATA, link_data, VENDOR_DIR, replace_vendor_urls, sync_shared_vendor, workbook_links
 from .bank_import import copy_import_material
 from .bank_provenance import check_bank_import
 from .note_metadata import forbidden_note_metadata, summary_structure_errors
@@ -20,12 +20,13 @@ from .note_summary import SUMMARY_FILE, load_note_summaries, check_topic_ids, re
 KINDS={'past':'실제 기출','unknown':'출처 미확인','predicted':'기존 예상문제','practice':'새 연습'}
 ANSWERS={'verified':'풀이 검토됨','disputed':'답안 충돌','unresolved':'정답 미확정'}
 
-def read_fragment(run,relative,names):
+def read_fragment(run,relative,names,manifest):
     candidate=(run/relative).resolve()
     if not candidate.is_relative_to(run.resolve()): raise ValueError('fragment outside run')
     text=candidate.read_text(encoding='utf-8')
     if re.search(r'<script\b|\son\w+\s*=|javascript:',text,re.I): raise ValueError('Active fragment code is forbidden')
-    return link_data(text).replace('{{NOTE_HREF}}',names['note_html']).replace('{{REVIEW_HREF}}',names['review_html'])
+    text = link_data(text).replace('{{NOTE_HREF}}', names['note_html'])
+    return workbook_links(text, manifest)
 
 def assemble(manifest,run,out,assets):
     errors=validate_manifest(manifest)
@@ -38,7 +39,7 @@ def assemble(manifest,run,out,assets):
     names=output_names(manifest['experiment'],review_presentation_version=manifest.get('review_presentation_version')); sources={s['id']:s for s in manifest['sources']}
     if workbook:
         from .workbook_content import load_workbook_content,build_workbook_data
-        from .workbook_render import render_workbook_html
+        from .workbook_render import render_workbook_html, workbook_source_path, write_workbook_payload
         from .workbook_md import write_workbook_md
         authored=load_workbook_content(manifest,run)
     esc=lambda v:html.escape(str(v),quote=True)
@@ -59,7 +60,7 @@ def assemble(manifest,run,out,assets):
     summaries=load_note_summaries(run)
     if summaries is not None:check_topic_ids(summaries,[t['id'] for t in manifest['topics']])
     for t in manifest['topics']:
-        fragment=read_fragment(run,t['fragment'],names)
+        fragment=read_fragment(run,t['fragment'],names,manifest)
         modern=manifest.get('note_presentation_version')==2
         if modern and forbidden_note_metadata(fragment):
             raise ValueError(t['id']+': note metadata belongs in manifest, not HTML')
@@ -75,7 +76,7 @@ def assemble(manifest,run,out,assets):
         if p['status']!='included': continue
         head=f'<p class="eyebrow">{KINDS[p["kind"]]} · {ANSWERS[p["answer_status"]]} · {esc(p["scope"])}</p>'
         conflict=(f'<aside>제공 답안: {esc(p.get("given_answer"))} / 도출 답안: {esc(p.get("derived_answer"))}. 충돌·불확실성을 확인하세요.</aside>' if p['answer_status']!='verified' else '')
-        body=read_fragment(run,p['fragment'],names)
+        body=read_fragment(run,p['fragment'],names,manifest)
         guide=''
         if 'bank_question_id' in p:
             guide=f'<p><a href="{DATA}/원문과_저작안내.md#{p["id"]}">원문·제공 답안 연결·보류 기록</a></p>'
@@ -120,14 +121,18 @@ def assemble(manifest,run,out,assets):
     if workbook:
         for mode,key in [('problems','question'),('answers','review')]:
             data=build_workbook_data(manifest,authored,mode)
-            path=out/names[key+'_html']
-            path.write_text(render_workbook_html(data,assets),encoding='utf-8')
-            paths[key+'_html']=path
+            path=workbook_source_path(out,manifest,key)
+            if manifest.get('workbook_delivery')=='pdf':
+                paths[key+'_source']=write_workbook_payload(path,data)
+            else:
+                path.write_text(render_workbook_html(data,assets),encoding='utf-8')
+                paths[key+'_html']=path
             paths[key+'_md']=write_workbook_md(data,manifest,out/DATA/names[key+'_md'])
     if manifest.get('problem_explanation_version') in (1,2):
         from .explanation_render import write_explanations
         from .workbook_render import read_workbook_payload
-        paths.update(write_explanations(manifest,read_workbook_payload(paths['question_html']),run,out,assets))
+        question=read_workbook_payload(workbook_source_path(out,manifest,'question'))
+        paths.update(write_explanations(manifest,question,run,out,assets))
     audit=['# 출처와 문항목록','',f'판본 상태: {status}','']
     for p in manifest['problems']:
         audit.extend([f'## {p["id"]} · {KINDS[p["kind"]]}',f'- 분류: {p["status"]} / 범위: {p["scope"]}',f'- 사유: {p["reason"]}',f'- 대표 문항: {p.get("duplicate_of")}',f'- 제공 답안: {p.get("given_answer")}',f'- 도출 답안: {p.get("derived_answer")} / {ANSWERS[p["answer_status"]]}'])

@@ -7,7 +7,7 @@ description: 논리회로실험 1~10의 실험 설명, 예습·복습 자료, �
 
 오래전에 논리회로를 배운 학생이 기초부터 회로를 이해하고 기출을 풀 수 있게 한다.
 기존 보고서에 등장하는 용어를 안다고 가정하지 않는다. 완전판 설명+앞부분 요약과 고유 기출 전체가 기본이다.
-새 워크북 학습팩은 실험설명·기출문제·기출풀이·문제설명 HTML 네 개와 같은 내용의 MD 네 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
+새 워크북 학습팩은 실험설명·문제설명 HTML, 기출문제·기출풀이 PDF와 MD 네 개를 만든다. 사용자에게 중간 메뉴를 반복해서 묻지 않는다.
 
 REPO는 scripts/lab/config.py가 있는 저장소 루트. SKILL은 이 폴더. RUN은 REPO/tmp/review-pack/<실험NN>-<고유실행ID>.
 셸 작업 디렉터리를 REPO로 두고 Python 모듈을 실행한다. 실제 사용 가능한 Python 실행 파일을 확인한다.
@@ -85,7 +85,7 @@ python -m scripts.lab.review_pack build --root . --run RUN --stage STAGE
 python -m scripts.lab.review_pack check --folder STAGE
 ```
 
-build는 problem_explanation_version=2인 새 워크북에서 네 HTML을 실험 폴더 루트에, 네 MD·출처와_문항목록.md·검증결과.md·manifest.json·figures/·assets/를 숨김 폴더 `.pack/`에 만든다. legacy 팩은 두 HTML·두 MD를 유지한다(MD는 역시 `.pack/`).
+build는 새 워크북의 실험설명·문제설명 HTML과 기출문제·기출풀이 PDF를 stage 루트에 만든다. 네 MD와 워크북 원고 `workbook-problems.json`·`workbook-answers.json`, 출처와_문항목록.md·검증결과.md·manifest.json·figures/·assets/는 `.pack/`에 둔다. 인쇄용 워크북 HTML은 임시 작업 폴더에서 렌더링하고 PDF 검사 후 정리한다.
 은행 수입 팩에는 원문과_저작안내.md와 evidence/·authoring-index.json도 `.pack/`에 복사한다.
 RUN(저작 작업 폴더)은 이 규칙의 대상이 아니다. RUN 안에서는 manifest.json·figures/·evidence/·검증결과.md를 예전처럼 RUN 루트에 둔다. build가 `.pack/` 로 옮긴다.
 build/publish는 원래 은행·원문·자산 해시를 대조한다. 변경 시 새 import 후 관련 내용을 재검토한다.
@@ -109,7 +109,7 @@ python -m scripts.lab.review_pack publish --root . --stage STAGE --experiment 4
 ```
 
 **저장 규칙.** `복습노트/실험NN/` 루트에는 학생이 여는 `.html`·`.pdf` 와 숨김 폴더 `.pack/` 만 둔다.
-나머지는 모두 `.pack/` 안에 둔다: MD 문서(실험설명·기출문제·기출풀이·문제설명·출처와_문항목록·원문과_저작안내·검증결과), manifest.json, authoring-index.json, assets/, evidence/, figures/, problem-explanations/.
+나머지는 모두 `.pack/` 안에 둔다: MD 문서(실험설명·기출문제·기출풀이·문제설명·출처와_문항목록·원문과_저작안내·검증결과), 워크북 원고 JSON 두 개, manifest.json, authoring-index.json, assets/, evidence/, figures/, problem-explanations/.
 HTML이 이 파일을 부를 때는 루트 기준 상대경로 `.pack/figures/..`, 공유 벤더는 `../.vendor/..` (`복습노트/.vendor/`) 로 쓴다. MD는 `.pack/` 안에 있으므로 `figures/..`, 형제 MD는 이름 그대로, 저장소 원문은 `../../../강의노트/..` 로 부른다.
 MD 작성기는 루트 기준으로 본문을 만들고 `scripts/lab/review_pack/pack_md.py` 의 `write_pack_md` 로 쓴다(쓰는 순간 `.pack/` 기준으로 바뀐다). 새 MD도 이 함수로 쓴다. 폴더 이름은 `scripts/lab/config.py` 의 `PACK_DATA_DIR` 한 곳에서 정한다.
 manifest 안의 경로(figure_manifest, snapshot_path, workbook_fragment)는 `.pack/` 기준 상대경로 그대로 둔다(`figures/redraw-manifest.json`). generated_files 만 실험 폴더 루트 기준이라 `.pack/figures/..`, `.pack/실험NN_실험설명.md` 로 적힌다.
@@ -120,7 +120,7 @@ RUN 의 저작 조각(sections·workbook JSON)은 `figures/..` 라고 쓰면 bui
 저장은 복습노트/실험NN. 교체 전 원문 해시·검증 상태를 확인하고 기존 팩을 백업한다.
 사용자 추가 파일이 생성 파일과 충돌하면 덮어쓰지 않는다. 백업은 삭제하지 않는다.
 최종 경로에서 문항 링크·원문 PDF 링크를 다시 확인한다.
-publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf 실험NN`. `복습노트/실험NN/`에 실험NN_기출문제.pdf·실험NN_기출풀이.pdf가 생기고(A4 가로, 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX·답 상자 밑 그림 검사 포함) 실패하면 성공이라 하지 않는다. publish·rerender로 HTML 내용이 바뀌면 PDF를 다시 만든다. 링크 경로만 바뀐 경우(`.pack/` 이전)는 PDF 내용이 같으므로 다시 만들지 않는다.
+build가 생성한 A4 가로 기출문제·기출풀이 PDF를 publish 전에 전 페이지 눈으로 검수한다. 쪽 수·크기·넘침 검사와 인쇄 결과의 원문 LaTeX 및 답 상자 밑 그림은 자동으로도 검사한다. 기존 두 PDF를 다시 만들 때는 `python -m scripts.lab.workbook_pdf 실험NN`을 실행한다. 검토용 별도 출력은 `--out DIR`를 붙이고 stage가 입력이면 `--folder STAGE`로 지정한다.
 **신규 학습팩 확인문제.** 새 학습팩의 publish와 기출 PDF까지 통과했으면 [logic-lab-concept-check](../logic-lab-concept-check/SKILL.md)의 준비·저작·블라인드 풀이·브라우저 검사·발행 절차를 이 실험 번호로 이어서 실행한다. 여러 신규 팩이면 각 팩마다 실행한다. 확인문제의 RUN은 학습팩의 RUN과 따로 두고, 이미 발행된 실험설명과 manifest를 근거로 쓴다. 기존 팩의 부분·전체 갱신, rerender, PDF 재생성 또는 문제은행 실행에서는 이 단계를 호출하지 않는다.
 
 확인문제를 발행했으면 HTML·문항 수·검사 결과를 함께 보고한다. 근거 누락이나 최종 검사 미통과면 “학습팩 생성됨 / 확인문제 보류”와 이유를 보고한다. 이미 발행된 학습팩·기출 PDF와 이전 확인문제는 계속 이용할 수 있다.
@@ -135,11 +135,11 @@ publish 뒤 태블릿용 PDF를 만든다: `python -m scripts.lab.workbook_pdf �
 ## 후속 요청과 경계
 
 특정 부분에 대한 질문은 기존 팩을 읽고 설명한다. 질문만으로 파일을 수정하지 않는다.
-'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. **워크북** 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(워크북 payload에서 HTML·MD 재생성 후 검사)을 쓴다. 이 명령은 실험설명을 재생성하지 않는다. 카드 서식(표·수식) 도입 전에 발행한 실험설명은 `python -m scripts.lab.review_pack.card_upgrade --all`로 점검하고 `--apply --backup-dir <팩 밖 새 폴더>`로 제자리 업그레이드한다. 다시 실행하면 변경이 0건이어야 한다. 실험설명 표 열 배치는 `.pack/sections/table-layout.json`을 쓴 뒤 `python -m scripts.lab.review_pack.table_layout_upgrade --all`로 점검하고 `--apply --backup-dir <팩 밖 새 폴더>`로 적용한다. 이 명령은 동봉 note 템플릿을 스킬과 맞추고, 그 템플릿으로 문제설명도 다시 그린다.
+'고쳐줘/보충해줘'는 같은 팩을 갱신한다. PDF 요청은 위 workbook_pdf 스크립트로 만든다. **워크북** 템플릿 패치나 해설 단계를 바꾼 뒤 이미 저장된 팩에 반영할 때는 `python -m scripts.lab.review_pack rerender --folder 복습노트/실험NN`(워크북 원고·MD·PDF 쌍 검증 후 교체)을 쓴다. 이 명령은 실험설명을 재생성하지 않는다. 카드 서식(표·수식) 도입 전에 발행한 실험설명은 `python -m scripts.lab.review_pack.card_upgrade --all`로 점검하고 `--apply --backup-dir <팩 밖 새 폴더>`로 제자리 업그레이드한다. 다시 실행하면 변경이 0건이어야 한다. 실험설명 표 열 배치는 `.pack/sections/table-layout.json`을 쓴 뒤 `python -m scripts.lab.review_pack.table_layout_upgrade --all`로 점검하고 `--apply --backup-dir <팩 밖 새 폴더>`로 적용한다. 이 명령은 동봉 note 템플릿을 스킬과 맞추고, 그 템플릿으로 문제설명도 다시 그린다.
 
 **기존 목차 일괄 갱신.** `python -m scripts.lab.review_pack.navigation_upgrade --all`로 dry-run 목록을 확인하고 `python -m scripts.lab.review_pack.navigation_upgrade --all --apply --backup-dir <새 백업 폴더>`로 적용한다. 한 팩은 `--all` 대신 `--folder 복습노트/실험NN`을 쓴다. 명령은 모든 대상의 구조를 사전 검사하고 전체 팩을 백업한 뒤 탐색 부분과 동봉 note/review 템플릿만 바꾼다. 알 수 없는 HTML은 쓰기 전에 실패하며 본문·IDs·워크북 payload는 보존한다. 재실행의 변경 목록은 0이어야 한다. 적용 후 각 팩의 check와 브라우저 검증을 수행한다. 이미 내보낸 standalone HTML이 있으면 갱신한 원본으로 다시 내보낸다.
 보고서·체크리스트·노션 업로드·FPGA 프로젝트를 자동으로 시작하지 않는다.
 
 ## 문제풀이 입문 설명 연결
 
-문제설명만·핵심 개념 보충 요청은 [logic-lab-problem-explain](../logic-lab-problem-explain/SKILL.md)으로 진행한다. 전체 학습팩도 같은 실행에서 이 스킬로 모든 included explanations를 저작한 뒤 위 build/check/publish로 돌아온다. 새 manifest는 v2이며 기존 v1 읽기와 저장·검토 계약은 [전용 형식](../logic-lab-problem-explain/references/format.md)을 따른다. 기존 팩의 설명만 갱신할 때는 전용 스킬의 보존 stage 절차를 사용하고 워크북 HTML/MD/PDF를 재생성하지 않는다. 전체팩의 네 HTML·네 MD 및 여덟 링크 보고 규칙을 유지한다.
+문제설명만·핵심 개념 보충 요청은 [logic-lab-problem-explain](../logic-lab-problem-explain/SKILL.md)으로 진행한다. 전체 학습팩도 같은 실행에서 이 스킬로 모든 included explanations를 저작한 뒤 위 build/check/publish로 돌아온다. 새 manifest는 v2이며 기존 v1 읽기와 저장·검토 계약은 [전용 형식](../logic-lab-problem-explain/references/format.md)을 따른다. 기존 팩의 설명만 갱신할 때는 전용 스킬의 보존 stage 절차를 사용하고 워크북 원고·MD·PDF를 재생성하지 않는다. 전체팩의 두 HTML·두 PDF·네 MD 및 여덟 링크 보고 규칙을 유지한다.

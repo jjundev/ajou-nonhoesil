@@ -21,7 +21,7 @@
 4. 정답을 독립 계산하고 조건·반례·진리표·답의 허용 범위를 검토한다. 확인한 뒤에만 answer_status=verified와 derived_answer를 쓴다. 자료나 답이 부족하면 held와 이유를 남긴다. 할당량이 부족하면 build/publish가 실패하므로 부족 유형과 근거를 보고하고 기존 팩을 보존한다.
 5. 작도 회로·칩 명세·빈 보드·완성 보드·연결표를 만든다. 아래 그림 계약을 따른다.
 6. 새 문항까지 모든 included 문항에 문제설명 v2의 일곱 layer와 sum을 저작한다. 기존 문제설명 스킬을 사용하고 ID·순서를 일치시킨다. schema_version=1, review_presentation_version=2, problem_explanation_version=2, quiz_practice_version=1이다.
-7. 새 stage로 build/check, 내용·브라우저·그림 검토를 수행하고 publish 후 두 PDF를 다시 만든다. 구조 검사 통과를 내용 정확성으로 보고하지 않는다. 실제 독립 리뷰가 없으면 independent=self_review 또는 not_run이다. 검토 후 내용 변경은 관련 검토를 다시 수행한다.
+7. 새 stage로 build/check, 내용·브라우저·그림과 두 PDF 전 페이지를 검토한 후 publish한다. 구조 검사 통과를 내용 정확성으로 보고하지 않는다. 실제 독립 리뷰가 없으면 independent=self_review 또는 not_run이다. 검토 후 내용 변경은 관련 검토를 다시 수행한다.
 
 ## 유형별 문제와 해설
 
@@ -64,4 +64,4 @@ conditions 안에 다음 구조를 쓴다. 실제 소자의 사용 핀과 전원
 
 기존 팩은 자동 소급 수정하지 않는다. rerender, PDF만 내보내기, 목차만 갱신, 문제설명만 갱신, 부분 수정은 기존 policy와 문항을 보존하며 새 문제를 추가하지 않는다. 다음 전체 재저작 때 같은 ID를 재사용해 10문항을 유지하고 누적 추가하지 않는다.
 
-문제·해설·문제설명 HTML/MD에서 ID·순서와 조건이 같아야 한다. 문제 payload에는 solution/notes를 넣지 않는다. 작도 보드 1회 표시, 해설의 완성 그림과 최종 답, T/F·빈칸·서술형 대표 문항을 1280/375px·offline·A4 가로 PDF로 확인한다. data-ready=true, data-overflow='', 깨진 그림·수식·콘솔 오류 0을 요구한다. PDF에서 핀·홀·레일의 가독성을 확대 확인한다. 미실행 검사는 not_run이며 skip을 pass로 보고하지 않는다.
+문제·해설 PDF·원고·MD와 문제설명 HTML/MD에서 ID·순서와 조건이 같아야 한다. 문제 payload에는 solution/notes를 넣지 않는다. 작도 보드 1회 표시, 해설의 완성 그림과 최종 답, T/F·빈칸·서술형 대표 문항을 1280/375px·offline·A4 가로 PDF로 확인한다. data-ready=true, data-overflow='', 깨진 그림·수식·콘솔 오류 0을 요구한다. PDF에서 핀·홀·레일의 가독성을 확대 확인한다. 미실행 검사는 not_run이며 skip을 pass로 보고하지 않는다.

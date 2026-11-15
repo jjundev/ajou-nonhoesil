@@ -20,9 +20,6 @@ def test_check_pdf_reports_page_count_and_size(tmp_path):
 
 
 def test_real_note_smoke(tmp_path):
-    d = wp.NOTES / "실험05"
-    if not (d / "실험05_기출문제.html").exists():
-        pytest.skip("실험05 없음")
     assert wp.main(["실험05", "--kind", "기출문제", "--out", str(tmp_path)]) == 0
     assert (tmp_path / "실험05_기출문제.pdf").exists()
 
@@ -76,8 +73,6 @@ def test_export_prints_after_the_page_script_finishes(tmp_path, monkeypatch):
     monkeypatch.setattr(wp, "html_to_pdf", fake_html_to_pdf)
     monkeypatch.setattr(wp, "dom_state", lambda src: ("true", ""))
     d = wp.NOTES / "실험05"
-    if not (d / "실험05_기출풀이.html").exists():
-        pytest.skip("실험05 없음")
     with pytest.raises(wp.PdfError):
         wp.export(d, "기출풀이", tmp_path)
     assert seen.get("virtual_time_budget", 0) >= wp.BUDGET_MS
@@ -85,8 +80,5 @@ def test_export_prints_after_the_page_script_finishes(tmp_path, monkeypatch):
 
 def test_real_answer_sheet_has_rendered_math_and_uncut_figures(tmp_path):
     # 실험02 는 수식 193개·풀이 그림 14장으로 두 결함이 다 드러난 해설지다
-    d = wp.NOTES / "실험02"
-    if not (d / "실험02_기출풀이.html").exists():
-        pytest.skip("실험02 없음")
     assert wp.main(["실험02", "--kind", "기출풀이", "--out", str(tmp_path)]) == 0
     assert wp.check_pdf_content(tmp_path / "실험02_기출풀이.pdf") == []

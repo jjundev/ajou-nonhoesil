@@ -193,9 +193,9 @@ def _top_level_commas(tex):
     return commas
 
 
-def test_published_experiment05_has_no_top_level_commas_in_display_math(chrome):
+def test_published_experiment05_has_no_top_level_commas_in_display_math(chrome, published_workbook_preview):
     """게시본 실험05 해설지의 디스플레이 식에 식 목록 쉼표가 남지 않고, 기출4 의 `O_0 &= ` 행이 있다."""
-    html = Path('복습노트/실험05/실험05_기출풀이.html')
+    html = published_workbook_preview('실험05', 'review')
     page = chrome.new_page(viewport={'width': 1280, 'height': 900})
     try:
         page.goto(html.resolve().as_uri())

@@ -4,7 +4,7 @@ import json,shutil,re
 from .manifest import load_manifest,output_names,DATA,VENDOR_DIR,sync_shared_vendor
 from .explanation_content import within,CHECK_KEYS,explanation_sections
 from .explanation_render import write_explanations
-from .workbook_render import read_workbook_payload
+from .workbook_render import read_workbook_payload, workbook_source_path
 
 def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, sync_explanation_template: bool = False, explanation_version: int = 2) -> Path:
     folder,author_root,stage=map(lambda p:Path(p).resolve(),(folder,author_root,stage))
@@ -27,7 +27,7 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, s
         if f.is_file():new_paths.append(DATA+'/problem-explanations/'+f.relative_to(author_root).as_posix())
     for relative in new_paths:
         if within(folder,relative).exists() and relative not in owned:raise ValueError('User explanation file collision: '+relative)
-    question=read_workbook_payload(folder/names['question_html'])
+    question=read_workbook_payload(workbook_source_path(folder,m,'question'))
     # Validate before any stage is written; author_root contains the per-question files.
     from .explanation_content import load_explanations
     from tempfile import TemporaryDirectory

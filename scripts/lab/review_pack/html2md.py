@@ -115,19 +115,27 @@ def export_document(path, export=True, note_metadata=None):
         raise ValueError('Unsupported learning markup: '+tag)
     return re.sub(r'\n{3,}','\n\n',render(tree)).strip()+'\n',len(figures)
 
-def convert_pack(note_path,review_path,manifest=None):
-    paths=[Path(note_path),Path(review_path)]
-    names=[re.fullmatch(r'(실험\d{2})_(실험설명|기출풀이)\.html',p.name) for p in paths]
-    if not all(names) or names[0][1]!=names[1][1] or [m[2] for m in names]!=['실험설명','기출풀이'] or paths[0].parent!=paths[1].parent:
+def convert_pack(note_path,review_path=None,manifest=None):
+    note_path = Path(note_path)
+    note_name = re.fullmatch(r'(실험\d{2})_실험설명\.html', note_path.name)
+    if manifest is None and (note_path.parent/DATA/'manifest.json').is_file():
+        manifest=json.loads((note_path.parent/DATA/'manifest.json').read_text(encoding='utf-8'))
+    workbook=bool(manifest and manifest.get('review_presentation_version')==2)
+    paths = [note_path]
+    if not workbook or review_path is not None:
+        review_path = Path(review_path) if review_path is not None else None
+        if (review_path is None or note_name is None or
+                review_path.name != note_name[1] + '_기출풀이.html' or
+                review_path.parent != note_path.parent):
+            raise ValueError('Mismatched learning pack names')
+        paths.append(review_path)
+    if note_name is None:
         raise ValueError('Mismatched learning pack names')
     outputs=[];count=0
-    if manifest is None and (paths[0].parent/DATA/'manifest.json').is_file():
-        manifest=json.loads((paths[0].parent/DATA/'manifest.json').read_text(encoding='utf-8'))
     metadata=None
     if manifest and manifest.get('note_presentation_version')==2:
         from .note_metadata import topic_metadata
         metadata=topic_metadata(manifest)
-    workbook=bool(manifest and manifest.get('review_presentation_version')==2)
     if workbook:
         paths=paths[:1]
     for path in paths:

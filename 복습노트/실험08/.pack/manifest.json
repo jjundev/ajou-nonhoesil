@@ -2722,6 +2722,8 @@
     ".pack/problem-explanations/문제설명-summary-validation.json",
     ".pack/problem-explanations/실험설명-summary-validation.json",
     ".pack/sections/table-layout.json",
+    ".pack/workbook-answers.json",
+    ".pack/workbook-problems.json",
     ".pack/검증결과.md",
     ".pack/실험08_기출문제.md",
     ".pack/실험08_기출풀이.md",
@@ -2729,9 +2731,10 @@
     ".pack/실험08_실험설명.md",
     ".pack/원문과_저작안내.md",
     ".pack/출처와_문항목록.md",
-    "실험08_기출문제.html",
-    "실험08_기출풀이.html",
+    "실험08_기출문제.pdf",
+    "실험08_기출풀이.pdf",
     "실험08_문제설명.html",
     "실험08_실험설명.html"
-  ]
+  ],
+  "workbook_delivery": "pdf"
 }
