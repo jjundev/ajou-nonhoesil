@@ -1176,6 +1176,8 @@
   "review_presentation_version": 2,
   "figure_manifest": "figures/redraw-manifest.json",
   "generated_files": [
+    ".pack/assets/explanation-panel.css",
+    ".pack/assets/explanation-panel.js",
     ".pack/assets/note-template.html",
     ".pack/assets/review-interaction.css",
     ".pack/assets/review-interaction.js",

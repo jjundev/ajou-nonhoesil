@@ -1,0 +1,109 @@
+.problem-inline { margin-block-start: var(--s3); }
+.problem-inline > summary {
+  width: fit-content;
+  min-height: var(--tap);
+  align-content: center;
+  cursor: pointer;
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+#panel-prob[hidden], #toggle-prob[hidden], #panel-prob [hidden] { display: none; }
+#panel-prob { min-width: 0; }
+#panel-prob .problem-panel-head { flex-wrap: wrap; gap: var(--s1) var(--s2); }
+#panel-prob .problem-panel-actions { display: flex; flex-wrap: wrap; gap: 2px; }
+#panel-prob :is(.problem-panel-actions .text-btn, .problem-panel-move) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+}
+#panel-prob .problem-panel-move[hidden] { display: none; }
+#panel-prob :is(.problem-panel-actions, .problem-panel-move) svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+#panel-prob .problem-panel-actions .strip { fill: currentColor; stroke: none; }
+#panel-prob .problem-panel-move .grip { stroke-width: 3; }
+#panel-prob .problem-panel-actions button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+#panel-prob .problem-panel-link { display: inline-block; margin: 0 0 var(--s2); }
+#panel-prob [data-problem-reading] { margin-top: var(--s1); overflow-wrap: anywhere; }
+#panel-prob .table-card, #panel-prob .equation-card { max-width: 100%; }
+
+@media screen and (min-width: 1024px) {
+  .layout[data-problem-dock="left"], .layout[data-problem-dock="right"] {
+    --problem-dock-width: clamp(240px, 24vw, 392px);
+    --problem-side-space: calc(100vw - var(--problem-dock-width) - 320px);
+    grid-template-columns: auto auto minmax(320px, 1fr) auto;
+  }
+  .layout[data-problem-dock="right"] { grid-template-columns: auto minmax(320px, 1fr) auto auto; }
+  .layout[data-problem-dock] > * { grid-row: 1; }
+  .layout[data-problem-dock="left"] > .content { grid-column: 3; }
+  .layout:is([data-problem-dock="left"], [data-problem-dock="right"]) > .panel-right { grid-column: 4; }
+  .layout[data-problem-dock="left"] > #panel-prob { grid-column: 2; border-right: 1px solid var(--line); }
+  .layout[data-problem-dock="right"] > #panel-prob { grid-column: 3; border-left: 1px solid var(--line); }
+  .layout[data-problem-dock="left"] > #panel-prob,
+  .layout[data-problem-dock="right"] > #panel-prob { width: var(--problem-dock-width); }
+  .layout[data-problem-dock]:not([data-problem-dock="float"]) > :is(.panel-left, .panel-right) {
+    max-width: var(--problem-side-space);
+  }
+  .layout[data-problem-dock]:not([data-problem-dock="float"])[data-left="open"][data-right="open"] {
+    --problem-side-space: calc((100vw - var(--problem-dock-width) - 320px) / 2);
+  }
+
+  .layout[data-problem-dock="float"] > #panel-prob {
+    position: fixed;
+    z-index: 30;
+    left: var(--problem-x);
+    top: var(--problem-y);
+    width: var(--problem-width);
+    height: var(--problem-height);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+  }
+  #panel-prob .problem-panel-head { cursor: grab; touch-action: none; }
+  .layout[data-problem-dock="float"] .problem-panel-head {
+    position: sticky;
+    top: calc(-1 * var(--s4));
+    z-index: 1;
+    margin-top: calc(-1 * var(--s4));
+    padding-top: var(--s2);
+    background: var(--bg);
+  }
+  #panel-prob .problem-panel-move { cursor: grab; }
+  #panel-prob .problem-panel-resize:not([hidden]) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    cursor: nwse-resize;
+    touch-action: none;
+    background: linear-gradient(135deg, transparent 50%, var(--ink-2) 50% 58%, transparent 58% 70%, var(--ink-2) 70% 78%, transparent 78%);
+  }
+  #panel-prob .problem-panel-resize:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .layout[data-problem-snap]::after {
+    content: "";
+    position: fixed;
+    z-index: 29;
+    top: var(--problem-snap-top);
+    width: min(400px, 40vw);
+    height: var(--problem-snap-height);
+    border: 2px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    pointer-events: none;
+  }
+  .layout[data-problem-snap="left"]::after { left: 0; }
+  .layout[data-problem-snap="right"]::after { right: 0; }
+}
+
+@media print {
+  #panel-prob, #toggle-prob, .problem-inline > summary { display: none !important; }
+}
