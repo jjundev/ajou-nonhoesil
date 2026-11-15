@@ -1,9 +1,0 @@
-{
-  "sha256": "0e2dcf935e5e142d3f6dc79d110cf2a47eb0d81a9e34ae8a569969f6af9e43ed",
-  "files": {
-    "/Users/hyunjun_macbook_pro/Documents/Univ/논회실-solution-video/.claude/skills/logic-lab-solution-video/scripts/tts_lib/__init__.py": "8ac8cedc1c14e617b81ab16d2044a8e828f25e51e97b44272714d87b4e7841bb",
-    "/Users/hyunjun_macbook_pro/Documents/Univ/논회실-solution-video/.claude/skills/logic-lab-solution-video/scripts/tts_lib/cache.py": "c40032b9b13ff45149b42b0a43d0e3e77e75a158800d6fade5988b847f593637",
-    "/Users/hyunjun_macbook_pro/Documents/Univ/논회실-solution-video/.claude/skills/logic-lab-solution-video/scripts/tts_lib/budget.py": "24f46689be169ef28152f843807cf7fe33c78d8268e33751a313ab2582d77aea",
-    "/Users/hyunjun_macbook_pro/Documents/Univ/논회실-solution-video/.claude/skills/logic-lab-solution-video/scripts/tts_lib/vertex_tts.py": "dfee132f26b69436b50decbcbefcb3e28bc3c704be053296cb84f6e2d97e38cc"
-  }
-}
