@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts.lab.review_pack.checks import check_pack
 from scripts.lab.review_pack.manifest import DATA, load_manifest, output_names
 from scripts.lab.review_pack.workbook_render import read_workbook_payload
@@ -26,7 +28,8 @@ def test_published_workbooks_own_json_and_pdf_without_html():
         assert check_pack(folder) == []
 
 
-def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeypatch):
+@pytest.mark.parametrize('experiment', [4, 10])
+def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeypatch, experiment):
     import shutil
     from scripts.lab import workbook_pdf
     from scripts.lab.review_pack.__main__ import main
@@ -36,6 +39,7 @@ def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeyp
     from tests._explanation_recall_fixture import setup_v2
 
     manifest, run, _ = setup_v2(tmp_path)
+    manifest['experiment'] = experiment
     assets = tmp_path / '.claude/skills/logic-lab-review-pack/assets'
     shutil.copytree(Path('.claude/skills/logic-lab-review-pack/assets'), assets)
     for source in manifest['sources']:
@@ -60,7 +64,7 @@ def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeyp
     stage = tmp_path / 'stage'
     assert main(['build', '--root', str(tmp_path), '--run', str(run), '--stage', str(stage)]) == 0
     assert printed == ['problems', 'answers']
-    destination = tmp_path / '복습노트/실험04'
+    destination = tmp_path / '복습노트' / f'실험{experiment:02d}'
     publish(stage, destination, tmp_path)
     assert not list(destination.glob('*_기출*.html'))
     assert len(list(destination.glob('*_기출*.pdf'))) == 2
@@ -70,6 +74,13 @@ def test_build_publication_and_explanation_output_are_pdf_only(tmp_path, monkeyp
     assert not list(explain.glob('*_기출*.html'))
     for path in destination.glob('*_기출*.pdf'):
         assert (explain / path.name).read_bytes() == path.read_bytes()
+    for folder in (destination, explain):
+        files = load_manifest(folder / DATA / 'manifest.json')['generated_files']
+        panel_files = {f'{DATA}/assets/explanation-panel.{ext}' for ext in ('css', 'js')}
+        assert (panel_files & set(files)) == (panel_files if experiment == 10 else set())
+        if experiment == 10:
+            html = (folder / '실험10_문제설명.html').read_text(encoding='utf-8')
+            assert 'data-question-label="문제지 PDF"' in html
 
 
 def test_failed_answer_keeps_existing_pdf_pair(tmp_path, monkeypatch):

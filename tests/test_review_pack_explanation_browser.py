@@ -77,15 +77,20 @@ def test_all_published_explanation_articles(browser,number,width,theme):
         page.evaluate('(id)=>location.hash=id',ident)
         page.wait_for_function('(id)=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
         assert page.locator('#'+ident).is_visible()
-        assert page.locator('#'+ident+' table').evaluate_all('(tables)=>tables.every(el=>el.closest(".table-card"))')
+        if width < 1024:
+            page.locator('#'+ident+' .problem-inline > summary').click()
+        current_surfaces = f'#{ident}, #panel-prob [data-problem-reading="{ident}"]'
+        assert page.locator(current_surfaces).locator('table').evaluate_all('(tables)=>tables.every(el=>el.closest(".table-card"))')
         assert page.locator('#'+ident+' [data-explanation="solve"]').is_visible()
-        assert page.locator('#'+ident+' .equation-card, #'+ident+' .table-card').evaluate_all('''cards => cards.every(el => {
+        assert page.locator(current_surfaces).locator('.equation-card, .table-card').evaluate_all('''cards => cards.every(el => {
             const style = getComputedStyle(el);
             return parseFloat(style.borderTopWidth) >= 1 && parseFloat(style.paddingTop) >= 16
                 && style.backgroundColor !== 'rgba(0, 0, 0, 0)' && style.overflowX === 'auto';
         })''')
-        assert_explanation_section_gap(page, '#'+ident+' [data-explanation="recall"]')
-        assert_explanation_section_gap(page, '#'+ident+' [data-explanation="understand"]')
+        for section in ('recall', 'understand'):
+            selector = f'#{ident} .layer + [data-explanation="{section}"]'
+            if page.locator(selector).count():
+                assert_explanation_section_gap(page, selector)
         assert page.locator('.katex-error').count()==0
         assert page.locator('img').evaluate_all('(a)=>a.every(x=>x.complete&&x.naturalWidth>0)')
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
@@ -141,6 +146,7 @@ def test_formula_card_scroll_does_not_turn_the_page(browser, theme):
     ctx = browser.new_context(viewport=dict(width=375, height=900), color_scheme=theme, has_touch=True)
     page = ctx.new_page()
     page.goto((root/'복습노트/실험03/실험03_문제설명.html').as_uri() + '#q-fa-design')
+    page.locator('#q-fa-design .problem-inline > summary').click()
     card = page.locator('#q-fa-design .equation-card').first
     assert card.is_visible()
     assert card.evaluate('el => el.scrollWidth > el.clientWidth')

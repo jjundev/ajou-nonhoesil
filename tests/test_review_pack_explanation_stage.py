@@ -8,12 +8,13 @@ from scripts.lab.review_pack.explanation_stage import prepare_explanation_stage
 from scripts.lab.review_pack.explanation_checks import check_explanations
 ASSETS=Path('.claude/skills/logic-lab-review-pack/assets')
 
-def pack(tmp_path):
+def pack(tmp_path, experiment=4):
     m,run,data=setup(tmp_path)
+    m['experiment'] = experiment
     del m['problem_explanation_version'];del m['explanation_checks']
     folder=tmp_path/'pack';paths=assemble(m,run,folder,ASSETS)
     convert_pack(paths['note_html'],paths['review_html'],manifest=m)
-    (folder/'실험04_기출문제.pdf').write_bytes(b'pdf-preserve')
+    (folder/f'실험{experiment:02d}_기출문제.pdf').write_bytes(b'pdf-preserve')
     m['generated_files']=sorted(p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file())
     (folder/'.pack/manifest.json').write_text(json.dumps(m,ensure_ascii=False))
     (folder/'사용자메모.md').write_text('사용자 기록')

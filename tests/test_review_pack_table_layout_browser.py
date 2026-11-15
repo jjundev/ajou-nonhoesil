@@ -58,7 +58,11 @@ def test_all_managed_tables(browser,request,number,width,theme):
     for ident in page.locator('main article.topic').evaluate_all('els=>els.map(e=>e.id)'):
         page.evaluate('id=>location.hash=id',ident)
         page.wait_for_function('id=>document.querySelector(".toc a[aria-current=true]").getAttribute("href")==="#"+id',arg=ident)
-        for t in page.locator('#'+ident+' [data-layout-table]').all():
+        inline = page.locator(f'#{ident} .problem-inline > summary')
+        if inline.is_visible():
+            inline.click()
+        current_surfaces = f'#{ident}, #panel-prob [data-problem-reading="{ident}"]'
+        for t in page.locator(current_surfaces).locator('[data-layout-table]').all():
             key=t.get_attribute('data-layout-table')
             entry=next(e for e in metadata['tables'] if e['key']==key)
             result=t.evaluate('''t=>{
@@ -75,6 +79,7 @@ def test_all_managed_tables(browser,request,number,width,theme):
                 let card=t.closest('.table-card');
                 return {cells,clipped,width:t.getBoundingClientRect().width,card:!!card,
                     inners:[...card.querySelectorAll('.table-wrap')].map(e=>getComputedStyle(e).overflowX),
+                    surface: t.closest('#panel-prob') ? 'problem' : 'article',
                     cols:[...t.querySelectorAll('col')].map(c=>c.getBoundingClientRect().width)};
             }''')
             assert result['card'] and all(x=='visible' for x in result['inners']),key
@@ -86,8 +91,9 @@ def test_all_managed_tables(browser,request,number,width,theme):
                     if 'major-'+side in cell['boundary']:assert cell[side[0]]==16,(key,cell)
                     if 'minor-'+side in cell['boundary']:assert cell[side[0]]==12,(key,cell)
             if pair:=entry.get('pair'):
-                if pair in profiles:assert all(abs(a-b)<=1 for a,b in zip(profiles[pair],result['cols'])),key
-                profiles[pair]=result['cols']
+                profile = (pair, result['surface'])
+                if profile in profiles:assert all(abs(a-b)<=1 for a,b in zip(profiles[profile],result['cols'])),key
+                profiles[profile]=result['cols']
             card=t.locator('xpath=ancestor::div[contains(@class,"table-card")]').first
             card.evaluate('e=>e.scrollLeft=e.scrollWidth')
             assert card.evaluate('e=>e.scrollLeft+e.clientWidth>=e.scrollWidth-1')
