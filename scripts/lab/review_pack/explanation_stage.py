@@ -3,13 +3,16 @@ from pathlib import Path
 import json,shutil,re
 from .manifest import load_manifest,output_names,DATA,VENDOR_DIR,sync_shared_vendor
 from .explanation_content import within,CHECK_KEYS,explanation_sections
-from .explanation_render import write_explanations
+from .explanation_render import (
+    PROBLEM_PANEL_ASSETS, PROBLEM_PANEL_FIRST_EXPERIMENT, copy_problem_panel_assets, write_explanations,
+)
 from .workbook_render import read_workbook_payload, workbook_source_path
 
-def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, sync_explanation_template: bool = False, explanation_version: int = 2) -> Path:
+def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, sync_explanation_template: bool = False, explanation_version: int = 2, problem_panel: bool = False) -> Path:
     folder,author_root,stage=map(lambda p:Path(p).resolve(),(folder,author_root,stage))
     if stage.exists() or stage.is_relative_to(folder) or folder.is_relative_to(stage):raise ValueError('Existing/overlapping explanation stage')
     m=load_manifest(folder/DATA/'manifest.json')
+    problem_panel = problem_panel or m['experiment'] >= PROBLEM_PANEL_FIRST_EXPERIMENT
     explanation_sections(explanation_version)
     m['problem_explanation_version']=explanation_version
     if m.get('review_presentation_version')!=2:raise ValueError('Explanations require workbook version 2')
@@ -18,6 +21,8 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, s
         if not within(folder,relative).is_file():raise ValueError('Missing owned file: '+relative)
     names=output_names(m['experiment'],review_presentation_version=2,problem_explanation_version=m['problem_explanation_version'])
     new_paths=[names['explanation_html'],DATA+'/'+names['explanation_md']]
+    if problem_panel:
+        new_paths.extend(f'{DATA}/assets/{name}' for name in PROBLEM_PANEL_ASSETS)
     for p in m['problems']:
         if p['status']=='included':
             p['explanation_fragment']=f'problem-explanations/{p["id"]}.html'
@@ -39,6 +44,8 @@ def prepare_explanation_stage(folder: Path, author_root: Path, stage: Path, *, s
             sync_shared_vendor(folder.parent/VENDOR_DIR,stage.parent/VENDOR_DIR)
         for relative in owned:
             target=stage/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(folder/relative,target)
+        if problem_panel:
+            copy_problem_panel_assets(stage / DATA / 'assets')
         if sync_explanation_template:
             template=stage/DATA/'assets/note-template.html'
             common=Path(__file__).resolve().parents[3]/'.agents/skills/logic-lab-review-pack/assets/note-template.html'

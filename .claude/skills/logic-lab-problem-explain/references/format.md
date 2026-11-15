@@ -8,4 +8,4 @@ explanation_checks는 source_visual/content/independent/browser 네 키, 값은 
 
 generated_files는 실험 폴더 루트 기준이며 새 설명 HTML/MD·조각·그림·검증 기록을 포함해 stage 실제 파일 집합과 같아야 해요. 사용자 파일을 편입하지 않아요. 검토 보고서를 stage에 새로 추가하면 이 목록도 갱신해요.
 
-문제설명은 부모 스킬의 note-template과 article.topic·eli5/formal/warn·sum·목차·이전/다음을 재사용해요. 별도 자산을 복제하지 않아요. 읽음 RANGE는 logic-lab-NN-problem-explanation으로 실험설명과 분리해요. 자료 이동·진행 합계·학습 잠금·자동 채점은 넣지 않아요. 불확실성·성립 조건은 HTML에, 상세 출처는 MD에 남겨요. 기존 문제 projection에 정답 projection을 섞지 않아요.
+문제설명은 부모 스킬의 note-template과 article.topic·eli5/formal/warn·sum·목차·이전/다음을 재사용해요. 실험10부터는 실험09와 같은 문제 패널 CSS·JS를 팩의 `.pack/assets/`에 함께 담아요. 읽음 RANGE는 logic-lab-NN-problem-explanation으로 실험설명과 분리해요. 자료 이동·진행 합계·학습 잠금·자동 채점은 넣지 않아요. 불확실성·성립 조건은 HTML에, 상세 출처는 MD에 남겨요. 기존 문제 projection에 정답 projection을 섞지 않아요.

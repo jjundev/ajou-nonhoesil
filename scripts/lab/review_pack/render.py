@@ -129,10 +129,13 @@ def assemble(manifest,run,out,assets):
                 paths[key+'_html']=path
             paths[key+'_md']=write_workbook_md(data,manifest,out/DATA/names[key+'_md'])
     if manifest.get('problem_explanation_version') in (1,2):
-        from .explanation_render import write_explanations
+        from .explanation_render import PROBLEM_PANEL_FIRST_EXPERIMENT, copy_problem_panel_assets, write_explanations
         from .workbook_render import read_workbook_payload
+        explanation_assets = data_out / 'assets'
+        if manifest['experiment'] >= PROBLEM_PANEL_FIRST_EXPERIMENT:
+            copy_problem_panel_assets(explanation_assets)
         question=read_workbook_payload(workbook_source_path(out,manifest,'question'))
-        paths.update(write_explanations(manifest,question,run,out,assets))
+        paths.update(write_explanations(manifest,question,run,out,explanation_assets))
     audit=['# 출처와 문항목록','',f'판본 상태: {status}','']
     for p in manifest['problems']:
         audit.extend([f'## {p["id"]} · {KINDS[p["kind"]]}',f'- 분류: {p["status"]} / 범위: {p["scope"]}',f'- 사유: {p["reason"]}',f'- 대표 문항: {p.get("duplicate_of")}',f'- 제공 답안: {p.get("given_answer")}',f'- 도출 답안: {p.get("derived_answer")} / {ANSWERS[p["answer_status"]]}'])

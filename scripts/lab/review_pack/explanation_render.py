@@ -8,9 +8,18 @@ from .explanation_content import load_explanations, within
 from .equation_cards import separate_equations
 from .table_cards import separate_tables
 from .table_layout import load_layouts, layout_problem_tables, TableLayoutError
-from .manifest import workbook_links, output_names, DATA, replace_vendor_urls
+from .manifest import workbook_links, workbook_pdf_names, output_names, DATA, replace_vendor_urls
 from .navigation import render_navigation
 from .html2md import export_document, Parser
+
+PROBLEM_PANEL_ASSETS = ('explanation-panel.css', 'explanation-panel.js')
+PROBLEM_PANEL_FIRST_EXPERIMENT = 10
+
+
+def copy_problem_panel_assets(destination: Path) -> None:
+    source = Path(__file__).resolve().parents[3] / '.claude/skills/logic-lab-problem-explain/assets'
+    for name in PROBLEM_PANEL_ASSETS:
+        shutil.copy2(source / name, destination / name)
 
 def explanation_metadata(manifest: dict) -> dict[str,str]:
     sources={s['id']:s for s in manifest['sources']};metadata={}
@@ -27,11 +36,14 @@ def explanation_metadata(manifest: dict) -> dict[str,str]:
         metadata[p['id']]='출처: '+' · '.join(refs) if refs else '새로 구성한 연습문제예요.'
     return metadata
 
-def write_explanations(manifest: dict, question_data: dict, author_root: Path, folder: Path, assets: Path) -> dict[str,Path]:
+def write_explanations(manifest: dict, question_data: dict, author_root: Path, folder: Path, assets: Path, *, note_template: Path | None = None) -> dict[str,Path]:
     rows=load_explanations(manifest,question_data,author_root)
     author_root,folder,assets=map(Path,(author_root,folder,assets))
     names=output_names(manifest['experiment'],review_presentation_version=2,problem_explanation_version=manifest['problem_explanation_version'])
     esc=lambda value:html.escape(str(value),quote=True)
+    panel_assets = [name for name in PROBLEM_PANEL_ASSETS if (assets / name).is_file()]
+    if panel_assets and len(panel_assets) != len(PROBLEM_PANEL_ASSETS):
+        raise ValueError('Incomplete problem panel assets')
     layouts=load_layouts(author_root)
     if layouts:
         ids={r.problem["id"] for r in rows}
@@ -41,7 +53,8 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     for row in rows:
         p=row.problem
         parts=layout_problem_tables(p['id'],dict(p['html'],explanation=row.fragment),layouts)
-        problem='<div class="layer formal"><span class="layer-title">문제 읽기</span>'
+        panel_id = f' data-problem-reading="{esc(p["id"])}"' if panel_assets else ''
+        problem=f'<div class="layer formal"{panel_id}><span class="layer-title">문제 읽기</span>'
         for key,label in [('original','문제'),('conditions','주어진 조건'),('ask','구할 것')]:
             if parts[key].strip():problem+=f'<h4>{label}</h4>'+parts[key]
         for f in p['figures']:
@@ -71,9 +84,20 @@ def write_explanations(manifest: dict, question_data: dict, author_root: Path, f
     content='<section id="learning"><h2>문제를 함께 풀어요</h2>'+''.join(bodies)+'</section>'
     toc=render_navigation(names,'note',[dict(id=r.problem['id'],title=f"문제 {r.problem['number']} · {r.problem['title']}") for r in rows])
     values=dict(PAGE_TITLE=title,DESCRIPTION='이론을 문제풀이에 연결해요',BRAND='문제 설명',TITLE=title,SUBTITLE='첫 줄부터 완성 답과 검산까지 함께 풀어요.',INTRO='문제지와 같은 번호로 읽어요. 설명을 읽은 뒤 문제지에서 다시 풀어 보세요.',SECTIONS=content,PARTS=content,FOOTER='',SCRIPTS=f'<script src="{DATA}/assets/widgets.js"></script>',RANGE=f"logic-lab-{manifest['experiment']:02d}-problem-explanation",NOTE_HREF=names['note_html'],**toc)
-    document=(assets/'note-template.html').read_text(encoding='utf-8')
+    document=(note_template or assets/'note-template.html').read_text(encoding='utf-8')
     document=document.replace('<body', '<body data-problem-explanation="true"',1)
     for key,value in values.items():document=document.replace('{{'+key+'}}',value)
+    if panel_assets:
+        css, script = (f'{DATA}/assets/{name}' for name in panel_assets)
+        pdf_delivery = manifest.get('workbook_delivery') == 'pdf'
+        question_href = workbook_pdf_names(manifest['experiment'])['question'] if pdf_delivery else names['question_html']
+        label = '문제지 PDF' if pdf_delivery else '문제지'
+        document = document.replace('</head>', f'  <link rel="stylesheet" href="{css}">\n</head>', 1)
+        document = document.replace(
+            '</body>',
+            f'  <script defer src="{script}" data-question-href="{quote(question_href)}" '
+            f'data-question-label="{label}"></script>\n</body>', 1,
+        )
     document=replace_vendor_urls(document)
     if '{{' in document:raise ValueError('Unreplaced explanation placeholder')
     parser=Parser();parser.feed(document)

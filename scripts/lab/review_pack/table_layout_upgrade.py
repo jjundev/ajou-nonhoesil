@@ -74,7 +74,10 @@ def _rerender_explanation(folder, manifest):
     question = read_workbook_payload(workbook_source_path(folder, manifest, 'question'))
     changes = {}
     with TemporaryDirectory(prefix='layout-upgrade-') as scratch:
-        paths = write_explanations(manifest, question, folder / DATA, Path(scratch), ASSETS)
+        paths = write_explanations(
+            manifest, question, folder / DATA, Path(scratch), folder / DATA / 'assets',
+            note_template=ASSETS / 'note-template.html',
+        )
         for path in paths.values():
             target = folder / path.relative_to(scratch)
             if target.is_symlink():

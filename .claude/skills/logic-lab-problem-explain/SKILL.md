@@ -32,6 +32,7 @@ REPO는 scripts/lab/config.py가 있는 저장소 루트예요. PowerShell 작�
 ## 3. 새 stage와 검토
 
 기존 팩은 원고를 완성한 뒤 실행해요. explain-stage 기본값은 v2예요.
+실험10부터는 전체 팩의 `build`와 설명만 갱신하는 `explain-stage` 모두 실험09와 같은 문제 패널을 기본으로 넣어요. 실험01~09의 문제 패널 자산을 다시 가져올 때는 `explain-stage --problem-panel`을 사용해요.
 
 ```powershell
 python -m scripts.lab.review_pack explain-stage --folder 복습노트/실험NN --author-root docs/learning-pack-source/실험NN/problem-explanations --stage STAGE
