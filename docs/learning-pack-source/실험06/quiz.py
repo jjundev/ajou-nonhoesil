@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from h import p, table
+from recall import QUIZ_RECALL
 
 MAN = 's-a9792f60486135b0'
 BOARD = 's-df4e3850c9b9d3a3'
@@ -115,9 +116,9 @@ SUMMARY_NOTES = {'q-qp-e06-tf-01': '정상 상태로 초기화된 이상 래치�
 
 def explanation(item):
     typ,suffix,title,topic,page,condition,ask,answer,reason,check,pitfall=item
-    cue={'true_false':'활성 조건과 상태 변화를 나누어 판단해요','fill_blank':'활성 극성과 직전 상태를 먼저 표시해요','breadboard':'논리 회로의 넷을 실제 핀과 홀로 옮겨요','short_answer':'기능·원리·성립 조건을 연결해 설명해요'}[typ]
-    recall=p('문제의 단서는 “'+condition+'”예요. '+reason)+p('Q는 현재 출력, Q′은 정상 상태에서 그 보수예요. E는 레벨 허용 신호, CLK는 유효 엣지를 판별할 신호예요. 이 문항은 '+('비동기 제어가 우선이고 정상 모드에서 하강 엣지가 유효하다는 기준' if topic=='t-74hc76' else '전파 지연 뒤 안정 상태에서 NAND 출력과 되먹임을 따르는 기준')+'을 적용해요.')
-    start=p(('핀 14=+5V, 핀 7=GND부터 적고 게이트를 (1,2)→3, (4,5)→6, (9,10)→8, (12,13)→11로 나눠요.' if typ=='breadboard' else ('먼저 SET·RESET이 둘 다 High인지 확인해요.' if topic=='t-74hc76' else '먼저 E가 0인지 1인지 적고, Q이전이 필요한 조건인지 확인해요.')))+f'<p>개념으로 돌아가기: <a href="{{{{NOTE_HREF}}}}#{topic}">해당 동작 원리</a></p>'
+    cue, concept, first_step = QUIZ_RECALL[suffix]
+    recall = p(concept)
+    start = p(first_step) + f'<p>개념으로 돌아가기: <a href="{{{{NOTE_HREF}}}}#{topic}">해당 동작 원리</a></p>'
     obj=workbook(item)
     solve=''.join(p(s['label'])+s['html'].replace('src="figures/','src=".pack/figures/').replace(' style="max-width:100%;height:auto"','') for s in obj['solution']['steps'])
     if typ=='breadboard':solve=solve.replace('<img ','<figure class="figure"><img ').replace('alt="v1 PDF 위 Enable SR 래치 완성 결선도">','alt="v1 PDF 위 Enable SR 래치 완성 결선도"></figure>')
