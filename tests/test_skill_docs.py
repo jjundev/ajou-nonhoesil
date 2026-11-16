@@ -629,16 +629,28 @@ class SkillDocInvariants(unittest.TestCase):
         # 3·6 에 남아 깨졌다 — 규칙 17 이 말하는 그 파생을 여기서도 한다.
         spec = parse_spec(ROOT / config.experiment_dir(1) / "체크리스트/명세.md")
         n_proc = len(spec.items)
-        # 고정 소절 둘: 공통 결선 규칙 + 실험 전 확인할 사항. 브레드보드
-        # 작도는 소절이 아니라 회로 소절 안의 그림이 됐다(§절대 규칙 20).
-        n_wire = n_proc + 2
-        counts = subsection_counts(CANON.read_text(encoding="utf-8"))
+        # 고정 소절 하나: 공통 결선 규칙. 브레드보드 작도는 소절이 아니라
+        # 회로 소절 안의 그림이 됐다(§절대 규칙 20). 실험 전 확인할 사항
+        # 소절은 2026-11-17 에 뺐지만 승인된 정본에는 남아 있으므로, 세기
+        # 전에 그 소절만 걷어 낸다 — 정본을 고치면 노션 baseline 과 어긋난다.
+        n_wire = n_proc + 1
+        canon = re.sub(r"^## 실험 전 확인할 사항\n.*?(?=^#{1,2} )", "",
+                       CANON.read_text(encoding="utf-8"), flags=re.M | re.S)
+        counts = subsection_counts(canon)
         self.assertEqual(counts["실험 과정 및 예상 결과"], n_proc)
         self.assertEqual(counts["회로 결선도"], n_wire)
         # 규칙의 예시 문장을 정본에서 센 숫자로 조립해 대조한다. 줄바꿈에
         # 기대지 않는다 — 문단을 다시 감싸도 규칙이 같으면 통과해야 한다.
         self.assertIn(f"`items` {n_proc}개면 과정 {n_proc}소절, 결선 {n_wire}소절이다",
                       self.flat["예보"])
+
+    def test_pre_lab_check_subsection_is_not_generated(self):
+        # 2026-11-17: 평가 항목이 아니라 사용자가 뺐다. 규칙이 다시 그
+        # 소절을 지시하거나 재료 행이 그 재료를 들면 새 보고서에 되살아난다.
+        flat = self.flat["예보"]
+        self.assertNotIn("## 실험 전 확인할 사항", flat)
+        self.assertNotIn("고정 소절 둘", flat)
+        self.assertIn("회로 결선도 절 끝에 실험 전 확인 목록 소절을 두지 않는다", flat)
 
     def test_ai_usage_log_gate_is_written_against_the_parsed_value(self):
         # config.load_course_info() 는 YAML `~` 를 None 으로 돌려준다.
