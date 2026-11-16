@@ -1055,8 +1055,7 @@ class BreadboardRenderer(_RuleChecks):
             tx, ty = text_at or (box[2] + 2, center[1] - h / 2 - 1)
             col = KEEP if self._keep_parts else (90, 60, 20, 255)
             # 흰 바탕 — 글자 뒤 빈 홀이 글자를 끊어 읽히지 않는다. 그 상자는 배선기가 피한다(`part_boxes`)
-            self.draw.rectangle([tx - 1, ty, tx + w + 1, ty + h + 3], fill=(250, 250, 250, 235))
-            self.draw.text((tx, ty), text, fill=col, font=self.font_en_sm)
+            self._blank_parts(self._part_value_tag, tx, ty, w, h, text, col)
             self.part_boxes.append((tx, ty, tx + w, ty + h + 3))
             near = ((center[0], center[1] - 14) if abs(p1[0] - p0[0]) >= abs(p1[1] - p0[1])
                     else (center[0] - 14, center[1]))
@@ -1086,16 +1085,19 @@ class BreadboardRenderer(_RuleChecks):
             text = f'{name} {value}'
             tb = self.draw.textbbox((0, 0), text, font=self.font_en_sm)
             tx, ty = x1 + 3, ys[1] - (tb[3] - tb[1]) / 2 - 1
-            self.draw.rectangle([tx - 1, ty, tx + tb[2] - tb[0] + 1, ty + tb[3] - tb[1] + 3],
-                                fill=(250, 250, 250, 235))
-            self.draw.text((tx, ty), text, fill=KEEP if self._keep_parts else (20, 60, 140, 255),
-                           font=self.font_en_sm)
+            self._blank_parts(self._part_value_tag, tx, ty, tb[2] - tb[0], tb[3] - tb[1], text,
+                              KEEP if self._keep_parts else (20, 60, 140, 255))
             self.part_boxes.append((tx, ty, tx + tb[2] - tb[0], ty + tb[3] - tb[1] + 3))
             self.step_note('sig', self.addr(x, ys[0]), self.addr(x, ys[2]),
                            f'{label} 가변저항({self.addr(x, ys[0])}·{self.addr(x, ys[1])} 와이퍼·'
                            f'{self.addr(x, ys[2])}) · {desc}', marker_near=(x - 14, ys[1]))
         finally:
             self._keep_parts = False
+
+    def _part_value_tag(self, tx, ty, w, h, text, col):
+        """누운 저항·가변저항 몸통 옆 이름·값 글자. 부품과 함께 손그림모사에선 비운다 — 팀원이 적는다."""
+        self.draw.rectangle([tx - 1, ty, tx + w + 1, ty + h + 3], fill=(250, 250, 250, 235))
+        self.draw.text((tx, ty), text, fill=col, font=self.font_en_sm)
 
     def _draw_pot(self, x, ys, x0, x1, y0, y1):
         lead_col = KEEP if self._keep_parts else (100, 100, 100, 255)

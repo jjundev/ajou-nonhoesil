@@ -474,6 +474,28 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([r[:2] for r in rows], [('계측', 'DAC OUTPUT'), ('계측', 'CLK')])
         self.assertIn(bb.probes[0]['at'], rows[0][2])
 
+    def _resistor_board(self, **k):
+        bb = _load().BreadboardRenderer(board='v2', **k)
+        bb.enable_steps()
+        L = bb.cols['left']
+        bb.resistor((L['c'], 10), (L['c'], 14), 'R5', '22.6k', '가중 저항')
+        bb.potentiometer(L['c'], 20, 'R9', '330', '분배기')
+        return bb
+
+    def test_손그림모사는_누운_저항_가변저항_이름값을_비운다(self):
+        # 실험10 `R5 22.6k` 글자가 overlay 에 남아 hand_sim 이 멈췄다
+        self.assertIsNone(self._resistor_board(hand=1).overlay.getbbox())
+
+    def test_안내판은_저항_이름값을_제_색으로_쓰고_표에_가변저항을_싣는다(self):
+        from scripts.lab import hand_sim
+        bb = self._resistor_board(hand=1, hand_guide=True)
+        colors = {c for _, c in bb.overlay.getcolors(1 << 20)}
+        self.assertIn((90, 60, 20, 255), colors)
+        self.assertIn((20, 60, 140, 255), colors)
+        rows = hand_sim.guide_rows(bb)
+        self.assertEqual([r[:2] for r in rows], [('저항', 'R5 22.6kΩ'), ('저항', 'R9 330Ω')])
+        self.assertIn('와이퍼', rows[1][2])
+
     def test_범례는_계측_접점이_있는_판에만_계측을_말한다(self):
         from scripts.lab import hand_sim
         self.assertEqual(hand_sim.legend_for([('칩', '7490', '좌 블록 · pin 1 = 5행')]), hand_sim.LEGEND)

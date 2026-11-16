@@ -77,6 +77,8 @@ def guide_rows(bb):
              for ch in bb.led_chains]
     rows += [('저항', r['label'], f'{hole(r["top"])} → {hole(r["bottom"])}')
              for r in bb.resistors]
+    rows += [('저항', p['label'], f'{hole(p["ends"][0])} → {hole(p["ends"][1])} · 와이퍼 {hole(p["wiper"])}')
+             for p in bb.pots]
     rows += [('입력', i['name'], f'레일 쪽 끝 {bb.addr(*bb._segments[i["seg"]][1][0])} 옆')
              for i in bb.inputs]
     # 그림에 그린 계측 접점만 — `instrument_note`(그릴 자리 없는 접점)는 `sym` 이 없다
