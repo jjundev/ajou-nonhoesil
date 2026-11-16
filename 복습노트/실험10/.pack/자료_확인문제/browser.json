@@ -1,0 +1,57 @@
+{
+  "html": "복습노트/실험10/실험10_확인문제.html",
+  "sha256": "9929e5e32dffba5fb3fa07a81dad225ad4881d7aaf3611c2e92947e926968006",
+  "viewports": [
+    "1280x900",
+    "375x812"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "runs": [
+    {
+      "label": "1280x900 light",
+      "detail": {
+        "items_checked": 10,
+        "items": 10,
+        "hints_checked": 10
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "1280x900 dark",
+      "detail": {
+        "items_checked": 10,
+        "items": 10,
+        "hints_checked": 10
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "375x812 light",
+      "detail": {
+        "items_checked": 10,
+        "items": 10,
+        "hints_checked": 10
+      },
+      "failures": [],
+      "external_blocked": []
+    },
+    {
+      "label": "375x812 dark",
+      "detail": {
+        "items_checked": 10,
+        "items": 10,
+        "hints_checked": 10
+      },
+      "failures": [],
+      "external_blocked": []
+    }
+  ],
+  "failures": [],
+  "transport": "file://, offline=True",
+  "status": "pass"
+}

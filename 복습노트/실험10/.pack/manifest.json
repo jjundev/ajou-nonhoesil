@@ -1,0 +1,1771 @@
+{
+  "schema_version": 1,
+  "experiment": 10,
+  "title": "D/A & A/D Converter — 숫자를 전압으로, 전압을 숫자로",
+  "edition_status": "current",
+  "bank_import": {
+    "bank_id": "bank-exp10",
+    "schema_version": 1,
+    "source_path": "문제은행/실험10/question-bank.json",
+    "sha256": "d19ac0a6f1e48719e4b71a7529b357e20bcf29b22bda8c890b06240acf559d89",
+    "snapshot_path": "evidence/question-bank.json",
+    "index_path": "authoring-index.json"
+  },
+  "sources": [
+    {
+      "id": "s-3603d8be680785b1",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 기출 2016-2.pdf",
+      "sha256": "175dbd4ac1bbf98c0c40cc5004f08455faf39f177abf8b94a17d82dfb8d5998c",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-04be542d738ad07b",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 예상문제_v1.pdf",
+      "sha256": "245da45e09ab9d5c55d02a83e6161293d52f74658926d55fa691c412e343c50d",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-fd1f78a90d897f62",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 예상문제_v2.pdf",
+      "sha256": "bbc27fa62045339de33660a555e0493a2f28e68962cddccb6f0aa518d7f29b14",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-20b18f3a195db4c6",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 예상문제_v3.pdf",
+      "sha256": "f63eaa883649c89a05b1f7f35775aaa743ded1c121a8c5185fe6ebf26c8229fb",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-f16052453e4cc88a",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 예상문제_v4.pdf",
+      "sha256": "5d0c69fe9a5f3eec55dbaa121d413eb7dfb32f28d8fdc45fd6e2f6267673c696",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-8b796102077543be",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 예상문제_v5.pdf",
+      "sha256": "56b875631705bd7460a8c4e8309c502fed18152f5b941b28164cf32853f94ba7",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-e5708daac82da7e3",
+      "path": "from_the_past/정리/퀴즈/실험10/실험10 퀴즈 종합_기출문제 (4p).pdf",
+      "sha256": "a672393258ac72f9dfa9daa003dcf6b1ce66bba45f165b954b0ee12cd6128584",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-5af968e8c65d3c20",
+      "path": "from_the_past/정리/퀴즈/실험10/원본_docx/실험10.docx",
+      "sha256": "3d468dcecce0f011bc21d0735c92a57189408bcad3048dfdde47bd65460f4579",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-d46bd455cf88c839",
+      "path": "from_the_past/정리/퀴즈/실험10/원본_docx/실험10_예상.docx",
+      "sha256": "911a215964ee4901bafeedabfc58c2f1b2451d56cc1a29badb364c5bc732c744",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-af510093c583bb96",
+      "path": "from_the_past/정리/퀴즈/실험10/원본_docx/실험10_예상.pdf",
+      "sha256": "48ef3bbbf12a1bb5a1a151d08b3286c7eac13804ea7e1648e364fc407b0cf4d4",
+      "kind": "quiz",
+      "edition": "unknown"
+    },
+    {
+      "id": "s-manual10",
+      "path": "강의노트/실험10. DAC & ADC.pdf",
+      "sha256": "64928fc18b2961202fe18456edc06e3af8321d4c9ff3a264c85721b0d4bfe893",
+      "kind": "manual",
+      "edition": "current"
+    },
+    {
+      "id": "s-scope",
+      "path": "강의노트/공지사항/2026-09-14_[필독]_논리회로실험_보고서_관련_공지.md",
+      "sha256": "49c08dec92f3f4c15395bccafdecde311c56df07f68041ef103641409b7d5d50",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-board",
+      "path": "강의노트/공지사항/Breadboard.pdf",
+      "sha256": "045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4",
+      "kind": "notice",
+      "edition": "current"
+    },
+    {
+      "id": "s-spec10",
+      "path": "보고서/실험10/체크리스트/명세.md",
+      "sha256": "61fed2806d0d42ee1e2f117cbe0364bb01c10c2594b0bd56204a881f17c23b22",
+      "kind": "record",
+      "edition": "current"
+    },
+    {
+      "id": "s-netlist10",
+      "path": "보고서/실험10/결선도/netlist.md",
+      "sha256": "074650385e11d2a206096f7b4034976f94ab18dccd527e6ba16d75e21b1407bb",
+      "kind": "record",
+      "edition": "current"
+    }
+  ],
+  "topics": [
+    {
+      "id": "t-start",
+      "title": "왜 이 회로를 쓰는지 먼저 알아봐요",
+      "requires": [],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 2,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 7,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 13,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-scope",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-start.html",
+      "md_notes": "교안 표지는 25-1이에요. 보고서 범위(실험 1) DAC)는 2026-09-14 공지(_350547_1)와 config.EXPERIMENT_SCOPE[10]에서 확인했어요(명세 근거와 범위). DAC 정의·쓰임은 p7, ADC 정의는 p13이에요. 디지털 저장·전송의 장점은 기출 제공 답안에 있는 일반 설명이라 보충으로 표시했어요. 4비트 예시 표는 이해를 위한 예시이고 check_values.py 가 다시 계산했어요."
+    },
+    {
+      "id": "t-opamp",
+      "title": "Op-Amp: 두 입력의 차이를 크게 키워요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 3,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-opamp.html",
+      "md_notes": "p3 정의(Vout = A(V+−V−), A는 수만~수백만), p4 반전 증폭기 식과 그림을 옮겼어요. 가상 접지 용어와 LM741 출력 한계는 교안 밖 보충이에요. 추적표 값은 check_values.py 가 다시 계산했어요."
+    },
+    {
+      "id": "t-summing",
+      "title": "반전 가산증폭기: 여러 입력을 무게를 달아 더해요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 4,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-summing.html",
+      "md_notes": "p11 반전 가산증폭기 식을 옮겼어요. 식의 R1~R4와 회로도 R1~R4(1.5k 풀업)의 이름 겹침은 명세 토큰 표의 판독을 따랐어요. 24k·12k·6k·3k 예시는 이해를 위한 값이고 check_values.py 가 다시 계산했어요."
+    },
+    {
+      "id": "t-network",
+      "title": "Register Network: 가중 저항과 래더 저항",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-network.html",
+      "md_notes": "p6 그림과 두 식을 300dpi로 다시 읽어 직접 다시 그렸어요(D1이 MSB, 가중 저항 RL ≫ R, 래더 끝 2R 접지). 장단점은 교안 본문에 없고 기출 제공 답안과 일반 지식에서 가져온 보충이에요. 3비트 예시 값은 check_values.py 가 두 식과 저항망 노드 해석(가중: 밀만, 래더: 회로 해석)으로 다시 계산했어요."
+    },
+    {
+      "id": "t-7490",
+      "title": "7490: 클럭을 세어 0~9를 BCD로 내요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 15,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-7490.html",
+      "md_notes": "p8 카운트 순서(0000~1001 반복), p10 LSB·MSB 표시, p8·p15·p16 회로도 핀(CLKA 14, CLKB 1, R01 2, R02 3, R91 6, R92 7, QA 12, QB 9, QC 8, QD 11)을 따랐어요. 전원 5·10번은 netlist 핀아웃 출처(TI SDLS940A, 실험08 기록 경유)예요. 2진·5진 단 구조는 칩 자료에서 가져온 보충이에요. 초기화 입력이 없어 시작 값이 정해지지 않는다는 판단은 명세를 따랐어요."
+    },
+    {
+      "id": "t-oc",
+      "title": "7404 + 7405: 비트 전압을 정확히 0V 또는 5V로 맞춰요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 9,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist10",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-oc.html",
+      "md_notes": "p9 문장(정확히 GND 또는 Vcc, Open-collector IC 05와 Pull up 저항, IC 04로 반전 피하기)과 p10 회로 값을 따랐어요. 경로 저항 합(24.1k·12k·6k·3k)은 명세에 있는 V+=GND일 때의 이상 셈이에요. TTL High 전압 설명은 보충이에요. 74HC05가 open-drain이라는 것은 netlist 핀아웃 출처(TI SCLS080F 2026-11-16 확인)예요."
+    },
+    {
+      "id": "t-dac",
+      "title": "DAC 회로 전체: 카운트가 오르면 출력은 계단으로 내려가요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 10,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 11,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 12,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 16,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 17,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 18,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 19,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 20,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 21,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-netlist10",
+          "pdf_page": null,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-dac.html",
+      "md_notes": "p10~p12 회로, p16·p17 절차, p18 예상 결과(내림차순 계단), p19~p21 절차 4~6을 따랐어요. V+=GND에서 평평한 선 예상은 명세 T3의 판단이고, p18 두 사진의 절차 대응은 미확정이에요(netlist M13). 교안 소자값의 이상 셈이 +15V를 넘는 문제는 netlist M7, U4 7번 라벨 없음은 M3이에요(기출 예상문제 v3의 같은 회로 그림은 7번을 +15V로 적어 이 노트·명세의 +15V 연결과 맞아요), LM741 단일 전원 문제는 M11이에요. 1kHz에서 1ms·10ms, Rf 0.6배, 10.5k∥68k ≈ 9.1k는 check_values.py 셈이에요. 절차 4~6을 따로 하는 순서는 명세의 결정이에요(M9). 출력 식 V+ + Rf·Σ(V+−Vi)/Ri는 이상 Op-Amp의 KCL 셈으로 보충이에요."
+    },
+    {
+      "id": "t-comparator",
+      "title": "비교기: 피드백 없이 두 입력 중 큰 쪽을 알려 줘요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 5,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 22,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 23,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 24,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-spec10",
+          "pdf_page": null,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-comparator.html",
+      "md_notes": "p5 비교기 정의와 p22 회로(DAC OUTPUT → 2번, R13 330 가운데 단자 → 3번, 7번 +15V, 4번 0, 출력 15V 또는 0V), p23·p24 절차를 따랐어요. p5 문장(“V+ 기준 Vin(V−)이 작다면 Vs−”)은 같은 쪽 식과 반대라 식을 따랐어요(300dpi 판독). 실험 2는 보고서 범위 밖(명세)이에요. 추적표 전압은 이해를 위한 예시예요."
+    },
+    {
+      "id": "t-adc",
+      "title": "ADC의 두 종류: 한꺼번에 비교하거나, 비교하며 좁혀 가요",
+      "requires": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 13,
+          "printed_page": null
+        }
+      ],
+      "fragment": "sections/t-adc.html",
+      "md_notes": "p13의 두 type과 세 feedback 방식(Ramp, Counter, SAR)을 옮겼어요. 2ⁿ−1은 p13을 300dpi로 읽어 확인했어요(텍스트 추출은 위첨자를 잃어 2n-1로 나와요). SAR 예시와 비교기 수는 check_values.py 가 다시 계산했어요. 실험 2를 Counter type으로 본 것과 Counter 변환 시간이 입력에 따라 달라진다는 것은 보충이에요."
+    }
+  ],
+  "problems": [
+    {
+      "id": "q-converter-roles",
+      "bank_question_id": "q-converter-roles",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-start"
+      ],
+      "sources": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P32; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 9; OOXML 본문 P41~P42; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 9; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "9"
+        },
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "우상단 삽입 캡처 “실험 10 DAC&ADC Online 개별과제”",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "D/A converter는 디지털 신호를 아날로그 신호(전압·전류)로 바꿔요. 컴퓨터의 디지털 데이터를 스피커 소리처럼 아날로그 양으로 내보낼 때 써요(디지털 오디오를 아날로그 오디오로, TV·휴대폰). A/D converter는 아날로그 신호를 디지털 신호로 바꿔요. 마이크·센서의 전압을 컴퓨터가 다룰 수 있는 숫자로 읽어들일 때 써요.",
+      "answer_status": "verified",
+      "title": "DAC와 ADC의 역할과 쓰임",
+      "workbook_fragment": "workbook/q-converter-roles.json",
+      "explanation_fragment": "problem-explanations/q-converter-roles.html"
+    },
+    {
+      "id": "q-summing-amp",
+      "bank_question_id": "q-summing-amp",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-summing"
+      ],
+      "sources": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P23 (첫째 그림); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 6; OOXML 본문 P33 (첫째 그림); Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 6; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "6"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Vo = −(Rf/R1·V1 + Rf/R2·V2 + Rf/R3·V3)",
+      "answer_status": "verified",
+      "title": "반전 가산증폭기의 Vo",
+      "workbook_fragment": "workbook/q-summing-amp.json",
+      "explanation_fragment": "problem-explanations/q-summing-amp.html"
+    },
+    {
+      "id": "q-opamp-online",
+      "bank_question_id": "q-opamp-online",
+      "kind": "unknown",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-summing"
+      ],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "우상단 삽입 캡처 “실험 10 DAC&ADC Online 개별과제”",
+          "bbox": null,
+          "image_size": null,
+          "question": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "(1) Vo = −(Rf/R1·V1 + Rf/R2·V2 + Rf/R3·V3) (2) 여러 입력 전압에 저항 비만큼 무게를 달아 더하고 부호를 뒤집어 내는 반전 가산증폭기예요. 반전 입력이 거의 0V라 입력끼리 서로 영향을 주지 않고, Rf로 전체 크기를 바꿀 수 있어요. DAC에서는 비트마다 무게가 다른 가지 저항을 달아 디지털 값을 아날로그 전압으로 바꿔요.",
+      "answer_status": "verified",
+      "title": "가산증폭기의 Vo와 역할",
+      "workbook_fragment": "workbook/q-opamp-online.json",
+      "explanation_fragment": "problem-explanations/q-opamp-online.html"
+    },
+    {
+      "id": "q-resistor-network",
+      "bank_question_id": "q-resistor-network",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-network"
+      ],
+      "sources": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2~P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 1; OOXML 본문 P2~P3; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "가중 저항(weighted): 구조가 간단하고 저항 수가 적지만, 비트가 늘수록 저항값 범위(R ~ 2ⁿ⁻¹R)가 넓어져 정밀하게 맞추기 어렵고, 큰 저항은 온도 드리프트·스위칭 속도에 불리해요. 래더(ladder, R-2R): R과 2R 두 값만 써서 정밀도와 속도를 얻기 쉬워 지금 DAC에 주로 쓰지만, 저항 수가 많고 구성이 조금 복잡해요.",
+      "answer_status": "verified",
+      "title": "가중 저항과 래더 저항의 장단점",
+      "workbook_fragment": "workbook/q-resistor-network.json",
+      "explanation_fragment": "problem-explanations/q-resistor-network.html"
+    },
+    {
+      "id": "q-counter-7490",
+      "bank_question_id": "q-counter-7490",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(7490 카운터의 기능과 BCD 출력의 무게)을 보충해서 수록해요",
+      "topics": [
+        "t-7490"
+      ],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P17; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 4; OOXML 본문 P24~P25; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "74HC90(교안 회로도의 7490)은 클럭 펄스를 세는 10진(BCD) 카운터예요. QA를 CLKB에 이어 0부터 9까지 세고 다시 0으로 돌아가요. QA, QB, QC, QD는 지금까지 센 값을 나타내는 BCD 비트로, 각각 2⁰, 2¹, 2², 2³의 무게예요(QA=LSB, QD=MSB).",
+      "answer_status": "verified",
+      "title": "7490(74HC90)의 기능과 출력",
+      "workbook_fragment": "workbook/q-counter-7490.json",
+      "explanation_fragment": "problem-explanations/q-counter-7490.html"
+    },
+    {
+      "id": "q-dac-operation",
+      "bank_question_id": "q-dac-operation",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(교안 DAC 회로 전체의 신호 흐름)을 보충해서 수록해요",
+      "topics": [
+        "t-dac"
+      ],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P13 (그림 포함); Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 3; OOXML 본문 P20~P21 (그림 포함); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "클럭이 들어올 때마다 7490이 0~9를 세어 QA~QD로 내요. 각 비트는 7404와 오픈 컬렉터 7405를 거쳐(두 번 반전이라 값은 그대로) 1.5kΩ 풀업으로 정확한 0V 또는 5V가 돼요. 가중 저항(22.6k·10.5k·4.5k·1.5k)이 비트마다 2⁰~2³의 무게를 주고, LM741 반전 가산증폭기가 가지 전류를 더해 Rf(4.5k)로 전압을 만들어요. 그래서 카운트에 따라 한 단씩 바뀌는 아날로그 전압이 나오고, 반전이라 0~9 동안 내림차순 계단이 돼요. 전압 분배기는 V+를 올려 출력이 0V 아래로 내려가지 않게 해요.",
+      "answer_status": "verified",
+      "title": "DAC 회로의 동작 원리",
+      "workbook_fragment": "workbook/q-dac-operation.json",
+      "explanation_fragment": "problem-explanations/q-dac-operation.html"
+    },
+    {
+      "id": "q-rf-output",
+      "bank_question_id": "q-rf-output",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(귀환 저항 Rf와 출력 크기)을 보충해서 수록해요",
+      "topics": [
+        "t-dac"
+      ],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P25; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 7; OOXML 본문 P35~P36; Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Rf가 작아지면 DAC output 전압의 크기(계단 한 단의 높이와 전체 폭)가 Rf에 비례해 작아지고, Rf가 커지면 커져요. 반전 가산기의 출력이 −Rf × (가지 전류의 합)이기 때문이에요. 예를 들어 4.5kΩ → 2.7kΩ이면 0.6배예요. 단, 출력이 공급 전압(0~15V) 안에 있을 때만 그래요.",
+      "answer_status": "verified",
+      "title": "Rf와 DAC 출력 크기",
+      "workbook_fragment": "workbook/q-rf-output.json",
+      "explanation_fragment": "problem-explanations/q-rf-output.html"
+    },
+    {
+      "id": "q-comparator",
+      "bank_question_id": "q-comparator",
+      "kind": "predicted",
+      "status": "included",
+      "reason": "예상문항이지만 기출이 다루지 않은 개념(비교기 동작과 가변저항의 역할)을 보충해서 수록해요",
+      "topics": [
+        "t-comparator"
+      ],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 4,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 4",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P28 (그림 포함); Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 8; OOXML 본문 P38~P39 (그림 포함); Word 읽기 전용 렌더 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "피드백이 없는 Op-Amp라 두 입력의 작은 차이도 크게 키워 출력이 +15V 또는 0V에 붙어요. 이 회로는 DAC OUTPUT이 반전 입력(2번), 가변저항 가운데 단자가 비반전 입력(3번)이라, DAC 출력이 기준보다 낮으면 15V, 높으면 0V예요. 가변저항(R13 330Ω)은 +15V와 GND 사이에서 기준 전압을 정해요. 기준을 바꿔 가며 출력이 바뀌는 지점을 찾으면, 그 아날로그 전압에 해당하는 디지털 값(카운트)을 알 수 있어요.",
+      "answer_status": "disputed",
+      "title": "비교기와 가변저항",
+      "workbook_fragment": "workbook/q-comparator.json",
+      "explanation_fragment": "problem-explanations/q-comparator.html"
+    },
+    {
+      "id": "q-adc-types",
+      "bank_question_id": "q-adc-types",
+      "kind": "past",
+      "status": "included",
+      "reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요",
+      "topics": [
+        "t-adc"
+      ],
+      "sources": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 1; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "1"
+        },
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P7; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 2; OOXML 본문 P8~P9; Word 읽기 전용 렌더 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Simultaneous(Flash) type은 feedback path가 없어 입력 전압을 여러 기준 전압과 비교기로 동시에 비교해요. 변환이 매우 빠르지만 n비트에 2ⁿ−1개의 비교기가 필요해 비경제적이에요. Feedback path type은 비교기 결과에 따라 DAC 출력(또는 내부 상태)을 조절해 점진적으로 디지털 값을 찾아요. 비교기가 적은 대신 여러 번 비교해서 Flash보다 느려요. 그중 Ramp·Counter type은 느리고, SAR type은 이진 탐색으로 빠르고 정확하며 경제적이에요.",
+      "answer_status": "verified",
+      "title": "ADC의 두 가지 type",
+      "workbook_fragment": "workbook/q-adc-types.json",
+      "explanation_fragment": "problem-explanations/q-adc-types.html"
+    },
+    {
+      "id": "q-qp-e10-tf-01",
+      "title": "비교기의 피드백",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-comparator"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 5,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-tf-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-tf-01.html"
+    },
+    {
+      "id": "q-qp-e10-tf-02",
+      "title": "Rf를 두 배로",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-opamp"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-tf-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-tf-02.html"
+    },
+    {
+      "id": "q-qp-e10-tf-03",
+      "title": "3비트 Flash의 비교기 수",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-adc"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 13,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "F",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-tf-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-tf-03.html"
+    },
+    {
+      "id": "q-qp-e10-tf-04",
+      "title": "7404 + 7405의 논리값",
+      "kind": "practice",
+      "question_type": "true_false",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-oc"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 9,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "T",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-tf-04.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-tf-04.html"
+    },
+    {
+      "id": "q-qp-e10-blank-01",
+      "title": "7490 출력의 무게",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7490"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 10,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① 2⁰ (1), ② 2³ (8), ③ 9",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-blank-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-blank-01.html"
+    },
+    {
+      "id": "q-qp-e10-blank-02",
+      "title": "반전 증폭기의 이득",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-opamp"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 4,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① Rf, ② R1, ③ −3",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-blank-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-blank-02.html"
+    },
+    {
+      "id": "q-qp-e10-blank-03",
+      "title": "R-2R 래더와 가중 저항",
+      "kind": "practice",
+      "question_type": "fill_blank",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-network"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 6,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "① R, ② 2R, ③ 8",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-blank-03.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-blank-03.html"
+    },
+    {
+      "id": "q-qp-e10-board-01",
+      "title": "7490을 0~9 카운터로 작도해요",
+      "kind": "practice",
+      "question_type": "breadboard",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-7490"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 8,
+          "printed_page": null
+        },
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "5→+5V, 10→GND, 2·3·6·7→GND, 12→1, 14←CLK, 12·9·8·11 측정점, 4·13 NC.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-board-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-board-01.html"
+    },
+    {
+      "id": "q-qp-e10-short-01",
+      "title": "V+에 전압 분배기를 잇는 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-dac"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 12,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "반전 가산증폭기는 V+가 GND이면 Vout = −Rf·Σ(Vi/Ri)라 출력이 0V 이하가 돼요. 그런데 LM741의 음전원이 GND라 출력이 0V 아래로 내려갈 수 없어 계단이 나오지 않아요. 분배기로 V+를 올리면 출력이 0V보다 높은 쪽에서 움직여 카운트에 따라 내려가는 계단이 보여요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-short-01.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-short-01.html"
+    },
+    {
+      "id": "q-qp-e10-short-02",
+      "title": "SAR이 Counter type보다 빠른 이유",
+      "kind": "practice",
+      "question_type": "short_answer",
+      "status": "included",
+      "reason": "현재 교안 개념을 다른 퀴즈 유형으로 연습하는 자체 출제",
+      "topics": [
+        "t-adc"
+      ],
+      "sources": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 13,
+          "printed_page": null
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "current",
+      "given_answer": null,
+      "derived_answer": "Counter type은 0부터 하나씩 올리며 DAC 출력과 Vin을 비교해서, 최악에는 2ⁿ−1번 가까이 비교해요. SAR type은 위 비트부터 1을 넣어 보고 남길지 정하는 이진 탐색이라 n번 비교로 끝나요. 그래서 비트가 많을수록 SAR이 훨씬 빨라요.",
+      "answer_status": "verified",
+      "workbook_fragment": "workbook/q-qp-e10-short-02.json",
+      "explanation_fragment": "problem-explanations/q-qp-e10-short-02.html"
+    },
+    {
+      "id": "q-lm741",
+      "bank_question_id": "q-lm741",
+      "kind": "predicted",
+      "status": "held",
+      "reason": "예상문항이에요. LM741의 기능(반전 가산증폭기)과 output의 의미(카운트에 따른 아날로그 전압)는 기출 q-summing-amp·미확인 q-opamp-online의 식과 역할, 예상 q-dac-operation의 신호 흐름에서 이미 답해요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요.",
+      "topics": [],
+      "sources": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-fd1f78a90d897f62",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-20b18f3a195db4c6",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-f16052453e4cc88a",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-8b796102077543be",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-e5708daac82da7e3",
+          "pdf_page": 3,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 3",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-5af968e8c65d3c20",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P20; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-d46bd455cf88c839",
+          "pdf_page": null,
+          "printed_page": null,
+          "locator": "문항 5; OOXML 본문 P27~P28; Word 읽기 전용 렌더 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        },
+        {
+          "source_id": "s-af510093c583bb96",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 5; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "5"
+        }
+      ],
+      "duplicate_of": null,
+      "scope": "unknown",
+      "given_answer": null,
+      "derived_answer": null,
+      "answer_status": "unresolved"
+    }
+  ],
+  "checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "note_presentation_version": 2,
+  "note_summary_version": 2,
+  "note_reading_version": 1,
+  "review_presentation_version": 2,
+  "problem_explanation_version": 2,
+  "quiz_practice_version": 1,
+  "figure_manifest": "figures/redraw-manifest.json",
+  "explanation_checks": {
+    "source_visual": "pass",
+    "content": "self_review",
+    "independent": "not_run",
+    "browser": "pass"
+  },
+  "workbook_delivery": "pdf",
+  "generated_files": [
+    ".pack/assets/explanation-panel.css",
+    ".pack/assets/explanation-panel.js",
+    ".pack/assets/note-template.html",
+    ".pack/assets/review-interaction.css",
+    ".pack/assets/review-interaction.js",
+    ".pack/assets/review-template.html",
+    ".pack/assets/template-provenance.json",
+    ".pack/assets/widgets.js",
+    ".pack/assets/workbook/answer.html",
+    ".pack/assets/workbook/problem.html",
+    ".pack/assets/workbook/provenance.json",
+    ".pack/authoring-index.json",
+    ".pack/evidence/assets/s01-p1-q1.png",
+    ".pack/evidence/assets/s01-p1-q2.png",
+    ".pack/evidence/assets/s01-p1-q3.png",
+    ".pack/evidence/assets/s01-p1-q4.png",
+    ".pack/evidence/assets/s01-p1.png",
+    ".pack/evidence/assets/s02-p1-online.png",
+    ".pack/evidence/assets/s02-p1.png",
+    ".pack/evidence/assets/s02-p2.png",
+    ".pack/evidence/assets/s02-p3.png",
+    ".pack/evidence/assets/s03-p1.png",
+    ".pack/evidence/assets/s03-p2.png",
+    ".pack/evidence/assets/s04-p1-q1.png",
+    ".pack/evidence/assets/s04-p1-q2.png",
+    ".pack/evidence/assets/s04-p1-q3.png",
+    ".pack/evidence/assets/s04-p1-q4.png",
+    ".pack/evidence/assets/s04-p1-q5.png",
+    ".pack/evidence/assets/s04-p1.png",
+    ".pack/evidence/assets/s04-p2-q6.png",
+    ".pack/evidence/assets/s04-p2-q7.png",
+    ".pack/evidence/assets/s04-p2-q8.png",
+    ".pack/evidence/assets/s04-p2-q9.png",
+    ".pack/evidence/assets/s04-p2.png",
+    ".pack/evidence/assets/s05-p1.png",
+    ".pack/evidence/assets/s05-p2.png",
+    ".pack/evidence/assets/s05-p3.png",
+    ".pack/evidence/assets/s06-p1.png",
+    ".pack/evidence/assets/s06-p2.png",
+    ".pack/evidence/assets/s07-p2.png",
+    ".pack/evidence/assets/s07-p3.png",
+    ".pack/evidence/assets/s07-p4.png",
+    ".pack/evidence/assets/s08-p1.png",
+    ".pack/evidence/assets/s08-p2.png",
+    ".pack/evidence/assets/s08-p3.png",
+    ".pack/evidence/assets/s09-p1.png",
+    ".pack/evidence/assets/s09-p2.png",
+    ".pack/evidence/assets/s09-p3.png",
+    ".pack/evidence/assets/s10-p1.png",
+    ".pack/evidence/assets/s10-p2.png",
+    ".pack/evidence/assets/s10-p3.png",
+    ".pack/evidence/question-bank.json",
+    ".pack/figures/comparator.svg",
+    ".pack/figures/dac-block.svg",
+    ".pack/figures/flash.svg",
+    ".pack/figures/network.svg",
+    ".pack/figures/oc.svg",
+    ".pack/figures/opamp-inv.svg",
+    ".pack/figures/questions/comparator-given.png",
+    ".pack/figures/questions/comparator-given.svg",
+    ".pack/figures/questions/counter-blank.png",
+    ".pack/figures/questions/counter-blank.svg",
+    ".pack/figures/questions/counter-given.png",
+    ".pack/figures/questions/counter-given.svg",
+    ".pack/figures/questions/dac-given-2.png",
+    ".pack/figures/questions/dac-given-2.svg",
+    ".pack/figures/questions/dac-given-3.png",
+    ".pack/figures/questions/dac-given-3.svg",
+    ".pack/figures/questions/dac-given.png",
+    ".pack/figures/questions/dac-given.svg",
+    ".pack/figures/questions/network-given.png",
+    ".pack/figures/questions/network-given.svg",
+    ".pack/figures/questions/summing-given-2.png",
+    ".pack/figures/questions/summing-given-2.svg",
+    ".pack/figures/questions/summing-given.png",
+    ".pack/figures/questions/summing-given.svg",
+    ".pack/figures/quiz-board-mapping.json",
+    ".pack/figures/redraw-manifest.json",
+    ".pack/figures/solutions/counter-complete.png",
+    ".pack/figures/solutions/counter-complete.svg",
+    ".pack/figures/solutions/stair-rf.png",
+    ".pack/figures/solutions/stair-rf.svg",
+    ".pack/figures/stair.svg",
+    ".pack/figures/summing.svg",
+    ".pack/manifest.json",
+    ".pack/problem-explanations/q-adc-types.html",
+    ".pack/problem-explanations/q-comparator.html",
+    ".pack/problem-explanations/q-converter-roles.html",
+    ".pack/problem-explanations/q-counter-7490.html",
+    ".pack/problem-explanations/q-dac-operation.html",
+    ".pack/problem-explanations/q-opamp-online.html",
+    ".pack/problem-explanations/q-qp-e10-blank-01.html",
+    ".pack/problem-explanations/q-qp-e10-blank-02.html",
+    ".pack/problem-explanations/q-qp-e10-blank-03.html",
+    ".pack/problem-explanations/q-qp-e10-board-01.html",
+    ".pack/problem-explanations/q-qp-e10-short-01.html",
+    ".pack/problem-explanations/q-qp-e10-short-02.html",
+    ".pack/problem-explanations/q-qp-e10-tf-01.html",
+    ".pack/problem-explanations/q-qp-e10-tf-02.html",
+    ".pack/problem-explanations/q-qp-e10-tf-03.html",
+    ".pack/problem-explanations/q-qp-e10-tf-04.html",
+    ".pack/problem-explanations/q-resistor-network.html",
+    ".pack/problem-explanations/q-rf-output.html",
+    ".pack/problem-explanations/q-summing-amp.html",
+    ".pack/problem-explanations/table-layout.json",
+    ".pack/sections/table-layout.json",
+    ".pack/workbook-answers.json",
+    ".pack/workbook-problems.json",
+    ".pack/검증결과.md",
+    ".pack/실험10_기출문제.md",
+    ".pack/실험10_기출풀이.md",
+    ".pack/실험10_문제설명.md",
+    ".pack/실험10_실험설명.md",
+    ".pack/원문과_저작안내.md",
+    ".pack/출처와_문항목록.md",
+    "실험10_기출문제.pdf",
+    "실험10_기출풀이.pdf",
+    "실험10_문제설명.html",
+    "실험10_실험설명.html"
+  ]
+}

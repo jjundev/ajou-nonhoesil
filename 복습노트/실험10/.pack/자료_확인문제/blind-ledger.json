@@ -1,0 +1,72 @@
+{
+  "q1": {
+    "answer": "-1.5",
+    "hash": "4aa7304f033627656ad62db4615ed387c914c0ce79c3da313f020efd63eb9afd",
+    "objection": "",
+    "rationale": "이득 −Rf/R1 = −6k/2k = −3, 0.5V × (−3) = −1.5V. ±15V 안이라 포화 없음",
+    "round": 1
+  },
+  "q10": {
+    "answer": "1010",
+    "hash": "f43d9d233e39353acc003b0a9654622d0c2e6c723cc70018104ecf89aec403c9",
+    "objection": "",
+    "rationale": "1000(8V) ≤ 10.6 → 유지; 1100(12V) > 10.6 → 0; 1010(10V) ≤ 10.6 → 유지; 1011(11V) > 10.6 → 0. 결과 1010",
+    "round": 1
+  },
+  "q2": {
+    "answer": "A",
+    "hash": "54a5042496682ad5f50ce23f9ed3aa12b2ea320b414c485ba544300c8a7c3a33",
+    "objection": "",
+    "rationale": "가지 전류 Vi/Ri: 5V/10k = 0.5mA, 5V/40k = 0.125mA. 공통 Rf를 곱하면 10kΩ 가지가 4배 기여",
+    "round": 1
+  },
+  "q3": {
+    "answer": "C",
+    "hash": "5c08cdf3bec01082885d6ac1ab60015d1e1efb3bc4e6cd65155041755d43d6dd",
+    "objection": "",
+    "rationale": "R-2R 래더는 비트 수와 상관없이 R과 2R 두 값만 사용",
+    "round": 1
+  },
+  "q4": {
+    "answer": "0000",
+    "hash": "a2d979f19654ff0e2fdb400f0fe7c82cafbe858bb246e85602b45f3725d06cc1",
+    "objection": "",
+    "rationale": "0111 = 7, 클럭 3번: 7→8(1000)→9(1001)→0(0000). 1001 다음은 1010이 아니라 0000",
+    "round": 1
+  },
+  "q5": {
+    "answer": "B",
+    "hash": "95d00ee7d29cff4eac66b43b2e2356ba058bc5cee6f60f166adfdb77b7cfa3e7",
+    "objection": "",
+    "rationale": "Q=1 → 7404 출력 0 → 7405 입력 0이라 출력을 놓음(오픈 컬렉터) → 1.5kΩ 풀업이 +5V로 끌어올림",
+    "round": 1
+  },
+  "q6": {
+    "answer": "D",
+    "hash": "ea440eb839614257346f39c688e8d0847af0c7ad8f350dfee166bfadbc4a1967",
+    "objection": "",
+    "rationale": "반전 가산기라 카운트(무게 합)가 1 늘면 출력은 한 단 내려감(내림차순 계단). 크게 뛰는 것은 9→0 때만",
+    "round": 1
+  },
+  "q7": {
+    "answer": "0.3",
+    "hash": "1032488c15b0119c1ec4ba2ef5eaa64ad76ca1daad05f08bd5cc4afeb8f64958",
+    "objection": "",
+    "rationale": "한 단 높이는 Rf에 비례: 0.9V × 1.5k/4.5k = 0.3V. 출력이 공급 범위 안이라 비례 성립",
+    "round": 1
+  },
+  "q8": {
+    "answer": "B",
+    "hash": "ee0afce23c0d042c579189234da52d43070bf36200efc308c1331f0877c02649",
+    "objection": "",
+    "rationale": "V+(3번, 기준)=9V, V−(2번, DAC)=7V → V+−V−=+2V. 피드백 없는 비교기라 A(V+−V−)는 공급 범위를 넘어 위쪽 전원(+15V)으로 포화함. 전원이 +15V/GND라 출력은 15V 또는 0V 중 15V 근처(실제 LM741은 조금 안쪽에서 멈춤)",
+    "round": 2
+  },
+  "q9": {
+    "answer": "C",
+    "hash": "27f3f4eb266abe37034eaf53603de750ab5fdf23b959867e5ad3e0aa713f118e",
+    "objection": "",
+    "rationale": "n비트 Flash 비교기 수 2ⁿ−1 = 2⁴−1 = 15",
+    "round": 1
+  }
+}

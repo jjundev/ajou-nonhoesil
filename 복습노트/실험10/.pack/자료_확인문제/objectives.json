@@ -1,0 +1,105 @@
+{
+  "experiment": 10,
+  "objectives": [
+    {
+      "id": "o1",
+      "topic_id": "t-opamp",
+      "kind": "원리",
+      "concept": "음의 피드백 반전 증폭기의 출력 Vout = −(Rf/R1)·Vin",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 4
+      }
+    },
+    {
+      "id": "o2",
+      "topic_id": "t-summing",
+      "kind": "원리",
+      "concept": "반전 가산기에서 가지 저항이 작을수록 무게가 커요",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 11
+      }
+    },
+    {
+      "id": "o3",
+      "topic_id": "t-network",
+      "kind": "정의·구별",
+      "concept": "가중 저항과 R-2R 래더가 쓰는 저항 값",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 6
+      }
+    },
+    {
+      "id": "o4",
+      "topic_id": "t-7490",
+      "kind": "상태 추적",
+      "concept": "7490 BCD 카운터는 9 다음에 0으로 돌아가요",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 8
+      }
+    },
+    {
+      "id": "o5",
+      "topic_id": "t-oc",
+      "kind": "신호 해석",
+      "concept": "7404 + 오픈 컬렉터 7405 + 풀업이 비트를 0V·5V로 맞춰요",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 9
+      }
+    },
+    {
+      "id": "o6",
+      "topic_id": "t-dac",
+      "kind": "원리",
+      "concept": "반전 가산기라 카운트가 오르면 DAC 출력이 내려가요",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 11
+      }
+    },
+    {
+      "id": "o7",
+      "topic_id": "t-dac",
+      "kind": "규칙 적용",
+      "concept": "계단 한 단의 높이는 Rf에 비례해요",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 20
+      }
+    },
+    {
+      "id": "o8",
+      "topic_id": "t-comparator",
+      "kind": "신호 해석",
+      "concept": "피드백 없는 비교기의 출력 방향(DAC가 반전 입력)",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 22
+      }
+    },
+    {
+      "id": "o9",
+      "topic_id": "t-adc",
+      "kind": "정의·구별",
+      "concept": "n비트 Flash ADC의 비교기 수 2ⁿ−1",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 13
+      }
+    },
+    {
+      "id": "o10",
+      "topic_id": "t-adc",
+      "kind": "상태 추적",
+      "concept": "SAR ADC의 이진 탐색",
+      "source": {
+        "source_id": "s-manual10",
+        "pdf_page": 13
+      }
+    }
+  ]
+}

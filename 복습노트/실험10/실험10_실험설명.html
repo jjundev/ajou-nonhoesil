@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>실험 10 · D/A &amp; A/D Converter — 숫자를 전압으로, 전압을 숫자로 · 실험 설명</title>
+  <meta name="description" content="이번 학기 교안 기준">
+  <script>document.documentElement.classList.add('js');try{const t=localStorage.getItem('od-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <link rel="stylesheet" href="../.vendor/pretendard/pretendard.css">
+  <link rel="stylesheet" href="../.vendor/katex/katex.min.css">
+  <script defer src="../.vendor/katex/katex.min.js"></script>
+  <script defer src="../.vendor/katex/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false,ignoredTags:['script','noscript','style','textarea','pre','code']})"></script>
+  <style>
+    /* ---------- 토큰 ---------- */
+    :root {
+      color-scheme: light;
+      --bg: #ffffff; --surface: #f7f8fa; --ink: #111111; --ink-2: #6b7280; --line: #d9dee7;
+      --accent: #1677ff; --accent-ink: #1b64da; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #b54708; --prof: #6941c6; --supp: #067647; --danger: #d92d20;
+      --scroll: #c9d0db; --scroll-hover: #9aa3b2;
+      --font: 'Pretendard', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --fs-title: clamp(28px, 6vw, 36px); --fs-h3: clamp(26px, 5.4vw, 32px); --fs-layer: 19px; --fs-lead: 22px; --fs-body: 17px; --fs-sub: 15px; --fs-small: 14px; --fs-label: 13px; --fs-fig: 12px;
+      --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+      --radius: 8px; --measure: 680px; --tap: 48px; --btn-min: 160px;
+      --dur: 220ms; --dur-exit: 150ms; --ease-out: cubic-bezier(.2, .8, .2, 1);
+      /* 예전 조각이 참조할 수 있는 이름 */
+      --surface-2: var(--surface); --accent-soft: var(--surface); --warn-soft: var(--surface);
+      --prof-soft: var(--surface); --supp-soft: var(--surface); --eli5: var(--accent-ink); --eli5-soft: var(--surface);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+        --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+        --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+        --scroll: #3f414b; --scroll-hover: #5b5e6a;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #17171c; --surface: #212128; --ink: #f2f4f6; --ink-2: #a3abb8; --line: #34353d;
+      --accent: #3182f6; --accent-ink: #6ea4ff; --btn-bg: #1b64da; --on-btn: #ffffff;
+      --warn: #f5a15c; --prof: #b69cff; --supp: #5fd39a; --danger: #ff6b61;
+      --scroll: #3f414b; --scroll-hover: #5b5e6a;
+    }
+
+    /* ---------- 기본 ---------- */
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+      background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--fs-body); line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+    a { color: var(--accent-ink); text-underline-offset: 3px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    [hidden] { display: none !important; }
+
+    /* ---------- 상단 바 ---------- */
+    .topbar { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s2) var(--s4); display: flex; align-items: center; gap: var(--s3); min-height: 56px; }
+    .brand { flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; }
+    .text-btn { flex: none; min-height: 44px; min-width: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--radius);
+      background: transparent; color: var(--ink); font: 600 var(--fs-small)/1 var(--font); cursor: pointer; }
+    .bar { height: 2px; background: var(--line); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+
+    /* ---------- 본문 ---------- */
+    main { flex: 1 0 auto; width: 100%; max-width: var(--measure); margin: 0 auto; padding: var(--s6) var(--s5) var(--s7); }
+    .hero h1 { font-size: var(--fs-title); line-height: 1.3; margin: 0 0 var(--s3); letter-spacing: -0.02em; }
+    .hero p { color: var(--ink-2); margin: 0; }
+    section { margin-top: var(--s7); }
+    section > h2 { font-size: 22px; line-height: 1.4; margin: 0 0 var(--s4); }
+    .topic { padding: var(--s6) 0; border-top: 1px solid var(--line); }
+    .topic h3 { margin: 0 0 var(--s2); font-size: var(--fs-h3); font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; }
+    .tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+    .tag { font-size: var(--fs-label); line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); white-space: nowrap; }
+
+    /* 레이어: 배경 없이 라벨과 구분선으로 나눈다 */
+    .layer { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer.eli5 { margin-top: 0; padding-top: 0; border-top: 0; }
+    /* .tags 가 없는 토픽에서도 h3 바로 아래 첫 eli5 소제목 위에 상단 여백을 둔다. */
+    .topic h3 + .layer.eli5 { margin-top: var(--s5); }
+    /* 앞에 문제 읽기 등 다른 레이어가 있으면 단락 간격을 유지한다. */
+    .layer + .layer.eli5 { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
+    .layer > :first-child { margin-top: 0; }
+    .layer > :last-child { margin-bottom: 0; }
+    .layer-title { display: block; font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin-bottom: var(--s3); }
+    .layer.eli5 .layer-title { color: var(--accent-ink); }
+    .layer.eli5 .lead { font-size: var(--fs-lead); font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; margin: 0 0 var(--s4); }
+    /* 정확히 말하면: 본문 크기 그대로, 굵은 첫머리만 진하게 */
+    .layer.formal b { font-weight: 700; color: var(--ink); }
+    /* 교수님 말씀 · 주의: 보조 정보는 한 단계 작게 */
+    .layer.prof, .layer.warn, .layer.listen { font-size: var(--fs-sub); line-height: 1.7; }
+    .layer.prof blockquote { font-size: var(--fs-sub); }
+    .layer.prof .layer-title { color: var(--prof); }
+    .layer.warn, .layer.listen { background: var(--surface); border-top: 0; border-radius: var(--radius); padding: var(--s4); }
+    .layer.warn .layer-title { color: var(--warn); font-size: var(--fs-body); }
+    .layer.listen .layer-title { color: var(--accent-ink); font-size: var(--fs-body); }
+    .layer.supp .badge.supp { margin-bottom: var(--s2); }
+    .badge { display: inline-block; font-size: var(--fs-label); font-weight: 600; line-height: 1.5; padding: 2px var(--s2); border-radius: 6px; background: var(--surface); color: var(--ink-2); }
+    .badge.supp { color: var(--supp); }
+    .badge.exam { color: var(--warn); margin-right: var(--s1); }
+    blockquote { margin: var(--s3) 0; padding: 0 0 0 var(--s3); border-left: 2px solid var(--line); color: var(--ink-2); }
+    ol.steps { padding-left: 1.4em; }
+    ol.steps li { margin: var(--s2) 0; }
+
+    /* 그림 · 수식 · 표 */
+    .figure { margin: var(--s4) 0; text-align: center; }
+    .figure svg { width: 100%; height: auto; max-width: 560px; color: var(--ink); border-radius: var(--radius); }
+    .figure img { max-width: 100%; height: auto; border-radius: var(--radius); }
+    .figure figcaption { font-size: var(--fs-small); color: var(--ink-2); margin-top: var(--s1); }
+    .work-board img { border-radius: var(--radius); }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: var(--s1) 0; }
+    .equation-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card > p { margin: 0; width: max-content; min-width: 100%; }
+    .equation-card .katex-display { margin: 0; text-align: left; }
+    .equation-card .katex-display > .katex { text-align: left; }
+    .table-card { margin: var(--s4) 0; padding: var(--s4); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); max-width: 100%; overflow-x: auto; }
+    .equation-card::-webkit-scrollbar, .table-card::-webkit-scrollbar { height: 8px; }
+    .equation-card::-webkit-scrollbar-track, .table-card::-webkit-scrollbar-track { background: transparent; }
+    .equation-card::-webkit-scrollbar-thumb, .table-card::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--surface); }
+    .equation-card::-webkit-scrollbar-thumb:hover, .table-card::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .equation-card, .table-card { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .table-card > table { margin: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: var(--fs-small); }
+    th, td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
+    th { color: var(--ink-2); font-weight: 600; }
+    td:first-child, th:first-child { min-width: 6em; }
+
+    /* explanation-table-layout:start */
+    [data-problem-explanation] .work-board img { display: block; max-width: 100%; height: auto; }
+    .table-card:has(> table[data-layout-table]) { container-type: inline-size; position: relative; }
+    .table-card .table-wrap { overflow: visible; }
+    table[data-layout-table] { table-layout: fixed; width: var(--layout-min); min-width: var(--layout-min); margin: 0; }
+    table[data-layout-mode="text"] { width: 100%; }
+    [data-layout-table] th,
+    [data-layout-table] td { min-width: 0; padding: 0.5rem; }
+    [data-layout-table] td { white-space: nowrap; }
+    [data-layout-table] th { white-space: normal; word-break: keep-all; overflow-wrap: normal; }
+    [data-layout-table] [data-layout-kind="text"] { white-space: normal; overflow-wrap: anywhere; }
+    [data-layout-table] [data-layout-boundary~="major-left"] { padding-left: 1rem; }
+    [data-layout-table] [data-layout-boundary~="major-right"] { padding-right: 1rem; }
+    [data-layout-table] [data-layout-boundary~="minor-left"] { padding-left: 0.75rem; }
+    [data-layout-table] [data-layout-boundary~="minor-right"] { padding-right: 0.75rem; }
+    [data-layout-group-row] th { font-size: var(--fs-label); color: var(--ink-3); font-weight: 500; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    /* explanation-table-layout:end */
+    /* note-reading:start */
+    .gist { font-size: 1.08em; line-height: 1.7; }
+    tr[data-row="compare"] > td { background: color-mix(in srgb, var(--accent) 14%, transparent); font-weight: 700; }
+    tr[data-row="avoid"] > td { color: var(--warn); }
+    /* note-reading:end */
+
+    /* 위젯 */
+    .widget { background: var(--surface); border-radius: var(--radius); padding: var(--s4); margin: var(--s5) 0; }
+    .widget h4 { margin: 0 0 var(--s1); font-size: var(--fs-layer); line-height: 1.4; }
+    .widget-help { font-size: var(--fs-small); color: var(--ink-2); margin: 0 0 var(--s3); }
+    .controls { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: var(--s2); font-size: var(--fs-small); }
+    .controls label { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+    .controls input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+    .widget svg { width: 100%; height: auto; background: var(--bg); border-radius: var(--radius); }
+    .readout { font-size: var(--fs-small); margin-top: var(--s2); }
+    .legend { font-size: var(--fs-label); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: var(--s3); }
+    .sw { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: var(--s1); border-radius: 2px; }
+    .sw.truth { background: var(--ink-2); } .sw.fit { background: var(--accent); } .sw.train { background: var(--accent); height: 10px; width: 10px; border-radius: 50%; }
+    .sw.test { background: var(--warn); height: 10px; width: 10px; border-radius: 50%; } .sw.like { background: var(--accent); } .sw.prior { background: var(--prof); } .sw.post { background: var(--supp); }
+    .axis { stroke: var(--line); stroke-width: 1.5; }
+    .tick { fill: var(--ink-2); font-size: 11px; }
+    .plot-truth { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .plot-fit { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+    .pt-train { fill: var(--accent); }
+    .pt-test { fill: var(--warn); }
+    .plot-like { fill: none; stroke: var(--accent); stroke-width: 2; }
+    .plot-prior { fill: none; stroke: var(--prof); stroke-width: 2; stroke-dasharray: 6 4; }
+    .plot-post { fill: none; stroke: var(--supp); stroke-width: 3; }
+    .mark-ml { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .mark-map { stroke: var(--supp); stroke-width: 1.5; stroke-dasharray: 3 3; }
+    .fig-ink { stroke: currentColor; fill: none; stroke-width: 2; }
+    .fig-accent { stroke: var(--accent); fill: none; stroke-width: 2.5; }
+    .fig-danger { stroke: var(--danger); fill: none; stroke-width: 2.5; }
+    .fig-dot { fill: var(--accent); }
+    .fig-text { fill: currentColor; font-size: 13px; font-family: inherit; }
+    .fig-muted { fill: var(--ink-2); font-size: var(--fs-fig); font-family: inherit; }
+
+    footer { width: 100%; max-width: var(--measure); margin: 0 auto; padding: 0 var(--s5) var(--s6); color: var(--ink-2); font-size: var(--fs-small); }
+
+    /* ---------- 하단 이동 바 ---------- */
+    .pager { position: sticky; bottom: 0; z-index: 10; background: var(--bg); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+    .pager-inner { max-width: var(--measure); margin: 0 auto; padding: var(--s3) var(--s4); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s3); }
+    .pager-count { font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center; min-width: 4em; }
+    .btn { min-height: var(--tap); min-width: var(--btn-min); padding: 0 var(--s6); border-radius: var(--radius); border: 0; font: 700 var(--fs-body)/1 var(--font); cursor: pointer; white-space: nowrap;
+      transition: background-color 150ms ease-out, opacity 150ms ease-out; }
+    .btn-ghost { justify-self: start; background: var(--surface); color: var(--ink); }
+    .btn-primary { justify-self: end; background: var(--btn-bg); color: var(--on-btn); }
+    .btn:disabled { opacity: .4; cursor: default; }
+    @media (hover: hover) {
+      .text-btn:hover, .btn-ghost:not(:disabled):hover { background: var(--line); }
+      .btn-primary:not(:disabled):hover { box-shadow: inset 0 0 0 100px rgba(0, 0, 0, .14); }
+    }
+
+    /* ---------- 목차 시트 ---------- */
+    .sheet { width: min(100%, var(--measure)); max-width: 100%; max-height: 80dvh; margin: auto auto 0; padding: 0; border: 0;
+      border-radius: 16px 16px 0 0; background: var(--bg); color: var(--ink); }
+    .sheet::backdrop { background: rgba(0, 0, 0, .4); }
+    .sheet-inner { padding: var(--s4) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom)); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
+    .sheet-head h2 { margin: 0; font-size: var(--fs-lead); }
+    .toc { display: flex; flex-direction: column; }
+    .toc > a, .toc-group > a { display: block; padding: var(--s3) 0 var(--s1); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); text-decoration: none; }
+    .toc-list { list-style: none; margin: 0 0 var(--s2); padding: 0; }
+    .toc-list a { display: flex; align-items: center; gap: var(--s3); min-height: var(--tap); padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3));
+      border-radius: var(--radius); color: var(--ink); text-decoration: none; line-height: 1.4; }
+    .toc-list a[aria-current="true"] { background: var(--surface); font-weight: 700; color: var(--accent-ink); }
+    .toc-list .toc-title { flex: 1 1 0; min-width: 0; }
+    @media (hover: hover) { .toc-list a:hover { background: var(--surface); } }
+
+    /* ---------- 내부 목차 ---------- */
+    .panel .toc-list { padding-left: 0; }
+    .toc a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+    @media screen and (max-width: 1023.98px) {
+      html:not(.js) body { display: block; height: auto; overflow: visible; }
+      html:not(.js) .layout { display: block; }
+      html:not(.js) .layout .panel-left { display: flex; position: static; visibility: visible; transform: none; width: 100%; }
+      html:not(.js) .content { overflow: visible; }
+      html:not(.js) .panel-close { display: none; }
+    }
+
+    /* ---------- 한 화면에 하나씩 (JS가 켤 때만) ---------- */
+    html:not(.js) .pager, html:not(.js) #toc-open { display: none; }
+    html:not(.js) .sheet { display: block; position: static; width: 100%; max-height: none; margin: 0 auto; border-radius: 0; border-bottom: 1px solid var(--line); }
+    html:not(.js) .sheet-close { display: none; }
+    .js main > .hero:not(.is-current), .js main > section:not(.is-on), .js .screen:not(.is-current) { display: none; }
+    .js main > section { margin-top: 0; }
+    .js main > section > h2 { font-size: var(--fs-small); font-weight: 600; color: var(--accent-ink); margin: 0 0 var(--s2); }
+    .js .topic { padding: 0; border-top: 0; }
+    .js .hero { padding-top: 12vh; }
+    .js footer { display: none; }
+    .js body.at-end footer { display: block; }
+    .screen.enter-next { animation: enter-next var(--dur) var(--ease-out); }
+    .screen.enter-prev { animation: enter-prev var(--dur) var(--ease-out); }
+    @keyframes enter-next { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+    @keyframes enter-prev { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .screen.enter-next, .screen.enter-prev { animation: none; }
+      .bar > span, .btn { transition: none; }
+    }
+    @media (max-width: 480px) {
+      main { padding: var(--s5) var(--s4) var(--s6); }
+      footer { padding: 0 var(--s4) var(--s5); }
+      .btn { min-width: 120px; padding: 0 var(--s5); }
+    }
+    @media print {
+      .topbar, .pager, .sheet { display: none !important; }
+      .js main > .hero, .js main > section, .js .screen, .js footer { display: block !important; }
+    }
+
+    /* ---------- 좌우 패널 (drawer) ---------- */
+    :root { --panel-l: clamp(240px, 18vw, 320px); --panel-r-min: 320px; --panel-r-max: 720px; --scrollbar: 16px; --drawer-l: 304px; --drawer-r: 360px; --fs-panel: 16px; --scrim: rgba(0, 0, 0, .4); }
+    body { height: 100vh; height: 100dvh; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+    .topbar-inner { max-width: none; padding: var(--s2) var(--s3); gap: var(--s2); }
+    .panel-toggle { display: inline-flex; align-items: center; gap: var(--s1); padding: 0 var(--s2); }
+    .panel-toggle svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-toggle .strip { fill: transparent; stroke: none; transition: fill 150ms ease-out; }
+    .panel-toggle[aria-expanded="true"] { color: var(--accent-ink); }
+    .panel-toggle[aria-expanded="true"] .strip { fill: currentColor; }
+    .theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+    .theme-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .theme-toggle .i-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .i-sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .i-moon { display: none; }
+    }
+
+    .layout { display: grid; grid-template-columns: auto minmax(320px, 1fr) auto; min-height: 0; }
+    .content { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-top: var(--s4); }
+    .panel { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--bg); color: var(--ink); font-size: var(--fs-panel); line-height: 1.6; }
+    .panel-left { grid-column: 1; border-right: 1px solid var(--line); }
+    .content { grid-column: 2; }
+    .panel-right { grid-column: 3; border-left: 1px solid var(--line); }
+    .panel-inner { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--s4) var(--s4) var(--s6); }
+    .content::-webkit-scrollbar, .panel-inner::-webkit-scrollbar { width: 8px; }
+    .content::-webkit-scrollbar-track, .panel-inner::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb, .panel-inner::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 8px; border: 2px solid var(--bg); }
+    .content::-webkit-scrollbar-thumb:hover, .panel-inner::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+    @supports (scrollbar-color: auto) { .content, .panel-inner { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; } }
+    .panel-resize { display: none; }
+    .panel-head { display: flex; align-items: center; gap: var(--s2); min-height: 44px; margin-bottom: var(--s2); }
+    .panel-head h2 { flex: 1 1 0; min-width: 0; margin: 0; font-size: var(--fs-lead); line-height: 1.4; }
+    .panel-sub { margin: 0 0 var(--s4); font-size: var(--fs-layer); font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; }
+    .panel-empty { margin: 0; color: var(--ink-2); }
+    .panel-label { display: block; margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+
+    /* 진행 상태 */
+    .panel-meta { margin: 0 0 var(--s2); font-size: var(--fs-small); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .panel-meta b { color: var(--ink); }
+    .progress { height: 4px; margin-bottom: var(--s3); border-radius: 2px; background: var(--line); overflow: hidden; }
+    .progress > span { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform var(--dur) var(--ease-out); }
+    .panel .toc-list a { margin: 0 calc(-1 * var(--s2)); padding: var(--s2); font-size: var(--fs-panel); }
+    .toc-mark { flex: none; display: block; width: 20px; height: 20px; color: var(--ink-2); }
+    .toc-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .toc-mark.is-done { color: var(--accent-ink); }
+
+    /* 복습문제: 원문 · 힌트 · 풀이 */
+    .aid details:last-of-type { border-bottom: 1px solid var(--line); }
+    .aid details.original > summary { font-size: var(--fs-panel); }
+    .solved-btn { display: flex; align-items: center; justify-content: center; gap: var(--s2); width: 100%; min-height: var(--tap); margin-top: var(--s5); padding: 0 var(--s4);
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--ink); font: 700 var(--fs-panel)/1.2 var(--font); cursor: pointer; }
+    .solved-btn svg { flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .solved-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-ink); }
+
+    /* 정리노트: 페이지 요약 */
+    .sum-lead { margin: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.6; }
+    .eq-list { list-style: none; margin: 0; padding: 0; }
+    .eq-list li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .eq-list li:first-child { padding-top: 0; }
+    .eq-name { display: block; font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .eq-list .katex-display { margin: var(--s1) 0 0; text-align: left; }
+    .eq-list .katex-display > .katex { text-align: left; }
+    .terms { margin: 0; }
+    .terms dt { font-size: var(--fs-panel); font-weight: 700; margin-top: var(--s4); }
+    .terms dt:first-child { margin-top: 0; }
+    .terms dd { margin: var(--s1) 0 0; font-size: var(--fs-sub); line-height: 1.6; color: var(--ink-2); }
+    .flow { margin: 0; padding-left: 1.4em; font-size: var(--fs-sub); }
+    .flow li { margin: var(--s2) 0; }
+    /* 요약 세 칸: 외울 규칙 · 이유 · 헷갈리지 마요 */
+    .sum-label { margin: var(--s5) 0 var(--s2); font-size: var(--fs-label); font-weight: 600; color: var(--ink-2); }
+    .sum > .sum-label:first-child { margin-top: 0; }
+    .sum-label-warn { color: var(--warn); }
+    .sum-rules { list-style: none; margin: 0; padding: 0; font-size: var(--fs-panel); line-height: 1.6; }
+    .sum-rules li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
+    .sum-rules li:first-child { padding-top: 0; }
+    .sum-rules b { font-weight: 700; color: var(--ink); }
+    .sum-why { margin: 0; font-size: var(--fs-sub); line-height: 1.7; color: var(--ink-2); }
+    .sum-traps { margin: 0; padding: 0 0 0 var(--s3); list-style: none; border-left: 3px solid var(--warn); font-size: var(--fs-sub); line-height: 1.6; }
+    .sum-traps li + li { margin-top: var(--s2); }
+
+    @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
+
+    /* 넓은 화면: 본문 옆에 붙는 패널 */
+    @media (min-width: 1024px) {
+      .layout { --l: var(--panel-l-user, var(--panel-l)); }
+      .layout[data-left="closed"] { --l: 0px; }
+      .panel-left { width: var(--l); }
+      /* 기본값: 왼쪽 패널과 본문 폭을 뺀 나머지를 오른쪽 패널이 차지 → 본문 옆 빈 여백이 생기지 않는다 */
+      .panel-right { width: var(--panel-r-user, clamp(var(--panel-r-min), calc(100vw - var(--l) - var(--measure) - var(--scrollbar)), var(--panel-r-max))); }
+      .panel-resize { display: block; position: absolute; top: 0; bottom: 0; z-index: 2; width: 12px; padding: 0; border: 0; background: transparent; cursor: col-resize; touch-action: none; }
+      .panel-left .panel-resize { right: 0; }
+      .panel-right .panel-resize { left: 0; }
+      .panel-resize::after { content: ""; position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); opacity: 0; transition: opacity 150ms ease-out; }
+      .panel-left .panel-resize::after { right: 0; }
+      .panel-right .panel-resize::after { left: 0; }
+      .panel-resize:focus-visible { outline: none; }
+      .panel-resize:focus-visible::after, .is-resizing .panel-resize:active::after { opacity: 1; }
+      @media (hover: hover) { .panel-resize:hover::after { opacity: 1; } }
+      body.is-resizing { cursor: col-resize; user-select: none; }
+      .layout[data-left="closed"] .panel-left, .layout[data-right="closed"] .panel-right { display: none; }
+      .panel.is-shown { animation: panel-fade var(--dur) var(--ease-out); }
+      .scrim, .panel-close { display: none; }
+    }
+    @keyframes panel-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 좁은 화면: 가장자리에서 밀려 나오는 drawer */
+    @media (max-width: 1023.98px) {
+      .panel { position: fixed; top: 0; bottom: 0; z-index: 40; visibility: hidden;
+        transition: transform var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .panel-left { left: 0; width: min(var(--drawer-l), 88vw); transform: translateX(-100%); }
+      .panel-right { right: 0; width: min(var(--drawer-r), 88vw); transform: translateX(100%); }
+      .panel.is-open { visibility: visible; transform: none; transition: transform var(--dur) var(--ease-out); }
+      .panel-inner { padding-top: calc(var(--s3) + env(safe-area-inset-top)); padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom)); }
+      .scrim { position: fixed; inset: 0; z-index: 35; background: var(--scrim); opacity: 0; visibility: hidden;
+        transition: opacity var(--dur-exit) ease-in, visibility 0s linear var(--dur-exit); }
+      .scrim.is-on { opacity: 1; visibility: visible; transition: opacity var(--dur) var(--ease-out); }
+      html:not(.js) .panel-left { display: none; }
+    }
+    @media (max-width: 480px) { .panel-toggle { padding: 0 var(--s1); } }
+    html:not(.js) .panel-toggle, html:not(.js) .panel-right, html:not(.js) .scrim { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .panel, .panel.is-open, .scrim, .scrim.is-on, .progress > span, .panel-toggle .strip { transition: none; }
+      .panel.is-shown { animation: none; }
+      .panel-resize::after { transition: none; }
+    }
+    @media print {
+      body { display: block; height: auto; overflow: visible; }
+      .layout { display: block; }
+      .content { overflow: visible; }
+      .panel, .scrim { display: none !important; }
+    }
+  </style>
+</head>
+<body data-screens="article.topic" data-panels="note" data-range="logic-lab-10">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="text-btn panel-toggle" id="toggle-left" type="button" aria-controls="panel-left" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="3" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span>목차</span></button>
+      <strong class="brand">실험 설명</strong>
+      <button class="text-btn theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드로 전환" title="다크 모드로 전환"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="text-btn panel-toggle" id="toggle-right" type="button" aria-controls="panel-right" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="strip" x="15" y="4" width="6" height="16" rx="1"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span>요약</span></button>
+    </div>
+    <div class="bar" aria-hidden="true"><span id="pager-bar"></span></div>
+  </header>
+  <div class="layout" data-left="open" data-right="closed">
+    <aside class="panel panel-left" id="panel-left" aria-labelledby="panel-left-title">
+      <div class="panel-resize" data-side="left" role="separator" aria-orientation="vertical" aria-controls="panel-left" aria-label="왼쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-left-title">목차</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <nav class="toc" aria-label="이 페이지 목차"><ol class="toc-list"><li><a href="#t-start"><span class="toc-title">왜 이 회로를 쓰는지 먼저 알아봐요</span></a></li><li><a href="#t-opamp"><span class="toc-title">Op-Amp: 두 입력의 차이를 크게 키워요</span></a></li><li><a href="#t-summing"><span class="toc-title">반전 가산증폭기: 여러 입력을 무게를 달아 더해요</span></a></li><li><a href="#t-network"><span class="toc-title">Register Network: 가중 저항과 래더 저항</span></a></li><li><a href="#t-7490"><span class="toc-title">7490: 클럭을 세어 0~9를 BCD로 내요</span></a></li><li><a href="#t-oc"><span class="toc-title">7404 + 7405: 비트 전압을 정확히 0V 또는 5V로 맞춰요</span></a></li><li><a href="#t-dac"><span class="toc-title">DAC 회로 전체: 카운트가 오르면 출력은 계단으로 내려가요</span></a></li><li><a href="#t-comparator"><span class="toc-title">비교기: 피드백 없이 두 입력 중 큰 쪽을 알려 줘요</span></a></li><li><a href="#t-adc"><span class="toc-title">ADC의 두 종류: 한꺼번에 비교하거나, 비교하며 좁혀 가요</span></a></li></ol></nav>
+      </div>
+    </aside>
+    <div class="content">
+  <main>
+    <div class="hero">
+      <h1>실험 10 · D/A &amp; A/D Converter — 숫자를 전압으로, 전압을 숫자로 · 실험 설명</h1>
+      <p>이번 학기 교안 기준</p>
+    </div>
+<section id="learning"><h2>실험 이해</h2><article class="topic" id="t-start"><h3>왜 이 회로를 쓰는지 먼저 알아봐요</h3><div class="layer eli5"><span class="layer-title">디지털 숫자와 아날로그 전압을 서로 바꿔 줘야 해요</span><p class="gist"><strong>DAC는 디지털 숫자를 전압으로, ADC는 전압을 디지털 숫자로 바꿔요.</strong> 컴퓨터는 0과 1로 된 숫자만 다루는데, 소리·온도·빛 같은 바깥 세상의 신호는 끊김 없이 변하는 전압(아날로그)이에요.</p><p>마이크가 만든 소리 전압을 저장하려면 숫자로 바꾸는 ADC가, 저장한 숫자를 스피커로 들으려면 다시 전압으로 바꾸는 DAC가 필요해요(이해를 위한 예시). 교안은 DAC의 쓰임으로 디지털 데이터를 아날로그 오디오 신호로 바꾸는 일(TV, 휴대폰)을 들어요.</p><p>보충: 숫자는 복사·저장·전송해도 값이 흐려지지 않아요. 그래서 중간은 디지털로 다루고, 바깥 세상과 만나는 양 끝에서만 바꿔요.</p></div><div class="layer formal"><span class="layer-title">4비트 숫자 하나를 전압으로, 전압 하나를 숫자로 바꿔 봐요</span><p>이해를 위한 예시로 한 칸(가장 낮은 비트, LSB)이 1V인 4비트 변환기를 생각해요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-start/0" data-layout-mode="text" style="--layout-min:30.400rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.800rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><colgroup data-layout-cols=""><col style="width:4.600rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.600rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">조건</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">순서</th><th data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">변환</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">입력</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">출력</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">①</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left major-right">DAC</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">0101</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">5V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 1 = 5칸</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">②</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left major-right">DAC</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1010</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">10V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">8 + 2 = 10칸</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">③</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left major-right">ADC</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">5.0V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0101</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">5칸에 해당해요</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">④</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-left major-right">ADC</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">5.4V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0101</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">칸 사이 값은 아래 칸으로 잘라요(예시의 규칙)</td></tr></tbody></table></div></div><p>색칠한 ③과 ④는 전압이 다른데 숫자가 같아요. 한 칸보다 작은 차이는 숫자로 남지 않아서, 비트 수가 많을수록 더 촘촘히 바꿀 수 있어요.</p></div><div class="layer formal"><span class="layer-title">이번 실험은 카운터 숫자를 계단 전압으로 바꾸고, 비교기로 다시 읽어요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-start/1" data-layout-mode="text" style="--layout-min:31.200rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">실험</th><th data-layout-kind="text" data-layout-role="description" scope="col">칩</th><th data-layout-kind="text" data-layout-role="description" scope="col">크기</th><th data-layout-kind="text" data-layout-role="description" scope="col">확인할 것</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">실험 1) DAC</td><td data-layout-kind="text" data-layout-role="description">7490, 74HC04, 74HC05, LM741</td><td data-layout-kind="text" data-layout-role="description">4비트 (0~9)</td><td data-layout-kind="text" data-layout-role="description">LED로 0~9 카운트, 출력의 계단 파형, 핀 개방·Rf·병렬 저항을 바꾼 파형</td></tr><tr><td data-layout-kind="text" data-layout-role="description">실험 2) ADC</td><td data-layout-kind="text" data-layout-role="description">실험 1 회로 + LM741 비교기</td><td data-layout-kind="text" data-layout-role="description">4비트</td><td data-layout-kind="text" data-layout-role="description">기준 전압을 바꾸며 출력이 바뀌는 지점 기록</td></tr></tbody></table></div></div></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>해결하는 문제</b> → 컴퓨터의 디지털 숫자와 바깥 세상의 아날로그 전압을 서로 바꿔요</li><li><b>DAC</b> → 디지털 → 아날로그 (예: 저장한 소리를 스피커로)</li><li><b>ADC</b> → 아날로그 → 디지털 (예: 마이크 소리를 저장)</li><li><b>실험 1</b> → 7490 카운터 + LM741 반전 가산기 = 4비트 DAC, 계단 파형</li><li><b>실험 2</b> → 실험 1 출력 + 비교기 = ADC의 원리</li></ul><p class="sum-label">이유</p><p class="sum-why">숫자는 흐려지지 않게 저장·전송할 수 있지만, 듣고 보는 신호는 연속된 전압이에요. 그래서 양 끝에서 바꿔 줘야 해요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>보고서 범위는 실험 1) DAC예요. 실험 2) ADC는 보고서에 쓰지 않지만 기출에는 나와요.</li><li>교안 표지는 25-1이에요.</li><li>표의 전압·코드는 이해를 위한 예시 값이에요. 실제 측정값이 아니에요.</li><li>한 칸보다 작은 전압 차이는 숫자로 남지 않아요.</li></ul></div></article>
+<article class="topic" id="t-opamp"><h3>Op-Amp: 두 입력의 차이를 크게 키워요</h3><div class="layer eli5"><span class="layer-title">피드백을 걸면 출력이 −(Rf/R1)배가 돼요</span><p class="gist"><strong>반전 증폭기의 출력은 Vout = −(Rf/R1)·Vin이에요.</strong> Op-Amp 자체는 두 입력의 차이를 수만~수백만 배로 키우지만, 출력 일부를 Rf로 반전 입력에 되돌리면 저항 두 개의 비가 증폭 정도를 정해요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-opamp/0" data-layout-mode="text" style="--layout-min:23.400rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">단자</th><th data-layout-kind="text" data-layout-role="description" scope="col">이름</th><th data-layout-kind="text" data-layout-role="description" scope="col">하는 일</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">V+</td><td data-layout-kind="text" data-layout-role="description">비반전 입력 (+)</td><td data-layout-kind="text" data-layout-role="description">기준 쪽 입력이에요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">V−</td><td data-layout-kind="text" data-layout-role="description">반전 입력 (−)</td><td data-layout-kind="text" data-layout-role="description">신호가 들어가면 뒤집혀 나와요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">Vs+ · Vs−</td><td data-layout-kind="text" data-layout-role="description">양·음의 전력 공급</td><td data-layout-kind="text" data-layout-role="description">출력이 넘을 수 없는 위·아래 한계예요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">Vout</td><td data-layout-kind="text" data-layout-role="description">출력</td><td data-layout-kind="text" data-layout-role="description">A(V+ − V−)를 내요</td></tr></tbody></table></div></div><figure class="figure"><img src=".pack/figures/opamp-inv.svg" alt="반전 증폭기"><figcaption>Vin이 R1을 지나 반전 입력(−)으로 들어가고, Rf가 출력을 같은 점으로 되돌려요(음의 피드백). 비반전 입력(+)은 GND예요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">음의 피드백이 두 입력 전압을 같게 맞춰요</span><div class="equation-card" role="group" aria-label="수식"><p>$$V_{out} = A\,(V_+ - V_-)$$</p></div><p>A가 아주 커서, 출력이 공급 전압 안에 있으려면 V+ − V−가 거의 0이어야 해요. 그래서 V+를 GND에 두면 V−도 거의 0V가 돼요(보충: 가상 접지라고 불러요).</p><div class="equation-card" role="group" aria-label="수식"><p>$$I = \frac{V_{in}}{R_1} = -\frac{V_{out}}{R_f} \;\Rightarrow\; V_{out} = -\frac{R_f}{R_1}V_{in}$$</p></div><p>Op-Amp 입력으로는 전류가 거의 들어가지 않아서, R1로 들어온 전류가 모두 Rf로 빠져나가요. 그래서 출력은 입력과 부호가 반대예요.</p></div><div class="layer formal"><span class="layer-title">Rf가 바뀌면 같은 입력에도 출력 크기가 바뀌어요</span><p>이해를 위한 예시로 R1=1.5kΩ, 공급 ±15V인 이상 Op-Amp를 따라가요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-opamp/1" data-layout-mode="text" style="--layout-min:53.500rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:13.700rem"></colgroup><colgroup data-layout-cols=""><col style="width:13.700rem"></colgroup><colgroup data-layout-cols=""><col style="width:13.700rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">제어</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">순서</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">Vin</th><th data-layout-kind="signal" data-layout-role="control" data-layout-boundary="major-left major-right" scope="col">Rf</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">Vout</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">①</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1V</td><td data-layout-kind="signal" data-layout-role="control" data-layout-boundary="major-left major-right">4.5kΩ</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−3V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">이득 −4.5/1.5 = −3</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">②</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">2V</td><td data-layout-kind="signal" data-layout-role="control" data-layout-boundary="major-left major-right">4.5kΩ</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−6V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">입력이 2배라 출력도 2배</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">③</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">1V</td><td data-layout-kind="signal" data-layout-role="control" data-layout-boundary="major-left major-right">2.7kΩ</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−1.8V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">이득 −2.7/1.5 = −1.8</td></tr><tr data-row="avoid"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">④</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left major-right">6V</td><td data-layout-kind="signal" data-layout-role="control" data-layout-boundary="major-left major-right">4.5kΩ</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−15V 근처에 붙어요</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">식은 −18V지만 공급 −15V를 넘지 못해요</td></tr></tbody></table></div></div><p>색칠한 ①과 ③은 입력이 같고 Rf만 달라요. 출력 크기는 Rf에 비례해요.</p></div><div class="layer warn"><span class="layer-title">출력은 공급 전압을 넘지 못해요</span><p>식이 주는 값이 공급 범위를 넘으면 출력은 한계 근처에 붙어요(포화). 그때는 Rf/R1 비례가 성립하지 않아요. 실제 LM741은 한계보다 조금 안쪽에서 멈춰요(보충).</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>R1=1kΩ, Rf=4.5kΩ인 반전 증폭기에 Vin=0.5V를 넣으면 Vout은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>이득 −Rf/R1부터 구해요.</p></details><details class="solution"><summary>연습 답</summary><p>−2.25V예요. 이득이 −4.5라 0.5V × (−4.5)예요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>Op-Amp 출력</b> → A(V+ − V−), A는 수만~수백만</li><li><b>반전 증폭기</b> → Vout = −(Rf/R1)·Vin</li><li><b>음의 피드백</b> → V− ≈ V+ (V+=GND면 V− ≈ 0V)</li><li><b>식의 값이 공급 범위를 넘으면</b> → 한계 근처에 붙어요 (포화)</li></ul><p class="sum-label">이유</p><p class="sum-why">R1로 들어온 전류가 Op-Amp 입력으로 새지 않고 모두 Rf로 빠져서 Vin/R1 = −Vout/Rf가 돼요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>반전 증폭기의 출력은 입력과 부호가 반대예요.</li><li>가상 접지·LM741 출력 한계는 교안 밖 보충이에요.</li><li>표의 값은 이상 Op-Amp로 셈한 예시예요.</li></ul></div></article>
+<article class="topic" id="t-summing"><h3>반전 가산증폭기: 여러 입력을 무게를 달아 더해요</h3><div class="layer eli5"><span class="layer-title">Vout = −Rf(V1/R1 + V2/R2 + …)예요</span><p class="gist"><strong>입력마다 들어오는 전류가 한 점에서 더해지고, 그 합이 Rf를 지나 출력 전압이 돼요.</strong> 가지 저항이 작은 입력일수록 같은 전압에서 전류가 커서 무게가 커요.</p><figure class="figure"><img src=".pack/figures/summing.svg" alt="네 입력 반전 가산증폭기"><figcaption>V1~V4가 각자의 가지 저항 R1~R4를 지나 반전 입력(−)의 한 점에서 만나요. Rf가 출력을 그 점으로 되돌리고, 비반전 입력(+)은 GND예요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">가지 전류의 합이 모두 Rf로 빠져나가요</span><div class="equation-card" role="group" aria-label="수식"><p>$$V_{out} = -\left(\frac{R_f}{R_1}V_1 + \frac{R_f}{R_2}V_2 + \frac{R_f}{R_3}V_3 + \frac{R_f}{R_4}V_4\right)$$</p></div><p>V−가 0V에 붙어 있어서 가지 하나의 전류는 V<sub>i</sub>/R<sub>i</sub>예요. 다른 가지의 전압이 이 전류를 바꾸지 않아서, 입력끼리 서로 방해하지 않고 더해져요.</p></div><div class="layer formal"><span class="layer-title">가지 저항을 8:4:2:1로 고르면 출력이 이진수 값에 비례해요</span><p>이해를 위한 예시로 가지 저항을 24kΩ(QA, LSB)·12kΩ(QB)·6kΩ(QC)·3kΩ(QD, MSB), Rf=4.5kΩ, High=5V, 양전원 이상 Op-Amp로 둬요. 가장 작은 무게 한 칸은 4.5k × 5V ÷ 24k = 0.9375V예요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-summing/0" data-layout-mode="text" style="--layout-min:30.050rem"><colgroup data-layout-cols=""><col style="width:5.400rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.150rem"></colgroup><colgroup data-layout-cols=""><col style="width:7.200rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">카운트</th><th data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">QD QC QB QA</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">Vout</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0001</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−0.9375V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QA만 High: 한 칸</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0010</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−1.875V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QB 가지 12k는 전류가 두 배</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0111</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−6.5625V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">1 + 2 + 4 = 7칸</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1000</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−7.5V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QD 가지 3k 하나가 8칸</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">9</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1001</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">−8.4375V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">8 + 1 = 9칸</td></tr></tbody></table></div></div><p>색칠한 7과 8은 켜진 가지가 3개와 1개인데 8의 출력 크기가 더 커요. 비트마다 무게가 다르기 때문이에요.</p></div><div class="layer warn"><span class="layer-title">식의 R1~R4는 회로도의 R1~R4(풀업)와 다른 저항이에요</span><p>교안 p11 식의 R1~R4는 각 비트가 가산 노드로 들어가는 가지 저항이에요. 같은 쪽 회로도의 R1~R4는 1.5kΩ 풀업이라 이름만 같아요.</p><p>출력은 음수예요. 교안 회로처럼 음전원 핀(4번)이 GND이면 이 음수를 낼 수 없어요. 그래서 실험 회로는 V+를 올려요(DAC 회로 토픽).</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>위 예시에서 카운트 5(0101)의 Vout은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>켜진 비트의 무게를 더하고 한 칸 0.9375V를 곱해요.</p></details><details class="solution"><summary>연습 답</summary><p>−4.6875V예요. 4 + 1 = 5칸이에요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>반전 가산증폭기</b> → Vout = −Rf(V1/R1 + V2/R2 + V3/R3 + V4/R4)</li><li><b>가지 저항이 작을수록</b> → 무게가 커요 (전류 Vi/Ri)</li><li><b>가지 저항 8:4:2:1</b> → 출력 ∝ 이진수 값</li><li><b>Rf를 키우면</b> → 출력 크기가 Rf에 비례해 커져요</li></ul><p class="sum-label">이유</p><p class="sum-why">V−가 0V에 붙어 있어 가지 전류가 서로 영향을 주지 않고, 그 합이 모두 Rf로 빠지니 출력이 합에 비례해요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>식의 R1~R4(가지 저항)와 회로도의 R1~R4(1.5kΩ 풀업)는 다른 저항이에요.</li><li>반전이라 출력은 음수예요.</li><li>표의 24k·12k·6k·3k는 이해를 위한 예시 값이에요.</li></ul></div></article>
+<article class="topic" id="t-network"><h3>Register Network: 가중 저항과 래더 저항</h3><div class="layer eli5"><span class="layer-title">가중 저항은 간단하고, 래더는 R과 2R만 써서 정밀해요</span><p class="gist"><strong>두 회로 모두 비트마다 2배씩 다른 무게를 줘요.</strong> 가중 저항(Weighted)은 비트마다 R, 2R, 4R…처럼 다른 저항을 달고, 래더(Ladder, R-2R)는 R과 2R 두 값만 사다리처럼 이어요.</p><p>교안의 Register는 저항(resistor)을 뜻해요. 교안 그림과 식에서 D1이 가장 무거운 비트(MSB)예요.</p><figure class="figure"><img src=".pack/figures/network.svg" alt="가중 저항과 래더 저항"><figcaption>왼쪽은 가중 저항(D1~Dn에 R·2R·4R·2ⁿ⁻¹R, 부하 RL ≫ R), 오른쪽은 래더(각 비트 2R, 사이사이 R, 끝 2R 접지)예요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">n비트일 때 분모가 2ⁿ−1과 2ⁿ으로 달라요</span><div class="equation-card" role="group" aria-label="수식"><p>$$\text{가중: } V_o = V_R \times \frac{2^{n-1}D_1 + 2^{n-2}D_2 + \cdots + 2^0 D_n}{2^n - 1}$$</p></div><div class="equation-card" role="group" aria-label="수식"><p>$$\text{래더: } V_o = V_R \times \frac{2^{n-1}D_1 + 2^{n-2}D_2 + \cdots + 2^0 D_n}{2^n}$$</p></div><p>이해를 위한 예시로 3비트(n=3), V<sub>R</sub>=8V를 넣어요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-network/0" data-layout-mode="text" style="--layout-min:33.600rem"><colgroup data-layout-cols=""><col style="width:6.700rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.300rem"><col style="width:9.300rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="2">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-right" scope="col">D1 D2 D3</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left" scope="col">가중 저항 Vo</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-right" scope="col">래더 Vo</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr data-row="compare"><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-right">001</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">8/7 ≈ 1.14V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-right">1V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">분자 1</td></tr><tr><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-right">100</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">32/7 ≈ 4.57V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-right">4V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">D1의 무게가 4</td></tr><tr data-row="compare"><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-right">111</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left">8V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-right">7V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">분자 7: 가중은 V<sub>R</sub>까지, 래더는 한 칸 아래까지</td></tr></tbody></table></div></div><p>색칠한 001과 111을 보면 가중 저항의 가장 큰 값은 V<sub>R</sub>과 같고, 래더는 V<sub>R</sub>보다 한 칸(V<sub>R</sub>/8) 낮아요.</p></div><div class="layer formal"><span class="layer-title">저항값이 넓게 퍼지면 정밀도와 속도가 떨어져요 (보충)</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-network/1" data-layout-mode="text" style="--layout-min:31.200rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">방식</th><th data-layout-kind="text" data-layout-role="description" scope="col">저항 값</th><th data-layout-kind="text" data-layout-role="description" scope="col">좋은 점</th><th data-layout-kind="text" data-layout-role="description" scope="col">아쉬운 점</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">가중 저항</td><td data-layout-kind="text" data-layout-role="description">R, 2R, 4R, …, 2ⁿ⁻¹R (n개)</td><td data-layout-kind="text" data-layout-role="description">구조가 간단하고 저항 수가 적어요</td><td data-layout-kind="text" data-layout-role="description">비트가 늘면 저항값 범위가 넓어져 정밀하게 맞추기 어렵고, 큰 저항은 온도 변화·스위칭 속도에 불리해요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">래더 (R-2R)</td><td data-layout-kind="text" data-layout-role="description">R과 2R 두 값</td><td data-layout-kind="text" data-layout-role="description">두 값만 정확히 맞추면 돼 정밀하고 빨라요. 요즘 DAC에 주로 써요</td><td data-layout-kind="text" data-layout-role="description">저항 수가 많고 연결이 조금 복잡해요</td></tr></tbody></table></div></div><p>8비트라면 가중 저항은 R부터 128R까지 128배 범위가 필요해요. 래더는 비트가 늘어도 R과 2R뿐이에요.</p></div><div class="layer warn"><span class="layer-title">이번 실험 DAC는 가중 저항 방식이에요</span><p>교안 회로는 비트마다 22.6k·10.5k·4.5k·1.5k를 달아 2⁰~2³의 비중을 줘요. 래더는 이론으로만 다뤄요.</p><p>가중 저항 그림의 RL ≫ R은 출력을 읽는 부하가 커서 회로 전압을 거의 바꾸지 않는다는 조건이에요. 이 조건에서만 위 식이 성립해요.</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>4비트 가중 저항에서 가장 작은 저항이 1kΩ이면 가장 큰 저항은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>가장 큰 저항은 2ⁿ⁻¹R이에요.</p></details><details class="solution"><summary>연습 답</summary><p>8kΩ이에요. 2³ × 1kΩ이에요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>가중 저항</b> → R, 2R, 4R … 2ⁿ⁻¹R, Vo = V_R·(가중합)/(2ⁿ−1)</li><li><b>래더 (R-2R)</b> → R과 2R만, Vo = V_R·(가중합)/2ⁿ</li><li><b>가중 저항의 장단점</b> → 간단 / 저항값 범위가 넓어 정밀도·속도에 불리</li><li><b>래더의 장단점</b> → 정밀·고속 / 저항 수가 많고 복잡</li></ul><p class="sum-label">이유</p><p class="sum-why">저항값이 넓게 퍼지면 모든 값을 같은 비율의 오차로 맞추기 어렵지만, 두 값만 쓰면 정밀하게 맞추기 쉬워요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>교안 그림에서 D1이 MSB예요.</li><li>가중 저항 식은 RL ≫ R일 때예요.</li><li>장단점(온도·속도)은 교안 본문 밖 보충이에요.</li><li>이번 실험 회로는 가중 저항 방식이에요.</li></ul></div></article>
+<article class="topic" id="t-7490"><h3>7490: 클럭을 세어 0~9를 BCD로 내요</h3><div class="layer eli5"><span class="layer-title">QD QC QB QA는 지금까지 센 클럭 수예요</span><p class="gist"><strong>7490은 클럭 펄스를 0부터 9까지 세고 다시 0으로 돌아가는 카운터예요.</strong> 출력 QA, QB, QC, QD는 각각 1, 2, 4, 8의 무게를 가진 BCD 코드라, 네 출력을 무게대로 더하면 센 수가 돼요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-7490/0" data-layout-mode="text" style="--layout-min:23.400rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">핀</th><th data-layout-kind="text" data-layout-role="description" scope="col">이름</th><th data-layout-kind="text" data-layout-role="description" scope="col">하는 일</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">14</td><td data-layout-kind="text" data-layout-role="description">CLKA</td><td data-layout-kind="text" data-layout-role="description">클럭이 들어가요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">12 → 1</td><td data-layout-kind="text" data-layout-role="description">QA → CLKB</td><td data-layout-kind="text" data-layout-role="description">QA를 둘째 단에 넣어 0~9로 세요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">2 · 3</td><td data-layout-kind="text" data-layout-role="description">R01 · R02</td><td data-layout-kind="text" data-layout-role="description">둘 다 1이면 0으로 (이 회로에서는 GND)</td></tr><tr><td data-layout-kind="text" data-layout-role="description">6 · 7</td><td data-layout-kind="text" data-layout-role="description">R91 · R92</td><td data-layout-kind="text" data-layout-role="description">둘 다 1이면 9로 (이 회로에서는 GND)</td></tr><tr><td data-layout-kind="text" data-layout-role="description">12, 9, 8, 11</td><td data-layout-kind="text" data-layout-role="description">QA, QB, QC, QD</td><td data-layout-kind="text" data-layout-role="description">무게 1, 2, 4, 8</td></tr><tr><td data-layout-kind="text" data-layout-role="description">5 · 10</td><td data-layout-kind="text" data-layout-role="description">VCC · GND</td><td data-layout-kind="text" data-layout-role="description">전원 (74HC 칩의 14·7번과 달라요)</td></tr></tbody></table></div></div></div><div class="layer formal"><span class="layer-title">9 다음에는 10이 아니라 0이에요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-7490/1" data-layout-mode="text" style="--layout-min:28.750rem"><colgroup data-layout-cols=""><col style="width:5.400rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.150rem"></colgroup><colgroup data-layout-cols=""><col style="width:5.900rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">클럭</th><th data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">QD QC QB QA</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">십진수</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">0</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0000</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">네 LED가 모두 꺼진 구간을 0으로 잡아요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0001</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QA만 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0010</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">2</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QA가 1→0으로 떨어지며 QB가 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0011</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">3</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">2 + 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0100</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">4</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QC만 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0101</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">5</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0110</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">6</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 2</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0111</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">7</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 2 + 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1000</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">8</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QD만 1</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">9</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1001</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">9</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">8 + 1</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">10번째</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0000</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">1001 다음은 1010이 아니라 0000이에요</td></tr></tbody></table></div></div><p>색칠한 두 행처럼 1001 다음은 1010이 아니라 0000이에요. 그래서 출력은 늘 0~9 범위의 BCD예요.</p></div><div class="layer formal"><span class="layer-title">QA를 CLKB에 이어야 2진 단과 5진 단이 하나로 이어져요 (보충)</span><p>7490 안에는 2로 나누는 단(QA)과 5로 나누는 단(QB·QC·QD)이 따로 있어요. QA를 CLKB에 이으면 QA가 1에서 0으로 떨어질 때마다 둘째 단이 하나씩 세서 모두 2 × 5 = 10가지 상태를 돌아요. 이 구조는 칩 자료에서 가져온 보충이에요.</p></div><div class="layer warn"><span class="layer-title">초기화 입력을 모두 GND에 두어 시작 값은 정해지지 않아요</span><p>R01·R02·R91·R92가 모두 GND라 회로에는 0으로 맞추는 입력이 없어요. 전원 직후 어느 수부터 셀지는 정해지지 않으니, 네 LED가 모두 꺼진 구간을 0으로 잡고 순서를 봐요(예상).</p><p>7490의 전원은 5번 VCC, 10번 GND예요. 74HC04·74HC05의 14·7번과 헷갈리지 않아요.</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>지금 QD QC QB QA = 0110이에요. 클럭이 두 번 더 들어오면 출력은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>0110을 십진수로 바꾸고 2를 더해요.</p></details><details class="solution"><summary>연습 답</summary><p>1000이에요. 6 + 2 = 8이에요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>7490</b> → 클럭을 0~9로 세는 BCD 카운터</li><li><b>QA · QB · QC · QD</b> → 무게 2⁰ · 2¹ · 2² · 2³ (QA=LSB, QD=MSB)</li><li><b>1001 다음</b> → 0000 (10이 아니라 0)</li><li><b>QA → CLKB 연결</b> → 2진 단 + 5진 단 = 10가지 상태</li><li><b>R0 · R9를 GND에</b> → 초기화 없이 계속 세요</li></ul><p class="sum-label">이유</p><p class="sum-why">둘째 단(5진)이 QA가 떨어질 때마다 하나씩 세어, 2 × 5 = 10가지 상태를 차례로 돌아요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>7490 전원은 5번 VCC, 10번 GND예요.</li><li>전원 직후 시작 값은 정해지지 않아요(예상).</li><li>2진·5진 단 구조는 칩 자료에서 가져온 보충이에요.</li><li>기출 문항은 74HC90이라 적었지만 교안 회로도는 7490이에요.</li></ul></div></article>
+<article class="topic" id="t-oc"><h3>7404 + 7405: 비트 전압을 정확히 0V 또는 5V로 맞춰요</h3><div class="layer eli5"><span class="layer-title">두 번 뒤집어 논리값은 그대로이고, 1일 때는 풀업이 5V로 맞춰요</span><p class="gist"><strong>7405는 0일 때만 출력을 GND로 당기고, 1일 때는 출력을 놓아 버려요(오픈 컬렉터).</strong> 그래서 1.5kΩ 풀업 저항이 출력을 +5V로 끌어올려요. 7405가 값을 뒤집으니 앞에 7404를 하나 더 두어 원래 값으로 돌려놓아요.</p><figure class="figure"><img src=".pack/figures/oc.svg" alt="7404와 7405, 1.5kΩ 풀업"><figcaption>한 비트의 길: 7490 출력 → 7404 → 7405 → 가중 저항. 7405 출력과 +5V 사이에 1.5kΩ 풀업이 있어요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">카운터 출력이 1이면 가중 저항 앞은 5V, 0이면 0V예요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-oc/0" data-layout-mode="text" style="--layout-min:40.800rem"><colgroup data-layout-cols=""><col style="width:8.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:8.000rem"><col style="width:8.000rem"></colgroup><colgroup data-layout-cols=""><col style="width:8.500rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="2">중간</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right" scope="col">Q (7490)</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left" scope="col">7404 출력</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right" scope="col">7405 출력</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">가중 저항 앞</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr data-row="compare"><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">0</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">당김</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">7405 입력 1 → 출력을 GND로 당겨요</td></tr><tr data-row="compare"><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">1</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left">0</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-right">놓음</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">+5V (풀업)</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">7405 입력 0 → 출력을 놓아 풀업이 5V로 끌어올려요</td></tr></tbody></table></div></div><p>색칠한 두 행은 Q만 다르고, 가중 저항 앞 전압이 0V와 5V로 깔끔하게 갈려요.</p></div><div class="layer formal"><span class="layer-title">풀업과 가중 저항을 더하면 경로 저항이 거의 8:4:2:1이에요</span><p>교안은 “출력을 정확히 GND 또는 Vcc로 만들기 위해” 오픈 컬렉터 7405와 풀업을 쓴다고 적어요. 가중 저항 DAC는 비트 전압이 모두 같아야 무게 비가 맞아요. 보충: TTL 칩의 1 출력은 보통 5V보다 낮고 칩마다 달라서, 같은 +5V 풀업으로 맞추는 편이 정확해요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-oc/1" data-layout-mode="text" style="--layout-min:31.200rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">비트</th><th data-layout-kind="text" data-layout-role="description" scope="col">풀업 + 가중 저항</th><th data-layout-kind="text" data-layout-role="description" scope="col">경로 저항</th><th data-layout-kind="text" data-layout-role="description" scope="col">비</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">QA (LSB)</td><td data-layout-kind="text" data-layout-role="description">1.5k + 22.6k</td><td data-layout-kind="text" data-layout-role="description">24.1kΩ</td><td data-layout-kind="text" data-layout-role="description">≈ 8</td></tr><tr><td data-layout-kind="text" data-layout-role="description">QB</td><td data-layout-kind="text" data-layout-role="description">1.5k + 10.5k</td><td data-layout-kind="text" data-layout-role="description">12kΩ</td><td data-layout-kind="text" data-layout-role="description">4</td></tr><tr><td data-layout-kind="text" data-layout-role="description">QC</td><td data-layout-kind="text" data-layout-role="description">1.5k + 4.5k</td><td data-layout-kind="text" data-layout-role="description">6kΩ</td><td data-layout-kind="text" data-layout-role="description">2</td></tr><tr><td data-layout-kind="text" data-layout-role="description">QD (MSB)</td><td data-layout-kind="text" data-layout-role="description">1.5k + 1.5k</td><td data-layout-kind="text" data-layout-role="description">3kΩ</td><td data-layout-kind="text" data-layout-role="description">1</td></tr></tbody></table></div></div><p>High인 비트의 전류는 +5V에서 풀업과 가중 저항을 함께 지나 가산 노드로 가요. 경로 저항이 작을수록 전류가 커서, QD가 QA의 약 8배 무게를 가져요. 이 합은 V+=GND일 때의 이상 셈이에요. 교안도 “비율은 약간의 오차가 있어도 됨”이라고 적어요.</p></div><div class="layer warn"><span class="layer-title">7405 출력에 풀업이 없으면 1이 만들어지지 않아요</span><p>7405는 1을 스스로 내지 못해서, 풀업을 빼먹으면 1이어야 할 때 출력이 떠요.</p><p>회로도 표기는 7404·7405, 준비물은 74HC04·74HC05예요. 핀 번호는 같아요. 74HC05는 같은 구조를 오픈 드레인이라고 불러요(보충).</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>7404를 빼고 7490의 QA를 바로 7405에 넣었어요. QA=1일 때 QA 가중 저항 앞 전압은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>7405 입력이 1이면 출력은 어떻게 되나요?</p></details><details class="solution"><summary>연습 답</summary><p>0V예요. 7405가 1을 뒤집어 GND로 당겨요. 모든 비트가 뒤집혀 들어가요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>7405 입력 1</b> → 출력을 GND로 당겨 0V</li><li><b>7405 입력 0</b> → 출력을 놓아요 → 풀업이 +5V</li><li><b>7404 + 7405</b> → 두 번 뒤집어 논리값 그대로</li><li><b>풀업 + 가중 저항</b> → 24.1k : 12k : 6k : 3k ≈ 8 : 4 : 2 : 1</li></ul><p class="sum-label">이유</p><p class="sum-why">오픈 컬렉터는 0만 직접 내고 1은 같은 +5V 풀업이 만들어서, 모든 비트의 High 전압이 같아져요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>7405 하나만 쓰면 값이 뒤집혀요. 그래서 7404를 앞에 둬요.</li><li>TTL 1 출력 전압 설명은 교안 밖 보충이에요.</li><li>경로 저항 합은 V+=GND일 때의 이상 셈이에요.</li><li>회로도 7404·7405와 준비물 74HC04·74HC05 표기가 달라요. 핀 번호는 같아요.</li></ul></div></article>
+<article class="topic" id="t-dac"><h3>DAC 회로 전체: 카운트가 오르면 출력은 계단으로 내려가요</h3><div class="layer eli5"><span class="layer-title">카운트가 1 오를 때마다 출력이 한 단씩 내려가요</span><p class="gist"><strong>7490이 센 수가 비트 전압이 되고, 가중 저항이 무게를 달고, LM741 반전 가산기가 무게 합을 뒤집힌 전압으로 내요.</strong> 그래서 0부터 9까지 셀 때 출력은 내림차순 계단이 되고, 9 다음 0에서 맨 위로 돌아가요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-dac/0" data-layout-mode="text" style="--layout-min:20.200rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">단계</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">부품</th><th data-layout-kind="text" data-layout-role="description" scope="col">하는 일</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">①</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">7490</td><td data-layout-kind="text" data-layout-role="description">클럭을 0~9로 세요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">②</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">7404 → 7405 + 1.5kΩ 풀업</td><td data-layout-kind="text" data-layout-role="description">비트를 정확한 0V · 5V로 맞춰요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">③</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">22.6k · 10.5k · 4.5k · 1.5k</td><td data-layout-kind="text" data-layout-role="description">2⁰~2³의 무게를 줘요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">④</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">LM741 + Rf (R12 4.5kΩ)</td><td data-layout-kind="text" data-layout-role="description">가지 전류를 더해 전압으로 바꿔요 (반전)</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">⑤</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">+15V – 1k – 330Ω(가변) – 1k</td><td data-layout-kind="text" data-layout-role="description">V+를 0V보다 높게 올려요</td></tr></tbody></table></div></div><figure class="figure"><img src=".pack/figures/dac-block.svg" alt="DAC 회로 전체 흐름"><figcaption>교안 회로의 신호 흐름을 줄여 그렸어요. 핀 번호와 소자값은 교안 회로도 그대로예요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">V+를 GND에 두면 출력이 0V 아래로 내려갈 곳이 없어요</span><p>교안 회로의 LM741은 4번이 GND예요. 반전 가산기 식은 0 이하의 값을 주는데, 음전원이 GND라 출력은 0V 아래로 내려가지 못해요. 그래서 V+=GND(절차 2)에서는 계단 대신 바닥에 붙은 평평한 선을 예상해요(예상). 교안 p12도 “DAC Output이 음의 값(0V 이하)을 갖지 않도록” 전압 분배기를 둔다고 적어요.</p><p>전압 분배기로 V+를 올리면 가산 노드도 그 전압을 따라 올라가요. 그러면 출력은 V+보다 높은 쪽에서 움직이고, High인 가지가 무거울수록 내려가요.</p><div class="equation-card" role="group" aria-label="수식"><p>$$V_{out} = V_+ + R_f \sum_i \frac{V_+ - V_i}{R_i}$$</p></div><p>보충(이상 Op-Amp 셈): V<sub>i</sub>는 비트 가지 전압, R<sub>i</sub>는 가지 저항이에요. V<sub>+</sub>=0이면 앞의 반전 가산기 식과 같아져요.</p></div><div class="layer formal"><span class="layer-title">9에서 0으로 넘어갈 때만 크게 올라가요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-dac/1" data-layout-mode="text" style="--layout-min:41.150rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.150rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.800rem"></colgroup><colgroup data-layout-cols=""><col style="width:9.800rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">중간</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">클럭</th><th data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">QD QC QB QA</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right" scope="col">무게 합</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">출력</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">0</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0000</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">가장 높음</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">켜진 가지가 없어 가장 위예요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">1</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0001</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">1</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">한 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QA 가지(무게 1)가 켜져요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0010</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">2</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">두 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QA는 꺼지고 QB(무게 2)가 켜져요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0011</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">3</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">세 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">1 + 2</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0100</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">4</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">네 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QC(무게 4) 하나</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0101</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">5</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">다섯 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">6</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0110</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">6</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">여섯 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 2</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">7</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0111</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">7</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">일곱 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">4 + 2 + 1</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1000</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">8</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">여덟 단 아래</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">QD(무게 8) 하나</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">9</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1001</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">9</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">가장 낮음</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">8 + 1</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">다음</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0000</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">0</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">가장 높음</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">9 다음은 0이라 아홉 단을 한 번에 올라가요</td></tr></tbody></table></div></div><p>색칠한 두 행 사이에서만 출력이 크게 뛰어요. 10단 계단이 한 주기이고, 1.0kHz 클럭이면 한 단 1ms, 한 주기 10ms예요(셈).</p><figure class="figure"><img src=".pack/figures/stair.svg" alt="내림차순 계단 파형"><figcaption>이해를 위한 그림: 카운트 0~9 동안 한 단씩 내려가고 9 다음 0에서 맨 위로 돌아가요. 세로 눈금 숫자는 없어요.</figcaption></figure><p>각 단의 전압 값은 교안에 없어요. 교안 소자값으로 이상 셈을 하면 출력이 +15V를 넘어 사진과 맞지 않아서, 이 노트는 숫자를 정하지 않고 실측으로 확인해요.</p></div><div class="layer formal"><span class="layer-title">Rf·가지 저항·연결을 바꾸면 계단 모양이 이렇게 바뀌어요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-dac/2" data-layout-mode="text" style="--layout-min:33.200rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.800rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 4)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="2">조건</th><th scope="colgroup" colspan="1">결과</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="text" data-layout-role="input" scope="col">절차</th><th data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-right" scope="col">바꾸는 것</th><th data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">예상</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 그런가요</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="input">4</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-right">7404 출력과 7405 입력 사이를 열어요 (QA·QB·QC 자리, 한 번에 하나)</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">개형을 정하지 않아요</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">7405 입력이 떠서 그 비트 값이 정해지지 않아요</td></tr><tr data-row="compare"><td data-layout-kind="text" data-layout-role="input">5</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-right">Rf를 4.5kΩ → 2.7kΩ</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">단 높이가 0.6배</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">한 단 = 가지 전류 변화 × Rf</td></tr><tr data-row="compare"><td data-layout-kind="text" data-layout-role="input">6</td><td data-layout-kind="text" data-layout-role="input" data-layout-boundary="major-right">10.5kΩ(QB 가지)에 68kΩ 병렬</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">QB가 바뀌는 단의 높이가 달라져요</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">10.5k ∥ 68k ≈ 9.1k라 QB 무게가 커져요</td></tr></tbody></table></div></div><p>색칠한 5와 6은 둘 다 저항을 바꾸지만, 5는 모든 단을 같은 비율로, 6은 QB가 바뀌는 단(1→2, 3→4, 5→6, 7→8)만 바꿔요. 이 예상은 출력이 공급 전압 안에 있을 때만 맞아요(이상 셈).</p></div><div class="layer warn"><span class="layer-title">절차의 V+는 3번 핀이에요. 교안 핀 그림의 V+(7번)와 달라요</span><p>절차 문장의 “Op-Amp V+”는 비반전 입력 3번 핀이에요. p16·p17의 LM741 핀 그림은 같은 글자 V+를 7번(양전원)에 붙여요. 회로도는 U4의 7번에 전원 이름을 적지 않았으니 실험 전에 확인해요.</p><p>절차 4~6은 서로 따로 해요. 연 선은 다시 잇고, Rf는 4.5kΩ으로 되돌린 뒤 다음 절차로 가요(이 노트의 순서, 교안에는 없어요).</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>Rf=4.5kΩ일 때 한 단이 0.5V였다고 해요(예시 값). Rf를 2.7kΩ으로 바꾸면 한 단은 얼마일까요?</p><details class="hint"><summary>힌트</summary><p>한 단은 Rf에 비례해요.</p></details><details class="solution"><summary>연습 답</summary><p>0.3V예요. 0.5V × 2.7/4.5 = 0.3V예요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>카운트 0 → 9</b> → 출력이 한 단씩 내려가요 (내림차순 계단, 10단)</li><li><b>9 → 0</b> → 출력이 맨 위로 돌아가요</li><li><b>V+=GND</b> → 음전원이 GND라 0V 아래로 못 가요 (예상: 평평한 선)</li><li><b>V+=전압 분배기</b> → 출력이 0V 위에서 계단으로 움직여요</li><li><b>Rf 4.5k → 2.7k</b> → 단 높이 0.6배</li><li><b>QB 가지에 68k 병렬</b> → QB 무게가 커져 단 높이가 고르지 않아요</li></ul><p class="sum-label">이유</p><p class="sum-why">High인 가지의 무게 합이 클수록 Rf로 흐르는 전류가 바뀌어 반전 출력이 내려가요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>절차의 V+는 3번 핀(비반전 입력)이에요. 핀 그림의 V+(7번)와 달라요.</li><li>U4 7번의 전원 라벨은 회로도에 없어요.</li><li>각 단의 전압 숫자는 정하지 않았어요. 교안 소자값의 이상 셈은 사진과 맞지 않아요(미확정).</li><li>p18 두 사진이 어느 절차인지 교안이 밝히지 않아요.</li><li>핀을 연 비트의 출력은 정해지지 않아요.</li></ul></div></article>
+<article class="topic" id="t-comparator"><h3>비교기: 피드백 없이 두 입력 중 큰 쪽을 알려 줘요</h3><div class="layer eli5"><span class="layer-title">V+가 V−보다 크면 Vs+, 작으면 Vs−가 나와요</span><p class="gist"><strong>피드백이 없는 Op-Amp는 두 입력의 작은 차이도 끝까지 키워서, 출력이 위 전원(Vs+)이나 아래 전원(Vs−)에 붙어요.</strong> 그래서 출력은 “어느 입력이 더 큰가”를 1과 0처럼 알려 줘요.</p><figure class="figure"><img src=".pack/figures/comparator.svg" alt="실험 2 비교기"><figcaption>DAC OUTPUT은 2번(−), 가변저항 R13 가운데 단자는 3번(+)에 들어가요. 7번 +15V, 4번 GND예요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">실험 2 비교기는 DAC 출력이 기준보다 낮을 때 15V를 내요</span><p>교안 p22 회로는 DAC OUTPUT을 2번(−)에, 가변저항 R13(330Ω)의 가운데 단자를 3번(+)에 넣어요. 전원이 +15V와 GND라 출력은 15V 또는 0V예요.</p><p>이해를 위한 예시로 기준을 8.5V로 두고, DAC 계단이 한 단에 1V씩 내려간다고 해요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-comparator/0" data-layout-mode="text" style="--layout-min:26.500rem"><colgroup data-layout-cols=""><col style="width:5.400rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.100rem"><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.600rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="2">입력</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">카운트</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left" scope="col">DAC 출력 (V−)</th><th data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right" scope="col">기준 (V+)</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">출력</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left">10V</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">8.5V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">V+ &lt; V− → 아래 전원</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left">9V</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">8.5V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">0V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">아직 DAC가 더 커요</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left">8V</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">8.5V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">15V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">V+ &gt; V− → 위 전원</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">5</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-left">7V</td><td data-layout-kind="signal" data-layout-role="input" data-layout-boundary="major-right">8.5V</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">15V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">계속 DAC가 작아요</td></tr></tbody></table></div></div><p>색칠한 카운트 3과 4 사이에서 출력이 바뀌어요. 그 순간의 카운트 값이 기준 전압을 숫자로 읽은 결과예요.</p></div><div class="layer formal"><span class="layer-title">가변저항은 비교 기준을 바꾸는 손잡이예요</span><p>R13을 돌리면 3번 핀 전압(기준)이 바뀌어요. 한 번에 펄스 하나씩 넣으며 출력이 바뀌는 지점의 카운트와 7405 출력 전압(8, 6, 4, 2번)을 기록하면, 아날로그 기준 전압이 어느 디지털 값에 해당하는지 알 수 있어요. 비교기 하나로 ADC의 원리를 보는 셈이에요.</p></div><div class="layer warn"><span class="layer-title">교안 p5 문장은 식과 반대로 적혀 있어요</span><p>교안 p5는 “V+ 기준 Vin(V−)이 작다면 Vs−가, 크다면 Vs+가 출력됨”이라고 적어요. 같은 교안의 식 Vout = A(V+ − V−)대로면 V−가 작을 때 차이가 양수라 Vs+가 나와요. 이 노트는 식을 따랐어요.</p><p>실험 2) ADC는 보고서 범위가 아니지만 비교기 문항은 예상문제로 나와요.</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>위 예시에서 기준을 9.5V로 올리면 출력이 15V로 바뀌는 카운트는 몇일까요?</p><details class="hint"><summary>힌트</summary><p>DAC 출력이 처음으로 9.5V보다 낮아지는 카운트를 찾아요.</p></details><details class="solution"><summary>연습 답</summary><p>카운트 3이에요. 9V < 9.5V예요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>V+ > V−</b> → 출력 Vs+ (실험 2: 15V)</li><li><b>V+ < V−</b> → 출력 Vs− (실험 2: 0V)</li><li><b>피드백 없음</b> → 작은 차이도 끝까지 키워 전원에 붙어요</li><li><b>가변저항 R13</b> → 기준 전압(3번 핀)을 바꿔요</li><li><b>실험 2 회로</b> → DAC 출력이 기준보다 낮아지는 순간 15V</li></ul><p class="sum-label">이유</p><p class="sum-why">이득 A가 수만 배 이상이라, 피드백이 없으면 아주 작은 차이도 공급 한계까지 키워져요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>교안 p5 문장은 식과 반대예요. 식 Vout = A(V+ − V−)를 따라요.</li><li>DAC 출력은 반전 입력(2번)에 들어가요.</li><li>실험 2) ADC는 보고서 범위 밖이에요.</li><li>표의 전압은 이해를 위한 예시 값이에요.</li></ul></div></article>
+<article class="topic" id="t-adc"><h3>ADC의 두 종류: 한꺼번에 비교하거나, 비교하며 좁혀 가요</h3><div class="layer eli5"><span class="layer-title">Flash는 빠르지만 비교기가 많고, 피드백 방식은 비교기가 적지만 느려요</span><p class="gist"><strong>Simultaneous(Flash) ADC는 피드백 경로 없이 입력을 여러 기준과 동시에 비교하고, Feedback path ADC는 비교 결과로 DAC 출력을 조절해 값을 점점 좁혀요.</strong> Flash는 n비트에 2ⁿ−1개의 비교기가 필요해요.</p><figure class="figure"><img src=".pack/figures/flash.svg" alt="2비트 Flash ADC"><figcaption>저항 사다리가 기준 세 개를 만들고, 비교기 세 개가 Vin을 동시에 비교해요. 인코더가 결과를 2비트로 바꿔요.</figcaption></figure></div><div class="layer formal"><span class="layer-title">3비트 Flash는 비교기 7개, 8비트면 255개예요</span><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-adc/0" data-layout-mode="text" style="--layout-min:18.300rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:5.900rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 1)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">출력</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">비트 수 n</th><th data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">비교기 수 2ⁿ−1</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">2</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">3</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">경계 3개로 4구간을 나눠요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">3</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">7</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">8구간</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">4</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">15</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">16구간</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">8</td><td data-layout-kind="signal" data-layout-role="output" data-layout-boundary="major-left major-right">255</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">비트가 하나 늘 때마다 거의 두 배</td></tr></tbody></table></div></div><p>비교가 한 번에 끝나 아주 빠르지만, 비트가 늘수록 비교기가 거의 두 배씩 늘어 비경제적이에요.</p></div><div class="layer formal"><span class="layer-title">SAR은 반씩 좁혀서 4비트를 비교 네 번에 정해요</span><p>이해를 위한 예시로 한 칸 1V, Vin = 6.3V인 4비트 SAR이에요. 위 비트부터 1을 넣어 보고, DAC 전압이 Vin보다 크면 그 비트를 0으로 되돌려요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-adc/1" data-layout-mode="text" style="--layout-min:33.650rem"><colgroup data-layout-cols=""><col style="width:4.100rem"></colgroup><colgroup data-layout-cols=""><col style="width:7.850rem"></colgroup><colgroup data-layout-cols=""><col style="width:4.600rem"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.800rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><colgroup data-layout-cols=""><col style="width:calc(8.300rem + max(0px, 100cqw - var(--layout-min)) / 2)"></colgroup><thead><tr data-layout-group-row=""><th scope="colgroup" colspan="1">순서</th><th scope="colgroup" colspan="1">입력</th><th scope="colgroup" colspan="1">중간</th><th scope="colgroup" colspan="1">결과</th><th scope="colgroup" colspan="1">설명</th></tr><tr><th data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right" scope="col">비교</th><th data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right" scope="col">시험 코드</th><th data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right" scope="col">DAC 전압</th><th data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right" scope="col">판정</th><th data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left" scope="col">왜 이 값인가요</th></tr></thead><tbody><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">①</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">1000</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">8V</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">Vin &lt; 8V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">MSB는 0: 8보다 작아요</td></tr><tr><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">②</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0100</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">4V</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">Vin &gt; 4V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">둘째 비트 1</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">③</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0110</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">6V</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">Vin &gt; 6V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">셋째 비트 1</td></tr><tr data-row="compare"><td data-layout-kind="index" data-layout-role="index" data-layout-boundary="major-right">④</td><td data-layout-kind="bus" data-layout-role="input" data-layout-boundary="major-left major-right">0111</td><td data-layout-kind="signal" data-layout-role="intermediate" data-layout-boundary="major-left major-right">7V</td><td data-layout-kind="text" data-layout-role="output" data-layout-boundary="major-left major-right">Vin &lt; 7V</td><td data-layout-kind="text" data-layout-role="description" data-layout-boundary="major-left">넷째 비트 0 → 결과 0110</td></tr></tbody></table></div></div><p>색칠한 ③과 ④에서 6V는 넘고 7V는 못 넘어 결과가 0110(6)으로 정해져요. Counter type이면 0부터 하나씩 올려 7V에서 처음 넘으니 일곱 번 비교해요.</p><div class="table-wrap"><div class="table-card" role="group" aria-label="표"><table data-layout-table="t-adc/2" data-layout-mode="text" style="--layout-min:23.400rem"><colgroup data-layout-cols=""><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"><col style="width:calc(7.800rem + max(0px, 100cqw - var(--layout-min)) / 3)"></colgroup><thead><tr><th data-layout-kind="text" data-layout-role="description" scope="col">방식</th><th data-layout-kind="text" data-layout-role="description" scope="col">하는 일</th><th data-layout-kind="text" data-layout-role="description" scope="col">속도</th></tr></thead><tbody><tr><td data-layout-kind="text" data-layout-role="description">Ramp</td><td data-layout-kind="text" data-layout-role="description">일정 속도로 오르는 램프 전압과 Vin을 비교</td><td data-layout-kind="text" data-layout-role="description">느리고 간단해요</td></tr><tr><td data-layout-kind="text" data-layout-role="description">Counter</td><td data-layout-kind="text" data-layout-role="description">DAC와 비교기로 DAC 출력과 Vin을 비교</td><td data-layout-kind="text" data-layout-role="description">느려요 (하나씩 올려요)</td></tr><tr><td data-layout-kind="text" data-layout-role="description">SAR</td><td data-layout-kind="text" data-layout-role="description">이진 탐색으로 디지털 값을 정해요</td><td data-layout-kind="text" data-layout-role="description">빠르고 정확하고 경제적이에요</td></tr></tbody></table></div></div><p>실험 2는 카운터가 만든 DAC 계단과 기준을 비교기 하나로 비교해서 Counter type과 같은 원리예요(이 노트의 해석).</p></div><div class="layer warn"><span class="layer-title">Feedback path가 모두 SAR은 아니에요</span><p>피드백 경로 방식에는 Ramp, Counter, SAR이 있어요. 변환 시간이 입력과 상관없이 늘 같은 것은 n번 비교하는 SAR이에요. Counter type은 입력이 클수록 오래 걸려요(보충).</p></div><div class="layer supp"><span class="layer-title">한 단계만 풀어 봐요</span><p>8비트 SAR은 비교를 몇 번 하고, 8비트 Flash는 비교기가 몇 개 필요할까요?</p><details class="hint"><summary>힌트</summary><p>SAR은 비트마다 한 번, Flash는 2ⁿ−1개예요.</p></details><details class="solution"><summary>연습 답</summary><p>SAR은 8번, Flash는 255개예요.</p></details></div><div class="sum" hidden><p class="sum-label">외울 규칙</p><ul class="sum-rules"><li><b>Simultaneous (Flash)</b> → 피드백 없이 동시 비교 → 빠름, 비교기 2ⁿ−1개 (비경제적)</li><li><b>Feedback path</b> → 비교 결과로 DAC 출력을 조절해 점점 좁혀요</li><li><b>Ramp · Counter</b> → 느려요 (Counter는 하나씩 올려 비교)</li><li><b>SAR</b> → 이진 탐색, n번 비교 → 빠르고 정확·경제적</li></ul><p class="sum-label">이유</p><p class="sum-why">Flash는 모든 경계를 비교기로 한꺼번에 보고, 피드백 방식은 비교기 하나를 여러 번 써서 시간과 부품을 맞바꿔요.</p><p class="sum-label sum-label-warn">헷갈리지 마요</p><ul class="sum-traps"><li>n비트 Flash 비교기는 2ⁿ−1개예요.</li><li>Counter type은 입력이 클수록 오래 걸려요(보충).</li><li>실험 2를 Counter type으로 본 것은 이 노트의 해석이에요.</li><li>표의 Vin·코드는 이해를 위한 예시 값이에요.</li></ul></div></article></section>
+  </main>
+  <footer></footer>
+    </div>
+    <aside class="panel panel-right" id="panel-right" aria-labelledby="panel-right-title">
+      <div class="panel-resize" data-side="right" role="separator" aria-orientation="vertical" aria-controls="panel-right" aria-label="오른쪽 패널 너비 조절. 좌우 화살표로 조절, Home으로 자동 너비" tabindex="0"></div>
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h2 id="panel-right-title">페이지 요약</h2>
+          <button class="text-btn panel-close" type="button" data-panel-close>닫기</button>
+        </div>
+        <p class="panel-empty" id="sum-empty">페이지를 넘기면 그 페이지의 핵심 식과 용어가 여기에 나옵니다.</p>
+        <div class="sums" id="sum-for"></div>
+      </div>
+    </aside>
+  </div>
+  <div class="scrim" id="panel-scrim" aria-hidden="true"></div>
+  <nav class="pager" aria-label="화면 이동">
+    <div class="pager-inner">
+      <button class="btn btn-ghost" id="pager-prev" type="button">이전</button>
+      <span class="pager-count" id="pager-count"></span>
+      <button class="btn btn-primary" id="pager-next" type="button">시작하기</button>
+    </div>
+  </nav>
+  <p class="sr-only" id="pager-status" aria-live="polite"></p>
+<script src=".pack/assets/widgets.js"></script>
+  <script id="theme-ui">
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const sysDark = matchMedia('(prefers-color-scheme: dark)');
+      const KEY = 'od-theme';
+      const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : sysDark.matches;
+      function label() {
+        const next = isDark() ? '라이트 모드로 전환' : '다크 모드로 전환';
+        btn.setAttribute('aria-label', next);
+        btn.title = next;
+      }
+      btn.addEventListener('click', () => {
+        const t = isDark() ? 'light' : 'dark';
+        // 시스템 설정과 같아지면 저장을 지워 다시 시스템을 따른다
+        if ((t === 'dark') === sysDark.matches) { delete root.dataset.theme; try { localStorage.removeItem(KEY); } catch (e) {} }
+        else { root.dataset.theme = t; try { localStorage.setItem(KEY, t); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+        label();
+      });
+      sysDark.addEventListener('change', label);
+      window.addEventListener('storage', (e) => {
+        if (e.key !== KEY) return;
+        if (e.newValue === 'light' || e.newValue === 'dark') root.dataset.theme = e.newValue; else delete root.dataset.theme;
+        label();
+      });
+      label();
+    })();
+  </script>
+  <script id="panels-ui">
+    (function () {
+      const body = document.body;
+      const layout = document.querySelector('.layout');
+      const kind = body.dataset.panels;
+      const panels = { left: document.getElementById('panel-left'), right: document.getElementById('panel-right') };
+      const toggles = { left: document.getElementById('toggle-left'), right: document.getElementById('toggle-right') };
+      const scrim = document.getElementById('panel-scrim');
+      const blockers = [document.querySelector('.topbar'), document.querySelector('.content'), document.querySelector('.pager')];
+      const wideMq = matchMedia('(min-width: 1024px)');
+      const roomyMq = matchMedia('(min-width: 1280px)');
+      const store = {
+        get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      // 푼 기록은 탭(세션) 단위로만 유지: 뒤로가기·새로고침엔 남고, 창을 닫고 다시 열면 초기화
+      const tabStore = {
+        get(k, d) { try { const v = sessionStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+        set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가: 이번 방문에만 유지 */ } }
+      };
+      const PREF = 'od-panels:' + kind;
+      // 팩마다 문제·토픽 id가 p1, s1-…로 겹치므로 진행 기록은 기간별로 나눈다
+      const RANGE = body.dataset.range || '';
+      const ICON_TODO = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
+      const ICON_DONE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>';
+      let overlay = null;
+
+      // ---------- 열고 닫기 ----------
+      function docked() {
+        const pref = store.get(PREF, {});
+        return { left: pref.left ?? true, right: pref.right ?? roomyMq.matches };
+      }
+      function sync() {
+        const wide = wideMq.matches;
+        const d = docked();
+        ['left', 'right'].forEach((side) => {
+          const open = wide ? d[side] : overlay === side;
+          const p = panels[side];
+          layout.dataset[side] = open ? 'open' : 'closed';
+          p.classList.toggle('is-open', !wide && open);
+          p.inert = !open;
+          if (!wide && open) { p.setAttribute('role', 'dialog'); p.setAttribute('aria-modal', 'true'); }
+          else { p.removeAttribute('role'); p.removeAttribute('aria-modal'); }
+          toggles[side].setAttribute('aria-expanded', String(open));
+        });
+        const drawer = !wide && overlay !== null;
+        scrim.classList.toggle('is-on', drawer);
+        body.classList.toggle('drawer-open', drawer);
+        blockers.forEach((el) => { el.inert = drawer; });
+      }
+      function openDrawer(side) {
+        overlay = side;
+        sync();
+        requestAnimationFrame(() => panels[side].querySelector('[data-panel-close]').focus());
+      }
+      function closeDrawer(refocus) {
+        if (overlay === null) return;
+        const side = overlay;
+        overlay = null;
+        sync();
+        if (refocus) toggles[side].focus();
+      }
+      function toggle(side) {
+        if (wideMq.matches) {
+          const d = docked();
+          d[side] = !d[side];
+          store.set(PREF, d);
+          sync();
+          if (d[side]) { const p = panels[side]; p.classList.remove('is-shown'); void p.offsetWidth; p.classList.add('is-shown'); }
+        } else if (overlay === side) closeDrawer(true);
+        else openDrawer(side);
+      }
+
+      toggles.left.addEventListener('click', () => toggle('left'));
+      toggles.right.addEventListener('click', () => toggle('right'));
+      scrim.addEventListener('click', () => closeDrawer(true));
+      document.querySelectorAll('[data-panel-close]').forEach((b) => b.addEventListener('click', () => closeDrawer(true)));
+      panels.left.addEventListener('click', (e) => { if (e.target.closest('.toc a')) closeDrawer(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay !== null) { e.preventDefault(); closeDrawer(true); } });
+
+      // ---------- 패널 너비: 기본은 화면 폭에 맞춰 자동, 경계를 끌면 직접 조절 ----------
+      const WIDTH = { left: { min: 220, max: 480, prop: '--panel-l-user' }, right: { min: 280, max: 720, prop: '--panel-r-user' } };
+      function applyWidths() {
+        const w = store.get(PREF + ':w', {});
+        ['left', 'right'].forEach((side) => {
+          if (w[side]) layout.style.setProperty(WIDTH[side].prop, w[side] + 'px');
+          else layout.style.removeProperty(WIDTH[side].prop);
+        });
+      }
+      function maxFor(side) {
+        const other = side === 'left' ? panels.right : panels.left;
+        const otherW = layout.dataset[side === 'left' ? 'right' : 'left'] === 'open' ? other.getBoundingClientRect().width : 0;
+        return Math.max(WIDTH[side].min, Math.min(WIDTH[side].max, window.innerWidth - otherW - 400));
+      }
+      function setWidth(side, px, save) {
+        const v = Math.round(Math.min(Math.max(px, WIDTH[side].min), maxFor(side)));
+        layout.style.setProperty(WIDTH[side].prop, v + 'px');
+        panels[side].querySelector('.panel-resize').setAttribute('aria-valuenow', String(v));
+        if (save) { const w = store.get(PREF + ':w', {}); w[side] = v; store.set(PREF + ':w', w); }
+      }
+      function resetWidth(side) {
+        const w = store.get(PREF + ':w', {});
+        delete w[side];
+        store.set(PREF + ':w', w);
+        layout.style.removeProperty(WIDTH[side].prop);
+      }
+      document.querySelectorAll('.panel-resize').forEach((handle) => {
+        const side = handle.dataset.side;
+        const dir = side === 'left' ? 1 : -1;
+        handle.setAttribute('aria-valuemin', String(WIDTH[side].min));
+        handle.setAttribute('aria-valuemax', String(WIDTH[side].max));
+        handle.addEventListener('pointerdown', (e) => {
+          if (!wideMq.matches || e.button !== 0) return;
+          e.preventDefault();
+          const startX = e.clientX;
+          const startW = panels[side].getBoundingClientRect().width;
+          handle.setPointerCapture(e.pointerId);
+          body.classList.add('is-resizing');
+          const move = (ev) => setWidth(side, startW + dir * (ev.clientX - startX), false);
+          const up = () => {
+            handle.removeEventListener('pointermove', move);
+            handle.removeEventListener('pointerup', up);
+            handle.removeEventListener('pointercancel', up);
+            body.classList.remove('is-resizing');
+            setWidth(side, panels[side].getBoundingClientRect().width, true);
+          };
+          handle.addEventListener('pointermove', move);
+          handle.addEventListener('pointerup', up);
+          handle.addEventListener('pointercancel', up);
+        });
+        handle.addEventListener('dblclick', () => resetWidth(side));
+        handle.addEventListener('keydown', (e) => {
+          const step = e.shiftKey ? 64 : 16;
+          const cur = panels[side].getBoundingClientRect().width;
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.stopPropagation();
+            setWidth(side, cur + (e.key === 'ArrowRight' ? step : -step) * dir, true);
+          } else if (e.key === 'Home') { e.preventDefault(); resetWidth(side); }
+        });
+      });
+      applyWidths();
+      const onMq = () => { overlay = null; sync(); };
+      wideMq.addEventListener('change', onMq);
+      roomyMq.addEventListener('change', onMq);
+
+      // ---------- 목차의 진행 표시 ----------
+      function markToc(done, total, doneLabel) {
+        panels.left.querySelectorAll('.toc-list a').forEach((a) => {
+          let id;
+          try { id = decodeURIComponent(a.getAttribute('href').slice(1)); } catch (e) { return; }
+          let mark = a.querySelector('.toc-mark');
+          if (!mark) {
+            mark = document.createElement('span');
+            mark.className = 'toc-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            const state = document.createElement('span');
+            state.className = 'sr-only toc-state';
+            a.append(mark, state);
+          }
+          const isDone = done.has(id);
+          mark.classList.toggle('is-done', isDone);
+          mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
+          a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
+        });
+      }
+      function revealCurrent() {
+        const link = panels.left.querySelector('.toc-list a[aria-current="true"]');
+        if (link && layout.dataset.left === 'open') link.scrollIntoView({ block: 'nearest' });
+      }
+
+      // ---------- 복습문제: 오른쪽 = 원문 · 힌트 · 풀이 ----------
+      function setupReview() {
+        const KEY = 'od-review-solved:' + RANGE;
+        const cards = Array.from(document.querySelectorAll('main article.card'));
+        const aids = panels.right.querySelector('.aids');
+        const empty = panels.right.querySelector('.panel-empty');
+        const btn = document.getElementById('solved-btn');
+        const groups = {};
+        const solved = new Set(tabStore.get(KEY, []).filter((id) => cards.some((c) => c.id === id)));
+        cards.forEach((card) => {
+          const g = document.createElement('div');
+          g.className = 'aid';
+          g.hidden = true;
+          card.querySelectorAll(':scope > details').forEach((d) => g.appendChild(d));
+          aids.appendChild(g);
+          groups[card.id] = g;
+        });
+        let curId = null;
+        function paintBtn() {
+          const on = solved.has(curId);
+          btn.setAttribute('aria-pressed', String(on));
+          btn.innerHTML = (on ? ICON_DONE : ICON_TODO) + '<span>' + (on ? '푼 문제 · 표시 해제' : '푼 문제로 표시') + '</span>';
+        }
+        btn.addEventListener('click', () => {
+          if (!curId) return;
+          if (solved.has(curId)) solved.delete(curId); else solved.add(curId);
+          tabStore.set(KEY, Array.from(solved));
+          paintBtn();
+          markToc(solved, cards.length, '푼 문제');
+        });
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          curId = s.matches('article.card') ? s.id : null;
+          Object.keys(groups).forEach((id) => { groups[id].hidden = id !== curId; });
+          empty.hidden = Boolean(curId);
+          btn.hidden = !curId;
+          if (curId) paintBtn();
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(solved, cards.length, '푼 문제');
+          revealCurrent();
+        });
+      }
+
+      // ---------- 정리노트: 오른쪽 = 페이지(토픽)별 요약 ----------
+      function setupNote() {
+        const KEY = 'od-note-read:' + RANGE;
+        const topics = Array.from(document.querySelectorAll('main article.topic'));
+        const read = new Set(store.get(KEY, []).filter((id) => topics.some((t) => t.id === id)));
+        // 조각의 <div class="sum" hidden> 을 오른쪽 패널로 옮긴다. 없으면 안내 문구만 보인다.
+        const box = panels.right.querySelector('.sums');
+        const sums = {};
+        topics.forEach((t) => {
+          const el = t.querySelector(':scope > .sum');
+          if (!el) return;
+          el.hidden = true;
+          box.appendChild(el);
+          sums[t.id] = el;
+        });
+        const empty = document.getElementById('sum-empty');
+        document.addEventListener('od:screen', (e) => {
+          const s = e.detail.screen;
+          const key = s.matches('article.topic') ? s.id : 'intro';
+          Object.keys(sums).forEach((id) => { sums[id].hidden = id !== key; });
+          empty.hidden = Boolean(sums[key]);
+          if (s.matches('article.topic') && !read.has(s.id)) { read.add(s.id); store.set(KEY, Array.from(read)); }
+          panels.right.querySelector('.panel-inner').scrollTop = 0;
+          markToc(read, topics.length, '읽음');
+          revealCurrent();
+        });
+      }
+
+      if (kind === 'review') setupReview();
+      if (kind === 'note') setupNote();
+      sync();
+    })();
+  </script>
+  <script id="pager-ui">
+    (function () {
+      const root = document.documentElement;
+      const main = document.querySelector('main');
+      const hero = main.querySelector('.hero');
+      const screens = [hero].concat(Array.from(main.querySelectorAll(document.body.dataset.screens)));
+      if (screens.length < 2) { root.classList.remove('js'); return; }
+      screens.forEach((s) => s.classList.add('screen'));
+
+      const last = screens.length - 1;
+      const prevBtn = document.getElementById('pager-prev');
+      const nextBtn = document.getElementById('pager-next');
+      const count = document.getElementById('pager-count');
+      const bar = document.getElementById('pager-bar');
+      const status = document.getElementById('pager-status');
+      const toc = document.querySelector('#panel-left .toc');
+      const scroller = document.querySelector('.content');
+      const titleOf = (s) => ((s.querySelector('h3') || s.querySelector('h1') || {}).textContent || '').trim();
+      let cur = -1;
+
+      // 목차: 정적으로 생성한 토픽 목록을 화면과 연결한다
+      const links = Array.from(toc.querySelectorAll('.toc-list a'));
+      const tocLinks = screens.map((s) => links.find((a) => a.getAttribute('href') === '#' + s.id));
+
+      function indexFor(hash) {
+        let id;
+        try { id = decodeURIComponent((hash || '').replace(/^#/, '')); } catch (e) { return { i: 0 }; }
+        const el = id && document.getElementById(id);
+        if (!el || !main.contains(el)) return { i: 0 };
+        const i = screens.findIndex((s) => s.contains(el) || el.contains(s));
+        return { i: Math.max(i, 0), target: i >= 0 && screens[i].contains(el) && screens[i] !== el ? el : null };
+      }
+
+      function render(i, target) {
+        const dir = cur < 0 ? '' : i > cur ? 'enter-next' : 'enter-prev';
+        if (i !== cur) {
+          if (cur >= 0) screens[cur].classList.remove('is-current', 'enter-next', 'enter-prev');
+          main.querySelectorAll(':scope > section.is-on').forEach((sec) => sec.classList.remove('is-on'));
+          const s = screens[i];
+          const sec = s.closest('section');
+          if (sec) sec.classList.add('is-on');
+          s.classList.add('is-current');
+          if (dir) { s.classList.remove('enter-next', 'enter-prev'); void s.offsetWidth; s.classList.add(dir); }
+          cur = i;
+          document.body.classList.toggle('at-end', i === last);
+          prevBtn.disabled = i === 0;
+          nextBtn.textContent = i === 0 ? '시작하기' : i === last ? '처음으로' : '다음';
+          count.textContent = i === 0 ? '' : i + ' / ' + last;
+          bar.style.transform = 'scaleX(' + (i / last) + ')';
+          status.textContent = i === 0 ? titleOf(s) : i + ' / ' + last + ', ' + titleOf(s);
+          tocLinks.forEach((link, k) => link && link.setAttribute('aria-current', String(k === i)));
+          document.dispatchEvent(new CustomEvent('od:screen', { detail: { index: i, screen: s } }));
+        }
+        if (target) target.scrollIntoView({ block: 'start' });
+        else scroller.scrollTo(0, 0);
+      }
+
+      function go(i) {
+        i = Math.min(Math.max(i, 0), last);
+        if (i === cur) return;
+        const url = i === 0 ? location.pathname + location.search : '#' + screens[i].id;
+        history.pushState(null, '', url);
+        render(i);
+      }
+
+      prevBtn.addEventListener('click', () => go(cur - 1));
+      nextBtn.addEventListener('click', () => go(cur === last ? 0 : cur + 1));
+      const fromUrl = () => { const r = indexFor(location.hash); render(r.i, r.target); };
+      window.addEventListener('hashchange', fromUrl);
+      window.addEventListener('popstate', fromUrl);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || document.body.classList.contains('drawer-open')) return;
+        if (e.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+      });
+
+      // 좌우로 밀어서 넘기기 (가로로 스크롤되는 영역은 제외)
+      let sx = 0, sy = 0, skip = true;
+      main.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY;
+        skip = e.touches.length > 1 || Boolean(e.target.closest('.widget, .equation-card, .table-card, .katex-display, .table-wrap, svg, input, details'));
+      }, { passive: true });
+      main.addEventListener('touchend', (e) => {
+        if (skip) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 64 && Math.abs(dx) > 2 * Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      fromUrl();
+    })();
+  </script>
+</body>
+</html>

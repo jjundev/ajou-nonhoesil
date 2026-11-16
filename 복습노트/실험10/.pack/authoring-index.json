@@ -1,0 +1,950 @@
+{
+  "schema": "logic-lab-bank-import",
+  "schema_version": 1,
+  "bank_id": "bank-exp10",
+  "bank_sha256": "d19ac0a6f1e48719e4b71a7529b357e20bcf29b22bda8c890b06240acf559d89",
+  "experiment": 10,
+  "questions": [
+    {
+      "question_id": "q-resistor-network",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q4",
+      "occurrence_ids": [
+        "o-s01-q4",
+        "o-s02-q1",
+        "o-s03-q1",
+        "o-s04-q1",
+        "o-s05-q1",
+        "o-s06-q1",
+        "o-s07-q1",
+        "o-s08-q1",
+        "o-s09-q1",
+        "o-s10-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a1",
+          "target_id": "q-resistor-network",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-3603d8be680785b1",
+          "reason": "파일명 학기 2016-2와 시험지 헤더 “2016-1학기”가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        },
+        {
+          "target_id": "o-s07-a1",
+          "reason": "종합본 1번 답은 weighted/ladder 구분 표지 없이 두 문단만 있다. 첫 문단은 R·2R 구조(ladder), 둘째 문단은 비트별 저항(weighted)을 설명하는 것으로 보이나 원문 표지가 없어 대응을 확정하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q4",
+        "a-s01-p1",
+        "a-s04-p1-q1",
+        "a-s04-p1",
+        "a-s06-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s08-p1",
+        "a-s09-p1",
+        "a-s10-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-adc-types",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q1",
+      "occurrence_ids": [
+        "o-s01-q1",
+        "o-s02-q2",
+        "o-s03-q2",
+        "o-s04-q2",
+        "o-s05-q2",
+        "o-s06-q2",
+        "o-s07-q2",
+        "o-s08-q2",
+        "o-s09-q2",
+        "o-s10-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a2",
+          "target_id": "q-adc-types",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-3603d8be680785b1",
+          "reason": "파일명 학기 2016-2와 시험지 헤더 “2016-1학기”가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q1",
+        "a-s01-p1",
+        "a-s04-p1-q2",
+        "a-s04-p1",
+        "a-s06-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s07-p2",
+        "a-s08-p1",
+        "a-s09-p1",
+        "a-s10-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-dac-operation",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s04-q3",
+      "occurrence_ids": [
+        "o-s02-q3",
+        "o-s03-q3",
+        "o-s04-q3",
+        "o-s05-q3",
+        "o-s06-q3",
+        "o-s07-q3",
+        "o-s08-q3",
+        "o-s09-q3",
+        "o-s10-q3"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a3",
+          "target_id": "q-dac-operation",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a3",
+          "target_id": "q-dac-operation",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a3",
+          "target_id": "q-dac-operation",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a3",
+          "target_id": "q-dac-operation",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-dac-operation",
+          "reason": "문항·제공 답안은 74HC90·74HC05를 말하지만 회로도 부품 라벨은 7490·7404·7405다. 부품명을 교정하지 않고 원문 그대로 보존. 후속 독립 풀이에서 검토 필요."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s04-p1-q3",
+        "a-s04-p1",
+        "a-s06-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p1",
+        "a-s03-p1",
+        "a-s05-p1",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s08-p1",
+        "a-s09-p2",
+        "a-s10-p1",
+        "a-s10-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(교안 DAC 회로 전체의 신호 흐름)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-counter-7490",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s04-q4",
+      "occurrence_ids": [
+        "o-s02-q4",
+        "o-s03-q4",
+        "o-s04-q4",
+        "o-s05-q4",
+        "o-s06-q4",
+        "o-s07-q4",
+        "o-s08-q4",
+        "o-s09-q4",
+        "o-s10-q4"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a4",
+          "target_id": "q-counter-7490",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a4",
+          "target_id": "q-counter-7490",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a4",
+          "target_id": "q-counter-7490",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a4",
+          "target_id": "q-counter-7490",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-counter-7490",
+          "reason": "문항은 74HC90 IC를 묻지만 앞 회로도의 U1 라벨은 7490이다. 원문 그대로 보존했으며 동일 계열 여부는 판정하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s04-p1-q4",
+        "a-s04-p1",
+        "a-s06-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p1",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s08-p2",
+        "a-s09-p2",
+        "a-s10-p2"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(7490 카운터의 기능과 BCD 출력의 무게)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-lm741",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s04-q5",
+      "occurrence_ids": [
+        "o-s02-q5",
+        "o-s03-q5",
+        "o-s04-q5",
+        "o-s05-q5",
+        "o-s06-q5",
+        "o-s07-q5",
+        "o-s08-q5",
+        "o-s09-q5",
+        "o-s10-q5"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a5",
+          "target_id": "q-lm741",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-lm741",
+          "to_id": "q-summing-amp",
+          "type": "duplicate_candidate",
+          "reason": "둘 다 LM741 반전가산증폭기의 출력 의미를 다루나 5번은 앞 DAC 회로의 LM741, 6번은 일반 3입력 도해의 Vo 관계식을 요구. 묶지 않고 후보로만 둠.",
+          "evidence": [
+            {
+              "source_id": "s-20b18f3a195db4c6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-20b18f3a195db4c6",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s02-online-note",
+          "to_id": "q-lm741",
+          "type": "answer_candidate",
+          "reason": "손글씨 메모 문구가 v4·실험10_예상 자료의 5번(LM741 output 의미) 제공 답안 문구와 같다. 메모 위치는 Online 과제 Op-amp 항목 옆이라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-04be542d738ad07b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "우상단 손글씨 메모",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-f16052453e4cc88a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "o-s02-online-note",
+          "reason": "손글씨 메모의 일부 어절을 글자 단위로 확정하지 못해 partial로 둠. 메모가 Online 과제 항목과 5번 중 어느 쪽 답인지도 후보 연결만 함."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s04-p1-q5",
+        "a-s04-p1",
+        "a-s06-p1"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p1",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s08-p2",
+        "a-s09-p2",
+        "a-s10-p2",
+        "a-s03-p2",
+        "a-s02-p1-online",
+        "a-s02-p1"
+      ],
+      "authoring_status": "not_selected",
+      "selection_reason": "예상문항이에요. LM741의 기능(반전 가산증폭기)과 output의 의미(카운트에 따른 아날로그 전압)는 기출 q-summing-amp·미확인 q-opamp-online의 식과 역할, 예상 q-dac-operation의 신호 흐름에서 이미 답해요. 새 개념 공백이 없어 미선별했고 원문·제공 답안은 보존해요."
+    },
+    {
+      "question_id": "q-summing-amp",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q2",
+      "occurrence_ids": [
+        "o-s01-q2",
+        "o-s02-q6",
+        "o-s03-q6",
+        "o-s04-q6",
+        "o-s05-q6",
+        "o-s06-q6",
+        "o-s07-q6",
+        "o-s08-q6",
+        "o-s09-q6",
+        "o-s10-q6"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "v4 2쪽 6번 문장 오른쪽 위에 붙은 수식 이미지. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "종합본 3쪽 6번 회로 다음, 4쪽 첫머리 7번 앞에 이어지는 수식. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a6",
+          "target_id": "q-summing-amp",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-summing-amp",
+          "to_id": "q-opamp-online",
+          "type": "variant_of",
+          "reason": "같은 반전 가산증폭기 도해를 쓰지만 Online 과제는 Vo 수식(1)에 더해 역할과 특징 설명(2)을 요구해 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-3603d8be680785b1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-04be542d738ad07b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "우상단 삽입 캡처 “실험 10 DAC&ADC Online 개별과제”",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "q-lm741",
+          "to_id": "q-summing-amp",
+          "type": "duplicate_candidate",
+          "reason": "둘 다 LM741 반전가산증폭기의 출력 의미를 다루나 5번은 앞 DAC 회로의 LM741, 6번은 일반 3입력 도해의 Vo 관계식을 요구. 묶지 않고 후보로만 둠.",
+          "evidence": [
+            {
+              "source_id": "s-20b18f3a195db4c6",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-20b18f3a195db4c6",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 6; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-3603d8be680785b1",
+          "reason": "파일명 학기 2016-2와 시험지 헤더 “2016-1학기”가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q2",
+        "a-s01-p1",
+        "a-s04-p2-q6",
+        "a-s04-p2",
+        "a-s06-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p2",
+        "a-s05-p2",
+        "a-s07-p3",
+        "a-s08-p2",
+        "a-s09-p3",
+        "a-s10-p2",
+        "a-s07-p4"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-rf-output",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s04-q7",
+      "occurrence_ids": [
+        "o-s02-q7",
+        "o-s03-q7",
+        "o-s04-q7",
+        "o-s05-q7",
+        "o-s06-q7",
+        "o-s07-q7",
+        "o-s08-q7",
+        "o-s09-q7",
+        "o-s10-q7"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a7",
+          "target_id": "q-rf-output",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a7",
+          "target_id": "q-rf-output",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a7",
+          "target_id": "q-rf-output",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a7",
+          "target_id": "q-rf-output",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "q-rf-output",
+          "reason": "앞 DAC 회로도에는 Rf 라벨이 없고 귀환 위치 저항은 R12 4.5k로 표기된다. 영문 병기는 “D/A Converter of Question 6”이라 6번 가산증폭기 도해를 가리킨다. 어느 저항을 Rf로 보는지 원문에서 확정되지 않음."
+        },
+        {
+          "target_id": "o-s07-a7",
+          "reason": "종합본 7번 답 “저항을 줄이면 출력이 커진다. 반비례관계”는 v1·v2·실험10.docx 제공 답 “Rf저항이 작아지면 DAC output 전압도 작아진다”와 방향이 반대다. 두 답을 모두 보존하고 정답을 채택하지 않음."
+        },
+        {
+          "target_id": "o-s02-a7",
+          "reason": "종합본 7번 제공 답과 방향이 반대(Rf 감소 시 출력 감소 vs 증가). 정답 판정은 후속 독립 풀이에서 수행."
+        },
+        {
+          "target_id": "o-s03-a7",
+          "reason": "종합본 7번 제공 답과 방향이 반대(Rf 감소 시 출력 감소 vs 증가). 정답 판정은 후속 독립 풀이에서 수행."
+        },
+        {
+          "target_id": "o-s08-a7",
+          "reason": "종합본 7번 제공 답과 방향이 반대(Rf 감소 시 출력 감소 vs 증가). 정답 판정은 후속 독립 풀이에서 수행."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s04-p2-q7",
+        "a-s04-p2",
+        "a-s06-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p2",
+        "a-s05-p2",
+        "a-s07-p4",
+        "a-s08-p2",
+        "a-s09-p3",
+        "a-s10-p2",
+        "a-s10-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(귀환 저항 Rf와 출력 크기)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-comparator",
+      "kind": "predicted",
+      "representative_occurrence_id": "o-s04-q8",
+      "occurrence_ids": [
+        "o-s02-q8",
+        "o-s03-q8",
+        "o-s04-q8",
+        "o-s05-q8",
+        "o-s06-q8",
+        "o-s07-q8",
+        "o-s08-q8",
+        "o-s09-q8",
+        "o-s10-q8"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a8",
+          "target_id": "q-comparator",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "o-s07-a8",
+          "reason": "종합본 8번 답의 “가변저항을 통해서 대역폭을 조절한다”는 다른 자료의 제공 답(기준 전위 조절)과 내용이 다르다. 원문 그대로 보존하고 검증하지 않음."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s04-p2-q8",
+        "a-s04-p2",
+        "a-s06-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p2",
+        "a-s03-p2",
+        "a-s05-p2",
+        "a-s05-p3",
+        "a-s07-p4",
+        "a-s08-p2",
+        "a-s09-p3",
+        "a-s10-p3"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "예상문항이지만 기출이 다루지 않은 개념(비교기 동작과 가변저항의 역할)을 보충해서 수록해요"
+    },
+    {
+      "question_id": "q-converter-roles",
+      "kind": "past",
+      "representative_occurrence_id": "o-s01-q3",
+      "occurrence_ids": [
+        "o-s01-q3",
+        "o-s02-q9",
+        "o-s03-q9",
+        "o-s04-q9",
+        "o-s05-q9",
+        "o-s06-q9",
+        "o-s07-q9",
+        "o-s08-q9",
+        "o-s09-q9",
+        "o-s10-q9",
+        "o-s02-online-q1"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s03-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s05-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s07-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s08-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s09-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        },
+        {
+          "occurrence_id": "o-s10-a9",
+          "target_id": "q-converter-roles",
+          "status": "confirmed",
+          "reason": "같은 자료에서 해당 문항 바로 뒤에 제시된 제공 답안. 연결 확인이며 정답 검증은 아님."
+        }
+      ],
+      "relations": [],
+      "unresolved": [
+        {
+          "target_id": "s-3603d8be680785b1",
+          "reason": "파일명 학기 2016-2와 시험지 헤더 “2016-1학기”가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [
+        "a-s01-p1-q3",
+        "a-s01-p1",
+        "a-s04-p2-q9",
+        "a-s04-p2",
+        "a-s06-p2"
+      ],
+      "evidence_only_asset_ids": [
+        "a-s02-p3",
+        "a-s03-p2",
+        "a-s05-p3",
+        "a-s07-p4",
+        "a-s08-p3",
+        "a-s09-p3",
+        "a-s10-p3",
+        "a-s02-p1-online",
+        "a-s02-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    },
+    {
+      "question_id": "q-opamp-online",
+      "kind": "unknown",
+      "representative_occurrence_id": "o-s02-online-q2",
+      "occurrence_ids": [
+        "o-s02-online-q2"
+      ],
+      "subparts": [],
+      "provided_answers": [
+        {
+          "occurrence_id": "o-s02-online-note",
+          "target_id": "q-opamp-online",
+          "status": "candidate",
+          "reason": "같은 캡처의 Op-amp 항목 오른쪽에 붙은 손글씨 메모. 수식(1)은 없고 역할 서술만 있어 항목 전체 답안인지 확정하지 않음."
+        }
+      ],
+      "relations": [
+        {
+          "from_id": "q-summing-amp",
+          "to_id": "q-opamp-online",
+          "type": "variant_of",
+          "reason": "같은 반전 가산증폭기 도해를 쓰지만 Online 과제는 Vo 수식(1)에 더해 역할과 특징 설명(2)을 요구해 조건이 다름.",
+          "evidence": [
+            {
+              "source_id": "s-3603d8be680785b1",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "문항 2; 원문 page 1",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-04be542d738ad07b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "우상단 삽입 캡처 “실험 10 DAC&ADC Online 개별과제”",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        },
+        {
+          "from_id": "o-s02-online-note",
+          "to_id": "q-lm741",
+          "type": "answer_candidate",
+          "reason": "손글씨 메모 문구가 v4·실험10_예상 자료의 5번(LM741 output 의미) 제공 답안 문구와 같다. 메모 위치는 Online 과제 Op-amp 항목 옆이라 후보로만 연결.",
+          "evidence": [
+            {
+              "source_id": "s-04be542d738ad07b",
+              "pdf_page": 1,
+              "printed_page": null,
+              "locator": "우상단 손글씨 메모",
+              "bbox": null,
+              "image_size": null
+            },
+            {
+              "source_id": "s-f16052453e4cc88a",
+              "pdf_page": 2,
+              "printed_page": null,
+              "locator": "문항 5; 원문 page 2",
+              "bbox": null,
+              "image_size": null
+            }
+          ]
+        }
+      ],
+      "unresolved": [
+        {
+          "target_id": "s-3603d8be680785b1",
+          "reason": "파일명 학기 2016-2와 시험지 헤더 “2016-1학기”가 다르다. 두 값을 모두 보존했으며 실제 시행 학기는 외부 자료로 확정하지 않았다."
+        },
+        {
+          "target_id": "o-s02-online-note",
+          "reason": "손글씨 메모의 일부 어절을 글자 단위로 확정하지 못해 partial로 둠. 메모가 Online 과제 항목과 5번 중 어느 쪽 답인지도 후보 연결만 함."
+        },
+        {
+          "target_id": "q-opamp-online",
+          "reason": "Online 개별과제 캡처 항목이며 실제 퀴즈 시행 근거가 없다. 기출/예상 여부 unknown 유지. 캡처 상단 제목 일부가 잘려 있다."
+        }
+      ],
+      "representative_reading": "readable",
+      "safe_problem_asset_ids": [],
+      "evidence_only_asset_ids": [
+        "a-s02-p1-online",
+        "a-s02-p1"
+      ],
+      "authoring_status": "ready",
+      "selection_reason": "고유 기출·미확인 문항과 개념 공백을 보충하는 예상문항을 원문 조건 그대로 수록해요"
+    }
+  ]
+}

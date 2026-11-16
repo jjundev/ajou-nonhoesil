@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "figures": [
+    {
+      "id": "summing-given",
+      "question_id": "q-summing-amp",
+      "role": "problem",
+      "svg": "figures/questions/summing-given.svg",
+      "png": "figures/questions/summing-given.png",
+      "svg_sha256": "f52c17f07589b27ec6534c33fba8ea17f624478fa43c9219631dc0dc2bf3d5e3",
+      "png_sha256": "1e357d988ee2892e90d7ef9afebf5d396d48a2a15a008aceb81a2dc57f6d4bde",
+      "w_mm": 120,
+      "h_mm": 69.33333333333333,
+      "source_asset_ids": [
+        "a-s01-p1-q2"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 2; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "2"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "network-given",
+      "question_id": "q-resistor-network",
+      "role": "problem",
+      "svg": "figures/questions/network-given.svg",
+      "png": "figures/questions/network-given.png",
+      "svg_sha256": "bcff142b276d6fce9b1451a5189fb27a884fb01d688cebde8be14b1f66aa9afa",
+      "png_sha256": "4c927f5063dbca95081f8f0a82df255c0c732a493d3bdddc586763e2ee23ba6d",
+      "w_mm": 160,
+      "h_mm": 68.92307692307692,
+      "source_asset_ids": [
+        "a-s01-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-3603d8be680785b1",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "dac-given",
+      "question_id": "q-dac-operation",
+      "role": "problem",
+      "svg": "figures/questions/dac-given.svg",
+      "png": "figures/questions/dac-given.png",
+      "svg_sha256": "1e5590ca805328da029de4b20f10bee7c8b558265d85c676404346741dbdf762",
+      "png_sha256": "b9a47ce6f0a6c78fe32cb5c25de7b5b64638443dae21cc31f4ea12f26b7d1aa1",
+      "w_mm": 175,
+      "h_mm": 96.47435897435898,
+      "source_asset_ids": [
+        "a-s04-p1-q3"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 1,
+          "printed_page": null,
+          "locator": "문항 3; 원문 page 1",
+          "bbox": null,
+          "image_size": null,
+          "question": "3"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "dac-given-2",
+      "question_id": "q-counter-7490",
+      "role": "problem",
+      "svg": "figures/questions/dac-given-2.svg",
+      "png": "figures/questions/dac-given-2.png",
+      "svg_sha256": "1e5590ca805328da029de4b20f10bee7c8b558265d85c676404346741dbdf762",
+      "png_sha256": "b9a47ce6f0a6c78fe32cb5c25de7b5b64638443dae21cc31f4ea12f26b7d1aa1",
+      "w_mm": 175,
+      "h_mm": 96.47435897435898,
+      "source_asset_ids": [
+        "a-s04-p1-q4"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 4; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "4"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "dac-given-3",
+      "question_id": "q-rf-output",
+      "role": "problem",
+      "svg": "figures/questions/dac-given-3.svg",
+      "png": "figures/questions/dac-given-3.png",
+      "svg_sha256": "1e5590ca805328da029de4b20f10bee7c8b558265d85c676404346741dbdf762",
+      "png_sha256": "b9a47ce6f0a6c78fe32cb5c25de7b5b64638443dae21cc31f4ea12f26b7d1aa1",
+      "w_mm": 175,
+      "h_mm": 96.47435897435898,
+      "source_asset_ids": [
+        "a-s04-p2-q7"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "stair-rf",
+      "question_id": "q-rf-output",
+      "role": "solution",
+      "svg": "figures/solutions/stair-rf.svg",
+      "png": "figures/solutions/stair-rf.png",
+      "svg_sha256": "d849dba6ca9439303e2048cbab5fe61f4f4289cc1716058c4724b6df2f9d13a0",
+      "png_sha256": "b451d541a54fb1c5a83af7ed09cc673b3d3e8c0836d78c486d30bfa6b2077aac",
+      "w_mm": 140,
+      "h_mm": 53.45454545454545,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 7; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "7"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "comparator-given",
+      "question_id": "q-comparator",
+      "role": "problem",
+      "svg": "figures/questions/comparator-given.svg",
+      "png": "figures/questions/comparator-given.png",
+      "svg_sha256": "ec9212e67f5c913e17544ce1319ab3c150876df6de8e691652007cd104ddf913",
+      "png_sha256": "14581961ca427d0064aa07c56a87440afe347de199a70e71205afca95e36fa36",
+      "w_mm": 130,
+      "h_mm": 60.666666666666664,
+      "source_asset_ids": [
+        "a-s04-p2-q8"
+      ],
+      "source_refs": [
+        {
+          "source_id": "s-04be542d738ad07b",
+          "pdf_page": 2,
+          "printed_page": null,
+          "locator": "문항 8; 원문 page 2",
+          "bbox": null,
+          "image_size": null,
+          "question": "8"
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "counter-given",
+      "question_id": "q-qp-e10-board-01",
+      "role": "problem",
+      "svg": "figures/questions/counter-given.svg",
+      "png": "figures/questions/counter-given.png",
+      "svg_sha256": "87a508938a282973bea12e4656661532a08cb82bb3776f16220830acba4093a0",
+      "png_sha256": "3b4dc7880c241799e4d6f093061f2b9e96a056e30cef98e655ec49984d97b782",
+      "w_mm": 70,
+      "h_mm": 45.58139534883721,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-manual10",
+          "pdf_page": 8,
+          "printed_page": null
+        }
+      ],
+      "derivation": "원문의 핀·신호·연결을 읽어 직접 다시 그린 벡터 그림이에요. 문제 그림과 풀이 그림을 나눴어요.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 PNG를 원문·교안 회로와 대조했어요. 7490 핀 번호, 7404·7405 핀 쌍, 풀업·가중 저항 값, LM741 핀(2·3·4·6·7), 분배기 R10·R9·R11, 비교기 입력 방향, 문제 그림의 답 비노출을 확인했어요."
+    },
+    {
+      "id": "counter-blank",
+      "question_id": "q-qp-e10-board-01",
+      "role": "problem",
+      "svg": "figures/questions/counter-blank.svg",
+      "png": "figures/questions/counter-blank.png",
+      "svg_sha256": "24bd20b39fa68e3d8058d9fe1c24b17806e52f7048a91ecdebbeaa8e290bd790",
+      "png_sha256": "afd6320bd2a49808fca62018d851635a9cae0f7a3d4903775da3c8f8d30de022",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352(실험08 팩에서 잰 값). 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "none",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 확대 렌더로 배선 끝점이 홀에 놓이고 5번 +5V, 10번 GND, 2·3·6·7번 GND, 12→1 연결, 14번 CLK와 QA~QD 측정점 표시(보라 원)인지 확인했어요. CLK는 발생기 신호라 레일에 잇지 않았어요."
+    },
+    {
+      "id": "counter-complete",
+      "question_id": "q-qp-e10-board-01",
+      "role": "solution",
+      "svg": "figures/solutions/counter-complete.svg",
+      "png": "figures/solutions/counter-complete.png",
+      "svg_sha256": "d631bd1cfe8aecfb4d20372434e8365c85cb882a8b9a6cd56bafada2489a07f6",
+      "png_sha256": "0e118d43e1610f30fdac05daec2e9e94d6349c25e6fd0ded7cebb9c222605837",
+      "w_mm": 100,
+      "h_mm": 141.46833400564745,
+      "source_asset_ids": [],
+      "source_refs": [
+        {
+          "source_id": "s-board",
+          "pdf_page": 1,
+          "printed_page": null
+        }
+      ],
+      "derivation": "v1 배포 강의노트/공지사항/Breadboard.pdf sha256=045ae9111b0e36f36a6adb2ef171f1b92ed1d31d7208e9723e4f3c90c34762d4 300dpi 전체 페이지. PDF 열 중심 394,433,563,606,649,692,734,862,904,948,990,1033,1161,1201; 행1=711.8 행63=3352(실험08 팩에서 잰 값). 엔진 JPG 좌표를 개별 선형 대응. verify 와 넷 대조.",
+      "answer_exposure": "present",
+      "review_status": "pass",
+      "review_notes": "2026-11-16 확대 렌더로 배선 끝점이 홀에 놓이고 5번 +5V, 10번 GND, 2·3·6·7번 GND, 12→1 연결, 14번 CLK와 QA~QD 측정점 표시(보라 원)인지 확인했어요. CLK는 발생기 신호라 레일에 잇지 않았어요."
+    }
+  ]
+}
