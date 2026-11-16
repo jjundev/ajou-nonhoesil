@@ -496,6 +496,13 @@ class HandSimScript(unittest.TestCase):
         self.assertEqual([r[:2] for r in rows], [('저항', 'R5 22.6kΩ'), ('저항', 'R9 330Ω')])
         self.assertIn('와이퍼', rows[1][2])
 
+    def test_안내판_그림은_넘치는_표만큼만_줄인다(self):
+        # 25행(실험05 BCD)까지는 CSS 그대로라 이미 낸 PDF 가 안 바뀐다
+        from scripts.lab import hand_sim
+        rows = [('저항', 'R', 'a1 → a3')] * 25
+        self.assertEqual(hand_sim.guide_img_style(rows), '')
+        self.assertIn('208mm', hand_sim.guide_img_style(rows + [('계측', 'OUT', '접점 h38')]))
+
     def test_범례는_계측_접점이_있는_판에만_계측을_말한다(self):
         from scripts.lab import hand_sim
         self.assertEqual(hand_sim.legend_for([('칩', '7490', '좌 블록 · pin 1 = 5행')]), hand_sim.LEGEND)

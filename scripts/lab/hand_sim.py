@@ -47,7 +47,7 @@ h1 { font-size: 13pt; margin: 0 0 2mm; }
 p.legend { font-size: 9.5pt; margin: 0 0 2mm; }
 img { display: block; max-width: 100%; margin: 0 auto 2mm; }
 /* Windows 글꼴에서도 BCD 부품표 25행과 범례가 396mm 인쇄 영역에 들어간다. */
-img.guide { max-height: 220mm; }
+img.guide { max-height: 220mm; }   /* = GUIDE_IMG_MM */
 table { border-collapse: collapse; width: 100%; font-size: 9pt; }
 th, td { border: 1px solid #999; padding: 0.6mm 1.5mm; text-align: left; }
 th { background: #eee; }
@@ -175,8 +175,23 @@ def render_guide_html(title, pages):
                 f'<tbody>{body}</tbody></table>')
     return _doc(title, ''.join(
         f'<section class="page"><h1>{html.escape(t)}</h1><p class="legend">{html.escape(legend_for(rows))}</p>'
-        f'<img class="guide" src="{quote(img)}" alt="{html.escape(t)}">{table(rows)}</section>'
+        f'<img class="guide" src="{quote(img)}" alt="{html.escape(t)}"{guide_img_style(rows)}>{table(rows)}</section>'
         for t, img, rows in pages))
+
+
+GUIDE_IMG_MM = 220      # `CSS` 의 `img.guide` 높이 — 부품표 `GUIDE_FIT_ROWS` 행까지 한 쪽에 든다
+GUIDE_FIT_ROWS = 25     # 실험05 BCD
+GUIDE_ROW_MM = 6        # 9pt 한 행 + 위아래 여백, 넉넉히
+GUIDE_LEGEND_LINE_MM = 6
+
+
+def guide_img_style(rows):
+    """부품표가 `GUIDE_FIT_ROWS` 행을 넘거나 범례가 길어지면 그만큼 그림만 줄인다 — 표 글자는 그대로다.
+    그 안이면 빈 문자열이라 이미 낸 PDF 는 바뀌지 않는다(실험10 DAC 26행 + 계측 범례)."""
+    over = max(0, len(rows) - GUIDE_FIT_ROWS) * GUIDE_ROW_MM
+    if legend_for(rows) not in (LEGEND, LEGEND_DISPLAY):
+        over += GUIDE_LEGEND_LINE_MM
+    return f' style="max-height: {GUIDE_IMG_MM - over}mm"' if over else ''
 
 
 def check_pdf(path, n):
