@@ -308,8 +308,10 @@ WIRE = {
     'gnd': (30, 60, 200, 255),    # 파랑 — 0V(GND)
     'sig': (25, 25, 25, 255),     # 검정 — 출력·LED 쪽 신호(입력 점퍼는 INPUT 보라)
     'mid': (20, 130, 60, 255),    # 초록 — 칩과 칩 사이 중간 노드
+    # 주황 갈색 — 둘째 전원 +15V(실험10 LM741·분배기). 노랑 잭에서 우 바깥 VCC 레일로만 간다
+    'v15': (190, 90, 0, 255),
 }
-KIND_KR = {'vcc': '+5V', 'gnd': '0V', 'sig': '신호', 'mid': '중간'}
+KIND_KR = {'vcc': '+5V', 'gnd': '0V', 'sig': '신호', 'mid': '중간', 'v15': '+15V'}
 
 # 앞 단계에서 그대로 두는 배선·부품 — 넷의 색이 아니라 표시라 `WIRE` 에 넣지 않는다.
 KEEP = (165, 165, 165, 255)
@@ -335,6 +337,29 @@ LAYER_PALETTE = (
     (200, 160, 0, 255),    # 금색
     (150, 200, 40, 255),   # 연두
 )
+
+
+# 저항 색띠 — 숫자 0~9 의 색. `_value_bands` 가 값 글자(`22.6k`)에서 띠를 뽑는다(실험10 저항망)
+_BAND = ((30, 30, 30, 255), (139, 69, 19, 255), (200, 20, 20, 255), (230, 120, 0, 255), (230, 200, 0, 255),
+         (30, 150, 50, 255), (30, 70, 200, 255), (140, 50, 170, 255), (130, 130, 130, 255), (245, 245, 245, 255))
+_GOLD, _BROWN = (218, 165, 32, 255), (139, 69, 19, 255)
+
+
+def _value_bands(value):
+    """값 글자('330', '1.5k', '22.6k') → 색띠. 유효숫자 둘이면 4띠(금 ±5%), 셋이면 5띠(갈 ±1%)."""
+    text = str(value).strip().lower().rstrip('ω')
+    mult = {'k': 3, 'm': 6}.get(text[-1:], 0)
+    num = text[:-1] if mult else text
+    frac = len(num.split('.')[1]) if '.' in num else 0
+    ohms = int(num.replace('.', '')) * 10 ** (mult - frac)
+    digits = str(ohms).rstrip('0') or '0'
+    sig = 2 if len(digits) <= 2 else 3
+    digits = digits.ljust(sig, '0')
+    power = len(str(ohms)) - sig
+    if power < 0:
+        raise ValueError(f'색띠로 못 적는 값: {value!r}')
+    bands = [_BAND[int(d)] for d in digits] + [_BAND[power]]
+    return bands + [_GOLD if sig == 2 else _BROWN]
 
 
 def _hex_color(c):

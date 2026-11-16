@@ -95,3 +95,21 @@ def _input_jumper(bb, c, row, name, target, marker=None, col=None, side='a'):
     # 비운다 — 사람이 직접 적는다(`_blank_parts`)
     bb._blank_parts(bb.signal_tag, name, badge_x, y_rail, col=INPUT, seg=len(bb._segments) - 1,
                     arrow=arrow, max_w=max_w)
+
+
+def led_block_parts(board):
+    """주차 `board` 의 R10 예외 — LED 전용 블록에 저항·가변저항을 두는 이유 문장(`LED_BLOCK_PARTS_REASON`),
+    없으면 None. 예외는 이유로만 연다 — 칩이 다 차서 저항망이 좌 블록에 안 들어가는 주차(실험10 DAC)."""
+    reason = getattr(board, 'LED_BLOCK_PARTS_REASON', None)
+    if reason is None:
+        return None
+    if not str(reason).strip():
+        raise ValueError('LED_BLOCK_PARTS_REASON 은 빈 문장일 수 없다 — 왜 우 블록에 저항을 두는지 적는다')
+    return reason
+
+
+def check_led_block_parts(board, bb, label):
+    """빌더가 주차 R10 예외(`LED_BLOCK_PARTS_REASON`)를 렌더러에 넘겼는가 — `build_all` 의 `check_board` 가 부른다."""
+    if bb.led_block_parts != led_block_parts(board):
+        raise ValueError(f'{label}: 주차 LED_BLOCK_PARTS_REASON 과 렌더러의 led_block_parts 가 다르다 — '
+                         '빌더가 bb.led_block_parts = LED_BLOCK_PARTS_REASON 으로 넘겨야 한다')

@@ -250,6 +250,13 @@ class _RuleChecks:
         led_strips = {self._strip(ch['signal']) for ch in self.led_chains
                       if ch['signal'] is not None and ch['signal'][0] in led_blocks}
         led_strips |= {self._strip(sym) for d in self.displays for sym in d['seg_strips'].values()}
+        if getattr(self, 'led_block_parts', None):
+            # 주차 예외(`LED_BLOCK_PARTS_REASON`) — 그 블록의 저항·가변저항 스트립과 바깥 레일도 받는다(실험10)
+            led_strips |= {self._strip(r[k]) for r in self.lying for k in ('top', 'bottom')
+                           if r[k] is not None and r[k][0] in led_blocks}
+            led_strips |= {self._strip(sym) for p in self.pots for sym in (*p['ends'], p['wiper'])
+                           if sym[0] in led_blocks}
+            led_strips |= {('rail', self.cols[b][k]) for b in led_blocks for k in ('gnd', 'vcc')}
         bad, ok = [], []
         for w in self.block_crossings():
             led_end = next((s for z, s in w['ends'].items() if z in led_blocks), None)
@@ -295,6 +302,8 @@ class _RuleChecks:
         }
         if self.displays:
             out['displays'] = list(self.displays)    # 표시기 없는 주차는 키가 없다 — 옛 도장이 그대로다
+        if getattr(self, 'pots', None):
+            out['pots'] = list(self.pots)            # 가변저항 없는 주차는 키가 없다(실험10)
         return out
 
     def input_node(self, name, x, row):
@@ -347,6 +356,11 @@ class _RuleChecks:
         for d in self.displays:
             out += [(f"{d['label']} pin {p}", sym) for p, sym in d['pins'].items()
                     if p not in d.get('open', ())]  # 일부러 비운 핀(FND 507 DP)은 뜬 다리가 아니다
+        for i, pot in enumerate(getattr(self, 'pots', ()), 1):
+            out.append((f"가변저항{i}({pot['label']}) 끝 다리 1", pot['ends'][0]))
+            out.append((f"가변저항{i}({pot['label']}) 끝 다리 2", pot['ends'][1]))
+            if not pot.get('wiper_open'):
+                out.append((f"가변저항{i}({pot['label']}) 와이퍼", pot['wiper']))
         return out
 
     def nets(self, substitute_inputs=True):
@@ -505,9 +519,29 @@ class _RuleChecks:
         nets = self.nets()
         # 단락만은 치환하지 않은 넷에서 본다 — 입력 점퍼의 레일 끝은 실재 배선이다
         for net in self.nets(substitute_inputs=False):
-            if {'vcc', 'gnd'} <= net['rails']:
+            if {'vcc', 'gnd'} == net['rails'] or {'vcc', 'gnd'} < net['rails']:
                 r5.append('+5V 와 GND 가 한 넷이다 — 단락: '
                           + ', '.join(sorted(net['labels'])))
+            elif len(net['rails']) > 1:
+                names = ' 와 '.join(KIND_KR[k] for k in sorted(net['rails']))
+                r5.append(f'{names} 가 한 넷이다 — 단락: ' + ', '.join(sorted(net['labels'])))
+        # 둘째 전원(+15V) — 그 레일 넷에는 `DIP_SUPPLY` 가 허락한 칩 핀만 닿고, 그 핀은 그 레일에 닿는다
+        # (실험10: +15V 가 로직 칩에 닿으면 칩이 망가진다 — 74HC05 절대 최대 7V)
+        extra = {k for k in self._touched if k not in ('vcc', 'gnd')}
+        if extra:
+            for ch in self.chips:
+                allowed = DIP_SUPPLY.get(ch['label'], {})
+                for p in ch['pins']:
+                    lab = self._pin_label(ch, p)
+                    net = next((n for n in nets if lab in n['labels']), None)
+                    rails = net['rails'] if net else set()
+                    for k in extra & rails:
+                        if allowed.get(p) != k:
+                            r5.append(f'{lab} 가 {KIND_KR[k]} 레일 넷에 닿는다 — 이 핀은 {KIND_KR[k]} 를 받지 않는다')
+                    want = allowed.get(p)
+                    if want and want not in rails and not self.partial:
+                        r5.append(f'{lab} 는 {KIND_KR[want]} 레일에 닿아야 한다 — 지금 넷의 레일: '
+                                  + ('·'.join(KIND_KR[k] for k in sorted(rails)) or '없음'))
 
         # 아무 데도 안 물린 것 — 넷에 자기 라벨 하나뿐. 개방 미사용 핀·계측 자리(실험02)·덜 그린
         # 그림(`partial`)은 뺀다
@@ -541,7 +575,7 @@ class _RuleChecks:
             raise AssertionError('넷이 틀렸다:\n  ' + '\n  '.join(r5))
 
         # 레일 연결성 — 같은 전원 레일들이 브리지로 이어져 있지 않으면 전원이 안 간다
-        for kind in ('vcc', 'gnd'):
+        for kind in self._touched:
             rails = self._touched[kind]
             if len(rails) <= 1:
                 continue

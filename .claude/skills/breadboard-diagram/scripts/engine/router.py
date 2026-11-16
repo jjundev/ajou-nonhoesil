@@ -31,10 +31,14 @@ DIP_PINS = {
     '74HC20': 14, '74HC21': 14, '74HC27': 14, '74HC32': 14, '74HC74': 14, '74HC86': 14,
     '74HC42': 16, '74HC76': 16, '74HC138': 16, '74HC148': 16,
     '7447': 16, '7490': 14, '74HC03': 14, '74670': 16,
+    '74HC05': 14, 'LM741': 8,
 }
 # 전원핀이 모서리(VCC = n, GND = n/2)가 아닌 칩 — (VCC 핀, GND 핀). 74HC76 은 교안 p11 이 "GND와 Vcc
 # 위치 유의" 라고 적는 칩이다(실험06, ST M74HC76 Pin description)
-DIP_POWER = {'74HC76': (5, 13), '7490': (5, 10)}
+DIP_POWER = {'74HC76': (5, 13), '7490': (5, 10), 'LM741': (7, 4)}
+# +5V 가 아닌 전원을 받는 핀 — 칩 → {핀: 레일 종류}. `connect_power` 가 그 핀을 그 레일로 잇고, verify() 가
+# 그 레일 넷에 이 표 밖의 칩 핀이 닿으면 멈춘다(실험10 LM741 pin 7 = +15V, 로직 칩 절대 최대 7V)
+DIP_SUPPLY = {'LM741': {7: 'v15'}}
 
 
 def dip_power(model, n=None):
@@ -87,6 +91,9 @@ def _end_holes(bb, chips, end):
                 if (R[c], end[1]) not in bb._leads and (R[c], end[1]) not in bb._passed]
     if end[0] == 'SEG':     # 표시기 저항의 빈 끝 스트립
         return [(x, bb.r_y(r)) for x, r in bb.seg_ends[end[1]]
+                if (x, r) not in bb._leads and (x, r) not in bb._passed]
+    if end[0] == 'NODE':    # 빌더가 이름 붙인 부품 스트립·레일 홀(`bb.node`) — 저항망·가변저항(실험10)
+        return [(x, bb.r_y(r)) for x, r in bb.node_holes[end[1]]
                 if (x, r) not in bb._leads and (x, r) not in bb._passed]
     k, pin = chips[end[0]], end[1]
     n = _chip_pins(bb).get(k, 14)
@@ -300,8 +307,8 @@ def _route(bb, chips, frm, to):
 def _routes(bb, chips, frm, to, density_weight=0.0):
     """`frm`→`to` 의 합법 경로를 싼 순으로 낸다. 후보는 [A, (A.x, y1), (X, y1), (X, y2), (B.x, y2), B]
     꼴이다 — y1·y2 는 끝 행 또는 반 행 위아래, X 는 `_lanes()`."""
-    led = to[0] in ('LED', 'TAP', 'SEG')
-    gap = _GAP_LANES if to[0] == 'SEG' else ()
+    led = to[0] in ('LED', 'TAP', 'SEG') or (to[0] == 'NODE' and _node_block(bb, to[1]) == 'right')
+    gap = _GAP_LANES if to[0] == 'SEG' or (to[0] == 'NODE' and _node_fj(bb, to[1])) else ()
     side = led and getattr(bb, 'route_side_lanes', False)
     srcs, dsts = _end_holes(bb, chips, frm), _end_holes(bb, chips, to)
     others = []
@@ -322,6 +329,17 @@ def _routes(bb, chips, frm, to, density_weight=0.0):
             m = _marker_spot(bb, p)
             if m is not None:          # 번호 원을 찍을 데가 없는 경로는 따라 그릴 수 없다
                 yield p, m
+
+
+def _node_block(bb, name):
+    """NODE 끝의 블록 — 홀이 가운데 레일보다 오른쪽이면 'right'."""
+    return 'right' if all(x > bb.cols['left']['mid_vcc'] for x, _r in bb.node_holes[name]) else 'left'
+
+
+def _node_fj(bb, name):
+    """NODE 끝이 우 블록 f~j 쪽인가 — 골 차선으로 가로로 들어간다(표시기 저항 끝과 같다)."""
+    R = bb.cols['right']
+    return all(R['f'] - 5 <= x <= R['j'] + 5 for x, _r in bb.node_holes[name])
 
 
 _ORDERED = {}

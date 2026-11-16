@@ -207,9 +207,10 @@ class RenderedContract(unittest.TestCase):
 
     def test_배선_색이_넷을_넘지_않는다(self):
         """이전 판은 한 장에 16색을 썼고 그중 눈으로 구분 안 되는 쌍이 여럿이었다.
-        따라 그리는 사람 손에 있는 펜도 네 자루다."""
-        self.assertEqual(set(self.mod.WIRE), {'vcc', 'gnd', 'sig', 'mid'})
-        self.assertEqual(len(set(self.mod.WIRE.values())), 4, '색이 겹친다')
+        따라 그리는 사람 손에 있는 펜도 네 자루다. 둘째 전원 +15V(`v15`, 실험10 LM741)만 다섯째 색이다 —
+        그 주차에만 나오는 넷이다."""
+        self.assertEqual(set(self.mod.WIRE), {'vcc', 'gnd', 'sig', 'mid', 'v15'})
+        self.assertEqual(len(set(self.mod.WIRE.values())), 5, '색이 겹친다')
 
     def test_계측기는_배선_색을_쓰지_않는다(self):
         """프로브는 점퍼로 꽂는 게 아니라 문다. 색을 섞으면 조원이 프로브 자리에

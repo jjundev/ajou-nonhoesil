@@ -165,6 +165,13 @@ class BreadboardRenderer(_RuleChecks):
         # 눕혀 꽂은 풀업 저항(`pull_up`) — 끝점 기호·라벨. `part_boxes` 는 그 몸통·다리 상자(배선기·R15 가 피한다)
         self.pullups = []
         self.part_boxes = []
+        # 두 홀 사이에 꽂은 일반 저항(`resistor`)과 가변저항(`potentiometer`) — 실험10 저항망. 없으면 도장 키도 없다
+        self.lying = []
+        self.pots = []
+        # 이름 붙인 배선 끝 홀 후보(`node`) — 배선기 끝 ('NODE', 이름)
+        self.node_holes = {}
+        # LED 전용 블록(R10)에 저항·가변저항을 두는 주차 예외의 이유 — 주차 `LED_BLOCK_PARTS_REASON`. None 이면 R10 그대로
+        self.led_block_parts = None
         self.led_chains = []
         self.unused_inputs = []
         self.unused_outputs = []
@@ -438,6 +445,48 @@ class BreadboardRenderer(_RuleChecks):
                         (c['gnd'], y_g), (c['gnd'], self.r_y(r_g))],
                        'gnd', '전원장치 0V 잭', marker_at=(s.jacks['gray'] + 46, s.jack_marker_y))
 
+    def connect_jacks_15v(self):
+        """둘째 전원 +15V(실험10 LM741·분배기). 노랑 잭 → 우 바깥 VCC 레일, 회색 잭 둘째 선 → 우 바깥 GND 레일.
+        우 바깥 VCC 레일은 이 그림에서 **+15V 전용 레일**이다 — 넷 종류를 'v15' 로 바꿔 +5V·GND 와 한 넷이 되면
+        verify() 가 멈추고, 그 레일 넷에 `DIP_SUPPLY` 밖의 칩 핀이 닿아도 멈춘다. `connect_jacks()` 뒤에 부른다 —
+        노랑은 +5V 선과 같은 높이(가로 구간이 안 겹친다), 회색 둘째 선은 0V 선 아래 한 칸을 가로지른다."""
+        if self.board != 'v2':
+            raise ValueError('+15V 레일은 v2 판형만 — 우 바깥 레일이 비어 있는 판이다')
+        R, s = self.cols['right'], self.spec
+        y_v, y_g = s.jack_route_y
+        self._rail_kind[R['vcc']] = 'v15'
+        self._touched.setdefault('v15', set())
+        self._addr_map[R['vcc']] = '우 +15V레일'
+        r_v, r_g = self.free_rail_row(3, R['vcc']), self.free_rail_row(4, R['gnd'])
+        self.step_wire([(s.jacks['yellow'], s.jack_bottom), (s.jacks['yellow'], y_v),
+                        (R['vcc'], y_v), (R['vcc'], self.r_y(r_v))],
+                       'v15', '전원장치 +15V 잭(노랑)', marker_at=(s.jacks['yellow'] + 46, s.jack_marker_y))
+        x_g, y_g2 = s.jacks['gray'] + 14, y_g + (y_g - y_v)
+        self.step_wire([(x_g, s.jack_bottom), (x_g, y_g2), (R['gnd'], y_g2), (R['gnd'], self.r_y(r_g))],
+                       'gnd', '전원장치 0V 잭 -> 우 바깥 GND', marker_at=(s.jacks['gray'] + 92, s.jack_marker_y))
+        # 두 GND 레일은 같은 회색 잭에서 받는다 — 레일 연결성 검사에는 브리지와 같다
+        self._uf_union(self.cols['left']['gnd'], R['gnd'])
+
+    def connect_v15(self, pin_row, rail_row, desc):
+        """좌 블록 f쪽 핀 스트립(`pin_row`) → 우 바깥 +15V 레일. i 열에서 나와 i·j 사이 차선으로 `rail_row` 위
+        반 행까지 내려가, j 열·가운데 레일·우 블록을 **반 행**으로 건너 레일 홀에 꽂는다 — 홀 위를 지나지 않는다.
+        i·j 사이로 내려가는 까닭: 아래 행 j 열에서 가운데 레일을 건너는 부품(실험10 Rf)을 비킨다. 빌더는 그 반
+        행에 부품이 없는 행을 고른다(R15 가 잡는다)."""
+        if 'v15' not in self._touched:
+            raise ValueError('+15V 핀을 잇기 전에 connect_jacks_15v() 로 +15V 레일을 깐다')
+        L, R = self.cols['left'], self.cols['right']
+        lane = (L['i'] + L['j']) // 2
+        r = self.free_rail_row(rail_row, R['vcc'])
+        y_h = self.r_y(r) - self.spec.row_pitch / 2
+        y_p = self.r_y(pin_row)
+        self.step_wire([(L['i'], y_p), (lane, y_p), (lane, y_h), (R['vcc'], y_h), (R['vcc'], self.r_y(r))],
+                       'v15', desc, marker_near=((lane + R['vcc']) // 2, y_h))
+
+    def node(self, name, holes):
+        """배선기 끝 ('NODE', `name`) 의 홀 후보 [(x, 행)] — 저항·가변저항 다리가 꽂힌 스트립의 빈 홀이나 레일 홀.
+        배선기는 그중 비어 있는 홀만 고른다."""
+        self.node_holes[name] = [(x, r) for x, r in holes]
+
     # ---------------- 낱개 그리기 ----------------
 
     def note(self, text):
@@ -533,20 +582,33 @@ class BreadboardRenderer(_RuleChecks):
                        fill=color, width=width)
                 t = e + gap
 
-    def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None):
+    def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None, side='left'):
         """계측기·신호원 접점 — 배선이 아니다. 회색 점선을 보드 왼쪽 여백으로 빼고 계측표에 따로 쌓는다.
         `lane_row` 는 이웃 행 접점의 꼬리표가 겹칠 때 여백 안에서 꺾을 행이다. `name`(교안 신호 이름)을
         주면 같은 스트립 끝 여백에 배지로도 적는다 — 손그림이 보드 밖 이름을 빠뜨린다.
         """
         y = self.r_y(row)
         lane_y = self.r_y(lane_row) if lane_row else y
-        # x=140·100·12 는 좌 여백 안이다 — v1 테두리 149, v2 144 둘 다 그 오른쪽이라 판형과 무관하다
-        pts = [(x, y), (140, y)] + ([(140, lane_y)] if lane_row else []) + [(100, lane_y)]
-        self._dashed(pts, PROBE)
-        self.draw.ellipse([x - 5, y - 5, x + 5, y + 5], outline=PROBE, width=2)
         n = len(self.probes) + 1
-        self.draw_badge(12, lane_y - 8, f'{n}. {label}', (248, 248, 250, 240), PROBE,
-                        font=self.font_kr_sm, pad=2)
+        if side == 'right':
+            # 오른쪽 여백 — 우 바깥 레일 밖(실험10 DAC OUTPUT). 꼬리표는 여백 오른쪽 끝에 붙인다
+            xr = self.spec.board_right
+            # `lane_row` 가 있으면 접점에서 먼저 세로로 그 행(반 행)까지 가서 오른쪽으로 빠진다 — 접점 행의
+            # 다른 스트립 위로 점선이 지나가지 않게
+            pts = ([(x, y), (x, lane_y)] if lane_row else [(x, y)]) + [(xr + 30, lane_y)]
+            self._dashed(pts, PROBE)
+            self.draw.ellipse([x - 5, y - 5, x + 5, y + 5], outline=PROBE, width=2)
+            text = f'{n}. {label}'
+            w = self.draw.textbbox((0, 0), text, font=self.font_kr_sm)[2]
+            self.draw_badge(self.spec.size[0] - 12 - w, lane_y - 8, text, (248, 248, 250, 240), PROBE,
+                            font=self.font_kr_sm, pad=2)
+        else:
+            # x=140·100·12 는 좌 여백 안이다 — v1 테두리 149, v2 144 둘 다 그 오른쪽이라 판형과 무관하다
+            pts = [(x, y), (140, y)] + ([(140, lane_y)] if lane_row else []) + [(100, lane_y)]
+            self._dashed(pts, PROBE)
+            self.draw.ellipse([x - 5, y - 5, x + 5, y + 5], outline=PROBE, width=2)
+            self.draw_badge(12, lane_y - 8, f'{n}. {label}', (248, 248, 250, 240), PROBE,
+                            font=self.font_kr_sm, pad=2)
         entry = {'n': n, 'label': label, 'at': self.addr(x, y), 'desc': desc,
                  'sym': self.sym(x, row)}
         if name:
@@ -916,7 +978,7 @@ class BreadboardRenderer(_RuleChecks):
         finally:
             self._keep_parts = False
 
-    def _draw_resistor_between(self, p0, p1, center, label):
+    def _draw_resistor_between(self, p0, p1, center, label, bands=None):
         """두 홀 사이에 눕힌 저항 — 다리 둘, 몸통은 `center` 에 선 방향으로 놓는다."""
         dx, dy = p1[0] - p0[0], p1[1] - p0[1]
         length = (dx * dx + dy * dy) ** .5
@@ -925,7 +987,9 @@ class BreadboardRenderer(_RuleChecks):
         wire_col = KEEP if self._keep_parts else (100, 100, 100, 255)
         body_col = (215, 215, 215, 255) if self._keep_parts else (225, 195, 145, 255)
         if self._keep_parts:
-            bands = [KEEP] * 4
+            bands = [KEEP] * len(bands or (0,) * 4)
+        elif bands is not None:
+            pass
         elif '10k' in label:
             bands = [(139, 69, 19, 255), (30, 30, 30, 255), (230, 120, 0, 255), (218, 165, 32, 255)]
         else:
@@ -939,9 +1003,106 @@ class BreadboardRenderer(_RuleChecks):
         corners = [(cx + ux * s * 12 + nx * w * 5, cy + uy * s * 12 + ny * w * 5)
                    for s, w in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
         self.draw.polygon(corners, fill=body_col, outline=(90, 70, 40, 255))
-        for col, off in zip(bands, [-7, -2, 3, 8]):
+        offs = [-7, -2, 3, 8] if len(bands) == 4 else [-8, -4, 0, 4, 8]
+        for col, off in zip(bands, offs):
             bx, by = cx + ux * off, cy + uy * off
             self.draw.line([(bx - nx * 4, by - ny * 4), (bx + nx * 4, by + ny * 4)], fill=col, width=2)
+
+    def resistor(self, a, b, name, value, desc, text_at=None):
+        """저항 한 개를 두 홀 `a`·`b`((x, 행)) 사이에 꽂는다 — 같은 열에 세우든, 골을 건너든, 레일까지 눕히든
+        같은 함수다(실험10 가중 저항·Rf·분배기). 몸통은 두 홀 가운데, 사이 홀은 지나간 홀이다. 이름·값
+        글자(`R5 22.6k`)를 몸통 옆 `text_at`(없으면 오른쪽)에 적는다 — 저항값이 회로의 뜻이다. 색띠는 값에서
+        뽑는다. 몸통·글자 상자는 `part_boxes` 에 남아 배선기와 R15 가 피한다. 기준선(`snapshot()['lying']`)에
+        같은 두 홀이 있으면 회색·번호 없이 그린다."""
+        (xa, ra), (xb, rb) = a, b
+        p0, p1 = (xa, self.r_y(ra)), (xb, self.r_y(rb))
+        if math.dist(p0, p1) < 30:
+            raise ValueError(f'{name}: 두 홀이 너무 가깝다 — 몸통(24px)이 안 들어간다')
+        label = f'{value}Ω'
+        key = (self.sym(xa, ra), self.sym(xb, rb))
+        self._keep_parts = self.baseline is not None and key in self.baseline.get('lying', {})
+        try:
+            self.lead(*p0, f'{name} {label} 저항 다리')
+            self.lead(*p1, f'{name} {label} 저항 다리')
+            self._register_pass([p0, p1])
+            rec = {'label': f'{name} {label}', 'top': key[0], 'bottom': key[1]}
+            self.resistors.append(rec)
+            self.lying.append(dict(rec))
+            pad = 5
+            if abs(p1[0] - p0[0]) >= abs(p1[1] - p0[1]):
+                lo, hi = sorted((p0[0], p1[0]))
+                box = (lo + pad, min(p0[1], p1[1]) - 6, hi - pad, max(p0[1], p1[1]) + 6)
+            else:
+                lo, hi = sorted((p0[1], p1[1]))
+                box = (min(p0[0], p1[0]) - 6, lo + pad, max(p0[0], p1[0]) + 6, hi - pad)
+            self.part_boxes.append(box)
+            center = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)
+            if abs(p1[1] - p0[1]) < .5:
+                # 가로로 눕힌 저항이 홀 위를 지나면 몸통을 그 홀에 얹는다 — 다리가 레일 홀 위를 지나면
+                # 그 레일에 꽂힌 것으로 읽힌다(`pull_up` 과 같은 규칙)
+                lo, hi = sorted((p0[0], p1[0]))
+                inner = sorted(v for v in self._addr_map if lo < v < hi and self.hole_at(v, p0[1]) is not None)
+                if inner:
+                    center = (inner[len(inner) // 2], p0[1])
+            self._blank_parts(self._draw_resistor_between, p0, p1, center, label, _value_bands(value))
+            text = f'{name} {value}'
+            tb = self.draw.textbbox((0, 0), text, font=self.font_en_sm)
+            w, h = tb[2] - tb[0], tb[3] - tb[1]
+            tx, ty = text_at or (box[2] + 2, center[1] - h / 2 - 1)
+            col = KEEP if self._keep_parts else (90, 60, 20, 255)
+            # 흰 바탕 — 글자 뒤 빈 홀이 글자를 끊어 읽히지 않는다. 그 상자는 배선기가 피한다(`part_boxes`)
+            self.draw.rectangle([tx - 1, ty, tx + w + 1, ty + h + 3], fill=(250, 250, 250, 235))
+            self.draw.text((tx, ty), text, fill=col, font=self.font_en_sm)
+            self.part_boxes.append((tx, ty, tx + w, ty + h + 3))
+            near = ((center[0], center[1] - 14) if abs(p1[0] - p0[0]) >= abs(p1[1] - p0[1])
+                    else (center[0] - 14, center[1]))
+            self.step_note('sig', self.addr(*p0), self.addr(*p1),
+                           f'{name} {label}({self.addr(*p0)}→{self.addr(*p1)}) · {desc}', marker_near=near)
+        finally:
+            self._keep_parts = False
+
+    def potentiometer(self, x, top_row, name, value, desc, wiper_open=False):
+        """3단자 가변저항 — 다리 셋을 한 열의 세 행(`top_row`~+2)에 꽂는다. 가운데가 와이퍼다(실험10 R9).
+        몸통은 다리 오른쪽 열 사이에 그려 홀을 가리지 않는다. `wiper_open` 이면 와이퍼가 비어 있어도
+        R5ⓒ 뜬 다리로 안 본다 — 분배기를 꽂아 두고 아직 V+ 로 안 쓰는 단계(실험10 C2 4단계)."""
+        ys = [self.r_y(top_row + i) for i in range(3)]
+        syms = [self.sym(x, top_row + i) for i in range(3)]
+        label = f'{name} {value}Ω'
+        key = (syms[0], syms[1], syms[2])
+        self._keep_parts = self.baseline is not None and key in self.baseline.get('pots', {})
+        try:
+            for y, what in zip(ys, ('끝 다리', '와이퍼 다리', '끝 다리')):
+                self.lead(x, y, f'{label} 가변저항 {what}')
+            self.pots.append({'label': label, 'ends': (syms[0], syms[2]), 'wiper': syms[1],
+                              'wiper_open': wiper_open})
+            x0, x1 = x + 5, x + 19
+            y0, y1 = ys[0] - 7, ys[2] + 7
+            self.part_boxes.append((x0, y0, x1, y1))
+            self._blank_parts(self._draw_pot, x, ys, x0, x1, y0, y1)
+            text = f'{name} {value}'
+            tb = self.draw.textbbox((0, 0), text, font=self.font_en_sm)
+            tx, ty = x1 + 3, ys[1] - (tb[3] - tb[1]) / 2 - 1
+            self.draw.rectangle([tx - 1, ty, tx + tb[2] - tb[0] + 1, ty + tb[3] - tb[1] + 3],
+                                fill=(250, 250, 250, 235))
+            self.draw.text((tx, ty), text, fill=KEEP if self._keep_parts else (20, 60, 140, 255),
+                           font=self.font_en_sm)
+            self.part_boxes.append((tx, ty, tx + tb[2] - tb[0], ty + tb[3] - tb[1] + 3))
+            self.step_note('sig', self.addr(x, ys[0]), self.addr(x, ys[2]),
+                           f'{label} 가변저항({self.addr(x, ys[0])}·{self.addr(x, ys[1])} 와이퍼·'
+                           f'{self.addr(x, ys[2])}) · {desc}', marker_near=(x - 14, ys[1]))
+        finally:
+            self._keep_parts = False
+
+    def _draw_pot(self, x, ys, x0, x1, y0, y1):
+        lead_col = KEEP if self._keep_parts else (100, 100, 100, 255)
+        body = (215, 215, 215, 255) if self._keep_parts else (60, 110, 200, 255)
+        for y in ys:
+            self.draw.line([(x, y), (x0, y)], fill=lead_col, width=2)
+        self.draw.rectangle([x0, y0, x1, y1], fill=body, outline=(30, 50, 110, 255), width=1)
+        cx = (x0 + x1) / 2
+        self.draw.ellipse([cx - 5, ys[1] - 5, cx + 5, ys[1] + 5], fill=(235, 235, 235, 255),
+                          outline=(30, 50, 110, 255), width=1)
+        self.draw.line([(cx - 3, ys[1] + 3), (cx + 3, ys[1] - 3)], fill=(30, 50, 110, 255), width=2)
 
     # ---------------- 칩 ----------------
 
@@ -1107,7 +1268,7 @@ class BreadboardRenderer(_RuleChecks):
                        '레일 브리지',
                        marker_at=((x_a + x_b) // 2, y - 12))
 
-    def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d'):
+    def connect_power(self, start_row, block='left', gnd_marker_at=None, gnd_col='d', v15_rail_row=None):
         """pin 14(DIP-16 은 16) -> +5V, pin 7(DIP-16 은 8) -> GND. 점퍼는 핀 홀 옆 d·g 열에서 출발하고,
         어느 레일로 가는지는 블록마다 뒤집힌다. `gnd_marker_at` 은 기본 번호 원 자리에 다른 배선 모서리가
         올 때만, `gnd_col` 은 d 열 위로 다른 선이 지날 때 준다. 전원핀이 모서리가 아닌 칩(`DIP_POWER`)은
@@ -1117,7 +1278,7 @@ class BreadboardRenderer(_RuleChecks):
         n = self._pins_at(block, start_row)
         model = self._model_at(block, start_row)
         if model in DIP_POWER:
-            return self._connect_power_inner(start_row, block, model, n, gnd_col)
+            return self._connect_power_inner(start_row, block, model, n, gnd_col, v15_rail_row)
         g = start_row + n // 2 - 1          # GND 핀 행 — DIP-14 pin 7 은 k+6, DIP-16 pin 8 은 k+7
         x_vcc = c['mid_vcc'] if block == 'left' else c['vcc']
         x_gnd = c['gnd'] if block == 'left' else c['mid_gnd']
@@ -1133,14 +1294,21 @@ class BreadboardRenderer(_RuleChecks):
                        'gnd', f'pin {n // 2} -> GND 레일', marker_at=gnd_marker_at,
                        marker_near=((c['d'] + x_gnd) // 2, self.r_y(g) - 11))
 
-    def _connect_power_inner(self, start_row, block, model, n, a_col):
+    def _connect_power_inner(self, start_row, block, model, n, a_col, v15_rail_row=None):
         """전원핀이 모서리가 아닌 칩(74HC76 VCC 5·GND 13). 핀마다 자기 쪽 가까운 레일로 간다 — 좌 블록
-        a쪽 핀은 좌 바깥 레일, f쪽 핀은 가운데 레일. a쪽 출발 열은 `a_col`(기본 d), f쪽은 g."""
+        a쪽 핀은 좌 바깥 레일, f쪽 핀은 가운데 레일. a쪽 출발 열은 `a_col`(기본 d), f쪽은 g.
+        `DIP_SUPPLY` 의 +15V 핀(LM741 pin 7)은 `connect_v15` 로 우 바깥 +15V 레일 `v15_rail_row` 근처에 간다."""
         if block != 'left':
             raise ValueError(f'{model}: 전원핀이 안쪽인 칩은 좌 블록에만 그린다')
         c = self.cols[block]
+        supply = DIP_SUPPLY.get(model, {})
         for pin, kind in zip(dip_power(model, n), ('vcc', 'gnd')):
             row = _dip_pin_row(start_row, pin, n)
+            if supply.get(pin) == 'v15':
+                if v15_rail_row is None:
+                    raise ValueError(f'{model} pin {pin} 은 +15V 다 — connect_power(..., v15_rail_row=) 로 레일 행을 준다')
+                self.connect_v15(row, v15_rail_row, f'pin {pin} -> +15V 레일')
+                continue
             a_side = _dip_side(pin, n) == 'a'
             x_from = c[a_col] if a_side else c['g']
             x_rail = c[kind] if a_side else c[f'mid_{kind}']
@@ -1386,6 +1554,10 @@ class BreadboardRenderer(_RuleChecks):
             out['displays'] = {(d['block'], d['pin1_row']): d['label'] for d in self.displays}
         if self.pullups:
             out['pullups'] = {(p['top'], p['bottom']): p['label'] for p in self.pullups}
+        if self.lying:
+            out['lying'] = {(p['top'], p['bottom']): p['label'] for p in self.lying}
+        if self.pots:
+            out['pots'] = {(p['ends'][0], p['wiper'], p['ends'][1]): p['label'] for p in self.pots}
         return out
 
     def removals(self):
@@ -1424,6 +1596,14 @@ class BreadboardRenderer(_RuleChecks):
         for key, label in self.baseline.get('pullups', {}).items():
             if key not in here_pu:
                 out.append(f'{label} 풀업 ({self._sym_addr(("hole", key[0]))}→{self._sym_addr(("hole", key[1]))}) 뽑는다')
+        here_ly = {(p['top'], p['bottom']) for p in self.lying}
+        for key, label in self.baseline.get('lying', {}).items():
+            if key not in here_ly:
+                out.append(f'{label} 저항 ({self._sym_addr(("hole", key[0]))}→{self._sym_addr(("hole", key[1]))}) 뽑는다')
+        here_pot = {(p['ends'][0], p['wiper'], p['ends'][1]) for p in self.pots}
+        for key, label in self.baseline.get('pots', {}).items():
+            if key not in here_pot:
+                out.append(f'{label} 가변저항 ({self._sym_addr(("hole", key[0]))}~{self._sym_addr(("hole", key[2]))}) 뽑는다')
         return out
 
     def reserve_badges(self, other):

@@ -151,6 +151,7 @@ def check_board(board, bb, label):
     if bb.board != want:
         raise ValueError(f"{label}: 주차 BOARD 는 '{want}' 인데 렌더러는 '{bb.board}' 판형이다 — "
                          "빌더가 BreadboardRenderer(..., board=BOARD) 로 넘겨야 한다")
+    check_led_block_parts(board, bb, label)
     limit = side_lead_max(board)
     if bb.side_lead_max != limit:
         raise ValueError(f'{label}: 주차 R7 한도는 {limit} 인데 렌더러는 {bb.side_lead_max} 로 그렸다 — '
