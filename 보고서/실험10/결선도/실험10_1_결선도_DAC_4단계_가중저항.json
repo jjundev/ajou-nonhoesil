@@ -1,0 +1,87 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 2~3. DAC 전체 회로 4단계",
+ "subtitle": "7490 + 74HC04 + 74HC05 + LM741 · CLK 1.0kHz",
+ "kept": 56,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "mid",
+   "from": "우 e38",
+   "to": "우 f38",
+   "desc": "가산 노드: 우 a~e 38행 -> 우 f~j 38행",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 2,
+   "kind": "mid",
+   "from": "좌 d26",
+   "to": "우 a36",
+   "desc": "OA: U3 pin 2 -> R5 윗다리 스트립",
+   "count": 1,
+   "color": "#009696"
+  },
+  {
+   "n": 3,
+   "kind": "mid",
+   "from": "좌 d28",
+   "to": "우 a40",
+   "desc": "OB: U3 pin 4 -> R6 아랫다리 스트립",
+   "count": 1,
+   "color": "#c81e96"
+  },
+  {
+   "n": 4,
+   "kind": "mid",
+   "from": "좌 c30",
+   "to": "우 f36",
+   "desc": "OC: U3 pin 6 -> R7 윗다리 스트립",
+   "count": 1,
+   "color": "#788c00"
+  },
+  {
+   "n": 5,
+   "kind": "mid",
+   "from": "좌 h31",
+   "to": "우 f40",
+   "desc": "OD: U3 pin 8 -> R8 아랫다리 스트립",
+   "count": 1,
+   "color": "#2896dc"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

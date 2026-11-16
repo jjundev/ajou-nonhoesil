@@ -1,0 +1,98 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 1. 7490 카운터 확인 준비 2 · LED 준비",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 11,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 b3",
+   "to": "우 c6",
+   "desc": "QD: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · QD: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "우 a6",
+   "to": "중앙GND레일6행",
+   "desc": "QD 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 b8",
+   "to": "우 c11",
+   "desc": "QC: LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · QC: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "gnd",
+   "from": "우 a11",
+   "to": "중앙GND레일11행",
+   "desc": "QC 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "sig",
+   "from": "우 b13",
+   "to": "우 c16",
+   "desc": "QB: LED(우 b13→우 b14) + 330Ω(우 c14→우 c16) 직렬 · QB: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "우 a16",
+   "to": "중앙GND레일16행",
+   "desc": "QB 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "QA: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · QA: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "우 a21",
+   "to": "중앙GND레일21행",
+   "desc": "QA 저항 아래 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": []
+}

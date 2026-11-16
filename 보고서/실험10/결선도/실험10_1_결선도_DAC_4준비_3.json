@@ -1,0 +1,66 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 2~3. DAC 전체 회로 준비 3 · 분배기 준비",
+ "subtitle": "전원과 신호발생기 출력을 꺼요. 배선만 육안으로 대조해요.",
+ "kept": 53,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "우 j43",
+   "to": "우 +15V레일43행",
+   "desc": "R10 1kΩ(우 j43→우 +15V레일43행) · +15V -> R9 윗단자",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "우 h43",
+   "to": "우 h45",
+   "desc": "R9 330Ω 가변저항(우 h43·우 h44 와이퍼·우 h45) · 분배기 가변저항 — 가운데 단자가 V+ 후보",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "우 j45",
+   "to": "우 GND레일45행",
+   "desc": "R11 1kΩ(우 j45→우 GND레일45행) · R9 아랫단자 -> GND",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

@@ -1,0 +1,234 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 1. 7490 카운터 확인",
+ "subtitle": "7490 ×1 · CLK 사각파 주기 1s · LED QD~QA",
+ "kept": null,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "vcc",
+   "from": "전원잭",
+   "to": "좌 VCC레일3행",
+   "desc": "전원장치 +5V 잭",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "gnd",
+   "from": "전원잭",
+   "to": "좌 GND레일4행",
+   "desc": "전원장치 0V 잭",
+   "count": 1
+  },
+  {
+   "n": 3,
+   "kind": "gnd",
+   "from": "좌 GND레일48행",
+   "to": "중앙GND레일48행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 4,
+   "kind": "vcc",
+   "from": "좌 VCC레일49행",
+   "to": "중앙VCC레일49행",
+   "desc": "레일 브리지",
+   "count": 1
+  },
+  {
+   "n": 5,
+   "kind": "vcc",
+   "from": "좌 a8",
+   "to": "좌 VCC레일7행",
+   "desc": "pin 5 -> +5V 레일",
+   "count": 1
+  },
+  {
+   "n": 6,
+   "kind": "gnd",
+   "from": "좌 g8",
+   "to": "중앙GND레일7행",
+   "desc": "pin 10 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 7,
+   "kind": "gnd",
+   "from": "좌 a5",
+   "to": "좌 GND레일5행",
+   "desc": "U1 pin 2 R01 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 8,
+   "kind": "gnd",
+   "from": "좌 a6",
+   "to": "좌 GND레일6행",
+   "desc": "U1 pin 3 R02 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 9,
+   "kind": "gnd",
+   "from": "좌 a9",
+   "to": "좌 GND레일9행",
+   "desc": "U1 pin 6 R91 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 10,
+   "kind": "gnd",
+   "from": "좌 a10",
+   "to": "좌 GND레일10행",
+   "desc": "U1 pin 7 R92 -> GND 레일",
+   "count": 1
+  },
+  {
+   "n": 11,
+   "kind": "sig",
+   "from": "중앙GND레일4행",
+   "to": "좌 j4",
+   "desc": "입력 CLK -> U1 pin 14 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 12,
+   "kind": "sig",
+   "from": "우 b3",
+   "to": "우 c6",
+   "desc": "QD: LED(우 b3→우 b4) + 330Ω(우 c4→우 c6) 직렬 · QD: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 13,
+   "kind": "gnd",
+   "from": "우 a6",
+   "to": "중앙GND레일6행",
+   "desc": "QD 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 14,
+   "kind": "sig",
+   "from": "우 b8",
+   "to": "우 c11",
+   "desc": "QC: LED(우 b8→우 b9) + 330Ω(우 c9→우 c11) 직렬 · QC: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 15,
+   "kind": "gnd",
+   "from": "우 a11",
+   "to": "중앙GND레일11행",
+   "desc": "QC 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 16,
+   "kind": "sig",
+   "from": "우 b13",
+   "to": "우 c16",
+   "desc": "QB: LED(우 b13→우 b14) + 330Ω(우 c14→우 c16) 직렬 · QB: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 17,
+   "kind": "gnd",
+   "from": "우 a16",
+   "to": "중앙GND레일16행",
+   "desc": "QB 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 18,
+   "kind": "sig",
+   "from": "우 b18",
+   "to": "우 c21",
+   "desc": "QA: LED(우 b18→우 b19) + 330Ω(우 c19→우 c21) 직렬 · QA: 출력 1 이면 켜짐",
+   "count": 1
+  },
+  {
+   "n": 19,
+   "kind": "gnd",
+   "from": "우 a21",
+   "to": "중앙GND레일21행",
+   "desc": "QA 저항 아래 -> GND",
+   "count": 1
+  },
+  {
+   "n": 20,
+   "kind": "sig",
+   "from": "좌 g6",
+   "to": "좌 c4",
+   "desc": "QA: U1 pin 12 -> U1 pin 1 (CLKB)",
+   "count": 1
+  },
+  {
+   "n": 21,
+   "kind": "sig",
+   "from": "좌 j6",
+   "to": "우 a18",
+   "desc": "QA = U1 pin 12 -> LED QA",
+   "count": 1
+  },
+  {
+   "n": 22,
+   "kind": "sig",
+   "from": "좌 j9",
+   "to": "우 a13",
+   "desc": "QB = U1 pin 9 -> LED QB",
+   "count": 1
+  },
+  {
+   "n": 23,
+   "kind": "sig",
+   "from": "좌 j10",
+   "to": "우 a8",
+   "desc": "QC = U1 pin 8 -> LED QC",
+   "count": 1
+  },
+  {
+   "n": 24,
+   "kind": "sig",
+   "from": "좌 j7",
+   "to": "우 a3",
+   "desc": "QD = U1 pin 11 -> LED QD",
+   "count": 1
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}

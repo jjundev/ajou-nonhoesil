@@ -1,0 +1,68 @@
+{
+ "schema": "breadboard-sidecar/v1",
+ "title": "실험 1) DAC — 1. 7490 카운터 확인 1단계",
+ "subtitle": "7490 ×1 · CLK 사각파 주기 1s · LED QD~QA",
+ "kept": 19,
+ "steps": [
+  {
+   "n": 1,
+   "kind": "sig",
+   "from": "중앙GND레일4행",
+   "to": "좌 j4",
+   "desc": "입력 CLK -> U1 pin 14 · 1 이면 레일 쪽 끝을 +5V 레일로 옮겨요",
+   "count": 1
+  },
+  {
+   "n": 2,
+   "kind": "sig",
+   "from": "좌 g6",
+   "to": "좌 c4",
+   "desc": "QA: U1 pin 12 -> U1 pin 1 (CLKB)",
+   "count": 1,
+   "color": "#e67800"
+  },
+  {
+   "n": 3,
+   "kind": "sig",
+   "from": "좌 j6",
+   "to": "우 a18",
+   "desc": "QA = U1 pin 12 -> LED QA",
+   "count": 1,
+   "color": "#009696"
+  }
+ ],
+ "removals": [],
+ "probes": [],
+ "board": "v2",
+ "leds": [
+  {
+   "tag": "QD",
+   "at": "우 a3",
+   "active_low": false
+  },
+  {
+   "tag": "QC",
+   "at": "우 a8",
+   "active_low": false
+  },
+  {
+   "tag": "QB",
+   "at": "우 a13",
+   "active_low": false
+  },
+  {
+   "tag": "QA",
+   "at": "우 a18",
+   "active_low": false
+  }
+ ],
+ "inputs": [
+  {
+   "name": "CLK",
+   "at": "좌 j4",
+   "rail": "중앙GND레일4행",
+   "x": 588,
+   "row": 4
+  }
+ ]
+}
