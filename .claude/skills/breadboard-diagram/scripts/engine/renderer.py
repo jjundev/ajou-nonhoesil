@@ -582,11 +582,15 @@ class BreadboardRenderer(_RuleChecks):
                        fill=color, width=width)
                 t = e + gap
 
-    def instrument(self, x, row, label, desc, block='left', lane_row=None, name=None, side='left'):
+    def instrument(self, *a, **k):
         """계측기·신호원 접점 — 배선이 아니다. 회색 점선을 보드 왼쪽 여백으로 빼고 계측표에 따로 쌓는다.
         `lane_row` 는 이웃 행 접점의 꼬리표가 겹칠 때 여백 안에서 꺾을 행이다. `name`(교안 신호 이름)을
         주면 같은 스트립 끝 여백에 배지로도 적는다 — 손그림이 보드 밖 이름을 빠뜨린다.
+        손그림 모드에선 부품처럼 비우고 안내판에선 제 색으로 그린다 — 팀원이 접점·이름을 그린다(실험10 DAC).
         """
+        return self._blank_parts(self._draw_instrument, *a, **k)
+
+    def _draw_instrument(self, x, row, label, desc, block='left', lane_row=None, name=None, side='left'):
         y = self.r_y(row)
         lane_y = self.r_y(lane_row) if lane_row else y
         n = len(self.probes) + 1
@@ -805,11 +809,11 @@ class BreadboardRenderer(_RuleChecks):
         if self.hand is None:
             return draw_fn(*a, **k)
         if self.hand_guide:
-            self._in_parts = True
+            outer, self._in_parts = self._in_parts, True     # 중첩 호출(부품 안의 부품)에도 안전
             try:
                 return draw_fn(*a, **k)
             finally:
-                self._in_parts = False
+                self._in_parts = outer
         real, self.draw = self.draw, _NullDraw(self.draw)
         try:
             return draw_fn(*a, **k)

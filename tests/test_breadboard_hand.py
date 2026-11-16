@@ -429,7 +429,7 @@ class HandSimScript(unittest.TestCase):
         bb = self._guide_board()
         rows = hand_sim.guide_rows(bb)
         kinds = [k for k, _, _ in rows]
-        self.assertEqual(kinds, sorted(kinds, key=['칩', 'LED', '저항', '입력'].index))
+        self.assertEqual(kinds, sorted(kinds, key=['칩', 'LED', '저항', '입력', '계측'].index))
         self.assertEqual(kinds.count('칩'), len(bb.chips))
         self.assertEqual(kinds.count('LED'), len(bb.led_chains))
         self.assertEqual(kinds.count('저항'), len(bb.resistors))
@@ -444,6 +444,40 @@ class HandSimScript(unittest.TestCase):
         rows = hand_sim.guide_rows(bb)
         self.assertEqual(rows[0], ('표시기', 'FND 507', '우 블록 · pin 1 = 28행'))
         self.assertEqual([k for k, _, _ in rows], ['표시기'] + ['저항'] * 7)
+
+    def _probe_board(self, **k):
+        bb = _load().BreadboardRenderer(board='v2', **k)
+        bb.instrument(bb.cols['left']['h'], 20, 'DAC OUTPUT', '오실로스코프', lane_row=20.5, side='right')
+        bb.instrument(bb.cols['left']['c'], 12, 'CLK', '함수 발생기', name='CLK')
+        return bb
+
+    def test_손그림모사는_계측_접점을_비운다(self):
+        # 실험10 DAC OUTPUT — 프로브 점선·원·꼬리표가 overlay 에 남으면 벡터 쪽에 못 옮긴다
+        bb = self._probe_board(hand=1)
+        self.assertIsNone(bb.overlay.getbbox())
+        self.assertEqual([p['label'] for p in bb.probes], ['DAC OUTPUT', 'CLK'])
+        self.assertEqual([t[0] for t in bb.tag_boxes], ['CLK'])
+
+    def test_안내판은_계측_접점을_제_색으로_그린다(self):
+        bb = self._probe_board(hand=1, hand_guide=True)
+        colors = {c for _, c in bb.overlay.getcolors(1 << 20) if c[3] == 255}
+        self.assertIn(_load().PROBE, colors)
+
+    def test_손그림_아닌_판의_계측_접점은_그대로다(self):
+        self.assertIsNotNone(self._probe_board().overlay.getbbox())
+
+    def test_부품표에_계측_접점이_입력_다음에_있다(self):
+        from scripts.lab import hand_sim
+        bb = self._probe_board(hand=1, hand_guide=True)
+        bb.instrument_note('저항', '꽂기 전', '멀티미터')     # 그림 없는 접점 — 표에 안 싣는다
+        rows = hand_sim.guide_rows(bb)
+        self.assertEqual([r[:2] for r in rows], [('계측', 'DAC OUTPUT'), ('계측', 'CLK')])
+        self.assertIn(bb.probes[0]['at'], rows[0][2])
+
+    def test_범례는_계측_접점이_있는_판에만_계측을_말한다(self):
+        from scripts.lab import hand_sim
+        self.assertEqual(hand_sim.legend_for([('칩', '7490', '좌 블록 · pin 1 = 5행')]), hand_sim.LEGEND)
+        self.assertIn('계측', hand_sim.legend_for([('계측', 'DAC OUTPUT', 'h20')]))
 
     def test_범례는_표시기가_있는_판에만_표시기를_말한다(self):
         # 표시기 없는 실험의 범례가 바뀌면 커밋된 PDF 가 까닭 없이 달라진다

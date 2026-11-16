@@ -34,6 +34,7 @@ OUT_DIR = '팀원전달용'
 
 LEGEND = ('회색 선은 이미 그려져 있어요 · 색으로 된 칩·LED·저항·입력 이름만 그리세요 '
           '(칩 핀·LED·저항의 회색 다리도 부품과 함께 그려요)')
+LEGEND_PROBE = ' · 계측 접점(점선·원·꼬리표)도 그려요'
 LEGEND_DISPLAY = LEGEND.replace('칩·LED', '칩·표시기·LED').replace('칩 핀·LED', '칩·표시기 핀·LED')
 
 # 부품그리기 안내판 — 태블릿 판. 손그림모사는 `board_page` 판
@@ -65,7 +66,7 @@ def output_paths(experiment):
 
 
 def guide_rows(bb):
-    """안내판 부품표 — (종류, 이름, 자리). 칩 → 표시기 → LED → 저항 → 입력, 각각 엔진 기록 순서."""
+    """안내판 부품표 — (종류, 이름, 자리). 칩 → 표시기 → LED → 저항 → 입력 → 계측, 각각 엔진 기록 순서."""
     def hole(sym):
         return bb._sym_addr(('hole', sym))
     def dip(kind, part):
@@ -78,12 +79,16 @@ def guide_rows(bb):
              for r in bb.resistors]
     rows += [('입력', i['name'], f'레일 쪽 끝 {bb.addr(*bb._segments[i["seg"]][1][0])} 옆')
              for i in bb.inputs]
+    # 그림에 그린 계측 접점만 — `instrument_note`(그릴 자리 없는 접점)는 `sym` 이 없다
+    rows += [('계측', p['label'], f'접점 {p["at"]}') for p in bb.probes if 'sym' in p]
     return rows
 
 
 def legend_for(rows):
-    """표시기가 있는 쪽만 범례가 표시기를 말한다 — 표시기 없는 실험의 PDF 는 그대로다."""
-    return LEGEND_DISPLAY if any(k == '표시기' for k, _, _ in rows) else LEGEND
+    """표시기·계측 접점이 있는 쪽만 범례가 그것을 말한다 — 없는 실험의 PDF 는 그대로다."""
+    kinds = {k for k, _, _ in rows}
+    legend = LEGEND_DISPLAY if '표시기' in kinds else LEGEND
+    return legend + LEGEND_PROBE if '계측' in kinds else legend
 
 
 def render_final(fn, final_name, work_dir):
