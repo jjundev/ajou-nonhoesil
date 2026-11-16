@@ -723,7 +723,13 @@ def _chip_swap(previous, current) -> str:
         # 이유인 그 지시가 배너에서 사라진다.
         # `continues` 는 언제나 직전 회로다(validate 가 강제한다). 회로 번호는
         # 머리글과 길잡이 줄에 찍혀 있어 제목 전체를 되풀이하지 않는다.
-        tail = " · 더 꽂을 칩: " + ", ".join(current.ics) if current.ics else ""
+        # 단, **같은 번호로 다시 적은 칩**(실험10 C3 의 `U2 = 74HC04`)은 바뀐 핀을
+        # 적으려는 같은 패키지다 — 번호까지 같은 선언은 뺀다.
+        added = []
+        for ref, chip in current.ic_decls:
+            if (ref, chip) not in previous.ic_decls and chip not in added:
+                added.append(chip)
+        tail = " · 더 꽂을 칩: " + ", ".join(added) if added else ""
         return (f"앞 회로({previous.id})를 그대로 두고 이어 붙여요. "
                 f"점퍼선은 뽑지 않아요{tail}")
     remove = [c for c in previous.ics if c not in current.ics]

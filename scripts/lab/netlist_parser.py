@@ -161,10 +161,20 @@ class NetlistSection:
         쓴다 (netlist M10: 칩이 종류당 하나라 회로를 순차로 배선해야 한다).
         """
         out = []
-        for _, chip in IC_DECL.findall(self.body):
-            chip = chip.strip("`")
+        for _, chip in self.ic_decls:
             if chip not in out:
                 out.append(chip)
+        return out
+
+    @property
+    def ic_decls(self) -> list:
+        """`(U<n>, 칩)` 쌍. 등장 순서를 지키고 중복을 지운다. 같은 번호·같은 칩은
+        같은 패키지다 — 이어 붙이는 회로의 칩 배너가 이것으로 새 패키지만 고른다."""
+        out = []
+        for ref, chip in IC_DECL.findall(self.body):
+            pair = (ref, chip.strip("`"))
+            if pair not in out:
+                out.append(pair)
         return out
 
 

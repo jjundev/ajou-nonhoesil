@@ -1251,6 +1251,21 @@ class TestContinuesBanner(unittest.TestCase):
         banner = self._banner(circuit_pages(spec, netlist), 1)
         self.assertIn("더 꽂을 칩: 7490", banner)
 
+    def test_continues_가_같은_번호로_다시_적은_칩은_새로_꽂지_않는다(self):
+        """실험10 C3 은 C2 의 `U2 = 74HC04`·`U4 = LM741` 을 바뀐 핀을 적으려고 다시
+        선언한다 — 같은 번호면 같은 패키지다. 배너가 그것을 더 꽂으라고 하면
+        학생이 칩을 하나 더 찾는다(2026-11-16)."""
+        text = (ROOT / "tests/fixtures/netlist_capture.md").read_text(
+            encoding="utf-8")
+        text = text.replace("- U5 = 741 (비교기)", "- U1 = 7490 (같은 패키지)\n- U5 = 741 (비교기)")
+        text = text.replace("- tables: [T2]", "- tables: [T2]\n- continues: C1")
+        path = Path(tempfile.mkdtemp()) / "netlist.md"
+        path.write_text(text, encoding="utf-8")
+        spec = parse_spec(ROOT / "tests/fixtures/spec_capture.md")
+        banner = self._banner(circuit_pages(spec, parse_netlist(path)), 1)
+        self.assertIn("더 꽂을 칩: 741", banner)
+        self.assertNotIn("7490", banner)
+
     def test_continues_가_없으면_옛_배너_그대로다(self):
         """이 줄을 지우면 배너가 되돌아와야 한다 — 뮤테이션으로 무는 자리."""
         banner = self._banner(self._html(""), 1)
