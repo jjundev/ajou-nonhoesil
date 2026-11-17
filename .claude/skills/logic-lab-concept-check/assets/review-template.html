@@ -272,6 +272,7 @@
     .toc-mark { flex: none; display: block; width: 20px; height: 20px; color: var(--ink-2); }
     .toc-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .toc-mark.is-done { color: var(--accent-ink); }
+    .toc-mark[data-result="incorrect"] { color: var(--danger); }
 
     /* 복습문제: 원문 · 힌트 · 풀이 */
     .aid details:last-of-type { border-bottom: 1px solid var(--line); }
@@ -453,6 +454,14 @@
       const RANGE = body.dataset.range || '';
       const ICON_TODO = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>';
       const ICON_DONE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>';
+      const ICON_WRONG = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6m0-6-6 6"/></svg>';
+      const ICON_PENDING = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.88 2.08C12.5 12.15 12 12.75 12 14m0 2.25h.01"/></svg>';
+      const tocResults = {
+        correct: {icon: ICON_DONE, label: '정답'},
+        incorrect: {icon: ICON_WRONG, label: '오답'},
+        pending: {icon: ICON_PENDING, label: '자기채점 대기'},
+        ambiguous: {icon: ICON_PENDING, label: '판정 보류'}
+      };
       let overlay = null;
 
       // ---------- 열고 닫기 ----------
@@ -578,6 +587,7 @@
       const progressN = document.getElementById('progress-n');
       const progressBar = document.getElementById('progress-bar');
       const progressTotal = document.getElementById('progress-total');
+      const answerResults = new Map();
       function markToc(done, total, doneLabel) {
         panels.left.querySelectorAll('.toc-list a').forEach((a) => {
           const id = decodeURIComponent(a.getAttribute('href').slice(1));
@@ -591,9 +601,12 @@
             a.append(mark, state);
           }
           const isDone = done.has(id);
-          mark.classList.toggle('is-done', isDone);
-          mark.innerHTML = isDone ? ICON_DONE : ICON_TODO;
-          a.querySelector('.toc-state').textContent = isDone ? ' (' + doneLabel + ')' : '';
+          const result = isDone ? answerResults.get(id) : null;
+          const grade = tocResults[result];
+          mark.classList.toggle('is-done', isDone && (!grade || result === 'correct'));
+          mark.dataset.result = grade ? result : '';
+          mark.innerHTML = grade?.icon ?? (isDone ? ICON_DONE : ICON_TODO);
+          a.querySelector('.toc-state').textContent = isDone ? ' (' + (grade?.label ?? doneLabel) + ')' : '';
         });
         progressN.textContent = String(done.size);
         progressTotal.textContent = String(total);
@@ -620,6 +633,14 @@
           card.querySelectorAll(':scope > details').forEach((d) => g.appendChild(d));
           aids.appendChild(g);
           groups[card.id] = g;
+        });
+        // Record the grade before the progress handler repaints the list.
+        document.addEventListener('od:answer', ({detail}) => {
+          if (!cards.some(card => card.id === detail.id)) return;
+          if (detail.selected === null) answerResults.delete(detail.id);
+          else answerResults.set(detail.id, detail.result);
+          // The progress handler preserves the saved completion state on restore.
+          if (detail.restored && detail.selected !== null) markToc(solved, cards.length, '푼 문제');
         });
         let curId = null;
         function paintBtn() {

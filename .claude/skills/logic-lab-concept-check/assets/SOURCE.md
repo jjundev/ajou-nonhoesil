@@ -4,9 +4,9 @@
 
 | 파일 | 원본 경로 | SHA-256 |
 |---|---|---|
-| `review-template.html` | `.agents/skills/ds-review-pack/assets/review-template.html` | `345324b7d1cdcbfadd2e538c4a871d92597bbceb946abbb7bf793d95b68b5a93` |
+| `review-template.html` | `.agents/skills/ds-review-pack/assets/review-template.html` | `a4ab46b5dd70f6d50748f6b47ffa11a17eb7a7aa4124fb07d2bc06e1b4cbacab` |
 | `review-interaction.css` | `.agents/skills/ds-concept-check/assets/review-interaction.css` | `5700e02b9a686b4c2af0b00a3deee81a8531a52c5c1bd2ec5f1e6bb1e44ab37f` |
 | `review-interaction.js` | `.agents/skills/ds-concept-check/assets/review-interaction.js` | `654facf47d19f68f4c0e9ed5a87b03333c9d70aedfe17e15353fae22fcbb20f5` |
 | `review-prompt.js` | `.agents/skills/ds-concept-check/assets/review-prompt.js` | `344d3a7bc4ffad6eb84c9e2fa6951185de42a6feb28d2ce5a9793d203606ef45` |
 
-네 파일은 원본 바이트 그대로 저장합니다. 생성할 때 논회실 공용 Pretendard·KaTeX 경로를 적용합니다. 상호작용 설치, 블라인드 장부, 브라우저 검사는 같은 커밋의 Python 스크립트를 논회실 학습팩 구조에 맞췄습니다.
+템플릿에는 문제 목록의 채점 아이콘 변경을 반영했습니다. 원본 템플릿의 SHA-256은 `345324b7d1cdcbfadd2e538c4a871d92597bbceb946abbb7bf793d95b68b5a93`입니다. 나머지 세 파일은 원본과 같습니다. 생성할 때 논회실 공용 Pretendard·KaTeX 경로를 적용합니다. 상호작용 설치, 블라인드 장부, 브라우저 검사는 같은 커밋의 Python 스크립트를 논회실 학습팩 구조에 맞췄습니다.

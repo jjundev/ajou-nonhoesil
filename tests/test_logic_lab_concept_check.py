@@ -9,10 +9,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / ".claude/skills/logic-lab-concept-check"
 SCRIPTS = SKILL / "scripts"
-TEMPLATE_SHA = "345324b7d1cdcbfadd2e538c4a871d92597bbceb946abbb7bf793d95b68b5a93"
+TEMPLATE_SHA = "a4ab46b5dd70f6d50748f6b47ffa11a17eb7a7aa4124fb07d2bc06e1b4cbacab"
 
 
-def test_template_is_pinned_upstream_bytes():
+def test_template_matches_pinned_digest():
     assert hashlib.sha256((SKILL / "assets/review-template.html").read_bytes()).hexdigest() == TEMPLATE_SHA
 
 

@@ -10,7 +10,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 ASSET_HASHES = {
-    "review-template.html": "345324b7d1cdcbfadd2e538c4a871d92597bbceb946abbb7bf793d95b68b5a93",
+    "review-template.html": "a4ab46b5dd70f6d50748f6b47ffa11a17eb7a7aa4124fb07d2bc06e1b4cbacab",
     "review-interaction.css": "5700e02b9a686b4c2af0b00a3deee81a8531a52c5c1bd2ec5f1e6bb1e44ab37f",
     "review-interaction.js": "654facf47d19f68f4c0e9ed5a87b03333c9d70aedfe17e15353fae22fcbb20f5",
     "review-prompt.js": "344d3a7bc4ffad6eb84c9e2fa6951185de42a6feb28d2ce5a9793d203606ef45",

@@ -171,7 +171,7 @@ def patch_review_shell(source: str) -> str:
         if section.count(needle) != 1:
             raise ValueError('setupReview aid 구조 불일치')
         section = section.replace(needle, needle + '\n          g.dataset.cardId = card.id;')
-    if "document.addEventListener('od:answer'" not in section:
+    if "if (detail.selected === null) solved.delete(detail.id);" not in section:
         needle = "        document.addEventListener('od:screen', (e) => {"
         if section.count(needle) != 1:
             raise ValueError('setupReview 이벤트 구조 불일치')
