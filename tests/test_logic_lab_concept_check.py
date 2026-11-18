@@ -9,7 +9,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / ".claude/skills/logic-lab-concept-check"
 SCRIPTS = SKILL / "scripts"
-TEMPLATE_SHA = "a4ab46b5dd70f6d50748f6b47ffa11a17eb7a7aa4124fb07d2bc06e1b4cbacab"
+TEMPLATE_SHA = "b8df4750f44ce1e6e4487133049e480cf1be2236d92bd6d8af8a56df2d400927"
 
 
 def test_template_matches_pinned_digest():

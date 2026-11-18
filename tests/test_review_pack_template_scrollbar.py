@@ -1,4 +1,5 @@
 import re
+from hashlib import sha256
 from pathlib import Path
 import pytest
 
@@ -44,10 +45,19 @@ def test_발행물_스크롤바(page):
     check_scrollbar(text, cards=CARD_RULE in text)
 
 
+# 실험 01–06에 보관된 뷰포트 변경 이전 템플릿과 출처 기록.
+PACK_TEMPLATE_HASHES = {
+    'note-template.html': '3d8f76e6d8b62a995500f69183ddc7959ec7b3f1289dd3a811ed2f2850b9ff0a',
+    'review-template.html': 'b084c0fc4d9a53c9e3a9098ac0bfa56d9db97dc4932b28e5ec9467f610fc53d9',
+    'template-provenance.json': '66e0f6df71267c62576ca382f953d4f2505ea1586af606c6f054527f0954dc20',
+}
+
+
 @pytest.mark.parametrize('folder', PACKS, ids=str)
-def test_팩_템플릿_사본은_스킬과_같다(folder):
-    for name in ('note-template.html', 'review-template.html', 'template-provenance.json'):
-        assert (folder / '.pack/assets' / name).read_bytes() == (ASSETS / name).read_bytes()
+def test_팩_템플릿_사본은_보관_해시와_같다(folder):
+    for name, expected in PACK_TEMPLATE_HASHES.items():
+        path = folder / '.pack/assets' / name
+        assert sha256(path.read_bytes()).hexdigest() == expected, path
 
 
 def test_노트_상단여백과_그림_둥근모서리():
