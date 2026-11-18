@@ -333,9 +333,25 @@
     .sum-rules li { padding: var(--s2) 0; border-bottom: 1px solid var(--line); }
     .sum-rules li:first-child { padding-top: 0; }
     .sum-rules b { font-weight: 700; color: var(--ink); }
+    .sum .katex-display { margin: var(--s2) 0 0; }
+    .sum .katex-display > .katex { text-align: left; }
+    .sum .keep-equation-together { display: inline-block; white-space: nowrap; }
     .sum-why { margin: 0; font-size: var(--fs-sub); line-height: 1.7; color: var(--ink-2); }
     .sum-traps { margin: 0; padding: 0 0 0 var(--s3); list-style: none; border-left: 3px solid var(--warn); font-size: var(--fs-sub); line-height: 1.6; }
     .sum-traps li + li { margin-top: var(--s2); }
+    /* 문장 안의 분수에만 줄 높이와 간격을 추가한다. */
+    body:not([data-problem-explanation]) #panel-right
+      :is(.sum-rules > li, .sum-why, .sum-traps > li):has(.katex:not(.katex-display .katex) > .katex-mathml mfrac) {
+      line-height: 1.8;
+    }
+    body:not([data-problem-explanation]) #panel-right
+      .sum-rules > li:has(.katex:not(.katex-display .katex) > .katex-mathml mfrac) {
+      padding-block: var(--s3);
+    }
+    body:not([data-problem-explanation]) #panel-right
+      .sum-rules > li:first-child:has(.katex:not(.katex-display .katex) > .katex-mathml mfrac) {
+      padding-block-start: var(--s1);
+    }
 
     @media (hover: hover) { .solved-btn:hover { background: var(--surface); } }
 
