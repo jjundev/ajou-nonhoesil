@@ -20,6 +20,7 @@ def close(a, b, tol=1e-6):
 # t-start: 1V/LSB 4비트
 ok('start-dac', [int('0101', 2), int('1010', 2)] == [5, 10])
 ok('start-adc', [int(5.0 // 1), int(5.4 // 1)] == [5, 5], '내림 규칙에서 5.0V, 5.4V 모두 0101')
+ok('start-adc-boundary', [int(v // 1) for v in (5.9, 6.0)] == [5, 6])
 
 # t-opamp: 이상 반전 증폭기, 공급 ±15V
 def inv(vin, r1, rf, vs=15):
@@ -37,7 +38,7 @@ Ri = {'QA': 24, 'QB': 12, 'QC': 6, 'QD': 3}
 def summ(n, rf=4.5, vh=5):
     bits = {'QA': n & 1, 'QB': n >> 1 & 1, 'QC': n >> 2 & 1, 'QD': n >> 3 & 1}
     return -rf * sum(vh * b / Ri[k] for k, b in bits.items())
-want = {1: -0.9375, 2: -1.875, 7: -6.5625, 8: -7.5, 9: -8.4375, 5: -4.6875}
+want = {0: 0, 1: -0.9375, 2: -1.875, 7: -6.5625, 8: -7.5, 9: -8.4375, 5: -4.6875}
 ok('summing-rows', all(close(summ(n), v) for n, v in want.items()), {n: summ(n) for n in want})
 ok('summing-linear', all(close(summ(n), n * summ(1)) for n in range(16)))
 
@@ -81,6 +82,8 @@ def chain(q, pullup=True):
     return 0 if pulls else (5 if pullup else None)
 ok('oc-rows', chain(0) == 0 and chain(1) == 5 and chain(1, False) is None)
 ok('oc-path', [round(1.5 + r, 1) for r in (22.6, 10.5, 4.5, 1.5)] == [24.1, 12.0, 6.0, 3.0])
+qa_loaded_high = Fr('22.6') * 5 / Fr('24.1')
+ok('oc-loaded-contact', Fr(4) < qa_loaded_high < Fr(5), float(qa_loaded_high))
 ok('oc-supp', (0 if 1 == 1 else 5) == 0, 'QA=1 바로 7405 → 당김 0V')
 
 # t-dac
@@ -91,15 +94,25 @@ par = 10.5 * 68 / (10.5 + 68)
 ok('dac-parallel', close(round(par, 1), 9.1), par)
 # 출력 식 V+ + Rf Σ(V+−Vi)/Ri 는 V+=0에서 반전 가산기와 같아요
 ok('dac-formula', all(close(0 + 4.5 * sum((0 - 5 * b) / r for b, r in zip(bits, (24, 12, 6, 3))), summ(sum(b << i for i, b in enumerate(bits)))) for bits in itertools.product([0, 1], repeat=4)))
+example_points = [(2, 0, 4), (3, 0, 6), (3, 5, 1)]
+ok('dac-reference-and-input', all(vplus - vin == vout - vplus for vplus, vin, vout in example_points), example_points)
 
 # t-comparator: Vout = Vs+ if V+ > V− else Vs−
 def cmp(vp, vm):
     return 15 if vp > vm else 0
 ok('cmp-rows', [cmp(8.5, v) for v in (10, 9, 8, 7)] == [0, 0, 15, 15])
+first_high = next(n for n, v in zip(range(2, 6), (10, 9, 8, 7)) if cmp(8.5, v) == 15)
+ok('cmp-first-high-code', format(first_high, '04b') == '0100')
 ok('cmp-supp', next(n for n, v in zip(range(2, 6), (10, 9, 8, 7)) if cmp(9.5, v) == 15) == 3)
 
 # t-adc
 ok('flash', [2 ** n - 1 for n in (2, 3, 4, 8)] == [3, 7, 15, 255])
+flash_patterns = [
+    ''.join(str(int(vin > ref)) for ref in (3, 2, 1))
+    for vin in (0.5, 1.5, 2.5, 3.5)
+]
+ok('flash-2bit-trace', flash_patterns == ['000', '001', '011', '111']
+   and [format(row.count('1'), '02b') for row in flash_patterns] == ['00', '01', '10', '11'])
 def sar(vin, n=4):
     code, log = 0, []
     for k in reversed(range(n)):

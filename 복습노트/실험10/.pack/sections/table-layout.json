@@ -290,32 +290,6 @@
     {
       "key": "t-7490/0",
       "expected_headers": [
-        "핀",
-        "이름",
-        "하는 일"
-      ],
-      "columns": [
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "설명"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "설명"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "설명"
-        }
-      ],
-      "boundaries": []
-    },
-    {
-      "key": "t-7490/1",
-      "expected_headers": [
         "클럭",
         "QD QC QB QA",
         "십진수",
@@ -359,13 +333,38 @@
       ]
     },
     {
+      "key": "t-7490/1",
+      "expected_headers": [
+        "핀",
+        "이름",
+        "하는 일"
+      ],
+      "columns": [
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": []
+    },
+    {
       "key": "t-oc/0",
       "expected_headers": [
-        "Q (7490)",
-        "7404 출력",
-        "7405 출력",
-        "가중 저항 앞",
-        "왜 이 값인가요"
+        "QA (7490)",
+        "7405 입력",
+        "내부 스위치",
+        "가중 저항과 만나는 곳"
       ],
       "columns": [
         {
@@ -379,14 +378,9 @@
           "group": "중간"
         },
         {
-          "role": "intermediate",
-          "kind": "signal",
-          "group": "중간"
-        },
-        {
           "role": "output",
-          "kind": "signal",
-          "group": "출력"
+          "kind": "text",
+          "group": "결과"
         },
         {
           "role": "description",
@@ -400,11 +394,11 @@
           "kind": "major"
         },
         {
-          "left": 2,
+          "left": 1,
           "kind": "major"
         },
         {
-          "left": 3,
+          "left": 2,
           "kind": "major"
         }
       ]
@@ -443,37 +437,6 @@
     },
     {
       "key": "t-dac/0",
-      "expected_headers": [
-        "단계",
-        "부품",
-        "하는 일"
-      ],
-      "columns": [
-        {
-          "role": "index",
-          "kind": "index",
-          "group": "순서"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "설명"
-        },
-        {
-          "role": "description",
-          "kind": "text",
-          "group": "설명"
-        }
-      ],
-      "boundaries": [
-        {
-          "left": 0,
-          "kind": "major"
-        }
-      ]
-    },
-    {
-      "key": "t-dac/1",
       "expected_headers": [
         "클럭",
         "QD QC QB QA",
@@ -528,7 +491,7 @@
       ]
     },
     {
-      "key": "t-dac/2",
+      "key": "t-dac/1",
       "expected_headers": [
         "절차",
         "바꾸는 것",
@@ -571,21 +534,15 @@
     {
       "key": "t-comparator/0",
       "expected_headers": [
-        "카운트",
+        "카운터 코드",
         "DAC 출력 (V−)",
-        "기준 (V+)",
-        "출력",
+        "비교기 출력",
         "왜 이 값인가요"
       ],
       "columns": [
         {
-          "role": "index",
-          "kind": "index",
-          "group": "순서"
-        },
-        {
           "role": "input",
-          "kind": "signal",
+          "kind": "bus",
           "group": "입력"
         },
         {
@@ -606,21 +563,62 @@
       ],
       "boundaries": [
         {
-          "left": 0,
+          "left": 1,
           "kind": "major"
         },
         {
           "left": 2,
-          "kind": "major"
-        },
-        {
-          "left": 3,
           "kind": "major"
         }
       ]
     },
     {
       "key": "t-adc/0",
+      "expected_headers": [
+        "입력 예시",
+        "C3 C2 C1",
+        "출력 코드",
+        "넘은 경계"
+      ],
+      "columns": [
+        {
+          "role": "input",
+          "kind": "signal",
+          "group": "입력"
+        },
+        {
+          "role": "intermediate",
+          "kind": "signal",
+          "group": "중간"
+        },
+        {
+          "role": "output",
+          "kind": "bus",
+          "group": "출력"
+        },
+        {
+          "role": "description",
+          "kind": "text",
+          "group": "설명"
+        }
+      ],
+      "boundaries": [
+        {
+          "left": 0,
+          "kind": "major"
+        },
+        {
+          "left": 1,
+          "kind": "major"
+        },
+        {
+          "left": 2,
+          "kind": "major"
+        }
+      ]
+    },
+    {
+      "key": "t-adc/1",
       "expected_headers": [
         "비트 수 n",
         "비교기 수 2ⁿ−1",
@@ -655,7 +653,7 @@
       ]
     },
     {
-      "key": "t-adc/1",
+      "key": "t-adc/2",
       "expected_headers": [
         "비교",
         "시험 코드",
@@ -710,7 +708,7 @@
       ]
     },
     {
-      "key": "t-adc/2",
+      "key": "t-adc/3",
       "expected_headers": [
         "방식",
         "하는 일",

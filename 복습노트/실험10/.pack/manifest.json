@@ -106,14 +106,14 @@
     {
       "id": "s-spec10",
       "path": "보고서/실험10/체크리스트/명세.md",
-      "sha256": "61fed2806d0d42ee1e2f117cbe0364bb01c10c2594b0bd56204a881f17c23b22",
+      "sha256": "050b87fbd922abee6fac89259a7b6ede878411ed8b6a6c1e5b1153cb61fa3ef1",
       "kind": "record",
       "edition": "current"
     },
     {
       "id": "s-netlist10",
       "path": "보고서/실험10/결선도/netlist.md",
-      "sha256": "074650385e11d2a206096f7b4034976f94ab18dccd527e6ba16d75e21b1407bb",
+      "sha256": "2c58f0ba5fcd669fd0985f4537373ce253b9ab7beb88184c4fc15e0f15d622f3",
       "kind": "record",
       "edition": "current"
     }
@@ -140,6 +140,11 @@
           "printed_page": null
         },
         {
+          "source_id": "s-manual10",
+          "pdf_page": 18,
+          "printed_page": null
+        },
+        {
           "source_id": "s-scope",
           "pdf_page": null,
           "printed_page": null
@@ -151,7 +156,7 @@
         }
       ],
       "fragment": "sections/t-start.html",
-      "md_notes": "교안 표지는 25-1이에요. 보고서 범위(실험 1) DAC)는 2026-09-14 공지(_350547_1)와 config.EXPERIMENT_SCOPE[10]에서 확인했어요(명세 근거와 범위). DAC 정의·쓰임은 p7, ADC 정의는 p13이에요. 디지털 저장·전송의 장점은 기출 제공 답안에 있는 일반 설명이라 보충으로 표시했어요. 4비트 예시 표는 이해를 위한 예시이고 check_values.py 가 다시 계산했어요."
+      "md_notes": "교안 표지는 25-1이에요. 보고서 범위(실험 1) DAC)는 2026-09-14 공지(_350547_1)와 config.EXPERIMENT_SCOPE[10]에서 확인했어요(명세 근거와 범위). DAC 정의·쓰임은 p7, ADC 정의는 p13이에요. 4비트 변환 표는 이해를 위한 예시이고 check_values.py가 다시 계산했어요. 내림차순 계단 그림은 p18에 근거한 개형이에요."
     },
     {
       "id": "t-opamp",
@@ -244,7 +249,7 @@
     },
     {
       "id": "t-oc",
-      "title": "7404 + 7405: 비트 전압을 정확히 0V 또는 5V로 맞춰요",
+      "title": "7404 + 7405: 비트로 가중 저항의 경로를 바꿔요",
       "requires": [
         "t-start"
       ],
@@ -271,7 +276,7 @@
         }
       ],
       "fragment": "sections/t-oc.html",
-      "md_notes": "p9 문장(정확히 GND 또는 Vcc, Open-collector IC 05와 Pull up 저항, IC 04로 반전 피하기)과 p10 회로 값을 따랐어요. 경로 저항 합(24.1k·12k·6k·3k)은 명세에 있는 V+=GND일 때의 이상 셈이에요. TTL High 전압 설명은 보충이에요. 74HC05가 open-drain이라는 것은 netlist 핀아웃 출처(TI SCLS080F 2026-11-16 확인)예요."
+      "md_notes": "p9 문장(정확히 GND 또는 Vcc, Open-collector IC 05와 Pull up 저항, IC 04로 반전 피하기)과 p10 회로 값을 따랐어요. 경로 저항 합(24.1k·12k·6k·3k)은 명세에 있는 V+=GND일 때의 이상 셈이에요. 스위치 동작과 풀업 접점 전압은 이상 모델로 설명했어요. 74HC05가 open-drain이라는 것은 netlist 핀아웃 출처(TI SCLS080F 2026-11-16 확인)예요."
     },
     {
       "id": "t-dac",
@@ -337,7 +342,7 @@
         }
       ],
       "fragment": "sections/t-dac.html",
-      "md_notes": "p10~p12 회로, p16·p17 절차, p18 예상 결과(내림차순 계단), p19~p21 절차 4~6을 따랐어요. V+=GND에서 평평한 선 예상은 명세 T3의 판단이고, p18 두 사진의 절차 대응은 미확정이에요(netlist M13). 교안 소자값의 이상 셈이 +15V를 넘는 문제는 netlist M7, U4 7번 라벨 없음은 M3이에요(기출 예상문제 v3의 같은 회로 그림은 7번을 +15V로 적어 이 노트·명세의 +15V 연결과 맞아요), LM741 단일 전원 문제는 M11이에요. 1kHz에서 1ms·10ms, Rf 0.6배, 10.5k∥68k ≈ 9.1k는 check_values.py 셈이에요. 절차 4~6을 따로 하는 순서는 명세의 결정이에요(M9). 출력 식 V+ + Rf·Σ(V+−Vi)/Ri는 이상 Op-Amp의 KCL 셈으로 보충이에요."
+      "md_notes": "p10~p12 회로, p16·p17 절차, p18 예상 결과(내림차순 계단), p19~p21 절차 4~6을 따랐어요. V+=GND에서 평평한 선 예상은 명세 T3의 판단이고, p18 두 사진의 절차 대응은 미확정이에요(netlist M13). 교안 소자값의 이상 셈이 +15V를 넘는 문제는 netlist M7, U4 7번 라벨 없음은 M3이에요(기출 예상문제 v3의 같은 회로 그림은 7번을 +15V로 적어 이 노트·명세의 +15V 연결과 맞아요), LM741 단일 전원 문제는 M11이에요. 1kHz에서 1ms·10ms, Rf 0.6배, 10.5k∥68k ≈ 9.1k는 check_values.py 셈이에요. 절차 4~6을 따로 하는 순서는 명세의 결정이에요(M9). 출력 식 V+ + Rf·Σ(V+−Vi)/Ri와 기준·입력을 하나씩 바꾸는 예시는 이상 Op-Amp의 KCL 셈으로 보충했어요."
     },
     {
       "id": "t-comparator",
@@ -389,7 +394,7 @@
         }
       ],
       "fragment": "sections/t-adc.html",
-      "md_notes": "p13의 두 type과 세 feedback 방식(Ramp, Counter, SAR)을 옮겼어요. 2ⁿ−1은 p13을 300dpi로 읽어 확인했어요(텍스트 추출은 위첨자를 잃어 2n-1로 나와요). SAR 예시와 비교기 수는 check_values.py 가 다시 계산했어요. 실험 2를 Counter type으로 본 것과 Counter 변환 시간이 입력에 따라 달라진다는 것은 보충이에요."
+      "md_notes": "p13의 두 type과 세 feedback 방식(Ramp, Counter, SAR)을 옮겼어요. 2ⁿ−1은 p13을 300dpi로 읽어 확인했어요(텍스트 추출은 위첨자를 잃어 2n-1로 나와요). Flash 2비트 예시, SAR 예시와 비교기 수는 check_values.py가 다시 계산했어요. 실험 2를 Counter type으로 본 것과 Counter 변환 시간이 입력에 따라 달라진다는 것은 보충이에요."
     }
   ],
   "problems": [

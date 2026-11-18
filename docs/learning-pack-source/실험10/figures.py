@@ -127,6 +127,9 @@ def network(given=False):
     f.dot(270, 260)
     res_v(f, 270, 260, 420, 'RL ≫ R')
     gnd(f, 270, 420)
+    if not given:
+        f.line([(450, 260), (505, 260)])
+        term(f, 505, 260, 'Vo', 'right')
     f.text(270, 520, 'Weighted resistor', size=22, anchor='middle', weight='bold')
     # 래더
     xs2 = [760, 900, 1040, 1180]
@@ -141,12 +144,15 @@ def network(given=False):
     f.line([(620, 300), (620, 400)])
     gnd(f, 620, 400)
     f.text(830, 112, '…', size=28, anchor='middle')
+    if not given:
+        f.line([(1180, 300), (1225, 300)])
+        term(f, 1225, 300, 'Vo', 'right')
     f.text(900, 520, 'Ladder type resistor', size=22, anchor='middle', weight='bold')
     return f
 
 
 def oc():
-    f = Fig(1100, 330, '7404와 7405, 1.5kΩ 풀업', '한 비트: 7490 출력 → 7404 → 7405 → 가중 저항, 7405 출력에 +5V 풀업')
+    f = Fig(1100, 330, '7404와 7405, 1.5kΩ 풀업', '7405 출력과 풀업, 가중 저항이 한 접점에서 만나요. +5V 전원은 풀업 위에 있어요.')
     y = 210
     term(f, 140, y, 'Q (7490)')
     a = f.not_(200, y - 22)
@@ -165,7 +171,8 @@ def oc():
     res_h(f, 640, 860, y, '가중 저항 (예: 22.6kΩ)')
     f.line([(860, y), (900, y)])
     f.text(910, y + 7, '가산 노드로', size=20, fill=BLUE, weight='bold')
-    f.text(330, 110, '0 → 0V, 1 → +5V', size=22, anchor='middle', fill=BLUE, weight='bold')
+    f.line([(600, y + 7), (600, y + 35)], color=GREY, width=2)
+    f.text(600, y + 58, '가중 저항 앞 접점', size=20, anchor='middle', fill=BLUE, weight='bold')
     return f
 
 
